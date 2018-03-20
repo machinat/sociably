@@ -1,13 +1,10 @@
 {
-  "name": "machinat",
   "private": true,
   "version": "0.0.1",
   "scripts": {
     "lint": "eslint ./packages/*",
     "test": "jest"
   },
-  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
-  "description": "",
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.41",
     "@babel/core": "^7.0.0-beta.41",

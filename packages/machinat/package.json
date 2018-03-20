@@ -1,0 +1,7 @@
+{
+  "name": "machinat",
+  "version": "0.0.0",
+  "description": "Machinat is a JavaScript library for building chat user interfaces.",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "main": "lib/index.js"
+}
