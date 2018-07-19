@@ -1,0 +1,24 @@
+export const TEXT = 'text';
+export const IMAGE = 'image';
+export const VIDEO = 'video';
+export const AUDIO = 'audio';
+export const FILE = 'file';
+export const LOCATION = 'location';
+export const TEMPLATE = 'template';
+
+export const MESSAGE = 'message';
+export const READ = 'read';
+export const DELIVERY = 'delivery';
+export const ACCOUNT_LINKING = 'account_linking';
+export const CHECKOUT_UPDATE = 'checkout_update';
+export const GAME_PLAY = 'game_play';
+export const PASS_THREAD_CONTROL = 'pass_thread_control';
+export const TAKE_THREAD_CONTROL = 'take_thread_control';
+export const REQUEST_THREAD_CONTROL = 'request_thread_control';
+export const APP_ROLES = 'app_roles';
+export const OPTIN = 'optin';
+export const PAYMENT = 'payment';
+export const POLICY_ENFORCEMENT = 'policy-enforcement';
+export const POSTBACK = 'postback';
+export const PAYMENT_PRE_CHECKOUT = 'payment_pre_checkout';
+export const REFERRAL = 'referral';

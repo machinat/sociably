@@ -1,0 +1,41 @@
+[
+  {
+    "sender":{
+      "id":"<PSID>"
+    },
+    "recipient":{
+      "id":"<PAGE_ID>"
+    },
+    "timestamp":1458692752478,
+    "message": {
+      "mid": "mid.$cAACFU2NCL81nc02tgVhQghkkuXzk",
+      "seq": 69894,
+      "text": "Transfer $50 to yourname@email.com tomorrow at 2pm",
+      "nlp": {
+        "entities": {
+          "amount_of_money": [{
+            "confidence": 0.9650075,
+            "value": 50,
+            "type": "value",
+            "unit": "$"
+          }],
+          "email": [{
+            "confidence": 0.96904833333333,
+            "value": "your-name@email.com"
+          }],
+          "datetime": [{
+            "confidence": 0.96793833333333,
+            "values": [{
+              "value": "2018-01-30T14:00:00.000+01:00",
+              "grain": "hour",
+              "type": "value"
+            }],
+            "value": "2018-01-30T14:00:00.000+01:00",
+            "grain": "hour",
+            "type": "value"
+          }]
+        }
+      }
+    }
+  }
+]

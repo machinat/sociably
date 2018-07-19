@@ -1,0 +1,23 @@
+[
+  {
+    "sender":{
+      "id":"<PSID>"
+    },
+    "recipient":{
+      "id":"<PAGE_ID>"
+    },
+    "timestamp":1458692752478,
+    "message":{
+      "mid":"mid.1458696618141:b4ef9d19ec21086067",
+      "text":"<URL_SENT_BY_THE_USER>",
+      "attachments":[
+        {
+          "type":"fallback",
+          "payload":null,
+        	"title":"<TITLE_OF_THE_URL_ATTACHMENT>",
+        	"URL":"<URL_OF_THE_ATTACHMENT>"
+        }
+      ]
+    }
+  }
+]
