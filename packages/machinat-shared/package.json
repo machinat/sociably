@@ -1,0 +1,9 @@
+{
+  "name": "machinat-shared",
+  "version": "0.0.1-0",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "warning": "^4.0.1"
+  }
+}

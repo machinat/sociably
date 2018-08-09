@@ -14,7 +14,11 @@ class MessengerConnector extends EventEmitter {
     this.respondTimeout = respondTimeout;
   }
 
-  async _handleRequest(request, response, parsedBody) {
+  callback() {
+    return this.handleRequest.bind(this);
+  }
+
+  async handleRequest(request, response, parsedBody) {
     let body = parsedBody;
     if (!body) {
       const rawBody = await getRawBody(request, RAW_BODY_OPTION);

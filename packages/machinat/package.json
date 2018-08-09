@@ -3,5 +3,8 @@
   "version": "0.0.1-0",
   "description": "Machinat is a JavaScript library for building chat user interfaces.",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
-  "main": "lib/index.js"
+  "main": "lib/index.js",
+  "dependencies": {
+    "machinat-shared": "0.0.1-0"
+  }
 }

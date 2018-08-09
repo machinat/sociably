@@ -5,7 +5,8 @@ module.exports = {
   },
   plugins: [
     'json',
-    'prettier'
+    'prettier',
+    'flowtype',
   ],
   extends: [
     'airbnb-base',
@@ -13,10 +14,24 @@ module.exports = {
   ],
   rules: {
     strict: 0,
+    'no-nested-ternary': 0,
+    'no-underscore-dangle': 0,
+    'no-unused-vars': ['error', {
+      varsIgnorePattern: 'Machinat',
+    }],
+    'no-param-reassign': ['error', {
+      props: true,
+      ignorePropertyModificationsFor: ['context'],
+    }],
+    'flowtype/define-flow-type': 1,
     'prettier/prettier': ['error', {
       trailingComma: 'es5',
       singleQuote: true,
+      parser: 'babylon',
     }],
-    'no-nested-ternary': 0,
+    'import/no-unresolved': ['error', {
+      ignore: ['types/.+', 'machinat-.+']
+    }],
+    'import/extensions': 0,
   },
 };

@@ -1,2 +1,4 @@
+scripts
 **/node_modules/*
 packages/*/lib/*
+babel.config.js

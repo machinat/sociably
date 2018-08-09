@@ -30,7 +30,6 @@ const chalk = require('chalk');
 const micromatch = require('micromatch');
 const stringLength = require('string-length');
 const getPackages = require('./getPackages');
-const browserBuild = require('./browserBuild');
 
 const OK = chalk.reset.inverse.bold.green(' DONE ');
 const SRC_DIR = 'src';
@@ -154,6 +153,6 @@ if (files.length) {
   packages.forEach(buildNodePackage);
   process.stdout.write('\n');
 
-  process.stdout.write(chalk.inverse(' Building browser packages \n'));
-  packages.forEach(buildBrowserPackage);
+  // process.stdout.write(chalk.inverse(' Building browser packages \n'));
+  // packages.forEach(buildBrowserPackage);
 }
