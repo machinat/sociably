@@ -9,4 +9,8 @@ const Utils = {
 };
 
 export { Children, Utils };
-export * from './symbol';
+export {
+  MACHINAT_ELEMENT_TYPE,
+  MACHINAT_FRAGMENT_TYPE,
+  MACHINAT_ASYNC_TYPE,
+} from './symbol';

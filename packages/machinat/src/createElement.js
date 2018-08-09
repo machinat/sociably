@@ -1,17 +1,23 @@
+// @flow
 import { MACHINAT_ELEMENT_TYPE } from 'machinat-shared';
+import type { MachinatElementType, MachinatNode } from 'types/element';
 
-export default function createElement(type, config, ...children) {
-  const { async, ...props } = config || {};
+export default function createElement(
+  type: MachinatElementType,
+  config: Object,
+  ...children: Array<MachinatNode>
+) {
+  const props = config || {};
   if (children.length === 1) {
-    [props.children] = children;
+    props.children = children[0]; // eslint-disable-line prefer-destructuring
   } else if (children.length > 1) {
     props.children = children;
   }
   return {
     type,
     props,
-    async: !!async,
     $$typeof: MACHINAT_ELEMENT_TYPE,
+    // $FlowFixMe it's ok until we have other way labeling native type
     $$native: type.$$native,
   };
 }

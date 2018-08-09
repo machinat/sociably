@@ -17,7 +17,6 @@ export type MachinatElement<ElementType: MachinatElementType> = {
   $$native: void | string | Symbol,
   type: ElementType,
   props: MachinatElementProps,
-  async: boolean,
 };
 
 export type MachinatText = string | number;
