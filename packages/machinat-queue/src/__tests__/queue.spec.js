@@ -6,6 +6,8 @@ it('is a constructor', () => {
   expect(() => new MachinatQueue()).not.toThrow();
 });
 
+jest.useFakeTimers();
+
 describe('MachinatQueue instance', () => {
   let queue;
   beforeEach(() => {
@@ -18,34 +20,39 @@ describe('MachinatQueue instance', () => {
     expect(queue.length).toBe(1);
 
     let called = false;
-    const result = await queue.acquire(1, jobs => {
+    const promise = queue.acquire(1, async jobs => {
       called = true;
       expect(jobs.length).toBe(1);
       expect(jobs[0]).toBe(job);
+      await delay(100);
       return 'Success';
     });
 
+    setImmediate(jest.runAllTimers);
+
+    await expect(promise).resolves.toBe('Success');
     expect(queue.length).toBe(0);
     expect(called).toBe(true);
-    expect(result).toBe('Success');
   });
 
-  test('enque jobs and acquire  with failure', async () => {
+  test('enque jobs and acquire with failure', async () => {
     const jobs = [{ id: 1 }, { id: 2 }, { id: 3 }];
     queue.enqueue(...jobs);
     expect(queue.length).toBe(3);
 
     let called = false;
-    await expect(
-      queue.acquire(3, acquired => {
-        called = true;
-        expect(queue.length).toBe(0);
-        expect(acquired.length).toBe(3);
-        expect(acquired).toEqual(jobs);
-        throw new Error('fail!');
-      })
-    ).rejects.toThrowError('fail!');
+    const promise = queue.acquire(3, async acquired => {
+      called = true;
+      expect(queue.length).toBe(0);
+      expect(acquired.length).toBe(3);
+      expect(acquired).toEqual(jobs);
+      await delay(100);
+      throw new Error('fail!');
+    });
 
+    setImmediate(jest.runAllTimers);
+
+    await expect(promise).rejects.toThrowError('fail!');
     expect(queue.length).toBe(3);
     expect(called).toBe(true);
   });
@@ -57,7 +64,7 @@ describe('MachinatQueue instance', () => {
 
     let count = 0;
     while (queue.length > 0) {
-      const result = await queue.acquire(3, async acquired => {
+      const promise = queue.acquire(3, async acquired => {
         expect(acquired.length).toBe(11 - count < 3 ? 11 - count : 3);
         acquired.forEach(job => {
           expect(job).toEqual({ id: count });
@@ -68,7 +75,9 @@ describe('MachinatQueue instance', () => {
         return 'Success';
       });
 
-      expect(result).toBe('Success');
+      setImmediate(jest.runOnlyPendingTimers);
+
+      await expect(promise).resolves.toBe('Success');
       expect(queue.length).toBe(11 - count);
     }
 
@@ -76,7 +85,7 @@ describe('MachinatQueue instance', () => {
     expect(count).toBe(11);
   });
 
-  test('enqueue many jobs and acquire asynchronizedly', async () => {
+  xtest('enqueue many jobs and acquire asynchronizedly', async () => {
     const jobs = new Array(11).fill(null).map((_, i) => ({ id: i }));
     queue.enqueue(...jobs);
     expect(queue.length).toBe(11);
@@ -97,17 +106,21 @@ describe('MachinatQueue instance', () => {
         })
       );
       expect(queue.length).toBe(11 - count);
-      await delay(20);
     }
 
-    const result = await Promise.all(executions);
-
-    expect(result).toEqual(['Success', 'Success', 'Success', 'Success']);
     expect(queue.length).toBe(0);
+
+    setImmediate(jest.runAllTimers);
+    await expect(Promise.all(executions)).resolves.toEqual([
+      'Success',
+      'Success',
+      'Success',
+      'Success',
+    ]);
     expect(count).toBe(11);
   });
 
-  test('acquire asynchronizedly with acquisitionLimit set', async () => {
+  xtest('acquire asynchronizedly with acquisitionLimit set', async () => {
     queue = new MachinatQueue({ acquisitionLimit: 2 });
     const jobs = new Array(11).fill(null).map((_, i) => ({ id: i }));
     queue.enqueue(...jobs);
@@ -129,6 +142,9 @@ describe('MachinatQueue instance', () => {
         })(t)
       );
     }
+
+    setImmediate(jest.runAllTimers);
+
     expect(queue.length).toBe(11);
     await delay(10);
     expect(queue.length).toBe(7);
