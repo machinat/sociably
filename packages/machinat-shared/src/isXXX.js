@@ -1,6 +1,13 @@
 // @flow
-import { MACHINAT_FRAGMENT_TYPE, MACHINAT_ELEMENT_TYPE } from './symbol';
+import {
+  MACHINAT_FRAGMENT_TYPE,
+  MACHINAT_ELEMENT_TYPE,
+  MACHINAT_IMMEDIATELY_TYPE,
+} from './symbol';
 import isValidElementType from './isValidElementType';
+
+export const isEmpty = (element: any) =>
+  typeof element === 'boolean' || element === null || element === undefined;
 
 export const isElement = (element: any) =>
   typeof element === 'object' &&
@@ -13,8 +20,10 @@ export const isFragment = (element: any) =>
   element !== null &&
   element.type === MACHINAT_FRAGMENT_TYPE;
 
-export const isEmpty = (element: any) =>
-  typeof element === 'boolean' || element === null || element === undefined;
+export const isImmediately = (element: any) =>
+  typeof element === 'object' &&
+  element !== null &&
+  element.type === MACHINAT_IMMEDIATELY_TYPE;
 
 export const isValidRenderable = (element: any) =>
   typeof element === 'string' ||

@@ -8,7 +8,7 @@ import type {
   MachinatFragmentElement,
 } from 'types/element';
 
-import { isFragment, isEmpty, isValidRenderable } from './isXXX';
+import { isFragment, isEmpty, isValidRenderable, isImmediately } from './isXXX';
 import type {
   TraverseElementCallback,
   ElementReducer,
@@ -17,13 +17,13 @@ import type {
 
 const ITER_SEPARATOR = ':';
 
-const traverse = (
+export const traverse = (
   children: MachinatNode,
   prefix: string = '',
   context: any,
   callback: TraverseElementCallback
 ): number => {
-  if (isValidRenderable(children)) {
+  if (isValidRenderable(children) || isImmediately(children)) {
     callback(
       (children: any),
       prefix.charAt(prefix.length - 1) === ':'

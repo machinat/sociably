@@ -17,7 +17,7 @@ export default function createElement(
     type,
     props,
     $$typeof: MACHINAT_ELEMENT_TYPE,
-    // $FlowFixMe it's ok until we have other way labeling native type
-    $$native: type.$$native,
+    // $FlowFixMe ok until we have better way labeling native type
+    $$native: type && type.$$native,
   };
 }

@@ -24,6 +24,7 @@ export type MachinatEmpty = null | void | boolean;
 
 export type MachinatElementProps = {
   children: MachinatChildren,
+  [string]: any,
 };
 
 export type MachinatFunctionType = MachinatElementProps => MachinatNode;

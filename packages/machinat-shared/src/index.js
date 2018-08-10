@@ -12,5 +12,5 @@ export { Children, Utils };
 export {
   MACHINAT_ELEMENT_TYPE,
   MACHINAT_FRAGMENT_TYPE,
-  MACHINAT_ASYNC_TYPE,
+  MACHINAT_IMMEDIATELY_TYPE,
 } from './symbol';

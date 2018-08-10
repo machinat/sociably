@@ -27,11 +27,6 @@ export type RenderResult<Rendered> = {
   rendered: Rendered,
 };
 
-export type RenderContext = {
-  renderPath: string,
-  payload: Object,
-};
-
 export type RenderCallback = (
   MachinatElement<any>,
   string,

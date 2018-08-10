@@ -1,5 +1,5 @@
 import isValidElementType from '../isValidElementType';
-import { MACHINAT_FRAGMENT_TYPE } from '../symbol';
+import { MACHINAT_FRAGMENT_TYPE, MACHINAT_IMMEDIATELY_TYPE } from '../symbol';
 
 test('strings are valid', () => {
   ['text', 'a', 'b', 'i'].forEach(str => {
@@ -22,6 +22,10 @@ test('functions are valid', () => {
 
 test('fragment symbol is valid', () => {
   expect(isValidElementType(MACHINAT_FRAGMENT_TYPE)).toBe(true);
+});
+
+test('immediately symbol is valid', () => {
+  expect(isValidElementType(MACHINAT_IMMEDIATELY_TYPE)).toBe(true);
 });
 
 test('others are invalid', () => {

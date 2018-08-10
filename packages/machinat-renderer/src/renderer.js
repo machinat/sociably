@@ -2,19 +2,59 @@
 import invariant from 'invariant';
 import { Children, Utils } from 'machinat-shared';
 
-import type { ElementReducer } from 'machinat-shared/types';
-import type { MachinatNode } from 'types/element';
+import type { TraverseElementCallback } from 'machinat-shared/types';
+import type { MachinatNode, MachinatElement } from 'types/element';
 import type MachinatQueue from 'machinat-queue';
-import type { RenderDelegate } from './types';
+import type { RenderDelegate, RenderResult } from './types';
 
-const { isNative } = Utils;
-const { reduce } = Children;
+const { isNative, isImmediately } = Utils;
+const { traverse } = Children;
 
-const RENDER_PREFIX = '#';
+const RENDER_SEPARATOR = '#';
+const RENDER_ROOT = '$';
+
+const addToAccumulates = (result, context) => {
+  context.accumulates.push(result);
+};
+
+const addToLastBatchOfAccumulates = (result, context) => {
+  const { accumulates } = context;
+  let lastBatch;
+  if (
+    accumulates.length === 0 ||
+    !Array.isArray(accumulates[accumulates.length - 1])
+  ) {
+    lastBatch = [];
+    accumulates.push(lastBatch);
+  } else {
+    lastBatch = accumulates[accumulates.length - 1];
+  }
+  lastBatch.push(result);
+};
+
+const addImmediatelyAsSeparator = (immediately, context) => {
+  const { after } = immediately.props;
+  invariant(
+    !after || typeof after === 'function',
+    `props.after of Immediately element should be a function, got ${after}`
+  );
+  context.accumulates.push(immediately);
+};
+
+type ImmediatelyEle = MachinatElement<Symbol>;
+type RenderResultBatch = Array<RenderResult<any>>;
+type BatchesAndSeparators = Array<RenderResultBatch | ImmediatelyEle>;
+type RenderTraverseContext<C: RenderResultBatch | BatchesAndSeparators> = {
+  payload: any,
+  accumulates: C,
+  handleRenderedResult: ?(RenderResult<any>, RenderTraverseContext<C>) => void,
+  handleImmediately: ?(ImmediatelyEle, RenderTraverseContext<C>) => void,
+};
 
 export default class Renderer<Rendered, Job> {
   delegate: RenderDelegate<Rendered, Job>;
   oriented: string;
+  context: RenderTraverseContext<any>;
 
   constructor(
     orientedPlatform: string,
@@ -22,44 +62,69 @@ export default class Renderer<Rendered, Job> {
   ) {
     this.delegate = delegate;
     this.oriented = orientedPlatform;
+    this.context = {
+      payload: null,
+      accumulates: null,
+      handleRenderedResult: null,
+      handleImmediately: null,
+    };
   }
 
-  renderRoots(elements: MachinatNode) {
-    reduce();
-  }
+  renderBatch = (elements: MachinatNode, payload: any) => {
+    const { context } = this;
+    context.payload = payload;
+    context.accumulates = ([]: BatchesAndSeparators);
+    context.handleRenderedResult = addToLastBatchOfAccumulates;
+    context.handleImmediately = addImmediatelyAsSeparator;
 
-  _renderInternal = (elements: MachinatNode, prefix: string, context: any) =>
-    reduce(elements, this._renderRuducer, [], prefix, context);
+    traverse(elements, RENDER_ROOT, context, this._renderTraverseCallback);
+    return context.accumulates;
+  };
 
-  _renderRuducer: ElementReducer<Array<Rendered>> = (
-    renderedArr,
+  renderInner = (elements: MachinatNode, prefix: string, payload: any) => {
+    const { context } = this;
+    context.payload = payload;
+    context.accumulates = ([]: RenderResultBatch);
+    context.handleRenderedResult = addToAccumulates;
+    context.handleImmediately = null;
+
+    traverse(elements, prefix, context, this._renderTraverseCallback);
+    return context.accumulates;
+  };
+
+  _renderTraverseCallback: TraverseElementCallback = (
     element,
     prefix,
     context
   ) => {
-    let result = renderedArr;
+    const { payload, handleRenderedResult, handleImmediately } = context;
 
     if (typeof element === 'string' || typeof element === 'number') {
-      result.push({
-        element,
-        rendered: element,
-      });
+      handleRenderedResult(
+        {
+          element,
+          rendered: element,
+        },
+        context
+      );
     } else if (typeof element.type === 'string') {
       const rendered = this.delegate.renderGeneralElement(
         element,
-        this._renderInternal,
+        this.renderInner,
         prefix,
-        context
+        payload
       );
-      result.push({ rendered, element });
+      handleRenderedResult({ rendered, element }, context);
+    } else if (isImmediately(element) && handleImmediately) {
+      handleImmediately(element, context);
     } else if (this.delegate.isNativeElementType(element.type)) {
       const rendered = this.delegate.renderNativeElement(
         element,
-        this._renderInternal,
+        this.renderInner,
         prefix,
-        context
+        payload
       );
-      result.push({ rendered, element });
+      handleRenderedResult({ rendered, element }, context);
     } else if (typeof element.type === 'function') {
       invariant(
         !isNative(element),
@@ -74,13 +139,12 @@ export default class Renderer<Rendered, Job> {
 
       const { type: renderCustom, props } = element;
 
-      const rendered = renderCustom(props, context);
-      result = reduce(
+      const rendered = renderCustom(props, payload);
+      traverse(
         rendered,
-        this._renderRuducer,
-        result,
-        prefix + RENDER_PREFIX + renderCustom.name,
-        context
+        prefix + RENDER_SEPARATOR + renderCustom.name,
+        context,
+        this._renderTraverseCallback
       );
     } else {
       invariant(
@@ -88,7 +152,5 @@ export default class Renderer<Rendered, Job> {
         `The element type of ${element} at poistion ${prefix} is illegal for rendering`
       );
     }
-
-    return result;
   };
 }
