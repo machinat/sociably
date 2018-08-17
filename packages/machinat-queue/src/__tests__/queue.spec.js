@@ -6,17 +6,20 @@ it('is a constructor', () => {
   expect(() => new MachinatQueue()).not.toThrow();
 });
 
-jest.useFakeTimers();
-
 describe('MachinatQueue instance', () => {
   let queue;
   beforeEach(() => {
     queue = new MachinatQueue();
+    jest.useFakeTimers();
   });
 
-  test('enque one jobs and acquire it', async () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test('enqueue one jobs and acquire it', async () => {
     const job = { id: 1 };
-    queue.enqueue(job);
+    queue.enqueueJob(job);
     expect(queue.length).toBe(1);
 
     let called = false;
@@ -37,7 +40,7 @@ describe('MachinatQueue instance', () => {
 
   test('enque jobs and acquire with failure', async () => {
     const jobs = [{ id: 1 }, { id: 2 }, { id: 3 }];
-    queue.enqueue(...jobs);
+    queue.enqueueJob(...jobs);
     expect(queue.length).toBe(3);
 
     let called = false;
@@ -53,13 +56,13 @@ describe('MachinatQueue instance', () => {
     setImmediate(jest.runAllTimers);
 
     await expect(promise).rejects.toThrowError('fail!');
-    expect(queue.length).toBe(3);
+    expect(queue.length).toBe(0);
     expect(called).toBe(true);
   });
 
   test('enqueue many jobs and acquire synchronizedly', async () => {
     const jobs = new Array(11).fill(null).map((_, i) => ({ id: i }));
-    queue.enqueue(...jobs);
+    queue.enqueueJob(...jobs);
     expect(queue.length).toBe(11);
 
     let count = 0;
@@ -85,9 +88,9 @@ describe('MachinatQueue instance', () => {
     expect(count).toBe(11);
   });
 
-  xtest('enqueue many jobs and acquire asynchronizedly', async () => {
+  test('enqueue many jobs and acquire asynchronizedly', async () => {
     const jobs = new Array(11).fill(null).map((_, i) => ({ id: i }));
-    queue.enqueue(...jobs);
+    queue.enqueueJob(...jobs);
     expect(queue.length).toBe(11);
 
     let count = 0;
@@ -120,39 +123,165 @@ describe('MachinatQueue instance', () => {
     expect(count).toBe(11);
   });
 
-  xtest('acquire asynchronizedly with acquisitionLimit set', async () => {
-    queue = new MachinatQueue({ acquisitionLimit: 2 });
-    const jobs = new Array(11).fill(null).map((_, i) => ({ id: i }));
-    queue.enqueue(...jobs);
-    expect(queue.length).toBe(11);
+  test('enqueueJobAndWait with less job acquire a time', async () => {
+    /* eslint-disable no-return-assign, no-fallthrough, default-case */
+    const jobs = new Array(9).fill(null).map((_, i) => ({ id: i }));
+    const batch1 = queue.enqueueJobAndWait(...jobs.slice(0, 3));
+    const batch2 = queue.enqueueJobAndWait(...jobs.slice(3, 6));
+    const batch3 = queue.enqueueJobAndWait(...jobs.slice(6, 9));
+    expect(queue.length).toBe(9);
 
-    let count = 0;
-    for (let t = 1; t <= 6; t += 1) {
-      queue.acquire(
-        2,
-        (n => async acquired => {
-          expect(queue.length).toBe(Math.max(11 - 2 * n, 0));
-          acquired.forEach(job => {
-            expect(job.id).toBeLessThan(11 - queue.length);
-            count += 1;
-          });
+    let batch1Resolved = false;
+    let batch2Resolved = false;
+    let batch3Resolved = false;
+    batch1.then(() => (batch1Resolved = true));
+    batch2.then(() => (batch2Resolved = true));
+    batch3.then(() => (batch3Resolved = true));
 
-          await delay(100);
-          return 'Success';
-        })(t)
-      );
+    for (let i = 0; i < 5; i += 1) {
+      setImmediate(jest.runOnlyPendingTimers);
+
+      const result = await queue.acquire(2, async acquired => {
+        expect(acquired).toEqual(jobs.slice(i * 2, i * 2 + 2));
+        await delay(10);
+        return acquired.map(() => true);
+      });
+      expect(queue.length).toBe(Math.max(0, 9 - i * 2 - 2));
+      expect(result).toEqual(i === 4 ? [true] : [true, true]);
+
+      switch (i) {
+        case 4:
+          expect(batch3Resolved).toBe(true);
+          break;
+        case 3:
+        case 2:
+          expect(batch3Resolved).toBe(false);
+          expect(batch2Resolved).toBe(true);
+          break;
+        case 1:
+          expect(batch2Resolved).toBe(false);
+          expect(batch1Resolved).toBe(true);
+          break;
+        case 0:
+          expect(batch1Resolved).toBe(false);
+      }
     }
 
-    setImmediate(jest.runAllTimers);
-
-    expect(queue.length).toBe(11);
-    await delay(10);
-    expect(queue.length).toBe(7);
-    await delay(100);
-    expect(queue.length).toBe(3);
-    await delay(100);
     expect(queue.length).toBe(0);
+    await expect(Promise.all([batch1, batch2, batch3])).resolves.toEqual(
+      new Array(3).fill({
+        error: null,
+        batchResult: [true, true, true],
+      })
+    );
+  });
 
-    expect(count).toBe(11);
+  test('enqueueJobAndWait with less job acquire a time asynchronizedly', async () => {
+    // The fake timers cause all acquirisitions finish at same tick
+    // which would break the resolve order assertions
+    jest.useRealTimers();
+    /* eslint-disable no-return-assign, no-fallthrough, default-case */
+    const jobs = new Array(9).fill(null).map((_, i) => ({ id: i }));
+    const batch1 = queue.enqueueJobAndWait(...jobs.slice(0, 3));
+    const batch2 = queue.enqueueJobAndWait(...jobs.slice(3, 6));
+    const batch3 = queue.enqueueJobAndWait(...jobs.slice(6, 9));
+    expect(queue.length).toBe(9);
+
+    let batch1Resolved = false;
+    let batch2Resolved = false;
+    let batch3Resolved = false;
+    batch1.then(() => (batch1Resolved = true));
+    batch2.then(() => (batch2Resolved = true));
+    batch3.then(() => (batch3Resolved = true));
+
+    const promises = new Array(5).fill(null).map(async (_, i) =>
+      queue.acquire(2, async acquired => {
+        expect(acquired).toEqual(jobs.slice(i * 2, i * 2 + 2));
+        expect(queue.length).toBe(Math.max(0, 9 - i * 2 - 2));
+
+        await delay(i * 10);
+
+        switch (i) {
+          case 4:
+          case 3:
+            expect(batch3Resolved).toBe(false);
+            expect(batch2Resolved).toBe(true);
+            break;
+          case 2:
+            expect(batch2Resolved).toBe(false);
+            expect(batch1Resolved).toBe(true);
+            break;
+          case 1:
+          case 0:
+            expect(batch1Resolved).toBe(false);
+        }
+
+        return acquired.map(() => true);
+      })
+    );
+
+    expect(queue.length).toBe(0);
+    const result = await Promise.all(promises);
+
+    expect(result).toEqual([
+      [true, true],
+      [true, true],
+      [true, true],
+      [true, true],
+      [true],
+    ]);
+    await expect(Promise.all([batch1, batch2, batch3])).resolves.toEqual(
+      new Array(3).fill({
+        error: null,
+        batchResult: [true, true, true],
+      })
+    );
+  });
+
+  test('enqueueJobAndWait with more job acquire a time', async () => {
+    /* eslint-disable no-return-assign, no-fallthrough, default-case */
+    const jobs = new Array(9).fill(null).map((_, i) => ({ id: i }));
+    const batch1 = queue.enqueueJobAndWait(...jobs.slice(0, 3));
+    const batch2 = queue.enqueueJobAndWait(...jobs.slice(3, 6));
+    const batch3 = queue.enqueueJobAndWait(...jobs.slice(6, 9));
+    expect(queue.length).toBe(9);
+
+    let batch1Resolved = false;
+    let batch2Resolved = false;
+    let batch3Resolved = false;
+    batch1.then(() => (batch1Resolved = true));
+    batch2.then(() => (batch2Resolved = true));
+    batch3.then(() => (batch3Resolved = true));
+
+    for (let i = 0; i < 2; i += 1) {
+      setImmediate(jest.runOnlyPendingTimers);
+
+      const result = await queue.acquire(5, async acquired => {
+        expect(acquired).toEqual(jobs.slice(i * 5, i * 5 + 5));
+        await delay(10);
+        return acquired.map(() => true);
+      });
+
+      if (i === 0) {
+        expect(queue.length).toBe(4);
+        expect(result).toEqual([true, true, true, true, true]);
+        expect(batch1Resolved).toBe(true);
+        expect(batch2Resolved).toBe(false);
+        expect(batch3Resolved).toBe(false);
+      } else {
+        expect(queue.length).toBe(0);
+        expect(result).toEqual([true, true, true, true]);
+        expect(batch2Resolved).toBe(true);
+        expect(batch3Resolved).toBe(true);
+      }
+    }
+
+    expect(queue.length).toBe(0);
+    await expect(Promise.all([batch1, batch2, batch3])).resolves.toEqual(
+      new Array(3).fill({
+        error: null,
+        batchResult: [true, true, true],
+      })
+    );
   });
 });

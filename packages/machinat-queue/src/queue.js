@@ -1,67 +1,111 @@
 // @flow
-import Deque from 'denque';
+import Denque from 'denque';
 
-type MachinatQueueOptions = {
-  acquisitionLimit: number,
+type JobResult = {
+  success: boolean,
+  payload: any,
 };
 
-export default class MachinatQueue {
-  acquisitionLimit: number;
-  acquisitionCount: number;
-  _hasLimit: boolean;
-  _waitingQueue: Array<Function>;
-  _deque: Deque;
+type RequestResponse = {
+  error: any,
+  batchResult: Array<void | JobResult>,
+};
 
-  constructor(options: MachinatQueueOptions) {
-    this.acquisitionLimit = options && options.acquisitionLimit;
-    this.acquisitionCount = 0;
-    this._hasLimit = !!this.acquisitionLimit;
-    this._waitingQueue = new Deque();
-    this._deque = new Deque();
+type BatchRequest = {
+  resolve: RequestResponse => void,
+  begin: number,
+  end: number,
+  result: Array<void | JobResult>,
+};
+
+export default class MachinatQueue<Job: Object> {
+  _beginSeq: number;
+  _endSeq: number;
+  _queuedJobs: Denque<Job>;
+  _waitedRequets: Denque<BatchRequest>;
+
+  constructor() {
+    this._beginSeq = 0;
+    this._endSeq = 0;
+    this._queuedJobs = new Denque();
+    this._waitedRequets = new Denque();
   }
 
-  async acquire(n: Number, consume: (Array<Object>) => Promise<void>) {
-    await this._registerAcquisition();
-    const jobs = this._deque.remove(0, n);
+  async acquire(
+    n: number,
+    consume: (Job[]) => Promise<JobResult[]>
+  ): Promise<void | JobResult[]> {
+    const jobs = this._queuedJobs.remove(0, n);
+    if (jobs === undefined) {
+      return;
+    }
+    const start = this._beginSeq;
+    const end = start + jobs.length;
+    this._beginSeq = end;
+
     try {
-      const result = await consume(jobs);
-      return result;
-    } catch (e) {
-      for (let i = jobs.length - 1; i >= 0; i -= 1) {
-        this._deque.unshift(jobs[i]);
-      }
-      throw e;
-    } finally {
-      this._releaseAcquisition();
+      const jobsResult = await consume(jobs);
+      this._respondWaited(jobsResult, start, end);
+      return jobsResult; // eslint-disable-line consistent-return
+    } catch (err) {
+      this._failWaited(err, start, end);
+      throw err;
     }
   }
 
-  enqueue(...jobs: Array<Object>) {
+  enqueueJob(...jobs: Job[]) {
     for (let i = 0; i < jobs.length; i += 1) {
-      this._deque.push(jobs[i]);
+      this._queuedJobs.push(jobs[i]);
     }
+    this._endSeq += jobs.length;
+  }
+
+  enqueueJobAndWait(...jobs: Job[]) {
+    const begin = this._endSeq;
+    this.enqueueJob(...jobs);
+    return new Promise(this._pushWaitedRequest.bind(this, begin, this._endSeq));
   }
 
   get length() {
-    return this._deque.length;
+    return this._queuedJobs.length;
   }
 
-  async _registerAcquisition() {
-    if (this._hasLimit && this.acquisitionCount >= this.acquisitionLimit) {
-      await new Promise(this._pushToWaitingQueue);
+  _respondWaited(jobsResult: JobResult[], begin: number, end: number) {
+    let request;
+    // eslint-disable-next-line no-cond-assign
+    while ((request = this._waitedRequets.peekFront()) && request.begin < end) {
+      const jobBegin = Math.max(begin, request.begin);
+      const jobEnd = Math.min(end, request.end);
+      for (let i = jobBegin; i < jobEnd; i += 1) {
+        request.result[i - request.begin] = jobsResult[i - begin];
+      }
+
+      // FIXME: should handle previously acquired but not resolved yet
+      if (end >= request.end) {
+        request.resolve({ error: null, batchResult: request.result });
+        this._waitedRequets.shift();
+      } else {
+        break;
+      }
     }
-    this.acquisitionCount += 1;
   }
 
-  _releaseAcquisition() {
-    this.acquisitionCount -= 1;
-    const next = this._waitingQueue.shift();
-    if (next !== undefined) {
-      next();
+  _failWaited(reason: Error, begin: number, end: number) {
+    let request;
+    // eslint-disable-next-line no-cond-assign
+    while ((request = this._waitedRequets.peekFront()) && request.begin < end) {
+      // FIXME: should handle previously acquired but not resolved yet
+      request.resolve({ error: reason, batchResult: request.result });
+      this._waitedRequets.shift();
     }
   }
 
-  _pushToWaitingQueue = (resolve: Function) => {
-    this._waitingQueue.push(resolve);
-  };
+  _pushWaitedRequest(begin: number, end: number, resolve: Function) {
+    this._waitedRequets.push({
+      begin,
+      end,
+      resolve,
+      result: new Array(end - begin),
+    });
+  }
 }
