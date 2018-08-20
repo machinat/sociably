@@ -70,7 +70,11 @@ export default class Renderer<Rendered, Job> {
     };
   }
 
-  renderBatch = (elements: MachinatNode, payload: any) => {
+  render(elements: MachinatNode, prefix: string, payload: any) {
+    return this._renderImpl(prefix, elements, '', payload);
+  }
+
+  renderSequence(elements: MachinatNode, payload: any) {
     const { context } = this;
     context.payload = payload;
     context.accumulates = ([]: BatchesAndSeparators);
@@ -79,16 +83,26 @@ export default class Renderer<Rendered, Job> {
 
     traverse(elements, RENDER_ROOT, context, this._renderTraverseCallback);
     return context.accumulates;
-  };
+  }
 
-  renderInner = (elements: MachinatNode, prefix: string, payload: any) => {
+  _renderImpl = (
+    prefix: string,
+    elements: MachinatNode,
+    currentPath: string,
+    payload: any
+  ) => {
     const { context } = this;
     context.payload = payload;
     context.accumulates = ([]: RenderResultBatch);
     context.handleRenderedResult = addToAccumulates;
     context.handleImmediately = null;
 
-    traverse(elements, prefix, context, this._renderTraverseCallback);
+    traverse(
+      elements,
+      prefix + currentPath,
+      context,
+      this._renderTraverseCallback
+    );
     return context.accumulates;
   };
 
@@ -110,9 +124,9 @@ export default class Renderer<Rendered, Job> {
     } else if (typeof element.type === 'string') {
       const rendered = this.delegate.renderGeneralElement(
         element,
-        this.renderInner,
-        prefix,
-        payload
+        this._renderImpl.bind(this, prefix),
+        payload,
+        prefix
       );
       handleRenderedResult({ rendered, element }, context);
     } else if (isImmediately(element) && handleImmediately) {
@@ -120,16 +134,16 @@ export default class Renderer<Rendered, Job> {
     } else if (this.delegate.isNativeElementType(element.type)) {
       const rendered = this.delegate.renderNativeElement(
         element,
-        this.renderInner,
-        prefix,
-        payload
+        this._renderImpl.bind(this, prefix),
+        payload,
+        prefix
       );
       handleRenderedResult({ rendered, element }, context);
     } else if (typeof element.type === 'function') {
       invariant(
         !isNative(element),
         `Element at ${prefix} is native type of ${(typeof element.$$native ===
-        // $FlowFixMe: remove this after symbol primitive supported
+        // $FlowFixMe: remove me after symbol primitive supported
         'symbol'
           ? Symbol.keyFor(element.$$native)
           : element.$$native) || 'Unknown'}, which not supported by ${

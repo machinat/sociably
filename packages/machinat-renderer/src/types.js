@@ -11,15 +11,15 @@ import type {
 type RenderDelegateCallback<Rendered> = (
   MachinatNativeElement,
   RenderCallback,
-  string,
-  any
+  any,
+  string
 ) => ?Rendered;
 
 export type RenderDelegate<Rendered, Job> = {
   isNativeElementType: MachinatElementType => boolean,
   renderNativeElement: RenderDelegateCallback<Rendered>,
   renderGeneralElement: RenderDelegateCallback<Rendered>,
-  wrapRootMessagingJobs: (Array<RenderResult<Rendered>>) => Array<Job>,
+  createJobsFromRendered: (Array<RenderResult<Rendered>>) => Array<Job>,
 };
 
 export type RenderResult<Rendered> = {

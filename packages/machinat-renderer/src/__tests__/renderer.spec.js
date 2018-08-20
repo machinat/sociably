@@ -27,11 +27,11 @@ afterEach(() => {
   delegate.renderNativeElement.mockClear();
 });
 
-describe('#renderInner()', () => {
+describe('#render()', () => {
   it('works', () => {
     const context = {};
     const renderer = new Renderer('Test', delegate);
-    const rendered = renderer.renderInner(
+    const rendered = renderer.render(
       <>
         {123}
         abc
@@ -67,30 +67,25 @@ describe('#renderInner()', () => {
     expect(delegate.isNativeElementType).toHaveBeenNthCalledWith(3, Native);
 
     expect(delegate.renderGeneralElement).toBeCalledTimes(1);
-    expect(delegate.renderGeneralElement.mock.calls[0]).toEqual([
-      <a>aaa</a>,
-      renderer.renderInner,
-      '$::2',
-      context,
-    ]);
+    const renderGeneralCalls = delegate.renderGeneralElement.mock.calls;
+    expect(renderGeneralCalls[0][0]).toEqual(<a>aaa</a>);
+    expect(typeof renderGeneralCalls[0][1]).toBe('function');
+    expect(renderGeneralCalls[0][2]).toEqual(context);
+    expect(renderGeneralCalls[0][3]).toEqual('$::2');
 
     expect(delegate.renderNativeElement).toBeCalledTimes(2);
-    expect(delegate.renderNativeElement.mock.calls[0]).toEqual([
-      <Native x="true" y={false} />,
-      renderer.renderInner,
-      '$::3',
-      context,
-    ]);
-    expect(delegate.renderNativeElement.mock.calls[1]).toEqual([
-      <Native a="A" b={2} />,
-      renderer.renderInner,
-      '$::4#mockConstructor::1',
-      context,
-    ]);
+    delegate.renderNativeElement.mock.calls.forEach((call, i) => {
+      expect(call[0]).toEqual(
+        [<Native x="true" y={false} />, <Native a="A" b={2} />][i]
+      );
+      expect(typeof call[1]).toBe('function');
+      expect(call[2]).toEqual(context);
+      expect(call[3]).toEqual(['$::3', '$::4#mockConstructor::1'][i]);
+    });
   });
 });
 
-describe('#renderBatch()', () => {
+describe('#renderSequence()', () => {
   it('works', () => {
     const afterCallback = () => Promise.resolve();
     const WrappedImmediately = () => (
@@ -99,7 +94,7 @@ describe('#renderBatch()', () => {
     const context = {};
 
     const renderer = new Renderer('Test', delegate);
-    const rendered = renderer.renderBatch(
+    const rendered = renderer.renderSequence(
       <>
         <Machinat.Immediately />
         {123}
@@ -149,25 +144,19 @@ describe('#renderBatch()', () => {
     expect(isNativeElementType).toHaveBeenNthCalledWith(4, Native);
 
     expect(renderGeneralElement).toBeCalledTimes(1);
-    expect(renderGeneralElement.mock.calls[0]).toEqual([
-      <a>aaa</a>,
-      renderer.renderInner,
-      '$::4',
-      context,
-    ]);
+    expect(renderGeneralElement.mock.calls[0][0]).toEqual(<a>aaa</a>);
+    expect(typeof renderGeneralElement.mock.calls[0][1]).toBe('function');
+    expect(renderGeneralElement.mock.calls[0][2]).toEqual(context);
+    expect(renderGeneralElement.mock.calls[0][3]).toEqual('$::4');
 
     expect(renderNativeElement).toBeCalledTimes(2);
-    expect(renderNativeElement.mock.calls[0]).toEqual([
-      <Native x="true" y={false} />,
-      renderer.renderInner,
-      '$::5',
-      context,
-    ]);
-    expect(renderNativeElement.mock.calls[1]).toEqual([
-      <Native a="A" b={2} />,
-      renderer.renderInner,
-      '$::7#mockConstructor::1',
-      context,
-    ]);
+    renderNativeElement.mock.calls.forEach((call, i) => {
+      expect(call[0]).toEqual(
+        [<Native x="true" y={false} />, <Native a="A" b={2} />][i]
+      );
+      expect(typeof call[1]).toBe('function');
+      expect(call[2]).toEqual(context);
+      expect(call[3]).toEqual(['$::5', '$::7#mockConstructor::1'][i]);
+    });
   });
 });
