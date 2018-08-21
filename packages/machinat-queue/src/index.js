@@ -1,1 +1,1 @@
-export { default } from './queue';
+export default from './queue';

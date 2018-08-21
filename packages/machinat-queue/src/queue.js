@@ -7,6 +7,7 @@ type JobResult = {
 };
 
 type RequestResponse = {
+  success: boolean,
   error: any,
   batchResult: Array<void | JobResult>,
 };
@@ -76,13 +77,31 @@ export default class MachinatQueue<Job: Object> {
     while ((request = this._waitedRequets.peekFront()) && request.begin < end) {
       const jobBegin = Math.max(begin, request.begin);
       const jobEnd = Math.min(end, request.end);
+
+      let failedResult;
       for (let i = jobBegin; i < jobEnd; i += 1) {
-        request.result[i - request.begin] = jobsResult[i - begin];
+        const result = jobsResult[i - begin];
+        if (!result.success && failedResult === undefined) {
+          failedResult = result;
+        }
+        request.result[i - request.begin] = result;
       }
 
       // FIXME: should handle previously acquired but not resolved yet
-      if (end >= request.end) {
-        request.resolve({ error: null, batchResult: request.result });
+      if (failedResult !== undefined) {
+        this._removeJobsOfRequest(request);
+        request.resolve({
+          success: false,
+          error: failedResult.payload,
+          batchResult: request.result,
+        });
+        this._waitedRequets.shift();
+      } else if (end >= request.end) {
+        request.resolve({
+          success: true,
+          error: null,
+          batchResult: request.result,
+        });
         this._waitedRequets.shift();
       } else {
         break;
@@ -94,9 +113,23 @@ export default class MachinatQueue<Job: Object> {
     let request;
     // eslint-disable-next-line no-cond-assign
     while ((request = this._waitedRequets.peekFront()) && request.begin < end) {
+      this._removeJobsOfRequest(request);
       // FIXME: should handle previously acquired but not resolved yet
-      request.resolve({ error: reason, batchResult: request.result });
+      request.resolve({
+        success: false,
+        error: reason,
+        batchResult: request.result,
+      });
       this._waitedRequets.shift();
+    }
+  }
+
+  _removeJobsOfRequest(request: BatchRequest) {
+    if (request.end > this._beginSeq) {
+      const removed = this._queuedJobs.remove(0, request.end - this._beginSeq);
+      if (removed !== undefined) {
+        this._beginSeq += removed.length;
+      }
     }
   }
 

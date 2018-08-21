@@ -28,12 +28,14 @@ describe('MachinatQueue instance', () => {
       expect(jobs.length).toBe(1);
       expect(jobs[0]).toBe(job);
       await delay(100);
-      return 'Success';
+      return [{ success: true, payload: 'Success' }];
     });
 
     setImmediate(jest.runAllTimers);
 
-    await expect(promise).resolves.toBe('Success');
+    await expect(promise).resolves.toEqual([
+      { success: true, payload: 'Success' },
+    ]);
     expect(queue.length).toBe(0);
     expect(called).toBe(true);
   });
@@ -66,7 +68,7 @@ describe('MachinatQueue instance', () => {
     expect(queue.length).toBe(11);
 
     let count = 0;
-    while (queue.length > 0) {
+    for (let i = 0; i < 4; i += 1) {
       const promise = queue.acquire(3, async acquired => {
         expect(acquired.length).toBe(11 - count < 3 ? 11 - count : 3);
         acquired.forEach(job => {
@@ -75,12 +77,17 @@ describe('MachinatQueue instance', () => {
         });
 
         await delay(100);
-        return 'Success';
+        return acquired.map(() => ({ success: true, payload: 'Success' }));
       });
 
       setImmediate(jest.runOnlyPendingTimers);
 
-      await expect(promise).resolves.toBe('Success');
+      await expect(promise).resolves.toEqual(
+        new Array(i === 3 ? 2 : 3).fill({
+          success: true,
+          payload: 'Success',
+        })
+      );
       expect(queue.length).toBe(11 - count);
     }
 
@@ -94,9 +101,9 @@ describe('MachinatQueue instance', () => {
     expect(queue.length).toBe(11);
 
     let count = 0;
-    const executions = [];
+    const promises = [];
     while (queue.length > 0) {
-      executions.push(
+      promises.push(
         queue.acquire(3, async acquired => {
           expect(acquired.length).toBe(11 - count < 3 ? 11 - count : 3);
           acquired.forEach(job => {
@@ -105,7 +112,7 @@ describe('MachinatQueue instance', () => {
           });
 
           await delay(100);
-          return 'Success';
+          return acquired.map(() => ({ success: true, payload: 'Success' }));
         })
       );
       expect(queue.length).toBe(11 - count);
@@ -114,12 +121,14 @@ describe('MachinatQueue instance', () => {
     expect(queue.length).toBe(0);
 
     setImmediate(jest.runAllTimers);
-    await expect(Promise.all(executions)).resolves.toEqual([
-      'Success',
-      'Success',
-      'Success',
-      'Success',
-    ]);
+    await expect(Promise.all(promises)).resolves.toEqual(
+      new Array(4).fill(null).map((_, i) =>
+        new Array(i === 3 ? 2 : 3).fill({
+          success: true,
+          payload: 'Success',
+        })
+      )
+    );
     expect(count).toBe(11);
   });
 
@@ -144,10 +153,18 @@ describe('MachinatQueue instance', () => {
       const result = await queue.acquire(2, async acquired => {
         expect(acquired).toEqual(jobs.slice(i * 2, i * 2 + 2));
         await delay(10);
-        return acquired.map(() => true);
+        return acquired.map(() => ({
+          success: true,
+          payload: 'Success',
+        }));
       });
       expect(queue.length).toBe(Math.max(0, 9 - i * 2 - 2));
-      expect(result).toEqual(i === 4 ? [true] : [true, true]);
+      expect(result).toEqual(
+        new Array(i === 4 ? 1 : 2).fill({
+          success: true,
+          payload: 'Success',
+        })
+      );
 
       switch (i) {
         case 4:
@@ -170,8 +187,9 @@ describe('MachinatQueue instance', () => {
     expect(queue.length).toBe(0);
     await expect(Promise.all([batch1, batch2, batch3])).resolves.toEqual(
       new Array(3).fill({
+        success: true,
         error: null,
-        batchResult: [true, true, true],
+        batchResult: new Array(3).fill({ success: true, payload: 'Success' }),
       })
     );
   });
@@ -216,7 +234,7 @@ describe('MachinatQueue instance', () => {
             expect(batch1Resolved).toBe(false);
         }
 
-        return acquired.map(() => true);
+        return acquired.map(() => ({ success: true, payload: 'Success' }));
       })
     );
 
@@ -224,16 +242,17 @@ describe('MachinatQueue instance', () => {
     const result = await Promise.all(promises);
 
     expect(result).toEqual([
-      [true, true],
-      [true, true],
-      [true, true],
-      [true, true],
-      [true],
+      new Array(2).fill({ success: true, payload: 'Success' }),
+      new Array(2).fill({ success: true, payload: 'Success' }),
+      new Array(2).fill({ success: true, payload: 'Success' }),
+      new Array(2).fill({ success: true, payload: 'Success' }),
+      [{ success: true, payload: 'Success' }],
     ]);
     await expect(Promise.all([batch1, batch2, batch3])).resolves.toEqual(
       new Array(3).fill({
+        success: true,
         error: null,
-        batchResult: [true, true, true],
+        batchResult: new Array(3).fill({ success: true, payload: 'Success' }),
       })
     );
   });
@@ -259,18 +278,22 @@ describe('MachinatQueue instance', () => {
       const result = await queue.acquire(5, async acquired => {
         expect(acquired).toEqual(jobs.slice(i * 5, i * 5 + 5));
         await delay(10);
-        return acquired.map(() => true);
+        return acquired.map(() => ({ success: true, payload: 'Success' }));
       });
 
       if (i === 0) {
         expect(queue.length).toBe(4);
-        expect(result).toEqual([true, true, true, true, true]);
+        expect(result).toEqual(
+          new Array(5).fill({ success: true, payload: 'Success' })
+        );
         expect(batch1Resolved).toBe(true);
         expect(batch2Resolved).toBe(false);
         expect(batch3Resolved).toBe(false);
       } else {
         expect(queue.length).toBe(0);
-        expect(result).toEqual([true, true, true, true]);
+        expect(result).toEqual(
+          new Array(4).fill({ success: true, payload: 'Success' })
+        );
         expect(batch2Resolved).toBe(true);
         expect(batch3Resolved).toBe(true);
       }
@@ -279,9 +302,96 @@ describe('MachinatQueue instance', () => {
     expect(queue.length).toBe(0);
     await expect(Promise.all([batch1, batch2, batch3])).resolves.toEqual(
       new Array(3).fill({
+        success: true,
         error: null,
-        batchResult: [true, true, true],
+        batchResult: new Array(3).fill({ success: true, payload: 'Success' }),
       })
     );
+  });
+
+  test('enqueueJobAndWait with acquire error', async () => {
+    /* eslint-disable no-return-assign, no-fallthrough, default-case */
+    const jobs = new Array(9).fill(null).map((_, i) => ({ id: i }));
+    const batch1 = queue.enqueueJobAndWait(...jobs.slice(0, 3));
+    const batch2 = queue.enqueueJobAndWait(...jobs.slice(3, 6));
+    const batch3 = queue.enqueueJobAndWait(...jobs.slice(6, 9));
+    expect(queue.length).toBe(9);
+
+    for (let i = 0; i < 2; i += 1) {
+      setImmediate(jest.runOnlyPendingTimers);
+
+      try {
+        await queue.acquire(5, async () => {
+          throw new Error('somthing wrong');
+        });
+      } catch (e) {
+        expect(e).toStrictEqual(new Error('somthing wrong'));
+      }
+
+      const failedResult = {
+        success: false,
+        error: new Error('somthing wrong'),
+        batchResult: new Array(3),
+      };
+      if (i === 0) {
+        expect(queue.length).toBe(3);
+        expect(batch1).resolves.toStrictEqual(failedResult);
+        expect(batch2).resolves.toStrictEqual(failedResult);
+      } else {
+        expect(queue.length).toBe(0);
+        expect(batch3).resolves.toStrictEqual(failedResult);
+      }
+    }
+
+    expect(queue.length).toBe(0);
+  });
+
+  test('enqueueJobAndWait with failed job returned by acquire', async () => {
+    /* eslint-disable no-return-assign, no-fallthrough, default-case */
+    const jobs = new Array(9).fill(null).map((_, i) => ({ id: i }));
+    const batch1 = queue.enqueueJobAndWait(...jobs.slice(0, 3));
+    const batch2 = queue.enqueueJobAndWait(...jobs.slice(3, 6));
+    const batch3 = queue.enqueueJobAndWait(...jobs.slice(6, 9));
+    expect(queue.length).toBe(9);
+
+    for (let i = 0; i < 2; i += 1) {
+      setImmediate(jest.runOnlyPendingTimers);
+
+      await queue.acquire(5, async () => {
+        const result = new Array(i ? 4 : 5).fill({
+          success: true,
+          payload: 'Success',
+        });
+        if (i === 0) result[3] = { success: false, payload: 'Fail' };
+        return result;
+      });
+
+      if (i === 0) {
+        expect(batch1).resolves.toStrictEqual({
+          success: true,
+          error: null,
+          batchResult: new Array(3).fill({ success: true, payload: 'Success' }),
+        });
+        expect(batch2).resolves.toStrictEqual({
+          success: false,
+          error: 'Fail',
+          batchResult: [
+            { success: false, payload: 'Fail' },
+            { success: true, payload: 'Success' },
+            undefined,
+          ],
+        });
+        expect(queue.length).toBe(3);
+      } else {
+        expect(queue.length).toBe(0);
+        expect(batch3).resolves.toStrictEqual({
+          success: true,
+          error: null,
+          batchResult: new Array(3).fill({ success: true, payload: 'Success' }),
+        });
+      }
+    }
+
+    expect(queue.length).toBe(0);
   });
 });

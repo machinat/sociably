@@ -1,10 +1,16 @@
 // @flow
 import invariant from 'invariant';
 import { Children, Utils } from 'machinat-shared';
-
 import type { TraverseElementCallback } from 'machinat-shared/types';
 import type { MachinatNode, MachinatElement } from 'types/element';
 import type MachinatQueue from 'machinat-queue';
+
+import {
+  addImmediatelyAsSeparator,
+  addToAccumulates,
+  addToLastBatchOfAccumulates,
+} from './utils';
+import { ExecutionError } from './errors';
 import type { RenderDelegate, RenderResult } from './types';
 
 const { isNative, isImmediately } = Utils;
@@ -12,34 +18,6 @@ const { traverse } = Children;
 
 const RENDER_SEPARATOR = '#';
 const RENDER_ROOT = '$';
-
-const addToAccumulates = (result, context) => {
-  context.accumulates.push(result);
-};
-
-const addToLastBatchOfAccumulates = (result, context) => {
-  const { accumulates } = context;
-  let lastBatch;
-  if (
-    accumulates.length === 0 ||
-    !Array.isArray(accumulates[accumulates.length - 1])
-  ) {
-    lastBatch = [];
-    accumulates.push(lastBatch);
-  } else {
-    lastBatch = accumulates[accumulates.length - 1];
-  }
-  lastBatch.push(result);
-};
-
-const addImmediatelyAsSeparator = (immediately, context) => {
-  const { after } = immediately.props;
-  invariant(
-    !after || typeof after === 'function',
-    `props.after of Immediately element should be a function, got ${after}`
-  );
-  context.accumulates.push(immediately);
-};
 
 type ImmediatelyEle = MachinatElement<Symbol>;
 type RenderResultBatch = Array<RenderResult<any>>;
@@ -83,6 +61,36 @@ export default class Renderer<Rendered, Job> {
 
     traverse(elements, RENDER_ROOT, context, this._renderTraverseCallback);
     return context.accumulates;
+  }
+
+  async executeSequence(queue: MachinatQueue, resultSequence) {
+    const result = [];
+
+    for (let i = 0; i < resultSequence.length; i += 1) {
+      const action = resultSequence[i];
+      if (isImmediately(action)) {
+        const { after } = action.props;
+        if (after && typeof after === 'function') {
+          await after(); // eslint-disable-line no-await-in-loop
+        } else {
+          invariant(
+            !after,
+            `"after" prop of Immediately element should be a function, got ${after}`
+          );
+        }
+      } else {
+        const jobs = this.delegate.createJobsFromRendered(action);
+
+        // eslint-disable-next-line no-await-in-loop
+        const { error, jobsResult } = await queue.enqueueJobAndWait(jobs);
+        result.push(...jobsResult);
+
+        if (error) {
+          throw new ExecutionError(error, result);
+        }
+      }
+    }
+    return result;
   }
 
   _renderImpl = (
