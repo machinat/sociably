@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PassThreadControl match snapshot 1`] = `
+Array [
+  Object {
+    "sender_action": "mark_seen",
+  },
+  Object {
+    "sender_action": "typing_on",
+  },
+  Object {
+    "sender_action": "typing_off",
+  },
+]
+`;

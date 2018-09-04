@@ -11,13 +11,14 @@ module.exports = {
   extends: [
     'airbnb-base',
     'prettier',
+    'plugin:react/recommended',
   ],
   rules: {
     strict: 0,
     'no-nested-ternary': 0,
     'no-underscore-dangle': 0,
     'no-unused-vars': ['error', {
-      varsIgnorePattern: 'Machinat',
+      ignoreRestSiblings: true,
     }],
     'no-param-reassign': ['error', {
       props: true,
@@ -33,5 +34,14 @@ module.exports = {
       ignore: ['types/.+', 'machinat-.+']
     }],
     'import/extensions': 0,
+    'react/jsx-key': 0,
+    'react/no-unescaped-entities': ['error', {
+      forbid: ['<', '>', '{', '}']
+    }],
   },
+  settings:{
+    react: {
+      pragma: 'Machinat',
+    },
+  }
 };

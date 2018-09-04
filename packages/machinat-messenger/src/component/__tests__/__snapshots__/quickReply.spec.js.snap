@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`QuickReply match snapshot 1`] = `
+Array [
+  Object {
+    "content_type": "text",
+    "image_url": undefined,
+    "payload": "🥧",
+    "title": "i want a pie",
+  },
+  Object {
+    "content_type": "text",
+    "image_url": "http://cake.it",
+    "payload": "🍰",
+    "title": "a piece of cake",
+  },
+  Object {
+    "content_type": "user_phone_number",
+  },
+  Object {
+    "content_type": "user_email",
+  },
+  Object {
+    "content_type": "location",
+  },
+]
+`;

@@ -1,0 +1,118 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`media Components match snapshot 1`] = `
+Array [
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "attachment_id": undefined,
+          "is_reusable": true,
+          "url": "http://this.is/a/picture",
+        },
+        "type": "image",
+      },
+      "metadata": undefined,
+      "quick_replies": undefined,
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "attachment_id": undefined,
+          "is_reusable": true,
+          "url": "http://this.is/a/video",
+        },
+        "type": "video",
+      },
+      "metadata": undefined,
+      "quick_replies": undefined,
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "attachment_id": undefined,
+          "is_reusable": true,
+          "url": "http://this.is/an/audio",
+        },
+        "type": "audio",
+      },
+      "metadata": undefined,
+      "quick_replies": undefined,
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "attachment_id": undefined,
+          "is_reusable": true,
+          "url": "http://this.is/a/file",
+        },
+        "type": "file",
+      },
+      "metadata": undefined,
+      "quick_replies": undefined,
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "attachment_id": "_I_am_Image_",
+          "is_reusable": undefined,
+          "url": undefined,
+        },
+        "type": "image",
+      },
+      "metadata": undefined,
+      "quick_replies": undefined,
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "attachment_id": "_I_am_Video_",
+          "is_reusable": undefined,
+          "url": undefined,
+        },
+        "type": "video",
+      },
+      "metadata": undefined,
+      "quick_replies": undefined,
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "attachment_id": "_I_am_Audio_",
+          "is_reusable": undefined,
+          "url": undefined,
+        },
+        "type": "audio",
+      },
+      "metadata": undefined,
+      "quick_replies": undefined,
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "attachment_id": "_I_am_File_",
+          "is_reusable": undefined,
+          "url": undefined,
+        },
+        "type": "file",
+      },
+      "metadata": undefined,
+      "quick_replies": undefined,
+    },
+  },
+]
+`;

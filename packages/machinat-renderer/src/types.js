@@ -2,7 +2,6 @@
 import type {
   MachinatText,
   MachinatElement,
-  MachinatNode,
   MachinatElementType,
   MachinatNativeElement,
   MachinatGeneralElement,
@@ -16,7 +15,7 @@ type RenderDelegateCallback<Rendered> = (
 ) => ?Rendered;
 
 export type RenderDelegate<Rendered, Job> = {
-  isNativeElementType: MachinatElementType => boolean,
+  isNativeComponent: MachinatElementType => boolean,
   renderNativeElement: RenderDelegateCallback<Rendered>,
   renderGeneralElement: RenderDelegateCallback<Rendered>,
   createJobsFromRendered: (Array<RenderResult<Rendered>>) => Array<Job>,
@@ -25,6 +24,7 @@ export type RenderDelegate<Rendered, Job> = {
 export type RenderResult<Rendered> = {
   element: MachinatText | MachinatNativeElement | MachinatGeneralElement,
   rendered: Rendered,
+  path: string,
 };
 
 export type RenderCallback = (

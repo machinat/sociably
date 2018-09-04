@@ -1,0 +1,380 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`templates Components ButtonTemplate match snapshot 1`] = `
+Array [
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "buttons": Array [
+            "__RENDERED_BUTTON_OBJ_1__",
+            "__RENDERED_BUTTON_OBJ_2__",
+            "__RENDERED_BUTTON_OBJ_3__",
+          ],
+          "sharable": true,
+          "template_type": "button",
+          "text": "
+__RENDERED_TEXT_1__
+__RENDERED_TEXT_2__
+__RENDERED_TEXT_3__",
+        },
+        "type": "template",
+      },
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "buttons": Array [
+            "__RENDERED_BUTTON_OBJ_1__",
+            "__RENDERED_BUTTON_OBJ_2__",
+            "__RENDERED_BUTTON_OBJ_3__",
+          ],
+          "sharable": undefined,
+          "template_type": "button",
+          "text": "
+__RENDERED_TEXT_1__
+__RENDERED_TEXT_2__
+__RENDERED_TEXT_3__",
+        },
+        "type": "template",
+      },
+    },
+  },
+]
+`;
+
+exports[`templates Components GenericItem match snapshot 1`] = `
+Array [
+  Object {
+    "buttons": undefined,
+    "default_action": undefined,
+    "image_url": undefined,
+    "subtitle": undefined,
+    "title": "foo",
+  },
+  Object {
+    "buttons": undefined,
+    "default_action": undefined,
+    "image_url": undefined,
+    "subtitle": "bar",
+    "title": "foo",
+  },
+  Object {
+    "buttons": undefined,
+    "default_action": undefined,
+    "image_url": "http://foo.bar/image",
+    "subtitle": undefined,
+    "title": "foo",
+  },
+  Object {
+    "buttons": undefined,
+    "default_action": Object {
+      "fallback_url": "http://foo.baz/",
+      "messenger_extensions": true,
+      "type": "web_url",
+      "url": "http://foo.bar/",
+      "webview_height_ratio": "compact",
+      "webview_share_button": "hide",
+    },
+    "image_url": undefined,
+    "subtitle": undefined,
+    "title": "foo",
+  },
+  Object {
+    "buttons": undefined,
+    "default_action": Object {
+      "fallback_url": "http://foo.baz/login",
+      "messenger_extensions": true,
+      "type": "web_url",
+      "url": "http://foo.bar/",
+      "webview_height_ratio": "compact",
+      "webview_share_button": "hide",
+    },
+    "image_url": "http://foo.bar/image",
+    "subtitle": "bar",
+    "title": "foo",
+  },
+]
+`;
+
+exports[`templates Components GenericItem render children for "buttons" field 1`] = `
+Object {
+  "buttons": Array [
+    "__RENDERED_BUTTON_OBJ_1__",
+    "__RENDERED_BUTTON_OBJ_2__",
+    "__RENDERED_BUTTON_OBJ_3__",
+  ],
+  "default_action": undefined,
+  "image_url": undefined,
+  "subtitle": undefined,
+  "title": "Look!",
+}
+`;
+
+exports[`templates Components GenericTemplate match snapshot 1`] = `
+Array [
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "elements": Array [
+            "__RENDERED_GENERIC_ITEM_OBJ_1__",
+            "__RENDERED_GENERIC_ITEM_OBJ_2__",
+            "__RENDERED_GENERIC_ITEM_OBJ_3__",
+          ],
+          "image_aspect_ratio": undefined,
+          "sharable": undefined,
+          "template_type": "generic",
+        },
+        "type": "template",
+      },
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "elements": Array [
+            "__RENDERED_GENERIC_ITEM_OBJ_1__",
+            "__RENDERED_GENERIC_ITEM_OBJ_2__",
+            "__RENDERED_GENERIC_ITEM_OBJ_3__",
+          ],
+          "image_aspect_ratio": "square",
+          "sharable": true,
+          "template_type": "generic",
+        },
+        "type": "template",
+      },
+    },
+  },
+]
+`;
+
+exports[`templates Components ListTemplate match snapshot 1`] = `
+Array [
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "buttons": undefined,
+          "elements": Array [
+            "__RENDERED_GENERIC_ITEM_OBJ_1__",
+            "__RENDERED_GENERIC_ITEM_OBJ_2__",
+            "__RENDERED_GENERIC_ITEM_OBJ_3__",
+          ],
+          "sharable": undefined,
+          "template_type": "list",
+          "top_element_style": undefined,
+        },
+        "type": "template",
+      },
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "buttons": undefined,
+          "elements": Array [
+            "__RENDERED_GENERIC_ITEM_OBJ_1__",
+            "__RENDERED_GENERIC_ITEM_OBJ_2__",
+            "__RENDERED_GENERIC_ITEM_OBJ_3__",
+          ],
+          "sharable": true,
+          "template_type": "list",
+          "top_element_style": undefined,
+        },
+        "type": "template",
+      },
+    },
+  },
+]
+`;
+
+exports[`templates Components ListTemplate render button prop as "buttons" field 1`] = `
+Object {
+  "message": Object {
+    "attachment": Object {
+      "payload": Object {
+        "buttons": Array [
+          "__RENDERED_BUTTON_OBJ_1__",
+        ],
+        "elements": Array [
+          "__RENDERED_GENERIC_ITEM_OBJ_1__",
+          "__RENDERED_GENERIC_ITEM_OBJ_2__",
+          "__RENDERED_GENERIC_ITEM_OBJ_3__",
+        ],
+        "sharable": undefined,
+        "template_type": "list",
+        "top_element_style": undefined,
+      },
+      "type": "template",
+    },
+  },
+}
+`;
+
+exports[`templates Components MediaTemplate match snapshot 1`] = `
+Array [
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "elements": Array [
+            Object {
+              "attachment_id": undefined,
+              "buttons": Array [
+                "__RENDERED_BUTTON_OBJ_1__",
+                "__RENDERED_BUTTON_OBJ_2__",
+                "__RENDERED_BUTTON_OBJ_3__",
+              ],
+              "media_type": "image",
+              "url": "http://...",
+            },
+          ],
+          "sharable": undefined,
+          "template_type": "media",
+        },
+        "type": "template",
+      },
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "elements": Array [
+            Object {
+              "attachment_id": "__ID__",
+              "buttons": Array [
+                "__RENDERED_BUTTON_OBJ_1__",
+                "__RENDERED_BUTTON_OBJ_2__",
+                "__RENDERED_BUTTON_OBJ_3__",
+              ],
+              "media_type": "video",
+              "url": undefined,
+            },
+          ],
+          "sharable": true,
+          "template_type": "media",
+        },
+        "type": "template",
+      },
+    },
+  },
+]
+`;
+
+exports[`templates Components OpenGraphTemplate match snapshot 1`] = `
+Array [
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "elements": Array [
+            Object {
+              "buttons": Array [
+                "__RENDERED_BUTTON_OBJ_1__",
+                "__RENDERED_BUTTON_OBJ_2__",
+                "__RENDERED_BUTTON_OBJ_3__",
+              ],
+              "url": "http://...",
+            },
+          ],
+          "sharable": undefined,
+          "template_type": "open_graph",
+        },
+        "type": "template",
+      },
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "elements": Array [
+            Object {
+              "buttons": Array [
+                "__RENDERED_BUTTON_OBJ_1__",
+                "__RENDERED_BUTTON_OBJ_2__",
+                "__RENDERED_BUTTON_OBJ_3__",
+              ],
+              "url": "http://...",
+            },
+          ],
+          "sharable": true,
+          "template_type": "open_graph",
+        },
+        "type": "template",
+      },
+    },
+  },
+]
+`;
+
+exports[`templates Components ReceiptTemplate match snapshot 1`] = `
+Object {
+  "message": Object {
+    "attachment": Object {
+      "payload": Object {
+        "address": Object {
+          "city": "Menlo Park",
+          "country": "US",
+          "postal_code": "94025",
+          "state": "CA",
+          "street_1": "1 Hacker Way",
+          "street_2": "",
+        },
+        "adjustments": Array [
+          Object {
+            "amount": 20,
+            "name": "New Customer Discount",
+          },
+          Object {
+            "amount": 10,
+            "name": "$10 Off Coupon",
+          },
+        ],
+        "currency": "USD",
+        "elements": Array [
+          "__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__",
+          "__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__",
+          "__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__",
+        ],
+        "order_number": "12345",
+        "order_url": "http://what.a.shop",
+        "payment_method": "Visa 2345",
+        "recipient_name": "John Doe",
+        "sharable": true,
+        "summary": Object {
+          "shipping_cost": 4.95,
+          "subtotal": 75,
+          "total_cost": 56.14,
+          "total_tax": 6.19,
+        },
+        "template_type": "receipt",
+        "timestamp": "1428444852",
+      },
+      "type": "template",
+    },
+  },
+}
+`;
+
+exports[`templates Components ReceiptTemplateItem match snapshot 1`] = `
+Object {
+  "$$native": Symbol(machinat.messenger.native),
+  "$$typeof": Symbol(machinat.element),
+  "props": Object {
+    "currency": "USD",
+    "imageUrl": "http://i.robot/avatar",
+    "price": 99.99,
+    "quantity": 999,
+    "subtitle": "It's real!",
+    "title": "A robot!",
+  },
+  "type": [Function],
+}
+`;

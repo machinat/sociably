@@ -14,9 +14,10 @@ const Custom = jest.fn(props => (
     wrapped foot
   </>
 ));
+Object.defineProperty(Custom, 'name', { value: 'Custom' });
 
 const delegate = {
-  isNativeElementType: jest.fn(t => t === Native),
+  isNativeComponent: jest.fn(t => t === Native),
   renderGeneralElement: jest.fn().mockReturnValue('bbb'),
   renderNativeElement: jest.fn(e => e.props),
   createJobsFromRendered: jest.fn(rendered =>
@@ -26,7 +27,7 @@ const delegate = {
 
 afterEach(() => {
   Custom.mockClear();
-  delegate.isNativeElementType.mockClear();
+  delegate.isNativeComponent.mockClear();
   delegate.renderGeneralElement.mockClear();
   delegate.renderNativeElement.mockClear();
   delegate.createJobsFromRendered.mockClear();
@@ -49,27 +50,37 @@ describe('#render()', () => {
     );
 
     expect(rendered).toEqual([
-      { element: 123, rendered: 123 },
-      { element: 'abc', rendered: 'abc' },
-      { element: <a>aaa</a>, rendered: 'bbb' },
+      { element: 123, rendered: 123, path: '$::0' },
+      { element: 'abc', rendered: 'abc', path: '$::1' },
+      { element: <a>aaa</a>, rendered: 'bbb', path: '$::2' },
       {
         element: <Native x="true" y={false} />,
         rendered: { x: 'true', y: false },
+        path: '$::3',
       },
-      { element: 'wrapped head', rendered: 'wrapped head' },
+      {
+        element: 'wrapped head',
+        rendered: 'wrapped head',
+        path: '$::4#Custom::0',
+      },
       {
         element: <Native a="A" b={2} />,
         rendered: { a: 'A', b: 2 },
+        path: '$::4#Custom::1',
       },
-      { element: 'wrapped foot', rendered: 'wrapped foot' },
+      {
+        element: 'wrapped foot',
+        rendered: 'wrapped foot',
+        path: '$::4#Custom::2',
+      },
     ]);
 
     expect(Custom).toBeCalledTimes(1);
     expect(Custom.mock.calls[0]).toEqual([{ a: 'A', b: 2 }, context]);
 
-    expect(delegate.isNativeElementType).toHaveBeenNthCalledWith(1, Native);
-    expect(delegate.isNativeElementType).toHaveBeenNthCalledWith(2, Custom);
-    expect(delegate.isNativeElementType).toHaveBeenNthCalledWith(3, Native);
+    expect(delegate.isNativeComponent).toHaveBeenNthCalledWith(1, Native);
+    expect(delegate.isNativeComponent).toHaveBeenNthCalledWith(2, Custom);
+    expect(delegate.isNativeComponent).toHaveBeenNthCalledWith(3, Native);
 
     expect(delegate.renderGeneralElement).toBeCalledTimes(1);
     const renderGeneralCalls = delegate.renderGeneralElement.mock.calls;
@@ -85,7 +96,34 @@ describe('#render()', () => {
       );
       expect(typeof call[1]).toBe('function');
       expect(call[2]).toEqual(context);
-      expect(call[3]).toEqual(['$::3', '$::4#mockConstructor::1'][i]);
+      expect(call[3]).toEqual(['$::3', '$::4#Custom::1'][i]);
+    });
+  });
+
+  it('return undefined if no renderable element in the node', () => {
+    const renderer = new Renderer('Test', delegate);
+
+    const None = () => null;
+    const emptyNodes = [
+      true,
+      false,
+      undefined,
+      null,
+      [],
+      <>{null}</>,
+      <None />,
+      [true, false, undefined, null, <None />],
+      <>
+        {true}
+        {false}
+        {undefined}
+        {null}
+        <None />
+      </>,
+    ];
+
+    emptyNodes.forEach(node => {
+      expect(renderer.render(node)).toBe(undefined);
     });
   });
 });
@@ -115,23 +153,36 @@ describe('#renderSequence()', () => {
 
     expect(rendered).toEqual([
       <Machinat.Immediately />,
-      [{ element: 123, rendered: 123 }, { element: 'abc', rendered: 'abc' }],
+      [
+        { element: 123, rendered: 123, path: '$::1' },
+        { element: 'abc', rendered: 'abc', path: '$::2' },
+      ],
       <Machinat.Immediately after={afterCallback} />,
       [
-        { element: <a>aaa</a>, rendered: 'bbb' },
+        { element: <a>aaa</a>, rendered: 'bbb', path: '$::4' },
         {
           element: <Native x="true" y={false} />,
           rendered: { x: 'true', y: false },
+          path: '$::5',
         },
       ],
       <Machinat.Immediately after={afterCallback} />,
       [
-        { element: 'wrapped head', rendered: 'wrapped head' },
+        {
+          element: 'wrapped head',
+          rendered: 'wrapped head',
+          path: '$::7#Custom::0',
+        },
         {
           element: <Native a="A" b={2} />,
           rendered: { a: 'A', b: 2 },
+          path: '$::7#Custom::1',
         },
-        { element: 'wrapped foot', rendered: 'wrapped foot' },
+        {
+          element: 'wrapped foot',
+          rendered: 'wrapped foot',
+          path: '$::7#Custom::2',
+        },
       ],
     ]);
 
@@ -139,14 +190,14 @@ describe('#renderSequence()', () => {
     expect(Custom.mock.calls[0]).toEqual([{ a: 'A', b: 2 }, context]);
 
     const {
-      isNativeElementType,
+      isNativeComponent,
       renderGeneralElement,
       renderNativeElement,
     } = delegate;
-    expect(isNativeElementType).toHaveBeenNthCalledWith(1, Native);
-    expect(isNativeElementType).toHaveBeenNthCalledWith(2, WrappedImmediately);
-    expect(isNativeElementType).toHaveBeenNthCalledWith(3, Custom);
-    expect(isNativeElementType).toHaveBeenNthCalledWith(4, Native);
+    expect(isNativeComponent).toHaveBeenNthCalledWith(1, Native);
+    expect(isNativeComponent).toHaveBeenNthCalledWith(2, WrappedImmediately);
+    expect(isNativeComponent).toHaveBeenNthCalledWith(3, Custom);
+    expect(isNativeComponent).toHaveBeenNthCalledWith(4, Native);
 
     expect(renderGeneralElement).toBeCalledTimes(1);
     expect(renderGeneralElement.mock.calls[0][0]).toEqual(<a>aaa</a>);
@@ -161,7 +212,7 @@ describe('#renderSequence()', () => {
       );
       expect(typeof call[1]).toBe('function');
       expect(call[2]).toEqual(context);
-      expect(call[3]).toEqual(['$::5', '$::7#mockConstructor::1'][i]);
+      expect(call[3]).toEqual(['$::5', '$::7#Custom::1'][i]);
     });
   });
 

@@ -5,6 +5,8 @@
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "main": "lib/index.js",
   "dependencies": {
+    "invariant": "^2.2.4",
+    "machinat-shared": "0.0.1-0",
     "raw-body": "^2.3.3"
   },
   "devDependencies": {

@@ -1,0 +1,110 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`button Components BuyButton match snapshot 1`] = `
+Object {
+  "payload": "_MY_PAYLOAD_",
+  "payment_summary": Object {
+    "currency": "USD",
+    "is_test_payment": true,
+    "merchant_name": "My Fake Business",
+    "payment_type": "FIXED_AMOUNT",
+    "price_list": Array [
+      Object {
+        "amount": "12.75",
+        "label": "subtotal",
+      },
+    ],
+    "requested_user_info": Array [
+      "shipping_address",
+      "contact_name",
+      "contact_phone",
+      "contact_email",
+    ],
+  },
+  "title": "my button",
+  "type": "payment",
+}
+`;
+
+exports[`button Components CallButton match snapshot 1`] = `
+Object {
+  "number": "+15105551234",
+  "title": "call me maybe",
+  "type": "phone_number",
+}
+`;
+
+exports[`button Components GamePlayButton match snapshot 1`] = `
+Object {
+  "game_metadata": Object {
+    "context_id": "SAW",
+    "player_id": "Adam",
+  },
+  "payload": "GAME_OVER",
+  "title": "I want to play a game",
+  "type": "game_play",
+}
+`;
+
+exports[`button Components LoginButton match snapshot 1`] = `
+Object {
+  "type": "account_link",
+  "url": "https://council.elrond",
+}
+`;
+
+exports[`button Components LoginButton match snapshot 2`] = `
+Object {
+  "type": "account_link",
+  "url": "https://council.elrond",
+}
+`;
+
+exports[`button Components LogoutButton match snapshot 1`] = `
+Object {
+  "type": "account_unlink",
+}
+`;
+
+exports[`button Components PostbackButton match snapshot 1`] = `
+Object {
+  "payload": "_MY_PAYLOAD_",
+  "title": "my button",
+  "type": "postback",
+}
+`;
+
+exports[`button Components ShareButton match snapshot 1`] = `
+Array [
+  Object {
+    "type": "element_share",
+  },
+  Object {
+    "share_contents": "__RENDERED_GENERIC_TEMPLATE_MEASSGE_OBJ__",
+    "type": "element_share",
+  },
+]
+`;
+
+exports[`button Components URLButton match snapshot 1`] = `
+Array [
+  Object {
+    "fallback_url": undefined,
+    "messenger_extensions": undefined,
+    "title": "my button",
+    "type": "web_url",
+    "url": "http://machinat.com",
+    "webview_height_ratio": undefined,
+    "webview_share_button": undefined,
+  },
+  Object {
+    "fallback_url": "http://...",
+    "messenger_extensions": true,
+    "title": "my button",
+    "type": "web_url",
+    "url": "http://machinat.com",
+    "webview_height_ratio": "compact",
+    "webview_share_button": "hide",
+  },
+]
+`;

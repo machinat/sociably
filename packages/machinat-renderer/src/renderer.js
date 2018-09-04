@@ -13,7 +13,7 @@ import {
 import { ExecutionError } from './errors';
 import type { RenderDelegate, RenderResult } from './types';
 
-const { isNative, isImmediately } = Utils;
+const { isNative, isImmediately, isEmpty } = Utils;
 const { traverse } = Children;
 
 const RENDER_SEPARATOR = '#';
@@ -25,14 +25,14 @@ type BatchesAndSeparators = Array<RenderResultBatch | ImmediatelyEle>;
 type RenderTraverseContext<C: RenderResultBatch | BatchesAndSeparators> = {
   payload: any,
   accumulates: C,
-  handleRenderedResult: ?(RenderResult<any>, RenderTraverseContext<C>) => void,
-  handleImmediately: ?(ImmediatelyEle, RenderTraverseContext<C>) => void,
+  handleRenderedResult: (RenderResult<any>, RenderTraverseContext<C>) => void,
+  handleImmediately: (ImmediatelyEle, RenderTraverseContext<C>) => void,
 };
 
 export default class Renderer<Rendered, Job> {
   delegate: RenderDelegate<Rendered, Job>;
   oriented: string;
-  context: RenderTraverseContext<any>;
+  context: Object;
 
   constructor(
     orientedPlatform: string,
@@ -49,10 +49,14 @@ export default class Renderer<Rendered, Job> {
   }
 
   render(elements: MachinatNode, prefix: string, payload: any) {
-    return this._renderImpl(prefix, elements, '', payload);
+    return this._renderImpl(prefix, payload, elements, '');
   }
 
   renderSequence(elements: MachinatNode, payload: any) {
+    if (isEmpty(elements)) {
+      return undefined;
+    }
+
     const { context } = this;
     context.payload = payload;
     context.accumulates = ([]: BatchesAndSeparators);
@@ -60,7 +64,9 @@ export default class Renderer<Rendered, Job> {
     context.handleImmediately = addImmediatelyAsSeparator;
 
     traverse(elements, RENDER_ROOT, context, this._renderTraverseCallback);
-    return context.accumulates;
+
+    const { accumulates } = context;
+    return accumulates.length === 0 ? undefined : accumulates;
   }
 
   async executeSequence(queue: MachinatQueue, resultSequence) {
@@ -95,10 +101,14 @@ export default class Renderer<Rendered, Job> {
 
   _renderImpl = (
     prefix: string,
+    payload: any,
     elements: MachinatNode,
-    currentPath: string,
-    payload: any
+    currentPath: string
   ) => {
+    if (isEmpty(elements)) {
+      return undefined;
+    }
+
     const { context } = this;
     context.payload = payload;
     context.accumulates = ([]: RenderResultBatch);
@@ -111,13 +121,14 @@ export default class Renderer<Rendered, Job> {
       context,
       this._renderTraverseCallback
     );
-    return context.accumulates;
+    const { accumulates } = context;
+    return accumulates.length === 0 ? undefined : accumulates;
   };
 
   _renderTraverseCallback: TraverseElementCallback = (
     element,
     prefix,
-    context
+    context: RenderTraverseContext<any>
   ) => {
     const { payload, handleRenderedResult, handleImmediately } = context;
 
@@ -126,31 +137,32 @@ export default class Renderer<Rendered, Job> {
         {
           element,
           rendered: element,
+          path: prefix,
         },
         context
       );
     } else if (typeof element.type === 'string') {
       const rendered = this.delegate.renderGeneralElement(
         element,
-        this._renderImpl.bind(this, prefix),
+        this._renderImpl.bind(this, prefix, payload),
         payload,
         prefix
       );
-      handleRenderedResult({ rendered, element }, context);
+      handleRenderedResult({ rendered, element, path: prefix }, context);
     } else if (isImmediately(element) && handleImmediately) {
       handleImmediately(element, context);
-    } else if (this.delegate.isNativeElementType(element.type)) {
+    } else if (this.delegate.isNativeComponent(element.type)) {
       const rendered = this.delegate.renderNativeElement(
         element,
-        this._renderImpl.bind(this, prefix),
+        this._renderImpl.bind(this, prefix, payload),
         payload,
         prefix
       );
-      handleRenderedResult({ rendered, element }, context);
+      handleRenderedResult({ rendered, element, path: prefix }, context);
     } else if (typeof element.type === 'function') {
       invariant(
         !isNative(element),
-        `Element at ${prefix} is native type of ${(typeof element.$$native ===
+        `Element at ${prefix} is native Component type ${(typeof element.$$native ===
         // $FlowFixMe: remove me after symbol primitive supported
         'symbol'
           ? Symbol.keyFor(element.$$native)
