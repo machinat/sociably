@@ -22,7 +22,7 @@ const textReducer = (text, cur) => {
 };
 
 export const renderTextContent = (node, render, propName) => {
-  const rendered = render(node, propName);
+  const rendered = render(node, `.${propName}`);
   if (rendered === undefined) {
     return undefined;
   }
@@ -40,7 +40,7 @@ const onlyType = (Type, result) => {
   return true;
 };
 export const renderOnlyType = (Type, node, render, propName) => {
-  const result = render(node, propName);
+  const result = render(node, `.${propName}`);
   if (result === undefined) {
     return undefined;
   }
@@ -61,7 +61,7 @@ const onlyInTypes = (types, result) => {
   return true;
 };
 export const renderOnlyInTypes = (types, node, render, propName) => {
-  const result = render(node, propName);
+  const result = render(node, `.${propName}`);
   if (result === undefined) {
     return undefined;
   }

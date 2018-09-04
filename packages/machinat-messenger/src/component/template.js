@@ -12,6 +12,8 @@ import * as buttonComponents from './button';
 
 const { isElement } = Utils;
 
+const CHILDREN = 'children';
+
 const refineDefaultAction = (actionProp, render) => {
   if (!isElement(actionProp)) {
     return actionProp;
@@ -21,7 +23,7 @@ const refineDefaultAction = (actionProp, render) => {
     buttonComponents.URLButton,
     actionProp,
     render,
-    '.defaultAction'
+    'defaultAction'
   );
 
   const { title, ...action } = actionResult[0].rendered;
@@ -48,7 +50,7 @@ export const GenericItem = (
   image_url: imageUrl,
   subtitle,
   default_action: refineDefaultAction(defaultAction, render),
-  buttons: refineButtons(children, render, '.children'),
+  buttons: refineButtons(children, render, CHILDREN),
 });
 annotateNative(GenericItem);
 
@@ -56,12 +58,7 @@ export const GenericTemplate = (
   { children, sharable, imageAspectRatio },
   render
 ) => {
-  const itemsResult = renderOnlyType(
-    GenericItem,
-    children,
-    render,
-    '.children'
-  );
+  const itemsResult = renderOnlyType(GenericItem, children, render, CHILDREN);
 
   // TODO: invariant itemsResult.length > 0 ?
 
@@ -85,12 +82,7 @@ export const ListTemplate = (
   { children, topStyle, sharable, button },
   render
 ) => {
-  const itemsResult = renderOnlyType(
-    GenericItem,
-    children,
-    render,
-    '.children'
-  );
+  const itemsResult = renderOnlyType(GenericItem, children, render, CHILDREN);
 
   // TODO: invariant itemsResult.length > 0 ?
 
@@ -103,7 +95,7 @@ export const ListTemplate = (
           top_element_style: topStyle,
           sharable,
           elements: itemsResult.map(getRendered),
-          buttons: refineButtons(button, render, '.button'),
+          buttons: refineButtons(button, render, 'button'),
         },
       },
     },
@@ -117,9 +109,9 @@ export const ButtonTemplate = ({ children, text, sharable }, render) => ({
       type: 'template',
       payload: {
         template_type: 'button',
-        text: renderTextContent(text, render, '.text'),
+        text: renderTextContent(text, render, 'text'),
         sharable,
-        buttons: refineButtons(children, render, '.children'),
+        buttons: refineButtons(children, render, CHILDREN),
       },
     },
   },
@@ -141,7 +133,7 @@ export const MediaTemplate = (
             media_type: type,
             url,
             attachment_id: attachmentId,
-            buttons: refineButtons(children, render, '.children'),
+            buttons: refineButtons(children, render, CHILDREN),
           },
         ],
       },
@@ -160,7 +152,7 @@ export const OpenGraphTemplate = ({ children, url, sharable }, render) => ({
         elements: [
           {
             url,
-            buttons: refineButtons(children, render, '.children'),
+            buttons: refineButtons(children, render, CHILDREN),
           },
         ],
       },
@@ -206,7 +198,7 @@ export const ReceiptTemplate = (
     ReceiptTemplateItem,
     children,
     render,
-    '.children'
+    CHILDREN
   );
 
   // TODO: invariant itemsResult.length > 0 ?

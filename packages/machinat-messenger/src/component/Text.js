@@ -15,12 +15,12 @@ export const Text = ({ children, quickReplies, metadata }, render) => {
     quickReplyTypes,
     quickReplies,
     render,
-    '.quickReplies'
+    'quickReplies'
   );
 
   return {
     message: {
-      text: renderTextContent(children, render, '.children'),
+      text: renderTextContent(children, render, 'children'),
       quick_replies: repliesResult && repliesResult.map(getRendered),
       metadata,
     },
@@ -29,5 +29,5 @@ export const Text = ({ children, quickReplies, metadata }, render) => {
 annotateNativeRoot(Text, ENTRY_MESSAGES);
 
 export const Latex = ({ children }, render) =>
-  `\\(${renderTextContent(children, render, '.children')}\\)`;
+  `\\(${renderTextContent(children, render, 'children')}\\)`;
 annotateNative(Latex);

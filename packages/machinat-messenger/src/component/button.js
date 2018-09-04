@@ -32,7 +32,7 @@ export const ShareButton = ({ children }, render) => {
     GenericTemplate,
     children,
     render,
-    '.children'
+    'children'
   );
 
   if (templateResult !== undefined) {
