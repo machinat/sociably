@@ -3,14 +3,12 @@ import invariant from 'invariant';
 import { Children, Utils } from 'machinat-shared';
 import type { TraverseElementCallback } from 'machinat-shared/types';
 import type { MachinatNode, MachinatElement } from 'types/element';
-import type MachinatQueue from 'machinat-queue';
 
 import {
   addImmediatelyAsSeparator,
   addToAccumulates,
   addToLastBatchOfAccumulates,
 } from './utils';
-import { ExecutionError } from './errors';
 import type { RenderDelegate, RenderResult } from './types';
 
 const { isNative, isImmediately, isEmpty } = Utils;
@@ -32,7 +30,6 @@ type RenderTraverseContext<C: RenderResultBatch | BatchesAndSeparators> = {
 export default class Renderer<Rendered, Job> {
   delegate: RenderDelegate<Rendered, Job>;
   oriented: string;
-  context: Object;
 
   constructor(
     orientedPlatform: string,
@@ -40,97 +37,84 @@ export default class Renderer<Rendered, Job> {
   ) {
     this.delegate = delegate;
     this.oriented = orientedPlatform;
-    this.context = {
-      payload: null,
-      accumulates: null,
-      handleRenderedResult: null,
-      handleImmediately: null,
-    };
   }
 
   render(elements: MachinatNode, prefix: string, payload: any) {
     return this._renderImpl(prefix, payload, elements, '');
   }
 
-  renderSequence(elements: MachinatNode, payload: any) {
+  renderJobSequence(
+    elements: MachinatNode,
+    payload: any
+  ): ?Array<Array<Job> | ImmediatelyEle> {
     if (isEmpty(elements)) {
       return undefined;
     }
 
-    const { context } = this;
-    context.payload = payload;
-    context.accumulates = ([]: BatchesAndSeparators);
-    context.handleRenderedResult = addToLastBatchOfAccumulates;
-    context.handleImmediately = addImmediatelyAsSeparator;
+    const accumulates = [];
 
-    traverse(elements, RENDER_ROOT, context, this._renderTraverseCallback);
+    traverse(
+      elements,
+      RENDER_ROOT,
+      {
+        payload,
+        accumulates,
+        handleRenderedResult: addToLastBatchOfAccumulates,
+        handleImmediately: addImmediatelyAsSeparator,
+      },
+      this._renderTraverseCallback
+    );
 
-    const { accumulates } = context;
-    return accumulates.length === 0 ? undefined : accumulates;
-  }
-
-  async executeSequence(queue: MachinatQueue, resultSequence) {
-    const result = [];
-
-    for (let i = 0; i < resultSequence.length; i += 1) {
-      const action = resultSequence[i];
-      if (isImmediately(action)) {
-        const { after } = action.props;
-        if (after && typeof after === 'function') {
-          await after(); // eslint-disable-line no-await-in-loop
-        } else {
-          invariant(
-            !after,
-            `"after" prop of Immediately element should be a function, got ${after}`
-          );
-        }
-      } else {
-        const jobs = this.delegate.createJobsFromRendered(action);
-
-        // eslint-disable-next-line no-await-in-loop
-        const { error, jobsResult } = await queue.enqueueJobAndWait(jobs);
-        result.push(...jobsResult);
-
-        if (error) {
-          throw new ExecutionError(error, result);
-        }
-      }
+    if (accumulates.length === 0) {
+      return undefined;
     }
-    return result;
+
+    const jobSequence = new Array(accumulates.length);
+    for (let i = 0; i < accumulates.length; i += 1) {
+      const action = accumulates[i];
+      jobSequence[i] = isImmediately(action)
+        ? action
+        : this.delegate.createJobsFromRendered(action, payload);
+    }
+    return jobSequence;
   }
 
-  _renderImpl = (
+  _renderImpl(
     prefix: string,
     payload: any,
     elements: MachinatNode,
     currentPath: string
-  ) => {
+  ) {
     if (isEmpty(elements)) {
       return undefined;
     }
 
-    const { context } = this;
-    context.payload = payload;
-    context.accumulates = ([]: RenderResultBatch);
-    context.handleRenderedResult = addToAccumulates;
-    context.handleImmediately = null;
-
+    const accumulates = [];
     traverse(
       elements,
       prefix + currentPath,
-      context,
+      {
+        payload,
+        accumulates,
+        handleRenderedResult: addToAccumulates,
+        handleImmediately: null,
+      },
       this._renderTraverseCallback
     );
-    const { accumulates } = context;
     return accumulates.length === 0 ? undefined : accumulates;
-  };
+  }
 
   _renderTraverseCallback: TraverseElementCallback = (
     element,
     prefix,
     context: RenderTraverseContext<any>
   ) => {
-    const { payload, handleRenderedResult, handleImmediately } = context;
+    const {
+      accumulates,
+      payload,
+      handleRenderedResult,
+      handleImmediately,
+    } = context;
 
     if (typeof element === 'string' || typeof element === 'number') {
       handleRenderedResult(
@@ -139,7 +123,7 @@ export default class Renderer<Rendered, Job> {
           rendered: element,
           path: prefix,
         },
-        context
+        accumulates
       );
     } else if (typeof element.type === 'string') {
       const rendered = this.delegate.renderGeneralElement(
@@ -148,9 +132,9 @@ export default class Renderer<Rendered, Job> {
         payload,
         prefix
       );
-      handleRenderedResult({ rendered, element, path: prefix }, context);
+      handleRenderedResult({ rendered, element, path: prefix }, accumulates);
     } else if (isImmediately(element) && handleImmediately) {
-      handleImmediately(element, context);
+      handleImmediately(element, accumulates);
     } else if (this.delegate.isNativeComponent(element.type)) {
       const rendered = this.delegate.renderNativeElement(
         element,
@@ -158,7 +142,7 @@ export default class Renderer<Rendered, Job> {
         payload,
         prefix
       );
-      handleRenderedResult({ rendered, element, path: prefix }, context);
+      handleRenderedResult({ rendered, element, path: prefix }, accumulates);
     } else if (typeof element.type === 'function') {
       invariant(
         !isNative(element),

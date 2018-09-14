@@ -1,11 +1,10 @@
 import invariant from 'invariant';
 
-export const addToAccumulates = (result, context) => {
-  context.accumulates.push(result);
+export const addToAccumulates = (result, accumulates) => {
+  accumulates.push(result);
 };
 
-export const addToLastBatchOfAccumulates = (result, context) => {
-  const { accumulates } = context;
+export const addToLastBatchOfAccumulates = (result, accumulates) => {
   let lastBatch;
   // eslint-disable-next-line no-cond-assign
   if (
@@ -18,13 +17,12 @@ export const addToLastBatchOfAccumulates = (result, context) => {
   lastBatch.push(result);
 };
 
-export const addImmediatelyAsSeparator = (immediately, context) => {
+export const addImmediatelyAsSeparator = (immediately, accumulates) => {
   const { after } = immediately.props;
   invariant(
     !after || typeof after === 'function',
     `props.after of Immediately element should be a function, got ${after}`
   );
-  const { accumulates } = context;
   let last;
   // eslint-disable-next-line no-cond-assign
   if (
@@ -32,6 +30,7 @@ export const addImmediatelyAsSeparator = (immediately, context) => {
     Array.isArray((last = accumulates[accumulates.length - 1])) &&
     last.length === 0
   ) {
+    // eslint-disable-next-line no-param-reassign
     accumulates[accumulates.length - 1] = immediately;
     accumulates.push(last);
   } else {

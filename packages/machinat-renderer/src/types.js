@@ -18,7 +18,7 @@ export type RenderDelegate<Rendered, Job> = {
   isNativeComponent: MachinatElementType => boolean,
   renderNativeElement: RenderDelegateCallback<Rendered>,
   renderGeneralElement: RenderDelegateCallback<Rendered>,
-  createJobsFromRendered: (Array<RenderResult<Rendered>>) => Array<Job>,
+  createJobsFromRendered: (Array<RenderResult<Rendered>>, any) => Array<Job>,
 };
 
 export type RenderResult<Rendered> = {
