@@ -1,12 +1,6 @@
 // @flow
 import warning from 'warning';
-import type {
-  MachinatNode,
-  MachinatText,
-  MachinatElement,
-  MachinatRenderable,
-  MachinatFragmentElement,
-} from 'types/element';
+import type { MachinatNode, MachinatRenderable } from 'types/element';
 
 import { isFragment, isEmpty, isValidRenderable, isImmediately } from './isXXX';
 import type {

@@ -6,26 +6,26 @@ import {
 } from './symbol';
 import isValidElementType from './isValidElementType';
 
-export const isEmpty = (element: any) =>
+export const isEmpty = (element: any): boolean %checks =>
   typeof element === 'boolean' || element === null || element === undefined;
 
-export const isElement = (element: any) =>
+export const isElement = (element: any): boolean %checks =>
   typeof element === 'object' &&
   element !== null &&
   element.$$typeof === MACHINAT_ELEMENT_TYPE &&
   isValidElementType(element.type);
 
-export const isFragment = (element: any) =>
+export const isFragment = (element: any): boolean %checks =>
   typeof element === 'object' &&
   element !== null &&
   element.type === MACHINAT_FRAGMENT_TYPE;
 
-export const isImmediately = (element: any) =>
+export const isImmediately = (element: any): boolean %checks =>
   typeof element === 'object' &&
   element !== null &&
   element.type === MACHINAT_IMMEDIATELY_TYPE;
 
-export const isValidRenderable = (element: any) =>
+export const isValidRenderable = (element: any): boolean %checks =>
   typeof element === 'string' ||
   typeof element === 'number' ||
   (typeof element === 'object' &&
@@ -33,9 +33,9 @@ export const isValidRenderable = (element: any) =>
     element.$$typeof === MACHINAT_ELEMENT_TYPE &&
     (typeof element.type === 'string' || typeof element.type === 'function'));
 
-export const isNative = (element: any) =>
+export const isNative = (element: any): boolean %checks =>
   typeof element === 'object' &&
   element !== null &&
-  // $FlowFixMe: remove this after symbol primitive supported
+  // $FlowFixMe: remove me after symbol primitive supported
   (typeof element.$$native === 'symbol' ||
     typeof element.$$native === 'string');
