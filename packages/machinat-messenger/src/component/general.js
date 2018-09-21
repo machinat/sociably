@@ -26,10 +26,12 @@ export const a = (props, render) => {
 const generalMediaFactory = (name, type) =>
   ({
     [name]: props => ({
-      attachment: {
-        type,
-        payload: {
-          url: props.src,
+      message: {
+        attachment: {
+          type,
+          payload: {
+            url: props.src,
+          },
         },
       },
     }),

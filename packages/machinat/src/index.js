@@ -3,6 +3,7 @@ import {
   MACHINAT_IMMEDIATELY_TYPE,
 } from 'machinat-shared';
 import createElement from './createElement';
+import createServer from './server/native';
 
 const Machinat = {
   createElement,
@@ -10,4 +11,4 @@ const Machinat = {
   Immediately: MACHINAT_IMMEDIATELY_TYPE,
 };
 
-export default Machinat;
+export { Machinat as default, createServer };

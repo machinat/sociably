@@ -3,16 +3,24 @@ export const MessengerEventBase = {
     enumerable: true,
     value: 'messenger',
   },
-  sender: {
+  user: {
     enumerable: true,
     get() {
       return this.raw.sender;
     },
   },
-  recipient: {
+  userId: {
     enumerable: true,
     get() {
-      return this.raw.recipient;
+      return this.raw.sender.id;
+    },
+  },
+  thread: {
+    enumerable: true,
+    get() {
+      return this.type === 'optin' && this.raw.sender === undefined
+        ? { user_ref: this.optin.user_ref }
+        : this.raw.sender;
     },
   },
   shouldRespond: {
@@ -115,6 +123,10 @@ export const ReadBase = Object.assign({}, MessengerEventBase, {
 });
 
 export const Echo = {
+  isEcho: {
+    enumerable: true,
+    value: true,
+  },
   appId: {
     enumerable: true,
     get() {

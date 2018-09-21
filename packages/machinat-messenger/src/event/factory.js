@@ -65,9 +65,12 @@ import {
   unknown,
 } from './event';
 
+const hasOwnProperty = (obj, prop) =>
+  Object.prototype.hasOwnProperty.call(obj, prop);
+
 const createMessageEvent = (raw, isStandby) => {
   const { message } = raw;
-  if (message[TEXT]) {
+  if (hasOwnProperty(message, TEXT)) {
     return isStandby
       ? standbyText(raw)
       : message.is_echo
@@ -112,25 +115,47 @@ const createMessageEvent = (raw, isStandby) => {
   }
 };
 
-const createEvent = (isStandby, raw) => {
-  if (raw[MESSAGE]) return createMessageEvent(raw, isStandby);
-  if (raw[READ]) return isStandby ? standbyRead(raw) : read(raw);
-  if (raw[DELIVERY]) return isStandby ? standbyDelivery(raw) : delivery(raw);
-  if (raw[ACCOUNT_LINKING]) return accountLinking(raw);
-  if (raw[CHECKOUT_UPDATE]) return checkoutUpdate(raw);
-  if (raw[GAME_PLAY]) return gamePlay(raw);
-  if (raw[TAKE_THREAD_CONTROL]) return takeThreadControl(raw);
-  if (raw[PASS_THREAD_CONTROL]) return passThreadControl(raw);
-  if (raw[REQUEST_THREAD_CONTROL]) return requestThreadControl(raw);
-  if (raw[APP_ROLES]) return appRoles(raw);
-  if (raw[OPTIN]) return optin(raw);
-  if (raw[PAYMENT]) return payment(raw);
-  if (raw[POLICY_ENFORCEMENT]) return policyEnforcement(raw);
-  if (raw[POSTBACK]) return isStandby ? standbyPostback(raw) : postback(raw);
-  if (raw[PAYMENT_PRE_CHECKOUT]) return paymentPreCheckout(raw);
-  if (raw[REFERRAL]) return referral(raw);
-  return unknown(raw);
-};
+// prettier-ignore
+const createEvent = (isStandby, raw) =>
+  hasOwnProperty(raw, MESSAGE)
+    ? createMessageEvent(raw, isStandby)
+    : hasOwnProperty(raw, READ)
+    ? isStandby
+      ? standbyRead(raw)
+      : read(raw)
+    : hasOwnProperty(raw, DELIVERY)
+      ? isStandby
+        ? standbyDelivery(raw)
+        : delivery(raw)
+    : hasOwnProperty(raw, ACCOUNT_LINKING)
+    ? accountLinking(raw)
+    : hasOwnProperty(raw, CHECKOUT_UPDATE)
+    ? checkoutUpdate(raw)
+    : hasOwnProperty(raw, GAME_PLAY)
+    ? gamePlay(raw)
+    : hasOwnProperty(raw, TAKE_THREAD_CONTROL)
+    ? takeThreadControl(raw)
+    : hasOwnProperty(raw, PASS_THREAD_CONTROL)
+    ? passThreadControl(raw)
+    : hasOwnProperty(raw, REQUEST_THREAD_CONTROL)
+    ? requestThreadControl(raw)
+    : hasOwnProperty(raw, APP_ROLES)
+    ? appRoles(raw)
+    : hasOwnProperty(raw, OPTIN)
+    ? optin(raw)
+    : hasOwnProperty(raw, PAYMENT)
+    ? payment(raw)
+    : hasOwnProperty(raw, POLICY_ENFORCEMENT)
+    ? policyEnforcement(raw)
+    : hasOwnProperty(raw, POSTBACK)
+    ? isStandby
+      ? standbyPostback(raw)
+      : postback(raw)
+    : hasOwnProperty(raw, PAYMENT_PRE_CHECKOUT)
+    ? paymentPreCheckout(raw)
+    : hasOwnProperty(raw, REFERRAL)
+    ? referral(raw)
+    : unknown(raw);
 
 const eventReducer = (events, rawEvent) => {
   const { messaging, stanby } = rawEvent;

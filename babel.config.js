@@ -1,14 +1,4 @@
 module.exports = {
-  env: {
-    test: {
-      plugins: [
-        ['@babel/plugin-transform-react-jsx', {
-            pragma: 'Machinat.createElement',
-            pragmaFrag: 'Machinat.Fragment',
-        }],
-      ],
-    },
-  },
   presets: [
     '@babel/preset-flow',
     ['@babel/preset-env', {
@@ -20,5 +10,9 @@ module.exports = {
   plugins: [
     '@babel/plugin-proposal-class-properties',
     '@babel/plugin-proposal-object-rest-spread',
+    ['@babel/plugin-transform-react-jsx', {
+        pragma: 'Machinat.createElement',
+        pragmaFrag: 'Machinat.Fragment',
+    }],
   ],
 };
