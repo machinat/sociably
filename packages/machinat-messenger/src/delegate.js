@@ -1,21 +1,26 @@
 import invariant from 'invariant';
 
-import { MESSENGER_NAITVE_TYPE } from './symbol';
+import {
+  MESSENGER_NAITVE_TYPE,
+  THREAD_IDENTIFIER,
+  ATTACHED_FILE_DATA,
+  ATTACHED_FILE_INFO,
+} from './symbol';
 import { ENTRY_MESSAGES } from './component/constant';
 import * as generalRenderer from './component/general';
 
 const POST = 'POST';
 
-export const appendUrlencodedBody = (body, key, value) =>
+const appendUrlencodedBody = (body, key, value) =>
   `${body === '' ? body : `${body}&`}${key}=${encodeURIComponent(value)}`;
 
-export const requestJobFromString = (text, body) => ({
+const createJobFromString = (text, body) => ({
   method: POST,
   relative_url: ENTRY_MESSAGES,
   body: appendUrlencodedBody(body, 'message', JSON.stringify({ text })),
 });
 
-export const requestJobFromRendered = (renderedResult, currentBody) => {
+const createJobFromRenderedResult = (renderedResult, currentBody) => {
   const { element, rendered } = renderedResult;
   const fields = Object.keys(rendered);
 
@@ -31,6 +36,15 @@ export const requestJobFromRendered = (renderedResult, currentBody) => {
     body,
   };
 };
+
+const makeThreadId = thread =>
+  thread.id
+    ? `id:${thread.id}`
+    : thread.user_ref
+      ? `user_ref:${thread.user_ref}`
+      : thread.phone_number
+        ? `phone_number:${thread.phone_number}`
+        : JSON.stringify(thread);
 
 const Delegate = {
   isNativeComponent(component) {
@@ -60,9 +74,9 @@ const Delegate = {
 
       let job;
       if (typeof rendered === 'string') {
-        job = requestJobFromString(rendered, body);
+        job = createJobFromString(rendered, body);
       } else if (typeof element.type === 'string' || element.type.$$root) {
-        job = requestJobFromRendered(node, body);
+        job = createJobFromRenderedResult(node, body);
       } else {
         invariant(
           false,
@@ -70,6 +84,9 @@ const Delegate = {
         );
       }
 
+      job[ATTACHED_FILE_DATA] = rendered[ATTACHED_FILE_DATA];
+      job[ATTACHED_FILE_INFO] = rendered[ATTACHED_FILE_INFO];
+      job[THREAD_IDENTIFIER] = makeThreadId(thread);
       jobs[i] = job;
     }
     return jobs;

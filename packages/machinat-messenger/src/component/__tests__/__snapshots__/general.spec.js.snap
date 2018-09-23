@@ -29,35 +29,43 @@ https://machinat.world",
 foo.bar('hello world')
 \`\`\`",
   Object {
-    "attachment": Object {
-      "payload": Object {
-        "url": "http://avatar.my.bot",
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "url": "http://avatar.my.bot",
+        },
+        "type": "image",
       },
-      "type": "image",
     },
   },
   Object {
-    "attachment": Object {
-      "payload": Object {
-        "url": "http://vid.my.bot",
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "url": "http://vid.my.bot",
+        },
+        "type": "video",
       },
-      "type": "video",
     },
   },
   Object {
-    "attachment": Object {
-      "payload": Object {
-        "url": "http://sound.my.bot",
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "url": "http://sound.my.bot",
+        },
+        "type": "audio",
       },
-      "type": "audio",
     },
   },
   Object {
-    "attachment": Object {
-      "payload": Object {
-        "url": "http://profile.my.bot",
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "url": "http://profile.my.bot",
+        },
+        "type": "file",
       },
-      "type": "file",
     },
   },
 ]

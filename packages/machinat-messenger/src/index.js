@@ -1,2 +1,2 @@
-export { default as MessengerConnector } from './connector';
+export { default } from './connector';
 export * from './component';

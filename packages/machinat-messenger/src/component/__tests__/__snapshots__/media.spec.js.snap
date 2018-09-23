@@ -15,6 +15,8 @@ Array [
       "metadata": undefined,
       "quick_replies": undefined,
     },
+    Symbol(machinat.messenger.job.attached_file_data): undefined,
+    Symbol(machinat.messenger.job.attached_file_info): undefined,
   },
   Object {
     "message": Object {
@@ -29,6 +31,8 @@ Array [
       "metadata": undefined,
       "quick_replies": undefined,
     },
+    Symbol(machinat.messenger.job.attached_file_data): undefined,
+    Symbol(machinat.messenger.job.attached_file_info): undefined,
   },
   Object {
     "message": Object {
@@ -43,6 +47,8 @@ Array [
       "metadata": undefined,
       "quick_replies": undefined,
     },
+    Symbol(machinat.messenger.job.attached_file_data): undefined,
+    Symbol(machinat.messenger.job.attached_file_info): undefined,
   },
   Object {
     "message": Object {
@@ -57,6 +63,8 @@ Array [
       "metadata": undefined,
       "quick_replies": undefined,
     },
+    Symbol(machinat.messenger.job.attached_file_data): undefined,
+    Symbol(machinat.messenger.job.attached_file_info): undefined,
   },
   Object {
     "message": Object {
@@ -71,6 +79,8 @@ Array [
       "metadata": undefined,
       "quick_replies": undefined,
     },
+    Symbol(machinat.messenger.job.attached_file_data): undefined,
+    Symbol(machinat.messenger.job.attached_file_info): undefined,
   },
   Object {
     "message": Object {
@@ -85,6 +95,8 @@ Array [
       "metadata": undefined,
       "quick_replies": undefined,
     },
+    Symbol(machinat.messenger.job.attached_file_data): undefined,
+    Symbol(machinat.messenger.job.attached_file_info): undefined,
   },
   Object {
     "message": Object {
@@ -99,6 +111,8 @@ Array [
       "metadata": undefined,
       "quick_replies": undefined,
     },
+    Symbol(machinat.messenger.job.attached_file_data): undefined,
+    Symbol(machinat.messenger.job.attached_file_info): undefined,
   },
   Object {
     "message": Object {
@@ -113,6 +127,8 @@ Array [
       "metadata": undefined,
       "quick_replies": undefined,
     },
+    Symbol(machinat.messenger.job.attached_file_data): undefined,
+    Symbol(machinat.messenger.job.attached_file_info): undefined,
   },
 ]
 `;

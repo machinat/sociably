@@ -36,6 +36,11 @@ class MessengerConnector extends EventEmitter {
     };
     this.options = Object.assign(defaultOpions, options);
 
+    warning(
+      appSecret,
+      'provide the appSecret to secure your application by attaching appsecret_proof'
+    );
+
     invariant(
       !this.options.shouldValidateEvent || this.appSecret,
       'should provide appSecret if shouldValidateEvent set to true'
@@ -49,6 +54,7 @@ class MessengerConnector extends EventEmitter {
     this.renderer = new Renderer('Messneger', MessengerDelegator);
     this.queue = new Queue();
     this.client = new Client(accessToken, this.queue, {
+      appSecret,
       consumeInterval: this.options.consumeInterval,
     });
 
