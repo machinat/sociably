@@ -1,5 +1,6 @@
 import Machinat from '../../../machinat';
 import Renderer from '../renderer';
+import JobSequence from '../jobSequence';
 
 it('is a constructor', () => {
   expect(() => new Renderer('Test')).not.toThrow();
@@ -18,7 +19,7 @@ Object.defineProperty(Custom, 'name', { value: 'Custom' });
 let jobId = 0;
 const delegate = {
   isNativeComponent: jest.fn(t => t === Native),
-  renderGeneralElement: jest.fn().mockReturnValue('bbb'),
+  renderGeneralElement: jest.fn().mockReturnValue('__GENERAL_ELE__'),
   renderNativeElement: jest.fn(e => e.props),
   createJobsFromRendered: jest.fn(
     rendered => rendered.map(() => ({ id: jobId++ })) // eslint-disable-line no-plusplus
@@ -34,11 +35,11 @@ afterEach(() => {
   delegate.createJobsFromRendered.mockClear();
 });
 
-describe('#render()', () => {
+describe('#renderInner()', () => {
   it('works', () => {
     const context = {};
     const renderer = new Renderer('Test', delegate);
-    const rendered = renderer.render(
+    const rendered = renderer.renderInner(
       <>
         {123}
         abc
@@ -51,27 +52,27 @@ describe('#render()', () => {
     );
 
     expect(rendered).toEqual([
-      { element: 123, rendered: 123, path: '$::0' },
-      { element: 'abc', rendered: 'abc', path: '$::1' },
-      { element: <a>aaa</a>, rendered: 'bbb', path: '$::2' },
+      { element: undefined, value: 123, path: '$::0' },
+      { element: undefined, value: 'abc', path: '$::1' },
+      { element: <a>aaa</a>, value: '__GENERAL_ELE__', path: '$::2' },
       {
         element: <Native x="true" y={false} />,
-        rendered: { x: 'true', y: false },
+        value: { x: 'true', y: false },
         path: '$::3',
       },
       {
-        element: 'wrapped head',
-        rendered: 'wrapped head',
+        element: undefined,
+        value: 'wrapped head',
         path: '$::4#Custom::0',
       },
       {
         element: <Native a="A" b={2} />,
-        rendered: { a: 'A', b: 2 },
+        value: { a: 'A', b: 2 },
         path: '$::4#Custom::1',
       },
       {
-        element: 'wrapped foot',
-        rendered: 'wrapped foot',
+        element: undefined,
+        value: 'wrapped foot',
         path: '$::4#Custom::2',
       },
     ]);
@@ -124,42 +125,50 @@ describe('#render()', () => {
     ];
 
     emptyNodes.forEach(node => {
-      expect(renderer.render(node)).toBe(undefined);
+      expect(renderer.renderInner(node)).toBe(undefined);
     });
+  });
+
+  it('throw if Immediate included', () => {
+    const renderer = new Renderer('Test', delegate);
+
+    expect(() =>
+      renderer.renderInner(
+        <>
+          foo<Machinat.Immediate />bar
+        </>
+      )
+    ).toThrow(
+      'separator element should not be placed in the inner of native or general prop'
+    );
   });
 });
 
 describe('#renderJobSequence()', () => {
   it('works', () => {
     const afterCallback = () => Promise.resolve();
-    const WrappedImmediately = () => (
-      <Machinat.Immediately after={afterCallback} />
+    const WrappedImmediate = () => (
+      <Machinat.Immediate after={afterCallback} />
     );
     const context = {};
 
     const renderer = new Renderer('Test', delegate);
-    const rendered = renderer.renderJobSequence(
+    const jobSequence = renderer.renderJobSequence(
       <>
-        <Machinat.Immediately />
         {123}
+        <Machinat.Immediate delay={1000} />
         abc
-        <Machinat.Immediately after={afterCallback} />
+        <Machinat.Immediate after={afterCallback} />
+        <b />
         <a>aaa</a>
+        <WrappedImmediate />
         <Native x="true" y={false} />
-        <WrappedImmediately />
         <Custom a="A" b={2} />
       </>,
       context
     );
 
-    expect(rendered).toEqual([
-      <Machinat.Immediately />,
-      [{ id: 0 }, { id: 1 }],
-      <Machinat.Immediately after={afterCallback} />,
-      [{ id: 2 }, { id: 3 }],
-      <Machinat.Immediately after={afterCallback} />,
-      [{ id: 4 }, { id: 5 }, { id: 6 }],
-    ]);
+    expect(jobSequence).toBeInstanceOf(JobSequence);
 
     expect(Custom).toBeCalledTimes(1);
     expect(Custom.mock.calls[0]).toEqual([{ a: 'A', b: 2 }, context]);
@@ -170,16 +179,20 @@ describe('#renderJobSequence()', () => {
       renderNativeElement,
       createJobsFromRendered,
     } = delegate;
-    expect(isNativeComponent).toHaveBeenNthCalledWith(1, Native);
-    expect(isNativeComponent).toHaveBeenNthCalledWith(2, WrappedImmediately);
-    expect(isNativeComponent).toHaveBeenNthCalledWith(3, Custom);
-    expect(isNativeComponent).toHaveBeenNthCalledWith(4, Native);
+    expect(isNativeComponent.mock.calls).toEqual([
+      [WrappedImmediate],
+      [Native],
+      [Custom],
+      [Native],
+    ]);
 
-    expect(renderGeneralElement).toBeCalledTimes(1);
-    expect(renderGeneralElement.mock.calls[0][0]).toEqual(<a>aaa</a>);
-    expect(typeof renderGeneralElement.mock.calls[0][1]).toBe('function');
-    expect(renderGeneralElement.mock.calls[0][2]).toEqual(context);
-    expect(renderGeneralElement.mock.calls[0][3]).toEqual('$::4');
+    expect(renderGeneralElement).toBeCalledTimes(2);
+    renderGeneralElement.mock.calls.forEach((call, i) => {
+      expect(call[0]).toEqual([<b />, <a>aaa</a>][i]);
+      expect(typeof call[1]).toBe('function');
+      expect(call[2]).toEqual(context);
+      expect(call[3]).toEqual(['$::4', '$::5'][i]);
+    });
 
     expect(renderNativeElement).toBeCalledTimes(2);
     renderNativeElement.mock.calls.forEach((call, i) => {
@@ -188,50 +201,55 @@ describe('#renderJobSequence()', () => {
       );
       expect(typeof call[1]).toBe('function');
       expect(call[2]).toEqual(context);
-      expect(call[3]).toEqual(['$::5', '$::7#Custom::1'][i]);
+      expect(call[3]).toEqual(['$::7', '$::8#Custom::1'][i]);
     });
 
-    expect(createJobsFromRendered).toBeCalledTimes(3);
-    expect(createJobsFromRendered).toHaveBeenNthCalledWith(
-      1,
+    expect(createJobsFromRendered).toBeCalledTimes(0);
+    for (let i = 0; i < 7; i += 1) {
+      expect(jobSequence.hasNext()).toBe(true);
+
+      if (i === 1 || i === 3 || i === 5) {
+        expect(jobSequence.next()).toBeInstanceOf(Promise);
+      } else {
+        const expectedBatches = [
+          [{ id: 0 }],
+          [{ id: 1 }],
+          [{ id: 2 }, { id: 3 }],
+          [{ id: 4 }, { id: 5 }, { id: 6 }, { id: 7 }],
+        ];
+        expect(jobSequence.next()).toEqual(expectedBatches[i / 2]);
+      }
+    }
+    expect(jobSequence.hasNext()).toBe(false);
+
+    expect(createJobsFromRendered).toBeCalledTimes(4);
+    expect(createJobsFromRendered.mock.calls).toEqual([
+      [[{ element: undefined, value: 123, path: '$::0' }], context],
+      [[{ element: undefined, value: 'abc', path: '$::2' }], context],
       [
-        { element: 123, rendered: 123, path: '$::1' },
-        { element: 'abc', rendered: 'abc', path: '$::2' },
+        [
+          { element: <b />, value: '__GENERAL_ELE__', path: '$::4' },
+          { element: <a>aaa</a>, value: '__GENERAL_ELE__', path: '$::5' },
+        ],
+        context,
       ],
-      context
-    );
-    expect(createJobsFromRendered).toHaveBeenNthCalledWith(
-      2,
       [
-        { element: <a>aaa</a>, rendered: 'bbb', path: '$::4' },
-        {
-          element: <Native x="true" y={false} />,
-          rendered: { x: 'true', y: false },
-          path: '$::5',
-        },
+        [
+          {
+            element: <Native x="true" y={false} />,
+            value: { x: 'true', y: false },
+            path: '$::7',
+          },
+          { element: undefined, value: 'wrapped head', path: '$::8#Custom::0' },
+          {
+            element: <Native a="A" b={2} />,
+            value: { a: 'A', b: 2 },
+            path: '$::8#Custom::1',
+          },
+          { element: undefined, value: 'wrapped foot', path: '$::8#Custom::2' },
+        ],
+        context,
       ],
-      context
-    );
-    expect(createJobsFromRendered).toHaveBeenNthCalledWith(
-      3,
-      [
-        {
-          element: 'wrapped head',
-          rendered: 'wrapped head',
-          path: '$::7#Custom::0',
-        },
-        {
-          element: <Native a="A" b={2} />,
-          rendered: { a: 'A', b: 2 },
-          path: '$::7#Custom::1',
-        },
-        {
-          element: 'wrapped foot',
-          rendered: 'wrapped foot',
-          path: '$::7#Custom::2',
-        },
-      ],
-      context
-    );
+    ]);
   });
 });

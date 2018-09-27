@@ -1,11 +1,12 @@
 /* eslint-disable no-await-in-loop, no-loop-func, no-return-assign, no-fallthrough, default-case */
 import delay from 'delay';
-import Machinat from '../../../machinat';
 import MachinatQueue from '../queue';
 
 const makeJobs = n => new Array(n).fill(0).map((_, i) => ({ id: i }));
 const makeSuccessJobResult = ids =>
   ids.map(id => ({ success: true, payload: `Success${id}` }));
+
+const nextTick = () => new Promise(setImmediate);
 
 it('is a constructor', () => {
   expect(() => new MachinatQueue()).not.toThrow();
@@ -33,7 +34,7 @@ describe('MachinatQueue.prototype', () => {
   });
 
   describe('#enqueue() and #acquire()', () => {
-    test('acquire() return undeined if queue is empty', async () => {
+    test('acquire() return undefined if queue is empty', async () => {
       await expect(queue.acquire(1, consume)).resolves.toBe(undefined);
       expect(consume).not.toHaveBeenCalled();
     });
@@ -686,7 +687,7 @@ describe('MachinatQueue.prototype', () => {
   });
 
   describe('#executeJobSequence()', () => {
-    it('works', async () => {
+    it('enqueue sequence of jobs and wait for result', async () => {
       queue.enqueueJobAndWait = jest.fn((...jobs) => ({
         success: true,
         errors: null,
@@ -696,14 +697,16 @@ describe('MachinatQueue.prototype', () => {
         })),
       }));
 
-      const afterCallback = jest.fn();
-      const sequence = [
-        [{ id: 1 }, { id: 2 }],
-        <Machinat.Immediately after={afterCallback} />,
-        [{ id: 3 }, { id: 4 }],
-        <Machinat.Immediately after={afterCallback} />,
-        [{ id: 5 }],
-      ];
+      const sequence = {
+        n: 0,
+        hasNext() {
+          return this.n < this.sequence.length;
+        },
+        next: jest.fn(function next() {
+          return this.sequence[this.n++]; // eslint-disable-line no-plusplus
+        }),
+        sequence: [[{ id: 1 }, { id: 2 }], [{ id: 3 }, { id: 4 }], [{ id: 5 }]],
+      };
 
       const result = await queue.executeJobSequence(sequence);
 
@@ -719,19 +722,73 @@ describe('MachinatQueue.prototype', () => {
         ],
       });
 
-      expect(afterCallback).toBeCalledTimes(2);
+      expect(sequence.next).toHaveBeenCalledTimes(3);
 
       const { enqueueJobAndWait } = queue;
-      expect(enqueueJobAndWait).toBeCalledTimes(3);
-      expect(enqueueJobAndWait).toHaveBeenNthCalledWith(
-        1,
-        ...[{ id: 1 }, { id: 2 }]
-      );
-      expect(enqueueJobAndWait).toHaveBeenNthCalledWith(
-        2,
-        ...[{ id: 3 }, { id: 4 }]
-      );
-      expect(enqueueJobAndWait).toHaveBeenNthCalledWith(3, { id: 5 });
+      expect(enqueueJobAndWait.mock.calls).toEqual([
+        [{ id: 1 }, { id: 2 }],
+        [{ id: 3 }, { id: 4 }],
+        [{ id: 5 }],
+      ]);
+    });
+
+    it('wait for promise return by sequence.next()', async () => {
+      queue.enqueueJobAndWait = jest.fn((...jobs) => ({
+        success: true,
+        errors: null,
+        batchResult: jobs.map(job => ({
+          success: true,
+          payload: `Success${job.id}`,
+        })),
+      }));
+
+      const sequence = {
+        n: 0,
+        hasNext() {
+          return this.n < this.sequence.length;
+        },
+        next: jest.fn(function next() {
+          return this.sequence[this.n++]; // eslint-disable-line no-plusplus
+        }),
+        sequence: [
+          [{ id: 1 }, { id: 2 }],
+          delay(10),
+          [{ id: 3 }, { id: 4 }],
+          delay(20),
+          [{ id: 5 }],
+        ],
+      };
+
+      const promise = queue.executeJobSequence(sequence);
+      expect(queue.enqueueJobAndWait).toHaveBeenCalledTimes(1);
+
+      setImmediate(jest.advanceTimersByTime, 10);
+      await nextTick();
+      expect(queue.enqueueJobAndWait).toHaveBeenCalledTimes(2);
+
+      setImmediate(jest.advanceTimersByTime, 10);
+      await nextTick();
+      expect(queue.enqueueJobAndWait).toHaveBeenCalledTimes(3);
+
+      await expect(promise).resolves.toEqual({
+        success: true,
+        errors: null,
+        batchResult: [
+          { success: true, payload: 'Success1' },
+          { success: true, payload: 'Success2' },
+          { success: true, payload: 'Success3' },
+          { success: true, payload: 'Success4' },
+          { success: true, payload: 'Success5' },
+        ],
+      });
+
+      expect(sequence.next).toHaveBeenCalledTimes(5);
+
+      expect(queue.enqueueJobAndWait.mock.calls).toEqual([
+        [{ id: 1 }, { id: 2 }],
+        [{ id: 3 }, { id: 4 }],
+        [{ id: 5 }],
+      ]);
     });
 
     test('execute with fail job', async () => {
@@ -747,14 +804,24 @@ describe('MachinatQueue.prototype', () => {
         }),
       }));
 
-      const afterCallback = jest.fn();
-      const sequence = [
-        [{ id: 0 }, { id: 1 }, { id: 2 }],
-        <Machinat.Immediately after={afterCallback} />,
-        [{ id: 3 }, { id: 4 }, { id: 5 }],
-        <Machinat.Immediately after={afterCallback} />,
-        [{ id: 5 }, { id: 6 }],
-      ];
+      const sequence = {
+        n: 0,
+        hasNext() {
+          return this.n < this.sequence.length;
+        },
+        next: jest.fn(function next() {
+          return this.sequence[this.n++]; // eslint-disable-line no-plusplus
+        }),
+        sequence: [
+          [{ id: 0 }, { id: 1 }, { id: 2 }],
+          delay(10),
+          [{ id: 3 }, { id: 4 }, { id: 5 }],
+          delay(20),
+          [{ id: 6 }],
+        ],
+      };
+
+      setImmediate(jest.runAllTimers);
 
       const result = await queue.executeJobSequence(sequence);
       expect(result).toEqual({
@@ -770,18 +837,11 @@ describe('MachinatQueue.prototype', () => {
         ],
       });
 
-      expect(afterCallback).toHaveBeenCalledTimes(1);
-
       const { enqueueJobAndWait } = queue;
-      expect(enqueueJobAndWait).toBeCalledTimes(2);
-      expect(enqueueJobAndWait).toHaveBeenNthCalledWith(
-        1,
-        ...[{ id: 0 }, { id: 1 }, { id: 2 }]
-      );
-      expect(enqueueJobAndWait).toHaveBeenNthCalledWith(
-        2,
-        ...[{ id: 3 }, { id: 4 }, { id: 5 }]
-      );
+      expect(enqueueJobAndWait.mock.calls).toEqual([
+        [{ id: 0 }, { id: 1 }, { id: 2 }],
+        [{ id: 3 }, { id: 4 }, { id: 5 }],
+      ]);
     });
   });
 });

@@ -20,7 +20,7 @@ export const isFragment = (element: any): boolean %checks =>
   element !== null &&
   element.type === MACHINAT_FRAGMENT_TYPE;
 
-export const isImmediately = (element: any): boolean %checks =>
+export const isImmediate = (element: any): boolean %checks =>
   typeof element === 'object' &&
   element !== null &&
   element.type === MACHINAT_IMMEDIATELY_TYPE;

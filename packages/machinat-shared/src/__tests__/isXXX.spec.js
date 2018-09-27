@@ -3,7 +3,7 @@ import {
   isElement,
   isFragment,
   isEmpty,
-  isImmediately,
+  isImmediate,
   isNative,
   isValidRenderable,
 } from '../isXXX';
@@ -16,7 +16,7 @@ describe('isElement', () => {
       <b>BBB</b>,
       <>123</>,
       <MyComponent />,
-      <Machinat.Immediately />,
+      <Machinat.Immediate />,
     ];
     elements.forEach(ele => {
       expect(isElement(ele)).toBe(true);
@@ -61,7 +61,7 @@ describe('isFragment', () => {
       <a />,
       <b>BBB</b>,
       <MyComponent />,
-      <Machinat.Immediately />,
+      <Machinat.Immediate />,
     ];
     nonFragments.forEach(ele => {
       expect(isFragment(ele)).toBe(false);
@@ -69,18 +69,19 @@ describe('isFragment', () => {
   });
 });
 
-describe('isImmediately', () => {
-  it('return true if Immediately element passed', () => {
+describe('isImmediate', () => {
+  it('return true if Immediate element passed', () => {
     const immediatelies = [
-      <Machinat.Immediately />,
-      <Machinat.Immediately await={() => Promise.reoslve()} />,
+      <Machinat.Immediate />,
+      <Machinat.Immediate delay={1000} />,
+      <Machinat.Immediate after={() => Promise.reoslve()} />,
     ];
     immediatelies.forEach(ele => {
-      expect(isImmediately(ele)).toBe(true);
+      expect(isImmediate(ele)).toBe(true);
     });
   });
 
-  it('return false if non Immediately element passed', () => {
+  it('return false if non Immediate element passed', () => {
     const MyComponent = () => 'abc'; // eslint-disable-line no-unused-vars
     const nonImmediatelies = [
       null,
@@ -95,7 +96,7 @@ describe('isImmediately', () => {
       <Machinat.Fragment />,
     ];
     nonImmediatelies.forEach(ele => {
-      expect(isImmediately(ele)).toBe(false);
+      expect(isImmediate(ele)).toBe(false);
     });
   });
 });
@@ -116,7 +117,7 @@ describe('isEmpty', () => {
       <a />,
       <b>BBB</b>,
       <>123</>,
-      <Machinat.Immediately />,
+      <Machinat.Immediate />,
       <MyComponent />,
     ];
     nonEmpties.forEach(ele => {
@@ -151,7 +152,7 @@ describe('isNative', () => {
       <b>BBB</b>,
       <>abc</>,
       <MyComponent />,
-      <Machinat.Immediately />,
+      <Machinat.Immediate />,
     ];
     nonEmpties.forEach(ele => {
       expect(isNative(ele)).toBe(false);
@@ -180,7 +181,7 @@ describe('isValidRenderable', () => {
       true,
       <>abc</>,
       <Machinat.Fragment />,
-      <Machinat.Immediately />,
+      <Machinat.Immediate />,
     ];
     nonEmpties.forEach(ele => {
       expect(isValidRenderable(ele)).toBe(false);

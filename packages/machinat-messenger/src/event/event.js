@@ -63,10 +63,10 @@ export const echoedTemplate = makeEvent(
 );
 
 export const read = makeEvent('read', ReadBase);
-export const standbyRead = makeEvent('stanby:read', ReadBase);
+export const standbyRead = makeEvent('standby:read', ReadBase);
 
 export const delivery = makeEvent('delivery', DeliveryBase);
-export const standbyDelivery = makeEvent('delivery', DeliveryBase);
+export const standbyDelivery = makeEvent('standby:delivery', DeliveryBase);
 
 export const accountLinking = makeEvent('account_linking', AccountLinkingBase);
 export const checkoutUpdate = makeEvent('checkout_update', CheckoutUpdateBase);

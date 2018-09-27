@@ -1,21 +1,60 @@
 import Machinat from '../../../machinat';
-import { toArray, reduce, map } from '../children';
+import { traverse, toArray, reduce, map } from '../children';
+
+describe('traverse', () => {
+  it('traverse through node tree and pass all non empty element to callback', () => {
+    const context = {};
+    const callback = jest.fn();
+    expect(
+      traverse(
+        <>
+          {null}
+          first
+          {[<a>second</a>, [<third />]]}
+          <i>fourth</i>
+          <>
+            fifth
+            <>
+              <b>sixth</b>
+            </>
+          </>
+          <seventh />
+          {undefined}
+          {{ n: 'eight' }}
+          {true}
+          {false}
+        </>,
+        '$',
+        context,
+        callback
+      )
+    ).toBe(8);
+
+    expect(callback.mock.calls).toEqual([
+      ['first', '$::1', context],
+      [<a>second</a>, '$::2:0', context],
+      [<third />, '$::2:1:0', context],
+      [<i>fourth</i>, '$::3', context],
+      ['fifth', '$::4::0', context],
+      [<b>sixth</b>, '$::4::1::0', context],
+      [<seventh />, '$::5', context],
+      [{ n: 'eight' }, '$::7', context],
+    ]);
+  });
+
+  test('if a Fragment contains only one child, path be shown as first children', () => {
+    const context = {};
+    const callback = jest.fn();
+    expect(traverse(<>hello</>, '$', context, callback)).toBe(1);
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith('hello', '$::0', context);
+  });
+});
 
 describe('toArray', () => {
-  it('returns [] if children is empty', () => {
-    const empties = [
-      <text />,
-      <text></text>, // eslint-disable-line
-      <text>{null}</text>,
-      <text>{true}</text>,
-      <text>{false}</text>,
-      <text>{undefined}</text>,
-      <text>{}</text>,
-    ];
-
-    empties.forEach(element => {
-      expect(toArray(element.props.children)).toEqual([]);
-    });
+  it('returns null or undefined if null or undefined passed', () => {
+    expect(toArray(null)).toBe(null);
+    expect(toArray(undefined)).toBe(undefined);
   });
 
   it('returns list of children as array', () => {
@@ -76,7 +115,10 @@ describe('toArray', () => {
               </>
             </>
             <seventh />
-            {null}
+            {undefined}
+            {{ n: 'eight' }}
+            {true}
+            {false}
           </text>
         ).props.children
       )
@@ -88,6 +130,7 @@ describe('toArray', () => {
       'fifth',
       <b>sixth</b>,
       <seventh />,
+      { n: 'eight' },
     ]);
   });
 });
@@ -110,6 +153,7 @@ describe('reduce', () => {
       ['fifth', '$::4::0'],
       [<b>sixth</b>, '$::4::1::0'],
       [<seventh />, '$::5'],
+      [{ n: 'eight' }, '$::7'],
     ];
     const count = reduce(
       <>
@@ -124,7 +168,10 @@ describe('reduce', () => {
           </>
         </>
         <seventh />
-        {null}
+        {undefined}
+        {{ n: 'eight' }}
+        {true}
+        {false}
       </>,
       (i, element, path, context) => {
         expect(element).toEqual(expections[i][0]);
@@ -136,7 +183,7 @@ describe('reduce', () => {
       '$',
       _context
     );
-    expect(count).toBe(7);
+    expect(count).toBe(8);
   });
 });
 
@@ -158,7 +205,10 @@ describe('map', () => {
             </>
           </>
           <seventh />
-          {null}
+          {undefined}
+          {{ n: 'eight' }}
+          {true}
+          {false}
         </>,
         callback,
         '$',
@@ -172,6 +222,7 @@ describe('map', () => {
       { e: 'fifth' },
       { e: <b>sixth</b> },
       { e: <seventh /> },
+      { e: { n: 'eight' } },
     ]);
 
     const expections = [
@@ -182,8 +233,9 @@ describe('map', () => {
       ['fifth', '$::4::0'],
       [<b>sixth</b>, '$::4::1::0'],
       [<seventh />, '$::5'],
+      [{ n: 'eight' }, '$::7'],
     ];
-    expect(callback).toHaveBeenCalledTimes(7);
+    expect(callback).toHaveBeenCalledTimes(8);
     callback.mock.calls.forEach((param, i) => {
       expect(param[0]).toEqual(expections[i][0]);
       expect(param[1]).toBe(expections[i][1]);

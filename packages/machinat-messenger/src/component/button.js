@@ -1,5 +1,4 @@
-import { annotateNative, renderOnlyType } from './utils';
-import { GenericTemplate } from './template';
+import { annotateNative } from './utils';
 
 export const URLButton = ({
   title,
@@ -28,17 +27,16 @@ annotateNative(PostbackButton);
 
 const ELEMENT_SHARE_TYPE = { type: 'element_share' };
 export const ShareButton = ({ children }, render) => {
-  const templateResult = renderOnlyType(
-    GenericTemplate,
-    children,
-    render,
-    'children'
-  );
+  const templateRendered = render(children, '.children');
 
-  if (templateResult !== undefined) {
+  if (__DEV__) {
+    // TODO: validate templateRendered
+  }
+
+  if (templateRendered) {
     return {
       type: 'element_share',
-      share_contents: templateResult[0].rendered.message,
+      share_contents: templateRendered[0].value.message,
     };
   }
   return ELEMENT_SHARE_TYPE;

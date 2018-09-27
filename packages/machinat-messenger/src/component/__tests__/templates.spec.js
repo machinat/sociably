@@ -11,10 +11,8 @@ import {
   ReceiptTemplateItem,
 } from '../template';
 import { URLButton, PostbackButton, CallButton } from '../button';
+import { QuickReply } from '../quickReply';
 import renderHelper from './renderHelper';
-
-const renderInside = jest.fn();
-const render = renderHelper(renderInside);
 
 const buttons = (
   <>
@@ -26,15 +24,15 @@ const buttons = (
 const buttonsRendered = [
   {
     element: buttons.props.children[0],
-    rendered: '__RENDERED_BUTTON_OBJ_1__',
+    value: '__RENDERED_BUTTON_OBJ_1__',
   },
   {
     element: buttons.props.children[1],
-    rendered: '__RENDERED_BUTTON_OBJ_2__',
+    value: '__RENDERED_BUTTON_OBJ_2__',
   },
   {
     element: buttons.props.children[2],
-    rendered: '__RENDERED_BUTTON_OBJ_3__',
+    value: '__RENDERED_BUTTON_OBJ_3__',
   },
 ];
 
@@ -48,20 +46,54 @@ const genericItems = (
 const genericItemsRendered = [
   {
     element: genericItems.props.children[0],
-    rendered: '__RENDERED_GENERIC_ITEM_OBJ_1__',
+    value: '__RENDERED_GENERIC_ITEM_OBJ_1__',
   },
   {
     element: genericItems.props.children[1],
-    rendered: '__RENDERED_GENERIC_ITEM_OBJ_2__',
+    value: '__RENDERED_GENERIC_ITEM_OBJ_2__',
   },
   {
     element: genericItems.props.children[2],
-    rendered: '__RENDERED_GENERIC_ITEM_OBJ_3__',
+    value: '__RENDERED_GENERIC_ITEM_OBJ_3__',
   },
 ];
 
+const quickReplies = [
+  <QuickReply title="A" />,
+  <QuickReply title="B" />,
+  <QuickReply title="C" />,
+];
+const quickRepliesRendered = [
+  {
+    value: '__RENDERED_QUICKREPLY_OBJ_1__',
+    element: quickReplies[0],
+  },
+  {
+    value: '__RENDERED_QUICKREPLY_OBJ_2__',
+    element: quickReplies[1],
+  },
+  {
+    value: '__RENDERED_QUICKREPLY_OBJ_3__',
+    element: quickReplies[2],
+  },
+];
+
+const renderWithFixtures = node =>
+  node &&
+  (node === buttons
+    ? buttonsRendered
+    : node === genericItems
+      ? genericItemsRendered
+      : node === quickReplies
+        ? quickRepliesRendered
+        : [{ value: node }]);
+
+const renderInside = jest.fn();
+const render = renderHelper(renderInside);
+
 afterEach(() => {
   renderInside.mockReset();
+  renderInside.mockImplementation(renderWithFixtures);
 });
 
 describe('templates Components', () => {
@@ -87,12 +119,48 @@ describe('templates Components', () => {
   });
 
   describe('GenericItem', () => {
+    beforeEach(() => {
+      renderInside.mockImplementation(
+        node =>
+          node && node.type === URLButton
+            ? [
+                {
+                  element: node,
+                  value: {
+                    title: 'TITLE!',
+                    type: 'web_url',
+                    url: 'http://foo.bar/',
+                    webview_height_ratio: 'compact',
+                    messenger_extensions: true,
+                    fallback_url: 'http://foo.baz/login',
+                    webview_share_button: 'hide',
+                  },
+                },
+              ]
+            : renderWithFixtures(node)
+      );
+    });
+
     it('match snapshot', () => {
       expect(
         [
           <GenericItem title="foo" />,
           <GenericItem title="foo" subtitle="bar" />,
           <GenericItem title="foo" imageUrl="http://foo.bar/image" />,
+          <GenericItem title="foo">{buttons}</GenericItem>,
+          <GenericItem
+            title="foo"
+            defaultAction={
+              <URLButton
+                title="TITLE!"
+                url="http://foo.bar/"
+                heightRatio="compact"
+                extensions
+                fallbackUrl="http://foo.baz/login"
+                hideShareButton
+              />
+            }
+          />,
           <GenericItem
             title="foo"
             defaultAction={{
@@ -100,7 +168,7 @@ describe('templates Components', () => {
               url: 'http://foo.bar/',
               webview_height_ratio: 'compact',
               messenger_extensions: true,
-              fallback_url: 'http://foo.baz/',
+              fallback_url: 'http://foo.baz/login',
               webview_share_button: 'hide',
             }}
           />,
@@ -116,7 +184,9 @@ describe('templates Components', () => {
               fallback_url: 'http://foo.baz/login',
               webview_share_button: 'hide',
             }}
-          />,
+          >
+            {buttons}
+          </GenericItem>,
         ].map(render)
       ).toMatchSnapshot();
     });
@@ -124,6 +194,7 @@ describe('templates Components', () => {
     it('can use <URLButton /> as defaultAction', () => {
       const urlButton = (
         <URLButton
+          title="TITLE!"
           url="http://foo.bar/"
           heightRatio="compact"
           extensions
@@ -131,48 +202,33 @@ describe('templates Components', () => {
           hideShareButton
         />
       );
-      renderInside.mockReturnValue([
-        {
-          element: urlButton,
-          rendered: {
-            type: 'web_url',
-            title: 'foobar',
-            url: 'http://foo.bar/',
-            webview_height_ratio: 'compact',
-            messenger_extensions: true,
-            fallback_url: 'http://foo.baz/login',
-            webview_share_button: 'hide',
-          },
-        },
-      ]);
+      const plainObjAction = {
+        type: 'web_url',
+        url: 'http://foo.bar/',
+        webview_height_ratio: 'compact',
+        messenger_extensions: true,
+        fallback_url: 'http://foo.baz/login',
+        webview_share_button: 'hide',
+      };
+
       expect(
         render(<GenericItem title="foo" defaultAction={urlButton} />)
       ).toEqual(
-        render(
-          <GenericItem
-            title="foo"
-            defaultAction={{
-              type: 'web_url',
-              url: 'http://foo.bar/',
-              webview_height_ratio: 'compact',
-              messenger_extensions: true,
-              fallback_url: 'http://foo.baz/login',
-              webview_share_button: 'hide',
-            }}
-          />
-        )
+        render(<GenericItem title="foo" defaultAction={plainObjAction} />)
       );
+
       expect(renderInside).toHaveBeenCalledWith(urlButton, '.defaultAction');
+      expect(renderInside).toHaveBeenCalledWith(
+        plainObjAction,
+        '.defaultAction'
+      );
     });
 
     it('render children for "buttons" field', () => {
-      renderInside.mockReturnValue(buttonsRendered);
-
       const rendered = render(
         <GenericItem title="Look!">{buttons}</GenericItem>
       );
 
-      expect(rendered).toMatchSnapshot();
       expect(rendered.buttons).toEqual([
         '__RENDERED_BUTTON_OBJ_1__',
         '__RENDERED_BUTTON_OBJ_2__',
@@ -183,15 +239,18 @@ describe('templates Components', () => {
   });
 
   describe('GenericTemplate', () => {
-    beforeEach(() => {
-      renderInside.mockReturnValue(genericItemsRendered);
-    });
-
     it('match snapshot', () => {
       expect(
         [
           <GenericTemplate>{genericItems}</GenericTemplate>,
-          <GenericTemplate imageAspectRatio="square" sharable>
+          <GenericTemplate quickReplies={quickReplies}>
+            {genericItems}
+          </GenericTemplate>,
+          <GenericTemplate
+            quickReplies={quickReplies}
+            imageAspectRatio="square"
+            sharable
+          >
             {genericItems}
           </GenericTemplate>,
         ].map(render)
@@ -217,9 +276,9 @@ describe('templates Components', () => {
     beforeEach(() => {
       renderInside.mockImplementation(
         node =>
-          node === genericItems
-            ? genericItemsRendered
-            : node && buttonsRendered.slice(0, 1)
+          node && node.type === URLButton
+            ? buttonsRendered.slice(0, 1)
+            : renderWithFixtures(node)
       );
     });
 
@@ -227,7 +286,16 @@ describe('templates Components', () => {
       expect(
         [
           <ListTemplate>{genericItems}</ListTemplate>,
-          <ListTemplate imageAspectRatio="square" sharable>
+          <ListTemplate button={button}>{genericItems}</ListTemplate>,
+          <ListTemplate quickReplies={quickReplies}>
+            {genericItems}
+          </ListTemplate>,
+          <ListTemplate
+            button={button}
+            quickReplies={quickReplies}
+            imageAspectRatio="square"
+            sharable
+          >
             {genericItems}
           </ListTemplate>,
         ].map(render)
@@ -252,7 +320,6 @@ describe('templates Components', () => {
         <ListTemplate button={button}>{genericItems}</ListTemplate>
       );
 
-      expect(rendered).toMatchSnapshot();
       expect(rendered.message.attachment.payload.buttons).toEqual([
         '__RENDERED_BUTTON_OBJ_1__',
       ]);
@@ -267,18 +334,18 @@ describe('templates Components', () => {
         node =>
           node === textNodes || typeof node === 'string'
             ? [
-                { rendered: '\n__RENDERED_TEXT_1__', element: textNodes[0] },
-                { rendered: '\n__RENDERED_TEXT_2__', element: textNodes[1] },
-                { rendered: '\n__RENDERED_TEXT_3__', element: textNodes[2] },
+                { value: '\n__RENDERED_TEXT_1__', element: textNodes[0] },
+                { value: '\n__RENDERED_TEXT_2__', element: textNodes[1] },
+                { value: '\n__RENDERED_TEXT_3__', element: textNodes[2] },
               ]
-            : buttonsRendered
+            : renderWithFixtures(node)
       );
     });
 
     it('match snapshot', () => {
       expect(
         [
-          <ButtonTemplate text="abc" sharable>
+          <ButtonTemplate text="abc" quickReplies={quickReplies} sharable>
             {buttons}
           </ButtonTemplate>,
           <ButtonTemplate text={textNodes}>{buttons}</ButtonTemplate>,
@@ -319,17 +386,18 @@ __RENDERED_TEXT_3__`;
   });
 
   describe('MediaTemplate', () => {
-    beforeEach(() => {
-      renderInside.mockReturnValue(buttonsRendered);
-    });
-
     it('match snapshot', () => {
       expect(
         [
           <MediaTemplate type="image" url="http://...">
             {buttons}
           </MediaTemplate>,
-          <MediaTemplate type="video" attachmentId="__ID__" sharable>
+          <MediaTemplate
+            quickReplies={quickReplies}
+            type="video"
+            attachmentId="__ID__"
+            sharable
+          >
             {buttons}
           </MediaTemplate>,
         ].map(render)
@@ -354,15 +422,15 @@ __RENDERED_TEXT_3__`;
   });
 
   describe('OpenGraphTemplate', () => {
-    beforeEach(() => {
-      renderInside.mockReturnValue(buttonsRendered);
-    });
-
     it('match snapshot', () => {
       expect(
         [
           <OpenGraphTemplate url="http://...">{buttons}</OpenGraphTemplate>,
-          <OpenGraphTemplate url="http://..." sharable>
+          <OpenGraphTemplate
+            quickReplies={quickReplies}
+            url="http://..."
+            sharable
+          >
             {buttons}
           </OpenGraphTemplate>,
         ].map(render)
@@ -406,26 +474,32 @@ __RENDERED_TEXT_3__`;
       <ReceiptTemplateItem title="Slinky Dog" />,
     ];
     beforeEach(() => {
-      renderInside.mockReturnValue([
-        {
-          rendered: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__',
-          element: items[0],
-        },
-        {
-          rendered: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__',
-          element: items[1],
-        },
-        {
-          rendered: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__',
-          element: items[2],
-        },
-      ]);
+      renderInside.mockImplementation(
+        node =>
+          node && node === items
+            ? [
+                {
+                  value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__',
+                  element: items[0],
+                },
+                {
+                  value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__',
+                  element: items[1],
+                },
+                {
+                  value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__',
+                  element: items[2],
+                },
+              ]
+            : renderWithFixtures(node)
+      );
     });
 
     it('match snapshot', () => {
       expect(
         render(
           <ReceiptTemplate
+            quickReplies={quickReplies}
             sharable
             recipientName="John Doe"
             orderNumber="12345"

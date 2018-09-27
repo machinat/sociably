@@ -3,6 +3,9 @@ module.exports = {
   env: {
     jest: true,
   },
+  globals: {
+    __DEV__: false
+  },
   plugins: [
     'json',
     'prettier',

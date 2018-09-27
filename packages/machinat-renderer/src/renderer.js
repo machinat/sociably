@@ -2,30 +2,27 @@
 import invariant from 'invariant';
 import { Children, Utils } from 'machinat-shared';
 import type { TraverseElementCallback } from 'machinat-shared/types';
-import type { MachinatNode, MachinatElement } from 'types/element';
+import type { MachinatNode } from 'types/element';
+import JobSequence from './jobSequence';
 
 import {
-  addImmediatelyAsSeparator,
-  addToAccumulates,
-  addToLastBatchOfAccumulates,
+  appendResult,
+  invariantNoSeparator,
+  appendResultToLastBatch,
+  appendSeparator,
 } from './utils';
-import type { RenderDelegate, RenderResult } from './types';
+import type {
+  RenderDelegate,
+  RenderResult,
+  ImmediateEle,
+  RenderTraverseContext,
+} from './types';
 
-const { isNative, isImmediately, isEmpty } = Utils;
+const { isNative, isImmediate, isEmpty } = Utils;
 const { traverse } = Children;
 
 const RENDER_SEPARATOR = '#';
 const RENDER_ROOT = '$';
-
-type ImmediatelyEle = MachinatElement<Symbol>;
-type RenderResultBatch = Array<RenderResult<any>>;
-type BatchesAndSeparators = Array<RenderResultBatch | ImmediatelyEle>;
-type RenderTraverseContext<C: RenderResultBatch | BatchesAndSeparators> = {
-  payload: any,
-  accumulates: C,
-  handleRenderedResult: (RenderResult<any>, RenderTraverseContext<C>) => void,
-  handleImmediately: (ImmediatelyEle, RenderTraverseContext<C>) => void,
-};
 
 export default class Renderer<Rendered, Job> {
   delegate: RenderDelegate<Rendered, Job>;
@@ -39,14 +36,19 @@ export default class Renderer<Rendered, Job> {
     this.oriented = orientedPlatform;
   }
 
-  render(elements: MachinatNode, prefix: string, payload: any) {
-    return this._renderImpl(prefix, payload, elements, '');
+  renderInner(elements: MachinatNode, prefix: string, payload: any) {
+    return this._renderInnerImpl(prefix, payload, elements, '');
   }
 
+  _renderJobSequenceTraverseCallback = this._makeRenderTraverseCallback(
+    appendResultToLastBatch,
+    appendSeparator
+  );
+  // TODO: Job sequence need further encapsulation
   renderJobSequence(
     elements: MachinatNode,
     payload: any
-  ): ?Array<Array<Job> | ImmediatelyEle> {
+  ): ?JobSequence<Rendered, Job> {
     if (isEmpty(elements)) {
       return undefined;
     }
@@ -56,30 +58,26 @@ export default class Renderer<Rendered, Job> {
     traverse(
       elements,
       RENDER_ROOT,
-      {
-        payload,
-        accumulates,
-        handleRenderedResult: addToLastBatchOfAccumulates,
-        handleImmediately: addImmediatelyAsSeparator,
-      },
-      this._renderTraverseCallback
+      { payload, accumulates },
+      this._renderJobSequenceTraverseCallback
     );
 
     if (accumulates.length === 0) {
       return undefined;
     }
 
-    const jobSequence = new Array(accumulates.length);
-    for (let i = 0; i < accumulates.length; i += 1) {
-      const action = accumulates[i];
-      jobSequence[i] = isImmediately(action)
-        ? action
-        : this.delegate.createJobsFromRendered(action, payload);
-    }
-    return jobSequence;
+    return new JobSequence(
+      accumulates,
+      payload,
+      this.delegate.createJobsFromRendered
+    );
   }
 
-  _renderImpl(
+  _renderInnerTraverseCallback = this._makeRenderTraverseCallback(
+    appendResult,
+    invariantNoSeparator
+  );
+  _renderInnerImpl(
     prefix: string,
     payload: any,
     elements: MachinatNode,
@@ -93,82 +91,79 @@ export default class Renderer<Rendered, Job> {
     traverse(
       elements,
       prefix + currentPath,
-      {
-        payload,
-        accumulates,
-        handleRenderedResult: addToAccumulates,
-        handleImmediately: null,
-      },
-      this._renderTraverseCallback
+      { payload, accumulates },
+      this._renderInnerTraverseCallback
     );
     return accumulates.length === 0 ? undefined : accumulates;
   }
 
-  _renderTraverseCallback: TraverseElementCallback = (
-    element,
-    prefix,
-    context: RenderTraverseContext<any>
-  ) => {
-    const {
-      accumulates,
-      payload,
-      handleRenderedResult,
-      handleImmediately,
-    } = context;
+  _makeRenderTraverseCallback<Acc>(
+    handleRenderedResult: (RenderResult<any>, Acc) => void,
+    handleSeparator: (ImmediateEle, Acc) => void
+  ): TraverseElementCallback {
+    const traversCallback = (
+      element,
+      path,
+      context: RenderTraverseContext<any>
+    ) => {
+      const { accumulates, payload } = context;
 
-    if (typeof element === 'string' || typeof element === 'number') {
-      handleRenderedResult(
-        {
+      if (typeof element === 'string' || typeof element === 'number') {
+        handleRenderedResult(
+          { element: undefined, value: element, path },
+          accumulates
+        );
+      } else if (typeof element.type === 'string') {
+        const value = this.delegate.renderGeneralElement(
           element,
-          rendered: element,
-          path: prefix,
-        },
-        accumulates
-      );
-    } else if (typeof element.type === 'string') {
-      const rendered = this.delegate.renderGeneralElement(
-        element,
-        this._renderImpl.bind(this, prefix, payload),
-        payload,
-        prefix
-      );
-      handleRenderedResult({ rendered, element, path: prefix }, accumulates);
-    } else if (isImmediately(element) && handleImmediately) {
-      handleImmediately(element, accumulates);
-    } else if (this.delegate.isNativeComponent(element.type)) {
-      const rendered = this.delegate.renderNativeElement(
-        element,
-        this._renderImpl.bind(this, prefix, payload),
-        payload,
-        prefix
-      );
-      handleRenderedResult({ rendered, element, path: prefix }, accumulates);
-    } else if (typeof element.type === 'function') {
-      invariant(
-        !isNative(element),
-        `Element at ${prefix} is native Component type ${(typeof element.$$native ===
-        // $FlowFixMe: remove me after symbol primitive supported
-        'symbol'
-          ? Symbol.keyFor(element.$$native)
-          : element.$$native) || 'Unknown'}, which not supported by ${
-          this.oriented
-        }`
-      );
+          this._renderInnerImpl.bind(this, path, payload),
+          payload,
+          path
+        );
+        handleRenderedResult({ value, element, path }, accumulates);
+      } else if (isImmediate(element)) {
+        handleSeparator(element, accumulates);
+      } else if (this.delegate.isNativeComponent(element.type)) {
+        const value = this.delegate.renderNativeElement(
+          element,
+          this._renderInnerImpl.bind(this, path, payload),
+          payload,
+          path
+        );
+        handleRenderedResult({ value, element, path }, accumulates);
+      } else if (typeof element.type === 'function') {
+        invariant(
+          !isNative(element),
+          `Element ${
+            element.name
+          } at ${path} is native Component type of ${(typeof element.$$native ===
+          // $FlowFixMe: remove me after symbol primitive supported
+          'symbol'
+            ? Symbol.keyFor(element.$$native)
+            : element.$$native) || 'unknown'}, not supported by ${
+            this.oriented
+          }`
+        );
 
-      const { type: renderCustom, props } = element;
+        const { type: renderCustom, props } = element;
 
-      const rendered = renderCustom(props, payload);
-      traverse(
-        rendered,
-        prefix + RENDER_SEPARATOR + renderCustom.name,
-        context,
-        this._renderTraverseCallback
-      );
-    } else {
-      invariant(
-        false,
-        `The element type of ${element} at poistion ${prefix} is illegal for rendering`
-      );
-    }
-  };
+        const rendered = renderCustom(props, payload);
+        traverse(
+          rendered,
+          path + RENDER_SEPARATOR + renderCustom.name,
+          context,
+          traversCallback
+        );
+      } else if (typeof element === 'object') {
+        handleRenderedResult(
+          { value: element, element: undefined, path },
+          accumulates
+        );
+      } else {
+        invariant(false, `${element} at poistion ${path} is illegal`);
+      }
+    };
+
+    return traversCallback;
+  }
 }

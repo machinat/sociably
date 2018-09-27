@@ -124,9 +124,9 @@ const createEvent = (isStandby, raw) =>
       ? standbyRead(raw)
       : read(raw)
     : hasOwnProperty(raw, DELIVERY)
-      ? isStandby
-        ? standbyDelivery(raw)
-        : delivery(raw)
+    ? isStandby
+      ? standbyDelivery(raw)
+      : delivery(raw)
     : hasOwnProperty(raw, ACCOUNT_LINKING)
     ? accountLinking(raw)
     : hasOwnProperty(raw, CHECKOUT_UPDATE)

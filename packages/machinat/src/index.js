@@ -8,7 +8,7 @@ import createServer from './server/native';
 const Machinat = {
   createElement,
   Fragment: MACHINAT_FRAGMENT_TYPE,
-  Immediately: MACHINAT_IMMEDIATELY_TYPE,
+  Immediate: MACHINAT_IMMEDIATELY_TYPE,
 };
 
 export { Machinat as default, createServer };

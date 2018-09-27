@@ -1,8 +1,7 @@
 // @flow
-import warning from 'warning';
 import type { MachinatNode, MachinatRenderable } from 'types/element';
 
-import { isFragment, isEmpty, isValidRenderable, isImmediately } from './isXXX';
+import { isFragment, isEmpty } from './isXXX';
 import type {
   TraverseElementCallback,
   ElementReducer,
@@ -17,35 +16,30 @@ export const traverse = (
   context: any,
   callback: TraverseElementCallback
 ): number => {
-  if (isValidRenderable(children) || isImmediately(children)) {
-    callback(
-      (children: any),
-      prefix.charAt(prefix.length - 1) === ':'
-        ? `${prefix + ITER_SEPARATOR}0`
-        : prefix,
-      context
-    );
-    return 1;
-  }
-
   let count = 0;
   if (Array.isArray(children)) {
     for (let i = 0; i < children.length; i += 1) {
       const child = children[i];
       count += traverse(child, prefix + ITER_SEPARATOR + i, context, callback);
     }
-  } else if (isFragment(children) && (children: any).props) {
-    count += traverse(
-      (children: any).props.children,
-      prefix + ITER_SEPARATOR,
-      context,
-      callback
+  } else if (isFragment(children)) {
+    if (children.props) {
+      count += traverse(
+        children.props.children,
+        prefix + ITER_SEPARATOR,
+        context,
+        callback
+      );
+    }
+  } else if (!isEmpty(children)) {
+    callback(
+      children,
+      prefix.charAt(prefix.length - 1) === ':'
+        ? `${prefix + ITER_SEPARATOR}0`
+        : prefix,
+      context
     );
-  } else {
-    warning(
-      isEmpty(children),
-      `invalid node ${(children: any)} in the element tree at position ${prefix}`
-    );
+    return 1;
   }
 
   return count;
@@ -79,30 +73,31 @@ export const reduce = <Reduced>(
   return context.reduced;
 };
 
-const mapReducer: ElementReducer = (mappedArr, node, path, context) => {
-  const { mapper, payload } = context;
-  const mapped = mapper(node, path, payload);
-  mappedArr.push(mapped);
-  return mappedArr;
+const mapCallback: TraverseElementCallback = (
+  child,
+  path,
+  context: ReduceContext<any>
+) => {
+  const { mapper, payload, mappedArray } = context;
+  const mapped = mapper(child, path, payload);
+  mappedArray.push(mapped);
 };
+
 export const map = <Mapped>(
   children: MachinatNode,
   mapper: MachinatRenderable => Promise<Mapped>,
   prefix: string,
   payload: any
 ): ?Array<Mapped> => {
-  const context = {
-    mapper,
-    payload,
-  };
-  const result = reduce(children, mapReducer, [], prefix, context);
-  return result;
+  if (children === undefined || children === null) {
+    return children;
+  }
+
+  const mappedArray = [];
+  traverse(children, prefix, { mapper, payload, mappedArray }, mapCallback);
+  return mappedArray;
 };
 
 const identity: any = ele => ele;
-export const toArray = (children: MachinatNode) => {
-  if (children === undefined || children === null) {
-    return [];
-  }
-  return map<MachinatNode>(children, identity, '');
-};
+export const toArray = (children: MachinatNode) =>
+  map<MachinatNode>(children, identity, '');

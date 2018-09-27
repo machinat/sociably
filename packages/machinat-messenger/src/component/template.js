@@ -1,45 +1,40 @@
-import { Utils } from 'machinat-shared';
 import { ENTRY_MESSAGES } from './constant';
 import {
   annotateNative,
   annotateNativeRoot,
-  renderOnlyType,
-  renderOnlyInTypes,
-  getRendered,
+  getValue,
   renderTextContent,
+  renderQuickReplies,
 } from './utils';
-import * as buttonComponents from './button';
 
-const { isElement } = Utils;
+const CHILDREN = '.children';
 
-const CHILDREN = 'children';
-
-const refineDefaultAction = (actionProp, render) => {
-  if (!isElement(actionProp)) {
-    return actionProp;
+const renderDefaultAction = (actionProp, render) => {
+  const renderedAction = render(actionProp, '.defaultAction');
+  if (renderedAction === undefined) {
+    return undefined;
   }
 
-  const actionResult = renderOnlyType(
-    buttonComponents.URLButton,
-    actionProp,
-    render,
-    'defaultAction'
-  );
+  if (__DEV__) {
+    // TODO: validate renderedAction
+  }
 
-  const { title, ...action } = actionResult[0].rendered;
+  if (renderedAction[0].element === undefined) {
+    return renderedAction[0].value;
+  }
+
+  const { title, ...action } = renderedAction[0].value;
   return action;
 };
 
-const buttonTypes = Object.values(buttonComponents);
-const refineButtons = (children, render, propName) => {
-  const buttonsResult = renderOnlyInTypes(
-    buttonTypes,
-    children,
-    render,
-    propName
-  );
+const renderButtons = (nodes, render, propName) => {
+  const renderedButtons = render(nodes, propName);
 
-  return buttonsResult && buttonsResult.map(getRendered);
+  if (__DEV__) {
+    // TODO: validate renderedButtons
+  }
+
+  return renderedButtons && renderedButtons.map(getValue);
 };
 
 export const GenericItem = (
@@ -49,28 +44,31 @@ export const GenericItem = (
   title,
   image_url: imageUrl,
   subtitle,
-  default_action: refineDefaultAction(defaultAction, render),
-  buttons: refineButtons(children, render, CHILDREN),
+  default_action: renderDefaultAction(defaultAction, render),
+  buttons: renderButtons(children, render, CHILDREN),
 });
 annotateNative(GenericItem);
 
 export const GenericTemplate = (
-  { children, sharable, imageAspectRatio },
+  { children, sharable, quickReplies, imageAspectRatio },
   render
 ) => {
-  const itemsResult = renderOnlyType(GenericItem, children, render, CHILDREN);
+  const renderedItems = render(children, CHILDREN);
 
-  // TODO: invariant itemsResult.length > 0 ?
+  if (__DEV__) {
+    // TODO: validate renderedItems
+  }
 
   return {
     message: {
+      quick_replies: renderQuickReplies(quickReplies, render),
       attachment: {
         type: 'template',
         payload: {
           template_type: 'generic',
           sharable,
           image_aspect_ratio: imageAspectRatio,
-          elements: itemsResult.map(getRendered),
+          elements: renderedItems.map(getValue),
         },
       },
     },
@@ -79,23 +77,26 @@ export const GenericTemplate = (
 annotateNativeRoot(GenericTemplate, ENTRY_MESSAGES);
 
 export const ListTemplate = (
-  { children, topStyle, sharable, button },
+  { children, topStyle, sharable, quickReplies, button },
   render
 ) => {
-  const itemsResult = renderOnlyType(GenericItem, children, render, CHILDREN);
+  const itemsResult = render(children, CHILDREN);
 
-  // TODO: invariant itemsResult.length > 0 ?
+  if (__DEV__) {
+    // TODO: validate itemsResult
+  }
 
   return {
     message: {
+      quick_replies: renderQuickReplies(quickReplies, render),
       attachment: {
         type: 'template',
         payload: {
           template_type: 'list',
           top_element_style: topStyle,
           sharable,
-          elements: itemsResult.map(getRendered),
-          buttons: refineButtons(button, render, 'button'),
+          elements: itemsResult.map(getValue),
+          buttons: renderButtons(button, render, '.button'),
         },
       },
     },
@@ -103,15 +104,19 @@ export const ListTemplate = (
 };
 annotateNativeRoot(ListTemplate, ENTRY_MESSAGES);
 
-export const ButtonTemplate = ({ children, text, sharable }, render) => ({
+export const ButtonTemplate = (
+  { children, text, sharable, quickReplies },
+  render
+) => ({
   message: {
+    quick_replies: renderQuickReplies(quickReplies, render),
     attachment: {
       type: 'template',
       payload: {
         template_type: 'button',
-        text: renderTextContent(text, render, 'text'),
+        text: renderTextContent(text, render, '.text'),
         sharable,
-        buttons: refineButtons(children, render, CHILDREN),
+        buttons: renderButtons(children, render, CHILDREN),
       },
     },
   },
@@ -119,10 +124,11 @@ export const ButtonTemplate = ({ children, text, sharable }, render) => ({
 annotateNativeRoot(ButtonTemplate, ENTRY_MESSAGES);
 
 export const MediaTemplate = (
-  { children, type, attachmentId, url, sharable },
+  { children, type, attachmentId, url, sharable, quickReplies },
   render
 ) => ({
   message: {
+    quick_replies: renderQuickReplies(quickReplies, render),
     attachment: {
       type: 'template',
       payload: {
@@ -133,7 +139,7 @@ export const MediaTemplate = (
             media_type: type,
             url,
             attachment_id: attachmentId,
-            buttons: refineButtons(children, render, CHILDREN),
+            buttons: renderButtons(children, render, CHILDREN),
           },
         ],
       },
@@ -142,8 +148,12 @@ export const MediaTemplate = (
 });
 annotateNativeRoot(MediaTemplate, ENTRY_MESSAGES);
 
-export const OpenGraphTemplate = ({ children, url, sharable }, render) => ({
+export const OpenGraphTemplate = (
+  { children, url, sharable, quickReplies },
+  render
+) => ({
   message: {
+    quick_replies: renderQuickReplies(quickReplies, render),
     attachment: {
       type: 'template',
       payload: {
@@ -152,7 +162,7 @@ export const OpenGraphTemplate = ({ children, url, sharable }, render) => ({
         elements: [
           {
             url,
-            buttons: refineButtons(children, render, CHILDREN),
+            buttons: renderButtons(children, render, CHILDREN),
           },
         ],
       },
@@ -182,6 +192,7 @@ export const ReceiptTemplate = (
   {
     children,
     sharable,
+    quickReplies,
     recipientName,
     orderNumber,
     currency,
@@ -194,17 +205,15 @@ export const ReceiptTemplate = (
   },
   render
 ) => {
-  const itemsResult = renderOnlyType(
-    ReceiptTemplateItem,
-    children,
-    render,
-    CHILDREN
-  );
+  const renderedItem = render(children, CHILDREN);
 
-  // TODO: invariant itemsResult.length > 0 ?
+  if (__DEV__) {
+    // TODO: validate renderedItem
+  }
 
   return {
     message: {
+      quick_replies: renderQuickReplies(quickReplies, render),
       attachment: {
         type: 'template',
         payload: {
@@ -222,7 +231,7 @@ export const ReceiptTemplate = (
           address,
           summary,
           adjustments,
-          elements: itemsResult.map(getRendered),
+          elements: renderedItem.map(getValue),
         },
       },
     },

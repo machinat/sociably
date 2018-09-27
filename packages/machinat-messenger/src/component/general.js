@@ -1,7 +1,7 @@
 import { renderTextContent } from './utils';
 
 export const text = ({ children }, render) =>
-  renderTextContent(children, render, 'children');
+  renderTextContent(children, render, '.children');
 
 export const br = () => '\n';
 

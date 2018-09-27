@@ -73,7 +73,7 @@ describe('button Components', () => {
         node =>
           node && [
             {
-              rendered: {
+              value: {
                 message: '__RENDERED_GENERIC_TEMPLATE_MEASSGE_OBJ__',
               },
               element: sharedTemplate,

@@ -21,6 +21,7 @@
     "babel-core": "^7.0.0-0",
     "babel-eslint": "^8.2.2",
     "babel-jest": "^23.0.0",
+    "babel-plugin-dev-expression": "^0.2.1",
     "eslint": "^4.9.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-config-prettier": "^2.9.0",
@@ -42,7 +43,10 @@
   "jest": {
     "testMatch": [
       "**/__tests__/**/*.spec.js?(x)"
-    ]
+    ],
+    "globals": {
+      "__DEV__": true
+    }
   },
   "dependencies": {}
 }

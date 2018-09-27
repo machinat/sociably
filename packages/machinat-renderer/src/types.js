@@ -6,6 +6,8 @@ import type {
   MachinatNativeElement,
   MachinatGeneralElement,
 } from 'types/element';
+// eslint-disable-next-line import/prefer-default-export
+export { default as JobSequence } from './jobSequence';
 
 type RenderDelegateCallback<Rendered> = (
   MachinatNativeElement,
@@ -22,8 +24,8 @@ export type RenderDelegate<Rendered, Job> = {
 };
 
 export type RenderResult<Rendered> = {
-  element: MachinatText | MachinatNativeElement | MachinatGeneralElement,
-  rendered: Rendered,
+  element: void | MachinatText | MachinatNativeElement | MachinatGeneralElement,
+  value: Rendered,
   path: string,
 };
 
@@ -32,3 +34,13 @@ export type RenderCallback = (
   string,
   any
 ) => ?Array<RenderResult<any>>;
+
+export type ImmediateEle = MachinatElement<Symbol>;
+export type RenderResultBatch = Array<RenderResult<any>>;
+export type BatchesAndSeparators = Array<RenderResultBatch | ImmediateEle>;
+export type RenderTraverseContext<
+  Acc: RenderResultBatch | BatchesAndSeparators
+> = {
+  payload: any,
+  accumulates: Acc,
+};

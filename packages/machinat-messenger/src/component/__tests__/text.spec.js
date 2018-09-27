@@ -13,27 +13,27 @@ const quickReplies = [
 const renderInside = jest.fn(
   node =>
     typeof node === 'string'
-      ? [{ rendered: node, element: node }]
+      ? [{ value: node, element: undefined }]
       : node === quickReplies
         ? [
             {
-              rendered: '__RENDERED_QUICKREPLY_OBJ_1__',
+              value: '__RENDERED_QUICKREPLY_OBJ_1__',
               element: quickReplies[0],
             },
             {
-              rendered: '__RENDERED_QUICKREPLY_OBJ_2__',
+              value: '__RENDERED_QUICKREPLY_OBJ_2__',
               element: quickReplies[1],
             },
             {
-              rendered: '__RENDERED_QUICKREPLY_OBJ_3__',
+              value: '__RENDERED_QUICKREPLY_OBJ_3__',
               element: quickReplies[2],
             },
           ]
         : node === textNode
           ? [
-              { rendered: '\n__RENDERED_TEXT_1__', element: textNode[0] },
-              { rendered: '\n__RENDERED_TEXT_2__', element: textNode[1] },
-              { rendered: '\n__RENDERED_TEXT_3__', element: textNode[2] },
+              { value: '\n__RENDERED_TEXT_1__', element: textNode[0] },
+              { value: '\n__RENDERED_TEXT_2__', element: textNode[1] },
+              { value: '\n__RENDERED_TEXT_3__', element: textNode[2] },
             ]
           : undefined
 );

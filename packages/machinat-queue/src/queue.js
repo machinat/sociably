@@ -1,10 +1,7 @@
 // @flow
 import Denque from 'denque';
-import invariant from 'invariant';
-import { Utils } from 'machinat-shared';
-import type { MachinatElement } from 'types/element';
-
-const { isImmediately } = Utils;
+import isPromise from 'p-is-promise';
+import type { JobSequence } from 'machinat-renderer/types';
 
 type JobResponse = {|
   success: boolean,
@@ -75,28 +72,17 @@ export default class MachinatQueue<Job: Object> {
     return new Promise(this._pushWaitedRequest.bind(this, begin, this._endSeq));
   }
 
-  async executeJobSequence(
-    jobSequence: Array<Array<Job> | MachinatElement<Symbol>>
-  ) {
+  async executeJobSequence(jobSequence: JobSequence<any, Job>) {
     const result: BatchResponse = {
       success: true,
       errors: null,
       batchResult: null,
     };
 
-    for (let i = 0; i < jobSequence.length; i += 1) {
-      const action = jobSequence[i];
-      if (isImmediately(action)) {
-        const { after } = action.props;
-
-        if (after && typeof after === 'function') {
-          await after(); // eslint-disable-line no-await-in-loop
-        } else {
-          invariant(
-            !after,
-            `"after" prop of Immediately element should be a function, got ${after}`
-          );
-        }
+    while (jobSequence.hasNext()) {
+      const action = jobSequence.next();
+      if (isPromise(action)) {
+        await action; // eslint-disable-line no-await-in-loop
       } else {
         const {
           success,

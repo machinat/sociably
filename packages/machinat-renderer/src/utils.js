@@ -1,10 +1,17 @@
 import invariant from 'invariant';
 
-export const addToAccumulates = (result, accumulates) => {
+export const appendResult = (result, accumulates) => {
   accumulates.push(result);
 };
 
-export const addToLastBatchOfAccumulates = (result, accumulates) => {
+export const invariantNoSeparator = () => {
+  invariant(
+    false,
+    `separator element should not be placed in the inner of native or general prop`
+  );
+};
+
+export const appendResultToLastBatch = (result, accumulates) => {
   let lastBatch;
   // eslint-disable-next-line no-cond-assign
   if (
@@ -17,11 +24,11 @@ export const addToLastBatchOfAccumulates = (result, accumulates) => {
   lastBatch.push(result);
 };
 
-export const addImmediatelyAsSeparator = (immediately, accumulates) => {
+export const appendSeparator = (immediately, accumulates) => {
   const { after } = immediately.props;
   invariant(
     !after || typeof after === 'function',
-    `props.after of Immediately element should be a function, got ${after}`
+    `props.after of Immediate element should be a function, got ${after}`
   );
   let last;
   // eslint-disable-next-line no-cond-assign

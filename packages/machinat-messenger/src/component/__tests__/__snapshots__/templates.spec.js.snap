@@ -20,6 +20,11 @@ __RENDERED_TEXT_3__",
         },
         "type": "template",
       },
+      "quick_replies": Array [
+        "__RENDERED_QUICKREPLY_OBJ_1__",
+        "__RENDERED_QUICKREPLY_OBJ_2__",
+        "__RENDERED_QUICKREPLY_OBJ_3__",
+      ],
     },
   },
   Object {
@@ -40,6 +45,7 @@ __RENDERED_TEXT_3__",
         },
         "type": "template",
       },
+      "quick_replies": undefined,
     },
   },
 ]
@@ -69,9 +75,20 @@ Array [
     "title": "foo",
   },
   Object {
+    "buttons": Array [
+      "__RENDERED_BUTTON_OBJ_1__",
+      "__RENDERED_BUTTON_OBJ_2__",
+      "__RENDERED_BUTTON_OBJ_3__",
+    ],
+    "default_action": undefined,
+    "image_url": undefined,
+    "subtitle": undefined,
+    "title": "foo",
+  },
+  Object {
     "buttons": undefined,
     "default_action": Object {
-      "fallback_url": "http://foo.baz/",
+      "fallback_url": "http://foo.baz/login",
       "messenger_extensions": true,
       "type": "web_url",
       "url": "http://foo.bar/",
@@ -92,25 +109,29 @@ Array [
       "webview_height_ratio": "compact",
       "webview_share_button": "hide",
     },
+    "image_url": undefined,
+    "subtitle": undefined,
+    "title": "foo",
+  },
+  Object {
+    "buttons": Array [
+      "__RENDERED_BUTTON_OBJ_1__",
+      "__RENDERED_BUTTON_OBJ_2__",
+      "__RENDERED_BUTTON_OBJ_3__",
+    ],
+    "default_action": Object {
+      "fallback_url": "http://foo.baz/login",
+      "messenger_extensions": true,
+      "type": "web_url",
+      "url": "http://foo.bar/",
+      "webview_height_ratio": "compact",
+      "webview_share_button": "hide",
+    },
     "image_url": "http://foo.bar/image",
     "subtitle": "bar",
     "title": "foo",
   },
 ]
-`;
-
-exports[`templates Components GenericItem render children for "buttons" field 1`] = `
-Object {
-  "buttons": Array [
-    "__RENDERED_BUTTON_OBJ_1__",
-    "__RENDERED_BUTTON_OBJ_2__",
-    "__RENDERED_BUTTON_OBJ_3__",
-  ],
-  "default_action": undefined,
-  "image_url": undefined,
-  "subtitle": undefined,
-  "title": "Look!",
-}
 `;
 
 exports[`templates Components GenericTemplate match snapshot 1`] = `
@@ -130,6 +151,29 @@ Array [
         },
         "type": "template",
       },
+      "quick_replies": undefined,
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "elements": Array [
+            "__RENDERED_GENERIC_ITEM_OBJ_1__",
+            "__RENDERED_GENERIC_ITEM_OBJ_2__",
+            "__RENDERED_GENERIC_ITEM_OBJ_3__",
+          ],
+          "image_aspect_ratio": undefined,
+          "sharable": undefined,
+          "template_type": "generic",
+        },
+        "type": "template",
+      },
+      "quick_replies": Array [
+        "__RENDERED_QUICKREPLY_OBJ_1__",
+        "__RENDERED_QUICKREPLY_OBJ_2__",
+        "__RENDERED_QUICKREPLY_OBJ_3__",
+      ],
     },
   },
   Object {
@@ -147,6 +191,11 @@ Array [
         },
         "type": "template",
       },
+      "quick_replies": Array [
+        "__RENDERED_QUICKREPLY_OBJ_1__",
+        "__RENDERED_QUICKREPLY_OBJ_2__",
+        "__RENDERED_QUICKREPLY_OBJ_3__",
+      ],
     },
   },
 ]
@@ -170,6 +219,28 @@ Array [
         },
         "type": "template",
       },
+      "quick_replies": undefined,
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "buttons": Array [
+            "__RENDERED_BUTTON_OBJ_1__",
+          ],
+          "elements": Array [
+            "__RENDERED_GENERIC_ITEM_OBJ_1__",
+            "__RENDERED_GENERIC_ITEM_OBJ_2__",
+            "__RENDERED_GENERIC_ITEM_OBJ_3__",
+          ],
+          "sharable": undefined,
+          "template_type": "list",
+          "top_element_style": undefined,
+        },
+        "type": "template",
+      },
+      "quick_replies": undefined,
     },
   },
   Object {
@@ -182,38 +253,45 @@ Array [
             "__RENDERED_GENERIC_ITEM_OBJ_2__",
             "__RENDERED_GENERIC_ITEM_OBJ_3__",
           ],
+          "sharable": undefined,
+          "template_type": "list",
+          "top_element_style": undefined,
+        },
+        "type": "template",
+      },
+      "quick_replies": Array [
+        "__RENDERED_QUICKREPLY_OBJ_1__",
+        "__RENDERED_QUICKREPLY_OBJ_2__",
+        "__RENDERED_QUICKREPLY_OBJ_3__",
+      ],
+    },
+  },
+  Object {
+    "message": Object {
+      "attachment": Object {
+        "payload": Object {
+          "buttons": Array [
+            "__RENDERED_BUTTON_OBJ_1__",
+          ],
+          "elements": Array [
+            "__RENDERED_GENERIC_ITEM_OBJ_1__",
+            "__RENDERED_GENERIC_ITEM_OBJ_2__",
+            "__RENDERED_GENERIC_ITEM_OBJ_3__",
+          ],
           "sharable": true,
           "template_type": "list",
           "top_element_style": undefined,
         },
         "type": "template",
       },
+      "quick_replies": Array [
+        "__RENDERED_QUICKREPLY_OBJ_1__",
+        "__RENDERED_QUICKREPLY_OBJ_2__",
+        "__RENDERED_QUICKREPLY_OBJ_3__",
+      ],
     },
   },
 ]
-`;
-
-exports[`templates Components ListTemplate render button prop as "buttons" field 1`] = `
-Object {
-  "message": Object {
-    "attachment": Object {
-      "payload": Object {
-        "buttons": Array [
-          "__RENDERED_BUTTON_OBJ_1__",
-        ],
-        "elements": Array [
-          "__RENDERED_GENERIC_ITEM_OBJ_1__",
-          "__RENDERED_GENERIC_ITEM_OBJ_2__",
-          "__RENDERED_GENERIC_ITEM_OBJ_3__",
-        ],
-        "sharable": undefined,
-        "template_type": "list",
-        "top_element_style": undefined,
-      },
-      "type": "template",
-    },
-  },
-}
 `;
 
 exports[`templates Components MediaTemplate match snapshot 1`] = `
@@ -239,6 +317,7 @@ Array [
         },
         "type": "template",
       },
+      "quick_replies": undefined,
     },
   },
   Object {
@@ -262,6 +341,11 @@ Array [
         },
         "type": "template",
       },
+      "quick_replies": Array [
+        "__RENDERED_QUICKREPLY_OBJ_1__",
+        "__RENDERED_QUICKREPLY_OBJ_2__",
+        "__RENDERED_QUICKREPLY_OBJ_3__",
+      ],
     },
   },
 ]
@@ -288,6 +372,7 @@ Array [
         },
         "type": "template",
       },
+      "quick_replies": undefined,
     },
   },
   Object {
@@ -309,6 +394,11 @@ Array [
         },
         "type": "template",
       },
+      "quick_replies": Array [
+        "__RENDERED_QUICKREPLY_OBJ_1__",
+        "__RENDERED_QUICKREPLY_OBJ_2__",
+        "__RENDERED_QUICKREPLY_OBJ_3__",
+      ],
     },
   },
 ]
@@ -359,6 +449,11 @@ Object {
       },
       "type": "template",
     },
+    "quick_replies": Array [
+      "__RENDERED_QUICKREPLY_OBJ_1__",
+      "__RENDERED_QUICKREPLY_OBJ_2__",
+      "__RENDERED_QUICKREPLY_OBJ_3__",
+    ],
   },
 }
 `;
