@@ -1,11 +1,14 @@
-import { ENTRY_MESSAGES } from './constant';
 import {
   annotateNative,
   annotateNativeRoot,
   getValue,
   renderTextContent,
-  renderQuickReplies,
-} from './utils';
+} from 'machinat-renderer';
+
+import { MESSENGER_NAITVE_TYPE } from '../symbol';
+import { ENTRY_MESSAGES } from './apiEntry';
+
+import { renderQuickReplies } from './utils';
 
 const CHILDREN = '.children';
 
@@ -47,7 +50,7 @@ export const GenericItem = (
   default_action: renderDefaultAction(defaultAction, render),
   buttons: renderButtons(children, render, CHILDREN),
 });
-annotateNative(GenericItem);
+annotateNative(GenericItem, MESSENGER_NAITVE_TYPE);
 
 export const GenericTemplate = (
   { children, sharable, quickReplies, imageAspectRatio },
@@ -74,7 +77,7 @@ export const GenericTemplate = (
     },
   };
 };
-annotateNativeRoot(GenericTemplate, ENTRY_MESSAGES);
+annotateNativeRoot(GenericTemplate, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
 
 export const ListTemplate = (
   { children, topStyle, sharable, quickReplies, button },
@@ -102,7 +105,7 @@ export const ListTemplate = (
     },
   };
 };
-annotateNativeRoot(ListTemplate, ENTRY_MESSAGES);
+annotateNativeRoot(ListTemplate, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
 
 export const ButtonTemplate = (
   { children, text, sharable, quickReplies },
@@ -121,7 +124,7 @@ export const ButtonTemplate = (
     },
   },
 });
-annotateNativeRoot(ButtonTemplate, ENTRY_MESSAGES);
+annotateNativeRoot(ButtonTemplate, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
 
 export const MediaTemplate = (
   { children, type, attachmentId, url, sharable, quickReplies },
@@ -146,7 +149,7 @@ export const MediaTemplate = (
     },
   },
 });
-annotateNativeRoot(MediaTemplate, ENTRY_MESSAGES);
+annotateNativeRoot(MediaTemplate, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
 
 export const OpenGraphTemplate = (
   { children, url, sharable, quickReplies },
@@ -169,7 +172,7 @@ export const OpenGraphTemplate = (
     },
   },
 });
-annotateNativeRoot(OpenGraphTemplate, ENTRY_MESSAGES);
+annotateNativeRoot(OpenGraphTemplate, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
 
 export const ReceiptTemplateItem = ({
   title,
@@ -186,7 +189,7 @@ export const ReceiptTemplateItem = ({
   currency,
   image_url: imageUrl,
 });
-annotateNative(ReceiptTemplateItem);
+annotateNative(ReceiptTemplateItem, MESSENGER_NAITVE_TYPE);
 
 export const ReceiptTemplate = (
   {
@@ -237,4 +240,4 @@ export const ReceiptTemplate = (
     },
   };
 };
-annotateNativeRoot(ReceiptTemplate, ENTRY_MESSAGES);
+annotateNativeRoot(ReceiptTemplate, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);

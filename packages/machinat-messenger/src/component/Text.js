@@ -1,10 +1,13 @@
 import {
-  renderQuickReplies,
   renderTextContent,
   annotateNative,
   annotateNativeRoot,
-} from './utils';
-import { ENTRY_MESSAGES } from './constant';
+} from 'machinat-renderer';
+
+import { MESSENGER_NAITVE_TYPE } from '../symbol';
+import { ENTRY_MESSAGES } from './apiEntry';
+
+import { renderQuickReplies } from './utils';
 
 export const Text = ({ children, quickReplies, metadata }, render) => ({
   message: {
@@ -13,8 +16,8 @@ export const Text = ({ children, quickReplies, metadata }, render) => ({
     metadata,
   },
 });
-annotateNativeRoot(Text, ENTRY_MESSAGES);
+annotateNativeRoot(Text, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
 
 export const Latex = ({ children }, render) =>
   `\\(${renderTextContent(children, render, '.children')}\\)`;
-annotateNative(Latex);
+annotateNative(Latex, MESSENGER_NAITVE_TYPE);

@@ -1,25 +1,25 @@
 // @flow
 import invariant from 'invariant';
-import { Children, Utils } from 'machinat-shared';
-import type { TraverseElementCallback } from 'machinat-shared/types';
-import type { MachinatNode } from 'types/element';
-import JobSequence from './jobSequence';
+import { isNative, isImmediate, isEmpty } from 'machinat-shared';
+import { traverse } from 'machinat-children';
 
+import type { MachinatNode } from 'types/element';
+
+import JobSequence from './jobSequence';
 import {
   appendResult,
   invariantNoSeparator,
   appendResultToLastBatch,
   appendSeparator,
 } from './utils';
+
 import type {
   RenderDelegate,
   RenderResult,
   ImmediateEle,
   RenderTraverseContext,
+  TraverseElementCallback,
 } from './types';
-
-const { isNative, isImmediate, isEmpty } = Utils;
-const { traverse } = Children;
 
 const RENDER_SEPARATOR = '#';
 const RENDER_ROOT = '$';
@@ -135,9 +135,8 @@ export default class Renderer<Rendered, Job> {
         invariant(
           !isNative(element),
           `Element ${
-            element.name
+            element.type.name
           } at ${path} is native Component type of ${(typeof element.$$native ===
-          // $FlowFixMe: remove me after symbol primitive supported
           'symbol'
             ? Symbol.keyFor(element.$$native)
             : element.$$native) || 'unknown'}, not supported by ${

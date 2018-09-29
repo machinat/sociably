@@ -1,9 +1,9 @@
-import { Children } from 'machinat-shared'; // eslint-disable-line
+import { reduce } from 'machinat-children'; // eslint-disable-line
 import Machinat from '../../../../machinat';
 import * as general from '../general';
 
 const render = jest.fn(node =>
-  Children.reduce(
+  reduce(
     node,
     (rendered, ele) =>
       rendered.concat(

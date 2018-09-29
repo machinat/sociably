@@ -1,3 +1,6 @@
+// @flow
+import type { MachinatRenderable } from 'types/element';
+
 export type TraverseElementCallback = (MachinatRenderable, string, any) => void;
 
 export type ElementReducer = <Reduced>(
@@ -7,8 +10,4 @@ export type ElementReducer = <Reduced>(
   any
 ) => Reduced;
 
-export type ReduceContext<Reduced> = {
-  reduced: Reduced,
-  reducer: Reducer,
-  payload: any,
-};
+export type ElementMapper = <Mapped>(MachinatRenderable, string, any) => Mapped;

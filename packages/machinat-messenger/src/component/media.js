@@ -1,7 +1,12 @@
-import { ATTACHED_FILE_DATA, ATTACHED_FILE_INFO } from '../symbol';
+import { annotateNativeRoot } from 'machinat-renderer';
 
-import { annotateNativeRoot, renderQuickReplies } from './utils';
-import { ENTRY_MESSAGES } from './constant';
+import {
+  ATTACHED_FILE_DATA,
+  ATTACHED_FILE_INFO,
+  MESSENGER_NAITVE_TYPE,
+} from '../symbol';
+import { renderQuickReplies } from './utils';
+import { ENTRY_MESSAGES } from './apiEntry';
 
 const nativeMediaFactroy = (name, type) => {
   const container = {
@@ -26,7 +31,11 @@ const nativeMediaFactroy = (name, type) => {
     }),
   };
 
-  return annotateNativeRoot(container[name], ENTRY_MESSAGES);
+  return annotateNativeRoot(
+    container[name],
+    MESSENGER_NAITVE_TYPE,
+    ENTRY_MESSAGES
+  );
 };
 
 export const Image = nativeMediaFactroy('Image', 'image');

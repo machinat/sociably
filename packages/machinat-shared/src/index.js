@@ -1,14 +1,8 @@
 // @flow
-import isValidElementType from './isValidElementType';
-import * as IsXXX from './isXXX';
-import * as Children from './children';
+export { default as isValidElementType } from './isValidElementType';
 
-const Utils = {
-  isValidElementType,
-  ...IsXXX,
-};
+export * from './isXXX';
 
-export { Children, Utils };
 export {
   MACHINAT_ELEMENT_TYPE,
   MACHINAT_FRAGMENT_TYPE,

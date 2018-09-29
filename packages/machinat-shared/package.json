@@ -4,6 +4,7 @@
   "main": "lib/index.js",
   "license": "MIT",
   "dependencies": {
+    "invariant": "^2.2.4",
     "warning": "^4.0.1"
   }
 }

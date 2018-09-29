@@ -1,14 +1,26 @@
 // @flow
-import type { MachinatNode, MachinatRenderable } from 'types/element';
+import type { MachinatNode } from 'types/element';
 
-import { isFragment, isEmpty } from './isXXX';
+import { isFragment, isEmpty } from 'machinat-shared';
 import type {
   TraverseElementCallback,
   ElementReducer,
-  ReduceContext,
+  ElementMapper,
 } from './types';
 
 const ITER_SEPARATOR = ':';
+
+export type ReduceTraverseContext<Reduced> = {
+  reduced: Reduced,
+  reducer: ElementReducer,
+  payload: any,
+};
+
+export type MapTraverseContext<Mapped> = {
+  mappedArray: Array<Mapped>,
+  mapper: ElementMapper,
+  payload: any,
+};
 
 export const traverse = (
   children: MachinatNode,
@@ -48,7 +60,7 @@ export const traverse = (
 const reduceCallback: TraverseElementCallback = (
   child,
   path,
-  context: ReduceContext<any>
+  context: ReduceTraverseContext<any>
 ) => {
   const { reduced, reducer, payload } = context;
   context.reduced = reducer(reduced, child, path, payload);
@@ -64,7 +76,7 @@ export const reduce = <Reduced>(
   if (children === undefined || children === null) {
     return children;
   }
-  const context: ReduceContext<Reduced> = {
+  const context: ReduceTraverseContext<Reduced> = {
     reduced: initial,
     reducer,
     payload,
@@ -73,19 +85,15 @@ export const reduce = <Reduced>(
   return context.reduced;
 };
 
-const mapCallback: TraverseElementCallback = (
-  child,
-  path,
-  context: ReduceContext<any>
-) => {
-  const { mapper, payload, mappedArray } = context;
+const mapCallback: TraverseElementCallback = <Mapped>(child, path, context) => {
+  const { mapper, payload, mappedArray }: MapTraverseContext<Mapped> = context;
   const mapped = mapper(child, path, payload);
   mappedArray.push(mapped);
 };
 
 export const map = <Mapped>(
   children: MachinatNode,
-  mapper: MachinatRenderable => Promise<Mapped>,
+  mapper: ElementMapper,
   prefix: string,
   payload: any
 ): ?Array<Mapped> => {
@@ -93,9 +101,14 @@ export const map = <Mapped>(
     return children;
   }
 
-  const mappedArray = [];
-  traverse(children, prefix, { mapper, payload, mappedArray }, mapCallback);
-  return mappedArray;
+  const context: MapTraverseContext<Mapped> = {
+    mapper,
+    payload,
+    mappedArray: [],
+  };
+
+  traverse(children, prefix, context, mapCallback);
+  return context.mappedArray;
 };
 
 const identity: any = ele => ele;

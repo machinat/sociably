@@ -1,4 +1,5 @@
-import { annotateNative } from './utils';
+import { annotateNative } from 'machinat-renderer';
+import { MESSENGER_NAITVE_TYPE } from '../symbol';
 
 export const URLButton = ({
   title,
@@ -16,14 +17,14 @@ export const URLButton = ({
   fallback_url: fallbackUrl,
   webview_share_button: hideShareButton ? 'hide' : undefined,
 });
-annotateNative(URLButton);
+annotateNative(URLButton, MESSENGER_NAITVE_TYPE);
 
 export const PostbackButton = ({ title, payload }) => ({
   type: 'postback',
   title,
   payload,
 });
-annotateNative(PostbackButton);
+annotateNative(PostbackButton, MESSENGER_NAITVE_TYPE);
 
 const ELEMENT_SHARE_TYPE = { type: 'element_share' };
 export const ShareButton = ({ children }, render) => {
@@ -41,7 +42,7 @@ export const ShareButton = ({ children }, render) => {
   }
   return ELEMENT_SHARE_TYPE;
 };
-annotateNative(ShareButton);
+annotateNative(ShareButton, MESSENGER_NAITVE_TYPE);
 
 export const BuyButton = ({
   title,
@@ -65,24 +66,24 @@ export const BuyButton = ({
     price_list: priceList,
   },
 });
-annotateNative(BuyButton);
+annotateNative(BuyButton, MESSENGER_NAITVE_TYPE);
 
 export const CallButton = ({ title, number }) => ({
   type: 'phone_number',
   title,
   number,
 });
-annotateNative(CallButton);
+annotateNative(CallButton, MESSENGER_NAITVE_TYPE);
 
 export const LoginButton = ({ url }) => ({
   type: 'account_link',
   url,
 });
-annotateNative(LoginButton);
+annotateNative(LoginButton, MESSENGER_NAITVE_TYPE);
 
 const ACCOUNT_UNLINK_TYPE = { type: 'account_unlink' };
 export const LogoutButton = () => ACCOUNT_UNLINK_TYPE;
-annotateNative(LogoutButton);
+annotateNative(LogoutButton, MESSENGER_NAITVE_TYPE);
 
 export const GamePlayButton = ({ title, payload, playerId, contextId }) => ({
   type: 'game_play',
@@ -93,4 +94,4 @@ export const GamePlayButton = ({ title, payload, playerId, contextId }) => ({
     context_id: contextId,
   },
 });
-annotateNative(GamePlayButton);
+annotateNative(GamePlayButton, MESSENGER_NAITVE_TYPE);

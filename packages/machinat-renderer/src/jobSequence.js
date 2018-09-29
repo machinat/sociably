@@ -1,7 +1,7 @@
 // @flow
 import invariant from 'invariant';
 import delay from 'delay';
-import { Utils } from 'machinat-shared';
+import { isImmediate } from 'machinat-shared';
 
 import type { BatchesAndSeparators, RenderDelegate } from './types';
 
@@ -9,8 +9,6 @@ type CreateJobs<Rendered, Job> = $PropertyType<
   RenderDelegate<Rendered, Job>,
   'createJobsFromRendered'
 >;
-
-const { isImmediate } = Utils;
 
 export default class JobSequence<Rendered, Job> {
   curSeq: number;

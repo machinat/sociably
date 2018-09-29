@@ -1,4 +1,4 @@
-import { renderTextContent } from './utils';
+import { renderTextContent } from 'machinat-renderer';
 
 export const text = ({ children }, render) =>
   renderTextContent(children, render, '.children');
