@@ -1,0 +1,9 @@
+{
+  "name": "machinat-line",
+  "version": "0.0.1-0",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "machinat-renderer": "0.0.1-0"
+  }
+}

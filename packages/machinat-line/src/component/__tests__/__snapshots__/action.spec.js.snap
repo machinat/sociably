@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`match snapshot 1`] = `
+Array [
+  Object {
+    "data": "__POSTBACK_FOO__",
+    "displayText": undefined,
+    "label": "Hello!",
+    "type": "postback",
+  },
+  Object {
+    "label": "Tick",
+    "text": "Tock",
+    "type": "message",
+  },
+  Object {
+    "label": undefined,
+    "type": "uri",
+    "uri": "http://machinat.com",
+  },
+  Object {
+    "data": "__MEETUP_DATE__",
+    "initial": "2018-01-01",
+    "label": "Which day?",
+    "max": "2046-01-01",
+    "min": "2000-01-01",
+    "mode": "date",
+    "type": "datetimepicker",
+  },
+  Object {
+    "data": "__MEETUP_TIME__",
+    "initial": "00:00",
+    "label": "What time?",
+    "max": "21:21",
+    "min": "12:12",
+    "mode": "time",
+    "type": "datetimepicker",
+  },
+  Object {
+    "data": "__MEETUP_DATETIME__",
+    "initial": "2000-01-01T00:00",
+    "label": "Say it again?",
+    "max": "2020-01-01T00:00",
+    "min": "1990-01-01T00:00",
+    "mode": "datetime",
+    "type": "datetimepicker",
+  },
+  Object {
+    "label": "Cheer!",
+    "type": "camera",
+  },
+  Object {
+    "label": "Cheer again!",
+    "type": "cameraRoll",
+  },
+  Object {
+    "label": "Ok, where are we?",
+    "type": "location",
+  },
+]
+`;
