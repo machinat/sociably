@@ -15,16 +15,16 @@ it('is a constructor', () => {
 describe('#next() and #hasNext()', () => {
   it('pass batch of jobs by sequence order and ignore empty Immediate', () => {
     const renderedSequence = [
-      [{ rendered: 0 }, { rendered: 1 }],
-      [{ rendered: 2 }, { rendered: 3 }],
+      [{ value: 0 }, { value: 1 }],
+      [{ value: 2 }, { value: 3 }],
       <Machinat.Immediate />,
-      [{ rendered: 4 }, { rendered: 5 }],
+      [{ value: 4 }, { value: 5 }],
       <Machinat.Immediate />,
       <Machinat.Immediate />,
-      [{ rendered: 6 }, { rendered: 7 }],
+      [{ value: 6 }, { value: 7 }],
     ];
     const payload = {};
-    const createJob = jest.fn(jobs => jobs.map(j => ({ id: j.rendered })));
+    const createJob = jest.fn(jobs => jobs.map(j => ({ id: j.value })));
     const jobSequence = new JobSequence(renderedSequence, payload, createJob);
 
     for (let t = 0; t < 5; t += 1) {
@@ -38,10 +38,10 @@ describe('#next() and #hasNext()', () => {
     }
 
     expect(createJob.mock.calls).toEqual([
-      [[{ rendered: 0 }, { rendered: 1 }], payload],
-      [[{ rendered: 2 }, { rendered: 3 }], payload],
-      [[{ rendered: 4 }, { rendered: 5 }], payload],
-      [[{ rendered: 6 }, { rendered: 7 }], payload],
+      [[{ value: 0 }, { value: 1 }], payload],
+      [[{ value: 2 }, { value: 3 }], payload],
+      [[{ value: 4 }, { value: 5 }], payload],
+      [[{ value: 6 }, { value: 7 }], payload],
     ]);
   });
 
@@ -50,16 +50,16 @@ describe('#next() and #hasNext()', () => {
     const myDelay = jest.fn(n => delay(n));
 
     const renderedSequence = [
-      [{ rendered: 0 }, { rendered: 1 }],
+      [{ value: 0 }, { value: 1 }],
       <Machinat.Immediate delay={100} />,
-      [{ rendered: 2 }, { rendered: 3 }],
+      [{ value: 2 }, { value: 3 }],
       <Machinat.Immediate after={() => myDelay(100)} />,
-      [{ rendered: 4 }, { rendered: 5 }],
+      [{ value: 4 }, { value: 5 }],
       <Machinat.Immediate delay={50} after={() => myDelay(50)} />,
-      [{ rendered: 6 }, { rendered: 7 }],
+      [{ value: 6 }, { value: 7 }],
     ];
     const payload = {};
-    const createJob = jest.fn(jobs => jobs.map(j => ({ id: j.rendered })));
+    const createJob = jest.fn(jobs => jobs.map(j => ({ id: j.value })));
     const jobSequence = new JobSequence(renderedSequence, payload, createJob);
 
     for (let t = 0; t < 8; t += 1) {
@@ -99,10 +99,10 @@ describe('#next() and #hasNext()', () => {
     expect(myDelay).toHaveBeenCalledTimes(2);
 
     expect(createJob.mock.calls).toEqual([
-      [[{ rendered: 0 }, { rendered: 1 }], payload],
-      [[{ rendered: 2 }, { rendered: 3 }], payload],
-      [[{ rendered: 4 }, { rendered: 5 }], payload],
-      [[{ rendered: 6 }, { rendered: 7 }], payload],
+      [[{ value: 0 }, { value: 1 }], payload],
+      [[{ value: 2 }, { value: 3 }], payload],
+      [[{ value: 4 }, { value: 5 }], payload],
+      [[{ value: 6 }, { value: 7 }], payload],
     ]);
   });
 });

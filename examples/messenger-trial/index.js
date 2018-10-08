@@ -1,9 +1,12 @@
+import dotenv from 'dotenv';
 import Machinat, { createServer } from '../../packages/machinat/src';
 import MessengerConnector, {
   Image,
 } from '../../packages/machinat-messenger/src';
 
-const PORT = process.env.PORT || 5000;
+dotenv.config({ path: `${__dirname}/.env` });
+
+const PORT = process.env.PORT || 3000;
 
 const bot = new MessengerConnector({
   shouldVerifyWebhook: true,
@@ -12,7 +15,7 @@ const bot = new MessengerConnector({
   appSecret: process.env.SECRET,
 });
 
-bot.on('event', context =>
+bot.use(context =>
   context.reply(
     <>
       <Image url="https://i.ytimg.com/vi/XEq-Y46Tlxg/maxresdefault.jpg" />
@@ -48,6 +51,8 @@ bot.on('event', context =>
     </>
   )
 );
+
+bot.on('error', console.error);
 
 const server = createServer(bot);
 

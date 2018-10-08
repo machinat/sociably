@@ -43,15 +43,21 @@ const appendBodyToForm = (form, body) => {
 };
 
 export default class MessengerClient {
-  constructor(token, queue, { consumeInterval = 500, appSecret }) {
-    this.token = token;
-    this.queue = queue;
+  constructor(
+    queue,
+    renderer,
+    { consumeInterval = 500, appSecret, accessToken }
+  ) {
+    this.token = accessToken;
     this.consumeInterval = consumeInterval;
-    this._consumptionTimeoutId = null;
+
+    this._queue = queue;
+    this._renderer = renderer;
+
     this.appSecretProof = appSecret
       ? crypto
           .createHmac('sha256', appSecret)
-          .update(token)
+          .update(accessToken)
           .digest('hex')
       : undefined;
     this.batchBodyCarrier = {
@@ -60,6 +66,22 @@ export default class MessengerClient {
       appsecret_proof: this.appSecretProof || undefined,
       batch: null,
     };
+    this._consumptionTimeoutId = null;
+  }
+
+  async send(recipient, nodes, options) {
+    let thread = recipient;
+    if (typeof thread === 'string') {
+      thread = { id: recipient };
+    }
+
+    const sequence = this._renderer.renderJobSequence(nodes, {
+      thread,
+      options,
+    });
+
+    const result = await this._queue.executeJobSequence(sequence);
+    return result;
   }
 
   async _request(method, path, body, query) {
@@ -111,7 +133,7 @@ export default class MessengerClient {
 
   _startConsumingJobFlow = async () => {
     this._consumptionTimeoutId = IS_CONSUMING_FLAG;
-    while (this.queue.length > 0) {
+    while (this._queue.length > 0) {
       try {
         // eslint-disable-next-line no-await-in-loop
         await new Promise(this._handleConsumptionAdanvancing);
@@ -130,7 +152,7 @@ export default class MessengerClient {
 
   _handleConsumptionAdanvancing = async (resolveFlow, rejectFlow) => {
     try {
-      await this.queue.acquire(50, this._consumeJob(resolveFlow, rejectFlow));
+      await this._queue.acquire(50, this._consumeJob(resolveFlow, rejectFlow));
     } catch (e) {
       // TODO: handle errors
       console.error(e);

@@ -3,7 +3,7 @@ import {
   MACHINAT_IMMEDIATELY_TYPE,
 } from 'machinat-shared';
 import createElement from './createElement';
-import createServer from './server/native';
+import createServer from './server/node';
 
 const Machinat = {
   createElement,

@@ -14,7 +14,7 @@ const bot = new LineConnector({
   channelSecret: process.env.SECRET,
 });
 
-bot.on('event', async context =>
+bot.use(async context =>
   context.reply(
     <>
       <Image

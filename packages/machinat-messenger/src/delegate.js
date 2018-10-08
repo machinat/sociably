@@ -20,14 +20,14 @@ const createJobFromString = (text, body) => ({
   body: appendUrlencodedBody(body, 'message', JSON.stringify({ text })),
 });
 
-const createJobFromRenderedResult = (renderedResult, currentBody) => {
-  const { element, rendered } = renderedResult;
-  const fields = Object.keys(rendered);
+const createJobFromRenderedResult = (rendered, currentBody) => {
+  const { element, value } = rendered;
+  const fields = Object.keys(value);
 
   let body = currentBody;
   for (let f = 0; f < fields.length; f += 1) {
     const field = fields[f];
-    body = appendUrlencodedBody(body, field, JSON.stringify(rendered[field]));
+    body = appendUrlencodedBody(body, field, JSON.stringify(value[field]));
   }
 
   return {
@@ -63,8 +63,8 @@ export default {
     const jobs = new Array(renderedRoots.length);
 
     for (let i = 0; i < renderedRoots.length; i += 1) {
-      const node = renderedRoots[i];
-      const { element, rendered } = node;
+      const rendered = renderedRoots[i];
+      const { element, value } = rendered;
 
       const body = appendUrlencodedBody(
         '',
@@ -73,10 +73,10 @@ export default {
       );
 
       let job;
-      if (typeof rendered === 'string') {
-        job = createJobFromString(rendered, body);
+      if (typeof value === 'string') {
+        job = createJobFromString(value, body);
       } else if (typeof element.type === 'string' || element.type.$$root) {
-        job = createJobFromRenderedResult(node, body);
+        job = createJobFromRenderedResult(rendered, body);
       } else {
         invariant(
           false,
@@ -84,8 +84,8 @@ export default {
         );
       }
 
-      job[ATTACHED_FILE_DATA] = rendered[ATTACHED_FILE_DATA];
-      job[ATTACHED_FILE_INFO] = rendered[ATTACHED_FILE_INFO];
+      job[ATTACHED_FILE_DATA] = value[ATTACHED_FILE_DATA];
+      job[ATTACHED_FILE_INFO] = value[ATTACHED_FILE_INFO];
       job[THREAD_IDENTIFIER] = makeThreadId(thread);
       jobs[i] = job;
     }

@@ -1,4 +1,4 @@
-import { mixin, makeEvent } from 'machinat-shared';
+import { mixin, makeEvent } from 'machinat-base';
 import {
   EventBase as Base,
   Message,

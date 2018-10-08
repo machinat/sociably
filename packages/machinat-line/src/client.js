@@ -1,5 +1,6 @@
 import url from 'url';
 import fetch from 'node-fetch';
+import invariant from 'invariant';
 
 import { API_PATH, HAS_BODY } from './symbol';
 
@@ -13,16 +14,39 @@ const API_ENTRY = 'https://api.line.me/v2/bot/';
 const IS_CONSUMING_FLAG = Symbol('__is_now_consuming__');
 
 export default class LineClient {
-  constructor(accessToken, queue, { consumeInterval = 500 }) {
+  constructor(
+    queue,
+    renderer,
+    { consumeInterval = 500, useReplyAPI, accessToken }
+  ) {
     this.consumeInterval = consumeInterval;
+    this.useReplyAPI = useReplyAPI;
+    this._queue = queue;
+    this._renderer = renderer;
+
     this._postHeaders = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
     };
     this._getHeaders = { Authorization: `Bearer ${accessToken}` };
-    this._queue = queue;
 
     this._consumptionTimeoutId = null;
+  }
+
+  async send(source, nodes, options) {
+    invariant(!this.useReplyAPI || (options && options.replyToken));
+    let thread = source;
+    if (typeof thread === 'string') {
+      thread = { userId: source };
+    }
+
+    const sequence = this._renderer.renderJobSequence(nodes, {
+      thread,
+      options,
+    });
+
+    const result = await this._queue.executeJobSequence(sequence);
+    return result;
   }
 
   async _request(method, path, body) {
