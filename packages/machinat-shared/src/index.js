@@ -2,6 +2,7 @@
 export { default as isValidElementType } from './isValidElementType';
 
 export * from './isXXX';
+export * from './eventUtils';
 
 export {
   MACHINAT_ELEMENT_TYPE,

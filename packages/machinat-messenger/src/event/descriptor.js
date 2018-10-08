@@ -1,4 +1,4 @@
-export const MessengerEventBase = {
+export const EventBase = {
   platform: {
     enumerable: true,
     value: 'messenger',
@@ -37,14 +37,14 @@ export const MessengerEventBase = {
   },
 };
 
-export const MessageBase = Object.assign({}, MessengerEventBase, {
+export const Message = {
   messageId: {
     enumerable: true,
     get() {
       return this.raw.message.mid;
     },
   },
-});
+};
 
 export const Media = {
   url: {
@@ -104,23 +104,23 @@ export const Template = {
   },
 };
 
-export const DeliveryBase = Object.assign({}, MessengerEventBase, {
+export const Delivery = {
   delivery: {
     enumerable: true,
     get() {
       return this.raw.delivery;
     },
   },
-});
+};
 
-export const ReadBase = Object.assign({}, MessengerEventBase, {
+export const Read = {
   read: {
     enumerable: true,
     get() {
       return this.raw.read;
     },
   },
-});
+};
 
 export const Echo = {
   isEcho: {
@@ -141,16 +141,16 @@ export const Echo = {
   },
 };
 
-export const AccountLinkingBase = Object.assign({}, MessengerEventBase, {
+export const AccountLinking = {
   accountLinking: {
     enumerable: true,
     get() {
       return this.raw.account_linking;
     },
   },
-});
+};
 
-export const CheckoutUpdateBase = Object.assign({}, MessengerEventBase, {
+export const CheckoutUpdate = {
   shouldRespond: {
     enumerable: true,
     value: true,
@@ -161,90 +161,90 @@ export const CheckoutUpdateBase = Object.assign({}, MessengerEventBase, {
       return this.raw.checkout_update;
     },
   },
-});
+};
 
-export const GamePlayBase = Object.assign({}, MessengerEventBase, {
+export const GamePlay = {
   gamePlay: {
     enumerable: true,
     get() {
       return this.raw.game_play;
     },
   },
-});
+};
 
-export const PassThreadControlBase = Object.assign({}, MessengerEventBase, {
+export const PassThreadControl = {
   passThreadControl: {
     enumerable: true,
     get() {
       return this.raw.pass_thread_control;
     },
   },
-});
+};
 
-export const TakeThreadControlBase = Object.assign({}, MessengerEventBase, {
+export const TakeThreadControl = {
   takeThreadControl: {
     enumerable: true,
     get() {
       return this.raw.take_thread_control;
     },
   },
-});
+};
 
-export const RequestThreadControlBase = Object.assign({}, MessengerEventBase, {
+export const RequestThreadControl = {
   requestThreadControl: {
     enumerable: true,
     get() {
       return this.raw.request_thread_control;
     },
   },
-});
+};
 
-export const AppRolesBase = Object.assign({}, MessengerEventBase, {
+export const AppRoles = {
   appRoles: {
     enumerable: true,
     get() {
       return this.raw.app_roles;
     },
   },
-});
+};
 
-export const OptinBase = Object.assign({}, MessengerEventBase, {
+export const Optin = {
   optin: {
     enumerable: true,
     get() {
       return this.raw.optin;
     },
   },
-});
+};
 
-export const PaymentBase = Object.assign({}, MessengerEventBase, {
+export const Payment = {
   payment: {
     enumerable: true,
     get() {
       return this.raw.payment;
     },
   },
-});
+};
 
-export const PolicyEnforcementBase = Object.assign({}, MessengerEventBase, {
+export const PolicyEnforcement = {
   payment: {
     enumerable: true,
     get() {
       return this.raw['policy-enforcement'];
     },
   },
-});
+};
 
-export const PostbackBase = Object.assign({}, MessengerEventBase, {
+export const Postback = {
   postback: {
     enumerable: true,
     get() {
       return this.raw.postback;
     },
   },
-});
+};
 
-export const PaymentPreCheckoutBase = Object.assign({}, MessengerEventBase, {
+export const PaymentPreCheckout = {
   shouldRespond: {
     enumerable: true,
     value: true,
@@ -255,13 +255,13 @@ export const PaymentPreCheckoutBase = Object.assign({}, MessengerEventBase, {
       return this.raw.payment_pre_checkout;
     },
   },
-});
+};
 
-export const ReferralBase = Object.assign({}, MessengerEventBase, {
+export const Referral = {
   referral: {
     enumerable: true,
     get() {
       return this.raw.referral;
     },
   },
-});
+};

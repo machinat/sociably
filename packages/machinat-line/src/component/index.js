@@ -9,3 +9,5 @@ export * from './media';
 export * from './quickReply';
 export * from './template';
 export * from './text';
+export * from './leave';
+export * from './richMenu';

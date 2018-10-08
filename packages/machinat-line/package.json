@@ -4,6 +4,13 @@
   "main": "lib/index.js",
   "license": "MIT",
   "dependencies": {
-    "machinat-renderer": "0.0.1-0"
+    "invariant": "^2.2.4",
+    "machinat-queue": "0.0.1-0",
+    "machinat-renderer": "0.0.1-0",
+    "machinat-shared": "0.0.1-0",
+    "node-fetch": "^2.2.0",
+    "raw-body": "^2.3.3",
+    "thenifiedly": "^0.1.0",
+    "warning": "^4.0.2"
   }
 }

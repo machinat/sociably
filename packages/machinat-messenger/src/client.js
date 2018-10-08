@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import fetch from 'isomorphic-fetch';
 import FormData from 'form-data';
 
-import { GraphAPIError } from './errors';
+import { GraphAPIError } from './error';
 import {
   THREAD_IDENTIFIER,
   ATTACHED_FILE_DATA,
@@ -12,12 +12,12 @@ import {
 
 const UNKNOWN_THREAD = 'unknown_thread';
 
-const ENTRY = 'https://graph.facebook.com/v3.1';
+const ENTRY = 'https://graph.facebook.com/v3.1/';
 
 const GET = 'GET';
 const POST = 'POST';
 
-const IS_FETCHING_FLAG = Symbol('__is_fetching__');
+const IS_CONSUMING_FLAG = Symbol('__is_consuming__');
 
 const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
 
@@ -43,38 +43,38 @@ const appendBodyToForm = (form, body) => {
 };
 
 export default class MessengerClient {
-  constructor(token, queue, { consumeInterval, appSecret } = {}) {
+  constructor(token, queue, { consumeInterval = 500, appSecret }) {
     this.token = token;
     this.queue = queue;
-    this.consumeInterval = consumeInterval || 500;
-    this._nextConsumptionId = null;
+    this.consumeInterval = consumeInterval;
+    this._consumptionTimeoutId = null;
     this.appSecretProof = appSecret
       ? crypto
           .createHmac('sha256', appSecret)
           .update(token)
           .digest('hex')
-      : null;
+      : undefined;
     this.batchBodyCarrier = {
       access_token: this.token,
-      include_headers: 'false', // NOTE: Graph API param only work as string
+      include_headers: 'false', // NOTE: Graph API param work as string
       appsecret_proof: this.appSecretProof || undefined,
       batch: null,
     };
   }
 
   async _request(method, path, body, query) {
-    const queryURL = new url.URL(path, ENTRY);
-    queryURL.searchParams.set('access_token', this.token);
+    const requestURL = new url.URL(path, ENTRY);
+    requestURL.searchParams.set('access_token', this.token);
 
-    if (this.appSecretProof !== null) {
-      queryURL.searchParams.set('appsecret_proof', this.appSecretProof);
+    if (this.appSecretProof !== undefined) {
+      requestURL.searchParams.set('appsecret_proof', this.appSecretProof);
     }
 
     if (query !== undefined) {
-      assignQueryParams(queryURL.searchParams, query);
+      assignQueryParams(requestURL.searchParams, query);
     }
 
-    const response = await fetch(queryURL.href, { method, body });
+    const response = await fetch(requestURL.href, { method, body });
     const result = await response.json();
     if (!response.ok) {
       throw new GraphAPIError(result);
@@ -90,25 +90,27 @@ export default class MessengerClient {
     return this._request(POST, path, body, query);
   }
 
-  startConsumingBatchJob() {
-    if (this._nextConsumptionId === null) {
-      this._startConsumeBatchJobFlow(this.queue);
+  startConsumingJob() {
+    if (this._consumptionTimeoutId === null) {
+      this._startConsumingJobFlow();
       return true;
     }
     return false;
   }
 
-  stopConsumingBatchJob() {
-    if (this._nextConsumptionId !== null) {
-      clearTimeout(this._nextConsumptionId);
-      this._nextConsumptionId = null;
+  stopConsumingJob() {
+    if (this._consumptionTimeoutId !== null) {
+      if (this._consumptionTimeoutId !== IS_CONSUMING_FLAG) {
+        clearTimeout(this._consumptionTimeoutId);
+      }
+      this._consumptionTimeoutId = null;
       return true;
     }
     return false;
   }
 
-  _startConsumeBatchJobFlow = async () => {
-    this._nextConsumptionId = IS_FETCHING_FLAG;
+  _startConsumingJobFlow = async () => {
+    this._consumptionTimeoutId = IS_CONSUMING_FLAG;
     while (this.queue.length > 0) {
       try {
         // eslint-disable-next-line no-await-in-loop
@@ -117,25 +119,25 @@ export default class MessengerClient {
         // do nothing since only errors before header received go to here
       }
     }
-    this._nextConsumptionId = setTimeout(
-      this._startConsumeBatchJobFlow,
-      this.consumeInterval
-    );
+
+    if (this._consumptionTimeoutId === IS_CONSUMING_FLAG) {
+      this._consumptionTimeoutId = setTimeout(
+        this._startConsumingJobFlow,
+        this.consumeInterval
+      );
+    }
   };
 
   _handleConsumptionAdanvancing = async (resolveFlow, rejectFlow) => {
     try {
-      await this.queue.acquire(
-        50,
-        this._consumeBatchJob(resolveFlow, rejectFlow)
-      );
+      await this.queue.acquire(50, this._consumeJob(resolveFlow, rejectFlow));
     } catch (e) {
       // TODO: handle errors
       console.error(e);
     }
   };
 
-  _consumeBatchJob = (resolveFlow, rejectFlow) => async jobs => {
+  _consumeJob = (resolveFlow, rejectFlow) => async jobs => {
     const threadSendingRec = new Map();
     let fileCount = 0;
     let filesForm;

@@ -10,6 +10,7 @@
     "isomorphic-fetch": "^2.2.1",
     "machinat-queue": "0.0.1-0",
     "machinat-renderer": "0.0.1-0",
+    "machinat-shared": "0.0.1-0",
     "raw-body": "^2.3.3",
     "thenifiedly": "^0.1.0",
     "warning": "^4.0.2"

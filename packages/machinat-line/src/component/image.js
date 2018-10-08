@@ -15,10 +15,7 @@ export const Image = ({ url, previewImage, quickReplies }, render) => ({
 
 annotateNativeRoot(Image, LINE_NAITVE_TYPE);
 
-export const Sticker = (
-  { id: stickerId, package: packageId, quickReplies },
-  render
-) => ({
+export const Sticker = ({ stickerId, packageId, quickReplies }, render) => ({
   type: 'sticker',
   packageId,
   stickerId,

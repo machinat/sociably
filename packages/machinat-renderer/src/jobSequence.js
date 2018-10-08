@@ -27,6 +27,10 @@ export default class JobSequence<Rendered, Job> {
     this.curSeq = 0;
   }
 
+  get length() {
+    return this.sequence.length;
+  }
+
   next(): Promise<void> | Array<Job> {
     for (; this.curSeq < this.sequence.length; this.curSeq += 1) {
       const action = this.sequence[this.curSeq];

@@ -1,170 +1,124 @@
+import { mixin, makeEvent } from 'machinat-shared';
 import {
-  TEXT,
-  IMAGE,
-  VIDEO,
-  AUDIO,
-  FILE,
-  LOCATION,
-  TEMPLATE,
-  MESSAGE,
-  READ,
-  DELIVERY,
-  ACCOUNT_LINKING,
-  CHECKOUT_UPDATE,
-  GAME_PLAY,
-  PASS_THREAD_CONTROL,
-  TAKE_THREAD_CONTROL,
-  REQUEST_THREAD_CONTROL,
-  APP_ROLES,
-  OPTIN,
-  PAYMENT,
-  POLICY_ENFORCEMENT,
-  POSTBACK,
-  PAYMENT_PRE_CHECKOUT,
-  REFERRAL,
-} from './key';
+  EventBase as Base,
+  Message,
+  Text,
+  NLP,
+  Media,
+  Location,
+  Echo,
+  Template,
+  Read,
+  Delivery,
+  AccountLinking,
+  CheckoutUpdate,
+  GamePlay,
+  PassThreadControl,
+  TakeThreadControl,
+  RequestThreadControl,
+  AppRoles,
+  Optin,
+  Payment,
+  PolicyEnforcement,
+  Postback,
+  PaymentPreCheckout,
+  Referral,
+} from './descriptor';
 
-import {
-  text,
-  image,
-  video,
-  audio,
-  file,
-  location,
-  echoedText,
-  echoedImage,
-  echoedVideo,
-  echoedAudio,
-  echoedFile,
-  echoedLocation,
-  echoedTemplate,
-  standbyText,
-  standbyImage,
-  standbyVideo,
-  standbyAudio,
-  standbyFile,
-  standbyLocation,
-  read,
-  standbyRead,
-  delivery,
-  standbyDelivery,
-  accountLinking,
-  checkoutUpdate,
-  gamePlay,
-  passThreadControl,
-  takeThreadControl,
-  requestThreadControl,
-  appRoles,
-  optin,
-  payment,
-  policyEnforcement,
-  postback,
-  standbyPostback,
-  paymentPreCheckout,
-  referral,
-  unknown,
-} from './event';
+const textProto = mixin(Base, Message, Text, NLP);
+export const text = makeEvent('text', null, textProto);
+export const standbyText = makeEvent('standby:text', textProto);
 
-const hasOwnProperty = (obj, prop) =>
-  Object.prototype.hasOwnProperty.call(obj, prop);
+const MediaProto = mixin(Base, Message, Media);
+export const image = makeEvent('image', null, MediaProto);
+export const video = makeEvent('video', null, MediaProto);
+export const audio = makeEvent('audio', null, MediaProto);
+export const file = makeEvent('file', null, MediaProto);
 
-const createMessageEvent = (raw, isStandby) => {
-  const { message } = raw;
-  if (hasOwnProperty(message, TEXT)) {
-    return isStandby
-      ? standbyText(raw)
-      : message.is_echo
-        ? echoedText(raw)
-        : text(raw);
-  }
-  switch (message.attachments[0].type) {
-    case IMAGE:
-      return isStandby
-        ? standbyImage(raw)
-        : message.is_echo
-          ? echoedImage(raw)
-          : image(raw);
-    case VIDEO:
-      return isStandby
-        ? standbyVideo(raw)
-        : message.is_echo
-          ? echoedVideo(raw)
-          : video(raw);
-    case AUDIO:
-      return isStandby
-        ? standbyAudio(raw)
-        : message.is_echo
-          ? echoedAudio(raw)
-          : audio(raw);
-    case FILE:
-      return isStandby
-        ? standbyFile(raw)
-        : message.is_echo
-          ? echoedFile(raw)
-          : file(raw);
-    case LOCATION:
-      return isStandby
-        ? standbyLocation(raw)
-        : message.is_echo
-          ? echoedLocation(raw)
-          : location(raw);
-    case TEMPLATE:
-      return echoedTemplate(raw);
-    default:
-      return unknown(raw);
-  }
-};
+export const standbyImage = makeEvent('standby', 'image', MediaProto);
+export const standbyVideo = makeEvent('standby', 'video', MediaProto);
+export const standbyAudio = makeEvent('standby', 'audio', MediaProto);
+export const standbyFile = makeEvent('standby', 'file', MediaProto);
 
-// prettier-ignore
-const createEvent = (isStandby, raw) =>
-  hasOwnProperty(raw, MESSAGE)
-    ? createMessageEvent(raw, isStandby)
-    : hasOwnProperty(raw, READ)
-    ? isStandby
-      ? standbyRead(raw)
-      : read(raw)
-    : hasOwnProperty(raw, DELIVERY)
-    ? isStandby
-      ? standbyDelivery(raw)
-      : delivery(raw)
-    : hasOwnProperty(raw, ACCOUNT_LINKING)
-    ? accountLinking(raw)
-    : hasOwnProperty(raw, CHECKOUT_UPDATE)
-    ? checkoutUpdate(raw)
-    : hasOwnProperty(raw, GAME_PLAY)
-    ? gamePlay(raw)
-    : hasOwnProperty(raw, TAKE_THREAD_CONTROL)
-    ? takeThreadControl(raw)
-    : hasOwnProperty(raw, PASS_THREAD_CONTROL)
-    ? passThreadControl(raw)
-    : hasOwnProperty(raw, REQUEST_THREAD_CONTROL)
-    ? requestThreadControl(raw)
-    : hasOwnProperty(raw, APP_ROLES)
-    ? appRoles(raw)
-    : hasOwnProperty(raw, OPTIN)
-    ? optin(raw)
-    : hasOwnProperty(raw, PAYMENT)
-    ? payment(raw)
-    : hasOwnProperty(raw, POLICY_ENFORCEMENT)
-    ? policyEnforcement(raw)
-    : hasOwnProperty(raw, POSTBACK)
-    ? isStandby
-      ? standbyPostback(raw)
-      : postback(raw)
-    : hasOwnProperty(raw, PAYMENT_PRE_CHECKOUT)
-    ? paymentPreCheckout(raw)
-    : hasOwnProperty(raw, REFERRAL)
-    ? referral(raw)
-    : unknown(raw);
+const LocationProto = mixin(Base, Message, Location);
+export const location = makeEvent('location', null, LocationProto);
+export const standbyLocation = makeEvent('standby', 'location', LocationProto);
 
-const eventReducer = (events, rawEvent) => {
-  const { messaging, stanby } = rawEvent;
-  const eventBody = messaging || stanby;
-  const isStandby = !!stanby;
-  events.push(createEvent(isStandby, eventBody[0]));
-  return events;
-};
+export const echoedText = makeEvent(
+  'echo',
+  'text',
+  mixin(Base, Message, Echo, Text)
+);
 
-const eventFactory = entries => entries.reduce(eventReducer, []);
+const EchoedMediaProto = mixin(Base, Message, Echo, Media);
+export const echoedImage = makeEvent('echo', 'image', EchoedMediaProto);
+export const echoedVideo = makeEvent('echo', 'video', EchoedMediaProto);
+export const echoedAudio = makeEvent('echo', 'audio', EchoedMediaProto);
+export const echoedFile = makeEvent('echo', 'file', EchoedMediaProto);
 
-export default eventFactory;
+export const echoedLocation = makeEvent(
+  'echo',
+  'location',
+  mixin(Base, Message, Echo, Location)
+);
+export const echoedTemplate = makeEvent(
+  'echo',
+  'template',
+  mixin(Base, Message, Echo, Template)
+);
+
+const ReadProto = mixin(Base, Read);
+export const read = makeEvent('read', null, ReadProto);
+export const standbyRead = makeEvent('standby', 'read', ReadProto);
+
+const DeliveryProto = mixin(Base, Delivery);
+export const delivery = makeEvent('delivery', null, DeliveryProto);
+export const standbyDelivery = makeEvent('standby', 'delivery', DeliveryProto);
+
+export const accountLinking = makeEvent(
+  'account_linking',
+  null,
+  mixin(Base, AccountLinking)
+);
+export const checkoutUpdate = makeEvent(
+  'checkout_update',
+  null,
+  mixin(Base, CheckoutUpdate)
+);
+export const gamePlay = makeEvent('game_play', null, mixin(Base, GamePlay));
+export const passThreadControl = makeEvent(
+  'pass_thread_control',
+  null,
+  mixin(Base, PassThreadControl)
+);
+export const takeThreadControl = makeEvent(
+  'take_thread_control',
+  null,
+  mixin(Base, TakeThreadControl)
+);
+export const requestThreadControl = makeEvent(
+  'request_thread_control',
+  null,
+  mixin(Base, RequestThreadControl)
+);
+export const appRoles = makeEvent('app_roles', null, mixin(Base, AppRoles));
+export const optin = makeEvent('optin', null, mixin(Base, Optin));
+export const payment = makeEvent('payment', null, mixin(Base, Payment));
+export const policyEnforcement = makeEvent(
+  'policy_enforcement',
+  null,
+  mixin(Base, PolicyEnforcement)
+);
+
+const PostbackProto = mixin(Base, Postback);
+export const postback = makeEvent('postback', null, PostbackProto);
+export const standbyPostback = makeEvent('standby', 'postback', PostbackProto);
+
+export const paymentPreCheckout = makeEvent(
+  'payment_pre_checkout',
+  null,
+  mixin(Base, PaymentPreCheckout)
+);
+export const referral = makeEvent('referral', null, mixin(Base, Referral));
+
+export const unknown = makeEvent('unknown', null, mixin(Base));

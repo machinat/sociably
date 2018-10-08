@@ -9,7 +9,7 @@ import Renderer from 'machinat-renderer';
 import Queue from 'machinat-queue';
 
 import MessengerDelegator from './delegate';
-import eventFactory from './event';
+import createEvent from './event';
 import Context from './context';
 import Client from './client';
 
@@ -17,6 +17,17 @@ const endResponse = thenifiedly.callMethodFactory('end');
 const shouldEventRespond = e => !!e.shouldRespond;
 
 const RAW_BODY_OPTION = { encoding: true };
+
+const eventReducer = (events, rawEvent) => {
+  const { messaging, stanby } = rawEvent;
+  const eventBody = messaging || stanby;
+  const isStandby = !!stanby;
+
+  for (let i = 0; i < eventBody.length; i += 1) {
+    events.push(createEvent(isStandby, eventBody[i]));
+  }
+  return events;
+};
 
 class MessengerConnector extends EventEmitter {
   constructor({ appId, appSecret, accessToken, ...options } = {}) {
@@ -118,10 +129,10 @@ class MessengerConnector extends EventEmitter {
     );
 
     if (this.options.shouldValidateEvent) {
-      // ... validate the req
+      // TODO: validate the req
     }
 
-    const events = eventFactory(body.entry);
+    const events = body.entry.reduce(eventReducer, []);
     events.forEach(this._emitEvent);
 
     if (events.findIndex(shouldEventRespond) !== -1) {

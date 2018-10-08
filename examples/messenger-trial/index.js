@@ -1,5 +1,7 @@
-import Machinat, { createServer } from '../packages/machinat/src';
-import MessengerConnector, { Image } from '../packages/machinat-messenger/src';
+import Machinat, { createServer } from '../../packages/machinat/src';
+import MessengerConnector, {
+  Image,
+} from '../../packages/machinat-messenger/src';
 
 const PORT = process.env.PORT || 5000;
 

@@ -6,8 +6,8 @@ import {
   ATTACHED_FILE_DATA,
   ATTACHED_FILE_INFO,
 } from './symbol';
-import { ENTRY_MESSAGES } from './component/constant';
-import * as generalRenderer from './component/general';
+import { ENTRY_MESSAGES } from './component/apiEntry';
+import * as generalComponents from './component/general';
 
 const POST = 'POST';
 
@@ -46,13 +46,13 @@ const makeThreadId = thread =>
         ? `phone_number:${thread.phone_number}`
         : JSON.stringify(thread);
 
-const Delegate = {
-  isNativeComponent(component) {
-    return !!component && component.$$native === MESSENGER_NAITVE_TYPE;
+export default {
+  isNativeComponent(Component) {
+    return !!Component && Component.$$native === MESSENGER_NAITVE_TYPE;
   },
 
   renderGeneralElement({ props, type }, render) {
-    return generalRenderer[type](props, render);
+    return generalComponents[type](props, render);
   },
 
   renderNativeElement({ type: Component, props }, render) {
@@ -80,7 +80,7 @@ const Delegate = {
       } else {
         invariant(
           false,
-          `illegal root element ${element.type.name || element.type} recieved`
+          `'${element.type.name || element.type}' is not legal root Component`
         );
       }
 
@@ -92,5 +92,3 @@ const Delegate = {
     return jobs;
   },
 };
-
-export default Delegate;
