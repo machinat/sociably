@@ -3,11 +3,12 @@
   "version": "0.0.1",
   "scripts": {
     "bootstrap": "lerna bootstrap && yarn run build",
-    "build": "node ./scripts/build",
+    "build-clean": "rm -rf ./packages/*/lib",
+    "build": "yarn build-clean && node ./scripts/build",
     "lint": "eslint --ext .json --ext .js ./packages/*",
     "lint:fix": "yarn run lint -- --fix",
     "test": "jest",
-    "tunnel": "ssh -R machinat-dev-$USER:80:localhost:${PORT:-3000} serveo.net"
+    "tunnel": "ssh -o ServerAliveInterval=60 -R machinat-dev-$USER:80:localhost:${PORT:-3000} serveo.net"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

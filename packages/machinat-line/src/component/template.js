@@ -41,7 +41,7 @@ export const ButtonTemplate = (
       defaultAction: defaultActionRendered && defaultActionRendered[0].value,
       actions: actionsRendered.map(getValue),
     },
-    quickReplies: renderQuickReplies(quickReplies),
+    quickReplies: renderQuickReplies(quickReplies, render),
   };
 };
 
@@ -64,7 +64,7 @@ export const ConfirmTemplate = (
       text,
       actions: actionsRendered.map(getValue),
     },
-    quickReplies: renderQuickReplies(quickReplies),
+    quickReplies: renderQuickReplies(quickReplies, render),
   };
 };
 
@@ -110,7 +110,7 @@ export const CarouselTemplate = (
       imageSize: contain && 'contain',
       columns: renderedItems.map(getValue),
     },
-    quickReplies: renderQuickReplies(quickReplies),
+    quickReplies: renderQuickReplies(quickReplies, render),
   };
 };
 
@@ -146,7 +146,7 @@ export const ImageCarouselTemplate = (
       type: 'image_carousel',
       columns: renderedItems.map(getValue),
     },
-    quickReplies: renderQuickReplies(quickReplies),
+    quickReplies: renderQuickReplies(quickReplies, render),
   };
 };
 

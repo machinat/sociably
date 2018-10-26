@@ -3,7 +3,7 @@ module.exports = {
     '@babel/preset-flow',
     ['@babel/preset-env', {
         targets: {
-          node: '6.10',
+          node: '7.6',
         },
     }],
   ],

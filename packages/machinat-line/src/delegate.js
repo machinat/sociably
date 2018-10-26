@@ -31,13 +31,9 @@ export default ({ useReplyAPI }) => ({
 
   createJobsFromRendered(renderedRoots, { thread, options }) {
     const replyToken = options && options.replyToken;
-    const { type } = thread;
+    const { type, groupId, roomId, userId } = thread;
     const threadId =
-      type === 'group'
-        ? thread.groupId
-        : type === 'room'
-          ? thread.roomId
-          : thread.userId;
+      type === 'group' ? groupId : type === 'room' ? roomId : userId;
 
     const jobs = [];
     let messages;

@@ -26,6 +26,8 @@ export default class LineConnector extends BaseConnector {
 
     super(new Client(queue, renderer, { accessToken, ...refinedOptions }));
 
+    this.client.startConsumingJob();
+
     this.channelSecret = channelSecret;
     this.options = refinedOptions;
 

@@ -22,6 +22,13 @@ export const EventBase = {
       return this.raw.source;
     },
   },
+  threadId: {
+    enumerable: true,
+    get() {
+      const { type, groupId, roomId, userId } = this.raw.source;
+      return type === 'group' ? groupId : type === 'room' ? roomId : userId;
+    },
+  },
   shouldRespond: {
     enumerable: true,
     value: false,

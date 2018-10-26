@@ -23,6 +23,12 @@ export const EventBase = {
         : this.raw.sender;
     },
   },
+  threadId: {
+    enumerable: true,
+    get() {
+      return this.raw.sender.id;
+    },
+  },
   shouldRespond: {
     enumerable: true,
     value: false,

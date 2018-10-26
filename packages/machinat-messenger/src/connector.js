@@ -30,6 +30,7 @@ export default class MessengerConnector extends BaseConnector {
       respondTimeout: 5000,
       consumeInterval: 100,
     };
+
     const refinedOptions = Object.assign(defaultOpions, options);
 
     const renderer = new Renderer('Messneger', MessengerDelegator);
@@ -41,6 +42,8 @@ export default class MessengerConnector extends BaseConnector {
     });
 
     super(client);
+
+    this.client.startConsumingJob();
 
     this.appId = appId;
     this.appSecret = appSecret;

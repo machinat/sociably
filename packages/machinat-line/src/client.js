@@ -3,11 +3,13 @@ import fetch from 'node-fetch';
 import invariant from 'invariant';
 
 import { API_PATH, HAS_BODY } from './symbol';
-
 import { LineAPIError } from './error';
+import UserProfile from './userProfile';
 
 const GET = 'GET';
 const POST = 'POST';
+const PUT = 'PUT';
+const DELETE = 'DELETE';
 
 const API_ENTRY = 'https://api.line.me/v2/bot/';
 
@@ -24,11 +26,10 @@ export default class LineClient {
     this._queue = queue;
     this._renderer = renderer;
 
-    this._postHeaders = {
+    this._headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
     };
-    this._getHeaders = { Authorization: `Bearer ${accessToken}` };
 
     this._consumptionTimeoutId = null;
   }
@@ -49,28 +50,51 @@ export default class LineClient {
     return result;
   }
 
+  async getUserProfile(user) {
+    const rawResult = await this.get(`profile/${user.userId}`);
+    return new UserProfile(rawResult);
+  }
+
   async _request(method, path, body) {
     const requestURL = new url.URL(path, API_ENTRY);
 
     const response = await fetch(requestURL.href, {
       method,
-      body: JSON.stringify(body),
-      headers: method === POST ? this._postHeaders : this._getHeaders,
+      body: body === undefined ? undefined : JSON.stringify(body),
+      headers: this._headers,
     });
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (e) {
+      if (e.message.indexOf('Unexpected end of JSON input') === -1) {
+        throw e;
+      }
+    }
+
     if (!response.ok) {
+      // eslint-disable-next-line no-unsafe-finally
       throw new LineAPIError(response.statusText, result);
     }
+
     return result;
   }
 
   get(path) {
-    return this._request(GET, path, null);
+    return this._request(GET, path);
   }
 
   post(path, body) {
     return this._request(POST, path, body);
+  }
+
+  put(path, body) {
+    return this._request(PUT, path, body);
+  }
+
+  delete(path, body) {
+    return this._request(DELETE, path, body);
   }
 
   startConsumingJob() {

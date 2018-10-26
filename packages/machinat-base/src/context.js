@@ -2,10 +2,11 @@
 import invariant from 'invariant';
 
 export default class MachinatContext {
-  constructor(event, client, response) {
+  constructor(event, client, response, httpContext) {
     this.event = event;
     this.client = client;
     this.response = response;
+    this.httpContext = httpContext;
   }
 
   respond(status, body) {
