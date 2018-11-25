@@ -34,6 +34,7 @@
     "flow-bin": "^0.77.0",
     "jest": "^23.0.0-alpha.0",
     "lerna": "^2.9.0",
+    "moxy": "https://github.com/lrills/moxy/releases/download/v0.1.0-2/moxy.tar.gz",
     "nodemon": "^1.18.4",
     "prettier": "^1.11.1",
     "regenerator-runtime": "^0.11.1"
@@ -47,7 +48,10 @@
     ],
     "globals": {
       "__DEV__": true
-    }
+    },
+    "setupFiles": [
+      "<rootDir>/node_modules/moxy/lib/extends/jest.js"
+    ]
   },
   "dependencies": {}
 }

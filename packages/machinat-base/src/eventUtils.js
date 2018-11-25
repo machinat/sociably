@@ -2,9 +2,9 @@
 export const mixin = (...descriptors: Array<Object>) =>
   Object.defineProperties({}, Object.assign({}, ...descriptors));
 
-export const makeEvent = (type: string, subType: string, proto: Object) => (
+export const makeEvent = (type: string, subtype: string, proto: Object) => (
   raw: Object
-): { raw: Object, type: string, subType: string } =>
+): { raw: Object, type: string, subtype: string } =>
   Object.create(proto, {
     raw: {
       enumerable: true,
@@ -14,8 +14,8 @@ export const makeEvent = (type: string, subType: string, proto: Object) => (
       enumerable: true,
       value: type,
     },
-    subType: {
+    subtype: {
       enumerable: true,
-      value: subType,
+      value: subtype,
     },
   });
