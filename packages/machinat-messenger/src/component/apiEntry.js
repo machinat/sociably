@@ -1,3 +1,4 @@
+// @flow
 export const ENTRY_MESSAGES = 'me/messages';
 
 export const ENTRY_PASS_THREAD_CONTROL = 'me/pass_thread_control';

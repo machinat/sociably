@@ -160,7 +160,7 @@ describe('MachinatQueue.prototype', () => {
     });
   });
 
-  describe('#enqueueJobAndWait()', () => {
+  describe('#executeJobBatch()', () => {
     let jobs = makeJobs(9);
     const batch1Resolved = jest.fn();
     const batch2Resolved = jest.fn();
@@ -171,9 +171,9 @@ describe('MachinatQueue.prototype', () => {
       batch1Resolved.mockClear();
       batch2Resolved.mockClear();
       batch3Resolved.mockClear();
-      queue.enqueueJobAndWait(...jobs.slice(0, 3)).then(batch1Resolved);
-      queue.enqueueJobAndWait(...jobs.slice(3, 6)).then(batch2Resolved);
-      queue.enqueueJobAndWait(...jobs.slice(6, 9)).then(batch3Resolved);
+      queue.executeJobBatch(...jobs.slice(0, 3)).then(batch1Resolved);
+      queue.executeJobBatch(...jobs.slice(3, 6)).then(batch2Resolved);
+      queue.executeJobBatch(...jobs.slice(6, 9)).then(batch3Resolved);
     });
 
     test('with less job acquire() a time', async () => {
@@ -688,7 +688,7 @@ describe('MachinatQueue.prototype', () => {
 
   describe('#executeJobSequence()', () => {
     it('enqueue sequence of jobs and wait for result', async () => {
-      queue.enqueueJobAndWait = jest.fn((...jobs) => ({
+      queue.executeJobBatch = jest.fn((...jobs) => ({
         success: true,
         errors: null,
         batchResult: jobs.map(job => ({
@@ -724,8 +724,8 @@ describe('MachinatQueue.prototype', () => {
 
       expect(sequence.next).toHaveBeenCalledTimes(3);
 
-      const { enqueueJobAndWait } = queue;
-      expect(enqueueJobAndWait.mock.calls).toEqual([
+      const { executeJobBatch } = queue;
+      expect(executeJobBatch.mock.calls).toEqual([
         [{ id: 1 }, { id: 2 }],
         [{ id: 3 }, { id: 4 }],
         [{ id: 5 }],
@@ -733,7 +733,7 @@ describe('MachinatQueue.prototype', () => {
     });
 
     it('wait for promise return by sequence.next()', async () => {
-      queue.enqueueJobAndWait = jest.fn((...jobs) => ({
+      queue.executeJobBatch = jest.fn((...jobs) => ({
         success: true,
         errors: null,
         batchResult: jobs.map(job => ({
@@ -760,15 +760,15 @@ describe('MachinatQueue.prototype', () => {
       };
 
       const promise = queue.executeJobSequence(sequence);
-      expect(queue.enqueueJobAndWait).toHaveBeenCalledTimes(1);
+      expect(queue.executeJobBatch).toHaveBeenCalledTimes(1);
 
       setImmediate(jest.advanceTimersByTime, 10);
       await nextTick();
-      expect(queue.enqueueJobAndWait).toHaveBeenCalledTimes(2);
+      expect(queue.executeJobBatch).toHaveBeenCalledTimes(2);
 
       setImmediate(jest.advanceTimersByTime, 10);
       await nextTick();
-      expect(queue.enqueueJobAndWait).toHaveBeenCalledTimes(3);
+      expect(queue.executeJobBatch).toHaveBeenCalledTimes(3);
 
       await expect(promise).resolves.toEqual({
         success: true,
@@ -784,7 +784,7 @@ describe('MachinatQueue.prototype', () => {
 
       expect(sequence.next).toHaveBeenCalledTimes(5);
 
-      expect(queue.enqueueJobAndWait.mock.calls).toEqual([
+      expect(queue.executeJobBatch.mock.calls).toEqual([
         [{ id: 1 }, { id: 2 }],
         [{ id: 3 }, { id: 4 }],
         [{ id: 5 }],
@@ -792,7 +792,7 @@ describe('MachinatQueue.prototype', () => {
     });
 
     test('execute with fail job', async () => {
-      queue.enqueueJobAndWait = jest.fn((...jobs) => ({
+      queue.executeJobBatch = jest.fn((...jobs) => ({
         success: jobs[0].id === 0,
         errors: null,
         batchResult: jobs.map(job => {
@@ -837,8 +837,8 @@ describe('MachinatQueue.prototype', () => {
         ],
       });
 
-      const { enqueueJobAndWait } = queue;
-      expect(enqueueJobAndWait.mock.calls).toEqual([
+      const { executeJobBatch } = queue;
+      expect(executeJobBatch.mock.calls).toEqual([
         [{ id: 0 }, { id: 1 }, { id: 2 }],
         [{ id: 3 }, { id: 4 }, { id: 5 }],
       ]);

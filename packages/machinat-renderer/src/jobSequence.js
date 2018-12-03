@@ -6,7 +6,7 @@ import { isImmediate } from 'machinat-shared';
 import type { BatchesAndSeparators, RenderDelegate } from './types';
 
 type CreateJobs<Rendered, Job> = $PropertyType<
-  RenderDelegate<Rendered, Job>,
+  RenderDelegate<Rendered, Job, any>,
   'createJobsFromRendered'
 >;
 
@@ -34,6 +34,7 @@ export default class JobSequence<Rendered, Job> {
   next(): Promise<void> | Array<Job> {
     for (; this.curSeq < this.sequence.length; this.curSeq += 1) {
       const action = this.sequence[this.curSeq];
+
       if (isImmediate(action)) {
         const { after, delay: timeToDelay } = action.props;
         let promise;

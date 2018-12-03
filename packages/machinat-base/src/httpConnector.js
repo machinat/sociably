@@ -13,14 +13,14 @@ type RequestHandler = (
   req: IncomingMessage,
   res: ServerResponse,
   rawBody?: string
-) => Array<MachinatEvent>;
+) => ?Array<MachinatEvent>;
 
 const RAW_BODY_OPTION = { encoding: true };
 
 const endResponse = thenifiedly.callMethodFactory('end');
 const shouldEventRespond = e => !!e.shouldRespond;
 
-class HTTPConnector<Client: MachinatClient<any, any>> extends BaseConnector<
+class HTTPConnector<Client: MachinatClient<any>> extends BaseConnector<
   MachinatContext<Client>
 > {
   client: Client;

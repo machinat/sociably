@@ -1,7 +1,11 @@
 // @flow
 import type { MachinatRenderable } from 'types/element';
 
-export type TraverseElementCallback = (MachinatRenderable, string, any) => void;
+export type TraverseElementCallback = (
+  MachinatRenderable | Object,
+  string,
+  any
+) => void;
 
 export type ElementReducer = <Reduced>(
   Reduced,

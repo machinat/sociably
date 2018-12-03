@@ -1,7 +1,10 @@
 // @flow
+import type { MachinatNode } from 'types/element';
+
 export interface MachinatThread {
-  type: string;
-  id: string;
+  +platform: string;
+  +type: string;
+  +identifier: string;
 }
 
 export interface MachinatEvent {
@@ -12,11 +15,15 @@ export interface MachinatEvent {
   shouldRespond: boolean;
 }
 
-export interface MachinatClient<Msg, Result> {
-  send(thread: MachinatThread, message: Msg, options: Object): Promise<Result>;
+export interface MachinatClient<Result> {
+  send(
+    thread: string | Object,
+    message: MachinatNode,
+    options: Object
+  ): Promise<?(Result[])>;
 }
 
-export interface MachinatContext<Client: MachinatClient<any, any>> {
+export interface MachinatContext<Client: MachinatClient<any>> {
   source: string;
   event: MachinatEvent;
   client: Client;

@@ -3,31 +3,13 @@ import Denque from 'denque';
 import isPromise from 'p-is-promise';
 import type { JobSequence } from 'machinat-renderer/types';
 
-type JobResponse = {|
-  success: boolean,
-  payload: any,
-|};
+import type { BatchRequest, BatchResponse, JobResponse } from './types';
 
-type BatchResponse = {|
-  success: boolean,
-  errors: ?Array<Error>,
-  batchResult: ?Array<void | JobResponse>,
-|};
-
-type BatchRequest = {|
-  begin: number,
-  end: number,
-  resolve: BatchResponse => void,
-  allAcquired: boolean,
-  acquiredCount: number,
-  response: BatchResponse,
-|};
-
-export default class MachinatQueue<Job: Object> {
+export default class MachinatQueue<J, R> {
   _beginSeq: number;
   _endSeq: number;
-  _queuedJobs: Denque<Job>;
-  _waitedRequets: Denque<BatchRequest>;
+  _queuedJobs: Denque<J>;
+  _waitedRequets: Denque<BatchRequest<J, R>>;
 
   constructor() {
     this._beginSeq = 0;
@@ -38,8 +20,8 @@ export default class MachinatQueue<Job: Object> {
 
   async acquire(
     n: number,
-    consume: (Job[]) => Promise<JobResponse[]>
-  ): Promise<void | JobResponse[]> {
+    consume: (J[]) => Promise<JobResponse<J, R>[]>
+  ): Promise<void | JobResponse<J, R>[]> {
     const jobs = this._queuedJobs.remove(0, n);
     if (jobs === undefined) {
       return undefined;
@@ -59,21 +41,23 @@ export default class MachinatQueue<Job: Object> {
     }
   }
 
-  enqueueJob(...jobs: Job[]) {
+  enqueueJob(...jobs: J[]) {
     for (let i = 0; i < jobs.length; i += 1) {
       this._queuedJobs.push(jobs[i]);
     }
     this._endSeq += jobs.length;
   }
 
-  enqueueJobAndWait(...jobs: Job[]): Promise<BatchResponse> {
+  executeJobBatch(...jobs: J[]): Promise<BatchResponse<J, R>> {
     const begin = this._endSeq;
     this.enqueueJob(...jobs);
     return new Promise(this._pushWaitedRequest.bind(this, begin, this._endSeq));
   }
 
-  async executeJobSequence(jobSequence: JobSequence<any, Job>) {
-    const result: BatchResponse = {
+  async executeJobSequence(
+    jobSequence: JobSequence<any, J>
+  ): Promise<BatchResponse<J, R>> {
+    const result: BatchResponse<J, R> = {
       success: true,
       errors: null,
       batchResult: null,
@@ -88,7 +72,7 @@ export default class MachinatQueue<Job: Object> {
           success,
           errors,
           batchResult,
-        }: BatchResponse = await this.enqueueJobAndWait(...action); // eslint-disable-line no-await-in-loop
+        }: BatchResponse<J, R> = await this.executeJobBatch(...action); // eslint-disable-line no-await-in-loop
 
         if (result.batchResult) {
           if (batchResult) result.batchResult.push(...batchResult);
@@ -108,6 +92,7 @@ export default class MachinatQueue<Job: Object> {
         }
       }
     }
+
     return result;
   }
 
@@ -116,7 +101,7 @@ export default class MachinatQueue<Job: Object> {
   }
 
   _respondRequestsInReange(
-    jobResps: JobResponse[],
+    jobResps: JobResponse<J, R>[],
     begin: number,
     end: number
   ) {
@@ -130,8 +115,12 @@ export default class MachinatQueue<Job: Object> {
   }
 
   _respondRequestReducer = (
-    payload: { rmIdx: number, rmCount: number, jobResps: JobResponse[] },
-    request: BatchRequest,
+    payload: {
+      rmIdx: number,
+      rmCount: number,
+      jobResps: JobResponse<J, R>[],
+    },
+    request: BatchRequest<J, R>,
     idx: number,
     begin: number,
     end: number
@@ -166,11 +155,13 @@ export default class MachinatQueue<Job: Object> {
       if (payload.rmIdx === -1) {
         payload.rmIdx = idx;
       }
+
       payload.rmCount += 1;
     } else {
       request.acquiredCount -= 1;
       /* eslint-enable no-param-reassign */
     }
+
     return payload;
   };
 
@@ -186,7 +177,7 @@ export default class MachinatQueue<Job: Object> {
 
   _failRequestsReducer = (
     payload: { rmIdx: number, rmCount: number, reason: any },
-    request: BatchRequest,
+    request: BatchRequest<J, R>,
     idx: number
   ) => {
     this._removeJobsOfRequest(request);
@@ -219,7 +210,7 @@ export default class MachinatQueue<Job: Object> {
 
   _registerAcquisitionReducer = (
     _: void,
-    request: BatchRequest,
+    request: BatchRequest<J, R>,
     idx: number,
     begin: number,
     end: number
@@ -232,14 +223,12 @@ export default class MachinatQueue<Job: Object> {
     /* eslint-enable no-param-reassign */
   };
 
-  // FIXME: should be written as class method instead of function propery,
-  //        but flow generic syntax in class method breaks the highlight.
   _reduceRequestInRange = <Acc>(
     begin: number,
     end: number,
     reducer: (
       reduced: Acc,
-      request: BatchRequest,
+      request: BatchRequest<J, R>,
       idx: number,
       begin: number,
       end: number
@@ -247,6 +236,7 @@ export default class MachinatQueue<Job: Object> {
     initial: Acc
   ): Acc => {
     let reduced = initial;
+
     for (let i = 0; i < this._waitedRequets.length; i += 1) {
       const request = (this._waitedRequets.peekAt(i): any);
 
@@ -258,12 +248,14 @@ export default class MachinatQueue<Job: Object> {
         }
       }
     }
+
     return reduced;
   };
 
-  _removeJobsOfRequest(request: BatchRequest) {
+  _removeJobsOfRequest(request: BatchRequest<J, R>) {
     if (request.end > this._beginSeq) {
       const removed = this._queuedJobs.remove(0, request.end - this._beginSeq);
+
       if (removed !== undefined) {
         this._beginSeq += removed.length;
       }

@@ -3,7 +3,12 @@ import invariant from 'invariant';
 import { isNative, isImmediate, isEmpty } from 'machinat-shared';
 import { traverse } from 'machinat-children';
 
-import type { MachinatNode } from 'types/element';
+import type {
+  MachinatNode,
+  MachinatGeneralElement,
+  MachinatNativeElement,
+} from 'types/element';
+import type { TraverseElementCallback } from 'machinat-children/types';
 
 import JobSequence from './jobSequence';
 import {
@@ -18,20 +23,16 @@ import type {
   RenderResult,
   ImmediateEle,
   RenderTraverseContext,
-  TraverseElementCallback,
 } from './types';
 
 const RENDER_SEPARATOR = '#';
 const RENDER_ROOT = '$';
 
-export default class Renderer<Rendered, Job> {
-  delegate: RenderDelegate<Rendered, Job>;
+export default class MachinatRenderer<R: Object, J, N> {
+  delegate: RenderDelegate<R, J, N>;
   oriented: string;
 
-  constructor(
-    orientedPlatform: string,
-    delegate: RenderDelegate<Rendered, Job>
-  ) {
+  constructor(orientedPlatform: string, delegate: RenderDelegate<R, J, N>) {
     this.delegate = delegate;
     this.oriented = orientedPlatform;
   }
@@ -45,10 +46,7 @@ export default class Renderer<Rendered, Job> {
     appendSeparator
   );
   // TODO: Job sequence need further encapsulation
-  renderJobSequence(
-    elements: MachinatNode,
-    payload: any
-  ): ?JobSequence<Rendered, Job> {
+  renderJobSequence(elements: MachinatNode, payload: any): ?JobSequence<R, J> {
     if (isEmpty(elements)) {
       return undefined;
     }
@@ -77,6 +75,7 @@ export default class Renderer<Rendered, Job> {
     appendResult,
     invariantNoSeparator
   );
+
   _renderInnerImpl(
     prefix: string,
     payload: any,
@@ -94,11 +93,12 @@ export default class Renderer<Rendered, Job> {
       { payload, accumulates },
       this._renderInnerTraverseCallback
     );
+
     return accumulates.length === 0 ? undefined : accumulates;
   }
 
   _makeRenderTraverseCallback<Acc>(
-    handleRenderedResult: (RenderResult<any>, Acc) => void,
+    handleRenderedResult: (RenderResult<R, N>, Acc) => void,
     handleSeparator: (ImmediateEle, Acc) => void
   ): TraverseElementCallback {
     const traversCallback = (
@@ -110,7 +110,7 @@ export default class Renderer<Rendered, Job> {
 
       if (typeof element === 'string' || typeof element === 'number') {
         handleRenderedResult(
-          { element: undefined, value: element, path },
+          { element: (element: string | number), value: element, path },
           accumulates
         );
       } else if (typeof element.type === 'string') {
@@ -120,7 +120,13 @@ export default class Renderer<Rendered, Job> {
           payload,
           path
         );
-        handleRenderedResult({ value, element, path }, accumulates);
+
+        if (value) {
+          handleRenderedResult(
+            { element: (element: MachinatGeneralElement), value, path },
+            accumulates
+          );
+        }
       } else if (isImmediate(element)) {
         handleSeparator(element, accumulates);
       } else if (this.delegate.isNativeComponent(element.type)) {
@@ -130,7 +136,13 @@ export default class Renderer<Rendered, Job> {
           payload,
           path
         );
-        handleRenderedResult({ value, element, path }, accumulates);
+
+        if (value) {
+          handleRenderedResult(
+            { element: (element: MachinatNativeElement<N>), value, path },
+            accumulates
+          );
+        }
       } else if (typeof element.type === 'function') {
         invariant(
           !isNative(element),
@@ -145,8 +157,8 @@ export default class Renderer<Rendered, Job> {
         );
 
         const { type: renderCustom, props } = element;
-
         const rendered = renderCustom(props, payload);
+
         traverse(
           rendered,
           path + RENDER_SEPARATOR + renderCustom.name,
@@ -155,7 +167,7 @@ export default class Renderer<Rendered, Job> {
         );
       } else if (typeof element === 'object') {
         handleRenderedResult(
-          { value: element, element: undefined, path },
+          { value: element, element: (undefined: void), path },
           accumulates
         );
       } else {

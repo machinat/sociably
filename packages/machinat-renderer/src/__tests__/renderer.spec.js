@@ -52,8 +52,8 @@ describe('#renderInner()', () => {
     );
 
     expect(rendered).toEqual([
-      { element: undefined, value: 123, path: '$::0' },
-      { element: undefined, value: 'abc', path: '$::1' },
+      { element: 123, value: 123, path: '$::0' },
+      { element: 'abc', value: 'abc', path: '$::1' },
       { element: <a>aaa</a>, value: '__GENERAL_ELE__', path: '$::2' },
       {
         element: <Native x="true" y={false} />,
@@ -61,7 +61,7 @@ describe('#renderInner()', () => {
         path: '$::3',
       },
       {
-        element: undefined,
+        element: 'wrapped head',
         value: 'wrapped head',
         path: '$::4#Custom::0',
       },
@@ -71,7 +71,7 @@ describe('#renderInner()', () => {
         path: '$::4#Custom::1',
       },
       {
-        element: undefined,
+        element: 'wrapped foot',
         value: 'wrapped foot',
         path: '$::4#Custom::2',
       },
@@ -147,9 +147,7 @@ describe('#renderInner()', () => {
 describe('#renderJobSequence()', () => {
   it('works', () => {
     const afterCallback = () => Promise.resolve();
-    const WrappedImmediate = () => (
-      <Machinat.Immediate after={afterCallback} />
-    );
+    const WrappedImmediate = () => <Machinat.Immediate after={afterCallback} />;
     const context = {};
 
     const renderer = new Renderer('Test', delegate);
@@ -224,8 +222,8 @@ describe('#renderJobSequence()', () => {
 
     expect(createJobsFromRendered).toBeCalledTimes(4);
     expect(createJobsFromRendered.mock.calls).toEqual([
-      [[{ element: undefined, value: 123, path: '$::0' }], context],
-      [[{ element: undefined, value: 'abc', path: '$::2' }], context],
+      [[{ element: 123, value: 123, path: '$::0' }], context],
+      [[{ element: 'abc', value: 'abc', path: '$::2' }], context],
       [
         [
           { element: <b />, value: '__GENERAL_ELE__', path: '$::4' },
@@ -240,13 +238,21 @@ describe('#renderJobSequence()', () => {
             value: { x: 'true', y: false },
             path: '$::7',
           },
-          { element: undefined, value: 'wrapped head', path: '$::8#Custom::0' },
+          {
+            element: 'wrapped head',
+            value: 'wrapped head',
+            path: '$::8#Custom::0',
+          },
           {
             element: <Native a="A" b={2} />,
             value: { a: 'A', b: 2 },
             path: '$::8#Custom::1',
           },
-          { element: undefined, value: 'wrapped foot', path: '$::8#Custom::2' },
+          {
+            element: 'wrapped foot',
+            value: 'wrapped foot',
+            path: '$::8#Custom::2',
+          },
         ],
         context,
       ],
