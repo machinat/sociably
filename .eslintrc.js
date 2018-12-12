@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   parser: 'babel-eslint',
   env: {
@@ -27,16 +29,23 @@ module.exports = {
       props: true,
       ignorePropertyModificationsFor: ['context'],
     }],
+    'no-restricted-syntax': ['error',
+      'ForInStatement', 'LabeledStatement', 'WithStatement'
+    ],
     'flowtype/define-flow-type': 1,
     'prettier/prettier': ['error', {
       trailingComma: 'es5',
       singleQuote: true,
       parser: 'babylon',
     }],
+    'import/extensions': 0,
     'import/no-unresolved': ['error', {
       ignore: ['types/.+', 'machinat-.+']
     }],
-    'import/extensions': 0,
+    'import/no-extraneous-dependencies': ['error', {
+      devDependencies: ['**/*.spec.js'],
+      packagePath: ['./', '../../'],
+    }],
     'react/jsx-key': 0,
     'react/no-unescaped-entities': ['error', {
       forbid: ['<', '>', '{', '}']

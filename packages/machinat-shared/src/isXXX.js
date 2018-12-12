@@ -37,5 +37,5 @@ export const isNative = (element: any): boolean %checks =>
   typeof element === 'object' &&
   element !== null &&
   // $FlowFixMe: remove me after symbol primitive supported
-  (typeof element.$$native === 'symbol' ||
-    typeof element.$$native === 'string');
+  (typeof element.type.$$native === 'symbol' ||
+    typeof element.type.$$native === 'string');

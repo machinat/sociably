@@ -8,7 +8,7 @@ import { HTTPConnector, Bot } from 'machinat-base';
 import Renderer from 'machinat-renderer';
 import Queue from 'machinat-queue';
 
-import MessengerDelegator from './delegate';
+import MessengerRenderDelegator from './delegate';
 import createEvent from './event';
 import Client from './client';
 
@@ -134,10 +134,14 @@ export default class MessengerBot extends Bot<Client> {
       'should provide verifyToken if shouldVerifyWebhook set to true'
     );
 
-    const renderer = new Renderer('Messneger', MessengerDelegator);
+    const renderer = new Renderer('Messneger', MessengerRenderDelegator);
     const queue = new Queue();
 
-    const client = new Client(queue, renderer, options);
+    const client = new Client(queue, renderer, {
+      accessToken: options.accessToken,
+      appSecret: options.appSecret,
+      consumeInterval: options.consumeInterval,
+    });
     const connector = new HTTPConnector(client, handleRequest(options));
 
     super(client, connector);

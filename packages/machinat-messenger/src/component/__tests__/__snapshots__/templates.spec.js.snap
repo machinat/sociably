@@ -460,7 +460,6 @@ Object {
 
 exports[`templates Components ReceiptTemplateItem match snapshot 1`] = `
 Object {
-  "$$native": Symbol(machinat.messenger.native),
   "$$typeof": Symbol(machinat.element),
   "props": Object {
     "currency": "USD",

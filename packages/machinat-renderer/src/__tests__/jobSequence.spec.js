@@ -12,97 +12,108 @@ it('is a constructor', () => {
   expect(() => new JobSequence()).not.toThrow();
 });
 
-describe('#next() and #hasNext()', () => {
-  it('pass batch of jobs by sequence order and ignore empty Immediate', () => {
-    const renderedSequence = [
-      [{ value: 0 }, { value: 1 }],
-      [{ value: 2 }, { value: 3 }],
-      <Machinat.Immediate />,
-      [{ value: 4 }, { value: 5 }],
-      <Machinat.Immediate />,
-      <Machinat.Immediate />,
-      [{ value: 6 }, { value: 7 }],
-    ];
-    const payload = {};
-    const createJob = jest.fn(jobs => jobs.map(j => ({ id: j.value })));
-    const jobSequence = new JobSequence(renderedSequence, payload, createJob);
+it('is an iterator', () => {
+  const jobSequence = new JobSequence([1, 2, 3], {}, x => x);
 
-    for (let t = 0; t < 5; t += 1) {
-      if (t === 4) {
-        expect(jobSequence.hasNext()).toBe(false);
-        expect(jobSequence.next()).resolves.toBe(undefined);
-      } else {
-        expect(jobSequence.hasNext()).toBe(true);
-        expect(jobSequence.next()).toEqual([{ id: t * 2 }, { id: t * 2 + 1 }]);
-      }
-    }
+  expect(typeof jobSequence[Symbol.iterator]).toBe('function');
 
-    expect(createJob.mock.calls).toEqual([
-      [[{ value: 0 }, { value: 1 }], payload],
-      [[{ value: 2 }, { value: 3 }], payload],
-      [[{ value: 4 }, { value: 5 }], payload],
-      [[{ value: 6 }, { value: 7 }], payload],
-    ]);
-  });
+  const iterator = jobSequence[Symbol.iterator]();
 
-  it('pass promise to await if Immediate is not empty', async () => {
-    jest.useFakeTimers();
-    const myDelay = jest.fn(n => delay(n));
+  expect(typeof iterator.next).toBe('function');
+  expect(iterator.next()).toEqual({ done: false, value: 1 });
+  expect(iterator.next()).toEqual({ done: false, value: 2 });
+  expect(iterator.next()).toEqual({ done: false, value: 3 });
+  expect(iterator.next()).toEqual({ done: true });
+});
 
-    const renderedSequence = [
-      [{ value: 0 }, { value: 1 }],
-      <Machinat.Immediate delay={100} />,
-      [{ value: 2 }, { value: 3 }],
-      <Machinat.Immediate after={() => myDelay(100)} />,
-      [{ value: 4 }, { value: 5 }],
-      <Machinat.Immediate delay={50} after={() => myDelay(50)} />,
-      [{ value: 6 }, { value: 7 }],
-    ];
-    const payload = {};
-    const createJob = jest.fn(jobs => jobs.map(j => ({ id: j.value })));
-    const jobSequence = new JobSequence(renderedSequence, payload, createJob);
+it('pass batch of jobs by sequence order and ignore empty Immediate', () => {
+  const renderedSequence = [
+    [{ value: 0 }, { value: 1 }],
+    [{ value: 2 }, { value: 3 }],
+    <Machinat.Immediate />,
+    [{ value: 4 }, { value: 5 }],
+    <Machinat.Immediate />,
+    <Machinat.Immediate />,
+    [{ value: 6 }, { value: 7 }],
+  ];
 
-    for (let t = 0; t < 8; t += 1) {
-      if (t === 7) {
-        expect(jobSequence.hasNext()).toBe(false);
-        expect(jobSequence.next()).resolves.toBe(undefined);
-      } else {
-        expect(jobSequence.hasNext()).toBe(true);
+  const payload = {};
+  const createJob = jest.fn(jobs => jobs.map(j => ({ id: j.value })));
+  const jobSequence = new JobSequence(renderedSequence, payload, createJob);
 
-        if (t % 2 === 1) {
-          const until = jobSequence.next();
-          expect(until).toBeInstanceOf(Promise);
+  expect([...jobSequence]).toEqual([
+    [{ id: 0 }, { id: 1 }],
+    [{ id: 2 }, { id: 3 }],
+    [{ id: 4 }, { id: 5 }],
+    [{ id: 6 }, { id: 7 }],
+  ]);
 
-          const spy = jest.fn();
-          until.then(spy);
-          expect(spy).not.toHaveBeenCalled();
+  expect(createJob.mock.calls).toEqual([
+    [[{ value: 0 }, { value: 1 }], payload],
+    [[{ value: 2 }, { value: 3 }], payload],
+    [[{ value: 4 }, { value: 5 }], payload],
+    [[{ value: 6 }, { value: 7 }], payload],
+  ]);
+});
 
-          // test the promise wait for delay then after in order
-          if (t >= 3) {
-            expect(myDelay).toHaveBeenCalledTimes(1);
-            expect(myDelay).toHaveBeenCalledWith(100);
-          }
+it('pass promise to await if Immediate is not empty', async () => {
+  jest.useFakeTimers();
+  const myDelay = jest.fn(n => delay(n));
 
-          jest.advanceTimersByTime(50);
-          await nextTick(); // eslint-disable-line no-await-in-loop
-          if (t === 5) expect(myDelay).toHaveBeenCalledWith(50);
+  const renderedSequence = [
+    [{ value: 0 }, { value: 1 }],
+    <Machinat.Immediate delay={100} />,
+    [{ value: 2 }, { value: 3 }],
+    <Machinat.Immediate after={() => myDelay(100)} />,
+    [{ value: 4 }, { value: 5 }],
+    <Machinat.Immediate delay={50} after={() => myDelay(50)} />,
+    [{ value: 6 }, { value: 7 }],
+  ];
 
-          jest.advanceTimersByTime(50);
-          await nextTick(); // eslint-disable-line no-await-in-loop
-          expect(spy).toHaveBeenCalledTimes(1);
-        } else {
-          expect(jobSequence.next()).toEqual([{ id: t }, { id: t + 1 }]);
+  const payload = {};
+  const createJob = jest.fn(jobs => jobs.map(j => ({ id: j.value })));
+  const jobSequence = new JobSequence(renderedSequence, payload, createJob);
+  const iterator = jobSequence[Symbol.iterator]();
+
+  for (let t = 0; t < 8; t += 1) {
+    if (t === 7) {
+      expect(iterator.next()).toEqual({ done: true });
+    } else {
+      const next = iterator.next();
+      expect(next.done).toBe(false);
+
+      if (t % 2 === 1) {
+        const until = next.value;
+        expect(until).toBeInstanceOf(Promise);
+
+        const spy = jest.fn();
+        until.then(spy);
+
+        // test the promise wait for delay then after in order
+        if (t >= 3) {
+          expect(myDelay).toHaveBeenCalledTimes(1);
+          expect(myDelay).toHaveBeenCalledWith(100);
         }
+
+        jest.advanceTimersByTime(50);
+        await nextTick(); // eslint-disable-line no-await-in-loop
+        if (t === 5) expect(myDelay).toHaveBeenCalledWith(50);
+
+        jest.advanceTimersByTime(50);
+        await nextTick(); // eslint-disable-line no-await-in-loop
+        expect(spy).toHaveBeenCalledTimes(1);
+      } else {
+        expect(next.value).toEqual([{ id: t }, { id: t + 1 }]);
       }
     }
+  }
 
-    expect(myDelay).toHaveBeenCalledTimes(2);
+  expect(myDelay).toHaveBeenCalledTimes(2);
 
-    expect(createJob.mock.calls).toEqual([
-      [[{ value: 0 }, { value: 1 }], payload],
-      [[{ value: 2 }, { value: 3 }], payload],
-      [[{ value: 4 }, { value: 5 }], payload],
-      [[{ value: 6 }, { value: 7 }], payload],
-    ]);
-  });
+  expect(createJob.mock.calls).toEqual([
+    [[{ value: 0 }, { value: 1 }], payload],
+    [[{ value: 2 }, { value: 3 }], payload],
+    [[{ value: 4 }, { value: 5 }], payload],
+    [[{ value: 6 }, { value: 7 }], payload],
+  ]);
 });

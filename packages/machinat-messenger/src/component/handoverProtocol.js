@@ -4,7 +4,7 @@ import {
   ENTRY_PASS_THREAD_CONTROL,
   ENTRY_REQUEST_THREAD_CONTROL,
   ENTRY_TAKE_THREAD_CONTROL,
-} from './apiEntry';
+} from '../apiEntry';
 
 export const PassThreadControl = ({ appId, metadata }) => ({
   target_app_id: appId,

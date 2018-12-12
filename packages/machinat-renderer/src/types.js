@@ -53,12 +53,14 @@ export type RenderInnerFn = (
   payload: any
 ) => ?Array<RenderResult<any>>;
 
-export type ImmediateEle = MachinatElement<Symbol>;
+export type ImmediateElement = MachinatElement<Symbol>;
 export type RenderResultBatch = Array<RenderResult<any, any>>;
-export type BatchesAndSeparators = Array<RenderResultBatch | ImmediateEle>;
+export type BatchesOrSeparators = Array<RenderResultBatch | ImmediateElement>;
 export type RenderTraverseContext<
-  Acc: RenderResultBatch | BatchesAndSeparators
+  Acc: RenderResultBatch | BatchesOrSeparators
 > = {
   payload: any,
   accumulates: Acc,
 };
+
+export type JobOrSeparator<Job> = Array<Job> | ImmediateElement;

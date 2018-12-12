@@ -127,19 +127,19 @@ describe('isEmpty', () => {
 });
 
 describe('isNative', () => {
-  it('return true if element is labeled native', () => {
-    const Native = () => {};
-    Native.$$native = Symbol('test1');
-    const myEle = <a />;
-    myEle.$$native = Symbol('test2');
+  it('return true if "type" of element is labeled as native', () => {
+    const Native1 = () => {};
+    Native1.$$native = Symbol('test1');
 
-    const natives = [<Native />, { $$native: Symbol('test3') }, myEle];
+    const Native2 = { $$native: Symbol('test2') };
+
+    const natives = [<Native1 />, <Native2 />];
     natives.forEach(ele => {
       expect(isNative(ele)).toBe(true);
     });
   });
 
-  it('return false if invalid element passed', () => {
+  it('return false if "type" of element is not native', () => {
     const MyComponent = () => 'abc'; // eslint-disable-line no-unused-vars
     const nonEmpties = [
       null,

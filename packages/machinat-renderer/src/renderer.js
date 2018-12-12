@@ -14,14 +14,14 @@ import JobSequence from './jobSequence';
 import {
   appendResult,
   invariantNoSeparator,
-  appendResultToLastBatch,
-  appendSeparator,
+  appendResultToSequence,
+  appendSeparatorToSequence,
 } from './utils';
 
 import type {
   RenderDelegate,
   RenderResult,
-  ImmediateEle,
+  ImmediateElement,
   RenderTraverseContext,
 } from './types';
 
@@ -42,8 +42,8 @@ export default class MachinatRenderer<R: Object, J, N> {
   }
 
   _renderJobSequenceTraverseCallback = this._makeRenderTraverseCallback(
-    appendResultToLastBatch,
-    appendSeparator
+    appendResultToSequence,
+    appendSeparatorToSequence
   );
   // TODO: Job sequence need further encapsulation
   renderJobSequence(elements: MachinatNode, payload: any): ?JobSequence<R, J> {
@@ -99,7 +99,7 @@ export default class MachinatRenderer<R: Object, J, N> {
 
   _makeRenderTraverseCallback<Acc>(
     handleRenderedResult: (RenderResult<R, N>, Acc) => void,
-    handleSeparator: (ImmediateEle, Acc) => void
+    handleSeparator: (ImmediateElement, Acc) => void
   ): TraverseElementCallback {
     const traversCallback = (
       element,
@@ -148,10 +148,10 @@ export default class MachinatRenderer<R: Object, J, N> {
           !isNative(element),
           `Element ${
             element.type.name
-          } at ${path} is native Component type of ${(typeof element.$$native ===
-          'symbol'
-            ? Symbol.keyFor(element.$$native)
-            : element.$$native) || 'unknown'}, not supported by ${
+          } at ${path} is native Component type of ${(typeof element.type
+            .$$native === 'symbol'
+            ? Symbol.keyFor(element.type.$$native)
+            : element.type.$$native) || 'unknown'}, not supported by ${
             this.oriented
           }`
         );

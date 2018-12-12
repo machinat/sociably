@@ -3,7 +3,7 @@ import Denque from 'denque';
 import isPromise from 'p-is-promise';
 import type { JobSequence } from 'machinat-renderer/types';
 
-import type { BatchRequest, BatchResponse, JobResponse } from './types';
+import type { BatchRequest, BatchJobResponse, JobResponse } from './types';
 
 export default class MachinatQueue<J, R> {
   _beginSeq: number;
@@ -48,7 +48,7 @@ export default class MachinatQueue<J, R> {
     this._endSeq += jobs.length;
   }
 
-  executeJobBatch(...jobs: J[]): Promise<BatchResponse<J, R>> {
+  executeJobBatch(...jobs: J[]): Promise<BatchJobResponse<J, R>> {
     const begin = this._endSeq;
     this.enqueueJob(...jobs);
     return new Promise(this._pushWaitedRequest.bind(this, begin, this._endSeq));
@@ -56,15 +56,14 @@ export default class MachinatQueue<J, R> {
 
   async executeJobSequence(
     jobSequence: JobSequence<any, J>
-  ): Promise<BatchResponse<J, R>> {
-    const result: BatchResponse<J, R> = {
+  ): Promise<BatchJobResponse<J, R>> {
+    const result: BatchJobResponse<J, R> = {
       success: true,
       errors: null,
       batchResult: null,
     };
 
-    while (jobSequence.hasNext()) {
-      const action = jobSequence.next();
+    for (const action of jobSequence) {
       if (isPromise(action)) {
         await action; // eslint-disable-line no-await-in-loop
       } else {
@@ -72,7 +71,7 @@ export default class MachinatQueue<J, R> {
           success,
           errors,
           batchResult,
-        }: BatchResponse<J, R> = await this.executeJobBatch(...action); // eslint-disable-line no-await-in-loop
+        }: BatchJobResponse<J, R> = await this.executeJobBatch(...action); // eslint-disable-line no-await-in-loop
 
         if (result.batchResult) {
           if (batchResult) result.batchResult.push(...batchResult);
@@ -139,8 +138,11 @@ export default class MachinatQueue<J, R> {
       const jobResponse = payload.jobResps[seq - begin];
 
       response.batchResult[seq - requestBegin] = jobResponse;
-      if (success && !jobResponse.success) {
-        success = false;
+      if (!jobResponse.success) {
+        if (success) success = false;
+
+        if (!response.errors) response.errors = [];
+        response.errors.push(jobResponse.error);
       }
     }
 

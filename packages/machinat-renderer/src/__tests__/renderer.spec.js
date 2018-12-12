@@ -1,3 +1,5 @@
+import moxy from 'moxy';
+
 import Machinat from '../../../machinat';
 import Renderer from '../renderer';
 import JobSequence from '../jobSequence';
@@ -7,32 +9,29 @@ it('is a constructor', () => {
 });
 
 const Native = () => {};
-const Custom = jest.fn(props => (
+Native.$$root = true;
+
+const Custom = moxy(props => (
   <>
     wrapped head
     <Native {...props} />
     wrapped foot
   </>
 ));
-Object.defineProperty(Custom, 'name', { value: 'Custom' });
+Custom.mock.getter('name').fakeReturnValue('Custom');
 
 let jobId = 0;
-const delegate = {
-  isNativeComponent: jest.fn(t => t === Native),
-  renderGeneralElement: jest.fn().mockReturnValue('__GENERAL_ELE__'),
-  renderNativeElement: jest.fn(e => e.props),
-  createJobsFromRendered: jest.fn(
-    rendered => rendered.map(() => ({ id: jobId++ })) // eslint-disable-line no-plusplus
-  ),
-};
+const delegate = moxy({
+  isNativeComponent: t => t === Native,
+  renderGeneralElement: () => '__GENERAL_ELE__',
+  renderNativeElement: e => e.props,
+  createJobsFromRendered: rendered => rendered.map(() => ({ id: jobId++ })), // eslint-disable-line no-plusplus
+});
 
 afterEach(() => {
   jobId = 0;
-  Custom.mockClear();
-  delegate.isNativeComponent.mockClear();
-  delegate.renderGeneralElement.mockClear();
-  delegate.renderNativeElement.mockClear();
-  delegate.createJobsFromRendered.mockClear();
+  Custom.mock.clear();
+  delegate.mock.clear();
 });
 
 describe('#renderInner()', () => {
@@ -77,28 +76,28 @@ describe('#renderInner()', () => {
       },
     ]);
 
-    expect(Custom).toBeCalledTimes(1);
-    expect(Custom.mock.calls[0]).toEqual([{ a: 'A', b: 2 }, context]);
+    expect(Custom.mock).toBeCalledTimes(1);
+    expect(Custom.mock.calls[0].args).toEqual([{ a: 'A', b: 2 }, context]);
 
-    expect(delegate.isNativeComponent).toHaveBeenNthCalledWith(1, Native);
-    expect(delegate.isNativeComponent).toHaveBeenNthCalledWith(2, Custom);
-    expect(delegate.isNativeComponent).toHaveBeenNthCalledWith(3, Native);
+    expect(delegate.isNativeComponent.mock).toHaveBeenNthCalledWith(1, Native);
+    expect(delegate.isNativeComponent.mock).toHaveBeenNthCalledWith(2, Custom);
+    expect(delegate.isNativeComponent.mock).toHaveBeenNthCalledWith(3, Native);
 
-    expect(delegate.renderGeneralElement).toBeCalledTimes(1);
-    const renderGeneralCalls = delegate.renderGeneralElement.mock.calls;
-    expect(renderGeneralCalls[0][0]).toEqual(<a>aaa</a>);
-    expect(typeof renderGeneralCalls[0][1]).toBe('function');
-    expect(renderGeneralCalls[0][2]).toEqual(context);
-    expect(renderGeneralCalls[0][3]).toEqual('$::2');
+    expect(delegate.renderGeneralElement.mock).toBeCalledTimes(1);
+    const renderGeneralCall = delegate.renderGeneralElement.mock.calls[0];
+    expect(renderGeneralCall.args[0]).toEqual(<a>aaa</a>);
+    expect(typeof renderGeneralCall.args[1]).toBe('function');
+    expect(renderGeneralCall.args[2]).toEqual(context);
+    expect(renderGeneralCall.args[3]).toEqual('$::2');
 
-    expect(delegate.renderNativeElement).toBeCalledTimes(2);
+    expect(delegate.renderNativeElement.mock).toBeCalledTimes(2);
     delegate.renderNativeElement.mock.calls.forEach((call, i) => {
-      expect(call[0]).toEqual(
+      expect(call.args[0]).toEqual(
         [<Native x="true" y={false} />, <Native a="A" b={2} />][i]
       );
-      expect(typeof call[1]).toBe('function');
-      expect(call[2]).toEqual(context);
-      expect(call[3]).toEqual(['$::3', '$::4#Custom::1'][i]);
+      expect(typeof call.args[1]).toBe('function');
+      expect(call.args[2]).toEqual(context);
+      expect(call.args[3]).toEqual(['$::3', '$::4#Custom::1'][i]);
     });
   });
 
@@ -168,8 +167,8 @@ describe('#renderJobSequence()', () => {
 
     expect(jobSequence).toBeInstanceOf(JobSequence);
 
-    expect(Custom).toBeCalledTimes(1);
-    expect(Custom.mock.calls[0]).toEqual([{ a: 'A', b: 2 }, context]);
+    expect(Custom.mock).toBeCalledTimes(1);
+    expect(Custom.mock.calls[0].args).toEqual([{ a: 'A', b: 2 }, context]);
 
     const {
       isNativeComponent,
@@ -177,37 +176,40 @@ describe('#renderJobSequence()', () => {
       renderNativeElement,
       createJobsFromRendered,
     } = delegate;
-    expect(isNativeComponent.mock.calls).toEqual([
+    expect(isNativeComponent.mock.calls.map(c => c.args)).toEqual([
       [WrappedImmediate],
       [Native],
       [Custom],
       [Native],
     ]);
 
-    expect(renderGeneralElement).toBeCalledTimes(2);
+    expect(renderGeneralElement.mock).toBeCalledTimes(2);
     renderGeneralElement.mock.calls.forEach((call, i) => {
-      expect(call[0]).toEqual([<b />, <a>aaa</a>][i]);
-      expect(typeof call[1]).toBe('function');
-      expect(call[2]).toEqual(context);
-      expect(call[3]).toEqual(['$::4', '$::5'][i]);
+      expect(call.args[0]).toEqual([<b />, <a>aaa</a>][i]);
+      expect(typeof call.args[1]).toBe('function');
+      expect(call.args[2]).toEqual(context);
+      expect(call.args[3]).toEqual(['$::4', '$::5'][i]);
     });
 
-    expect(renderNativeElement).toBeCalledTimes(2);
+    expect(renderNativeElement.mock).toBeCalledTimes(2);
     renderNativeElement.mock.calls.forEach((call, i) => {
-      expect(call[0]).toEqual(
+      expect(call.args[0]).toEqual(
         [<Native x="true" y={false} />, <Native a="A" b={2} />][i]
       );
-      expect(typeof call[1]).toBe('function');
-      expect(call[2]).toEqual(context);
-      expect(call[3]).toEqual(['$::7', '$::8#Custom::1'][i]);
+      expect(typeof call.args[1]).toBe('function');
+      expect(call.args[2]).toEqual(context);
+      expect(call.args[3]).toEqual(['$::7', '$::8#Custom::1'][i]);
     });
 
-    expect(createJobsFromRendered).toBeCalledTimes(0);
+    const iterator = jobSequence[Symbol.iterator]();
+
+    expect(createJobsFromRendered.mock).toBeCalledTimes(0);
     for (let i = 0; i < 7; i += 1) {
-      expect(jobSequence.hasNext()).toBe(true);
+      const next = iterator.next();
+      expect(next.done).toBe(false);
 
       if (i === 1 || i === 3 || i === 5) {
-        expect(jobSequence.next()).toBeInstanceOf(Promise);
+        expect(next.value).toBeInstanceOf(Promise);
       } else {
         const expectedBatches = [
           [{ id: 0 }],
@@ -215,13 +217,14 @@ describe('#renderJobSequence()', () => {
           [{ id: 2 }, { id: 3 }],
           [{ id: 4 }, { id: 5 }, { id: 6 }, { id: 7 }],
         ];
-        expect(jobSequence.next()).toEqual(expectedBatches[i / 2]);
+        expect(next.value).toEqual(expectedBatches[i / 2]);
       }
     }
-    expect(jobSequence.hasNext()).toBe(false);
 
-    expect(createJobsFromRendered).toBeCalledTimes(4);
-    expect(createJobsFromRendered.mock.calls).toEqual([
+    expect(iterator.next()).toEqual({ done: true });
+
+    expect(createJobsFromRendered.mock).toBeCalledTimes(4);
+    expect(createJobsFromRendered.mock.calls.map(c => c.args)).toEqual([
       [[{ element: 123, value: 123, path: '$::0' }], context],
       [[{ element: 'abc', value: 'abc', path: '$::2' }], context],
       [
@@ -257,5 +260,20 @@ describe('#renderJobSequence()', () => {
         context,
       ],
     ]);
+  });
+
+  it('throws if non root native component passed', () => {
+    const Root = () => {};
+    Root.$$root = true;
+    const NonRoot = () => {};
+
+    delegate.isNativeComponent.mock.fake(C => C === Root || C === NonRoot);
+
+    const renderer = new Renderer('Test', delegate);
+
+    expect(() => renderer.renderJobSequence(<Root />, {})).not.toThrow();
+    expect(() => renderer.renderJobSequence(<NonRoot />, {})).toThrow(
+      "'NonRoot' is not legal root Component"
+    );
   });
 });

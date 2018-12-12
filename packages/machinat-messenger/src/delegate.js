@@ -1,6 +1,4 @@
 // @flow
-import invariant from 'invariant';
-
 import type {
   MachinatGeneralElement,
   MachinatNativeElement,
@@ -13,7 +11,7 @@ import {
   ATTACHED_FILE_DATA,
   ATTACHED_FILE_INFO,
 } from './symbol';
-import { ENTRY_MESSAGES } from './component/apiEntry';
+import { ENTRY_MESSAGES } from './apiEntry';
 import * as generalComponents from './component/general';
 
 import type {
@@ -69,7 +67,7 @@ const makeThreadId = thread =>
     ? `phone_number:${thread.phone_number}`
     : JSON.stringify(thread);
 
-const delegate: RenderDelegate<
+const MessengerRenderDelegate: RenderDelegate<
   ComponentRendered,
   MessengerJob,
   MessengerComponent
@@ -82,6 +80,11 @@ const delegate: RenderDelegate<
     { props, type }: MachinatGeneralElement,
     render: RenderInnerFn
   ) {
+    if (!(type in generalComponents)) {
+      throw new TypeError(
+        `<${type} /> is not valid general element supported in messenger`
+      );
+    }
     return generalComponents[type](props, render);
   },
 
@@ -105,27 +108,16 @@ const delegate: RenderDelegate<
         JSON.stringify(thread)
       );
 
-      invariant(
-        !element ||
-          typeof element === 'string' ||
-          typeof element === 'number' ||
-          typeof element.type === 'string' ||
-          element.type.$$root,
-        `'${String(
-          element && (element.type || element)
-        )}' is not legal root Component`
-      );
-
       const job =
         typeof value === 'string' || typeof value === 'number'
           ? createJobFromText(value, body)
           : createJobFromElementRendered(element, value, body);
 
+      // FIXME: type the symbol props after supported in flow
+      job[THREAD_IDENTIFIER] = makeThreadId(thread);
       if (typeof value === 'object') {
-        // FIXME: type the symbol props after supported in flow
         job[ATTACHED_FILE_DATA] = value[ATTACHED_FILE_DATA];
         job[ATTACHED_FILE_INFO] = value[ATTACHED_FILE_INFO];
-        job[THREAD_IDENTIFIER] = makeThreadId(thread);
       }
       jobs[i] = job;
     }
@@ -133,4 +125,4 @@ const delegate: RenderDelegate<
   },
 };
 
-export default delegate;
+export default MessengerRenderDelegate;

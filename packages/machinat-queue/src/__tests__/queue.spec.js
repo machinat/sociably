@@ -1,10 +1,25 @@
 /* eslint-disable no-await-in-loop, no-loop-func, no-return-assign, no-fallthrough, default-case */
+import moxy from 'moxy';
 import delay from 'delay';
 import MachinatQueue from '../queue';
 
 const makeJobs = n => new Array(n).fill(0).map((_, i) => ({ id: i }));
-const makeSuccessJobResult = ids =>
-  ids.map(id => ({ success: true, payload: `Success${id}` }));
+
+const successJobResponses = ids =>
+  ids.map(id => ({
+    success: true,
+    result: `Success${id}`,
+    error: undefined,
+    job: { id },
+  }));
+
+const failedJobResponses = ids =>
+  ids.map(id => ({
+    success: false,
+    result: `Fail${id}`,
+    error: new Error(`Fail${id}`),
+    job: { id },
+  }));
 
 const nextTick = () => new Promise(setImmediate);
 
@@ -22,10 +37,7 @@ describe('MachinatQueue.prototype', () => {
 
     consume.mockImplementation(async acquired => {
       await delay(10);
-      return acquired.map(job => ({
-        success: true,
-        payload: `Success${job.id}`,
-      }));
+      return successJobResponses(acquired.map(job => job.id));
     });
   });
 
@@ -46,9 +58,9 @@ describe('MachinatQueue.prototype', () => {
 
       setImmediate(jest.runAllTimers);
 
-      await expect(queue.acquire(1, consume)).resolves.toEqual([
-        { success: true, payload: 'Success1' },
-      ]);
+      await expect(queue.acquire(1, consume)).resolves.toEqual(
+        successJobResponses([1])
+      );
 
       expect(queue.length).toBe(0);
       expect(consume).toHaveBeenCalledTimes(1);
@@ -61,7 +73,7 @@ describe('MachinatQueue.prototype', () => {
       expect(queue.length).toBe(2);
 
       expect(queue.acquire(5, consume)).resolves.toEqual(
-        makeSuccessJobResult([0, 1])
+        successJobResponses([0, 1])
       );
 
       expect(consume).toBeCalledTimes(1);
@@ -94,17 +106,14 @@ describe('MachinatQueue.prototype', () => {
       consume.mockImplementation(async acquired => {
         expect(queue.length).toBe(Math.max(0, 11 - (i + 1) * 3));
 
-        return acquired.map(job => ({
-          success: true,
-          payload: `Success${job.id}`,
-        }));
+        return successJobResponses(acquired.map(job => job.id));
       });
 
       for (; i < 4; i += 1) {
         setImmediate(jest.runOnlyPendingTimers);
 
         await expect(queue.acquire(3, consume)).resolves.toEqual(
-          makeSuccessJobResult(
+          successJobResponses(
             new Array(i === 3 ? 2 : 3).fill(0).map((_, j) => i * 3 + j)
           )
         );
@@ -130,10 +139,7 @@ describe('MachinatQueue.prototype', () => {
         await delay(100);
         expect(queue.length).toBe(0);
 
-        return acquired.map(job => ({
-          success: true,
-          payload: `Success${job.id}`,
-        }));
+        return successJobResponses(acquired.map(job => job.id));
       });
 
       const promises = [];
@@ -146,10 +152,10 @@ describe('MachinatQueue.prototype', () => {
 
       setImmediate(jest.runAllTimers);
       await expect(Promise.all(promises)).resolves.toEqual([
-        makeSuccessJobResult([0, 1, 2]),
-        makeSuccessJobResult([3, 4, 5]),
-        makeSuccessJobResult([6, 7, 8]),
-        makeSuccessJobResult([9, 10]),
+        successJobResponses([0, 1, 2]),
+        successJobResponses([3, 4, 5]),
+        successJobResponses([6, 7, 8]),
+        successJobResponses([9, 10]),
       ]);
 
       expect(consume).toHaveBeenCalledTimes(4);
@@ -184,7 +190,7 @@ describe('MachinatQueue.prototype', () => {
         setImmediate(jest.runOnlyPendingTimers);
 
         await expect(queue.acquire(2, consume)).resolves.toEqual(
-          makeSuccessJobResult(i === 4 ? [8] : [i * 2, i * 2 + 1])
+          successJobResponses(i === 4 ? [8] : [i * 2, i * 2 + 1])
         );
         expect(queue.length).toBe(Math.max(0, 9 - i * 2 - 2));
 
@@ -220,7 +226,7 @@ describe('MachinatQueue.prototype', () => {
           expect(resolved).toHaveBeenCalledWith({
             success: true,
             errors: null,
-            batchResult: makeSuccessJobResult([s, s + 1, s + 2]),
+            batchResult: successJobResponses([s, s + 1, s + 2]),
           });
         }
       );
@@ -232,7 +238,7 @@ describe('MachinatQueue.prototype', () => {
       for (let i = 0; i < 2; i += 1) {
         setImmediate(jest.runOnlyPendingTimers);
         await expect(queue.acquire(5, consume)).resolves.toEqual(
-          makeSuccessJobResult(i === 0 ? [0, 1, 2, 3, 4] : [5, 6, 7, 8])
+          successJobResponses(i === 0 ? [0, 1, 2, 3, 4] : [5, 6, 7, 8])
         );
 
         expect(consume).toHaveBeenCalledTimes(i + 1);
@@ -258,7 +264,7 @@ describe('MachinatQueue.prototype', () => {
           expect(resolved).toHaveBeenCalledWith({
             success: true,
             errors: null,
-            batchResult: makeSuccessJobResult([i * 3, i * 3 + 1, i * 3 + 2]),
+            batchResult: successJobResponses([i * 3, i * 3 + 1, i * 3 + 2]),
           });
         }
       );
@@ -272,10 +278,7 @@ describe('MachinatQueue.prototype', () => {
         if (acquired[0].id === 2 || acquired[0].id === 4) {
           throw new Error('somthing wrong');
         }
-        return acquired.map(j => ({
-          success: true,
-          payload: `Success${j.id}`,
-        }));
+        return successJobResponses(acquired.map(j => j.id));
       });
 
       for (let i = 0; i < 5; i += 1) {
@@ -289,7 +292,7 @@ describe('MachinatQueue.prototype', () => {
           await expect(queue.acquire(2, consume)).resolves.toBe(undefined);
         } else {
           await expect(queue.acquire(2, consume)).resolves.toEqual(
-            makeSuccessJobResult(
+            successJobResponses(
               i === 3 ? [8] : i === 2 ? [6, 7] : [i * 2, i * 2 + 1]
             )
           );
@@ -327,11 +330,7 @@ describe('MachinatQueue.prototype', () => {
       expect(batch1Resolved).toHaveBeenCalledWith({
         success: false,
         errors: [new Error('somthing wrong')],
-        batchResult: [
-          { success: true, payload: 'Success0' },
-          { success: true, payload: 'Success1' },
-          undefined,
-        ],
+        batchResult: [...successJobResponses([0, 1]), undefined],
       });
       expect(batch2Resolved).toHaveBeenCalledWith({
         success: false,
@@ -341,7 +340,7 @@ describe('MachinatQueue.prototype', () => {
       expect(batch3Resolved).toHaveBeenCalledWith({
         success: true,
         errors: null,
-        batchResult: makeSuccessJobResult([6, 7, 8]),
+        batchResult: successJobResponses([6, 7, 8]),
       });
     });
 
@@ -350,19 +349,21 @@ describe('MachinatQueue.prototype', () => {
 
       consume.mockImplementation(async acquired => {
         await delay(10);
-        return acquired.map(({ id }) => {
-          const success = ![3, 6, 8].includes(id);
-          return { success, payload: `${success ? 'Success' : 'Fail'}${id}` };
+        return acquired.map(job => {
+          const success = ![3, 6, 8].includes(job.id);
+
+          const [response] = success
+            ? successJobResponses([job.id])
+            : failedJobResponses([job.id]);
+          return response;
         });
       });
 
       setImmediate(jest.runOnlyPendingTimers);
       await expect(queue.acquire(5, consume)).resolves.toEqual([
-        { success: true, payload: 'Success0' },
-        { success: true, payload: 'Success1' },
-        { success: true, payload: 'Success2' },
-        { success: false, payload: 'Fail3' },
-        { success: true, payload: 'Success4' },
+        ...successJobResponses([0, 1, 2]),
+        ...failedJobResponses([3]),
+        ...successJobResponses([4]),
       ]);
 
       expect(queue.length).toBe(3);
@@ -373,9 +374,9 @@ describe('MachinatQueue.prototype', () => {
 
       setImmediate(jest.runOnlyPendingTimers);
       await expect(queue.acquire(5, consume)).resolves.toEqual([
-        { success: false, payload: 'Fail6' },
-        { success: true, payload: 'Success7' },
-        { success: false, payload: 'Fail8' },
+        ...failedJobResponses([6]),
+        ...successJobResponses([7]),
+        ...failedJobResponses([8]),
       ]);
 
       expect(queue.length).toBe(0);
@@ -390,24 +391,24 @@ describe('MachinatQueue.prototype', () => {
       expect(batch1Resolved).toHaveBeenCalledWith({
         success: true,
         errors: null,
-        batchResult: makeSuccessJobResult([0, 1, 2]),
+        batchResult: successJobResponses([0, 1, 2]),
       });
       expect(batch2Resolved).toHaveBeenCalledWith({
         success: false,
-        errors: null,
+        errors: [new Error('Fail3')],
         batchResult: [
-          { success: false, payload: 'Fail3' },
-          { success: true, payload: 'Success4' },
+          ...failedJobResponses([3]),
+          ...successJobResponses([4]),
           undefined,
         ],
       });
       expect(batch3Resolved).toHaveBeenCalledWith({
         success: false,
-        errors: null,
+        errors: [new Error('Fail6'), new Error('Fail8')],
         batchResult: [
-          { success: false, payload: 'Fail6' },
-          { success: true, payload: 'Success7' },
-          { success: false, payload: 'Fail8' },
+          ...failedJobResponses([6]),
+          ...successJobResponses([7]),
+          ...failedJobResponses([8]),
         ],
       });
     });
@@ -440,10 +441,7 @@ describe('MachinatQueue.prototype', () => {
               break;
           }
 
-          return acquired.map(job => ({
-            success: true,
-            payload: `Success${job.id}`,
-          }));
+          return successJobResponses(acquired.map(job => job.id));
         })
       );
       expect(queue.length).toBe(0);
@@ -453,11 +451,11 @@ describe('MachinatQueue.prototype', () => {
       expect(batch1Resolved).toHaveBeenCalled();
 
       expect(result).toEqual([
-        makeSuccessJobResult([0, 1]),
-        makeSuccessJobResult([2, 3]),
-        makeSuccessJobResult([4, 5]),
-        makeSuccessJobResult([6, 7]),
-        makeSuccessJobResult([8]),
+        successJobResponses([0, 1]),
+        successJobResponses([2, 3]),
+        successJobResponses([4, 5]),
+        successJobResponses([6, 7]),
+        successJobResponses([8]),
       ]);
       [batch1Resolved, batch2Resolved, batch3Resolved].forEach(
         (resolved, i) => {
@@ -465,7 +463,7 @@ describe('MachinatQueue.prototype', () => {
           expect(resolved).toHaveBeenCalledWith({
             success: true,
             errors: null,
-            batchResult: makeSuccessJobResult([b, b + 1, b + 2]),
+            batchResult: successJobResponses([b, b + 1, b + 2]),
           });
         }
       );
@@ -494,10 +492,7 @@ describe('MachinatQueue.prototype', () => {
               break;
           }
 
-          return acquired.map(job => ({
-            success: true,
-            payload: `Success${job.id}`,
-          }));
+          return successJobResponses(acquired.map(job => job.id));
         })
       );
       expect(queue.length).toBe(0);
@@ -507,8 +502,8 @@ describe('MachinatQueue.prototype', () => {
       expect(batch1Resolved).toHaveBeenCalled();
 
       expect(result).toEqual([
-        makeSuccessJobResult([0, 1, 2, 3, 4]),
-        makeSuccessJobResult([5, 6, 7, 8]),
+        successJobResponses([0, 1, 2, 3, 4]),
+        successJobResponses([5, 6, 7, 8]),
       ]);
       [batch1Resolved, batch2Resolved, batch3Resolved].forEach(
         (resolved, i) => {
@@ -516,7 +511,7 @@ describe('MachinatQueue.prototype', () => {
           expect(resolved).toHaveBeenCalledWith({
             success: true,
             errors: null,
-            batchResult: makeSuccessJobResult([b, b + 1, b + 2]),
+            batchResult: successJobResponses([b, b + 1, b + 2]),
           });
         }
       );
@@ -532,7 +527,7 @@ describe('MachinatQueue.prototype', () => {
           expect(acquired).toEqual(jobs.slice(i * 2, i * 2 + 2));
           expect(queue.length).toBe(Math.max(0, 9 - (i + 1) * 2));
 
-          await delay((5 - i) * 10);
+          await delay((5 - i) * 100);
 
           switch (i) {
             case 4:
@@ -554,39 +549,26 @@ describe('MachinatQueue.prototype', () => {
             throw new Error('something wrong');
           }
 
-          return acquired.map(job => ({
-            success: true,
-            payload: `Success${job.id}`,
-          }));
+          return successJobResponses(acquired.map(job => job.id));
         })
       );
       expect(queue.length).toBe(0);
 
       await expect(promises[4]).rejects.toThrow('something wrong');
       await expect(promises[3]).rejects.toThrow('something wrong');
-      await expect(promises[2]).resolves.toEqual(makeSuccessJobResult([4, 5]));
+      await expect(promises[2]).resolves.toEqual(successJobResponses([4, 5]));
       await expect(promises[1]).rejects.toThrow('something wrong');
-      await expect(promises[0]).resolves.toEqual(makeSuccessJobResult([0, 1]));
-
-      expect(batch1Resolved).toHaveBeenCalled();
+      await expect(promises[0]).resolves.toEqual(successJobResponses([0, 1]));
 
       expect(batch1Resolved).toHaveBeenCalledWith({
         success: false,
         errors: [new Error('something wrong')],
-        batchResult: [
-          { success: true, payload: 'Success0' },
-          { success: true, payload: 'Success1' },
-          undefined,
-        ],
+        batchResult: [...successJobResponses([0, 1]), undefined],
       });
       expect(batch2Resolved).toHaveBeenCalledWith({
         success: false,
         errors: [new Error('something wrong')],
-        batchResult: [
-          undefined,
-          { success: true, payload: 'Success4' },
-          { success: true, payload: 'Success5' },
-        ],
+        batchResult: [undefined, ...successJobResponses([4, 5])],
       });
       expect(batch3Resolved).toHaveBeenCalledWith({
         success: false,
@@ -627,7 +609,9 @@ describe('MachinatQueue.prototype', () => {
             const success = job.id % 2 === 1;
             return {
               success,
-              payload: `${success ? 'Success' : 'Fail'}${job.id}`,
+              result: `${success ? 'Success' : 'Fail'}${job.id}`,
+              error: success ? undefined : new Error(`Fail${job.id}`),
+              job,
             };
           });
         })
@@ -635,52 +619,40 @@ describe('MachinatQueue.prototype', () => {
       expect(queue.length).toBe(0);
 
       await expect(Promise.all(promises)).resolves.toEqual([
-        [
-          { success: false, payload: 'Fail0' },
-          { success: true, payload: 'Success1' },
-        ],
-        [
-          { success: false, payload: 'Fail2' },
-          { success: true, payload: 'Success3' },
-        ],
-        [
-          { success: false, payload: 'Fail4' },
-          { success: true, payload: 'Success5' },
-        ],
-        [
-          { success: false, payload: 'Fail6' },
-          { success: true, payload: 'Success7' },
-        ],
-        [{ success: false, payload: 'Fail8' }],
+        [...failedJobResponses([0]), ...successJobResponses([1])],
+        [...failedJobResponses([2]), ...successJobResponses([3])],
+        [...failedJobResponses([4]), ...successJobResponses([5])],
+        [...failedJobResponses([6]), ...successJobResponses([7])],
+        [...failedJobResponses([8])],
       ]);
 
       expect(batch1Resolved).toHaveBeenCalled();
 
       expect(batch1Resolved).toHaveBeenCalledWith({
         success: false,
-        errors: null,
+        errors: [new Error('Fail2'), new Error('Fail0')],
         batchResult: [
-          { success: false, payload: 'Fail0' },
-          { success: true, payload: 'Success1' },
-          { success: false, payload: 'Fail2' },
+          ...failedJobResponses([0]),
+          ...successJobResponses([1]),
+          ...failedJobResponses([2]),
         ],
       });
       expect(batch2Resolved).toHaveBeenCalledWith({
         success: false,
-        errors: null,
+        errors: [new Error('Fail4')],
         batchResult: [
-          { success: true, payload: 'Success3' },
-          { success: false, payload: 'Fail4' },
-          { success: true, payload: 'Success5' },
+          ...successJobResponses([3]),
+          ...failedJobResponses([4]),
+          ...successJobResponses([5]),
         ],
       });
       expect(batch3Resolved).toHaveBeenCalledWith({
         success: false,
-        errors: null,
+        errors: [new Error('Fail8'), new Error('Fail6')],
         batchResult: [
-          { success: false, payload: 'Fail6' },
-          { success: true, payload: 'Success7' },
-          { success: false, payload: 'Fail8' },
+          ...failedJobResponses([6]),
+          ...successJobResponses([7]),
+          ...failedJobResponses([8]),
         ],
       });
     });
@@ -697,16 +669,11 @@ describe('MachinatQueue.prototype', () => {
         })),
       }));
 
-      const sequence = {
-        n: 0,
-        hasNext() {
-          return this.n < this.sequence.length;
-        },
-        next: jest.fn(function next() {
-          return this.sequence[this.n++]; // eslint-disable-line no-plusplus
-        }),
-        sequence: [[{ id: 1 }, { id: 2 }], [{ id: 3 }, { id: 4 }], [{ id: 5 }]],
-      };
+      const sequence = moxy([
+        [{ id: 1 }, { id: 2 }],
+        [{ id: 3 }, { id: 4 }],
+        [{ id: 5 }],
+      ]);
 
       const result = await queue.executeJobSequence(sequence);
 
@@ -722,7 +689,7 @@ describe('MachinatQueue.prototype', () => {
         ],
       });
 
-      expect(sequence.next).toHaveBeenCalledTimes(3);
+      expect(sequence[Symbol.iterator].mock).toHaveBeenCalled();
 
       const { executeJobBatch } = queue;
       expect(executeJobBatch.mock.calls).toEqual([
@@ -742,22 +709,13 @@ describe('MachinatQueue.prototype', () => {
         })),
       }));
 
-      const sequence = {
-        n: 0,
-        hasNext() {
-          return this.n < this.sequence.length;
-        },
-        next: jest.fn(function next() {
-          return this.sequence[this.n++]; // eslint-disable-line no-plusplus
-        }),
-        sequence: [
-          [{ id: 1 }, { id: 2 }],
-          delay(10),
-          [{ id: 3 }, { id: 4 }],
-          delay(20),
-          [{ id: 5 }],
-        ],
-      };
+      const sequence = moxy([
+        [{ id: 1 }, { id: 2 }],
+        delay(10),
+        [{ id: 3 }, { id: 4 }],
+        delay(20),
+        [{ id: 5 }],
+      ]);
 
       const promise = queue.executeJobSequence(sequence);
       expect(queue.executeJobBatch).toHaveBeenCalledTimes(1);
@@ -782,7 +740,7 @@ describe('MachinatQueue.prototype', () => {
         ],
       });
 
-      expect(sequence.next).toHaveBeenCalledTimes(5);
+      expect(sequence[Symbol.iterator].mock).toHaveBeenCalled();
 
       expect(queue.executeJobBatch.mock.calls).toEqual([
         [{ id: 1 }, { id: 2 }],
@@ -804,22 +762,13 @@ describe('MachinatQueue.prototype', () => {
         }),
       }));
 
-      const sequence = {
-        n: 0,
-        hasNext() {
-          return this.n < this.sequence.length;
-        },
-        next: jest.fn(function next() {
-          return this.sequence[this.n++]; // eslint-disable-line no-plusplus
-        }),
-        sequence: [
-          [{ id: 0 }, { id: 1 }, { id: 2 }],
-          delay(10),
-          [{ id: 3 }, { id: 4 }, { id: 5 }],
-          delay(20),
-          [{ id: 6 }],
-        ],
-      };
+      const sequence = [
+        [{ id: 0 }, { id: 1 }, { id: 2 }],
+        delay(10),
+        [{ id: 3 }, { id: 4 }, { id: 5 }],
+        delay(20),
+        [{ id: 6 }],
+      ];
 
       setImmediate(jest.runAllTimers);
 

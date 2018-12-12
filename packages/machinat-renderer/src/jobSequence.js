@@ -3,73 +3,79 @@ import invariant from 'invariant';
 import delay from 'delay';
 import { isImmediate } from 'machinat-shared';
 
-import type { BatchesAndSeparators, RenderDelegate } from './types';
+import type {
+  BatchesOrSeparators,
+  RenderDelegate,
+  JobOrSeparator,
+} from './types';
 
 type CreateJobs<Rendered, Job> = $PropertyType<
   RenderDelegate<Rendered, Job, any>,
   'createJobsFromRendered'
 >;
 
-export default class JobSequence<Rendered, Job> {
-  curSeq: number;
-  sequence: BatchesAndSeparators;
+function nextBatchOrSeparator() {
+  for (; this.curIdx < this.sequence.length; this.curIdx += 1) {
+    const action = this.sequence[this.curIdx];
+
+    if (isImmediate(action)) {
+      const { after, delay: timeToDelay } = action.props;
+      let promise;
+
+      if (timeToDelay !== undefined) {
+        promise = delay(timeToDelay);
+      }
+
+      if (after !== undefined) {
+        invariant(
+          typeof after === 'function',
+          `"after" prop of Immediate element should be a function, got ${after}`
+        );
+
+        promise = promise === undefined ? after() : promise.then(after);
+      }
+
+      if (promise !== undefined) {
+        this.curIdx += 1;
+        return { done: false, value: promise };
+      }
+    } else {
+      this.curIdx += 1;
+      return { done: false, value: this.createJobs(action, this.payload) };
+    }
+  }
+
+  return { done: true, value: undefined };
+}
+
+export default class JobSequence<Rendered, Job>
+  implements Iterable<JobOrSeparator<Job>> {
+  sequence: BatchesOrSeparators;
   createJobs: CreateJobs<Rendered, Job>;
   payload: any;
 
   constructor(
-    renderedSepuence: BatchesAndSeparators,
+    renderedSepuence: BatchesOrSeparators,
     payload: any,
     createJobs: CreateJobs<Rendered, Job>
   ) {
     this.sequence = renderedSepuence;
     this.payload = payload;
     this.createJobs = createJobs;
-    this.curSeq = 0;
   }
 
   get length() {
     return this.sequence.length;
   }
 
-  next(): Promise<void> | Array<Job> {
-    for (; this.curSeq < this.sequence.length; this.curSeq += 1) {
-      const action = this.sequence[this.curSeq];
-
-      if (isImmediate(action)) {
-        const { after, delay: timeToDelay } = action.props;
-        let promise;
-
-        if (timeToDelay !== undefined) {
-          promise = delay(timeToDelay);
-        }
-
-        if (after !== undefined) {
-          invariant(
-            typeof after === 'function',
-            `"after" prop of Immediate element should be a function, got ${after}`
-          );
-
-          promise = promise === undefined ? after() : promise.then(after);
-        }
-
-        if (promise !== undefined) {
-          this.curSeq += 1;
-          return promise;
-        }
-      } else {
-        this.curSeq += 1;
-        return this.createJobs(action, this.payload);
-      }
-    }
-
-    return Promise.resolve();
-  }
-
-  hasNext() {
-    return this.curSeq < this.sequence.length;
-  }
-
-  reset() {
-    this.curSeq = 0;
+  /* :: @@iterator: () => Iterator<JobOrSeparator<Job>>; */
+  [Symbol.iterator]() {
+    return {
+      curIdx: 0,
+      next: nextBatchOrSeparator,
+      sequence: this.sequence,
+      payload: this.payload,
+      createJobs: this.createJobs,
+    };
   }
 }

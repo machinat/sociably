@@ -5,13 +5,13 @@ import fetch from 'isomorphic-fetch';
 import FormData from 'form-data';
 
 import type MahinateQueue from 'machinat-queue';
-import type { JobResponse } from 'machinat-queue/types';
+import type { JobResponse, BatchJobResponse } from 'machinat-queue/types';
 import type MahinateRenderer from 'machinat-renderer';
-import type { MachinatClient } from 'machinat-base/types';
+import type { MachinatClient, SendingResponse } from 'machinat-base/types';
 
 import type { MachinatNode } from 'types/element';
 
-import { GraphAPIError } from './error';
+import { GraphAPIError, MachinatSendError } from './error';
 import {
   THREAD_IDENTIFIER,
   ATTACHED_FILE_DATA,
@@ -20,10 +20,10 @@ import {
 
 import type MessengerThread from './thread';
 import type {
-  MessengerComponent,
-  MessengerJob,
-  MessengerJobResult,
-  ComponentRendered,
+  MessengerComponent as Component,
+  MessengerJob as Job,
+  MessengerJobResult as Result,
+  ComponentRendered as Rendered,
   Recepient,
   SendOptions,
 } from './types';
@@ -31,18 +31,14 @@ import type {
 export type MessengerClientOptions = {
   accessToken: string,
   appSecret: ?string,
-  consumeInterval: number,
+  consumeInterval: ?number,
 };
 
-type MessengerRenderer = MahinateRenderer<
-  ComponentRendered,
-  MessengerJob,
-  MessengerComponent
->;
+type MessengerRenderer = MahinateRenderer<Rendered, Job, Component>;
 
-type MessengerJobQueue = MahinateQueue<MessengerJob, MessengerJobResult>;
+type MessengerJobQueue = MahinateQueue<Job, Result>;
 
-type MessengerJobResponse = JobResponse<MessengerJob, MessengerJobResult>;
+type MessengerJobResponse = JobResponse<Job, Result>;
 
 const UNKNOWN_THREAD = 'unknown_thread';
 
@@ -74,17 +70,16 @@ const appendFieldsToForm = (form: FormData, body: { [string]: ?string }) => {
     const field = fields[k];
     const value = body[field];
 
-    if (value) form.append(field);
+    if (value) form.append(field, value);
   }
 
   return form;
 };
 
-export default class MessengerClient
-  implements MachinatClient<MessengerJobResult> {
+export default class MessengerClient implements MachinatClient<Job, Result> {
   token: string;
   consumeInterval: number;
-  appSecretProof: ?string;
+  _appSecretProof: ?string;
   _queue: MessengerJobQueue;
   _renderer: MessengerRenderer;
   _consumptionTimeoutId: TimeoutID | Symbol | null;
@@ -95,12 +90,12 @@ export default class MessengerClient
     { consumeInterval, appSecret, accessToken }: MessengerClientOptions
   ) {
     this.token = accessToken;
-    this.consumeInterval = consumeInterval;
+    this.consumeInterval = consumeInterval || 500;
 
     this._queue = queue;
     this._renderer = renderer;
 
-    this.appSecretProof = appSecret
+    this._appSecretProof = appSecret
       ? crypto
           .createHmac('sha256', appSecret)
           .update(accessToken)
@@ -114,7 +109,7 @@ export default class MessengerClient
     recipient: string | Recepient | MessengerThread,
     nodes: MachinatNode,
     options: SendOptions
-  ): Promise<void | MessengerJobResult[]> {
+  ): Promise<SendingResponse<Job, Result>> {
     let thread = recipient;
     if (typeof thread === 'string') {
       thread = { id: recipient };
@@ -126,24 +121,32 @@ export default class MessengerClient
     });
 
     if (!sequence) {
-      return undefined;
+      return { jobs: null, result: null };
     }
 
-    const response = await this._queue.executeJobSequence(sequence);
+    const batchResonse: BatchJobResponse<
+      Job,
+      Result
+    > = (await this._queue.executeJobSequence(sequence): any);
 
-    if (!response.success) {
-      throw new Error(response);
+    if (!batchResonse.success) {
+      throw new MachinatSendError(batchResonse);
     }
 
     // since it succeeed, the batchResult must be fullfilled
-    const batchResult: MessengerJobResponse[] = (response.batchResult: any);
+    const batchResult: MessengerJobResponse[] = (batchResonse.batchResult: any);
 
-    const payloads: MessengerJobResult[] = new Array(batchResult.length);
+    const response = {
+      jobs: new Array(batchResult.length),
+      result: new Array(batchResult.length),
+    };
+
     for (let i = 0; i < batchResult.length; i += 1) {
-      payloads[i] = batchResult[i].payload;
+      response.jobs[i] = batchResult[i].job;
+      response.result[i] = batchResult[i].result;
     }
 
-    return payloads;
+    return response;
   }
 
   async _request(
@@ -155,8 +158,8 @@ export default class MessengerClient
     const requestURL = new url.URL(path, ENTRY);
     requestURL.searchParams.set('access_token', this.token);
 
-    if (this.appSecretProof) {
-      requestURL.searchParams.set('appsecret_proof', this.appSecretProof);
+    if (this._appSecretProof) {
+      requestURL.searchParams.set('appsecret_proof', this._appSecretProof);
     }
 
     if (query !== undefined) {
@@ -223,20 +226,16 @@ export default class MessengerClient
     }
   };
 
-  _handleConsumptionAdanvancing = async (
+  _handleConsumptionAdanvancing = (
     resolveFlow: any => void,
     rejectFlow: any => void
-  ) => {
-    try {
-      await this._queue.acquire(50, this._consumeJob(resolveFlow, rejectFlow));
-    } catch (e) {
-      // TODO: handle errors
-      console.error(e);
-    }
-  };
+  ) =>
+    this._queue
+      .acquire(50, this._consumeJob(resolveFlow, rejectFlow))
+      .catch(() => {}); // TODO: what to do?
 
   _consumeJob = (resolveFlow: any => void, rejectFlow: any => void) => async (
-    jobs: MessengerJob[]
+    jobs: Job[]
   ) => {
     const threadSendingRec = new Map();
     let fileCount = 0;
@@ -280,7 +279,7 @@ export default class MessengerClient
     const batchBody = {
       access_token: this.token,
       include_headers: 'false', // NOTE: Graph API param work as string
-      appsecret_proof: this.appSecretProof || undefined,
+      appsecret_proof: this._appSecretProof || undefined,
       batch: JSON.stringify(jobs),
     };
 
@@ -297,20 +296,29 @@ export default class MessengerClient
       throw err;
     }
 
-    const batchResult = await response.json();
+    const apiBody = await response.json();
     if (!response.ok) {
-      throw new GraphAPIError(batchResult);
+      throw new GraphAPIError(apiBody);
     }
 
-    const result: MessengerJobResponse[] = new Array(batchResult.length);
+    const result: MessengerJobResponse[] = new Array(apiBody.length);
 
     for (let i = 0; i < result.length; i += 1) {
-      const payload = batchResult[i];
-      result[i] = {
-        success: payload.code >= 200 && payload.code < 300,
-        payload,
-        job: jobs[i],
-      };
+      const apiJobRes = apiBody[i];
+      const success = apiJobRes.code >= 200 && apiJobRes.code < 300;
+      result[i] = success
+        ? {
+            success: true,
+            result: apiJobRes,
+            error: undefined,
+            job: jobs[i],
+          }
+        : {
+            success: false,
+            result: apiJobRes,
+            error: new GraphAPIError(JSON.parse(apiJobRes.body)),
+            job: jobs[i],
+          };
     }
 
     return result;

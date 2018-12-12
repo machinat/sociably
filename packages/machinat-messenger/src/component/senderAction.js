@@ -1,7 +1,7 @@
 import { annotateNativeRoot } from 'machinat-renderer';
 
 import { MESSENGER_NAITVE_TYPE } from '../symbol';
-import { ENTRY_MESSAGES } from './apiEntry';
+import { ENTRY_MESSAGES } from '../apiEntry';
 
 const MARK_SEEN = { sender_action: 'mark_seen' };
 export const MarkSeen = () => MARK_SEEN;

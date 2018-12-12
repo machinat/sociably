@@ -13,11 +13,11 @@ export default function createElement(
   } else if (children.length > 1) {
     props.children = children;
   }
+
   return {
     type,
     props,
     $$typeof: MACHINAT_ELEMENT_TYPE,
     // $FlowFixMe ok until we have better way labeling native type
-    $$native: type && type.$$native,
   };
 }

@@ -15,15 +15,20 @@ export interface MachinatEvent {
   shouldRespond: boolean;
 }
 
-export interface MachinatClient<Result> {
+export type SendingResponse<Job, Result> = {
+  jobs: ?(Job[]),
+  result: ?(Result[]),
+};
+
+export interface MachinatClient<Job, Result> {
   send(
     thread: string | Object,
     message: MachinatNode,
     options: Object
-  ): Promise<?(Result[])>;
+  ): Promise<SendingResponse<Job, Result>>;
 }
 
-export interface MachinatContext<Client: MachinatClient<any>> {
+export interface MachinatContext<Client: MachinatClient<any, any>> {
   source: string;
   event: MachinatEvent;
   client: Client;

@@ -5,7 +5,7 @@ import {
 } from 'machinat-renderer';
 
 import { MESSENGER_NAITVE_TYPE } from '../symbol';
-import { ENTRY_MESSAGES } from './apiEntry';
+import { ENTRY_MESSAGES } from '../apiEntry';
 
 import { renderQuickReplies } from './utils';
 

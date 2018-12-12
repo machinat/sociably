@@ -6,7 +6,7 @@ import {
   MESSENGER_NAITVE_TYPE,
 } from '../symbol';
 import { renderQuickReplies } from './utils';
-import { ENTRY_MESSAGES } from './apiEntry';
+import { ENTRY_MESSAGES } from '../apiEntry';
 
 const nativeMediaFactroy = (name, type) => {
   const container = {
