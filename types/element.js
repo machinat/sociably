@@ -35,8 +35,9 @@ export type MachinatNativeType<T> = T & {
 
 export type MachinatRenderable = MachinatText | MachinatElement<any>;
 
-export type MachinatFragmentElement = MachinatElement<Symbol>;
-export type MachinatNativeElement<T> = MachinatElement<MachinatNativeType<T>>;
-export type MachinatGeneralElement = MachinatElement<string>;
+export type FragmentElement = MachinatElement<Symbol>;
+export type NativeElement<T> = MachinatElement<MachinatNativeType<T>>;
+export type GeneralElement = MachinatElement<string>;
+export type SeparatorElement = MachinatElement<Symbol>;
 
 export type MachinatChildren = MachinatNode;

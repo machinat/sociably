@@ -2,7 +2,6 @@ import moxy from 'moxy';
 
 import Machinat from '../../../machinat';
 import Renderer from '../renderer';
-import JobSequence from '../jobSequence';
 
 it('is a constructor', () => {
   expect(() => new Renderer('Test')).not.toThrow();
@@ -20,16 +19,13 @@ const Custom = moxy(props => (
 ));
 Custom.mock.getter('name').fakeReturnValue('Custom');
 
-let jobId = 0;
 const delegate = moxy({
   isNativeComponent: t => t === Native,
   renderGeneralElement: () => '__GENERAL_ELE__',
   renderNativeElement: e => e.props,
-  createJobsFromRendered: rendered => rendered.map(() => ({ id: jobId++ })), // eslint-disable-line no-plusplus
 });
 
 afterEach(() => {
-  jobId = 0;
   Custom.mock.clear();
   delegate.mock.clear();
 });
@@ -51,25 +47,34 @@ describe('#renderInner()', () => {
     );
 
     expect(rendered).toEqual([
-      { element: 123, value: 123, path: '$::0' },
-      { element: 'abc', value: 'abc', path: '$::1' },
-      { element: <a>aaa</a>, value: '__GENERAL_ELE__', path: '$::2' },
+      { isSeparator: false, element: 123, value: 123, path: '$::0' },
+      { isSeparator: false, element: 'abc', value: 'abc', path: '$::1' },
       {
+        isSeparator: false,
+        element: <a>aaa</a>,
+        value: '__GENERAL_ELE__',
+        path: '$::2',
+      },
+      {
+        isSeparator: false,
         element: <Native x="true" y={false} />,
         value: { x: 'true', y: false },
         path: '$::3',
       },
       {
+        isSeparator: false,
         element: 'wrapped head',
         value: 'wrapped head',
         path: '$::4#Custom::0',
       },
       {
+        isSeparator: false,
         element: <Native a="A" b={2} />,
         value: { a: 'A', b: 2 },
         path: '$::4#Custom::1',
       },
       {
+        isSeparator: false,
         element: 'wrapped foot',
         value: 'wrapped foot',
         path: '$::4#Custom::2',
@@ -101,7 +106,7 @@ describe('#renderInner()', () => {
     });
   });
 
-  it('return undefined if no renderable element in the node', () => {
+  it('return null if no renderable element in the node', () => {
     const renderer = new Renderer('Test', delegate);
 
     const None = () => null;
@@ -124,7 +129,7 @@ describe('#renderInner()', () => {
     ];
 
     emptyNodes.forEach(node => {
-      expect(renderer.renderInner(node)).toBe(undefined);
+      expect(renderer.renderInner(node)).toBe(null);
     });
   });
 
@@ -138,19 +143,19 @@ describe('#renderInner()', () => {
         </>
       )
     ).toThrow(
-      'separator element should not be placed in the inner of native or general prop'
+      'separator element should not be placed beneath native or general element props'
     );
   });
 });
 
-describe('#renderJobSequence()', () => {
+describe('#renderRoot()', () => {
   it('works', () => {
     const afterCallback = () => Promise.resolve();
     const WrappedImmediate = () => <Machinat.Immediate after={afterCallback} />;
     const context = {};
 
     const renderer = new Renderer('Test', delegate);
-    const jobSequence = renderer.renderJobSequence(
+    const rendered = renderer.renderRoot(
       <>
         {123}
         <Machinat.Immediate delay={1000} />
@@ -165,7 +170,64 @@ describe('#renderJobSequence()', () => {
       context
     );
 
-    expect(jobSequence).toBeInstanceOf(JobSequence);
+    expect(rendered).toEqual([
+      { isSeparator: false, element: 123, value: 123, path: '$::0' },
+      {
+        isSeparator: true,
+        element: <Machinat.Immediate delay={1000} />,
+        value: undefined,
+        path: '$::1',
+      },
+      { isSeparator: false, element: 'abc', value: 'abc', path: '$::2' },
+      {
+        isSeparator: true,
+        element: <Machinat.Immediate after={afterCallback} />,
+        value: undefined,
+        path: '$::3',
+      },
+      {
+        isSeparator: false,
+        element: <b />,
+        value: '__GENERAL_ELE__',
+        path: '$::4',
+      },
+      {
+        isSeparator: false,
+        element: <a>aaa</a>,
+        value: '__GENERAL_ELE__',
+        path: '$::5',
+      },
+      {
+        isSeparator: true,
+        element: <Machinat.Immediate after={afterCallback} />,
+        value: undefined,
+        path: '$::6#WrappedImmediate',
+      },
+      {
+        isSeparator: false,
+        element: <Native x="true" y={false} />,
+        value: { x: 'true', y: false },
+        path: '$::7',
+      },
+      {
+        isSeparator: false,
+        element: 'wrapped head',
+        value: 'wrapped head',
+        path: '$::8#Custom::0',
+      },
+      {
+        isSeparator: false,
+        element: <Native a="A" b={2} />,
+        value: { a: 'A', b: 2 },
+        path: '$::8#Custom::1',
+      },
+      {
+        isSeparator: false,
+        element: 'wrapped foot',
+        value: 'wrapped foot',
+        path: '$::8#Custom::2',
+      },
+    ]);
 
     expect(Custom.mock).toBeCalledTimes(1);
     expect(Custom.mock.calls[0].args).toEqual([{ a: 'A', b: 2 }, context]);
@@ -174,8 +236,8 @@ describe('#renderJobSequence()', () => {
       isNativeComponent,
       renderGeneralElement,
       renderNativeElement,
-      createJobsFromRendered,
     } = delegate;
+
     expect(isNativeComponent.mock.calls.map(c => c.args)).toEqual([
       [WrappedImmediate],
       [Native],
@@ -200,66 +262,33 @@ describe('#renderJobSequence()', () => {
       expect(call.args[2]).toEqual(context);
       expect(call.args[3]).toEqual(['$::7', '$::8#Custom::1'][i]);
     });
+  });
 
-    const iterator = jobSequence[Symbol.iterator]();
+  it('return null if no renderable element in the node', () => {
+    const renderer = new Renderer('Test', delegate);
 
-    expect(createJobsFromRendered.mock).toBeCalledTimes(0);
-    for (let i = 0; i < 7; i += 1) {
-      const next = iterator.next();
-      expect(next.done).toBe(false);
+    const None = () => null;
+    const emptyNodes = [
+      true,
+      false,
+      undefined,
+      null,
+      [],
+      <>{null}</>,
+      <None />,
+      [true, false, undefined, null, <None />],
+      <>
+        {true}
+        {false}
+        {undefined}
+        {null}
+        <None />
+      </>,
+    ];
 
-      if (i === 1 || i === 3 || i === 5) {
-        expect(next.value).toBeInstanceOf(Promise);
-      } else {
-        const expectedBatches = [
-          [{ id: 0 }],
-          [{ id: 1 }],
-          [{ id: 2 }, { id: 3 }],
-          [{ id: 4 }, { id: 5 }, { id: 6 }, { id: 7 }],
-        ];
-        expect(next.value).toEqual(expectedBatches[i / 2]);
-      }
-    }
-
-    expect(iterator.next()).toEqual({ done: true });
-
-    expect(createJobsFromRendered.mock).toBeCalledTimes(4);
-    expect(createJobsFromRendered.mock.calls.map(c => c.args)).toEqual([
-      [[{ element: 123, value: 123, path: '$::0' }], context],
-      [[{ element: 'abc', value: 'abc', path: '$::2' }], context],
-      [
-        [
-          { element: <b />, value: '__GENERAL_ELE__', path: '$::4' },
-          { element: <a>aaa</a>, value: '__GENERAL_ELE__', path: '$::5' },
-        ],
-        context,
-      ],
-      [
-        [
-          {
-            element: <Native x="true" y={false} />,
-            value: { x: 'true', y: false },
-            path: '$::7',
-          },
-          {
-            element: 'wrapped head',
-            value: 'wrapped head',
-            path: '$::8#Custom::0',
-          },
-          {
-            element: <Native a="A" b={2} />,
-            value: { a: 'A', b: 2 },
-            path: '$::8#Custom::1',
-          },
-          {
-            element: 'wrapped foot',
-            value: 'wrapped foot',
-            path: '$::8#Custom::2',
-          },
-        ],
-        context,
-      ],
-    ]);
+    emptyNodes.forEach(node => {
+      expect(renderer.renderRoot(node)).toBe(null);
+    });
   });
 
   it('throws if non root native component passed', () => {
@@ -271,9 +300,30 @@ describe('#renderJobSequence()', () => {
 
     const renderer = new Renderer('Test', delegate);
 
-    expect(() => renderer.renderJobSequence(<Root />, {})).not.toThrow();
-    expect(() => renderer.renderJobSequence(<NonRoot />, {})).toThrow(
-      "'NonRoot' is not legal root Component"
+    expect(() => renderer.renderRoot(<Root />, {})).not.toThrow();
+    expect(() => renderer.renderRoot(<NonRoot />, {})).toThrow(
+      'NonRoot is not legal root component'
+    );
+  });
+
+  it('throw if non renderalbe passed', () => {
+    const IllegalComponent = { foo: 'bar' };
+
+    const renderer = new Renderer('Test', delegate);
+
+    expect(() => renderer.renderRoot(<IllegalComponent />, {})).toThrow(
+      "element type { foo: 'bar' } at poistion '$' is illegal"
+    );
+  });
+
+  it('throw if native compoinent of non supported', () => {
+    const AnotherPlatformNative = () => {};
+    AnotherPlatformNative.$$native = Symbol('some other platform');
+
+    const renderer = new Renderer('test', delegate);
+
+    expect(() => renderer.renderRoot(<AnotherPlatformNative />, {})).toThrow(
+      "component AnotherPlatformNative at '$' is not supported by test"
     );
   });
 });

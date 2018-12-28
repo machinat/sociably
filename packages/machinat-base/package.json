@@ -4,6 +4,7 @@
   "main": "lib/index.js",
   "license": "MIT",
   "dependencies": {
+    "delay": "^4.1.0",
     "invariant": "^2.2.4",
     "koa-compose": "^4.1.0",
     "raw-body": "^2.3.3",

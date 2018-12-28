@@ -1,9 +1,9 @@
 import moxy from 'moxy';
-import HttpContext from '../httpContext';
+import WebhookContext from '../webhookContext';
 
 it('is a contructor', () => {
-  expect(typeof HttpContext).toBe('function');
-  expect(() => new HttpContext()).not.toThrow();
+  expect(typeof WebhookContext).toBe('function');
+  expect(() => new WebhookContext()).not.toThrow();
 });
 
 describe('#reply()', () => {
@@ -12,7 +12,7 @@ describe('#reply()', () => {
     const result = { success: true };
     const client = moxy({ send: () => Promise.resolve(result) });
 
-    const context = new HttpContext(event, client);
+    const context = new WebhookContext(event, client);
     await expect(context.reply('hello')).resolves.toBe(result);
 
     await context.reply('world', { some: 'options' });
@@ -24,7 +24,7 @@ describe('#reply()', () => {
   });
 
   it('throw if event.thread is empty', () => {
-    const context = new HttpContext({}, {});
+    const context = new WebhookContext({}, {});
 
     expect(() => context.reply('fail')).toThrow();
   });
@@ -33,7 +33,7 @@ describe('#reply()', () => {
 describe('#respond()', () => {
   it('configure the response object passed in', () => {
     const response = {};
-    const context = new HttpContext({ shouldRespond: true }, {}, response);
+    const context = new WebhookContext({ shouldRespond: true }, {}, response);
 
     context.respond(200, 'body');
 
@@ -41,15 +41,15 @@ describe('#respond()', () => {
   });
 
   it('throw if event is not shouldRespond', () => {
-    const context = new HttpContext({}, {}, {});
+    const context = new WebhookContext({}, {}, {});
 
     expect(() => context.respond(200, 'body')).toThrow();
   });
 
   it('throw if response object is already set before', () => {
     const response = {};
-    const ctx1 = new HttpContext({ shouldRespond: true }, {}, response);
-    const ctx2 = new HttpContext({ shouldRespond: true }, {}, response);
+    const ctx1 = new WebhookContext({ shouldRespond: true }, {}, response);
+    const ctx2 = new WebhookContext({ shouldRespond: true }, {}, response);
 
     ctx1.respond(200, 'body');
     expect(() => ctx2.respond(200, 'body')).toThrow();

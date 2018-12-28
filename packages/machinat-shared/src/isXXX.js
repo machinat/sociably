@@ -4,7 +4,6 @@ import {
   MACHINAT_ELEMENT_TYPE,
   MACHINAT_IMMEDIATELY_TYPE,
 } from './symbol';
-import isValidElementType from './isValidElementType';
 
 export const isEmpty = (element: any): boolean %checks =>
   typeof element === 'boolean' || element === null || element === undefined;
@@ -12,8 +11,7 @@ export const isEmpty = (element: any): boolean %checks =>
 export const isElement = (element: any): boolean %checks =>
   typeof element === 'object' &&
   element !== null &&
-  element.$$typeof === MACHINAT_ELEMENT_TYPE &&
-  isValidElementType(element.type);
+  element.$$typeof === MACHINAT_ELEMENT_TYPE;
 
 export const isFragment = (element: any): boolean %checks =>
   typeof element === 'object' &&

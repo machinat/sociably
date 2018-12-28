@@ -22,7 +22,7 @@ class BaseConnector<Ctx: MachinatContext<any>> extends EventEmitter {
     return this;
   }
 
-  createMiddlewaresFn(): Ctx => Promise<void> {
+  createHandler(): Ctx => Promise<void> {
     return compose(this.middlewares);
   }
 

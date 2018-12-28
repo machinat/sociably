@@ -6,10 +6,10 @@ import getRawBody from 'raw-body';
 import thenifiedly from 'thenifiedly';
 
 import BaseConnector from './baseConnector';
-import Context from './httpContext';
+import Context from './webhookContext';
 import type { MachinatClient, MachinatContext, MachinatEvent } from './types';
 
-type RequestHandler = (
+type WebhookHandler = (
   req: IncomingMessage,
   res: ServerResponse,
   rawBody?: string
@@ -20,26 +20,26 @@ const RAW_BODY_OPTION = { encoding: true };
 const endResponse = thenifiedly.callMethodFactory('end');
 const shouldEventRespond = e => !!e.shouldRespond;
 
-class HTTPConnector<Client: MachinatClient<any>> extends BaseConnector<
-  MachinatContext<Client>
-> {
+class WebhookConnector<
+  Client: MachinatClient<any, any, any, any>
+> extends BaseConnector<MachinatContext<Client>> {
   client: Client;
   server: Server;
-  handleRequest: RequestHandler;
+  handleWebhook: WebhookHandler;
 
-  constructor(client: Client, handleRequest: RequestHandler) {
+  constructor(client: Client, handleWebhook: WebhookHandler) {
     super();
     this.client = client;
-    this.handleRequest = handleRequest;
+    this.handleWebhook = handleWebhook;
   }
 
-  createHandler() {
-    const fn = this.createMiddlewaresFn();
-    return this.handleWebhook(fn);
+  callback() {
+    const fn = this.createHandler();
+    return this.handleRequest(fn);
   }
 
   listen(...args) {
-    const handler = this.createHandler();
+    const handler = this.callback();
     this.server = createServer((req, res) => {
       handler(req, res).catch(() => {});
     });
@@ -47,7 +47,7 @@ class HTTPConnector<Client: MachinatClient<any>> extends BaseConnector<
     return this.server.listen(...args);
   }
 
-  handleWebhook(fn: (MachinatContext<Client>) => Promise<void>) {
+  handleRequest(fn: (MachinatContext<Client>) => Promise<void>) {
     return async (
       req: IncomingMessage,
       res: ServerResponse,
@@ -68,7 +68,7 @@ class HTTPConnector<Client: MachinatClient<any>> extends BaseConnector<
           body = await getRawBody(req, RAW_BODY_OPTION);
         }
 
-        const events = this.handleRequest(req, res, body);
+        const events = this.handleWebhook(req, res, body);
         if (!events || events.length === 0) {
           await endResponse(res);
           return;
@@ -104,4 +104,4 @@ class HTTPConnector<Client: MachinatClient<any>> extends BaseConnector<
   }
 }
 
-export default HTTPConnector;
+export default WebhookConnector;

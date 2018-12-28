@@ -14,8 +14,8 @@ const textReducer = (text, cur) => text + cur.value;
 
 export const renderTextContent = (node, render, propPath) => {
   const rendered = render(node, propPath);
-  if (rendered === undefined) {
-    return undefined;
+  if (rendered === null) {
+    return null;
   }
 
   if (__DEV__) {

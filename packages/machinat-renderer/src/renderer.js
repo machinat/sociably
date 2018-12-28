@@ -1,180 +1,188 @@
 // @flow
+import { inspect } from 'util';
 import invariant from 'invariant';
-import { isNative, isImmediate, isEmpty } from 'machinat-shared';
+import { isNative, isImmediate, isEmpty, isElement } from 'machinat-shared';
 import { traverse } from 'machinat-children';
 
 import type {
   MachinatNode,
-  MachinatGeneralElement,
-  MachinatNativeElement,
+  GeneralElement,
+  NativeElement,
+  SeparatorElement,
 } from 'types/element';
 import type { TraverseElementCallback } from 'machinat-children/types';
 
-import JobSequence from './jobSequence';
-import {
-  appendResult,
-  invariantNoSeparator,
-  appendResultToSequence,
-  appendSeparatorToSequence,
-} from './utils';
-
-import type {
-  RenderDelegate,
-  RenderResult,
-  ImmediateElement,
-  RenderTraverseContext,
-} from './types';
+import type { RenderDelegate, InnerAction, RootAction } from './types';
 
 const RENDER_SEPARATOR = '#';
 const RENDER_ROOT = '$';
 
-export default class MachinatRenderer<R: Object, J, N> {
-  delegate: RenderDelegate<R, J, N>;
+type RenderTraverseContext<R, N> =
+  | {
+      payload: any,
+      accumulates: RootAction<R, N>[],
+      asRoot: true,
+    }
+  | {
+      payload: any,
+      accumulates: InnerAction<R, N>[],
+      asRoot: false,
+    };
+
+export default class MachinatRenderer<Action, Native> {
+  delegate: RenderDelegate<Action, Native>;
   oriented: string;
 
-  constructor(orientedPlatform: string, delegate: RenderDelegate<R, J, N>) {
+  constructor(
+    orientedPlatform: string,
+    delegate: RenderDelegate<Action, Native>
+  ) {
     this.delegate = delegate;
     this.oriented = orientedPlatform;
   }
 
-  renderInner(elements: MachinatNode, prefix: string, payload: any) {
+  renderInner(
+    elements: MachinatNode,
+    prefix: string,
+    payload: any
+  ): null | InnerAction<Action, Native>[] {
     return this._renderInnerImpl(prefix, payload, elements, '');
   }
 
-  _renderJobSequenceTraverseCallback = this._makeRenderTraverseCallback(
-    appendResultToSequence,
-    appendSeparatorToSequence
-  );
-  // TODO: Job sequence need further encapsulation
-  renderJobSequence(elements: MachinatNode, payload: any): ?JobSequence<R, J> {
+  renderRoot(
+    elements: MachinatNode,
+    payload: any
+  ): null | RootAction<Action, Native>[] {
     if (isEmpty(elements)) {
-      return undefined;
+      return null;
     }
 
-    const accumulates = [];
-
+    const accumulates: RootAction<Action, Native>[] = [];
     traverse(
       elements,
       RENDER_ROOT,
-      { payload, accumulates },
-      this._renderJobSequenceTraverseCallback
+      { payload, accumulates, asRoot: true },
+      this._traverseCallback
     );
 
-    if (accumulates.length === 0) {
-      return undefined;
-    }
-
-    return new JobSequence(
-      accumulates,
-      payload,
-      this.delegate.createJobsFromRendered
-    );
+    return accumulates.length === 0 ? null : accumulates;
   }
-
-  _renderInnerTraverseCallback = this._makeRenderTraverseCallback(
-    appendResult,
-    invariantNoSeparator
-  );
 
   _renderInnerImpl(
     prefix: string,
     payload: any,
     elements: MachinatNode,
     currentPath: string
-  ) {
+  ): null | InnerAction<Action, Native>[] {
     if (isEmpty(elements)) {
-      return undefined;
+      return null;
     }
 
-    const accumulates = [];
+    const accumulates: InnerAction<Action, Native>[] = [];
     traverse(
       elements,
       prefix + currentPath,
-      { payload, accumulates },
-      this._renderInnerTraverseCallback
+      { payload, accumulates, asRoot: false },
+      this._traverseCallback
     );
 
-    return accumulates.length === 0 ? undefined : accumulates;
+    return accumulates.length === 0 ? null : accumulates;
   }
 
-  _makeRenderTraverseCallback<Acc>(
-    handleRenderedResult: (RenderResult<R, N>, Acc) => void,
-    handleSeparator: (ImmediateElement, Acc) => void
-  ): TraverseElementCallback {
-    const traversCallback = (
-      element,
-      path,
-      context: RenderTraverseContext<any>
-    ) => {
-      const { accumulates, payload } = context;
+  _traverseCallback: TraverseElementCallback = (
+    element,
+    path,
+    context: RenderTraverseContext<Action, Native>
+  ) => {
+    const { accumulates, payload, asRoot } = context;
 
-      if (typeof element === 'string' || typeof element === 'number') {
-        handleRenderedResult(
-          { element: (element: string | number), value: element, path },
-          accumulates
-        );
-      } else if (typeof element.type === 'string') {
-        const value = this.delegate.renderGeneralElement(
-          element,
-          this._renderInnerImpl.bind(this, path, payload),
-          payload,
-          path
-        );
+    if (typeof element === 'string' || typeof element === 'number') {
+      accumulates.push({
+        isSeparator: false,
+        element: (element: string | number),
+        value: element,
+        path,
+      });
+    } else if (typeof element.type === 'string') {
+      const value = this.delegate.renderGeneralElement(
+        element,
+        this._renderInnerImpl.bind(this, path, payload),
+        payload,
+        path
+      );
 
-        if (value) {
-          handleRenderedResult(
-            { element: (element: MachinatGeneralElement), value, path },
-            accumulates
-          );
-        }
-      } else if (isImmediate(element)) {
-        handleSeparator(element, accumulates);
-      } else if (this.delegate.isNativeComponent(element.type)) {
-        const value = this.delegate.renderNativeElement(
-          element,
-          this._renderInnerImpl.bind(this, path, payload),
-          payload,
-          path
-        );
-
-        if (value) {
-          handleRenderedResult(
-            { element: (element: MachinatNativeElement<N>), value, path },
-            accumulates
-          );
-        }
-      } else if (typeof element.type === 'function') {
-        invariant(
-          !isNative(element),
-          `Element ${
-            element.type.name
-          } at ${path} is native Component type of ${(typeof element.type
-            .$$native === 'symbol'
-            ? Symbol.keyFor(element.type.$$native)
-            : element.type.$$native) || 'unknown'}, not supported by ${
-            this.oriented
-          }`
-        );
-
-        const { type: renderCustom, props } = element;
-        const rendered = renderCustom(props, payload);
-
-        traverse(
-          rendered,
-          path + RENDER_SEPARATOR + renderCustom.name,
-          context,
-          traversCallback
-        );
-      } else if (typeof element === 'object') {
-        handleRenderedResult(
-          { value: element, element: (undefined: void), path },
-          accumulates
-        );
-      } else {
-        invariant(false, `${element} at poistion ${path} is illegal`);
+      if (value) {
+        accumulates.push({
+          isSeparator: false,
+          element: (element: GeneralElement),
+          value: (value: Action),
+          path,
+        });
       }
-    };
+    } else if (isImmediate(element)) {
+      invariant(
+        asRoot,
+        `separator element should not be placed beneath native or general element props`
+      );
 
-    return traversCallback;
-  }
+      accumulates.push({
+        isSeparator: true,
+        element: (element: SeparatorElement),
+        value: undefined,
+        path,
+      });
+    } else if (this.delegate.isNativeComponent(element.type)) {
+      const value = this.delegate.renderNativeElement(
+        element,
+        this._renderInnerImpl.bind(this, path, payload),
+        payload,
+        path
+      );
+
+      invariant(
+        !asRoot || element.type.$$root,
+        `${
+          typeof element.type === 'function' ? element.type.name : element.type
+        } is not legal root component`
+      );
+
+      if (value) {
+        accumulates.push({
+          isSeparator: false,
+          element: (element: NativeElement<Native>),
+          value,
+          path,
+        });
+      }
+    } else if (typeof element.type === 'function') {
+      invariant(
+        !isNative(element),
+        `component ${element.type.name} at '${path}' is not supported by ${
+          this.oriented
+        }`
+      );
+
+      const { type: renderCustom, props } = element;
+      const rendered = renderCustom(props, payload);
+
+      traverse(
+        rendered,
+        path + RENDER_SEPARATOR + renderCustom.name,
+        context,
+        this._traverseCallback
+      );
+    } else if (typeof element === 'object' && !isElement(element)) {
+      accumulates.push({
+        isSeparator: false,
+        value: element,
+        element: (undefined: void),
+        path,
+      });
+    } else {
+      invariant(
+        false,
+        `element type ${inspect(element.type)} at poistion '${path}' is illegal`
+      );
+    }
+  };
 }

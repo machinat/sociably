@@ -1,14 +1,14 @@
 import moxy from 'moxy';
 import { IncomingMessage, ServerResponse } from 'http';
 import rawBody from 'raw-body';
-import HTTPConnector from '../httpConnector';
+import WebhookConnector from '../webhookConnector';
 
 jest.mock('raw-body');
 
-describe('#handleWebhook(fn)', () => {
+describe('#handleRequest(fn)', () => {
   it('returns the handler', () => {
-    const connector = new HTTPConnector({}, () => {});
-    expect(typeof connector.handleWebhook(() => {})).toBe('function');
+    const connector = new WebhookConnector({}, () => {});
+    expect(typeof connector.handleRequest(() => {})).toBe('function');
   });
 
   describe('handler(req, res, body, httpContext)', () => {
@@ -18,12 +18,12 @@ describe('#handleWebhook(fn)', () => {
       const cb = f || e || d;
       if (typeof cb === 'function') cb();
     });
-    const handleRequest = moxy(() => [{ id: 1 }, { id: 2 }, { id: 3 }]);
+    const handleWebhook = moxy(() => [{ id: 1 }, { id: 2 }, { id: 3 }]);
 
     beforeEach(() => {
       req.mock.reset();
       res.mock.reset();
-      handleRequest.mock.reset();
+      handleWebhook.mock.reset();
       res.end.mock.fake((d, e, f) => {
         const cb = f || e || d;
         if (typeof cb === 'function') cb();
@@ -31,10 +31,10 @@ describe('#handleWebhook(fn)', () => {
     });
 
     it('returns a promise', async () => {
-      const connector = new HTTPConnector({}, handleRequest);
+      const connector = new WebhookConnector({}, handleWebhook);
 
       const fn = moxy();
-      const handler = connector.handleWebhook(fn);
+      const handler = connector.handleRequest(fn);
 
       const promise = handler(req, res, 'body');
 
@@ -43,14 +43,14 @@ describe('#handleWebhook(fn)', () => {
     });
 
     it('retrieve the event and pass it to fn', async () => {
-      const connector = new HTTPConnector({}, handleRequest);
+      const connector = new WebhookConnector({}, handleWebhook);
 
       const fn = moxy();
-      const handler = connector.handleWebhook(fn);
+      const handler = connector.handleRequest(fn);
 
       await handler(req, res, 'body');
 
-      expect(handleRequest.mock).toHaveBeenCalledWith(req, res, 'body');
+      expect(handleWebhook.mock).toHaveBeenCalledWith(req, res, 'body');
 
       expect(fn.mock.calls[0].args[0]).toEqual(
         expect.objectContaining({ event: { id: 1 }, source: 'http' })
@@ -64,32 +64,32 @@ describe('#handleWebhook(fn)', () => {
     });
 
     it('reads body from req if body not given', async () => {
-      const connector = new HTTPConnector({}, handleRequest);
+      const connector = new WebhookConnector({}, handleWebhook);
 
       req.mock.getter('method').fakeReturnValue('POST');
       rawBody.mock.fake(() => Promise.resolve('body'));
 
       const fn = moxy();
-      const handler = connector.handleWebhook(fn);
+      const handler = connector.handleRequest(fn);
 
       await handler(req, res);
 
       expect(rawBody.mock.calls[0].args[0]).toBe(req);
-      expect(handleRequest.mock).toHaveBeenCalledWith(req, res, 'body');
+      expect(handleWebhook.mock).toHaveBeenCalledWith(req, res, 'body');
 
       rawBody.mock.reset();
     });
 
     it('ends res with 200 if no event returned by handleRequest', async () => {
-      const connector = new HTTPConnector({}, handleRequest);
+      const connector = new WebhookConnector({}, handleWebhook);
 
       const fn = moxy();
-      const handler = connector.handleWebhook(fn);
+      const handler = connector.handleRequest(fn);
 
-      handleRequest.mock.fakeReturnValue(undefined);
+      handleWebhook.mock.fakeReturnValue(undefined);
       await handler(req, res, 'body');
 
-      expect(handleRequest.mock).toHaveBeenCalledTimes(1);
+      expect(handleWebhook.mock).toHaveBeenCalledTimes(1);
       expect(fn.mock).not.toHaveBeenCalled();
 
       expect(res.end.mock).toHaveBeenCalled();
@@ -97,10 +97,10 @@ describe('#handleWebhook(fn)', () => {
     });
 
     it('ends res with 200 if no shouldRespond envent found', async () => {
-      const connector = new HTTPConnector({}, handleRequest);
+      const connector = new WebhookConnector({}, handleWebhook);
 
       const fn = moxy();
-      const handler = connector.handleWebhook(fn);
+      const handler = connector.handleRequest(fn);
 
       await handler(req, res, 'body');
       expect(res.end.mock).toHaveBeenCalled();
@@ -108,13 +108,13 @@ describe('#handleWebhook(fn)', () => {
     });
 
     it('ends res with what is configured by context.respond()', async () => {
-      const connector = new HTTPConnector({}, handleRequest);
-      handleRequest.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
+      const connector = new WebhookConnector({}, handleWebhook);
+      handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
 
       const fn = moxy(async ctx => {
         ctx.respond(201, 'success body');
       });
-      const handler = connector.handleWebhook(fn);
+      const handler = connector.handleRequest(fn);
 
       await handler(req, res, 'body');
       expect(res.statusCode).toBe(201);
@@ -122,13 +122,13 @@ describe('#handleWebhook(fn)', () => {
     });
 
     it('ends res body with json if object pass to context.respond()', async () => {
-      const connector = new HTTPConnector({}, handleRequest);
-      handleRequest.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
+      const connector = new WebhookConnector({}, handleWebhook);
+      handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
 
       const fn = moxy(async ctx => {
         ctx.respond(201, { success: true });
       });
-      const handler = connector.handleWebhook(fn);
+      const handler = connector.handleRequest(fn);
 
       await handler(req, res, 'body');
       expect(res.statusCode).toBe(201);
@@ -136,11 +136,11 @@ describe('#handleWebhook(fn)', () => {
     });
 
     it('ends res with 501 if fn does not context.respond()', async () => {
-      const connector = new HTTPConnector({}, handleRequest);
-      handleRequest.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
+      const connector = new WebhookConnector({}, handleWebhook);
+      handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
 
       const fn = moxy(async () => {});
-      const handler = connector.handleWebhook(fn);
+      const handler = connector.handleRequest(fn);
 
       await handler(req, res, 'body');
       expect(res.statusCode).toBe(501);
@@ -148,8 +148,8 @@ describe('#handleWebhook(fn)', () => {
     });
 
     it('ends res error.status thrown by fn', async () => {
-      const connector = new HTTPConnector({}, handleRequest);
-      handleRequest.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
+      const connector = new WebhookConnector({}, handleWebhook);
+      handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
 
       const fn = moxy(async () => {
         const err = new Error();
@@ -157,7 +157,7 @@ describe('#handleWebhook(fn)', () => {
         err.message = 'Failed!';
         throw err;
       });
-      const handler = connector.handleWebhook(fn);
+      const handler = connector.handleRequest(fn);
 
       await expect(handler(req, res, 'body')).rejects.toThrow();
 

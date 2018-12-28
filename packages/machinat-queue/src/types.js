@@ -1,12 +1,12 @@
 // @flow
-type SuccessJobRes<Job, Result> = {|
+export type SuccessJobResponse<Job, Result> = {|
   success: true,
   result: Result,
   error: void,
   job: Job,
 |};
 
-type FailJobRes<Job, Result> = {|
+export type FailedJobResponse<Job, Result> = {|
   success: false,
   result: Result,
   error: Error,
@@ -14,20 +14,21 @@ type FailJobRes<Job, Result> = {|
 |};
 
 export type JobResponse<Job, Result> =
-  | SuccessJobRes<Job, Result>
-  | FailJobRes<Job, Result>;
+  | SuccessJobResponse<Job, Result>
+  | FailedJobResponse<Job, Result>;
 
-export type BatchJobResponse<Job, Result> = {|
-  success: boolean,
-  errors: ?Array<Error>,
-  batchResult: ?Array<void | JobResponse<Job, Result>>,
+export type SuccessJobBatchResponse<Job, Result> = {|
+  success: true,
+  errors: null,
+  batch: Array<SuccessJobResponse<Job, Result>>,
 |};
 
-export type BatchRequest<Job, Result> = {|
-  begin: number,
-  end: number,
-  resolve: (BatchJobResponse<Job, Result>) => void,
-  allAcquired: boolean,
-  acquiredCount: number,
-  response: BatchJobResponse<Job, Result>,
+export type FailedJobBatchResponse<Job, Result> = {|
+  success: false,
+  errors: Error[],
+  batch: ?Array<void | JobResponse<Job, Result>>,
 |};
+
+export type JobBatchResponse<Job, Result> =
+  | SuccessJobBatchResponse<Job, Result>
+  | FailedJobBatchResponse<Job, Result>;

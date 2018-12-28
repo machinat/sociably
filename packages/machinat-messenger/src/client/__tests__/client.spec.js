@@ -1,32 +1,31 @@
 import moxy from 'moxy';
 import nock from 'nock';
-import Queue from 'machinat-queue';
-import Machinat from '../../../machinat';
+import Machinat from 'machinat';
 import MesengerClient from '../client';
 import {
-  THREAD_IDENTIFIER,
+  MESSENGER_NAITVE_TYPE,
   ATTACHED_FILE_DATA,
   ATTACHED_FILE_INFO,
-} from '../symbol';
+} from '../../symbol';
 
 const makeResponse = (code, body) => ({
   code,
   body: JSON.stringify(body),
 });
 
-const jobBatch = [
-  { job: 1, [THREAD_IDENTIFIER]: 'foo' },
-  { job: 2, [THREAD_IDENTIFIER]: 'foo' },
-  { job: 3, [THREAD_IDENTIFIER]: 'foo' },
-];
-const renderer = moxy({
-  renderJobSequence() {
-    return [jobBatch];
-  },
-});
+const Foo = moxy(props => props);
+Foo.$$native = MESSENGER_NAITVE_TYPE;
+Foo.$$root = true;
+
+const msgs = (
+  <>
+    <Foo id={1} />
+    <Foo id={2} />
+    <Foo id={3} />
+  </>
+);
 
 let graphAPI;
-
 beforeEach(() => {
   graphAPI = nock('https://graph.facebook.com');
 });
@@ -36,40 +35,39 @@ afterEach(() => {
 });
 
 it('sends', async () => {
-  const queue = moxy(new Queue(), { includeProps: ['executeJobSequence'] });
   const accessToken = '_graph_api_access_token_';
-  const client = new MesengerClient(queue, renderer, { accessToken });
+  const client = new MesengerClient({ accessToken });
 
   const thread = { id: 'foo' };
-  const promise = client.send(thread, <bar />);
+  const promise = client.send(thread, msgs);
   expect(promise).toBeInstanceOf(Promise);
-
-  expect(renderer.renderJobSequence.mock) // prettier-ignore
-    .toHaveBeenCalledWith(<bar />, { thread });
-  expect(queue.executeJobSequence.mock) // prettier-ignore
-    .toHaveBeenCalledWith([jobBatch]);
-  expect(queue.length).toBe(3);
 
   const scope = graphAPI
     .post('/v3.1/', body => {
       expect(body.access_token).toBe(accessToken);
       expect(body.include_headers).toBe('false');
 
-      expect(JSON.parse(body.batch)).toEqual([
-        { job: 1, name: 'foo:1', omit_response_on_success: false },
-        {
-          job: 2,
-          depends_on: 'foo:1',
-          name: 'foo:2',
-          omit_response_on_success: false,
-        },
-        {
-          job: 3,
-          depends_on: 'foo:2',
-          name: 'foo:3',
-          omit_response_on_success: false,
-        },
-      ]);
+      expect(body).toMatchSnapshot();
+
+      const batch = JSON.parse(body.batch);
+
+      let lastName;
+      batch.forEach((request, i) => {
+        expect(request).toEqual(
+          expect.objectContaining({
+            method: 'POST',
+            relative_url: 'me/messages',
+            omit_response_on_success: false,
+          })
+        );
+
+        expect(request.depends_on).toBe(lastName);
+        lastName = request.name;
+
+        expect(request.body).toBe(
+          `recipient=${encodeURIComponent('{"id":"foo"}')}&id=${i + 1}`
+        );
+      });
 
       return true;
     })
@@ -87,15 +85,7 @@ it('sends', async () => {
 
   expect(scope.isDone()).toBe(true);
 
-  response.result.forEach(res => {
-    expect(res.code).toBe(200);
-    expect(JSON.parse(res.body)).toEqual({
-      message_id: 'xxx',
-      recipient_id: 'xxx',
-    });
-  });
-
-  expect(response.jobs).toEqual(jobBatch);
+  expect(response).toMatchSnapshot();
 });
 
 it('attach appsecret_proof if appSecret option given', async () => {
@@ -104,7 +94,7 @@ it('attach appsecret_proof if appSecret option given', async () => {
   const expectedProof =
     'c3d9a02ac88561d9721b3cb2ba338c933f0666b68ad29523393b830b3916cd91';
 
-  const client = new MesengerClient(new Queue(), renderer, {
+  const client = new MesengerClient({
     accessToken,
     appSecret,
   });
@@ -113,6 +103,8 @@ it('attach appsecret_proof if appSecret option given', async () => {
     .post('/v3.1/', body => {
       expect(body.access_token).toBe(accessToken);
       expect(body.appsecret_proof).toBe(expectedProof);
+
+      expect(body).toMatchSnapshot();
 
       return true;
     })
@@ -126,51 +118,42 @@ it('attach appsecret_proof if appSecret option given', async () => {
     );
 
   client.startConsumingJob();
-  const response = await client.send({ id: 'foo' }, <bar />);
+  const response = await client.send({ id: 'foo' }, msgs);
 
   expect(scope.isDone()).toBe(true);
 
-  response.result.forEach(res => {
-    expect(res.code).toBe(200);
-    expect(JSON.parse(res.body)).toEqual({
-      message_id: 'xxx',
-      recipient_id: 'xxx',
-    });
-  });
-  expect(response.jobs).toEqual(jobBatch);
+  expect(response).toMatchSnapshot();
 });
 
 it('upload files with form data if binary attached on job', async () => {
-  renderer.renderJobSequence.mock.fakeReturnValueOnce([
-    [
-      { job: 1, [THREAD_IDENTIFIER]: 'foo', [ATTACHED_FILE_DATA]: '_file0_' },
-      {
-        job: 2,
-        [THREAD_IDENTIFIER]: 'foo',
-        [ATTACHED_FILE_DATA]: '_file1_',
-        [ATTACHED_FILE_INFO]: {
-          filename: 'unicycle.jpg',
-          contentType: 'image/jpeg',
-          knownLength: 19806,
-        },
-      },
-      { job: 3, [THREAD_IDENTIFIER]: 'foo' },
-    ],
-  ]);
+  Foo.mock.fakeOnce(props => ({ ...props, [ATTACHED_FILE_DATA]: '_file0_' }));
+  Foo.mock.fakeOnce(props => ({
+    ...props,
+    [ATTACHED_FILE_DATA]: '_file1_',
+    [ATTACHED_FILE_INFO]: {
+      filename: 'YouDontSay.jpg',
+      contentType: 'image/jpeg',
+      knownLength: 19806,
+    },
+  }));
 
-  const client = new MesengerClient(new Queue(), renderer, {
+  const client = new MesengerClient({
     accessToken: '_graph_api_access_token_',
   });
 
   const scope = graphAPI
     .matchHeader('content-type', /multipart\/form-data.*/)
     .post('/v3.1/', body => {
+      expect(
+        body.replace(/-+[0-9]+/g, '-----MULTIPART_SEPARATOR-----')
+      ).toMatchSnapshot();
+
       const file0Field = new RegExp(
         'Content-Disposition: form-data; name="(?<name>.+)"' +
           '[\\n\\r\\s]+_file0_'
       ).exec(body);
       const file1Field = new RegExp(
-        'Content-Disposition: form-data; name="(?<name>.+)"; filename="unicycle.jpg"' +
+        'Content-Disposition: form-data; name="(?<name>.+)"; filename="YouDontSay.jpg"' +
           '[\\n\\r\\s]+Content-Type: image/jpeg' +
           '[\\n\\r\\s]+_file1_'
       ).exec(body);
@@ -191,27 +174,24 @@ it('upload files with form data if binary attached on job', async () => {
         )[1]
       );
 
-      expect(batch).toEqual([
-        {
-          job: 1,
-          name: 'foo:1',
-          omit_response_on_success: false,
-          attached_files: file0Field.groups.name,
-        },
-        {
-          job: 2,
-          depends_on: 'foo:1',
-          name: 'foo:2',
-          omit_response_on_success: false,
-          attached_files: file1Field.groups.name,
-        },
-        {
-          job: 3,
-          depends_on: 'foo:2',
-          name: 'foo:3',
-          omit_response_on_success: false,
-        },
-      ]);
+      let lastName;
+      batch.forEach((request, i) => {
+        expect(request).toEqual(
+          expect.objectContaining({
+            method: 'POST',
+            relative_url: 'me/messages',
+            omit_response_on_success: false,
+          })
+        );
+
+        expect(request.depends_on).toBe(lastName);
+        lastName = request.name;
+
+        expect(request.body).toBe(
+          `recipient=${encodeURIComponent('{"id":"foo"}')}&id=${i + 1}`
+        );
+      });
+
       return true;
     })
     .reply(
@@ -224,21 +204,15 @@ it('upload files with form data if binary attached on job', async () => {
     );
 
   client.startConsumingJob();
-  const response = await client.send({ id: 'foo' }, <bar />);
+  const response = await client.send({ id: 'foo' }, msgs);
 
   expect(scope.isDone()).toBe(true);
 
-  response.result.forEach(res => {
-    expect(res.code).toBe(200);
-    expect(JSON.parse(res.body)).toEqual({
-      message_id: 'xxx',
-      recipient_id: 'xxx',
-    });
-  });
+  expect(response).toMatchSnapshot();
 });
 
 it('throw if connection error happen', async () => {
-  const client = new MesengerClient(new Queue(), renderer, {
+  const client = new MesengerClient({
     accessToken: '_graph_api_access_token_',
   });
 
@@ -247,7 +221,7 @@ it('throw if connection error happen', async () => {
     .replyWithError('something wrong like connection error');
 
   client.startConsumingJob();
-  await expect(client.send({ id: 'foo' }, <bar />)).rejects.toThrow(
+  await expect(client.send({ id: 'foo' }, msgs)).rejects.toThrow(
     'something wrong like connection error'
   );
 
@@ -255,7 +229,7 @@ it('throw if connection error happen', async () => {
 });
 
 it('throw if api error happen', async () => {
-  const client = new MesengerClient(new Queue(), renderer, {
+  const client = new MesengerClient({
     accessToken: '_graph_api_access_token_',
   });
 
@@ -269,7 +243,7 @@ it('throw if api error happen', async () => {
   });
 
   client.startConsumingJob();
-  await expect(client.send({ id: 'foo' }, <bar />)).rejects.toThrow(
+  await expect(client.send({ id: 'foo' }, msgs)).rejects.toThrow(
     'The access token could not be decrypted'
   );
 
@@ -277,7 +251,7 @@ it('throw if api error happen', async () => {
 });
 
 it('throw if one single job fail', async () => {
-  const client = new MesengerClient(new Queue(), renderer, {
+  const client = new MesengerClient({
     accessToken: '_graph_api_access_token_',
   });
 
@@ -297,7 +271,7 @@ it('throw if one single job fail', async () => {
     ])
   );
   client.startConsumingJob();
-  await expect(client.send({ id: 'foo' }, <bar />)).rejects.toThrow(
+  await expect(client.send({ id: 'foo' }, msgs)).rejects.toThrow(
     'you should not passed!'
   );
 

@@ -2,33 +2,50 @@
 import type { MachinatElementProps } from 'types/element';
 import type { RenderInnerFn } from 'machinat-renderer/types';
 
-type GeneralRendered = {
-  $$entry: string,
+export type MessengerBotOptions = {
+  accessToken: string,
+  appSecret: ?string,
+  shouldValidateRequest: boolean,
+  shouldVerifyWebhook: boolean,
+  verifyToken: ?string,
+  respondTimeout: number,
+  consumeInterval: number,
 };
 
-type MessageRendered = {
+type MessageAction = {
   message: Object, // TODO: detailed message type
-} & GeneralRendered;
+};
 
-type SenderActionRendered = {
+type SenderAction = {
   sender_action: 'mark_seen' | 'typing_on' | 'typing_off',
-} & GeneralRendered;
+};
 
-export type ComponentRendered = MessageRendered | SenderActionRendered;
+export type MessengerAction = MessageAction | SenderAction;
 
-export type MessengerComponent = (
-  MachinatElementProps,
-  RenderInnerFn
-) => ComponentRendered;
+export type MessengerComponent = {
+  $$entry?: string,
+} & ((MachinatElementProps, RenderInnerFn) => MessengerAction);
 
-export type MessengerJob = {|
+export type MessengerRequest = {|
   method: string,
   relative_url: string,
   body: string,
-  name?: string,
-  depends_on?: string,
-  attached_files?: string,
-  omit_response_on_success?: boolean,
+  name: ?string,
+  depends_on: ?string,
+  attached_files: ?string,
+  omit_response_on_success: ?boolean,
+|};
+
+export type MessengerJob = {|
+  request: MessengerRequest,
+  threadId: string,
+  attachedFileData: void | string | Buffer | ReadableStream,
+  attachedFileInfo: void | {|
+    filename?: string,
+    filepath?: string,
+    contentType?: string,
+    knownLength?: number,
+  |},
 |};
 
 export type MessengerJobResult = {|
@@ -37,13 +54,14 @@ export type MessengerJobResult = {|
   attachment_id: string,
 |};
 
-export type Recepient =
-  | {| id: string |}
-  | {| user_ref: string |}
-  | {|
-      phone_number: string,
-      name?: {| first_name: string, last_name: string |},
-    |};
+type PSIDRecepient = {| id: string |};
+type UserRefRecepient = {| user_ref: string |};
+type PhoneNumberRecepient = {|
+  phone_number: string,
+  name?: {| first_name: string, last_name: string |},
+|};
+
+export type Recepient = PSIDRecepient | UserRefRecepient | PhoneNumberRecepient;
 
 export type ExtenstionContext = {|
   thread_type: string,
@@ -52,4 +70,4 @@ export type ExtenstionContext = {|
   signed_request: string,
 |};
 
-export type SendOptions = {};
+export type MessengerSendOptions = {};

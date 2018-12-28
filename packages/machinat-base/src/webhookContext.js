@@ -8,7 +8,7 @@ type ResponseStore = {
   body: ?(string | Object),
 };
 
-class HttpContext<Client: MachinatClient<any, any>>
+class WebhookContext<Client: MachinatClient<any, any, any, any>>
   implements MachinatContext<Client> {
   client: Client;
   event: MachinatEvent;
@@ -64,4 +64,4 @@ class HttpContext<Client: MachinatClient<any, any>>
   }
 }
 
-export default HttpContext;
+export default WebhookContext;

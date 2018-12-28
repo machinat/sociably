@@ -89,7 +89,7 @@ const createMessageEvent = (raw, isStandby) => {
   }
 };
 
-export default (isStandby, raw) =>
+const createEvent = (isStandby, raw) =>
   // prettier-ignore
   hasOwnProperty(raw, 'message')
     ? createMessageEvent(raw, isStandby)
@@ -130,3 +130,5 @@ export default (isStandby, raw) =>
     : hasOwnProperty(raw, 'referral')
     ? referral(raw)
     : unknown(raw);
+
+export default createEvent;

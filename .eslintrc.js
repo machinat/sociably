@@ -15,8 +15,11 @@ module.exports = {
   ],
   extends: [
     'airbnb-base',
-    'prettier',
     'plugin:react/recommended',
+    'plugin:prettier/recommended',
+    'prettier/flowtype',
+    'prettier/react',
+    'prettier/standard',
   ],
   rules: {
     strict: 0,
@@ -33,11 +36,6 @@ module.exports = {
       'ForInStatement', 'LabeledStatement', 'WithStatement'
     ],
     'flowtype/define-flow-type': 1,
-    'prettier/prettier': ['error', {
-      trailingComma: 'es5',
-      singleQuote: true,
-      parser: 'babylon',
-    }],
     'import/extensions': 0,
     'import/no-unresolved': ['error', {
       ignore: ['types/.+', 'machinat-.+']

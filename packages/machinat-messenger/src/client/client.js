@@ -4,29 +4,29 @@ import crypto from 'crypto';
 import fetch from 'isomorphic-fetch';
 import FormData from 'form-data';
 
-import type MahinateQueue from 'machinat-queue';
-import type { JobResponse, BatchJobResponse } from 'machinat-queue/types';
-import type MahinateRenderer from 'machinat-renderer';
-import type { MachinatClient, SendingResponse } from 'machinat-base/types';
+import { BaseClient } from 'machinat-base';
+
+import Queue from 'machinat-queue';
+import Renderer from 'machinat-renderer';
 
 import type { MachinatNode } from 'types/element';
+import type { JobResponse } from 'machinat-queue/types';
+import type { MachinatClient } from 'machinat-base/types';
 
-import { GraphAPIError, MachinatSendError } from './error';
-import {
-  THREAD_IDENTIFIER,
-  ATTACHED_FILE_DATA,
-  ATTACHED_FILE_INFO,
-} from './symbol';
+import MessengerThread from '../thread';
 
-import type MessengerThread from './thread';
+import MessengerRenderDelegator from './delegate';
+import createJobs from './createJobs';
+import { GraphAPIError } from './error';
+
 import type {
   MessengerComponent as Component,
   MessengerJob as Job,
   MessengerJobResult as Result,
-  ComponentRendered as Rendered,
+  MessengerAction as Action,
   Recepient,
-  SendOptions,
-} from './types';
+  MessengerSendOptions as Options,
+} from '../types';
 
 export type MessengerClientOptions = {
   accessToken: string,
@@ -34,15 +34,11 @@ export type MessengerClientOptions = {
   consumeInterval: ?number,
 };
 
-type MessengerRenderer = MahinateRenderer<Rendered, Job, Component>;
-
-type MessengerJobQueue = MahinateQueue<Job, Result>;
-
 type MessengerJobResponse = JobResponse<Job, Result>;
 
-const UNKNOWN_THREAD = 'unknown_thread';
-
 const ENTRY = 'https://graph.facebook.com/v3.1/';
+
+const MESSENGER = 'messenger';
 
 const GET = 'GET';
 const POST = 'POST';
@@ -59,7 +55,7 @@ const assignQueryParams = (queryParams, obj) => {
   }
 };
 
-const makeJobName = (threadId: string, count: number) => `${threadId}:${count}`;
+const makeJobName = (threadId: string, count: number) => `${threadId}-${count}`;
 
 const makeFileName = num => `file_${num}`;
 
@@ -76,24 +72,26 @@ const appendFieldsToForm = (form: FormData, body: { [string]: ?string }) => {
   return form;
 };
 
-export default class MessengerClient implements MachinatClient<Job, Result> {
+export default class MessengerClient
+  extends BaseClient<Action, Component, Job, Result, MessengerThread, Options>
+  implements MachinatClient<Action, Component, Job, Result> {
   token: string;
   consumeInterval: number;
   _appSecretProof: ?string;
-  _queue: MessengerJobQueue;
-  _renderer: MessengerRenderer;
   _consumptionTimeoutId: TimeoutID | Symbol | null;
 
-  constructor(
-    queue: MessengerJobQueue,
-    renderer: MessengerRenderer,
-    { consumeInterval, appSecret, accessToken }: MessengerClientOptions
-  ) {
+  constructor({
+    consumeInterval,
+    appSecret,
+    accessToken,
+  }: MessengerClientOptions) {
+    const renderer = new Renderer(MESSENGER, MessengerRenderDelegator);
+    const queue = new Queue();
+
+    super(MESSENGER, queue, renderer, createJobs);
+
     this.token = accessToken;
     this.consumeInterval = consumeInterval || 500;
-
-    this._queue = queue;
-    this._renderer = renderer;
 
     this._appSecretProof = appSecret
       ? crypto
@@ -108,45 +106,17 @@ export default class MessengerClient implements MachinatClient<Job, Result> {
   async send(
     recipient: string | Recepient | MessengerThread,
     nodes: MachinatNode,
-    options: SendOptions
-  ): Promise<SendingResponse<Job, Result>> {
-    let thread = recipient;
-    if (typeof thread === 'string') {
-      thread = { id: recipient };
-    }
+    options: Options
+  ) {
+    const thread =
+      // prettier-ignore
+      recipient instanceof MessengerThread
+        ? recipient
+        : typeof recipient === 'string'
+        ? new MessengerThread({ id: recipient })
+        : new MessengerThread(recipient);
 
-    const sequence = this._renderer.renderJobSequence(nodes, {
-      thread,
-      options,
-    });
-
-    if (!sequence) {
-      return { jobs: null, result: null };
-    }
-
-    const batchResonse: BatchJobResponse<
-      Job,
-      Result
-    > = (await this._queue.executeJobSequence(sequence): any);
-
-    if (!batchResonse.success) {
-      throw new MachinatSendError(batchResonse);
-    }
-
-    // since it succeeed, the batchResult must be fullfilled
-    const batchResult: MessengerJobResponse[] = (batchResonse.batchResult: any);
-
-    const response = {
-      jobs: new Array(batchResult.length),
-      result: new Array(batchResult.length),
-    };
-
-    for (let i = 0; i < batchResult.length; i += 1) {
-      response.jobs[i] = batchResult[i].job;
-      response.result[i] = batchResult[i].result;
-    }
-
-    return response;
+    return this._sendImpl(thread, nodes, options);
   }
 
   async _request(
@@ -212,9 +182,9 @@ export default class MessengerClient implements MachinatClient<Job, Result> {
     while (this._queue.length > 0) {
       try {
         // eslint-disable-next-line no-await-in-loop
-        await new Promise(this._handleConsumptionAdanvancing);
+        await this._queue.acquire(50, this._consumeJob);
       } catch (e) {
-        // do nothing since only errors before header received go to here
+        // leave the error to request side of queue to handle
       }
     }
 
@@ -226,101 +196,82 @@ export default class MessengerClient implements MachinatClient<Job, Result> {
     }
   };
 
-  _handleConsumptionAdanvancing = (
-    resolveFlow: any => void,
-    rejectFlow: any => void
-  ) =>
-    this._queue
-      .acquire(50, this._consumeJob(resolveFlow, rejectFlow))
-      .catch(() => {}); // TODO: what to do?
-
-  _consumeJob = (resolveFlow: any => void, rejectFlow: any => void) => async (
-    jobs: Job[]
-  ) => {
+  _consumeJob = async (jobs: Job[]) => {
     const threadSendingRec = new Map();
     let fileCount = 0;
     let filesForm: FormData;
 
+    const requests = new Array(jobs.length);
+
     for (let i = 0; i < jobs.length; i += 1) {
-      const job = jobs[i];
-      const threadId = job[THREAD_IDENTIFIER] || UNKNOWN_THREAD;
+      const { request, threadId, attachedFileData, attachedFileInfo } = jobs[i];
 
       let count = threadSendingRec.get(threadId);
       if (count !== undefined) {
-        job.depends_on = makeJobName(threadId, count);
+        request.depends_on = makeJobName(threadId, count);
         count += 1;
       } else {
         count = 1;
       }
 
       threadSendingRec.set(threadId, count);
-      job.name = makeJobName(threadId, count);
+      request.name = makeJobName(threadId, count);
 
-      if (job[ATTACHED_FILE_DATA] !== undefined) {
+      if (attachedFileData !== undefined) {
         if (filesForm === undefined) filesForm = new FormData();
 
         const filename = makeFileName(fileCount);
         fileCount += 1;
 
-        filesForm.append(
-          filename,
-          job[ATTACHED_FILE_DATA],
-          job[ATTACHED_FILE_INFO]
-        );
-        job.attached_files = filename;
+        filesForm.append(filename, attachedFileData, attachedFileInfo);
+        request.attached_files = filename;
       }
 
-      job.omit_response_on_success = false; // FIXME: remove after job object pooled
+      requests[i] = request;
     }
 
-    const hasFiles = filesForm === undefined;
-    const headers = hasFiles ? REQEST_JSON_HEADERS : undefined;
+    const hasFiles = filesForm !== undefined;
+    const headers = hasFiles ? undefined : REQEST_JSON_HEADERS;
 
     const batchBody = {
       access_token: this.token,
       include_headers: 'false', // NOTE: Graph API param work as string
       appsecret_proof: this._appSecretProof || undefined,
-      batch: JSON.stringify(jobs),
+      batch: JSON.stringify(requests),
     };
 
     const body = hasFiles
-      ? JSON.stringify(batchBody)
-      : appendFieldsToForm(filesForm, batchBody);
+      ? appendFieldsToForm(filesForm, batchBody)
+      : JSON.stringify(batchBody);
 
-    let response;
-    try {
-      response = await fetch(ENTRY, { method: POST, headers, body });
-      resolveFlow(response);
-    } catch (err) {
-      rejectFlow(err);
-      throw err;
-    }
+    const apiResponse = await fetch(ENTRY, { method: POST, headers, body });
 
-    const apiBody = await response.json();
-    if (!response.ok) {
+    const apiBody = await apiResponse.json();
+    if (!apiResponse.ok) {
       throw new GraphAPIError(apiBody);
     }
 
-    const result: MessengerJobResponse[] = new Array(apiBody.length);
+    const jobResponses: MessengerJobResponse[] = new Array(apiBody.length);
 
-    for (let i = 0; i < result.length; i += 1) {
-      const apiJobRes = apiBody[i];
-      const success = apiJobRes.code >= 200 && apiJobRes.code < 300;
-      result[i] = success
+    for (let i = 0; i < jobResponses.length; i += 1) {
+      const result = apiBody[i];
+      const success = result.code >= 200 && result.code < 300;
+
+      jobResponses[i] = success // NOTE: to help flow recognize which case it is
         ? {
             success: true,
-            result: apiJobRes,
+            result,
             error: undefined,
             job: jobs[i],
           }
         : {
             success: false,
-            result: apiJobRes,
-            error: new GraphAPIError(JSON.parse(apiJobRes.body)),
+            result,
+            error: new GraphAPIError(JSON.parse(result.body)),
             job: jobs[i],
           };
     }
 
-    return result;
+    return jobResponses;
   };
 }

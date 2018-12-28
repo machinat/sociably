@@ -1,10 +1,11 @@
 // @flow
 import type { MachinatNode } from 'types/element';
+import type { RootAction } from 'machinat-renderer/types';
 
 export interface MachinatThread {
-  +platform: string;
-  +type: string;
-  +identifier: string;
+  platform: string;
+  type: string;
+  uid(): string;
 }
 
 export interface MachinatEvent {
@@ -15,20 +16,22 @@ export interface MachinatEvent {
   shouldRespond: boolean;
 }
 
-export type SendingResponse<Job, Result> = {
+export type SendResponse<Action, Native, Job, Result> = {
   jobs: ?(Job[]),
-  result: ?(Result[]),
+  results: ?(Result[]),
+  actions: ?(RootAction<Action, Native>[]),
+  message: MachinatNode,
 };
 
-export interface MachinatClient<Job, Result> {
+export interface MachinatClient<Action, Native, Job, Result> {
   send(
     thread: string | Object,
     message: MachinatNode,
     options: Object
-  ): Promise<SendingResponse<Job, Result>>;
+  ): Promise<SendResponse<Action, Native, Job, Result>>;
 }
 
-export interface MachinatContext<Client: MachinatClient<any, any>> {
+export interface MachinatContext<Client: MachinatClient<any, any, any, any>> {
   source: string;
   event: MachinatEvent;
   client: Client;

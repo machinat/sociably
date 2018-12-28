@@ -2,65 +2,66 @@
 import type {
   MachinatNode,
   MachinatText,
-  MachinatElement,
   MachinatElementType,
-  MachinatNativeElement,
-  MachinatGeneralElement,
+  NativeElement,
+  GeneralElement,
+  SeparatorElement,
 } from 'types/element';
-// eslint-disable-next-line import/prefer-default-export
-export { default as JobSequence } from './jobSequence';
 
-type RenderDelegateCallback<R, E> = (
-  element: E,
+type RenderDelegateCallback<Action, Element> = (
+  element: Element,
   render: RenderInnerFn,
   payload: any,
   path: string
-) => ?R;
+) => ?Action;
 
-export type RenderDelegate<R, J, N> = {
+export type RenderDelegate<Action, Native> = {
   isNativeComponent: MachinatElementType => boolean,
-  renderNativeElement: RenderDelegateCallback<R, MachinatNativeElement<N>>,
-  renderGeneralElement: RenderDelegateCallback<R, MachinatGeneralElement>,
-  createJobsFromRendered: (Array<RenderResult<R, N>>, any) => Array<J>,
+  renderNativeElement: RenderDelegateCallback<Action, NativeElement<Native>>,
+  renderGeneralElement: RenderDelegateCallback<Action, GeneralElement>,
 };
 
-export type TextRendered = {|
+export type TextRenderedAction = {|
+  isSeparator: false,
   element: MachinatText,
   value: MachinatText,
   path: string,
 |};
 
-export type ElementRendered<R, N> = {|
-  element: MachinatNativeElement<N> | MachinatGeneralElement,
-  value: R,
+export type ElementRenderedAction<Action, Native> = {|
+  isSeparator: false,
+  element: NativeElement<Native> | GeneralElement,
+  value: Action,
   path: string,
 |};
 
-export type RawRendered = {|
+export type RawRenderedAction = {|
+  isSeparator: false,
   element: void,
   value: Object,
   path: string,
 |};
 
-export type RenderResult<R, N> =
-  | TextRendered
-  | ElementRendered<R, N>
-  | RawRendered;
+export type SeparatorRenderedAction = {|
+  isSeparator: true,
+  element: SeparatorElement,
+  value: void,
+  path: string,
+|};
+
+export type InnerAction<Action, Native> =
+  | TextRenderedAction
+  | ElementRenderedAction<Action, Native>
+  | RawRenderedAction;
+
+export type RootAction<Action, Native> =
+  | TextRenderedAction
+  | ElementRenderedAction<Action, Native>
+  | RawRenderedAction
+  | SeparatorRenderedAction;
 
 export type RenderInnerFn = (
   node: MachinatNode,
   path: string,
   payload: any
-) => ?Array<RenderResult<any>>;
-
-export type ImmediateElement = MachinatElement<Symbol>;
-export type RenderResultBatch = Array<RenderResult<any, any>>;
-export type BatchesOrSeparators = Array<RenderResultBatch | ImmediateElement>;
-export type RenderTraverseContext<
-  Acc: RenderResultBatch | BatchesOrSeparators
-> = {
-  payload: any,
-  accumulates: Acc,
-};
-
-export type JobOrSeparator<Job> = Array<Job> | ImmediateElement;
+) => ?Array<InnerAction<any, any>>;

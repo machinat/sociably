@@ -1,9 +1,19 @@
 // @flow
+/* eslint-disable no-param-reassign */
 import Denque from 'denque';
-import isPromise from 'p-is-promise';
-import type { JobSequence } from 'machinat-renderer/types';
 
-import type { BatchRequest, BatchJobResponse, JobResponse } from './types';
+import type { JobBatchResponse, JobResponse } from './types';
+
+type BatchRequest<Job, Result> = {|
+  begin: number,
+  end: number,
+  resolve: (JobBatchResponse<Job, Result>) => void,
+  allAcquired: boolean,
+  acquiredCount: number,
+  success: boolean,
+  errors: ?(Error[]),
+  batch: ?Array<void | JobResponse<Job, Result>>,
+|};
 
 export default class MachinatQueue<J, R> {
   _beginSeq: number;
@@ -33,7 +43,7 @@ export default class MachinatQueue<J, R> {
 
     try {
       const jobsResult = await consume(jobs);
-      this._respondRequestsInReange(jobsResult, start, end);
+      this._respondRequestsInRange(jobsResult, start, end);
       return jobsResult; // eslint-disable-line consistent-return
     } catch (err) {
       this._failRequestsInRange(err, start, end);
@@ -41,65 +51,24 @@ export default class MachinatQueue<J, R> {
     }
   }
 
-  enqueueJob(...jobs: J[]) {
+  enqueueJobs(...jobs: J[]) {
     for (let i = 0; i < jobs.length; i += 1) {
       this._queuedJobs.push(jobs[i]);
     }
     this._endSeq += jobs.length;
   }
 
-  executeJobBatch(...jobs: J[]): Promise<BatchJobResponse<J, R>> {
+  executeJobs(...jobs: J[]): Promise<JobBatchResponse<J, R>> {
     const begin = this._endSeq;
-    this.enqueueJob(...jobs);
+    this.enqueueJobs(...jobs);
     return new Promise(this._pushWaitedRequest.bind(this, begin, this._endSeq));
-  }
-
-  async executeJobSequence(
-    jobSequence: JobSequence<any, J>
-  ): Promise<BatchJobResponse<J, R>> {
-    const result: BatchJobResponse<J, R> = {
-      success: true,
-      errors: null,
-      batchResult: null,
-    };
-
-    for (const action of jobSequence) {
-      if (isPromise(action)) {
-        await action; // eslint-disable-line no-await-in-loop
-      } else {
-        const {
-          success,
-          errors,
-          batchResult,
-        }: BatchJobResponse<J, R> = await this.executeJobBatch(...action); // eslint-disable-line no-await-in-loop
-
-        if (result.batchResult) {
-          if (batchResult) result.batchResult.push(...batchResult);
-        } else {
-          result.batchResult = batchResult;
-        }
-
-        if (result.errors) {
-          if (errors) result.errors.push(...errors);
-        } else {
-          result.errors = errors;
-        }
-
-        if (!success) {
-          result.success = false;
-          return result;
-        }
-      }
-    }
-
-    return result;
   }
 
   get length() {
     return this._queuedJobs.length;
   }
 
-  _respondRequestsInReange(
+  _respondRequestsInRange(
     jobResps: JobResponse<J, R>[],
     begin: number,
     end: number
@@ -124,25 +93,25 @@ export default class MachinatQueue<J, R> {
     begin: number,
     end: number
   ) => {
-    const { response, begin: requestBegin, end: requestEnd } = request;
+    const { begin: requestBegin, end: requestEnd } = request;
 
     const jobBegin = Math.max(begin, requestBegin);
     const jobEnd = Math.min(end, requestEnd);
 
-    if (!response.batchResult) {
-      response.batchResult = new Array(requestEnd - requestBegin);
+    if (!request.batch) {
+      request.batch = new Array(requestEnd - requestBegin);
     }
 
     let success = true;
     for (let seq = jobBegin; seq < jobEnd; seq += 1) {
       const jobResponse = payload.jobResps[seq - begin];
 
-      response.batchResult[seq - requestBegin] = jobResponse;
+      request.batch[seq - requestBegin] = jobResponse;
       if (!jobResponse.success) {
         if (success) success = false;
 
-        if (!response.errors) response.errors = [];
-        response.errors.push(jobResponse.error);
+        if (!request.errors) request.errors = [];
+        request.errors.push(jobResponse.error);
       }
     }
 
@@ -150,10 +119,17 @@ export default class MachinatQueue<J, R> {
       this._removeJobsOfRequest(request);
     }
 
-    response.success = response.success && success;
+    request.success = request.success && success;
     if (request.acquiredCount <= 1 && (request.allAcquired || !success)) {
-      request.resolve(response);
-      /* eslint-disable no-param-reassign */
+      request.resolve(
+        // NOTE: either SuccessJobResponse or FailedJobResponse should be fulfilled here
+        ({
+          success: request.success,
+          errors: request.errors,
+          batch: request.batch,
+        }: any)
+      );
+
       if (payload.rmIdx === -1) {
         payload.rmIdx = idx;
       }
@@ -161,7 +137,6 @@ export default class MachinatQueue<J, R> {
       payload.rmCount += 1;
     } else {
       request.acquiredCount -= 1;
-      /* eslint-enable no-param-reassign */
     }
 
     return payload;
@@ -174,6 +149,7 @@ export default class MachinatQueue<J, R> {
       this._failRequestsReducer,
       { reason, rmIdx: -1, rmCount: 0 }
     );
+
     this._waitedRequets.remove(rmIdx, rmCount);
   }
 
@@ -184,17 +160,21 @@ export default class MachinatQueue<J, R> {
   ) => {
     this._removeJobsOfRequest(request);
 
-    const { response } = request;
-    if (!response.errors) {
-      response.errors = [];
+    request.success = false;
+
+    if (request.errors) {
+      request.errors.push(payload.reason);
+    } else {
+      request.errors = [payload.reason];
     }
 
-    response.errors.push(payload.reason);
-    response.success = false;
-
     if (request.acquiredCount <= 1) {
-      request.resolve(response);
-      /* eslint-disable no-param-reassign */
+      request.resolve({
+        success: false,
+        errors: (request.errors: any), // NOTE: it is refined above
+        batch: request.batch,
+      });
+
       payload.rmCount += 1;
       if (payload.rmIdx === -1) {
         payload.rmIdx = idx;
@@ -202,7 +182,7 @@ export default class MachinatQueue<J, R> {
     } else {
       request.acquiredCount -= 1;
     }
-    /* eslint-enable no-param-reassign */
+
     return payload;
   };
 
@@ -217,12 +197,10 @@ export default class MachinatQueue<J, R> {
     begin: number,
     end: number
   ) => {
-    /* eslint-disable no-param-reassign */
     request.acquiredCount += 1;
     if (request.end <= end) {
       request.allAcquired = true;
     }
-    /* eslint-enable no-param-reassign */
   };
 
   _reduceRequestInRange = <Acc>(
@@ -271,11 +249,9 @@ export default class MachinatQueue<J, R> {
       resolve,
       acquiredCount: 0,
       allAcquired: false,
-      response: {
-        success: true,
-        errors: null,
-        batchResult: null,
-      },
+      success: true,
+      errors: null,
+      batch: null,
     });
   }
 }

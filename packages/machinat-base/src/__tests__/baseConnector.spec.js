@@ -50,7 +50,7 @@ describe('#use(middleware)', () => {
   });
 });
 
-describe('#createMiddlewareFn()', () => {
+describe('#createHandler()', () => {
   it('returns a function that compose all the middlewares together', async () => {
     const connector = new BaseConnector();
 
@@ -69,7 +69,7 @@ describe('#createMiddlewareFn()', () => {
       .use(middleware2)
       .use(middleware3);
 
-    const fn = connector.createMiddlewaresFn();
+    const fn = connector.createHandler();
 
     const context = { foo: 'bar' };
     await fn(context);
