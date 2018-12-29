@@ -139,7 +139,9 @@ describe('#renderInner()', () => {
     expect(() =>
       renderer.renderInner(
         <>
-          foo<Machinat.Immediate />bar
+          foo
+          <Machinat.Immediate />
+          bar
         </>
       )
     ).toThrow(

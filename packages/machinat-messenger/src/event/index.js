@@ -48,40 +48,40 @@ const createMessageEvent = (raw, isStandby) => {
     return isStandby
       ? standbyText(raw)
       : message.is_echo
-        ? echoedText(raw)
-        : text(raw);
+      ? echoedText(raw)
+      : text(raw);
   }
   switch (message.attachments[0].type) {
     case 'image':
       return isStandby
         ? standbyImage(raw)
         : message.is_echo
-          ? echoedImage(raw)
-          : image(raw);
+        ? echoedImage(raw)
+        : image(raw);
     case 'video':
       return isStandby
         ? standbyVideo(raw)
         : message.is_echo
-          ? echoedVideo(raw)
-          : video(raw);
+        ? echoedVideo(raw)
+        : video(raw);
     case 'audio':
       return isStandby
         ? standbyAudio(raw)
         : message.is_echo
-          ? echoedAudio(raw)
-          : audio(raw);
+        ? echoedAudio(raw)
+        : audio(raw);
     case 'file':
       return isStandby
         ? standbyFile(raw)
         : message.is_echo
-          ? echoedFile(raw)
-          : file(raw);
+        ? echoedFile(raw)
+        : file(raw);
     case 'location':
       return isStandby
         ? standbyLocation(raw)
         : message.is_echo
-          ? echoedLocation(raw)
-          : location(raw);
+        ? echoedLocation(raw)
+        : location(raw);
     case 'template':
       return echoedTemplate(raw);
     default:
@@ -90,7 +90,6 @@ const createMessageEvent = (raw, isStandby) => {
 };
 
 const createEvent = (isStandby, raw) =>
-  // prettier-ignore
   hasOwnProperty(raw, 'message')
     ? createMessageEvent(raw, isStandby)
     : hasOwnProperty(raw, 'read')

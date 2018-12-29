@@ -17,9 +17,9 @@ describe('#reply()', () => {
 
     await context.reply('world', { some: 'options' });
 
-    expect(client.send.mock) // prettier-ignore
+    expect(client.send.mock) // for alignment
       .toHaveBeenNthCalledWith(1, event.thread, 'hello', undefined);
-    expect(client.send.mock) // prettier-ignore
+    expect(client.send.mock) // for alignment
       .toHaveBeenNthCalledWith(2, event.thread, 'world', { some: 'options' });
   });
 

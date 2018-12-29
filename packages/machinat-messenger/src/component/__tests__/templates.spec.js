@@ -83,10 +83,10 @@ const renderWithFixtures = node =>
   (node === buttons
     ? buttonsRendered
     : node === genericItems
-      ? genericItemsRendered
-      : node === quickReplies
-        ? quickRepliesRendered
-        : [{ value: node }]);
+    ? genericItemsRendered
+    : node === quickReplies
+    ? quickRepliesRendered
+    : [{ value: node }]);
 
 const renderInside = jest.fn();
 const render = renderHelper(renderInside);
@@ -120,24 +120,23 @@ describe('templates Components', () => {
 
   describe('GenericItem', () => {
     beforeEach(() => {
-      renderInside.mockImplementation(
-        node =>
-          node && node.type === URLButton
-            ? [
-                {
-                  element: node,
-                  value: {
-                    title: 'TITLE!',
-                    type: 'web_url',
-                    url: 'http://foo.bar/',
-                    webview_height_ratio: 'compact',
-                    messenger_extensions: true,
-                    fallback_url: 'http://foo.baz/login',
-                    webview_share_button: 'hide',
-                  },
+      renderInside.mockImplementation(node =>
+        node && node.type === URLButton
+          ? [
+              {
+                element: node,
+                value: {
+                  title: 'TITLE!',
+                  type: 'web_url',
+                  url: 'http://foo.bar/',
+                  webview_height_ratio: 'compact',
+                  messenger_extensions: true,
+                  fallback_url: 'http://foo.baz/login',
+                  webview_share_button: 'hide',
                 },
-              ]
-            : renderWithFixtures(node)
+              },
+            ]
+          : renderWithFixtures(node)
       );
     });
 
@@ -274,11 +273,10 @@ describe('templates Components', () => {
   describe('ListTemplate', () => {
     const button = buttons.props.children[0];
     beforeEach(() => {
-      renderInside.mockImplementation(
-        node =>
-          node && node.type === URLButton
-            ? buttonsRendered.slice(0, 1)
-            : renderWithFixtures(node)
+      renderInside.mockImplementation(node =>
+        node && node.type === URLButton
+          ? buttonsRendered.slice(0, 1)
+          : renderWithFixtures(node)
       );
     });
 
@@ -330,15 +328,14 @@ describe('templates Components', () => {
   describe('ButtonTemplate', () => {
     const textNodes = [<i>foo</i>, <b>bar</b>, <del>baz</del>];
     beforeEach(() => {
-      renderInside.mockImplementation(
-        node =>
-          node === textNodes || typeof node === 'string'
-            ? [
-                { value: '\n__RENDERED_TEXT_1__', element: textNodes[0] },
-                { value: '\n__RENDERED_TEXT_2__', element: textNodes[1] },
-                { value: '\n__RENDERED_TEXT_3__', element: textNodes[2] },
-              ]
-            : renderWithFixtures(node)
+      renderInside.mockImplementation(node =>
+        node === textNodes || typeof node === 'string'
+          ? [
+              { value: '\n__RENDERED_TEXT_1__', element: textNodes[0] },
+              { value: '\n__RENDERED_TEXT_2__', element: textNodes[1] },
+              { value: '\n__RENDERED_TEXT_3__', element: textNodes[2] },
+            ]
+          : renderWithFixtures(node)
       );
     });
 
@@ -474,24 +471,23 @@ __RENDERED_TEXT_3__`;
       <ReceiptTemplateItem title="Slinky Dog" />,
     ];
     beforeEach(() => {
-      renderInside.mockImplementation(
-        node =>
-          node && node === items
-            ? [
-                {
-                  value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__',
-                  element: items[0],
-                },
-                {
-                  value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__',
-                  element: items[1],
-                },
-                {
-                  value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__',
-                  element: items[2],
-                },
-              ]
-            : renderWithFixtures(node)
+      renderInside.mockImplementation(node =>
+        node && node === items
+          ? [
+              {
+                value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__',
+                element: items[0],
+              },
+              {
+                value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__',
+                element: items[1],
+              },
+              {
+                value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__',
+                element: items[2],
+              },
+            ]
+          : renderWithFixtures(node)
       );
     });
 

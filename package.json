@@ -7,6 +7,7 @@
     "build": "yarn build-clean && node ./scripts/build",
     "lint": "eslint --ext .json --ext .js ./packages/*",
     "lint:fix": "yarn run lint -- --fix",
+    "prettier": "prettier --write packages/**/*.js scripts/*.js types/*.js flow-typed/*.js",
     "test": "jest",
     "tunnel": "ssh -o ServerAliveInterval=60 -R machinat-dev-$USER:80:localhost:${PORT:-3000} serveo.net"
   },

@@ -109,7 +109,6 @@ export default class MessengerClient
     options: Options
   ) {
     const thread =
-      // prettier-ignore
       recipient instanceof MessengerThread
         ? recipient
         : typeof recipient === 'string'

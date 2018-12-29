@@ -19,7 +19,6 @@ class MessengerThread implements MachinatThread {
   uid() {
     const { recepient } = this;
     const pagePrefix = `${MESSNEGER}:${this.pageId || ''}`;
-    // prettier-ignore
     return recepient.id
       ? `${pagePrefix}:id:${recepient.id}`
       : recepient.user_ref

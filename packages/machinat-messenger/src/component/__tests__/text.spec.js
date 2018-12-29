@@ -10,32 +10,31 @@ const quickReplies = [
   <QuickReply title="B" />,
   <QuickReply title="C" />,
 ];
-const renderInside = jest.fn(
-  node =>
-    typeof node === 'string'
-      ? [{ value: node, element: undefined }]
-      : node === quickReplies
-        ? [
-            {
-              value: '__RENDERED_QUICKREPLY_OBJ_1__',
-              element: quickReplies[0],
-            },
-            {
-              value: '__RENDERED_QUICKREPLY_OBJ_2__',
-              element: quickReplies[1],
-            },
-            {
-              value: '__RENDERED_QUICKREPLY_OBJ_3__',
-              element: quickReplies[2],
-            },
-          ]
-        : node === textNode
-          ? [
-              { value: '\n__RENDERED_TEXT_1__', element: textNode[0] },
-              { value: '\n__RENDERED_TEXT_2__', element: textNode[1] },
-              { value: '\n__RENDERED_TEXT_3__', element: textNode[2] },
-            ]
-          : undefined
+const renderInside = jest.fn(node =>
+  typeof node === 'string'
+    ? [{ value: node, element: undefined }]
+    : node === quickReplies
+    ? [
+        {
+          value: '__RENDERED_QUICKREPLY_OBJ_1__',
+          element: quickReplies[0],
+        },
+        {
+          value: '__RENDERED_QUICKREPLY_OBJ_2__',
+          element: quickReplies[1],
+        },
+        {
+          value: '__RENDERED_QUICKREPLY_OBJ_3__',
+          element: quickReplies[2],
+        },
+      ]
+    : node === textNode
+    ? [
+        { value: '\n__RENDERED_TEXT_1__', element: textNode[0] },
+        { value: '\n__RENDERED_TEXT_2__', element: textNode[1] },
+        { value: '\n__RENDERED_TEXT_3__', element: textNode[2] },
+      ]
+    : undefined
 );
 const render = renderHelper(renderInside);
 

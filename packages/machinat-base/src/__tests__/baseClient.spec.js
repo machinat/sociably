@@ -77,7 +77,7 @@ it('renders and enqueue jobs', async () => {
 
   expect(createJobs.mock).toHaveBeenCalledWith(actions, thread, options);
 
-  expect(queue.executeJobs.mock) // prettier-ignore
+  expect(queue.executeJobs.mock) // for alignment
     .toHaveBeenCalledWith({ id: 1 }, { id: 2 }, { id: 3 });
 });
 
@@ -128,7 +128,7 @@ it('pass sending context through middlewares', async () => {
     foo: 'baz',
   });
 
-  expect(renderer.renderRoot.mock) // prettier-ignore
+  expect(renderer.renderRoot.mock) // for alignment
     .toHaveBeenCalledWith(message, { platform: 'test' });
 
   expect(createJobs.mock).toHaveBeenCalledWith(actions, thread, options);
@@ -136,7 +136,7 @@ it('pass sending context through middlewares', async () => {
   expect(middleware1.mock).toHaveBeenCalled();
   expect(middleware2.mock).toHaveBeenCalled();
 
-  expect(queue.executeJobs.mock) // prettier-ignore
+  expect(queue.executeJobs.mock) // for alignment
     .toHaveBeenCalledWith({ id: 1 }, { id: 2 }, { id: 3 });
 });
 
@@ -183,14 +183,14 @@ it('waits separator', async () => {
     results: [1, 2, 3],
   });
 
-  expect(renderer.renderRoot.mock) // prettier-ignore
+  expect(renderer.renderRoot.mock) // for alignment
     .toHaveBeenCalledWith(message, { platform: 'test' });
 
-  expect(createJobs.mock) // align-helper
+  expect(createJobs.mock) // for alignment
     .toHaveBeenNthCalledWith(1, [pausedActions[0]], thread, options);
-  expect(createJobs.mock) // align-helper
+  expect(createJobs.mock) // for alignment
     .toHaveBeenNthCalledWith(2, [pausedActions[2]], thread, options);
-  expect(createJobs.mock) // align-helper
+  expect(createJobs.mock) // for alignment
     .toHaveBeenNthCalledWith(3, [pausedActions[4]], thread, options);
 
   expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(1, { id: 1 });

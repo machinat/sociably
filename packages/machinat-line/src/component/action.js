@@ -28,7 +28,6 @@ const fullDate = d =>
   `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 const fullHourMinute = d => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 const dateToStringByMode = (isDate, isTime, d) =>
-  // prettier-ignore
   !(d instanceof Date)
     ? d
     : isDate === isTime
