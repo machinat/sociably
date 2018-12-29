@@ -35,7 +35,7 @@ describe('delegate.isNativeComponent()', () => {
       [],
       <text>abc</text>,
       <MyComponent />,
-      <Machinat.Immediate />,
+      <Machinat.Pause />,
     ].forEach(Components => {
       expect(isNativeComponent(Components)).toBe(false);
     });

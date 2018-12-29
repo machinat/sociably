@@ -19,19 +19,19 @@ const options = { foo: 'bar' };
 
 const actions = [
   {
-    isSeparator: false,
+    isPause: false,
     element: <a id={1} />,
     value: '__RENDERED_GENERAL_1__',
     path: '$::0',
   },
   {
-    isSeparator: false,
+    isPause: false,
     element: <b id={2} />,
     value: '__RENDERED_GENERAL_2__',
     path: '$::1',
   },
   {
-    isSeparator: false,
+    isPause: false,
     element: <c id={3} />,
     value: '__RENDERED_GENERAL_3__',
     path: '$::2',
@@ -140,33 +140,33 @@ it('pass sending context through middlewares', async () => {
     .toHaveBeenCalledWith({ id: 1 }, { id: 2 }, { id: 3 });
 });
 
-it('waits separator', async () => {
+it('waits pause', async () => {
   const after = moxy();
   const pausedActions = [
     {
-      isSeparator: false,
+      isPause: false,
       element: <a id={1} />,
       value: '__RENDERED_GENERAL_1__',
       path: '$::0',
     },
     {
-      isSeparator: true,
-      element: <Machinat.Immediate />,
+      isPause: true,
+      element: <Machinat.Pause />,
       path: '$::1',
     },
     {
-      isSeparator: false,
+      isPause: false,
       element: <b id={2} />,
       value: '__RENDERED_GENERAL_2__',
       path: '$::2',
     },
     {
-      isSeparator: true,
-      element: <Machinat.Immediate after={after} />,
+      isPause: true,
+      element: <Machinat.Pause after={after} />,
       path: '$::3',
     },
     {
-      isSeparator: false,
+      isPause: false,
       element: <b id={3} />,
       value: '__RENDERED_GENERAL_3__',
       path: '$::4',

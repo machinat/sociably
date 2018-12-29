@@ -47,34 +47,34 @@ describe('#renderInner()', () => {
     );
 
     expect(rendered).toEqual([
-      { isSeparator: false, element: 123, value: 123, path: '$::0' },
-      { isSeparator: false, element: 'abc', value: 'abc', path: '$::1' },
+      { isPause: false, element: 123, value: 123, path: '$::0' },
+      { isPause: false, element: 'abc', value: 'abc', path: '$::1' },
       {
-        isSeparator: false,
+        isPause: false,
         element: <a>aaa</a>,
         value: '__GENERAL_ELE__',
         path: '$::2',
       },
       {
-        isSeparator: false,
+        isPause: false,
         element: <Native x="true" y={false} />,
         value: { x: 'true', y: false },
         path: '$::3',
       },
       {
-        isSeparator: false,
+        isPause: false,
         element: 'wrapped head',
         value: 'wrapped head',
         path: '$::4#Custom::0',
       },
       {
-        isSeparator: false,
+        isPause: false,
         element: <Native a="A" b={2} />,
         value: { a: 'A', b: 2 },
         path: '$::4#Custom::1',
       },
       {
-        isSeparator: false,
+        isPause: false,
         element: 'wrapped foot',
         value: 'wrapped foot',
         path: '$::4#Custom::2',
@@ -133,19 +133,19 @@ describe('#renderInner()', () => {
     });
   });
 
-  it('throw if Immediate included', () => {
+  it('throw if Pause included', () => {
     const renderer = new Renderer('Test', delegate);
 
     expect(() =>
       renderer.renderInner(
         <>
           foo
-          <Machinat.Immediate />
+          <Machinat.Pause />
           bar
         </>
       )
     ).toThrow(
-      'separator element should not be placed beneath native or general element props'
+      '<Pause /> should not be placed beneath native or general element props'
     );
   });
 });
@@ -153,19 +153,19 @@ describe('#renderInner()', () => {
 describe('#renderRoot()', () => {
   it('works', () => {
     const afterCallback = () => Promise.resolve();
-    const WrappedImmediate = () => <Machinat.Immediate after={afterCallback} />;
+    const WrappedPause = () => <Machinat.Pause after={afterCallback} />;
     const context = {};
 
     const renderer = new Renderer('Test', delegate);
     const rendered = renderer.renderRoot(
       <>
         {123}
-        <Machinat.Immediate delay={1000} />
+        <Machinat.Pause delay={1000} />
         abc
-        <Machinat.Immediate after={afterCallback} />
+        <Machinat.Pause after={afterCallback} />
         <b />
         <a>aaa</a>
-        <WrappedImmediate />
+        <WrappedPause />
         <Native x="true" y={false} />
         <Custom a="A" b={2} />
       </>,
@@ -173,58 +173,58 @@ describe('#renderRoot()', () => {
     );
 
     expect(rendered).toEqual([
-      { isSeparator: false, element: 123, value: 123, path: '$::0' },
+      { isPause: false, element: 123, value: 123, path: '$::0' },
       {
-        isSeparator: true,
-        element: <Machinat.Immediate delay={1000} />,
+        isPause: true,
+        element: <Machinat.Pause delay={1000} />,
         value: undefined,
         path: '$::1',
       },
-      { isSeparator: false, element: 'abc', value: 'abc', path: '$::2' },
+      { isPause: false, element: 'abc', value: 'abc', path: '$::2' },
       {
-        isSeparator: true,
-        element: <Machinat.Immediate after={afterCallback} />,
+        isPause: true,
+        element: <Machinat.Pause after={afterCallback} />,
         value: undefined,
         path: '$::3',
       },
       {
-        isSeparator: false,
+        isPause: false,
         element: <b />,
         value: '__GENERAL_ELE__',
         path: '$::4',
       },
       {
-        isSeparator: false,
+        isPause: false,
         element: <a>aaa</a>,
         value: '__GENERAL_ELE__',
         path: '$::5',
       },
       {
-        isSeparator: true,
-        element: <Machinat.Immediate after={afterCallback} />,
+        isPause: true,
+        element: <Machinat.Pause after={afterCallback} />,
         value: undefined,
-        path: '$::6#WrappedImmediate',
+        path: '$::6#WrappedPause',
       },
       {
-        isSeparator: false,
+        isPause: false,
         element: <Native x="true" y={false} />,
         value: { x: 'true', y: false },
         path: '$::7',
       },
       {
-        isSeparator: false,
+        isPause: false,
         element: 'wrapped head',
         value: 'wrapped head',
         path: '$::8#Custom::0',
       },
       {
-        isSeparator: false,
+        isPause: false,
         element: <Native a="A" b={2} />,
         value: { a: 'A', b: 2 },
         path: '$::8#Custom::1',
       },
       {
-        isSeparator: false,
+        isPause: false,
         element: 'wrapped foot',
         value: 'wrapped foot',
         path: '$::8#Custom::2',
@@ -241,7 +241,7 @@ describe('#renderRoot()', () => {
     } = delegate;
 
     expect(isNativeComponent.mock.calls.map(c => c.args)).toEqual([
-      [WrappedImmediate],
+      [WrappedPause],
       [Native],
       [Custom],
       [Native],

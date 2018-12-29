@@ -2,7 +2,7 @@
 import {
   MACHINAT_FRAGMENT_TYPE,
   MACHINAT_ELEMENT_TYPE,
-  MACHINAT_IMMEDIATELY_TYPE,
+  MACHINAT_PAUSE_TYPE,
 } from './symbol';
 
 export const isEmpty = (element: any): boolean %checks =>
@@ -18,10 +18,10 @@ export const isFragment = (element: any): boolean %checks =>
   element !== null &&
   element.type === MACHINAT_FRAGMENT_TYPE;
 
-export const isImmediate = (element: any): boolean %checks =>
+export const isPause = (element: any): boolean %checks =>
   typeof element === 'object' &&
   element !== null &&
-  element.type === MACHINAT_IMMEDIATELY_TYPE;
+  element.type === MACHINAT_PAUSE_TYPE;
 
 export const isValidRenderable = (element: any): boolean %checks =>
   typeof element === 'string' ||

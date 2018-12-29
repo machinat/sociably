@@ -1,14 +1,14 @@
 // @flow
 import { inspect } from 'util';
 import invariant from 'invariant';
-import { isNative, isImmediate, isEmpty, isElement } from 'machinat-shared';
+import { isNative, isPause, isEmpty, isElement } from 'machinat-shared';
 import { traverse } from 'machinat-children';
 
 import type {
   MachinatNode,
   GeneralElement,
   NativeElement,
-  SeparatorElement,
+  PauseElement,
 } from 'types/element';
 import type { TraverseElementCallback } from 'machinat-children/types';
 
@@ -98,7 +98,7 @@ export default class MachinatRenderer<Action, Native> {
 
     if (typeof element === 'string' || typeof element === 'number') {
       accumulates.push({
-        isSeparator: false,
+        isPause: false,
         element: (element: string | number),
         value: element,
         path,
@@ -113,21 +113,21 @@ export default class MachinatRenderer<Action, Native> {
 
       if (value) {
         accumulates.push({
-          isSeparator: false,
+          isPause: false,
           element: (element: GeneralElement),
           value: (value: Action),
           path,
         });
       }
-    } else if (isImmediate(element)) {
+    } else if (isPause(element)) {
       invariant(
         asRoot,
-        `separator element should not be placed beneath native or general element props`
+        `<Pause /> should not be placed beneath native or general element props`
       );
 
       accumulates.push({
-        isSeparator: true,
-        element: (element: SeparatorElement),
+        isPause: true,
+        element: (element: PauseElement),
         value: undefined,
         path,
       });
@@ -148,7 +148,7 @@ export default class MachinatRenderer<Action, Native> {
 
       if (value) {
         accumulates.push({
-          isSeparator: false,
+          isPause: false,
           element: (element: NativeElement<Native>),
           value,
           path,
@@ -173,7 +173,7 @@ export default class MachinatRenderer<Action, Native> {
       );
     } else if (typeof element === 'object' && !isElement(element)) {
       accumulates.push({
-        isSeparator: false,
+        isPause: false,
         value: element,
         element: (undefined: void),
         path,

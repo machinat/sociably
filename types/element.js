@@ -38,6 +38,6 @@ export type MachinatRenderable = MachinatText | MachinatElement<any>;
 export type FragmentElement = MachinatElement<Symbol>;
 export type NativeElement<T> = MachinatElement<MachinatNativeType<T>>;
 export type GeneralElement = MachinatElement<string>;
-export type SeparatorElement = MachinatElement<Symbol>;
+export type PauseElement = MachinatElement<Symbol>;
 
 export type MachinatChildren = MachinatNode;

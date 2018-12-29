@@ -5,7 +5,7 @@ import type {
   MachinatElementType,
   NativeElement,
   GeneralElement,
-  SeparatorElement,
+  PauseElement,
 } from 'types/element';
 
 type RenderDelegateCallback<Action, Element> = (
@@ -22,29 +22,29 @@ export type RenderDelegate<Action, Native> = {
 };
 
 export type TextRenderedAction = {|
-  isSeparator: false,
+  isPause: false,
   element: MachinatText,
   value: MachinatText,
   path: string,
 |};
 
 export type ElementRenderedAction<Action, Native> = {|
-  isSeparator: false,
+  isPause: false,
   element: NativeElement<Native> | GeneralElement,
   value: Action,
   path: string,
 |};
 
 export type RawRenderedAction = {|
-  isSeparator: false,
+  isPause: false,
   element: void,
   value: Object,
   path: string,
 |};
 
-export type SeparatorRenderedAction = {|
-  isSeparator: true,
-  element: SeparatorElement,
+export type PauseRenderedAction = {|
+  isPause: true,
+  element: PauseElement,
   value: void,
   path: string,
 |};
@@ -58,7 +58,7 @@ export type RootAction<Action, Native> =
   | TextRenderedAction
   | ElementRenderedAction<Action, Native>
   | RawRenderedAction
-  | SeparatorRenderedAction;
+  | PauseRenderedAction;
 
 export type RenderInnerFn = (
   node: MachinatNode,

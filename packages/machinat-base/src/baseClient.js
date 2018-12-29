@@ -3,7 +3,7 @@ import compose from 'koa-compose';
 import invariant from 'invariant';
 import delay from 'delay';
 
-import type { MachinatNode, SeparatorElement } from 'types/element';
+import type { MachinatNode, PauseElement } from 'types/element';
 import type MahinateQueue from 'machinat-queue';
 import type { SuccessJobResponse } from 'machinat-queue/types';
 import type MahinateRenderer from 'machinat-renderer';
@@ -31,8 +31,8 @@ type CreateJobFunc<Action, Native, Job, Thread, Options> = (
   options: Options
 ) => Array<Job>;
 
-const handleSeparator = async (separatorEle: SeparatorElement) => {
-  const { after, delay: timeToDelay } = separatorEle.props;
+const handlePause = async (pauseEle: PauseElement) => {
+  const { after, delay: timeToDelay } = pauseEle.props;
   let promise;
 
   if (timeToDelay !== undefined) {
@@ -42,7 +42,7 @@ const handleSeparator = async (separatorEle: SeparatorElement) => {
   if (after !== undefined) {
     invariant(
       typeof after === 'function',
-      `"after" prop of Immediate element should be a function, got ${after}`
+      `"after" prop of Pause element should be a function, got ${after}`
     );
 
     promise = promise === undefined ? after() : promise.then(after);
@@ -117,7 +117,7 @@ export default class BaseClient<Action, Native, Job, Result, Thread, Options> {
     for (let i = 0; i <= actions.length; i += 1) {
       const action = actions[i];
 
-      if (action === undefined || action.isSeparator) {
+      if (action === undefined || action.isPause) {
         if (actionBatch.length > 0) {
           const jobs = this._createJobs(actionBatch, thread, options);
 
@@ -139,7 +139,7 @@ export default class BaseClient<Action, Native, Job, Result, Thread, Options> {
         }
 
         if (action) {
-          await handleSeparator(action.element); // eslint-disable-line no-await-in-loop
+          await handlePause(action.element); // eslint-disable-line no-await-in-loop
           actionBatch = [];
         }
       } else {

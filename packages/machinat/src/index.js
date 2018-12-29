@@ -1,14 +1,11 @@
-import {
-  MACHINAT_FRAGMENT_TYPE,
-  MACHINAT_IMMEDIATELY_TYPE,
-} from 'machinat-shared';
+import { MACHINAT_FRAGMENT_TYPE, MACHINAT_PAUSE_TYPE } from 'machinat-shared';
 import createElement from './createElement';
 import createServer from './server/http';
 
 const Machinat = {
   createElement,
   Fragment: MACHINAT_FRAGMENT_TYPE,
-  Immediate: MACHINAT_IMMEDIATELY_TYPE,
+  Pause: MACHINAT_PAUSE_TYPE,
 };
 
 export { Machinat as default, createServer };
