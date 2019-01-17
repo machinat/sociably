@@ -1,6 +1,10 @@
 // @flow
 import type { GeneralElement, NativeElement } from 'types/element';
-import type { RenderDelegate, RenderInnerFn } from 'machinat-renderer/types';
+import type {
+  RenderDelegate,
+  RenderInnerFn,
+  MachinatAction,
+} from 'machinat-renderer/types';
 
 import { MESSENGER_NAITVE_TYPE } from '../symbol';
 import * as generalComponents from '../component/general';
@@ -15,20 +19,69 @@ const MessengerRenderDelegate: RenderDelegate<
     return !!Component && Component.$$native === MESSENGER_NAITVE_TYPE;
   },
 
-  renderGeneralElement({ props, type }: GeneralElement, render: RenderInnerFn) {
+  renderGeneralElement(
+    element: GeneralElement,
+    render: RenderInnerFn,
+    context: { platform: 'messenger' },
+    path: string
+  ): ?(MachinatAction<MessengerAction, MessengerComponent>[]) {
+    const { props, type } = element;
     if (!(type in generalComponents)) {
       throw new TypeError(
         `<${type} /> is not valid general element supported in messenger`
       );
     }
-    return generalComponents[type](props, render);
+
+    const values = generalComponents[type](props, render);
+    if (values === null) {
+      return null;
+    }
+
+    const actions = new Array(values.length);
+
+    for (let i = 0; i < values.length; i += 1) {
+      actions[i] = {
+        isPause: false,
+        asUnit: true,
+        element,
+        value: values[i],
+        path,
+      };
+    }
+
+    return actions;
   },
 
   renderNativeElement(
-    { type: Component, props }: NativeElement<MessengerComponent>,
-    render: RenderInnerFn
-  ) {
-    return Component(props, render);
+    element: NativeElement<MessengerComponent>,
+    render: RenderInnerFn,
+    context: { platform: 'messenger' },
+    path: string
+  ): ?(MachinatAction<MessengerAction, MessengerComponent>[]) {
+    const { type: Component, props } = element;
+
+    if (Component.$$container) {
+      return Component(props, render);
+    }
+
+    const values = Component(props, render);
+    if (values === null) {
+      return null;
+    }
+
+    const actions = new Array(values.length);
+
+    for (let i = 0; i < actions.length; i += 1) {
+      actions[i] = {
+        isPause: false,
+        asUnit: true,
+        element,
+        value: values[i],
+        path,
+      };
+    }
+
+    return actions;
   },
 };
 

@@ -1,41 +1,65 @@
-import { renderTextContent } from 'machinat-renderer';
+import { joinTextValues, ACTION_BREAK } from 'machinat-utility';
+
+import { compose, map } from './utils';
 
 export const text = ({ children }, render) =>
-  renderTextContent(children, render, '.children');
+  joinTextValues(children, render, '.children') || null;
 
-export const br = () => '\n';
+export const br = () => [ACTION_BREAK];
 
-export const b = (props, render) => `*${text(props, render)}*`;
+const B = '*';
+export const b = compose(
+  map(v => (typeof v === 'string' ? B + v + B : v)),
+  text
+);
 
-export const i = (props, render) => `_${text(props, render)}_`;
+const I = '_';
+export const i = compose(
+  map(v => (typeof v === 'string' ? I + v + I : v)),
+  text
+);
 
-export const del = (props, render) => `~${text(props, render)}~`;
+const DEL = '~';
+export const del = compose(
+  map(v => (typeof v === 'string' ? DEL + v + DEL : v)),
+  text
+);
 
-export const code = (props, render) => `\`${text(props, render)}\``;
+const CODE = '`';
+export const code = compose(
+  map(v => (typeof v === 'string' ? CODE + v + CODE : v)),
+  text
+);
 
-export const pre = (props, render) => `\`\`\`\n${text(props, render)}\n\`\`\``;
+const PRE_BEGIN = '```\n';
+const PRE_END = '\n```';
+export const pre = compose(
+  map(v => (typeof v === 'string' ? PRE_BEGIN + v + PRE_END : v)),
+  text
+);
 
-export const a = (props, render) => {
-  const t = text(props, render);
-  if (props.href) {
-    return `${t}:\n${props.href}`;
-  }
-  return t;
+export const a = ({ children, href }, render) => {
+  const values = joinTextValues(children, render, '.children');
+  return values === undefined
+    ? null
+    : [...values, ACTION_BREAK, href, ACTION_BREAK];
 };
 
-const generalMediaFactory = (name, type) =>
+const generalMediaFactory = (tag, type) =>
   ({
-    [name]: props => ({
-      message: {
-        attachment: {
-          type,
-          payload: {
-            url: props.src,
+    [tag]: props => [
+      {
+        message: {
+          attachment: {
+            type,
+            payload: {
+              url: props.src,
+            },
           },
         },
       },
-    }),
-  }[name]);
+    ],
+  }[tag]);
 
 export const img = generalMediaFactory('img', 'image');
 export const video = generalMediaFactory('video', 'video');

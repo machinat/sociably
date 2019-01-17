@@ -1,6 +1,6 @@
 // @flow
 import type { MachinatElementProps } from 'types/element';
-import type { RenderInnerFn } from 'machinat-renderer/types';
+import type { RenderInnerFn, MachinatAction } from 'machinat-renderer/types';
 
 export type MessengerBotOptions = {
   accessToken: string,
@@ -22,9 +22,26 @@ type SenderAction = {
 
 export type MessengerAction = MessageAction | SenderAction;
 
-export type MessengerComponent = {
+export type ContainerComponent = {
+  (
+    MachinatElementProps,
+    RenderInnerFn
+  ): MachinatAction<MessengerAction, MessengerComponent>[], // eslint-disable-line no-use-before-define
+  $$native: Symbol,
+  $$unit: boolean,
   $$entry?: string,
-} & ((MachinatElementProps, RenderInnerFn) => MessengerAction);
+  $$container: true,
+};
+
+export type BasicComponent = {
+  (MachinatElementProps, RenderInnerFn): MessengerAction[],
+  $$native: Symbol,
+  $$unit: boolean,
+  $$entry?: string,
+  $$container: false,
+};
+
+export type MessengerComponent = BasicComponent | ContainerComponent;
 
 export type MessengerRequest = {|
   method: string,
@@ -70,4 +87,9 @@ export type ExtenstionContext = {|
   signed_request: string,
 |};
 
-export type MessengerSendOptions = {};
+export type MessengerSendOptions = {
+  messagingType?: 'RESPONSE' | 'UPDATE' | 'MESSAGE_TAG',
+  tag?: string,
+  notificationType?: 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH',
+  personaId?: string,
+};

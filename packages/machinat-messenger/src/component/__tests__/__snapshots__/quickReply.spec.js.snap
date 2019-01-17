@@ -1,6 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`QuickReply match snapshot 1`] = `
+exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function EmailQuickReply]} match snapshot 1`] = `
+Array [
+  Object {
+    "content_type": "user_email",
+  },
+]
+`;
+
+exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function LocationQuickReply]} match snapshot 1`] = `
+Array [
+  Object {
+    "content_type": "location",
+  },
+]
+`;
+
+exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function PhoneQuickReply]} match snapshot 1`] = `
+Array [
+  Object {
+    "content_type": "user_phone_number",
+  },
+]
+`;
+
+exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function QuickReply]} match snapshot 1`] = `
 Array [
   Object {
     "content_type": "text",
@@ -8,20 +32,16 @@ Array [
     "payload": "🥧",
     "title": "i want a pie",
   },
+]
+`;
+
+exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function QuickReply]} match snapshot 2`] = `
+Array [
   Object {
     "content_type": "text",
     "image_url": "http://cake.it",
     "payload": "🍰",
     "title": "a piece of cake",
-  },
-  Object {
-    "content_type": "user_phone_number",
-  },
-  Object {
-    "content_type": "user_email",
-  },
-  Object {
-    "content_type": "location",
   },
 ]
 `;

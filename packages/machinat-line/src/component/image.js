@@ -1,72 +1,148 @@
+import invariant from 'invariant';
 import {
-  annotateNativeRoot,
-  annotateNative,
-  getValue,
-} from 'machinat-renderer';
+  annotate,
+  asNative,
+  asUnit,
+  valuesOfAssertedType,
+} from 'machinat-utility';
+
 import { LINE_NAITVE_TYPE } from '../symbol';
-import { renderQuickReplies } from './utils';
 
-export const Image = ({ url, previewImage, quickReplies }, render) => ({
-  type: 'image',
-  originalContentUrl: url,
-  previewImageUrl: previewImage,
-  quickReplies: renderQuickReplies(quickReplies, render),
-});
+import { URIAction, MessageAction } from './action';
 
-annotateNativeRoot(Image, LINE_NAITVE_TYPE);
+export const Image = ({
+  url,
+  originalContentUrl,
+  previewURL,
+  previewImageUrl,
+}) => [
+  {
+    type: 'image',
+    originalContentUrl: originalContentUrl || url,
+    previewImageUrl: previewImageUrl || previewURL,
+  },
+];
 
-export const Sticker = ({ stickerId, packageId, quickReplies }, render) => ({
-  type: 'sticker',
-  packageId,
-  stickerId,
-  quickReplies: renderQuickReplies(quickReplies, render),
-});
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(Image);
 
-annotateNativeRoot(Sticker, LINE_NAITVE_TYPE);
+export const Sticker = ({ stickerId, packageId }) => [
+  {
+    type: 'sticker',
+    packageId,
+    stickerId,
+  },
+];
+
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(Sticker);
+
+const renderImageMapActionValues = valuesOfAssertedType(
+  URIAction,
+  MessageAction
+);
 
 export const ImageMapArea = ({ action, x, y, width, height }, render) => {
-  const renderedAction = render(action, '.action');
-  if (__DEV__) {
-    // TODO: validate renderedAction
-  }
+  const actionValues = renderImageMapActionValues(action, render, '.action');
 
-  const { type, label, uri, text } = renderedAction[0].value;
-  return {
-    type,
-    label,
-    linkUri: uri,
-    text,
-    area: {
-      x,
-      y,
-      width,
-      height,
-    },
-  };
+  invariant(
+    actionValues !== undefined && actionValues.length === 1,
+    actionValues
+      ? `there should be only 1 "action" in <ImageMapArea/>, got ${
+          actionValues.length
+        }`
+      : `prop "action" of <ImageMapArea/> should not be empty`
+  );
+
+  const [actionValue] = actionValues;
+
+  return [
+    actionValue.type === 'uri'
+      ? {
+          type: 'uri',
+          label: actionValue.label,
+          linkUri: actionValue.uri,
+          area: {
+            x,
+            y,
+            width,
+            height,
+          },
+        }
+      : {
+          type: 'message',
+          label: actionValue.label,
+          text: actionValue.text,
+          area: {
+            x,
+            y,
+            width,
+            height,
+          },
+        },
+  ];
 };
 
-annotateNative(ImageMapArea, LINE_NAITVE_TYPE);
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(ImageMapArea);
 
-export const ImageMap = (
-  { baseUrl, alt, height, children, quickReplies },
+const renderURIActionValues = valuesOfAssertedType(URIAction);
+
+export const ImageMapVideoArea = (
+  {
+    url,
+    originalContentUrl,
+    previewURL,
+    previewImageUrl,
+    x,
+    y,
+    width,
+    height,
+    action,
+  },
   render
 ) => {
-  const renderedArea = render(children, '.children');
-  if (__DEV__) {
-    // TODO: validate renderedArea
-  }
+  const actionValues = renderURIActionValues(action, render, '.action');
 
-  return {
-    type: 'imagemap',
-    baseUrl,
-    altText: alt,
-    baseSize: {
-      width: 1040,
-      height,
+  return [
+    {
+      originalContentUrl: originalContentUrl || url,
+      previewImageUrl: previewImageUrl || previewURL,
+      area: {
+        x,
+        y,
+        width,
+        height,
+      },
+      externalLink: actionValues && {
+        linkUri: actionValues[0].uri,
+        label: actionValues[0].label,
+      },
     },
-    actions: renderedArea.map(getValue),
-    quickReplies: renderQuickReplies(quickReplies, render),
-  };
+  ];
 };
 
-annotateNativeRoot(ImageMap, LINE_NAITVE_TYPE);
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(ImageMapVideoArea);
+
+const renderVideoAreaValues = valuesOfAssertedType(ImageMapVideoArea);
+const renderActionAreaValues = valuesOfAssertedType(ImageMapArea);
+
+export const ImageMap = (
+  { baseURL, baseUrl, alt, altText, height, children, video },
+  render
+) => {
+  const videoValues = renderVideoAreaValues(video, render, '.video');
+
+  return [
+    {
+      type: 'imagemap',
+      baseUrl: baseUrl || baseURL,
+      altText: altText || alt,
+      baseSize: {
+        width: 1040,
+        height,
+      },
+      actions: renderActionAreaValues(children, render, '.children'),
+      video: videoValues && videoValues[0],
+    },
+  ];
+};
+
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(ImageMap);

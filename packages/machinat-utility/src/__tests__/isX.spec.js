@@ -6,7 +6,7 @@ import {
   isPause,
   isNative,
   isValidRenderable,
-} from '../isXXX';
+} from '../isX';
 
 describe('isElement', () => {
   it('return true if valid element passed', () => {

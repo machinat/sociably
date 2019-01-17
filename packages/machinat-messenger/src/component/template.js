@@ -1,222 +1,241 @@
+import invariant from 'invariant';
 import {
-  annotateNative,
-  annotateNativeRoot,
-  getValue,
-  renderTextContent,
-} from 'machinat-renderer';
+  annotate,
+  asNative,
+  asUnit,
+  hasEntry,
+  joinTextValues,
+  valuesOfAssertedType,
+} from 'machinat-utility';
+
+import * as buttonModule from './button';
 
 import { MESSENGER_NAITVE_TYPE } from '../symbol';
 import { ENTRY_MESSAGES } from '../apiEntry';
 
-import { renderQuickReplies } from './utils';
+const buttonComponents = Object.values(buttonModule);
 
 const CHILDREN = '.children';
 
-const renderDefaultAction = (actionProp, render) => {
-  const renderedAction = render(actionProp, '.defaultAction');
-  if (renderedAction === undefined) {
-    return undefined;
-  }
-
-  if (__DEV__) {
-    // TODO: validate renderedAction
-  }
-
-  if (renderedAction[0].element === undefined) {
-    return renderedAction[0].value;
-  }
-
-  const { title, ...action } = renderedAction[0].value;
-  return action;
-};
-
-const renderButtons = (nodes, render, propName) => {
-  const renderedButtons = render(nodes, propName);
-
-  if (__DEV__) {
-    // TODO: validate renderedButtons
-  }
-
-  return renderedButtons && renderedButtons.map(getValue);
-};
+const renderUrlButtonValues = valuesOfAssertedType(buttonModule.URLButton);
+const renderButtonValues = valuesOfAssertedType(...buttonComponents);
 
 export const GenericItem = (
-  { children, title, imageUrl, subtitle, defaultAction },
-  render
-) => ({
-  title,
-  image_url: imageUrl,
-  subtitle,
-  default_action: renderDefaultAction(defaultAction, render),
-  buttons: renderButtons(children, render, CHILDREN),
-});
-annotateNative(GenericItem, MESSENGER_NAITVE_TYPE);
-
-export const GenericTemplate = (
-  { children, sharable, quickReplies, imageAspectRatio },
+  { children, title, imageURL, subtitle, defaultAction: defaultActionProp },
   render
 ) => {
-  const renderedItems = render(children, CHILDREN);
+  const urlButtonValues = renderUrlButtonValues(
+    defaultActionProp,
+    render,
+    '.defaultAction'
+  );
 
-  if (__DEV__) {
-    // TODO: validate renderedItems
+  // ignore title field
+  let defaultAction;
+  if (urlButtonValues) {
+    const [{ title: _, ...defaultActionValue }] = urlButtonValues;
+    defaultAction = defaultActionValue;
   }
 
-  return {
+  return [
+    {
+      title,
+      image_url: imageURL,
+      subtitle,
+      default_action: defaultAction,
+      buttons: renderButtonValues(children, render, CHILDREN),
+    },
+  ];
+};
+
+annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(GenericItem);
+
+const renderGenericItemValues = valuesOfAssertedType(GenericItem);
+
+export const GenericTemplate = (
+  { children, sharable, imageAspectRatio },
+  render
+) => [
+  {
     message: {
-      quick_replies: renderQuickReplies(quickReplies, render),
       attachment: {
         type: 'template',
         payload: {
           template_type: 'generic',
           sharable,
           image_aspect_ratio: imageAspectRatio,
-          elements: renderedItems.map(getValue),
+          elements: renderGenericItemValues(children, render, CHILDREN),
         },
       },
     },
-  };
-};
-annotateNativeRoot(GenericTemplate, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
+  },
+];
+
+annotate(
+  asNative(MESSENGER_NAITVE_TYPE),
+  hasEntry(ENTRY_MESSAGES),
+  asUnit(true)
+)(GenericTemplate);
 
 export const ListTemplate = (
-  { children, topStyle, sharable, quickReplies, button },
+  { children, topStyle, sharable, button },
   render
-) => {
-  const itemsResult = render(children, CHILDREN);
-
-  if (__DEV__) {
-    // TODO: validate itemsResult
-  }
-
-  return {
+) => [
+  {
     message: {
-      quick_replies: renderQuickReplies(quickReplies, render),
       attachment: {
         type: 'template',
         payload: {
           template_type: 'list',
           top_element_style: topStyle,
           sharable,
-          elements: itemsResult.map(getValue),
-          buttons: renderButtons(button, render, '.button'),
+          elements: renderGenericItemValues(children, render, CHILDREN),
+          buttons: renderButtonValues(button, render, '.button'),
         },
       },
     },
-  };
-};
-annotateNativeRoot(ListTemplate, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
+  },
+];
 
-export const ButtonTemplate = (
-  { children, text, sharable, quickReplies },
-  render
-) => ({
-  message: {
-    quick_replies: renderQuickReplies(quickReplies, render),
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'button',
-        text: renderTextContent(text, render, '.text'),
-        sharable,
-        buttons: renderButtons(children, render, CHILDREN),
+annotate(
+  asNative(MESSENGER_NAITVE_TYPE),
+  hasEntry(ENTRY_MESSAGES),
+  asUnit(true)
+)(ListTemplate);
+
+export const ButtonTemplate = ({ children, text, sharable }, render) => {
+  const values = joinTextValues(text, render, '.text');
+
+  let textValue;
+  invariant(
+    values !== undefined &&
+      values.length === 1 &&
+      typeof (textValue = values[0]) === 'string', // eslint-disable-line prefer-destructuring
+    values
+      ? `<br /> in prop "text" of <ButtonTemplate /> is invalid`
+      : `prop "text" of <ButtonTemplate /> should not be empty`
+  );
+
+  return [
+    {
+      message: {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text: textValue,
+            sharable,
+            buttons: renderButtonValues(children, render, CHILDREN),
+          },
+        },
       },
     },
-  },
-});
-annotateNativeRoot(ButtonTemplate, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
+  ];
+};
+
+annotate(
+  asNative(MESSENGER_NAITVE_TYPE),
+  hasEntry(ENTRY_MESSAGES),
+  asUnit(true)
+)(ButtonTemplate);
 
 export const MediaTemplate = (
-  { children, type, attachmentId, url, sharable, quickReplies },
+  { children, type, attachmentId, url, sharable },
   render
-) => ({
-  message: {
-    quick_replies: renderQuickReplies(quickReplies, render),
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'media',
-        sharable,
-        elements: [
-          {
-            media_type: type,
-            url,
-            attachment_id: attachmentId,
-            buttons: renderButtons(children, render, CHILDREN),
-          },
-        ],
+) => [
+  {
+    message: {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'media',
+          sharable,
+          elements: [
+            {
+              media_type: type,
+              url,
+              attachment_id: attachmentId,
+              buttons: renderButtonValues(children, render, CHILDREN),
+            },
+          ],
+        },
       },
     },
   },
-});
-annotateNativeRoot(MediaTemplate, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
+];
 
-export const OpenGraphTemplate = (
-  { children, url, sharable, quickReplies },
-  render
-) => ({
-  message: {
-    quick_replies: renderQuickReplies(quickReplies, render),
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'open_graph',
-        sharable,
-        elements: [
-          {
-            url,
-            buttons: renderButtons(children, render, CHILDREN),
-          },
-        ],
+annotate(
+  asNative(MESSENGER_NAITVE_TYPE),
+  hasEntry(ENTRY_MESSAGES),
+  asUnit(true)
+)(MediaTemplate);
+
+export const OpenGraphTemplate = ({ children, url, sharable }, render) => [
+  {
+    message: {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'open_graph',
+          sharable,
+          elements: [
+            {
+              url,
+              buttons: renderButtonValues(children, render, CHILDREN),
+            },
+          ],
+        },
       },
     },
   },
-});
-annotateNativeRoot(OpenGraphTemplate, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
+];
 
-export const ReceiptTemplateItem = ({
+annotate(
+  asNative(MESSENGER_NAITVE_TYPE),
+  hasEntry(ENTRY_MESSAGES),
+  asUnit(true)
+)(OpenGraphTemplate);
+
+export const ReceiptItem = ({
   title,
   subtitle,
   quantity,
   price,
   currency,
-  imageUrl,
-}) => ({
-  title,
-  subtitle,
-  quantity,
-  price,
-  currency,
-  image_url: imageUrl,
-});
-annotateNative(ReceiptTemplateItem, MESSENGER_NAITVE_TYPE);
+  imageURL,
+}) => [
+  {
+    title,
+    subtitle,
+    quantity,
+    price,
+    currency,
+    image_url: imageURL,
+  },
+];
+
+annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(ReceiptItem);
+
+const receiptTemplateItemValues = valuesOfAssertedType(ReceiptItem);
 
 export const ReceiptTemplate = (
   {
     children,
     sharable,
-    quickReplies,
     recipientName,
     orderNumber,
     currency,
     paymentMethod,
-    orderUrl,
+    orderURL,
     timestamp,
     address,
     summary,
     adjustments,
   },
   render
-) => {
-  const renderedItem = render(children, CHILDREN);
-
-  if (__DEV__) {
-    // TODO: validate renderedItem
-  }
-
-  return {
+) => [
+  {
     message: {
-      quick_replies: renderQuickReplies(quickReplies, render),
       attachment: {
         type: 'template',
         payload: {
@@ -226,7 +245,7 @@ export const ReceiptTemplate = (
           order_number: orderNumber,
           currency,
           payment_method: paymentMethod,
-          order_url: orderUrl,
+          order_url: orderURL,
           timestamp:
             timestamp instanceof Date
               ? `${Math.floor(timestamp.getTime() / 1000)}`
@@ -234,10 +253,15 @@ export const ReceiptTemplate = (
           address,
           summary,
           adjustments,
-          elements: renderedItem.map(getValue),
+          elements: receiptTemplateItemValues(children, render, CHILDREN),
         },
       },
     },
-  };
-};
-annotateNativeRoot(ReceiptTemplate, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
+  },
+];
+
+annotate(
+  asNative(MESSENGER_NAITVE_TYPE),
+  hasEntry(ENTRY_MESSAGES),
+  asUnit(true)
+)(ReceiptTemplate);

@@ -1,14 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`thread ccontrol Component match snapshot 1`] = `
+exports[`match snapshot 1`] = `
 Array [
   Object {
     "metadata": "you have my bow",
     "target_app_id": "Legolas",
   },
+]
+`;
+
+exports[`match snapshot 2`] = `
+Array [
   Object {
     "metadata": "give me the ring",
   },
+]
+`;
+
+exports[`match snapshot 3`] = `
+Array [
   Object {
     "metadata": "my precious",
   },

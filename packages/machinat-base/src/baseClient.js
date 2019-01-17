@@ -3,30 +3,49 @@ import compose from 'koa-compose';
 import invariant from 'invariant';
 import delay from 'delay';
 
-import type { MachinatNode, PauseElement } from 'types/element';
+import { ACTION_BREAK } from 'machinat-utility';
+
+import type {
+  MachinatNode,
+  PauseElement,
+  GeneralElement,
+  NativeElement,
+  MachinatNativeType,
+} from 'types/element';
 import type MahinateQueue from 'machinat-queue';
 import type { SuccessJobResponse } from 'machinat-queue/types';
 import type MahinateRenderer from 'machinat-renderer';
-import type { RootAction, InnerAction } from 'machinat-renderer/types';
+import type {
+  TextRenderedAction,
+  ElementRenderedAction,
+  RawAction,
+  MachinatAction,
+} from 'machinat-renderer/types';
 import { SendError } from './error';
 import type { SendResponse } from './types';
 
-type SendingContext<Action, Native, Thread, Options> = {
+type SendingContext<Rendered, Native, Thread, Options> = {
   message: MachinatNode,
   platform: string,
   thread: Thread,
   options: Options,
-  renderer: MahinateRenderer<Action, Native>,
-  actions: RootAction<Action, Native>[],
+  renderer: MahinateRenderer<Rendered, Native>,
+  actions: MachinatAction<Rendered, Native>[],
 };
 
-type MiddlewareFunc<Action, Native, Job, Result, Thread, Options> = (
-  ctx: SendingContext<Action, Native, Thread, Options>,
-  next?: MiddlewareFunc<Action, Native, Job, Result, Thread, Options>
-) => Promise<SendResponse<Action, Native, Job, Result>>;
+type MiddlewareFunc<Rendered, Native, Job, Result, Thread, Options> = (
+  ctx: SendingContext<Rendered, Native, Thread, Options>,
+  next?: MiddlewareFunc<Rendered, Native, Job, Result, Thread, Options>
+) => Promise<SendResponse<Rendered, Native, Job, Result>>;
 
-type CreateJobFunc<Action, Native, Job, Thread, Options> = (
-  actions: InnerAction<Action, Native>[],
+type NonPauseAction<Rendered, Native> =
+  | TextRenderedAction
+  | ElementRenderedAction<Rendered, GeneralElement>
+  | ElementRenderedAction<Rendered, NativeElement<Native>>
+  | RawAction;
+
+type CreateJobFunc<Rendered, Native, Job, Thread, Options> = (
+  actions: NonPauseAction<Rendered, Native>[],
   thread: Thread,
   options: Options
 ) => Array<Job>;
@@ -55,19 +74,26 @@ const getJob = <J, R>(response: SuccessJobResponse<J, R>): J => response.job;
 const getResult = <J, R>(response: SuccessJobResponse<J, R>): R =>
   response.result;
 
-export default class BaseClient<Action, Native, Job, Result, Thread, Options> {
+export default class BaseClient<
+  Rendered,
+  Native: MachinatNativeType,
+  Job,
+  Result,
+  Thread,
+  Options
+> {
   platform: string;
-  middlewares: MiddlewareFunc<Action, Native, Job, Result, Thread, Options>[];
+  middlewares: MiddlewareFunc<Rendered, Native, Job, Result, Thread, Options>[];
   _queue: MahinateQueue<Job, Result>;
-  _renderer: MahinateRenderer<Action, Native>;
-  _handle: MiddlewareFunc<Action, Native, Job, Result, Thread, Options>;
-  _createJobs: CreateJobFunc<Action, Native, Job, Thread, Options>;
+  _renderer: MahinateRenderer<Rendered, Native>;
+  _handle: MiddlewareFunc<Rendered, Native, Job, Result, Thread, Options>;
+  _createJobs: CreateJobFunc<Rendered, Native, Job, Thread, Options>;
 
   constructor(
     platform: string,
     queue: MahinateQueue<Job, Result>,
-    renderer: MahinateRenderer<Action, Native>,
-    createJobs: CreateJobFunc<Action, Native, Job, Thread, Options>
+    renderer: MahinateRenderer<Rendered, Native>,
+    createJobs: CreateJobFunc<Rendered, Native, Job, Thread, Options>
   ) {
     this.platform = platform;
     this._queue = queue;
@@ -82,8 +108,8 @@ export default class BaseClient<Action, Native, Job, Result, Thread, Options> {
     thread: Thread,
     node: MachinatNode,
     options: Options
-  ): Promise<SendResponse<Action, Native, Job, Result>> {
-    const actions = this._renderer.renderRoot(node, {
+  ): Promise<SendResponse<Rendered, Native, Job, Result>> {
+    const actions = this._renderer.render(node, {
       platform: this.platform,
     });
 
@@ -91,7 +117,7 @@ export default class BaseClient<Action, Native, Job, Result, Thread, Options> {
       return { jobs: null, results: null, message: node, actions };
     }
 
-    const context: SendingContext<Action, Native, Thread, Options> = {
+    const context: SendingContext<Rendered, Native, Thread, Options> = {
       message: node,
       thread,
       options,
@@ -106,13 +132,13 @@ export default class BaseClient<Action, Native, Job, Result, Thread, Options> {
   }
 
   _executeSending = async (
-    context: SendingContext<Action, Native, Thread, Options>
-  ): Promise<SendResponse<Action, Native, Job, Result>> => {
+    context: SendingContext<Rendered, Native, Thread, Options>
+  ): Promise<SendResponse<Rendered, Native, Job, Result>> => {
     const { actions, message, options, thread } = context;
 
     const jobResponses: SuccessJobResponse<Job, Result>[] = [];
 
-    let actionBatch: InnerAction<Action, Native>[] = [];
+    let actionBatch: NonPauseAction<Rendered, Native>[] = [];
 
     for (let i = 0; i <= actions.length; i += 1) {
       const action = actions[i];
@@ -138,11 +164,11 @@ export default class BaseClient<Action, Native, Job, Result, Thread, Options> {
           }
         }
 
-        if (action) {
+        if (action !== undefined) {
           await handlePause(action.element); // eslint-disable-line no-await-in-loop
           actionBatch = [];
         }
-      } else {
+      } else if (action.value !== ACTION_BREAK) {
         actionBatch.push(action);
       }
     }
@@ -155,7 +181,7 @@ export default class BaseClient<Action, Native, Job, Result, Thread, Options> {
     };
   };
 
-  use(fn: MiddlewareFunc<Action, Native, Job, Result, Thread, Options>) {
+  use(fn: MiddlewareFunc<Rendered, Native, Job, Result, Thread, Options>) {
     if (typeof fn !== 'function')
       throw new TypeError('middleware must be a function!');
 

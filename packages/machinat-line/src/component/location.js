@@ -1,18 +1,23 @@
 /* eslint-disable import/prefer-default-export */
-import { annotateNativeRoot } from 'machinat-renderer';
-import { LINE_NAITVE_TYPE } from '../symbol';
-import { renderQuickReplies } from './utils';
+import { annotate, asNative, asUnit } from 'machinat-utility';
 
-export const Location = (
-  { title, address, lat, long, quickReplies },
-  render
-) => ({
-  type: 'location',
+import { LINE_NAITVE_TYPE } from '../symbol';
+
+export const Location = ({
   title,
   address,
-  latitude: lat,
-  longitude: long,
-  quickReplies: renderQuickReplies(quickReplies, render),
-});
+  lat,
+  latitude,
+  long,
+  longitude,
+}) => [
+  {
+    type: 'location',
+    title,
+    address,
+    latitude: latitude || lat,
+    longitude: longitude || long,
+  },
+];
 
-annotateNativeRoot(Location, LINE_NAITVE_TYPE);
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(Location);

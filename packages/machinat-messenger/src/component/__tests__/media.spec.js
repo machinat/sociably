@@ -1,4 +1,5 @@
-import Machinat from '../../../../machinat';
+import Machinat from 'machinat';
+
 import { MESSENGER_NAITVE_TYPE } from '../../symbol';
 import { Image, Video, Audio, File } from '../media';
 import renderHelper from './renderHelper';
@@ -11,7 +12,7 @@ describe('media Components', () => {
     expect(typeof Media).toBe('function');
     expect(Media.$$native).toBe(MESSENGER_NAITVE_TYPE);
     expect(Media.$$entry).toBe('me/messages');
-    expect(Media.$$root).toBe(true);
+    expect(Media.$$unit).toBe(true);
   });
 
   it('match snapshot', () => {

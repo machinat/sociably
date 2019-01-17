@@ -1,17 +1,22 @@
 /* eslint-disable import/prefer-default-export */
 import invariant from 'invariant';
-import { GET_API_PATH } from '../symbol';
+import { annotate, asNative, asUnit, hasEntry } from 'machinat-utility';
 
-export const LinkRichMenu = ({ id: richMenuId }) => ({
-  // eslint-disable-next-line consistent-return
-  [GET_API_PATH]: thread => {
-    const { type, userId } = thread;
+import { LINE_NAITVE_TYPE, NO_BODY } from '../symbol';
+
+export const LinkRichMenu = ({ id }) => [{ [NO_BODY]: true, id }];
+
+annotate(
+  asNative(LINE_NAITVE_TYPE),
+  asUnit(true),
+  hasEntry((thread, act) => {
+    const { type, source } = thread;
 
     invariant(
       type === 'user',
       '<RichMenu /> should be only used in a user thread'
     );
 
-    return `user/${userId}/richmenu/${richMenuId}`;
-  },
-});
+    return `user/${source.userId}/richmenu/${act.id}`;
+  })
+)(LinkRichMenu);

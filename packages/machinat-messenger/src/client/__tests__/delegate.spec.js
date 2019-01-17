@@ -55,17 +55,17 @@ describe('delegate.renderGeneralElement()', () => {
       <pre>pqr</pre>,
     ];
 
-    const values = renderer.renderInner(elements, '$').map(r => r.value);
+    const values = renderer.render(elements, {}).map(r => r.value);
 
     const { b, i, text, code, a, pre } = generalComponents;
 
     expect(values).toEqual([
-      b.mock.calls[0].result,
-      i.mock.calls[0].result,
-      text.mock.calls[0].result,
-      code.mock.calls[0].result,
-      a.mock.calls[0].result,
-      pre.mock.calls[0].result,
+      ...b.mock.calls[0].result,
+      ...i.mock.calls[0].result,
+      ...text.mock.calls[0].result,
+      ...code.mock.calls[0].result,
+      ...a.mock.calls[0].result,
+      ...pre.mock.calls[0].result,
     ]);
 
     expect(b.mock.calls[0].args[0]).toBe(elements[0].props);
@@ -79,7 +79,7 @@ describe('delegate.renderGeneralElement()', () => {
   it('throw if invalid general type passed', () => {
     const renderer = new Renderer('test', MessengerRenderDelegate);
 
-    expect(() => renderer.renderInner(<invalid />, '$')).toThrow(
+    expect(() => renderer.render(<invalid />, {})).toThrow(
       TypeError(
         '<invalid /> is not valid general element supported in messenger'
       )
@@ -90,23 +90,23 @@ describe('delegate.renderGeneralElement()', () => {
 describe('delegate.renderNativeElement()', () => {
   it('handles native element rendered value right', () => {
     const renderer = new Renderer('test', MessengerRenderDelegate);
-    const { Text, QuickReply, Image } = nativeComponents;
+    const { TypingOn, QuickReply, Image } = nativeComponents;
 
     const elements = [
-      <Text>abc</Text>,
+      <TypingOn>abc</TypingOn>,
       <QuickReply title="yes" />,
       <Image src="http://foo.bar/baz.jpg" />,
     ];
 
-    const values = renderer.renderInner(elements, '$').map(r => r.value);
+    const values = renderer.render(elements, {}).map(r => r.value);
 
     expect(values).toEqual([
-      Text.mock.calls[0].result,
-      QuickReply.mock.calls[0].result,
-      Image.mock.calls[0].result,
+      ...TypingOn.mock.calls[0].result,
+      ...QuickReply.mock.calls[0].result,
+      ...Image.mock.calls[0].result,
     ]);
 
-    expect(Text.mock.calls[0].args[0]).toBe(elements[0].props);
+    expect(TypingOn.mock.calls[0].args[0]).toBe(elements[0].props);
     expect(QuickReply.mock.calls[0].args[0]).toBe(elements[1].props);
     expect(Image.mock.calls[0].args[0]).toBe(elements[2].props);
   });

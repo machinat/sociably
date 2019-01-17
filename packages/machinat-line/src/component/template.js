@@ -1,153 +1,149 @@
 import {
-  annotateNativeRoot,
-  annotateNative,
-  getValue,
-} from 'machinat-renderer';
+  annotate,
+  asNative,
+  asUnit,
+  valuesOfAssertedType,
+} from 'machinat-utility';
+
 import { LINE_NAITVE_TYPE } from '../symbol';
-import { renderQuickReplies } from './utils';
+import * as _actionModule from './action';
+
+const actionComponents = Object.values(_actionModule);
+const renderActionValues = valuesOfAssertedType(...actionComponents);
 
 export const ButtonTemplate = (
   {
     children,
     defaultAction,
     alt,
-    thumbnailImage,
+    altText,
+    imageURL,
+    thumbnailImageUrl,
     imageAspectRatio,
-    contain,
-    backgroundColor,
+    imageSize,
+    imageBackgroundColor,
     title,
     text,
-    quickReplies,
   },
   render
 ) => {
-  const actionsRendered = render(children, '.children');
-  const defaultActionRendered = render(defaultAction, '.defaultAction');
-  if (__DEV__) {
-    // TODO: validate defaultActionRendered & actionsRendered
-  }
+  const defaultActionValues = renderActionValues(
+    defaultAction,
+    render,
+    '.defaultAction'
+  );
 
-  return {
-    type: 'template',
-    altText: alt,
-    template: {
-      type: 'buttons',
-      thumbnailImageUrl: thumbnailImage,
-      imageAspectRatio,
-      imageSize: contain && 'contain',
-      imageBackgroundColor: backgroundColor,
-      title,
-      text,
-      defaultAction: defaultActionRendered && defaultActionRendered[0].value,
-      actions: actionsRendered.map(getValue),
+  return [
+    {
+      type: 'template',
+      altText: altText || alt,
+      template: {
+        type: 'buttons',
+        thumbnailImageUrl: thumbnailImageUrl || imageURL,
+        imageAspectRatio,
+        imageSize,
+        imageBackgroundColor,
+        title,
+        text,
+        defaultAction: defaultActionValues && defaultActionValues[0],
+        actions: renderActionValues(children, render, '.children'),
+      },
     },
-    quickReplies: renderQuickReplies(quickReplies, render),
-  };
+  ];
 };
 
-annotateNativeRoot(ButtonTemplate, LINE_NAITVE_TYPE);
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(ButtonTemplate);
 
-export const ConfirmTemplate = (
-  { children, alt, text, quickReplies },
-  render
-) => {
-  const actionsRendered = render(children, '.children');
-  if (__DEV__) {
-    // TODO: validate actionsRendered
-  }
-
-  return {
+export const ConfirmTemplate = ({ children, alt, altText, text }, render) => [
+  {
     type: 'template',
-    altText: alt,
+    altText: altText || alt,
     template: {
       type: 'confirm',
       text,
-      actions: actionsRendered.map(getValue),
+      actions: renderActionValues(children, render, '.children'),
     },
-    quickReplies: renderQuickReplies(quickReplies, render),
-  };
-};
+  },
+];
 
-annotateNativeRoot(ConfirmTemplate, LINE_NAITVE_TYPE);
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(ConfirmTemplate);
 
 export const CarouselItem = (
-  { children, defaultAction, thumbnailImage, backgroundColor, title, text },
-  render
-) => {
-  const actionsRendered = render(children, '.children');
-  const defaultActionRendered = render(defaultAction, '.defaultAction');
-  if (__DEV__) {
-    // TODO: validate defaultActionRendered & actionsRendered
-  }
-
-  return {
-    thumbnailImageUrl: thumbnailImage,
-    imageBackgroundColor: backgroundColor,
+  {
+    children,
+    defaultAction,
+    imageURL,
+    thumbnailImageUrl,
+    imageBackgroundColor,
     title,
     text,
-    defaultAction: defaultActionRendered && defaultActionRendered[0].value,
-    actions: actionsRendered.map(getValue),
-  };
-};
-
-annotateNative(CarouselItem, LINE_NAITVE_TYPE);
-
-export const CarouselTemplate = (
-  { children, alt, imageAspectRatio, contain, quickReplies },
+  },
   render
 ) => {
-  const renderedItems = render(children, '.children');
-  if (__DEV__) {
-    // TODO: validate renderedItems
-  }
+  const defaultActionValues = renderActionValues(
+    defaultAction,
+    render,
+    '.defaultAction'
+  );
 
-  return {
+  return [
+    {
+      thumbnailImageUrl: thumbnailImageUrl || imageURL,
+      imageBackgroundColor,
+      title,
+      text,
+      defaultAction: defaultActionValues && defaultActionValues[0],
+      actions: renderActionValues(children, render, '.children'),
+    },
+  ];
+};
+
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(CarouselItem);
+
+const renderCarouselItemValues = valuesOfAssertedType(CarouselItem);
+
+export const CarouselTemplate = (
+  { children, alt, altText, imageAspectRatio, imageSize },
+  render
+) => [
+  {
     type: 'template',
-    altText: alt,
+    altText: altText || alt,
     template: {
       type: 'carousel',
       imageAspectRatio,
-      imageSize: contain && 'contain',
-      columns: renderedItems.map(getValue),
+      imageSize,
+      columns: renderCarouselItemValues(children, render, '.children'),
     },
-    quickReplies: renderQuickReplies(quickReplies, render),
-  };
+  },
+];
+
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(CarouselTemplate);
+
+export const ImageCarouselItem = ({ url, imageUrl, action }, render) => {
+  const actionValues = renderActionValues(action, render, '.action');
+
+  return [
+    {
+      imageUrl: imageUrl || url,
+      action: actionValues && actionValues[0],
+    },
+  ];
 };
 
-annotateNativeRoot(CarouselTemplate, LINE_NAITVE_TYPE);
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(ImageCarouselItem);
 
-export const ImageCarouselItem = ({ url, action }, render) => {
-  const actionRendered = render(action, '.action');
-  if (__DEV__) {
-    // TODO: validate actionRendered
-  }
+const renderImageCarouselItemValues = valuesOfAssertedType(ImageCarouselItem);
 
-  return {
-    imageUrl: url,
-    action: actionRendered[0].value,
-  };
-};
-
-annotateNative(ImageCarouselItem, LINE_NAITVE_TYPE);
-
-export const ImageCarouselTemplate = (
-  { children, alt, quickReplies },
-  render
-) => {
-  const renderedItems = render(children, '.children');
-  if (__DEV__) {
-    // TODO: validate renderedItems
-  }
-
-  return {
+export const ImageCarouselTemplate = ({ children, alt, altText }, render) => [
+  {
     type: 'template',
-    altText: alt,
+    altText: altText || alt,
     template: {
       type: 'image_carousel',
-      columns: renderedItems.map(getValue),
+      columns: renderImageCarouselItemValues(children, render, '.children'),
     },
-    quickReplies: renderQuickReplies(quickReplies, render),
-  };
-};
+  },
+];
 
-annotateNativeRoot(ImageCarouselTemplate, LINE_NAITVE_TYPE);
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(ImageCarouselTemplate);

@@ -13,9 +13,9 @@ const makeResponse = (code, body) => ({
   body: JSON.stringify(body),
 });
 
-const Foo = moxy(props => props);
+const Foo = moxy(props => [props]);
 Foo.$$native = MESSENGER_NAITVE_TYPE;
-Foo.$$root = true;
+Foo.$$unit = true;
 
 const msgs = (
   <>
@@ -31,6 +31,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  Foo.mock.clear();
   nock.cleanAll();
 });
 
@@ -126,16 +127,18 @@ it('attach appsecret_proof if appSecret option given', async () => {
 });
 
 it('upload files with form data if binary attached on job', async () => {
-  Foo.mock.fakeOnce(props => ({ ...props, [ATTACHED_FILE_DATA]: '_file0_' }));
-  Foo.mock.fakeOnce(props => ({
-    ...props,
-    [ATTACHED_FILE_DATA]: '_file1_',
-    [ATTACHED_FILE_INFO]: {
-      filename: 'YouDontSay.jpg',
-      contentType: 'image/jpeg',
-      knownLength: 19806,
+  Foo.mock.fakeOnce(props => [{ ...props, [ATTACHED_FILE_DATA]: '_file0_' }]);
+  Foo.mock.fakeOnce(props => [
+    {
+      ...props,
+      [ATTACHED_FILE_DATA]: '_file1_',
+      [ATTACHED_FILE_INFO]: {
+        filename: 'YouDontSay.jpg',
+        contentType: 'image/jpeg',
+        knownLength: 19806,
+      },
     },
-  }));
+  ]);
 
   const client = new MesengerClient({
     accessToken: '_graph_api_access_token_',

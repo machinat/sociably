@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Audio render match snapshot 1`] = `
+Array [
+  Object {
+    "duration": 6666,
+    "originalContentUrl": "https://...",
+    "type": "image",
+  },
+]
+`;
+
+exports[`Video render match snapshot 1`] = `
+Array [
+  Object {
+    "originalContentUrl": "https://...",
+    "previewImageUrl": "https://...",
+    "type": "image",
+  },
+]
+`;

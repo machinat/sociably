@@ -1,5 +1,5 @@
 // @flow
-import { MACHINAT_ELEMENT_TYPE } from 'machinat-shared';
+import { MACHINAT_ELEMENT_TYPE } from 'machinat-utility';
 import type { MachinatElementType, MachinatNode } from 'types/element';
 
 export default function createElement(
@@ -7,10 +7,12 @@ export default function createElement(
   config: Object,
   ...children: Array<MachinatNode>
 ) {
+  const childrenLen = children.length;
+
   const props = config || {};
-  if (children.length === 1) {
+  if (childrenLen === 1) {
     props.children = children[0]; // eslint-disable-line prefer-destructuring
-  } else if (children.length > 1) {
+  } else if (childrenLen > 1) {
     props.children = children;
   }
 

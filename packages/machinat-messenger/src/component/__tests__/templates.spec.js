@@ -1,4 +1,7 @@
-import Machinat from '../../../../machinat';
+import Machinat from 'machinat';
+
+import { ACTION_BREAK } from 'machinat-utility';
+
 import { MESSENGER_NAITVE_TYPE } from '../../symbol';
 import {
   GenericItem,
@@ -8,10 +11,9 @@ import {
   MediaTemplate,
   OpenGraphTemplate,
   ReceiptTemplate,
-  ReceiptTemplateItem,
+  ReceiptItem,
 } from '../template';
 import { URLButton, PostbackButton, CallButton } from '../button';
-import { QuickReply } from '../quickReply';
 import renderHelper from './renderHelper';
 
 const buttons = (
@@ -21,6 +23,7 @@ const buttons = (
     <CallButton title="call us" number="+12345678" />
   </>
 );
+
 const buttonsRendered = [
   {
     element: buttons.props.children[0],
@@ -40,7 +43,7 @@ const genericItems = (
   <>
     <GenericItem title="foo1" subtitle="bar" />
     <GenericItem title="foo2" subtitle="baz" />
-    <GenericItem title="foo3" imageUrl="http://foo.bar/image" />
+    <GenericItem title="foo3" imageURL="http://foo.bar/image" />
   </>
 );
 const genericItemsRendered = [
@@ -58,35 +61,14 @@ const genericItemsRendered = [
   },
 ];
 
-const quickReplies = [
-  <QuickReply title="A" />,
-  <QuickReply title="B" />,
-  <QuickReply title="C" />,
-];
-const quickRepliesRendered = [
-  {
-    value: '__RENDERED_QUICKREPLY_OBJ_1__',
-    element: quickReplies[0],
-  },
-  {
-    value: '__RENDERED_QUICKREPLY_OBJ_2__',
-    element: quickReplies[1],
-  },
-  {
-    value: '__RENDERED_QUICKREPLY_OBJ_3__',
-    element: quickReplies[2],
-  },
-];
-
 const renderWithFixtures = node =>
-  node &&
-  (node === buttons
-    ? buttonsRendered
-    : node === genericItems
-    ? genericItemsRendered
-    : node === quickReplies
-    ? quickRepliesRendered
-    : [{ value: node }]);
+  node
+    ? node === buttons
+      ? buttonsRendered
+      : node === genericItems
+      ? genericItemsRendered
+      : [{ value: node }]
+    : null;
 
 const renderInside = jest.fn();
 const render = renderHelper(renderInside);
@@ -104,18 +86,18 @@ describe('templates Components', () => {
     MediaTemplate,
     OpenGraphTemplate,
     ReceiptTemplate,
-  ])('is valid root Component', Template => {
+  ])('attribute of %p', Template => {
     expect(typeof Template).toBe('function');
     expect(Template.$$native).toBe(MESSENGER_NAITVE_TYPE);
     expect(Template.$$entry).toBe('me/messages');
-    expect(Template.$$root).toBe(true);
+    expect(Template.$$unit).toBe(true);
   });
 
-  test.each([GenericItem, ReceiptTemplateItem])('is valid Conponent', Item => {
+  test.each([GenericItem, ReceiptItem])('attribute of %p', Item => {
     expect(typeof Item).toBe('function');
     expect(Item.$$native).toBe(MESSENGER_NAITVE_TYPE);
     expect(Item.$$entry).toBe(undefined);
-    expect(Item.$$root).toBe(undefined);
+    expect(Item.$$unit).toBe(false);
   });
 
   describe('GenericItem', () => {
@@ -145,7 +127,7 @@ describe('templates Components', () => {
         [
           <GenericItem title="foo" />,
           <GenericItem title="foo" subtitle="bar" />,
-          <GenericItem title="foo" imageUrl="http://foo.bar/image" />,
+          <GenericItem title="foo" imageURL="http://foo.bar/image" />,
           <GenericItem title="foo">{buttons}</GenericItem>,
           <GenericItem
             title="foo"
@@ -155,7 +137,7 @@ describe('templates Components', () => {
                 url="http://foo.bar/"
                 heightRatio="compact"
                 extensions
-                fallbackUrl="http://foo.baz/login"
+                fallbackURL="http://foo.baz/login"
                 hideShareButton
               />
             }
@@ -174,7 +156,7 @@ describe('templates Components', () => {
           <GenericItem
             title="foo"
             subtitle="bar"
-            imageUrl="http://foo.bar/image"
+            imageURL="http://foo.bar/image"
             defaultAction={{
               type: 'web_url',
               url: 'http://foo.bar/',
@@ -197,10 +179,11 @@ describe('templates Components', () => {
           url="http://foo.bar/"
           heightRatio="compact"
           extensions
-          fallbackUrl="http://foo.baz/login"
+          fallbackURL="http://foo.baz/login"
           hideShareButton
         />
       );
+
       const plainObjAction = {
         type: 'web_url',
         url: 'http://foo.bar/',
@@ -223,8 +206,28 @@ describe('templates Components', () => {
       );
     });
 
+    it('throw if non URLButton element received in defaultAction', () => {
+      const Unknown = () => {};
+
+      renderInside.mockImplementation(
+        node =>
+          node && [
+            {
+              element: node,
+              value: { Ihave: 'a riddle for U' },
+            },
+          ]
+      );
+
+      expect(() =>
+        render(<GenericItem title="foo" defaultAction={<Unknown />} />)
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"<Unknown /> is invalid in .defaultAction, only <[URLButton]/> allowed"`
+      );
+    });
+
     it('render children for "buttons" field', () => {
-      const rendered = render(
+      const [rendered] = render(
         <GenericItem title="Look!">{buttons}</GenericItem>
       );
 
@@ -235,6 +238,22 @@ describe('templates Components', () => {
       ]);
       expect(renderInside).toHaveBeenCalledWith(buttons, '.children');
     });
+
+    it('throw if non Button element in children', () => {
+      const Unknown = () => {};
+
+      renderInside.mockImplementation(node =>
+        node === '__BUTTONS__'
+          ? [...buttonsRendered, { value: 'x', element: <Unknown /> }]
+          : null
+      );
+
+      expect(() =>
+        render(<GenericItem title="foo">{'__BUTTONS__'}</GenericItem>)
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"<Unknown /> is invalid in .children, only <[URLButton, PostbackButton, ShareButton, BuyButton, CallButton, LoginButton, LogoutButton, GamePlayButton]/> allowed"`
+      );
+    });
   });
 
   describe('GenericTemplate', () => {
@@ -242,14 +261,7 @@ describe('templates Components', () => {
       expect(
         [
           <GenericTemplate>{genericItems}</GenericTemplate>,
-          <GenericTemplate quickReplies={quickReplies}>
-            {genericItems}
-          </GenericTemplate>,
-          <GenericTemplate
-            quickReplies={quickReplies}
-            imageAspectRatio="square"
-            sharable
-          >
+          <GenericTemplate imageAspectRatio="square" sharable>
             {genericItems}
           </GenericTemplate>,
         ].map(render)
@@ -257,16 +269,33 @@ describe('templates Components', () => {
     });
 
     it('render children as "elements" field', () => {
-      expect(
-        render(<GenericTemplate>{genericItems}</GenericTemplate>).message
-          .attachment.payload.elements
-      ).toEqual([
+      const [rendered] = render(
+        <GenericTemplate>{genericItems}</GenericTemplate>
+      );
+
+      expect(rendered.message.attachment.payload.elements).toEqual([
         '__RENDERED_GENERIC_ITEM_OBJ_1__',
         '__RENDERED_GENERIC_ITEM_OBJ_2__',
         '__RENDERED_GENERIC_ITEM_OBJ_3__',
       ]);
 
       expect(renderInside).toHaveBeenCalledWith(genericItems, '.children');
+    });
+
+    it('throw if non GenericItem element in children', () => {
+      const Unknown = () => {};
+
+      renderInside.mockImplementation(node =>
+        node === '__ITEMS__'
+          ? [...genericItemsRendered, { value: 'x', element: <Unknown /> }]
+          : null
+      );
+
+      expect(() =>
+        render(<GenericTemplate>{'__ITEMS__'}</GenericTemplate>)
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"<Unknown /> is invalid in .children, only <[GenericItem]/> allowed"`
+      );
     });
   });
 
@@ -285,15 +314,7 @@ describe('templates Components', () => {
         [
           <ListTemplate>{genericItems}</ListTemplate>,
           <ListTemplate button={button}>{genericItems}</ListTemplate>,
-          <ListTemplate quickReplies={quickReplies}>
-            {genericItems}
-          </ListTemplate>,
-          <ListTemplate
-            button={button}
-            quickReplies={quickReplies}
-            imageAspectRatio="square"
-            sharable
-          >
+          <ListTemplate button={button} imageAspectRatio="square" sharable>
             {genericItems}
           </ListTemplate>,
         ].map(render)
@@ -301,10 +322,9 @@ describe('templates Components', () => {
     });
 
     it('render children as "elements" field', () => {
-      expect(
-        render(<ListTemplate>{genericItems}</ListTemplate>).message.attachment
-          .payload.elements
-      ).toEqual([
+      const [rendered] = render(<ListTemplate>{genericItems}</ListTemplate>);
+
+      expect(rendered.message.attachment.payload.elements).toEqual([
         '__RENDERED_GENERIC_ITEM_OBJ_1__',
         '__RENDERED_GENERIC_ITEM_OBJ_2__',
         '__RENDERED_GENERIC_ITEM_OBJ_3__',
@@ -314,7 +334,7 @@ describe('templates Components', () => {
     });
 
     it('render button prop as "buttons" field', () => {
-      const rendered = render(
+      const [rendered] = render(
         <ListTemplate button={button}>{genericItems}</ListTemplate>
       );
 
@@ -322,6 +342,22 @@ describe('templates Components', () => {
         '__RENDERED_BUTTON_OBJ_1__',
       ]);
       expect(renderInside).toHaveBeenCalledWith(button, '.button');
+    });
+
+    it('throw if non GenericItem element in children', () => {
+      const Unknown = () => {};
+
+      renderInside.mockImplementation(node =>
+        node === '__ITEMS__'
+          ? [...genericItemsRendered, { value: 'x', element: <Unknown /> }]
+          : null
+      );
+
+      expect(() =>
+        render(<ListTemplate>{'__ITEMS__'}</ListTemplate>)
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"<Unknown /> is invalid in .children, only <[GenericItem]/> allowed"`
+      );
     });
   });
 
@@ -342,7 +378,7 @@ describe('templates Components', () => {
     it('match snapshot', () => {
       expect(
         [
-          <ButtonTemplate text="abc" quickReplies={quickReplies} sharable>
+          <ButtonTemplate text="abc" sharable>
             {buttons}
           </ButtonTemplate>,
           <ButtonTemplate text={textNodes}>{buttons}</ButtonTemplate>,
@@ -351,10 +387,11 @@ describe('templates Components', () => {
     });
 
     it('render children as "buttons" field', () => {
-      expect(
-        render(<ButtonTemplate text="abc">{buttons}</ButtonTemplate>).message
-          .attachment.payload.buttons
-      ).toEqual([
+      const [rendered] = render(
+        <ButtonTemplate text="abc">{buttons}</ButtonTemplate>
+      );
+
+      expect(rendered.message.attachment.payload.buttons).toEqual([
         '__RENDERED_BUTTON_OBJ_1__',
         '__RENDERED_BUTTON_OBJ_2__',
         '__RENDERED_BUTTON_OBJ_3__',
@@ -363,22 +400,70 @@ describe('templates Components', () => {
       expect(renderInside).toHaveBeenCalledWith(buttons, '.children');
     });
 
+    it('throw if non Button element in children', () => {
+      const Unknown = () => {};
+
+      renderInside.mockImplementation(node =>
+        node === '__BUTTONS__'
+          ? [...buttonsRendered, { value: 'x', element: <Unknown /> }]
+          : [{ value: 'foo', element: node }]
+      );
+
+      expect(() =>
+        render(<ButtonTemplate text="foo">{'__BUTTONS__'}</ButtonTemplate>)
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"<Unknown /> is invalid in .children, only <[URLButton, PostbackButton, ShareButton, BuyButton, CallButton, LoginButton, LogoutButton, GamePlayButton]/> allowed"`
+      );
+    });
+
     it('render text prop as "text" field', () => {
       const expectedTextOutput = `
 __RENDERED_TEXT_1__
 __RENDERED_TEXT_2__
 __RENDERED_TEXT_3__`;
-      expect(
-        render(<ButtonTemplate text="abc">{buttons}</ButtonTemplate>).message
-          .attachment.payload.text
-      ).toEqual(expectedTextOutput);
-      expect(
-        render(<ButtonTemplate text={textNodes}>{buttons}</ButtonTemplate>)
-          .message.attachment.payload.text
-      ).toEqual(expectedTextOutput);
+
+      const [rendered1] = render(
+        <ButtonTemplate text="abc">{buttons}</ButtonTemplate>
+      );
+
+      expect(rendered1.message.attachment.payload.text).toEqual(
+        expectedTextOutput
+      );
+
+      const [rendered2] = render(
+        <ButtonTemplate text={textNodes}>{buttons}</ButtonTemplate>
+      );
+
+      expect(rendered2.message.attachment.payload.text).toEqual(
+        expectedTextOutput
+      );
 
       expect(renderInside).toHaveBeenCalledWith('abc', '.text');
       expect(renderInside).toHaveBeenCalledWith(textNodes, '.text');
+    });
+
+    it('throw if text prop is empty', () => {
+      renderInside.mockImplementation(() => null);
+
+      expect(() =>
+        render(<ButtonTemplate />)
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"prop \\"text\\" of <ButtonTemplate /> should not be empty"`
+      );
+    });
+
+    it('throw if <br /> contained in text prop', () => {
+      renderInside.mockImplementation(() => [
+        { value: 'foo', element: 'foo' },
+        { value: ACTION_BREAK, element: <br /> },
+        { value: 'bar', element: 'bar' },
+      ]);
+
+      expect(() =>
+        render(<ButtonTemplate text={'_somthing_with_<br />_'} />)
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"<br /> in prop \\"text\\" of <ButtonTemplate /> is invalid"`
+      );
     });
   });
 
@@ -389,12 +474,7 @@ __RENDERED_TEXT_3__`;
           <MediaTemplate type="image" url="http://...">
             {buttons}
           </MediaTemplate>,
-          <MediaTemplate
-            quickReplies={quickReplies}
-            type="video"
-            attachmentId="__ID__"
-            sharable
-          >
+          <MediaTemplate type="video" attachmentId="__ID__" sharable>
             {buttons}
           </MediaTemplate>,
         ].map(render)
@@ -402,19 +482,35 @@ __RENDERED_TEXT_3__`;
     });
 
     it('render children as "buttons" field', () => {
-      expect(
-        render(
-          <MediaTemplate type="image" url="http://...">
-            {buttons}
-          </MediaTemplate>
-        ).message.attachment.payload.elements[0].buttons
-      ).toEqual([
+      const [rendered] = render(
+        <MediaTemplate type="image" url="http://...">
+          {buttons}
+        </MediaTemplate>
+      );
+
+      expect(rendered.message.attachment.payload.elements[0].buttons).toEqual([
         '__RENDERED_BUTTON_OBJ_1__',
         '__RENDERED_BUTTON_OBJ_2__',
         '__RENDERED_BUTTON_OBJ_3__',
       ]);
 
       expect(renderInside).toHaveBeenCalledWith(buttons, '.children');
+    });
+
+    it('throw if non Button element in children', () => {
+      const Unknown = () => {};
+
+      renderInside.mockImplementation(node =>
+        node === '__BUTTONS__'
+          ? [...buttonsRendered, { value: 'x', element: <Unknown /> }]
+          : [{ value: 'foo', element: node }]
+      );
+
+      expect(() =>
+        render(<MediaTemplate>{'__BUTTONS__'}</MediaTemplate>)
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"<Unknown /> is invalid in .children, only <[URLButton, PostbackButton, ShareButton, BuyButton, CallButton, LoginButton, LogoutButton, GamePlayButton]/> allowed"`
+      );
     });
   });
 
@@ -423,11 +519,7 @@ __RENDERED_TEXT_3__`;
       expect(
         [
           <OpenGraphTemplate url="http://...">{buttons}</OpenGraphTemplate>,
-          <OpenGraphTemplate
-            quickReplies={quickReplies}
-            url="http://..."
-            sharable
-          >
+          <OpenGraphTemplate url="http://..." sharable>
             {buttons}
           </OpenGraphTemplate>,
         ].map(render)
@@ -435,11 +527,11 @@ __RENDERED_TEXT_3__`;
     });
 
     it('render children as "buttons" field', () => {
-      expect(
-        render(
-          <OpenGraphTemplate url="http://...">{buttons}</OpenGraphTemplate>
-        ).message.attachment.payload.elements[0].buttons
-      ).toEqual([
+      const [rendered] = render(
+        <OpenGraphTemplate url="http://...">{buttons}</OpenGraphTemplate>
+      );
+
+      expect(rendered.message.attachment.payload.elements[0].buttons).toEqual([
         '__RENDERED_BUTTON_OBJ_1__',
         '__RENDERED_BUTTON_OBJ_2__',
         '__RENDERED_BUTTON_OBJ_3__',
@@ -447,46 +539,67 @@ __RENDERED_TEXT_3__`;
 
       expect(renderInside).toHaveBeenCalledWith(buttons, '.children');
     });
+
+    it('throw if non Button element in children', () => {
+      const Unknown = () => {};
+
+      renderInside.mockImplementation(node =>
+        node === '__BUTTONS__'
+          ? [...buttonsRendered, { value: 'x', element: <Unknown /> }]
+          : [{ value: 'foo', element: node }]
+      );
+
+      expect(() =>
+        render(<OpenGraphTemplate>{'__BUTTONS__'}</OpenGraphTemplate>)
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"<Unknown /> is invalid in .children, only <[URLButton, PostbackButton, ShareButton, BuyButton, CallButton, LoginButton, LogoutButton, GamePlayButton]/> allowed"`
+      );
+    });
   });
 
-  describe('ReceiptTemplateItem', () => {
+  describe('ReceiptItem', () => {
     it('match snapshot', () => {
       expect(
-        <ReceiptTemplateItem
-          title="A robot!"
-          subtitle="It's real!"
-          quantity={999}
-          price={99.99}
-          currency="USD"
-          imageUrl="http://i.robot/avatar"
-        />
+        render(
+          <ReceiptItem
+            title="A robot!"
+            subtitle="It's real!"
+            quantity={999}
+            price={99.99}
+            currency="USD"
+            imageURL="http://i.robot/avatar"
+          />
+        )
       ).toMatchSnapshot();
     });
   });
 
   describe('ReceiptTemplate', () => {
     const items = [
-      <ReceiptTemplateItem title="Buzz Lightyear" />,
-      <ReceiptTemplateItem title="Woody" />,
-      <ReceiptTemplateItem title="Slinky Dog" />,
+      <ReceiptItem title="Buzz Lightyear" />,
+      <ReceiptItem title="Woody" />,
+      <ReceiptItem title="Slinky Dog" />,
     ];
+
+    const receiptTemplateItemRendered = [
+      {
+        value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__',
+        element: items[0],
+      },
+      {
+        value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__',
+        element: items[1],
+      },
+      {
+        value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__',
+        element: items[2],
+      },
+    ];
+
     beforeEach(() => {
       renderInside.mockImplementation(node =>
         node && node === items
-          ? [
-              {
-                value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__',
-                element: items[0],
-              },
-              {
-                value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__',
-                element: items[1],
-              },
-              {
-                value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__',
-                element: items[2],
-              },
-            ]
+          ? receiptTemplateItemRendered
           : renderWithFixtures(node)
       );
     });
@@ -495,13 +608,12 @@ __RENDERED_TEXT_3__`;
       expect(
         render(
           <ReceiptTemplate
-            quickReplies={quickReplies}
             sharable
             recipientName="John Doe"
             orderNumber="12345"
             currency="USD"
             paymentMethod="Visa 2345"
-            orderUrl="http://what.a.shop"
+            orderURL="http://what.a.shop"
             timestamp="1428444852"
             address={{
               street_1: '1 Hacker Way',
@@ -549,16 +661,34 @@ __RENDERED_TEXT_3__`;
     });
 
     it('render children as "elements" field', () => {
-      expect(
-        render(<ReceiptTemplate>{items}</ReceiptTemplate>).message.attachment
-          .payload.elements
-      ).toEqual([
+      const [rendered] = render(<ReceiptTemplate>{items}</ReceiptTemplate>);
+
+      expect(rendered.message.attachment.payload.elements).toEqual([
         '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__',
         '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__',
         '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__',
       ]);
 
       expect(renderInside).toHaveBeenCalledWith(items, '.children');
+    });
+
+    it('throw if non GenericItem element in children', () => {
+      const Unknown = () => {};
+
+      renderInside.mockImplementation(node =>
+        node === '__ITEMS__'
+          ? [
+              ...receiptTemplateItemRendered,
+              { value: 'x', element: <Unknown /> },
+            ]
+          : null
+      );
+
+      expect(() =>
+        render(<ReceiptTemplate>{'__ITEMS__'}</ReceiptTemplate>)
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"<Unknown /> is invalid in .children, only <[ReceiptItem]/> allowed"`
+      );
     });
   });
 });

@@ -8,60 +8,68 @@ import type {
   PauseElement,
 } from 'types/element';
 
-type RenderDelegateCallback<Action, Element> = (
+type RenderDelegateCallback<Rendered, Native, Element> = (
   element: Element,
   render: RenderInnerFn,
   payload: any,
   path: string
-) => ?Action;
+) => ?(MachinatAction<Rendered, Native>[]);
 
-export type RenderDelegate<Action, Native> = {
+export type RenderDelegate<Rendered, Native> = {
   isNativeComponent: MachinatElementType => boolean,
-  renderNativeElement: RenderDelegateCallback<Action, NativeElement<Native>>,
-  renderGeneralElement: RenderDelegateCallback<Action, GeneralElement>,
+  renderNativeElement: RenderDelegateCallback<
+    Rendered,
+    Native,
+    NativeElement<Native>
+  >,
+  renderGeneralElement: RenderDelegateCallback<
+    Rendered,
+    Native,
+    GeneralElement
+  >,
 };
 
 export type TextRenderedAction = {|
   isPause: false,
+  asUnit: true,
   element: MachinatText,
   value: MachinatText,
   path: string,
 |};
 
-export type ElementRenderedAction<Action, Native> = {|
+export type ElementRenderedAction<Rendered, Element> = {|
   isPause: false,
-  element: NativeElement<Native> | GeneralElement,
-  value: Action,
+  asUnit: boolean,
+  element: Element,
+  value: Rendered,
   path: string,
 |};
 
-export type RawRenderedAction = {|
+export type RawAction = {|
   isPause: false,
+  asUnit: true,
   element: void,
   value: Object,
   path: string,
 |};
 
-export type PauseRenderedAction = {|
+export type PauseAction = {|
   isPause: true,
+  asUnit: true,
   element: PauseElement,
   value: void,
   path: string,
 |};
 
-export type InnerAction<Action, Native> =
+export type MachinatAction<Rendered, Native> =
   | TextRenderedAction
-  | ElementRenderedAction<Action, Native>
-  | RawRenderedAction;
-
-export type RootAction<Action, Native> =
-  | TextRenderedAction
-  | ElementRenderedAction<Action, Native>
-  | RawRenderedAction
-  | PauseRenderedAction;
+  | ElementRenderedAction<Rendered, GeneralElement>
+  | ElementRenderedAction<Rendered, NativeElement<Native>>
+  | RawAction
+  | PauseAction;
 
 export type RenderInnerFn = (
   node: MachinatNode,
   path: string,
   payload: any
-) => ?Array<InnerAction<any, any>>;
+) => null | Array<MachinatAction<any, any>>;

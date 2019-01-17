@@ -1,18 +1,7 @@
-import {
-  annotateNativeRoot,
-  annotateNative,
-  renderTextContent,
-} from 'machinat-renderer';
+/* eslint-disable import/prefer-default-export */
+import { annotate, asNative, asUnit } from 'machinat-utility';
 import { LINE_NAITVE_TYPE } from '../symbol';
-import { renderQuickReplies } from './utils';
 
-export const Text = ({ children, quickReplies }, render) => ({
-  type: 'text',
-  text: renderTextContent(children, render, '.children'),
-  quickReplies: renderQuickReplies(quickReplies, render),
-});
+export const Emoji = ({ code }) => [String.fromCodePoint(code)];
 
-annotateNativeRoot(Text, LINE_NAITVE_TYPE);
-
-export const Emoji = ({ code }) => String.fromCodePoint(code);
-annotateNative(Emoji, LINE_NAITVE_TYPE);
+annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(Emoji);

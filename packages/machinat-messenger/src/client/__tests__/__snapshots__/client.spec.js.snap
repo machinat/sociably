@@ -4,7 +4,7 @@ exports[`attach appsecret_proof if appSecret option given 1`] = `
 Object {
   "access_token": "_fb_graph_api_access_token_",
   "appsecret_proof": "c3d9a02ac88561d9721b3cb2ba338c933f0666b68ad29523393b830b3916cd91",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"name\\":\\"messenger::id:foo-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"name\\":\\"messenger::id:foo-2\\",\\"depends_on\\":\\"messenger::id:foo-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"name\\":\\"messenger::id:foo-3\\",\\"depends_on\\":\\"messenger::id:foo-2\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"name\\":\\"messenger:default:id:foo-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"name\\":\\"messenger:default:id:foo-2\\",\\"depends_on\\":\\"messenger:default:id:foo-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"name\\":\\"messenger:default:id:foo-3\\",\\"depends_on\\":\\"messenger:default:id:foo-2\\",\\"omit_response_on_success\\":false}]",
   "include_headers": "false",
 }
 `;
@@ -13,6 +13,7 @@ exports[`attach appsecret_proof if appSecret option given 2`] = `
 Object {
   "actions": Array [
     Object {
+      "asUnit": true,
       "element": Object {
         "$$typeof": Symbol(machinat.element),
         "props": Object {
@@ -27,6 +28,7 @@ Object {
       },
     },
     Object {
+      "asUnit": true,
       "element": Object {
         "$$typeof": Symbol(machinat.element),
         "props": Object {
@@ -41,6 +43,7 @@ Object {
       },
     },
     Object {
+      "asUnit": true,
       "element": Object {
         "$$typeof": Symbol(machinat.element),
         "props": Object {
@@ -64,11 +67,11 @@ Object {
         "body": "recipient=%7B%22id%22%3A%22foo%22%7D&id=1",
         "depends_on": undefined,
         "method": "POST",
-        "name": "messenger::id:foo-1",
+        "name": "messenger:default:id:foo-1",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
-      "threadId": "messenger::id:foo",
+      "threadId": "messenger:default:id:foo",
     },
     Object {
       "attachedFileData": undefined,
@@ -76,13 +79,13 @@ Object {
       "request": Object {
         "attached_files": undefined,
         "body": "recipient=%7B%22id%22%3A%22foo%22%7D&id=2",
-        "depends_on": "messenger::id:foo-1",
+        "depends_on": "messenger:default:id:foo-1",
         "method": "POST",
-        "name": "messenger::id:foo-2",
+        "name": "messenger:default:id:foo-2",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
-      "threadId": "messenger::id:foo",
+      "threadId": "messenger:default:id:foo",
     },
     Object {
       "attachedFileData": undefined,
@@ -90,13 +93,13 @@ Object {
       "request": Object {
         "attached_files": undefined,
         "body": "recipient=%7B%22id%22%3A%22foo%22%7D&id=3",
-        "depends_on": "messenger::id:foo-2",
+        "depends_on": "messenger:default:id:foo-2",
         "method": "POST",
-        "name": "messenger::id:foo-3",
+        "name": "messenger:default:id:foo-3",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
-      "threadId": "messenger::id:foo",
+      "threadId": "messenger:default:id:foo",
     },
   ],
   "message": Object {
@@ -148,7 +151,7 @@ Object {
 exports[`sends 1`] = `
 Object {
   "access_token": "_graph_api_access_token_",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"name\\":\\"messenger::id:foo-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"name\\":\\"messenger::id:foo-2\\",\\"depends_on\\":\\"messenger::id:foo-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"name\\":\\"messenger::id:foo-3\\",\\"depends_on\\":\\"messenger::id:foo-2\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"name\\":\\"messenger:default:id:foo-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"name\\":\\"messenger:default:id:foo-2\\",\\"depends_on\\":\\"messenger:default:id:foo-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"name\\":\\"messenger:default:id:foo-3\\",\\"depends_on\\":\\"messenger:default:id:foo-2\\",\\"omit_response_on_success\\":false}]",
   "include_headers": "false",
 }
 `;
@@ -157,6 +160,7 @@ exports[`sends 2`] = `
 Object {
   "actions": Array [
     Object {
+      "asUnit": true,
       "element": Object {
         "$$typeof": Symbol(machinat.element),
         "props": Object {
@@ -171,6 +175,7 @@ Object {
       },
     },
     Object {
+      "asUnit": true,
       "element": Object {
         "$$typeof": Symbol(machinat.element),
         "props": Object {
@@ -185,6 +190,7 @@ Object {
       },
     },
     Object {
+      "asUnit": true,
       "element": Object {
         "$$typeof": Symbol(machinat.element),
         "props": Object {
@@ -208,11 +214,11 @@ Object {
         "body": "recipient=%7B%22id%22%3A%22foo%22%7D&id=1",
         "depends_on": undefined,
         "method": "POST",
-        "name": "messenger::id:foo-1",
+        "name": "messenger:default:id:foo-1",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
-      "threadId": "messenger::id:foo",
+      "threadId": "messenger:default:id:foo",
     },
     Object {
       "attachedFileData": undefined,
@@ -220,13 +226,13 @@ Object {
       "request": Object {
         "attached_files": undefined,
         "body": "recipient=%7B%22id%22%3A%22foo%22%7D&id=2",
-        "depends_on": "messenger::id:foo-1",
+        "depends_on": "messenger:default:id:foo-1",
         "method": "POST",
-        "name": "messenger::id:foo-2",
+        "name": "messenger:default:id:foo-2",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
-      "threadId": "messenger::id:foo",
+      "threadId": "messenger:default:id:foo",
     },
     Object {
       "attachedFileData": undefined,
@@ -234,13 +240,13 @@ Object {
       "request": Object {
         "attached_files": undefined,
         "body": "recipient=%7B%22id%22%3A%22foo%22%7D&id=3",
-        "depends_on": "messenger::id:foo-2",
+        "depends_on": "messenger:default:id:foo-2",
         "method": "POST",
-        "name": "messenger::id:foo-3",
+        "name": "messenger:default:id:foo-3",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
-      "threadId": "messenger::id:foo",
+      "threadId": "messenger:default:id:foo",
     },
   ],
   "message": Object {
@@ -310,7 +316,7 @@ false
 -----MULTIPART_SEPARATOR-----
 Content-Disposition: form-data; name=\\"batch\\"
 
-[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"name\\":\\"messenger::id:foo-----MULTIPART_SEPARATOR-----\\",\\"attached_files\\":\\"file_0\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"name\\":\\"messenger::id:foo-----MULTIPART_SEPARATOR-----\\",\\"depends_on\\":\\"messenger::id:foo-----MULTIPART_SEPARATOR-----\\",\\"attached_files\\":\\"file_1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"name\\":\\"messenger::id:foo-----MULTIPART_SEPARATOR-----\\",\\"depends_on\\":\\"messenger::id:foo-----MULTIPART_SEPARATOR-----\\",\\"omit_response_on_success\\":false}]
+[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"name\\":\\"messenger:default:id:foo-----MULTIPART_SEPARATOR-----\\",\\"attached_files\\":\\"file_0\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"name\\":\\"messenger:default:id:foo-----MULTIPART_SEPARATOR-----\\",\\"depends_on\\":\\"messenger:default:id:foo-----MULTIPART_SEPARATOR-----\\",\\"attached_files\\":\\"file_1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"name\\":\\"messenger:default:id:foo-----MULTIPART_SEPARATOR-----\\",\\"depends_on\\":\\"messenger:default:id:foo-----MULTIPART_SEPARATOR-----\\",\\"omit_response_on_success\\":false}]
 -----MULTIPART_SEPARATOR-------
 "
 `;
@@ -319,6 +325,7 @@ exports[`upload files with form data if binary attached on job 2`] = `
 Object {
   "actions": Array [
     Object {
+      "asUnit": true,
       "element": Object {
         "$$typeof": Symbol(machinat.element),
         "props": Object {
@@ -334,6 +341,7 @@ Object {
       },
     },
     Object {
+      "asUnit": true,
       "element": Object {
         "$$typeof": Symbol(machinat.element),
         "props": Object {
@@ -354,6 +362,7 @@ Object {
       },
     },
     Object {
+      "asUnit": true,
       "element": Object {
         "$$typeof": Symbol(machinat.element),
         "props": Object {
@@ -377,11 +386,11 @@ Object {
         "body": "recipient=%7B%22id%22%3A%22foo%22%7D&id=1",
         "depends_on": undefined,
         "method": "POST",
-        "name": "messenger::id:foo-1",
+        "name": "messenger:default:id:foo-1",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
-      "threadId": "messenger::id:foo",
+      "threadId": "messenger:default:id:foo",
     },
     Object {
       "attachedFileData": "_file1_",
@@ -393,13 +402,13 @@ Object {
       "request": Object {
         "attached_files": "file_1",
         "body": "recipient=%7B%22id%22%3A%22foo%22%7D&id=2",
-        "depends_on": "messenger::id:foo-1",
+        "depends_on": "messenger:default:id:foo-1",
         "method": "POST",
-        "name": "messenger::id:foo-2",
+        "name": "messenger:default:id:foo-2",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
-      "threadId": "messenger::id:foo",
+      "threadId": "messenger:default:id:foo",
     },
     Object {
       "attachedFileData": undefined,
@@ -407,13 +416,13 @@ Object {
       "request": Object {
         "attached_files": undefined,
         "body": "recipient=%7B%22id%22%3A%22foo%22%7D&id=3",
-        "depends_on": "messenger::id:foo-2",
+        "depends_on": "messenger:default:id:foo-2",
         "method": "POST",
-        "name": "messenger::id:foo-3",
+        "name": "messenger:default:id:foo-3",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
-      "threadId": "messenger::id:foo",
+      "threadId": "messenger:default:id:foo",
     },
   ],
   "message": Object {

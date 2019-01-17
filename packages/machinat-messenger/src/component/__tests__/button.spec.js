@@ -1,4 +1,5 @@
-import Machinat from '../../../../machinat';
+import Machinat from 'machinat';
+
 import { MESSENGER_NAITVE_TYPE } from '../../symbol';
 import {
   URLButton,
@@ -19,59 +20,58 @@ beforeEach(() => {
   renderInside.mockReset();
 });
 
-describe('button Components', () => {
-  test.each([
-    URLButton,
-    PostbackButton,
-    ShareButton,
-    BuyButton,
-    CallButton,
-    LoginButton,
-    LogoutButton,
-    GamePlayButton,
-  ])('is valid Component', Button => {
-    expect(typeof Button).toBe('function');
-    expect(Button.$$native).toBe(MESSENGER_NAITVE_TYPE);
-    expect(Button.$$entry).toBe(undefined);
-    expect(Button.$$root).toBe(undefined);
-  });
+test.each([
+  URLButton,
+  PostbackButton,
+  ShareButton,
+  BuyButton,
+  CallButton,
+  LoginButton,
+  LogoutButton,
+  GamePlayButton,
+])('is valid Component', Button => {
+  expect(typeof Button).toBe('function');
+  expect(Button.$$native).toBe(MESSENGER_NAITVE_TYPE);
+  expect(Button.$$entry).toBe(undefined);
+  expect(Button.$$unit).toBe(false);
+});
 
-  describe('URLButton', () => {
-    it('match snapshot', () => {
-      expect(
-        [
-          <URLButton title="my button" url="http://machinat.com" />,
-          <URLButton
-            title="my button"
-            url="http://machinat.com"
-            heightRatio="compact"
-            extensions
-            fallbackUrl="http://..."
-            hideShareButton
-          />,
-        ].map(render)
-      ).toMatchSnapshot();
-    });
+describe('URLButton', () => {
+  it('match snapshot', () => {
+    expect(
+      [
+        <URLButton title="my button" url="http://machinat.com" />,
+        <URLButton
+          title="my button"
+          url="http://machinat.com"
+          heightRatio="compact"
+          extensions
+          fallbackURL="http://..."
+          hideShareButton
+        />,
+      ].map(render)
+    ).toMatchSnapshot();
   });
+});
 
-  describe('PostbackButton', () => {
-    it('match snapshot', () => {
-      expect(
-        render(<PostbackButton title="my button" payload="_MY_PAYLOAD_" />)
-      ).toMatchSnapshot();
-    });
+describe('PostbackButton', () => {
+  it('match snapshot', () => {
+    expect(
+      render(<PostbackButton title="my button" payload="_MY_PAYLOAD_" />)
+    ).toMatchSnapshot();
   });
+});
 
-  describe('ShareButton', () => {
-    it('match snapshot', () => {
-      const sharedTemplate = (
-        <GenericTemplate>
-          <GenericItem title="foo" subtitle="bar" />
-        </GenericTemplate>
-      );
-      renderInside.mockImplementation(
-        node =>
-          node && [
+describe('ShareButton', () => {
+  it('match snapshot', () => {
+    const sharedTemplate = (
+      <GenericTemplate>
+        <GenericItem title="foo" subtitle="bar" />
+      </GenericTemplate>
+    );
+    renderInside.mockImplementation(node =>
+      node
+        ? [
             {
               value: {
                 message: '__RENDERED_GENERIC_TEMPLATE_MEASSGE_OBJ__',
@@ -79,112 +79,106 @@ describe('button Components', () => {
               element: sharedTemplate,
             },
           ]
-      );
-      expect(
-        [<ShareButton />, <ShareButton>{sharedTemplate}</ShareButton>].map(
-          render
-        )
-      ).toMatchSnapshot();
+        : null
+    );
+    expect(
+      [<ShareButton />, <ShareButton>{sharedTemplate}</ShareButton>].map(render)
+    ).toMatchSnapshot();
 
-      expect(renderInside).toHaveBeenCalledWith(sharedTemplate, '.children');
-    });
-
-    it('throw if non GenericTemplate children given', () => {
-      renderInside.mockImplementation(node => [
-        {
-          rendered: '__SOMETHING_WRONG__',
-          element: node,
-        },
-      ]);
-      expect(() => render(<ShareButton>abc</ShareButton>)).toThrow();
-      expect(() =>
-        render(
-          <ShareButton>
-            <text>123</text>
-          </ShareButton>
-        )
-      ).toThrow();
-      expect(() =>
-        render(
-          <ShareButton>
-            <GenericItem title="foo" subtitle="bar" />
-          </ShareButton>
-        )
-      ).toThrow();
-    });
+    expect(renderInside).toHaveBeenCalledWith(sharedTemplate, '.children');
   });
 
-  describe('BuyButton', () => {
-    it('match snapshot', () => {
-      expect(
-        render(
-          <BuyButton
-            title="my button"
-            payload="_MY_PAYLOAD_"
-            currency="USD"
-            isTest
-            paymentType="FIXED_AMOUNT"
-            merchantName="My Fake Business"
-            requestedInfo={[
-              'shipping_address',
-              'contact_name',
-              'contact_phone',
-              'contact_email',
-            ]}
-            priceList={[
-              {
-                label: 'subtotal',
-                amount: '12.75',
-              },
-            ]}
-          />
-        )
-      ).toMatchSnapshot();
-    });
-  });
+  it('throw if non GenericTemplate children given', () => {
+    const Invalid = () => {};
+    renderInside.mockImplementation(node => [
+      {
+        value: '__SOMETHING_WRONG__',
+        element: node,
+      },
+    ]);
 
-  describe('CallButton', () => {
-    it('match snapshot', () => {
-      expect(
-        render(<CallButton title="call me maybe" number="+15105551234" />)
-      ).toMatchSnapshot();
-    });
+    expect(() =>
+      render(
+        <ShareButton>
+          <Invalid />
+        </ShareButton>
+      )
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"<Invalid /> is invalid in .children, only <[GenericTemplate]/> allowed"`
+    );
   });
+});
 
-  describe('LoginButton', () => {
-    it('match snapshot', () => {
-      expect(
-        render(<LoginButton url="https://council.elrond" />)
-      ).toMatchSnapshot();
-    });
+describe('BuyButton', () => {
+  it('match snapshot', () => {
+    expect(
+      render(
+        <BuyButton
+          title="my button"
+          payload="_MY_PAYLOAD_"
+          currency="USD"
+          isTest
+          paymentType="FIXED_AMOUNT"
+          merchantName="My Fake Business"
+          requestedInfo={[
+            'shipping_address',
+            'contact_name',
+            'contact_phone',
+            'contact_email',
+          ]}
+          priceList={[
+            {
+              label: 'subtotal',
+              amount: '12.75',
+            },
+          ]}
+        />
+      )
+    ).toMatchSnapshot();
   });
+});
 
-  describe('LoginButton', () => {
-    it('match snapshot', () => {
-      expect(
-        render(<LoginButton url="https://council.elrond" />)
-      ).toMatchSnapshot();
-    });
+describe('CallButton', () => {
+  it('match snapshot', () => {
+    expect(
+      render(<CallButton title="call me maybe" number="+15105551234" />)
+    ).toMatchSnapshot();
   });
+});
 
-  describe('LogoutButton', () => {
-    it('match snapshot', () => {
-      expect(render(<LogoutButton />)).toMatchSnapshot();
-    });
+describe('LoginButton', () => {
+  it('match snapshot', () => {
+    expect(
+      render(<LoginButton url="https://council.elrond" />)
+    ).toMatchSnapshot();
   });
+});
 
-  describe('GamePlayButton', () => {
-    it('match snapshot', () => {
-      expect(
-        render(
-          <GamePlayButton
-            title="I want to play a game"
-            payload="GAME_OVER"
-            playerId="Adam"
-            contextId="SAW"
-          />
-        )
-      ).toMatchSnapshot();
-    });
+describe('LoginButton', () => {
+  it('match snapshot', () => {
+    expect(
+      render(<LoginButton url="https://council.elrond" />)
+    ).toMatchSnapshot();
+  });
+});
+
+describe('LogoutButton', () => {
+  it('match snapshot', () => {
+    expect(render(<LogoutButton />)).toMatchSnapshot();
+  });
+});
+
+describe('GamePlayButton', () => {
+  it('match snapshot', () => {
+    expect(
+      render(
+        <GamePlayButton
+          title="I want to play a game"
+          payload="GAME_OVER"
+          playerId="Adam"
+          contextId="SAW"
+        />
+      )
+    ).toMatchSnapshot();
   });
 });

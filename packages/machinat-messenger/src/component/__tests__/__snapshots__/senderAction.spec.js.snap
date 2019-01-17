@@ -1,15 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PassThreadControl match snapshot 1`] = `
+exports[`[Function MarkSeen] match snapshot 1`] = `
 Array [
   Object {
     "sender_action": "mark_seen",
   },
-  Object {
-    "sender_action": "typing_on",
-  },
+]
+`;
+
+exports[`[Function TypingOff] match snapshot 1`] = `
+Array [
   Object {
     "sender_action": "typing_off",
+  },
+]
+`;
+
+exports[`[Function TypingOn] match snapshot 1`] = `
+Array [
+  Object {
+    "sender_action": "typing_on",
   },
 ]
 `;

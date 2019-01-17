@@ -1,12 +1,3 @@
-/* eslint-disable import/prefer-default-export */
-import { getValue } from 'machinat-renderer';
+export const compose = (fn1, fn2) => (...args) => fn1(fn2(...args));
 
-export const renderQuickReplies = (nodes, render) => {
-  const renderedReplies = render(nodes, '.quickReplies');
-
-  if (__DEV__) {
-    // TODO: validate renderedReplies
-  }
-
-  return renderedReplies && renderedReplies.map(getValue);
-};
+export const map = mapper => values => values && values.map(mapper);

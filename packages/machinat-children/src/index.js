@@ -1,7 +1,7 @@
 // @flow
 import type { MachinatNode } from 'types/element';
 
-import { isFragment, isEmpty } from 'machinat-shared';
+import { isFragment, isEmpty } from 'machinat-utility';
 import type {
   TraverseElementCallback,
   ElementReducer,

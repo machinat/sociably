@@ -6,10 +6,11 @@ import type { Recepient } from './types';
 const MESSNEGER = 'messenger';
 
 class MessengerThread implements MachinatThread {
-  platform: string;
-  type: string;
   recepient: Recepient;
   pageId: ?string;
+
+  platform = 'messenger';
+  type = 'user';
 
   constructor(recepient: Recepient, pageId?: string) {
     this.recepient = recepient;
@@ -18,7 +19,7 @@ class MessengerThread implements MachinatThread {
 
   uid() {
     const { recepient } = this;
-    const pagePrefix = `${MESSNEGER}:${this.pageId || ''}`;
+    const pagePrefix = `${MESSNEGER}:${this.pageId || 'default'}`;
     return recepient.id
       ? `${pagePrefix}:id:${recepient.id}`
       : recepient.user_ref
@@ -28,14 +29,5 @@ class MessengerThread implements MachinatThread {
       : JSON.stringify(recepient);
   }
 }
-
-Object.defineProperties(MessengerThread.prototype, {
-  platform: {
-    value: 'messenger',
-  },
-  type: {
-    value: 'user',
-  },
-});
 
 export default MessengerThread;

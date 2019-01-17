@@ -1,0 +1,256 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Dialog with all props match snapshot 1`] = `
+Array [
+  Object {
+    "element": "foo",
+    "value": Object {
+      "message": Object {
+        "text": "foo",
+      },
+      "messaging_type": "MESSAGE_TAG",
+      "notification_type": "SILENT_PUSH",
+      "persona_id": "_PERSONA_ID_",
+      "tag": "PAYMENT_UPDATE",
+    },
+  },
+  Object {
+    "element": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": "bar",
+    },
+    "value": Object {
+      "message": Object {
+        "metadata": "_MY_METADATA_",
+        "quick_replies": Array [
+          "_QUICK_REPLY_RENDERED_",
+          "_QUICK_REPLY_RENDERED_",
+          "_QUICK_REPLY_RENDERED_",
+          "_QUICK_REPLY_RENDERED_",
+        ],
+        "text": "bar",
+      },
+      "messaging_type": "MESSAGE_TAG",
+      "notification_type": "SILENT_PUSH",
+      "persona_id": "_PERSONA_ID_",
+      "tag": "PAYMENT_UPDATE",
+    },
+  },
+]
+`;
+
+exports[`Dialog with metadata match snapshot 1`] = `
+Array [
+  Object {
+    "element": "foo",
+    "value": Object {
+      "message": Object {
+        "text": "foo",
+      },
+      "messaging_type": undefined,
+      "notification_type": undefined,
+      "persona_id": undefined,
+      "tag": undefined,
+    },
+  },
+  Object {
+    "element": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": "bar",
+    },
+    "value": Object {
+      "message": Object {
+        "metadata": "_SOME_METADATA_",
+        "quick_replies": undefined,
+        "text": "bar",
+      },
+      "messaging_type": undefined,
+      "notification_type": undefined,
+      "persona_id": undefined,
+      "tag": undefined,
+    },
+  },
+]
+`;
+
+exports[`Dialog with notificationType match snapshot 1`] = `
+Array [
+  Object {
+    "element": "foo",
+    "value": Object {
+      "message": Object {
+        "text": "foo",
+      },
+      "messaging_type": undefined,
+      "notification_type": "NO_PUSH",
+      "persona_id": undefined,
+      "tag": undefined,
+    },
+  },
+  Object {
+    "element": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": "bar",
+    },
+    "value": Object {
+      "message": Object {
+        "metadata": undefined,
+        "quick_replies": undefined,
+        "text": "bar",
+      },
+      "messaging_type": undefined,
+      "notification_type": "NO_PUSH",
+      "persona_id": undefined,
+      "tag": undefined,
+    },
+  },
+]
+`;
+
+exports[`Dialog with personaId match snapshot 1`] = `
+Array [
+  Object {
+    "element": "foo",
+    "value": Object {
+      "message": Object {
+        "text": "foo",
+      },
+      "messaging_type": undefined,
+      "notification_type": undefined,
+      "persona_id": "_PERSONA_ID_",
+      "tag": undefined,
+    },
+  },
+  Object {
+    "element": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": "bar",
+    },
+    "value": Object {
+      "message": Object {
+        "metadata": undefined,
+        "quick_replies": undefined,
+        "text": "bar",
+      },
+      "messaging_type": undefined,
+      "notification_type": undefined,
+      "persona_id": "_PERSONA_ID_",
+      "tag": undefined,
+    },
+  },
+]
+`;
+
+exports[`Dialog with quickReplies match snapshot 1`] = `
+Array [
+  Object {
+    "element": "foo",
+    "value": Object {
+      "message": Object {
+        "text": "foo",
+      },
+      "messaging_type": undefined,
+      "notification_type": undefined,
+      "persona_id": undefined,
+      "tag": undefined,
+    },
+  },
+  Object {
+    "element": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": "bar",
+    },
+    "value": Object {
+      "message": Object {
+        "metadata": undefined,
+        "quick_replies": Array [
+          "_QUICK_REPLY_RENDERED_",
+          "_QUICK_REPLY_RENDERED_",
+          "_QUICK_REPLY_RENDERED_",
+          "_QUICK_REPLY_RENDERED_",
+        ],
+        "text": "bar",
+      },
+      "messaging_type": undefined,
+      "notification_type": undefined,
+      "persona_id": undefined,
+      "tag": undefined,
+    },
+  },
+]
+`;
+
+exports[`Dialog with type and tag match snapshot 1`] = `
+Array [
+  Object {
+    "element": "foo",
+    "value": Object {
+      "message": Object {
+        "text": "foo",
+      },
+      "messaging_type": "MESSAGE_TAG",
+      "notification_type": undefined,
+      "persona_id": undefined,
+      "tag": "COMMUNITY_ALERT",
+    },
+  },
+  Object {
+    "element": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": "bar",
+    },
+    "value": Object {
+      "message": Object {
+        "metadata": undefined,
+        "quick_replies": undefined,
+        "text": "bar",
+      },
+      "messaging_type": "MESSAGE_TAG",
+      "notification_type": undefined,
+      "persona_id": undefined,
+      "tag": "COMMUNITY_ALERT",
+    },
+  },
+]
+`;
+
+exports[`Dialog with type match snapshot 1`] = `
+Array [
+  Object {
+    "element": "foo",
+    "value": Object {
+      "message": Object {
+        "text": "foo",
+      },
+      "messaging_type": "UPDATE",
+      "notification_type": undefined,
+      "persona_id": undefined,
+      "tag": undefined,
+    },
+  },
+  Object {
+    "element": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": "bar",
+    },
+    "value": Object {
+      "message": Object {
+        "metadata": undefined,
+        "quick_replies": undefined,
+        "text": "bar",
+      },
+      "messaging_type": "UPDATE",
+      "notification_type": undefined,
+      "persona_id": undefined,
+      "tag": undefined,
+    },
+  },
+]
+`;

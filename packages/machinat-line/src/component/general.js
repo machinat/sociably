@@ -1,25 +1,26 @@
-import { renderTextContent } from 'machinat-renderer';
+import { joinTextValues, ACTION_BREAK } from 'machinat-utility';
 
 export const text = ({ children }, render) =>
-  renderTextContent(children, render, '.children');
+  joinTextValues(children, render, '.children') || null;
 
-export const br = () => '\n';
+export const br = () => [ACTION_BREAK];
 
 export const b = text;
 export const i = text;
 export const del = text;
 export const code = text;
-export const pre = (props, render) => `\n${text(props, render)}\n`;
+export const pre = text;
 
-export const a = (props, render) => {
-  const t = text(props, render);
-  if (props.href) {
-    return `${t}:\n${props.href}`;
-  }
-  return t;
+export const a = ({ children, href }, render) => {
+  const values = joinTextValues(children, render, '.children');
+  return values === undefined
+    ? null
+    : [...values, ACTION_BREAK, href, ACTION_BREAK];
 };
 
-export const img = ({ src }) => src;
-export const video = ({ src }) => src;
-export const audio = ({ src }) => src;
-export const file = ({ src }) => src;
+const _media = ({ src }) => (src ? [src] : null);
+
+export const img = _media;
+export const video = _media;
+export const audio = _media;
+export const file = _media;

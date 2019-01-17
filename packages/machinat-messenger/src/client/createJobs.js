@@ -1,5 +1,10 @@
 // @flow
-import type { InnerAction } from 'machinat-renderer/types';
+import type { GeneralElement, NativeElement } from 'types/element';
+import type {
+  TextRenderedAction,
+  ElementRenderedAction,
+  RawAction,
+} from 'machinat-renderer/types';
 
 import { ATTACHED_FILE_DATA, ATTACHED_FILE_INFO } from '../symbol';
 import { ENTRY_MESSAGES } from '../apiEntry';
@@ -8,41 +13,51 @@ import type MessengerThread from '../thread';
 import type {
   MessengerAction,
   MessengerSendOptions,
-  MessengerComponent,
   MessengerJob,
+  MessengerComponent,
 } from '../types';
 
 const POST = 'POST';
 
-const appendUrlencodedBody = (body, key, value) =>
+const appendURIencoded = (body, key, value) =>
   // eslint-disable-next-line prefer-template
   (body === '' ? body : body + '&') + key + '=' + encodeURIComponent(value);
 
-const createRequestFromText = (text: string | number, body: string) => ({
-  method: POST,
-  relative_url: ENTRY_MESSAGES,
-  body: appendUrlencodedBody(
-    body,
-    'message',
-    JSON.stringify({ text: text.toString() })
-  ),
-  name: undefined,
-  depends_on: undefined,
-  attached_files: undefined,
-  omit_response_on_success: false,
-});
-
-const createRequestFromAction = (
+const createRequest = (
   element,
-  value: Object,
-  currentBody: string
+  value: number | string | MessengerAction,
+  currentBody: string,
+  options: ?MessengerSendOptions
 ) => {
-  const fields = Object.keys(value);
+  const valueFields =
+    typeof value === 'number' || typeof value === 'string'
+      ? { message: { text: value.toString() } }
+      : value;
 
+  const fields: Object = options
+    ? {
+        messaging_type: options.messagingType,
+        tag: options.tag,
+        notification_type: options.notificationType,
+        persona_id: options.personaId,
+        ...valueFields,
+      }
+    : valueFields;
+
+  const keys = Object.keys(fields);
   let body = currentBody;
-  for (let f = 0; f < fields.length; f += 1) {
-    const field = fields[f];
-    body = appendUrlencodedBody(body, field, JSON.stringify(value[field]));
+
+  for (let i = 0; i < keys.length; i += 1) {
+    const fieldKey = keys[i];
+    const fieldVal = fields[fieldKey];
+
+    if (fieldVal !== undefined) {
+      body = appendURIencoded(
+        body,
+        fieldKey,
+        typeof fieldVal === 'object' ? JSON.stringify(fieldVal) : fieldVal
+      );
+    }
   }
 
   return {
@@ -64,9 +79,14 @@ const createRequestFromAction = (
 };
 
 const createJobs = (
-  actions: InnerAction<MessengerAction, MessengerComponent>[],
+  actions: (
+    | TextRenderedAction
+    | ElementRenderedAction<MessengerAction, GeneralElement>
+    | ElementRenderedAction<MessengerAction, NativeElement<MessengerComponent>>
+    | RawAction
+  )[],
   thread: MessengerThread,
-  options: MessengerSendOptions
+  options: ?MessengerSendOptions
 ) => {
   const jobs: MessengerJob[] = new Array(actions.length);
 
@@ -74,16 +94,13 @@ const createJobs = (
     const action = actions[i];
     const { element, value } = action;
 
-    const body = appendUrlencodedBody(
+    const body = appendURIencoded(
       '',
       'recipient',
       JSON.stringify(thread.recepient)
     );
 
-    const request =
-      typeof value === 'string' || typeof value === 'number'
-        ? createRequestFromText(value, body)
-        : createRequestFromAction(element, value, body);
+    const request = createRequest(element, value, body, options);
 
     const job = {
       request,
@@ -99,6 +116,7 @@ const createJobs = (
 
     jobs[i] = job;
   }
+
   return jobs;
 };
 

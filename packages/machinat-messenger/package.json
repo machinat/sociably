@@ -11,7 +11,7 @@
     "machinat-base": "0.0.1-0",
     "machinat-queue": "0.0.1-0",
     "machinat-renderer": "0.0.1-0",
-    "machinat-shared": "0.0.1-0",
+    "machinat-utility": "0.0.1-0",
     "warning": "^4.0.2"
   },
   "devDependencies": {

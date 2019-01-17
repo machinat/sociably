@@ -1,4 +1,4 @@
-import { MACHINAT_FRAGMENT_TYPE, MACHINAT_PAUSE_TYPE } from 'machinat-shared';
+import { MACHINAT_FRAGMENT_TYPE, MACHINAT_PAUSE_TYPE } from 'machinat-utility';
 import createElement from './createElement';
 import createServer from './server/http';
 

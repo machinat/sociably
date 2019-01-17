@@ -1,23 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`match snapshot 1`] = `
+exports[`CameraAction match snapshot 1`] = `
 Array [
   Object {
-    "data": "__POSTBACK_FOO__",
-    "displayText": undefined,
-    "label": "Hello!",
-    "type": "postback",
+    "label": "Cheer!",
+    "type": "camera",
   },
+]
+`;
+
+exports[`CameraRollAction match snapshot 1`] = `
+Array [
   Object {
-    "label": "Tick",
-    "text": "Tock",
-    "type": "message",
+    "label": "Cheer again!",
+    "type": "cameraRoll",
   },
-  Object {
-    "label": undefined,
-    "type": "uri",
-    "uri": "http://machinat.com",
-  },
+]
+`;
+
+exports[`DateTimePickerAction match snapshot 1`] = `
+Array [
   Object {
     "data": "__MEETUP_DATE__",
     "initial": "2018-01-01",
@@ -27,6 +29,11 @@ Array [
     "mode": "date",
     "type": "datetimepicker",
   },
+]
+`;
+
+exports[`DateTimePickerAction match snapshot 2`] = `
+Array [
   Object {
     "data": "__MEETUP_TIME__",
     "initial": "00:00",
@@ -36,6 +43,11 @@ Array [
     "mode": "time",
     "type": "datetimepicker",
   },
+]
+`;
+
+exports[`DateTimePickerAction match snapshot 3`] = `
+Array [
   Object {
     "data": "__MEETUP_DATETIME__",
     "initial": "2000-01-01T00:00",
@@ -45,17 +57,45 @@ Array [
     "mode": "datetime",
     "type": "datetimepicker",
   },
-  Object {
-    "label": "Cheer!",
-    "type": "camera",
-  },
-  Object {
-    "label": "Cheer again!",
-    "type": "cameraRoll",
-  },
+]
+`;
+
+exports[`LocationAction match snapshot 1`] = `
+Array [
   Object {
     "label": "Ok, where are we?",
     "type": "location",
+  },
+]
+`;
+
+exports[`MessageAction match snapshot 1`] = `
+Array [
+  Object {
+    "label": "Tick",
+    "text": "Tock",
+    "type": "message",
+  },
+]
+`;
+
+exports[`PostbackAction match snapshot 1`] = `
+Array [
+  Object {
+    "data": "__POSTBACK_FOO__",
+    "displayText": "WORLD!",
+    "label": "Hello!",
+    "type": "postback",
+  },
+]
+`;
+
+exports[`URIAction match snapshot 1`] = `
+Array [
+  Object {
+    "label": "Try it!",
+    "type": "uri",
+    "uri": "http://machinat.com",
   },
 ]
 `;

@@ -1,24 +1,30 @@
 /* eslint-disable import/prefer-default-export */
 import invariant from 'invariant';
-import { GET_API_PATH } from '../symbol';
+import { annotate, asNative, asUnit, hasEntry } from 'machinat-utility';
 
-const LEAVE = {
+import { LINE_NAITVE_TYPE, NO_BODY } from '../symbol';
+
+const LEAVE_RENDERED = [{ [NO_BODY]: true }];
+
+export const Leave = () => LEAVE_RENDERED;
+
+annotate(
+  asNative(LINE_NAITVE_TYPE),
+  asUnit(true),
   // eslint-disable-next-line consistent-return
-  [GET_API_PATH]: thread => {
-    const { type, groupId, roomId } = thread;
+  hasEntry(thread => {
+    const { type, source } = thread;
 
     switch (type) {
       case 'group':
-        return `group/${groupId}/leave`;
+        return `group/${source.groupId}/leave`;
       case 'room':
-        return `room/${roomId}/leave`;
+        return `room/${source.roomId}/leave`;
       default:
         invariant(
           false,
           '<Leave /> should be only used in a group or room thread'
         );
     }
-  },
-};
-
-export const Leave = () => LEAVE;
+  })
+)(Leave);

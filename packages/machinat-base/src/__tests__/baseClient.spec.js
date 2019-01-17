@@ -4,6 +4,8 @@ import Renderer from 'machinat-renderer';
 
 import Machinat from 'machinat';
 
+import { ACTION_BREAK } from 'machinat-utility';
+
 import Client from '../baseClient';
 import { SendError } from '../error';
 
@@ -53,12 +55,12 @@ const createJobs = moxy(acts =>
 );
 
 const renderer = moxy(new Renderer('test', {}));
-renderer.renderRoot.mock.fakeReturnValue(actions);
+renderer.render.mock.fakeReturnValue(actions);
 
 beforeEach(() => {
   queue.executeJobs.mock.clear();
   createJobs.mock.clear();
-  renderer.renderRoot.mock.clear();
+  renderer.render.mock.clear();
 });
 
 it('renders and enqueue jobs', async () => {
@@ -71,7 +73,7 @@ it('renders and enqueue jobs', async () => {
     results: [1, 2, 3],
   });
 
-  expect(renderer.renderRoot.mock).toHaveBeenCalledWith(message, {
+  expect(renderer.render.mock).toHaveBeenCalledWith(message, {
     platform: 'test',
   });
 
@@ -128,7 +130,7 @@ it('pass sending context through middlewares', async () => {
     foo: 'baz',
   });
 
-  expect(renderer.renderRoot.mock) // for alignment
+  expect(renderer.render.mock) // for alignment
     .toHaveBeenCalledWith(message, { platform: 'test' });
 
   expect(createJobs.mock).toHaveBeenCalledWith(actions, thread, options);
@@ -141,7 +143,7 @@ it('pass sending context through middlewares', async () => {
 });
 
 it('waits pause', async () => {
-  const after = moxy();
+  const after = moxy(() => Promise.resolve());
   const pausedActions = [
     {
       isPause: false,
@@ -172,7 +174,7 @@ it('waits pause', async () => {
       path: '$::4',
     },
   ];
-  renderer.renderRoot.mock.fakeReturnValue(pausedActions);
+  renderer.render.mock.fakeReturnValue(pausedActions);
 
   const client = new Client('test', queue, renderer, createJobs);
 
@@ -183,7 +185,9 @@ it('waits pause', async () => {
     results: [1, 2, 3],
   });
 
-  expect(renderer.renderRoot.mock) // for alignment
+  expect(after.mock).toHaveBeenCalledTimes(1);
+
+  expect(renderer.render.mock) // for alignment
     .toHaveBeenCalledWith(message, { platform: 'test' });
 
   expect(createJobs.mock) // for alignment
@@ -196,6 +200,78 @@ it('waits pause', async () => {
   expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(1, { id: 1 });
   expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(2, { id: 2 });
   expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(3, { id: 3 });
+});
+
+it('ignores break', async () => {
+  const pausedActions = [
+    {
+      isPause: false,
+      element: <a id={1} />,
+      value: '__RENDERED_GENERAL_1__',
+      path: '$::0',
+    },
+    {
+      isPause: false,
+      element: <br />,
+      value: ACTION_BREAK,
+      path: '$::1',
+    },
+    {
+      isPause: false,
+      element: <a id={2} />,
+      value: '__RENDERED_GENERAL_2__',
+      path: '$::2',
+    },
+    {
+      isPause: true,
+      element: <Machinat.Pause />,
+      path: '$::3',
+    },
+    {
+      isPause: false,
+      element: <br />,
+      value: ACTION_BREAK,
+      path: '$::4',
+    },
+    {
+      isPause: false,
+      element: <a id={3} />,
+      value: '__RENDERED_GENERAL_3__',
+      path: '$::5',
+    },
+    {
+      isPause: false,
+      element: <br />,
+      value: ACTION_BREAK,
+      path: '$::6',
+    },
+  ];
+  renderer.render.mock.fakeReturnValue(pausedActions);
+
+  const client = new Client('test', queue, renderer, createJobs);
+
+  await expect(client._sendImpl(thread, message, options)).resolves.toEqual({
+    message,
+    actions: pausedActions,
+    jobs: [{ id: 1 }, { id: 2 }, { id: 3 }],
+    results: [1, 2, 3],
+  });
+
+  expect(renderer.render.mock) // for alignment
+    .toHaveBeenCalledWith(message, { platform: 'test' });
+
+  expect(createJobs.mock).toHaveBeenNthCalledWith(
+    1,
+    [pausedActions[0], pausedActions[2]],
+    thread,
+    options
+  );
+  expect(createJobs.mock) // for alignment
+    .toHaveBeenNthCalledWith(2, [pausedActions[5]], thread, options);
+
+  expect(queue.executeJobs.mock) // for alignment
+    .toHaveBeenNthCalledWith(1, { id: 1 }, { id: 2 });
+  expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(2, { id: 3 });
 });
 
 it('throws if execution fail', async () => {

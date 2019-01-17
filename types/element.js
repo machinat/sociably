@@ -10,7 +10,7 @@ export type MachinatElementType =
   | string
   | Symbol
   | MachinatComponentType
-  | MachinatNativeType<any>;
+  | MachinatNativeType;
 
 export type MachinatElement<ElementType: MachinatElementType> = {
   $$typeof: string | Symbol,
@@ -28,15 +28,14 @@ export type MachinatElementProps = {
 
 export type MachinatComponentType = MachinatElementProps => MachinatNode;
 
-export type MachinatNativeType<T> = T & {
+export type MachinatNativeType = {
   $$native: Symbol,
-  $$root: boolean,
 };
 
 export type MachinatRenderable = MachinatText | MachinatElement<any>;
 
 export type FragmentElement = MachinatElement<Symbol>;
-export type NativeElement<T> = MachinatElement<MachinatNativeType<T>>;
+export type NativeElement<Native: MachinatNativeType> = MachinatElement<Native>;
 export type GeneralElement = MachinatElement<string>;
 export type PauseElement = MachinatElement<Symbol>;
 

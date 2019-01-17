@@ -1,16 +1,32 @@
-import { annotateNativeRoot } from 'machinat-renderer';
+import { annotate, asNative, asUnit, hasEntry } from 'machinat-utility';
 
 import { MESSENGER_NAITVE_TYPE } from '../symbol';
 import { ENTRY_MESSAGES } from '../apiEntry';
 
-const MARK_SEEN = { sender_action: 'mark_seen' };
-export const MarkSeen = () => MARK_SEEN;
-annotateNativeRoot(MarkSeen, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
+const MARK_SEEN_RENDERED = [{ sender_action: 'mark_seen' }];
+const TYPING_ON_RENDERED = [{ sender_action: 'typing_on' }];
+const TYPING_OFF_RENDERED = [{ sender_action: 'typing_off' }];
 
-const TYPING_ON = { sender_action: 'typing_on' };
-export const TypingOn = () => TYPING_ON;
-annotateNativeRoot(TypingOn, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
+export const MarkSeen = () => MARK_SEEN_RENDERED;
 
-const TYPING_OFF = { sender_action: 'typing_off' };
-export const TypingOff = () => TYPING_OFF;
-annotateNativeRoot(TypingOff, MESSENGER_NAITVE_TYPE, ENTRY_MESSAGES);
+annotate(
+  asNative(MESSENGER_NAITVE_TYPE),
+  hasEntry(ENTRY_MESSAGES),
+  asUnit(true)
+)(MarkSeen);
+
+export const TypingOn = () => TYPING_ON_RENDERED;
+
+annotate(
+  asNative(MESSENGER_NAITVE_TYPE),
+  hasEntry(ENTRY_MESSAGES),
+  asUnit(true)
+)(TypingOn);
+
+export const TypingOff = () => TYPING_OFF_RENDERED;
+
+annotate(
+  asNative(MESSENGER_NAITVE_TYPE),
+  hasEntry(ENTRY_MESSAGES),
+  asUnit(true)
+)(TypingOff);
