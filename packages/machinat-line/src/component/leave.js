@@ -2,29 +2,26 @@
 import invariant from 'invariant';
 import { annotate, asNative, asUnit, hasEntry } from 'machinat-utility';
 
-import { LINE_NAITVE_TYPE, NO_BODY } from '../symbol';
+import { LINE_NAITVE_TYPE, NO_RENDERED } from '../symbol';
 
-const LEAVE_RENDERED = [{ [NO_BODY]: true }];
+import { hasBody } from './utils';
+
+const LEAVE_RENDERED = [NO_RENDERED];
 
 export const Leave = () => LEAVE_RENDERED;
 
 annotate(
   asNative(LINE_NAITVE_TYPE),
   asUnit(true),
-  // eslint-disable-next-line consistent-return
+  hasBody(false),
   hasEntry(thread => {
-    const { type, source } = thread;
+    const { type, sourceId } = thread;
 
-    switch (type) {
-      case 'group':
-        return `group/${source.groupId}/leave`;
-      case 'room':
-        return `room/${source.roomId}/leave`;
-      default:
-        invariant(
-          false,
-          '<Leave /> should be only used in a group or room thread'
-        );
-    }
+    invariant(
+      type !== 'user',
+      '<Leave /> should be only used in a group or room thread'
+    );
+
+    return `${type}/${sourceId}/leave`;
   })
 )(Leave);

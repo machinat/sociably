@@ -23,7 +23,6 @@ const eventReducer = (events, rawEvent) => {
 const endRes = (res, code, body) => {
   res.statusCode = code; // eslint-disable-line no-param-reassign
   res.end(body);
-
   return undefined;
 };
 
@@ -58,8 +57,9 @@ const handleWebhook = (options: MessengerBotOptions) => (
   }
 
   if (options.shouldValidateRequest) {
-    // $FlowFixMe options type of disjointed shouldValidateRequest & appSecret
+    // FIXME: it's refined at client but unable to type it
     const hmac = crypto.createHmac('sha1', options.appSecret);
+
     hmac.update(rawBody, 'utf8');
     const computedSig = `sha1=${hmac.digest('hex')}`;
 
@@ -70,19 +70,16 @@ const handleWebhook = (options: MessengerBotOptions) => (
 
   let body;
   try {
-    body = JSON.parse((rawBody: any));
-  } catch (e) {
-    if (e instanceof SyntaxError) {
-      return endRes(res, 400);
+    body = JSON.parse(rawBody);
+
+    if (body.object !== 'page') {
+      return endRes(res, 404);
     }
-    throw e;
-  }
 
-  if (body.object !== 'page') {
-    return endRes(res, 404);
+    return body.entry.reduce(eventReducer, []);
+  } catch (e) {
+    return endRes(res, 400);
   }
-
-  return body.entry.reduce(eventReducer, []);
 };
 
 export default handleWebhook;

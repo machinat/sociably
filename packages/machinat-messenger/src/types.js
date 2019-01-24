@@ -6,10 +6,10 @@ import type {
 
 export type MessengerBotOptions = {
   accessToken: string,
-  appSecret: ?string,
+  appSecret?: string,
   shouldValidateRequest: boolean,
   shouldVerifyWebhook: boolean,
-  verifyToken: ?string,
+  verifyToken?: string,
   respondTimeout: number,
   consumeInterval: number,
 };

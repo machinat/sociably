@@ -2,7 +2,7 @@ import Machinat from 'machinat';
 
 import { Leave } from '../leave';
 
-import { LINE_NAITVE_TYPE, NO_BODY } from '../../symbol';
+import { LINE_NAITVE_TYPE, NO_RENDERED } from '../../symbol';
 import LineThread from '../../thread';
 
 import render from './render';
@@ -51,6 +51,6 @@ describe('$$entry function', () => {
   });
 });
 
-it('render to NO_BODY symbol', () => {
-  expect(render(<Leave />)[0].value).toEqual({ [NO_BODY]: true });
+it('render to NO_RENDERED', () => {
+  expect(render(<Leave />)[0].value).toEqual(NO_RENDERED);
 });

@@ -22,23 +22,20 @@ const render = node =>
     ''
   ) || null;
 
-test('shallow textual elements match snapshot', () => {
-  expect(
-    render([
-      <text>abc</text>,
-      <a href="https://machinat.world">hello</a>,
-      <b>important</b>,
-      <i>italic</i>,
-      <del>nooooo</del>,
-      <br />,
-      <code>foo.bar()</code>,
-      <pre>foo.bar('hello world')</pre>,
-      <img src="http://..." />,
-      <video src="http://..." />,
-      <audio src="http://..." />,
-      <file src="http://..." />,
-    ]).map(r => r.value)
-  ).toMatchInlineSnapshot(`
+describe('text components', () => {
+  test('shallow textual elements match snapshot', () => {
+    expect(
+      render([
+        <text>abc</text>,
+        <a href="https://machinat.world">hello</a>,
+        <b>important</b>,
+        <i>italic</i>,
+        <del>nooooo</del>,
+        <br />,
+        <code>foo.bar()</code>,
+        <pre>foo.bar('hello world')</pre>,
+      ]).map(r => r.value)
+    ).toMatchInlineSnapshot(`
 Array [
   "abc",
   "hello",
@@ -51,35 +48,31 @@ Array [
   Symbol(machinat.action.break),
   "foo.bar()",
   "foo.bar('hello world')",
-  "http://...",
-  "http://...",
-  "http://...",
-  "http://...",
 ]
 `);
-});
+  });
 
-test('nested textual elements match snapshot', () => {
-  expect(
-    render(
-      <text>
-        123{' '}
-        <code>
-          Hello, <b>Luke Skywalker!</b>
-        </code>
-        <br />
-        You know what?
-        <br />
-        <i>
-          I'm your <del>FATHER</del> <code>droid</code>.
-        </i>
-        <br />
-        <br />
-        <a href="https://C3.PO">Check here</a>
-        <pre>May the force be with you!</pre> abc
-      </text>
-    ).map(r => r.value)
-  ).toMatchInlineSnapshot(`
+  test('nested textual elements match snapshot', () => {
+    expect(
+      render(
+        <text>
+          123{' '}
+          <code>
+            Hello, <b>Luke Skywalker!</b>
+          </code>
+          <br />
+          You know what?
+          <br />
+          <i>
+            I'm your <del>FATHER</del> <code>droid</code>.
+          </i>
+          <br />
+          <br />
+          <a href="https://C3.PO">Check here</a>
+          <pre>May the force be with you!</pre> abc
+        </text>
+      ).map(r => r.value)
+    ).toMatchInlineSnapshot(`
 Array [
   "123 Hello, Luke Skywalker!",
   Symbol(machinat.action.break),
@@ -95,27 +88,27 @@ Array [
   "May the force be with you! abc",
 ]
 `);
-});
+  });
 
-test('with break placed in children', () => {
-  const children = (
-    <>
-      foo
-      <br />
-      bar
-    </>
-  );
-  expect(
-    render([
-      <text>{children}</text>,
-      <a href="https://machinat.world">{children}</a>,
-      <b>{children}</b>,
-      <i>{children}</i>,
-      <del>{children}</del>,
-      <code>{children}</code>,
-      <pre>{children}</pre>,
-    ]).map(r => r.value)
-  ).toMatchInlineSnapshot(`
+  test('with break placed in children', () => {
+    const children = (
+      <>
+        foo
+        <br />
+        bar
+      </>
+    );
+    expect(
+      render([
+        <text>{children}</text>,
+        <a href="https://machinat.world">{children}</a>,
+        <b>{children}</b>,
+        <i>{children}</i>,
+        <del>{children}</del>,
+        <code>{children}</code>,
+        <pre>{children}</pre>,
+      ]).map(r => r.value)
+    ).toMatchInlineSnapshot(`
 Array [
   "foo",
   Symbol(machinat.action.break),
@@ -143,47 +136,82 @@ Array [
   "bar",
 ]
 `);
-});
+  });
 
-test('should throw if non string value rendered', () => {
-  const NonText = () => {};
-  const children = (
-    <>
-      foo
-      <NonText />
-      bar
-    </>
-  );
-
-  [
-    <a src="...">{children}</a>,
-    <b>{children}</b>,
-    <i>{children}</i>,
-    <del>{children}</del>,
-    <text>{children}</text>,
-    <code>{children}</code>,
-    <pre>{children}</pre>,
-  ].forEach(node => {
-    expect(() => render(node)).toThrow(
-      '<NonText /> at ::1 is not rendered as text content'
+  test('should throw if non string value rendered', () => {
+    const NonText = () => {};
+    const children = (
+      <>
+        foo
+        <NonText />
+        bar
+      </>
     );
+
+    [
+      <a src="...">{children}</a>,
+      <b>{children}</b>,
+      <i>{children}</i>,
+      <del>{children}</del>,
+      <text>{children}</text>,
+      <code>{children}</code>,
+      <pre>{children}</pre>,
+    ].forEach(node => {
+      expect(() => render(node)).toThrow(
+        '<NonText /> at ::1 is not rendered as text content'
+      );
+    });
+  });
+
+  test('should return null if content is empty', () => {
+    [
+      <a src="..." />,
+      <b />,
+      <i />,
+      <del />,
+      <text />,
+      <code />,
+      <pre />,
+    ].forEach(node => {
+      expect(render(node)).toEqual([null]);
+    });
   });
 });
 
-test('should return null if content is empty', () => {
-  [
-    <a src="..." />,
-    <b />,
-    <i />,
-    <del />,
-    <text />,
-    <code />,
-    <pre />,
-    <img />,
-    <video />,
-    <audio />,
-    <file />,
-  ].forEach(node => {
-    expect(render(node)).toEqual([null]);
+describe('media components', () => {
+  it('metch snapshot', () => {
+    expect(
+      render([
+        <img src="http://..." />,
+        <video src="http://..." />,
+        <audio src="http://..." />,
+        <file src="http://..." />,
+      ]).map(act => act.value)
+    ).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "text": "http://...",
+    "type": "text",
+  },
+  Object {
+    "text": "http://...",
+    "type": "text",
+  },
+  Object {
+    "text": "http://...",
+    "type": "text",
+  },
+  Object {
+    "text": "http://...",
+    "type": "text",
+  },
+]
+`);
+  });
+
+  test('should return null if content is empty', () => {
+    [<img />, <video />, <audio />, <file />].forEach(node => {
+      expect(render(node)).toEqual([null]);
+    });
   });
 });

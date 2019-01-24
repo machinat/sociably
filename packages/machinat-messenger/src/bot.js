@@ -33,7 +33,7 @@ export default class MessengerBot extends Bot<Client> {
 
     invariant(
       !options.shouldValidateRequest || options.appSecret,
-      'should provide appSecret if shouldValidateEvent set to true'
+      'should provide appSecret if shouldValidateRequest set to true'
     );
 
     invariant(

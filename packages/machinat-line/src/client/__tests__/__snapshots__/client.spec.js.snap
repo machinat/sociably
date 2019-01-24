@@ -1,0 +1,795 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`pushs message ok 1`] = `
+Object {
+  "messages": Array [
+    Object {
+      "id": 1,
+    },
+    Object {
+      "id": 2,
+    },
+    Object {
+      "id": 3,
+    },
+    Object {
+      "id": 4,
+    },
+    Object {
+      "id": 5,
+    },
+  ],
+  "to": "foo",
+}
+`;
+
+exports[`pushs message ok 2`] = `
+Object {
+  "messages": Array [
+    Object {
+      "id": 6,
+    },
+  ],
+  "to": "foo",
+}
+`;
+
+exports[`pushs message ok 3`] = `
+Object {
+  "messages": Array [
+    Object {
+      "id": 7,
+    },
+  ],
+  "to": "foo",
+}
+`;
+
+exports[`pushs message ok 4`] = `
+Object {
+  "messages": Array [
+    Object {
+      "id": 9,
+    },
+  ],
+  "to": "foo",
+}
+`;
+
+exports[`pushs message ok 5`] = `
+Object {
+  "actions": Array [
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 1,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::0",
+      "value": Object {
+        "id": 1,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 2,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::1",
+      "value": Object {
+        "id": 2,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 3,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::2",
+      "value": Object {
+        "id": 3,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 4,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::3",
+      "value": Object {
+        "id": 4,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 5,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::4",
+      "value": Object {
+        "id": 5,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 6,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::5",
+      "value": Object {
+        "id": 6,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {},
+        "type": Symbol(machinat.element.pause),
+      },
+      "isPause": true,
+      "path": "$::6",
+      "value": undefined,
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 7,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::7",
+      "value": Object {
+        "id": 7,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 8,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::8",
+      "value": Object {
+        "id": 8,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 9,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::9",
+      "value": Object {
+        "id": 9,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 10,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::10",
+      "value": Object {
+        "id": 10,
+      },
+    },
+  ],
+  "jobs": Array [
+    Object {
+      "apiEntry": "message/push",
+      "body": Object {
+        "messages": Array [
+          Object {
+            "id": 1,
+          },
+          Object {
+            "id": 2,
+          },
+          Object {
+            "id": 3,
+          },
+          Object {
+            "id": 4,
+          },
+          Object {
+            "id": 5,
+          },
+        ],
+        "to": "foo",
+      },
+      "hasBody": true,
+      "threadId": "line:user:foo",
+    },
+    Object {
+      "apiEntry": "message/push",
+      "body": Object {
+        "messages": Array [
+          Object {
+            "id": 6,
+          },
+        ],
+        "to": "foo",
+      },
+      "hasBody": true,
+      "threadId": "line:user:foo",
+    },
+    Object {
+      "apiEntry": "message/push",
+      "body": Object {
+        "messages": Array [
+          Object {
+            "id": 7,
+          },
+        ],
+        "to": "foo",
+      },
+      "hasBody": true,
+      "threadId": "line:user:foo",
+    },
+    Object {
+      "apiEntry": "foo/bar/8",
+      "body": Object {
+        "id": 8,
+      },
+      "hasBody": false,
+      "threadId": "line:user:foo",
+    },
+    Object {
+      "apiEntry": "message/push",
+      "body": Object {
+        "messages": Array [
+          Object {
+            "id": 9,
+          },
+        ],
+        "to": "foo",
+      },
+      "hasBody": true,
+      "threadId": "line:user:foo",
+    },
+    Object {
+      "apiEntry": "foo/baz/10",
+      "body": Object {
+        "id": 10,
+      },
+      "hasBody": true,
+      "threadId": "line:user:foo",
+    },
+  ],
+  "message": Object {
+    "$$typeof": Symbol(machinat.element),
+    "props": Object {
+      "children": Array [
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 1,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 2,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 3,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 4,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 5,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 6,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {},
+          "type": Symbol(machinat.element.pause),
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 7,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 8,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 9,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 10,
+          },
+          "type": [Function],
+        },
+      ],
+    },
+    "type": Symbol(machinat.element.fragment),
+  },
+  "results": Array [
+    Object {},
+    Object {},
+    Object {},
+    Object {},
+    Object {},
+    Object {},
+  ],
+}
+`;
+
+exports[`reply message ok 1`] = `
+Object {
+  "messages": Array [
+    Object {
+      "id": 1,
+    },
+    Object {
+      "id": 2,
+    },
+    Object {
+      "id": 3,
+    },
+    Object {
+      "id": 4,
+    },
+    Object {
+      "id": 5,
+    },
+  ],
+  "replyToken": "__REPLY_TOKEN__",
+}
+`;
+
+exports[`reply message ok 2`] = `
+Object {
+  "messages": Array [
+    Object {
+      "id": 6,
+    },
+  ],
+  "replyToken": "__REPLY_TOKEN__",
+}
+`;
+
+exports[`reply message ok 3`] = `
+Object {
+  "messages": Array [
+    Object {
+      "id": 7,
+    },
+  ],
+  "replyToken": "__REPLY_TOKEN__",
+}
+`;
+
+exports[`reply message ok 4`] = `
+Object {
+  "messages": Array [
+    Object {
+      "id": 9,
+    },
+  ],
+  "replyToken": "__REPLY_TOKEN__",
+}
+`;
+
+exports[`reply message ok 5`] = `
+Object {
+  "actions": Array [
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 1,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::0",
+      "value": Object {
+        "id": 1,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 2,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::1",
+      "value": Object {
+        "id": 2,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 3,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::2",
+      "value": Object {
+        "id": 3,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 4,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::3",
+      "value": Object {
+        "id": 4,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 5,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::4",
+      "value": Object {
+        "id": 5,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 6,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::5",
+      "value": Object {
+        "id": 6,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {},
+        "type": Symbol(machinat.element.pause),
+      },
+      "isPause": true,
+      "path": "$::6",
+      "value": undefined,
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 7,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::7",
+      "value": Object {
+        "id": 7,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 8,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::8",
+      "value": Object {
+        "id": 8,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 9,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::9",
+      "value": Object {
+        "id": 9,
+      },
+    },
+    Object {
+      "asUnit": true,
+      "element": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "id": 10,
+        },
+        "type": [Function],
+      },
+      "isPause": false,
+      "path": "$::10",
+      "value": Object {
+        "id": 10,
+      },
+    },
+  ],
+  "jobs": Array [
+    Object {
+      "apiEntry": "message/reply",
+      "body": Object {
+        "messages": Array [
+          Object {
+            "id": 1,
+          },
+          Object {
+            "id": 2,
+          },
+          Object {
+            "id": 3,
+          },
+          Object {
+            "id": 4,
+          },
+          Object {
+            "id": 5,
+          },
+        ],
+        "replyToken": "__REPLY_TOKEN__",
+      },
+      "hasBody": true,
+      "threadId": "line:user:foo",
+    },
+    Object {
+      "apiEntry": "message/reply",
+      "body": Object {
+        "messages": Array [
+          Object {
+            "id": 6,
+          },
+        ],
+        "replyToken": "__REPLY_TOKEN__",
+      },
+      "hasBody": true,
+      "threadId": "line:user:foo",
+    },
+    Object {
+      "apiEntry": "message/reply",
+      "body": Object {
+        "messages": Array [
+          Object {
+            "id": 7,
+          },
+        ],
+        "replyToken": "__REPLY_TOKEN__",
+      },
+      "hasBody": true,
+      "threadId": "line:user:foo",
+    },
+    Object {
+      "apiEntry": "foo/bar/8",
+      "body": Object {
+        "id": 8,
+      },
+      "hasBody": false,
+      "threadId": "line:user:foo",
+    },
+    Object {
+      "apiEntry": "message/reply",
+      "body": Object {
+        "messages": Array [
+          Object {
+            "id": 9,
+          },
+        ],
+        "replyToken": "__REPLY_TOKEN__",
+      },
+      "hasBody": true,
+      "threadId": "line:user:foo",
+    },
+    Object {
+      "apiEntry": "foo/baz/10",
+      "body": Object {
+        "id": 10,
+      },
+      "hasBody": true,
+      "threadId": "line:user:foo",
+    },
+  ],
+  "message": Object {
+    "$$typeof": Symbol(machinat.element),
+    "props": Object {
+      "children": Array [
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 1,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 2,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 3,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 4,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 5,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 6,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {},
+          "type": Symbol(machinat.element.pause),
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 7,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 8,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 9,
+          },
+          "type": [Function],
+        },
+        Object {
+          "$$typeof": Symbol(machinat.element),
+          "props": Object {
+            "id": 10,
+          },
+          "type": [Function],
+        },
+      ],
+    },
+    "type": Symbol(machinat.element.fragment),
+  },
+  "results": Array [
+    Object {},
+    Object {},
+    Object {},
+    Object {},
+    Object {},
+    Object {},
+  ],
+}
+`;

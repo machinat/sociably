@@ -18,7 +18,7 @@ export const a = ({ children, href }, render) => {
     : [...values, ACTION_BREAK, href, ACTION_BREAK];
 };
 
-const _media = ({ src }) => (src ? [src] : null);
+const _media = ({ src }) => (src ? [{ type: 'text', text: src }] : null);
 
 export const img = _media;
 export const video = _media;

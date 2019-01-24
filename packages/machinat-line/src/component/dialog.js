@@ -25,7 +25,7 @@ export const Dialog = ({ children, quickReplies }, render) => {
     const { element, value } = contentActs[i];
     const valueType = typeof value;
 
-    if (valueType === 'string' || valueType === 'number') {
+    if (valueType === 'string') {
       contentActs[i].value = {
         type: 'text',
         text: valueType === 'string' ? value : String(value),

@@ -21,7 +21,7 @@ const endResponse = thenifiedly.callMethodFactory('end');
 const shouldEventRespond = e => !!e.shouldRespond;
 
 class WebhookConnector<
-  Client: MachinatClient<any, any, any, any>
+  Client: MachinatClient<any, any, any, any, any>
 > extends BaseConnector<MachinatContext<Client>> {
   client: Client;
   server: Server;
@@ -69,7 +69,7 @@ class WebhookConnector<
         }
 
         const events = this.handleWebhook(req, res, body);
-        if (!events || events.length === 0) {
+        if (!events) {
           await endResponse(res);
           return;
         }

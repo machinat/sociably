@@ -2,7 +2,7 @@ import Machinat from 'machinat';
 
 import { LinkRichMenu } from '../richMenu';
 
-import { LINE_NAITVE_TYPE, NO_BODY } from '../../symbol';
+import { LINE_NAITVE_TYPE } from '../../symbol';
 import LineThread from '../../thread';
 
 import render from './render';
@@ -14,9 +14,8 @@ it('is valid native unit component', () => {
   expect(LinkRichMenu.$$unit).toBe(true);
 });
 
-it('render to NO_BODY symbol', () => {
+it('render ok', () => {
   expect(render(<LinkRichMenu id="_RICH_MENU_ID_" />)[0].value).toEqual({
-    [NO_BODY]: true,
     id: '_RICH_MENU_ID_',
   });
 });
@@ -29,7 +28,7 @@ describe('$$entry function', () => {
           type: 'user',
           userId: '_USER_ID_',
         }),
-        { [NO_BODY]: true, id: '_RICH_MENU_ID_' }
+        { id: '_RICH_MENU_ID_' }
       )
     ).toBe('user/_USER_ID_/richmenu/_RICH_MENU_ID_');
   });
@@ -42,7 +41,7 @@ describe('$$entry function', () => {
           roomId: '_ROOM_ID_',
           userId: '_USER_ID_',
         }),
-        { [NO_BODY]: true, id: '_RICH_MENU_ID_' }
+        { id: '_RICH_MENU_ID_' }
       )
     ).toThrowErrorMatchingInlineSnapshot(
       `"<RichMenu /> should be only used in a user thread"`
@@ -55,7 +54,7 @@ describe('$$entry function', () => {
           groupId: '_GROUP_ID_',
           userId: '_USER_ID_',
         }),
-        { [NO_BODY]: true, id: '_RICH_MENU_ID_' }
+        { id: '_RICH_MENU_ID_' }
       )
     ).toThrowErrorMatchingInlineSnapshot(
       `"<RichMenu /> should be only used in a user thread"`

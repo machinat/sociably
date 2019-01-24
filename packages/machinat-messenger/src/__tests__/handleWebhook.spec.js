@@ -82,20 +82,7 @@ describe('handling POST request', () => {
     req.method = 'POST';
     const res = moxy(new ServerResponse({ method: 'POST' }));
 
-    expect(handleWebhook()(req, res)) // alignment
-      .toBe(undefined);
-
-    expect(res.statusCode).toBe(400);
-    expect(res.finished).toBe(true);
-  });
-
-  it('respond 400 if body is empty', () => {
-    const req = moxy(new IncomingMessage());
-    req.method = 'POST';
-    const res = moxy(new ServerResponse({ method: 'POST' }));
-
-    expect(handleWebhook()(req, res)) // alignment
-      .toBe(undefined);
+    expect(handleWebhook()(req, res)).toBe(undefined);
 
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
@@ -166,14 +153,12 @@ describe('handling POST request', () => {
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(false);
 
-    expect(events[0].platform).toBe('messenger');
-    expect(events[1].platform).toBe('messenger');
-    expect(events[0].type).toBe('text');
-    expect(events[1].type).toBe('image');
-    expect(events[0].subtype).toBe(null);
-    expect(events[1].subtype).toBe(null);
-    expect(events[0].raw).toEqual(body.entry[0].messaging[0]);
-    expect(events[1].raw).toEqual(body.entry[0].messaging[1]);
+    events.forEach((event, i) => {
+      expect(event.platform).toBe('messenger');
+      expect(event.type).toBe(!i ? 'text' : 'image');
+      expect(event.subtype).toBe(null);
+      expect(event.raw).toEqual(body.entry[0].messaging[i]);
+    });
   });
 
   it('works if signature validation passed', () => {
@@ -191,15 +176,15 @@ describe('handling POST request', () => {
       .getter('headers')
       .fake(() => ({ 'x-hub-signature': `sha1=${hmac}` }));
 
-    const events = handleWebhook(options)(req, res, body);
+    const [event] = handleWebhook(options)(req, res, body);
 
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(false);
 
-    expect(events[0].platform).toBe('messenger');
-    expect(events[0].type).toBe('text');
-    expect(events[0].subtype).toBe(null);
-    expect(events[0].raw).toEqual({
+    expect(event.platform).toBe('messenger');
+    expect(event.type).toBe('text');
+    expect(event.subtype).toBe(null);
+    expect(event.raw).toEqual({
       sender: { id: '_PSID_' },
       recipient: { id: '_PAGE_ID_' },
       message: { mid: 'xxx', text: 'foo' },
