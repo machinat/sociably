@@ -1,27 +1,27 @@
 // @flow
 import invariant from 'invariant';
 
-import type { MachinatNode, MachinatNativeType } from 'types/element';
-import type { RenderInnerFn, MachinatAction } from 'machinat-renderer/types';
+import type { MachinatNode } from 'machinat/types';
+import type { RenderInnerFn, ValuesNativeType } from 'machinat-renderer/types';
 
 import formatElement from './formatElement';
 
 const getTagName = t => (typeof t === 'function' ? t.name : t);
 
-const valuesOfAssertedType = <Rendered>(
-  ...types: (string | MachinatNativeType)[]
+const valuesOfAssertedType = <Value>(
+  ...types: (string | ValuesNativeType<Value>)[]
 ) => (
   node: MachinatNode,
   render: RenderInnerFn,
   propPath: string
-): void | Rendered[] => {
+): void | Value[] => {
   const rendered = render(node, propPath);
   if (rendered === null) {
     return undefined;
   }
 
   const len = rendered.length;
-  const values = new Array(len);
+  const values: Value[] = new Array(len);
 
   for (let i = 0; i < len; i += 1) {
     const { element, value } = rendered[i];
@@ -34,6 +34,7 @@ const valuesOfAssertedType = <Rendered>(
         .join(', ')}]/> allowed`
     );
 
+    // $FlowFixMe too complicated to refine value type, just allow it
     values[i] = value;
   }
 

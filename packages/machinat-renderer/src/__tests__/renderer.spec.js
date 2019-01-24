@@ -7,59 +7,62 @@ it('is a constructor', () => {
   expect(() => new Renderer('Test')).not.toThrow();
 });
 
-const Native = () => {};
-Native.$$root = true;
+const NATIVE_TYPE = Symbol('test.native.type');
 
-const Custom = moxy(props => (
-  <>
-    wrapped head
-    <Native {...props} />
-    wrapped foot
-  </>
-));
-Custom.mock.getter('name').fakeReturnValue('Custom');
+const renderGeneralElement = moxy(() => ['_GENERAL_RENDERED_']);
 
-const delegate = moxy({
-  isNativeComponent: t => t === Native,
-  renderGeneralElement: (element, render, payload, path) => [
-    {
-      isPause: false,
-      asUnit: true,
-      element,
-      value: '_GENERAL_RENDERED_',
-      path,
-    },
-  ],
-  renderNativeElement: (element, render, payload, path) => [
-    {
-      isPause: false,
-      asUnit: true,
-      element,
-      value: '_NATIVE_RENDERED_1_',
-      path,
-    },
-    {
-      isPause: false,
-      asUnit: true,
-      element,
-      value: '_NATIVE_RENDERED_2_',
-      path,
-    },
-  ],
+const generalElementDelegate = moxy({
+  a: renderGeneralElement,
+  b: renderGeneralElement,
 });
 
 afterEach(() => {
-  Custom.mock.clear();
-  delegate.mock.clear();
+  generalElementDelegate.mock.clear();
 });
 
 describe('#render()', () => {
   it('works', () => {
+    const Native = moxy(() => ['_NATIVE_RENDERED_1_', '_NATIVE_RENDERED_2_']);
+    Native.mock.getter('name').fakeReturnValue('Native');
+    Native.$$native = NATIVE_TYPE;
+    Native.$$unit = true;
+    Native.$$container = false;
+
+    const Custom = moxy(props => (
+      <>
+        wrapped head
+        <Native {...props} />
+        wrapped foot
+      </>
+    ));
+    Custom.mock.getter('name').fakeReturnValue('Custom');
+
+    const Container = moxy(() => [
+      {
+        isPause: true,
+        asUnit: true,
+        element: <Machinat.Pause />,
+        value: undefined,
+        path: '$xxx',
+      },
+      {
+        isPause: false,
+        asUnit: true,
+        element: 'somewhere in container',
+        value: 'somewhere over the rainbow',
+        path: '$xxx',
+      },
+    ]);
+    Container.mock.getter('name').fakeReturnValue('Container');
+    Container.$$native = NATIVE_TYPE;
+    Container.$$unit = true;
+    Container.$$container = true;
+
     const afterCallback = () => Promise.resolve();
     const WrappedPause = () => <Machinat.Pause after={afterCallback} />;
     const context = {};
 
-    const renderer = new Renderer('Test', delegate);
+    const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
     const rendered = renderer.render(
       <>
         {123}
@@ -72,6 +75,7 @@ describe('#render()', () => {
         <Native x="true" y={false} />
         <Custom a="A" b={2} />
         {{ raw: 'object' }}
+        <Container>somthing wrapped</Container>
       </>,
       context
     );
@@ -169,45 +173,97 @@ describe('#render()', () => {
         value: { raw: 'object' },
         path: '$::9',
       },
+      {
+        isPause: true,
+        asUnit: true,
+        element: <Machinat.Pause />,
+        value: undefined,
+        path: '$xxx',
+      },
+      {
+        isPause: false,
+        asUnit: true,
+        element: 'somewhere in container',
+        value: 'somewhere over the rainbow',
+        path: '$xxx',
+      },
     ]);
 
     expect(Custom.mock).toBeCalledTimes(1);
     expect(Custom.mock.calls[0].args).toEqual([{ a: 'A', b: 2 }, context]);
 
-    const {
-      isNativeComponent,
-      renderGeneralElement,
-      renderNativeElement,
-    } = delegate;
-
-    expect(isNativeComponent.mock.calls.map(c => c.args)).toEqual([
-      [WrappedPause],
-      [Native],
-      [Custom],
-      [Native],
-    ]);
-
     expect(renderGeneralElement.mock).toBeCalledTimes(2);
     renderGeneralElement.mock.calls.forEach((call, i) => {
-      expect(call.args[0]).toEqual([<b />, <a>aaa</a>][i]);
-      expect(typeof call.args[1]).toBe('function');
-      expect(call.args[2]).toEqual(context);
-      expect(call.args[3]).toEqual(['$::4', '$::5'][i]);
+      expect(call.args[0]).toEqual(!i ? {} : { children: 'aaa' });
+
+      const renderInner = call.args[1];
+      expect(renderInner([<a />, <b />], '.children')).toEqual([
+        {
+          isPause: false,
+          asUnit: true,
+          element: <a />,
+          value: '_GENERAL_RENDERED_',
+          path: `$::${!i ? '4#b' : '5#a'}.children:0`,
+        },
+        {
+          isPause: false,
+          asUnit: true,
+          element: <b />,
+          value: '_GENERAL_RENDERED_',
+          path: `$::${!i ? '4#b' : '5#a'}.children:1`,
+        },
+      ]);
     });
 
-    expect(renderNativeElement.mock).toBeCalledTimes(2);
-    renderNativeElement.mock.calls.forEach((call, i) => {
+    expect(Native.mock).toBeCalledTimes(2);
+    Native.mock.calls.forEach((call, i) => {
       expect(call.args[0]).toEqual(
-        [<Native x="true" y={false} />, <Native a="A" b={2} />][i]
+        !i ? { x: 'true', y: false } : { a: 'A', b: 2 }
       );
-      expect(typeof call.args[1]).toBe('function');
-      expect(call.args[2]).toEqual(context);
-      expect(call.args[3]).toEqual(['$::7', '$::8#Custom::1'][i]);
+
+      const renderInner = call.args[1];
+      expect(renderInner([<a />, <b />], '.children')).toEqual([
+        {
+          isPause: false,
+          asUnit: true,
+          element: <a />,
+          value: '_GENERAL_RENDERED_',
+          path: `$::${!i ? '7' : '8#Custom::1'}#Native.children:0`,
+        },
+        {
+          isPause: false,
+          asUnit: true,
+          element: <b />,
+          value: '_GENERAL_RENDERED_',
+          path: `$::${!i ? '7' : '8#Custom::1'}#Native.children:1`,
+        },
+      ]);
     });
+
+    expect(Container.mock).toBeCalledTimes(1);
+    const [containerProps, containerRenderInner] = Container.mock.calls[0].args;
+
+    expect(containerProps).toEqual({ children: 'somthing wrapped' });
+    expect(containerRenderInner([<a />, <b />], '.children')).toEqual([
+      {
+        isPause: false,
+        asUnit: true,
+        element: <a />,
+        value: '_GENERAL_RENDERED_',
+        path: `$::10#Container.children:0`,
+      },
+      {
+        isPause: false,
+        asUnit: true,
+        element: <b />,
+        value: '_GENERAL_RENDERED_',
+        path: `$::10#Container.children:1`,
+      },
+    ]);
   });
 
   it('return null if no renderable element in the node', () => {
-    const renderer = new Renderer('Test', delegate);
+    const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
     const None = () => null;
     const emptyNodes = [
@@ -234,30 +290,15 @@ describe('#render()', () => {
   });
 
   it('throws if non root native component passed', () => {
-    const Root = () => {};
-    Root.$$root = true;
-    const NonRoot = () => {};
+    const Root = () => ['_ROOT_'];
+    Root.$$unit = true;
+    Root.$$native = NATIVE_TYPE;
 
-    delegate.isNativeComponent.mock.fake(C => C === Root || C === NonRoot);
-    delegate.renderNativeElement.mock.fake(element => [
-      element.type === Root
-        ? {
-            isPause: false,
-            asUnit: true,
-            element,
-            value: '_ROOT_',
-            path: 'xxx',
-          }
-        : {
-            isPause: false,
-            asUnit: false,
-            element,
-            value: '_NON_ROOT_',
-            path: 'xxx',
-          },
-    ]);
+    const NonRoot = () => ['_NON_ROOT_'];
+    NonRoot.$$unit = false;
+    NonRoot.$$native = NATIVE_TYPE;
 
-    const renderer = new Renderer('test', delegate);
+    const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
     expect(() => renderer.render(<Root />, {})).not.toThrow();
     expect(() =>
@@ -267,10 +308,20 @@ describe('#render()', () => {
     );
   });
 
+  it('throw if general type not supported passed', () => {
+    const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
+
+    expect(() =>
+      renderer.render(<invalid />, {})
+    ).toThrowErrorMatchingInlineSnapshot(
+      '<invalid /> is not valid general element supported in Test'
+    );
+  });
+
   it('throw if non renderalbe passed', () => {
     const IllegalComponent = { foo: 'bar' };
 
-    const renderer = new Renderer('test', delegate);
+    const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
     expect(() =>
       renderer.render(<IllegalComponent />, {})
@@ -279,16 +330,16 @@ describe('#render()', () => {
     );
   });
 
-  it('throw if native component not supported received', () => {
+  it('throw if native component of other platform received', () => {
     const AnotherPlatformNative = () => {};
     AnotherPlatformNative.$$native = Symbol('some other platform');
 
-    const renderer = new Renderer('test', delegate);
+    const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
     expect(() =>
       renderer.render(<AnotherPlatformNative />, {})
     ).toThrowErrorMatchingInlineSnapshot(
-      `"component AnotherPlatformNative at '$' is not supported by test"`
+      `"component AnotherPlatformNative at '$' is not supported by Test"`
     );
   });
 });

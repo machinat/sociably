@@ -10,9 +10,8 @@ packages/*/lib
 [lints]
 
 [options]
-module.name_mapper='^types/\(.*\)$' -> '<PROJECT_ROOT>/types/\1.js'
-module.name_mapper='\(machinat-[^/]*\)$' -> '<PROJECT_ROOT>/packages/\1/src/index.js'
-module.name_mapper='\(machinat-[^/]*\)/types$' -> '<PROJECT_ROOT>/packages/\1/src/types.js'
+module.name_mapper='\(machinat[^/]*\)$' -> '<PROJECT_ROOT>/packages/\1/src/index.js'
+module.name_mapper='\(machinat[^/]*\)/types$' -> '<PROJECT_ROOT>/packages/\1/src/types.js'
 include_warnings=true
 emoji=true
 

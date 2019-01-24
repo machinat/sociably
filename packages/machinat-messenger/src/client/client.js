@@ -5,17 +5,19 @@ import fetch from 'isomorphic-fetch';
 import FormData from 'form-data';
 
 import { BaseClient } from 'machinat-base';
+import type { MachinatClient } from 'machinat-base/types';
 
 import Queue from 'machinat-queue';
+import type { JobResponse } from 'machinat-queue/types';
+
 import Renderer from 'machinat-renderer';
 
-import type { MachinatNode } from 'types/element';
-import type { JobResponse } from 'machinat-queue/types';
-import type { MachinatClient } from 'machinat-base/types';
+import type { MachinatNode } from 'machinat/types';
 
 import MessengerThread from '../thread';
 
-import MessengerRenderDelegator from './delegate';
+import { MESSENGER_NAITVE_TYPE } from '../symbol';
+import * as generalComponents from '../component/general';
 import createJobs from './createJobs';
 import { GraphAPIError } from './error';
 
@@ -23,7 +25,7 @@ import type {
   MessengerComponent as Component,
   MessengerJob as Job,
   MessengerJobResult as Result,
-  MessengerAction as Action,
+  MessengerActionValue as Action,
   Recepient,
   MessengerSendOptions as Options,
 } from '../types';
@@ -74,7 +76,7 @@ const appendFieldsToForm = (form: FormData, body: { [string]: ?string }) => {
 
 export default class MessengerClient
   extends BaseClient<Action, Component, Job, Result, MessengerThread, Options>
-  implements MachinatClient<Action, Component, Job, Result> {
+  implements MachinatClient<Action, Component, Job, Result, Options> {
   token: string;
   consumeInterval: number;
   _appSecretProof: ?string;
@@ -85,7 +87,12 @@ export default class MessengerClient
     appSecret,
     accessToken,
   }: MessengerClientOptions) {
-    const renderer = new Renderer(MESSENGER, MessengerRenderDelegator);
+    const renderer = new Renderer(
+      MESSENGER,
+      MESSENGER_NAITVE_TYPE,
+      generalComponents
+    );
+
     const queue = new Queue();
 
     super(MESSENGER, queue, renderer, createJobs);
@@ -106,7 +113,7 @@ export default class MessengerClient
   async send(
     recipient: string | Recepient | MessengerThread,
     nodes: MachinatNode,
-    options: Options
+    options?: Options
   ) {
     const thread =
       recipient instanceof MessengerThread

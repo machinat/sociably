@@ -1,5 +1,4 @@
 // @flow
-import type { GeneralElement, NativeElement } from 'types/element';
 import type {
   TextRenderedAction,
   ElementRenderedAction,
@@ -11,7 +10,7 @@ import { ENTRY_MESSAGES } from '../apiEntry';
 
 import type MessengerThread from '../thread';
 import type {
-  MessengerAction,
+  MessengerActionValue,
   MessengerSendOptions,
   MessengerJob,
   MessengerComponent,
@@ -25,14 +24,12 @@ const appendURIencoded = (body, key, value) =>
 
 const createRequest = (
   element,
-  value: number | string | MessengerAction,
+  value: string | MessengerActionValue,
   currentBody: string,
   options: ?MessengerSendOptions
 ) => {
   const valueFields =
-    typeof value === 'number' || typeof value === 'string'
-      ? { message: { text: value.toString() } }
-      : value;
+    typeof value === 'string' ? { message: { text: value.toString() } } : value;
 
   const fields: Object = options
     ? {
@@ -67,7 +64,7 @@ const createRequest = (
       typeof element === 'string' ||
       typeof element === 'number' ||
       typeof element.type === 'string' ||
-      !element.type.$$entry
+      element.type.$$entry === undefined
         ? ENTRY_MESSAGES
         : element.type.$$entry,
     body,
@@ -81,8 +78,7 @@ const createRequest = (
 const createJobs = (
   actions: (
     | TextRenderedAction
-    | ElementRenderedAction<MessengerAction, GeneralElement>
-    | ElementRenderedAction<MessengerAction, NativeElement<MessengerComponent>>
+    | ElementRenderedAction<MessengerActionValue, MessengerComponent>
     | RawAction
   )[],
   thread: MessengerThread,

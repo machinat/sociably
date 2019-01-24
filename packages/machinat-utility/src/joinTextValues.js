@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import type { MachinatNode } from 'types/element';
+import type { MachinatNode } from 'machinat/types';
 import type { RenderInnerFn } from 'machinat-renderer/types';
 
 import formatElement from './formatElement';
@@ -23,7 +23,7 @@ const joinTextValues = (
     const { value } = action;
     const len = values.length;
 
-    if (typeof value === 'string' || typeof value === 'number') {
+    if (typeof value === 'string') {
       const lastValue = values[len - 1];
 
       if (len === 0 || typeof lastValue !== 'string') {

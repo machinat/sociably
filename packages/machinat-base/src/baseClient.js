@@ -5,13 +5,7 @@ import delay from 'delay';
 
 import { ACTION_BREAK } from 'machinat-utility';
 
-import type {
-  MachinatNode,
-  PauseElement,
-  GeneralElement,
-  NativeElement,
-  MachinatNativeType,
-} from 'types/element';
+import type { MachinatNode, PauseElement } from 'machinat/types';
 import type MahinateQueue from 'machinat-queue';
 import type { SuccessJobResponse } from 'machinat-queue/types';
 import type MahinateRenderer from 'machinat-renderer';
@@ -20,6 +14,7 @@ import type {
   ElementRenderedAction,
   RawAction,
   MachinatAction,
+  MachinatNativeType,
 } from 'machinat-renderer/types';
 import { SendError } from './error';
 import type { SendResponse } from './types';
@@ -28,7 +23,7 @@ type SendingContext<Rendered, Native, Thread, Options> = {
   message: MachinatNode,
   platform: string,
   thread: Thread,
-  options: Options,
+  options?: Options,
   renderer: MahinateRenderer<Rendered, Native>,
   actions: MachinatAction<Rendered, Native>[],
 };
@@ -38,17 +33,16 @@ type MiddlewareFunc<Rendered, Native, Job, Result, Thread, Options> = (
   next?: MiddlewareFunc<Rendered, Native, Job, Result, Thread, Options>
 ) => Promise<SendResponse<Rendered, Native, Job, Result>>;
 
-type NonPauseAction<Rendered, Native> =
+type ActionWithoutPause<Rendered, Native> =
   | TextRenderedAction
-  | ElementRenderedAction<Rendered, GeneralElement>
-  | ElementRenderedAction<Rendered, NativeElement<Native>>
+  | ElementRenderedAction<Rendered, Native>
   | RawAction;
 
 type CreateJobFunc<Rendered, Native, Job, Thread, Options> = (
-  actions: NonPauseAction<Rendered, Native>[],
+  actions: ActionWithoutPause<Rendered, Native>[],
   thread: Thread,
-  options: Options
-) => Array<Job>;
+  options?: Options
+) => Job[];
 
 const handlePause = async (pauseEle: PauseElement) => {
   const { after, delay: timeToDelay } = pauseEle.props;
@@ -76,7 +70,7 @@ const getResult = <J, R>(response: SuccessJobResponse<J, R>): R =>
 
 export default class BaseClient<
   Rendered,
-  Native: MachinatNativeType,
+  Native: MachinatNativeType<Rendered>,
   Job,
   Result,
   Thread,
@@ -107,7 +101,7 @@ export default class BaseClient<
   async _sendImpl(
     thread: Thread,
     node: MachinatNode,
-    options: Options
+    options?: Options
   ): Promise<SendResponse<Rendered, Native, Job, Result>> {
     const actions = this._renderer.render(node, {
       platform: this.platform,
@@ -138,7 +132,7 @@ export default class BaseClient<
 
     const jobResponses: SuccessJobResponse<Job, Result>[] = [];
 
-    let actionBatch: NonPauseAction<Rendered, Native>[] = [];
+    let actionBatch: ActionWithoutPause<Rendered, Native>[] = [];
 
     for (let i = 0; i <= actions.length; i += 1) {
       const action = actions[i];

@@ -1,6 +1,8 @@
 // @flow
-import type { MachinatElementProps } from 'types/element';
-import type { RenderInnerFn, MachinatAction } from 'machinat-renderer/types';
+import type {
+  ContainerNativeType,
+  ValuesNativeType,
+} from 'machinat-renderer/types';
 
 export type MessengerBotOptions = {
   accessToken: string,
@@ -12,36 +14,27 @@ export type MessengerBotOptions = {
   consumeInterval: number,
 };
 
-type MessageAction = {
+type MessageActionValue = {
   message: Object, // TODO: detailed message type
 };
 
-type SenderAction = {
+type SenderActionValue = {
   sender_action: 'mark_seen' | 'typing_on' | 'typing_off',
 };
 
-export type MessengerAction = MessageAction | SenderAction;
+export type MessengerActionValue = MessageActionValue | SenderActionValue;
 
-export type ContainerComponent = {
-  (
-    MachinatElementProps,
-    RenderInnerFn
-  ): MachinatAction<MessengerAction, MessengerComponent>[], // eslint-disable-line no-use-before-define
-  $$native: Symbol,
-  $$unit: boolean,
+export type MessengerContainerComponent = ContainerNativeType<MessengerActionValue> & {
   $$entry?: string,
-  $$container: true,
 };
 
-export type BasicComponent = {
-  (MachinatElementProps, RenderInnerFn): MessengerAction[],
-  $$native: Symbol,
-  $$unit: boolean,
+export type MessengerValuesComponent = ValuesNativeType<MessengerActionValue> & {
   $$entry?: string,
-  $$container: false,
 };
 
-export type MessengerComponent = BasicComponent | ContainerComponent;
+export type MessengerComponent =
+  | MessengerContainerComponent
+  | MessengerValuesComponent;
 
 export type MessengerRequest = {|
   method: string,

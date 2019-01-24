@@ -38,7 +38,7 @@ module.exports = {
     'flowtype/define-flow-type': 1,
     'import/extensions': 0,
     'import/no-unresolved': ['error', {
-      ignore: ['types/.+', 'machinat-.+']
+      ignore: ['machinat.*']
     }],
     'import/no-extraneous-dependencies': ['error', {
       devDependencies: ['**/*.spec.js'],

@@ -28,11 +28,10 @@ export const Dialog = (
     const action = actions[i];
 
     // hoisting text to message object
-    const valueType = typeof action.value;
-    if (valueType === 'string' || valueType === 'number') {
+    if (typeof action.value === 'string') {
       action.value = {
         message: {
-          text: valueType === 'string' ? action.value : String(action.value),
+          text: action.value,
         },
       };
     }

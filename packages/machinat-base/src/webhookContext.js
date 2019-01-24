@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import type { MachinatNode } from 'types/element';
+import type { MachinatNode } from 'machinat/types';
 import type { MachinatClient, MachinatContext, MachinatEvent } from './types';
 
 type ResponseStore = {

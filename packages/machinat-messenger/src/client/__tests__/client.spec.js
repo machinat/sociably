@@ -8,6 +8,8 @@ import {
   ATTACHED_FILE_INFO,
 } from '../../symbol';
 
+nock.disableNetConnect();
+
 const makeResponse = (code, body) => ({
   code,
   body: JSON.stringify(body),
@@ -17,10 +19,15 @@ const Foo = moxy(props => [props]);
 Foo.$$native = MESSENGER_NAITVE_TYPE;
 Foo.$$unit = true;
 
-const msgs = (
+const Bar = moxy(props => [props]);
+Bar.$$native = MESSENGER_NAITVE_TYPE;
+Bar.$$unit = true;
+Bar.$$entry = 'bar/baz';
+
+const msg = (
   <>
     <Foo id={1} />
-    <Foo id={2} />
+    <Bar id={2} />
     <Foo id={3} />
   </>
 );
@@ -35,12 +42,12 @@ afterEach(() => {
   nock.cleanAll();
 });
 
-it('sends', async () => {
+it('sends ok', async () => {
   const accessToken = '_graph_api_access_token_';
   const client = new MesengerClient({ accessToken });
 
   const thread = { id: 'foo' };
-  const promise = client.send(thread, msgs);
+  const promise = client.send(thread, msg);
   expect(promise).toBeInstanceOf(Promise);
 
   const scope = graphAPI
@@ -54,13 +61,9 @@ it('sends', async () => {
 
       let lastName;
       batch.forEach((request, i) => {
-        expect(request).toEqual(
-          expect.objectContaining({
-            method: 'POST',
-            relative_url: 'me/messages',
-            omit_response_on_success: false,
-          })
-        );
+        expect(request.method).toBe('POST');
+        expect(request.relative_url).toBe(i === 1 ? 'bar/baz' : 'me/messages');
+        expect(request.omit_response_on_success).toBe(false);
 
         expect(request.depends_on).toBe(lastName);
         lastName = request.name;
@@ -119,7 +122,7 @@ it('attach appsecret_proof if appSecret option given', async () => {
     );
 
   client.startConsumingJob();
-  const response = await client.send({ id: 'foo' }, msgs);
+  const response = await client.send({ id: 'foo' }, msg);
 
   expect(scope.isDone()).toBe(true);
 
@@ -179,13 +182,9 @@ it('upload files with form data if binary attached on job', async () => {
 
       let lastName;
       batch.forEach((request, i) => {
-        expect(request).toEqual(
-          expect.objectContaining({
-            method: 'POST',
-            relative_url: 'me/messages',
-            omit_response_on_success: false,
-          })
-        );
+        expect(request.method).toBe('POST');
+        expect(request.relative_url).toBe(i === 1 ? 'bar/baz' : 'me/messages');
+        expect(request.omit_response_on_success).toBe(false);
 
         expect(request.depends_on).toBe(lastName);
         lastName = request.name;
@@ -207,7 +206,7 @@ it('upload files with form data if binary attached on job', async () => {
     );
 
   client.startConsumingJob();
-  const response = await client.send({ id: 'foo' }, msgs);
+  const response = await client.send({ id: 'foo' }, msg);
 
   expect(scope.isDone()).toBe(true);
 
@@ -224,9 +223,16 @@ it('throw if connection error happen', async () => {
     .replyWithError('something wrong like connection error');
 
   client.startConsumingJob();
-  await expect(client.send({ id: 'foo' }, msgs)).rejects.toThrow(
-    'something wrong like connection error'
-  );
+  await expect(client.send({ id: 'foo' }, msg)).rejects
+    .toThrowErrorMatchingInlineSnapshot(`
+"Errors happen while sending:
+
+	FetchError: request to https://graph.facebook.com/v3.1/ failed, reason: something wrong like connection error
+    at OverriddenClientRequest.<anonymous> (/Users/LR/Documents/machinat/node_modules/isomorphic-fetch/node_modules/node-fetch/index.js:133:11)
+    at OverriddenClientRequest.emit (events.js:182:13)
+    at /Users/LR/Documents/machinat/node_modules/nock/lib/request_overrider.js:221:11
+    at process._tickCallback (internal/process/next_tick.js:61:11)"
+`);
 
   expect(scope.isDone()).toBe(true);
 });
@@ -246,9 +252,14 @@ it('throw if api error happen', async () => {
   });
 
   client.startConsumingJob();
-  await expect(client.send({ id: 'foo' }, msgs)).rejects.toThrow(
-    'The access token could not be decrypted'
-  );
+  await expect(client.send({ id: 'foo' }, msg)).rejects
+    .toThrowErrorMatchingInlineSnapshot(`
+"Errors happen while sending:
+
+	OAuthException: The access token could not be decrypted
+    at MessengerClient._defineProperty (/Users/LR/Documents/machinat/packages/machinat-messenger/src/client/client.js:257:13)
+    at process._tickCallback (internal/process/next_tick.js:68:7)"
+`);
 
   expect(scope.isDone()).toBe(true);
 });
@@ -274,9 +285,14 @@ it('throw if one single job fail', async () => {
     ])
   );
   client.startConsumingJob();
-  await expect(client.send({ id: 'foo' }, msgs)).rejects.toThrow(
-    'you should not passed!'
-  );
+  await expect(client.send({ id: 'foo' }, msg)).rejects
+    .toThrowErrorMatchingInlineSnapshot(`
+"Errors happen while sending:
+
+	OAuthException: you should not passed!
+    at MessengerClient._defineProperty (/Users/LR/Documents/machinat/packages/machinat-messenger/src/client/client.js:276:20)
+    at process._tickCallback (internal/process/next_tick.js:68:7)"
+`);
 
   expect(scope.isDone()).toBe(true);
 });

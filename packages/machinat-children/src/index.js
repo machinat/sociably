@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatNode } from 'types/element';
+import type { MachinatNode } from 'machinat/types';
 
 import { isFragment, isEmpty } from 'machinat-utility';
 import type {

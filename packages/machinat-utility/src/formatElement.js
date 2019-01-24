@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatRenderable } from 'types/element';
+import type { MachinatRenderable } from 'machinat/types';
 
 const formatProps = props => {
   const keys = Object.keys(props);

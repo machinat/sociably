@@ -9,9 +9,9 @@ const render = nodes =>
   nodes.map(element => ({
     element,
     value:
-      typeof element === 'string'
+      typeof element === 'string' || typeof element === 'number'
         ? element
-        : typeof element.type === 'string' || typeof element.type === 'number'
+        : typeof element.type === 'string'
         ? element.type
         : element.type(),
   }));

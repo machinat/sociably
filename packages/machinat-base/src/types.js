@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatNode } from 'types/element';
+import type { MachinatNode } from 'machinat/types';
 import type { MachinatAction } from 'machinat-renderer/types';
 
 export interface MachinatThread {
@@ -23,15 +23,17 @@ export type SendResponse<Rendered, Native, Job, Result> = {
   message: MachinatNode,
 };
 
-export interface MachinatClient<Rendered, Native, Job, Result> {
+export interface MachinatClient<Rendered, Native, Job, Result, Options> {
   send(
     thread: string | Object,
     message: MachinatNode,
-    options: Object
+    options?: Options
   ): Promise<SendResponse<Rendered, Native, Job, Result>>;
 }
 
-export interface MachinatContext<Client: MachinatClient<any, any, any, any>> {
+export interface MachinatContext<
+  Client: MachinatClient<any, any, any, any, any>
+> {
   source: string;
   event: MachinatEvent;
   client: Client;

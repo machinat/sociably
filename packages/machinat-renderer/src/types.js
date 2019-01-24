@@ -2,46 +2,47 @@
 import type {
   MachinatNode,
   MachinatText,
-  MachinatElementType,
+  MachinatElementProps,
   NativeElement,
   GeneralElement,
   PauseElement,
-} from 'types/element';
+} from 'machinat/types';
 
-type RenderDelegateCallback<Rendered, Native, Element> = (
-  element: Element,
-  render: RenderInnerFn,
-  payload: any,
-  path: string
-) => ?(MachinatAction<Rendered, Native>[]);
-
-export type RenderDelegate<Rendered, Native> = {
-  isNativeComponent: MachinatElementType => boolean,
-  renderNativeElement: RenderDelegateCallback<
-    Rendered,
-    Native,
-    NativeElement<Native>
-  >,
-  renderGeneralElement: RenderDelegateCallback<
-    Rendered,
-    Native,
-    GeneralElement
-  >,
+export type ContainerNativeType<Rendered> = {
+  (
+    props: MachinatElementProps,
+    render: RenderInnerFn
+  ): null | MachinatAction<Rendered, any>[],
+  $$native: Symbol,
+  $$unit: boolean,
+  $$container: true,
 };
+
+export type ValuesNativeType<Rendered> = {
+  (props: MachinatElementProps, render: RenderInnerFn): null | Rendered[],
+  $$native: Symbol,
+  $$unit: boolean,
+  $$container: false,
+};
+
+export type MachinatNativeType<Rendered> =
+  | ContainerNativeType<Rendered>
+  | ValuesNativeType<Rendered>
+  | ValuesNativeType<string>;
 
 export type TextRenderedAction = {|
   isPause: false,
   asUnit: true,
   element: MachinatText,
-  value: MachinatText,
+  value: string,
   path: string,
 |};
 
-export type ElementRenderedAction<Rendered, Element> = {|
+export type ElementRenderedAction<Rendered, Native> = {|
   isPause: false,
   asUnit: boolean,
-  element: Element,
-  value: Rendered,
+  element: GeneralElement | NativeElement<Native>,
+  value: string | Rendered,
   path: string,
 |};
 
@@ -63,8 +64,7 @@ export type PauseAction = {|
 
 export type MachinatAction<Rendered, Native> =
   | TextRenderedAction
-  | ElementRenderedAction<Rendered, GeneralElement>
-  | ElementRenderedAction<Rendered, NativeElement<Native>>
+  | ElementRenderedAction<Rendered, Native>
   | RawAction
   | PauseAction;
 
