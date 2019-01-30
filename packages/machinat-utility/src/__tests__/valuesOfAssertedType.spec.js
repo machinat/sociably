@@ -39,7 +39,9 @@ it('throw if string contained', () => {
 it('throw if number contained', () => {
   expect(() =>
     valuesOfAFoo([<A />, 123, <foo />], render, '.someprop')
-  ).toThrowErrorMatchingInlineSnapshot(`"element.type is not a function"`);
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"123 is invalid in .someprop, only <[A, foo]/> allowed"`
+  );
 });
 
 it('throw if invalid general element contained', () => {

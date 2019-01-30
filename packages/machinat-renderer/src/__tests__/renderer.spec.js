@@ -81,7 +81,13 @@ describe('#render()', () => {
     );
 
     expect(rendered).toEqual([
-      { isPause: false, asUnit: true, element: 123, value: 123, path: '$::0' },
+      {
+        isPause: false,
+        asUnit: true,
+        element: 123,
+        value: '123',
+        path: '$::0',
+      },
       {
         isPause: true,
         asUnit: true,
@@ -314,7 +320,7 @@ describe('#render()', () => {
     expect(() =>
       renderer.render(<invalid />, {})
     ).toThrowErrorMatchingInlineSnapshot(
-      '<invalid /> is not valid general element supported in Test'
+      `"<invalid /> is not valid general element supported in Test"`
     );
   });
 

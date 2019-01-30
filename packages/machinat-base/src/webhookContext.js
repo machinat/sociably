@@ -8,7 +8,7 @@ type ResponseStore = {
   body: ?(string | Object),
 };
 
-class WebhookContext<Client: MachinatClient<any, any, any, any>>
+class WebhookContext<Client: MachinatClient<any, any, any, any, any>>
   implements MachinatContext<Client> {
   client: Client;
   event: MachinatEvent;
