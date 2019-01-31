@@ -11,7 +11,7 @@ export type MessengerBotOptions = {
   shouldVerifyWebhook: boolean,
   verifyToken?: string,
   respondTimeout: number,
-  consumeInterval: number,
+  consumeInterval?: number,
 };
 
 type MessageActionValue = {

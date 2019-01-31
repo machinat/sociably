@@ -10,6 +10,8 @@ import {
 
 nock.disableNetConnect();
 
+const delay = t => new Promise(resolve => setTimeout(resolve, t));
+
 const makeResponse = (code, body) => ({
   code,
   body: JSON.stringify(body),
@@ -257,7 +259,7 @@ it('throw if api error happen', async () => {
 "Errors happen while sending:
 
 	OAuthException: The access token could not be decrypted
-    at MessengerClient._defineProperty (/Users/LR/Documents/machinat/packages/machinat-messenger/src/client/client.js:257:13)
+    at MessengerClient._defineProperty (/Users/LR/Documents/machinat/packages/machinat-messenger/src/client/client.js:272:13)
     at process._tickCallback (internal/process/next_tick.js:68:7)"
 `);
 
@@ -290,9 +292,90 @@ it('throw if one single job fail', async () => {
 "Errors happen while sending:
 
 	OAuthException: you should not passed!
-    at MessengerClient._defineProperty (/Users/LR/Documents/machinat/packages/machinat-messenger/src/client/client.js:276:20)
+    at MessengerClient._defineProperty (/Users/LR/Documents/machinat/packages/machinat-messenger/src/client/client.js:291:20)
     at process._tickCallback (internal/process/next_tick.js:68:7)"
 `);
 
   expect(scope.isDone()).toBe(true);
 });
+
+it('waits consumeInterval for jobs to execute if set', async () => {
+  const client = new MesengerClient({
+    accessToken: '_graph_api_access_token_',
+    consumeInterval: 300,
+  });
+
+  const bodySpy = moxy(() => true);
+  const scope = graphAPI
+    .post('/v3.1/', bodySpy)
+    .reply(
+      200,
+      JSON.stringify(
+        new Array(9).fill(
+          makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' })
+        )
+      )
+    );
+
+  client.startConsumingJob();
+
+  const promise1 = client.send({ id: 'foo' }, msg);
+  expect(bodySpy.mock).not.toHaveBeenCalled();
+  await delay(100);
+
+  const promise2 = client.send({ id: 'bar' }, msg);
+  expect(bodySpy.mock).not.toHaveBeenCalled();
+  await delay(100);
+
+  const promise3 = client.send({ id: 'baz' }, msg);
+  expect(bodySpy.mock).not.toHaveBeenCalled();
+  await delay(100);
+
+  expect(bodySpy.mock).toHaveBeenCalled();
+  expect(scope.isDone()).toBe(true);
+  await promise1;
+  await promise2;
+  await promise3;
+});
+
+it.each([undefined, 0])(
+  'execute immediatly if consumeInterval is %p',
+  async consumeInterval => {
+    const client = new MesengerClient({
+      accessToken: '_graph_api_access_token_',
+      consumeInterval,
+    });
+
+    const bodySpy = moxy(() => true);
+    const scope = graphAPI
+      .post('/v3.1/', bodySpy)
+      .times(3)
+      .delay(50)
+      .reply(
+        200,
+        JSON.stringify(
+          new Array(3).fill(
+            makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' })
+          )
+        )
+      );
+
+    client.startConsumingJob();
+
+    const promise1 = client.send({ id: 'foo' }, msg);
+    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+
+    await delay(100);
+    const promise2 = client.send({ id: 'bar' }, msg);
+    expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+
+    await delay(100);
+    const promise3 = client.send({ id: 'baz' }, msg);
+    expect(bodySpy.mock).toHaveBeenCalledTimes(3);
+
+    expect(scope.isDone()).toBe(true);
+    await promise1;
+    await promise2;
+    await promise3;
+  }
+);

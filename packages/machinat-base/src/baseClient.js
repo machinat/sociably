@@ -141,7 +141,7 @@ export default class BaseClient<
         if (actionBatch.length > 0) {
           const jobs = this._createJobs(actionBatch, thread, options);
 
-          const batchRes = await this._queue.executeJobs(...jobs); // eslint-disable-line no-await-in-loop
+          const batchRes = await this._queue.executeJobs(jobs); // eslint-disable-line no-await-in-loop
 
           if (batchRes.success) {
             jobResponses.push(...batchRes.batch);

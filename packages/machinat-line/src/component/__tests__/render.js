@@ -5,7 +5,7 @@ const render = moxy(
   node =>
     map(node, element =>
       typeof element === 'string' || typeof element === 'number'
-        ? { element, value: element }
+        ? { element, value: String(element) }
         : {
             element,
             value: element.type(element.props, render)[0],

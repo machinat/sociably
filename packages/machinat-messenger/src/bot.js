@@ -21,7 +21,7 @@ export default class MessengerBot extends Bot<Client> {
       shouldVerifyWebhook: true,
       verifyToken: undefined,
       respondTimeout: 5000,
-      consumeInterval: 100,
+      consumeInterval: undefined,
     };
 
     const options = Object.assign(defaultOpions, optionsInput);

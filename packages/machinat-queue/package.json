@@ -4,7 +4,7 @@
   "main": "lib/index.js",
   "license": "MIT",
   "dependencies": {
-    "denque": "^1.3.0",
+    "denque": "^1.4.0",
     "invariant": "^2.2.4"
   },
   "devDependencies": {}

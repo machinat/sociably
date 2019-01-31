@@ -4,111 +4,167 @@ import Denque from 'denque';
 
 import type { JobBatchResponse, JobResponse } from './types';
 
+type JobPackage<Job> = {
+  seq: number,
+  job: Job,
+  request: BatchRequest<Job, any>,
+};
+
 type BatchRequest<Job, Result> = {|
   begin: number,
   end: number,
   resolve: (JobBatchResponse<Job, Result>) => void,
-  allAcquired: boolean,
+  finishedCount: number,
   acquiredCount: number,
   success: boolean,
   errors: ?(Error[]),
-  batch: ?Array<void | JobResponse<Job, Result>>,
+  responses: ?Array<void | JobResponse<Job, Result>>,
 |};
 
-export default class MachinatQueue<J, R> {
-  _beginSeq: number;
-  _endSeq: number;
-  _queuedJobs: Denque<J>;
-  _waitedRequets: Denque<BatchRequest<J, R>>;
+const getJob = <Job>(pkg: JobPackage<Job>) => pkg.job;
 
-  constructor() {
-    this._beginSeq = 0;
-    this._endSeq = 0;
-    this._queuedJobs = new Denque();
-    this._waitedRequets = new Denque();
+const reduceRequestsOfPackages = <Job, Result, Acc>(
+  pkgs: JobPackage<Job>[],
+  reducer: (
+    reduced: Acc,
+    request: BatchRequest<Job, Result>,
+    pkgs: JobPackage<Job>[],
+    begin: number,
+    count: number
+  ) => Acc,
+  initial: Acc
+): Acc => {
+  let jobBegin = 0;
+  let lastRequest = pkgs[0].request;
+  let reduced = initial;
+
+  for (let i = 1; i <= pkgs.length; i += 1) {
+    const pkg = pkgs[i];
+    const loopEnded = i === pkgs.length;
+
+    if (loopEnded || lastRequest !== pkg.request) {
+      reduced = reducer(reduced, lastRequest, pkgs, jobBegin, i - jobBegin);
+
+      if (!loopEnded) {
+        lastRequest = pkg.request;
+        jobBegin = i;
+      }
+    }
   }
 
-  async acquire(
-    n: number,
-    consume: (J[]) => Promise<JobResponse<J, R>[]>
-  ): Promise<void | JobResponse<J, R>[]> {
-    const jobs = this._queuedJobs.remove(0, n);
-    if (jobs === undefined) {
+  return reduced;
+};
+
+export default class MachinatQueue<Job, Result> {
+  currentSeq: number;
+  _queuedJobs: Denque<JobPackage<Job>>;
+  _waitedRequets: Set<BatchRequest<Job, Result>>;
+  _jobListeners: ((MachinatQueue<Job, Result>) => void)[];
+
+  constructor() {
+    this.currentSeq = 0;
+    this._queuedJobs = new Denque();
+    this._waitedRequets = new Set();
+    this._jobListeners = [];
+  }
+
+  onJob(listener: (MachinatQueue<Job, Result>) => void) {
+    this._jobListeners.push(listener);
+  }
+
+  _emitJobEvent() {
+    const listeners = this._jobListeners;
+    for (let i = 0; i < listeners.length; i += 1) {
+      listeners[i](this);
+    }
+  }
+
+  peekAt(idx: number): void | Job {
+    const pkg = this._queuedJobs.peekAt(idx);
+    return pkg ? pkg.job : undefined;
+  }
+
+  async acquireAt(
+    idx: number,
+    count: number,
+    consume: (Job[]) => Promise<JobResponse<Job, Result>[]>
+  ): Promise<void | JobResponse<Job, Result>[]> {
+    const pkgs = this._queuedJobs.remove(idx, count);
+    if (pkgs === undefined) {
       return undefined;
     }
-    const start = this._beginSeq;
-    const end = start + jobs.length;
-    this._beginSeq = end;
-    this._registerAcquisitionInRange(start, end);
+
+    this._registerAcquisition(pkgs);
 
     try {
+      const jobs = pkgs.map(getJob);
       const jobsResult = await consume(jobs);
-      this._respondRequestsInRange(jobsResult, start, end);
-      return jobsResult; // eslint-disable-line consistent-return
+
+      this._respondRequests(pkgs, jobsResult);
+      return jobsResult;
     } catch (err) {
-      this._failRequestsInRange(err, start, end);
+      this._failRequests(pkgs, err);
       throw err;
     }
   }
 
-  enqueueJobs(...jobs: J[]) {
-    for (let i = 0; i < jobs.length; i += 1) {
-      this._queuedJobs.push(jobs[i]);
-    }
-    this._endSeq += jobs.length;
+  acquire(
+    count: number,
+    consume: (Job[]) => Promise<JobResponse<Job, Result>[]>
+  ): Promise<void | JobResponse<Job, Result>[]> {
+    return this.acquireAt(0, count, consume);
   }
 
-  executeJobs(...jobs: J[]): Promise<JobBatchResponse<J, R>> {
-    const begin = this._endSeq;
-    this.enqueueJobs(...jobs);
-    return new Promise(this._pushWaitedRequest.bind(this, begin, this._endSeq));
+  _enqueueJobs(jobs: Job[], request: BatchRequest<Job, Result>) {
+    const seq = this.currentSeq;
+
+    for (let i = 0; i < jobs.length; i += 1) {
+      this._queuedJobs.push({ seq: seq + i, job: jobs[i], request });
+    }
+
+    this.currentSeq = seq + jobs.length;
+    this._emitJobEvent();
+  }
+
+  executeJobs(jobs: Job[]): Promise<JobBatchResponse<Job, Result>> {
+    return new Promise(this._handleJobsForWaiting.bind(this, jobs));
   }
 
   get length() {
     return this._queuedJobs.length;
   }
 
-  _respondRequestsInRange(
-    jobResps: JobResponse<J, R>[],
-    begin: number,
-    end: number
+  _respondRequests(
+    pkgs: JobPackage<Job>[],
+    jobResps: JobResponse<Job, Result>[]
   ) {
-    const { rmIdx, rmCount } = this._reduceRequestInRange(
-      begin,
-      end,
-      this._respondRequestReducer,
-      { jobResps, rmIdx: -1, rmCount: 0 }
-    );
-    this._waitedRequets.remove(rmIdx, rmCount);
+    reduceRequestsOfPackages(pkgs, this._respondRequestReducer, jobResps);
   }
 
   _respondRequestReducer = (
-    payload: {
-      rmIdx: number,
-      rmCount: number,
-      jobResps: JobResponse<J, R>[],
-    },
-    request: BatchRequest<J, R>,
-    idx: number,
+    jobResps: JobResponse<Job, Result>[],
+    request: BatchRequest<Job, Result>,
+    pkgs: JobPackage<Job>[],
     begin: number,
-    end: number
+    count: number
   ) => {
     const { begin: requestBegin, end: requestEnd } = request;
 
-    const jobBegin = Math.max(begin, requestBegin);
-    const jobEnd = Math.min(end, requestEnd);
-
-    if (!request.batch) {
-      request.batch = new Array(requestEnd - requestBegin);
+    if (!request.responses) {
+      request.responses = new Array(requestEnd - requestBegin);
     }
 
     let success = true;
-    for (let seq = jobBegin; seq < jobEnd; seq += 1) {
-      const jobResponse = payload.jobResps[seq - begin];
+    const end = begin + count;
+    for (let i = begin; i < end; i += 1) {
+      const { seq } = pkgs[i];
 
-      request.batch[seq - requestBegin] = jobResponse;
+      const jobResponse = jobResps[i];
+      request.responses[seq - requestBegin] = jobResponse;
+
+      request.finishedCount += 1;
       if (!jobResponse.success) {
-        if (success) success = false;
+        success = false;
 
         if (!request.errors) request.errors = [];
         request.errors.push(jobResponse.error);
@@ -120,138 +176,112 @@ export default class MachinatQueue<J, R> {
     }
 
     request.success = request.success && success;
-    if (request.acquiredCount <= 1 && (request.allAcquired || !success)) {
+
+    const jobLength = requestEnd - requestBegin;
+    if (
+      request.acquiredCount <= 1 &&
+      (request.finishedCount === jobLength || !success)
+    ) {
       request.resolve(
         // NOTE: either SuccessJobResponse or FailedJobResponse should be fulfilled here
         ({
           success: request.success,
           errors: request.errors,
-          batch: request.batch,
+          batch: request.responses,
         }: any)
       );
 
-      if (payload.rmIdx === -1) {
-        payload.rmIdx = idx;
-      }
-
-      payload.rmCount += 1;
+      this._waitedRequets.delete(request);
     } else {
       request.acquiredCount -= 1;
     }
 
-    return payload;
+    return jobResps;
   };
 
-  _failRequestsInRange(reason: Error, begin: number, end: number) {
-    const { rmIdx, rmCount } = this._reduceRequestInRange(
-      begin,
-      end,
-      this._failRequestsReducer,
-      { reason, rmIdx: -1, rmCount: 0 }
-    );
-
-    this._waitedRequets.remove(rmIdx, rmCount);
+  _failRequests(pkgs: JobPackage<Job>[], reason: Error) {
+    reduceRequestsOfPackages(pkgs, this._failRequestsReducer, reason);
   }
 
   _failRequestsReducer = (
-    payload: { rmIdx: number, rmCount: number, reason: any },
-    request: BatchRequest<J, R>,
-    idx: number
+    reason: Error,
+    request: BatchRequest<Job, Result>,
+    pkgs: JobPackage<Job>[],
+    begin: number,
+    count: number
   ) => {
     this._removeJobsOfRequest(request);
 
     request.success = false;
 
-    if (request.errors) {
-      request.errors.push(payload.reason);
-    } else {
-      request.errors = [payload.reason];
-    }
+    if (!request.errors) request.errors = [];
+    request.errors.push(reason);
 
     if (request.acquiredCount <= 1) {
       request.resolve({
         success: false,
         errors: (request.errors: any), // NOTE: it is refined above
-        batch: request.batch,
+        batch: request.responses,
       });
 
-      payload.rmCount += 1;
-      if (payload.rmIdx === -1) {
-        payload.rmIdx = idx;
-      }
+      this._waitedRequets.delete(request);
     } else {
       request.acquiredCount -= 1;
+      request.finishedCount += count;
     }
 
-    return payload;
+    return reason;
   };
 
-  _registerAcquisitionInRange(begin: number, end: number) {
-    this._reduceRequestInRange(begin, end, this._registerAcquisitionReducer);
+  _registerAcquisition(pkgs: JobPackage<Job>[]) {
+    reduceRequestsOfPackages(pkgs, this._registerAcquisitionReducer);
   }
 
   _registerAcquisitionReducer = (
     _: void,
-    request: BatchRequest<J, R>,
-    idx: number,
-    begin: number,
-    end: number
+    request: BatchRequest<Job, Result>
   ) => {
     request.acquiredCount += 1;
-    if (request.end <= end) {
-      request.allAcquired = true;
-    }
   };
 
-  _reduceRequestInRange = <Acc>(
-    begin: number,
-    end: number,
-    reducer: (
-      reduced: Acc,
-      request: BatchRequest<J, R>,
-      idx: number,
-      begin: number,
-      end: number
-    ) => Acc,
-    initial: Acc
-  ): Acc => {
-    let reduced = initial;
+  _removeJobsOfRequest(requestToClear: BatchRequest<Job, Result>) {
+    const jobLength = this._queuedJobs.length;
+    let removeBegin = -1;
 
-    for (let i = 0; i < this._waitedRequets.length; i += 1) {
-      const request = (this._waitedRequets.peekAt(i): any);
+    for (let i = 0; i < jobLength; i += 1) {
+      // $FlowFixMe i is surely safe
+      const { request } = this._queuedJobs.peekAt(i);
 
-      if (request.end > begin) {
-        if (request.begin < end) {
-          reduced = reducer(reduced, request, i, begin, end);
-        } else {
-          break;
+      if (request === requestToClear) {
+        if (removeBegin === -1) {
+          removeBegin = i;
         }
+      } else if (removeBegin !== -1) {
+        this._queuedJobs.remove(removeBegin, i - removeBegin);
+        return;
       }
     }
 
-    return reduced;
-  };
-
-  _removeJobsOfRequest(request: BatchRequest<J, R>) {
-    if (request.end > this._beginSeq) {
-      const removed = this._queuedJobs.remove(0, request.end - this._beginSeq);
-
-      if (removed !== undefined) {
-        this._beginSeq += removed.length;
-      }
+    if (removeBegin !== -1) {
+      this._queuedJobs.remove(removeBegin, jobLength - removeBegin);
     }
   }
 
-  _pushWaitedRequest(begin: number, end: number, resolve: Function) {
-    this._waitedRequets.push({
-      begin,
-      end,
+  _handleJobsForWaiting(jobs: Job[], resolve: Function) {
+    const seq = this.currentSeq;
+
+    const request = {
+      begin: seq,
+      end: seq + jobs.length,
       resolve,
       acquiredCount: 0,
-      allAcquired: false,
+      finishedCount: 0,
       success: true,
       errors: null,
-      batch: null,
-    });
+      responses: null,
+    };
+
+    this._enqueueJobs(jobs, request);
+    this._waitedRequets.add(request);
   }
 }

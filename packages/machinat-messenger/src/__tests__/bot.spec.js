@@ -77,7 +77,7 @@ it('set default options', () => {
 Object {
   "accessToken": "_ACCESS_TOKEN_",
   "appSecret": "_SECRET_",
-  "consumeInterval": 100,
+  "consumeInterval": undefined,
   "respondTimeout": 5000,
   "shouldValidateRequest": true,
   "shouldVerifyWebhook": true,

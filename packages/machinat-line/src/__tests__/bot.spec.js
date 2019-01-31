@@ -39,7 +39,7 @@ it('sets default options', () => {
 Object {
   "accessToken": "_TOKEN_",
   "channelSecret": "_SECRET_",
-  "consumeInterval": 100,
+  "connectionCapicity": 100,
   "shouldValidateRequest": true,
   "useReplyAPI": false,
 }
@@ -51,7 +51,7 @@ it('covers default options', () => {
     accessToken: '_TOKEN_',
     shouldValidateRequest: false,
     channelSecret: '_SECRET_',
-    consumeInterval: 9999,
+    connectionCapicity: 9999,
     useReplyAPI: true,
   };
   expect(new LineBot(options).options).toEqual(options);

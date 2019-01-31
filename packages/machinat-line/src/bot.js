@@ -19,7 +19,7 @@ export default class LineBot extends Bot<Client> {
       shouldValidateRequest: true,
       channelSecret: undefined,
       useReplyAPI: false,
-      consumeInterval: 100,
+      connectionCapicity: 100,
     };
 
     const options = Object.assign(defaultOpions, optionsInput);

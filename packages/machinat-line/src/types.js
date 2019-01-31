@@ -162,5 +162,5 @@ export type LineBotOptions = {
   shouldValidateRequest: boolean,
   accessToken: string,
   useReplyAPI: boolean,
-  consumeInterval: number,
+  connectionCapicity: number,
 };

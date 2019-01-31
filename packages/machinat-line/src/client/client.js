@@ -38,31 +38,32 @@ const DELETE = 'DELETE';
 
 const API_ENTRY = 'https://api.line.me/v2/bot/';
 
-const IS_CONSUMING_FLAG = Symbol('__is_now_consuming__');
-
 const LINE = 'line';
 
 type LineClientOptions = {
-  consumeInterval: number,
   useReplyAPI: boolean,
   accessToken: string,
+  connectionCapicity: number,
 };
 
 export default class LineClient
   extends BaseClient<Action, Component, Job, Result, LineThread, Options>
   implements MachinatClient<Action, Component, Job, Result, Options> {
-  consumeInterval: number;
   useReplyAPI: boolean;
   _headers: {
     'Content-Type': 'application/json',
     Authorization: string,
   };
-  _consumptionTimeoutId: TimeoutID | Symbol | null;
+
+  connectionSize: number;
+  connectionCapicity: number;
+  _started: boolean;
+  _lockedIds: Set<string>;
 
   constructor({
-    consumeInterval,
     useReplyAPI,
     accessToken,
+    connectionCapicity,
   }: LineClientOptions) {
     const queue = new Queue();
     const renderer = new Renderer(
@@ -73,7 +74,12 @@ export default class LineClient
 
     super(LINE, queue, renderer, createJobs({ useReplyAPI }));
 
-    this.consumeInterval = consumeInterval;
+    queue.onJob(() => {
+      if (this._started) {
+        this._consume();
+      }
+    });
+
     this.useReplyAPI = useReplyAPI;
 
     this._headers = {
@@ -81,7 +87,10 @@ export default class LineClient
       Authorization: `Bearer ${accessToken}`,
     };
 
-    this._consumptionTimeoutId = null;
+    this.connectionSize = 0;
+    this.connectionCapicity = connectionCapicity;
+    this._lockedIds = new Set();
+    this._started = false;
   }
 
   async send(
@@ -111,6 +120,7 @@ export default class LineClient
         : source instanceof LineThread
         ? source.source.userId
         : source.userId;
+
     const rawResult = await this.get(`profile/${userId}`);
     return new UserProfile(rawResult);
   }
@@ -158,46 +168,57 @@ export default class LineClient
   }
 
   startConsumingJob() {
-    if (this._consumptionTimeoutId === null) {
-      this._consumeLoop();
-      return true;
+    if (this._started) {
+      return false;
     }
-    return false;
+
+    this._started = true;
+    this._consume();
+    return true;
   }
 
   stopConsumingJob() {
-    const { _consumptionTimeoutId } = this;
-    if (
-      _consumptionTimeoutId !== null &&
-      typeof _consumptionTimeoutId !== 'symbol'
-    ) {
-      clearTimeout(this._consumptionTimeoutId);
-      this._consumptionTimeoutId = null;
-      return true;
+    if (!this._started) {
+      return false;
     }
-    return false;
+    this._started = false;
+    return true;
   }
 
-  _consumeLoop = async () => {
-    this._consumptionTimeoutId = IS_CONSUMING_FLAG;
-    while (this._queue.length > 0) {
-      try {
-        // TODO: jobs should be executed and awaited in the thread scope, need refactoring queue
-        await this._queue.acquire(1, this._consumeJob); // eslint-disable-line no-await-in-loop
-      } catch (e) {
-        // TODO: handle errors
+  _consume() {
+    const { _queue: queue, _lockedIds: lockedIds, connectionCapicity } = this;
+
+    for (let i = 0; i < queue.length; i += 1) {
+      if (this.connectionSize >= connectionCapicity) {
+        break;
+      }
+
+      // $FlowFixMe i is in valid range
+      const { threadId }: Job = queue.peekAt(i);
+      if (!lockedIds.has(threadId)) {
+        this._consumeJobAt(i, threadId);
+
+        this.connectionSize += 1;
+        lockedIds.add(threadId);
       }
     }
+  }
 
-    if (this._consumptionTimeoutId === IS_CONSUMING_FLAG) {
-      this._consumptionTimeoutId = setTimeout(
-        this._consumeLoop,
-        this.consumeInterval
-      );
+  async _consumeJobAt(idx: number, threadId: string) {
+    try {
+      await this._queue.acquireAt(idx, 1, this._consumeCallback);
+    } catch (e) {
+      // NOTE: leave the error to the request side
+    } finally {
+      this.connectionSize -= 1;
+      this._lockedIds.delete(threadId);
+      if (this._started) {
+        this._consume();
+      }
     }
-  };
+  }
 
-  _consumeJob = async ([job]: Job[]) => {
+  _consumeCallback = async ([job]: Job[]) => {
     const result = await this.post(
       job.apiEntry,
       job.hasBody ? job.body : undefined

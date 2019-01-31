@@ -43,7 +43,7 @@ const actions = [
 const queue = moxy(new Queue(), {
   excludeProps: ['_waitedRequets', '_queuedJobs'],
 });
-queue.executeJobs.mock.fake((...jobs) =>
+queue.executeJobs.mock.fake(jobs =>
   Promise.resolve({
     success: true,
     batch: jobs.map(job => ({ job, success: true, result: job.id })),
@@ -80,7 +80,7 @@ it('renders and enqueue jobs', async () => {
   expect(createJobs.mock).toHaveBeenCalledWith(actions, thread, options);
 
   expect(queue.executeJobs.mock) // for alignment
-    .toHaveBeenCalledWith({ id: 1 }, { id: 2 }, { id: 3 });
+    .toHaveBeenCalledWith([{ id: 1 }, { id: 2 }, { id: 3 }]);
 });
 
 it('pass sending context through middlewares', async () => {
@@ -139,7 +139,7 @@ it('pass sending context through middlewares', async () => {
   expect(middleware2.mock).toHaveBeenCalled();
 
   expect(queue.executeJobs.mock) // for alignment
-    .toHaveBeenCalledWith({ id: 1 }, { id: 2 }, { id: 3 });
+    .toHaveBeenCalledWith([{ id: 1 }, { id: 2 }, { id: 3 }]);
 });
 
 it('waits pause', async () => {
@@ -197,9 +197,9 @@ it('waits pause', async () => {
   expect(createJobs.mock) // for alignment
     .toHaveBeenNthCalledWith(3, [pausedActions[4]], thread, options);
 
-  expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(1, { id: 1 });
-  expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(2, { id: 2 });
-  expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(3, { id: 3 });
+  expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(1, [{ id: 1 }]);
+  expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(2, [{ id: 2 }]);
+  expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(3, [{ id: 3 }]);
 });
 
 it('ignores break', async () => {
@@ -270,8 +270,8 @@ it('ignores break', async () => {
     .toHaveBeenNthCalledWith(2, [pausedActions[5]], thread, options);
 
   expect(queue.executeJobs.mock) // for alignment
-    .toHaveBeenNthCalledWith(1, { id: 1 }, { id: 2 });
-  expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(2, { id: 3 });
+    .toHaveBeenNthCalledWith(1, [{ id: 1 }, { id: 2 }]);
+  expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(2, [{ id: 3 }]);
 });
 
 it('throws if execution fail', async () => {

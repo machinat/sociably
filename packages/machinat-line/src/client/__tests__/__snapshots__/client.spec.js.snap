@@ -19,7 +19,7 @@ Object {
       "id": 5,
     },
   ],
-  "to": "foo",
+  "to": "john",
 }
 `;
 
@@ -30,7 +30,7 @@ Object {
       "id": 6,
     },
   ],
-  "to": "foo",
+  "to": "john",
 }
 `;
 
@@ -41,7 +41,7 @@ Object {
       "id": 7,
     },
   ],
-  "to": "foo",
+  "to": "john",
 }
 `;
 
@@ -52,7 +52,7 @@ Object {
       "id": 9,
     },
   ],
-  "to": "foo",
+  "to": "john",
 }
 `;
 
@@ -242,10 +242,10 @@ Object {
             "id": 5,
           },
         ],
-        "to": "foo",
+        "to": "john",
       },
       "hasBody": true,
-      "threadId": "line:user:foo",
+      "threadId": "line:user:john",
     },
     Object {
       "apiEntry": "message/push",
@@ -255,10 +255,10 @@ Object {
             "id": 6,
           },
         ],
-        "to": "foo",
+        "to": "john",
       },
       "hasBody": true,
-      "threadId": "line:user:foo",
+      "threadId": "line:user:john",
     },
     Object {
       "apiEntry": "message/push",
@@ -268,18 +268,18 @@ Object {
             "id": 7,
           },
         ],
-        "to": "foo",
+        "to": "john",
       },
       "hasBody": true,
-      "threadId": "line:user:foo",
+      "threadId": "line:user:john",
     },
     Object {
-      "apiEntry": "foo/bar/8",
+      "apiEntry": "john/bar/8",
       "body": Object {
         "id": 8,
       },
       "hasBody": false,
-      "threadId": "line:user:foo",
+      "threadId": "line:user:john",
     },
     Object {
       "apiEntry": "message/push",
@@ -289,18 +289,18 @@ Object {
             "id": 9,
           },
         ],
-        "to": "foo",
+        "to": "john",
       },
       "hasBody": true,
-      "threadId": "line:user:foo",
+      "threadId": "line:user:john",
     },
     Object {
-      "apiEntry": "foo/baz/10",
+      "apiEntry": "john/baz/10",
       "body": Object {
         "id": 10,
       },
       "hasBody": true,
-      "threadId": "line:user:foo",
+      "threadId": "line:user:john",
     },
   ],
   "message": Object {
@@ -642,7 +642,7 @@ Object {
         "replyToken": "__REPLY_TOKEN__",
       },
       "hasBody": true,
-      "threadId": "line:user:foo",
+      "threadId": "line:user:john",
     },
     Object {
       "apiEntry": "message/reply",
@@ -655,7 +655,7 @@ Object {
         "replyToken": "__REPLY_TOKEN__",
       },
       "hasBody": true,
-      "threadId": "line:user:foo",
+      "threadId": "line:user:john",
     },
     Object {
       "apiEntry": "message/reply",
@@ -668,15 +668,15 @@ Object {
         "replyToken": "__REPLY_TOKEN__",
       },
       "hasBody": true,
-      "threadId": "line:user:foo",
+      "threadId": "line:user:john",
     },
     Object {
-      "apiEntry": "foo/bar/8",
+      "apiEntry": "john/bar/8",
       "body": Object {
         "id": 8,
       },
       "hasBody": false,
-      "threadId": "line:user:foo",
+      "threadId": "line:user:john",
     },
     Object {
       "apiEntry": "message/reply",
@@ -689,15 +689,15 @@ Object {
         "replyToken": "__REPLY_TOKEN__",
       },
       "hasBody": true,
-      "threadId": "line:user:foo",
+      "threadId": "line:user:john",
     },
     Object {
-      "apiEntry": "foo/baz/10",
+      "apiEntry": "john/baz/10",
       "body": Object {
         "id": 10,
       },
       "hasBody": true,
-      "threadId": "line:user:foo",
+      "threadId": "line:user:john",
     },
   ],
   "message": Object {

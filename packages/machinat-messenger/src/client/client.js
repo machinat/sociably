@@ -45,8 +45,6 @@ const MESSENGER = 'messenger';
 const GET = 'GET';
 const POST = 'POST';
 
-const IS_CONSUMING_FLAG = Symbol('__is_consuming__');
-
 const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
 
 const assignQueryParams = (queryParams, obj) => {
@@ -78,9 +76,12 @@ export default class MessengerClient
   extends BaseClient<Action, Component, Job, Result, MessengerThread, Options>
   implements MachinatClient<Action, Component, Job, Result, Options> {
   token: string;
-  consumeInterval: number;
+  consumeInterval: ?number;
   _appSecretProof: ?string;
-  _consumptionTimeoutId: TimeoutID | Symbol | null;
+
+  _consumptionTimeoutId: TimeoutID | null;
+  _started: boolean;
+  _isConsuming: boolean;
 
   constructor({
     consumeInterval,
@@ -98,7 +99,16 @@ export default class MessengerClient
     super(MESSENGER, queue, renderer, createJobs);
 
     this.token = accessToken;
-    this.consumeInterval = consumeInterval || 500;
+    this.consumeInterval = consumeInterval;
+
+    this._started = false;
+    if (!consumeInterval) {
+      queue.onJob(() => {
+        if (this._started && !this._isConsuming) {
+          this._consume();
+        }
+      });
+    }
 
     this._appSecretProof = appSecret
       ? crypto
@@ -164,45 +174,50 @@ export default class MessengerClient
   }
 
   startConsumingJob() {
-    if (this._consumptionTimeoutId === null) {
-      this._startConsumingJobFlow();
+    if (!this._started) {
+      this._started = true;
+      this._consume();
       return true;
     }
     return false;
   }
 
   stopConsumingJob() {
-    if (this._consumptionTimeoutId !== null) {
-      if (this._consumptionTimeoutId !== IS_CONSUMING_FLAG) {
+    if (this._started) {
+      if (this._consumptionTimeoutId !== null) {
         clearTimeout(this._consumptionTimeoutId);
+        this._consumptionTimeoutId = null;
       }
 
-      this._consumptionTimeoutId = null;
+      this._started = false;
       return true;
     }
     return false;
   }
 
-  _startConsumingJobFlow = async () => {
-    this._consumptionTimeoutId = IS_CONSUMING_FLAG;
+  _consume = async () => {
+    this._isConsuming = true;
+    this._consumptionTimeoutId = null;
+
     while (this._queue.length > 0) {
       try {
         // eslint-disable-next-line no-await-in-loop
-        await this._queue.acquire(50, this._consumeJob);
+        await this._queue.acquire(50, this._consumeCallback);
       } catch (e) {
         // leave the error to request side of queue to handle
       }
     }
 
-    if (this._consumptionTimeoutId === IS_CONSUMING_FLAG) {
+    this._isConsuming = false;
+    if (this._started && this.consumeInterval) {
       this._consumptionTimeoutId = setTimeout(
-        this._startConsumingJobFlow,
+        this._consume,
         this.consumeInterval
       );
     }
   };
 
-  _consumeJob = async (jobs: Job[]) => {
+  _consumeCallback = async (jobs: Job[]) => {
     const threadSendingRec = new Map();
     let fileCount = 0;
     let filesForm: FormData;
