@@ -293,12 +293,15 @@ it('throws if execution fail', async () => {
     expect(err.response).toEqual(response);
 
     expect(err).toBeInstanceOf(SendError);
-    expect(err.message).toEqual(
-      expect.stringContaining('Errors happen while sending:')
-    );
 
     expect(err.message).toEqual(expect.stringContaining(err1.message));
     expect(err.message).toEqual(expect.stringContaining(err2.message));
+
+    expect(err.message).toMatchInlineSnapshot(`
+"Errors happen while sending:
+	1) Error: bad thing 1
+	2) Error: bad thing 2"
+`);
   }
 });
 

@@ -170,12 +170,7 @@ it('throw if connection error happen', async () => {
   await expect(client.send({ type: 'user', userId: 'john' }, msg)).rejects
     .toThrowErrorMatchingInlineSnapshot(`
 "Errors happen while sending:
-
-	FetchError: request to https://api.line.me/v2/bot/message/push failed, reason: something wrong like connection error
-    at OverriddenClientRequest.<anonymous> (/Users/LR/Documents/machinat/node_modules/node-fetch/lib/index.js:1345:11)
-    at OverriddenClientRequest.emit (events.js:182:13)
-    at /Users/LR/Documents/machinat/node_modules/nock/lib/request_overrider.js:221:11
-    at process._tickCallback (internal/process/next_tick.js:61:11)"
+	1) FetchError: request to https://api.line.me/v2/bot/message/push failed, reason: something wrong like connection error"
 `);
 
   expect(scope.isDone()).toBe(true);
@@ -208,10 +203,7 @@ it('throw if api error happen', async () => {
   await expect(client.send({ type: 'user', userId: 'john' }, msg)).rejects
     .toThrowErrorMatchingInlineSnapshot(`
 "Errors happen while sending:
-
-	Bad Request: The request body has 2 error(s). 1) May not be empty, at messages[0].text. 2) Must be one of the following values: [text, image, video, audio, location, sticker, template, imagemap], at messages[1].type.
-    at LineClient._request (/Users/LR/Documents/machinat/packages/machinat-line/src/client/client.js:148:13)
-    at process._tickCallback (internal/process/next_tick.js:68:7)"
+	1) Bad Request: The request body has 2 error(s): 1. May not be empty, at messages[0].text. 2. Must be one of the following values: [text, image, video, audio, location, sticker, template, imagemap], at messages[1].type."
 `);
 
   expect(scope1.isDone()).toBe(true);

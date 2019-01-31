@@ -5,10 +5,10 @@ export class LineAPIError extends Error {
     super(
       body.message +
         (body.details
-          ? `. ${body.details
+          ? `: ${body.details
               .map(
                 ({ property, message }, i) =>
-                  `${i + 1}) ${message}, at ${property}.`
+                  `${i + 1}. ${message}, at ${property}.`
               )
               .join(' ')}`
           : '')

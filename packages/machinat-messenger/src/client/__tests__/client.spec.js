@@ -228,12 +228,7 @@ it('throw if connection error happen', async () => {
   await expect(client.send({ id: 'foo' }, msg)).rejects
     .toThrowErrorMatchingInlineSnapshot(`
 "Errors happen while sending:
-
-	FetchError: request to https://graph.facebook.com/v3.1/ failed, reason: something wrong like connection error
-    at OverriddenClientRequest.<anonymous> (/Users/LR/Documents/machinat/node_modules/isomorphic-fetch/node_modules/node-fetch/index.js:133:11)
-    at OverriddenClientRequest.emit (events.js:182:13)
-    at /Users/LR/Documents/machinat/node_modules/nock/lib/request_overrider.js:221:11
-    at process._tickCallback (internal/process/next_tick.js:61:11)"
+	1) FetchError: request to https://graph.facebook.com/v3.1/ failed, reason: something wrong like connection error"
 `);
 
   expect(scope.isDone()).toBe(true);
@@ -257,10 +252,7 @@ it('throw if api error happen', async () => {
   await expect(client.send({ id: 'foo' }, msg)).rejects
     .toThrowErrorMatchingInlineSnapshot(`
 "Errors happen while sending:
-
-	OAuthException: The access token could not be decrypted
-    at MessengerClient._defineProperty (/Users/LR/Documents/machinat/packages/machinat-messenger/src/client/client.js:272:13)
-    at process._tickCallback (internal/process/next_tick.js:68:7)"
+	1) OAuthException: The access token could not be decrypted"
 `);
 
   expect(scope.isDone()).toBe(true);
@@ -290,10 +282,7 @@ it('throw if one single job fail', async () => {
   await expect(client.send({ id: 'foo' }, msg)).rejects
     .toThrowErrorMatchingInlineSnapshot(`
 "Errors happen while sending:
-
-	OAuthException: you should not passed!
-    at MessengerClient._defineProperty (/Users/LR/Documents/machinat/packages/machinat-messenger/src/client/client.js:291:20)
-    at process._tickCallback (internal/process/next_tick.js:68:7)"
+	1) OAuthException: you should not passed!"
 `);
 
   expect(scope.isDone()).toBe(true);

@@ -10,7 +10,9 @@ export class SendError<Job, Result> extends Error {
 
     const message = errors
       ? errors.reduce(
-          (msg, err) => `${msg}\n\n\t${err.stack || err.toString()}`,
+          (msg, err, idx) =>
+            `${msg}\n\t${idx + 1}) ${err.name}: ${err.message ||
+              err.toString()}`,
           'Errors happen while sending:'
         )
       : 'Unknown error happen while sending';
