@@ -3,8 +3,10 @@ import type {
   ContainerNativeType,
   ValuesNativeType,
 } from 'machinat-renderer/types';
+import type { BotPlugin } from 'machinat-base/types';
+import type { WebhookResponse } from 'machinat-webhook/types';
 
-import type LineThread from './thread';
+import type { ChatThread, MulticastThread } from './thread';
 
 type UserSource = {|
   type: 'user',
@@ -24,6 +26,37 @@ type RoomSource = {|
 |};
 
 export type LineSource = UserSource | GroupSource | RoomSource;
+
+// TODO: type the complete raw event object
+export type LineRawEvent = {
+  type: string,
+  timestamp: number,
+  source: LineSource,
+  replytoken: string,
+  message: Object,
+  joined: Object,
+  left: Object,
+  postback: Object,
+  beacon: Object,
+  link: Object,
+  things: Object,
+};
+
+// TODO: type all the events
+export type LineEvent = {
+  platform: 'line',
+  type: string,
+  subtype: void | string,
+  thread: ChatThread,
+  shouldRespond: boolean,
+  raw: LineRawEvent,
+  _useReplyAPI: boolean,
+};
+
+export type LineWebhookRequestBody = {|
+  destination: string,
+  events: LineRawEvent[],
+|};
 
 export type QuickRepliable = {
   quickReply?: {
@@ -116,46 +149,56 @@ export type LineActionValue =
   | LinkRichMenuActionValue
   | LeaveActionValue;
 
+type LineComponentExtraAttr = {
+  $$hasBody: boolean,
+  $$entry: <Value>(thread: ChatThread, rendered: Value) => string,
+};
+
 export type LineContainerNativeType = ContainerNativeType<LineActionValue>;
 
 export type LineMessageNativeType = ValuesNativeType<MessageActionValue>;
 
 export type LineNonMessageNativeType = ValuesNativeType<
   LinkRichMenuActionValue | LeaveActionValue
-> & {
-  $$hasBody: boolean,
-  $$entry: <Value>(thread: LineThread, action: Value) => string,
-};
+> &
+  LineComponentExtraAttr;
 
 export type LineComponent =
   | LineContainerNativeType
   | LineMessageNativeType
   | LineNonMessageNativeType;
 
-export type LineSendOpions = {
-  replyToken?: string,
-};
+type MessagesBodyWithoutTarget = {|
+  messages: LineActionValue[],
+|};
 
-type ReplyRequestBody = {
+type ReplyRequestBody = {|
   replyToken: string,
-  messages: LineActionValue[],
-};
+  ...MessagesBodyWithoutTarget,
+|};
 
-type PushRequestBody = {
+type PushRequestBody = {|
   to: string,
-  messages: LineActionValue[],
-};
+  ...MessagesBodyWithoutTarget,
+|};
 
-export type LineRequestBody = ReplyRequestBody | PushRequestBody;
+type MulticastRequestBody = {|
+  to: string[],
+  ...MessagesBodyWithoutTarget,
+|};
+
+export type LineAPIRequestBody =
+  | ReplyRequestBody
+  | PushRequestBody
+  | MulticastRequestBody;
 
 export type LineJob = {
-  body: void | LineRequestBody,
-  apiEntry: string,
-  hasBody: boolean,
+  body: void | LineAPIRequestBody,
+  entry: string,
   threadId: string,
 };
 
-export type LineJobResult = {};
+export type LineAPIResult = {};
 
 export type LineBotOptions = {
   channelSecret?: string,
@@ -163,4 +206,14 @@ export type LineBotOptions = {
   accessToken: string,
   useReplyAPI: boolean,
   connectionCapicity: number,
+  plugins?: BotPlugin<
+    LineRawEvent,
+    WebhookResponse,
+    LineActionValue,
+    LineComponent,
+    LineJob,
+    LineAPIResult,
+    ChatThread | MulticastThread,
+    ChatThread
+  >[],
 };

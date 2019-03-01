@@ -20,12 +20,12 @@ export type JobResponse<Job, Result> =
 export type SuccessJobBatchResponse<Job, Result> = {|
   success: true,
   errors: null,
-  batch: Array<SuccessJobResponse<Job, Result>>,
+  batch: $ReadOnlyArray<SuccessJobResponse<Job, Result>>,
 |};
 
 export type FailedJobBatchResponse<Job, Result> = {|
   success: false,
-  errors: Error[],
+  errors: Array<Error>,
   batch: ?Array<void | JobResponse<Job, Result>>,
 |};
 

@@ -1,13 +1,23 @@
 // @flow
 /* eslint-disable import/prefer-default-export */
-import type { FailedJobBatchResponse } from 'machinat-queue/types';
+import type { MachinatNode } from 'machinat/types';
+import type { JobResponse } from 'machinat-queue/types';
+import type { MachinatAction } from 'machinat-renderer/types';
 
-export class SendError<Job, Result> extends Error {
-  response: FailedJobBatchResponse<Job, Result>;
+export class SendError<Rendered, Native, Job, Result> extends Error {
+  errors: $ReadOnlyArray<Error>;
+  node: MachinatNode;
+  actions: MachinatAction<Rendered, Native>[];
+  jobs: Job[];
+  responses: $ReadOnlyArray<void | JobResponse<Job, Result>>;
 
-  constructor(response: FailedJobBatchResponse<Job, Result>) {
-    const { errors } = response;
-
+  constructor(
+    errors: $ReadOnlyArray<Error>,
+    node: MachinatNode,
+    actions: MachinatAction<Rendered, Native>[],
+    jobs: Job[],
+    responses: $ReadOnlyArray<void | JobResponse<Job, Result>>
+  ) {
     const message = errors
       ? errors.reduce(
           (msg, err, idx) =>
@@ -23,6 +33,10 @@ export class SendError<Job, Result> extends Error {
       Error.captureStackTrace(this, SendError);
     }
 
-    this.response = response;
+    this.errors = errors;
+    this.node = node;
+    this.actions = actions;
+    this.jobs = jobs;
+    this.responses = responses;
   }
 }

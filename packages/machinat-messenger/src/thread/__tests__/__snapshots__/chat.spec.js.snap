@@ -1,0 +1,160 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#createJobs(actions) add attached file data and info if there are 1`] = `
+Array [
+  Object {
+    "attachedFileData": "_DEADLY_VIRUS_",
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22john%22%7D&a=gift",
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadId": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": "_MERCY_CURE_",
+    "attachedFileInfo": Object {
+      "contentType": "image/jpeg",
+      "filename": "deathangel.jpg",
+      "knownLength": 66666,
+    },
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22john%22%7D&a=redemption",
+      "method": "POST",
+      "relative_url": "bar/baz",
+    },
+    "threadId": "messenger:default:user:john",
+  },
+]
+`;
+
+exports[`#createJobs(actions) add coresponding options to body 1`] = `
+Array [
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22id%22%3A1%7D&messaging_type=MESSAGE_TAG&tag=PAYMENT_UPDATE&notification_type=SILENT_PUSH&persona_id=your-dearest-friend",
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadId": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=2&messaging_type=MESSAGE_TAG&tag=PAYMENT_UPDATE&notification_type=SILENT_PUSH&persona_id=your-dearest-friend",
+      "method": "POST",
+      "relative_url": "bar/baz",
+    },
+    "threadId": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22text%22%3A%22id%3A3%22%7D&messaging_type=MESSAGE_TAG&tag=PAYMENT_UPDATE&notification_type=SILENT_PUSH&persona_id=your-dearest-friend",
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadId": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22text%22%3A%224%22%7D&messaging_type=MESSAGE_TAG&tag=PAYMENT_UPDATE&notification_type=SILENT_PUSH&persona_id=your-dearest-friend",
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadId": "messenger:default:user:john",
+  },
+]
+`;
+
+exports[`#createJobs(actions) create jobs to be sent 1`] = `
+Array [
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22id%22%3A1%7D",
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadId": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=2",
+      "method": "POST",
+      "relative_url": "bar/baz",
+    },
+    "threadId": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22text%22%3A%22id%3A3%22%7D",
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadId": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22text%22%3A%224%22%7D",
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadId": "messenger:default:user:john",
+  },
+]
+`;
+
+exports[`#createJobs(actions) respect options originally set in action value 1`] = `
+Array [
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22Luke%22%7D&message=%7B%22text%22%3A%22bibiboo%22%7D&messaging_type=MESSAGE_TAG&tag=SHIPPING_UPDATE&notification_type=SILENT_PUSH&persona_id=astromech-droid",
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadId": "messenger:default:user:Luke",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22Luke%22%7D&message=%7B%22text%22%3A%22Oh!%20I%20apologize.%22%7D&notification_type=REGULAR&persona_id=protocol-droid&messaging_type=UPDATE",
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadId": "messenger:default:user:Luke",
+  },
+]
+`;
+
+exports[`#createJobs(actions) respect the empty tag if messaging_type has already been set 1`] = `
+Array [
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": "recipient=%7B%22id%22%3A%22Luke%22%7D&message=%7B%22text%22%3A%22bibibooboobibooboo%22%7D&messaging_type=RESPONSE&notification_type=SILENT_PUSH&persona_id=astromech-droid",
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadId": "messenger:default:user:Luke",
+  },
+]
+`;

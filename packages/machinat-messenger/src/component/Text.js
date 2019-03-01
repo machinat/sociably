@@ -1,5 +1,6 @@
 /* eslint-disable import/prefer-default-export */
-import { annotate, asNative, asUnit } from 'machinat-utility';
+import invariant from 'invariant';
+import { annotate, asNative, asUnit, joinTextValues } from 'machinat-utility';
 
 import { compose, map } from './utils';
 import { text } from './general';
@@ -15,3 +16,18 @@ export const Latex = compose(
 );
 
 annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(true))(Latex);
+
+export const DynamicText = ({ children, fallback }, render) => {
+  const rendered = joinTextValues(children, render, '.children');
+
+  if (rendered === undefined) {
+    return null;
+  }
+
+  invariant(
+    rendered.length === 1 && typeof rendered[0] === 'string',
+    '<br/> is invalid with in children of DynamicText'
+  );
+
+  return [{ dynamic_text: { text: rendered[0], fallback_text: fallback } }];
+};

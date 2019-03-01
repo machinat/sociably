@@ -1,5 +1,4 @@
 // @flow
-import type { MachinatRenderable } from 'machinat/types';
 
 const formatProps = props => {
   const keys = Object.keys(props);
@@ -16,10 +15,7 @@ const formatProps = props => {
   return formated;
 };
 
-const formatElement = (
-  element: ?MachinatRenderable,
-  withProps: boolean = false
-): string =>
+const formatElement = (element: any, withProps: boolean = false): string =>
   !element || typeof element === 'number'
     ? String(element)
     : typeof element === 'string'
@@ -30,12 +26,12 @@ const formatElement = (
     ? `<${element.type.toString()} ${
         withProps ? formatProps(element.props) : ''
       }/>`
-    : typeof element.type === 'function' && element.type.name
-    ? `<${element.type.name} ${withProps ? formatProps(element.props) : ''}/>`
-    : `element with type (${String(element.type)})${
-        withProps
-          ? ` and props (${formatProps(element.props).slice(0, -1)})`
-          : ''
-      }`;
+    : typeof element.type === 'function'
+    ? element.type.name
+      ? `<${element.type.name} ${withProps ? formatProps(element.props) : ''}/>`
+      : `<(${String(element.type)}) ${
+          withProps ? formatProps(element.props) : ''
+        }/>`
+    : JSON.stringify(element);
 
 export default formatElement;

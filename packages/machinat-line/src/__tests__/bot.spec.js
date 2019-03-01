@@ -1,6 +1,65 @@
-import { WebhookConnector } from 'machinat-base';
+import nock from 'nock';
+import moxy from 'moxy';
+import Machinat from 'machinat';
+import { Engine, Controller, BaseBot } from 'machinat-base';
+import WebhookReceiver from 'machinat-webhook';
 import LineBot from '../bot';
 import Client from '../client';
+import { LINE_NATIVE_TYPE } from '../symbol';
+
+nock.disableNetConnect();
+
+jest.mock('machinat-base');
+
+const Foo = moxy(props => [props]);
+Foo.$$unit = true;
+Foo.$$native = LINE_NATIVE_TYPE;
+
+const Bar = moxy(props => [props]);
+Bar.$$unit = true;
+Bar.$$native = LINE_NATIVE_TYPE;
+Bar.$$entry = moxy(() => 'bar');
+Bar.$$hasBody = false;
+
+const Baz = moxy(props => [props]);
+Baz.$$unit = true;
+Baz.$$native = LINE_NATIVE_TYPE;
+Baz.$$entry = moxy(() => 'baz');
+Baz.$$hasBody = true;
+
+const msgs = [
+  <Foo id={0} />,
+  <Foo id={1} />,
+  <Foo id={2} />,
+  <Foo id={3} />,
+  <Foo id={4} />,
+  <Foo id={5} />,
+  <Foo id={6} />,
+  <Bar id={7} />,
+  <Foo id={8} />,
+  <Baz id={9} />,
+];
+
+const pathSpy = moxy(() => true);
+const bodySpy = moxy(() => true);
+
+const accessToken = '__ACCESS_TOKEN__';
+let lineAPI;
+beforeEach(() => {
+  Bar.$$entry.mock.clear();
+  Baz.$$entry.mock.clear();
+
+  lineAPI = nock('https://api.line.me', {
+    reqheaders: {
+      'content-type': 'application/json',
+      authorization: 'Bearer __ACCESS_TOKEN__',
+    },
+  });
+
+  pathSpy.mock.clear();
+  bodySpy.mock.clear();
+  BaseBot.mock.clear();
+});
 
 it('throws if accessToken not given', () => {
   expect(() => new LineBot()).toThrowErrorMatchingInlineSnapshot(
@@ -10,7 +69,7 @@ it('throws if accessToken not given', () => {
 
 it('throws if shouldValidateRequest but channelSecret not given', () => {
   expect(
-    () => new LineBot({ accessToken: '_TOKEN_', shouldValidateRequest: true })
+    () => new LineBot({ accessToken, shouldValidateRequest: true })
   ).toThrowErrorMatchingInlineSnapshot(
     `"should provide channelSecret if shouldValidateRequest set to true"`
   );
@@ -18,26 +77,48 @@ it('throws if shouldValidateRequest but channelSecret not given', () => {
 
 it('is ok to have channelSecret empty if shouldValidateRequest set to false', () => {
   expect(
-    () => new LineBot({ accessToken: '_TOKEN_', shouldValidateRequest: false })
+    () => new LineBot({ accessToken, shouldValidateRequest: false })
   ).not.toThrow();
 });
 
-it('creates client and connector', () => {
+it('has engine, controller, receiver and client', () => {
   const bot = new LineBot({
-    accessToken: '_TOKEN_',
+    accessToken,
     channelSecret: '_SECRET_',
   });
 
   expect(bot.client).toBeInstanceOf(Client);
-  expect(bot.connector).toBeInstanceOf(WebhookConnector);
+  expect(bot.engine).toBeInstanceOf(Engine);
+  expect(bot.controller).toBeInstanceOf(Controller);
+  expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
+});
+
+it('pass controller, engine and plugins to BaseBot', () => {
+  const plugins = [moxy(() => ({})), moxy(() => ({})), moxy(() => ({}))];
+
+  const bot = new LineBot({
+    accessToken,
+    channelSecret: '_SECRET_',
+    plugins,
+  });
+
+  expect(BaseBot.mock).toHaveBeenCalledTimes(1);
+  expect(BaseBot.mock).toHaveBeenCalledWith(
+    bot.controller,
+    bot.engine,
+    plugins
+  );
+
+  expect(plugins[0].mock).toHaveBeenCalled();
+  expect(plugins[1].mock).toHaveBeenCalled();
+  expect(plugins[2].mock).toHaveBeenCalled();
 });
 
 it('sets default options', () => {
-  expect(
-    new LineBot({ accessToken: '_TOKEN_', channelSecret: '_SECRET_' }).options
-  ).toMatchInlineSnapshot(`
+  expect(new LineBot({ accessToken, channelSecret: '_SECRET_' }).options)
+    .toMatchInlineSnapshot(`
 Object {
-  "accessToken": "_TOKEN_",
+  "accessToken": "__ACCESS_TOKEN__",
   "channelSecret": "_SECRET_",
   "connectionCapicity": 100,
   "shouldValidateRequest": true,
@@ -48,11 +129,100 @@ Object {
 
 it('covers default options', () => {
   const options = {
-    accessToken: '_TOKEN_',
+    accessToken,
     shouldValidateRequest: false,
     channelSecret: '_SECRET_',
     connectionCapicity: 9999,
     useReplyAPI: true,
   };
   expect(new LineBot(options).options).toEqual(options);
+});
+
+test('#reply(token, node) works', async () => {
+  const bot = new LineBot({
+    accessToken,
+    channelSecret: '_SECRET_',
+    useReplyAPI: true,
+  });
+
+  const apiScope = lineAPI
+    .post(pathSpy, bodySpy)
+    .times(5)
+    .reply(200, '{}');
+
+  const response = await bot.reply('__REPLY_TOKEN__', msgs);
+
+  expect(response).toMatchSnapshot();
+  expect(apiScope.isDone()).toBe(true);
+
+  expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
+    '/v2/bot/message/reply',
+    '/v2/bot/message/reply',
+    '/v2/bot/bar',
+    '/v2/bot/message/reply',
+    '/v2/bot/baz',
+  ]);
+
+  bodySpy.mock.calls.forEach((call, i) => {
+    expect(call.args[0]).toEqual(response.jobs[i].body || '');
+  });
+});
+
+test('#push(token, node) works', async () => {
+  const bot = new LineBot({
+    accessToken,
+    channelSecret: '_SECRET_',
+    useReplyAPI: false,
+  });
+
+  const apiScope = lineAPI
+    .post(pathSpy, bodySpy)
+    .times(5)
+    .reply(200, '{}');
+
+  const response = await bot.push('john doe', msgs);
+
+  expect(response).toMatchSnapshot();
+  expect(apiScope.isDone()).toBe(true);
+
+  expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
+    '/v2/bot/message/push',
+    '/v2/bot/message/push',
+    '/v2/bot/bar',
+    '/v2/bot/message/push',
+    '/v2/bot/baz',
+  ]);
+
+  bodySpy.mock.calls.forEach((call, i) => {
+    expect(call.args[0]).toEqual(response.jobs[i].body || '');
+  });
+});
+
+test('#multicast(targets, node) works', async () => {
+  const bot = new LineBot({
+    accessToken,
+    channelSecret: '_SECRET_',
+  });
+
+  const apiScope = lineAPI
+    .post(pathSpy, bodySpy)
+    .times(2)
+    .reply(200, '{}');
+
+  const response = await bot.multicast(
+    ['john', 'wick', 'dog'],
+    msgs.slice(0, 7)
+  );
+
+  expect(response).toMatchSnapshot();
+  expect(apiScope.isDone()).toBe(true);
+
+  expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
+    '/v2/bot/message/multicast',
+    '/v2/bot/message/multicast',
+  ]);
+
+  bodySpy.mock.calls.forEach((call, i) => {
+    expect(call.args[0]).toEqual(response.jobs[i].body || '');
+  });
 });

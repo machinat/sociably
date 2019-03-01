@@ -40,12 +40,12 @@ const reduceRequestsOfPackages = <Job, Result, Acc>(
 
   for (let i = 1; i <= pkgs.length; i += 1) {
     const pkg = pkgs[i];
-    const loopEnded = i === pkgs.length;
+    const isLoopEnded = i === pkgs.length;
 
-    if (loopEnded || lastRequest !== pkg.request) {
+    if (isLoopEnded || lastRequest !== pkg.request) {
       reduced = reducer(reduced, lastRequest, pkgs, jobBegin, i - jobBegin);
 
-      if (!loopEnded) {
+      if (!isLoopEnded) {
         lastRequest = pkg.request;
         jobBegin = i;
       }
@@ -70,6 +70,17 @@ export default class MachinatQueue<Job, Result> {
 
   onJob(listener: (MachinatQueue<Job, Result>) => void) {
     this._jobListeners.push(listener);
+  }
+
+  offJob(listenerToRemove: (MachinatQueue<Job, Result>) => void) {
+    const listeners = this._jobListeners;
+    for (let i = 0; i < listeners.length; i += 1) {
+      if (listeners[i] === listenerToRemove) {
+        this._jobListeners.splice(i, 1);
+        return true;
+      }
+    }
+    return false;
   }
 
   _emitJobEvent() {
@@ -127,6 +138,10 @@ export default class MachinatQueue<Job, Result> {
   }
 
   executeJobs(jobs: Job[]): Promise<JobBatchResponse<Job, Result>> {
+    if (jobs.length === 0) {
+      return Promise.resolve({ success: true, errors: null, batch: [] });
+    }
+
     return new Promise(this._handleJobsForWaiting.bind(this, jobs));
   }
 
@@ -166,7 +181,9 @@ export default class MachinatQueue<Job, Result> {
       if (!jobResponse.success) {
         success = false;
 
-        if (!request.errors) request.errors = [];
+        if (!request.errors) {
+          request.errors = [];
+        }
         request.errors.push(jobResponse.error);
       }
     }

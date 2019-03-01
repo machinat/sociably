@@ -6,7 +6,7 @@ export type MachinatNode =
   | MachinatEmpty
   | MachinatText
   | MachinatElement<any>
-  | Iterable<MachinatNode>;
+  | Array<MachinatNode>;
 
 export type MachinatElementType =
   | string

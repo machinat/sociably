@@ -28,6 +28,8 @@ module.exports = {
     'no-unused-vars': ['error', {
       ignoreRestSiblings: true,
     }],
+    'no-unused-expressions': 0,
+    'flowtype/no-unused-expressions': 2,
     'no-param-reassign': ['error', {
       props: true,
       ignorePropertyModificationsFor: ['context'],

@@ -3,5 +3,7 @@
   "version": "0.0.1-0",
   "main": "lib/index.js",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "invariant": "^2.2.4"
+  }
 }

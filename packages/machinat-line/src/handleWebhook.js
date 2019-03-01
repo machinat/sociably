@@ -4,12 +4,15 @@ import type { IncomingMessage, ServerResponse } from 'http';
 
 import createEvent from './event';
 
-import type { LineBotOptions } from './types';
+import type {
+  LineBotOptions,
+  LineWebhookRequestBody,
+  LineEvent,
+} from './types';
 
 const endRes = (res, code, body) => {
   res.statusCode = code; // eslint-disable-line no-param-reassign
   res.end(body);
-  return undefined;
 };
 
 const handleWebhook = (options: LineBotOptions) => (
@@ -25,9 +28,12 @@ const handleWebhook = (options: LineBotOptions) => (
     return endRes(res, 400);
   }
 
-  if (options.shouldValidateRequest) {
+  const { useReplyAPI, shouldValidateRequest, channelSecret } = options;
+
+  // NOTE: channelSecret is validated at bot 👇
+  if (shouldValidateRequest /* :: && channelSecret */) {
     const signature = crypto
-      .createHmac('SHA256', options.channelSecret)
+      .createHmac('SHA256', channelSecret)
       .update(rawBody)
       .digest('base64');
 
@@ -36,10 +42,16 @@ const handleWebhook = (options: LineBotOptions) => (
     }
   }
 
-  let body;
   try {
-    body = JSON.parse(rawBody);
-    return body.events.map(createEvent);
+    const { events: rawEvents } = (JSON.parse(rawBody): LineWebhookRequestBody);
+
+    const events: LineEvent[] = new Array(rawEvents.length);
+
+    for (let i = 0; i < events.length; i += 1) {
+      events[i] = createEvent(rawEvents[i], useReplyAPI);
+    }
+
+    return events;
   } catch (e) {
     return endRes(res, 400);
   }

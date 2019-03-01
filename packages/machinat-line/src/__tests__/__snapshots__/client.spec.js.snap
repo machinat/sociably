@@ -1,0 +1,168 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sequently excute jobs of the identical thread 1`] = `
+Object {
+  "batch": Array [
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 1,
+        },
+        "entry": "message/push",
+        "threadId": "foo",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 2,
+        },
+        "entry": "message/push",
+        "threadId": "bar",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 3,
+        },
+        "entry": "message/push",
+        "threadId": "baz",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 4,
+        },
+        "entry": "message/reply",
+        "threadId": "foo",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 5,
+        },
+        "entry": "message/reply",
+        "threadId": "bar",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 6,
+        },
+        "entry": "message/reply",
+        "threadId": "baz",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 7,
+        },
+        "entry": "message/push",
+        "threadId": "foo",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 8,
+        },
+        "entry": "message/push",
+        "threadId": "bar",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 9,
+        },
+        "entry": "message/push",
+        "threadId": "baz",
+      },
+      "result": Object {},
+      "success": true,
+    },
+  ],
+  "errors": null,
+  "success": true,
+}
+`;
+
+exports[`throw if api error happen 1`] = `
+Object {
+  "batch": Array [
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 1,
+        },
+        "entry": "message/push",
+        "threadId": "foo",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    undefined,
+    undefined,
+  ],
+  "errors": Array [
+    [Bad Request: The request body has 2 error(s): 1. May not be empty, at messages[0].text. 2. Must be one of the following values: [text, image, video, audio, location, sticker, template, imagemap], at messages[1].type.],
+  ],
+  "success": false,
+}
+`;
+
+exports[`throw if connection error happen 1`] = `
+Object {
+  "batch": Array [
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 1,
+        },
+        "entry": "message/push",
+        "threadId": "foo",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    undefined,
+    undefined,
+  ],
+  "errors": Array [
+    [FetchError: request to https://api.line.me/v2/bot/message/push failed, reason: something wrong like connection error],
+  ],
+  "success": false,
+}
+`;

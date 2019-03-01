@@ -41,9 +41,6 @@ beforeEach(() => {
   batch1Resolved.mockClear();
   batch2Resolved.mockClear();
   batch3Resolved.mockClear();
-  queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
-  queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
-  queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 });
 
 afterEach(() => {
@@ -75,8 +72,35 @@ describe('#onJob(cb)', () => {
   });
 });
 
+describe('#offJob(cb)', () => {
+  it('remove job listener cb', () => {
+    const cb1 = moxy();
+    const cb2 = moxy();
+
+    queue.onJob(cb1);
+    queue.onJob(cb2);
+    queue.executeJobs(jobs);
+
+    expect(cb1.mock).toHaveBeenCalledTimes(1);
+    expect(cb2.mock).toHaveBeenCalledTimes(1);
+
+    queue.offJob(cb1);
+    queue.executeJobs(jobs);
+
+    expect(cb1.mock).toHaveBeenCalledTimes(1);
+    expect(cb2.mock).toHaveBeenCalledTimes(2);
+
+    queue.offJob(cb2);
+    queue.executeJobs(jobs);
+
+    expect(cb1.mock).toHaveBeenCalledTimes(1);
+    expect(cb2.mock).toHaveBeenCalledTimes(2);
+  });
+});
+
 describe('#peekAt(idx)', () => {
   it('returns job at idx', () => {
+    queue.executeJobs(jobs).then(batch1Resolved);
     expect(queue.length).toBe(9);
 
     for (let i = 0; i < 9; i += 1) {
@@ -89,6 +113,7 @@ describe('#peekAt(idx)', () => {
   });
 
   it('returns job at negative idx', () => {
+    queue.executeJobs(jobs).then(batch1Resolved);
     expect(queue.length).toBe(9);
 
     for (let i = -1; i > -10; i -= 1) {
@@ -101,9 +126,28 @@ describe('#peekAt(idx)', () => {
   });
 });
 
+describe('#executeJobs(jobs)', () => {
+  it('enqueue jobs', () => {
+    queue.executeJobs(jobs.slice(0, 3));
+    queue.executeJobs(jobs.slice(3, 6));
+    queue.executeJobs(jobs.slice(6, 9));
+
+    expect(queue.length).toBe(9);
+  });
+
+  it('resolve a empty success response if empty jobs passed', () =>
+    expect(queue.executeJobs([])).resolves.toEqual({
+      success: true,
+      errors: null,
+      batch: [],
+    }));
+});
+
 describe('as a FIFO queue', () => {
   test('with less job acquire() a time', async () => {
-    expect(queue.length).toBe(9);
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     for (let i = 0; i < 5; i += 1) {
       setImmediate(jest.runOnlyPendingTimers);
@@ -150,7 +194,9 @@ describe('as a FIFO queue', () => {
   });
 
   test('with more job acquire() a time', async () => {
-    expect(queue.length).toBe(9);
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     for (let i = 0; i < 2; i += 1) {
       setImmediate(jest.runOnlyPendingTimers);
@@ -186,7 +232,9 @@ describe('as a FIFO queue', () => {
   });
 
   test('with acquire() consumption error', async () => {
-    expect(queue.length).toBe(9);
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     consume.mockImplementation(async acquired => {
       await delay(10);
@@ -260,7 +308,9 @@ describe('as a FIFO queue', () => {
   });
 
   test('with failed job returned by acquire()', async () => {
-    expect(queue.length).toBe(9);
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     consume.mockImplementation(async acquired => {
       await delay(10);
@@ -333,6 +383,10 @@ describe('as a FIFO queue', () => {
     // which would break the resolve order assertions.
     jest.useRealTimers();
 
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
+
     const promises = new Array(5).fill(0).map(async (_, i) =>
       queue.acquire(2, async acquired => {
         expect(acquired).toEqual(jobs.slice(i * 2, i * 2 + 2));
@@ -385,7 +439,9 @@ describe('as a FIFO queue', () => {
   test('with more job acquire() asynchronizedly a time', async () => {
     jest.useRealTimers();
 
-    expect(queue.length).toBe(9);
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     const promises = new Array(2).fill(0).map(async (_, i) =>
       queue.acquire(5, async acquired => {
@@ -431,7 +487,9 @@ describe('as a FIFO queue', () => {
   test('with acquire() consumption error asynchronizedly', async () => {
     jest.useRealTimers();
 
-    expect(queue.length).toBe(9);
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     const promises = new Array(5).fill(0).map(async (_, i) =>
       queue.acquire(2, async acquired => {
@@ -491,7 +549,9 @@ describe('as a FIFO queue', () => {
   test('with failed jobs return by acquire() asynchronizedly', async () => {
     jest.useRealTimers();
 
-    expect(queue.length).toBe(9);
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     const promises = new Array(5).fill(0).map(async (_, i) =>
       queue.acquire(2, async acquired => {
@@ -571,6 +631,10 @@ describe('as a FIFO queue', () => {
 
 describe('as a FILO queue', () => {
   test('with less job acquire() a time', async () => {
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
+
     for (let i = 0; i < 5; i += 1) {
       setImmediate(jest.runOnlyPendingTimers);
 
@@ -619,6 +683,10 @@ describe('as a FILO queue', () => {
   });
 
   test('with more job acquire() a time', async () => {
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
+
     for (let i = 0; i < 2; i += 1) {
       setImmediate(jest.runOnlyPendingTimers);
       await expect(
@@ -655,6 +723,10 @@ describe('as a FILO queue', () => {
   });
 
   test('with acquire() consumption error', async () => {
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
+
     consume.mockImplementation(async acquired => {
       await delay(10);
       if (acquired[0].id === 5 || acquired[0].id === 3) {
@@ -731,6 +803,10 @@ describe('as a FILO queue', () => {
   });
 
   test('with failed job returned by acquire()', async () => {
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
+
     consume.mockImplementation(async acquired => {
       await delay(10);
       return acquired.map(job => {
@@ -800,6 +876,10 @@ describe('as a FILO queue', () => {
 
 describe('acquire disorderly', () => {
   test('when all succeed', async () => {
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
+
     for (let i = 0; i < 5; i += 1) {
       setImmediate(jest.runOnlyPendingTimers);
 
@@ -866,6 +946,10 @@ describe('acquire disorderly', () => {
   });
 
   test('when consumption error happen', async () => {
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
+
     consume.mockImplementation(async acquired => {
       await delay(10);
       if (acquired[0].id === 2 || acquired[0].id === 7) {
@@ -934,6 +1018,10 @@ describe('acquire disorderly', () => {
   });
 
   test('with failed job returned by acquire()', async () => {
+    queue.executeJobs(jobs.slice(0, 3)).then(batch1Resolved);
+    queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
+    queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
+
     consume.mockImplementation(async acquired => {
       await delay(10);
       return acquired.map(job => {

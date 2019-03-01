@@ -1,6 +1,6 @@
 // @flow
 import { MACHINAT_ELEMENT_TYPE } from 'machinat-utility';
-import type { MachinatElementType, MachinatNode } from 'types/element';
+import type { MachinatElementType, MachinatNode } from './types';
 
 export default function createElement(
   type: MachinatElementType,
@@ -20,6 +20,5 @@ export default function createElement(
     type,
     props,
     $$typeof: MACHINAT_ELEMENT_TYPE,
-    // $FlowFixMe ok until we have better way labeling native type
   };
 }

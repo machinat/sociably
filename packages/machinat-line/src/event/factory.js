@@ -1,4 +1,6 @@
-import { mixin, makeEvent } from 'machinat-base';
+// @flow
+import { mixin } from 'machinat-base';
+import { eventFactory } from './utils';
 import {
   EventBase as Base,
   Message,
@@ -14,72 +16,76 @@ import {
   DatetimeParam,
   Beacon,
   AccountLink,
+  DeviceLink,
 } from './descriptor';
 
-export const text = makeEvent(
-  'text',
-  null,
-  mixin(Base, Message, Repliable, Text)
-);
+export const text = eventFactory(mixin(Base, Message, Repliable, Text), 'text');
 
 const MediaProto = mixin(Base, Message, Repliable, Media);
-export const image = makeEvent('image', null, MediaProto);
-export const video = makeEvent('video', null, MediaProto);
-export const audio = makeEvent('audio', null, MediaProto);
+export const image = eventFactory(MediaProto, 'image');
+export const video = eventFactory(MediaProto, 'video');
+export const audio = eventFactory(MediaProto, 'audio');
 
-export const file = makeEvent(
-  'file',
-  null,
-  mixin(Base, Message, Repliable, Media, File)
+export const file = eventFactory(
+  mixin(Base, Message, Repliable, Media, File),
+  'file'
 );
 
-export const location = makeEvent(
-  'location',
-  null,
-  mixin(Base, Message, Repliable, Location)
+export const location = eventFactory(
+  mixin(Base, Message, Repliable, Location),
+  'location'
 );
 
-export const sticker = makeEvent(
-  'sticker',
-  null,
-  mixin(Base, Message, Repliable, Sticker)
+export const sticker = eventFactory(
+  mixin(Base, Message, Repliable, Sticker),
+  'sticker'
 );
 
 const BaseProto = mixin(Base);
 const RepliableProto = mixin(Base, Repliable);
 
-export const follow = makeEvent('follow', null, RepliableProto);
-export const unfollow = makeEvent('unfollow', null, BaseProto);
-export const join = makeEvent('join', null, RepliableProto);
-export const leave = makeEvent('leave', null, BaseProto);
+export const follow = eventFactory(RepliableProto, 'follow');
+export const unfollow = eventFactory(BaseProto, 'unfollow');
+export const join = eventFactory(RepliableProto, 'join');
+export const leave = eventFactory(BaseProto, 'leave');
 
-export const postback = makeEvent(
-  'postback',
-  null,
-  mixin(Base, Repliable, Postback)
+export const postback = eventFactory(
+  mixin(Base, Repliable, Postback),
+  'postback'
 );
-export const postbackDate = makeEvent(
+export const postbackDate = eventFactory(
+  mixin(Base, Repliable, Postback, DateParam),
   'postback',
-  'date',
-  mixin(Base, Repliable, Postback, DateParam)
+  'date'
 );
-export const postbackTime = makeEvent(
+export const postbackTime = eventFactory(
+  mixin(Base, Repliable, Postback, TimeParam),
   'postback',
-  'time',
-  mixin(Base, Repliable, Postback, TimeParam)
+  'time'
 );
-export const postbackDatetime = makeEvent(
+export const postbackDatetime = eventFactory(
+  mixin(Base, Repliable, Postback, DatetimeParam),
   'postback',
-  'datetime',
-  mixin(Base, Repliable, Postback, DatetimeParam)
-);
-
-export const beacon = makeEvent('beacon', null, mixin(Base, Repliable, Beacon));
-
-export const accountLinking = makeEvent(
-  'acount_linking',
-  null,
-  mixin(Base, Repliable, AccountLink)
+  'datetime'
 );
 
-export const unknown = makeEvent('unknown', null, BaseProto);
+export const beacon = eventFactory(mixin(Base, Repliable, Beacon), 'beacon');
+
+export const accountLink = eventFactory(
+  mixin(Base, Repliable, AccountLink),
+  'acount_link'
+);
+
+export const deviceLink = eventFactory(
+  mixin(Base, Repliable, DeviceLink),
+  'things',
+  'link'
+);
+
+export const deviceUnlink = eventFactory(
+  mixin(Base, Repliable, DeviceLink),
+  'things',
+  'unlink'
+);
+
+export const unknown = eventFactory(BaseProto, 'unknown');

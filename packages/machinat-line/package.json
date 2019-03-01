@@ -9,6 +9,7 @@
     "machinat-queue": "0.0.1-0",
     "machinat-renderer": "0.0.1-0",
     "machinat-utility": "0.0.1-0",
+    "machinat-webhook": "0.0.1-0",
     "node-fetch": "^2.2.0",
     "warning": "^4.0.2"
   }

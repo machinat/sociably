@@ -1,3 +1,6 @@
+// @flow
+import { ChatThread } from '../thread';
+
 export const EventBase = {
   platform: {
     enumerable: true,
@@ -19,7 +22,11 @@ export const EventBase = {
   thread: {
     enumerable: true,
     get() {
-      return this.raw.source;
+      return new ChatThread(
+        this.raw.source,
+        this.raw.replyToken,
+        this._useReplyAPI
+      );
     },
   },
   threadId: {
@@ -210,6 +217,21 @@ export const AccountLink = {
     enumerable: true,
     get() {
       return this.raw.link.nonce;
+    },
+  },
+};
+
+export const DeviceLink = {
+  deviceId: {
+    enumerable: true,
+    get() {
+      return this.raw.things.deviceId;
+    },
+  },
+  linked: {
+    enumerable: true,
+    get() {
+      return this.raw.things.type === 'link';
     },
   },
 };

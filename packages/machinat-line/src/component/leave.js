@@ -15,13 +15,13 @@ annotate(
   asUnit(true),
   hasBody(false),
   hasEntry(thread => {
-    const { type, sourceId } = thread;
+    const { type, subtype, sourceId } = thread;
 
     invariant(
-      type !== 'user',
+      type === 'chat' && subtype !== 'user',
       '<Leave /> should be only used in a group or room thread'
     );
 
-    return `${type}/${sourceId}/leave`;
+    return `${subtype}/${sourceId}/leave`;
   })
 )(Leave);

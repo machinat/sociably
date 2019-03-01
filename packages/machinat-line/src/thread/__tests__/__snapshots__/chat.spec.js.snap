@@ -1,0 +1,137 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#createJobs(actions) when not useReplyAPI 1`] = `
+Array [
+  Object {
+    "body": Object {
+      "messages": Array [
+        Object {
+          "id": 0,
+        },
+        Object {
+          "id": 1,
+        },
+        Object {
+          "id": 2,
+        },
+        Object {
+          "id": 3,
+        },
+        Object {
+          "id": 4,
+        },
+      ],
+      "to": "john",
+    },
+    "entry": "message/push",
+    "threadId": "line:default:user:john",
+  },
+  Object {
+    "body": Object {
+      "messages": Array [
+        Object {
+          "id": 5,
+        },
+        Object {
+          "id": 6,
+        },
+      ],
+      "to": "john",
+    },
+    "entry": "message/push",
+    "threadId": "line:default:user:john",
+  },
+  Object {
+    "body": undefined,
+    "entry": "bar",
+    "threadId": "line:default:user:john",
+  },
+  Object {
+    "body": Object {
+      "messages": Array [
+        Object {
+          "id": 8,
+        },
+      ],
+      "to": "john",
+    },
+    "entry": "message/push",
+    "threadId": "line:default:user:john",
+  },
+  Object {
+    "body": Object {
+      "id": 9,
+    },
+    "entry": "baz",
+    "threadId": "line:default:user:john",
+  },
+]
+`;
+
+exports[`#createJobs(actions) when useReplyAPI 1`] = `
+Array [
+  Object {
+    "body": Object {
+      "messages": Array [
+        Object {
+          "id": 0,
+        },
+        Object {
+          "id": 1,
+        },
+        Object {
+          "id": 2,
+        },
+        Object {
+          "id": 3,
+        },
+        Object {
+          "id": 4,
+        },
+      ],
+      "replyToken": "__REPLY_TOKEN__",
+    },
+    "entry": "message/reply",
+    "threadId": "line:default:unknown:__REPLY_TOKEN__",
+  },
+  Object {
+    "body": Object {
+      "messages": Array [
+        Object {
+          "id": 5,
+        },
+        Object {
+          "id": 6,
+        },
+      ],
+      "replyToken": "__REPLY_TOKEN__",
+    },
+    "entry": "message/reply",
+    "threadId": "line:default:unknown:__REPLY_TOKEN__",
+  },
+  Object {
+    "body": undefined,
+    "entry": "bar",
+    "threadId": "line:default:unknown:__REPLY_TOKEN__",
+  },
+  Object {
+    "body": Object {
+      "messages": Array [
+        Object {
+          "id": 8,
+        },
+      ],
+      "replyToken": "__REPLY_TOKEN__",
+    },
+    "entry": "message/reply",
+    "threadId": "line:default:unknown:__REPLY_TOKEN__",
+  },
+  Object {
+    "body": Object {
+      "id": 9,
+    },
+    "entry": "baz",
+    "threadId": "line:default:unknown:__REPLY_TOKEN__",
+  },
+]
+`;

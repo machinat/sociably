@@ -21,9 +21,9 @@ export const asUnit = (is: boolean) => (Component: Function) => {
   Component.$$unit = is;
 };
 
-export const hasEntry = (path: string | (MachinatThread => string)) => (
-  Component: Function
-) => {
+export const hasEntry = (
+  path: string | ((MachinatThread<any, any>) => string)
+) => (Component: Function) => {
   Component.$$entry = path;
 };
 

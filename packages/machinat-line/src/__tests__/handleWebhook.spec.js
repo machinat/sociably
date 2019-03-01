@@ -110,12 +110,12 @@ it('returns events created', () => {
   events.forEach((event, i) => {
     expect(event.platform).toBe('line');
     expect(event.type).toBe(!i ? 'text' : 'follow');
-    expect(event.subtype).toBe(null);
+    expect(event.subtype).toBe(undefined);
     expect(event.raw).toEqual(body.events[i]);
   });
 });
 
-it('returns events ok if request validation passed', () => {
+it('returns events if request validation passed', () => {
   const req = moxy(new IncomingMessage());
   req.method = 'POST';
   const res = moxy(new ServerResponse({ method: 'POST' }));
@@ -135,7 +135,7 @@ it('returns events ok if request validation passed', () => {
 
   expect(event.platform).toBe('line');
   expect(event.type).toBe('text');
-  expect(event.subtype).toBe(null);
+  expect(event.subtype).toBe(undefined);
   expect(event.raw).toEqual({
     replyToken: 'xxx',
     type: 'message',
