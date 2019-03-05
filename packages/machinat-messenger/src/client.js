@@ -225,17 +225,18 @@ export default class MessengerClient implements MachinatWorker {
 
     const batchBody = {
       access_token: this.token,
-      include_headers: 'false', // NOTE: Graph API param work as string
       appsecret_proof: this._appSecretProof || undefined,
       batch: JSON.stringify(requests),
     };
 
+    // use formdata if files attached, otherwise json
     const body = hasFiles
       ? appendFieldsToForm(filesForm, batchBody)
       : JSON.stringify(batchBody);
 
     const apiResponse = await fetch(ENTRY, { method: POST, headers, body });
 
+    // if batch respond with error, throw it
     const apiBody = await apiResponse.json();
     if (!apiResponse.ok) {
       throw new GraphAPIError(apiBody);

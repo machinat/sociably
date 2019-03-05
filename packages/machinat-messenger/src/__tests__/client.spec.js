@@ -81,7 +81,7 @@ it('sends ok', async () => {
   const body = bodySpy.mock.calls[0].args[0];
 
   expect(body.access_token).toBe(accessToken);
-  expect(body.include_headers).toBe('false');
+  expect(body.include_headers).toBe(undefined);
   expect(body).toMatchSnapshot();
 
   const batch = JSON.parse(body.batch);
@@ -237,9 +237,6 @@ it('upload files with form data if binary attached on job', async () => {
 
   expect(body).toMatch(
     /Content-Disposition: form-data; name="access_token"[\n\r\s]+_graph_api_access_token_/
-  );
-  expect(body).toMatch(
-    /Content-Disposition: form-data; name="include_headers"[\n\r\s]+false/
   );
 
   const batch = JSON.parse(
