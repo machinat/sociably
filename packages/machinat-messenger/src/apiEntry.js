@@ -6,3 +6,5 @@ export const ENTRY_REQUEST_THREAD_CONTROL = 'me/request_thread_control';
 export const ENTRY_TAKE_THREAD_CONTROL = 'me/take_thread_control';
 
 export const ENTRY_MESSAGE_CREATIVES = 'me/message_creatives';
+export const ENTRY_BROADCAST_MESSAGES = 'me/broadcast_messages';
+export const ENTRY_CUSTOM_LABELS = 'me/custom_labels';

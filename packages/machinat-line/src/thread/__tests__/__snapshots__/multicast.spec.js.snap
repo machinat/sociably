@@ -28,7 +28,7 @@ Array [
       ],
     },
     "entry": "message/multicast",
-    "threadId": "line:default:multicast",
+    "threadId": "line:default:multicast:*",
   },
   Object {
     "body": Object {
@@ -50,7 +50,7 @@ Array [
       ],
     },
     "entry": "message/multicast",
-    "threadId": "line:default:multicast",
+    "threadId": "line:default:multicast:*",
   },
 ]
 `;

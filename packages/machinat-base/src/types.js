@@ -22,18 +22,13 @@ export interface MachinatThread<Job, Options> {
   type: any;
   subtype?: any;
   allowPause: boolean;
-  uid(): string;
-  // TODO: put createJobs method under a symbol
-  createJobs(actions: ActionWithoutPause<any, any>[], options: Options): Job[];
+  uid: string;
+  // TODO: move "createJobs" method under a symbol
+  createJobs(
+    actions: null | ActionWithoutPause<any, any>[],
+    options: Options
+  ): null | Job[];
 }
-
-declare function getOptions<Options, Thread: MachinatThread<any, Options>>(
-  Thread
-): Options;
-export type OptionsOf<Thread: MachinatThread<any, any>> = $Call<
-  typeof getOptions,
-  Thread
->;
 
 export interface MachinatEvent<Raw, Thread: MachinatThread<any, any>> {
   platform: any;
@@ -44,25 +39,25 @@ export interface MachinatEvent<Raw, Thread: MachinatThread<any, any>> {
   raw: Raw;
 }
 
-export type SendResponse<Rendered, Native, Job, Result> = {
-  jobs: ?(Job[]),
-  results: ?(Result[]),
-  actions: ?(MachinatAction<Rendered, Native>[]),
-  message: MachinatNode,
+export type DispatchReport<Rendered, Native, Job, Result> = {
+  element: null | MachinatNode,
+  actions: null | MachinatAction<Rendered, Native>[],
+  jobs: null | Job[],
+  results: null | Result[],
 };
 
-export type SendContext<
+export type DispatchContext<
   Rendered,
   Native,
   Job,
   Thread: MachinatThread<Job, any>
 > = {
-  message: MachinatNode,
+  element: MachinatNode,
   platform: string,
   thread: Thread,
-  options: OptionsOf<Thread>,
+  options: any,
   renderer: MahinateRenderer<Rendered, Native>,
-  actions: MachinatAction<Rendered, Native>[],
+  actions: null | MachinatAction<Rendered, Native>[],
 };
 
 export type MiddlewareFunc<Ctx, Value> = (
@@ -86,8 +81,8 @@ export type SendMiddleware<
   Result,
   Thread: MachinatThread<Job, any>
 > = MiddlewareFunc<
-  SendContext<Rendered, Native, Job, Thread>,
-  Promise<SendResponse<Rendered, Native, Job, Result>>
+  DispatchContext<Rendered, Native, Job, Thread>,
+  Promise<DispatchReport<Rendered, Native, Job, Result>>
 >;
 
 export type BotPlugin<

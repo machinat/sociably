@@ -26,7 +26,7 @@ export type SuccessJobBatchResponse<Job, Result> = {|
 export type FailedJobBatchResponse<Job, Result> = {|
   success: false,
   errors: Array<Error>,
-  batch: ?Array<void | JobResponse<Job, Result>>,
+  batch: null | Array<void | JobResponse<Job, Result>>,
 |};
 
 export type JobBatchResponse<Job, Result> =

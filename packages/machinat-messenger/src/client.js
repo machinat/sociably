@@ -245,6 +245,8 @@ export default class MessengerClient implements MachinatWorker {
 
     for (let i = 0; i < jobResponses.length; i += 1) {
       const result = apiBody[i];
+      result.body = JSON.parse(result.body);
+
       const success = result.code >= 200 && result.code < 300;
 
       jobResponses[i] = success // NOTE: to help flow recognize which case it is
@@ -257,7 +259,7 @@ export default class MessengerClient implements MachinatWorker {
         : {
             success: false,
             result,
-            error: new GraphAPIError(JSON.parse(result.body)),
+            error: new GraphAPIError(result.body),
             job: jobs[i],
           };
     }

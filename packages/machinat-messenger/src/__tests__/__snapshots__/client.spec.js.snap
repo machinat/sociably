@@ -34,7 +34,10 @@ Object {
         "threadId": "messenger:default:id:foo",
       },
       "result": Object {
-        "body": "{\\"message_id\\":\\"xxx\\",\\"recipient_id\\":\\"xxx\\"}",
+        "body": Object {
+          "message_id": "xxx",
+          "recipient_id": "xxx",
+        },
         "code": 200,
       },
       "success": true,
@@ -54,7 +57,14 @@ Object {
         "threadId": "messenger:default:id:foo",
       },
       "result": Object {
-        "body": "{\\"error\\":{\\"message\\":\\"you should not passed!\\",\\"type\\":\\"OAuthException\\",\\"code\\":999,\\"fbtrace_id\\":\\"DuNgzaHdmcb\\"}}",
+        "body": Object {
+          "error": Object {
+            "code": 999,
+            "fbtrace_id": "DuNgzaHdmcb",
+            "message": "you should not passed!",
+            "type": "OAuthException",
+          },
+        },
         "code": 400,
       },
       "success": false,
@@ -73,7 +83,10 @@ Object {
         "threadId": "messenger:default:id:foo",
       },
       "result": Object {
-        "body": "{\\"message_id\\":\\"xxx\\",\\"recipient_id\\":\\"xxx\\"}",
+        "body": Object {
+          "message_id": "xxx",
+          "recipient_id": "xxx",
+        },
         "code": 200,
       },
       "success": true,

@@ -12,7 +12,9 @@ test('user source', () => {
   expect(thread.platform).toBe('line');
   expect(thread.type).toBe('chat');
   expect(thread.subtype).toBe('user');
+  expect(thread.uid).toBe('line:default:user:foo');
   expect(thread.allowPause).toBe(true);
+
   expect(thread.source).toEqual({ type: 'user', userId: 'foo' });
   expect(thread.sourceId).toBe('foo');
   expect(thread.replyToken).toBe('_TOKEN_');
@@ -29,7 +31,9 @@ test('room source', () => {
   expect(thread.platform).toBe('line');
   expect(thread.type).toBe('chat');
   expect(thread.subtype).toBe('room');
+  expect(thread.uid).toBe('line:default:room:foo');
   expect(thread.allowPause).toBe(true);
+
   expect(thread.source).toEqual({ type: 'room', roomId: 'foo' });
   expect(thread.sourceId).toBe('foo');
   expect(thread.replyToken).toBe('_TOKEN_');
@@ -58,8 +62,10 @@ test('unknown source', () => {
 
   expect(thread.platform).toBe('line');
   expect(thread.type).toBe('chat');
-  expect(thread.subtype).toBe('unknown');
+  expect(thread.subtype).toBe('unknown_chat');
+  expect(thread.uid).toBe('line:default:unknown_chat:*');
   expect(thread.allowPause).toBe(true);
+
   expect(thread.source).toEqual(null);
   expect(thread.sourceId).toBe(undefined);
   expect(thread.replyToken).toBe('_TOKEN_');

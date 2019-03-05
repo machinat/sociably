@@ -6,8 +6,9 @@ it('implements MachinatThread', () => {
 
   expect(thread.platform).toBe('line');
   expect(thread.type).toBe('multicast');
+  expect(thread.uid).toBe('line:default:multicast:*');
   expect(thread.allowPause).toBe(false);
-  expect(thread.to).toEqual(['foo', 'bar', 'baz']);
+  expect(thread.targets).toEqual(['foo', 'bar', 'baz']);
 });
 
 describe('#createJobs(actions)', () => {

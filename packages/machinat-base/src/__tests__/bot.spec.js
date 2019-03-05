@@ -9,7 +9,7 @@ const controller = moxy({
 
 const engine = moxy({
   use: () => engine,
-  process: () => 'Vrooooooooooooooom',
+  dispatch: () => 'Vrooooooooooooooom',
   start: () => true,
   stop: () => true,
 });
@@ -52,22 +52,6 @@ describe('#constructor(controller, engine, plugins)', () => {
 
     expect(controller.use.mock).toHaveBeenCalledWith(rmw1, rmw2);
     expect(engine.use.mock).toHaveBeenCalledWith(smw1, smw2);
-  });
-});
-
-describe('#deliver(thread, message, option)', () => {
-  it('proxy to engine.process()', async () => {
-    const bot = new Bot(controller, engine);
-    const thread = { john: 'doe' };
-    const msg = 'Hello!';
-    const options = { foo: 'bar' };
-
-    engine.process.mock.fake(() => Promise.resolve('World!'));
-
-    await expect(bot.deliver(thread, msg, options)).resolves.toBe('World!');
-
-    expect(engine.process.mock).toHaveBeenCalledTimes(1);
-    expect(engine.process.mock).toHaveBeenCalledWith(thread, msg, options);
   });
 });
 

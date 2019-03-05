@@ -1,14 +1,7 @@
 // @flow
 import EventEmitter from 'events';
-import type { MachinatNode } from 'machinat/types';
 import type { MachinatNativeType } from 'machinat-renderer/types';
-import type {
-  SendResponse,
-  BotPlugin,
-  EventHandler,
-  MachinatThread,
-  OptionsOf,
-} from './types';
+import type { BotPlugin, EventHandler, MachinatThread } from './types';
 import type MachinatController from './controller';
 import type MachinatEngine from './engine';
 
@@ -19,15 +12,15 @@ export default class BaseBot<
   Native: MachinatNativeType<Rendered>,
   Job,
   Result,
-  DeliverableThread: MachinatThread<Job, any>,
-  ReceivableThread: DeliverableThread
+  Deliverable: MachinatThread<Job, any>,
+  Receivable: Deliverable
 > extends EventEmitter {
-  controller: MachinatController<RawEvent, Response, ReceivableThread>;
-  engine: MachinatEngine<Rendered, Native, Job, Result, DeliverableThread>;
+  controller: MachinatController<RawEvent, Response, Receivable>;
+  engine: MachinatEngine<Rendered, Native, Job, Result, Deliverable>;
 
   constructor(
-    controller: MachinatController<RawEvent, Response, ReceivableThread>,
-    engine: MachinatEngine<Rendered, Native, Job, Result, DeliverableThread>,
+    controller: MachinatController<RawEvent, Response, Receivable>,
+    engine: MachinatEngine<Rendered, Native, Job, Result, Deliverable>,
     plugins?: BotPlugin<
       RawEvent,
       Response,
@@ -35,8 +28,8 @@ export default class BaseBot<
       Native,
       Job,
       Result,
-      DeliverableThread,
-      ReceivableThread
+      Deliverable,
+      Receivable
     >[]
   ) {
     super();
@@ -62,15 +55,7 @@ export default class BaseBot<
     this.engine.start();
   }
 
-  deliver<Thread: DeliverableThread>(
-    thread: Thread,
-    message: MachinatNode,
-    options: OptionsOf<Thread>
-  ): Promise<SendResponse<Rendered, Native, Job, Result>> {
-    return this.engine.process(thread, message, options);
-  }
-
-  eventHandler(): EventHandler<RawEvent, Response, ReceivableThread> {
+  eventHandler(): EventHandler<RawEvent, Response, Receivable> {
     return this.controller.makeEventHandler(
       this,
       context => {

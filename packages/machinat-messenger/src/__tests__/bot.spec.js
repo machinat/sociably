@@ -1,11 +1,34 @@
 import moxy from 'moxy';
+import nock from 'nock';
+import Machinat from 'machinat';
 import { Controller, Engine, BaseBot } from 'machinat-base';
 import WebhookReceiver from 'machinat-webhook';
 import MessengerBot from '../bot';
 import MessengerClient from '../client';
+import { Image, Dialog, QuickReply } from '../component';
+import { makeResponse } from './utils';
+
+nock.disableNetConnect();
+
+const message = (
+  <Dialog quickReplies={<QuickReply title="Hi!" />}>
+    Hello
+    <b>World!</b>
+    <Image src="https://machinat.com/greeting.png" />
+  </Dialog>
+);
+
+let graphAPI;
+const bodySpy = moxy(() => true);
 
 beforeEach(() => {
+  graphAPI = nock('https://graph.facebook.com').post('/v3.1/', bodySpy);
   BaseBot.mock.clear();
+  bodySpy.mock.clear();
+});
+
+afterEach(() => {
+  nock.cleanAll();
 });
 
 it('throw if accessToken not given', () => {
@@ -128,4 +151,206 @@ it('covers default options', () => {
   };
 
   expect(new MessengerBot(options).options).toEqual(options);
+});
+
+describe('#send(message, options)', () => {
+  let scope;
+  beforeEach(() => {
+    scope = graphAPI.reply(
+      200,
+      JSON.stringify([
+        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
+        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
+        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
+      ])
+    );
+  });
+
+  it('resolves null if message is empty', async () => {
+    const bot = new MessengerBot({
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    });
+
+    const empties = [undefined, null, [], <></>];
+    for (const empty of empties) {
+      await expect(bot.send('john', empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
+    }
+  });
+
+  it('works', async () => {
+    const bot = new MessengerBot({
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    });
+
+    await expect(bot.send('john', message)).resolves.toEqual([
+      { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
+      { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
+      { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
+    ]);
+
+    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    const body = bodySpy.mock.calls[0].args[0];
+
+    expect(body).toMatchSnapshot({ batch: expect.any(String) });
+    expect(JSON.parse(body.batch)).toMatchSnapshot();
+
+    expect(scope.isDone()).toBe(true);
+  });
+
+  it('works with options', async () => {
+    const bot = new MessengerBot({
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    });
+
+    await expect(
+      bot.send('john', message, {
+        messagingType: 'TAG',
+        tag: 'TRANSPORTATION_UPDATE',
+        notificationType: 'SILENT_PUSH',
+        personaId: 'billy17',
+      })
+    ).resolves.toEqual([
+      { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
+      { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
+      { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
+    ]);
+
+    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    const body = bodySpy.mock.calls[0].args[0];
+
+    expect(body).toMatchSnapshot({ batch: expect.any(String) });
+    expect(JSON.parse(body.batch)).toMatchSnapshot();
+
+    expect(scope.isDone()).toBe(true);
+  });
+});
+
+describe('#createMessageCreative(message)', async () => {
+  it('resolves null if message is empty', async () => {
+    const bot = new MessengerBot({
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    });
+
+    const empties = [undefined, null, [], <></>];
+    for (const empty of empties) {
+      await expect(bot.createMessageCreative(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
+    }
+  });
+
+  it('works', async () => {
+    const bot = new MessengerBot({
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    });
+
+    const scope = graphAPI.reply(
+      200,
+      JSON.stringify([makeResponse(200, { message_creative_id: 938461089 })])
+    );
+
+    await expect(bot.createMessageCreative('john', message)).resolves.toEqual({
+      code: 200,
+      body: { message_creative_id: 938461089 },
+    });
+
+    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    const body = bodySpy.mock.calls[0].args[0];
+
+    expect(body).toMatchSnapshot({ batch: expect.any(String) });
+    expect(JSON.parse(body.batch)).toMatchSnapshot();
+
+    expect(scope.isDone()).toBe(true);
+  });
+});
+
+describe('#broadcastMessage(creativeId, options)', () => {
+  let scope;
+  beforeEach(() => {
+    scope = graphAPI.reply(
+      200,
+      JSON.stringify([makeResponse(200, { broadcast_id: 827 })])
+    );
+  });
+
+  it('works', async () => {
+    const bot = new MessengerBot({
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    });
+
+    await expect(bot.broadcastMessage(938461089)).resolves.toEqual({
+      code: 200,
+      body: { broadcast_id: 827 },
+    });
+
+    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    const body = bodySpy.mock.calls[0].args[0];
+
+    expect(body).toMatchSnapshot({ batch: expect.any(String) });
+    expect(JSON.parse(body.batch)).toMatchSnapshot();
+
+    expect(scope.isDone()).toBe(true);
+  });
+
+  it('works with options', async () => {
+    const bot = new MessengerBot({
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    });
+
+    await expect(
+      bot.broadcastMessage(938461089, {
+        customLabelId: 1712444532121303,
+        notificationType: 'SILENT_PUSH',
+        personaId: 'billy18',
+      })
+    ).resolves.toEqual({ code: 200, body: { broadcast_id: 827 } });
+
+    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    const body = bodySpy.mock.calls[0].args[0];
+
+    expect(body).toMatchSnapshot({ batch: expect.any(String) });
+    expect(JSON.parse(body.batch)).toMatchSnapshot();
+
+    expect(scope.isDone()).toBe(true);
+  });
+});
+
+describe('#createCustomLabel(name)', () => {
+  it('works', async () => {
+    const bot = new MessengerBot({
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    });
+
+    const scope = graphAPI.reply(
+      200,
+      JSON.stringify([makeResponse(200, { id: 1712444532121303 })])
+    );
+
+    await expect(bot.createCustomLabel('foo')).resolves.toEqual({
+      code: 200,
+      body: { id: 1712444532121303 },
+    });
+
+    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    const body = bodySpy.mock.calls[0].args[0];
+
+    expect(body).toMatchSnapshot({ batch: expect.any(String) });
+    expect(JSON.parse(body.batch)).toMatchSnapshot();
+
+    expect(scope.isDone()).toBe(true);
+  });
 });

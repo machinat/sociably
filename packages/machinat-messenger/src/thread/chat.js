@@ -7,20 +7,21 @@ import { ATTACHED_FILE_DATA, ATTACHED_FILE_INFO } from '../symbol';
 import { ENTRY_MESSAGES } from '../apiEntry';
 
 import type {
-  Recepient,
+  Recipient,
   MessengerActionValue,
-  MessengerSendOptions,
+  SendOptions,
   MessengerJob,
   MessengerComponent,
 } from '../types';
 
-import { isMessage, appendURIField } from './utils';
+import { isMessage, appendField, appendFields } from './utils';
 
 const POST = 'POST';
 
 class MessengerThread
-  implements MachinatThread<MessengerJob, void | MessengerSendOptions> {
-  recepient: Recepient;
+  implements MachinatThread<MessengerJob, void | SendOptions> {
+  uid: string;
+  recepient: Recipient;
   pageId: ?string;
 
   platform = 'messenger';
@@ -28,42 +29,45 @@ class MessengerThread
   subtype = 'user';
   allowPause = true;
 
-  constructor(recepient: Recepient, pageId?: string) {
+  constructor(recepient: Recipient, pageId?: string) {
     this.recepient = recepient;
     this.pageId = pageId;
-  }
 
-  uid() {
-    const { recepient } = this;
-    const pagePrefix = `messenger:${this.pageId || 'default'}`;
-
-    return recepient.id
-      ? `${pagePrefix}:user:${recepient.id}`
-      : recepient.user_ref
-      ? `${pagePrefix}:user_ref:${recepient.user_ref}`
-      : recepient.phone_number
-      ? `${pagePrefix}:phone_number:${crypto
-          .createHash('sha1')
-          .update(recepient.phone_number)
-          .digest('base64')}`
-      : JSON.stringify(recepient);
+    this.uid = `messenger:${this.pageId || 'default'}:${
+      recepient.id
+        ? `user:${recepient.id}`
+        : recepient.user_ref
+        ? `user_ref:${recepient.user_ref}`
+        : recepient.phone_number
+        ? `phone_number:${crypto
+            .createHash('sha1')
+            .update(recepient.phone_number)
+            .digest('base64')}`
+        : 'chat:*'
+    }`;
   }
 
   createJobs(
-    actions: ActionWithoutPause<MessengerActionValue, MessengerComponent>[],
-    options?: MessengerSendOptions
+    actions:
+      | null
+      | ActionWithoutPause<MessengerActionValue, MessengerComponent>[],
+    options?: SendOptions
   ) {
+    if (actions === null) {
+      return null;
+    }
+
+    const sharedBody = appendField(
+      '',
+      'recipient',
+      JSON.stringify(this.recepient)
+    );
+
     const jobs: MessengerJob[] = new Array(actions.length);
 
     for (let i = 0; i < actions.length; i += 1) {
       const action = actions[i];
       const { element, value } = action;
-
-      let body = appendURIField(
-        '',
-        'recipient',
-        JSON.stringify(this.recepient)
-      );
 
       const fields: Object =
         typeof value === 'string' ? { message: { text: value } } : value;
@@ -79,19 +83,6 @@ class MessengerThread
           fields.persona_id = options.personaId;
       }
 
-      for (const key of Object.keys(fields)) {
-        const fieldValue = fields[key];
-
-        if (fieldValue !== undefined) {
-          const fieldContent =
-            typeof fieldValue === 'object'
-              ? JSON.stringify(fieldValue)
-              : fieldValue;
-
-          body = appendURIField(body, key, fieldContent);
-        }
-      }
-
       const job: MessengerJob = {
         request: {
           method: POST,
@@ -99,9 +90,9 @@ class MessengerThread
             ? ENTRY_MESSAGES
             : // $FlowFixMe can't refine element.type https://github.com/facebook/flow/issues/6097
               element.type.$$entry,
-          body,
+          body: appendFields(sharedBody, fields),
         },
-        threadId: this.uid(),
+        threadId: this.uid,
         attachedFileData:
           typeof value === 'object' ? value[ATTACHED_FILE_DATA] : undefined,
         attachedFileInfo:

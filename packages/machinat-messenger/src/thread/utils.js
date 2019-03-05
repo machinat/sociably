@@ -12,6 +12,24 @@ export const isMessage = (
   typeof element.type === 'string' ||
   element.type.$$entry === undefined;
 
-export const appendURIField = (body: string, key: string, value: string) =>
+export const appendField = (body: string, key: string, value: string) =>
   // eslint-disable-next-line prefer-template
   (body === '' ? body : body + '&') + key + '=' + encodeURIComponent(value);
+
+export const appendFields = (prefix: string, fields: { [string]: any }) => {
+  let body = prefix;
+
+  for (const key of Object.keys(fields)) {
+    const fieldValue = fields[key];
+
+    if (fieldValue !== undefined) {
+      body = appendField(
+        body,
+        key,
+        typeof fieldValue === 'string' ? fieldValue : JSON.stringify(fieldValue)
+      );
+    }
+  }
+
+  return body;
+};

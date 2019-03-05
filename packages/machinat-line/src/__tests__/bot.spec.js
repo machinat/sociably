@@ -150,9 +150,9 @@ test('#reply(token, node) works', async () => {
     .times(5)
     .reply(200, '{}');
 
-  const response = await bot.reply('__REPLY_TOKEN__', msgs);
+  const results = await bot.reply('__REPLY_TOKEN__', msgs);
 
-  expect(response).toMatchSnapshot();
+  expect(results).toMatchSnapshot();
   expect(apiScope.isDone()).toBe(true);
 
   expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
@@ -163,9 +163,53 @@ test('#reply(token, node) works', async () => {
     '/v2/bot/baz',
   ]);
 
-  bodySpy.mock.calls.forEach((call, i) => {
-    expect(call.args[0]).toEqual(response.jobs[i].body || '');
-  });
+  expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "messages": Array [
+      Object {
+        "id": 0,
+      },
+      Object {
+        "id": 1,
+      },
+      Object {
+        "id": 2,
+      },
+      Object {
+        "id": 3,
+      },
+      Object {
+        "id": 4,
+      },
+    ],
+    "replyToken": "__REPLY_TOKEN__",
+  },
+  Object {
+    "messages": Array [
+      Object {
+        "id": 5,
+      },
+      Object {
+        "id": 6,
+      },
+    ],
+    "replyToken": "__REPLY_TOKEN__",
+  },
+  "",
+  Object {
+    "messages": Array [
+      Object {
+        "id": 8,
+      },
+    ],
+    "replyToken": "__REPLY_TOKEN__",
+  },
+  Object {
+    "id": 9,
+  },
+]
+`);
 });
 
 test('#push(token, node) works', async () => {
@@ -180,9 +224,9 @@ test('#push(token, node) works', async () => {
     .times(5)
     .reply(200, '{}');
 
-  const response = await bot.push('john doe', msgs);
+  const results = await bot.push('john doe', msgs);
 
-  expect(response).toMatchSnapshot();
+  expect(results).toMatchSnapshot();
   expect(apiScope.isDone()).toBe(true);
 
   expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
@@ -193,9 +237,53 @@ test('#push(token, node) works', async () => {
     '/v2/bot/baz',
   ]);
 
-  bodySpy.mock.calls.forEach((call, i) => {
-    expect(call.args[0]).toEqual(response.jobs[i].body || '');
-  });
+  expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "messages": Array [
+      Object {
+        "id": 0,
+      },
+      Object {
+        "id": 1,
+      },
+      Object {
+        "id": 2,
+      },
+      Object {
+        "id": 3,
+      },
+      Object {
+        "id": 4,
+      },
+    ],
+    "to": "john doe",
+  },
+  Object {
+    "messages": Array [
+      Object {
+        "id": 5,
+      },
+      Object {
+        "id": 6,
+      },
+    ],
+    "to": "john doe",
+  },
+  "",
+  Object {
+    "messages": Array [
+      Object {
+        "id": 8,
+      },
+    ],
+    "to": "john doe",
+  },
+  Object {
+    "id": 9,
+  },
+]
+`);
 });
 
 test('#multicast(targets, node) works', async () => {
@@ -209,12 +297,12 @@ test('#multicast(targets, node) works', async () => {
     .times(2)
     .reply(200, '{}');
 
-  const response = await bot.multicast(
+  const results = await bot.multicast(
     ['john', 'wick', 'dog'],
     msgs.slice(0, 7)
   );
 
-  expect(response).toMatchSnapshot();
+  expect(results).toMatchSnapshot();
   expect(apiScope.isDone()).toBe(true);
 
   expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
@@ -222,7 +310,47 @@ test('#multicast(targets, node) works', async () => {
     '/v2/bot/message/multicast',
   ]);
 
-  bodySpy.mock.calls.forEach((call, i) => {
-    expect(call.args[0]).toEqual(response.jobs[i].body || '');
-  });
+  expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "messages": Array [
+      Object {
+        "id": 0,
+      },
+      Object {
+        "id": 1,
+      },
+      Object {
+        "id": 2,
+      },
+      Object {
+        "id": 3,
+      },
+      Object {
+        "id": 4,
+      },
+    ],
+    "to": Array [
+      "john",
+      "wick",
+      "dog",
+    ],
+  },
+  Object {
+    "messages": Array [
+      Object {
+        "id": 5,
+      },
+      Object {
+        "id": 6,
+      },
+    ],
+    "to": Array [
+      "john",
+      "wick",
+      "dog",
+    ],
+  },
+]
+`);
 });

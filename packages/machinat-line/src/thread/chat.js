@@ -15,7 +15,8 @@ const REPLY_PATH = 'message/reply';
 const PUSH_PATH = 'message/push';
 
 class LineChatThread implements MachinatThread<LineJob, void> {
-  subtype: 'user' | 'room' | 'group' | 'unknown';
+  subtype: 'user' | 'room' | 'group' | 'unknown_chat';
+  uid: string;
   source: ?LineSource;
   replyToken: ?string;
 
@@ -27,10 +28,11 @@ class LineChatThread implements MachinatThread<LineJob, void> {
   allowPause = true;
 
   constructor(source: ?LineSource, replyToken: ?string, useReplyAPI: boolean) {
+    this.subtype = source ? source.type : 'unknown_chat';
+
     this.source = source;
     this.replyToken = replyToken;
     this.useReplyAPI = useReplyAPI;
-    this.subtype = source ? source.type : 'unknown';
     this.sourceId = source
       ? source.type === 'group'
         ? source.groupId
@@ -38,15 +40,17 @@ class LineChatThread implements MachinatThread<LineJob, void> {
         ? source.roomId
         : source.userId
       : undefined;
+
+    this.uid = `line:default:${this.subtype}:${this.sourceId || '*'}`;
   }
 
-  uid() {
-    return `line:default:${this.subtype}:${this.sourceId ||
-      this.replyToken ||
-      'undefined'}`;
-  }
+  createJobs(
+    actions: null | ActionWithoutPause<LineActionValue, LineComponent>[]
+  ) {
+    if (actions === null) {
+      return null;
+    }
 
-  createJobs(actions: ActionWithoutPause<LineActionValue, LineComponent>[]) {
     let target: string;
     if (this.useReplyAPI) {
       invariant(
@@ -84,7 +88,7 @@ class LineChatThread implements MachinatThread<LineJob, void> {
       ) {
         jobs.push({
           entry: this.useReplyAPI ? REPLY_PATH : PUSH_PATH,
-          threadId: this.uid(),
+          threadId: this.uid,
           body: this.useReplyAPI
             ? { replyToken: target, messages }
             : { to: (target: string), messages },
@@ -96,7 +100,7 @@ class LineChatThread implements MachinatThread<LineJob, void> {
         jobs.push({
           // FIXME: can't refine element.type https://github.com/facebook/flow/issues/6097
           entry: element.type.$$entry(this, value),
-          threadId: this.uid(),
+          threadId: this.uid,
           body: element.type.$$hasBody ? value : undefined,
         });
       }

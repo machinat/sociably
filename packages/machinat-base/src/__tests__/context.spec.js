@@ -3,7 +3,9 @@ import ReceiveContext from '../context';
 
 const bot = {
   an: 'droid',
-  deliver: moxy(() => Promise.resolve({ success: true })),
+  engine: {
+    dispatch: moxy(() => Promise.resolve({ success: true })),
+  },
 };
 const event = {
   platform: 'resistance',
@@ -26,7 +28,7 @@ it('is a contructor', () => {
 });
 
 describe('#react()', () => {
-  it('make bot.deliver() call', async () => {
+  it('make bot.engine.dispatch() call', async () => {
     const context = new ReceiveContext(event, bot, source, transportCtx);
 
     const msg = "I'm hit! R2, do what you can do on it.";
@@ -36,6 +38,10 @@ describe('#react()', () => {
       success: true,
     });
 
-    expect(bot.deliver.mock).toHaveBeenCalledWith(event.thread, msg, options);
+    expect(bot.engine.dispatch.mock).toHaveBeenCalledWith(
+      event.thread,
+      msg,
+      options
+    );
   });
 });

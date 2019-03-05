@@ -92,7 +92,7 @@ Array [
       "replyToken": "__REPLY_TOKEN__",
     },
     "entry": "message/reply",
-    "threadId": "line:default:unknown:__REPLY_TOKEN__",
+    "threadId": "line:default:unknown_chat:*",
   },
   Object {
     "body": Object {
@@ -107,12 +107,12 @@ Array [
       "replyToken": "__REPLY_TOKEN__",
     },
     "entry": "message/reply",
-    "threadId": "line:default:unknown:__REPLY_TOKEN__",
+    "threadId": "line:default:unknown_chat:*",
   },
   Object {
     "body": undefined,
     "entry": "bar",
-    "threadId": "line:default:unknown:__REPLY_TOKEN__",
+    "threadId": "line:default:unknown_chat:*",
   },
   Object {
     "body": Object {
@@ -124,14 +124,14 @@ Array [
       "replyToken": "__REPLY_TOKEN__",
     },
     "entry": "message/reply",
-    "threadId": "line:default:unknown:__REPLY_TOKEN__",
+    "threadId": "line:default:unknown_chat:*",
   },
   Object {
     "body": Object {
       "id": 9,
     },
     "entry": "baz",
-    "threadId": "line:default:unknown:__REPLY_TOKEN__",
+    "threadId": "line:default:unknown_chat:*",
   },
 ]
 `;

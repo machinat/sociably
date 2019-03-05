@@ -91,25 +91,28 @@ export default class LineBot
     );
   }
 
-  reply(token: string, node: MachinatNode) {
+  reply(token: string, node: MachinatNode): Promise<null | LineAPIResult[]> {
     const thread = new ChatThread(undefined, token, this.options.useReplyAPI);
 
-    return this.deliver(thread, node);
+    return this.engine.dispatch(thread, node);
   }
 
-  push(source: string | LineSource, node: MachinatNode) {
+  push(
+    source: string | LineSource,
+    node: MachinatNode
+  ): Promise<null | LineAPIResult[]> {
     const thread = new ChatThread(
       typeof source === 'string' ? { type: 'user', userId: source } : source,
       undefined,
       this.options.useReplyAPI
     );
 
-    return this.deliver(thread, node);
+    return this.engine.dispatch(thread, node);
   }
 
-  multicast(to: string[], node: MachinatNode) {
+  multicast(to: string[], node: MachinatNode): Promise<null | LineAPIResult[]> {
     const thread = new MulticastThread(to);
 
-    return this.deliver(thread, node);
+    return this.engine.dispatch(thread, node);
   }
 }

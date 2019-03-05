@@ -1,4 +1,3 @@
-import moxy from 'moxy';
 import Machinat from 'machinat';
 import { formatElement } from 'machinat-utility';
 import MESSAGE_CREATIVES_THREAD from '../creative';
@@ -17,9 +16,10 @@ it('implements MachinatThread', () => {
   const thread = MESSAGE_CREATIVES_THREAD;
 
   expect(thread.platform).toBe('messenger');
-  expect(thread.type).toBe('message_creatives');
+  expect(thread.type).toBe('page_api');
+  expect(thread.subtype).toBe('message_creatives');
   expect(thread.allowPause).toBe(false);
-  expect(thread.uid()).toBe('messenger:default:message_creatives');
+  expect(thread.uid).toBe('messenger:default:message_creatives:*');
   expect(typeof thread.createJobs).toBe('function');
 });
 
@@ -33,7 +33,7 @@ describe('#createJobs(actions)', () => {
   it('create jobs to be sent to messenge_creative', () => {
     expect(MESSAGE_CREATIVES_THREAD.createJobs(actions)).toEqual([
       {
-        threadId: 'messenger:default:message_creatives',
+        threadId: 'messenger:default:message_creatives:*',
         request: {
           method: 'POST',
           relative_url: 'me/message_creatives',

@@ -12,19 +12,26 @@ import type {
   MessengerComponent,
 } from '../types';
 
-import { isMessage, appendURIField } from './utils';
+import { isMessage, appendField } from './utils';
 
 const POST = 'POST';
-const CREATIVE_THREAD_UID = 'messenger:default:message_creatives';
+const CREATIVE_THREAD_UID = 'messenger:default:message_creatives:*';
 
-const MESSAGE_CREATIVES_THREAD: MachinatThread<MessengerJob, void> = {
+const MESSAGE_CREATIVES_THREAD = {
   platform: 'messenger',
-  type: 'message_creatives',
+  type: 'page_api',
+  subtype: 'message_creatives',
   allowPause: false,
-  uid: () => CREATIVE_THREAD_UID,
-  createJobs: (
-    actions: ActionWithoutPause<MessengerActionValue, MessengerComponent>[]
-  ) => {
+  uid: CREATIVE_THREAD_UID,
+  createJobs(
+    actions:
+      | null
+      | ActionWithoutPause<MessengerActionValue, MessengerComponent>[]
+  ) {
+    if (actions === null) {
+      return null;
+    }
+
     const messages: MessengerMessage[] = new Array(actions.length);
 
     for (let i = 0; i < actions.length; i += 1) {
@@ -48,7 +55,7 @@ const MESSAGE_CREATIVES_THREAD: MachinatThread<MessengerJob, void> = {
     return [
       {
         request: {
-          body: appendURIField('', 'messages', JSON.stringify(messages)),
+          body: appendField('', 'messages', JSON.stringify(messages)),
           relative_url: ENTRY_MESSAGE_CREATIVES,
           method: POST,
         },
@@ -57,5 +64,7 @@ const MESSAGE_CREATIVES_THREAD: MachinatThread<MessengerJob, void> = {
     ];
   },
 };
+
+(MESSAGE_CREATIVES_THREAD: MachinatThread<MessengerJob, void>);
 
 export default MESSAGE_CREATIVES_THREAD;

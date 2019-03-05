@@ -7,16 +7,16 @@ import type { MachinatAction } from 'machinat-renderer/types';
 export class SendError<Rendered, Native, Job, Result> extends Error {
   errors: $ReadOnlyArray<Error>;
   node: MachinatNode;
-  actions: MachinatAction<Rendered, Native>[];
+  actions: null | MachinatAction<Rendered, Native>[];
   jobs: Job[];
-  responses: $ReadOnlyArray<void | JobResponse<Job, Result>>;
+  responses: null | $ReadOnlyArray<void | JobResponse<Job, Result>>;
 
   constructor(
     errors: $ReadOnlyArray<Error>,
     node: MachinatNode,
-    actions: MachinatAction<Rendered, Native>[],
+    actions: null | MachinatAction<Rendered, Native>[],
     jobs: Job[],
-    responses: $ReadOnlyArray<void | JobResponse<Job, Result>>
+    responses: null | $ReadOnlyArray<void | JobResponse<Job, Result>>
   ) {
     const message = errors
       ? errors.reduce(

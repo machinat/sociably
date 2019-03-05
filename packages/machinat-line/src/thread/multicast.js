@@ -8,25 +8,26 @@ import type { LineJob, LineActionValue, LineComponent } from '../types';
 import { makeMessageFromString, isMessage } from './utils';
 
 const MULTICAST_PATH = 'message/multicast';
-const MULTICAST_UID = 'line:default:multicast';
 
 class LineMulticastThread implements MachinatThread<LineJob, void> {
-  to: string[];
+  targets: string[];
 
   platform = 'line';
   type = 'multicast';
+  uid = 'line:default:multicast:*';
   allowPause = false;
 
-  constructor(to: string[]) {
-    this.to = to;
+  constructor(targets: string[]) {
+    this.targets = targets;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  uid() {
-    return MULTICAST_UID;
-  }
+  createJobs(
+    actions: null | ActionWithoutPause<LineActionValue, LineComponent>[]
+  ) {
+    if (actions === null) {
+      return null;
+    }
 
-  createJobs(actions: ActionWithoutPause<LineActionValue, LineComponent>[]) {
     const jobs: LineJob[] = [];
     let messages: LineActionValue[] = [];
 
@@ -45,8 +46,8 @@ class LineMulticastThread implements MachinatThread<LineJob, void> {
       if (messages.length === 5 || i === actions.length - 1) {
         jobs.push({
           entry: MULTICAST_PATH,
-          threadId: this.uid(),
-          body: { to: (this.to: string[]), messages },
+          threadId: this.uid,
+          body: { to: (this.targets: string[]), messages },
         });
         messages = [];
       }

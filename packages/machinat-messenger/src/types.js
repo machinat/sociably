@@ -7,16 +7,19 @@ import type { BotPlugin } from 'machinat-base/types';
 import type MachinatQueue from 'machinat-queue';
 import type { WebhookResponse } from 'machinat-webhook/types';
 import type { ChatThread } from './thread';
-import typeof { MESSAGE_CREATIVES_THREAD as CreativesThread } from './thread';
+import typeof {
+  MESSAGE_CREATIVES_THREAD,
+  BROADCAST_MESSAGES_THREAD,
+} from './thread';
 
-type PSIDRecepient = {| id: string |};
-type UserRefRecepient = {| user_ref: string |};
-type PhoneNumberRecepient = {|
+type PSIDRecipient = {| id: string |};
+type UserRefRecipient = {| user_ref: string |};
+type PhoneNumberRecipient = {|
   phone_number: string,
   name?: {| first_name: string, last_name: string |},
 |};
 
-export type Recepient = PSIDRecepient | UserRefRecepient | PhoneNumberRecepient;
+export type Recipient = PSIDRecipient | UserRefRecipient | PhoneNumberRecipient;
 
 // TODO: type the raw event object
 export type MessengerRawEvent = Object;
@@ -69,9 +72,10 @@ export type MessengerJob = {|
 |};
 
 export type MessengerAPIResult = {|
-  recipient_id: string,
-  message_id: string,
-  attachment_id?: string,
+  code: number,
+  headers: Object,
+  // TODO: type the api result
+  body: Object,
 |};
 
 export type GraphAPIErrorInfo = {
@@ -86,14 +90,25 @@ export type GraphAPIErrorBody = {
   error: GraphAPIErrorInfo,
 };
 
-export type MessengerSendOptions = {
+export type SendOptions = {
   messagingType?: 'RESPONSE' | 'UPDATE' | 'MESSAGE_TAG',
   tag?: string,
   notificationType?: 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH',
   personaId?: string,
 };
 
+export type BroadcastOptions = {
+  notificationType?: 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH',
+  personaId?: string,
+  customLabelId?: number,
+};
+
 export type MessengerQueue = MachinatQueue<MessengerJob, MessengerAPIResult>;
+
+export type DeliverableThread =
+  | ChatThread
+  | MESSAGE_CREATIVES_THREAD
+  | BROADCAST_MESSAGES_THREAD;
 
 export type MessengerBotOptions = {
   accessToken: string,
@@ -110,7 +125,7 @@ export type MessengerBotOptions = {
     MessengerComponent,
     MessengerJob,
     MessengerAPIResult,
-    ChatThread | CreativesThread,
+    DeliverableThread,
     ChatThread
   >[],
 };

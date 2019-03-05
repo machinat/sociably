@@ -12,14 +12,24 @@ import type { MachinatNativeType, PauseAction } from 'machinat-renderer/types';
 import { SendError } from './error';
 import { compose } from './utils';
 import type {
-  SendResponse,
+  DispatchReport,
   SendMiddleware,
-  SendContext,
+  DispatchContext,
   ActionWithoutPause,
   MachinatWorker,
   MachinatThread,
-  OptionsOf,
 } from './types';
+
+const getResult = <Job, Result>(res: JobResponse<Job, Result>): Result =>
+  res.result;
+
+const flatten = <T>(metric: T[][]): T[] => {
+  const flattened = [];
+  for (const arr of metric) {
+    flattened.push(...arr);
+  }
+  return flattened;
+};
 
 const handlePause = async (pauseEle: PauseElement) => {
   const { after, delay: timeToDelay } = pauseEle.props;
@@ -49,8 +59,8 @@ export default class MachinatEngine<
   renderer: MahinateRenderer<Rendered, Native>;
   worker: MachinatWorker;
   _handleSending: (
-    SendContext<Rendered, Native, Job, Thread>
-  ) => Promise<SendResponse<Rendered, Native, Job, Result>>;
+    DispatchContext<Rendered, Native, Job, Thread>
+  ) => Promise<DispatchReport<Rendered, Native, Job, Result>>;
 
   constructor(
     platform: string,
@@ -90,21 +100,17 @@ export default class MachinatEngine<
     return this.worker.stop(this.queue);
   }
 
-  async process(
+  async dispatch(
     thread: Thread,
     node: MachinatNode,
-    options: OptionsOf<Thread>
-  ): Promise<SendResponse<Rendered, Native, Job, Result>> {
+    options: any
+  ): Promise<null | Result[]> {
     const actions = this.renderer.render(node, {
       platform: this.platform,
     });
 
-    if (!actions) {
-      return { jobs: null, results: null, message: node, actions };
-    }
-
-    const context: SendContext<Rendered, Native, Job, Thread> = {
-      message: node,
+    const context: DispatchContext<Rendered, Native, Job, Thread> = {
+      element: node,
       thread,
       options,
       actions,
@@ -112,14 +118,39 @@ export default class MachinatEngine<
       renderer: this.renderer,
     };
 
-    const sendingRespons = await this._handleSending(context);
-    return sendingRespons;
+    const report = await this._handleSending(context);
+    return report.results;
   }
 
   async _executeSending(
-    context: SendContext<Rendered, Native, Job, Thread>
-  ): Promise<SendResponse<Rendered, Native, Job, Result>> {
-    const { actions, message, options, thread } = context;
+    context: DispatchContext<Rendered, Native, Job, Thread>
+  ): Promise<DispatchReport<Rendered, Native, Job, Result>> {
+    const { actions, element, options, thread } = context;
+
+    // leave the decision to thread if nothing rendered
+    if (actions === null) {
+      const jobs = thread.createJobs(null, options);
+
+      let results = null;
+      if (jobs !== null) {
+        // if there is any jobs, execute it
+        const batchResponse = await this.queue.executeJobs(jobs);
+
+        if (batchResponse.success) {
+          results = batchResponse.batch.map(getResult);
+        } else {
+          throw new SendError(
+            batchResponse.errors,
+            element,
+            actions,
+            jobs,
+            batchResponse.batch
+          );
+        }
+      }
+
+      return { element, actions, jobs, results };
+    }
 
     const jobBatches: Job[][] = [];
     const pauses: PauseAction[] = [];
@@ -129,7 +160,7 @@ export default class MachinatEngine<
     for (let i = 0; i < actions.length; i += 1) {
       const action = actions[i];
 
-      // collect action to buffer and ignoring ACTION_BREAK
+      // collect actions to buffer and ignoring ACTION_BREAK
       if (!action.isPause && action.value !== ACTION_BREAK) {
         actionBuffer.push(action);
       }
@@ -141,7 +172,9 @@ export default class MachinatEngine<
       ) {
         const jobs = thread.createJobs(actionBuffer, options);
 
-        jobBatches.push(jobs);
+        if (jobs !== null) {
+          jobBatches.push(jobs);
+        }
       }
 
       // collect pauses
@@ -167,9 +200,9 @@ export default class MachinatEngine<
       } else {
         throw new SendError(
           batchResponse.errors,
-          message,
+          element,
           actions,
-          jobBatches.reduce((jobs, batch) => jobs.concat(batch)),
+          flatten(jobBatches),
           batchResponse.batch
             ? responses.concat(batchResponse.batch)
             : responses
@@ -182,22 +215,11 @@ export default class MachinatEngine<
       }
     }
 
-    // get jobs and results
-    const responsesLen = responses.length;
-    const jobs: Job[] = new Array(responsesLen);
-    const results: Result[] = new Array(responsesLen);
-
-    for (let i = 0; i < responsesLen; i += 1) {
-      const { job, result } = responses[i];
-      jobs[i] = job;
-      results[i] = result;
-    }
-
     return {
-      jobs,
-      results,
+      element,
       actions,
-      message,
+      jobs: flatten(jobBatches),
+      results: responses.map(getResult),
     };
   }
 }

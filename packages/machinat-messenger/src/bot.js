@@ -12,19 +12,27 @@ import type { HTTPReceivable, HTTPReceiver } from 'machinat-base/types';
 
 import MessengerClient from './client';
 import handleWebhook from './handleWebhook';
-import { MESSAGE_CREATIVES_THREAD } from './thread';
+import {
+  ChatThread,
+  MESSAGE_CREATIVES_THREAD,
+  BROADCAST_MESSAGES_THREAD,
+  CREATE_LABELS_THREAD,
+} from './thread';
 import { MESSENGER_NAITVE_TYPE } from './symbol';
 import * as generalComponents from './component/general';
 
 import type {
+  Recipient,
   MessengerBotOptions,
   MessengerRawEvent,
   MessengerComponent,
   MessengerJob,
   MessengerAPIResult,
   MessengerActionValue,
+  SendOptions,
+  BroadcastOptions,
+  DeliverableThread,
 } from './types';
-import type { ChatThread } from './thread';
 
 type MessengerBotOptionsInput = $Shape<MessengerBotOptions>;
 
@@ -38,7 +46,7 @@ export default class MessengerBot
     MessengerComponent,
     MessengerJob,
     MessengerAPIResult,
-    ChatThread | typeof MESSAGE_CREATIVES_THREAD,
+    DeliverableThread,
     ChatThread
   >
   implements HTTPReceivable {
@@ -103,7 +111,43 @@ export default class MessengerBot
     this.options = options;
   }
 
-  createMessageCreatives(node: MachinatNode) {
-    return this.deliver(MESSAGE_CREATIVES_THREAD, node);
+  send(
+    target: string | Recipient,
+    message: MachinatNode,
+    options?: SendOptions
+  ): Promise<null | MessengerAPIResult[]> {
+    const thread = new ChatThread(
+      typeof target === 'string' ? { id: target } : target
+    );
+
+    return this.engine.dispatch(thread, message, options);
+  }
+
+  async createMessageCreative(node: MachinatNode) {
+    const results = await this.engine.dispatch(MESSAGE_CREATIVES_THREAD, node);
+    return results && results[0];
+  }
+
+  async broadcastMessage(creativeId: number, options?: BroadcastOptions) {
+    const results = await this.engine.dispatch(
+      BROADCAST_MESSAGES_THREAD,
+      null,
+      {
+        message_creative_id: creativeId,
+        notification_type: options && options.notificationType,
+        persona_id: options && options.personaId,
+        custom_label_id: options && options.customLabelId,
+      }
+    );
+
+    return results && results[0];
+  }
+
+  async createCustomLabel(name: string) {
+    const results = await this.engine.dispatch(CREATE_LABELS_THREAD, null, {
+      name,
+    });
+
+    return results && results[0];
   }
 }

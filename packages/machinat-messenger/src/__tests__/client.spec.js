@@ -1,16 +1,10 @@
 import moxy from 'moxy';
 import nock from 'nock';
 import Queue from 'machinat-queue';
-import MesengerClient from '../client';
+import MessengerClient from '../client';
+import { delay, makeResponse } from './utils';
 
 nock.disableNetConnect();
-
-const delay = t => new Promise(resolve => setTimeout(resolve, t));
-
-const makeResponse = (code, body) => ({
-  code,
-  body: JSON.stringify(body),
-});
 
 const jobs = [
   {
@@ -52,7 +46,7 @@ afterEach(() => {
 
 it('sends ok', async () => {
   const accessToken = '_graph_api_access_token_';
-  const client = new MesengerClient({ accessToken });
+  const client = new MessengerClient({ accessToken });
 
   const bodySpy = moxy(() => true);
 
@@ -71,7 +65,7 @@ it('sends ok', async () => {
 
   const expectedResult = {
     code: 200,
-    body: '{"message_id":"xxx","recipient_id":"xxx"}',
+    body: { message_id: 'xxx', recipient_id: 'xxx' },
   };
   await expect(queue.executeJobs(jobs)).resolves.toEqual({
     success: true,
@@ -115,7 +109,7 @@ it('attach appsecret_proof if appSecret option given', async () => {
   const expectedProof =
     'c3d9a02ac88561d9721b3cb2ba338c933f0666b68ad29523393b830b3916cd91';
 
-  const client = new MesengerClient({
+  const client = new MessengerClient({
     accessToken,
     appSecret,
   });
@@ -137,7 +131,7 @@ it('attach appsecret_proof if appSecret option given', async () => {
 
   const expectedResult = {
     code: 200,
-    body: '{"message_id":"xxx","recipient_id":"xxx"}',
+    body: { message_id: 'xxx', recipient_id: 'xxx' },
   };
   await expect(queue.executeJobs(jobs)).resolves.toEqual({
     success: true,
@@ -159,7 +153,7 @@ it('attach appsecret_proof if appSecret option given', async () => {
 });
 
 it('upload files with form data if binary attached on job', async () => {
-  const client = new MesengerClient({
+  const client = new MessengerClient({
     accessToken: '_graph_api_access_token_',
   });
 
@@ -195,7 +189,7 @@ it('upload files with form data if binary attached on job', async () => {
 
   const expectedResult = {
     code: 200,
-    body: '{"message_id":"xxx","recipient_id":"xxx"}',
+    body: { message_id: 'xxx', recipient_id: 'xxx' },
   };
 
   await expect(
@@ -275,7 +269,7 @@ it('upload files with form data if binary attached on job', async () => {
 });
 
 it('throw if connection error happen', async () => {
-  const client = new MesengerClient({
+  const client = new MessengerClient({
     accessToken: '_graph_api_access_token_',
   });
 
@@ -298,7 +292,7 @@ Object {
 });
 
 it('throw if api error happen', async () => {
-  const client = new MesengerClient({
+  const client = new MessengerClient({
     accessToken: '_graph_api_access_token_',
   });
 
@@ -326,7 +320,7 @@ Object {
 });
 
 it('throw if one single job fail', async () => {
-  const client = new MesengerClient({
+  const client = new MessengerClient({
     accessToken: '_graph_api_access_token_',
   });
 
@@ -360,7 +354,7 @@ Array [
 });
 
 it('waits consumeInterval for jobs to execute if set', async () => {
-  const client = new MesengerClient({
+  const client = new MessengerClient({
     accessToken: '_graph_api_access_token_',
     consumeInterval: 300,
   });
@@ -400,7 +394,7 @@ it('waits consumeInterval for jobs to execute if set', async () => {
 it.each([undefined, 0])(
   'execute immediatly if consumeInterval is %p',
   async consumeInterval => {
-    const client = new MesengerClient({
+    const client = new MessengerClient({
       accessToken: '_graph_api_access_token_',
       consumeInterval,
     });

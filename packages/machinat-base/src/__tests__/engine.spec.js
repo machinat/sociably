@@ -9,7 +9,7 @@ import { ACTION_BREAK } from 'machinat-utility';
 import Engine from '../engine';
 import { SendError } from '../error';
 
-const message = (
+const element = (
   <>
     <a id={1} />
     <b id={2} />
@@ -101,25 +101,27 @@ describe('#use(...fns)', () => {
   });
 });
 
-describe('#process(thread, message, options)', () => {
-  it('renders and enqueue jobs', async () => {
+describe('#dispatch(thread, element, options)', () => {
+  it('renders and enqueue jobs and return array of results', async () => {
     const engine = new Engine('test', queue, renderer, worker);
 
-    await expect(engine.process(thread, message, options)).resolves.toEqual({
-      message,
-      actions,
-      jobs: [{ id: 1 }, { id: 2 }, { id: 3 }],
-      results: [1, 2, 3],
-    });
+    await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
+      1,
+      2,
+      3,
+    ]);
 
-    expect(renderer.render.mock).toHaveBeenCalledWith(message, {
+    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
       platform: 'test',
     });
 
     expect(thread.createJobs.mock).toHaveBeenCalledWith(actions, options);
 
-    expect(queue.executeJobs.mock) //
-      .toHaveBeenCalledWith([{ id: 1 }, { id: 2 }, { id: 3 }]);
+    expect(queue.executeJobs.mock).toHaveBeenCalledWith([
+      { id: 1 },
+      { id: 2 },
+      { id: 3 },
+    ]);
   });
 
   it('pass sending context through middlewares', async () => {
@@ -130,12 +132,12 @@ describe('#process(thread, message, options)', () => {
       thread,
       options,
       renderer,
-      message,
+      element,
       actions,
     };
 
     const expectedResponse = {
-      message,
+      element,
       actions,
       jobs: [{ id: 1 }, { id: 2 }, { id: 3 }],
       results: [1, 2, 3],
@@ -173,13 +175,15 @@ describe('#process(thread, message, options)', () => {
 
     engine.use(middleware1, middleware2, middleware3);
 
-    await expect(engine.process(thread, message, options)).resolves.toEqual({
-      ...expectedResponse,
-      foo: 'baz',
-    });
+    await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
+      1,
+      2,
+      3,
+    ]);
 
-    expect(renderer.render.mock) //
-      .toHaveBeenCalledWith(message, { platform: 'test' });
+    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
+      platform: 'test',
+    });
 
     expect(thread.createJobs.mock).toHaveBeenCalledWith(actions, options);
 
@@ -187,42 +191,51 @@ describe('#process(thread, message, options)', () => {
     expect(middleware2.mock).toHaveBeenCalledTimes(1);
     expect(middleware3.mock).toHaveBeenCalledTimes(1);
 
-    expect(queue.executeJobs.mock) //
-      .toHaveBeenCalledWith([{ id: 1 }, { id: 2 }, { id: 3 }]);
+    expect(queue.executeJobs.mock).toHaveBeenCalledWith([
+      { id: 1 },
+      { id: 2 },
+      { id: 3 },
+    ]);
   });
 
   it('can bypass the real sending within middleware', async () => {
     const engine = new Engine('test', queue, renderer, worker);
 
-    const middleware = moxy(() => async () => ({ nothing: 'happened' }));
+    const middleware = moxy(() => async () => ({
+      results: [{ nothing: 'happened' }],
+    }));
 
     engine.use(middleware);
 
-    await expect(engine.process(thread, message, options)) //
-      .resolves.toEqual({ nothing: 'happened' });
+    await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
+      { nothing: 'happened' },
+    ]);
 
-    expect(renderer.render.mock) //
-      .toHaveBeenCalledWith(message, { platform: 'test' });
+    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
+      platform: 'test',
+    });
 
     expect(middleware.mock).toHaveBeenCalledTimes(1);
     expect(thread.createJobs.mock).not.toHaveBeenCalled();
     expect(queue.executeJobs.mock).not.toHaveBeenCalled();
   });
 
-  it('can bypass the sending with error thrown in middleware', async () => {
+  it('can skip following middlewares with error thrown in middleware', async () => {
     const engine = new Engine('test', queue, renderer, worker);
 
     const middleware = moxy(() => async () => {
-      throw new Error('something wrong with the message');
+      throw new Error('something wrong with the element');
     });
 
     engine.use(middleware);
 
-    await expect(engine.process(thread, message, options)) //
-      .rejects.toThrow('something wrong with the message');
+    await expect(engine.dispatch(thread, element, options)).rejects.toThrow(
+      'something wrong with the element'
+    );
 
-    expect(renderer.render.mock) //
-      .toHaveBeenCalledWith(message, { platform: 'test' });
+    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
+      platform: 'test',
+    });
 
     expect(middleware.mock).toHaveBeenCalledTimes(1);
     expect(thread.createJobs.mock).not.toHaveBeenCalled();
@@ -265,24 +278,33 @@ describe('#process(thread, message, options)', () => {
 
     const engine = new Engine('test', queue, renderer, worker);
 
-    await expect(engine.process(thread, message, options)).resolves.toEqual({
-      message,
-      actions: pausedActions,
-      jobs: [{ id: 1 }, { id: 2 }, { id: 3 }],
-      results: [1, 2, 3],
-    });
+    await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
+      1,
+      2,
+      3,
+    ]);
 
     expect(after.mock).toHaveBeenCalledTimes(1);
 
-    expect(renderer.render.mock) //
-      .toHaveBeenCalledWith(message, { platform: 'test' });
+    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
+      platform: 'test',
+    });
 
-    expect(thread.createJobs.mock) //
-      .toHaveBeenNthCalledWith(1, [pausedActions[0]], options);
-    expect(thread.createJobs.mock) //
-      .toHaveBeenNthCalledWith(2, [pausedActions[2]], options);
-    expect(thread.createJobs.mock) //
-      .toHaveBeenNthCalledWith(3, [pausedActions[4]], options);
+    expect(thread.createJobs.mock).toHaveBeenNthCalledWith(
+      1,
+      [pausedActions[0]],
+      options
+    );
+    expect(thread.createJobs.mock).toHaveBeenNthCalledWith(
+      2,
+      [pausedActions[2]],
+      options
+    );
+    expect(thread.createJobs.mock).toHaveBeenNthCalledWith(
+      3,
+      [pausedActions[4]],
+      options
+    );
 
     expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(1, [{ id: 1 }]);
     expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(2, [{ id: 2 }]);
@@ -315,17 +337,20 @@ describe('#process(thread, message, options)', () => {
     const engine = new Engine('test', queue, renderer, worker);
 
     await expect(
-      engine.process(thread, message, options)
+      engine.dispatch(thread, element, options)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"you shall not <Pause /> on test:test"`
     );
 
-    expect(renderer.render.mock) //
-      .toHaveBeenCalledWith(message, { platform: 'test' });
+    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
+      platform: 'test',
+    });
 
     expect(thread.createJobs.mock).toHaveBeenCalledTimes(1);
-    expect(thread.createJobs.mock) //
-      .toHaveBeenCalledWith([pausedActions[0]], options);
+    expect(thread.createJobs.mock).toHaveBeenCalledWith(
+      [pausedActions[0]],
+      options
+    );
 
     expect(queue.executeJobs.mock).not.toHaveBeenCalled();
   });
@@ -378,26 +403,31 @@ describe('#process(thread, message, options)', () => {
 
     const engine = new Engine('test', queue, renderer, worker);
 
-    await expect(engine.process(thread, message, options)).resolves.toEqual({
-      message,
-      actions: pausedActions,
-      jobs: [{ id: 1 }, { id: 2 }, { id: 3 }],
-      results: [1, 2, 3],
-    });
+    await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
+      1,
+      2,
+      3,
+    ]);
 
-    expect(renderer.render.mock) //
-      .toHaveBeenCalledWith(message, { platform: 'test' });
+    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
+      platform: 'test',
+    });
 
     expect(thread.createJobs.mock).toHaveBeenNthCalledWith(
       1,
       [pausedActions[0], pausedActions[2]],
       options
     );
-    expect(thread.createJobs.mock) //
-      .toHaveBeenNthCalledWith(2, [pausedActions[5]], options);
+    expect(thread.createJobs.mock).toHaveBeenNthCalledWith(
+      2,
+      [pausedActions[5]],
+      options
+    );
 
-    expect(queue.executeJobs.mock) //
-      .toHaveBeenNthCalledWith(1, [{ id: 1 }, { id: 2 }]);
+    expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(1, [
+      { id: 1 },
+      { id: 2 },
+    ]);
     expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(2, [{ id: 3 }]);
   });
 
@@ -420,10 +450,10 @@ describe('#process(thread, message, options)', () => {
 
     let isThrown = false;
     try {
-      await engine.process(thread, message);
+      await engine.dispatch(thread, element);
     } catch (err) {
       isThrown = true;
-      expect(err.node).toEqual(message);
+      expect(err.node).toEqual(element);
       expect(err.actions).toEqual(actions);
       expect(err.jobs).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
       expect(err.responses).toEqual(execResponse.batch);
@@ -451,16 +481,17 @@ describe('#process(thread, message, options)', () => {
     const middleware = next => async context => {
       try {
         return await next(context);
-      } catch (e) {
-        return { something: 'else' };
+      } catch (err) {
+        expect(err).toEqual(new Error('bad thing!'));
+        return { results: [{ something: 'else' }] };
       }
     };
 
     engine.use(middleware);
 
-    await expect(engine.process(thread, message)).resolves.toEqual({
-      something: 'else',
-    });
+    await expect(engine.dispatch(thread, element)).resolves.toEqual([
+      { something: 'else' },
+    ]);
   });
 });
 

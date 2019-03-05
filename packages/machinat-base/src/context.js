@@ -2,12 +2,7 @@
 import type { MachinatNode } from 'machinat/types';
 import type { MachinatNativeType } from 'machinat-renderer/types';
 import type MachinatBot from './bot';
-import type {
-  SendResponse,
-  MachinatEvent,
-  MachinatThread,
-  OptionsOf,
-} from './types';
+import type { MachinatEvent, MachinatThread } from './types';
 
 export default class MachinatReceiveContext<
   Raw,
@@ -38,10 +33,7 @@ export default class MachinatReceiveContext<
     return this.event.platform;
   }
 
-  react(
-    nodes: MachinatNode,
-    options?: OptionsOf<Thread>
-  ): Promise<SendResponse<Rendered, Native, Job, Result>> {
-    return this.bot.deliver(this.event.thread, nodes, options);
+  react(nodes: MachinatNode, options: any): Promise<null | Result[]> {
+    return this.bot.engine.dispatch(this.event.thread, nodes, options);
   }
 }

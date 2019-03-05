@@ -15,7 +15,7 @@ test('with user id', () => {
   expect(thread.type).toBe('chat');
   expect(thread.subtype).toBe('user');
   expect(thread.allowPause).toBe(true);
-  expect(thread.uid()).toBe('messenger:default:user:foo');
+  expect(thread.uid).toBe('messenger:default:user:foo');
   expect(typeof thread.createJobs).toBe('function');
 });
 
@@ -26,7 +26,7 @@ test('with user id', () => {
   expect(thread.type).toBe('chat');
   expect(thread.subtype).toBe('user');
   expect(thread.allowPause).toBe(true);
-  expect(thread.uid()).toBe('messenger:default:user:foo');
+  expect(thread.uid).toBe('messenger:default:user:foo');
   expect(typeof thread.createJobs).toBe('function');
 });
 
@@ -37,7 +37,7 @@ test('with user_ref', () => {
   expect(thread.type).toBe('chat');
   expect(thread.subtype).toBe('user');
   expect(thread.allowPause).toBe(true);
-  expect(thread.uid()).toBe('messenger:default:user_ref:bar');
+  expect(thread.uid).toBe('messenger:default:user_ref:bar');
   expect(typeof thread.createJobs).toBe('function');
 });
 
@@ -49,7 +49,7 @@ test('with phone_number', () => {
   expect(thread.subtype).toBe('user');
   expect(thread.allowPause).toBe(true);
   // the phone number is hashed to hide personal info
-  expect(thread.uid()).toMatchInlineSnapshot(
+  expect(thread.uid).toMatchInlineSnapshot(
     `"messenger:default:phone_number:nRn5C+EX4/vdk02aEWYs2zV5sHM="`
   );
   expect(typeof thread.createJobs).toBe('function');

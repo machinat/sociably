@@ -1,0 +1,159 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#broadcastMessage(creativeId, options) works 1`] = `
+Object {
+  "access_token": "_ACCESS_TOKEN_",
+  "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
+  "batch": Any<String>,
+  "include_headers": "false",
+}
+`;
+
+exports[`#broadcastMessage(creativeId, options) works 2`] = `
+Array [
+  Object {
+    "body": "messaging_type=MESSAGE_TAG&tag=NON_PROMOTIONAL_SUBSCRIPTION&message_creative_id=938461089",
+    "method": "POST",
+    "name": "messenger:default:broadcast_messages-1",
+    "omit_response_on_success": false,
+    "relative_url": "me/broadcast_messages",
+  },
+]
+`;
+
+exports[`#broadcastMessage(creativeId, options) works with options 1`] = `
+Object {
+  "access_token": "_ACCESS_TOKEN_",
+  "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
+  "batch": Any<String>,
+  "include_headers": "false",
+}
+`;
+
+exports[`#broadcastMessage(creativeId, options) works with options 2`] = `
+Array [
+  Object {
+    "body": "messaging_type=MESSAGE_TAG&tag=NON_PROMOTIONAL_SUBSCRIPTION&message_creative_id=938461089&notification_type=SILENT_PUSH&persona_id=billy18&custom_label_id=1712444532121303",
+    "method": "POST",
+    "name": "messenger:default:broadcast_messages-1",
+    "omit_response_on_success": false,
+    "relative_url": "me/broadcast_messages",
+  },
+]
+`;
+
+exports[`#createCustomLabel(name) works 1`] = `
+Object {
+  "access_token": "_ACCESS_TOKEN_",
+  "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
+  "batch": Any<String>,
+  "include_headers": "false",
+}
+`;
+
+exports[`#createCustomLabel(name) works 2`] = `
+Array [
+  Object {
+    "body": "name=foo",
+    "method": "POST",
+    "name": "messenger:default:custom_labels-1",
+    "omit_response_on_success": false,
+    "relative_url": "me/custom_labels",
+  },
+]
+`;
+
+exports[`#createMessageCreative(message) works 1`] = `
+Object {
+  "access_token": "_ACCESS_TOKEN_",
+  "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
+  "batch": Any<String>,
+  "include_headers": "false",
+}
+`;
+
+exports[`#createMessageCreative(message) works 2`] = `
+Array [
+  Object {
+    "body": "messages=%5B%7B%22text%22%3A%22john%22%7D%5D",
+    "method": "POST",
+    "name": "messenger:default:message_creatives:*-1",
+    "omit_response_on_success": false,
+    "relative_url": "me/message_creatives",
+  },
+]
+`;
+
+exports[`#send(message, options) works 1`] = `
+Object {
+  "access_token": "_ACCESS_TOKEN_",
+  "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
+  "batch": Any<String>,
+  "include_headers": "false",
+}
+`;
+
+exports[`#send(message, options) works 2`] = `
+Array [
+  Object {
+    "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22text%22%3A%22Hello%22%7D",
+    "method": "POST",
+    "name": "messenger:default:user:john-1",
+    "omit_response_on_success": false,
+    "relative_url": "me/messages",
+  },
+  Object {
+    "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22text%22%3A%22*World!*%22%7D",
+    "depends_on": "messenger:default:user:john-1",
+    "method": "POST",
+    "name": "messenger:default:user:john-2",
+    "omit_response_on_success": false,
+    "relative_url": "me/messages",
+  },
+  Object {
+    "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D",
+    "depends_on": "messenger:default:user:john-2",
+    "method": "POST",
+    "name": "messenger:default:user:john-3",
+    "omit_response_on_success": false,
+    "relative_url": "me/messages",
+  },
+]
+`;
+
+exports[`#send(message, options) works with options 1`] = `
+Object {
+  "access_token": "_ACCESS_TOKEN_",
+  "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
+  "batch": Any<String>,
+  "include_headers": "false",
+}
+`;
+
+exports[`#send(message, options) works with options 2`] = `
+Array [
+  Object {
+    "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22text%22%3A%22Hello%22%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17",
+    "method": "POST",
+    "name": "messenger:default:user:john-1",
+    "omit_response_on_success": false,
+    "relative_url": "me/messages",
+  },
+  Object {
+    "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22text%22%3A%22*World!*%22%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17",
+    "depends_on": "messenger:default:user:john-1",
+    "method": "POST",
+    "name": "messenger:default:user:john-2",
+    "omit_response_on_success": false,
+    "relative_url": "me/messages",
+  },
+  Object {
+    "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17",
+    "depends_on": "messenger:default:user:john-2",
+    "method": "POST",
+    "name": "messenger:default:user:john-3",
+    "omit_response_on_success": false,
+    "relative_url": "me/messages",
+  },
+]
+`;
