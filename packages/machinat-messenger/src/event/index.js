@@ -1,3 +1,4 @@
+// @flow
 import {
   text,
   image,
@@ -38,6 +39,7 @@ import {
   referral,
   unknown,
 } from './factory';
+import type { MessengerRawEvent } from '../types';
 
 const hasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
@@ -89,7 +91,7 @@ const createMessageEvent = (raw, isStandby) => {
   }
 };
 
-const createEvent = (isStandby, raw) =>
+const createEvent = (isStandby: boolean, raw: MessengerRawEvent) =>
   hasOwnProperty(raw, 'message')
     ? createMessageEvent(raw, isStandby)
     : hasOwnProperty(raw, 'read')

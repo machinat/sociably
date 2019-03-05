@@ -16,7 +16,8 @@ describe.each([
 
     fixtures.forEach(raw => {
       const event = factory(raw);
-      expect(event).toEqual({ type, subtype, raw });
+
+      expect({ ...event }).toEqual({ type, subtype, raw });
     });
   });
 

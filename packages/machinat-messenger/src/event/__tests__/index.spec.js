@@ -17,7 +17,6 @@ test.each([
   ['audio', null, 'audio*'],
   ['file', null, 'file*'],
 ])('making %s:%s messaging event', async (type, subtype, fixturesGlob) => {
-  //
   const fixtures = await getFixtures(fixturesGlob);
 
   const events = fixtures.map(fixt => mainFactory(false, fixt));

@@ -1,15 +1,20 @@
 // @flow
-export const mixin = (...descriptors: Array<Object>) =>
-  Object.defineProperties({}, Object.assign({}, ...descriptors));
+export const mixin = (...prototypes: Array<Object>) =>
+  Object.defineProperties(
+    {},
+    Object.assign(
+      {},
+      ...prototypes.map(proto => Object.getOwnPropertyDescriptors(proto))
+    )
+  );
 
-export const makeEvent = (type: string, subtype: string, proto: Object) => (
-  raw: Object
-): { raw: Object, type: string, subtype: string } => {
-  const event = Object.create(proto);
+export function toJSON() {
+  /* eslint-disable guard-for-in, no-restricted-syntax */
+  const obj = {};
+  for (const k in this) {
+    obj[k] = this[k];
+  }
 
-  event.raw = raw;
-  event.type = type;
-  event.subtype = subtype;
-
-  return event;
-};
+  return JSON.stringify(obj);
+  /* eslint-enable guard-for-in, no-restricted-syntax */
+}

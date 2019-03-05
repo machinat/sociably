@@ -1,4 +1,6 @@
-import { mixin, makeEvent } from 'machinat-base';
+// @flow
+import { mixin } from 'machinat-base';
+import type { MachinatEvent } from 'machinat-base/types';
 import {
   EventBase as Base,
   Message,
@@ -23,102 +25,121 @@ import {
   Postback,
   PaymentPreCheckout,
   Referral,
-} from './descriptor';
+} from './mixin';
+import type { MessengerRawEvent } from '../types';
+import type { ChatThread } from '../thread';
 
-const textProto = mixin(Base, Message, Text, NLP);
-export const text = makeEvent('text', null, textProto);
-export const standbyText = makeEvent('standby:text', textProto);
+export const eventFactory = (proto: Object, type: string, subtype?: string) => (
+  raw: MessengerRawEvent
+): MachinatEvent<MessengerRawEvent, ChatThread> => {
+  const event = Object.create(proto);
+
+  event.raw = raw;
+  event.type = type;
+  event.subtype = subtype;
+
+  return event;
+};
+
+const TextProto = mixin(Base, Message, Text, NLP);
+export const text = eventFactory(TextProto, 'text');
+export const standbyText = eventFactory(TextProto, 'standby', 'text');
 
 const MediaProto = mixin(Base, Message, Media);
-export const image = makeEvent('image', null, MediaProto);
-export const video = makeEvent('video', null, MediaProto);
-export const audio = makeEvent('audio', null, MediaProto);
-export const file = makeEvent('file', null, MediaProto);
+export const image = eventFactory(MediaProto, 'image');
+export const video = eventFactory(MediaProto, 'video');
+export const audio = eventFactory(MediaProto, 'audio');
+export const file = eventFactory(MediaProto, 'file');
 
-export const standbyImage = makeEvent('standby', 'image', MediaProto);
-export const standbyVideo = makeEvent('standby', 'video', MediaProto);
-export const standbyAudio = makeEvent('standby', 'audio', MediaProto);
-export const standbyFile = makeEvent('standby', 'file', MediaProto);
+export const standbyImage = eventFactory(MediaProto, 'standby', 'image');
+export const standbyVideo = eventFactory(MediaProto, 'standby', 'video');
+export const standbyAudio = eventFactory(MediaProto, 'standby', 'audio');
+export const standbyFile = eventFactory(MediaProto, 'standby', 'file');
 
 const LocationProto = mixin(Base, Message, Location);
-export const location = makeEvent('location', null, LocationProto);
-export const standbyLocation = makeEvent('standby', 'location', LocationProto);
+export const location = eventFactory(LocationProto, 'location');
+export const standbyLocation = eventFactory(
+  LocationProto,
+  'standby',
+  'location'
+);
 
-export const echoedText = makeEvent(
+export const echoedText = eventFactory(
+  mixin(Base, Message, Echo, Text),
   'echo',
-  'text',
-  mixin(Base, Message, Echo, Text)
+  'text'
 );
 
 const EchoedMediaProto = mixin(Base, Message, Echo, Media);
-export const echoedImage = makeEvent('echo', 'image', EchoedMediaProto);
-export const echoedVideo = makeEvent('echo', 'video', EchoedMediaProto);
-export const echoedAudio = makeEvent('echo', 'audio', EchoedMediaProto);
-export const echoedFile = makeEvent('echo', 'file', EchoedMediaProto);
+export const echoedImage = eventFactory(EchoedMediaProto, 'echo', 'image');
+export const echoedVideo = eventFactory(EchoedMediaProto, 'echo', 'video');
+export const echoedAudio = eventFactory(EchoedMediaProto, 'echo', 'audio');
+export const echoedFile = eventFactory(EchoedMediaProto, 'echo', 'file');
 
-export const echoedLocation = makeEvent(
+export const echoedLocation = eventFactory(
+  mixin(Base, Message, Echo, Location),
   'echo',
-  'location',
-  mixin(Base, Message, Echo, Location)
+  'location'
 );
-export const echoedTemplate = makeEvent(
+export const echoedTemplate = eventFactory(
+  mixin(Base, Message, Echo, Template),
   'echo',
-  'template',
-  mixin(Base, Message, Echo, Template)
+  'template'
 );
 
 const ReadProto = mixin(Base, Read);
-export const read = makeEvent('read', null, ReadProto);
-export const standbyRead = makeEvent('standby', 'read', ReadProto);
+export const read = eventFactory(ReadProto, 'read');
+export const standbyRead = eventFactory(ReadProto, 'standby', 'read');
 
 const DeliveryProto = mixin(Base, Delivery);
-export const delivery = makeEvent('delivery', null, DeliveryProto);
-export const standbyDelivery = makeEvent('standby', 'delivery', DeliveryProto);
+export const delivery = eventFactory(DeliveryProto, 'delivery');
+export const standbyDelivery = eventFactory(
+  DeliveryProto,
+  'standby',
+  'delivery'
+);
 
-export const accountLinking = makeEvent(
-  'account_linking',
-  null,
-  mixin(Base, AccountLinking)
+export const accountLinking = eventFactory(
+  mixin(Base, AccountLinking),
+  'account_linking'
 );
-export const checkoutUpdate = makeEvent(
-  'checkout_update',
-  null,
-  mixin(Base, CheckoutUpdate)
+export const checkoutUpdate = eventFactory(
+  mixin(Base, CheckoutUpdate),
+  'checkout_update'
 );
-export const gamePlay = makeEvent('game_play', null, mixin(Base, GamePlay));
-export const passThreadControl = makeEvent(
-  'pass_thread_control',
-  null,
-  mixin(Base, PassThreadControl)
+export const gamePlay = eventFactory(mixin(Base, GamePlay), 'game_play');
+export const passThreadControl = eventFactory(
+  mixin(Base, PassThreadControl),
+  'pass_thread_control'
 );
-export const takeThreadControl = makeEvent(
-  'take_thread_control',
-  null,
-  mixin(Base, TakeThreadControl)
+export const takeThreadControl = eventFactory(
+  mixin(Base, TakeThreadControl),
+  'take_thread_control'
 );
-export const requestThreadControl = makeEvent(
-  'request_thread_control',
-  null,
-  mixin(Base, RequestThreadControl)
+export const requestThreadControl = eventFactory(
+  mixin(Base, RequestThreadControl),
+  'request_thread_control'
 );
-export const appRoles = makeEvent('app_roles', null, mixin(Base, AppRoles));
-export const optin = makeEvent('optin', null, mixin(Base, Optin));
-export const payment = makeEvent('payment', null, mixin(Base, Payment));
-export const policyEnforcement = makeEvent(
-  'policy_enforcement',
-  null,
-  mixin(Base, PolicyEnforcement)
+export const appRoles = eventFactory(mixin(Base, AppRoles), 'app_roles');
+export const optin = eventFactory(mixin(Base, Optin), 'optin');
+export const payment = eventFactory(mixin(Base, Payment), 'payment');
+export const policyEnforcement = eventFactory(
+  mixin(Base, PolicyEnforcement),
+  'policy_enforcement'
 );
 
 const PostbackProto = mixin(Base, Postback);
-export const postback = makeEvent('postback', null, PostbackProto);
-export const standbyPostback = makeEvent('standby', 'postback', PostbackProto);
-
-export const paymentPreCheckout = makeEvent(
-  'payment_pre_checkout',
-  null,
-  mixin(Base, PaymentPreCheckout)
+export const postback = eventFactory(PostbackProto, 'postback');
+export const standbyPostback = eventFactory(
+  PostbackProto,
+  'standby',
+  'postback'
 );
-export const referral = makeEvent('referral', null, mixin(Base, Referral));
 
-export const unknown = makeEvent('unknown', null, mixin(Base));
+export const paymentPreCheckout = eventFactory(
+  mixin(Base, PaymentPreCheckout),
+  'payment_pre_checkout'
+);
+export const referral = eventFactory(mixin(Base, Referral), 'referral');
+
+export const unknown = eventFactory(mixin(Base), 'unknown');

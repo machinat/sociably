@@ -1,6 +1,5 @@
 // @flow
 import { mixin } from 'machinat-base';
-import { eventFactory } from './utils';
 import {
   EventBase as Base,
   Message,
@@ -17,7 +16,23 @@ import {
   Beacon,
   AccountLink,
   DeviceLink,
-} from './descriptor';
+} from './mixin';
+import type { LineRawEvent, LineEvent } from '../types';
+
+export const eventFactory = (proto: Object, type: string, subtype?: string) => (
+  raw: LineRawEvent,
+  useReplyAPI: boolean
+): LineEvent => {
+  const event = Object.create(proto);
+
+  event.raw = raw;
+  event.type = type;
+  event.subtype = subtype;
+  event._useReplyAPI = useReplyAPI;
+
+  // TODO: type the line events
+  return (event: any);
+};
 
 export const text = eventFactory(mixin(Base, Message, Repliable, Text), 'text');
 
