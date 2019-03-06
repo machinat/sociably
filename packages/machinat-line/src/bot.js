@@ -20,7 +20,7 @@ import type {
   LineComponent,
   LineJob,
   LineAPIResult,
-  LineRawEvent,
+  LineEvent,
 } from './types';
 
 import { ChatThread, MulticastThread } from './thread';
@@ -34,14 +34,14 @@ const LINE = 'line';
 
 export default class LineBot
   extends BaseBot<
-    LineRawEvent,
-    WebhookResponse,
     LineActionValue,
     LineComponent,
     LineJob,
     LineAPIResult,
     ChatThread | MulticastThread,
-    ChatThread
+    WebhookResponse,
+    ChatThread,
+    LineEvent
   >
   implements HTTPReceivable {
   options: LineBotOptions;

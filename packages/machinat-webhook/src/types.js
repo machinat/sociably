@@ -7,8 +7,8 @@ export type WebhookResponse = {|
   body: string | Object,
 |};
 
-export type WebhookHandler<Raw, Thread> = (
+export type WebhookHandler<Thread, Event: MachinatEvent<any, Thread>> = (
   req: IncomingMessage,
   res: ServerResponse,
   rawBody?: string
-) => ?$ReadOnlyArray<MachinatEvent<Raw, Thread>>;
+) => ?$ReadOnlyArray<Event>;

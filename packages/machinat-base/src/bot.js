@@ -1,35 +1,40 @@
 // @flow
 import EventEmitter from 'events';
 import type { MachinatNativeType } from 'machinat-renderer/types';
-import type { BotPlugin, EventHandler, MachinatThread } from './types';
+import type {
+  BotPlugin,
+  EventHandler,
+  MachinatThread,
+  MachinatEvent,
+} from './types';
 import type MachinatController from './controller';
 import type MachinatEngine from './engine';
 
 export default class BaseBot<
-  RawEvent,
-  Response,
   Rendered,
   Native: MachinatNativeType<Rendered>,
   Job,
   Result,
   Deliverable: MachinatThread<Job, any>,
-  Receivable: Deliverable
+  Response,
+  Receivable: Deliverable,
+  Event: MachinatEvent<any, Receivable>
 > extends EventEmitter {
-  controller: MachinatController<RawEvent, Response, Receivable>;
+  controller: MachinatController<Response, Receivable, Event>;
   engine: MachinatEngine<Rendered, Native, Job, Result, Deliverable>;
 
   constructor(
-    controller: MachinatController<RawEvent, Response, Receivable>,
+    controller: MachinatController<Response, Receivable, Event>,
     engine: MachinatEngine<Rendered, Native, Job, Result, Deliverable>,
     plugins?: BotPlugin<
-      RawEvent,
-      Response,
       Rendered,
       Native,
       Job,
       Result,
       Deliverable,
-      Receivable
+      Response,
+      Receivable,
+      Event
     >[]
   ) {
     super();
@@ -55,7 +60,7 @@ export default class BaseBot<
     this.engine.start();
   }
 
-  eventHandler(): EventHandler<RawEvent, Response, Receivable> {
+  eventHandler(): EventHandler<Response, Receivable, Event> {
     return this.controller.makeEventHandler(
       this,
       context => {

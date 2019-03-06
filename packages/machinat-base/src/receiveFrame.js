@@ -5,21 +5,21 @@ import type MachinatBot from './bot';
 import type { MachinatEvent, MachinatThread } from './types';
 
 class MachinatReceiveFrame<
-  Raw,
   Rendered,
   Native: MachinatNativeType<Rendered>,
   Job,
   Result,
-  Thread: MachinatThread<Job, any>
+  Thread: MachinatThread<Job, any>,
+  Event: MachinatEvent<any, Thread>
 > {
-  event: MachinatEvent<Raw, Thread>;
-  bot: MachinatBot<Raw, any, Rendered, Native, Job, Result, any, Thread>;
+  event: Event;
+  bot: MachinatBot<Rendered, Native, Job, Result, any, any, Thread, Event>;
   source: string;
   transportContext: any;
 
   constructor(
-    event: MachinatEvent<Raw, Thread>,
-    bot: MachinatBot<Raw, any, Rendered, Native, Job, Result, any, Thread>,
+    event: Event,
+    bot: MachinatBot<Rendered, Native, Job, Result, any, any, Thread, Event>,
     source: string,
     transportContext: any
   ) {

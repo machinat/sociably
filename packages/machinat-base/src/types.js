@@ -12,6 +12,10 @@ import type {
 import type BaseBot from './bot';
 import type ReceiveFrame from './receiveFrame';
 
+export type MiddlewareFunc<Ctx, Value> = (
+  next: (ctx: Ctx) => Value
+) => (ctx: Ctx) => Value;
+
 export type ActionWithoutPause<Rendered, Native> =
   | TextRenderedAction
   | ElementRenderedAction<Rendered, Native>
@@ -39,12 +43,15 @@ export interface MachinatEvent<Raw, Thread: MachinatThread<any, any>> {
   raw: Raw;
 }
 
-export type DispatchReport<Rendered, Native, Job, Result> = {
-  element: null | MachinatNode,
-  actions: null | MachinatAction<Rendered, Native>[],
-  jobs: null | Job[],
-  results: null | Result[],
-};
+export type ReceiveMiddleware<
+  Native,
+  Response,
+  Thread: MachinatThread<any, any>,
+  Event: MachinatEvent<any, Thread>
+> = MiddlewareFunc<
+  ReceiveFrame<any, Native, any, any, Thread, Event>,
+  Promise<void | Response>
+>;
 
 export type DispatchFrame<
   Rendered,
@@ -60,19 +67,12 @@ export type DispatchFrame<
   actions: null | MachinatAction<Rendered, Native>[],
 };
 
-export type MiddlewareFunc<Ctx, Value> = (
-  next: (ctx: Ctx) => Value
-) => (ctx: Ctx) => Value;
-
-export type ReceiveMiddleware<
-  Raw,
-  Response,
-  Native,
-  Thread: MachinatThread<any, any>
-> = MiddlewareFunc<
-  ReceiveFrame<Raw, any, Native, any, any, Thread>,
-  Promise<void | Response>
->;
+export type DispatchReport<Rendered, Native, Job, Result> = {
+  element: null | MachinatNode,
+  actions: null | MachinatAction<Rendered, Native>[],
+  jobs: null | Job[],
+  results: null | Result[],
+};
 
 export type DispatchMiddleware<
   Rendered,
@@ -86,24 +86,24 @@ export type DispatchMiddleware<
 >;
 
 export type BotPlugin<
-  Raw,
-  Response,
   Rendered,
   Native,
   Job,
   Result,
   DeliverableThread,
-  ReceivableThread
+  Response,
+  ReceivableThread,
+  Event: MachinatEvent<any, ReceivableThread>
 > = (
   bot: BaseBot<
-    Raw,
-    Response,
     Rendered,
     Native,
     Job,
     Result,
     DeliverableThread,
-    ReceivableThread
+    Response,
+    ReceivableThread,
+    Event
   >
 ) => {
   dispatchMiddleware: ?DispatchMiddleware<
@@ -114,10 +114,10 @@ export type BotPlugin<
     DeliverableThread
   >,
   receiveMiddleware: ?ReceiveMiddleware<
-    Raw,
-    Response,
     Native,
-    ReceivableThread
+    Response,
+    ReceivableThread,
+    Event
   >,
 };
 
@@ -126,8 +126,12 @@ export interface MachinatWorker {
   stop(queue: MachinatQueue<any, any>): boolean;
 }
 
-export type EventHandler<Raw, Response, Thread: MachinatThread<any, any>> = (
-  event: MachinatEvent<Raw, Thread>,
+export type EventHandler<
+  Response,
+  Thread: MachinatThread<any, any>,
+  Event: MachinatEvent<any, Thread>
+> = (
+  event: Event,
   source: string,
   tranportContext: any
 ) => Promise<void | Response>;

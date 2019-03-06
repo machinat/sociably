@@ -207,13 +207,13 @@ export type LineBotOptions = {
   useReplyAPI: boolean,
   connectionCapicity: number,
   plugins?: BotPlugin<
-    LineRawEvent,
-    WebhookResponse,
     LineActionValue,
     LineComponent,
     LineJob,
     LineAPIResult,
     ChatThread | MulticastThread,
-    ChatThread
+    WebhookResponse,
+    ChatThread,
+    LineEvent
   >[],
 };

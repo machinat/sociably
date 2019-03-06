@@ -24,6 +24,15 @@ export type Recipient = PSIDRecipient | UserRefRecipient | PhoneNumberRecipient;
 // TODO: type the raw event object
 export type MessengerRawEvent = Object;
 
+export type MessengerEvent = {
+  platform: 'messenger',
+  type: string,
+  subtype?: string,
+  shouldRespond: boolean,
+  thread: ChatThread,
+  raw: MessengerRawEvent,
+};
+
 // TODO: detailed message type
 export type MessengerMessage = Object;
 
@@ -119,13 +128,13 @@ export type MessengerBotOptions = {
   respondTimeout: number,
   consumeInterval?: number,
   plugins?: BotPlugin<
-    MessengerRawEvent,
-    WebhookResponse,
     MessengerActionValue,
     MessengerComponent,
     MessengerJob,
     MessengerAPIResult,
     DeliverableThread,
-    ChatThread
+    WebhookResponse,
+    ChatThread,
+    MessengerEvent
   >[],
 };

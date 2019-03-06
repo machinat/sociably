@@ -24,7 +24,7 @@ import * as generalComponents from './component/general';
 import type {
   Recipient,
   MessengerBotOptions,
-  MessengerRawEvent,
+  MessengerEvent,
   MessengerComponent,
   MessengerJob,
   MessengerAPIResult,
@@ -40,14 +40,14 @@ const MESSENGER = 'messenger';
 
 export default class MessengerBot
   extends BaseBot<
-    MessengerRawEvent,
-    WebhookResponse,
     MessengerActionValue,
     MessengerComponent,
     MessengerJob,
     MessengerAPIResult,
     DeliverableThread,
-    ChatThread
+    WebhookResponse,
+    ChatThread,
+    MessengerEvent
   >
   implements HTTPReceivable {
   options: MessengerBotOptions;

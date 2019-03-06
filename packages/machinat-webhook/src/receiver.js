@@ -7,6 +7,7 @@ import type {
   MachinatThread,
   HTTPReceiver,
   EventHandler,
+  MachinatEvent,
 } from 'machinat-base/types';
 import type { WebhookHandler, WebhookResponse } from './types';
 
@@ -18,14 +19,16 @@ const endRes = (res, status, body) => {
   res.end(body);
 };
 
-class WebhookReceiver<Raw, Thread: MachinatThread<any, any>>
-  implements HTTPReceiver {
-  handleWebhook: WebhookHandler<Raw, Thread>;
-  handleEvent: EventHandler<Raw, WebhookResponse, Thread>;
+class WebhookReceiver<
+  Thread: MachinatThread<any, any>,
+  Event: MachinatEvent<any, Thread>
+> implements HTTPReceiver {
+  handleWebhook: WebhookHandler<Thread, Event>;
+  handleEvent: EventHandler<WebhookResponse, Thread, Event>;
 
   constructor(
-    handleWebhook: WebhookHandler<Raw, Thread>,
-    handleEvent: EventHandler<Raw, WebhookResponse, Thread>
+    handleWebhook: WebhookHandler<Thread, Event>,
+    handleEvent: EventHandler<WebhookResponse, Thread, Event>
   ) {
     this.handleWebhook = handleWebhook;
     this.handleEvent = handleEvent;
