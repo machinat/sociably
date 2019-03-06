@@ -1,6 +1,6 @@
 // @flow
 import { compose } from './utils';
-import Context from './context';
+import ReceiveFrame from './receiveFrame';
 import type {
   ReceiveMiddleware,
   MachinatEvent,
@@ -8,7 +8,6 @@ import type {
   MachinatThread,
 } from './types';
 import type MachinatBot from './bot';
-import type ReceiveContext from './context';
 
 class MachinatController<Raw, Response, Thread: MachinatThread<any, any>> {
   middlewares: ReceiveMiddleware<Raw, Response, any, Thread>[];
@@ -32,7 +31,7 @@ class MachinatController<Raw, Response, Thread: MachinatThread<any, any>> {
   makeEventHandler(
     bot: MachinatBot<Raw, Response, any, any, any, any, any, Thread>,
     finalHandler: (
-      ReceiveContext<Raw, any, any, any, any, Thread>
+      ReceiveFrame<Raw, any, any, any, any, Thread>
     ) => Promise<void | Response>,
     onError: Error => void
   ): EventHandler<Raw, Response, Thread> {
@@ -46,10 +45,10 @@ class MachinatController<Raw, Response, Thread: MachinatThread<any, any>> {
       event: MachinatEvent<Raw, Thread>,
       source: string,
       transportContext: any
-    ) =>
-      handle(new Context(event, bot, source, transportContext)).catch(
-        handleError
-      );
+    ) => {
+      const frame = new ReceiveFrame(event, bot, source, transportContext);
+      return handle(frame).catch(handleError);
+    };
   }
 }
 

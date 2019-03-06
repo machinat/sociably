@@ -1,10 +1,9 @@
 // @flow
-/* eslint-disable import/prefer-default-export */
 import type { MachinatNode } from 'machinat/types';
 import type { JobResponse } from 'machinat-queue/types';
 import type { MachinatAction } from 'machinat-renderer/types';
 
-export class SendError<Rendered, Native, Job, Result> extends Error {
+class DispatchError<Rendered, Native, Job, Result> extends Error {
   errors: $ReadOnlyArray<Error>;
   node: MachinatNode;
   actions: null | MachinatAction<Rendered, Native>[];
@@ -30,7 +29,7 @@ export class SendError<Rendered, Native, Job, Result> extends Error {
     super(message);
 
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, SendError);
+      Error.captureStackTrace(this, DispatchError);
     }
 
     this.errors = errors;
@@ -40,3 +39,5 @@ export class SendError<Rendered, Native, Job, Result> extends Error {
     this.responses = responses;
   }
 }
+
+export default DispatchError;

@@ -10,7 +10,7 @@ import type {
   MachinatAction,
 } from 'machinat-renderer/types';
 import type BaseBot from './bot';
-import type ReceiveContext from './context';
+import type ReceiveFrame from './receiveFrame';
 
 export type ActionWithoutPause<Rendered, Native> =
   | TextRenderedAction
@@ -46,7 +46,7 @@ export type DispatchReport<Rendered, Native, Job, Result> = {
   results: null | Result[],
 };
 
-export type DispatchContext<
+export type DispatchFrame<
   Rendered,
   Native,
   Job,
@@ -70,18 +70,18 @@ export type ReceiveMiddleware<
   Native,
   Thread: MachinatThread<any, any>
 > = MiddlewareFunc<
-  ReceiveContext<Raw, any, Native, any, any, Thread>,
+  ReceiveFrame<Raw, any, Native, any, any, Thread>,
   Promise<void | Response>
 >;
 
-export type SendMiddleware<
+export type DispatchMiddleware<
   Rendered,
   Native,
   Job,
   Result,
   Thread: MachinatThread<Job, any>
 > = MiddlewareFunc<
-  DispatchContext<Rendered, Native, Job, Thread>,
+  DispatchFrame<Rendered, Native, Job, Thread>,
   Promise<DispatchReport<Rendered, Native, Job, Result>>
 >;
 
@@ -106,7 +106,7 @@ export type BotPlugin<
     ReceivableThread
   >
 ) => {
-  sendMiddleware: ?SendMiddleware<
+  dispatchMiddleware: ?DispatchMiddleware<
     Rendered,
     Native,
     Job,

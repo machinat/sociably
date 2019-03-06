@@ -1,6 +1,6 @@
 import moxy from 'moxy';
 import Controller from '../controller';
-import ReceiveContext from '../context';
+import ReceiveFrame from '../receiveFrame';
 
 it('is a constructor', () => {
   expect(typeof Controller).toBe('function');
@@ -49,7 +49,7 @@ describe('#makeEventHandler(bot, finalHandler, onError)', () => {
     onError.mock.clear();
   });
 
-  it('pass context to finalHandler', async () => {
+  it('pass frame to finalHandler', async () => {
     const controller = new Controller();
 
     const handle = controller.makeEventHandler(bot, finalHandler, onError);
@@ -62,7 +62,7 @@ describe('#makeEventHandler(bot, finalHandler, onError)', () => {
 
     expect(finalHandler.mock).toHaveBeenCalledTimes(3);
     for (let i = 0; i < 3; i += 1) {
-      expect(finalHandler.mock.calls[i].args[0]).toBeInstanceOf(ReceiveContext);
+      expect(finalHandler.mock.calls[i].args[0]).toBeInstanceOf(ReceiveFrame);
       expect(finalHandler.mock).toHaveBeenCalledWith({
         bot,
         event: { id: i + 1 },
@@ -88,39 +88,39 @@ describe('#makeEventHandler(bot, finalHandler, onError)', () => {
     });
   });
 
-  it('pass receiving context through middlewares', async () => {
+  it('pass ReceiveFrame through middlewares', async () => {
     const controller = new Controller();
     finalHandler.mock.fake(() => Promise.resolve('Roger'));
 
-    const expectedContext = {
+    const expectedFrame = {
       bot,
       event,
       source: 'test',
       transportContext: transportCtx,
     };
 
-    const middleware1 = next => async context => {
-      expect(context).toEqual(expectedContext);
+    const middleware1 = next => async frame => {
+      expect(frame).toEqual(expectedFrame);
 
-      const result = await next({ ...context, foo: true });
+      const result = await next({ ...frame, foo: true });
       expect(result).toBe('Roger foo bar');
 
       return `${result} baz`;
     };
 
-    const middleware2 = next => async context => {
-      expect(context).toEqual({ ...expectedContext, foo: true });
+    const middleware2 = next => async frame => {
+      expect(frame).toEqual({ ...expectedFrame, foo: true });
 
-      const result = await next({ ...context, bar: true });
+      const result = await next({ ...frame, bar: true });
       expect(result).toBe('Roger foo');
 
       return `${result} bar`;
     };
 
-    const middleware3 = next => async context => {
-      expect(context).toEqual({ ...expectedContext, foo: true, bar: true });
+    const middleware3 = next => async frame => {
+      expect(frame).toEqual({ ...expectedFrame, foo: true, bar: true });
 
-      const result = await next({ ...context, baz: true });
+      const result = await next({ ...frame, baz: true });
       expect(result).toBe('Roger');
 
       return `${result} foo`;

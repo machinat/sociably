@@ -42,9 +42,9 @@ export default class BaseBot<
       const sendingMiddlewares = [];
 
       for (const createPlugin of plugins) {
-        const { sendMiddleware, receiveMiddleware } = createPlugin(this);
+        const { dispatchMiddleware, receiveMiddleware } = createPlugin(this);
 
-        if (sendMiddleware) sendingMiddlewares.push(sendMiddleware);
+        if (dispatchMiddleware) sendingMiddlewares.push(dispatchMiddleware);
         if (receiveMiddleware) receivingMiddlewares.push(receiveMiddleware);
       }
 

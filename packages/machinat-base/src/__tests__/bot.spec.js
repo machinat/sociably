@@ -38,9 +38,9 @@ describe('#constructor(controller, engine, plugins)', () => {
     const smw1 = () => () => {};
     const smw2 = () => () => {};
     const plugins = [
-      moxy(() => ({ sendMiddleware: smw1 })),
+      moxy(() => ({ dispatchMiddleware: smw1 })),
       moxy(() => ({ receiveMiddleware: rmw1 })),
-      moxy(() => ({ sendMiddleware: smw2, receiveMiddleware: rmw2 })),
+      moxy(() => ({ dispatchMiddleware: smw2, receiveMiddleware: rmw2 })),
     ];
 
     const bot = new Bot(controller, engine, plugins);

@@ -1,5 +1,5 @@
 import moxy from 'moxy';
-import ReceiveContext from '../context';
+import ReceiveFrame from '../receiveFrame';
 
 const bot = {
   an: 'droid',
@@ -16,25 +16,25 @@ const source = 'ANewHope';
 const transportCtx = { assault: 'DeathStar' };
 
 it('is a contructor', () => {
-  expect(typeof ReceiveContext).toBe('function');
+  expect(typeof ReceiveFrame).toBe('function');
 
-  const context = new ReceiveContext(event, bot, source, transportCtx);
+  const frame = new ReceiveFrame(event, bot, source, transportCtx);
 
-  expect(context.bot).toBe(bot);
-  expect(context.event).toBe(event);
-  expect(context.source).toBe(source);
-  expect(context.transportContext).toBe(transportCtx);
-  expect(context.platform).toBe(event.platform);
+  expect(frame.bot).toBe(bot);
+  expect(frame.event).toBe(event);
+  expect(frame.source).toBe(source);
+  expect(frame.transportContext).toBe(transportCtx);
+  expect(frame.platform).toBe(event.platform);
 });
 
 describe('#react()', () => {
   it('make bot.engine.dispatch() call', async () => {
-    const context = new ReceiveContext(event, bot, source, transportCtx);
+    const frame = new ReceiveFrame(event, bot, source, transportCtx);
 
     const msg = "I'm hit! R2, do what you can do on it.";
     const options = { very: 'urgent' };
 
-    await expect(context.react(msg, options)).resolves.toEqual({
+    await expect(frame.react(msg, options)).resolves.toEqual({
       success: true,
     });
 

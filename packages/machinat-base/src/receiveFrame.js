@@ -4,7 +4,7 @@ import type { MachinatNativeType } from 'machinat-renderer/types';
 import type MachinatBot from './bot';
 import type { MachinatEvent, MachinatThread } from './types';
 
-export default class MachinatReceiveContext<
+class MachinatReceiveFrame<
   Raw,
   Rendered,
   Native: MachinatNativeType<Rendered>,
@@ -37,3 +37,5 @@ export default class MachinatReceiveContext<
     return this.bot.engine.dispatch(this.event.thread, nodes, options);
   }
 }
+
+export default MachinatReceiveFrame;

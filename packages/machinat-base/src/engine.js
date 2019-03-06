@@ -9,12 +9,12 @@ import type MahinateQueue from 'machinat-queue';
 import type { JobResponse } from 'machinat-queue/types';
 import type MahinateRenderer from 'machinat-renderer';
 import type { MachinatNativeType, PauseAction } from 'machinat-renderer/types';
-import { SendError } from './error';
+import DispatchError from './error';
 import { compose } from './utils';
 import type {
   DispatchReport,
-  SendMiddleware,
-  DispatchContext,
+  DispatchMiddleware,
+  DispatchFrame,
   ActionWithoutPause,
   MachinatWorker,
   MachinatThread,
@@ -54,12 +54,12 @@ export default class MachinatEngine<
   Thread: MachinatThread<Job, any>
 > {
   platform: string;
-  middlewares: SendMiddleware<Rendered, Native, Job, Result, Thread>[];
+  middlewares: DispatchMiddleware<Rendered, Native, Job, Result, Thread>[];
   queue: MahinateQueue<Job, Result>;
   renderer: MahinateRenderer<Rendered, Native>;
   worker: MachinatWorker;
   _handleSending: (
-    DispatchContext<Rendered, Native, Job, Thread>
+    DispatchFrame<Rendered, Native, Job, Thread>
   ) => Promise<DispatchReport<Rendered, Native, Job, Result>>;
 
   constructor(
@@ -77,7 +77,7 @@ export default class MachinatEngine<
     this.use();
   }
 
-  use(...fns: SendMiddleware<Rendered, Native, Job, Result, Thread>[]) {
+  use(...fns: DispatchMiddleware<Rendered, Native, Job, Result, Thread>[]) {
     for (const fn of fns) {
       if (typeof fn !== 'function') {
         throw new TypeError('middleware must be a function!');
@@ -109,7 +109,7 @@ export default class MachinatEngine<
       platform: this.platform,
     });
 
-    const context: DispatchContext<Rendered, Native, Job, Thread> = {
+    const context: DispatchFrame<Rendered, Native, Job, Thread> = {
       element: node,
       thread,
       options,
@@ -123,7 +123,7 @@ export default class MachinatEngine<
   }
 
   async _executeSending(
-    context: DispatchContext<Rendered, Native, Job, Thread>
+    context: DispatchFrame<Rendered, Native, Job, Thread>
   ): Promise<DispatchReport<Rendered, Native, Job, Result>> {
     const { actions, element, options, thread } = context;
 
@@ -139,7 +139,7 @@ export default class MachinatEngine<
         if (batchResponse.success) {
           results = batchResponse.batch.map(getResult);
         } else {
-          throw new SendError(
+          throw new DispatchError(
             batchResponse.errors,
             element,
             actions,
@@ -198,7 +198,7 @@ export default class MachinatEngine<
       if (batchResponse.success) {
         responses.push(...batchResponse.batch);
       } else {
-        throw new SendError(
+        throw new DispatchError(
           batchResponse.errors,
           element,
           actions,

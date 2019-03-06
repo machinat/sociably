@@ -1,13 +1,11 @@
 import moxy from 'moxy';
+import Machinat from 'machinat';
 import Queue from 'machinat-queue';
 import Renderer from 'machinat-renderer';
-
-import Machinat from 'machinat';
-
 import { MACHINAT_ACTION_BREAK } from 'machinat-symbol';
 
 import Engine from '../engine';
-import { SendError } from '../error';
+import DispatchError from '../error';
 
 const element = (
   <>
@@ -458,7 +456,7 @@ describe('#dispatch(thread, element, options)', () => {
       expect(err.jobs).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
       expect(err.responses).toEqual(execResponse.batch);
 
-      expect(err).toBeInstanceOf(SendError);
+      expect(err).toBeInstanceOf(DispatchError);
 
       expect(err.message).toEqual(expect.stringContaining(err1.message));
       expect(err.message).toEqual(expect.stringContaining(err2.message));
