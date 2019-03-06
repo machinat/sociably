@@ -1,4 +1,4 @@
-import { reduce } from 'machinat-children';
+import { reduce } from 'machinat-utility';
 import Machinat from 'machinat';
 import * as general from '../general';
 

@@ -1,6 +1,6 @@
 import moxy from 'moxy';
 import Machinat from 'machinat';
-import { reduce } from 'machinat-children';
+import { reduce } from 'machinat-utility';
 
 import { MESSENGER_NAITVE_TYPE } from '../../symbol';
 import { Latex } from '../text';

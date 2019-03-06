@@ -7,8 +7,8 @@ import {
   isEmpty,
   isElement,
   formatElement,
+  traverse,
 } from 'machinat-utility';
-import { traverse } from 'machinat-children';
 
 import type {
   MachinatNode,
@@ -16,7 +16,7 @@ import type {
   GeneralElement,
   NativeElement,
 } from 'machinat/types';
-import type { TraverseElementCallback } from 'machinat-children/types';
+import type { TraverseElementCallback } from 'machinat-utility/types';
 
 import type {
   RenderInnerFn,
@@ -234,7 +234,6 @@ export default class MachinatRenderer<
       }
     } else {
       // throw if non of supported condition met
-
       invariant(
         false,
         `element type ${inspect(element.type)} at poistion '${path}' is illegal`

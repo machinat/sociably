@@ -1,5 +1,5 @@
-import Machinat from '../../../machinat';
-import { traverse, toArray, reduce, map } from '../';
+import Machinat from 'machinat';
+import { traverse, toArray, reduce, map } from '../children';
 
 describe('traverse', () => {
   it('traverse through node tree and pass all non empty element to callback', () => {

@@ -1,4 +1,4 @@
-import Machinat from '../../../machinat';
+import Machinat from 'machinat';
 import {
   isElement,
   isFragment,

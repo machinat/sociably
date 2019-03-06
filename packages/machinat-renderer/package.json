@@ -6,7 +6,6 @@
   "dependencies": {
     "delay": "^4.0.1",
     "invariant": "^2.2.4",
-    "machinat-children": "0.0.1-0",
     "machinat-utility": "0.0.1-0",
     "warning": "^4.0.1"
   }

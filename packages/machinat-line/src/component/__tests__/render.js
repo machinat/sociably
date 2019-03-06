@@ -1,5 +1,5 @@
 import moxy from 'moxy';
-import { map } from 'machinat-children';
+import { map } from 'machinat-utility';
 
 const render = moxy(
   node =>

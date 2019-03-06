@@ -6,3 +6,4 @@ export { default as valuesOfAssertedType } from './valuesOfAssertedType';
 
 export * from './isX';
 export * from './annotation';
+export * from './children';

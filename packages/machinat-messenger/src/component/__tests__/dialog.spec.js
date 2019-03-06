@@ -1,5 +1,5 @@
 import Machinat from 'machinat';
-import { map } from 'machinat-children';
+import { map } from 'machinat-utility';
 
 import {
   QuickReply,
