@@ -1,14 +1,14 @@
 import { getFixtures } from './helper';
 
 import { text, image, video, audio, file } from '../factory';
-import { EventBase, Message, Text, NLP, Media } from '../descriptor';
+import { EventBase, Message, Text, NLP, Media } from '../mixin';
 
 describe.each([
-  ['text', null, text, 'text*', [Message, Text, NLP]],
-  ['image', null, image, 'image*', [Message, Media]],
-  ['video', null, video, 'video*', [Message, Media]],
-  ['audio', null, audio, 'audio*', [Message, Media]],
-  ['file', null, file, 'file*', [Message, Media]],
+  ['text', undefined, text, 'text*', [Message, Text, NLP]],
+  ['image', undefined, image, 'image*', [Message, Media]],
+  ['video', undefined, video, 'video*', [Message, Media]],
+  ['audio', undefined, audio, 'audio*', [Message, Media]],
+  ['file', undefined, file, 'file*', [Message, Media]],
 ])('%s:%s event factory', (type, subtype, factory, fixturesGlob, mixins) => {
   //
   it('implements MachinatEvent interface', async () => {

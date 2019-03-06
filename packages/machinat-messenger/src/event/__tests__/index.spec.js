@@ -1,21 +1,13 @@
-import { getFixtures, eachKeyValueAsync } from './helper';
+import { getFixtures } from './helper';
 
 import mainFactory from '../';
 
-const expectedMapping = {
-  text: { fixturePrefix: 'text' },
-  image: { fixturePrefix: 'image' },
-  video: { fixturePrefix: 'video' },
-  audio: { fixturePrefix: 'audio' },
-  file: { fixturePrefix: 'file' },
-};
-
 test.each([
-  ['text', null, 'text*'],
-  ['image', null, 'image*'],
-  ['video', null, 'video*'],
-  ['audio', null, 'audio*'],
-  ['file', null, 'file*'],
+  ['text', undefined, 'text*'],
+  ['image', undefined, 'image*'],
+  ['video', undefined, 'video*'],
+  ['audio', undefined, 'audio*'],
+  ['file', undefined, 'file*'],
 ])('making %s:%s messaging event', async (type, subtype, fixturesGlob) => {
   const fixtures = await getFixtures(fixturesGlob);
 

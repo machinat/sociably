@@ -9,8 +9,9 @@ describe('handling GET request', () => {
     req.method = 'GET';
     const res = moxy(new ServerResponse({ method: 'GET' }));
 
-    expect(handleWebhook({ shouldVerifyWebhook: false })(req, res)) // alignment
-      .toBe(undefined);
+    expect(handleWebhook({ shouldVerifyWebhook: false })(req, res)).toBe(
+      undefined
+    );
 
     expect(res.statusCode).toBe(403);
     expect(res.finished).toBe(true);
@@ -29,8 +30,9 @@ describe('handling GET request', () => {
 
       const res = moxy(new ServerResponse({ method: 'GET' }));
 
-      expect(handleWebhook({ shouldVerifyWebhook: true })(req, res)) // alignment
-        .toBe(undefined);
+      expect(handleWebhook({ shouldVerifyWebhook: true })(req, res)).toBe(
+        undefined
+      );
 
       expect(res.statusCode).toBe(400);
       expect(res.finished).toBe(true);
@@ -156,7 +158,7 @@ describe('handling POST request', () => {
     events.forEach((event, i) => {
       expect(event.platform).toBe('messenger');
       expect(event.type).toBe(!i ? 'text' : 'image');
-      expect(event.subtype).toBe(null);
+      expect(event.subtype).toBe(undefined);
       expect(event.raw).toEqual(body.entry[0].messaging[i]);
     });
   });
@@ -183,7 +185,7 @@ describe('handling POST request', () => {
 
     expect(event.platform).toBe('messenger');
     expect(event.type).toBe('text');
-    expect(event.subtype).toBe(null);
+    expect(event.subtype).toBe(undefined);
     expect(event.raw).toEqual({
       sender: { id: '_PSID_' },
       recipient: { id: '_PAGE_ID_' },
