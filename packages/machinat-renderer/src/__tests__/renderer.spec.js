@@ -332,7 +332,7 @@ describe('#render()', () => {
     expect(() =>
       renderer.render(<IllegalComponent />, {})
     ).toThrowErrorMatchingInlineSnapshot(
-      `"element type { foo: 'bar' } at poistion '$' is illegal"`
+      `"{\\"type\\":{\\"foo\\":\\"bar\\"},\\"props\\":{}} at poistion '$' is not valid element"`
     );
   });
 
@@ -345,7 +345,7 @@ describe('#render()', () => {
     expect(() =>
       renderer.render(<AnotherPlatformNative />, {})
     ).toThrowErrorMatchingInlineSnapshot(
-      `"component AnotherPlatformNative at '$' is not supported by Test"`
+      `"native component <AnotherPlatformNative /> at '$' is not supported by Test"`
     );
   });
 });

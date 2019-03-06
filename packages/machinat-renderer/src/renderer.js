@@ -1,5 +1,4 @@
 // @flow
-import { inspect } from 'util';
 import invariant from 'invariant';
 import {
   isNative,
@@ -140,7 +139,9 @@ export default class MachinatRenderer<
       const { props, type } = element;
       invariant(
         type in this.generalComponentDelegate,
-        `<${type} /> is not valid general element supported in ${this.platform}`
+        `${formatElement(element)} is not valid general element supported in ${
+          this.platform
+        }`
       );
 
       const values = this.generalComponentDelegate[type](
@@ -217,9 +218,9 @@ export default class MachinatRenderer<
 
         invariant(
           !isNative(element),
-          `component ${element.type.name} at '${path}' is not supported by ${
-            this.platform
-          }`
+          `native component ${formatElement(
+            element
+          )} at '${path}' is not supported by ${this.platform}`
         );
 
         const { type: renderCustom, props } = element;
@@ -233,10 +234,10 @@ export default class MachinatRenderer<
         );
       }
     } else {
-      // throw if non of supported condition met
+      // throw if invalid element met
       invariant(
         false,
-        `element type ${inspect(element.type)} at poistion '${path}' is illegal`
+        `${formatElement(element)} at poistion '${path}' is not valid element`
       );
     }
   };
