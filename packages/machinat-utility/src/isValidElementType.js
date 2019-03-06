@@ -1,5 +1,5 @@
 // @flow
-import { MACHINAT_FRAGMENT_TYPE, MACHINAT_PAUSE_TYPE } from './symbol';
+import { MACHINAT_FRAGMENT_TYPE, MACHINAT_PAUSE_TYPE } from 'machinat-symbol';
 
 const isValidElementType = (type: any) =>
   typeof type === 'string' ||

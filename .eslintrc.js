@@ -40,11 +40,7 @@ module.exports = {
     'flowtype/define-flow-type': 1,
     'import/extensions': 0,
     'import/no-unresolved': ['error', {
-      ignore: ['machinat.*']
-    }],
-    'import/no-extraneous-dependencies': ['error', {
-      devDependencies: ['**/*.spec.js'],
-      packagePath: ['./', '../../'],
+      ignore: ['machinat.*/types']
     }],
     'react/jsx-key': 0,
     'react/no-unescaped-entities': ['error', {

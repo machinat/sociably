@@ -2,7 +2,7 @@
 import invariant from 'invariant';
 import delay from 'delay';
 
-import { ACTION_BREAK } from 'machinat-utility';
+import { MACHINAT_ACTION_BREAK } from 'machinat-symbol';
 
 import type { MachinatNode, PauseElement } from 'machinat/types';
 import type MahinateQueue from 'machinat-queue';
@@ -160,8 +160,8 @@ export default class MachinatEngine<
     for (let i = 0; i < actions.length; i += 1) {
       const action = actions[i];
 
-      // collect actions to buffer and ignoring ACTION_BREAK
-      if (!action.isPause && action.value !== ACTION_BREAK) {
+      // collect actions to buffer and ignoring MACHINAT_ACTION_BREAK
+      if (!action.isPause && action.value !== MACHINAT_ACTION_BREAK) {
         actionBuffer.push(action);
       }
 

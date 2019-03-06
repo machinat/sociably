@@ -1,5 +1,5 @@
 // @flow
-import { MACHINAT_ELEMENT_TYPE } from 'machinat-utility';
+import { MACHINAT_ELEMENT_TYPE } from 'machinat-symbol';
 import type { MachinatElementType, MachinatNode } from './types';
 
 export default function createElement(

@@ -4,7 +4,7 @@ import Renderer from 'machinat-renderer';
 
 import Machinat from 'machinat';
 
-import { ACTION_BREAK } from 'machinat-utility';
+import { MACHINAT_ACTION_BREAK } from 'machinat-symbol';
 
 import Engine from '../engine';
 import { SendError } from '../error';
@@ -366,7 +366,7 @@ describe('#dispatch(thread, element, options)', () => {
       {
         isPause: false,
         element: <br />,
-        value: ACTION_BREAK,
+        value: MACHINAT_ACTION_BREAK,
         path: '$::1',
       },
       {
@@ -383,7 +383,7 @@ describe('#dispatch(thread, element, options)', () => {
       {
         isPause: false,
         element: <br />,
-        value: ACTION_BREAK,
+        value: MACHINAT_ACTION_BREAK,
         path: '$::4',
       },
       {
@@ -395,7 +395,7 @@ describe('#dispatch(thread, element, options)', () => {
       {
         isPause: false,
         element: <br />,
-        value: ACTION_BREAK,
+        value: MACHINAT_ACTION_BREAK,
         path: '$::6',
       },
     ];

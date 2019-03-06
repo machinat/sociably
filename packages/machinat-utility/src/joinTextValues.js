@@ -1,10 +1,10 @@
 // @flow
 import invariant from 'invariant';
+import { MACHINAT_ACTION_BREAK } from 'machinat-symbol';
 import type { MachinatNode } from 'machinat/types';
 import type { RenderInnerFn } from 'machinat-renderer/types';
 
 import formatElement from './formatElement';
-import { ACTION_BREAK } from './symbol';
 
 const joinTextValues = (
   node: MachinatNode,
@@ -31,8 +31,8 @@ const joinTextValues = (
       } else {
         values[len - 1] = lastValue + value;
       }
-    } else if (value === ACTION_BREAK) {
-      values.push(ACTION_BREAK);
+    } else if (value === MACHINAT_ACTION_BREAK) {
+      values.push(MACHINAT_ACTION_BREAK);
     } else {
       invariant(
         false,

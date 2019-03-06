@@ -3,7 +3,7 @@ import {
   MACHINAT_FRAGMENT_TYPE,
   MACHINAT_ELEMENT_TYPE,
   MACHINAT_PAUSE_TYPE,
-} from './symbol';
+} from 'machinat-symbol';
 
 export const isEmpty = (element: any): boolean %checks =>
   typeof element === 'boolean' || element === null || element === undefined;

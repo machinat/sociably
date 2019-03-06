@@ -1,5 +1,5 @@
+import { MACHINAT_FRAGMENT_TYPE, MACHINAT_PAUSE_TYPE } from 'machinat-symbol';
 import isValidElementType from '../isValidElementType';
-import { MACHINAT_FRAGMENT_TYPE, MACHINAT_PAUSE_TYPE } from '../symbol';
 
 test('strings are valid', () => {
   ['text', 'a', 'b', 'i'].forEach(str => {
