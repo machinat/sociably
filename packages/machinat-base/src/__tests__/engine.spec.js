@@ -1,4 +1,4 @@
-import moxy, { isMoxy } from 'moxy';
+import moxy from 'moxy';
 import Queue from 'machinat-queue';
 import Renderer from 'machinat-renderer';
 

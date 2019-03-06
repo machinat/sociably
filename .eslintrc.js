@@ -47,6 +47,14 @@ module.exports = {
       forbid: ['<', '>', '{', '}']
     }],
   },
+  overrides: [
+    {
+      files: '**/__{tests,fixtures,mocks}__/*',
+      rules: {
+        'import/no-extraneous-dependencies': 0
+      }
+    }
+  ],
   settings:{
     react: {
       pragma: 'Machinat',

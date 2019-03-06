@@ -1,6 +1,4 @@
-import moxy from 'moxy';
 import Machinat from 'machinat';
-import { formatElement } from 'machinat-utility';
 import ChatThread from '../chat';
 import {
   MESSENGER_NAITVE_TYPE,

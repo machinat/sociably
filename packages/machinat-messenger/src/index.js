@@ -1,2 +1,2 @@
-export { default } from './connector';
+export { default } from './bot';
 export * from './component';

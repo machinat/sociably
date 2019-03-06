@@ -1,5 +1,4 @@
 import Machinat from 'machinat';
-import { map } from 'machinat-children';
 
 import render from './render';
 
