@@ -8,13 +8,13 @@ export const mixin = (...prototypes: Array<Object>) =>
     )
   );
 
-export function toJSON() {
+export function toJSONWithProto() {
   /* eslint-disable guard-for-in, no-restricted-syntax */
   const obj = {};
   for (const k in this) {
     obj[k] = this[k];
   }
 
-  return JSON.stringify(obj);
+  return obj;
   /* eslint-enable guard-for-in, no-restricted-syntax */
 }

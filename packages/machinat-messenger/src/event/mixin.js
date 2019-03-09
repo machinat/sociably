@@ -1,5 +1,5 @@
 // @flow
-import { toJSON } from 'machinat-base';
+import { toJSONWithProto } from 'machinat-base';
 import { ChatThread } from '../thread';
 
 export const EventBase = {
@@ -31,7 +31,7 @@ Object.defineProperties(EventBase, {
   },
   toJSON: {
     enumerable: false,
-    value: toJSON,
+    value: toJSONWithProto,
   },
 });
 
