@@ -1,14 +1,16 @@
 // @flow
 import EventEmitter from 'events';
+import { mixin } from 'machinat-utility';
 import type { MachinatNativeType } from 'machinat-renderer/types';
 import type {
   BotPlugin,
   EventHandler,
   MachinatThread,
   MachinatEvent,
+  MachinatAdaptor,
 } from './types';
-import type MachinatController from './controller';
-import type MachinatEngine from './engine';
+import Controller from './controller';
+import Engine from './engine';
 
 export default class BaseBot<
   Rendered,
@@ -20,12 +22,26 @@ export default class BaseBot<
   Receivable: Deliverable,
   Event: MachinatEvent<any, Receivable>
 > extends EventEmitter {
-  controller: MachinatController<Response, Receivable, Event>;
-  engine: MachinatEngine<Rendered, Native, Job, Result, Deliverable>;
+  adaptor: MachinatAdaptor<Response, Receivable, Event>;
+  controller: Controller<Response, Receivable, Event>;
+  engine: Engine<Rendered, Native, Job, Result, Deliverable>;
+  plugins:
+    | void
+    | BotPlugin<
+        Rendered,
+        Native,
+        Job,
+        Result,
+        Deliverable,
+        Response,
+        Receivable,
+        Event
+      >[];
 
   constructor(
-    controller: MachinatController<Response, Receivable, Event>,
-    engine: MachinatEngine<Rendered, Native, Job, Result, Deliverable>,
+    adaptor: MachinatAdaptor<Response, Receivable, Event>,
+    controller: Controller<Response, Receivable, Event>,
+    engine: Engine<Rendered, Native, Job, Result, Deliverable>,
     plugins?: BotPlugin<
       Rendered,
       Native,
@@ -39,36 +55,52 @@ export default class BaseBot<
   ) {
     super();
 
-    this.engine = engine;
+    this.adaptor = adaptor;
     this.controller = controller;
+    this.engine = engine;
+    this.plugins = plugins;
 
     if (plugins) {
-      const receivingMiddlewares = [];
-      const sendingMiddlewares = [];
+      const receiveMws = [];
+      const dispatchMws = [];
+      const receiveExts = [];
+      const dispatchExts = [];
 
-      for (const createPlugin of plugins) {
-        const { dispatchMiddleware, receiveMiddleware } = createPlugin(this);
+      for (const plugin of plugins) {
+        const {
+          dispatchMiddleware,
+          dispatchFrameExtension,
+          receiveMiddleware,
+          receiveFrameExtension,
+        } = plugin(this);
 
-        if (dispatchMiddleware) sendingMiddlewares.push(dispatchMiddleware);
-        if (receiveMiddleware) receivingMiddlewares.push(receiveMiddleware);
+        if (receiveMiddleware) receiveMws.push(receiveMiddleware);
+        if (dispatchMiddleware) dispatchMws.push(dispatchMiddleware);
+
+        if (receiveFrameExtension) receiveExts.push(receiveFrameExtension);
+        if (dispatchFrameExtension) dispatchExts.push(dispatchFrameExtension);
       }
 
-      this.controller.use(...receivingMiddlewares);
-      this.engine.use(...sendingMiddlewares);
+      this.controller.setMiddlewares(...receiveMws);
+      this.controller.setFramePrototype(mixin(...receiveExts));
+
+      this.engine.setMiddlewares(...dispatchMws);
+      this.engine.setFramePrototype(mixin(...dispatchExts));
     }
 
     this.engine.start();
+    this.adaptor.bind(this.eventHandler());
   }
 
   eventHandler(): EventHandler<Response, Receivable, Event> {
     return this.controller.makeEventHandler(
       this,
-      context => {
-        this.emit('event', context);
+      frame => {
+        this.emit('event', frame);
         return Promise.resolve();
       },
       err => {
-        this.emit('error', err);
+        this.emit('error', err, this);
       }
     );
   }

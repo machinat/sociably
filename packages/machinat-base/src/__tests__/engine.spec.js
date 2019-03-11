@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import moxy from 'moxy';
 import Machinat from 'machinat';
 import Queue from 'machinat-queue';
@@ -73,17 +74,19 @@ beforeEach(() => {
   worker.mock.reset();
 });
 
-describe('#use(...fns)', () => {
+describe('#setMiddlewares(...fns)', () => {
   it('throws if non function args given', () => {
     const engine = new Engine('test', queue, renderer, worker);
     const invalidParams = [undefined, null, 1, true, 'foo', {}];
 
-    invalidParams.forEach(p => expect(() => engine.use(p)).toThrow());
+    invalidParams.forEach(p =>
+      expect(() => engine.setMiddlewares(p)).toThrow()
+    );
   });
 
   it('returns the engine itself', () => {
     const engine = new Engine('test', queue, renderer, worker);
-    expect(engine.use(async () => () => {})).toBe(engine);
+    expect(engine.setMiddlewares(async () => () => {})).toBe(engine);
   });
 
   it('adds middleware function to .middlewares', () => {
@@ -93,9 +96,65 @@ describe('#use(...fns)', () => {
     const middleware2 = async () => {};
     const middleware3 = async () => {};
 
-    engine.use(middleware1, middleware2).use(middleware3);
+    engine.setMiddlewares(middleware1, middleware2, middleware3);
 
     expect(engine.middlewares).toEqual([middleware1, middleware2, middleware3]);
+  });
+
+  it('reset middlewares every time called', () => {
+    const engine = new Engine('test', queue, renderer, worker);
+
+    const middleware1 = async () => {};
+    const middleware2 = async () => {};
+    const middleware3 = async () => {};
+
+    engine.setMiddlewares(middleware1, middleware2);
+    expect(engine.middlewares).toEqual([middleware1, middleware2]);
+
+    engine.setMiddlewares(middleware3, middleware2);
+    expect(engine.middlewares).toEqual([middleware3, middleware2]);
+  });
+});
+
+describe('#setFramePrototype(mixin)', () => {
+  const mixin = {
+    foo: 1,
+    get bar() {
+      return 2;
+    },
+    baz() {
+      return 3;
+    },
+  };
+
+  it('return engine itself', () => {
+    const engine = new Engine('test', queue, renderer, worker);
+
+    expect(engine.setFramePrototype(mixin)).toBe(engine);
+  });
+
+  it('extends engine.frame with base props remained', () => {
+    const engine = new Engine('test', queue, renderer, worker);
+
+    engine.setFramePrototype(mixin);
+
+    expect(typeof engine.frame.createJobs).toBe('function');
+
+    expect(engine.frame.foo).toBe(1);
+    expect(engine.frame.bar).toBe(2);
+    expect(engine.frame.baz()).toBe(3);
+  });
+
+  it('resets frame every time called', () => {
+    const engine = new Engine('test', queue, renderer, worker);
+
+    engine.setFramePrototype(mixin);
+    engine.setFramePrototype({ hello: 'world' });
+
+    expect(engine.frame.hello).toBe('world');
+    expect(engine.frame.foo).toBe(undefined);
+    expect(engine.frame.bar).toBe(undefined);
+    expect(engine.frame.baz).toBe(undefined);
   });
 });
 
@@ -122,10 +181,10 @@ describe('#dispatch(thread, element, options)', () => {
     ]);
   });
 
-  it('pass sending context through middlewares', async () => {
+  it('pass dispatch frame through middlewares', async () => {
     const engine = new Engine('test', queue, renderer, worker);
 
-    const expectedContext = {
+    const expectedFrame = {
       platform: 'test',
       thread,
       options,
@@ -141,37 +200,50 @@ describe('#dispatch(thread, element, options)', () => {
       results: [1, 2, 3],
     };
 
-    const middleware1 = moxy(next => async context => {
-      expect(context).toEqual(expectedContext);
+    const middleware1 = moxy(next => async frame => {
+      expect(frame).toEqual(expectedFrame);
+      expect(Object.getPrototypeOf(frame)).toBe(engine.frame);
 
-      const result = await next({ ...context, foo: 'bar' });
+      frame.foo = 1;
+      const result = await next(frame);
 
-      expect(result).toEqual({ ...expectedResponse, foo: 'baz' });
+      expect(result).toEqual({ ...expectedResponse, bar: 2 });
+      result.bar = 1;
 
       return result;
     });
 
-    const middleware2 = moxy(next => async context => {
-      expect(context).toEqual({ ...expectedContext, foo: 'bar' });
+    const middleware2 = moxy(next => async frame => {
+      expect(frame).toEqual({ ...expectedFrame, foo: 1 });
+      expect(Object.getPrototypeOf(frame)).toBe(engine.frame);
 
-      const result = await next({ ...context, foo: 'baz' });
+      frame.foo = 2;
+      const result = await next(frame);
 
-      expect(result).toEqual({ ...expectedResponse, foo: 'bar' });
+      expect(result).toEqual({ ...expectedResponse, bar: 3 });
+      result.bar = 2;
 
-      return { ...result, foo: 'baz' };
+      return result;
     });
 
-    const middleware3 = moxy(next => async context => {
-      expect(context).toEqual({ ...expectedContext, foo: 'baz' });
+    const middleware3 = moxy(next => async frame => {
+      expect(frame).toEqual({ ...expectedFrame, foo: 2 });
+      expect(Object.getPrototypeOf(frame)).toBe(engine.frame);
 
-      const result = await next(context);
+      frame.foo = 3;
+      const result = await next(frame);
 
       expect(result).toEqual(expectedResponse);
+      result.bar = 3;
 
-      return { ...result, foo: 'bar' };
+      return result;
     });
 
-    engine.use(middleware1, middleware2, middleware3);
+    engine.setMiddlewares(middleware1, middleware2, middleware3);
+
+    expect(middleware1.mock).toHaveBeenCalledTimes(1);
+    expect(middleware2.mock).toHaveBeenCalledTimes(1);
+    expect(middleware3.mock).toHaveBeenCalledTimes(1);
 
     await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
       1,
@@ -184,10 +256,6 @@ describe('#dispatch(thread, element, options)', () => {
     });
 
     expect(thread.createJobs.mock).toHaveBeenCalledWith(actions, options);
-
-    expect(middleware1.mock).toHaveBeenCalledTimes(1);
-    expect(middleware2.mock).toHaveBeenCalledTimes(1);
-    expect(middleware3.mock).toHaveBeenCalledTimes(1);
 
     expect(queue.executeJobs.mock).toHaveBeenCalledWith([
       { id: 1 },
@@ -203,7 +271,7 @@ describe('#dispatch(thread, element, options)', () => {
       results: [{ nothing: 'happened' }],
     }));
 
-    engine.use(middleware);
+    engine.setMiddlewares(middleware);
 
     await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
       { nothing: 'happened' },
@@ -225,7 +293,7 @@ describe('#dispatch(thread, element, options)', () => {
       throw new Error('something wrong with the element');
     });
 
-    engine.use(middleware);
+    engine.setMiddlewares(middleware);
 
     await expect(engine.dispatch(thread, element, options)).rejects.toThrow(
       'something wrong with the element'
@@ -485,7 +553,7 @@ describe('#dispatch(thread, element, options)', () => {
       }
     };
 
-    engine.use(middleware);
+    engine.setMiddlewares(middleware);
 
     await expect(engine.dispatch(thread, element)).resolves.toEqual([
       { something: 'else' },

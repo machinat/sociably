@@ -8,7 +8,11 @@ import type { MachinatNode, PauseElement } from 'machinat/types';
 import type MahinateQueue from 'machinat-queue';
 import type { JobResponse } from 'machinat-queue/types';
 import type MahinateRenderer from 'machinat-renderer';
-import type { MachinatNativeType, PauseAction } from 'machinat-renderer/types';
+import type {
+  MachinatNativeType,
+  MachinatAction,
+  PauseAction,
+} from 'machinat-renderer/types';
 import DispatchError from './error';
 import { compose } from './utils';
 import type {
@@ -46,6 +50,12 @@ const handlePause = async (pauseEle: PauseElement) => {
   await promise;
 };
 
+const DispatchFrameProto = {
+  createJobs(actions: null | ActionWithoutPause<any, any>[], options: any) {
+    return this.thread.createJobs(actions, options);
+  },
+};
+
 export default class MachinatEngine<
   Rendered,
   Native: MachinatNativeType<Rendered>,
@@ -61,6 +71,7 @@ export default class MachinatEngine<
   _handleSending: (
     DispatchFrame<Rendered, Native, Job, Thread>
   ) => Promise<DispatchReport<Rendered, Native, Job, Result>>;
+  frame: typeof DispatchFrameProto;
 
   constructor(
     platform: string,
@@ -74,19 +85,32 @@ export default class MachinatEngine<
     this.worker = worker;
 
     this.middlewares = [];
-    this.use();
+    this.setMiddlewares();
+
+    this.frame = Object.create(DispatchFrameProto);
   }
 
-  use(...fns: DispatchMiddleware<Rendered, Native, Job, Result, Thread>[]) {
+  setMiddlewares(
+    ...fns: DispatchMiddleware<Rendered, Native, Job, Result, Thread>[]
+  ) {
     for (const fn of fns) {
       if (typeof fn !== 'function') {
         throw new TypeError('middleware must be a function!');
       }
     }
 
-    this.middlewares.push(...fns);
+    this.middlewares = fns;
     this._handleSending = compose(...this.middlewares)(
       this._executeSending.bind(this)
+    );
+
+    return this;
+  }
+
+  setFramePrototype(mixin: Object) {
+    this.frame = Object.defineProperties(
+      Object.create(DispatchFrameProto),
+      Object.getOwnPropertyDescriptors(mixin)
     );
 
     return this;
@@ -102,30 +126,41 @@ export default class MachinatEngine<
 
   async dispatch(
     thread: Thread,
-    node: MachinatNode,
+    element: MachinatNode,
     options: any
   ): Promise<null | Result[]> {
-    const actions = this.renderer.render(node, {
+    const actions = this.renderer.render(element, {
       platform: this.platform,
     });
 
-    const context: DispatchFrame<Rendered, Native, Job, Thread> = {
-      element: node,
-      thread,
-      options,
-      actions,
-      platform: this.platform,
-      renderer: this.renderer,
-    };
+    const frame = this.createDispatchFrame(thread, element, options, actions);
 
-    const report = await this._handleSending(context);
+    const report = await this._handleSending(frame);
     return report.results;
   }
 
+  createDispatchFrame(
+    thread: Thread,
+    element: MachinatNode,
+    options: any,
+    actions: null | MachinatAction<Rendered, Native>[]
+  ): DispatchFrame<Rendered, Native, Job, Thread> {
+    const frame = Object.create(this.frame);
+
+    frame.thread = thread;
+    frame.element = element;
+    frame.options = options;
+    frame.actions = actions;
+    frame.platform = this.platform;
+    frame.renderer = this.renderer;
+
+    return frame;
+  }
+
   async _executeSending(
-    context: DispatchFrame<Rendered, Native, Job, Thread>
+    frame: DispatchFrame<Rendered, Native, Job, Thread>
   ): Promise<DispatchReport<Rendered, Native, Job, Result>> {
-    const { actions, element, options, thread } = context;
+    const { actions, element, options, thread } = frame;
 
     // leave the decision to thread if nothing rendered
     if (actions === null) {

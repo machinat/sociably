@@ -1,5 +1,5 @@
 // @flow
-import { toJSONWithProto } from 'machinat-base';
+import { toJSONWithProto } from 'machinat-utility';
 import { ChatThread } from '../thread';
 
 export const EventBase = {

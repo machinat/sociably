@@ -32,7 +32,8 @@ type LineBotOptionsInput = $Shape<LineBotOptions>;
 
 const LINE = 'line';
 
-export default class LineBot
+// $FlowFixMe https://github.com/facebook/flow/issues/7539
+class LineBot
   extends BaseBot<
     LineActionValue,
     LineComponent,
@@ -80,15 +81,12 @@ export default class LineBot
 
     const client = new LineClient(options);
     const engine = new Engine(LINE, queue, renderer, client);
+    const receiver = new WebhookReceiver(handleWebhook(options));
 
-    super(controller, engine, options.plugins);
+    super(receiver, controller, engine, options.plugins);
 
     this.options = options;
     this.client = client;
-    this.receiver = new WebhookReceiver(
-      handleWebhook(options),
-      this.eventHandler()
-    );
   }
 
   reply(token: string, node: MachinatNode): Promise<null | LineAPIResult[]> {
@@ -116,3 +114,5 @@ export default class LineBot
     return this.engine.dispatch(thread, node);
   }
 }
+
+export default LineBot;

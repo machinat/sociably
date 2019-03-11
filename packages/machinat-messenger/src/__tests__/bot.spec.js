@@ -1,7 +1,7 @@
 import moxy from 'moxy';
 import nock from 'nock';
 import Machinat from 'machinat';
-import { Controller, Engine, BaseBot } from 'machinat-base';
+import { Controller, Engine } from 'machinat-base';
 import WebhookReceiver from 'machinat-webhook';
 import MessengerBot from '../bot';
 import MessengerClient from '../client';
@@ -23,7 +23,6 @@ const bodySpy = moxy(() => true);
 
 beforeEach(() => {
   graphAPI = nock('https://graph.facebook.com').post('/v3.1/', bodySpy);
-  BaseBot.mock.clear();
   bodySpy.mock.clear();
 });
 
@@ -91,13 +90,13 @@ it('has receiver, controller, engine and client', () => {
     verifyToken: '_VERIFIY_TOKEN_',
   });
 
+  expect(bot.adaptor).toBeInstanceOf(WebhookReceiver);
   expect(bot.controller).toBeInstanceOf(Controller);
   expect(bot.engine).toBeInstanceOf(Engine);
   expect(bot.client).toBeInstanceOf(MessengerClient);
-  expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
 });
 
-it('pass controller, engine and plugins to BaseBot', () => {
+it('have plugins initiated', () => {
   const plugins = [moxy(() => ({})), moxy(() => ({})), moxy(() => ({}))];
 
   const bot = new MessengerBot({
@@ -107,16 +106,10 @@ it('pass controller, engine and plugins to BaseBot', () => {
     plugins,
   });
 
-  expect(BaseBot.mock).toHaveBeenCalledTimes(1);
-  expect(BaseBot.mock).toHaveBeenCalledWith(
-    bot.controller,
-    bot.engine,
-    plugins
-  );
-
-  expect(plugins[0].mock).toHaveBeenCalled();
-  expect(plugins[1].mock).toHaveBeenCalled();
-  expect(plugins[2].mock).toHaveBeenCalled();
+  expect(bot.plugins).toBe(plugins);
+  expect(plugins[0].mock).toHaveBeenCalledWith(bot);
+  expect(plugins[1].mock).toHaveBeenCalledWith(bot);
+  expect(plugins[2].mock).toHaveBeenCalledWith(bot);
 });
 
 it('set default options', () => {

@@ -8,13 +8,15 @@ import type {
   ElementRenderedAction,
   RawAction,
   MachinatAction,
+  MachinatNativeType,
 } from 'machinat-renderer/types';
-import type BaseBot from './bot';
-import type ReceiveFrame from './receiveFrame';
+import type MachinatBot from './bot';
 
-export type MiddlewareFunc<Ctx, Value> = (
-  next: (ctx: Ctx) => Value
-) => (ctx: Ctx) => Value;
+export type { MachinatBot }; // eslint-disable-line import/prefer-default-export
+
+export type MiddlewareFunc<Frame, Value> = (
+  next: (Frame) => Value
+) => Frame => Value;
 
 export type ActionWithoutPause<Rendered, Native> =
   | TextRenderedAction
@@ -43,6 +45,23 @@ export interface MachinatEvent<Raw, Thread: MachinatThread<any, any>> {
   raw: Raw;
 }
 
+export type ReceiveFrame<
+  Rendered,
+  Native: MachinatNativeType<Rendered>,
+  Job,
+  Result,
+  Thread: MachinatThread<Job, any>,
+  Event: MachinatEvent<any, Thread>
+> = {
+  platform: string,
+  thread: Thread,
+  event: Event,
+  bot: MachinatBot<Rendered, Native, Job, Result, any, any, Thread, Event>,
+  source: string,
+  transportContext: any,
+  react(nodes: MachinatNode, options: any): Promise<null | Result[]>,
+};
+
 export type ReceiveMiddleware<
   Native,
   Response,
@@ -65,6 +84,10 @@ export type DispatchFrame<
   options: any,
   renderer: MahinateRenderer<Rendered, Native>,
   actions: null | MachinatAction<Rendered, Native>[],
+  createJobs(
+    actions: null | ActionWithoutPause<any, any>[],
+    options: any
+  ): null | Job[],
 };
 
 export type DispatchReport<Rendered, Native, Job, Result> = {
@@ -95,7 +118,7 @@ export type BotPlugin<
   ReceivableThread,
   Event: MachinatEvent<any, ReceivableThread>
 > = (
-  bot: BaseBot<
+  bot: MachinatBot<
     Rendered,
     Native,
     Job,
@@ -106,19 +129,25 @@ export type BotPlugin<
     Event
   >
 ) => {
-  dispatchMiddleware: ?DispatchMiddleware<
+  dispatchMiddleware?: DispatchMiddleware<
     Rendered,
     Native,
     Job,
     Result,
     DeliverableThread
   >,
-  receiveMiddleware: ?ReceiveMiddleware<
+  dispatchFrameExtension?: {
+    [string]: any,
+  },
+  receiveMiddleware?: ReceiveMiddleware<
     Native,
     Response,
     ReceivableThread,
     Event
   >,
+  receiveFrameExtension?: {
+    [string]: any,
+  },
 };
 
 export interface MachinatWorker {
@@ -131,10 +160,19 @@ export type EventHandler<
   Thread: MachinatThread<any, any>,
   Event: MachinatEvent<any, Thread>
 > = (
-  event: Event,
   source: string,
+  event: Event,
   tranportContext: any
 ) => Promise<void | Response>;
+
+export interface MachinatAdaptor<
+  Response,
+  Thread: MachinatThread<any, any>,
+  Event: MachinatEvent<any, Thread>
+> {
+  bind(handler: EventHandler<Response, Thread, Event>): boolean;
+  unbind(): boolean;
+}
 
 export interface HTTPReceiver {
   handleRequest(
@@ -146,5 +184,5 @@ export interface HTTPReceiver {
 }
 
 export interface HTTPReceivable {
-  receiver: HTTPReceiver;
+  adaptor: HTTPReceiver;
 }

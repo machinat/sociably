@@ -1,6 +1,5 @@
 // @flow
 import type { IncomingMessage, ServerResponse } from 'http';
-
 import getRawBody from 'raw-body';
 
 import type {
@@ -8,6 +7,7 @@ import type {
   HTTPReceiver,
   EventHandler,
   MachinatEvent,
+  MachinatAdaptor,
 } from 'machinat-base/types';
 import type { WebhookHandler, WebhookResponse } from './types';
 
@@ -15,23 +15,40 @@ const RAW_BODY_OPTION = { encoding: true };
 const WEBHOOK = 'webhook';
 
 const endRes = (res, status, body) => {
-  res.statusCode = status; // eslint-disable-line
+  res.statusCode = status; // eslint-disable-line no-param-reassign
   res.end(body);
 };
 
 class WebhookReceiver<
   Thread: MachinatThread<any, any>,
   Event: MachinatEvent<any, Thread>
-> implements HTTPReceiver {
+> implements HTTPReceiver, MachinatAdaptor<WebhookResponse, Thread, Event> {
   handleWebhook: WebhookHandler<Thread, Event>;
-  handleEvent: EventHandler<WebhookResponse, Thread, Event>;
+  isBound: boolean;
+  _handleEvent: EventHandler<WebhookResponse, Thread, Event>;
 
-  constructor(
-    handleWebhook: WebhookHandler<Thread, Event>,
-    handleEvent: EventHandler<WebhookResponse, Thread, Event>
-  ) {
+  constructor(handleWebhook: WebhookHandler<Thread, Event>) {
     this.handleWebhook = handleWebhook;
-    this.handleEvent = handleEvent;
+    this.isBound = false;
+  }
+
+  bind(handleEvent: EventHandler<WebhookResponse, Thread, Event>) {
+    if (this.isBound) {
+      return false;
+    }
+
+    this._handleEvent = handleEvent;
+    this.isBound = true;
+    return true;
+  }
+
+  unbind() {
+    if (!this.isBound) {
+      return false;
+    }
+
+    this.isBound = false;
+    return true;
   }
 
   async handleRequest(
@@ -41,6 +58,11 @@ class WebhookReceiver<
     httpContext?: any
   ) {
     try {
+      if (!this.isBound) {
+        endRes(res, 501);
+        return;
+      }
+
       let reqBody = rawBody;
       if (
         reqBody === undefined &&
@@ -63,7 +85,7 @@ class WebhookReceiver<
 
       for (let i = 0; i < events.length; i += 1) {
         const event = events[i];
-        promises[i] = this.handleEvent(event, WEBHOOK, httpContext);
+        promises[i] = this._handleEvent(WEBHOOK, event, httpContext);
 
         if (event.shouldRespond) {
           shouldRespond = true;
@@ -97,7 +119,7 @@ class WebhookReceiver<
       if (!res.finished) {
         endRes(
           res,
-          err.status || 501,
+          err.status || 500,
           typeof err.body === 'string' ? err.body : JSON.stringify(err.body)
         );
       }

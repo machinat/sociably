@@ -1,15 +1,13 @@
 import nock from 'nock';
 import moxy from 'moxy';
 import Machinat from 'machinat';
-import { Engine, Controller, BaseBot } from 'machinat-base';
+import { Engine, Controller } from 'machinat-base';
 import WebhookReceiver from 'machinat-webhook';
 import LineBot from '../bot';
 import Client from '../client';
 import { LINE_NATIVE_TYPE } from '../symbol';
 
 nock.disableNetConnect();
-
-jest.mock('machinat-base');
 
 const Foo = moxy(props => [props]);
 Foo.$$unit = true;
@@ -58,7 +56,6 @@ beforeEach(() => {
 
   pathSpy.mock.clear();
   bodySpy.mock.clear();
-  BaseBot.mock.clear();
 });
 
 it('throws if accessToken not given', () => {
@@ -87,13 +84,13 @@ it('has engine, controller, receiver and client', () => {
     channelSecret: '_SECRET_',
   });
 
-  expect(bot.client).toBeInstanceOf(Client);
-  expect(bot.engine).toBeInstanceOf(Engine);
+  expect(bot.adaptor).toBeInstanceOf(WebhookReceiver);
   expect(bot.controller).toBeInstanceOf(Controller);
-  expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
+  expect(bot.engine).toBeInstanceOf(Engine);
+  expect(bot.client).toBeInstanceOf(Client);
 });
 
-it('pass controller, engine and plugins to BaseBot', () => {
+it('have plugins initiated', () => {
   const plugins = [moxy(() => ({})), moxy(() => ({})), moxy(() => ({}))];
 
   const bot = new LineBot({
@@ -102,16 +99,10 @@ it('pass controller, engine and plugins to BaseBot', () => {
     plugins,
   });
 
-  expect(BaseBot.mock).toHaveBeenCalledTimes(1);
-  expect(BaseBot.mock).toHaveBeenCalledWith(
-    bot.controller,
-    bot.engine,
-    plugins
-  );
-
-  expect(plugins[0].mock).toHaveBeenCalled();
-  expect(plugins[1].mock).toHaveBeenCalled();
-  expect(plugins[2].mock).toHaveBeenCalled();
+  expect(bot.plugins).toBe(plugins);
+  expect(plugins[0].mock).toHaveBeenCalledWith(bot);
+  expect(plugins[1].mock).toHaveBeenCalledWith(bot);
+  expect(plugins[2].mock).toHaveBeenCalledWith(bot);
 });
 
 it('sets default options', () => {

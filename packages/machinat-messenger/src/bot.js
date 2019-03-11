@@ -38,6 +38,7 @@ type MessengerBotOptionsInput = $Shape<MessengerBotOptions>;
 
 const MESSENGER = 'messenger';
 
+// $FlowFixMe https://github.com/facebook/flow/issues/7539
 export default class MessengerBot
   extends BaseBot<
     MessengerActionValue,
@@ -99,13 +100,9 @@ export default class MessengerBot
     });
 
     const engine = new Engine(MESSENGER, queue, renderer, client);
+    const receiver = new WebhookReceiver(handleWebhook(options));
 
-    super(controller, engine, options.plugins);
-
-    this.receiver = new WebhookReceiver(
-      handleWebhook(options),
-      this.eventHandler()
-    );
+    super(receiver, controller, engine, options.plugins);
 
     this.client = client;
     this.options = options;
