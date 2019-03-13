@@ -51,9 +51,6 @@ describe('#wrap(id, bot)', () => {
     [bot1, bot2, bot3].forEach(bot => {
       expect(bot.controller.makeEventHandler.mock).toHaveBeenCalledTimes(1);
 
-      const [botArg] = bot.controller.makeEventHandler.mock.calls[0].args;
-      expect(botArg).toBe(bot);
-
       expect(bot.adaptor.bind.mock).toHaveBeenCalledTimes(1);
       expect(bot.adaptor.bind.mock).toHaveBeenCalledWith(
         bot.controller.makeEventHandler.mock.calls[0].result
@@ -73,7 +70,7 @@ describe('#wrap(id, bot)', () => {
     [bot1, bot2, bot3].forEach((bot, i) => {
       expect(bot.controller.makeEventHandler.mock).toHaveBeenCalledTimes(1);
 
-      const onEvent = bot.controller.makeEventHandler.mock.calls[0].args[1];
+      const onEvent = bot.controller.makeEventHandler.mock.calls[0].args[0];
 
       const eventFrame = { event: 'ザ・ワールド，時は止まる！' };
       onEvent(eventFrame);
@@ -97,7 +94,7 @@ describe('#wrap(id, bot)', () => {
 
     [bot1, bot2, bot3].forEach((bot, i) => {
       expect(bot.controller.makeEventHandler.mock).toHaveBeenCalledTimes(1);
-      const onError = bot.controller.makeEventHandler.mock.calls[0].args[2];
+      const onError = bot.controller.makeEventHandler.mock.calls[0].args[1];
 
       const err = new Error('ゴゴゴゴゴゴ');
       onError(err);

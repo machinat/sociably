@@ -7,7 +7,6 @@ import type {
   EventHandler,
   MachinatThread,
   EventFrame,
-  MachinatBot,
 } from './types';
 
 const EventFrameProto = {
@@ -66,7 +65,6 @@ class MachinatController<
   }
 
   makeEventHandler(
-    bot: MachinatBot<any, any, any, any, any, Response, Thread, Event>,
     onEvent: (
       EventFrame<any, any, any, any, Thread, Event>
     ) => Promise<void | Response>,
@@ -79,7 +77,7 @@ class MachinatController<
     };
 
     return (source: string, event: Event, transportContext: any) => {
-      const frame = this.createEventFrame(source, event, bot, transportContext);
+      const frame = this.createEventFrame(source, event, transportContext);
 
       return handle(frame).catch(handleError);
     };
@@ -88,12 +86,10 @@ class MachinatController<
   createEventFrame(
     source: string,
     event: Event,
-    bot: MachinatBot<any, any, any, any, any, Response, Thread, Event>,
     transportContext: any
   ): EventFrame<any, any, any, any, Thread, Event> {
     const frame = Object.create(this.frame);
 
-    frame.bot = bot;
     frame.event = event;
     frame.source = source;
     frame.transportContext = transportContext;

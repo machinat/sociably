@@ -82,10 +82,13 @@ export default class BaseBot<
       }
 
       this.controller.setMiddlewares(...eventMws);
-      this.controller.setFramePrototype(mixin(...eventExts));
+      this.controller.setFramePrototype(mixin({ bot: this }, ...eventExts));
 
       this.engine.setMiddlewares(...dispatchMws);
-      this.engine.setFramePrototype(mixin(...dispatchExts));
+      this.engine.setFramePrototype(mixin({ bot: this }, ...dispatchExts));
+    } else {
+      this.controller.setFramePrototype({ bot: this });
+      this.engine.setFramePrototype({ bot: this });
     }
 
     this.engine.start();
@@ -94,7 +97,6 @@ export default class BaseBot<
 
   eventHandler(): EventHandler<Response, Receivable, Event> {
     return this.controller.makeEventHandler(
-      this,
       frame => {
         this.emit('event', frame);
         return Promise.resolve();

@@ -23,7 +23,6 @@ class MachinatMultiplexer<
   wrap(id: string, bot: Bot) {
     // bind new handler to adator
     const eventHandler = bot.controller.makeEventHandler(
-      bot,
       frame => {
         bot.emit('event', frame);
         this.emit('event', frame);

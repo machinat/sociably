@@ -46,6 +46,13 @@ describe('#constructor(controller, engine, plugins)', () => {
     expect(bot.engine.start.mock).toHaveBeenCalledTimes(1);
   });
 
+  it('setFramePrototype() with "bot" prop of engine and controller', () => {
+    const bot = new Bot(adaptor, controller, engine);
+
+    expect(engine.setFramePrototype.mock).toHaveBeenCalledWith({ bot });
+    expect(controller.setFramePrototype.mock).toHaveBeenCalledWith({ bot });
+  });
+
   it('makeEventHandler() with events firing and error handling callback', () => {
     const bot = new Bot(adaptor, controller, engine);
 
@@ -54,13 +61,8 @@ describe('#constructor(controller, engine, plugins)', () => {
       controller.makeEventHandler.mock.calls[0].result
     );
 
-    const [
-      botArg,
-      onEvent,
-      onError,
-    ] = controller.makeEventHandler.mock.calls[0].args;
+    const [onEvent, onError] = controller.makeEventHandler.mock.calls[0].args;
 
-    expect(botArg).toBe(bot);
     expect(typeof onEvent).toBe('function');
     expect(typeof onError).toBe('function');
 
@@ -110,10 +112,12 @@ describe('#constructor(controller, engine, plugins)', () => {
     expect(engine.setMiddlewares.mock).toHaveBeenCalledWith(smw1, smw2);
 
     expect(engine.setFramePrototype.mock).toHaveBeenCalledWith({
+      bot,
       foo: 2,
       bar: 1,
     });
     expect(controller.setFramePrototype.mock).toHaveBeenCalledWith({
+      bot,
       foo: 1,
       bar: 2,
     });
