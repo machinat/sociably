@@ -61,28 +61,28 @@ export default class BaseBot<
     this.plugins = plugins;
 
     if (plugins) {
-      const receiveMws = [];
+      const eventMws = [];
       const dispatchMws = [];
-      const receiveExts = [];
+      const eventExts = [];
       const dispatchExts = [];
 
       for (const plugin of plugins) {
         const {
           dispatchMiddleware,
           dispatchFrameExtension,
-          receiveMiddleware,
-          receiveFrameExtension,
+          eventMiddleware,
+          eventFrameExtension,
         } = plugin(this);
 
-        if (receiveMiddleware) receiveMws.push(receiveMiddleware);
+        if (eventMiddleware) eventMws.push(eventMiddleware);
         if (dispatchMiddleware) dispatchMws.push(dispatchMiddleware);
 
-        if (receiveFrameExtension) receiveExts.push(receiveFrameExtension);
+        if (eventFrameExtension) eventExts.push(eventFrameExtension);
         if (dispatchFrameExtension) dispatchExts.push(dispatchFrameExtension);
       }
 
-      this.controller.setMiddlewares(...receiveMws);
-      this.controller.setFramePrototype(mixin(...receiveExts));
+      this.controller.setMiddlewares(...eventMws);
+      this.controller.setFramePrototype(mixin(...eventExts));
 
       this.engine.setMiddlewares(...dispatchMws);
       this.engine.setFramePrototype(mixin(...dispatchExts));

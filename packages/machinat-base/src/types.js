@@ -45,7 +45,7 @@ export interface MachinatEvent<Raw, Thread: MachinatThread<any, any>> {
   raw: Raw;
 }
 
-export type ReceiveFrame<
+export type EventFrame<
   Rendered,
   Native: MachinatNativeType<Rendered>,
   Job,
@@ -62,13 +62,13 @@ export type ReceiveFrame<
   react(nodes: MachinatNode, options: any): Promise<null | Result[]>,
 };
 
-export type ReceiveMiddleware<
+export type EventMiddleware<
   Native,
   Response,
   Thread: MachinatThread<any, any>,
   Event: MachinatEvent<any, Thread>
 > = MiddlewareFunc<
-  ReceiveFrame<any, Native, any, any, Thread, Event>,
+  EventFrame<any, Native, any, any, Thread, Event>,
   Promise<void | Response>
 >;
 
@@ -139,13 +139,8 @@ export type BotPlugin<
   dispatchFrameExtension?: {
     [string]: any,
   },
-  receiveMiddleware?: ReceiveMiddleware<
-    Native,
-    Response,
-    ReceivableThread,
-    Event
-  >,
-  receiveFrameExtension?: {
+  eventMiddleware?: EventMiddleware<Native, Response, ReceivableThread, Event>,
+  eventFrameExtension?: {
     [string]: any,
   },
 };

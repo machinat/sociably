@@ -51,15 +51,14 @@ class MachinatMultiplexer<
         const {
           dispatchMiddleware,
           dispatchFrameExtension,
-          receiveMiddleware,
-          receiveFrameExtension,
+          eventMiddleware,
+          eventFrameExtension,
         } = plugin(bot);
 
-        if (receiveMiddleware) commonReceiveMws.push(receiveMiddleware);
+        if (eventMiddleware) commonReceiveMws.push(eventMiddleware);
         if (dispatchMiddleware) commonDispatchMws.push(dispatchMiddleware);
 
-        if (receiveFrameExtension)
-          commonReceiveExts.push(receiveFrameExtension);
+        if (eventFrameExtension) commonReceiveExts.push(eventFrameExtension);
         if (dispatchFrameExtension)
           commonDispatchExts.push(dispatchFrameExtension);
       }

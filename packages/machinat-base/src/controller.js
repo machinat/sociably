@@ -2,15 +2,15 @@
 import type { MachinatNode } from 'machinat/types';
 import { compose } from './utils';
 import type {
-  ReceiveMiddleware,
+  EventMiddleware,
   MachinatEvent,
   EventHandler,
   MachinatThread,
-  ReceiveFrame,
+  EventFrame,
   MachinatBot,
 } from './types';
 
-const ReceiveFrameProto = {
+const EventFrameProto = {
   get platform() {
     return this.event.platform;
   },
@@ -37,15 +37,15 @@ class MachinatController<
   Thread: MachinatThread<any, any>,
   Event: MachinatEvent<any, Thread>
 > {
-  middlewares: ReceiveMiddleware<any, Response, Thread, Event>[];
-  frame: typeof ReceiveFrameProto;
+  middlewares: EventMiddleware<any, Response, Thread, Event>[];
+  frame: typeof EventFrameProto;
 
   constructor() {
     this.middlewares = [];
-    this.frame = Object.create(ReceiveFrameProto);
+    this.frame = Object.create(EventFrameProto);
   }
 
-  setMiddlewares(...fns: ReceiveMiddleware<any, Response, Thread, Event>[]) {
+  setMiddlewares(...fns: EventMiddleware<any, Response, Thread, Event>[]) {
     for (const fn of fns) {
       if (typeof fn !== 'function') {
         throw new TypeError('middleware must be a function!');
@@ -58,7 +58,7 @@ class MachinatController<
 
   setFramePrototype(mixin: Object) {
     this.frame = Object.defineProperties(
-      Object.create(ReceiveFrameProto),
+      Object.create(EventFrameProto),
       Object.getOwnPropertyDescriptors(mixin)
     );
 
@@ -68,7 +68,7 @@ class MachinatController<
   makeEventHandler(
     bot: MachinatBot<any, any, any, any, any, Response, Thread, Event>,
     onEvent: (
-      ReceiveFrame<any, any, any, any, Thread, Event>
+      EventFrame<any, any, any, any, Thread, Event>
     ) => Promise<void | Response>,
     onError: Error => void
   ): EventHandler<Response, Thread, Event> {
@@ -79,23 +79,18 @@ class MachinatController<
     };
 
     return (source: string, event: Event, transportContext: any) => {
-      const frame = this.createReceiveFrame(
-        source,
-        event,
-        bot,
-        transportContext
-      );
+      const frame = this.createEventFrame(source, event, bot, transportContext);
 
       return handle(frame).catch(handleError);
     };
   }
 
-  createReceiveFrame(
+  createEventFrame(
     source: string,
     event: Event,
     bot: MachinatBot<any, any, any, any, any, Response, Thread, Event>,
     transportContext: any
-  ): ReceiveFrame<any, any, any, any, Thread, Event> {
+  ): EventFrame<any, any, any, any, Thread, Event> {
     const frame = Object.create(this.frame);
 
     frame.bot = bot;

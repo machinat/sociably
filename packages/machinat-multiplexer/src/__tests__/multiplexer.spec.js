@@ -117,17 +117,17 @@ describe('#wrap(id, bot)', () => {
     const plugins = [
       moxy(() => ({
         dispatchMiddleware: smw1,
-        receiveFrameExtension: { foo: 1, bar: 1 },
+        eventFrameExtension: { foo: 1, bar: 1 },
       })),
       moxy(() => ({
-        receiveMiddleware: rmw1,
+        eventMiddleware: rmw1,
         dispatchFrameExtension: { foo: 2, bar: 2 },
       })),
       moxy(() => ({
         dispatchMiddleware: smw2,
-        receiveMiddleware: rmw2,
+        eventMiddleware: rmw2,
         dispatchFrameExtension: { baz: 3 },
-        receiveFrameExtension: { baz: 3 },
+        eventFrameExtension: { baz: 3 },
       })),
     ];
 

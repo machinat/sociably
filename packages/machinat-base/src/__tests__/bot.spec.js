@@ -85,17 +85,17 @@ describe('#constructor(controller, engine, plugins)', () => {
     const plugins = [
       moxy(() => ({
         dispatchMiddleware: smw1,
-        receiveFrameExtension: { foo: 1 },
+        eventFrameExtension: { foo: 1 },
       })),
       moxy(() => ({
-        receiveMiddleware: rmw1,
+        eventMiddleware: rmw1,
         dispatchFrameExtension: { foo: 2 },
       })),
       moxy(() => ({
         dispatchMiddleware: smw2,
-        receiveMiddleware: rmw2,
+        eventMiddleware: rmw2,
         dispatchFrameExtension: { bar: 1 },
-        receiveFrameExtension: { bar: 2 },
+        eventFrameExtension: { bar: 2 },
       })),
     ];
 
