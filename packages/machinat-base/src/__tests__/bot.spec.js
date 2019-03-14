@@ -14,9 +14,13 @@ const controller = moxy({
 });
 
 const engine = moxy({
+  queue: {},
   setMiddlewares: () => engine,
   setFramePrototype: () => engine,
   dispatch: () => 'Vrooooooooooooooom',
+});
+
+const worker = moxy({
   start: () => true,
   stop: () => true,
 });
@@ -25,36 +29,41 @@ beforeEach(() => {
   adaptor.mock.clear();
   controller.mock.clear();
   engine.mock.clear();
+  worker.mock.clear();
 });
 
 it('extends EventEmitter', () => {
-  expect(new Bot(adaptor, controller, engine)).toBeInstanceOf(EventEmitter);
+  expect(new Bot(adaptor, controller, engine, worker)).toBeInstanceOf(
+    EventEmitter
+  );
 });
 
-describe('#constructor(controller, engine, plugins)', () => {
+describe('#constructor(controller, engine, worker, plugins)', () => {
   it('initiats with controller and engine', () => {
-    const bot = new Bot(adaptor, controller, engine);
+    const bot = new Bot(adaptor, controller, engine, worker);
 
+    expect(bot.adaptor).toBe(adaptor);
     expect(bot.controller).toBe(controller);
     expect(bot.engine).toBe(engine);
-    expect(engine.start.mock).toHaveBeenCalledTimes(1);
+    expect(bot.worker).toBe(worker);
   });
 
-  it('starts engine', () => {
-    const bot = new Bot(adaptor, controller, engine);
+  it('starts worker', () => {
+    const bot = new Bot(adaptor, controller, engine, worker);
 
-    expect(bot.engine.start.mock).toHaveBeenCalledTimes(1);
+    expect(bot.worker.start.mock).toHaveBeenCalledTimes(1);
+    expect(bot.worker.start.mock).toHaveBeenCalledWith(engine.queue);
   });
 
   it('setFramePrototype() with "bot" prop of engine and controller', () => {
-    const bot = new Bot(adaptor, controller, engine);
+    const bot = new Bot(adaptor, controller, engine, worker);
 
     expect(engine.setFramePrototype.mock).toHaveBeenCalledWith({ bot });
     expect(controller.setFramePrototype.mock).toHaveBeenCalledWith({ bot });
   });
 
   it('makeEventHandler() with events firing and error handling callback', () => {
-    const bot = new Bot(adaptor, controller, engine);
+    const bot = new Bot(adaptor, controller, engine, worker);
 
     expect(adaptor.bind.mock).toHaveBeenCalledTimes(1);
     expect(adaptor.bind.mock).toHaveBeenCalledWith(
@@ -101,7 +110,7 @@ describe('#constructor(controller, engine, plugins)', () => {
       })),
     ];
 
-    const bot = new Bot(adaptor, controller, engine, plugins);
+    const bot = new Bot(adaptor, controller, engine, worker, plugins);
 
     plugins.forEach(pluginFn => {
       expect(pluginFn.mock).toHaveBeenCalledTimes(1);

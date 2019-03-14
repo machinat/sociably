@@ -8,7 +8,7 @@ import WebhookReceiver from 'machinat-webhook';
 
 import type { MachinatNode } from 'machinat/types';
 import type { WebhookResponse } from 'machinat-webhook/types';
-import type { HTTPReceivable, HTTPReceiver } from 'machinat-base/types';
+import type { HTTPReceivable, HTTPReceiver } from 'machinat-http/types';
 
 import MessengerClient from './client';
 import handleWebhook from './handleWebhook';
@@ -99,10 +99,10 @@ export default class MessengerBot
       consumeInterval: options.consumeInterval,
     });
 
-    const engine = new Engine(MESSENGER, queue, renderer, client);
+    const engine = new Engine(MESSENGER, queue, renderer);
     const receiver = new WebhookReceiver(handleWebhook(options));
 
-    super(receiver, controller, engine, options.plugins);
+    super(receiver, controller, engine, client, options.plugins);
 
     this.client = client;
     this.options = options;

@@ -52,11 +52,6 @@ const thread = moxy({
 
 const renderer = moxy(new Renderer('test', {}));
 
-const worker = moxy({
-  start: () => true,
-  stop: () => true,
-});
-
 beforeEach(() => {
   thread.mock.reset();
 
@@ -70,13 +65,11 @@ beforeEach(() => {
 
   renderer.render.mock.reset();
   renderer.render.mock.fakeReturnValue(actions);
-
-  worker.mock.reset();
 });
 
 describe('#setMiddlewares(...fns)', () => {
   it('throws if non function args given', () => {
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
     const invalidParams = [undefined, null, 1, true, 'foo', {}];
 
     invalidParams.forEach(p =>
@@ -85,12 +78,12 @@ describe('#setMiddlewares(...fns)', () => {
   });
 
   it('returns the engine itself', () => {
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
     expect(engine.setMiddlewares(async () => () => {})).toBe(engine);
   });
 
   it('adds middleware function to .middlewares', () => {
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     const middleware1 = async () => {};
     const middleware2 = async () => {};
@@ -102,7 +95,7 @@ describe('#setMiddlewares(...fns)', () => {
   });
 
   it('reset middlewares every time called', () => {
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     const middleware1 = async () => {};
     const middleware2 = async () => {};
@@ -128,13 +121,13 @@ describe('#setFramePrototype(mixin)', () => {
   };
 
   it('return engine itself', () => {
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     expect(engine.setFramePrototype(mixin)).toBe(engine);
   });
 
   it('extends engine.frame with base props remained', () => {
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     engine.setFramePrototype(mixin);
 
@@ -146,7 +139,7 @@ describe('#setFramePrototype(mixin)', () => {
   });
 
   it('resets frame every time called', () => {
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     engine.setFramePrototype(mixin);
     engine.setFramePrototype({ hello: 'world' });
@@ -160,7 +153,7 @@ describe('#setFramePrototype(mixin)', () => {
 
 describe('#dispatch(thread, element, options)', () => {
   it('renders and enqueue jobs and return array of results', async () => {
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
       1,
@@ -182,7 +175,7 @@ describe('#dispatch(thread, element, options)', () => {
   });
 
   it('pass dispatch frame through middlewares', async () => {
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     const expectedFrame = {
       platform: 'test',
@@ -265,7 +258,7 @@ describe('#dispatch(thread, element, options)', () => {
   });
 
   it('can bypass the real sending within middleware', async () => {
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     const middleware = moxy(() => async () => ({
       results: [{ nothing: 'happened' }],
@@ -287,7 +280,7 @@ describe('#dispatch(thread, element, options)', () => {
   });
 
   it('can skip following middlewares with error thrown in middleware', async () => {
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     const middleware = moxy(() => async () => {
       throw new Error('something wrong with the element');
@@ -342,7 +335,7 @@ describe('#dispatch(thread, element, options)', () => {
     ];
     renderer.render.mock.fakeReturnValue(pausedActions);
 
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
       1,
@@ -400,7 +393,7 @@ describe('#dispatch(thread, element, options)', () => {
     renderer.render.mock.fakeReturnValue(pausedActions);
 
     thread.mock.getter('allowPause').fakeReturnValue(false);
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     await expect(
       engine.dispatch(thread, element, options)
@@ -467,7 +460,7 @@ describe('#dispatch(thread, element, options)', () => {
     ];
     renderer.render.mock.fakeReturnValue(pausedActions);
 
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
       1,
@@ -512,7 +505,7 @@ describe('#dispatch(thread, element, options)', () => {
 
     queue.executeJobs.mock.fake(() => Promise.resolve(execResponse));
 
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     let isThrown = false;
     try {
@@ -542,7 +535,7 @@ describe('#dispatch(thread, element, options)', () => {
   it('can catch sending error in middleware', async () => {
     queue.executeJobs.mock.fake(() => Promise.reject(new Error('bad thing!')));
 
-    const engine = new Engine('test', queue, renderer, worker);
+    const engine = new Engine('test', queue, renderer);
 
     const middleware = next => async context => {
       try {
@@ -558,29 +551,5 @@ describe('#dispatch(thread, element, options)', () => {
     await expect(engine.dispatch(thread, element)).resolves.toEqual([
       { something: 'else' },
     ]);
-  });
-});
-
-describe('#start() & #stop()', () => {
-  it('starts and stops worker with queue', () => {
-    const engine = new Engine('test', queue, renderer, worker);
-
-    expect(engine.start()).toBe(true);
-    expect(engine.stop()).toBe(true);
-
-    expect(worker.start.mock).toHaveBeenCalledWith(queue);
-    expect(worker.stop.mock).toHaveBeenCalledWith(queue);
-  });
-
-  it('returns false if worker start or stop fail', () => {
-    const engine = new Engine('test', queue, renderer, worker);
-    worker.start.mock.fakeReturnValueOnce(false);
-    worker.stop.mock.fakeReturnValueOnce(false);
-
-    expect(engine.start()).toBe(false);
-    expect(engine.stop()).toBe(false);
-
-    expect(worker.start.mock).toHaveBeenCalledWith(queue);
-    expect(worker.stop.mock).toHaveBeenCalledWith(queue);
   });
 });

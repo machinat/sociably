@@ -1,5 +1,4 @@
 // @flow
-import type { IncomingMessage, ServerResponse } from 'http';
 import type { MachinatNode } from 'machinat/types';
 import type MahinateRenderer from 'machinat-renderer';
 import type MachinatQueue from 'machinat-queue';
@@ -145,9 +144,9 @@ export type BotPlugin<
   },
 };
 
-export interface MachinatWorker {
-  start(queue: MachinatQueue<any, any>): boolean;
-  stop(queue: MachinatQueue<any, any>): boolean;
+export interface MachinatWorker<Job, Result> {
+  start(queue: MachinatQueue<Job, Result>): boolean;
+  stop(queue: MachinatQueue<Job, Result>): boolean;
 }
 
 export type EventHandler<

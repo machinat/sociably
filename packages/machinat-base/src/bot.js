@@ -8,6 +8,7 @@ import type {
   MachinatThread,
   MachinatEvent,
   MachinatAdaptor,
+  MachinatWorker,
 } from './types';
 import Controller from './controller';
 import Engine from './engine';
@@ -25,6 +26,7 @@ export default class BaseBot<
   adaptor: MachinatAdaptor<Response, Receivable, Event>;
   controller: Controller<Response, Receivable, Event>;
   engine: Engine<Rendered, Native, Job, Result, Deliverable>;
+  worker: MachinatWorker<Job, Result>;
   plugins:
     | void
     | BotPlugin<
@@ -42,6 +44,7 @@ export default class BaseBot<
     adaptor: MachinatAdaptor<Response, Receivable, Event>,
     controller: Controller<Response, Receivable, Event>,
     engine: Engine<Rendered, Native, Job, Result, Deliverable>,
+    worker: MachinatWorker<Job, Result>,
     plugins?: BotPlugin<
       Rendered,
       Native,
@@ -58,6 +61,7 @@ export default class BaseBot<
     this.adaptor = adaptor;
     this.controller = controller;
     this.engine = engine;
+    this.worker = worker;
     this.plugins = plugins;
 
     if (plugins) {
@@ -91,7 +95,7 @@ export default class BaseBot<
       this.engine.setFramePrototype({ bot: this });
     }
 
-    this.engine.start();
+    this.worker.start(engine.queue);
     this.adaptor.bind(this.eventHandler());
   }
 

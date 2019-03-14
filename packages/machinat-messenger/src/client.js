@@ -52,7 +52,8 @@ const appendFieldsToForm = (form: FormData, body: { [string]: ?string }) => {
   return form;
 };
 
-export default class MessengerClient implements MachinatWorker {
+export default class MessengerClient
+  implements MachinatWorker<MessengerJob, MessengerAPIResult> {
   token: string;
   consumeInterval: ?number;
   _appSecretProof: ?string;

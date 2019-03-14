@@ -7,7 +7,7 @@ import Renderer from 'machinat-renderer';
 import WebhookReceiver from 'machinat-webhook';
 
 import type { MachinatNode } from 'machinat/types';
-import type { HTTPReceivable, HTTPReceiver } from 'machinat-base/types';
+import type { HTTPReceivable, HTTPReceiver } from 'machinat-http/types';
 import type { WebhookResponse } from 'machinat-webhook/types';
 
 import LineClient from './client';
@@ -80,10 +80,10 @@ class LineBot
     );
 
     const client = new LineClient(options);
-    const engine = new Engine(LINE, queue, renderer, client);
+    const engine = new Engine(LINE, queue, renderer);
     const receiver = new WebhookReceiver(handleWebhook(options));
 
-    super(receiver, controller, engine, options.plugins);
+    super(receiver, controller, engine, client, options.plugins);
 
     this.options = options;
     this.client = client;

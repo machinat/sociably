@@ -20,7 +20,6 @@ import type {
   DispatchMiddleware,
   DispatchFrame,
   ActionWithoutPause,
-  MachinatWorker,
   MachinatThread,
 } from './types';
 
@@ -67,7 +66,6 @@ export default class MachinatEngine<
   middlewares: DispatchMiddleware<Rendered, Native, Job, Result, Thread>[];
   queue: MahinateQueue<Job, Result>;
   renderer: MahinateRenderer<Rendered, Native>;
-  worker: MachinatWorker;
   _handleSending: (
     DispatchFrame<Rendered, Native, Job, Thread>
   ) => Promise<DispatchReport<Rendered, Native, Job, Result>>;
@@ -76,13 +74,11 @@ export default class MachinatEngine<
   constructor(
     platform: string,
     queue: MahinateQueue<Job, Result>,
-    renderer: MahinateRenderer<Rendered, Native>,
-    worker: MachinatWorker
+    renderer: MahinateRenderer<Rendered, Native>
   ) {
     this.platform = platform;
     this.queue = queue;
     this.renderer = renderer;
-    this.worker = worker;
 
     this.middlewares = [];
     this.setMiddlewares();
@@ -114,14 +110,6 @@ export default class MachinatEngine<
     );
 
     return this;
-  }
-
-  start() {
-    return this.worker.start(this.queue);
-  }
-
-  stop() {
-    return this.worker.stop(this.queue);
   }
 
   async dispatch(

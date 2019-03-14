@@ -24,7 +24,8 @@ type LineClientOptions = {
 
 type LineJobQueue = Queue<LineJob, LineAPIResult>;
 
-export default class LineClient implements MachinatWorker {
+export default class LineClient
+  implements MachinatWorker<LineJob, LineAPIResult> {
   useReplyAPI: boolean;
   _headers: {
     'Content-Type': 'application/json',
