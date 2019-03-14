@@ -168,16 +168,3 @@ export interface MachinatAdaptor<
   bind(handler: EventHandler<Response, Thread, Event>): boolean;
   unbind(): boolean;
 }
-
-export interface HTTPReceiver {
-  handleRequest(
-    req: IncomingMessage,
-    res: ServerResponse,
-    rawBody?: string,
-    httpContext?: any
-  ): void | Promise<void>;
-}
-
-export interface HTTPReceivable {
-  adaptor: HTTPReceiver;
-}

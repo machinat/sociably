@@ -32,7 +32,7 @@ module.exports = {
     'flowtype/no-unused-expressions': 2,
     'no-param-reassign': ['error', {
       props: true,
-      ignorePropertyModificationsFor: ['context'],
+      ignorePropertyModificationsFor: ['context', 'ctx', 'frame'],
     }],
     'no-restricted-syntax': ['error',
       'ForInStatement', 'LabeledStatement', 'WithStatement'

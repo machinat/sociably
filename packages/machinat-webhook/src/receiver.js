@@ -4,11 +4,11 @@ import getRawBody from 'raw-body';
 
 import type {
   MachinatThread,
-  HTTPReceiver,
   EventHandler,
   MachinatEvent,
   MachinatAdaptor,
 } from 'machinat-base/types';
+import { HTTPReceiver } from 'machinat-http/types';
 import type { WebhookHandler, WebhookResponse } from './types';
 
 const RAW_BODY_OPTION = { encoding: true };

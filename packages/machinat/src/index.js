@@ -1,6 +1,5 @@
 import { MACHINAT_FRAGMENT_TYPE, MACHINAT_PAUSE_TYPE } from 'machinat-symbol';
 import createElement from './createElement';
-import createServer from './server/http';
 
 const Machinat = {
   createElement,
@@ -8,4 +7,4 @@ const Machinat = {
   Pause: MACHINAT_PAUSE_TYPE,
 };
 
-export { Machinat as default, createServer };
+export default Machinat;
