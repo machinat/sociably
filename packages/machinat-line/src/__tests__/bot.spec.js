@@ -2,7 +2,7 @@ import nock from 'nock';
 import moxy from 'moxy';
 import Machinat from 'machinat';
 import { Engine, Controller } from 'machinat-base';
-import WebhookReceiver from 'machinat-webhook';
+import WebhookReceiver from 'machinat-webhook-receiver';
 import LineBot from '../bot';
 import Client from '../client';
 import { LINE_NATIVE_TYPE } from '../symbol';

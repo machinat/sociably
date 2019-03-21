@@ -8,7 +8,7 @@ import type {
   MachinatEvent,
   MachinatAdaptor,
 } from 'machinat-base/types';
-import { HTTPReceiver } from 'machinat-http/types';
+import { HTTPRequestReceiver } from 'machinat-http/types';
 import type { WebhookHandler, WebhookResponse } from './types';
 
 const RAW_BODY_OPTION = { encoding: true };
@@ -22,7 +22,10 @@ const endRes = (res, status, body) => {
 class WebhookReceiver<
   Thread: MachinatThread<any, any>,
   Event: MachinatEvent<any, Thread>
-> implements HTTPReceiver, MachinatAdaptor<WebhookResponse, Thread, Event> {
+>
+  implements
+    HTTPRequestReceiver,
+    MachinatAdaptor<WebhookResponse, Thread, Event> {
   handleWebhook: WebhookHandler<Thread, Event>;
   isBound: boolean;
   _handleEvent: EventHandler<WebhookResponse, Thread, Event>;
@@ -51,11 +54,20 @@ class WebhookReceiver<
     return true;
   }
 
-  async handleRequest(
+  handleRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    rawBody?: string,
-    httpContext?: any
+    httpContext?: Object,
+    rawBody?: string
+  ) {
+    this._handleRequestImpl(req, res, httpContext, rawBody);
+  }
+
+  async _handleRequestImpl(
+    req: IncomingMessage,
+    res: ServerResponse,
+    httpContext?: any,
+    rawBody?: string
   ) {
     try {
       if (!this.isBound) {

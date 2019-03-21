@@ -4,7 +4,7 @@ import type {
   ValuesNativeType,
 } from 'machinat-renderer/types';
 import type { BotPlugin } from 'machinat-base/types';
-import type { WebhookResponse } from 'machinat-webhook/types';
+import type { WebhookResponse } from 'machinat-webhook-receiver/types';
 
 import type { ChatThread, MulticastThread } from './thread';
 

@@ -18,5 +18,5 @@ declare module 'denque' {
     clear(): void;
   }
 
-  declare export default typeof Denque;
+  declare module.exports: typeof Denque;
 }

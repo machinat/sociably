@@ -2,7 +2,7 @@ import moxy from 'moxy';
 import nock from 'nock';
 import Machinat from 'machinat';
 import { Controller, Engine } from 'machinat-base';
-import WebhookReceiver from 'machinat-webhook';
+import WebhookReceiver from 'machinat-webhook-receiver';
 import MessengerBot from '../bot';
 import MessengerClient from '../client';
 import { Image, Dialog, QuickReply } from '../component';

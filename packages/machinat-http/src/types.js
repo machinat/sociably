@@ -1,15 +1,24 @@
 // @flow
 import type { IncomingMessage, ServerResponse } from 'http';
+import type { Socket } from 'net';
 
-export interface HTTPReceiver {
+export interface HTTPRequestReceiver {
   handleRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    rawBody?: string,
-    httpContext?: any
-  ): Promise<void>;
+    httpContext?: Object,
+    rawBody?: string
+  ): void;
 }
 
-export interface HTTPReceivable {
-  adaptor: HTTPReceiver;
+export interface HTTPRequestReceivable {
+  adaptor: HTTPRequestReceiver;
+}
+
+export interface HTTPUpgradeReceiver {
+  handleUpgrade(req: IncomingMessage, socket: Socket, head: Buffer): void;
+}
+
+export interface HTTPUpgradeReceivable {
+  adaptor: HTTPUpgradeReceiver;
 }

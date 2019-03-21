@@ -5,7 +5,7 @@ import type {
 } from 'machinat-renderer/types';
 import type { BotPlugin } from 'machinat-base/types';
 import type MachinatQueue from 'machinat-queue';
-import type { WebhookResponse } from 'machinat-webhook/types';
+import type { WebhookResponse } from 'machinat-webhook-receiver/types';
 import type { ChatThread } from './thread';
 import typeof {
   MESSAGE_CREATIVES_THREAD,

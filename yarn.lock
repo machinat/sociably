@@ -4433,9 +4433,9 @@ moment@^2.6.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
 
-"moxy@https://github.com/lrills/moxy/releases/download/v0.1.0-4/moxy.tar.gz":
-  version "0.1.0-4"
-  resolved "https://github.com/lrills/moxy/releases/download/v0.1.0-4/moxy.tar.gz#5fe5efbc5ea6cf682e2eb179b95ce88938e7a393"
+"moxy@https://github.com/lrills/moxy/releases/download/v0.1.0-5/moxy.tar.gz":
+  version "0.1.0-5"
+  resolved "https://github.com/lrills/moxy/releases/download/v0.1.0-5/moxy.tar.gz#74f005519df18a41a308c8cc747d7c9ad5d369d1"
   dependencies:
     fast-deep-equal "^2.0.1"
 
@@ -6495,6 +6495,13 @@ ws@^5.2.0:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/ws/-/ws-5.2.2.tgz#dffef14866b8e8dc9133582514d1befaf96e980f"
   integrity sha512-jaHFD6PFv6UgoIVda6qZllptQsMlDEJkTQcybzzXDYM1XO9Y8em691FGMPmM46WGyLU4z9KMgQN+qrux/nhlHA==
+  dependencies:
+    async-limiter "~1.0.0"
+
+ws@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-6.2.0.tgz#13806d9913b2a5f3cbb9ba47b563c002cbc7c526"
+  integrity sha512-deZYUNlt2O4buFCa3t5bKLf8A7FPP/TVjwOeVNpw818Ma5nk4MLXls2eoEGS39o8119QIYxTrTDoPQ5B/gTD6w==
   dependencies:
     async-limiter "~1.0.0"
 

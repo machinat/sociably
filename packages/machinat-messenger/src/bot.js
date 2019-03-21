@@ -4,11 +4,14 @@ import invariant from 'invariant';
 import { BaseBot, Engine, Controller } from 'machinat-base';
 import Queue from 'machinat-queue';
 import Renderer from 'machinat-renderer';
-import WebhookReceiver from 'machinat-webhook';
+import WebhookReceiver from 'machinat-webhook-receiver';
 
 import type { MachinatNode } from 'machinat/types';
-import type { WebhookResponse } from 'machinat-webhook/types';
-import type { HTTPReceivable, HTTPReceiver } from 'machinat-http/types';
+import type { WebhookResponse } from 'machinat-webhook-receiver/types';
+import type {
+  HTTPRequestReceivable,
+  HTTPRequestReceiver,
+} from 'machinat-http/types';
 
 import MessengerClient from './client';
 import handleWebhook from './handleWebhook';
@@ -50,9 +53,9 @@ export default class MessengerBot
     ChatThread,
     MessengerEvent
   >
-  implements HTTPReceivable {
+  implements HTTPRequestReceivable {
   options: MessengerBotOptions;
-  receiver: HTTPReceiver;
+  receiver: HTTPRequestReceiver;
   client: MessengerClient;
 
   constructor(optionsInput: MessengerBotOptionsInput = {}) {

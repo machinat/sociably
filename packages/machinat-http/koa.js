@@ -1,1 +1,1 @@
-module.exports = require('./lib/koa');
+module.exports = require('./lib/connectKoa');

@@ -4,6 +4,9 @@ import rawBody from 'raw-body';
 import WebhookReceiver from '../receiver';
 
 jest.mock('raw-body');
+jest.useFakeTimers();
+
+const nextTick = () => new Promise(process.nextTick);
 
 describe('#handleRequest(req, res, raw, ctx)', () => {
   let req;
@@ -20,14 +23,11 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     handleEvent.mock.reset();
   });
 
-  it('returns a promise', async () => {
+  it('returns undefined', () => {
     const receiver = new WebhookReceiver(handleWebhook);
     receiver.bind(handleEvent);
 
-    const promise = receiver.handleRequest(req, res, 'body');
-
-    expect(promise).toBeInstanceOf(Promise);
-    await expect(promise).resolves.toBe(undefined);
+    expect(receiver.handleRequest(req, res, {}, 'body')).toBe(undefined);
   });
 
   it('get events from handleWebhook and pass to handleEvent', async () => {
@@ -35,7 +35,10 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     receiver.bind(handleEvent);
 
     const transportCtx = { hello: 'world' };
-    await receiver.handleRequest(req, res, 'body', transportCtx);
+    receiver.handleRequest(req, res, transportCtx, 'body');
+
+    jest.runAllTimers();
+    await nextTick();
 
     expect(handleWebhook.mock).toHaveBeenCalledWith(req, res, 'body');
 
@@ -56,7 +59,10 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     req.mock.getter('method').fakeReturnValue('POST');
     rawBody.mock.fake(() => Promise.resolve('some body'));
 
-    await receiver.handleRequest(req, res);
+    receiver.handleRequest(req, res);
+
+    jest.runAllTimers();
+    await nextTick();
 
     expect(rawBody.mock.calls[0].args[0]).toBe(req);
     expect(handleWebhook.mock).toHaveBeenCalledWith(req, res, 'some body');
@@ -69,7 +75,10 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
     expect(receiver.isBound).toBe(false);
 
-    await receiver.handleRequest(req, res, 'body');
+    receiver.handleRequest(req, res, {}, 'body');
+
+    jest.runAllTimers();
+    await nextTick();
 
     expect(handleWebhook.mock).not.toHaveBeenCalled();
     expect(handleEvent.mock).not.toHaveBeenCalled();
@@ -83,7 +92,10 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     receiver.bind(handleEvent);
 
     handleWebhook.mock.fakeReturnValue(undefined);
-    await receiver.handleRequest(req, res, 'body');
+    receiver.handleRequest(req, res, {}, 'body');
+
+    jest.runAllTimers();
+    await nextTick();
 
     expect(handleWebhook.mock).toHaveBeenCalledTimes(1);
     expect(handleEvent.mock).not.toHaveBeenCalled();
@@ -96,7 +108,10 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     const receiver = new WebhookReceiver(handleWebhook);
     receiver.bind(handleEvent);
 
-    await receiver.handleRequest(req, res, 'body');
+    receiver.handleRequest(req, res, {}, 'body');
+
+    jest.runAllTimers();
+    await nextTick();
 
     expect(res.end.mock).toHaveBeenCalled();
     expect(res.statusCode).toBe(200);
@@ -109,7 +124,10 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
     handleEvent.mock.fakeReturnValue({ status: 201, body: 'success body' });
 
-    await receiver.handleRequest(req, res, 'body');
+    receiver.handleRequest(req, res, {}, 'body');
+
+    jest.runAllTimers();
+    await nextTick();
 
     expect(res.statusCode).toBe(201);
     expect(res.end.mock.calls[0].args[0]).toBe('success body');
@@ -122,7 +140,10 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
     handleEvent.mock.fakeReturnValue({ status: 201, body: { success: true } });
 
-    await receiver.handleRequest(req, res, 'body');
+    receiver.handleRequest(req, res, {}, 'body');
+
+    jest.runAllTimers();
+    await nextTick();
 
     expect(res.statusCode).toBe(201);
     expect(res.end.mock.calls[0].args[0]).toBe('{"success":true}');
@@ -134,7 +155,10 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
     handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
 
-    await receiver.handleRequest(req, res, 'body');
+    receiver.handleRequest(req, res, {}, 'body');
+
+    jest.runAllTimers();
+    await nextTick();
 
     expect(res.statusCode).toBe(501);
     expect(res.end.mock).toHaveBeenCalled();
@@ -147,7 +171,10 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
     handleEvent.mock.fake(() => Promise.reject(new Error()));
 
-    await receiver.handleRequest(req, res, 'body');
+    receiver.handleRequest(req, res, {}, 'body');
+
+    jest.runAllTimers();
+    await nextTick();
 
     expect(res.statusCode).toBe(500);
     expect(res.end.mock.calls[0].args[0]).toBe(undefined);
@@ -165,7 +192,10 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
       throw err;
     });
 
-    await receiver.handleRequest(req, res, 'body');
+    receiver.handleRequest(req, res, {}, 'body');
+
+    jest.runAllTimers();
+    await nextTick();
 
     expect(res.statusCode).toBe(555);
     expect(res.end.mock.calls[0].args[0]).toBe('YOU LOSE!');
