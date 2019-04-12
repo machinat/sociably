@@ -25,12 +25,12 @@ module.exports = {
     strict: 0,
     'no-nested-ternary': 0,
     'no-underscore-dangle': 0,
+    'no-cond-assign': 0,
     'no-unused-vars': ['error', {
       ignoreRestSiblings: true,
     }],
     'no-cond-assign': 0,
     'no-unused-expressions': 0,
-    'flowtype/no-unused-expressions': 2,
     'no-param-reassign': ['error', {
       props: true,
       ignorePropertyModificationsFor: ['context', 'ctx', 'frame'],
@@ -38,7 +38,8 @@ module.exports = {
     'no-restricted-syntax': ['error',
       'ForInStatement', 'LabeledStatement', 'WithStatement'
     ],
-    'flowtype/define-flow-type': 1,
+    'flowtype/define-flow-type': 2,
+    'flowtype/no-unused-expressions': 2,
     'import/extensions': 0,
     'import/no-unresolved': ['error', {
       ignore: ['machinat.*/types']

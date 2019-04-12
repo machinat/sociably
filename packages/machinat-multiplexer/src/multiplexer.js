@@ -1,7 +1,7 @@
 // @flow
 import EventEmitter from 'events';
 import { mixin } from 'machinat-utility';
-import type { MachinatBot, BotPlugin } from 'machinat-base/types';
+import type { MachinatBot, BotPlugin, EventHandler } from 'machinat-base/types';
 
 type MultiplexerOptions = {
   plugins?: BotPlugin<any, any, any, any, any, any, any>[],
@@ -21,6 +21,8 @@ class MachinatMultiplexer<
   }
 
   wrap(id: string, bot: Bot) {
+    bot.receiver.unbind();
+
     // bind new handler to adator
     const eventHandler = bot.controller.makeEventHandler(frame => {
       bot.emit('event', frame);

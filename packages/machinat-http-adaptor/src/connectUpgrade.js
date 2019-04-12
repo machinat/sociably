@@ -6,7 +6,7 @@ import type { HTTPUpgradeReceivable } from './types';
 const UPGRADE_404_RESPONSE =
   'HTTP/1.1 404 Not Found\r\n' +
   'Connection: close\r\n' +
-  'Content-type: text/html\r\n' +
+  'Content-Type: text/html\r\n' +
   'Content-Length: 9\r\n' +
   '\r\nNot Found';
 
