@@ -90,7 +90,7 @@ it('has receiver, controller, engine and client', () => {
     verifyToken: '_VERIFIY_TOKEN_',
   });
 
-  expect(bot.adaptor).toBeInstanceOf(WebhookReceiver);
+  expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
   expect(bot.controller).toBeInstanceOf(Controller);
   expect(bot.engine).toBeInstanceOf(Engine);
   expect(bot.client).toBeInstanceOf(MessengerClient);

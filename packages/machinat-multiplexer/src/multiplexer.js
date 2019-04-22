@@ -33,7 +33,7 @@ class MachinatMultiplexer<
       }
     );
 
-    bot.adaptor.bind(eventHandler);
+    bot.receiver.bind(eventHandler);
 
     // extends common middlewares and extensions from plugins
     const getBotMixin = Object.defineProperty({}, 'getBot', {

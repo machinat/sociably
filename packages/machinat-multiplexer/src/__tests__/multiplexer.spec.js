@@ -1,7 +1,7 @@
 import moxy from 'moxy';
 import Multiplexer from '../multiplexer';
 
-const adaptor = {
+const receiver = {
   bind: () => true,
 };
 
@@ -21,7 +21,7 @@ const engine = {
 };
 
 const _bot = {
-  adaptor,
+  receiver,
   controller,
   engine,
   emit: () => true,
@@ -41,7 +41,7 @@ beforeEach(() => {
 });
 
 describe('#wrap(id, bot)', () => {
-  it('rebind new eventHander to adaptor', () => {
+  it('rebind new eventHander to receiver', () => {
     const multiplexer = new Multiplexer();
 
     expect(multiplexer.wrap('bot1', bot1)).toBe(bot1);
@@ -51,8 +51,8 @@ describe('#wrap(id, bot)', () => {
     [bot1, bot2, bot3].forEach(bot => {
       expect(bot.controller.makeEventHandler.mock).toHaveBeenCalledTimes(1);
 
-      expect(bot.adaptor.bind.mock).toHaveBeenCalledTimes(1);
-      expect(bot.adaptor.bind.mock).toHaveBeenCalledWith(
+      expect(bot.receiver.bind.mock).toHaveBeenCalledTimes(1);
+      expect(bot.receiver.bind.mock).toHaveBeenCalledWith(
         bot.controller.makeEventHandler.mock.calls[0].result
       );
     });

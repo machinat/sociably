@@ -1,5 +1,5 @@
 {
-  "name": "machinat-http",
+  "name": "machinat-http-adaptor",
   "version": "0.0.1-0",
   "main": "lib/index.js",
   "license": "MIT",

@@ -7,10 +7,7 @@ import Renderer from 'machinat-renderer';
 import WebhookReceiver from 'machinat-webhook-receiver';
 
 import type { MachinatNode } from 'machinat/types';
-import type {
-  HTTPRequestReceivable,
-  HTTPRequestReceiver,
-} from 'machinat-http/types';
+import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
 import type { WebhookResponse } from 'machinat-webhook-receiver/types';
 
 import LineClient from './client';
@@ -49,7 +46,6 @@ class LineBot
   >
   implements HTTPRequestReceivable {
   options: LineBotOptions;
-  receiver: HTTPRequestReceiver;
   client: LineClient;
 
   constructor(optionsInput: LineBotOptionsInput = {}) {

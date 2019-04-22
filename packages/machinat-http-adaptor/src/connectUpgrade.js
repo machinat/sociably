@@ -37,7 +37,7 @@ const connectUpgrade = (
         return;
       }
 
-      bot.adaptor.handleUpgrade(req, socket, head);
+      bot.receiver.handleUpgrade(req, socket, head);
     };
   } else {
     const bot = provider;
@@ -47,7 +47,7 @@ const connectUpgrade = (
       socket: Socket,
       head: Buffer
     ) => {
-      bot.adaptor.handleUpgrade(req, socket, head);
+      bot.receiver.handleUpgrade(req, socket, head);
     };
   }
 

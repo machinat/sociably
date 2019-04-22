@@ -21,7 +21,7 @@ const createKoaMiddleware = (
         return;
       }
 
-      bot.adaptor.handleRequest(req, res, ctx, request.rawBody);
+      bot.receiver.handleRequest(req, res, ctx, request.rawBody);
       ctx.respond = false;
     };
   } else {
@@ -30,7 +30,7 @@ const createKoaMiddleware = (
     koaBotConnector = async (ctx: Object) => {
       const { req, res, request } = ctx;
 
-      bot.adaptor.handleRequest(req, res, ctx, request.rawBody);
+      bot.receiver.handleRequest(req, res, ctx, request.rawBody);
       ctx.respond = false;
     };
   }

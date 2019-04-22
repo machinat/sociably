@@ -12,7 +12,7 @@ export interface HTTPRequestReceiver {
 }
 
 export interface HTTPRequestReceivable {
-  adaptor: HTTPRequestReceiver;
+  receiver: HTTPRequestReceiver;
 }
 
 export interface HTTPUpgradeReceiver {
@@ -20,5 +20,5 @@ export interface HTTPUpgradeReceiver {
 }
 
 export interface HTTPUpgradeReceivable {
-  adaptor: HTTPUpgradeReceiver;
+  receiver: HTTPUpgradeReceiver;
 }

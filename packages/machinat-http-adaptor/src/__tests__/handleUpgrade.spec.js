@@ -2,7 +2,7 @@ import moxy from 'moxy';
 import connectUpgrade from '../connectUpgrade';
 
 const bot = moxy({
-  adaptor: {
+  receiver: {
     handleUpgrade() {},
   },
 });
@@ -23,14 +23,14 @@ it('works when connect to a bot directly', () => {
   const callback = connectUpgrade(bot);
 
   expect(callback(req, socket, buffer)).toBe(undefined);
-  expect(bot.adaptor.handleUpgrade.mock).toHaveBeenCalledTimes(1);
-  expect(bot.adaptor.handleUpgrade.mock).toHaveBeenCalledWith(
+  expect(bot.receiver.handleUpgrade.mock).toHaveBeenCalledTimes(1);
+  expect(bot.receiver.handleUpgrade.mock).toHaveBeenCalledWith(
     req,
     socket,
     buffer
   );
 
-  // leave the socket to adaptor
+  // leave the socket to receiver
   expect(socket.write.mock).not.toHaveBeenCalled();
   expect(socket.destroy.mock).not.toHaveBeenCalled();
 });
@@ -45,8 +45,8 @@ it('works when connect to a bot provider function', () => {
   expect(provider.mock).toHaveBeenCalledTimes(1);
   expect(provider.mock).toHaveBeenCalledWith(req);
 
-  expect(bot.adaptor.handleUpgrade.mock).toHaveBeenCalledTimes(1);
-  expect(bot.adaptor.handleUpgrade.mock).toHaveBeenCalledWith(
+  expect(bot.receiver.handleUpgrade.mock).toHaveBeenCalledTimes(1);
+  expect(bot.receiver.handleUpgrade.mock).toHaveBeenCalledWith(
     req,
     socket,
     buffer

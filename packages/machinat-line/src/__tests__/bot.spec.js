@@ -84,7 +84,7 @@ it('has engine, controller, receiver and client', () => {
     channelSecret: '_SECRET_',
   });
 
-  expect(bot.adaptor).toBeInstanceOf(WebhookReceiver);
+  expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
   expect(bot.controller).toBeInstanceOf(Controller);
   expect(bot.engine).toBeInstanceOf(Engine);
   expect(bot.client).toBeInstanceOf(Client);

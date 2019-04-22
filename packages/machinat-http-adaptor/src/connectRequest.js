@@ -24,13 +24,13 @@ const connectRequest = (
         return;
       }
 
-      bot.adaptor.handleRequest(req, res, req);
+      bot.receiver.handleRequest(req, res, req);
     };
   } else {
     const bot = provider;
 
     httpRequestBotConnector = (req: IncomingMessage, res: ServerResponse) => {
-      bot.adaptor.handleRequest(req, res, req);
+      bot.receiver.handleRequest(req, res, req);
     };
   }
 

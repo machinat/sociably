@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import moxy from 'moxy';
 import Bot from '../bot';
 
-const adaptor = moxy({
+const receiver = moxy({
   bind: () => true,
   unbined: () => true,
 });
@@ -26,47 +26,47 @@ const worker = moxy({
 });
 
 beforeEach(() => {
-  adaptor.mock.clear();
+  receiver.mock.clear();
   controller.mock.clear();
   engine.mock.clear();
   worker.mock.clear();
 });
 
 it('extends EventEmitter', () => {
-  expect(new Bot(adaptor, controller, engine, worker)).toBeInstanceOf(
+  expect(new Bot(receiver, controller, engine, worker)).toBeInstanceOf(
     EventEmitter
   );
 });
 
 describe('#constructor(controller, engine, worker, plugins)', () => {
   it('initiats with controller and engine', () => {
-    const bot = new Bot(adaptor, controller, engine, worker);
+    const bot = new Bot(receiver, controller, engine, worker);
 
-    expect(bot.adaptor).toBe(adaptor);
+    expect(bot.receiver).toBe(receiver);
     expect(bot.controller).toBe(controller);
     expect(bot.engine).toBe(engine);
     expect(bot.worker).toBe(worker);
   });
 
   it('starts worker', () => {
-    const bot = new Bot(adaptor, controller, engine, worker);
+    const bot = new Bot(receiver, controller, engine, worker);
 
     expect(bot.worker.start.mock).toHaveBeenCalledTimes(1);
     expect(bot.worker.start.mock).toHaveBeenCalledWith(engine.queue);
   });
 
   it('setFramePrototype() with "bot" prop of engine and controller', () => {
-    const bot = new Bot(adaptor, controller, engine, worker);
+    const bot = new Bot(receiver, controller, engine, worker);
 
     expect(engine.setFramePrototype.mock).toHaveBeenCalledWith({ bot });
     expect(controller.setFramePrototype.mock).toHaveBeenCalledWith({ bot });
   });
 
   it('makeEventHandler() with events firing and error handling callback', () => {
-    const bot = new Bot(adaptor, controller, engine, worker);
+    const bot = new Bot(receiver, controller, engine, worker);
 
-    expect(adaptor.bind.mock).toHaveBeenCalledTimes(1);
-    expect(adaptor.bind.mock).toHaveBeenCalledWith(
+    expect(receiver.bind.mock).toHaveBeenCalledTimes(1);
+    expect(receiver.bind.mock).toHaveBeenCalledWith(
       controller.makeEventHandler.mock.calls[0].result
     );
 
@@ -110,7 +110,7 @@ describe('#constructor(controller, engine, worker, plugins)', () => {
       })),
     ];
 
-    const bot = new Bot(adaptor, controller, engine, worker, plugins);
+    const bot = new Bot(receiver, controller, engine, worker, plugins);
 
     plugins.forEach(pluginFn => {
       expect(pluginFn.mock).toHaveBeenCalledTimes(1);

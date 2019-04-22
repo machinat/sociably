@@ -7,7 +7,7 @@ import type {
   EventHandler,
   MachinatThread,
   MachinatEvent,
-  MachinatAdaptor,
+  MachinatReceiver,
   MachinatWorker,
 } from './types';
 import Controller from './controller';
@@ -23,7 +23,7 @@ export default class BaseBot<
   Receivable: Deliverable,
   Event: MachinatEvent<any, Receivable>
 > extends EventEmitter {
-  adaptor: MachinatAdaptor<Response, Receivable, Event>;
+  receiver: MachinatReceiver<Response, Receivable, Event>;
   controller: Controller<Response, Receivable, Event>;
   engine: Engine<Rendered, Native, Job, Result, Deliverable>;
   worker: MachinatWorker<Job, Result>;
@@ -41,7 +41,7 @@ export default class BaseBot<
       >[];
 
   constructor(
-    adaptor: MachinatAdaptor<Response, Receivable, Event>,
+    receiver: MachinatReceiver<Response, Receivable, Event>,
     controller: Controller<Response, Receivable, Event>,
     engine: Engine<Rendered, Native, Job, Result, Deliverable>,
     worker: MachinatWorker<Job, Result>,
@@ -58,7 +58,7 @@ export default class BaseBot<
   ) {
     super();
 
-    this.adaptor = adaptor;
+    this.receiver = receiver;
     this.controller = controller;
     this.engine = engine;
     this.worker = worker;
@@ -96,7 +96,7 @@ export default class BaseBot<
     }
 
     this.worker.start(engine.queue);
-    this.adaptor.bind(this.eventHandler());
+    this.receiver.bind(this.eventHandler());
   }
 
   eventHandler(): EventHandler<Response, Receivable, Event> {

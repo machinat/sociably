@@ -6,9 +6,9 @@ import type {
   MachinatThread,
   EventHandler,
   MachinatEvent,
-  MachinatAdaptor,
+  MachinatReceiver,
 } from 'machinat-base/types';
-import { HTTPRequestReceiver } from 'machinat-http/types';
+import { HTTPRequestReceiver } from 'machinat-http-adaptor/types';
 import type { WebhookHandler, WebhookResponse } from './types';
 
 const RAW_BODY_OPTION = { encoding: true };
@@ -25,7 +25,7 @@ class WebhookReceiver<
 >
   implements
     HTTPRequestReceiver,
-    MachinatAdaptor<WebhookResponse, Thread, Event> {
+    MachinatReceiver<WebhookResponse, Thread, Event> {
   handleWebhook: WebhookHandler<Thread, Event>;
   isBound: boolean;
   _handleEvent: EventHandler<WebhookResponse, Thread, Event>;

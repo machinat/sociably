@@ -159,7 +159,7 @@ export type EventHandler<
   tranportContext: any
 ) => Promise<void | Response>;
 
-export interface MachinatAdaptor<
+export interface MachinatReceiver<
   Response,
   Thread: MachinatThread<any, any>,
   Event: MachinatEvent<any, Thread>
