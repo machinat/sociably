@@ -5,8 +5,8 @@ import uniqid from 'uniqid';
 import type WebSocket from 'ws';
 import type { IncomingMessage } from 'http';
 import type { Socket } from 'net';
-import type { MachinatAdaptor, EventHandler } from 'machinat-base/types';
-import type { HTTPUpgradeReceiver } from 'machinat-http/types';
+import type { MachinatReceiver, EventHandler } from 'machinat-base/types';
+import type { HTTPUpgradeReceiver } from 'machinat-http-adaptor/types';
 import type { WebEvent, WebBotOptions, ThreadUid } from './types';
 import type ConnectionBroker from './broker';
 import type { ConnectBody, DisconnectBody, EventBody } from './channel';
@@ -35,14 +35,15 @@ const rejectUpgrade = (socket: Socket, code: number, message?: string) => {
 };
 
 class WebAdaptor
-  implements HTTPUpgradeReceiver, MachinatAdaptor<void, WebThread, WebEvent> {
+  implements HTTPUpgradeReceiver, MachinatReceiver<void, WebThread, WebEvent> {
   webSocketServer: WebSocketServer;
   broker: ConnectionBroker;
   options: WebBotOptions;
+  _threadCache: Map<ThreadUid, WebThread>;
 
   isBound: boolean;
   _handleEvent: EventHandler<void, WebThread, WebEvent>;
-  _threadCache: Map<ThreadUid, WebThread>;
+  _handleError: (e: Error) => void;
 
   _handleChannelConnect: (body: ConnectBody, seq: number) => void;
   _handleChannelDisconnect: (body: DisconnectBody, seq: number) => void;
@@ -75,13 +76,17 @@ class WebAdaptor
     };
   }
 
-  bind(handler: EventHandler<void, WebThread, WebEvent>) {
+  bind(
+    handler: EventHandler<void, WebThread, WebEvent>,
+    handleError: (e: Error) => void
+  ) {
     if (this.isBound) {
       return false;
     }
 
     this.isBound = true;
     this._handleEvent = handler;
+    this._handleError = handleError;
     return true;
   }
 
@@ -138,22 +143,27 @@ class WebAdaptor
   ) {
     const thread = this._getCachedThread(uid);
     if (thread === null) {
-      this._issueError(new Error(xxx));
+      this._handleError(new Error(xxx));
       return;
     }
 
     const info = this.broker.getLocalConnectionInfo(uid, channel.id);
     if (info === null) {
-      this._issueError(new Error(xxx));
+      this._handleError(new Error(xxx));
       return;
     }
 
     const event = createEvent(type, subtype, thread, channel.id, payload);
-    this._handleEvent(WEB, event, {
-      info,
-      channelId: channel.id,
-      request: channel.request,
-    });
+
+    try {
+      this._handleEvent(WEB, event, {
+        info,
+        channelId: channel.id,
+        request: channel.request,
+      });
+    } catch (err) {
+      this._handleError(err);
+    }
   }
 
   _handleChannelConnectImpl(channel: Channel, body: ConnectBody) {
