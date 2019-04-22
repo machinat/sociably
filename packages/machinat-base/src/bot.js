@@ -96,18 +96,17 @@ export default class BaseBot<
     }
 
     this.worker.start(engine.queue);
-    this.receiver.bind(this.eventHandler());
+    this.receiver.bind(this.eventHandler(), this._emitError);
   }
 
   eventHandler(): EventHandler<Response, Receivable, Event> {
-    return this.controller.makeEventHandler(
-      frame => {
-        this.emit('event', frame);
-        return Promise.resolve();
-      },
-      err => {
-        this.emit('error', err, this);
-      }
-    );
+    return this.controller.makeEventHandler(frame => {
+      this.emit('event', frame);
+      return Promise.resolve();
+    });
   }
+
+  _emitError = (err: Error) => {
+    this.emit('error', err, this);
+  };
 }

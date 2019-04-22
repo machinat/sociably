@@ -52,9 +52,13 @@ describe('#wrap(id, bot)', () => {
       expect(bot.controller.makeEventHandler.mock).toHaveBeenCalledTimes(1);
 
       expect(bot.receiver.bind.mock).toHaveBeenCalledTimes(1);
-      expect(bot.receiver.bind.mock).toHaveBeenCalledWith(
+
+      const [handleEvent, handleError] = bot.receiver.bind.mock.calls[0].args;
+      expect(handleEvent).toEqual(
         bot.controller.makeEventHandler.mock.calls[0].result
       );
+
+      expect(typeof handleError).toBe('function');
     });
   });
 
@@ -93,8 +97,8 @@ describe('#wrap(id, bot)', () => {
     expect(multiplexer.wrap('bot3', bot3)).toBe(bot3);
 
     [bot1, bot2, bot3].forEach((bot, i) => {
-      expect(bot.controller.makeEventHandler.mock).toHaveBeenCalledTimes(1);
-      const onError = bot.controller.makeEventHandler.mock.calls[0].args[1];
+      expect(bot.receiver.bind.mock).toHaveBeenCalledTimes(1);
+      const onError = bot.receiver.bind.mock.calls[0].args[1];
 
       const err = new Error('ゴゴゴゴゴゴ');
       onError(err);

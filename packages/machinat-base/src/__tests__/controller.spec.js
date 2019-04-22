@@ -103,17 +103,15 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
   const ctx = { on: 'spaceship' };
   const event = { found: 'Obi-Wan' };
   const finalHandler = moxy(() => Promise.resolve());
-  const onError = moxy();
 
   beforeEach(() => {
     finalHandler.mock.clear();
-    onError.mock.clear();
   });
 
   it('pass frame to finalHandler', async () => {
     const controller = new Controller();
 
-    const handle = controller.makeEventHandler(finalHandler, onError);
+    const handle = controller.makeEventHandler(finalHandler);
 
     await Promise.all([
       expect(handle('test', { id: 1 }, ctx)).resolves.toBe(undefined),
@@ -134,7 +132,7 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
   it('returns what finalHandler returns', async () => {
     const controller = new Controller();
 
-    const handle = controller.makeEventHandler(finalHandler, onError);
+    const handle = controller.makeEventHandler(finalHandler);
 
     finalHandler.mock.fake(() => Promise.resolve('Roger'));
     await expect(handle('test', event, ctx)).resolves.toBe('Roger');
@@ -191,7 +189,7 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
 
     controller.setMiddlewares(middleware1, middleware2, middleware3);
 
-    const handle = controller.makeEventHandler(finalHandler, onError);
+    const handle = controller.makeEventHandler(finalHandler);
 
     finalHandler.mock.fakeReturnValue('Roger');
     await expect(handle('test', event, ctx)).resolves.toBe('Roger foo bar baz');
@@ -206,7 +204,7 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     });
   });
 
-  it('pass error thrown in middleware to onError', async () => {
+  it('throw what middleware thrown and bypass finalHandler', async () => {
     const controller = new Controller();
 
     const middleware = () => async () => {
@@ -214,14 +212,13 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     };
 
     controller.setMiddlewares(middleware);
-    const handle = controller.makeEventHandler(finalHandler, onError);
+    const handle = controller.makeEventHandler(finalHandler);
 
     await expect(handle('test', event, ctx)).rejects.toThrow(
       'an X-wing crash!'
     );
 
     expect(finalHandler.mock).not.toHaveBeenCalled();
-    expect(onError.mock).toHaveBeenCalledWith(new Error('an X-wing crash!'));
   });
 
   it('can bypass the finalHandler in middleware', async () => {
@@ -230,14 +227,13 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     const middleware = () => async () => 'your droid is being hijacked hahaha';
 
     controller.setMiddlewares(middleware);
-    const handle = controller.makeEventHandler(finalHandler, onError);
+    const handle = controller.makeEventHandler(finalHandler);
 
     await expect(handle('test', event, ctx)).resolves.toBe(
       'your droid is being hijacked hahaha'
     );
 
     expect(finalHandler.mock).not.toHaveBeenCalled();
-    expect(onError.mock).not.toHaveBeenCalled();
   });
 
   it('can catch error in middleware', async () => {
@@ -256,13 +252,12 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     };
 
     controller.setMiddlewares(middleware1, middleware2);
-    const handle = controller.makeEventHandler(finalHandler, onError);
+    const handle = controller.makeEventHandler(finalHandler);
 
     await expect(handle('test', event, ctx)).resolves.toBe(
       "Oh, it's just trash compactor bug"
     );
 
     expect(finalHandler.mock).not.toHaveBeenCalled();
-    expect(onError.mock).not.toHaveBeenCalled();
   });
 });

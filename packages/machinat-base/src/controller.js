@@ -67,19 +67,14 @@ class MachinatController<
   makeEventHandler(
     onEvent: (
       EventFrame<any, any, any, any, Thread, Event>
-    ) => Promise<void | Response>,
-    onError: Error => void
+    ) => Promise<void | Response>
   ): EventHandler<Response, Thread, Event> {
     const handle = compose(...this.middlewares)(onEvent);
-    const handleError = err => {
-      onError(err);
-      throw err;
-    };
 
     return (source: string, event: Event, transportContext: any) => {
       const frame = this.createEventFrame(source, event, transportContext);
 
-      return handle(frame).catch(handleError);
+      return handle(frame);
     };
   }
 

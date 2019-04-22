@@ -28,19 +28,26 @@ class WebhookReceiver<
     MachinatReceiver<WebhookResponse, Thread, Event> {
   handleWebhook: WebhookHandler<Thread, Event>;
   isBound: boolean;
+
   _handleEvent: EventHandler<WebhookResponse, Thread, Event>;
+  _handleError: (e: Error) => void;
 
   constructor(handleWebhook: WebhookHandler<Thread, Event>) {
     this.handleWebhook = handleWebhook;
     this.isBound = false;
   }
 
-  bind(handleEvent: EventHandler<WebhookResponse, Thread, Event>) {
+  bind(
+    handleEvent: EventHandler<WebhookResponse, Thread, Event>,
+    errorHandler: (e: Error) => void
+  ) {
     if (this.isBound) {
       return false;
     }
 
     this._handleEvent = handleEvent;
+    this._handleError = errorHandler;
+
     this.isBound = true;
     return true;
   }
@@ -135,6 +142,8 @@ class WebhookReceiver<
           typeof err.body === 'string' ? err.body : JSON.stringify(err.body)
         );
       }
+
+      this._handleError(err);
     }
   }
 }

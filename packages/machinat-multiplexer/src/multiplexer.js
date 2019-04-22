@@ -22,18 +22,18 @@ class MachinatMultiplexer<
 
   wrap(id: string, bot: Bot) {
     // bind new handler to adator
-    const eventHandler = bot.controller.makeEventHandler(
-      frame => {
-        bot.emit('event', frame);
-        this.emit('event', frame);
-        return Promise.resolve();
-      },
-      err => {
-        this.emit('error', err, bot);
-      }
-    );
+    const eventHandler = bot.controller.makeEventHandler(frame => {
+      bot.emit('event', frame);
+      this.emit('event', frame);
+      return Promise.resolve();
+    });
 
-    bot.receiver.bind(eventHandler);
+    // redirect all errors to notofication to this
+    const errorHandler = err => {
+      this.emit('error', err, bot);
+    };
+
+    bot.receiver.bind(eventHandler, errorHandler);
 
     // extends common middlewares and extensions from plugins
     const getBotMixin = Object.defineProperty({}, 'getBot', {

@@ -62,24 +62,29 @@ describe('#constructor(controller, engine, worker, plugins)', () => {
     expect(controller.setFramePrototype.mock).toHaveBeenCalledWith({ bot });
   });
 
-  it('makeEventHandler() with events firing and error handling callback', () => {
+  it('calls controller.makeEventHandler() with events firing callback', () => {
     const bot = new Bot(receiver, controller, engine, worker);
 
-    expect(receiver.bind.mock).toHaveBeenCalledTimes(1);
-    expect(receiver.bind.mock).toHaveBeenCalledWith(
-      controller.makeEventHandler.mock.calls[0].result
-    );
-
-    const [onEvent, onError] = controller.makeEventHandler.mock.calls[0].args;
+    const onEvent = controller.makeEventHandler.mock.calls[0].args[0];
 
     expect(typeof onEvent).toBe('function');
-    expect(typeof onError).toBe('function');
 
     const eventListener = moxy();
     bot.on('event', eventListener);
     const receiveFrame = { foo: 'bar' };
     onEvent(receiveFrame);
     expect(eventListener.mock).toHaveBeenCalledWith(receiveFrame);
+  });
+
+  it('calls receiver.bind() with eventHandler and errorHandler', () => {
+    const bot = new Bot(receiver, controller, engine, worker);
+
+    expect(receiver.bind.mock).toHaveBeenCalledTimes(1);
+    expect(receiver.bind.mock.calls[0].args[0]).toBe(
+      controller.makeEventHandler.mock.calls[0].result
+    );
+
+    const onError = receiver.bind.mock.calls[0].args[1];
 
     const errorListener = moxy();
     bot.on('error', errorListener);

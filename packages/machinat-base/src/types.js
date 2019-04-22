@@ -164,6 +164,9 @@ export interface MachinatReceiver<
   Thread: MachinatThread<any, any>,
   Event: MachinatEvent<any, Thread>
 > {
-  bind(handler: EventHandler<Response, Thread, Event>): boolean;
+  bind(
+    eventHandler: EventHandler<Response, Thread, Event>,
+    errorHandler: (err: Error) => void
+  ): boolean;
   unbind(): boolean;
 }
