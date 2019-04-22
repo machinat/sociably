@@ -30,11 +30,11 @@ import type { MessengerRawEvent } from '../types';
 import type { ChatThread } from '../thread';
 
 export const eventFactory = (proto: Object, type: string, subtype?: string) => (
-  raw: MessengerRawEvent
+  payload: MessengerRawEvent
 ): MachinatEvent<MessengerRawEvent, ChatThread> => {
   const event = Object.create(proto);
 
-  event.raw = raw;
+  event.payload = payload;
   event.type = type;
   event.subtype = subtype;
 

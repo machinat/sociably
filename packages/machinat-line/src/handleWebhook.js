@@ -43,12 +43,12 @@ const handleWebhook = (options: LineBotOptions) => (
   }
 
   try {
-    const { events: rawEvents } = (JSON.parse(rawBody): LineWebhookRequestBody);
+    const { events: payloads } = (JSON.parse(rawBody): LineWebhookRequestBody);
 
-    const events: LineEvent[] = new Array(rawEvents.length);
+    const events: LineEvent[] = new Array(payloads.length);
 
     for (let i = 0; i < events.length; i += 1) {
-      events[i] = createEvent(rawEvents[i], useReplyAPI);
+      events[i] = createEvent(payloads[i], useReplyAPI);
     }
 
     return events;

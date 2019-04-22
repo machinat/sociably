@@ -3,7 +3,7 @@ import type {
   ContainerNativeType,
   ValuesNativeType,
 } from 'machinat-renderer/types';
-import type { BotPlugin } from 'machinat-base/types';
+import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type MachinatQueue from 'machinat-queue';
 import type { WebhookResponse } from 'machinat-webhook-receiver/types';
 import type { ChatThread } from './thread';
@@ -30,8 +30,11 @@ export type MessengerEvent = {
   subtype?: string,
   shouldRespond: boolean,
   thread: ChatThread,
-  raw: MessengerRawEvent,
+  payload: MessengerRawEvent,
 };
+
+declare var e: MessengerEvent;
+(e: MachinatEvent<MessengerRawEvent, ChatThread>);
 
 // TODO: detailed message type
 export type MessengerMessage = Object;

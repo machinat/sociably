@@ -8,13 +8,13 @@ import createEvent from './event';
 
 import type { MessengerBotOptions } from './types';
 
-const eventReducer = (events, rawEvent) => {
-  const { messaging, stanby } = rawEvent;
+const eventReducer = (events, rawEventWrapper) => {
+  const { messaging, stanby } = rawEventWrapper;
   const isStandby = stanby !== undefined;
-  const rawEvents = isStandby ? stanby : messaging;
+  const payloads = isStandby ? stanby : messaging;
 
-  for (let i = 0; i < rawEvents.length; i += 1) {
-    events.push(createEvent(isStandby, rawEvents[i]));
+  for (let i = 0; i < payloads.length; i += 1) {
+    events.push(createEvent(isStandby, payloads[i]));
   }
 
   return events;

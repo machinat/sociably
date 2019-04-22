@@ -111,7 +111,7 @@ it('returns events created', () => {
     expect(event.platform).toBe('line');
     expect(event.type).toBe(!i ? 'text' : 'follow');
     expect(event.subtype).toBe(undefined);
-    expect(event.raw).toEqual(body.events[i]);
+    expect(event.payload).toEqual(body.events[i]);
   });
 });
 
@@ -136,7 +136,7 @@ it('returns events if request validation passed', () => {
   expect(event.platform).toBe('line');
   expect(event.type).toBe('text');
   expect(event.subtype).toBe(undefined);
-  expect(event.raw).toEqual({
+  expect(event.payload).toEqual({
     replyToken: 'xxx',
     type: 'message',
     timestamp: 1462629479859,

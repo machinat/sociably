@@ -159,7 +159,7 @@ describe('handling POST request', () => {
       expect(event.platform).toBe('messenger');
       expect(event.type).toBe(!i ? 'text' : 'image');
       expect(event.subtype).toBe(undefined);
-      expect(event.raw).toEqual(body.entry[0].messaging[i]);
+      expect(event.payload).toEqual(body.entry[0].messaging[i]);
     });
   });
 
@@ -186,7 +186,7 @@ describe('handling POST request', () => {
     expect(event.platform).toBe('messenger');
     expect(event.type).toBe('text');
     expect(event.subtype).toBe(undefined);
-    expect(event.raw).toEqual({
+    expect(event.payload).toEqual({
       sender: { id: '_PSID_' },
       recipient: { id: '_PAGE_ID_' },
       message: { mid: 'xxx', text: 'foo' },

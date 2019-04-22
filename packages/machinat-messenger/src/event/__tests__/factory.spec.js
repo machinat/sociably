@@ -14,18 +14,18 @@ describe.each([
   it('implements MachinatEvent interface', async () => {
     const fixtures = await getFixtures(fixturesGlob);
 
-    fixtures.forEach(raw => {
-      const event = factory(raw);
+    fixtures.forEach(payload => {
+      const event = factory(payload);
 
-      expect({ ...event }).toEqual({ type, subtype, raw });
+      expect({ ...event }).toEqual({ type, subtype, payload });
     });
   });
 
   it('contains expected mixins', async () => {
     const fixtures = await getFixtures(type, subtype);
 
-    fixtures.forEach(raw => {
-      const event = factory(raw);
+    fixtures.forEach(payload => {
+      const event = factory(payload);
       const protoDescriptor = Object.getOwnPropertyDescriptors(
         Object.getPrototypeOf(event)
       );

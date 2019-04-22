@@ -7,27 +7,28 @@ export const EventBase = {
   shouldRespond: false,
 
   get user() {
-    const { source } = this.raw;
+    const { source } = this.payload;
     return source.userId === undefined ? null : source;
   },
 
   get userId() {
-    return this.raw.source.userId;
+    return this.payload.source.userId;
   },
 
   get thread() {
     return new ChatThread(
-      this.raw.source,
-      this.raw.replyToken,
+      this.payload.source,
+      this.payload.replyToken,
       this._useReplyAPI
     );
   },
 
   get time() {
-    return new Date(this.raw.timestamp);
+    return new Date(this.payload.timestamp);
   },
 };
 
+// $FlowFixMe
 Object.defineProperties(EventBase, {
   [Symbol.toStringTag]: {
     enumerable: false,
@@ -41,7 +42,7 @@ Object.defineProperties(EventBase, {
 
 export const Repliable = {
   get replyToken() {
-    return this.raw.replyToken;
+    return this.payload.replyToken;
   },
 };
 
@@ -53,7 +54,7 @@ export const Message = {
 
 export const Text = {
   get text() {
-    return this.raw.message.text;
+    return this.payload.message.text;
   },
 };
 
@@ -65,63 +66,63 @@ export const Media = {
 
 export const File = {
   get fileName() {
-    return this.raw.message.fileName;
+    return this.payload.message.fileName;
   },
 
   get fileSize() {
-    return this.raw.message.fileSize;
+    return this.payload.message.fileSize;
   },
 };
 
 export const Location = {
   get title() {
-    return this.raw.message.title;
+    return this.payload.message.title;
   },
 
   get address() {
-    return this.raw.message.address;
+    return this.payload.message.address;
   },
 
   get lat() {
-    return this.raw.message.lat;
+    return this.payload.message.lat;
   },
 
   get long() {
-    return this.raw.message.long;
+    return this.payload.message.long;
   },
 };
 
 export const Sticker = {
   get packageId() {
-    return this.raw.message.packageId;
+    return this.payload.message.packageId;
   },
 
   get stickerId() {
-    return this.raw.message.stickerId;
+    return this.payload.message.stickerId;
   },
 };
 
 export const Postback = {
   get data() {
-    return this.raw.postback.data;
+    return this.payload.postback.data;
   },
 };
 
 export const DateParam = {
   get date() {
-    return this.raw.postback.params.date;
+    return this.payload.postback.params.date;
   },
 };
 
 export const TimeParam = {
   get time() {
-    return this.raw.postback.params.time;
+    return this.payload.postback.params.time;
   },
 };
 
 export const DatetimeParam = {
   get datetime() {
-    return this.raw.postback.params.datetime;
+    return this.payload.postback.params.datetime;
   },
 };
 
@@ -141,20 +142,20 @@ export const Beacon = {
 
 export const AccountLink = {
   get result() {
-    return this.raw.link.result;
+    return this.payload.link.result;
   },
 
   get nonce() {
-    return this.raw.link.nonce;
+    return this.payload.link.nonce;
   },
 };
 
 export const DeviceLink = {
   get deviceId() {
-    return this.raw.things.deviceId;
+    return this.payload.things.deviceId;
   },
 
   get linked() {
-    return this.raw.things.type === 'link';
+    return this.payload.things.type === 'link';
   },
 };

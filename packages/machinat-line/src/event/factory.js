@@ -20,12 +20,12 @@ import {
 import type { LineRawEvent, LineEvent } from '../types';
 
 export const eventFactory = (proto: Object, type: string, subtype?: string) => (
-  raw: LineRawEvent,
+  payload: LineRawEvent,
   useReplyAPI: boolean
 ): LineEvent => {
   const event = Object.create(proto);
 
-  event.raw = raw;
+  event.payload = payload;
   event.type = type;
   event.subtype = subtype;
   event._useReplyAPI = useReplyAPI;

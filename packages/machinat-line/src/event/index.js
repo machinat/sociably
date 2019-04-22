@@ -24,56 +24,59 @@ import {
   unknown,
 } from './factory';
 
-const createEvent = (raw: LineRawEvent, useReplyAPI: boolean): LineEvent => {
-  switch (raw.type) {
+const createEvent = (
+  payload: LineRawEvent,
+  useReplyAPI: boolean
+): LineEvent => {
+  switch (payload.type) {
     case 'message':
-      switch (raw.message.type) {
+      switch (payload.message.type) {
         case 'text':
-          return text(raw, useReplyAPI);
+          return text(payload, useReplyAPI);
         case 'image':
-          return image(raw, useReplyAPI);
+          return image(payload, useReplyAPI);
         case 'video':
-          return video(raw, useReplyAPI);
+          return video(payload, useReplyAPI);
         case 'audio':
-          return audio(raw, useReplyAPI);
+          return audio(payload, useReplyAPI);
         case 'file':
-          return file(raw, useReplyAPI);
+          return file(payload, useReplyAPI);
         case 'location':
-          return location(raw, useReplyAPI);
+          return location(payload, useReplyAPI);
         case 'sticker':
-          return sticker(raw, useReplyAPI);
+          return sticker(payload, useReplyAPI);
         default:
-          return unknown(raw, useReplyAPI);
+          return unknown(payload, useReplyAPI);
       }
     case 'follow':
-      return follow(raw, useReplyAPI);
+      return follow(payload, useReplyAPI);
     case 'unfollow':
-      return unfollow(raw, useReplyAPI);
+      return unfollow(payload, useReplyAPI);
     case 'join':
-      return join(raw, useReplyAPI);
+      return join(payload, useReplyAPI);
     case 'leave':
-      return leave(raw, useReplyAPI);
+      return leave(payload, useReplyAPI);
     case 'postback':
-      if (raw.postback.params === undefined) {
-        return postback(raw, useReplyAPI);
-      } else if (raw.postback.params.date !== undefined) {
-        return postbackDate(raw, useReplyAPI);
-      } else if (raw.postback.params.time !== undefined) {
-        return postbackTime(raw, useReplyAPI);
-      } else if (raw.postback.params.datetime !== undefined) {
-        return postbackDatetime(raw, useReplyAPI);
+      if (payload.postback.params === undefined) {
+        return postback(payload, useReplyAPI);
+      } else if (payload.postback.params.date !== undefined) {
+        return postbackDate(payload, useReplyAPI);
+      } else if (payload.postback.params.time !== undefined) {
+        return postbackTime(payload, useReplyAPI);
+      } else if (payload.postback.params.datetime !== undefined) {
+        return postbackDatetime(payload, useReplyAPI);
       }
-      return postback(raw, useReplyAPI);
+      return postback(payload, useReplyAPI);
     case 'beacon':
-      return beacon(raw, useReplyAPI);
+      return beacon(payload, useReplyAPI);
     case 'accountLink':
-      return accountLink(raw, useReplyAPI);
+      return accountLink(payload, useReplyAPI);
     case 'things':
-      return raw.things.type === 'link'
-        ? deviceLink(raw, useReplyAPI)
-        : deviceUnlink(raw, useReplyAPI);
+      return payload.things.type === 'link'
+        ? deviceLink(payload, useReplyAPI)
+        : deviceUnlink(payload, useReplyAPI);
     default:
-      return unknown(raw, useReplyAPI);
+      return unknown(payload, useReplyAPI);
   }
 };
 

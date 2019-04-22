@@ -3,7 +3,7 @@ import type {
   ContainerNativeType,
   ValuesNativeType,
 } from 'machinat-renderer/types';
-import type { BotPlugin } from 'machinat-base/types';
+import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type { WebhookResponse } from 'machinat-webhook-receiver/types';
 
 import type { ChatThread, MulticastThread } from './thread';
@@ -42,16 +42,18 @@ export type LineRawEvent = {
   things: Object,
 };
 
-// TODO: type all the events
 export type LineEvent = {
   platform: 'line',
   type: string,
   subtype: void | string,
   thread: ChatThread,
   shouldRespond: boolean,
-  raw: LineRawEvent,
+  payload: LineRawEvent,
   _useReplyAPI: boolean,
 };
+
+declare var e: LineEvent;
+(e: MachinatEvent<LineRawEvent, ChatThread>);
 
 export type LineWebhookRequestBody = {|
   destination: string,

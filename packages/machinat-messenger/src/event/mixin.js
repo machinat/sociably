@@ -7,23 +7,24 @@ export const EventBase = {
   shouldRespond: false,
 
   get user() {
-    return this.raw.sender;
+    return this.payload.sender;
   },
 
   get userId() {
-    return this.raw.sender.id;
+    return this.payload.sender.id;
   },
 
   get thread() {
     const source =
-      this.type === 'optin' && this.raw.sender === undefined
+      this.type === 'optin' && this.payload.sender === undefined
         ? { user_ref: this.optin.user_ref }
-        : this.raw.sender;
+        : this.payload.sender;
 
     return new ChatThread(source);
   },
 };
 
+// $FlowFixMe
 Object.defineProperties(EventBase, {
   [Symbol.toStringTag]: {
     enumerable: false,
@@ -37,148 +38,148 @@ Object.defineProperties(EventBase, {
 
 export const Message = {
   get messageId() {
-    return this.raw.message.mid;
+    return this.payload.message.mid;
   },
 };
 
 export const Media = {
   get url() {
-    return this.raw.message.attachments[0].payload.url;
+    return this.payload.message.attachments[0].payload.url;
   },
 };
 
 export const Text = {
   get text() {
-    return this.raw.message.text;
+    return this.payload.message.text;
   },
 
   get quickReply() {
-    return this.raw.message.quick_reply;
+    return this.payload.message.quick_reply;
   },
 
   get fallback() {
-    const { attachments } = this.raw.message;
+    const { attachments } = this.payload.message;
     return attachments && attachments[0];
   },
 };
 
 export const NLP = {
   get nlp() {
-    return this.raw.message.nlp;
+    return this.payload.message.nlp;
   },
 };
 
 export const Location = {
   get coordinates() {
-    return this.raw.message.attachments[0].payload.coordinates;
+    return this.payload.message.attachments[0].payload.coordinates;
   },
 };
 
 export const Template = {
   get template() {
-    return this.raw.message.attachments[0].payload;
+    return this.payload.message.attachments[0].payload;
   },
 };
 
 export const Delivery = {
   get delivery() {
-    return this.raw.delivery;
+    return this.payload.delivery;
   },
 };
 
 export const Read = {
   get read() {
-    return this.raw.read;
+    return this.payload.read;
   },
 };
 
 export const Echo = {
   isEcho: true,
   get appId() {
-    return this.raw.message.app_id;
+    return this.payload.message.app_id;
   },
 
   get metadata() {
-    return this.raw.message.metadata;
+    return this.payload.message.metadata;
   },
 };
 
 export const AccountLinking = {
   get accountLinking() {
-    return this.raw.account_linking;
+    return this.payload.account_linking;
   },
 };
 
 export const CheckoutUpdate = {
   shouldRespond: true,
   get checkoutUpdate() {
-    return this.raw.checkout_update;
+    return this.payload.checkout_update;
   },
 };
 
 export const GamePlay = {
   get gamePlay() {
-    return this.raw.game_play;
+    return this.payload.game_play;
   },
 };
 
 export const PassThreadControl = {
   get passThreadControl() {
-    return this.raw.pass_thread_control;
+    return this.payload.pass_thread_control;
   },
 };
 
 export const TakeThreadControl = {
   get takeThreadControl() {
-    return this.raw.take_thread_control;
+    return this.payload.take_thread_control;
   },
 };
 
 export const RequestThreadControl = {
   get requestThreadControl() {
-    return this.raw.request_thread_control;
+    return this.payload.request_thread_control;
   },
 };
 
 export const AppRoles = {
   get appRoles() {
-    return this.raw.app_roles;
+    return this.payload.app_roles;
   },
 };
 
 export const Optin = {
   get optin() {
-    return this.raw.optin;
+    return this.payload.optin;
   },
 };
 
 export const Payment = {
   get payment() {
-    return this.raw.payment;
+    return this.payload.payment;
   },
 };
 
 export const PolicyEnforcement = {
   payment() {
-    return this.raw['policy-enforcement'];
+    return this.payload['policy-enforcement'];
   },
 };
 
 export const Postback = {
   get postback() {
-    return this.raw.postback;
+    return this.payload.postback;
   },
 };
 
 export const PaymentPreCheckout = {
   shouldRespond: true,
   get paymentPreCheckout() {
-    return this.raw.payment_pre_checkout;
+    return this.payload.payment_pre_checkout;
   },
 };
 
 export const Referral = {
   get referral() {
-    return this.raw.referral;
+    return this.payload.referral;
   },
 };

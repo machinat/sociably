@@ -44,92 +44,92 @@ import type { MessengerRawEvent } from '../types';
 const hasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
-const createMessageEvent = (raw, isStandby) => {
-  const { message } = raw;
+const createMessageEvent = (payload, isStandby) => {
+  const { message } = payload;
   if (hasOwnProperty(message, 'text')) {
     return isStandby
-      ? standbyText(raw)
+      ? standbyText(payload)
       : message.is_echo
-      ? echoedText(raw)
-      : text(raw);
+      ? echoedText(payload)
+      : text(payload);
   }
   switch (message.attachments[0].type) {
     case 'image':
       return isStandby
-        ? standbyImage(raw)
+        ? standbyImage(payload)
         : message.is_echo
-        ? echoedImage(raw)
-        : image(raw);
+        ? echoedImage(payload)
+        : image(payload);
     case 'video':
       return isStandby
-        ? standbyVideo(raw)
+        ? standbyVideo(payload)
         : message.is_echo
-        ? echoedVideo(raw)
-        : video(raw);
+        ? echoedVideo(payload)
+        : video(payload);
     case 'audio':
       return isStandby
-        ? standbyAudio(raw)
+        ? standbyAudio(payload)
         : message.is_echo
-        ? echoedAudio(raw)
-        : audio(raw);
+        ? echoedAudio(payload)
+        : audio(payload);
     case 'file':
       return isStandby
-        ? standbyFile(raw)
+        ? standbyFile(payload)
         : message.is_echo
-        ? echoedFile(raw)
-        : file(raw);
+        ? echoedFile(payload)
+        : file(payload);
     case 'location':
       return isStandby
-        ? standbyLocation(raw)
+        ? standbyLocation(payload)
         : message.is_echo
-        ? echoedLocation(raw)
-        : location(raw);
+        ? echoedLocation(payload)
+        : location(payload);
     case 'template':
-      return echoedTemplate(raw);
+      return echoedTemplate(payload);
     default:
-      return unknown(raw);
+      return unknown(payload);
   }
 };
 
-const createEvent = (isStandby: boolean, raw: MessengerRawEvent) =>
-  hasOwnProperty(raw, 'message')
-    ? createMessageEvent(raw, isStandby)
-    : hasOwnProperty(raw, 'read')
+const createEvent = (isStandby: boolean, payload: MessengerRawEvent) =>
+  hasOwnProperty(payload, 'message')
+    ? createMessageEvent(payload, isStandby)
+    : hasOwnProperty(payload, 'read')
     ? isStandby
-      ? standbyRead(raw)
-      : read(raw)
-    : hasOwnProperty(raw, 'delivery')
+      ? standbyRead(payload)
+      : read(payload)
+    : hasOwnProperty(payload, 'delivery')
     ? isStandby
-      ? standbyDelivery(raw)
-      : delivery(raw)
-    : hasOwnProperty(raw, 'account_linking')
-    ? accountLinking(raw)
-    : hasOwnProperty(raw, 'checkout_update')
-    ? checkoutUpdate(raw)
-    : hasOwnProperty(raw, 'game_play')
-    ? gamePlay(raw)
-    : hasOwnProperty(raw, 'take_thread_control')
-    ? takeThreadControl(raw)
-    : hasOwnProperty(raw, 'pass_thread_control')
-    ? passThreadControl(raw)
-    : hasOwnProperty(raw, 'request_thread_control')
-    ? requestThreadControl(raw)
-    : hasOwnProperty(raw, 'app_roles')
-    ? appRoles(raw)
-    : hasOwnProperty(raw, 'optin')
-    ? optin(raw)
-    : hasOwnProperty(raw, 'payment')
-    ? payment(raw)
-    : hasOwnProperty(raw, 'policy-enforcement')
-    ? policyEnforcement(raw)
-    : hasOwnProperty(raw, 'postback')
+      ? standbyDelivery(payload)
+      : delivery(payload)
+    : hasOwnProperty(payload, 'account_linking')
+    ? accountLinking(payload)
+    : hasOwnProperty(payload, 'checkout_update')
+    ? checkoutUpdate(payload)
+    : hasOwnProperty(payload, 'game_play')
+    ? gamePlay(payload)
+    : hasOwnProperty(payload, 'take_thread_control')
+    ? takeThreadControl(payload)
+    : hasOwnProperty(payload, 'pass_thread_control')
+    ? passThreadControl(payload)
+    : hasOwnProperty(payload, 'request_thread_control')
+    ? requestThreadControl(payload)
+    : hasOwnProperty(payload, 'app_roles')
+    ? appRoles(payload)
+    : hasOwnProperty(payload, 'optin')
+    ? optin(payload)
+    : hasOwnProperty(payload, 'payment')
+    ? payment(payload)
+    : hasOwnProperty(payload, 'policy-enforcement')
+    ? policyEnforcement(payload)
+    : hasOwnProperty(payload, 'postback')
     ? isStandby
-      ? standbyPostback(raw)
-      : postback(raw)
-    : hasOwnProperty(raw, 'payment_pre_checkout')
-    ? paymentPreCheckout(raw)
-    : hasOwnProperty(raw, 'referral')
-    ? referral(raw)
-    : unknown(raw);
+      ? standbyPostback(payload)
+      : postback(payload)
+    : hasOwnProperty(payload, 'payment_pre_checkout')
+    ? paymentPreCheckout(payload)
+    : hasOwnProperty(payload, 'referral')
+    ? referral(payload)
+    : unknown(payload);
 
 export default createEvent;

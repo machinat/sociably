@@ -35,13 +35,13 @@ export interface MachinatThread<Job, Options> {
   ): null | Job[];
 }
 
-export interface MachinatEvent<Raw, Thread: MachinatThread<any, any>> {
+export interface MachinatEvent<Payload, Thread: MachinatThread<any, any>> {
   platform: any;
   type: any;
   subtype?: any;
   thread: Thread;
   shouldRespond: boolean;
-  raw: Raw;
+  payload: Payload;
 }
 
 export type EventFrame<
