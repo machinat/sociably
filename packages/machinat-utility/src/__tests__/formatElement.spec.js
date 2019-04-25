@@ -1,8 +1,7 @@
-import Machinat from 'machinat';
-import {
+import Machinat, {
   MACHINAT_FRAGMENT_TYPE as Fragment,
   MACHINAT_PAUSE_TYPE as Pause,
-} from 'machinat-symbol';
+} from 'machinat';
 import formatElement from '../formatElement';
 
 const MyComp = () => {};

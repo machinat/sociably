@@ -11,7 +11,6 @@
     "machinat-base": "0.0.1-0",
     "machinat-queue": "0.0.1-0",
     "machinat-renderer": "0.0.1-0",
-    "machinat-symbol": "0.0.1-0",
     "machinat-utility": "0.0.1-0",
     "machinat-webhook-receiver": "0.0.1-0",
     "warning": "^4.0.2"
@@ -19,5 +18,8 @@
   "devDependencies": {
     "glob": "^7.1.2",
     "thenify": "^3.3.0"
+  },
+  "peerDependencies": {
+    "machinat": "0.0.1-0"
   }
 }

@@ -1,7 +1,6 @@
 import moxy from 'moxy';
-import { SEGMENT_BREAK } from 'machinat-symbol';
+import Machinat, { SEGMENT_BREAK } from 'machinat';
 
-import Machinat from '../../../machinat';
 import Renderer from '../renderer';
 
 it('is a constructor', () => {

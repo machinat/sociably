@@ -1,4 +1,5 @@
-import { MACHINAT_FRAGMENT_TYPE, MACHINAT_PAUSE_TYPE } from 'machinat-symbol';
+// @flow
+import { MACHINAT_FRAGMENT_TYPE, MACHINAT_PAUSE_TYPE } from './symbol';
 import createElement from './createElement';
 
 const Machinat = {
@@ -8,3 +9,4 @@ const Machinat = {
 };
 
 export default Machinat;
+export * from './symbol';

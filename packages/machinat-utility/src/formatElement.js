@@ -1,5 +1,5 @@
 // @flow
-import { MACHINAT_PAUSE_TYPE, MACHINAT_FRAGMENT_TYPE } from 'machinat-symbol';
+import { MACHINAT_PAUSE_TYPE, MACHINAT_FRAGMENT_TYPE } from 'machinat';
 
 const formatProps = props => {
   const keys = Object.keys(props);

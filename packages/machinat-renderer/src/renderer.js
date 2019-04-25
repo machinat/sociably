@@ -8,7 +8,7 @@ import {
   formatElement,
   traverse,
 } from 'machinat-utility';
-import { SEGMENT_BREAK } from 'machinat-symbol';
+import { SEGMENT_BREAK } from 'machinat';
 
 import type {
   MachinatNode,

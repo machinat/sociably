@@ -1,4 +1,4 @@
-import { SEGMENT_BREAK } from 'machinat-symbol';
+import { SEGMENT_BREAK } from 'machinat';
 import { joinTextValues } from 'machinat-utility';
 
 export const text = ({ children }, render) =>

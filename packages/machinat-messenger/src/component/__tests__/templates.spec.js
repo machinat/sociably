@@ -1,6 +1,4 @@
-import Machinat from 'machinat';
-
-import { SEGMENT_BREAK } from 'machinat-symbol';
+import Machinat, { SEGMENT_BREAK } from 'machinat';
 
 import { MESSENGER_NAITVE_TYPE } from '../../symbol';
 import {

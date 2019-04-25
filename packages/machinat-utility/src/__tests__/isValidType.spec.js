@@ -1,4 +1,4 @@
-import { MACHINAT_FRAGMENT_TYPE, MACHINAT_PAUSE_TYPE } from 'machinat-symbol';
+import { MACHINAT_FRAGMENT_TYPE, MACHINAT_PAUSE_TYPE } from 'machinat';
 import isValidElementType from '../isValidElementType';
 
 test('strings are valid', () => {

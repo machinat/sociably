@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import { SEGMENT_BREAK } from 'machinat-symbol';
+import { SEGMENT_BREAK } from 'machinat';
 import type { MachinatNode } from 'machinat/types';
 import type { RenderInnerFn } from 'machinat-renderer/types';
 
