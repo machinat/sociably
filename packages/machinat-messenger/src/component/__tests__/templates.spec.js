@@ -1,6 +1,6 @@
 import Machinat from 'machinat';
 
-import { MACHINAT_ACTION_BREAK } from 'machinat-symbol';
+import { SEGMENT_BREAK } from 'machinat-symbol';
 
 import { MESSENGER_NAITVE_TYPE } from '../../symbol';
 import {
@@ -455,7 +455,7 @@ __RENDERED_TEXT_3__`;
     it('throw if <br /> contained in text prop', () => {
       renderInside.mockImplementation(() => [
         { value: 'foo', element: 'foo' },
-        { value: MACHINAT_ACTION_BREAK, element: <br /> },
+        { value: SEGMENT_BREAK, element: <br /> },
         { value: 'bar', element: 'bar' },
       ]);
 

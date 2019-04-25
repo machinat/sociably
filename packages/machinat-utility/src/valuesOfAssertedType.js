@@ -2,14 +2,14 @@
 import invariant from 'invariant';
 
 import type { MachinatNode } from 'machinat/types';
-import type { RenderInnerFn, ValuesNativeType } from 'machinat-renderer/types';
+import type { RenderInnerFn, SegmentNativeType } from 'machinat-renderer/types';
 
 import formatElement from './formatElement';
 
 const getTagName = t => (typeof t === 'function' ? t.name : t);
 
 const valuesOfAssertedType = <Value>(
-  ...types: (string | ValuesNativeType<Value>)[]
+  ...types: (string | SegmentNativeType<Value>)[]
 ) => (
   node: MachinatNode,
   render: RenderInnerFn,

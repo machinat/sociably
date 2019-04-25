@@ -1,5 +1,5 @@
 import Machinat from 'machinat';
-import { MACHINAT_ACTION_BREAK } from 'machinat-symbol';
+import { SEGMENT_BREAK } from 'machinat-symbol';
 import moxy from 'moxy';
 
 import joinTextValues from '../joinTextValues';
@@ -18,7 +18,7 @@ it('merge text values', () => {
   expect(render.mock).toHaveBeenCalledWith(node, path);
 });
 
-it('separate values if MACHINAT_ACTION_BREAK met', () => {
+it('separate values if SEGMENT_BREAK met', () => {
   const node = [<a />, <b />, <c />];
   const render = moxy(() => [
     { isPause: false, isUnit: true, element: <a />, value: 'A', path: '$::0' },
@@ -27,7 +27,7 @@ it('separate values if MACHINAT_ACTION_BREAK met', () => {
       isPause: false,
       isUnit: true,
       element: <br />,
-      value: MACHINAT_ACTION_BREAK,
+      value: SEGMENT_BREAK,
       path: '$::2',
     },
     { isPause: false, isUnit: true, element: <c />, value: 'C', path: '$::3' },
@@ -36,7 +36,7 @@ it('separate values if MACHINAT_ACTION_BREAK met', () => {
       isPause: false,
       isUnit: true,
       element: <br />,
-      value: MACHINAT_ACTION_BREAK,
+      value: SEGMENT_BREAK,
       path: '$::5',
     },
     { isPause: false, isUnit: true, element: <e />, value: 'E', path: '$::6' },
@@ -46,9 +46,9 @@ it('separate values if MACHINAT_ACTION_BREAK met', () => {
 
   expect(joinTextValues(node, render, path)).toEqual([
     'AB',
-    MACHINAT_ACTION_BREAK,
+    SEGMENT_BREAK,
     'CD',
-    MACHINAT_ACTION_BREAK,
+    SEGMENT_BREAK,
     'EF',
   ]);
   expect(render.mock).toHaveBeenCalledTimes(1);

@@ -1,4 +1,5 @@
 import moxy from 'moxy';
+import { SEGMENT_BREAK } from 'machinat-symbol';
 
 import Machinat from '../../../machinat';
 import Renderer from '../renderer';
@@ -22,7 +23,11 @@ afterEach(() => {
 
 describe('#render()', () => {
   it('works', () => {
-    const Native = moxy(() => ['_NATIVE_RENDERED_1_', '_NATIVE_RENDERED_2_']);
+    const Native = moxy(() => [
+      '_NATIVE_RENDERED_1_',
+      SEGMENT_BREAK,
+      '_NATIVE_RENDERED_2_',
+    ]);
     Native.mock.getter('name').fakeReturnValue('Native');
     Native.$$native = NATIVE_TYPE;
     Native.$$unit = true;
@@ -60,7 +65,6 @@ describe('#render()', () => {
 
     const afterCallback = () => Promise.resolve();
     const WrappedPause = () => <Machinat.Pause after={afterCallback} />;
-    const context = {};
 
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
     const rendered = renderer.render(
@@ -77,7 +81,7 @@ describe('#render()', () => {
         {{ raw: 'object' }}
         <Container>somthing wrapped</Container>
       </>,
-      context
+      true
     );
 
     expect(rendered).toEqual([
@@ -196,7 +200,7 @@ describe('#render()', () => {
     ]);
 
     expect(Custom.mock).toBeCalledTimes(1);
-    expect(Custom.mock.calls[0].args).toEqual([{ a: 'A', b: 2 }, context]);
+    expect(Custom.mock.calls[0].args).toEqual([{ a: 'A', b: 2 }]);
 
     expect(renderGeneralElement.mock).toBeCalledTimes(2);
     renderGeneralElement.mock.calls.forEach((call, i) => {
@@ -272,6 +276,10 @@ describe('#render()', () => {
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
     const None = () => null;
+    const Break = () => [SEGMENT_BREAK];
+    Break.$$native = NATIVE_TYPE;
+    Break.$$unit = true;
+
     const emptyNodes = [
       true,
       false,
@@ -288,14 +296,109 @@ describe('#render()', () => {
         {null}
         <None />
       </>,
+      <Break />,
     ];
 
     emptyNodes.forEach(node => {
-      expect(renderer.render(node)).toBe(null);
+      expect(renderer.render(node, true)).toBe(null);
     });
   });
 
-  it('throws if non root native component passed', () => {
+  it('filter SEGMENT_BREAK value at surface layer but not in deeper', () => {
+    const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
+
+    const Native = moxy(() => ['head', SEGMENT_BREAK, 'foot']);
+    Native.mock.getter('name').fakeReturnValue('Native');
+    Native.$$unit = true;
+    Native.$$native = NATIVE_TYPE;
+
+    expect(renderer.render(<Native />, true)).toEqual([
+      {
+        isPause: false,
+        asUnit: true,
+        element: <Native />,
+        value: 'head',
+        path: `$`,
+      },
+      {
+        isPause: false,
+        asUnit: true,
+        element: <Native />,
+        value: 'foot',
+        path: `$`,
+      },
+    ]);
+
+    let renderInner = Native.mock.calls[0].args[1];
+
+    expect(renderInner(<Native />, '.children')).toEqual([
+      {
+        isPause: false,
+        asUnit: true,
+        element: <Native />,
+        value: 'head',
+        path: `$#Native.children`,
+      },
+      {
+        isPause: false,
+        asUnit: true,
+        element: <Native />,
+        value: SEGMENT_BREAK,
+        path: `$#Native.children`,
+      },
+      {
+        isPause: false,
+        asUnit: true,
+        element: <Native />,
+        value: 'foot',
+        path: `$#Native.children`,
+      },
+    ]);
+
+    let containedSegments;
+    const Container = moxy(
+      // eslint-disable-next-line no-return-assign
+      () =>
+        (containedSegments = [
+          {
+            isPause: false,
+            asUnit: true,
+            element: <Container />,
+            value: 'head',
+            path: `$`,
+          },
+          {
+            isPause: false,
+            asUnit: true,
+            element: <Container />,
+            value: SEGMENT_BREAK,
+            path: `$`,
+          },
+          {
+            isPause: false,
+            asUnit: true,
+            element: <Container />,
+            value: 'foot',
+            path: `$`,
+          },
+        ])
+    );
+    Container.mock.getter('name').fakeReturnValue('Container');
+    Container.$$container = true;
+    Container.$$unit = true;
+    Container.$$native = NATIVE_TYPE;
+
+    expect(renderer.render(<Container />, '.children')).toEqual([
+      containedSegments[0],
+      containedSegments[2],
+    ]);
+
+    [, renderInner] = Native.mock.calls[1].args;
+
+    expect(renderInner(<Container />, '.children')).toEqual(containedSegments);
+  });
+
+  it('throws if non unit native component placed at surface', () => {
     const Root = () => ['_ROOT_'];
     Root.$$unit = true;
     Root.$$native = NATIVE_TYPE;
@@ -306,11 +409,11 @@ describe('#render()', () => {
 
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
-    expect(() => renderer.render(<Root />, {})).not.toThrow();
+    expect(() => renderer.render(<Root />, true)).not.toThrow();
     expect(() =>
-      renderer.render(<NonRoot />, {})
+      renderer.render(<NonRoot />, true)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<NonRoot /> is not a sending unit and should not be placed at top level of messages"`
+      `"<NonRoot /> is not a valid unit to be sent and should not be placed at surface level"`
     );
   });
 
@@ -318,7 +421,7 @@ describe('#render()', () => {
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
     expect(() =>
-      renderer.render(<invalid />, {})
+      renderer.render(<invalid />, true)
     ).toThrowErrorMatchingInlineSnapshot(
       `"<invalid /> is not valid general element supported in Test"`
     );
@@ -330,7 +433,7 @@ describe('#render()', () => {
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
     expect(() =>
-      renderer.render(<IllegalComponent />, {})
+      renderer.render(<IllegalComponent />, true)
     ).toThrowErrorMatchingInlineSnapshot(
       `"{\\"type\\":{\\"foo\\":\\"bar\\"},\\"props\\":{}} at poistion '$' is not valid element"`
     );
@@ -343,9 +446,58 @@ describe('#render()', () => {
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
     expect(() =>
-      renderer.render(<AnotherPlatformNative />, {})
+      renderer.render(<AnotherPlatformNative />, true)
     ).toThrowErrorMatchingInlineSnapshot(
       `"native component <AnotherPlatformNative /> at '$' is not supported by Test"`
+    );
+  });
+
+  it('throw if <Pause/> contained in non container native component', () => {
+    const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
+
+    const Native = (_, render) => {
+      render(<Machinat.Pause />, '.children');
+      return null;
+    };
+    Native.$$native = NATIVE_TYPE;
+    Native.$$unit = true;
+
+    expect(() =>
+      renderer.render(<Native />, true)
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"<Pause /> at $#Native.children is not allowed"`
+    );
+
+    const Container = (_, render) => {
+      render(<Machinat.Pause />, '.children');
+      return null;
+    };
+    Container.$$container = true;
+    Container.$$unit = true;
+    Container.$$native = NATIVE_TYPE;
+
+    expect(() => renderer.render(<Container />, true)).not.toThrow();
+  });
+
+  it('throw if <Pause/> contained when allowPause set to false', () => {
+    const Container = (_, render) => {
+      render(<Machinat.Pause />, '.children');
+      return null;
+    };
+    Container.$$container = true;
+    Container.$$unit = true;
+    Container.$$native = NATIVE_TYPE;
+
+    const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
+
+    expect(() =>
+      renderer.render(<Machinat.Pause />, false)
+    ).toThrowErrorMatchingInlineSnapshot(`"<Pause /> at $ is not allowed"`);
+
+    expect(() =>
+      renderer.render(<Container />, false)
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"<Pause /> at $#Container.children is not allowed"`
     );
   });
 });

@@ -8,6 +8,7 @@ import {
   formatElement,
   traverse,
 } from 'machinat-utility';
+import { SEGMENT_BREAK } from 'machinat-symbol';
 
 import type {
   MachinatNode,
@@ -19,7 +20,7 @@ import type { TraverseElementCallback } from 'machinat-utility/types';
 
 import type {
   RenderInnerFn,
-  MachinatAction,
+  MachinatSegment,
   MachinatNativeType,
 } from './types';
 
@@ -27,18 +28,19 @@ const RENDER_SEPARATOR = '#';
 const RENDER_ROOT = '$';
 
 type RenderTraverseContext<R, N> = {
-  payload: any,
-  actions: MachinatAction<R, N>[],
+  allowPause: boolean,
+  atSurface: boolean,
+  segments: MachinatSegment<R, N>[],
 };
 
-type ComponentFn<Rendered> = (
+type ComponentFn<Value> = (
   props: Object,
   render: RenderInnerFn
-) => null | Rendered[];
+) => null | Value[];
 
 type TextComponentFn = ComponentFn<string>;
 
-type GeneralComponentDelegate<Rendered> = {
+type GeneralComponentDelegate<Value> = {
   text: TextComponentFn,
   a: TextComponentFn,
   b: TextComponentFn,
@@ -46,25 +48,37 @@ type GeneralComponentDelegate<Rendered> = {
   del: TextComponentFn,
   code: TextComponentFn,
   pre: TextComponentFn,
-  img: ComponentFn<Rendered>,
-  video: ComponentFn<Rendered>,
-  audio: ComponentFn<Rendered>,
-  file: ComponentFn<Rendered>,
-  [string]: ComponentFn<string | Rendered>,
+  img: ComponentFn<Value>,
+  video: ComponentFn<Value>,
+  audio: ComponentFn<Value>,
+  file: ComponentFn<Value>,
+  [string]: ComponentFn<string | Value>,
+};
+
+const invariantElementAsUnit = (
+  atSurface: boolean,
+  element: NativeElement<any>
+) => {
+  invariant(
+    !atSurface || element.type.$$unit,
+    `${formatElement(
+      element
+    )} is not a valid unit to be sent and should not be placed at surface level`
+  );
 };
 
 export default class MachinatRenderer<
-  Rendered,
-  Native: MachinatNativeType<Rendered>
+  Value,
+  Native: MachinatNativeType<Value>
 > {
   platform: string;
   nativeSign: Symbol;
-  generalComponentDelegate: GeneralComponentDelegate<Rendered>;
+  generalComponentDelegate: GeneralComponentDelegate<Value>;
 
   constructor(
     platform: string,
     nativeSign: Symbol,
-    generalComponentDelegate: GeneralComponentDelegate<Rendered>
+    generalComponentDelegate: GeneralComponentDelegate<Value>
   ) {
     this.platform = platform;
     this.nativeSign = nativeSign;
@@ -73,24 +87,9 @@ export default class MachinatRenderer<
 
   render(
     elements: MachinatNode,
-    payload: any
-  ): null | MachinatAction<Rendered, Native>[] {
-    const actions = this._renderImpl('', payload, elements, RENDER_ROOT);
-
-    if (actions) {
-      for (let i = 0; i < actions.length; i += 1) {
-        const { asUnit, element } = actions[i];
-
-        invariant(
-          asUnit,
-          `${formatElement(
-            element
-          )} is not a sending unit and should not be placed at top level of messages`
-        );
-      }
-    }
-
-    return actions;
+    allowPause: boolean
+  ): null | MachinatSegment<Value, Native>[] {
+    return this._renderImpl('', allowPause, true, elements, RENDER_ROOT);
   }
 
   _isNativeComponent(Component: Function) {
@@ -99,35 +98,36 @@ export default class MachinatRenderer<
 
   _renderImpl(
     prefix: string,
-    payload: any,
+    allowPause: boolean,
+    atSurface: boolean,
     elements: MachinatNode,
     currentPath: string
-  ): null | MachinatAction<Rendered, Native>[] {
+  ): null | MachinatSegment<Value, Native>[] {
     if (isEmpty(elements)) {
       return null;
     }
 
-    const actions: MachinatAction<Rendered, Native>[] = [];
+    const segments: MachinatSegment<Value, Native>[] = [];
     traverse(
       elements,
       prefix + currentPath,
-      { payload, actions },
+      { segments, allowPause, atSurface },
       this._traverseCallback
     );
 
-    return actions.length === 0 ? null : actions;
+    return segments.length === 0 ? null : segments;
   }
 
   _traverseCallback: TraverseElementCallback = (
     element,
     path,
-    context: RenderTraverseContext<Rendered, Native>
+    context: RenderTraverseContext<Value, Native>
   ) => {
-    const { actions, payload } = context;
+    const { segments, allowPause, atSurface } = context;
 
     if (typeof element === 'string' || typeof element === 'number') {
-      // handle sting or number as a node
-      actions.push({
+      // handle string or number as a node
+      segments.push({
         isPause: false,
         asUnit: true,
         element: (element: string | number),
@@ -146,24 +146,32 @@ export default class MachinatRenderer<
 
       const values = this.generalComponentDelegate[type](
         props,
-        this._renderImpl.bind(this, `${path}#${type}`, payload)
+        this._renderImpl.bind(this, `${path}#${type}`, false, false)
       );
 
       if (values !== null) {
         for (let i = 0; i < values.length; i += 1) {
-          actions.push({
-            isPause: false,
-            asUnit: true,
-            element: (element: GeneralElement),
-            value: values[i],
-            path,
-          });
+          const value = values[i];
+
+          if (!atSurface || value !== SEGMENT_BREAK) {
+            segments.push({
+              isPause: false,
+              asUnit: true,
+              element: (element: GeneralElement),
+              value,
+              path,
+            });
+          }
         }
       }
     } else if (isPause(element)) {
       // handle PauseElement
+      invariant(
+        allowPause,
+        `${formatElement(element)} at ${path} is not allowed`
+      );
 
-      actions.push({
+      segments.push({
         isPause: true,
         asUnit: true,
         element: (element: PauseElement),
@@ -172,50 +180,68 @@ export default class MachinatRenderer<
       });
     } else if (typeof element === 'object' && !isElement(element)) {
       // handle raw object passed as a node
-      actions.push({
+
+      segments.push({
         isPause: false,
         asUnit: true,
-        value: element,
+        value: (element: Object),
         element: (undefined: void),
         path,
       });
     } else if (typeof element.type === 'function') {
       if (this._isNativeComponent(element.type)) {
         // handle NativeElement
+        invariantElementAsUnit(atSurface, element);
 
         const { type: Component, props } = (element: NativeElement<Native>);
         const pathInner = `${path}#${Component.name}`;
 
         if (Component.$$container) {
-          const newActions = Component(
+          // container native component returns segments, just add them
+          const containedSegments = Component(
             props,
-            this._renderImpl.bind(this, pathInner, payload)
+            this._renderImpl.bind(this, pathInner, allowPause, false)
           );
 
-          if (newActions) {
-            actions.push(...newActions);
+          if (containedSegments) {
+            for (let i = 0; i < containedSegments.length; i += 1) {
+              const segment = containedSegments[i];
+              const { element: newSegElement, value: newSegValue } = segment;
+
+              if (isElement(newSegElement) && isNative(newSegElement)) {
+                invariantElementAsUnit(atSurface, newSegElement);
+              }
+
+              if (!atSurface || newSegValue !== SEGMENT_BREAK) {
+                segments.push(segment);
+              }
+            }
           }
         } else {
+          // handle value native components
           const values = Component(
             props,
-            this._renderImpl.bind(this, pathInner, payload)
+            this._renderImpl.bind(this, pathInner, false, false)
           );
 
           if (values !== null) {
             for (let i = 0; i < values.length; i += 1) {
-              actions.push({
-                isPause: false,
-                asUnit: Component.$$unit,
-                element: (element: NativeElement<Native>),
-                value: values[i],
-                path,
-              });
+              const value = values[i];
+
+              if (!atSurface || value !== SEGMENT_BREAK) {
+                segments.push({
+                  isPause: false,
+                  asUnit: Component.$$unit,
+                  element: (element: NativeElement<Native>),
+                  value,
+                  path,
+                });
+              }
             }
           }
         }
       } else {
         // handle element with custom functional component type
-
         invariant(
           !isNative(element),
           `native component ${formatElement(
@@ -224,7 +250,7 @@ export default class MachinatRenderer<
         );
 
         const { type: renderCustom, props } = element;
-        const rendered = renderCustom(props, payload);
+        const rendered = renderCustom(props);
 
         traverse(
           rendered,

@@ -3,34 +3,35 @@ import type {
   MachinatNode,
   MachinatText,
   MachinatElementProps,
+  MachinatElement,
   NativeElement,
   GeneralElement,
   PauseElement,
 } from 'machinat/types';
 
-export type ContainerNativeType<Rendered> = {
+export type ContainerNativeType<Value> = {
   (
     props: MachinatElementProps,
     render: RenderInnerFn
-  ): null | MachinatAction<Rendered, any>[],
+  ): null | MachinatSegment<Value, any>[],
   $$native: Symbol,
   $$unit: boolean,
   $$container: true,
 };
 
-export type ValuesNativeType<Rendered> = {
-  (props: MachinatElementProps, render: RenderInnerFn): null | Rendered[],
+export type SegmentNativeType<Value> = {
+  (props: MachinatElementProps, render: RenderInnerFn): null | Value[],
   $$native: Symbol,
   $$unit: boolean,
   $$container: false,
 };
 
-export type MachinatNativeType<Rendered> =
-  | ContainerNativeType<Rendered>
-  | ValuesNativeType<Rendered>
-  | ValuesNativeType<string>;
+export type MachinatNativeType<Value> =
+  | ContainerNativeType<Value>
+  | SegmentNativeType<Value>
+  | SegmentNativeType<string>;
 
-export type TextRenderedAction = {|
+export type TextSegment = {|
   isPause: false,
   asUnit: true,
   element: MachinatText,
@@ -38,23 +39,23 @@ export type TextRenderedAction = {|
   path: string,
 |};
 
-export type ElementRenderedAction<Rendered, Native> = {|
+export type ElementSegment<Value, Native> = {|
   isPause: false,
   asUnit: boolean,
   element: GeneralElement | NativeElement<Native>,
-  value: string | Rendered,
+  value: string | Value,
   path: string,
 |};
 
-export type RawAction = {|
+export type RawSegment<Value> = {|
   isPause: false,
   asUnit: true,
   element: void,
-  value: Object,
+  value: Value,
   path: string,
 |};
 
-export type PauseAction = {|
+export type PauseSegment = {|
   isPause: true,
   asUnit: true,
   element: PauseElement,
@@ -62,14 +63,14 @@ export type PauseAction = {|
   path: string,
 |};
 
-export type MachinatAction<Rendered, Native> =
-  | TextRenderedAction
-  | ElementRenderedAction<Rendered, Native>
-  | RawAction
-  | PauseAction;
+export type MachinatSegment<Value, Native> =
+  | TextSegment
+  | ElementSegment<Value, Native>
+  | RawSegment<Value>
+  | PauseSegment;
 
 export type RenderInnerFn = (
   node: MachinatNode,
   path: string,
   payload: any
-) => null | Array<MachinatAction<any, any>>;
+) => null | Array<MachinatSegment<any, any>>;

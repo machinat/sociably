@@ -1,4 +1,5 @@
 // @flow
+import { MACHINAT_PAUSE_TYPE, MACHINAT_FRAGMENT_TYPE } from 'machinat-symbol';
 
 const formatProps = props => {
   const keys = Object.keys(props);
@@ -23,15 +24,19 @@ const formatElement = (element: any, withProps: boolean = false): string =>
     : typeof element.type === 'string'
     ? `<${element.type} ${withProps ? formatProps(element.props) : ''}/>`
     : typeof element.type === 'symbol'
-    ? `<${element.type.toString()} ${
-        withProps ? formatProps(element.props) : ''
-      }/>`
+    ? element.type === MACHINAT_PAUSE_TYPE
+      ? `<Pause ${withProps ? formatProps(element.props) : ''}/>`
+      : element.type === MACHINAT_FRAGMENT_TYPE
+      ? `<Fragment ${withProps ? formatProps(element.props) : ''}/>`
+      : `<${element.type.toString()} ${
+          withProps ? formatProps(element.props) : ''
+        }/>`
     : typeof element.type === 'function'
     ? element.type.name
       ? `<${element.type.name} ${withProps ? formatProps(element.props) : ''}/>`
       : `<(${String(element.type)}) ${
           withProps ? formatProps(element.props) : ''
         }/>`
-    : JSON.stringify(element);
+    : JSON.stringify(element) || String(element);
 
 export default formatElement;
