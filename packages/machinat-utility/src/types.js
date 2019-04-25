@@ -1,17 +1,17 @@
 // @flow
 import type { MachinatRenderable } from 'machinat/types';
 
-export type TraverseElementCallback = (
+export type TraverseNodeCallback = (
   MachinatRenderable | Object,
   string,
   any
 ) => void;
 
-export type ElementReducer = <Reduced>(
+export type NodeReducer = <Reduced>(
   Reduced,
   MachinatRenderable,
   string,
   any
 ) => Reduced;
 
-export type ElementMapper = <Mapped>(MachinatRenderable, string, any) => Mapped;
+export type NodeMapper = <Mapped>(MachinatRenderable, string, any) => Mapped;

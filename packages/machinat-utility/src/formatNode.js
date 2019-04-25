@@ -16,7 +16,7 @@ const formatProps = props => {
   return formated;
 };
 
-const formatElement = (element: any, withProps: boolean = false): string =>
+const formatNode = (element: any, withProps: boolean = false): string =>
   !element || typeof element === 'number'
     ? String(element)
     : typeof element === 'string'
@@ -39,4 +39,4 @@ const formatElement = (element: any, withProps: boolean = false): string =>
         }/>`
     : JSON.stringify(element) || String(element);
 
-export default formatElement;
+export default formatNode;

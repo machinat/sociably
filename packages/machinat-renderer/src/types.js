@@ -34,7 +34,7 @@ export type MachinatNativeType<Value> =
 export type TextSegment = {|
   isPause: false,
   asUnit: true,
-  element: MachinatText,
+  node: MachinatText,
   value: string,
   path: string,
 |};
@@ -42,7 +42,7 @@ export type TextSegment = {|
 export type ElementSegment<Value, Native> = {|
   isPause: false,
   asUnit: boolean,
-  element: GeneralElement | NativeElement<Native>,
+  node: GeneralElement | NativeElement<Native>,
   value: string | Value,
   path: string,
 |};
@@ -50,7 +50,7 @@ export type ElementSegment<Value, Native> = {|
 export type RawSegment<Value> = {|
   isPause: false,
   asUnit: true,
-  element: void,
+  node: void,
   value: Value,
   path: string,
 |};
@@ -58,7 +58,7 @@ export type RawSegment<Value> = {|
 export type PauseSegment = {|
   isPause: true,
   asUnit: true,
-  element: PauseElement,
+  node: PauseElement,
   value: void,
   path: string,
 |};

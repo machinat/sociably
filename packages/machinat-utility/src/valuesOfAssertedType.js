@@ -4,7 +4,7 @@ import invariant from 'invariant';
 import type { MachinatNode } from 'machinat/types';
 import type { RenderInnerFn, SegmentNativeType } from 'machinat-renderer/types';
 
-import formatElement from './formatElement';
+import formatNode from './formatNode';
 
 const getTagName = t => (typeof t === 'function' ? t.name : t);
 
@@ -29,7 +29,7 @@ const valuesOfAssertedType = <Value>(
     invariant(
       element === undefined ||
         (typeof element === 'object' && types.includes(element.type)),
-      `${formatElement(element)} is invalid in ${propPath}, only <[${types
+      `${formatNode(element)} is invalid in ${propPath}, only <[${types
         .map(getTagName)
         .join(', ')}]/> allowed`
     );

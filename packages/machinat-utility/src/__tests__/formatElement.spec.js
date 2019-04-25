@@ -2,7 +2,7 @@ import Machinat, {
   MACHINAT_FRAGMENT_TYPE as Fragment,
   MACHINAT_PAUSE_TYPE as Pause,
 } from 'machinat';
-import formatElement from '../formatElement';
+import formatNode from '../formatNode';
 
 const MyComp = () => {};
 const Sym = Symbol('_symbol_component_');
@@ -29,5 +29,5 @@ test.each`
   ${<Pause />}               | ${false}  | ${'<Pause />'}
   ${<Pause delay={777} />}   | ${true}   | ${'<Pause delay={777} />'}
 `('foramt element $element', ({ element, withProps, expected }) => {
-  expect(formatElement(element, withProps)).toBe(expected);
+  expect(formatNode(element, withProps)).toBe(expected);
 });

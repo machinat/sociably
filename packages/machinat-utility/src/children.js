@@ -3,22 +3,22 @@ import type { MachinatNode } from 'machinat/types';
 
 import { isFragment, isEmpty } from './isX';
 import type {
-  TraverseElementCallback,
-  ElementReducer,
-  ElementMapper,
+  TraverseNodeCallback,
+  NodeReducer,
+  NodeMapper,
 } from './types';
 
 const ITER_SEPARATOR = ':';
 
 export type ReduceTraverseContext<Reduced> = {
   reduced: Reduced,
-  reducer: ElementReducer,
+  reducer: NodeReducer,
   payload: any,
 };
 
 export type MapTraverseContext<Mapped> = {
   mappedArray: Array<Mapped>,
-  mapper: ElementMapper,
+  mapper: NodeMapper,
   payload: any,
 };
 
@@ -26,7 +26,7 @@ export const traverse = (
   children: MachinatNode,
   prefix: string = '',
   context: any,
-  callback: TraverseElementCallback
+  callback: TraverseNodeCallback
 ): number => {
   let count = 0;
   if (Array.isArray(children)) {
@@ -57,7 +57,7 @@ export const traverse = (
   return count;
 };
 
-const reduceCallback: TraverseElementCallback = (
+const reduceCallback: TraverseNodeCallback = (
   child,
   path,
   context: ReduceTraverseContext<any>
@@ -68,7 +68,7 @@ const reduceCallback: TraverseElementCallback = (
 
 export const reduce = <Reduced>(
   children: MachinatNode,
-  reducer: ElementReducer,
+  reducer: NodeReducer,
   initial: Reduced,
   prefix: string,
   payload: any
@@ -85,7 +85,7 @@ export const reduce = <Reduced>(
   return context.reduced;
 };
 
-const mapCallback: TraverseElementCallback = <Mapped>(child, path, context) => {
+const mapCallback: TraverseNodeCallback = <Mapped>(child, path, context) => {
   const { mapper, payload, mappedArray }: MapTraverseContext<Mapped> = context;
   const mapped = mapper(child, path, payload);
   mappedArray.push(mapped);
@@ -93,7 +93,7 @@ const mapCallback: TraverseElementCallback = <Mapped>(child, path, context) => {
 
 export const map = <Mapped>(
   children: MachinatNode,
-  mapper: ElementMapper,
+  mapper: NodeMapper,
   prefix: string,
   payload: any
 ): ?Array<Mapped> => {

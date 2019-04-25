@@ -4,7 +4,7 @@ import { SEGMENT_BREAK } from 'machinat';
 import type { MachinatNode } from 'machinat/types';
 import type { RenderInnerFn } from 'machinat-renderer/types';
 
-import formatElement from './formatElement';
+import formatNode from './formatNode';
 
 const joinTextValues = (
   node: MachinatNode,
@@ -36,7 +36,7 @@ const joinTextValues = (
     } else {
       invariant(
         false,
-        `${formatElement(action.element)} at ${
+        `${formatNode(action.element)} at ${
           action.path
         } is not rendered as text content`
       );
