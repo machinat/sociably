@@ -3,7 +3,7 @@ import Machinat from 'machinat';
 import { LinkRichMenu } from '../richMenu';
 
 import { LINE_NAITVE_TYPE } from '../../symbol';
-import { ChatThread } from '../../thread';
+import LineThread from '../../thread';
 
 import render from './render';
 
@@ -24,7 +24,7 @@ describe('$$entry function', () => {
   it('point to the api entry for linking rich menu', () => {
     expect(
       LinkRichMenu.$$entry(
-        new ChatThread({
+        new LineThread({
           type: 'user',
           userId: '_USER_ID_',
         }),
@@ -36,7 +36,7 @@ describe('$$entry function', () => {
   it('throw if type of thread is not user', () => {
     expect(() =>
       LinkRichMenu.$$entry(
-        new ChatThread({
+        new LineThread({
           type: 'room',
           roomId: '_ROOM_ID_',
           userId: '_USER_ID_',
@@ -49,7 +49,7 @@ describe('$$entry function', () => {
 
     expect(() =>
       LinkRichMenu.$$entry(
-        new ChatThread({
+        new LineThread({
           type: 'group',
           groupId: '_GROUP_ID_',
           userId: '_USER_ID_',

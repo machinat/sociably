@@ -2,27 +2,117 @@
 
 exports[`#multicast(targets, node) works 1`] = `
 Array [
-  Object {},
-  Object {},
+  Object {
+    "messages": Array [
+      Object {
+        "id": 0,
+      },
+      Object {
+        "id": 1,
+      },
+      Object {
+        "id": 2,
+      },
+      Object {
+        "id": 3,
+      },
+      Object {
+        "id": 4,
+      },
+    ],
+    "to": Array [
+      "john",
+      "wick",
+      "dog",
+    ],
+  },
+  Object {
+    "messages": Array [
+      Object {
+        "id": 5,
+      },
+      Object {
+        "id": 6,
+      },
+    ],
+    "to": Array [
+      "john",
+      "wick",
+      "dog",
+    ],
+  },
 ]
 `;
 
-exports[`#push(token, node) works 1`] = `
+exports[`#send(token, node, options) works 1`] = `
 Array [
-  Object {},
-  Object {},
-  Object {},
-  Object {},
-  Object {},
+  Object {
+    "messages": Array [
+      Object {
+        "id": 0,
+      },
+      Object {
+        "id": 1,
+      },
+      Object {
+        "id": 2,
+      },
+      Object {
+        "id": 3,
+      },
+      Object {
+        "id": 4,
+      },
+    ],
+    "to": "john doe",
+  },
+  Object {
+    "messages": Array [
+      Object {
+        "id": 5,
+      },
+      Object {
+        "id": 6,
+      },
+    ],
+    "to": "john doe",
+  },
+  Object {
+    "id": 7,
+  },
+  Object {
+    "messages": Array [
+      Object {
+        "id": 8,
+      },
+    ],
+    "to": "john doe",
+  },
+  "",
 ]
 `;
 
-exports[`#reply(token, node) works 1`] = `
+exports[`#send(token, node, options) works with replyToken 1`] = `
 Array [
-  Object {},
-  Object {},
-  Object {},
-  Object {},
-  Object {},
+  Object {
+    "messages": Array [
+      Object {
+        "id": 0,
+      },
+      Object {
+        "id": 1,
+      },
+      Object {
+        "id": 2,
+      },
+      Object {
+        "id": 3,
+      },
+      Object {
+        "id": 4,
+      },
+    ],
+    "replyToken": "__REPLY_TOKEN__",
+  },
 ]
 `;

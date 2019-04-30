@@ -1,21 +1,16 @@
 // @flow
-import type { MachinatNode } from 'machinat/types';
-import type { JobResponse } from 'machinat-queue/types';
-import type { MachinatAction } from 'machinat-renderer/types';
+import type { DispatchAction } from './types';
 
-class DispatchError<Rendered, Native, Job, Result> extends Error {
+class DispatchError<Job, Result> extends Error {
   errors: $ReadOnlyArray<Error>;
-  node: MachinatNode;
-  actions: null | MachinatAction<Rendered, Native>[];
-  jobs: Job[];
-  responses: null | $ReadOnlyArray<void | JobResponse<Job, Result>>;
+
+  actions: DispatchAction<Job>[];
+  results: (void | Result)[];
 
   constructor(
     errors: $ReadOnlyArray<Error>,
-    node: MachinatNode,
-    actions: null | MachinatAction<Rendered, Native>[],
-    jobs: Job[],
-    responses: null | $ReadOnlyArray<void | JobResponse<Job, Result>>
+    actions: DispatchAction<Job>[],
+    results: (void | Result)[]
   ) {
     const message = errors
       ? errors.reduce(
@@ -33,10 +28,8 @@ class DispatchError<Rendered, Native, Job, Result> extends Error {
     }
 
     this.errors = errors;
-    this.node = node;
     this.actions = actions;
-    this.jobs = jobs;
-    this.responses = responses;
+    this.results = results;
   }
 }
 

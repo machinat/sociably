@@ -10,49 +10,44 @@ import type { MachinatNode } from 'machinat/types';
 import type { WebhookResponse } from 'machinat-webhook-receiver/types';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
 
-import MessengerClient from './client';
+import MessengerWorker from './worker';
 import handleWebhook from './handleWebhook';
-import {
-  ChatThread,
-  MESSAGE_CREATIVES_THREAD,
-  BROADCAST_MESSAGES_THREAD,
-  CREATE_LABELS_THREAD,
-} from './thread';
-import { MESSENGER_NAITVE_TYPE } from './symbol';
 import * as generalComponents from './component/general';
 
+import { MESSENGER_NAITVE_TYPE } from './symbol';
+import MessengerThread from './thread';
+import { createChatJobs, createCreativeJobs } from './job';
+
 import type {
-  Recipient,
+  MessnegerSource,
   MessengerBotOptions,
   MessengerEvent,
   MessengerComponent,
   MessengerJob,
   MessengerAPIResult,
-  MessengerActionValue,
+  MessengerSegmentValue,
   SendOptions,
   BroadcastOptions,
-  DeliverableThread,
 } from './types';
 
 type MessengerBotOptionsInput = $Shape<MessengerBotOptions>;
 
 const MESSENGER = 'messenger';
+const POST = 'POST';
 
 // $FlowFixMe https://github.com/facebook/flow/issues/7539
 export default class MessengerBot
   extends BaseBot<
-    MessengerActionValue,
+    MessengerThread,
+    MessengerEvent,
+    MessengerSegmentValue,
     MessengerComponent,
-    MessengerJob,
-    MessengerAPIResult,
-    DeliverableThread,
     WebhookResponse,
-    ChatThread,
-    MessengerEvent
+    MessengerJob,
+    MessengerAPIResult
   >
   implements HTTPRequestReceivable {
   options: MessengerBotOptions;
-  client: MessengerClient;
 
   constructor(optionsInput: MessengerBotOptionsInput = {}) {
     const defaultOpions: MessengerBotOptionsInput = {
@@ -92,58 +87,98 @@ export default class MessengerBot
 
     const queue = new Queue();
 
-    const client = new MessengerClient({
+    const worker = new MessengerWorker({
       accessToken: options.accessToken,
       appSecret: options.appSecret,
       consumeInterval: options.consumeInterval,
     });
 
-    const engine = new Engine(MESSENGER, queue, renderer);
+    const engine = new Engine(MESSENGER, renderer, queue, worker);
     const receiver = new WebhookReceiver(handleWebhook(options));
 
-    super(receiver, controller, engine, client, options.plugins);
+    super(receiver, controller, engine, options.plugins);
 
-    this.client = client;
     this.options = options;
   }
 
-  send(
-    target: string | Recipient,
-    message: MachinatNode,
+  async send(
+    target: string | MessnegerSource | MessengerThread,
+    messages: MachinatNode,
     options?: SendOptions
   ): Promise<null | MessengerAPIResult[]> {
-    const thread = new ChatThread(
-      typeof target === 'string' ? { id: target } : target
+    const thread =
+      target instanceof MessengerThread
+        ? target
+        : new MessengerThread(
+            typeof target === 'string' ? { id: target } : target
+          );
+
+    const actions = this.engine.renderActions(
+      createChatJobs,
+      thread,
+      messages,
+      options,
+      true
     );
 
-    return this.engine.dispatch(thread, message, options);
+    if (actions === null) return null;
+
+    const response = await this.engine.dispatch(null, actions, messages);
+    return response === null ? null : response.results;
   }
 
-  async createMessageCreative(node: MachinatNode) {
-    const results = await this.engine.dispatch(MESSAGE_CREATIVES_THREAD, node);
-    return results && results[0];
+  async createMessageCreative(
+    messages: MachinatNode
+  ): Promise<null | MessengerAPIResult> {
+    const actions = this.engine.renderActions(
+      createCreativeJobs,
+      null,
+      messages,
+      undefined,
+      false
+    );
+    if (actions === null) return null;
+
+    const response = await this.engine.dispatch(null, actions, messages);
+    return response === null ? null : response.results[0];
   }
 
   async broadcastMessage(creativeId: number, options?: BroadcastOptions) {
-    const results = await this.engine.dispatch(
-      BROADCAST_MESSAGES_THREAD,
-      null,
-      {
-        message_creative_id: creativeId,
-        notification_type: options && options.notificationType,
-        persona_id: options && options.personaId,
-        custom_label_id: options && options.customLabelId,
-      }
-    );
+    const job = {
+      request: {
+        relative_url: 'me/broadcast_messages',
+        method: POST,
+        body: {
+          messaging_type: 'MESSAGE_TAG',
+          tag: 'NON_PROMOTIONAL_SUBSCRIPTION',
+          message_creative_id: creativeId,
+          notification_type: options && options.notificationType,
+          persona_id: options && options.personaId,
+          custom_label_id: options && options.customLabelId,
+        },
+      },
+    };
 
-    return results && results[0];
+    const response = await this.engine.dispatch(null, [
+      { type: 'jobs', payload: [job] },
+    ]);
+
+    return response === null ? null : response.results[0];
   }
 
-  async createCustomLabel(name: string) {
-    const results = await this.engine.dispatch(CREATE_LABELS_THREAD, null, {
-      name,
-    });
+  async createCustomLabel(name: string): Promise<null | MessengerAPIResult> {
+    const job = {
+      request: {
+        relative_url: 'me/custom_labels',
+        method: POST,
+        body: { name },
+      },
+    };
 
-    return results && results[0];
+    const response = await this.engine.dispatch(null, [
+      { type: 'jobs', payload: [job] },
+    ]);
+
+    return response === null ? null : response.results[0];
   }
 }

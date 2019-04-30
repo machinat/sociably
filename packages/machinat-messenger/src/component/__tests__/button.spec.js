@@ -76,7 +76,7 @@ describe('ShareButton', () => {
               value: {
                 message: '__RENDERED_GENERIC_TEMPLATE_MEASSGE_OBJ__',
               },
-              element: sharedTemplate,
+              node: sharedTemplate,
             },
           ]
         : null
@@ -93,7 +93,7 @@ describe('ShareButton', () => {
     renderInside.mockImplementation(node => [
       {
         value: '__SOMETHING_WRONG__',
-        element: node,
+        node,
       },
     ]);
 

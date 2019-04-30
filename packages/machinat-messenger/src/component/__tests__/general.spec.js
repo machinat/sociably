@@ -10,13 +10,13 @@ const render = node =>
     (rendered, element, path) =>
       rendered.concat(
         typeof element === 'string'
-          ? { value: element, element, path }
+          ? { value: element, node: element, path }
           : typeof element.type === 'string'
           ? map(
               general[element.type](element.props, render), //
-              value => ({ value, element, path })
+              value => ({ value, node: element, path })
             )
-          : { value: { non: 'text' }, element, path }
+          : { value: { non: 'text' }, node: element, path }
       ),
     [],
     ''
@@ -38,13 +38,13 @@ test('shallow textual elements match snapshot', () => {
 Array [
   "abc",
   "hello",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "https://machinat.world",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "*important*",
   "_italic_",
   "~nooooo~",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "\`foo.bar()\`",
   "\`\`\`
 foo.bar('hello world')
@@ -76,16 +76,16 @@ test('nested textual elements match snapshot', () => {
   ).toMatchInlineSnapshot(`
 Array [
   "123 \`Hello, *Luke Skywalker!*\`",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "You know what?",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "_I'm your ~FATHER~ \`droid\`._",
-  Symbol(machinat.action.break),
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
+  Symbol(machinat.segment.break),
   "Check here",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "https://C3.PO",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "\`\`\`
 May the force be with you!
 \`\`\` abc",
@@ -114,30 +114,30 @@ test('with break placed in children', () => {
   ).toMatchInlineSnapshot(`
 Array [
   "foo",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "bar",
   "foo",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "bar",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "https://machinat.world",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "*foo*",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "*bar*",
   "_foo_",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "_bar_",
   "~foo~",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "~bar~",
   "\`foo\`",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "\`bar\`",
   "\`\`\`
 foo
 \`\`\`",
-  Symbol(machinat.action.break),
+  Symbol(machinat.segment.break),
   "\`\`\`
 bar
 \`\`\`",

@@ -24,15 +24,15 @@ const buttons = (
 
 const buttonsRendered = [
   {
-    element: buttons.props.children[0],
+    node: buttons.props.children[0],
     value: '__RENDERED_BUTTON_OBJ_1__',
   },
   {
-    element: buttons.props.children[1],
+    node: buttons.props.children[1],
     value: '__RENDERED_BUTTON_OBJ_2__',
   },
   {
-    element: buttons.props.children[2],
+    node: buttons.props.children[2],
     value: '__RENDERED_BUTTON_OBJ_3__',
   },
 ];
@@ -46,15 +46,15 @@ const genericItems = (
 );
 const genericItemsRendered = [
   {
-    element: genericItems.props.children[0],
+    node: genericItems.props.children[0],
     value: '__RENDERED_GENERIC_ITEM_OBJ_1__',
   },
   {
-    element: genericItems.props.children[1],
+    node: genericItems.props.children[1],
     value: '__RENDERED_GENERIC_ITEM_OBJ_2__',
   },
   {
-    element: genericItems.props.children[2],
+    node: genericItems.props.children[2],
     value: '__RENDERED_GENERIC_ITEM_OBJ_3__',
   },
 ];
@@ -104,7 +104,7 @@ describe('templates Components', () => {
         node && node.type === URLButton
           ? [
               {
-                element: node,
+                node,
                 value: {
                   title: 'TITLE!',
                   type: 'web_url',
@@ -211,7 +211,7 @@ describe('templates Components', () => {
         node =>
           node && [
             {
-              element: node,
+              node,
               value: { Ihave: 'a riddle for U' },
             },
           ]
@@ -242,7 +242,7 @@ describe('templates Components', () => {
 
       renderInside.mockImplementation(node =>
         node === '__BUTTONS__'
-          ? [...buttonsRendered, { value: 'x', element: <Unknown /> }]
+          ? [...buttonsRendered, { value: 'x', node: <Unknown /> }]
           : null
       );
 
@@ -285,7 +285,7 @@ describe('templates Components', () => {
 
       renderInside.mockImplementation(node =>
         node === '__ITEMS__'
-          ? [...genericItemsRendered, { value: 'x', element: <Unknown /> }]
+          ? [...genericItemsRendered, { value: 'x', node: <Unknown /> }]
           : null
       );
 
@@ -347,7 +347,7 @@ describe('templates Components', () => {
 
       renderInside.mockImplementation(node =>
         node === '__ITEMS__'
-          ? [...genericItemsRendered, { value: 'x', element: <Unknown /> }]
+          ? [...genericItemsRendered, { value: 'x', node: <Unknown /> }]
           : null
       );
 
@@ -365,9 +365,9 @@ describe('templates Components', () => {
       renderInside.mockImplementation(node =>
         node === textNodes || typeof node === 'string'
           ? [
-              { value: '\n__RENDERED_TEXT_1__', element: textNodes[0] },
-              { value: '\n__RENDERED_TEXT_2__', element: textNodes[1] },
-              { value: '\n__RENDERED_TEXT_3__', element: textNodes[2] },
+              { value: '\n__RENDERED_TEXT_1__', node: textNodes[0] },
+              { value: '\n__RENDERED_TEXT_2__', node: textNodes[1] },
+              { value: '\n__RENDERED_TEXT_3__', node: textNodes[2] },
             ]
           : renderWithFixtures(node)
       );
@@ -403,8 +403,8 @@ describe('templates Components', () => {
 
       renderInside.mockImplementation(node =>
         node === '__BUTTONS__'
-          ? [...buttonsRendered, { value: 'x', element: <Unknown /> }]
-          : [{ value: 'foo', element: node }]
+          ? [...buttonsRendered, { value: 'x', node: <Unknown /> }]
+          : [{ value: 'foo', node }]
       );
 
       expect(() =>
@@ -452,9 +452,9 @@ __RENDERED_TEXT_3__`;
 
     it('throw if <br /> contained in text prop', () => {
       renderInside.mockImplementation(() => [
-        { value: 'foo', element: 'foo' },
-        { value: SEGMENT_BREAK, element: <br /> },
-        { value: 'bar', element: 'bar' },
+        { value: 'foo', node: 'foo' },
+        { value: SEGMENT_BREAK, node: <br /> },
+        { value: 'bar', node: 'bar' },
       ]);
 
       expect(() =>
@@ -500,8 +500,8 @@ __RENDERED_TEXT_3__`;
 
       renderInside.mockImplementation(node =>
         node === '__BUTTONS__'
-          ? [...buttonsRendered, { value: 'x', element: <Unknown /> }]
-          : [{ value: 'foo', element: node }]
+          ? [...buttonsRendered, { value: 'x', node: <Unknown /> }]
+          : [{ value: 'foo', node }]
       );
 
       expect(() =>
@@ -543,8 +543,8 @@ __RENDERED_TEXT_3__`;
 
       renderInside.mockImplementation(node =>
         node === '__BUTTONS__'
-          ? [...buttonsRendered, { value: 'x', element: <Unknown /> }]
-          : [{ value: 'foo', element: node }]
+          ? [...buttonsRendered, { value: 'x', node: <Unknown /> }]
+          : [{ value: 'foo', node }]
       );
 
       expect(() =>
@@ -582,15 +582,15 @@ __RENDERED_TEXT_3__`;
     const receiptTemplateItemRendered = [
       {
         value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__',
-        element: items[0],
+        node: items[0],
       },
       {
         value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__',
-        element: items[1],
+        node: items[1],
       },
       {
         value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__',
-        element: items[2],
+        node: items[2],
       },
     ];
 
@@ -675,10 +675,7 @@ __RENDERED_TEXT_3__`;
 
       renderInside.mockImplementation(node =>
         node === '__ITEMS__'
-          ? [
-              ...receiptTemplateItemRendered,
-              { value: 'x', element: <Unknown /> },
-            ]
+          ? [...receiptTemplateItemRendered, { value: 'x', node: <Unknown /> }]
           : null
       );
 

@@ -3,7 +3,6 @@ import type {
   MachinatNode,
   MachinatText,
   MachinatElementProps,
-  MachinatElement,
   NativeElement,
   GeneralElement,
   PauseElement,

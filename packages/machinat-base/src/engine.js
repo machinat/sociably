@@ -1,41 +1,27 @@
 // @flow
-import invariant from 'invariant';
 import delay from 'delay';
-
-import { MACHINAT_ACTION_BREAK } from 'machinat-symbol';
 
 import type { MachinatNode, PauseElement } from 'machinat/types';
 import type MahinateQueue from 'machinat-queue';
-import type { JobResponse } from 'machinat-queue/types';
-import type MahinateRenderer from 'machinat-renderer';
-import type {
-  MachinatNativeType,
-  MachinatAction,
-  PauseAction,
-} from 'machinat-renderer/types';
+import type { JobBatchResponse } from 'machinat-queue/types';
+import type MachinatRenderer from 'machinat-renderer';
+import type { MachinatNativeType } from 'machinat-renderer/types';
+
 import DispatchError from './error';
 import { compose } from './utils';
+
 import type {
-  DispatchReport,
   DispatchMiddleware,
   DispatchFrame,
-  ActionWithoutPause,
+  SegmentWithoutPause,
   MachinatThread,
+  MachinatWorker,
+  DispatchAction,
+  DispatchResponse,
 } from './types';
 
-const getResult = <Job, Result>(res: JobResponse<Job, Result>): Result =>
-  res.result;
-
-const flatten = <T>(metric: T[][]): T[] => {
-  const flattened = [];
-  for (const arr of metric) {
-    flattened.push(...arr);
-  }
-  return flattened;
-};
-
-const handlePause = async (pauseEle: PauseElement) => {
-  const { after, delay: timeToDelay } = pauseEle.props;
+const handlePause = async (pauseElement: PauseElement) => {
+  const { after, delay: timeToDelay } = pauseElement.props;
   let promise;
 
   if (timeToDelay !== undefined) {
@@ -49,46 +35,44 @@ const handlePause = async (pauseEle: PauseElement) => {
   await promise;
 };
 
-const DispatchFrameProto = {
-  createJobs(actions: null | ActionWithoutPause<any, any>[], options: any) {
-    return this.thread.createJobs(actions, options);
-  },
-};
-
 export default class MachinatEngine<
-  Rendered,
-  Native: MachinatNativeType<Rendered>,
+  SegmentValue,
+  Native: MachinatNativeType<SegmentValue>,
+  Thread: MachinatThread,
   Job,
-  Result,
-  Thread: MachinatThread<Job, any>
+  Result
 > {
   platform: string;
-  middlewares: DispatchMiddleware<Rendered, Native, Job, Result, Thread>[];
+  middlewares: DispatchMiddleware<Thread, Job, Result>[];
+  renderer: MachinatRenderer<SegmentValue, Native>;
   queue: MahinateQueue<Job, Result>;
-  renderer: MahinateRenderer<Rendered, Native>;
+  worker: MachinatWorker<Job, Result>;
+  frame: {};
+
   _handleSending: (
-    DispatchFrame<Rendered, Native, Job, Thread>
-  ) => Promise<DispatchReport<Rendered, Native, Job, Result>>;
-  frame: typeof DispatchFrameProto;
+    frame: DispatchFrame<Thread, Job>
+  ) => Promise<null | DispatchResponse<Job, Result>>;
 
   constructor(
     platform: string,
+    renderer: MachinatRenderer<SegmentValue, Native>,
     queue: MahinateQueue<Job, Result>,
-    renderer: MahinateRenderer<Rendered, Native>
+    worker: MachinatWorker<Job, Result>
   ) {
     this.platform = platform;
-    this.queue = queue;
     this.renderer = renderer;
+    this.queue = queue;
+    this.worker = worker;
 
     this.middlewares = [];
     this.setMiddlewares();
 
-    this.frame = Object.create(DispatchFrameProto);
+    this.frame = {};
+
+    this.worker.start(queue);
   }
 
-  setMiddlewares(
-    ...fns: DispatchMiddleware<Rendered, Native, Job, Result, Thread>[]
-  ) {
+  setMiddlewares(...fns: DispatchMiddleware<Thread, Job, Result>[]) {
     for (const fn of fns) {
       if (typeof fn !== 'function') {
         throw new TypeError('middleware must be a function!');
@@ -105,144 +89,110 @@ export default class MachinatEngine<
 
   setFramePrototype(mixin: Object) {
     this.frame = Object.defineProperties(
-      Object.create(DispatchFrameProto),
+      {},
       Object.getOwnPropertyDescriptors(mixin)
     );
 
     return this;
   }
 
-  async dispatch(
-    thread: Thread,
-    element: MachinatNode,
-    options: any
-  ): Promise<null | Result[]> {
-    const actions = this.renderer.render(element, {
-      platform: this.platform,
-    });
-
-    const frame = this.createDispatchFrame(thread, element, options, actions);
-
-    const report = await this._handleSending(frame);
-    return report.results;
-  }
-
-  createDispatchFrame(
-    thread: Thread,
-    element: MachinatNode,
-    options: any,
-    actions: null | MachinatAction<Rendered, Native>[]
-  ): DispatchFrame<Rendered, Native, Job, Thread> {
-    const frame = Object.create(this.frame);
-
-    frame.thread = thread;
-    frame.element = element;
-    frame.options = options;
-    frame.actions = actions;
-    frame.platform = this.platform;
-    frame.renderer = this.renderer;
-
-    return frame;
-  }
-
-  async _executeSending(
-    frame: DispatchFrame<Rendered, Native, Job, Thread>
-  ): Promise<DispatchReport<Rendered, Native, Job, Result>> {
-    const { actions, element, options, thread } = frame;
-
-    // leave the decision to thread if nothing rendered
-    if (actions === null) {
-      const jobs = thread.createJobs(null, options);
-
-      let results = null;
-      if (jobs !== null) {
-        // if there is any jobs, execute it
-        const batchResponse = await this.queue.executeJobs(jobs);
-
-        if (batchResponse.success) {
-          results = batchResponse.batch.map(getResult);
-        } else {
-          throw new DispatchError(
-            batchResponse.errors,
-            element,
-            actions,
-            jobs,
-            batchResponse.batch
-          );
-        }
-      }
-
-      return { element, actions, jobs, results };
+  renderActions<T, O>(
+    createJobs: (
+      target: T,
+      segments: SegmentWithoutPause<SegmentValue, Native>[],
+      options: O
+    ) => Job[],
+    target: T,
+    message: MachinatNode,
+    options: O,
+    allowPause: boolean
+  ): null | DispatchAction<Job>[] {
+    const segments = this.renderer.render(message, allowPause);
+    if (segments === null) {
+      return null;
     }
 
-    const jobBatches: Job[][] = [];
-    const pauses: PauseAction[] = [];
+    const actions: DispatchAction<Job>[] = [];
 
-    let actionBuffer: ActionWithoutPause<Rendered, Native>[] = [];
+    let segmentsBuffer: SegmentWithoutPause<SegmentValue, Native>[] = [];
 
-    for (let i = 0; i < actions.length; i += 1) {
-      const action = actions[i];
+    for (let i = 0; i < segments.length; i += 1) {
+      const segment = segments[i];
 
-      // collect actions to buffer and ignoring MACHINAT_ACTION_BREAK
-      if (!action.isPause && action.value !== MACHINAT_ACTION_BREAK) {
-        actionBuffer.push(action);
+      if (!segment.isPause) {
+        segmentsBuffer.push(segment);
       }
 
-      // create and collect jobs batch when Pause met or loop end
+      // create jobs batch when Pause met or loop end
       if (
-        (i === actions.length - 1 || action.isPause) &&
-        actionBuffer.length > 0
+        (i === segments.length - 1 || segment.isPause) &&
+        segmentsBuffer.length > 0
       ) {
-        const jobs = thread.createJobs(actionBuffer, options);
+        const jobs = createJobs(target, segmentsBuffer, options);
 
         if (jobs !== null) {
-          jobBatches.push(jobs);
+          actions.push({ type: 'jobs', payload: jobs });
         }
       }
 
       // collect pauses
-      if (action.isPause) {
-        invariant(
-          thread.allowPause,
-          `you shall not <Pause /> on ${thread.platform}:${thread.type}`
-        );
-
-        pauses.push(action);
-        actionBuffer = [];
+      if (segment.isPause) {
+        actions.push({ type: 'pause', payload: segment.node });
+        segmentsBuffer = [];
       }
     }
 
-    const responses: JobResponse<Job, Result>[] = [];
+    return actions;
+  }
 
-    for (let i = 0; i < jobBatches.length; i += 1) {
-      // execute batch of jobs
-      const batchResponse = await this.queue.executeJobs(jobBatches[i]); // eslint-disable-line no-await-in-loop
+  dispatch(
+    thread: null | Thread,
+    actions: DispatchAction<Job>[],
+    node?: MachinatNode
+  ): Promise<null | DispatchResponse<Job, Result>> {
+    const frame: DispatchFrame<Thread, Job> = Object.create(this.frame);
 
-      if (batchResponse.success) {
-        responses.push(...batchResponse.batch);
+    frame.thread = thread;
+    frame.actions = actions;
+    frame.platform = this.platform;
+    frame.node = node;
+
+    return this._handleSending(frame);
+  }
+
+  async _executeSending(
+    frame: DispatchFrame<Thread, Job>
+  ): Promise<null | DispatchResponse<Job, Result>> {
+    const { actions } = frame;
+    const results: Result[] = [];
+
+    for (const action of actions) {
+      if (action.type === 'jobs') {
+        const batchResp: JobBatchResponse<
+          Job,
+          Result
+        > = await this.queue.executeJobs(action.payload); // eslint-disable-line no-await-in-loop
+
+        if (batchResp.success) {
+          for (const jobResp of batchResp.batch) {
+            results.push(jobResp.result);
+          }
+        } else {
+          const { errors, batch } = batchResp;
+
+          throw new DispatchError(errors, actions, [
+            ...results,
+            ...(batch ? batch.map(jobResp => jobResp && jobResp.result) : []),
+          ]);
+        }
+      } else if (action.type === 'pause') {
+        // eslint-disable-next-line no-await-in-loop
+        await handlePause(action.payload);
       } else {
-        throw new DispatchError(
-          batchResponse.errors,
-          element,
-          actions,
-          flatten(jobBatches),
-          batchResponse.batch
-            ? responses.concat(batchResponse.batch)
-            : responses
-        );
-      }
-
-      // if there is Pause between batch await it
-      if (i < pauses.length) {
-        await handlePause(pauses[i].element); // eslint-disable-line no-await-in-loop
+        throw new TypeError(`invalid dispatch action type "${action.type}"`);
       }
     }
 
-    return {
-      element,
-      actions,
-      jobs: flatten(jobBatches),
-      results: responses.map(getResult),
-    };
+    return { actions, results };
   }
 }

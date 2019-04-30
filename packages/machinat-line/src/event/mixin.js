@@ -1,6 +1,6 @@
 // @flow
 import { toJSONWithProto } from 'machinat-utility';
-import { ChatThread } from '../thread';
+import LineThread from '../thread';
 
 export const EventBase = {
   platform: 'line',
@@ -16,11 +16,7 @@ export const EventBase = {
   },
 
   get thread() {
-    return new ChatThread(
-      this.payload.source,
-      this.payload.replyToken,
-      this._useReplyAPI
-    );
+    return new LineThread(this.payload.source);
   },
 
   get time() {

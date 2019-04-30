@@ -1,7 +1,7 @@
 import moxy from 'moxy';
 import nock from 'nock';
 import Queue from 'machinat-queue';
-import LineClient from '../client';
+import LineWorker from '../worker';
 
 nock.disableNetConnect();
 
@@ -23,7 +23,7 @@ beforeEach(() => {
 });
 
 it('makes calls to api ok', async () => {
-  const client = new LineClient({
+  const client = new LineWorker({
     accessToken,
     useReplyAPI: false,
     connectionCapicity: 10,
@@ -40,12 +40,12 @@ it('makes calls to api ok', async () => {
   client.start(queue);
 
   const jobs = [
-    { entry: 'foo/1', body: { id: 1 }, threadId: '_THREAD_' },
-    { entry: 'bar/1', body: { id: 2 }, threadId: '_THREAD_' },
-    { entry: 'baz/1', body: { id: 3 }, threadId: '_THREAD_' },
-    { entry: 'foo/2', body: { id: 4 }, threadId: '_THREAD_' },
-    { entry: 'bar/2', body: { id: 5 }, threadId: '_THREAD_' },
-    { entry: 'baz/2', body: { id: 6 }, threadId: '_THREAD_' },
+    { entry: 'foo/1', body: { id: 1 }, threadUid: '_THREAD_' },
+    { entry: 'bar/1', body: { id: 2 }, threadUid: '_THREAD_' },
+    { entry: 'baz/1', body: { id: 3 }, threadUid: '_THREAD_' },
+    { entry: 'foo/2', body: { id: 4 }, threadUid: '_THREAD_' },
+    { entry: 'bar/2', body: { id: 5 }, threadUid: '_THREAD_' },
+    { entry: 'baz/2', body: { id: 6 }, threadUid: '_THREAD_' },
   ];
 
   await expect(queue.executeJobs(jobs)).resolves.toEqual({
@@ -63,7 +63,7 @@ it('makes calls to api ok', async () => {
 });
 
 it('throw if connection error happen', async () => {
-  const client = new LineClient({
+  const client = new LineWorker({
     accessToken,
     useReplyAPI: false,
     connectionCapicity: 10,
@@ -78,9 +78,9 @@ it('throw if connection error happen', async () => {
 
   await expect(
     queue.executeJobs([
-      { entry: 'message/push', body: { id: 1 }, threadId: 'foo' },
-      { entry: 'message/push', body: { id: 2 }, threadId: 'foo' },
-      { entry: 'message/push', body: { id: 3 }, threadId: 'foo' },
+      { entry: 'message/push', body: { id: 1 }, threadUid: 'foo' },
+      { entry: 'message/push', body: { id: 2 }, threadUid: 'foo' },
+      { entry: 'message/push', body: { id: 3 }, threadUid: 'foo' },
     ])
   ).resolves.toMatchSnapshot();
 
@@ -89,7 +89,7 @@ it('throw if connection error happen', async () => {
 });
 
 it('throw if api error happen', async () => {
-  const client = new LineClient({
+  const client = new LineWorker({
     accessToken,
     useReplyAPI: false,
     connectionCapicity: 10,
@@ -114,9 +114,9 @@ it('throw if api error happen', async () => {
   client.start(queue);
   await expect(
     queue.executeJobs([
-      { entry: 'message/push', body: { id: 1 }, threadId: 'foo' },
-      { entry: 'message/push', body: { id: 2 }, threadId: 'foo' },
-      { entry: 'message/push', body: { id: 3 }, threadId: 'foo' },
+      { entry: 'message/push', body: { id: 1 }, threadUid: 'foo' },
+      { entry: 'message/push', body: { id: 2 }, threadUid: 'foo' },
+      { entry: 'message/push', body: { id: 3 }, threadUid: 'foo' },
     ])
   ).resolves.toMatchSnapshot();
 
@@ -125,7 +125,7 @@ it('throw if api error happen', async () => {
 });
 
 it('sequently excute jobs of the identical thread', async () => {
-  const client = new LineClient({
+  const client = new LineWorker({
     accessToken,
     useReplyAPI: false,
     connectionCapicity: 10,
@@ -142,15 +142,15 @@ it('sequently excute jobs of the identical thread', async () => {
 
   const promise = expect(
     queue.executeJobs([
-      { entry: 'message/push', threadId: 'foo', body: { id: 1 } },
-      { entry: 'message/push', threadId: 'bar', body: { id: 2 } },
-      { entry: 'message/push', threadId: 'baz', body: { id: 3 } },
-      { entry: 'message/reply', threadId: 'foo', body: { id: 4 } },
-      { entry: 'message/reply', threadId: 'bar', body: { id: 5 } },
-      { entry: 'message/reply', threadId: 'baz', body: { id: 6 } },
-      { entry: 'message/push', threadId: 'foo', body: { id: 7 } },
-      { entry: 'message/push', threadId: 'bar', body: { id: 8 } },
-      { entry: 'message/push', threadId: 'baz', body: { id: 9 } },
+      { entry: 'message/push', threadUid: 'foo', body: { id: 1 } },
+      { entry: 'message/push', threadUid: 'bar', body: { id: 2 } },
+      { entry: 'message/push', threadUid: 'baz', body: { id: 3 } },
+      { entry: 'message/reply', threadUid: 'foo', body: { id: 4 } },
+      { entry: 'message/reply', threadUid: 'bar', body: { id: 5 } },
+      { entry: 'message/reply', threadUid: 'baz', body: { id: 6 } },
+      { entry: 'message/push', threadUid: 'foo', body: { id: 7 } },
+      { entry: 'message/push', threadUid: 'bar', body: { id: 8 } },
+      { entry: 'message/push', threadUid: 'baz', body: { id: 9 } },
     ])
   ).resolves.toMatchSnapshot();
 

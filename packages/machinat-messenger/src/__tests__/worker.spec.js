@@ -1,7 +1,7 @@
 import moxy from 'moxy';
 import nock from 'nock';
 import Queue from 'machinat-queue';
-import MessengerClient from '../client';
+import MessengerWorker from '../worker';
 import { delay, makeResponse } from './utils';
 
 nock.disableNetConnect();
@@ -12,7 +12,7 @@ const jobs = [
     request: {
       method: 'POST',
       relative_url: 'me/messages',
-      body: 'recipient=%7B%22id%22%3A%22foo%22%7D&id=1',
+      body: { recipient: { id: 'foo' }, id: 1 },
     },
   },
   {
@@ -20,7 +20,7 @@ const jobs = [
     request: {
       method: 'POST',
       relative_url: 'bar/baz',
-      body: 'recipient=%7B%22id%22%3A%22foo%22%7D&id=2',
+      body: { recipient: { id: 'foo' }, id: 2 },
     },
   },
   {
@@ -28,7 +28,7 @@ const jobs = [
     request: {
       method: 'POST',
       relative_url: 'me/messages',
-      body: 'recipient=%7B%22id%22%3A%22foo%22%7D&id=3',
+      body: { recipient: { id: 'foo' }, id: 3 },
     },
   },
 ];
@@ -46,7 +46,7 @@ afterEach(() => {
 
 it('sends ok', async () => {
   const accessToken = '_graph_api_access_token_';
-  const client = new MessengerClient({ accessToken });
+  const client = new MessengerWorker({ accessToken });
 
   const bodySpy = moxy(() => true);
 
@@ -109,7 +109,7 @@ it('attach appsecret_proof if appSecret option given', async () => {
   const expectedProof =
     'c3d9a02ac88561d9721b3cb2ba338c933f0666b68ad29523393b830b3916cd91';
 
-  const client = new MessengerClient({
+  const client = new MessengerWorker({
     accessToken,
     appSecret,
   });
@@ -153,7 +153,7 @@ it('attach appsecret_proof if appSecret option given', async () => {
 });
 
 it('upload files with form data if binary attached on job', async () => {
-  const client = new MessengerClient({
+  const client = new MessengerWorker({
     accessToken: '_graph_api_access_token_',
   });
 
@@ -266,7 +266,7 @@ it('upload files with form data if binary attached on job', async () => {
 });
 
 it('throw if connection error happen', async () => {
-  const client = new MessengerClient({
+  const client = new MessengerWorker({
     accessToken: '_graph_api_access_token_',
   });
 
@@ -289,7 +289,7 @@ Object {
 });
 
 it('throw if api error happen', async () => {
-  const client = new MessengerClient({
+  const client = new MessengerWorker({
     accessToken: '_graph_api_access_token_',
   });
 
@@ -317,7 +317,7 @@ Object {
 });
 
 it('throw if one single job fail', async () => {
-  const client = new MessengerClient({
+  const client = new MessengerWorker({
     accessToken: '_graph_api_access_token_',
   });
 
@@ -351,7 +351,7 @@ Array [
 });
 
 it('waits consumeInterval for jobs to execute if set', async () => {
-  const client = new MessengerClient({
+  const client = new MessengerWorker({
     accessToken: '_graph_api_access_token_',
     consumeInterval: 300,
   });
@@ -391,7 +391,7 @@ it('waits consumeInterval for jobs to execute if set', async () => {
 it.each([undefined, 0])(
   'execute immediatly if consumeInterval is %p',
   async consumeInterval => {
-    const client = new MessengerClient({
+    const client = new MessengerWorker({
       accessToken: '_graph_api_access_token_',
       consumeInterval,
     });

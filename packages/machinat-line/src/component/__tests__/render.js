@@ -7,7 +7,7 @@ const render = moxy(
       typeof element === 'string' || typeof element === 'number'
         ? { element, value: String(element) }
         : {
-            element,
+            node: element,
             value: element.type(element.props, render)[0],
           }
     ) || null

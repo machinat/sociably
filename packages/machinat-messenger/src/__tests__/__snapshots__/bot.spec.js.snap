@@ -13,7 +13,6 @@ Array [
   Object {
     "body": "messaging_type=MESSAGE_TAG&tag=NON_PROMOTIONAL_SUBSCRIPTION&message_creative_id=938461089",
     "method": "POST",
-    "name": "messenger:default:broadcast_messages-1",
     "omit_response_on_success": false,
     "relative_url": "me/broadcast_messages",
   },
@@ -33,7 +32,6 @@ Array [
   Object {
     "body": "messaging_type=MESSAGE_TAG&tag=NON_PROMOTIONAL_SUBSCRIPTION&message_creative_id=938461089&notification_type=SILENT_PUSH&persona_id=billy18&custom_label_id=1712444532121303",
     "method": "POST",
-    "name": "messenger:default:broadcast_messages-1",
     "omit_response_on_success": false,
     "relative_url": "me/broadcast_messages",
   },
@@ -53,7 +51,6 @@ Array [
   Object {
     "body": "name=foo",
     "method": "POST",
-    "name": "messenger:default:custom_labels-1",
     "omit_response_on_success": false,
     "relative_url": "me/custom_labels",
   },
@@ -73,7 +70,6 @@ Array [
   Object {
     "body": "messages=%5B%7B%22text%22%3A%22john%22%7D%5D",
     "method": "POST",
-    "name": "messenger:default:message_creatives:*-1",
     "omit_response_on_success": false,
     "relative_url": "me/message_creatives",
   },
@@ -91,14 +87,14 @@ Object {
 exports[`#send(message, options) works 2`] = `
 Array [
   Object {
-    "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22text%22%3A%22Hello%22%7D",
+    "body": "message=%7B%22text%22%3A%22Hello%22%7D&recipient=%7B%22id%22%3A%22john%22%7D",
     "method": "POST",
     "name": "messenger:default:user:john-1",
     "omit_response_on_success": false,
     "relative_url": "me/messages",
   },
   Object {
-    "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22text%22%3A%22*World!*%22%7D",
+    "body": "message=%7B%22text%22%3A%22*World!*%22%7D&recipient=%7B%22id%22%3A%22john%22%7D",
     "depends_on": "messenger:default:user:john-1",
     "method": "POST",
     "name": "messenger:default:user:john-2",
@@ -106,7 +102,7 @@ Array [
     "relative_url": "me/messages",
   },
   Object {
-    "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D",
+    "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D&recipient=%7B%22id%22%3A%22john%22%7D",
     "depends_on": "messenger:default:user:john-2",
     "method": "POST",
     "name": "messenger:default:user:john-3",
@@ -127,14 +123,14 @@ Object {
 exports[`#send(message, options) works with options 2`] = `
 Array [
   Object {
-    "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22text%22%3A%22Hello%22%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17",
+    "body": "message=%7B%22text%22%3A%22Hello%22%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
     "method": "POST",
     "name": "messenger:default:user:john-1",
     "omit_response_on_success": false,
     "relative_url": "me/messages",
   },
   Object {
-    "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22text%22%3A%22*World!*%22%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17",
+    "body": "message=%7B%22text%22%3A%22*World!*%22%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
     "depends_on": "messenger:default:user:john-1",
     "method": "POST",
     "name": "messenger:default:user:john-2",
@@ -142,7 +138,7 @@ Array [
     "relative_url": "me/messages",
   },
   Object {
-    "body": "recipient=%7B%22id%22%3A%22john%22%7D&message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17",
+    "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
     "depends_on": "messenger:default:user:john-2",
     "method": "POST",
     "name": "messenger:default:user:john-3",

@@ -27,11 +27,11 @@ import {
   Referral,
 } from './mixin';
 import type { MessengerRawEvent } from '../types';
-import type { ChatThread } from '../thread';
+import type MessengerThread from '../thread';
 
 export const eventFactory = (proto: Object, type: string, subtype?: string) => (
   payload: MessengerRawEvent
-): MachinatEvent<MessengerRawEvent, ChatThread> => {
+): MachinatEvent<MessengerRawEvent, MessengerThread> => {
   const event = Object.create(proto);
 
   event.payload = payload;

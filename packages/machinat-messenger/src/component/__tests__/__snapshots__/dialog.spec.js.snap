@@ -3,7 +3,7 @@
 exports[`Dialog with all props match snapshot 1`] = `
 Array [
   Object {
-    "element": "foo",
+    "node": "foo",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -15,7 +15,7 @@ Array [
     },
   },
   Object {
-    "element": Object {
+    "node": Object {
       "$$typeof": Symbol(machinat.element),
       "props": Object {},
       "type": "bar",
@@ -43,7 +43,7 @@ Array [
 exports[`Dialog with metadata match snapshot 1`] = `
 Array [
   Object {
-    "element": "foo",
+    "node": "foo",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -55,7 +55,7 @@ Array [
     },
   },
   Object {
-    "element": Object {
+    "node": Object {
       "$$typeof": Symbol(machinat.element),
       "props": Object {},
       "type": "bar",
@@ -78,7 +78,7 @@ Array [
 exports[`Dialog with notificationType match snapshot 1`] = `
 Array [
   Object {
-    "element": "foo",
+    "node": "foo",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -90,7 +90,7 @@ Array [
     },
   },
   Object {
-    "element": Object {
+    "node": Object {
       "$$typeof": Symbol(machinat.element),
       "props": Object {},
       "type": "bar",
@@ -113,7 +113,7 @@ Array [
 exports[`Dialog with personaId match snapshot 1`] = `
 Array [
   Object {
-    "element": "foo",
+    "node": "foo",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -125,7 +125,7 @@ Array [
     },
   },
   Object {
-    "element": Object {
+    "node": Object {
       "$$typeof": Symbol(machinat.element),
       "props": Object {},
       "type": "bar",
@@ -148,7 +148,7 @@ Array [
 exports[`Dialog with quickReplies match snapshot 1`] = `
 Array [
   Object {
-    "element": "foo",
+    "node": "foo",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -160,7 +160,7 @@ Array [
     },
   },
   Object {
-    "element": Object {
+    "node": Object {
       "$$typeof": Symbol(machinat.element),
       "props": Object {},
       "type": "bar",
@@ -188,7 +188,7 @@ Array [
 exports[`Dialog with type and tag match snapshot 1`] = `
 Array [
   Object {
-    "element": "foo",
+    "node": "foo",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -200,7 +200,7 @@ Array [
     },
   },
   Object {
-    "element": Object {
+    "node": Object {
       "$$typeof": Symbol(machinat.element),
       "props": Object {},
       "type": "bar",
@@ -223,7 +223,7 @@ Array [
 exports[`Dialog with type match snapshot 1`] = `
 Array [
   Object {
-    "element": "foo",
+    "node": "foo",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -235,7 +235,7 @@ Array [
     },
   },
   Object {
-    "element": Object {
+    "node": Object {
       "$$typeof": Symbol(machinat.element),
       "props": Object {},
       "type": "bar",

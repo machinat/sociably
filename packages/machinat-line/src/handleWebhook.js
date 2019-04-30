@@ -28,7 +28,7 @@ const handleWebhook = (options: LineBotOptions) => (
     return endRes(res, 400);
   }
 
-  const { useReplyAPI, shouldValidateRequest, channelSecret } = options;
+  const { shouldValidateRequest, channelSecret } = options;
 
   // NOTE: channelSecret is validated at bot 👇
   if (shouldValidateRequest /* :: && channelSecret */) {
@@ -48,7 +48,7 @@ const handleWebhook = (options: LineBotOptions) => (
     const events: LineEvent[] = new Array(payloads.length);
 
     for (let i = 0; i < events.length; i += 1) {
-      events[i] = createEvent(payloads[i], useReplyAPI);
+      events[i] = createEvent(payloads[i]);
     }
 
     return events;

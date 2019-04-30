@@ -1,6 +1,8 @@
 // @flow
 import EventEmitter from 'events';
 import { mixin } from 'machinat-utility';
+
+import type { MachinatNode } from 'machinat/types';
 import type { MachinatNativeType } from 'machinat-renderer/types';
 import type {
   BotPlugin,
@@ -8,52 +10,39 @@ import type {
   MachinatThread,
   MachinatEvent,
   MachinatReceiver,
-  MachinatWorker,
 } from './types';
+
 import Controller from './controller';
 import Engine from './engine';
 
 export default class BaseBot<
-  Rendered,
-  Native: MachinatNativeType<Rendered>,
-  Job,
-  Result,
-  Deliverable: MachinatThread<Job, any>,
+  Thread: MachinatThread,
+  Event: MachinatEvent<any, Thread>,
+  SegmentValue,
+  Native: MachinatNativeType<SegmentValue>,
   Response,
-  Receivable: Deliverable,
-  Event: MachinatEvent<any, Receivable>
+  Job,
+  Result
 > extends EventEmitter {
-  receiver: MachinatReceiver<Response, Receivable, Event>;
-  controller: Controller<Response, Receivable, Event>;
-  engine: Engine<Rendered, Native, Job, Result, Deliverable>;
-  worker: MachinatWorker<Job, Result>;
+  receiver: MachinatReceiver<Response, Thread, Event>;
+  controller: Controller<Response, Thread, Event>;
+  engine: Engine<SegmentValue, Native, Thread, Job, Result>;
   plugins:
     | void
-    | BotPlugin<
-        Rendered,
-        Native,
-        Job,
-        Result,
-        Deliverable,
-        Response,
-        Receivable,
-        Event
-      >[];
+    | BotPlugin<Thread, Event, SegmentValue, Native, Response, Job, Result>[];
 
   constructor(
-    receiver: MachinatReceiver<Response, Receivable, Event>,
-    controller: Controller<Response, Receivable, Event>,
-    engine: Engine<Rendered, Native, Job, Result, Deliverable>,
-    worker: MachinatWorker<Job, Result>,
+    receiver: MachinatReceiver<Response, Thread, Event>,
+    controller: Controller<Response, Thread, Event>,
+    engine: Engine<SegmentValue, Native, Thread, Job, Result>,
     plugins?: BotPlugin<
-      Rendered,
+      Thread,
+      Event,
+      SegmentValue,
       Native,
-      Job,
-      Result,
-      Deliverable,
       Response,
-      Receivable,
-      Event
+      Job,
+      Result
     >[]
   ) {
     super();
@@ -61,14 +50,22 @@ export default class BaseBot<
     this.receiver = receiver;
     this.controller = controller;
     this.engine = engine;
-    this.worker = worker;
     this.plugins = plugins;
 
+    const bot = this;
+    const engineMixin = { bot };
+    const controllerMixin = {
+      bot,
+      reply(...args) {
+        return bot.send(this.thread, ...args);
+      },
+    };
+
     if (plugins) {
-      const eventMws = [];
-      const dispatchMws = [];
-      const eventExts = [];
-      const dispatchExts = [];
+      const eventMiddlewares = [];
+      const dispatchMiddlewares = [];
+      const eventExtenstions = [];
+      const dispatchExtenstions = [];
 
       for (const plugin of plugins) {
         const {
@@ -78,32 +75,39 @@ export default class BaseBot<
           eventFrameExtension,
         } = plugin(this);
 
-        if (eventMiddleware) eventMws.push(eventMiddleware);
-        if (dispatchMiddleware) dispatchMws.push(dispatchMiddleware);
+        if (eventMiddleware) eventMiddlewares.push(eventMiddleware);
+        if (dispatchMiddleware) dispatchMiddlewares.push(dispatchMiddleware);
 
-        if (eventFrameExtension) eventExts.push(eventFrameExtension);
-        if (dispatchFrameExtension) dispatchExts.push(dispatchFrameExtension);
+        if (eventFrameExtension) eventExtenstions.push(eventFrameExtension);
+        if (dispatchFrameExtension)
+          dispatchExtenstions.push(dispatchFrameExtension);
       }
 
-      this.controller.setMiddlewares(...eventMws);
-      this.controller.setFramePrototype(mixin({ bot: this }, ...eventExts));
+      this.controller.setMiddlewares(...eventMiddlewares);
+      this.controller.setFramePrototype(
+        mixin(controllerMixin, ...eventExtenstions)
+      );
 
-      this.engine.setMiddlewares(...dispatchMws);
-      this.engine.setFramePrototype(mixin({ bot: this }, ...dispatchExts));
+      this.engine.setMiddlewares(...dispatchMiddlewares);
+      this.engine.setFramePrototype(mixin(engineMixin, ...dispatchExtenstions));
     } else {
-      this.controller.setFramePrototype({ bot: this });
-      this.engine.setFramePrototype({ bot: this });
+      this.controller.setFramePrototype(controllerMixin);
+      this.engine.setFramePrototype(engineMixin);
     }
 
-    this.worker.start(engine.queue);
     this.receiver.bind(this.eventHandler(), this._emitError);
   }
 
-  eventHandler(): EventHandler<Response, Receivable, Event> {
+  eventHandler(): EventHandler<Response, Thread, Event> {
     return this.controller.makeEventHandler(frame => {
       this.emit('event', frame);
       return Promise.resolve();
     });
+  }
+
+  // eslint-disable-next-line class-methods-use-this, no-unused-vars
+  send(thread: Thread, message: MachinatNode, options: any) {
+    throw new TypeError('Bot#send() should not be called on BaseBot');
   }
 
   _emitError = (err: Error) => {

@@ -3,7 +3,6 @@ import moxy from 'moxy';
 import Machinat from 'machinat';
 import Queue from 'machinat-queue';
 import Renderer from 'machinat-renderer';
-import { MACHINAT_ACTION_BREAK } from 'machinat-symbol';
 
 import Engine from '../engine';
 import DispatchError from '../error';
@@ -17,44 +16,30 @@ const element = (
 );
 const options = { foo: 'bar' };
 
-const actions = [
-  {
-    isPause: false,
-    element: <a id={1} />,
-    value: '__RENDERED_GENERAL_1__',
-    path: '$::0',
-  },
-  {
-    isPause: false,
-    element: <b id={2} />,
-    value: '__RENDERED_GENERAL_2__',
-    path: '$::1',
-  },
-  {
-    isPause: false,
-    element: <c id={3} />,
-    value: '__RENDERED_GENERAL_3__',
-    path: '$::2',
-  },
+const segments = [
+  { isPause: false, node: <a id={1} />, value: { id: 1 } },
+  { isPause: false, node: <b id={2} />, value: { id: 2 } },
+  { isPause: false, node: <c id={3} />, value: { id: 3 } },
 ];
 
 const queue = moxy(new Queue(), {
   excludeProps: ['_waitedRequets', '_queuedJobs'],
 });
 
-const thread = moxy({
+const worker = moxy({
+  start: () => true,
+  stop: () => true,
+});
+
+const thread = {
   platform: 'test',
   type: 'test',
-  allowPause: true,
-  uid: () => 'TEST',
-  createJobs: acts => acts.map(act => ({ id: act.element.props.id })),
-});
+  uid: 'test',
+};
 
 const renderer = moxy(new Renderer('test', {}));
 
 beforeEach(() => {
-  thread.mock.reset();
-
   queue.executeJobs.mock.reset();
   queue.executeJobs.mock.fake(jobs =>
     Promise.resolve({
@@ -64,12 +49,19 @@ beforeEach(() => {
   );
 
   renderer.render.mock.reset();
-  renderer.render.mock.fakeReturnValue(actions);
+  renderer.render.mock.fakeReturnValue(segments);
+});
+
+it('starts worker', () => {
+  const engine = new Engine('test', renderer, queue, worker);
+
+  expect(worker.start.mock).toHaveBeenCalledTimes(1);
+  expect(worker.start.mock).toHaveBeenCalledWith(engine.queue);
 });
 
 describe('#setMiddlewares(...fns)', () => {
   it('throws if non function args given', () => {
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
     const invalidParams = [undefined, null, 1, true, 'foo', {}];
 
     invalidParams.forEach(p =>
@@ -78,12 +70,12 @@ describe('#setMiddlewares(...fns)', () => {
   });
 
   it('returns the engine itself', () => {
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
     expect(engine.setMiddlewares(async () => () => {})).toBe(engine);
   });
 
   it('adds middleware function to .middlewares', () => {
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
 
     const middleware1 = async () => {};
     const middleware2 = async () => {};
@@ -95,7 +87,7 @@ describe('#setMiddlewares(...fns)', () => {
   });
 
   it('reset middlewares every time called', () => {
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
 
     const middleware1 = async () => {};
     const middleware2 = async () => {};
@@ -121,17 +113,15 @@ describe('#setFramePrototype(mixin)', () => {
   };
 
   it('return engine itself', () => {
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
 
     expect(engine.setFramePrototype(mixin)).toBe(engine);
   });
 
   it('extends engine.frame with base props remained', () => {
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
 
     engine.setFramePrototype(mixin);
-
-    expect(typeof engine.frame.createJobs).toBe('function');
 
     expect(engine.frame.foo).toBe(1);
     expect(engine.frame.bar).toBe(2);
@@ -139,7 +129,7 @@ describe('#setFramePrototype(mixin)', () => {
   });
 
   it('resets frame every time called', () => {
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
 
     engine.setFramePrototype(mixin);
     engine.setFramePrototype({ hello: 'world' });
@@ -151,21 +141,96 @@ describe('#setFramePrototype(mixin)', () => {
   });
 });
 
-describe('#dispatch(thread, element, options)', () => {
-  it('renders and enqueue jobs and return array of results', async () => {
-    const engine = new Engine('test', queue, renderer);
+describe('#renderActions(createJobs, target, message, options, allowPause)', () => {
+  const createJobs = moxy((_, segemnts) =>
+    segemnts.map(({ value: { id } }) => ({ id }))
+  );
 
-    await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
-      1,
-      2,
-      3,
+  beforeEach(() => {
+    createJobs.mock.clear();
+  });
+
+  it('render message and create "jobs" actions', () => {
+    const engine = new Engine('test', renderer, queue, worker);
+    expect(
+      engine.renderActions(createJobs, 'foo', element, { bar: 1 }, true)
+    ).toEqual([{ type: 'jobs', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] }]);
+
+    expect(renderer.render.mock).toHaveBeenCalledTimes(1);
+    expect(renderer.render.mock).toHaveBeenCalledWith(element, true);
+
+    expect(createJobs.mock).toHaveBeenCalledTimes(1);
+    expect(createJobs.mock).toHaveBeenCalledWith('foo', segments, {
+      bar: 1,
+    });
+  });
+
+  it('pass allowPause to renderer.render', () => {
+    const engine = new Engine('test', renderer, queue, worker);
+    expect(
+      engine.renderActions(createJobs, 'foo', element, { bar: 1 }, false)
+    ).toEqual([{ type: 'jobs', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] }]);
+
+    expect(renderer.render.mock).toHaveBeenCalledTimes(1);
+    expect(renderer.render.mock).toHaveBeenCalledWith(element, false);
+
+    expect(createJobs.mock).toHaveBeenCalledTimes(1);
+    expect(createJobs.mock).toHaveBeenCalledWith('foo', segments, {
+      bar: 1,
+    });
+  });
+
+  it('create "pause" action out of "pause" segments which separate "jobs" action', () => {
+    const segmentsWithPause = [
+      { isPause: true, node: <Machinat.Pause /> },
+      segments[0],
+      segments[1],
+      { isPause: true, node: <Machinat.Pause /> },
+      segments[2],
+    ];
+
+    renderer.render.mock.fakeReturnValue(segmentsWithPause);
+
+    const engine = new Engine('test', renderer, queue, worker);
+    expect(
+      engine.renderActions(createJobs, 'foo', element, { bar: 1 }, true)
+    ).toEqual([
+      { type: 'pause', payload: <Machinat.Pause /> },
+      { type: 'jobs', payload: [{ id: 1 }, { id: 2 }] },
+      { type: 'pause', payload: <Machinat.Pause /> },
+      { type: 'jobs', payload: [{ id: 3 }] },
     ]);
 
-    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
-      platform: 'test',
-    });
+    expect(renderer.render.mock).toHaveBeenCalledTimes(1);
+    expect(renderer.render.mock).toHaveBeenCalledWith(element, true);
 
-    expect(thread.createJobs.mock).toHaveBeenCalledWith(actions, options);
+    expect(createJobs.mock).toHaveBeenCalledTimes(2);
+    expect(createJobs.mock).toHaveBeenNthCalledWith(
+      1,
+      'foo',
+      segments.slice(0, 2),
+      { bar: 1 }
+    );
+    expect(createJobs.mock).toHaveBeenNthCalledWith(
+      2,
+      'foo',
+      segments.slice(2),
+      { bar: 1 }
+    );
+  });
+});
+
+describe('#dispatch(thread, actions, node)', () => {
+  it('renders and enqueue jobs and return array of results', async () => {
+    const engine = new Engine('test', renderer, queue, worker);
+    const actions = [
+      { type: 'jobs', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
+    ];
+
+    await expect(engine.dispatch(thread, actions, element)).resolves.toEqual({
+      actions,
+      results: [1, 2, 3],
+    });
 
     expect(queue.executeJobs.mock).toHaveBeenCalledWith([
       { id: 1 },
@@ -175,22 +240,16 @@ describe('#dispatch(thread, element, options)', () => {
   });
 
   it('pass dispatch frame through middlewares', async () => {
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
+    const actions = [
+      { type: 'jobs', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
+    ];
 
     const expectedFrame = {
       platform: 'test',
       thread,
-      options,
-      renderer,
-      element,
+      node: element,
       actions,
-    };
-
-    const expectedResponse = {
-      element,
-      actions,
-      jobs: [{ id: 1 }, { id: 2 }, { id: 3 }],
-      results: [1, 2, 3],
     };
 
     const middleware1 = moxy(next => async frame => {
@@ -198,12 +257,12 @@ describe('#dispatch(thread, element, options)', () => {
       expect(Object.getPrototypeOf(frame)).toBe(engine.frame);
 
       frame.foo = 1;
-      const result = await next(frame);
+      const response = await next(frame);
 
-      expect(result).toEqual({ ...expectedResponse, bar: 2 });
-      result.bar = 1;
+      expect(response).toEqual({ actions, results: [1, 2, 3], bar: 2 });
+      response.bar = 1;
 
-      return result;
+      return response;
     });
 
     const middleware2 = moxy(next => async frame => {
@@ -211,12 +270,12 @@ describe('#dispatch(thread, element, options)', () => {
       expect(Object.getPrototypeOf(frame)).toBe(engine.frame);
 
       frame.foo = 2;
-      const result = await next(frame);
+      const response = await next(frame);
 
-      expect(result).toEqual({ ...expectedResponse, bar: 3 });
-      result.bar = 2;
+      expect(response).toEqual({ actions, results: [1, 2, 3], bar: 3 });
+      response.bar = 2;
 
-      return result;
+      return response;
     });
 
     const middleware3 = moxy(next => async frame => {
@@ -224,12 +283,12 @@ describe('#dispatch(thread, element, options)', () => {
       expect(Object.getPrototypeOf(frame)).toBe(engine.frame);
 
       frame.foo = 3;
-      const result = await next(frame);
+      const response = await next(frame);
 
-      expect(result).toEqual(expectedResponse);
-      result.bar = 3;
+      expect(response).toEqual({ actions, results: [1, 2, 3] });
+      response.bar = 3;
 
-      return result;
+      return response;
     });
 
     engine.setMiddlewares(middleware1, middleware2, middleware3);
@@ -238,17 +297,11 @@ describe('#dispatch(thread, element, options)', () => {
     expect(middleware2.mock).toHaveBeenCalledTimes(1);
     expect(middleware3.mock).toHaveBeenCalledTimes(1);
 
-    await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
-      1,
-      2,
-      3,
-    ]);
-
-    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
-      platform: 'test',
+    await expect(engine.dispatch(thread, actions, element)).resolves.toEqual({
+      bar: 1,
+      actions,
+      results: [1, 2, 3],
     });
-
-    expect(thread.createJobs.mock).toHaveBeenCalledWith(actions, options);
 
     expect(queue.executeJobs.mock).toHaveBeenCalledWith([
       { id: 1 },
@@ -258,29 +311,29 @@ describe('#dispatch(thread, element, options)', () => {
   });
 
   it('can bypass the real sending within middleware', async () => {
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
+    const actions = [
+      { type: 'jobs', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
+    ];
 
     const middleware = moxy(() => async () => ({
+      actions,
       results: [{ nothing: 'happened' }],
     }));
 
     engine.setMiddlewares(middleware);
 
-    await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
-      { nothing: 'happened' },
-    ]);
-
-    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
-      platform: 'test',
+    await expect(engine.dispatch(thread, actions, element)).resolves.toEqual({
+      actions,
+      results: [{ nothing: 'happened' }],
     });
 
     expect(middleware.mock).toHaveBeenCalledTimes(1);
-    expect(thread.createJobs.mock).not.toHaveBeenCalled();
     expect(queue.executeJobs.mock).not.toHaveBeenCalled();
   });
 
   it('can skip following middlewares with error thrown in middleware', async () => {
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
 
     const middleware = moxy(() => async () => {
       throw new Error('something wrong with the element');
@@ -292,196 +345,27 @@ describe('#dispatch(thread, element, options)', () => {
       'something wrong with the element'
     );
 
-    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
-      platform: 'test',
-    });
-
     expect(middleware.mock).toHaveBeenCalledTimes(1);
-    expect(thread.createJobs.mock).not.toHaveBeenCalled();
     expect(queue.executeJobs.mock).not.toHaveBeenCalled();
   });
 
   it('waits pause', async () => {
     const after = moxy(() => Promise.resolve());
-    const pausedActions = [
-      {
-        isPause: false,
-        element: <a id={1} />,
-        value: '__RENDERED_GENERAL_1__',
-        path: '$::0',
-      },
-      {
-        isPause: true,
-        element: <Machinat.Pause />,
-        path: '$::1',
-      },
-      {
-        isPause: false,
-        element: <b id={2} />,
-        value: '__RENDERED_GENERAL_2__',
-        path: '$::2',
-      },
-      {
-        isPause: true,
-        element: <Machinat.Pause after={after} />,
-        path: '$::3',
-      },
-      {
-        isPause: false,
-        element: <b id={3} />,
-        value: '__RENDERED_GENERAL_3__',
-        path: '$::4',
-      },
+    const actionsWithPause = [
+      { type: 'pause', payload: <Machinat.Pause /> },
+      { type: 'jobs', payload: [{ id: 1 }, { id: 2 }] },
+      { type: 'pause', payload: <Machinat.Pause after={after} /> },
+      { type: 'jobs', payload: [{ id: 3 }] },
+      { type: 'pause', payload: <Machinat.Pause /> },
     ];
-    renderer.render.mock.fakeReturnValue(pausedActions);
 
-    const engine = new Engine('test', queue, renderer);
-
-    await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
-      1,
-      2,
-      3,
-    ]);
-
-    expect(after.mock).toHaveBeenCalledTimes(1);
-
-    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
-      platform: 'test',
-    });
-
-    expect(thread.createJobs.mock).toHaveBeenNthCalledWith(
-      1,
-      [pausedActions[0]],
-      options
-    );
-    expect(thread.createJobs.mock).toHaveBeenNthCalledWith(
-      2,
-      [pausedActions[2]],
-      options
-    );
-    expect(thread.createJobs.mock).toHaveBeenNthCalledWith(
-      3,
-      [pausedActions[4]],
-      options
-    );
-
-    expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(1, [{ id: 1 }]);
-    expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(2, [{ id: 2 }]);
-    expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(3, [{ id: 3 }]);
-  });
-
-  it('throw when pause met if thread not allowPause', async () => {
-    const pausedActions = [
-      {
-        isPause: false,
-        element: <a id={1} />,
-        value: '__RENDERED_GENERAL_1__',
-        path: '$::0',
-      },
-      {
-        isPause: true,
-        element: <Machinat.Pause />,
-        path: '$::1',
-      },
-      {
-        isPause: false,
-        element: <b id={2} />,
-        value: '__RENDERED_GENERAL_2__',
-        path: '$::2',
-      },
-    ];
-    renderer.render.mock.fakeReturnValue(pausedActions);
-
-    thread.mock.getter('allowPause').fakeReturnValue(false);
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
 
     await expect(
-      engine.dispatch(thread, element, options)
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"you shall not <Pause /> on test:test"`
-    );
+      engine.dispatch(thread, actionsWithPause, element)
+    ).resolves.toEqual({ actions: actionsWithPause, results: [1, 2, 3] });
 
-    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
-      platform: 'test',
-    });
-
-    expect(thread.createJobs.mock).toHaveBeenCalledTimes(1);
-    expect(thread.createJobs.mock).toHaveBeenCalledWith(
-      [pausedActions[0]],
-      options
-    );
-
-    expect(queue.executeJobs.mock).not.toHaveBeenCalled();
-  });
-
-  it('ignores break', async () => {
-    const pausedActions = [
-      {
-        isPause: false,
-        element: <a id={1} />,
-        value: '__RENDERED_GENERAL_1__',
-        path: '$::0',
-      },
-      {
-        isPause: false,
-        element: <br />,
-        value: MACHINAT_ACTION_BREAK,
-        path: '$::1',
-      },
-      {
-        isPause: false,
-        element: <a id={2} />,
-        value: '__RENDERED_GENERAL_2__',
-        path: '$::2',
-      },
-      {
-        isPause: true,
-        element: <Machinat.Pause />,
-        path: '$::3',
-      },
-      {
-        isPause: false,
-        element: <br />,
-        value: MACHINAT_ACTION_BREAK,
-        path: '$::4',
-      },
-      {
-        isPause: false,
-        element: <a id={3} />,
-        value: '__RENDERED_GENERAL_3__',
-        path: '$::5',
-      },
-      {
-        isPause: false,
-        element: <br />,
-        value: MACHINAT_ACTION_BREAK,
-        path: '$::6',
-      },
-    ];
-    renderer.render.mock.fakeReturnValue(pausedActions);
-
-    const engine = new Engine('test', queue, renderer);
-
-    await expect(engine.dispatch(thread, element, options)).resolves.toEqual([
-      1,
-      2,
-      3,
-    ]);
-
-    expect(renderer.render.mock).toHaveBeenCalledWith(element, {
-      platform: 'test',
-    });
-
-    expect(thread.createJobs.mock).toHaveBeenNthCalledWith(
-      1,
-      [pausedActions[0], pausedActions[2]],
-      options
-    );
-    expect(thread.createJobs.mock).toHaveBeenNthCalledWith(
-      2,
-      [pausedActions[5]],
-      options
-    );
+    expect(after.mock).toHaveBeenCalledTimes(1);
 
     expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(1, [
       { id: 1 },
@@ -502,20 +386,23 @@ describe('#dispatch(thread, element, options)', () => {
         undefined,
       ],
     };
+    const actions = [{ type: 'jobs', payload: [1, 2, 3] }];
 
     queue.executeJobs.mock.fake(() => Promise.resolve(execResponse));
 
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
 
     let isThrown = false;
     try {
-      await engine.dispatch(thread, element);
+      await engine.dispatch(thread, actions);
     } catch (err) {
       isThrown = true;
-      expect(err.node).toEqual(element);
       expect(err.actions).toEqual(actions);
-      expect(err.jobs).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
-      expect(err.responses).toEqual(execResponse.batch);
+      expect(err.results).toEqual([
+        "I'm only one survived",
+        undefined,
+        undefined,
+      ]);
 
       expect(err).toBeInstanceOf(DispatchError);
 
@@ -535,7 +422,7 @@ describe('#dispatch(thread, element, options)', () => {
   it('can catch sending error in middleware', async () => {
     queue.executeJobs.mock.fake(() => Promise.reject(new Error('bad thing!')));
 
-    const engine = new Engine('test', queue, renderer);
+    const engine = new Engine('test', renderer, queue, worker);
 
     const middleware = next => async context => {
       try {
@@ -548,8 +435,8 @@ describe('#dispatch(thread, element, options)', () => {
 
     engine.setMiddlewares(middleware);
 
-    await expect(engine.dispatch(thread, element)).resolves.toEqual([
-      { something: 'else' },
-    ]);
+    await expect(
+      engine.dispatch(thread, [{ type: 'jobs', payload: [1, 2, 3] }])
+    ).resolves.toEqual({ results: [{ something: 'else' }] });
   });
 });

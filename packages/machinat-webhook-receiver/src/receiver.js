@@ -19,10 +19,7 @@ const endRes = (res, status, body) => {
   res.end(body);
 };
 
-class WebhookReceiver<
-  Thread: MachinatThread<any, any>,
-  Event: MachinatEvent<any, Thread>
->
+class WebhookReceiver<Thread: MachinatThread, Event: MachinatEvent<any, Thread>>
   implements
     HTTPRequestReceiver,
     MachinatReceiver<WebhookResponse, Thread, Event> {

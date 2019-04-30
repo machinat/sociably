@@ -33,7 +33,7 @@ const EventFrameProto = {
 
 class MachinatController<
   Response,
-  Thread: MachinatThread<any, any>,
+  Thread: MachinatThread,
   Event: MachinatEvent<any, Thread>
 > {
   middlewares: EventMiddleware<any, Response, Thread, Event>[];
@@ -71,8 +71,8 @@ class MachinatController<
   ): EventHandler<Response, Thread, Event> {
     const handle = compose(...this.middlewares)(onEvent);
 
-    return (source: string, event: Event, transportContext: any) => {
-      const frame = this.createEventFrame(source, event, transportContext);
+    return (source: string, event: Event, transportation: any) => {
+      const frame = this.createEventFrame(source, event, transportation);
 
       return handle(frame);
     };
@@ -81,13 +81,13 @@ class MachinatController<
   createEventFrame(
     source: string,
     event: Event,
-    transportContext: any
+    transportation: any
   ): EventFrame<any, any, any, any, Thread, Event> {
     const frame = Object.create(this.frame);
 
     frame.event = event;
     frame.source = source;
-    frame.transportContext = transportContext;
+    frame.transportation = transportation;
 
     return frame;
   }

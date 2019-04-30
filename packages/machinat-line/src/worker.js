@@ -17,7 +17,6 @@ const DELETE = 'DELETE';
 const API_ENTRY = 'https://api.line.me/v2/bot/';
 
 type LineClientOptions = {
-  useReplyAPI: boolean,
   accessToken: string,
   connectionCapicity: number,
 };
@@ -26,7 +25,6 @@ type LineJobQueue = Queue<LineJob, LineAPIResult>;
 
 export default class LineClient
   implements MachinatWorker<LineJob, LineAPIResult> {
-  useReplyAPI: boolean;
   _headers: {
     'Content-Type': 'application/json',
     Authorization: string,
@@ -37,13 +35,7 @@ export default class LineClient
   connectionCapicity: number;
   _lockedIds: Set<string>;
 
-  constructor({
-    useReplyAPI,
-    accessToken,
-    connectionCapicity,
-  }: LineClientOptions) {
-    this.useReplyAPI = useReplyAPI;
-
+  constructor({ accessToken, connectionCapicity }: LineClientOptions) {
     this._headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
@@ -136,14 +128,17 @@ export default class LineClient
       }
 
       // $FlowFixMe i is in valid range
-      const { threadId }: Job = queue.peekAt(i);
-      if (lockedIds.has(threadId)) {
+      const { threadUid }: LineJob = queue.peekAt(i);
+      if (threadUid !== undefined && lockedIds.has(threadUid)) {
         i += 1;
       } else {
-        this._consumeJobAt(queue, i, threadId);
+        this._consumeJobAt(queue, i, threadUid);
 
         this.connectionSize += 1;
-        lockedIds.add(threadId);
+
+        if (threadUid !== undefined) {
+          lockedIds.add(threadUid);
+        }
       }
     }
   }
@@ -151,7 +146,7 @@ export default class LineClient
   async _consumeJobAt(
     queue: Queue<LineJob, LineAPIResult>,
     idx: number,
-    threadId: string
+    threadUid: void | string
   ) {
     try {
       await queue.acquireAt(idx, 1, this._consumeCallback);
@@ -159,7 +154,10 @@ export default class LineClient
       // NOTE: leave the error to the request side
     } finally {
       this.connectionSize -= 1;
-      this._lockedIds.delete(threadId);
+
+      if (threadUid !== undefined) {
+        this._lockedIds.delete(threadUid);
+      }
 
       if (this._started) {
         this._consume(queue);

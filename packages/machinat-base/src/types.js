@@ -1,12 +1,10 @@
 // @flow
-import type { MachinatNode } from 'machinat/types';
-import type MahinateRenderer from 'machinat-renderer';
+import type { MachinatNode, PauseElement } from 'machinat/types';
 import type MachinatQueue from 'machinat-queue';
 import type {
-  TextRenderedAction,
-  ElementRenderedAction,
-  RawAction,
-  MachinatAction,
+  TextSegment,
+  ElementSegment,
+  RawSegment,
   MachinatNativeType,
 } from 'machinat-renderer/types';
 import type MachinatBot from './bot';
@@ -17,25 +15,19 @@ export type MiddlewareFunc<Frame, Value> = (
   next: (Frame) => Value
 ) => Frame => Value;
 
-export type ActionWithoutPause<Rendered, Native> =
-  | TextRenderedAction
-  | ElementRenderedAction<Rendered, Native>
-  | RawAction;
+export type SegmentWithoutPause<SegmentValue, Native> =
+  | TextSegment
+  | RawSegment<SegmentValue>
+  | ElementSegment<SegmentValue, Native>;
 
-export interface MachinatThread<Job, Options> {
+export interface MachinatThread {
   platform: string;
   type: any;
   subtype?: any;
-  allowPause: boolean;
   uid: string;
-  // TODO: move "createJobs" method under a symbol
-  createJobs(
-    actions: null | ActionWithoutPause<any, any>[],
-    options: Options
-  ): null | Job[];
 }
 
-export interface MachinatEvent<Payload, Thread: MachinatThread<any, any>> {
+export interface MachinatEvent<Payload, Thread: MachinatThread> {
   platform: any;
   type: any;
   subtype?: any;
@@ -45,100 +37,74 @@ export interface MachinatEvent<Payload, Thread: MachinatThread<any, any>> {
 }
 
 export type EventFrame<
-  Rendered,
-  Native: MachinatNativeType<Rendered>,
+  SegmentValue,
+  Native: MachinatNativeType<SegmentValue>,
   Job,
   Result,
-  Thread: MachinatThread<Job, any>,
+  Thread: MachinatThread,
   Event: MachinatEvent<any, Thread>
 > = {
   platform: string,
   thread: Thread,
   event: Event,
-  bot: MachinatBot<Rendered, Native, Job, Result, any, any, Thread, Event>,
+  bot: MachinatBot<Thread, Event, SegmentValue, Native, any, Job, Result>,
   source: string,
-  transportContext: any,
-  react(nodes: MachinatNode, options: any): Promise<null | Result[]>,
+  transportation: any,
+  reply(nodes: MachinatNode, options: any): Promise<null | Result[]>,
 };
 
 export type EventMiddleware<
   Native,
   Response,
-  Thread: MachinatThread<any, any>,
+  Thread: MachinatThread,
   Event: MachinatEvent<any, Thread>
 > = MiddlewareFunc<
   EventFrame<any, Native, any, any, Thread, Event>,
   Promise<void | Response>
 >;
 
-export type DispatchFrame<
-  Rendered,
-  Native,
-  Job,
-  Thread: MachinatThread<Job, any>
-> = {
-  element: MachinatNode,
+type PauseDispatchAction = {| type: 'pause', payload: PauseElement |};
+type JobsDispatchAction<Job> = {| type: 'jobs', payload: Job[] |};
+export type DispatchAction<Job> = PauseDispatchAction | JobsDispatchAction<Job>;
+
+export type DispatchFrame<Thread: MachinatThread, Job> = {
   platform: string,
-  thread: Thread,
-  options: any,
-  renderer: MahinateRenderer<Rendered, Native>,
-  actions: null | MachinatAction<Rendered, Native>[],
-  createJobs(
-    actions: null | ActionWithoutPause<any, any>[],
-    options: any
-  ): null | Job[],
+  thread: null | Thread,
+  actions: DispatchAction<Job>[],
+  bot: MachinatBot<Thread, Event, any, any, any, Job, any>,
+  node?: MachinatNode,
 };
 
-export type DispatchReport<Rendered, Native, Job, Result> = {
-  element: null | MachinatNode,
-  actions: null | MachinatAction<Rendered, Native>[],
-  jobs: null | Job[],
-  results: null | Result[],
+export type DispatchResponse<Job, Result> = {
+  actions: DispatchAction<Job>[],
+  results: Result[],
 };
 
 export type DispatchMiddleware<
-  Rendered,
-  Native,
+  Thread: MachinatThread,
   Job,
-  Result,
-  Thread: MachinatThread<Job, any>
+  Result
 > = MiddlewareFunc<
-  DispatchFrame<Rendered, Native, Job, Thread>,
-  Promise<DispatchReport<Rendered, Native, Job, Result>>
+  DispatchFrame<Thread, Job>,
+  Promise<null | DispatchResponse<Job, Result>>
 >;
 
 export type BotPlugin<
-  Rendered,
+  Thread,
+  Event: MachinatEvent<any, Thread>,
+  SegmentValue,
   Native,
-  Job,
-  Result,
-  DeliverableThread,
   Response,
-  ReceivableThread,
-  Event: MachinatEvent<any, ReceivableThread>
+  Job,
+  Result
 > = (
-  bot: MachinatBot<
-    Rendered,
-    Native,
-    Job,
-    Result,
-    DeliverableThread,
-    Response,
-    ReceivableThread,
-    Event
-  >
+  bot: MachinatBot<Thread, Event, SegmentValue, Native, Response, Job, Result>
 ) => {
-  dispatchMiddleware?: DispatchMiddleware<
-    Rendered,
-    Native,
-    Job,
-    Result,
-    DeliverableThread
-  >,
+  dispatchMiddleware?: DispatchMiddleware<Thread, Job, Result>,
   dispatchFrameExtension?: {
     [string]: any,
   },
-  eventMiddleware?: EventMiddleware<Native, Response, ReceivableThread, Event>,
+  eventMiddleware?: EventMiddleware<Native, Response, Thread, Event>,
   eventFrameExtension?: {
     [string]: any,
   },
@@ -151,7 +117,7 @@ export interface MachinatWorker<Job, Result> {
 
 export type EventHandler<
   Response,
-  Thread: MachinatThread<any, any>,
+  Thread: MachinatThread,
   Event: MachinatEvent<any, Thread>
 > = (
   source: string,
@@ -161,7 +127,7 @@ export type EventHandler<
 
 export interface MachinatReceiver<
   Response,
-  Thread: MachinatThread<any, any>,
+  Thread: MachinatThread,
   Event: MachinatEvent<any, Thread>
 > {
   bind(

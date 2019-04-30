@@ -1,59 +1,59 @@
 // @flow
 import type {
   ContainerNativeType,
-  ValuesNativeType,
+  SegmentNativeType,
 } from 'machinat-renderer/types';
 import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type MachinatQueue from 'machinat-queue';
 import type { WebhookResponse } from 'machinat-webhook-receiver/types';
-import type { ChatThread } from './thread';
-import typeof {
-  MESSAGE_CREATIVES_THREAD,
-  BROADCAST_MESSAGES_THREAD,
-} from './thread';
+import type MessnegerThread from './thread';
 
-type PSIDRecipient = {| id: string |};
-type UserRefRecipient = {| user_ref: string |};
-type PhoneNumberRecipient = {|
+type PSIDSource = {| id: string |};
+type UserRefSource = {| user_ref: string |};
+type PhoneNumberSource = {|
   phone_number: string,
   name?: {| first_name: string, last_name: string |},
 |};
 
-export type Recipient = PSIDRecipient | UserRefRecipient | PhoneNumberRecipient;
+export type MessnegerSource = PSIDSource | UserRefSource | PhoneNumberSource;
 
 // TODO: type the raw event object
 export type MessengerRawEvent = Object;
 
-export type MessengerEvent = {
+export type MessengerEvent = {|
   platform: 'messenger',
   type: string,
   subtype?: string,
   shouldRespond: boolean,
-  thread: ChatThread,
+  thread: MessnegerThread,
   payload: MessengerRawEvent,
-};
+|};
 
 declare var e: MessengerEvent;
-(e: MachinatEvent<MessengerRawEvent, ChatThread>);
+(e: MachinatEvent<MessengerRawEvent, MessnegerThread>);
 
 // TODO: detailed message type
-export type MessengerMessage = Object;
+export type MessengerMessage = {};
 
-type MessageActionValue = {
+type MessageValue = {|
   message: MessengerMessage,
-};
+  messaging_type?: string,
+  notification_type?: string,
+  tag?: string,
+  persona_id?: string,
+|};
 
-type SenderActionValue = {
+type SenderActionValue = {|
   sender_action: 'mark_seen' | 'typing_on' | 'typing_off',
-};
+|};
 
-export type MessengerActionValue = MessageActionValue | SenderActionValue;
+export type MessengerSegmentValue = MessageValue | SenderActionValue;
 
-export type MessengerContainerComponent = ContainerNativeType<MessengerActionValue> & {
+export type MessengerContainerComponent = ContainerNativeType<MessengerSegmentValue> & {
   $$entry?: string,
 };
 
-export type MessengerValuesComponent = ValuesNativeType<MessengerActionValue> & {
+export type MessengerValuesComponent = SegmentNativeType<MessengerSegmentValue> & {
   $$entry?: string,
 };
 
@@ -64,7 +64,7 @@ export type MessengerComponent =
 export type MessengerRequest = {|
   method: string,
   relative_url: string,
-  body: string,
+  body: Object,
   name?: string,
   depends_on?: string,
   attached_files?: string,
@@ -73,7 +73,7 @@ export type MessengerRequest = {|
 
 export type MessengerJob = {|
   request: MessengerRequest,
-  threadId: string,
+  threadUid?: string,
   attachedFileData?: string | Buffer | ReadableStream,
   attachedFileInfo?: {|
     filename?: string,
@@ -102,25 +102,20 @@ export type GraphAPIErrorBody = {
   error: GraphAPIErrorInfo,
 };
 
-export type SendOptions = {
+export type SendOptions = {|
   messagingType?: 'RESPONSE' | 'UPDATE' | 'MESSAGE_TAG',
   tag?: string,
   notificationType?: 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH',
   personaId?: string,
-};
+|};
 
-export type BroadcastOptions = {
+export type BroadcastOptions = {|
   notificationType?: 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH',
   personaId?: string,
   customLabelId?: number,
-};
+|};
 
 export type MessengerQueue = MachinatQueue<MessengerJob, MessengerAPIResult>;
-
-export type DeliverableThread =
-  | ChatThread
-  | MESSAGE_CREATIVES_THREAD
-  | BROADCAST_MESSAGES_THREAD;
 
 export type MessengerBotOptions = {
   accessToken: string,
@@ -131,13 +126,12 @@ export type MessengerBotOptions = {
   respondTimeout: number,
   consumeInterval?: number,
   plugins?: BotPlugin<
-    MessengerActionValue,
+    MessnegerThread,
+    MessengerEvent,
+    MessengerSegmentValue,
     MessengerComponent,
-    MessengerJob,
-    MessengerAPIResult,
-    DeliverableThread,
     WebhookResponse,
-    ChatThread,
-    MessengerEvent
+    MessengerJob,
+    MessengerAPIResult
   >[],
 };

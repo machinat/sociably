@@ -28,6 +28,7 @@ module.exports = {
     'no-unused-vars': ['error', {
       ignoreRestSiblings: true,
     }],
+    'no-cond-assign': 0,
     'no-unused-expressions': 0,
     'flowtype/no-unused-expressions': 2,
     'no-param-reassign': ['error', {

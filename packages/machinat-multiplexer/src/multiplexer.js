@@ -4,13 +4,13 @@ import { mixin } from 'machinat-utility';
 import type { MachinatBot, BotPlugin } from 'machinat-base/types';
 
 type MultiplexerOptions = {
-  plugins?: BotPlugin<any, any, any, any, any, any, any, any>[],
+  plugins?: BotPlugin<any, any, any, any, any, any, any>[],
 };
 
 class MachinatMultiplexer<
-  Bot: MachinatBot<any, any, any, any, any, any, any, any>
+  Bot: MachinatBot<any, any, any, any, any, any, any>
 > extends EventEmitter {
-  plugins: void | BotPlugin<any, any, any, any, any, any, any, any>[];
+  plugins: void | BotPlugin<any, any, any, any, any, any, any>[];
   _botMapping: Map<string, Bot>;
 
   constructor(options?: MultiplexerOptions) {

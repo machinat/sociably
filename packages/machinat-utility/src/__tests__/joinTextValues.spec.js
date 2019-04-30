@@ -6,9 +6,9 @@ import joinTextValues from '../joinTextValues';
 it('merge text values', () => {
   const node = [<a />, <b />, <c />];
   const render = moxy(() => [
-    { isPause: false, isUnit: true, element: <a />, value: 'A', path: '$::0' },
-    { isPause: false, isUnit: true, element: <b />, value: 'B', path: '$::1' },
-    { isPause: false, isUnit: true, element: <c />, value: 'C', path: '$::2' },
+    { isPause: false, isUnit: true, node: <a />, value: 'A', path: '$::0' },
+    { isPause: false, isUnit: true, node: <b />, value: 'B', path: '$::1' },
+    { isPause: false, isUnit: true, node: <c />, value: 'C', path: '$::2' },
   ]);
   const path = '.childern';
 
@@ -20,26 +20,26 @@ it('merge text values', () => {
 it('separate values if SEGMENT_BREAK met', () => {
   const node = [<a />, <b />, <c />];
   const render = moxy(() => [
-    { isPause: false, isUnit: true, element: <a />, value: 'A', path: '$::0' },
-    { isPause: false, isUnit: true, element: <b />, value: 'B', path: '$::1' },
+    { isPause: false, isUnit: true, node: <a />, value: 'A', path: '$::0' },
+    { isPause: false, isUnit: true, node: <b />, value: 'B', path: '$::1' },
     {
       isPause: false,
       isUnit: true,
-      element: <br />,
+      node: <br />,
       value: SEGMENT_BREAK,
       path: '$::2',
     },
-    { isPause: false, isUnit: true, element: <c />, value: 'C', path: '$::3' },
-    { isPause: false, isUnit: true, element: <d />, value: 'D', path: '$::4' },
+    { isPause: false, isUnit: true, node: <c />, value: 'C', path: '$::3' },
+    { isPause: false, isUnit: true, node: <d />, value: 'D', path: '$::4' },
     {
       isPause: false,
       isUnit: true,
-      element: <br />,
+      node: <br />,
       value: SEGMENT_BREAK,
       path: '$::5',
     },
-    { isPause: false, isUnit: true, element: <e />, value: 'E', path: '$::6' },
-    { isPause: false, isUnit: true, element: <f />, value: 'F', path: '$::7' },
+    { isPause: false, isUnit: true, node: <e />, value: 'E', path: '$::6' },
+    { isPause: false, isUnit: true, node: <f />, value: 'F', path: '$::7' },
   ]);
   const path = '.childern';
 
@@ -57,15 +57,15 @@ it('separate values if SEGMENT_BREAK met', () => {
 it('throw if non text value met', () => {
   const node = [<a />, <b />, <c />];
   const render = moxy(() => [
-    { isPause: false, isUnit: true, element: <a />, value: 'A', path: '$::0' },
+    { isPause: false, isUnit: true, node: <a />, value: 'A', path: '$::0' },
     {
       isPause: false,
       isUnit: true,
-      element: <b />,
+      node: <b />,
       value: { illegal: 'not text' },
       path: '$::1',
     },
-    { isPause: false, isUnit: true, element: <c />, value: 'C', path: '$::2' },
+    { isPause: false, isUnit: true, node: <c />, value: 'C', path: '$::2' },
   ]);
   const path = '.childern';
 

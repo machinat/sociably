@@ -1,4 +1,4 @@
-import Machinat from '../../../../machinat';
+import Machinat, { LINE_NAITVE_TYPE } from 'machinat';
 import {
   PostbackAction,
   MessageAction,
@@ -8,7 +8,6 @@ import {
   CameraRollAction,
   LocationAction,
 } from '../action';
-import { LINE_NAITVE_TYPE } from '../../symbol';
 import render from './render';
 
 test.each(

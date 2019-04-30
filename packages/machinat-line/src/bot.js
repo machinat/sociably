@@ -10,20 +10,22 @@ import type { MachinatNode } from 'machinat/types';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
 import type { WebhookResponse } from 'machinat-webhook-receiver/types';
 
-import LineClient from './client';
+import LineWorker from './worker';
 import handleWebhook from './handleWebhook';
+import { createChatJobs, createMulticastJobs } from './job';
 
 import type {
   LineSource,
   LineBotOptions,
-  LineActionValue,
+  LineSegmentValue,
   LineComponent,
   LineJob,
   LineAPIResult,
   LineEvent,
+  LineSendOptions,
 } from './types';
 
-import { ChatThread, MulticastThread } from './thread';
+import LineThread from './thread';
 import { LINE_NATIVE_TYPE } from './symbol';
 
 import * as generalElementDelegate from './component/general';
@@ -35,25 +37,22 @@ const LINE = 'line';
 // $FlowFixMe https://github.com/facebook/flow/issues/7539
 class LineBot
   extends BaseBot<
-    LineActionValue,
+    LineThread,
+    LineEvent,
+    LineSegmentValue,
     LineComponent,
-    LineJob,
-    LineAPIResult,
-    ChatThread | MulticastThread,
     WebhookResponse,
-    ChatThread,
-    LineEvent
+    LineJob,
+    LineAPIResult
   >
   implements HTTPRequestReceivable {
   options: LineBotOptions;
-  client: LineClient;
 
   constructor(optionsInput: LineBotOptionsInput = {}) {
     const defaultOpions: LineBotOptionsInput = {
       accessToken: undefined,
       shouldValidateRequest: true,
       channelSecret: undefined,
-      useReplyAPI: false,
       connectionCapicity: 100,
     };
 
@@ -78,39 +77,73 @@ class LineBot
       generalElementDelegate
     );
 
-    const client = new LineClient(options);
-    const engine = new Engine(LINE, queue, renderer);
+    const worker = new LineWorker(options);
+    const engine = new Engine(LINE, renderer, queue, worker);
     const receiver = new WebhookReceiver(handleWebhook(options));
 
-    super(receiver, controller, engine, client, options.plugins);
+    super(receiver, controller, engine, options.plugins);
 
     this.options = options;
-    this.client = client;
   }
 
-  reply(token: string, node: MachinatNode): Promise<null | LineAPIResult[]> {
-    const thread = new ChatThread(undefined, token, this.options.useReplyAPI);
-
-    return this.engine.dispatch(thread, node);
-  }
-
-  push(
+  async send(
     source: string | LineSource,
-    node: MachinatNode
+    message: MachinatNode,
+    options: LineSendOptions
   ): Promise<null | LineAPIResult[]> {
-    const thread = new ChatThread(
-      typeof source === 'string' ? { type: 'user', userId: source } : source,
-      undefined,
-      this.options.useReplyAPI
+    const thread = new LineThread(
+      typeof source === 'string' ? { type: 'user', userId: source } : source
     );
 
-    return this.engine.dispatch(thread, node);
+    const usePush = !(options && options.replyToken);
+
+    const jobs = this.engine.renderActions(
+      createChatJobs,
+      thread,
+      message,
+      options,
+      usePush
+    );
+    if (jobs === null) return null;
+
+    if (!usePush) {
+      let replyFound = false;
+
+      for (const job of jobs) {
+        if (job.type === 'jobs') {
+          for (const { entry } of job.payload) {
+            const isReply = entry === 'message/reply';
+
+            invariant(
+              !(replyFound && isReply),
+              `can not send more than 5 messages with a replyToken`
+            );
+
+            replyFound = replyFound || isReply;
+          }
+        }
+      }
+    }
+
+    const response = await this.engine.dispatch(thread, jobs, message);
+    return response === null ? null : response.results;
   }
 
-  multicast(to: string[], node: MachinatNode): Promise<null | LineAPIResult[]> {
-    const thread = new MulticastThread(to);
+  async multicast(
+    targets: string[],
+    message: MachinatNode
+  ): Promise<null | LineAPIResult[]> {
+    const jobs = this.engine.renderActions(
+      createMulticastJobs,
+      targets,
+      message,
+      undefined,
+      true
+    );
+    if (jobs === null) return null;
 
-    return this.engine.dispatch(thread, node);
+    const response = await this.engine.dispatch(null, jobs, message);
+    return response === null ? null : response.results;
   }
 }
 

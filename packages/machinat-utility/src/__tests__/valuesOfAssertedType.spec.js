@@ -5,15 +5,15 @@ const A = () => 'a';
 const B = () => 'b';
 const C = () => 'c';
 
-const render = nodes =>
-  nodes.map(element => ({
-    element,
+const render = messages =>
+  messages.map(node => ({
+    node,
     value:
-      typeof element === 'string' || typeof element === 'number'
-        ? element
-        : typeof element.type === 'string'
-        ? element.type
-        : element.type(),
+      typeof node === 'string' || typeof node === 'number'
+        ? node
+        : typeof node.type === 'string'
+        ? node.type
+        : node.type(),
   }));
 
 it('render and return values', () => {

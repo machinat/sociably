@@ -1,0 +1,303 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createChatJobs() add attached file data and info if there are 1`] = `
+Array [
+  Object {
+    "attachedFileData": "_DEADLY_VIRUS_",
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "a": "gift",
+        "recipient": Object {
+          "id": "john",
+        },
+        Symbol(machinat.messenger.job.attached_file_data): "_DEADLY_VIRUS_",
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadUid": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": "_MERCY_CURE_",
+    "attachedFileInfo": Object {
+      "contentType": "image/jpeg",
+      "filename": "deathangel.jpg",
+      "knownLength": 66666,
+    },
+    "request": Object {
+      "body": Object {
+        "a": "redemption",
+        "recipient": Object {
+          "id": "john",
+        },
+        Symbol(machinat.messenger.job.attached_file_data): "_MERCY_CURE_",
+        Symbol(machinat.messenger.job.attached_file_info): Object {
+          "contentType": "image/jpeg",
+          "filename": "deathangel.jpg",
+          "knownLength": 66666,
+        },
+      },
+      "method": "POST",
+      "relative_url": "bar/baz",
+    },
+    "threadUid": "messenger:default:user:john",
+  },
+]
+`;
+
+exports[`createChatJobs() add coresponding options to body on message only 1`] = `
+Array [
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "recipient": Object {
+          "id": "john",
+        },
+        "sender_action": "typing_on",
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadUid": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "message": Object {
+          "id": 1,
+        },
+        "messaging_type": "MESSAGE_TAG",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "your-dearest-friend",
+        "recipient": Object {
+          "id": "john",
+        },
+        "tag": "PAYMENT_UPDATE",
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadUid": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "id": 2,
+        "recipient": Object {
+          "id": "john",
+        },
+      },
+      "method": "POST",
+      "relative_url": "bar/baz",
+    },
+    "threadUid": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "message": Object {
+          "text": "id:3",
+        },
+        "messaging_type": "MESSAGE_TAG",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "your-dearest-friend",
+        "recipient": Object {
+          "id": "john",
+        },
+        "tag": "PAYMENT_UPDATE",
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadUid": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "message": Object {
+          "text": "4",
+        },
+        "messaging_type": "MESSAGE_TAG",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "your-dearest-friend",
+        "recipient": Object {
+          "id": "john",
+        },
+        "tag": "PAYMENT_UPDATE",
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadUid": "messenger:default:user:john",
+  },
+]
+`;
+
+exports[`createChatJobs() create jobs to be sent 1`] = `
+Array [
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "recipient": Object {
+          "id": "john",
+        },
+        "sender_action": "typing_on",
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadUid": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "message": Object {
+          "id": 1,
+        },
+        "recipient": Object {
+          "id": "john",
+        },
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadUid": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "id": 2,
+        "recipient": Object {
+          "id": "john",
+        },
+      },
+      "method": "POST",
+      "relative_url": "bar/baz",
+    },
+    "threadUid": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "message": Object {
+          "text": "id:3",
+        },
+        "recipient": Object {
+          "id": "john",
+        },
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadUid": "messenger:default:user:john",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "message": Object {
+          "text": "4",
+        },
+        "recipient": Object {
+          "id": "john",
+        },
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadUid": "messenger:default:user:john",
+  },
+]
+`;
+
+exports[`createChatJobs() respect options originally set in job value 1`] = `
+Array [
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "message": Object {
+          "text": "bibiboo",
+        },
+        "messaging_type": "MESSAGE_TAG",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "astromech-droid",
+        "recipient": Object {
+          "id": "Luke",
+        },
+        "tag": "SHIPPING_UPDATE",
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadUid": "messenger:default:user:Luke",
+  },
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "message": Object {
+          "text": "Oh! I apologize.",
+        },
+        "messaging_type": "UPDATE",
+        "notification_type": "REGULAR",
+        "persona_id": "protocol-droid",
+        "recipient": Object {
+          "id": "Luke",
+        },
+        "tag": undefined,
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadUid": "messenger:default:user:Luke",
+  },
+]
+`;
+
+exports[`createChatJobs() respect the empty tag if messaging_type has already been set 1`] = `
+Array [
+  Object {
+    "attachedFileData": undefined,
+    "attachedFileInfo": undefined,
+    "request": Object {
+      "body": Object {
+        "message": Object {
+          "text": "bibibooboobibooboo",
+        },
+        "messaging_type": "RESPONSE",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "astromech-droid",
+        "recipient": Object {
+          "id": "Luke",
+        },
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+    "threadUid": "messenger:default:user:Luke",
+  },
+]
+`;

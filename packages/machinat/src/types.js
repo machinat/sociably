@@ -1,5 +1,5 @@
-/* eslint-disable no-use-before-define */
 // @flow
+/* eslint-disable no-use-before-define */
 import type { MachinatNativeType } from 'machinat-renderer/types';
 
 export type MachinatNode =
@@ -14,19 +14,19 @@ export type MachinatElementType =
   | MachinatComponentType
   | MachinatNativeType<any>;
 
-export type MachinatElement<ElementType: MachinatElementType> = {
+export type MachinatElement<ElementType: MachinatElementType> = {|
   $$typeof: string | Symbol,
   type: ElementType,
   props: MachinatElementProps,
-};
+|};
 
 export type MachinatText = string | number;
 export type MachinatEmpty = null | void | boolean;
 
-export type MachinatElementProps = {
+export type MachinatElementProps = {|
   children: MachinatChildren,
   [string]: any,
-};
+|};
 
 export type MachinatComponentType = MachinatElementProps => MachinatNode;
 

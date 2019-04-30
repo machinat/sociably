@@ -8,10 +8,11 @@ import type { MachinatWorker } from 'machinat-base/types';
 import type { JobResponse } from 'machinat-queue/types';
 
 import { GraphAPIError } from './error';
+import { formatRequest } from './utils';
 
 import type { MessengerJob, MessengerAPIResult, MessengerQueue } from './types';
 
-export type MessengerClientOptions = {
+export type MessengerWorkerOptions = {
   accessToken: string,
   appSecret: ?string,
   consumeInterval: ?number,
@@ -52,7 +53,7 @@ const appendFieldsToForm = (form: FormData, body: { [string]: ?string }) => {
   return form;
 };
 
-export default class MessengerClient
+export default class MessengerWorker
   implements MachinatWorker<MessengerJob, MessengerAPIResult> {
   token: string;
   consumeInterval: ?number;
@@ -66,7 +67,7 @@ export default class MessengerClient
     consumeInterval,
     appSecret,
     accessToken,
-  }: MessengerClientOptions) {
+  }: MessengerWorkerOptions) {
     this.token = accessToken;
     this.consumeInterval = consumeInterval;
 
@@ -190,19 +191,24 @@ export default class MessengerClient
     const requests = new Array(jobs.length);
 
     for (let i = 0; i < jobs.length; i += 1) {
-      const { request, threadId, attachedFileData, attachedFileInfo } = jobs[i];
+      const { request, threadUid, attachedFileData, attachedFileInfo } = jobs[
+        i
+      ];
 
-      // keep the order of requests per thread
-      let count = threadSendingRec.get(threadId);
-      if (count !== undefined) {
-        request.depends_on = makeRequestName(threadId, count);
-        count += 1;
-      } else {
-        count = 1;
+      if (threadUid !== undefined) {
+        // keep the order of requests per thread
+        let count = threadSendingRec.get(threadUid);
+        if (count !== undefined) {
+          request.depends_on = makeRequestName(threadUid, count);
+          count += 1;
+        } else {
+          count = 1;
+        }
+
+        threadSendingRec.set(threadUid, count);
+        request.name = makeRequestName(threadUid, count);
       }
 
-      threadSendingRec.set(threadId, count);
-      request.name = makeRequestName(threadId, count);
       request.omit_response_on_success = false;
 
       // if binary data attached, use from-data and add the file field
@@ -218,7 +224,7 @@ export default class MessengerClient
         request.attached_files = filename;
       }
 
-      requests[i] = request;
+      requests[i] = formatRequest(request);
     }
 
     const hasFiles = filesForm !== undefined;

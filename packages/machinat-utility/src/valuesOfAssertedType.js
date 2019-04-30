@@ -11,11 +11,11 @@ const getTagName = t => (typeof t === 'function' ? t.name : t);
 const valuesOfAssertedType = <Value>(
   ...types: (string | SegmentNativeType<Value>)[]
 ) => (
-  node: MachinatNode,
+  message: MachinatNode,
   render: RenderInnerFn,
   propPath: string
 ): void | Value[] => {
-  const rendered = render(node, propPath);
+  const rendered = render(message, propPath);
   if (rendered === null) {
     return undefined;
   }
@@ -24,12 +24,12 @@ const valuesOfAssertedType = <Value>(
   const values: Value[] = new Array(len);
 
   for (let i = 0; i < len; i += 1) {
-    const { element, value } = rendered[i];
+    const { node, value } = rendered[i];
 
     invariant(
-      element === undefined ||
-        (typeof element === 'object' && types.includes(element.type)),
-      `${formatNode(element)} is invalid in ${propPath}, only <[${types
+      node === undefined ||
+        (typeof node === 'object' && types.includes(node.type)),
+      `${formatNode(node)} is invalid in ${propPath}, only <[${types
         .map(getTagName)
         .join(', ')}]/> allowed`
     );

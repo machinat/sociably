@@ -4,7 +4,6 @@ import Machinat from 'machinat';
 import { Controller, Engine } from 'machinat-base';
 import WebhookReceiver from 'machinat-webhook-receiver';
 import MessengerBot from '../bot';
-import MessengerClient from '../client';
 import { Image, Dialog, QuickReply } from '../component';
 import { makeResponse } from './utils';
 
@@ -93,7 +92,6 @@ it('has receiver, controller, engine and client', () => {
   expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
   expect(bot.controller).toBeInstanceOf(Controller);
   expect(bot.engine).toBeInstanceOf(Engine);
-  expect(bot.client).toBeInstanceOf(MessengerClient);
 });
 
 it('have plugins initiated', () => {

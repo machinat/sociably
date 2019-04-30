@@ -1,12 +1,12 @@
 // @flow
 import type {
   ContainerNativeType,
-  ValuesNativeType,
+  SegmentNativeType,
 } from 'machinat-renderer/types';
 import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type { WebhookResponse } from 'machinat-webhook-receiver/types';
 
-import type { ChatThread, MulticastThread } from './thread';
+import type LineThread from './thread';
 
 type UserSource = {|
   type: 'user',
@@ -46,14 +46,13 @@ export type LineEvent = {
   platform: 'line',
   type: string,
   subtype: void | string,
-  thread: ChatThread,
+  thread: LineThread,
   shouldRespond: boolean,
   payload: LineRawEvent,
-  _useReplyAPI: boolean,
 };
 
 declare var e: LineEvent;
-(e: MachinatEvent<LineRawEvent, ChatThread>);
+(e: MachinatEvent<LineRawEvent, LineThread>);
 
 export type LineWebhookRequestBody = {|
   destination: string,
@@ -67,36 +66,36 @@ export type QuickRepliable = {
   },
 };
 
-export type TextActionValue = {
+export type TextSegmentValue = {
   type: 'text',
   text: string,
 } & QuickRepliable;
 
-export type StickerActionValue = {
+export type StickerSegmentValue = {
   type: 'sticker',
   packageId: string,
   stickerId: string,
 } & QuickRepliable;
 
-export type ImageActionValue = {
+export type ImageSegmentValue = {
   type: 'image',
   originalContentUrl: string,
   previewImageUrl: string,
 } & QuickRepliable;
 
-export type VideoActionValue = {
+export type VideoSegmentValue = {
   type: 'video',
   originalContentUrl: string,
   previewImageUrl: string,
 } & QuickRepliable;
 
-export type AudioActionValue = {
+export type AudioSegmentValue = {
   type: 'audio',
   originalContentUrl: string,
   duration: number,
 } & QuickRepliable;
 
-export type LocationActionValue = {
+export type LocationSegmentValue = {
   type: 'location',
   title: string,
   address: string,
@@ -104,7 +103,7 @@ export type LocationActionValue = {
   longitude: number,
 } & QuickRepliable;
 
-export type ImagemapActionValue = {
+export type ImagemapSegmentValue = {
   type: 'imagemap',
   altText: string,
   address: string,
@@ -127,43 +126,39 @@ export type ImagemapActionValue = {
   actions: Object[], // TODO: type the imagemap action object
 } & QuickRepliable;
 
-export type TemplateActionValue = {
+export type TemplateSegmentValue = {
   type: 'template',
   altText: string,
   template: Object, // TODO: type the template object
 } & QuickRepliable;
 
-export type LinkRichMenuActionValue = { id: string };
-export type LeaveActionValue = {};
+export type LinkRichMenuSegmentValue = { id: string };
+export type LeaveSegmentValue = {};
 
-export type MessageActionValue =
-  | TextActionValue
-  | StickerActionValue
-  | ImageActionValue
-  | VideoActionValue
-  | AudioActionValue
-  | LocationActionValue
-  | ImagemapActionValue
-  | TemplateActionValue;
+export type MessageSegmentValue =
+  | TextSegmentValue
+  | StickerSegmentValue
+  | ImageSegmentValue
+  | VideoSegmentValue
+  | AudioSegmentValue
+  | LocationSegmentValue
+  | ImagemapSegmentValue
+  | TemplateSegmentValue;
 
-export type LineActionValue =
-  | MessageActionValue
-  | LinkRichMenuActionValue
-  | LeaveActionValue;
+export type LineSegmentValue =
+  | MessageSegmentValue
+  | LinkRichMenuSegmentValue
+  | LeaveSegmentValue;
 
-type LineComponentExtraAttr = {
-  $$hasBody: boolean,
-  $$entry: <Value>(thread: ChatThread, rendered: Value) => string,
+export type LineContainerNativeType = ContainerNativeType<LineSegmentValue>;
+
+export type LineMessageNativeType = SegmentNativeType<MessageSegmentValue>;
+
+export type LineNonMessageNativeType = SegmentNativeType<
+  LinkRichMenuSegmentValue | LeaveSegmentValue
+> & {
+  $$entry: <Value>(thread: LineThread, rendered: Value) => string,
 };
-
-export type LineContainerNativeType = ContainerNativeType<LineActionValue>;
-
-export type LineMessageNativeType = ValuesNativeType<MessageActionValue>;
-
-export type LineNonMessageNativeType = ValuesNativeType<
-  LinkRichMenuActionValue | LeaveActionValue
-> &
-  LineComponentExtraAttr;
 
 export type LineComponent =
   | LineContainerNativeType
@@ -171,7 +166,7 @@ export type LineComponent =
   | LineNonMessageNativeType;
 
 type MessagesBodyWithoutTarget = {|
-  messages: LineActionValue[],
+  messages: LineSegmentValue[],
 |};
 
 type ReplyRequestBody = {|
@@ -189,15 +184,15 @@ type MulticastRequestBody = {|
   ...MessagesBodyWithoutTarget,
 |};
 
-export type LineAPIRequestBody =
+export type LineMessageRequestBody =
   | ReplyRequestBody
   | PushRequestBody
   | MulticastRequestBody;
 
 export type LineJob = {
-  body: void | LineAPIRequestBody,
+  body: void | LineMessageRequestBody | Object,
   entry: string,
-  threadId: string,
+  threadUid?: string,
 };
 
 export type LineAPIResult = {};
@@ -206,16 +201,18 @@ export type LineBotOptions = {
   channelSecret?: string,
   shouldValidateRequest: boolean,
   accessToken: string,
-  useReplyAPI: boolean,
   connectionCapicity: number,
   plugins?: BotPlugin<
-    LineActionValue,
+    LineThread,
+    LineEvent,
+    LineSegmentValue,
     LineComponent,
-    LineJob,
-    LineAPIResult,
-    ChatThread | MulticastThread,
     WebhookResponse,
-    ChatThread,
-    LineEvent
+    LineJob,
+    LineAPIResult
   >[],
+};
+
+export type LineSendOptions = {
+  replyToken?: string,
 };

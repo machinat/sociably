@@ -31,15 +31,15 @@ const children = (
 const Unknown = () => {};
 
 const renderInner = jest.fn(
-  node =>
-    map(node, element =>
-      typeof element === 'string'
-        ? { value: element, element }
-        : typeof element.type === 'string'
-        ? { value: { message: { text: element.type } }, element }
-        : element.type === Unknown
-        ? { value: { you: "don't know me" }, element }
-        : { value: '_QUICK_REPLY_RENDERED_', element }
+  message =>
+    map(message, node =>
+      typeof node === 'string'
+        ? { value: node, node }
+        : typeof node.type === 'string'
+        ? { value: { message: { text: node.type } }, node }
+        : node.type === Unknown
+        ? { value: { you: "don't know me" }, node }
+        : { value: '_QUICK_REPLY_RENDERED_', node }
     ) || null
 );
 

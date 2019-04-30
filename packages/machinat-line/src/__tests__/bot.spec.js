@@ -4,7 +4,6 @@ import Machinat from 'machinat';
 import { Engine, Controller } from 'machinat-base';
 import WebhookReceiver from 'machinat-webhook-receiver';
 import LineBot from '../bot';
-import Client from '../client';
 import { LINE_NATIVE_TYPE } from '../symbol';
 
 nock.disableNetConnect();
@@ -17,13 +16,11 @@ const Bar = moxy(props => [props]);
 Bar.$$unit = true;
 Bar.$$native = LINE_NATIVE_TYPE;
 Bar.$$entry = moxy(() => 'bar');
-Bar.$$hasBody = false;
 
-const Baz = moxy(props => [props]);
+const Baz = moxy(() => [undefined]);
 Baz.$$unit = true;
 Baz.$$native = LINE_NATIVE_TYPE;
 Baz.$$entry = moxy(() => 'baz');
-Baz.$$hasBody = true;
 
 const msgs = [
   <Foo id={0} />,
@@ -87,7 +84,6 @@ it('has engine, controller, receiver and client', () => {
   expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
   expect(bot.controller).toBeInstanceOf(Controller);
   expect(bot.engine).toBeInstanceOf(Engine);
-  expect(bot.client).toBeInstanceOf(Client);
 });
 
 it('have plugins initiated', () => {
@@ -113,7 +109,6 @@ Object {
   "channelSecret": "_SECRET_",
   "connectionCapicity": 100,
   "shouldValidateRequest": true,
-  "useReplyAPI": false,
 }
 `);
 });
@@ -129,152 +124,70 @@ it('covers default options', () => {
   expect(new LineBot(options).options).toEqual(options);
 });
 
-test('#reply(token, node) works', async () => {
-  const bot = new LineBot({
-    accessToken,
-    channelSecret: '_SECRET_',
-    useReplyAPI: true,
+describe('#send(token, node, options)', () => {
+  it('works', async () => {
+    const bot = new LineBot({
+      accessToken,
+      channelSecret: '_SECRET_',
+      useReplyAPI: false,
+    });
+
+    const apiScope = lineAPI
+      .post(pathSpy, bodySpy)
+      .times(5)
+      .reply(200, '{}');
+
+    const results = await bot.send('john doe', msgs);
+
+    expect(results).toEqual([{}, {}, {}, {}, {}]);
+    expect(apiScope.isDone()).toBe(true);
+
+    expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
+      '/v2/bot/message/push',
+      '/v2/bot/message/push',
+      '/v2/bot/bar',
+      '/v2/bot/message/push',
+      '/v2/bot/baz',
+    ]);
+
+    expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchSnapshot();
   });
 
-  const apiScope = lineAPI
-    .post(pathSpy, bodySpy)
-    .times(5)
-    .reply(200, '{}');
+  it('works with replyToken', async () => {
+    const bot = new LineBot({
+      accessToken,
+      channelSecret: '_SECRET_',
+      useReplyAPI: true,
+    });
 
-  const results = await bot.reply('__REPLY_TOKEN__', msgs);
+    const apiScope = lineAPI.post(pathSpy, bodySpy).reply(200, '{}');
 
-  expect(results).toMatchSnapshot();
-  expect(apiScope.isDone()).toBe(true);
+    const results = await bot.send('john doe', msgs.slice(0, 5), {
+      replyToken: '__REPLY_TOKEN__',
+    });
 
-  expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
-    '/v2/bot/message/reply',
-    '/v2/bot/message/reply',
-    '/v2/bot/bar',
-    '/v2/bot/message/reply',
-    '/v2/bot/baz',
-  ]);
+    expect(results).toEqual([{}]);
+    expect(apiScope.isDone()).toBe(true);
 
-  expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "messages": Array [
-      Object {
-        "id": 0,
-      },
-      Object {
-        "id": 1,
-      },
-      Object {
-        "id": 2,
-      },
-      Object {
-        "id": 3,
-      },
-      Object {
-        "id": 4,
-      },
-    ],
-    "replyToken": "__REPLY_TOKEN__",
-  },
-  Object {
-    "messages": Array [
-      Object {
-        "id": 5,
-      },
-      Object {
-        "id": 6,
-      },
-    ],
-    "replyToken": "__REPLY_TOKEN__",
-  },
-  "",
-  Object {
-    "messages": Array [
-      Object {
-        "id": 8,
-      },
-    ],
-    "replyToken": "__REPLY_TOKEN__",
-  },
-  Object {
-    "id": 9,
-  },
-]
-`);
-});
-
-test('#push(token, node) works', async () => {
-  const bot = new LineBot({
-    accessToken,
-    channelSecret: '_SECRET_',
-    useReplyAPI: false,
+    expect(pathSpy.mock.calls[0].args[0]).toEqual('/v2/bot/message/reply');
+    expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchSnapshot();
   });
 
-  const apiScope = lineAPI
-    .post(pathSpy, bodySpy)
-    .times(5)
-    .reply(200, '{}');
+  it('throw if messages length more than 5 when using replyToken', () => {
+    const bot = new LineBot({
+      accessToken,
+      channelSecret: '_SECRET_',
+      useReplyAPI: true,
+    });
 
-  const results = await bot.push('john doe', msgs);
-
-  expect(results).toMatchSnapshot();
-  expect(apiScope.isDone()).toBe(true);
-
-  expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
-    '/v2/bot/message/push',
-    '/v2/bot/message/push',
-    '/v2/bot/bar',
-    '/v2/bot/message/push',
-    '/v2/bot/baz',
-  ]);
-
-  expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "messages": Array [
-      Object {
-        "id": 0,
-      },
-      Object {
-        "id": 1,
-      },
-      Object {
-        "id": 2,
-      },
-      Object {
-        "id": 3,
-      },
-      Object {
-        "id": 4,
-      },
-    ],
-    "to": "john doe",
-  },
-  Object {
-    "messages": Array [
-      Object {
-        "id": 5,
-      },
-      Object {
-        "id": 6,
-      },
-    ],
-    "to": "john doe",
-  },
-  "",
-  Object {
-    "messages": Array [
-      Object {
-        "id": 8,
-      },
-    ],
-    "to": "john doe",
-  },
-  Object {
-    "id": 9,
-  },
-]
-`);
+    expect(
+      bot.send('john doe', [0, 1, 2, 3, 4, 5], {
+        replyToken: '__REPLY_TOKEN__',
+      })
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"can not send more than 5 messages with a replyToken"`
+    );
+  });
 });
 
 test('#multicast(targets, node) works', async () => {
@@ -293,7 +206,7 @@ test('#multicast(targets, node) works', async () => {
     msgs.slice(0, 7)
   );
 
-  expect(results).toMatchSnapshot();
+  expect(results).toEqual([{}, {}]);
   expect(apiScope.isDone()).toBe(true);
 
   expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
@@ -301,47 +214,5 @@ test('#multicast(targets, node) works', async () => {
     '/v2/bot/message/multicast',
   ]);
 
-  expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "messages": Array [
-      Object {
-        "id": 0,
-      },
-      Object {
-        "id": 1,
-      },
-      Object {
-        "id": 2,
-      },
-      Object {
-        "id": 3,
-      },
-      Object {
-        "id": 4,
-      },
-    ],
-    "to": Array [
-      "john",
-      "wick",
-      "dog",
-    ],
-  },
-  Object {
-    "messages": Array [
-      Object {
-        "id": 5,
-      },
-      Object {
-        "id": 6,
-      },
-    ],
-    "to": Array [
-      "john",
-      "wick",
-      "dog",
-    ],
-  },
-]
-`);
+  expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchSnapshot();
 });

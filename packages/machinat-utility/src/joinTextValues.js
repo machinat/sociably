@@ -7,20 +7,20 @@ import type { RenderInnerFn } from 'machinat-renderer/types';
 import formatNode from './formatNode';
 
 const joinTextValues = (
-  node: MachinatNode,
+  message: MachinatNode,
   render: RenderInnerFn,
   propPath: string
 ) => {
-  const actions = render(node, propPath);
-  if (actions === null) {
+  const segments = render(message, propPath);
+  if (segments === null) {
     return undefined;
   }
 
   const values: (string | Symbol)[] = [];
 
-  for (let i = 0; i < actions.length; i += 1) {
-    const action = actions[i];
-    const { value } = action;
+  for (let i = 0; i < segments.length; i += 1) {
+    const segment = segments[i];
+    const { value } = segment;
     const len = values.length;
 
     if (typeof value === 'string') {
@@ -36,8 +36,8 @@ const joinTextValues = (
     } else {
       invariant(
         false,
-        `${formatNode(action.element)} at ${
-          action.path
+        `${formatNode(segment.node)} at ${
+          segment.path
         } is not rendered as text content`
       );
     }

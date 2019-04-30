@@ -20,50 +20,52 @@ const engine = moxy({
   dispatch: () => 'Vrooooooooooooooom',
 });
 
-const worker = moxy({
-  start: () => true,
-  stop: () => true,
-});
-
 beforeEach(() => {
   receiver.mock.clear();
   controller.mock.clear();
   engine.mock.clear();
-  worker.mock.clear();
 });
 
 it('extends EventEmitter', () => {
-  expect(new Bot(receiver, controller, engine, worker)).toBeInstanceOf(
-    EventEmitter
-  );
+  expect(new Bot(receiver, controller, engine)).toBeInstanceOf(EventEmitter);
 });
 
-describe('#constructor(controller, engine, worker, plugins)', () => {
+describe('#constructor(controller, engine, plugins)', () => {
   it('initiats with controller and engine', () => {
-    const bot = new Bot(receiver, controller, engine, worker);
+    const bot = new Bot(receiver, controller, engine);
 
     expect(bot.receiver).toBe(receiver);
     expect(bot.controller).toBe(controller);
     expect(bot.engine).toBe(engine);
-    expect(bot.worker).toBe(worker);
-  });
-
-  it('starts worker', () => {
-    const bot = new Bot(receiver, controller, engine, worker);
-
-    expect(bot.worker.start.mock).toHaveBeenCalledTimes(1);
-    expect(bot.worker.start.mock).toHaveBeenCalledWith(engine.queue);
   });
 
   it('setFramePrototype() with "bot" prop of engine and controller', () => {
-    const bot = new Bot(receiver, controller, engine, worker);
+    const bot = new Bot(receiver, controller, engine);
 
     expect(engine.setFramePrototype.mock).toHaveBeenCalledWith({ bot });
-    expect(controller.setFramePrototype.mock).toHaveBeenCalledWith({ bot });
+    expect(controller.setFramePrototype.mock).toHaveBeenCalledWith({
+      bot,
+      reply: expect.any(Function),
+    });
+  });
+
+  it('add reply() sugar to controller frame', () => {
+    const bot = new Bot(receiver, controller, engine);
+    bot.send = moxy(() => [{ success: 'hahaha' }]);
+
+    const frame = { thread: '__THE_THREAD_OBJ__' };
+    const { reply } = controller.setFramePrototype.mock.calls[0].args[0];
+
+    expect(reply.bind(frame)('foo', 'bar')).toEqual([{ success: 'hahaha' }]);
+    expect(bot.send.mock).toHaveBeenCalledWith(
+      '__THE_THREAD_OBJ__',
+      'foo',
+      'bar'
+    );
   });
 
   it('calls controller.makeEventHandler() with events firing callback', () => {
-    const bot = new Bot(receiver, controller, engine, worker);
+    const bot = new Bot(receiver, controller, engine);
 
     const onEvent = controller.makeEventHandler.mock.calls[0].args[0];
 
@@ -77,7 +79,7 @@ describe('#constructor(controller, engine, worker, plugins)', () => {
   });
 
   it('calls receiver.bind() with eventHandler and errorHandler', () => {
-    const bot = new Bot(receiver, controller, engine, worker);
+    const bot = new Bot(receiver, controller, engine);
 
     expect(receiver.bind.mock).toHaveBeenCalledTimes(1);
     expect(receiver.bind.mock.calls[0].args[0]).toBe(
@@ -115,7 +117,7 @@ describe('#constructor(controller, engine, worker, plugins)', () => {
       })),
     ];
 
-    const bot = new Bot(receiver, controller, engine, worker, plugins);
+    const bot = new Bot(receiver, controller, engine, plugins);
 
     plugins.forEach(pluginFn => {
       expect(pluginFn.mock).toHaveBeenCalledTimes(1);
@@ -130,10 +132,12 @@ describe('#constructor(controller, engine, worker, plugins)', () => {
       foo: 2,
       bar: 1,
     });
+
     expect(controller.setFramePrototype.mock).toHaveBeenCalledWith({
       bot,
       foo: 1,
       bar: 2,
+      reply: expect.any(Function),
     });
   });
 });

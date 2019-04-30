@@ -1,6 +1,6 @@
 // @flow
 import { toJSONWithProto } from 'machinat-utility';
-import { ChatThread } from '../thread';
+import MessengerThread from '../thread';
 
 export const EventBase = {
   platform: 'messenger',
@@ -20,7 +20,7 @@ export const EventBase = {
         ? { user_ref: this.optin.user_ref }
         : this.payload.sender;
 
-    return new ChatThread(source);
+    return new MessengerThread(source);
   },
 };
 

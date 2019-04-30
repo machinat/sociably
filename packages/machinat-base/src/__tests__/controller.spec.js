@@ -124,7 +124,7 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
       expect(finalHandler.mock).toHaveBeenNthCalledWith(i, {
         event: { id: i },
         source: 'test',
-        transportContext: ctx,
+        transportation: ctx,
       });
     }
   });
@@ -140,7 +140,7 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     expect(finalHandler.mock).toHaveBeenCalledWith({
       event,
       source: 'test',
-      transportContext: ctx,
+      transportation: ctx,
     });
   });
 
@@ -151,7 +151,7 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     const expectedFrame = {
       event,
       source: 'test',
-      transportContext: ctx,
+      transportation: ctx,
     };
 
     const middleware1 = next => async frame => {
@@ -197,7 +197,7 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     expect(finalHandler.mock).toHaveBeenCalledWith({
       event,
       source: 'test',
-      transportContext: ctx,
+      transportation: ctx,
       foo: true,
       bar: true,
       baz: true,
