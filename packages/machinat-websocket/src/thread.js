@@ -7,12 +7,12 @@ class WebThread implements MachinatThread<WebMessageJob, void> {
   uid: string;
   id: string;
 
-  platform = 'web';
+  platform = 'websocket';
   allowPause = true;
 
   static fromUid(uid: string): null | WebThread {
     const [platform, type, subtype, id] = uid.split(':');
-    if (platform !== 'web' || !type || !id) {
+    if (platform !== 'websocket' || !type || !id) {
       return null;
     }
 

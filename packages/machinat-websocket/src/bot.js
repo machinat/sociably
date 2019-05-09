@@ -1,6 +1,6 @@
 // @flow
 import { MachinatBot } from 'machinat-base/types';
 
-class WebBot {}
+class WebSocketBot {}
 
-export default WebBot;
+export default WebSocketBot;

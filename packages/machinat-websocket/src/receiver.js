@@ -17,7 +17,7 @@ import createEvent from './event';
 
 type WebSocketServer = $ElementType<Class<WebSocket>, 'Server'>;
 
-const WEB = 'web';
+const WEBSOCKET = 'websocket';
 
 const rejectUpgrade = (socket: Socket, code: number, message?: string) => {
   const codeName = http.STATUS_CODES[code];
@@ -156,7 +156,7 @@ class WebAdaptor
     const event = createEvent(type, subtype, thread, channel.id, payload);
 
     try {
-      this._handleEvent(WEB, event, {
+      this._handleEvent(WEBSOCKET, event, {
         info,
         channelId: channel.id,
         request: channel.request,
