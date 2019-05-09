@@ -2,8 +2,8 @@ import {
   asNative,
   asNamespace,
   annotate,
-  wrapPartSegment,
-  wrapUnitSegment,
+  wrapSinglePartSegment,
+  wrapSingleUnitSegment,
 } from 'machinat-renderer';
 import { compose } from 'machinat-utility';
 
@@ -18,21 +18,21 @@ export const asContainerComponent = compose(
   asNamespace(MESSENGER_NAMESPACE)
 );
 
-export const asPartComponent = compose(
+export const asSinglePartComponent = compose(
   asNative(MESSENGER_NAITVE_TYPE),
   asNamespace(MESSENGER_NAMESPACE),
-  wrapPartSegment
+  wrapSinglePartSegment
 );
 
-export const asUnitComponentWithEntry = entry =>
+export const asSingleUnitComponentWithEntry = entry =>
   compose(
     asNative(MESSENGER_NAITVE_TYPE),
     asNamespace(MESSENGER_NAMESPACE),
     annotate('$$entry', entry),
-    wrapUnitSegment
+    wrapSingleUnitSegment
   );
 
-export const asMessagesUnitComponent = asUnitComponentWithEntry(ENTRY_MESSAGES);
+export const asSingleMessageUnitComponent = asSingleUnitComponentWithEntry(ENTRY_MESSAGES);
 
 export const mapSegmentValue = mapper => segments => {
   if (segments === null) {

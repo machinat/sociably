@@ -1,18 +1,16 @@
 /* eslint-disable import/prefer-default-export */
-import { asMessageUnitComponent } from './utils';
+import { asSingleMessageUnitComponent } from './utils';
 
 const Location = ({
   props: { title, address, lat, latitude, long, longitude },
-}) => [
-  {
-    type: 'location',
-    title,
-    address,
-    latitude: latitude || lat,
-    longitude: longitude || long,
-  },
-];
+}) => ({
+  type: 'location',
+  title,
+  address,
+  latitude: latitude || lat,
+  longitude: longitude || long,
+});
 
-const __Location = asMessageUnitComponent(Location);
+const __Location = asSingleMessageUnitComponent(Location);
 
 export { __Location as Location };

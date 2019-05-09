@@ -1,16 +1,16 @@
-import { asMessagesUnitComponent } from './utils';
+import { asSingleMessageUnitComponent } from './utils';
 
-const MARK_SEEN_RENDERED = [{ sender_action: 'mark_seen' }];
+const MARK_SEEN_RENDERED = { sender_action: 'mark_seen' };
 const MarkSeen = () => MARK_SEEN_RENDERED;
-const __MarkSeen = asMessagesUnitComponent(MarkSeen);
+const __MarkSeen = asSingleMessageUnitComponent(MarkSeen);
 
-const TYPING_ON_RENDERED = [{ sender_action: 'typing_on' }];
+const TYPING_ON_RENDERED = { sender_action: 'typing_on' };
 const TypingOn = () => TYPING_ON_RENDERED;
-const __TypingOn = asMessagesUnitComponent(TypingOn);
+const __TypingOn = asSingleMessageUnitComponent(TypingOn);
 
-const TYPING_OFF_RENDERED = [{ sender_action: 'typing_off' }];
+const TYPING_OFF_RENDERED = { sender_action: 'typing_off' };
 const TypingOff = () => TYPING_OFF_RENDERED;
-const __TypingOff = asMessagesUnitComponent(TypingOff);
+const __TypingOff = asSingleMessageUnitComponent(TypingOff);
 
 export {
   __MarkSeen as MarkSeen,

@@ -1,10 +1,10 @@
 /* eslint-disable import/prefer-default-export */
 import invariant from 'invariant';
-import { asUnitComponentWithEntryGetter } from './utils';
+import { asSingleUnitComponentWithEntryGetter } from './utils';
 
-const LinkRichMenu = ({ props: { id } }) => [{ id }];
+const LinkRichMenu = ({ props: { id } }) => ({ id });
 
-const __LinkRichMenu = asUnitComponentWithEntryGetter((thread, act) => {
+const __LinkRichMenu = asSingleUnitComponentWithEntryGetter((thread, act) => {
   const { type, subtype, source } = thread;
 
   invariant(

@@ -1,6 +1,6 @@
 import { valuesOfAssertedType } from 'machinat-utility';
 
-import { asPartComponent, asMessageUnitComponent } from './utils';
+import { asSinglePartComponent, asSingleMessageUnitComponent } from './utils';
 import * as _actionModule from './action';
 
 const actionComponents = Object.values(_actionModule);
@@ -28,41 +28,37 @@ const ButtonTemplate = (
     render(defaultAction, '.defaultAction')
   );
 
-  return [
-    {
-      type: 'template',
-      altText: altText || alt,
-      template: {
-        type: 'buttons',
-        thumbnailImageUrl: thumbnailImageUrl || imageURL,
-        imageAspectRatio,
-        imageSize,
-        imageBackgroundColor,
-        title,
-        text,
-        defaultAction: defaultActionValues && defaultActionValues[0],
-        actions: getActionValues(render(children, '.children')),
-      },
+  return {
+    type: 'template',
+    altText: altText || alt,
+    template: {
+      type: 'buttons',
+      thumbnailImageUrl: thumbnailImageUrl || imageURL,
+      imageAspectRatio,
+      imageSize,
+      imageBackgroundColor,
+      title,
+      text,
+      defaultAction: defaultActionValues && defaultActionValues[0],
+      actions: getActionValues(render(children, '.children')),
     },
-  ];
+  };
 };
-const __ButtonTemplate = asMessageUnitComponent(ButtonTemplate);
+const __ButtonTemplate = asSingleMessageUnitComponent(ButtonTemplate);
 
 const ConfirmTemplate = (
   { props: { children, alt, altText, text } },
   render
-) => [
-  {
-    type: 'template',
-    altText: altText || alt,
-    template: {
-      type: 'confirm',
-      text,
-      actions: getActionValues(render(children, '.children')),
-    },
+) => ({
+  type: 'template',
+  altText: altText || alt,
+  template: {
+    type: 'confirm',
+    text,
+    actions: getActionValues(render(children, '.children')),
   },
-];
-const __ConfirmTemplate = asMessageUnitComponent(ConfirmTemplate);
+});
+const __ConfirmTemplate = asSingleMessageUnitComponent(ConfirmTemplate);
 
 const CarouselItem = (
   {
@@ -82,67 +78,61 @@ const CarouselItem = (
     render(defaultAction, '.defaultAction')
   );
 
-  return [
-    {
-      thumbnailImageUrl: thumbnailImageUrl || imageURL,
-      imageBackgroundColor,
-      title,
-      text,
-      defaultAction: defaultActionValues && defaultActionValues[0],
-      actions: getActionValues(render(children, '.children')),
-    },
-  ];
+  return {
+    thumbnailImageUrl: thumbnailImageUrl || imageURL,
+    imageBackgroundColor,
+    title,
+    text,
+    defaultAction: defaultActionValues && defaultActionValues[0],
+    actions: getActionValues(render(children, '.children')),
+  };
 };
-const __CarouselItem = asPartComponent(CarouselItem);
+const __CarouselItem = asSinglePartComponent(CarouselItem);
 
 const getCarouselItemValues = valuesOfAssertedType(__CarouselItem);
 
 const CarouselTemplate = (
   { props: { children, alt, altText, imageAspectRatio, imageSize } },
   render
-) => [
-  {
-    type: 'template',
-    altText: altText || alt,
-    template: {
-      type: 'carousel',
-      imageAspectRatio,
-      imageSize,
-      columns: getCarouselItemValues(render(children, '.children')),
-    },
+) => ({
+  type: 'template',
+  altText: altText || alt,
+  template: {
+    type: 'carousel',
+    imageAspectRatio,
+    imageSize,
+    columns: getCarouselItemValues(render(children, '.children')),
   },
-];
-const __CarouselTemplate = asMessageUnitComponent(CarouselTemplate);
+});
+const __CarouselTemplate = asSingleMessageUnitComponent(CarouselTemplate);
 
 const ImageCarouselItem = ({ props: { url, imageUrl, action } }, render) => {
   const actionValues = getActionValues(render(action, '.action'));
 
-  return [
-    {
-      imageUrl: imageUrl || url,
-      action: actionValues && actionValues[0],
-    },
-  ];
+  return {
+    imageUrl: imageUrl || url,
+    action: actionValues && actionValues[0],
+  };
 };
 
-const __ImageCarouselItem = asPartComponent(ImageCarouselItem);
+const __ImageCarouselItem = asSinglePartComponent(ImageCarouselItem);
 
 const getImageCarouselItemValues = valuesOfAssertedType(__ImageCarouselItem);
 
 const ImageCarouselTemplate = (
   { props: { children, alt, altText } },
   render
-) => [
-  {
-    type: 'template',
-    altText: altText || alt,
-    template: {
-      type: 'image_carousel',
-      columns: getImageCarouselItemValues(render(children, '.children')),
-    },
+) => ({
+  type: 'template',
+  altText: altText || alt,
+  template: {
+    type: 'image_carousel',
+    columns: getImageCarouselItemValues(render(children, '.children')),
   },
-];
-const __ImageCarouselTemplate = asMessageUnitComponent(ImageCarouselTemplate);
+});
+const __ImageCarouselTemplate = asSingleMessageUnitComponent(
+  ImageCarouselTemplate
+);
 
 export {
   __ButtonTemplate as ButtonTemplate,

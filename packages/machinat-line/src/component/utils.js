@@ -3,8 +3,8 @@ import {
   asNative,
   asNamespace,
   annotate,
-  wrapPartSegment,
-  wrapUnitSegment,
+  wrapSinglePartSegment,
+  wrapSingleUnitSegment,
 } from 'machinat-renderer';
 
 import { LINE_NAMESPACE, LINE_NATIVE_TYPE } from '../constant';
@@ -14,22 +14,22 @@ export const asContainerComponent = compose(
   asNamespace(LINE_NAMESPACE)
 );
 
-export const asPartComponent = compose(
+export const asSinglePartComponent = compose(
   asNative(LINE_NATIVE_TYPE),
   asNamespace(LINE_NAMESPACE),
-  wrapPartSegment
+  wrapSinglePartSegment
 );
 
-export const asMessageUnitComponent = compose(
+export const asSingleMessageUnitComponent = compose(
   asNative(LINE_NATIVE_TYPE),
   asNamespace(LINE_NAMESPACE),
-  wrapUnitSegment
+  wrapSingleUnitSegment
 );
 
-export const asUnitComponentWithEntryGetter = entry =>
+export const asSingleUnitComponentWithEntryGetter = entry =>
   compose(
     asNative(LINE_NATIVE_TYPE),
     asNamespace(LINE_NAMESPACE),
     annotate('$$getEntry', entry),
-    wrapUnitSegment
+    wrapSingleUnitSegment
   );

@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import { joinTextualSegments, valuesOfAssertedType } from 'machinat-utility';
 
-import { asPartComponent, asMessageUnitComponent } from './utils';
+import { asSinglePartComponent, asSingleMessageUnitComponent } from './utils';
 import * as actionsModule from './action';
 
 const getActionValues = valuesOfAssertedType(...Object.values(actionsModule));
@@ -19,35 +19,31 @@ const FlexButton = (
     }`
   );
 
-  return [
-    {
-      type: 'button',
-      flex,
-      margin,
-      height,
-      style,
-      color,
-      gravity,
-      action: actionValues[0],
-    },
-  ];
-};
-const __FlexButton = asPartComponent(FlexButton);
-
-const FILLER_TYPE_VLUES = [{ type: 'filler' }];
-const FlexFiller = () => FILLER_TYPE_VLUES;
-const __FlexFiller = asPartComponent(FlexFiller);
-
-const FlexIcon = ({ props: { url, margin, size, aspectRatio } }) => [
-  {
-    type: 'icon',
-    url,
+  return {
+    type: 'button',
+    flex,
     margin,
-    size,
-    aspectRatio,
-  },
-];
-const __FlexIcon = asPartComponent(FlexIcon);
+    height,
+    style,
+    color,
+    gravity,
+    action: actionValues[0],
+  };
+};
+const __FlexButton = asSinglePartComponent(FlexButton);
+
+const FILLER_TYPE_VLUES = { type: 'filler' };
+const FlexFiller = () => FILLER_TYPE_VLUES;
+const __FlexFiller = asSinglePartComponent(FlexFiller);
+
+const FlexIcon = ({ props: { url, margin, size, aspectRatio } }) => ({
+  type: 'icon',
+  url,
+  margin,
+  size,
+  aspectRatio,
+});
+const __FlexIcon = asSinglePartComponent(FlexIcon);
 
 const FlexImage = (
   {
@@ -68,40 +64,34 @@ const FlexImage = (
 ) => {
   const actionValues = getActionValues(render(action, '.action'));
 
-  return [
-    {
-      type: 'image',
-      url,
-      flex,
-      margin,
-      align,
-      gravity,
-      size,
-      aspectRatio,
-      aspectMode,
-      backgroundColor,
-      action: actionValues && actionValues[0],
-    },
-  ];
-};
-const __FlexImage = asPartComponent(FlexImage);
-
-const FlexSeparator = ({ props: { margin, color } }) => [
-  {
-    type: 'separator',
+  return {
+    type: 'image',
+    url,
+    flex,
     margin,
-    color,
-  },
-];
-const __FlexSeparator = asPartComponent(FlexSeparator);
-
-const FlexSpacer = ({ props: { size } }) => [
-  {
-    type: 'spacer',
+    align,
+    gravity,
     size,
-  },
-];
-const __FlexSpacer = asPartComponent(FlexSpacer);
+    aspectRatio,
+    aspectMode,
+    backgroundColor,
+    action: actionValues && actionValues[0],
+  };
+};
+const __FlexImage = asSinglePartComponent(FlexImage);
+
+const FlexSeparator = ({ props: { margin, color } }) => ({
+  type: 'separator',
+  margin,
+  color,
+});
+const __FlexSeparator = asSinglePartComponent(FlexSeparator);
+
+const FlexSpacer = ({ props: { size } }) => ({
+  type: 'spacer',
+  size,
+});
+const __FlexSpacer = asSinglePartComponent(FlexSpacer);
 
 const FlexText = (
   {
@@ -135,24 +125,22 @@ const FlexText = (
 
   const actionsValue = getActionValues(render(action, '.action'));
 
-  return [
-    {
-      type: 'text',
-      text,
-      flex,
-      margin,
-      size,
-      align,
-      gravity,
-      wrap,
-      maxLines,
-      weight,
-      color,
-      action: actionsValue && actionsValue[0],
-    },
-  ];
+  return {
+    type: 'text',
+    text,
+    flex,
+    margin,
+    size,
+    align,
+    gravity,
+    wrap,
+    maxLines,
+    weight,
+    color,
+    action: actionsValue && actionsValue[0],
+  };
 };
-const __FlexText = asPartComponent(FlexText);
+const __FlexText = asSinglePartComponent(FlexText);
 
 let getBoxContentValue;
 
@@ -168,19 +156,17 @@ const FlexBox = (
     `children of FlexBox should not be empty`
   );
 
-  return [
-    {
-      type: 'box',
-      layout,
-      flex,
-      spacing,
-      margin,
-      action: actionValues && actionValues[0],
-      contents: contentValues,
-    },
-  ];
+  return {
+    type: 'box',
+    layout,
+    flex,
+    spacing,
+    margin,
+    action: actionValues && actionValues[0],
+    contents: contentValues,
+  };
 };
-const __FlexBox = asPartComponent(FlexBox);
+const __FlexBox = asSinglePartComponent(FlexBox);
 
 getBoxContentValue = valuesOfAssertedType(
   __FlexBox,
@@ -210,24 +196,22 @@ const createBlockComponent = (section, valueFetcher) => {
         }`
       );
 
-      return [
-        {
-          name: section,
-          content: contentValues[0],
-          style:
-            backgroundColor || separator || separatorColor
-              ? {
-                  backgroundColor,
-                  separator,
-                  separatorColor,
-                }
-              : undefined,
-        },
-      ];
+      return {
+        name: section,
+        content: contentValues[0],
+        style:
+          backgroundColor || separator || separatorColor
+            ? {
+                backgroundColor,
+                separator,
+                separatorColor,
+              }
+            : undefined,
+      };
     },
   };
 
-  return asPartComponent(wrapper[tagName]);
+  return asSinglePartComponent(wrapper[tagName]);
 };
 
 const getBoxValues = valuesOfAssertedType(__FlexBox);
@@ -272,19 +256,17 @@ const FlexBubbleContainer = ({ props: { children, rightToLeft } }, render) => {
     }
   }
 
-  return [bubbleObject];
+  return bubbleObject;
 };
-const __FlexBubbleContainer = asPartComponent(FlexBubbleContainer);
+const __FlexBubbleContainer = asSinglePartComponent(FlexBubbleContainer);
 
 const getBubbleContainerValues = valuesOfAssertedType(__FlexBubbleContainer);
 
-const FlexCarouselContainer = ({ props: { children } }, render) => [
-  {
-    type: 'carousel',
-    contents: getBubbleContainerValues(render(children, '.children')),
-  },
-];
-const __FlexCarouselContainer = asPartComponent(FlexCarouselContainer);
+const FlexCarouselContainer = ({ props: { children } }, render) => ({
+  type: 'carousel',
+  contents: getBubbleContainerValues(render(children, '.children')),
+});
+const __FlexCarouselContainer = asSinglePartComponent(FlexCarouselContainer);
 
 const getContainerValues = valuesOfAssertedType(
   __FlexBubbleContainer,
@@ -301,15 +283,13 @@ const FlexMessage = ({ props: { children, alt, altText } }, render) => {
     }`
   );
 
-  return [
-    {
-      type: 'flex',
-      altText: altText || alt,
-      contents: containerValues[0],
-    },
-  ];
+  return {
+    type: 'flex',
+    altText: altText || alt,
+    contents: containerValues[0],
+  };
 };
-const __FlexMessage = asMessageUnitComponent(FlexMessage);
+const __FlexMessage = asSingleMessageUnitComponent(FlexMessage);
 
 export default {
   Box: __FlexBox,

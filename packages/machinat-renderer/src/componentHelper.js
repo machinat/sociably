@@ -53,8 +53,12 @@ export const textSegment = (
   path,
 });
 
-export const wrapPartSegment = <Value>(
-  _component: (NativeElement<any>, RenderInnerFn<Value, any>, string) => Value[]
+export const wrapSinglePartSegment = <Value>(
+  _component: (
+    NativeElement<any>,
+    RenderInnerFn<Value, any>,
+    string
+  ) => null | Value
 ) => {
   const { name } = _component;
 
@@ -64,30 +68,31 @@ export const wrapPartSegment = <Value>(
       render: RenderInnerFn<Value, any>,
       path: string
     ) => {
-      const values = _component(element, render, path);
-      if (values === null) {
+      const value = _component(element, render, path);
+      if (value === null) {
         return null;
       }
 
-      const segments: PartSegment<Value, any>[] = new Array(values.length);
-      for (let i = 0; i < values.length; i += 1) {
-        segments[i] = {
+      return [
+        {
           type: 'part',
           node: element,
-          value: values[i],
+          value,
           path,
-        };
-      }
-
-      return segments;
+        },
+      ];
     },
   };
 
   return box[name];
 };
 
-export const wrapUnitSegment = <Value>(
-  _component: (NativeElement<any>, RenderInnerFn<Value, any>, string) => Value[]
+export const wrapSingleUnitSegment = <Value>(
+  _component: (
+    NativeElement<any>,
+    RenderInnerFn<Value, any>,
+    string
+  ) => null | Value
 ) => {
   const { name } = _component;
 
@@ -97,22 +102,19 @@ export const wrapUnitSegment = <Value>(
       render: RenderInnerFn<Value, any>,
       path: string
     ) => {
-      const values = _component(element, render, path);
-      if (values === null) {
+      const value = _component(element, render, path);
+      if (value === null) {
         return null;
       }
 
-      const segments: UnitSegment<Value, any>[] = new Array(values.length);
-      for (let i = 0; i < values.length; i += 1) {
-        segments[i] = {
+      return [
+        {
           type: 'unit',
           node: element,
-          value: values[i],
+          value,
           path,
-        };
-      }
-
-      return segments;
+        },
+      ];
     },
   };
 

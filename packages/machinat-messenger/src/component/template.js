@@ -2,7 +2,7 @@ import invariant from 'invariant';
 import { joinTextualSegments, valuesOfAssertedType } from 'machinat-utility';
 
 import * as buttonModule from './button';
-import { asMessagesUnitComponent, asPartComponent } from './utils';
+import { asSingleMessageUnitComponent, asSinglePartComponent } from './utils';
 
 const buttonComponents = Object.values(buttonModule);
 
@@ -35,60 +35,54 @@ const GenericItem = (
     defaultAction = defaultActionVal;
   }
 
-  return [
-    {
-      title,
-      image_url: imageURL,
-      subtitle,
-      default_action: defaultAction,
-      buttons: getButtonValues(buttonSegments),
-    },
-  ];
+  return {
+    title,
+    image_url: imageURL,
+    subtitle,
+    default_action: defaultAction,
+    buttons: getButtonValues(buttonSegments),
+  };
 };
-const __GenericItem = asPartComponent(GenericItem);
+const __GenericItem = asSinglePartComponent(GenericItem);
 
 const getGenericItemValues = valuesOfAssertedType(__GenericItem);
 
 const GenericTemplate = (
   { props: { children, sharable, imageAspectRatio } },
   render
-) => [
-  {
-    message: {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'generic',
-          sharable,
-          image_aspect_ratio: imageAspectRatio,
-          elements: getGenericItemValues(render(children, CHILDREN)),
-        },
+) => ({
+  message: {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'generic',
+        sharable,
+        image_aspect_ratio: imageAspectRatio,
+        elements: getGenericItemValues(render(children, CHILDREN)),
       },
     },
   },
-];
-const __GenericTemplate = asMessagesUnitComponent(GenericTemplate);
+});
+const __GenericTemplate = asSingleMessageUnitComponent(GenericTemplate);
 
 const ListTemplate = (
   { props: { children, topStyle, sharable, button } },
   render
-) => [
-  {
-    message: {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'list',
-          top_element_style: topStyle,
-          sharable,
-          elements: getGenericItemValues(render(children, CHILDREN)),
-          buttons: getButtonValues(render(button, '.button')),
-        },
+) => ({
+  message: {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'list',
+        top_element_style: topStyle,
+        sharable,
+        elements: getGenericItemValues(render(children, CHILDREN)),
+        buttons: getButtonValues(render(button, '.button')),
       },
     },
   },
-];
-const __ListTemplate = asMessagesUnitComponent(ListTemplate);
+});
+const __ListTemplate = asSingleMessageUnitComponent(ListTemplate);
 
 const ButtonTemplate = ({ props: { children, text, sharable } }, render) => {
   const segments = joinTextualSegments(render(text, '.text'));
@@ -103,84 +97,76 @@ const ButtonTemplate = ({ props: { children, text, sharable } }, render) => {
       : `prop "text" of <ButtonTemplate /> should not be empty`
   );
 
-  return [
-    {
-      message: {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'button',
-            text: textValue,
-            sharable,
-            buttons: getButtonValues(render(children, CHILDREN)),
-          },
+  return {
+    message: {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'button',
+          text: textValue,
+          sharable,
+          buttons: getButtonValues(render(children, CHILDREN)),
         },
       },
     },
-  ];
+  };
 };
-const __ButtonTemplate = asMessagesUnitComponent(ButtonTemplate);
+const __ButtonTemplate = asSingleMessageUnitComponent(ButtonTemplate);
 
 const MediaTemplate = (
   { props: { children, type, attachmentId, url, sharable } },
   render
-) => [
-  {
-    message: {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'media',
-          sharable,
-          elements: [
-            {
-              media_type: type,
-              url,
-              attachment_id: attachmentId,
-              buttons: getButtonValues(render(children, CHILDREN)),
-            },
-          ],
-        },
+) => ({
+  message: {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'media',
+        sharable,
+        elements: [
+          {
+            media_type: type,
+            url,
+            attachment_id: attachmentId,
+            buttons: getButtonValues(render(children, CHILDREN)),
+          },
+        ],
       },
     },
   },
-];
-const __MediaTemplate = asMessagesUnitComponent(MediaTemplate);
+});
+const __MediaTemplate = asSingleMessageUnitComponent(MediaTemplate);
 
-const OpenGraphTemplate = ({ props: { children, url, sharable } }, render) => [
-  {
-    message: {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'open_graph',
-          sharable,
-          elements: [
-            {
-              url,
-              buttons: getButtonValues(render(children, CHILDREN)),
-            },
-          ],
-        },
+const OpenGraphTemplate = ({ props: { children, url, sharable } }, render) => ({
+  message: {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'open_graph',
+        sharable,
+        elements: [
+          {
+            url,
+            buttons: getButtonValues(render(children, CHILDREN)),
+          },
+        ],
       },
     },
   },
-];
-const __OpenGraphTemplate = asMessagesUnitComponent(OpenGraphTemplate);
+});
+const __OpenGraphTemplate = asSingleMessageUnitComponent(OpenGraphTemplate);
 
 const ReceiptItem = ({
   props: { title, subtitle, quantity, price, currency, imageURL },
-}) => [
-  {
-    title,
-    subtitle,
-    quantity,
-    price,
-    currency,
-    image_url: imageURL,
-  },
-];
-const __ReceiptItem = asPartComponent(ReceiptItem);
+}) => ({
+  title,
+  subtitle,
+  quantity,
+  price,
+  currency,
+  image_url: imageURL,
+});
+const __ReceiptItem = asSinglePartComponent(ReceiptItem);
 
 const getReceiptItemValues = valuesOfAssertedType(__ReceiptItem);
 
@@ -201,34 +187,32 @@ const ReceiptTemplate = (
     },
   },
   render
-) => [
-  {
-    message: {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'receipt',
-          sharable,
-          recipient_name: recipientName,
-          order_number: orderNumber,
-          currency,
-          payment_method: paymentMethod,
-          order_url: orderURL,
-          timestamp:
-            timestamp instanceof Date
-              ? `${Math.floor(timestamp.getTime() / 1000)}`
-              : timestamp,
-          address,
-          summary,
-          adjustments,
-          elements: getReceiptItemValues(render(children, CHILDREN)),
-        },
+) => ({
+  message: {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'receipt',
+        sharable,
+        recipient_name: recipientName,
+        order_number: orderNumber,
+        currency,
+        payment_method: paymentMethod,
+        order_url: orderURL,
+        timestamp:
+          timestamp instanceof Date
+            ? `${Math.floor(timestamp.getTime() / 1000)}`
+            : timestamp,
+        address,
+        summary,
+        adjustments,
+        elements: getReceiptItemValues(render(children, CHILDREN)),
       },
     },
   },
-];
+});
 
-const __ReceiptTemplate = asMessagesUnitComponent(ReceiptTemplate);
+const __ReceiptTemplate = asSingleMessageUnitComponent(ReceiptTemplate);
 
 export {
   __GenericItem as GenericItem,

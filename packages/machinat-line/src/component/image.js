@@ -1,28 +1,24 @@
 import invariant from 'invariant';
 import { valuesOfAssertedType } from 'machinat-utility';
 
-import { asPartComponent, asMessageUnitComponent } from './utils';
+import { asSinglePartComponent, asSingleMessageUnitComponent } from './utils';
 import { URIAction, MessageAction } from './action';
 
 const Image = ({
   props: { url, originalContentUrl, previewURL, previewImageUrl },
-}) => [
-  {
-    type: 'image',
-    originalContentUrl: originalContentUrl || url,
-    previewImageUrl: previewImageUrl || previewURL,
-  },
-];
-const __Image = asMessageUnitComponent(Image);
+}) => ({
+  type: 'image',
+  originalContentUrl: originalContentUrl || url,
+  previewImageUrl: previewImageUrl || previewURL,
+});
+const __Image = asSingleMessageUnitComponent(Image);
 
-const Sticker = ({ props: { stickerId, packageId } }) => [
-  {
-    type: 'sticker',
-    packageId,
-    stickerId,
-  },
-];
-const __Sticker = asMessageUnitComponent(Sticker);
+const Sticker = ({ props: { stickerId, packageId } }) => ({
+  type: 'sticker',
+  packageId,
+  stickerId,
+});
+const __Sticker = asSingleMessageUnitComponent(Sticker);
 
 const getImageMapActionValues = valuesOfAssertedType(URIAction, MessageAction);
 
@@ -40,33 +36,31 @@ const ImageMapArea = ({ props: { action, x, y, width, height } }, render) => {
 
   const [actionValue] = actionValues;
 
-  return [
-    actionValue.type === 'uri'
-      ? {
-          type: 'uri',
-          label: actionValue.label,
-          linkUri: actionValue.uri,
-          area: {
-            x,
-            y,
-            width,
-            height,
-          },
-        }
-      : {
-          type: 'message',
-          label: actionValue.label,
-          text: actionValue.text,
-          area: {
-            x,
-            y,
-            width,
-            height,
-          },
+  return actionValue.type === 'uri'
+    ? {
+        type: 'uri',
+        label: actionValue.label,
+        linkUri: actionValue.uri,
+        area: {
+          x,
+          y,
+          width,
+          height,
         },
-  ];
+      }
+    : {
+        type: 'message',
+        label: actionValue.label,
+        text: actionValue.text,
+        area: {
+          x,
+          y,
+          width,
+          height,
+        },
+      };
 };
-const __ImageMapArea = asPartComponent(ImageMapArea);
+const __ImageMapArea = asSinglePartComponent(ImageMapArea);
 
 const renderURIActionValues = valuesOfAssertedType(URIAction);
 
@@ -88,24 +82,22 @@ const ImageMapVideoArea = (
 ) => {
   const actionValues = renderURIActionValues(render(action, '.action'));
 
-  return [
-    {
-      originalContentUrl: originalContentUrl || url,
-      previewImageUrl: previewImageUrl || previewURL,
-      area: {
-        x,
-        y,
-        width,
-        height,
-      },
-      externalLink: actionValues && {
-        linkUri: actionValues[0].uri,
-        label: actionValues[0].label,
-      },
+  return {
+    originalContentUrl: originalContentUrl || url,
+    previewImageUrl: previewImageUrl || previewURL,
+    area: {
+      x,
+      y,
+      width,
+      height,
     },
-  ];
+    externalLink: actionValues && {
+      linkUri: actionValues[0].uri,
+      label: actionValues[0].label,
+    },
+  };
 };
-const __ImageMapVideoArea = asPartComponent(ImageMapVideoArea);
+const __ImageMapVideoArea = asSinglePartComponent(ImageMapVideoArea);
 
 const getVideoAreaValues = valuesOfAssertedType(__ImageMapVideoArea);
 const renderActionAreaValues = valuesOfAssertedType(__ImageMapArea);
@@ -116,21 +108,19 @@ const ImageMap = (
 ) => {
   const videoValues = getVideoAreaValues(render(video, '.video'));
 
-  return [
-    {
-      type: 'imagemap',
-      baseUrl: baseUrl || baseURL,
-      altText: altText || alt,
-      baseSize: {
-        width: 1040,
-        height,
-      },
-      actions: renderActionAreaValues(render(children, '.children')),
-      video: videoValues && videoValues[0],
+  return {
+    type: 'imagemap',
+    baseUrl: baseUrl || baseURL,
+    altText: altText || alt,
+    baseSize: {
+      width: 1040,
+      height,
     },
-  ];
+    actions: renderActionAreaValues(render(children, '.children')),
+    video: videoValues && videoValues[0],
+  };
 };
-const __ImageMap = asMessageUnitComponent(ImageMap);
+const __ImageMap = asSingleMessageUnitComponent(ImageMap);
 
 export {
   __Image as Image,

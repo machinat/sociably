@@ -3,7 +3,7 @@ import invariant from 'invariant';
 import { compose, joinTextualSegments } from 'machinat-utility';
 import {
   mapSegmentValue,
-  asMessagesUnitComponent,
+  asSingleMessageUnitComponent,
   asContainerComponent,
 } from './utils';
 
@@ -34,17 +34,15 @@ const DynamicText = ({ props: { children, fallback } }, render) => {
     '<br/> is invalid with in children of DynamicText'
   );
 
-  return [
-    {
-      message: {
-        dynamic_text: {
-          text: textValue,
-          fallback_text: fallback,
-        },
+  return {
+    message: {
+      dynamic_text: {
+        text: textValue,
+        fallback_text: fallback,
       },
     },
-  ];
+  };
 };
-const __DynamicText = asMessagesUnitComponent(DynamicText);
+const __DynamicText = asSingleMessageUnitComponent(DynamicText);
 
 export { __Latex as Latex, __DynamicText as DynamicText };

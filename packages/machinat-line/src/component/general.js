@@ -1,4 +1,8 @@
-import { breakSegment, textSegment, wrapUnitSegment } from 'machinat-renderer';
+import {
+  breakSegment,
+  textSegment,
+  wrapSingleUnitSegment,
+} from 'machinat-renderer';
 import { joinTextualSegments } from 'machinat-utility';
 
 export const text = (node, render, path) =>
@@ -29,9 +33,10 @@ export const a = (node, render, path) => {
     : [...segments, breakSeg, textSegment(href, node, path), breakSeg];
 };
 
-const __media = wrapUnitSegment(({ props: { src } }) => [
-  { type: 'text', text: src || '' },
-]);
+const __media = wrapSingleUnitSegment(({ props: { src } }) => ({
+  type: 'text',
+  text: src || '',
+}));
 
 export const img = __media;
 export const video = __media;

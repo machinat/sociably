@@ -1,32 +1,26 @@
-import { asPartComponent } from './utils';
+import { asSinglePartComponent } from './utils';
 
-const PostbackAction = ({ props: { label, data, text, displayText } }) => [
-  {
-    type: 'postback',
-    data,
-    label,
-    displayText: displayText || text,
-  },
-];
-const __PostbackAction = asPartComponent(PostbackAction);
+const PostbackAction = ({ props: { label, data, text, displayText } }) => ({
+  type: 'postback',
+  data,
+  label,
+  displayText: displayText || text,
+});
+const __PostbackAction = asSinglePartComponent(PostbackAction);
 
-const MessageAction = ({ props: { label, text } }) => [
-  {
-    type: 'message',
-    label,
-    text,
-  },
-];
-const __MessageAction = asPartComponent(MessageAction);
+const MessageAction = ({ props: { label, text } }) => ({
+  type: 'message',
+  label,
+  text,
+});
+const __MessageAction = asSinglePartComponent(MessageAction);
 
-const URIAction = ({ props: { label, uri } }) => [
-  {
-    type: 'uri',
-    label,
-    uri,
-  },
-];
-const __URIAction = asPartComponent(URIAction);
+const URIAction = ({ props: { label, uri } }) => ({
+  type: 'uri',
+  label,
+  uri,
+});
+const __URIAction = asSinglePartComponent(URIAction);
 
 const pad2 = n => (n < 10 ? `0${n}` : n);
 const fullDate = d =>
@@ -47,43 +41,35 @@ const DateTimePickerAction = ({
   const modeRefined =
     mode || (!date === !time ? 'datetime' : date ? 'date' : 'time');
 
-  return [
-    {
-      type: 'datetimepicker',
-      label,
-      data,
-      mode: modeRefined,
-      initial: dateToStringByMode(modeRefined, initial),
-      max: dateToStringByMode(modeRefined, max),
-      min: dateToStringByMode(modeRefined, min),
-    },
-  ];
+  return {
+    type: 'datetimepicker',
+    label,
+    data,
+    mode: modeRefined,
+    initial: dateToStringByMode(modeRefined, initial),
+    max: dateToStringByMode(modeRefined, max),
+    min: dateToStringByMode(modeRefined, min),
+  };
 };
-const __DateTimePickerAction = asPartComponent(DateTimePickerAction);
+const __DateTimePickerAction = asSinglePartComponent(DateTimePickerAction);
 
-const CameraAction = ({ props: { label } }) => [
-  {
-    type: 'camera',
-    label,
-  },
-];
-const __CameraAction = asPartComponent(CameraAction);
+const CameraAction = ({ props: { label } }) => ({
+  type: 'camera',
+  label,
+});
+const __CameraAction = asSinglePartComponent(CameraAction);
 
-const CameraRollAction = ({ props: { label } }) => [
-  {
-    type: 'cameraRoll',
-    label,
-  },
-];
-const __CameraRollAction = asPartComponent(CameraRollAction);
+const CameraRollAction = ({ props: { label } }) => ({
+  type: 'cameraRoll',
+  label,
+});
+const __CameraRollAction = asSinglePartComponent(CameraRollAction);
 
-const LocationAction = ({ props: { label } }) => [
-  {
-    type: 'location',
-    label,
-  },
-];
-const __LocationAction = asPartComponent(LocationAction);
+const LocationAction = ({ props: { label } }) => ({
+  type: 'location',
+  label,
+});
+const __LocationAction = asSinglePartComponent(LocationAction);
 
 export {
   __PostbackAction as PostbackAction,

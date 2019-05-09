@@ -1,4 +1,8 @@
-import { breakSegment, textSegment, wrapUnitSegment } from 'machinat-renderer';
+import {
+  breakSegment,
+  textSegment,
+  wrapSingleUnitSegment,
+} from 'machinat-renderer';
 import { compose, joinTextualSegments } from 'machinat-utility';
 
 import { mapSegmentValue } from './utils';
@@ -52,23 +56,21 @@ export const a = (node, render, path) => {
   return [...joined, breakSeg, textSegment(href), breakSeg];
 };
 
-const generalMediaFactory = (tag, type) =>
-  wrapUnitSegment(
-    {
-      [tag]: ({ props: { src } }) => [
-        {
-          message: {
-            attachment: {
-              type,
-              payload: {
-                url: src,
-              },
-            },
+const generalMediaFactory = (tag, type) => {
+  const box = {
+    [tag]: ({ props: { src } }) => ({
+      message: {
+        attachment: {
+          type,
+          payload: {
+            url: src,
           },
         },
-      ],
-    }[tag]
-  );
+      },
+    }),
+  };
+  return wrapSingleUnitSegment(box[tag]);
+};
 
 export const img = generalMediaFactory('img', 'image');
 export const video = generalMediaFactory('video', 'video');

@@ -1,12 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 import invariant from 'invariant';
-import { asUnitComponentWithEntryGetter } from './utils';
+import { asSingleUnitComponentWithEntryGetter } from './utils';
 
-const LEAVE_RENDERED = [{}];
+const LEAVE_RENDERED = {};
 
 const Leave = () => LEAVE_RENDERED;
 
-const __Leave = asUnitComponentWithEntryGetter(thread => {
+const __Leave = asSingleUnitComponentWithEntryGetter(thread => {
   const { type, subtype, sourceId } = thread;
 
   invariant(
