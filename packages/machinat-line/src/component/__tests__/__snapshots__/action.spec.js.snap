@@ -1,101 +1,83 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`CameraAction match snapshot 1`] = `
-Array [
-  Object {
-    "label": "Cheer!",
-    "type": "camera",
-  },
-]
+Object {
+  "label": "Cheer!",
+  "type": "camera",
+}
 `;
 
 exports[`CameraRollAction match snapshot 1`] = `
-Array [
-  Object {
-    "label": "Cheer again!",
-    "type": "cameraRoll",
-  },
-]
+Object {
+  "label": "Cheer again!",
+  "type": "cameraRoll",
+}
 `;
 
 exports[`DateTimePickerAction match snapshot 1`] = `
-Array [
-  Object {
-    "data": "__MEETUP_DATE__",
-    "initial": "2018-01-01",
-    "label": "Which day?",
-    "max": "2046-01-01",
-    "min": "2000-01-01",
-    "mode": "date",
-    "type": "datetimepicker",
-  },
-]
+Object {
+  "data": "__MEETUP_DATE__",
+  "initial": "2018-01-01",
+  "label": "Which day?",
+  "max": "2046-01-01",
+  "min": "2000-01-01",
+  "mode": "date",
+  "type": "datetimepicker",
+}
 `;
 
 exports[`DateTimePickerAction match snapshot 2`] = `
-Array [
-  Object {
-    "data": "__MEETUP_TIME__",
-    "initial": "00:00",
-    "label": "What time?",
-    "max": "21:21",
-    "min": "12:12",
-    "mode": "time",
-    "type": "datetimepicker",
-  },
-]
+Object {
+  "data": "__MEETUP_TIME__",
+  "initial": "00:00",
+  "label": "What time?",
+  "max": "21:21",
+  "min": "12:12",
+  "mode": "time",
+  "type": "datetimepicker",
+}
 `;
 
 exports[`DateTimePickerAction match snapshot 3`] = `
-Array [
-  Object {
-    "data": "__MEETUP_DATETIME__",
-    "initial": "2000-01-01T00:00",
-    "label": "Say it again?",
-    "max": "2020-01-01T00:00",
-    "min": "1990-01-01T00:00",
-    "mode": "datetime",
-    "type": "datetimepicker",
-  },
-]
+Object {
+  "data": "__MEETUP_DATETIME__",
+  "initial": "2000-01-01T00:00",
+  "label": "Say it again?",
+  "max": "2020-01-01T00:00",
+  "min": "1990-01-01T00:00",
+  "mode": "datetime",
+  "type": "datetimepicker",
+}
 `;
 
 exports[`LocationAction match snapshot 1`] = `
-Array [
-  Object {
-    "label": "Ok, where are we?",
-    "type": "location",
-  },
-]
+Object {
+  "label": "Ok, where are we?",
+  "type": "location",
+}
 `;
 
 exports[`MessageAction match snapshot 1`] = `
-Array [
-  Object {
-    "label": "Tick",
-    "text": "Tock",
-    "type": "message",
-  },
-]
+Object {
+  "label": "Tick",
+  "text": "Tock",
+  "type": "message",
+}
 `;
 
 exports[`PostbackAction match snapshot 1`] = `
-Array [
-  Object {
-    "data": "__POSTBACK_FOO__",
-    "displayText": "WORLD!",
-    "label": "Hello!",
-    "type": "postback",
-  },
-]
+Object {
+  "data": "__POSTBACK_FOO__",
+  "displayText": "WORLD!",
+  "label": "Hello!",
+  "type": "postback",
+}
 `;
 
 exports[`URIAction match snapshot 1`] = `
-Array [
-  Object {
-    "label": "Try it!",
-    "type": "uri",
-    "uri": "http://machinat.com",
-  },
-]
+Object {
+  "label": "Try it!",
+  "type": "uri",
+  "uri": "http://machinat.com",
+}
 `;

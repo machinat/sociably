@@ -1,165 +1,218 @@
+import moxy from 'moxy';
 import Machinat from 'machinat';
 
 import { Dialog } from '../dialog';
 import { QuickReply } from '../quickReply';
-import { MessageAction } from '../action';
 
-import { LINE_NAITVE_TYPE } from '../../symbol';
+import { LINE_NATIVE_TYPE } from '../../constant';
 
-import render from './render';
+import renderHelper from './renderHelper';
+
+const renderInner = moxy();
+const render = renderHelper(renderInner);
 
 beforeEach(() => {
-  render.mock.reset();
+  renderInner.mock.reset();
 });
 
 it('is valid native component', () => {
   expect(typeof Dialog).toBe('function');
 
-  expect(Dialog.$$native).toBe(LINE_NAITVE_TYPE);
-  expect(Dialog.$$entry).toBe(undefined);
-  expect(Dialog.$$unit).toBe(true);
-  expect(Dialog.$$container).toBe(true);
+  expect(Dialog.$$native).toBe(LINE_NATIVE_TYPE);
+  expect(Dialog.$$getEntry).toBe(undefined);
 });
 
-it('return acts of what children rendered', () => {
-  const children = '__CHILDREN__';
-  const childrenActs = [
-    { element: <foo />, value: { type: 'text', text: 'foo' } },
-    { element: <bar />, value: { type: 'text', text: 'bar' } },
-    { element: <baz />, value: { type: 'text', text: 'baz' } },
+it('return segments of what children rendered', () => {
+  const childrenSegments = [
+    {
+      type: 'unit',
+      node: <foo />,
+      value: { type: 'text', text: 'foo' },
+      path: '$:0#Dialog.children:0',
+    },
+    {
+      type: 'unit',
+      node: <bar />,
+      value: { type: 'text', text: 'bar' },
+      path: '$:0#Dialog.children:1',
+    },
+    {
+      type: 'unit',
+      node: <baz />,
+      value: { type: 'text', text: 'baz' },
+      path: '$:0#Dialog.children:2',
+    },
   ];
-
-  render.mock.wrap(fn => node =>
-    node && node.type === Dialog
-      ? Dialog(node.props, render)
-      : node === children
-      ? childrenActs
-      : fn(node)
+  renderInner.mock.fake(node =>
+    node === '__CHILDREN__' ? childrenSegments : null
   );
 
-  expect(render(<Dialog>{children}</Dialog>)).toEqual(childrenActs);
+  expect(render(<Dialog>__CHILDREN__</Dialog>)).toEqual(childrenSegments);
 });
 
 it('hoist children rendered text into text message object', () => {
-  const children = '__CHILDREN__';
-
-  render.mock.wrap(fn => node =>
-    node && node.type === Dialog
-      ? Dialog(node.props, render)
-      : node === children
+  renderInner.mock.fake(node =>
+    node === '__CHILDREN__'
       ? [
-          { element: <foo />, value: 'foo' },
-          { element: <bar />, value: { type: 'text', text: 'bar' } },
-          { element: <baz />, value: 'baz' },
+          {
+            type: 'text',
+            node: <foo />,
+            value: 'foo',
+            path: '$:0#Dialog.children:0',
+          },
+          {
+            type: 'unit',
+            node: <bar />,
+            value: { type: 'text', text: 'bar' },
+            path: '$:0#Dialog.children:1',
+          },
+          {
+            type: 'text',
+            node: <baz />,
+            value: 'baz',
+            path: '$:0#Dialog.children:2',
+          },
         ]
-      : fn(node)
+      : null
   );
 
-  expect(render(<Dialog>{children}</Dialog>)).toEqual([
-    { element: <foo />, value: { type: 'text', text: 'foo' } },
-    { element: <bar />, value: { type: 'text', text: 'bar' } },
-    { element: <baz />, value: { type: 'text', text: 'baz' } },
+  expect(render(<Dialog>__CHILDREN__</Dialog>)).toEqual([
+    {
+      type: 'unit',
+      node: <foo />,
+      value: { type: 'text', text: 'foo' },
+      path: '$:0#Dialog.children:0',
+    },
+    {
+      type: 'unit',
+      node: <bar />,
+      value: { type: 'text', text: 'bar' },
+      path: '$:0#Dialog.children:1',
+    },
+    {
+      type: 'unit',
+      node: <baz />,
+      value: { type: 'text', text: 'baz' },
+      path: '$:0#Dialog.children:2',
+    },
   ]);
 });
 
 it('attach quickReply to last message object', () => {
-  const children = '__CHILDREN__';
   const Something = () => {};
-  Something.$$entry = () => 'jsut/like/this';
+  Something.$$getEntry = () => 'just/like/this';
 
-  render.mock.wrap(fn => node =>
-    node && node.type === Dialog
-      ? Dialog(node.props, render)
-      : node === children
-      ? [
-          { element: <foo />, value: 'Where you ganna go' },
-          {
-            element: <bar />,
-            value: { type: 'text', text: 'What you ganna risk' },
-          },
-          { element: <baz />, value: "I'm looking for" },
-          { element: <Something />, value: { someone: 'i can kiss' } },
-        ]
-      : fn(node)
+  const childrenSegments = [
+    {
+      type: 'text',
+      node: <foo />,
+      value: 'Where you ganna go',
+      path: '$:0#Dialog.children:0',
+    },
+    {
+      type: 'unit',
+      node: <bar />,
+      value: {
+        type: 'text',
+        text: 'What you ganna risk',
+      },
+      path: '$:0#Dialog.children:1',
+    },
+    {
+      type: 'text',
+      node: <baz />,
+      value: "I'm looking for",
+      path: '$:0#Dialog.children:2',
+    },
+    {
+      type: 'unit',
+      node: <Something />,
+      value: { someone: 'i can kiss' },
+      path: '$:0#Dialog.children:3',
+    },
+  ];
+
+  const quickReplySegments = [
+    {
+      type: 'part',
+      node: <QuickReply action="..." />,
+      value: {
+        type: 'action',
+        action: { type: 'message', label: '👮‍', text: 'Some superhero' },
+      },
+    },
+    {
+      type: 'part',
+      node: <QuickReply action="..." />,
+      value: {
+        type: 'action',
+        action: {
+          type: 'message',
+          label: '🧚‍',
+          text: 'Some fairytale bliss',
+        },
+      },
+    },
+    {
+      type: 'part',
+      node: <QuickReply action="..." />,
+      value: {
+        type: 'action',
+        imageUrl: 'https://somthing.just.like/this',
+        action: {
+          type: 'message',
+          label: '💑',
+          text: 'Somebody I can kiss',
+        },
+      },
+    },
+  ];
+
+  renderInner.mock.fake(node =>
+    node === '__CHILDREN__' ? childrenSegments : quickReplySegments
   );
 
   expect(
-    render(
-      <Dialog
-        quickReplies={[
-          <QuickReply
-            action={<MessageAction label="👮‍" text="Some superhero" />}
-          />,
-          <QuickReply
-            action={<MessageAction label="🧚‍" text="Some fairytale bliss" />}
-          />,
-          <QuickReply
-            action={<MessageAction label="💑" text="Somebody I can kiss" />}
-            imageURL="https://somthing.just.like/this"
-          />,
-        ]}
-      >
-        {children}
-      </Dialog>
-    )
+    render(<Dialog quickReplies="__QUICK_REPLIES__">__CHILDREN__</Dialog>)
   ).toEqual([
-    { element: <foo />, value: { type: 'text', text: 'Where you ganna go' } },
-    { element: <bar />, value: { type: 'text', text: 'What you ganna risk' } },
     {
-      element: <baz />,
+      type: 'unit',
+      node: <foo />,
+      value: { type: 'text', text: 'Where you ganna go' },
+      path: '$:0#Dialog.children:0',
+    },
+    childrenSegments[1],
+    {
+      type: 'unit',
+      node: <baz />,
       value: {
         type: 'text',
         text: "I'm looking for",
         quickReply: {
-          items: [
-            {
-              type: 'action',
-              action: { type: 'message', label: '👮‍', text: 'Some superhero' },
-            },
-            {
-              type: 'action',
-              action: {
-                type: 'message',
-                label: '🧚‍',
-                text: 'Some fairytale bliss',
-              },
-            },
-            {
-              type: 'action',
-              imageUrl: 'https://somthing.just.like/this',
-              action: {
-                type: 'message',
-                label: '💑',
-                text: 'Somebody I can kiss',
-              },
-            },
-          ],
+          items: quickReplySegments.map(seg => seg.value),
         },
       },
+      path: '$:0#Dialog.children:2',
     },
-    { element: <Something />, value: { someone: 'i can kiss' } },
+    childrenSegments[3],
   ]);
 });
 
 it('return null if children is empty', () => {
-  render.mock.wrap(fn => node =>
-    node && node.type === Dialog ? Dialog(node.props, render) : fn(node)
+  renderInner.mock.fake(node =>
+    node === '__QUICK_REPLIES__'
+      ? [
+          {
+            type: 'part',
+            node: <QuickReply action="..." />,
+            value: {
+              type: 'action',
+              action: { type: 'message', text: 'just like this' },
+            },
+          },
+        ]
+      : null
   );
 
-  expect(
-    render(
-      <Dialog
-        quickReplies={[
-          <QuickReply
-            action={
-              <MessageAction
-                label="Reading‍ books of old"
-                text="The legends and the myths"
-              />
-            }
-          />,
-        ]}
-      />
-    )
-  ).toBe(null);
+  expect(render(<Dialog quickReplies="__QUICK_REPLIES__" />)).toBe(null);
 });

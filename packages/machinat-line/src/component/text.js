@@ -1,7 +1,11 @@
 /* eslint-disable import/prefer-default-export */
-import { annotate, asNative, asUnit } from 'machinat-utility';
-import { LINE_NAITVE_TYPE } from '../symbol';
+import { textSegment } from 'machinat-renderer';
+import { asContainerComponent } from './utils';
 
-export const Emoji = ({ code }) => [String.fromCodePoint(code)];
+const Emoji = (node, _, path) => [
+  textSegment(String.fromCodePoint(node.props.code), node, path),
+];
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(Emoji);
+const __Emoji = asContainerComponent(Emoji);
+
+export { __Emoji as Emoji };

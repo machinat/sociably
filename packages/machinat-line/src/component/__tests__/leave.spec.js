@@ -1,23 +1,23 @@
 import Machinat from 'machinat';
 
-import { Leave } from '../leave';
-
-import { LINE_NAITVE_TYPE, NO_RENDERED } from '../../symbol';
+import { LINE_NATIVE_TYPE } from '../../constant';
 import LineThread from '../../thread';
+import { Leave } from '../leave';
+import renderHelper from './renderHelper';
 
-import render from './render';
+const render = renderHelper(() => null);
 
-it('is valid native unit component', () => {
+it('is valid native unit component with entry getter', () => {
   expect(typeof Leave).toBe('function');
 
-  expect(Leave.$$native).toBe(LINE_NAITVE_TYPE);
-  expect(Leave.$$unit).toBe(true);
+  expect(Leave.$$native).toBe(LINE_NATIVE_TYPE);
+  expect(typeof Leave.$$getEntry).toBe('function');
 });
 
-describe('$$entry function', () => {
+describe('$$getEntry function', () => {
   it('point to the api entry for leaving', () => {
     expect(
-      Leave.$$entry(
+      Leave.$$getEntry(
         new LineThread({
           type: 'group',
           groupId: '_GROUP_ID_',
@@ -27,7 +27,7 @@ describe('$$entry function', () => {
     ).toBe('group/_GROUP_ID_/leave');
 
     expect(
-      Leave.$$entry(
+      Leave.$$getEntry(
         new LineThread({
           type: 'room',
           roomId: '_ROOM_ID_',
@@ -39,7 +39,7 @@ describe('$$entry function', () => {
 
   it('throw if type of thread is user', () => {
     expect(() =>
-      Leave.$$entry(
+      Leave.$$getEntry(
         new LineThread({
           type: 'user',
           userId: '_USER_ID_',
@@ -51,6 +51,13 @@ describe('$$entry function', () => {
   });
 });
 
-it('render to NO_RENDERED', () => {
-  expect(render(<Leave />)[0].value).toEqual(NO_RENDERED);
+it('render an empty object', () => {
+  const segments = render(<Leave />);
+  expect(segments.length).toBe(1);
+
+  const segment = segments[0];
+  expect(segment.type).toBe('unit');
+  expect(segment.node).toEqual(<Leave />);
+  expect(segment.path).toBe('$');
+  expect(segment.value).toEqual({});
 });

@@ -1,6 +1,7 @@
 import Machinat from 'machinat';
-import render from './render';
+import { map } from 'machinat-utility';
 
+import { LINE_NATIVE_TYPE } from '../../constant';
 import {
   Image,
   Sticker,
@@ -8,8 +9,23 @@ import {
   ImageMapVideoArea,
   ImageMapArea,
 } from '../image';
-
 import { URIAction, MessageAction } from '../action';
+import renderHelper from './renderHelper';
+
+const renderInner = (prop, route) =>
+  map(prop, (node, path) => node.type(node, renderInner, path)[0], route) ||
+  null;
+const render = renderHelper(renderInner);
+
+it.each(
+  [Image, Sticker, ImageMap, ImageMapVideoArea, ImageMapArea].map(C => [
+    C.name,
+    C,
+  ])
+)('%s is a valid component', (_, Img) => {
+  expect(Img.$$native).toBe(LINE_NATIVE_TYPE);
+  expect(Img.$$getEntry).toBe(undefined);
+});
 
 it.each(
   [
@@ -84,5 +100,12 @@ it.each(
     </ImageMap>,
   ].map(e => [e.type.name, e])
 )('%s match snapshot', (_, element) => {
-  expect(render(element).map(action => action.value)).toMatchSnapshot();
+  const segments = render(element);
+  expect(segments.length).toBe(1);
+
+  const segment = segments[0];
+  expect(segment.type).toBe('unit');
+  expect(segment.node).toBe(element);
+  expect(segment.path).toBe('$');
+  expect(segment.value).toMatchSnapshot();
 });

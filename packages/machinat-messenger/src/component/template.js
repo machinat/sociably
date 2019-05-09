@@ -1,40 +1,38 @@
 import invariant from 'invariant';
-import {
-  annotate,
-  asNative,
-  asUnit,
-  hasEntry,
-  joinTextValues,
-  valuesOfAssertedType,
-} from 'machinat-utility';
+import { joinTextualSegments, valuesOfAssertedType } from 'machinat-utility';
 
 import * as buttonModule from './button';
-
-import { MESSENGER_NAITVE_TYPE } from '../symbol';
-import { ENTRY_MESSAGES } from '../apiEntry';
+import { asMessagesUnitComponent, asPartComponent } from './utils';
 
 const buttonComponents = Object.values(buttonModule);
 
 const CHILDREN = '.children';
 
-const renderUrlButtonValues = valuesOfAssertedType(buttonModule.URLButton);
-const renderButtonValues = valuesOfAssertedType(...buttonComponents);
+const getButtonValues = valuesOfAssertedType(...buttonComponents);
+const getUrlButtonValues = valuesOfAssertedType(buttonModule.URLButton);
 
-export const GenericItem = (
-  { children, title, imageURL, subtitle, defaultAction: defaultActionProp },
+const GenericItem = (
+  {
+    props: {
+      children,
+      title,
+      imageURL,
+      subtitle,
+      defaultAction: defaultActionProp,
+    },
+  },
   render
 ) => {
-  const urlButtonValues = renderUrlButtonValues(
-    defaultActionProp,
-    render,
-    '.defaultAction'
-  );
+  const buttonSegments = render(children, CHILDREN);
+  const defaultActionSegments = render(defaultActionProp, '.defaultAction');
 
-  // ignore title field
   let defaultAction;
-  if (urlButtonValues) {
-    const [{ title: _, ...defaultActionValue }] = urlButtonValues;
-    defaultAction = defaultActionValue;
+  if (defaultActionSegments !== null) {
+    const defaultActionValues = getUrlButtonValues(defaultActionSegments);
+
+    // ignore title field
+    const [{ title: _, ...defaultActionVal }] = defaultActionValues;
+    defaultAction = defaultActionVal;
   }
 
   return [
@@ -43,17 +41,16 @@ export const GenericItem = (
       image_url: imageURL,
       subtitle,
       default_action: defaultAction,
-      buttons: renderButtonValues(children, render, CHILDREN),
+      buttons: getButtonValues(buttonSegments),
     },
   ];
 };
+const __GenericItem = asPartComponent(GenericItem);
 
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(GenericItem);
+const getGenericItemValues = valuesOfAssertedType(__GenericItem);
 
-const renderGenericItemValues = valuesOfAssertedType(GenericItem);
-
-export const GenericTemplate = (
-  { children, sharable, imageAspectRatio },
+const GenericTemplate = (
+  { props: { children, sharable, imageAspectRatio } },
   render
 ) => [
   {
@@ -64,21 +61,16 @@ export const GenericTemplate = (
           template_type: 'generic',
           sharable,
           image_aspect_ratio: imageAspectRatio,
-          elements: renderGenericItemValues(children, render, CHILDREN),
+          elements: getGenericItemValues(render(children, CHILDREN)),
         },
       },
     },
   },
 ];
+const __GenericTemplate = asMessagesUnitComponent(GenericTemplate);
 
-annotate(
-  asNative(MESSENGER_NAITVE_TYPE),
-  hasEntry(ENTRY_MESSAGES),
-  asUnit(true)
-)(GenericTemplate);
-
-export const ListTemplate = (
-  { children, topStyle, sharable, button },
+const ListTemplate = (
+  { props: { children, topStyle, sharable, button } },
   render
 ) => [
   {
@@ -89,29 +81,24 @@ export const ListTemplate = (
           template_type: 'list',
           top_element_style: topStyle,
           sharable,
-          elements: renderGenericItemValues(children, render, CHILDREN),
-          buttons: renderButtonValues(button, render, '.button'),
+          elements: getGenericItemValues(render(children, CHILDREN)),
+          buttons: getButtonValues(render(button, '.button')),
         },
       },
     },
   },
 ];
+const __ListTemplate = asMessagesUnitComponent(ListTemplate);
 
-annotate(
-  asNative(MESSENGER_NAITVE_TYPE),
-  hasEntry(ENTRY_MESSAGES),
-  asUnit(true)
-)(ListTemplate);
-
-export const ButtonTemplate = ({ children, text, sharable }, render) => {
-  const values = joinTextValues(text, render, '.text');
+const ButtonTemplate = ({ props: { children, text, sharable } }, render) => {
+  const segments = joinTextualSegments(render(text, '.text'));
 
   let textValue;
   invariant(
-    values !== undefined &&
-      values.length === 1 &&
-      typeof (textValue = values[0]) === 'string', // eslint-disable-line prefer-destructuring
-    values
+    segments !== null &&
+      segments.length === 1 &&
+      typeof (textValue = segments[0].value) === 'string', // eslint-disable-line prefer-destructuring
+    segments
       ? `<br /> in prop "text" of <ButtonTemplate /> is invalid`
       : `prop "text" of <ButtonTemplate /> should not be empty`
   );
@@ -125,22 +112,17 @@ export const ButtonTemplate = ({ children, text, sharable }, render) => {
             template_type: 'button',
             text: textValue,
             sharable,
-            buttons: renderButtonValues(children, render, CHILDREN),
+            buttons: getButtonValues(render(children, CHILDREN)),
           },
         },
       },
     },
   ];
 };
+const __ButtonTemplate = asMessagesUnitComponent(ButtonTemplate);
 
-annotate(
-  asNative(MESSENGER_NAITVE_TYPE),
-  hasEntry(ENTRY_MESSAGES),
-  asUnit(true)
-)(ButtonTemplate);
-
-export const MediaTemplate = (
-  { children, type, attachmentId, url, sharable },
+const MediaTemplate = (
+  { props: { children, type, attachmentId, url, sharable } },
   render
 ) => [
   {
@@ -155,7 +137,7 @@ export const MediaTemplate = (
               media_type: type,
               url,
               attachment_id: attachmentId,
-              buttons: renderButtonValues(children, render, CHILDREN),
+              buttons: getButtonValues(render(children, CHILDREN)),
             },
           ],
         },
@@ -163,14 +145,9 @@ export const MediaTemplate = (
     },
   },
 ];
+const __MediaTemplate = asMessagesUnitComponent(MediaTemplate);
 
-annotate(
-  asNative(MESSENGER_NAITVE_TYPE),
-  hasEntry(ENTRY_MESSAGES),
-  asUnit(true)
-)(MediaTemplate);
-
-export const OpenGraphTemplate = ({ children, url, sharable }, render) => [
+const OpenGraphTemplate = ({ props: { children, url, sharable } }, render) => [
   {
     message: {
       attachment: {
@@ -181,7 +158,7 @@ export const OpenGraphTemplate = ({ children, url, sharable }, render) => [
           elements: [
             {
               url,
-              buttons: renderButtonValues(children, render, CHILDREN),
+              buttons: getButtonValues(render(children, CHILDREN)),
             },
           ],
         },
@@ -189,20 +166,10 @@ export const OpenGraphTemplate = ({ children, url, sharable }, render) => [
     },
   },
 ];
+const __OpenGraphTemplate = asMessagesUnitComponent(OpenGraphTemplate);
 
-annotate(
-  asNative(MESSENGER_NAITVE_TYPE),
-  hasEntry(ENTRY_MESSAGES),
-  asUnit(true)
-)(OpenGraphTemplate);
-
-export const ReceiptItem = ({
-  title,
-  subtitle,
-  quantity,
-  price,
-  currency,
-  imageURL,
+const ReceiptItem = ({
+  props: { title, subtitle, quantity, price, currency, imageURL },
 }) => [
   {
     title,
@@ -213,24 +180,25 @@ export const ReceiptItem = ({
     image_url: imageURL,
   },
 ];
+const __ReceiptItem = asPartComponent(ReceiptItem);
 
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(ReceiptItem);
+const getReceiptItemValues = valuesOfAssertedType(__ReceiptItem);
 
-const receiptTemplateItemValues = valuesOfAssertedType(ReceiptItem);
-
-export const ReceiptTemplate = (
+const ReceiptTemplate = (
   {
-    children,
-    sharable,
-    recipientName,
-    orderNumber,
-    currency,
-    paymentMethod,
-    orderURL,
-    timestamp,
-    address,
-    summary,
-    adjustments,
+    props: {
+      children,
+      sharable,
+      recipientName,
+      orderNumber,
+      currency,
+      paymentMethod,
+      orderURL,
+      timestamp,
+      address,
+      summary,
+      adjustments,
+    },
   },
   render
 ) => [
@@ -253,15 +221,22 @@ export const ReceiptTemplate = (
           address,
           summary,
           adjustments,
-          elements: receiptTemplateItemValues(children, render, CHILDREN),
+          elements: getReceiptItemValues(render(children, CHILDREN)),
         },
       },
     },
   },
 ];
 
-annotate(
-  asNative(MESSENGER_NAITVE_TYPE),
-  hasEntry(ENTRY_MESSAGES),
-  asUnit(true)
-)(ReceiptTemplate);
+const __ReceiptTemplate = asMessagesUnitComponent(ReceiptTemplate);
+
+export {
+  __GenericItem as GenericItem,
+  __GenericTemplate as GenericTemplate,
+  __ListTemplate as ListTemplate,
+  __ButtonTemplate as ButtonTemplate,
+  __MediaTemplate as MediaTemplate,
+  __OpenGraphTemplate as OpenGraphTemplate,
+  __ReceiptItem as ReceiptItem,
+  __ReceiptTemplate as ReceiptTemplate,
+};

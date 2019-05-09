@@ -1,4 +1,4 @@
-import Machinat, { LINE_NAITVE_TYPE } from 'machinat';
+import Machinat from 'machinat';
 import {
   PostbackAction,
   MessageAction,
@@ -8,7 +8,10 @@ import {
   CameraRollAction,
   LocationAction,
 } from '../action';
-import render from './render';
+import { LINE_NATIVE_TYPE } from '../../constant';
+import renderHelper from './renderHelper';
+
+const render = renderHelper(() => null);
 
 test.each(
   [
@@ -21,11 +24,10 @@ test.each(
     CameraRollAction,
     LocationAction,
   ].map(C => [C.name, C])
-)('is valid native Component', (_, Action) => {
+)('%s is valid native Component', (_, Action) => {
   expect(typeof Action).toBe('function');
-  expect(Action.$$native).toBe(LINE_NAITVE_TYPE);
-  expect(Action.$$entry).toBe(undefined);
-  expect(Action.$$unit).toBe(false);
+  expect(Action.$$native).toBe(LINE_NATIVE_TYPE);
+  expect(Action.$$getEntry).toBe(undefined);
 });
 
 it.each(
@@ -61,7 +63,14 @@ it.each(
     <LocationAction label="Ok, where are we?" />,
   ].map(element => [element.type.name, element])
 )('%s match snapshot', (_, actionElement) => {
-  expect(render(actionElement).map(action => action.value)).toMatchSnapshot();
+  const segments = render(actionElement);
+  expect(segments.length).toBe(1);
+
+  const segment = segments[0];
+  expect(segment.type).toBe('part');
+  expect(segment.node).toBe(actionElement);
+  expect(segment.path).toBe('$');
+  expect(segment.value).toMatchSnapshot();
 });
 
 describe('DateTimePickerAction', () => {

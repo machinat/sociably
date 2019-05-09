@@ -1,19 +1,10 @@
-import {
-  annotate,
-  asNative,
-  asUnit,
-  valuesOfAssertedType,
-} from 'machinat-utility';
-import { MESSENGER_NAITVE_TYPE } from '../symbol';
+import { valuesOfAssertedType } from 'machinat-utility';
+
+import { asPartComponent } from './utils';
 import { GenericTemplate } from './template';
 
-export const URLButton = ({
-  title,
-  url,
-  heightRatio,
-  extensions,
-  fallbackURL,
-  hideShareButton,
+const URLButton = ({
+  props: { title, url, heightRatio, extensions, fallbackURL, hideShareButton },
 }) => [
   {
     type: 'web_url',
@@ -25,47 +16,47 @@ export const URLButton = ({
     webview_share_button: hideShareButton ? 'hide' : undefined,
   },
 ];
+const __URLButton = asPartComponent(URLButton);
 
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(URLButton);
-
-export const PostbackButton = ({ title, payload }) => [
+const PostbackButton = ({ props: { title, payload } }) => [
   {
     type: 'postback',
     title,
     payload,
   },
 ];
+const __PostbackButton = asPartComponent(PostbackButton);
 
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(PostbackButton);
+const getGenericTemplateValues = valuesOfAssertedType(GenericTemplate);
 
-const renderGenericTemplateValues = valuesOfAssertedType(GenericTemplate);
+const ShareButton = ({ props: { children } }, render) => {
+  const sharedSegments = render(children, '.children');
 
-export const ShareButton = ({ children }, render) => {
-  const sharedValues = renderGenericTemplateValues(
-    children,
-    render,
-    '.children'
-  );
+  let sharedContent;
+  if (sharedSegments !== null) {
+    sharedContent = getGenericTemplateValues(sharedSegments)[0].message;
+  }
 
   return [
     {
       type: 'element_share',
-      share_contents: sharedValues && sharedValues[0].message,
+      share_contents: sharedContent,
     },
   ];
 };
+const __ShareButton = asPartComponent(ShareButton);
 
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(ShareButton);
-
-export const BuyButton = ({
-  title,
-  payload,
-  currency,
-  paymentType,
-  isTest,
-  merchantName,
-  requestedInfo,
-  priceList,
+const BuyButton = ({
+  props: {
+    title,
+    payload,
+    currency,
+    paymentType,
+    isTest,
+    merchantName,
+    requestedInfo,
+    priceList,
+  },
 }) => [
   {
     type: 'payment',
@@ -81,34 +72,30 @@ export const BuyButton = ({
     },
   },
 ];
+const __BuyButton = asPartComponent(BuyButton);
 
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(BuyButton);
-
-export const CallButton = ({ title, number }) => [
+const CallButton = ({ props: { title, number } }) => [
   {
     type: 'phone_number',
     title,
     number,
   },
 ];
+const __CallButton = asPartComponent(CallButton);
 
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(CallButton);
-
-export const LoginButton = ({ url }) => [
+const LoginButton = ({ props: { url } }) => [
   {
     type: 'account_link',
     url,
   },
 ];
-
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(LoginButton);
+const __LoginButton = asPartComponent(LoginButton);
 
 const ACCOUNT_UNLINK_TYPE = { type: 'account_unlink' };
-export const LogoutButton = () => [ACCOUNT_UNLINK_TYPE];
+const LogoutButton = () => [ACCOUNT_UNLINK_TYPE];
+const __LogoutButton = asPartComponent(LogoutButton);
 
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(LogoutButton);
-
-export const GamePlayButton = ({ title, payload, playerId, contextId }) => [
+const GamePlayButton = ({ props: { title, payload, playerId, contextId } }) => [
   {
     type: 'game_play',
     title,
@@ -119,5 +106,15 @@ export const GamePlayButton = ({ title, payload, playerId, contextId }) => [
     },
   },
 ];
+const __GamePlayButton = asPartComponent(GamePlayButton);
 
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(GamePlayButton);
+export {
+  __URLButton as URLButton,
+  __PostbackButton as PostbackButton,
+  __ShareButton as ShareButton,
+  __BuyButton as BuyButton,
+  __CallButton as CallButton,
+  __LoginButton as LoginButton,
+  __LogoutButton as LogoutButton,
+  __GamePlayButton as GamePlayButton,
+};

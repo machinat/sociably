@@ -1,58 +1,51 @@
 /* eslint-disable import/prefer-default-export */
-import {
-  annotate,
-  asNative,
-  asUnit,
-  asContainer,
-  valuesOfAssertedType,
-} from 'machinat-utility';
-
-import { LINE_NAITVE_TYPE } from '../symbol';
-
+import { valuesOfAssertedType } from 'machinat-utility';
+import { asContainerComponent } from './utils';
 import { QuickReply } from './quickReply';
 
 const renderQuickReplyValues = valuesOfAssertedType(QuickReply);
 
-export const Dialog = ({ children, quickReplies }, render) => {
-  const contentActs = render(children, '.children');
-  if (contentActs === null) {
+const Dialog = ({ props: { children, quickReplies } }, render) => {
+  const segments = render(children, '.children');
+  if (segments === null) {
     return null;
   }
 
   let lastMessageIdx = -1;
   // hoisting text to line text message object
-  for (let i = 0; i < contentActs.length; i += 1) {
-    const { element, value } = contentActs[i];
-    const valueType = typeof value;
+  for (let i = 0; i < segments.length; i += 1) {
+    const segment = segments[i];
+    const { type, node, value } = segment;
 
-    if (valueType === 'string') {
-      contentActs[i].value = {
+    if (type === 'text') {
+      segment.type = 'unit';
+      segment.value = {
         type: 'text',
-        text: valueType === 'string' ? value : String(value),
+        text: value,
       };
     }
 
     if (
-      typeof element !== 'object' ||
-      typeof element.type.$$entry !== 'function'
+      typeof node !== 'object' ||
+      typeof node.type.$$getEntry !== 'function'
     ) {
       lastMessageIdx = i;
     }
   }
 
   const quickRepliesValues = renderQuickReplyValues(
-    quickReplies,
-    render,
-    '.quickReplies'
+    render(quickReplies, '.quickReplies')
   );
 
   if (quickRepliesValues && lastMessageIdx !== -1) {
-    contentActs[lastMessageIdx].value.quickReply = {
+    segments[lastMessageIdx].value.quickReply = {
       items: quickRepliesValues,
     };
   }
 
-  return contentActs;
+  return segments;
 };
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true), asContainer(true))(Dialog);
+const __Dialog = asContainerComponent(Dialog);
+
+export { __Dialog as Dialog };

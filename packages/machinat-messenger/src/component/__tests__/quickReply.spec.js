@@ -1,6 +1,6 @@
 import Machinat from 'machinat';
 
-import { MESSENGER_NAITVE_TYPE } from '../../symbol';
+import { MESSENGER_NAITVE_TYPE } from '../../constant';
 import {
   QuickReply,
   PhoneQuickReply,
@@ -17,7 +17,7 @@ it.each([QuickReply, PhoneQuickReply, EmailQuickReply, LocationQuickReply])(
     expect(typeof Reply).toBe('function');
     expect(Reply.$$native).toBe(MESSENGER_NAITVE_TYPE);
     expect(Reply.$$entry).toBe(undefined);
-    expect(Reply.$$unit).toBe(false);
+    expect(Reply.$$namespace).toBe('Messenger');
   }
 );
 

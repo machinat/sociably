@@ -1,4 +1,5 @@
 import Machinat from 'machinat';
+import { map } from 'machinat-utility';
 
 import {
   ButtonTemplate,
@@ -9,19 +10,20 @@ import {
   ImageCarouselTemplate,
 } from '../template';
 import { URIAction } from '../action';
+import { LINE_NATIVE_TYPE } from '../../constant';
+import renderHelper from './renderHelper';
 
-import { LINE_NAITVE_TYPE } from '../../symbol';
-
-import render from './render';
+const renderInner = prop =>
+  map(prop, (node, path) => node.type(node, renderInner, path)[0]) || null;
+const render = renderHelper(renderInner);
 
 test.each([CarouselItem, ImageCarouselItem].map(C => [C.name, C]))(
   '%s is valid native component',
   (_, Item) => {
     expect(typeof Item).toBe('function');
 
-    expect(Item.$$native).toBe(LINE_NAITVE_TYPE);
-    expect(Item.$$entry).toBe(undefined);
-    expect(Item.$$unit).toBe(false);
+    expect(Item.$$native).toBe(LINE_NATIVE_TYPE);
+    expect(Item.$$getEntry).toBe(undefined);
   }
 );
 
@@ -35,9 +37,8 @@ test.each(
 )('%s is valid native unit component', (_, Template) => {
   expect(typeof Template).toBe('function');
 
-  expect(Template.$$native).toBe(LINE_NAITVE_TYPE);
-  expect(Template.$$entry).toBe(undefined);
-  expect(Template.$$unit).toBe(true);
+  expect(Template.$$native).toBe(LINE_NATIVE_TYPE);
+  expect(Template.$$getEntry).toBe(undefined);
 });
 
 test.each(
@@ -86,5 +87,12 @@ test.each(
     </ImageCarouselTemplate>,
   ].map(ele => [ele.type.name, ele])
 )('%s rendered match snapshot', (_, templateElement) => {
-  expect(render(templateElement).map(act => act.value)).toMatchSnapshot();
+  const segments = render(templateElement);
+  expect(segments.length).toBe(1);
+
+  const [segment] = segments;
+  expect(segment.type).toBe('unit');
+  expect(segment.node).toBe(templateElement);
+  expect(segment.path).toBe('$');
+  expect(segment.value).toMatchSnapshot();
 });

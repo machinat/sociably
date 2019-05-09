@@ -5,57 +5,64 @@ const A = () => 'a';
 const B = () => 'b';
 const C = () => 'c';
 
-const render = messages =>
-  messages.map(node => ({
-    node,
-    value:
-      typeof node === 'string' || typeof node === 'number'
-        ? node
-        : typeof node.type === 'string'
-        ? node.type
-        : node.type(),
-  }));
-
 it('render and return values', () => {
   expect(
-    valuesOfAssertedType(A, B, C, 'foo', 'bar')(
-      [<A />, <foo />, <B />, <bar />, <C />],
-      render,
-      '.someprop'
-    )
-  ).toEqual(['a', 'foo', 'b', 'bar', 'c']);
+    valuesOfAssertedType(A, B, C, 'foo', 'bar')([
+      { type: 'part', node: <A />, value: { x: 'a' }, path: '$#X.y:0' },
+      { type: 'part', node: <foo />, value: { x: 'foo' }, path: '$#X.y:1' },
+      { type: 'part', node: <B />, value: { x: 'b' }, path: '$#X.y:2' },
+      { type: 'part', node: <bar />, value: { x: 'bar' }, path: '$#X.y:3' },
+      { type: 'part', node: <C />, value: { x: 'c' }, path: '$#X.y:4' },
+    ])
+  ).toEqual([{ x: 'a' }, { x: 'foo' }, { x: 'b' }, { x: 'bar' }, { x: 'c' }]);
 });
 
 const valuesOfAFoo = valuesOfAssertedType(A, 'foo');
 
 it('throw if string contained', () => {
   expect(() =>
-    valuesOfAFoo([<A />, 'abc', <foo />], render, '.someprop')
+    valuesOfAFoo([
+      { type: 'part', node: <A />, value: { x: 'a' }, path: '$#X.y:0' },
+      { type: 'text', node: 'abc', value: 'abc', path: '$#X.y:1' },
+      { type: 'part', node: <foo />, value: { x: 'foo' }, path: '$#X.y:2' },
+    ])
   ).toThrowErrorMatchingInlineSnapshot(
-    `"\\"abc\\" is invalid in .someprop, only <[A, foo]/> allowed"`
+    `"\\"abc\\" at $#X.y:1 is invalid, only <[A, foo]/> allowed"`
   );
 });
 
 it('throw if number contained', () => {
   expect(() =>
-    valuesOfAFoo([<A />, 123, <foo />], render, '.someprop')
+    valuesOfAFoo([
+      { type: 'part', node: <A />, value: { x: 'a' }, path: '$#X.y:0' },
+      { type: 'text', node: 123, value: '123', path: '$#X.y:1' },
+      { type: 'part', node: <foo />, value: { x: 'foo' }, path: '$#X.y:2' },
+    ])
   ).toThrowErrorMatchingInlineSnapshot(
-    `"123 is invalid in .someprop, only <[A, foo]/> allowed"`
+    `"123 at $#X.y:1 is invalid, only <[A, foo]/> allowed"`
   );
 });
 
 it('throw if invalid general element contained', () => {
   expect(() =>
-    valuesOfAFoo([<A />, <xxx />, <foo />], render, '.someprop')
+    valuesOfAFoo([
+      { type: 'part', node: <A />, value: { x: 'a' }, path: '$#X.y:0' },
+      { type: 'part', node: <xxx />, value: { x: 'x' }, path: '$#X.y:1' },
+      { type: 'part', node: <foo />, value: { x: 'foo' }, path: '$#X.y:2' },
+    ])
   ).toThrowErrorMatchingInlineSnapshot(
-    `"<xxx /> is invalid in .someprop, only <[A, foo]/> allowed"`
+    `"<xxx /> at $#X.y:1 is invalid, only <[A, foo]/> allowed"`
   );
 });
 
 it('throw if invalid Native element contained', () => {
   expect(() =>
-    valuesOfAFoo([<A />, <C />, <foo />], render, '.someprop')
+    valuesOfAFoo([
+      { type: 'part', node: <A />, value: { x: 'a' }, path: '$#X.y:0' },
+      { type: 'part', node: <C />, value: { x: 'c' }, path: '$#X.y:1' },
+      { type: 'part', node: <foo />, value: { x: 'foo' }, path: '$#X.y:2' },
+    ])
   ).toThrowErrorMatchingInlineSnapshot(
-    `"<C /> is invalid in .someprop, only <[A, foo]/> allowed"`
+    `"<C /> at $#X.y:1 is invalid, only <[A, foo]/> allowed"`
   );
 });

@@ -1,36 +1,31 @@
-import {
-  annotate,
-  asNative,
-  asUnit,
-  valuesOfAssertedType,
-} from 'machinat-utility';
+import { valuesOfAssertedType } from 'machinat-utility';
 
-import { LINE_NAITVE_TYPE } from '../symbol';
+import { asPartComponent, asMessageUnitComponent } from './utils';
 import * as _actionModule from './action';
 
 const actionComponents = Object.values(_actionModule);
-const renderActionValues = valuesOfAssertedType(...actionComponents);
+const getActionValues = valuesOfAssertedType(...actionComponents);
 
-export const ButtonTemplate = (
+const ButtonTemplate = (
   {
-    children,
-    defaultAction,
-    alt,
-    altText,
-    imageURL,
-    thumbnailImageUrl,
-    imageAspectRatio,
-    imageSize,
-    imageBackgroundColor,
-    title,
-    text,
+    props: {
+      children,
+      defaultAction,
+      alt,
+      altText,
+      imageURL,
+      thumbnailImageUrl,
+      imageAspectRatio,
+      imageSize,
+      imageBackgroundColor,
+      title,
+      text,
+    },
   },
   render
 ) => {
-  const defaultActionValues = renderActionValues(
-    defaultAction,
-    render,
-    '.defaultAction'
+  const defaultActionValues = getActionValues(
+    render(defaultAction, '.defaultAction')
   );
 
   return [
@@ -46,44 +41,45 @@ export const ButtonTemplate = (
         title,
         text,
         defaultAction: defaultActionValues && defaultActionValues[0],
-        actions: renderActionValues(children, render, '.children'),
+        actions: getActionValues(render(children, '.children')),
       },
     },
   ];
 };
+const __ButtonTemplate = asMessageUnitComponent(ButtonTemplate);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(ButtonTemplate);
-
-export const ConfirmTemplate = ({ children, alt, altText, text }, render) => [
+const ConfirmTemplate = (
+  { props: { children, alt, altText, text } },
+  render
+) => [
   {
     type: 'template',
     altText: altText || alt,
     template: {
       type: 'confirm',
       text,
-      actions: renderActionValues(children, render, '.children'),
+      actions: getActionValues(render(children, '.children')),
     },
   },
 ];
+const __ConfirmTemplate = asMessageUnitComponent(ConfirmTemplate);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(ConfirmTemplate);
-
-export const CarouselItem = (
+const CarouselItem = (
   {
-    children,
-    defaultAction,
-    imageURL,
-    thumbnailImageUrl,
-    imageBackgroundColor,
-    title,
-    text,
+    props: {
+      children,
+      defaultAction,
+      imageURL,
+      thumbnailImageUrl,
+      imageBackgroundColor,
+      title,
+      text,
+    },
   },
   render
 ) => {
-  const defaultActionValues = renderActionValues(
-    defaultAction,
-    render,
-    '.defaultAction'
+  const defaultActionValues = getActionValues(
+    render(defaultAction, '.defaultAction')
   );
 
   return [
@@ -93,17 +89,16 @@ export const CarouselItem = (
       title,
       text,
       defaultAction: defaultActionValues && defaultActionValues[0],
-      actions: renderActionValues(children, render, '.children'),
+      actions: getActionValues(render(children, '.children')),
     },
   ];
 };
+const __CarouselItem = asPartComponent(CarouselItem);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(CarouselItem);
+const getCarouselItemValues = valuesOfAssertedType(__CarouselItem);
 
-const renderCarouselItemValues = valuesOfAssertedType(CarouselItem);
-
-export const CarouselTemplate = (
-  { children, alt, altText, imageAspectRatio, imageSize },
+const CarouselTemplate = (
+  { props: { children, alt, altText, imageAspectRatio, imageSize } },
   render
 ) => [
   {
@@ -113,15 +108,14 @@ export const CarouselTemplate = (
       type: 'carousel',
       imageAspectRatio,
       imageSize,
-      columns: renderCarouselItemValues(children, render, '.children'),
+      columns: getCarouselItemValues(render(children, '.children')),
     },
   },
 ];
+const __CarouselTemplate = asMessageUnitComponent(CarouselTemplate);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(CarouselTemplate);
-
-export const ImageCarouselItem = ({ url, imageUrl, action }, render) => {
-  const actionValues = renderActionValues(action, render, '.action');
+const ImageCarouselItem = ({ props: { url, imageUrl, action } }, render) => {
+  const actionValues = getActionValues(render(action, '.action'));
 
   return [
     {
@@ -131,19 +125,30 @@ export const ImageCarouselItem = ({ url, imageUrl, action }, render) => {
   ];
 };
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(ImageCarouselItem);
+const __ImageCarouselItem = asPartComponent(ImageCarouselItem);
 
-const renderImageCarouselItemValues = valuesOfAssertedType(ImageCarouselItem);
+const getImageCarouselItemValues = valuesOfAssertedType(__ImageCarouselItem);
 
-export const ImageCarouselTemplate = ({ children, alt, altText }, render) => [
+const ImageCarouselTemplate = (
+  { props: { children, alt, altText } },
+  render
+) => [
   {
     type: 'template',
     altText: altText || alt,
     template: {
       type: 'image_carousel',
-      columns: renderImageCarouselItemValues(children, render, '.children'),
+      columns: getImageCarouselItemValues(render(children, '.children')),
     },
   },
 ];
+const __ImageCarouselTemplate = asMessageUnitComponent(ImageCarouselTemplate);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(ImageCarouselTemplate);
+export {
+  __ButtonTemplate as ButtonTemplate,
+  __ConfirmTemplate as ConfirmTemplate,
+  __CarouselItem as CarouselItem,
+  __CarouselTemplate as CarouselTemplate,
+  __ImageCarouselItem as ImageCarouselItem,
+  __ImageCarouselTemplate as ImageCarouselTemplate,
+};

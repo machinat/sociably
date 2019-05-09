@@ -3,27 +3,55 @@
 exports[`BuyButton match snapshot 1`] = `
 Array [
   Object {
-    "payload": "_MY_PAYLOAD_",
-    "payment_summary": Object {
-      "currency": "USD",
-      "is_test_payment": true,
-      "merchant_name": "My Fake Business",
-      "payment_type": "FIXED_AMOUNT",
-      "price_list": Array [
-        Object {
-          "amount": "12.75",
-          "label": "subtotal",
-        },
-      ],
-      "requested_user_info": Array [
-        "shipping_address",
-        "contact_name",
-        "contact_phone",
-        "contact_email",
-      ],
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "currency": "USD",
+        "isTest": true,
+        "merchantName": "My Fake Business",
+        "payload": "_MY_PAYLOAD_",
+        "paymentType": "FIXED_AMOUNT",
+        "priceList": Array [
+          Object {
+            "amount": "12.75",
+            "label": "subtotal",
+          },
+        ],
+        "requestedInfo": Array [
+          "shipping_address",
+          "contact_name",
+          "contact_phone",
+          "contact_email",
+        ],
+        "title": "my button",
+      },
+      "type": [Function],
     },
-    "title": "my button",
-    "type": "payment",
+    "path": "$",
+    "type": "part",
+    "value": Object {
+      "payload": "_MY_PAYLOAD_",
+      "payment_summary": Object {
+        "currency": "USD",
+        "is_test_payment": true,
+        "merchant_name": "My Fake Business",
+        "payment_type": "FIXED_AMOUNT",
+        "price_list": Array [
+          Object {
+            "amount": "12.75",
+            "label": "subtotal",
+          },
+        ],
+        "requested_user_info": Array [
+          "shipping_address",
+          "contact_name",
+          "contact_phone",
+          "contact_email",
+        ],
+      },
+      "title": "my button",
+      "type": "payment",
+    },
   },
 ]
 `;
@@ -31,9 +59,21 @@ Array [
 exports[`CallButton match snapshot 1`] = `
 Array [
   Object {
-    "number": "+15105551234",
-    "title": "call me maybe",
-    "type": "phone_number",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "number": "+15105551234",
+        "title": "call me maybe",
+      },
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "part",
+    "value": Object {
+      "number": "+15105551234",
+      "title": "call me maybe",
+      "type": "phone_number",
+    },
   },
 ]
 `;
@@ -41,13 +81,27 @@ Array [
 exports[`GamePlayButton match snapshot 1`] = `
 Array [
   Object {
-    "game_metadata": Object {
-      "context_id": "SAW",
-      "player_id": "Adam",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "contextId": "SAW",
+        "payload": "GAME_OVER",
+        "playerId": "Adam",
+        "title": "I want to play a game",
+      },
+      "type": [Function],
     },
-    "payload": "GAME_OVER",
-    "title": "I want to play a game",
-    "type": "game_play",
+    "path": "$",
+    "type": "part",
+    "value": Object {
+      "game_metadata": Object {
+        "context_id": "SAW",
+        "player_id": "Adam",
+      },
+      "payload": "GAME_OVER",
+      "title": "I want to play a game",
+      "type": "game_play",
+    },
   },
 ]
 `;
@@ -55,8 +109,19 @@ Array [
 exports[`LoginButton match snapshot 1`] = `
 Array [
   Object {
-    "type": "account_link",
-    "url": "https://council.elrond",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "url": "https://council.elrond",
+      },
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "part",
+    "value": Object {
+      "type": "account_link",
+      "url": "https://council.elrond",
+    },
   },
 ]
 `;
@@ -64,8 +129,19 @@ Array [
 exports[`LoginButton match snapshot 2`] = `
 Array [
   Object {
-    "type": "account_link",
-    "url": "https://council.elrond",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "url": "https://council.elrond",
+      },
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "part",
+    "value": Object {
+      "type": "account_link",
+      "url": "https://council.elrond",
+    },
   },
 ]
 `;
@@ -73,7 +149,16 @@ Array [
 exports[`LogoutButton match snapshot 1`] = `
 Array [
   Object {
-    "type": "account_unlink",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "part",
+    "value": Object {
+      "type": "account_unlink",
+    },
   },
 ]
 `;
@@ -81,9 +166,21 @@ Array [
 exports[`PostbackButton match snapshot 1`] = `
 Array [
   Object {
-    "payload": "_MY_PAYLOAD_",
-    "title": "my button",
-    "type": "postback",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "payload": "_MY_PAYLOAD_",
+        "title": "my button",
+      },
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "part",
+    "value": Object {
+      "payload": "_MY_PAYLOAD_",
+      "title": "my button",
+      "type": "postback",
+    },
   },
 ]
 `;
@@ -92,14 +189,47 @@ exports[`ShareButton match snapshot 1`] = `
 Array [
   Array [
     Object {
-      "share_contents": undefined,
-      "type": "element_share",
+      "node": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {},
+        "type": [Function],
+      },
+      "path": "$",
+      "type": "part",
+      "value": Object {
+        "share_contents": undefined,
+        "type": "element_share",
+      },
     },
   ],
   Array [
     Object {
-      "share_contents": "__RENDERED_GENERIC_TEMPLATE_MEASSGE_OBJ__",
-      "type": "element_share",
+      "node": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "children": Object {
+            "$$typeof": Symbol(machinat.element),
+            "props": Object {
+              "children": Object {
+                "$$typeof": Symbol(machinat.element),
+                "props": Object {
+                  "subtitle": "bar",
+                  "title": "foo",
+                },
+                "type": [Function],
+              },
+            },
+            "type": [Function],
+          },
+        },
+        "type": [Function],
+      },
+      "path": "$",
+      "type": "part",
+      "value": Object {
+        "share_contents": "__RENDERED_GENERIC_TEMPLATE_MEASSGE_OBJ__",
+        "type": "element_share",
+      },
     },
   ],
 ]
@@ -109,24 +239,52 @@ exports[`URLButton match snapshot 1`] = `
 Array [
   Array [
     Object {
-      "fallback_url": undefined,
-      "messenger_extensions": undefined,
-      "title": "my button",
-      "type": "web_url",
-      "url": "http://machinat.com",
-      "webview_height_ratio": undefined,
-      "webview_share_button": undefined,
+      "node": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "title": "my button",
+          "url": "http://machinat.com",
+        },
+        "type": [Function],
+      },
+      "path": "$",
+      "type": "part",
+      "value": Object {
+        "fallback_url": undefined,
+        "messenger_extensions": undefined,
+        "title": "my button",
+        "type": "web_url",
+        "url": "http://machinat.com",
+        "webview_height_ratio": undefined,
+        "webview_share_button": undefined,
+      },
     },
   ],
   Array [
     Object {
-      "fallback_url": "http://...",
-      "messenger_extensions": true,
-      "title": "my button",
-      "type": "web_url",
-      "url": "http://machinat.com",
-      "webview_height_ratio": "compact",
-      "webview_share_button": "hide",
+      "node": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "extensions": true,
+          "fallbackURL": "http://...",
+          "heightRatio": "compact",
+          "hideShareButton": true,
+          "title": "my button",
+          "url": "http://machinat.com",
+        },
+        "type": [Function],
+      },
+      "path": "$",
+      "type": "part",
+      "value": Object {
+        "fallback_url": "http://...",
+        "messenger_extensions": true,
+        "title": "my button",
+        "type": "web_url",
+        "url": "http://machinat.com",
+        "webview_height_ratio": "compact",
+        "webview_share_button": "hide",
+      },
     },
   ],
 ]

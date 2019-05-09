@@ -1,6 +1,6 @@
 // @flow
 /* eslint-disable no-use-before-define */
-import type { MachinatNativeType } from 'machinat-renderer/types';
+import type { MachinatNativeComponent } from 'machinat-renderer/types';
 
 export type MachinatNode =
   | MachinatEmpty
@@ -12,7 +12,7 @@ export type MachinatElementType =
   | string
   | Symbol
   | MachinatComponentType
-  | MachinatNativeType<any>;
+  | MachinatNativeComponent<any>;
 
 export type MachinatElement<ElementType: MachinatElementType> = {|
   $$typeof: string | Symbol,
@@ -34,7 +34,7 @@ export type MachinatRenderable = MachinatText | MachinatElement<any>;
 
 export type FragmentElement = MachinatElement<Symbol>;
 export type NativeElement<
-  Native: MachinatNativeType<any>
+  Native: MachinatNativeComponent<any>
 > = MachinatElement<Native>;
 export type GeneralElement = MachinatElement<string>;
 export type PauseElement = MachinatElement<Symbol>;

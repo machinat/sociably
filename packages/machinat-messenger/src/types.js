@@ -1,8 +1,5 @@
 // @flow
-import type {
-  ContainerNativeType,
-  SegmentNativeType,
-} from 'machinat-renderer/types';
+import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type MachinatQueue from 'machinat-queue';
 import type { WebhookResponse } from 'machinat-webhook-receiver/types';
@@ -49,17 +46,9 @@ type SenderActionValue = {|
 
 export type MessengerSegmentValue = MessageValue | SenderActionValue;
 
-export type MessengerContainerComponent = ContainerNativeType<MessengerSegmentValue> & {
+export type MessengerComponent = MachinatNativeComponent<MessengerSegmentValue> & {
   $$entry?: string,
 };
-
-export type MessengerValuesComponent = SegmentNativeType<MessengerSegmentValue> & {
-  $$entry?: string,
-};
-
-export type MessengerComponent =
-  | MessengerContainerComponent
-  | MessengerValuesComponent;
 
 export type MessengerRequest = {|
   method: string,

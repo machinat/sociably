@@ -1,15 +1,8 @@
 /* eslint-disable import/prefer-default-export */
-import { annotate, asNative, asUnit } from 'machinat-utility';
+import { asMessageUnitComponent } from './utils';
 
-import { LINE_NAITVE_TYPE } from '../symbol';
-
-export const Location = ({
-  title,
-  address,
-  lat,
-  latitude,
-  long,
-  longitude,
+const Location = ({
+  props: { title, address, lat, latitude, long, longitude },
 }) => [
   {
     type: 'location',
@@ -20,4 +13,6 @@ export const Location = ({
   },
 ];
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(Location);
+const __Location = asMessageUnitComponent(Location);
+
+export { __Location as Location };

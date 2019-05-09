@@ -1,33 +1,33 @@
-import { annotate, asNative, asUnit, hasEntry } from 'machinat-utility';
-import { MESSENGER_NAITVE_TYPE } from '../symbol';
+import { asUnitComponentWithEntry } from './utils';
+
 import {
   ENTRY_PASS_THREAD_CONTROL,
   ENTRY_REQUEST_THREAD_CONTROL,
   ENTRY_TAKE_THREAD_CONTROL,
-} from '../apiEntry';
+} from '../constant';
 
-export const PassThreadControl = ({ appId, metadata }) => [
+const PassThreadControl = ({ props: { appId, metadata } }) => [
   { target_app_id: appId, metadata },
 ];
 
-annotate(
-  asNative(MESSENGER_NAITVE_TYPE),
-  hasEntry(ENTRY_PASS_THREAD_CONTROL),
-  asUnit(true)
-)(PassThreadControl);
+const __PassThreadControl = asUnitComponentWithEntry(ENTRY_PASS_THREAD_CONTROL)(
+  PassThreadControl
+);
 
-export const RequestThreadControl = ({ metadata }) => [{ metadata }];
+const RequestThreadControl = ({ props: { metadata } }) => [{ metadata }];
 
-annotate(
-  asNative(MESSENGER_NAITVE_TYPE),
-  hasEntry(ENTRY_REQUEST_THREAD_CONTROL),
-  asUnit(true)
+const __RequestThreadControl = asUnitComponentWithEntry(
+  ENTRY_REQUEST_THREAD_CONTROL
 )(RequestThreadControl);
 
-export const TakeThreadContorl = ({ metadata }) => [{ metadata }];
+const TakeThreadContorl = ({ props: { metadata } }) => [{ metadata }];
 
-annotate(
-  asNative(MESSENGER_NAITVE_TYPE),
-  hasEntry(ENTRY_TAKE_THREAD_CONTROL),
-  asUnit(true)
-)(TakeThreadContorl);
+const __TakeThreadContorl = asUnitComponentWithEntry(ENTRY_TAKE_THREAD_CONTROL)(
+  TakeThreadContorl
+);
+
+export {
+  __PassThreadControl as PassThreadControl,
+  __RequestThreadControl as RequestThreadControl,
+  __TakeThreadContorl as TakeThreadContorl,
+};

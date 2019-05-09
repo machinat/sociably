@@ -1,75 +1,77 @@
 // @flow
+import typeof { SEGMENT_BREAK, MACHINAT_ELEMENT_TYPE } from 'machinat';
 import type {
   MachinatNode,
   MachinatText,
-  MachinatElementProps,
   NativeElement,
   GeneralElement,
   PauseElement,
 } from 'machinat/types';
 
-export type ContainerNativeType<Value> = {
-  (
-    props: MachinatElementProps,
-    render: RenderInnerFn
-  ): null | MachinatSegment<Value, any>[],
-  $$native: Symbol,
-  $$unit: boolean,
-  $$container: true,
-};
-
-export type SegmentNativeType<Value> = {
-  (props: MachinatElementProps, render: RenderInnerFn): null | Value[],
-  $$native: Symbol,
-  $$unit: boolean,
-  $$container: false,
-};
-
-export type MachinatNativeType<Value> =
-  | ContainerNativeType<Value>
-  | SegmentNativeType<Value>
-  | SegmentNativeType<string>;
-
-export type TextSegment = {|
-  isPause: false,
-  asUnit: true,
-  node: MachinatText,
+export type TextSegment<Native> = {|
+  type: 'text',
+  node: MachinatText | GeneralElement | NativeElement<Native>,
   value: string,
   path: string,
 |};
 
-export type ElementSegment<Value, Native> = {|
-  isPause: false,
-  asUnit: boolean,
+export type PartSegment<Value, Native> = {|
+  type: 'part',
   node: GeneralElement | NativeElement<Native>,
-  value: string | Value,
+  value: Value,
+  path: string,
+|};
+
+export type UnitSegment<Value, Native> = {|
+  type: 'unit',
+  node: GeneralElement | NativeElement<Native>,
+  value: Value,
   path: string,
 |};
 
 export type RawSegment<Value> = {|
-  isPause: false,
-  asUnit: true,
+  type: 'raw',
   node: void,
   value: Value,
   path: string,
 |};
 
 export type PauseSegment = {|
-  isPause: true,
-  asUnit: true,
+  type: 'pause',
   node: PauseElement,
   value: void,
   path: string,
 |};
 
+export type BreakSegment<Native> = {|
+  type: 'break',
+  node: GeneralElement | NativeElement<Native>,
+  value: SEGMENT_BREAK,
+  path: string,
+|};
+
 export type MachinatSegment<Value, Native> =
-  | TextSegment
-  | ElementSegment<Value, Native>
+  | TextSegment<Native>
+  | UnitSegment<Value, Native>
   | RawSegment<Value>
   | PauseSegment;
 
-export type RenderInnerFn = (
+export type InnerSegment<Value, Native> =
+  | MachinatSegment<Value, Native>
+  | BreakSegment<Native>
+  | PartSegment<Value, Native>;
+
+export type RenderInnerFn<Value, Native> = (
   node: MachinatNode,
-  path: string,
-  payload: any
-) => null | Array<MachinatSegment<any, any>>;
+  path: string
+) => null | Array<InnerSegment<Value, Native>>;
+
+export type MachinatNativeComponent<Value> = {
+  (
+    element: NativeElement<MachinatNativeComponent<Value>>,
+    render: RenderInnerFn<Value, MachinatNativeComponent<Value>>,
+    path: string
+  ): null | InnerSegment<Value, MachinatNativeComponent<Value>>[],
+  $$native: MACHINAT_ELEMENT_TYPE,
+  $$namespace: string,
+};

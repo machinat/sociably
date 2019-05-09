@@ -1,20 +1,11 @@
 import invariant from 'invariant';
-import {
-  annotate,
-  asNative,
-  asUnit,
-  valuesOfAssertedType,
-} from 'machinat-utility';
+import { valuesOfAssertedType } from 'machinat-utility';
 
-import { LINE_NAITVE_TYPE } from '../symbol';
-
+import { asPartComponent, asMessageUnitComponent } from './utils';
 import { URIAction, MessageAction } from './action';
 
-export const Image = ({
-  url,
-  originalContentUrl,
-  previewURL,
-  previewImageUrl,
+const Image = ({
+  props: { url, originalContentUrl, previewURL, previewImageUrl },
 }) => [
   {
     type: 'image',
@@ -22,26 +13,21 @@ export const Image = ({
     previewImageUrl: previewImageUrl || previewURL,
   },
 ];
+const __Image = asMessageUnitComponent(Image);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(Image);
-
-export const Sticker = ({ stickerId, packageId }) => [
+const Sticker = ({ props: { stickerId, packageId } }) => [
   {
     type: 'sticker',
     packageId,
     stickerId,
   },
 ];
+const __Sticker = asMessageUnitComponent(Sticker);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(Sticker);
+const getImageMapActionValues = valuesOfAssertedType(URIAction, MessageAction);
 
-const renderImageMapActionValues = valuesOfAssertedType(
-  URIAction,
-  MessageAction
-);
-
-export const ImageMapArea = ({ action, x, y, width, height }, render) => {
-  const actionValues = renderImageMapActionValues(action, render, '.action');
+const ImageMapArea = ({ props: { action, x, y, width, height } }, render) => {
+  const actionValues = getImageMapActionValues(render(action, '.action'));
 
   invariant(
     actionValues !== undefined && actionValues.length === 1,
@@ -80,26 +66,27 @@ export const ImageMapArea = ({ action, x, y, width, height }, render) => {
         },
   ];
 };
-
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(ImageMapArea);
+const __ImageMapArea = asPartComponent(ImageMapArea);
 
 const renderURIActionValues = valuesOfAssertedType(URIAction);
 
-export const ImageMapVideoArea = (
+const ImageMapVideoArea = (
   {
-    url,
-    originalContentUrl,
-    previewURL,
-    previewImageUrl,
-    x,
-    y,
-    width,
-    height,
-    action,
+    props: {
+      url,
+      originalContentUrl,
+      previewURL,
+      previewImageUrl,
+      x,
+      y,
+      width,
+      height,
+      action,
+    },
   },
   render
 ) => {
-  const actionValues = renderURIActionValues(action, render, '.action');
+  const actionValues = renderURIActionValues(render(action, '.action'));
 
   return [
     {
@@ -118,17 +105,16 @@ export const ImageMapVideoArea = (
     },
   ];
 };
+const __ImageMapVideoArea = asPartComponent(ImageMapVideoArea);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(ImageMapVideoArea);
+const getVideoAreaValues = valuesOfAssertedType(__ImageMapVideoArea);
+const renderActionAreaValues = valuesOfAssertedType(__ImageMapArea);
 
-const renderVideoAreaValues = valuesOfAssertedType(ImageMapVideoArea);
-const renderActionAreaValues = valuesOfAssertedType(ImageMapArea);
-
-export const ImageMap = (
-  { baseURL, baseUrl, alt, altText, height, children, video },
+const ImageMap = (
+  { props: { baseURL, baseUrl, alt, altText, height, children, video } },
   render
 ) => {
-  const videoValues = renderVideoAreaValues(video, render, '.video');
+  const videoValues = getVideoAreaValues(render(video, '.video'));
 
   return [
     {
@@ -139,10 +125,17 @@ export const ImageMap = (
         width: 1040,
         height,
       },
-      actions: renderActionAreaValues(children, render, '.children'),
+      actions: renderActionAreaValues(render(children, '.children')),
       video: videoValues && videoValues[0],
     },
   ];
 };
+const __ImageMap = asMessageUnitComponent(ImageMap);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(ImageMap);
+export {
+  __Image as Image,
+  __Sticker as Sticker,
+  __ImageMapArea as ImageMapArea,
+  __ImageMapVideoArea as ImageMapVideoArea,
+  __ImageMap as ImageMap,
+};

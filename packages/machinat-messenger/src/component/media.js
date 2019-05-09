@@ -1,15 +1,9 @@
-import { annotate, asNative, asUnit, hasEntry } from 'machinat-utility';
-
-import {
-  ATTACHED_FILE_DATA,
-  ATTACHED_FILE_INFO,
-  MESSENGER_NAITVE_TYPE,
-} from '../symbol';
-import { ENTRY_MESSAGES } from '../apiEntry';
+import { asMessagesUnitComponent } from './utils';
+import { ATTACHED_FILE_DATA, ATTACHED_FILE_INFO } from '../constant';
 
 const nativeMediaFactroy = (name, type) => {
   const container = {
-    [name]: ({ url, reusable, attachmentId, data, fileInfo }) => [
+    [name]: ({ props: { url, reusable, attachmentId, data, fileInfo } }) => [
       {
         message: {
           attachment: {
@@ -27,11 +21,7 @@ const nativeMediaFactroy = (name, type) => {
     ],
   };
 
-  return annotate(
-    asNative(MESSENGER_NAITVE_TYPE),
-    hasEntry(ENTRY_MESSAGES),
-    asUnit(true)
-  )(container[name]);
+  return asMessagesUnitComponent(container[name]);
 };
 
 export const Image = nativeMediaFactroy('Image', 'image');

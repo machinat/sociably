@@ -3,7 +3,16 @@
 exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function EmailQuickReply]} match snapshot 1`] = `
 Array [
   Object {
-    "content_type": "user_email",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "part",
+    "value": Object {
+      "content_type": "user_email",
+    },
   },
 ]
 `;
@@ -11,7 +20,16 @@ Array [
 exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function LocationQuickReply]} match snapshot 1`] = `
 Array [
   Object {
-    "content_type": "location",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "part",
+    "value": Object {
+      "content_type": "location",
+    },
   },
 ]
 `;
@@ -19,7 +37,16 @@ Array [
 exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function PhoneQuickReply]} match snapshot 1`] = `
 Array [
   Object {
-    "content_type": "user_phone_number",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "part",
+    "value": Object {
+      "content_type": "user_phone_number",
+    },
   },
 ]
 `;
@@ -27,10 +54,22 @@ Array [
 exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function QuickReply]} match snapshot 1`] = `
 Array [
   Object {
-    "content_type": "text",
-    "image_url": undefined,
-    "payload": "🥧",
-    "title": "i want a pie",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "payload": "🥧",
+        "title": "i want a pie",
+      },
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "part",
+    "value": Object {
+      "content_type": "text",
+      "image_url": undefined,
+      "payload": "🥧",
+      "title": "i want a pie",
+    },
   },
 ]
 `;
@@ -38,10 +77,23 @@ Array [
 exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function QuickReply]} match snapshot 2`] = `
 Array [
   Object {
-    "content_type": "text",
-    "image_url": "http://cake.it",
-    "payload": "🍰",
-    "title": "a piece of cake",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "imageURL": "http://cake.it",
+        "payload": "🍰",
+        "title": "a piece of cake",
+      },
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "part",
+    "value": Object {
+      "content_type": "text",
+      "image_url": "http://cake.it",
+      "payload": "🍰",
+      "title": "a piece of cake",
+    },
   },
 ]
 `;

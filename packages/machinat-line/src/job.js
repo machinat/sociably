@@ -18,7 +18,7 @@ const MULTICAST_PATH = 'message/multicast';
 const isMessagesEntry = node =>
   typeof node !== 'object' ||
   typeof node.type !== 'function' ||
-  node.type.$$entry === undefined;
+  node.type.$$getEntry === undefined;
 
 export const createChatJobs = (
   thread: LineThread,
@@ -65,10 +65,10 @@ export const createChatJobs = (
       !isMesssage /* :: && // for refinement, this equals to:
       typeof node === 'object' &&
       typeof node.type === 'function' &&
-      node.type.$$entry !== undefined */
+      node.type.$$getEntry !== undefined */
     ) {
       jobs.push({
-        entry: node.type.$$entry(thread, value),
+        entry: node.type.$$getEntry(thread, value),
         threadUid: thread.uid,
         body: value,
       });

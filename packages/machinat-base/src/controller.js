@@ -1,6 +1,7 @@
 // @flow
+import { compose } from 'machinat-utility';
+
 import type { MachinatNode } from 'machinat/types';
-import { compose } from './utils';
 import type {
   EventMiddleware,
   MachinatEvent,

@@ -1,4 +1,16 @@
 // @flow
+export const MESSNEGER = 'messenger';
+export const MESSENGER_NAMESPACE = 'Messenger';
+export const MESSENGER_NAITVE_TYPE = Symbol.for('machinat.messenger.native');
+
+export const ATTACHED_FILE_DATA = Symbol(
+  'machinat.messenger.job.attached_file_data'
+);
+
+export const ATTACHED_FILE_INFO = Symbol(
+  'machinat.messenger.job.attached_file_info'
+);
+
 export const ENTRY_MESSAGES = 'me/messages';
 
 export const ENTRY_PASS_THREAD_CONTROL = 'me/pass_thread_control';

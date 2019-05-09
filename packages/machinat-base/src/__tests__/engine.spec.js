@@ -17,9 +17,9 @@ const element = (
 const options = { foo: 'bar' };
 
 const segments = [
-  { isPause: false, node: <a id={1} />, value: { id: 1 } },
-  { isPause: false, node: <b id={2} />, value: { id: 2 } },
-  { isPause: false, node: <c id={3} />, value: { id: 3 } },
+  { type: 'unit', node: <a id={1} />, value: { id: 1 } },
+  { type: 'unit', node: <b id={2} />, value: { id: 2 } },
+  { type: 'unit', node: <c id={3} />, value: { id: 3 } },
 ];
 
 const queue = moxy(new Queue(), {
@@ -182,10 +182,10 @@ describe('#renderActions(createJobs, target, message, options, allowPause)', () 
 
   it('create "pause" action out of "pause" segments which separate "jobs" action', () => {
     const segmentsWithPause = [
-      { isPause: true, node: <Machinat.Pause /> },
+      { type: 'pause', node: <Machinat.Pause />, value: undefined },
       segments[0],
       segments[1],
-      { isPause: true, node: <Machinat.Pause /> },
+      { type: 'pause', node: <Machinat.Pause />, value: undefined },
       segments[2],
     ];
 

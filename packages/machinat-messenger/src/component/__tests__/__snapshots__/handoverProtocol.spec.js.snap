@@ -3,8 +3,20 @@
 exports[`match snapshot 1`] = `
 Array [
   Object {
-    "metadata": "you have my bow",
-    "target_app_id": "Legolas",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "appId": "Legolas",
+        "metadata": "you have my bow",
+      },
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "metadata": "you have my bow",
+      "target_app_id": "Legolas",
+    },
   },
 ]
 `;
@@ -12,7 +24,18 @@ Array [
 exports[`match snapshot 2`] = `
 Array [
   Object {
-    "metadata": "give me the ring",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "metadata": "give me the ring",
+      },
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "metadata": "give me the ring",
+    },
   },
 ]
 `;
@@ -20,7 +43,18 @@ Array [
 exports[`match snapshot 3`] = `
 Array [
   Object {
-    "metadata": "my precious",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "metadata": "my precious",
+      },
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "metadata": "my precious",
+    },
   },
 ]
 `;

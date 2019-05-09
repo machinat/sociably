@@ -4,23 +4,41 @@ import Machinat from 'machinat';
 import { Engine, Controller } from 'machinat-base';
 import WebhookReceiver from 'machinat-webhook-receiver';
 import LineBot from '../bot';
-import { LINE_NATIVE_TYPE } from '../symbol';
+import { LINE_NATIVE_TYPE } from '../constant';
 
 nock.disableNetConnect();
 
-const Foo = moxy(props => [props]);
-Foo.$$unit = true;
+const Foo = moxy((node, _, path) => [
+  {
+    type: 'unit',
+    value: node.props,
+    node,
+    path,
+  },
+]);
 Foo.$$native = LINE_NATIVE_TYPE;
 
-const Bar = moxy(props => [props]);
-Bar.$$unit = true;
+const Bar = moxy((node, _, path) => [
+  {
+    type: 'unit',
+    value: node.props,
+    node,
+    path,
+  },
+]);
 Bar.$$native = LINE_NATIVE_TYPE;
-Bar.$$entry = moxy(() => 'bar');
+Bar.$$getEntry = moxy(() => 'bar');
 
-const Baz = moxy(() => [undefined]);
-Baz.$$unit = true;
+const Baz = moxy((node, _, path) => [
+  {
+    type: 'unit',
+    value: {},
+    node,
+    path,
+  },
+]);
 Baz.$$native = LINE_NATIVE_TYPE;
-Baz.$$entry = moxy(() => 'baz');
+Baz.$$getEntry = moxy(() => 'baz');
 
 const msgs = [
   <Foo id={0} />,
@@ -41,8 +59,8 @@ const bodySpy = moxy(() => true);
 const accessToken = '__ACCESS_TOKEN__';
 let lineAPI;
 beforeEach(() => {
-  Bar.$$entry.mock.clear();
-  Baz.$$entry.mock.clear();
+  Bar.$$getEntry.mock.clear();
+  Baz.$$getEntry.mock.clear();
 
   lineAPI = nock('https://api.line.me', {
     reqheaders: {

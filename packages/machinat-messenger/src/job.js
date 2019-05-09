@@ -12,8 +12,12 @@ import type {
 } from './types';
 import type MessangerThread from './thread';
 
-import { ENTRY_MESSAGES, ENTRY_MESSAGE_CREATIVES } from './apiEntry';
-import { ATTACHED_FILE_DATA, ATTACHED_FILE_INFO } from './symbol';
+import {
+  ENTRY_MESSAGES,
+  ENTRY_MESSAGE_CREATIVES,
+  ATTACHED_FILE_DATA,
+  ATTACHED_FILE_INFO,
+} from './constant';
 
 const POST = 'POST';
 

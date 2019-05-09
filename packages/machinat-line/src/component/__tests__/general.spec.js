@@ -2,21 +2,16 @@ import { reduce } from 'machinat-utility';
 import Machinat from 'machinat';
 import * as general from '../general';
 
-const map = (arr, mapper) => arr && arr.map(mapper);
-
-const render = node =>
+const render = children =>
   reduce(
-    node,
-    (rendered, element, path) =>
-      rendered.concat(
-        typeof element === 'string'
-          ? { value: element, node: element, path }
-          : typeof element.type === 'string'
-          ? map(
-              general[element.type](element.props, render), //
-              value => ({ value, node: element, path })
-            )
-          : { value: { non: 'text' }, node: element, path }
+    children,
+    (segments, node, path) =>
+      segments.concat(
+        typeof node === 'string'
+          ? { type: 'text', value: node, node, path }
+          : typeof node.type === 'string'
+          ? general[node.type](node, render, path)
+          : { type: 'part', value: { something: 'unknown' }, node, path }
       ),
     [],
     ''
@@ -24,18 +19,18 @@ const render = node =>
 
 describe('text components', () => {
   test('shallow textual elements match snapshot', () => {
-    expect(
-      render([
-        <text>abc</text>,
-        <a href="https://machinat.world">hello</a>,
-        <b>important</b>,
-        <i>italic</i>,
-        <del>nooooo</del>,
-        <br />,
-        <code>foo.bar()</code>,
-        <pre>foo.bar('hello world')</pre>,
-      ]).map(r => r.value)
-    ).toMatchInlineSnapshot(`
+    const segments = render([
+      <text>abc</text>,
+      <a href="https://machinat.world">hello</a>,
+      <b>important</b>,
+      <i>italic</i>,
+      <del>nooooo</del>,
+      <br />,
+      <code>foo.bar()</code>,
+      <pre>foo.bar('hello world')</pre>,
+    ]);
+
+    expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
 Array [
   "abc",
   "hello",
@@ -50,29 +45,31 @@ Array [
   "foo.bar('hello world')",
 ]
 `);
+
+    expect(segments).toMatchSnapshot();
   });
 
   test('nested textual elements match snapshot', () => {
-    expect(
-      render(
-        <text>
-          123{' '}
-          <code>
-            Hello, <b>Luke Skywalker!</b>
-          </code>
-          <br />
-          You know what?
-          <br />
-          <i>
-            I'm your <del>FATHER</del> <code>droid</code>.
-          </i>
-          <br />
-          <br />
-          <a href="https://C3.PO">Check here</a>
-          <pre>May the force be with you!</pre> abc
-        </text>
-      ).map(r => r.value)
-    ).toMatchInlineSnapshot(`
+    const segments = render(
+      <text>
+        123{' '}
+        <code>
+          Hello, <b>Luke Skywalker!</b>
+        </code>
+        <br />
+        You know what?
+        <br />
+        <i>
+          I'm your <del>FATHER</del> <code>droid</code>.
+        </i>
+        <br />
+        <br />
+        <a href="https://C3.PO">Check here</a>
+        <pre>May the force be with you!</pre> abc
+      </text>
+    );
+
+    expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
 Array [
   "123 Hello, Luke Skywalker!",
   Symbol(machinat.segment.break),
@@ -88,6 +85,7 @@ Array [
   "May the force be with you! abc",
 ]
 `);
+    expect(segments).toMatchSnapshot();
   });
 
   test('with break placed in children', () => {
@@ -98,17 +96,18 @@ Array [
         bar
       </>
     );
-    expect(
-      render([
-        <text>{children}</text>,
-        <a href="https://machinat.world">{children}</a>,
-        <b>{children}</b>,
-        <i>{children}</i>,
-        <del>{children}</del>,
-        <code>{children}</code>,
-        <pre>{children}</pre>,
-      ]).map(r => r.value)
-    ).toMatchInlineSnapshot(`
+
+    const segments = render([
+      <text>{children}</text>,
+      <a href="https://machinat.world">{children}</a>,
+      <b>{children}</b>,
+      <i>{children}</i>,
+      <del>{children}</del>,
+      <code>{children}</code>,
+      <pre>{children}</pre>,
+    ]);
+
+    expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
 Array [
   "foo",
   Symbol(machinat.segment.break),
@@ -136,6 +135,7 @@ Array [
   "bar",
 ]
 `);
+    expect(segments).toMatchSnapshot();
   });
 
   test('should throw if non string value rendered', () => {
@@ -158,7 +158,7 @@ Array [
       <pre>{children}</pre>,
     ].forEach(node => {
       expect(() => render(node)).toThrow(
-        '<NonText /> at ::1 is not rendered as text content'
+        '<NonText /> at ::1 is not valid textual content'
       );
     });
   });
@@ -180,14 +180,21 @@ Array [
 
 describe('media components', () => {
   it('metch snapshot', () => {
-    expect(
-      render([
-        <img src="http://..." />,
-        <video src="http://..." />,
-        <audio src="http://..." />,
-        <file src="http://..." />,
-      ]).map(act => act.value)
-    ).toMatchInlineSnapshot(`
+    const messages = [
+      <img src="http://..." />,
+      <video src="http://..." />,
+      <audio src="http://..." />,
+      <file src="http://..." />,
+    ];
+
+    const segments = render(messages);
+
+    segments.forEach((seg, i) => {
+      expect(seg.type).toBe('unit');
+      expect(seg.node).toBe(messages[i]);
+    });
+
+    expect(segments.map(seg => seg.value)).toMatchInlineSnapshot(`
 Array [
   Object {
     "text": "http://...",
@@ -209,9 +216,9 @@ Array [
 `);
   });
 
-  test('should return null if content is empty', () => {
+  test('should return "" if content is empty', () => {
     [<img />, <video />, <audio />, <file />].forEach(node => {
-      expect(render(node)).toEqual([null]);
+      expect(render(node)[0].value).toEqual({ text: '', type: 'text' });
     });
   });
 });

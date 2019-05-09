@@ -5,7 +5,7 @@ import {
   MESSENGER_NAITVE_TYPE,
   ATTACHED_FILE_DATA,
   ATTACHED_FILE_INFO,
-} from '../symbol';
+} from '../constant';
 
 const Foo = () => {};
 Foo.$$native = MESSENGER_NAITVE_TYPE;

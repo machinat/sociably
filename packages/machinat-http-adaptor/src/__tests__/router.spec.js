@@ -14,9 +14,9 @@ describe('#provide()', () => {
   const req = moxy(new IncomingMessage());
 
   beforeEach(() => {
-    router = new Router();
-    router.route(path('/foo'), fooBot);
-    router.route(path('/bar'), barBot);
+    router = new Router()
+      .route(path('/foo'), fooBot)
+      .route(path('/bar'), barBot);
 
     req.mock.clear();
   });
@@ -51,8 +51,8 @@ describe('#provide()', () => {
 
   test('setup after provide() called not effected to previouse provider', () => {
     const provider = router.provide();
-    router.route(path('/foooo'), fooBot);
-    router.route(path('/barrr'), barBot);
+
+    router.route(path('/foooo'), fooBot).route(path('/barrr'), barBot);
     router.default(defaultBot);
 
     req.mock.getter('url').fakeReturnValue('/foo');

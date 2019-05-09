@@ -1,20 +1,15 @@
 /* eslint-disable import/prefer-default-export */
-import {
-  annotate,
-  asNative,
-  asUnit,
-  valuesOfAssertedType,
-} from 'machinat-utility';
+import { valuesOfAssertedType } from 'machinat-utility';
 
-import { LINE_NAITVE_TYPE } from '../symbol';
+import { asPartComponent } from './utils';
 
 import * as _actionModule from './action';
 
 const actionComponents = Object.values(_actionModule);
-const renderActionValues = valuesOfAssertedType(...actionComponents);
+const getActionValues = valuesOfAssertedType(...actionComponents);
 
-export const QuickReply = ({ imageURL, action }, render) => {
-  const actionValues = renderActionValues(action, render, 'action');
+const QuickReply = ({ props: { imageURL, action } }, render) => {
+  const actionValues = getActionValues(render(action, '.action'));
 
   return [
     {
@@ -25,4 +20,6 @@ export const QuickReply = ({ imageURL, action }, render) => {
   ];
 };
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(QuickReply);
+const __QuickReply = asPartComponent(QuickReply);
+
+export { __QuickReply as QuickReply };

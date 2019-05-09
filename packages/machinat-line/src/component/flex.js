@@ -1,28 +1,21 @@
 import invariant from 'invariant';
-import {
-  annotate,
-  asNative,
-  asUnit,
-  valuesOfAssertedType,
-  joinTextValues,
-} from 'machinat-utility';
+import { joinTextualSegments, valuesOfAssertedType } from 'machinat-utility';
 
-import { LINE_NAITVE_TYPE } from '../symbol';
-import * as _actionModule from './action';
+import { asPartComponent, asMessageUnitComponent } from './utils';
+import * as actionsModule from './action';
 
-const actionComponents = Object.values(_actionModule);
-const renderActionValues = valuesOfAssertedType(...actionComponents);
+const getActionValues = valuesOfAssertedType(...Object.values(actionsModule));
 
-export const FlexButton = (
-  { action, flex, margin, height, style, color, gravity },
+const FlexButton = (
+  { props: { action, flex, margin, height, style, color, gravity } },
   render
 ) => {
-  const actionRendered = renderActionValues(action, render, '.action');
+  const actionValues = getActionValues(render(action, '.action'));
 
   invariant(
-    actionRendered !== undefined && actionRendered.length === 1,
+    actionValues !== undefined && actionValues.length === 1,
     `there should be exactly 1 action in prop "action" of FlexButton, got ${
-      actionRendered ? actionRendered.length : 0
+      actionValues ? actionValues.length : 0
     }`
   );
 
@@ -35,19 +28,17 @@ export const FlexButton = (
       style,
       color,
       gravity,
-      action: actionRendered[0],
+      action: actionValues[0],
     },
   ];
 };
+const __FlexButton = asPartComponent(FlexButton);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(FlexButton);
+const FILLER_TYPE_VLUES = [{ type: 'filler' }];
+const FlexFiller = () => FILLER_TYPE_VLUES;
+const __FlexFiller = asPartComponent(FlexFiller);
 
-const FILLER_TYPE_RENDERED = [{ type: 'filler' }];
-export const FlexFiller = () => FILLER_TYPE_RENDERED;
-
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(FlexFiller);
-
-export const FlexIcon = ({ url, margin, size, aspectRatio }) => [
+const FlexIcon = ({ props: { url, margin, size, aspectRatio } }) => [
   {
     type: 'icon',
     url,
@@ -56,25 +47,26 @@ export const FlexIcon = ({ url, margin, size, aspectRatio }) => [
     aspectRatio,
   },
 ];
+const __FlexIcon = asPartComponent(FlexIcon);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(FlexIcon);
-
-export const FlexImage = (
+const FlexImage = (
   {
-    url,
-    flex,
-    margin,
-    align,
-    gravity,
-    size,
-    aspectRatio,
-    aspectMode,
-    backgroundColor,
-    action,
+    props: {
+      url,
+      flex,
+      margin,
+      align,
+      gravity,
+      size,
+      aspectRatio,
+      aspectMode,
+      backgroundColor,
+      action,
+    },
   },
   render
 ) => {
-  const actionRendered = renderActionValues(action, render, '.action');
+  const actionValues = getActionValues(render(action, '.action'));
 
   return [
     {
@@ -88,60 +80,60 @@ export const FlexImage = (
       aspectRatio,
       aspectMode,
       backgroundColor,
-      action: actionRendered && actionRendered[0],
+      action: actionValues && actionValues[0],
     },
   ];
 };
+const __FlexImage = asPartComponent(FlexImage);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(FlexImage);
-
-export const FlexSeparator = ({ margin, color }) => [
+const FlexSeparator = ({ props: { margin, color } }) => [
   {
     type: 'separator',
     margin,
     color,
   },
 ];
+const __FlexSeparator = asPartComponent(FlexSeparator);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(FlexSeparator);
-
-export const FlexSpacer = ({ size }) => [
+const FlexSpacer = ({ props: { size } }) => [
   {
     type: 'spacer',
     size,
   },
 ];
+const __FlexSpacer = asPartComponent(FlexSpacer);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(FlexSpacer);
-
-export const FlexText = (
+const FlexText = (
   {
-    children,
-    flex,
-    margin,
-    size,
-    align,
-    gravity,
-    wrap,
-    maxLines,
-    weight,
-    color,
-    action,
+    props: {
+      children,
+      flex,
+      margin,
+      size,
+      align,
+      gravity,
+      wrap,
+      maxLines,
+      weight,
+      color,
+      action,
+    },
   },
   render
 ) => {
-  const renderedActions = renderActionValues(action, render, '.action');
-  const textValues = joinTextValues(children, render, '.children');
+  const textSegments = joinTextualSegments(render(children, '.children'));
 
   let text;
   invariant(
-    textValues !== undefined &&
-      textValues.length === 1 &&
-      typeof (text = textValues[0]) === 'string', // eslint-disable-line prefer-destructuring
-    textValues
+    textSegments !== null &&
+      textSegments.length === 1 &&
+      typeof (text = textSegments[0].value) === 'string', // eslint-disable-line prefer-destructuring
+    textSegments
       ? `there should be no <br/> in children of <FlexText/>`
       : `children of <FlexText/> should not be empty`
   );
+
+  const actionsValue = getActionValues(render(action, '.action'));
 
   return [
     {
@@ -156,24 +148,23 @@ export const FlexText = (
       maxLines,
       weight,
       color,
-      action: renderedActions && renderedActions[0],
+      action: actionsValue && actionsValue[0],
     },
   ];
 };
+const __FlexText = asPartComponent(FlexText);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(FlexText);
+let getBoxContentValue;
 
-let renderBoxContentValue;
-
-export const FlexBox = (
-  { children, layout, flex, spacing, margin, action },
+const FlexBox = (
+  { props: { children, layout, flex, spacing, margin, action } },
   render
 ) => {
-  const contentRendered = renderBoxContentValue(children, render, '.children');
-  const actionRendered = renderActionValues(action, render, '.action');
+  const contentValues = getBoxContentValue(render(children, '.children'));
+  const actionValues = getActionValues(render(action, '.action'));
 
   invariant(
-    contentRendered !== undefined,
+    contentValues !== undefined,
     `children of FlexBox should not be empty`
   );
 
@@ -184,45 +175,45 @@ export const FlexBox = (
       flex,
       spacing,
       margin,
-      action: actionRendered && actionRendered[0],
-      contents: contentRendered,
+      action: actionValues && actionValues[0],
+      contents: contentValues,
     },
   ];
 };
+const __FlexBox = asPartComponent(FlexBox);
 
-renderBoxContentValue = valuesOfAssertedType(
-  FlexBox,
-  FlexButton,
-  FlexFiller,
-  FlexIcon,
-  FlexImage,
-  FlexSeparator,
-  FlexSpacer,
-  FlexText
+getBoxContentValue = valuesOfAssertedType(
+  __FlexBox,
+  __FlexButton,
+  __FlexFiller,
+  __FlexIcon,
+  __FlexImage,
+  __FlexSeparator,
+  __FlexSpacer,
+  __FlexText
 );
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(FlexBox);
-
-export const createBlockComponent = (section, renderer) => {
+const createBlockComponent = (section, valueFetcher) => {
   const tagName = `Flex${section[0].toUpperCase()}${section.slice(1)}`;
+
   const wrapper = {
     [tagName]: (
-      { children, backgroundColor, separator, separatorColor },
+      { props: { children, backgroundColor, separator, separatorColor } },
       render
     ) => {
-      const contentRendered = renderer(children, render, '.children');
+      const contentValues = valueFetcher(render(children, '.children'));
 
       invariant(
-        contentRendered !== undefined && contentRendered.length === 1,
+        contentValues !== undefined && contentValues.length === 1,
         `there should be exactly 1 child in ${tagName}, got ${
-          contentRendered ? contentRendered.length : 0
+          contentValues ? contentValues.length : 0
         }`
       );
 
       return [
         {
           name: section,
-          content: contentRendered[0],
+          content: contentValues[0],
           style:
             backgroundColor || separator || separatorColor
               ? {
@@ -236,39 +227,39 @@ export const createBlockComponent = (section, renderer) => {
     },
   };
 
-  return annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(wrapper[tagName]);
+  return asPartComponent(wrapper[tagName]);
 };
 
-const renderBoxValues = valuesOfAssertedType(FlexBox);
-const renderImagesValues = valuesOfAssertedType(FlexImage);
+const getBoxValues = valuesOfAssertedType(__FlexBox);
+const getImagesValues = valuesOfAssertedType(__FlexImage);
 
-export const FlexHeader = createBlockComponent('header', renderBoxValues);
-export const FlexHero = createBlockComponent('hero', renderImagesValues);
-export const FlexBody = createBlockComponent('body', renderBoxValues);
-export const FlexFooter = createBlockComponent('footer', renderBoxValues);
+const __FlexHeader = createBlockComponent('header', getBoxValues);
+const __FlexHero = createBlockComponent('hero', getImagesValues);
+const __FlexBody = createBlockComponent('body', getBoxValues);
+const __FlexFooter = createBlockComponent('footer', getBoxValues);
 
-const renderBlockValues = valuesOfAssertedType(
-  FlexHeader,
-  FlexHero,
-  FlexBody,
-  FlexFooter
+const getBlockValues = valuesOfAssertedType(
+  __FlexHeader,
+  __FlexHero,
+  __FlexBody,
+  __FlexFooter
 );
 
-export const FlexBubbleContainer = ({ children, rightToLeft }, render) => {
+const FlexBubbleContainer = ({ props: { children, rightToLeft } }, render) => {
   const bubbleObject = {
     type: 'bubble',
     direction: rightToLeft ? 'rtl' : 'ltr',
   };
 
-  const renderedSections = renderBlockValues(children, render, '.children');
+  const sections = getBlockValues(render(children, '.children'));
 
   invariant(
-    renderedSections !== undefined,
-    `there should be at least 1 block in children of FlexBubbleContainer`
+    sections !== undefined,
+    `there should be at least 1 block in children of <FlexBubbleContainer />`
   );
 
-  for (let i = 0; i < renderedSections.length; i += 1) {
-    const section = renderedSections[i];
+  for (let i = 0; i < sections.length; i += 1) {
+    const section = sections[i];
 
     bubbleObject[section.name] = section.content;
 
@@ -283,36 +274,30 @@ export const FlexBubbleContainer = ({ children, rightToLeft }, render) => {
 
   return [bubbleObject];
 };
+const __FlexBubbleContainer = asPartComponent(FlexBubbleContainer);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(FlexBubbleContainer);
+const getBubbleContainerValues = valuesOfAssertedType(__FlexBubbleContainer);
 
-const renderBubbleContainerValues = valuesOfAssertedType(FlexBubbleContainer);
-
-export const FlexCarouselContainer = ({ children }, render) => [
+const FlexCarouselContainer = ({ props: { children } }, render) => [
   {
     type: 'carousel',
-    contents: renderBubbleContainerValues(children, render, '.children'),
+    contents: getBubbleContainerValues(render(children, '.children')),
   },
 ];
+const __FlexCarouselContainer = asPartComponent(FlexCarouselContainer);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(FlexCarouselContainer);
-
-const renderContainerValues = valuesOfAssertedType(
-  FlexBubbleContainer,
-  FlexCarouselContainer
+const getContainerValues = valuesOfAssertedType(
+  __FlexBubbleContainer,
+  __FlexCarouselContainer
 );
 
-export const FlexMessage = ({ children, alt, altText }, render) => {
-  const containersRendered = renderContainerValues(
-    children,
-    render,
-    '.children'
-  );
+const FlexMessage = ({ props: { children, alt, altText } }, render) => {
+  const containerValues = getContainerValues(render(children, '.children'));
 
   invariant(
-    containersRendered !== undefined && containersRendered.length === 1,
+    containerValues !== undefined && containerValues.length === 1,
     `there should be exactly 1 conatiner in children of FlexMessage, got ${
-      containersRendered ? containersRendered.length : 0
+      containerValues ? containerValues.length : 0
     }`
   );
 
@@ -320,27 +305,44 @@ export const FlexMessage = ({ children, alt, altText }, render) => {
     {
       type: 'flex',
       altText: altText || alt,
-      contents: containersRendered[0],
+      contents: containerValues[0],
     },
   ];
 };
-
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(FlexMessage);
+const __FlexMessage = asMessageUnitComponent(FlexMessage);
 
 export default {
-  Box: FlexBox,
-  Button: FlexButton,
-  Filler: FlexFiller,
-  Icon: FlexIcon,
-  Image: FlexImage,
-  Separator: FlexSeparator,
-  Spacer: FlexSpacer,
-  Text: FlexText,
-  Header: FlexHeader,
-  Hero: FlexHero,
-  Body: FlexBody,
-  Footer: FlexFooter,
-  BubbleContainer: FlexBubbleContainer,
-  CarouselContainer: FlexCarouselContainer,
-  Message: FlexMessage,
+  Box: __FlexBox,
+  Button: __FlexButton,
+  Filler: __FlexFiller,
+  Icon: __FlexIcon,
+  Image: __FlexImage,
+  Separator: __FlexSeparator,
+  Spacer: __FlexSpacer,
+  Text: __FlexText,
+  Header: __FlexHeader,
+  Hero: __FlexHero,
+  Body: __FlexBody,
+  Footer: __FlexFooter,
+  BubbleContainer: __FlexBubbleContainer,
+  CarouselContainer: __FlexCarouselContainer,
+  Message: __FlexMessage,
+};
+
+export {
+  __FlexBox as FlexBox,
+  __FlexButton as FlexButton,
+  __FlexFiller as FlexFiller,
+  __FlexIcon as FlexIcon,
+  __FlexImage as FlexImage,
+  __FlexSeparator as FlexSeparator,
+  __FlexSpacer as FlexSpacer,
+  __FlexText as FlexText,
+  __FlexHeader as FlexHeader,
+  __FlexHero as FlexHero,
+  __FlexBody as FlexBody,
+  __FlexFooter as FlexFooter,
+  __FlexBubbleContainer as FlexBubbleContainer,
+  __FlexCarouselContainer as FlexCarouselContainer,
+  __FlexMessage as FlexMessage,
 };

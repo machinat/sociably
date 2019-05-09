@@ -2,28 +2,36 @@ import Machinat from 'machinat';
 
 import { LinkRichMenu } from '../richMenu';
 
-import { LINE_NAITVE_TYPE } from '../../symbol';
+import { LINE_NATIVE_TYPE } from '../../constant';
 import LineThread from '../../thread';
 
-import render from './render';
+import renderHelper from './renderHelper';
 
-it('is valid native unit component', () => {
+const render = renderHelper(() => null);
+
+it('is valid native unit component with entry getter', () => {
   expect(typeof LinkRichMenu).toBe('function');
-
-  expect(LinkRichMenu.$$native).toBe(LINE_NAITVE_TYPE);
-  expect(LinkRichMenu.$$unit).toBe(true);
+  expect(LinkRichMenu.$$native).toBe(LINE_NATIVE_TYPE);
+  expect(typeof LinkRichMenu.$$getEntry).toBe('function');
 });
 
 it('render ok', () => {
-  expect(render(<LinkRichMenu id="_RICH_MENU_ID_" />)[0].value).toEqual({
-    id: '_RICH_MENU_ID_',
-  });
+  expect(render(<LinkRichMenu id="_RICH_MENU_ID_" />)).toEqual([
+    {
+      type: 'unit',
+      node: <LinkRichMenu id="_RICH_MENU_ID_" />,
+      value: {
+        id: '_RICH_MENU_ID_',
+      },
+      path: '$',
+    },
+  ]);
 });
 
-describe('$$entry function', () => {
+describe('$$getEntry function', () => {
   it('point to the api entry for linking rich menu', () => {
     expect(
-      LinkRichMenu.$$entry(
+      LinkRichMenu.$$getEntry(
         new LineThread({
           type: 'user',
           userId: '_USER_ID_',
@@ -35,7 +43,7 @@ describe('$$entry function', () => {
 
   it('throw if type of thread is not user', () => {
     expect(() =>
-      LinkRichMenu.$$entry(
+      LinkRichMenu.$$getEntry(
         new LineThread({
           type: 'room',
           roomId: '_ROOM_ID_',
@@ -48,7 +56,7 @@ describe('$$entry function', () => {
     );
 
     expect(() =>
-      LinkRichMenu.$$entry(
+      LinkRichMenu.$$getEntry(
         new LineThread({
           type: 'group',
           groupId: '_GROUP_ID_',

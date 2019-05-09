@@ -4,6 +4,8 @@ exports[`Dialog with all props match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
+    "path": "$::0",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -20,6 +22,8 @@ Array [
       "props": Object {},
       "type": "bar",
     },
+    "path": "$::1",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "metadata": "_MY_METADATA_",
@@ -44,6 +48,8 @@ exports[`Dialog with metadata match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
+    "path": "$::0",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -60,6 +66,8 @@ Array [
       "props": Object {},
       "type": "bar",
     },
+    "path": "$::1",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "metadata": "_SOME_METADATA_",
@@ -79,6 +87,8 @@ exports[`Dialog with notificationType match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
+    "path": "$::0",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -95,6 +105,8 @@ Array [
       "props": Object {},
       "type": "bar",
     },
+    "path": "$::1",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "metadata": undefined,
@@ -114,6 +126,8 @@ exports[`Dialog with personaId match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
+    "path": "$::0",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -130,6 +144,8 @@ Array [
       "props": Object {},
       "type": "bar",
     },
+    "path": "$::1",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "metadata": undefined,
@@ -149,6 +165,8 @@ exports[`Dialog with quickReplies match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
+    "path": "$::0",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -165,6 +183,8 @@ Array [
       "props": Object {},
       "type": "bar",
     },
+    "path": "$::1",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "metadata": undefined,
@@ -189,6 +209,8 @@ exports[`Dialog with type and tag match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
+    "path": "$::0",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -205,6 +227,8 @@ Array [
       "props": Object {},
       "type": "bar",
     },
+    "path": "$::1",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "metadata": undefined,
@@ -224,6 +248,8 @@ exports[`Dialog with type match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
+    "path": "$::0",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "text": "foo",
@@ -240,6 +266,8 @@ Array [
       "props": Object {},
       "type": "bar",
     },
+    "path": "$::1",
+    "type": "unit",
     "value": Object {
       "message": Object {
         "metadata": undefined,

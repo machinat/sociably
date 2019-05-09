@@ -1,10 +1,10 @@
-import { SEGMENT_BREAK } from 'machinat';
-import { joinTextValues } from 'machinat-utility';
+import { breakSegment, textSegment, wrapUnitSegment } from 'machinat-renderer';
+import { joinTextualSegments } from 'machinat-utility';
 
-export const text = ({ children }, render) =>
-  joinTextValues(children, render, '.children') || null;
+export const text = (node, render, path) =>
+  joinTextualSegments(render(node.props.children, '.children'), node, path);
 
-export const br = () => [SEGMENT_BREAK];
+export const br = (node, _, path) => [breakSegment(node, path)];
 
 export const b = text;
 export const i = text;
@@ -12,16 +12,28 @@ export const del = text;
 export const code = text;
 export const pre = text;
 
-export const a = ({ children, href }, render) => {
-  const values = joinTextValues(children, render, '.children');
-  return values === undefined
+export const a = (node, render, path) => {
+  const {
+    props: { children, href },
+  } = node;
+
+  const segments = joinTextualSegments(
+    render(children, '.children'),
+    node,
+    path
+  );
+  const breakSeg = breakSegment(node, path);
+
+  return segments === null
     ? null
-    : [...values, SEGMENT_BREAK, href, SEGMENT_BREAK];
+    : [...segments, breakSeg, textSegment(href, node, path), breakSeg];
 };
 
-const _media = ({ src }) => (src ? [{ type: 'text', text: src }] : null);
+const __media = wrapUnitSegment(({ props: { src } }) => [
+  { type: 'text', text: src || '' },
+]);
 
-export const img = _media;
-export const video = _media;
-export const audio = _media;
-export const file = _media;
+export const img = __media;
+export const video = __media;
+export const audio = __media;
+export const file = __media;

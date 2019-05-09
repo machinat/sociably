@@ -3,7 +3,7 @@ import EventEmitter from 'events';
 import { mixin } from 'machinat-utility';
 
 import type { MachinatNode } from 'machinat/types';
-import type { MachinatNativeType } from 'machinat-renderer/types';
+import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type {
   BotPlugin,
   EventHandler,
@@ -19,7 +19,7 @@ export default class BaseBot<
   Thread: MachinatThread,
   Event: MachinatEvent<any, Thread>,
   SegmentValue,
-  Native: MachinatNativeType<SegmentValue>,
+  Native: MachinatNativeComponent<SegmentValue>,
   Response,
   Job,
   Result

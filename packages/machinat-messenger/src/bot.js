@@ -14,7 +14,7 @@ import MessengerWorker from './worker';
 import handleWebhook from './handleWebhook';
 import * as generalComponents from './component/general';
 
-import { MESSENGER_NAITVE_TYPE } from './symbol';
+import { MESSENGER_NAITVE_TYPE } from './constant';
 import MessengerThread from './thread';
 import { createChatJobs, createCreativeJobs } from './job';
 
@@ -82,7 +82,16 @@ export default class MessengerBot
     const renderer = new Renderer(
       MESSENGER,
       MESSENGER_NAITVE_TYPE,
-      generalComponents
+      (node, render, path) => {
+        const { type } = node;
+
+        invariant(
+          type in generalComponents,
+          `"${type}" is not valid general component tag on messenger`
+        );
+
+        return generalComponents[type](node, render, path);
+      }
     );
 
     const queue = new Queue();

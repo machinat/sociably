@@ -3,9 +3,9 @@ import type { MachinatNode, PauseElement } from 'machinat/types';
 import type MachinatQueue from 'machinat-queue';
 import type {
   TextSegment,
-  ElementSegment,
+  UnitSegment,
   RawSegment,
-  MachinatNativeType,
+  MachinatNativeComponent,
 } from 'machinat-renderer/types';
 import type MachinatBot from './bot';
 
@@ -16,9 +16,9 @@ export type MiddlewareFunc<Frame, Value> = (
 ) => Frame => Value;
 
 export type SegmentWithoutPause<SegmentValue, Native> =
-  | TextSegment
+  | TextSegment<Native>
   | RawSegment<SegmentValue>
-  | ElementSegment<SegmentValue, Native>;
+  | UnitSegment<SegmentValue, Native>;
 
 export interface MachinatThread {
   platform: string;
@@ -38,7 +38,7 @@ export interface MachinatEvent<Payload, Thread: MachinatThread> {
 
 export type EventFrame<
   SegmentValue,
-  Native: MachinatNativeType<SegmentValue>,
+  Native: MachinatNativeComponent<SegmentValue>,
   Job,
   Result,
   Thread: MachinatThread,

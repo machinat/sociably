@@ -2,24 +2,19 @@ import { reduce } from 'machinat-utility';
 import Machinat from 'machinat';
 import * as general from '../general';
 
-const map = (arr, mapper) => arr && arr.map(mapper);
-
 const render = node =>
   reduce(
     node,
     (rendered, element, path) =>
       rendered.concat(
         typeof element === 'string'
-          ? { value: element, node: element, path }
+          ? { type: 'text', value: element, node: element, path }
           : typeof element.type === 'string'
-          ? map(
-              general[element.type](element.props, render), //
-              value => ({ value, node: element, path })
-            )
+          ? general[element.type](element, render, path)
           : { value: { non: 'text' }, node: element, path }
       ),
     [],
-    ''
+    '$'
   ) || null;
 
 test('shallow textual elements match snapshot', () => {
@@ -54,26 +49,27 @@ foo.bar('hello world')
 });
 
 test('nested textual elements match snapshot', () => {
-  expect(
-    render(
-      <text>
-        123{' '}
-        <code>
-          Hello, <b>Luke Skywalker!</b>
-        </code>
-        <br />
-        You know what?
-        <br />
-        <i>
-          I'm your <del>FATHER</del> <code>droid</code>.
-        </i>
-        <br />
-        <br />
-        <a href="https://C3.PO">Check here</a>
-        <pre>May the force be with you!</pre> abc
-      </text>
-    ).map(r => r.value)
-  ).toMatchInlineSnapshot(`
+  const segments = render(
+    <text>
+      123{' '}
+      <code>
+        Hello, <b>Luke Skywalker!</b>
+      </code>
+      <br />
+      You know what?
+      <br />
+      <i>
+        I'm your <del>FATHER</del> <code>droid</code>.
+      </i>
+      <br />
+      <br />
+      <a href="https://C3.PO">Check here</a>
+      <pre>May the force be with you!</pre> abc
+    </text>
+  );
+  expect(segments).toMatchSnapshot();
+
+  expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
 Array [
   "123 \`Hello, *Luke Skywalker!*\`",
   Symbol(machinat.segment.break),
@@ -101,17 +97,20 @@ test('with break placed in children', () => {
       bar
     </>
   );
-  expect(
-    render([
-      <text>{children}</text>,
-      <a href="https://machinat.world">{children}</a>,
-      <b>{children}</b>,
-      <i>{children}</i>,
-      <del>{children}</del>,
-      <code>{children}</code>,
-      <pre>{children}</pre>,
-    ]).map(r => r.value)
-  ).toMatchInlineSnapshot(`
+
+  const segments = render([
+    <text>{children}</text>,
+    <a href="https://machinat.world">{children}</a>,
+    <b>{children}</b>,
+    <i>{children}</i>,
+    <del>{children}</del>,
+    <code>{children}</code>,
+    <pre>{children}</pre>,
+  ]);
+
+  expect(segments).toMatchSnapshot();
+
+  expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
 Array [
   "foo",
   Symbol(machinat.segment.break),
@@ -165,7 +164,7 @@ test('should throw if non string value rendered', () => {
     <pre>{children}</pre>,
   ].forEach(node => {
     expect(() => render(node)).toThrow(
-      '<NonText /> at ::1 is not rendered as text content'
+      '<NonText /> at $::1 is not valid textual content'
     );
   });
 });
@@ -177,51 +176,8 @@ test('media elements match snapshot', () => {
       <video src="http://vid.my.bot" />,
       <audio src="http://sound.my.bot" />,
       <file src="http://profile.my.bot" />,
-    ]).map(r => r.value)
-  ).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "message": Object {
-      "attachment": Object {
-        "payload": Object {
-          "url": "http://avatar.my.bot",
-        },
-        "type": "image",
-      },
-    },
-  },
-  Object {
-    "message": Object {
-      "attachment": Object {
-        "payload": Object {
-          "url": "http://vid.my.bot",
-        },
-        "type": "video",
-      },
-    },
-  },
-  Object {
-    "message": Object {
-      "attachment": Object {
-        "payload": Object {
-          "url": "http://sound.my.bot",
-        },
-        "type": "audio",
-      },
-    },
-  },
-  Object {
-    "message": Object {
-      "attachment": Object {
-        "payload": Object {
-          "url": "http://profile.my.bot",
-        },
-        "type": "file",
-      },
-    },
-  },
-]
-`);
+    ])
+  ).toMatchSnapshot();
 });
 
 test('should return null if content is empty', () => {

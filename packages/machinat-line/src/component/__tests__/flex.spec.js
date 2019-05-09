@@ -1,8 +1,8 @@
 import Machinat from 'machinat';
+import { map } from 'machinat-utility';
 
-import render from './render';
-
-import { LINE_NAITVE_TYPE } from '../../symbol';
+import { LINE_NATIVE_TYPE } from '../../constant';
+import renderHelper from './renderHelper';
 
 import Flex, {
   FlexBox,
@@ -23,6 +23,22 @@ import Flex, {
 } from '../flex';
 import { URIAction } from '../action';
 
+const renderInner = (message, route) =>
+  map(
+    message || null,
+    (node, path) => {
+      if (typeof node === 'string' || typeof node === 'number') {
+        return { type: 'text', node, value: `${node}`, path };
+      }
+
+      const child = node.type(node, renderInner, path)[0];
+      expect(child.type).toBe('part');
+      return child;
+    },
+    route
+  );
+const render = renderHelper(renderInner);
+
 test.each(
   [
     FlexBox,
@@ -42,16 +58,14 @@ test.each(
   ].map(C => [C.name, C])
 )('%s is valid native Component', (_, Action) => {
   expect(typeof Action).toBe('function');
-  expect(Action.$$native).toBe(LINE_NAITVE_TYPE);
-  expect(Action.$$entry).toBe(undefined);
-  expect(Action.$$unit).toBe(false);
+  expect(Action.$$native).toBe(LINE_NATIVE_TYPE);
+  expect(Action.$$getEntry).toBe(undefined);
 });
 
 test('FlexMessage is valid native unit Component', () => {
   expect(typeof FlexMessage).toBe('function');
-  expect(FlexMessage.$$native).toBe(LINE_NAITVE_TYPE);
-  expect(FlexMessage.$$entry).toBe(undefined);
-  expect(FlexMessage.$$unit).toBe(true);
+  expect(FlexMessage.$$native).toBe(LINE_NATIVE_TYPE);
+  expect(FlexMessage.$$getEntry).toBe(undefined);
 });
 
 test('Flex as a alias for flex components', () => {
@@ -314,5 +328,12 @@ it.each([
     </FlexMessage>,
   ],
 ])('%s match snapshot', (name, fixture) => {
-  expect(render(fixture).map(action => action.value)).toMatchSnapshot();
+  const segments = render(fixture);
+  expect(segments.length).toBe(1);
+
+  const segment = segments[0];
+  expect(segment.type).toBe('unit');
+  expect(segment.node).toBe(fixture);
+  expect(segment.path).toBe('$');
+  expect(segment.value).toMatchSnapshot();
 });

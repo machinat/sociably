@@ -1,6 +1,6 @@
 import Machinat from 'machinat';
 
-import { MESSENGER_NAITVE_TYPE } from '../../symbol';
+import { MESSENGER_NAITVE_TYPE } from '../../constant';
 import {
   URLButton,
   PostbackButton,
@@ -33,7 +33,7 @@ test.each([
   expect(typeof Button).toBe('function');
   expect(Button.$$native).toBe(MESSENGER_NAITVE_TYPE);
   expect(Button.$$entry).toBe(undefined);
-  expect(Button.$$unit).toBe(false);
+  expect(Button.$$namespace).toBe('Messenger');
 });
 
 describe('URLButton', () => {
@@ -73,6 +73,7 @@ describe('ShareButton', () => {
       node
         ? [
             {
+              type: 'unit',
               value: {
                 message: '__RENDERED_GENERIC_TEMPLATE_MEASSGE_OBJ__',
               },
@@ -92,8 +93,10 @@ describe('ShareButton', () => {
     const Invalid = () => {};
     renderInside.mockImplementation(node => [
       {
+        type: 'unit',
         value: '__SOMETHING_WRONG__',
         node,
+        path: '$:0#ShareButton.children:0',
       },
     ]);
 
@@ -104,7 +107,7 @@ describe('ShareButton', () => {
         </ShareButton>
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<Invalid /> is invalid in .children, only <[GenericTemplate]/> allowed"`
+      `"<Invalid /> at $:0#ShareButton.children:0 is invalid, only <[GenericTemplate]/> allowed"`
     );
   });
 });

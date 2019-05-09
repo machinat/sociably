@@ -1,12 +1,7 @@
-import { annotate, asNative, asUnit } from 'machinat-utility';
+import { asMessageUnitComponent } from './utils';
 
-import { LINE_NAITVE_TYPE } from '../symbol';
-
-export const Video = ({
-  url,
-  originalContentUrl,
-  previewURL,
-  previewImageUrl,
+const Video = ({
+  props: { url, originalContentUrl, previewURL, previewImageUrl },
 }) => [
   {
     type: 'image',
@@ -14,15 +9,15 @@ export const Video = ({
     previewImageUrl: previewImageUrl || previewURL,
   },
 ];
+const __Video = asMessageUnitComponent(Video);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(Video);
-
-export const Audio = ({ url, originalContentUrl, duration }) => [
+const Audio = ({ props: { url, originalContentUrl, duration } }) => [
   {
     type: 'image',
     originalContentUrl: originalContentUrl || url,
     duration,
   },
 ];
+const __Audio = asMessageUnitComponent(Audio);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(true))(Audio);
+export { __Video as Video, __Audio as Audio };

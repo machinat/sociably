@@ -1,44 +1,43 @@
 // @flow
 import invariant from 'invariant';
 
-import type { MachinatNode } from 'machinat/types';
-import type { RenderInnerFn, SegmentNativeType } from 'machinat-renderer/types';
+import type {
+  InnerSegment,
+  MachinatNativeComponent,
+} from 'machinat-renderer/types';
 
 import formatNode from './formatNode';
 
 const getTagName = t => (typeof t === 'function' ? t.name : t);
 
 const valuesOfAssertedType = <Value>(
-  ...types: (string | SegmentNativeType<Value>)[]
-) => (
-  message: MachinatNode,
-  render: RenderInnerFn,
-  propPath: string
-): void | Value[] => {
-  const rendered = render(message, propPath);
-  if (rendered === null) {
-    return undefined;
-  }
+  ...types: (string | MachinatNativeComponent<Value>)[]
+) => {
+  const allowed = new Set(types);
 
-  const len = rendered.length;
-  const values: Value[] = new Array(len);
+  return (segments: null | InnerSegment<Value, any>[]): void | Value[] => {
+    if (segments === null) {
+      return undefined;
+    }
 
-  for (let i = 0; i < len; i += 1) {
-    const { node, value } = rendered[i];
+    const len = segments.length;
+    const values: Value[] = new Array(len);
 
-    invariant(
-      node === undefined ||
-        (typeof node === 'object' && types.includes(node.type)),
-      `${formatNode(node)} is invalid in ${propPath}, only <[${types
-        .map(getTagName)
-        .join(', ')}]/> allowed`
-    );
+    for (let i = 0; i < len; i += 1) {
+      const { type, node, value, path } = segments[i];
 
-    // $FlowFixMe too complicated to refine value type, just allow it
-    values[i] = value;
-  }
+      invariant(
+        type === 'raw' || (typeof node === 'object' && allowed.has(node.type)),
+        `${formatNode(node)} at ${path} is invalid, only <[${types
+          .map(getTagName)
+          .join(', ')}]/> allowed`
+      );
 
-  return values;
+      values[i] = (value: any);
+    }
+
+    return values;
+  };
 };
 
 export default valuesOfAssertedType;

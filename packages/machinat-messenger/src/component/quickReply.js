@@ -1,8 +1,6 @@
-import { annotate, asNative, asUnit } from 'machinat-utility';
+import { asPartComponent } from './utils';
 
-import { MESSENGER_NAITVE_TYPE } from '../symbol';
-
-export const QuickReply = ({ title, payload, imageURL }) => [
+const QuickReply = ({ props: { title, payload, imageURL } }) => [
   {
     content_type: 'text',
     title,
@@ -10,21 +8,23 @@ export const QuickReply = ({ title, payload, imageURL }) => [
     image_url: imageURL,
   },
 ];
+const __QuickReply = asPartComponent(QuickReply);
 
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(QuickReply);
+const LOCATION_QUICK_REPLY_VALUES = [{ content_type: 'location' }];
+const LocationQuickReply = () => LOCATION_QUICK_REPLY_VALUES;
+const __LocationQuickReply = asPartComponent(LocationQuickReply);
 
-const LOCATION_QUICK_REPLY_RENDERED = [{ content_type: 'location' }];
-const PHONE_QUICK_REPLY_RENDERED = [{ content_type: 'user_phone_number' }];
-const EMAIL_QUICK_REPLY_RENDERED = [{ content_type: 'user_email' }];
+const PHONE_QUICK_REPLY_VALUES = [{ content_type: 'user_phone_number' }];
+const PhoneQuickReply = () => PHONE_QUICK_REPLY_VALUES;
+const __PhoneQuickReply = asPartComponent(PhoneQuickReply);
 
-export const LocationQuickReply = () => LOCATION_QUICK_REPLY_RENDERED;
+const EMAIL_QUICK_REPLY_VALUES = [{ content_type: 'user_email' }];
+const EmailQuickReply = () => EMAIL_QUICK_REPLY_VALUES;
+const __EmailQuickReply = asPartComponent(EmailQuickReply);
 
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(LocationQuickReply);
-
-export const PhoneQuickReply = () => PHONE_QUICK_REPLY_RENDERED;
-
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(PhoneQuickReply);
-
-export const EmailQuickReply = () => EMAIL_QUICK_REPLY_RENDERED;
-
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(false))(EmailQuickReply);
+export {
+  __QuickReply as QuickReply,
+  __LocationQuickReply as LocationQuickReply,
+  __PhoneQuickReply as PhoneQuickReply,
+  __EmailQuickReply as EmailQuickReply,
+};

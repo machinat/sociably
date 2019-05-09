@@ -1,8 +1,5 @@
 // @flow
-import type {
-  ContainerNativeType,
-  SegmentNativeType,
-} from 'machinat-renderer/types';
+import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type { WebhookResponse } from 'machinat-webhook-receiver/types';
 
@@ -150,20 +147,15 @@ export type LineSegmentValue =
   | LinkRichMenuSegmentValue
   | LeaveSegmentValue;
 
-export type LineContainerNativeType = ContainerNativeType<LineSegmentValue>;
+export type LineMessageNativeType = MachinatNativeComponent<MessageSegmentValue>;
 
-export type LineMessageNativeType = SegmentNativeType<MessageSegmentValue>;
-
-export type LineNonMessageNativeType = SegmentNativeType<
+export type LineNonMessageNativeType = MachinatNativeComponent<
   LinkRichMenuSegmentValue | LeaveSegmentValue
 > & {
-  $$entry: <Value>(thread: LineThread, rendered: Value) => string,
+  $$getEntry: <Value>(thread: LineThread, rendered: Value) => string,
 };
 
-export type LineComponent =
-  | LineContainerNativeType
-  | LineMessageNativeType
-  | LineNonMessageNativeType;
+export type LineComponent = LineMessageNativeType | LineNonMessageNativeType;
 
 type MessagesBodyWithoutTarget = {|
   messages: LineSegmentValue[],

@@ -32,14 +32,22 @@ const Unknown = () => {};
 
 const renderInner = jest.fn(
   message =>
-    map(message, node =>
-      typeof node === 'string'
-        ? { value: node, node }
-        : typeof node.type === 'string'
-        ? { value: { message: { text: node.type } }, node }
-        : node.type === Unknown
-        ? { value: { you: "don't know me" }, node }
-        : { value: '_QUICK_REPLY_RENDERED_', node }
+    map(
+      message,
+      (node, path) =>
+        typeof node === 'string'
+          ? { type: 'unit', value: node, node, path }
+          : typeof node.type === 'string'
+          ? {
+              type: 'unit',
+              value: { message: { text: node.type } },
+              node,
+              path,
+            }
+          : node.type === Unknown
+          ? { type: 'unit', value: { you: "don't know me" }, node, path }
+          : { type: 'unit', value: '_QUICK_REPLY_RENDERED_', node, path },
+      '$'
     ) || null
 );
 
@@ -106,7 +114,7 @@ it('hoist text value into message object', () => {
 });
 
 it('add root fields to action value', () => {
-  const actions = render(
+  const segments = render(
     <Dialog
       type="MESSAGE_TAG"
       tag="PAYMENT_UPDATE"
@@ -118,11 +126,11 @@ it('add root fields to action value', () => {
     </Dialog>
   );
 
-  actions.forEach(action => {
-    expect(action.value.messaging_type).toBe('MESSAGE_TAG');
-    expect(action.value.tag).toBe('PAYMENT_UPDATE');
-    expect(action.value.notification_type).toBe('SILENT_PUSH');
-    expect(action.value.persona_id).toBe('_PERSONA_ID_');
+  segments.forEach(segment => {
+    expect(segment.value.messaging_type).toBe('MESSAGE_TAG');
+    expect(segment.value.tag).toBe('PAYMENT_UPDATE');
+    expect(segment.value.notification_type).toBe('SILENT_PUSH');
+    expect(segment.value.persona_id).toBe('_PERSONA_ID_');
   });
 });
 
@@ -190,6 +198,6 @@ it('throw if non QuickReply element received within prop quickReplies', () => {
       </Dialog>
     )
   ).toThrowErrorMatchingInlineSnapshot(
-    `"<Unknown /> is invalid in .quickReplies, only <[QuickReply, LocationQuickReply, PhoneQuickReply, EmailQuickReply]/> allowed"`
+    `"<Unknown /> at $:2 is invalid, only <[QuickReply, LocationQuickReply, PhoneQuickReply, EmailQuickReply]/> allowed"`
   );
 });

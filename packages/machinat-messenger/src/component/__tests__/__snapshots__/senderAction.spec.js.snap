@@ -3,7 +3,16 @@
 exports[`[Function MarkSeen] match snapshot 1`] = `
 Array [
   Object {
-    "sender_action": "mark_seen",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "sender_action": "mark_seen",
+    },
   },
 ]
 `;
@@ -11,7 +20,16 @@ Array [
 exports[`[Function TypingOff] match snapshot 1`] = `
 Array [
   Object {
-    "sender_action": "typing_off",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "sender_action": "typing_off",
+    },
   },
 ]
 `;
@@ -19,7 +37,16 @@ Array [
 exports[`[Function TypingOn] match snapshot 1`] = `
 Array [
   Object {
-    "sender_action": "typing_on",
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": [Function],
+    },
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "sender_action": "typing_on",
+    },
   },
 ]
 `;

@@ -2,11 +2,7 @@
 import type { MachinatNode } from 'machinat/types';
 
 import { isFragment, isEmpty } from './isX';
-import type {
-  TraverseNodeCallback,
-  NodeReducer,
-  NodeMapper,
-} from './types';
+import type { TraverseNodeCallback, NodeReducer, NodeMapper } from './types';
 
 const ITER_SEPARATOR = ':';
 

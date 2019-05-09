@@ -1,6 +1,6 @@
 import Machinat from 'machinat';
 
-import { MESSENGER_NAITVE_TYPE } from '../../symbol';
+import { MESSENGER_NAITVE_TYPE } from '../../constant';
 import {
   PassThreadControl,
   RequestThreadControl,
@@ -18,7 +18,7 @@ it.each([
   expect(typeof ThreadControl).toBe('function');
   expect(ThreadControl.$$native).toBe(MESSENGER_NAITVE_TYPE);
   expect(ThreadControl.$$entry).toBe(entry);
-  expect(ThreadControl.$$unit).toBe(true);
+  expect(ThreadControl.$$namespace).toBe('Messenger');
 });
 
 it.each([

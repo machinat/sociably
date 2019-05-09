@@ -1,14 +1,14 @@
 // @flow
 import delay from 'delay';
+import { compose } from 'machinat-utility';
 
 import type { MachinatNode, PauseElement } from 'machinat/types';
 import type MahinateQueue from 'machinat-queue';
 import type { JobBatchResponse } from 'machinat-queue/types';
 import type MachinatRenderer from 'machinat-renderer';
-import type { MachinatNativeType } from 'machinat-renderer/types';
+import type { MachinatNativeComponent } from 'machinat-renderer/types';
 
 import DispatchError from './error';
-import { compose } from './utils';
 
 import type {
   DispatchMiddleware,
@@ -37,7 +37,7 @@ const handlePause = async (pauseElement: PauseElement) => {
 
 export default class MachinatEngine<
   SegmentValue,
-  Native: MachinatNativeType<SegmentValue>,
+  Native: MachinatNativeComponent<SegmentValue>,
   Thread: MachinatThread,
   Job,
   Result
@@ -119,13 +119,13 @@ export default class MachinatEngine<
     for (let i = 0; i < segments.length; i += 1) {
       const segment = segments[i];
 
-      if (!segment.isPause) {
+      if (segment.type !== 'pause') {
         segmentsBuffer.push(segment);
       }
 
       // create jobs batch when Pause met or loop end
       if (
-        (i === segments.length - 1 || segment.isPause) &&
+        (i === segments.length - 1 || segment.type === 'pause') &&
         segmentsBuffer.length > 0
       ) {
         const jobs = createJobs(target, segmentsBuffer, options);
@@ -136,7 +136,7 @@ export default class MachinatEngine<
       }
 
       // collect pauses
-      if (segment.isPause) {
+      if (segment.type === 'pause') {
         actions.push({ type: 'pause', payload: segment.node });
         segmentsBuffer = [];
       }

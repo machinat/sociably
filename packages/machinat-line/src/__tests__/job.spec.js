@@ -7,14 +7,14 @@ describe('createChatJobs()', () => {
   const Foo = () => {};
 
   const Bar = () => {};
-  Bar.$$entry = moxy(() => 'bar');
+  Bar.$$getEntry = moxy(() => 'bar');
 
   const Baz = () => {};
-  Baz.$$entry = moxy(() => 'baz');
+  Baz.$$getEntry = moxy(() => 'baz');
 
   beforeEach(() => {
-    Bar.$$entry.mock.clear();
-    Baz.$$entry.mock.clear();
+    Bar.$$getEntry.mock.clear();
+    Baz.$$getEntry.mock.clear();
   });
 
   const segments = [
@@ -47,11 +47,11 @@ describe('createChatJobs()', () => {
       }
     });
 
-    expect(Bar.$$entry.mock).toHaveBeenCalledTimes(1);
-    expect(Bar.$$entry.mock).toHaveBeenCalledWith(thread, { id: 7 });
+    expect(Bar.$$getEntry.mock).toHaveBeenCalledTimes(1);
+    expect(Bar.$$getEntry.mock).toHaveBeenCalledWith(thread, { id: 7 });
 
-    expect(Baz.$$entry.mock).toHaveBeenCalledTimes(1);
-    expect(Baz.$$entry.mock).toHaveBeenCalledWith(thread, { id: 9 });
+    expect(Baz.$$getEntry.mock).toHaveBeenCalledTimes(1);
+    expect(Baz.$$getEntry.mock).toHaveBeenCalledWith(thread, { id: 9 });
   });
 
   test('when useReplyAPI', () => {
@@ -73,11 +73,11 @@ describe('createChatJobs()', () => {
       }
     });
 
-    expect(Bar.$$entry.mock).toHaveBeenCalledTimes(1);
-    expect(Bar.$$entry.mock).toHaveBeenCalledWith(thread, { id: 7 });
+    expect(Bar.$$getEntry.mock).toHaveBeenCalledTimes(1);
+    expect(Bar.$$getEntry.mock).toHaveBeenCalledWith(thread, { id: 7 });
 
-    expect(Baz.$$entry.mock).toHaveBeenCalledTimes(1);
-    expect(Baz.$$entry.mock).toHaveBeenCalledWith(thread, { id: 9 });
+    expect(Baz.$$getEntry.mock).toHaveBeenCalledTimes(1);
+    expect(Baz.$$getEntry.mock).toHaveBeenCalledWith(thread, { id: 9 });
   });
 });
 
@@ -85,7 +85,7 @@ describe('createMulticastJobs()', () => {
   const Foo = () => {};
 
   const Bar = () => {};
-  Bar.$$entry = () => 'bar';
+  Bar.$$getEntry = () => 'bar';
   Bar.$$hasBody = false;
 
   const segments = [

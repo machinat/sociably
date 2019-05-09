@@ -1,7 +1,6 @@
-import { annotate, asNative, asUnit } from 'machinat-utility';
-import { LINE_NAITVE_TYPE } from '../symbol';
+import { asPartComponent } from './utils';
 
-export const PostbackAction = ({ label, data, text, displayText }) => [
+const PostbackAction = ({ props: { label, data, text, displayText } }) => [
   {
     type: 'postback',
     data,
@@ -9,28 +8,25 @@ export const PostbackAction = ({ label, data, text, displayText }) => [
     displayText: displayText || text,
   },
 ];
+const __PostbackAction = asPartComponent(PostbackAction);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(PostbackAction);
-
-export const MessageAction = ({ label, text }) => [
+const MessageAction = ({ props: { label, text } }) => [
   {
     type: 'message',
     label,
     text,
   },
 ];
+const __MessageAction = asPartComponent(MessageAction);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(MessageAction);
-
-export const URIAction = ({ label, uri }) => [
+const URIAction = ({ props: { label, uri } }) => [
   {
     type: 'uri',
     label,
     uri,
   },
 ];
-
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(URIAction);
+const __URIAction = asPartComponent(URIAction);
 
 const pad2 = n => (n < 10 ? `0${n}` : n);
 const fullDate = d =>
@@ -45,15 +41,8 @@ const dateToStringByMode = (mode, d) =>
     ? fullDate(d)
     : fullHourMinute(d);
 
-export const DateTimePickerAction = ({
-  label,
-  data,
-  mode,
-  date,
-  time,
-  initial,
-  min,
-  max,
+const DateTimePickerAction = ({
+  props: { label, data, mode, date, time, initial, min, max },
 }) => {
   const modeRefined =
     mode || (!date === !time ? 'datetime' : date ? 'date' : 'time');
@@ -70,31 +59,38 @@ export const DateTimePickerAction = ({
     },
   ];
 };
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(DateTimePickerAction);
+const __DateTimePickerAction = asPartComponent(DateTimePickerAction);
 
-export const CameraAction = ({ label }) => [
+const CameraAction = ({ props: { label } }) => [
   {
     type: 'camera',
     label,
   },
 ];
+const __CameraAction = asPartComponent(CameraAction);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(CameraAction);
-
-export const CameraRollAction = ({ label }) => [
+const CameraRollAction = ({ props: { label } }) => [
   {
     type: 'cameraRoll',
     label,
   },
 ];
+const __CameraRollAction = asPartComponent(CameraRollAction);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(CameraRollAction);
-
-export const LocationAction = ({ label }) => [
+const LocationAction = ({ props: { label } }) => [
   {
     type: 'location',
     label,
   },
 ];
+const __LocationAction = asPartComponent(LocationAction);
 
-annotate(asNative(LINE_NAITVE_TYPE), asUnit(false))(LocationAction);
+export {
+  __PostbackAction as PostbackAction,
+  __MessageAction as MessageAction,
+  __URIAction as URIAction,
+  __DateTimePickerAction as DateTimePickerAction,
+  __CameraAction as CameraAction,
+  __CameraRollAction as CameraRollAction,
+  __LocationAction as LocationAction,
+};

@@ -1,20 +1,24 @@
 /* eslint-disable import/prefer-default-export */
-import {
-  annotate,
-  asNative,
-  asUnit,
-  asContainer,
-  valuesOfAssertedType,
-} from 'machinat-utility';
+import { valuesOfAssertedType } from 'machinat-utility';
 
-import { MESSENGER_NAITVE_TYPE } from '../symbol';
+import { asContainerComponent } from './utils';
 import * as quickReply from './quickReply';
 
 const replyComponents = Object.values(quickReply);
-const renderQuickRepliesValues = valuesOfAssertedType(...replyComponents);
+const getQuickRepliesValues = valuesOfAssertedType(...replyComponents);
 
-export const Dialog = (
-  { children, type, tag, notificationType, metadata, quickReplies, personaId },
+const Dialog = (
+  {
+    props: {
+      children,
+      type,
+      tag,
+      notificationType,
+      metadata,
+      quickReplies,
+      personaId,
+    },
+  },
   render
 ) => {
   const segments = render(children, '.children');
@@ -57,10 +61,9 @@ export const Dialog = (
 
     const message = { ...value.message };
     message.metadata = metadata;
-    message.quick_replies = renderQuickRepliesValues(
-      quickReplies,
-      render,
-      '.quickReplies'
+
+    message.quick_replies = getQuickRepliesValues(
+      render(quickReplies, '.quickReplies')
     );
 
     value.message = message;
@@ -69,6 +72,6 @@ export const Dialog = (
   return segments;
 };
 
-annotate(asNative(MESSENGER_NAITVE_TYPE), asUnit(true), asContainer(true))(
-  Dialog
-);
+const __Dialog = asContainerComponent(Dialog);
+
+export { __Dialog as Dialog };

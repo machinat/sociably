@@ -4,130 +4,222 @@ exports[`media Components match snapshot 1`] = `
 Array [
   Array [
     Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
-            "attachment_id": undefined,
-            "is_reusable": true,
-            "url": "http://this.is/a/picture",
-          },
-          "type": "image",
+      "node": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "reusable": true,
+          "url": "http://this.is/a/picture",
         },
+        "type": [Function],
       },
-      Symbol(machinat.messenger.job.attached_file_data): undefined,
-      Symbol(machinat.messenger.job.attached_file_info): undefined,
+      "path": "$",
+      "type": "unit",
+      "value": Object {
+        "message": Object {
+          "attachment": Object {
+            "payload": Object {
+              "attachment_id": undefined,
+              "is_reusable": true,
+              "url": "http://this.is/a/picture",
+            },
+            "type": "image",
+          },
+        },
+        Symbol(machinat.messenger.job.attached_file_data): undefined,
+        Symbol(machinat.messenger.job.attached_file_info): undefined,
+      },
     },
   ],
   Array [
     Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
-            "attachment_id": undefined,
-            "is_reusable": true,
-            "url": "http://this.is/a/video",
-          },
-          "type": "video",
+      "node": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "reusable": true,
+          "url": "http://this.is/a/video",
         },
+        "type": [Function],
       },
-      Symbol(machinat.messenger.job.attached_file_data): undefined,
-      Symbol(machinat.messenger.job.attached_file_info): undefined,
+      "path": "$",
+      "type": "unit",
+      "value": Object {
+        "message": Object {
+          "attachment": Object {
+            "payload": Object {
+              "attachment_id": undefined,
+              "is_reusable": true,
+              "url": "http://this.is/a/video",
+            },
+            "type": "video",
+          },
+        },
+        Symbol(machinat.messenger.job.attached_file_data): undefined,
+        Symbol(machinat.messenger.job.attached_file_info): undefined,
+      },
     },
   ],
   Array [
     Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
-            "attachment_id": undefined,
-            "is_reusable": true,
-            "url": "http://this.is/an/audio",
-          },
-          "type": "audio",
+      "node": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "reusable": true,
+          "url": "http://this.is/an/audio",
         },
+        "type": [Function],
       },
-      Symbol(machinat.messenger.job.attached_file_data): undefined,
-      Symbol(machinat.messenger.job.attached_file_info): undefined,
+      "path": "$",
+      "type": "unit",
+      "value": Object {
+        "message": Object {
+          "attachment": Object {
+            "payload": Object {
+              "attachment_id": undefined,
+              "is_reusable": true,
+              "url": "http://this.is/an/audio",
+            },
+            "type": "audio",
+          },
+        },
+        Symbol(machinat.messenger.job.attached_file_data): undefined,
+        Symbol(machinat.messenger.job.attached_file_info): undefined,
+      },
     },
   ],
   Array [
     Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
-            "attachment_id": undefined,
-            "is_reusable": true,
-            "url": "http://this.is/a/file",
-          },
-          "type": "file",
+      "node": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "reusable": true,
+          "url": "http://this.is/a/file",
         },
+        "type": [Function],
       },
-      Symbol(machinat.messenger.job.attached_file_data): undefined,
-      Symbol(machinat.messenger.job.attached_file_info): undefined,
+      "path": "$",
+      "type": "unit",
+      "value": Object {
+        "message": Object {
+          "attachment": Object {
+            "payload": Object {
+              "attachment_id": undefined,
+              "is_reusable": true,
+              "url": "http://this.is/a/file",
+            },
+            "type": "file",
+          },
+        },
+        Symbol(machinat.messenger.job.attached_file_data): undefined,
+        Symbol(machinat.messenger.job.attached_file_info): undefined,
+      },
     },
   ],
   Array [
     Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
-            "attachment_id": "_I_am_Image_",
-            "is_reusable": undefined,
-            "url": undefined,
-          },
-          "type": "image",
+      "node": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "attachmentId": "_I_am_Image_",
         },
+        "type": [Function],
       },
-      Symbol(machinat.messenger.job.attached_file_data): undefined,
-      Symbol(machinat.messenger.job.attached_file_info): undefined,
+      "path": "$",
+      "type": "unit",
+      "value": Object {
+        "message": Object {
+          "attachment": Object {
+            "payload": Object {
+              "attachment_id": "_I_am_Image_",
+              "is_reusable": undefined,
+              "url": undefined,
+            },
+            "type": "image",
+          },
+        },
+        Symbol(machinat.messenger.job.attached_file_data): undefined,
+        Symbol(machinat.messenger.job.attached_file_info): undefined,
+      },
     },
   ],
   Array [
     Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
-            "attachment_id": "_I_am_Video_",
-            "is_reusable": undefined,
-            "url": undefined,
-          },
-          "type": "video",
+      "node": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "attachmentId": "_I_am_Video_",
         },
+        "type": [Function],
       },
-      Symbol(machinat.messenger.job.attached_file_data): undefined,
-      Symbol(machinat.messenger.job.attached_file_info): undefined,
+      "path": "$",
+      "type": "unit",
+      "value": Object {
+        "message": Object {
+          "attachment": Object {
+            "payload": Object {
+              "attachment_id": "_I_am_Video_",
+              "is_reusable": undefined,
+              "url": undefined,
+            },
+            "type": "video",
+          },
+        },
+        Symbol(machinat.messenger.job.attached_file_data): undefined,
+        Symbol(machinat.messenger.job.attached_file_info): undefined,
+      },
     },
   ],
   Array [
     Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
-            "attachment_id": "_I_am_Audio_",
-            "is_reusable": undefined,
-            "url": undefined,
-          },
-          "type": "audio",
+      "node": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "attachmentId": "_I_am_Audio_",
         },
+        "type": [Function],
       },
-      Symbol(machinat.messenger.job.attached_file_data): undefined,
-      Symbol(machinat.messenger.job.attached_file_info): undefined,
+      "path": "$",
+      "type": "unit",
+      "value": Object {
+        "message": Object {
+          "attachment": Object {
+            "payload": Object {
+              "attachment_id": "_I_am_Audio_",
+              "is_reusable": undefined,
+              "url": undefined,
+            },
+            "type": "audio",
+          },
+        },
+        Symbol(machinat.messenger.job.attached_file_data): undefined,
+        Symbol(machinat.messenger.job.attached_file_info): undefined,
+      },
     },
   ],
   Array [
     Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
-            "attachment_id": "_I_am_File_",
-            "is_reusable": undefined,
-            "url": undefined,
-          },
-          "type": "file",
+      "node": Object {
+        "$$typeof": Symbol(machinat.element),
+        "props": Object {
+          "attachmentId": "_I_am_File_",
         },
+        "type": [Function],
       },
-      Symbol(machinat.messenger.job.attached_file_data): undefined,
-      Symbol(machinat.messenger.job.attached_file_info): undefined,
+      "path": "$",
+      "type": "unit",
+      "value": Object {
+        "message": Object {
+          "attachment": Object {
+            "payload": Object {
+              "attachment_id": "_I_am_File_",
+              "is_reusable": undefined,
+              "url": undefined,
+            },
+            "type": "file",
+          },
+        },
+        Symbol(machinat.messenger.job.attached_file_data): undefined,
+        Symbol(machinat.messenger.job.attached_file_info): undefined,
+      },
     },
   ],
 ]

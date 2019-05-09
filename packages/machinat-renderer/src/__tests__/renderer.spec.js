@@ -9,12 +9,15 @@ it('is a constructor', () => {
 
 const NATIVE_TYPE = Symbol('test.native.type');
 
-const renderGeneralElement = moxy(() => ['_GENERAL_RENDERED_']);
-
-const generalElementDelegate = moxy({
-  a: renderGeneralElement,
-  b: renderGeneralElement,
-});
+const generalElementDelegate = moxy((node, _, path) =>
+  node.type === 'a'
+    ? [
+        { type: 'text', node, value: `${node.props.children}1`, path },
+        { type: 'break', node, value: SEGMENT_BREAK, path },
+        { type: 'text', node, value: `${node.props.children}2`, path },
+      ]
+    : [{ type: 'unit', node, value: { letters: node.props.children }, path }]
+);
 
 afterEach(() => {
   generalElementDelegate.mock.clear();
@@ -22,20 +25,16 @@ afterEach(() => {
 
 describe('#render()', () => {
   it('works', () => {
-    const Native = moxy(() => [
-      '_NATIVE_RENDERED_1_',
-      SEGMENT_BREAK,
-      '_NATIVE_RENDERED_2_',
+    const Unit = moxy((node, _, path) => [
+      { type: 'unit', node, value: node.props, path },
     ]);
-    Native.mock.getter('name').fakeReturnValue('Native');
-    Native.$$native = NATIVE_TYPE;
-    Native.$$unit = true;
-    Native.$$container = false;
+    Unit.mock.getter('name').fakeReturnValue('Unit');
+    Unit.$$native = NATIVE_TYPE;
 
     const Custom = moxy(props => (
       <>
         wrapped head
-        <Native {...props} />
+        <Unit {...props} />
         wrapped foot
       </>
     ));
@@ -43,24 +42,26 @@ describe('#render()', () => {
 
     const Container = moxy(() => [
       {
-        isPause: true,
-        asUnit: true,
+        type: 'pause',
         node: <Machinat.Pause />,
         value: undefined,
         path: '$xxx',
       },
       {
-        isPause: false,
-        asUnit: true,
+        type: 'text',
         node: 'somewhere in container',
         value: 'somewhere over the rainbow',
+        path: '$xxx',
+      },
+      {
+        type: 'unit',
+        node: <c />,
+        value: { rendered: 'by other' },
         path: '$xxx',
       },
     ]);
     Container.mock.getter('name').fakeReturnValue('Container');
     Container.$$native = NATIVE_TYPE;
-    Container.$$unit = true;
-    Container.$$container = true;
 
     const afterCallback = () => Promise.resolve();
     const WrappedPause = () => <Machinat.Pause after={afterCallback} />;
@@ -72,10 +73,10 @@ describe('#render()', () => {
         <Machinat.Pause delay={1000} />
         abc
         <Machinat.Pause after={afterCallback} />
-        <b />
-        <a>aaa</a>
+        <a>AAA</a>
+        <b>BBB</b>
         <WrappedPause />
-        <Native x="true" y={false} />
+        <Unit x="true" y={false} />
         <Custom a="A" b={2} />
         {{ raw: 'object' }}
         <Container>somthing wrapped</Container>
@@ -85,115 +86,99 @@ describe('#render()', () => {
 
     expect(rendered).toEqual([
       {
-        isPause: false,
-        asUnit: true,
+        type: 'text',
         node: 123,
         value: '123',
         path: '$::0',
       },
       {
-        isPause: true,
-        asUnit: true,
+        type: 'pause',
         node: <Machinat.Pause delay={1000} />,
         value: undefined,
         path: '$::1',
       },
       {
-        isPause: false,
-        asUnit: true,
+        type: 'text',
         node: 'abc',
         value: 'abc',
         path: '$::2',
       },
       {
-        isPause: true,
-        asUnit: true,
+        type: 'pause',
         node: <Machinat.Pause after={afterCallback} />,
         value: undefined,
         path: '$::3',
       },
       {
-        isPause: false,
-        asUnit: true,
-        node: <b />,
-        value: '_GENERAL_RENDERED_',
+        type: 'text',
+        node: <a>AAA</a>,
+        value: 'AAA1',
         path: '$::4',
       },
       {
-        isPause: false,
-        asUnit: true,
-        node: <a>aaa</a>,
-        value: '_GENERAL_RENDERED_',
+        type: 'text',
+        node: <a>AAA</a>,
+        value: 'AAA2',
+        path: '$::4',
+      },
+      {
+        type: 'unit',
+        node: <b>BBB</b>,
+        value: { letters: 'BBB' },
         path: '$::5',
       },
       {
-        isPause: true,
-        asUnit: true,
+        type: 'pause',
         node: <Machinat.Pause after={afterCallback} />,
         value: undefined,
         path: '$::6#WrappedPause',
       },
       {
-        isPause: false,
-        asUnit: true,
-        node: <Native x="true" y={false} />,
-        value: '_NATIVE_RENDERED_1_',
+        type: 'unit',
+        node: <Unit x="true" y={false} />,
+        value: { x: 'true', y: false },
         path: '$::7',
       },
       {
-        isPause: false,
-        asUnit: true,
-        node: <Native x="true" y={false} />,
-        value: '_NATIVE_RENDERED_2_',
-        path: '$::7',
-      },
-      {
-        isPause: false,
-        asUnit: true,
+        type: 'text',
         node: 'wrapped head',
         value: 'wrapped head',
         path: '$::8#Custom::0',
       },
       {
-        isPause: false,
-        asUnit: true,
-        node: <Native a="A" b={2} />,
-        value: '_NATIVE_RENDERED_1_',
+        type: 'unit',
+        node: <Unit a="A" b={2} />,
+        value: { a: 'A', b: 2 },
         path: '$::8#Custom::1',
       },
       {
-        isPause: false,
-        asUnit: true,
-        node: <Native a="A" b={2} />,
-        value: '_NATIVE_RENDERED_2_',
-        path: '$::8#Custom::1',
-      },
-      {
-        isPause: false,
-        asUnit: true,
+        type: 'text',
         node: 'wrapped foot',
         value: 'wrapped foot',
         path: '$::8#Custom::2',
       },
       {
-        isPause: false,
-        asUnit: true,
+        type: 'raw',
         node: undefined,
         value: { raw: 'object' },
         path: '$::9',
       },
       {
-        isPause: true,
-        asUnit: true,
+        type: 'pause',
         node: <Machinat.Pause />,
         value: undefined,
         path: '$xxx',
       },
       {
-        isPause: false,
-        asUnit: true,
+        type: 'text',
         node: 'somewhere in container',
         value: 'somewhere over the rainbow',
+        path: '$xxx',
+      },
+      {
+        type: 'unit',
+        node: <c />,
+        value: { rendered: 'by other' },
         path: '$xxx',
       },
     ]);
@@ -201,81 +186,66 @@ describe('#render()', () => {
     expect(Custom.mock).toBeCalledTimes(1);
     expect(Custom.mock.calls[0].args).toEqual([{ a: 'A', b: 2 }]);
 
-    expect(renderGeneralElement.mock).toBeCalledTimes(2);
-    renderGeneralElement.mock.calls.forEach((call, i) => {
-      expect(call.args[0]).toEqual(!i ? {} : { children: 'aaa' });
+    expect(generalElementDelegate.mock).toBeCalledTimes(2);
+    generalElementDelegate.mock.calls.forEach((call, i) => {
+      expect(call.args[0]).toEqual(i === 0 ? <a>AAA</a> : <b>BBB</b>);
+      expect(call.args[2]).toEqual(i === 0 ? '$::4' : '$::5');
 
       const renderInner = call.args[1];
-      expect(renderInner([<a />, <b />], '.children')).toEqual([
+      expect(renderInner(['foo'], '.children')).toEqual([
         {
-          isPause: false,
-          asUnit: true,
-          node: <a />,
-          value: '_GENERAL_RENDERED_',
-          path: `$::${!i ? '4#b' : '5#a'}.children:0`,
-        },
-        {
-          isPause: false,
-          asUnit: true,
-          node: <b />,
-          value: '_GENERAL_RENDERED_',
-          path: `$::${!i ? '4#b' : '5#a'}.children:1`,
+          type: 'text',
+          node: 'foo',
+          value: 'foo',
+          path: `$::${i === 0 ? '4#a' : '5#b'}.children:0`,
         },
       ]);
     });
 
-    expect(Native.mock).toBeCalledTimes(2);
-    Native.mock.calls.forEach((call, i) => {
+    expect(Unit.mock).toBeCalledTimes(2);
+    Unit.mock.calls.forEach((call, i) => {
       expect(call.args[0]).toEqual(
-        !i ? { x: 'true', y: false } : { a: 'A', b: 2 }
+        i === 0 ? <Unit x="true" y={false} /> : <Unit a="A" b={2} />
       );
+      expect(call.args[2]).toEqual(i === 0 ? '$::7' : '$::8#Custom::1');
 
       const renderInner = call.args[1];
-      expect(renderInner([<a />, <b />], '.children')).toEqual([
+      expect(renderInner(['bar'], '.children')).toEqual([
         {
-          isPause: false,
-          asUnit: true,
-          node: <a />,
-          value: '_GENERAL_RENDERED_',
-          path: `$::${!i ? '7' : '8#Custom::1'}#Native.children:0`,
-        },
-        {
-          isPause: false,
-          asUnit: true,
-          node: <b />,
-          value: '_GENERAL_RENDERED_',
-          path: `$::${!i ? '7' : '8#Custom::1'}#Native.children:1`,
+          type: 'text',
+          node: 'bar',
+          value: 'bar',
+          path: `$::${!i ? '7' : '8#Custom::1'}#Unit.children:0`,
         },
       ]);
     });
 
     expect(Container.mock).toBeCalledTimes(1);
-    const [containerProps, containerRenderInner] = Container.mock.calls[0].args;
+    const [
+      containerNode,
+      containerRenderInner,
+      containerPath,
+    ] = Container.mock.calls[0].args;
 
-    expect(containerProps).toEqual({ children: 'somthing wrapped' });
-    expect(containerRenderInner([<a />, <b />], '.children')).toEqual([
+    expect(containerNode).toEqual(<Container>somthing wrapped</Container>);
+    expect(containerRenderInner(['baz'], '.children')).toEqual([
       {
-        isPause: false,
-        asUnit: true,
-        node: <a />,
-        value: '_GENERAL_RENDERED_',
+        type: 'text',
+        node: 'baz',
+        value: 'baz',
         path: `$::10#Container.children:0`,
       },
-      {
-        isPause: false,
-        asUnit: true,
-        node: <b />,
-        value: '_GENERAL_RENDERED_',
-        path: `$::10#Container.children:1`,
-      },
     ]);
+    expect(containerPath).toBe('$::10');
   });
 
   it('return null if no renderable element in the node', () => {
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
     const None = () => null;
-    const Break = () => [SEGMENT_BREAK];
+    const Break = () => [
+      { type: 'break', node: <br />, value: undefined, path: '$:0' },
+    ];
     Break.$$native = NATIVE_TYPE;
     Break.$$unit = true;
 
@@ -306,124 +276,60 @@ describe('#render()', () => {
   it('filter SEGMENT_BREAK value at surface layer but not in deeper', () => {
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
-    const Native = moxy(() => ['head', SEGMENT_BREAK, 'foot']);
-    Native.mock.getter('name').fakeReturnValue('Native');
-    Native.$$unit = true;
-    Native.$$native = NATIVE_TYPE;
+    const Section = moxy(() => [
+      { type: 'text', node: 'head', value: 'head', path: '$' },
+      { type: 'break', node: <br />, value: SEGMENT_BREAK, path: '$' },
+      { type: 'text', node: 'foot', value: 'foot', path: '$' },
+    ]);
+    Section.mock.getter('name').fakeReturnValue('Section');
+    Section.$$native = NATIVE_TYPE;
 
-    expect(renderer.render(<Native />, true)).toEqual([
-      {
-        isPause: false,
-        asUnit: true,
-        node: <Native />,
-        value: 'head',
-        path: `$`,
-      },
-      {
-        isPause: false,
-        asUnit: true,
-        node: <Native />,
-        value: 'foot',
-        path: `$`,
-      },
+    expect(renderer.render(<Section />, true)).toEqual([
+      { type: 'text', node: 'head', value: 'head', path: '$' },
+      { type: 'text', node: 'foot', value: 'foot', path: '$' },
     ]);
 
-    let renderInner = Native.mock.calls[0].args[1];
+    const renderInner = Section.mock.calls[0].args[1];
 
-    expect(renderInner(<Native />, '.children')).toEqual([
-      {
-        isPause: false,
-        asUnit: true,
-        node: <Native />,
-        value: 'head',
-        path: `$#Native.children`,
-      },
-      {
-        isPause: false,
-        asUnit: true,
-        node: <Native />,
-        value: SEGMENT_BREAK,
-        path: `$#Native.children`,
-      },
-      {
-        isPause: false,
-        asUnit: true,
-        node: <Native />,
-        value: 'foot',
-        path: `$#Native.children`,
-      },
+    expect(renderInner(<Section />, '.children')).toEqual([
+      { type: 'text', node: 'head', value: 'head', path: '$' },
+      { type: 'break', node: <br />, value: SEGMENT_BREAK, path: '$' },
+      { type: 'text', node: 'foot', value: 'foot', path: '$' },
     ]);
-
-    let containedSegments;
-    const Container = moxy(
-      // eslint-disable-next-line no-return-assign
-      () =>
-        (containedSegments = [
-          {
-            isPause: false,
-            asUnit: true,
-            node: <Container />,
-            value: 'head',
-            path: `$`,
-          },
-          {
-            isPause: false,
-            asUnit: true,
-            node: <Container />,
-            value: SEGMENT_BREAK,
-            path: `$`,
-          },
-          {
-            isPause: false,
-            asUnit: true,
-            node: <Container />,
-            value: 'foot',
-            path: `$`,
-          },
-        ])
-    );
-    Container.mock.getter('name').fakeReturnValue('Container');
-    Container.$$container = true;
-    Container.$$unit = true;
-    Container.$$native = NATIVE_TYPE;
-
-    expect(renderer.render(<Container />, '.children')).toEqual([
-      containedSegments[0],
-      containedSegments[2],
-    ]);
-
-    [, renderInner] = Native.mock.calls[1].args;
-
-    expect(renderInner(<Container />, '.children')).toEqual(containedSegments);
   });
 
   it('throws if non unit native component placed at surface', () => {
-    const Root = () => ['_ROOT_'];
-    Root.$$unit = true;
-    Root.$$native = NATIVE_TYPE;
+    const Unit = () => [
+      { type: 'unit', node: <Unit />, value: { root: true }, path: '$' },
+    ];
+    Unit.$$native = NATIVE_TYPE;
 
-    const NonRoot = () => ['_NON_ROOT_'];
-    NonRoot.$$unit = false;
-    NonRoot.$$native = NATIVE_TYPE;
+    const Part = () => [
+      { type: 'part', node: <Part />, value: { root: false }, path: '$' },
+    ];
+    Part.$$native = NATIVE_TYPE;
 
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
-    expect(() => renderer.render(<Root />, true)).not.toThrow();
+    expect(renderer.render(<Unit />, true)).toEqual([
+      { type: 'unit', node: <Unit />, value: { root: true }, path: '$' },
+    ]);
     expect(() =>
-      renderer.render(<NonRoot />, true)
+      renderer.render(<Part />, true)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<NonRoot /> is not a valid unit to be sent and should not be placed at surface level"`
+      `"<Part /> is a part element and should not be placed at surface level"`
     );
   });
 
-  it('throw if general type not supported passed', () => {
+  it('throw if generalElementDelegate throw', () => {
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
+    generalElementDelegate.mock.fake(() => {
+      throw new Error('<invalid /> is not good');
+    });
 
     expect(() =>
       renderer.render(<invalid />, true)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"<invalid /> is not valid general element supported in Test"`
-    );
+    ).toThrowErrorMatchingInlineSnapshot(`"<invalid /> is not good"`);
   });
 
   it('throw if non renderalbe passed', () => {
@@ -439,43 +345,16 @@ describe('#render()', () => {
   });
 
   it('throw if native component of other platform received', () => {
-    const AnotherPlatformNative = () => {};
-    AnotherPlatformNative.$$native = Symbol('some other platform');
+    const AnotherPlatformUnit = () => {};
+    AnotherPlatformUnit.$$native = Symbol('some other platform');
 
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
     expect(() =>
-      renderer.render(<AnotherPlatformNative />, true)
+      renderer.render(<AnotherPlatformUnit />, true)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"native component <AnotherPlatformNative /> at '$' is not supported by Test"`
+      `"native component <AnotherPlatformUnit /> at '$' is not supported by Test"`
     );
-  });
-
-  it('throw if <Pause/> contained in non container native component', () => {
-    const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
-
-    const Native = (_, render) => {
-      render(<Machinat.Pause />, '.children');
-      return null;
-    };
-    Native.$$native = NATIVE_TYPE;
-    Native.$$unit = true;
-
-    expect(() =>
-      renderer.render(<Native />, true)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"<Pause /> at $#Native.children is not allowed"`
-    );
-
-    const Container = (_, render) => {
-      render(<Machinat.Pause />, '.children');
-      return null;
-    };
-    Container.$$container = true;
-    Container.$$unit = true;
-    Container.$$native = NATIVE_TYPE;
-
-    expect(() => renderer.render(<Container />, true)).not.toThrow();
   });
 
   it('throw if <Pause/> contained when allowPause set to false', () => {

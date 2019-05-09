@@ -1,24 +1,20 @@
 /* eslint-disable import/prefer-default-export */
 import invariant from 'invariant';
-import { annotate, asNative, asUnit, hasEntry } from 'machinat-utility';
+import { asUnitComponentWithEntryGetter } from './utils';
 
-import { LINE_NAITVE_TYPE } from '../symbol';
+const LEAVE_RENDERED = [{}];
 
-const LEAVE_RENDERED = [undefined];
+const Leave = () => LEAVE_RENDERED;
 
-export const Leave = () => LEAVE_RENDERED;
+const __Leave = asUnitComponentWithEntryGetter(thread => {
+  const { type, subtype, sourceId } = thread;
 
-annotate(
-  asNative(LINE_NAITVE_TYPE),
-  asUnit(true),
-  hasEntry(thread => {
-    const { type, subtype, sourceId } = thread;
+  invariant(
+    type === 'chat' && subtype !== 'user',
+    '<Leave /> should be only used in a group or room thread'
+  );
 
-    invariant(
-      type === 'chat' && subtype !== 'user',
-      '<Leave /> should be only used in a group or room thread'
-    );
+  return `${subtype}/${sourceId}/leave`;
+})(Leave);
 
-    return `${subtype}/${sourceId}/leave`;
-  })
-)(Leave);
+export { __Leave as Leave };

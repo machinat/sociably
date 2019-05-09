@@ -26,7 +26,7 @@ import type {
 } from './types';
 
 import LineThread from './thread';
-import { LINE_NATIVE_TYPE } from './symbol';
+import { LINE_NATIVE_TYPE } from './constant';
 
 import * as generalElementDelegate from './component/general';
 
