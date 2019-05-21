@@ -4,26 +4,38 @@ import uniqid from 'uniqid';
 
 import type WebSocket from 'ws';
 import type { IncomingMessage } from 'http';
-import type { Socket } from 'net';
+import type { Socket as NetSocket } from 'net';
 import type { MachinatReceiver, EventHandler } from 'machinat-base/types';
 import type { HTTPUpgradeReceiver } from 'machinat-http-adaptor/types';
-import type { WebEvent, WebBotOptions, ThreadUid } from './types';
-import type ConnectionBroker from './broker';
-import type { ConnectBody, DisconnectBody, EventBody } from './channel';
+import type {
+  WebSocketEvent,
+  WebSocketBotOptions,
+  RegisterResponse,
+  WebSocketResponse,
+  ConnectionInfo,
+  ThreadUid,
+} from './types';
+import type Distributor from './distributor';
+import type Socket, {
+  ConnectBody,
+  DisconnectBody,
+  EventBody,
+  RegisterBody,
+} from './socket';
 
-import Channel from './channel';
-import WebThread from './thread';
+import MachinatSocket from './socket';
+import WebSocketThread from './thread';
 import createEvent from './event';
 
 type WebSocketServer = $ElementType<Class<WebSocket>, 'Server'>;
 
 const WEBSOCKET = 'websocket';
 
-const rejectUpgrade = (socket: Socket, code: number, message?: string) => {
+const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
   const codeName = http.STATUS_CODES[code];
   const body = message || codeName;
 
-  socket.write(
+  ns.write(
     `HTTP/1.1 ${code} ${codeName}\r\n` +
       'Connection: close\r\n' +
       'Content-Type: text/html\r\n' +
@@ -31,53 +43,49 @@ const rejectUpgrade = (socket: Socket, code: number, message?: string) => {
       `\r\n${body}`
   );
 
-  socket.destroy();
+  ns.destroy();
 };
 
-class WebAdaptor
-  implements HTTPUpgradeReceiver, MachinatReceiver<void, WebThread, WebEvent> {
-  webSocketServer: WebSocketServer;
-  broker: ConnectionBroker;
-  options: WebBotOptions;
-  _threadCache: Map<ThreadUid, WebThread>;
+class WebSocketReceiver
+  implements
+    HTTPUpgradeReceiver,
+    MachinatReceiver<WebSocketResponse, WebSocketThread, WebSocketEvent> {
+  _webSocketServer: WebSocketServer;
+  _distributor: Distributor;
+  options: WebSocketBotOptions;
+
+  _threadCache: Map<ThreadUid, WebSocketThread>;
 
   isBound: boolean;
-  _handleEvent: EventHandler<void, WebThread, WebEvent>;
+  _handleEvent: EventHandler<
+    WebSocketResponse,
+    WebSocketThread,
+    WebSocketEvent
+  >;
   _handleError: (e: Error) => void;
 
-  _handleChannelConnect: (body: ConnectBody, seq: number) => void;
-  _handleChannelDisconnect: (body: DisconnectBody, seq: number) => void;
-  _handleChannelEvent: (body: EventBody, seq: number) => void;
+  _handleSocketConnect: (body: ConnectBody, seq: number) => void;
+  _handleSocketDisconnect: (body: DisconnectBody, seq: number) => void;
+  _handleSocketEvent: (body: EventBody, seq: number) => void;
 
   constructor(
     webSocketServer: WebSocketServer,
-    broker: ConnectionBroker,
-    options: WebBotOptions
+    distributor: Distributor,
+    options: WebSocketBotOptions
   ) {
-    this.webSocketServer = webSocketServer;
-    this.broker = broker;
+    this._webSocketServer = webSocketServer;
+    this._distributor = distributor;
     this.options = options;
-    this._threadCache = new Map();
 
-    const adaptor = this;
+    distributor.setAuthenticator(this._handleRegisterAuth);
 
-    this._handleChannelConnect = function handleConnect(body: ConnectBody) {
-      adaptor._handleChannelConnectImpl((this: Channel), body);
-    };
-
-    this._handleChannelDisconnect = function handleDisconnect(
-      body: DisconnectBody
-    ) {
-      adaptor._handleChannelDisconnectImpl((this: Channel), body);
-    };
-
-    this._handleChannelEvent = function handleEvent(body: EventBody) {
-      adaptor._handleChannelEventImpl((this: Channel), body);
-    };
+    distributor.on('event', this._handleSocketEvent);
+    distributor.on('connect', this._handleSocketConnect);
+    distributor.on('disconnect', this._handleSocketDissconnect);
   }
 
   bind(
-    handler: EventHandler<void, WebThread, WebEvent>,
+    handler: EventHandler<WebSocketResponse, WebSocketThread, WebSocketEvent>,
     handleError: (e: Error) => void
   ) {
     if (this.isBound) {
@@ -99,32 +107,33 @@ class WebAdaptor
     return true;
   }
 
-  handleUpgrade(req: IncomingMessage, socket: Socket, head: Buffer) {
+  handleUpgrade(req: IncomingMessage, ns: NetSocket, head: Buffer) {
+    if (this.options.verifyUpgrade) {
+      const allowed = this.options.verifyUpgrade(req);
+
+      if (!allowed) {
+        rejectUpgrade(ns, 400);
+        return;
+      }
+    }
+
     const request = {
       method: req.method,
       url: req.url,
       headers: req.headers,
-      origin: req.headers.origin,
     };
 
-    this.webSocketServer.handleUpgrade(req, socket, head, (ws: WebSocket) => {
-      const channel = new Channel(ws, uniqid(), request);
-
-      channel.on('action', this._handleChannelEvent);
-
-      channel.on('connect', this._handleChannelConnect);
-      channel.on('disconnect', this._handleChannelDisconnect);
-      channel.on('error', () => {
-        // TODO: handle error
-      });
+    this._webSocketServer.handleUpgrade(req, ns, head, (ws: WebSocket) => {
+      const socket = new MachinatSocket(ws, uniqid(), request);
+      this._distributor.addSocket(socket);
     });
   }
 
-  _getCachedThread(uid: ThreadUid): null | WebThread {
+  _getCachedThread(uid: ThreadUid): null | WebSocketThread {
     let thread = this._threadCache.get(uid);
 
     if (thread === undefined) {
-      thread = WebThread.fromUid(uid);
+      thread = WebSocketThread.fromUid(uid);
 
       if (thread !== null) {
         this._threadCache.set(uid, thread);
@@ -134,12 +143,13 @@ class WebAdaptor
     return thread;
   }
 
-  _issueEvent(
+  async _issueEvent(
     uid: ThreadUid,
-    channel: Channel,
+    socket: Socket,
     type: string,
     subtype: void | string,
-    payload: any
+    payload: any,
+    info: ConnectionInfo
   ) {
     const thread = this._getCachedThread(uid);
     if (thread === null) {
@@ -147,39 +157,60 @@ class WebAdaptor
       return;
     }
 
-    const info = this.broker.getLocalConnectionInfo(uid, channel.id);
-    if (info === null) {
-      this._handleError(new Error(xxx));
-      return;
-    }
-
-    const event = createEvent(type, subtype, thread, channel.id, payload);
+    const event = createEvent(type, subtype, thread, socket.id, payload);
 
     try {
-      this._handleEvent(WEBSOCKET, event, {
+      await this._handleEvent(WEBSOCKET, event, {
         info,
-        channelId: channel.id,
-        request: channel.request,
+        socketId: socket.id,
+        request: socket.request,
       });
     } catch (err) {
       this._handleError(err);
     }
   }
 
-  _handleChannelConnectImpl(channel: Channel, body: ConnectBody) {
-    const { uid } = body;
-    this._issueEvent(uid, channel, 'connect');
-  }
+  _handleRegisterAuth = async (
+    socket: Socket,
+    body: RegisterBody
+  ): Promise<RegisterResponse> => {
+    const thread = new WebSocketThread('@socket', undefined, socket.id);
+    const event = createEvent('@register', undefined, thread, socket.id, body);
 
-  _handleChannelDisconnectImpl(channel: Channel, body: DisconnectBody) {
-    const { uid } = body;
-    this._issueEvent(uid, channel, 'disconnect');
-  }
+    const response: WebSocketResponse = await this._handleEvent(
+      WEBSOCKET,
+      event,
+      { socketId: socket.id, request: socket.request }
+    );
 
-  _handleChannelEventImpl(channel: Channel, body: EventBody) {
-    const { uid, type, subtype, payload } = body;
-    this._issueEvent(uid, channel, type, subtype, payload);
-  }
+    return response || { accepted: false, code: 0.0, reason: '????????' };
+  };
+
+  _handleSocketEvent = (
+    socket: Socket,
+    uid: ThreadUid,
+    info: ConnectionInfo,
+    body: EventBody
+  ) => {
+    const { type, subtype, payload } = body;
+    this._issueEvent(uid, socket, type, subtype, payload, info);
+  };
+
+  _handleSocketConnect = (
+    socket: Socket,
+    uid: ThreadUid,
+    info: ConnectionInfo
+  ) => {
+    this._issueEvent(uid, socket, '@connect', undefined, undefined, info);
+  };
+
+  _handleSocketDissconnect = (
+    socket: Socket,
+    uid: ThreadUid,
+    info: ConnectionInfo
+  ) => {
+    this._issueEvent(uid, socket, '@disconnect', undefined, undefined, info);
+  };
 }
 
-export default WebAdaptor;
+export default WebSocketReceiver;

@@ -1,23 +1,26 @@
 // @flow
+import type { IncomingMessage } from 'http';
 import type { MachinatEvent } from 'machinat-base/types';
-import type { EventBody, RegisterBody } from './channel';
-import type WebThread from './thread';
+import type MachinatSocket, { EventBody, RegisterBody } from './socket';
+import type WebSocketThread from './thread';
 
-export type ChannelId = string;
+export type SocketId = string;
 export type ThreadUid = string;
 
-export type WebEvent = {
-  platform: 'web',
+export type ConnectionInfo = {| [string]: any |};
+
+export type WebSocketEvent = {
+  platform: 'websocket',
   type: string,
   subtype?: string,
-  shouldRespond: boolean,
-  thread: WebThread,
   payload: any,
-  connectionId: string,
+  connectionInfo: ConnectionInfo,
+  shouldRespond: boolean,
+  thread: WebSocketThread,
 };
 
-declare var e: WebEvent;
-(e: MachinatEvent<any, WebThread>);
+declare var e: WebSocketEvent;
+(e: MachinatEvent<any, WebSocketThread>);
 
 export type WebEventJob = {
   body: EventBody,
@@ -28,48 +31,49 @@ export type WebEventJob = {
 export type RequestInfo = {
   method: string,
   url: string,
-  headers: { [string]: string },
-  origin: string,
+  headers: {| [string]: string |},
 };
 
-export type ConnectionInfo = { [string]: any };
-
-export type WebSocketContext = {
-  channelId: ChannelId,
+export type WebSocketTransport = {
+  source: 'websocket',
+  socketId: SocketId,
   request: RequestInfo,
-  info: ConnectionInfo,
+  connectionInfo: ConnectionInfo,
 };
 
-export type AcceptedRegisterResult = {
+export type AcceptedRegisterResponse = {
   accepted: true,
-  thread: WebThread,
+  thread: WebSocketThread,
   info: ConnectionInfo,
 };
 
-export type UnacceptedRegisterResult = {
+export type UnacceptedRegisterResponse = {|
   accepted: false,
   code: number,
   reason: string,
-};
+|};
 
-export type RegisterResult = AcceptedRegisterResult | UnacceptedRegisterResult;
+export type RegisterResponse =
+  | AcceptedRegisterResponse
+  | UnacceptedRegisterResponse;
+
+export type WebSocketResponse = void | RegisterResponse;
 
 export type RegisterAuthenticator = (
-  request: RequestInfo,
+  socket: MachinatSocket,
   body: RegisterBody
-) => RegisterResult;
+) => Promise<RegisterResponse>;
 
-export type WebBotOptions = {
-  verifyUpgrade: boolean,
-  handleRegister: () => {},
-};
+export type WebSocketBotOptions = {|
+  verifyUpgrade?: IncomingMessage => boolean,
+|};
 
-export interface ClusterSynchronizer {
-  addNode(): Promise<void>;
-  removeNode(): Promise<void>;
-  addChannel(): Promise<void>;
-  removeChannel(): Promise<void>;
-  addConnection(): Promise<void>;
-  removeConnection(): Promise<void>;
-  send(): Promise<void>;
+export interface SocketBroker {
+  broadcast(job: WebEventJob): Promise<null | SocketId[]>;
+  addConnection(
+    uid: ThreadUid,
+    socketId: SocketId,
+    info: ConnectionInfo
+  ): Promise<boolean>;
+  removeConnection(uid: ThreadUid, socketId: SocketId): Promise<boolean>;
 }

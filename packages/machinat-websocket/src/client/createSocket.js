@@ -1,13 +1,13 @@
 //  @flow
-import Channel from '../channel';
+import MachinatSocket from '../socket';
 import WebSocket from './ws';
 
 const MACHINAT_WEB_PROTOCOL_V0 = 'machinat-web-v0';
 
-const createChannel = (url: string) => {
+const createSocket = (url: string) => {
   const webSocket = new WebSocket(url, MACHINAT_WEB_PROTOCOL_V0);
 
-  return new Channel(webSocket, '');
+  return new MachinatSocket(webSocket, '');
 };
 
-export default createChannel;
+export default createSocket;

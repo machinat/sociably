@@ -1,6 +1,6 @@
 // @flow
 import type WebThread from './thread';
-import type { WebEvent } from './types';
+import type { WebSocketEvent } from './types';
 
 const WebEventProto = {
   platform: 'web',
@@ -11,16 +11,16 @@ const createEvent = (
   type: string,
   subtype: void | string,
   thread: WebThread,
-  channelId: string,
+  socketId: string,
   payload: any
-): WebEvent => {
+): WebSocketEvent => {
   const event = Object.create(WebEventProto);
 
   event.type = type;
   event.subtype = subtype;
   event.payload = payload;
   event.thread = thread;
-  event.channelId = channelId;
+  event.socketId = socketId;
 
   return event;
 };

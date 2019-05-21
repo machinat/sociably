@@ -5,7 +5,7 @@ import thenifiedly from 'thenifiedly';
 import type WebSocket from 'ws';
 
 import { ConnectionError } from './error';
-import type { RequestInfo, ChannelId, ThreadUid } from './types';
+import type { RequestInfo, SocketId, ThreadUid } from './types';
 
 /**
  * Mahcinat Web Protocle v0
@@ -23,8 +23,7 @@ import type { RequestInfo, ChannelId, ThreadUid } from './types';
  *            events of specified threads
  *  - Client: client connects to one or miltiple threads, can send/receive
  *            events of the connected threads to/from Server
- *  - Channel: the underlying tunnel for multiplexing transmit events of
- *             different threads
+ *  - Socket: the underlying tunnel for multiplexing events of different threads
  */
 
 /* eslint-disable no-unused-vars */
@@ -43,7 +42,7 @@ const SOCKET_CLOSED = 3;
  * [frameType, sequence, body]
  *
  * frameType: string, type of a frame
- * sequence: number, the message sequence on the channel it transmitted on
+ * sequence: number, the message sequence on the socket it transmitted on
  * body: object, body object correponded to the frame type
  */
 
@@ -62,7 +61,7 @@ export type EventBody = {
   type: string,
   subtype?: string,
   payload: any,
-  requireAnswer: boolean,
+  requireAnswer?: boolean,
 };
 
 /**
@@ -78,9 +77,9 @@ export type AnswerBody = {
  */
 export type RejectBody = {
   req: number, // seq of the rejected frame
-  code: number,
-  reason: string,
-  payload: any,
+  // code: number,
+  // reason: string,
+  // payload: any,
 };
 
 /**
@@ -200,40 +199,41 @@ const MASK_DISCONNECTING = FLAG_DISCONNECT_SENT | FLAG_DISCONNECT_RECEIVED;
 
 const HANDSHAKE_TIMEOUT = 20 * 1000;
 
-type WithChannel = { channel: Channel }; // eslint-disable-line no-use-before-define
+type WithSocket = { socket: MachinatSocket }; // eslint-disable-line no-use-before-define
 
 function handleWSMessage(data: any) {
-  (this: WithChannel).channel._handlePacket(data);
+  (this: WithSocket).socket._handlePacket(data);
 }
 
 function handleWSOpen() {
-  (this: WithChannel).channel.emit('open');
+  (this: WithSocket).socket.emit('open');
 }
 
 function handleWSClose(code, reason) {
-  const { channel } = (this: WithChannel);
+  const { socket } = (this: WithSocket);
 
-  for (const [uid, state] of channel.connectStates.entries()) {
+  for (const [uid, state] of socket.connectStates.entries()) {
     if (state === STATE_CONNECTED_OK) {
       this.emit('disconnect', { uid });
     }
   }
 
-  channel.connectStates.clear();
-  channel.emit('close', code, reason);
+  socket.connectStates.clear();
+  socket.emit('close', code, reason);
 }
 
 function handleWSError(err) {
-  (this: WithChannel).channel.emit('error', err);
+  (this: WithSocket).socket.emit('error', err);
 }
 
 /**
- * Channel encapsulate protocol detail and provide a high level api for
+ * Socket encapsulate protocol detail and provide a high level api for
  * communicating operatiom and notification
  */
-class Channel extends EventEmitter {
-  id: ChannelId;
-  socket: WebSocket;
+class MachinatSocket extends EventEmitter {
+  id: SocketId;
+  _ws: WebSocket;
+
   isClient: boolean;
   request: void | RequestInfo;
 
@@ -242,11 +242,11 @@ class Channel extends EventEmitter {
   connectStates: Map<ThreadUid, number>;
   _handshakeTimeouts: Map<ThreadUid, TimeoutID>;
 
-  constructor(socket: WebSocket, id: ChannelId, request?: RequestInfo) {
+  constructor(ws: WebSocket, id: SocketId, request?: RequestInfo) {
     super();
 
     this.id = id;
-    this.socket = socket;
+    this._ws = ws;
     this.request = request;
     this.isClient = !request;
     this._seq = 0;
@@ -254,28 +254,26 @@ class Channel extends EventEmitter {
     this.connectStates = new Map();
     this._handshakeTimeouts = new Map();
 
-    socket.channel = this; // eslint-disable-line no-param-reassign
-    socket.on('message', handleWSMessage);
-    socket.on('open', handleWSOpen);
-    socket.on('close', handleWSClose);
-    socket.on('error', handleWSError);
+    ws.socket = this; // eslint-disable-line no-param-reassign
+    ws.on('message', handleWSMessage);
+    ws.on('open', handleWSOpen);
+    ws.on('close', handleWSClose);
+    ws.on('error', handleWSError);
   }
 
   isReady() {
-    return this.socket.readyState === SOCKET_OPEN;
+    return this._ws.readyState === SOCKET_OPEN;
   }
 
   isConnectedTo(uid: ThreadUid): boolean {
     const state = this.connectStates.get(uid);
-    return (
-      this.socket.readyState === SOCKET_OPEN && state === STATE_CONNECTED_OK
-    );
+    return this._ws.readyState === SOCKET_OPEN && state === STATE_CONNECTED_OK;
   }
 
   isConnectingTo(uid: ThreadUid): boolean {
     const state = this.connectStates.get(uid);
     return (
-      this.socket.readyState === SOCKET_OPEN &&
+      this._ws.readyState === SOCKET_OPEN &&
       state !== undefined &&
       !!(state & MASK_CONNECTING)
     );
@@ -284,7 +282,7 @@ class Channel extends EventEmitter {
   isDisconnetingTo(uid: ThreadUid) {
     const state = this.connectStates.get(uid);
     return (
-      this.socket.readyState === SOCKET_OPEN &&
+      this._ws.readyState === SOCKET_OPEN &&
       state !== undefined &&
       !!(state & MASK_DISCONNECTING)
     );
@@ -357,7 +355,7 @@ class Channel extends EventEmitter {
   }
 
   async _send(frame: string, body: Object): Promise<number> {
-    if (this.socket.readyState !== SOCKET_OPEN) {
+    if (this._ws.readyState !== SOCKET_OPEN) {
       throw new ConnectionError();
     }
 
@@ -367,9 +365,9 @@ class Channel extends EventEmitter {
     const packet = JSON.stringify([frame, seq, body]);
 
     if (this.isClient) {
-      this.socket.send(packet);
+      this._ws.send(packet);
     } else {
-      await thenifiedly.callMethod('send', this.socket, packet);
+      await thenifiedly.callMethod('send', this._ws, packet);
     }
 
     return seq;
@@ -479,7 +477,7 @@ class Channel extends EventEmitter {
     } else if (frameType === FRAME_DISCONNECT) {
       this._handleDisconnect(body, seq);
     } else {
-      this.reject().catch(this._emitError);
+      this.reject({ req: seq }).catch(this._emitError);
     }
   }
 
@@ -500,7 +498,7 @@ class Channel extends EventEmitter {
     ) {
       this.emit('action', body, seq);
     } else {
-      this.reject().catch(this._emitError);
+      this.reject({ req: seq }).catch(this._emitError);
     }
   }
 
@@ -514,7 +512,7 @@ class Channel extends EventEmitter {
 
   _handleRegister(body: RegisterBody, seq: number) {
     if (this.isClient) {
-      this.reject().catch(this._emitError);
+      this.reject({ req: seq }).catch(this._emitError);
     } else {
       this.emit('register', body, seq);
     }
@@ -550,7 +548,7 @@ class Channel extends EventEmitter {
     const state = this.connectStates.get(uid);
     if (state === undefined) {
       // reject if not even start connecting
-      this.reject().catch(this._emitError);
+      this.reject({ req: seq }).catch(this._emitError);
     } else if (state & FLAG_DISCONNECT_SENT) {
       // DISCONNECT confirmed, remove state
       this._accomplishDisconnect(body, seq);
@@ -562,4 +560,4 @@ class Channel extends EventEmitter {
   }
 }
 
-export default Channel;
+export default MachinatSocket;
