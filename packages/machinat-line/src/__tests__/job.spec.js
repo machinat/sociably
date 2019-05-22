@@ -1,6 +1,6 @@
 import moxy from 'moxy';
 import Machinat from 'machinat';
-import LineThread from '../thread';
+import LineChannel from '../channel';
 import { createChatJobs, createMulticastJobs } from '../job';
 
 describe('createChatJobs()', () => {
@@ -31,9 +31,9 @@ describe('createChatJobs()', () => {
   ];
 
   it('work', () => {
-    const thread = new LineThread({ type: 'user', userId: 'john' });
+    const channel = new LineChannel({ type: 'user', userId: 'john' });
 
-    const jobs = createChatJobs(thread, segments);
+    const jobs = createChatJobs(channel, segments);
 
     expect(jobs).toMatchSnapshot();
 
@@ -48,16 +48,16 @@ describe('createChatJobs()', () => {
     });
 
     expect(Bar.$$getEntry.mock).toHaveBeenCalledTimes(1);
-    expect(Bar.$$getEntry.mock).toHaveBeenCalledWith(thread, { id: 7 });
+    expect(Bar.$$getEntry.mock).toHaveBeenCalledWith(channel, { id: 7 });
 
     expect(Baz.$$getEntry.mock).toHaveBeenCalledTimes(1);
-    expect(Baz.$$getEntry.mock).toHaveBeenCalledWith(thread, { id: 9 });
+    expect(Baz.$$getEntry.mock).toHaveBeenCalledWith(channel, { id: 9 });
   });
 
   test('when useReplyAPI', () => {
-    const thread = new LineThread({ type: 'user', userId: 'john' });
+    const channel = new LineChannel({ type: 'user', userId: 'john' });
 
-    const jobs = createChatJobs(thread, segments, {
+    const jobs = createChatJobs(channel, segments, {
       replyToken: '__REPLY_TOKEN__',
     });
 
@@ -74,10 +74,10 @@ describe('createChatJobs()', () => {
     });
 
     expect(Bar.$$getEntry.mock).toHaveBeenCalledTimes(1);
-    expect(Bar.$$getEntry.mock).toHaveBeenCalledWith(thread, { id: 7 });
+    expect(Bar.$$getEntry.mock).toHaveBeenCalledWith(channel, { id: 7 });
 
     expect(Baz.$$getEntry.mock).toHaveBeenCalledTimes(1);
-    expect(Baz.$$getEntry.mock).toHaveBeenCalledWith(thread, { id: 9 });
+    expect(Baz.$$getEntry.mock).toHaveBeenCalledWith(channel, { id: 9 });
   });
 });
 
@@ -105,7 +105,7 @@ describe('createMulticastJobs()', () => {
     expect(jobs.length).toBe(2);
     expect(jobs).toMatchSnapshot();
 
-    expect(jobs[0].threadId).toBe(jobs[1].threadId);
+    expect(jobs[0].channelId).toBe(jobs[1].channelId);
 
     jobs.forEach(job => {
       expect(job.entry).toBe('message/multicast');

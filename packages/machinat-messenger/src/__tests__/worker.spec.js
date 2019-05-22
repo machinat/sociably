@@ -8,7 +8,7 @@ nock.disableNetConnect();
 
 const jobs = [
   {
-    threadId: 'messenger:default:id:foo',
+    channelId: 'messenger:default:id:foo',
     request: {
       method: 'POST',
       relative_url: 'me/messages',
@@ -16,7 +16,7 @@ const jobs = [
     },
   },
   {
-    threadId: 'messenger:default:id:foo',
+    channelId: 'messenger:default:id:foo',
     request: {
       method: 'POST',
       relative_url: 'bar/baz',
@@ -24,7 +24,7 @@ const jobs = [
     },
   },
   {
-    threadId: 'messenger:default:id:foo',
+    channelId: 'messenger:default:id:foo',
     request: {
       method: 'POST',
       relative_url: 'me/messages',

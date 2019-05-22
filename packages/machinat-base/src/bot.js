@@ -7,7 +7,7 @@ import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type {
   BotPlugin,
   EventHandler,
-  MachinatThread,
+  MachinatChannel,
   MachinatEvent,
   MachinatTransport,
   MachinatReceiver,
@@ -17,7 +17,7 @@ import Controller from './controller';
 import Engine from './engine';
 
 export default class BaseBot<
-  Thread: MachinatThread,
+  Channel: MachinatChannel,
   Event: MachinatEvent<any>,
   Transport: MachinatTransport<any>,
   SegmentValue,
@@ -26,13 +26,13 @@ export default class BaseBot<
   Job,
   Result
 > extends EventEmitter {
-  receiver: MachinatReceiver<Response, Thread, Event, Transport>;
-  controller: Controller<Response, Thread, Event, Transport>;
-  engine: Engine<SegmentValue, Native, Thread, Job, Result>;
+  receiver: MachinatReceiver<Response, Channel, Event, Transport>;
+  controller: Controller<Response, Channel, Event, Transport>;
+  engine: Engine<SegmentValue, Native, Channel, Job, Result>;
   plugins:
     | void
     | BotPlugin<
-        Thread,
+        Channel,
         Event,
         Transport,
         SegmentValue,
@@ -43,11 +43,11 @@ export default class BaseBot<
       >[];
 
   constructor(
-    receiver: MachinatReceiver<Response, Thread, Event, Transport>,
-    controller: Controller<Response, Thread, Event, Transport>,
-    engine: Engine<SegmentValue, Native, Thread, Job, Result>,
+    receiver: MachinatReceiver<Response, Channel, Event, Transport>,
+    controller: Controller<Response, Channel, Event, Transport>,
+    engine: Engine<SegmentValue, Native, Channel, Job, Result>,
     plugins?: BotPlugin<
-      Thread,
+      Channel,
       Event,
       Transport,
       SegmentValue,
@@ -69,7 +69,7 @@ export default class BaseBot<
     const controllerMixin = {
       bot,
       reply(...args) {
-        return bot.send(this.thread, ...args);
+        return bot.send(this.channel, ...args);
       },
     };
 
@@ -110,7 +110,7 @@ export default class BaseBot<
     this.receiver.bind(this.eventHandler(), this._emitError);
   }
 
-  eventHandler(): EventHandler<Response, Thread, Event, Transport> {
+  eventHandler(): EventHandler<Response, Channel, Event, Transport> {
     return this.controller.makeEventHandler(frame => {
       this.emit('event', frame);
       return Promise.resolve();
@@ -118,7 +118,7 @@ export default class BaseBot<
   }
 
   // eslint-disable-next-line class-methods-use-this, no-unused-vars
-  send(thread: Thread, message: MachinatNode, options: any) {
+  send(channel: Channel, message: MachinatNode, options: any) {
     throw new TypeError('Bot#send() should not be called on BaseBot');
   }
 

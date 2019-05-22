@@ -13,7 +13,7 @@ const createJobs = (
   for (let i = 0; i < actions.length; i += 1) {
     const { value } = actions[i];
     jobs[i] = {
-      threadId: this.uid,
+      channelId: this.uid,
       message:
         typeof value === 'string'
           ? { type: 'message', subtype: 'text', payload: value }

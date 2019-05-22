@@ -83,19 +83,19 @@ describe('#setFramePrototype(mixin)', () => {
     expect(controller.frame.baz()).toBe(3);
   });
 
-  test('frame.reply(msg, opt) calls frame.bot.send(frame.thread, msg, opt)', () => {
+  test('frame.reply(msg, opt) calls frame.bot.send(frame.channel, msg, opt)', () => {
     const controller = new Controller();
     const { reply } = controller.frame;
 
-    const thread = { empire: 'strikes back' };
+    const channel = { empire: 'strikes back' };
     const bot = moxy({ send: () => ['go to cloud city'] });
-    const frame = { thread, bot };
+    const frame = { channel, bot };
     const options = { stay: 'finish training', leave: 'save leia' };
     const message = "I'll return, I promise.";
 
     expect(reply.call(frame, message, options)).toEqual(['go to cloud city']);
     expect(bot.send.mock).toHaveBeenCalledTimes(1);
-    expect(bot.send.mock).toHaveBeenCalledWith(thread, message, options);
+    expect(bot.send.mock).toHaveBeenCalledWith(channel, message, options);
   });
 
   it('resets frame every time called', () => {
@@ -114,7 +114,7 @@ describe('#setFramePrototype(mixin)', () => {
 describe('#makeEventHandler(finalHandler, onError)', () => {
   const transport = { on: 'spaceship' };
   const event = { found: 'Obi-Wan' };
-  const thread = { a: 'new hope' };
+  const channel = { a: 'new hope' };
   const finalHandler = moxy(() => Promise.resolve());
 
   beforeEach(() => {
@@ -127,16 +127,16 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     const handle = controller.makeEventHandler(finalHandler);
 
     await Promise.all([
-      expect(handle(thread, { id: 1 }, transport)).resolves.toBe(undefined),
-      expect(handle(thread, { id: 2 }, transport)).resolves.toBe(undefined),
-      expect(handle(thread, { id: 3 }, transport)).resolves.toBe(undefined),
+      expect(handle(channel, { id: 1 }, transport)).resolves.toBe(undefined),
+      expect(handle(channel, { id: 2 }, transport)).resolves.toBe(undefined),
+      expect(handle(channel, { id: 3 }, transport)).resolves.toBe(undefined),
     ]);
 
     expect(finalHandler.mock).toHaveBeenCalledTimes(3);
     for (let i = 1; i < 4; i += 1) {
       expect(finalHandler.mock).toHaveBeenNthCalledWith(i, {
         event: { id: i },
-        thread: { a: 'new hope' },
+        channel: { a: 'new hope' },
         transport,
       });
     }
@@ -148,11 +148,11 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     const handle = controller.makeEventHandler(finalHandler);
 
     finalHandler.mock.fake(() => Promise.resolve('Roger'));
-    await expect(handle(thread, event, transport)).resolves.toBe('Roger');
+    await expect(handle(channel, event, transport)).resolves.toBe('Roger');
 
     expect(finalHandler.mock).toHaveBeenCalledWith({
       event,
-      thread: { a: 'new hope' },
+      channel: { a: 'new hope' },
       transport,
     });
   });
@@ -163,7 +163,7 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
 
     const expectedFrame = {
       event,
-      thread: { a: 'new hope' },
+      channel: { a: 'new hope' },
       transport,
     };
 
@@ -205,13 +205,13 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     const handle = controller.makeEventHandler(finalHandler);
 
     finalHandler.mock.fakeReturnValue('Roger');
-    await expect(handle(thread, event, transport)).resolves.toBe(
+    await expect(handle(channel, event, transport)).resolves.toBe(
       'Roger foo bar baz'
     );
 
     expect(finalHandler.mock).toHaveBeenCalledWith({
       event,
-      thread: { a: 'new hope' },
+      channel: { a: 'new hope' },
       transport,
       foo: true,
       bar: true,
@@ -229,7 +229,7 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     controller.setMiddlewares(middleware);
     const handle = controller.makeEventHandler(finalHandler);
 
-    await expect(handle(thread, event, transport)).rejects.toThrow(
+    await expect(handle(channel, event, transport)).rejects.toThrow(
       'an X-wing crash!'
     );
 
@@ -244,7 +244,7 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     controller.setMiddlewares(middleware);
     const handle = controller.makeEventHandler(finalHandler);
 
-    await expect(handle(thread, event, transport)).resolves.toBe(
+    await expect(handle(channel, event, transport)).resolves.toBe(
       'your droid is being hijacked hahaha'
     );
 
@@ -269,7 +269,7 @@ describe('#makeEventHandler(finalHandler, onError)', () => {
     controller.setMiddlewares(middleware1, middleware2);
     const handle = controller.makeEventHandler(finalHandler);
 
-    await expect(handle(thread, event, transport)).resolves.toBe(
+    await expect(handle(channel, event, transport)).resolves.toBe(
       "Oh, it's just trash compactor bug"
     );
 

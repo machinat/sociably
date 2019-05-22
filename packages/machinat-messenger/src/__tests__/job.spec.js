@@ -1,6 +1,6 @@
 import Machinat from 'machinat';
 import { createChatJobs, createCreativeJobs } from '../job';
-import MessengerThread from '../thread';
+import MessengerChannel from '../channel';
 import {
   MESSENGER_NAITVE_TYPE,
   ATTACHED_FILE_DATA,
@@ -35,15 +35,15 @@ describe('createChatJobs()', () => {
   ];
 
   it('create jobs to be sent', () => {
-    const thread = new MessengerThread({ id: 'john' });
+    const channel = new MessengerChannel({ id: 'john' });
 
-    const jobs = createChatJobs(thread, segments);
+    const jobs = createChatJobs(channel, segments);
 
     expect(jobs).toMatchSnapshot();
 
     jobs.forEach((job, i) => {
       expect(job).toEqual({
-        threadUid: 'messenger:default:user:john',
+        channelUid: 'messenger:default:user:john',
         request: {
           method: 'POST',
           relative_url: i === 2 ? 'bar/baz' : 'me/messages',
@@ -57,9 +57,9 @@ describe('createChatJobs()', () => {
   });
 
   it('add coresponding options to body on message only', () => {
-    const thread = new MessengerThread({ id: 'john' });
+    const channel = new MessengerChannel({ id: 'john' });
 
-    const jobs = createChatJobs(thread, segments, {
+    const jobs = createChatJobs(channel, segments, {
       messagingType: 'MESSAGE_TAG',
       tag: 'PAYMENT_UPDATE',
       notificationType: 'SILENT_PUSH',
@@ -86,7 +86,7 @@ describe('createChatJobs()', () => {
       }
 
       expect(job).toEqual({
-        threadUid: 'messenger:default:user:john',
+        channelUid: 'messenger:default:user:john',
         request: {
           method: 'POST',
           relative_url: i === 2 ? 'bar/baz' : 'me/messages',
@@ -97,10 +97,10 @@ describe('createChatJobs()', () => {
   });
 
   it('respect options originally set in job value', () => {
-    const thread = new MessengerThread({ id: 'Luke' });
+    const channel = new MessengerChannel({ id: 'Luke' });
 
     const jobs = createChatJobs(
-      thread,
+      channel,
       [
         {
           node: <Foo />,
@@ -148,10 +148,10 @@ describe('createChatJobs()', () => {
   });
 
   it('respect the empty tag if messaging_type has already been set', () => {
-    const thread = new MessengerThread({ id: 'Luke' });
+    const channel = new MessengerChannel({ id: 'Luke' });
 
     const jobs = createChatJobs(
-      thread,
+      channel,
       [
         {
           node: <Foo />,
@@ -181,14 +181,14 @@ describe('createChatJobs()', () => {
   });
 
   it('add attached file data and info if there are', () => {
-    const thread = new MessengerThread({ id: 'john' });
+    const channel = new MessengerChannel({ id: 'john' });
     const fileInfo = {
       filename: 'deathangel.jpg',
       contentType: 'image/jpeg',
       knownLength: 66666,
     };
 
-    const jobs = createChatJobs(thread, [
+    const jobs = createChatJobs(channel, [
       {
         node: <Foo />,
         value: { a: 'gift', [ATTACHED_FILE_DATA]: '_DEADLY_VIRUS_' },

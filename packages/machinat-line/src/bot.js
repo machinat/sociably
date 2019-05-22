@@ -28,7 +28,7 @@ import type {
   LineSendOptions,
 } from './types';
 
-import LineThread from './thread';
+import LineChannel from './channel';
 import { LINE_NATIVE_TYPE } from './constant';
 
 import * as generalElementDelegate from './component/general';
@@ -40,7 +40,7 @@ const LINE = 'line';
 // $FlowFixMe https://github.com/facebook/flow/issues/7539
 class LineBot
   extends BaseBot<
-    LineThread,
+    LineChannel,
     LineEvent,
     WebhookTransport,
     LineSegmentValue,
@@ -95,7 +95,7 @@ class LineBot
     message: MachinatNode,
     options: LineSendOptions
   ): Promise<null | LineAPIResult[]> {
-    const thread = new LineThread(
+    const channel = new LineChannel(
       typeof source === 'string' ? { type: 'user', userId: source } : source
     );
 
@@ -103,7 +103,7 @@ class LineBot
 
     const jobs = this.engine.renderActions(
       createChatJobs,
-      thread,
+      channel,
       message,
       options,
       usePush
@@ -129,7 +129,7 @@ class LineBot
       }
     }
 
-    const response = await this.engine.dispatch(thread, jobs, message);
+    const response = await this.engine.dispatch(channel, jobs, message);
     return response === null ? null : response.results;
   }
 

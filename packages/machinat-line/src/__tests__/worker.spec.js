@@ -40,12 +40,12 @@ it('makes calls to api ok', async () => {
   client.start(queue);
 
   const jobs = [
-    { entry: 'foo/1', body: { id: 1 }, threadUid: '_THREAD_' },
-    { entry: 'bar/1', body: { id: 2 }, threadUid: '_THREAD_' },
-    { entry: 'baz/1', body: { id: 3 }, threadUid: '_THREAD_' },
-    { entry: 'foo/2', body: { id: 4 }, threadUid: '_THREAD_' },
-    { entry: 'bar/2', body: { id: 5 }, threadUid: '_THREAD_' },
-    { entry: 'baz/2', body: { id: 6 }, threadUid: '_THREAD_' },
+    { entry: 'foo/1', body: { id: 1 }, channelUid: '_THREAD_' },
+    { entry: 'bar/1', body: { id: 2 }, channelUid: '_THREAD_' },
+    { entry: 'baz/1', body: { id: 3 }, channelUid: '_THREAD_' },
+    { entry: 'foo/2', body: { id: 4 }, channelUid: '_THREAD_' },
+    { entry: 'bar/2', body: { id: 5 }, channelUid: '_THREAD_' },
+    { entry: 'baz/2', body: { id: 6 }, channelUid: '_THREAD_' },
   ];
 
   await expect(queue.executeJobs(jobs)).resolves.toEqual({
@@ -78,9 +78,9 @@ it('throw if connection error happen', async () => {
 
   await expect(
     queue.executeJobs([
-      { entry: 'message/push', body: { id: 1 }, threadUid: 'foo' },
-      { entry: 'message/push', body: { id: 2 }, threadUid: 'foo' },
-      { entry: 'message/push', body: { id: 3 }, threadUid: 'foo' },
+      { entry: 'message/push', body: { id: 1 }, channelUid: 'foo' },
+      { entry: 'message/push', body: { id: 2 }, channelUid: 'foo' },
+      { entry: 'message/push', body: { id: 3 }, channelUid: 'foo' },
     ])
   ).resolves.toMatchSnapshot();
 
@@ -114,9 +114,9 @@ it('throw if api error happen', async () => {
   client.start(queue);
   await expect(
     queue.executeJobs([
-      { entry: 'message/push', body: { id: 1 }, threadUid: 'foo' },
-      { entry: 'message/push', body: { id: 2 }, threadUid: 'foo' },
-      { entry: 'message/push', body: { id: 3 }, threadUid: 'foo' },
+      { entry: 'message/push', body: { id: 1 }, channelUid: 'foo' },
+      { entry: 'message/push', body: { id: 2 }, channelUid: 'foo' },
+      { entry: 'message/push', body: { id: 3 }, channelUid: 'foo' },
     ])
   ).resolves.toMatchSnapshot();
 
@@ -124,7 +124,7 @@ it('throw if api error happen', async () => {
   expect(scope2.isDone()).toBe(true);
 });
 
-it('sequently excute jobs of the identical thread', async () => {
+it('sequently excute jobs of the identical channel', async () => {
   const client = new LineWorker({
     accessToken,
     useReplyAPI: false,
@@ -142,15 +142,15 @@ it('sequently excute jobs of the identical thread', async () => {
 
   const promise = expect(
     queue.executeJobs([
-      { entry: 'message/push', threadUid: 'foo', body: { id: 1 } },
-      { entry: 'message/push', threadUid: 'bar', body: { id: 2 } },
-      { entry: 'message/push', threadUid: 'baz', body: { id: 3 } },
-      { entry: 'message/reply', threadUid: 'foo', body: { id: 4 } },
-      { entry: 'message/reply', threadUid: 'bar', body: { id: 5 } },
-      { entry: 'message/reply', threadUid: 'baz', body: { id: 6 } },
-      { entry: 'message/push', threadUid: 'foo', body: { id: 7 } },
-      { entry: 'message/push', threadUid: 'bar', body: { id: 8 } },
-      { entry: 'message/push', threadUid: 'baz', body: { id: 9 } },
+      { entry: 'message/push', channelUid: 'foo', body: { id: 1 } },
+      { entry: 'message/push', channelUid: 'bar', body: { id: 2 } },
+      { entry: 'message/push', channelUid: 'baz', body: { id: 3 } },
+      { entry: 'message/reply', channelUid: 'foo', body: { id: 4 } },
+      { entry: 'message/reply', channelUid: 'bar', body: { id: 5 } },
+      { entry: 'message/reply', channelUid: 'baz', body: { id: 6 } },
+      { entry: 'message/push', channelUid: 'foo', body: { id: 7 } },
+      { entry: 'message/push', channelUid: 'bar', body: { id: 8 } },
+      { entry: 'message/push', channelUid: 'baz', body: { id: 9 } },
     ])
   ).resolves.toMatchSnapshot();
 

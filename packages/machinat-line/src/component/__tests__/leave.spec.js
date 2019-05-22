@@ -1,7 +1,7 @@
 import Machinat from 'machinat';
 
 import { LINE_NATIVE_TYPE } from '../../constant';
-import LineThread from '../../thread';
+import LineChannel from '../../channel';
 import { Leave } from '../leave';
 import renderHelper from './renderHelper';
 
@@ -18,7 +18,7 @@ describe('$$getEntry function', () => {
   it('point to the api entry for leaving', () => {
     expect(
       Leave.$$getEntry(
-        new LineThread({
+        new LineChannel({
           type: 'group',
           groupId: '_GROUP_ID_',
           userId: '_USER_ID_',
@@ -28,7 +28,7 @@ describe('$$getEntry function', () => {
 
     expect(
       Leave.$$getEntry(
-        new LineThread({
+        new LineChannel({
           type: 'room',
           roomId: '_ROOM_ID_',
           userId: '_USER_ID_',
@@ -37,16 +37,16 @@ describe('$$getEntry function', () => {
     ).toBe('room/_ROOM_ID_/leave');
   });
 
-  it('throw if type of thread is user', () => {
+  it('throw if type of channel is user', () => {
     expect(() =>
       Leave.$$getEntry(
-        new LineThread({
+        new LineChannel({
           type: 'user',
           userId: '_USER_ID_',
         })
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<Leave /> should be only used in a group or room thread"`
+      `"<Leave /> should be only used in a group or room channel"`
     );
   });
 });

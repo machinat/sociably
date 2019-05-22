@@ -1,8 +1,8 @@
 // @flow
-import type { MachinatThread } from 'machinat-base/types';
+import type { MachinatChannel } from 'machinat-base/types';
 import type { LineSource } from './types';
 
-class LineThread implements MachinatThread {
+class LineChannel implements MachinatChannel {
   platform = 'line';
   type = 'chat';
 
@@ -26,4 +26,4 @@ class LineThread implements MachinatThread {
   }
 }
 
-export default LineThread;
+export default LineChannel;

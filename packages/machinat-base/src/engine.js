@@ -14,7 +14,7 @@ import type {
   DispatchMiddleware,
   DispatchFrame,
   SegmentWithoutPause,
-  MachinatThread,
+  MachinatChannel,
   MachinatWorker,
   DispatchAction,
   DispatchResponse,
@@ -38,19 +38,19 @@ const handlePause = async (pauseElement: PauseElement) => {
 export default class MachinatEngine<
   SegmentValue,
   Native: MachinatNativeComponent<SegmentValue>,
-  Thread: MachinatThread,
+  Channel: MachinatChannel,
   Job,
   Result
 > {
   platform: string;
-  middlewares: DispatchMiddleware<Thread, Job, Result>[];
+  middlewares: DispatchMiddleware<Channel, Job, Result>[];
   renderer: MachinatRenderer<SegmentValue, Native>;
   queue: MahinateQueue<Job, Result>;
   worker: MachinatWorker<Job, Result>;
   frame: {};
 
   _handleSending: (
-    frame: DispatchFrame<Thread, Job>
+    frame: DispatchFrame<Channel, Job>
   ) => Promise<null | DispatchResponse<Job, Result>>;
 
   constructor(
@@ -72,7 +72,7 @@ export default class MachinatEngine<
     this.worker.start(queue);
   }
 
-  setMiddlewares(...fns: DispatchMiddleware<Thread, Job, Result>[]) {
+  setMiddlewares(...fns: DispatchMiddleware<Channel, Job, Result>[]) {
     for (const fn of fns) {
       if (typeof fn !== 'function') {
         throw new TypeError('middleware must be a function!');
@@ -146,13 +146,13 @@ export default class MachinatEngine<
   }
 
   dispatch(
-    thread: null | Thread,
+    channel: null | Channel,
     actions: DispatchAction<Job>[],
     node?: MachinatNode
   ): Promise<null | DispatchResponse<Job, Result>> {
-    const frame: DispatchFrame<Thread, Job> = Object.create(this.frame);
+    const frame: DispatchFrame<Channel, Job> = Object.create(this.frame);
 
-    frame.thread = thread;
+    frame.channel = channel;
     frame.actions = actions;
     frame.platform = this.platform;
     frame.node = node;
@@ -161,7 +161,7 @@ export default class MachinatEngine<
   }
 
   async _executeSending(
-    frame: DispatchFrame<Thread, Job>
+    frame: DispatchFrame<Channel, Job>
   ): Promise<null | DispatchResponse<Job, Result>> {
     const { actions } = frame;
     const results: Result[] = [];

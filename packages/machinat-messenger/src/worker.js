@@ -35,8 +35,8 @@ const assignQueryParams = (queryParams, obj) => {
   }
 };
 
-const makeRequestName = (threadId: string, count: number) =>
-  `${threadId}-${count}`;
+const makeRequestName = (channelId: string, count: number) =>
+  `${channelId}-${count}`;
 
 const makeFileName = num => `file_${num}`;
 
@@ -184,29 +184,29 @@ export default class MessengerWorker
   };
 
   _consumeCallback = async (jobs: MessengerJob[]) => {
-    const threadSendingRec = new Map();
+    const channelSendingRec = new Map();
     let fileCount = 0;
     let filesForm: FormData;
 
     const requests = new Array(jobs.length);
 
     for (let i = 0; i < jobs.length; i += 1) {
-      const { request, threadUid, attachedFileData, attachedFileInfo } = jobs[
+      const { request, channelUid, attachedFileData, attachedFileInfo } = jobs[
         i
       ];
 
-      if (threadUid !== undefined) {
-        // keep the order of requests per thread
-        let count = threadSendingRec.get(threadUid);
+      if (channelUid !== undefined) {
+        // keep the order of requests per channel
+        let count = channelSendingRec.get(channelUid);
         if (count !== undefined) {
-          request.depends_on = makeRequestName(threadUid, count);
+          request.depends_on = makeRequestName(channelUid, count);
           count += 1;
         } else {
           count = 1;
         }
 
-        threadSendingRec.set(threadUid, count);
-        request.name = makeRequestName(threadUid, count);
+        channelSendingRec.set(channelUid, count);
+        request.name = makeRequestName(channelUid, count);
       }
 
       request.omit_response_on_success = false;

@@ -9,7 +9,7 @@ import type Socket, {
 } from './socket';
 import type {
   WebEventJob,
-  ThreadUid,
+  ChannelUid,
   SocketId,
   ConnectionInfo,
   RegisterAuthenticator,
@@ -30,7 +30,7 @@ class SocketDistributor extends EventEmitter {
   _authenticator: RegisterAuthenticator;
 
   _socketStore: Map<SocketId, SocketStatus>;
-  _connectionMapping: Map<ThreadUid, Map<SocketId, ConnectionStatus>>;
+  _connectionMapping: Map<ChannelUid, Map<SocketId, ConnectionStatus>>;
 
   _handleEvent: (body: EventBody, seq: number) => void;
   _handleRegister: (body: RegisterBody, seq: number) => void;
@@ -127,7 +127,7 @@ class SocketDistributor extends EventEmitter {
 
   async addLocalConnection(
     socketId: SocketId,
-    uid: ThreadUid,
+    uid: ChannelUid,
     info: ConnectionInfo
   ): Promise<boolean> {
     const socketStatus = this._socketStore.get(socketId);
@@ -152,7 +152,7 @@ class SocketDistributor extends EventEmitter {
 
   async removeLocalConnection(
     socketId: SocketId,
-    uid: ThreadUid
+    uid: ChannelUid
   ): Promise<boolean> {
     if (this._deleteLocalConnection(socketId, uid)) {
       const socketStatus = this._socketStore.get(socketId);
@@ -219,7 +219,7 @@ class SocketDistributor extends EventEmitter {
     this._authenticator = authenticator;
   }
 
-  _deleteLocalConnection(socketId: SocketId, uid: ThreadUid): boolean {
+  _deleteLocalConnection(socketId: SocketId, uid: ChannelUid): boolean {
     const connections = this._connectionMapping.get(uid);
     if (connections === undefined) {
       return false;
@@ -242,24 +242,24 @@ class SocketDistributor extends EventEmitter {
 
   _emitEvent(
     socket: Socket,
-    uid: ThreadUid,
+    uid: ChannelUid,
     info: ConnectionInfo,
     body: EventBody
   ) {
     this.emit('event', socket, uid, info, body);
   }
 
-  _emitConnect(socket: Socket, uid: ThreadUid, info: ConnectionInfo) {
+  _emitConnect(socket: Socket, uid: ChannelUid, info: ConnectionInfo) {
     this.emit('connect', socket, uid, info);
   }
 
-  _emitDisconnect(socket: Socket, uid: ThreadUid, info: ConnectionInfo) {
+  _emitDisconnect(socket: Socket, uid: ChannelUid, info: ConnectionInfo) {
     this.emit('disconnect', socket, uid, info);
   }
 
   _getLocalConnectionInfo(
     socketId: SocketId,
-    uid: ThreadUid
+    uid: ChannelUid
   ): void | ConnectionInfo {
     const conneted = this._connectionMapping.get(uid);
     if (conneted === undefined) {
@@ -275,7 +275,7 @@ class SocketDistributor extends EventEmitter {
   }
 
   _setLocalConnection(
-    uid: ThreadUid,
+    uid: ChannelUid,
     socketId: SocketId,
     info: ConnectionInfo,
     connected: boolean,
@@ -301,8 +301,8 @@ class SocketDistributor extends EventEmitter {
     const result = await this._authenticator(socket, body);
 
     if (result.accepted) {
-      const { thread, info } = result;
-      const uid: ThreadUid = (thread.uid: any);
+      const { channel, info } = result;
+      const uid: ChannelUid = (channel.uid: any);
 
       await socket.connect({ uid, req: seq });
       this._setLocalConnection(uid, socket.id, info || {}, false);

@@ -53,7 +53,7 @@ describe('#constructor(controller, engine, plugins)', () => {
     const bot = new Bot(receiver, controller, engine);
     bot.send = moxy(() => [{ success: 'hahaha' }]);
 
-    const frame = { thread: '__THE_THREAD_OBJ__' };
+    const frame = { channel: '__THE_THREAD_OBJ__' };
     const { reply } = controller.setFramePrototype.mock.calls[0].args[0];
 
     expect(reply.bind(frame)('foo', 'bar')).toEqual([{ success: 'hahaha' }]);

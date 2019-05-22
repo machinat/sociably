@@ -23,8 +23,8 @@ Array [
       ],
       "replyToken": "__REPLY_TOKEN__",
     },
+    "channelUid": "line:default:user:john",
     "entry": "message/reply",
-    "threadUid": "line:default:user:john",
   },
   Object {
     "body": Object {
@@ -38,15 +38,15 @@ Array [
       ],
       "replyToken": "__REPLY_TOKEN__",
     },
+    "channelUid": "line:default:user:john",
     "entry": "message/reply",
-    "threadUid": "line:default:user:john",
   },
   Object {
     "body": Object {
       "id": 7,
     },
+    "channelUid": "line:default:user:john",
     "entry": "bar",
-    "threadUid": "line:default:user:john",
   },
   Object {
     "body": Object {
@@ -57,15 +57,15 @@ Array [
       ],
       "replyToken": "__REPLY_TOKEN__",
     },
+    "channelUid": "line:default:user:john",
     "entry": "message/reply",
-    "threadUid": "line:default:user:john",
   },
   Object {
     "body": Object {
       "id": 9,
     },
+    "channelUid": "line:default:user:john",
     "entry": "baz",
-    "threadUid": "line:default:user:john",
   },
 ]
 `;
@@ -93,8 +93,8 @@ Array [
       ],
       "to": "john",
     },
+    "channelUid": "line:default:user:john",
     "entry": "message/push",
-    "threadUid": "line:default:user:john",
   },
   Object {
     "body": Object {
@@ -108,15 +108,15 @@ Array [
       ],
       "to": "john",
     },
+    "channelUid": "line:default:user:john",
     "entry": "message/push",
-    "threadUid": "line:default:user:john",
   },
   Object {
     "body": Object {
       "id": 7,
     },
+    "channelUid": "line:default:user:john",
     "entry": "bar",
-    "threadUid": "line:default:user:john",
   },
   Object {
     "body": Object {
@@ -127,15 +127,15 @@ Array [
       ],
       "to": "john",
     },
+    "channelUid": "line:default:user:john",
     "entry": "message/push",
-    "threadUid": "line:default:user:john",
   },
   Object {
     "body": Object {
       "id": 9,
     },
+    "channelUid": "line:default:user:john",
     "entry": "baz",
-    "threadUid": "line:default:user:john",
   },
 ]
 `;

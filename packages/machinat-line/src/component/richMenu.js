@@ -4,12 +4,12 @@ import { asSingleUnitComponentWithEntryGetter } from './utils';
 
 const LinkRichMenu = ({ props: { id } }) => ({ id });
 
-const __LinkRichMenu = asSingleUnitComponentWithEntryGetter((thread, act) => {
-  const { type, subtype, source } = thread;
+const __LinkRichMenu = asSingleUnitComponentWithEntryGetter((channel, act) => {
+  const { type, subtype, source } = channel;
 
   invariant(
     type === 'chat' && subtype === 'user',
-    '<RichMenu /> can only be delivered in a user chatting thread'
+    '<RichMenu /> can only be delivered in a user chatting channel'
   );
 
   return `user/${source.userId}/richmenu/${act.id}`;

@@ -7,7 +7,7 @@ import type {
 } from 'machinat-webhook-receiver/types';
 
 import createEvent from './event';
-import LineThread from './thread';
+import LineChannel from './channel';
 
 import type {
   LineBotOptions,
@@ -22,7 +22,7 @@ const endRes = (res, code, body) => {
 
 const handleWebhook = (
   options: LineBotOptions
-): WebhookHandler<LineThread, LineEvent> => (
+): WebhookHandler<LineChannel, LineEvent> => (
   req: IncomingMessage,
   res: ServerResponse,
   rawBody: void | string
@@ -52,7 +52,7 @@ const handleWebhook = (
   try {
     const { events: payloads } = (JSON.parse(rawBody): LineWebhookRequestBody);
 
-    const events: WebhookEventReport<LineThread, LineEvent>[] = new Array(
+    const events: WebhookEventReport<LineChannel, LineEvent>[] = new Array(
       payloads.length
     );
 
@@ -60,9 +60,9 @@ const handleWebhook = (
       const payload = payloads[i];
 
       const event = createEvent(payload);
-      const thread = new LineThread(payload.source);
+      const channel = new LineChannel(payload.source);
 
-      events[i] = { event, thread, shouldRespond: false };
+      events[i] = { event, channel, shouldRespond: false };
     }
 
     return events;

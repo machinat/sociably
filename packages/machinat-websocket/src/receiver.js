@@ -14,7 +14,7 @@ import type {
   RegisterResponse,
   WebSocketResponse,
   ConnectionInfo,
-  ThreadUid,
+  ChannelUid,
 } from './types';
 import type Distributor from './distributor';
 import type Socket, {
@@ -25,7 +25,7 @@ import type Socket, {
 } from './socket';
 
 import MachinatSocket from './socket';
-import WebSocketThread from './thread';
+import WebSocketChannel from './channel';
 import createEvent from './event';
 
 type WebSocketServer = $ElementType<Class<WebSocket>, 'Server'>;
@@ -52,7 +52,7 @@ class WebSocketReceiver
     HTTPUpgradeReceiver,
     MachinatReceiver<
       WebSocketResponse,
-      WebSocketThread,
+      WebSocketChannel,
       WebSocketEvent,
       WebSocketTransport
     > {
@@ -60,12 +60,12 @@ class WebSocketReceiver
   _distributor: Distributor;
   options: WebSocketBotOptions;
 
-  _threadCache: Map<ThreadUid, WebSocketThread>;
+  _channelCache: Map<ChannelUid, WebSocketChannel>;
 
   isBound: boolean;
   _handleEvent: EventHandler<
     WebSocketResponse,
-    WebSocketThread,
+    WebSocketChannel,
     WebSocketEvent,
     WebSocketTransport
   >;
@@ -94,7 +94,7 @@ class WebSocketReceiver
   bind(
     handler: EventHandler<
       WebSocketResponse,
-      WebSocketThread,
+      WebSocketChannel,
       WebSocketEvent,
       WebSocketTransport
     >,
@@ -141,30 +141,30 @@ class WebSocketReceiver
     });
   }
 
-  _getCachedThread(uid: ThreadUid): null | WebSocketThread {
-    let thread = this._threadCache.get(uid);
+  _getCachedChannel(uid: ChannelUid): null | WebSocketChannel {
+    let channel = this._channelCache.get(uid);
 
-    if (thread === undefined) {
-      thread = WebSocketThread.fromUid(uid);
+    if (channel === undefined) {
+      channel = WebSocketChannel.fromUid(uid);
 
-      if (thread !== null) {
-        this._threadCache.set(uid, thread);
+      if (channel !== null) {
+        this._channelCache.set(uid, channel);
       }
     }
 
-    return thread;
+    return channel;
   }
 
   async _issueEvent(
-    uid: ThreadUid,
+    uid: ChannelUid,
     socket: Socket,
     type: string,
     subtype: void | string,
     payload: any,
     info: ConnectionInfo
   ) {
-    const thread = this._getCachedThread(uid);
-    if (thread === null) {
+    const channel = this._getCachedChannel(uid);
+    if (channel === null) {
       this._handleError(new Error(xxx));
       return;
     }
@@ -172,7 +172,7 @@ class WebSocketReceiver
     const event = createEvent(type, subtype, payload);
 
     try {
-      await this._handleEvent(thread, event, {
+      await this._handleEvent(channel, event, {
         source: WEBSOCKET,
         info,
         socketId: socket.id,
@@ -187,10 +187,10 @@ class WebSocketReceiver
     socket: Socket,
     body: RegisterBody
   ): Promise<RegisterResponse> => {
-    const thread = new WebSocketThread('@socket', undefined, socket.id);
+    const channel = new WebSocketChannel('@socket', undefined, socket.id);
     const event = createEvent('@register', undefined, body);
 
-    const response: WebSocketResponse = await this._handleEvent(thread, event, {
+    const response: WebSocketResponse = await this._handleEvent(channel, event, {
       source: WEBSOCKET,
       socketId: socket.id,
       request: socket.request,
@@ -201,7 +201,7 @@ class WebSocketReceiver
 
   _handleSocketEvent = (
     socket: Socket,
-    uid: ThreadUid,
+    uid: ChannelUid,
     info: ConnectionInfo,
     body: EventBody
   ) => {
@@ -211,7 +211,7 @@ class WebSocketReceiver
 
   _handleSocketConnect = (
     socket: Socket,
-    uid: ThreadUid,
+    uid: ChannelUid,
     info: ConnectionInfo
   ) => {
     this._issueEvent(uid, socket, '@connect', undefined, undefined, info);
@@ -219,7 +219,7 @@ class WebSocketReceiver
 
   _handleSocketDissconnect = (
     socket: Socket,
-    uid: ThreadUid,
+    uid: ChannelUid,
     info: ConnectionInfo
   ) => {
     this._issueEvent(uid, socket, '@disconnect', undefined, undefined, info);

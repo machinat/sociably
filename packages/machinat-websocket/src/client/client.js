@@ -9,7 +9,7 @@ import type MachinatSocket, {
   RejectBody,
 } from '../socket';
 
-import WebSocketThread from '../thread';
+import WebSocketChannel from '../channel';
 import { ConnectionError } from '../error';
 
 import createSocket from './createSocket';
@@ -36,7 +36,7 @@ type QueuedRegisterJob = {
 
 type ConnectionHandler = (
   connection: Connection,
-  thread: WebSocketThread
+  channel: WebSocketChannel
 ) => void;
 
 class WebClient extends EventEmitter {
@@ -109,16 +109,16 @@ class WebClient extends EventEmitter {
   _createConnection() {
     const connection = new Connection(
       async (event: ClientEvent) => {
-        const thread = connection._thread;
-        if (thread === undefined) {
+        const channel = connection._channel;
+        if (channel === undefined) {
           throw new ConnectionError();
         }
 
-        await this._socket.event({ uid: thread.uid, ...event });
+        await this._socket.event({ uid: channel.uid, ...event });
       },
       async () => {
-        if (connection._thread !== undefined) {
-          const { uid } = connection._thread;
+        if (connection._channel !== undefined) {
+          const { uid } = connection._channel;
           await this._socket.disconnect({ uid });
         }
       }
@@ -141,9 +141,9 @@ class WebClient extends EventEmitter {
     return true;
   }
 
-  _emitConnected(connection: Connection, thread: WebSocketThread) {
+  _emitConnected(connection: Connection, channel: WebSocketChannel) {
     for (const handler of this._connectionHandlers) {
-      handler(connection, thread);
+      handler(connection, channel);
     }
   }
 
@@ -192,25 +192,25 @@ class WebClient extends EventEmitter {
   };
 
   _handleConnect = ({ uid, req }: ConnectBody, seq: number) => {
-    const thread = WebSocketThread.fromUid(uid);
-    if (thread === null) {
+    const channel = WebSocketChannel.fromUid(uid);
+    if (channel === null) {
       this._socket.reject({ req: seq }).catch(this._emitError);
       return;
     }
 
     let connection = this._registeringConns.get((req: any));
     if (connection !== undefined) {
-      connection._setConnected(thread);
+      connection._setConnected(channel);
       connection._emitEvent(
         { type: 'connect', subtype: undefined, payload: undefined },
-        thread
+        channel
       );
 
       this._registeringConns.delete((req: any));
     } else {
       connection = this._createConnection();
-      connection._setConnected(thread);
-      this._emitConnected(connection, thread);
+      connection._setConnected(channel);
+      this._emitConnected(connection, channel);
     }
 
     this._connectedConns.set(uid, connection);
@@ -219,12 +219,12 @@ class WebClient extends EventEmitter {
   _handleDisconnect = ({ uid }: DisconnectBody) => {
     const connection = this._connectedConns.get(uid);
     if (connection !== undefined) {
-      const thread: WebSocketThread = (connection.thread: any);
+      const channel: WebSocketChannel = (connection.channel: any);
 
       connection._setDisconnected();
       connection._emitEvent(
         { type: 'disconnect', subtype: undefined, payload: undefined },
-        thread
+        channel
       );
 
       this._connectedConns.delete(uid);
@@ -236,8 +236,8 @@ class WebClient extends EventEmitter {
     const connection = this._connectedConns.get(uid);
 
     if (connection !== undefined) {
-      const thread: WebSocketThread = (connection.thread: any);
-      connection._emitEvent({ type, subtype, payload }, thread);
+      const channel: WebSocketChannel = (connection.channel: any);
+      connection._emitEvent({ type, subtype, payload }, channel);
     }
   };
 

@@ -6,7 +6,7 @@ import type {
   WebhookTransport,
 } from 'machinat-webhook-receiver/types';
 
-import type LineThread from './thread';
+import type LineChannel from './channel';
 
 type UserSource = {|
   type: 'user',
@@ -153,7 +153,7 @@ export type LineMessageNativeType = MachinatNativeComponent<MessageSegmentValue>
 export type LineNonMessageNativeType = MachinatNativeComponent<
   LinkRichMenuSegmentValue | LeaveSegmentValue
 > & {
-  $$getEntry: <Value>(thread: LineThread, rendered: Value) => string,
+  $$getEntry: <Value>(channel: LineChannel, rendered: Value) => string,
 };
 
 export type LineComponent = LineMessageNativeType | LineNonMessageNativeType;
@@ -185,7 +185,7 @@ export type LineMessageRequestBody =
 export type LineJob = {
   body: void | LineMessageRequestBody | Object,
   entry: string,
-  threadUid?: string,
+  channelUid?: string,
 };
 
 export type LineAPIResult = {};
@@ -196,7 +196,7 @@ export type LineBotOptions = {
   accessToken: string,
   connectionCapicity: number,
   plugins?: BotPlugin<
-    LineThread,
+    LineChannel,
     LineEvent,
     WebhookTransport,
     LineSegmentValue,

@@ -128,16 +128,16 @@ export default class LineClient
       }
 
       // $FlowFixMe i is in valid range
-      const { threadUid }: LineJob = queue.peekAt(i);
-      if (threadUid !== undefined && lockedIds.has(threadUid)) {
+      const { channelUid }: LineJob = queue.peekAt(i);
+      if (channelUid !== undefined && lockedIds.has(channelUid)) {
         i += 1;
       } else {
-        this._consumeJobAt(queue, i, threadUid);
+        this._consumeJobAt(queue, i, channelUid);
 
         this.connectionSize += 1;
 
-        if (threadUid !== undefined) {
-          lockedIds.add(threadUid);
+        if (channelUid !== undefined) {
+          lockedIds.add(channelUid);
         }
       }
     }
@@ -146,7 +146,7 @@ export default class LineClient
   async _consumeJobAt(
     queue: Queue<LineJob, LineAPIResult>,
     idx: number,
-    threadUid: void | string
+    channelUid: void | string
   ) {
     try {
       await queue.acquireAt(idx, 1, this._consumeCallback);
@@ -155,8 +155,8 @@ export default class LineClient
     } finally {
       this.connectionSize -= 1;
 
-      if (threadUid !== undefined) {
-        this._lockedIds.delete(threadUid);
+      if (channelUid !== undefined) {
+        this._lockedIds.delete(channelUid);
       }
 
       if (this._started) {

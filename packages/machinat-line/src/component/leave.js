@@ -6,12 +6,12 @@ const LEAVE_RENDERED = {};
 
 const Leave = () => LEAVE_RENDERED;
 
-const __Leave = asSingleUnitComponentWithEntryGetter(thread => {
-  const { type, subtype, sourceId } = thread;
+const __Leave = asSingleUnitComponentWithEntryGetter(channel => {
+  const { type, subtype, sourceId } = channel;
 
   invariant(
     type === 'chat' && subtype !== 'user',
-    '<Leave /> should be only used in a group or room thread'
+    '<Leave /> should be only used in a group or room channel'
   );
 
   return `${subtype}/${sourceId}/leave`;

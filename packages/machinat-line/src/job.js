@@ -3,7 +3,7 @@ import invariant from 'invariant';
 import { formatNode } from 'machinat-utility';
 
 import type { SegmentWithoutPause } from 'machinat-base/types';
-import type LineThread from './thread';
+import type LineChannel from './channel';
 import type {
   LineSegmentValue,
   LineComponent,
@@ -21,7 +21,7 @@ const isMessagesEntry = node =>
   node.type.$$getEntry === undefined;
 
 export const createChatJobs = (
-  thread: LineThread,
+  channel: LineChannel,
   segments: SegmentWithoutPause<LineSegmentValue, LineComponent>[],
   options?: LineSendOptions
 ) => {
@@ -52,10 +52,10 @@ export const createChatJobs = (
     ) {
       jobs.push({
         entry: replyToken ? REPLY_PATH : PUSH_PATH,
-        threadUid: thread.uid,
+        channelUid: channel.uid,
         body: replyToken
           ? { replyToken: (replyToken: string), messages: messagesBuffer }
-          : { to: (thread.sourceId: string), messages: messagesBuffer },
+          : { to: (channel.sourceId: string), messages: messagesBuffer },
       });
       messagesBuffer = [];
     }
@@ -68,8 +68,8 @@ export const createChatJobs = (
       node.type.$$getEntry !== undefined */
     ) {
       jobs.push({
-        entry: node.type.$$getEntry(thread, value),
-        threadUid: thread.uid,
+        entry: node.type.$$getEntry(channel, value),
+        channelUid: channel.uid,
         body: value,
       });
     }

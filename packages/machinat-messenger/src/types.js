@@ -6,7 +6,7 @@ import type {
   WebhookResponse,
   WebhookTransport,
 } from 'machinat-webhook-receiver/types';
-import type MessnegerThread from './thread';
+import type MessnegerChannel from './channel';
 
 type PSIDSource = {| id: string |};
 type UserRefSource = {| user_ref: string |};
@@ -63,7 +63,7 @@ export type MessengerRequest = {|
 
 export type MessengerJob = {|
   request: MessengerRequest,
-  threadUid?: string,
+  channelUid?: string,
   attachedFileData?: string | Buffer | ReadableStream,
   attachedFileInfo?: {|
     filename?: string,
@@ -116,7 +116,7 @@ export type MessengerBotOptions = {
   respondTimeout: number,
   consumeInterval?: number,
   plugins?: BotPlugin<
-    MessnegerThread,
+    MessnegerChannel,
     MessengerEvent,
     WebhookTransport,
     MessengerSegmentValue,

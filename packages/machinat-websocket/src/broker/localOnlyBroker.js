@@ -1,7 +1,7 @@
 // @flow
 import type Distributor from '../distributor';
 import type {
-  ThreadUid,
+  ChannelUid,
   SocketId,
   WebEventJob,
   ConnectionInfo,
@@ -19,11 +19,11 @@ export default class LocalOnlyBroker implements SocketBroker {
     return this.distributor.broadcast(job);
   }
 
-  addConnection(socketId: SocketId, uid: ThreadUid, info: ConnectionInfo) {
+  addConnection(socketId: SocketId, uid: ChannelUid, info: ConnectionInfo) {
     return this.distributor.addLocalConnection(socketId, uid, info);
   }
 
-  removeConnection(socketId: SocketId, uid: ThreadUid) {
+  removeConnection(socketId: SocketId, uid: ChannelUid) {
     return this.distributor.removeLocalConnection(socketId, uid);
   }
 }

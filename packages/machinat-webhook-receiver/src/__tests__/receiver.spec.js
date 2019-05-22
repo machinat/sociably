@@ -12,11 +12,11 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
   let req;
   let res;
 
-  const thread = { foo: 'bar' };
+  const channel = { foo: 'bar' };
   const handleWebhook = moxy(() => [
-    { thread, event: { id: 1 }, shouldRespond: false },
-    { thread, event: { id: 2 }, shouldRespond: false },
-    { thread, event: { id: 3 }, shouldRespond: false },
+    { channel, event: { id: 1 }, shouldRespond: false },
+    { channel, event: { id: 2 }, shouldRespond: false },
+    { channel, event: { id: 3 }, shouldRespond: false },
   ]);
   const handleEvent = moxy();
   const handleError = moxy();
@@ -52,7 +52,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     for (let i = 1; i < 4; i += 1) {
       expect(handleEvent.mock).toHaveBeenNthCalledWith(
         i,
-        thread,
+        channel,
         { id: i },
         { source: 'webhook', context: transportCtx }
       );
@@ -125,7 +125,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
   });
 
   const shouldRespondEvents = [
-    { thread, event: { id: 1 }, shouldRespond: true },
+    { channel, event: { id: 1 }, shouldRespond: true },
   ];
 
   it('ends res with retruned response object', async () => {
@@ -158,7 +158,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
     expect(handleEvent.mock).toHaveBeenCalledTimes(1);
     expect(handleEvent.mock).toHaveBeenCalledWith(
-      thread,
+      channel,
       { id: 1 },
       { source: 'webhook', context: {} }
     );

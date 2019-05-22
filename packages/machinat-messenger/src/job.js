@@ -10,7 +10,7 @@ import type {
   SendOptions,
   MessengerJob,
 } from './types';
-import type MessangerThread from './thread';
+import type MessangerChannel from './channel';
 
 import {
   ENTRY_MESSAGES,
@@ -27,11 +27,11 @@ const isMessagesEntry = node =>
   node.type.$$entry === ENTRY_MESSAGES;
 
 export const createChatJobs = (
-  thread: MessangerThread,
+  channel: MessangerChannel,
   segments: SegmentWithoutPause<MessengerSegmentValue, MessengerComponent>[],
   options?: SendOptions
 ): MessengerJob[] => {
-  const { source, uid } = thread;
+  const { source, uid } = channel;
 
   const jobs: MessengerJob[] = new Array(segments.length);
 
@@ -67,7 +67,7 @@ export const createChatJobs = (
               node.type.$$entry,
         body,
       },
-      threadUid: uid,
+      channelUid: uid,
       attachedFileData:
         typeof value === 'object' ? value[ATTACHED_FILE_DATA] : undefined,
       attachedFileInfo:
@@ -79,7 +79,7 @@ export const createChatJobs = (
 };
 
 export const createCreativeJobs = (
-  thread: null,
+  channel: null,
   segments: SegmentWithoutPause<MessengerSegmentValue, MessengerComponent>[]
 ): MessengerJob[] => {
   const messages: MessengerMessage[] = new Array(segments.length);

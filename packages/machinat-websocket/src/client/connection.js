@@ -1,5 +1,5 @@
 // @flow
-import type WebSocketThread from '../thread';
+import type WebSocketChannel from '../channel';
 
 export type ClientEvent = {|
   type: string,
@@ -13,10 +13,10 @@ type QueuedEventJob = {
   reject: any => void,
 };
 
-type EventListener = (event: ClientEvent, thread: WebSocketThread) => void;
+type EventListener = (event: ClientEvent, channel: WebSocketChannel) => void;
 
 export default class Connection {
-  _thread: void | WebSocketThread;
+  _channel: void | WebSocketChannel;
   _sendEvent: ClientEvent => Promise<void>;
   _disconnect: () => Promise<void>;
 
@@ -33,25 +33,25 @@ export default class Connection {
     this._queuedEventJobs = [];
   }
 
-  get thread() {
-    return this._thread;
+  get channel() {
+    return this._channel;
   }
 
   get connected() {
-    return this._thread !== undefined;
+    return this._channel !== undefined;
   }
 
-  _setConnected(thread: WebSocketThread) {
-    this._thread = thread;
+  _setConnected(channel: WebSocketChannel) {
+    this._channel = channel;
     this._flushQueuedEvent();
   }
 
   _setDisconnected() {
-    this._thread = undefined;
+    this._channel = undefined;
   }
 
   send(event: ClientEvent): Promise<void> {
-    if (this._thread) {
+    if (this._channel) {
       return this._sendEvent(event);
     }
 
@@ -86,9 +86,9 @@ export default class Connection {
     this._eventListners.push(listener);
   }
 
-  _emitEvent(event: ClientEvent, thread: WebSocketThread) {
+  _emitEvent(event: ClientEvent, channel: WebSocketChannel) {
     this._eventListners.forEach(listener => {
-      listener(event, thread);
+      listener(event, channel);
     });
   }
 

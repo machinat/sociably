@@ -15,14 +15,14 @@ export type WebhookTransport = {|
 declare var t: WebhookTransport;
 (t: MachinatTransport<'webhook'>);
 
-export type WebhookEventReport<Thread, Event: MachinatEvent<any>> = {
-  thread: Thread,
+export type WebhookEventReport<Channel, Event: MachinatEvent<any>> = {
+  channel: Channel,
   event: Event,
   shouldRespond: boolean,
 };
 
-export type WebhookHandler<Thread, Event: MachinatEvent<any>> = (
+export type WebhookHandler<Channel, Event: MachinatEvent<any>> = (
   req: IncomingMessage,
   res: ServerResponse,
   rawBody?: string
-) => ?$ReadOnlyArray<WebhookEventReport<Thread, Event>>;
+) => ?$ReadOnlyArray<WebhookEventReport<Channel, Event>>;

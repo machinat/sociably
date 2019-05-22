@@ -2,10 +2,10 @@
 import type { IncomingMessage } from 'http';
 import type { MachinatEvent, MachinatTransport } from 'machinat-base/types';
 import type MachinatSocket, { EventBody, RegisterBody } from './socket';
-import type WebSocketThread from './thread';
+import type WebSocketChannel from './channel';
 
 export type SocketId = string;
-export type ThreadUid = string;
+export type ChannelUid = string;
 
 export type ConnectionInfo = {| [string]: any |};
 
@@ -43,7 +43,7 @@ declare var t: WebSocketTransport;
 
 export type AcceptedRegisterResponse = {
   accepted: true,
-  thread: WebSocketThread,
+  channel: WebSocketChannel,
   info: ConnectionInfo,
 };
 
@@ -71,9 +71,9 @@ export type WebSocketBotOptions = {|
 export interface SocketBroker {
   broadcast(job: WebEventJob): Promise<null | SocketId[]>;
   addConnection(
-    uid: ThreadUid,
+    uid: ChannelUid,
     socketId: SocketId,
     info: ConnectionInfo
   ): Promise<boolean>;
-  removeConnection(uid: ThreadUid, socketId: SocketId): Promise<boolean>;
+  removeConnection(uid: ChannelUid, socketId: SocketId): Promise<boolean>;
 }

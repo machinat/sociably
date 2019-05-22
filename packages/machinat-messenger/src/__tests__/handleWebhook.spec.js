@@ -155,9 +155,9 @@ describe('handling POST request', () => {
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(false);
 
-    events.forEach(({ thread, event, shouldRespond }, i) => {
+    events.forEach(({ channel, event, shouldRespond }, i) => {
       expect(shouldRespond).toBe(false);
-      expect(thread.source).toEqual({ id: '_PSID_' });
+      expect(channel.source).toEqual({ id: '_PSID_' });
 
       expect(event.platform).toBe('messenger');
       expect(event.type).toBe(!i ? 'text' : 'image');
@@ -227,9 +227,9 @@ describe('handling POST request', () => {
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(false);
 
-    events.forEach(({ thread, event, shouldRespond }, i) => {
+    events.forEach(({ channel, event, shouldRespond }, i) => {
       expect(shouldRespond).toBe(true);
-      expect(thread.source).toEqual({ id: '_PSID_' });
+      expect(channel.source).toEqual({ id: '_PSID_' });
 
       expect(event.platform).toBe('messenger');
       expect(event.type).toBe(!i ? 'pre_checkout' : 'checkout_update');
@@ -238,7 +238,7 @@ describe('handling POST request', () => {
     });
   });
 
-  it('create thread from optin.user_ref if sender not included', () => {
+  it('create channel from optin.user_ref if sender not included', () => {
     const req = moxy(new IncomingMessage());
     req.method = 'POST';
     const res = moxy(new ServerResponse({ method: 'POST' }));
@@ -274,9 +274,9 @@ describe('handling POST request', () => {
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(false);
 
-    events.forEach(({ thread, event, shouldRespond }, i) => {
+    events.forEach(({ channel, event, shouldRespond }, i) => {
       expect(shouldRespond).toBe(false);
-      expect(thread.source).toEqual(
+      expect(channel.source).toEqual(
         i === 0 ? { id: '_PSID_' } : { user_ref: '<REF_FROM_CHECKBOX_PLUGIN>' }
       );
 
@@ -303,13 +303,13 @@ describe('handling POST request', () => {
       .fake(() => ({ 'x-hub-signature': `sha1=${hmac}` }));
 
     const handle = handleWebhook(options);
-    const [{ event, thread, shouldRespond }] = handle(req, res, body);
+    const [{ event, channel, shouldRespond }] = handle(req, res, body);
 
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(false);
 
     expect(shouldRespond).toBe(false);
-    expect(thread.source).toEqual({ id: '_PSID_' });
+    expect(channel.source).toEqual({ id: '_PSID_' });
 
     expect(event.platform).toBe('messenger');
     expect(event.type).toBe('text');

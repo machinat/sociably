@@ -21,6 +21,7 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
+        "channelId": "messenger:default:id:foo",
         "request": Object {
           "attached_files": "file_0",
           "body": Object {
@@ -33,7 +34,6 @@ Object {
           "omit_response_on_success": false,
           "relative_url": "me/messages",
         },
-        "threadId": "messenger:default:id:foo",
       },
       "result": Object {
         "body": Object {
@@ -47,6 +47,7 @@ Object {
     Object {
       "error": [OAuthException: you should not passed!],
       "job": Object {
+        "channelId": "messenger:default:id:foo",
         "request": Object {
           "attached_files": "file_1",
           "body": Object {
@@ -59,7 +60,6 @@ Object {
           "omit_response_on_success": false,
           "relative_url": "bar/baz",
         },
-        "threadId": "messenger:default:id:foo",
       },
       "result": Object {
         "body": Object {
@@ -77,6 +77,7 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
+        "channelId": "messenger:default:id:foo",
         "request": Object {
           "body": Object {
             "id": 3,
@@ -88,7 +89,6 @@ Object {
           "omit_response_on_success": false,
           "relative_url": "me/messages",
         },
-        "threadId": "messenger:default:id:foo",
       },
       "result": Object {
         "body": Object {

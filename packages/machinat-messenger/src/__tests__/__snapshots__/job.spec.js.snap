@@ -5,6 +5,7 @@ Array [
   Object {
     "attachedFileData": "_DEADLY_VIRUS_",
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:john",
     "request": Object {
       "body": Object {
         "a": "gift",
@@ -16,7 +17,6 @@ Array [
       "method": "POST",
       "relative_url": "me/messages",
     },
-    "threadUid": "messenger:default:user:john",
   },
   Object {
     "attachedFileData": "_MERCY_CURE_",
@@ -25,6 +25,7 @@ Array [
       "filename": "deathangel.jpg",
       "knownLength": 66666,
     },
+    "channelUid": "messenger:default:user:john",
     "request": Object {
       "body": Object {
         "a": "redemption",
@@ -41,7 +42,6 @@ Array [
       "method": "POST",
       "relative_url": "bar/baz",
     },
-    "threadUid": "messenger:default:user:john",
   },
 ]
 `;
@@ -51,6 +51,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:john",
     "request": Object {
       "body": Object {
         "recipient": Object {
@@ -61,11 +62,11 @@ Array [
       "method": "POST",
       "relative_url": "me/messages",
     },
-    "threadUid": "messenger:default:user:john",
   },
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -82,11 +83,11 @@ Array [
       "method": "POST",
       "relative_url": "me/messages",
     },
-    "threadUid": "messenger:default:user:john",
   },
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:john",
     "request": Object {
       "body": Object {
         "id": 2,
@@ -97,11 +98,11 @@ Array [
       "method": "POST",
       "relative_url": "bar/baz",
     },
-    "threadUid": "messenger:default:user:john",
   },
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -118,11 +119,11 @@ Array [
       "method": "POST",
       "relative_url": "me/messages",
     },
-    "threadUid": "messenger:default:user:john",
   },
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -139,7 +140,6 @@ Array [
       "method": "POST",
       "relative_url": "me/messages",
     },
-    "threadUid": "messenger:default:user:john",
   },
 ]
 `;
@@ -149,6 +149,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:john",
     "request": Object {
       "body": Object {
         "recipient": Object {
@@ -159,11 +160,11 @@ Array [
       "method": "POST",
       "relative_url": "me/messages",
     },
-    "threadUid": "messenger:default:user:john",
   },
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -176,11 +177,11 @@ Array [
       "method": "POST",
       "relative_url": "me/messages",
     },
-    "threadUid": "messenger:default:user:john",
   },
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:john",
     "request": Object {
       "body": Object {
         "id": 2,
@@ -191,11 +192,11 @@ Array [
       "method": "POST",
       "relative_url": "bar/baz",
     },
-    "threadUid": "messenger:default:user:john",
   },
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -208,11 +209,11 @@ Array [
       "method": "POST",
       "relative_url": "me/messages",
     },
-    "threadUid": "messenger:default:user:john",
   },
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -225,7 +226,6 @@ Array [
       "method": "POST",
       "relative_url": "me/messages",
     },
-    "threadUid": "messenger:default:user:john",
   },
 ]
 `;
@@ -235,6 +235,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:Luke",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -251,11 +252,11 @@ Array [
       "method": "POST",
       "relative_url": "me/messages",
     },
-    "threadUid": "messenger:default:user:Luke",
   },
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:Luke",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -272,7 +273,6 @@ Array [
       "method": "POST",
       "relative_url": "me/messages",
     },
-    "threadUid": "messenger:default:user:Luke",
   },
 ]
 `;
@@ -282,6 +282,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
+    "channelUid": "messenger:default:user:Luke",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -297,7 +298,6 @@ Array [
       "method": "POST",
       "relative_url": "me/messages",
     },
-    "threadUid": "messenger:default:user:Luke",
   },
 ]
 `;

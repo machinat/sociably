@@ -31,7 +31,7 @@ const worker = moxy({
   stop: () => true,
 });
 
-const thread = {
+const channel = {
   platform: 'test',
   type: 'test',
   uid: 'test',
@@ -220,14 +220,14 @@ describe('#renderActions(createJobs, target, message, options, allowPause)', () 
   });
 });
 
-describe('#dispatch(thread, actions, node)', () => {
+describe('#dispatch(channel, actions, node)', () => {
   it('renders and enqueue jobs and return array of results', async () => {
     const engine = new Engine('test', renderer, queue, worker);
     const actions = [
       { type: 'jobs', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
     ];
 
-    await expect(engine.dispatch(thread, actions, element)).resolves.toEqual({
+    await expect(engine.dispatch(channel, actions, element)).resolves.toEqual({
       actions,
       results: [1, 2, 3],
     });
@@ -247,7 +247,7 @@ describe('#dispatch(thread, actions, node)', () => {
 
     const expectedFrame = {
       platform: 'test',
-      thread,
+      channel,
       node: element,
       actions,
     };
@@ -297,7 +297,7 @@ describe('#dispatch(thread, actions, node)', () => {
     expect(middleware2.mock).toHaveBeenCalledTimes(1);
     expect(middleware3.mock).toHaveBeenCalledTimes(1);
 
-    await expect(engine.dispatch(thread, actions, element)).resolves.toEqual({
+    await expect(engine.dispatch(channel, actions, element)).resolves.toEqual({
       bar: 1,
       actions,
       results: [1, 2, 3],
@@ -323,7 +323,7 @@ describe('#dispatch(thread, actions, node)', () => {
 
     engine.setMiddlewares(middleware);
 
-    await expect(engine.dispatch(thread, actions, element)).resolves.toEqual({
+    await expect(engine.dispatch(channel, actions, element)).resolves.toEqual({
       actions,
       results: [{ nothing: 'happened' }],
     });
@@ -341,7 +341,7 @@ describe('#dispatch(thread, actions, node)', () => {
 
     engine.setMiddlewares(middleware);
 
-    await expect(engine.dispatch(thread, element, options)).rejects.toThrow(
+    await expect(engine.dispatch(channel, element, options)).rejects.toThrow(
       'something wrong with the element'
     );
 
@@ -362,7 +362,7 @@ describe('#dispatch(thread, actions, node)', () => {
     const engine = new Engine('test', renderer, queue, worker);
 
     await expect(
-      engine.dispatch(thread, actionsWithPause, element)
+      engine.dispatch(channel, actionsWithPause, element)
     ).resolves.toEqual({ actions: actionsWithPause, results: [1, 2, 3] });
 
     expect(after.mock).toHaveBeenCalledTimes(1);
@@ -394,7 +394,7 @@ describe('#dispatch(thread, actions, node)', () => {
 
     let isThrown = false;
     try {
-      await engine.dispatch(thread, actions);
+      await engine.dispatch(channel, actions);
     } catch (err) {
       isThrown = true;
       expect(err.actions).toEqual(actions);
@@ -436,7 +436,7 @@ describe('#dispatch(thread, actions, node)', () => {
     engine.setMiddlewares(middleware);
 
     await expect(
-      engine.dispatch(thread, [{ type: 'jobs', payload: [1, 2, 3] }])
+      engine.dispatch(channel, [{ type: 'jobs', payload: [1, 2, 3] }])
     ).resolves.toEqual({ results: [{ something: 'else' }] });
   });
 });

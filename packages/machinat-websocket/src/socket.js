@@ -5,7 +5,7 @@ import thenifiedly from 'thenifiedly';
 import type WebSocket from 'ws';
 
 import { ConnectionError } from './error';
-import type { RequestInfo, SocketId, ThreadUid } from './types';
+import type { RequestInfo, SocketId, ChannelUid } from './types';
 
 /**
  * Mahcinat Web Protocle v0
@@ -16,14 +16,14 @@ import type { RequestInfo, SocketId, ThreadUid } from './types';
  * warning: this is just an alpha attemption, and will be rewritten at beta.
  *
  * Glossary:
- *  - Thread: user defined MachinatThread which reflect a "topic" where events
+ *  - Channel: user defined MachinatChannel which reflect a "topic" where events
  *            can be published onto
- *  - Event:  user defined MachinatEvent which happen on specified Thread
+ *  - Event:  user defined MachinatEvent which happen on specified Channel
  *  - Server: the central server to receive events from Client and publish
- *            events of specified threads
- *  - Client: client connects to one or miltiple threads, can send/receive
- *            events of the connected threads to/from Server
- *  - Socket: the underlying tunnel for multiplexing events of different threads
+ *            events of specified channels
+ *  - Client: client connects to one or miltiple channels, can send/receive
+ *            events of the connected channels to/from Server
+ *  - Socket: the underlying tunnel for multiplexing events of different channels
  */
 
 /* eslint-disable no-unused-vars */
@@ -54,10 +54,10 @@ const FRAME_CONNECT = 'connect';
 const FRAME_DISCONNECT = 'disconnect';
 
 /**
- * Event Frame carries a event which happens on a specified thread
+ * Event Frame carries a event which happens on a specified channel
  */
 export type EventBody = {
-  uid: ThreadUid,
+  uid: ChannelUid,
   type: string,
   subtype?: string,
   payload: any,
@@ -83,7 +83,7 @@ export type RejectBody = {
 };
 
 /**
- * Register Frame register a client to a thread
+ * Register Frame register a client to a channel
  */
 export type RegisterBody = {
   type: string,
@@ -97,7 +97,7 @@ export type RegisterBody = {
 export type ConnectBody = {
   // the register frame seq on server, or the connect frame seq on client
   req?: number,
-  uid: ThreadUid,
+  uid: ChannelUid,
   token?: string,
 };
 
@@ -107,13 +107,13 @@ export type ConnectBody = {
  */
 export type DisconnectBody = {
   req?: number, // the disconnect frame seq received if it's a confirmation
-  uid: ThreadUid,
+  uid: ChannelUid,
 };
 
 /**
  * Communication
  *
- * Connect Handshake: this connect a client to one thread
+ * Connect Handshake: this connect a client to one channel
  *
  *  +---------+             +---------+
  *  | Client  |             | Server  |
@@ -130,36 +130,36 @@ export type DisconnectBody = {
  *       |                       |-| or initiative by Server |
  *       |                       | |-------------------------|
  *       |                       |
- *       |      CONNECT (thread) |
+ *       |      CONNECT (channel) |
  *       |<----------------------|
  *       |                       |
- *       | CONNECT (thread)      |
+ *       | CONNECT (channel)      |
  *       |---------------------->|
  *       |                       | -----------------------\
  *       |                       |-| ok to emit event now |
  *       |                       | |----------------------|
- *       |        EVENT (thread) |
+ *       |        EVENT (channel) |
  *       |<----------------------|
  *       |                       |
  *
- * Disconnect Handshake: disconnect client from a thread, this can be initiate
+ * Disconnect Handshake: disconnect client from a channel, this can be initiate
  *                       on both Client and Server
  *
  *                        +---------+                +---------+
  *                        | Client  |                | Server  |
  *                        +---------+                +---------+
  *                             |                          |
- *                             |      DISCONNECT (thread) |
+ *                             |      DISCONNECT (channel) |
  *                             |<-------------------------|
  * --------------------------\ |                          |
  * | event before DISCONNECT |-|                          |
  * | echoed back still count | |                          |
  * |-------------------------| |                          |
  *                             |                          |
- *                             | EVENT (thread)           |
+ *                             | EVENT (channel)           |
  *                             |------------------------->|
  *                             |                          |
- *                             | DISCONNECT (thread)      |
+ *                             | DISCONNECT (channel)      |
  *                             |------------------------->|
  *                             |                          |
  *
@@ -239,8 +239,8 @@ class MachinatSocket extends EventEmitter {
 
   _seq: number;
 
-  connectStates: Map<ThreadUid, number>;
-  _handshakeTimeouts: Map<ThreadUid, TimeoutID>;
+  connectStates: Map<ChannelUid, number>;
+  _handshakeTimeouts: Map<ChannelUid, TimeoutID>;
 
   constructor(ws: WebSocket, id: SocketId, request?: RequestInfo) {
     super();
@@ -265,12 +265,12 @@ class MachinatSocket extends EventEmitter {
     return this._ws.readyState === SOCKET_OPEN;
   }
 
-  isConnectedTo(uid: ThreadUid): boolean {
+  isConnectedTo(uid: ChannelUid): boolean {
     const state = this.connectStates.get(uid);
     return this._ws.readyState === SOCKET_OPEN && state === STATE_CONNECTED_OK;
   }
 
-  isConnectingTo(uid: ThreadUid): boolean {
+  isConnectingTo(uid: ChannelUid): boolean {
     const state = this.connectStates.get(uid);
     return (
       this._ws.readyState === SOCKET_OPEN &&
@@ -279,7 +279,7 @@ class MachinatSocket extends EventEmitter {
     );
   }
 
-  isDisconnetingTo(uid: ThreadUid) {
+  isDisconnetingTo(uid: ChannelUid) {
     const state = this.connectStates.get(uid);
     return (
       this._ws.readyState === SOCKET_OPEN &&
@@ -288,7 +288,7 @@ class MachinatSocket extends EventEmitter {
     );
   }
 
-  _outdateHandshake = (uid: ThreadUid, req: number) => {
+  _outdateHandshake = (uid: ChannelUid, req: number) => {
     const state = this.connectStates.get(uid);
     if (state !== undefined && state !== STATE_CONNECTED_OK) {
       this.connectStates.delete(uid);
@@ -303,7 +303,7 @@ class MachinatSocket extends EventEmitter {
     this._handshakeTimeouts.delete(uid);
   };
 
-  _addHandshakeTimeout(uid: ThreadUid, req?: number) {
+  _addHandshakeTimeout(uid: ChannelUid, req?: number) {
     if (this._handshakeTimeouts.has(uid)) {
       return;
     }

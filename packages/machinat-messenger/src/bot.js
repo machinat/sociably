@@ -18,7 +18,7 @@ import handleWebhook from './handleWebhook';
 import * as generalComponents from './component/general';
 
 import { MESSENGER_NAITVE_TYPE } from './constant';
-import MessengerThread from './thread';
+import MessengerChannel from './channel';
 import { createChatJobs, createCreativeJobs } from './job';
 
 import type {
@@ -41,7 +41,7 @@ const POST = 'POST';
 // $FlowFixMe https://github.com/facebook/flow/issues/7539
 export default class MessengerBot
   extends BaseBot<
-    MessengerThread,
+    MessengerChannel,
     MessengerEvent,
     WebhookTransport,
     MessengerSegmentValue,
@@ -115,20 +115,20 @@ export default class MessengerBot
   }
 
   async send(
-    target: string | MessengerSource | MessengerThread,
+    target: string | MessengerSource | MessengerChannel,
     messages: MachinatNode,
     options?: SendOptions
   ): Promise<null | MessengerAPIResult[]> {
-    const thread =
-      target instanceof MessengerThread
+    const channel =
+      target instanceof MessengerChannel
         ? target
-        : new MessengerThread(
+        : new MessengerChannel(
             typeof target === 'string' ? { id: target } : target
           );
 
     const actions = this.engine.renderActions(
       createChatJobs,
-      thread,
+      channel,
       messages,
       options,
       true

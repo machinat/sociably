@@ -10,7 +10,7 @@ import type {
 import type { MessengerBotOptions, MessengerEvent } from './types';
 
 import createEvent from './event';
-import MessengerThread from './thread';
+import MessengerChannel from './channel';
 
 const endRes = (res, code, body) => {
   res.statusCode = code; // eslint-disable-line no-param-reassign
@@ -20,7 +20,7 @@ const endRes = (res, code, body) => {
 
 const handleWebhook = (
   options: MessengerBotOptions
-): WebhookHandler<MessengerThread, MessengerEvent> => (
+): WebhookHandler<MessengerChannel, MessengerEvent> => (
   req: IncomingMessage,
   res: ServerResponse,
   rawBody: void | string
@@ -72,7 +72,7 @@ const handleWebhook = (
       return endRes(res, 404);
     }
 
-    const reports: WebhookEventReport<MessengerThread, MessengerEvent>[] = [];
+    const reports: WebhookEventReport<MessengerChannel, MessengerEvent>[] = [];
 
     for (const { messaging, stanby } of body.entry) {
       const isStandby = stanby !== undefined;
@@ -86,12 +86,12 @@ const handleWebhook = (
           type === 'optin' && payload.sender === undefined
             ? { user_ref: payload.optin.user_ref }
             : payload.sender;
-        const thread = new MessengerThread(source);
+        const channel = new MessengerChannel(source);
 
         const shouldRespond =
           type === 'checkout_update' || type === 'pre_checkout';
 
-        reports.push({ event, thread, shouldRespond });
+        reports.push({ event, channel, shouldRespond });
       }
     }
 

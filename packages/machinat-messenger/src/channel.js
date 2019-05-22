@@ -1,11 +1,11 @@
 // @flow
 /* eslint-disable camelcase */
 import crypto from 'crypto';
-import type { MachinatThread } from 'machinat-base/types';
+import type { MachinatChannel } from 'machinat-base/types';
 
 import type { MessengerSource } from './types';
 
-class MessengerThread implements MachinatThread {
+class MessengerChannel implements MachinatChannel {
   uid: string;
   source: MessengerSource;
   pageId: ?string;
@@ -34,4 +34,4 @@ class MessengerThread implements MachinatThread {
   }
 }
 
-export default MessengerThread;
+export default MessengerChannel;

@@ -1,7 +1,7 @@
 // @flow
-import type { MachinatThread } from 'machinat-base/types';
+import type { MachinatChannel } from 'machinat-base/types';
 
-class WebSocketThread implements MachinatThread {
+class WebSocketChannel implements MachinatChannel {
   type: string;
   subtype: void | string;
   uid: string;
@@ -9,13 +9,13 @@ class WebSocketThread implements MachinatThread {
 
   platform = 'websocket';
 
-  static fromUid(uid: string): null | WebSocketThread {
+  static fromUid(uid: string): null | WebSocketChannel {
     const [platform, type, subtype, id] = uid.split(':');
     if (platform !== 'websocket' || !type || !id) {
       return null;
     }
 
-    return new WebSocketThread(
+    return new WebSocketChannel(
       type,
       subtype && subtype !== '*' ? subtype : undefined,
       id
@@ -30,4 +30,4 @@ class WebSocketThread implements MachinatThread {
   }
 }
 
-export default WebSocketThread;
+export default WebSocketChannel;

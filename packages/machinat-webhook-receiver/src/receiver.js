@@ -3,7 +3,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import getRawBody from 'raw-body';
 
 import type {
-  MachinatThread,
+  MachinatChannel,
   EventHandler,
   MachinatEvent,
   MachinatReceiver,
@@ -23,23 +23,23 @@ const endRes = (res, status, body) => {
   res.end(body);
 };
 
-class WebhookReceiver<Thread: MachinatThread, Event: MachinatEvent<any>>
+class WebhookReceiver<Channel: MachinatChannel, Event: MachinatEvent<any>>
   implements
     HTTPRequestReceiver,
-    MachinatReceiver<WebhookResponse, Thread, Event, WebhookTransport> {
-  handleWebhook: WebhookHandler<Thread, Event>;
+    MachinatReceiver<WebhookResponse, Channel, Event, WebhookTransport> {
+  handleWebhook: WebhookHandler<Channel, Event>;
   isBound: boolean;
 
-  _handleEvent: EventHandler<WebhookResponse, Thread, Event, WebhookTransport>;
+  _handleEvent: EventHandler<WebhookResponse, Channel, Event, WebhookTransport>;
   _handleError: (e: Error) => void;
 
-  constructor(handleWebhook: WebhookHandler<Thread, Event>) {
+  constructor(handleWebhook: WebhookHandler<Channel, Event>) {
     this.handleWebhook = handleWebhook;
     this.isBound = false;
   }
 
   bind(
-    handleEvent: EventHandler<WebhookResponse, Thread, Event, WebhookTransport>,
+    handleEvent: EventHandler<WebhookResponse, Channel, Event, WebhookTransport>,
     errorHandler: (e: Error) => void
   ) {
     if (this.isBound) {
@@ -106,8 +106,8 @@ class WebhookReceiver<Thread: MachinatThread, Event: MachinatEvent<any>>
       const transport = { source: WEBHOOK, context: httpContext };
 
       for (let i = 0; i < events.length; i += 1) {
-        const { event, thread, shouldRespond } = events[i];
-        promises[i] = this._handleEvent(thread, event, transport);
+        const { event, channel, shouldRespond } = events[i];
+        promises[i] = this._handleEvent(channel, event, transport);
 
         if (shouldRespond) {
           shouldWaitRespond = true;

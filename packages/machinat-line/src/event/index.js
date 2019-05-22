@@ -1,7 +1,7 @@
 // @flow
 import type { LineRawEvent, LineEvent } from '../types';
 
-import LineThread from '../thread';
+import LineChannel from '../channel';
 
 import {
   text,
