@@ -1,8 +1,13 @@
 // @flow
 import crypto from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
+import type {
+  WebhookHandler,
+  WebhookEventReport,
+} from 'machinat-webhook-receiver/types';
 
 import createEvent from './event';
+import LineThread from './thread';
 
 import type {
   LineBotOptions,
@@ -15,7 +20,9 @@ const endRes = (res, code, body) => {
   res.end(body);
 };
 
-const handleWebhook = (options: LineBotOptions) => (
+const handleWebhook = (
+  options: LineBotOptions
+): WebhookHandler<LineThread, LineEvent> => (
   req: IncomingMessage,
   res: ServerResponse,
   rawBody: void | string
@@ -45,10 +52,17 @@ const handleWebhook = (options: LineBotOptions) => (
   try {
     const { events: payloads } = (JSON.parse(rawBody): LineWebhookRequestBody);
 
-    const events: LineEvent[] = new Array(payloads.length);
+    const events: WebhookEventReport<LineThread, LineEvent>[] = new Array(
+      payloads.length
+    );
 
     for (let i = 0; i < events.length; i += 1) {
-      events[i] = createEvent(payloads[i]);
+      const payload = payloads[i];
+
+      const event = createEvent(payload);
+      const thread = new LineThread(payload.source);
+
+      events[i] = { event, thread, shouldRespond: false };
     }
 
     return events;

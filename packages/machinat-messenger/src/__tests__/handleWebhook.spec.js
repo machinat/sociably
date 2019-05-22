@@ -155,9 +155,133 @@ describe('handling POST request', () => {
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(false);
 
-    events.forEach((event, i) => {
+    events.forEach(({ thread, event, shouldRespond }, i) => {
+      expect(shouldRespond).toBe(false);
+      expect(thread.source).toEqual({ id: '_PSID_' });
+
       expect(event.platform).toBe('messenger');
       expect(event.type).toBe(!i ? 'text' : 'image');
+      expect(event.subtype).toBe(undefined);
+      expect(event.payload).toEqual(body.entry[0].messaging[i]);
+    });
+  });
+
+  it('return shouldRespond as true if payment_pre_checkout or checkout_update event received', () => {
+    const req = moxy(new IncomingMessage());
+    req.method = 'POST';
+    const res = moxy(new ServerResponse({ method: 'POST' }));
+
+    const body = {
+      object: 'page',
+      entry: [
+        {
+          id: '_PAGE_ID_',
+          time: 1458692752478,
+          messaging: [
+            {
+              sender: { id: '_PSID_' },
+              recipient: { id: '_PAGE_ID_' },
+              pre_checkout: {
+                payload: 'xyz',
+                requested_user_info: {
+                  shipping_address: {
+                    name: 'Tao Jiang',
+                    street_1: '600 Edgewater Blvd',
+                    street_2: '',
+                    city: 'Foster City',
+                    state: 'CA',
+                    country: 'US',
+                    postal_code: '94404',
+                  },
+                  contact_name: 'Tao Jiang',
+                },
+                amount: {
+                  currency: 'USD',
+                  amount: '2.70',
+                },
+              },
+            },
+            {
+              sender: { id: '_PSID_' },
+              recipient: { id: '_PAGE_ID_' },
+              checkout_update: {
+                payload: 'DEVELOPER_DEFINED_PAYLOAD',
+                shipping_address: {
+                  id: 10105655000959552,
+                  country: 'US',
+                  city: 'MENLO PARK',
+                  street1: '1 Hacker Way',
+                  street2: '',
+                  state: 'CA',
+                  postal_code: '94025',
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const events = handleWebhook({})(req, res, JSON.stringify(body));
+
+    expect(res.statusCode).toBe(200);
+    expect(res.finished).toBe(false);
+
+    events.forEach(({ thread, event, shouldRespond }, i) => {
+      expect(shouldRespond).toBe(true);
+      expect(thread.source).toEqual({ id: '_PSID_' });
+
+      expect(event.platform).toBe('messenger');
+      expect(event.type).toBe(!i ? 'pre_checkout' : 'checkout_update');
+      expect(event.subtype).toBe(undefined);
+      expect(event.payload).toEqual(body.entry[0].messaging[i]);
+    });
+  });
+
+  it('create thread from optin.user_ref if sender not included', () => {
+    const req = moxy(new IncomingMessage());
+    req.method = 'POST';
+    const res = moxy(new ServerResponse({ method: 'POST' }));
+
+    const body = {
+      object: 'page',
+      entry: [
+        {
+          id: '_PAGE_ID_',
+          time: 1458692752478,
+          messaging: [
+            {
+              sender: { id: '_PSID_' },
+              recipient: { id: '_PAGE_ID_' },
+              optin: {
+                ref: '<PASS_THROUGH_PARAM>',
+              },
+            },
+            {
+              recipient: { id: '_PAGE_ID_' },
+              optin: {
+                ref: '<PASS_THROUGH_PARAM>',
+                user_ref: '<REF_FROM_CHECKBOX_PLUGIN>',
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const events = handleWebhook({})(req, res, JSON.stringify(body));
+
+    expect(res.statusCode).toBe(200);
+    expect(res.finished).toBe(false);
+
+    events.forEach(({ thread, event, shouldRespond }, i) => {
+      expect(shouldRespond).toBe(false);
+      expect(thread.source).toEqual(
+        i === 0 ? { id: '_PSID_' } : { user_ref: '<REF_FROM_CHECKBOX_PLUGIN>' }
+      );
+
+      expect(event.platform).toBe('messenger');
+      expect(event.type).toBe('optin');
       expect(event.subtype).toBe(undefined);
       expect(event.payload).toEqual(body.entry[0].messaging[i]);
     });
@@ -178,10 +302,14 @@ describe('handling POST request', () => {
       .getter('headers')
       .fake(() => ({ 'x-hub-signature': `sha1=${hmac}` }));
 
-    const [event] = handleWebhook(options)(req, res, body);
+    const handle = handleWebhook(options);
+    const [{ event, thread, shouldRespond }] = handle(req, res, body);
 
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(false);
+
+    expect(shouldRespond).toBe(false);
+    expect(thread.source).toEqual({ id: '_PSID_' });
 
     expect(event.platform).toBe('messenger');
     expect(event.type).toBe('text');

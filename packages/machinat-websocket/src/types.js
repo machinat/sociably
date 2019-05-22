@@ -1,6 +1,6 @@
 // @flow
 import type { IncomingMessage } from 'http';
-import type { MachinatEvent } from 'machinat-base/types';
+import type { MachinatEvent, MachinatTransport } from 'machinat-base/types';
 import type MachinatSocket, { EventBody, RegisterBody } from './socket';
 import type WebSocketThread from './thread';
 
@@ -14,13 +14,10 @@ export type WebSocketEvent = {
   type: string,
   subtype?: string,
   payload: any,
-  connectionInfo: ConnectionInfo,
-  shouldRespond: boolean,
-  thread: WebSocketThread,
 };
 
 declare var e: WebSocketEvent;
-(e: MachinatEvent<any, WebSocketThread>);
+(e: MachinatEvent<any>);
 
 export type WebEventJob = {
   body: EventBody,
@@ -38,8 +35,11 @@ export type WebSocketTransport = {
   source: 'websocket',
   socketId: SocketId,
   request: RequestInfo,
-  connectionInfo: ConnectionInfo,
+  connectionInfo?: ConnectionInfo,
 };
+
+declare var t: WebSocketTransport;
+(t: MachinatTransport<'websocket'>);
 
 export type AcceptedRegisterResponse = {
   accepted: true,

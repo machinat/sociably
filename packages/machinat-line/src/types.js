@@ -1,7 +1,10 @@
 // @flow
 import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
-import type { WebhookResponse } from 'machinat-webhook-receiver/types';
+import type {
+  WebhookResponse,
+  WebhookTransport,
+} from 'machinat-webhook-receiver/types';
 
 import type LineThread from './thread';
 
@@ -43,13 +46,11 @@ export type LineEvent = {
   platform: 'line',
   type: string,
   subtype: void | string,
-  thread: LineThread,
-  shouldRespond: boolean,
   payload: LineRawEvent,
 };
 
 declare var e: LineEvent;
-(e: MachinatEvent<LineRawEvent, LineThread>);
+(e: MachinatEvent<LineRawEvent>);
 
 export type LineWebhookRequestBody = {|
   destination: string,
@@ -197,6 +198,7 @@ export type LineBotOptions = {
   plugins?: BotPlugin<
     LineThread,
     LineEvent,
+    WebhookTransport,
     LineSegmentValue,
     LineComponent,
     WebhookResponse,

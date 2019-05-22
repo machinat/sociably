@@ -30,13 +30,4 @@ class WebSocketThread implements MachinatThread {
   }
 }
 
-`websocket:@socket:*:${id}`;
-
-if (
-  platform === 'websocket' &&
-  channel.type === '@socket' &&
-  event.type === '@registry'
-) {
-}
-
 export default WebSocketThread;

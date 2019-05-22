@@ -7,7 +7,10 @@ import Renderer from 'machinat-renderer';
 import WebhookReceiver from 'machinat-webhook-receiver';
 
 import type { MachinatNode } from 'machinat/types';
-import type { WebhookResponse } from 'machinat-webhook-receiver/types';
+import type {
+  WebhookResponse,
+  WebhookTransport,
+} from 'machinat-webhook-receiver/types';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
 
 import MessengerWorker from './worker';
@@ -19,7 +22,7 @@ import MessengerThread from './thread';
 import { createChatJobs, createCreativeJobs } from './job';
 
 import type {
-  MessnegerSource,
+  MessengerSource,
   MessengerBotOptions,
   MessengerEvent,
   MessengerComponent,
@@ -40,6 +43,7 @@ export default class MessengerBot
   extends BaseBot<
     MessengerThread,
     MessengerEvent,
+    WebhookTransport,
     MessengerSegmentValue,
     MessengerComponent,
     WebhookResponse,
@@ -111,7 +115,7 @@ export default class MessengerBot
   }
 
   async send(
-    target: string | MessnegerSource | MessengerThread,
+    target: string | MessengerSource | MessengerThread,
     messages: MachinatNode,
     options?: SendOptions
   ): Promise<null | MessengerAPIResult[]> {

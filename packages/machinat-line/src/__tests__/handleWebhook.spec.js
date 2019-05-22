@@ -2,6 +2,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 import moxy from 'moxy';
 
 import handleWebhook from '../handleWebhook';
+import LineThread from '../thread';
 
 it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   'responds 405 if req.method is %s',
@@ -107,7 +108,16 @@ it('returns events created', () => {
 
   expect(events.length).toBe(2);
 
-  events.forEach((event, i) => {
+  events.forEach(({ event, thread, shouldRespond }, i) => {
+    expect(shouldRespond).toBe(false);
+
+    expect(thread).toBeInstanceOf(LineThread);
+    expect(thread.subtype).toBe('user');
+    expect(thread.source).toEqual({
+      type: 'user',
+      userId: 'U4af4980629...',
+    });
+
     expect(event.platform).toBe('line');
     expect(event.type).toBe(!i ? 'text' : 'follow');
     expect(event.subtype).toBe(undefined);
@@ -125,13 +135,16 @@ it('returns events if request validation passed', () => {
   const hmac = 'tJIFpuDMyZ4a9XzwkNUBK2B/7NH5gxYJDR/57RCf+6k=';
   req.mock.getter('headers').fakeReturnValue({ 'x-line-signature': hmac });
 
-  const [event] = handleWebhook({
+  const [{ event, thread, shouldRespond }] = handleWebhook({
     shouldValidateRequest: true,
     channelSecret: '__LINE_CHANNEL_SECRET__',
   })(req, res, body);
 
   expect(res.statusCode).toBe(200);
   expect(res.finished).toBe(false);
+
+  expect(shouldRespond).toBe(false);
+  expect(thread.source).toEqual({ type: 'user', userId: 'xxx' });
 
   expect(event.platform).toBe('line');
   expect(event.type).toBe('text');

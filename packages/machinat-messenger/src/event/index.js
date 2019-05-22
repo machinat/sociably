@@ -35,14 +35,14 @@ import {
   policyEnforcement,
   postback,
   standbyPostback,
-  paymentPreCheckout,
+  preCheckout,
   referral,
   unknown,
 } from './factory';
 import type { MessengerRawEvent } from '../types';
 
-const hasOwnProperty = (obj, prop) =>
-  Object.prototype.hasOwnProperty.call(obj, prop);
+const objectHasOwnProperty = Object.prototype.hasOwnProperty;
+const hasOwnProperty = (obj, prop) => objectHasOwnProperty.call(obj, prop);
 
 const createMessageEvent = (payload, isStandby) => {
   const { message } = payload;
@@ -53,6 +53,7 @@ const createMessageEvent = (payload, isStandby) => {
       ? echoedText(payload)
       : text(payload);
   }
+
   switch (message.attachments[0].type) {
     case 'image':
       return isStandby
@@ -126,8 +127,8 @@ const createEvent = (isStandby: boolean, payload: MessengerRawEvent) =>
     ? isStandby
       ? standbyPostback(payload)
       : postback(payload)
-    : hasOwnProperty(payload, 'payment_pre_checkout')
-    ? paymentPreCheckout(payload)
+    : hasOwnProperty(payload, 'pre_checkout')
+    ? preCheckout(payload)
     : hasOwnProperty(payload, 'referral')
     ? referral(payload)
     : unknown(payload);

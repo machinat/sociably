@@ -8,7 +8,10 @@ import WebhookReceiver from 'machinat-webhook-receiver';
 
 import type { MachinatNode } from 'machinat/types';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
-import type { WebhookResponse } from 'machinat-webhook-receiver/types';
+import type {
+  WebhookResponse,
+  WebhookTransport,
+} from 'machinat-webhook-receiver/types';
 
 import LineWorker from './worker';
 import handleWebhook from './handleWebhook';
@@ -39,6 +42,7 @@ class LineBot
   extends BaseBot<
     LineThread,
     LineEvent,
+    WebhookTransport,
     LineSegmentValue,
     LineComponent,
     WebhookResponse,

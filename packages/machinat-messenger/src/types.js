@@ -2,7 +2,10 @@
 import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type MachinatQueue from 'machinat-queue';
-import type { WebhookResponse } from 'machinat-webhook-receiver/types';
+import type {
+  WebhookResponse,
+  WebhookTransport,
+} from 'machinat-webhook-receiver/types';
 import type MessnegerThread from './thread';
 
 type PSIDSource = {| id: string |};
@@ -12,7 +15,7 @@ type PhoneNumberSource = {|
   name?: {| first_name: string, last_name: string |},
 |};
 
-export type MessnegerSource = PSIDSource | UserRefSource | PhoneNumberSource;
+export type MessengerSource = PSIDSource | UserRefSource | PhoneNumberSource;
 
 // TODO: type the raw event object
 export type MessengerRawEvent = Object;
@@ -21,13 +24,11 @@ export type MessengerEvent = {|
   platform: 'messenger',
   type: string,
   subtype?: string,
-  shouldRespond: boolean,
-  thread: MessnegerThread,
   payload: MessengerRawEvent,
 |};
 
 declare var e: MessengerEvent;
-(e: MachinatEvent<MessengerRawEvent, MessnegerThread>);
+(e: MachinatEvent<MessengerRawEvent>);
 
 // TODO: detailed message type
 export type MessengerMessage = {};
@@ -117,6 +118,7 @@ export type MessengerBotOptions = {
   plugins?: BotPlugin<
     MessnegerThread,
     MessengerEvent,
+    WebhookTransport,
     MessengerSegmentValue,
     MessengerComponent,
     WebhookResponse,

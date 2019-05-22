@@ -12,7 +12,12 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
   let req;
   let res;
 
-  const handleWebhook = moxy(() => [{ id: 1 }, { id: 2 }, { id: 3 }]);
+  const thread = { foo: 'bar' };
+  const handleWebhook = moxy(() => [
+    { thread, event: { id: 1 }, shouldRespond: false },
+    { thread, event: { id: 2 }, shouldRespond: false },
+    { thread, event: { id: 3 }, shouldRespond: false },
+  ]);
   const handleEvent = moxy();
   const handleError = moxy();
 
@@ -47,9 +52,9 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     for (let i = 1; i < 4; i += 1) {
       expect(handleEvent.mock).toHaveBeenNthCalledWith(
         i,
-        'webhook',
+        thread,
         { id: i },
-        transportCtx
+        { source: 'webhook', context: transportCtx }
       );
     }
   });
@@ -119,11 +124,15 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     expect(res.statusCode).toBe(200);
   });
 
+  const shouldRespondEvents = [
+    { thread, event: { id: 1 }, shouldRespond: true },
+  ];
+
   it('ends res with retruned response object', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
     receiver.bind(handleEvent, handleError);
 
-    handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
+    handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
     handleEvent.mock.fakeReturnValue({ status: 201, body: 'success body' });
 
     receiver.handleRequest(req, res, {}, 'body');
@@ -139,13 +148,20 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     const receiver = new WebhookReceiver(handleWebhook);
     receiver.bind(handleEvent, handleError);
 
-    handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
+    handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
     handleEvent.mock.fakeReturnValue({ status: 201, body: { success: true } });
 
     receiver.handleRequest(req, res, {}, 'body');
 
     jest.runAllTimers();
     await nextTick();
+
+    expect(handleEvent.mock).toHaveBeenCalledTimes(1);
+    expect(handleEvent.mock).toHaveBeenCalledWith(
+      thread,
+      { id: 1 },
+      { source: 'webhook', context: {} }
+    );
 
     expect(res.statusCode).toBe(201);
     expect(res.end.mock.calls[0].args[0]).toBe('{"success":true}');
@@ -155,7 +171,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     const receiver = new WebhookReceiver(handleWebhook);
     receiver.bind(handleEvent, handleError);
 
-    handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
+    handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
 
     receiver.handleRequest(req, res, {}, 'body');
 
@@ -169,7 +185,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
   it('ends res with 500 if error thrown', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
     receiver.bind(handleEvent, handleError);
-    handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
+    handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
 
     const err = new Error();
     handleEvent.mock.fake(() => Promise.reject(err));
@@ -188,7 +204,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
   it('ends res with "status" and "body" prop of error thrown if given', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
     receiver.bind(handleEvent, handleError);
-    handleWebhook.mock.fakeReturnValue([{ id: 1, shouldRespond: true }]);
+    handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
 
     const err = new Error();
     err.status = 555;

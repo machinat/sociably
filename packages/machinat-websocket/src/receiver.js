@@ -9,6 +9,7 @@ import type { MachinatReceiver, EventHandler } from 'machinat-base/types';
 import type { HTTPUpgradeReceiver } from 'machinat-http-adaptor/types';
 import type {
   WebSocketEvent,
+  WebSocketTransport,
   WebSocketBotOptions,
   RegisterResponse,
   WebSocketResponse,
@@ -49,7 +50,12 @@ const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
 class WebSocketReceiver
   implements
     HTTPUpgradeReceiver,
-    MachinatReceiver<WebSocketResponse, WebSocketThread, WebSocketEvent> {
+    MachinatReceiver<
+      WebSocketResponse,
+      WebSocketThread,
+      WebSocketEvent,
+      WebSocketTransport
+    > {
   _webSocketServer: WebSocketServer;
   _distributor: Distributor;
   options: WebSocketBotOptions;
@@ -60,7 +66,8 @@ class WebSocketReceiver
   _handleEvent: EventHandler<
     WebSocketResponse,
     WebSocketThread,
-    WebSocketEvent
+    WebSocketEvent,
+    WebSocketTransport
   >;
   _handleError: (e: Error) => void;
 
@@ -85,7 +92,12 @@ class WebSocketReceiver
   }
 
   bind(
-    handler: EventHandler<WebSocketResponse, WebSocketThread, WebSocketEvent>,
+    handler: EventHandler<
+      WebSocketResponse,
+      WebSocketThread,
+      WebSocketEvent,
+      WebSocketTransport
+    >,
     handleError: (e: Error) => void
   ) {
     if (this.isBound) {
@@ -157,10 +169,11 @@ class WebSocketReceiver
       return;
     }
 
-    const event = createEvent(type, subtype, thread, socket.id, payload);
+    const event = createEvent(type, subtype, payload);
 
     try {
-      await this._handleEvent(WEBSOCKET, event, {
+      await this._handleEvent(thread, event, {
+        source: WEBSOCKET,
         info,
         socketId: socket.id,
         request: socket.request,
@@ -175,13 +188,13 @@ class WebSocketReceiver
     body: RegisterBody
   ): Promise<RegisterResponse> => {
     const thread = new WebSocketThread('@socket', undefined, socket.id);
-    const event = createEvent('@register', undefined, thread, socket.id, body);
+    const event = createEvent('@register', undefined, body);
 
-    const response: WebSocketResponse = await this._handleEvent(
-      WEBSOCKET,
-      event,
-      { socketId: socket.id, request: socket.request }
-    );
+    const response: WebSocketResponse = await this._handleEvent(thread, event, {
+      source: WEBSOCKET,
+      socketId: socket.id,
+      request: socket.request,
+    });
 
     return response || { accepted: false, code: 0.0, reason: '????????' };
   };

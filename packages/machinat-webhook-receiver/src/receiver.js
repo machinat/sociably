@@ -9,7 +9,11 @@ import type {
   MachinatReceiver,
 } from 'machinat-base/types';
 import { HTTPRequestReceiver } from 'machinat-http-adaptor/types';
-import type { WebhookHandler, WebhookResponse } from './types';
+import type {
+  WebhookHandler,
+  WebhookResponse,
+  WebhookTransport,
+} from './types';
 
 const RAW_BODY_OPTION = { encoding: true };
 const WEBHOOK = 'webhook';
@@ -19,14 +23,14 @@ const endRes = (res, status, body) => {
   res.end(body);
 };
 
-class WebhookReceiver<Thread: MachinatThread, Event: MachinatEvent<any, Thread>>
+class WebhookReceiver<Thread: MachinatThread, Event: MachinatEvent<any>>
   implements
     HTTPRequestReceiver,
-    MachinatReceiver<WebhookResponse, Thread, Event> {
+    MachinatReceiver<WebhookResponse, Thread, Event, WebhookTransport> {
   handleWebhook: WebhookHandler<Thread, Event>;
   isBound: boolean;
 
-  _handleEvent: EventHandler<WebhookResponse, Thread, Event>;
+  _handleEvent: EventHandler<WebhookResponse, Thread, Event, WebhookTransport>;
   _handleError: (e: Error) => void;
 
   constructor(handleWebhook: WebhookHandler<Thread, Event>) {
@@ -35,7 +39,7 @@ class WebhookReceiver<Thread: MachinatThread, Event: MachinatEvent<any, Thread>>
   }
 
   bind(
-    handleEvent: EventHandler<WebhookResponse, Thread, Event>,
+    handleEvent: EventHandler<WebhookResponse, Thread, Event, WebhookTransport>,
     errorHandler: (e: Error) => void
   ) {
     if (this.isBound) {
@@ -96,19 +100,21 @@ class WebhookReceiver<Thread: MachinatThread, Event: MachinatEvent<any, Thread>>
         return;
       }
 
-      let shouldRespond = false;
+      let shouldWaitRespond = false;
       const promises = new Array(events.length);
 
-      for (let i = 0; i < events.length; i += 1) {
-        const event = events[i];
-        promises[i] = this._handleEvent(WEBHOOK, event, httpContext);
+      const transport = { source: WEBHOOK, context: httpContext };
 
-        if (event.shouldRespond) {
-          shouldRespond = true;
+      for (let i = 0; i < events.length; i += 1) {
+        const { event, thread, shouldRespond } = events[i];
+        promises[i] = this._handleEvent(thread, event, transport);
+
+        if (shouldRespond) {
+          shouldWaitRespond = true;
         }
       }
 
-      if (!shouldRespond) {
+      if (!shouldWaitRespond) {
         endRes(res, 200);
       }
 

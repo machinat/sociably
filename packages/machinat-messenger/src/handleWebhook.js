@@ -3,22 +3,14 @@ import url from 'url';
 import crypto from 'crypto';
 
 import type { IncomingMessage, ServerResponse } from 'http';
+import type {
+  WebhookHandler,
+  WebhookEventReport,
+} from 'machinat-webhook-receiver/types';
+import type { MessengerBotOptions, MessengerEvent } from './types';
 
 import createEvent from './event';
-
-import type { MessengerBotOptions } from './types';
-
-const eventReducer = (events, rawEventWrapper) => {
-  const { messaging, stanby } = rawEventWrapper;
-  const isStandby = stanby !== undefined;
-  const payloads = isStandby ? stanby : messaging;
-
-  for (let i = 0; i < payloads.length; i += 1) {
-    events.push(createEvent(isStandby, payloads[i]));
-  }
-
-  return events;
-};
+import MessengerThread from './thread';
 
 const endRes = (res, code, body) => {
   res.statusCode = code; // eslint-disable-line no-param-reassign
@@ -26,7 +18,9 @@ const endRes = (res, code, body) => {
   return undefined;
 };
 
-const handleWebhook = (options: MessengerBotOptions) => (
+const handleWebhook = (
+  options: MessengerBotOptions
+): WebhookHandler<MessengerThread, MessengerEvent> => (
   req: IncomingMessage,
   res: ServerResponse,
   rawBody: void | string
@@ -49,11 +43,13 @@ const handleWebhook = (options: MessengerBotOptions) => (
   }
 
   if (req.method !== 'POST') {
-    return endRes(res, 405);
+    endRes(res, 405);
+    return undefined;
   }
 
   if (rawBody === undefined) {
-    return endRes(res, 400);
+    endRes(res, 400);
+    return undefined;
   }
 
   if (options.shouldValidateRequest) {
@@ -76,9 +72,33 @@ const handleWebhook = (options: MessengerBotOptions) => (
       return endRes(res, 404);
     }
 
-    return body.entry.reduce(eventReducer, []);
+    const reports: WebhookEventReport<MessengerThread, MessengerEvent>[] = [];
+
+    for (const { messaging, stanby } of body.entry) {
+      const isStandby = stanby !== undefined;
+      const rawEvents = isStandby ? stanby : messaging;
+
+      for (const raw of rawEvents) {
+        const event = createEvent(isStandby, raw);
+        const { type, payload } = event;
+
+        const source =
+          type === 'optin' && payload.sender === undefined
+            ? { user_ref: payload.optin.user_ref }
+            : payload.sender;
+        const thread = new MessengerThread(source);
+
+        const shouldRespond =
+          type === 'checkout_update' || type === 'pre_checkout';
+
+        reports.push({ event, thread, shouldRespond });
+      }
+    }
+
+    return reports;
   } catch (e) {
-    return endRes(res, 400);
+    endRes(res, 400);
+    return undefined;
   }
 };
 

@@ -1,6 +1,5 @@
 // @flow
 import { mixin } from 'machinat-utility';
-import type { MachinatEvent } from 'machinat-base/types';
 import {
   EventBase as Base,
   Message,
@@ -23,16 +22,15 @@ import {
   Payment,
   PolicyEnforcement,
   Postback,
-  PaymentPreCheckout,
+  PreCheckout,
   Referral,
 } from './mixin';
-import type { MessengerRawEvent } from '../types';
-import type MessengerThread from '../thread';
+import type { MessengerRawEvent, MessengerEvent } from '../types';
 
-export const eventFactory = (proto: Object, type: string, subtype?: string) => (
+const eventFactory = (proto: Object, type: string, subtype?: string) => (
   payload: MessengerRawEvent
-): MachinatEvent<MessengerRawEvent, MessengerThread> => {
-  const event = Object.create(proto);
+): MessengerEvent => {
+  const event: MessengerEvent = (Object.create(proto): any);
 
   event.payload = payload;
   event.type = type;
@@ -136,9 +134,9 @@ export const standbyPostback = eventFactory(
   'postback'
 );
 
-export const paymentPreCheckout = eventFactory(
-  mixin(Base, PaymentPreCheckout),
-  'payment_pre_checkout'
+export const preCheckout = eventFactory(
+  mixin(Base, PreCheckout),
+  'pre_checkout'
 );
 export const referral = eventFactory(mixin(Base, Referral), 'referral');
 

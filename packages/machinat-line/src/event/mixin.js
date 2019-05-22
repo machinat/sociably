@@ -1,10 +1,8 @@
 // @flow
 import { toJSONWithProto } from 'machinat-utility';
-import LineThread from '../thread';
 
 export const EventBase = {
   platform: 'line',
-  shouldRespond: false,
 
   get user() {
     const { source } = this.payload;
@@ -13,10 +11,6 @@ export const EventBase = {
 
   get userId() {
     return this.payload.source.userId;
-  },
-
-  get thread() {
-    return new LineThread(this.payload.source);
   },
 
   get time() {

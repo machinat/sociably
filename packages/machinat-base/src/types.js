@@ -27,13 +27,15 @@ export interface MachinatThread {
   uid: string;
 }
 
-export interface MachinatEvent<Payload, Thread: MachinatThread> {
+export interface MachinatEvent<Payload> {
   platform: any;
   type: any;
   subtype?: any;
-  thread: Thread;
-  shouldRespond: boolean;
   payload: Payload;
+}
+
+export interface MachinatTransport<Source: string> {
+  source: Source;
 }
 
 export type EventFrame<
@@ -42,14 +44,14 @@ export type EventFrame<
   Job,
   Result,
   Thread: MachinatThread,
-  Event: MachinatEvent<any, Thread>
+  Event: MachinatEvent<any>,
+  Transport: MachinatTransport<any>
 > = {
   platform: string,
   thread: Thread,
   event: Event,
   bot: MachinatBot<Thread, Event, SegmentValue, Native, any, Job, Result>,
-  source: string,
-  transportation: any,
+  transport: Transport,
   reply(nodes: MachinatNode, options: any): Promise<null | Result[]>,
 };
 
@@ -57,9 +59,10 @@ export type EventMiddleware<
   Native,
   Response,
   Thread: MachinatThread,
-  Event: MachinatEvent<any, Thread>
+  Event: MachinatEvent<any>,
+  Transport: MachinatTransport<any>
 > = MiddlewareFunc<
-  EventFrame<any, Native, any, any, Thread, Event>,
+  EventFrame<any, Native, any, any, Thread, Event, Transport>,
   Promise<void | Response>
 >;
 
@@ -91,20 +94,30 @@ export type DispatchMiddleware<
 
 export type BotPlugin<
   Thread,
-  Event: MachinatEvent<any, Thread>,
+  Event: MachinatEvent<any>,
+  Transport: MachinatTransport<any>,
   SegmentValue,
   Native,
   Response,
   Job,
   Result
 > = (
-  bot: MachinatBot<Thread, Event, SegmentValue, Native, Response, Job, Result>
+  bot: MachinatBot<
+    Thread,
+    Event,
+    Transport,
+    SegmentValue,
+    Native,
+    Response,
+    Job,
+    Result
+  >
 ) => {
   dispatchMiddleware?: DispatchMiddleware<Thread, Job, Result>,
   dispatchFrameExtension?: {
     [string]: any,
   },
-  eventMiddleware?: EventMiddleware<Native, Response, Thread, Event>,
+  eventMiddleware?: EventMiddleware<Native, Response, Thread, Event, Transport>,
   eventFrameExtension?: {
     [string]: any,
   },
@@ -118,20 +131,22 @@ export interface MachinatWorker<Job, Result> {
 export type EventHandler<
   Response,
   Thread: MachinatThread,
-  Event: MachinatEvent<any, Thread>
+  Event: MachinatEvent<any>,
+  Transport: MachinatTransport<any>
 > = (
-  source: string,
+  thread: Thread,
   event: Event,
-  tranportContext: any
+  transport: Transport
 ) => Promise<void | Response>;
 
 export interface MachinatReceiver<
   Response,
   Thread: MachinatThread,
-  Event: MachinatEvent<any, Thread>
+  Event: MachinatEvent<any>,
+  Transport: MachinatTransport<any>
 > {
   bind(
-    eventHandler: EventHandler<Response, Thread, Event>,
+    eventHandler: EventHandler<Response, Thread, Event, Transport>,
     errorHandler: (err: Error) => void
   ): boolean;
   unbind(): boolean;

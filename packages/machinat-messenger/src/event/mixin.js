@@ -1,10 +1,8 @@
 // @flow
 import { toJSONWithProto } from 'machinat-utility';
-import MessengerThread from '../thread';
 
 export const EventBase = {
   platform: 'messenger',
-  shouldRespond: false,
 
   get user() {
     return this.payload.sender;
@@ -12,15 +10,6 @@ export const EventBase = {
 
   get userId() {
     return this.payload.sender.id;
-  },
-
-  get thread() {
-    const source =
-      this.type === 'optin' && this.payload.sender === undefined
-        ? { user_ref: this.optin.user_ref }
-        : this.payload.sender;
-
-    return new MessengerThread(source);
   },
 };
 
@@ -111,7 +100,6 @@ export const AccountLinking = {
 };
 
 export const CheckoutUpdate = {
-  shouldRespond: true,
   get checkoutUpdate() {
     return this.payload.checkout_update;
   },
@@ -171,10 +159,9 @@ export const Postback = {
   },
 };
 
-export const PaymentPreCheckout = {
-  shouldRespond: true,
-  get paymentPreCheckout() {
-    return this.payload.payment_pre_checkout;
+export const PreCheckout = {
+  get preCheckout() {
+    return this.payload.pre_checkout;
   },
 };
 

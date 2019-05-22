@@ -3,14 +3,13 @@ import type { MachinatThread } from 'machinat-base/types';
 import type { LineSource } from './types';
 
 class LineThread implements MachinatThread {
+  platform = 'line';
+  type = 'chat';
+
   subtype: 'user' | 'room' | 'group';
   uid: string;
   source: LineSource;
-
   sourceId: string;
-
-  platform = 'line';
-  type = 'chat';
 
   constructor(source: LineSource) {
     this.subtype = source.type;

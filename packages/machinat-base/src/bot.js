@@ -9,6 +9,7 @@ import type {
   EventHandler,
   MachinatThread,
   MachinatEvent,
+  MachinatTransport,
   MachinatReceiver,
 } from './types';
 
@@ -17,27 +18,38 @@ import Engine from './engine';
 
 export default class BaseBot<
   Thread: MachinatThread,
-  Event: MachinatEvent<any, Thread>,
+  Event: MachinatEvent<any>,
+  Transport: MachinatTransport<any>,
   SegmentValue,
   Native: MachinatNativeComponent<SegmentValue>,
   Response,
   Job,
   Result
 > extends EventEmitter {
-  receiver: MachinatReceiver<Response, Thread, Event>;
-  controller: Controller<Response, Thread, Event>;
+  receiver: MachinatReceiver<Response, Thread, Event, Transport>;
+  controller: Controller<Response, Thread, Event, Transport>;
   engine: Engine<SegmentValue, Native, Thread, Job, Result>;
   plugins:
     | void
-    | BotPlugin<Thread, Event, SegmentValue, Native, Response, Job, Result>[];
+    | BotPlugin<
+        Thread,
+        Event,
+        Transport,
+        SegmentValue,
+        Native,
+        Response,
+        Job,
+        Result
+      >[];
 
   constructor(
-    receiver: MachinatReceiver<Response, Thread, Event>,
-    controller: Controller<Response, Thread, Event>,
+    receiver: MachinatReceiver<Response, Thread, Event, Transport>,
+    controller: Controller<Response, Thread, Event, Transport>,
     engine: Engine<SegmentValue, Native, Thread, Job, Result>,
     plugins?: BotPlugin<
       Thread,
       Event,
+      Transport,
       SegmentValue,
       Native,
       Response,
@@ -98,7 +110,7 @@ export default class BaseBot<
     this.receiver.bind(this.eventHandler(), this._emitError);
   }
 
-  eventHandler(): EventHandler<Response, Thread, Event> {
+  eventHandler(): EventHandler<Response, Thread, Event, Transport> {
     return this.controller.makeEventHandler(frame => {
       this.emit('event', frame);
       return Promise.resolve();

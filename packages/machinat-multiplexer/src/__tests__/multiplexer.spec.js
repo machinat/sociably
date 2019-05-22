@@ -3,6 +3,7 @@ import Multiplexer from '../multiplexer';
 
 const receiver = {
   bind: () => true,
+  unbind: () => true,
 };
 
 const controller = {

@@ -3,11 +3,11 @@
 import crypto from 'crypto';
 import type { MachinatThread } from 'machinat-base/types';
 
-import type { MessnegerSource } from './types';
+import type { MessengerSource } from './types';
 
 class MessengerThread implements MachinatThread {
   uid: string;
-  source: MessnegerSource;
+  source: MessengerSource;
   pageId: ?string;
 
   platform = 'messenger';
@@ -15,7 +15,7 @@ class MessengerThread implements MachinatThread {
   subtype = 'user';
   allowPause = true;
 
-  constructor(source: MessnegerSource, pageId?: string) {
+  constructor(source: MessengerSource, pageId?: string) {
     this.source = source;
     this.pageId = pageId;
 
