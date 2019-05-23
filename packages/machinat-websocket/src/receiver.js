@@ -27,6 +27,7 @@ import type Socket, {
 import MachinatSocket from './socket';
 import WebSocketChannel from './channel';
 import createEvent from './event';
+import { ConnectionError } from './error';
 
 type WebSocketServer = $ElementType<Class<WebSocket>, 'Server'>;
 
@@ -165,7 +166,9 @@ class WebSocketReceiver
   ) {
     const channel = this._getCachedChannel(uid);
     if (channel === null) {
-      this._handleError(new Error(xxx));
+      this._handleError(
+        new ConnectionError(`invalid channel uid [${uid}] received`)
+      );
       return;
     }
 
@@ -176,7 +179,7 @@ class WebSocketReceiver
         source: WEBSOCKET,
         info,
         socketId: socket.id,
-        request: socket.request,
+        request: (socket.request: any), // request exist at server side
       });
     } catch (err) {
       this._handleError(err);
@@ -190,11 +193,15 @@ class WebSocketReceiver
     const channel = new WebSocketChannel('@socket', undefined, socket.id);
     const event = createEvent('@register', undefined, body);
 
-    const response: WebSocketResponse = await this._handleEvent(channel, event, {
-      source: WEBSOCKET,
-      socketId: socket.id,
-      request: socket.request,
-    });
+    const response: WebSocketResponse = await this._handleEvent(
+      channel,
+      event,
+      {
+        source: WEBSOCKET,
+        socketId: socket.id,
+        request: (socket.request: any), // request exist at server side
+      }
+    );
 
     return response || { accepted: false, code: 0.0, reason: '????????' };
   };

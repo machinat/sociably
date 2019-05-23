@@ -17,13 +17,14 @@ import type { RequestInfo, SocketId, ChannelUid } from './types';
  *
  * Glossary:
  *  - Channel: user defined MachinatChannel which reflect a "topic" where events
- *            can be published onto
- *  - Event:  user defined MachinatEvent which happen on specified Channel
- *  - Server: the central server to receive events from Client and publish
- *            events of specified channels
- *  - Client: client connects to one or miltiple channels, can send/receive
- *            events of the connected channels to/from Server
- *  - Socket: the underlying tunnel for multiplexing events of different channels
+ *             can be published onto
+ *  - Event:   user defined MachinatEvent which happen on specified Channel
+ *  - Server:  the central server to receive events from Client and publish
+ *             events of specified channels
+ *  - Client:  client connects to one or miltiple channels, can send/receive
+ *             events of the connected channels to/from Server
+ *  - Socket:  the underlying tunnel for multiplexing events of different
+ *             channels
  */
 
 /* eslint-disable no-unused-vars */
@@ -78,8 +79,7 @@ export type AnswerBody = {
 export type RejectBody = {
   req: number, // seq of the rejected frame
   // code: number,
-  // reason: string,
-  // payload: any,
+  reason: string,
 };
 
 /**
@@ -108,6 +108,8 @@ export type ConnectBody = {
 export type DisconnectBody = {
   req?: number, // the disconnect frame seq received if it's a confirmation
   uid: ChannelUid,
+  // code: number,
+  reason: string,
 };
 
 /**
@@ -118,29 +120,29 @@ export type DisconnectBody = {
  *  +---------+             +---------+
  *  | Client  |             | Server  |
  *  +---------+             +---------+
- *       |                       |
- *       | REGISTER (auth)       |
- *       |---------------------->|
- *       |                       |
- *       |                       | verify auth
- *       |                       |------------
- *       |                       |           |
- *       |                       |<-----------
- *       |                       | --------------------------\
- *       |                       |-| or initiative by Server |
- *       |                       | |-------------------------|
- *       |                       |
+ *       |                        |
+ *       | REGISTER (auth)        |
+ *       |----------------------->|
+ *       |                        |
+ *       |                        | verify auth
+ *       |                        |------------
+ *       |                        |           |
+ *       |                        |<-----------
+ *       |                        | --------------------------\
+ *       |                        |-| or initiative by Server |
+ *       |                        | |-------------------------|
+ *       |                        |
  *       |      CONNECT (channel) |
- *       |<----------------------|
- *       |                       |
+ *       |<-----------------------|
+ *       |                        |
  *       | CONNECT (channel)      |
- *       |---------------------->|
- *       |                       | -----------------------\
- *       |                       |-| ok to emit event now |
- *       |                       | |----------------------|
+ *       |----------------------->|
+ *       |                        | -----------------------\
+ *       |                        |-| ok to emit event now |
+ *       |                        | |----------------------|
  *       |        EVENT (channel) |
- *       |<----------------------|
- *       |                       |
+ *       |<-----------------------|
+ *       |                        |
  *
  * Disconnect Handshake: disconnect client from a channel, this can be initiate
  *                       on both Client and Server
@@ -148,20 +150,20 @@ export type DisconnectBody = {
  *                        +---------+                +---------+
  *                        | Client  |                | Server  |
  *                        +---------+                +---------+
- *                             |                          |
+ *                             |                           |
  *                             |      DISCONNECT (channel) |
- *                             |<-------------------------|
- * --------------------------\ |                          |
- * | event before DISCONNECT |-|                          |
- * | echoed back still count | |                          |
- * |-------------------------| |                          |
- *                             |                          |
+ *                             |<--------------------------|
+ * --------------------------\ |                           |
+ * | event before DISCONNECT |-|                           |
+ * | echoed back still count | |                           |
+ * |-------------------------| |                           |
+ *                             |                           |
  *                             | EVENT (channel)           |
- *                             |------------------------->|
- *                             |                          |
+ *                             |-------------------------->|
+ *                             |                           |
  *                             | DISCONNECT (channel)      |
- *                             |------------------------->|
- *                             |                          |
+ *                             |-------------------------->|
+ *                             |                           |
  *
  * Event & Answer: emit event and make answer to an emmited event (optional),
  *
@@ -288,7 +290,7 @@ class MachinatSocket extends EventEmitter {
     );
   }
 
-  _outdateHandshake = (uid: ChannelUid, req: number) => {
+  _outdateHandshake = (uid: ChannelUid, req?: number) => {
     const state = this.connectStates.get(uid);
     if (state !== undefined && state !== STATE_CONNECTED_OK) {
       this.connectStates.delete(uid);
@@ -356,7 +358,7 @@ class MachinatSocket extends EventEmitter {
 
   async _send(frame: string, body: Object): Promise<number> {
     if (this._ws.readyState !== SOCKET_OPEN) {
-      throw new ConnectionError();
+      throw new ConnectionError('the underlying WebSocket is not opened');
     }
 
     const seq = this._seq;
@@ -378,7 +380,9 @@ class MachinatSocket extends EventEmitter {
 
     const state = this.connectStates.get(uid);
     if (state !== STATE_CONNECTED_OK) {
-      throw new ConnectionError();
+      throw new ConnectionError(
+        `channel(${uid}) is not connected or is disconnecting`
+      );
     }
 
     return this._send(FRAME_EVENT, body);
@@ -394,7 +398,7 @@ class MachinatSocket extends EventEmitter {
 
   register(body: RegisterBody): Promise<number> {
     if (!this.isClient) {
-      throw new ConnectionError();
+      throw new ConnectionError("can't send register on server to a client");
     }
 
     return this._send(FRAME_REGISTER, body);
@@ -411,7 +415,7 @@ class MachinatSocket extends EventEmitter {
       (state !== undefined &&
         (state & MASK_DISCONNECTING || state & FLAG_CONNECT_SENT))
     ) {
-      throw new ConnectionError();
+      throw new ConnectionError(`channel(${uid}) already connected`);
     }
 
     this._addHandshakeTimeout(uid, req);
@@ -439,7 +443,9 @@ class MachinatSocket extends EventEmitter {
     let state = this.connectStates.get(uid);
     if (state === undefined) {
       // throw if not even connecting
-      throw new ConnectionError();
+      throw new ConnectionError(
+        `socket[${this.id}] didn't connect to channel[${uid}]`
+      );
     } else if (state & FLAG_DISCONNECT_SENT) {
       // return nothing while waiting for echo
       return undefined;
@@ -477,7 +483,9 @@ class MachinatSocket extends EventEmitter {
     } else if (frameType === FRAME_DISCONNECT) {
       this._handleDisconnect(body, seq);
     } else {
-      this.reject({ req: seq }).catch(this._emitError);
+      this.reject({ req: seq, reason: 'unknown frame type' }).catch(
+        this._emitError
+      );
     }
   }
 
@@ -496,9 +504,11 @@ class MachinatSocket extends EventEmitter {
         !(state & MASK_CONNECTING) &&
         !(state & FLAG_DISCONNECT_RECEIVED))
     ) {
-      this.emit('action', body, seq);
+      this.emit('event', body, seq);
     } else {
-      this.reject({ req: seq }).catch(this._emitError);
+      this.reject({ req: seq, reason: 'channel not connected' }).catch(
+        this._emitError
+      );
     }
   }
 
@@ -512,7 +522,10 @@ class MachinatSocket extends EventEmitter {
 
   _handleRegister(body: RegisterBody, seq: number) {
     if (this.isClient) {
-      this.reject({ req: seq }).catch(this._emitError);
+      this.reject({
+        req: seq,
+        reason: 'not accepet register to a client',
+      }).catch(this._emitError);
     } else {
       this.emit('register', body, seq);
     }
@@ -530,8 +543,12 @@ class MachinatSocket extends EventEmitter {
         // confirm on client side
         this.connect({ uid, req: seq }).catch(this._emitError);
       } else {
-        // disallow starting connect handshake from client
-        this.disconnect({ uid, req: seq }).catch(this._emitError);
+        // disallow initiating connect handshake from client
+        this.disconnect({
+          uid,
+          req: seq,
+          reason: 'initiate connect handshake from client is not allowed',
+        }).catch(this._emitError);
       }
     } else if (state & FLAG_CONNECT_SENT && !(state & MASK_DISCONNECTING)) {
       // CONNECT confirmed, set as connected
@@ -548,14 +565,19 @@ class MachinatSocket extends EventEmitter {
     const state = this.connectStates.get(uid);
     if (state === undefined) {
       // reject if not even start connecting
-      this.reject({ req: seq }).catch(this._emitError);
+      this.reject({
+        req: seq,
+        reason: 'channel not connected or connecting',
+      }).catch(this._emitError);
     } else if (state & FLAG_DISCONNECT_SENT) {
       // DISCONNECT confirmed, remove state
       this._accomplishDisconnect(body, seq);
     } else {
       // echo back to finish handshake
       this.connectStates.set(uid, state | FLAG_DISCONNECT_RECEIVED);
-      this.disconnect({ uid, req: seq }).catch(this._emitError);
+      this.disconnect({ uid, req: seq, reason: 'confirmed' }).catch(
+        this._emitError
+      );
     }
   }
 }

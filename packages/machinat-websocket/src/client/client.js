@@ -30,8 +30,6 @@ type ClientOptionsInput = $Shape<ClientOptions>;
 type QueuedRegisterJob = {
   body: RegisterBody,
   connection: Connection,
-  resolve: number => void,
-  reject: any => void,
 };
 
 type ConnectionHandler = (
@@ -70,8 +68,9 @@ class WebClient extends EventEmitter {
 
     this._socket = createSocket(options.url);
 
-    this._socket.on('open', this._flushRegister);
-    this._socket.on('close', this._clearAllConnections);
+    this._socket.on('open', this._handleSocketOpen);
+    this._socket.on('close', this._handleSocketClose);
+    this._socket.on('error', this._handleSocketError);
 
     this._socket.on('connect', this._handleConnect);
     this._socket.on('disconnect', this._handleDisconnect);
@@ -84,24 +83,14 @@ class WebClient extends EventEmitter {
     // this._socket.on('answer');
   }
 
-  _sendRegister(body: RegisterBody, connection: Connection): Promise<number> {
-    if (!this._socket.isReady()) {
-      return new Promise((resolve, reject) => {
-        this._queuedRegister.push({ body, connection, resolve, reject });
-      });
-    }
-
-    return this._socket.register(body);
-  }
-
   register(body: RegisterBody): Connection {
     const connection = this._createConnection();
 
-    this._sendRegister(body, connection)
-      .then(registerSeq => {
-        this._registeringConns.set(registerSeq, connection);
-      })
-      .catch(this._emitError);
+    if (this._socket.isReady()) {
+      this._socket.register(body);
+    } else {
+      this._queuedRegister.push({ body, connection });
+    }
 
     return connection;
   }
@@ -111,15 +100,15 @@ class WebClient extends EventEmitter {
       async (event: ClientEvent) => {
         const channel = connection._channel;
         if (channel === undefined) {
-          throw new ConnectionError();
+          throw new ConnectionError('connection is not connected yet');
         }
 
         await this._socket.event({ uid: channel.uid, ...event });
       },
-      async () => {
+      async (reason: string) => {
         if (connection._channel !== undefined) {
           const { uid } = connection._channel;
-          await this._socket.disconnect({ uid });
+          await this._socket.disconnect({ uid, reason });
         }
       }
     );
@@ -167,34 +156,39 @@ class WebClient extends EventEmitter {
     }
   };
 
-  _flushRegister = () => {
-    for (const { body, resolve, reject } of this._queuedRegister) {
+  _handleSocketOpen = () => {
+    for (const { body, connection } of this._queuedRegister) {
       this._socket
         .register(body)
-        .then(resolve)
-        .catch(reject);
+        .then(seq => this._registeringConns.set(seq, connection))
+        .catch(this._emitError);
     }
 
     this._queuedRegister = [];
   };
 
-  _clearAllConnections = () => {
-    const err = new ConnectionError();
+  _handleSocketClose = (code: number, reason: string) => {
+    const err = new ConnectionError(
+      `socket close (${reason}) while registering connection`
+    );
+
+    // fail all queued jobs of registering connection
     for (const connection of this._registeringConns.values()) {
       connection._failAllEventsJob(err);
     }
     this._registeringConns = new Map();
-
-    for (const connection of this._connectedConns.values()) {
-      connection._setDisconnected();
-    }
-    this._connectedConns = new Map();
   };
+
+  _handleSocketError(err: Error) {
+    this._emitError(err);
+  }
 
   _handleConnect = ({ uid, req }: ConnectBody, seq: number) => {
     const channel = WebSocketChannel.fromUid(uid);
     if (channel === null) {
-      this._socket.reject({ req: seq }).catch(this._emitError);
+      this._socket
+        .reject({ req: seq, reason: 'uid invalid' })
+        .catch(this._emitError);
       return;
     }
 
@@ -202,7 +196,7 @@ class WebClient extends EventEmitter {
     if (connection !== undefined) {
       connection._setConnected(channel);
       connection._emitEvent(
-        { type: 'connect', subtype: undefined, payload: undefined },
+        { type: '@connect', subtype: undefined, payload: undefined },
         channel
       );
 
@@ -223,7 +217,7 @@ class WebClient extends EventEmitter {
 
       connection._setDisconnected();
       connection._emitEvent(
-        { type: 'disconnect', subtype: undefined, payload: undefined },
+        { type: '@disconnect', subtype: undefined, payload: undefined },
         channel
       );
 
@@ -241,15 +235,15 @@ class WebClient extends EventEmitter {
     }
   };
 
-  _handleReject = ({ req }: RejectBody) => {
+  _handleReject = ({ req, reason }: RejectBody) => {
     if (this._registeringConns.has(req)) {
-      this._emitError(new ConnectionError());
+      this._emitError(new ConnectionError(reason));
       this._registeringConns.delete(req);
     }
   };
 
-  _handleConnectFail = (body: DisconnectBody) => {
-    const err = new ConnectionError();
+  _handleConnectFail = () => {
+    const err = new ConnectionError('connect handshake declined by server');
     this._emitError(err);
   };
 }

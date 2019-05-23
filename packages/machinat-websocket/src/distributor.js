@@ -152,7 +152,8 @@ class SocketDistributor extends EventEmitter {
 
   async removeLocalConnection(
     socketId: SocketId,
-    uid: ChannelUid
+    uid: ChannelUid,
+    reason: string
   ): Promise<boolean> {
     if (this._deleteLocalConnection(socketId, uid)) {
       const socketStatus = this._socketStore.get(socketId);
@@ -161,7 +162,7 @@ class SocketDistributor extends EventEmitter {
       }
 
       const { instance: socket } = socketStatus;
-      await socket.disconnect({ uid });
+      await socket.disconnect({ uid, reason });
 
       return true;
     }
@@ -185,7 +186,7 @@ class SocketDistributor extends EventEmitter {
     const blacklistSet = blacklist && new Set(blacklist);
 
     const promises = [];
-    const connsOnSending = [];
+    const socketsSent = [];
 
     for (const socketId of conneted.keys()) {
       const socketStatus = this._socketStore.get(socketId);
@@ -196,23 +197,22 @@ class SocketDistributor extends EventEmitter {
         (!whitelistSet || whitelistSet.has(socketId)) &&
         (!blacklistSet || blacklistSet.has(socketId))
       ) {
-        connsOnSending.push(socketId);
-
         const { instance: socket } = socketStatus;
         promises.push(socket.event(body).catch(this._emitError));
+        socketsSent.push(socketId);
       }
     }
 
-    const results = await promises;
+    const results = await Promise.all(promises);
 
-    const connsSent = [];
+    const socketsFinished = [];
     for (let i = 0; i < results.length; i += 1) {
-      if (results[i] === undefined) {
-        connsSent.push(connsOnSending[i]);
+      if (results[i] !== undefined) {
+        socketsFinished.push(socketsSent[i]);
       }
     }
 
-    return connsSent;
+    return socketsFinished;
   }
 
   setAuthenticator(authenticator: RegisterAuthenticator) {
@@ -292,12 +292,6 @@ class SocketDistributor extends EventEmitter {
   }
 
   async _handleRegisterImpl(socket: Socket, body: RegisterBody, seq: number) {
-    const socketStatus = this._socketStore.get(socket.id);
-    if (socketStatus === undefined) {
-      await socket.reject({ req: seq });
-      return;
-    }
-
     const result = await this._authenticator(socket, body);
 
     if (result.accepted) {
@@ -307,7 +301,7 @@ class SocketDistributor extends EventEmitter {
       await socket.connect({ uid, req: seq });
       this._setLocalConnection(uid, socket.id, info || {}, false);
     } else {
-      await socket.reject({ req: seq });
+      await socket.reject({ req: seq, reason: result.reason });
     }
   }
 
@@ -317,7 +311,8 @@ class SocketDistributor extends EventEmitter {
     const connections = this._connectionMapping.get(uid);
 
     if (connections === undefined || !connections.has(socket.id)) {
-      await socket.disconnect({ uid });
+      // reject if not registered
+      await socket.disconnect({ uid, reason: 'connection not registered' });
     } else {
       const { resolve, info }: ConnectionStatus = (connections.get(
         socket.id
@@ -327,7 +322,7 @@ class SocketDistributor extends EventEmitter {
       }
 
       this._setLocalConnection(uid, socket.id, info, true);
-      this._emitConnect(socket.id, uid, info);
+      this._emitConnect(socket, uid, info);
     }
   }
 
@@ -355,7 +350,7 @@ class SocketDistributor extends EventEmitter {
     }
 
     this._deleteLocalConnection(socket.id, uid);
-    this._emitDisconnect(socket.id, uid, info);
+    this._emitDisconnect(socket, uid, info);
   }
 
   _handleEventImpl(socket: Socket, body: EventBody) {
@@ -365,7 +360,7 @@ class SocketDistributor extends EventEmitter {
       return;
     }
 
-    this._emitEvent(socket.id, uid, info, body);
+    this._emitEvent(socket, uid, info, body);
   }
 
   _handleSocketCloseImpl(socket: Socket) {

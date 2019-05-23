@@ -75,5 +75,9 @@ export interface SocketBroker {
     socketId: SocketId,
     info: ConnectionInfo
   ): Promise<boolean>;
-  removeConnection(uid: ChannelUid, socketId: SocketId): Promise<boolean>;
+  removeConnection(
+    uid: ChannelUid,
+    socketId: SocketId,
+    reason: string
+  ): Promise<boolean>;
 }

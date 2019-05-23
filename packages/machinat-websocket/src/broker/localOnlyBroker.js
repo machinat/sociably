@@ -23,7 +23,7 @@ export default class LocalOnlyBroker implements SocketBroker {
     return this.distributor.addLocalConnection(socketId, uid, info);
   }
 
-  removeConnection(socketId: SocketId, uid: ChannelUid) {
-    return this.distributor.removeLocalConnection(socketId, uid);
+  removeConnection(socketId: SocketId, uid: ChannelUid, reason: string) {
+    return this.distributor.removeLocalConnection(socketId, uid, reason);
   }
 }

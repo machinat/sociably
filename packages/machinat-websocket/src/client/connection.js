@@ -18,14 +18,14 @@ type EventListener = (event: ClientEvent, channel: WebSocketChannel) => void;
 export default class Connection {
   _channel: void | WebSocketChannel;
   _sendEvent: ClientEvent => Promise<void>;
-  _disconnect: () => Promise<void>;
+  _disconnect: string => Promise<void>;
 
   _eventListners: EventListener[];
   _queuedEventJobs: QueuedEventJob[];
 
   constructor(
     sendEvent: ClientEvent => Promise<void>,
-    disconnect: () => Promise<void>
+    disconnect: string => Promise<void>
   ) {
     this._sendEvent = sendEvent;
     this._disconnect = disconnect;
@@ -78,8 +78,8 @@ export default class Connection {
     this._queuedEventJobs = [];
   }
 
-  disconnect() {
-    this._disconnect();
+  disconnect(reason: string) {
+    this._disconnect(reason);
   }
 
   onEvent(listener: EventListener) {
