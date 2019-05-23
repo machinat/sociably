@@ -5,7 +5,12 @@ import thenifiedly from 'thenifiedly';
 import type WebSocket from 'ws';
 
 import { ConnectionError } from './error';
-import type { RequestInfo, SocketId, ChannelUid } from './types';
+import type {
+  RequestInfo,
+  SocketId,
+  ChannelUid,
+  ConnectionInfo,
+} from './types';
 
 /**
  * Mahcinat Web Protocle v0
@@ -98,7 +103,7 @@ export type ConnectBody = {
   // the register frame seq on server, or the connect frame seq on client
   req?: number,
   uid: ChannelUid,
-  token?: string,
+  info: ConnectionInfo,
 };
 
 /**
@@ -532,7 +537,7 @@ class MachinatSocket extends EventEmitter {
   }
 
   _handleConnect(body: ConnectBody, seq: number) {
-    const { uid } = body;
+    const { uid, info } = body;
 
     const state = this.connectStates.get(uid);
     if (state === undefined) {
@@ -541,7 +546,7 @@ class MachinatSocket extends EventEmitter {
 
       if (this.isClient) {
         // confirm on client side
-        this.connect({ uid, req: seq }).catch(this._emitError);
+        this.connect({ uid, req: seq, info }).catch(this._emitError);
       } else {
         // disallow initiating connect handshake from client
         this.disconnect({

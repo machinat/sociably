@@ -1,5 +1,6 @@
 // @flow
 import type WebSocketChannel from '../channel';
+import type { ConnectionInfo } from '../types';
 
 export type ClientEvent = {|
   type: string,
@@ -13,10 +14,17 @@ type QueuedEventJob = {
   reject: any => void,
 };
 
-type EventListener = (event: ClientEvent, channel: WebSocketChannel) => void;
+type EventListener = (
+  event: ClientEvent,
+  channel: WebSocketChannel,
+  info: ConnectionInfo
+) => void;
 
 export default class Connection {
+  _connected: boolean;
   _channel: void | WebSocketChannel;
+  _info: void | ConnectionInfo;
+
   _sendEvent: ClientEvent => Promise<void>;
   _disconnect: string => Promise<void>;
 
@@ -27,6 +35,7 @@ export default class Connection {
     sendEvent: ClientEvent => Promise<void>,
     disconnect: string => Promise<void>
   ) {
+    this._connected = false;
     this._sendEvent = sendEvent;
     this._disconnect = disconnect;
     this._eventListners = [];
@@ -37,17 +46,12 @@ export default class Connection {
     return this._channel;
   }
 
+  get info() {
+    return this._info;
+  }
+
   get connected() {
-    return this._channel !== undefined;
-  }
-
-  _setConnected(channel: WebSocketChannel) {
-    this._channel = channel;
-    this._flushQueuedEvent();
-  }
-
-  _setDisconnected() {
-    this._channel = undefined;
+    return this._connected;
   }
 
   send(event: ClientEvent): Promise<void> {
@@ -58,6 +62,36 @@ export default class Connection {
     return new Promise((resolve, reject) => {
       this._queuedEventJobs.push({ event, resolve, reject });
     });
+  }
+
+  removeEventListner(listener: EventListener) {
+    const listenerIdx = this._eventListners.findIndex(fn => fn === listener);
+
+    if (listenerIdx === -1) {
+      return false;
+    }
+
+    this._eventListners.splice(listenerIdx, 1);
+    return true;
+  }
+
+  disconnect(reason: string) {
+    this._disconnect(reason);
+  }
+
+  onEvent(listener: EventListener) {
+    this._eventListners.push(listener);
+  }
+
+  _setConnected(channel: WebSocketChannel, info: ConnectionInfo) {
+    this._connected = true;
+    this._channel = channel;
+    this._info = info;
+    this._flushQueuedEvent();
+  }
+
+  _setDisconnected() {
+    this._connected = false;
   }
 
   _flushQueuedEvent() {
@@ -78,28 +112,9 @@ export default class Connection {
     this._queuedEventJobs = [];
   }
 
-  disconnect(reason: string) {
-    this._disconnect(reason);
-  }
-
-  onEvent(listener: EventListener) {
-    this._eventListners.push(listener);
-  }
-
-  _emitEvent(event: ClientEvent, channel: WebSocketChannel) {
+  _emitEvent(event: ClientEvent) {
     this._eventListners.forEach(listener => {
-      listener(event, channel);
+      listener(event, (this._channel: any), (this._info: any)); // assume it's connected already
     });
-  }
-
-  removeEventListner(listener: EventListener) {
-    const listenerIdx = this._eventListners.findIndex(fn => fn === listener);
-
-    if (listenerIdx === -1) {
-      return false;
-    }
-
-    this._eventListners.splice(listenerIdx, 1);
-    return true;
   }
 }

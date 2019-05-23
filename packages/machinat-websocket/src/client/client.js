@@ -183,7 +183,7 @@ class WebClient extends EventEmitter {
     this._emitError(err);
   }
 
-  _handleConnect = ({ uid, req }: ConnectBody, seq: number) => {
+  _handleConnect = ({ uid, req, info }: ConnectBody, seq: number) => {
     const channel = WebSocketChannel.fromUid(uid);
     if (channel === null) {
       this._socket
@@ -194,16 +194,17 @@ class WebClient extends EventEmitter {
 
     let connection = this._registeringConns.get((req: any));
     if (connection !== undefined) {
-      connection._setConnected(channel);
-      connection._emitEvent(
-        { type: '@connect', subtype: undefined, payload: undefined },
-        channel
-      );
+      connection._setConnected(channel, info);
+      connection._emitEvent({
+        type: '@connect',
+        subtype: undefined,
+        payload: undefined,
+      });
 
       this._registeringConns.delete((req: any));
     } else {
       connection = this._createConnection();
-      connection._setConnected(channel);
+      connection._setConnected(channel, info);
       this._emitConnected(connection, channel);
     }
 
@@ -213,13 +214,12 @@ class WebClient extends EventEmitter {
   _handleDisconnect = ({ uid }: DisconnectBody) => {
     const connection = this._connectedConns.get(uid);
     if (connection !== undefined) {
-      const channel: WebSocketChannel = (connection.channel: any);
-
       connection._setDisconnected();
-      connection._emitEvent(
-        { type: '@disconnect', subtype: undefined, payload: undefined },
-        channel
-      );
+      connection._emitEvent({
+        type: '@disconnect',
+        subtype: undefined,
+        payload: undefined,
+      });
 
       this._connectedConns.delete(uid);
     }
@@ -230,8 +230,7 @@ class WebClient extends EventEmitter {
     const connection = this._connectedConns.get(uid);
 
     if (connection !== undefined) {
-      const channel: WebSocketChannel = (connection.channel: any);
-      connection._emitEvent({ type, subtype, payload }, channel);
+      connection._emitEvent({ type, subtype, payload });
     }
   };
 

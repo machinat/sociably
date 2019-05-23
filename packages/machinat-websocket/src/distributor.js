@@ -142,7 +142,7 @@ class SocketDistributor extends EventEmitter {
 
     const { instance: socket } = socketStatus;
 
-    await socket.connect({ uid });
+    await socket.connect({ uid, info });
     const success = await new Promise(resolve => {
       this._setLocalConnection(uid, socketId, info, false, resolve);
     });
@@ -298,7 +298,7 @@ class SocketDistributor extends EventEmitter {
       const { channel, info } = result;
       const uid: ChannelUid = (channel.uid: any);
 
-      await socket.connect({ uid, req: seq });
+      await socket.connect({ uid, req: seq, info });
       this._setLocalConnection(uid, socket.id, info || {}, false);
     } else {
       await socket.reject({ req: seq, reason: result.reason });
