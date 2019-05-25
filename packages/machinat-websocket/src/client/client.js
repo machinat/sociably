@@ -32,11 +32,6 @@ type QueuedRegisterJob = {
   connection: Connection,
 };
 
-type ConnectionHandler = (
-  connection: Connection,
-  channel: WebSocketChannel
-) => void;
-
 class WebClient extends EventEmitter {
   options: ClientOptions;
   _socket: MachinatSocket;
@@ -45,9 +40,6 @@ class WebClient extends EventEmitter {
 
   _registeringConns: Map<number, Connection>;
   _connectedConns: Map<string, Connection>;
-
-  _connectionHandlers: ConnectionHandler[];
-  _errorHandlers: ((Error) => void)[];
 
   constructor(optionsInput: ClientOptionsInput) {
     super();
@@ -63,9 +55,6 @@ class WebClient extends EventEmitter {
     this._registeringConns = new Map();
     this._connectedConns = new Map();
 
-    this._connectionHandlers = [];
-    this._errorHandlers = [];
-
     this._socket = createSocket(options.url);
 
     this._socket.on('open', this._handleSocketOpen);
@@ -80,7 +69,12 @@ class WebClient extends EventEmitter {
     this._socket.on('error', this._emitError);
     this._socket.on('connect_fail', this._handleConnectFail);
 
+    // TODO: implement answering
     // this._socket.on('answer');
+  }
+
+  readyState() {
+    return this._socket.readyState();
   }
 
   register(body: RegisterBody): Connection {
@@ -94,6 +88,22 @@ class WebClient extends EventEmitter {
 
     return connection;
   }
+
+  close(code: number, reason: string) {
+    this._socket.close(code, reason);
+  }
+
+  _emitConnect(connection: Connection) {
+    this.emit('connect', connection);
+  }
+
+  _emitDisconnect(connection: Connection) {
+    this.emit('disconnect', connection);
+  }
+
+  _emitError = (err: Error) => {
+    this.emit('error', err);
+  };
 
   _createConnection() {
     const connection = new Connection(
@@ -116,46 +126,6 @@ class WebClient extends EventEmitter {
     return connection;
   }
 
-  onConnected(handler: ConnectionHandler) {
-    this._connectionHandlers.push(handler);
-  }
-
-  removeConnectedHandler(handler: ConnectionHandler) {
-    const idx = this._connectionHandlers.findIndex(fn => fn === handler);
-    if (idx === -1) {
-      return false;
-    }
-
-    this._connectionHandlers.splice(idx, 1);
-    return true;
-  }
-
-  _emitConnected(connection: Connection, channel: WebSocketChannel) {
-    for (const handler of this._connectionHandlers) {
-      handler(connection, channel);
-    }
-  }
-
-  onError(handler: Error => void) {
-    this._errorHandlers.push(handler);
-  }
-
-  removeErrorHandler(handler: Error => void) {
-    const idx = this._errorHandlers.findIndex(fn => fn === handler);
-    if (idx === -1) {
-      return false;
-    }
-
-    this._errorHandlers.splice(idx, 1);
-    return true;
-  }
-
-  _emitError = (err: Error) => {
-    for (const handler of this._errorHandlers) {
-      handler(err);
-    }
-  };
-
   _handleSocketOpen = () => {
     for (const { body, connection } of this._queuedRegister) {
       this._socket
@@ -168,15 +138,8 @@ class WebClient extends EventEmitter {
   };
 
   _handleSocketClose = (code: number, reason: string) => {
-    const err = new ConnectionError(
-      `socket close (${reason}) while registering connection`
-    );
-
-    // fail all queued jobs of registering connection
-    for (const connection of this._registeringConns.values()) {
-      connection._failAllEventsJob(err);
-    }
-    this._registeringConns = new Map();
+    this._socket.removeAllListeners();
+    this.emit('close', code, reason);
   };
 
   _handleSocketError(err: Error) {
@@ -205,7 +168,7 @@ class WebClient extends EventEmitter {
     } else {
       connection = this._createConnection();
       connection._setConnected(channel, info);
-      this._emitConnected(connection, channel);
+      this._emitConnect(connection);
     }
 
     this._connectedConns.set(uid, connection);
@@ -222,6 +185,7 @@ class WebClient extends EventEmitter {
       });
 
       this._connectedConns.delete(uid);
+      this._emitDisconnect(connection);
     }
   };
 

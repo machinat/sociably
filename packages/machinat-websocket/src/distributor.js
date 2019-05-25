@@ -102,27 +102,18 @@ class SocketDistributor extends EventEmitter {
     return true;
   }
 
-  async removeSocket(socketId: SocketId): Promise<number> {
+  async _removeSocket(
+    socketId: SocketId,
+    code: number,
+    reason: string
+  ): Promise<void> {
     const socketStatus = this._socketStore.get(socketId);
+    if (socketStatus !== undefined) {
+      this._socketStore.delete(socketId);
 
-    if (socketStatus === undefined) {
-      return 0;
+      const { instance: socket } = socketStatus;
+      socket.close(code, reason);
     }
-
-    this._socketStore.delete(socketId);
-
-    const { instance: socket } = socketStatus;
-    let unboundCount = 0;
-
-    for (const uid of socket.connectStates.keys()) {
-      const conneted = this._connectionMapping.get(uid);
-
-      if (conneted !== undefined && conneted.delete(socketId)) {
-        unboundCount += 1;
-      }
-    }
-
-    return unboundCount;
   }
 
   async addLocalConnection(
@@ -364,7 +355,8 @@ class SocketDistributor extends EventEmitter {
   }
 
   _handleSocketCloseImpl(socket: Socket) {
-    this.removeSocket(socket.id);
+    socket.removeAllListeners();
+    this._socketStore.delete(socket.id);
   }
 }
 

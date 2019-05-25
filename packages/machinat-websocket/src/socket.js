@@ -213,29 +213,20 @@ function handleWSMessage(data: any) {
 }
 
 function handleWSOpen() {
-  (this: WithSocket).socket.emit('open');
+  (this: WithSocket).socket._emitOpen();
 }
 
 function handleWSClose(code, reason) {
-  const { socket } = (this: WithSocket);
-
-  for (const [uid, state] of socket.connectStates.entries()) {
-    if (state === STATE_CONNECTED_OK) {
-      this.emit('disconnect', { uid });
-    }
-  }
-
-  socket.connectStates.clear();
-  socket.emit('close', code, reason);
+  (this: WithSocket).socket._handleClose(code, reason);
 }
 
 function handleWSError(err) {
-  (this: WithSocket).socket.emit('error', err);
+  (this: WithSocket).socket._emitError(err);
 }
 
 /**
  * Socket encapsulate protocol detail and provide a high level api for
- * communicating operatiom and notification
+ * communicating operation and notification
  */
 class MachinatSocket extends EventEmitter {
   id: SocketId;
@@ -246,7 +237,7 @@ class MachinatSocket extends EventEmitter {
 
   _seq: number;
 
-  connectStates: Map<ChannelUid, number>;
+  _connectStates: Map<ChannelUid, number>;
   _handshakeTimeouts: Map<ChannelUid, TimeoutID>;
 
   constructor(ws: WebSocket, id: SocketId, request?: RequestInfo) {
@@ -258,7 +249,7 @@ class MachinatSocket extends EventEmitter {
     this.isClient = !request;
     this._seq = 0;
 
-    this.connectStates = new Map();
+    this._connectStates = new Map();
     this._handshakeTimeouts = new Map();
 
     ws.socket = this; // eslint-disable-line no-param-reassign
@@ -272,13 +263,17 @@ class MachinatSocket extends EventEmitter {
     return this._ws.readyState === SOCKET_OPEN;
   }
 
+  readyState() {
+    return this._ws.readyState;
+  }
+
   isConnectedTo(uid: ChannelUid): boolean {
-    const state = this.connectStates.get(uid);
+    const state = this._connectStates.get(uid);
     return this._ws.readyState === SOCKET_OPEN && state === STATE_CONNECTED_OK;
   }
 
   isConnectingTo(uid: ChannelUid): boolean {
-    const state = this.connectStates.get(uid);
+    const state = this._connectStates.get(uid);
     return (
       this._ws.readyState === SOCKET_OPEN &&
       state !== undefined &&
@@ -287,7 +282,7 @@ class MachinatSocket extends EventEmitter {
   }
 
   isDisconnetingTo(uid: ChannelUid) {
-    const state = this.connectStates.get(uid);
+    const state = this._connectStates.get(uid);
     return (
       this._ws.readyState === SOCKET_OPEN &&
       state !== undefined &&
@@ -295,95 +290,10 @@ class MachinatSocket extends EventEmitter {
     );
   }
 
-  _outdateHandshake = (uid: ChannelUid, req?: number) => {
-    const state = this.connectStates.get(uid);
-    if (state !== undefined && state !== STATE_CONNECTED_OK) {
-      this.connectStates.delete(uid);
-
-      if (state & MASK_CONNECTING) {
-        this.emit('connect_fail', { uid, req }, req);
-      } else {
-        this.emit('disconnect', { uid, req }, req);
-      }
-    }
-
-    this._handshakeTimeouts.delete(uid);
-  };
-
-  _addHandshakeTimeout(uid: ChannelUid, req?: number) {
-    if (this._handshakeTimeouts.has(uid)) {
-      return;
-    }
-
-    const state = this.connectStates.get(uid);
-    if (state !== undefined) {
-      this.connectStates.set(uid, state | FLAG_OUTDATING);
-    }
-
-    const timeoutId = setTimeout(
-      this._outdateHandshake,
-      HANDSHAKE_TIMEOUT,
-      uid,
-      req
-    );
-    this._handshakeTimeouts.set(uid, timeoutId);
-  }
-
-  _accomplishConnect(body: ConnectBody, seq: number) {
-    this.emit('connect', body, seq);
-
-    const { uid } = body;
-    this.connectStates.set(uid, STATE_CONNECTED_OK);
-
-    const timeoutId = this._handshakeTimeouts.get(uid);
-    if (timeoutId !== undefined) {
-      clearTimeout(timeoutId);
-      this._handshakeTimeouts.delete(uid);
-    }
-  }
-
-  _accomplishDisconnect(body: DisconnectBody, seq?: number) {
-    const { uid } = body;
-    const state = this.connectStates.get(uid);
-
-    if (state === undefined || state & MASK_CONNECTING) {
-      this.emit('connect_fail', body, seq);
-    } else {
-      this.emit('disconnect', body, seq);
-    }
-
-    this.connectStates.delete(uid);
-
-    const timeoutId = this._handshakeTimeouts.get(uid);
-    if (timeoutId !== undefined) {
-      clearTimeout(timeoutId);
-      this._handshakeTimeouts.delete(uid);
-    }
-  }
-
-  async _send(frame: string, body: Object): Promise<number> {
-    if (this._ws.readyState !== SOCKET_OPEN) {
-      throw new ConnectionError('the underlying WebSocket is not opened');
-    }
-
-    const seq = this._seq;
-    this._seq += 1;
-
-    const packet = JSON.stringify([frame, seq, body]);
-
-    if (this.isClient) {
-      this._ws.send(packet);
-    } else {
-      await thenifiedly.callMethod('send', this._ws, packet);
-    }
-
-    return seq;
-  }
-
   event(body: EventBody): Promise<number> {
     const { uid } = body;
 
-    const state = this.connectStates.get(uid);
+    const state = this._connectStates.get(uid);
     if (state !== STATE_CONNECTED_OK) {
       throw new ConnectionError(
         `channel(${uid}) is not connected or is disconnecting`
@@ -413,7 +323,7 @@ class MachinatSocket extends EventEmitter {
   async connect(body: ConnectBody): Promise<number> {
     const { uid, req } = body;
 
-    let state = this.connectStates.get(uid);
+    let state = this._connectStates.get(uid);
     // throw if already connected or disconnecting or waiting for CONNECT echo
     if (
       state === STATE_CONNECTED_OK ||
@@ -426,7 +336,7 @@ class MachinatSocket extends EventEmitter {
     this._addHandshakeTimeout(uid, req);
     const seq = await this._send(FRAME_CONNECT, body);
 
-    state = this.connectStates.get(uid);
+    state = this._connectStates.get(uid);
 
     if (state !== undefined) {
       if (state & FLAG_CONNECT_RECEIVED && !(state & MASK_DISCONNECTING)) {
@@ -434,7 +344,7 @@ class MachinatSocket extends EventEmitter {
         this._accomplishConnect(body, seq);
       } else {
         // set flag and wait for CONNECT echo
-        this.connectStates.set(uid, state & FLAG_CONNECT_SENT);
+        this._connectStates.set(uid, state & FLAG_CONNECT_SENT);
       }
     }
 
@@ -445,7 +355,7 @@ class MachinatSocket extends EventEmitter {
   async disconnect(body: DisconnectBody): Promise<void | number> {
     const { uid, req } = body;
 
-    let state = this.connectStates.get(uid);
+    let state = this._connectStates.get(uid);
     if (state === undefined) {
       // throw if not even connecting
       throw new ConnectionError(
@@ -459,15 +369,81 @@ class MachinatSocket extends EventEmitter {
     this._addHandshakeTimeout(uid, req);
     const seq = await this._send(FRAME_DISCONNECT, body);
 
-    this.connectStates.set(uid, state | FLAG_DISCONNECT_SENT);
+    this._connectStates.set(uid, state | FLAG_DISCONNECT_SENT);
 
-    state = this.connectStates.get(uid);
+    state = this._connectStates.get(uid);
     if (state !== undefined && state & FLAG_DISCONNECT_RECEIVED) {
       // DISCONNECT handshake finished
       this._accomplishDisconnect(body, seq);
     }
 
     return seq;
+  }
+
+  // TODO: close code
+  close(code: number, reason: string) {
+    this._ws.close(code, reason);
+    this._handleClose(code, reason);
+  }
+
+  async _send(frame: string, body: Object): Promise<number> {
+    const { readyState } = this._ws;
+    if (readyState !== SOCKET_OPEN) {
+      throw new ConnectionError(`the socket is ${readyState}`);
+    }
+
+    const seq = this._seq;
+    this._seq += 1;
+
+    const packet = JSON.stringify([frame, seq, body]);
+
+    if (this.isClient) {
+      this._ws.send(packet);
+    } else {
+      await thenifiedly.callMethod('send', this._ws, packet);
+    }
+
+    return seq;
+  }
+
+  _emitError = (err: Error) => {
+    this.emit('error', err);
+  };
+
+  _emitEvent(body: EventBody, seq: number) {
+    this.emit('event', body, seq);
+  }
+
+  _emitReject(body: RejectBody, seq: number) {
+    this.emit('reject', body, seq);
+  }
+
+  _emitAnswer(body: AnswerBody, seq: number) {
+    this.emit('answer', body, seq);
+  }
+
+  _emitRegister(body: RegisterBody, seq: number) {
+    this.emit('register', body, seq);
+  }
+
+  _emitConnect(body: ConnectBody, seq: number) {
+    this.emit('connect', body, seq);
+  }
+
+  _emitConnectFail(body: DisconnectBody, seq?: number) {
+    this.emit('connect_fail', body, seq);
+  }
+
+  _emitDisconnect(body: DisconnectBody, seq?: number) {
+    this.emit('disconnect', body, seq);
+  }
+
+  _emitOpen() {
+    this.emit('open');
+  }
+
+  _emitClose(code: number, reason: string) {
+    this.emit('close', code, reason);
   }
 
   _handlePacket(data: string) {
@@ -478,9 +454,9 @@ class MachinatSocket extends EventEmitter {
     if (frameType === FRAME_EVENT) {
       this._handleEvent(body, seq);
     } else if (frameType === FRAME_ANSWER) {
-      this._handleAnswer(body, seq);
+      this._emitAnswer(body, seq);
     } else if (frameType === FRAME_REJECT) {
-      this._handleReject(body, seq);
+      this._emitReject(body, seq);
     } else if (frameType === FRAME_REGISTER) {
       this._handleRegister(body, seq);
     } else if (frameType === FRAME_CONNECT) {
@@ -494,14 +470,10 @@ class MachinatSocket extends EventEmitter {
     }
   }
 
-  _emitError = (err: Error) => {
-    this.emit('error', err);
-  };
-
   _handleEvent(body: EventBody, seq: number) {
     const { uid } = body;
 
-    const state = this.connectStates.get(uid);
+    const state = this._connectStates.get(uid);
     if (
       state === STATE_CONNECTED_OK ||
       // accept msg when DISCONNECT sent but not yet echoed back
@@ -509,20 +481,12 @@ class MachinatSocket extends EventEmitter {
         !(state & MASK_CONNECTING) &&
         !(state & FLAG_DISCONNECT_RECEIVED))
     ) {
-      this.emit('event', body, seq);
+      this._emitEvent(body, seq);
     } else {
       this.reject({ req: seq, reason: 'channel not connected' }).catch(
         this._emitError
       );
     }
-  }
-
-  _handleReject(body: RejectBody, seq: number) {
-    this.emit('reject', body, seq);
-  }
-
-  _handleAnswer(body: AnswerBody, seq: number) {
-    this.emit('answer', body, seq);
   }
 
   _handleRegister(body: RegisterBody, seq: number) {
@@ -532,17 +496,17 @@ class MachinatSocket extends EventEmitter {
         reason: 'not accepet register to a client',
       }).catch(this._emitError);
     } else {
-      this.emit('register', body, seq);
+      this._emitRegister(body, seq);
     }
   }
 
   _handleConnect(body: ConnectBody, seq: number) {
     const { uid, info } = body;
 
-    const state = this.connectStates.get(uid);
+    const state = this._connectStates.get(uid);
     if (state === undefined) {
       // handle fresh connect initiation
-      this.connectStates.set(uid, FLAG_CONNECT_RECEIVED);
+      this._connectStates.set(uid, FLAG_CONNECT_RECEIVED);
 
       if (this.isClient) {
         // confirm on client side
@@ -560,14 +524,14 @@ class MachinatSocket extends EventEmitter {
       this._accomplishConnect(body, seq);
     } else {
       // if disconnecting while connecting, add flag and do nothing
-      this.connectStates.set(uid, state | FLAG_CONNECT_RECEIVED);
+      this._connectStates.set(uid, state | FLAG_CONNECT_RECEIVED);
     }
   }
 
   _handleDisconnect(body: DisconnectBody, seq: number) {
     const { uid } = body;
 
-    const state = this.connectStates.get(uid);
+    const state = this._connectStates.get(uid);
     if (state === undefined) {
       // reject if not even start connecting
       this.reject({
@@ -579,10 +543,98 @@ class MachinatSocket extends EventEmitter {
       this._accomplishDisconnect(body, seq);
     } else {
       // echo back to finish handshake
-      this.connectStates.set(uid, state | FLAG_DISCONNECT_RECEIVED);
+      this._connectStates.set(uid, state | FLAG_DISCONNECT_RECEIVED);
       this.disconnect({ uid, req: seq, reason: 'confirmed' }).catch(
         this._emitError
       );
+    }
+  }
+
+  _handleClose(code: number, reason: string) {
+    for (const [uid, state] of this._connectStates.entries()) {
+      if (state === STATE_CONNECTED_OK || state & MASK_DISCONNECTING) {
+        this._emitDisconnect({ uid, reason });
+      } else if (state & MASK_CONNECTING) {
+        this._emitConnectFail({ uid, reason });
+      }
+    }
+
+    for (const timeoutId of this._handshakeTimeouts.values()) {
+      clearTimeout(timeoutId);
+    }
+
+    this._connectStates.clear();
+    this._handshakeTimeouts.clear();
+
+    if (this._ws.readyState === SOCKET_CLOSED) {
+      this._emitClose(code, reason);
+    }
+  }
+
+  _outdateHandshake = (uid: ChannelUid, req?: number) => {
+    const state = this._connectStates.get(uid);
+    if (state !== undefined && state !== STATE_CONNECTED_OK) {
+      this._connectStates.delete(uid);
+
+      const reason = 'handshake timeout';
+      if (state & MASK_CONNECTING) {
+        this._emitConnectFail({ uid, req, reason }, req);
+      } else {
+        this._emitDisconnect({ uid, req, reason }, req);
+      }
+    }
+
+    this._handshakeTimeouts.delete(uid);
+  };
+
+  _addHandshakeTimeout(uid: ChannelUid, req?: number) {
+    if (this._handshakeTimeouts.has(uid)) {
+      return;
+    }
+
+    const state = this._connectStates.get(uid);
+    if (state !== undefined) {
+      this._connectStates.set(uid, state | FLAG_OUTDATING);
+    }
+
+    const timeoutId = setTimeout(
+      this._outdateHandshake,
+      HANDSHAKE_TIMEOUT,
+      uid,
+      req
+    );
+    this._handshakeTimeouts.set(uid, timeoutId);
+  }
+
+  _accomplishConnect(body: ConnectBody, seq: number) {
+    this._emitConnect(body, seq);
+
+    const { uid } = body;
+    this._connectStates.set(uid, STATE_CONNECTED_OK);
+
+    const timeoutId = this._handshakeTimeouts.get(uid);
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+      this._handshakeTimeouts.delete(uid);
+    }
+  }
+
+  _accomplishDisconnect(body: DisconnectBody, seq?: number) {
+    const { uid } = body;
+    const state = this._connectStates.get(uid);
+
+    if (state === undefined || state & MASK_CONNECTING) {
+      this._emitConnectFail(body, seq);
+    } else {
+      this._emitDisconnect(body, seq);
+    }
+
+    this._connectStates.delete(uid);
+
+    const timeoutId = this._handshakeTimeouts.get(uid);
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+      this._handshakeTimeouts.delete(uid);
     }
   }
 }
