@@ -62,12 +62,13 @@ if (typeof WebSocket !== 'undefined') {
       return this._ws.url;
     }
 
-    send(data) {
-      return this._ws.send(data);
+    send(data, callback) {
+      this._ws.send(data);
+      callback();
     }
 
     close(code, reason) {
-      return this._ws.close(code, reason);
+      this._ws.close(code, reason);
     }
   }
 
