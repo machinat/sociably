@@ -35,7 +35,7 @@
     "flow-bin": "^0.93.0",
     "jest": "^23.6.0",
     "lerna": "^2.9.0",
-    "moxy": "https://github.com/lrills/moxy/releases/download/v0.1.0-5/moxy.tar.gz",
+    "moxy": "https://github.com/lrills/moxy/releases/download/v0.1.0-6/moxy.tar.gz",
     "nock": "^10.0.3",
     "nodemon": "^1.18.4",
     "prettier": "^1.15.3",
@@ -45,6 +45,7 @@
     "packages/*"
   ],
   "jest": {
+    "testEnvironment": "node",
     "testMatch": [
       "**/__tests__/**/*.spec.js?(x)"
     ],

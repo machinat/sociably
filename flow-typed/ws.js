@@ -37,7 +37,10 @@ declare module 'ws' {
     readyState: number;
     url?: string;
 
-    constructor(address: string | URL$URL | URL$Url): WebSocket;
+    constructor(
+      address: string | URL$URL | URL$Url,
+      proto: string | string[]
+    ): WebSocket;
     send(data: any, options?: Object, callback?: Function): void;
     close(code?: number, reason?: string): void;
     on('close', (code: number, reason: string) => void): void;

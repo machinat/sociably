@@ -26,7 +26,7 @@ class WebSocketChannel implements MachinatChannel {
     this.id = id;
     this.type = type;
     this.subtype = subtype;
-    this.uid = `websocket:${type}:${subtype || '*'}:${id}`;
+    this.uid = `websocket:${type}:${subtype || '*'}:${id || '*'}`;
   }
 }
 

@@ -1,18 +1,19 @@
 // @flow
 import EventEmitter from 'events';
+import WS from 'ws';
 
-import type MachinatSocket, {
+import type {
   ConnectBody,
   DisconnectBody,
   EventBody,
   RegisterBody,
   RejectBody,
 } from '../socket';
+import MachinatSocket, { SOCKET_OPEN } from '../socket';
 
 import WebSocketChannel from '../channel';
 import { ConnectionError } from '../error';
 
-import createSocket from './createSocket';
 import Connection from './connection';
 import type { ClientEvent } from './connection';
 
@@ -30,6 +31,14 @@ type ClientOptionsInput = $Shape<ClientOptions>;
 type QueuedRegisterJob = {
   body: RegisterBody,
   connection: Connection,
+};
+
+const MACHINAT_WEBSOCKET_PROTOCOL_V0 = 'machinat-websocket-v0';
+
+const createSocket = (url: string) => {
+  const webSocket = new WS(url, MACHINAT_WEBSOCKET_PROTOCOL_V0);
+
+  return new MachinatSocket(webSocket, '');
 };
 
 class WebClient extends EventEmitter {
@@ -73,15 +82,18 @@ class WebClient extends EventEmitter {
     // this._socket.on('answer');
   }
 
-  readyState() {
+  get state() {
     return this._socket.readyState();
   }
 
   register(body: RegisterBody): Connection {
     const connection = this._createConnection();
 
-    if (this._socket.isReady()) {
-      this._socket.register(body);
+    if (this._socket.readyState() === SOCKET_OPEN) {
+      this._socket
+        .register(body)
+        .then(seq => this._registeringConns.set(seq, connection))
+        .catch(this._emitError);
     } else {
       this._queuedRegister.push({ body, connection });
     }
@@ -135,6 +147,7 @@ class WebClient extends EventEmitter {
     }
 
     this._queuedRegister = [];
+    this.emit('open');
   };
 
   _handleSocketClose = (code: number, reason: string) => {
@@ -157,7 +170,7 @@ class WebClient extends EventEmitter {
 
     let connection = this._registeringConns.get((req: any));
     if (connection !== undefined) {
-      connection._setConnected(channel, info);
+      connection._setConnected(channel, info || {});
       connection._emitEvent({
         type: '@connect',
         subtype: undefined,
@@ -167,7 +180,7 @@ class WebClient extends EventEmitter {
       this._registeringConns.delete((req: any));
     } else {
       connection = this._createConnection();
-      connection._setConnected(channel, info);
+      connection._setConnected(channel, info || {});
       this._emitConnect(connection);
     }
 
@@ -206,7 +219,7 @@ class WebClient extends EventEmitter {
   };
 
   _handleConnectFail = () => {
-    const err = new ConnectionError('connect handshake declined by server');
+    const err = new ConnectionError('connect handshake fail');
     this._emitError(err);
   };
 }

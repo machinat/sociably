@@ -50,7 +50,7 @@ export default class Connection {
     return this._info;
   }
 
-  get connected() {
+  get isReady() {
     return this._connected;
   }
 
@@ -76,6 +76,7 @@ export default class Connection {
   }
 
   disconnect(reason: string) {
+    this._connected = false;
     this._disconnect(reason);
   }
 

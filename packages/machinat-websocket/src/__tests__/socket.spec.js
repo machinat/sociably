@@ -303,7 +303,7 @@ describe('connecting handshake', () => {
     await expect(
       serverSocket.connect({ uid, info })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"channel [my:channel:_type_:_subtype_] already connected"`
+      `"channel [my:channel:_type_:_subtype_] is already connected"`
     );
   });
 });

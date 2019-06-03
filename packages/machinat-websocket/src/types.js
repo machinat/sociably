@@ -31,12 +31,12 @@ export type RequestInfo = {
   headers: {| [string]: string |},
 };
 
-export type WebSocketTransport = {
+export type WebSocketTransport = {|
   source: 'websocket',
   socketId: SocketId,
   request: RequestInfo,
   connectionInfo?: ConnectionInfo,
-};
+|};
 
 declare var t: WebSocketTransport;
 (t: MachinatTransport<'websocket'>);
@@ -49,7 +49,8 @@ export type AcceptedRegisterResponse = {
 
 export type UnacceptedRegisterResponse = {|
   accepted: false,
-  code: number,
+  // TODO: reject code
+  // code: number,
   reason: string,
 |};
 
@@ -65,7 +66,7 @@ export type RegisterAuthenticator = (
 ) => Promise<RegisterResponse>;
 
 export type WebSocketBotOptions = {|
-  verifyUpgrade?: IncomingMessage => boolean,
+  verifyUpgrade?: RequestInfo => boolean,
 |};
 
 export interface SocketBroker {

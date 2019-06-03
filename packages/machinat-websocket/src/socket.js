@@ -33,10 +33,10 @@ import type {
  */
 
 /* eslint-disable no-unused-vars */
-const SOCKET_CONNECTING = 0;
-const SOCKET_OPEN = 1;
-const SOCKET_COSING = 2;
-const SOCKET_CLOSED = 3;
+export const SOCKET_CONNECTING = 0;
+export const SOCKET_OPEN = 1;
+export const SOCKET_CLOSING = 2;
+export const SOCKET_CLOSED = 3;
 /* eslint-enable no-unused-vars */
 
 /**
@@ -261,10 +261,6 @@ class MachinatSocket extends EventEmitter {
     ws.on('error', handleWSError);
   }
 
-  isReady() {
-    return this._ws.readyState === SOCKET_OPEN;
-  }
-
   readyState() {
     return this._ws.readyState;
   }
@@ -332,7 +328,7 @@ class MachinatSocket extends EventEmitter {
       (state !== undefined &&
         (state & MASK_DISCONNECTING || state & FLAG_CONNECT_SENT))
     ) {
-      throw new ConnectionError(`channel [${uid}] already connected`);
+      throw new ConnectionError(`channel [${uid}] is already connected`);
     }
 
     this._addHandshakeTimeout(uid, req);
@@ -385,8 +381,8 @@ class MachinatSocket extends EventEmitter {
       throw new ConnectionError('socket is not ready');
     }
 
-    const seq = this._seq;
     this._seq += 1;
+    const seq = this._seq;
 
     const packet = JSON.stringify([frame, seq, body]);
 

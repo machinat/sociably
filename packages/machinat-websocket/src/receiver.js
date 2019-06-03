@@ -17,12 +17,7 @@ import type {
   ChannelUid,
 } from './types';
 import type Distributor from './distributor';
-import type Socket, {
-  ConnectBody,
-  DisconnectBody,
-  EventBody,
-  RegisterBody,
-} from './socket';
+import type Socket, { EventBody, RegisterBody } from './socket';
 
 import MachinatSocket from './socket';
 import WebSocketChannel from './channel';
@@ -64,36 +59,34 @@ class WebSocketReceiver
   _channelCache: Map<ChannelUid, WebSocketChannel>;
 
   isBound: boolean;
-  _handleEvent: EventHandler<
+  _issueEvent: EventHandler<
     WebSocketResponse,
     WebSocketChannel,
     WebSocketEvent,
     WebSocketTransport
   >;
-  _handleError: (e: Error) => void;
-
-  _handleSocketConnect: (body: ConnectBody, seq: number) => void;
-  _handleSocketDisconnect: (body: DisconnectBody, seq: number) => void;
-  _handleSocketEvent: (body: EventBody, seq: number) => void;
+  _issueError: (e: Error) => void;
 
   constructor(
     webSocketServer: WebSocketServer,
     distributor: Distributor,
     options: WebSocketBotOptions
   ) {
+    this.options = options;
     this._webSocketServer = webSocketServer;
     this._distributor = distributor;
-    this.options = options;
+    this._channelCache = new Map();
 
     distributor.setAuthenticator(this._handleRegisterAuth);
 
     distributor.on('event', this._handleSocketEvent);
-    distributor.on('connect', this._handleSocketConnect);
-    distributor.on('disconnect', this._handleSocketDissconnect);
+    distributor.on('connect', this._handleConnect);
+    distributor.on('disconnect', this._handleDisconnect);
+    distributor.on('error', this._handleDistributorError);
   }
 
   bind(
-    handler: EventHandler<
+    handleEvent: EventHandler<
       WebSocketResponse,
       WebSocketChannel,
       WebSocketEvent,
@@ -106,8 +99,8 @@ class WebSocketReceiver
     }
 
     this.isBound = true;
-    this._handleEvent = handler;
-    this._handleError = handleError;
+    this._issueEvent = handleEvent;
+    this._issueError = handleError;
     return true;
   }
 
@@ -121,8 +114,14 @@ class WebSocketReceiver
   }
 
   handleUpgrade(req: IncomingMessage, ns: NetSocket, head: Buffer) {
+    const requestInfo = {
+      method: req.method,
+      url: req.url,
+      headers: req.headers,
+    };
+
     if (this.options.verifyUpgrade) {
-      const allowed = this.options.verifyUpgrade(req);
+      const allowed = this.options.verifyUpgrade(requestInfo);
 
       if (!allowed) {
         rejectUpgrade(ns, 400);
@@ -130,15 +129,9 @@ class WebSocketReceiver
       }
     }
 
-    const request = {
-      method: req.method,
-      url: req.url,
-      headers: req.headers,
-    };
-
     this._webSocketServer.handleUpgrade(req, ns, head, (ws: WebSocket) => {
-      const socket = new MachinatSocket(ws, uniqid(), request);
-      this._distributor.addSocket(socket);
+      const socket = new MachinatSocket(ws, uniqid(), requestInfo);
+      this._distributor.consignSocket(socket);
     });
   }
 
@@ -156,17 +149,17 @@ class WebSocketReceiver
     return channel;
   }
 
-  async _issueEvent(
+  async _processEvent(
     uid: ChannelUid,
     socket: Socket,
     type: string,
     subtype: void | string,
     payload: any,
-    info: ConnectionInfo
+    connectionInfo: ConnectionInfo
   ) {
     const channel = this._getCachedChannel(uid);
     if (channel === null) {
-      this._handleError(
+      this._issueError(
         new ConnectionError(`invalid channel uid [${uid}] received`)
       );
       return;
@@ -175,14 +168,14 @@ class WebSocketReceiver
     const event = createEvent(type, subtype, payload);
 
     try {
-      await this._handleEvent(channel, event, {
+      await this._issueEvent(channel, event, {
         source: WEBSOCKET,
-        info,
+        connectionInfo,
         socketId: socket.id,
         request: (socket.request: any), // request exist at server side
       });
     } catch (err) {
-      this._handleError(err);
+      this._issueError(err);
     }
   }
 
@@ -192,18 +185,23 @@ class WebSocketReceiver
   ): Promise<RegisterResponse> => {
     const channel = new WebSocketChannel('@socket', undefined, socket.id);
     const event = createEvent('@register', undefined, body);
+    try {
+      const response: WebSocketResponse = await this._issueEvent(
+        channel,
+        event,
+        {
+          source: WEBSOCKET,
+          socketId: socket.id,
+          request: (socket.request: any), // request exist at server side
+        }
+      );
 
-    const response: WebSocketResponse = await this._handleEvent(
-      channel,
-      event,
-      {
-        source: WEBSOCKET,
-        socketId: socket.id,
-        request: (socket.request: any), // request exist at server side
-      }
-    );
-
-    return response || { accepted: false, code: 0.0, reason: '????????' };
+      return (
+        response || { accepted: false, reason: 'no registration middleware' }
+      );
+    } catch (e) {
+      return { accepted: false, reason: e.message };
+    }
   };
 
   _handleSocketEvent = (
@@ -213,23 +211,23 @@ class WebSocketReceiver
     body: EventBody
   ) => {
     const { type, subtype, payload } = body;
-    this._issueEvent(uid, socket, type, subtype, payload, info);
+    this._processEvent(uid, socket, type, subtype, payload, info);
   };
 
-  _handleSocketConnect = (
+  _handleConnect = (socket: Socket, uid: ChannelUid, info: ConnectionInfo) => {
+    this._processEvent(uid, socket, '@connect', undefined, undefined, info);
+  };
+
+  _handleDisconnect = (
     socket: Socket,
     uid: ChannelUid,
     info: ConnectionInfo
   ) => {
-    this._issueEvent(uid, socket, '@connect', undefined, undefined, info);
+    this._processEvent(uid, socket, '@disconnect', undefined, undefined, info);
   };
 
-  _handleSocketDissconnect = (
-    socket: Socket,
-    uid: ChannelUid,
-    info: ConnectionInfo
-  ) => {
-    this._issueEvent(uid, socket, '@disconnect', undefined, undefined, info);
+  _handleDistributorError = (err: Error) => {
+    this._issueError(err);
   };
 }
 

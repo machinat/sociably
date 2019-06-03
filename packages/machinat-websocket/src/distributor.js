@@ -45,32 +45,34 @@ class SocketDistributor extends EventEmitter {
     this._socketStore = new Map();
     this._connectionMapping = new Map();
 
-    const broker = this;
+    const distributor = this;
 
     function handleRegister(body: RegisterBody, seq: number) {
-      broker
+      distributor
         ._handleRegisterImpl((this: Socket), body, seq)
         .catch(this._emitError);
     }
 
     function handleConnect(body: ConnectBody) {
-      broker._handleConnectImpl((this: Socket), body).catch(this._emitError);
+      distributor
+        ._handleConnectImpl((this: Socket), body)
+        .catch(this._emitError);
     }
 
     function handleEvent(body: EventBody) {
-      broker._handleEventImpl((this: Socket), body);
+      distributor._handleEventImpl((this: Socket), body);
     }
 
     function handleConnectFail(body: DisconnectBody) {
-      broker._handleConnectFailImpl((this: Socket), body);
+      distributor._handleConnectFailImpl((this: Socket), body);
     }
 
     function handleDisconnect(body: DisconnectBody) {
-      broker._handleDisconnectImpl((this: Socket), body);
+      distributor._handleDisconnectImpl((this: Socket), body);
     }
 
     function handleSocketClose() {
-      broker._handleSocketCloseImpl((this: Socket));
+      distributor._handleSocketCloseImpl((this: Socket));
     }
 
     this._handleEvent = handleEvent;
@@ -81,7 +83,7 @@ class SocketDistributor extends EventEmitter {
     this._handleSocketClose = handleSocketClose;
   }
 
-  addSocket(socket: Socket): boolean {
+  consignSocket(socket: Socket): boolean {
     const socketId = socket.id;
 
     if (this._socketStore.has(socketId)) {
@@ -102,21 +104,19 @@ class SocketDistributor extends EventEmitter {
     return true;
   }
 
-  async _removeSocket(
+  getLocalConnectionInfo(
     socketId: SocketId,
-    code: number,
-    reason: string
-  ): Promise<void> {
-    const socketStatus = this._socketStore.get(socketId);
-    if (socketStatus !== undefined) {
-      this._socketStore.delete(socketId);
-
-      const { instance: socket } = socketStatus;
-      socket.close(code, reason);
+    uid: ChannelUid
+  ): void | ConnectionInfo {
+    const status = this._getConnectionStatus(socketId, uid);
+    if (status === undefined) {
+      return undefined;
     }
+
+    return status.connected ? status.info : undefined;
   }
 
-  async addLocalConnection(
+  async linkLocalConnection(
     socketId: SocketId,
     uid: ChannelUid,
     info: ConnectionInfo
@@ -133,42 +133,45 @@ class SocketDistributor extends EventEmitter {
 
     const { instance: socket } = socketStatus;
 
-    await socket.connect({ uid, info });
-    const success = await new Promise(resolve => {
+    const finishPromise = new Promise(resolve => {
       this._setLocalConnection(uid, socketId, info, false, resolve);
     });
+    await socket.connect({ uid, info });
 
+    const success = await finishPromise;
     return success;
   }
 
-  async removeLocalConnection(
+  async unlinkLocalConnection(
     socketId: SocketId,
     uid: ChannelUid,
     reason: string
   ): Promise<boolean> {
-    if (this._deleteLocalConnection(socketId, uid)) {
-      const socketStatus = this._socketStore.get(socketId);
-      if (socketStatus === undefined) {
-        return false;
-      }
-
-      const { instance: socket } = socketStatus;
-      await socket.disconnect({ uid, reason });
-
-      return true;
+    const socketStatus = this._socketStore.get(socketId);
+    if (socketStatus === undefined) {
+      return false;
     }
 
-    return false;
+    const status = this._getConnectionStatus(socketId, uid);
+    if (status === undefined || !status.connected) {
+      return false;
+    }
+
+    this._setLocalConnection(uid, socketId, status.info, false);
+
+    const { instance: socket } = socketStatus;
+    await socket.disconnect({ uid, reason });
+
+    return true;
   }
 
-  async broadcast({
+  async broadcastLocal({
     body,
     whitelist,
     blacklist,
   }: WebEventJob): Promise<null | SocketId[]> {
     const { uid } = body;
     const conneted = this._connectionMapping.get(uid);
-
     if (conneted === undefined) {
       return null;
     }
@@ -186,7 +189,7 @@ class SocketDistributor extends EventEmitter {
         conneted.delete(socketId);
       } else if (
         (!whitelistSet || whitelistSet.has(socketId)) &&
-        (!blacklistSet || blacklistSet.has(socketId))
+        (!blacklistSet || !blacklistSet.has(socketId))
       ) {
         const { instance: socket } = socketStatus;
         promises.push(socket.event(body).catch(this._emitError));
@@ -203,11 +206,34 @@ class SocketDistributor extends EventEmitter {
       }
     }
 
-    return socketsFinished;
+    return socketsFinished.length === 0 ? null : socketsFinished;
   }
 
   setAuthenticator(authenticator: RegisterAuthenticator) {
     this._authenticator = authenticator;
+  }
+
+  _getConnectionStatus(socketId: SocketId, uid: ChannelUid) {
+    const conneted = this._connectionMapping.get(uid);
+    if (conneted === undefined) {
+      return undefined;
+    }
+
+    return conneted.get(socketId);
+  }
+
+  async _deleteSocket(
+    socketId: SocketId,
+    code: number,
+    reason: string
+  ): Promise<void> {
+    const socketStatus = this._socketStore.get(socketId);
+    if (socketStatus !== undefined) {
+      this._socketStore.delete(socketId);
+
+      const { instance: socket } = socketStatus;
+      socket.close(code, reason);
+    }
   }
 
   _deleteLocalConnection(socketId: SocketId, uid: ChannelUid): boolean {
@@ -246,23 +272,6 @@ class SocketDistributor extends EventEmitter {
 
   _emitDisconnect(socket: Socket, uid: ChannelUid, info: ConnectionInfo) {
     this.emit('disconnect', socket, uid, info);
-  }
-
-  _getLocalConnectionInfo(
-    socketId: SocketId,
-    uid: ChannelUid
-  ): void | ConnectionInfo {
-    const conneted = this._connectionMapping.get(uid);
-    if (conneted === undefined) {
-      return undefined;
-    }
-
-    const status = conneted.get(socketId);
-    if (status === undefined) {
-      return undefined;
-    }
-
-    return status.info;
   }
 
   _setLocalConnection(
@@ -335,23 +344,23 @@ class SocketDistributor extends EventEmitter {
 
   _handleDisconnectImpl(socket: Socket, body: DisconnectBody) {
     const { uid } = body;
-    const info = this._getLocalConnectionInfo(socket.id, uid);
-    if (info === undefined) {
+    const status = this._getConnectionStatus(socket.id, uid);
+    if (status === undefined) {
       return;
     }
 
     this._deleteLocalConnection(socket.id, uid);
-    this._emitDisconnect(socket, uid, info);
+    this._emitDisconnect(socket, uid, status.info);
   }
 
   _handleEventImpl(socket: Socket, body: EventBody) {
     const { uid } = body;
-    const info = this._getLocalConnectionInfo(socket.id, uid);
-    if (info === undefined) {
+    const status = this._getConnectionStatus(socket.id, uid);
+    if (status === undefined || !status.connected) {
       return;
     }
 
-    this._emitEvent(socket, uid, info, body);
+    this._emitEvent(socket, uid, status.info, body);
   }
 
   _handleSocketCloseImpl(socket: Socket) {
