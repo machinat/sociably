@@ -117,8 +117,11 @@ export default class BaseBot<
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this, no-unused-vars
-  send(channel: Channel, message: MachinatNode, options: any) {
+  send( // eslint-disable-line class-methods-use-this
+    channel: Channel,
+    message: MachinatNode,
+    options: any // eslint-disable-line no-unused-vars
+  ): Promise<null | Result[]> {
     throw new TypeError('Bot#send() should not be called on BaseBot');
   }
 

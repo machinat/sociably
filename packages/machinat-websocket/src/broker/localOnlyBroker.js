@@ -3,7 +3,7 @@ import type Distributor from '../distributor';
 import type {
   ChannelUid,
   SocketId,
-  WebEventJob,
+  WebSocketJob,
   ConnectionInfo,
   SocketBroker,
 } from '../types';
@@ -15,15 +15,15 @@ export default class LocalOnlyBroker implements SocketBroker {
     this.distributor = distributor;
   }
 
-  broadcast(job: WebEventJob) {
-    return this.distributor.broadcast(job);
+  broadcast(job: WebSocketJob) {
+    return this.distributor.broadcastLocal(job);
   }
 
-  addConnection(socketId: SocketId, uid: ChannelUid, info: ConnectionInfo) {
-    return this.distributor.addLocalConnection(socketId, uid, info);
+  linkConnection(uid: ChannelUid, socketId: SocketId, info: ConnectionInfo) {
+    return this.distributor.linkLocalConnection(socketId, uid, info);
   }
 
-  removeConnection(socketId: SocketId, uid: ChannelUid, reason: string) {
-    return this.distributor.removeLocalConnection(socketId, uid, reason);
+  unlinkConnection(uid: ChannelUid, socketId: SocketId, reason: string) {
+    return this.distributor.unlinkLocalConnection(socketId, uid, reason);
   }
 }

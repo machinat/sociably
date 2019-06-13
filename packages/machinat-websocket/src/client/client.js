@@ -19,11 +19,6 @@ import type { ClientEvent } from './connection';
 
 type ClientOptions = {
   url?: string,
-  // TODO:
-  // reconnecting: boolean,
-  // heartbeatInterval: number,
-  // heartbeatTimeout: number,
-  // socketTimeout: number,
 };
 
 type ClientOptionsInput = $Shape<ClientOptions>;

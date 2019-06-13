@@ -8,7 +8,7 @@ import type Socket, {
   DisconnectBody,
 } from './socket';
 import type {
-  WebEventJob,
+  WebSocketJob,
   ChannelUid,
   SocketId,
   ConnectionInfo,
@@ -166,11 +166,13 @@ class SocketDistributor extends EventEmitter {
   }
 
   async broadcastLocal({
-    body,
+    uid,
+    type,
+    subtype,
+    payload,
     whitelist,
     blacklist,
-  }: WebEventJob): Promise<null | SocketId[]> {
-    const { uid } = body;
+  }: WebSocketJob): Promise<null | SocketId[]> {
     const conneted = this._connectionMapping.get(uid);
     if (conneted === undefined) {
       return null;
@@ -192,7 +194,9 @@ class SocketDistributor extends EventEmitter {
         (!blacklistSet || !blacklistSet.has(socketId))
       ) {
         const { instance: socket } = socketStatus;
-        promises.push(socket.event(body).catch(this._emitError));
+        promises.push(
+          socket.event({ uid, type, subtype, payload }).catch(this._emitError)
+        );
         socketsSent.push(socketId);
       }
     }

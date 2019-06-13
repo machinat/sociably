@@ -24,7 +24,7 @@ import WebSocketChannel from './channel';
 import createEvent from './event';
 import { ConnectionError } from './error';
 
-type WebSocketServer = $ElementType<Class<WebSocket>, 'Server'>;
+type WebSocketServer = $ElementType<WebSocket, 'Server'>;
 
 const WEBSOCKET = 'websocket';
 

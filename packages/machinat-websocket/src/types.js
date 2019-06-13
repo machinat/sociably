@@ -1,7 +1,6 @@
 // @flow
-import type { IncomingMessage } from 'http';
 import type { MachinatEvent, MachinatTransport } from 'machinat-base/types';
-import type MachinatSocket, { EventBody, RegisterBody } from './socket';
+import type MachinatSocket, { RegisterBody } from './socket';
 import type WebSocketChannel from './channel';
 
 export type SocketId = string;
@@ -19,17 +18,28 @@ export type WebSocketEvent = {
 declare var e: WebSocketEvent;
 (e: MachinatEvent<any>);
 
-export type WebEventJob = {
-  body: EventBody,
+export type EventRenderValue = {|
+  type: string,
+  subtype?: string,
+  payload?: string,
   whitelist?: string[],
   blacklist?: string[],
+|};
+
+export type WebSocketJob = {|
+  uid: ChannelUid,
+  ...EventRenderValue,
+|};
+
+export type WebSocketResult = {
+  sockets: null | SocketId[],
 };
 
-export type RequestInfo = {
+export type RequestInfo = {|
   method: string,
   url: string,
   headers: {| [string]: string |},
-};
+|};
 
 export type WebSocketTransport = {|
   source: 'websocket',
@@ -41,11 +51,11 @@ export type WebSocketTransport = {|
 declare var t: WebSocketTransport;
 (t: MachinatTransport<'websocket'>);
 
-export type AcceptedRegisterResponse = {
+export type AcceptedRegisterResponse = {|
   accepted: true,
   channel: WebSocketChannel,
   info: ConnectionInfo,
-};
+|};
 
 export type UnacceptedRegisterResponse = {|
   accepted: false,
@@ -70,13 +80,13 @@ export type WebSocketBotOptions = {|
 |};
 
 export interface SocketBroker {
-  broadcast(job: WebEventJob): Promise<null | SocketId[]>;
-  addConnection(
+  broadcast(job: WebSocketJob): Promise<null | SocketId[]>;
+  linkConnection(
     uid: ChannelUid,
     socketId: SocketId,
     info: ConnectionInfo
   ): Promise<boolean>;
-  removeConnection(
+  unlinkConnection(
     uid: ChannelUid,
     socketId: SocketId,
     reason: string

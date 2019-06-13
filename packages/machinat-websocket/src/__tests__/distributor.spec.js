@@ -242,12 +242,16 @@ test('manipulate lifecycle of connection', async () => {
 
   await expect(
     distributor.broadcastLocal({
-      body: { uid: chanFoo.uid, type: 'greeting', payload: 'hello foo' },
+      uid: chanFoo.uid,
+      type: 'greeting',
+      payload: 'hello foo',
     })
   ).resolves.toEqual(expect.arrayContaining([skt1.id, skt2.id]));
   await expect(
     distributor.broadcastLocal({
-      body: { uid: chanBar.uid, type: 'greeting', payload: 'hello bar' },
+      uid: chanBar.uid,
+      type: 'greeting',
+      payload: 'hello bar',
     })
   ).resolves.toEqual([skt1.id]);
 
@@ -349,11 +353,9 @@ test('broadcastLocal() return null when not connected', async () => {
 
   await expect(
     distributor.broadcastLocal({
-      body: {
-        uid: chanFoo.uid,
-        type: 'greeting',
-        payload: 'hello nobody',
-      },
+      uid: chanFoo.uid,
+      type: 'greeting',
+      payload: 'hello nobody',
     })
   ).resolves.toBe(null);
 });
@@ -383,21 +385,21 @@ test('broadcastLocal() with whitelist and blacklist', async () => {
 
   const whitelist = ['1', '2'];
   const blacklist = ['2', '3'];
-  const body = { uid: chanFoo.uid, type: 'greeting', payload: 'hello foo' };
+  const job = { uid: chanFoo.uid, type: 'greeting', payload: 'hello foo' };
 
-  await expect(distributor.broadcastLocal({ body })).resolves.toEqual([
+  await expect(distributor.broadcastLocal(job)).resolves.toEqual([
     '1',
     '2',
     '3',
   ]);
   await expect(
-    distributor.broadcastLocal({ body, whitelist })
+    distributor.broadcastLocal({ ...job, whitelist })
   ).resolves.toEqual(['1', '2']);
   await expect(
-    distributor.broadcastLocal({ body, blacklist })
+    distributor.broadcastLocal({ ...job, blacklist })
   ).resolves.toEqual(['1']);
   await expect(
-    distributor.broadcastLocal({ body, whitelist, blacklist })
+    distributor.broadcastLocal({ ...job, whitelist, blacklist })
   ).resolves.toEqual(['1']);
 
   expect(skt1.event.mock).toHaveBeenCalledTimes(4);
@@ -413,11 +415,9 @@ test('broadcastLocal() return null when not connected', async () => {
 
   await expect(
     distributor.broadcastLocal({
-      body: {
-        uid: chanFoo.uid,
-        type: 'greeting',
-        payload: 'hello nobody',
-      },
+      uid: chanFoo.uid,
+      type: 'greeting',
+      payload: 'hello nobody',
     })
   ).resolves.toBe(null);
 });
@@ -444,11 +444,9 @@ test('broadcastLocal() socket level error happen', async () => {
 
   await expect(
     distributor.broadcastLocal({
-      body: {
-        uid: chanFoo.uid,
-        type: 'greeting',
-        payload: 'hello dangerous',
-      },
+      uid: chanFoo.uid,
+      type: 'greeting',
+      payload: 'hello dangerous',
     })
   ).resolves.toEqual(['1']);
 
@@ -456,11 +454,9 @@ test('broadcastLocal() socket level error happen', async () => {
 
   await expect(
     distributor.broadcastLocal({
-      body: {
-        uid: chanFoo.uid,
-        type: 'greeting',
-        payload: 'hello dangerous',
-      },
+      uid: chanFoo.uid,
+      type: 'greeting',
+      payload: 'hello dangerous',
     })
   ).resolves.toBe(null);
 

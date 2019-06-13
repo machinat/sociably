@@ -29,7 +29,7 @@ declare module 'ws' {
   }
 
   declare class WebSocket extends $EventEmitter {
-    static Server: Server;
+    static Server: Class<Server>;
 
     binaryType: string;
     bufferedAmount: number;
