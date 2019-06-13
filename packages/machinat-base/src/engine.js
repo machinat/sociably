@@ -16,7 +16,7 @@ import type {
   SegmentWithoutPause,
   MachinatChannel,
   MachinatWorker,
-  DispatchAction,
+  DispatchTask,
   DispatchResponse,
 } from './types';
 
@@ -96,7 +96,7 @@ export default class MachinatEngine<
     return this;
   }
 
-  renderActions<T, O>(
+  renderTasks<T, O>(
     createJobs: (
       target: T,
       segments: SegmentWithoutPause<SegmentValue, Native>[],
@@ -106,13 +106,13 @@ export default class MachinatEngine<
     message: MachinatNode,
     options: O,
     allowPause: boolean
-  ): null | DispatchAction<Job>[] {
+  ): null | DispatchTask<Job>[] {
     const segments = this.renderer.render(message, allowPause);
     if (segments === null) {
       return null;
     }
 
-    const actions: DispatchAction<Job>[] = [];
+    const tasks: DispatchTask<Job>[] = [];
 
     let segmentsBuffer: SegmentWithoutPause<SegmentValue, Native>[] = [];
 
@@ -131,29 +131,29 @@ export default class MachinatEngine<
         const jobs = createJobs(target, segmentsBuffer, options);
 
         if (jobs !== null) {
-          actions.push({ type: 'jobs', payload: jobs });
+          tasks.push({ type: 'transmit', payload: jobs });
         }
       }
 
       // collect pauses
       if (segment.type === 'pause') {
-        actions.push({ type: 'pause', payload: segment.node });
+        tasks.push({ type: 'pause', payload: segment.node });
         segmentsBuffer = [];
       }
     }
 
-    return actions;
+    return tasks;
   }
 
   dispatch(
     channel: null | Channel,
-    actions: DispatchAction<Job>[],
+    tasks: DispatchTask<Job>[],
     node?: MachinatNode
   ): Promise<null | DispatchResponse<Job, Result>> {
     const frame: DispatchFrame<Channel, Job> = Object.create(this.frame);
 
     frame.channel = channel;
-    frame.actions = actions;
+    frame.tasks = tasks;
     frame.platform = this.platform;
     frame.node = node;
 
@@ -163,15 +163,18 @@ export default class MachinatEngine<
   async _executeSending(
     frame: DispatchFrame<Channel, Job>
   ): Promise<null | DispatchResponse<Job, Result>> {
-    const { actions } = frame;
+    const { tasks } = frame;
     const results: Result[] = [];
+    const jobs: Job[] = [];
 
-    for (const action of actions) {
-      if (action.type === 'jobs') {
+    for (const task of tasks) {
+      if (task.type === 'transmit') {
+        jobs.push(...task.payload);
+
         const batchResp: JobBatchResponse<
           Job,
           Result
-        > = await this.queue.executeJobs(action.payload); // eslint-disable-line no-await-in-loop
+        > = await this.queue.executeJobs(task.payload); // eslint-disable-line no-await-in-loop
 
         if (batchResp.success) {
           for (const jobResp of batchResp.batch) {
@@ -180,19 +183,19 @@ export default class MachinatEngine<
         } else {
           const { errors, batch } = batchResp;
 
-          throw new DispatchError(errors, actions, [
+          throw new DispatchError(errors, tasks, jobs, [
             ...results,
             ...(batch ? batch.map(jobResp => jobResp && jobResp.result) : []),
           ]);
         }
-      } else if (action.type === 'pause') {
+      } else if (task.type === 'pause') {
         // eslint-disable-next-line no-await-in-loop
-        await handlePause(action.payload);
+        await handlePause(task.payload);
       } else {
-        throw new TypeError(`invalid dispatch action type "${action.type}"`);
+        throw new TypeError(`invalid dispatch task type "${task.type}"`);
       }
     }
 
-    return { actions, results };
+    return { tasks, results, jobs };
   }
 }

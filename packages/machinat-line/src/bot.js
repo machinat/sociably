@@ -101,20 +101,20 @@ class LineBot
 
     const usePush = !(options && options.replyToken);
 
-    const jobs = this.engine.renderActions(
+    const tasks = this.engine.renderTasks(
       createChatJobs,
       channel,
       message,
       options,
       usePush
     );
-    if (jobs === null) return null;
+    if (tasks === null) return null;
 
     if (!usePush) {
       let replyFound = false;
 
-      for (const job of jobs) {
-        if (job.type === 'jobs') {
+      for (const job of tasks) {
+        if (job.type === 'transmit') {
           for (const { entry } of job.payload) {
             const isReply = entry === 'message/reply';
 
@@ -129,7 +129,7 @@ class LineBot
       }
     }
 
-    const response = await this.engine.dispatch(channel, jobs, message);
+    const response = await this.engine.dispatch(channel, tasks, message);
     return response === null ? null : response.results;
   }
 
@@ -137,16 +137,16 @@ class LineBot
     targets: string[],
     message: MachinatNode
   ): Promise<null | LineAPIResult[]> {
-    const jobs = this.engine.renderActions(
+    const tasks = this.engine.renderTasks(
       createMulticastJobs,
       targets,
       message,
       undefined,
       true
     );
-    if (jobs === null) return null;
+    if (tasks === null) return null;
 
-    const response = await this.engine.dispatch(null, jobs, message);
+    const response = await this.engine.dispatch(null, tasks, message);
     return response === null ? null : response.results;
   }
 }

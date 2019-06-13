@@ -66,20 +66,21 @@ export type EventMiddleware<
   Promise<void | Response>
 >;
 
-type PauseDispatchAction = {| type: 'pause', payload: PauseElement |};
-type JobsDispatchAction<Job> = {| type: 'jobs', payload: Job[] |};
-export type DispatchAction<Job> = PauseDispatchAction | JobsDispatchAction<Job>;
+type PauseDispatchTask = {| type: 'pause', payload: PauseElement |};
+type TransmitDispatchTask<Job> = {| type: 'transmit', payload: Job[] |};
+export type DispatchTask<Job> = PauseDispatchTask | TransmitDispatchTask<Job>;
 
 export type DispatchFrame<Channel: MachinatChannel, Job> = {
   platform: string,
   channel: null | Channel,
-  actions: DispatchAction<Job>[],
+  tasks: DispatchTask<Job>[],
   bot: MachinatBot<Channel, Event, any, any, any, Job, any>,
   node?: MachinatNode,
 };
 
 export type DispatchResponse<Job, Result> = {
-  actions: DispatchAction<Job>[],
+  jobs: Job[],
+  tasks: DispatchTask<Job>[],
   results: Result[],
 };
 
@@ -117,7 +118,13 @@ export type BotPlugin<
   dispatchFrameExtension?: {
     [string]: any,
   },
-  eventMiddleware?: EventMiddleware<Native, Response, Channel, Event, Transport>,
+  eventMiddleware?: EventMiddleware<
+    Native,
+    Response,
+    Channel,
+    Event,
+    Transport
+  >,
   eventFrameExtension?: {
     [string]: any,
   },

@@ -141,7 +141,7 @@ describe('#setFramePrototype(mixin)', () => {
   });
 });
 
-describe('#renderActions(createJobs, target, message, options, allowPause)', () => {
+describe('#renderTasks(createJobs, target, message, options, allowPause)', () => {
   const createJobs = moxy((_, segemnts) =>
     segemnts.map(({ value: { id } }) => ({ id }))
   );
@@ -150,11 +150,13 @@ describe('#renderActions(createJobs, target, message, options, allowPause)', () 
     createJobs.mock.clear();
   });
 
-  it('render message and create "jobs" actions', () => {
+  it('render message and create "transmit" tasks', () => {
     const engine = new Engine('test', renderer, queue, worker);
     expect(
-      engine.renderActions(createJobs, 'foo', element, { bar: 1 }, true)
-    ).toEqual([{ type: 'jobs', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] }]);
+      engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, true)
+    ).toEqual([
+      { type: 'transmit', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
+    ]);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledWith(element, true);
@@ -168,8 +170,10 @@ describe('#renderActions(createJobs, target, message, options, allowPause)', () 
   it('pass allowPause to renderer.render', () => {
     const engine = new Engine('test', renderer, queue, worker);
     expect(
-      engine.renderActions(createJobs, 'foo', element, { bar: 1 }, false)
-    ).toEqual([{ type: 'jobs', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] }]);
+      engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, false)
+    ).toEqual([
+      { type: 'transmit', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
+    ]);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledWith(element, false);
@@ -180,7 +184,7 @@ describe('#renderActions(createJobs, target, message, options, allowPause)', () 
     });
   });
 
-  it('create "pause" action out of "pause" segments which separate "jobs" action', () => {
+  it('create "pause" action out of "pause" segments which separate "transmit" action', () => {
     const segmentsWithPause = [
       { type: 'pause', node: <Machinat.Pause />, value: undefined },
       segments[0],
@@ -193,12 +197,12 @@ describe('#renderActions(createJobs, target, message, options, allowPause)', () 
 
     const engine = new Engine('test', renderer, queue, worker);
     expect(
-      engine.renderActions(createJobs, 'foo', element, { bar: 1 }, true)
+      engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, true)
     ).toEqual([
       { type: 'pause', payload: <Machinat.Pause /> },
-      { type: 'jobs', payload: [{ id: 1 }, { id: 2 }] },
+      { type: 'transmit', payload: [{ id: 1 }, { id: 2 }] },
       { type: 'pause', payload: <Machinat.Pause /> },
-      { type: 'jobs', payload: [{ id: 3 }] },
+      { type: 'transmit', payload: [{ id: 3 }] },
     ]);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
@@ -220,15 +224,16 @@ describe('#renderActions(createJobs, target, message, options, allowPause)', () 
   });
 });
 
-describe('#dispatch(channel, actions, node)', () => {
+describe('#dispatch(channel, tasks, node)', () => {
   it('renders and enqueue jobs and return array of results', async () => {
     const engine = new Engine('test', renderer, queue, worker);
-    const actions = [
-      { type: 'jobs', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
+    const tasks = [
+      { type: 'transmit', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
     ];
 
-    await expect(engine.dispatch(channel, actions, element)).resolves.toEqual({
-      actions,
+    await expect(engine.dispatch(channel, tasks, element)).resolves.toEqual({
+      tasks,
+      jobs: [{ id: 1 }, { id: 2 }, { id: 3 }],
       results: [1, 2, 3],
     });
 
@@ -241,15 +246,14 @@ describe('#dispatch(channel, actions, node)', () => {
 
   it('pass dispatch frame through middlewares', async () => {
     const engine = new Engine('test', renderer, queue, worker);
-    const actions = [
-      { type: 'jobs', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
-    ];
+    const jobs = [{ id: 1 }, { id: 2 }, { id: 3 }];
+    const tasks = [{ type: 'transmit', payload: jobs }];
 
     const expectedFrame = {
       platform: 'test',
       channel,
       node: element,
-      actions,
+      tasks,
     };
 
     const middleware1 = moxy(next => async frame => {
@@ -259,7 +263,7 @@ describe('#dispatch(channel, actions, node)', () => {
       frame.foo = 1;
       const response = await next(frame);
 
-      expect(response).toEqual({ actions, results: [1, 2, 3], bar: 2 });
+      expect(response).toEqual({ tasks, jobs, results: [1, 2, 3], bar: 2 });
       response.bar = 1;
 
       return response;
@@ -272,7 +276,7 @@ describe('#dispatch(channel, actions, node)', () => {
       frame.foo = 2;
       const response = await next(frame);
 
-      expect(response).toEqual({ actions, results: [1, 2, 3], bar: 3 });
+      expect(response).toEqual({ tasks, jobs, results: [1, 2, 3], bar: 3 });
       response.bar = 2;
 
       return response;
@@ -285,7 +289,7 @@ describe('#dispatch(channel, actions, node)', () => {
       frame.foo = 3;
       const response = await next(frame);
 
-      expect(response).toEqual({ actions, results: [1, 2, 3] });
+      expect(response).toEqual({ tasks, jobs, results: [1, 2, 3] });
       response.bar = 3;
 
       return response;
@@ -297,9 +301,10 @@ describe('#dispatch(channel, actions, node)', () => {
     expect(middleware2.mock).toHaveBeenCalledTimes(1);
     expect(middleware3.mock).toHaveBeenCalledTimes(1);
 
-    await expect(engine.dispatch(channel, actions, element)).resolves.toEqual({
+    await expect(engine.dispatch(channel, tasks, element)).resolves.toEqual({
       bar: 1,
-      actions,
+      tasks,
+      jobs,
       results: [1, 2, 3],
     });
 
@@ -312,19 +317,21 @@ describe('#dispatch(channel, actions, node)', () => {
 
   it('can bypass the real sending within middleware', async () => {
     const engine = new Engine('test', renderer, queue, worker);
-    const actions = [
-      { type: 'jobs', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
+    const tasks = [
+      { type: 'transmit', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
     ];
 
     const middleware = moxy(() => async () => ({
-      actions,
+      tasks,
+      jobs: [{ id: 0 }],
       results: [{ nothing: 'happened' }],
     }));
 
     engine.setMiddlewares(middleware);
 
-    await expect(engine.dispatch(channel, actions, element)).resolves.toEqual({
-      actions,
+    await expect(engine.dispatch(channel, tasks, element)).resolves.toEqual({
+      tasks,
+      jobs: [{ id: 0 }],
       results: [{ nothing: 'happened' }],
     });
 
@@ -351,20 +358,23 @@ describe('#dispatch(channel, actions, node)', () => {
 
   it('waits pause', async () => {
     const after = moxy(() => Promise.resolve());
-    const actionsWithPause = [
+    const tasksWithPause = [
       { type: 'pause', payload: <Machinat.Pause /> },
-      { type: 'jobs', payload: [{ id: 1 }, { id: 2 }] },
+      { type: 'transmit', payload: [{ id: 1 }, { id: 2 }] },
       { type: 'pause', payload: <Machinat.Pause after={after} /> },
-      { type: 'jobs', payload: [{ id: 3 }] },
+      { type: 'transmit', payload: [{ id: 3 }] },
       { type: 'pause', payload: <Machinat.Pause /> },
     ];
 
     const engine = new Engine('test', renderer, queue, worker);
 
     await expect(
-      engine.dispatch(channel, actionsWithPause, element)
-    ).resolves.toEqual({ actions: actionsWithPause, results: [1, 2, 3] });
-
+      engine.dispatch(channel, tasksWithPause, element)
+    ).resolves.toEqual({
+      tasks: tasksWithPause,
+      jobs: [{ id: 1 }, { id: 2 }, { id: 3 }],
+      results: [1, 2, 3],
+    });
     expect(after.mock).toHaveBeenCalledTimes(1);
 
     expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(1, [
@@ -386,7 +396,7 @@ describe('#dispatch(channel, actions, node)', () => {
         undefined,
       ],
     };
-    const actions = [{ type: 'jobs', payload: [1, 2, 3] }];
+    const tasks = [{ type: 'transmit', payload: [1, 2, 3] }];
 
     queue.executeJobs.mock.fake(() => Promise.resolve(execResponse));
 
@@ -394,10 +404,11 @@ describe('#dispatch(channel, actions, node)', () => {
 
     let isThrown = false;
     try {
-      await engine.dispatch(channel, actions);
+      await engine.dispatch(channel, tasks);
     } catch (err) {
       isThrown = true;
-      expect(err.actions).toEqual(actions);
+      expect(err.tasks).toEqual(tasks);
+      expect(err.jobs).toEqual([1, 2, 3]);
       expect(err.results).toEqual([
         "I'm only one survived",
         undefined,
@@ -436,7 +447,7 @@ describe('#dispatch(channel, actions, node)', () => {
     engine.setMiddlewares(middleware);
 
     await expect(
-      engine.dispatch(channel, [{ type: 'jobs', payload: [1, 2, 3] }])
+      engine.dispatch(channel, [{ type: 'transmit', payload: [1, 2, 3] }])
     ).resolves.toEqual({ results: [{ something: 'else' }] });
   });
 });

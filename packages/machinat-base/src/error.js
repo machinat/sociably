@@ -1,15 +1,16 @@
 // @flow
-import type { DispatchAction } from './types';
+import type { DispatchTask } from './types';
 
 class DispatchError<Job, Result> extends Error {
   errors: $ReadOnlyArray<Error>;
-
-  actions: DispatchAction<Job>[];
+  tasks: DispatchTask<Job>[];
+  jobs: Job[];
   results: (void | Result)[];
 
   constructor(
     errors: $ReadOnlyArray<Error>,
-    actions: DispatchAction<Job>[],
+    tasks: DispatchTask<Job>[],
+    jobs: Job[],
     results: (void | Result)[]
   ) {
     const message = errors
@@ -28,7 +29,8 @@ class DispatchError<Job, Result> extends Error {
     }
 
     this.errors = errors;
-    this.actions = actions;
+    this.tasks = tasks;
+    this.jobs = jobs;
     this.results = results;
   }
 }

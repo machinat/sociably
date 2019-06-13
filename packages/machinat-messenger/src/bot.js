@@ -126,7 +126,7 @@ export default class MessengerBot
             typeof target === 'string' ? { id: target } : target
           );
 
-    const actions = this.engine.renderActions(
+    const tasks = this.engine.renderTasks(
       createChatJobs,
       channel,
       messages,
@@ -134,25 +134,25 @@ export default class MessengerBot
       true
     );
 
-    if (actions === null) return null;
+    if (tasks === null) return null;
 
-    const response = await this.engine.dispatch(null, actions, messages);
+    const response = await this.engine.dispatch(null, tasks, messages);
     return response === null ? null : response.results;
   }
 
   async createMessageCreative(
     messages: MachinatNode
   ): Promise<null | MessengerAPIResult> {
-    const actions = this.engine.renderActions(
+    const tasks = this.engine.renderTasks(
       createCreativeJobs,
       null,
       messages,
       undefined,
       false
     );
-    if (actions === null) return null;
+    if (tasks === null) return null;
 
-    const response = await this.engine.dispatch(null, actions, messages);
+    const response = await this.engine.dispatch(null, tasks, messages);
     return response === null ? null : response.results[0];
   }
 
@@ -173,7 +173,7 @@ export default class MessengerBot
     };
 
     const response = await this.engine.dispatch(null, [
-      { type: 'jobs', payload: [job] },
+      { type: 'transmit', payload: [job] },
     ]);
 
     return response === null ? null : response.results[0];
@@ -189,7 +189,7 @@ export default class MessengerBot
     };
 
     const response = await this.engine.dispatch(null, [
-      { type: 'jobs', payload: [job] },
+      { type: 'transmit', payload: [job] },
     ]);
 
     return response === null ? null : response.results[0];

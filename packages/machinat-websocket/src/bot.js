@@ -97,16 +97,16 @@ class WebSocketBot extends BaseBot<
     channel: WebSocketChannel,
     message: MachinatNode
   ): Promise<null | WebSocketResult[]> {
-    const actions = this.engine.renderActions(
+    const tasks = this.engine.renderTasks(
       createJobs,
       channel,
       message,
       undefined,
-      false
+      true
     );
-    if (actions === null) return null;
+    if (tasks === null) return null;
 
-    const response = await this.engine.dispatch(channel, actions, message);
+    const response = await this.engine.dispatch(channel, tasks, message);
     return response === null ? null : response.results;
   }
 
