@@ -4,6 +4,7 @@ import WS from 'ws';
 import Distributor from '../distributor';
 import Socket from '../socket';
 import Channel from '../channel';
+import { LocalOnlyBroker } from '../broker';
 
 const delay = t => new Promise(resolve => setTimeout(resolve, t));
 
@@ -29,7 +30,10 @@ const connectSpy = moxy();
 const disconnectSpy = moxy();
 const eventSpy = moxy();
 
+const broker = moxy(new LocalOnlyBroker());
+
 beforeEach(() => {
+  broker.mock.clear();
   connectSpy.mock.clear();
   disconnectSpy.mock.clear();
   eventSpy.mock.clear();
@@ -38,7 +42,7 @@ beforeEach(() => {
 test('consigning sockets', () => {
   const skt1 = new Socket(new WS(), '1', request);
   const skt2 = new Socket(new WS(), '2', request);
-  const distributor = new Distributor();
+  const distributor = new Distributor(broker);
 
   expect(distributor.consignSocket(skt1)).toBe(true);
   expect(distributor.consignSocket(skt2)).toBe(true);
@@ -49,7 +53,7 @@ test('consigning sockets', () => {
 });
 
 test('handle connection events and lifecycle', async () => {
-  const distributor = new Distributor();
+  const distributor = new Distributor(broker);
   distributor.setAuthenticator(authenticator);
   distributor
     .on('event', eventSpy)
@@ -183,7 +187,7 @@ test('handle connection events and lifecycle', async () => {
 });
 
 test('manipulate lifecycle of connection', async () => {
-  const distributor = new Distributor();
+  const distributor = new Distributor(broker);
   distributor.setAuthenticator(authenticator);
   distributor
     .on('event', eventSpy)
@@ -201,9 +205,9 @@ test('manipulate lifecycle of connection', async () => {
 
   let promises;
   promises = [
-    distributor.linkLocalConnection(skt1.id, chanFoo.uid, info),
-    distributor.linkLocalConnection(skt1.id, chanBar.uid, info),
-    distributor.linkLocalConnection(skt2.id, chanFoo.uid, info),
+    distributor.connectSocket(chanFoo.uid, skt1.id, info),
+    distributor.connectSocket(chanBar.uid, skt1.id, info),
+    distributor.connectSocket(chanFoo.uid, skt2.id, info),
   ];
 
   expect(skt1.connect.mock).toHaveBeenCalledTimes(2);
@@ -241,14 +245,14 @@ test('manipulate lifecycle of connection', async () => {
   );
 
   await expect(
-    distributor.broadcastLocal({
+    distributor.broadcast({
       uid: chanFoo.uid,
       type: 'greeting',
       payload: 'hello foo',
     })
   ).resolves.toEqual(expect.arrayContaining([skt1.id, skt2.id]));
   await expect(
-    distributor.broadcastLocal({
+    distributor.broadcast({
       uid: chanBar.uid,
       type: 'greeting',
       payload: 'hello bar',
@@ -276,9 +280,9 @@ test('manipulate lifecycle of connection', async () => {
   expect(eventSpy.mock).not.toHaveBeenCalled();
 
   promises = [
-    distributor.unlinkLocalConnection(skt1.id, chanFoo.uid, 'bye'),
-    distributor.unlinkLocalConnection(skt1.id, chanBar.uid, 'bye'),
-    distributor.unlinkLocalConnection(skt2.id, chanFoo.uid, 'bye'),
+    distributor.disconnectSocket(chanFoo.uid, skt1.id, 'bye'),
+    distributor.disconnectSocket(chanBar.uid, skt1.id, 'bye'),
+    distributor.disconnectSocket(chanFoo.uid, skt2.id, 'bye'),
   ];
 
   expect(skt1.disconnect.mock).toHaveBeenCalledTimes(2);
@@ -318,41 +322,41 @@ test('manipulate lifecycle of connection', async () => {
   expect(disconnectSpy.mock).toHaveBeenCalledWith(skt2, chanFoo.uid, info);
 });
 
-test('linkLocalConnection() return false when already connected', async () => {
-  const distributor = new Distributor();
+test('connectSocket() return false when already connected', async () => {
+  const distributor = new Distributor(broker);
 
   const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
   distributor.consignSocket(skt1);
 
   skt1.connect.mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
 
-  distributor.linkLocalConnection('1', chanFoo.uid, {});
+  distributor.connectSocket(chanFoo.uid, '1', {});
   skt1.emit('connect', { uid: chanFoo.uid });
 
-  await expect(
-    distributor.linkLocalConnection('1', chanFoo.uid, {})
-  ).resolves.toBe(false);
+  await expect(distributor.connectSocket(chanFoo.uid, '1', {})).resolves.toBe(
+    false
+  );
 });
 
-test('unlinkLocalConnection() return false when not connected', async () => {
-  const distributor = new Distributor();
+test('disconnectSocket() return false when not connected', async () => {
+  const distributor = new Distributor(broker);
 
   const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
   distributor.consignSocket(skt1);
 
   await expect(
-    distributor.unlinkLocalConnection('1', chanFoo.uid, {})
+    distributor.disconnectSocket(chanFoo.uid, '1', {})
   ).resolves.toBe(false);
 });
 
-test('broadcastLocal() return null when not connected', async () => {
-  const distributor = new Distributor();
+test('broadcast() return null when not connected', async () => {
+  const distributor = new Distributor(broker);
 
   const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
   distributor.consignSocket(skt1);
 
   await expect(
-    distributor.broadcastLocal({
+    distributor.broadcast({
       uid: chanFoo.uid,
       type: 'greeting',
       payload: 'hello nobody',
@@ -360,8 +364,8 @@ test('broadcastLocal() return null when not connected', async () => {
   ).resolves.toBe(null);
 });
 
-test('broadcastLocal() with whitelist and blacklist', async () => {
-  const distributor = new Distributor();
+test('broadcast() with whitelist and blacklist', async () => {
+  const distributor = new Distributor(broker);
 
   const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
   const skt2 = moxy(new Socket(new WS(), '2', request), socketMoxyOpts);
@@ -375,9 +379,9 @@ test('broadcastLocal() with whitelist and blacklist', async () => {
     skt3[method].mock.fake(() => Promise.resolve(skt3._seq++)); // eslint-disable-line no-plusplus
   });
 
-  distributor.linkLocalConnection('1', chanFoo.uid, {});
-  distributor.linkLocalConnection('2', chanFoo.uid, {});
-  distributor.linkLocalConnection('3', chanFoo.uid, {});
+  distributor.connectSocket(chanFoo.uid, '1', {});
+  distributor.connectSocket(chanFoo.uid, '2', {});
+  distributor.connectSocket(chanFoo.uid, '3', {});
 
   skt1.emit('connect', { uid: chanFoo.uid });
   skt2.emit('connect', { uid: chanFoo.uid });
@@ -387,19 +391,16 @@ test('broadcastLocal() with whitelist and blacklist', async () => {
   const blacklist = ['2', '3'];
   const job = { uid: chanFoo.uid, type: 'greeting', payload: 'hello foo' };
 
-  await expect(distributor.broadcastLocal(job)).resolves.toEqual([
+  await expect(distributor.broadcast(job)).resolves.toEqual(['1', '2', '3']);
+  await expect(distributor.broadcast({ ...job, whitelist })).resolves.toEqual([
     '1',
     '2',
-    '3',
+  ]);
+  await expect(distributor.broadcast({ ...job, blacklist })).resolves.toEqual([
+    '1',
   ]);
   await expect(
-    distributor.broadcastLocal({ ...job, whitelist })
-  ).resolves.toEqual(['1', '2']);
-  await expect(
-    distributor.broadcastLocal({ ...job, blacklist })
-  ).resolves.toEqual(['1']);
-  await expect(
-    distributor.broadcastLocal({ ...job, whitelist, blacklist })
+    distributor.broadcast({ ...job, whitelist, blacklist })
   ).resolves.toEqual(['1']);
 
   expect(skt1.event.mock).toHaveBeenCalledTimes(4);
@@ -407,14 +408,14 @@ test('broadcastLocal() with whitelist and blacklist', async () => {
   expect(skt3.event.mock).toHaveBeenCalledTimes(1);
 });
 
-test('broadcastLocal() return null when not connected', async () => {
-  const distributor = new Distributor();
+test('broadcast() return null when not connected', async () => {
+  const distributor = new Distributor(broker);
 
   const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
   distributor.consignSocket(skt1);
 
   await expect(
-    distributor.broadcastLocal({
+    distributor.broadcast({
       uid: chanFoo.uid,
       type: 'greeting',
       payload: 'hello nobody',
@@ -422,8 +423,8 @@ test('broadcastLocal() return null when not connected', async () => {
   ).resolves.toBe(null);
 });
 
-test('broadcastLocal() socket level error happen', async () => {
-  const distributor = new Distributor();
+test('broadcast() socket level error happen', async () => {
+  const distributor = new Distributor(broker);
 
   const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
   const skt2 = moxy(new Socket(new WS(), '2', request), socketMoxyOpts);
@@ -431,8 +432,8 @@ test('broadcastLocal() socket level error happen', async () => {
   distributor.consignSocket(skt2);
   skt1.connect.mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
   skt2.connect.mock.fake(() => Promise.resolve(skt2._seq++)); // eslint-disable-line no-plusplus
-  distributor.linkLocalConnection('1', chanFoo.uid, {});
-  distributor.linkLocalConnection('2', chanFoo.uid, {});
+  distributor.connectSocket(chanFoo.uid, '1', {});
+  distributor.connectSocket(chanFoo.uid, '2', {});
   skt1.emit('connect', { uid: chanFoo.uid });
   skt2.emit('connect', { uid: chanFoo.uid });
 
@@ -443,7 +444,7 @@ test('broadcastLocal() socket level error happen', async () => {
   skt2.event.mock.fake(() => Promise.reject(new Error('Wasted!')));
 
   await expect(
-    distributor.broadcastLocal({
+    distributor.broadcast({
       uid: chanFoo.uid,
       type: 'greeting',
       payload: 'hello dangerous',
@@ -453,7 +454,7 @@ test('broadcastLocal() socket level error happen', async () => {
   skt1.event.mock.fake(() => Promise.reject(new Error('Wasted!')));
 
   await expect(
-    distributor.broadcastLocal({
+    distributor.broadcast({
       uid: chanFoo.uid,
       type: 'greeting',
       payload: 'hello dangerous',

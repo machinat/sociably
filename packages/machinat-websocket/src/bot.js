@@ -16,9 +16,7 @@ import type {
   WebSocketJob,
   WebSocketResult,
   WebSocketBotOptions,
-  ChannelUid,
   SocketId,
-  SocketBroker,
 } from './types';
 
 import { WEBSOCKET, WEBSOCKET_NATIVE_TYPE } from './constant';
@@ -62,7 +60,7 @@ class WebSocketBot extends BaseBot<
   WebSocketJob,
   WebSocketResult
 > {
-  _broker: SocketBroker;
+  _distributor: Distributor;
   options: WebSocketBotOptions;
 
   constructor(optionsInput?: WebSocketBotOptionsInput) {
@@ -71,9 +69,9 @@ class WebSocketBot extends BaseBot<
     };
     const options = Object.assign(defaultOptions, optionsInput);
 
-    const distributor = new Distributor();
-    const broker = new LocalOnlyBroker(distributor);
-    const worker = new Worker(broker);
+    const broker = new LocalOnlyBroker();
+    const distributor = new Distributor(broker);
+    const worker = new Worker(distributor);
 
     const wsServer = new WSServer({ noServer: true });
 
@@ -91,7 +89,7 @@ class WebSocketBot extends BaseBot<
 
     super(receiver, controller, engine);
 
-    this._broker = broker;
+    this._distributor = distributor;
     this.options = options;
   }
 
@@ -112,8 +110,12 @@ class WebSocketBot extends BaseBot<
     return response === null ? null : response.results;
   }
 
-  disconnect(uid: ChannelUid, socketId: SocketId, reason: string) {
-    return this._broker.unlinkConnection(uid, socketId, reason);
+  disconnectSocket(
+    channel: WebSocketChannel,
+    socketId: SocketId,
+    reason: string
+  ) {
+    return this._distributor.disconnectSocket(channel.uid, socketId, reason);
   }
 }
 

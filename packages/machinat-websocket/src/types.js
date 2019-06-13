@@ -80,15 +80,29 @@ export type WebSocketBotOptions = {|
 |};
 
 export interface SocketBroker {
-  broadcast(job: WebSocketJob): Promise<null | SocketId[]>;
-  linkConnection(
+  broadcastRemote(job: WebSocketJob): Promise<null | SocketId[]>;
+
+  connectRemoteSocket(
     uid: ChannelUid,
     socketId: SocketId,
     info: ConnectionInfo
   ): Promise<boolean>;
-  unlinkConnection(
+
+  disconnectRemoteSocket(
     uid: ChannelUid,
     socketId: SocketId,
     reason: string
   ): Promise<boolean>;
+
+  updateConnected(
+    uid: ChannelUid,
+    socketId: SocketId,
+    info: ConnectionInfo
+  ): Promise<boolean>;
+
+  updateDisconnected(uid: ChannelUid, socketId: SocketId): Promise<boolean>;
+
+  getRemoteConnections(
+    uid: ChannelUid
+  ): Promise<null | { socketId: SocketId, info: ConnectionInfo }[]>;
 }

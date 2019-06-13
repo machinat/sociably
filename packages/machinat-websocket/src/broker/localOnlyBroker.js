@@ -1,29 +1,29 @@
 // @flow
-import type Distributor from '../distributor';
-import type {
-  ChannelUid,
-  SocketId,
-  WebSocketJob,
-  ConnectionInfo,
-  SocketBroker,
-} from '../types';
+import type { SocketBroker } from '../types';
 
+/* eslint-disable class-methods-use-this */
 export default class LocalOnlyBroker implements SocketBroker {
-  distributor: Distributor;
-
-  constructor(distributor: Distributor) {
-    this.distributor = distributor;
+  broadcastRemote() {
+    return Promise.resolve(null);
   }
 
-  broadcast(job: WebSocketJob) {
-    return this.distributor.broadcastLocal(job);
+  connectRemoteSocket() {
+    return Promise.resolve(false);
   }
 
-  linkConnection(uid: ChannelUid, socketId: SocketId, info: ConnectionInfo) {
-    return this.distributor.linkLocalConnection(socketId, uid, info);
+  disconnectRemoteSocket() {
+    return Promise.resolve(false);
   }
 
-  unlinkConnection(uid: ChannelUid, socketId: SocketId, reason: string) {
-    return this.distributor.unlinkLocalConnection(socketId, uid, reason);
+  updateConnected() {
+    return Promise.resolve(true);
+  }
+
+  updateDisconnected() {
+    return Promise.resolve(true);
+  }
+
+  getRemoteConnections() {
+    return Promise.resolve(null);
   }
 }
