@@ -110,10 +110,10 @@ class SocketDistributor extends EventEmitter {
   }
 
   getLocalConnectionInfo(
-    socketId: SocketId,
-    uid: ChannelUid
+    uid: ChannelUid,
+    socketId: SocketId
   ): void | ConnectionInfo {
-    const status = this._getConnectionStatus(socketId, uid);
+    const status = this._getConnectionStatus(uid, socketId);
     if (status === undefined) {
       return undefined;
     }
@@ -167,7 +167,7 @@ class SocketDistributor extends EventEmitter {
       return remoteResult;
     }
 
-    const status = this._getConnectionStatus(socketId, uid);
+    const status = this._getConnectionStatus(uid, socketId);
     if (status === undefined || !status.connected) {
       return false;
     }
@@ -185,6 +185,7 @@ class SocketDistributor extends EventEmitter {
 
     const conneted = this._connectionMapping.get(uid);
     if (conneted === undefined) {
+      // return only remote result if no connected socket at local
       const remoteResult = await this._broker.broadcastRemote(job);
       return remoteResult;
     }
@@ -194,13 +195,14 @@ class SocketDistributor extends EventEmitter {
 
     const promises = [];
     const socketsSent = [];
-
-    for (const socketId of conneted.keys()) {
+    // send event and collect promises and ids
+    for (const [socketId, status] of conneted) {
       const socketStatus = this._socketStore.get(socketId);
 
       if (socketStatus === undefined) {
         conneted.delete(socketId);
       } else if (
+        status.connected &&
         (!whitelistSet || whitelistSet.has(socketId)) &&
         (!blacklistSet || !blacklistSet.has(socketId))
       ) {
@@ -212,13 +214,19 @@ class SocketDistributor extends EventEmitter {
       }
     }
 
-    const results = await Promise.all(promises);
+    const remoteResult = await this._broker.broadcastRemote(job);
+    const localResults = await Promise.all(promises);
 
+    // pick success socket id
     const socketsFinished = [];
-    for (let i = 0; i < results.length; i += 1) {
-      if (results[i] !== undefined) {
+    for (let i = 0; i < localResults.length; i += 1) {
+      if (localResults[i] !== undefined) {
         socketsFinished.push(socketsSent[i]);
       }
+    }
+
+    if (remoteResult !== null) {
+      socketsFinished.push(...remoteResult);
     }
 
     return socketsFinished.length === 0 ? null : socketsFinished;
@@ -228,7 +236,7 @@ class SocketDistributor extends EventEmitter {
     this._authenticator = authenticator;
   }
 
-  _getConnectionStatus(socketId: SocketId, uid: ChannelUid) {
+  _getConnectionStatus(uid: ChannelUid, socketId: SocketId) {
     const conneted = this._connectionMapping.get(uid);
     if (conneted === undefined) {
       return undefined;
@@ -273,20 +281,20 @@ class SocketDistributor extends EventEmitter {
   };
 
   _emitEvent(
-    socket: Socket,
     uid: ChannelUid,
+    socket: Socket,
     info: ConnectionInfo,
     body: EventBody
   ) {
-    this.emit('event', socket, uid, info, body);
+    this.emit('event', uid, socket, info, body);
   }
 
-  _emitConnect(socket: Socket, uid: ChannelUid, info: ConnectionInfo) {
-    this.emit('connect', socket, uid, info);
+  _emitConnect(uid: ChannelUid, socket: Socket, info: ConnectionInfo) {
+    this.emit('connect', uid, socket, info);
   }
 
-  _emitDisconnect(socket: Socket, uid: ChannelUid, info: ConnectionInfo) {
-    this.emit('disconnect', socket, uid, info);
+  _emitDisconnect(uid: ChannelUid, socket: Socket, info: ConnectionInfo) {
+    this.emit('disconnect', uid, socket, info);
   }
 
   _setLocalConnection(
@@ -337,7 +345,7 @@ class SocketDistributor extends EventEmitter {
       }
 
       this._setLocalConnection(uid, socket.id, info, true);
-      this._emitConnect(socket, uid, info);
+      this._emitConnect(uid, socket, info);
       await this._broker.updateConnected(uid, socket.id, info);
     }
   }
@@ -360,24 +368,24 @@ class SocketDistributor extends EventEmitter {
 
   async _handleDisconnectImpl(socket: Socket, body: DisconnectBody) {
     const { uid } = body;
-    const status = this._getConnectionStatus(socket.id, uid);
+    const status = this._getConnectionStatus(uid, socket.id);
     if (status === undefined) {
       return;
     }
 
     this._deleteLocalConnection(socket.id, uid);
-    this._emitDisconnect(socket, uid, status.info);
+    this._emitDisconnect(uid, socket, status.info);
     await this._broker.updateDisconnected(uid, socket.id);
   }
 
   _handleEventImpl(socket: Socket, body: EventBody) {
     const { uid } = body;
-    const status = this._getConnectionStatus(socket.id, uid);
+    const status = this._getConnectionStatus(uid, socket.id);
     if (status === undefined || !status.connected) {
       return;
     }
 
-    this._emitEvent(socket, uid, status.info, body);
+    this._emitEvent(uid, socket, status.info, body);
   }
 
   _handleSocketCloseImpl(socket: Socket) {

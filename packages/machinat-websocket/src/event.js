@@ -1,9 +1,9 @@
 // @flow
+import { WEBSOCKET } from './constant';
 import type { WebSocketEvent } from './types';
 
 const WebEventProto = {
-  platform: 'web',
-  shouldRespond: false,
+  platform: WEBSOCKET,
 };
 
 const createEvent = (

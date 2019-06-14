@@ -240,7 +240,7 @@ it('issue @connect event', () => {
   receiver.bind(issueEvent, issueError);
 
   const connectionInfo = { hello: 'world' };
-  distributor.emit('connect', socket, 'websocket:foo:bar:baz', connectionInfo);
+  distributor.emit('connect', 'websocket:foo:bar:baz', socket, connectionInfo);
 
   expect(issueEvent.mock).toHaveBeenCalledTimes(1);
   expect(issueEvent.mock).toHaveBeenCalledWith(
@@ -264,8 +264,8 @@ it('issue @disconnect event', () => {
   const connectionInfo = { hello: 'world' };
   distributor.emit(
     'disconnect',
-    socket,
     'websocket:foo:bar:baz',
+    socket,
     connectionInfo
   );
 
@@ -290,7 +290,7 @@ it('issue customized event', () => {
 
   const connectionInfo = { hello: 'world' };
 
-  distributor.emit('event', socket, 'websocket:foo:bar:baz', connectionInfo, {
+  distributor.emit('event', 'websocket:foo:bar:baz', socket, connectionInfo, {
     type: 'greeting',
     subtype: 'french',
     payload: 'bonjour',

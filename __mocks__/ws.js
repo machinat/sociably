@@ -23,4 +23,6 @@ WebSocket.OPEN = 1;
 WebSocket.CLOSING = 2;
 WebSocket.CLOSED = 3;
 
+WebSocket.Server = function WebSocketServer() {};
+
 module.exports = moxy(WebSocket, { excludeProps: ['_*'] });

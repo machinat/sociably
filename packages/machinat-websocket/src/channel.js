@@ -4,8 +4,8 @@ import type { MachinatChannel } from 'machinat-base/types';
 class WebSocketChannel implements MachinatChannel {
   type: string;
   subtype: void | string;
+  id: void | string;
   uid: string;
-  id: string;
 
   platform = 'websocket';
 
@@ -22,11 +22,11 @@ class WebSocketChannel implements MachinatChannel {
     );
   }
 
-  constructor(type: string, subtype: void | string, id: string) {
+  constructor(type?: string, subtype?: string, id?: string) {
     this.id = id;
-    this.type = type;
+    this.type = type || 'default';
     this.subtype = subtype;
-    this.uid = `websocket:${type}:${subtype || '*'}:${id || '*'}`;
+    this.uid = `websocket:${this.type}:${subtype || '*'}:${id || '*'}`;
   }
 }
 

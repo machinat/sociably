@@ -205,8 +205,8 @@ class WebSocketReceiver
   };
 
   _handleSocketEvent = (
-    socket: Socket,
     uid: ChannelUid,
+    socket: Socket,
     info: ConnectionInfo,
     body: EventBody
   ) => {
@@ -214,13 +214,13 @@ class WebSocketReceiver
     this._processEvent(uid, socket, type, subtype, payload, info);
   };
 
-  _handleConnect = (socket: Socket, uid: ChannelUid, info: ConnectionInfo) => {
+  _handleConnect = (uid: ChannelUid, socket: Socket, info: ConnectionInfo) => {
     this._processEvent(uid, socket, '@connect', undefined, undefined, info);
   };
 
   _handleDisconnect = (
-    socket: Socket,
     uid: ChannelUid,
+    socket: Socket,
     info: ConnectionInfo
   ) => {
     this._processEvent(uid, socket, '@disconnect', undefined, undefined, info);

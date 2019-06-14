@@ -33,10 +33,10 @@ const eventSpy = moxy();
 const broker = moxy(new LocalOnlyBroker());
 
 beforeEach(() => {
-  broker.mock.clear();
-  connectSpy.mock.clear();
-  disconnectSpy.mock.clear();
-  eventSpy.mock.clear();
+  broker.mock.reset();
+  connectSpy.mock.reset();
+  disconnectSpy.mock.reset();
+  eventSpy.mock.reset();
 });
 
 test('consigning sockets', () => {
@@ -96,13 +96,13 @@ test('handle connection events and lifecycle', async () => {
   });
 
   expect(connectSpy.mock).not.toHaveBeenCalled();
-  expect(distributor.getLocalConnectionInfo(skt1.id, chanFoo.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt1.id)).toBe(
     undefined
   );
-  expect(distributor.getLocalConnectionInfo(skt1.id, chanBar.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt1.id)).toBe(
     undefined
   );
-  expect(distributor.getLocalConnectionInfo(skt2.id, chanFoo.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt2.id)).toBe(
     undefined
   );
 
@@ -111,16 +111,24 @@ test('handle connection events and lifecycle', async () => {
   skt2.emit('connect', { uid: chanFoo.uid, req: 4 }, 5);
 
   expect(connectSpy.mock).toHaveBeenCalledTimes(3);
-  expect(connectSpy.mock).toHaveBeenCalledWith(skt1, chanFoo.uid, info);
-  expect(connectSpy.mock).toHaveBeenCalledWith(skt1, chanBar.uid, info);
-  expect(connectSpy.mock).toHaveBeenCalledWith(skt2, chanFoo.uid, info);
+  expect(connectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt1, info);
+  expect(connectSpy.mock).toHaveBeenCalledWith(chanBar.uid, skt1, info);
+  expect(connectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt2, info);
 
-  expect(distributor.getLocalConnectionInfo(skt1.id, chanFoo.uid)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(skt1.id, chanBar.uid)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(skt2.id, chanFoo.uid)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(skt2.id, chanBar.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt1.id)).toBe(info);
+  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt1.id)).toBe(info);
+  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt2.id)).toBe(info);
+  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt2.id)).toBe(
     undefined
   );
+
+  expect(broker.updateConnected.mock).toHaveBeenCalledTimes(3);
+  expect(broker.updateConnected.mock) //
+    .toHaveBeenCalledWith(chanFoo.uid, skt1.id, info);
+  expect(broker.updateConnected.mock) //
+    .toHaveBeenCalledWith(chanBar.uid, skt1.id, info);
+  expect(broker.updateConnected.mock) //
+    .toHaveBeenCalledWith(chanFoo.uid, skt2.id, info);
 
   skt1.emit(
     'event',
@@ -140,17 +148,17 @@ test('handle connection events and lifecycle', async () => {
   );
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(3);
-  expect(eventSpy.mock).toHaveBeenCalledWith(skt1, chanFoo.uid, info, {
+  expect(eventSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt1, info, {
     uid: chanFoo.uid,
     type: 'greeting',
     payload: 'hello foo',
   });
-  expect(eventSpy.mock).toHaveBeenCalledWith(skt1, chanBar.uid, info, {
+  expect(eventSpy.mock).toHaveBeenCalledWith(chanBar.uid, skt1, info, {
     uid: chanBar.uid,
     type: 'greeting',
     payload: 'hello bar',
   });
-  expect(eventSpy.mock).toHaveBeenCalledWith(skt2, chanFoo.uid, info, {
+  expect(eventSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt2, info, {
     uid: chanFoo.uid,
     type: 'greeting',
     payload: 'hello foo',
@@ -160,28 +168,34 @@ test('handle connection events and lifecycle', async () => {
   skt2.emit('disconnect', { uid: chanFoo.uid }, 7);
 
   expect(disconnectSpy.mock).toHaveBeenCalledTimes(2);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(skt1, chanFoo.uid, info);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(skt2, chanFoo.uid, info);
+  expect(disconnectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt1, info);
+  expect(disconnectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt2, info);
 
-  expect(distributor.getLocalConnectionInfo(skt1.id, chanFoo.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt1.id)).toBe(
     undefined
   );
-  expect(distributor.getLocalConnectionInfo(skt1.id, chanBar.uid)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(skt2.id, chanFoo.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt1.id)).toBe(info);
+  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt2.id)).toBe(
     undefined
   );
+
+  expect(broker.updateDisconnected.mock).toHaveBeenCalledTimes(2);
+  expect(broker.updateDisconnected.mock) //
+    .toHaveBeenCalledWith(chanFoo.uid, skt1.id);
+  expect(broker.updateDisconnected.mock) //
+    .toHaveBeenCalledWith(chanFoo.uid, skt2.id);
 
   skt1.emit('close', 3333, 'bye');
 
   // TODO: move closing logic to distributor and uncomment this
   // expect(disconnectSpy.mock).toHaveBeenCalledTimes(2);
   // expect(disconnectSpy.mock).toHaveBeenCalledWith(
-  //   socket,
   //   chanBar.uid,
+  //   socket,
   //   info
   // );
   //
-  // expect(distributor.getLocalConnectionInfo(socket.id, chanBar.uid)).toBe(
+  // expect(distributor.getLocalConnectionInfo(chanBar.uid, socket.id)).toBe(
   //   undefined
   // );
 });
@@ -216,13 +230,13 @@ test('manipulate lifecycle of connection', async () => {
   expect(skt2.connect.mock).toHaveBeenCalledTimes(1);
   expect(skt2.connect.mock).toHaveBeenCalledWith({ uid: chanFoo.uid, info });
 
-  expect(distributor.getLocalConnectionInfo(skt1.id, chanFoo.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt1.id)).toBe(
     undefined
   );
-  expect(distributor.getLocalConnectionInfo(skt1.id, chanBar.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt1.id)).toBe(
     undefined
   );
-  expect(distributor.getLocalConnectionInfo(skt2.id, chanFoo.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt2.id)).toBe(
     undefined
   );
 
@@ -233,16 +247,24 @@ test('manipulate lifecycle of connection', async () => {
   await expect(Promise.all(promises)).resolves.toEqual([true, true, true]);
 
   expect(connectSpy.mock).toHaveBeenCalledTimes(3);
-  expect(connectSpy.mock).toHaveBeenCalledWith(skt1, chanFoo.uid, info);
-  expect(connectSpy.mock).toHaveBeenCalledWith(skt1, chanBar.uid, info);
-  expect(connectSpy.mock).toHaveBeenCalledWith(skt2, chanFoo.uid, info);
+  expect(connectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt1, info);
+  expect(connectSpy.mock).toHaveBeenCalledWith(chanBar.uid, skt1, info);
+  expect(connectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt2, info);
 
-  expect(distributor.getLocalConnectionInfo(skt1.id, chanFoo.uid)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(skt1.id, chanBar.uid)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(skt2.id, chanFoo.uid)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(skt2.id, chanBar.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt1.id)).toBe(info);
+  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt1.id)).toBe(info);
+  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt2.id)).toBe(info);
+  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt2.id)).toBe(
     undefined
   );
+
+  expect(broker.updateConnected.mock).toHaveBeenCalledTimes(3);
+  expect(broker.updateConnected.mock) //
+    .toHaveBeenCalledWith(chanFoo.uid, skt1.id, info);
+  expect(broker.updateConnected.mock) //
+    .toHaveBeenCalledWith(chanBar.uid, skt1.id, info);
+  expect(broker.updateConnected.mock) //
+    .toHaveBeenCalledWith(chanFoo.uid, skt2.id, info);
 
   await expect(
     distributor.broadcast({
@@ -277,6 +299,18 @@ test('manipulate lifecycle of connection', async () => {
     payload: 'hello foo',
   });
 
+  expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(2);
+  expect(broker.broadcastRemote.mock).toHaveBeenCalledWith({
+    uid: chanFoo.uid,
+    type: 'greeting',
+    payload: 'hello foo',
+  });
+  expect(broker.broadcastRemote.mock).toHaveBeenCalledWith({
+    uid: chanBar.uid,
+    type: 'greeting',
+    payload: 'hello bar',
+  });
+
   expect(eventSpy.mock).not.toHaveBeenCalled();
 
   promises = [
@@ -300,13 +334,13 @@ test('manipulate lifecycle of connection', async () => {
     reason: 'bye',
   });
 
-  expect(distributor.getLocalConnectionInfo(skt1.id, chanFoo.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt1.id)).toBe(
     undefined
   );
-  expect(distributor.getLocalConnectionInfo(skt1.id, chanBar.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt1.id)).toBe(
     undefined
   );
-  expect(distributor.getLocalConnectionInfo(skt2.id, chanFoo.uid)).toBe(
+  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt2.id)).toBe(
     undefined
   );
 
@@ -317,152 +351,262 @@ test('manipulate lifecycle of connection', async () => {
   await expect(Promise.all(promises)).resolves.toEqual([true, true, true]);
 
   expect(disconnectSpy.mock).toHaveBeenCalledTimes(3);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(skt1, chanFoo.uid, info);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(skt1, chanBar.uid, info);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(skt2, chanFoo.uid, info);
+  expect(disconnectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt1, info);
+  expect(disconnectSpy.mock).toHaveBeenCalledWith(chanBar.uid, skt1, info);
+  expect(disconnectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt2, info);
+
+  expect(broker.updateDisconnected.mock).toHaveBeenCalledTimes(3);
+  expect(broker.updateDisconnected.mock) //
+    .toHaveBeenCalledWith(chanFoo.uid, skt1.id);
+  expect(broker.updateDisconnected.mock) //
+    .toHaveBeenCalledWith(chanBar.uid, skt1.id);
+  expect(broker.updateDisconnected.mock) //
+    .toHaveBeenCalledWith(chanFoo.uid, skt2.id);
 });
 
-test('connectSocket() return false when already connected', async () => {
-  const distributor = new Distributor(broker);
+describe('connectSocket()', () => {
+  it('return false when already connected', async () => {
+    const distributor = new Distributor(broker);
 
-  const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-  distributor.consignSocket(skt1);
+    const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
+    distributor.consignSocket(skt1);
 
-  skt1.connect.mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
+    skt1.connect.mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
 
-  distributor.connectSocket(chanFoo.uid, '1', {});
-  skt1.emit('connect', { uid: chanFoo.uid });
+    distributor.connectSocket(chanFoo.uid, '1', {});
+    skt1.emit('connect', { uid: chanFoo.uid });
 
-  await expect(distributor.connectSocket(chanFoo.uid, '1', {})).resolves.toBe(
-    false
-  );
-});
-
-test('disconnectSocket() return false when not connected', async () => {
-  const distributor = new Distributor(broker);
-
-  const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-  distributor.consignSocket(skt1);
-
-  await expect(
-    distributor.disconnectSocket(chanFoo.uid, '1', {})
-  ).resolves.toBe(false);
-});
-
-test('broadcast() return null when not connected', async () => {
-  const distributor = new Distributor(broker);
-
-  const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-  distributor.consignSocket(skt1);
-
-  await expect(
-    distributor.broadcast({
-      uid: chanFoo.uid,
-      type: 'greeting',
-      payload: 'hello nobody',
-    })
-  ).resolves.toBe(null);
-});
-
-test('broadcast() with whitelist and blacklist', async () => {
-  const distributor = new Distributor(broker);
-
-  const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-  const skt2 = moxy(new Socket(new WS(), '2', request), socketMoxyOpts);
-  const skt3 = moxy(new Socket(new WS(), '3', request), socketMoxyOpts);
-  distributor.consignSocket(skt1);
-  distributor.consignSocket(skt2);
-  distributor.consignSocket(skt3);
-  ['connect', 'event'].forEach(method => {
-    skt1[method].mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
-    skt2[method].mock.fake(() => Promise.resolve(skt2._seq++)); // eslint-disable-line no-plusplus
-    skt3[method].mock.fake(() => Promise.resolve(skt3._seq++)); // eslint-disable-line no-plusplus
+    await expect(distributor.connectSocket(chanFoo.uid, '1', {})).resolves.toBe(
+      false
+    );
   });
 
-  distributor.connectSocket(chanFoo.uid, '1', {});
-  distributor.connectSocket(chanFoo.uid, '2', {});
-  distributor.connectSocket(chanFoo.uid, '3', {});
+  it('delegate to broker if socket is not local', async () => {
+    const distributor = new Distributor(broker);
 
-  skt1.emit('connect', { uid: chanFoo.uid });
-  skt2.emit('connect', { uid: chanFoo.uid });
-  skt3.emit('connect', { uid: chanFoo.uid });
+    await expect(
+      distributor.connectSocket(chanFoo.uid, '1', { hello: 'world' })
+    ).resolves.toBe(false);
 
-  const whitelist = ['1', '2'];
-  const blacklist = ['2', '3'];
-  const job = { uid: chanFoo.uid, type: 'greeting', payload: 'hello foo' };
+    expect(broker.connectRemoteSocket.mock).toHaveBeenCalledTimes(1);
+    expect(broker.connectRemoteSocket.mock).toHaveBeenCalledWith(
+      chanFoo.uid,
+      '1',
+      { hello: 'world' }
+    );
 
-  await expect(distributor.broadcast(job)).resolves.toEqual(['1', '2', '3']);
-  await expect(distributor.broadcast({ ...job, whitelist })).resolves.toEqual([
-    '1',
-    '2',
-  ]);
-  await expect(distributor.broadcast({ ...job, blacklist })).resolves.toEqual([
-    '1',
-  ]);
-  await expect(
-    distributor.broadcast({ ...job, whitelist, blacklist })
-  ).resolves.toEqual(['1']);
+    broker.connectRemoteSocket.mock.fake(() => Promise.resolve(true));
 
-  expect(skt1.event.mock).toHaveBeenCalledTimes(4);
-  expect(skt2.event.mock).toHaveBeenCalledTimes(2);
-  expect(skt3.event.mock).toHaveBeenCalledTimes(1);
+    await expect(
+      distributor.connectSocket(chanFoo.uid, '2', { hello: 'world' })
+    ).resolves.toBe(true);
+
+    expect(broker.connectRemoteSocket.mock).toHaveBeenCalledTimes(2);
+    expect(broker.connectRemoteSocket.mock).toHaveBeenCalledWith(
+      chanFoo.uid,
+      '2',
+      { hello: 'world' }
+    );
+  });
 });
 
-test('broadcast() return null when not connected', async () => {
-  const distributor = new Distributor(broker);
+describe('disconnectSocket()', () => {
+  it('return false when not connected', async () => {
+    const distributor = new Distributor(broker);
 
-  const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-  distributor.consignSocket(skt1);
+    const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
+    distributor.consignSocket(skt1);
 
-  await expect(
-    distributor.broadcast({
+    await expect(
+      distributor.disconnectSocket(chanFoo.uid, '1', {})
+    ).resolves.toBe(false);
+  });
+
+  it('delegate to borker if socket is not local', async () => {
+    const distributor = new Distributor(broker);
+
+    await expect(
+      distributor.disconnectSocket(chanFoo.uid, '1', { hello: 'world' })
+    ).resolves.toBe(false);
+
+    expect(broker.disconnectRemoteSocket.mock).toHaveBeenCalledTimes(1);
+    expect(broker.disconnectRemoteSocket.mock).toHaveBeenCalledWith(
+      chanFoo.uid,
+      '1',
+      { hello: 'world' }
+    );
+
+    broker.disconnectRemoteSocket.mock.fake(() => Promise.resolve(true));
+
+    await expect(
+      distributor.disconnectSocket(chanFoo.uid, '2', { hello: 'world' })
+    ).resolves.toBe(true);
+
+    expect(broker.disconnectRemoteSocket.mock).toHaveBeenCalledTimes(2);
+    expect(broker.disconnectRemoteSocket.mock).toHaveBeenCalledWith(
+      chanFoo.uid,
+      '2',
+      { hello: 'world' }
+    );
+  });
+});
+
+describe('broadcast()', () => {
+  it('delegate to broker if no socket connected', async () => {
+    const distributor = new Distributor(broker);
+
+    const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
+    distributor.consignSocket(skt1);
+
+    await expect(
+      distributor.broadcast({
+        uid: chanFoo.uid,
+        type: 'greeting',
+        payload: 'hello nobody',
+      })
+    ).resolves.toBe(null);
+
+    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(1);
+    expect(broker.broadcastRemote.mock).toHaveBeenCalledWith({
       uid: chanFoo.uid,
       type: 'greeting',
       payload: 'hello nobody',
-    })
-  ).resolves.toBe(null);
-});
+    });
 
-test('broadcast() socket level error happen', async () => {
-  const distributor = new Distributor(broker);
+    broker.broadcastRemote.mock.fake(() => Promise.resolve(['6', '7', '8']));
 
-  const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-  const skt2 = moxy(new Socket(new WS(), '2', request), socketMoxyOpts);
-  distributor.consignSocket(skt1);
-  distributor.consignSocket(skt2);
-  skt1.connect.mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
-  skt2.connect.mock.fake(() => Promise.resolve(skt2._seq++)); // eslint-disable-line no-plusplus
-  distributor.connectSocket(chanFoo.uid, '1', {});
-  distributor.connectSocket(chanFoo.uid, '2', {});
-  skt1.emit('connect', { uid: chanFoo.uid });
-  skt2.emit('connect', { uid: chanFoo.uid });
+    await expect(
+      distributor.broadcast({
+        uid: chanBar.uid,
+        type: 'greeting',
+        payload: 'hello remote friends',
+      })
+    ).resolves.toEqual(['6', '7', '8']);
 
-  const errorSpy = moxy();
-  distributor.on('error', errorSpy);
+    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(2);
+    expect(broker.broadcastRemote.mock).toHaveBeenCalledWith({
+      uid: chanBar.uid,
+      type: 'greeting',
+      payload: 'hello remote friends',
+    });
+  });
 
-  skt1.event.mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
-  skt2.event.mock.fake(() => Promise.reject(new Error('Wasted!')));
+  it('return socket ids from both remote and local merged', async () => {
+    const distributor = new Distributor(broker);
 
-  await expect(
-    distributor.broadcast({
+    const skt = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
+    distributor.consignSocket(skt);
+    skt.connect.mock.fake(() => Promise.resolve(skt._seq++)); // eslint-disable-line no-plusplus
+    skt.event.mock.fake(() => Promise.resolve(skt._seq++)); // eslint-disable-line no-plusplus
+    distributor.connectSocket(chanFoo.uid, '1', {});
+    skt.emit('connect', { uid: chanFoo.uid });
+
+    broker.broadcastRemote.mock.fake(() => Promise.resolve(['3', '4', '5']));
+
+    await expect(
+      distributor.broadcast({
+        uid: chanFoo.uid,
+        type: 'greeting',
+        payload: 'hello world',
+      })
+    ).resolves.toEqual(expect.arrayContaining(['1', '3', '4', '5']));
+
+    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(1);
+    expect(broker.broadcastRemote.mock).toHaveBeenCalledWith({
       uid: chanFoo.uid,
       type: 'greeting',
-      payload: 'hello dangerous',
-    })
-  ).resolves.toEqual(['1']);
+      payload: 'hello world',
+    });
+  });
 
-  skt1.event.mock.fake(() => Promise.reject(new Error('Wasted!')));
+  it('filter socket to send with whitelist and blacklist', async () => {
+    const distributor = new Distributor(broker);
 
-  await expect(
-    distributor.broadcast({
-      uid: chanFoo.uid,
-      type: 'greeting',
-      payload: 'hello dangerous',
-    })
-  ).resolves.toBe(null);
+    const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
+    const skt2 = moxy(new Socket(new WS(), '2', request), socketMoxyOpts);
+    const skt3 = moxy(new Socket(new WS(), '3', request), socketMoxyOpts);
+    distributor.consignSocket(skt1);
+    distributor.consignSocket(skt2);
+    distributor.consignSocket(skt3);
+    ['connect', 'event'].forEach(method => {
+      skt1[method].mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
+      skt2[method].mock.fake(() => Promise.resolve(skt2._seq++)); // eslint-disable-line no-plusplus
+      skt3[method].mock.fake(() => Promise.resolve(skt3._seq++)); // eslint-disable-line no-plusplus
+    });
 
-  expect(errorSpy.mock).toHaveBeenCalledTimes(3);
-  errorSpy.mock.calls.forEach(call => {
-    expect(call.args[0]).toEqual(new Error('Wasted!'));
+    distributor.connectSocket(chanFoo.uid, '1', {});
+    distributor.connectSocket(chanFoo.uid, '2', {});
+    distributor.connectSocket(chanFoo.uid, '3', {});
+
+    skt1.emit('connect', { uid: chanFoo.uid });
+    skt2.emit('connect', { uid: chanFoo.uid });
+    skt3.emit('connect', { uid: chanFoo.uid });
+
+    const whitelist = ['1', '2'];
+    const blacklist = ['2', '3'];
+    const job = { uid: chanFoo.uid, type: 'greeting', payload: 'hello foo' };
+
+    await expect(distributor.broadcast(job)).resolves.toEqual(['1', '2', '3']);
+    await expect(distributor.broadcast({ ...job, whitelist })).resolves.toEqual(
+      ['1', '2']
+    );
+    await expect(distributor.broadcast({ ...job, blacklist })).resolves.toEqual(
+      ['1']
+    );
+    await expect(
+      distributor.broadcast({ ...job, whitelist, blacklist })
+    ).resolves.toEqual(['1']);
+
+    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(4);
+
+    expect(skt1.event.mock).toHaveBeenCalledTimes(4);
+    expect(skt2.event.mock).toHaveBeenCalledTimes(2);
+    expect(skt3.event.mock).toHaveBeenCalledTimes(1);
+  });
+
+  it('emit error when socket level error happen', async () => {
+    const distributor = new Distributor(broker);
+
+    const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
+    const skt2 = moxy(new Socket(new WS(), '2', request), socketMoxyOpts);
+    distributor.consignSocket(skt1);
+    distributor.consignSocket(skt2);
+    skt1.connect.mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
+    skt2.connect.mock.fake(() => Promise.resolve(skt2._seq++)); // eslint-disable-line no-plusplus
+    distributor.connectSocket(chanFoo.uid, '1', {});
+    distributor.connectSocket(chanFoo.uid, '2', {});
+    skt1.emit('connect', { uid: chanFoo.uid });
+    skt2.emit('connect', { uid: chanFoo.uid });
+
+    const errorSpy = moxy();
+    distributor.on('error', errorSpy);
+
+    skt1.event.mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
+    skt2.event.mock.fake(() => Promise.reject(new Error('Wasted!')));
+
+    await expect(
+      distributor.broadcast({
+        uid: chanFoo.uid,
+        type: 'greeting',
+        payload: 'hello dangerous',
+      })
+    ).resolves.toEqual(['1']);
+
+    skt1.event.mock.fake(() => Promise.reject(new Error('Wasted!')));
+
+    await expect(
+      distributor.broadcast({
+        uid: chanFoo.uid,
+        type: 'greeting',
+        payload: 'hello dangerous',
+      })
+    ).resolves.toBe(null);
+
+    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(2);
+
+    expect(errorSpy.mock).toHaveBeenCalledTimes(3);
+    errorSpy.mock.calls.forEach(call => {
+      expect(call.args[0]).toEqual(new Error('Wasted!'));
+    });
   });
 });
