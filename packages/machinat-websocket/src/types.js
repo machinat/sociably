@@ -6,7 +6,7 @@ import type WebSocketChannel from './channel';
 export type SocketId = string;
 export type ChannelUid = string;
 
-export type ConnectionInfo = {| [string]: any |};
+export type ConnectionInfo = { [string]: any };
 
 export type WebSocketEvent = {
   platform: 'websocket',

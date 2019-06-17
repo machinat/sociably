@@ -9,23 +9,29 @@ import type {
   RegisterBody,
   RejectBody,
 } from '../socket';
-import MachinatSocket, { SOCKET_OPEN } from '../socket';
+import type { ConnectionInfo } from '../types';
+import MachinatSocket from '../socket';
 
-import WebSocketChannel from '../channel';
+import Channel from '../channel';
 import { ConnectionError } from '../error';
 
-import Connection from './connection';
-import type { ClientEvent } from './connection';
+export type ClientEvent = {|
+  type: string,
+  subtype: void | string,
+  payload: any,
+|};
 
 type ClientOptions = {
-  url?: string,
+  url: string,
+  register: RegisterBody,
 };
 
 type ClientOptionsInput = $Shape<ClientOptions>;
 
-type QueuedRegisterJob = {
-  body: RegisterBody,
-  connection: Connection,
+type PendingEventJob = {
+  event: ClientEvent,
+  resolve: () => void,
+  reject: Error => void,
 };
 
 const MACHINAT_WEBSOCKET_PROTOCOL_V0 = 'machinat-websocket-v0';
@@ -38,26 +44,26 @@ const createSocket = (url: string) => {
 
 class WebClient extends EventEmitter {
   options: ClientOptions;
+  _connected: boolean;
   _socket: MachinatSocket;
+  _registerSeq: number;
+  _channel: Channel;
+  _connectionInfo: ConnectionInfo;
 
-  _queuedRegister: QueuedRegisterJob[];
-
-  _registeringConns: Map<number, Connection>;
-  _connectedConns: Map<string, Connection>;
+  _queuedEventJobs: PendingEventJob[];
 
   constructor(optionsInput: ClientOptionsInput) {
     super();
 
     const defaultOptions = {
       url: './',
+      register: { type: 'default' },
     };
     const options = Object.assign(defaultOptions, optionsInput);
 
     this.options = options;
-    this._queuedRegister = [];
-
-    this._registeringConns = new Map();
-    this._connectedConns = new Map();
+    this._connected = false;
+    this._queuedEventJobs = [];
 
     this._socket = createSocket(options.url);
 
@@ -77,145 +83,127 @@ class WebClient extends EventEmitter {
     // this._socket.on('answer');
   }
 
-  get state() {
-    return this._socket.readyState();
+  get connected() {
+    return this._connected;
   }
 
-  register(body: RegisterBody): Connection {
-    const connection = this._createConnection();
+  get channel() {
+    return this._channel;
+  }
 
-    if (this._socket.readyState() === SOCKET_OPEN) {
-      this._socket
-        .register(body)
-        .then(seq => this._registeringConns.set(seq, connection))
-        .catch(this._emitError);
+  get connectionInfo() {
+    return this._connectionInfo;
+  }
+
+  async send(event: ClientEvent): Promise<void> {
+    if (!this._connected) {
+      await new Promise((resolve, reject) => {
+        this._queuedEventJobs.push({ resolve, reject, event });
+      });
     } else {
-      this._queuedRegister.push({ body, connection });
+      await this._socket.event({ ...event, uid: this._channel.uid });
     }
-
-    return connection;
   }
 
-  close(code: number, reason: string) {
-    this._socket.close(code, reason);
+  close(reason: string) {
+    if (this._connected) {
+      this._connected = false;
+      this._socket
+        .disconnect({ uid: this._channel.uid, reason })
+        .catch(this._emitError);
+    }
   }
 
-  _emitConnect(connection: Connection) {
-    this.emit('connect', connection);
-  }
-
-  _emitDisconnect(connection: Connection) {
-    this.emit('disconnect', connection);
+  _emitEvent(event: ClientEvent) {
+    this.emit('event', event, this._channel, this._connectionInfo);
   }
 
   _emitError = (err: Error) => {
     this.emit('error', err);
   };
 
-  _createConnection() {
-    const connection = new Connection(
-      async (event: ClientEvent) => {
-        const channel = connection._channel;
-        if (channel === undefined) {
-          throw new ConnectionError('connection is not connected yet');
-        }
-
-        await this._socket.event({ uid: channel.uid, ...event });
-      },
-      async (reason: string) => {
-        if (connection._channel !== undefined) {
-          const { uid } = connection._channel;
-          await this._socket.disconnect({ uid, reason });
-        }
-      }
-    );
-
-    return connection;
-  }
-
-  _handleSocketOpen = () => {
-    for (const { body, connection } of this._queuedRegister) {
-      this._socket
-        .register(body)
-        .then(seq => this._registeringConns.set(seq, connection))
-        .catch(this._emitError);
-    }
-
-    this._queuedRegister = [];
-    this.emit('open');
+  _handleSocketOpen = async () => {
+    const seq = await this._socket.register(this.options.register);
+    this._registerSeq = seq;
   };
 
-  _handleSocketClose = (code: number, reason: string) => {
-    this._socket.removeAllListeners();
-    this.emit('close', code, reason);
+  _handleSocketClose = () => {
+    if (this._connected === true) {
+      this._connected = false;
+      this._emitEvent({
+        type: '@disconnect',
+        subtype: undefined,
+        payload: undefined,
+      });
+    }
+  };
+
+  _handleConnect = ({ uid, req, info }: ConnectBody) => {
+    if (req !== this._registerSeq) {
+      return;
+    }
+
+    const channel = Channel.fromUid(uid);
+    if (channel === null) {
+      this._emitError(new TypeError('invalid channel uid received'));
+      return;
+    }
+
+    this._connected = true;
+    this._channel = channel;
+    this._connectionInfo = info || {};
+    this._emitEvent({
+      type: '@connect',
+      subtype: undefined,
+      payload: undefined,
+    });
+
+    for (const { event, resolve, reject } of this._queuedEventJobs) {
+      this._socket
+        .event({ ...event, uid: this._channel.uid })
+        .then(resolve)
+        .catch(reject);
+    }
+    this._queuedEventJobs = [];
   };
 
   _handleSocketError(err: Error) {
     this._emitError(err);
   }
 
-  _handleConnect = ({ uid, req, info }: ConnectBody, seq: number) => {
-    const channel = WebSocketChannel.fromUid(uid);
-    if (channel === null) {
-      this._socket
-        .reject({ req: seq, reason: 'uid invalid' })
-        .catch(this._emitError);
-      return;
-    }
-
-    let connection = this._registeringConns.get((req: any));
-    if (connection !== undefined) {
-      connection._setConnected(channel, info || {});
-      connection._emitEvent({
-        type: '@connect',
-        subtype: undefined,
-        payload: undefined,
-      });
-
-      this._registeringConns.delete((req: any));
-    } else {
-      connection = this._createConnection();
-      connection._setConnected(channel, info || {});
-      this._emitConnect(connection);
-    }
-
-    this._connectedConns.set(uid, connection);
-  };
-
   _handleDisconnect = ({ uid }: DisconnectBody) => {
-    const connection = this._connectedConns.get(uid);
-    if (connection !== undefined) {
-      connection._setDisconnected();
-      connection._emitEvent({
+    if (this._channel && this._channel.uid === uid) {
+      this._connected = false;
+      this._emitEvent({
         type: '@disconnect',
         subtype: undefined,
         payload: undefined,
       });
-
-      this._connectedConns.delete(uid);
-      this._emitDisconnect(connection);
     }
   };
 
   _handleEvent = (body: EventBody) => {
     const { uid, type, subtype, payload } = body;
-    const connection = this._connectedConns.get(uid);
-
-    if (connection !== undefined) {
-      connection._emitEvent({ type, subtype, payload });
+    if (
+      this._connected === true &&
+      this._channel &&
+      this._channel.uid === uid
+    ) {
+      this._emitEvent({ type, subtype, payload });
     }
   };
 
   _handleReject = ({ req, reason }: RejectBody) => {
-    if (this._registeringConns.has(req)) {
+    if (req === this._registerSeq) {
       this._emitError(new ConnectionError(reason));
-      this._registeringConns.delete(req);
     }
   };
 
-  _handleConnectFail = () => {
-    const err = new ConnectionError('connect handshake fail');
-    this._emitError(err);
+  _handleConnectFail = ({ req }: DisconnectBody) => {
+    if (req === this._registerSeq) {
+      const err = new ConnectionError('connect handshake fail');
+      this._emitError(err);
+    }
   };
 }
 
