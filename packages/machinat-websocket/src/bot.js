@@ -10,7 +10,7 @@ import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type WebSocketChannel from './channel';
 import type {
   WebSocketEvent,
-  WebSocketTransport,
+  WebSocketMetadata,
   EventRenderValue,
   WebSocketResponse,
   WebSocketJob,
@@ -53,7 +53,7 @@ const createJobs = (
 class WebSocketBot extends BaseBot<
   WebSocketChannel,
   WebSocketEvent,
-  WebSocketTransport,
+  WebSocketMetadata,
   EventRenderValue,
   WebSocketComponent,
   WebSocketResponse,

@@ -3,7 +3,7 @@ import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type {
   WebhookResponse,
-  WebhookTransport,
+  WebhookMetadata,
 } from 'machinat-webhook-receiver/types';
 
 import type LineChannel from './channel';
@@ -198,7 +198,7 @@ export type LineBotOptions = {
   plugins?: BotPlugin<
     LineChannel,
     LineEvent,
-    WebhookTransport,
+    WebhookMetadata,
     LineSegmentValue,
     LineComponent,
     WebhookResponse,

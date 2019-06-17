@@ -5,7 +5,7 @@ import type { MachinatNode } from 'machinat/types';
 import type {
   EventMiddleware,
   MachinatEvent,
-  MachinatTransport,
+  MachinatMetadata,
   EventHandler,
   MachinatChannel,
   EventFrame,
@@ -25,9 +25,9 @@ class MachinatController<
   Response,
   Channel: MachinatChannel,
   Event: MachinatEvent<any>,
-  Transport: MachinatTransport<any>
+  Metadata: MachinatMetadata<any>
 > {
-  middlewares: EventMiddleware<any, Response, Channel, Event, Transport>[];
+  middlewares: EventMiddleware<any, Response, Channel, Event, Metadata>[];
   frame: typeof EventFrameProto;
 
   constructor() {
@@ -36,7 +36,7 @@ class MachinatController<
   }
 
   setMiddlewares(
-    ...fns: EventMiddleware<any, Response, Channel, Event, Transport>[]
+    ...fns: EventMiddleware<any, Response, Channel, Event, Metadata>[]
   ) {
     for (const fn of fns) {
       if (typeof fn !== 'function') {
@@ -59,13 +59,13 @@ class MachinatController<
 
   makeEventHandler(
     onEvent: (
-      EventFrame<any, any, any, any, Channel, Event, Transport>
+      EventFrame<any, any, any, any, Channel, Event, Metadata>
     ) => Promise<void | Response>
-  ): EventHandler<Response, Channel, Event, Transport> {
+  ): EventHandler<Response, Channel, Event, Metadata> {
     const handle = compose(...this.middlewares)(onEvent);
 
-    return (channel: Channel, event: Event, transport: Transport) => {
-      const frame = this.createEventFrame(channel, event, transport);
+    return (channel: Channel, event: Event, metadata: Metadata) => {
+      const frame = this.createEventFrame(channel, event, metadata);
 
       return handle(frame);
     };
@@ -74,13 +74,13 @@ class MachinatController<
   createEventFrame(
     channel: Channel,
     event: Event,
-    transport: Transport
-  ): EventFrame<any, any, any, any, Channel, Event, Transport> {
+    metadata: Metadata
+  ): EventFrame<any, any, any, any, Channel, Event, Metadata> {
     const frame = Object.create(this.frame);
 
     frame.channel = channel;
     frame.event = event;
-    frame.transport = transport;
+    frame.metadata = metadata;
 
     return frame;
   }

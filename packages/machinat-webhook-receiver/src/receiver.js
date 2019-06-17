@@ -9,11 +9,7 @@ import type {
   MachinatReceiver,
 } from 'machinat-base/types';
 import { HTTPRequestReceiver } from 'machinat-http-adaptor/types';
-import type {
-  WebhookHandler,
-  WebhookResponse,
-  WebhookTransport,
-} from './types';
+import type { WebhookHandler, WebhookResponse, WebhookMetadata } from './types';
 
 const RAW_BODY_OPTION = { encoding: true };
 const WEBHOOK = 'webhook';
@@ -26,11 +22,11 @@ const endRes = (res, status, body) => {
 class WebhookReceiver<Channel: MachinatChannel, Event: MachinatEvent<any>>
   implements
     HTTPRequestReceiver,
-    MachinatReceiver<WebhookResponse, Channel, Event, WebhookTransport> {
+    MachinatReceiver<WebhookResponse, Channel, Event, WebhookMetadata> {
   handleWebhook: WebhookHandler<Channel, Event>;
   isBound: boolean;
 
-  _handleEvent: EventHandler<WebhookResponse, Channel, Event, WebhookTransport>;
+  _handleEvent: EventHandler<WebhookResponse, Channel, Event, WebhookMetadata>;
   _handleError: (e: Error) => void;
 
   constructor(handleWebhook: WebhookHandler<Channel, Event>) {
@@ -39,7 +35,7 @@ class WebhookReceiver<Channel: MachinatChannel, Event: MachinatEvent<any>>
   }
 
   bind(
-    handleEvent: EventHandler<WebhookResponse, Channel, Event, WebhookTransport>,
+    handleEvent: EventHandler<WebhookResponse, Channel, Event, WebhookMetadata>,
     errorHandler: (e: Error) => void
   ) {
     if (this.isBound) {
@@ -103,11 +99,11 @@ class WebhookReceiver<Channel: MachinatChannel, Event: MachinatEvent<any>>
       let shouldWaitRespond = false;
       const promises = new Array(events.length);
 
-      const transport = { source: WEBHOOK, context: httpContext };
+      const metadata = { source: WEBHOOK, context: httpContext };
 
       for (let i = 0; i < events.length; i += 1) {
         const { event, channel, shouldRespond } = events[i];
-        promises[i] = this._handleEvent(channel, event, transport);
+        promises[i] = this._handleEvent(channel, event, metadata);
 
         if (shouldRespond) {
           shouldWaitRespond = true;

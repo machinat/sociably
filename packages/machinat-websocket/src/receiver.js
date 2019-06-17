@@ -9,7 +9,7 @@ import type { MachinatReceiver, EventHandler } from 'machinat-base/types';
 import type { HTTPUpgradeReceiver } from 'machinat-http-adaptor/types';
 import type {
   WebSocketEvent,
-  WebSocketTransport,
+  WebSocketMetadata,
   WebSocketBotOptions,
   RegisterResponse,
   WebSocketResponse,
@@ -50,7 +50,7 @@ class WebSocketReceiver
       WebSocketResponse,
       WebSocketChannel,
       WebSocketEvent,
-      WebSocketTransport
+      WebSocketMetadata
     > {
   _webSocketServer: WebSocketServer;
   _distributor: Distributor;
@@ -63,7 +63,7 @@ class WebSocketReceiver
     WebSocketResponse,
     WebSocketChannel,
     WebSocketEvent,
-    WebSocketTransport
+    WebSocketMetadata
   >;
   _issueError: (e: Error) => void;
 
@@ -90,7 +90,7 @@ class WebSocketReceiver
       WebSocketResponse,
       WebSocketChannel,
       WebSocketEvent,
-      WebSocketTransport
+      WebSocketMetadata
     >,
     handleError: (e: Error) => void
   ) {

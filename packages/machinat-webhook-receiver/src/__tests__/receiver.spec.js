@@ -41,8 +41,8 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     const receiver = new WebhookReceiver(handleWebhook);
     receiver.bind(handleEvent, handleError);
 
-    const transportCtx = { hello: 'world' };
-    receiver.handleRequest(req, res, transportCtx, 'body');
+    const webCtx = { hello: 'world' };
+    receiver.handleRequest(req, res, webCtx, 'body');
 
     jest.runAllTimers();
     await nextTick();
@@ -54,7 +54,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
         i,
         channel,
         { id: i },
-        { source: 'webhook', context: transportCtx }
+        { source: 'webhook', context: webCtx }
       );
     }
   });

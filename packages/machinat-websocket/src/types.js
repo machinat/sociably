@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatEvent, MachinatTransport } from 'machinat-base/types';
+import type { MachinatEvent, MachinatMetadata } from 'machinat-base/types';
 import type MachinatSocket, { RegisterBody } from './socket';
 import type WebSocketChannel from './channel';
 
@@ -41,15 +41,15 @@ export type RequestInfo = {|
   headers: {| [string]: string |},
 |};
 
-export type WebSocketTransport = {|
+export type WebSocketMetadata = {|
   source: 'websocket',
   socketId: SocketId,
   request: RequestInfo,
   connectionInfo?: ConnectionInfo,
 |};
 
-declare var t: WebSocketTransport;
-(t: MachinatTransport<'websocket'>);
+declare var t: WebSocketMetadata;
+(t: MachinatMetadata<'websocket'>);
 
 export type AcceptedRegisterResponse = {|
   accepted: true,

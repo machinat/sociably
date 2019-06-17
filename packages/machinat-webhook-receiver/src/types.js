@@ -1,19 +1,19 @@
 // @flow
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { MachinatEvent, MachinatTransport } from 'machinat-base/types';
+import type { MachinatEvent, MachinatMetadata } from 'machinat-base/types';
 
 export type WebhookResponse = {|
   status: number,
   body: string | Object,
 |};
 
-export type WebhookTransport = {|
+export type WebhookMetadata = {|
   source: 'webhook',
   context: any,
 |};
 
-declare var t: WebhookTransport;
-(t: MachinatTransport<'webhook'>);
+declare var t: WebhookMetadata;
+(t: MachinatMetadata<'webhook'>);
 
 export type WebhookEventReport<Channel, Event: MachinatEvent<any>> = {
   channel: Channel,

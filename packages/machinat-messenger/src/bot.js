@@ -9,7 +9,7 @@ import WebhookReceiver from 'machinat-webhook-receiver';
 import type { MachinatNode } from 'machinat/types';
 import type {
   WebhookResponse,
-  WebhookTransport,
+  WebhookMetadata,
 } from 'machinat-webhook-receiver/types';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
 
@@ -43,7 +43,7 @@ export default class MessengerBot
   extends BaseBot<
     MessengerChannel,
     MessengerEvent,
-    WebhookTransport,
+    WebhookMetadata,
     MessengerSegmentValue,
     MessengerComponent,
     WebhookResponse,

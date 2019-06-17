@@ -34,7 +34,7 @@ export interface MachinatEvent<Payload> {
   payload: Payload;
 }
 
-export interface MachinatTransport<Source: string> {
+export interface MachinatMetadata<Source: string> {
   source: Source;
 }
 
@@ -45,13 +45,13 @@ export type EventFrame<
   Result,
   Channel: MachinatChannel,
   Event: MachinatEvent<any>,
-  Transport: MachinatTransport<any>
+  Metadata: MachinatMetadata<any>
 > = {
   platform: string,
   channel: Channel,
   event: Event,
   bot: MachinatBot<Channel, Event, SegmentValue, Native, any, Job, Result>,
-  transport: Transport,
+  metadata: Metadata,
   reply(nodes: MachinatNode, options: any): Promise<null | Result[]>,
 };
 
@@ -60,9 +60,9 @@ export type EventMiddleware<
   Response,
   Channel: MachinatChannel,
   Event: MachinatEvent<any>,
-  Transport: MachinatTransport<any>
+  Metadata: MachinatMetadata<any>
 > = MiddlewareFunc<
-  EventFrame<any, Native, any, any, Channel, Event, Transport>,
+  EventFrame<any, Native, any, any, Channel, Event, Metadata>,
   Promise<void | Response>
 >;
 
@@ -96,7 +96,7 @@ export type DispatchMiddleware<
 export type BotPlugin<
   Channel,
   Event: MachinatEvent<any>,
-  Transport: MachinatTransport<any>,
+  Metadata: MachinatMetadata<any>,
   SegmentValue,
   Native,
   Response,
@@ -106,7 +106,7 @@ export type BotPlugin<
   bot: MachinatBot<
     Channel,
     Event,
-    Transport,
+    Metadata,
     SegmentValue,
     Native,
     Response,
@@ -118,13 +118,7 @@ export type BotPlugin<
   dispatchFrameExtension?: {
     [string]: any,
   },
-  eventMiddleware?: EventMiddleware<
-    Native,
-    Response,
-    Channel,
-    Event,
-    Transport
-  >,
+  eventMiddleware?: EventMiddleware<Native, Response, Channel, Event, Metadata>,
   eventFrameExtension?: {
     [string]: any,
   },
@@ -139,21 +133,21 @@ export type EventHandler<
   Response,
   Channel: MachinatChannel,
   Event: MachinatEvent<any>,
-  Transport: MachinatTransport<any>
+  Metadata: MachinatMetadata<any>
 > = (
   channel: Channel,
   event: Event,
-  transport: Transport
+  metadata: Metadata
 ) => Promise<void | Response>;
 
 export interface MachinatReceiver<
   Response,
   Channel: MachinatChannel,
   Event: MachinatEvent<any>,
-  Transport: MachinatTransport<any>
+  Metadata: MachinatMetadata<any>
 > {
   bind(
-    eventHandler: EventHandler<Response, Channel, Event, Transport>,
+    eventHandler: EventHandler<Response, Channel, Event, Metadata>,
     errorHandler: (err: Error) => void
   ): boolean;
   unbind(): boolean;

@@ -4,7 +4,7 @@ import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type MachinatQueue from 'machinat-queue';
 import type {
   WebhookResponse,
-  WebhookTransport,
+  WebhookMetadata,
 } from 'machinat-webhook-receiver/types';
 import type MessnegerChannel from './channel';
 
@@ -118,7 +118,7 @@ export type MessengerBotOptions = {
   plugins?: BotPlugin<
     MessnegerChannel,
     MessengerEvent,
-    WebhookTransport,
+    WebhookMetadata,
     MessengerSegmentValue,
     MessengerComponent,
     WebhookResponse,
