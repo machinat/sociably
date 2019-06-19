@@ -1,4 +1,5 @@
 import EventEmitter from 'events';
+import Symbol$observable from 'symbol-observable';
 import moxy from 'moxy';
 import Bot from '../bot';
 
@@ -10,7 +11,7 @@ const receiver = moxy({
 const controller = moxy({
   setMiddlewares: () => controller,
   setFramePrototype: () => controller,
-  makeEventHandler: () => () => {},
+  makeEventHandler: fn => fn,
 });
 
 const engine = moxy({
@@ -78,23 +79,6 @@ describe('#constructor(controller, engine, plugins)', () => {
     expect(eventListener.mock).toHaveBeenCalledWith(receiveFrame);
   });
 
-  it('calls receiver.bind() with eventHandler and errorHandler', () => {
-    const bot = new Bot(receiver, controller, engine);
-
-    expect(receiver.bind.mock).toHaveBeenCalledTimes(1);
-    expect(receiver.bind.mock.calls[0].args[0]).toBe(
-      controller.makeEventHandler.mock.calls[0].result
-    );
-
-    const onError = receiver.bind.mock.calls[0].args[1];
-
-    const errorListener = moxy();
-    bot.on('error', errorListener);
-    const error = new Error('boom');
-    onError(error);
-    expect(errorListener.mock).toHaveBeenCalledWith(error, bot);
-  });
-
   it('setups controller and engine with middlewares and extenstion from plugins', () => {
     const rmw1 = () => () => {};
     const rmw2 = () => () => {};
@@ -140,4 +124,56 @@ describe('#constructor(controller, engine, plugins)', () => {
       reply: expect.any(Function),
     });
   });
+});
+
+it('emit event', () => {
+  const bot = new Bot(receiver, controller, engine);
+  const eventListener = moxy();
+  bot.on('event', eventListener);
+
+  const [eventHandler] = receiver.bind.mock.calls[0].args;
+
+  eventHandler({ foo: 'bar' });
+  expect(eventListener.mock).toHaveBeenCalledTimes(1);
+  expect(eventListener.mock).toHaveBeenCalledWith({ foo: 'bar' });
+});
+
+it('emit error thrown iin controller', () => {
+  const bot = new Bot(receiver, controller, engine);
+  const errorListener = moxy();
+  bot.on('error', errorListener);
+
+  const [, errorHandler] = receiver.bind.mock.calls[0].args;
+
+  errorHandler(new Error('NO'));
+  expect(errorListener.mock).toHaveBeenCalledTimes(1);
+  expect(errorListener.mock).toHaveBeenCalledWith(new Error('NO'), bot);
+});
+
+it('is observable', () => {
+  const bot = new Bot(receiver, controller, engine);
+
+  const observable = bot[Symbol$observable]();
+  const observer = {
+    next: moxy(),
+    error: moxy(),
+  };
+
+  const subscription = observable.subscribe(observer);
+
+  const eventFrame = { foo: 'bar' };
+  const [eventHandler, errorHandler] = receiver.bind.mock.calls[0].args;
+
+  eventHandler(eventFrame);
+  expect(observer.next.mock).toHaveBeenCalledTimes(1);
+  expect(observer.next.mock).toHaveBeenCalledWith({ foo: 'bar' });
+
+  errorHandler(new Error('NOOO'));
+  expect(observer.error.mock).toHaveBeenCalledTimes(1);
+  expect(observer.error.mock).toHaveBeenCalledWith(new Error('NOOO'));
+
+  subscription.unsubscribe();
+
+  eventHandler(eventFrame);
+  expect(observer.next.mock).toHaveBeenCalledTimes(1);
 });

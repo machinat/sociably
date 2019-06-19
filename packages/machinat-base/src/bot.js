@@ -1,14 +1,15 @@
 // @flow
 import EventEmitter from 'events';
+import Symbol$observable from 'symbol-observable';
 import { mixin } from 'machinat-utility';
 
 import type { MachinatNode } from 'machinat/types';
 import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type {
   BotPlugin,
-  EventHandler,
   MachinatChannel,
   MachinatEvent,
+  EventFrame,
   MachinatMetadata,
   MachinatReceiver,
 } from './types';
@@ -107,14 +108,13 @@ export default class BaseBot<
       this.engine.setFramePrototype(engineMixin);
     }
 
-    this.receiver.bind(this.eventHandler(), this._emitError);
-  }
-
-  eventHandler(): EventHandler<Response, Channel, Event, Metadata> {
-    return this.controller.makeEventHandler(frame => {
-      this.emit('event', frame);
-      return Promise.resolve();
-    });
+    this.receiver.bind(
+      this.controller.makeEventHandler(frame => {
+        this.emit('event', frame);
+        return Promise.resolve();
+      }),
+      this._emitError
+    );
   }
 
   send( // eslint-disable-line class-methods-use-this
@@ -128,4 +128,29 @@ export default class BaseBot<
   _emitError = (err: Error) => {
     this.emit('error', err, this);
   };
+
+  // $FlowFixMe
+  [Symbol$observable]() {
+    return {
+      subscribe: observer => {
+        const eventListener = (frame: EventFrame) => {
+          observer.next(frame);
+        };
+
+        const errorListener = err => {
+          observer.error(err);
+        };
+
+        this.on('event', eventListener);
+        this.on('error', errorListener);
+
+        return {
+          unsubscribe: () => {
+            this.removeListener('event', eventListener);
+            this.removeListener('error', errorListener);
+          },
+        };
+      },
+    };
+  }
 }
