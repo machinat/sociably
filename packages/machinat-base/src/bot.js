@@ -1,9 +1,9 @@
 // @flow
-import EventEmitter from 'events';
 import Symbol$observable from 'symbol-observable';
-import { mixin } from 'machinat-utility';
+import Queue from 'machinat-queue';
 
 import type { MachinatNode } from 'machinat/types';
+import type MachinatRenderer from 'machinat-renderer';
 import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type {
   BotPlugin,
@@ -11,106 +11,100 @@ import type {
   MachinatEvent,
   EventFrame,
   MachinatMetadata,
-  MachinatReceiver,
+  MachinatWorker,
 } from './types';
+import type MachinatReceiver from './receiver';
 
-import Controller from './controller';
 import Engine from './engine';
 
+// BaseBot provide basic constucting and event/error listening entry point for
+// all the machinat bot to inherit.
 export default class BaseBot<
   Channel: MachinatChannel,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
+  Response,
   SegmentValue,
   Native: MachinatNativeComponent<SegmentValue>,
-  Response,
   Job,
   Result
-> extends EventEmitter {
-  receiver: MachinatReceiver<Response, Channel, Event, Metadata>;
-  controller: Controller<Response, Channel, Event, Metadata>;
-  engine: Engine<SegmentValue, Native, Channel, Job, Result>;
+> {
+  platform: string;
+  engine: Engine<
+    Channel,
+    Event,
+    Metadata,
+    Response,
+    SegmentValue,
+    Native,
+    Job,
+    Result
+  >;
   plugins:
     | void
     | BotPlugin<
         Channel,
         Event,
         Metadata,
+        Response,
         SegmentValue,
         Native,
-        Response,
         Job,
         Result
       >[];
+  _eventListeners: ((
+    EventFrame<Channel, Event, Metadata, SegmentValue, Native, Job, Result>
+  ) => void)[];
+  _errorListeners: ((Error) => void)[];
 
   constructor(
-    receiver: MachinatReceiver<Response, Channel, Event, Metadata>,
-    controller: Controller<Response, Channel, Event, Metadata>,
-    engine: Engine<SegmentValue, Native, Channel, Job, Result>,
+    platform: string,
+    receiver: MachinatReceiver<Channel, Event, Metadata, Response>,
+    renderer: MachinatRenderer<SegmentValue, Native>,
+    worker: MachinatWorker<Job, Result>,
     plugins?: BotPlugin<
       Channel,
       Event,
       Metadata,
+      Response,
       SegmentValue,
       Native,
-      Response,
       Job,
       Result
     >[]
   ) {
-    super();
-
-    this.receiver = receiver;
-    this.controller = controller;
-    this.engine = engine;
+    this.platform = platform;
     this.plugins = plugins;
+    this._eventListeners = [];
+    this._errorListeners = [];
 
-    const bot = this;
-    const engineMixin = { bot };
-    const controllerMixin = {
-      bot,
-      reply(...args) {
-        return bot.send(this.channel, ...args);
-      },
-    };
+    const eventMiddlewares = [];
+    const dispatchMiddlewares = [];
 
     if (plugins) {
-      const eventMiddlewares = [];
-      const dispatchMiddlewares = [];
-      const eventExtenstions = [];
-      const dispatchExtenstions = [];
-
       for (const plugin of plugins) {
-        const {
-          dispatchMiddleware,
-          dispatchFrameExtension,
-          eventMiddleware,
-          eventFrameExtension,
-        } = plugin(this);
+        const { dispatchMiddleware, eventMiddleware } = plugin(this);
 
         if (eventMiddleware) eventMiddlewares.push(eventMiddleware);
         if (dispatchMiddleware) dispatchMiddlewares.push(dispatchMiddleware);
-
-        if (eventFrameExtension) eventExtenstions.push(eventFrameExtension);
-        if (dispatchFrameExtension)
-          dispatchExtenstions.push(dispatchFrameExtension);
       }
-
-      this.controller.setMiddlewares(...eventMiddlewares);
-      this.controller.setFramePrototype(
-        mixin(controllerMixin, ...eventExtenstions)
-      );
-
-      this.engine.setMiddlewares(...dispatchMiddlewares);
-      this.engine.setFramePrototype(mixin(engineMixin, ...dispatchExtenstions));
-    } else {
-      this.controller.setFramePrototype(controllerMixin);
-      this.engine.setFramePrototype(engineMixin);
     }
 
-    this.receiver.bind(
-      this.controller.makeEventHandler(frame => {
-        this.emit('event', frame);
+    const queue = new Queue();
+    worker.start(queue);
+
+    this.engine = new Engine(
+      platform,
+      this,
+      renderer,
+      queue,
+      eventMiddlewares,
+      dispatchMiddlewares
+    );
+
+    receiver.bindIssuer(
+      this.engine.eventIssuer(frame => {
+        this._emitEvent(frame);
         return Promise.resolve();
       }),
       this._emitError
@@ -125,8 +119,72 @@ export default class BaseBot<
     throw new TypeError('Bot#send() should not be called on BaseBot');
   }
 
+  onEvent(
+    listener: (
+      EventFrame<Channel, Event, Metadata, SegmentValue, Native, Job, Result>
+    ) => void
+  ) {
+    if (typeof listener !== 'function') {
+      throw new TypeError('listener must be a function');
+    }
+    this._eventListeners.push(listener);
+  }
+
+  removeEventListener(
+    listener: (
+      EventFrame<Channel, Event, Metadata, SegmentValue, Native, Job, Result>
+    ) => void
+  ) {
+    const idx = this._eventListeners.findIndex(fn => fn === listener);
+    if (idx === -1) {
+      return false;
+    }
+
+    this._eventListeners.splice(idx, 1);
+    return true;
+  }
+
+  _emitEvent(
+    frame: EventFrame<
+      Channel,
+      Event,
+      Metadata,
+      SegmentValue,
+      Native,
+      Job,
+      Result
+    >
+  ) {
+    for (const listener of this._eventListeners) {
+      listener(frame);
+    }
+  }
+
+  onError(listener: Error => void) {
+    if (typeof listener !== 'function') {
+      throw new TypeError('listener must be a function');
+    }
+    this._errorListeners.push(listener);
+  }
+
+  removeErrorListener(listener: Error => void) {
+    const idx = this._errorListeners.findIndex(fn => fn === listener);
+    if (idx === -1) {
+      return false;
+    }
+
+    this._errorListeners.splice(idx, 1);
+    return true;
+  }
+
   _emitError = (err: Error) => {
-    this.emit('error', err, this);
+    if (this._errorListeners.length === 0) {
+      throw err;
+    }
+
+    for (const listener of this._errorListeners) {
+      listener(err);
+    }
   };
 
   // $FlowFixMe
@@ -141,13 +199,13 @@ export default class BaseBot<
           observer.error(err);
         };
 
-        this.on('event', eventListener);
-        this.on('error', errorListener);
+        this.onEvent(eventListener);
+        this.onError(errorListener);
 
         return {
           unsubscribe: () => {
-            this.removeListener('event', eventListener);
-            this.removeListener('error', errorListener);
+            this.removeEventListener(eventListener);
+            this.removeErrorListener(errorListener);
           },
         };
       },

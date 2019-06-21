@@ -119,9 +119,9 @@ export type MessengerBotOptions = {
     MessnegerChannel,
     MessengerEvent,
     WebhookMetadata,
+    WebhookResponse,
     MessengerSegmentValue,
     MessengerComponent,
-    WebhookResponse,
     MessengerJob,
     MessengerAPIResult
   >[],

@@ -1,8 +1,7 @@
 // @flow
 import invariant from 'invariant';
 
-import { BaseBot, Engine, Controller } from 'machinat-base';
-import Queue from 'machinat-queue';
+import { BaseBot } from 'machinat-base';
 import Renderer from 'machinat-renderer';
 import WebhookReceiver from 'machinat-webhook-receiver';
 
@@ -37,20 +36,22 @@ type LineBotOptionsInput = $Shape<LineBotOptions>;
 
 const LINE = 'line';
 
-// $FlowFixMe https://github.com/facebook/flow/issues/7539
 class LineBot
   extends BaseBot<
     LineChannel,
     LineEvent,
     WebhookMetadata,
+    WebhookResponse,
     LineSegmentValue,
     LineComponent,
-    WebhookResponse,
     LineJob,
     LineAPIResult
   >
   implements HTTPRequestReceivable {
   options: LineBotOptions;
+  // $FlowFixMe https://github.com/facebook/flow/issues/7539
+  receiver: WebhookReceiver<LineChannel, LineEvent>;
+  worker: LineWorker;
 
   constructor(optionsInput: LineBotOptionsInput = {}) {
     const defaultOpions: LineBotOptionsInput = {
@@ -72,9 +73,6 @@ class LineBot
       'should provide channelSecret if shouldValidateRequest set to true'
     );
 
-    const controller = new Controller();
-
-    const queue = new Queue();
     const renderer = new Renderer(
       LINE,
       LINE_NATIVE_TYPE,
@@ -82,22 +80,28 @@ class LineBot
     );
 
     const worker = new LineWorker(options);
-    const engine = new Engine(LINE, renderer, queue, worker);
     const receiver = new WebhookReceiver(handleWebhook(options));
 
-    super(receiver, controller, engine, options.plugins);
+    super(LINE, receiver, renderer, worker, options.plugins);
 
     this.options = options;
+    this.receiver = receiver;
+    this.worker = worker;
   }
 
   async send(
-    source: string | LineSource,
+    source: string | LineSource | LineChannel,
     message: MachinatNode,
     options: LineSendOptions
   ): Promise<null | LineAPIResult[]> {
-    const channel = new LineChannel(
-      typeof source === 'string' ? { type: 'user', userId: source } : source
-    );
+    const channel =
+      source instanceof LineChannel
+        ? source
+        : new LineChannel(
+            typeof source === 'string'
+              ? { type: 'user', userId: source }
+              : source
+          );
 
     const usePush = !(options && options.replyToken);
 

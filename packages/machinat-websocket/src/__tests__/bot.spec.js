@@ -1,7 +1,8 @@
 import moxy from 'moxy';
 import ws from 'ws';
 import Machinat from 'machinat';
-import { Controller, Engine } from 'machinat-base';
+import Renderer from 'machinat-renderer';
+import BaseBot from 'machinat-base/src/bot';
 import WebSocketBot from '../bot';
 import Receiver from '../receiver';
 import Distributor from '../distributor';
@@ -9,23 +10,36 @@ import Worker from '../worker';
 import Channel from '../channel';
 import { Event } from '../component';
 
+jest.mock('machinat-base/src/bot');
 jest.mock('../receiver');
 jest.mock('../worker');
 jest.mock('../distributor');
 
 beforeEach(() => {
+  BaseBot.mock.clear();
   Receiver.mock.clear();
   Worker.mock.clear();
   Distributor.mock.clear();
 });
 
-it('initiate with base modules', () => {
-  const bot = new WebSocketBot();
+it('extends BaseBot', () => {
+  expect(new WebSocketBot()).toBeInstanceOf(BaseBot);
+});
 
-  expect(bot.receiver).toBeInstanceOf(Receiver);
-  expect(bot.controller).toBeInstanceOf(Controller);
-  expect(bot.engine).toBeInstanceOf(Engine);
-  expect(bot.engine.worker).toBeInstanceOf(Worker);
+it('initiate BaseBot', () => {
+  const plugins = [moxy(() => ({})), moxy(() => ({})), moxy(() => ({}))];
+  const bot = new WebSocketBot({ plugins });
+
+  expect(bot.plugins).toEqual(plugins);
+
+  expect(BaseBot.mock).toHaveBeenCalledTimes(1);
+  expect(BaseBot.mock).toHaveBeenCalledWith(
+    'websocket',
+    expect.any(Receiver),
+    expect.any(Renderer),
+    expect.any(Worker),
+    plugins
+  );
 });
 
 it('pass ws server, distributor and options to receiver', () => {

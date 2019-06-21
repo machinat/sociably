@@ -1,157 +1,169 @@
-import EventEmitter from 'events';
 import Symbol$observable from 'symbol-observable';
 import moxy from 'moxy';
+import Queue from 'machinat-queue';
 import Bot from '../bot';
+import Engine from '../engine';
+
+jest.mock('../engine');
 
 const receiver = moxy({
-  bind: () => true,
-  unbined: () => true,
+  bindIssuer: () => true,
+  unbinedIssuer: () => true,
 });
 
-const controller = moxy({
-  setMiddlewares: () => controller,
-  setFramePrototype: () => controller,
-  makeEventHandler: fn => fn,
-});
+const renderer = moxy({});
 
-const engine = moxy({
-  queue: {},
-  setMiddlewares: () => engine,
-  setFramePrototype: () => engine,
-  dispatch: () => 'Vrooooooooooooooom',
+const worker = moxy({
+  start: () => true,
+  stop: () => true,
 });
 
 beforeEach(() => {
+  Engine.mock.clear();
   receiver.mock.clear();
-  controller.mock.clear();
-  engine.mock.clear();
+  worker.mock.clear();
 });
 
-it('extends EventEmitter', () => {
-  expect(new Bot(receiver, controller, engine)).toBeInstanceOf(EventEmitter);
-});
+describe('#constructor(platform, receiver, renderer, worker, plugins)', () => {
+  it('initiats with props', () => {
+    const plugins = [() => ({})];
+    const bot = new Bot('test', receiver, renderer, worker, plugins);
 
-describe('#constructor(controller, engine, plugins)', () => {
-  it('initiats with controller and engine', () => {
-    const bot = new Bot(receiver, controller, engine);
+    expect(bot.platform).toBe('test');
+    expect(bot.plugins).toBe(plugins);
+    expect(bot.engine).toBeInstanceOf(Engine);
+  });
 
-    expect(bot.receiver).toBe(receiver);
-    expect(bot.controller).toBe(controller);
+  it('create engine', () => {
+    const bot = new Bot('test', receiver, renderer, worker);
+
+    expect(Engine.mock).toHaveBeenCalledTimes(1);
+    expect(Engine.mock).toHaveBeenCalledWith(
+      'test',
+      bot,
+      renderer,
+      expect.any(Queue),
+      [],
+      []
+    );
+
+    const engine = Engine.mock.calls[0].instance;
     expect(bot.engine).toBe(engine);
   });
 
-  it('setFramePrototype() with "bot" prop of engine and controller', () => {
-    const bot = new Bot(receiver, controller, engine);
-
-    expect(engine.setFramePrototype.mock).toHaveBeenCalledWith({ bot });
-    expect(controller.setFramePrototype.mock).toHaveBeenCalledWith({
-      bot,
-      reply: expect.any(Function),
-    });
-  });
-
-  it('add reply() sugar to controller frame', () => {
-    const bot = new Bot(receiver, controller, engine);
-    bot.send = moxy(() => [{ success: 'hahaha' }]);
-
-    const frame = { channel: '__THE_THREAD_OBJ__' };
-    const { reply } = controller.setFramePrototype.mock.calls[0].args[0];
-
-    expect(reply.bind(frame)('foo', 'bar')).toEqual([{ success: 'hahaha' }]);
-    expect(bot.send.mock).toHaveBeenCalledWith(
-      '__THE_THREAD_OBJ__',
-      'foo',
-      'bar'
-    );
-  });
-
-  it('calls controller.makeEventHandler() with events firing callback', () => {
-    const bot = new Bot(receiver, controller, engine);
-
-    const onEvent = controller.makeEventHandler.mock.calls[0].args[0];
-
-    expect(typeof onEvent).toBe('function');
-
-    const eventListener = moxy();
-    bot.on('event', eventListener);
-    const receiveFrame = { foo: 'bar' };
-    onEvent(receiveFrame);
-    expect(eventListener.mock).toHaveBeenCalledWith(receiveFrame);
-  });
-
-  it('setups controller and engine with middlewares and extenstion from plugins', () => {
-    const rmw1 = () => () => {};
-    const rmw2 = () => () => {};
-    const smw1 = () => () => {};
-    const smw2 = () => () => {};
+  it('pass middlewares to engine from plugins', () => {
+    const eventMiddleware1 = () => () => {};
+    const eventMiddleware2 = () => () => {};
+    const dispatchMiddleware1 = () => () => {};
+    const dispatchMiddleware2 = () => () => {};
     const plugins = [
       moxy(() => ({
-        dispatchMiddleware: smw1,
-        eventFrameExtension: { foo: 1 },
+        dispatchMiddleware: dispatchMiddleware1,
       })),
       moxy(() => ({
-        eventMiddleware: rmw1,
-        dispatchFrameExtension: { foo: 2 },
+        eventMiddleware: eventMiddleware1,
       })),
       moxy(() => ({
-        dispatchMiddleware: smw2,
-        eventMiddleware: rmw2,
-        dispatchFrameExtension: { bar: 1 },
-        eventFrameExtension: { bar: 2 },
+        dispatchMiddleware: dispatchMiddleware2,
+        eventMiddleware: eventMiddleware2,
       })),
     ];
 
-    const bot = new Bot(receiver, controller, engine, plugins);
+    const bot = new Bot('test', receiver, renderer, worker, plugins);
 
     plugins.forEach(pluginFn => {
       expect(pluginFn.mock).toHaveBeenCalledTimes(1);
       expect(pluginFn.mock).toHaveBeenCalledWith(bot);
     });
 
-    expect(controller.setMiddlewares.mock).toHaveBeenCalledWith(rmw1, rmw2);
-    expect(engine.setMiddlewares.mock).toHaveBeenCalledWith(smw1, smw2);
-
-    expect(engine.setFramePrototype.mock).toHaveBeenCalledWith({
+    expect(Engine.mock).toHaveBeenCalledWith(
+      'test',
       bot,
-      foo: 2,
-      bar: 1,
-    });
+      renderer,
+      expect.any(Queue),
+      [eventMiddleware1, eventMiddleware2],
+      [dispatchMiddleware1, dispatchMiddleware2]
+    );
+  });
 
-    expect(controller.setFramePrototype.mock).toHaveBeenCalledWith({
-      bot,
-      foo: 1,
-      bar: 2,
-      reply: expect.any(Function),
-    });
+  it('calls engine.eventIssuer() with callback emitting event', async () => {
+    const bot = new Bot('test', receiver, renderer, worker);
+
+    const engine = Engine.mock.calls[0].instance;
+    const emitEvent = engine.eventIssuer.mock.calls[0].args[0];
+
+    const eventSpy = moxy();
+    bot.onEvent(eventSpy);
+
+    await expect(emitEvent({ foo: 'bar' })).resolves.toBe(undefined);
+    expect(eventSpy.mock).toHaveBeenCalledWith({ foo: 'bar' });
+
+    const issueEvent = engine.eventIssuer.mock.calls[0].result;
+    expect(receiver.bindIssuer.mock).toHaveBeenCalledWith(
+      issueEvent,
+      expect.any(Function)
+    );
+  });
+
+  it('starts worker', () => {
+    const bot = new Bot('test', receiver, renderer, worker);
+
+    expect(worker.start.mock).toHaveBeenCalledTimes(1);
+    expect(worker.start.mock).toHaveBeenCalledWith(bot.engine.queue);
   });
 });
 
-it('emit event', () => {
-  const bot = new Bot(receiver, controller, engine);
+it('issue event frame', async () => {
+  const bot = new Bot('test', receiver, renderer, worker);
   const eventListener = moxy();
-  bot.on('event', eventListener);
+  bot.onEvent(eventListener);
 
-  const [eventHandler] = receiver.bind.mock.calls[0].args;
+  const [issueEvent] = receiver.bindIssuer.mock.calls[0].args;
 
-  eventHandler({ foo: 'bar' });
+  const channel = { super: 'slam' };
+  const event = { a: 'phonecall' };
+  const metadata = { champ: 'Johnnnnn Ceeeena!' };
+
+  await expect(issueEvent(channel, event, metadata)).resolves.toBe(undefined);
   expect(eventListener.mock).toHaveBeenCalledTimes(1);
-  expect(eventListener.mock).toHaveBeenCalledWith({ foo: 'bar' });
+  expect(eventListener.mock).toHaveBeenCalledWith({
+    platform: 'test',
+    bot,
+    channel,
+    event,
+    metadata,
+    reply: expect.any(Function),
+  });
+
+  expect(bot.removeEventListener(eventListener)).toBe(true);
+
+  await expect(issueEvent({ foo: 'bar' })).resolves.toBe(undefined);
+  expect(eventListener.mock).toHaveBeenCalledTimes(1);
+
+  expect(bot.removeEventListener(eventListener)).toBe(false);
 });
 
-it('emit error thrown iin controller', () => {
-  const bot = new Bot(receiver, controller, engine);
+it('emit error thrown', () => {
+  const bot = new Bot('test', receiver, renderer, worker);
   const errorListener = moxy();
-  bot.on('error', errorListener);
+  bot.onError(errorListener);
 
-  const [, errorHandler] = receiver.bind.mock.calls[0].args;
+  const [, issueError] = receiver.bindIssuer.mock.calls[0].args;
 
-  errorHandler(new Error('NO'));
+  expect(issueError(new Error('NO'))).toBe(undefined);
   expect(errorListener.mock).toHaveBeenCalledTimes(1);
-  expect(errorListener.mock).toHaveBeenCalledWith(new Error('NO'), bot);
+  expect(errorListener.mock).toHaveBeenCalledWith(new Error('NO'));
+
+  expect(bot.removeErrorListener(errorListener)).toBe(true);
+
+  expect(() => issueError(new Error('NO'))).toThrow();
+  expect(errorListener.mock).toHaveBeenCalledTimes(1);
+
+  expect(bot.removeErrorListener(errorListener)).toBe(false);
 });
 
 it('is observable', () => {
-  const bot = new Bot(receiver, controller, engine);
+  const bot = new Bot('test', receiver, renderer, worker);
 
   const observable = bot[Symbol$observable]();
   const observer = {
@@ -161,19 +173,25 @@ it('is observable', () => {
 
   const subscription = observable.subscribe(observer);
 
-  const eventFrame = { foo: 'bar' };
-  const [eventHandler, errorHandler] = receiver.bind.mock.calls[0].args;
+  const [issueEvent, issueError] = receiver.bindIssuer.mock.calls[0].args;
 
-  eventHandler(eventFrame);
+  issueEvent({ foo: ' bar' }, { hello: 'world' }, { love: 'peace' });
   expect(observer.next.mock).toHaveBeenCalledTimes(1);
-  expect(observer.next.mock).toHaveBeenCalledWith({ foo: 'bar' });
+  expect(observer.next.mock).toHaveBeenCalledWith({
+    platform: 'test',
+    bot,
+    channel: { foo: ' bar' },
+    event: { hello: 'world' },
+    metadata: { love: 'peace' },
+    reply: expect.any(Function),
+  });
 
-  errorHandler(new Error('NOOO'));
+  issueError(new Error('NOOO'));
   expect(observer.error.mock).toHaveBeenCalledTimes(1);
   expect(observer.error.mock).toHaveBeenCalledWith(new Error('NOOO'));
 
   subscription.unsubscribe();
 
-  eventHandler(eventFrame);
+  issueEvent({ foo: ' bar' }, { hello: 'world' }, { love: 'peace' });
   expect(observer.next.mock).toHaveBeenCalledTimes(1);
 });

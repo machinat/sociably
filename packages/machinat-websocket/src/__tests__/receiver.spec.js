@@ -1,4 +1,5 @@
 import { IncomingMessage } from 'http';
+import { BaseReceiver } from 'machinat-base';
 import WS from 'ws';
 import moxy from 'moxy';
 import Distributor from '../distributor';
@@ -41,9 +42,15 @@ beforeEach(() => {
   issueError.mock.reset();
 });
 
+it('extends BaseReceiver', () => {
+  expect(new Receiver(webSocketServer, distributor, {})).toBeInstanceOf(
+    BaseReceiver
+  );
+});
+
 it('handle upgrade and pass Socket to distributor', () => {
   const receiver = new Receiver(webSocketServer, distributor, {});
-  receiver.bind(issueEvent, issueError);
+  receiver.bindIssuer(issueEvent, issueError);
 
   expect(receiver.handleUpgrade(req, netSocket, head)).toBe(undefined);
 
@@ -71,7 +78,7 @@ it('handle upgrade and pass Socket to distributor', () => {
 it('generate uniq socket id', () => {
   const ids = new Set();
   const receiver = new Receiver(webSocketServer, distributor, {});
-  receiver.bind(issueEvent, issueError);
+  receiver.bindIssuer(issueEvent, issueError);
 
   for (let i = 0; i < 500; i += 1) {
     receiver.handleUpgrade(req, netSocket, head);
@@ -87,7 +94,7 @@ it('verify upgrade if options.verifyUpgrade provided', () => {
   const receiver = new Receiver(webSocketServer, distributor, {
     verifyUpgrade,
   });
-  receiver.bind(issueEvent, issueError);
+  receiver.bindIssuer(issueEvent, issueError);
 
   receiver.handleUpgrade(req, netSocket, head);
 
@@ -131,7 +138,7 @@ describe('authenticating registration', () => {
 
   it('call Distributor#setAuthenticator()', () => {
     const receiver = new Receiver(webSocketServer, distributor, {});
-    receiver.bind(issueEvent, issueError);
+    receiver.bindIssuer(issueEvent, issueError);
 
     expect(distributor.setAuthenticator.mock).toHaveBeenCalledTimes(1);
     expect(distributor.setAuthenticator.mock).toHaveBeenCalledWith(
@@ -141,7 +148,7 @@ describe('authenticating registration', () => {
 
   it('pass "@register" event and handle auth response', async () => {
     const receiver = new Receiver(webSocketServer, distributor, {});
-    receiver.bind(issueEvent, issueError);
+    receiver.bindIssuer(issueEvent, issueError);
     const authenticator = distributor.setAuthenticator.mock.calls[0].args[0];
 
     await expect(authenticator(socket, { type: 'test' })).resolves
@@ -169,7 +176,7 @@ Object {
     );
 
     const receiver = new Receiver(webSocketServer, distributor, {});
-    receiver.bind(issueEvent, issueError);
+    receiver.bindIssuer(issueEvent, issueError);
     const authenticator = distributor.setAuthenticator.mock.calls[0].args[0];
 
     await expect(authenticator(socket, { type: 'test' })).resolves
@@ -199,7 +206,7 @@ Object {
     );
 
     const receiver = new Receiver(webSocketServer, distributor, {});
-    receiver.bind(issueEvent, issueError);
+    receiver.bindIssuer(issueEvent, issueError);
     const authenticator = distributor.setAuthenticator.mock.calls[0].args[0];
 
     await expect(authenticator(socket, { type: 'test' })).resolves
@@ -215,7 +222,7 @@ Object {
     issueEvent.mock.fake(() => Promise.reject(new Error('NOOOOOO!')));
 
     const receiver = new Receiver(webSocketServer, distributor, {});
-    receiver.bind(issueEvent, issueError);
+    receiver.bindIssuer(issueEvent, issueError);
     const authenticator = distributor.setAuthenticator.mock.calls[0].args[0];
 
     await expect(authenticator(socket, { type: 'test' })).resolves
@@ -237,7 +244,7 @@ it('issue @connect event', () => {
   const socket = new Socket(new WS(/* mocked */), '_id_', request);
 
   const receiver = new Receiver(webSocketServer, distributor, {});
-  receiver.bind(issueEvent, issueError);
+  receiver.bindIssuer(issueEvent, issueError);
 
   const connectionInfo = { hello: 'world' };
   distributor.emit('connect', 'websocket:foo:bar:baz', socket, connectionInfo);
@@ -259,7 +266,7 @@ it('issue @disconnect event', () => {
   const socket = new Socket(new WS(/* mocked */), '_id_', request);
 
   const receiver = new Receiver(webSocketServer, distributor, {});
-  receiver.bind(issueEvent, issueError);
+  receiver.bindIssuer(issueEvent, issueError);
 
   const connectionInfo = { hello: 'world' };
   distributor.emit(
@@ -286,7 +293,7 @@ it('issue customized event', () => {
   const socket = new Socket(new WS(/* mocked */), '_id_', request);
 
   const receiver = new Receiver(webSocketServer, distributor, {});
-  receiver.bind(issueEvent, issueError);
+  receiver.bindIssuer(issueEvent, issueError);
 
   const connectionInfo = { hello: 'world' };
 
@@ -306,7 +313,7 @@ it('issue customized event', () => {
 
 it('issue distributer error', () => {
   const receiver = new Receiver(webSocketServer, distributor, {});
-  receiver.bind(issueEvent, issueError);
+  receiver.bindIssuer(issueEvent, issueError);
 
   distributor.emit('error', new Error("It's Bat Man!"));
 

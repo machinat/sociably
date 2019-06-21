@@ -199,9 +199,9 @@ export type LineBotOptions = {
     LineChannel,
     LineEvent,
     WebhookMetadata,
+    WebhookResponse,
     LineSegmentValue,
     LineComponent,
-    WebhookResponse,
     LineJob,
     LineAPIResult
   >[],

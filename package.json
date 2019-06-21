@@ -53,7 +53,7 @@
       "__DEV__": true
     },
     "moduleNameMapper": {
-      "^(machinat-?[^\/]*)(.*)$": "<rootDir>/packages/$1/src$2"
+      "^(machinat-?[^\/]*)$": "<rootDir>/packages/$1/src"
     },
     "setupFiles": [
       "<rootDir>/node_modules/moxy/lib/extends/jest.js"

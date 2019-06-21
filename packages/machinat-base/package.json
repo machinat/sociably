@@ -6,6 +6,7 @@
   "dependencies": {
     "delay": "^4.1.0",
     "invariant": "^2.2.4",
+    "machinat-queue": "0.0.1-0",
     "machinat-utility": "0.0.1-0",
     "raw-body": "^2.3.3",
     "symbol-observable": "^1.2.0",

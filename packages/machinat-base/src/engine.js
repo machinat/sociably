@@ -11,14 +11,27 @@ import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import DispatchError from './error';
 
 import type {
-  DispatchMiddleware,
-  DispatchFrame,
-  SegmentWithoutPause,
+  MachinatBot,
   MachinatChannel,
-  MachinatWorker,
+  MachinatEvent,
+  MachinatMetadata,
+  SegmentWithoutPause,
+  EventFrame,
+  EventIssuer,
+  EventMiddleware,
   DispatchTask,
   DispatchResponse,
+  DispatchFrame,
+  DispatchMiddleware,
 } from './types';
+
+const validateMiddlewares = (fns: Function[]) => {
+  for (const fn of fns) {
+    if (typeof fn !== 'function') {
+      throw new TypeError(`middleware must be a function, got ${fn}`);
+    }
+  }
+};
 
 const handlePause = async (pauseElement: PauseElement) => {
   const { after, delay: timeToDelay } = pauseElement.props;
@@ -35,67 +48,122 @@ const handlePause = async (pauseElement: PauseElement) => {
   await promise;
 };
 
+// MachinatEngine controls all the logic flow and the data framing within
+// machinat framework. When event flow in, engine construct EventFrame and pass
+// it throught event middlewares then publish it. It also provide helpers to
+// render element tree into tasks to execute, pass tasks through dispatch
+// middlewares, execute tasks and return results back through middlewares.
+// Both event and dispatch middlewares in machinat take the in & out model
+// like koa does.
 export default class MachinatEngine<
+  Channel: MachinatChannel,
+  Event: MachinatEvent<any>,
+  Metadata: MachinatMetadata<any>,
+  Response,
   SegmentValue,
   Native: MachinatNativeComponent<SegmentValue>,
-  Channel: MachinatChannel,
   Job,
   Result
 > {
   platform: string;
-  middlewares: DispatchMiddleware<Channel, Job, Result>[];
+  bot: MachinatBot<
+    Channel,
+    Event,
+    Metadata,
+    Response,
+    SegmentValue,
+    Native,
+    Job,
+    Result
+  >;
+
   renderer: MachinatRenderer<SegmentValue, Native>;
   queue: MahinateQueue<Job, Result>;
-  worker: MachinatWorker<Job, Result>;
-  frame: {};
 
-  _handleSending: (
+  eventMiddlewares: EventMiddleware<
+    Channel,
+    Event,
+    Metadata,
+    Response,
+    Native
+  >[];
+  dispatchMiddlewares: DispatchMiddleware<Channel, Job, Result>[];
+
+  _dispatchThroughMiddlewares: (
     frame: DispatchFrame<Channel, Job>
   ) => Promise<null | DispatchResponse<Job, Result>>;
 
   constructor(
     platform: string,
+    bot: MachinatBot<
+      Channel,
+      Event,
+      Metadata,
+      Response,
+      SegmentValue,
+      Native,
+      Job,
+      Result
+    >,
     renderer: MachinatRenderer<SegmentValue, Native>,
     queue: MahinateQueue<Job, Result>,
-    worker: MachinatWorker<Job, Result>
+    eventMiddlewares: EventMiddleware<
+      Channel,
+      Event,
+      Metadata,
+      Response,
+      Native
+    >[],
+    dispatchMiddlewares: DispatchMiddleware<Channel, Job, Result>[]
   ) {
     this.platform = platform;
+    this.bot = bot;
     this.renderer = renderer;
     this.queue = queue;
-    this.worker = worker;
 
-    this.middlewares = [];
-    this.setMiddlewares();
+    validateMiddlewares(eventMiddlewares);
+    validateMiddlewares(dispatchMiddlewares);
 
-    this.frame = {};
-
-    this.worker.start(queue);
-  }
-
-  setMiddlewares(...fns: DispatchMiddleware<Channel, Job, Result>[]) {
-    for (const fn of fns) {
-      if (typeof fn !== 'function') {
-        throw new TypeError('middleware must be a function!');
-      }
-    }
-
-    this.middlewares = fns;
-    this._handleSending = compose(...this.middlewares)(
-      this._executeSending.bind(this)
+    this.eventMiddlewares = eventMiddlewares;
+    this.dispatchMiddlewares = dispatchMiddlewares;
+    this._dispatchThroughMiddlewares = compose(...this.dispatchMiddlewares)(
+      this._executeDispatch.bind(this)
     );
-
-    return this;
   }
 
-  setFramePrototype(mixin: Object) {
-    this.frame = Object.defineProperties(
-      {},
-      Object.getOwnPropertyDescriptors(mixin)
-    );
+  // eventIssuer create the event issuing function which construct event frame
+  // and pass it through event middlewares in order. The finalHandler is called
+  // as the last middleware then return the response poped out of the stack one
+  // be one. For most of time you pass the issuer fn created to the receiver.
+  eventIssuer(
+    finalHandler: (
+      EventFrame<Channel, Event, Metadata, any, any, any, any>
+    ) => Promise<void | Response>
+  ): EventIssuer<Channel, Event, Metadata, Response> {
+    const issue = compose(...this.eventMiddlewares)(finalHandler);
 
-    return this;
+    return (channel: Channel, event: Event, metadata: Metadata) => {
+      const { bot } = this;
+
+      const frame = {
+        platform: this.platform,
+        bot,
+        channel,
+        event,
+        metadata,
+        reply(nodes: MachinatNode, options: any) {
+          return bot.send(channel, nodes, options);
+        },
+      };
+
+      return issue(frame);
+    };
   }
 
+  // renderTasks renders machinat element tree into task to be executed. There
+  // are two kinds of task for now: "transmit" contains the jobs to be executed
+  // on the certain platform, "pause" represent the interval made by <Pause />
+  // element which should be waited between "transmit" tasks.
   renderTasks<T, O>(
     createJobs: (
       target: T,
@@ -145,22 +213,25 @@ export default class MachinatEngine<
     return tasks;
   }
 
+  // dispatch construct the dispatch frame containing the tasks along with other
+  // info throught dispatch middleware. At the end of the stack of middlewares,
+  // all the tasks is executed and the response poped up along the retruning
+  // chain of the middlewares.
   dispatch(
     channel: null | Channel,
     tasks: DispatchTask<Job>[],
     node?: MachinatNode
   ): Promise<null | DispatchResponse<Job, Result>> {
-    const frame: DispatchFrame<Channel, Job> = Object.create(this.frame);
-
-    frame.channel = channel;
-    frame.tasks = tasks;
-    frame.platform = this.platform;
-    frame.node = node;
-
-    return this._handleSending(frame);
+    return this._dispatchThroughMiddlewares({
+      platform: this.platform,
+      bot: this.bot,
+      channel,
+      tasks,
+      node,
+    });
   }
 
-  async _executeSending(
+  async _executeDispatch(
     frame: DispatchFrame<Channel, Job>
   ): Promise<null | DispatchResponse<Job, Result>> {
     const { tasks } = frame;

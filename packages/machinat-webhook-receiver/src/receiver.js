@@ -1,14 +1,10 @@
 // @flow
 import type { IncomingMessage, ServerResponse } from 'http';
 import getRawBody from 'raw-body';
+import { BaseReceiver } from 'machinat-base';
 
-import type {
-  MachinatChannel,
-  EventHandler,
-  MachinatEvent,
-  MachinatReceiver,
-} from 'machinat-base/types';
-import { HTTPRequestReceiver } from 'machinat-http-adaptor/types';
+import type { MachinatChannel, MachinatEvent } from 'machinat-base/types';
+import type { HTTPRequestReceiver } from 'machinat-http-adaptor/types';
 import type { WebhookHandler, WebhookResponse, WebhookMetadata } from './types';
 
 const RAW_BODY_OPTION = { encoding: true };
@@ -20,42 +16,13 @@ const endRes = (res, status, body) => {
 };
 
 class WebhookReceiver<Channel: MachinatChannel, Event: MachinatEvent<any>>
-  implements
-    HTTPRequestReceiver,
-    MachinatReceiver<WebhookResponse, Channel, Event, WebhookMetadata> {
+  extends BaseReceiver<Channel, Event, WebhookMetadata, WebhookResponse>
+  implements HTTPRequestReceiver {
   handleWebhook: WebhookHandler<Channel, Event>;
-  isBound: boolean;
-
-  _handleEvent: EventHandler<WebhookResponse, Channel, Event, WebhookMetadata>;
-  _handleError: (e: Error) => void;
 
   constructor(handleWebhook: WebhookHandler<Channel, Event>) {
+    super();
     this.handleWebhook = handleWebhook;
-    this.isBound = false;
-  }
-
-  bind(
-    handleEvent: EventHandler<WebhookResponse, Channel, Event, WebhookMetadata>,
-    errorHandler: (e: Error) => void
-  ) {
-    if (this.isBound) {
-      return false;
-    }
-
-    this._handleEvent = handleEvent;
-    this._handleError = errorHandler;
-
-    this.isBound = true;
-    return true;
-  }
-
-  unbind() {
-    if (!this.isBound) {
-      return false;
-    }
-
-    this.isBound = false;
-    return true;
   }
 
   handleRequest(
@@ -103,7 +70,7 @@ class WebhookReceiver<Channel: MachinatChannel, Event: MachinatEvent<any>>
 
       for (let i = 0; i < events.length; i += 1) {
         const { event, channel, shouldRespond } = events[i];
-        promises[i] = this._handleEvent(channel, event, metadata);
+        promises[i] = this._issueEvent(channel, event, metadata);
 
         if (shouldRespond) {
           shouldWaitRespond = true;
@@ -142,7 +109,7 @@ class WebhookReceiver<Channel: MachinatChannel, Event: MachinatEvent<any>>
         );
       }
 
-      this._handleError(err);
+      this._issueError(err);
     }
   }
 }

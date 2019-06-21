@@ -1,11 +1,11 @@
 // @flow
 import http from 'http';
 import uniqid from 'uniqid';
+import { BaseReceiver } from 'machinat-base';
 
 import type WebSocket from 'ws';
 import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
-import type { MachinatReceiver, EventHandler } from 'machinat-base/types';
 import type { HTTPUpgradeReceiver } from 'machinat-http-adaptor/types';
 import type {
   WebSocketEvent,
@@ -44,34 +44,25 @@ const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
 };
 
 class WebSocketReceiver
-  implements
-    HTTPUpgradeReceiver,
-    MachinatReceiver<
-      WebSocketResponse,
-      WebSocketChannel,
-      WebSocketEvent,
-      WebSocketMetadata
-    > {
-  _webSocketServer: WebSocketServer;
-  _distributor: Distributor;
-  options: WebSocketBotOptions;
-
-  _channelCache: Map<ChannelUid, WebSocketChannel>;
-
-  isBound: boolean;
-  _issueEvent: EventHandler<
-    WebSocketResponse,
+  extends BaseReceiver<
     WebSocketChannel,
     WebSocketEvent,
-    WebSocketMetadata
-  >;
-  _issueError: (e: Error) => void;
+    WebSocketMetadata,
+    WebSocketResponse
+  >
+  implements HTTPUpgradeReceiver {
+  options: WebSocketBotOptions;
+  _webSocketServer: WebSocketServer;
+  _distributor: Distributor;
+  _channelCache: Map<ChannelUid, WebSocketChannel>;
 
   constructor(
     webSocketServer: WebSocketServer,
     distributor: Distributor,
     options: WebSocketBotOptions
   ) {
+    super();
+
     this.options = options;
     this._webSocketServer = webSocketServer;
     this._distributor = distributor;
@@ -83,34 +74,6 @@ class WebSocketReceiver
     distributor.on('connect', this._handleConnect);
     distributor.on('disconnect', this._handleDisconnect);
     distributor.on('error', this._handleDistributorError);
-  }
-
-  bind(
-    handleEvent: EventHandler<
-      WebSocketResponse,
-      WebSocketChannel,
-      WebSocketEvent,
-      WebSocketMetadata
-    >,
-    handleError: (e: Error) => void
-  ) {
-    if (this.isBound) {
-      return false;
-    }
-
-    this.isBound = true;
-    this._issueEvent = handleEvent;
-    this._issueError = handleError;
-    return true;
-  }
-
-  unbind() {
-    if (!this.isBound) {
-      return false;
-    }
-
-    this.isBound = false;
-    return true;
   }
 
   handleUpgrade(req: IncomingMessage, ns: NetSocket, head: Buffer) {

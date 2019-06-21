@@ -4,6 +4,7 @@
   "main": "lib/index.js",
   "license": "MIT",
   "dependencies": {
+    "machinat-base": "0.0.1-0",
     "invariant": "^2.2.4",
     "raw-body": "^2.3.3"
   }

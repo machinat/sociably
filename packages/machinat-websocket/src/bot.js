@@ -1,12 +1,11 @@
 // @flow
 import WS from 'ws';
-import { BaseBot, Engine, Controller } from 'machinat-base';
+import { BaseBot } from 'machinat-base';
 import Renderer from 'machinat-renderer';
-import Queue from 'machinat-queue';
 
 import type { MachinatNode } from 'machinat/types';
 import type { SegmentWithoutPause } from 'machinat-base/types';
-import type { MachinatNativeComponent } from 'machinat-renderer/types';
+import type { HTTPUpgradeReceivable } from 'machinat-http-adaptor/types';
 import type WebSocketChannel from './channel';
 import type {
   WebSocketEvent,
@@ -16,19 +15,19 @@ import type {
   WebSocketJob,
   WebSocketResult,
   WebSocketBotOptions,
+  WebSocketComponent,
   SocketId,
 } from './types';
 
 import { WEBSOCKET, WEBSOCKET_NATIVE_TYPE } from './constant';
 import Distributor from './distributor';
 import { LocalOnlyBroker } from './broker';
-import Receiver from './receiver';
-import Worker from './worker';
+import WebSocketReceiver from './receiver';
+import WebSocketWorker from './worker';
 
 const WSServer = WS.Server;
 
 type WebSocketBotOptionsInput = $Shape<WebSocketBotOptions>;
-type WebSocketComponent = MachinatNativeComponent<EventRenderValue>;
 
 const createJobs = (
   channel: WebSocketChannel,
@@ -50,18 +49,23 @@ const createJobs = (
   return jobs;
 };
 
-class WebSocketBot extends BaseBot<
-  WebSocketChannel,
-  WebSocketEvent,
-  WebSocketMetadata,
-  EventRenderValue,
-  WebSocketComponent,
-  WebSocketResponse,
-  WebSocketJob,
-  WebSocketResult
-> {
+class WebSocketBot
+  extends BaseBot<
+    WebSocketChannel,
+    WebSocketEvent,
+    WebSocketMetadata,
+    WebSocketResponse,
+    EventRenderValue,
+    WebSocketComponent,
+    WebSocketJob,
+    WebSocketResult
+  >
+  implements HTTPUpgradeReceivable {
   _distributor: Distributor;
   options: WebSocketBotOptions;
+  // $FlowFixMe https://github.com/facebook/flow/issues/7539
+  receiver: WebSocketReceiver;
+  worker: WebSocketWorker;
 
   constructor(optionsInput?: WebSocketBotOptionsInput) {
     const defaultOptions: WebSocketBotOptions = {
@@ -71,12 +75,11 @@ class WebSocketBot extends BaseBot<
 
     const broker = new LocalOnlyBroker();
     const distributor = new Distributor(broker);
-    const worker = new Worker(distributor);
+    const worker = new WebSocketWorker(distributor);
 
     const wsServer = new WSServer({ noServer: true });
 
-    const receiver = new Receiver(wsServer, distributor, options);
-    const controller = new Controller();
+    const receiver = new WebSocketReceiver(wsServer, distributor, options);
 
     const renderer = new Renderer(WEBSOCKET, WEBSOCKET_NATIVE_TYPE, () => {
       throw new TypeError(
@@ -84,13 +87,12 @@ class WebSocketBot extends BaseBot<
       );
     });
 
-    const queue = new Queue();
-    const engine = new Engine(WEBSOCKET, renderer, queue, worker);
-
-    super(receiver, controller, engine);
+    super(WEBSOCKET, receiver, renderer, worker, options.plugins);
 
     this._distributor = distributor;
     this.options = options;
+    this.receiver = receiver;
+    this.worker = worker;
   }
 
   async send(

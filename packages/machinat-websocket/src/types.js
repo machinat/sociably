@@ -1,5 +1,10 @@
 // @flow
-import type { MachinatEvent, MachinatMetadata } from 'machinat-base/types';
+import type {
+  MachinatEvent,
+  MachinatMetadata,
+  BotPlugin,
+} from 'machinat-base/types';
+import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type MachinatSocket, { RegisterBody } from './socket';
 import type WebSocketChannel from './channel';
 
@@ -75,8 +80,20 @@ export type RegisterAuthenticator = (
   body: RegisterBody
 ) => Promise<RegisterResponse>;
 
+export type WebSocketComponent = MachinatNativeComponent<EventRenderValue>;
+
 export type WebSocketBotOptions = {|
   verifyUpgrade?: RequestInfo => boolean,
+  plugins?: BotPlugin<
+    WebSocketChannel,
+    WebSocketEvent,
+    WebSocketMetadata,
+    WebSocketResponse,
+    EventRenderValue,
+    WebSocketComponent,
+    WebSocketJob,
+    WebSocketResult
+  >[],
 |};
 
 export interface SocketBroker {

@@ -1,4 +1,5 @@
 import moxy from 'moxy';
+import { BaseReceiver } from 'machinat-base';
 import { IncomingMessage, ServerResponse } from 'http';
 import rawBody from 'raw-body';
 import WebhookReceiver from '../receiver';
@@ -7,6 +8,10 @@ jest.mock('raw-body');
 jest.useFakeTimers();
 
 const nextTick = () => new Promise(process.nextTick);
+
+it('extends BaseReceiver', () => {
+  expect(new WebhookReceiver(() => {})).toBeInstanceOf(BaseReceiver);
+});
 
 describe('#handleRequest(req, res, raw, ctx)', () => {
   let req;
@@ -32,14 +37,14 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
   it('returns undefined', () => {
     const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bind(handleEvent, handleError);
+    receiver.bindIssuer(handleEvent, handleError);
 
     expect(receiver.handleRequest(req, res, {}, 'body')).toBe(undefined);
   });
 
   it('get events from handleWebhook and pass to handleEvent', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bind(handleEvent, handleError);
+    receiver.bindIssuer(handleEvent, handleError);
 
     const webCtx = { hello: 'world' };
     receiver.handleRequest(req, res, webCtx, 'body');
@@ -61,7 +66,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
   it('reads body from req if body not given', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bind(handleEvent, handleError);
+    receiver.bindIssuer(handleEvent, handleError);
 
     req.mock.getter('method').fakeReturnValue('POST');
     rawBody.mock.fake(() => Promise.resolve('some body'));
@@ -80,8 +85,6 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
   it('ends res with 501 if no handler bound', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
 
-    expect(receiver.isBound).toBe(false);
-
     receiver.handleRequest(req, res, {}, 'body');
 
     jest.runAllTimers();
@@ -96,7 +99,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
   it('ends res with 200 if no event returned by handleRequest', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bind(handleEvent, handleError);
+    receiver.bindIssuer(handleEvent, handleError);
 
     handleWebhook.mock.fakeReturnValue(undefined);
     receiver.handleRequest(req, res, {}, 'body');
@@ -113,7 +116,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
   it('ends res with 200 if no shouldRespond event found', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bind(handleEvent, handleError);
+    receiver.bindIssuer(handleEvent, handleError);
 
     receiver.handleRequest(req, res, {}, 'body');
 
@@ -130,7 +133,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
   it('ends res with retruned response object', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bind(handleEvent, handleError);
+    receiver.bindIssuer(handleEvent, handleError);
 
     handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
     handleEvent.mock.fakeReturnValue({ status: 201, body: 'success body' });
@@ -146,7 +149,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
   it('ends res body with json if object returned as body', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bind(handleEvent, handleError);
+    receiver.bindIssuer(handleEvent, handleError);
 
     handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
     handleEvent.mock.fakeReturnValue({ status: 201, body: { success: true } });
@@ -169,7 +172,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
   it('ends res with 501 if shouldRespond but empty returned', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bind(handleEvent, handleError);
+    receiver.bindIssuer(handleEvent, handleError);
 
     handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
 
@@ -184,7 +187,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
   it('ends res with 500 if error thrown', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bind(handleEvent, handleError);
+    receiver.bindIssuer(handleEvent, handleError);
     handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
 
     const err = new Error();
@@ -203,7 +206,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
   it('ends res with "status" and "body" prop of error thrown if given', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bind(handleEvent, handleError);
+    receiver.bindIssuer(handleEvent, handleError);
     handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
 
     const err = new Error();

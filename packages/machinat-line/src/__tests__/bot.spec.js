@@ -1,10 +1,14 @@
 import nock from 'nock';
 import moxy from 'moxy';
 import Machinat from 'machinat';
-import { Engine, Controller } from 'machinat-base';
+import BaseBot from 'machinat-base/src/bot';
+import Renderer from 'machinat-renderer';
 import WebhookReceiver from 'machinat-webhook-receiver';
 import LineBot from '../bot';
+import LineWorker from '../worker';
 import { LINE_NATIVE_TYPE } from '../constant';
+
+jest.mock('machinat-base/src/bot');
 
 nock.disableNetConnect();
 
@@ -59,6 +63,8 @@ const bodySpy = moxy(() => true);
 const accessToken = '__ACCESS_TOKEN__';
 let lineAPI;
 beforeEach(() => {
+  BaseBot.mock.clear();
+
   Bar.$$getEntry.mock.clear();
   Baz.$$getEntry.mock.clear();
 
@@ -71,6 +77,15 @@ beforeEach(() => {
 
   pathSpy.mock.clear();
   bodySpy.mock.clear();
+});
+
+it('extends BaseBot', () => {
+  expect(
+    new LineBot({
+      accessToken,
+      channelSecret: '_SECRET_',
+    })
+  ).toBeInstanceOf(BaseBot);
 });
 
 it('throws if accessToken not given', () => {
@@ -93,18 +108,7 @@ it('is ok to have channelSecret empty if shouldValidateRequest set to false', ()
   ).not.toThrow();
 });
 
-it('has engine, controller, receiver and client', () => {
-  const bot = new LineBot({
-    accessToken,
-    channelSecret: '_SECRET_',
-  });
-
-  expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
-  expect(bot.controller).toBeInstanceOf(Controller);
-  expect(bot.engine).toBeInstanceOf(Engine);
-});
-
-it('have plugins initiated', () => {
+it('initiate BaseBot', () => {
   const plugins = [moxy(() => ({})), moxy(() => ({})), moxy(() => ({}))];
 
   const bot = new LineBot({
@@ -113,10 +117,16 @@ it('have plugins initiated', () => {
     plugins,
   });
 
-  expect(bot.plugins).toBe(plugins);
-  expect(plugins[0].mock).toHaveBeenCalledWith(bot);
-  expect(plugins[1].mock).toHaveBeenCalledWith(bot);
-  expect(plugins[2].mock).toHaveBeenCalledWith(bot);
+  expect(bot.plugins).toEqual(plugins);
+
+  expect(BaseBot.mock).toHaveBeenCalledTimes(1);
+  expect(BaseBot.mock).toHaveBeenCalledWith(
+    'line',
+    expect.any(WebhookReceiver),
+    expect.any(Renderer),
+    expect.any(LineWorker),
+    plugins
+  );
 });
 
 it('sets default options', () => {

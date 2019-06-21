@@ -1,8 +1,7 @@
 // @flow
 import invariant from 'invariant';
 
-import { BaseBot, Engine, Controller } from 'machinat-base';
-import Queue from 'machinat-queue';
+import { BaseBot } from 'machinat-base';
 import Renderer from 'machinat-renderer';
 import WebhookReceiver from 'machinat-webhook-receiver';
 
@@ -38,20 +37,22 @@ type MessengerBotOptionsInput = $Shape<MessengerBotOptions>;
 const MESSENGER = 'messenger';
 const POST = 'POST';
 
-// $FlowFixMe https://github.com/facebook/flow/issues/7539
 export default class MessengerBot
   extends BaseBot<
     MessengerChannel,
     MessengerEvent,
     WebhookMetadata,
+    WebhookResponse,
     MessengerSegmentValue,
     MessengerComponent,
-    WebhookResponse,
     MessengerJob,
     MessengerAPIResult
   >
   implements HTTPRequestReceivable {
   options: MessengerBotOptions;
+  // $FlowFixMe https://github.com/facebook/flow/issues/7539
+  receiver: WebhookReceiver<MessengerChannel, MessengerEvent>;
+  worker: MessengerWorker;
 
   constructor(optionsInput: MessengerBotOptionsInput = {}) {
     const defaultOpions: MessengerBotOptionsInput = {
@@ -81,8 +82,6 @@ export default class MessengerBot
       'should provide verifyToken if shouldVerifyWebhook set to true'
     );
 
-    const controller = new Controller();
-
     const renderer = new Renderer(
       MESSENGER,
       MESSENGER_NAITVE_TYPE,
@@ -98,20 +97,19 @@ export default class MessengerBot
       }
     );
 
-    const queue = new Queue();
-
     const worker = new MessengerWorker({
       accessToken: options.accessToken,
       appSecret: options.appSecret,
       consumeInterval: options.consumeInterval,
     });
 
-    const engine = new Engine(MESSENGER, renderer, queue, worker);
     const receiver = new WebhookReceiver(handleWebhook(options));
 
-    super(receiver, controller, engine, options.plugins);
+    super(MESSENGER, receiver, renderer, worker, options.plugins);
 
     this.options = options;
+    this.receiver = receiver;
+    this.worker = worker;
   }
 
   async send(

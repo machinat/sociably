@@ -1,11 +1,15 @@
 import moxy from 'moxy';
 import nock from 'nock';
 import Machinat from 'machinat';
-import { Controller, Engine } from 'machinat-base';
+import Renderer from 'machinat-renderer';
+import BaseBot from 'machinat-base/src/bot';
 import WebhookReceiver from 'machinat-webhook-receiver';
 import MessengerBot from '../bot';
+import MessengerWorker from '../worker';
 import { Image, Dialog, QuickReply } from '../component';
 import { makeResponse } from './utils';
+
+jest.mock('machinat-base/src/bot');
 
 nock.disableNetConnect();
 
@@ -21,12 +25,23 @@ let graphAPI;
 const bodySpy = moxy(() => true);
 
 beforeEach(() => {
+  BaseBot.mock.clear();
   graphAPI = nock('https://graph.facebook.com').post('/v3.1/', bodySpy);
   bodySpy.mock.clear();
 });
 
 afterEach(() => {
   nock.cleanAll();
+});
+
+it('extends BaseBot', () => {
+  const bot = new MessengerBot({
+    accessToken: '_ACCESS_TOKEN_',
+    appSecret: '_SECRET_',
+    verifyToken: '_VERIFIY_TOKEN_',
+  });
+
+  expect(bot).toBeInstanceOf(BaseBot);
 });
 
 it('throw if accessToken not given', () => {
@@ -82,18 +97,6 @@ it('is ok to have verifyToken empty if shouldVerifyWebhook set to false', () => 
   expect(() => new MessengerBot(options)).not.toThrow();
 });
 
-it('has receiver, controller, engine and client', () => {
-  const bot = new MessengerBot({
-    accessToken: '_ACCESS_TOKEN_',
-    appSecret: '_SECRET_',
-    verifyToken: '_VERIFIY_TOKEN_',
-  });
-
-  expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
-  expect(bot.controller).toBeInstanceOf(Controller);
-  expect(bot.engine).toBeInstanceOf(Engine);
-});
-
 it('have plugins initiated', () => {
   const plugins = [moxy(() => ({})), moxy(() => ({})), moxy(() => ({}))];
 
@@ -105,9 +108,15 @@ it('have plugins initiated', () => {
   });
 
   expect(bot.plugins).toBe(plugins);
-  expect(plugins[0].mock).toHaveBeenCalledWith(bot);
-  expect(plugins[1].mock).toHaveBeenCalledWith(bot);
-  expect(plugins[2].mock).toHaveBeenCalledWith(bot);
+
+  expect(BaseBot.mock).toHaveBeenCalledTimes(1);
+  expect(BaseBot.mock).toHaveBeenCalledWith(
+    'messenger',
+    expect.any(WebhookReceiver),
+    expect.any(Renderer),
+    expect.any(MessengerWorker),
+    plugins
+  );
 });
 
 it('set default options', () => {
