@@ -1,5 +1,4 @@
 // @flow
-import EventEmitter from 'events';
 import WS from 'ws';
 
 import type {
@@ -19,6 +18,13 @@ export type ClientEvent = {|
   type: string,
   subtype: void | string,
   payload: any,
+|};
+
+type ClientEventFrame = {|
+  channel: Channel,
+  event: ClientEvent,
+  connectionInfo: ConnectionInfo,
+  client: WebScoketClient, // eslint-disable-line no-use-before-define
 |};
 
 type ClientOptions = {
@@ -42,7 +48,7 @@ const createSocket = (url: string) => {
   return new MachinatSocket(webSocket, '');
 };
 
-class WebClient extends EventEmitter {
+class WebScoketClient {
   options: ClientOptions;
   _connected: boolean;
   _socket: MachinatSocket;
@@ -52,8 +58,11 @@ class WebClient extends EventEmitter {
 
   _queuedEventJobs: PendingEventJob[];
 
+  _eventListeners: ((ClientEventFrame) => void)[];
+  _errorListeners: ((Error) => void)[];
+
   constructor(optionsInput: ClientOptionsInput) {
-    super();
+    this._errorListeners = [];
 
     const defaultOptions = {
       url: './',
@@ -64,6 +73,7 @@ class WebClient extends EventEmitter {
     this.options = options;
     this._connected = false;
     this._queuedEventJobs = [];
+    this._eventListeners = [];
 
     this._socket = createSocket(options.url);
 
@@ -114,12 +124,59 @@ class WebClient extends EventEmitter {
     }
   }
 
+  onEvent(listener: ClientEventFrame => void) {
+    if (typeof listener !== 'function') {
+      throw new TypeError('listener must be a function');
+    }
+    this._eventListeners.push(listener);
+  }
+
+  removeEventListener(listener: ClientEventFrame => void) {
+    const idx = this._eventListeners.findIndex(fn => fn === listener);
+    if (idx === -1) {
+      return false;
+    }
+
+    this._eventListeners.splice(idx, 1);
+    return true;
+  }
+
   _emitEvent(event: ClientEvent) {
-    this.emit('event', event, this._channel, this._connectionInfo);
+    for (const listener of this._eventListeners) {
+      listener({
+        event,
+        channel: this._channel,
+        connectionInfo: this._connectionInfo,
+        client: this,
+      });
+    }
+  }
+
+  onError(listener: Error => void) {
+    if (typeof listener !== 'function') {
+      throw new TypeError('listener must be a function');
+    }
+    this._errorListeners.push(listener);
+  }
+
+  removeErrorListener(listener: Error => void) {
+    const idx = this._errorListeners.findIndex(fn => fn === listener);
+    if (idx === -1) {
+      return false;
+    }
+
+    this._errorListeners.splice(idx, 1);
+    return true;
   }
 
   _emitError = (err: Error) => {
-    this.emit('error', err);
+    if (this._errorListeners.length === 0) {
+      throw err;
+    }
+
+    for (const listener of this._errorListeners) {
+      listener(err);
+    }
   };
 
   _handleSocketOpen = async () => {
@@ -207,4 +264,4 @@ class WebClient extends EventEmitter {
   };
 }
 
-export default WebClient;
+export default WebScoketClient;

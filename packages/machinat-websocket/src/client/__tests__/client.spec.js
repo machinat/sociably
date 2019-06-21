@@ -33,7 +33,7 @@ it('initiate ok', () => {
 it('register to server when socket open', async () => {
   const eventSpy = moxy();
   const client = new Client({ url: '/hello', register: { type: 'test' } });
-  client.on('event', eventSpy);
+  client.onEvent(eventSpy);
 
   const socket = Socket.mock.calls[0].instance;
   expect(socket.register.mock).not.toHaveBeenCalled();
@@ -53,17 +53,18 @@ it('register to server when socket open', async () => {
   expect(client.connectionInfo).toEqual(info);
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(1);
-  expect(eventSpy.mock).toHaveBeenCalledWith(
-    { type: '@connect' },
-    new Channel('foo', 'bar', 'baz'),
-    info
-  );
+  expect(eventSpy.mock).toHaveBeenCalledWith({
+    event: { type: '@connect' },
+    channel: new Channel('foo', 'bar', 'baz'),
+    connectionInfo: info,
+    client,
+  });
 });
 
 it('register with {type: "default"} if empty in options', async () => {
   const eventSpy = moxy();
   const client = new Client({ url: '/hello' });
-  client.on('event', eventSpy);
+  client.onEvent(eventSpy);
 
   const socket = Socket.mock.calls[0].instance;
   expect(socket.register.mock).not.toHaveBeenCalled();
@@ -77,7 +78,7 @@ it('register with {type: "default"} if empty in options', async () => {
 it('emit error if register rejected when socket is already open', async () => {
   const errorSpy = moxy();
   const client = new Client({ url: '/hello', register: { type: 'test' } });
-  client.on('error', errorSpy);
+  client.onError(errorSpy);
 
   const socket = Socket.mock.calls[0].instance;
   socket.register.mock.fake(() => Promise.resolve(3));
@@ -103,7 +104,7 @@ it('emit event when received', async () => {
   await delay();
 
   const eventSpy = moxy();
-  client.on('event', eventSpy);
+  client.onEvent(eventSpy);
 
   socket.emit('event', {
     uid,
@@ -113,15 +114,16 @@ it('emit event when received', async () => {
   });
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(1);
-  expect(eventSpy.mock).toHaveBeenCalledWith(
-    {
+  expect(eventSpy.mock).toHaveBeenCalledWith({
+    event: {
       type: 'reaction',
       subtype: 'wasted',
       payload: 'Link is down! Legend over.',
     },
-    new Channel('foo', 'bar', 'baz'),
-    info
-  );
+    channel: new Channel('foo', 'bar', 'baz'),
+    connectionInfo: info,
+    client,
+  });
 });
 
 it('send event when connected', async () => {
@@ -193,22 +195,21 @@ test('disconnect by server', () => {
   const client = new Client({ url: '/hello' });
   const socket = Socket.mock.calls[0].instance;
 
-  const connectSpy = moxy();
-  client.on('connect', connectSpy);
   socket.emit('connect', { uid, info });
 
   const eventSpy = moxy();
-  client.on('event', eventSpy);
+  client.onEvent(eventSpy);
 
   expect(client.connected).toBe(true);
   socket.emit('disconnect', { uid, reason: 'See ya!' });
 
   expect(client.connected).toBe(false);
-  expect(eventSpy.mock).toHaveBeenLastCalledWith(
-    { type: '@disconnect' },
-    new Channel('foo', 'bar', 'baz'),
-    info
-  );
+  expect(eventSpy.mock).toHaveBeenLastCalledWith({
+    event: { type: '@disconnect' },
+    channel: new Channel('foo', 'bar', 'baz'),
+    connectionInfo: info,
+    client,
+  });
 });
 
 test('disconnect by #close()', async () => {
@@ -219,7 +220,7 @@ test('disconnect by #close()', async () => {
   socket.emit('connect', { uid, info });
 
   const eventSpy = moxy();
-  client.on('event', eventSpy);
+  client.onEvent(eventSpy);
 
   expect(client.connected).toBe(true);
   expect(client.close('You are chickened!')).toBe(undefined);
@@ -234,17 +235,18 @@ test('disconnect by #close()', async () => {
 
   socket.emit('disconnect', { uid, reason: 'See ya!' });
 
-  expect(eventSpy.mock).toHaveBeenLastCalledWith(
-    { type: '@disconnect' },
-    new Channel('foo', 'bar', 'baz'),
-    info
-  );
+  expect(eventSpy.mock).toHaveBeenLastCalledWith({
+    event: { type: '@disconnect' },
+    channel: new Channel('foo', 'bar', 'baz'),
+    connectionInfo: info,
+    client,
+  });
 });
 
 it('emit errer if connect_fail', () => {
   const errorSpy = moxy();
   const client = new Client({ url: '/hello' });
-  client.on('error', errorSpy);
+  client.onError(errorSpy);
 
   const socket = Socket.mock.calls[0].instance;
   socket.emit('connect_fail', { uid, reason: 'FAILED' }, 3);
