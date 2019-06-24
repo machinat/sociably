@@ -1,5 +1,5 @@
 // @flow
-import typeof { SEGMENT_BREAK, MACHINAT_ELEMENT_TYPE } from 'machinat';
+import typeof { SEGMENT_BREAK, MACHINAT_NATIVE_TYPE } from 'machinat';
 import type {
   MachinatNode,
   MachinatText,
@@ -72,6 +72,9 @@ export type MachinatNativeComponent<Value> = {
     render: RenderInnerFn<Value, MachinatNativeComponent<Value>>,
     path: string
   ): null | InnerSegment<Value, MachinatNativeComponent<Value>>[],
-  $$native: MACHINAT_ELEMENT_TYPE,
+  $$typeof: MACHINAT_NATIVE_TYPE,
+  $$native: Symbol,
   $$namespace: string,
 };
+
+export type MachinatService = {};

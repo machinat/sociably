@@ -15,7 +15,7 @@ export type MachinatElementType =
   | MachinatNativeComponent<any>;
 
 export type MachinatElement<ElementType: MachinatElementType> = {|
-  $$typeof: string | Symbol,
+  $$typeof: Symbol,
   type: ElementType,
   props: MachinatElementProps,
 |};

@@ -1,5 +1,5 @@
 import moxy from 'moxy';
-import Machinat from 'machinat';
+import Machinat, { MACHINAT_NATIVE_TYPE } from 'machinat';
 
 import {
   asNative,
@@ -18,6 +18,7 @@ describe('asNative(sym)(_component)', () => {
 
     expect(Component).toBe(_component);
     expect(Component.$$native).toBe(sign);
+    expect(Component.$$typeof).toBe(MACHINAT_NATIVE_TYPE);
   });
 });
 

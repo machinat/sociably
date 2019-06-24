@@ -1,4 +1,4 @@
-import Machinat from 'machinat';
+import Machinat, { MACHINAT_NATIVE_TYPE } from 'machinat';
 import {
   isElement,
   isFragment,
@@ -128,19 +128,16 @@ describe('isEmpty', () => {
 
 describe('isNative', () => {
   it('return true if "type" of element is labeled as native', () => {
-    const Native1 = () => {};
-    Native1.$$native = Symbol('test1');
+    const Native = () => {};
+    Native.$$native = Symbol('test1');
+    Native.$$typeof = MACHINAT_NATIVE_TYPE;
 
-    const Native2 = { $$native: Symbol('test2') };
-
-    const natives = [<Native1 />, <Native2 />];
-    natives.forEach(ele => {
-      expect(isNative(ele)).toBe(true);
-    });
+    expect(isNative(<Native />)).toBe(true);
   });
 
   it('return false if "type" of element is not native', () => {
     const MyComponent = () => 'abc'; // eslint-disable-line no-unused-vars
+
     const nonEmpties = [
       null,
       undefined,

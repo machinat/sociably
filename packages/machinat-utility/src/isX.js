@@ -3,6 +3,7 @@ import {
   MACHINAT_FRAGMENT_TYPE,
   MACHINAT_ELEMENT_TYPE,
   MACHINAT_PAUSE_TYPE,
+  MACHINAT_NATIVE_TYPE,
 } from 'machinat';
 
 export const isEmpty = (element: any): boolean %checks =>
@@ -34,5 +35,5 @@ export const isValidRenderable = (element: any): boolean %checks =>
 export const isNative = (element: any): boolean %checks =>
   typeof element === 'object' &&
   element !== null &&
-  (typeof element.type.$$native === 'symbol' ||
-    typeof element.type.$$native === 'string');
+  (typeof element.type === 'function' &&
+    element.type.$$typeof === MACHINAT_NATIVE_TYPE);

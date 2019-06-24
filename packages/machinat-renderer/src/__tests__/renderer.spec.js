@@ -1,5 +1,5 @@
 import moxy from 'moxy';
-import Machinat, { SEGMENT_BREAK } from 'machinat';
+import Machinat, { SEGMENT_BREAK, MACHINAT_NATIVE_TYPE } from 'machinat';
 
 import Renderer from '../renderer';
 
@@ -346,6 +346,7 @@ describe('#render()', () => {
 
   it('throw if native component of other platform received', () => {
     const AnotherPlatformUnit = () => {};
+    AnotherPlatformUnit.$$typeof = MACHINAT_NATIVE_TYPE;
     AnotherPlatformUnit.$$native = Symbol('some other platform');
 
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);

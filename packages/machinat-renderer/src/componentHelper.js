@@ -1,12 +1,11 @@
 // @flow
-import { SEGMENT_BREAK } from 'machinat';
+/* eslint-disable no-param-reassign */
+import { SEGMENT_BREAK, MACHINAT_NATIVE_TYPE } from 'machinat';
 
 import type { GeneralElement, NativeElement } from 'machinat/types';
 import type {
   MachinatNativeComponent,
   RenderInnerFn,
-  PartSegment,
-  UnitSegment,
   BreakSegment,
   TextSegment,
 } from './types';
@@ -14,21 +13,22 @@ import type {
 export const asNative = (sign: Symbol) => (
   Component: MachinatNativeComponent<any>
 ) => {
-  Component.$$native = sign; // eslint-disable-line no-param-reassign
+  Component.$$typeof = MACHINAT_NATIVE_TYPE;
+  Component.$$native = sign;
   return Component;
 };
 
 export const asNamespace = (namespace: string) => (
   Component: MachinatNativeComponent<any>
 ) => {
-  Component.$$namespace = namespace; // eslint-disable-line no-param-reassign
+  Component.$$namespace = namespace;
   return Component;
 };
 
 export const annotate = (key: string, val: any) => (
   Component: MachinatNativeComponent<any>
 ) => {
-  Component[key] = val; // eslint-disable-line no-param-reassign
+  Component[key] = val;
   return Component;
 };
 
