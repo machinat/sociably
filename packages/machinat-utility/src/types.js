@@ -1,17 +1,21 @@
 // @flow
 import type { MachinatRenderable } from 'machinat/types';
 
-export type TraverseNodeCallback = (
-  MachinatRenderable | Object,
-  string,
-  any
+export type TraverseNodeCallback<Context> = (
+  node: MachinatRenderable | Object,
+  path: string,
+  context: Context
 ) => void;
 
-export type NodeReducer = <Reduced>(
-  Reduced,
-  MachinatRenderable,
-  string,
-  any
+export type NodeReducer = <Reduced, Payload>(
+  reduced: Reduced,
+  node: MachinatRenderable,
+  path: string,
+  payload: Payload
 ) => Reduced;
 
-export type NodeMapper = <Mapped>(MachinatRenderable, string, any) => Mapped;
+export type NodeMapper = <Mapped, Payload>(
+  node: MachinatRenderable,
+  path: string,
+  payload: Payload
+) => Mapped;

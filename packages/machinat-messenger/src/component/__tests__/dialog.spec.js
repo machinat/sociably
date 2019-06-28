@@ -1,3 +1,4 @@
+import moxy from 'moxy';
 import Machinat from 'machinat';
 import { map } from 'machinat-utility';
 
@@ -30,26 +31,26 @@ const children = (
 
 const Unknown = () => {};
 
-const renderInner = jest.fn(
-  message =>
-    map(
-      message,
-      (node, path) =>
-        typeof node === 'string'
-          ? { type: 'unit', value: node, node, path }
-          : typeof node.type === 'string'
-          ? {
-              type: 'unit',
-              value: { message: { text: node.type } },
-              node,
-              path,
-            }
-          : node.type === Unknown
-          ? { type: 'unit', value: { you: "don't know me" }, node, path }
-          : { type: 'unit', value: '_QUICK_REPLY_RENDERED_', node, path },
-      '$'
-    ) || null
-);
+const renderInner = moxy(async message => {
+  const renderings = map(
+    message,
+    (node, path) =>
+      typeof node === 'string'
+        ? { type: 'unit', value: node, node, path }
+        : typeof node.type === 'string'
+        ? {
+            type: 'unit',
+            value: { message: { text: node.type } },
+            node,
+            path,
+          }
+        : node.type === Unknown
+        ? { type: 'unit', value: { you: "don't know me" }, node, path }
+        : { type: 'unit', value: '_QUICK_REPLY_RENDERED_', node, path },
+    '$'
+  );
+  return renderings ? [].concat(...(await Promise.all(renderings))) : null;
+});
 
 const render = renderHelper(renderInner);
 
@@ -90,17 +91,17 @@ it.each([
       {children}
     </Dialog>,
   ],
-])('%s match snapshot', (_, element) => {
-  expect(render(element)).toMatchSnapshot();
+])('%s match snapshot', async (_, element) => {
+  await expect(render(element)).resolves.toMatchSnapshot();
 });
 
-it('returns null if empty children received', () => {
-  expect(render(<Dialog />)).toBe(null);
-  expect(render(<Dialog>{null}</Dialog>)).toBe(null);
+it('returns null if empty children received', async () => {
+  await expect(render(<Dialog />)).resolves.toBe(null);
+  await expect(render(<Dialog>{null}</Dialog>)).resolves.toBe(null);
 });
 
-it('hoist text value into message object', () => {
-  const actions = render(
+it('hoist text value into message object', async () => {
+  const segments = await render(
     <Dialog>
       foo
       <bar />
@@ -108,13 +109,13 @@ it('hoist text value into message object', () => {
     </Dialog>
   );
 
-  expect(actions[0].value).toEqual({ message: { text: 'foo' } });
-  expect(actions[1].value).toEqual({ message: { text: 'bar' } });
-  expect(actions[2].value).toEqual({ message: { text: 'baz' } });
+  expect(segments[0].value).toEqual({ message: { text: 'foo' } });
+  expect(segments[1].value).toEqual({ message: { text: 'bar' } });
+  expect(segments[2].value).toEqual({ message: { text: 'baz' } });
 });
 
-it('add root fields to action value', () => {
-  const segments = render(
+it('add root fields to action value', async () => {
+  const segments = await render(
     <Dialog
       type="MESSAGE_TAG"
       tag="PAYMENT_UPDATE"
@@ -134,8 +135,8 @@ it('add root fields to action value', () => {
   });
 });
 
-it('adds metadata to last message action', () => {
-  const actions = render(
+it('adds metadata to last message action', async () => {
+  const segments = await render(
     <Dialog metadata="_META_">
       <foo />
       bar
@@ -143,15 +144,15 @@ it('adds metadata to last message action', () => {
     </Dialog>
   );
 
-  expect(actions[0].value).toEqual({ message: { text: 'foo' } });
-  expect(actions[1].value).toEqual({
+  expect(segments[0].value).toEqual({ message: { text: 'foo' } });
+  expect(segments[1].value).toEqual({
     message: { text: 'bar', metadata: '_META_' },
   });
-  expect(actions[2].value).toEqual({ you: "don't know me" });
+  expect(segments[2].value).toEqual({ you: "don't know me" });
 });
 
-it('adds quickReplies to last message action', () => {
-  const actions = render(
+it('adds quickReplies to last message action', async () => {
+  const segments = await render(
     <Dialog
       quickReplies={[
         <QuickReply title="foo" />,
@@ -166,8 +167,8 @@ it('adds quickReplies to last message action', () => {
     </Dialog>
   );
 
-  expect(actions[0].value).toEqual({ message: { text: 'foo' } });
-  expect(actions[1].value).toEqual({
+  expect(segments[0].value).toEqual({ message: { text: 'foo' } });
+  expect(segments[1].value).toEqual({
     message: {
       text: 'bar',
       quick_replies: [
@@ -178,11 +179,11 @@ it('adds quickReplies to last message action', () => {
       ],
     },
   });
-  expect(actions[2].value).toEqual({ you: "don't know me" });
+  expect(segments[2].value).toEqual({ you: "don't know me" });
 });
 
-it('throw if non QuickReply element received within prop quickReplies', () => {
-  expect(() =>
+it('throw if non QuickReply element received within prop quickReplies', async () => {
+  expect(
     render(
       <Dialog
         quickReplies={[
@@ -197,7 +198,7 @@ it('throw if non QuickReply element received within prop quickReplies', () => {
         bar
       </Dialog>
     )
-  ).toThrowErrorMatchingInlineSnapshot(
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"<Unknown /> at $:2 is invalid, only <[QuickReply, LocationQuickReply, PhoneQuickReply, EmailQuickReply]/> allowed"`
   );
 });

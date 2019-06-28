@@ -1,10 +1,10 @@
 // @flow
+import type { MachinatNativeComponent } from 'machinat/types';
 import type {
   MachinatEvent,
   MachinatMetadata,
   BotPlugin,
 } from 'machinat-base/types';
-import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type MachinatSocket, { RegisterBody } from './socket';
 import type WebSocketChannel from './channel';
 

@@ -2,7 +2,7 @@
 import invariant from 'invariant';
 import { asSingleUnitComponentWithEntryGetter } from './utils';
 
-const LinkRichMenu = ({ props: { id } }) => ({ id });
+const LinkRichMenu = async ({ props: { id } }) => ({ id });
 
 const __LinkRichMenu = asSingleUnitComponentWithEntryGetter((channel, act) => {
   const { type, subtype, source } = channel;

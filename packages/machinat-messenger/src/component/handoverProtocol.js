@@ -6,7 +6,7 @@ import {
   ENTRY_TAKE_THREAD_CONTROL,
 } from '../constant';
 
-const PassThreadControl = ({ props: { appId, metadata } }) => ({
+const PassThreadControl = async ({ props: { appId, metadata } }) => ({
   target_app_id: appId,
   metadata,
 });
@@ -15,13 +15,13 @@ const __PassThreadControl = asSingleUnitComponentWithEntry(
   ENTRY_PASS_THREAD_CONTROL
 )(PassThreadControl);
 
-const RequestThreadControl = ({ props: { metadata } }) => ({ metadata });
+const RequestThreadControl = async ({ props: { metadata } }) => ({ metadata });
 
 const __RequestThreadControl = asSingleUnitComponentWithEntry(
   ENTRY_REQUEST_THREAD_CONTROL
 )(RequestThreadControl);
 
-const TakeThreadContorl = ({ props: { metadata } }) => ({ metadata });
+const TakeThreadContorl = async ({ props: { metadata } }) => ({ metadata });
 
 const __TakeThreadContorl = asSingleUnitComponentWithEntry(
   ENTRY_TAKE_THREAD_CONTROL

@@ -14,7 +14,7 @@ describe.each([MarkSeen, TypingOn, TypingOff])('%p', Action => {
     expect(Action.$$namespace).toBe('Messenger');
   });
 
-  it('match snapshot', () => {
-    expect(render(<Action />)).toMatchSnapshot();
+  it('match snapshot', async () => {
+    await expect(render(<Action />)).resolves.toMatchSnapshot();
   });
 });

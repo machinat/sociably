@@ -77,11 +77,11 @@ describe('#renderTasks(createJobs, target, message, options, allowPause)', () =>
     createJobs.mock.clear();
   });
 
-  it('render message and create "transmit" tasks', () => {
+  it('render message and create "transmit" tasks', async () => {
     const engine = new Engine('test', bot, renderer, queue, [], []);
-    expect(
+    await expect(
       engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, true)
-    ).toEqual([
+    ).resolves.toEqual([
       { type: 'transmit', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
     ]);
 
@@ -94,11 +94,11 @@ describe('#renderTasks(createJobs, target, message, options, allowPause)', () =>
     });
   });
 
-  it('pass allowPause to renderer.render', () => {
+  it('pass allowPause to renderer.render', async () => {
     const engine = new Engine('test', bot, renderer, queue, [], []);
-    expect(
+    await expect(
       engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, false)
-    ).toEqual([
+    ).resolves.toEqual([
       { type: 'transmit', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
     ]);
 
@@ -111,7 +111,7 @@ describe('#renderTasks(createJobs, target, message, options, allowPause)', () =>
     });
   });
 
-  it('create "pause" action out of "pause" segments which separate "transmit" action', () => {
+  it('create "pause" action out of "pause" segments which separate "transmit" action', async () => {
     const segmentsWithPause = [
       { type: 'pause', node: <Machinat.Pause />, value: undefined },
       segments[0],
@@ -123,9 +123,9 @@ describe('#renderTasks(createJobs, target, message, options, allowPause)', () =>
     renderer.render.mock.fakeReturnValue(segmentsWithPause);
 
     const engine = new Engine('test', bot, renderer, queue, [], []);
-    expect(
+    await expect(
       engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, true)
-    ).toEqual([
+    ).resolves.toEqual([
       { type: 'pause', payload: <Machinat.Pause /> },
       { type: 'transmit', payload: [{ id: 1 }, { id: 2 }] },
       { type: 'pause', payload: <Machinat.Pause /> },
@@ -285,11 +285,11 @@ describe('#dispatch(channel, tasks, node)', () => {
   });
 
   it('waits pause', async () => {
-    const after = moxy(() => Promise.resolve());
+    const until = moxy(() => Promise.resolve());
     const tasksWithPause = [
       { type: 'pause', payload: <Machinat.Pause /> },
       { type: 'transmit', payload: [{ id: 1 }, { id: 2 }] },
-      { type: 'pause', payload: <Machinat.Pause after={after} /> },
+      { type: 'pause', payload: <Machinat.Pause until={until} /> },
       { type: 'transmit', payload: [{ id: 3 }] },
       { type: 'pause', payload: <Machinat.Pause /> },
     ];
@@ -303,7 +303,7 @@ describe('#dispatch(channel, tasks, node)', () => {
       jobs: [{ id: 1 }, { id: 2 }, { id: 3 }],
       results: [1, 2, 3],
     });
-    expect(after.mock).toHaveBeenCalledTimes(1);
+    expect(until.mock).toHaveBeenCalledTimes(1);
 
     expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(1, [
       { id: 1 },

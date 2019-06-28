@@ -15,8 +15,8 @@ it('is valid native unit component with entry getter', () => {
   expect(typeof LinkRichMenu.$$getEntry).toBe('function');
 });
 
-it('render ok', () => {
-  expect(render(<LinkRichMenu id="_RICH_MENU_ID_" />)).toEqual([
+it('render ok', async () => {
+  await expect(render(<LinkRichMenu id="_RICH_MENU_ID_" />)).resolves.toEqual([
     {
       type: 'unit',
       node: <LinkRichMenu id="_RICH_MENU_ID_" />,

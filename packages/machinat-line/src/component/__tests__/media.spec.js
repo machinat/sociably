@@ -21,13 +21,17 @@ it.each(
     <Audio url="https://..." duration={6666} />,
     <Video url="https://..." previewURL="https://..." />,
   ].map(e => [e.type.name, e])
-)('%s render match snapshot', (_, mediaElement) => {
-  const segments = render(mediaElement);
-  expect(segments.length).toBe(1);
+)('%s render match snapshot', async (_, mediaElement) => {
+  const promise = render(mediaElement);
+  await expect(promise).resolves.toEqual([
+    {
+      type: 'unit',
+      node: mediaElement,
+      value: expect.any(Object),
+      path: '$',
+    },
+  ]);
 
-  const [segment] = segments;
-  expect(segment.type).toBe('unit');
-  expect(segment.node).toBe(mediaElement);
-  expect(segment.path).toBe('$');
-  expect(segment.value).toMatchSnapshot();
+  const [{ value }] = await promise;
+  expect(value).toMatchSnapshot();
 });

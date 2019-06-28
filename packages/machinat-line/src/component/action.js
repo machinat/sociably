@@ -1,6 +1,8 @@
 import { asSinglePartComponent } from './utils';
 
-const PostbackAction = ({ props: { label, data, text, displayText } }) => ({
+const PostbackAction = async ({
+  props: { label, data, text, displayText },
+}) => ({
   type: 'postback',
   data,
   label,
@@ -8,14 +10,14 @@ const PostbackAction = ({ props: { label, data, text, displayText } }) => ({
 });
 const __PostbackAction = asSinglePartComponent(PostbackAction);
 
-const MessageAction = ({ props: { label, text } }) => ({
+const MessageAction = async ({ props: { label, text } }) => ({
   type: 'message',
   label,
   text,
 });
 const __MessageAction = asSinglePartComponent(MessageAction);
 
-const URIAction = ({ props: { label, uri } }) => ({
+const URIAction = async ({ props: { label, uri } }) => ({
   type: 'uri',
   label,
   uri,
@@ -35,7 +37,7 @@ const dateToStringByMode = (mode, d) =>
     ? fullDate(d)
     : fullHourMinute(d);
 
-const DateTimePickerAction = ({
+const DateTimePickerAction = async ({
   props: { label, data, mode, date, time, initial, min, max },
 }) => {
   const modeRefined =
@@ -53,19 +55,19 @@ const DateTimePickerAction = ({
 };
 const __DateTimePickerAction = asSinglePartComponent(DateTimePickerAction);
 
-const CameraAction = ({ props: { label } }) => ({
+const CameraAction = async ({ props: { label } }) => ({
   type: 'camera',
   label,
 });
 const __CameraAction = asSinglePartComponent(CameraAction);
 
-const CameraRollAction = ({ props: { label } }) => ({
+const CameraRollAction = async ({ props: { label } }) => ({
   type: 'cameraRoll',
   label,
 });
 const __CameraRollAction = asSinglePartComponent(CameraRollAction);
 
-const LocationAction = ({ props: { label } }) => ({
+const LocationAction = async ({ props: { label } }) => ({
   type: 'location',
   label,
 });

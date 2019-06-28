@@ -14,7 +14,7 @@ import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
 
 import MessengerWorker from './worker';
 import handleWebhook from './handleWebhook';
-import * as generalComponents from './component/general';
+import generalComponentDelegate from './component/general';
 
 import { MESSENGER_NAITVE_TYPE } from './constant';
 import MessengerChannel from './channel';
@@ -85,16 +85,7 @@ export default class MessengerBot
     const renderer = new Renderer(
       MESSENGER,
       MESSENGER_NAITVE_TYPE,
-      (node, render, path) => {
-        const { type } = node;
-
-        invariant(
-          type in generalComponents,
-          `"${type}" is not valid general component tag on messenger`
-        );
-
-        return generalComponents[type](node, render, path);
-      }
+      generalComponentDelegate
     );
 
     const worker = new MessengerWorker({
@@ -124,7 +115,7 @@ export default class MessengerBot
             typeof target === 'string' ? { id: target } : target
           );
 
-    const tasks = this.engine.renderTasks(
+    const tasks = await this.engine.renderTasks(
       createChatJobs,
       channel,
       messages,
@@ -132,7 +123,9 @@ export default class MessengerBot
       true
     );
 
-    if (tasks === null) return null;
+    if (tasks === null) {
+      return null;
+    }
 
     const response = await this.engine.dispatch(null, tasks, messages);
     return response === null ? null : response.results;
@@ -141,14 +134,17 @@ export default class MessengerBot
   async createMessageCreative(
     messages: MachinatNode
   ): Promise<null | MessengerAPIResult> {
-    const tasks = this.engine.renderTasks(
+    const tasks = await this.engine.renderTasks(
       createCreativeJobs,
       null,
       messages,
       undefined,
       false
     );
-    if (tasks === null) return null;
+
+    if (tasks === null) {
+      return null;
+    }
 
     const response = await this.engine.dispatch(null, tasks, messages);
     return response === null ? null : response.results[0];

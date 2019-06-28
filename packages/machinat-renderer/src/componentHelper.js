@@ -2,13 +2,12 @@
 /* eslint-disable no-param-reassign */
 import { SEGMENT_BREAK, MACHINAT_NATIVE_TYPE } from 'machinat';
 
-import type { GeneralElement, NativeElement } from 'machinat/types';
 import type {
+  MachinatGeneralElement,
+  MachinatNativeElement,
   MachinatNativeComponent,
-  RenderInnerFn,
-  BreakSegment,
-  TextSegment,
-} from './types';
+} from 'machinat/types';
+import type { RenderInnerFn, BreakSegment, TextSegment } from './types';
 
 export const asNative = (sign: Symbol) => (
   Component: MachinatNativeComponent<any>
@@ -33,7 +32,7 @@ export const annotate = (key: string, val: any) => (
 };
 
 export const breakSegment = (
-  node: GeneralElement | NativeElement<any>,
+  node: MachinatGeneralElement | MachinatNativeElement<any>,
   path: string
 ): BreakSegment<any> => ({
   type: 'break',
@@ -44,7 +43,7 @@ export const breakSegment = (
 
 export const textSegment = (
   text: string,
-  node: GeneralElement | NativeElement<any>,
+  node: MachinatGeneralElement | MachinatNativeElement<any>,
   path: string
 ): TextSegment<any> => ({
   type: 'text',
@@ -55,7 +54,7 @@ export const textSegment = (
 
 export const wrapSinglePartSegment = <Value>(
   _component: (
-    NativeElement<any>,
+    MachinatNativeElement<any>,
     RenderInnerFn<Value, any>,
     string
   ) => null | Value
@@ -63,12 +62,12 @@ export const wrapSinglePartSegment = <Value>(
   const { name } = _component;
 
   const box = {
-    [name]: (
-      element: NativeElement<any>,
+    [name]: async (
+      element: MachinatNativeElement<any>,
       render: RenderInnerFn<Value, any>,
       path: string
     ) => {
-      const value = _component(element, render, path);
+      const value = await _component(element, render, path);
       if (value === null) {
         return null;
       }
@@ -89,7 +88,7 @@ export const wrapSinglePartSegment = <Value>(
 
 export const wrapSingleUnitSegment = <Value>(
   _component: (
-    NativeElement<any>,
+    MachinatNativeElement<any>,
     RenderInnerFn<Value, any>,
     string
   ) => null | Value
@@ -97,12 +96,12 @@ export const wrapSingleUnitSegment = <Value>(
   const { name } = _component;
 
   const box = {
-    [name]: (
-      element: NativeElement<any>,
+    [name]: async (
+      element: MachinatNativeElement<any>,
       render: RenderInnerFn<Value, any>,
       path: string
     ) => {
-      const value = _component(element, render, path);
+      const value = await _component(element, render, path);
       if (value === null) {
         return null;
       }

@@ -8,8 +8,9 @@ import * as _actionModule from './action';
 const actionComponents = Object.values(_actionModule);
 const getActionValues = valuesOfAssertedType(...actionComponents);
 
-const QuickReply = ({ props: { imageURL, action } }, render) => {
-  const actionValues = getActionValues(render(action, '.action'));
+const QuickReply = async ({ props: { imageURL, action } }, render) => {
+  const actionSegments = await render(action, '.action');
+  const actionValues = getActionValues(actionSegments);
 
   return {
     type: 'action',

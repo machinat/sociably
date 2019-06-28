@@ -11,7 +11,7 @@ const CHILDREN = '.children';
 const getButtonValues = valuesOfAssertedType(...buttonComponents);
 const getUrlButtonValues = valuesOfAssertedType(buttonModule.URLButton);
 
-const GenericItem = (
+const GenericItem = async (
   {
     props: {
       children,
@@ -23,8 +23,11 @@ const GenericItem = (
   },
   render
 ) => {
-  const buttonSegments = render(children, CHILDREN);
-  const defaultActionSegments = render(defaultActionProp, '.defaultAction');
+  const buttonSegments = await render(children, CHILDREN);
+  const defaultActionSegments = await render(
+    defaultActionProp,
+    '.defaultAction'
+  );
 
   let defaultAction;
   if (defaultActionSegments !== null) {
@@ -47,45 +50,58 @@ const __GenericItem = asSinglePartComponent(GenericItem);
 
 const getGenericItemValues = valuesOfAssertedType(__GenericItem);
 
-const GenericTemplate = (
+const GenericTemplate = async (
   { props: { children, sharable, imageAspectRatio } },
   render
-) => ({
-  message: {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'generic',
-        sharable,
-        image_aspect_ratio: imageAspectRatio,
-        elements: getGenericItemValues(render(children, CHILDREN)),
+) => {
+  const elementsSegments = await render(children, CHILDREN);
+
+  return {
+    message: {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'generic',
+          sharable,
+          image_aspect_ratio: imageAspectRatio,
+          elements: getGenericItemValues(elementsSegments),
+        },
       },
     },
-  },
-});
+  };
+};
 const __GenericTemplate = asSingleMessageUnitComponent(GenericTemplate);
 
-const ListTemplate = (
+const ListTemplate = async (
   { props: { children, topStyle, sharable, button } },
   render
-) => ({
-  message: {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'list',
-        top_element_style: topStyle,
-        sharable,
-        elements: getGenericItemValues(render(children, CHILDREN)),
-        buttons: getButtonValues(render(button, '.button')),
+) => {
+  const elementSegments = await render(children, CHILDREN);
+  const buttonSegments = await render(button, '.button');
+
+  return {
+    message: {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'list',
+          top_element_style: topStyle,
+          sharable,
+          elements: getGenericItemValues(elementSegments),
+          buttons: getButtonValues(buttonSegments),
+        },
       },
     },
-  },
-});
+  };
+};
 const __ListTemplate = asSingleMessageUnitComponent(ListTemplate);
 
-const ButtonTemplate = ({ props: { children, text, sharable } }, render) => {
-  const segments = joinTextualSegments(render(text, '.text'));
+const ButtonTemplate = async (
+  { props: { children, text, sharable } },
+  render
+) => {
+  const textSegments = await render(text, '.text');
+  const segments = joinTextualSegments(textSegments);
 
   let textValue;
   invariant(
@@ -97,6 +113,8 @@ const ButtonTemplate = ({ props: { children, text, sharable } }, render) => {
       : `prop "text" of <ButtonTemplate /> should not be empty`
   );
 
+  const buttonSegments = await render(children, CHILDREN);
+
   return {
     message: {
       attachment: {
@@ -105,7 +123,7 @@ const ButtonTemplate = ({ props: { children, text, sharable } }, render) => {
           template_type: 'button',
           text: textValue,
           sharable,
-          buttons: getButtonValues(render(children, CHILDREN)),
+          buttons: getButtonValues(buttonSegments),
         },
       },
     },
@@ -113,50 +131,61 @@ const ButtonTemplate = ({ props: { children, text, sharable } }, render) => {
 };
 const __ButtonTemplate = asSingleMessageUnitComponent(ButtonTemplate);
 
-const MediaTemplate = (
+const MediaTemplate = async (
   { props: { children, type, attachmentId, url, sharable } },
   render
-) => ({
-  message: {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'media',
-        sharable,
-        elements: [
-          {
-            media_type: type,
-            url,
-            attachment_id: attachmentId,
-            buttons: getButtonValues(render(children, CHILDREN)),
-          },
-        ],
+) => {
+  const buttonSegments = await render(children, CHILDREN);
+
+  return {
+    message: {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'media',
+          sharable,
+          elements: [
+            {
+              media_type: type,
+              url,
+              attachment_id: attachmentId,
+              buttons: getButtonValues(buttonSegments),
+            },
+          ],
+        },
       },
     },
-  },
-});
+  };
+};
 const __MediaTemplate = asSingleMessageUnitComponent(MediaTemplate);
 
-const OpenGraphTemplate = ({ props: { children, url, sharable } }, render) => ({
-  message: {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'open_graph',
-        sharable,
-        elements: [
-          {
-            url,
-            buttons: getButtonValues(render(children, CHILDREN)),
-          },
-        ],
+const OpenGraphTemplate = async (
+  { props: { children, url, sharable } },
+  render
+) => {
+  const buttonSegments = await render(children, CHILDREN);
+
+  return {
+    message: {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'open_graph',
+          sharable,
+          elements: [
+            {
+              url,
+              buttons: getButtonValues(buttonSegments),
+            },
+          ],
+        },
       },
     },
-  },
-});
+  };
+};
 const __OpenGraphTemplate = asSingleMessageUnitComponent(OpenGraphTemplate);
 
-const ReceiptItem = ({
+const ReceiptItem = async ({
   props: { title, subtitle, quantity, price, currency, imageURL },
 }) => ({
   title,
@@ -170,7 +199,7 @@ const __ReceiptItem = asSinglePartComponent(ReceiptItem);
 
 const getReceiptItemValues = valuesOfAssertedType(__ReceiptItem);
 
-const ReceiptTemplate = (
+const ReceiptTemplate = async (
   {
     props: {
       children,
@@ -187,30 +216,34 @@ const ReceiptTemplate = (
     },
   },
   render
-) => ({
-  message: {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'receipt',
-        sharable,
-        recipient_name: recipientName,
-        order_number: orderNumber,
-        currency,
-        payment_method: paymentMethod,
-        order_url: orderURL,
-        timestamp:
-          timestamp instanceof Date
-            ? `${Math.floor(timestamp.getTime() / 1000)}`
-            : timestamp,
-        address,
-        summary,
-        adjustments,
-        elements: getReceiptItemValues(render(children, CHILDREN)),
+) => {
+  const elementSegments = await render(children, CHILDREN);
+
+  return {
+    message: {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'receipt',
+          sharable,
+          recipient_name: recipientName,
+          order_number: orderNumber,
+          currency,
+          payment_method: paymentMethod,
+          order_url: orderURL,
+          timestamp:
+            timestamp instanceof Date
+              ? `${Math.floor(timestamp.getTime() / 1000)}`
+              : timestamp,
+          address,
+          summary,
+          adjustments,
+          elements: getReceiptItemValues(elementSegments),
+        },
       },
     },
-  },
-});
+  };
+};
 
 const __ReceiptTemplate = asSingleMessageUnitComponent(ReceiptTemplate);
 

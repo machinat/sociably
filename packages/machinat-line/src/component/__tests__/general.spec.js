@@ -1,25 +1,26 @@
-import { reduce } from 'machinat-utility';
+/* eslint-disable no-await-in-loop */
+import { map } from 'machinat-utility';
 import Machinat from 'machinat';
-import * as general from '../general';
+import generalDelegate from '../general';
 
-const render = children =>
-  reduce(
+const render = async children => {
+  const renderings = map(
     children,
-    (segments, node, path) =>
-      segments.concat(
-        typeof node === 'string'
-          ? { type: 'text', value: node, node, path }
-          : typeof node.type === 'string'
-          ? general[node.type](node, render, path)
-          : { type: 'part', value: { something: 'unknown' }, node, path }
-      ),
-    [],
-    ''
-  ) || null;
+    (node, path) =>
+      typeof node === 'string'
+        ? { type: 'text', value: node, node, path }
+        : typeof node.type === 'string'
+        ? generalDelegate(node, render, path)
+        : { type: 'part', value: { something: 'unknown' }, node, path },
+    '$'
+  );
+
+  return renderings ? [].concat(...(await Promise.all(renderings))) : null;
+};
 
 describe('text components', () => {
-  test('shallow textual elements match snapshot', () => {
-    const segments = render([
+  test('shallow textual elements match snapshot', async () => {
+    const promise = render([
       <text>abc</text>,
       <a href="https://machinat.world">hello</a>,
       <b>important</b>,
@@ -30,7 +31,11 @@ describe('text components', () => {
       <pre>foo.bar('hello world')</pre>,
     ]);
 
-    expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
+    await expect(promise).resolves.toMatchSnapshot();
+
+    const segments = await promise;
+
+    expect(segments.map(s => s.value)).toMatchInlineSnapshot(`
 Array [
   "abc",
   "hello",
@@ -45,12 +50,10 @@ Array [
   "foo.bar('hello world')",
 ]
 `);
-
-    expect(segments).toMatchSnapshot();
   });
 
-  test('nested textual elements match snapshot', () => {
-    const segments = render(
+  test('nested textual elements match snapshot', async () => {
+    const promise = render(
       <text>
         123{' '}
         <code>
@@ -69,6 +72,9 @@ Array [
       </text>
     );
 
+    await expect(promise).resolves.toMatchSnapshot();
+    const segments = await promise;
+
     expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
 Array [
   "123 Hello, Luke Skywalker!",
@@ -85,10 +91,9 @@ Array [
   "May the force be with you! abc",
 ]
 `);
-    expect(segments).toMatchSnapshot();
   });
 
-  test('with break placed in children', () => {
+  test('with break placed in children', async () => {
     const children = (
       <>
         foo
@@ -97,7 +102,7 @@ Array [
       </>
     );
 
-    const segments = render([
+    const promise = render([
       <text>{children}</text>,
       <a href="https://machinat.world">{children}</a>,
       <b>{children}</b>,
@@ -106,6 +111,9 @@ Array [
       <code>{children}</code>,
       <pre>{children}</pre>,
     ]);
+
+    await expect(promise).resolves.toMatchSnapshot();
+    const segments = await promise;
 
     expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
 Array [
@@ -135,10 +143,9 @@ Array [
   "bar",
 ]
 `);
-    expect(segments).toMatchSnapshot();
   });
 
-  test('should throw if non string value rendered', () => {
+  test('should throw if non string value rendered', async () => {
     const NonText = () => {};
     const children = (
       <>
@@ -148,7 +155,7 @@ Array [
       </>
     );
 
-    [
+    const elements = [
       <a src="...">{children}</a>,
       <b>{children}</b>,
       <i>{children}</i>,
@@ -156,15 +163,17 @@ Array [
       <text>{children}</text>,
       <code>{children}</code>,
       <pre>{children}</pre>,
-    ].forEach(node => {
-      expect(() => render(node)).toThrow(
-        '<NonText /> at ::1 is not valid textual content'
+    ];
+
+    for (const element of elements) {
+      await expect(render(element)).rejects.toThrow(
+        '<NonText /> at $::1 is not valid textual content'
       );
-    });
+    }
   });
 
-  test('should return null if content is empty', () => {
-    [
+  test('should return null if content is empty', async () => {
+    const elements = [
       <a src="..." />,
       <b />,
       <i />,
@@ -172,53 +181,50 @@ Array [
       <text />,
       <code />,
       <pre />,
-    ].forEach(node => {
-      expect(render(node)).toEqual([null]);
-    });
+    ];
+
+    for (const element of elements) {
+      await expect(render(element)).resolves.toEqual([null]);
+    }
   });
 });
 
 describe('media components', () => {
-  it('metch snapshot', () => {
-    const messages = [
+  it('metch snapshot', async () => {
+    const medias = [
       <img src="http://..." />,
       <video src="http://..." />,
       <audio src="http://..." />,
       <file src="http://..." />,
     ];
 
-    const segments = render(messages);
-
-    segments.forEach((seg, i) => {
-      expect(seg.type).toBe('unit');
-      expect(seg.node).toBe(messages[i]);
-    });
-
-    expect(segments.map(seg => seg.value)).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "text": "http://...",
-    "type": "text",
-  },
-  Object {
-    "text": "http://...",
-    "type": "text",
-  },
-  Object {
-    "text": "http://...",
-    "type": "text",
-  },
-  Object {
-    "text": "http://...",
-    "type": "text",
-  },
-]
-`);
+    for (const media of medias) {
+      await expect(render(media)).resolves.toEqual([
+        {
+          type: 'unit',
+          node: media,
+          value: {
+            text: 'http://...',
+            type: 'text',
+          },
+          path: '$',
+        },
+      ]);
+    }
   });
 
-  test('should return "" if content is empty', () => {
-    [<img />, <video />, <audio />, <file />].forEach(node => {
-      expect(render(node)[0].value).toEqual({ text: '', type: 'text' });
-    });
+  test('should return "" if content is empty', async () => {
+    const medias = [<img />, <video />, <audio />, <file />];
+
+    for (const media of medias) {
+      await expect(render(media)).resolves.toEqual([
+        {
+          type: 'unit',
+          node: media,
+          value: { text: '', type: 'text' },
+          path: '$',
+        },
+      ]);
+    }
   });
 });

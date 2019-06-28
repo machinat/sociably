@@ -1,7 +1,10 @@
 // @flow
 import invariant from 'invariant';
 
-import type { GeneralElement, NativeElement } from 'machinat/types';
+import type {
+  MachinatGeneralElement,
+  MachinatNativeElement,
+} from 'machinat/types';
 import type {
   TextSegment,
   BreakSegment,
@@ -12,7 +15,7 @@ import formatNode from './formatNode';
 
 const joinTextualSegments = (
   segments: null | InnerSegment<any, any>[],
-  node: GeneralElement | NativeElement<any>,
+  node: MachinatGeneralElement | MachinatNativeElement<any>,
   path: string
 ): null | (TextSegment<any> | BreakSegment<any>)[] => {
   if (segments === null) {

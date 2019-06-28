@@ -1,36 +1,31 @@
 /* eslint-disable import/prefer-default-export */
 import invariant from 'invariant';
-import { compose, joinTextualSegments } from 'machinat-utility';
+import { joinTextualSegments } from 'machinat-utility';
 import {
-  mapSegmentValue,
   asSingleMessageUnitComponent,
   asContainerComponent,
+  mapJoinedTextualValues,
 } from './utils';
-
-import { text } from './general';
 
 const LATEX_BEGIN = '\\(';
 const LATEX_END = '\\)';
 
-const Latex = compose(
-  mapSegmentValue(v =>
-    typeof v === 'string' ? LATEX_BEGIN + v + LATEX_END : v
-  ),
-  text
+const Latex = mapJoinedTextualValues(v =>
+  typeof v === 'string' ? LATEX_BEGIN + v + LATEX_END : v
 );
 const __Latex = asContainerComponent(Latex);
 
-const DynamicText = ({ props: { children, fallback } }, render) => {
-  const segments = joinTextualSegments(render(children, '.children'));
-
+const DynamicText = async ({ props: { children, fallback } }, render) => {
+  const segments = await render(children, '.children');
   if (segments === null) {
     return null;
   }
 
+  const joined = joinTextualSegments(segments);
+
   let textValue;
   invariant(
-    segments.length === 1 &&
-      typeof (textValue = segments[0].value) === 'string',
+    joined.length === 1 && typeof (textValue = joined[0].value) === 'string',
     '<br/> is invalid with in children of DynamicText'
   );
 

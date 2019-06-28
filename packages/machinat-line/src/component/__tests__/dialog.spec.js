@@ -8,7 +8,7 @@ import { LINE_NATIVE_TYPE } from '../../constant';
 
 import renderHelper from './renderHelper';
 
-const renderInner = moxy();
+const renderInner = moxy(async () => null);
 const render = renderHelper(renderInner);
 
 beforeEach(() => {
@@ -22,7 +22,7 @@ it('is valid native component', () => {
   expect(Dialog.$$getEntry).toBe(undefined);
 });
 
-it('return segments of what children rendered', () => {
+it('return segments of what children rendered', async () => {
   const childrenSegments = [
     {
       type: 'unit',
@@ -43,15 +43,18 @@ it('return segments of what children rendered', () => {
       path: '$:0#Dialog.children:2',
     },
   ];
-  renderInner.mock.fake(node =>
+
+  renderInner.mock.fake(async node =>
     node === '__CHILDREN__' ? childrenSegments : null
   );
 
-  expect(render(<Dialog>__CHILDREN__</Dialog>)).toEqual(childrenSegments);
+  await expect(render(<Dialog>__CHILDREN__</Dialog>)).resolves.toEqual(
+    childrenSegments
+  );
 });
 
-it('hoist children rendered text into text message object', () => {
-  renderInner.mock.fake(node =>
+it('hoist children rendered text into text message object', async () => {
+  renderInner.mock.fake(async node =>
     node === '__CHILDREN__'
       ? [
           {
@@ -76,7 +79,7 @@ it('hoist children rendered text into text message object', () => {
       : null
   );
 
-  expect(render(<Dialog>__CHILDREN__</Dialog>)).toEqual([
+  await expect(render(<Dialog>__CHILDREN__</Dialog>)).resolves.toEqual([
     {
       type: 'unit',
       node: <foo />,
@@ -98,7 +101,7 @@ it('hoist children rendered text into text message object', () => {
   ]);
 });
 
-it('attach quickReply to last message object', () => {
+it('attach quickReply to last message object', async () => {
   const Something = () => {};
   Something.$$getEntry = () => 'just/like/this';
 
@@ -168,13 +171,13 @@ it('attach quickReply to last message object', () => {
     },
   ];
 
-  renderInner.mock.fake(node =>
+  renderInner.mock.fake(async node =>
     node === '__CHILDREN__' ? childrenSegments : quickReplySegments
   );
 
-  expect(
+  await expect(
     render(<Dialog quickReplies="__QUICK_REPLIES__">__CHILDREN__</Dialog>)
-  ).toEqual([
+  ).resolves.toEqual([
     {
       type: 'unit',
       node: <foo />,
@@ -198,8 +201,8 @@ it('attach quickReply to last message object', () => {
   ]);
 });
 
-it('return null if children is empty', () => {
-  renderInner.mock.fake(node =>
+it('return null if children is empty', async () => {
+  renderInner.mock.fake(async node =>
     node === '__QUICK_REPLIES__'
       ? [
           {
@@ -214,5 +217,7 @@ it('return null if children is empty', () => {
       : null
   );
 
-  expect(render(<Dialog quickReplies="__QUICK_REPLIES__" />)).toBe(null);
+  await expect(
+    render(<Dialog quickReplies="__QUICK_REPLIES__" />)
+  ).resolves.toBe(null);
 });

@@ -1,3 +1,4 @@
+import moxy from 'moxy';
 import Machinat from 'machinat';
 
 import { MESSENGER_NAITVE_TYPE } from '../../constant';
@@ -14,11 +15,8 @@ import {
 import { GenericTemplate, GenericItem } from '../template';
 import renderHelper from './renderHelper';
 
-const renderInside = jest.fn();
-const render = renderHelper(renderInside);
-beforeEach(() => {
-  renderInside.mockReset();
-});
+const renderInner = moxy();
+const render = renderHelper(renderInner);
 
 test.each([
   URLButton,
@@ -37,39 +35,41 @@ test.each([
 });
 
 describe('URLButton', () => {
-  it('match snapshot', () => {
-    expect(
-      [
-        <URLButton title="my button" url="http://machinat.com" />,
-        <URLButton
-          title="my button"
-          url="http://machinat.com"
-          heightRatio="compact"
-          extensions
-          fallbackURL="http://..."
-          hideShareButton
-        />,
-      ].map(render)
-    ).toMatchSnapshot();
+  it('match snapshot', async () => {
+    await expect(
+      Promise.all(
+        [
+          <URLButton title="my button" url="http://machinat.com" />,
+          <URLButton
+            title="my button"
+            url="http://machinat.com"
+            heightRatio="compact"
+            extensions
+            fallbackURL="http://..."
+            hideShareButton
+          />,
+        ].map(render)
+      )
+    ).resolves.toMatchSnapshot();
   });
 });
 
 describe('PostbackButton', () => {
-  it('match snapshot', () => {
-    expect(
+  it('match snapshot', async () => {
+    await expect(
       render(<PostbackButton title="my button" payload="_MY_PAYLOAD_" />)
-    ).toMatchSnapshot();
+    ).resolves.toMatchSnapshot();
   });
 });
 
 describe('ShareButton', () => {
-  it('match snapshot', () => {
+  it('match snapshot', async () => {
     const sharedTemplate = (
       <GenericTemplate>
         <GenericItem title="foo" subtitle="bar" />
       </GenericTemplate>
     );
-    renderInside.mockImplementation(node =>
+    renderInner.mock.fake(async node =>
       node
         ? [
             {
@@ -82,16 +82,20 @@ describe('ShareButton', () => {
           ]
         : null
     );
-    expect(
-      [<ShareButton />, <ShareButton>{sharedTemplate}</ShareButton>].map(render)
-    ).toMatchSnapshot();
+    await expect(
+      Promise.all(
+        [<ShareButton />, <ShareButton>{sharedTemplate}</ShareButton>].map(
+          render
+        )
+      )
+    ).resolves.toMatchSnapshot();
 
-    expect(renderInside).toHaveBeenCalledWith(sharedTemplate, '.children');
+    expect(renderInner.mock).toHaveBeenCalledWith(sharedTemplate, '.children');
   });
 
-  it('throw if non GenericTemplate children given', () => {
+  it('throw if non GenericTemplate children given', async () => {
     const Invalid = () => {};
-    renderInside.mockImplementation(node => [
+    renderInner.mock.fake(async node => [
       {
         type: 'unit',
         value: '__SOMETHING_WRONG__',
@@ -100,21 +104,21 @@ describe('ShareButton', () => {
       },
     ]);
 
-    expect(() =>
+    await expect(
       render(
         <ShareButton>
           <Invalid />
         </ShareButton>
       )
-    ).toThrowErrorMatchingInlineSnapshot(
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"<Invalid /> at $:0#ShareButton.children:0 is invalid, only <[GenericTemplate]/> allowed"`
     );
   });
 });
 
 describe('BuyButton', () => {
-  it('match snapshot', () => {
-    expect(
+  it('match snapshot', async () => {
+    await expect(
       render(
         <BuyButton
           title="my button"
@@ -137,43 +141,43 @@ describe('BuyButton', () => {
           ]}
         />
       )
-    ).toMatchSnapshot();
+    ).resolves.toMatchSnapshot();
   });
 });
 
 describe('CallButton', () => {
-  it('match snapshot', () => {
-    expect(
+  it('match snapshot', async () => {
+    await expect(
       render(<CallButton title="call me maybe" number="+15105551234" />)
-    ).toMatchSnapshot();
+    ).resolves.toMatchSnapshot();
   });
 });
 
 describe('LoginButton', () => {
-  it('match snapshot', () => {
-    expect(
+  it('match snapshot', async () => {
+    await expect(
       render(<LoginButton url="https://council.elrond" />)
-    ).toMatchSnapshot();
+    ).resolves.toMatchSnapshot();
   });
 });
 
 describe('LoginButton', () => {
-  it('match snapshot', () => {
-    expect(
+  it('match snapshot', async () => {
+    await expect(
       render(<LoginButton url="https://council.elrond" />)
-    ).toMatchSnapshot();
+    ).resolves.toMatchSnapshot();
   });
 });
 
 describe('LogoutButton', () => {
-  it('match snapshot', () => {
-    expect(render(<LogoutButton />)).toMatchSnapshot();
+  it('match snapshot', async () => {
+    await expect(render(<LogoutButton />)).resolves.toMatchSnapshot();
   });
 });
 
 describe('GamePlayButton', () => {
-  it('match snapshot', () => {
-    expect(
+  it('match snapshot', async () => {
+    await expect(
       render(
         <GamePlayButton
           title="I want to play a game"
@@ -182,6 +186,6 @@ describe('GamePlayButton', () => {
           contextId="SAW"
         />
       )
-    ).toMatchSnapshot();
+    ).resolves.toMatchSnapshot();
   });
 });

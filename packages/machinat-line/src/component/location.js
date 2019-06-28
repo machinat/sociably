@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { asSingleMessageUnitComponent } from './utils';
 
-const Location = ({
+const Location = async ({
   props: { title, address, lat, latitude, long, longitude },
 }) => ({
   type: 'location',

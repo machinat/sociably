@@ -51,13 +51,13 @@ describe('$$getEntry function', () => {
   });
 });
 
-it('render an empty object', () => {
-  const segments = render(<Leave />);
-  expect(segments.length).toBe(1);
-
-  const segment = segments[0];
-  expect(segment.type).toBe('unit');
-  expect(segment.node).toEqual(<Leave />);
-  expect(segment.path).toBe('$');
-  expect(segment.value).toEqual({});
+it('render an empty object', async () => {
+  await expect(render(<Leave />)).resolves.toEqual([
+    {
+      type: 'unit',
+      node: <Leave />,
+      value: {},
+      path: '$',
+    },
+  ]);
 });

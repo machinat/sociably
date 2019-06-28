@@ -1,11 +1,14 @@
 // @flow
-import type { MachinatNode, PauseElement } from 'machinat/types';
+import type {
+  MachinatNode,
+  MachinatPause,
+  MachinatNativeComponent,
+} from 'machinat/types';
 import type MachinatQueue from 'machinat-queue';
 import type {
   TextSegment,
   UnitSegment,
   RawSegment,
-  MachinatNativeComponent,
 } from 'machinat-renderer/types';
 import type MachinatBot from './bot';
 
@@ -75,7 +78,7 @@ export type EventMiddleware<
   Promise<void | Response>
 >;
 
-type PauseDispatchTask = {| type: 'pause', payload: PauseElement |};
+type PauseDispatchTask = {| type: 'pause', payload: MachinatPause |};
 type TransmitDispatchTask<Job> = {| type: 'transmit', payload: Job[] |};
 export type DispatchTask<Job> = PauseDispatchTask | TransmitDispatchTask<Job>;
 

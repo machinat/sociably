@@ -99,14 +99,17 @@ class WebSocketBot
     channel: WebSocketChannel,
     message: MachinatNode
   ): Promise<null | WebSocketResult[]> {
-    const tasks = this.engine.renderTasks(
+    const tasks = await this.engine.renderTasks(
       createJobs,
       channel,
       message,
       undefined,
       true
     );
-    if (tasks === null) return null;
+
+    if (tasks === null) {
+      return null;
+    }
 
     const response = await this.engine.dispatch(channel, tasks, message);
     return response === null ? null : response.results;

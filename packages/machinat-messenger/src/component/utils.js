@@ -5,7 +5,7 @@ import {
   wrapSinglePartSegment,
   wrapSingleUnitSegment,
 } from 'machinat-renderer';
-import { compose } from 'machinat-utility';
+import { compose, joinTextualSegments } from 'machinat-utility';
 
 import {
   MESSENGER_NAITVE_TYPE,
@@ -32,17 +32,21 @@ export const asSingleUnitComponentWithEntry = entry =>
     wrapSingleUnitSegment
   );
 
-export const asSingleMessageUnitComponent = asSingleUnitComponentWithEntry(ENTRY_MESSAGES);
+export const asSingleMessageUnitComponent = asSingleUnitComponentWithEntry(
+  ENTRY_MESSAGES
+);
 
-export const mapSegmentValue = mapper => segments => {
+export const mapJoinedTextualValues = mapper => async (node, render, path) => {
+  const segments = await render(node.props.children, '.children');
   if (segments === null) {
     return null;
   }
 
-  for (let i = 0; i < segments.length; i += 1) {
-    const segment = segments[i];
+  const joined = joinTextualSegments(segments, node, path);
+
+  for (const segment of joined) {
     segment.value = mapper(segment.value);
   }
 
-  return segments;
+  return joined;
 };

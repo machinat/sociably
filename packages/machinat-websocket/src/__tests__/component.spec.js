@@ -11,12 +11,12 @@ it('is valid Component', () => {
   expect(typeof Event).toBe('function');
 });
 
-it('render to valid value', () => {
-  expect(render(<Event />)).toEqual([
+it('render to valid value', async () => {
+  await expect(render(<Event />)).resolves.toEqual([
     { type: 'unit', node: <Event />, value: { type: 'default' }, path: '$' },
   ]);
 
-  expect(render(<Event type="foo" />)).toEqual([
+  await expect(render(<Event type="foo" />)).resolves.toEqual([
     {
       type: 'unit',
       node: <Event type="foo" />,
@@ -25,7 +25,7 @@ it('render to valid value', () => {
     },
   ]);
 
-  expect(render(<Event type="foo" subtype="bar" />)).toEqual([
+  await expect(render(<Event type="foo" subtype="bar" />)).resolves.toEqual([
     {
       type: 'unit',
       node: <Event type="foo" subtype="bar" />,
@@ -34,7 +34,9 @@ it('render to valid value', () => {
     },
   ]);
 
-  expect(render(<Event type="foo" subtype="bar" payload="baz" />)).toEqual([
+  await expect(
+    render(<Event type="foo" subtype="bar" payload="baz" />)
+  ).resolves.toEqual([
     {
       type: 'unit',
       node: <Event type="foo" subtype="bar" payload="baz" />,
@@ -52,7 +54,7 @@ it('render to valid value', () => {
       blacklist={['2', '3']}
     />
   );
-  expect(render(eventWithBlackAndWhiteList)).toEqual([
+  await expect(render(eventWithBlackAndWhiteList)).resolves.toEqual([
     {
       type: 'unit',
       node: eventWithBlackAndWhiteList,

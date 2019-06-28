@@ -3,7 +3,9 @@ import { ATTACHED_FILE_DATA, ATTACHED_FILE_INFO } from '../constant';
 
 const nativeMediaFactroy = (name, type) => {
   const container = {
-    [name]: ({ props: { url, reusable, attachmentId, data, fileInfo } }) => ({
+    [name]: async ({
+      props: { url, reusable, attachmentId, data, fileInfo },
+    }) => ({
       message: {
         attachment: {
           type,

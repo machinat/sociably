@@ -14,21 +14,30 @@ describe('Emoji', () => {
     expect(Emoji.$$getEntry).toBe(undefined);
   });
 
-  it('renders ok', () => {
-    const emoji = <Emoji code={0x100078} />;
-    const segments = render(emoji);
-    expect(segments.length).toBe(1);
-
-    const [segment] = segments;
-    expect(segment.type).toBe('text');
-    expect(segment.node).toBe(emoji);
-    expect(segment.path).toBe('$');
-    expect(typeof segment.value).toBe('string');
-  });
-
-  it('renders to corespond unicode char', () => {
-    expect(render(<Emoji code={0x100078} />)[0].value).toBe('\u{100078}');
-    expect(render(<Emoji code={0x10008b} />)[0].value).toBe('\u{10008b}');
-    expect(render(<Emoji code={0x100096} />)[0].value).toBe('\u{100096}');
+  it('renders to corespond unicode char', async () => {
+    await expect(render(<Emoji code={0x100078} />)).resolves.toEqual([
+      {
+        type: 'text',
+        node: <Emoji code={0x100078} />,
+        value: '\u{100078}',
+        path: '$',
+      },
+    ]);
+    await expect(render(<Emoji code={0x10008b} />)).resolves.toEqual([
+      {
+        type: 'text',
+        node: <Emoji code={0x10008b} />,
+        value: '\u{10008b}',
+        path: '$',
+      },
+    ]);
+    await expect(render(<Emoji code={0x100096} />)).resolves.toEqual([
+      {
+        type: 'text',
+        node: <Emoji code={0x100096} />,
+        value: '\u{100096}',
+        path: '$',
+      },
+    ]);
   });
 });

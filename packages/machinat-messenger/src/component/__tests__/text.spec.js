@@ -7,7 +7,7 @@ import { Latex, DynamicText } from '../text';
 
 import renderHelper from './renderHelper';
 
-const renderInner = moxy(message =>
+const renderInner = moxy(async message =>
   map(
     message,
     (node, path) =>
@@ -37,9 +37,9 @@ describe('Latex', () => {
     expect(Latex.$$namespace).toBe('Messenger');
   });
 
-  it('render children as text', () => {
+  it('render children as text', async () => {
     const nodeWithPlainText = <Latex>some text</Latex>;
-    expect(render(nodeWithPlainText)).toEqual([
+    await expect(render(nodeWithPlainText)).resolves.toEqual([
       {
         type: 'text',
         value: '\\(some text\\)',
@@ -56,7 +56,7 @@ describe('Latex', () => {
         <c>ijkl</c>
       </Latex>
     );
-    expect(render(nodeWithElements)).toEqual([
+    await expect(render(nodeWithElements)).resolves.toEqual([
       {
         type: 'text',
         node: nodeWithElements,
@@ -67,7 +67,7 @@ describe('Latex', () => {
     expect(renderInner.mock).toHaveBeenCalledTimes(2);
   });
 
-  it('quote each text separated by break', () => {
+  it('quote each text separated by break', async () => {
     const nodeWithBreak = (
       <Latex>
         <a>abcd</a>
@@ -77,7 +77,7 @@ describe('Latex', () => {
         <c>ijkl</c>
       </Latex>
     );
-    expect(render(nodeWithBreak)).toEqual([
+    await expect(render(nodeWithBreak)).resolves.toEqual([
       { type: 'text', node: nodeWithBreak, value: '\\(abcd\\)', path: '$' },
       {
         type: 'break',
@@ -106,13 +106,13 @@ describe('DynamicText', () => {
     expect(DynamicText.$$namespace).toBe('Messenger');
   });
 
-  it('renders dynamic text message object', () => {
+  it('renders dynamic text message object', async () => {
     const node = (
       <DynamicText fallback="Hello World!">
         Hello {'{{first_name}}!'}
       </DynamicText>
     );
-    expect(render(node)).toEqual([
+    await expect(render(node)).resolves.toEqual([
       {
         type: 'unit',
         node,

@@ -7,7 +7,7 @@ import * as quickReply from './quickReply';
 const replyComponents = Object.values(quickReply);
 const getQuickRepliesValues = valuesOfAssertedType(...replyComponents);
 
-const Dialog = (
+const Dialog = async (
   {
     props: {
       children,
@@ -21,7 +21,7 @@ const Dialog = (
   },
   render
 ) => {
-  const segments = render(children, '.children');
+  const segments = await render(children, '.children');
   if (segments === null) {
     return null;
   }
@@ -62,9 +62,8 @@ const Dialog = (
     const message = { ...value.message };
     message.metadata = metadata;
 
-    message.quick_replies = getQuickRepliesValues(
-      render(quickReplies, '.quickReplies')
-    );
+    const quickReplySegments = await render(quickReplies, '.quickReplies');
+    message.quick_replies = getQuickRepliesValues(quickReplySegments);
 
     value.message = message;
   }

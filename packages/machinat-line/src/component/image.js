@@ -4,7 +4,7 @@ import { valuesOfAssertedType } from 'machinat-utility';
 import { asSinglePartComponent, asSingleMessageUnitComponent } from './utils';
 import { URIAction, MessageAction } from './action';
 
-const Image = ({
+const Image = async ({
   props: { url, originalContentUrl, previewURL, previewImageUrl },
 }) => ({
   type: 'image',
@@ -13,7 +13,7 @@ const Image = ({
 });
 const __Image = asSingleMessageUnitComponent(Image);
 
-const Sticker = ({ props: { stickerId, packageId } }) => ({
+const Sticker = async ({ props: { stickerId, packageId } }) => ({
   type: 'sticker',
   packageId,
   stickerId,
@@ -22,8 +22,12 @@ const __Sticker = asSingleMessageUnitComponent(Sticker);
 
 const getImageMapActionValues = valuesOfAssertedType(URIAction, MessageAction);
 
-const ImageMapArea = ({ props: { action, x, y, width, height } }, render) => {
-  const actionValues = getImageMapActionValues(render(action, '.action'));
+const ImageMapArea = async (
+  { props: { action, x, y, width, height } },
+  render
+) => {
+  const actionSegments = await render(action, '.action');
+  const actionValues = getImageMapActionValues(actionSegments);
 
   invariant(
     actionValues !== undefined && actionValues.length === 1,
@@ -62,9 +66,9 @@ const ImageMapArea = ({ props: { action, x, y, width, height } }, render) => {
 };
 const __ImageMapArea = asSinglePartComponent(ImageMapArea);
 
-const renderURIActionValues = valuesOfAssertedType(URIAction);
+const getURIActionValues = valuesOfAssertedType(URIAction);
 
-const ImageMapVideoArea = (
+const ImageMapVideoArea = async (
   {
     props: {
       url,
@@ -80,7 +84,8 @@ const ImageMapVideoArea = (
   },
   render
 ) => {
-  const actionValues = renderURIActionValues(render(action, '.action'));
+  const actionSegments = await render(action, '.action');
+  const actionValues = getURIActionValues(actionSegments);
 
   return {
     originalContentUrl: originalContentUrl || url,
@@ -100,13 +105,16 @@ const ImageMapVideoArea = (
 const __ImageMapVideoArea = asSinglePartComponent(ImageMapVideoArea);
 
 const getVideoAreaValues = valuesOfAssertedType(__ImageMapVideoArea);
-const renderActionAreaValues = valuesOfAssertedType(__ImageMapArea);
+const getActionAreaValues = valuesOfAssertedType(__ImageMapArea);
 
-const ImageMap = (
+const ImageMap = async (
   { props: { baseURL, baseUrl, alt, altText, height, children, video } },
   render
 ) => {
-  const videoValues = getVideoAreaValues(render(video, '.video'));
+  const videoSegments = await render(video, '.video');
+  const videoValues = getVideoAreaValues(videoSegments);
+
+  const actionSegments = await render(children, '.children');
 
   return {
     type: 'imagemap',
@@ -116,7 +124,7 @@ const ImageMap = (
       width: 1040,
       height,
     },
-    actions: renderActionAreaValues(render(children, '.children')),
+    actions: getActionAreaValues(actionSegments),
     video: videoValues && videoValues[0],
   };
 };

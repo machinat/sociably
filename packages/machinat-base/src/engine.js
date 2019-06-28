@@ -2,11 +2,14 @@
 import delay from 'delay';
 import { compose } from 'machinat-utility';
 
-import type { MachinatNode, PauseElement } from 'machinat/types';
+import type {
+  MachinatNode,
+  MachinatPause,
+  MachinatNativeComponent,
+} from 'machinat/types';
 import type MahinateQueue from 'machinat-queue';
 import type { JobBatchResponse } from 'machinat-queue/types';
 import type MachinatRenderer from 'machinat-renderer';
-import type { MachinatNativeComponent } from 'machinat-renderer/types';
 
 import DispatchError from './error';
 
@@ -33,16 +36,16 @@ const validateMiddlewares = (fns: Function[]) => {
   }
 };
 
-const handlePause = async (pauseElement: PauseElement) => {
-  const { after, delay: timeToDelay } = pauseElement.props;
+const handlePause = async (pauseElement: MachinatPause) => {
+  const { until, delay: timeToDelay } = pauseElement.props;
   let promise;
 
   if (timeToDelay !== undefined) {
     promise = delay(timeToDelay);
   }
 
-  if (after !== undefined) {
-    promise = promise === undefined ? after() : promise.then(after);
+  if (until !== undefined) {
+    promise = promise === undefined ? until() : promise.then(until);
   }
 
   await promise;
@@ -164,7 +167,7 @@ export default class MachinatEngine<
   // are two kinds of task for now: "transmit" contains the jobs to be executed
   // on the certain platform, "pause" represent the interval made by <Pause />
   // element which should be waited between "transmit" tasks.
-  renderTasks<T, O>(
+  async renderTasks<T, O>(
     createJobs: (
       target: T,
       segments: SegmentWithoutPause<SegmentValue, Native>[],
@@ -174,8 +177,8 @@ export default class MachinatEngine<
     message: MachinatNode,
     options: O,
     allowPause: boolean
-  ): null | DispatchTask<Job>[] {
-    const segments = this.renderer.render(message, allowPause);
+  ): Promise<null | DispatchTask<Job>[]> {
+    const segments = await this.renderer.render(message, allowPause);
     if (segments === null) {
       return null;
     }
@@ -187,7 +190,7 @@ export default class MachinatEngine<
     for (let i = 0; i < segments.length; i += 1) {
       const segment = segments[i];
 
-      if (segment.type !== 'pause') {
+      if (segment.type !== 'pause' && segment.type !== 'thunk') {
         segmentsBuffer.push(segment);
       }
 

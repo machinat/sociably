@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`match snapshot 1`] = `
+exports[`PassThreadControl match snapshot 1`] = `
 Array [
   Object {
     "node": Object {
@@ -21,7 +21,7 @@ Array [
 ]
 `;
 
-exports[`match snapshot 2`] = `
+exports[`RequestThreadControl match snapshot 1`] = `
 Array [
   Object {
     "node": Object {
@@ -40,7 +40,7 @@ Array [
 ]
 `;
 
-exports[`match snapshot 3`] = `
+exports[`TakeThreadContorl match snapshot 1`] = `
 Array [
   Object {
     "node": Object {

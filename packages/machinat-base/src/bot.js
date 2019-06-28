@@ -2,9 +2,8 @@
 import Symbol$observable from 'symbol-observable';
 import Queue from 'machinat-queue';
 
-import type { MachinatNode } from 'machinat/types';
+import type { MachinatNode, MachinatNativeComponent } from 'machinat/types';
 import type MachinatRenderer from 'machinat-renderer';
-import type { MachinatNativeComponent } from 'machinat-renderer/types';
 import type {
   BotPlugin,
   MachinatChannel,

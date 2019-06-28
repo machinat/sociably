@@ -5,65 +5,73 @@ import {
   isPause,
   isEmpty,
   isElement,
+  isProvider,
+  isConsumer,
   formatNode,
   traverse,
 } from 'machinat-utility';
 
 import type {
   MachinatNode,
-  NativeElement,
-  GeneralElement,
+  MachinatElement,
+  MachinatComponentType,
+  MachinatNativeElement,
+  MachinatGeneralElement,
+  MachinatNativeComponent,
+  MachinatProvider,
+  MachinatConsumer,
+  MachinatService,
+  ServiceProvideFn,
 } from 'machinat/types';
 import type { TraverseNodeCallback } from 'machinat-utility/types';
 
-import type {
-  RenderInnerFn,
-  MachinatSegment,
-  MachinatNativeComponent,
-  InnerSegment,
-} from './types';
+import type { RenderInnerFn, MachinatSegment, InnerSegment } from './types';
 
 const RENDER_SEPARATOR = '#';
 const RENDER_ROOT = '$';
 
+type ServiceConsumeFn<Served, ProviderInput, ConsumeInput> = $Call<
+  ServiceProvideFn<Served, ProviderInput, ConsumeInput>
+>;
+
 type RenderTraverseContext<Value, Native> = {
   allowPause: boolean,
   atSurface: boolean,
-  segments: InnerSegment<Value, Native>[],
+  renderings: Promise<
+    null | InnerSegment<Value, Native> | InnerSegment<Value, Native>[]
+  >[],
+  servicesProvided: Map<
+    MachinatService<any, any, any>,
+    ServiceConsumeFn<any, any, any>
+  >,
 };
 
 type GeneralComponentDelegate<Value, Native> = (
-  element: GeneralElement,
+  element: MachinatGeneralElement,
   render: RenderInnerFn<Value, Native>,
   path: string
-) => null | InnerSegment<Value, Native>[];
+) => Promise<null | InnerSegment<Value, Native>[]>;
 
-const pushRenderedSegment = <Value, Native: MachinatNativeComponent<Value>>(
-  segments: InnerSegment<Value, Native>[],
-  rendered: InnerSegment<Value, Native>[],
+const checkSegmentDangerously = <Value, Native: MachinatNativeComponent<Value>>(
   allowPause: boolean,
-  atSurface: boolean
-) => {
-  for (let i = 0; i < rendered.length; i += 1) {
-    const segment = rendered[i];
-    const { type } = segment;
+  atSurface: boolean,
+  segment: InnerSegment<Value, Native>
+): boolean => {
+  const { type } = segment;
 
-    invariant(
-      !atSurface || type !== 'part',
-      `${formatNode(
-        segment.node
-      )} is a part element and should not be placed at surface level`
-    );
+  invariant(
+    !atSurface || type !== 'part',
+    `${formatNode(
+      segment.node
+    )} is a part element and should not be placed at surface level`
+  );
 
-    invariant(
-      allowPause || type !== 'pause',
-      `<Pause /> at ${segment.path} is not allowed`
-    );
+  invariant(
+    allowPause || type !== 'pause',
+    `<Pause /> at ${segment.path} is not allowed`
+  );
 
-    if (!atSurface || type !== 'break') {
-      segments.push(segment);
-    }
-  }
+  return !(atSurface && type === 'break');
 };
 
 export default class MachinatRenderer<
@@ -88,102 +96,185 @@ export default class MachinatRenderer<
     node: MachinatNode,
     allowPause: boolean
   ): null | MachinatSegment<Value, Native>[] {
-    return this._renderImpl('', allowPause, true, node, RENDER_ROOT);
+    // $FlowFixMe: overload _renderImpl depending on atService behavior
+    return this._renderImpl(RENDER_ROOT, allowPause, true, new Map(), node);
   }
 
   _isNativeComponent(Component: Function) {
     return Component.$$native === this.nativeSign;
   }
 
-  _renderImpl(
+  async _renderImpl(
     prefix: string,
     allowPause: boolean,
     atSurface: boolean,
+    servicesProvided: Map<
+      MachinatService<any, any, any>,
+      ServiceConsumeFn<any, any, any>
+    >,
     node: MachinatNode,
-    currentPath: string
-  ): null | InnerSegment<Value, Native>[] {
+    currentPath?: string
+  ): Promise<null | InnerSegment<Value, Native>[]> {
     if (isEmpty(node)) {
       return null;
     }
 
-    const segments: InnerSegment<Value, Native>[] = [];
+    const renderings: Promise<
+      null | InnerSegment<Value, Native> | InnerSegment<Value, Native>[]
+    >[] = [];
+
     traverse(
       node,
-      prefix + currentPath,
-      { segments, allowPause, atSurface },
+      prefix + (currentPath || ''),
+      { renderings, allowPause, atSurface, servicesProvided },
       this._traverseCallback
     );
+
+    const rendered: (
+      | null
+      | InnerSegment<Value, Native>
+      | InnerSegment<Value, Native>[]
+    )[] = await Promise.all(renderings);
+
+    const segments: InnerSegment<Value, Native>[] = [];
+    const checkSeg = checkSegmentDangerously.bind(
+      undefined,
+      allowPause,
+      atSurface
+    );
+
+    for (let i = 0; i < rendered.length; i += 1) {
+      const target = rendered[i];
+
+      if (target !== null) {
+        if (Array.isArray(target)) {
+          segments.push(...target.filter(checkSeg));
+        } else if (checkSeg(target)) {
+          segments.push(target);
+        }
+      }
+    }
 
     return segments.length === 0 ? null : segments;
   }
 
-  _traverseCallback: TraverseNodeCallback = (
-    node,
-    path,
-    context: RenderTraverseContext<Value, Native>
-  ) => {
-    const { segments, allowPause, atSurface } = context;
+  _traverseCallback: TraverseNodeCallback<
+    RenderTraverseContext<Value, Native>
+  > = (node, path, context) => {
+    const { renderings, allowPause, servicesProvided } = context;
 
     if (typeof node === 'string' || typeof node === 'number') {
       // handle string or number as a node
-      segments.push({
-        type: 'text',
-        node,
-        value: typeof node === 'string' ? node : String(node),
-        path,
-      });
+      renderings.push(
+        Promise.resolve({
+          type: 'text',
+          node,
+          value: typeof node === 'string' ? node : String(node),
+          path,
+        })
+      );
     } else if (typeof node.type === 'string') {
-      // handle GeneralElement
+      // handle MachinatGeneralElement
 
-      const renderedSegments = this.generalDelegate(
-        node,
-        this._renderImpl.bind(this, `${path}#${node.type}`, allowPause, false),
+      const renderPromise = this.generalDelegate(
+        ((node: any): MachinatGeneralElement),
+        this._renderImpl.bind(
+          this,
+          `${path}#${node.type}`,
+          allowPause,
+          false,
+          servicesProvided
+        ),
         path
       );
 
-      if (renderedSegments !== null) {
-        pushRenderedSegment(segments, renderedSegments, allowPause, atSurface);
-      }
+      renderings.push(renderPromise);
+    } else if (typeof node === 'object' && !isElement(node)) {
+      // handle raw object passed as a node
+      renderings.push(
+        Promise.resolve({
+          type: 'raw',
+          value: (node: any),
+          node: undefined,
+          path,
+        })
+      );
     } else if (isPause(node)) {
       // handle PauseElement
       invariant(allowPause, `<Pause /> at ${path} is not allowed`);
 
-      segments.push({
-        type: 'pause',
-        node,
-        value: undefined,
-        path,
-      });
-    } else if (typeof node === 'object' && !isElement(node)) {
-      // handle raw object passed as a node
+      renderings.push(
+        Promise.resolve({
+          type: 'pause',
+          node: (node: any),
+          value: undefined,
+          path,
+        })
+      );
+    } else if (isProvider(node)) {
+      const {
+        type: { _service: service },
+        props: { provide: input, children },
+      } = ((node: any): MachinatProvider<any, any>);
 
-      segments.push({
-        type: 'raw',
-        value: (node: any),
-        node: undefined,
-        path,
-      });
+      const newProvided = new Map(servicesProvided);
+      newProvided.set(service, service._serve(input));
+
+      traverse(
+        children,
+        `${path}.children`,
+        { ...context, servicesProvided: newProvided },
+        this._traverseCallback
+      );
+    } else if (isConsumer(node)) {
+      const {
+        type: { _service: service },
+        props: { consume: input, children },
+      } = ((node: any): MachinatConsumer<any, any>);
+
+      const provided = servicesProvided.get(service);
+      let servingPromise;
+      if (provided !== undefined) {
+        servingPromise = provided(input);
+      } else {
+        servingPromise = service._serve()(input);
+      }
+
+      renderings.push(
+        servingPromise
+          .then(children)
+          .then(
+            this._renderImpl.bind(
+              this,
+              `${path}#consume`,
+              allowPause,
+              false,
+              servicesProvided
+            )
+          )
+      );
     } else if (typeof node.type === 'function') {
       if (this._isNativeComponent(node.type)) {
-        // handle NativeElement
+        // handle MachinatNativeElement
 
-        const { type: Component } = (node: NativeElement<Native>);
+        const {
+          type: Component,
+        } = ((node: any): MachinatNativeElement<Native>);
         const pathInner = `${path}#${Component.name}`;
 
-        const renderedSegments = Component(
-          node,
-          this._renderImpl.bind(this, pathInner, allowPause, false),
+        const renderPromise = Component(
+          (node: any),
+          this._renderImpl.bind(
+            this,
+            pathInner,
+            allowPause,
+            false,
+            servicesProvided
+          ),
           path
         );
 
-        if (renderedSegments) {
-          pushRenderedSegment(
-            segments,
-            renderedSegments,
-            allowPause,
-            atSurface
-          );
-        }
+        renderings.push(renderPromise);
       } else {
         // handle element with custom functional component type
         invariant(
@@ -193,7 +284,10 @@ export default class MachinatRenderer<
           )} at '${path}' is not supported by ${this.platform}`
         );
 
-        const { type: renderCustom, props } = node;
+        const {
+          type: renderCustom,
+          props,
+        } = ((node: any): MachinatElement<MachinatComponentType>);
         const rendered = renderCustom(props);
 
         traverse(

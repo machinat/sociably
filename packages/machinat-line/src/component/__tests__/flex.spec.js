@@ -23,20 +23,21 @@ import Flex, {
 } from '../flex';
 import { URIAction } from '../action';
 
-const renderInner = (message, route) =>
-  map(
+const renderInner = async (message, route) => {
+  const renderings = map(
     message || null,
     (node, path) => {
       if (typeof node === 'string' || typeof node === 'number') {
         return { type: 'text', node, value: `${node}`, path };
       }
 
-      const child = node.type(node, renderInner, path)[0];
-      expect(child.type).toBe('part');
-      return child;
+      return node.type(node, renderInner, path);
     },
     route
   );
+
+  return renderings ? [].concat(...(await Promise.all(renderings))) : null;
+};
 const render = renderHelper(renderInner);
 
 test.each(
@@ -327,13 +328,12 @@ it.each([
       </FlexCarouselContainer>
     </FlexMessage>,
   ],
-])('%s match snapshot', (name, fixture) => {
-  const segments = render(fixture);
-  expect(segments.length).toBe(1);
+])('%s match snapshot', async (name, fixture) => {
+  const promise = render(fixture);
+  await expect(promise).resolves.toEqual([
+    { type: 'unit', node: fixture, value: expect.any(Object), path: '$' },
+  ]);
 
-  const segment = segments[0];
-  expect(segment.type).toBe('unit');
-  expect(segment.node).toBe(fixture);
-  expect(segment.path).toBe('$');
-  expect(segment.value).toMatchSnapshot();
+  const [{ value }] = await promise;
+  expect(value).toMatchSnapshot();
 });

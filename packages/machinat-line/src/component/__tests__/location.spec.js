@@ -15,7 +15,7 @@ it('is valid native unit component', () => {
   expect(Location.$$getEntry).toBe(undefined);
 });
 
-it('render match snapshot', () => {
+it('render match snapshot', async () => {
   const loc = (
     <Location
       title="WHERE AM I?"
@@ -24,21 +24,18 @@ it('render match snapshot', () => {
       long={-1.189902}
     />
   );
-  const segments = render(loc);
-
-  expect(segments.length).toBe(1);
-
-  const [segment] = segments;
-  expect(segment.type).toBe('unit');
-  expect(segment.node).toBe(loc);
-  expect(segment.path).toBe('$');
-  expect(segment.value).toMatchInlineSnapshot(`
-Object {
-  "address": "NARNIA",
-  "latitude": 51.756779,
-  "longitude": -1.189902,
-  "title": "WHERE AM I?",
-  "type": "location",
-}
-`);
+  await expect(render(loc)).resolves.toEqual([
+    {
+      type: 'unit',
+      node: loc,
+      value: {
+        address: 'NARNIA',
+        latitude: 51.756779,
+        longitude: -1.189902,
+        title: 'WHERE AM I?',
+        type: 'location',
+      },
+      path: '$',
+    },
+  ]);
 });

@@ -1,35 +1,35 @@
-import { reduce } from 'machinat-utility';
+import { map } from 'machinat-utility';
 import Machinat from 'machinat';
-import * as general from '../general';
+import generalDelegate from '../general';
 
-const render = node =>
-  reduce(
+const render = async node => {
+  const renderings = map(
     node,
-    (rendered, element, path) =>
-      rendered.concat(
-        typeof element === 'string'
-          ? { type: 'text', value: element, node: element, path }
-          : typeof element.type === 'string'
-          ? general[element.type](element, render, path)
-          : { value: { non: 'text' }, node: element, path }
-      ),
-    [],
+    (element, path) =>
+      typeof element === 'string'
+        ? { type: 'text', value: element, node: element, path }
+        : typeof element.type === 'string'
+        ? generalDelegate(element, render, path)
+        : { value: { non: 'text' }, node: element, path },
     '$'
-  ) || null;
+  );
+  return renderings ? [].concat(...(await Promise.all(renderings))) : null;
+};
 
-test('shallow textual elements match snapshot', () => {
-  expect(
-    render([
-      <text>abc</text>,
-      <a href="https://machinat.world">hello</a>,
-      <b>important</b>,
-      <i>italic</i>,
-      <del>nooooo</del>,
-      <br />,
-      <code>foo.bar()</code>,
-      <pre>foo.bar('hello world')</pre>,
-    ]).map(r => r.value)
-  ).toMatchInlineSnapshot(`
+test('shallow textual elements match snapshot', async () => {
+  const segments = await render([
+    <text>abc</text>,
+    <a href="https://machinat.world">hello</a>,
+    <b>important</b>,
+    <i>italic</i>,
+    <del>nooooo</del>,
+    <br />,
+    <code>foo.bar()</code>,
+    <pre>foo.bar('hello world')</pre>,
+  ]);
+  expect(segments).toMatchSnapshot();
+
+  expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
 Array [
   "abc",
   "hello",
@@ -48,8 +48,8 @@ foo.bar('hello world')
 `);
 });
 
-test('nested textual elements match snapshot', () => {
-  const segments = render(
+test('nested textual elements match snapshot', async () => {
+  const segments = await render(
     <text>
       123{' '}
       <code>
@@ -89,7 +89,7 @@ May the force be with you!
 `);
 });
 
-test('with break placed in children', () => {
+test('with break placed in children', async () => {
   const children = (
     <>
       foo
@@ -98,7 +98,7 @@ test('with break placed in children', () => {
     </>
   );
 
-  const segments = render([
+  const segments = await render([
     <text>{children}</text>,
     <a href="https://machinat.world">{children}</a>,
     <b>{children}</b>,
@@ -107,7 +107,6 @@ test('with break placed in children', () => {
     <code>{children}</code>,
     <pre>{children}</pre>,
   ]);
-
   expect(segments).toMatchSnapshot();
 
   expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
@@ -144,7 +143,7 @@ bar
 `);
 });
 
-test('should throw if non string value rendered', () => {
+test('should throw if non string value rendered', async () => {
   const NonText = () => {};
   const children = (
     <>
@@ -154,7 +153,7 @@ test('should throw if non string value rendered', () => {
     </>
   );
 
-  [
+  for (const node of [
     <a src="...">{children}</a>,
     <b>{children}</b>,
     <i>{children}</i>,
@@ -162,28 +161,36 @@ test('should throw if non string value rendered', () => {
     <text>{children}</text>,
     <code>{children}</code>,
     <pre>{children}</pre>,
-  ].forEach(node => {
-    expect(() => render(node)).toThrow(
+  ]) {
+    // eslint-disable-next-line no-await-in-loop
+    await expect(render(node)).rejects.toThrow(
       '<NonText /> at $::1 is not valid textual content'
     );
-  });
+  }
 });
 
-test('media elements match snapshot', () => {
-  expect(
+test('media elements match snapshot', async () => {
+  await expect(
     render([
       <img src="http://avatar.my.bot" />,
       <video src="http://vid.my.bot" />,
       <audio src="http://sound.my.bot" />,
       <file src="http://profile.my.bot" />,
     ])
-  ).toMatchSnapshot();
+  ).resolves.toMatchSnapshot();
 });
 
-test('should return null if content is empty', () => {
-  [<a src="..." />, <b />, <i />, <del />, <text />, <code />, <pre />].forEach(
-    node => {
-      expect(render(node)).toEqual([null]);
-    }
-  );
+test('should return null if content is empty', async () => {
+  for (const node of [
+    <a src="..." />,
+    <b />,
+    <i />,
+    <del />,
+    <text />,
+    <code />,
+    <pre />,
+  ]) {
+    // eslint-disable-next-line no-await-in-loop
+    await expect(render(node)).resolves.toEqual([null]);
+  }
 });

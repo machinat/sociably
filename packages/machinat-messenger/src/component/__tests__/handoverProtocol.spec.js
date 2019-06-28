@@ -21,10 +21,12 @@ it.each([
   expect(ThreadControl.$$namespace).toBe('Messenger');
 });
 
-it.each([
-  <PassThreadControl appId="Legolas" metadata="you have my bow" />,
-  <RequestThreadControl metadata="give me the ring" />,
-  <TakeThreadContorl metadata="my precious" />,
-])('match snapshot', ThreadControl => {
-  expect(render(ThreadControl)).toMatchSnapshot();
+it.each(
+  [
+    <PassThreadControl appId="Legolas" metadata="you have my bow" />,
+    <RequestThreadControl metadata="give me the ring" />,
+    <TakeThreadContorl metadata="my precious" />,
+  ].map(ele => [ele.type.name, ele])
+)('%s match snapshot', async (_, threadControlElement) => {
+  await expect(render(threadControlElement)).resolves.toMatchSnapshot();
 });

@@ -3,7 +3,7 @@ import { valuesOfAssertedType } from 'machinat-utility';
 import { asSinglePartComponent } from './utils';
 import { GenericTemplate } from './template';
 
-const URLButton = ({
+const URLButton = async ({
   props: { title, url, heightRatio, extensions, fallbackURL, hideShareButton },
 }) => ({
   type: 'web_url',
@@ -16,7 +16,7 @@ const URLButton = ({
 });
 const __URLButton = asSinglePartComponent(URLButton);
 
-const PostbackButton = ({ props: { title, payload } }) => ({
+const PostbackButton = async ({ props: { title, payload } }) => ({
   type: 'postback',
   title,
   payload,
@@ -25,8 +25,8 @@ const __PostbackButton = asSinglePartComponent(PostbackButton);
 
 const getGenericTemplateValues = valuesOfAssertedType(GenericTemplate);
 
-const ShareButton = ({ props: { children } }, render) => {
-  const sharedSegments = render(children, '.children');
+const ShareButton = async ({ props: { children } }, render) => {
+  const sharedSegments = await render(children, '.children');
 
   let sharedContent;
   if (sharedSegments !== null) {
@@ -40,7 +40,7 @@ const ShareButton = ({ props: { children } }, render) => {
 };
 const __ShareButton = asSinglePartComponent(ShareButton);
 
-const BuyButton = ({
+const BuyButton = async ({
   props: {
     title,
     payload,
@@ -66,24 +66,24 @@ const BuyButton = ({
 });
 const __BuyButton = asSinglePartComponent(BuyButton);
 
-const CallButton = ({ props: { title, number } }) => ({
+const CallButton = async ({ props: { title, number } }) => ({
   type: 'phone_number',
   title,
   number,
 });
 const __CallButton = asSinglePartComponent(CallButton);
 
-const LoginButton = ({ props: { url } }) => ({
+const LoginButton = async ({ props: { url } }) => ({
   type: 'account_link',
   url,
 });
 const __LoginButton = asSinglePartComponent(LoginButton);
 
 const ACCOUNT_UNLINK_TYPE = { type: 'account_unlink' };
-const LogoutButton = () => ACCOUNT_UNLINK_TYPE;
+const LogoutButton = async () => ACCOUNT_UNLINK_TYPE;
 const __LogoutButton = asSinglePartComponent(LogoutButton);
 
-const GamePlayButton = ({
+const GamePlayButton = async ({
   props: { title, payload, playerId, contextId },
 }) => ({
   type: 'game_play',

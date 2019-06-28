@@ -1,10 +1,8 @@
 // @flow
 import invariant from 'invariant';
 
-import type {
-  InnerSegment,
-  MachinatNativeComponent,
-} from 'machinat-renderer/types';
+import type { MachinatNativeComponent } from 'machinat/types';
+import type { InnerSegment } from 'machinat-renderer/types';
 
 import formatNode from './formatNode';
 

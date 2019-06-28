@@ -6,11 +6,12 @@ import * as actionsModule from './action';
 
 const getActionValues = valuesOfAssertedType(...Object.values(actionsModule));
 
-const FlexButton = (
+const FlexButton = async (
   { props: { action, flex, margin, height, style, color, gravity } },
   render
 ) => {
-  const actionValues = getActionValues(render(action, '.action'));
+  const actionSegments = await render(action, '.action');
+  const actionValues = getActionValues(actionSegments);
 
   invariant(
     actionValues !== undefined && actionValues.length === 1,
@@ -33,7 +34,7 @@ const FlexButton = (
 const __FlexButton = asSinglePartComponent(FlexButton);
 
 const FILLER_TYPE_VLUES = { type: 'filler' };
-const FlexFiller = () => FILLER_TYPE_VLUES;
+const FlexFiller = async () => FILLER_TYPE_VLUES;
 const __FlexFiller = asSinglePartComponent(FlexFiller);
 
 const FlexIcon = ({ props: { url, margin, size, aspectRatio } }) => ({
@@ -45,7 +46,7 @@ const FlexIcon = ({ props: { url, margin, size, aspectRatio } }) => ({
 });
 const __FlexIcon = asSinglePartComponent(FlexIcon);
 
-const FlexImage = (
+const FlexImage = async (
   {
     props: {
       url,
@@ -62,7 +63,8 @@ const FlexImage = (
   },
   render
 ) => {
-  const actionValues = getActionValues(render(action, '.action'));
+  const actionSegments = await render(action, '.action');
+  const actionValues = getActionValues(actionSegments);
 
   return {
     type: 'image',
@@ -87,13 +89,13 @@ const FlexSeparator = ({ props: { margin, color } }) => ({
 });
 const __FlexSeparator = asSinglePartComponent(FlexSeparator);
 
-const FlexSpacer = ({ props: { size } }) => ({
+const FlexSpacer = async ({ props: { size } }) => ({
   type: 'spacer',
   size,
 });
 const __FlexSpacer = asSinglePartComponent(FlexSpacer);
 
-const FlexText = (
+const FlexText = async (
   {
     props: {
       children,
@@ -111,19 +113,21 @@ const FlexText = (
   },
   render
 ) => {
-  const textSegments = joinTextualSegments(render(children, '.children'));
+  const textSegments = await render(children, '.children');
+  const joinedSegments = joinTextualSegments(textSegments);
 
   let text;
   invariant(
-    textSegments !== null &&
-      textSegments.length === 1 &&
-      typeof (text = textSegments[0].value) === 'string', // eslint-disable-line prefer-destructuring
-    textSegments
+    joinedSegments !== null &&
+      joinedSegments.length === 1 &&
+      typeof (text = joinedSegments[0].value) === 'string', // eslint-disable-line prefer-destructuring
+    joinedSegments
       ? `there should be no <br/> in children of <FlexText/>`
       : `children of <FlexText/> should not be empty`
   );
 
-  const actionsValue = getActionValues(render(action, '.action'));
+  const actionSegments = await render(action, '.action');
+  const actionsValue = getActionValues(actionSegments);
 
   return {
     type: 'text',
@@ -144,12 +148,15 @@ const __FlexText = asSinglePartComponent(FlexText);
 
 let getBoxContentValue;
 
-const FlexBox = (
+const FlexBox = async (
   { props: { children, layout, flex, spacing, margin, action } },
   render
 ) => {
-  const contentValues = getBoxContentValue(render(children, '.children'));
-  const actionValues = getActionValues(render(action, '.action'));
+  const contentSegments = await render(children, '.children');
+  const contentValues = getBoxContentValue(contentSegments);
+
+  const actionSegments = await render(action, '.action');
+  const actionValues = getActionValues(actionSegments);
 
   invariant(
     contentValues !== undefined,
@@ -183,11 +190,12 @@ const createBlockComponent = (section, valueFetcher) => {
   const tagName = `Flex${section[0].toUpperCase()}${section.slice(1)}`;
 
   const wrapper = {
-    [tagName]: (
+    [tagName]: async (
       { props: { children, backgroundColor, separator, separatorColor } },
       render
     ) => {
-      const contentValues = valueFetcher(render(children, '.children'));
+      const contentSegments = await render(children, '.children');
+      const contentValues = valueFetcher(contentSegments);
 
       invariant(
         contentValues !== undefined && contentValues.length === 1,
@@ -229,13 +237,17 @@ const getBlockValues = valuesOfAssertedType(
   __FlexFooter
 );
 
-const FlexBubbleContainer = ({ props: { children, rightToLeft } }, render) => {
+const FlexBubbleContainer = async (
+  { props: { children, rightToLeft } },
+  render
+) => {
   const bubbleObject = {
     type: 'bubble',
     direction: rightToLeft ? 'rtl' : 'ltr',
   };
 
-  const sections = getBlockValues(render(children, '.children'));
+  const sectionSegments = await render(children, '.children');
+  const sections = getBlockValues(sectionSegments);
 
   invariant(
     sections !== undefined,
@@ -262,10 +274,14 @@ const __FlexBubbleContainer = asSinglePartComponent(FlexBubbleContainer);
 
 const getBubbleContainerValues = valuesOfAssertedType(__FlexBubbleContainer);
 
-const FlexCarouselContainer = ({ props: { children } }, render) => ({
-  type: 'carousel',
-  contents: getBubbleContainerValues(render(children, '.children')),
-});
+const FlexCarouselContainer = async ({ props: { children } }, render) => {
+  const contentSegments = await render(children, '.children');
+
+  return {
+    type: 'carousel',
+    contents: getBubbleContainerValues(contentSegments),
+  };
+};
 const __FlexCarouselContainer = asSinglePartComponent(FlexCarouselContainer);
 
 const getContainerValues = valuesOfAssertedType(
@@ -273,20 +289,21 @@ const getContainerValues = valuesOfAssertedType(
   __FlexCarouselContainer
 );
 
-const FlexMessage = ({ props: { children, alt, altText } }, render) => {
-  const containerValues = getContainerValues(render(children, '.children'));
+const FlexMessage = async ({ props: { children, alt, altText } }, render) => {
+  const contentSegments = await render(children, '.children');
+  const contentValues = getContainerValues(contentSegments);
 
   invariant(
-    containerValues !== undefined && containerValues.length === 1,
+    contentValues !== undefined && contentValues.length === 1,
     `there should be exactly 1 conatiner in children of FlexMessage, got ${
-      containerValues ? containerValues.length : 0
+      contentValues ? contentValues.length : 0
     }`
   );
 
   return {
     type: 'flex',
     altText: altText || alt,
-    contents: containerValues[0],
+    contents: contentValues[0],
   };
 };
 const __FlexMessage = asSingleMessageUnitComponent(FlexMessage);

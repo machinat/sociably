@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatNativeComponent } from 'machinat-renderer/types';
+import type { MachinatNativeComponent } from 'machinat/types';
 import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type {
   WebhookResponse,

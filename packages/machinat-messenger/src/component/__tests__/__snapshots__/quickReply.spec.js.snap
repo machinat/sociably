@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function EmailQuickReply]} match snapshot 1`] = `
+exports[`"EmailQuickReply" match snapshot 1`] = `
 Array [
   Object {
     "node": Object {
@@ -17,7 +17,7 @@ Array [
 ]
 `;
 
-exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function LocationQuickReply]} match snapshot 1`] = `
+exports[`"LocationQuickReply" match snapshot 1`] = `
 Array [
   Object {
     "node": Object {
@@ -34,7 +34,7 @@ Array [
 ]
 `;
 
-exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function PhoneQuickReply]} match snapshot 1`] = `
+exports[`"PhoneQuickReply" match snapshot 1`] = `
 Array [
   Object {
     "node": Object {
@@ -51,7 +51,7 @@ Array [
 ]
 `;
 
-exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function QuickReply]} match snapshot 1`] = `
+exports[`"QuickReply" match snapshot 1`] = `
 Array [
   Object {
     "node": Object {
@@ -74,7 +74,7 @@ Array [
 ]
 `;
 
-exports[`{"$typeof": Symbol(machinat.element), "props": [Object], "type": [Function QuickReply]} match snapshot 2`] = `
+exports[`"QuickReply" match snapshot 2`] = `
 Array [
   Object {
     "node": Object {

@@ -3,10 +3,10 @@ import { valuesOfAssertedType } from 'machinat-utility';
 import { asContainerComponent } from './utils';
 import { QuickReply } from './quickReply';
 
-const renderQuickReplyValues = valuesOfAssertedType(QuickReply);
+const getQuickReplyValues = valuesOfAssertedType(QuickReply);
 
-const Dialog = ({ props: { children, quickReplies } }, render) => {
-  const segments = render(children, '.children');
+const Dialog = async ({ props: { children, quickReplies } }, render) => {
+  const segments = await render(children, '.children');
   if (segments === null) {
     return null;
   }
@@ -33,9 +33,8 @@ const Dialog = ({ props: { children, quickReplies } }, render) => {
     }
   }
 
-  const quickRepliesValues = renderQuickReplyValues(
-    render(quickReplies, '.quickReplies')
-  );
+  const quickReplySegments = await render(quickReplies, '.quickReplies');
+  const quickRepliesValues = getQuickReplyValues(quickReplySegments);
 
   if (quickRepliesValues && lastMessageIdx !== -1) {
     segments[lastMessageIdx].value.quickReply = {

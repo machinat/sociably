@@ -21,12 +21,18 @@ it.each([QuickReply, PhoneQuickReply, EmailQuickReply, LocationQuickReply])(
   }
 );
 
-it.each([
-  <QuickReply title="i want a pie" payload="🥧" />,
-  <QuickReply title="a piece of cake" payload="🍰" imageURL="http://cake.it" />,
-  <PhoneQuickReply />,
-  <EmailQuickReply />,
-  <LocationQuickReply />,
-])('%p match snapshot', element => {
-  expect(render(element)).toMatchSnapshot();
+it.each(
+  [
+    <QuickReply title="i want a pie" payload="🥧" />,
+    <QuickReply
+      title="a piece of cake"
+      payload="🍰"
+      imageURL="http://cake.it"
+    />,
+    <PhoneQuickReply />,
+    <EmailQuickReply />,
+    <LocationQuickReply />,
+  ].map(ele => [ele.type.name, ele])
+)('%p match snapshot', async (_, element) => {
+  await expect(render(element)).resolves.toMatchSnapshot();
 });

@@ -720,6 +720,133 @@ May the force be with you!
 ]
 `;
 
+exports[`shallow textual elements match snapshot 1`] = `
+Array [
+  Object {
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "children": "abc",
+      },
+      "type": "text",
+    },
+    "path": "$:0",
+    "type": "text",
+    "value": "abc",
+  },
+  Object {
+    "node": undefined,
+    "path": undefined,
+    "type": "text",
+    "value": "hello",
+  },
+  Object {
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "children": "hello",
+        "href": "https://machinat.world",
+      },
+      "type": "a",
+    },
+    "path": "$:1",
+    "type": "break",
+    "value": Symbol(machinat.segment.break),
+  },
+  Object {
+    "node": undefined,
+    "path": undefined,
+    "type": "text",
+    "value": "https://machinat.world",
+  },
+  Object {
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "children": "hello",
+        "href": "https://machinat.world",
+      },
+      "type": "a",
+    },
+    "path": "$:1",
+    "type": "break",
+    "value": Symbol(machinat.segment.break),
+  },
+  Object {
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "children": "important",
+      },
+      "type": "b",
+    },
+    "path": "$:2",
+    "type": "text",
+    "value": "*important*",
+  },
+  Object {
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "children": "italic",
+      },
+      "type": "i",
+    },
+    "path": "$:3",
+    "type": "text",
+    "value": "_italic_",
+  },
+  Object {
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "children": "nooooo",
+      },
+      "type": "del",
+    },
+    "path": "$:4",
+    "type": "text",
+    "value": "~nooooo~",
+  },
+  Object {
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {},
+      "type": "br",
+    },
+    "path": "$:5",
+    "type": "break",
+    "value": Symbol(machinat.segment.break),
+  },
+  Object {
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "children": "foo.bar()",
+      },
+      "type": "code",
+    },
+    "path": "$:6",
+    "type": "text",
+    "value": "\`foo.bar()\`",
+  },
+  Object {
+    "node": Object {
+      "$$typeof": Symbol(machinat.element),
+      "props": Object {
+        "children": "foo.bar('hello world')",
+      },
+      "type": "pre",
+    },
+    "path": "$:7",
+    "type": "text",
+    "value": "\`\`\`
+foo.bar('hello world')
+\`\`\`",
+  },
+]
+`;
+
 exports[`with break placed in children 1`] = `
 Array [
   Object {

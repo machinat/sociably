@@ -17,30 +17,28 @@ it('is valid native component', () => {
   expect(QuickReply.$$getEntry).toBe(undefined);
 });
 
-it('renders match snapshot', () => {
+it('renders match snapshot', async () => {
   const qr = (
     <QuickReply
       imageURL="https://..."
       action={<URIAction uri="https://..." label="foo" />}
     />
   );
-  const segments = render(qr);
-  expect(segments.length).toBe(1);
 
-  const [segment] = segments;
-
-  expect(segment.type).toBe('part');
-  expect(segment.node).toBe(qr);
-  expect(segment.path).toBe('$');
-  expect(segment.value).toMatchInlineSnapshot(`
-Object {
-  "action": Object {
-    "label": "foo",
-    "type": "uri",
-    "uri": "https://...",
-  },
-  "imageUrl": "https://...",
-  "type": "action",
-}
-`);
+  await expect(render(qr)).resolves.toEqual([
+    {
+      type: 'part',
+      node: qr,
+      value: {
+        action: {
+          label: 'foo',
+          type: 'uri',
+          uri: 'https://...',
+        },
+        imageUrl: 'https://...',
+        type: 'action',
+      },
+      path: '$',
+    },
+  ]);
 });

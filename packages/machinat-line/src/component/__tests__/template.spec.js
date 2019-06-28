@@ -13,8 +13,13 @@ import { URIAction } from '../action';
 import { LINE_NATIVE_TYPE } from '../../constant';
 import renderHelper from './renderHelper';
 
-const renderInner = prop =>
-  map(prop, (node, path) => node.type(node, renderInner, path)[0]) || null;
+const renderInner = async prop => {
+  const renderings = map(prop, (node, path) =>
+    node.type(node, renderInner, path)
+  );
+
+  return renderings ? [].concat(...(await Promise.all(renderings))) : null;
+};
 const render = renderHelper(renderInner);
 
 test.each([CarouselItem, ImageCarouselItem].map(C => [C.name, C]))(
@@ -86,13 +91,17 @@ test.each(
       />
     </ImageCarouselTemplate>,
   ].map(ele => [ele.type.name, ele])
-)('%s rendered match snapshot', (_, templateElement) => {
-  const segments = render(templateElement);
-  expect(segments.length).toBe(1);
+)('%s rendered match snapshot', async (_, templateElement) => {
+  const promise = render(templateElement);
+  await expect(promise).resolves.toEqual([
+    {
+      type: 'unit',
+      node: templateElement,
+      value: expect.any(Object),
+      path: '$',
+    },
+  ]);
 
-  const [segment] = segments;
-  expect(segment.type).toBe('unit');
-  expect(segment.node).toBe(templateElement);
-  expect(segment.path).toBe('$');
-  expect(segment.value).toMatchSnapshot();
+  const [{ value }] = await promise;
+  expect(value).toMatchSnapshot();
 });

@@ -45,13 +45,14 @@ describe('annotate(key)(value)(_component)', () => {
 });
 
 describe('wrapSinglePartSegment(_component)', () => {
-  it('wrap the values retruned by underlying function into part segment', () => {
-    const _component = moxy(() => ({ foo: 'bar' }));
+  it('wrap the values resolved by underlying function into part segment', async () => {
+    const _component = moxy(() => Promise.resolve({ foo: 'bar' }));
     _component.mock.getter('name').fakeReturnValue('MyComponent');
-    const Component = wrapSinglePartSegment(_component);
 
+    const Component = wrapSinglePartSegment(_component);
     expect(Component.name).toBe('MyComponent');
-    expect(Component(<Component />, null, '$')).toEqual([
+
+    await expect(Component(<Component />, null, '$')).resolves.toEqual([
       {
         type: 'part',
         node: <Component />,
@@ -63,24 +64,25 @@ describe('wrapSinglePartSegment(_component)', () => {
     expect(_component.mock).toHaveBeenCalledWith(<Component />, null, '$');
   });
 
-  it('returns null if underlying value function returns null', () => {
+  it('returns null if underlying value function returns null', async () => {
     const _component = moxy(() => null);
     _component.mock.getter('name').fakeReturnValue('MyComponent');
     const Component = wrapSinglePartSegment(_component);
 
-    expect(Component(null, null, '$')).toEqual(null);
+    await expect(Component(null, null, '$')).resolves.toEqual(null);
     expect(_component.mock).toHaveBeenCalledWith(null, null, '$');
   });
 });
 
 describe('wrapSingleUnitSegment(_component)', () => {
-  it('wrap the values retruned by underlying function into unit segment', () => {
+  it('wrap the values resolved by underlying function into unit segment', async () => {
     const _component = moxy(() => ({ foo: 'bar' }));
     _component.mock.getter('name').fakeReturnValue('MyComponent');
-    const Component = wrapSingleUnitSegment(_component);
 
+    const Component = wrapSingleUnitSegment(_component);
     expect(Component.name).toBe('MyComponent');
-    expect(Component(<Component />, null, '$')).toEqual([
+
+    await expect(Component(<Component />, null, '$')).resolves.toEqual([
       {
         type: 'unit',
         node: <Component />,
@@ -92,13 +94,12 @@ describe('wrapSingleUnitSegment(_component)', () => {
     expect(_component.mock).toHaveBeenCalledWith(<Component />, null, '$');
   });
 
-  it('returns null if underlying value function returns null', () => {
+  it('returns null if underlying value function returns null', async () => {
     const _component = moxy(() => null);
     _component.mock.getter('name').fakeReturnValue('MyComponent');
     const Component = wrapSingleUnitSegment(_component);
 
-    expect(Component.name).toBe('MyComponent');
-    expect(Component(null, null, '$')).toEqual(null);
+    await expect(Component(null, null, '$')).resolves.toEqual(null);
     expect(_component.mock).toHaveBeenCalledWith(null, null, '$');
   });
 });

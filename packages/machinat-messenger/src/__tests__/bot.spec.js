@@ -184,6 +184,11 @@ describe('#send(message, options)', () => {
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_SECRET_',
       verifyToken: '_VERIFIY_TOKEN_',
+      plugins: [
+        () => ({
+          dispatchMiddleware: next => frame => next(frame),
+        }),
+      ],
     });
 
     await expect(bot.send('john', message)).resolves.toEqual([

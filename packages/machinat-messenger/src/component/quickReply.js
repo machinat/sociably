@@ -9,15 +9,15 @@ const QuickReply = ({ props: { title, payload, imageURL } }) => ({
 const __QuickReply = asSinglePartComponent(QuickReply);
 
 const LOCATION_QUICK_REPLY_VALUES = { content_type: 'location' };
-const LocationQuickReply = () => LOCATION_QUICK_REPLY_VALUES;
+const LocationQuickReply = async () => LOCATION_QUICK_REPLY_VALUES;
 const __LocationQuickReply = asSinglePartComponent(LocationQuickReply);
 
 const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
-const PhoneQuickReply = () => PHONE_QUICK_REPLY_VALUES;
+const PhoneQuickReply = async () => PHONE_QUICK_REPLY_VALUES;
 const __PhoneQuickReply = asSinglePartComponent(PhoneQuickReply);
 
 const EMAIL_QUICK_REPLY_VALUES = { content_type: 'user_email' };
-const EmailQuickReply = () => EMAIL_QUICK_REPLY_VALUES;
+const EmailQuickReply = async () => EMAIL_QUICK_REPLY_VALUES;
 const __EmailQuickReply = asSinglePartComponent(EmailQuickReply);
 
 export {

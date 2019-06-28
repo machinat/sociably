@@ -4,7 +4,7 @@ import { asSingleUnitComponentWithEntryGetter } from './utils';
 
 const LEAVE_RENDERED = {};
 
-const Leave = () => LEAVE_RENDERED;
+const Leave = async () => LEAVE_RENDERED;
 
 const __Leave = asSingleUnitComponentWithEntryGetter(channel => {
   const { type, subtype, sourceId } = channel;

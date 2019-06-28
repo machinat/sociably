@@ -30,7 +30,7 @@ import type {
 import LineChannel from './channel';
 import { LINE_NATIVE_TYPE } from './constant';
 
-import * as generalElementDelegate from './component/general';
+import generalElementDelegate from './component/general';
 
 type LineBotOptionsInput = $Shape<LineBotOptions>;
 
@@ -105,14 +105,17 @@ class LineBot
 
     const usePush = !(options && options.replyToken);
 
-    const tasks = this.engine.renderTasks(
+    const tasks = await this.engine.renderTasks(
       createChatJobs,
       channel,
       message,
       options,
       usePush
     );
-    if (tasks === null) return null;
+
+    if (tasks === null) {
+      return null;
+    }
 
     if (!usePush) {
       let replyFound = false;
@@ -141,14 +144,17 @@ class LineBot
     targets: string[],
     message: MachinatNode
   ): Promise<null | LineAPIResult[]> {
-    const tasks = this.engine.renderTasks(
+    const tasks = await this.engine.renderTasks(
       createMulticastJobs,
       targets,
       message,
       undefined,
       true
     );
-    if (tasks === null) return null;
+
+    if (tasks === null) {
+      return null;
+    }
 
     const response = await this.engine.dispatch(null, tasks, message);
     return response === null ? null : response.results;

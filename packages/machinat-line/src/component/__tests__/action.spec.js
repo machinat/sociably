@@ -11,7 +11,7 @@ import {
 import { LINE_NATIVE_TYPE } from '../../constant';
 import renderHelper from './renderHelper';
 
-const render = renderHelper(() => null);
+const render = renderHelper(async () => null);
 
 test.each(
   [
@@ -62,20 +62,24 @@ it.each(
     <CameraRollAction label="Cheer again!" />,
     <LocationAction label="Ok, where are we?" />,
   ].map(element => [element.type.name, element])
-)('%s match snapshot', (_, actionElement) => {
-  const segments = render(actionElement);
-  expect(segments.length).toBe(1);
+)('%s match snapshot', async (_, actionElement) => {
+  const promise = render(actionElement);
+  await expect(promise).resolves.toEqual([
+    {
+      type: 'part',
+      node: actionElement,
+      value: expect.any(Object),
+      path: '$',
+    },
+  ]);
 
-  const segment = segments[0];
-  expect(segment.type).toBe('part');
-  expect(segment.node).toBe(actionElement);
-  expect(segment.path).toBe('$');
-  expect(segment.value).toMatchSnapshot();
+  const [{ value }] = await promise;
+  expect(value).toMatchSnapshot();
 });
 
 describe('DateTimePickerAction', () => {
-  test('datetime mode', () => {
-    [
+  test('datetime mode', async () => {
+    const actions = [
       <DateTimePickerAction
         mode="datetime"
         initial="2000-01-01T00:00"
@@ -94,18 +98,29 @@ describe('DateTimePickerAction', () => {
         min={new Date(1990, 0)}
         max={new Date(2020, 0)}
       />,
-    ].forEach(pickerElement => {
-      const [{ value }] = render(pickerElement);
+    ];
 
-      expect(value.mode).toBe('datetime');
-      expect(value.initial).toBe('2000-01-01T00:00');
-      expect(value.min).toBe('1990-01-01T00:00');
-      expect(value.max).toBe('2020-01-01T00:00');
-    });
+    for (const action of actions) {
+      // eslint-disable-next-line no-await-in-loop
+      await expect(render(action)).resolves.toEqual([
+        {
+          type: 'part',
+          node: action,
+          value: {
+            type: 'datetimepicker',
+            mode: 'datetime',
+            initial: '2000-01-01T00:00',
+            min: '1990-01-01T00:00',
+            max: '2020-01-01T00:00',
+          },
+          path: '$',
+        },
+      ]);
+    }
   });
 
-  test('date mode', () => {
-    [
+  test('date mode', async () => {
+    const actions = [
       <DateTimePickerAction
         mode="date"
         initial="2000-01-01"
@@ -118,18 +133,29 @@ describe('DateTimePickerAction', () => {
         min={new Date(1990, 0)}
         max={new Date(2020, 0)}
       />,
-    ].forEach(pickerElement => {
-      const [{ value }] = render(pickerElement);
+    ];
 
-      expect(value.mode).toBe('date');
-      expect(value.initial).toBe('2000-01-01');
-      expect(value.min).toBe('1990-01-01');
-      expect(value.max).toBe('2020-01-01');
-    });
+    for (const action of actions) {
+      // eslint-disable-next-line no-await-in-loop
+      await expect(render(action)).resolves.toEqual([
+        {
+          type: 'part',
+          node: action,
+          value: {
+            type: 'datetimepicker',
+            mode: 'date',
+            initial: '2000-01-01',
+            min: '1990-01-01',
+            max: '2020-01-01',
+          },
+          path: '$',
+        },
+      ]);
+    }
   });
 
-  test('time mode', () => {
-    [
+  test('time mode', async () => {
+    const actions = [
       <DateTimePickerAction
         mode="time"
         initial="11:11"
@@ -142,13 +168,24 @@ describe('DateTimePickerAction', () => {
         min={new Date(0, 0, 0, 0, 0)}
         max={new Date(0, 0, 0, 22, 22)}
       />,
-    ].forEach(pickerElement => {
-      const [{ value }] = render(pickerElement);
+    ];
 
-      expect(value.mode).toBe('time');
-      expect(value.initial).toBe('11:11');
-      expect(value.min).toBe('00:00');
-      expect(value.max).toBe('22:22');
-    });
+    for (const action of actions) {
+      // eslint-disable-next-line no-await-in-loop
+      await expect(render(action)).resolves.toEqual([
+        {
+          type: 'part',
+          node: action,
+          value: {
+            type: 'datetimepicker',
+            mode: 'time',
+            initial: '11:11',
+            min: '00:00',
+            max: '22:22',
+          },
+          path: '$',
+        },
+      ]);
+    }
   });
 });

@@ -12,9 +12,13 @@ import {
 import { URIAction, MessageAction } from '../action';
 import renderHelper from './renderHelper';
 
-const renderInner = (prop, route) =>
-  map(prop, (node, path) => node.type(node, renderInner, path)[0], route) ||
-  null;
+const renderInner = async prop => {
+  const renderings = map(prop, (node, path) =>
+    node.type(node, renderInner, path)
+  );
+
+  return renderings ? [].concat(...(await Promise.all(renderings))) : null;
+};
 const render = renderHelper(renderInner);
 
 it.each(
@@ -99,13 +103,17 @@ it.each(
       />
     </ImageMap>,
   ].map(e => [e.type.name, e])
-)('%s match snapshot', (_, element) => {
-  const segments = render(element);
-  expect(segments.length).toBe(1);
+)('%s match snapshot', async (_, element) => {
+  const promise = render(element);
+  await expect(promise).resolves.toEqual([
+    {
+      type: 'unit',
+      node: element,
+      value: expect.any(Object),
+      path: '$',
+    },
+  ]);
 
-  const segment = segments[0];
-  expect(segment.type).toBe('unit');
-  expect(segment.node).toBe(element);
-  expect(segment.path).toBe('$');
-  expect(segment.value).toMatchSnapshot();
+  const [{ value }] = await promise;
+  expect(value).toMatchSnapshot();
 });
