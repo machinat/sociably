@@ -238,7 +238,7 @@ describe('createCreativeJobs()', () => {
     [
       [<Bar />, {}, '<Bar />'],
       [<Foo />, { i: 'am not a message' }, '<Foo />'],
-      [undefined, { neither: 'am i' }, '{"neither":"am i"}'],
+      [undefined, { neither: 'am i' }, '[object Object]'],
     ].forEach(([node, value, formated]) => {
       expect(() =>
         createCreativeJobs(null, [

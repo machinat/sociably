@@ -9,6 +9,7 @@ import type {
   TextSegment,
   UnitSegment,
   RawSegment,
+  RenderThunkFn,
 } from 'machinat-renderer/types';
 import type MachinatBot from './bot';
 
@@ -78,9 +79,11 @@ export type EventMiddleware<
   Promise<void | Response>
 >;
 
-type PauseDispatchTask = {| type: 'pause', payload: MachinatPause |};
-type TransmitDispatchTask<Job> = {| type: 'transmit', payload: Job[] |};
-export type DispatchTask<Job> = PauseDispatchTask | TransmitDispatchTask<Job>;
+type TransmitTask<Job> = {| type: 'transmit', payload: Job[] |};
+type PauseTask = {| type: 'pause', payload: MachinatPause |};
+type ThunkTask = {| type: 'thunk', payload: RenderThunkFn |};
+
+export type DispatchTask<Job> = TransmitTask<Job> | PauseTask | ThunkTask;
 
 export type DispatchFrame<Channel: MachinatChannel, Job> = {
   platform: string,

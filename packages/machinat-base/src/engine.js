@@ -6,6 +6,7 @@ import type {
   MachinatNode,
   MachinatPause,
   MachinatNativeComponent,
+  RenderThunkFn,
 } from 'machinat/types';
 import type MahinateQueue from 'machinat-queue';
 import type { JobBatchResponse } from 'machinat-queue/types';
@@ -164,9 +165,11 @@ export default class MachinatEngine<
   }
 
   // renderTasks renders machinat element tree into task to be executed. There
-  // are two kinds of task for now: "transmit" contains the jobs to be executed
-  // on the certain platform, "pause" represent the interval made by <Pause />
-  // element which should be waited between "transmit" tasks.
+  // are three kinds of task: "transmit" contains the jobs to be executed on the
+  // certain platform, "pause" represent the interval made by <Pause />
+  // element which should be waited between "transmit" tasks, "thunk" holds a
+  // function registered by service which will be excuted after all jobs
+  // transmited.
   async renderTasks<T, O>(
     createJobs: (
       target: T,
@@ -184,33 +187,47 @@ export default class MachinatEngine<
     }
 
     const tasks: DispatchTask<Job>[] = [];
-
+    let thunksBuffer: RenderThunkFn[] = [];
     let segmentsBuffer: SegmentWithoutPause<SegmentValue, Native>[] = [];
 
     for (let i = 0; i < segments.length; i += 1) {
       const segment = segments[i];
+      if (segment.type === 'thunk') {
+        // collect thunk
+        thunksBuffer.push(segment.value);
+      } else if (segment.type === 'pause') {
+        // create jobs from buffered segments and clear buffer
+        if (segmentsBuffer.length > 0) {
+          const jobs = createJobs(target, segmentsBuffer, options);
+          if (jobs !== null) {
+            tasks.push({ type: 'transmit', payload: jobs });
+          }
+          segmentsBuffer = [];
+        }
 
-      if (segment.type !== 'pause' && segment.type !== 'thunk') {
+        if (thunksBuffer.length > 0) {
+          for (const thunkFn of thunksBuffer) {
+            tasks.push({ type: 'thunk', payload: thunkFn });
+          }
+          thunksBuffer = [];
+        }
+
+        tasks.push({ type: 'pause', payload: segment.node });
+      } else {
+        // push unit segments to buffer
         segmentsBuffer.push(segment);
       }
+    }
 
-      // create jobs batch when Pause met or loop end
-      if (
-        (i === segments.length - 1 || segment.type === 'pause') &&
-        segmentsBuffer.length > 0
-      ) {
-        const jobs = createJobs(target, segmentsBuffer, options);
-
-        if (jobs !== null) {
-          tasks.push({ type: 'transmit', payload: jobs });
-        }
+    if (segmentsBuffer.length > 0) {
+      const jobs = createJobs(target, segmentsBuffer, options);
+      if (jobs !== null) {
+        tasks.push({ type: 'transmit', payload: jobs });
       }
+    }
 
-      // collect pauses
-      if (segment.type === 'pause') {
-        tasks.push({ type: 'pause', payload: segment.node });
-        segmentsBuffer = [];
-      }
+    for (const thunkFn of thunksBuffer) {
+      tasks.push({ type: 'thunk', payload: thunkFn });
     }
 
     return tasks;
@@ -239,11 +256,12 @@ export default class MachinatEngine<
   ): Promise<null | DispatchResponse<Job, Result>> {
     const { tasks } = frame;
     const results: Result[] = [];
-    const jobs: Job[] = [];
+    const thunks: RenderThunkFn[] = [];
+    const jobsExecuted: Job[] = [];
 
     for (const task of tasks) {
       if (task.type === 'transmit') {
-        jobs.push(...task.payload);
+        jobsExecuted.push(...task.payload);
 
         const batchResp: JobBatchResponse<
           Job,
@@ -257,7 +275,7 @@ export default class MachinatEngine<
         } else {
           const { errors, batch } = batchResp;
 
-          throw new DispatchError(errors, tasks, jobs, [
+          throw new DispatchError(errors, tasks, jobsExecuted, [
             ...results,
             ...(batch ? batch.map(jobResp => jobResp && jobResp.result) : []),
           ]);
@@ -265,11 +283,31 @@ export default class MachinatEngine<
       } else if (task.type === 'pause') {
         // eslint-disable-next-line no-await-in-loop
         await handlePause(task.payload);
+      } else if (task.type === 'thunk') {
+        thunks.push(task.payload);
       } else {
         throw new TypeError(`invalid dispatch task type "${task.type}"`);
       }
     }
 
-    return { tasks, results, jobs };
+    if (thunks.length > 0) {
+      const errors: Error[] = [];
+
+      await Promise.all(
+        thunks.map(async thunk => {
+          try {
+            await thunk();
+          } catch (err) {
+            errors.push(err);
+          }
+        })
+      );
+
+      if (errors.length > 0) {
+        throw new DispatchError(errors, tasks, jobsExecuted, results);
+      }
+    }
+
+    return { tasks, results, jobs: jobsExecuted };
   }
 }

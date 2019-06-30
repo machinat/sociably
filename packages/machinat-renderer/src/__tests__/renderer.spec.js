@@ -456,22 +456,22 @@ Array [
     expect(serveFoo.mock).toHaveBeenCalledWith('A');
     const provideFoo = serveFoo.mock.calls[0].result;
     expect(provideFoo.mock).toHaveBeenCalledTimes(2);
-    expect(provideFoo.mock).toHaveBeenCalledWith('X');
-    expect(provideFoo.mock).toHaveBeenCalledWith('x');
+    expect(provideFoo.mock).toHaveBeenCalledWith('X', expect.any(Function));
+    expect(provideFoo.mock).toHaveBeenCalledWith('x', expect.any(Function));
 
     expect(serveBar.mock).toHaveBeenCalledTimes(1);
     expect(serveBar.mock).toHaveBeenCalledWith('B');
     const provideBar = serveBar.mock.calls[0].result;
     expect(provideBar.mock).toHaveBeenCalledTimes(2);
-    expect(provideBar.mock).toHaveBeenCalledWith('Y');
-    expect(provideBar.mock).toHaveBeenCalledWith('y');
+    expect(provideBar.mock).toHaveBeenCalledWith('Y', expect.any(Function));
+    expect(provideBar.mock).toHaveBeenCalledWith('y', expect.any(Function));
 
     expect(serveBaz.mock).toHaveBeenCalledTimes(1);
     expect(serveBaz.mock).toHaveBeenCalledWith('C');
     const provideBaz = serveBaz.mock.calls[0].result;
     expect(provideBaz.mock).toHaveBeenCalledTimes(2);
-    expect(provideBaz.mock).toHaveBeenCalledWith('Z');
-    expect(provideBaz.mock).toHaveBeenCalledWith('z');
+    expect(provideBaz.mock).toHaveBeenCalledWith('Z', expect.any(Function));
+    expect(provideBaz.mock).toHaveBeenCalledWith('z', expect.any(Function));
   });
 
   test('without/with/overwrite service provided', async () => {
@@ -604,6 +604,64 @@ Array [
     expect(spy.mock).toHaveBeenCalledTimes(10);
   });
 
+  test('register thunk within service', async () => {
+    const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
+
+    const thunkFn = moxy();
+    const mockReturnOpt = { mockReturnValue: true };
+    const serveFoo = moxy(
+      () => async (_, thunk) => {
+        thunk(thunkFn);
+        thunk(thunkFn);
+        return 'FOO';
+      },
+      mockReturnOpt
+    );
+    const serveBar = moxy(
+      () => async (_, thunk) => {
+        thunk(thunkFn);
+        return 'BAR';
+      },
+      mockReturnOpt
+    );
+    const ServiceFoo = Machinat.createService(serveFoo);
+    const ServiceBar = Machinat.createService(serveBar);
+
+    const spy = moxy(x => x);
+    const promise = renderer.render(
+      <ServiceFoo.Provider>
+        <ServiceBar.Provider>
+          <ServiceFoo.Consumer>{spy}</ServiceFoo.Consumer>
+          <ServiceBar.Consumer>{spy}</ServiceBar.Consumer>
+        </ServiceBar.Provider>
+      </ServiceFoo.Provider>,
+      true
+    );
+
+    await expect(promise).resolves.toEqual([
+      { type: 'text', node: 'FOO', value: 'FOO', path: expect.any(String) },
+      {
+        type: 'thunk',
+        node: expect.any(Object),
+        value: thunkFn,
+        path: expect.any(String),
+      },
+      {
+        type: 'thunk',
+        node: expect.any(Object),
+        value: thunkFn,
+        path: expect.any(String),
+      },
+      { type: 'text', node: 'BAR', value: 'BAR', path: expect.any(String) },
+      {
+        type: 'thunk',
+        node: expect.any(Object),
+        value: thunkFn,
+        path: expect.any(String),
+      },
+    ]);
+  });
+
   it('reject when service reject', async () => {
     const ServiceFailWhenProvide = Machinat.createService(() => {
       throw new Error('オラオラオラ');
@@ -654,7 +712,7 @@ Array [
     await expect(
       renderer.render(<IllegalComponent />, true)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"{\\"type\\":{\\"foo\\":\\"bar\\"},\\"props\\":{}} at poistion '$' is not valid element"`
+      `"[object Object] at poistion '$' is not valid element"`
     );
   });
 

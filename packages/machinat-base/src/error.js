@@ -11,7 +11,7 @@ class DispatchError<Job, Result> extends Error {
     errors: $ReadOnlyArray<Error>,
     tasks: DispatchTask<Job>[],
     jobs: Job[],
-    results: (void | Result)[]
+    results: $ReadOnlyArray<void | Result>
   ) {
     const message = errors
       ? errors.reduce(

@@ -7,6 +7,8 @@ import Renderer from 'machinat-renderer';
 import Engine from '../engine';
 import DispatchError from '../error';
 
+const MyService = Machinat.createService(() => () => {});
+
 const element = (
   <>
     <a id={1} />
@@ -18,10 +20,11 @@ const options = { foo: 'bar' };
 
 const bot = { name: 'r2d2', send: moxy() };
 
-const segments = [
+const unitSegments = [
   { type: 'unit', node: <a id={1} />, value: { id: 1 } },
   { type: 'unit', node: <b id={2} />, value: { id: 2 } },
   { type: 'unit', node: <c id={3} />, value: { id: 3 } },
+  { type: 'unit', node: <c id={4} />, value: { id: 4 } },
 ];
 
 const queue = moxy(new Queue(), {
@@ -47,7 +50,7 @@ beforeEach(() => {
   );
 
   renderer.render.mock.reset();
-  renderer.render.mock.fakeReturnValue(segments);
+  renderer.render.mock.fakeReturnValue(unitSegments);
 });
 
 describe('#constructor()', () => {
@@ -82,14 +85,17 @@ describe('#renderTasks(createJobs, target, message, options, allowPause)', () =>
     await expect(
       engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, true)
     ).resolves.toEqual([
-      { type: 'transmit', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
+      {
+        type: 'transmit',
+        payload: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+      },
     ]);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledWith(element, true);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
-    expect(createJobs.mock).toHaveBeenCalledWith('foo', segments, {
+    expect(createJobs.mock).toHaveBeenCalledWith('foo', unitSegments, {
       bar: 1,
     });
   });
@@ -99,55 +105,97 @@ describe('#renderTasks(createJobs, target, message, options, allowPause)', () =>
     await expect(
       engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, false)
     ).resolves.toEqual([
-      { type: 'transmit', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
+      {
+        type: 'transmit',
+        payload: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+      },
     ]);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledWith(element, false);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
-    expect(createJobs.mock).toHaveBeenCalledWith('foo', segments, {
+    expect(createJobs.mock).toHaveBeenCalledWith('foo', unitSegments, {
       bar: 1,
     });
   });
 
-  it('create "pause" action out of "pause" segments which separate "transmit" action', async () => {
-    const segmentsWithPause = [
+  it('create "pause" task out of "pause" segments which separate "transmit" action', async () => {
+    const segments = [
+      unitSegments[0],
       { type: 'pause', node: <Machinat.Pause />, value: undefined },
-      segments[0],
-      segments[1],
+      unitSegments[1],
+      unitSegments[2],
       { type: 'pause', node: <Machinat.Pause />, value: undefined },
-      segments[2],
+      unitSegments[3],
     ];
 
-    renderer.render.mock.fakeReturnValue(segmentsWithPause);
+    renderer.render.mock.fakeReturnValue(segments);
 
     const engine = new Engine('test', bot, renderer, queue, [], []);
     await expect(
       engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, true)
     ).resolves.toEqual([
+      { type: 'transmit', payload: [{ id: 1 }] },
       { type: 'pause', payload: <Machinat.Pause /> },
-      { type: 'transmit', payload: [{ id: 1 }, { id: 2 }] },
+      { type: 'transmit', payload: [{ id: 2 }, { id: 3 }] },
       { type: 'pause', payload: <Machinat.Pause /> },
-      { type: 'transmit', payload: [{ id: 3 }] },
+      { type: 'transmit', payload: [{ id: 4 }] },
     ]);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledWith(element, true);
 
-    expect(createJobs.mock).toHaveBeenCalledTimes(2);
-    expect(createJobs.mock).toHaveBeenNthCalledWith(
-      1,
-      'foo',
-      segments.slice(0, 2),
-      { bar: 1 }
-    );
-    expect(createJobs.mock).toHaveBeenNthCalledWith(
-      2,
-      'foo',
-      segments.slice(2),
-      { bar: 1 }
-    );
+    expect(createJobs.mock).toHaveBeenCalledTimes(3);
+    expect(createJobs.mock) //
+      .toHaveBeenNthCalledWith(1, 'foo', [unitSegments[0]], { bar: 1 });
+    expect(createJobs.mock) //
+      .toHaveBeenNthCalledWith(2, 'foo', unitSegments.slice(1, 3), { bar: 1 });
+    expect(createJobs.mock) //
+      .toHaveBeenNthCalledWith(3, 'foo', [unitSegments[3]], { bar: 1 });
+  });
+
+  it('collect "thunk" tasks and place it after "transmit" task', async () => {
+    const thunkFn = moxy();
+
+    const segments = [
+      unitSegments[0],
+      { type: 'thunk', node: <MyService.Consumer />, value: thunkFn },
+      { type: 'pause', node: <Machinat.Pause />, value: undefined },
+      unitSegments[1],
+      { type: 'thunk', node: <MyService.Consumer />, value: thunkFn },
+      unitSegments[2],
+      { type: 'pause', node: <Machinat.Pause />, value: undefined },
+      { type: 'thunk', node: <MyService.Consumer />, value: thunkFn },
+      unitSegments[3],
+    ];
+
+    renderer.render.mock.fakeReturnValue(segments);
+
+    const engine = new Engine('test', bot, renderer, queue, [], []);
+    await expect(
+      engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, true)
+    ).resolves.toEqual([
+      { type: 'transmit', payload: [{ id: 1 }] },
+      { type: 'thunk', payload: thunkFn },
+      { type: 'pause', payload: <Machinat.Pause /> },
+      { type: 'transmit', payload: [{ id: 2 }, { id: 3 }] },
+      { type: 'thunk', payload: thunkFn },
+      { type: 'pause', payload: <Machinat.Pause /> },
+      { type: 'transmit', payload: [{ id: 4 }] },
+      { type: 'thunk', payload: thunkFn },
+    ]);
+
+    expect(renderer.render.mock).toHaveBeenCalledTimes(1);
+    expect(renderer.render.mock).toHaveBeenCalledWith(element, true);
+
+    expect(createJobs.mock).toHaveBeenCalledTimes(3);
+    expect(createJobs.mock) //
+      .toHaveBeenNthCalledWith(1, 'foo', [unitSegments[0]], { bar: 1 });
+    expect(createJobs.mock) //
+      .toHaveBeenNthCalledWith(2, 'foo', unitSegments.slice(1, 3), { bar: 1 });
+    expect(createJobs.mock) //
+      .toHaveBeenNthCalledWith(3, 'foo', [unitSegments[3]], { bar: 1 });
   });
 });
 
@@ -285,31 +333,113 @@ describe('#dispatch(channel, tasks, node)', () => {
   });
 
   it('waits pause', async () => {
-    const until = moxy(() => Promise.resolve());
-    const tasksWithPause = [
-      { type: 'pause', payload: <Machinat.Pause /> },
-      { type: 'transmit', payload: [{ id: 1 }, { id: 2 }] },
+    let pauseCount = 0;
+    const until = moxy(async () => {
+      expect(queue.executeJobs.mock).toHaveBeenCalledTimes(pauseCount++); // eslint-disable-line no-plusplus
+    });
+
+    const tasks = [
       { type: 'pause', payload: <Machinat.Pause until={until} /> },
-      { type: 'transmit', payload: [{ id: 3 }] },
-      { type: 'pause', payload: <Machinat.Pause /> },
+      { type: 'transmit', payload: [{ id: 1 }] },
+      { type: 'pause', payload: <Machinat.Pause until={until} /> },
+      { type: 'transmit', payload: [{ id: 2 }, { id: 3 }] },
+      { type: 'pause', payload: <Machinat.Pause until={until} /> },
+      { type: 'transmit', payload: [{ id: 4 }] },
     ];
 
     const engine = new Engine('test', bot, renderer, queue, [], []);
 
-    await expect(
-      engine.dispatch(channel, tasksWithPause, element)
-    ).resolves.toEqual({
-      tasks: tasksWithPause,
-      jobs: [{ id: 1 }, { id: 2 }, { id: 3 }],
-      results: [1, 2, 3],
+    await expect(engine.dispatch(channel, tasks, element)).resolves.toEqual({
+      tasks,
+      jobs: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+      results: [1, 2, 3, 4],
     });
-    expect(until.mock).toHaveBeenCalledTimes(1);
+    expect(until.mock).toHaveBeenCalledTimes(3);
 
-    expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(1, [
-      { id: 1 },
-      { id: 2 },
-    ]);
-    expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(2, [{ id: 3 }]);
+    expect(queue.executeJobs.mock).toHaveBeenCalledTimes(3);
+    expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(1, [{ id: 1 }]);
+    expect(queue.executeJobs.mock) //
+      .toHaveBeenNthCalledWith(2, [{ id: 2 }, { id: 3 }]);
+    expect(queue.executeJobs.mock).toHaveBeenNthCalledWith(3, [{ id: 4 }]);
+  });
+
+  it('execute thunk tasks after all other tasks executed', async () => {
+    let pauseCount = 0;
+    const thunkFn = moxy(async () => {});
+    const until = moxy(async () => {
+      expect(thunkFn.mock).not.toHaveBeenCalled();
+      expect(queue.executeJobs.mock).toHaveBeenCalledTimes(pauseCount++); // eslint-disable-line no-plusplus
+    });
+
+    const tasks = [
+      { type: 'thunk', payload: thunkFn },
+      { type: 'pause', payload: <Machinat.Pause until={until} /> },
+      { type: 'transmit', payload: [{ id: 1 }] },
+      { type: 'thunk', payload: thunkFn },
+      { type: 'pause', payload: <Machinat.Pause until={until} /> },
+      { type: 'transmit', payload: [{ id: 2 }, { id: 3 }] },
+      { type: 'thunk', payload: thunkFn },
+      { type: 'pause', payload: <Machinat.Pause until={until} /> },
+      { type: 'transmit', payload: [{ id: 4 }] },
+      { type: 'thunk', payload: thunkFn },
+    ];
+
+    const engine = new Engine('test', bot, renderer, queue, [], []);
+
+    await expect(engine.dispatch(channel, tasks, element)).resolves.toEqual({
+      tasks,
+      jobs: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+      results: [1, 2, 3, 4],
+    });
+    expect(until.mock).toHaveBeenCalledTimes(3);
+    expect(thunkFn.mock).toHaveBeenCalledTimes(4);
+  });
+
+  it('throw DispatchError when thunks thrown', async () => {
+    let thunkCount = 0;
+    const thunkFn = moxy(() =>
+      thunkCount++ % 2 // eslint-disable-line no-plusplus
+        ? Promise.reject(new Error('ゴゴゴ'))
+        : Promise.resolve()
+    );
+    const until = moxy(async () => {
+      expect(thunkFn.mock).not.toHaveBeenCalled();
+    });
+
+    const tasks = [
+      { type: 'thunk', payload: thunkFn },
+      { type: 'pause', payload: <Machinat.Pause until={until} /> },
+      { type: 'transmit', payload: [{ id: 1 }] },
+      { type: 'thunk', payload: thunkFn },
+      { type: 'pause', payload: <Machinat.Pause until={until} /> },
+      { type: 'transmit', payload: [{ id: 2 }, { id: 3 }] },
+      { type: 'thunk', payload: thunkFn },
+      { type: 'pause', payload: <Machinat.Pause until={until} /> },
+      { type: 'transmit', payload: [{ id: 4 }] },
+      { type: 'thunk', payload: thunkFn },
+    ];
+
+    const engine = new Engine('test', bot, renderer, queue, [], []);
+
+    let thrown = false;
+    try {
+      await engine.dispatch(channel, tasks, element);
+    } catch (err) {
+      thrown = true;
+
+      expect(err).toBeInstanceOf(DispatchError);
+      expect(err.errors).toEqual([new Error('ゴゴゴ'), new Error('ゴゴゴ')]);
+      expect(err.tasks).toEqual(tasks);
+      expect(err.jobs).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]);
+      expect(err.results).toEqual([1, 2, 3, 4]);
+
+      expect(err.message).toEqual(expect.stringContaining('ゴゴゴ'));
+    }
+
+    expect(thrown).toBe(true);
+
+    expect(until.mock).toHaveBeenCalledTimes(3);
+    expect(thunkFn.mock).toHaveBeenCalledTimes(4);
   });
 
   it('throws if execution fail', async () => {
@@ -335,6 +465,7 @@ describe('#dispatch(channel, tasks, node)', () => {
       await engine.dispatch(channel, tasks);
     } catch (err) {
       isThrown = true;
+      expect(err.errors).toEqual([err1, err2]);
       expect(err.tasks).toEqual(tasks);
       expect(err.jobs).toEqual([1, 2, 3]);
       expect(err.results).toEqual([

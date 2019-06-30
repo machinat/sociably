@@ -111,13 +111,13 @@ export type MachinatConsumer<Served, ConsumeInput> = {|
   |},
 |};
 
-export type ServiceThunkFn = () => Promise<void>;
+export type RenderThunkFn = () => Promise<void>;
 
 export type ServiceProvideFn<Served, ProvideInput, ConsumeInput> = (
   provideInput?: ProvideInput
 ) => (
-  consumeInput: ConsumeInput
-  // registerThunk: (thunk: ServiceThunkFn) => void
+  consumeInput: ConsumeInput,
+  registerThunk: (thunk: RenderThunkFn) => void
 ) => Promise<Served>;
 
 export type MachinatService<Served, ProvideInput, ConsumeInput> = {|

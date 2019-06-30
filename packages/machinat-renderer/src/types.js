@@ -7,7 +7,7 @@ import type {
   MachinatGeneralElement,
   MachinatPause,
   MachinatConsumer,
-  ServiceThunkFn,
+  RenderThunkFn,
 } from 'machinat/types';
 
 export type TextSegment<Native> = {|
@@ -55,7 +55,7 @@ export type BreakSegment<Native> = {|
 export type ThunkSegment = {|
   type: 'thunk',
   node: MachinatConsumer<any, any>,
-  value: ServiceThunkFn,
+  value: RenderThunkFn,
   path: string,
 |};
 

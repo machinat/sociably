@@ -1,5 +1,10 @@
 // @flow
-import { MACHINAT_PAUSE_TYPE, MACHINAT_FRAGMENT_TYPE } from 'machinat';
+import {
+  MACHINAT_PAUSE_TYPE,
+  MACHINAT_FRAGMENT_TYPE,
+  MACHINAT_PROVIDER_TYPE,
+  MACHINAT_CONSUMER_TYPE,
+} from 'machinat';
 
 const formatProps = props => {
   const keys = Object.keys(props);
@@ -37,6 +42,12 @@ const formatNode = (element: any, withProps: boolean = false): string =>
       : `<(${String(element.type)}) ${
           withProps ? formatProps(element.props) : ''
         }/>`
-    : JSON.stringify(element) || String(element);
+    : typeof element.type === 'object'
+    ? element.type.$$typeof === MACHINAT_PROVIDER_TYPE
+      ? `<ServiceProvider ${withProps ? formatProps(element.props) : ''}/>`
+      : element.type.$$typeof === MACHINAT_CONSUMER_TYPE
+      ? `<ServiceConsumer ${withProps ? formatProps(element.props) : ''}/>`
+      : Object.prototype.toString.call(element)
+    : String(element);
 
 export default formatNode;

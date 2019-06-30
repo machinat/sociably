@@ -22,6 +22,7 @@ import type {
   MachinatConsumer,
   MachinatService,
   ServiceProvideFn,
+  RenderThunkFn,
 } from 'machinat/types';
 import type { TraverseNodeCallback } from 'machinat-utility/types';
 
@@ -73,6 +74,18 @@ const checkSegmentDangerously = <Value, Native: MachinatNativeComponent<Value>>(
 
   return !(atSurface && type === 'break');
 };
+
+class ThunkRegistry {
+  thunks: RenderThunkFn[];
+
+  constructor() {
+    this.thunks = [];
+  }
+
+  register = (thunk: RenderThunkFn) => {
+    this.thunks.push(thunk);
+  };
+}
 
 export default class MachinatRenderer<
   Value,
@@ -158,6 +171,54 @@ export default class MachinatRenderer<
     return segments.length === 0 ? null : segments;
   }
 
+  _consumeService = async (
+    node: MachinatConsumer<any, any>,
+    servicesProvided: Map<
+      MachinatService<any, any, any>,
+      ServiceConsumeFn<any, any, any>
+    >,
+    thunkRegistry: ThunkRegistry,
+    path: string,
+    allowPause: boolean
+  ): Promise<null | InnerSegment<Value, Native>[]> => {
+    const {
+      type: { _service: service },
+      props: { children, consume: input },
+    } = node;
+    const provided = servicesProvided.get(service);
+
+    let served;
+    if (provided !== undefined) {
+      served = await provided(input, thunkRegistry.register);
+    } else {
+      served = await service._serve()(input, thunkRegistry.register);
+    }
+
+    const segments = await this._renderImpl(
+      path,
+      allowPause,
+      false,
+      servicesProvided,
+      children(served),
+      '#consume'
+    );
+
+    if (segments === null) {
+      return null;
+    }
+
+    for (const thunk of thunkRegistry.thunks) {
+      segments.push({
+        type: 'thunk',
+        node,
+        value: thunk,
+        path,
+      });
+    }
+
+    return segments;
+  };
+
   _traverseCallback: TraverseNodeCallback<
     RenderTraverseContext<Value, Native>
   > = (node, path, context) => {
@@ -227,32 +288,17 @@ export default class MachinatRenderer<
         this._traverseCallback
       );
     } else if (isConsumer(node)) {
-      const {
-        type: { _service: service },
-        props: { consume: input, children },
-      } = ((node: any): MachinatConsumer<any, any>);
+      const thunkRegistry = new ThunkRegistry();
 
-      const provided = servicesProvided.get(service);
-      let servingPromise;
-      if (provided !== undefined) {
-        servingPromise = provided(input);
-      } else {
-        servingPromise = service._serve()(input);
-      }
-
-      renderings.push(
-        servingPromise
-          .then(children)
-          .then(
-            this._renderImpl.bind(
-              this,
-              `${path}#consume`,
-              allowPause,
-              false,
-              servicesProvided
-            )
-          )
+      const consumePormise = this._consumeService(
+        ((node: any): MachinatConsumer<any, any>),
+        servicesProvided,
+        thunkRegistry,
+        path,
+        allowPause
       );
+
+      renderings.push(consumePormise);
     } else if (typeof node.type === 'function') {
       if (this._isNativeComponent(node.type)) {
         // handle MachinatNativeElement
