@@ -1,31 +1,77 @@
 // @flow
+import redis from 'redis';
+import thenifiedly from 'thenifiedly';
 import type { MachinatChannel } from 'machinat-base/types';
 import type { Session, SessionManager } from '../types';
 
+type RedisClient = any;
+
+type RedisSessionManagerOptions = {
+  host?: string,
+  port?: number,
+  path?: string,
+  url?: string,
+  db?: number,
+};
+
 class RedisSession implements Session {
-  constructor() {}
+  _client: RedisClient;
+  _channel: MachinatChannel;
 
-  get(key: string) {
-    return Promise.resolve(value);
+  constructor(client: RedisClient, channel: MachinatChannel) {
+    this._client = client;
+    this._channel = channel;
   }
 
-  set(key: string, value: any) {
-    return Promise.resolve();
+  async get(key: string) {
+    const result = await thenifiedly.callMethod(
+      'hget',
+      this._client,
+      this._channel.uid,
+      key
+    );
+
+    return result ? JSON.parse(result) : undefined;
   }
 
-  delete(key: string) {
-    return Promise.resolve(true);
+  async set(key: string, value: any) {
+    await thenifiedly.callMethod(
+      'hset',
+      this._client,
+      this._channel.uid,
+      key,
+      JSON.stringify(value)
+    );
   }
 
-  clear() {
-    return Promise.resolve();
+  async delete(key: string) {
+    const result = await thenifiedly.callMethod(
+      'hdel',
+      this._client,
+      this._channel.uid,
+      key
+    );
+
+    return !!result;
+  }
+
+  async clear() {
+    await thenifiedly.callMethod('del', this._client, this._channel.uid);
   }
 }
 
 class RedisSessionManager implements SessionManager {
-  constructor() {}
+  client: RedisClient;
+  options: RedisSessionManagerOptions;
 
-  getSession(channel: MachinatChannel) {}
+  constructor(options: RedisSessionManagerOptions) {
+    this.client = redis.createClient(options);
+    this.options = options;
+  }
+
+  getSession(channel: MachinatChannel) {
+    return new RedisSession(this.client, channel);
+  }
 }
 
 export default RedisSessionManager;

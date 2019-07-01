@@ -3,5 +3,8 @@
   "version": "0.0.1-0",
   "main": "lib/index.js",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "redis": "^2.8.0",
+    "thenifiedly": "^0.2.1"
+  }
 }
