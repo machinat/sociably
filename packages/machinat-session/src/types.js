@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatChannel } from 'machinat-base/types';
+import type { EventFrame, MachinatChannel } from 'machinat-base/types';
 
 export interface Session {
   get<Value>(key: string): Promise<void | Value>;
@@ -10,4 +10,7 @@ export interface Session {
 
 export interface SessionManager {
   getSession(channel: MachinatChannel): Session;
+  attachSession(): (
+    frame: EventFrame<any, any, any, any, any, any, any>
+  ) => EventFrame<any, any, any, any, any, any, any> & { session: Session };
 }

@@ -1,7 +1,7 @@
 // @flow
 import redis from 'redis';
 import thenifiedly from 'thenifiedly';
-import type { MachinatChannel } from 'machinat-base/types';
+import type { EventFrame, MachinatChannel } from 'machinat-base/types';
 import type { Session, SessionManager } from '../types';
 
 type RedisClient = any;
@@ -62,6 +62,7 @@ class RedisSession implements Session {
 
 class RedisSessionManager implements SessionManager {
   client: RedisClient;
+
   options: RedisSessionManagerOptions;
 
   constructor(options: RedisSessionManagerOptions) {
@@ -71,6 +72,13 @@ class RedisSessionManager implements SessionManager {
 
   getSession(channel: MachinatChannel) {
     return new RedisSession(this.client, channel);
+  }
+
+  attachSession() {
+    return (frame: EventFrame<any, any, any, any, any, any, any>) => ({
+      ...frame,
+      session: new RedisSession(this.client, frame.channel),
+    });
   }
 }
 

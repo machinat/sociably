@@ -38,6 +38,9 @@ module.exports = {
     'no-restricted-syntax': ['error',
       'ForInStatement', 'LabeledStatement', 'WithStatement'
     ],
+    'lines-between-class-members': ['error',
+      'always', { exceptAfterSingleLine: true }
+    ],
     'flowtype/define-flow-type': 2,
     'flowtype/no-unused-expressions': 2,
     'import/extensions': 0,

@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatChannel } from 'machinat-base/types';
+import type { EventFrame, MachinatChannel } from 'machinat-base/types';
 import type { Session, SessionManager } from '../types';
 
 class InMemorySession implements Session {
@@ -47,6 +47,13 @@ class InMemorySessionManager implements SessionManager {
     const newSession = new InMemorySession();
     this._sessions.set(uid, newSession);
     return newSession;
+  }
+
+  attachSession() {
+    return (frame: EventFrame<any, any, any, any, any, any, any>) => ({
+      ...frame,
+      session: this.getSession(frame.channel),
+    });
   }
 }
 
