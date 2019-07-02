@@ -4,12 +4,6 @@ import Denque from 'denque';
 
 import type { JobBatchResponse, JobResponse } from './types';
 
-type JobPackage<Job> = {
-  seq: number,
-  job: Job,
-  request: BatchRequest<Job, any>,
-};
-
 type BatchRequest<Job, Result> = {|
   begin: number,
   end: number,
@@ -18,8 +12,14 @@ type BatchRequest<Job, Result> = {|
   acquiredCount: number,
   success: boolean,
   errors: ?(Error[]),
-  responses: ?Array<void | JobResponse<Job, Result>>,
+  responses: null | (void | JobResponse<Job, Result>)[],
 |};
+
+type JobPackage<Job> = {
+  seq: number,
+  job: Job,
+  request: BatchRequest<Job, any>,
+};
 
 const getJob = <Job>(pkg: JobPackage<Job>) => pkg.job;
 

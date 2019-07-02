@@ -39,6 +39,7 @@ export default class BaseBot<
     Job,
     Result
   >;
+
   plugins:
     | void
     | BotPlugin<
@@ -51,9 +52,11 @@ export default class BaseBot<
         Job,
         Result
       >[];
+
   _eventListeners: ((
     EventFrame<Channel, Event, Metadata, SegmentValue, Native, Job, Result>
   ) => void)[];
+
   _errorListeners: ((Error) => void)[];
 
   constructor(
@@ -110,13 +113,15 @@ export default class BaseBot<
     );
   }
 
-  send( // eslint-disable-line class-methods-use-this
+  /* eslint-disable no-unused-vars, class-methods-use-this */
+  send(
     channel: Channel,
     message: MachinatNode,
-    options: any // eslint-disable-line no-unused-vars
+    options: any
   ): Promise<null | Result[]> {
     throw new TypeError('Bot#send() should not be called on BaseBot');
   }
+  /* eslint-enable no-unused-vars, class-methods-use-this */
 
   onEvent(
     listener: (

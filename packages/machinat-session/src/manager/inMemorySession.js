@@ -50,7 +50,7 @@ class InMemorySessionManager implements SessionManager {
   }
 
   attachSession() {
-    return (frame: EventFrame<any, any, any, any, any, any, any>) => ({
+    return (frame: Object) => ({
       ...frame,
       session: this.getSession(frame.channel),
     });

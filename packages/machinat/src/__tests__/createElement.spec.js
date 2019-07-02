@@ -1,4 +1,4 @@
-import Machinat from '../';
+import Machinat from '..';
 import createElement from '../createElement';
 
 it('returns element object', () => {

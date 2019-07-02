@@ -1,6 +1,6 @@
 import { getFixtures } from './helper';
 
-import mainFactory from '../';
+import mainFactory from '..';
 
 test.each([
   ['text', undefined, 'text*'],

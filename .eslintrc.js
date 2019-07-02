@@ -47,6 +47,7 @@ module.exports = {
     'import/no-unresolved': ['error', {
       ignore: ['machinat.*/types']
     }],
+    'import/no-cycle': 0,
     'react/jsx-key': 0,
     'react/no-unescaped-entities': ['error', {
       forbid: ['<', '>', '{', '}']

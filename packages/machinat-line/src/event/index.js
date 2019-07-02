@@ -1,8 +1,6 @@
 // @flow
 import type { LineRawEvent, LineEvent } from '../types';
 
-import LineChannel from '../channel';
-
 import {
   text,
   image,

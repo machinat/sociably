@@ -32,9 +32,7 @@ const ImageMapArea = async (
   invariant(
     actionValues !== undefined && actionValues.length === 1,
     actionValues
-      ? `there should be only 1 "action" in <ImageMapArea/>, got ${
-          actionValues.length
-        }`
+      ? `there should be only 1 "action" in <ImageMapArea/>, got ${actionValues.length}`
       : `prop "action" of <ImageMapArea/> should not be empty`
   );
 
