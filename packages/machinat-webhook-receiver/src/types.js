@@ -9,7 +9,12 @@ export type WebhookResponse = {|
 
 export type WebhookMetadata = {|
   source: 'webhook',
-  context: any,
+  request: {|
+    method: string,
+    url: string,
+    headers: {| [string]: string |},
+    body: string,
+  |},
 |};
 
 declare var t: WebhookMetadata;
@@ -24,5 +29,6 @@ export type WebhookEventReport<Channel, Event: MachinatEvent<any>> = {
 export type WebhookHandler<Channel, Event: MachinatEvent<any>> = (
   req: IncomingMessage,
   res: ServerResponse,
-  rawBody?: string
+  rawBody?: string,
+  parsedBody?: Object
 ) => ?$ReadOnlyArray<WebhookEventReport<Channel, Event>>;

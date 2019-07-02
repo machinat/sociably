@@ -9,9 +9,7 @@ describe('handling GET request', () => {
     req.method = 'GET';
     const res = moxy(new ServerResponse({ method: 'GET' }));
 
-    expect(handleWebhook({ shouldVerifyWebhook: false })(req, res)).toBe(
-      undefined
-    );
+    expect(handleWebhook({ shouldVerifyWebhook: false })(req, res)).toBe(null);
 
     expect(res.statusCode).toBe(403);
     expect(res.finished).toBe(true);
@@ -30,9 +28,7 @@ describe('handling GET request', () => {
 
       const res = moxy(new ServerResponse({ method: 'GET' }));
 
-      expect(handleWebhook({ shouldVerifyWebhook: true })(req, res)).toBe(
-        undefined
-      );
+      expect(handleWebhook({ shouldVerifyWebhook: true })(req, res)).toBe(null);
 
       expect(res.statusCode).toBe(400);
       expect(res.finished).toBe(true);
@@ -50,7 +46,7 @@ describe('handling GET request', () => {
 
     const res = moxy(new ServerResponse({ method: 'GET' }));
 
-    expect(handleWebhook(options)(req, res)).toBe(undefined);
+    expect(handleWebhook(options)(req, res)).toBe(null);
 
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
@@ -69,7 +65,7 @@ describe('handling GET request', () => {
 
     const res = moxy(new ServerResponse({ method: 'GET' }));
 
-    expect(handleWebhook(options)(req, res)).toBe(undefined);
+    expect(handleWebhook(options)(req, res)).toBe(null);
 
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
@@ -84,7 +80,7 @@ describe('handling POST request', () => {
     req.method = 'POST';
     const res = moxy(new ServerResponse({ method: 'POST' }));
 
-    expect(handleWebhook()(req, res)).toBe(undefined);
+    expect(handleWebhook({})(req, res)).toBe(null);
 
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
@@ -95,7 +91,7 @@ describe('handling POST request', () => {
     req.method = 'POST';
     const res = moxy(new ServerResponse({ method: 'POST' }));
 
-    expect(handleWebhook({})(req, res, 'I am Jason')).toBe(undefined);
+    expect(handleWebhook({})(req, res, 'I am Jason')).toBe(null);
 
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
@@ -106,7 +102,7 @@ describe('handling POST request', () => {
     req.method = 'POST';
     const res = moxy(new ServerResponse({ method: 'POST' }));
 
-    expect(handleWebhook({})(req, res, '{"object":"Pegg"}')).toBe(undefined);
+    expect(handleWebhook({})(req, res, '{"object":"Pegg"}')).toBe(null);
 
     expect(res.statusCode).toBe(404);
     expect(res.finished).toBe(true);
@@ -333,7 +329,7 @@ describe('handling POST request', () => {
 
     req.mock.getter('headers').fake(() => ({ 'x-hub-signature': hmac }));
 
-    expect(handleWebhook(options)(req, res, body)).toBe(undefined);
+    expect(handleWebhook(options)(req, res, body)).toBe(null);
 
     expect(res.statusCode).toBe(401);
     expect(res.finished).toBe(true);
@@ -344,7 +340,7 @@ describe('handling POST request', () => {
     req.method = 'POST';
     const res = moxy(new ServerResponse({ method: 'POST' }));
 
-    expect(handleWebhook({})(req, res)).toBe(undefined);
+    expect(handleWebhook({})(req, res)).toBe(null);
 
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);

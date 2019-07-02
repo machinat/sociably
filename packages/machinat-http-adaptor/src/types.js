@@ -2,21 +2,30 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { Socket } from 'net';
 
+export type RequestCallback = (
+  req: IncomingMessage,
+  res: ServerResponse,
+  rawBody?: string
+) => void;
+
 export interface HTTPRequestReceiver {
-  handleRequest(
-    req: IncomingMessage,
-    res: ServerResponse,
-    httpContext?: Object,
-    rawBody?: string
-  ): void;
+  +handleRequest: RequestCallback;
+  callback(): RequestCallback;
 }
 
 export interface HTTPRequestReceivable {
   receiver: HTTPRequestReceiver;
 }
 
+export type UpgradeCallback = (
+  req: IncomingMessage,
+  socket: Socket,
+  head: Buffer
+) => void;
+
 export interface HTTPUpgradeReceiver {
-  handleUpgrade(req: IncomingMessage, socket: Socket, head: Buffer): void;
+  +handleUpgrade: UpgradeCallback;
+  callback(): UpgradeCallback;
 }
 
 export interface HTTPUpgradeReceivable {

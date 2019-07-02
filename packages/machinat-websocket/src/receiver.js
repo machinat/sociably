@@ -98,6 +98,10 @@ class WebSocketReceiver
     });
   }
 
+  callback() {
+    return this.handleUpgrade.bind(this);
+  }
+
   _getCachedChannel(uid: ChannelUid): null | WebSocketChannel {
     let channel = this._channelCache.get(uid);
 

@@ -6,16 +6,14 @@ const connectRequest = (
   provider:
     | HTTPRequestReceivable
     | (IncomingMessage => HTTPRequestReceivable | void)
-) => {
-  let httpRequestBotConnector: (
-    req: IncomingMessage,
-    res: ServerResponse
-  ) => void;
-
+): ((req: IncomingMessage, res: ServerResponse) => void) => {
   if (typeof provider === 'function') {
     const getBot = provider;
 
-    httpRequestBotConnector = (req: IncomingMessage, res: ServerResponse) => {
+    const httpRequestBotConnector = (
+      req: IncomingMessage,
+      res: ServerResponse
+    ) => {
       const bot = getBot(req);
 
       if (bot === undefined) {
@@ -24,17 +22,13 @@ const connectRequest = (
         return;
       }
 
-      bot.receiver.handleRequest(req, res, req);
+      bot.receiver.handleRequest(req, res);
     };
-  } else {
-    const bot = provider;
 
-    httpRequestBotConnector = (req: IncomingMessage, res: ServerResponse) => {
-      bot.receiver.handleRequest(req, res, req);
-    };
+    return httpRequestBotConnector;
   }
 
-  return httpRequestBotConnector;
+  return provider.receiver.callback();
 };
 
 export default connectRequest;

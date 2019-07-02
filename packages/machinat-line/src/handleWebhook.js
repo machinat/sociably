@@ -13,6 +13,7 @@ import type {
   LineBotOptions,
   LineWebhookRequestBody,
   LineEvent,
+  LineRawEvent,
 } from './types';
 
 const endRes = (res, code, body) => {
@@ -20,55 +21,62 @@ const endRes = (res, code, body) => {
   res.end(body);
 };
 
+const createEventReport = (
+  rawEvent: LineRawEvent
+): WebhookEventReport<LineChannel, LineEvent> => {
+  return {
+    event: createEvent(rawEvent),
+    channel: new LineChannel(rawEvent.source),
+    shouldRespond: false,
+  };
+};
+
 const handleWebhook = (
   options: LineBotOptions
 ): WebhookHandler<LineChannel, LineEvent> => (
   req: IncomingMessage,
   res: ServerResponse,
-  rawBody: void | string
+  rawBody?: string
 ) => {
   if (req.method !== 'POST') {
-    return endRes(res, 405);
+    endRes(res, 405);
+    return null;
   }
 
-  if (rawBody === undefined) {
-    return endRes(res, 400);
+  if (!rawBody) {
+    endRes(res, 400);
+    return null;
   }
 
   const { shouldValidateRequest, channelSecret } = options;
 
-  // NOTE: channelSecret is validated at bot 👇
-  if (shouldValidateRequest /* :: && channelSecret */) {
+  if (shouldValidateRequest && channelSecret !== undefined) {
     const signature = crypto
       .createHmac('SHA256', channelSecret)
       .update(rawBody)
       .digest('base64');
 
     if (req.headers['x-line-signature'] !== signature) {
-      return endRes(res, 401);
+      endRes(res, 401);
+      return null;
     }
   }
 
+  let body: LineWebhookRequestBody;
   try {
-    const { events: payloads } = (JSON.parse(rawBody): LineWebhookRequestBody);
-
-    const events: WebhookEventReport<LineChannel, LineEvent>[] = new Array(
-      payloads.length
-    );
-
-    for (let i = 0; i < events.length; i += 1) {
-      const payload = payloads[i];
-
-      const event = createEvent(payload);
-      const channel = new LineChannel(payload.source);
-
-      events[i] = { event, channel, shouldRespond: false };
-    }
-
-    return events;
+    body = JSON.parse(rawBody);
   } catch (e) {
-    return endRes(res, 400);
+    endRes(res, 400);
+    return null;
   }
+
+  const { events } = body;
+  if (!events) {
+    endRes(res, 400);
+    return null;
+  }
+
+  return events.map(createEventReport);
 };
 
 export default handleWebhook;

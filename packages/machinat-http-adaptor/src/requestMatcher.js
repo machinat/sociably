@@ -6,7 +6,7 @@ import { join } from 'path';
 export const path = (...paths: string[]) => {
   const expectedPath = join(...paths);
 
-  return (req: IncomingMessage) => {
+  return (req: IncomingMessage): boolean => {
     const { pathname } = parse(req.url);
     if (typeof pathname !== 'string') {
       return false;
@@ -16,7 +16,9 @@ export const path = (...paths: string[]) => {
   };
 };
 
-export const pathSuffixBy = (suffix: string) => (req: IncomingMessage) => {
+export const pathSuffixBy = (suffix: string) => (
+  req: IncomingMessage
+): boolean => {
   const { pathname } = parse(req.url);
   if (typeof pathname !== 'string') {
     return false;
@@ -25,7 +27,9 @@ export const pathSuffixBy = (suffix: string) => (req: IncomingMessage) => {
   return pathname.slice(-suffix.length) === suffix;
 };
 
-export const pathMatch = (pattern: RegExp) => (req: IncomingMessage) => {
+export const pathMatch = (pattern: RegExp) => (
+  req: IncomingMessage
+): boolean => {
   const { pathname } = parse(req.url);
   if (typeof pathname !== 'string') {
     return false;

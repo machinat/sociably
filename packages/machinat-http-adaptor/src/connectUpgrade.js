@@ -14,17 +14,11 @@ const connectUpgrade = (
   provider:
     | HTTPUpgradeReceivable
     | (IncomingMessage => HTTPUpgradeReceivable | void)
-) => {
-  let httpUpgradeBotConnector: (
-    req: IncomingMessage,
-    socket: Socket,
-    head: Buffer
-  ) => void;
-
+): ((req: IncomingMessage, socket: Socket, head: Buffer) => void) => {
   if (typeof provider === 'function') {
     const getBot = provider;
 
-    httpUpgradeBotConnector = (
+    const httpUpgradeBotConnector = (
       req: IncomingMessage,
       socket: Socket,
       head: Buffer
@@ -39,19 +33,11 @@ const connectUpgrade = (
 
       bot.receiver.handleUpgrade(req, socket, head);
     };
-  } else {
-    const bot = provider;
 
-    httpUpgradeBotConnector = (
-      req: IncomingMessage,
-      socket: Socket,
-      head: Buffer
-    ) => {
-      bot.receiver.handleUpgrade(req, socket, head);
-    };
+    return httpUpgradeBotConnector;
   }
 
-  return httpUpgradeBotConnector;
+  return provider.receiver.callback();
 };
 
 export default connectUpgrade;

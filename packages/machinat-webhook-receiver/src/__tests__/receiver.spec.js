@@ -28,6 +28,10 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
   beforeEach(() => {
     req = moxy(new IncomingMessage());
+    req.mock.getter('method').fakeReturnValue('POST');
+    req.mock.getter('url').fakeReturnValue('/hello');
+    req.mock.getter('headers').fakeReturnValue({ wonderful: 'world' });
+
     res = moxy(new ServerResponse({}));
 
     handleWebhook.mock.reset();
@@ -39,27 +43,34 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     const receiver = new WebhookReceiver(handleWebhook);
     receiver.bindIssuer(handleEvent, handleError);
 
-    expect(receiver.handleRequest(req, res, {}, 'body')).toBe(undefined);
+    expect(receiver.handleRequest(req, res, 'body')).toBe(undefined);
   });
 
   it('get events from handleWebhook and pass to handleEvent', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
     receiver.bindIssuer(handleEvent, handleError);
 
-    const webCtx = { hello: 'world' };
-    receiver.handleRequest(req, res, webCtx, 'body');
+    receiver.handleRequest(req, res, 'hi');
 
     jest.runAllTimers();
     await nextTick();
 
-    expect(handleWebhook.mock).toHaveBeenCalledWith(req, res, 'body');
+    expect(handleWebhook.mock).toHaveBeenCalledWith(req, res, 'hi');
 
     for (let i = 1; i < 4; i += 1) {
       expect(handleEvent.mock).toHaveBeenNthCalledWith(
         i,
         channel,
         { id: i },
-        { source: 'webhook', context: webCtx }
+        {
+          source: 'webhook',
+          request: {
+            method: 'POST',
+            url: '/hello',
+            headers: { wonderful: 'world' },
+            body: 'hi',
+          },
+        }
       );
     }
   });
@@ -85,7 +96,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
   it('ends res with 501 if no handler bound', async () => {
     const receiver = new WebhookReceiver(handleWebhook);
 
-    receiver.handleRequest(req, res, {}, 'body');
+    receiver.handleRequest(req, res, 'body');
 
     jest.runAllTimers();
     await nextTick();
@@ -102,7 +113,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     receiver.bindIssuer(handleEvent, handleError);
 
     handleWebhook.mock.fakeReturnValue(undefined);
-    receiver.handleRequest(req, res, {}, 'body');
+    receiver.handleRequest(req, res, 'body');
 
     jest.runAllTimers();
     await nextTick();
@@ -118,7 +129,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     const receiver = new WebhookReceiver(handleWebhook);
     receiver.bindIssuer(handleEvent, handleError);
 
-    receiver.handleRequest(req, res, {}, 'body');
+    receiver.handleRequest(req, res, 'body');
 
     jest.runAllTimers();
     await nextTick();
@@ -138,7 +149,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
     handleEvent.mock.fakeReturnValue({ status: 201, body: 'success body' });
 
-    receiver.handleRequest(req, res, {}, 'body');
+    receiver.handleRequest(req, res, 'body');
 
     jest.runAllTimers();
     await nextTick();
@@ -154,7 +165,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
     handleEvent.mock.fakeReturnValue({ status: 201, body: { success: true } });
 
-    receiver.handleRequest(req, res, {}, 'body');
+    receiver.handleRequest(req, res, 'body');
 
     jest.runAllTimers();
     await nextTick();
@@ -163,7 +174,15 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     expect(handleEvent.mock).toHaveBeenCalledWith(
       channel,
       { id: 1 },
-      { source: 'webhook', context: {} }
+      {
+        source: 'webhook',
+        request: {
+          method: 'POST',
+          url: '/hello',
+          headers: { wonderful: 'world' },
+          body: 'body',
+        },
+      }
     );
 
     expect(res.statusCode).toBe(201);
@@ -176,7 +195,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
     handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
 
-    receiver.handleRequest(req, res, {}, 'body');
+    receiver.handleRequest(req, res, 'body');
 
     jest.runAllTimers();
     await nextTick();
@@ -193,7 +212,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     const err = new Error();
     handleEvent.mock.fake(() => Promise.reject(err));
 
-    receiver.handleRequest(req, res, {}, 'body');
+    receiver.handleRequest(req, res, 'body');
 
     jest.runAllTimers();
     await nextTick();
@@ -216,7 +235,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
       throw err;
     });
 
-    receiver.handleRequest(req, res, {}, 'body');
+    receiver.handleRequest(req, res, 'body');
 
     jest.runAllTimers();
     await nextTick();

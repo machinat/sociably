@@ -4,6 +4,7 @@ import connectKoa from '../connectKoa';
 const bot = moxy({
   receiver: {
     handleRequest() {},
+    callback: () => moxy(),
   },
 });
 
@@ -26,13 +27,10 @@ it('works when connect to a bot directly', async () => {
   expect(promise).toBeInstanceOf(Promise);
   await expect(promise).resolves.toBe(undefined);
 
-  expect(bot.receiver.handleRequest.mock).toHaveBeenCalledTimes(1);
-  expect(bot.receiver.handleRequest.mock).toHaveBeenCalledWith(
-    ctx.req,
-    ctx.res,
-    ctx,
-    undefined
-  );
+  expect(bot.receiver.callback.mock).toHaveBeenCalledTimes(1);
+
+  const callback = bot.receiver.callback.mock.calls[0].result;
+  expect(callback.mock).toHaveBeenCalledWith(ctx.req, ctx.res, undefined);
 
   expect(ctx.mock.setter('status')).not.toHaveBeenCalled();
 });
@@ -53,7 +51,6 @@ it('works when connect to a bot provider function', async () => {
   expect(bot.receiver.handleRequest.mock).toHaveBeenCalledWith(
     ctx.req,
     ctx.res,
-    ctx,
     undefined
   );
 

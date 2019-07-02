@@ -6,13 +6,11 @@ const createKoaMiddleware = (
   provider:
     | HTTPRequestReceivable
     | (IncomingMessage => HTTPRequestReceivable | void)
-) => {
-  let koaBotConnector: (ctx: Object) => Promise<void>;
-
+): ((ctx: Object) => Promise<void>) => {
   if (typeof provider === 'function') {
     const getBot = provider;
 
-    koaBotConnector = async (ctx: Object) => {
+    const koaBotConnector = async (ctx: Object) => {
       const { req, res, request } = ctx;
       const bot = getBot(req);
 
@@ -21,19 +19,21 @@ const createKoaMiddleware = (
         return;
       }
 
-      bot.receiver.handleRequest(req, res, ctx, request.rawBody);
+      bot.receiver.handleRequest(req, res, request.rawBody);
       ctx.respond = false;
     };
-  } else {
-    const bot = provider;
 
-    koaBotConnector = async (ctx: Object) => {
-      const { req, res, request } = ctx;
-
-      bot.receiver.handleRequest(req, res, ctx, request.rawBody);
-      ctx.respond = false;
-    };
+    return koaBotConnector;
   }
+
+  const callback = provider.receiver.callback();
+
+  const koaBotConnector = async (ctx: Object) => {
+    const { req, res, request } = ctx;
+
+    callback(req, res, request.rawBody);
+    ctx.respond = false;
+  };
 
   return koaBotConnector;
 };

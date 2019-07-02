@@ -3,13 +3,13 @@ import type {
   MachinatNode,
   MachinatPause,
   MachinatNativeComponent,
+  RenderThunkFn,
 } from 'machinat/types';
 import type MachinatQueue from 'machinat-queue';
 import type {
   TextSegment,
   UnitSegment,
   RawSegment,
-  RenderThunkFn,
 } from 'machinat-renderer/types';
 import type MachinatBot from './bot';
 

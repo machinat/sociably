@@ -4,6 +4,7 @@ import connectRequest from '../connectRequest';
 const bot = moxy({
   receiver: {
     handleRequest() {},
+    callback: () => moxy(),
   },
 });
 
@@ -18,10 +19,10 @@ beforeEach(() => {
 
 it('works when connect to a bot directly', () => {
   const callback = connectRequest(bot);
+  expect(bot.receiver.callback.mock).toHaveBeenCalledTimes(1);
+  expect(callback).toBe(bot.receiver.callback.mock.calls[0].result);
 
   expect(callback(req, res)).toBe(undefined);
-  expect(bot.receiver.handleRequest.mock).toHaveBeenCalledTimes(1);
-  expect(bot.receiver.handleRequest.mock).toHaveBeenCalledWith(req, res, req);
 
   // leave the response to receiver
   expect(res.mock.setter('statusCode')).not.toHaveBeenCalled();
@@ -39,7 +40,7 @@ it('works when connect to a bot provider function', () => {
   expect(provider.mock).toHaveBeenCalledWith(req);
 
   expect(bot.receiver.handleRequest.mock).toHaveBeenCalledTimes(1);
-  expect(bot.receiver.handleRequest.mock).toHaveBeenCalledWith(req, res, req);
+  expect(bot.receiver.handleRequest.mock).toHaveBeenCalledWith(req, res);
 
   expect(res.mock.setter('statusCode')).not.toHaveBeenCalled();
   expect(res.end.mock).not.toHaveBeenCalled();

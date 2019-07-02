@@ -13,7 +13,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 
     expect(
       handleWebhook({ shouldValidateRequest: false })(req, res, 'body')
-    ).toBe(undefined);
+    ).toBe(null);
 
     expect(res.statusCode).toBe(405);
     expect(res.finished).toBe(true);
@@ -25,9 +25,7 @@ it('responds 400 if body is empty', () => {
   req.method = 'POST';
   const res = moxy(new ServerResponse({ method: 'POST' }));
 
-  expect(handleWebhook({ shouldValidateRequest: false })(req, res)).toBe(
-    undefined
-  );
+  expect(handleWebhook({ shouldValidateRequest: false })(req, res)).toBe(null);
 
   expect(res.statusCode).toBe(400);
   expect(res.finished).toBe(true);
@@ -40,7 +38,7 @@ it('responds 400 if body is not not valid json format', () => {
 
   expect(
     handleWebhook({ shouldValidateRequest: false })(req, res, '_invalid_body_')
-  ).toBe(undefined);
+  ).toBe(null);
 
   expect(res.statusCode).toBe(400);
   expect(res.finished).toBe(true);
@@ -57,7 +55,7 @@ it('responds 400 if body is in invalid format', () => {
       res,
       JSON.stringify({ there: 'is no events hahaha' })
     )
-  ).toBe(undefined);
+  ).toBe(null);
 
   expect(res.statusCode).toBe(400);
   expect(res.finished).toBe(true);
@@ -173,7 +171,7 @@ it('responds 401 if request validation failed', () => {
       shouldValidateRequest: true,
       channelSecret: '__LINE_CHANNEL_SECRET__',
     })(req, res, body)
-  ).toBe(undefined);
+  ).toBe(null);
 
   expect(res.statusCode).toBe(401);
   expect(res.finished).toBe(true);

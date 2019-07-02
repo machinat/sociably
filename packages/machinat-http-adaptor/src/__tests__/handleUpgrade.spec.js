@@ -4,6 +4,7 @@ import connectUpgrade from '../connectUpgrade';
 const bot = moxy({
   receiver: {
     handleUpgrade() {},
+    callback: () => moxy(),
   },
 });
 
@@ -21,14 +22,10 @@ beforeEach(() => {
 
 it('works when connect to a bot directly', () => {
   const callback = connectUpgrade(bot);
+  expect(bot.receiver.callback.mock).toHaveBeenCalledTimes(1);
+  expect(callback).toBe(bot.receiver.callback.mock.calls[0].result);
 
   expect(callback(req, socket, buffer)).toBe(undefined);
-  expect(bot.receiver.handleUpgrade.mock).toHaveBeenCalledTimes(1);
-  expect(bot.receiver.handleUpgrade.mock).toHaveBeenCalledWith(
-    req,
-    socket,
-    buffer
-  );
 
   // leave the socket to receiver
   expect(socket.write.mock).not.toHaveBeenCalled();
