@@ -1,11 +1,11 @@
 // @flow
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { HTTPRequestReceivable } from './types';
+import type { HTTPRequestReceiver, HTTPRequestReceivable } from './types';
 
-const connectRequest = (
+const connectRequest = <Receiver: HTTPRequestReceiver>(
   provider:
-    | HTTPRequestReceivable
-    | (IncomingMessage => HTTPRequestReceivable | void)
+    | HTTPRequestReceivable<Receiver>
+    | (IncomingMessage => HTTPRequestReceivable<Receiver> | void)
 ): ((req: IncomingMessage, res: ServerResponse) => void) => {
   if (typeof provider === 'function') {
     const getBot = provider;

@@ -1,11 +1,13 @@
 // @flow
 import invariant from 'invariant';
 
-import { BaseBot } from 'machinat-base';
+import { Emitter, Engine, Controller, resolvePlugins } from 'machinat-base';
 import Renderer from 'machinat-renderer';
+import Queue from 'machinat-queue';
 import WebhookReceiver from 'machinat-webhook-receiver';
 
 import type { MachinatNode } from 'machinat/types';
+import type { MachinatBot } from 'machinat-base/types';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
 import type {
   WebhookResponse,
@@ -34,26 +36,58 @@ import generalElementDelegate from './component/general';
 
 type LineBotOptionsInput = $Shape<LineBotOptions>;
 
+type LineReceiver = WebhookReceiver<LineChannel, LineEvent>;
+
 const LINE = 'line';
 
 class LineBot
-  extends BaseBot<
+  extends Emitter<
     LineChannel,
     LineEvent,
     WebhookMetadata,
-    WebhookResponse,
     LineSegmentValue,
     LineComponent,
     LineJob,
     LineAPIResult
   >
-  implements HTTPRequestReceivable {
+  implements
+    HTTPRequestReceivable<LineReceiver>,
+    MachinatBot<
+      LineChannel,
+      LineEvent,
+      WebhookMetadata,
+      WebhookResponse,
+      LineSegmentValue,
+      LineComponent,
+      LineJob,
+      LineAPIResult,
+      LineBotOptionsInput,
+      LineSendOptions
+    > {
   options: LineBotOptions;
-  // $FlowFixMe https://github.com/facebook/flow/issues/7539
-  receiver: WebhookReceiver<LineChannel, LineEvent>;
+  controller: Controller<
+    LineChannel,
+    LineEvent,
+    WebhookMetadata,
+    WebhookResponse,
+    LineSegmentValue,
+    LineComponent
+  >;
+
+  engine: Engine<
+    LineChannel,
+    LineSegmentValue,
+    LineComponent,
+    LineJob,
+    LineAPIResult
+  >;
+
+  receiver: LineReceiver;
   worker: LineWorker;
 
   constructor(optionsInput: LineBotOptionsInput = {}) {
+    super();
+
     const defaultOpions: LineBotOptionsInput = {
       accessToken: undefined,
       shouldValidateRequest: true,
@@ -62,6 +96,7 @@ class LineBot
     };
 
     const options = Object.assign(defaultOpions, optionsInput);
+    this.options = options;
 
     invariant(
       options.accessToken,
@@ -73,20 +108,36 @@ class LineBot
       'should provide channelSecret if shouldValidateRequest set to true'
     );
 
+    const { eventMiddlewares, dispatchMiddlewares } = resolvePlugins(
+      this,
+      options.plugins
+    );
+
+    this.controller = new Controller(LINE, this, eventMiddlewares);
+    this.receiver = new WebhookReceiver(handleWebhook(options));
+
+    this.receiver.bindIssuer(
+      this.controller.eventIssuerThroughMiddlewares(this.emitEvent.bind(this)),
+      this.emitError.bind(this)
+    );
+
     const renderer = new Renderer(
       LINE,
       LINE_NATIVE_TYPE,
       generalElementDelegate
     );
 
+    const queue = new Queue();
     const worker = new LineWorker(options);
-    const receiver = new WebhookReceiver(handleWebhook(options));
 
-    super(LINE, receiver, renderer, worker, options.plugins);
-
-    this.options = options;
-    this.receiver = receiver;
-    this.worker = worker;
+    this.engine = new Engine(
+      LINE,
+      this,
+      renderer,
+      queue,
+      worker,
+      dispatchMiddlewares
+    );
   }
 
   async send(

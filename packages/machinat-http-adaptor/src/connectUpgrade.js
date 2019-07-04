@@ -1,7 +1,7 @@
 // @flow
 import type { IncomingMessage } from 'http';
 import type { Socket } from 'net';
-import type { HTTPUpgradeReceivable } from './types';
+import type { HTTPUpgradeReceiver, HTTPUpgradeReceivable } from './types';
 
 const UPGRADE_404_RESPONSE =
   'HTTP/1.1 404 Not Found\r\n' +
@@ -10,10 +10,10 @@ const UPGRADE_404_RESPONSE =
   'Content-Length: 9\r\n' +
   '\r\nNot Found';
 
-const connectUpgrade = (
+const connectUpgrade = <Recevier: HTTPUpgradeReceiver>(
   provider:
-    | HTTPUpgradeReceivable
-    | (IncomingMessage => HTTPUpgradeReceivable | void)
+    | HTTPUpgradeReceivable<Recevier>
+    | (IncomingMessage => HTTPUpgradeReceivable<Recevier> | void)
 ): ((req: IncomingMessage, socket: Socket, head: Buffer) => void) => {
   if (typeof provider === 'function') {
     const getBot = provider;

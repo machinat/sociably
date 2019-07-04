@@ -4607,9 +4607,9 @@ moment@^2.6.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
 
-"moxy@https://github.com/lrills/moxy/releases/download/v0.1.0-6/moxy.tar.gz":
-  version "0.1.0-6"
-  resolved "https://github.com/lrills/moxy/releases/download/v0.1.0-6/moxy.tar.gz#1511d55d9935e0627d08bf43f0d5e14ae3e95b70"
+"moxy@https://github.com/lrills/moxy/releases/download/v0.1.0-8/moxy.tar.gz":
+  version "0.1.0-8"
+  resolved "https://github.com/lrills/moxy/releases/download/v0.1.0-8/moxy.tar.gz#6785937d737b295df2b72fae84cc9892e28bf4f2"
   dependencies:
     fast-deep-equal "^2.0.1"
     micromatch "^4.0.2"

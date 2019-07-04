@@ -1,11 +1,13 @@
 // @flow
 import invariant from 'invariant';
 
-import { BaseBot } from 'machinat-base';
+import { Emitter, Controller, Engine, resolvePlugins } from 'machinat-base';
+import Queue from 'machinat-queue';
 import Renderer from 'machinat-renderer';
 import WebhookReceiver from 'machinat-webhook-receiver';
 
 import type { MachinatNode } from 'machinat/types';
+import type { MachinatBot } from 'machinat-base/types';
 import type {
   WebhookResponse,
   WebhookMetadata,
@@ -16,7 +18,7 @@ import MessengerWorker from './worker';
 import handleWebhook from './handleWebhook';
 import generalComponentDelegate from './component/general';
 
-import { MESSENGER_NAITVE_TYPE } from './constant';
+import { MESSENGER_NATIVE_TYPE } from './constant';
 import MessengerChannel from './channel';
 import { createChatJobs, createCreativeJobs } from './job';
 
@@ -28,33 +30,66 @@ import type {
   MessengerJob,
   MessengerAPIResult,
   MessengerSegmentValue,
-  SendOptions,
+  MessengerSendOptions,
   BroadcastOptions,
 } from './types';
 
 type MessengerBotOptionsInput = $Shape<MessengerBotOptions>;
 
+type MessengerReceiver = WebhookReceiver<MessengerChannel, MessengerEvent>;
+
 const MESSENGER = 'messenger';
 const POST = 'POST';
 
 export default class MessengerBot
-  extends BaseBot<
+  extends Emitter<
     MessengerChannel,
     MessengerEvent,
     WebhookMetadata,
-    WebhookResponse,
     MessengerSegmentValue,
     MessengerComponent,
     MessengerJob,
     MessengerAPIResult
   >
-  implements HTTPRequestReceivable {
+  implements
+    HTTPRequestReceivable<MessengerReceiver>,
+    MachinatBot<
+      MessengerChannel,
+      MessengerEvent,
+      WebhookMetadata,
+      WebhookResponse,
+      MessengerSegmentValue,
+      MessengerComponent,
+      MessengerJob,
+      MessengerAPIResult,
+      MessengerBotOptionsInput,
+      MessengerSendOptions
+    > {
   options: MessengerBotOptions;
-  // $FlowFixMe https://github.com/facebook/flow/issues/7539
-  receiver: WebhookReceiver<MessengerChannel, MessengerEvent>;
+  receiver: MessengerReceiver;
+
+  controller: Controller<
+    MessengerChannel,
+    MessengerEvent,
+    WebhookMetadata,
+    WebhookResponse,
+    MessengerSegmentValue,
+    MessengerComponent
+  >;
+
+  engine: Engine<
+    MessengerChannel,
+    MessengerSegmentValue,
+    MessengerComponent,
+    MessengerJob,
+    MessengerAPIResult
+  >;
+
   worker: MessengerWorker;
 
   constructor(optionsInput: MessengerBotOptionsInput = {}) {
+    super();
+
     const defaultOpions: MessengerBotOptionsInput = {
       appSecret: undefined,
       accessToken: undefined,
@@ -66,6 +101,7 @@ export default class MessengerBot
     };
 
     const options = Object.assign(defaultOpions, optionsInput);
+    this.options = options;
 
     invariant(
       options.accessToken,
@@ -82,31 +118,46 @@ export default class MessengerBot
       'should provide verifyToken if shouldVerifyWebhook set to true'
     );
 
+    const { eventMiddlewares, dispatchMiddlewares } = resolvePlugins(
+      this,
+      options.plugins
+    );
+
+    this.controller = new Controller(MESSENGER, this, eventMiddlewares);
+    this.receiver = new WebhookReceiver(handleWebhook(options));
+
+    this.receiver.bindIssuer(
+      this.controller.eventIssuerThroughMiddlewares(this.emitEvent.bind(this)),
+      this.emitError.bind(this)
+    );
+
     const renderer = new Renderer(
       MESSENGER,
-      MESSENGER_NAITVE_TYPE,
+      MESSENGER_NATIVE_TYPE,
       generalComponentDelegate
     );
 
+    const queue = new Queue();
     const worker = new MessengerWorker({
       accessToken: options.accessToken,
       appSecret: options.appSecret,
       consumeInterval: options.consumeInterval,
     });
 
-    const receiver = new WebhookReceiver(handleWebhook(options));
-
-    super(MESSENGER, receiver, renderer, worker, options.plugins);
-
-    this.options = options;
-    this.receiver = receiver;
-    this.worker = worker;
+    this.engine = new Engine(
+      MESSENGER,
+      this,
+      renderer,
+      queue,
+      worker,
+      dispatchMiddlewares
+    );
   }
 
   async send(
     target: string | MessengerSource | MessengerChannel,
     messages: MachinatNode,
-    options?: SendOptions
+    options?: MessengerSendOptions
   ): Promise<null | MessengerAPIResult[]> {
     const channel =
       target instanceof MessengerChannel

@@ -92,7 +92,7 @@ export type GraphAPIErrorBody = {
   error: GraphAPIErrorInfo,
 };
 
-export type SendOptions = {|
+export type MessengerSendOptions = {|
   messagingType?: 'RESPONSE' | 'UPDATE' | 'MESSAGE_TAG',
   tag?: string,
   notificationType?: 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH',

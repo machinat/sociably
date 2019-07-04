@@ -13,8 +13,8 @@ export interface HTTPRequestReceiver {
   callback(): RequestCallback;
 }
 
-export interface HTTPRequestReceivable {
-  receiver: HTTPRequestReceiver;
+export interface HTTPRequestReceivable<R: HTTPRequestReceiver> {
+  receiver: R;
 }
 
 export type UpgradeCallback = (
@@ -28,6 +28,6 @@ export interface HTTPUpgradeReceiver {
   callback(): UpgradeCallback;
 }
 
-export interface HTTPUpgradeReceivable {
-  receiver: HTTPUpgradeReceiver;
+export interface HTTPUpgradeReceivable<R: HTTPUpgradeReceiver> {
+  receiver: R;
 }

@@ -7,7 +7,7 @@ import type {
   MessengerMessage,
   MessengerSegmentValue,
   MessengerComponent,
-  SendOptions,
+  MessengerSendOptions,
   MessengerJob,
 } from './types';
 import type MessangerChannel from './channel';
@@ -29,7 +29,7 @@ const isMessagesEntry = node =>
 export const createChatJobs = (
   channel: MessangerChannel,
   segments: SegmentWithoutPause<MessengerSegmentValue, MessengerComponent>[],
-  options?: SendOptions
+  options?: MessengerSendOptions
 ): MessengerJob[] => {
   const { source, uid } = channel;
 

@@ -2,14 +2,18 @@ import moxy from 'moxy';
 import nock from 'nock';
 import Machinat from 'machinat';
 import Renderer from 'machinat-renderer';
-import BaseBot from 'machinat-base/src/bot';
+import Queue from 'machinat-queue';
+import { Emitter, Engine, Controller } from 'machinat-base';
 import WebhookReceiver from 'machinat-webhook-receiver';
 import MessengerBot from '../bot';
 import MessengerWorker from '../worker';
 import { Image, Dialog, QuickReply } from '../component';
+import { MESSENGER_NATIVE_TYPE } from '../constant';
 import { makeResponse } from './utils';
 
-jest.mock('machinat-base/src/bot');
+jest.mock('machinat-base');
+jest.mock('machinat-renderer');
+jest.mock('machinat-webhook-receiver');
 
 nock.disableNetConnect();
 
@@ -25,7 +29,11 @@ let graphAPI;
 const bodySpy = moxy(() => true);
 
 beforeEach(() => {
-  BaseBot.mock.clear();
+  Renderer.mock.clear();
+  Engine.mock.clear();
+  Controller.mock.clear();
+  WebhookReceiver.mock.clear();
+
   graphAPI = nock('https://graph.facebook.com').post('/v3.1/', bodySpy);
   bodySpy.mock.clear();
 });
@@ -34,99 +42,78 @@ afterEach(() => {
   nock.cleanAll();
 });
 
-it('extends BaseBot', () => {
-  const bot = new MessengerBot({
-    accessToken: '_ACCESS_TOKEN_',
-    appSecret: '_SECRET_',
-    verifyToken: '_VERIFIY_TOKEN_',
+describe('#constructor(options)', () => {
+  it('extends Emitter', () => {
+    const bot = new MessengerBot({
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    });
+
+    expect(bot).toBeInstanceOf(Emitter);
   });
 
-  expect(bot).toBeInstanceOf(BaseBot);
-});
+  it('throw if accessToken not given', () => {
+    const options = {
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    };
 
-it('throw if accessToken not given', () => {
-  const options = {
-    appSecret: '_SECRET_',
-    verifyToken: '_VERIFIY_TOKEN_',
-  };
-
-  expect(() => new MessengerBot(options)).toThrowErrorMatchingInlineSnapshot(
-    `"should provide accessToken to send messenge"`
-  );
-});
-
-it('throw if appSecret not given', () => {
-  const options = {
-    accessToken: '_ACCESS_TOKEN_',
-    verifyToken: '_VERIFIY_TOKEN_',
-  };
-
-  expect(() => new MessengerBot(options)).toThrowErrorMatchingInlineSnapshot(
-    `"should provide appSecret if shouldValidateRequest set to true"`
-  );
-});
-
-it('is ok to have appSecret empty if shouldValidateRequest set to false', () => {
-  const options = {
-    accessToken: '_ACCESS_TOKEN_',
-    verifyToken: '_VERIFIY_TOKEN_',
-    shouldValidateRequest: false,
-  };
-
-  expect(() => new MessengerBot(options)).not.toThrow();
-});
-
-it('throw if verifyToken not given', () => {
-  const options = {
-    accessToken: '_ACCESS_TOKEN_',
-    appSecret: '_SECRET_',
-  };
-
-  expect(() => new MessengerBot(options)).toThrowErrorMatchingInlineSnapshot(
-    `"should provide verifyToken if shouldVerifyWebhook set to true"`
-  );
-});
-
-it('is ok to have verifyToken empty if shouldVerifyWebhook set to false', () => {
-  const options = {
-    accessToken: '_ACCESS_TOKEN_',
-    appSecret: '_SECRET_',
-    shouldVerifyWebhook: false,
-  };
-
-  expect(() => new MessengerBot(options)).not.toThrow();
-});
-
-it('have plugins initiated', () => {
-  const plugins = [moxy(() => ({})), moxy(() => ({})), moxy(() => ({}))];
-
-  const bot = new MessengerBot({
-    accessToken: '_ACCESS_TOKEN_',
-    appSecret: '_SECRET_',
-    verifyToken: '_VERIFIY_TOKEN_',
-    plugins,
+    expect(() => new MessengerBot(options)).toThrowErrorMatchingInlineSnapshot(
+      `"should provide accessToken to send messenge"`
+    );
   });
 
-  expect(bot.plugins).toBe(plugins);
+  it('throw if appSecret not given', () => {
+    const options = {
+      accessToken: '_ACCESS_TOKEN_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    };
 
-  expect(BaseBot.mock).toHaveBeenCalledTimes(1);
-  expect(BaseBot.mock).toHaveBeenCalledWith(
-    'messenger',
-    expect.any(WebhookReceiver),
-    expect.any(Renderer),
-    expect.any(MessengerWorker),
-    plugins
-  );
-});
+    expect(() => new MessengerBot(options)).toThrowErrorMatchingInlineSnapshot(
+      `"should provide appSecret if shouldValidateRequest set to true"`
+    );
+  });
 
-it('set default options', () => {
-  const options = {
-    accessToken: '_ACCESS_TOKEN_',
-    appSecret: '_SECRET_',
-    verifyToken: '_VERIFIY_TOKEN_',
-  };
+  it('is ok to have appSecret empty if shouldValidateRequest set to false', () => {
+    const options = {
+      accessToken: '_ACCESS_TOKEN_',
+      verifyToken: '_VERIFIY_TOKEN_',
+      shouldValidateRequest: false,
+    };
 
-  expect(new MessengerBot(options).options).toMatchInlineSnapshot(`
+    expect(() => new MessengerBot(options)).not.toThrow();
+  });
+
+  it('throw if verifyToken not given', () => {
+    const options = {
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+    };
+
+    expect(() => new MessengerBot(options)).toThrowErrorMatchingInlineSnapshot(
+      `"should provide verifyToken if shouldVerifyWebhook set to true"`
+    );
+  });
+
+  it('is ok to have verifyToken empty if shouldVerifyWebhook set to false', () => {
+    const options = {
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      shouldVerifyWebhook: false,
+    };
+
+    expect(() => new MessengerBot(options)).not.toThrow();
+  });
+
+  it('set default options', () => {
+    const options = {
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    };
+
+    expect(new MessengerBot(options).options).toMatchInlineSnapshot(`
 Object {
   "accessToken": "_ACCESS_TOKEN_",
   "appSecret": "_SECRET_",
@@ -137,20 +124,141 @@ Object {
   "verifyToken": "_VERIFIY_TOKEN_",
 }
 `);
-});
+  });
 
-it('covers default options', () => {
-  const options = {
-    appSecret: '_SECRET_',
-    accessToken: '_ACCESS_TOKEN_',
-    shouldValidateRequest: true,
-    shouldVerifyWebhook: true,
-    verifyToken: '_VERIFIY_TOKEN_',
-    respondTimeout: 9999,
-    consumeInterval: 10000,
-  };
+  it('covers default options', () => {
+    const options = {
+      appSecret: '_SECRET_',
+      accessToken: '_ACCESS_TOKEN_',
+      shouldValidateRequest: true,
+      shouldVerifyWebhook: true,
+      verifyToken: '_VERIFIY_TOKEN_',
+      respondTimeout: 9999,
+      consumeInterval: 10000,
+    };
 
-  expect(new MessengerBot(options).options).toEqual(options);
+    expect(new MessengerBot(options).options).toEqual(options);
+  });
+
+  it('assemble core modules', () => {
+    const bot = new MessengerBot({
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    });
+
+    expect(bot.engine).toBeInstanceOf(Engine);
+    expect(bot.controller).toBeInstanceOf(Controller);
+    expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
+
+    expect(Renderer.mock).toHaveBeenCalledTimes(1);
+    expect(Renderer.mock).toHaveBeenCalledWith(
+      'messenger',
+      MESSENGER_NATIVE_TYPE,
+      expect.any(Function)
+    );
+
+    expect(Engine.mock).toHaveBeenCalledTimes(1);
+    expect(Engine.mock).toHaveBeenCalledWith(
+      'messenger',
+      bot,
+      expect.any(Renderer),
+      expect.any(Queue),
+      expect.any(MessengerWorker),
+      []
+    );
+
+    expect(Controller.mock).toHaveBeenCalledTimes(1);
+    expect(Controller.mock).toHaveBeenCalledWith('messenger', bot, []);
+
+    expect(WebhookReceiver.mock).toHaveBeenCalledTimes(1);
+    expect(WebhookReceiver.mock).toHaveBeenCalledWith(expect.any(Function));
+  });
+
+  it('pass middlewares from plugins to controller and engine', () => {
+    const eventMiddleware1 = () => () => {};
+    const eventMiddleware2 = () => () => {};
+    const dispatchMiddleware1 = () => () => {};
+    const dispatchMiddleware2 = () => () => {};
+    const plugins = [
+      moxy(() => ({
+        dispatchMiddleware: dispatchMiddleware1,
+      })),
+      moxy(() => ({
+        eventMiddleware: eventMiddleware1,
+      })),
+      moxy(() => ({
+        dispatchMiddleware: dispatchMiddleware2,
+        eventMiddleware: eventMiddleware2,
+      })),
+    ];
+
+    const bot = new MessengerBot({
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+      plugins,
+    });
+
+    expect(Engine.mock).toHaveBeenCalledWith(
+      'messenger',
+      bot,
+      expect.any(Renderer),
+      expect.any(Queue),
+      expect.any(MessengerWorker),
+      [dispatchMiddleware1, dispatchMiddleware2]
+    );
+
+    expect(Controller.mock).toHaveBeenCalledWith('messenger', bot, [
+      eventMiddleware1,
+      eventMiddleware2,
+    ]);
+  });
+
+  it('issue event & error', async () => {
+    const eventIssuerSpy = moxy(() => Promise.resolve());
+    Controller.mock.fake(function FakeController() {
+      return { eventIssuerThroughMiddlewares: () => eventIssuerSpy };
+    });
+
+    const bot = new MessengerBot({
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+      verifyToken: '_VERIFIY_TOKEN_',
+    });
+
+    const eventListener = moxy();
+    const errorListener = moxy();
+    bot.onEvent(eventListener);
+    bot.onError(errorListener);
+
+    expect(bot.receiver.bindIssuer.mock).toHaveBeenCalledTimes(1);
+    expect(
+      bot.controller.eventIssuerThroughMiddlewares.mock
+    ).toHaveBeenCalledTimes(1);
+    const finalPublisher =
+      bot.controller.eventIssuerThroughMiddlewares.mock.calls[0].args[0];
+
+    const channel = { super: 'slam' };
+    const event = { a: 'phonecall' };
+    const metadata = { champ: 'Johnnnnn Ceeeena!' };
+    const frame = { channel, event, metadata };
+
+    expect(finalPublisher(frame)).toBe(undefined);
+
+    expect(eventListener.mock).toHaveBeenCalledTimes(1);
+    expect(eventListener.mock).toHaveBeenCalledWith(frame);
+
+    const [issueEvent, issueError] = bot.receiver.bindIssuer.mock.calls[0].args;
+
+    await expect(issueEvent(channel, event, metadata)).resolves.toBe(undefined);
+    expect(eventIssuerSpy.mock).toHaveBeenCalledTimes(1);
+    expect(eventIssuerSpy.mock).toHaveBeenCalledWith(channel, event, metadata);
+
+    expect(issueError(new Error('NO'))).toBe(undefined);
+    expect(errorListener.mock).toHaveBeenCalledTimes(1);
+    expect(errorListener.mock).toHaveBeenCalledWith(new Error('NO'));
+  });
 });
 
 describe('#send(message, options)', () => {

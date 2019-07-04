@@ -1,10 +1,11 @@
 // @flow
 import WS from 'ws';
-import { BaseBot } from 'machinat-base';
+import { Emitter, Controller, Engine, resolvePlugins } from 'machinat-base';
 import Renderer from 'machinat-renderer';
+import Queue from 'machinat-queue';
 
 import type { MachinatNode } from 'machinat/types';
-import type { SegmentWithoutPause } from 'machinat-base/types';
+import type { MachinatBot, SegmentWithoutPause } from 'machinat-base/types';
 import type { HTTPUpgradeReceivable } from 'machinat-http-adaptor/types';
 import type WebSocketChannel from './channel';
 import type {
@@ -50,36 +51,82 @@ const createJobs = (
 };
 
 class WebSocketBot
-  extends BaseBot<
+  extends Emitter<
     WebSocketChannel,
     WebSocketEvent,
     WebSocketMetadata,
-    WebSocketResponse,
     EventRenderValue,
     WebSocketComponent,
     WebSocketJob,
     WebSocketResult
   >
-  implements HTTPUpgradeReceivable {
+  implements
+    HTTPUpgradeReceivable<WebSocketReceiver>,
+    MachinatBot<
+      WebSocketChannel,
+      WebSocketEvent,
+      WebSocketMetadata,
+      WebSocketResponse,
+      EventRenderValue,
+      WebSocketComponent,
+      WebSocketJob,
+      WebSocketResult,
+      WebSocketBotOptionsInput,
+      void
+    > {
   _distributor: Distributor;
   options: WebSocketBotOptions;
-  // $FlowFixMe https://github.com/facebook/flow/issues/7539
   receiver: WebSocketReceiver;
+
+  controller: Controller<
+    WebSocketChannel,
+    WebSocketEvent,
+    WebSocketMetadata,
+    WebSocketResponse,
+    EventRenderValue,
+    WebSocketComponent
+  >;
+
+  engine: Engine<
+    WebSocketChannel,
+    EventRenderValue,
+    WebSocketComponent,
+    WebSocketJob,
+    WebSocketResult
+  >;
+
   worker: WebSocketWorker;
 
   constructor(optionsInput?: WebSocketBotOptionsInput) {
+    super();
+
     const defaultOptions: WebSocketBotOptions = {
       verifyUpgrade: undefined,
     };
     const options = Object.assign(defaultOptions, optionsInput);
+    this.options = options;
 
     const broker = new LocalOnlyBroker();
     const distributor = new Distributor(broker);
-    const worker = new WebSocketWorker(distributor);
+    this._distributor = distributor;
 
     const wsServer = new WSServer({ noServer: true });
 
-    const receiver = new WebSocketReceiver(wsServer, distributor, options);
+    const { eventMiddlewares, dispatchMiddlewares } = resolvePlugins(
+      this,
+      options.plugins
+    );
+
+    this.controller = new Controller(WEBSOCKET, this, eventMiddlewares);
+    this.receiver = new WebSocketReceiver(wsServer, distributor, options);
+
+    this.receiver.bindIssuer(
+      this.controller.eventIssuerThroughMiddlewares(this.emitEvent.bind(this)),
+      this.emitError.bind(this)
+    );
+
+    const queue = new Queue();
+    const worker = new WebSocketWorker(distributor);
 
     const renderer = new Renderer(WEBSOCKET, WEBSOCKET_NATIVE_TYPE, () => {
       throw new TypeError(
@@ -87,12 +134,14 @@ class WebSocketBot
       );
     });
 
-    super(WEBSOCKET, receiver, renderer, worker, options.plugins);
-
-    this._distributor = distributor;
-    this.options = options;
-    this.receiver = receiver;
-    this.worker = worker;
+    this.engine = new Engine(
+      WEBSOCKET,
+      this,
+      renderer,
+      queue,
+      worker,
+      dispatchMiddlewares
+    );
   }
 
   async send(

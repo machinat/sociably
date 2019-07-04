@@ -13,29 +13,18 @@ import type { JobBatchResponse } from 'machinat-queue/types';
 import type MachinatRenderer from 'machinat-renderer';
 
 import DispatchError from './error';
+import { validateMiddlewares } from './utils';
 
 import type {
   MachinatBot,
   MachinatChannel,
-  MachinatEvent,
-  MachinatMetadata,
+  MachinatWorker,
   SegmentWithoutPause,
-  EventFrame,
-  EventIssuer,
-  EventMiddleware,
   DispatchTask,
   DispatchResponse,
   DispatchFrame,
   DispatchMiddleware,
 } from './types';
-
-const validateMiddlewares = (fns: Function[]) => {
-  for (const fn of fns) {
-    if (typeof fn !== 'function') {
-      throw new TypeError(`middleware must be a function, got ${fn}`);
-    }
-  }
-};
 
 const handlePause = async (pauseElement: MachinatPause) => {
   const { until, delay: timeToDelay } = pauseElement.props;
@@ -52,18 +41,11 @@ const handlePause = async (pauseElement: MachinatPause) => {
   await promise;
 };
 
-// MachinatEngine controls all the logic flow and the data framing within
-// machinat framework. When event flow in, engine construct EventFrame and pass
-// it throught event middlewares then publish it. It also provide helpers to
-// render element tree into tasks to execute, pass tasks through dispatch
-// middlewares, execute tasks and return results back through middlewares.
-// Both event and dispatch middlewares in machinat take the in & out model
-// like koa does.
+// MachinatEngine provide helpers to render element tree into tasks to execute,
+// it pass tasks through dispatch middlewares, execute tasks and return the
+// results poped through middlewares.
 export default class MachinatEngine<
   Channel: MachinatChannel,
-  Event: MachinatEvent<any>,
-  Metadata: MachinatMetadata<any>,
-  Response,
   SegmentValue,
   Native: MachinatNativeComponent<SegmentValue>,
   Job,
@@ -72,26 +54,20 @@ export default class MachinatEngine<
   platform: string;
   bot: MachinatBot<
     Channel,
-    Event,
-    Metadata,
-    Response,
+    any,
+    any,
+    any,
     SegmentValue,
     Native,
     Job,
-    Result
+    Result,
+    any,
+    any
   >;
 
   renderer: MachinatRenderer<SegmentValue, Native>;
   queue: MahinateQueue<Job, Result>;
-
-  eventMiddlewares: EventMiddleware<
-    Channel,
-    Event,
-    Metadata,
-    Response,
-    Native
-  >[];
-
+  worker: MachinatWorker<Job, Result>;
   dispatchMiddlewares: DispatchMiddleware<Channel, Job, Result>[];
 
   _dispatchThroughMiddlewares: (
@@ -102,67 +78,35 @@ export default class MachinatEngine<
     platform: string,
     bot: MachinatBot<
       Channel,
-      Event,
-      Metadata,
-      Response,
+      any,
+      any,
+      any,
       SegmentValue,
       Native,
       Job,
-      Result
+      Result,
+      any,
+      any
     >,
     renderer: MachinatRenderer<SegmentValue, Native>,
     queue: MahinateQueue<Job, Result>,
-    eventMiddlewares: EventMiddleware<
-      Channel,
-      Event,
-      Metadata,
-      Response,
-      Native
-    >[],
+    worker: MachinatWorker<Job, Result>,
     dispatchMiddlewares: DispatchMiddleware<Channel, Job, Result>[]
   ) {
     this.platform = platform;
     this.bot = bot;
     this.renderer = renderer;
     this.queue = queue;
+    this.worker = worker;
 
-    validateMiddlewares(eventMiddlewares);
+    worker.start(queue);
+
     validateMiddlewares(dispatchMiddlewares);
 
-    this.eventMiddlewares = eventMiddlewares;
     this.dispatchMiddlewares = dispatchMiddlewares;
     this._dispatchThroughMiddlewares = compose(...this.dispatchMiddlewares)(
       this._executeDispatch.bind(this)
     );
-  }
-
-  // eventIssuer create the event issuing function which construct event frame
-  // and pass it through event middlewares in order. The finalHandler is called
-  // as the last middleware then return the response poped out of the stack one
-  // be one. For most of time you pass the issuer fn created to the receiver.
-  eventIssuer(
-    finalHandler: (
-      EventFrame<Channel, Event, Metadata, any, any, any, any>
-    ) => Promise<void | Response>
-  ): EventIssuer<Channel, Event, Metadata, Response> {
-    const issue = compose(...this.eventMiddlewares)(finalHandler);
-
-    return (channel: Channel, event: Event, metadata: Metadata) => {
-      const { bot } = this;
-
-      const frame = {
-        platform: this.platform,
-        bot,
-        channel,
-        event,
-        metadata,
-        reply(nodes: MachinatNode, options: any) {
-          return bot.send(channel, nodes, options);
-        },
-      };
-
-      return issue(frame);
-    };
   }
 
   // renderTasks renders machinat element tree into task to be executed. There

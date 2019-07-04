@@ -2,18 +2,18 @@ import Machinat from 'machinat';
 import { createChatJobs, createCreativeJobs } from '../job';
 import MessengerChannel from '../channel';
 import {
-  MESSENGER_NAITVE_TYPE,
+  MESSENGER_NATIVE_TYPE,
   ATTACHED_FILE_DATA,
   ATTACHED_FILE_INFO,
 } from '../constant';
 
 const Foo = () => {};
-Foo.$$native = MESSENGER_NAITVE_TYPE;
+Foo.$$native = MESSENGER_NATIVE_TYPE;
 Foo.$$unit = true;
 Foo.$$entry = 'me/messages';
 
 const Bar = () => {};
-Bar.$$native = MESSENGER_NAITVE_TYPE;
+Bar.$$native = MESSENGER_NATIVE_TYPE;
 Bar.$$unit = true;
 Bar.$$entry = 'bar/baz';
 

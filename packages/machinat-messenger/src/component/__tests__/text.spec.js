@@ -2,7 +2,7 @@ import moxy from 'moxy';
 import Machinat from 'machinat';
 import { map } from 'machinat-utility';
 
-import { MESSENGER_NAITVE_TYPE } from '../../constant';
+import { MESSENGER_NATIVE_TYPE } from '../../constant';
 import { Latex, DynamicText } from '../text';
 
 import renderHelper from './renderHelper';
@@ -32,7 +32,7 @@ const render = renderHelper(renderInner);
 describe('Latex', () => {
   it('is valid Component', () => {
     expect(typeof Latex).toBe('function');
-    expect(Latex.$$native).toBe(MESSENGER_NAITVE_TYPE);
+    expect(Latex.$$native).toBe(MESSENGER_NATIVE_TYPE);
     expect(Latex.$$entry).toBe(undefined);
     expect(Latex.$$namespace).toBe('Messenger');
   });
@@ -101,7 +101,7 @@ describe('Latex', () => {
 describe('DynamicText', () => {
   it('is valid Component', () => {
     expect(typeof DynamicText).toBe('function');
-    expect(DynamicText.$$native).toBe(MESSENGER_NAITVE_TYPE);
+    expect(DynamicText.$$native).toBe(MESSENGER_NATIVE_TYPE);
     expect(DynamicText.$$entry).toBe('me/messages');
     expect(DynamicText.$$namespace).toBe('Messenger');
   });

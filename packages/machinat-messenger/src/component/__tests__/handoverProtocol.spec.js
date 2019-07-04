@@ -1,6 +1,6 @@
 import Machinat from 'machinat';
 
-import { MESSENGER_NAITVE_TYPE } from '../../constant';
+import { MESSENGER_NATIVE_TYPE } from '../../constant';
 import {
   PassThreadControl,
   RequestThreadControl,
@@ -16,7 +16,7 @@ it.each([
   [TakeThreadContorl, 'me/take_thread_control'],
 ])('%p is valid root Component', (ThreadControl, entry) => {
   expect(typeof ThreadControl).toBe('function');
-  expect(ThreadControl.$$native).toBe(MESSENGER_NAITVE_TYPE);
+  expect(ThreadControl.$$native).toBe(MESSENGER_NATIVE_TYPE);
   expect(ThreadControl.$$entry).toBe(entry);
   expect(ThreadControl.$$namespace).toBe('Messenger');
 });

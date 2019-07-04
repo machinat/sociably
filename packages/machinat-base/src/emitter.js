@@ -1,127 +1,35 @@
 // @flow
 import Symbol$observable from 'symbol-observable';
-import Queue from 'machinat-queue';
 
-import type { MachinatNode, MachinatNativeComponent } from 'machinat/types';
-import type MachinatRenderer from 'machinat-renderer';
+import type { MachinatNativeComponent } from 'machinat/types';
 import type {
-  BotPlugin,
   MachinatChannel,
   MachinatEvent,
   EventFrame,
   MachinatMetadata,
-  MachinatWorker,
 } from './types';
-import type MachinatReceiver from './receiver';
 
-import Engine from './engine';
-
-// BaseBot provide basic constucting and event/error listening entry point for
-// all the machinat bot to inherit.
-export default class BaseBot<
+// MachinatEmitter provide events and errors listening methods for machinat bot
+// implementation classes to inherit.
+export default class MachinatEmitter<
   Channel: MachinatChannel,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
-  Response,
   SegmentValue,
   Native: MachinatNativeComponent<SegmentValue>,
   Job,
   Result
 > {
-  platform: string;
-  engine: Engine<
-    Channel,
-    Event,
-    Metadata,
-    Response,
-    SegmentValue,
-    Native,
-    Job,
-    Result
-  >;
-
-  plugins:
-    | void
-    | BotPlugin<
-        Channel,
-        Event,
-        Metadata,
-        Response,
-        SegmentValue,
-        Native,
-        Job,
-        Result
-      >[];
-
   _eventListeners: ((
     EventFrame<Channel, Event, Metadata, SegmentValue, Native, Job, Result>
   ) => void)[];
 
   _errorListeners: ((Error) => void)[];
 
-  constructor(
-    platform: string,
-    receiver: MachinatReceiver<Channel, Event, Metadata, Response>,
-    renderer: MachinatRenderer<SegmentValue, Native>,
-    worker: MachinatWorker<Job, Result>,
-    plugins?: BotPlugin<
-      Channel,
-      Event,
-      Metadata,
-      Response,
-      SegmentValue,
-      Native,
-      Job,
-      Result
-    >[]
-  ) {
-    this.platform = platform;
-    this.plugins = plugins;
+  constructor() {
     this._eventListeners = [];
     this._errorListeners = [];
-
-    const eventMiddlewares = [];
-    const dispatchMiddlewares = [];
-
-    if (plugins) {
-      for (const plugin of plugins) {
-        const { dispatchMiddleware, eventMiddleware } = plugin(this);
-
-        if (eventMiddleware) eventMiddlewares.push(eventMiddleware);
-        if (dispatchMiddleware) dispatchMiddlewares.push(dispatchMiddleware);
-      }
-    }
-
-    const queue = new Queue();
-    worker.start(queue);
-
-    this.engine = new Engine(
-      platform,
-      this,
-      renderer,
-      queue,
-      eventMiddlewares,
-      dispatchMiddlewares
-    );
-
-    receiver.bindIssuer(
-      this.engine.eventIssuer(frame => {
-        this._emitEvent(frame);
-        return Promise.resolve();
-      }),
-      this._emitError
-    );
   }
-
-  /* eslint-disable no-unused-vars, class-methods-use-this */
-  send(
-    channel: Channel,
-    message: MachinatNode,
-    options: any
-  ): Promise<null | Result[]> {
-    throw new TypeError('Bot#send() should not be called on BaseBot');
-  }
-  /* eslint-enable no-unused-vars, class-methods-use-this */
 
   onEvent(
     listener: (
@@ -148,7 +56,7 @@ export default class BaseBot<
     return true;
   }
 
-  _emitEvent(
+  emitEvent(
     frame: EventFrame<
       Channel,
       Event,
@@ -181,7 +89,7 @@ export default class BaseBot<
     return true;
   }
 
-  _emitError = (err: Error) => {
+  emitError(err: Error) {
     if (this._errorListeners.length === 0) {
       throw err;
     }
@@ -189,7 +97,7 @@ export default class BaseBot<
     for (const listener of this._errorListeners) {
       listener(err);
     }
-  };
+  }
 
   // $FlowFixMe
   [Symbol$observable]() {

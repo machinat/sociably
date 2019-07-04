@@ -1,6 +1,6 @@
 import Machinat from 'machinat';
 
-import { MESSENGER_NAITVE_TYPE } from '../../constant';
+import { MESSENGER_NATIVE_TYPE } from '../../constant';
 import { Image, Video, Audio, File } from '../media';
 import renderHelper from './renderHelper';
 
@@ -9,7 +9,7 @@ const render = renderHelper(async () => null);
 describe('media Components', () => {
   test.each([Image, Video, Audio, File])('is valid root Component', Media => {
     expect(typeof Media).toBe('function');
-    expect(Media.$$native).toBe(MESSENGER_NAITVE_TYPE);
+    expect(Media.$$native).toBe(MESSENGER_NATIVE_TYPE);
     expect(Media.$$entry).toBe('me/messages');
     expect(Media.$$namespace).toBe('Messenger');
   });

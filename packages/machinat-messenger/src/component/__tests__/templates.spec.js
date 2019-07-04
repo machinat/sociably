@@ -1,7 +1,7 @@
 import moxy from 'moxy';
 import Machinat, { SEGMENT_BREAK } from 'machinat';
 
-import { MESSENGER_NAITVE_TYPE } from '../../constant';
+import { MESSENGER_NATIVE_TYPE } from '../../constant';
 import {
   GenericItem,
   GenericTemplate,
@@ -92,14 +92,14 @@ describe('templates Components', () => {
     ReceiptTemplate,
   ])('attribute of %p', Template => {
     expect(typeof Template).toBe('function');
-    expect(Template.$$native).toBe(MESSENGER_NAITVE_TYPE);
+    expect(Template.$$native).toBe(MESSENGER_NATIVE_TYPE);
     expect(Template.$$entry).toBe('me/messages');
     expect(Template.$$namespace).toBe('Messenger');
   });
 
   test.each([GenericItem, ReceiptItem])('attribute of %p', Item => {
     expect(typeof Item).toBe('function');
-    expect(Item.$$native).toBe(MESSENGER_NAITVE_TYPE);
+    expect(Item.$$native).toBe(MESSENGER_NATIVE_TYPE);
     expect(Item.$$entry).toBe(undefined);
     expect(Item.$$namespace).toBe('Messenger');
   });

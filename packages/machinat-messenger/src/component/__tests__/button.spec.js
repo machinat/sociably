@@ -1,7 +1,7 @@
 import moxy from 'moxy';
 import Machinat from 'machinat';
 
-import { MESSENGER_NAITVE_TYPE } from '../../constant';
+import { MESSENGER_NATIVE_TYPE } from '../../constant';
 import {
   URLButton,
   PostbackButton,
@@ -29,7 +29,7 @@ test.each([
   GamePlayButton,
 ])('is valid Component', Button => {
   expect(typeof Button).toBe('function');
-  expect(Button.$$native).toBe(MESSENGER_NAITVE_TYPE);
+  expect(Button.$$native).toBe(MESSENGER_NATIVE_TYPE);
   expect(Button.$$entry).toBe(undefined);
   expect(Button.$$namespace).toBe('Messenger');
 });

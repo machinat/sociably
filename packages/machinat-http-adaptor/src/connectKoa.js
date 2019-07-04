@@ -1,11 +1,11 @@
 // @flow
 import type { IncomingMessage } from 'http';
-import type { HTTPRequestReceivable } from './types';
+import type { HTTPRequestReceiver, HTTPRequestReceivable } from './types';
 
-const createKoaMiddleware = (
+const createKoaMiddleware = <Receiver: HTTPRequestReceiver>(
   provider:
-    | HTTPRequestReceivable
-    | (IncomingMessage => HTTPRequestReceivable | void)
+    | HTTPRequestReceivable<Receiver>
+    | (IncomingMessage => HTTPRequestReceivable<Receiver> | void)
 ): ((ctx: Object) => Promise<void>) => {
   if (typeof provider === 'function') {
     const getBot = provider;

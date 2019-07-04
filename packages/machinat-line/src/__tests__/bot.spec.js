@@ -1,14 +1,17 @@
 import nock from 'nock';
 import moxy from 'moxy';
 import Machinat from 'machinat';
-import BaseBot from 'machinat-base/src/bot';
+import { Emitter, Engine, Controller } from 'machinat-base';
 import Renderer from 'machinat-renderer';
+import Queue from 'machinat-queue';
 import WebhookReceiver from 'machinat-webhook-receiver';
 import LineBot from '../bot';
 import LineWorker from '../worker';
 import { LINE_NATIVE_TYPE } from '../constant';
 
-jest.mock('machinat-base/src/bot');
+jest.mock('machinat-base');
+jest.mock('machinat-renderer');
+jest.mock('machinat-webhook-receiver');
 
 nock.disableNetConnect();
 
@@ -63,7 +66,10 @@ const bodySpy = moxy(() => true);
 const accessToken = '__ACCESS_TOKEN__';
 let lineAPI;
 beforeEach(() => {
-  BaseBot.mock.clear();
+  Renderer.mock.reset();
+  Engine.mock.reset();
+  Controller.mock.reset();
+  WebhookReceiver.mock.reset();
 
   Bar.$$getEntry.mock.clear();
   Baz.$$getEntry.mock.clear();
@@ -79,59 +85,39 @@ beforeEach(() => {
   bodySpy.mock.clear();
 });
 
-it('extends BaseBot', () => {
-  expect(
-    new LineBot({
-      accessToken,
-      channelSecret: '_SECRET_',
-    })
-  ).toBeInstanceOf(BaseBot);
-});
-
-it('throws if accessToken not given', () => {
-  expect(() => new LineBot()).toThrowErrorMatchingInlineSnapshot(
-    `"should provide accessToken to send messenge"`
-  );
-});
-
-it('throws if shouldValidateRequest but channelSecret not given', () => {
-  expect(
-    () => new LineBot({ accessToken, shouldValidateRequest: true })
-  ).toThrowErrorMatchingInlineSnapshot(
-    `"should provide channelSecret if shouldValidateRequest set to true"`
-  );
-});
-
-it('is ok to have channelSecret empty if shouldValidateRequest set to false', () => {
-  expect(
-    () => new LineBot({ accessToken, shouldValidateRequest: false })
-  ).not.toThrow();
-});
-
-it('initiate BaseBot', () => {
-  const plugins = [moxy(() => ({})), moxy(() => ({})), moxy(() => ({}))];
-
-  const bot = new LineBot({
-    accessToken,
-    channelSecret: '_SECRET_',
-    plugins,
+describe('#constructor(options)', () => {
+  it('extends MachinatEmitter', () => {
+    expect(
+      new LineBot({
+        accessToken,
+        channelSecret: '_SECRET_',
+      })
+    ).toBeInstanceOf(Emitter);
   });
 
-  expect(bot.plugins).toEqual(plugins);
+  it('throws if accessToken not given', () => {
+    expect(() => new LineBot()).toThrowErrorMatchingInlineSnapshot(
+      `"should provide accessToken to send messenge"`
+    );
+  });
 
-  expect(BaseBot.mock).toHaveBeenCalledTimes(1);
-  expect(BaseBot.mock).toHaveBeenCalledWith(
-    'line',
-    expect.any(WebhookReceiver),
-    expect.any(Renderer),
-    expect.any(LineWorker),
-    plugins
-  );
-});
+  it('throws if shouldValidateRequest but channelSecret not given', () => {
+    expect(
+      () => new LineBot({ accessToken, shouldValidateRequest: true })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"should provide channelSecret if shouldValidateRequest set to true"`
+    );
+  });
 
-it('sets default options', () => {
-  expect(new LineBot({ accessToken, channelSecret: '_SECRET_' }).options)
-    .toMatchInlineSnapshot(`
+  it('is ok to have channelSecret empty if shouldValidateRequest set to false', () => {
+    expect(
+      () => new LineBot({ accessToken, shouldValidateRequest: false })
+    ).not.toThrow();
+  });
+
+  it('sets default options', () => {
+    expect(new LineBot({ accessToken, channelSecret: '_SECRET_' }).options)
+      .toMatchInlineSnapshot(`
 Object {
   "accessToken": "__ACCESS_TOKEN__",
   "channelSecret": "_SECRET_",
@@ -139,17 +125,135 @@ Object {
   "shouldValidateRequest": true,
 }
 `);
-});
+  });
 
-it('covers default options', () => {
-  const options = {
-    accessToken,
-    shouldValidateRequest: false,
-    channelSecret: '_SECRET_',
-    connectionCapicity: 9999,
-    useReplyAPI: true,
-  };
-  expect(new LineBot(options).options).toEqual(options);
+  it('covers default options', () => {
+    const options = {
+      accessToken,
+      shouldValidateRequest: false,
+      channelSecret: '_SECRET_',
+      connectionCapicity: 9999,
+      useReplyAPI: true,
+    };
+    expect(new LineBot(options).options).toEqual(options);
+  });
+
+  it('assemble core modules', () => {
+    const bot = new LineBot({
+      accessToken,
+      channelSecret: '_SECRET_',
+    });
+
+    expect(bot.engine).toBeInstanceOf(Engine);
+    expect(bot.controller).toBeInstanceOf(Controller);
+    expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
+
+    expect(Renderer.mock).toHaveBeenCalledTimes(1);
+    expect(Renderer.mock).toHaveBeenCalledWith(
+      'line',
+      LINE_NATIVE_TYPE,
+      expect.any(Function)
+    );
+
+    expect(Engine.mock).toHaveBeenCalledTimes(1);
+    expect(Engine.mock).toHaveBeenCalledWith(
+      'line',
+      bot,
+      expect.any(Renderer),
+      expect.any(Queue),
+      expect.any(LineWorker),
+      []
+    );
+
+    expect(Controller.mock).toHaveBeenCalledTimes(1);
+    expect(Controller.mock).toHaveBeenCalledWith('line', bot, []);
+
+    expect(WebhookReceiver.mock).toHaveBeenCalledTimes(1);
+    expect(WebhookReceiver.mock).toHaveBeenCalledWith(expect.any(Function));
+  });
+
+  it('pass middlewares from plugins to controller and engine', () => {
+    const eventMiddleware1 = () => () => {};
+    const eventMiddleware2 = () => () => {};
+    const dispatchMiddleware1 = () => () => {};
+    const dispatchMiddleware2 = () => () => {};
+    const plugins = [
+      moxy(() => ({
+        dispatchMiddleware: dispatchMiddleware1,
+      })),
+      moxy(() => ({
+        eventMiddleware: eventMiddleware1,
+      })),
+      moxy(() => ({
+        dispatchMiddleware: dispatchMiddleware2,
+        eventMiddleware: eventMiddleware2,
+      })),
+    ];
+
+    const bot = new LineBot({
+      accessToken,
+      channelSecret: '_SECRET_',
+      plugins,
+    });
+
+    expect(Engine.mock).toHaveBeenCalledWith(
+      'line',
+      bot,
+      expect.any(Renderer),
+      expect.any(Queue),
+      expect.any(LineWorker),
+      [dispatchMiddleware1, dispatchMiddleware2]
+    );
+
+    expect(Controller.mock).toHaveBeenCalledWith('line', bot, [
+      eventMiddleware1,
+      eventMiddleware2,
+    ]);
+  });
+
+  it('issue event & error', async () => {
+    const eventIssuerSpy = moxy(() => Promise.resolve());
+    Controller.mock.fake(function FakeController() {
+      return { eventIssuerThroughMiddlewares: () => eventIssuerSpy };
+    });
+
+    const bot = new LineBot({
+      accessToken,
+      channelSecret: '_SECRET_',
+    });
+
+    const eventListener = moxy();
+    const errorListener = moxy();
+    bot.onEvent(eventListener);
+    bot.onError(errorListener);
+
+    expect(bot.receiver.bindIssuer.mock).toHaveBeenCalledTimes(1);
+    expect(
+      bot.controller.eventIssuerThroughMiddlewares.mock
+    ).toHaveBeenCalledTimes(1);
+    const finalPublisher =
+      bot.controller.eventIssuerThroughMiddlewares.mock.calls[0].args[0];
+
+    const channel = { super: 'slam' };
+    const event = { a: 'phonecall' };
+    const metadata = { champ: 'Johnnnnn Ceeeena!' };
+    const frame = { channel, event, metadata };
+
+    expect(finalPublisher(frame)).toBe(undefined);
+
+    expect(eventListener.mock).toHaveBeenCalledTimes(1);
+    expect(eventListener.mock).toHaveBeenCalledWith(frame);
+
+    const [issueEvent, issueError] = bot.receiver.bindIssuer.mock.calls[0].args;
+
+    await expect(issueEvent(channel, event, metadata)).resolves.toBe(undefined);
+    expect(eventIssuerSpy.mock).toHaveBeenCalledTimes(1);
+    expect(eventIssuerSpy.mock).toHaveBeenCalledWith(channel, event, metadata);
+
+    expect(issueError(new Error('NO'))).toBe(undefined);
+    expect(errorListener.mock).toHaveBeenCalledTimes(1);
+    expect(errorListener.mock).toHaveBeenCalledWith(new Error('NO'));
+  });
 });
 
 describe('#send(token, node, options)', () => {

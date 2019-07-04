@@ -1,7 +1,7 @@
 // @flow
 export const MESSNEGER = 'messenger';
 export const MESSENGER_NAMESPACE = 'Messenger';
-export const MESSENGER_NAITVE_TYPE = Symbol.for('machinat.messenger.native');
+export const MESSENGER_NATIVE_TYPE = Symbol.for('machinat.messenger.native');
 
 export const ATTACHED_FILE_DATA = Symbol(
   'machinat.messenger.job.attached_file_data'

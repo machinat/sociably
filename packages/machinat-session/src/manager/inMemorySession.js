@@ -1,5 +1,5 @@
 // @flow
-import type { EventFrame, MachinatChannel } from 'machinat-base/types';
+import type { MachinatChannel } from 'machinat-base/types';
 import type { Session, SessionManager } from '../types';
 
 class InMemorySession implements Session {

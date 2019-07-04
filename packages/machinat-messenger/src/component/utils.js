@@ -8,25 +8,25 @@ import {
 import { compose, joinTextualSegments } from 'machinat-utility';
 
 import {
-  MESSENGER_NAITVE_TYPE,
+  MESSENGER_NATIVE_TYPE,
   MESSENGER_NAMESPACE,
   ENTRY_MESSAGES,
 } from '../constant';
 
 export const asContainerComponent = compose(
-  asNative(MESSENGER_NAITVE_TYPE),
+  asNative(MESSENGER_NATIVE_TYPE),
   asNamespace(MESSENGER_NAMESPACE)
 );
 
 export const asSinglePartComponent = compose(
-  asNative(MESSENGER_NAITVE_TYPE),
+  asNative(MESSENGER_NATIVE_TYPE),
   asNamespace(MESSENGER_NAMESPACE),
   wrapSinglePartSegment
 );
 
 export const asSingleUnitComponentWithEntry = entry =>
   compose(
-    asNative(MESSENGER_NAITVE_TYPE),
+    asNative(MESSENGER_NATIVE_TYPE),
     asNamespace(MESSENGER_NAMESPACE),
     annotate('$$entry', entry),
     wrapSingleUnitSegment

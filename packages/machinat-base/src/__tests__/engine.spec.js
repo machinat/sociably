@@ -31,6 +31,11 @@ const queue = moxy(new Queue(), {
   excludeProps: ['_*'],
 });
 
+const worker = moxy({
+  start: () => true,
+  stop: () => true,
+});
+
 const channel = {
   platform: 'test',
   type: 'test',
@@ -51,22 +56,31 @@ beforeEach(() => {
 
   renderer.render.mock.reset();
   renderer.render.mock.fakeReturnValue(unitSegments);
+
+  worker.mock.reset();
 });
 
 describe('#constructor()', () => {
-  it('throws if non function pass as eventMiddlewares', () => {
-    const invalidParams = [undefined, null, 1, true, 'foo', {}];
+  it('attach porps and start worker', () => {
+    const engine = new Engine('test', bot, renderer, queue, worker, []);
 
-    invalidParams.forEach(p =>
-      expect(() => new Engine('test', bot, renderer, queue, [p], [])).toThrow()
-    );
+    expect(engine.platform).toBe('test');
+    expect(engine.bot).toBe(bot);
+    expect(engine.renderer).toBe(renderer);
+    expect(engine.queue).toBe(queue);
+    expect(engine.worker).toBe(worker);
+
+    expect(worker.start.mock).toHaveBeenCalledTimes(1);
+    expect(worker.start.mock).toHaveBeenCalledWith(queue);
   });
 
   it('throws if non function pass as dispatchMiddlewares', () => {
     const invalidParams = [undefined, null, 1, true, 'foo', {}];
 
     invalidParams.forEach(p =>
-      expect(() => new Engine('test', bot, renderer, queue, [], [p])).toThrow()
+      expect(
+        () => new Engine('test', bot, renderer, queue, worker, [p])
+      ).toThrow()
     );
   });
 });
@@ -81,7 +95,7 @@ describe('#renderTasks(createJobs, target, message, options, allowPause)', () =>
   });
 
   it('render message and create "transmit" tasks', async () => {
-    const engine = new Engine('test', bot, renderer, queue, [], []);
+    const engine = new Engine('test', bot, renderer, queue, worker, []);
     await expect(
       engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, true)
     ).resolves.toEqual([
@@ -101,7 +115,7 @@ describe('#renderTasks(createJobs, target, message, options, allowPause)', () =>
   });
 
   it('pass allowPause to renderer.render', async () => {
-    const engine = new Engine('test', bot, renderer, queue, [], []);
+    const engine = new Engine('test', bot, renderer, queue, worker, []);
     await expect(
       engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, false)
     ).resolves.toEqual([
@@ -132,7 +146,7 @@ describe('#renderTasks(createJobs, target, message, options, allowPause)', () =>
 
     renderer.render.mock.fakeReturnValue(segments);
 
-    const engine = new Engine('test', bot, renderer, queue, [], []);
+    const engine = new Engine('test', bot, renderer, queue, worker, []);
     await expect(
       engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, true)
     ).resolves.toEqual([
@@ -172,7 +186,7 @@ describe('#renderTasks(createJobs, target, message, options, allowPause)', () =>
 
     renderer.render.mock.fakeReturnValue(segments);
 
-    const engine = new Engine('test', bot, renderer, queue, [], []);
+    const engine = new Engine('test', bot, renderer, queue, worker, []);
     await expect(
       engine.renderTasks(createJobs, 'foo', element, { bar: 1 }, true)
     ).resolves.toEqual([
@@ -201,7 +215,7 @@ describe('#renderTasks(createJobs, target, message, options, allowPause)', () =>
 
 describe('#dispatch(channel, tasks, node)', () => {
   it('renders and enqueue jobs and return array of results', async () => {
-    const engine = new Engine('test', bot, renderer, queue, [], []);
+    const engine = new Engine('test', bot, renderer, queue, worker, []);
     const tasks = [
       { type: 'transmit', payload: [{ id: 1 }, { id: 2 }, { id: 3 }] },
     ];
@@ -267,14 +281,11 @@ describe('#dispatch(channel, tasks, node)', () => {
       return response;
     });
 
-    const engine = new Engine(
-      'test',
-      bot,
-      renderer,
-      queue,
-      [],
-      [middleware1, middleware2, middleware3]
-    );
+    const engine = new Engine('test', bot, renderer, queue, worker, [
+      middleware1,
+      middleware2,
+      middleware3,
+    ]);
 
     expect(middleware1.mock).toHaveBeenCalledTimes(1);
     expect(middleware2.mock).toHaveBeenCalledTimes(1);
@@ -305,7 +316,9 @@ describe('#dispatch(channel, tasks, node)', () => {
       results: [{ nothing: 'happened' }],
     }));
 
-    const engine = new Engine('test', bot, renderer, queue, [], [middleware]);
+    const engine = new Engine('test', bot, renderer, queue, worker, [
+      middleware,
+    ]);
 
     await expect(engine.dispatch(channel, tasks, element)).resolves.toEqual({
       tasks,
@@ -322,7 +335,9 @@ describe('#dispatch(channel, tasks, node)', () => {
       throw new Error('something wrong with the element');
     });
 
-    const engine = new Engine('test', bot, renderer, queue, [], [middleware]);
+    const engine = new Engine('test', bot, renderer, queue, worker, [
+      middleware,
+    ]);
 
     await expect(engine.dispatch(channel, element, options)).rejects.toThrow(
       'something wrong with the element'
@@ -347,7 +362,7 @@ describe('#dispatch(channel, tasks, node)', () => {
       { type: 'transmit', payload: [{ id: 4 }] },
     ];
 
-    const engine = new Engine('test', bot, renderer, queue, [], []);
+    const engine = new Engine('test', bot, renderer, queue, worker, []);
 
     await expect(engine.dispatch(channel, tasks, element)).resolves.toEqual({
       tasks,
@@ -384,7 +399,7 @@ describe('#dispatch(channel, tasks, node)', () => {
       { type: 'thunk', payload: thunkFn },
     ];
 
-    const engine = new Engine('test', bot, renderer, queue, [], []);
+    const engine = new Engine('test', bot, renderer, queue, worker, []);
 
     await expect(engine.dispatch(channel, tasks, element)).resolves.toEqual({
       tasks,
@@ -419,7 +434,7 @@ describe('#dispatch(channel, tasks, node)', () => {
       { type: 'thunk', payload: thunkFn },
     ];
 
-    const engine = new Engine('test', bot, renderer, queue, [], []);
+    const engine = new Engine('test', bot, renderer, queue, worker, []);
 
     let thrown = false;
     try {
@@ -458,7 +473,7 @@ describe('#dispatch(channel, tasks, node)', () => {
 
     queue.executeJobs.mock.fake(() => Promise.resolve(execResponse));
 
-    const engine = new Engine('test', bot, renderer, queue, [], []);
+    const engine = new Engine('test', bot, renderer, queue, worker, []);
 
     let isThrown = false;
     try {
@@ -501,202 +516,12 @@ describe('#dispatch(channel, tasks, node)', () => {
       }
     };
 
-    const engine = new Engine('test', bot, renderer, queue, [], [middleware]);
+    const engine = new Engine('test', bot, renderer, queue, worker, [
+      middleware,
+    ]);
 
     await expect(
       engine.dispatch(channel, [{ type: 'transmit', payload: [1, 2, 3] }])
     ).resolves.toEqual({ results: [{ something: 'else' }] });
-  });
-});
-
-describe('#eventIssuer(finalHandler)', () => {
-  const metadata = { on: 'spaceship' };
-  const event = { found: 'Obi-Wan' };
-  const finalHandler = moxy(() => Promise.resolve());
-
-  beforeEach(() => {
-    finalHandler.mock.clear();
-  });
-
-  it('pass frame to finalHandler', async () => {
-    const engine = new Engine('test', bot, renderer, queue, [], []);
-
-    const issueEvent = engine.eventIssuer(finalHandler);
-
-    await Promise.all([
-      expect(issueEvent(channel, { id: 1 }, metadata)).resolves.toBe(undefined),
-      expect(issueEvent(channel, { id: 2 }, metadata)).resolves.toBe(undefined),
-      expect(issueEvent(channel, { id: 3 }, metadata)).resolves.toBe(undefined),
-    ]);
-
-    expect(finalHandler.mock).toHaveBeenCalledTimes(3);
-    for (let i = 1; i < 4; i += 1) {
-      expect(finalHandler.mock).toHaveBeenNthCalledWith(i, {
-        platform: 'test',
-        bot,
-        event: { id: i },
-        channel,
-        metadata,
-        reply: expect.any(Function),
-      });
-    }
-  });
-
-  it('returns what finalHandler returns', async () => {
-    const engine = new Engine('test', bot, renderer, queue, [], []);
-
-    const issueEvent = engine.eventIssuer(finalHandler);
-
-    finalHandler.mock.fake(() => Promise.resolve('Roger'));
-    await expect(issueEvent(channel, event, metadata)).resolves.toBe('Roger');
-
-    expect(finalHandler.mock).toHaveBeenCalledWith({
-      platform: 'test',
-      bot,
-      event,
-      channel,
-      metadata,
-      reply: expect.any(Function),
-    });
-  });
-
-  it('provide frame.reply(msg, opt) suger', () => {
-    const engine = new Engine('test', bot, renderer, queue, [], []);
-
-    const issueEvent = engine.eventIssuer(finalHandler);
-    issueEvent(channel, event, metadata);
-
-    const { reply } = finalHandler.mock.calls[0].args[0];
-
-    const frame = { channel, bot };
-    const message = "I'll return, I promise.";
-    bot.send.mock.fakeReturnValue(['go to cloud city']);
-
-    expect(reply.call(frame, message, options)).toEqual(['go to cloud city']);
-    expect(bot.send.mock).toHaveBeenCalledTimes(1);
-    expect(bot.send.mock).toHaveBeenCalledWith(channel, message, options);
-  });
-
-  it('pass EventFrame through middlewares', async () => {
-    finalHandler.mock.fake(() => Promise.resolve('Roger'));
-
-    const expectedFrame = {
-      platform: 'test',
-      bot,
-      event,
-      channel,
-      metadata,
-      reply: expect.any(Function),
-    };
-
-    const middleware1 = next => async frame => {
-      expect(frame).toEqual(expectedFrame);
-
-      frame.foo = true;
-      const result = await next(frame);
-      expect(result).toBe('Roger foo bar');
-
-      return `${result} baz`;
-    };
-
-    const middleware2 = next => async frame => {
-      expect(frame).toEqual({ ...expectedFrame, foo: true });
-
-      frame.bar = true;
-      const result = await next(frame);
-      expect(result).toBe('Roger foo');
-
-      return `${result} bar`;
-    };
-
-    const middleware3 = next => async frame => {
-      expect(frame).toEqual({ ...expectedFrame, foo: true, bar: true });
-
-      frame.baz = true;
-      const result = await next(frame);
-      expect(result).toBe('Roger');
-
-      return `${result} foo`;
-    };
-
-    const engine = new Engine(
-      'test',
-      bot,
-      renderer,
-      queue,
-      [middleware1, middleware2, middleware3],
-      []
-    );
-
-    const issueEvent = engine.eventIssuer(finalHandler);
-
-    finalHandler.mock.fakeReturnValue('Roger');
-    await expect(issueEvent(channel, event, metadata)).resolves.toBe(
-      'Roger foo bar baz'
-    );
-
-    expect(finalHandler.mock).toHaveBeenCalledWith({
-      ...expectedFrame,
-      foo: true,
-      bar: true,
-      baz: true,
-    });
-  });
-
-  it('throw what middleware thrown and bypass finalHandler', async () => {
-    const middleware = () => async () => {
-      throw new Error('an X-wing crash!');
-    };
-
-    const engine = new Engine('test', bot, renderer, queue, [middleware], []);
-    const issueEvent = engine.eventIssuer(finalHandler);
-
-    await expect(issueEvent(channel, event, metadata)).rejects.toThrow(
-      'an X-wing crash!'
-    );
-
-    expect(finalHandler.mock).not.toHaveBeenCalled();
-  });
-
-  it('can bypass the finalHandler in middleware', async () => {
-    const middleware = () => async () => 'your droid is being hijacked hahaha';
-    const engine = new Engine('test', bot, renderer, queue, [middleware], []);
-    const issueEvent = engine.eventIssuer(finalHandler);
-
-    await expect(issueEvent(channel, event, metadata)).resolves.toBe(
-      'your droid is being hijacked hahaha'
-    );
-
-    expect(finalHandler.mock).not.toHaveBeenCalled();
-  });
-
-  it('can catch error in middleware', async () => {
-    const middleware1 = next => async frame => {
-      try {
-        return await next(frame);
-      } catch (e) {
-        return "Oh, it's just trash compactor bug";
-      }
-    };
-
-    const middleware2 = () => async () => {
-      throw new Error('intruder in the ship!');
-    };
-
-    const engine = new Engine(
-      'test',
-      bot,
-      renderer,
-      queue,
-      [middleware1, middleware2],
-      []
-    );
-
-    const issueEvent = engine.eventIssuer(finalHandler);
-    await expect(issueEvent(channel, event, metadata)).resolves.toBe(
-      "Oh, it's just trash compactor bug"
-    );
-
-    expect(finalHandler.mock).not.toHaveBeenCalled();
   });
 });
