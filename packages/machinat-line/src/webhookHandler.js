@@ -4,6 +4,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import type {
   WebhookHandler,
   WebhookEventReport,
+  ResponsesHandler,
 } from 'machinat-webhook-receiver/types';
 
 import createEvent from './event';
@@ -23,17 +24,17 @@ const endRes = (res, code, body) => {
 
 const createEventReport = (
   rawEvent: LineRawEvent
-): WebhookEventReport<LineChannel, LineEvent> => {
+): WebhookEventReport<LineChannel, LineEvent, void> => {
   return {
     event: createEvent(rawEvent),
     channel: new LineChannel(rawEvent.source),
-    shouldRespond: false,
+    response: undefined,
   };
 };
 
 const handleWebhook = (
   options: LineBotOptions
-): WebhookHandler<LineChannel, LineEvent> => (
+): WebhookHandler<LineChannel, LineEvent, void> => async (
   req: IncomingMessage,
   res: ServerResponse,
   rawBody?: string
@@ -76,7 +77,9 @@ const handleWebhook = (
     return null;
   }
 
-  return events.map(createEventReport);
+  const reports = events.map(createEventReport);
+  endRes(res, 200);
+  return reports;
 };
 
 export default handleWebhook;

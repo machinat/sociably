@@ -9,13 +9,10 @@ import WebhookReceiver from 'machinat-webhook-receiver';
 import type { MachinatNode } from 'machinat/types';
 import type { MachinatBot } from 'machinat-base/types';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
-import type {
-  WebhookResponse,
-  WebhookMetadata,
-} from 'machinat-webhook-receiver/types';
+import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
 
 import LineWorker from './worker';
-import handleWebhook from './handleWebhook';
+import handleWebhook from './webhookHandler';
 import { createChatJobs, createMulticastJobs } from './job';
 
 import type {
@@ -36,7 +33,7 @@ import generalElementDelegate from './component/general';
 
 type LineBotOptionsInput = $Shape<LineBotOptions>;
 
-type LineReceiver = WebhookReceiver<LineChannel, LineEvent>;
+type LineReceiver = WebhookReceiver<LineChannel, LineEvent, void>;
 
 const LINE = 'line';
 
@@ -56,7 +53,7 @@ class LineBot
       LineChannel,
       LineEvent,
       WebhookMetadata,
-      WebhookResponse,
+      void,
       LineSegmentValue,
       LineComponent,
       LineJob,
@@ -69,7 +66,7 @@ class LineBot
     LineChannel,
     LineEvent,
     WebhookMetadata,
-    WebhookResponse,
+    void,
     LineSegmentValue,
     LineComponent
   >;

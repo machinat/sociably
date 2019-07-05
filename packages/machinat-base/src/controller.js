@@ -86,7 +86,7 @@ export default class MachinatController<
   eventIssuerThroughMiddlewares(
     finalHandler: (
       EventFrame<Channel, Event, Metadata, any, any, any, any>
-    ) => Promise<Response>
+    ) => Response | Promise<Response>
   ): EventIssuer<Channel, Event, Metadata, Response> {
     const issue = compose(...this.eventMiddlewares)(async (...args) =>
       finalHandler(...args)

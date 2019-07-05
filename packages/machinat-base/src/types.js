@@ -218,8 +218,4 @@ export type EventIssuer<
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
   Response
-> = (
-  channel: Channel,
-  event: Event,
-  metadata: Metadata
-) => Promise<void | Response>;
+> = (channel: Channel, event: Event, metadata: Metadata) => Promise<Response>;

@@ -2,10 +2,7 @@
 import type { MachinatNativeComponent } from 'machinat/types';
 import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type MachinatQueue from 'machinat-queue';
-import type {
-  WebhookResponse,
-  WebhookMetadata,
-} from 'machinat-webhook-receiver/types';
+import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
 import type MessnegerChannel from './channel';
 
 type PSIDSource = {| id: string |};
@@ -32,6 +29,13 @@ declare var e: MessengerEvent;
 
 // TODO: detailed message type
 export type MessengerMessage = {};
+
+type PreChackoutResponse = Object;
+type CheckoutUpdateResponse = Object;
+export type MessengerResponse =
+  | void
+  | PreChackoutResponse
+  | CheckoutUpdateResponse;
 
 type MessageValue = {|
   message: MessengerMessage,
@@ -119,7 +123,7 @@ export type MessengerBotOptions = {
     MessnegerChannel,
     MessengerEvent,
     WebhookMetadata,
-    WebhookResponse,
+    MessengerResponse,
     MessengerSegmentValue,
     MessengerComponent,
     MessengerJob,

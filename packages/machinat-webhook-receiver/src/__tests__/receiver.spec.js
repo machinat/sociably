@@ -18,13 +18,17 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
   let res;
 
   const channel = { foo: 'bar' };
-  const handleWebhook = moxy(() => [
-    { channel, event: { id: 1 }, shouldRespond: false },
-    { channel, event: { id: 2 }, shouldRespond: false },
-    { channel, event: { id: 3 }, shouldRespond: false },
-  ]);
-  const handleEvent = moxy();
-  const handleError = moxy();
+  const eventReports = [
+    { channel, event: { id: 1 }, response: undefined },
+    { channel, event: { id: 2 }, response: undefined },
+    { channel, event: { id: 3 }, response: undefined },
+  ];
+  const webhookHandler = moxy(async () => eventReports);
+  const responsesHandler = moxy(async () => {
+    res.end();
+  });
+  const issueEvent = moxy(async (_, event) => `Ok_${event.id}`);
+  const issueError = moxy();
 
   beforeEach(() => {
     req = moxy(new IncomingMessage());
@@ -34,31 +38,66 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
 
     res = moxy(new ServerResponse({}));
 
-    handleWebhook.mock.reset();
-    handleEvent.mock.reset();
-    handleError.mock.reset();
+    webhookHandler.mock.reset();
+    responsesHandler.mock.reset();
+    issueEvent.mock.reset();
+    issueError.mock.reset();
   });
 
   it('returns undefined', () => {
-    const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bindIssuer(handleEvent, handleError);
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
+    receiver.bindIssuer(issueEvent, issueError);
 
     expect(receiver.handleRequest(req, res, 'body')).toBe(undefined);
   });
 
-  it('get events from handleWebhook and pass to handleEvent', async () => {
-    const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bindIssuer(handleEvent, handleError);
+  it('ends res with 501 if no handler bound', async () => {
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
 
-    receiver.handleRequest(req, res, 'hi');
+    receiver.handleRequest(req, res, 'body');
 
     jest.runAllTimers();
     await nextTick();
 
-    expect(handleWebhook.mock).toHaveBeenCalledWith(req, res, 'hi');
+    expect(webhookHandler.mock).not.toHaveBeenCalled();
+    expect(issueEvent.mock).not.toHaveBeenCalled();
 
+    expect(res.end.mock).toHaveBeenCalled();
+    expect(res.statusCode).toBe(501);
+  });
+
+  it('reads body from req if raw body param not given', async () => {
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
+    receiver.bindIssuer(issueEvent, issueError);
+
+    req.mock.getter('method').fakeReturnValue('POST');
+    rawBody.mock.fake(() => Promise.resolve('some body'));
+
+    receiver.handleRequest(req, res);
+
+    jest.runAllTimers();
+    await nextTick();
+
+    expect(rawBody.mock.calls[0].args[0]).toBe(req);
+    expect(webhookHandler.mock).toHaveBeenCalledWith(req, res, 'some body');
+
+    rawBody.mock.reset();
+  });
+
+  it('get events from webhookHandler and pass to issueEvent', async () => {
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
+    receiver.bindIssuer(issueEvent, issueError);
+
+    receiver.handleRequest(req, res, 'hi');
+    jest.runAllTimers();
+    await nextTick();
+
+    expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+    expect(webhookHandler.mock).toHaveBeenCalledWith(req, res, 'hi');
+
+    expect(issueEvent.mock).toHaveBeenCalledTimes(3);
     for (let i = 1; i < 4; i += 1) {
-      expect(handleEvent.mock).toHaveBeenNthCalledWith(
+      expect(issueEvent.mock).toHaveBeenNthCalledWith(
         i,
         channel,
         { id: i },
@@ -73,165 +112,149 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
         }
       );
     }
+
+    expect(responsesHandler.mock).toHaveBeenCalledTimes(1);
+
+    await expect(Promise.all(issueEvent.mock.calls.map(c => c.result))).resolves
+      .toMatchInlineSnapshot(`
+Array [
+  "Ok_1",
+  "Ok_2",
+  "Ok_3",
+]
+`);
   });
 
-  it('reads body from req if body not given', async () => {
-    const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bindIssuer(handleEvent, handleError);
+  it('ends res with 501 if eventHandler not end it and return no events', async () => {
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
+    receiver.bindIssuer(issueEvent, issueError);
 
-    req.mock.getter('method').fakeReturnValue('POST');
-    rawBody.mock.fake(() => Promise.resolve('some body'));
-
-    receiver.handleRequest(req, res);
-
-    jest.runAllTimers();
-    await nextTick();
-
-    expect(rawBody.mock.calls[0].args[0]).toBe(req);
-    expect(handleWebhook.mock).toHaveBeenCalledWith(req, res, 'some body');
-
-    rawBody.mock.reset();
-  });
-
-  it('ends res with 501 if no handler bound', async () => {
-    const receiver = new WebhookReceiver(handleWebhook);
-
+    webhookHandler.mock.fakeReturnValue(undefined);
     receiver.handleRequest(req, res, 'body');
 
     jest.runAllTimers();
     await nextTick();
 
-    expect(handleWebhook.mock).not.toHaveBeenCalled();
-    expect(handleEvent.mock).not.toHaveBeenCalled();
+    expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+    expect(responsesHandler.mock).not.toHaveBeenCalled();
+    expect(issueEvent.mock).not.toHaveBeenCalled();
 
     expect(res.end.mock).toHaveBeenCalled();
     expect(res.statusCode).toBe(501);
   });
 
-  it('ends res with 200 if no event returned by handleRequest', async () => {
-    const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bindIssuer(handleEvent, handleError);
+  it('pass eventReports back to responsesHandler with response attached', async () => {
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
+    receiver.bindIssuer(issueEvent, issueError);
 
-    handleWebhook.mock.fakeReturnValue(undefined);
-    receiver.handleRequest(req, res, 'body');
+    receiver.handleRequest(req, res, 'hi');
+    jest.runAllTimers();
+    await nextTick();
+
+    expect(webhookHandler.mock).toHaveBeenCalledWith(req, res, 'hi');
 
     jest.runAllTimers();
     await nextTick();
 
-    expect(handleWebhook.mock).toHaveBeenCalledTimes(1);
-    expect(handleEvent.mock).not.toHaveBeenCalled();
+    expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+    expect(issueEvent.mock).toHaveBeenCalledTimes(3);
 
-    expect(res.end.mock).toHaveBeenCalled();
-    expect(res.statusCode).toBe(200);
-  });
-
-  it('ends res with 200 if no shouldRespond event found', async () => {
-    const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bindIssuer(handleEvent, handleError);
-
-    receiver.handleRequest(req, res, 'body');
-
-    jest.runAllTimers();
-    await nextTick();
-
-    expect(res.end.mock).toHaveBeenCalled();
-    expect(res.statusCode).toBe(200);
-  });
-
-  const shouldRespondEvents = [
-    { channel, event: { id: 1 }, shouldRespond: true },
-  ];
-
-  it('ends res with retruned response object', async () => {
-    const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bindIssuer(handleEvent, handleError);
-
-    handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
-    handleEvent.mock.fakeReturnValue({ status: 201, body: 'success body' });
-
-    receiver.handleRequest(req, res, 'body');
-
-    jest.runAllTimers();
-    await nextTick();
-
-    expect(res.statusCode).toBe(201);
-    expect(res.end.mock.calls[0].args[0]).toBe('success body');
-  });
-
-  it('ends res body with json if object returned as body', async () => {
-    const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bindIssuer(handleEvent, handleError);
-
-    handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
-    handleEvent.mock.fakeReturnValue({ status: 201, body: { success: true } });
-
-    receiver.handleRequest(req, res, 'body');
-
-    jest.runAllTimers();
-    await nextTick();
-
-    expect(handleEvent.mock).toHaveBeenCalledTimes(1);
-    expect(handleEvent.mock).toHaveBeenCalledWith(
-      channel,
-      { id: 1 },
-      {
-        source: 'webhook',
-        request: {
-          method: 'POST',
-          url: '/hello',
-          headers: { wonderful: 'world' },
-          body: 'body',
-        },
-      }
+    expect(responsesHandler.mock).toHaveBeenCalledTimes(1);
+    expect(responsesHandler.mock).toHaveBeenCalledWith(
+      req,
+      res,
+      eventReports.map(report => ({
+        ...report,
+        response: `Ok_${report.event.id}`,
+      }))
     );
 
-    expect(res.statusCode).toBe(201);
-    expect(res.end.mock.calls[0].args[0]).toBe('{"success":true}');
+    expect(res.statusCode).toBe(200);
   });
 
-  it('ends res with 501 if shouldRespond but empty returned', async () => {
-    const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bindIssuer(handleEvent, handleError);
+  it('not call responsesHandler if res already ended in webhookHandler', async () => {
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
+    receiver.bindIssuer(issueEvent, issueError);
 
-    handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
+    webhookHandler.mock.fake(async () => {
+      res.end();
+      return eventReports;
+    });
 
-    receiver.handleRequest(req, res, 'body');
-
+    receiver.handleRequest(req, res, 'hi');
     jest.runAllTimers();
     await nextTick();
 
+    expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+    expect(issueEvent.mock).toHaveBeenCalledTimes(3);
+
+    expect(webhookHandler.mock).toHaveBeenCalledWith(req, res, 'hi');
+    expect(responsesHandler.mock).not.toHaveBeenCalled();
+  });
+
+  it('end res with 501 if both webhookHandler and responsesHandler not end it', async () => {
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
+    receiver.bindIssuer(issueEvent, issueError);
+
+    responsesHandler.mock.fake(async () => {});
+
+    receiver.handleRequest(req, res, 'hi');
+    jest.runAllTimers();
+    await nextTick();
+
+    expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+    expect(issueEvent.mock).toHaveBeenCalledTimes(3);
+    expect(responsesHandler.mock).toHaveBeenCalledTimes(1);
+
+    expect(res.end.mock).toHaveBeenCalledTimes(1);
     expect(res.statusCode).toBe(501);
-    expect(res.end.mock).toHaveBeenCalled();
   });
 
-  it('ends res with 500 if error thrown', async () => {
-    const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bindIssuer(handleEvent, handleError);
-    handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
+  it('end res with 501 if webhookHandler not end it and no responsesHandler given', async () => {
+    const receiver = new WebhookReceiver(webhookHandler);
+    receiver.bindIssuer(issueEvent, issueError);
 
-    const err = new Error();
-    handleEvent.mock.fake(() => Promise.reject(err));
+    responsesHandler.mock.fake(async () => {});
 
+    receiver.handleRequest(req, res, 'hi');
+    jest.runAllTimers();
+    await nextTick();
+
+    expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+    expect(issueEvent.mock).toHaveBeenCalledTimes(3);
+    expect(res.end.mock).toHaveBeenCalledTimes(1);
+    expect(res.statusCode).toBe(501);
+  });
+
+  it('ends res with 500 if error thrown in issueEvent', async () => {
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
+    receiver.bindIssuer(issueEvent, issueError);
+
+    issueEvent.mock.fake(() => Promise.reject(new Error('FAIL')));
     receiver.handleRequest(req, res, 'body');
 
     jest.runAllTimers();
     await nextTick();
 
-    expect(handleError.mock).toHaveBeenCalledWith(err);
+    expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+    expect(issueEvent.mock).toHaveBeenCalledTimes(3);
+    expect(responsesHandler.mock).not.toHaveBeenCalled();
+
+    expect(issueError.mock).toHaveBeenCalledTimes(1);
+    expect(issueError.mock).toHaveBeenCalledWith(new Error('FAIL'));
 
     expect(res.statusCode).toBe(500);
     expect(res.end.mock.calls[0].args[0]).toBe(undefined);
   });
 
-  it('ends res with "status" and "body" prop of error thrown if given', async () => {
-    const receiver = new WebhookReceiver(handleWebhook);
-    receiver.bindIssuer(handleEvent, handleError);
-    handleWebhook.mock.fakeReturnValue(shouldRespondEvents);
+  it('ends res with "status" and "body" prop of error thrown in issueEvent', async () => {
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
+    receiver.bindIssuer(issueEvent, issueError);
 
     const err = new Error();
     err.status = 555;
     err.body = 'YOU LOSE!';
-    handleEvent.mock.fake(async () => {
+    issueEvent.mock.fake(async () => {
       throw err;
     });
 
@@ -240,9 +263,51 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     jest.runAllTimers();
     await nextTick();
 
-    expect(handleError.mock).toHaveBeenCalledWith(err);
+    expect(issueError.mock).toHaveBeenCalledWith(err);
 
     expect(res.statusCode).toBe(555);
     expect(res.end.mock.calls[0].args[0]).toBe('YOU LOSE!');
+  });
+
+  it('ends res with 500 if error thrown in webhookHandler', async () => {
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
+    receiver.bindIssuer(issueEvent, issueError);
+
+    webhookHandler.mock.fake(() => Promise.reject(new Error('FAIL')));
+    receiver.handleRequest(req, res, 'body');
+
+    jest.runAllTimers();
+    await nextTick();
+
+    expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+    expect(issueEvent.mock).not.toHaveBeenCalled();
+    expect(responsesHandler.mock).not.toHaveBeenCalled();
+
+    expect(issueError.mock).toHaveBeenCalledTimes(1);
+    expect(issueError.mock).toHaveBeenCalledWith(new Error('FAIL'));
+
+    expect(res.statusCode).toBe(500);
+    expect(res.end.mock.calls[0].args[0]).toBe(undefined);
+  });
+
+  it('ends res with 500 if error thrown in responsesHandler', async () => {
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
+    receiver.bindIssuer(issueEvent, issueError);
+
+    responsesHandler.mock.fake(() => Promise.reject(new Error('FAIL')));
+    receiver.handleRequest(req, res, 'body');
+
+    jest.runAllTimers();
+    await nextTick();
+
+    expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+    expect(issueEvent.mock).toHaveBeenCalledTimes(3);
+    expect(responsesHandler.mock).toHaveBeenCalledTimes(1);
+
+    expect(issueError.mock).toHaveBeenCalledTimes(1);
+    expect(issueError.mock).toHaveBeenCalledWith(new Error('FAIL'));
+
+    expect(res.statusCode).toBe(500);
+    expect(res.end.mock.calls[0].args[0]).toBe(undefined);
   });
 });

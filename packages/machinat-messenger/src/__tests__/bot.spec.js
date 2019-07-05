@@ -172,7 +172,10 @@ Object {
     expect(Controller.mock).toHaveBeenCalledWith('messenger', bot, []);
 
     expect(WebhookReceiver.mock).toHaveBeenCalledTimes(1);
-    expect(WebhookReceiver.mock).toHaveBeenCalledWith(expect.any(Function));
+    expect(WebhookReceiver.mock).toHaveBeenCalledWith(
+      expect.any(Function),
+      expect.any(Function)
+    );
   });
 
   it('pass middlewares from plugins to controller and engine', () => {

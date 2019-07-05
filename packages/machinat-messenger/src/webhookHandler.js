@@ -5,9 +5,13 @@ import crypto from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import type {
   WebhookHandler,
-  WebhookEventReport,
+  ResponsesHandler,
 } from 'machinat-webhook-receiver/types';
-import type { MessengerBotOptions, MessengerEvent } from './types';
+import type {
+  MessengerBotOptions,
+  MessengerEvent,
+  MessengerResponse,
+} from './types';
 
 import createEvent from './event';
 import MessengerChannel from './channel';
@@ -17,13 +21,13 @@ const endRes = (res, code, body) => {
   res.end(body);
 };
 
-const handleWebhook = (
+export const handleWebhook = (
   options: MessengerBotOptions
-): WebhookHandler<MessengerChannel, MessengerEvent> => (
-  req: IncomingMessage,
-  res: ServerResponse,
-  rawBody?: string
-) => {
+): WebhookHandler<
+  MessengerChannel,
+  MessengerEvent,
+  MessengerResponse
+> => async (req: IncomingMessage, res: ServerResponse, rawBody?: string) => {
   const {
     shouldVerifyWebhook,
     verifyToken,
@@ -83,30 +87,57 @@ const handleWebhook = (
     return null;
   }
 
-  const reports: WebhookEventReport<MessengerChannel, MessengerEvent>[] = [];
+  const reports = [];
+
+  let shouldWaitForRespond = false;
 
   for (const { messaging, stanby } of body.entry) {
     const isStandby = stanby !== undefined;
     const rawEvents = isStandby ? stanby : messaging;
 
-    for (const raw of rawEvents) {
-      const event = createEvent(isStandby, raw);
+    for (const rawEvent of rawEvents) {
+      const event = createEvent(isStandby, rawEvent);
       const { type, payload } = event;
 
-      const source =
+      const channel = new MessengerChannel(
         type === 'optin' && payload.sender === undefined
           ? { user_ref: payload.optin.user_ref }
-          : payload.sender;
-      const channel = new MessengerChannel(source);
+          : payload.sender
+      );
 
-      const shouldRespond =
-        type === 'checkout_update' || type === 'pre_checkout';
+      if (type === 'checkout_update' || type === 'pre_checkout') {
+        shouldWaitForRespond = true;
+      }
 
-      reports.push({ event, channel, shouldRespond });
+      reports.push({ event, channel, response: undefined });
     }
+  }
+
+  if (!shouldWaitForRespond) {
+    endRes(res, 200);
   }
 
   return reports;
 };
 
-export default handleWebhook;
+export const handleResponses = (): ResponsesHandler<
+  MessengerChannel,
+  MessengerEvent,
+  MessengerResponse
+> => async (req, res, reports) => {
+  for (const { event, response } of reports) {
+    const { type } = event;
+
+    if (type === 'checkout_update' || type === 'pre_checkout') {
+      if (typeof response === 'object') {
+        endRes(res, 200, JSON.stringify(response));
+      } else {
+        endRes(res, 501);
+      }
+
+      return;
+    }
+  }
+
+  endRes(res, 200);
+};

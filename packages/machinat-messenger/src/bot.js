@@ -8,14 +8,11 @@ import WebhookReceiver from 'machinat-webhook-receiver';
 
 import type { MachinatNode } from 'machinat/types';
 import type { MachinatBot } from 'machinat-base/types';
-import type {
-  WebhookResponse,
-  WebhookMetadata,
-} from 'machinat-webhook-receiver/types';
+import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
 
 import MessengerWorker from './worker';
-import handleWebhook from './handleWebhook';
+import { handleWebhook, handleResponses } from './webhookHandler';
 import generalComponentDelegate from './component/general';
 
 import { MESSENGER_NATIVE_TYPE } from './constant';
@@ -26,6 +23,7 @@ import type {
   MessengerSource,
   MessengerBotOptions,
   MessengerEvent,
+  MessengerResponse,
   MessengerComponent,
   MessengerJob,
   MessengerAPIResult,
@@ -36,7 +34,11 @@ import type {
 
 type MessengerBotOptionsInput = $Shape<MessengerBotOptions>;
 
-type MessengerReceiver = WebhookReceiver<MessengerChannel, MessengerEvent>;
+type MessengerReceiver = WebhookReceiver<
+  MessengerChannel,
+  MessengerEvent,
+  MessengerResponse
+>;
 
 const MESSENGER = 'messenger';
 const POST = 'POST';
@@ -57,7 +59,7 @@ export default class MessengerBot
       MessengerChannel,
       MessengerEvent,
       WebhookMetadata,
-      WebhookResponse,
+      MessengerResponse,
       MessengerSegmentValue,
       MessengerComponent,
       MessengerJob,
@@ -72,7 +74,7 @@ export default class MessengerBot
     MessengerChannel,
     MessengerEvent,
     WebhookMetadata,
-    WebhookResponse,
+    MessengerResponse,
     MessengerSegmentValue,
     MessengerComponent
   >;
@@ -124,7 +126,10 @@ export default class MessengerBot
     );
 
     this.controller = new Controller(MESSENGER, this, eventMiddlewares);
-    this.receiver = new WebhookReceiver(handleWebhook(options));
+    this.receiver = new WebhookReceiver(
+      handleWebhook(options),
+      handleResponses()
+    );
 
     this.receiver.bindIssuer(
       this.controller.eventIssuerThroughMiddlewares(this.emitEvent.bind(this)),
