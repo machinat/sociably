@@ -58,6 +58,7 @@ class NextReceiver
             method: req.method,
             url: req.url,
             headers: req.headers,
+            encrypted: !!(req: any).connection.encrypted,
           },
         }
       );

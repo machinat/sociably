@@ -17,10 +17,7 @@ const webSocketServer = moxy({
   },
 });
 
-const req = moxy(new IncomingMessage());
-req.mock.getter('method').fakeReturnValue('GET');
-req.mock.getter('url').fakeReturnValue('/hello');
-req.mock.getter('headers').fakeReturnValue({ foo: 'bar' });
+const req = moxy(new IncomingMessage({}));
 
 const netSocket = moxy({
   write() {},
@@ -37,7 +34,12 @@ beforeEach(() => {
   distributor.mock.clear();
   webSocketServer.mock.clear();
   netSocket.mock.clear();
-  req.mock.clear();
+
+  req.mock.reset();
+  req.mock.getter('method').fakeReturnValue('GET');
+  req.mock.getter('url').fakeReturnValue('/hello');
+  req.mock.getter('headers').fakeReturnValue({ foo: 'bar' });
+
   issueEvent.mock.reset();
   issueError.mock.reset();
 });
@@ -69,6 +71,29 @@ it('handle upgrade and pass Socket to distributor', () => {
     method: 'GET',
     url: '/hello',
     headers: { foo: 'bar' },
+    encrypted: false,
+  });
+  expect(typeof socket.id).toBe('string');
+
+  expect(ws.on.mock).toHaveBeenCalled();
+});
+
+it('set socket.request.encrypted to true if socket is encrypted', () => {
+  const receiver = new Receiver(webSocketServer, distributor, {});
+  receiver.bindIssuer(issueEvent, issueError);
+
+  req.socket.mock.getter('encrypted').fakeReturnValue(true);
+
+  expect(receiver.handleUpgrade(req, netSocket, head)).toBe(undefined);
+
+  expect(distributor.consignSocket.mock).toHaveBeenCalledTimes(1);
+  const socket = distributor.consignSocket.mock.calls[0].args[0];
+  expect(socket).toBeInstanceOf(Socket);
+  expect(socket.request).toEqual({
+    method: 'GET',
+    url: '/hello',
+    headers: { foo: 'bar' },
+    encrypted: true,
   });
   expect(typeof socket.id).toBe('string');
 
@@ -103,6 +128,7 @@ it('verify upgrade if options.verifyUpgrade provided', () => {
     method: 'GET',
     url: '/hello',
     headers: { foo: 'bar' },
+    encrypted: false,
   });
 
   expect(webSocketServer.handleUpgrade.mock).toHaveBeenCalledTimes(1);
@@ -240,6 +266,7 @@ it('issue @connect event', () => {
     method: 'GET',
     url: '/hello',
     headers: {},
+    encrypted: false,
   };
   const socket = new Socket(new WS(/* mocked */), '_id_', request);
 
@@ -262,6 +289,7 @@ it('issue @disconnect event', () => {
     method: 'GET',
     url: '/hello',
     headers: {},
+    encrypted: false,
   };
   const socket = new Socket(new WS(/* mocked */), '_id_', request);
 
@@ -289,6 +317,7 @@ it('issue customized event', () => {
     method: 'GET',
     url: '/hello',
     headers: {},
+    encrypted: false,
   };
   const socket = new Socket(new WS(/* mocked */), '_id_', request);
 

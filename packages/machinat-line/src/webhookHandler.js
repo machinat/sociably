@@ -4,7 +4,6 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import type {
   WebhookHandler,
   WebhookEventReport,
-  ResponsesHandler,
 } from 'machinat-webhook-receiver/types';
 
 import createEvent from './event';

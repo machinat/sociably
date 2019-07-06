@@ -6,6 +6,7 @@ export type NextMetadata = {|
     method: string,
     url: string,
     headers: {| [string]: string |},
+    encrypted: boolean,
   |},
 |};
 

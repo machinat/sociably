@@ -31,7 +31,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
   const issueError = moxy();
 
   beforeEach(() => {
-    req = moxy(new IncomingMessage());
+    req = moxy(new IncomingMessage({}));
     req.mock.getter('method').fakeReturnValue('POST');
     req.mock.getter('url').fakeReturnValue('/hello');
     req.mock.getter('headers').fakeReturnValue({ wonderful: 'world' });
@@ -108,6 +108,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
             url: '/hello',
             headers: { wonderful: 'world' },
             body: 'hi',
+            encrypted: false,
           },
         }
       );
@@ -123,6 +124,36 @@ Array [
   "Ok_3",
 ]
 `);
+  });
+
+  it('set metadata.request.encrypted to true if req is encrypted', async () => {
+    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
+    receiver.bindIssuer(issueEvent, issueError);
+
+    req.socket.mock.getter('encrypted').fakeReturnValue(true);
+
+    receiver.handleRequest(req, res, 'hi');
+    jest.runAllTimers();
+    await nextTick();
+
+    expect(issueEvent.mock).toHaveBeenCalledTimes(3);
+    for (let i = 1; i < 4; i += 1) {
+      expect(issueEvent.mock).toHaveBeenNthCalledWith(
+        i,
+        channel,
+        { id: i },
+        {
+          source: 'webhook',
+          request: {
+            method: 'POST',
+            url: '/hello',
+            headers: { wonderful: 'world' },
+            body: 'hi',
+            encrypted: true,
+          },
+        }
+      );
+    }
   });
 
   it('ends res with 501 if eventHandler not end it and return no events', async () => {

@@ -81,6 +81,7 @@ class WebSocketReceiver
       method: req.method,
       url: req.url,
       headers: req.headers,
+      encrypted: !!(req: any).connection.encrypted,
     };
 
     if (this.options.verifyUpgrade) {

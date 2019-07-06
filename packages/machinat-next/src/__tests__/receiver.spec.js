@@ -9,7 +9,7 @@ const next = moxy({
   renderError: async () => {},
 });
 
-const req = moxy(new IncomingMessage());
+const req = moxy(new IncomingMessage({}));
 const res = moxy(new ServerResponse({ method: 'GET' }));
 req.mock.getter('method').fakeReturnValue('GET');
 req.mock.getter('url').fakeReturnValue('http://machinat.com/hello?foo=bar');
@@ -79,11 +79,37 @@ it('render', async () => {
         method: 'GET',
         url: 'http://machinat.com/hello?foo=bar',
         headers: { 'x-y-z': 'abc' },
+        encrypted: false,
       },
     }
   );
 
   expect(res.mock.setter('statusCode')).not.toHaveBeenCalled();
+});
+
+it('set metadata.request.encrypted to true if req is encrypted', async () => {
+  const receiver = new NextReceiver(next);
+  receiver.bindIssuer(issueEvent, issueError);
+
+  req.socket.mock.getter('encrypted').fakeReturnValue(true);
+
+  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  await nextTick();
+
+  expect(issueEvent.mock).toHaveBeenCalledTimes(1);
+  expect(issueEvent.mock).toHaveBeenCalledWith(
+    expect.any(Object),
+    expect.any(Object),
+    {
+      source: 'next',
+      request: {
+        method: 'GET',
+        url: 'http://machinat.com/hello?foo=bar',
+        headers: { 'x-y-z': 'abc' },
+        encrypted: true,
+      },
+    }
+  );
 });
 
 it('render with params return by event issuer', async () => {

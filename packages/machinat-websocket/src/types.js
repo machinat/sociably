@@ -44,6 +44,7 @@ export type RequestInfo = {|
   method: string,
   url: string,
   headers: {| [string]: string |},
+  encrypted: boolean,
 |};
 
 export type WebSocketMetadata = {|

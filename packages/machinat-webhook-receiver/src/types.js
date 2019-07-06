@@ -9,6 +9,7 @@ export type WebhookMetadata = {|
     url: string,
     headers: {| [string]: string |},
     body: string,
+    encrypted: boolean,
   |},
 |};
 

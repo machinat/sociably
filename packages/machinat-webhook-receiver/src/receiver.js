@@ -77,6 +77,7 @@ class WebhookReceiver<
             url: req.url,
             headers: req.headers,
             body: body || '',
+            encrypted: !!(req: any).connection.encrypted,
           },
         };
 
