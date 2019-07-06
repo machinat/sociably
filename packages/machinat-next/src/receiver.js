@@ -33,12 +33,10 @@ class NextReceiver
 
   async _handleRequestImpl(req: IncomingMessage, res: ServerResponse) {
     const next = this._next;
-    const { pathname, query } = url.parse(req.url, true);
 
     try {
       if (!this.isBound) {
-        res.statusCode = 501; // eslint-disable-line no-param-reassign
-        await next.renderError(null, req, res, pathname, query);
+        await this._renderErrorWithCode(req, res, 501);
         return;
       }
 
@@ -47,10 +45,7 @@ class NextReceiver
         {
           platform: 'next',
           type: 'request',
-          payload: {
-            pathname: pathname || '',
-            query: query || {},
-          },
+          payload: { req, res },
         },
         {
           source: 'next',
@@ -64,16 +59,27 @@ class NextReceiver
       );
 
       if (!response) {
-        res.statusCode = 501; // eslint-disable-line no-param-reassign
-        await next.renderError(null, req, res, pathname, query);
+        await this._renderErrorWithCode(req, res, 501);
         return;
       }
 
       await next.render(req, res, response.pathname, response.query);
     } catch (err) {
       this._issueError(err);
+
+      const { pathname, query } = url.parse(req.url, true);
       await next.renderError(err, req, res, pathname, query);
     }
+  }
+
+  async _renderErrorWithCode(
+    req: IncomingMessage,
+    res: ServerResponse,
+    code: number
+  ) {
+    const { pathname, query } = url.parse(req.url, true);
+    res.statusCode = code; // eslint-disable-line no-param-reassign
+    await this._next.renderError(null, req, res, pathname, query);
   }
 }
 

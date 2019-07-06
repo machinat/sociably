@@ -68,10 +68,7 @@ it('render', async () => {
     {
       platform: 'next',
       type: 'request',
-      payload: {
-        pathname: '/hello',
-        query: { foo: 'bar' },
-      },
+      payload: { req, res },
     },
     {
       source: 'next',

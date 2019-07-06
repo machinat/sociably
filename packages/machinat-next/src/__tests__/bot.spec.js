@@ -1,3 +1,4 @@
+import { IncomingMessage, ServerResponse } from 'http';
 import moxy from 'moxy';
 import { Controller } from 'machinat-base';
 import NextBot from '../bot';
@@ -55,11 +56,11 @@ describe('#constructor(options)', () => {
   });
 
   it('issue event & error', async () => {
-    const payload = { pathname: '/hello', query: { foo: 'bar' } };
-
-    const eventIssuerSpy = moxy(() => Promise.resolve(payload));
+    const eventIssuerSpy = moxy();
     Controller.mock.fake(function FakeController() {
-      return { eventIssuerThroughMiddlewares: () => eventIssuerSpy };
+      return {
+        eventIssuerThroughMiddlewares: () => eventIssuerSpy,
+      };
     });
 
     const bot = new NextBot({ nextApp });
@@ -76,25 +77,88 @@ describe('#constructor(options)', () => {
     const finalPublisher =
       bot.controller.eventIssuerThroughMiddlewares.mock.calls[0].args[0];
 
-    const channel = { platform: 'next', type: 'server' };
-    const event = { platform: 'next', type: 'request', payload };
-    const metadata = { source: 'next', request: '...' };
-    const frame = { channel, event, metadata };
+    const req = moxy(new IncomingMessage({}));
+    req.mock.getter('url').fakeReturnValue('/hello?foo=bar');
+    const res = moxy(new ServerResponse({}));
 
-    expect(finalPublisher(frame)).toBe(payload);
+    const channel = { platform: 'next', type: 'server' };
+    const event = { platform: 'next', type: 'request', payload: { req, res } };
+    const metadata = { source: 'next', request: '...' };
+
+    const expectedResponse = {
+      pathname: '/hello',
+      query: { foo: 'bar' },
+    };
+
+    expect(finalPublisher({ channel, event, metadata })).toEqual(
+      expectedResponse
+    );
 
     expect(eventListener.mock).toHaveBeenCalledTimes(1);
-    expect(eventListener.mock).toHaveBeenCalledWith(frame);
+    expect(eventListener.mock).toHaveBeenCalledWith({
+      channel,
+      metadata,
+      event: { ...event, payload: {} },
+    });
 
     const [issueEvent, issueError] = bot.receiver.bindIssuer.mock.calls[0].args;
 
-    await expect(issueEvent(channel, event, metadata)).resolves.toBe(payload);
+    eventIssuerSpy.mock.fake(async () => expectedResponse);
+    await expect(issueEvent(channel, event, metadata)).resolves.toEqual(
+      expectedResponse
+    );
+
     expect(eventIssuerSpy.mock).toHaveBeenCalledTimes(1);
     expect(eventIssuerSpy.mock).toHaveBeenCalledWith(channel, event, metadata);
 
     expect(issueError(new Error('NO'))).toBe(undefined);
     expect(errorListener.mock).toHaveBeenCalledTimes(1);
     expect(errorListener.mock).toHaveBeenCalledWith(new Error('NO'));
+  });
+
+  it('remove req and res of event payload before publish it', async () => {
+    Controller.mock.fake(function FakeController() {
+      return { eventIssuerThroughMiddlewares: () => async () => {} };
+    });
+
+    const bot = new NextBot({ nextApp });
+
+    const eventListener = moxy();
+    bot.onEvent(eventListener);
+
+    expect(
+      bot.controller.eventIssuerThroughMiddlewares.mock
+    ).toHaveBeenCalledTimes(1);
+    const finalPublisher =
+      bot.controller.eventIssuerThroughMiddlewares.mock.calls[0].args[0];
+
+    const channel = { platform: 'next', type: 'server' };
+    const metadata = { source: 'next', request: '...' };
+    const event = {
+      platform: 'next',
+      type: 'request',
+      payload: {
+        req: new IncomingMessage({}),
+        res: new ServerResponse({}),
+        foo: 'bar',
+        other: 'props attached by middlewares',
+      },
+    };
+
+    finalPublisher({ event, channel, metadata });
+
+    expect(eventListener.mock).toHaveBeenCalledTimes(1);
+    expect(eventListener.mock).toHaveBeenCalledWith({
+      channel,
+      metadata,
+      event: {
+        ...event,
+        payload: {
+          foo: 'bar',
+          other: 'props attached by middlewares',
+        },
+      },
+    });
   });
 });
 

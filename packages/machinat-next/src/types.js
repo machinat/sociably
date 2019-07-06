@@ -1,4 +1,5 @@
 // @flow
+import type { IncomingMessage, ServerResponse } from 'http';
 
 export type NextMetadata = {|
   source: 'next',
@@ -18,5 +19,8 @@ export type NextParams = {
 export type NextEvent = {|
   platform: 'next',
   type: 'request',
-  payload: NextParams,
+  payload: {
+    req?: IncomingMessage,
+    res?: ServerResponse,
+  },
 |};

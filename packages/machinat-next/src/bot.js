@@ -1,4 +1,5 @@
 // @flow
+import url from 'url';
 import invariant from 'invariant';
 import { Emitter, Controller, resolvePlugins } from 'machinat-base';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
@@ -65,8 +66,19 @@ class NextServerBot
     this.controller = new Controller(NEXT, this, eventMiddlewares);
 
     const issueEvent = this.controller.eventIssuerThroughMiddlewares(frame => {
+      const { payload } = frame.event;
+
+      frame.event.payload = {
+        ...payload,
+        req: undefined,
+        res: undefined,
+      };
+
       this.emitEvent(frame);
-      return frame.event.payload;
+
+      const { pathname, query } = url.parse((payload.req: any).url, true);
+
+      return { pathname: pathname || '', query: query || {} };
     });
 
     this.receiver.bindIssuer(issueEvent, this.emitError.bind(this));
