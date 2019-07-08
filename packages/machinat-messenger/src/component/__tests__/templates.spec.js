@@ -104,7 +104,7 @@ describe('templates Components', () => {
     expect(Item.$$namespace).toBe('Messenger');
   });
 
-  describe('GenericItem', async () => {
+  describe('GenericItem', () => {
     beforeEach(() => {
       renderInner.mock.fake(async node =>
         node && node.type === URLButton

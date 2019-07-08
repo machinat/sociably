@@ -25,9 +25,8 @@
     "@babel/plugin-transform-react-jsx": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
     "@babel/preset-flow": "^7.0.0",
-    "babel-core": "^7.0.0-0",
     "babel-eslint": "^10.0.0",
-    "babel-jest": "^23.6.0",
+    "babel-jest": "^24.8.0",
     "babel-plugin-dev-expression": "^0.2.1",
     "eslint": "^5.3.0",
     "eslint-config-airbnb-base": "^13.1.0",
@@ -39,13 +38,11 @@
     "eslint-plugin-react": "^7.14.2",
     "flow-bin": "^0.93.0",
     "husky": "^3.0.0",
-    "jest": "^23.6.0",
+    "jest": "^24.8.0",
     "lerna": "^2.9.0",
     "moxy": "0.1.0-8",
     "nock": "^10.0.3",
-    "nodemon": "^1.18.4",
-    "prettier": "^1.18.2",
-    "regenerator-runtime": "^0.11.1"
+    "prettier": "^1.18.2"
   },
   "workspaces": [
     "packages/*"

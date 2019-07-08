@@ -347,7 +347,7 @@ describe('#send(message, options)', () => {
   });
 });
 
-describe('#createMessageCreative(message)', async () => {
+describe('#createMessageCreative(message)', () => {
   it('resolves null if message is empty', async () => {
     const bot = new MessengerBot({
       accessToken: '_ACCESS_TOKEN_',
