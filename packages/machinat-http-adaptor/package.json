@@ -10,7 +10,7 @@
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
-  "files": ["lib/*", "koa.js", "README.md"],
+  "files": ["lib/*", "README.md"],
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {}

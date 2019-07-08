@@ -1,7 +1,8 @@
 // @flow
 import type { IncomingMessage } from 'http';
+import type { HTTPRequestReceivable, HTTPUpgradeReceivable } from './types';
 
-class Router<Bot> {
+class Router<Bot: HTTPRequestReceivable<any> | HTTPUpgradeReceivable<any>> {
   routings: { matcher: IncomingMessage => boolean, bot: Bot }[];
   defaultBot: void | Bot;
 

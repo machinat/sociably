@@ -18,7 +18,7 @@ const connectRequest = <Receiver: HTTPRequestReceiver>(
 
       if (bot === undefined) {
         res.statusCode = 404; // eslint-disable-line no-param-reassign
-        res.end();
+        res.end('Not Found');
         return;
       }
 

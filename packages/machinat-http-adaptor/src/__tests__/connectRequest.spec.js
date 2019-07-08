@@ -59,4 +59,5 @@ it('respond 404 when bot provider function returns undefined', () => {
 
   expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(404);
   expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end.mock).toHaveBeenCalledWith('Not Found');
 });
