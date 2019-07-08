@@ -2,15 +2,15 @@
 /* eslint-disable camelcase */
 import crypto from 'crypto';
 import type { MachinatChannel } from 'machinat-base/types';
-
 import type { MessengerSource } from './types';
+import { MESSENGER } from './constant';
 
 class MessengerChannel implements MachinatChannel {
   uid: string;
   source: MessengerSource;
   pageId: ?string;
 
-  platform = 'messenger';
+  platform = MESSENGER;
   type = 'chat';
   subtype = 'user';
   allowPause = true;

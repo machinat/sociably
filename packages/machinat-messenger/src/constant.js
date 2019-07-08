@@ -1,5 +1,5 @@
 // @flow
-export const MESSNEGER = 'messenger';
+export const MESSENGER = 'messenger';
 export const MESSENGER_NAMESPACE = 'Messenger';
 export const MESSENGER_NATIVE_TYPE = Symbol.for('machinat.messenger.native');
 

@@ -15,7 +15,7 @@ import MessengerWorker from './worker';
 import { handleWebhook, handleResponses } from './webhookHandler';
 import generalComponentDelegate from './component/general';
 
-import { MESSENGER_NATIVE_TYPE } from './constant';
+import { MESSENGER, MESSENGER_NATIVE_TYPE } from './constant';
 import MessengerChannel from './channel';
 import { createChatJobs, createCreativeJobs } from './job';
 
@@ -40,7 +40,6 @@ type MessengerReceiver = WebhookReceiver<
   MessengerResponse
 >;
 
-const MESSENGER = 'messenger';
 const POST = 'POST';
 
 export default class MessengerBot

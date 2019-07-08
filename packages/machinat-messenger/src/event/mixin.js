@@ -1,8 +1,9 @@
 // @flow
 import { toJSONWithProto } from 'machinat-utility';
+import { MESSENGER } from '../constant';
 
 export const EventBase = {
-  platform: 'messenger',
+  platform: MESSENGER,
 
   get user() {
     return this.payload.sender;

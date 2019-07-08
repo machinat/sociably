@@ -3,7 +3,7 @@ import type { MachinatNativeComponent } from 'machinat/types';
 import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type MachinatQueue from 'machinat-queue';
 import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
-import type MessnegerChannel from './channel';
+import type MessengerChannel from './channel';
 
 type PSIDSource = {| id: string |};
 type UserRefSource = {| user_ref: string |};
@@ -120,7 +120,7 @@ export type MessengerBotOptions = {
   respondTimeout: number,
   consumeInterval?: number,
   plugins?: BotPlugin<
-    MessnegerChannel,
+    MessengerChannel,
     MessengerEvent,
     WebhookMetadata,
     MessengerResponse,
