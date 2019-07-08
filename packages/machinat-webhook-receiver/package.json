@@ -1,7 +1,16 @@
 {
   "name": "machinat-webhook-receiver",
   "version": "0.0.1-0",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/lrills/machinat.git",
+    "directory": "packages/machinat-webhook-receiver"
+  },
+  "homepage": "https://github.com/lrills/machinat#readme",
+  "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
+  "files": ["lib/*", "README.md"],
   "license": "MIT",
   "dependencies": {
     "machinat-base": "0.0.1-0",
