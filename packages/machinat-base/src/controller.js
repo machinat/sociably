@@ -23,7 +23,8 @@ export default class MachinatController<
   Metadata: MachinatMetadata<any>,
   Response,
   SegmentValue,
-  Native: MachinatNativeComponent<SegmentValue>
+  Native: MachinatNativeComponent<SegmentValue>,
+  SendOptions
 > {
   platform: string;
   bot: MachinatBot<
@@ -101,7 +102,7 @@ export default class MachinatController<
         channel,
         event,
         metadata,
-        reply(nodes: MachinatNode, options: any) {
+        reply(nodes: MachinatNode, options: SendOptions) {
           return bot.send(channel, nodes, options);
         },
       };

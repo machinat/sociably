@@ -68,7 +68,8 @@ class LineBot
     WebhookMetadata,
     void,
     LineSegmentValue,
-    LineComponent
+    LineComponent,
+    LineSendOptions
   >;
 
   engine: Engine<

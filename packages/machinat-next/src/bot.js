@@ -49,7 +49,8 @@ class NextServerBot
     NextMetadata,
     NextParams,
     void,
-    any
+    any,
+    void
   >;
 
   constructor(options: NextBotOptions) {

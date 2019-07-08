@@ -76,7 +76,8 @@ export default class MessengerBot
     WebhookMetadata,
     MessengerResponse,
     MessengerSegmentValue,
-    MessengerComponent
+    MessengerComponent,
+    MessengerSendOptions
   >;
 
   engine: Engine<

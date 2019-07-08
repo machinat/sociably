@@ -84,7 +84,8 @@ class WebSocketBot
     WebSocketMetadata,
     WebSocketResponse,
     EventRenderValue,
-    WebSocketComponent
+    WebSocketComponent,
+    void
   >;
 
   engine: Engine<
