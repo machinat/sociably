@@ -19,6 +19,6 @@
     "invariant": "^2.2.4"
   },
   "peerDependencies": {
-    "machinat": "0.0.1-0"
+    "machinat": "^0.0.1-1"
   }
 }
