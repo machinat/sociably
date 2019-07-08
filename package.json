@@ -8,8 +8,13 @@
     "lint": "eslint --ext .json --ext .js ./packages/*",
     "lint:fix": "yarn run lint -- --fix",
     "prettier": "prettier --write packages/**/*.js scripts/*.js types/*.js flow-typed/*.js",
-    "test": "jest",
-    "tunnel": "ssh -o ServerAliveInterval=60 -R machinat-dev-$USER:80:localhost:${PORT:-3000} serveo.net"
+    "test": "jest"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn test && yarn lint",
+      "post-commit": "yarn build"
+    }
   },
   "devDependencies": {
     "@babel/cli": "^7.2.0",
@@ -33,6 +38,7 @@
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.14.2",
     "flow-bin": "^0.93.0",
+    "husky": "^3.0.0",
     "jest": "^23.6.0",
     "lerna": "^2.9.0",
     "moxy": "https://github.com/lrills/moxy/releases/download/v0.1.0-8/moxy.tar.gz",
@@ -43,21 +49,5 @@
   },
   "workspaces": [
     "packages/*"
-  ],
-  "jest": {
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/__tests__/**/*.spec.js?(x)"
-    ],
-    "globals": {
-      "__DEV__": true
-    },
-    "moduleNameMapper": {
-      "^(machinat-?[^\/]*)$": "<rootDir>/packages/$1/src"
-    },
-    "setupFiles": [
-      "<rootDir>/node_modules/moxy/lib/extends/jest.js"
-    ]
-  },
-  "dependencies": {}
+  ]
 }

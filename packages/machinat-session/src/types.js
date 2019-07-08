@@ -1,5 +1,8 @@
 // @flow
-import type { EventFrame, MachinatChannel } from 'machinat-base/types';
+import type {
+  EventFrame, // eslint-disable-line no-unused-vars
+  MachinatChannel,
+} from 'machinat-base/types';
 
 export interface Session {
   get<Value>(key: string): Promise<void | Value>;
