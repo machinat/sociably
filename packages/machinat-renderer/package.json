@@ -1,21 +1,24 @@
 {
   "name": "machinat-renderer",
-  "version": "0.0.1-0",
+  "version": "0.0.1-1",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/lrills/machinat.git",
+    "type": "git",
+    "url": "https://github.com/lrills/machinat.git",
     "directory": "packages/machinat-renderer"
   },
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
-  "files": ["lib/*", "README.md"],
+  "files": [
+    "lib/*",
+    "README.md"
+  ],
   "license": "MIT",
   "dependencies": {
     "delay": "^4.0.1",
     "invariant": "^2.2.4",
-    "machinat-utility": "0.0.1-0",
+    "machinat-utility": "^0.0.1-1",
     "warning": "^4.0.1"
   },
   "peerDependencies": {

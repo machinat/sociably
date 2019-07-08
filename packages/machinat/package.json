@@ -1,16 +1,19 @@
 {
   "name": "machinat",
-  "version": "0.0.1-0",
+  "version": "0.0.1-1",
   "description": "Machinat is a JavaScript library for building chat user interfaces.",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/lrills/machinat.git",
+    "type": "git",
+    "url": "https://github.com/lrills/machinat.git",
     "directory": "packages/machinat"
   },
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
-  "files": ["lib/*", "README.md"],
+  "files": [
+    "lib/*",
+    "README.md"
+  ],
   "license": "MIT"
 }

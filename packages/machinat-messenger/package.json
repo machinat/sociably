@@ -1,27 +1,30 @@
 {
   "name": "machinat-messneger",
-  "version": "0.0.1-0",
+  "version": "0.0.1-1",
   "description": "Messenger connector for Machinat.",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/lrills/machinat.git",
+    "type": "git",
+    "url": "https://github.com/lrills/machinat.git",
     "directory": "packages/machinat-messenger"
   },
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
-  "files": ["lib/*", "README.md"],
+  "files": [
+    "lib/*",
+    "README.md"
+  ],
   "license": "MIT",
   "dependencies": {
     "form-data": "^2.3.2",
     "invariant": "^2.2.4",
     "isomorphic-fetch": "^2.2.1",
-    "machinat-base": "0.0.1-0",
-    "machinat-queue": "0.0.1-0",
-    "machinat-renderer": "0.0.1-0",
-    "machinat-utility": "0.0.1-0",
-    "machinat-webhook-receiver": "0.0.1-0",
+    "machinat-base": "^0.0.1-1",
+    "machinat-queue": "^0.0.1-1",
+    "machinat-renderer": "^0.0.1-1",
+    "machinat-utility": "^0.0.1-1",
+    "machinat-webhook-receiver": "^0.0.1-1",
     "warning": "^4.0.2"
   },
   "devDependencies": {

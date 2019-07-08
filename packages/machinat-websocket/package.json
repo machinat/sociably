@@ -1,24 +1,28 @@
 {
   "name": "machinat-websocket",
-  "version": "0.0.1-0",
+  "version": "0.0.1-1",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/lrills/machinat.git",
+    "type": "git",
+    "url": "https://github.com/lrills/machinat.git",
     "directory": "packages/machinat-websocket"
   },
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
-  "files": ["lib/*", "client.js", "README.md"],
+  "files": [
+    "lib/*",
+    "client.js",
+    "README.md"
+  ],
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",
     "jsonwebtoken": "^8.5.1",
-    "machinat-base": "0.0.1-0",
-    "machinat-queue": "0.0.1-0",
-    "machinat-renderer": "0.0.1-0",
-    "machinat-utility": "0.0.1-0",
+    "machinat-base": "^0.0.1-1",
+    "machinat-queue": "^0.0.1-1",
+    "machinat-renderer": "^0.0.1-1",
+    "machinat-utility": "^0.0.1-1",
     "thenifiedly": "^0.2.1",
     "uniqid": "^5.0.3",
     "ws": "^6.2.0"

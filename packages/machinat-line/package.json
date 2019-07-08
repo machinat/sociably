@@ -1,24 +1,27 @@
 {
   "name": "machinat-line",
-  "version": "0.0.1-0",
+  "version": "0.0.1-1",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/lrills/machinat.git",
+    "type": "git",
+    "url": "https://github.com/lrills/machinat.git",
     "directory": "packages/machinat-line"
   },
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
-  "files": ["lib/*", "README.md"],
+  "files": [
+    "lib/*",
+    "README.md"
+  ],
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",
-    "machinat-base": "0.0.1-0",
-    "machinat-queue": "0.0.1-0",
-    "machinat-renderer": "0.0.1-0",
-    "machinat-utility": "0.0.1-0",
-    "machinat-webhook-receiver": "0.0.1-0",
+    "machinat-base": "^0.0.1-1",
+    "machinat-queue": "^0.0.1-1",
+    "machinat-renderer": "^0.0.1-1",
+    "machinat-utility": "^0.0.1-1",
+    "machinat-webhook-receiver": "^0.0.1-1",
     "node-fetch": "^2.2.0",
     "warning": "^4.0.2"
   },
