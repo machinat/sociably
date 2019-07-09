@@ -5,6 +5,7 @@ import NextReceiver from '../receiver';
 const nextTick = () => new Promise(resolve => process.nextTick(resolve));
 
 const next = moxy({
+  getRequestHandler: () => moxy(async () => {}),
   render: async () => {},
   renderError: async () => {},
 });
@@ -109,7 +110,7 @@ it('set metadata.request.encrypted to true if req is encrypted', async () => {
   );
 });
 
-it('render with params return by event issuer', async () => {
+it('call next.render() with params return by event issuer', async () => {
   const receiver = new NextReceiver(next);
   receiver.bindIssuer(issueEvent, issueError);
 
@@ -130,7 +131,7 @@ it('render with params return by event issuer', async () => {
   });
 });
 
-it('renderError renderError with 501 if event issuer return empty', async () => {
+it('call next.getRequestHandler()() if event issuer return empty', async () => {
   const receiver = new NextReceiver(next);
   receiver.bindIssuer(issueEvent, issueError);
 
@@ -140,16 +141,37 @@ it('renderError renderError with 501 if event issuer return empty', async () => 
   await nextTick();
 
   expect(issueEvent.mock).toHaveBeenCalledTimes(1);
-  expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(501);
+  expect(res.mock.setter('statusCode')).not.toHaveBeenCalled();
 
   expect(next.render.mock).not.toHaveBeenCalled();
-  expect(next.renderError.mock).toHaveBeenCalledTimes(1);
-  expect(next.renderError.mock).toHaveBeenCalledWith(null, req, res, '/hello', {
-    foo: 'bar',
-  });
+  expect(next.renderError.mock).not.toHaveBeenCalled();
+
+  expect(next.getRequestHandler.mock).toHaveBeenCalledTimes(1);
+  const handler = next.getRequestHandler.mock.calls[0].result;
+
+  expect(handler.mock).toHaveBeenCalledTimes(1);
+  expect(handler.mock).toHaveBeenCalledWith(req, res, expect.any(Object));
+  expect(handler.mock.calls[0].args[2]).toMatchInlineSnapshot(`
+    Url {
+      "auth": null,
+      "hash": null,
+      "host": "machinat.com",
+      "hostname": "machinat.com",
+      "href": "http://machinat.com/hello?foo=bar",
+      "path": "/hello?foo=bar",
+      "pathname": "/hello",
+      "port": null,
+      "protocol": "http:",
+      "query": Object {
+        "foo": "bar",
+      },
+      "search": "?foo=bar",
+      "slashes": true,
+    }
+  `);
 });
 
-it('renderError if event issuer thrown', async () => {
+it('call next.renderError() if event issuer thrown', async () => {
   const receiver = new NextReceiver(next);
   receiver.bindIssuer(issueEvent, issueError);
 

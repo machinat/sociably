@@ -1,12 +1,11 @@
 // @flow
-import url from 'url';
 import invariant from 'invariant';
 import { Emitter, Controller, resolvePlugins } from 'machinat-base';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
 import type { MachinatBot, BotPlugin } from 'machinat-base/types';
 import NextReceiver from './receiver';
 import type { NextChannel } from './receiver';
-import type { NextEvent, NextMetadata, NextParams } from './types';
+import type { NextEvent, NextMetadata, NextPesponse } from './types';
 
 const NEXT = 'next';
 
@@ -14,7 +13,7 @@ type NextPlugin = BotPlugin<
   NextChannel,
   NextEvent,
   NextMetadata,
-  NextParams,
+  NextPesponse,
   void,
   any,
   void,
@@ -34,7 +33,7 @@ class NextServerBot
       NextChannel,
       NextEvent,
       NextMetadata,
-      NextParams,
+      NextPesponse,
       void,
       any,
       void,
@@ -47,7 +46,7 @@ class NextServerBot
     NextChannel,
     NextEvent,
     NextMetadata,
-    NextParams,
+    NextPesponse,
     void,
     any,
     void
@@ -76,10 +75,6 @@ class NextServerBot
       };
 
       this.emitEvent(frame);
-
-      const { pathname, query } = url.parse((payload.req: any).url, true);
-
-      return { pathname: pathname || '', query: query || {} };
     });
 
     this.receiver.bindIssuer(issueEvent, this.emitError.bind(this));

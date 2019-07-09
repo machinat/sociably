@@ -4,7 +4,11 @@ import { Controller } from 'machinat-base';
 import NextBot from '../bot';
 import Receiver from '../receiver';
 
-const nextApp = moxy();
+const nextApp = moxy({
+  getRequestHandler: () => moxy(async () => {}),
+  render: moxy(),
+  renderError: moxy(),
+});
 
 jest.mock('machinat-base');
 jest.mock('../receiver', () =>
@@ -85,14 +89,7 @@ describe('#constructor(options)', () => {
     const event = { platform: 'next', type: 'request', payload: { req, res } };
     const metadata = { source: 'next', request: '...' };
 
-    const expectedResponse = {
-      pathname: '/hello',
-      query: { foo: 'bar' },
-    };
-
-    expect(finalPublisher({ channel, event, metadata })).toEqual(
-      expectedResponse
-    );
+    expect(finalPublisher({ channel, event, metadata })).toEqual(undefined);
 
     expect(eventListener.mock).toHaveBeenCalledTimes(1);
     expect(eventListener.mock).toHaveBeenCalledWith({
@@ -103,9 +100,9 @@ describe('#constructor(options)', () => {
 
     const [issueEvent, issueError] = bot.receiver.bindIssuer.mock.calls[0].args;
 
-    eventIssuerSpy.mock.fake(async () => expectedResponse);
+    eventIssuerSpy.mock.fake(async () => {});
     await expect(issueEvent(channel, event, metadata)).resolves.toEqual(
-      expectedResponse
+      undefined
     );
 
     expect(eventIssuerSpy.mock).toHaveBeenCalledTimes(1);

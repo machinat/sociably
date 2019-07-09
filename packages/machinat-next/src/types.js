@@ -11,7 +11,7 @@ export type NextMetadata = {|
   |},
 |};
 
-export type NextParams = {
+export type NextPesponse = void | {
   pathname: string,
   query: {| [string]: any |},
 };
