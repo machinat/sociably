@@ -3,11 +3,11 @@ import { getFixtures } from './helper';
 import mainFactory from '..';
 
 test.each([
-  ['text', undefined, 'text*'],
-  ['image', undefined, 'image*'],
-  ['video', undefined, 'video*'],
-  ['audio', undefined, 'audio*'],
-  ['file', undefined, 'file*'],
+  ['message', 'text', 'text*'],
+  ['message', 'image', 'image*'],
+  ['message', 'video', 'video*'],
+  ['message', 'audio', 'audio*'],
+  ['message', 'file', 'file*'],
 ])('making %s:%s messaging event', async (type, subtype, fixturesGlob) => {
   const fixtures = await getFixtures(fixturesGlob);
 

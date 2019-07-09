@@ -169,8 +169,8 @@ describe('handleWebhook(options)(req, res, body)', () => {
         expect(channel.source).toEqual({ id: '_PSID_' });
 
         expect(event.platform).toBe('messenger');
-        expect(event.type).toBe(!i ? 'text' : 'image');
-        expect(event.subtype).toBe(undefined);
+        expect(event.type).toBe('message');
+        expect(event.subtype).toBe(!i ? 'text' : 'image');
         expect(event.payload).toEqual(body.entry[0].messaging[i]);
       });
     });
@@ -369,8 +369,8 @@ describe('handleWebhook(options)(req, res, body)', () => {
       expect(channel.source).toEqual({ id: '_PSID_' });
 
       expect(event.platform).toBe('messenger');
-      expect(event.type).toBe('text');
-      expect(event.subtype).toBe(undefined);
+      expect(event.type).toBe('message');
+      expect(event.subtype).toBe('text');
       expect(event.payload).toEqual({
         sender: { id: '_PSID_' },
         recipient: { id: '_PAGE_ID_' },

@@ -32,25 +32,32 @@ export const eventFactory = (proto: Object, type: string, subtype?: string) => (
   return (event: any);
 };
 
-export const text = eventFactory(mixin(Base, Message, Repliable, Text), 'text');
+export const text = eventFactory(
+  mixin(Base, Message, Repliable, Text),
+  'message',
+  'text'
+);
 
 const MediaProto = mixin(Base, Message, Repliable, Media);
-export const image = eventFactory(MediaProto, 'image');
-export const video = eventFactory(MediaProto, 'video');
-export const audio = eventFactory(MediaProto, 'audio');
+export const image = eventFactory(MediaProto, 'message', 'image');
+export const video = eventFactory(MediaProto, 'message', 'video');
+export const audio = eventFactory(MediaProto, 'message', 'audio');
 
 export const file = eventFactory(
   mixin(Base, Message, Repliable, Media, File),
+  'message',
   'file'
 );
 
 export const location = eventFactory(
   mixin(Base, Message, Repliable, Location),
+  'message',
   'location'
 );
 
 export const sticker = eventFactory(
   mixin(Base, Message, Repliable, Sticker),
+  'message',
   'sticker'
 );
 

@@ -40,14 +40,14 @@ const eventFactory = (proto: Object, type: string, subtype?: string) => (
 };
 
 const TextProto = mixin(Base, Message, Text, NLP);
-export const text = eventFactory(TextProto, 'text');
+export const text = eventFactory(TextProto, 'message', 'text');
 export const standbyText = eventFactory(TextProto, 'standby', 'text');
 
 const MediaProto = mixin(Base, Message, Media);
-export const image = eventFactory(MediaProto, 'image');
-export const video = eventFactory(MediaProto, 'video');
-export const audio = eventFactory(MediaProto, 'audio');
-export const file = eventFactory(MediaProto, 'file');
+export const image = eventFactory(MediaProto, 'message', 'image');
+export const video = eventFactory(MediaProto, 'message', 'video');
+export const audio = eventFactory(MediaProto, 'message', 'audio');
+export const file = eventFactory(MediaProto, 'message', 'file');
 
 export const standbyImage = eventFactory(MediaProto, 'standby', 'image');
 export const standbyVideo = eventFactory(MediaProto, 'standby', 'video');
@@ -55,7 +55,7 @@ export const standbyAudio = eventFactory(MediaProto, 'standby', 'audio');
 export const standbyFile = eventFactory(MediaProto, 'standby', 'file');
 
 const LocationProto = mixin(Base, Message, Location);
-export const location = eventFactory(LocationProto, 'location');
+export const location = eventFactory(LocationProto, 'message', 'location');
 export const standbyLocation = eventFactory(
   LocationProto,
   'standby',

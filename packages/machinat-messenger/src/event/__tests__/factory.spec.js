@@ -4,11 +4,11 @@ import { text, image, video, audio, file } from '../factory';
 import { EventBase, Message, Text, NLP, Media } from '../mixin';
 
 describe.each([
-  ['text', undefined, text, 'text*', [Message, Text, NLP]],
-  ['image', undefined, image, 'image*', [Message, Media]],
-  ['video', undefined, video, 'video*', [Message, Media]],
-  ['audio', undefined, audio, 'audio*', [Message, Media]],
-  ['file', undefined, file, 'file*', [Message, Media]],
+  ['message', 'text', text, 'text*', [Message, Text, NLP]],
+  ['message', 'image', image, 'image*', [Message, Media]],
+  ['message', 'video', video, 'video*', [Message, Media]],
+  ['message', 'audio', audio, 'audio*', [Message, Media]],
+  ['message', 'file', file, 'file*', [Message, Media]],
 ])('%s:%s event factory', (type, subtype, factory, fixturesGlob, mixins) => {
   //
   it('implements MachinatEvent interface', async () => {

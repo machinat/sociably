@@ -124,8 +124,8 @@ describe('handleWebhook(options)(req, res, body)', () => {
       });
 
       expect(event.platform).toBe('line');
-      expect(event.type).toBe(!i ? 'text' : 'follow');
-      expect(event.subtype).toBe(undefined);
+      expect(event.type).toBe(!i ? 'message' : 'follow');
+      expect(event.subtype).toBe(!i ? 'text' : undefined);
       expect(event.payload).toEqual(body.events[i]);
     });
   });
@@ -153,8 +153,8 @@ describe('handleWebhook(options)(req, res, body)', () => {
     expect(channel.source).toEqual({ type: 'user', userId: 'xxx' });
 
     expect(event.platform).toBe('line');
-    expect(event.type).toBe('text');
-    expect(event.subtype).toBe(undefined);
+    expect(event.type).toBe('message');
+    expect(event.subtype).toBe('text');
     expect(event.payload).toEqual({
       replyToken: 'xxx',
       type: 'message',
