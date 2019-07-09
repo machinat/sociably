@@ -6,7 +6,7 @@ it('issue event frame', () => {
   const emitter = new Emitter();
 
   const eventListener = moxy();
-  emitter.onEvent(eventListener);
+  expect(emitter.onEvent(eventListener)).toBe(emitter);
 
   const frame = {
     event: { a: 'phonecall' },
@@ -29,7 +29,7 @@ it('issue event frame', () => {
 it('emit error thrown', () => {
   const emitter = new Emitter();
   const errorListener = moxy();
-  emitter.onError(errorListener);
+  expect(emitter.onError(errorListener)).toBe(emitter);
 
   expect(emitter.emitError(new Error('NO'))).toBe(undefined);
   expect(errorListener.mock).toHaveBeenCalledTimes(1);

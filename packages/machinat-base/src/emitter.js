@@ -39,7 +39,9 @@ export default class MachinatEmitter<
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }
+
     this._eventListeners.push(listener);
+    return (this: any);
   }
 
   removeEventListener(
@@ -76,7 +78,9 @@ export default class MachinatEmitter<
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }
+
     this._errorListeners.push(listener);
+    return (this: any);
   }
 
   removeErrorListener(listener: Error => void) {

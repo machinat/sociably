@@ -46,7 +46,18 @@ export interface MachinatBot<
     listener: (
       EventFrame<Channel, Event, Metadata, SegmentValue, Native, Job, Result>
     ) => void
-  ): void;
+  ): MachinatBot<
+    Channel,
+    Event,
+    Metadata,
+    Response,
+    SegmentValue,
+    Native,
+    Job,
+    Result,
+    BotOptions,
+    SendOptions
+  >;
 
   removeEventListener(
     listener: (
@@ -54,7 +65,20 @@ export interface MachinatBot<
     ) => void
   ): boolean;
 
-  onError(listener: (Error) => void): void;
+  onError(
+    listener: (Error) => void
+  ): MachinatBot<
+    Channel,
+    Event,
+    Metadata,
+    Response,
+    SegmentValue,
+    Native,
+    Job,
+    Result,
+    BotOptions,
+    SendOptions
+  >;
 
   removeErrorListener(listener: (Error) => void): boolean;
 
