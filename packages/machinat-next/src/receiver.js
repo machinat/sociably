@@ -117,7 +117,7 @@ class NextReceiver
 
         await this._defaultHandler(req, res, {
           ...parsedUrl,
-          pathname: pathname.slice(this._basePath.length),
+          pathname: pathname.slice(this._basePath.length) || '/',
         });
       }
     } catch (err) {
