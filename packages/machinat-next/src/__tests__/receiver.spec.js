@@ -13,8 +13,10 @@ req.mock.getter('headers').fakeReturnValue({ 'x-y-z': 'abc' });
 res.mock.setter('statusCode').fake(() => {});
 
 const issueEvent = moxy(async () => {});
-
 const issueError = moxy();
+
+const nextHandler = moxy(async () => {});
+nextApp.getRequestHandler.mock.fakeReturnValue(nextHandler);
 
 beforeEach(() => {
   nextApp.mock.clear();
@@ -23,22 +25,58 @@ beforeEach(() => {
 
   issueEvent.mock.reset();
   issueError.mock.reset();
+  nextHandler.mock.clear();
 });
 
-it('call next.prepare() and respond 503 before ready', async () => {
+it('call next.prepare() if options.noPrepare is falsy and respond 503 before ready', async () => {
+  let resolve;
+  nextApp.prepare.mock.fakeReturnValue(
+    new Promise(_resolve => {
+      resolve = _resolve;
+    })
+  );
+
   const receiver = new NextReceiver({ nextApp });
+  receiver.bindIssuer(issueEvent, issueError);
   expect(nextApp.prepare.mock).toHaveBeenCalledTimes(1);
 
   expect(receiver.handleRequest(req, res)).toBe(undefined);
+  await nextTick();
+
   expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(503);
+  expect(res.end.mock).toHaveBeenCalledTimes(1);
 
   expect(nextApp.renderError.mock).not.toHaveBeenCalled();
   expect(issueEvent.mock).not.toHaveBeenCalled();
+
+  resolve();
+  await nextTick();
+
+  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  await nextTick();
+
+  expect(issueEvent.mock).toHaveBeenCalled();
+  expect(nextHandler.mock).toHaveBeenCalled();
+  expect(res.end.mock).toHaveBeenCalledTimes(1);
+
+  nextApp.prepare.mock.reset();
+});
+
+it('not call next.prepare() if options.noPrepare is true', async () => {
+  const receiver = new NextReceiver({ nextApp, noPrepare: true });
+  receiver.bindIssuer(issueEvent, issueError);
+
+  expect(nextApp.prepare.mock).not.toHaveBeenCalled();
+
+  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  await nextTick();
+
+  expect(issueEvent.mock).toHaveBeenCalled();
+  expect(nextHandler.mock).toHaveBeenCalled();
 });
 
 it('call next.renderError() with status 501 if receiver is not bound', async () => {
-  const receiver = new NextReceiver({ nextApp });
-  await nextTick();
+  const receiver = new NextReceiver({ nextApp, noPrepare: true });
 
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
@@ -49,18 +87,15 @@ it('call next.renderError() with status 501 if receiver is not bound', async () 
     req,
     res,
     '/hello',
-    {
-      foo: 'bar',
-    }
+    { foo: 'bar' }
   );
 
   expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(501);
 });
 
 it('call next.getRequestHandler()() if event issuer return empty', async () => {
-  const receiver = new NextReceiver({ nextApp });
+  const receiver = new NextReceiver({ nextApp, noPrepare: true });
   receiver.bindIssuer(issueEvent, issueError);
-  await nextTick();
 
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
@@ -72,7 +107,6 @@ it('call next.getRequestHandler()() if event issuer return empty', async () => {
   expect(nextApp.renderError.mock).not.toHaveBeenCalled();
 
   expect(nextApp.getRequestHandler.mock).toHaveBeenCalledTimes(1);
-  const nextHandler = nextApp.getRequestHandler.mock.calls[0].result;
 
   expect(nextHandler.mock).toHaveBeenCalledTimes(1);
   expect(nextHandler.mock).toHaveBeenCalledWith(req, res, expect.any(Object));
@@ -97,9 +131,12 @@ it('call next.getRequestHandler()() if event issuer return empty', async () => {
 });
 
 it('call nextHandler with basePath trimed if provided in options', async () => {
-  const receiver = new NextReceiver({ nextApp, basePath: '/hello' });
+  const receiver = new NextReceiver({
+    nextApp,
+    basePath: '/hello',
+    noPrepare: true,
+  });
   receiver.bindIssuer(issueEvent, issueError);
-  await nextTick();
 
   const helloWorldReq = moxy(new IncomingMessage({}));
   helloWorldReq.mock
@@ -113,7 +150,6 @@ it('call nextHandler with basePath trimed if provided in options', async () => {
   expect(nextApp.render.mock).not.toHaveBeenCalled();
   expect(nextApp.renderError.mock).not.toHaveBeenCalled();
   expect(nextApp.getRequestHandler.mock).toHaveBeenCalledTimes(1);
-  const nextHandler = nextApp.getRequestHandler.mock.calls[0].result;
 
   expect(nextHandler.mock).toHaveBeenCalledTimes(1);
   expect(nextHandler.mock).toHaveBeenCalledWith(
@@ -125,9 +161,12 @@ it('call nextHandler with basePath trimed if provided in options', async () => {
 });
 
 it('call next.renderError() with status 404 trimed if basePath not match', async () => {
-  const receiver = new NextReceiver({ nextApp, basePath: '/hello' });
+  const receiver = new NextReceiver({
+    nextApp,
+    basePath: '/hello',
+    noPrepare: true,
+  });
   receiver.bindIssuer(issueEvent, issueError);
-  await nextTick();
 
   const fooWorldReq = moxy(new IncomingMessage({}));
   fooWorldReq.mock
@@ -139,7 +178,7 @@ it('call next.renderError() with status 404 trimed if basePath not match', async
 
   expect(issueEvent.mock).toHaveBeenCalledTimes(1);
   expect(nextApp.render.mock).not.toHaveBeenCalled();
-  const nextHandler = nextApp.getRequestHandler.mock.calls[0].result;
+
   expect(nextHandler.mock).not.toHaveBeenCalled();
 
   expect(nextApp.renderError.mock).toHaveBeenCalledTimes(1);
@@ -153,9 +192,8 @@ it('call next.renderError() with status 404 trimed if basePath not match', async
 });
 
 it('call next.render() with params return by middlewares', async () => {
-  const receiver = new NextReceiver({ nextApp });
+  const receiver = new NextReceiver({ nextApp, noPrepare: true });
   receiver.bindIssuer(issueEvent, issueError);
-  await nextTick();
 
   issueEvent.mock.fake(async () => ({
     page: '/hello/world',
@@ -220,9 +258,12 @@ it('call next.render() with params return by middlewares', async () => {
 });
 
 it('basePath option not affect page params from middlewares', async () => {
-  const receiver = new NextReceiver({ nextApp, basePath: '/hello' });
+  const receiver = new NextReceiver({
+    nextApp,
+    basePath: '/hello',
+    noPrepare: true,
+  });
   receiver.bindIssuer(issueEvent, issueError);
-  await nextTick();
 
   issueEvent.mock.fake(async () => ({
     page: '/hello/world',
@@ -243,9 +284,8 @@ it('basePath option not affect page params from middlewares', async () => {
 });
 
 it('set metadata.request.encrypted to true if req is encrypted', async () => {
-  const receiver = new NextReceiver({ nextApp });
+  const receiver = new NextReceiver({ nextApp, noPrepare: true });
   receiver.bindIssuer(issueEvent, issueError);
-  await nextTick();
 
   req.socket.mock.getter('encrypted').fakeReturnValue(true);
 
@@ -269,9 +309,8 @@ it('set metadata.request.encrypted to true if req is encrypted', async () => {
 });
 
 it('call next.renderError() if event issuer thrown', async () => {
-  const receiver = new NextReceiver({ nextApp });
+  const receiver = new NextReceiver({ nextApp, noPrepare: true });
   receiver.bindIssuer(issueEvent, issueError);
-  await nextTick();
 
   issueEvent.mock.fake(async () => {
     throw new Error("I'm a teapot");

@@ -49,12 +49,14 @@ class NextReceiver
       );
     }
 
-    this._preparing = this._next
-      .prepare()
-      .then(() => {
-        this._preparing = undefined;
-      })
-      .catch(this._issueError);
+    if (!options.noPrepare) {
+      this._preparing = this._next
+        .prepare()
+        .then(() => {
+          this._preparing = undefined;
+        })
+        .catch(this._issueError);
+    }
   }
 
   handleRequest(req: IncomingMessage, res: ServerResponse) {
