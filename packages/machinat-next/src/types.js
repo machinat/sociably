@@ -1,5 +1,6 @@
 // @flow
 import type { IncomingMessage, ServerResponse } from 'http';
+import type { BotPlugin } from 'machinat-base/types';
 
 export type NextMetadata = {|
   source: 'next',
@@ -12,7 +13,7 @@ export type NextMetadata = {|
 |};
 
 export type NextPesponse = void | {
-  pathname: string,
+  page: string,
   query: {| [string]: any |},
 };
 
@@ -23,4 +24,27 @@ export type NextEvent = {|
     req?: IncomingMessage,
     res?: ServerResponse,
   },
+|};
+
+export type NextChannel = {|
+  platform: string,
+  type: string,
+  uid: string,
+|};
+
+export type NextPlugin = BotPlugin<
+  NextChannel,
+  NextEvent,
+  NextMetadata,
+  NextPesponse,
+  void,
+  any,
+  void,
+  void
+>;
+
+export type NextBotOptions = {|
+  nextApp: any,
+  basePath?: string,
+  plugins?: NextPlugin[],
 |};

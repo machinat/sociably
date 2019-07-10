@@ -3,12 +3,7 @@ import moxy from 'moxy';
 import { Controller } from 'machinat-base';
 import NextBot from '../bot';
 import Receiver from '../receiver';
-
-const nextApp = moxy({
-  getRequestHandler: () => moxy(async () => {}),
-  render: moxy(),
-  renderError: moxy(),
-});
+import nextApp from './nextApp';
 
 jest.mock('machinat-base');
 jest.mock('../receiver', () =>
@@ -31,7 +26,7 @@ describe('#constructor(options)', () => {
   });
 
   it('assemble core modules', () => {
-    const bot = new NextBot({ nextApp });
+    const bot = new NextBot({ nextApp, basePath: '/me' });
 
     expect(bot.controller).toBeInstanceOf(Controller);
     expect(bot.receiver).toBeInstanceOf(Receiver);
@@ -40,7 +35,7 @@ describe('#constructor(options)', () => {
     expect(Controller.mock).toHaveBeenCalledWith('next', bot, []);
 
     expect(Receiver.mock).toHaveBeenCalledTimes(1);
-    expect(Receiver.mock).toHaveBeenCalledWith(nextApp);
+    expect(Receiver.mock).toHaveBeenCalledWith({ nextApp, basePath: '/me' });
   });
 
   it('pass middlewares from plugins to controller and engine', () => {

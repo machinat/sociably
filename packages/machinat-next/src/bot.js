@@ -2,28 +2,17 @@
 import invariant from 'invariant';
 import { Emitter, Controller, resolvePlugins } from 'machinat-base';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
-import type { MachinatBot, BotPlugin } from 'machinat-base/types';
+import type { MachinatBot } from 'machinat-base/types';
 import NextReceiver from './receiver';
-import type { NextChannel } from './receiver';
-import type { NextEvent, NextMetadata, NextPesponse } from './types';
-
-const NEXT = 'next';
-
-type NextPlugin = BotPlugin<
+import type {
   NextChannel,
   NextEvent,
   NextMetadata,
   NextPesponse,
-  void,
-  any,
-  void,
-  void
->;
+  NextBotOptions,
+} from './types';
 
-type NextBotOptions = {|
-  nextApp: any,
-  plugins?: NextPlugin[],
-|};
+const NEXT = 'next';
 
 class NextServerBot
   extends Emitter<NextChannel, NextEvent, NextMetadata, void, any, void, void>
@@ -41,6 +30,7 @@ class NextServerBot
       NextBotOptions,
       void
     > {
+  options: NextBotOptions;
   receiver: NextReceiver;
   controller: Controller<
     NextChannel,
@@ -52,17 +42,18 @@ class NextServerBot
     void
   >;
 
-  constructor(options: NextBotOptions) {
+  constructor(optionsInput?: NextBotOptions) {
     super();
 
     invariant(
-      options && options.nextApp,
+      optionsInput && optionsInput.nextApp,
       'options.nextApp should not be empty'
     );
 
-    this.receiver = new NextReceiver(options.nextApp);
+    this.options = optionsInput;
+    this.receiver = new NextReceiver(this.options);
 
-    const { eventMiddlewares } = resolvePlugins(this, options.plugins);
+    const { eventMiddlewares } = resolvePlugins(this, this.options.plugins);
     this.controller = new Controller(NEXT, this, eventMiddlewares);
 
     const issueEvent = this.controller.eventIssuerThroughMiddlewares(frame => {

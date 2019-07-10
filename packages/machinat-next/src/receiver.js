@@ -1,9 +1,17 @@
 // @flow
 import { parse as parseUrl } from 'url';
+import { join as joinPath } from 'path';
+import { STATUS_CODES } from 'http';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { BaseReceiver } from 'machinat-base';
 import type { HTTPRequestReceiver } from 'machinat-http-adaptor/types';
-import type { NextEvent, NextMetadata, NextPesponse } from './types';
+import type {
+  NextChannel,
+  NextEvent,
+  NextMetadata,
+  NextPesponse,
+  NextBotOptions,
+} from './types';
 
 const NEXT_SERVER_CHANNEL = {
   platform: 'next',
@@ -11,22 +19,42 @@ const NEXT_SERVER_CHANNEL = {
   uid: 'next:server',
 };
 
-export type NextChannel = typeof NEXT_SERVER_CHANNEL;
+type ParsedURL = $Call<typeof parseUrl, string>;
 
 class NextReceiver
   extends BaseReceiver<NextChannel, NextEvent, NextMetadata, NextPesponse>
   implements HTTPRequestReceiver {
+  _basePath: string;
   _next: Object;
   _defaultHandler: (
     req: IncomingMessage,
     res: ServerResponse,
-    parsed: $Call<typeof parseUrl, string>
+    parsed: ParsedURL
   ) => Promise<void>;
 
-  constructor(next: Object) {
+  _preparing: void | Promise<void>;
+
+  constructor(options: NextBotOptions) {
     super();
-    this._next = next;
-    this._defaultHandler = next.getRequestHandler();
+
+    this._basePath = options.basePath
+      ? options.basePath.replace(/\/$/, '')
+      : '';
+    this._next = options.nextApp;
+    this._defaultHandler = this._next.getRequestHandler();
+
+    if (this._basePath !== '') {
+      this._next.setAssetPrefix(
+        joinPath(this._next.renderOpts.assetPrefix, this._basePath)
+      );
+    }
+
+    this._preparing = this._next
+      .prepare()
+      .then(() => {
+        this._preparing = undefined;
+      })
+      .catch(this._issueError);
   }
 
   handleRequest(req: IncomingMessage, res: ServerResponse) {
@@ -38,11 +66,19 @@ class NextReceiver
   }
 
   async _handleRequestImpl(req: IncomingMessage, res: ServerResponse) {
-    const next = this._next;
+    if (this._preparing !== undefined) {
+      res.statusCode = 503; // eslint-disable-line no-param-reassign
+      res.end(STATUS_CODES[503]);
+      return;
+    }
+
+    const parsedUrl = parseUrl(req.url, true);
+    const { pathname, query } = parsedUrl;
 
     try {
       if (!this.isBound) {
-        await this._renderErrorWithCode(req, res, 501);
+        res.statusCode = 501;
+        await this._next.renderError(null, req, res, pathname, query);
         return;
       }
 
@@ -65,26 +101,29 @@ class NextReceiver
       );
 
       if (response) {
-        await next.render(req, res, response.pathname, response.query);
+        await this._next.render(
+          req,
+          res,
+          response.page,
+          response.query,
+          parsedUrl
+        );
       } else {
-        await this._defaultHandler(req, res, parseUrl(req.url, true));
+        if (!pathname || pathname.indexOf(this._basePath) !== 0) {
+          res.statusCode = 404;
+          await this._next.renderError(null, req, res, pathname, query);
+          return;
+        }
+
+        await this._defaultHandler(req, res, {
+          ...parsedUrl,
+          pathname: pathname.slice(this._basePath.length),
+        });
       }
     } catch (err) {
       this._issueError(err);
-
-      const { pathname, query } = parseUrl(req.url, true);
-      await next.renderError(err, req, res, pathname, query);
+      await this._next.renderError(err, req, res, pathname, query);
     }
-  }
-
-  async _renderErrorWithCode(
-    req: IncomingMessage,
-    res: ServerResponse,
-    code: number
-  ) {
-    const { pathname, query } = parseUrl(req.url, true);
-    res.statusCode = code; // eslint-disable-line no-param-reassign
-    await this._next.renderError(null, req, res, pathname, query);
   }
 }
 

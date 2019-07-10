@@ -33,7 +33,7 @@ module.exports = {
     'no-unused-expressions': 0,
     'no-param-reassign': ['error', {
       props: true,
-      ignorePropertyModificationsFor: ['context', 'ctx', 'frame'],
+      ignorePropertyModificationsFor: ['context', 'ctx', 'frame', 'res'],
     }],
     'no-restricted-syntax': ['error',
       'ForInStatement', 'LabeledStatement', 'WithStatement'
