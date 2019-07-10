@@ -1,21 +1,19 @@
+/* eslint-disable class-methods-use-this */
 import moxy from 'moxy';
 import EventEmitter from 'events';
 
-function WebSocket() {
-  const ws = Object.create(EventEmitter.prototype);
-  ws.readyState = 1;
+class WebSocket extends EventEmitter {
+  readyState = 1;
 
-  ws.send = (body, cb) => {
+  send(body, cb) {
     cb();
-  };
+  }
 
-  ws.close = (code, reason) => {
+  close(code, reason) {
     setTimeout(() => {
-      ws.emit('close', code, reason);
+      this.emit('close', code, reason);
     }, 10);
-  };
-
-  return ws;
+  }
 }
 
 WebSocket.CONNECTING = 0;
@@ -23,6 +21,6 @@ WebSocket.OPEN = 1;
 WebSocket.CLOSING = 2;
 WebSocket.CLOSED = 3;
 
-WebSocket.Server = function WebSocketServer() {};
+WebSocket.Server = class WebSocketServer {};
 
 module.exports = moxy(WebSocket, { excludeProps: ['_*'] });

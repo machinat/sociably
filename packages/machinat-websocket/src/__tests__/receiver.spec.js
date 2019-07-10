@@ -7,6 +7,8 @@ import Socket from '../socket';
 import Receiver from '../receiver';
 import Channel from '../channel';
 
+jest.mock('../socket');
+
 const distributor = moxy(new Distributor());
 distributor.consignSocket.mock.fake(() => true);
 
@@ -30,9 +32,12 @@ const issueEvent = moxy(() => Promise.resolve());
 const issueError = moxy();
 
 beforeEach(() => {
+  Socket.mock.clear();
   distributor.removeAllListeners();
   distributor.mock.clear();
+
   webSocketServer.mock.clear();
+  ws.removeAllListeners();
   netSocket.mock.clear();
 
   req.mock.reset();
@@ -66,16 +71,15 @@ it('handle upgrade and pass Socket to distributor', () => {
 
   expect(distributor.consignSocket.mock).toHaveBeenCalledTimes(1);
   const socket = distributor.consignSocket.mock.calls[0].args[0];
-  expect(socket).toBeInstanceOf(Socket);
-  expect(socket.request).toEqual({
+
+  expect(Socket.mock).toHaveBeenCalledTimes(1);
+  expect(socket).toBe(Socket.mock.calls[0].instance);
+  expect(Socket.mock).toHaveBeenCalledWith(ws, expect.any(String), {
     method: 'GET',
     url: '/hello',
     headers: { foo: 'bar' },
     encrypted: false,
   });
-  expect(typeof socket.id).toBe('string');
-
-  expect(ws.on.mock).toHaveBeenCalled();
 });
 
 it('set socket.request.encrypted to true if socket is encrypted', () => {
@@ -96,8 +100,6 @@ it('set socket.request.encrypted to true if socket is encrypted', () => {
     encrypted: true,
   });
   expect(typeof socket.id).toBe('string');
-
-  expect(ws.on.mock).toHaveBeenCalled();
 });
 
 it('generate uniq socket id', () => {
@@ -108,9 +110,12 @@ it('generate uniq socket id', () => {
   for (let i = 0; i < 500; i += 1) {
     receiver.handleUpgrade(req, netSocket, head);
     const socket = distributor.consignSocket.mock.calls[i].args[0];
+
     expect(typeof socket.id).toBe('string');
     expect(ids.has(socket.id)).toBe(false);
     ids.add(socket.id);
+
+    ws.removeAllListeners();
   }
 });
 
