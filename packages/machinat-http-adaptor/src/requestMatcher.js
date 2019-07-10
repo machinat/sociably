@@ -16,17 +16,6 @@ export const path = (...paths: string[]) => {
   };
 };
 
-export const pathSuffixBy = (suffix: string) => (
-  req: IncomingMessage
-): boolean => {
-  const { pathname } = parse(req.url);
-  if (typeof pathname !== 'string') {
-    return false;
-  }
-
-  return pathname.slice(-suffix.length) === suffix;
-};
-
 export const pathMatch = (pattern: RegExp) => (
   req: IncomingMessage
 ): boolean => {
