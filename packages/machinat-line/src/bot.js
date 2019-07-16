@@ -16,6 +16,7 @@ import type { AssetStore } from 'machinat-asset-store/types';
 import LineWorker from './worker';
 import handleWebhook from './webhook';
 import { createChatJobs, createMulticastJobs } from './job';
+import { LineAssetAccessor } from './asset';
 
 import type {
   LineSource,
@@ -45,6 +46,15 @@ type LIFFParams = {|
   description?: string,
   features?: {| ble: boolean |},
 |};
+
+const compareLIFFAppParams = (expected: LIFFParams, actual: LIFFParams) =>
+  (!expected.view ||
+    (actual.view &&
+      expected.view.type === actual.view.type &&
+      expected.view.url === actual.view.url)) &&
+  expected.description === actual.description &&
+  (!expected.features ||
+    (actual.features && expected.features.ble === actual.features.ble));
 
 const LINE = 'line';
 
@@ -232,9 +242,9 @@ class LineBot
     name: string,
     params?: ?LIFFParams
   ): Promise<boolean> {
-    const entity = this.options.channelId || '*';
+    const assets = new LineAssetAccessor(store, this.options.channelId);
 
-    const liffId = await store.getAsset(LINE, 'liff', entity, name);
+    const liffId = await assets.getLIFFApp(name);
 
     // removed stored id if params is falsy
     if (!params) {
@@ -242,7 +252,7 @@ class LineBot
         return false;
       }
 
-      await store.deleteAsset(LINE, 'liff', entity, name);
+      await assets.deleteLIFFApp(name);
       await this._dispatchSingleAPICall({
         method: 'DELETE',
         entry: 'liff/v1/apps',
@@ -259,7 +269,7 @@ class LineBot
         body: params,
       });
 
-      await store.setAsset(LINE, 'liff', entity, name, result.liffId);
+      await assets.setLIFFApp(name, result.liffId);
       return true;
     }
 
@@ -280,20 +290,12 @@ class LineBot
         body: params,
       });
 
-      await store.setAsset(LINE, 'liff', entity, name, result.liffId);
+      await assets.setLIFFApp(name, result.liffId);
       return true;
     }
 
     // if app not match with params, update it
-    if (
-      (params.view &&
-        (!app.view ||
-          params.view.type !== app.view.type ||
-          params.view.url !== app.view.url)) ||
-      params.description !== app.description ||
-      (params.features &&
-        (!app.features || params.features.ble !== app.features.ble))
-    ) {
+    if (!compareLIFFAppParams(params, app)) {
       await this._dispatchSingleAPICall({
         method: 'PUT',
         entry: 'liff/v1/apps',
