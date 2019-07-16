@@ -51,7 +51,7 @@ it('sends ok', async () => {
   const bodySpy = moxy(() => true);
 
   const scope = graphAPI
-    .post('/v3.1/', bodySpy)
+    .post('/v3.3/', bodySpy)
     .reply(
       200,
       JSON.stringify([
@@ -117,7 +117,7 @@ it('attach appsecret_proof if appSecret option given', async () => {
   const bodySpy = moxy(() => true);
 
   const scope = graphAPI
-    .post('/v3.1/', bodySpy)
+    .post('/v3.3/', bodySpy)
     .reply(
       200,
       JSON.stringify([
@@ -161,7 +161,7 @@ it('upload files with form data if binary attached on job', async () => {
 
   const scope = graphAPI
     .matchHeader('content-type', /multipart\/form-data.*/)
-    .post('/v3.1/', bodySpy)
+    .post('/v3.3/', bodySpy)
     .reply(
       200,
       JSON.stringify([
@@ -271,7 +271,7 @@ it('throw if connection error happen', async () => {
   });
 
   const scope = graphAPI
-    .post('/v3.1/')
+    .post('/v3.3/')
     .replyWithError('something wrong like connection error');
 
   client.start(queue);
@@ -279,7 +279,7 @@ it('throw if connection error happen', async () => {
 Object {
   "batch": null,
   "errors": Array [
-    [FetchError: request to https://graph.facebook.com/v3.1/ failed, reason: something wrong like connection error],
+    [FetchError: request to https://graph.facebook.com/v3.3/ failed, reason: something wrong like connection error],
   ],
   "success": false,
 }
@@ -293,7 +293,7 @@ it('throw if api error happen', async () => {
     accessToken: '_graph_api_access_token_',
   });
 
-  const scope = graphAPI.post('/v3.1/').reply(400, {
+  const scope = graphAPI.post('/v3.3/').reply(400, {
     error: {
       message: 'The access token could not be decrypted',
       type: 'OAuthException',
@@ -321,7 +321,7 @@ it('throw if one single job fail', async () => {
     accessToken: '_graph_api_access_token_',
   });
 
-  const scope = graphAPI.post('/v3.1/').reply(
+  const scope = graphAPI.post('/v3.3/').reply(
     200,
     JSON.stringify([
       makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
@@ -358,7 +358,7 @@ it('waits consumeInterval for jobs to execute if set', async () => {
 
   const bodySpy = moxy(() => true);
   const scope = graphAPI
-    .post('/v3.1/', bodySpy)
+    .post('/v3.3/', bodySpy)
     .reply(
       200,
       JSON.stringify(
@@ -398,7 +398,7 @@ it.each([undefined, 0])(
 
     const bodySpy = moxy(() => true);
     const scope = graphAPI
-      .post('/v3.1/', bodySpy)
+      .post('/v3.3/', bodySpy)
       .times(3)
       .delay(50)
       .reply(

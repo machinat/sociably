@@ -20,7 +20,7 @@ export type MessengerWorkerOptions = {
 
 type MessengerJobResponse = JobResponse<MessengerJob, MessengerAPIResult>;
 
-const ENTRY = 'https://graph.facebook.com/v3.1/';
+const ENTRY = 'https://graph.facebook.com/v3.3/';
 
 const GET = 'GET';
 const POST = 'POST';

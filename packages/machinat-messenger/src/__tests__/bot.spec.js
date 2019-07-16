@@ -34,7 +34,7 @@ beforeEach(() => {
   Controller.mock.clear();
   WebhookReceiver.mock.clear();
 
-  graphAPI = nock('https://graph.facebook.com').post('/v3.1/', bodySpy);
+  graphAPI = nock('https://graph.facebook.com').post('/v3.3/', bodySpy);
   bodySpy.mock.clear();
 });
 
