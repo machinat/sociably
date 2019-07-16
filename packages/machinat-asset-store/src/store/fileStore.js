@@ -18,6 +18,9 @@ type AssetsObj = {|
   |},
 |};
 
+const object$hasOwnProperty = Object.prototype.hasOwnProperty;
+const hasOwnProperty = (obj, key) => object$hasOwnProperty.call(obj, key);
+
 class FileAssetStore implements AssetStore {
   path: string;
 
@@ -30,7 +33,7 @@ class FileAssetStore implements AssetStore {
     entity: string,
     resource: string,
     name: string
-  ) {
+  ): Promise<void | string | number> {
     const assets = await this._readAssets();
 
     const platformData = assets[platform];
@@ -51,12 +54,12 @@ class FileAssetStore implements AssetStore {
     return (resourceData[name]: any);
   }
 
-  async setAsset<T: string | number>(
+  async setAsset(
     platform: string,
     entity: string,
     resource: string,
     name: string,
-    id: T
+    id: string | number
   ) {
     const assets = await this._readAssets();
 
@@ -86,6 +89,60 @@ class FileAssetStore implements AssetStore {
 
     await this._writeAssets(assets);
     return resourceExisted;
+  }
+
+  async listAssets(platform: string, entity: string, resource: string) {
+    const assets: AssetsObj = await this._readAssets();
+
+    const platformData = assets[platform];
+    if (!platformData) {
+      return null;
+    }
+
+    const entityData = platformData[entity];
+    if (!entityData) {
+      return null;
+    }
+
+    const resourceData = entityData[resource];
+    if (!resourceData) {
+      return null;
+    }
+
+    return (new Map(Object.entries(resourceData)): any);
+  }
+
+  async deleteAsset(
+    platform: string,
+    entity: string,
+    resource: string,
+    name: string
+  ) {
+    const assets: AssetsObj = await this._readAssets();
+
+    const platformData = assets[platform];
+    if (!platformData) {
+      return false;
+    }
+
+    const entityData = platformData[entity];
+    if (!entityData) {
+      return false;
+    }
+
+    const resourceData = entityData[resource];
+    if (!resourceData) {
+      return false;
+    }
+
+    if (hasOwnProperty(resourceData, name)) {
+      delete resourceData[name];
+      await this._writeAssets(assets);
+
+      return true;
+    }
+
+    return false;
   }
 
   _writeAssets(assets: AssetsObj) {
