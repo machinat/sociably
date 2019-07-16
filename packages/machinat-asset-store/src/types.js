@@ -46,3 +46,9 @@ export interface ScopedAssetAccessor {
     id: string | number
   ): Promise<boolean>;
 }
+
+export type ResourceConsumption = {|
+  resource: string,
+  name: string,
+  invariant: boolean,
+|};

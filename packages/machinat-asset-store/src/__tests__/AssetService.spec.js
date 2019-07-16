@@ -34,6 +34,20 @@ it('return undefined if asset not existed', async () => {
   expect(assetsAccessor.getAsset.mock).toHaveBeenCalledWith('villager', 'Mary');
 });
 
+it('throw if consumption.invariant set to true and asset not existed', async () => {
+  assetsAccessor.getAsset.mock.fake(async () => undefined);
+
+  await expect(
+    AssetService._serve(assetsAccessor)({
+      resource: 'villager',
+      name: 'Joe',
+      invariant: true,
+    })
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"asset ( villager [ Joe ] ) not existed"`
+  );
+});
+
 it('throw if accessor not given', () => {
   expect(() =>
     AssetService._serve()({ resource: 'villager', name: 'Mary' })
