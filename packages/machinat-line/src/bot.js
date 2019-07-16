@@ -38,7 +38,7 @@ type LineBotOptionsInput = $Shape<LineBotOptions>;
 
 type LineReceiver = WebhookReceiver<LineChannel, LineEvent, void>;
 
-type LIFFParams = {|
+type LIFFAppParams = {|
   view: {|
     type: 'compact' | 'tall' | 'full',
     url: string,
@@ -47,7 +47,13 @@ type LIFFParams = {|
   features?: {| ble: boolean |},
 |};
 
-const compareLIFFAppParams = (expected: LIFFParams, actual: LIFFParams) =>
+type EnsureLIFFAppOpts = {|
+  id?: string,
+  name?: string,
+  assetStore?: AssetStore,
+|};
+
+const compareLIFFAppParams = (expected: LIFFAppParams, actual: LIFFAppParams) =>
   (!expected.view ||
     (actual.view &&
       expected.view.type === actual.view.type &&
@@ -238,13 +244,19 @@ class LineBot
   }
 
   async ensureLIFFApp(
-    store: AssetStore,
-    name: string,
-    params?: ?LIFFParams
+    params: ?LIFFAppParams,
+    { id, name, assetStore }: EnsureLIFFAppOpts
   ): Promise<boolean> {
-    const assets = new LineAssetAccessor(store, this.options.channelId);
+    let assets: void | LineAssetAccessor;
+    let liffId: void | string = id;
 
-    const liffId = await assets.getLIFFApp(name);
+    if (!liffId) {
+      invariant(name, 'either id or name of LIFF app have to be provided');
+      invariant(assetStore, 'assetStore must be provided while using name');
+
+      assets = new LineAssetAccessor(assetStore, this.options.channelId);
+      liffId = (await assets.getLIFFApp(name): void | string);
+    }
 
     // removed stored id if params is falsy
     if (!params) {
@@ -252,24 +264,27 @@ class LineBot
         return false;
       }
 
-      await assets.deleteLIFFApp(name);
+      if (assets !== undefined) {
+        await assets.deleteLIFFApp((name: any));
+      }
+
       await this._dispatchSingleAPICall({
         method: 'DELETE',
-        entry: 'liff/v1/apps',
+        entry: `liff/v1/apps/${liffId}`,
       });
 
       return true;
     }
 
-    // create liff app if no id stored
-    if (liffId === undefined) {
+    // create liff app if name provided but no id stored
+    if (liffId === undefined && assets !== undefined) {
       const result = await this._dispatchSingleAPICall({
         method: 'POST',
         entry: 'liff/v1/apps',
         body: params,
       });
 
-      await assets.setLIFFApp(name, result.liffId);
+      await assets.setLIFFApp((name: any), result.liffId);
       return true;
     }
 
@@ -283,14 +298,18 @@ class LineBot
     const app = apps.find(a => a.liffId === liffId);
 
     // if app with stored id not existed, create one
-    if (!app) {
+    if (app === undefined) {
+      if (assets === undefined) {
+        throw Error(`LIFF app with id [ ${(liffId: any)} ] not existed`);
+      }
+
       const result = await this._dispatchSingleAPICall({
         method: 'POST',
         entry: 'liff/v1/apps',
         body: params,
       });
 
-      await assets.setLIFFApp(name, result.liffId);
+      await assets.setLIFFApp((name: any), result.liffId);
       return true;
     }
 
@@ -301,6 +320,7 @@ class LineBot
         entry: 'liff/v1/apps',
         body: params,
       });
+
       return true;
     }
 

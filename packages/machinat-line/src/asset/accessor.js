@@ -31,8 +31,8 @@ class LineAssetAccessor implements ScopedAssetAccessor {
     return this.store.deleteAsset(LINE, this._entityCode, resource, name);
   }
 
-  getLIFFApp(name: string) {
-    return this.store.getAsset(LINE, this._entityCode, LIFF, name);
+  getLIFFApp(name: string): Promise<void | string> {
+    return (this.store.getAsset(LINE, this._entityCode, LIFF, name): any);
   }
 
   setLIFFApp(name: string, id: string) {
@@ -47,8 +47,8 @@ class LineAssetAccessor implements ScopedAssetAccessor {
     return this.store.deleteAsset(LINE, this._entityCode, LIFF, name);
   }
 
-  getRichMenu(name: string) {
-    return this.store.getAsset(LINE, this._entityCode, RICH_MENU, name);
+  getRichMenu(name: string): Promise<void | string> {
+    return (this.store.getAsset(LINE, this._entityCode, RICH_MENU, name): any);
   }
 
   setRichMenu(name: string, id: string) {
