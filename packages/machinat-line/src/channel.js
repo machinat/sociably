@@ -11,7 +11,7 @@ class LineChannel implements MachinatChannel {
   source: LineSource;
   sourceId: string;
 
-  constructor(source: LineSource) {
+  constructor(source: LineSource, lineChannelId?: string) {
     this.subtype = source.type;
 
     this.source = source;
@@ -22,7 +22,7 @@ class LineChannel implements MachinatChannel {
         ? source.roomId
         : source.userId;
 
-    this.uid = `line:default:${this.subtype}:${this.sourceId}`;
+    this.uid = `line:${lineChannelId || '*'}:${this.subtype}:${this.sourceId}`;
   }
 }
 

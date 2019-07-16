@@ -90,6 +90,7 @@ describe('#constructor(options)', () => {
     expect(
       new LineBot({
         accessToken,
+        channelId: '_my_bot_',
         channelSecret: '_SECRET_',
       })
     ).toBeInstanceOf(Emitter);
@@ -103,7 +104,12 @@ describe('#constructor(options)', () => {
 
   it('throws if shouldValidateRequest but channelSecret not given', () => {
     expect(
-      () => new LineBot({ accessToken, shouldValidateRequest: true })
+      () =>
+        new LineBot({
+          accessToken,
+          channelId: '_my_bot_',
+          shouldValidateRequest: true,
+        })
     ).toThrowErrorMatchingInlineSnapshot(
       `"should provide channelSecret if shouldValidateRequest set to true"`
     );
@@ -111,25 +117,37 @@ describe('#constructor(options)', () => {
 
   it('is ok to have channelSecret empty if shouldValidateRequest set to false', () => {
     expect(
-      () => new LineBot({ accessToken, shouldValidateRequest: false })
+      () =>
+        new LineBot({
+          accessToken,
+          channelId: '_my_bot_',
+          shouldValidateRequest: false,
+        })
     ).not.toThrow();
   });
 
   it('sets default options', () => {
-    expect(new LineBot({ accessToken, channelSecret: '_SECRET_' }).options)
-      .toMatchInlineSnapshot(`
-Object {
-  "accessToken": "__ACCESS_TOKEN__",
-  "channelSecret": "_SECRET_",
-  "connectionCapicity": 100,
-  "shouldValidateRequest": true,
-}
-`);
+    expect(
+      new LineBot({
+        accessToken,
+        channelId: '_my_bot_',
+        channelSecret: '_SECRET_',
+      }).options
+    ).toMatchInlineSnapshot(`
+      Object {
+        "accessToken": "__ACCESS_TOKEN__",
+        "channelId": "_my_bot_",
+        "channelSecret": "_SECRET_",
+        "connectionCapicity": 100,
+        "shouldValidateRequest": true,
+      }
+    `);
   });
 
   it('covers default options', () => {
     const options = {
       accessToken,
+      channelId: '_my_bot_',
       shouldValidateRequest: false,
       channelSecret: '_SECRET_',
       connectionCapicity: 9999,
@@ -141,6 +159,7 @@ Object {
   it('assemble core modules', () => {
     const bot = new LineBot({
       accessToken,
+      channelId: '_my_bot_',
       channelSecret: '_SECRET_',
     });
 
@@ -192,6 +211,7 @@ Object {
 
     const bot = new LineBot({
       accessToken,
+      channelId: '_my_bot_',
       channelSecret: '_SECRET_',
       plugins,
     });
@@ -219,6 +239,7 @@ Object {
 
     const bot = new LineBot({
       accessToken,
+      channelId: '_my_bot_',
       channelSecret: '_SECRET_',
     });
 
@@ -260,6 +281,7 @@ describe('#send(token, node, options)', () => {
   it('works', async () => {
     const bot = new LineBot({
       accessToken,
+      channelId: '_my_bot_',
       channelSecret: '_SECRET_',
       useReplyAPI: false,
     });
@@ -277,9 +299,9 @@ describe('#send(token, node, options)', () => {
     expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
       '/v2/bot/message/push',
       '/v2/bot/message/push',
-      '/v2/bot/bar',
+      '/bar',
       '/v2/bot/message/push',
-      '/v2/bot/baz',
+      '/baz',
     ]);
 
     expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchSnapshot();
@@ -288,6 +310,7 @@ describe('#send(token, node, options)', () => {
   it('works with replyToken', async () => {
     const bot = new LineBot({
       accessToken,
+      channelId: '_my_bot_',
       channelSecret: '_SECRET_',
       useReplyAPI: true,
     });
@@ -308,6 +331,7 @@ describe('#send(token, node, options)', () => {
   it('throw if messages length more than 5 when using replyToken', () => {
     const bot = new LineBot({
       accessToken,
+      channelId: '_my_bot_',
       channelSecret: '_SECRET_',
       useReplyAPI: true,
     });
@@ -325,6 +349,7 @@ describe('#send(token, node, options)', () => {
 test('#multicast(targets, node) works', async () => {
   const bot = new LineBot({
     accessToken,
+    channelId: '_my_bot_',
     channelSecret: '_SECRET_',
   });
 
@@ -348,3 +373,6 @@ test('#multicast(targets, node) works', async () => {
 
   expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchSnapshot();
 });
+
+// TODO: test ensureLIFFApp()
+// describe('#ensureLIFFApp(storage, name, param)', () => {});

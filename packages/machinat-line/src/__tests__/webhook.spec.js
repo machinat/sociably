@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import moxy from 'moxy';
 
-import handleWebhook from '../webhookHandler';
+import handleWebhook from '../webhook';
 import LineChannel from '../channel';
 
 describe('handleWebhook(options)(req, res, body)', () => {
@@ -82,7 +82,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
           timestamp: 1462629479859,
           source: {
             type: 'user',
-            userId: 'U4af4980629...',
+            userId: 'U4af4980629',
           },
           message: {
             id: '325708',
@@ -96,7 +96,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
           timestamp: 1462629479859,
           source: {
             type: 'user',
-            userId: 'U4af4980629...',
+            userId: 'U4af4980629',
           },
         },
       ],
@@ -113,6 +113,8 @@ describe('handleWebhook(options)(req, res, body)', () => {
 
     expect(events.length).toBe(2);
 
+    expect(events).toMatchSnapshot();
+
     events.forEach(({ event, channel, response }, i) => {
       expect(response).toBe(undefined);
 
@@ -120,14 +122,45 @@ describe('handleWebhook(options)(req, res, body)', () => {
       expect(channel.subtype).toBe('user');
       expect(channel.source).toEqual({
         type: 'user',
-        userId: 'U4af4980629...',
+        userId: 'U4af4980629',
       });
+      expect(channel.uid).toBe('line:*:user:U4af4980629');
 
       expect(event.platform).toBe('line');
       expect(event.type).toBe(!i ? 'message' : 'follow');
       expect(event.subtype).toBe(!i ? 'text' : undefined);
       expect(event.payload).toEqual(body.events[i]);
     });
+  });
+
+  it('pass options.channelId to channel', async () => {
+    const req = moxy(new IncomingMessage());
+    req.method = 'POST';
+    const res = moxy(new ServerResponse({ method: 'POST' }));
+
+    const [{ channel }] = await handleWebhook({
+      shouldValidateRequest: false,
+      channelId: '_my_foo_line_channel_',
+    })(
+      req,
+      res,
+      JSON.stringify({
+        destination: 'xxxxxxxxxx',
+        events: [
+          {
+            replyToken: '0f3779fba3b349968c5d07db31eab56f',
+            type: 'message',
+            timestamp: 1462629479859,
+            source: { type: 'user', userId: 'U4af4980629' },
+            message: { id: '325708', type: 'text', text: 'Hello, world' },
+          },
+        ],
+      })
+    );
+
+    expect(channel).toBeInstanceOf(LineChannel);
+    expect(channel.subtype).toBe('user');
+    expect(channel.uid).toBe('line:_my_foo_line_channel_:user:U4af4980629');
   });
 
   it('returns events if request validation passed', async () => {

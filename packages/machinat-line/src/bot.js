@@ -1,5 +1,6 @@
 // @flow
 import invariant from 'invariant';
+import warning from 'warning';
 
 import { Emitter, Engine, Controller, resolvePlugins } from 'machinat-base';
 import Renderer from 'machinat-renderer';
@@ -10,9 +11,10 @@ import type { MachinatNode } from 'machinat/types';
 import type { MachinatBot } from 'machinat-base/types';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
 import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
+import type { AssetStore } from 'machinat-asset-store/types';
 
 import LineWorker from './worker';
-import handleWebhook from './webhookHandler';
+import handleWebhook from './webhook';
 import { createChatJobs, createMulticastJobs } from './job';
 
 import type {
@@ -27,13 +29,22 @@ import type {
 } from './types';
 
 import LineChannel from './channel';
-import { LINE_NATIVE_TYPE } from './constant';
+import { LINE_NATIVE_TYPE, ENTRY_REPLY } from './constant';
 
 import generalElementDelegate from './component/general';
 
 type LineBotOptionsInput = $Shape<LineBotOptions>;
 
 type LineReceiver = WebhookReceiver<LineChannel, LineEvent, void>;
+
+type LIFFParams = {|
+  view: {|
+    type: 'compact' | 'tall' | 'full',
+    url: string,
+  |},
+  description?: string,
+  features?: {| ble: boolean |},
+|};
 
 const LINE = 'line';
 
@@ -89,12 +100,12 @@ class LineBot
     const defaultOpions: LineBotOptionsInput = {
       accessToken: undefined,
       shouldValidateRequest: true,
+      channelId: undefined,
       channelSecret: undefined,
       connectionCapicity: 100,
     };
 
     const options = Object.assign(defaultOpions, optionsInput);
-    this.options = options;
 
     invariant(
       options.accessToken,
@@ -105,6 +116,13 @@ class LineBot
       !options.shouldValidateRequest || options.channelSecret,
       'should provide channelSecret if shouldValidateRequest set to true'
     );
+
+    warning(
+      options.channelId,
+      'provide channelId to identify different line channel'
+    );
+
+    this.options = options;
 
     const { eventMiddlewares, dispatchMiddlewares } = resolvePlugins(
       this,
@@ -172,7 +190,7 @@ class LineBot
       for (const job of tasks) {
         if (job.type === 'transmit') {
           for (const { entry } of job.payload) {
-            const isReply = entry === 'message/reply';
+            const isReply = entry === ENTRY_REPLY;
 
             invariant(
               !(replyFound && isReply),
@@ -207,6 +225,92 @@ class LineBot
 
     const response = await this.engine.dispatch(null, tasks, message);
     return response === null ? null : response.results;
+  }
+
+  async ensureLIFFApp(
+    store: AssetStore,
+    name: string,
+    params?: ?LIFFParams
+  ): Promise<boolean> {
+    const entity = this.options.channelId || '*';
+
+    const liffId = await store.getAsset(LINE, 'liff', entity, name);
+
+    // removed stored id if params is falsy
+    if (!params) {
+      if (liffId === undefined) {
+        return false;
+      }
+
+      await store.deleteAsset(LINE, 'liff', entity, name);
+      await this._dispatchSingleAPICall({
+        method: 'DELETE',
+        entry: 'liff/v1/apps',
+      });
+
+      return true;
+    }
+
+    // create liff app if no id stored
+    if (liffId === undefined) {
+      const result = await this._dispatchSingleAPICall({
+        method: 'POST',
+        entry: 'liff/v1/apps',
+        body: params,
+      });
+
+      await store.setAsset(LINE, 'liff', entity, name, result.liffId);
+      return true;
+    }
+
+    // get actually existed apps
+    const { apps } = await this._dispatchSingleAPICall({
+      method: 'GET',
+      entry: 'liff/v1/apps',
+      body: params,
+    });
+
+    const app = apps.find(a => a.liffId === liffId);
+
+    // if app with stored id not existed, create one
+    if (!app) {
+      const result = await this._dispatchSingleAPICall({
+        method: 'POST',
+        entry: 'liff/v1/apps',
+        body: params,
+      });
+
+      await store.setAsset(LINE, 'liff', entity, name, result.liffId);
+      return true;
+    }
+
+    // if app not match with params, update it
+    if (
+      (params.view &&
+        (!app.view ||
+          params.view.type !== app.view.type ||
+          params.view.url !== app.view.url)) ||
+      params.description !== app.description ||
+      (params.features &&
+        (!app.features || params.features.ble !== app.features.ble))
+    ) {
+      await this._dispatchSingleAPICall({
+        method: 'PUT',
+        entry: 'liff/v1/apps',
+        body: params,
+      });
+      return true;
+    }
+
+    return false;
+  }
+
+  async _dispatchSingleAPICall(job: LineJob): Promise<LineAPIResult> {
+    const response = await this.engine.dispatch(null, [
+      { type: 'transmit', payload: [job] },
+    ]);
+
+    return response.results[0];
   }
 }
 

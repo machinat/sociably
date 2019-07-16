@@ -14,7 +14,7 @@ const POST = 'POST';
 const PUT = 'PUT';
 const DELETE = 'DELETE';
 
-const API_ENTRY = 'https://api.line.me/v2/bot/';
+const API_HOST = 'https://api.line.me';
 
 type LineClientOptions = {
   accessToken: string,
@@ -47,7 +47,7 @@ export default class LineClient
   }
 
   async _request(method: string, path: string, body?: Object): LineAPIResult {
-    const requestURL = new url.URL(path, API_ENTRY);
+    const requestURL = new url.URL(path, API_HOST);
 
     const response = await fetch(requestURL.href, {
       method,
@@ -166,7 +166,8 @@ export default class LineClient
   }
 
   _consumeCallback = async ([job]: LineJob[]) => {
-    const result = await this.post(job.entry, job.body);
+    const { method, entry, body } = job;
+    const result = await this._request(method, entry, body);
 
     return [{ success: true, result, job, error: undefined }];
   };

@@ -178,7 +178,7 @@ export type DispatchMiddleware<
   Result
 > = MiddlewareFunc<
   DispatchFrame<Channel, Job>,
-  Promise<null | DispatchResponse<Job, Result>>
+  Promise<DispatchResponse<Job, Result>>
 >;
 
 export type BotPlugin<

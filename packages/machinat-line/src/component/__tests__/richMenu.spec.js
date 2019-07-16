@@ -38,7 +38,7 @@ describe('$$getEntry function', () => {
         }),
         { id: '_RICH_MENU_ID_' }
       )
-    ).toBe('user/_USER_ID_/richmenu/_RICH_MENU_ID_');
+    ).toBe('v2/bot/user/_USER_ID_/richmenu/_RICH_MENU_ID_');
   });
 
   it('throw if type of channel is not user', () => {

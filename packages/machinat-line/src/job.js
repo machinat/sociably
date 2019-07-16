@@ -10,10 +10,7 @@ import type {
   LineJob,
   LineSendOptions,
 } from './types';
-
-const REPLY_PATH = 'message/reply';
-const PUSH_PATH = 'message/push';
-const MULTICAST_PATH = 'message/multicast';
+import { ENTRY_PUSH, ENTRY_REPLY, ENTRY_MULTICAST } from './constant';
 
 const isMessagesEntry = node =>
   typeof node !== 'object' ||
@@ -51,7 +48,8 @@ export const createChatJobs = (
       (!isMesssage || messagesBuffer.length === 5 || i === segments.length - 1)
     ) {
       jobs.push({
-        entry: replyToken ? REPLY_PATH : PUSH_PATH,
+        method: 'POST',
+        entry: replyToken ? ENTRY_REPLY : ENTRY_PUSH,
         channelUid: channel.uid,
         body: replyToken
           ? { replyToken: (replyToken: string), messages: messagesBuffer }
@@ -68,6 +66,7 @@ export const createChatJobs = (
       node.type.$$getEntry !== undefined */
     ) {
       jobs.push({
+        method: 'POST',
         entry: node.type.$$getEntry(channel, value),
         channelUid: channel.uid,
         body: value,
@@ -101,7 +100,8 @@ export const createMulticastJobs = (
 
     if (messages.length === 5 || i === segments.length - 1) {
       jobs.push({
-        entry: MULTICAST_PATH,
+        method: 'POST',
+        entry: ENTRY_MULTICAST,
         body: { to: targets, messages },
       });
       messages = [];

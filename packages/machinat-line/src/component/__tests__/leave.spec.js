@@ -24,7 +24,7 @@ describe('$$getEntry function', () => {
           userId: '_USER_ID_',
         })
       )
-    ).toBe('group/_GROUP_ID_/leave');
+    ).toBe('v2/bot/group/_GROUP_ID_/leave');
 
     expect(
       Leave.$$getEntry(
@@ -34,7 +34,7 @@ describe('$$getEntry function', () => {
           userId: '_USER_ID_',
         })
       )
-    ).toBe('room/_ROOM_ID_/leave');
+    ).toBe('v2/bot/room/_ROOM_ID_/leave');
   });
 
   it('throw if type of channel is user', () => {

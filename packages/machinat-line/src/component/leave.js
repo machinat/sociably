@@ -14,7 +14,7 @@ const __Leave = asSingleUnitComponentWithEntryGetter(channel => {
     '<Leave /> should be only used in a group or room channel'
   );
 
-  return `${subtype}/${sourceId}/leave`;
+  return `v2/bot/${subtype}/${sourceId}/leave`;
 })(Leave);
 
 export { __Leave as Leave };

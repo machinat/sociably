@@ -72,7 +72,7 @@ export default class MachinatEngine<
 
   _dispatchThroughMiddlewares: (
     frame: DispatchFrame<Channel, Job>
-  ) => Promise<null | DispatchResponse<Job, Result>>;
+  ) => Promise<DispatchResponse<Job, Result>>;
 
   constructor(
     platform: string,
@@ -186,7 +186,7 @@ export default class MachinatEngine<
     channel: null | Channel,
     tasks: DispatchTask<Job>[],
     node?: MachinatNode
-  ): Promise<null | DispatchResponse<Job, Result>> {
+  ): Promise<DispatchResponse<Job, Result>> {
     return this._dispatchThroughMiddlewares({
       platform: this.platform,
       bot: this.bot,
@@ -198,7 +198,7 @@ export default class MachinatEngine<
 
   async _executeDispatch(
     frame: DispatchFrame<Channel, Job>
-  ): Promise<null | DispatchResponse<Job, Result>> {
+  ): Promise<DispatchResponse<Job, Result>> {
     const { tasks } = frame;
     const results: Result[] = [];
     const thunks: RenderThunkFn[] = [];

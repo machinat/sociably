@@ -179,29 +179,34 @@ export type LineMessageRequestBody =
   | PushRequestBody
   | MulticastRequestBody;
 
-export type LineJob = {
-  body: void | LineMessageRequestBody | Object,
+export type LineJob = {|
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+  body?: LineMessageRequestBody | Object,
   entry: string,
   channelUid?: string,
-};
+  assetLabel?: string,
+|};
 
-export type LineAPIResult = {};
+export type LineAPIResult = Object;
+
+export type LineBotPlugin = BotPlugin<
+  LineChannel,
+  LineEvent,
+  WebhookMetadata,
+  void,
+  LineSegmentValue,
+  LineComponent,
+  LineJob,
+  LineAPIResult
+>;
 
 export type LineBotOptions = {
+  channelId?: string,
   channelSecret?: string,
   shouldValidateRequest: boolean,
   accessToken: string,
   connectionCapicity: number,
-  plugins?: BotPlugin<
-    LineChannel,
-    LineEvent,
-    WebhookMetadata,
-    void,
-    LineSegmentValue,
-    LineComponent,
-    LineJob,
-    LineAPIResult
-  >[],
+  plugins?: LineBotPlugin[],
 };
 
 export type LineSendOptions = {

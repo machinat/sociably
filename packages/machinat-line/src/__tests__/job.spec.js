@@ -42,7 +42,7 @@ describe('createChatJobs()', () => {
       if ([2, 4].includes(i)) {
         expect(job.entry).toBe(i === 2 ? 'bar' : 'baz');
       } else {
-        expect(job.entry).toBe('message/push');
+        expect(job.entry).toBe('v2/bot/message/push');
         expect(job.body.to).toBe('john');
       }
     });
@@ -68,7 +68,7 @@ describe('createChatJobs()', () => {
       if ([2, 4].includes(i)) {
         expect(job.entry).toBe(i === 2 ? 'bar' : 'baz');
       } else {
-        expect(job.entry).toBe('message/reply');
+        expect(job.entry).toBe('v2/bot/message/reply');
         expect(job.body.replyToken).toBe('__REPLY_TOKEN__');
       }
     });
@@ -108,7 +108,7 @@ describe('createMulticastJobs()', () => {
     expect(jobs[0].channelId).toBe(jobs[1].channelId);
 
     jobs.forEach(job => {
-      expect(job.entry).toBe('message/multicast');
+      expect(job.entry).toBe('v2/bot/message/multicast');
       expect(job.body.to).toEqual(['foo', 'bar', 'baz']);
     });
   });

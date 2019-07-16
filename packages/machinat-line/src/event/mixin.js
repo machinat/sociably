@@ -38,7 +38,7 @@ export const Repliable = {
 
 export const Message = {
   get messageId() {
-    return this.rwa.message.id;
+    return this.payload.message.id;
   },
 };
 
