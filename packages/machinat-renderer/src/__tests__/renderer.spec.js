@@ -580,7 +580,7 @@ Array [
 `);
 
     expect(serveFoo.mock).toHaveBeenCalledTimes(5);
-    expect(serveFoo.mock).toHaveBeenNthCalledWith(1, ...[]);
+    expect(serveFoo.mock).toHaveBeenNthCalledWith(1, undefined);
     expect(serveFoo.mock.calls[0].result.mock).toHaveBeenCalledTimes(1);
     expect(serveFoo.mock).toHaveBeenNthCalledWith(2, 'O');
     expect(serveFoo.mock.calls[1].result.mock).toHaveBeenCalledTimes(1);
@@ -588,17 +588,17 @@ Array [
     expect(serveFoo.mock.calls[2].result.mock).toHaveBeenCalledTimes(1);
     expect(serveFoo.mock).toHaveBeenNthCalledWith(4, 'H');
     expect(serveFoo.mock.calls[3].result.mock).toHaveBeenCalledTimes(1);
-    expect(serveFoo.mock).toHaveBeenNthCalledWith(5, ...[]);
+    expect(serveFoo.mock).toHaveBeenNthCalledWith(5, undefined);
     expect(serveFoo.mock.calls[4].result.mock).toHaveBeenCalledTimes(1);
 
     expect(serveBar.mock).toHaveBeenCalledTimes(4);
-    expect(serveBar.mock).toHaveBeenNthCalledWith(1, ...[]);
+    expect(serveBar.mock).toHaveBeenNthCalledWith(1, undefined);
     expect(serveBar.mock.calls[0].result.mock).toHaveBeenCalledTimes(1);
     expect(serveBar.mock).toHaveBeenNthCalledWith(2, 'O');
     expect(serveBar.mock.calls[1].result.mock).toHaveBeenCalledTimes(1);
     expect(serveBar.mock).toHaveBeenNthCalledWith(3, 'E');
     expect(serveBar.mock.calls[2].result.mock).toHaveBeenCalledTimes(2);
-    expect(serveBar.mock).toHaveBeenNthCalledWith(4, ...[]);
+    expect(serveBar.mock).toHaveBeenNthCalledWith(4, undefined);
     expect(serveBar.mock.calls[3].result.mock).toHaveBeenCalledTimes(1);
 
     expect(spy.mock).toHaveBeenCalledTimes(10);

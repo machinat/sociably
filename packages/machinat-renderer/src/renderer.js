@@ -191,7 +191,7 @@ export default class MachinatRenderer<
     if (provided !== undefined) {
       served = await provided(input, thunkRegistry.register);
     } else {
-      served = await service._serve()(input, thunkRegistry.register);
+      served = await service._serve(undefined)(input, thunkRegistry.register);
     }
 
     const segments = await this._renderImpl(
