@@ -18,6 +18,7 @@ import generalComponentDelegate from './component/general';
 import { MESSENGER, MESSENGER_NATIVE_TYPE } from './constant';
 import MessengerChannel from './channel';
 import { createChatJobs, createCreativeJobs } from './job';
+import { diffProfile } from './utils';
 
 import type {
   MessengerSource,
@@ -243,5 +244,54 @@ export default class MessengerBot
     ]);
 
     return response === null ? null : response.results[0];
+  }
+
+  async ensureProfile(profileParams: Object): Promise<boolean> {
+    const {
+      data: [profile],
+    } = await this._dispatchSingleAPICall({
+      request: {
+        method: 'GET',
+        relative_url: 'me/messenger_profile',
+        body: undefined,
+      },
+    });
+
+    const { updates, deletes } = diffProfile(profileParams, profile);
+    let changed = false;
+
+    if (Object.getOwnPropertyNames(updates).length > 0) {
+      changed = true;
+
+      await this._dispatchSingleAPICall({
+        request: {
+          method: 'POST',
+          relative_url: 'me/messenger_profile',
+          body: updates,
+        },
+      });
+    }
+
+    if (deletes.length > 0) {
+      changed = true;
+
+      await this._dispatchSingleAPICall({
+        request: {
+          method: 'DELETE',
+          relative_url: 'me/messenger_profile',
+          body: { fields: deletes },
+        },
+      });
+    }
+
+    return changed;
+  }
+
+  async _dispatchSingleAPICall(job: MessengerJob): Promise<Object> {
+    const response = await this.engine.dispatch(null, [
+      { type: 'transmit', payload: [job] },
+    ]);
+
+    return response.results[0].body;
   }
 }

@@ -1,6 +1,7 @@
 // @flow
 import invariant from 'invariant';
 import warning from 'warning';
+import deepEqual from 'fast-deep-equal';
 
 import { Emitter, Engine, Controller, resolvePlugins } from 'machinat-base';
 import Renderer from 'machinat-renderer';
@@ -52,15 +53,6 @@ type EnsureLIFFAppOpts = {|
   name?: string,
   assetStore?: AssetStore,
 |};
-
-const compareLIFFAppParams = (expected: LIFFAppParams, actual: LIFFAppParams) =>
-  (!expected.view ||
-    (actual.view &&
-      expected.view.type === actual.view.type &&
-      expected.view.url === actual.view.url)) &&
-  expected.description === actual.description &&
-  (!expected.features ||
-    (actual.features && expected.features.ble === actual.features.ble));
 
 const LINE = 'line';
 
@@ -313,8 +305,8 @@ class LineBot
       return true;
     }
 
-    // if app not match with params, update it
-    if (!compareLIFFAppParams(params, app)) {
+    // if app not match to params, update it
+    if (!deepEqual(params, app)) {
       await this._dispatchSingleAPICall({
         method: 'PUT',
         entry: 'liff/v1/apps',
