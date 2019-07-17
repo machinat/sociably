@@ -33,7 +33,6 @@ describe('Latex', () => {
   it('is valid Component', () => {
     expect(typeof Latex).toBe('function');
     expect(Latex.$$native).toBe(MESSENGER_NATIVE_TYPE);
-    expect(Latex.$$entry).toBe(undefined);
     expect(Latex.$$namespace).toBe('Messenger');
   });
 
@@ -102,7 +101,6 @@ describe('DynamicText', () => {
   it('is valid Component', () => {
     expect(typeof DynamicText).toBe('function');
     expect(DynamicText.$$native).toBe(MESSENGER_NATIVE_TYPE);
-    expect(DynamicText.$$entry).toBe('me/messages');
     expect(DynamicText.$$namespace).toBe('Messenger');
   });
 

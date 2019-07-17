@@ -31,7 +31,7 @@ import type {
 } from './types';
 
 import LineChannel from './channel';
-import { LINE_NATIVE_TYPE, ENTRY_REPLY } from './constant';
+import { LINE, LINE_NATIVE_TYPE, PATH_REPLY } from './constant';
 
 import generalElementDelegate from './component/general';
 
@@ -53,8 +53,6 @@ type EnsureLIFFAppOpts = {|
   name?: string,
   assetStore?: AssetStore,
 |};
-
-const LINE = 'line';
 
 class LineBot
   extends Emitter<
@@ -198,7 +196,7 @@ class LineBot
       for (const job of tasks) {
         if (job.type === 'transmit') {
           for (const { entry } of job.payload) {
-            const isReply = entry === ENTRY_REPLY;
+            const isReply = entry === PATH_REPLY;
 
             invariant(
               !(replyFound && isReply),

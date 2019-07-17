@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import { formatNode } from 'machinat-utility';
+import { formatNode, filterSymbolKeys } from 'machinat-utility';
 
 import type { SegmentWithoutPause } from 'machinat-base/types';
 import type LineChannel from './channel';
@@ -10,12 +10,13 @@ import type {
   LineJob,
   LineSendOptions,
 } from './types';
-import { ENTRY_PUSH, ENTRY_REPLY, ENTRY_MULTICAST } from './constant';
-
-const isMessagesEntry = node =>
-  typeof node !== 'object' ||
-  typeof node.type !== 'function' ||
-  node.type.$$getEntry === undefined;
+import {
+  PATH_PUSH,
+  PATH_REPLY,
+  PATH_MULTICAST,
+  ENTRY_GETTER,
+} from './constant';
+import { isMessageValue } from './utils';
 
 export const createChatJobs = (
   channel: LineChannel,
@@ -28,16 +29,16 @@ export const createChatJobs = (
   let messagesBuffer: LineSegmentValue[] = [];
 
   for (let i = 0; i < segments.length; i += 1) {
-    const { node, value } = segments[i];
+    const { value } = segments[i];
 
-    const isMesssage = isMessagesEntry(node);
+    const isMesssage = isMessageValue(value);
 
     // push message to buffer
     if (isMesssage) {
       messagesBuffer.push(
         typeof value === 'string'
           ? { type: 'text', text: (value: string) }
-          : value
+          : filterSymbolKeys(value)
       );
     }
 
@@ -49,7 +50,7 @@ export const createChatJobs = (
     ) {
       jobs.push({
         method: 'POST',
-        entry: replyToken ? ENTRY_REPLY : ENTRY_PUSH,
+        entry: replyToken ? PATH_REPLY : PATH_PUSH,
         channelUid: channel.uid,
         body: replyToken
           ? { replyToken: (replyToken: string), messages: messagesBuffer }
@@ -59,17 +60,14 @@ export const createChatJobs = (
     }
 
     // if non message met, use value as body directly and get dynamic entry
-    if (
-      !isMesssage /* :: && // for refinement, this equals to:
-      typeof node === 'object' &&
-      typeof node.type === 'function' &&
-      node.type.$$getEntry !== undefined */
-    ) {
+    if (!isMesssage) {
+      const { method, path } = (value: any)[ENTRY_GETTER](channel);
+
       jobs.push({
-        method: 'POST',
-        entry: node.type.$$getEntry(channel, value),
+        method,
+        entry: path,
         channelUid: channel.uid,
-        body: value,
+        body: filterSymbolKeys(value),
       });
     }
   }
@@ -88,7 +86,7 @@ export const createMulticastJobs = (
     const { node, value } = segments[i];
 
     invariant(
-      isMessagesEntry(node),
+      !hasOwnProperty.call(value, ENTRY_GETTER),
       `${formatNode(node)} is invalid to be delivered in multicast`
     );
 
@@ -101,7 +99,7 @@ export const createMulticastJobs = (
     if (messages.length === 5 || i === segments.length - 1) {
       jobs.push({
         method: 'POST',
-        entry: ENTRY_MULTICAST,
+        entry: PATH_MULTICAST,
         body: { to: targets, messages },
       });
       messages = [];

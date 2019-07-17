@@ -10,7 +10,6 @@ describe('media Components', () => {
   test.each([Image, Video, Audio, File])('is valid root Component', Media => {
     expect(typeof Media).toBe('function');
     expect(Media.$$native).toBe(MESSENGER_NATIVE_TYPE);
-    expect(Media.$$entry).toBe('me/messages');
     expect(Media.$$namespace).toBe('Messenger');
   });
 

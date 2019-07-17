@@ -4,7 +4,7 @@ import Machinat from 'machinat';
 import { Dialog } from '../dialog';
 import { QuickReply } from '../quickReply';
 
-import { LINE_NATIVE_TYPE } from '../../constant';
+import { LINE_NATIVE_TYPE, ENTRY_GETTER } from '../../constant';
 
 import renderHelper from './renderHelper';
 
@@ -19,7 +19,7 @@ it('is valid native component', () => {
   expect(typeof Dialog).toBe('function');
 
   expect(Dialog.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Dialog.$$getEntry).toBe(undefined);
+  expect(Dialog.$$namespace).toBe('Line');
 });
 
 it('return segments of what children rendered', async () => {
@@ -103,7 +103,6 @@ it('hoist children rendered text into text message object', async () => {
 
 it('attach quickReply to last message object', async () => {
   const Something = () => {};
-  Something.$$getEntry = () => 'just/like/this';
 
   const childrenSegments = [
     {
@@ -130,7 +129,12 @@ it('attach quickReply to last message object', async () => {
     {
       type: 'unit',
       node: <Something />,
-      value: { someone: 'i can kiss' },
+      value: {
+        someone: 'i can kiss',
+        [ENTRY_GETTER]() {
+          return { method: 'GET', path: 'super/human/gift' };
+        },
+      },
       path: '$:0#Dialog.children:3',
     },
   ];

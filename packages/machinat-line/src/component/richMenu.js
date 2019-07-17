@@ -1,20 +1,41 @@
-/* eslint-disable import/prefer-default-export */
 import invariant from 'invariant';
-import { asSingleUnitComponentWithEntryGetter } from './utils';
+import { ENTRY_GETTER } from '../constant';
+import { asUnitComponent } from '../utils';
 
-const LinkRichMenu = async ({ props: { id } }) => ({ id });
+function getLinkRichMenuEntry({ type, subtype, source }) {
+  invariant(
+    type === 'chat' && subtype === 'user',
+    '<RichMenu /> can only be delivered in a user chatting channel'
+  );
 
-const __LinkRichMenu = asSingleUnitComponentWithEntryGetter(
-  (channel, value) => {
-    const { type, subtype, source } = channel;
+  return {
+    method: 'POST',
+    path: `v2/bot/user/${source.userId}/richmenu/${this.id}`,
+  };
+}
 
-    invariant(
-      type === 'chat' && subtype === 'user',
-      '<RichMenu /> can only be delivered in a user chatting channel'
-    );
+const LinkRichMenu = async ({ props: { id } }) => ({
+  id,
+  [ENTRY_GETTER]: getLinkRichMenuEntry,
+});
+const __LinkRichMenu = asUnitComponent(LinkRichMenu);
 
-    return `v2/bot/user/${source.userId}/richmenu/${value.id}`;
-  }
-)(LinkRichMenu);
+function getUnlinkRichMenuEntry({ type, subtype, source }) {
+  invariant(
+    type === 'chat' && subtype === 'user',
+    '<UnlinkRichMenu /> can only be delivered in a user chatting channel'
+  );
 
-export { __LinkRichMenu as LinkRichMenu };
+  return {
+    method: 'DELETE',
+    path: `v2/bot/user/${source.userId}/richmenu/${this.id}`,
+  };
+}
+
+const UnlinkRichMenu = async ({ props: { id } }) => ({
+  id,
+  [ENTRY_GETTER]: getUnlinkRichMenuEntry,
+});
+const __UnlinkRichMenu = asUnitComponent(UnlinkRichMenu);
+
+export { __LinkRichMenu as LinkRichMenu, __UnlinkRichMenu as UnlinkRichMenu };

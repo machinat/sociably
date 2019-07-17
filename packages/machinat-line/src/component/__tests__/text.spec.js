@@ -11,7 +11,7 @@ describe('Emoji', () => {
     expect(typeof Emoji).toBe('function');
 
     expect(Emoji.$$native).toBe(LINE_NATIVE_TYPE);
-    expect(Emoji.$$getEntry).toBe(undefined);
+    expect(Emoji.$$namespace).toBe('Line');
   });
 
   it('renders to corespond unicode char', async () => {

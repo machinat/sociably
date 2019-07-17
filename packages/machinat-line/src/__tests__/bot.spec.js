@@ -7,7 +7,7 @@ import Queue from 'machinat-queue';
 import WebhookReceiver from 'machinat-webhook-receiver';
 import LineBot from '../bot';
 import LineWorker from '../worker';
-import { LINE_NATIVE_TYPE } from '../constant';
+import { LINE_NATIVE_TYPE, ENTRY_GETTER } from '../constant';
 
 jest.mock('machinat-base');
 jest.mock('machinat-renderer');
@@ -28,24 +28,25 @@ Foo.$$native = LINE_NATIVE_TYPE;
 const Bar = moxy((node, _, path) => [
   {
     type: 'unit',
-    value: node.props,
+    value: {
+      ...node.props,
+      [ENTRY_GETTER]: () => ({ method: 'POST', path: 'bar' }),
+    },
     node,
     path,
   },
 ]);
 Bar.$$native = LINE_NATIVE_TYPE;
-Bar.$$getEntry = moxy(() => 'bar');
 
 const Baz = moxy((node, _, path) => [
   {
     type: 'unit',
-    value: {},
+    value: { [ENTRY_GETTER]: () => ({ method: 'POST', path: 'baz' }) },
     node,
     path,
   },
 ]);
 Baz.$$native = LINE_NATIVE_TYPE;
-Baz.$$getEntry = moxy(() => 'baz');
 
 const msgs = [
   <Foo id={0} />,
@@ -70,9 +71,6 @@ beforeEach(() => {
   Engine.mock.reset();
   Controller.mock.reset();
   WebhookReceiver.mock.reset();
-
-  Bar.$$getEntry.mock.clear();
-  Baz.$$getEntry.mock.clear();
 
   lineAPI = nock('https://api.line.me', {
     reqheaders: {
@@ -373,6 +371,3 @@ test('#multicast(targets, node) works', async () => {
 
   expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchSnapshot();
 });
-
-// TODO: test ensureLIFFApp()
-// describe('#ensureLIFFApp(storage, name, param)', () => {});

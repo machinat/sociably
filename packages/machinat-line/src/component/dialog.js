@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { valuesOfAssertedType } from 'machinat-utility';
-import { asContainerComponent } from './utils';
+import { asContainerComponent, isMessageValue } from '../utils';
 import { QuickReply } from './quickReply';
 
 const getQuickReplyValues = valuesOfAssertedType(QuickReply);
@@ -15,7 +15,7 @@ const Dialog = async ({ props: { children, quickReplies } }, render) => {
   // hoisting text to line text message object
   for (let i = 0; i < segments.length; i += 1) {
     const segment = segments[i];
-    const { type, node, value } = segment;
+    const { type, value } = segment;
 
     if (type === 'text') {
       segment.type = 'unit';
@@ -25,10 +25,7 @@ const Dialog = async ({ props: { children, quickReplies } }, render) => {
       };
     }
 
-    if (
-      typeof node !== 'object' ||
-      typeof node.type.$$getEntry !== 'function'
-    ) {
+    if (isMessageValue(value)) {
       lastMessageIdx = i;
     }
   }

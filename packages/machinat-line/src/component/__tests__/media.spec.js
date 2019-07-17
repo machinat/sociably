@@ -12,7 +12,7 @@ it.each([Audio, Video].map(C => [C.name, C]))(
     expect(typeof Media).toBe('function');
 
     expect(Media.$$native).toBe(LINE_NATIVE_TYPE);
-    expect(Media.$$getEntry).toBe(undefined);
+    expect(Media.$$namespace).toBe('Line');
   }
 );
 

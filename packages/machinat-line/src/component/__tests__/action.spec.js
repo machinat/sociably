@@ -27,7 +27,7 @@ test.each(
 )('%s is valid native Component', (_, Action) => {
   expect(typeof Action).toBe('function');
   expect(Action.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Action.$$getEntry).toBe(undefined);
+  expect(Action.$$namespace).toBe('Line');
 });
 
 it.each(

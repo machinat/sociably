@@ -10,16 +10,14 @@ import renderHelper from './renderHelper';
 
 const render = renderHelper(null);
 
-it.each([
-  [PassThreadControl, 'me/pass_thread_control'],
-  [RequestThreadControl, 'me/request_thread_control'],
-  [TakeThreadContorl, 'me/take_thread_control'],
-])('%p is valid root Component', (ThreadControl, entry) => {
-  expect(typeof ThreadControl).toBe('function');
-  expect(ThreadControl.$$native).toBe(MESSENGER_NATIVE_TYPE);
-  expect(ThreadControl.$$entry).toBe(entry);
-  expect(ThreadControl.$$namespace).toBe('Messenger');
-});
+it.each([PassThreadControl, RequestThreadControl, TakeThreadContorl])(
+  '%p is valid root Component',
+  ThreadControl => {
+    expect(typeof ThreadControl).toBe('function');
+    expect(ThreadControl.$$native).toBe(MESSENGER_NATIVE_TYPE);
+    expect(ThreadControl.$$namespace).toBe('Messenger');
+  }
+);
 
 it.each(
   [

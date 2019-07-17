@@ -18,8 +18,7 @@ type AssetsObj = {|
   |},
 |};
 
-const object$hasOwnProperty = Object.prototype.hasOwnProperty;
-const hasOwnProperty = (obj, key) => object$hasOwnProperty.call(obj, key);
+const { hasOwnProperty } = Object.prototype;
 
 class FileAssetStore implements AssetStore {
   path: string;
@@ -135,7 +134,7 @@ class FileAssetStore implements AssetStore {
       return false;
     }
 
-    if (hasOwnProperty(resourceData, name)) {
+    if (hasOwnProperty.call(resourceData, name)) {
       delete resourceData[name];
       await this._writeAssets(assets);
 

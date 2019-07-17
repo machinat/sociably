@@ -2,17 +2,15 @@
 import invariant from 'invariant';
 import { joinTextualSegments } from 'machinat-utility';
 import {
-  asSingleMessageUnitComponent,
+  asUnitComponent,
   asContainerComponent,
-  mapJoinedTextualValues,
-} from './utils';
+  mapJoinedTextValues,
+} from '../utils';
 
 const LATEX_BEGIN = '\\(';
 const LATEX_END = '\\)';
 
-const Latex = mapJoinedTextualValues(v =>
-  typeof v === 'string' ? LATEX_BEGIN + v + LATEX_END : v
-);
+const Latex = mapJoinedTextValues(v => LATEX_BEGIN + v + LATEX_END);
 const __Latex = asContainerComponent(Latex);
 
 const DynamicText = async ({ props: { children, fallback } }, render) => {
@@ -38,6 +36,6 @@ const DynamicText = async ({ props: { children, fallback } }, render) => {
     },
   };
 };
-const __DynamicText = asSingleMessageUnitComponent(DynamicText);
+const __DynamicText = asUnitComponent(DynamicText);
 
 export { __Latex as Latex, __DynamicText as DynamicText };

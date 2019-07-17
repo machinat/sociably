@@ -12,7 +12,7 @@ it('is valid native unit component', () => {
   expect(typeof Location).toBe('function');
 
   expect(Location.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Location.$$getEntry).toBe(undefined);
+  expect(Location.$$namespace).toBe('Line');
 });
 
 it('render match snapshot', async () => {

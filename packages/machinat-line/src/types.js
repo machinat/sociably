@@ -4,6 +4,7 @@ import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
 
 import type LineChannel from './channel';
+import typeof { ENTRY_GETTER } from './constant';
 
 type UserSource = {|
   type: 'user',
@@ -25,7 +26,7 @@ type RoomSource = {|
 export type LineSource = UserSource | GroupSource | RoomSource;
 
 // TODO: type the complete raw event object
-export type LineRawEvent = {
+export type LineRawEvent = {|
   type: string,
   timestamp: number,
   source: LineSource,
@@ -37,14 +38,14 @@ export type LineRawEvent = {
   beacon: Object,
   link: Object,
   things: Object,
-};
+|};
 
-export type LineEvent = {
+export type LineEvent = {|
   platform: 'line',
   type: string,
   subtype: void | string,
   payload: LineRawEvent,
-};
+|};
 
 declare var e: LineEvent;
 (e: MachinatEvent<LineRawEvent>);
@@ -102,22 +103,22 @@ export type ImagemapSegmentValue = {
   type: 'imagemap',
   altText: string,
   address: string,
-  baseSize: {
+  baseSize: {|
     width: 1040,
     height: number,
-  },
-  video: {
+  |},
+  video: {|
     originalContentUrl: string,
     previewImageUrl: string,
-    area: {
+    area: {|
       x: number,
       y: number,
       width: number,
       height: number,
-    },
+    |},
     externalLink: string,
     label: string,
-  },
+  |},
   actions: Object[], // TODO: type the imagemap action object
 } & QuickRepliable;
 
@@ -127,10 +128,18 @@ export type TemplateSegmentValue = {
   template: Object, // TODO: type the template object
 } & QuickRepliable;
 
-export type LinkRichMenuSegmentValue = { id: string };
-export type LeaveSegmentValue = {};
+export type EntryGetterFn = (
+  channel: LineChannel
+) => {| method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string |};
 
-export type MessageSegmentValue =
+export type LinkRichMenuSegmentValue = {|
+  id: string,
+  [ENTRY_GETTER]: EntryGetterFn,
+|};
+
+export type LeaveSegmentValue = {||};
+
+export type LineSegmentValue =
   | TextSegmentValue
   | StickerSegmentValue
   | ImageSegmentValue
@@ -138,22 +147,11 @@ export type MessageSegmentValue =
   | AudioSegmentValue
   | LocationSegmentValue
   | ImagemapSegmentValue
-  | TemplateSegmentValue;
-
-export type LineSegmentValue =
-  | MessageSegmentValue
+  | TemplateSegmentValue
   | LinkRichMenuSegmentValue
   | LeaveSegmentValue;
 
-export type LineMessageNativeType = MachinatNativeComponent<MessageSegmentValue>;
-
-export type LineNonMessageNativeType = MachinatNativeComponent<
-  LinkRichMenuSegmentValue | LeaveSegmentValue
-> & {
-  $$getEntry: <Value>(channel: LineChannel, rendered: Value) => string,
-};
-
-export type LineComponent = LineMessageNativeType | LineNonMessageNativeType;
+export type LineComponent = MachinatNativeComponent<LineSegmentValue>;
 
 type MessagesBodyWithoutTarget = {|
   messages: LineSegmentValue[],
@@ -184,7 +182,6 @@ export type LineJob = {|
   body?: LineMessageRequestBody | Object,
   entry: string,
   channelUid?: string,
-  assetLabel?: string,
 |};
 
 export type LineAPIResult = Object;

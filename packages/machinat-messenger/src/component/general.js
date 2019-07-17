@@ -6,34 +6,28 @@ import {
 } from 'machinat-renderer';
 import { joinTextualSegments } from 'machinat-utility';
 
-import { mapJoinedTextualValues } from './utils';
+import { mapJoinedTextValues } from '../utils';
 
 const identity = x => x;
-const text = mapJoinedTextualValues(identity);
+const text = mapJoinedTextValues(identity);
 
 const br = (node, _, path) => [breakSegment(node, path)];
 
 const B = '*';
-const b = mapJoinedTextualValues(v => (typeof v === 'string' ? B + v + B : v));
+const b = mapJoinedTextValues(v => B + v + B);
 
 const I = '_';
-const i = mapJoinedTextualValues(v => (typeof v === 'string' ? I + v + I : v));
+const i = mapJoinedTextValues(v => I + v + I);
 
 const DEL = '~';
-const del = mapJoinedTextualValues(v =>
-  typeof v === 'string' ? DEL + v + DEL : v
-);
+const del = mapJoinedTextValues(v => DEL + v + DEL);
 
 const CODE = '`';
-const code = mapJoinedTextualValues(v =>
-  typeof v === 'string' ? CODE + v + CODE : v
-);
+const code = mapJoinedTextValues(v => CODE + v + CODE);
 
 const PRE_BEGIN = '```\n';
 const PRE_END = '\n```';
-const pre = mapJoinedTextualValues(v =>
-  typeof v === 'string' ? PRE_BEGIN + v + PRE_END : v
-);
+const pre = mapJoinedTextValues(v => PRE_BEGIN + v + PRE_END);
 
 const a = async (node, render, path) => {
   const { children, href } = node.props;

@@ -30,7 +30,6 @@ test.each([
 ])('is valid Component', Button => {
   expect(typeof Button).toBe('function');
   expect(Button.$$native).toBe(MESSENGER_NATIVE_TYPE);
-  expect(Button.$$entry).toBe(undefined);
   expect(Button.$$namespace).toBe('Messenger');
 });
 

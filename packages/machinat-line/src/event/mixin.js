@@ -1,6 +1,4 @@
 // @flow
-import { toJSONWithProto } from 'machinat-utility';
-
 export const EventBase = {
   platform: 'line',
 
@@ -23,10 +21,6 @@ Object.defineProperties(EventBase, {
   [Symbol.toStringTag]: {
     enumerable: false,
     value: 'LineEvent',
-  },
-  toJSON: {
-    enumerable: false,
-    value: toJSONWithProto,
   },
 });
 

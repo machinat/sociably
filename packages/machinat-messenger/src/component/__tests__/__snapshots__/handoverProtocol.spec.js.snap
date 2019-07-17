@@ -16,6 +16,7 @@ Array [
     "value": Object {
       "metadata": "you have my bow",
       "target_app_id": "Legolas",
+      Symbol(machinat.messenger.segment.entry): "me/pass_thread_control",
     },
   },
 ]
@@ -35,6 +36,7 @@ Array [
     "type": "unit",
     "value": Object {
       "metadata": "give me the ring",
+      Symbol(machinat.messenger.segment.entry): "me/request_thread_control",
     },
   },
 ]
@@ -54,6 +56,7 @@ Array [
     "type": "unit",
     "value": Object {
       "metadata": "my precious",
+      Symbol(machinat.messenger.segment.entry): "me/take_thread_control",
     },
   },
 ]

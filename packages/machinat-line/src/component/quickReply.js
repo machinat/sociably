@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { valuesOfAssertedType } from 'machinat-utility';
 
-import { asSinglePartComponent } from './utils';
+import { asPartComponent } from '../utils';
 
 import * as _actionModule from './action';
 
@@ -19,6 +19,6 @@ const QuickReply = async ({ props: { imageURL, action } }, render) => {
   };
 };
 
-const __QuickReply = asSinglePartComponent(QuickReply);
+const __QuickReply = asPartComponent(QuickReply);
 
 export { __QuickReply as QuickReply };

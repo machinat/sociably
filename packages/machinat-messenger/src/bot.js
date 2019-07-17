@@ -15,7 +15,13 @@ import MessengerWorker from './worker';
 import { handleWebhook, handleResponses } from './webhookHandler';
 import generalComponentDelegate from './component/general';
 
-import { MESSENGER, MESSENGER_NATIVE_TYPE } from './constant';
+import {
+  MESSENGER,
+  MESSENGER_NATIVE_TYPE,
+  PATH_MESSENGER_PROFILE,
+  PATH_BROADCAST_MESSAGES,
+  PATH_CUSTOM_LABELS,
+} from './constant';
 import MessengerChannel from './channel';
 import { createChatJobs, createCreativeJobs } from './job';
 import { diffProfile } from './utils';
@@ -210,7 +216,7 @@ export default class MessengerBot
   async broadcastMessage(creativeId: number, options?: BroadcastOptions) {
     const job = {
       request: {
-        relative_url: 'me/broadcast_messages',
+        relative_url: PATH_BROADCAST_MESSAGES,
         method: POST,
         body: {
           messaging_type: 'MESSAGE_TAG',
@@ -233,7 +239,7 @@ export default class MessengerBot
   async createCustomLabel(name: string): Promise<null | MessengerAPIResult> {
     const job = {
       request: {
-        relative_url: 'me/custom_labels',
+        relative_url: PATH_CUSTOM_LABELS,
         method: POST,
         body: { name },
       },
@@ -252,7 +258,7 @@ export default class MessengerBot
     } = await this._dispatchSingleAPICall({
       request: {
         method: 'GET',
-        relative_url: 'me/messenger_profile',
+        relative_url: PATH_MESSENGER_PROFILE,
         body: undefined,
       },
     });
@@ -266,7 +272,7 @@ export default class MessengerBot
       await this._dispatchSingleAPICall({
         request: {
           method: 'POST',
-          relative_url: 'me/messenger_profile',
+          relative_url: PATH_MESSENGER_PROFILE,
           body: updates,
         },
       });
@@ -278,7 +284,7 @@ export default class MessengerBot
       await this._dispatchSingleAPICall({
         request: {
           method: 'DELETE',
-          relative_url: 'me/messenger_profile',
+          relative_url: PATH_MESSENGER_PROFILE,
           body: { fields: deletes },
         },
       });

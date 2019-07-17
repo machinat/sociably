@@ -4,6 +4,7 @@ import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type MachinatQueue from 'machinat-queue';
 import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
 import type MessengerChannel from './channel';
+import typeof { ENTRY_PATH } from './constant';
 
 type PSIDSource = {| id: string |};
 type UserRefSource = {| user_ref: string |};
@@ -49,11 +50,27 @@ type SenderActionValue = {|
   sender_action: 'mark_seen' | 'typing_on' | 'typing_off',
 |};
 
-export type MessengerSegmentValue = MessageValue | SenderActionValue;
+type PassThreadControlValue = {|
+  target_app_id: string,
+  metadata: string,
+  [ENTRY_PATH]: string,
+|};
 
-export type MessengerComponent = MachinatNativeComponent<MessengerSegmentValue> & {
-  $$entry?: string,
-};
+type RequestThreadControlValue = {|
+  metadata: string,
+  [ENTRY_PATH]: string,
+|};
+
+type TakeThreadControlValue = RequestThreadControlValue;
+
+export type MessengerSegmentValue =
+  | MessageValue
+  | SenderActionValue
+  | PassThreadControlValue
+  | RequestThreadControlValue
+  | TakeThreadControlValue;
+
+export type MessengerComponent = MachinatNativeComponent<MessengerSegmentValue>;
 
 export type MessengerRequest = {|
   method: string,

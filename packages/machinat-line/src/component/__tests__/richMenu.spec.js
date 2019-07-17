@@ -2,7 +2,7 @@ import Machinat from 'machinat';
 
 import { LinkRichMenu } from '../richMenu';
 
-import { LINE_NATIVE_TYPE } from '../../constant';
+import { LINE_NATIVE_TYPE, ENTRY_GETTER } from '../../constant';
 import LineChannel from '../../channel';
 
 import renderHelper from './renderHelper';
@@ -12,7 +12,7 @@ const render = renderHelper(() => null);
 it('is valid native unit component with entry getter', () => {
   expect(typeof LinkRichMenu).toBe('function');
   expect(LinkRichMenu.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(typeof LinkRichMenu.$$getEntry).toBe('function');
+  expect(LinkRichMenu.$$namespace).toBe('Line');
 });
 
 it('render ok', async () => {
@@ -22,50 +22,56 @@ it('render ok', async () => {
       node: <LinkRichMenu id="_RICH_MENU_ID_" />,
       value: {
         id: '_RICH_MENU_ID_',
+        [ENTRY_GETTER]: expect.any(Function),
       },
       path: '$',
     },
   ]);
 });
 
-describe('$$getEntry function', () => {
-  it('point to the api entry for linking rich menu', () => {
-    expect(
-      LinkRichMenu.$$getEntry(
-        new LineChannel({
-          type: 'user',
-          userId: '_USER_ID_',
-        }),
-        { id: '_RICH_MENU_ID_' }
-      )
-    ).toBe('v2/bot/user/_USER_ID_/richmenu/_RICH_MENU_ID_');
-  });
+test('entry getter point to the api entry for linking rich menu', async () => {
+  const [{ value }] = await render(<LinkRichMenu id="_RICH_MENU_ID_" />);
 
-  it('throw if type of channel is not user', () => {
-    expect(() =>
-      LinkRichMenu.$$getEntry(
-        new LineChannel({
-          type: 'room',
-          roomId: '_ROOM_ID_',
-          userId: '_USER_ID_',
-        }),
-        { id: '_RICH_MENU_ID_' }
-      )
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"<RichMenu /> can only be delivered in a user chatting channel"`
-    );
-
-    expect(() =>
-      LinkRichMenu.$$getEntry(
-        new LineChannel({
-          type: 'group',
-          groupId: '_GROUP_ID_',
-          userId: '_USER_ID_',
-        }),
-        { id: '_RICH_MENU_ID_' }
-      )
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"<RichMenu /> can only be delivered in a user chatting channel"`
-    );
+  expect(
+    value[ENTRY_GETTER](
+      new LineChannel({
+        type: 'user',
+        userId: '_USER_ID_',
+      }),
+      { id: '_RICH_MENU_ID_' }
+    )
+  ).toEqual({
+    method: 'POST',
+    path: 'v2/bot/user/_USER_ID_/richmenu/_RICH_MENU_ID_',
   });
+});
+
+test('entry getter throw if type of channel is not user', async () => {
+  const [{ value }] = await render(<LinkRichMenu id="_RICH_MENU_ID_" />);
+
+  expect(() =>
+    value[ENTRY_GETTER](
+      new LineChannel({
+        type: 'room',
+        roomId: '_ROOM_ID_',
+        userId: '_USER_ID_',
+      }),
+      { id: '_RICH_MENU_ID_' }
+    )
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"<RichMenu /> can only be delivered in a user chatting channel"`
+  );
+
+  expect(() =>
+    value[ENTRY_GETTER](
+      new LineChannel({
+        type: 'group',
+        groupId: '_GROUP_ID_',
+        userId: '_USER_ID_',
+      }),
+      { id: '_RICH_MENU_ID_' }
+    )
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"<RichMenu /> can only be delivered in a user chatting channel"`
+  );
 });

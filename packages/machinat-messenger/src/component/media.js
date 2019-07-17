@@ -1,4 +1,4 @@
-import { asSingleMessageUnitComponent } from './utils';
+import { asUnitComponent } from '../utils';
 import { ATTACHED_FILE_DATA, ATTACHED_FILE_INFO } from '../constant';
 
 const nativeMediaFactroy = (name, type) => {
@@ -21,7 +21,7 @@ const nativeMediaFactroy = (name, type) => {
     }),
   };
 
-  return asSingleMessageUnitComponent(container[name]);
+  return asUnitComponent(container[name]);
 };
 
 export const Image = nativeMediaFactroy('Image', 'image');

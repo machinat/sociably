@@ -1,22 +1,22 @@
 import moxy from 'moxy';
 import Machinat from 'machinat';
+import { ENTRY_GETTER } from '../constant';
 import LineChannel from '../channel';
 import { createChatJobs, createMulticastJobs } from '../job';
 
+const Foo = () => {};
+const Bar = () => {};
+const Baz = () => {};
+
+const barEntry = moxy(() => ({ method: 'POST', path: 'bar' }));
+const bazEntry = moxy(() => ({ method: 'POST', path: 'baz' }));
+
+beforeEach(() => {
+  barEntry.mock.clear();
+  bazEntry.mock.clear();
+});
+
 describe('createChatJobs()', () => {
-  const Foo = () => {};
-
-  const Bar = () => {};
-  Bar.$$getEntry = moxy(() => 'bar');
-
-  const Baz = () => {};
-  Baz.$$getEntry = moxy(() => 'baz');
-
-  beforeEach(() => {
-    Bar.$$getEntry.mock.clear();
-    Baz.$$getEntry.mock.clear();
-  });
-
   const segments = [
     { node: <Foo />, value: { id: 0 } },
     { node: <Foo />, value: { id: 1 } },
@@ -25,9 +25,9 @@ describe('createChatJobs()', () => {
     { node: <Foo />, value: { id: 4 } },
     { node: <Foo />, value: { id: 5 } },
     { node: <Foo />, value: { id: 6 } },
-    { node: <Bar />, value: { id: 7 } },
+    { node: <Bar />, value: { id: 7, [ENTRY_GETTER]: barEntry } },
     { node: <Foo />, value: { id: 8 } },
-    { node: <Baz />, value: { id: 9 } },
+    { node: <Baz />, value: { id: 9, [ENTRY_GETTER]: bazEntry } },
   ];
 
   it('work', () => {
@@ -47,11 +47,11 @@ describe('createChatJobs()', () => {
       }
     });
 
-    expect(Bar.$$getEntry.mock).toHaveBeenCalledTimes(1);
-    expect(Bar.$$getEntry.mock).toHaveBeenCalledWith(channel, { id: 7 });
+    expect(barEntry.mock).toHaveBeenCalledTimes(1);
+    expect(barEntry.mock).toHaveBeenCalledWith(channel);
 
-    expect(Baz.$$getEntry.mock).toHaveBeenCalledTimes(1);
-    expect(Baz.$$getEntry.mock).toHaveBeenCalledWith(channel, { id: 9 });
+    expect(bazEntry.mock).toHaveBeenCalledTimes(1);
+    expect(bazEntry.mock).toHaveBeenCalledWith(channel);
   });
 
   test('when useReplyAPI', () => {
@@ -73,21 +73,15 @@ describe('createChatJobs()', () => {
       }
     });
 
-    expect(Bar.$$getEntry.mock).toHaveBeenCalledTimes(1);
-    expect(Bar.$$getEntry.mock).toHaveBeenCalledWith(channel, { id: 7 });
+    expect(barEntry.mock).toHaveBeenCalledTimes(1);
+    expect(barEntry.mock).toHaveBeenCalledWith(channel);
 
-    expect(Baz.$$getEntry.mock).toHaveBeenCalledTimes(1);
-    expect(Baz.$$getEntry.mock).toHaveBeenCalledWith(channel, { id: 9 });
+    expect(bazEntry.mock).toHaveBeenCalledTimes(1);
+    expect(bazEntry.mock).toHaveBeenCalledWith(channel);
   });
 });
 
 describe('createMulticastJobs()', () => {
-  const Foo = () => {};
-
-  const Bar = () => {};
-  Bar.$$getEntry = () => 'bar';
-  Bar.$$hasBody = false;
-
   const segments = [
     { node: <Foo />, value: { id: 0 } },
     { node: <Foo />, value: { id: 1 } },
@@ -119,7 +113,7 @@ describe('createMulticastJobs()', () => {
         ['foo', 'bar', 'baz'],
         [
           ...segments.slice(0, 7),
-          { node: <Bar />, value: { id: 'Boom!' } },
+          { node: <Bar />, value: { id: 'Boom!', [ENTRY_GETTER]: barEntry } },
           segments.slice(7),
         ]
       )

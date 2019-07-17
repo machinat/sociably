@@ -28,7 +28,7 @@ it.each(
   ])
 )('%s is a valid component', (_, Img) => {
   expect(Img.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Img.$$getEntry).toBe(undefined);
+  expect(Img.$$namespace).toBe('Line');
 });
 
 it.each(

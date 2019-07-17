@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import { joinTextualSegments, valuesOfAssertedType } from 'machinat-utility';
 
-import { asSinglePartComponent, asSingleMessageUnitComponent } from './utils';
+import { asPartComponent, asUnitComponent } from '../utils';
 import * as actionsModule from './action';
 
 const getActionValues = valuesOfAssertedType(...Object.values(actionsModule));
@@ -31,11 +31,11 @@ const FlexButton = async (
     action: actionValues[0],
   };
 };
-const __FlexButton = asSinglePartComponent(FlexButton);
+const __FlexButton = asPartComponent(FlexButton);
 
 const FILLER_TYPE_VLUES = { type: 'filler' };
 const FlexFiller = async () => FILLER_TYPE_VLUES;
-const __FlexFiller = asSinglePartComponent(FlexFiller);
+const __FlexFiller = asPartComponent(FlexFiller);
 
 const FlexIcon = ({ props: { url, margin, size, aspectRatio } }) => ({
   type: 'icon',
@@ -44,7 +44,7 @@ const FlexIcon = ({ props: { url, margin, size, aspectRatio } }) => ({
   size,
   aspectRatio,
 });
-const __FlexIcon = asSinglePartComponent(FlexIcon);
+const __FlexIcon = asPartComponent(FlexIcon);
 
 const FlexImage = async (
   {
@@ -80,20 +80,20 @@ const FlexImage = async (
     action: actionValues && actionValues[0],
   };
 };
-const __FlexImage = asSinglePartComponent(FlexImage);
+const __FlexImage = asPartComponent(FlexImage);
 
 const FlexSeparator = ({ props: { margin, color } }) => ({
   type: 'separator',
   margin,
   color,
 });
-const __FlexSeparator = asSinglePartComponent(FlexSeparator);
+const __FlexSeparator = asPartComponent(FlexSeparator);
 
 const FlexSpacer = async ({ props: { size } }) => ({
   type: 'spacer',
   size,
 });
-const __FlexSpacer = asSinglePartComponent(FlexSpacer);
+const __FlexSpacer = asPartComponent(FlexSpacer);
 
 const FlexText = async (
   {
@@ -144,7 +144,7 @@ const FlexText = async (
     action: actionsValue && actionsValue[0],
   };
 };
-const __FlexText = asSinglePartComponent(FlexText);
+const __FlexText = asPartComponent(FlexText);
 
 let getBoxContentValue;
 
@@ -173,7 +173,7 @@ const FlexBox = async (
     contents: contentValues,
   };
 };
-const __FlexBox = asSinglePartComponent(FlexBox);
+const __FlexBox = asPartComponent(FlexBox);
 
 getBoxContentValue = valuesOfAssertedType(
   __FlexBox,
@@ -219,7 +219,7 @@ const createBlockComponent = (section, valueFetcher) => {
     },
   };
 
-  return asSinglePartComponent(wrapper[tagName]);
+  return asPartComponent(wrapper[tagName]);
 };
 
 const getBoxValues = valuesOfAssertedType(__FlexBox);
@@ -270,7 +270,7 @@ const FlexBubbleContainer = async (
 
   return bubbleObject;
 };
-const __FlexBubbleContainer = asSinglePartComponent(FlexBubbleContainer);
+const __FlexBubbleContainer = asPartComponent(FlexBubbleContainer);
 
 const getBubbleContainerValues = valuesOfAssertedType(__FlexBubbleContainer);
 
@@ -282,7 +282,7 @@ const FlexCarouselContainer = async ({ props: { children } }, render) => {
     contents: getBubbleContainerValues(contentSegments),
   };
 };
-const __FlexCarouselContainer = asSinglePartComponent(FlexCarouselContainer);
+const __FlexCarouselContainer = asPartComponent(FlexCarouselContainer);
 
 const getContainerValues = valuesOfAssertedType(
   __FlexBubbleContainer,
@@ -306,7 +306,7 @@ const FlexMessage = async ({ props: { children, alt, altText } }, render) => {
     contents: contentValues[0],
   };
 };
-const __FlexMessage = asSingleMessageUnitComponent(FlexMessage);
+const __FlexMessage = asUnitComponent(FlexMessage);
 
 export default {
   Box: __FlexBox,

@@ -60,13 +60,13 @@ test.each(
 )('%s is valid native Component', (_, Action) => {
   expect(typeof Action).toBe('function');
   expect(Action.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Action.$$getEntry).toBe(undefined);
+  expect(Action.$$namespace).toBe('Line');
 });
 
 test('FlexMessage is valid native unit Component', () => {
   expect(typeof FlexMessage).toBe('function');
   expect(FlexMessage.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(FlexMessage.$$getEntry).toBe(undefined);
+  expect(FlexMessage.$$namespace).toBe('Line');
 });
 
 test('Flex as a alias for flex components', () => {

@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import { formatNode } from 'machinat-utility';
+import { formatNode, filterSymbolKeys } from 'machinat-utility';
 
 import type { SegmentWithoutPause } from 'machinat-base/types';
 import type {
@@ -12,19 +12,18 @@ import type {
 } from './types';
 import type MessangerChannel from './channel';
 
+import { isMessageValue } from './utils';
 import {
-  ENTRY_MESSAGES,
-  ENTRY_MESSAGE_CREATIVES,
+  ENTRY_PATH,
+  PATH_MESSAGES,
+  PATH_MESSAGE_CREATIVES,
   ATTACHED_FILE_DATA,
   ATTACHED_FILE_INFO,
 } from './constant';
 
 const POST = 'POST';
 
-const isMessagesEntry = node =>
-  typeof node !== 'object' ||
-  typeof node.type !== 'function' ||
-  node.type.$$entry === ENTRY_MESSAGES;
+const { hasOwnProperty } = Object.prototype;
 
 export const createChatJobs = (
   channel: MessangerChannel,
@@ -36,21 +35,25 @@ export const createChatJobs = (
   const jobs: MessengerJob[] = new Array(segments.length);
 
   for (let i = 0; i < segments.length; i += 1) {
-    const { node, value } = segments[i];
+    const { value } = segments[i];
 
-    const fields: MessengerSegmentValue =
-      typeof value === 'string' ? { message: { text: value } } : value;
+    const body: Object =
+      typeof value === 'string'
+        ? { message: { text: value } }
+        : filterSymbolKeys(value);
 
-    const body: Object = { ...fields, recipient: source };
+    body.recipient = source;
 
-    if (options && isMessagesEntry(node) && body.message) {
+    if (options && isMessageValue(value) && body.message) {
       if (body.messaging_type === undefined) {
         body.messaging_type = options.messagingType;
         body.tag = options.tag;
       }
+
       if (body.notification_type === undefined) {
         body.notification_type = options.notificationType;
       }
+
       if (body.persona_id === undefined) {
         body.persona_id = options.personaId;
       }
@@ -60,11 +63,8 @@ export const createChatJobs = (
       request: {
         method: POST,
         relative_url:
-          // use "me/messages" if $$entry not specified on native component
-          isMessagesEntry(node)
-            ? ENTRY_MESSAGES
-            : // $FlowFixMe can't refine node.type https://github.com/facebook/flow/issues/6097
-              node.type.$$entry,
+          // use "me/messages" if ENTRY_PATH not specified
+          isMessageValue(value) ? PATH_MESSAGES : value[ENTRY_PATH],
         body,
       },
       channelUid: uid,
@@ -92,14 +92,14 @@ export const createCreativeJobs = (
     } else {
       // only message pass
       invariant(
-        isMessagesEntry(node) && value.message,
+        isMessageValue(value) && hasOwnProperty.call(value, 'message'),
         `${formatNode(
           node || value
         )} is unable to be delivered in message_creatives api`
       );
 
       invariant(
-        !(ATTACHED_FILE_DATA in value),
+        !hasOwnProperty.call(value, ATTACHED_FILE_DATA),
         `unable to upload binary data in message_creatives api`
       );
 
@@ -112,7 +112,7 @@ export const createCreativeJobs = (
       request: {
         method: POST,
         body: { messages },
-        relative_url: ENTRY_MESSAGE_CREATIVES,
+        relative_url: PATH_MESSAGE_CREATIVES,
       },
     },
   ];

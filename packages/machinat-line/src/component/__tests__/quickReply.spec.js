@@ -14,7 +14,7 @@ it('is valid native component', () => {
   expect(typeof QuickReply).toBe('function');
 
   expect(QuickReply.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(QuickReply.$$getEntry).toBe(undefined);
+  expect(QuickReply.$$namespace).toBe('Line');
 });
 
 it('renders match snapshot', async () => {

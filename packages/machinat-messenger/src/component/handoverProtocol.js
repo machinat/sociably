@@ -1,31 +1,29 @@
-import { asSingleUnitComponentWithEntry } from './utils';
-
+import { asUnitComponent } from '../utils';
 import {
-  ENTRY_PASS_THREAD_CONTROL,
-  ENTRY_REQUEST_THREAD_CONTROL,
-  ENTRY_TAKE_THREAD_CONTROL,
+  ENTRY_PATH,
+  PATH_PASS_THREAD_CONTROL,
+  PATH_REQUEST_THREAD_CONTROL,
+  PATH_TAKE_THREAD_CONTROL,
 } from '../constant';
 
 const PassThreadControl = async ({ props: { appId, metadata } }) => ({
   target_app_id: appId,
   metadata,
+  [ENTRY_PATH]: PATH_PASS_THREAD_CONTROL,
 });
+const __PassThreadControl = asUnitComponent(PassThreadControl);
 
-const __PassThreadControl = asSingleUnitComponentWithEntry(
-  ENTRY_PASS_THREAD_CONTROL
-)(PassThreadControl);
+const RequestThreadControl = async ({ props: { metadata } }) => ({
+  metadata,
+  [ENTRY_PATH]: PATH_REQUEST_THREAD_CONTROL,
+});
+const __RequestThreadControl = asUnitComponent(RequestThreadControl);
 
-const RequestThreadControl = async ({ props: { metadata } }) => ({ metadata });
-
-const __RequestThreadControl = asSingleUnitComponentWithEntry(
-  ENTRY_REQUEST_THREAD_CONTROL
-)(RequestThreadControl);
-
-const TakeThreadContorl = async ({ props: { metadata } }) => ({ metadata });
-
-const __TakeThreadContorl = asSingleUnitComponentWithEntry(
-  ENTRY_TAKE_THREAD_CONTROL
-)(TakeThreadContorl);
+const TakeThreadContorl = async ({ props: { metadata } }) => ({
+  metadata,
+  [ENTRY_PATH]: PATH_TAKE_THREAD_CONTROL,
+});
+const __TakeThreadContorl = asUnitComponent(TakeThreadContorl);
 
 export {
   __PassThreadControl as PassThreadControl,

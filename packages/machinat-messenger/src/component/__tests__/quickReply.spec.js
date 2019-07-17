@@ -16,7 +16,6 @@ it.each([QuickReply, PhoneQuickReply, EmailQuickReply, LocationQuickReply])(
   Reply => {
     expect(typeof Reply).toBe('function');
     expect(Reply.$$native).toBe(MESSENGER_NATIVE_TYPE);
-    expect(Reply.$$entry).toBe(undefined);
     expect(Reply.$$namespace).toBe('Messenger');
   }
 );

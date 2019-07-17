@@ -2,7 +2,7 @@ import invariant from 'invariant';
 import { joinTextualSegments, valuesOfAssertedType } from 'machinat-utility';
 
 import * as buttonModule from './button';
-import { asSingleMessageUnitComponent, asSinglePartComponent } from './utils';
+import { asUnitComponent, asPartComponent } from '../utils';
 
 const buttonComponents = Object.values(buttonModule);
 
@@ -46,7 +46,7 @@ const GenericItem = async (
     buttons: getButtonValues(buttonSegments),
   };
 };
-const __GenericItem = asSinglePartComponent(GenericItem);
+const __GenericItem = asPartComponent(GenericItem);
 
 const getGenericItemValues = valuesOfAssertedType(__GenericItem);
 
@@ -70,7 +70,7 @@ const GenericTemplate = async (
     },
   };
 };
-const __GenericTemplate = asSingleMessageUnitComponent(GenericTemplate);
+const __GenericTemplate = asUnitComponent(GenericTemplate);
 
 const ListTemplate = async (
   { props: { children, topStyle, sharable, button } },
@@ -94,7 +94,7 @@ const ListTemplate = async (
     },
   };
 };
-const __ListTemplate = asSingleMessageUnitComponent(ListTemplate);
+const __ListTemplate = asUnitComponent(ListTemplate);
 
 const ButtonTemplate = async (
   { props: { children, text, sharable } },
@@ -129,7 +129,7 @@ const ButtonTemplate = async (
     },
   };
 };
-const __ButtonTemplate = asSingleMessageUnitComponent(ButtonTemplate);
+const __ButtonTemplate = asUnitComponent(ButtonTemplate);
 
 const MediaTemplate = async (
   { props: { children, type, attachmentId, url, sharable } },
@@ -157,7 +157,7 @@ const MediaTemplate = async (
     },
   };
 };
-const __MediaTemplate = asSingleMessageUnitComponent(MediaTemplate);
+const __MediaTemplate = asUnitComponent(MediaTemplate);
 
 const OpenGraphTemplate = async (
   { props: { children, url, sharable } },
@@ -183,7 +183,7 @@ const OpenGraphTemplate = async (
     },
   };
 };
-const __OpenGraphTemplate = asSingleMessageUnitComponent(OpenGraphTemplate);
+const __OpenGraphTemplate = asUnitComponent(OpenGraphTemplate);
 
 const ReceiptItem = async ({
   props: { title, subtitle, quantity, price, currency, imageURL },
@@ -195,7 +195,7 @@ const ReceiptItem = async ({
   currency,
   image_url: imageURL,
 });
-const __ReceiptItem = asSinglePartComponent(ReceiptItem);
+const __ReceiptItem = asPartComponent(ReceiptItem);
 
 const getReceiptItemValues = valuesOfAssertedType(__ReceiptItem);
 
@@ -245,7 +245,7 @@ const ReceiptTemplate = async (
   };
 };
 
-const __ReceiptTemplate = asSingleMessageUnitComponent(ReceiptTemplate);
+const __ReceiptTemplate = asUnitComponent(ReceiptTemplate);
 
 export {
   __GenericItem as GenericItem,

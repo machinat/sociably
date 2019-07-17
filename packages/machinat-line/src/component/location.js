@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { asSingleMessageUnitComponent } from './utils';
+import { asUnitComponent } from '../utils';
 
 const Location = async ({
   props: { title, address, lat, latitude, long, longitude },
@@ -11,6 +11,6 @@ const Location = async ({
   longitude: longitude || long,
 });
 
-const __Location = asSingleMessageUnitComponent(Location);
+const __Location = asUnitComponent(Location);
 
 export { __Location as Location };

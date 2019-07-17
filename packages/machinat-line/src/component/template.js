@@ -1,6 +1,6 @@
 import { valuesOfAssertedType } from 'machinat-utility';
 
-import { asSinglePartComponent, asSingleMessageUnitComponent } from './utils';
+import { asPartComponent, asUnitComponent } from '../utils';
 import * as _actionModule from './action';
 
 const actionComponents = Object.values(_actionModule);
@@ -45,7 +45,7 @@ const ButtonTemplate = async (
     },
   };
 };
-const __ButtonTemplate = asSingleMessageUnitComponent(ButtonTemplate);
+const __ButtonTemplate = asUnitComponent(ButtonTemplate);
 
 const ConfirmTemplate = async (
   { props: { children, alt, altText, text } },
@@ -63,7 +63,7 @@ const ConfirmTemplate = async (
     },
   };
 };
-const __ConfirmTemplate = asSingleMessageUnitComponent(ConfirmTemplate);
+const __ConfirmTemplate = asUnitComponent(ConfirmTemplate);
 
 const CarouselItem = async (
   {
@@ -93,7 +93,7 @@ const CarouselItem = async (
     actions: getActionValues(actionSegments),
   };
 };
-const __CarouselItem = asSinglePartComponent(CarouselItem);
+const __CarouselItem = asPartComponent(CarouselItem);
 
 const getCarouselItemValues = valuesOfAssertedType(__CarouselItem);
 
@@ -114,7 +114,7 @@ const CarouselTemplate = async (
     },
   };
 };
-const __CarouselTemplate = asSingleMessageUnitComponent(CarouselTemplate);
+const __CarouselTemplate = asUnitComponent(CarouselTemplate);
 
 const ImageCarouselItem = async (
   { props: { url, imageUrl, action } },
@@ -129,7 +129,7 @@ const ImageCarouselItem = async (
   };
 };
 
-const __ImageCarouselItem = asSinglePartComponent(ImageCarouselItem);
+const __ImageCarouselItem = asPartComponent(ImageCarouselItem);
 
 const getImageCarouselItemValues = valuesOfAssertedType(__ImageCarouselItem);
 
@@ -148,9 +148,7 @@ const ImageCarouselTemplate = async (
     },
   };
 };
-const __ImageCarouselTemplate = asSingleMessageUnitComponent(
-  ImageCarouselTemplate
-);
+const __ImageCarouselTemplate = asUnitComponent(ImageCarouselTemplate);
 
 export {
   __ButtonTemplate as ButtonTemplate,

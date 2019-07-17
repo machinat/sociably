@@ -12,7 +12,6 @@ Array [
         "recipient": Object {
           "id": "john",
         },
-        Symbol(machinat.messenger.job.attached_file_data): "_DEADLY_VIRUS_",
       },
       "method": "POST",
       "relative_url": "me/messages",
@@ -31,12 +30,6 @@ Array [
         "a": "redemption",
         "recipient": Object {
           "id": "john",
-        },
-        Symbol(machinat.messenger.job.attached_file_data): "_MERCY_CURE_",
-        Symbol(machinat.messenger.job.attached_file_info): Object {
-          "contentType": "image/jpeg",
-          "filename": "deathangel.jpg",
-          "knownLength": 66666,
         },
       },
       "method": "POST",

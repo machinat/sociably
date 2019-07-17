@@ -28,7 +28,7 @@ test.each([CarouselItem, ImageCarouselItem].map(C => [C.name, C]))(
     expect(typeof Item).toBe('function');
 
     expect(Item.$$native).toBe(LINE_NATIVE_TYPE);
-    expect(Item.$$getEntry).toBe(undefined);
+    expect(Item.$$namespace).toBe('Line');
   }
 );
 
@@ -43,7 +43,7 @@ test.each(
   expect(typeof Template).toBe('function');
 
   expect(Template.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Template.$$getEntry).toBe(undefined);
+  expect(Template.$$namespace).toBe('Line');
 });
 
 test.each(

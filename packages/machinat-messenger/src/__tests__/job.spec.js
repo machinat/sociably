@@ -3,25 +3,22 @@ import { createChatJobs, createCreativeJobs } from '../job';
 import MessengerChannel from '../channel';
 import {
   MESSENGER_NATIVE_TYPE,
+  ENTRY_PATH,
   ATTACHED_FILE_DATA,
   ATTACHED_FILE_INFO,
 } from '../constant';
 
 const Foo = () => {};
 Foo.$$native = MESSENGER_NATIVE_TYPE;
-Foo.$$unit = true;
-Foo.$$entry = 'me/messages';
 
 const Bar = () => {};
 Bar.$$native = MESSENGER_NATIVE_TYPE;
-Bar.$$unit = true;
-Bar.$$entry = 'bar/baz';
 
 describe('createChatJobs()', () => {
   const segments = [
     { node: <Foo />, value: { sender_action: 'typing_on' } },
     { node: <Foo />, value: { message: { id: 1 } } },
-    { node: <Bar />, value: { id: 2 } },
+    { node: <Bar />, value: { id: 2, [ENTRY_PATH]: 'bar/baz' } },
     { node: 'id:3', value: 'id:3' },
     { node: 4, value: '4' },
   ];
@@ -197,6 +194,7 @@ describe('createChatJobs()', () => {
         node: <Bar />,
         value: {
           a: 'redemption',
+          [ENTRY_PATH]: 'bar/baz',
           [ATTACHED_FILE_DATA]: '_MERCY_CURE_',
           [ATTACHED_FILE_INFO]: fileInfo,
         },

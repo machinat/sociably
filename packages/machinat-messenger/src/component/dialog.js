@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { valuesOfAssertedType } from 'machinat-utility';
 
-import { asContainerComponent } from './utils';
+import { asContainerComponent } from '../utils';
 import * as quickReply from './quickReply';
 
 const replyComponents = Object.values(quickReply);
