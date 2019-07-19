@@ -31,7 +31,10 @@ describe('createChatJobs()', () => {
   ];
 
   it('work', () => {
-    const channel = new LineChannel({ type: 'user', userId: 'john' });
+    const channel = new LineChannel(
+      { type: 'user', userId: 'john' },
+      '_LINE_CHANNEL_ID_'
+    );
 
     const jobs = createChatJobs(channel, segments);
 
@@ -40,9 +43,9 @@ describe('createChatJobs()', () => {
     expect(jobs.length).toBe(5);
     jobs.forEach((job, i) => {
       if ([2, 4].includes(i)) {
-        expect(job.entry).toBe(i === 2 ? 'bar' : 'baz');
+        expect(job.path).toBe(i === 2 ? 'bar' : 'baz');
       } else {
-        expect(job.entry).toBe('v2/bot/message/push');
+        expect(job.path).toBe('v2/bot/message/push');
         expect(job.body.to).toBe('john');
       }
     });
@@ -55,7 +58,10 @@ describe('createChatJobs()', () => {
   });
 
   test('when useReplyAPI', () => {
-    const channel = new LineChannel({ type: 'user', userId: 'john' });
+    const channel = new LineChannel(
+      { type: 'user', userId: 'john' },
+      '_LINE_CHANNEL_ID_'
+    );
 
     const jobs = createChatJobs(channel, segments, {
       replyToken: '__REPLY_TOKEN__',
@@ -66,9 +72,9 @@ describe('createChatJobs()', () => {
     expect(jobs.length).toBe(5);
     jobs.forEach((job, i) => {
       if ([2, 4].includes(i)) {
-        expect(job.entry).toBe(i === 2 ? 'bar' : 'baz');
+        expect(job.path).toBe(i === 2 ? 'bar' : 'baz');
       } else {
-        expect(job.entry).toBe('v2/bot/message/reply');
+        expect(job.path).toBe('v2/bot/message/reply');
         expect(job.body.replyToken).toBe('__REPLY_TOKEN__');
       }
     });
@@ -102,7 +108,7 @@ describe('createMulticastJobs()', () => {
     expect(jobs[0].channelId).toBe(jobs[1].channelId);
 
     jobs.forEach(job => {
-      expect(job.entry).toBe('v2/bot/message/multicast');
+      expect(job.path).toBe('v2/bot/message/multicast');
       expect(job.body.to).toEqual(['foo', 'bar', 'baz']);
     });
   });

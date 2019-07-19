@@ -16,15 +16,15 @@ const AssetService = Machinat.createService<
   const accessor = _accessor; // NOTE: to satisfy flow
   return async ({
     resource,
-    name,
+    label,
     invariant: isInvariant,
   }: ResourceConsumption) => {
-    const id = await accessor.getAsset(resource, name);
+    const id = await accessor.getAsset(resource, label);
 
     if (isInvariant) {
       invariant(
         id !== undefined,
-        `asset ( ${resource} [ ${name} ] ) not existed`
+        `asset ( ${resource} [ ${label} ] ) not existed`
       );
     }
 

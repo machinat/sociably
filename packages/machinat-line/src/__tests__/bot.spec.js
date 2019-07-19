@@ -64,7 +64,6 @@ const msgs = [
 const pathSpy = moxy(() => true);
 const bodySpy = moxy(() => true);
 
-const accessToken = '__ACCESS_TOKEN__';
 let lineAPI;
 beforeEach(() => {
   Renderer.mock.reset();
@@ -87,16 +86,34 @@ describe('#constructor(options)', () => {
   it('extends MachinatEmitter', () => {
     expect(
       new LineBot({
-        accessToken,
-        channelId: '_my_bot_',
+        accessToken: '__ACCESS_TOKEN__',
+        channelId: '_MY_BOT_',
         channelSecret: '_SECRET_',
       })
     ).toBeInstanceOf(Emitter);
   });
 
   it('throws if accessToken not given', () => {
-    expect(() => new LineBot()).toThrowErrorMatchingInlineSnapshot(
+    expect(
+      () =>
+        new LineBot({
+          channelId: '_MY_BOT_',
+          channelSecret: '_SECRET_',
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
       `"should provide accessToken to send messenge"`
+    );
+  });
+
+  it('throws if channelId not given', () => {
+    expect(
+      () =>
+        new LineBot({
+          accessToken: '__ACCESS_TOKEN__',
+          channelSecret: '_SECRET_',
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"should provide channelId to identify different line channel"`
     );
   });
 
@@ -104,8 +121,8 @@ describe('#constructor(options)', () => {
     expect(
       () =>
         new LineBot({
-          accessToken,
-          channelId: '_my_bot_',
+          accessToken: '__ACCESS_TOKEN__',
+          channelId: '_MY_BOT_',
           shouldValidateRequest: true,
         })
     ).toThrowErrorMatchingInlineSnapshot(
@@ -117,8 +134,8 @@ describe('#constructor(options)', () => {
     expect(
       () =>
         new LineBot({
-          accessToken,
-          channelId: '_my_bot_',
+          accessToken: '__ACCESS_TOKEN__',
+          channelId: '_MY_BOT_',
           shouldValidateRequest: false,
         })
     ).not.toThrow();
@@ -127,25 +144,25 @@ describe('#constructor(options)', () => {
   it('sets default options', () => {
     expect(
       new LineBot({
-        accessToken,
-        channelId: '_my_bot_',
+        accessToken: '__ACCESS_TOKEN__',
+        channelId: '_MY_BOT_',
         channelSecret: '_SECRET_',
       }).options
     ).toMatchInlineSnapshot(`
-      Object {
-        "accessToken": "__ACCESS_TOKEN__",
-        "channelId": "_my_bot_",
-        "channelSecret": "_SECRET_",
-        "connectionCapicity": 100,
-        "shouldValidateRequest": true,
-      }
-    `);
+            Object {
+              "accessToken": "__ACCESS_TOKEN__",
+              "channelId": "_MY_BOT_",
+              "channelSecret": "_SECRET_",
+              "connectionCapicity": 100,
+              "shouldValidateRequest": true,
+            }
+        `);
   });
 
   it('covers default options', () => {
     const options = {
-      accessToken,
-      channelId: '_my_bot_',
+      accessToken: '__ACCESS_TOKEN__',
+      channelId: '_MY_BOT_',
       shouldValidateRequest: false,
       channelSecret: '_SECRET_',
       connectionCapicity: 9999,
@@ -156,8 +173,8 @@ describe('#constructor(options)', () => {
 
   it('assemble core modules', () => {
     const bot = new LineBot({
-      accessToken,
-      channelId: '_my_bot_',
+      accessToken: '__ACCESS_TOKEN__',
+      channelId: '_MY_BOT_',
       channelSecret: '_SECRET_',
     });
 
@@ -208,8 +225,8 @@ describe('#constructor(options)', () => {
     ];
 
     const bot = new LineBot({
-      accessToken,
-      channelId: '_my_bot_',
+      accessToken: '__ACCESS_TOKEN__',
+      channelId: '_MY_BOT_',
       channelSecret: '_SECRET_',
       plugins,
     });
@@ -236,8 +253,8 @@ describe('#constructor(options)', () => {
     });
 
     const bot = new LineBot({
-      accessToken,
-      channelId: '_my_bot_',
+      accessToken: '__ACCESS_TOKEN__',
+      channelId: '_MY_BOT_',
       channelSecret: '_SECRET_',
     });
 
@@ -278,8 +295,8 @@ describe('#constructor(options)', () => {
 describe('#send(token, node, options)', () => {
   it('works', async () => {
     const bot = new LineBot({
-      accessToken,
-      channelId: '_my_bot_',
+      accessToken: '__ACCESS_TOKEN__',
+      channelId: '_MY_BOT_',
       channelSecret: '_SECRET_',
       useReplyAPI: false,
     });
@@ -307,8 +324,8 @@ describe('#send(token, node, options)', () => {
 
   it('works with replyToken', async () => {
     const bot = new LineBot({
-      accessToken,
-      channelId: '_my_bot_',
+      accessToken: '__ACCESS_TOKEN__',
+      channelId: '_MY_BOT_',
       channelSecret: '_SECRET_',
       useReplyAPI: true,
     });
@@ -328,8 +345,8 @@ describe('#send(token, node, options)', () => {
 
   it('throw if messages length more than 5 when using replyToken', () => {
     const bot = new LineBot({
-      accessToken,
-      channelId: '_my_bot_',
+      accessToken: '__ACCESS_TOKEN__',
+      channelId: '_MY_BOT_',
       channelSecret: '_SECRET_',
       useReplyAPI: true,
     });
@@ -346,8 +363,8 @@ describe('#send(token, node, options)', () => {
 
 test('#multicast(targets, node) works', async () => {
   const bot = new LineBot({
-    accessToken,
-    channelId: '_my_bot_',
+    accessToken: '__ACCESS_TOKEN__',
+    channelId: '_MY_BOT_',
     channelSecret: '_SECRET_',
   });
 

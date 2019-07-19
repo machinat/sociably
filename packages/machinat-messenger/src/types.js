@@ -1,8 +1,14 @@
 // @flow
 import type { MachinatNativeComponent } from 'machinat/types';
-import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
+import type {
+  BotPlugin,
+  MachinatEvent,
+  EventMiddleware,
+  DispatchMiddleware,
+} from 'machinat-base/types';
 import type MachinatQueue from 'machinat-queue';
 import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
+import type MessengerBot from './bot';
 import type MessengerChannel from './channel';
 import typeof { ENTRY_PATH } from './constant';
 
@@ -75,7 +81,7 @@ export type MessengerComponent = MachinatNativeComponent<MessengerSegmentValue>;
 export type MessengerRequest = {|
   method: string,
   relative_url: string,
-  body: Object,
+  body: void | Object,
   name?: string,
   depends_on?: string,
   attached_files?: string,
@@ -84,6 +90,8 @@ export type MessengerRequest = {|
 
 export type MessengerJob = {|
   request: MessengerRequest,
+  pageId?: string,
+  assetLabel?: string,
   channelUid?: string,
   attachedFileData?: string | Buffer | ReadableStream,
   attachedFileInfo?: {|
@@ -120,15 +128,23 @@ export type MessengerSendOptions = {|
   personaId?: string,
 |};
 
-export type BroadcastOptions = {|
-  notificationType?: 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH',
-  personaId?: string,
-  customLabelId?: number,
-|};
-
 export type MessengerQueue = MachinatQueue<MessengerJob, MessengerAPIResult>;
 
+export type MessengerBotPlugin = BotPlugin<
+  MessengerChannel,
+  MessengerEvent,
+  WebhookMetadata,
+  MessengerResponse,
+  MessengerSegmentValue,
+  MessengerComponent,
+  MessengerJob,
+  MessengerAPIResult,
+  MessengerSendOptions,
+  MessengerBot
+>;
+
 export type MessengerBotOptions = {
+  pageId: string,
   accessToken: string,
   appSecret?: string,
   shouldValidateRequest: boolean,
@@ -136,14 +152,20 @@ export type MessengerBotOptions = {
   verifyToken?: string,
   respondTimeout: number,
   consumeInterval?: number,
-  plugins?: BotPlugin<
-    MessengerChannel,
-    MessengerEvent,
-    WebhookMetadata,
-    MessengerResponse,
-    MessengerSegmentValue,
-    MessengerComponent,
-    MessengerJob,
-    MessengerAPIResult
-  >[],
+  plugins?: MessengerBotPlugin[],
 };
+
+export type MessengerEventMiddleware = EventMiddleware<
+  MessengerChannel,
+  MessengerEvent,
+  WebhookMetadata,
+  MessengerResponse,
+  MessengerComponent,
+  MessengerSendOptions
+>;
+
+export type MessengerDispatchMiddleware = DispatchMiddleware<
+  MessengerChannel,
+  MessengerJob,
+  MessengerAPIResult
+>;

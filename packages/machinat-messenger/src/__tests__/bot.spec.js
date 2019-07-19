@@ -45,6 +45,7 @@ afterEach(() => {
 describe('#constructor(options)', () => {
   it('extends Emitter', () => {
     const bot = new MessengerBot({
+      pageId: '_PAGE_ID_',
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_SECRET_',
       verifyToken: '_VERIFIY_TOKEN_',
@@ -54,80 +55,105 @@ describe('#constructor(options)', () => {
   });
 
   it('throw if accessToken not given', () => {
-    const options = {
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-    };
+    expect(
+      () =>
+        new MessengerBot({
+          pageId: '_PAGE_ID_',
+          appSecret: '_SECRET_',
+          verifyToken: '_VERIFIY_TOKEN_',
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"should provide accessToken to send messages"`
+    );
+  });
 
-    expect(() => new MessengerBot(options)).toThrowErrorMatchingInlineSnapshot(
-      `"should provide accessToken to send messenge"`
+  it('throw if pageId not given', () => {
+    expect(
+      () =>
+        new MessengerBot({
+          accessToken: '_ACCESS_TOKEN_',
+          appSecret: '_SECRET_',
+          verifyToken: '_VERIFIY_TOKEN_',
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"should provide pageId as the identification of resources"`
     );
   });
 
   it('throw if appSecret not given', () => {
-    const options = {
-      accessToken: '_ACCESS_TOKEN_',
-      verifyToken: '_VERIFIY_TOKEN_',
-    };
-
-    expect(() => new MessengerBot(options)).toThrowErrorMatchingInlineSnapshot(
+    expect(
+      () =>
+        new MessengerBot({
+          pageId: '_PAGE_ID_',
+          accessToken: '_ACCESS_TOKEN_',
+          verifyToken: '_VERIFIY_TOKEN_',
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
       `"should provide appSecret if shouldValidateRequest set to true"`
     );
   });
 
   it('is ok to have appSecret empty if shouldValidateRequest set to false', () => {
-    const options = {
-      accessToken: '_ACCESS_TOKEN_',
-      verifyToken: '_VERIFIY_TOKEN_',
-      shouldValidateRequest: false,
-    };
-
-    expect(() => new MessengerBot(options)).not.toThrow();
+    expect(
+      () =>
+        new MessengerBot({
+          pageId: '_PAGE_ID_',
+          accessToken: '_ACCESS_TOKEN_',
+          verifyToken: '_VERIFIY_TOKEN_',
+          shouldValidateRequest: false,
+        })
+    ).not.toThrow();
   });
 
   it('throw if verifyToken not given', () => {
-    const options = {
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-    };
-
-    expect(() => new MessengerBot(options)).toThrowErrorMatchingInlineSnapshot(
+    expect(
+      () =>
+        new MessengerBot({
+          pageId: '_PAGE_ID_',
+          accessToken: '_ACCESS_TOKEN_',
+          appSecret: '_SECRET_',
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
       `"should provide verifyToken if shouldVerifyWebhook set to true"`
     );
   });
 
   it('is ok to have verifyToken empty if shouldVerifyWebhook set to false', () => {
-    const options = {
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      shouldVerifyWebhook: false,
-    };
-
-    expect(() => new MessengerBot(options)).not.toThrow();
+    expect(
+      () =>
+        new MessengerBot({
+          pageId: '_PAGE_ID_',
+          accessToken: '_ACCESS_TOKEN_',
+          appSecret: '_SECRET_',
+          shouldVerifyWebhook: false,
+        })
+    ).not.toThrow();
   });
 
   it('set default options', () => {
-    const options = {
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-    };
-
-    expect(new MessengerBot(options).options).toMatchInlineSnapshot(`
-Object {
-  "accessToken": "_ACCESS_TOKEN_",
-  "appSecret": "_SECRET_",
-  "consumeInterval": undefined,
-  "respondTimeout": 5000,
-  "shouldValidateRequest": true,
-  "shouldVerifyWebhook": true,
-  "verifyToken": "_VERIFIY_TOKEN_",
-}
-`);
+    expect(
+      new MessengerBot({
+        pageId: '_PAGE_ID_',
+        accessToken: '_ACCESS_TOKEN_',
+        appSecret: '_SECRET_',
+        verifyToken: '_VERIFIY_TOKEN_',
+      }).options
+    ).toMatchInlineSnapshot(`
+      Object {
+        "accessToken": "_ACCESS_TOKEN_",
+        "appSecret": "_SECRET_",
+        "pageId": "_PAGE_ID_",
+        "respondTimeout": 5000,
+        "shouldValidateRequest": true,
+        "shouldVerifyWebhook": true,
+        "verifyToken": "_VERIFIY_TOKEN_",
+      }
+    `);
   });
 
   it('covers default options', () => {
     const options = {
+      pageId: '_PAGE_ID_',
       appSecret: '_SECRET_',
       accessToken: '_ACCESS_TOKEN_',
       shouldValidateRequest: true,
@@ -142,6 +168,7 @@ Object {
 
   it('assemble core modules', () => {
     const bot = new MessengerBot({
+      pageId: '_PAGE_ID_',
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_SECRET_',
       verifyToken: '_VERIFIY_TOKEN_',
@@ -197,6 +224,7 @@ Object {
     ];
 
     const bot = new MessengerBot({
+      pageId: '_PAGE_ID_',
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_SECRET_',
       verifyToken: '_VERIFIY_TOKEN_',
@@ -225,6 +253,7 @@ Object {
     });
 
     const bot = new MessengerBot({
+      pageId: '_PAGE_ID_',
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_SECRET_',
       verifyToken: '_VERIFIY_TOKEN_',
@@ -279,6 +308,7 @@ describe('#send(message, options)', () => {
 
   it('resolves null if message is empty', async () => {
     const bot = new MessengerBot({
+      pageId: '_PAGE_ID_',
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_SECRET_',
       verifyToken: '_VERIFIY_TOKEN_',
@@ -292,6 +322,7 @@ describe('#send(message, options)', () => {
 
   it('works', async () => {
     const bot = new MessengerBot({
+      pageId: '_PAGE_ID_',
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_SECRET_',
       verifyToken: '_VERIFIY_TOKEN_',
@@ -319,6 +350,7 @@ describe('#send(message, options)', () => {
 
   it('works with options', async () => {
     const bot = new MessengerBot({
+      pageId: '_PAGE_ID_',
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_SECRET_',
       verifyToken: '_VERIFIY_TOKEN_',
@@ -350,6 +382,7 @@ describe('#send(message, options)', () => {
 describe('#createMessageCreative(message)', () => {
   it('resolves null if message is empty', async () => {
     const bot = new MessengerBot({
+      pageId: '_PAGE_ID_',
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_SECRET_',
       verifyToken: '_VERIFIY_TOKEN_',
@@ -363,6 +396,7 @@ describe('#createMessageCreative(message)', () => {
 
   it('works', async () => {
     const bot = new MessengerBot({
+      pageId: '_PAGE_ID_',
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_SECRET_',
       verifyToken: '_VERIFIY_TOKEN_',
@@ -376,89 +410,6 @@ describe('#createMessageCreative(message)', () => {
     await expect(bot.createMessageCreative('john', message)).resolves.toEqual({
       code: 200,
       body: { message_creative_id: 938461089 },
-    });
-
-    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
-    const body = bodySpy.mock.calls[0].args[0];
-
-    expect(body).toMatchSnapshot({ batch: expect.any(String) });
-    expect(JSON.parse(body.batch)).toMatchSnapshot();
-
-    expect(scope.isDone()).toBe(true);
-  });
-});
-
-describe('#broadcastMessage(creativeId, options)', () => {
-  let scope;
-  beforeEach(() => {
-    scope = graphAPI.reply(
-      200,
-      JSON.stringify([makeResponse(200, { broadcast_id: 827 })])
-    );
-  });
-
-  it('works', async () => {
-    const bot = new MessengerBot({
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-    });
-
-    await expect(bot.broadcastMessage(938461089)).resolves.toEqual({
-      code: 200,
-      body: { broadcast_id: 827 },
-    });
-
-    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
-    const body = bodySpy.mock.calls[0].args[0];
-
-    expect(body).toMatchSnapshot({ batch: expect.any(String) });
-    expect(JSON.parse(body.batch)).toMatchSnapshot();
-
-    expect(scope.isDone()).toBe(true);
-  });
-
-  it('works with options', async () => {
-    const bot = new MessengerBot({
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-    });
-
-    await expect(
-      bot.broadcastMessage(938461089, {
-        customLabelId: 1712444532121303,
-        notificationType: 'SILENT_PUSH',
-        personaId: 'billy18',
-      })
-    ).resolves.toEqual({ code: 200, body: { broadcast_id: 827 } });
-
-    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
-    const body = bodySpy.mock.calls[0].args[0];
-
-    expect(body).toMatchSnapshot({ batch: expect.any(String) });
-    expect(JSON.parse(body.batch)).toMatchSnapshot();
-
-    expect(scope.isDone()).toBe(true);
-  });
-});
-
-describe('#createCustomLabel(name)', () => {
-  it('works', async () => {
-    const bot = new MessengerBot({
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-    });
-
-    const scope = graphAPI.reply(
-      200,
-      JSON.stringify([makeResponse(200, { id: 1712444532121303 })])
-    );
-
-    await expect(bot.createCustomLabel('foo')).resolves.toEqual({
-      code: 200,
-      body: { id: 1712444532121303 },
     });
 
     expect(bodySpy.mock).toHaveBeenCalledTimes(1);

@@ -2,7 +2,7 @@
 import type { MachinatNativeComponent } from 'machinat/types';
 import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
 import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
-
+import type LineBot from './bot';
 import type LineChannel from './channel';
 import typeof { ENTRY_GETTER } from './constant';
 
@@ -180,11 +180,15 @@ export type LineMessageRequestBody =
 export type LineJob = {|
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   body?: LineMessageRequestBody | Object,
-  entry: string,
+  path: string,
   channelUid?: string,
 |};
 
 export type LineAPIResult = Object;
+
+export type LineSendOptions = {
+  replyToken?: string,
+};
 
 export type LineBotPlugin = BotPlugin<
   LineChannel,
@@ -194,18 +198,16 @@ export type LineBotPlugin = BotPlugin<
   LineSegmentValue,
   LineComponent,
   LineJob,
-  LineAPIResult
+  LineAPIResult,
+  LineSendOptions,
+  LineBot
 >;
 
 export type LineBotOptions = {
-  channelId?: string,
+  channelId: string,
   channelSecret?: string,
   shouldValidateRequest: boolean,
   accessToken: string,
   connectionCapicity: number,
   plugins?: LineBotPlugin[],
-};
-
-export type LineSendOptions = {
-  replyToken?: string,
 };

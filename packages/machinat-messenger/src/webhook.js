@@ -99,11 +99,12 @@ export const handleWebhook = (
       const event = createEvent(isStandby, rawEvent);
       const { type, payload } = event;
 
-      const channel = new MessengerChannel(
+      const source =
         type === 'optin' && payload.sender === undefined
           ? { user_ref: payload.optin.user_ref }
-          : payload.sender
-      );
+          : payload.sender;
+
+      const channel = new MessengerChannel(source, options.pageId);
 
       if (type === 'checkout_update' || type === 'pre_checkout') {
         shouldWaitForRespond = true;

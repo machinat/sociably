@@ -45,7 +45,8 @@ export default class MachinatController<
     Event,
     Metadata,
     Response,
-    Native
+    Native,
+    SendOptions
   >[];
 
   constructor(
@@ -68,7 +69,8 @@ export default class MachinatController<
       Event,
       Metadata,
       Response,
-      Native
+      Native,
+      SendOptions
     >[]
   ) {
     this.platform = platform;
@@ -86,7 +88,7 @@ export default class MachinatController<
   // the issuer fn created directly to the receiver.
   eventIssuerThroughMiddlewares(
     finalHandler: (
-      EventFrame<Channel, Event, Metadata, any, any, any, any>
+      EventFrame<Channel, Event, Metadata, any, any, any, any, SendOptions>
     ) => Response | Promise<Response>
   ): EventIssuer<Channel, Event, Metadata, Response> {
     const issue = compose(...this.eventMiddlewares)(async (...args) =>

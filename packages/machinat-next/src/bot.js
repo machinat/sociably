@@ -15,7 +15,16 @@ import type {
 const NEXT = 'next';
 
 class NextServerBot
-  extends Emitter<NextChannel, NextEvent, NextMetadata, void, any, void, void>
+  extends Emitter<
+    NextChannel,
+    NextEvent,
+    NextMetadata,
+    void,
+    any,
+    void,
+    void,
+    void
+  >
   implements
     HTTPRequestReceivable<NextReceiver>,
     MachinatBot<
@@ -27,8 +36,8 @@ class NextServerBot
       any,
       void,
       void,
-      NextBotOptions,
-      void
+      void,
+      NextBotOptions
     > {
   options: NextBotOptions;
   receiver: NextReceiver;

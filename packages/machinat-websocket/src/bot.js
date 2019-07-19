@@ -58,7 +58,8 @@ class WebSocketBot
     EventRenderValue,
     WebSocketComponent,
     WebSocketJob,
-    WebSocketResult
+    WebSocketResult,
+    void
   >
   implements
     HTTPUpgradeReceivable<WebSocketReceiver>,
@@ -71,8 +72,8 @@ class WebSocketBot
       WebSocketComponent,
       WebSocketJob,
       WebSocketResult,
-      WebSocketBotOptionsInput,
-      void
+      void,
+      WebSocketBotOptionsInput
     > {
   _distributor: Distributor;
   options: WebSocketBotOptions;

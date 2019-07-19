@@ -18,10 +18,20 @@ export default class MachinatEmitter<
   SegmentValue,
   Native: MachinatNativeComponent<SegmentValue>,
   Job,
-  Result
+  Result,
+  SendOptions
 > {
   _eventListeners: ((
-    EventFrame<Channel, Event, Metadata, SegmentValue, Native, Job, Result>
+    EventFrame<
+      Channel,
+      Event,
+      Metadata,
+      SegmentValue,
+      Native,
+      Job,
+      Result,
+      SendOptions
+    >
   ) => void)[];
 
   _errorListeners: ((Error) => void)[];
@@ -33,7 +43,16 @@ export default class MachinatEmitter<
 
   onEvent(
     listener: (
-      EventFrame<Channel, Event, Metadata, SegmentValue, Native, Job, Result>
+      EventFrame<
+        Channel,
+        Event,
+        Metadata,
+        SegmentValue,
+        Native,
+        Job,
+        Result,
+        SendOptions
+      >
     ) => void
   ) {
     if (typeof listener !== 'function') {
@@ -46,7 +65,16 @@ export default class MachinatEmitter<
 
   removeEventListener(
     listener: (
-      EventFrame<Channel, Event, Metadata, SegmentValue, Native, Job, Result>
+      EventFrame<
+        Channel,
+        Event,
+        Metadata,
+        SegmentValue,
+        Native,
+        Job,
+        Result,
+        SendOptions
+      >
     ) => void
   ) {
     const idx = this._eventListeners.findIndex(fn => fn === listener);
@@ -66,7 +94,8 @@ export default class MachinatEmitter<
       SegmentValue,
       Native,
       Job,
-      Result
+      Result,
+      SendOptions
     >
   ) {
     for (const listener of this._eventListeners) {

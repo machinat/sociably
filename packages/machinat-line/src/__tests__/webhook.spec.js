@@ -13,7 +13,10 @@ describe('handleWebhook(options)(req, res, body)', () => {
       const res = moxy(new ServerResponse({ method }));
 
       await expect(
-        handleWebhook({ shouldValidateRequest: false })(req, res, 'body')
+        handleWebhook({
+          channelId: '_LINE_CHANNEL_ID_',
+          shouldValidateRequest: false,
+        })(req, res, 'body')
       ).resolves.toBe(null);
 
       expect(res.statusCode).toBe(405);
@@ -27,7 +30,10 @@ describe('handleWebhook(options)(req, res, body)', () => {
     const res = moxy(new ServerResponse({ method: 'POST' }));
 
     await expect(
-      handleWebhook({ shouldValidateRequest: false })(req, res)
+      handleWebhook({
+        channelId: '_LINE_CHANNEL_ID_',
+        shouldValidateRequest: false,
+      })(req, res)
     ).resolves.toBe(null);
 
     expect(res.statusCode).toBe(400);
@@ -40,11 +46,10 @@ describe('handleWebhook(options)(req, res, body)', () => {
     const res = moxy(new ServerResponse({ method: 'POST' }));
 
     await expect(
-      handleWebhook({ shouldValidateRequest: false })(
-        req,
-        res,
-        '_invalid_body_'
-      )
+      handleWebhook({
+        channelId: '_LINE_CHANNEL_ID_',
+        shouldValidateRequest: false,
+      })(req, res, '_invalid_body_')
     ).resolves.toBe(null);
 
     expect(res.statusCode).toBe(400);
@@ -57,11 +62,10 @@ describe('handleWebhook(options)(req, res, body)', () => {
     const res = moxy(new ServerResponse({ method: 'POST' }));
 
     await expect(
-      handleWebhook({ shouldValidateRequest: false })(
-        req,
-        res,
-        JSON.stringify({ there: 'is no events hahaha' })
-      )
+      handleWebhook({
+        channelId: '_LINE_CHANNEL_ID_',
+        shouldValidateRequest: false,
+      })(req, res, JSON.stringify({ there: 'is no events hahaha' }))
     ).resolves.toBe(null);
 
     expect(res.statusCode).toBe(400);
@@ -102,11 +106,10 @@ describe('handleWebhook(options)(req, res, body)', () => {
       ],
     };
 
-    const events = await handleWebhook({ shouldValidateRequest: false })(
-      req,
-      res,
-      JSON.stringify(body)
-    );
+    const events = await handleWebhook({
+      channelId: '_LINE_CHANNEL_ID_',
+      shouldValidateRequest: false,
+    })(req, res, JSON.stringify(body));
 
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
@@ -124,7 +127,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
         type: 'user',
         userId: 'U4af4980629',
       });
-      expect(channel.uid).toBe('line:*:user:U4af4980629');
+      expect(channel.uid).toBe('line:_LINE_CHANNEL_ID_:user:U4af4980629');
 
       expect(event.platform).toBe('line');
       expect(event.type).toBe(!i ? 'message' : 'follow');
@@ -174,6 +177,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
     req.mock.getter('headers').fakeReturnValue({ 'x-line-signature': hmac });
 
     const [{ event, channel, response }] = await handleWebhook({
+      channelId: '_LINE_CHANNEL_ID_',
       shouldValidateRequest: true,
       channelSecret: '__LINE_CHANNEL_SECRET__',
     })(req, res, body);
@@ -209,6 +213,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
 
     await expect(
       handleWebhook({
+        channelId: '_LINE_CHANNEL_ID_',
         shouldValidateRequest: true,
         channelSecret: '__LINE_CHANNEL_SECRET__',
       })(req, res, body)

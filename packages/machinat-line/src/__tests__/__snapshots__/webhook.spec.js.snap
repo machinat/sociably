@@ -12,7 +12,7 @@ Array [
       "sourceId": "U4af4980629",
       "subtype": "user",
       "type": "chat",
-      "uid": "line:*:user:U4af4980629",
+      "uid": "line:_LINE_CHANNEL_ID_:user:U4af4980629",
     },
     "event": Object {
       "payload": Object {
@@ -44,7 +44,7 @@ Array [
       "sourceId": "U4af4980629",
       "subtype": "user",
       "type": "chat",
-      "uid": "line:*:user:U4af4980629",
+      "uid": "line:_LINE_CHANNEL_ID_:user:U4af4980629",
     },
     "event": Object {
       "payload": Object {

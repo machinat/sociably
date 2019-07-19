@@ -42,9 +42,3 @@ test('group source', () => {
   expect(channel.source).toEqual({ type: 'group', groupId: 'foo' });
   expect(channel.sourceId).toBe('foo');
 });
-
-test('with empty line channel id', () => {
-  const channel = new LineChannel({ type: 'user', userId: 'foo' });
-
-  expect(channel.uid).toBe('line:*:user:foo');
-});

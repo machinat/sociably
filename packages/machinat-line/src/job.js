@@ -50,7 +50,7 @@ export const createChatJobs = (
     ) {
       jobs.push({
         method: 'POST',
-        entry: replyToken ? PATH_REPLY : PATH_PUSH,
+        path: replyToken ? PATH_REPLY : PATH_PUSH,
         channelUid: channel.uid,
         body: replyToken
           ? { replyToken: (replyToken: string), messages: messagesBuffer }
@@ -65,7 +65,7 @@ export const createChatJobs = (
 
       jobs.push({
         method,
-        entry: path,
+        path,
         channelUid: channel.uid,
         body: filterSymbolKeys(value),
       });
@@ -99,7 +99,7 @@ export const createMulticastJobs = (
     if (messages.length === 5 || i === segments.length - 1) {
       jobs.push({
         method: 'POST',
-        entry: PATH_MULTICAST,
+        path: PATH_MULTICAST,
         body: { to: targets, messages },
       });
       messages = [];

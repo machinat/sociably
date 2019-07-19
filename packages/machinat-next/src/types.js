@@ -1,6 +1,7 @@
 // @flow
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { BotPlugin } from 'machinat-base/types';
+import type NextBot from './bot';
 
 export type NextMetadata = {|
   source: 'next',
@@ -40,7 +41,9 @@ export type NextPlugin = BotPlugin<
   void,
   any,
   void,
-  void
+  void,
+  void,
+  NextBot
 >;
 
 export type NextBotOptions = {|

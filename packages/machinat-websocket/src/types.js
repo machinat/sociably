@@ -5,6 +5,7 @@ import type {
   MachinatMetadata,
   BotPlugin,
 } from 'machinat-base/types';
+import type WebSocketBot from './bot';
 import type MachinatSocket, { RegisterBody } from './socket';
 import type WebSocketChannel from './channel';
 
@@ -93,7 +94,9 @@ export type WebSocketBotOptions = {|
     EventRenderValue,
     WebSocketComponent,
     WebSocketJob,
-    WebSocketResult
+    WebSocketResult,
+    void,
+    WebSocketBot
   >[],
 |};
 

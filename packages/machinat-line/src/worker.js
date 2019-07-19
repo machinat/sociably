@@ -166,8 +166,8 @@ export default class LineClient
   }
 
   _consumeCallback = async ([job]: LineJob[]) => {
-    const { method, entry, body } = job;
-    const result = await this._request(method, entry, body);
+    const { method, path, body } = job;
+    const result = await this._request(method, path, body);
 
     return [{ success: true, result, job, error: undefined }];
   };

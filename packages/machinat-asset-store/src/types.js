@@ -1,54 +1,57 @@
 // @flow
 export interface AssetStore {
-  getAsset(
+  get(
     platform: string,
     entity: string,
     resource: string,
-    name: string
+    label: string
   ): Promise<void | string | number>;
 
-  setAsset(
+  set(
     platform: string,
     entity: string,
     resource: string,
-    name: string,
+    label: string,
     id: string | number
   ): Promise<boolean>;
 
-  listAssets(
+  list(
     platform: string,
     entity: string,
     resource: string
   ): Promise<null | Map<string, string | number>>;
 
-  deleteAsset(
+  delete(
     platform: string,
     entity: string,
     resource: string,
-    name: string
+    label: string
+  ): Promise<boolean>;
+
+  deleteById(
+    platform: string,
+    entity: string,
+    resource: string,
+    id: string
   ): Promise<boolean>;
 }
 
 export interface ScopedAssetAccessor {
-  getAsset(resource: string, name: string): Promise<void | string | number>;
+  getAsset(resource: string, label: string): Promise<void | string | number>;
 
   setAsset(
     resource: string,
-    name: string,
+    label: string,
     id: string | number
   ): Promise<boolean>;
 
   listAssets(resource: string): Promise<null | Map<string, string | number>>;
-
-  deleteAsset(
-    resource: string,
-    name: string,
-    id: string | number
-  ): Promise<boolean>;
+  deleteAsset(resource: string, label: string): Promise<boolean>;
+  deleteAssetById(resource: string, id: string): Promise<boolean>;
 }
 
 export type ResourceConsumption = {|
   resource: string,
-  name: string,
+  label: string,
   invariant: boolean,
 |};

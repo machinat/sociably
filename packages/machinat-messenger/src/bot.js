@@ -12,19 +12,12 @@ import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
 import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
 
 import MessengerWorker from './worker';
-import { handleWebhook, handleResponses } from './webhookHandler';
+import { handleWebhook, handleResponses } from './webhook';
 import generalComponentDelegate from './component/general';
 
-import {
-  MESSENGER,
-  MESSENGER_NATIVE_TYPE,
-  PATH_MESSENGER_PROFILE,
-  PATH_BROADCAST_MESSAGES,
-  PATH_CUSTOM_LABELS,
-} from './constant';
+import { MESSENGER, MESSENGER_NATIVE_TYPE } from './constant';
 import MessengerChannel from './channel';
 import { createChatJobs, createCreativeJobs } from './job';
-import { diffProfile } from './utils';
 
 import type {
   MessengerSource,
@@ -36,7 +29,6 @@ import type {
   MessengerAPIResult,
   MessengerSegmentValue,
   MessengerSendOptions,
-  BroadcastOptions,
 } from './types';
 
 type MessengerBotOptionsInput = $Shape<MessengerBotOptions>;
@@ -47,8 +39,6 @@ type MessengerReceiver = WebhookReceiver<
   MessengerResponse
 >;
 
-const POST = 'POST';
-
 export default class MessengerBot
   extends Emitter<
     MessengerChannel,
@@ -57,7 +47,8 @@ export default class MessengerBot
     MessengerSegmentValue,
     MessengerComponent,
     MessengerJob,
-    MessengerAPIResult
+    MessengerAPIResult,
+    MessengerSendOptions
   >
   implements
     HTTPRequestReceivable<MessengerReceiver>,
@@ -70,8 +61,8 @@ export default class MessengerBot
       MessengerComponent,
       MessengerJob,
       MessengerAPIResult,
-      MessengerBotOptionsInput,
-      MessengerSendOptions
+      MessengerSendOptions,
+      MessengerBotOptionsInput
     > {
   options: MessengerBotOptions;
   receiver: MessengerReceiver;
@@ -100,21 +91,21 @@ export default class MessengerBot
     super();
 
     const defaultOpions: MessengerBotOptionsInput = {
-      appSecret: undefined,
-      accessToken: undefined,
       shouldValidateRequest: true,
       shouldVerifyWebhook: true,
-      verifyToken: undefined,
       respondTimeout: 5000,
-      consumeInterval: undefined,
     };
 
     const options = Object.assign(defaultOpions, optionsInput);
-    this.options = options;
+
+    invariant(
+      options.pageId,
+      'should provide pageId as the identification of resources'
+    );
 
     invariant(
       options.accessToken,
-      'should provide accessToken to send messenge'
+      'should provide accessToken to send messages'
     );
 
     invariant(
@@ -126,6 +117,8 @@ export default class MessengerBot
       !options.shouldVerifyWebhook || options.verifyToken,
       'should provide verifyToken if shouldVerifyWebhook set to true'
     );
+
+    this.options = options;
 
     const { eventMiddlewares, dispatchMiddlewares } = resolvePlugins(
       this,
@@ -175,7 +168,8 @@ export default class MessengerBot
       target instanceof MessengerChannel
         ? target
         : new MessengerChannel(
-            typeof target === 'string' ? { id: target } : target
+            typeof target === 'string' ? { id: target } : target,
+            this.options.pageId
           );
 
     const tasks = await this.engine.renderTasks(
@@ -213,89 +207,26 @@ export default class MessengerBot
     return response === null ? null : response.results[0];
   }
 
-  async broadcastMessage(creativeId: number, options?: BroadcastOptions) {
-    const job = {
-      request: {
-        relative_url: PATH_BROADCAST_MESSAGES,
-        method: POST,
-        body: {
-          messaging_type: 'MESSAGE_TAG',
-          tag: 'NON_PROMOTIONAL_SUBSCRIPTION',
-          message_creative_id: creativeId,
-          notification_type: options && options.notificationType,
-          persona_id: options && options.personaId,
-          custom_label_id: options && options.customLabelId,
-        },
-      },
-    };
-
+  async dispatchAPICall(
+    method: 'GET' | 'POST' | 'DELETE',
+    relativeURL: string,
+    body?: Object,
+    options?: {| assetLabel?: string |}
+  ): Promise<Object> {
     const response = await this.engine.dispatch(null, [
-      { type: 'transmit', payload: [job] },
-    ]);
-
-    return response === null ? null : response.results[0];
-  }
-
-  async createCustomLabel(name: string): Promise<null | MessengerAPIResult> {
-    const job = {
-      request: {
-        relative_url: PATH_CUSTOM_LABELS,
-        method: POST,
-        body: { name },
+      {
+        type: 'transmit',
+        payload: [
+          {
+            request: {
+              method,
+              relative_url: relativeURL,
+              body,
+            },
+            assetLabel: options && options.assetLabel,
+          },
+        ],
       },
-    };
-
-    const response = await this.engine.dispatch(null, [
-      { type: 'transmit', payload: [job] },
-    ]);
-
-    return response === null ? null : response.results[0];
-  }
-
-  async ensureProfile(profileParams: Object): Promise<boolean> {
-    const {
-      data: [profile],
-    } = await this._dispatchSingleAPICall({
-      request: {
-        method: 'GET',
-        relative_url: PATH_MESSENGER_PROFILE,
-        body: undefined,
-      },
-    });
-
-    const { updates, deletes } = diffProfile(profileParams, profile);
-    let changed = false;
-
-    if (Object.getOwnPropertyNames(updates).length > 0) {
-      changed = true;
-
-      await this._dispatchSingleAPICall({
-        request: {
-          method: 'POST',
-          relative_url: PATH_MESSENGER_PROFILE,
-          body: updates,
-        },
-      });
-    }
-
-    if (deletes.length > 0) {
-      changed = true;
-
-      await this._dispatchSingleAPICall({
-        request: {
-          method: 'DELETE',
-          relative_url: PATH_MESSENGER_PROFILE,
-          body: { fields: deletes },
-        },
-      });
-    }
-
-    return changed;
-  }
-
-  async _dispatchSingleAPICall(job: MessengerJob): Promise<Object> {
-    const response = await this.engine.dispatch(null, [
-      { type: 'transmit', payload: [job] },
     ]);
 
     return response.results[0].body;

@@ -13,7 +13,7 @@ export interface Session {
 
 export interface SessionManager {
   getSession(channel: MachinatChannel): Session;
-  attachSession<F: EventFrame<any, any, any, any, any, any, any>>(): (
+  attachSession<F: EventFrame<any, any, any, any, any, any, any, any>>(): (
     frame: F
   ) => F & { session: Session };
 }

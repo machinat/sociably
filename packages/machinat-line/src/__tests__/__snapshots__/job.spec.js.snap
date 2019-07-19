@@ -23,9 +23,9 @@ Array [
       ],
       "replyToken": "__REPLY_TOKEN__",
     },
-    "channelUid": "line:*:user:john",
-    "entry": "v2/bot/message/reply",
+    "channelUid": "line:_LINE_CHANNEL_ID_:user:john",
     "method": "POST",
+    "path": "v2/bot/message/reply",
   },
   Object {
     "body": Object {
@@ -39,17 +39,17 @@ Array [
       ],
       "replyToken": "__REPLY_TOKEN__",
     },
-    "channelUid": "line:*:user:john",
-    "entry": "v2/bot/message/reply",
+    "channelUid": "line:_LINE_CHANNEL_ID_:user:john",
     "method": "POST",
+    "path": "v2/bot/message/reply",
   },
   Object {
     "body": Object {
       "id": 7,
     },
-    "channelUid": "line:*:user:john",
-    "entry": "bar",
+    "channelUid": "line:_LINE_CHANNEL_ID_:user:john",
     "method": "POST",
+    "path": "bar",
   },
   Object {
     "body": Object {
@@ -60,17 +60,17 @@ Array [
       ],
       "replyToken": "__REPLY_TOKEN__",
     },
-    "channelUid": "line:*:user:john",
-    "entry": "v2/bot/message/reply",
+    "channelUid": "line:_LINE_CHANNEL_ID_:user:john",
     "method": "POST",
+    "path": "v2/bot/message/reply",
   },
   Object {
     "body": Object {
       "id": 9,
     },
-    "channelUid": "line:*:user:john",
-    "entry": "baz",
+    "channelUid": "line:_LINE_CHANNEL_ID_:user:john",
     "method": "POST",
+    "path": "baz",
   },
 ]
 `;
@@ -98,9 +98,9 @@ Array [
       ],
       "to": "john",
     },
-    "channelUid": "line:*:user:john",
-    "entry": "v2/bot/message/push",
+    "channelUid": "line:_LINE_CHANNEL_ID_:user:john",
     "method": "POST",
+    "path": "v2/bot/message/push",
   },
   Object {
     "body": Object {
@@ -114,17 +114,17 @@ Array [
       ],
       "to": "john",
     },
-    "channelUid": "line:*:user:john",
-    "entry": "v2/bot/message/push",
+    "channelUid": "line:_LINE_CHANNEL_ID_:user:john",
     "method": "POST",
+    "path": "v2/bot/message/push",
   },
   Object {
     "body": Object {
       "id": 7,
     },
-    "channelUid": "line:*:user:john",
-    "entry": "bar",
+    "channelUid": "line:_LINE_CHANNEL_ID_:user:john",
     "method": "POST",
+    "path": "bar",
   },
   Object {
     "body": Object {
@@ -135,17 +135,17 @@ Array [
       ],
       "to": "john",
     },
-    "channelUid": "line:*:user:john",
-    "entry": "v2/bot/message/push",
+    "channelUid": "line:_LINE_CHANNEL_ID_:user:john",
     "method": "POST",
+    "path": "v2/bot/message/push",
   },
   Object {
     "body": Object {
       "id": 9,
     },
-    "channelUid": "line:*:user:john",
-    "entry": "baz",
+    "channelUid": "line:_LINE_CHANNEL_ID_:user:john",
     "method": "POST",
+    "path": "baz",
   },
 ]
 `;
@@ -177,8 +177,8 @@ Array [
         "baz",
       ],
     },
-    "entry": "v2/bot/message/multicast",
     "method": "POST",
+    "path": "v2/bot/message/multicast",
   },
   Object {
     "body": Object {
@@ -199,8 +199,8 @@ Array [
         "baz",
       ],
     },
-    "entry": "v2/bot/message/multicast",
     "method": "POST",
+    "path": "v2/bot/message/multicast",
   },
 ]
 `;

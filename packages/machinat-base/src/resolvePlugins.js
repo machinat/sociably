@@ -18,9 +18,9 @@ const resolvePlugins = <
   SegmentValue,
   Native: MachinatNativeComponent<SegmentValue>,
   Job,
-  Result
->(
-  bot: MachinatBot<
+  Result,
+  SendOptions,
+  Bot: MachinatBot<
     Channel,
     Event,
     Metadata,
@@ -29,9 +29,11 @@ const resolvePlugins = <
     Native,
     Job,
     Result,
-    any,
+    SendOptions,
     any
-  >,
+  >
+>(
+  bot: Bot,
   plugins: ?Array<
     BotPlugin<
       Channel,
@@ -41,7 +43,9 @@ const resolvePlugins = <
       SegmentValue,
       Native,
       Job,
-      Result
+      Result,
+      SendOptions,
+      Bot
     >
   >
 ): {|
@@ -50,7 +54,8 @@ const resolvePlugins = <
     Event,
     Metadata,
     Response,
-    Native
+    Native,
+    SendOptions
   >[],
   dispatchMiddlewares: DispatchMiddleware<Channel, Job, Result>[],
 |} => {

@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import moxy from 'moxy';
 
-import { handleWebhook, handleResponses } from '../webhookHandler';
+import { handleWebhook, handleResponses } from '../webhook';
 
 describe('handleWebhook(options)(req, res, body)', () => {
   describe('handling GET', () => {

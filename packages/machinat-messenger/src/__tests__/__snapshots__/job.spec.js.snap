@@ -5,7 +5,7 @@ Array [
   Object {
     "attachedFileData": "_DEADLY_VIRUS_",
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:john",
+    "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
         "a": "gift",
@@ -24,7 +24,7 @@ Array [
       "filename": "deathangel.jpg",
       "knownLength": 66666,
     },
-    "channelUid": "messenger:default:user:john",
+    "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
         "a": "redemption",
@@ -44,7 +44,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:john",
+    "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
         "recipient": Object {
@@ -59,7 +59,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:john",
+    "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -80,7 +80,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:john",
+    "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
         "id": 2,
@@ -95,7 +95,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:john",
+    "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -116,7 +116,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:john",
+    "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -142,7 +142,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:john",
+    "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
         "recipient": Object {
@@ -157,7 +157,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:john",
+    "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -174,7 +174,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:john",
+    "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
         "id": 2,
@@ -189,7 +189,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:john",
+    "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -206,7 +206,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:john",
+    "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -228,7 +228,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:Luke",
+    "channelUid": "messenger:_PAGE_ID_:user:Luke",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -249,7 +249,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:Luke",
+    "channelUid": "messenger:_PAGE_ID_:user:Luke",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -275,7 +275,7 @@ Array [
   Object {
     "attachedFileData": undefined,
     "attachedFileInfo": undefined,
-    "channelUid": "messenger:default:user:Luke",
+    "channelUid": "messenger:_PAGE_ID_:user:Luke",
     "request": Object {
       "body": Object {
         "message": Object {

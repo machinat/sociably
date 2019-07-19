@@ -7,60 +7,40 @@ import { LINE } from '../constant';
 import { LIFF, RICH_MENU } from './resourceType';
 
 class LineAssetAccessor implements ScopedAssetAccessor {
-  _entityCode: string;
+  channelId: string;
   store: AssetStore;
 
-  constructor(store: AssetStore, lineChannelId?: string) {
-    this._entityCode = lineChannelId || '*';
+  constructor(store: AssetStore, lineChannelId: string) {
+    this.channelId = lineChannelId;
     this.store = store;
   }
 
-  getAsset(resource: string, name: string) {
-    return this.store.getAsset(LINE, this._entityCode, resource, name);
+  getAsset(resource: string, label: string) {
+    return this.store.get(LINE, this.channelId, resource, label);
   }
 
-  setAsset(resource: string, name: string, id: string | number) {
-    return this.store.setAsset(LINE, this._entityCode, resource, name, id);
+  setAsset(resource: string, label: string, id: string | number) {
+    return this.store.set(LINE, this.channelId, resource, label, id);
   }
 
   listAssets(resource: string) {
-    return this.store.listAssets(LINE, this._entityCode, resource);
+    return this.store.list(LINE, this.channelId, resource);
   }
 
-  deleteAsset(resource: string, name: string) {
-    return this.store.deleteAsset(LINE, this._entityCode, resource, name);
+  deleteAsset(resource: string, label: string) {
+    return this.store.delete(LINE, this.channelId, resource, label);
   }
 
-  getLIFFApp(name: string): Promise<void | string> {
-    return (this.store.getAsset(LINE, this._entityCode, LIFF, name): any);
+  deleteAssetById(resource: string, id: string) {
+    return this.store.deleteById(LINE, this.channelId, resource, id);
   }
 
-  setLIFFApp(name: string, id: string) {
-    return this.store.setAsset(LINE, this._entityCode, LIFF, name, id);
+  getLIFFApp(label: string): Promise<void | string> {
+    return (this.getAsset(LIFF, label): any);
   }
 
-  listLIFFApp() {
-    return this.store.listAssets(LINE, this._entityCode, LIFF);
-  }
-
-  deleteLIFFApp(name: string) {
-    return this.store.deleteAsset(LINE, this._entityCode, LIFF, name);
-  }
-
-  getRichMenu(name: string): Promise<void | string> {
-    return (this.store.getAsset(LINE, this._entityCode, RICH_MENU, name): any);
-  }
-
-  setRichMenu(name: string, id: string) {
-    return this.store.setAsset(LINE, this._entityCode, RICH_MENU, name, id);
-  }
-
-  listRichMenu() {
-    return this.store.listAssets(LINE, this._entityCode, RICH_MENU);
-  }
-
-  deleteRichMenu(name: string) {
-    return this.store.deleteAsset(LINE, this._entityCode, RICH_MENU, name);
+  getRichMenu(label: string): Promise<void | string> {
+    return (this.getAsset(RICH_MENU, label): any);
   }
 }
 

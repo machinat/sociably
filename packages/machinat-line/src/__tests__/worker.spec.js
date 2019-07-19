@@ -40,12 +40,12 @@ it('makes calls to api ok', async () => {
   client.start(queue);
 
   const jobs = [
-    { method: 'POST', entry: 'foo/1', body: { id: 1 }, channelUid: '_CHAN_' },
-    { method: 'POST', entry: 'bar/1', body: { id: 2 }, channelUid: '_CHAN_' },
-    { method: 'POST', entry: 'baz/1', body: { id: 3 }, channelUid: '_CHAN_' },
-    { method: 'POST', entry: 'foo/2', body: { id: 4 }, channelUid: '_CHAN_' },
-    { method: 'POST', entry: 'bar/2', body: { id: 5 }, channelUid: '_CHAN_' },
-    { method: 'POST', entry: 'baz/2', body: { id: 6 }, channelUid: '_CHAN_' },
+    { method: 'POST', path: 'foo/1', body: { id: 1 }, channelUid: '_CHAN_' },
+    { method: 'POST', path: 'bar/1', body: { id: 2 }, channelUid: '_CHAN_' },
+    { method: 'POST', path: 'baz/1', body: { id: 3 }, channelUid: '_CHAN_' },
+    { method: 'POST', path: 'foo/2', body: { id: 4 }, channelUid: '_CHAN_' },
+    { method: 'POST', path: 'bar/2', body: { id: 5 }, channelUid: '_CHAN_' },
+    { method: 'POST', path: 'baz/2', body: { id: 6 }, channelUid: '_CHAN_' },
   ];
 
   await expect(queue.executeJobs(jobs)).resolves.toEqual({
@@ -55,7 +55,7 @@ it('makes calls to api ok', async () => {
   });
 
   expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual(
-    jobs.map(j => `/${j.entry}`)
+    jobs.map(j => `/${j.path}`)
   );
   expect(bodySpy.mock.calls.map(c => c.args[0])).toEqual(jobs.map(j => j.body));
 
@@ -80,19 +80,19 @@ it('throw if connection error happen', async () => {
     queue.executeJobs([
       {
         method: 'POST',
-        entry: 'v2/bot/message/push',
+        path: 'v2/bot/message/push',
         body: { id: 1 },
         channelUid: 'foo',
       },
       {
         method: 'POST',
-        entry: 'v2/bot/message/push',
+        path: 'v2/bot/message/push',
         body: { id: 2 },
         channelUid: 'foo',
       },
       {
         method: 'POST',
-        entry: 'v2/bot/message/push',
+        path: 'v2/bot/message/push',
         body: { id: 3 },
         channelUid: 'foo',
       },
@@ -131,19 +131,19 @@ it('throw if api error happen', async () => {
     queue.executeJobs([
       {
         method: 'POST',
-        entry: 'v2/bot/message/push',
+        path: 'v2/bot/message/push',
         body: { id: 1 },
         channelUid: 'foo',
       },
       {
         method: 'POST',
-        entry: 'v2/bot/message/push',
+        path: 'v2/bot/message/push',
         body: { id: 2 },
         channelUid: 'foo',
       },
       {
         method: 'POST',
-        entry: 'v2/bot/message/push',
+        path: 'v2/bot/message/push',
         body: { id: 3 },
         channelUid: 'foo',
       },
@@ -174,55 +174,55 @@ it('sequently excute jobs of the identical channel', async () => {
     queue.executeJobs([
       {
         method: 'POST',
-        entry: 'v2/bot/message/push',
+        path: 'v2/bot/message/push',
         channelUid: 'foo',
         body: { id: 1 },
       },
       {
         method: 'POST',
-        entry: 'v2/bot/message/push',
+        path: 'v2/bot/message/push',
         channelUid: 'bar',
         body: { id: 2 },
       },
       {
         method: 'POST',
-        entry: 'v2/bot/message/push',
+        path: 'v2/bot/message/push',
         channelUid: 'baz',
         body: { id: 3 },
       },
       {
         method: 'POST',
-        entry: 'v2/bot/message/reply',
+        path: 'v2/bot/message/reply',
         channelUid: 'foo',
         body: { id: 4 },
       },
       {
         method: 'POST',
-        entry: 'v2/bot/message/reply',
+        path: 'v2/bot/message/reply',
         channelUid: 'bar',
         body: { id: 5 },
       },
       {
         method: 'POST',
-        entry: 'v2/bot/message/reply',
+        path: 'v2/bot/message/reply',
         channelUid: 'baz',
         body: { id: 6 },
       },
       {
         method: 'POST',
-        entry: 'v2/bot/message/push',
+        path: 'v2/bot/message/push',
         channelUid: 'foo',
         body: { id: 7 },
       },
       {
         method: 'POST',
-        entry: 'v2/bot/message/push',
+        path: 'v2/bot/message/push',
         channelUid: 'bar',
         body: { id: 8 },
       },
       {
         method: 'POST',
-        entry: 'v2/bot/message/push',
+        path: 'v2/bot/message/push',
         channelUid: 'baz',
         body: { id: 9 },
       },

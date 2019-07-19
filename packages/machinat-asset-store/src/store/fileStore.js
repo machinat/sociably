@@ -27,13 +27,13 @@ class FileAssetStore implements AssetStore {
     this.path = options.path;
   }
 
-  async getAsset(
+  async get(
     platform: string,
     entity: string,
     resource: string,
     name: string
   ): Promise<void | string | number> {
-    const assets = await this._readAssets();
+    const assets = await this._read();
 
     const platformData = assets[platform];
     if (!platformData) {
@@ -53,45 +53,45 @@ class FileAssetStore implements AssetStore {
     return (resourceData[name]: any);
   }
 
-  async setAsset(
+  async set(
     platform: string,
     entity: string,
     resource: string,
     name: string,
     id: string | number
   ) {
-    const assets = await this._readAssets();
+    const assets = await this._read();
 
     const platformData = assets[platform];
     if (!platformData) {
       assets[platform] = { [entity]: { [resource]: { [name]: id } } };
-      await this._writeAssets(assets);
+      await this._write(assets);
       return false;
     }
 
     const entityData = platformData[entity];
     if (!entityData) {
       platformData[entity] = { [resource]: { [name]: id } };
-      await this._writeAssets(assets);
+      await this._write(assets);
       return false;
     }
 
     const resourceData = entityData[resource];
     if (!resourceData) {
       entityData[resource] = { [name]: id };
-      await this._writeAssets(assets);
+      await this._write(assets);
       return false;
     }
 
     const resourceExisted = !!resourceData[name];
     resourceData[name] = id;
 
-    await this._writeAssets(assets);
+    await this._write(assets);
     return resourceExisted;
   }
 
-  async listAssets(platform: string, entity: string, resource: string) {
-    const assets: AssetsObj = await this._readAssets();
+  async list(platform: string, entity: string, resource: string) {
+    const assets: AssetsObj = await this._read();
 
     const platformData = assets[platform];
     if (!platformData) {
@@ -111,13 +111,13 @@ class FileAssetStore implements AssetStore {
     return (new Map(Object.entries(resourceData)): any);
   }
 
-  async deleteAsset(
+  async delete(
     platform: string,
     entity: string,
     resource: string,
     name: string
   ) {
-    const assets: AssetsObj = await this._readAssets();
+    const assets: AssetsObj = await this._read();
 
     const platformData = assets[platform];
     if (!platformData) {
@@ -136,7 +136,7 @@ class FileAssetStore implements AssetStore {
 
     if (hasOwnProperty.call(resourceData, name)) {
       delete resourceData[name];
-      await this._writeAssets(assets);
+      await this._write(assets);
 
       return true;
     }
@@ -144,12 +144,47 @@ class FileAssetStore implements AssetStore {
     return false;
   }
 
-  _writeAssets(assets: AssetsObj) {
+  async deleteById(
+    platform: string,
+    entity: string,
+    resource: string,
+    id: string | number
+  ) {
+    const assets: AssetsObj = await this._read();
+
+    const platformData = assets[platform];
+    if (!platformData) {
+      return false;
+    }
+
+    const entityData = platformData[entity];
+    if (!entityData) {
+      return false;
+    }
+
+    const resourceData = entityData[resource];
+    if (!resourceData) {
+      return false;
+    }
+
+    for (const [key, val] of Object.entries(resourceData)) {
+      if (val === id) {
+        delete resourceData[key];
+        await this._write(assets); // eslint-disable-line no-await-in-loop
+
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  _write(assets: AssetsObj) {
     const content = toml.stringify(assets);
     return thenifiedly.call(writeFile, this.path, content, 'utf8');
   }
 
-  async _readAssets(): Promise<AssetsObj> {
+  async _read(): Promise<AssetsObj> {
     const content = await thenifiedly.call(readFile, this.path, 'utf8');
     const assets = toml.parse(content);
     return assets;

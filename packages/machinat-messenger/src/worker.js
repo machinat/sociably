@@ -8,9 +8,13 @@ import type { MachinatWorker } from 'machinat-base/types';
 import type { JobResponse } from 'machinat-queue/types';
 
 import { GraphAPIError } from './error';
-import { formatRequest } from './utils';
 
-import type { MessengerJob, MessengerAPIResult, MessengerQueue } from './types';
+import type {
+  MessengerJob,
+  MessengerAPIResult,
+  MessengerQueue,
+  MessengerRequest,
+} from './types';
 
 export type MessengerWorkerOptions = {
   accessToken: string,
@@ -26,6 +30,32 @@ const GET = 'GET';
 const POST = 'POST';
 
 const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
+
+const appendField = (body: string, key: string, value: string) =>
+  `${body.length === 0 ? body : `${body}&`}${key}=${encodeURIComponent(value)}`;
+
+const encodeURIBody = (fields: { [string]: any }): string => {
+  let body = '';
+
+  for (const key of Object.keys(fields)) {
+    const fieldValue = fields[key];
+
+    if (fieldValue !== undefined) {
+      body = appendField(
+        body,
+        key,
+        typeof fieldValue === 'string' ? fieldValue : JSON.stringify(fieldValue)
+      );
+    }
+  }
+
+  return body;
+};
+
+const formatRequest = (request: MessengerRequest) => ({
+  ...request,
+  body: request.body && encodeURIBody(request.body),
+});
 
 const assignQueryParams = (queryParams, obj) => {
   const keys = Object.keys(obj);

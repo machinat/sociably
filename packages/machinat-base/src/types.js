@@ -22,17 +22,21 @@ export interface MachinatBot<
   Native: MachinatNativeComponent<SegmentValue>,
   Job,
   Result,
-  BotOptions: OptionsWithPlugins<
-    Channel,
-    Event,
-    Metadata,
-    Response,
-    SegmentValue,
-    Native,
-    Job,
-    Result
-  >,
-  SendOptions
+  SendOptions,
+  BotOptions: {
+    plugins?: BotPlugin<
+      Channel,
+      Event,
+      Metadata,
+      Response,
+      SegmentValue,
+      Native,
+      Job,
+      Result,
+      SendOptions,
+      any
+    >[],
+  }
 > {
   constructor(options: BotOptions): void;
 
@@ -44,7 +48,16 @@ export interface MachinatBot<
 
   onEvent(
     listener: (
-      EventFrame<Channel, Event, Metadata, SegmentValue, Native, Job, Result>
+      EventFrame<
+        Channel,
+        Event,
+        Metadata,
+        SegmentValue,
+        Native,
+        Job,
+        Result,
+        SendOptions
+      >
     ) => void
   ): MachinatBot<
     Channel,
@@ -55,13 +68,22 @@ export interface MachinatBot<
     Native,
     Job,
     Result,
-    BotOptions,
-    SendOptions
+    SendOptions,
+    BotOptions
   >;
 
   removeEventListener(
     listener: (
-      EventFrame<Channel, Event, Metadata, SegmentValue, Native, Job, Result>
+      EventFrame<
+        Channel,
+        Event,
+        Metadata,
+        SegmentValue,
+        Native,
+        Job,
+        Result,
+        SendOptions
+      >
     ) => void
   ): boolean;
 
@@ -76,8 +98,8 @@ export interface MachinatBot<
     Native,
     Job,
     Result,
-    BotOptions,
-    SendOptions
+    SendOptions,
+    BotOptions
   >;
 
   removeErrorListener(listener: (Error) => void): boolean;
@@ -120,7 +142,8 @@ export type EventFrame<
   SegmentValue,
   Native: MachinatNativeComponent<SegmentValue>,
   Job,
-  Result
+  Result,
+  SendOptions
 > = {
   platform: string,
   channel: Channel,
@@ -138,7 +161,7 @@ export type EventFrame<
     any
   >,
   metadata: Metadata,
-  reply(nodes: MachinatNode, options: any): Promise<null | Result[]>,
+  reply(nodes: MachinatNode, options: SendOptions): Promise<null | Result[]>,
 };
 
 export type EventMiddleware<
@@ -146,9 +169,10 @@ export type EventMiddleware<
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
   Response,
-  Native
+  Native,
+  SendOptions
 > = MiddlewareFunc<
-  EventFrame<Channel, Event, Metadata, any, Native, any, any>,
+  EventFrame<Channel, Event, Metadata, any, Native, any, any, SendOptions>,
   Promise<Response>
 >;
 
@@ -189,9 +213,9 @@ export type BotPlugin<
   SegmentValue,
   Native: MachinatNativeComponent<SegmentValue>,
   Job,
-  Result
-> = (
-  bot: MachinatBot<
+  Result,
+  SendOption,
+  Bot: MachinatBot<
     Channel,
     Event,
     Metadata,
@@ -200,42 +224,27 @@ export type BotPlugin<
     Native,
     Job,
     Result,
-    any,
+    SendOption,
     any
   >
+> = (
+  bot: Bot
 ) => ?{
   dispatchMiddleware?: DispatchMiddleware<Channel, Job, Result>,
-  eventMiddleware?: EventMiddleware<Channel, Event, Metadata, Response, Native>,
+  eventMiddleware?: EventMiddleware<
+    Channel,
+    Event,
+    Metadata,
+    Response,
+    Native,
+    SendOption
+  >,
 };
 
 export interface MachinatWorker<Job, Result> {
   start(queue: MachinatQueue<Job, Result>): boolean;
   stop(queue: MachinatQueue<Job, Result>): boolean;
 }
-
-export type OptionsWithPlugins<
-  Channel: MachinatChannel,
-  Event: MachinatEvent<any>,
-  Metadata: MachinatMetadata<any>,
-  Response,
-  SegmentValue,
-  Native: MachinatNativeComponent<SegmentValue>,
-  Job,
-  Result
-> = {
-  plugins?: Array<
-    BotPlugin<
-      Channel,
-      Event,
-      Metadata,
-      Response,
-      SegmentValue,
-      Native,
-      Job,
-      Result
-    >
-  >,
-};
 
 export type EventIssuer<
   Channel: MachinatChannel,
