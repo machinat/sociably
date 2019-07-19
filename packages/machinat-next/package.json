@@ -20,6 +20,7 @@
     "machinat-base": "^0.0.1"
   },
   "peerDependencies": {
+    "machinat": "^0.0.1",
     "next": "^9.0.0"
   }
 }
