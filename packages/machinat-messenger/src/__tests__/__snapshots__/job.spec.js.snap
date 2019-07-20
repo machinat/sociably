@@ -39,7 +39,7 @@ Array [
 ]
 `;
 
-exports[`createChatJobs() add coresponding options to body on message only 1`] = `
+exports[`createChatJobs() add coresponding options to body on messages 1`] = `
 Array [
   Object {
     "attachedFileData": undefined,
@@ -47,6 +47,7 @@ Array [
     "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
+        "persona_id": "your-dearest-friend",
         "recipient": Object {
           "id": "john",
         },

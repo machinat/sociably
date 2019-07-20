@@ -17,7 +17,7 @@ import {
 } from './constant';
 
 const { hasOwnProperty } = Object.prototype;
-export const isMessageValue = (value: string | MessengerSegmentValue) =>
+export const isMessageEntry = (value: string | MessengerSegmentValue) =>
   typeof value === 'string' || !hasOwnProperty.call(value, ENTRY_PATH);
 
 export const asContainerComponent = compose<any>(

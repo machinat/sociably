@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { valuesOfAssertedType } from 'machinat-utility';
 
-import { asContainerComponent } from '../utils';
+import { asContainerComponent, isMessageEntry } from '../utils';
 import * as quickReply from './quickReply';
 
 const replyComponents = Object.values(quickReply);
@@ -42,16 +42,24 @@ const Dialog = async (
 
     const { value } = segment;
 
-    if (value.message) {
+    if (isMessageEntry(value)) {
       const copied = { ...value };
 
-      copied.messaging_type = type;
-      copied.tag = tag;
-      copied.notification_type = notificationType;
-      copied.persona_id = personaId;
+      if (value.message) {
+        copied.messaging_type = type;
+        copied.tag = tag;
+        copied.notification_type = notificationType;
+        copied.persona_id = personaId;
+
+        lastMessageIdx = i;
+      } else if (
+        value.sender_action === 'typing_on' ||
+        value.sender_action === 'typing_off'
+      ) {
+        copied.persona_id = personaId;
+      }
 
       segment.value = copied;
-      lastMessageIdx = i;
     }
   }
 

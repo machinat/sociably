@@ -46,7 +46,14 @@ const renderInner = moxy(async message => {
           }
         : node.type === Unknown
         ? { type: 'unit', value: { you: "don't know me" }, node, path }
-        : { type: 'unit', value: '_QUICK_REPLY_RENDERED_', node, path },
+        : [
+            QuickReply,
+            LocationQuickReply,
+            EmailQuickReply,
+            PhoneQuickReply,
+          ].includes(node.type)
+        ? { type: 'unit', value: '_QUICK_REPLY_RENDERED_', node, path }
+        : { type: 'raw', node: undefined, value: node, path },
     '$'
   );
   return renderings ? [].concat(...(await Promise.all(renderings))) : null;
@@ -114,7 +121,7 @@ it('hoist text value into message object', async () => {
   expect(segments[2].value).toEqual({ message: { text: 'baz' } });
 });
 
-it('add root fields to action value', async () => {
+it('add attributes to action value', async () => {
   const segments = await render(
     <Dialog
       type="MESSAGE_TAG"
@@ -133,6 +140,23 @@ it('add root fields to action value', async () => {
     expect(segment.value.notification_type).toBe('SILENT_PUSH');
     expect(segment.value.persona_id).toBe('_PERSONA_ID_');
   });
+});
+
+it('add persona_id to typeing_on/typeing_off sender action', async () => {
+  let [{ value }] = await render(
+    <Dialog personaId="_PERSONA_ID_">{{ sender_action: 'typing_on' }}</Dialog>
+  );
+  expect(value.persona_id).toBe('_PERSONA_ID_');
+
+  [{ value }] = await render(
+    <Dialog personaId="_PERSONA_ID_">{{ sender_action: 'typing_off' }}</Dialog>
+  );
+  expect(value.persona_id).toBe('_PERSONA_ID_');
+
+  [{ value }] = await render(
+    <Dialog personaId="_PERSONA_ID_">{{ sender_action: 'mark_seen' }}</Dialog>
+  );
+  expect(value.persona_id).toBe(undefined);
 });
 
 it('adds metadata to last message action', async () => {
@@ -183,7 +207,7 @@ it('adds quickReplies to last message action', async () => {
 });
 
 it('throw if non QuickReply element received within prop quickReplies', async () => {
-  expect(
+  await expect(
     render(
       <Dialog
         quickReplies={[

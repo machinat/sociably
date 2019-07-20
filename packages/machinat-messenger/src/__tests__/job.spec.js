@@ -53,7 +53,7 @@ describe('createChatJobs()', () => {
     });
   });
 
-  it('add coresponding options to body on message only', () => {
+  it('add coresponding options to body on messages', () => {
     const channel = new MessengerChannel({ id: 'john' }, '_PAGE_ID_');
 
     const jobs = createChatJobs(channel, segments, {
@@ -65,31 +65,58 @@ describe('createChatJobs()', () => {
 
     expect(jobs).toMatchSnapshot();
 
-    const expectedAttributes = {
-      messaging_type: 'MESSAGE_TAG',
-      tag: 'PAYMENT_UPDATE',
-      notification_type: 'SILENT_PUSH',
-      persona_id: 'your-dearest-friend',
-    };
+    jobs.forEach((job, i) => {
+      if (i === 0) {
+        expect(job.request.body.messaging_type).toBe(undefined);
+        expect(job.request.body.tag).toBe(undefined);
+        expect(job.request.body.notification_type).toBe(undefined);
+        expect(job.request.body.persona_id).toBe('your-dearest-friend');
+      } else if (i === 2) {
+        expect(job.request.body.messaging_type).toBe(undefined);
+        expect(job.request.body.tag).toBe(undefined);
+        expect(job.request.body.notification_type).toBe(undefined);
+        expect(job.request.body.persona_id).toBe(undefined);
+      } else {
+        expect(job.request.body).toEqual(
+          expect.objectContaining({
+            messaging_type: 'MESSAGE_TAG',
+            tag: 'PAYMENT_UPDATE',
+            notification_type: 'SILENT_PUSH',
+            persona_id: 'your-dearest-friend',
+          })
+        );
+      }
+    });
+  });
+
+  it('set persona_id message and typing_on/typeing_off action', () => {
+    const channel = new MessengerChannel({ id: 'john' }, '_PAGE_ID_');
+
+    const jobs = createChatJobs(
+      channel,
+      [
+        {
+          node: <Foo />,
+          value: { message: { text: 'hello' } },
+        },
+        {
+          node: <Foo />,
+          value: { sender_action: 'typing_on' },
+        },
+        {
+          node: <Foo />,
+          value: { sender_action: 'typing_off' },
+        },
+        {
+          node: <Foo />,
+          value: { sender_action: 'mark_seen' },
+        },
+      ],
+      { personaId: 'droid' }
+    );
 
     jobs.forEach((job, i) => {
-      const expectedBody = {
-        recipient: { id: 'john' },
-        ...expectedBodyFields[i],
-      };
-
-      if (i !== 0 && i !== 2) {
-        Object.assign(expectedBody, expectedAttributes);
-      }
-
-      expect(job).toEqual({
-        channelUid: 'messenger:_PAGE_ID_:user:john',
-        request: {
-          method: 'POST',
-          relative_url: i === 2 ? 'bar/baz' : 'me/messages',
-          body: expectedBody,
-        },
-      });
+      expect(job.request.body.persona_id).toBe(i !== 3 ? 'droid' : undefined);
     });
   });
 

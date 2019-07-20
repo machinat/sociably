@@ -12,7 +12,7 @@ import type {
 } from './types';
 import type MessangerChannel from './channel';
 
-import { isMessageValue } from './utils';
+import { isMessageEntry } from './utils';
 import {
   ENTRY_PATH,
   PATH_MESSAGES,
@@ -44,18 +44,22 @@ export const createChatJobs = (
 
     body.recipient = source;
 
-    if (options && isMessageValue(value) && body.message) {
-      if (body.messaging_type === undefined) {
-        body.messaging_type = options.messagingType;
-        body.tag = options.tag;
-      }
+    if (options && isMessageEntry(value)) {
+      if (body.message) {
+        if (body.messaging_type === undefined) {
+          body.messaging_type = options.messagingType;
+          body.tag = options.tag;
+        }
 
-      if (body.notification_type === undefined) {
-        body.notification_type = options.notificationType;
-      }
+        body.notification_type =
+          body.notification_type || options.notificationType;
 
-      if (body.persona_id === undefined) {
-        body.persona_id = options.personaId;
+        body.persona_id = body.persona_id || options.personaId;
+      } else if (
+        body.sender_action === 'typing_on' ||
+        body.sender_action === 'typing_off'
+      ) {
+        body.persona_id = body.persona_id || options.personaId;
       }
     }
 
@@ -64,7 +68,7 @@ export const createChatJobs = (
         method: POST,
         relative_url:
           // use "me/messages" if ENTRY_PATH not specified
-          isMessageValue(value) ? PATH_MESSAGES : value[ENTRY_PATH],
+          isMessageEntry(value) ? PATH_MESSAGES : value[ENTRY_PATH],
         body,
       },
       channelUid: uid,
@@ -92,7 +96,7 @@ export const createCreativeJobs = (
     } else {
       // only message pass
       invariant(
-        isMessageValue(value) && hasOwnProperty.call(value, 'message'),
+        isMessageEntry(value) && hasOwnProperty.call(value, 'message'),
         `${formatNode(
           node || value
         )} is unable to be delivered in message_creatives api`
