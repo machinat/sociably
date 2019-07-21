@@ -163,7 +163,7 @@ export default class MessengerBot
     );
   }
 
-  async send(
+  async render(
     target: string | MessengerSource | MessengerChannel,
     messages: MachinatNode,
     options?: MessengerSendOptions
@@ -192,7 +192,7 @@ export default class MessengerBot
     return response.results;
   }
 
-  async createAttachment(
+  async renderAttachment(
     node: MachinatNode
   ): Promise<null | MessengerAPIResult> {
     const tasks = await this.engine.renderTasks(
@@ -211,7 +211,7 @@ export default class MessengerBot
     return response.results[0];
   }
 
-  async createMessageCreative(
+  async renderMessageCreative(
     messages: MachinatNode
   ): Promise<null | MessengerAPIResult> {
     const tasks = await this.engine.renderTasks(

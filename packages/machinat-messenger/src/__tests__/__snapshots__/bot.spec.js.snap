@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#createAttachment(message) works 1`] = `
+exports[`#render(message, options) works 1`] = `
 Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
@@ -8,23 +8,7 @@ Object {
 }
 `;
 
-exports[`#createMessageCreative(message) works 1`] = `
-Object {
-  "access_token": "_ACCESS_TOKEN_",
-  "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
-  "batch": Any<String>,
-}
-`;
-
-exports[`#send(message, options) works 1`] = `
-Object {
-  "access_token": "_ACCESS_TOKEN_",
-  "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
-  "batch": Any<String>,
-}
-`;
-
-exports[`#send(message, options) works 2`] = `
+exports[`#render(message, options) works 2`] = `
 Array [
   Object {
     "body": "message=%7B%22text%22%3A%22Hello%22%7D&recipient=%7B%22id%22%3A%22john%22%7D",
@@ -52,7 +36,7 @@ Array [
 ]
 `;
 
-exports[`#send(message, options) works with options 1`] = `
+exports[`#render(message, options) works with options 1`] = `
 Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
@@ -60,7 +44,7 @@ Object {
 }
 `;
 
-exports[`#send(message, options) works with options 2`] = `
+exports[`#render(message, options) works with options 2`] = `
 Array [
   Object {
     "body": "message=%7B%22text%22%3A%22Hello%22%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
@@ -86,4 +70,20 @@ Array [
     "relative_url": "me/messages",
   },
 ]
+`;
+
+exports[`#renderAttachment(message) works 1`] = `
+Object {
+  "access_token": "_ACCESS_TOKEN_",
+  "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
+  "batch": Any<String>,
+}
+`;
+
+exports[`#renderMessageCreative(message) works 1`] = `
+Object {
+  "access_token": "_ACCESS_TOKEN_",
+  "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
+  "batch": Any<String>,
+}
 `;

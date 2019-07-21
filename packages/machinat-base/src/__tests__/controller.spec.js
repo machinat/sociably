@@ -5,7 +5,7 @@ import Controller from '../controller';
 
 const options = { foo: 'bar' };
 
-const bot = { name: 'r2d2', send: moxy() };
+const bot = { name: 'r2d2', render: moxy() };
 
 const channel = {
   platform: 'test',
@@ -14,7 +14,7 @@ const channel = {
 };
 
 beforeEach(() => {
-  bot.send.mock.reset();
+  bot.render.mock.reset();
 });
 
 describe('#constructor()', () => {
@@ -88,11 +88,11 @@ describe('#eventIssuerThroughMiddlewares(finalHandler)', () => {
 
     const frame = { channel, bot };
     const message = "I'll return, I promise.";
-    bot.send.mock.fakeReturnValue(['go to cloud city']);
+    bot.render.mock.fakeReturnValue(['go to cloud city']);
 
     expect(reply.call(frame, message, options)).toEqual(['go to cloud city']);
-    expect(bot.send.mock).toHaveBeenCalledTimes(1);
-    expect(bot.send.mock).toHaveBeenCalledWith(channel, message, options);
+    expect(bot.render.mock).toHaveBeenCalledTimes(1);
+    expect(bot.render.mock).toHaveBeenCalledWith(channel, message, options);
   });
 
   it('pass EventFrame through middlewares', async () => {

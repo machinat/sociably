@@ -293,7 +293,7 @@ describe('#constructor(options)', () => {
   });
 });
 
-describe('#send(message, options)', () => {
+describe('#render(message, options)', () => {
   let scope;
   beforeEach(() => {
     scope = graphAPI.reply(
@@ -317,7 +317,8 @@ describe('#send(message, options)', () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
-      await expect(bot.send('john', empty)).resolves.toBe(null);
+      await expect(bot.render('john', empty)).resolves.toBe(null);
+      expect(scope.isDone()).toBe(false);
     }
   });
 
@@ -334,7 +335,7 @@ describe('#send(message, options)', () => {
       ],
     });
 
-    await expect(bot.send('john', message)).resolves.toEqual([
+    await expect(bot.render('john', message)).resolves.toEqual([
       { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
       { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
       { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
@@ -358,7 +359,7 @@ describe('#send(message, options)', () => {
     });
 
     await expect(
-      bot.send('john', message, {
+      bot.render('john', message, {
         messagingType: 'TAG',
         tag: 'TRANSPORTATION_UPDATE',
         notificationType: 'SILENT_PUSH',
@@ -380,7 +381,7 @@ describe('#send(message, options)', () => {
   });
 });
 
-describe('#createAttachment(message)', () => {
+describe('#renderAttachment(message)', () => {
   it('resolves null if message is empty', async () => {
     const bot = new MessengerBot({
       pageId: '_PAGE_ID_',
@@ -391,7 +392,7 @@ describe('#createAttachment(message)', () => {
 
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
-      await expect(bot.createAttachment(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
+      await expect(bot.renderAttachment(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
     }
   });
 
@@ -409,7 +410,7 @@ describe('#createAttachment(message)', () => {
     );
 
     await expect(
-      bot.createAttachment(
+      bot.renderAttachment(
         <Image sharable url="https://machinat.com/trollface.png" />
       )
     ).resolves.toEqual({
@@ -422,21 +423,21 @@ describe('#createAttachment(message)', () => {
 
     expect(body).toMatchSnapshot({ batch: expect.any(String) });
     expect(JSON.parse(body.batch)).toMatchInlineSnapshot(`
-                  Array [
-                    Object {
-                      "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Ftrollface.png%22%7D%7D%7D",
-                      "method": "POST",
-                      "omit_response_on_success": false,
-                      "relative_url": "me/message_attachments",
-                    },
-                  ]
-            `);
+      Array [
+        Object {
+          "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Ftrollface.png%22%7D%7D%7D",
+          "method": "POST",
+          "omit_response_on_success": false,
+          "relative_url": "me/message_attachments",
+        },
+      ]
+    `);
 
     expect(scope.isDone()).toBe(true);
   });
 });
 
-describe('#createMessageCreative(message)', () => {
+describe('#renderMessageCreative(message)', () => {
   it('resolves null if message is empty', async () => {
     const bot = new MessengerBot({
       pageId: '_PAGE_ID_',
@@ -447,7 +448,7 @@ describe('#createMessageCreative(message)', () => {
 
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
-      await expect(bot.createMessageCreative(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
+      await expect(bot.renderMessageCreative(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
     }
   });
 
@@ -464,7 +465,7 @@ describe('#createMessageCreative(message)', () => {
       JSON.stringify([makeResponse(200, { message_creative_id: 938461089 })])
     );
 
-    await expect(bot.createMessageCreative(message)).resolves.toEqual({
+    await expect(bot.renderMessageCreative(message)).resolves.toEqual({
       code: 200,
       body: { message_creative_id: 938461089 },
     });
@@ -474,15 +475,15 @@ describe('#createMessageCreative(message)', () => {
 
     expect(body).toMatchSnapshot({ batch: expect.any(String) });
     expect(JSON.parse(body.batch)).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "body": "messages=%5B%7B%22text%22%3A%22Hello%22%7D%2C%7B%22text%22%3A%22*World!*%22%7D%2C%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D%5D",
-          "method": "POST",
-          "omit_response_on_success": false,
-          "relative_url": "me/message_creatives",
-        },
-      ]
-    `);
+            Array [
+              Object {
+                "body": "messages=%5B%7B%22text%22%3A%22Hello%22%7D%2C%7B%22text%22%3A%22*World!*%22%7D%2C%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D%5D",
+                "method": "POST",
+                "omit_response_on_success": false,
+                "relative_url": "me/message_creatives",
+              },
+            ]
+        `);
 
     expect(scope.isDone()).toBe(true);
   });

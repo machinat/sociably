@@ -150,7 +150,7 @@ describe('#constructor(options)', () => {
   });
 });
 
-describe('#send(channel, event)', () => {
+describe('#render(channel, event)', () => {
   it('work', async () => {
     const bot = new WebSocketBot();
     const distributor = Distributor.mock.calls[0].instance;
@@ -159,7 +159,11 @@ describe('#send(channel, event)', () => {
 
     const channel = new Channel();
     await expect(
-      bot.send(channel, [<Event />, <Event type="foo" />, <Event type="bar" />])
+      bot.render(channel, [
+        <Event />,
+        <Event type="foo" />,
+        <Event type="bar" />,
+      ])
     ).resolves.toEqual([
       { sockets: ['1', '2', '3'] },
       { sockets: ['1', '2', '3'] },

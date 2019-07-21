@@ -1,50 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#multicast(targets, node) works 1`] = `
-Array [
-  Object {
-    "messages": Array [
-      Object {
-        "id": 0,
-      },
-      Object {
-        "id": 1,
-      },
-      Object {
-        "id": 2,
-      },
-      Object {
-        "id": 3,
-      },
-      Object {
-        "id": 4,
-      },
-    ],
-    "to": Array [
-      "john",
-      "wick",
-      "dog",
-    ],
-  },
-  Object {
-    "messages": Array [
-      Object {
-        "id": 5,
-      },
-      Object {
-        "id": 6,
-      },
-    ],
-    "to": Array [
-      "john",
-      "wick",
-      "dog",
-    ],
-  },
-]
-`;
-
-exports[`#send(token, node, options) works 1`] = `
+exports[`#render(token, node, options) works 1`] = `
 Array [
   Object {
     "messages": Array [
@@ -92,7 +48,7 @@ Array [
 ]
 `;
 
-exports[`#send(token, node, options) works with replyToken 1`] = `
+exports[`#render(token, node, options) works with replyToken 1`] = `
 Array [
   Object {
     "messages": Array [
@@ -113,6 +69,50 @@ Array [
       },
     ],
     "replyToken": "__REPLY_TOKEN__",
+  },
+]
+`;
+
+exports[`#renderMulticast(targets, node) make api call to message/mulitcast 1`] = `
+Array [
+  Object {
+    "messages": Array [
+      Object {
+        "id": 0,
+      },
+      Object {
+        "id": 1,
+      },
+      Object {
+        "id": 2,
+      },
+      Object {
+        "id": 3,
+      },
+      Object {
+        "id": 4,
+      },
+    ],
+    "to": Array [
+      "john",
+      "wick",
+      "dog",
+    ],
+  },
+  Object {
+    "messages": Array [
+      Object {
+        "id": 5,
+      },
+      Object {
+        "id": 6,
+      },
+    ],
+    "to": Array [
+      "john",
+      "wick",
+      "dog",
+    ],
   },
 ]
 `;

@@ -105,7 +105,7 @@ export default class MachinatController<
         event,
         metadata,
         reply(nodes: MachinatNode, options: SendOptions) {
-          return bot.send(channel, nodes, options);
+          return bot.render(channel, nodes, options);
         },
       };
 

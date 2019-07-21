@@ -154,11 +154,11 @@ describe('#constructor(options)', () => {
   });
 });
 
-describe('send()', () => {
+describe('render()', () => {
   it('throw', () => {
     const bot = new NextBot({ nextApp });
-    expect(() => bot.send()).toThrowErrorMatchingInlineSnapshot(
-      `"can't call send() on next server bot"`
+    expect(() => bot.render()).toThrowErrorMatchingInlineSnapshot(
+      `"cannot call render() on NextBot"`
     );
   });
 });

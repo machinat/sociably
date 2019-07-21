@@ -141,7 +141,7 @@ class LineBot
     );
   }
 
-  async send(
+  async render(
     source: string | LineSource | LineChannel,
     message: MachinatNode,
     options: LineSendOptions
@@ -193,7 +193,7 @@ class LineBot
     return response.results;
   }
 
-  async multicast(
+  async renderMulticast(
     targets: string[],
     message: MachinatNode
   ): Promise<null | LineAPIResult[]> {

@@ -146,7 +146,7 @@ class WebSocketBot
     );
   }
 
-  async send(
+  async render(
     channel: WebSocketChannel,
     message: MachinatNode
   ): Promise<null | WebSocketResult[]> {

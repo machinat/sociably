@@ -71,6 +71,7 @@ beforeEach(() => {
   Controller.mock.reset();
   WebhookReceiver.mock.reset();
 
+  nock.cleanAll();
   lineAPI = nock('https://api.line.me', {
     reqheaders: {
       'content-type': 'application/json',
@@ -166,7 +167,6 @@ describe('#constructor(options)', () => {
       shouldValidateRequest: false,
       channelSecret: '_SECRET_',
       connectionCapicity: 9999,
-      useReplyAPI: true,
     };
     expect(new LineBot(options).options).toEqual(options);
   });
@@ -292,13 +292,12 @@ describe('#constructor(options)', () => {
   });
 });
 
-describe('#send(token, node, options)', () => {
+describe('#render(token, node, options)', () => {
   it('works', async () => {
     const bot = new LineBot({
       accessToken: '__ACCESS_TOKEN__',
       channelId: '_MY_BOT_',
       channelSecret: '_SECRET_',
-      useReplyAPI: false,
     });
 
     const apiScope = lineAPI
@@ -306,7 +305,7 @@ describe('#send(token, node, options)', () => {
       .times(5)
       .reply(200, '{}');
 
-    const results = await bot.send('john doe', msgs);
+    const results = await bot.render('john doe', msgs);
 
     expect(results).toEqual([{}, {}, {}, {}, {}]);
     expect(apiScope.isDone()).toBe(true);
@@ -327,12 +326,11 @@ describe('#send(token, node, options)', () => {
       accessToken: '__ACCESS_TOKEN__',
       channelId: '_MY_BOT_',
       channelSecret: '_SECRET_',
-      useReplyAPI: true,
     });
 
     const apiScope = lineAPI.post(pathSpy, bodySpy).reply(200, '{}');
 
-    const results = await bot.send('john doe', msgs.slice(0, 5), {
+    const results = await bot.render('john doe', msgs.slice(0, 5), {
       replyToken: '__REPLY_TOKEN__',
     });
 
@@ -343,16 +341,28 @@ describe('#send(token, node, options)', () => {
     expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchSnapshot();
   });
 
+  it('return null if message is empty', async () => {
+    const bot = new LineBot({
+      accessToken: '__ACCESS_TOKEN__',
+      channelId: '_MY_BOT_',
+      channelSecret: '_SECRET_',
+    });
+
+    for (const empty of [null, undefined, [], <></>, true, false]) {
+      // eslint-disable-next-line no-await-in-loop
+      await expect(bot.render('john doe', empty)).resolves.toBe(null);
+    }
+  });
+
   it('throw if messages length more than 5 when using replyToken', () => {
     const bot = new LineBot({
       accessToken: '__ACCESS_TOKEN__',
       channelId: '_MY_BOT_',
       channelSecret: '_SECRET_',
-      useReplyAPI: true,
     });
 
     expect(
-      bot.send('john doe', [0, 1, 2, 3, 4, 5], {
+      bot.render('john doe', [0, 1, 2, 3, 4, 5], {
         replyToken: '__REPLY_TOKEN__',
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -361,30 +371,47 @@ describe('#send(token, node, options)', () => {
   });
 });
 
-test('#multicast(targets, node) works', async () => {
-  const bot = new LineBot({
-    accessToken: '__ACCESS_TOKEN__',
-    channelId: '_MY_BOT_',
-    channelSecret: '_SECRET_',
+describe('#renderMulticast(targets, node)', () => {
+  it('return null if message is empty', async () => {
+    const bot = new LineBot({
+      accessToken: '__ACCESS_TOKEN__',
+      channelId: '_MY_BOT_',
+      channelSecret: '_SECRET_',
+    });
+
+    for (const empty of [null, undefined, [], <></>, true, false]) {
+      // eslint-disable-next-line no-await-in-loop
+      await expect(
+        bot.renderMulticast(['no', 'one', 'knows'], empty)
+      ).resolves.toBe(null);
+    }
   });
 
-  const apiScope = lineAPI
-    .post(pathSpy, bodySpy)
-    .times(2)
-    .reply(200, '{}');
+  it('make api call to message/mulitcast', async () => {
+    const bot = new LineBot({
+      accessToken: '__ACCESS_TOKEN__',
+      channelId: '_MY_BOT_',
+      channelSecret: '_SECRET_',
+    });
 
-  const results = await bot.multicast(
-    ['john', 'wick', 'dog'],
-    msgs.slice(0, 7)
-  );
+    const apiScope = lineAPI
+      .post(pathSpy, bodySpy)
+      .times(2)
+      .reply(200, '{}');
 
-  expect(results).toEqual([{}, {}]);
-  expect(apiScope.isDone()).toBe(true);
+    const results = await bot.renderMulticast(
+      ['john', 'wick', 'dog'],
+      msgs.slice(0, 7)
+    );
 
-  expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
-    '/v2/bot/message/multicast',
-    '/v2/bot/message/multicast',
-  ]);
+    expect(results).toEqual([{}, {}]);
+    expect(apiScope.isDone()).toBe(true);
 
-  expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchSnapshot();
+    expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
+      '/v2/bot/message/multicast',
+      '/v2/bot/message/multicast',
+    ]);
+
+    expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchSnapshot();
+  });
 });

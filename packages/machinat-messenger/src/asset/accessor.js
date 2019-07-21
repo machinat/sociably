@@ -48,13 +48,13 @@ class MessengerAssetManager implements ScopedAssetAccessor {
     return (this.getAsset(ATTACHMENT, tag): any);
   }
 
-  async createAttachment(tag: string, node: MachinatNode): Promise<string> {
+  async renderAttachment(tag: string, node: MachinatNode): Promise<string> {
     const existed = await this.getAttachmentId(tag);
     if (existed !== undefined) {
       throw new Error();
     }
 
-    const result = await this.bot.createAttachment(node);
+    const result = await this.bot.renderAttachment(node);
     if (result === null) {
       throw new Error();
     }
@@ -68,7 +68,7 @@ class MessengerAssetManager implements ScopedAssetAccessor {
     return (this.getAsset(MESSAGE_CREATIVE, tag): any);
   }
 
-  async createMessageCreative(
+  async renderMessageCreative(
     tag: string,
     node: MachinatNode
   ): Promise<string> {
@@ -77,7 +77,7 @@ class MessengerAssetManager implements ScopedAssetAccessor {
       throw new Error();
     }
 
-    const result = await this.bot.createMessageCreative(node);
+    const result = await this.bot.renderMessageCreative(node);
     if (result === null) {
       throw new Error();
     }

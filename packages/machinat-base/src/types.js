@@ -40,7 +40,7 @@ export interface MachinatBot<
 > {
   constructor(options: BotOptions): void;
 
-  send(
+  render(
     channel: Channel,
     message: MachinatNode,
     options: SendOptions

@@ -81,8 +81,8 @@ class NextServerBot
   }
 
   // eslint-disable-next-line class-methods-use-this
-  send() {
-    throw new Error("can't call send() on next server bot");
+  render() {
+    throw new Error('cannot call render() on NextBot');
   }
 }
 
