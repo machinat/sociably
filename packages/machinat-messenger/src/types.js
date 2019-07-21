@@ -35,7 +35,7 @@ declare var e: MessengerEvent;
 (e: MachinatEvent<MessengerRawEvent>);
 
 // TODO: detailed message type
-export type MessengerMessage = {};
+export type MessengerMessage = Object;
 
 type PreChackoutResponse = Object;
 type CheckoutUpdateResponse = Object;
@@ -59,12 +59,12 @@ type SenderActionValue = {|
 type PassThreadControlValue = {|
   target_app_id: string,
   metadata: string,
-  [ENTRY_PATH]: string,
+  [ENTRY_PATH]: any,
 |};
 
 type RequestThreadControlValue = {|
   metadata: string,
-  [ENTRY_PATH]: string,
+  [ENTRY_PATH]: any,
 |};
 
 type TakeThreadControlValue = RequestThreadControlValue;
@@ -91,10 +91,10 @@ export type MessengerRequest = {|
 export type MessengerJob = {|
   request: MessengerRequest,
   pageId?: string,
-  assetLabel?: string,
   channelUid?: string,
-  attachedFileData?: string | Buffer | ReadableStream,
-  attachedFileInfo?: {|
+  attachmentAssetTag?: string,
+  attachmentFileData?: string | Buffer | ReadableStream,
+  attachmentFileInfo?: {|
     filename?: string,
     filepath?: string,
     contentType?: string,
@@ -105,7 +105,6 @@ export type MessengerJob = {|
 export type MessengerAPIResult = {|
   code: number,
   headers: Object,
-  // TODO: type the api result
   body: Object,
 |};
 

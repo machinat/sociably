@@ -1,5 +1,5 @@
 // @flow
-import type { ResourceConsumption } from 'machinat-asset-store/types';
+import type { AssetConsumerTarget } from 'machinat-asset-store/types';
 import {
   ATTACHMENT,
   CUSTOM_LABEL,
@@ -10,10 +10,10 @@ import {
 const consumerFactory = (fnName: string, resource: string) => {
   const box = {
     [fnName]: (
-      label: string,
+      tag: string,
       options?: { invariant?: boolean }
-    ): ResourceConsumption => ({
-      label,
+    ): AssetConsumerTarget => ({
+      tag,
       resource,
       invariant: !!(options && options.invariant),
     }),
@@ -22,10 +22,13 @@ const consumerFactory = (fnName: string, resource: string) => {
   return box[fnName];
 };
 
-export const getAttachment = consumerFactory('getAttachment', ATTACHMENT);
-export const getPersona = consumerFactory('getPersona', PERSONA);
-export const getCustomLabel = consumerFactory('getCustomLabel', CUSTOM_LABEL);
-export const getMessageCreative = consumerFactory(
-  'getMessageCreative',
+export const getAttachmentId = consumerFactory('getAttachmentId', ATTACHMENT);
+export const getPersonaId = consumerFactory('getPersonaId', PERSONA);
+export const getCustomLabelId = consumerFactory(
+  'getCustomLabelId',
+  CUSTOM_LABEL
+);
+export const getMessageCreativeId = consumerFactory(
+  'getMessageCreativeId',
   MESSAGE_CREATIVE
 );

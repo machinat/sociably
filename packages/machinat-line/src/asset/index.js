@@ -1,4 +1,4 @@
 // @flow
 export { default } from './plugin';
-export { default as LineAssetAccessor } from './accessor';
+export { default as LineAssetsAccessor } from './accessor';
 export * from './consumer';

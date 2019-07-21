@@ -1,12 +1,12 @@
 // @flow
 import invariant from 'invariant';
 import Machinat from 'machinat';
-import type { ScopedAssetAccessor, ResourceConsumption } from './types';
+import type { ScopedAssetAccessor, AssetConsumerTarget } from './types';
 
 const AssetService = Machinat.createService<
   void | string | number,
   ScopedAssetAccessor,
-  ResourceConsumption
+  AssetConsumerTarget
 >((_accessor?: ScopedAssetAccessor) => {
   invariant(
     _accessor,
@@ -16,15 +16,15 @@ const AssetService = Machinat.createService<
   const accessor = _accessor; // NOTE: to satisfy flow
   return async ({
     resource,
-    label,
+    tag,
     invariant: isInvariant,
-  }: ResourceConsumption) => {
-    const id = await accessor.getAsset(resource, label);
+  }: AssetConsumerTarget) => {
+    const id = await accessor.getAsset(resource, tag);
 
     if (isInvariant) {
       invariant(
         id !== undefined,
-        `asset ( ${resource} [ ${label} ] ) not existed`
+        `asset ( ${resource} [ ${tag} ] ) not existed`
       );
     }
 

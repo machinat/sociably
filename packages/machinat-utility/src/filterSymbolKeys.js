@@ -1,6 +1,6 @@
 // @flow
-const filterSymbolKeys = (obj: Object) => {
-  const filtered = {};
+const filterSymbolKeys = (obj: Object): Object => {
+  const filtered: Object = {};
 
   const names = Object.getOwnPropertyNames(obj);
   for (let i = 0; i < names.length; i += 1) {

@@ -229,7 +229,7 @@ export type BotPlugin<
   >
 > = (
   bot: Bot
-) => ?{
+) => ?{|
   dispatchMiddleware?: DispatchMiddleware<Channel, Job, Result>,
   eventMiddleware?: EventMiddleware<
     Channel,
@@ -239,7 +239,7 @@ export type BotPlugin<
     Native,
     SendOption
   >,
-};
+|};
 
 export interface MachinatWorker<Job, Result> {
   start(queue: MachinatQueue<Job, Result>): boolean;

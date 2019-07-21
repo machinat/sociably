@@ -31,7 +31,7 @@ class FileAssetStore implements AssetStore {
     platform: string,
     entity: string,
     resource: string,
-    name: string
+    tag: string
   ): Promise<void | string | number> {
     const assets = await this._read();
 
@@ -50,41 +50,41 @@ class FileAssetStore implements AssetStore {
       return undefined;
     }
 
-    return (resourceData[name]: any);
+    return (resourceData[tag]: any);
   }
 
   async set(
     platform: string,
     entity: string,
     resource: string,
-    name: string,
+    tag: string,
     id: string | number
   ) {
     const assets = await this._read();
 
     const platformData = assets[platform];
     if (!platformData) {
-      assets[platform] = { [entity]: { [resource]: { [name]: id } } };
+      assets[platform] = { [entity]: { [resource]: { [tag]: id } } };
       await this._write(assets);
       return false;
     }
 
     const entityData = platformData[entity];
     if (!entityData) {
-      platformData[entity] = { [resource]: { [name]: id } };
+      platformData[entity] = { [resource]: { [tag]: id } };
       await this._write(assets);
       return false;
     }
 
     const resourceData = entityData[resource];
     if (!resourceData) {
-      entityData[resource] = { [name]: id };
+      entityData[resource] = { [tag]: id };
       await this._write(assets);
       return false;
     }
 
-    const resourceExisted = !!resourceData[name];
-    resourceData[name] = id;
+    const resourceExisted = !!resourceData[tag];
+    resourceData[tag] = id;
 
     await this._write(assets);
     return resourceExisted;
@@ -115,7 +115,7 @@ class FileAssetStore implements AssetStore {
     platform: string,
     entity: string,
     resource: string,
-    name: string
+    tag: string
   ) {
     const assets: AssetsObj = await this._read();
 
@@ -134,8 +134,8 @@ class FileAssetStore implements AssetStore {
       return false;
     }
 
-    if (hasOwnProperty.call(resourceData, name)) {
-      delete resourceData[name];
+    if (hasOwnProperty.call(resourceData, tag)) {
+      delete resourceData[tag];
       await this._write(assets);
 
       return true;

@@ -7,10 +7,10 @@ import LineAssetsAccessor from './accessor';
 const lineAssetsPlugin = (store: AssetStore): LineBotPlugin => (
   bot: LineBot
 ) => {
-  const accessor = new LineAssetsAccessor(store, bot.options.channelId);
+  const accessor = new LineAssetsAccessor(store, bot);
 
   return {
-    eventMiddlware(next) {
+    eventMiddleware(next) {
       return frame => next({ ...frame, assets: accessor });
     },
   };

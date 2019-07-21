@@ -1,9 +1,11 @@
 // @flow
+import type { MachinatNode } from 'machinat/types';
 import type {
   AssetStore,
   ScopedAssetAccessor,
 } from 'machinat-asset-store/types';
-import { MESSENGER } from '../constant';
+import { MESSENGER, PATH_PERSONAS, PATH_CUSTOM_LABELS } from '../constant';
+import MessengerBot from '../bot';
 import {
   ATTACHMENT,
   CUSTOM_LABEL,
@@ -13,47 +15,132 @@ import {
 
 class MessengerAssetManager implements ScopedAssetAccessor {
   store: AssetStore;
+  bot: MessengerBot;
   pageId: string;
 
-  constructor(store: AssetStore, pageId: string) {
+  constructor(store: AssetStore, bot: MessengerBot) {
     this.store = store;
-    this.pageId = pageId;
+    this.bot = bot;
+    this.pageId = bot.options.pageId;
   }
 
-  getAsset(resource: string, label: string) {
-    return this.store.get(MESSENGER, this.pageId, resource, label);
+  getAsset(resource: string, tag: string) {
+    return this.store.get(MESSENGER, this.pageId, resource, tag);
   }
 
-  setAsset(resource: string, label: string, id: string | number) {
-    return this.store.set(MESSENGER, this.pageId, resource, label, id);
+  setAsset(resource: string, tag: string, id: string | number) {
+    return this.store.set(MESSENGER, this.pageId, resource, tag, id);
   }
 
   listAssets(resource: string) {
     return this.store.list(MESSENGER, this.pageId, resource);
   }
 
-  deleteAsset(resource: string, label: string) {
-    return this.store.delete(MESSENGER, this.pageId, resource, label);
+  deleteAsset(resource: string, tag: string) {
+    return this.store.delete(MESSENGER, this.pageId, resource, tag);
   }
 
   deleteAssetById(resource: string, id: string) {
     return this.store.deleteById(MESSENGER, this.pageId, resource, id);
   }
 
-  getAttachment(label: string): Promise<void | string> {
-    return (this.getAsset(ATTACHMENT, label): any);
+  getAttachmentId(tag: string): Promise<void | string> {
+    return (this.getAsset(ATTACHMENT, tag): any);
   }
 
-  getMessageCreative(label: string): Promise<void | string> {
-    return (this.getAsset(MESSAGE_CREATIVE, label): any);
+  async createAttachment(tag: string, node: MachinatNode): Promise<string> {
+    const existed = await this.getAttachmentId(tag);
+    if (existed !== undefined) {
+      throw new Error();
+    }
+
+    const result = await this.bot.createAttachment(node);
+    if (result === null) {
+      throw new Error();
+    }
+
+    const { attachment_id: id } = result.body;
+    await this.setAsset(MESSAGE_CREATIVE, tag, id);
+    return id;
   }
 
-  getCustomLabel(label: string): Promise<void | string> {
-    return (this.getAsset(CUSTOM_LABEL, label): any);
+  getMessageCreativeId(tag: string): Promise<void | string> {
+    return (this.getAsset(MESSAGE_CREATIVE, tag): any);
   }
 
-  getPersona(label: string): Promise<void | string> {
-    return (this.getAsset(PERSONA, label): any);
+  async createMessageCreative(
+    tag: string,
+    node: MachinatNode
+  ): Promise<string> {
+    const existed = await this.getMessageCreativeId(tag);
+    if (existed !== undefined) {
+      throw new Error();
+    }
+
+    const result = await this.bot.createMessageCreative(node);
+    if (result === null) {
+      throw new Error();
+    }
+
+    const { message_creative_id: id } = result.body;
+    await this.setAsset(MESSAGE_CREATIVE, tag, id);
+    return id;
+  }
+
+  getCustomLabelId(tag: string): Promise<void | string> {
+    return (this.getAsset(CUSTOM_LABEL, tag): any);
+  }
+
+  async createCustomLabel(tag: string, body: Object): Promise<string> {
+    const existed = await this.getCustomLabelId(tag);
+    if (existed !== undefined) {
+      throw new Error();
+    }
+
+    const {
+      body: { id },
+    } = await this.bot.dispatchAPICall('POST', PATH_CUSTOM_LABELS, body);
+
+    await this.setAsset(CUSTOM_LABEL, tag, id);
+    return id;
+  }
+
+  async deleteCustomLabel(tag: string): Promise<string> {
+    const id = await this.getCustomLabelId(tag);
+    if (id === undefined) {
+      throw new Error();
+    }
+
+    await this.bot.dispatchAPICall('DELETE', id);
+    return id;
+  }
+
+  getPersonaId(tag: string): Promise<void | string> {
+    return (this.getAsset(PERSONA, tag): any);
+  }
+
+  async createPersona(tag: string, body: Object): Promise<string> {
+    const existed = await this.getPersonaId(tag);
+    if (existed !== undefined) {
+      throw new Error();
+    }
+
+    const {
+      body: { id },
+    } = await this.bot.dispatchAPICall('POST', PATH_PERSONAS, body);
+
+    await this.setAsset(PERSONA, tag, id);
+    return id;
+  }
+
+  async deletePersona(tag: string): Promise<string> {
+    const id = await this.getPersonaId(tag);
+    if (id === undefined) {
+      throw new Error();
+    }
+
+    await this.bot.dispatchAPICall('DELETE', id);
+    return id;
   }
 }
 

@@ -1,11 +1,15 @@
 import Machinat from 'machinat';
-import { createChatJobs, createCreativeJobs } from '../job';
+import {
+  createChatJobs,
+  createCreativeJobs,
+  createAttachmentJobs,
+} from '../job';
 import MessengerChannel from '../channel';
 import {
   MESSENGER_NATIVE_TYPE,
   ENTRY_PATH,
-  ATTACHED_FILE_DATA,
-  ATTACHED_FILE_INFO,
+  ATTACHMENT_DATA,
+  ATTACHMENT_INFO,
 } from '../constant';
 
 const Foo = () => {};
@@ -215,15 +219,15 @@ describe('createChatJobs()', () => {
     const jobs = createChatJobs(channel, [
       {
         node: <Foo />,
-        value: { a: 'gift', [ATTACHED_FILE_DATA]: '_DEADLY_VIRUS_' },
+        value: { a: 'gift', [ATTACHMENT_DATA]: '_DEADLY_VIRUS_' },
       },
       {
         node: <Bar />,
         value: {
           a: 'redemption',
           [ENTRY_PATH]: 'bar/baz',
-          [ATTACHED_FILE_DATA]: '_MERCY_CURE_',
-          [ATTACHED_FILE_INFO]: fileInfo,
+          [ATTACHMENT_DATA]: '_MERCY_CURE_',
+          [ATTACHMENT_INFO]: fileInfo,
         },
       },
     ]);
@@ -231,11 +235,11 @@ describe('createChatJobs()', () => {
     expect(jobs).toMatchSnapshot();
 
     jobs.forEach((job, i) => {
-      expect(job.attachedFileData).toBe(
+      expect(job.attachmentFileData).toBe(
         i === 0 ? '_DEADLY_VIRUS_' : '_MERCY_CURE_'
       );
 
-      expect(job.attachedFileInfo).toEqual(i === 0 ? undefined : fileInfo);
+      expect(job.attachmentFileInfo).toEqual(i === 0 ? undefined : fileInfo);
     });
   });
 });
@@ -273,5 +277,138 @@ describe('createCreativeJobs()', () => {
         ])
       ).toThrow(`${formated} is unable to be delivered in message_creatives`);
     });
+  });
+});
+
+describe('createAttachmentJobs()', () => {
+  it('work with attachment url', () => {
+    expect(
+      createAttachmentJobs(null, [
+        {
+          type: 'unit',
+          node: <Foo />,
+          value: {
+            message: {
+              attachment: {
+                type: 'image',
+                src: 'https://machinat.com/doge.jpg',
+                is_sharable: true,
+              },
+            },
+          },
+        },
+      ])
+    ).toEqual([
+      {
+        request: {
+          method: 'POST',
+          relative_url: 'me/message_attachments',
+          body: {
+            message: {
+              attachment: {
+                type: 'image',
+                src: 'https://machinat.com/doge.jpg',
+                is_sharable: true,
+              },
+            },
+          },
+        },
+      },
+    ]);
+  });
+
+  it('work with file data', () => {
+    const fileInfo = {
+      filename: 'doge.jpg',
+      contentType: 'image/jpeg',
+      knownLength: 12345,
+    };
+
+    expect(
+      createAttachmentJobs(null, [
+        {
+          type: 'unit',
+          node: <Foo />,
+          value: {
+            message: {
+              attachment: { type: 'image', is_sharable: true },
+            },
+            [ATTACHMENT_DATA]: '_FILE_CONTENT_DATA_',
+            [ATTACHMENT_INFO]: fileInfo,
+          },
+        },
+      ])
+    ).toEqual([
+      {
+        attachmentFileData: '_FILE_CONTENT_DATA_',
+        attachmentFileInfo: fileInfo,
+        request: {
+          method: 'POST',
+          relative_url: 'me/message_attachments',
+          body: {
+            message: {
+              attachment: { type: 'image', is_sharable: true },
+            },
+          },
+        },
+      },
+    ]);
+  });
+
+  it('throw if multiple messages passed', () => {
+    const cage = {
+      type: 'unit',
+      node: <Foo />,
+      value: {
+        message: {
+          attachment: {
+            type: 'image',
+            src: 'https://machinat.com/you_dont_say.jpg',
+            is_sharable: true,
+          },
+        },
+      },
+    };
+
+    expect(() =>
+      createAttachmentJobs(null, [cage, cage])
+    ).toThrowErrorMatchingInlineSnapshot(`"more than 1 message received"`);
+  });
+
+  it('throw if non media message passed', () => {
+    expect(() =>
+      createAttachmentJobs(null, [
+        {
+          type: 'unit',
+          node: <Foo />,
+          value: {
+            message: { text: "I'm an attachment!" },
+          },
+        },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"non attachment message <Foo /> received"`
+    );
+
+    expect(() =>
+      createAttachmentJobs(null, [
+        {
+          type: 'unit',
+          node: <Bar />,
+          value: {
+            message: {
+              attachment: {
+                type: 'template',
+                payload: {
+                  /* ...... */
+                },
+              },
+            },
+          },
+        },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"non attachment message <Bar /> received"`
+    );
   });
 });

@@ -190,7 +190,7 @@ class LineBot
     }
 
     const response = await this.engine.dispatch(channel, tasks, message);
-    return response === null ? null : response.results;
+    return response.results;
   }
 
   async multicast(
@@ -210,7 +210,7 @@ class LineBot
     }
 
     const response = await this.engine.dispatch(null, tasks, message);
-    return response === null ? null : response.results;
+    return response.results;
   }
 
   async dispatchAPICall(

@@ -17,7 +17,11 @@ import generalComponentDelegate from './component/general';
 
 import { MESSENGER, MESSENGER_NATIVE_TYPE } from './constant';
 import MessengerChannel from './channel';
-import { createChatJobs, createCreativeJobs } from './job';
+import {
+  createChatJobs,
+  createCreativeJobs,
+  createAttachmentJobs,
+} from './job';
 
 import type {
   MessengerSource,
@@ -185,7 +189,26 @@ export default class MessengerBot
     }
 
     const response = await this.engine.dispatch(null, tasks, messages);
-    return response === null ? null : response.results;
+    return response.results;
+  }
+
+  async createAttachment(
+    node: MachinatNode
+  ): Promise<null | MessengerAPIResult> {
+    const tasks = await this.engine.renderTasks(
+      createAttachmentJobs,
+      null,
+      node,
+      undefined,
+      false
+    );
+
+    if (tasks === null) {
+      return null;
+    }
+
+    const response = await this.engine.dispatch(null, tasks, node);
+    return response.results[0];
   }
 
   async createMessageCreative(
@@ -204,15 +227,14 @@ export default class MessengerBot
     }
 
     const response = await this.engine.dispatch(null, tasks, messages);
-    return response === null ? null : response.results[0];
+    return response.results[0];
   }
 
   async dispatchAPICall(
     method: 'GET' | 'POST' | 'DELETE',
     relativeURL: string,
-    body?: Object,
-    options?: {| assetLabel?: string |}
-  ): Promise<Object> {
+    body?: Object
+  ): Promise<MessengerAPIResult> {
     const response = await this.engine.dispatch(null, [
       {
         type: 'transmit',
@@ -223,12 +245,11 @@ export default class MessengerBot
               relative_url: relativeURL,
               body,
             },
-            assetLabel: options && options.assetLabel,
           },
         ],
       },
     ]);
 
-    return response.results[0].body;
+    return response.results[0];
   }
 }

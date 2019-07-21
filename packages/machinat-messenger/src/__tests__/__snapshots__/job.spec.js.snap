@@ -3,8 +3,9 @@
 exports[`createChatJobs() add attached file data and info if there are 1`] = `
 Array [
   Object {
-    "attachedFileData": "_DEADLY_VIRUS_",
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": "_DEADLY_VIRUS_",
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
@@ -18,8 +19,9 @@ Array [
     },
   },
   Object {
-    "attachedFileData": "_MERCY_CURE_",
-    "attachedFileInfo": Object {
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": "_MERCY_CURE_",
+    "attachmentFileInfo": Object {
       "contentType": "image/jpeg",
       "filename": "deathangel.jpg",
       "knownLength": 66666,
@@ -42,8 +44,9 @@ Array [
 exports[`createChatJobs() add coresponding options to body on messages 1`] = `
 Array [
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
@@ -58,8 +61,9 @@ Array [
     },
   },
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
@@ -79,8 +83,9 @@ Array [
     },
   },
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
@@ -94,8 +99,9 @@ Array [
     },
   },
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
@@ -115,8 +121,9 @@ Array [
     },
   },
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
@@ -141,8 +148,9 @@ Array [
 exports[`createChatJobs() create jobs to be sent 1`] = `
 Array [
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
@@ -156,8 +164,9 @@ Array [
     },
   },
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
@@ -173,8 +182,9 @@ Array [
     },
   },
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
@@ -188,8 +198,9 @@ Array [
     },
   },
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
@@ -205,8 +216,9 @@ Array [
     },
   },
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:john",
     "request": Object {
       "body": Object {
@@ -227,8 +239,9 @@ Array [
 exports[`createChatJobs() respect options originally set in job value 1`] = `
 Array [
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:Luke",
     "request": Object {
       "body": Object {
@@ -248,8 +261,9 @@ Array [
     },
   },
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:Luke",
     "request": Object {
       "body": Object {
@@ -274,8 +288,9 @@ Array [
 exports[`createChatJobs() respect the empty tag if messaging_type has already been set 1`] = `
 Array [
   Object {
-    "attachedFileData": undefined,
-    "attachedFileInfo": undefined,
+    "attachmentAssetTag": undefined,
+    "attachmentFileData": undefined,
+    "attachmentFileInfo": undefined,
     "channelUid": "messenger:_PAGE_ID_:user:Luke",
     "request": Object {
       "body": Object {

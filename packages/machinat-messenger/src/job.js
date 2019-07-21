@@ -17,13 +17,13 @@ import {
   ENTRY_PATH,
   PATH_MESSAGES,
   PATH_MESSAGE_CREATIVES,
-  ATTACHED_FILE_DATA,
-  ATTACHED_FILE_INFO,
+  PATH_MESSAGE_ATTACHMENTS,
+  ATTACHMENT_DATA,
+  ATTACHMENT_INFO,
+  ASSET_TAG,
 } from './constant';
 
 const POST = 'POST';
-
-const { hasOwnProperty } = Object.prototype;
 
 export const createChatJobs = (
   channel: MessangerChannel,
@@ -37,10 +37,21 @@ export const createChatJobs = (
   for (let i = 0; i < segments.length; i += 1) {
     const { value } = segments[i];
 
-    const body: Object =
-      typeof value === 'string'
-        ? { message: { text: value } }
-        : filterSymbolKeys(value);
+    let body: Object;
+    let specifiedURL: void | string;
+    let attachmentAssetTag: void | string;
+    let attachmentFileData: void | Object;
+    let attachmentFileInfo: void | Object;
+
+    if (typeof value === 'object') {
+      body = filterSymbolKeys(value);
+      specifiedURL = value[ENTRY_PATH];
+      attachmentAssetTag = value[ASSET_TAG];
+      attachmentFileData = value[ATTACHMENT_DATA];
+      attachmentFileInfo = value[ATTACHMENT_INFO];
+    } else {
+      body = ({ message: { text: value } }: Object);
+    }
 
     body.recipient = source;
 
@@ -66,16 +77,13 @@ export const createChatJobs = (
     jobs[i] = {
       request: {
         method: POST,
-        relative_url:
-          // use "me/messages" if ENTRY_PATH not specified
-          isMessageEntry(value) ? PATH_MESSAGES : value[ENTRY_PATH],
+        relative_url: specifiedURL || PATH_MESSAGES,
         body,
       },
       channelUid: uid,
-      attachedFileData:
-        typeof value === 'object' ? value[ATTACHED_FILE_DATA] : undefined,
-      attachedFileInfo:
-        typeof value === 'object' ? value[ATTACHED_FILE_INFO] : undefined,
+      attachmentAssetTag,
+      attachmentFileData,
+      attachmentFileInfo,
     };
   }
 
@@ -96,14 +104,14 @@ export const createCreativeJobs = (
     } else {
       // only message pass
       invariant(
-        isMessageEntry(value) && hasOwnProperty.call(value, 'message'),
+        isMessageEntry(value) && value.message,
         `${formatNode(
           node || value
         )} is unable to be delivered in message_creatives api`
       );
 
       invariant(
-        !hasOwnProperty.call(value, ATTACHED_FILE_DATA),
+        !value[ATTACHMENT_DATA],
         `unable to upload binary data in message_creatives api`
       );
 
@@ -117,6 +125,41 @@ export const createCreativeJobs = (
         method: POST,
         body: { messages },
         relative_url: PATH_MESSAGE_CREATIVES,
+      },
+    },
+  ];
+};
+
+export const createAttachmentJobs = (
+  channel: null,
+  segments: SegmentWithoutPause<MessengerSegmentValue, MessengerComponent>[]
+): MessengerJob[] => {
+  invariant(segments.length === 1, 'more than 1 message received');
+
+  const [{ value, node }] = segments;
+
+  let attachmentType;
+  invariant(
+    typeof value === 'object' &&
+      value.message &&
+      value.message.attachment &&
+      ((attachmentType = value.message.attachment.type) === 'image' ||
+        attachmentType === 'video' ||
+        attachmentType === 'audio' ||
+        attachmentType === 'file'),
+    `non attachment message ${formatNode(node || value)} received`
+  );
+
+  const body = filterSymbolKeys(value);
+
+  return [
+    {
+      attachmentFileData: value[ATTACHMENT_DATA],
+      attachmentFileInfo: value[ATTACHMENT_INFO],
+      request: {
+        method: POST,
+        relative_url: PATH_MESSAGE_ATTACHMENTS,
+        body,
       },
     },
   ];

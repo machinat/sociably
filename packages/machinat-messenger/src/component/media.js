@@ -1,10 +1,10 @@
 import { asUnitComponent } from '../utils';
-import { ATTACHED_FILE_DATA, ATTACHED_FILE_INFO } from '../constant';
+import { ATTACHMENT_DATA, ATTACHMENT_INFO, ASSET_TAG } from '../constant';
 
 const nativeMediaFactroy = (name, type) => {
   const container = {
     [name]: async ({
-      props: { url, reusable, attachmentId, data, fileInfo },
+      props: { url, reusable, attachmentId, assetTag, fileData, fileInfo },
     }) => ({
       message: {
         attachment: {
@@ -16,8 +16,9 @@ const nativeMediaFactroy = (name, type) => {
           },
         },
       },
-      [ATTACHED_FILE_DATA]: data,
-      [ATTACHED_FILE_INFO]: fileInfo,
+      [ASSET_TAG]: assetTag,
+      [ATTACHMENT_DATA]: fileData,
+      [ATTACHMENT_INFO]: fileInfo,
     }),
   };
 
