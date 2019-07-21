@@ -12,3 +12,4 @@ const Machinat = {
 
 export default Machinat;
 export * from './symbol';
+export { default as context } from './context';
