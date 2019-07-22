@@ -45,7 +45,7 @@ class LineAssetsAccessor implements ScopedAssetAccessor {
   async createLIFFApp(tag: string, body: Object): Promise<string> {
     const existed = await this.getLIFFAppId(tag);
     if (existed !== undefined) {
-      throw new Error();
+      throw new Error(`liff app [ ${tag} ] already existed (${existed})`);
     }
 
     const { richMenuId } = await this.bot.dispatchAPICall(
@@ -61,7 +61,7 @@ class LineAssetsAccessor implements ScopedAssetAccessor {
   async updateLIFFApp(tag: string, body: Object): Promise<string> {
     const id = await this.getLIFFAppId(tag);
     if (id === undefined) {
-      throw new Error();
+      throw new Error(`liff app [ ${tag} ] not existed`);
     }
 
     await this.bot.dispatchAPICall('PUT', `${PATH_LIFFAPPS}/${id}`, body);
@@ -71,7 +71,7 @@ class LineAssetsAccessor implements ScopedAssetAccessor {
   async deleteLIFFApp(tag: string): Promise<string> {
     const id = await this.getLIFFAppId(tag);
     if (id === undefined) {
-      throw new Error();
+      throw new Error(`liff app [ ${tag} ] not existed`);
     }
 
     await this.bot.dispatchAPICall('DELETE', `${PATH_LIFFAPPS}/${id}`);
@@ -84,9 +84,9 @@ class LineAssetsAccessor implements ScopedAssetAccessor {
   }
 
   async createRichMenu(tag: string, body: Object): Promise<string> {
-    const id = await this.getRichMenuId(tag);
-    if (id === undefined) {
-      throw new Error();
+    const existed = await this.getRichMenuId(tag);
+    if (existed !== undefined) {
+      throw new Error(`rich menu [ ${tag} ] already existed (${existed})`);
     }
 
     const { richMenuId } = await this.bot.dispatchAPICall(
@@ -102,7 +102,7 @@ class LineAssetsAccessor implements ScopedAssetAccessor {
   async deleteRichMenu(tag: string): Promise<string> {
     const id = await this.getRichMenuId(tag);
     if (id === undefined) {
-      throw new Error();
+      throw new Error(`rich menu [ ${tag} ] not existed`);
     }
 
     await this.bot.dispatchAPICall('DELETE', `${PATH_RICHMENU}/${id}`);

@@ -4,6 +4,8 @@ import type {
   AssetStore,
   ScopedAssetAccessor,
 } from 'machinat-asset-store/types';
+
+import { formatNode } from 'machinat-utility';
 import { MESSENGER, PATH_PERSONAS, PATH_CUSTOM_LABELS } from '../constant';
 import MessengerBot from '../bot';
 import {
@@ -51,12 +53,12 @@ class MessengerAssetManager implements ScopedAssetAccessor {
   async renderAttachment(tag: string, node: MachinatNode): Promise<string> {
     const existed = await this.getAttachmentId(tag);
     if (existed !== undefined) {
-      throw new Error();
+      throw new Error(`attachment [ ${tag} ] already existed (${existed})`);
     }
 
     const result = await this.bot.renderAttachment(node);
     if (result === null) {
-      throw new Error();
+      throw new Error(`message ${formatNode(node)} render to empty`);
     }
 
     const { attachment_id: id } = result.body;
@@ -74,12 +76,14 @@ class MessengerAssetManager implements ScopedAssetAccessor {
   ): Promise<string> {
     const existed = await this.getMessageCreativeId(tag);
     if (existed !== undefined) {
-      throw new Error();
+      throw new Error(
+        `message creative [ ${tag} ] already existed (${existed})`
+      );
     }
 
     const result = await this.bot.renderMessageCreative(node);
     if (result === null) {
-      throw new Error();
+      throw new Error(`message ${formatNode(node)} render to empty`);
     }
 
     const { message_creative_id: id } = result.body;
@@ -94,7 +98,7 @@ class MessengerAssetManager implements ScopedAssetAccessor {
   async createCustomLabel(tag: string, body: Object): Promise<string> {
     const existed = await this.getCustomLabelId(tag);
     if (existed !== undefined) {
-      throw new Error();
+      throw new Error(`custom label [ ${tag} ] already existed (${existed})`);
     }
 
     const {
@@ -108,7 +112,7 @@ class MessengerAssetManager implements ScopedAssetAccessor {
   async deleteCustomLabel(tag: string): Promise<string> {
     const id = await this.getCustomLabelId(tag);
     if (id === undefined) {
-      throw new Error();
+      throw new Error(`custom label [ ${tag} ] not existed`);
     }
 
     await this.bot.dispatchAPICall('DELETE', id);
@@ -122,7 +126,7 @@ class MessengerAssetManager implements ScopedAssetAccessor {
   async createPersona(tag: string, body: Object): Promise<string> {
     const existed = await this.getPersonaId(tag);
     if (existed !== undefined) {
-      throw new Error();
+      throw new Error(`persona [ ${tag} ] already existed (${existed})`);
     }
 
     const {
@@ -136,7 +140,7 @@ class MessengerAssetManager implements ScopedAssetAccessor {
   async deletePersona(tag: string): Promise<string> {
     const id = await this.getPersonaId(tag);
     if (id === undefined) {
-      throw new Error();
+      throw new Error(`persona [ ${tag} ] not existed`);
     }
 
     await this.bot.dispatchAPICall('DELETE', id);
