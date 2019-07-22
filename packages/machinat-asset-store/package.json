@@ -22,5 +22,8 @@
   },
   "peerDependencies": {
     "machinat": "^0.0.1"
+  },
+  "devDependencies": {
+    "tmp": "^0.1.0"
   }
 }

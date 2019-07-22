@@ -1,5 +1,4 @@
 // @flow
-/* eslint-disable no-bitwise */
 import EventEmitter from 'events';
 import thenifiedly from 'thenifiedly';
 import type WebSocket from 'ws';

@@ -23,6 +23,7 @@ module.exports = {
   ],
   rules: {
     strict: 0,
+    'no-bitwise': 0,
     'no-nested-ternary': 0,
     'no-underscore-dangle': 0,
     'no-cond-assign': 0,
