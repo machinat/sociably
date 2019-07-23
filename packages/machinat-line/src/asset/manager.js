@@ -48,14 +48,14 @@ class LineAssetAccessor implements ScopedAssetAccessor {
       throw new Error(`liff app [ ${tag} ] already existed (${existed})`);
     }
 
-    const { richMenuId } = await this.bot.dispatchAPICall(
+    const { liffId } = await this.bot.dispatchAPICall(
       'POST',
       PATH_LIFFAPPS,
       body
     );
 
-    await this.setAsset(LIFF, tag, richMenuId);
-    return richMenuId;
+    await this.setAsset(LIFF, tag, liffId);
+    return liffId;
   }
 
   async updateLIFFApp(tag: string, body: Object): Promise<string> {
