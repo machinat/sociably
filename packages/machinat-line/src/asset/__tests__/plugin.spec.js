@@ -1,8 +1,8 @@
 import moxy from 'moxy';
-import lineAssetsPlugin from '../plugin';
-import LineAssetsAccessor from '../accessor';
+import lineAssetPlugin from '../plugin';
+import LineAssetManager from '../manager';
 
-jest.mock('../accessor', () => jest.requireActual('moxy').default());
+jest.mock('../manager', () => jest.requireActual('moxy').default());
 
 const store = moxy();
 const bot = moxy();
@@ -10,13 +10,13 @@ const next = moxy(async () => ({ foo: 'bar' }));
 const frame = { hello: 'droid' };
 
 beforeEach(() => {
-  LineAssetsAccessor.mock.clear();
+  LineAssetManager.mock.clear();
   next.mock.clear();
 });
 
 it('attach accessor to event frame', async () => {
   await expect(
-    lineAssetsPlugin(store)(bot).eventMiddleware(next)(frame)
+    lineAssetPlugin(store)(bot).eventMiddleware(next)(frame)
   ).resolves.toEqual({
     foo: 'bar',
   });
@@ -24,13 +24,13 @@ it('attach accessor to event frame', async () => {
   expect(next.mock).toHaveBeenCalledTimes(1);
   expect(next.mock).toHaveBeenCalledWith({
     hello: 'droid',
-    assets: expect.any(LineAssetsAccessor),
+    assets: expect.any(LineAssetManager),
   });
 
-  expect(LineAssetsAccessor.mock).toHaveBeenCalledTimes(1);
-  expect(LineAssetsAccessor.mock).toHaveBeenCalledWith(store, bot);
+  expect(LineAssetManager.mock).toHaveBeenCalledTimes(1);
+  expect(LineAssetManager.mock).toHaveBeenCalledWith(store, bot);
 
   expect(next.mock.calls[0].args[0].assets).toBe(
-    LineAssetsAccessor.mock.calls[0].instance
+    LineAssetManager.mock.calls[0].instance
   );
 });

@@ -1,8 +1,8 @@
 import moxy from 'moxy';
 import messengerAssetsPlugin from '../plugin';
-import MessengerAssetsAccessor from '../accessor';
+import MessengerAssetManager from '../manager';
 
-jest.mock('../accessor', () =>
+jest.mock('../manager', () =>
   jest.requireActual('moxy').default(function MockAccessor() {
     this.setAsset = async () => true;
   })
@@ -12,7 +12,7 @@ const store = moxy();
 const bot = moxy();
 
 beforeEach(() => {
-  MessengerAssetsAccessor.mock.clear();
+  MessengerAssetManager.mock.clear();
 });
 
 it('attach accessor to event frame', async () => {
@@ -26,14 +26,14 @@ it('attach accessor to event frame', async () => {
   expect(next.mock).toHaveBeenCalledTimes(1);
   expect(next.mock).toHaveBeenCalledWith({
     hello: 'droid',
-    assets: expect.any(MessengerAssetsAccessor),
+    assets: expect.any(MessengerAssetManager),
   });
 
-  expect(MessengerAssetsAccessor.mock).toHaveBeenCalledTimes(1);
-  expect(MessengerAssetsAccessor.mock).toHaveBeenCalledWith(store, bot);
+  expect(MessengerAssetManager.mock).toHaveBeenCalledTimes(1);
+  expect(MessengerAssetManager.mock).toHaveBeenCalledWith(store, bot);
 
   expect(next.mock.calls[0].args[0].assets).toBe(
-    MessengerAssetsAccessor.mock.calls[0].instance
+    MessengerAssetManager.mock.calls[0].instance
   );
 });
 
@@ -80,8 +80,8 @@ it('store asset created within send api', async () => {
   expect(next.mock).toHaveBeenCalledTimes(1);
   expect(next.mock).toHaveBeenCalledWith(frame);
 
-  expect(MessengerAssetsAccessor.mock).toHaveBeenCalledTimes(1);
-  const accessor = MessengerAssetsAccessor.mock.calls[0].instance;
+  expect(MessengerAssetManager.mock).toHaveBeenCalledTimes(1);
+  const accessor = MessengerAssetManager.mock.calls[0].instance;
 
   expect(accessor.setAsset.mock).toHaveBeenCalledTimes(3);
   expect(accessor.setAsset.mock).toHaveBeenNthCalledWith(

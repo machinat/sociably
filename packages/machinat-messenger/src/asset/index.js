@@ -1,5 +1,4 @@
 // @flow
-export { default } from './plugin';
-export { default as MessengerAssetAccessor } from './accessor';
+export { default as MessengerAssetManager } from './manager';
+export { default as messengerAssetPlugin } from './plugin';
 export * from './consumer';
-export * from './resourceType';

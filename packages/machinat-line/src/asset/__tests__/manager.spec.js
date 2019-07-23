@@ -1,5 +1,5 @@
 import moxy from 'moxy';
-import MessengerAssetsAccessor from '../accessor';
+import LineAssetManager from '../manager';
 
 const store = moxy({
   get: async () => '_ID_',
@@ -10,7 +10,7 @@ const store = moxy({
 });
 
 const bot = moxy({
-  options: { pageId: '_FB_PAGE_ID_' },
+  options: { channelId: '_LINE_CHANNEL_ID_' },
 });
 
 beforeEach(() => {
@@ -19,13 +19,13 @@ beforeEach(() => {
 });
 
 test('#getAsset() delegate call to store.get', async () => {
-  const accessor = new MessengerAssetsAccessor(store, bot);
+  const accessor = new LineAssetManager(store, bot);
 
   await expect(accessor.getAsset('foo', 'bar')).resolves.toBe('_ID_');
   expect(store.get.mock).toHaveBeenCalledTimes(1);
   expect(store.get.mock).toHaveBeenCalledWith(
-    'messenger',
-    '_FB_PAGE_ID_',
+    'line',
+    '_LINE_CHANNEL_ID_',
     'foo',
     'bar'
   );
@@ -37,13 +37,13 @@ test('#getAsset() delegate call to store.get', async () => {
 });
 
 test('#setAsset() delegate call to store.set', async () => {
-  const accessor = new MessengerAssetsAccessor(store, bot);
+  const accessor = new LineAssetManager(store, bot);
 
   await expect(accessor.setAsset('foo', 'bar', 'baz')).resolves.toBe(true);
   expect(store.set.mock).toHaveBeenCalledTimes(1);
   expect(store.set.mock).toHaveBeenCalledWith(
-    'messenger',
-    '_FB_PAGE_ID_',
+    'line',
+    '_LINE_CHANNEL_ID_',
     'foo',
     'bar',
     'baz'
@@ -56,15 +56,15 @@ test('#setAsset() delegate call to store.set', async () => {
 });
 
 test('#listAssets() delegate call to store.list', async () => {
-  const accessor = new MessengerAssetsAccessor(store, bot);
+  const accessor = new LineAssetManager(store, bot);
 
   await expect(accessor.listAssets('foo')).resolves.toEqual(
     new Map([['bar', 'baz']])
   );
   expect(store.list.mock).toHaveBeenCalledTimes(1);
   expect(store.list.mock).toHaveBeenCalledWith(
-    'messenger',
-    '_FB_PAGE_ID_',
+    'line',
+    '_LINE_CHANNEL_ID_',
     'foo'
   );
 
@@ -75,13 +75,13 @@ test('#listAssets() delegate call to store.list', async () => {
 });
 
 test('#deleteAsset() delegate call to store.delete', async () => {
-  const accessor = new MessengerAssetsAccessor(store, bot);
+  const accessor = new LineAssetManager(store, bot);
 
   await expect(accessor.deleteAsset('foo', 'bar')).resolves.toBe(true);
   expect(store.delete.mock).toHaveBeenCalledTimes(1);
   expect(store.delete.mock).toHaveBeenCalledWith(
-    'messenger',
-    '_FB_PAGE_ID_',
+    'line',
+    '_LINE_CHANNEL_ID_',
     'foo',
     'bar'
   );
@@ -93,13 +93,13 @@ test('#deleteAsset() delegate call to store.delete', async () => {
 });
 
 test('#deleteAssetById() delegate call to store.delete', async () => {
-  const accessor = new MessengerAssetsAccessor(store, bot);
+  const accessor = new LineAssetManager(store, bot);
 
   await expect(accessor.deleteAssetById('foo', 'baz')).resolves.toBe(true);
   expect(store.deleteById.mock).toHaveBeenCalledTimes(1);
   expect(store.deleteById.mock).toHaveBeenCalledWith(
-    'messenger',
-    '_FB_PAGE_ID_',
+    'line',
+    '_LINE_CHANNEL_ID_',
     'foo',
     'baz'
   );

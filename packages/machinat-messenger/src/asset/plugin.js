@@ -10,18 +10,18 @@ import type {
 } from '../types';
 import type MessengerBot from '../bot';
 
-import MessengerAssetsAccessor from './accessor';
+import MessengerAssetManager from './manager';
 import { ATTACHMENT } from './resourceType';
 
-const messengerAssetsPlugin = (store: AssetStore): MessengerBotPlugin => (
+const messengerAssetPlugin = (store: AssetStore): MessengerBotPlugin => (
   bot: MessengerBot
 ) => {
-  const accessor = new MessengerAssetsAccessor(store, bot);
+  const manager = new MessengerAssetManager(store, bot);
 
   const eventMiddleware: MessengerEventMiddleware = next => frame =>
     next({
       ...frame,
-      assets: accessor,
+      assets: manager,
     });
 
   const dispatchMiddleware: MessengerDispatchMiddleware = next => async frame => {
@@ -39,7 +39,7 @@ const messengerAssetsPlugin = (store: AssetStore): MessengerBotPlugin => (
 
       if (attachmentAssetTag && body.attachment_id) {
         assetUpdatings.push(
-          accessor.setAsset(ATTACHMENT, attachmentAssetTag, body.attachment_id)
+          manager.setAsset(ATTACHMENT, attachmentAssetTag, body.attachment_id)
         );
       }
     }
@@ -51,4 +51,4 @@ const messengerAssetsPlugin = (store: AssetStore): MessengerBotPlugin => (
   return { eventMiddleware, dispatchMiddleware };
 };
 
-export default messengerAssetsPlugin;
+export default messengerAssetPlugin;

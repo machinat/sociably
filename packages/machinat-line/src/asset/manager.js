@@ -7,7 +7,7 @@ import type LineBot from '../bot';
 import { LINE, PATH_RICHMENU, PATH_LIFFAPPS } from '../constant';
 import { LIFF, RICH_MENU } from './resourceType';
 
-class LineAssetsAccessor implements ScopedAssetAccessor {
+class LineAssetAccessor implements ScopedAssetAccessor {
   store: AssetStore;
   bot: LineBot;
   channelId: string;
@@ -112,4 +112,4 @@ class LineAssetsAccessor implements ScopedAssetAccessor {
   }
 }
 
-export default LineAssetsAccessor;
+export default LineAssetAccessor;

@@ -13,6 +13,7 @@
   "main": "lib/index.js",
   "files": [
     "lib/*",
+    "asset.js",
     "README.md"
   ],
   "license": "MIT",
