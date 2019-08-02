@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { tmpNameSync } from 'tmp';
-import FileAssetStore from '../fileStore';
+import FileAssetStore from '../file';
 
 test('#get() asset id from toml file', async () => {
   const tmpPath = tmpNameSync();
