@@ -1,3 +1,3 @@
 // @flow
-export { default as InMemorySession } from './manager/inMemorySession';
-export { default as RedisSession } from './manager/redisSession';
+export { default as attachSession } from './attachSession';
+export { default as StateService } from './StateService';

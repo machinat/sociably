@@ -1,36 +1,43 @@
 // @flow
 import type { MachinatChannel } from 'machinat-base/types';
-import type { Session, SessionManager } from '../types';
+import type { Session, SessionStore } from '../types';
 
 class InMemorySession implements Session {
-  _values: Map<string, any>;
+  _states: Map<string, any>;
 
   constructor() {
-    this._values = new Map();
+    this._states = new Map();
   }
 
   get(key: string) {
-    const value = this._values.get(key);
-    return Promise.resolve(value);
+    const state = this._states.get(key);
+    return Promise.resolve(state);
   }
 
-  set(key: string, value: any) {
-    this._values.set(key, value);
+  set(key: string, state: any) {
+    this._states.set(key, state);
+    return Promise.resolve();
+  }
+
+  update(key: string, update: any => any) {
+    const state = this._states.get(key);
+
+    this._states.set(key, update(state));
     return Promise.resolve();
   }
 
   delete(key: string) {
-    const success = this._values.delete(key);
+    const success = this._states.delete(key);
     return Promise.resolve(success);
   }
 
   clear() {
-    this._values.clear();
+    this._states.clear();
     return Promise.resolve();
   }
 }
 
-class InMemorySessionManager implements SessionManager {
+class InMemorySessionStore implements SessionStore {
   _sessions: Map<string, InMemorySession>;
 
   constructor() {
@@ -48,13 +55,6 @@ class InMemorySessionManager implements SessionManager {
     this._sessions.set(uid, newSession);
     return newSession;
   }
-
-  attachSession() {
-    return (frame: Object) => ({
-      ...frame,
-      session: this.getSession(frame.channel),
-    });
-  }
 }
 
-export default InMemorySessionManager;
+export default InMemorySessionStore;

@@ -16,7 +16,11 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "invariant": "^2.2.4",
     "redis": "^2.8.0",
     "thenifiedly": "^0.2.1"
+  },
+  "peerDependencies": {
+    "machinat": "^0.0.1"
   }
 }

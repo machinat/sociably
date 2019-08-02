@@ -1,19 +1,14 @@
 // @flow
-import type {
-  EventFrame, // eslint-disable-line no-unused-vars
-  MachinatChannel,
-} from 'machinat-base/types';
+import type { MachinatChannel } from 'machinat-base/types';
 
 export interface Session {
-  get<Value>(key: string): Promise<void | Value>;
-  set<Value>(key: string, value: Value): Promise<void>;
+  get<T>(key: string): Promise<void | T>;
+  set<T>(key: string, state: T): Promise<void>;
   delete(key: string): Promise<boolean>;
+  update<T>(key: string, (state: void | T) => void | T): Promise<void>;
   clear(): Promise<void>;
 }
 
-export interface SessionManager {
+export interface SessionStore {
   getSession(channel: MachinatChannel): Session;
-  attachSession<F: EventFrame<any, any, any, any, any, any, any, any>>(): (
-    frame: F
-  ) => F & { session: Session };
 }

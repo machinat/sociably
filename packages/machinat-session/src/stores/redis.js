@@ -1,18 +1,9 @@
 // @flow
-import redis from 'redis';
 import thenifiedly from 'thenifiedly';
 import type { MachinatChannel } from 'machinat-base/types';
-import type { Session, SessionManager } from '../types';
+import type { Session, SessionStore } from '../types';
 
 type RedisClient = any;
-
-type RedisSessionManagerOptions = {
-  host?: string,
-  port?: number,
-  path?: string,
-  url?: string,
-  db?: number,
-};
 
 class RedisSession implements Session {
   _client: RedisClient;
@@ -34,14 +25,32 @@ class RedisSession implements Session {
     return result ? JSON.parse(result) : undefined;
   }
 
-  async set(key: string, value: any) {
+  async set(key: string, state: any) {
     await thenifiedly.callMethod(
       'hset',
       this._client,
       this._channel.uid,
       key,
-      JSON.stringify(value)
+      JSON.stringify(state)
     );
+  }
+
+  async update(key: string, update: any => any) {
+    let updated = null;
+
+    while (updated === null) {
+      /* eslint-disable no-await-in-loop */
+      await thenifiedly.callMethod('watch', this._client, this._channel.uid);
+
+      const state = await this.get(key);
+      updated = await thenifiedly.callMethod(
+        'exec',
+        this._client
+          .multi()
+          .hset(this._channel.uid, key, JSON.stringify(update(state)))
+      );
+      /* eslint-enable no-await-in-loop */
+    }
   }
 
   async delete(key: string) {
@@ -60,26 +69,16 @@ class RedisSession implements Session {
   }
 }
 
-class RedisSessionManager implements SessionManager {
+class RedisSessionStore implements SessionStore {
   client: RedisClient;
 
-  options: RedisSessionManagerOptions;
-
-  constructor(options: RedisSessionManagerOptions) {
-    this.client = redis.createClient(options);
-    this.options = options;
+  constructor(client: RedisClient) {
+    this.client = client;
   }
 
   getSession(channel: MachinatChannel) {
     return new RedisSession(this.client, channel);
   }
-
-  attachSession() {
-    return (frame: Object) => ({
-      ...frame,
-      session: new RedisSession(this.client, frame.channel),
-    });
-  }
 }
 
-export default RedisSessionManager;
+export default RedisSessionStore;
