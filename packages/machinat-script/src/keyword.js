@@ -14,6 +14,8 @@ const VARS = Symbol('machinat.script.keyword.vars');
 
 const LABEL = Symbol('machinat.script.keyword.label');
 
+const CALL = Symbol('machinat.script.keyword.call');
+
 // TODO: unsupported keywords
 /* eslint-disable no-unused-vars */
 const SWITCH = Symbol('machinat.script.keyword.if');
@@ -22,6 +24,9 @@ const DEFAULT = Symbol('machinat.script.keyword.defaut');
 
 const BREAK = Symbol('machinat.script.keyword.break');
 const CONTINUE = Symbol('machinat.script.keyword.continue');
+
+const RETURN = Symbol('machinat.script.keyword.return');
+const EXIT = Symbol('machinat.script.keyword.exit');
 /* eslint-enable no-unused-vars */
 
 export {
@@ -34,4 +39,5 @@ export {
   PROMPT as Prompt,
   VARS as Vars,
   LABEL as Label,
+  CALL as Call,
 };

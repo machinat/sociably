@@ -2,7 +2,7 @@
 /* eslint no-use-before-define: ["error", { "variables": false }] */
 import invariant from 'invariant';
 import type { MachinatNode } from 'machinat/types';
-import type { MachinatScriptType, Vars, ScriptCallScope } from './types';
+import type { MachinatScript, Vars, ScriptCallScope } from './types';
 
 type FinishedExecuteResult = {
   finished: true,
@@ -21,7 +21,7 @@ type ExecuteResult = FinishedExecuteResult | UnfinishedExecuteResult;
 const merge = (...objs: Object[]) => Object.assign(...objs);
 
 const execute = (
-  script: MachinatScriptType,
+  script: MachinatScript,
   initialVars: Vars,
   begin: number
 ): ExecuteResult => {
@@ -45,7 +45,12 @@ const execute = (
         cursor = command.index;
       }
     } else if (command.type === 'call') {
-      const result = initRuntime(command.script, command.vars, command.gotoKey);
+      const { script: subScript, withVars, gotoKey } = command;
+      const result = initRuntime(
+        subScript,
+        withVars ? withVars(vars) : {},
+        gotoKey
+      );
 
       content.push(...result.content);
 
@@ -69,7 +74,7 @@ const execute = (
 };
 
 export const initRuntime = (
-  script: MachinatScriptType,
+  script: MachinatScript,
   initialVars: Vars,
   key?: string
 ): ExecuteResult => {
@@ -83,7 +88,7 @@ export const initRuntime = (
 };
 
 export const continueRuntime = (
-  libraries: MachinatScriptType[],
+  libraries: MachinatScript[],
   initialStack: ScriptCallScope[],
   frame: any
 ): ExecuteResult => {

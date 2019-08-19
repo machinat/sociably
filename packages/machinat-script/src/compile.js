@@ -247,10 +247,10 @@ const compileCallSegment = (
 ): CompileIntermediate[] => {
   const n: number = countLabel();
 
-  const { script, vars, key, gotoKey } = segment;
+  const { script, withVars, key, gotoKey } = segment;
   return [
     { type: 'label', name: `prompt_${n}`, key },
-    { type: 'call', script, vars, gotoKey },
+    { type: 'call', script, withVars, gotoKey },
   ];
 };
 

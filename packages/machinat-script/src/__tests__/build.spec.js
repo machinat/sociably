@@ -11,6 +11,7 @@ import {
   Prompt,
   Vars,
   Label,
+  Call,
 } from '../keyword';
 
 it('work', () => {
@@ -46,7 +47,11 @@ it('work', () => {
         <Else>
           <Label key="third" />
           {() => 'sit amet,'}
-          <ChildScript vars={{ foo: 'bar' }} goto="xxx" />
+          <Call
+            script={ChildScript}
+            withVars={() => ({ foo: 'bar' })}
+            goto="xxx"
+          />
         </Else>
       </If>
 

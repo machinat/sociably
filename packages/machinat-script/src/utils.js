@@ -6,7 +6,7 @@ import type { ScriptCallScope, ScriptExecuteState } from './types';
 const keyworsSymbols = Object.values(KEYWORDS);
 export const isKeyword = (type: any) => keyworsSymbols.includes(type);
 
-export const isScriptType = (type: any): boolean %checks =>
+export const isScript = (type: any): boolean %checks =>
   typeof type === 'object' && type.$$typeof === MACHINAT_SCRIPT_TYPE;
 
 export const makeScriptState = (

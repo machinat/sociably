@@ -4,7 +4,7 @@ import invariant from 'invariant';
 import { reduce, isElement, formatNode } from 'machinat-utility';
 import type { NodeReducer } from 'machinat-utility/types';
 import * as KEYWORDS from './keyword';
-import { isKeyword, isScriptType, counter } from './utils';
+import { isKeyword, isScript, counter } from './utils';
 import type {
   MachinatScriptNode,
   VarsMatcher,
@@ -15,6 +15,7 @@ import type {
   SetVarsSegment,
   PromptSegment,
   LabelSegment,
+  CallSegment,
 } from './types';
 
 const ifChildrenReducer: NodeReducer<
@@ -182,48 +183,51 @@ const resolveLabelSegment = ({ key }: Object): LabelSegment => {
   };
 };
 
+const resolveCallSegemnt = ({
+  script,
+  withVars,
+  goto: gotoKey,
+  key,
+}: Object): CallSegment => {
+  invariant(isScript(script), `invalid "script" prop received on <Call/>`);
+
+  return {
+    type: 'call',
+    script,
+    withVars,
+    gotoKey,
+    key,
+  };
+};
+
 const segmentsReducer: NodeReducer<
   ScriptSegment[],
   { promptCounter: () => number }
 > = (segments, node, path, { promptCounter }) => {
   if (isElement(node)) {
     const { type } = node;
+    invariant(isKeyword(type), `unexpected element: ${formatNode(node)}`);
 
-    if (isKeyword(type)) {
-      let segment;
-
-      if (type === KEYWORDS.If) {
-        segment = resolveIfSegment(node.props, path, promptCounter);
-      } else if (type === KEYWORDS.For) {
-        segment = resolveForSegment(node.props, path, promptCounter);
-      } else if (type === KEYWORDS.While) {
-        segment = resolveWhileSegment(node.props, path, promptCounter);
-      } else if (type === KEYWORDS.Vars) {
-        segment = resolveVarsSegment(node.props);
-      } else if (type === KEYWORDS.Prompt) {
-        segment = resolvePromptSegment(node.props, promptCounter);
-      } else if (type === KEYWORDS.Label) {
-        segment = resolveLabelSegment(node.props);
-      } else {
-        invariant(false, `unexpected keyword: ${formatNode(node)}`);
-      }
-
-      segments.push(segment);
+    let segment;
+    if (type === KEYWORDS.If) {
+      segment = resolveIfSegment(node.props, path, promptCounter);
+    } else if (type === KEYWORDS.For) {
+      segment = resolveForSegment(node.props, path, promptCounter);
+    } else if (type === KEYWORDS.While) {
+      segment = resolveWhileSegment(node.props, path, promptCounter);
+    } else if (type === KEYWORDS.Vars) {
+      segment = resolveVarsSegment(node.props);
+    } else if (type === KEYWORDS.Prompt) {
+      segment = resolvePromptSegment(node.props, promptCounter);
+    } else if (type === KEYWORDS.Label) {
+      segment = resolveLabelSegment(node.props);
+    } else if (type === KEYWORDS.Call) {
+      segment = resolveCallSegemnt(node.props);
     } else {
-      invariant(
-        isScriptType(node.type),
-        `invalid keyword element: ${formatNode(node)}`
-      );
-
-      const { vars, goto: gotoKey, key } = node.props;
-      segments.push({
-        type: 'call',
-        script: (node.type: any),
-        vars,
-        gotoKey,
-        key,
-      });
+      invariant(false, `unexpected keyword: ${formatNode(node)}`);
     }
+
+    segments.push(segment);
   } else {
     invariant(
       typeof node === 'function',

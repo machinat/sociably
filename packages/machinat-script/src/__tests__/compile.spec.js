@@ -204,7 +204,7 @@ it('compile other segments type ok', () => {
     {
       type: 'call',
       script: OrderScript,
-      vars: { foo: 'bar' },
+      withVars: () => ({ foo: 'bar' }),
       gotoKey: 'ordering',
     },
     { type: 'set_vars', setter: () => ({ ordered: true }) },
@@ -219,7 +219,7 @@ it('compile other segments type ok', () => {
     {
       type: 'call',
       script: OrderScript,
-      vars: { foo: 'bar' },
+      withVars: expect.any(Function),
       gotoKey: 'ordering',
     },
     { type: 'set_vars', setter: expect.any(Function) },
@@ -235,6 +235,7 @@ it('compile other segments type ok', () => {
     name: 'Joe',
   });
   expect(commands[3].render({ name: 'Joe' })).toBe('hi Joe, order ur meal');
+  expect(commands[4].withVars({})).toEqual({ foo: 'bar' });
   expect(commands[5].setter({})).toEqual({ ordered: true });
   expect(commands[6].render({})).toBe('enjoy ur meal');
 });

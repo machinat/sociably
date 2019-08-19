@@ -84,9 +84,7 @@ Array [
           "name": "SomeQuestions",
         },
         "type": "call",
-        "vars": Object {
-          "foo": "bar",
-        },
+        "withVars": [Function],
       },
     ],
     "key": "first",
@@ -241,9 +239,7 @@ Array [
       "name": "SomeQuestions",
     },
     "type": "call",
-    "vars": Object {
-      "foo": "baz",
-    },
+    "withVars": [Function],
   },
   Object {
     "key": "end",

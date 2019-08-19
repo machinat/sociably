@@ -7,7 +7,7 @@ export type Vars = { [string]: any };
 export type VarsMatcher = (vars: Vars) => boolean;
 export type VarsSetter = (vars: Vars) => Vars;
 
-export type MachinatScriptType = {|
+export type MachinatScript = {|
   $$typeof: MACHINAT_SCRIPT_TYPE,
   Init: MachinatComponentType,
   name: string,
@@ -21,7 +21,7 @@ export type MachinatScriptNode =
   | RenderScriptNode
   | {|
       $$typeof: Symbol,
-      type: Symbol | MachinatScriptType,
+      type: Symbol,
       props: any,
     |};
 
@@ -78,8 +78,8 @@ export type LabelSegment = {|
 
 export type CallSegment = {|
   type: 'call',
-  script: MachinatScriptType,
-  vars: Vars,
+  script: MachinatScript,
+  withVars?: Vars => Vars,
   gotoKey?: string,
   key?: string,
 |};
@@ -107,8 +107,8 @@ export type PromptCommand = {|
 
 export type CallCommand = {|
   type: 'call',
-  script: MachinatScriptType,
-  vars: Vars,
+  script: MachinatScript,
+  withVars?: Vars => Vars,
   gotoKey?: string,
 |};
 

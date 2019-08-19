@@ -43,9 +43,7 @@ Array [
       "name": "ChildScript",
     },
     "type": "call",
-    "vars": Object {
-      "foo": "bar",
-    },
+    "withVars": [Function],
   },
   Object {
     "index": 18,

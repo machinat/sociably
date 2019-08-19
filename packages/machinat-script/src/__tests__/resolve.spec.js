@@ -10,6 +10,7 @@ import {
   Prompt,
   Vars,
   Label,
+  Call,
 } from '../keyword';
 import resolve from '../resolve';
 
@@ -498,12 +499,17 @@ describe('resolving <Label/> segment', () => {
   });
 });
 
-describe('resolving script calling segments', () => {
+describe('resolving <Call/> segments', () => {
   it('resolve ok', () => {
     const segments = resolve(
       <>
         {() => 'hello'}
-        <AnotherScript vars={{ foo: 'bar' }} goto="greet" key="waiting" />
+        <Call
+          script={AnotherScript}
+          withVars={() => ({ foo: 'bar' })}
+          goto="greet"
+          key="waiting"
+        />
       </>
     );
     expect(segments).toEqual([
@@ -511,11 +517,20 @@ describe('resolving script calling segments', () => {
       {
         type: 'call',
         script: AnotherScript,
-        vars: { foo: 'bar' },
+        withVars: expect.any(Function),
         gotoKey: 'greet',
         key: 'waiting',
       },
     ]);
+    expect(segments[1].withVars({})).toEqual({ foo: 'bar' });
+  });
+
+  it('throw if non-script received', () => {
+    expect(() =>
+      resolve(<Call script={{ something: 'wrong' }} />)
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"invalid \\"script\\" prop received on <Call/>"`
+    );
   });
 });
 
@@ -541,7 +556,11 @@ test('resolve whole script', () => {
           </ElseIf>
           <Else>
             {() => 'sit amet,'}
-            <AnotherScript vars={{ foo: 'bar' }} goto="xxx" />
+            <Call
+              script={AnotherScript}
+              withVars={() => ({ foo: 'bar' })}
+              goto="xxx"
+            />
           </Else>
         </If>
 
@@ -585,7 +604,11 @@ test('resolve whole script', () => {
         </While>
 
         {() => <a>Ut enim</a>}
-        <AnotherScript vars={{ foo: 'baz' }} goto="zzz" />
+        <Call
+          script={AnotherScript}
+          withVars={() => ({ foo: 'baz' })}
+          goto="zzz"
+        />
 
         <Label key="end" />
         <Prompt set={() => ({ end: true })} />
@@ -601,12 +624,12 @@ it('throw if invalid syntax node received', () => {
   );
 
   expect(() => resolve(<world />)).toThrowErrorMatchingInlineSnapshot(
-    `"invalid keyword element: <world />"`
+    `"unexpected element: <world />"`
   );
 
   const Foo = () => {};
   expect(() => resolve(<Foo />)).toThrowErrorMatchingInlineSnapshot(
-    `"invalid keyword element: <Foo />"`
+    `"unexpected element: <Foo />"`
   );
 
   expect(() => resolve(<Then />)).toThrowErrorMatchingInlineSnapshot(
