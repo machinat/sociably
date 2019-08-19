@@ -28,6 +28,7 @@ module.exports = {
     'no-underscore-dangle': 0,
     'no-cond-assign': 0,
     'no-unused-vars': ['error', {
+      argsIgnorePattern: '^_',
       ignoreRestSiblings: true,
     }],
     'no-cond-assign': 0,
@@ -50,6 +51,7 @@ module.exports = {
     }],
     'import/no-cycle': 0,
     'react/jsx-key': 0,
+    'react/display-name': 0,
     'react/no-unescaped-entities': ['error', {
       forbid: ['<', '>', '{', '}']
     }],

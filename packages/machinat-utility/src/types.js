@@ -7,14 +7,14 @@ export type TraverseNodeCallback<Context> = (
   context: Context
 ) => void;
 
-export type NodeReducer = <Reduced, Payload>(
+export type NodeReducer<Reduced, Payload> = (
   reduced: Reduced,
   node: MachinatRenderable,
   path: string,
   payload: Payload
 ) => Reduced;
 
-export type NodeMapper = <Mapped, Payload>(
+export type NodeMapper<Mapped, Payload> = (
   node: MachinatRenderable,
   path: string,
   payload: Payload

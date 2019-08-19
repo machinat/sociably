@@ -122,7 +122,7 @@ export type ServiceProvideFn<Served, ProvideInput, ConsumeInput> = (
 
 export type MachinatService<Served, ProvideInput, ConsumeInput> = {|
   $$typeof: MACHINAT_SERVICE_TYPE,
-  Consumer: MachinatConsumerType<Served>,
-  Provider: MachinatProviderType<Served>,
+  Consumer: MachinatConsumerType<Served, ConsumeInput>,
+  Provider: MachinatProviderType<Served, ProvideInput>,
   _serve: ServiceProvideFn<Served, ProvideInput, ConsumeInput>,
 |};

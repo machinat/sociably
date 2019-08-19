@@ -1,0 +1,371 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`resolve whole script 1`] = `
+Array [
+  Object {
+    "key": "start",
+    "type": "label",
+  },
+  Object {
+    "render": [Function],
+    "type": "messages",
+  },
+  Object {
+    "branches": Array [
+      Object {
+        "body": Array [
+          Object {
+            "body": Array [
+              Object {
+                "render": [Function],
+                "type": "messages",
+              },
+              Object {
+                "key": "prompt#0",
+                "setter": undefined,
+                "type": "prompt",
+              },
+            ],
+            "condition": [Function],
+            "key": undefined,
+            "type": "while",
+          },
+        ],
+        "condition": [Function],
+      },
+      Object {
+        "body": Array [
+          Object {
+            "body": Array [
+              Object {
+                "render": [Function],
+                "type": "messages",
+              },
+              Object {
+                "key": "prompt#1",
+                "setter": undefined,
+                "type": "prompt",
+              },
+            ],
+            "getIterable": [Function],
+            "key": undefined,
+            "type": "for",
+            "varName": "n",
+          },
+        ],
+        "condition": [Function],
+      },
+    ],
+    "fallback": Array [
+      Object {
+        "render": [Function],
+        "type": "messages",
+      },
+      Object {
+        "gotoKey": "xxx",
+        "key": undefined,
+        "script": Object {
+          "$$typeof": Symbol(machinat.component.script),
+          "Init": [Function],
+          "_executable": Array [
+            Object {
+              "render": [Function],
+              "type": "messages",
+            },
+            Object {
+              "key": "ask",
+              "type": "prompt",
+            },
+          ],
+          "_keyMapping": Object {
+            "bar": 8,
+            "foo": 3,
+          },
+          "name": "SomeQuestions",
+        },
+        "type": "call",
+        "vars": Object {
+          "foo": "bar",
+        },
+      },
+    ],
+    "key": "first",
+    "type": "if",
+  },
+  Object {
+    "setter": [Function],
+    "type": "set_vars",
+  },
+  Object {
+    "key": "second",
+    "type": "label",
+  },
+  Object {
+    "render": [Function],
+    "type": "messages",
+  },
+  Object {
+    "body": Array [
+      Object {
+        "render": [Function],
+        "type": "messages",
+      },
+      Object {
+        "branches": Array [
+          Object {
+            "body": Array [
+              Object {
+                "render": [Function],
+                "type": "messages",
+              },
+              Object {
+                "key": "prompt#2",
+                "setter": undefined,
+                "type": "prompt",
+              },
+            ],
+            "condition": [Function],
+          },
+        ],
+        "fallback": Array [
+          Object {
+            "render": [Function],
+            "type": "messages",
+          },
+        ],
+        "key": undefined,
+        "type": "if",
+      },
+      Object {
+        "body": Array [
+          Object {
+            "key": "three",
+            "type": "label",
+          },
+          Object {
+            "render": [Function],
+            "type": "messages",
+          },
+        ],
+        "condition": [Function],
+        "key": undefined,
+        "type": "while",
+      },
+    ],
+    "getIterable": [Function],
+    "key": undefined,
+    "type": "for",
+    "varName": "x",
+  },
+  Object {
+    "setter": [Function],
+    "type": "set_vars",
+  },
+  Object {
+    "key": "four",
+    "type": "label",
+  },
+  Object {
+    "render": [Function],
+    "type": "messages",
+  },
+  Object {
+    "body": Array [
+      Object {
+        "render": [Function],
+        "type": "messages",
+      },
+      Object {
+        "branches": Array [
+          Object {
+            "body": Array [
+              Object {
+                "render": [Function],
+                "type": "messages",
+              },
+              Object {
+                "key": "prompt#3",
+                "setter": undefined,
+                "type": "prompt",
+              },
+            ],
+            "condition": [Function],
+          },
+        ],
+        "fallback": Array [
+          Object {
+            "body": Array [
+              Object {
+                "render": [Function],
+                "type": "messages",
+              },
+            ],
+            "getIterable": [Function],
+            "key": undefined,
+            "type": "for",
+            "varName": "y",
+          },
+        ],
+        "key": undefined,
+        "type": "if",
+      },
+    ],
+    "condition": [Function],
+    "key": undefined,
+    "type": "while",
+  },
+  Object {
+    "render": [Function],
+    "type": "messages",
+  },
+  Object {
+    "gotoKey": "zzz",
+    "key": undefined,
+    "script": Object {
+      "$$typeof": Symbol(machinat.component.script),
+      "Init": [Function],
+      "_executable": Array [
+        Object {
+          "render": [Function],
+          "type": "messages",
+        },
+        Object {
+          "key": "ask",
+          "type": "prompt",
+        },
+      ],
+      "_keyMapping": Object {
+        "bar": 8,
+        "foo": 3,
+      },
+      "name": "SomeQuestions",
+    },
+    "type": "call",
+    "vars": Object {
+      "foo": "baz",
+    },
+  },
+  Object {
+    "key": "end",
+    "type": "label",
+  },
+  Object {
+    "key": "prompt#4",
+    "setter": [Function],
+    "type": "prompt",
+  },
+  Object {
+    "render": [Function],
+    "type": "messages",
+  },
+]
+`;
+
+exports[`resolving <If/> segment resolve ok nested 1`] = `
+Array [
+  Object {
+    "branches": Array [
+      Object {
+        "body": Array [
+          Object {
+            "render": [Function],
+            "type": "messages",
+          },
+          Object {
+            "branches": Array [
+              Object {
+                "body": Array [
+                  Object {
+                    "render": [Function],
+                    "type": "messages",
+                  },
+                ],
+                "condition": [Function],
+              },
+            ],
+            "fallback": undefined,
+            "key": undefined,
+            "type": "if",
+          },
+          Object {
+            "render": [Function],
+            "type": "messages",
+          },
+        ],
+        "condition": [Function],
+      },
+      Object {
+        "body": Array [
+          Object {
+            "render": [Function],
+            "type": "messages",
+          },
+          Object {
+            "branches": Array [
+              Object {
+                "body": Array [
+                  Object {
+                    "render": [Function],
+                    "type": "messages",
+                  },
+                ],
+                "condition": [Function],
+              },
+              Object {
+                "body": Array [
+                  Object {
+                    "render": [Function],
+                    "type": "messages",
+                  },
+                ],
+                "condition": [Function],
+              },
+            ],
+            "fallback": undefined,
+            "key": undefined,
+            "type": "if",
+          },
+          Object {
+            "render": [Function],
+            "type": "messages",
+          },
+        ],
+        "condition": [Function],
+      },
+    ],
+    "fallback": Array [
+      Object {
+        "render": [Function],
+        "type": "messages",
+      },
+      Object {
+        "branches": Array [
+          Object {
+            "body": Array [
+              Object {
+                "render": [Function],
+                "type": "messages",
+              },
+            ],
+            "condition": [Function],
+          },
+        ],
+        "fallback": Array [
+          Object {
+            "render": [Function],
+            "type": "messages",
+          },
+        ],
+        "key": undefined,
+        "type": "if",
+      },
+      Object {
+        "render": [Function],
+        "type": "messages",
+      },
+    ],
+    "key": undefined,
+    "type": "if",
+  },
+]
+`;

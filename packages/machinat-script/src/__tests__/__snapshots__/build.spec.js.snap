@@ -1,0 +1,115 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`work 1`] = `
+Array [
+  Object {
+    "render": [Function],
+    "type": "messages",
+  },
+  Object {
+    "condition": [Function],
+    "index": 6,
+    "isNot": false,
+    "type": "jump_cond",
+  },
+  Object {
+    "condition": [Function],
+    "index": 11,
+    "isNot": false,
+    "type": "jump_cond",
+  },
+  Object {
+    "render": [Function],
+    "type": "messages",
+  },
+  Object {
+    "gotoKey": "xxx",
+    "script": Object {
+      "$$typeof": Symbol(machinat.component.script),
+      "Init": [Function],
+      "_commands": Array [
+        Object {
+          "render": [Function],
+          "type": "messages",
+        },
+        Object {
+          "setter": undefined,
+          "type": "prompt",
+        },
+      ],
+      "_keyMapping": Object {
+        "prompt#0": 1,
+      },
+      "name": "ChildScript",
+    },
+    "type": "call",
+    "vars": Object {
+      "foo": "bar",
+    },
+  },
+  Object {
+    "index": 18,
+    "type": "jump",
+  },
+  Object {
+    "condition": [Function],
+    "index": 10,
+    "isNot": true,
+    "type": "jump_cond",
+  },
+  Object {
+    "render": [Function],
+    "type": "messages",
+  },
+  Object {
+    "setter": undefined,
+    "type": "prompt",
+  },
+  Object {
+    "index": 6,
+    "type": "jump",
+  },
+  Object {
+    "index": 18,
+    "type": "jump",
+  },
+  Object {
+    "setter": [Function],
+    "type": "set_vars",
+  },
+  Object {
+    "condition": [Function],
+    "index": 16,
+    "isNot": true,
+    "type": "jump_cond",
+  },
+  Object {
+    "render": [Function],
+    "type": "messages",
+  },
+  Object {
+    "setter": undefined,
+    "type": "prompt",
+  },
+  Object {
+    "index": 11,
+    "type": "jump",
+  },
+  Object {
+    "setter": [Function],
+    "type": "set_vars",
+  },
+  Object {
+    "index": 18,
+    "type": "jump",
+  },
+  Object {
+    "setter": [Function],
+    "type": "set_vars",
+  },
+  Object {
+    "render": [Function],
+    "type": "messages",
+  },
+]
+`;

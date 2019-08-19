@@ -136,10 +136,11 @@ describe('toArray', () => {
 });
 
 describe('reduce', () => {
-  it('returns null or undefined if null or undefined passed', () => {
+  it('returns initial value if null or undefined passed', () => {
     const callback = jest.fn();
-    expect(reduce(null, callback)).toBe(null);
-    expect(reduce(undefined, callback)).toBe(undefined);
+    const initial = { foo: 'bar' };
+    expect(reduce(null, callback, initial)).toBe(initial);
+    expect(reduce(undefined, callback, initial)).toBe(initial);
     expect(callback).not.toHaveBeenCalled();
   });
 

@@ -8,13 +8,13 @@ const ITER_SEPARATOR = ':';
 
 export type ReduceTraverseContext<Reduced, Payload> = {
   reduced: Reduced,
-  reducer: NodeReducer,
+  reducer: NodeReducer<Reduced, Payload>,
   payload: Payload,
 };
 
 export type MapTraverseContext<Mapped, Payload> = {
   mappedArray: Array<Mapped>,
-  mapper: NodeMapper,
+  mapper: NodeMapper<Mapped, Payload>,
   payload: Payload,
 };
 
@@ -64,14 +64,15 @@ const reduceCallback = <Reduced, Payload>(
 
 export const reduce = <Reduced, Payload>(
   children: MachinatNode,
-  reducer: NodeReducer,
+  reducer: NodeReducer<Reduced, Payload>,
   initial: Reduced,
   prefix: string,
   payload: Payload
-): ?Reduced => {
+): Reduced => {
   if (children === undefined || children === null) {
-    return children;
+    return initial;
   }
+
   const context: ReduceTraverseContext<Reduced, Payload> = {
     reduced: initial,
     reducer,
@@ -93,7 +94,7 @@ const mapCallback = <Mapped, Payload>(
 
 export const map = <Mapped, Payload>(
   children: MachinatNode,
-  mapper: NodeMapper,
+  mapper: NodeMapper<Mapped, Payload>,
   prefix: string,
   payload: any
 ): ?Array<Mapped> => {
