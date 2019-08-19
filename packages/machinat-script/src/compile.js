@@ -4,7 +4,7 @@ import { counter } from './utils';
 import type {
   VarsMatcher,
   ScriptSegment,
-  MessagesSegment,
+  ContentSegment,
   IfSegment,
   WhileSegment,
   ForSegment,
@@ -12,7 +12,7 @@ import type {
   CallSegment,
   SetVarsSegment,
   LabelSegment,
-  MessagesCommand,
+  ContentCommand,
   PromptCommand,
   SetVarsCommand,
   CallCommand,
@@ -39,7 +39,7 @@ type LabelIntermediate = {|
 |};
 
 type CompileIntermediate =
-  | MessagesCommand
+  | ContentCommand
   | PromptCommand
   | SetVarsCommand
   | CallCommand
@@ -52,9 +52,9 @@ type CompileResult = {
   keyMapping: AccessKeyMapping,
 };
 
-const compileMessagesSegment = (
-  segment: MessagesSegment
-): CompileIntermediate[] => [{ type: 'messages', render: segment.render }];
+const compileContentSegment = (
+  segment: ContentSegment
+): CompileIntermediate[] => [{ type: 'content', render: segment.render }];
 
 const compileIfSegment = (
   segment: IfSegment,
@@ -276,8 +276,8 @@ const compileSegments = (
   const commands = [];
 
   for (const segment of segments) {
-    if (segment.type === 'messages') {
-      commands.push(...compileMessagesSegment(segment));
+    if (segment.type === 'content') {
+      commands.push(...compileContentSegment(segment));
     } else if (segment.type === 'if') {
       commands.push(...compileIfSegment(segment, countLabel));
     } else if (segment.type === 'for') {

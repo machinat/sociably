@@ -7,13 +7,13 @@ import type { MachinatScriptType, Vars, ScriptCallScope } from './types';
 type FinishedExecuteResult = {
   finished: true,
   stack: void,
-  messages: MachinatNode[],
+  content: MachinatNode[],
 };
 
 type UnfinishedExecuteResult = {
   finished: false,
   stack: ScriptCallScope[],
-  messages: MachinatNode[],
+  content: MachinatNode[],
 };
 
 type ExecuteResult = FinishedExecuteResult | UnfinishedExecuteResult;
@@ -29,13 +29,13 @@ const execute = (
 
   let cursor = begin;
   let vars = initialVars;
-  const messages = [];
+  const content = [];
 
   while (cursor < commands.length) {
     const command = commands[cursor];
 
-    if (command.type === 'messages') {
-      messages.push(command.render(vars));
+    if (command.type === 'content') {
+      content.push(command.render(vars));
     } else if (command.type === 'set_vars') {
       vars = merge(vars, command.setter(vars));
     } else if (command.type === 'jump') {
@@ -47,25 +47,25 @@ const execute = (
     } else if (command.type === 'call') {
       const result = initRuntime(command.script, command.vars, command.gotoKey);
 
-      messages.push(...result.messages);
+      content.push(...result.content);
 
       if (!result.finished) {
         return {
           finished: false,
-          messages,
+          content,
           stack: [{ name, vars, stopping: cursor }, ...result.stack],
         };
       }
     } else if (command.type === 'prompt') {
       return {
         finished: false,
-        messages,
+        content,
         stack: [{ name, vars, stopping: cursor }],
       };
     }
   }
 
-  return { finished: true, messages, stack: undefined };
+  return { finished: true, content, stack: undefined };
 };
 
 export const initRuntime = (
@@ -87,7 +87,7 @@ export const continueRuntime = (
   initialStack: ScriptCallScope[],
   frame: any
 ): ExecuteResult => {
-  const messages = [];
+  const content = [];
 
   for (let i = initialStack.length - 1; i >= 0; i -= 1) {
     const stack = initialStack[i];
@@ -111,12 +111,12 @@ export const continueRuntime = (
     }
 
     const result = execute(script, vars, stopping);
-    messages.push(...result.messages);
+    content.push(...result.content);
 
     if (!result.finished) {
       return {
         finished: false,
-        messages,
+        content,
         stack: [...initialStack.slice(0, i), ...result.stack],
       };
     }
@@ -124,7 +124,7 @@ export const continueRuntime = (
 
   return {
     finished: true,
-    messages,
+    content,
     stack: undefined,
   };
 };

@@ -8,7 +8,7 @@ Array [
   },
   Object {
     "render": [Function],
-    "type": "messages",
+    "type": "content",
   },
   Object {
     "branches": Array [
@@ -18,7 +18,7 @@ Array [
             "body": Array [
               Object {
                 "render": [Function],
-                "type": "messages",
+                "type": "content",
               },
               Object {
                 "key": "prompt#0",
@@ -39,7 +39,7 @@ Array [
             "body": Array [
               Object {
                 "render": [Function],
-                "type": "messages",
+                "type": "content",
               },
               Object {
                 "key": "prompt#1",
@@ -59,7 +59,7 @@ Array [
     "fallback": Array [
       Object {
         "render": [Function],
-        "type": "messages",
+        "type": "content",
       },
       Object {
         "gotoKey": "xxx",
@@ -70,7 +70,7 @@ Array [
           "_executable": Array [
             Object {
               "render": [Function],
-              "type": "messages",
+              "type": "content",
             },
             Object {
               "key": "ask",
@@ -102,13 +102,13 @@ Array [
   },
   Object {
     "render": [Function],
-    "type": "messages",
+    "type": "content",
   },
   Object {
     "body": Array [
       Object {
         "render": [Function],
-        "type": "messages",
+        "type": "content",
       },
       Object {
         "branches": Array [
@@ -116,7 +116,7 @@ Array [
             "body": Array [
               Object {
                 "render": [Function],
-                "type": "messages",
+                "type": "content",
               },
               Object {
                 "key": "prompt#2",
@@ -130,7 +130,7 @@ Array [
         "fallback": Array [
           Object {
             "render": [Function],
-            "type": "messages",
+            "type": "content",
           },
         ],
         "key": undefined,
@@ -144,7 +144,7 @@ Array [
           },
           Object {
             "render": [Function],
-            "type": "messages",
+            "type": "content",
           },
         ],
         "condition": [Function],
@@ -167,13 +167,13 @@ Array [
   },
   Object {
     "render": [Function],
-    "type": "messages",
+    "type": "content",
   },
   Object {
     "body": Array [
       Object {
         "render": [Function],
-        "type": "messages",
+        "type": "content",
       },
       Object {
         "branches": Array [
@@ -181,7 +181,7 @@ Array [
             "body": Array [
               Object {
                 "render": [Function],
-                "type": "messages",
+                "type": "content",
               },
               Object {
                 "key": "prompt#3",
@@ -197,7 +197,7 @@ Array [
             "body": Array [
               Object {
                 "render": [Function],
-                "type": "messages",
+                "type": "content",
               },
             ],
             "getIterable": [Function],
@@ -216,7 +216,7 @@ Array [
   },
   Object {
     "render": [Function],
-    "type": "messages",
+    "type": "content",
   },
   Object {
     "gotoKey": "zzz",
@@ -227,7 +227,7 @@ Array [
       "_executable": Array [
         Object {
           "render": [Function],
-          "type": "messages",
+          "type": "content",
         },
         Object {
           "key": "ask",
@@ -256,7 +256,7 @@ Array [
   },
   Object {
     "render": [Function],
-    "type": "messages",
+    "type": "content",
   },
 ]
 `;
@@ -269,7 +269,7 @@ Array [
         "body": Array [
           Object {
             "render": [Function],
-            "type": "messages",
+            "type": "content",
           },
           Object {
             "branches": Array [
@@ -277,7 +277,7 @@ Array [
                 "body": Array [
                   Object {
                     "render": [Function],
-                    "type": "messages",
+                    "type": "content",
                   },
                 ],
                 "condition": [Function],
@@ -289,7 +289,7 @@ Array [
           },
           Object {
             "render": [Function],
-            "type": "messages",
+            "type": "content",
           },
         ],
         "condition": [Function],
@@ -298,7 +298,7 @@ Array [
         "body": Array [
           Object {
             "render": [Function],
-            "type": "messages",
+            "type": "content",
           },
           Object {
             "branches": Array [
@@ -306,7 +306,7 @@ Array [
                 "body": Array [
                   Object {
                     "render": [Function],
-                    "type": "messages",
+                    "type": "content",
                   },
                 ],
                 "condition": [Function],
@@ -315,7 +315,7 @@ Array [
                 "body": Array [
                   Object {
                     "render": [Function],
-                    "type": "messages",
+                    "type": "content",
                   },
                 ],
                 "condition": [Function],
@@ -327,7 +327,7 @@ Array [
           },
           Object {
             "render": [Function],
-            "type": "messages",
+            "type": "content",
           },
         ],
         "condition": [Function],
@@ -336,7 +336,7 @@ Array [
     "fallback": Array [
       Object {
         "render": [Function],
-        "type": "messages",
+        "type": "content",
       },
       Object {
         "branches": Array [
@@ -344,7 +344,7 @@ Array [
             "body": Array [
               Object {
                 "render": [Function],
-                "type": "messages",
+                "type": "content",
               },
             ],
             "condition": [Function],
@@ -353,7 +353,7 @@ Array [
         "fallback": Array [
           Object {
             "render": [Function],
-            "type": "messages",
+            "type": "content",
           },
         ],
         "key": undefined,
@@ -361,7 +361,7 @@ Array [
       },
       Object {
         "render": [Function],
-        "type": "messages",
+        "type": "content",
       },
     ],
     "key": undefined,

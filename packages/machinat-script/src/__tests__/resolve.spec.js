@@ -18,13 +18,13 @@ const AnotherScript = {
   Init: () => '(Init)',
   name: 'SomeQuestions',
   _executable: [
-    { type: 'messages', render: () => '...' },
+    { type: 'content', render: () => '...' },
     { type: 'prompt', key: 'ask' },
   ],
   _keyMapping: { foo: 3, bar: 8 },
 };
 
-it('resolve messages rendering fn', () => {
+it('resolve content rendering fn', () => {
   const segments = resolve(
     <>
       {() => 'foo'}
@@ -33,9 +33,9 @@ it('resolve messages rendering fn', () => {
     </>
   );
   expect(segments).toEqual([
-    { type: 'messages', render: expect.any(Function) },
-    { type: 'messages', render: expect.any(Function) },
-    { type: 'messages', render: expect.any(Function) },
+    { type: 'content', render: expect.any(Function) },
+    { type: 'content', render: expect.any(Function) },
+    { type: 'content', render: expect.any(Function) },
   ]);
   expect(segments[0].render({})).toBe('foo');
   expect(segments[1].render({})).toBe('bar');
@@ -56,7 +56,7 @@ describe('resolving <If/> segment', () => {
         branches: [
           {
             condition: expect.any(Function),
-            body: [{ type: 'messages', render: expect.any(Function) }],
+            body: [{ type: 'content', render: expect.any(Function) }],
           },
         ],
         fallback: undefined,
@@ -80,10 +80,10 @@ describe('resolving <If/> segment', () => {
         branches: [
           {
             condition: expect.any(Function),
-            body: [{ type: 'messages', render: expect.any(Function) }],
+            body: [{ type: 'content', render: expect.any(Function) }],
           },
         ],
-        fallback: [{ type: 'messages', render: expect.any(Function) }],
+        fallback: [{ type: 'content', render: expect.any(Function) }],
       },
     ]);
     expect(segments[0].fallback[0].render()).toBe('bar');
@@ -103,9 +103,9 @@ describe('resolving <If/> segment', () => {
         type: 'if',
         branches: new Array(3).fill({
           condition: expect.any(Function),
-          body: [{ type: 'messages', render: expect.any(Function) }],
+          body: [{ type: 'content', render: expect.any(Function) }],
         }),
-        fallback: [{ type: 'messages', render: expect.any(Function) }],
+        fallback: [{ type: 'content', render: expect.any(Function) }],
       },
     ]);
     expect(segments[0].branches[0].condition()).toBe(true);
@@ -267,7 +267,7 @@ describe('resolving <For/> segment', () => {
         key: 'a_for',
         varName: 'name',
         getIterable: expect.any(Function),
-        body: [{ type: 'messages', render: expect.any(Function) }],
+        body: [{ type: 'content', render: expect.any(Function) }],
       },
     ]);
     expect(segments[0].getIterable({})).toEqual(['world', 'fool', 'magician']);
@@ -296,7 +296,7 @@ describe('resolving <For/> segment', () => {
             key: 'child_for',
             varName: 'num',
             getIterable: expect.any(Function),
-            body: [{ type: 'messages', render: expect.any(Function) }],
+            body: [{ type: 'content', render: expect.any(Function) }],
           },
         ],
       },
@@ -327,7 +327,7 @@ describe('resolving <While/> segment', () => {
         type: 'while',
         key: 'a_while',
         condition: expect.any(Function),
-        body: [{ type: 'messages', render: expect.any(Function) }],
+        body: [{ type: 'content', render: expect.any(Function) }],
       },
     ]);
     expect(segments[0].condition({})).toBe(true);
@@ -352,7 +352,7 @@ describe('resolving <While/> segment', () => {
             type: 'while',
             key: 'child_while',
             condition: expect.any(Function),
-            body: [{ type: 'messages', render: expect.any(Function) }],
+            body: [{ type: 'content', render: expect.any(Function) }],
           },
         ],
       },
@@ -385,7 +385,7 @@ describe('resolving <Vars/> segment', () => {
       )
     ).toEqual([
       { type: 'set_vars', setter: helloSetter },
-      { type: 'messages', render: expect.any(Function) },
+      { type: 'content', render: expect.any(Function) },
       { type: 'set_vars', setter: greetedSetter },
     ]);
   });
@@ -409,7 +409,7 @@ describe('resolving <Prompt/> segment', () => {
         </>
       )
     ).toEqual([
-      { type: 'messages', render: expect.any(Function) },
+      { type: 'content', render: expect.any(Function) },
       { type: 'prompt', setter: answerSetter, key: 'why' },
     ]);
 
@@ -423,9 +423,9 @@ describe('resolving <Prompt/> segment', () => {
         </>
       )
     ).toEqual([
-      { type: 'messages', render: expect.any(Function) },
+      { type: 'content', render: expect.any(Function) },
       { type: 'prompt', key: 'where', setter: answerSetter },
-      { type: 'messages', render: expect.any(Function) },
+      { type: 'content', render: expect.any(Function) },
       { type: 'prompt', key: 'what', setter: answerSetter },
     ]);
   });
@@ -463,7 +463,7 @@ describe('resolving <Label/> segment', () => {
       )
     ).toEqual([
       { type: 'label', key: 'foo' },
-      { type: 'messages', render: expect.any(Function) },
+      { type: 'content', render: expect.any(Function) },
     ]);
 
     expect(
@@ -477,9 +477,9 @@ describe('resolving <Label/> segment', () => {
       )
     ).toEqual([
       { type: 'label', key: 'bar' },
-      { type: 'messages', render: expect.any(Function) },
+      { type: 'content', render: expect.any(Function) },
       { type: 'label', key: 'baz' },
-      { type: 'messages', render: expect.any(Function) },
+      { type: 'content', render: expect.any(Function) },
     ]);
   });
 
@@ -507,7 +507,7 @@ describe('resolving script calling segments', () => {
       </>
     );
     expect(segments).toEqual([
-      { type: 'messages', render: expect.any(Function) },
+      { type: 'content', render: expect.any(Function) },
       {
         type: 'call',
         script: AnotherScript,

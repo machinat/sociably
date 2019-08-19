@@ -25,8 +25,8 @@ export type MachinatScriptNode =
       props: any,
     |};
 
-export type MessagesSegment = {|
-  type: 'messages',
+export type ContentSegment = {|
+  type: 'content',
   key?: string,
   render: RenderScriptNode,
 |};
@@ -85,7 +85,7 @@ export type CallSegment = {|
 |};
 
 export type ScriptSegment =
-  | MessagesSegment
+  | ContentSegment
   | SwitchSegment
   | IfSegment
   | ForSegment
@@ -95,8 +95,8 @@ export type ScriptSegment =
   | CallSegment
   | LabelSegment;
 
-export type MessagesCommand = {|
-  type: 'messages',
+export type ContentCommand = {|
+  type: 'content',
   render: RenderScriptNode,
 |};
 
@@ -130,7 +130,7 @@ export type JumpCondCommand = {|
 |};
 
 export type ScriptCommand =
-  | MessagesCommand
+  | ContentCommand
   | JumpCommand
   | JumpCondCommand
   | PromptCommand

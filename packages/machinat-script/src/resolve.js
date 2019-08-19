@@ -231,7 +231,7 @@ const segmentsReducer: NodeReducer<
     );
 
     segments.push({
-      type: 'messages',
+      type: 'content',
       render: node,
     });
   }

@@ -4,7 +4,7 @@ exports[`work 1`] = `
 Array [
   Object {
     "render": [Function],
-    "type": "messages",
+    "type": "content",
   },
   Object {
     "condition": [Function],
@@ -20,7 +20,7 @@ Array [
   },
   Object {
     "render": [Function],
-    "type": "messages",
+    "type": "content",
   },
   Object {
     "gotoKey": "xxx",
@@ -30,7 +30,7 @@ Array [
       "_commands": Array [
         Object {
           "render": [Function],
-          "type": "messages",
+          "type": "content",
         },
         Object {
           "setter": undefined,
@@ -59,7 +59,7 @@ Array [
   },
   Object {
     "render": [Function],
-    "type": "messages",
+    "type": "content",
   },
   Object {
     "setter": undefined,
@@ -85,7 +85,7 @@ Array [
   },
   Object {
     "render": [Function],
-    "type": "messages",
+    "type": "content",
   },
   Object {
     "setter": undefined,
@@ -109,7 +109,7 @@ Array [
   },
   Object {
     "render": [Function],
-    "type": "messages",
+    "type": "content",
   },
 ]
 `;

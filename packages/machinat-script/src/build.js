@@ -21,7 +21,7 @@ const build = (name: string, src: MachinatScriptNode): MachinatScriptType => {
     Init: ({ vars, goTo }) => {
       const result = initRuntime(script, vars, goTo);
       if (result.finished) {
-        return result.messages;
+        return result.content;
       }
 
       return (
@@ -33,7 +33,7 @@ const build = (name: string, src: MachinatScriptNode): MachinatScriptType => {
                 : makeScriptState(result.stack)
             );
 
-            return result.messages;
+            return result.content;
           }}
         </StateService.Consumer>
       );

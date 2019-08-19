@@ -24,7 +24,7 @@ const intercept = (sessionStore: SessionStore, libs: MachinatScriptType[]) => (
 
           const result = continueRuntime(libs, originalState, frame);
 
-          await frame.reply(result.messages);
+          await frame.reply(result.content);
 
           if (result.finished) {
             await session.delete(SCRIPT_STATE_KEY);

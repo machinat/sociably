@@ -9,7 +9,7 @@ it('compile if segment ok', () => {
         {
           condition: () => false,
           body: [
-            { type: 'messages', render: () => 'foo' },
+            { type: 'content', render: () => 'foo' },
             {
               type: 'prompt',
               key: 'ask1',
@@ -20,7 +20,7 @@ it('compile if segment ok', () => {
         {
           condition: () => true,
           body: [
-            { type: 'messages', render: () => 'bar' },
+            { type: 'content', render: () => 'bar' },
             {
               type: 'prompt',
               key: 'ask2',
@@ -30,7 +30,7 @@ it('compile if segment ok', () => {
         },
       ],
       fallback: [
-        { type: 'messages', render: () => 'baz' },
+        { type: 'content', render: () => 'baz' },
         {
           type: 'prompt',
           key: 'ask3',
@@ -52,13 +52,13 @@ it('compile if segment ok', () => {
       index: 8,
       isNot: false,
     },
-    { type: 'messages', render: expect.any(Function) },
+    { type: 'content', render: expect.any(Function) },
     { type: 'prompt', setter: expect.any(Function) },
     { type: 'jump', index: 11 },
-    { type: 'messages', render: expect.any(Function) },
+    { type: 'content', render: expect.any(Function) },
     { type: 'prompt', setter: expect.any(Function) },
     { type: 'jump', index: 11 },
-    { type: 'messages', render: expect.any(Function) },
+    { type: 'content', render: expect.any(Function) },
     { type: 'prompt', setter: expect.any(Function) },
     { type: 'jump', index: 11 },
   ]);
@@ -85,7 +85,7 @@ it('compile while segment ok', () => {
       key: 'a_while',
       condition: () => true,
       body: [
-        { type: 'messages', render: ({ target }) => `hello ${target}` },
+        { type: 'content', render: ({ target }) => `hello ${target}` },
         {
           type: 'prompt',
           key: 'ask',
@@ -101,7 +101,7 @@ it('compile while segment ok', () => {
       condition: expect.any(Function),
       isNot: true,
     },
-    { type: 'messages', render: expect.any(Function) },
+    { type: 'content', render: expect.any(Function) },
     { type: 'prompt', setter: expect.any(Function) },
     { type: 'jump', index: 0 },
   ]);
@@ -124,7 +124,7 @@ it('compile for segment ok', () => {
       varName: 'x',
       getIterable: () => ['foo', 'bar', 'baz'],
       body: [
-        { type: 'messages', render: ({ x }) => `hello ${x}` },
+        { type: 'content', render: ({ x }) => `hello ${x}` },
         {
           type: 'prompt',
           key: 'ask',
@@ -141,7 +141,7 @@ it('compile for segment ok', () => {
       index: 5,
       isNot: true,
     },
-    { type: 'messages', render: expect.any(Function) },
+    { type: 'content', render: expect.any(Function) },
     { type: 'prompt', setter: expect.any(Function) },
     { type: 'jump', index: 0 },
     { type: 'set_vars', setter: expect.any(Function) },
@@ -196,11 +196,11 @@ it('compile other segments type ok', () => {
   const OrderScript = { fake: 'script' };
 
   const { commands, keyMapping } = compile([
-    { type: 'messages', render: () => 'hello' },
+    { type: 'content', render: () => 'hello' },
     { type: 'label', key: 'begin' },
-    { type: 'messages', render: () => 'who r u' },
+    { type: 'content', render: () => 'who r u' },
     { type: 'prompt', setter: (_, { event }) => ({ name: event.text }) },
-    { type: 'messages', render: ({ name }) => `hi ${name}, order ur meal` },
+    { type: 'content', render: ({ name }) => `hi ${name}, order ur meal` },
     {
       type: 'call',
       script: OrderScript,
@@ -209,13 +209,13 @@ it('compile other segments type ok', () => {
     },
     { type: 'set_vars', setter: () => ({ ordered: true }) },
     { type: 'label', key: 'end' },
-    { type: 'messages', render: () => 'enjoy ur meal' },
+    { type: 'content', render: () => 'enjoy ur meal' },
   ]);
   expect(commands).toEqual([
-    { type: 'messages', render: expect.any(Function) },
-    { type: 'messages', render: expect.any(Function) },
+    { type: 'content', render: expect.any(Function) },
+    { type: 'content', render: expect.any(Function) },
     { type: 'prompt', setter: expect.any(Function) },
-    { type: 'messages', render: expect.any(Function) },
+    { type: 'content', render: expect.any(Function) },
     {
       type: 'call',
       script: OrderScript,
@@ -223,7 +223,7 @@ it('compile other segments type ok', () => {
       gotoKey: 'ordering',
     },
     { type: 'set_vars', setter: expect.any(Function) },
-    { type: 'messages', render: expect.any(Function) },
+    { type: 'content', render: expect.any(Function) },
   ]);
   expect(keyMapping).toEqual({
     begin: 1,
