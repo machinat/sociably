@@ -18,7 +18,8 @@ type UnfinishedExecuteResult = {
 
 type ExecuteResult = FinishedExecuteResult | UnfinishedExecuteResult;
 
-const merge = (...objs: Object[]) => Object.assign(...objs);
+const merge = (target: Object, ...objs: Object[]) =>
+  Object.assign(target, ...objs);
 
 const execute = (
   script: MachinatScript,
@@ -58,14 +59,14 @@ const execute = (
         return {
           finished: false,
           content,
-          stack: [{ name, vars, stopping: cursor }, ...result.stack],
+          stack: [{ name, vars, stoppedAt: cursor }, ...result.stack],
         };
       }
     } else if (command.type === 'prompt') {
       return {
         finished: false,
+        stack: [{ name, vars, stoppedAt: cursor }],
         content,
-        stack: [{ name, vars, stopping: cursor }],
       };
     }
   }
@@ -96,12 +97,12 @@ export const continueRuntime = (
 
   for (let i = initialStack.length - 1; i >= 0; i -= 1) {
     const stack = initialStack[i];
-    let { vars, stopping } = stack;
+    let { vars, stoppedAt } = stack;
 
     const script = libraries.find(lib => lib.name === stack.name);
     invariant(script, `?????????????????/`);
 
-    const currentCommand = script._commands[stopping];
+    const currentCommand = script._commands[stoppedAt];
     invariant(currentCommand, `?????????????????`);
 
     if (i === initialStack.length) {
@@ -110,26 +111,26 @@ export const continueRuntime = (
       vars = currentCommand.setter
         ? merge(vars, currentCommand.setter(vars, frame))
         : vars;
-      stopping += 1;
+      stoppedAt += 1;
     } else if (currentCommand.type === 'call') {
-      stopping += 1;
+      stoppedAt += 1;
     }
 
-    const result = execute(script, vars, stopping);
+    const result = execute(script, vars, stoppedAt);
     content.push(...result.content);
 
     if (!result.finished) {
       return {
         finished: false,
-        content,
         stack: [...initialStack.slice(0, i), ...result.stack],
+        content,
       };
     }
   }
 
   return {
     finished: true,
-    content,
     stack: undefined,
+    content,
   };
 };

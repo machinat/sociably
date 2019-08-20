@@ -144,7 +144,7 @@ export type AccessKeyMapping = {
 export type ScriptCallScope = {
   name: string,
   vars: Vars,
-  stopping: number,
+  stoppedAt: number,
 };
 
 export type ScriptExecuteState = {

@@ -7,13 +7,13 @@ import resolveScript from './resolve';
 import compile from './compile';
 import { initRuntime } from './runtime';
 import { makeScriptState } from './utils';
-import type { MachinatScriptType, MachinatScriptNode } from './types';
+import type { MachinatScript, MachinatScriptNode } from './types';
 
-const build = (name: string, src: MachinatScriptNode): MachinatScriptType => {
+const build = (name: string, src: MachinatScriptNode): MachinatScript => {
   const segments = resolveScript(src);
   const { keyMapping, commands } = compile(segments);
 
-  const script: MachinatScriptType = {
+  const script: MachinatScript = {
     $$typeof: MACHINAT_SCRIPT_TYPE,
     name,
     _keyMapping: keyMapping,
