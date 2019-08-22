@@ -12,7 +12,7 @@ export type MachinatScript = {|
   Init: MachinatComponentType,
   name: string,
   _commands: ScriptCommand[],
-  _keyMapping: AccessKeyMapping,
+  _keyMapping: Map<string, number>,
 |};
 
 export type RenderScriptNode = (vars: Vars, props: Object) => MachinatNode;
@@ -138,10 +138,6 @@ export type ScriptCommand =
   | PromptCommand
   | CallCommand
   | SetVarsCommand;
-
-export type AccessKeyMapping = {
-  [string]: number,
-};
 
 export type ScriptCallScope = {
   name: string,

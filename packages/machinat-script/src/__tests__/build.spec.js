@@ -67,16 +67,16 @@ it('work', () => {
 
   expect(MyScript._commands).toMatchSnapshot();
   expect(MyScript._keyMapping).toMatchInlineSnapshot(`
-    Object {
-      "call#2": 4,
-      "end": 18,
-      "first": 7,
-      "if": 1,
-      "prompt#0": 8,
-      "prompt#1": 14,
-      "second": 13,
-      "start": 0,
-      "third": 3,
+    Map {
+      "start" => 0,
+      "if" => 1,
+      "third" => 3,
+      "call#2" => 4,
+      "first" => 7,
+      "prompt#0" => 8,
+      "second" => 13,
+      "prompt#1" => 14,
+      "end" => 18,
     }
   `);
 });

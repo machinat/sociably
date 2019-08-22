@@ -70,12 +70,9 @@ it('compile if segment ok', () => {
   expect(commands[6].setter({})).toEqual({ a: 0 });
   expect(commands[8].render({})).toBe('bar');
   expect(commands[9].setter({})).toEqual({ b: 1 });
-  expect(keyMapping).toEqual({
-    a_if: 0,
-    ask1: 6,
-    ask2: 9,
-    ask3: 3,
-  });
+  expect(keyMapping).toEqual(
+    new Map([['a_if', 0], ['ask1', 6], ['ask2', 9], ['ask3', 3]])
+  );
 });
 
 it('compile while segment ok', () => {
@@ -105,10 +102,8 @@ it('compile while segment ok', () => {
     { type: 'prompt', setter: expect.any(Function), key: 'ask' },
     { type: 'jump', index: 0 },
   ]);
-  expect(keyMapping).toEqual({
-    a_while: 0,
-    ask: 2,
-  });
+  expect(keyMapping).toEqual(new Map([['a_while', 0], ['ask', 2]]));
+
   expect(commands[0].condition({})).toBe(true);
   expect(commands[1].render({ target: 'world' })).toBe('hello world');
   expect(commands[2].setter({}, { event: { text: 'baz' } })).toEqual({
@@ -146,10 +141,7 @@ it('compile for segment ok', () => {
     { type: 'jump', index: 0 },
     { type: 'set_vars', setter: expect.any(Function) },
   ]);
-  expect(keyMapping).toEqual({
-    a_for: 0,
-    ask: 3,
-  });
+  expect(keyMapping).toEqual(new Map([['a_for', 0], ['ask', 3]]));
 
   let vars = {};
   expect((vars = commands[0].setter({}))).toEqual({
@@ -225,10 +217,7 @@ it('compile other segments type ok', () => {
     { type: 'set_vars', setter: expect.any(Function) },
     { type: 'content', render: expect.any(Function) },
   ]);
-  expect(keyMapping).toEqual({
-    begin: 1,
-    end: 6,
-  });
+  expect(keyMapping).toEqual(new Map([['begin', 1], ['end', 6]]));
   expect(commands[0].render({})).toBe('hello');
   expect(commands[1].render({})).toBe('who r u');
   expect(commands[2].setter({}, { event: { text: 'Joe' } })).toEqual({

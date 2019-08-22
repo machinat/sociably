@@ -83,7 +83,7 @@ export const initRuntime = (
 ): ExecuteResult => {
   let begin = 0;
   if (key) {
-    begin = script._keyMapping[key];
+    begin = script._keyMapping.get(key);
     invariant(begin !== undefined, `?????????????????/`);
   }
 
@@ -105,7 +105,7 @@ export const continueRuntime = (
     const script = libraries.find(lib => lib.name === stack.name);
     invariant(script, `?????????????????/`);
 
-    let index = script._keyMapping[stoppedAt];
+    let index = script._keyMapping.get(stoppedAt);
     invariant(index !== undefined, `??????????`);
 
     const currentCommand = script._commands[index];

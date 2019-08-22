@@ -39,8 +39,8 @@ Array [
           "type": "prompt",
         },
       ],
-      "_keyMapping": Object {
-        "prompt#0": 1,
+      "_keyMapping": Map {
+        "prompt#0" => 1,
       },
       "name": "ChildScript",
     },

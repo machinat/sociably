@@ -18,7 +18,6 @@ import type {
   SetVarsCommand,
   CallCommand,
   ScriptCommand,
-  AccessKeyMapping,
 } from './types';
 
 type GotoIntermediate = {|
@@ -50,7 +49,7 @@ type CompileIntermediate =
 
 type CompileResult = {
   commands: ScriptCommand[],
-  keyMapping: AccessKeyMapping,
+  keyMapping: Map<string, number>,
 };
 
 const compileContentSegment = (
@@ -304,8 +303,8 @@ const compileSegments = (
 const compile = (segments: ScriptSegment[]): CompileResult => {
   const intermediates = compileSegments(segments, counter());
 
-  const keyMapping: AccessKeyMapping = {};
-  const labelMapping: AccessKeyMapping = {};
+  const keyMapping = new Map();
+  const labelMapping = new Map();
 
   // remove labels and store their indexes
   const mediateCommands = [];
@@ -313,11 +312,11 @@ const compile = (segments: ScriptSegment[]): CompileResult => {
     if (intermediate.type === 'label') {
       const { name, key } = intermediate;
 
-      invariant(!(name in labelMapping), `????????????`);
-      labelMapping[name] = mediateCommands.length;
+      invariant(!labelMapping.has(name), `????????????`);
+      labelMapping.set(name, mediateCommands.length);
       if (key) {
-        invariant(!(key in keyMapping), `????????????`);
-        keyMapping[key] = mediateCommands.length;
+        invariant(!keyMapping.has(key), `????????????`);
+        keyMapping.set(key, mediateCommands.length);
       }
     } else {
       mediateCommands.push(intermediate);
@@ -325,19 +324,24 @@ const compile = (segments: ScriptSegment[]): CompileResult => {
   }
 
   // translate "goto tag" to "jump index"
-  const commands = [];
+  const commands: ScriptCommand[] = [];
   for (const command of mediateCommands) {
     if (command.type === 'goto') {
+      const targetIdx = labelMapping.get(command.to);
+      invariant(targetIdx !== undefined, `??????????????`);
+
       commands.push({
         type: 'jump',
-        index: labelMapping[command.to],
+        index: targetIdx,
       });
     } else if (command.type === 'goto_cond') {
       const { to, condition, isNot } = command;
+      const targetIdx = labelMapping.get(to);
+      invariant(targetIdx !== undefined, `??????????????`);
 
       commands.push({
         type: 'jump_cond',
-        index: labelMapping[to],
+        index: targetIdx,
         condition,
         isNot,
       });

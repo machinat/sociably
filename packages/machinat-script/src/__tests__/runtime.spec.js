@@ -7,7 +7,7 @@ const testCommandsBehavior = runScript => {
       {
         name: 'Script',
         _commands: commands,
-        _keyMapping: {},
+        _keyMapping: new Map(),
       },
       vars
     );
@@ -101,15 +101,17 @@ const testCommandsBehavior = runScript => {
   });
 
   test('run call command if sub-script finished', () => {
-    const subScript = moxy({
+    const subScript = {
       name: 'SubScript',
-      _commands: [{ type: 'content', render: () => 'hello the other side' }],
-      _keyMapping: {},
-    });
-    const commands = moxy([
+      _commands: [
+        { type: 'content', render: moxy(() => 'hello the other side') },
+      ],
+      _keyMapping: new Map(),
+    };
+    const commands = [
       { type: 'call', script: subScript },
-      { type: 'content', render: () => 'yaaaaaay' },
-    ]);
+      { type: 'content', render: moxy(() => 'yaaaaaay') },
+    ];
 
     expect(run(commands, { foo: 'bar' })).toEqual({
       finished: true,
@@ -123,19 +125,19 @@ const testCommandsBehavior = runScript => {
   });
 
   test('run call command with withVars', () => {
-    const subScript = moxy({
+    const subScript = {
       name: 'SubScript',
       _commands: [{ type: 'content', render: moxy(() => 'at skyfall') }],
-      _keyMapping: {},
-    });
-    const commands = moxy([
+      _keyMapping: new Map(),
+    };
+    const commands = [
       {
         type: 'call',
         script: subScript,
-        withVars: () => ({ foo: 'baz' }),
+        withVars: moxy(() => ({ foo: 'baz' })),
       },
-      { type: 'content', render: () => 'awwww awwww awwwwwwwwww' },
-    ]);
+      { type: 'content', render: moxy(() => 'awwww awwww awwwwwwwwww') },
+    ];
 
     expect(run(commands, { foo: 'bar' })).toEqual({
       finished: true,
@@ -153,23 +155,23 @@ const testCommandsBehavior = runScript => {
   });
 
   test('run call command if sub-script not finished', () => {
-    const subScript = moxy({
+    const subScript = {
       name: 'SubScript',
       _commands: [
-        { type: 'content', render: () => "i can't go back" },
+        { type: 'content', render: moxy(() => "i can't go back") },
         { type: 'prompt', setter: () => ({}), key: 'childPrompt' },
       ],
-      _keyMapping: {},
-    });
-    const commands = moxy([
+      _keyMapping: new Map(),
+    };
+    const commands = [
       {
         type: 'call',
         script: subScript,
-        withVars: () => ({ foo: 'baz' }),
+        withVars: moxy(() => ({ foo: 'baz' })),
         key: 'motherCall',
       },
-      { type: 'content', render: () => 'to River Rea' },
-    ]);
+      { type: 'content', render: moxy(() => 'to River Rea') },
+    ];
 
     expect(run(commands, { foo: 'bar' })).toEqual({
       finished: false,
@@ -187,14 +189,14 @@ const testCommandsBehavior = runScript => {
   });
 
   test('run call command with gotoKey', () => {
-    const subScript = moxy({
+    const subScript = {
       name: 'SubScript',
       _commands: [
         { type: 'content', render: moxy(() => 'there is a fire') },
         { type: 'content', render: moxy(() => 'starting in my heart') },
       ],
-      _keyMapping: { where_is_it: 1 },
-    });
+      _keyMapping: new Map([['where_is_it', 1]]),
+    };
 
     expect(
       run([{ type: 'call', script: subScript, gotoKey: 'where_is_it' }], {})
@@ -209,12 +211,12 @@ const testCommandsBehavior = runScript => {
   });
 
   test('run jump command', () => {
-    const commands = moxy([
+    const commands = [
       { type: 'content', render: () => 'foo' },
       { type: 'jump', index: 3 },
-      { type: 'content', render: () => 'bar' },
+      { type: 'content', render: moxy(() => 'bar') },
       { type: 'content', render: () => 'baz' },
-    ]);
+    ];
     expect(run(commands, {})).toEqual({
       finished: true,
       content: ['foo', 'baz'],
@@ -224,11 +226,11 @@ const testCommandsBehavior = runScript => {
   });
 
   test('run jump command to overflow index', () => {
-    const commands = moxy([
+    const commands = [
       { type: 'content', render: () => 'foo' },
       { type: 'jump', index: 3 },
-      { type: 'content', render: () => 'bar' },
-    ]);
+      { type: 'content', render: moxy(() => 'bar') },
+    ];
     expect(run(commands, {})).toEqual({
       finished: true,
       content: ['foo'],
@@ -238,12 +240,17 @@ const testCommandsBehavior = runScript => {
   });
 
   test('run jump_cond command', () => {
-    const commands = moxy([
+    const commands = [
       { type: 'content', render: () => 'foo' },
-      { type: 'jump_cond', condition: () => true, isNot: false, index: 3 },
-      { type: 'content', render: () => 'bar' },
+      {
+        type: 'jump_cond',
+        condition: moxy(() => true),
+        isNot: false,
+        index: 3,
+      },
+      { type: 'content', render: moxy(() => 'bar') },
       { type: 'content', render: () => 'baz' },
-    ]);
+    ];
     expect(run(commands, {})).toEqual({
       finished: true,
       content: ['foo', 'baz'],
@@ -261,12 +268,12 @@ const testCommandsBehavior = runScript => {
   });
 
   test('run jump_cond command with isNot set to true', () => {
-    const commands = moxy([
+    const commands = [
       { type: 'content', render: () => 'foo' },
-      { type: 'jump_cond', condition: () => true, isNot: true, index: 3 },
-      { type: 'content', render: () => 'bar' },
+      { type: 'jump_cond', condition: moxy(() => true), isNot: true, index: 3 },
+      { type: 'content', render: moxy(() => 'bar') },
       { type: 'content', render: () => 'baz' },
-    ]);
+    ];
     expect(run(commands, {})).toEqual({
       finished: true,
       content: ['foo', 'bar', 'baz'],
@@ -291,7 +298,7 @@ const SubScript = {
     { type: 'jump_cond', condition: () => true, isNot: true, index: 3 },
     { type: 'prompt', setter: () => ({}) },
   ],
-  _keyMapping: {},
+  _keyMapping: new Map(),
 };
 
 const MockScript = moxy({
@@ -311,7 +318,7 @@ const MockScript = moxy({
     { type: 'content', render: () => 'world ' },
     { type: 'jump', index: 0 },
   ],
-  _keyMapping: {},
+  _keyMapping: new Map(),
 });
 
 beforeEach(() => {
@@ -357,9 +364,7 @@ describe('continueRuntime', () => {
         { type: 'prompt', setter: () => ({}), key: 'worm_hole' },
         { type: 'jump', index: 0 },
       ],
-      _keyMapping: {
-        worm_hole: _script._commands.length + 1,
-      },
+      _keyMapping: new Map([['worm_hole', _script._commands.length + 1]]),
     };
     return continueRuntime(
       [script],
