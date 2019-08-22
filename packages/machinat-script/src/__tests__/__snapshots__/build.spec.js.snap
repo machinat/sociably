@@ -24,6 +24,7 @@ Array [
   },
   Object {
     "gotoKey": "xxx",
+    "key": "call#2",
     "script": Object {
       "$$typeof": Symbol(machinat.component.script),
       "Init": [Function],
@@ -33,6 +34,7 @@ Array [
           "type": "content",
         },
         Object {
+          "key": "prompt#0",
           "setter": undefined,
           "type": "prompt",
         },
@@ -60,6 +62,7 @@ Array [
     "type": "content",
   },
   Object {
+    "key": "prompt#0",
     "setter": undefined,
     "type": "prompt",
   },
@@ -86,6 +89,7 @@ Array [
     "type": "content",
   },
   Object {
+    "key": "prompt#1",
     "setter": undefined,
     "type": "prompt",
   },

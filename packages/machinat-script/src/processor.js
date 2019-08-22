@@ -4,7 +4,7 @@ import type { SessionStore } from 'machinat-session/types';
 import { continueRuntime } from './runtime';
 import { SCRIPT_STATE_KEY } from './constant';
 import { makeScriptState } from './utils';
-import type { MachinatScript } from './types';
+import type { MachinatScript, ScriptExecuteState } from './types';
 
 const eventProcessor = (
   sessionStore: SessionStore,
@@ -14,13 +14,13 @@ const eventProcessor = (
 ): Promise<null | EventFrame<any, any, any, any, any, any, any, any>> => {
   const { channel } = frame;
   const session = sessionStore.getSession(channel);
-  const originalState = await session.get(SCRIPT_STATE_KEY);
+  const originalState = await session.get<ScriptExecuteState>(SCRIPT_STATE_KEY);
 
   if (!originalState) {
     return frame;
   }
 
-  const result = continueRuntime(libs, originalState, frame);
+  const result = continueRuntime(libs, originalState.callStack, frame);
 
   await frame.reply(result.content);
 

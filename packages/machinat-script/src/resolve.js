@@ -162,6 +162,15 @@ const resolveVarsSegment = ({ set: setter }: Object): SetVarsSegment => {
   };
 };
 
+const resolveLabelSegment = ({ key }: Object): LabelSegment => {
+  invariant(key, 'prop "key" of <Label/> should not be empty');
+
+  return {
+    type: 'label',
+    key,
+  };
+};
+
 const resolvePromptSegment = (
   { set: setter, key }: Object,
   promptCounter: () => number
@@ -174,29 +183,21 @@ const resolvePromptSegment = (
   };
 };
 
-const resolveLabelSegment = ({ key }: Object): LabelSegment => {
-  invariant(key, 'prop "key" of <Label/> should not be empty');
-
-  return {
-    type: 'label',
-    key,
-  };
-};
-
-const resolveCallSegemnt = ({
-  script,
-  withVars,
-  goto: gotoKey,
-  key,
-}: Object): CallSegment => {
+const resolveCallSegemnt = (
+  props: Object,
+  promptCounter: () => number
+): CallSegment => {
+  const { script, withVars, goto: gotoKey, key } = props;
   invariant(isScript(script), `invalid "script" prop received on <Call/>`);
+
+  const count = promptCounter();
 
   return {
     type: 'call',
     script,
     withVars,
     gotoKey,
-    key,
+    key: key || `call#${count}`,
   };
 };
 
@@ -222,7 +223,7 @@ const segmentsReducer: NodeReducer<
     } else if (type === KEYWORDS.Label) {
       segment = resolveLabelSegment(node.props);
     } else if (type === KEYWORDS.Call) {
-      segment = resolveCallSegemnt(node.props);
+      segment = resolveCallSegemnt(node.props, promptCounter);
     } else {
       invariant(false, `unexpected keyword: ${formatNode(node)}`);
     }

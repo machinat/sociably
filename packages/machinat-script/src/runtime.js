@@ -18,8 +18,7 @@ type UnfinishedExecuteResult = {
 
 type ExecuteResult = FinishedExecuteResult | UnfinishedExecuteResult;
 
-const merge = (target: Object, ...objs: Object[]) =>
-  Object.assign(target, ...objs);
+const merge = (...objs: Object[]) => Object.assign({}, ...objs);
 
 const execute = (
   script: MachinatScript,
@@ -34,6 +33,7 @@ const execute = (
 
   while (cursor < commands.length) {
     const command = commands[cursor];
+    cursor += 1;
 
     if (command.type === 'content') {
       content.push(command.render(vars));
@@ -46,7 +46,7 @@ const execute = (
         cursor = command.index;
       }
     } else if (command.type === 'call') {
-      const { script: subScript, withVars, gotoKey } = command;
+      const { script: subScript, key, withVars, gotoKey } = command;
       const result = initRuntime(
         subScript,
         withVars ? withVars(vars) : {},
@@ -59,15 +59,17 @@ const execute = (
         return {
           finished: false,
           content,
-          stack: [{ name, vars, stoppedAt: cursor }, ...result.stack],
+          stack: [{ name, vars, stoppedAt: key }, ...result.stack],
         };
       }
     } else if (command.type === 'prompt') {
       return {
         finished: false,
-        stack: [{ name, vars, stoppedAt: cursor }],
+        stack: [{ name, vars, stoppedAt: command.key }],
         content,
       };
+    } else {
+      throw new Error('???????????/');
     }
   }
 
@@ -97,26 +99,30 @@ export const continueRuntime = (
 
   for (let i = initialStack.length - 1; i >= 0; i -= 1) {
     const stack = initialStack[i];
-    let { vars, stoppedAt } = stack;
+    const { vars: initialVars, stoppedAt } = stack;
+    let vars = initialVars;
 
     const script = libraries.find(lib => lib.name === stack.name);
     invariant(script, `?????????????????/`);
 
-    const currentCommand = script._commands[stoppedAt];
+    let index = script._keyMapping[stoppedAt];
+    invariant(index !== undefined, `??????????`);
+
+    const currentCommand = script._commands[index];
     invariant(currentCommand, `?????????????????`);
 
-    if (i === initialStack.length) {
+    if (i === initialStack.length - 1) {
       invariant(currentCommand.type === 'prompt', `?????????????????`);
 
       vars = currentCommand.setter
         ? merge(vars, currentCommand.setter(vars, frame))
         : vars;
-      stoppedAt += 1;
+      index += 1;
     } else if (currentCommand.type === 'call') {
-      stoppedAt += 1;
+      index += 1;
     }
 
-    const result = execute(script, vars, stoppedAt);
+    const result = execute(script, vars, index);
     content.push(...result.content);
 
     if (!result.finished) {

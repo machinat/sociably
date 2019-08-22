@@ -79,9 +79,9 @@ export type LabelSegment = {|
 export type CallSegment = {|
   type: 'call',
   script: MachinatScript,
+  key: string,
   withVars?: Vars => Vars,
   gotoKey?: string,
-  key?: string,
 |};
 
 export type ScriptSegment =
@@ -103,11 +103,13 @@ export type ContentCommand = {|
 export type PromptCommand = {|
   type: 'prompt',
   setter?: (vars: Vars, frame: Object) => Vars,
+  key: string,
 |};
 
 export type CallCommand = {|
   type: 'call',
   script: MachinatScript,
+  key: string,
   withVars?: Vars => Vars,
   gotoKey?: string,
 |};
@@ -144,7 +146,7 @@ export type AccessKeyMapping = {
 export type ScriptCallScope = {
   name: string,
   vars: Vars,
-  stoppedAt: number,
+  stoppedAt: string,
 };
 
 export type ScriptExecuteState = {

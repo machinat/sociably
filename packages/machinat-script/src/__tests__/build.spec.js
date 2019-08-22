@@ -68,6 +68,7 @@ it('work', () => {
   expect(MyScript._commands).toMatchSnapshot();
   expect(MyScript._keyMapping).toMatchInlineSnapshot(`
     Object {
+      "call#2": 4,
       "end": 18,
       "first": 7,
       "if": 1,

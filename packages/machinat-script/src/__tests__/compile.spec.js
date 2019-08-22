@@ -53,13 +53,13 @@ it('compile if segment ok', () => {
       isNot: false,
     },
     { type: 'content', render: expect.any(Function) },
-    { type: 'prompt', setter: expect.any(Function) },
+    { type: 'prompt', setter: expect.any(Function), key: 'ask3' },
     { type: 'jump', index: 11 },
     { type: 'content', render: expect.any(Function) },
-    { type: 'prompt', setter: expect.any(Function) },
+    { type: 'prompt', setter: expect.any(Function), key: 'ask1' },
     { type: 'jump', index: 11 },
     { type: 'content', render: expect.any(Function) },
-    { type: 'prompt', setter: expect.any(Function) },
+    { type: 'prompt', setter: expect.any(Function), key: 'ask2' },
     { type: 'jump', index: 11 },
   ]);
   expect(commands[0].condition({})).toBe(false);
@@ -102,7 +102,7 @@ it('compile while segment ok', () => {
       isNot: true,
     },
     { type: 'content', render: expect.any(Function) },
-    { type: 'prompt', setter: expect.any(Function) },
+    { type: 'prompt', setter: expect.any(Function), key: 'ask' },
     { type: 'jump', index: 0 },
   ]);
   expect(keyMapping).toEqual({
@@ -142,7 +142,7 @@ it('compile for segment ok', () => {
       isNot: true,
     },
     { type: 'content', render: expect.any(Function) },
-    { type: 'prompt', setter: expect.any(Function) },
+    { type: 'prompt', setter: expect.any(Function), key: 'ask' },
     { type: 'jump', index: 0 },
     { type: 'set_vars', setter: expect.any(Function) },
   ]);

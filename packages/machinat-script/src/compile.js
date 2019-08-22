@@ -1,5 +1,6 @@
 // @flow
 /* eslint no-use-before-define: ["error", { "variables": false }] */
+import invariant from 'invariant';
 import { counter } from './utils';
 import type {
   VarsMatcher,
@@ -237,7 +238,7 @@ const compilePromptSegment = (
   const { setter, key } = segment;
   return [
     { type: 'label', name: `prompt_${n}`, key },
-    { type: 'prompt', setter },
+    { type: 'prompt', setter, key },
   ];
 };
 
@@ -249,8 +250,8 @@ const compileCallSegment = (
 
   const { script, withVars, key, gotoKey } = segment;
   return [
-    { type: 'label', name: `prompt_${n}`, key },
-    { type: 'call', script, withVars, gotoKey },
+    { type: 'label', name: `call_${n}`, key },
+    { type: 'call', script, withVars, gotoKey, key },
   ];
 };
 
@@ -304,7 +305,7 @@ const compile = (segments: ScriptSegment[]): CompileResult => {
   const intermediates = compileSegments(segments, counter());
 
   const keyMapping: AccessKeyMapping = {};
-  const intermediateMapping: AccessKeyMapping = {};
+  const labelMapping: AccessKeyMapping = {};
 
   // remove labels and store their indexes
   const mediateCommands = [];
@@ -312,8 +313,10 @@ const compile = (segments: ScriptSegment[]): CompileResult => {
     if (intermediate.type === 'label') {
       const { name, key } = intermediate;
 
-      intermediateMapping[name] = mediateCommands.length;
+      invariant(!(name in labelMapping), `????????????`);
+      labelMapping[name] = mediateCommands.length;
       if (key) {
+        invariant(!(key in keyMapping), `????????????`);
         keyMapping[key] = mediateCommands.length;
       }
     } else {
@@ -327,14 +330,14 @@ const compile = (segments: ScriptSegment[]): CompileResult => {
     if (command.type === 'goto') {
       commands.push({
         type: 'jump',
-        index: intermediateMapping[command.to],
+        index: labelMapping[command.to],
       });
     } else if (command.type === 'goto_cond') {
       const { to, condition, isNot } = command;
 
       commands.push({
         type: 'jump_cond',
-        index: intermediateMapping[to],
+        index: labelMapping[to],
         condition,
         isNot,
       });

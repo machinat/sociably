@@ -1,37 +1,29 @@
 // @flow
 import type { SessionStore } from 'machinat-session/types';
-import { Observable } from 'rxjs';
+import { pipe } from 'rxjs';
+import { groupBy, concatMap, mergeMap, filter } from 'rxjs/operators';
 import type { MachinatScript } from '../types';
 import processor from '../processor';
 
+const isNotEmpty = frame => !!frame;
+
 const processScript = (sessionStore: SessionStore, libs: MachinatScript[]) => {
   const processEvent = processor(sessionStore, libs);
+  const processEventCatched = async frame => {
+    try {
+      const nextFrame = await processEvent(frame);
+      return nextFrame;
+    } catch (err) {
+      // TODO: what to do here?
+      return { ...frame, scriptError: err };
+    }
+  };
 
-  return (observable: Object) =>
-    new Observable(observer => {
-      const subscription = observable.subscribe({
-        async next(frame) {
-          try {
-            const nextFrame = processEvent(frame);
-            if (nextFrame) {
-              observer.next(nextFrame);
-            }
-          } catch (err) {
-            observer.error(err);
-          }
-        },
-        error(err) {
-          observer.error(err);
-        },
-        complete() {
-          observer.complete();
-        },
-      });
-
-      return () => {
-        subscription.unsubscribe();
-      };
-    });
+  return pipe(
+    groupBy(frame => frame.channel.uid),
+    mergeMap(channel$ => channel$.pipe(concatMap(processEventCatched))),
+    filter(isNotEmpty)
+  );
 };
 
 export default processScript;
