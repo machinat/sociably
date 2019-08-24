@@ -13,14 +13,11 @@ export const isKeyword = (type: any) => keyworsSymbols.includes(type);
 export const isScript = (type: any): boolean %checks =>
   typeof type === 'object' && type.$$typeof === MACHINAT_SCRIPT_TYPE;
 
-const archiveStatus = ({
-  script,
-  vars,
-  at,
-}: CallingStatus): CallingStatusArchive => ({
-  name: script.name,
-  stoppedAt: at,
-  vars,
+const archiveStatus = (status: CallingStatus): CallingStatusArchive => ({
+  name: status.script.name,
+  stoppedAt: status.at,
+  vars: status.vars,
+  iterStack: status.iterStack,
 });
 
 export const archiveScriptState = (

@@ -48,7 +48,7 @@ Array [
     "withVars": [Function],
   },
   Object {
-    "offset": 13,
+    "offset": 11,
     "type": "jump",
   },
   Object {
@@ -71,18 +71,15 @@ Array [
     "type": "jump",
   },
   Object {
-    "offset": 8,
+    "offset": 6,
     "type": "jump",
   },
   Object {
-    "setter": [Function],
-    "type": "set_vars",
-  },
-  Object {
-    "condition": [Function],
-    "isNot": true,
-    "offset": 4,
-    "type": "jump_cond",
+    "endingOffset": 4,
+    "getIterable": [Function],
+    "iterName": "for_5",
+    "type": "iter_outset",
+    "varName": "n",
   },
   Object {
     "render": [Function],
@@ -94,12 +91,8 @@ Array [
     "type": "prompt",
   },
   Object {
-    "offset": -4,
+    "offset": -3,
     "type": "jump",
-  },
-  Object {
-    "setter": [Function],
-    "type": "set_vars",
   },
   Object {
     "offset": 1,

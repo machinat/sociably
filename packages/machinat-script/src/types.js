@@ -119,10 +119,10 @@ export type SetVarsCommand = {|
   setter: VarsSetter,
 |};
 
-export type JumpCommand = {
+export type JumpCommand = {|
   type: 'jump',
   offset: number,
-};
+|};
 
 export type JumpCondCommand = {|
   type: 'jump_cond',
@@ -131,24 +131,42 @@ export type JumpCondCommand = {|
   isNot: boolean,
 |};
 
+export type IterOutsetCommand = {|
+  type: 'iter_outset',
+  iterName: string,
+  getIterable: Vars => Iterator<any>,
+  varName?: string,
+  endingOffset: number,
+|};
+
 export type ScriptCommand =
   | ContentCommand
   | JumpCommand
   | JumpCondCommand
   | PromptCommand
   | CallCommand
-  | SetVarsCommand;
+  | SetVarsCommand
+  | IterOutsetCommand;
+
+export type IterStatus = {
+  name: string,
+  originalVar?: any,
+  iterTarget: any[],
+  index: number,
+};
 
 export type CallingStatus = {
   script: MachinatScript,
   vars: Vars,
   at: void | string,
+  iterStack: void | IterStatus[],
 };
 
 export type CallingStatusArchive = {
   name: string,
   vars: Vars,
   stoppedAt: string,
+  iterStack: void | IterStatus[],
 };
 
 export type ScriptProcessingState = {

@@ -10,32 +10,20 @@ it('compile if segment ok', () => {
           condition: () => false,
           body: [
             { type: 'content', render: () => 'foo' },
-            {
-              type: 'prompt',
-              key: 'ask1',
-              setter: () => ({ a: 0 }),
-            },
+            { type: 'prompt', key: 'ask1', setter: () => ({ a: 0 }) },
           ],
         },
         {
           condition: () => true,
           body: [
             { type: 'content', render: () => 'bar' },
-            {
-              type: 'prompt',
-              key: 'ask2',
-              setter: () => ({ b: 1 }),
-            },
+            { type: 'prompt', key: 'ask2', setter: () => ({ b: 1 }) },
           ],
         },
       ],
       fallback: [
         { type: 'content', render: () => 'baz' },
-        {
-          type: 'prompt',
-          key: 'ask3',
-          setter: () => ({ c: 2 }),
-        },
+        { type: 'prompt', key: 'ask3', setter: () => ({ c: 2 }) },
       ],
     },
   ]);
@@ -112,14 +100,15 @@ it('compile while segment ok', () => {
 });
 
 it('compile for segment ok', () => {
+  const getIterable = vars => [...vars.foo];
   const { commands, keyMapping } = compile([
     {
       type: 'for',
       key: 'a_for',
       varName: 'x',
-      getIterable: () => ['foo', 'bar', 'baz'],
+      getIterable,
       body: [
-        { type: 'content', render: ({ x }) => `hello ${x}` },
+        { type: 'content', render: ({ foo }) => `hello ${foo}` },
         {
           type: 'prompt',
           key: 'ask',
@@ -129,57 +118,23 @@ it('compile for segment ok', () => {
     },
   ]);
   expect(commands).toEqual([
-    { type: 'set_vars', setter: expect.any(Function) },
     {
-      type: 'jump_cond',
-      condition: expect.any(Function),
-      offset: 4,
-      isNot: true,
+      type: 'iter_outset',
+      iterName: 'for_0',
+      getIterable,
+      varName: 'x',
+      endingOffset: 4,
     },
     { type: 'content', render: expect.any(Function) },
     { type: 'prompt', setter: expect.any(Function), key: 'ask' },
-    { type: 'jump', offset: -4 },
-    { type: 'set_vars', setter: expect.any(Function) },
+    { type: 'jump', offset: -3 },
   ]);
-  expect(keyMapping).toEqual(new Map([['a_for', 0], ['ask', 3]]));
+  expect(keyMapping).toEqual(new Map([['a_for', 0], ['ask', 2]]));
 
-  let vars = {};
-  expect((vars = commands[0].setter({}))).toEqual({
-    x: 'foo',
-    $iterStack: [
-      { index: 0, items: ['foo', 'bar', 'baz'], name: expect.any(String) },
-    ],
-  });
-  expect(commands[1].condition(vars)).toBe(true);
-  expect(commands[2].render(vars)).toBe('hello foo');
-
-  expect((vars = commands[0].setter(vars))).toEqual({
-    x: 'bar',
-    $iterStack: [
-      { index: 1, items: ['foo', 'bar', 'baz'], name: expect.any(String) },
-    ],
-  });
-  expect(commands[1].condition(vars)).toBe(true);
-  expect(commands[2].render(vars)).toBe('hello bar');
-
-  expect((vars = commands[0].setter(vars))).toEqual({
-    x: 'baz',
-    $iterStack: [
-      { index: 2, items: ['foo', 'bar', 'baz'], name: expect.any(String) },
-    ],
-  });
-  expect(commands[1].condition(vars)).toBe(true);
-  expect(commands[2].render(vars)).toBe('hello baz');
-
-  expect((vars = commands[0].setter(vars))).toEqual({
-    $iterStack: [
-      { index: 3, items: ['foo', 'bar', 'baz'], name: expect.any(String) },
-    ],
-  });
-  expect(commands[1].condition(vars)).toBe(false);
-  expect(commands[5].setter(vars)).toEqual({});
-
-  expect(commands[3].setter({}, { event: { text: 'yo' } })).toEqual({
+  const vars = { foo: 'bar' };
+  expect(commands[0].getIterable(vars)).toEqual(['b', 'a', 'r']);
+  expect(commands[1].render(vars)).toBe('hello bar');
+  expect(commands[2].setter(vars, { event: { text: 'yo' } })).toEqual({
     words: 'yo',
   });
 });

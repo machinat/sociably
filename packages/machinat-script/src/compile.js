@@ -3,6 +3,7 @@
 import invariant from 'invariant';
 import { counter } from './utils';
 import type {
+  Vars,
   VarsMatcher,
   ScriptSegment,
   ContentSegment,
@@ -38,6 +39,14 @@ type LabelIntermediate = {|
   key?: string,
 |};
 
+export type ForOutsetIntermediate = {|
+  type: 'for_outset',
+  iterName: string,
+  getIterable: Vars => Iterator<any>,
+  varName?: string,
+  ending: string,
+|};
+
 type CompileIntermediate =
   | ContentCommand
   | PromptCommand
@@ -45,7 +54,8 @@ type CompileIntermediate =
   | CallCommand
   | GotoIntermediate
   | GotoCondIntermediate
-  | LabelIntermediate;
+  | LabelIntermediate
+  | ForOutsetIntermediate;
 
 type CompileResult = {
   commands: ScriptCommand[],
@@ -58,10 +68,10 @@ const compileContentSegment = (
 
 const compileIfSegment = (
   segment: IfSegment,
-  countLabel: () => number
+  countIdentifier: () => number
 ): CompileIntermediate[] => {
   const { branches, fallback, key } = segment;
-  const n: number = countLabel();
+  const n: number = countIdentifier();
 
   const endLabel = {
     type: 'label',
@@ -89,7 +99,7 @@ const compileIfSegment = (
       isNot: false,
     });
 
-    bodies.push(label, ...compileSegments(body, countLabel), jumpToEnd);
+    bodies.push(label, ...compileSegments(body, countIdentifier), jumpToEnd);
   }
 
   const commands: CompileIntermediate[] = [];
@@ -105,7 +115,7 @@ const compileIfSegment = (
   commands.push(...branchings);
 
   if (fallback) {
-    commands.push(...compileSegments(fallback, countLabel), jumpToEnd);
+    commands.push(...compileSegments(fallback, countIdentifier), jumpToEnd);
   }
 
   commands.push(...bodies, endLabel);
@@ -114,10 +124,10 @@ const compileIfSegment = (
 
 const compileWhileSegment = (
   segment: WhileSegment,
-  countLabel: () => number
+  countIdentifier: () => number
 ): CompileIntermediate[] => {
   const { condition, body, key } = segment;
-  const n: number = countLabel();
+  const n: number = countIdentifier();
 
   const startLabel = {
     type: 'label',
@@ -138,7 +148,7 @@ const compileWhileSegment = (
       isNot: true,
       to: endLabel.name,
     },
-    ...compileSegments(body, countLabel),
+    ...compileSegments(body, countIdentifier),
     {
       type: 'goto',
       to: startLabel.name,
@@ -149,9 +159,9 @@ const compileWhileSegment = (
 
 const compileForSegment = (
   segment: ForSegment,
-  countLabel: () => number
+  countIdentifier: () => number
 ): CompileIntermediate[] => {
-  const n: number = countLabel();
+  const n: number = countIdentifier();
   const { getIterable, body, varName } = segment;
 
   const iterName = `for_${n}`;
@@ -170,69 +180,26 @@ const compileForSegment = (
   return [
     startLabel,
     {
-      type: 'set_vars',
-      setter(vars) {
-        let iterStack = vars.$iterStack;
-
-        if (!iterStack) {
-          iterStack = [
-            {
-              index: 0,
-              items: [...getIterable(vars)],
-              name: iterName,
-            },
-          ];
-        } else if (iterStack[iterStack.length - 1].name !== iterName) {
-          iterStack.push({
-            index: 0,
-            items: [...getIterable(vars)],
-            name: iterName,
-          });
-        } else {
-          iterStack[iterStack.length - 1].index += 1;
-        }
-
-        if (varName) {
-          const { index, items } = iterStack[iterStack.length - 1];
-          return { ...vars, $iterStack: iterStack, [varName]: items[index] };
-        }
-
-        return { ...vars, $iterStack: iterStack };
-      },
+      type: 'for_outset',
+      iterName,
+      getIterable,
+      varName,
+      ending: endLabel.name,
     },
-    {
-      type: 'goto_cond',
-      condition: ({ $iterStack }) => {
-        const { index, items } = $iterStack[$iterStack.length - 1];
-        return index < items.length;
-      },
-      isNot: true,
-      to: endLabel.name,
-    },
-    ...compileSegments(body, countLabel),
+    ...compileSegments(body, countIdentifier),
     {
       type: 'goto',
       to: startLabel.name,
     },
     endLabel,
-    {
-      type: 'set_vars',
-      setter(vars) {
-        const iterStack = vars.$iterStack.slice(0, -1);
-        return {
-          ...vars,
-          $iterStack: iterStack.length === 0 ? undefined : iterStack,
-        };
-      },
-    },
   ];
 };
 
 const compilePromptSegment = (
   segment: PromptSegment,
-  countLabel: () => number
+  countIdentifier: () => number
 ): CompileIntermediate[] => {
-  const n: number = countLabel();
+  const n: number = countIdentifier();
 
   const { setter, key } = segment;
   return [
@@ -243,9 +210,9 @@ const compilePromptSegment = (
 
 const compileCallSegment = (
   segment: CallSegment,
-  countLabel: () => number
+  countIdentifier: () => number
 ): CompileIntermediate[] => {
-  const n: number = countLabel();
+  const n: number = countIdentifier();
 
   const { script, withVars, key, gotoKey } = segment;
   return [
@@ -263,15 +230,15 @@ const compileSetVarsSegment = (
 
 const compileLabelSegment = (
   segment: LabelSegment,
-  countLabel: () => number
+  countIdentifier: () => number
 ): CompileIntermediate[] => {
-  const n: number = countLabel();
+  const n: number = countIdentifier();
   return [{ type: 'label', name: `label_${n}`, key: segment.key }];
 };
 
 const compileSegments = (
   segments: ScriptSegment[],
-  countLabel: () => number
+  countIdentifier: () => number
 ): CompileIntermediate[] => {
   const commands = [];
 
@@ -279,19 +246,19 @@ const compileSegments = (
     if (segment.type === 'content') {
       commands.push(...compileContentSegment(segment));
     } else if (segment.type === 'if') {
-      commands.push(...compileIfSegment(segment, countLabel));
+      commands.push(...compileIfSegment(segment, countIdentifier));
     } else if (segment.type === 'for') {
-      commands.push(...compileForSegment(segment, countLabel));
+      commands.push(...compileForSegment(segment, countIdentifier));
     } else if (segment.type === 'while') {
-      commands.push(...compileWhileSegment(segment, countLabel));
+      commands.push(...compileWhileSegment(segment, countIdentifier));
     } else if (segment.type === 'prompt') {
-      commands.push(...compilePromptSegment(segment, countLabel));
+      commands.push(...compilePromptSegment(segment, countIdentifier));
     } else if (segment.type === 'call') {
-      commands.push(...compileCallSegment(segment, countLabel));
+      commands.push(...compileCallSegment(segment, countIdentifier));
     } else if (segment.type === 'set_vars') {
       commands.push(...compileSetVarsSegment(segment));
     } else if (segment.type === 'label') {
-      commands.push(...compileLabelSegment(segment, countLabel));
+      commands.push(...compileLabelSegment(segment, countIdentifier));
     } else {
       throw TypeError(`unexpected segment type: ${segment.type}`);
     }
@@ -344,6 +311,18 @@ const compile = (segments: ScriptSegment[]): CompileResult => {
         offset: targetIdx - idx,
         condition,
         isNot,
+      });
+    } else if (command.type === 'for_outset') {
+      const { iterName, getIterable, varName, ending } = command;
+      const targetIdx = labelMapping.get(ending);
+      invariant(targetIdx !== undefined, `??????????????`);
+
+      commands.push({
+        type: 'iter_outset',
+        iterName,
+        getIterable,
+        varName,
+        endingOffset: targetIdx - idx,
       });
     } else {
       commands.push(command);

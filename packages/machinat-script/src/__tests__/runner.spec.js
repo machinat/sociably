@@ -304,6 +304,168 @@ describe('behavior of commands', () => {
     });
     expect(script._commands[2].render.mock).toHaveBeenCalledTimes(1);
   });
+
+  test('run iter_outset command', () => {
+    const script = mockScript(
+      [
+        {
+          type: 'iter_outset',
+          iterName: 'for_0',
+          getIterable: () => ['foo', 'bar', 'baz'],
+          varName: 'x',
+          endingOffset: 4,
+        },
+        { type: 'content', render: ({ x }) => `hello ${x}` },
+        { type: 'prompt', setter: () => ({}), key: 'PROMPT' },
+        { type: 'jump', offset: -3 },
+        { type: 'content', render: ({ x }) => `hello ${x}` },
+      ],
+      new Map([['PROMPT', 2]])
+    );
+    let currentStack;
+    for (const [i, x] of ['foo', 'bar', 'baz'].entries()) {
+      const result =
+        i === 0
+          ? testRunning(script, { x: 'nothing' })
+          : runner(currentStack, { event: { text: 'hi' } });
+      currentStack = result.stack;
+
+      expect(result).toEqual({
+        finished: false,
+        content: [`hello ${x}`],
+        stack: [
+          {
+            script,
+            vars: { x },
+            at: 'PROMPT',
+            iterStack: [
+              {
+                name: 'for_0',
+                index: i,
+                iterTarget: ['foo', 'bar', 'baz'],
+                originalVar: 'nothing',
+              },
+            ],
+          },
+        ],
+      });
+    }
+    expect(runner(currentStack, { event: { text: 'hi' } })).toEqual({
+      finished: true,
+      content: ['hello nothing'],
+      stack: undefined,
+    });
+
+    expect(script._commands[0].getIterable.mock).toHaveBeenCalledTimes(1);
+    expect(script._commands[0].getIterable.mock).toHaveBeenCalledWith({
+      x: 'nothing',
+    });
+    expect(script._commands[1].render.mock).toHaveBeenCalledTimes(3);
+    expect(script._commands[2].setter.mock).toHaveBeenCalledTimes(3);
+    expect(script._commands[4].render.mock).toHaveBeenCalledTimes(1);
+  });
+
+  test('run iter_outset command with empty iterable', () => {
+    const script = mockScript(
+      [
+        {
+          type: 'iter_outset',
+          iterName: 'for_0',
+          getIterable: () => [],
+          varName: 'x',
+          endingOffset: 4,
+        },
+        { type: 'content', render: ({ x }) => `hello ${x}` },
+        { type: 'prompt', setter: () => ({}), key: 'PROMPT' },
+        { type: 'jump', offset: -3 },
+        { type: 'content', render: ({ x }) => `hello ${x}` },
+      ],
+      new Map([['PROMPT', 2]])
+    );
+    expect(testRunning(script, { x: 'nobody' })).toEqual({
+      finished: true,
+      content: ['hello nobody'],
+      stack: undefined,
+    });
+
+    expect(script._commands[0].getIterable.mock).toHaveBeenCalledTimes(1);
+    expect(script._commands[1].render.mock).not.toHaveBeenCalled();
+    expect(script._commands[2].setter.mock).not.toHaveBeenCalled();
+    expect(script._commands[4].render.mock).toHaveBeenCalledTimes(1);
+  });
+
+  test('run iter_outset command nested', () => {
+    const script = mockScript(
+      [
+        {
+          type: 'iter_outset',
+          iterName: 'for_0',
+          getIterable: () => 'bar',
+          varName: 'x',
+          endingOffset: 6,
+        },
+        {
+          type: 'iter_outset',
+          iterName: 'for_1',
+          getIterable: () => 'baz',
+          varName: 'y',
+          endingOffset: 4,
+        },
+        { type: 'content', render: ({ x, y }) => `hello ${x}${y}` },
+        { type: 'prompt', setter: () => ({}), key: 'PROMPT' },
+        { type: 'jump', offset: -3 },
+        { type: 'jump', offset: -5 },
+        { type: 'content', render: ({ x, y }) => `hello ${x}${y}` },
+      ],
+      new Map([['PROMPT', 3]])
+    );
+    let currentStack;
+    const strs = ['bb', 'ba', 'bz', 'ab', 'aa', 'az', 'rb', 'ra', 'rz'];
+    for (const [i, xy] of strs.entries()) {
+      const result =
+        i === 0
+          ? testRunning(script, { x: 'xxx', y: 'yyy' })
+          : runner(currentStack, { event: { text: 'hi' } });
+      currentStack = result.stack;
+
+      expect(result).toEqual({
+        finished: false,
+        content: [`hello ${xy}`],
+        stack: [
+          {
+            script,
+            vars: { x: xy[0], y: xy[1] },
+            at: 'PROMPT',
+            iterStack: [
+              {
+                name: 'for_0',
+                index: Math.floor(i / 3) % 3,
+                iterTarget: ['b', 'a', 'r'],
+                originalVar: 'xxx',
+              },
+              {
+                name: 'for_1',
+                index: i % 3,
+                iterTarget: ['b', 'a', 'z'],
+                originalVar: 'yyy',
+              },
+            ],
+          },
+        ],
+      });
+    }
+    expect(runner(currentStack, { event: { text: 'hi' } })).toEqual({
+      finished: true,
+      content: ['hello xxxyyy'],
+      stack: undefined,
+    });
+
+    expect(script._commands[0].getIterable.mock).toHaveBeenCalledTimes(1);
+    expect(script._commands[1].getIterable.mock).toHaveBeenCalledTimes(3);
+    expect(script._commands[2].render.mock).toHaveBeenCalledTimes(9);
+    expect(script._commands[3].setter.mock).toHaveBeenCalledTimes(9);
+    expect(script._commands[6].render.mock).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('running whole script', () => {
@@ -320,15 +482,20 @@ describe('running whole script', () => {
   const MockScript = mockScript(
     [
       {
-        type: 'content',
-        render: ({ descs }) => (descs ? descs.join(', ') : 'empty'),
+        type: 'iter_outset',
+        iterName: 'for_0',
+        getIterable: ({ descriptions }) => descriptions || ['empty'],
+        varName: 'desc',
+        endingOffset: 3,
       },
+      { type: 'content', render: ({ desc }) => desc },
+      { type: 'jump', offset: -2 },
       { type: 'set_vars', setter: ({ t }) => ({ t: (t || 0) + 1 }) },
       { type: 'jump_cond', condition: () => true, isNot: true, offset: 4 },
       {
         type: 'prompt',
-        setter: ({ descs }, { event: { text } }) => ({
-          descs: descs ? [...descs, text] : [text],
+        setter: ({ descriptions }, { event: { text } }) => ({
+          descriptions: descriptions ? [...descriptions, text] : [text],
         }),
         key: 'PROMPT',
       },
@@ -342,7 +509,7 @@ describe('running whole script', () => {
       { type: 'jump', offset: -5 },
       { type: 'content', render: () => 'world' },
     ],
-    new Map([['BEGIN', 0], ['PROMPT', 3], ['CALL', 4]]),
+    new Map([['BEGIN', 0], ['PROMPT', 5], ['CALL', 6]]),
     'MockScript'
   );
 
@@ -367,21 +534,25 @@ describe('running whole script', () => {
     });
 
     const commands = MockScript._commands;
-    expect(commands[0].render.mock).toHaveBeenCalledTimes(1);
-    expect(commands[0].render.mock).toHaveBeenCalledWith({ foo: 'bar' });
-    expect(commands[1].setter.mock).toHaveBeenCalledTimes(1);
-    expect(commands[1].setter.mock).toHaveBeenCalledWith({ foo: 'bar' });
-    expect(commands[2].condition.mock).toHaveBeenCalledTimes(1);
-    expect(commands[2].condition.mock).toHaveBeenCalledWith({
+    expect(commands[0].getIterable.mock).toHaveBeenCalledTimes(1);
+    expect(commands[1].render.mock).toHaveBeenCalledTimes(1);
+    expect(commands[1].render.mock).toHaveBeenCalledWith({
+      foo: 'bar',
+      desc: 'empty',
+    });
+    expect(commands[3].setter.mock).toHaveBeenCalledTimes(1);
+    expect(commands[3].setter.mock).toHaveBeenCalledWith({ foo: 'bar' });
+    expect(commands[4].condition.mock).toHaveBeenCalledTimes(1);
+    expect(commands[4].condition.mock).toHaveBeenCalledWith({
       foo: 'bar',
       t: 1,
     });
-    expect(commands[4].withVars.mock).not.toHaveBeenCalled();
-    expect(commands[6].render.mock).not.toHaveBeenCalled();
+    expect(commands[6].withVars.mock).not.toHaveBeenCalled();
+    expect(commands[8].render.mock).not.toHaveBeenCalled();
   });
 
   test('jump to the end', () => {
-    MockScript._commands[2].condition.mock.fakeReturnValue(false);
+    MockScript._commands[4].condition.mock.fakeReturnValue(false);
     expect(
       runner([{ script: MockScript, vars: { foo: 'bar' }, at: 'BEGIN' }])
     ).toEqual({
@@ -391,47 +562,60 @@ describe('running whole script', () => {
     });
 
     const commands = MockScript._commands;
-    expect(commands[0].render.mock).toHaveBeenCalledTimes(1);
-    expect(commands[1].setter.mock).toHaveBeenCalledTimes(1);
-    expect(commands[2].condition.mock).toHaveBeenCalledTimes(1);
-    expect(commands[4].withVars.mock).not.toHaveBeenCalled();
-    expect(commands[6].render.mock).toHaveBeenCalledTimes(1);
-    expect(commands[6].render.mock).toHaveBeenCalledWith({ foo: 'bar', t: 1 });
+    expect(commands[0].getIterable.mock).toHaveBeenCalledTimes(1);
+    expect(commands[1].render.mock).toHaveBeenCalledTimes(1);
+    expect(commands[3].setter.mock).toHaveBeenCalledTimes(1);
+    expect(commands[4].condition.mock).toHaveBeenCalledTimes(1);
+    expect(commands[6].withVars.mock).not.toHaveBeenCalled();
+    expect(commands[8].render.mock).toHaveBeenCalledTimes(1);
+    expect(commands[8].render.mock).toHaveBeenCalledWith({ foo: 'bar', t: 1 });
   });
 
   test('prompt in the loops', () => {
     let stack = [{ script: MockScript, vars: { foo: 'bar' }, at: 'PROMPT' }];
 
-    const descs = ['fun', 'beautyful', 'wonderful'];
-    for (const [idx, word] of descs.entries()) {
+    const descriptions = ['fun', 'beautyful', 'wonderful'];
+    for (const [idx, word] of descriptions.entries()) {
       const result = runner(stack, { event: { text: word } });
       expect(result).toEqual({
         finished: false,
         stack: [
           {
             script: MockScript,
-            vars: { foo: 'bar', t: idx + 1, descs: descs.slice(0, idx + 1) },
+            vars: {
+              foo: 'bar',
+              t: idx + 1,
+              descriptions: descriptions.slice(0, idx + 1),
+            },
             at: 'PROMPT',
           },
         ],
-        content: ['hello', descs.slice(0, idx + 1).join(', ')],
+        content: ['hello', ...descriptions.slice(0, idx + 1)],
       });
       ({ stack } = result);
     }
 
-    MockScript._commands[2].condition.mock.fakeReturnValue(false);
+    MockScript._commands[4].condition.mock.fakeReturnValue(false);
     expect(runner(stack, { event: { text: 'fascinating' } })).toEqual({
       finished: true,
       stack: undefined,
-      content: ['hello', 'fun, beautyful, wonderful, fascinating', 'world'],
+      content: [
+        'hello',
+        'fun',
+        'beautyful',
+        'wonderful',
+        'fascinating',
+        'world',
+      ],
     });
 
-    expect(MockScript._commands[0].render.mock).toHaveBeenCalledTimes(4);
-    expect(MockScript._commands[1].setter.mock).toHaveBeenCalledTimes(4);
-    expect(MockScript._commands[2].condition.mock).toHaveBeenCalledTimes(4);
+    expect(MockScript._commands[0].getIterable.mock).toHaveBeenCalledTimes(4);
+    expect(MockScript._commands[1].render.mock).toHaveBeenCalledTimes(10);
     expect(MockScript._commands[3].setter.mock).toHaveBeenCalledTimes(4);
-    expect(MockScript._commands[4].withVars.mock).toHaveBeenCalledTimes(4);
-    expect(MockScript._commands[6].render.mock).toHaveBeenCalledTimes(1);
+    expect(MockScript._commands[4].condition.mock).toHaveBeenCalledTimes(4);
+    expect(MockScript._commands[5].setter.mock).toHaveBeenCalledTimes(4);
+    expect(MockScript._commands[6].withVars.mock).toHaveBeenCalledTimes(4);
+    expect(MockScript._commands[8].render.mock).toHaveBeenCalledTimes(1);
 
     expect(SubScript._commands[0].render.mock).toHaveBeenCalledTimes(4);
     expect(SubScript._commands[1].condition.mock).toHaveBeenCalledTimes(4);
@@ -448,44 +632,45 @@ describe('running whole script', () => {
       stack: [
         {
           script: MockScript,
-          vars: { foo: 'bar', descs: ['fabulous'] },
+          vars: { foo: 'bar', descriptions: ['fabulous'] },
           at: 'CALL',
         },
         {
           script: SubScript,
-          vars: { foo: 'baz', descs: ['fabulous'] },
+          vars: { foo: 'baz', descriptions: ['fabulous'] },
           at: 'CHILD_PROMPT',
         },
       ],
       content: ['hello'],
     });
-    expect(MockScript._commands[0].render.mock).not.toHaveBeenCalled();
-    expect(MockScript._commands[1].setter.mock).not.toHaveBeenCalled();
-    expect(MockScript._commands[2].condition.mock).not.toHaveBeenCalled();
-    expect(MockScript._commands[3].setter.mock).toHaveBeenCalledTimes(1);
-    expect(MockScript._commands[4].withVars.mock).toHaveBeenCalledTimes(1);
-    expect(MockScript._commands[6].render.mock).not.toHaveBeenCalled();
+    expect(MockScript._commands[0].getIterable.mock).not.toHaveBeenCalled();
+    expect(MockScript._commands[1].render.mock).not.toHaveBeenCalled();
+    expect(MockScript._commands[3].setter.mock).not.toHaveBeenCalled();
+    expect(MockScript._commands[4].condition.mock).not.toHaveBeenCalled();
+    expect(MockScript._commands[5].setter.mock).toHaveBeenCalledTimes(1);
+    expect(MockScript._commands[6].withVars.mock).toHaveBeenCalledTimes(1);
+    expect(MockScript._commands[8].render.mock).not.toHaveBeenCalled();
 
     expect(SubScript._commands[0].render.mock).toHaveBeenCalledTimes(1);
     expect(SubScript._commands[0].render.mock).toHaveBeenCalledWith({
       foo: 'baz',
-      descs: ['fabulous'],
+      descriptions: ['fabulous'],
     });
     expect(SubScript._commands[1].condition.mock).toHaveBeenCalledTimes(1);
     expect(SubScript._commands[1].condition.mock).toHaveBeenCalledWith({
       foo: 'baz',
-      descs: ['fabulous'],
+      descriptions: ['fabulous'],
     });
   });
 
   test('start from sub script', () => {
-    MockScript._commands[2].condition.mock.fakeReturnValue(false);
+    MockScript._commands[4].condition.mock.fakeReturnValue(false);
     expect(
       runner(
         [
           {
             script: MockScript,
-            vars: { foo: 'bar' },
+            vars: { foo: 'bar', descriptions: ['gorgeous'] },
             at: 'CALL',
           },
           {
@@ -499,13 +684,14 @@ describe('running whole script', () => {
     ).toEqual({
       finished: true,
       stack: undefined,
-      content: ['empty', 'world'],
+      content: ['gorgeous', 'world'],
     });
-    expect(MockScript._commands[0].render.mock).toHaveBeenCalledTimes(1);
-    expect(MockScript._commands[1].setter.mock).toHaveBeenCalledTimes(1);
-    expect(MockScript._commands[2].condition.mock).toHaveBeenCalledTimes(1);
-    expect(MockScript._commands[4].withVars.mock).not.toHaveBeenCalled();
-    expect(MockScript._commands[2].condition.mock).toHaveBeenCalledTimes(1);
+    expect(MockScript._commands[0].getIterable.mock).toHaveBeenCalledTimes(1);
+    expect(MockScript._commands[1].render.mock).toHaveBeenCalledTimes(1);
+    expect(MockScript._commands[3].setter.mock).toHaveBeenCalledTimes(1);
+    expect(MockScript._commands[4].condition.mock).toHaveBeenCalledTimes(1);
+    expect(MockScript._commands[6].withVars.mock).not.toHaveBeenCalled();
+    expect(MockScript._commands[8].render.mock).toHaveBeenCalledTimes(1);
 
     expect(SubScript._commands[0].render.mock).not.toHaveBeenCalled();
     expect(SubScript._commands[1].condition.mock).not.toHaveBeenCalled();

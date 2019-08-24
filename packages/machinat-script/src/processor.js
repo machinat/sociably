@@ -18,17 +18,19 @@ import type {
 const callingStatusLinker = (libs: MachinatScript[]) => (
   archive: CallingStatusArchive
 ): CallingStatus => {
-  const { name, vars, stoppedAt } = archive;
+  const { name, vars, stoppedAt, iterStack } = archive;
 
   const script = libs.find(lib => lib.name === name);
   invariant(script, `????????????????`);
 
-  return { script, vars, at: stoppedAt };
+  return { script, vars, at: stoppedAt, iterStack };
 };
 
 export const initProcessComponent = (script: MachinatScript) => {
   const Init = (props: Object) => {
-    const result = run([{ script, vars: props.vars, at: props.goto }]);
+    const result = run([
+      { script, vars: props.vars, at: props.goto, iterStack: undefined },
+    ]);
     if (result.finished) {
       return result.content;
     }

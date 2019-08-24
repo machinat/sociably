@@ -74,9 +74,9 @@ it('work', () => {
       "call#2" => 4,
       "first" => 7,
       "prompt#0" => 8,
-      "second" => 13,
-      "prompt#1" => 14,
-      "end" => 18,
+      "second" => 12,
+      "prompt#1" => 13,
+      "end" => 16,
     }
   `);
 });
