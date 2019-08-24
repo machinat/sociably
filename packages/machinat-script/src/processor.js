@@ -15,15 +15,24 @@ import type {
   ScriptProcessingState,
 } from './types';
 
-const callingStatusLinker = (libs: MachinatScript[]) => (
-  archive: CallingStatusArchive
-): CallingStatus => {
-  const { name, vars, stoppedAt, iterStack } = archive;
+const callingStatusLinker = (libs: MachinatScript[]) => {
+  const linkings = new Map();
+  for (const script of libs) {
+    invariant(
+      !linkings.has(script.name),
+      `script name "${script.name}" duplicated`
+    );
+    linkings.set(script.name, script);
+  }
 
-  const script = libs.find(lib => lib.name === name);
-  invariant(script, `????????????????`);
+  return (archive: CallingStatusArchive): CallingStatus => {
+    const { name, vars, stoppedAt, iterStack } = archive;
 
-  return { script, vars, at: stoppedAt, iterStack };
+    const script = linkings.get(name);
+    invariant(script, `"${name}" not found in linked scripts`);
+
+    return { script, vars, at: stoppedAt, iterStack };
+  };
 };
 
 export const initProcessComponent = (script: MachinatScript) => {

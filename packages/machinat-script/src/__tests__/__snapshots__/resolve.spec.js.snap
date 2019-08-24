@@ -62,7 +62,7 @@ Array [
         "type": "content",
       },
       Object {
-        "gotoKey": "xxx",
+        "gotoKey": "bar",
         "key": "call#2",
         "script": Object {
           "$$typeof": Symbol(machinat.component.script),
@@ -77,11 +77,11 @@ Array [
               "type": "prompt",
             },
           ],
-          "_keyMapping": Object {
-            "bar": 8,
-            "foo": 3,
+          "_keyMapping": Map {
+            "foo" => 3,
+            "bar" => 8,
           },
-          "name": "SomeQuestions",
+          "name": "AnotherScript",
         },
         "type": "call",
         "withVars": [Function],
@@ -217,7 +217,7 @@ Array [
     "type": "content",
   },
   Object {
-    "gotoKey": "zzz",
+    "gotoKey": "foo",
     "key": "call#5",
     "script": Object {
       "$$typeof": Symbol(machinat.component.script),
@@ -232,11 +232,11 @@ Array [
           "type": "prompt",
         },
       ],
-      "_keyMapping": Object {
-        "bar": 8,
-        "foo": 3,
+      "_keyMapping": Map {
+        "foo" => 3,
+        "bar" => 8,
       },
-      "name": "SomeQuestions",
+      "name": "AnotherScript",
     },
     "type": "call",
     "withVars": [Function],

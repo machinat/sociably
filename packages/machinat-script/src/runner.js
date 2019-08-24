@@ -9,8 +9,10 @@ export const merge = (...objs: Object[]) => Object.assign({}, ...objs);
 export const getCursorIndex = (script: MachinatScript, key: string): number => {
   const index = script._keyMapping.get(key);
 
-  invariant(index !== undefined, `?????????????????????`);
-
+  invariant(
+    index !== undefined,
+    `stopped point key "${key}" not found in ${script.name}`
+  );
   return index;
 };
 
@@ -201,7 +203,7 @@ const execute = (
     } else if (command.type === 'iter_outset') {
       context = executeIterOutsetCommand(command, context);
     } else {
-      throw new Error('???????????/');
+      throw new TypeError(`unknow command type ${command.type}`);
     }
 
     if (context.stoppedAt) {
@@ -244,7 +246,9 @@ const run = (beginningStack: CallingStatus[], answer?: any): ExecuteResult => {
 
         invariant(
           waitingPrompt && waitingPrompt.type === 'prompt',
-          `?????????????????`
+          `stopped point "${at || ''}" is not a <Prompt/>, the key mapping of ${
+            script.name
+          } might have been changed`
         );
 
         vars = waitingPrompt.setter
@@ -255,7 +259,9 @@ const run = (beginningStack: CallingStatus[], answer?: any): ExecuteResult => {
     } else {
       invariant(
         script._commands[index].type === 'call',
-        `???????????????????????`
+        `returned point "${at || ''}" is not a <Call/>, the key mapping of ${
+          script.name
+        } might have been changed`
       );
 
       index += 1;

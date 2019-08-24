@@ -17,12 +17,12 @@ import resolve from '../resolve';
 const AnotherScript = {
   $$typeof: MACHINAT_SCRIPT_TYPE,
   Init: () => '(Init)',
-  name: 'SomeQuestions',
+  name: 'AnotherScript',
   _executable: [
     { type: 'content', render: () => '...' },
     { type: 'prompt', key: 'ask' },
   ],
-  _keyMapping: { foo: 3, bar: 8 },
+  _keyMapping: new Map([['foo', 3], ['bar', 8]]),
 };
 
 it('resolve content rendering fn', () => {
@@ -506,8 +506,8 @@ describe('resolving <Call/> segments', () => {
         {() => 'hello'}
         <Call
           script={AnotherScript}
-          withVars={() => ({ foo: 'bar' })}
-          goto="greet"
+          withVars={() => ({ hi: 'yo' })}
+          goto="foo"
           key="waiting"
         />
       </>
@@ -518,11 +518,11 @@ describe('resolving <Call/> segments', () => {
         type: 'call',
         script: AnotherScript,
         withVars: expect.any(Function),
-        gotoKey: 'greet',
+        gotoKey: 'foo',
         key: 'waiting',
       },
     ]);
-    expect(segments[1].withVars({})).toEqual({ foo: 'bar' });
+    expect(segments[1].withVars({})).toEqual({ hi: 'yo' });
   });
 
   it('throw if non-script received', () => {
@@ -530,6 +530,14 @@ describe('resolving <Call/> segments', () => {
       resolve(<Call script={{ something: 'wrong' }} />)
     ).toThrowErrorMatchingInlineSnapshot(
       `"invalid \\"script\\" prop received on <Call/>"`
+    );
+  });
+
+  it('throw if goto key not existed', () => {
+    expect(() =>
+      resolve(<Call script={AnotherScript} goto="not_existed_key" />)
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"key \\"not_existed_key\\" not found in AnotherScript"`
     );
   });
 });
@@ -558,8 +566,8 @@ test('resolve whole script', () => {
             {() => 'sit amet,'}
             <Call
               script={AnotherScript}
-              withVars={() => ({ foo: 'bar' })}
-              goto="xxx"
+              withVars={() => ({ x: 'xxxx' })}
+              goto="bar"
             />
           </Else>
         </If>
@@ -607,7 +615,7 @@ test('resolve whole script', () => {
         <Call
           script={AnotherScript}
           withVars={() => ({ foo: 'baz' })}
-          goto="zzz"
+          goto="foo"
         />
 
         <Label key="end" />

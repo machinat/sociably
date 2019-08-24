@@ -5,13 +5,13 @@ import compile from './compile';
 import { initProcessComponent } from './processor';
 import type { MachinatScript, MachinatScriptNode } from './types';
 
-const build = (name: string, src: MachinatScriptNode): MachinatScript => {
+const build = (scriptName: string, src: MachinatScriptNode): MachinatScript => {
   const segments = resolveScript(src);
-  const { keyMapping, commands } = compile(segments);
+  const { keyMapping, commands } = compile(segments, { scriptName });
 
   const script: MachinatScript = {
     $$typeof: MACHINAT_SCRIPT_TYPE,
-    name,
+    name: scriptName,
     _keyMapping: keyMapping,
     _commands: commands,
     Init: (null: any),

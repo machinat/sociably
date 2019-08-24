@@ -1,32 +1,35 @@
 import compile from '../compile';
 
 it('compile if segment ok', () => {
-  const { commands, keyMapping } = compile([
-    {
-      type: 'if',
-      key: 'a_if',
-      branches: [
-        {
-          condition: () => false,
-          body: [
-            { type: 'content', render: () => 'foo' },
-            { type: 'prompt', key: 'ask1', setter: () => ({ a: 0 }) },
-          ],
-        },
-        {
-          condition: () => true,
-          body: [
-            { type: 'content', render: () => 'bar' },
-            { type: 'prompt', key: 'ask2', setter: () => ({ b: 1 }) },
-          ],
-        },
-      ],
-      fallback: [
-        { type: 'content', render: () => 'baz' },
-        { type: 'prompt', key: 'ask3', setter: () => ({ c: 2 }) },
-      ],
-    },
-  ]);
+  const { commands, keyMapping } = compile(
+    [
+      {
+        type: 'if',
+        key: 'a_if',
+        branches: [
+          {
+            condition: () => false,
+            body: [
+              { type: 'content', render: () => 'foo' },
+              { type: 'prompt', key: 'ask1', setter: () => ({ a: 0 }) },
+            ],
+          },
+          {
+            condition: () => true,
+            body: [
+              { type: 'content', render: () => 'bar' },
+              { type: 'prompt', key: 'ask2', setter: () => ({ b: 1 }) },
+            ],
+          },
+        ],
+        fallback: [
+          { type: 'content', render: () => 'baz' },
+          { type: 'prompt', key: 'ask3', setter: () => ({ c: 2 }) },
+        ],
+      },
+    ],
+    { scriptName: 'MyScript' }
+  );
   expect(commands).toEqual([
     {
       type: 'jump_cond',
@@ -64,21 +67,24 @@ it('compile if segment ok', () => {
 });
 
 it('compile while segment ok', () => {
-  const { commands, keyMapping } = compile([
-    {
-      type: 'while',
-      key: 'a_while',
-      condition: () => true,
-      body: [
-        { type: 'content', render: ({ target }) => `hello ${target}` },
-        {
-          type: 'prompt',
-          key: 'ask',
-          setter: (_, frm) => ({ words: frm.event.text }),
-        },
-      ],
-    },
-  ]);
+  const { commands, keyMapping } = compile(
+    [
+      {
+        type: 'while',
+        key: 'a_while',
+        condition: () => true,
+        body: [
+          { type: 'content', render: ({ target }) => `hello ${target}` },
+          {
+            type: 'prompt',
+            key: 'ask',
+            setter: (_, frm) => ({ words: frm.event.text }),
+          },
+        ],
+      },
+    ],
+    { scriptName: 'MyScript' }
+  );
   expect(commands).toEqual([
     {
       type: 'jump_cond',
@@ -101,22 +107,25 @@ it('compile while segment ok', () => {
 
 it('compile for segment ok', () => {
   const getIterable = vars => [...vars.foo];
-  const { commands, keyMapping } = compile([
-    {
-      type: 'for',
-      key: 'a_for',
-      varName: 'x',
-      getIterable,
-      body: [
-        { type: 'content', render: ({ foo }) => `hello ${foo}` },
-        {
-          type: 'prompt',
-          key: 'ask',
-          setter: (_, frm) => ({ words: frm.event.text }),
-        },
-      ],
-    },
-  ]);
+  const { commands, keyMapping } = compile(
+    [
+      {
+        type: 'for',
+        key: 'a_for',
+        varName: 'x',
+        getIterable,
+        body: [
+          { type: 'content', render: ({ foo }) => `hello ${foo}` },
+          {
+            type: 'prompt',
+            key: 'ask',
+            setter: (_, frm) => ({ words: frm.event.text }),
+          },
+        ],
+      },
+    ],
+    { scriptName: 'MyScript' }
+  );
   expect(commands).toEqual([
     {
       type: 'iter_outset',
@@ -142,22 +151,25 @@ it('compile for segment ok', () => {
 it('compile other segments type ok', () => {
   const OrderScript = { fake: 'script' };
 
-  const { commands, keyMapping } = compile([
-    { type: 'content', render: () => 'hello' },
-    { type: 'label', key: 'begin' },
-    { type: 'content', render: () => 'who r u' },
-    { type: 'prompt', setter: (_, { event }) => ({ name: event.text }) },
-    { type: 'content', render: ({ name }) => `hi ${name}, order ur meal` },
-    {
-      type: 'call',
-      script: OrderScript,
-      withVars: () => ({ foo: 'bar' }),
-      gotoKey: 'ordering',
-    },
-    { type: 'set_vars', setter: () => ({ ordered: true }) },
-    { type: 'label', key: 'end' },
-    { type: 'content', render: () => 'enjoy ur meal' },
-  ]);
+  const { commands, keyMapping } = compile(
+    [
+      { type: 'content', render: () => 'hello' },
+      { type: 'label', key: 'begin' },
+      { type: 'content', render: () => 'who r u' },
+      { type: 'prompt', setter: (_, { event }) => ({ name: event.text }) },
+      { type: 'content', render: ({ name }) => `hi ${name}, order ur meal` },
+      {
+        type: 'call',
+        script: OrderScript,
+        withVars: () => ({ foo: 'bar' }),
+        gotoKey: 'ordering',
+      },
+      { type: 'set_vars', setter: () => ({ ordered: true }) },
+      { type: 'label', key: 'end' },
+      { type: 'content', render: () => 'enjoy ur meal' },
+    ],
+    { scriptName: 'MyScript' }
+  );
   expect(commands).toEqual([
     { type: 'content', render: expect.any(Function) },
     { type: 'content', render: expect.any(Function) },
@@ -182,4 +194,20 @@ it('compile other segments type ok', () => {
   expect(commands[4].withVars({})).toEqual({ foo: 'bar' });
   expect(commands[5].setter({})).toEqual({ ordered: true });
   expect(commands[6].render({})).toBe('enjoy ur meal');
+});
+
+it('throw if key duplicated', () => {
+  expect(() =>
+    compile(
+      [
+        { type: 'content', render: () => 'Who R U?' },
+        { type: 'prompt', key: 'who' },
+        { type: 'content', render: () => 'Who R U exactly!?' },
+        { type: 'prompt', key: 'who' },
+      ],
+      { scriptName: 'MyScript' }
+    )
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"key \\"who\\" duplicated in MyScript"`
+  );
 });

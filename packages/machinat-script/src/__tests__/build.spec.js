@@ -19,7 +19,7 @@ it('work', () => {
     'ChildScript',
     <>
       {() => <dolore />}
-      <Prompt setter={(_, frm) => ({ x: frm.x })} />
+      <Prompt setter={(_, frm) => ({ x: frm.x })} key="childPrompt" />
     </>
   );
 
@@ -50,7 +50,7 @@ it('work', () => {
           <Call
             script={ChildScript}
             withVars={() => ({ foo: 'bar' })}
-            goto="xxx"
+            goto="childPrompt"
           />
         </Else>
       </If>

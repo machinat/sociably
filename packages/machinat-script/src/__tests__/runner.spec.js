@@ -702,3 +702,62 @@ describe('running whole script', () => {
     );
   });
 });
+
+it('throw if stopped point key not found', () => {
+  const script = mockScript(
+    [{}, {}],
+    new Map([['foo', 0], ['bar', 1]]),
+    'MyScript'
+  );
+  expect(() =>
+    runner([{ script, vars: {}, at: 'UNKNOWN' }], {})
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"stopped point key \\"UNKNOWN\\" not found in MyScript"`
+  );
+});
+
+it('throw if stopped point is not <Prompt/>', () => {
+  const script = mockScript(
+    [
+      { type: 'content', render: () => 'R U Cathy?' },
+      { type: 'prompt', key: 'prompt#0' },
+    ],
+    new Map([['ask', 0], ['prompt#0', 1]]),
+    'MyScript'
+  );
+  expect(() =>
+    runner([{ script, vars: {}, at: 'ask' }], { event: { text: 'yes' } })
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"stopped point \\"ask\\" is not a <Prompt/>, the key mapping of MyScript might have been changed"`
+  );
+});
+
+it('throw if returned point is not <Call/>', () => {
+  const subScript = mockScript(
+    [
+      { type: 'content', render: () => 'how R U?' },
+      { type: 'prompt', key: 'prompt#0' },
+    ],
+    new Map([['ask', 0], ['prompt#0', 1]]),
+    'SubScript'
+  );
+  const script = mockScript(
+    [
+      { type: 'content', render: () => 'hi' },
+      { type: 'call', script: subScript, key: 'call#0' },
+    ],
+    new Map([['greet', 0], ['call#0', 1]]),
+    'MyScript'
+  );
+  expect(() =>
+    runner(
+      [
+        { script, vars: {}, at: 'greet' },
+        { script: subScript, vars: {}, at: 'prompt#0' },
+      ],
+      { event: { text: 'fine' } }
+    )
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"returned point \\"greet\\" is not a <Call/>, the key mapping of MyScript might have been changed"`
+  );
+});

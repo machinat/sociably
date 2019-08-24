@@ -23,7 +23,7 @@ Array [
     "type": "content",
   },
   Object {
-    "gotoKey": "xxx",
+    "gotoKey": "childPrompt",
     "key": "call#2",
     "script": Object {
       "$$typeof": Symbol(machinat.component.script),
@@ -34,13 +34,13 @@ Array [
           "type": "content",
         },
         Object {
-          "key": "prompt#0",
+          "key": "childPrompt",
           "setter": undefined,
           "type": "prompt",
         },
       ],
       "_keyMapping": Map {
-        "prompt#0" => 1,
+        "childPrompt" => 1,
       },
       "name": "ChildScript",
     },

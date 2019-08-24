@@ -190,8 +190,14 @@ const resolveCallSegemnt = (
   const { script, withVars, goto: gotoKey, key } = props;
   invariant(isScript(script), `invalid "script" prop received on <Call/>`);
 
-  const count = stopPointCounter();
+  if (gotoKey) {
+    invariant(
+      script._keyMapping.has(gotoKey),
+      `key "${gotoKey}" not found in ${script.name}`
+    );
+  }
 
+  const count = stopPointCounter();
   return {
     type: 'call',
     script,

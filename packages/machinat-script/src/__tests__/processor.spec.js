@@ -140,6 +140,30 @@ describe('processInterceptor', () => {
     expect(session.delete.mock).toHaveBeenCalledTimes(1);
     expect(session.delete.mock).toHaveBeenCalledWith(SCRIPT_STATE_KEY);
   });
+
+  it('throw if script name duplicated', () => {
+    expect(() =>
+      processInterceptor(sessionStore, [Script1, Script2, Script1])
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"script name \\"Script1\\" duplicated"`
+    );
+  });
+
+  it('throw if script name not found', async () => {
+    const intercept = processInterceptor(sessionStore, [Script1, Script2]);
+    session.get.mock.fake(async () => ({
+      version: 'V0',
+      callStack: [
+        { name: 'Script1', vars: { foo: 'bar' }, stoppedAt: 'somewhere' },
+        { name: 'ScriptUnknown', vars: { foo: 'bar' }, stoppedAt: 'somewhere' },
+        { name: 'Script2', vars: { foo: 'bar' }, stoppedAt: 'somewhere' },
+      ],
+    }));
+
+    await expect(intercept(frame)).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"\\"ScriptUnknown\\" not found in linked scripts"`
+    );
+  });
 });
 
 describe('initProcessComponent', () => {

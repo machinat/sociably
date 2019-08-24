@@ -267,7 +267,10 @@ const compileSegments = (
   return commands;
 };
 
-const compile = (segments: ScriptSegment[]): CompileResult => {
+const compile = (
+  segments: ScriptSegment[],
+  meta: { scriptName: string }
+): CompileResult => {
   const intermediates = compileSegments(segments, counter());
 
   const keyMapping = new Map();
@@ -279,10 +282,13 @@ const compile = (segments: ScriptSegment[]): CompileResult => {
     if (intermediate.type === 'label') {
       const { name, key } = intermediate;
 
-      invariant(!labelMapping.has(name), `????????????`);
+      invariant(!labelMapping.has(name), `label "${name}" duplicated`);
       labelMapping.set(name, mediateCommands.length);
       if (key) {
-        invariant(!keyMapping.has(key), `????????????`);
+        invariant(
+          !keyMapping.has(key),
+          `key "${key}" duplicated in ${meta.scriptName}`
+        );
         keyMapping.set(key, mediateCommands.length);
       }
     } else {
@@ -295,7 +301,7 @@ const compile = (segments: ScriptSegment[]): CompileResult => {
   for (const [idx, command] of mediateCommands.entries()) {
     if (command.type === 'goto') {
       const targetIdx = labelMapping.get(command.to);
-      invariant(targetIdx !== undefined, `??????????????`);
+      invariant(targetIdx !== undefined, `label "${command.to}" not found`);
 
       commands.push({
         type: 'jump',
@@ -304,7 +310,7 @@ const compile = (segments: ScriptSegment[]): CompileResult => {
     } else if (command.type === 'goto_cond') {
       const { to, condition, isNot } = command;
       const targetIdx = labelMapping.get(to);
-      invariant(targetIdx !== undefined, `??????????????`);
+      invariant(targetIdx !== undefined, `label "${to}" not found`);
 
       commands.push({
         type: 'jump_cond',
@@ -315,7 +321,7 @@ const compile = (segments: ScriptSegment[]): CompileResult => {
     } else if (command.type === 'for_outset') {
       const { iterName, getIterable, varName, ending } = command;
       const targetIdx = labelMapping.get(ending);
-      invariant(targetIdx !== undefined, `??????????????`);
+      invariant(targetIdx !== undefined, `label "${ending}" not found`);
 
       commands.push({
         type: 'iter_outset',
