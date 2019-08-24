@@ -139,13 +139,19 @@ export type ScriptCommand =
   | CallCommand
   | SetVarsCommand;
 
-export type ScriptCallScope = {
+export type CallingStatus = {
+  script: MachinatScript,
+  vars: Vars,
+  at: void | string,
+};
+
+export type CallingStatusArchive = {
   name: string,
   vars: Vars,
   stoppedAt: string,
 };
 
-export type ScriptExecuteState = {
+export type ScriptProcessingState = {
   version: 'V0',
-  callStack: ScriptCallScope[],
+  callStack: CallingStatusArchive[],
 };

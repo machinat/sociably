@@ -1,14 +1,18 @@
 import moxy from 'moxy';
 import { of } from 'rxjs';
-import processor from '../../processor';
+import { processInterceptor } from '../../processor';
 import processScriptOperator from '../rx';
 
-jest.mock('../../processor', () => jest.requireActual('moxy').default());
+jest.mock('../../processor', () =>
+  jest.requireActual('moxy').default({
+    processInterceptor: () => async () => null,
+  })
+);
 
 const delay = t => new Promise(resolve => setTimeout(resolve, t));
 
-const processEvent = moxy(async () => null);
-processor.mock.fakeReturnValue(processEvent);
+const interceptEvent = moxy(async () => null);
+processInterceptor.mock.fakeReturnValue(interceptEvent);
 
 const observer = moxy({
   next() {},
@@ -28,44 +32,44 @@ const frames = [
 ];
 
 beforeEach(() => {
-  processor.mock.clear();
+  processInterceptor.mock.clear();
   observer.mock.clear();
-  processEvent.mock.reset();
+  interceptEvent.mock.reset();
 });
 
-it('not pass the event if processor resolve null', async () => {
+it('not pass the event if interceptor resolve null', async () => {
   of(...frames)
     .pipe(processScriptOperator(sessionStore, libs))
     .subscribe(observer);
 
-  expect(processor.mock).toHaveBeenCalledTimes(1);
-  expect(processor.mock).toHaveBeenCalledWith(sessionStore, libs);
+  expect(processInterceptor.mock).toHaveBeenCalledTimes(1);
+  expect(processInterceptor.mock).toHaveBeenCalledWith(sessionStore, libs);
 
   await delay();
-  expect(processEvent.mock).toHaveBeenCalledTimes(5);
+  expect(interceptEvent.mock).toHaveBeenCalledTimes(5);
   // should process frame in order by channel
-  expect(processEvent.mock).toHaveBeenNthCalledWith(1, frames[0]); // foo
-  expect(processEvent.mock).toHaveBeenNthCalledWith(2, frames[1]); // bar
-  expect(processEvent.mock).toHaveBeenNthCalledWith(3, frames[3]); // baz
-  expect(processEvent.mock).toHaveBeenNthCalledWith(4, frames[2]); // foo
-  expect(processEvent.mock).toHaveBeenNthCalledWith(5, frames[4]); // foo
+  expect(interceptEvent.mock).toHaveBeenNthCalledWith(1, frames[0]); // foo
+  expect(interceptEvent.mock).toHaveBeenNthCalledWith(2, frames[1]); // bar
+  expect(interceptEvent.mock).toHaveBeenNthCalledWith(3, frames[3]); // baz
+  expect(interceptEvent.mock).toHaveBeenNthCalledWith(4, frames[2]); // foo
+  expect(interceptEvent.mock).toHaveBeenNthCalledWith(5, frames[4]); // foo
 
   expect(observer.next.mock).not.toHaveBeenCalled();
   expect(observer.error.mock).not.toHaveBeenCalled();
   expect(observer.complete.mock).toHaveBeenCalled();
 });
 
-it('pass the new frame processor resolve', async () => {
-  processEvent.mock.fake(async frame => ({ ...frame, processed: true }));
+it('pass the new frame interceptor resolve', async () => {
+  interceptEvent.mock.fake(async frame => ({ ...frame, processed: true }));
 
   of(...frames)
     .pipe(processScriptOperator(sessionStore, libs))
     .subscribe(observer.next, observer.error, observer.complete);
 
-  expect(processor.mock).toHaveBeenCalledTimes(1);
+  expect(processInterceptor.mock).toHaveBeenCalledTimes(1);
 
   await delay();
-  expect(processEvent.mock).toHaveBeenCalledTimes(5);
+  expect(interceptEvent.mock).toHaveBeenCalledTimes(5);
 
   expect(observer.next.mock).toHaveBeenCalledTimes(5);
   // should call next by process order
@@ -96,7 +100,7 @@ it('pass the new frame processor resolve', async () => {
 
 it('pass error if process thrown', async () => {
   let i = -1;
-  processEvent.mock.fake(async frame => {
+  interceptEvent.mock.fake(async frame => {
     i += 1;
     if (i === 1 || i === 2) {
       throw new Error('Something wrong!!!');
@@ -111,10 +115,10 @@ it('pass error if process thrown', async () => {
     .pipe(processScriptOperator(sessionStore, libs))
     .subscribe(observer.next, observer.error, observer.complete);
 
-  expect(processor.mock).toHaveBeenCalledTimes(1);
+  expect(processInterceptor.mock).toHaveBeenCalledTimes(1);
 
   await delay(10);
-  expect(processEvent.mock).toHaveBeenCalledTimes(5);
+  expect(interceptEvent.mock).toHaveBeenCalledTimes(5);
 
   expect(observer.next.mock).toHaveBeenCalledTimes(4);
   expect(observer.error.mock).not.toHaveBeenCalled();

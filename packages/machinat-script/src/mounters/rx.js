@@ -3,15 +3,16 @@ import type { SessionStore } from 'machinat-session/types';
 import { pipe } from 'rxjs';
 import { groupBy, concatMap, mergeMap, filter } from 'rxjs/operators';
 import type { MachinatScript } from '../types';
-import processor from '../processor';
+import { processInterceptor } from '../processor';
 
 const isNotEmpty = frame => !!frame;
 
 const processScript = (sessionStore: SessionStore, libs: MachinatScript[]) => {
-  const processEvent = processor(sessionStore, libs);
-  const processEventCatched = async frame => {
+  const intercept = processInterceptor(sessionStore, libs);
+
+  const interceptCatched = async frame => {
     try {
-      const nextFrame = await processEvent(frame);
+      const nextFrame = await intercept(frame);
       return nextFrame;
     } catch (err) {
       // TODO: what to do here?
@@ -21,7 +22,7 @@ const processScript = (sessionStore: SessionStore, libs: MachinatScript[]) => {
 
   return pipe(
     groupBy(frame => frame.channel.uid),
-    mergeMap(channel$ => channel$.pipe(concatMap(processEventCatched))),
+    mergeMap(channel$ => channel$.pipe(concatMap(interceptCatched))),
     filter(isNotEmpty)
   );
 };

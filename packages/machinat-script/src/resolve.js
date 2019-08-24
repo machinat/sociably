@@ -20,8 +20,8 @@ import type {
 
 const ifChildrenReducer: NodeReducer<
   IfSegment,
-  { condition: VarsMatcher, promptCounter: () => number }
-> = (segment, node, path, { condition, promptCounter }) => {
+  { condition: VarsMatcher, stopPointCounter: () => number }
+> = (segment, node, path, { condition, stopPointCounter }) => {
   invariant(
     isElement(node) &&
       (node.type === KEYWORDS.Then ||
@@ -45,7 +45,7 @@ const ifChildrenReducer: NodeReducer<
       body: resolveSegments(
         node.props.children,
         `${path}.children`,
-        promptCounter
+        stopPointCounter
       ),
     });
   } else if (node.type === KEYWORDS.ElseIf) {
@@ -64,7 +64,7 @@ const ifChildrenReducer: NodeReducer<
       body: resolveSegments(
         node.props.children,
         `${path}.children`,
-        promptCounter
+        stopPointCounter
       ),
     });
   } else if (node.type === KEYWORDS.Else) {
@@ -79,7 +79,7 @@ const ifChildrenReducer: NodeReducer<
     segment.fallback = resolveSegments(
       node.props.children,
       `${path}.children`,
-      promptCounter
+      stopPointCounter
     );
   }
 
@@ -89,7 +89,7 @@ const ifChildrenReducer: NodeReducer<
 const resolveIfSegment = (
   props: Object,
   path: string,
-  promptCounter: () => number
+  stopPointCounter: () => number
 ): IfSegment => {
   const { condition, children, key } = props;
 
@@ -108,14 +108,14 @@ const resolveIfSegment = (
       key,
     },
     `${path}.children`,
-    { condition, promptCounter }
+    { condition, stopPointCounter }
   );
 };
 
 const resolveForSegment = (
   props: Object,
   path: string,
-  promptCounter: () => number
+  stopPointCounter: () => number
 ): ForSegment => {
   const { var: varName, of: getIterable, children, key } = props;
 
@@ -128,7 +128,7 @@ const resolveForSegment = (
     type: 'for',
     varName,
     getIterable,
-    body: resolveSegments(children, `${path}.children`, promptCounter),
+    body: resolveSegments(children, `${path}.children`, stopPointCounter),
     key,
   };
 };
@@ -136,7 +136,7 @@ const resolveForSegment = (
 const resolveWhileSegment = (
   props: Object,
   path: string,
-  promptCounter: () => number
+  stopPointCounter: () => number
 ): WhileSegment => {
   const { condition, children, key } = props;
 
@@ -148,7 +148,7 @@ const resolveWhileSegment = (
   return {
     type: 'while',
     condition,
-    body: resolveSegments(children, `${path}.children`, promptCounter),
+    body: resolveSegments(children, `${path}.children`, stopPointCounter),
     key,
   };
 };
@@ -173,9 +173,9 @@ const resolveLabelSegment = ({ key }: Object): LabelSegment => {
 
 const resolvePromptSegment = (
   { set: setter, key }: Object,
-  promptCounter: () => number
+  stopPointCounter: () => number
 ): PromptSegment => {
-  const count = promptCounter();
+  const count = stopPointCounter();
   return {
     type: 'prompt',
     setter,
@@ -185,12 +185,12 @@ const resolvePromptSegment = (
 
 const resolveCallSegemnt = (
   props: Object,
-  promptCounter: () => number
+  stopPointCounter: () => number
 ): CallSegment => {
   const { script, withVars, goto: gotoKey, key } = props;
   invariant(isScript(script), `invalid "script" prop received on <Call/>`);
 
-  const count = promptCounter();
+  const count = stopPointCounter();
 
   return {
     type: 'call',
@@ -203,27 +203,27 @@ const resolveCallSegemnt = (
 
 const segmentsReducer: NodeReducer<
   ScriptSegment[],
-  { promptCounter: () => number }
-> = (segments, node, path, { promptCounter }) => {
+  { stopPointCounter: () => number }
+> = (segments, node, path, { stopPointCounter }) => {
   if (isElement(node)) {
     const { type } = node;
     invariant(isKeyword(type), `unexpected element: ${formatNode(node)}`);
 
     let segment;
     if (type === KEYWORDS.If) {
-      segment = resolveIfSegment(node.props, path, promptCounter);
+      segment = resolveIfSegment(node.props, path, stopPointCounter);
     } else if (type === KEYWORDS.For) {
-      segment = resolveForSegment(node.props, path, promptCounter);
+      segment = resolveForSegment(node.props, path, stopPointCounter);
     } else if (type === KEYWORDS.While) {
-      segment = resolveWhileSegment(node.props, path, promptCounter);
+      segment = resolveWhileSegment(node.props, path, stopPointCounter);
     } else if (type === KEYWORDS.Vars) {
       segment = resolveVarsSegment(node.props);
     } else if (type === KEYWORDS.Prompt) {
-      segment = resolvePromptSegment(node.props, promptCounter);
+      segment = resolvePromptSegment(node.props, stopPointCounter);
     } else if (type === KEYWORDS.Label) {
       segment = resolveLabelSegment(node.props);
     } else if (type === KEYWORDS.Call) {
-      segment = resolveCallSegemnt(node.props, promptCounter);
+      segment = resolveCallSegemnt(node.props, stopPointCounter);
     } else {
       invariant(false, `unexpected keyword: ${formatNode(node)}`);
     }
@@ -247,9 +247,9 @@ const segmentsReducer: NodeReducer<
 const resolveSegments = (
   node: MachinatScriptNode,
   path: string,
-  promptCounter: () => number
+  stopPointCounter: () => number
 ) => {
-  return reduce(node, segmentsReducer, [], path, { promptCounter });
+  return reduce(node, segmentsReducer, [], path, { stopPointCounter });
 };
 
 const resolve = (node: MachinatScriptNode) => {

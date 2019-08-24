@@ -1,12 +1,8 @@
 // @flow
-// @jsx Machinat
-import Machinat from 'machinat';
-import { StateService } from 'machinat-session';
-import { MACHINAT_SCRIPT_TYPE, SCRIPT_STATE_KEY } from './constant';
+import { MACHINAT_SCRIPT_TYPE } from './constant';
 import resolveScript from './resolve';
 import compile from './compile';
-import { initRuntime } from './runtime';
-import { makeScriptState } from './utils';
+import { initProcessComponent } from './processor';
 import type { MachinatScript, MachinatScriptNode } from './types';
 
 const build = (name: string, src: MachinatScriptNode): MachinatScript => {
@@ -18,28 +14,10 @@ const build = (name: string, src: MachinatScriptNode): MachinatScript => {
     name,
     _keyMapping: keyMapping,
     _commands: commands,
-    Init: ({ vars, goTo }) => {
-      const result = initRuntime(script, vars, goTo);
-      if (result.finished) {
-        return result.content;
-      }
-
-      return (
-        <StateService.Consumer key={SCRIPT_STATE_KEY}>
-          {([, setState]) => {
-            setState(state =>
-              state
-                ? { callStack: [...state.callStack, ...result.stack] }
-                : makeScriptState(result.stack)
-            );
-
-            return result.content;
-          }}
-        </StateService.Consumer>
-      );
-    },
+    Init: (null: any),
   };
 
+  script.Init = initProcessComponent(script);
   return script;
 };
 
