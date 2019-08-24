@@ -43,24 +43,24 @@ it('compile if segment ok', () => {
     {
       type: 'jump_cond',
       condition: expect.any(Function),
-      index: 5,
+      offset: 5,
       isNot: false,
     },
     {
       type: 'jump_cond',
       condition: expect.any(Function),
-      index: 8,
+      offset: 7,
       isNot: false,
     },
     { type: 'content', render: expect.any(Function) },
     { type: 'prompt', setter: expect.any(Function), key: 'ask3' },
-    { type: 'jump', index: 11 },
+    { type: 'jump', offset: 7 },
     { type: 'content', render: expect.any(Function) },
     { type: 'prompt', setter: expect.any(Function), key: 'ask1' },
-    { type: 'jump', index: 11 },
+    { type: 'jump', offset: 4 },
     { type: 'content', render: expect.any(Function) },
     { type: 'prompt', setter: expect.any(Function), key: 'ask2' },
-    { type: 'jump', index: 11 },
+    { type: 'jump', offset: 1 },
   ]);
   expect(commands[0].condition({})).toBe(false);
   expect(commands[1].condition({})).toBe(true);
@@ -94,13 +94,13 @@ it('compile while segment ok', () => {
   expect(commands).toEqual([
     {
       type: 'jump_cond',
-      index: 4,
+      offset: 4,
       condition: expect.any(Function),
       isNot: true,
     },
     { type: 'content', render: expect.any(Function) },
     { type: 'prompt', setter: expect.any(Function), key: 'ask' },
-    { type: 'jump', index: 0 },
+    { type: 'jump', offset: -3 },
   ]);
   expect(keyMapping).toEqual(new Map([['a_while', 0], ['ask', 2]]));
 
@@ -133,12 +133,12 @@ it('compile for segment ok', () => {
     {
       type: 'jump_cond',
       condition: expect.any(Function),
-      index: 5,
+      offset: 4,
       isNot: true,
     },
     { type: 'content', render: expect.any(Function) },
     { type: 'prompt', setter: expect.any(Function), key: 'ask' },
-    { type: 'jump', index: 0 },
+    { type: 'jump', offset: -4 },
     { type: 'set_vars', setter: expect.any(Function) },
   ]);
   expect(keyMapping).toEqual(new Map([['a_for', 0], ['ask', 3]]));

@@ -121,12 +121,12 @@ export type SetVarsCommand = {|
 
 export type JumpCommand = {
   type: 'jump',
-  index: number,
+  offset: number,
 };
 
 export type JumpCondCommand = {|
   type: 'jump_cond',
-  index: number,
+  offset: number,
   condition: VarsMatcher,
   isNot: boolean,
 |};

@@ -325,14 +325,14 @@ const compile = (segments: ScriptSegment[]): CompileResult => {
 
   // translate "goto tag" to "jump index"
   const commands: ScriptCommand[] = [];
-  for (const command of mediateCommands) {
+  for (const [idx, command] of mediateCommands.entries()) {
     if (command.type === 'goto') {
       const targetIdx = labelMapping.get(command.to);
       invariant(targetIdx !== undefined, `??????????????`);
 
       commands.push({
         type: 'jump',
-        index: targetIdx,
+        offset: targetIdx - idx,
       });
     } else if (command.type === 'goto_cond') {
       const { to, condition, isNot } = command;
@@ -341,7 +341,7 @@ const compile = (segments: ScriptSegment[]): CompileResult => {
 
       commands.push({
         type: 'jump_cond',
-        index: targetIdx,
+        offset: targetIdx - idx,
         condition,
         isNot,
       });

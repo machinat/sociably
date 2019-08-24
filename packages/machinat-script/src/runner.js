@@ -48,10 +48,10 @@ const execute = (
     } else if (command.type === 'set_vars') {
       vars = merge(vars, command.setter(vars));
     } else if (command.type === 'jump') {
-      cursor = command.index;
+      cursor += command.offset - 1;
     } else if (command.type === 'jump_cond') {
       if (command.condition(vars) !== command.isNot) {
-        cursor = command.index;
+        cursor += command.offset - 1;
       }
     } else if (command.type === 'prompt') {
       return {

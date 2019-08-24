@@ -8,14 +8,14 @@ Array [
   },
   Object {
     "condition": [Function],
-    "index": 6,
     "isNot": false,
+    "offset": 5,
     "type": "jump_cond",
   },
   Object {
     "condition": [Function],
-    "index": 11,
     "isNot": false,
+    "offset": 9,
     "type": "jump_cond",
   },
   Object {
@@ -48,13 +48,13 @@ Array [
     "withVars": [Function],
   },
   Object {
-    "index": 18,
+    "offset": 13,
     "type": "jump",
   },
   Object {
     "condition": [Function],
-    "index": 10,
     "isNot": true,
+    "offset": 4,
     "type": "jump_cond",
   },
   Object {
@@ -67,11 +67,11 @@ Array [
     "type": "prompt",
   },
   Object {
-    "index": 6,
+    "offset": -3,
     "type": "jump",
   },
   Object {
-    "index": 18,
+    "offset": 8,
     "type": "jump",
   },
   Object {
@@ -80,8 +80,8 @@ Array [
   },
   Object {
     "condition": [Function],
-    "index": 16,
     "isNot": true,
+    "offset": 4,
     "type": "jump_cond",
   },
   Object {
@@ -94,7 +94,7 @@ Array [
     "type": "prompt",
   },
   Object {
-    "index": 11,
+    "offset": -4,
     "type": "jump",
   },
   Object {
@@ -102,7 +102,7 @@ Array [
     "type": "set_vars",
   },
   Object {
-    "index": 18,
+    "offset": 1,
     "type": "jump",
   },
   Object {

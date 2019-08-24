@@ -228,7 +228,7 @@ describe('behavior of commands', () => {
   test('run jump command', () => {
     const script = mockScript([
       { type: 'content', render: () => 'foo' },
-      { type: 'jump', index: 3 },
+      { type: 'jump', offset: 2 },
       { type: 'content', render: () => 'bar' },
       { type: 'content', render: () => 'baz' },
     ]);
@@ -243,7 +243,7 @@ describe('behavior of commands', () => {
   test('run jump command to overflow index', () => {
     const script = mockScript([
       { type: 'content', render: () => 'foo' },
-      { type: 'jump', index: 3 },
+      { type: 'jump', offset: 2 },
       { type: 'content', render: () => 'bar' },
     ]);
     expect(testRunning(script, {})).toEqual({
@@ -261,7 +261,7 @@ describe('behavior of commands', () => {
         type: 'jump_cond',
         condition: () => true,
         isNot: false,
-        index: 3,
+        offset: 2,
       },
       { type: 'content', render: () => 'bar' },
       { type: 'content', render: () => 'baz' },
@@ -285,7 +285,7 @@ describe('behavior of commands', () => {
   test('run jump_cond command with isNot set to true', () => {
     const script = mockScript([
       { type: 'content', render: () => 'foo' },
-      { type: 'jump_cond', condition: () => true, isNot: true, index: 3 },
+      { type: 'jump_cond', condition: () => true, isNot: true, offset: 2 },
       { type: 'content', render: () => 'bar' },
       { type: 'content', render: () => 'baz' },
     ]);
@@ -310,7 +310,7 @@ describe('running whole script', () => {
   const SubScript = mockScript(
     [
       { type: 'content', render: () => 'hello' },
-      { type: 'jump_cond', condition: () => true, isNot: false, index: 3 },
+      { type: 'jump_cond', condition: () => true, isNot: false, offset: 2 },
       { type: 'prompt', setter: () => ({}), key: 'CHILD_PROMPT' },
     ],
     new Map([['BEGIN', 0], ['CHILD_PROMPT', 2]]),
@@ -324,7 +324,7 @@ describe('running whole script', () => {
         render: ({ descs }) => (descs ? descs.join(', ') : 'empty'),
       },
       { type: 'set_vars', setter: ({ t }) => ({ t: (t || 0) + 1 }) },
-      { type: 'jump_cond', condition: () => true, isNot: true, index: 6 },
+      { type: 'jump_cond', condition: () => true, isNot: true, offset: 4 },
       {
         type: 'prompt',
         setter: ({ descs }, { event: { text } }) => ({
@@ -339,7 +339,7 @@ describe('running whole script', () => {
         gotoKey: 'BEGIN',
         key: 'CALL',
       },
-      { type: 'jump', index: 0 },
+      { type: 'jump', offset: -5 },
       { type: 'content', render: () => 'world' },
     ],
     new Map([['BEGIN', 0], ['PROMPT', 3], ['CALL', 4]]),
