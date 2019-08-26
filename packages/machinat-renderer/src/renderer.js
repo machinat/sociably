@@ -53,7 +53,7 @@ type GeneralComponentDelegate<Value, Native> = (
   path: string
 ) => Promise<null | InnerSegment<Value, Native>[]>;
 
-const checkSegmentDangerously = <Value, Native: MachinatNativeComponent<Value>>(
+const checkSegmentAssertedly = <Value, Native: MachinatNativeComponent<Value>>(
   allowPause: boolean,
   atSurface: boolean,
   segment: InnerSegment<Value, Native>
@@ -150,7 +150,7 @@ export default class MachinatRenderer<
     )[] = await Promise.all(renderings);
 
     const segments: InnerSegment<Value, Native>[] = [];
-    const checkSeg = checkSegmentDangerously.bind(
+    const checkSeg = checkSegmentAssertedly.bind(
       undefined,
       allowPause,
       atSurface
@@ -183,15 +183,18 @@ export default class MachinatRenderer<
   ): Promise<null | InnerSegment<Value, Native>[]> => {
     const {
       type: { _service: service },
-      props: { children, consume: input },
+      props: { children, ...cosumerProps },
     } = node;
     const provided = servicesProvided.get(service);
 
     let served;
     if (provided !== undefined) {
-      served = await provided(input, thunkRegistry.register);
+      served = await provided(cosumerProps, thunkRegistry.register);
     } else {
-      served = await service._serve(undefined)(input, thunkRegistry.register);
+      served = await service._serve(undefined)(
+        cosumerProps,
+        thunkRegistry.register
+      );
     }
 
     const segments = await this._renderImpl(
@@ -275,11 +278,11 @@ export default class MachinatRenderer<
     } else if (isProvider(node)) {
       const {
         type: { _service: service },
-        props: { provide: input, children },
+        props: { children, ...providerProps },
       } = ((node: any): MachinatProvider<any, any>);
 
       const newProvided = new Map(servicesProvided);
-      newProvided.set(service, service._serve(input));
+      newProvided.set(service, service._serve(providerProps));
 
       traverse(
         children,

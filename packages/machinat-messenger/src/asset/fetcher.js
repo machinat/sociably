@@ -10,10 +10,10 @@ import {
 const consumerFactory = (fnName: string, resource: string) => {
   const box = {
     [fnName]: (
-      tag: string,
+      name: string,
       options?: { invariant?: boolean }
     ): AssetConsumerTarget => ({
-      tag,
+      name,
       resource,
       invariant: !!(options && options.invariant),
     }),
@@ -22,13 +22,10 @@ const consumerFactory = (fnName: string, resource: string) => {
   return box[fnName];
 };
 
-export const getAttachmentId = consumerFactory('getAttachmentId', ATTACHMENT);
-export const getPersonaId = consumerFactory('getPersonaId', PERSONA);
-export const getCustomLabelId = consumerFactory(
-  'getCustomLabelId',
-  CUSTOM_LABEL
-);
-export const getMessageCreativeId = consumerFactory(
-  'getMessageCreativeId',
+export const attachmentId = consumerFactory('attachmentId', ATTACHMENT);
+export const personaId = consumerFactory('personaId', PERSONA);
+export const customLabelId = consumerFactory('customLabelId', CUSTOM_LABEL);
+export const messageCreativeId = consumerFactory(
+  'messageCreativeId',
   MESSAGE_CREATIVE
 );

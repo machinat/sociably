@@ -1,30 +1,30 @@
 import {
-  getAttachmentId,
-  getCustomLabelId,
-  getMessageCreativeId,
-  getPersonaId,
-} from '../consumer';
+  attachmentId,
+  customLabelId,
+  messageCreativeId,
+  personaId,
+} from '../fetcher';
 
 it.each([
-  [getAttachmentId, 'attachment'],
-  [getCustomLabelId, 'custom_label'],
-  [getMessageCreativeId, 'message_creative'],
-  [getPersonaId, 'persona'],
+  [attachmentId, 'attachment'],
+  [customLabelId, 'custom_label'],
+  [messageCreativeId, 'message_creative'],
+  [personaId, 'persona'],
 ])('%p generate asset consumer target object', (getId, resource) => {
   expect(getId('foo')).toEqual({
-    tag: 'foo',
+    name: 'foo',
     resource,
     invariant: false,
   });
 
   expect(getId('foo', { invariant: false })).toEqual({
-    tag: 'foo',
+    name: 'foo',
     resource,
     invariant: false,
   });
 
   expect(getId('foo', { invariant: true })).toEqual({
-    tag: 'foo',
+    name: 'foo',
     resource,
     invariant: true,
   });

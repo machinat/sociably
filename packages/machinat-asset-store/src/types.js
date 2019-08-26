@@ -4,14 +4,14 @@ export interface AssetStore {
     platform: string,
     entity: string,
     resource: string,
-    tag: string
+    name: string
   ): Promise<void | string | number>;
 
   set(
     platform: string,
     entity: string,
     resource: string,
-    tag: string,
+    name: string,
     id: string | number
   ): Promise<boolean>;
 
@@ -25,7 +25,7 @@ export interface AssetStore {
     platform: string,
     entity: string,
     resource: string,
-    tag: string
+    name: string
   ): Promise<boolean>;
 
   deleteById(
@@ -37,21 +37,25 @@ export interface AssetStore {
 }
 
 export interface ScopedAssetAccessor {
-  getAsset(resource: string, tag: string): Promise<void | string | number>;
+  getAsset(resource: string, name: string): Promise<void | string | number>;
 
   setAsset(
     resource: string,
-    tag: string,
+    name: string,
     id: string | number
   ): Promise<boolean>;
 
   listAssets(resource: string): Promise<null | Map<string, string | number>>;
-  deleteAsset(resource: string, tag: string): Promise<boolean>;
+  deleteAsset(resource: string, name: string): Promise<boolean>;
   deleteAssetById(resource: string, id: string): Promise<boolean>;
 }
 
+export type AssetProviderProps = {| accessor: ScopedAssetAccessor |};
+
 export type AssetConsumerTarget = {|
   resource: string,
-  tag: string,
+  name: string,
   invariant: boolean,
 |};
+
+export type AssetConsumerProps = {| fetch: AssetConsumerTarget |};

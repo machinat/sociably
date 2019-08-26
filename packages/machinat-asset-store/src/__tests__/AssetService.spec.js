@@ -16,7 +16,9 @@ it('is machinat service', () => {
 
 it('return stored id', async () => {
   await expect(
-    AssetService._serve(assetsAccessor)({ resource: 'villager', tag: 'John' })
+    AssetService._serve({ accessor: assetsAccessor })({
+      fetch: { resource: 'villager', name: 'John' },
+    })
   ).resolves.toBe('_stored_asset_id_');
 
   expect(assetsAccessor.getAsset.mock).toHaveBeenCalledTimes(1);
@@ -27,7 +29,9 @@ it('return undefined if asset not existed', async () => {
   assetsAccessor.getAsset.mock.fake(async () => undefined);
 
   await expect(
-    AssetService._serve(assetsAccessor)({ resource: 'villager', tag: 'Mary' })
+    AssetService._serve({ accessor: assetsAccessor })({
+      fetch: { resource: 'villager', name: 'Mary' },
+    })
   ).resolves.toBe(undefined);
 
   expect(assetsAccessor.getAsset.mock).toHaveBeenCalledTimes(1);
@@ -38,10 +42,8 @@ it('throw if consumption.invariant set to true and asset not existed', async () 
   assetsAccessor.getAsset.mock.fake(async () => undefined);
 
   await expect(
-    AssetService._serve(assetsAccessor)({
-      resource: 'villager',
-      tag: 'Joe',
-      invariant: true,
+    AssetService._serve({ accessor: assetsAccessor })({
+      fetch: { resource: 'villager', name: 'Joe', invariant: true },
     })
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"asset ( villager [ Joe ] ) not existed"`
@@ -50,7 +52,7 @@ it('throw if consumption.invariant set to true and asset not existed', async () 
 
 it('throw if accessor not given', () => {
   expect(() =>
-    AssetService._serve()({ resource: 'villager', tag: 'Mary' })
+    AssetService._serve()({ fetch: { resource: 'villager', name: 'Mary' } })
   ).toThrowErrorMatchingInlineSnapshot(
     `"provide prop of AssetService.Provider must not be empty"`
   );

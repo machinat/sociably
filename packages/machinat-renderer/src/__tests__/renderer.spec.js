@@ -385,26 +385,26 @@ describe('#render()', () => {
     const Wrapper = (
       { children } // eslint-disable-line react/prop-types
     ) => (
-      <ServiceBar.Provider provide="B">
-        <ServiceFoo.Consumer consume="X">{fooSpy}</ServiceFoo.Consumer>
+      <ServiceBar.Provider bar={0}>
+        <ServiceFoo.Consumer foo={1}>{fooSpy}</ServiceFoo.Consumer>
         {children}
       </ServiceBar.Provider>
     );
 
     await expect(
       renderer.render(
-        <ServiceFoo.Provider provide="A">
+        <ServiceFoo.Provider foo={0}>
           <Wrapper>
-            <ServiceBaz.Provider provide="C">
-              <ServiceBar.Consumer consume="Y">{barSpy}</ServiceBar.Consumer>
+            <ServiceBaz.Provider baz={0}>
+              <ServiceBar.Consumer bar={1}>{barSpy}</ServiceBar.Consumer>
               <Native>
-                <ServiceBaz.Consumer consume="Z">{bazSpy}</ServiceBaz.Consumer>
+                <ServiceBaz.Consumer baz={1}>{bazSpy}</ServiceBaz.Consumer>
               </Native>
-              <ServiceFoo.Consumer consume="x">
+              <ServiceFoo.Consumer foo={2}>
                 {x => (
-                  <ServiceBar.Consumer consume="y">
+                  <ServiceBar.Consumer bar={2}>
                     {y => (
-                      <ServiceBaz.Consumer consume="z">
+                      <ServiceBaz.Consumer baz={2}>
                         {z => x + y + z}
                       </ServiceBaz.Consumer>
                     )}
@@ -453,33 +453,57 @@ Array [
     expect(bazSpy.mock).toHaveBeenCalledWith('BAZ');
 
     expect(serveFoo.mock).toHaveBeenCalledTimes(1);
-    expect(serveFoo.mock).toHaveBeenCalledWith('A');
+    expect(serveFoo.mock).toHaveBeenCalledWith({ foo: 0 });
     const provideFoo = serveFoo.mock.calls[0].result;
     expect(provideFoo.mock).toHaveBeenCalledTimes(2);
-    expect(provideFoo.mock).toHaveBeenCalledWith('X', expect.any(Function));
-    expect(provideFoo.mock).toHaveBeenCalledWith('x', expect.any(Function));
+    expect(provideFoo.mock).toHaveBeenCalledWith(
+      { foo: 1 },
+      expect.any(Function)
+    );
+    expect(provideFoo.mock).toHaveBeenCalledWith(
+      { foo: 2 },
+      expect.any(Function)
+    );
 
     expect(serveBar.mock).toHaveBeenCalledTimes(1);
-    expect(serveBar.mock).toHaveBeenCalledWith('B');
+    expect(serveBar.mock).toHaveBeenCalledWith({ bar: 0 });
     const provideBar = serveBar.mock.calls[0].result;
     expect(provideBar.mock).toHaveBeenCalledTimes(2);
-    expect(provideBar.mock).toHaveBeenCalledWith('Y', expect.any(Function));
-    expect(provideBar.mock).toHaveBeenCalledWith('y', expect.any(Function));
+    expect(provideBar.mock).toHaveBeenCalledWith(
+      { bar: 1 },
+      expect.any(Function)
+    );
+    expect(provideBar.mock).toHaveBeenCalledWith(
+      { bar: 2 },
+      expect.any(Function)
+    );
 
     expect(serveBaz.mock).toHaveBeenCalledTimes(1);
-    expect(serveBaz.mock).toHaveBeenCalledWith('C');
+    expect(serveBaz.mock).toHaveBeenCalledWith({ baz: 0 });
     const provideBaz = serveBaz.mock.calls[0].result;
     expect(provideBaz.mock).toHaveBeenCalledTimes(2);
-    expect(provideBaz.mock).toHaveBeenCalledWith('Z', expect.any(Function));
-    expect(provideBaz.mock).toHaveBeenCalledWith('z', expect.any(Function));
+    expect(provideBaz.mock).toHaveBeenCalledWith(
+      { baz: 1 },
+      expect.any(Function)
+    );
+    expect(provideBaz.mock).toHaveBeenCalledWith(
+      { baz: 2 },
+      expect.any(Function)
+    );
   });
 
   test('without/with/overwrite service provided', async () => {
     const renderer = new Renderer('Test', NATIVE_TYPE, generalElementDelegate);
 
     const mockReturnOpt = { mockReturnValue: true };
-    const serveFoo = moxy(x => async () => `FOO${x || ''}`, mockReturnOpt);
-    const serveBar = moxy(x => async () => `BAR${x || ''}`, mockReturnOpt);
+    const serveFoo = moxy(
+      ({ x } = {}) => async () => `FOO${x || ''}`,
+      mockReturnOpt
+    );
+    const serveBar = moxy(
+      ({ x } = {}) => async () => `BAR${x || ''}`,
+      mockReturnOpt
+    );
     const ServiceFoo = Machinat.createService(serveFoo);
     const ServiceBar = Machinat.createService(serveBar);
 
@@ -490,17 +514,17 @@ Array [
           <ServiceFoo.Consumer>{spy}</ServiceFoo.Consumer>
           <ServiceBar.Consumer>{spy}</ServiceBar.Consumer>
 
-          <ServiceFoo.Provider provide="O">
-            <ServiceBar.Provider provide="O">
+          <ServiceFoo.Provider x="O">
+            <ServiceBar.Provider x="O">
               <ServiceFoo.Consumer>{spy}</ServiceFoo.Consumer>
               <ServiceBar.Consumer>{spy}</ServiceBar.Consumer>
 
-              <ServiceFoo.Provider provide="L">
-                <ServiceBar.Provider provide="E">
+              <ServiceFoo.Provider x="L">
+                <ServiceBar.Provider x="E">
                   <ServiceFoo.Consumer>{spy}</ServiceFoo.Consumer>
                   <ServiceBar.Consumer>{spy}</ServiceBar.Consumer>
 
-                  <ServiceFoo.Provider provide="H">
+                  <ServiceFoo.Provider x="H">
                     <ServiceFoo.Consumer>{spy}</ServiceFoo.Consumer>
                     <ServiceBar.Consumer>{spy}</ServiceBar.Consumer>
                   </ServiceFoo.Provider>
@@ -582,11 +606,11 @@ Array [
     expect(serveFoo.mock).toHaveBeenCalledTimes(5);
     expect(serveFoo.mock).toHaveBeenNthCalledWith(1, undefined);
     expect(serveFoo.mock.calls[0].result.mock).toHaveBeenCalledTimes(1);
-    expect(serveFoo.mock).toHaveBeenNthCalledWith(2, 'O');
+    expect(serveFoo.mock).toHaveBeenNthCalledWith(2, { x: 'O' });
     expect(serveFoo.mock.calls[1].result.mock).toHaveBeenCalledTimes(1);
-    expect(serveFoo.mock).toHaveBeenNthCalledWith(3, 'L');
+    expect(serveFoo.mock).toHaveBeenNthCalledWith(3, { x: 'L' });
     expect(serveFoo.mock.calls[2].result.mock).toHaveBeenCalledTimes(1);
-    expect(serveFoo.mock).toHaveBeenNthCalledWith(4, 'H');
+    expect(serveFoo.mock).toHaveBeenNthCalledWith(4, { x: 'H' });
     expect(serveFoo.mock.calls[3].result.mock).toHaveBeenCalledTimes(1);
     expect(serveFoo.mock).toHaveBeenNthCalledWith(5, undefined);
     expect(serveFoo.mock.calls[4].result.mock).toHaveBeenCalledTimes(1);
@@ -594,9 +618,9 @@ Array [
     expect(serveBar.mock).toHaveBeenCalledTimes(4);
     expect(serveBar.mock).toHaveBeenNthCalledWith(1, undefined);
     expect(serveBar.mock.calls[0].result.mock).toHaveBeenCalledTimes(1);
-    expect(serveBar.mock).toHaveBeenNthCalledWith(2, 'O');
+    expect(serveBar.mock).toHaveBeenNthCalledWith(2, { x: 'O' });
     expect(serveBar.mock.calls[1].result.mock).toHaveBeenCalledTimes(1);
-    expect(serveBar.mock).toHaveBeenNthCalledWith(3, 'E');
+    expect(serveBar.mock).toHaveBeenNthCalledWith(3, { x: 'E' });
     expect(serveBar.mock.calls[2].result.mock).toHaveBeenCalledTimes(2);
     expect(serveBar.mock).toHaveBeenNthCalledWith(4, undefined);
     expect(serveBar.mock.calls[3].result.mock).toHaveBeenCalledTimes(1);

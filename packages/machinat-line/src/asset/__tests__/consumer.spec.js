@@ -1,22 +1,22 @@
-import { getLIFFAppId, getRichMenuId } from '../consumer';
+import { liffAppId, richMenuId } from '../fetcher';
 
-it.each([[getLIFFAppId, 'liff'], [getRichMenuId, 'rich_menu']])(
+it.each([[liffAppId, 'liff'], [richMenuId, 'rich_menu']])(
   '%p generate asset consumer target object',
   (getId, resource) => {
     expect(getId('foo')).toEqual({
-      tag: 'foo',
+      name: 'foo',
       resource,
       invariant: false,
     });
 
     expect(getId('foo', { invariant: false })).toEqual({
-      tag: 'foo',
+      name: 'foo',
       resource,
       invariant: false,
     });
 
     expect(getId('foo', { invariant: true })).toEqual({
-      tag: 'foo',
+      name: 'foo',
       resource,
       invariant: true,
     });

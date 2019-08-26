@@ -4,14 +4,20 @@ import invariant from 'invariant';
 import type { Session } from './types';
 
 type StateServiceConsumed<T> = [T, ((T) => T) => void];
+type StateServiceProviderProps = {| session: Session |};
+type StateServiceConsumerProps = {| key: string |};
 
-const provideStateService = (_session?: Session) => async (key, thunk) => {
+const provideStateService = ({
+  session,
+}: StateServiceProviderProps = {}) => async (
+  { key }: StateServiceConsumerProps,
+  thunk
+) => {
   invariant(
-    _session,
+    session,
     'session in provided among the scope of <StateService.Consumer />'
   );
 
-  const session = _session;
   const state = await session.get(key);
 
   const updateState = updater => {
@@ -23,8 +29,8 @@ const provideStateService = (_session?: Session) => async (key, thunk) => {
 
 const StateService = Machinat.createService<
   StateServiceConsumed<any>,
-  Session,
-  string
+  StateServiceProviderProps,
+  StateServiceConsumerProps
 >(provideStateService);
 
 export default StateService;

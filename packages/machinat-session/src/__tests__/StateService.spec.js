@@ -8,7 +8,10 @@ const session = moxy({
 
 it('work', async () => {
   const thunk = moxy();
-  const consumingPromise = StateService._serve(session)('some_key', thunk);
+  const consumingPromise = StateService._serve({ session })(
+    { key: 'some_key' },
+    thunk
+  );
 
   await expect(consumingPromise).resolves.toEqual([
     { foo: 'bar' },
@@ -37,7 +40,7 @@ it('work', async () => {
 
 it('throw if session not provided', () =>
   expect(
-    StateService._serve()('some_key', () => {})
+    StateService._serve()({ key: 'some_key' }, () => {})
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"session in provided among the scope of <StateService.Consumer />"`
   ));

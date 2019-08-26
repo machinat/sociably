@@ -34,7 +34,7 @@ class FileAssetStore implements AssetStore {
     platform: string,
     entity: string,
     resource: string,
-    tag: string
+    name: string
   ): Promise<void | string | number> {
     const fd = await this._open(false);
 
@@ -56,7 +56,7 @@ class FileAssetStore implements AssetStore {
         return undefined;
       }
 
-      return (resourceData[tag]: any);
+      return (resourceData[name]: any);
     } finally {
       await thenifiedly.call(fs.close, fd);
     }
@@ -66,7 +66,7 @@ class FileAssetStore implements AssetStore {
     platform: string,
     entity: string,
     resource: string,
-    tag: string,
+    name: string,
     id: string | number
   ) {
     const fd = await this._open(true);
@@ -76,27 +76,27 @@ class FileAssetStore implements AssetStore {
 
       const platformData = this._assets[platform];
       if (!platformData) {
-        this._assets[platform] = { [entity]: { [resource]: { [tag]: id } } };
+        this._assets[platform] = { [entity]: { [resource]: { [name]: id } } };
         await this._write(fd);
         return false;
       }
 
       const entityData = platformData[entity];
       if (!entityData) {
-        platformData[entity] = { [resource]: { [tag]: id } };
+        platformData[entity] = { [resource]: { [name]: id } };
         await this._write(fd);
         return false;
       }
 
       const resourceData = entityData[resource];
       if (!resourceData) {
-        entityData[resource] = { [tag]: id };
+        entityData[resource] = { [name]: id };
         await this._write(fd);
         return false;
       }
 
-      const resourceExisted = !!resourceData[tag];
-      resourceData[tag] = id;
+      const resourceExisted = !!resourceData[name];
+      resourceData[name] = id;
 
       await this._write(fd);
       return resourceExisted;
@@ -136,7 +136,7 @@ class FileAssetStore implements AssetStore {
     platform: string,
     entity: string,
     resource: string,
-    tag: string
+    name: string
   ) {
     const fd = await this._open(true);
 
@@ -158,8 +158,8 @@ class FileAssetStore implements AssetStore {
         return false;
       }
 
-      if (hasOwnProperty.call(resourceData, tag)) {
-        delete resourceData[tag];
+      if (hasOwnProperty.call(resourceData, name)) {
+        delete resourceData[name];
         await this._write(fd);
 
         return true;

@@ -1,30 +1,29 @@
 // @flow
 import invariant from 'invariant';
 import Machinat from 'machinat';
-import type { ScopedAssetAccessor, AssetConsumerTarget } from './types';
+import type { AssetProviderProps, AssetConsumerProps } from './types';
+
+type AssetIdResult = void | string | number;
 
 const AssetService = Machinat.createService<
-  void | string | number,
-  ScopedAssetAccessor,
-  AssetConsumerTarget
->((_accessor?: ScopedAssetAccessor) => {
+  AssetIdResult,
+  AssetProviderProps,
+  AssetConsumerProps
+>(({ accessor }: AssetProviderProps = {}) => {
   invariant(
-    _accessor,
+    accessor,
     'provide prop of AssetService.Provider must not be empty'
   );
 
-  const accessor = _accessor; // NOTE: to satisfy flow
   return async ({
-    resource,
-    tag,
-    invariant: isInvariant,
-  }: AssetConsumerTarget) => {
-    const id = await accessor.getAsset(resource, tag);
+    fetch: { resource, name, invariant: isInvariant },
+  }: AssetConsumerProps) => {
+    const id = await accessor.getAsset(resource, name);
 
     if (isInvariant) {
       invariant(
         id !== undefined,
-        `asset ( ${resource} [ ${tag} ] ) not existed`
+        `asset ( ${resource} [ ${name} ] ) not existed`
       );
     }
 

@@ -83,46 +83,46 @@ export type MachinatPause = {|
 
 export type MachinatChildren = MachinatNode;
 
-type MachinatProviderType<Served, ProvideInput> = {|
+type MachinatProviderType<Served, ProvideProps> = {|
   $$typeof: MACHINAT_PROVIDER_TYPE,
-  _service: MachinatService<Served, ProvideInput, any>, // eslint-disable-line no-use-before-define
+  _service: MachinatService<Served, ProvideProps, any>,
 |};
 
-export type MachinatProvider<Served, ProvideInput> = {|
+export type MachinatProvider<Served, ProvideProps> = {|
   $$typeof: MACHINAT_ELEMENT_TYPE,
-  type: MachinatProviderType<Served, ProvideInput>,
+  type: MachinatProviderType<Served, ProvideProps>,
   props: {|
     children: MachinatNode,
-    provide: ProvideInput,
+    ...ProvideProps,
   |},
 |};
 
-type MachinatConsumerType<Served, ConsumeInput> = {|
+type MachinatConsumerType<Served, ConsumeProps> = {|
   $$typeof: MACHINAT_CONSUMER_TYPE,
-  _service: MachinatService<Served, any, ConsumeInput>, // eslint-disable-line no-use-before-define
+  _service: MachinatService<Served, any, ConsumeProps>,
 |};
 
-export type MachinatConsumer<Served, ConsumeInput> = {|
+export type MachinatConsumer<Served, ConsumeProps> = {|
   $$typeof: MACHINAT_ELEMENT_TYPE,
-  type: MachinatConsumerType<Served, ConsumeInput>,
+  type: MachinatConsumerType<Served, ConsumeProps>,
   props: {|
     children: Served => MachinatNode,
-    consume: ConsumeInput,
+    ...ConsumeProps,
   |},
 |};
 
 export type RenderThunkFn = () => Promise<void>;
 
-export type ServiceProvideFn<Served, ProvideInput, ConsumeInput> = (
-  provideInput?: ProvideInput
+export type ServiceProvideFn<Served, ProvideProps, ConsumeProps> = (
+  provideInput?: ProvideProps
 ) => (
-  consumeInput: ConsumeInput,
+  consumeInput: ConsumeProps,
   registerThunk: (thunk: RenderThunkFn) => void
 ) => Promise<Served>;
 
-export type MachinatService<Served, ProvideInput, ConsumeInput> = {|
+export type MachinatService<Served, ProvideProps, ConsumeProps> = {|
   $$typeof: MACHINAT_SERVICE_TYPE,
-  Consumer: MachinatConsumerType<Served, ConsumeInput>,
-  Provider: MachinatProviderType<Served, ProvideInput>,
-  _serve: ServiceProvideFn<Served, ProvideInput, ConsumeInput>,
+  Consumer: MachinatConsumerType<Served, ConsumeProps>,
+  Provider: MachinatProviderType<Served, ProvideProps>,
+  _serve: ServiceProvideFn<Served, ProvideProps, ConsumeProps>,
 |};
