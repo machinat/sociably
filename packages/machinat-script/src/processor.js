@@ -50,6 +50,7 @@ export const initProcessComponent = (script: MachinatScript) => {
           setState((state: ScriptProcessingState) =>
             state
               ? {
+                  ...state,
                   callStack: [
                     ...state.callStack,
                     ...archiveScriptState(result.stack).callStack,

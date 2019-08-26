@@ -232,6 +232,7 @@ describe('initProcessComponent', () => {
         ],
       })
     ).toEqual({
+      version: 'V0',
       callStack: [
         { name: 'Script2', vars: { foo: 'bar' }, stoppedAt: 'somewhere' },
         { name: 'Script', vars: { foo: 'baz' }, stoppedAt: 'over_rainbow' },

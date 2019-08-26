@@ -5,7 +5,7 @@ export interface Session {
   get<T>(key: string): Promise<void | T>;
   set<T>(key: string, state: T): Promise<void>;
   delete(key: string): Promise<boolean>;
-  update<T>(key: string, (state: void | T) => void | T): Promise<void>;
+  update<T>(key: string, (state: void | T) => void | $Shape<T>): Promise<void>;
   clear(): Promise<void>;
 }
 

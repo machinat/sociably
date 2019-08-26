@@ -36,19 +36,24 @@ class RedisSession implements Session {
   }
 
   async update(key: string, update: any => any) {
-    let updated = null;
+    let isUpdated = null;
+    const { uid } = this._channel;
 
-    while (updated === null) {
+    while (isUpdated === null) {
       /* eslint-disable no-await-in-loop */
-      await thenifiedly.callMethod('watch', this._client, this._channel.uid);
+      await thenifiedly.callMethod('watch', this._client, uid);
 
       const state = await this.get(key);
-      updated = await thenifiedly.callMethod(
-        'exec',
-        this._client
-          .multi()
-          .hset(this._channel.uid, key, JSON.stringify(update(state)))
-      );
+      const newState = update(state);
+
+      let multi = this._client.multi();
+      if (newState === undefined) {
+        multi.hdel(uid, key);
+      } else {
+        multi = multi.hset(uid, key, JSON.stringify(newState));
+      }
+
+      isUpdated = await thenifiedly.callMethod('exec', multi);
       /* eslint-enable no-await-in-loop */
     }
   }

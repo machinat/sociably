@@ -7,24 +7,33 @@ type StateServiceConsumed<T> = [T, ((T) => T) => void];
 type StateServiceProviderProps = {| session: Session |};
 type StateServiceConsumerProps = {| key: string |};
 
-const provideStateService = ({
-  session,
-}: StateServiceProviderProps = {}) => async (
-  { key }: StateServiceConsumerProps,
-  thunk
-) => {
-  invariant(
-    session,
-    'session in provided among the scope of <StateService.Consumer />'
-  );
+const provideStateService = ({ session }: StateServiceProviderProps = {}) => {
+  const fetchingCache = new Map();
 
-  const state = await session.get(key);
+  return async ({ key }: StateServiceConsumerProps, thunk) => {
+    invariant(
+      session,
+      'session in provided among the scope of <StateService.Consumer />'
+    );
 
-  const updateState = updater => {
-    thunk(() => session.update(key, updater));
+    let promise = fetchingCache.get(key);
+    if (promise === undefined) {
+      promise = session.get(key);
+      fetchingCache.set(key, promise);
+    }
+
+    const state = await promise;
+
+    const setState = updater => {
+      thunk(() =>
+        typeof updater === 'function'
+          ? session.update(key, updater)
+          : session.set(key, updater)
+      );
+    };
+
+    return [state, setState];
   };
-
-  return [state, updateState];
 };
 
 const StateService = Machinat.createService<

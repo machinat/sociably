@@ -22,7 +22,13 @@ class InMemorySession implements Session {
   update(key: string, update: any => any) {
     const state = this._states.get(key);
 
-    this._states.set(key, update(state));
+    const newValues = update(state);
+    if (newValues === undefined) {
+      this.delete(key);
+    } else {
+      this._states.set(key, newValues);
+    }
+
     return Promise.resolve();
   }
 
