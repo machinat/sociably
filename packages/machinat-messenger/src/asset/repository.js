@@ -1,9 +1,6 @@
 // @flow
 import type { MachinatNode } from 'machinat/types';
-import type {
-  AssetsStore,
-  ScopedAssetsAccessor,
-} from 'machinat-asset-store/types';
+import type { AssetsStore, AssetsRepository } from 'machinat-asset-store/types';
 
 import { formatNode } from 'machinat-utility';
 import { MESSENGER, PATH_PERSONAS, PATH_CUSTOM_LABELS } from '../constant';
@@ -15,7 +12,7 @@ import {
   PERSONA,
 } from './resourceType';
 
-class MessengerAssetsManager implements ScopedAssetsAccessor {
+class MessengerAssetsRepository implements AssetsRepository {
   store: AssetsStore;
   bot: MessengerBot;
   pageId: string;
@@ -148,4 +145,4 @@ class MessengerAssetsManager implements ScopedAssetsAccessor {
   }
 }
 
-export default MessengerAssetsManager;
+export default MessengerAssetsRepository;

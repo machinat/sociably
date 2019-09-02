@@ -2,12 +2,12 @@ import moxy from 'moxy';
 import { MACHINAT_SERVICE_TYPE } from 'machinat';
 import AssetsService from '../AssetsService';
 
-const assetsAccessor = moxy({
+const assetsRepository = moxy({
   getAsset: async () => '_stored_asset_id_',
 });
 
 beforeEach(() => {
-  assetsAccessor.mock.reset();
+  assetsRepository.mock.reset();
 });
 
 it('is machinat service', () => {
@@ -16,33 +16,39 @@ it('is machinat service', () => {
 
 it('return stored id', async () => {
   await expect(
-    AssetsService._serve({ accessor: assetsAccessor })({
+    AssetsService._serve({ repository: assetsRepository })({
       fetch: { resource: 'villager', name: 'John' },
     })
   ).resolves.toBe('_stored_asset_id_');
 
-  expect(assetsAccessor.getAsset.mock).toHaveBeenCalledTimes(1);
-  expect(assetsAccessor.getAsset.mock).toHaveBeenCalledWith('villager', 'John');
+  expect(assetsRepository.getAsset.mock).toHaveBeenCalledTimes(1);
+  expect(assetsRepository.getAsset.mock).toHaveBeenCalledWith(
+    'villager',
+    'John'
+  );
 });
 
 it('return undefined if asset not existed', async () => {
-  assetsAccessor.getAsset.mock.fake(async () => undefined);
+  assetsRepository.getAsset.mock.fake(async () => undefined);
 
   await expect(
-    AssetsService._serve({ accessor: assetsAccessor })({
+    AssetsService._serve({ repository: assetsRepository })({
       fetch: { resource: 'villager', name: 'Mary' },
     })
   ).resolves.toBe(undefined);
 
-  expect(assetsAccessor.getAsset.mock).toHaveBeenCalledTimes(1);
-  expect(assetsAccessor.getAsset.mock).toHaveBeenCalledWith('villager', 'Mary');
+  expect(assetsRepository.getAsset.mock).toHaveBeenCalledTimes(1);
+  expect(assetsRepository.getAsset.mock).toHaveBeenCalledWith(
+    'villager',
+    'Mary'
+  );
 });
 
 it('throw if consumption.invariant set to true and asset not existed', async () => {
-  assetsAccessor.getAsset.mock.fake(async () => undefined);
+  assetsRepository.getAsset.mock.fake(async () => undefined);
 
   await expect(
-    AssetsService._serve({ accessor: assetsAccessor })({
+    AssetsService._serve({ repository: assetsRepository })({
       fetch: { resource: 'villager', name: 'Joe', invariant: true },
     })
   ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -50,7 +56,7 @@ it('throw if consumption.invariant set to true and asset not existed', async () 
   );
 });
 
-it('throw if accessor not given', () => {
+it('throw if repository not given', () => {
   expect(() =>
     AssetsService._serve()({ fetch: { resource: 'villager', name: 'Mary' } })
   ).toThrowErrorMatchingInlineSnapshot(

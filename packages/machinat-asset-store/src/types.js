@@ -36,7 +36,7 @@ export interface AssetsStore {
   ): Promise<boolean>;
 }
 
-export interface ScopedAssetsAccessor {
+export interface AssetsRepository {
   getAsset(resource: string, name: string): Promise<void | string | number>;
 
   setAsset(
@@ -50,7 +50,7 @@ export interface ScopedAssetsAccessor {
   deleteAssetById(resource: string, id: string): Promise<boolean>;
 }
 
-export type AssetsProviderProps = {| accessor: ScopedAssetsAccessor |};
+export type AssetsProviderProps = {| repository: AssetsRepository |};
 
 export type AssetsConsumerTarget = {|
   resource: string,

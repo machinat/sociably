@@ -1,9 +1,9 @@
 import moxy from 'moxy';
 import messengerAssetsPlugin from '../plugin';
-import MessengerAssetManager from '../manager';
+import MessengerAssetsRepository from '../repository';
 
-jest.mock('../manager', () =>
-  jest.requireActual('moxy').default(function MockAccessor() {
+jest.mock('../repository', () =>
+  jest.requireActual('moxy').default(function MockRepository() {
     this.setAsset = async () => true;
   })
 );
@@ -12,10 +12,10 @@ const store = moxy();
 const bot = moxy();
 
 beforeEach(() => {
-  MessengerAssetManager.mock.clear();
+  MessengerAssetsRepository.mock.clear();
 });
 
-it('attach accessor to event frame', async () => {
+it('attach repository to event frame', async () => {
   const next = moxy(async () => ({ foo: 'bar' }));
   const frame = { hello: 'droid' };
 
@@ -26,14 +26,14 @@ it('attach accessor to event frame', async () => {
   expect(next.mock).toHaveBeenCalledTimes(1);
   expect(next.mock).toHaveBeenCalledWith({
     hello: 'droid',
-    assets: expect.any(MessengerAssetManager),
+    assets: expect.any(MessengerAssetsRepository),
   });
 
-  expect(MessengerAssetManager.mock).toHaveBeenCalledTimes(1);
-  expect(MessengerAssetManager.mock).toHaveBeenCalledWith(store, bot);
+  expect(MessengerAssetsRepository.mock).toHaveBeenCalledTimes(1);
+  expect(MessengerAssetsRepository.mock).toHaveBeenCalledWith(store, bot);
 
   expect(next.mock.calls[0].args[0].assets).toBe(
-    MessengerAssetManager.mock.calls[0].instance
+    MessengerAssetsRepository.mock.calls[0].instance
   );
 });
 
@@ -80,23 +80,23 @@ it('store asset created within send api', async () => {
   expect(next.mock).toHaveBeenCalledTimes(1);
   expect(next.mock).toHaveBeenCalledWith(frame);
 
-  expect(MessengerAssetManager.mock).toHaveBeenCalledTimes(1);
-  const accessor = MessengerAssetManager.mock.calls[0].instance;
+  expect(MessengerAssetsRepository.mock).toHaveBeenCalledTimes(1);
+  const repository = MessengerAssetsRepository.mock.calls[0].instance;
 
-  expect(accessor.setAsset.mock).toHaveBeenCalledTimes(3);
-  expect(accessor.setAsset.mock).toHaveBeenNthCalledWith(
+  expect(repository.setAsset.mock).toHaveBeenCalledTimes(3);
+  expect(repository.setAsset.mock).toHaveBeenNthCalledWith(
     1,
     'attachment',
     'foo',
     '_ATTACHMENT_1_'
   );
-  expect(accessor.setAsset.mock).toHaveBeenNthCalledWith(
+  expect(repository.setAsset.mock).toHaveBeenNthCalledWith(
     2,
     'attachment',
     'bar',
     '_ATTACHMENT_2_'
   );
-  expect(accessor.setAsset.mock).toHaveBeenNthCalledWith(
+  expect(repository.setAsset.mock).toHaveBeenNthCalledWith(
     3,
     'attachment',
     'baz',

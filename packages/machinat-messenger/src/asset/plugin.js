@@ -10,18 +10,18 @@ import type {
 } from '../types';
 import type MessengerBot from '../bot';
 
-import MessengerAssetManager from './manager';
+import MessengerAssetRepository from './repository';
 import { ATTACHMENT } from './resourceType';
 
 const messengerAssetsPlugin = (store: AssetsStore): MessengerBotPlugin => (
   bot: MessengerBot
 ) => {
-  const manager = new MessengerAssetManager(store, bot);
+  const repository = new MessengerAssetRepository(store, bot);
 
   const eventMiddleware: MessengerEventMiddleware = next => frame =>
     next({
       ...frame,
-      assets: manager,
+      assets: repository,
     });
 
   const dispatchMiddleware: MessengerDispatchMiddleware = next => async frame => {
@@ -39,7 +39,11 @@ const messengerAssetsPlugin = (store: AssetsStore): MessengerBotPlugin => (
 
       if (attachmentAssetTag && body.attachment_id) {
         assetUpdatings.push(
-          manager.setAsset(ATTACHMENT, attachmentAssetTag, body.attachment_id)
+          repository.setAsset(
+            ATTACHMENT,
+            attachmentAssetTag,
+            body.attachment_id
+          )
         );
       }
     }

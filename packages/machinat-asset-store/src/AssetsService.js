@@ -9,16 +9,16 @@ const AssetsService = Machinat.createService<
   AssetIdResult,
   AssetsProviderProps,
   AssetsConsumerProps
->(({ accessor }: AssetsProviderProps = {}) => {
+>(({ repository }: AssetsProviderProps = {}) => {
   invariant(
-    accessor,
+    repository,
     'provide prop of AssetsService.Provider must not be empty'
   );
 
   return async ({
     fetch: { resource, name, invariant: isInvariant },
   }: AssetsConsumerProps) => {
-    const id = await accessor.getAsset(resource, name);
+    const id = await repository.getAsset(resource, name);
 
     if (isInvariant) {
       invariant(

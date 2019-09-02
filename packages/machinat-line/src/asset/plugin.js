@@ -2,12 +2,12 @@
 import type { AssetsStore } from 'machinat-asset-store/types';
 import type { LineBotPlugin } from '../types';
 import type LineBot from '../bot';
-import LineAssetManager from './manager';
+import LineAssetRepository from './repository';
 
 const lineAssetsPlugin = (store: AssetsStore): LineBotPlugin => (
   bot: LineBot
 ) => {
-  const manager = new LineAssetManager(store, bot);
+  const manager = new LineAssetRepository(store, bot);
 
   return {
     eventMiddleware(next) {
