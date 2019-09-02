@@ -1,8 +1,8 @@
 // @flow
 import type { MachinatNode } from 'machinat/types';
 import type {
-  AssetStore,
-  ScopedAssetAccessor,
+  AssetsStore,
+  ScopedAssetsAccessor,
 } from 'machinat-asset-store/types';
 
 import { formatNode } from 'machinat-utility';
@@ -15,12 +15,12 @@ import {
   PERSONA,
 } from './resourceType';
 
-class MessengerAssetManager implements ScopedAssetAccessor {
-  store: AssetStore;
+class MessengerAssetsManager implements ScopedAssetsAccessor {
+  store: AssetsStore;
   bot: MessengerBot;
   pageId: string;
 
-  constructor(store: AssetStore, bot: MessengerBot) {
+  constructor(store: AssetsStore, bot: MessengerBot) {
     this.store = store;
     this.bot = bot;
     this.pageId = bot.options.pageId;
@@ -148,4 +148,4 @@ class MessengerAssetManager implements ScopedAssetAccessor {
   }
 }
 
-export default MessengerAssetManager;
+export default MessengerAssetsManager;

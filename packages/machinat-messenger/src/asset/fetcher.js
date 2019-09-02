@@ -1,5 +1,5 @@
 // @flow
-import type { AssetConsumerTarget } from 'machinat-asset-store/types';
+import type { AssetsConsumerTarget } from 'machinat-asset-store/types';
 import {
   ATTACHMENT,
   CUSTOM_LABEL,
@@ -12,7 +12,7 @@ const consumerFactory = (fnName: string, resource: string) => {
     [fnName]: (
       name: string,
       options?: { invariant?: boolean }
-    ): AssetConsumerTarget => ({
+    ): AssetsConsumerTarget => ({
       name,
       resource,
       invariant: !!(options && options.invariant),

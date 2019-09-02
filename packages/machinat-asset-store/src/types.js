@@ -1,5 +1,5 @@
 // @flow
-export interface AssetStore {
+export interface AssetsStore {
   get(
     platform: string,
     entity: string,
@@ -36,7 +36,7 @@ export interface AssetStore {
   ): Promise<boolean>;
 }
 
-export interface ScopedAssetAccessor {
+export interface ScopedAssetsAccessor {
   getAsset(resource: string, name: string): Promise<void | string | number>;
 
   setAsset(
@@ -50,12 +50,12 @@ export interface ScopedAssetAccessor {
   deleteAssetById(resource: string, id: string): Promise<boolean>;
 }
 
-export type AssetProviderProps = {| accessor: ScopedAssetAccessor |};
+export type AssetsProviderProps = {| accessor: ScopedAssetsAccessor |};
 
-export type AssetConsumerTarget = {|
+export type AssetsConsumerTarget = {|
   resource: string,
   name: string,
   invariant: boolean,
 |};
 
-export type AssetConsumerProps = {| fetch: AssetConsumerTarget |};
+export type AssetsConsumerProps = {| fetch: AssetsConsumerTarget |};

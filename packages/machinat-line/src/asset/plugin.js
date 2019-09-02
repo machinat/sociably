@@ -1,10 +1,10 @@
 // @flow
-import type { AssetStore } from 'machinat-asset-store/types';
+import type { AssetsStore } from 'machinat-asset-store/types';
 import type { LineBotPlugin } from '../types';
 import type LineBot from '../bot';
 import LineAssetManager from './manager';
 
-const lineAssetPlugin = (store: AssetStore): LineBotPlugin => (
+const lineAssetsPlugin = (store: AssetsStore): LineBotPlugin => (
   bot: LineBot
 ) => {
   const manager = new LineAssetManager(store, bot);
@@ -16,4 +16,4 @@ const lineAssetPlugin = (store: AssetStore): LineBotPlugin => (
   };
 };
 
-export default lineAssetPlugin;
+export default lineAssetsPlugin;

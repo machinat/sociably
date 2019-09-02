@@ -1,6 +1,6 @@
 import moxy from 'moxy';
 import { MACHINAT_SERVICE_TYPE } from 'machinat';
-import AssetService from '../AssetService';
+import AssetsService from '../AssetsService';
 
 const assetsAccessor = moxy({
   getAsset: async () => '_stored_asset_id_',
@@ -11,12 +11,12 @@ beforeEach(() => {
 });
 
 it('is machinat service', () => {
-  expect(AssetService.$$typeof).toBe(MACHINAT_SERVICE_TYPE);
+  expect(AssetsService.$$typeof).toBe(MACHINAT_SERVICE_TYPE);
 });
 
 it('return stored id', async () => {
   await expect(
-    AssetService._serve({ accessor: assetsAccessor })({
+    AssetsService._serve({ accessor: assetsAccessor })({
       fetch: { resource: 'villager', name: 'John' },
     })
   ).resolves.toBe('_stored_asset_id_');
@@ -29,7 +29,7 @@ it('return undefined if asset not existed', async () => {
   assetsAccessor.getAsset.mock.fake(async () => undefined);
 
   await expect(
-    AssetService._serve({ accessor: assetsAccessor })({
+    AssetsService._serve({ accessor: assetsAccessor })({
       fetch: { resource: 'villager', name: 'Mary' },
     })
   ).resolves.toBe(undefined);
@@ -42,7 +42,7 @@ it('throw if consumption.invariant set to true and asset not existed', async () 
   assetsAccessor.getAsset.mock.fake(async () => undefined);
 
   await expect(
-    AssetService._serve({ accessor: assetsAccessor })({
+    AssetsService._serve({ accessor: assetsAccessor })({
       fetch: { resource: 'villager', name: 'Joe', invariant: true },
     })
   ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -52,8 +52,8 @@ it('throw if consumption.invariant set to true and asset not existed', async () 
 
 it('throw if accessor not given', () => {
   expect(() =>
-    AssetService._serve()({ fetch: { resource: 'villager', name: 'Mary' } })
+    AssetsService._serve()({ fetch: { resource: 'villager', name: 'Mary' } })
   ).toThrowErrorMatchingInlineSnapshot(
-    `"provide prop of AssetService.Provider must not be empty"`
+    `"provide prop of AssetsService.Provider must not be empty"`
   );
 });

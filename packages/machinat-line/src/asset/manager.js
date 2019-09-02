@@ -1,18 +1,18 @@
 // @flow
 import type {
-  AssetStore,
-  ScopedAssetAccessor,
+  AssetsStore,
+  ScopedAssetsAccessor,
 } from 'machinat-asset-store/types';
 import type LineBot from '../bot';
 import { LINE, PATH_RICHMENU, PATH_LIFFAPPS } from '../constant';
 import { LIFF, RICH_MENU } from './resourceType';
 
-class LineAssetAccessor implements ScopedAssetAccessor {
-  store: AssetStore;
+class LineAssetsAccessor implements ScopedAssetsAccessor {
+  store: AssetsStore;
   bot: LineBot;
   channelId: string;
 
-  constructor(store: AssetStore, bot: LineBot) {
+  constructor(store: AssetsStore, bot: LineBot) {
     this.store = store;
     this.bot = bot;
     this.channelId = bot.options.channelId;
@@ -112,4 +112,4 @@ class LineAssetAccessor implements ScopedAssetAccessor {
   }
 }
 
-export default LineAssetAccessor;
+export default LineAssetsAccessor;

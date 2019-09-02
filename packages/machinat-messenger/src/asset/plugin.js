@@ -1,5 +1,5 @@
 // @flow
-import type { AssetStore } from 'machinat-asset-store/types';
+import type { AssetsStore } from 'machinat-asset-store/types';
 import type { DispatchResponse } from 'machinat-base/types';
 import type {
   MessengerJob,
@@ -13,7 +13,7 @@ import type MessengerBot from '../bot';
 import MessengerAssetManager from './manager';
 import { ATTACHMENT } from './resourceType';
 
-const messengerAssetPlugin = (store: AssetStore): MessengerBotPlugin => (
+const messengerAssetsPlugin = (store: AssetsStore): MessengerBotPlugin => (
   bot: MessengerBot
 ) => {
   const manager = new MessengerAssetManager(store, bot);
@@ -51,4 +51,4 @@ const messengerAssetPlugin = (store: AssetStore): MessengerBotPlugin => (
   return { eventMiddleware, dispatchMiddleware };
 };
 
-export default messengerAssetPlugin;
+export default messengerAssetsPlugin;

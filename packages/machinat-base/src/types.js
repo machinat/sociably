@@ -108,7 +108,7 @@ export interface MachinatBot<
   // [Symbol$observable](): Obserable
 }
 
-export type MiddlewareFunc<Frame, Value> = (
+export type MachinatMiddleware<Frame, Value> = (
   next: (Frame) => Value
 ) => Frame => Value;
 
@@ -171,7 +171,7 @@ export type EventMiddleware<
   Response,
   Native,
   SendOptions
-> = MiddlewareFunc<
+> = MachinatMiddleware<
   EventFrame<Channel, Event, Metadata, any, Native, any, any, SendOptions>,
   Promise<Response>
 >;
@@ -200,7 +200,7 @@ export type DispatchMiddleware<
   Channel: MachinatChannel,
   Job,
   Result
-> = MiddlewareFunc<
+> = MachinatMiddleware<
   DispatchFrame<Channel, Job>,
   Promise<DispatchResponse<Job, Result>>
 >;
@@ -230,8 +230,8 @@ export type BotPlugin<
 > = (
   bot: Bot
 ) => ?{|
-  dispatchMiddleware?: DispatchMiddleware<Channel, Job, Result>,
-  eventMiddleware?: EventMiddleware<
+  dispatchMiddleware?: ?DispatchMiddleware<Channel, Job, Result>,
+  eventMiddleware?: ?EventMiddleware<
     Channel,
     Event,
     Metadata,

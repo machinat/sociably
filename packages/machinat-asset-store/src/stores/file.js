@@ -2,7 +2,7 @@
 import fs from 'fs';
 import thenifiedly from 'thenifiedly';
 import toml from '@iarna/toml';
-import { AssetStore } from '../types';
+import { AssetsStore } from '../types';
 
 const { O_RDONLY, O_RDWR, O_CREAT } = fs.constants;
 
@@ -22,7 +22,7 @@ type AssetsObj = {|
 
 const { hasOwnProperty } = Object.prototype;
 
-class FileAssetStore implements AssetStore {
+class FileAssetsStore implements AssetsStore {
   path: string;
   _assets: AssetsObj;
 
@@ -232,4 +232,4 @@ class FileAssetStore implements AssetStore {
   }
 }
 
-export default FileAssetStore;
+export default FileAssetsStore;

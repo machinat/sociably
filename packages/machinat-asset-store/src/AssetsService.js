@@ -1,23 +1,23 @@
 // @flow
 import invariant from 'invariant';
 import Machinat from 'machinat';
-import type { AssetProviderProps, AssetConsumerProps } from './types';
+import type { AssetsProviderProps, AssetsConsumerProps } from './types';
 
 type AssetIdResult = void | string | number;
 
-const AssetService = Machinat.createService<
+const AssetsService = Machinat.createService<
   AssetIdResult,
-  AssetProviderProps,
-  AssetConsumerProps
->(({ accessor }: AssetProviderProps = {}) => {
+  AssetsProviderProps,
+  AssetsConsumerProps
+>(({ accessor }: AssetsProviderProps = {}) => {
   invariant(
     accessor,
-    'provide prop of AssetService.Provider must not be empty'
+    'provide prop of AssetsService.Provider must not be empty'
   );
 
   return async ({
     fetch: { resource, name, invariant: isInvariant },
-  }: AssetConsumerProps) => {
+  }: AssetsConsumerProps) => {
     const id = await accessor.getAsset(resource, name);
 
     if (isInvariant) {
@@ -31,4 +31,4 @@ const AssetService = Machinat.createService<
   };
 });
 
-export default AssetService;
+export default AssetsService;
