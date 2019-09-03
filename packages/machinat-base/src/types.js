@@ -5,6 +5,10 @@ import type {
   MachinatPause,
   MachinatNativeComponent,
   RenderThunkFn,
+  MachinatUser,
+  MachinatChannel,
+  MachinatEvent,
+  MachinatMetadata,
 } from 'machinat/types';
 import type MachinatQueue from 'machinat-queue';
 import type {
@@ -15,6 +19,7 @@ import type {
 
 export interface MachinatBot<
   Channel: MachinatChannel,
+  User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
   Response,
@@ -26,6 +31,7 @@ export interface MachinatBot<
   BotOptions: {
     plugins?: BotPlugin<
       Channel,
+      User,
       Event,
       Metadata,
       Response,
@@ -50,6 +56,7 @@ export interface MachinatBot<
     listener: (
       EventFrame<
         Channel,
+        User,
         Event,
         Metadata,
         SegmentValue,
@@ -61,6 +68,7 @@ export interface MachinatBot<
     ) => void
   ): MachinatBot<
     Channel,
+    User,
     Event,
     Metadata,
     Response,
@@ -76,6 +84,7 @@ export interface MachinatBot<
     listener: (
       EventFrame<
         Channel,
+        User,
         Event,
         Metadata,
         SegmentValue,
@@ -91,6 +100,7 @@ export interface MachinatBot<
     listener: (Error) => void
   ): MachinatBot<
     Channel,
+    User,
     Event,
     Metadata,
     Response,
@@ -117,26 +127,9 @@ export type SegmentWithoutPause<SegmentValue, Native> =
   | RawSegment<SegmentValue>
   | UnitSegment<SegmentValue, Native>;
 
-export interface MachinatChannel {
-  platform: string;
-  type: any;
-  subtype?: any;
-  uid: string;
-}
-
-export interface MachinatEvent<Payload> {
-  platform: any;
-  type: any;
-  subtype?: any;
-  payload: Payload;
-}
-
-export interface MachinatMetadata<Source: string> {
-  source: Source;
-}
-
 export type EventFrame<
   Channel: MachinatChannel,
+  User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
   SegmentValue,
@@ -147,9 +140,11 @@ export type EventFrame<
 > = {
   platform: string,
   channel: Channel,
+  user: User,
   event: Event,
   bot: MachinatBot<
     Channel,
+    User,
     Event,
     Metadata,
     any,
@@ -166,13 +161,24 @@ export type EventFrame<
 
 export type EventMiddleware<
   Channel: MachinatChannel,
+  User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
   Response,
   Native,
   SendOptions
 > = MachinatMiddleware<
-  EventFrame<Channel, Event, Metadata, any, Native, any, any, SendOptions>,
+  EventFrame<
+    Channel,
+    User,
+    Event,
+    Metadata,
+    any,
+    Native,
+    any,
+    any,
+    SendOptions
+  >,
   Promise<Response>
 >;
 
@@ -186,7 +192,7 @@ export type DispatchFrame<Channel: MachinatChannel, Job> = {
   platform: string,
   channel: null | Channel,
   tasks: DispatchTask<Job>[],
-  bot: MachinatBot<Channel, any, any, any, any, any, Job, any, any, any>,
+  bot: MachinatBot<Channel, any, any, any, any, any, any, Job, any, any, any>,
   node?: MachinatNode,
 };
 
@@ -207,6 +213,7 @@ export type DispatchMiddleware<
 
 export type BotPlugin<
   Channel: MachinatChannel,
+  User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
   Response,
@@ -217,6 +224,7 @@ export type BotPlugin<
   SendOption,
   Bot: MachinatBot<
     Channel,
+    User,
     Event,
     Metadata,
     Response,
@@ -233,6 +241,7 @@ export type BotPlugin<
   dispatchMiddleware?: ?DispatchMiddleware<Channel, Job, Result>,
   eventMiddleware?: ?EventMiddleware<
     Channel,
+    User,
     Event,
     Metadata,
     Response,
@@ -248,7 +257,13 @@ export interface MachinatWorker<Job, Result> {
 
 export type EventIssuer<
   Channel: MachinatChannel,
+  User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
   Response
-> = (channel: Channel, event: Event, metadata: Metadata) => Promise<Response>;
+> = (
+  channel: Channel,
+  user: User,
+  event: Event,
+  metadata: Metadata
+) => Promise<Response>;

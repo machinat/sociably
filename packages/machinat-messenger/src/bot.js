@@ -23,6 +23,7 @@ import {
   createAttachmentJobs,
 } from './job';
 
+import type { MessengerUser } from './user';
 import type {
   MessengerSource,
   MessengerBotOptions,
@@ -39,6 +40,7 @@ type MessengerBotOptionsInput = $Shape<MessengerBotOptions>;
 
 type MessengerReceiver = WebhookReceiver<
   MessengerChannel,
+  ?MessengerUser,
   MessengerEvent,
   MessengerResponse
 >;
@@ -46,6 +48,7 @@ type MessengerReceiver = WebhookReceiver<
 export default class MessengerBot
   extends Emitter<
     MessengerChannel,
+    ?MessengerUser,
     MessengerEvent,
     WebhookMetadata,
     MessengerSegmentValue,
@@ -58,6 +61,7 @@ export default class MessengerBot
     HTTPRequestReceivable<MessengerReceiver>,
     MachinatBot<
       MessengerChannel,
+      ?MessengerUser,
       MessengerEvent,
       WebhookMetadata,
       MessengerResponse,
@@ -73,6 +77,7 @@ export default class MessengerBot
 
   controller: Controller<
     MessengerChannel,
+    ?MessengerUser,
     MessengerEvent,
     WebhookMetadata,
     MessengerResponse,

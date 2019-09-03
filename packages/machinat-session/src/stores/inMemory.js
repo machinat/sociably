@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatChannel } from 'machinat-base/types';
+import type { MachinatChannel } from 'machinat/types';
 import type { Session, SessionStore } from '../types';
 
 class InMemorySession implements Session {

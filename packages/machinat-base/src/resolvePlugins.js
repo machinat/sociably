@@ -1,17 +1,21 @@
 // @flow
-import type { MachinatNativeComponent } from 'machinat/types';
+import type {
+  MachinatNativeComponent,
+  MachinatChannel,
+  MachinatUser,
+  MachinatEvent,
+  MachinatMetadata,
+} from 'machinat/types';
 import type {
   MachinatBot,
   BotPlugin,
   EventMiddleware,
   DispatchMiddleware,
-  MachinatChannel,
-  MachinatEvent,
-  MachinatMetadata,
 } from './types';
 
 const resolvePlugins = <
   Channel: MachinatChannel,
+  User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
   Response,
@@ -22,6 +26,7 @@ const resolvePlugins = <
   SendOptions,
   Bot: MachinatBot<
     Channel,
+    User,
     Event,
     Metadata,
     Response,
@@ -37,6 +42,7 @@ const resolvePlugins = <
   plugins: ?Array<
     BotPlugin<
       Channel,
+      User,
       Event,
       Metadata,
       Response,
@@ -51,6 +57,7 @@ const resolvePlugins = <
 ): {|
   eventMiddlewares: EventMiddleware<
     Channel,
+    User,
     Event,
     Metadata,
     Response,

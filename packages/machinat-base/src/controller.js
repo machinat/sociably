@@ -1,12 +1,16 @@
 // @flow
 import { compose } from 'machinat-utility';
 
-import type { MachinatNode, MachinatNativeComponent } from 'machinat/types';
 import type {
-  MachinatBot,
+  MachinatNode,
+  MachinatNativeComponent,
   MachinatChannel,
+  MachinatUser,
   MachinatEvent,
   MachinatMetadata,
+} from 'machinat/types';
+import type {
+  MachinatBot,
   EventFrame,
   EventIssuer,
   EventMiddleware,
@@ -19,6 +23,7 @@ import { validateMiddlewares } from './utils';
 // pass it throught event middlewares then publish it.
 export default class MachinatController<
   Channel: MachinatChannel,
+  User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
   Response,
@@ -29,6 +34,7 @@ export default class MachinatController<
   platform: string;
   bot: MachinatBot<
     Channel,
+    User,
     Event,
     Metadata,
     Response,
@@ -42,6 +48,7 @@ export default class MachinatController<
 
   eventMiddlewares: EventMiddleware<
     Channel,
+    User,
     Event,
     Metadata,
     Response,
@@ -53,6 +60,7 @@ export default class MachinatController<
     platform: string,
     bot: MachinatBot<
       Channel,
+      User,
       Event,
       Metadata,
       Response,
@@ -66,6 +74,7 @@ export default class MachinatController<
 
     eventMiddlewares: EventMiddleware<
       Channel,
+      User,
       Event,
       Metadata,
       Response,
@@ -88,20 +97,31 @@ export default class MachinatController<
   // the issuer fn created directly to the receiver.
   eventIssuerThroughMiddlewares(
     finalHandler: (
-      EventFrame<Channel, Event, Metadata, any, any, any, any, SendOptions>
+      EventFrame<
+        Channel,
+        User,
+        Event,
+        Metadata,
+        any,
+        any,
+        any,
+        any,
+        SendOptions
+      >
     ) => Response | Promise<Response>
-  ): EventIssuer<Channel, Event, Metadata, Response> {
+  ): EventIssuer<Channel, User, Event, Metadata, Response> {
     const issue = compose(...this.eventMiddlewares)(async (...args) =>
       finalHandler(...args)
     );
 
-    return (channel: Channel, event: Event, metadata: Metadata) => {
+    return (channel: Channel, user: User, event: Event, metadata: Metadata) => {
       const { bot } = this;
 
       const frame = {
         platform: this.platform,
         bot,
         channel,
+        user,
         event,
         metadata,
         reply(nodes: MachinatNode, options: SendOptions) {

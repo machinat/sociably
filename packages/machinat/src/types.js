@@ -126,3 +126,46 @@ export type MachinatService<Served, ProvideProps, ConsumeProps> = {|
   Provider: MachinatProviderType<Served, ProvideProps>,
   _serve: ServiceProvideFn<Served, ProvideProps, ConsumeProps>,
 |};
+
+export interface MachinatChannel {
+  +platform: string;
+  +type: any;
+  +subtype?: any;
+  +uid: string;
+}
+
+export interface MachinatUser {
+  +platform: string;
+  +id: string;
+}
+
+export interface MachinatEvent<Payload> {
+  +platform: any;
+  +type: any;
+  +subtype?: any;
+  +payload: Payload;
+}
+
+export interface MachinatMetadata<Source: string> {
+  +source: Source;
+}
+
+export interface MachinatUserProfile {
+  +platform: any;
+  +id: string;
+  +name: string;
+}
+
+export interface UserProfileRetrievable<
+  User: MachinatUser,
+  Profile: MachinatUserProfile
+> {
+  getUserProfile(user: User): Promise<Profile>;
+  fetchProfilePicture(
+    profile: Profile
+  ): Promise<{
+    statusCode: number,
+    data: ReadableStream,
+    headers: {| [string]: string |},
+  }>;
+}

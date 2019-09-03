@@ -53,6 +53,7 @@ const createJobs = (
 class WebSocketBot
   extends Emitter<
     WebSocketChannel,
+    null,
     WebSocketEvent,
     WebSocketMetadata,
     EventRenderValue,
@@ -65,6 +66,7 @@ class WebSocketBot
     HTTPUpgradeReceivable<WebSocketReceiver>,
     MachinatBot<
       WebSocketChannel,
+      null,
       WebSocketEvent,
       WebSocketMetadata,
       WebSocketResponse,
@@ -81,6 +83,7 @@ class WebSocketBot
 
   controller: Controller<
     WebSocketChannel,
+    null,
     WebSocketEvent,
     WebSocketMetadata,
     WebSocketResponse,

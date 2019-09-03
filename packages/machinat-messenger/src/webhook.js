@@ -15,6 +15,7 @@ import type {
 
 import createEvent from './event';
 import MessengerChannel from './channel';
+import { MessengerUser } from './user';
 
 const endRes = (res, code, body) => {
   res.statusCode = code; // eslint-disable-line no-param-reassign
@@ -25,6 +26,7 @@ export const handleWebhook = (
   options: MessengerBotOptions
 ): WebhookHandler<
   MessengerChannel,
+  ?MessengerUser,
   MessengerEvent,
   MessengerResponse
 > => async (req: IncomingMessage, res: ServerResponse, rawBody?: string) => {
@@ -104,13 +106,16 @@ export const handleWebhook = (
           ? { user_ref: payload.optin.user_ref }
           : payload.sender;
 
-      const channel = new MessengerChannel(source, options.pageId);
-
       if (type === 'checkout_update' || type === 'pre_checkout') {
         shouldWaitForRespond = true;
       }
 
-      reports.push({ event, channel, response: undefined });
+      reports.push({
+        channel: new MessengerChannel(source, options.pageId),
+        user: source.id ? new MessengerUser(source) : null,
+        event,
+        response: undefined,
+      });
     }
   }
 
@@ -123,6 +128,7 @@ export const handleWebhook = (
 
 export const handleResponses = (): ResponsesHandler<
   MessengerChannel,
+  ?MessengerUser,
   MessengerEvent,
   MessengerResponse
 > => async (req, res, reports) => {

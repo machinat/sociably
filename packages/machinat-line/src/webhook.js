@@ -8,6 +8,7 @@ import type {
 
 import createEvent from './event';
 import LineChannel from './channel';
+import { LineUser } from './user';
 
 import type {
   LineBotOptions,
@@ -23,15 +24,17 @@ const endRes = (res, code, body) => {
 
 const handleWebhook = (
   options: LineBotOptions
-): WebhookHandler<LineChannel, LineEvent, void> => {
+): WebhookHandler<LineChannel, ?LineUser, LineEvent, void> => {
   const { shouldValidateRequest, channelSecret, channelId } = options;
 
   const createEventReport = (
     rawEvent: LineRawEvent
-  ): WebhookEventReport<LineChannel, LineEvent, void> => {
+  ): WebhookEventReport<LineChannel, ?LineUser, LineEvent, void> => {
+    const { source } = rawEvent;
     return {
+      channel: new LineChannel(source, channelId),
+      user: new LineUser(source),
       event: createEvent(rawEvent),
-      channel: new LineChannel(rawEvent.source, channelId),
       response: undefined,
     };
   };

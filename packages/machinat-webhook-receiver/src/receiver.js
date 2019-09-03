@@ -3,7 +3,11 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import getRawBody from 'raw-body';
 import { BaseReceiver } from 'machinat-base';
 
-import type { MachinatChannel, MachinatEvent } from 'machinat-base/types';
+import type {
+  MachinatChannel,
+  MachinatUser,
+  MachinatEvent,
+} from 'machinat/types';
 import type { HTTPRequestReceiver } from 'machinat-http-adaptor/types';
 import type {
   WebhookHandler,
@@ -21,16 +25,17 @@ const endRes = (res, status, body) => {
 
 class WebhookReceiver<
   Channel: MachinatChannel,
+  User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Response
-> extends BaseReceiver<Channel, Event, WebhookMetadata, Response>
+> extends BaseReceiver<Channel, User, Event, WebhookMetadata, Response>
   implements HTTPRequestReceiver {
-  _webhookHandler: WebhookHandler<Channel, Event, Response>;
-  _responsesHandler: void | ResponsesHandler<Channel, Event, Response>;
+  _webhookHandler: WebhookHandler<Channel, User, Event, Response>;
+  _responsesHandler: void | ResponsesHandler<Channel, User, Event, Response>;
 
   constructor(
-    webhookHandler: WebhookHandler<Channel, Event, Response>,
-    responsesHandler?: ResponsesHandler<Channel, Event, Response>
+    webhookHandler: WebhookHandler<Channel, User, Event, Response>,
+    responsesHandler?: ResponsesHandler<Channel, User, Event, Response>
   ) {
     super();
     this._webhookHandler = webhookHandler;
@@ -82,8 +87,8 @@ class WebhookReceiver<
         };
 
         const responses = await Promise.all(
-          eventReports.map(({ event, channel }) =>
-            this._issueEvent(channel, event, metadata)
+          eventReports.map(({ event, user, channel }) =>
+            this._issueEvent(channel, user, event, metadata)
           )
         );
 

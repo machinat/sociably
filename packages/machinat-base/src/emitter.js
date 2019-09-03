@@ -1,18 +1,20 @@
 // @flow
 import Symbol$observable from 'symbol-observable';
 
-import type { MachinatNativeComponent } from 'machinat/types';
 import type {
+  MachinatNativeComponent,
   MachinatChannel,
+  MachinatUser,
   MachinatEvent,
-  EventFrame,
   MachinatMetadata,
-} from './types';
+} from 'machinat/types';
+import type { EventFrame } from './types';
 
 // MachinatEmitter provide events and errors listening methods for machinat bot
 // implementation classes to inherit.
 export default class MachinatEmitter<
   Channel: MachinatChannel,
+  User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
   SegmentValue,
@@ -24,6 +26,7 @@ export default class MachinatEmitter<
   _eventListeners: ((
     EventFrame<
       Channel,
+      User,
       Event,
       Metadata,
       SegmentValue,
@@ -45,6 +48,7 @@ export default class MachinatEmitter<
     listener: (
       EventFrame<
         Channel,
+        User,
         Event,
         Metadata,
         SegmentValue,
@@ -67,6 +71,7 @@ export default class MachinatEmitter<
     listener: (
       EventFrame<
         Channel,
+        User,
         Event,
         Metadata,
         SegmentValue,
@@ -89,6 +94,7 @@ export default class MachinatEmitter<
   emitEvent(
     frame: EventFrame<
       Channel,
+      User,
       Event,
       Metadata,
       SegmentValue,

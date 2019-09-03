@@ -35,6 +35,7 @@ export type NextChannel = {|
 
 export type NextPlugin = BotPlugin<
   NextChannel,
+  null,
   NextEvent,
   NextMetadata,
   NextPesponse,

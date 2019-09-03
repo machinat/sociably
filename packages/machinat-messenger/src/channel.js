@@ -1,7 +1,7 @@
 // @flow
 /* eslint-disable camelcase */
 import crypto from 'crypto';
-import type { MachinatChannel } from 'machinat-base/types';
+import type { MachinatChannel } from 'machinat/types';
 import type { MessengerSource } from './types';
 import { MESSENGER } from './constant';
 

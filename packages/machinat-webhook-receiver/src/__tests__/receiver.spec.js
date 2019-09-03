@@ -18,16 +18,17 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
   let res;
 
   const channel = { foo: 'bar' };
+  const user = { id: 'red' };
   const eventReports = [
-    { channel, event: { id: 1 }, response: undefined },
-    { channel, event: { id: 2 }, response: undefined },
-    { channel, event: { id: 3 }, response: undefined },
+    { channel, user, event: { id: 1 }, response: undefined },
+    { channel, user, event: { id: 2 }, response: undefined },
+    { channel, user, event: { id: 3 }, response: undefined },
   ];
   const webhookHandler = moxy(async () => eventReports);
   const responsesHandler = moxy(async () => {
     res.end();
   });
-  const issueEvent = moxy(async (_, event) => `Ok_${event.id}`);
+  const issueEvent = moxy(async (_chan, _user, event) => `Ok_${event.id}`);
   const issueError = moxy();
 
   beforeEach(() => {
@@ -100,6 +101,7 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
       expect(issueEvent.mock).toHaveBeenNthCalledWith(
         i,
         channel,
+        user,
         { id: i },
         {
           source: 'webhook',
@@ -141,6 +143,7 @@ Array [
       expect(issueEvent.mock).toHaveBeenNthCalledWith(
         i,
         channel,
+        user,
         { id: i },
         {
           source: 'webhook',

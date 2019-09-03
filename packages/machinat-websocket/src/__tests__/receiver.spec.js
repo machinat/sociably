@@ -192,6 +192,7 @@ Object {
     expect(issueEvent.mock).toHaveBeenCalledTimes(1);
     expect(issueEvent.mock).toHaveBeenCalledWith(
       new Channel('@socket', undefined, socket.id),
+      null,
       { type: '@register', payload: { type: 'test' } },
       { source: 'websocket', socketId: socket.id, request }
     );
@@ -284,6 +285,7 @@ it('issue @connect event', () => {
   expect(issueEvent.mock).toHaveBeenCalledTimes(1);
   expect(issueEvent.mock).toHaveBeenCalledWith(
     new Channel('foo', 'bar', 'baz'),
+    null,
     { type: '@connect' },
     { source: 'websocket', socketId: socket.id, request, connectionInfo }
   );
@@ -312,6 +314,7 @@ it('issue @disconnect event', () => {
   expect(issueEvent.mock).toHaveBeenCalledTimes(1);
   expect(issueEvent.mock).toHaveBeenCalledWith(
     new Channel('foo', 'bar', 'baz'),
+    null,
     { type: '@disconnect' },
     { source: 'websocket', socketId: socket.id, request, connectionInfo }
   );
@@ -340,6 +343,7 @@ it('issue customized event', () => {
   expect(issueEvent.mock).toHaveBeenCalledTimes(1);
   expect(issueEvent.mock).toHaveBeenCalledWith(
     new Channel('foo', 'bar', 'baz'),
+    null,
     { type: 'greeting', subtype: 'french', payload: 'bonjour' },
     { source: 'websocket', socketId: socket.id, request, connectionInfo }
   );

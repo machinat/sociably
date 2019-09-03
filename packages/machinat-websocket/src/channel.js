@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatChannel } from 'machinat-base/types';
+import type { MachinatChannel } from 'machinat/types';
 
 class WebSocketChannel implements MachinatChannel {
   type: string;

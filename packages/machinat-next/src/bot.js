@@ -17,6 +17,7 @@ const NEXT = 'next';
 class NextServerBot
   extends Emitter<
     NextChannel,
+    null,
     NextEvent,
     NextMetadata,
     void,
@@ -29,6 +30,7 @@ class NextServerBot
     HTTPRequestReceivable<NextReceiver>,
     MachinatBot<
       NextChannel,
+      null,
       NextEvent,
       NextMetadata,
       NextPesponse,
@@ -43,6 +45,7 @@ class NextServerBot
   receiver: NextReceiver;
   controller: Controller<
     NextChannel,
+    null,
     NextEvent,
     NextMetadata,
     NextPesponse,

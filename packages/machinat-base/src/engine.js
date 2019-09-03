@@ -7,6 +7,7 @@ import type {
   MachinatPause,
   MachinatNativeComponent,
   RenderThunkFn,
+  MachinatChannel,
 } from 'machinat/types';
 import type MahinateQueue from 'machinat-queue';
 import type { JobBatchResponse } from 'machinat-queue/types';
@@ -14,10 +15,8 @@ import type MachinatRenderer from 'machinat-renderer';
 
 import DispatchError from './error';
 import { validateMiddlewares } from './utils';
-
 import type {
   MachinatBot,
-  MachinatChannel,
   MachinatWorker,
   SegmentWithoutPause,
   DispatchTask,
@@ -57,6 +56,7 @@ export default class MachinatEngine<
     any,
     any,
     any,
+    any,
     SegmentValue,
     Native,
     Job,
@@ -78,6 +78,7 @@ export default class MachinatEngine<
     platform: string,
     bot: MachinatBot<
       Channel,
+      any,
       any,
       any,
       any,

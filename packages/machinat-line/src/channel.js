@@ -1,9 +1,10 @@
 // @flow
-import type { MachinatChannel } from 'machinat-base/types';
+import type { MachinatChannel } from 'machinat/types';
 import type { LineSource } from './types';
+import { LINE } from './constant';
 
 class LineChannel implements MachinatChannel {
-  platform = 'line';
+  platform = LINE;
   type = 'chat';
 
   subtype: 'user' | 'room' | 'group';

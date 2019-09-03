@@ -46,6 +46,7 @@ const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
 class WebSocketReceiver
   extends BaseReceiver<
     WebSocketChannel,
+    null,
     WebSocketEvent,
     WebSocketMetadata,
     WebSocketResponse
@@ -136,7 +137,7 @@ class WebSocketReceiver
     const event = createEvent(type, subtype, payload);
 
     try {
-      await this._issueEvent(channel, event, {
+      await this._issueEvent(channel, null, event, {
         source: WEBSOCKET,
         connectionInfo,
         socketId: socket.id,
@@ -156,6 +157,7 @@ class WebSocketReceiver
     try {
       const response: WebSocketResponse = await this._issueEvent(
         channel,
+        null,
         event,
         {
           source: WEBSOCKET,

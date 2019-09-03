@@ -8,7 +8,7 @@ const interceptProcessingScriptMiddleware = (
   sessionStore: SessionStore,
   libs: MachinatScript[]
 ): MachinatMiddleware<
-  EventFrame<any, any, any, any, any, any, any, any>,
+  EventFrame<any, any, any, any, any, any, any, any, any>,
   any
 > => next => {
   const intercept = processInterceptor(sessionStore, libs);

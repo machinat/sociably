@@ -75,8 +75,18 @@ export const processInterceptor = (
   const linkerStatus = callingStatusLinker(libs);
 
   return async (
-    frame: EventFrame<any, any, any, any, any, any, any, any>
-  ): Promise<null | EventFrame<any, any, any, any, any, any, any, any>> => {
+    frame: EventFrame<any, any, any, any, any, any, any, any, any>
+  ): Promise<null | EventFrame<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
+  >> => {
     const { channel } = frame;
     const session = sessionStore.getSession(channel);
     const currentState = await session.get<ScriptProcessingState>(

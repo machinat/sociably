@@ -5,7 +5,7 @@ import type { SessionStore } from './types';
 const attachSessionMeddleware = (
   store: SessionStore
 ): MachinatMiddleware<
-  EventFrame<any, any, any, any, any, any, any, any>,
+  EventFrame<any, any, any, any, any, any, any, any, any>,
   any
 > => next => frame =>
   next({

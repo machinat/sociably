@@ -22,7 +22,7 @@ const NEXT_SERVER_CHANNEL = {
 type ParsedURL = $Call<typeof parseUrl, string>;
 
 class NextReceiver
-  extends BaseReceiver<NextChannel, NextEvent, NextMetadata, NextPesponse>
+  extends BaseReceiver<NextChannel, null, NextEvent, NextMetadata, NextPesponse>
   implements HTTPRequestReceiver {
   _basePath: string;
   _next: Object;
@@ -86,6 +86,7 @@ class NextReceiver
 
       const response = await this._issueEvent(
         NEXT_SERVER_CHANNEL,
+        null,
         {
           platform: 'next',
           type: 'request',

@@ -1,8 +1,7 @@
 // @flow
-import type { MachinatNativeComponent } from 'machinat/types';
+import type { MachinatNativeComponent, MachinatEvent } from 'machinat/types';
 import type {
   BotPlugin,
-  MachinatEvent,
   EventMiddleware,
   DispatchMiddleware,
 } from 'machinat-base/types';
@@ -10,11 +9,12 @@ import type MachinatQueue from 'machinat-queue';
 import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
 import type MessengerBot from './bot';
 import type MessengerChannel from './channel';
+import type { MessengerUser } from './user';
 import typeof { ENTRY_PATH } from './constant';
 
-type PSIDSource = {| id: string |};
-type UserRefSource = {| user_ref: string |};
-type PhoneNumberSource = {|
+export type PSIDSource = {| id: string |};
+export type UserRefSource = {| user_ref: string |};
+export type PhoneNumberSource = {|
   phone_number: string,
   name?: {| first_name: string, last_name: string |},
 |};
@@ -131,6 +131,7 @@ export type MessengerQueue = MachinatQueue<MessengerJob, MessengerAPIResult>;
 
 export type MessengerBotPlugin = BotPlugin<
   MessengerChannel,
+  ?MessengerUser,
   MessengerEvent,
   WebhookMetadata,
   MessengerResponse,
@@ -156,6 +157,7 @@ export type MessengerBotOptions = {
 
 export type MessengerEventMiddleware = EventMiddleware<
   MessengerChannel,
+  ?MessengerUser,
   MessengerEvent,
   WebhookMetadata,
   MessengerResponse,

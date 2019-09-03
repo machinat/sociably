@@ -1,10 +1,10 @@
 // @flow
-import type { MachinatNativeComponent } from 'machinat/types';
 import type {
+  MachinatNativeComponent,
   MachinatEvent,
   MachinatMetadata,
-  BotPlugin,
-} from 'machinat-base/types';
+} from 'machinat/types';
+import type { BotPlugin } from 'machinat-base/types';
 import type WebSocketBot from './bot';
 import type MachinatSocket, { RegisterBody } from './socket';
 import type WebSocketChannel from './channel';
@@ -88,6 +88,7 @@ export type WebSocketBotOptions = {|
   verifyUpgrade?: RequestInfo => boolean,
   plugins?: BotPlugin<
     WebSocketChannel,
+    null,
     WebSocketEvent,
     WebSocketMetadata,
     WebSocketResponse,

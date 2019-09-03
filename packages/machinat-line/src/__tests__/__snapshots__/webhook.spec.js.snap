@@ -33,6 +33,13 @@ Array [
       "type": "message",
     },
     "response": undefined,
+    "user": LineUser {
+      "platform": "line",
+      "source": Object {
+        "type": "user",
+        "userId": "U4af4980629",
+      },
+    },
   },
   Object {
     "channel": LineChannel {
@@ -60,6 +67,13 @@ Array [
       "type": "follow",
     },
     "response": undefined,
+    "user": LineUser {
+      "platform": "line",
+      "source": Object {
+        "type": "user",
+        "userId": "U4af4980629",
+      },
+    },
   },
 ]
 `;

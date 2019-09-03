@@ -238,6 +238,7 @@ it('call next.render() with params return by middlewares', async () => {
       type: 'server',
       uid: 'next:server',
     },
+    null,
     {
       platform: 'next',
       type: 'request',
@@ -295,6 +296,7 @@ it('set metadata.request.encrypted to true if req is encrypted', async () => {
   expect(issueEvent.mock).toHaveBeenCalledTimes(1);
   expect(issueEvent.mock).toHaveBeenCalledWith(
     expect.any(Object),
+    null,
     expect.any(Object),
     {
       source: 'next',

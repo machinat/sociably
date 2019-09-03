@@ -13,14 +13,14 @@ type DialogflowMiddlewareOption = {
   authConfig?: Object,
   languageCode?: string,
   getQueryConfig?: (
-    frame: EventFrame<any, any, any, any, any, any, any, any>
+    frame: EventFrame<any, any, any, any, any, any, any, any, any>
   ) => Promise<DetectIntentQueryConfig>,
 };
 
 const attachDialogflowRecognitionMiddleware = (
   middlewareConf: DialogflowMiddlewareOption
 ): MachinatMiddleware<
-  EventFrame<any, any, any, any, any, any, any, any>,
+  EventFrame<any, any, any, any, any, any, any, any, any>,
   any
 > => next => {
   invariant(

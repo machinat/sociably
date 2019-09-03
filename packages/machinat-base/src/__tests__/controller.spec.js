@@ -13,6 +13,10 @@ const channel = {
   uid: 'test',
 };
 
+const user = {
+  id: '#luke',
+};
+
 beforeEach(() => {
   bot.render.mock.reset();
 });
@@ -41,11 +45,13 @@ describe('#eventIssuerThroughMiddlewares(finalHandler)', () => {
 
     const issueEvent = controller.eventIssuerThroughMiddlewares(finalHandler);
 
-    await Promise.all([
-      expect(issueEvent(channel, { id: 1 }, metadata)).resolves.toBe(undefined),
-      expect(issueEvent(channel, { id: 2 }, metadata)).resolves.toBe(undefined),
-      expect(issueEvent(channel, { id: 3 }, metadata)).resolves.toBe(undefined),
-    ]);
+    await expect(
+      Promise.all([
+        issueEvent(channel, user, { id: 1 }, metadata),
+        issueEvent(channel, user, { id: 2 }, metadata),
+        issueEvent(channel, user, { id: 3 }, metadata),
+      ])
+    ).resolves.toEqual([undefined, undefined, undefined]);
 
     expect(finalHandler.mock).toHaveBeenCalledTimes(3);
     for (let i = 1; i < 4; i += 1) {
@@ -53,6 +59,7 @@ describe('#eventIssuerThroughMiddlewares(finalHandler)', () => {
         platform: 'test',
         bot,
         event: { id: i },
+        user,
         channel,
         metadata,
         reply: expect.any(Function),
@@ -66,12 +73,15 @@ describe('#eventIssuerThroughMiddlewares(finalHandler)', () => {
     const issueEvent = controller.eventIssuerThroughMiddlewares(finalHandler);
 
     finalHandler.mock.fake(() => Promise.resolve('Roger'));
-    await expect(issueEvent(channel, event, metadata)).resolves.toBe('Roger');
+    await expect(issueEvent(channel, user, event, metadata)).resolves.toBe(
+      'Roger'
+    );
 
     expect(finalHandler.mock).toHaveBeenCalledWith({
       platform: 'test',
       bot,
       event,
+      user,
       channel,
       metadata,
       reply: expect.any(Function),
@@ -82,7 +92,7 @@ describe('#eventIssuerThroughMiddlewares(finalHandler)', () => {
     const controller = new Controller('test', bot, []);
 
     const issueEvent = controller.eventIssuerThroughMiddlewares(finalHandler);
-    issueEvent(channel, event, metadata);
+    issueEvent(channel, user, event, metadata);
 
     const { reply } = finalHandler.mock.calls[0].args[0];
 
@@ -102,6 +112,7 @@ describe('#eventIssuerThroughMiddlewares(finalHandler)', () => {
       platform: 'test',
       bot,
       event,
+      user,
       channel,
       metadata,
       reply: expect.any(Function),
@@ -146,7 +157,7 @@ describe('#eventIssuerThroughMiddlewares(finalHandler)', () => {
     const issueEvent = controller.eventIssuerThroughMiddlewares(finalHandler);
 
     finalHandler.mock.fakeReturnValue('Roger');
-    await expect(issueEvent(channel, event, metadata)).resolves.toBe(
+    await expect(issueEvent(channel, user, event, metadata)).resolves.toBe(
       'Roger foo bar baz'
     );
 
@@ -166,7 +177,7 @@ describe('#eventIssuerThroughMiddlewares(finalHandler)', () => {
     const controller = new Controller('test', bot, [middleware]);
     const issueEvent = controller.eventIssuerThroughMiddlewares(finalHandler);
 
-    await expect(issueEvent(channel, event, metadata)).rejects.toThrow(
+    await expect(issueEvent(channel, user, event, metadata)).rejects.toThrow(
       'an X-wing crash!'
     );
 
@@ -179,7 +190,7 @@ describe('#eventIssuerThroughMiddlewares(finalHandler)', () => {
     const controller = new Controller('test', bot, [middleware]);
     const issueEvent = controller.eventIssuerThroughMiddlewares(finalHandler);
 
-    await expect(issueEvent(channel, event, metadata)).resolves.toBe(
+    await expect(issueEvent(channel, user, event, metadata)).resolves.toBe(
       'your droid is being hijacked hahaha'
     );
 
@@ -202,7 +213,7 @@ describe('#eventIssuerThroughMiddlewares(finalHandler)', () => {
     const controller = new Controller('test', bot, [middleware1, middleware2]);
 
     const issueEvent = controller.eventIssuerThroughMiddlewares(finalHandler);
-    await expect(issueEvent(channel, event, metadata)).resolves.toBe(
+    await expect(issueEvent(channel, user, event, metadata)).resolves.toBe(
       "Oh, it's just trash compactor bug"
     );
 

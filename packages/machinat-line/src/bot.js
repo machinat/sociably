@@ -14,7 +14,12 @@ import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
 import LineWorker from './worker';
 import handleWebhook from './webhook';
 import { createChatJobs, createMulticastJobs } from './job';
+import LineChannel from './channel';
+import { LINE, LINE_NATIVE_TYPE, PATH_REPLY } from './constant';
 
+import generalElementDelegate from './component/general';
+
+import type { LineUser } from './user';
 import type {
   LineSource,
   LineBotOptions,
@@ -26,18 +31,14 @@ import type {
   LineSendOptions,
 } from './types';
 
-import LineChannel from './channel';
-import { LINE, LINE_NATIVE_TYPE, PATH_REPLY } from './constant';
-
-import generalElementDelegate from './component/general';
-
 type LineBotOptionsInput = $Shape<LineBotOptions>;
 
-type LineReceiver = WebhookReceiver<LineChannel, LineEvent, void>;
+type LineReceiver = WebhookReceiver<LineChannel, ?LineUser, LineEvent, void>;
 
 class LineBot
   extends Emitter<
     LineChannel,
+    ?LineUser,
     LineEvent,
     WebhookMetadata,
     LineSegmentValue,
@@ -50,6 +51,7 @@ class LineBot
     HTTPRequestReceivable<LineReceiver>,
     MachinatBot<
       LineChannel,
+      ?LineUser,
       LineEvent,
       WebhookMetadata,
       void,
@@ -63,6 +65,7 @@ class LineBot
   options: LineBotOptions;
   controller: Controller<
     LineChannel,
+    ?LineUser,
     LineEvent,
     WebhookMetadata,
     void,

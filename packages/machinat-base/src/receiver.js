@@ -1,21 +1,23 @@
 // @flow
 import type {
-  EventIssuer,
   MachinatChannel,
+  MachinatUser,
   MachinatEvent,
   MachinatMetadata,
-} from './types';
+} from 'machinat/types';
+import type { EventIssuer } from './types';
 
 // BaseReceiver provide event/error issuer binding logic for implementation
 // classes to inherit.
 class BaseReceiver<
   Channel: MachinatChannel,
+  User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
   Response
 > {
   _isBound: boolean;
-  _issueEvent: EventIssuer<Channel, Event, Metadata, Response>;
+  _issueEvent: EventIssuer<Channel, User, Event, Metadata, Response>;
   _issueError: Error => void;
 
   constructor() {
@@ -27,7 +29,7 @@ class BaseReceiver<
   }
 
   bindIssuer(
-    eventIssuer: EventIssuer<Channel, Event, Metadata, Response>,
+    eventIssuer: EventIssuer<Channel, User, Event, Metadata, Response>,
     errorIssuer: (err: Error) => void
   ): boolean {
     if (this._isBound) {

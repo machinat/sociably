@@ -1,6 +1,6 @@
 // @flow
 import thenifiedly from 'thenifiedly';
-import type { MachinatChannel } from 'machinat-base/types';
+import type { MachinatChannel } from 'machinat/types';
 import type { Session, SessionStore } from '../types';
 
 type RedisClient = any;

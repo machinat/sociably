@@ -106,7 +106,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
       ],
     };
 
-    const events = await handleWebhook({
+    const eventResults = await handleWebhook({
       channelId: '_LINE_CHANNEL_ID_',
       shouldValidateRequest: false,
     })(req, res, JSON.stringify(body));
@@ -114,11 +114,11 @@ describe('handleWebhook(options)(req, res, body)', () => {
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
 
-    expect(events.length).toBe(2);
+    expect(eventResults.length).toBe(2);
 
-    expect(events).toMatchSnapshot();
+    expect(eventResults).toMatchSnapshot();
 
-    events.forEach(({ event, channel, response }, i) => {
+    eventResults.forEach(({ event, channel, response }, i) => {
       expect(response).toBe(undefined);
 
       expect(channel).toBeInstanceOf(LineChannel);

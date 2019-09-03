@@ -1,9 +1,10 @@
 // @flow
-import type { MachinatNativeComponent } from 'machinat/types';
-import type { BotPlugin, MachinatEvent } from 'machinat-base/types';
+import type { MachinatNativeComponent, MachinatEvent } from 'machinat/types';
+import type { BotPlugin } from 'machinat-base/types';
 import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
 import type LineBot from './bot';
 import type LineChannel from './channel';
+import type { LineUser } from './user';
 import typeof { ENTRY_GETTER } from './constant';
 
 type UserSource = {|
@@ -192,6 +193,7 @@ export type LineSendOptions = {
 
 export type LineBotPlugin = BotPlugin<
   LineChannel,
+  ?LineUser,
   LineEvent,
   WebhookMetadata,
   void,

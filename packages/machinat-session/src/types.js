@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatChannel } from 'machinat-base/types';
+import type { MachinatChannel } from 'machinat/types';
 
 export interface Session {
   get<T>(key: string): Promise<void | T>;
