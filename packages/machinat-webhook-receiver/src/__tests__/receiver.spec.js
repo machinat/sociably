@@ -52,21 +52,6 @@ describe('#handleRequest(req, res, raw, ctx)', () => {
     expect(receiver.handleRequest(req, res, 'body')).toBe(undefined);
   });
 
-  it('ends res with 501 if no handler bound', async () => {
-    const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
-
-    receiver.handleRequest(req, res, 'body');
-
-    jest.runAllTimers();
-    await nextTick();
-
-    expect(webhookHandler.mock).not.toHaveBeenCalled();
-    expect(issueEvent.mock).not.toHaveBeenCalled();
-
-    expect(res.end.mock).toHaveBeenCalled();
-    expect(res.statusCode).toBe(501);
-  });
-
   it('reads body from req if raw body param not given', async () => {
     const receiver = new WebhookReceiver(webhookHandler, responsesHandler);
     receiver.bindIssuer(issueEvent, issueError);

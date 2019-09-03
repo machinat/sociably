@@ -55,7 +55,7 @@ class NextReceiver
         .then(() => {
           this._preparing = undefined;
         })
-        .catch(this._issueError);
+        .catch(err => this.issueError(err));
     }
   }
 
@@ -78,13 +78,7 @@ class NextReceiver
     const { pathname, query } = parsedUrl;
 
     try {
-      if (!this.isBound) {
-        res.statusCode = 501;
-        await this._next.renderError(null, req, res, pathname, query);
-        return;
-      }
-
-      const response = await this._issueEvent(
+      const response = await this.issueEvent(
         NEXT_SERVER_CHANNEL,
         null,
         {
@@ -124,7 +118,7 @@ class NextReceiver
         });
       }
     } catch (err) {
-      this._issueError(err);
+      this.issueError(err);
       await this._next.renderError(err, req, res, pathname, query);
     }
   }

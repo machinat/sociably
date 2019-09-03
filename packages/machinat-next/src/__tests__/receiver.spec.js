@@ -75,24 +75,6 @@ it('not call next.prepare() if options.noPrepare is true', async () => {
   expect(nextHandler.mock).toHaveBeenCalled();
 });
 
-it('call next.renderError() with status 501 if receiver is not bound', async () => {
-  const receiver = new NextReceiver({ nextApp, noPrepare: true });
-
-  expect(receiver.handleRequest(req, res)).toBe(undefined);
-  await nextTick();
-
-  expect(nextApp.renderError.mock).toHaveBeenCalledTimes(1);
-  expect(nextApp.renderError.mock).toHaveBeenCalledWith(
-    null,
-    req,
-    res,
-    '/hello',
-    { foo: 'bar' }
-  );
-
-  expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(501);
-});
-
 it('call next.getRequestHandler()() if event issuer return empty', async () => {
   const receiver = new NextReceiver({ nextApp, noPrepare: true });
   receiver.bindIssuer(issueEvent, issueError);

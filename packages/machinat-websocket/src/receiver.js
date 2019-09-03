@@ -128,7 +128,7 @@ class WebSocketReceiver
   ) {
     const channel = this._getCachedChannel(uid);
     if (channel === null) {
-      this._issueError(
+      this.issueError(
         new ConnectionError(`invalid channel uid [${uid}] received`)
       );
       return;
@@ -137,14 +137,14 @@ class WebSocketReceiver
     const event = createEvent(type, subtype, payload);
 
     try {
-      await this._issueEvent(channel, null, event, {
+      await this.issueEvent(channel, null, event, {
         source: WEBSOCKET,
         connectionInfo,
         socketId: socket.id,
         request: (socket.request: any), // request exist at server side
       });
     } catch (err) {
-      this._issueError(err);
+      this.issueError(err);
     }
   }
 
@@ -155,7 +155,7 @@ class WebSocketReceiver
     const channel = new WebSocketChannel('@socket', undefined, socket.id);
     const event = createEvent('@register', undefined, body);
     try {
-      const response: WebSocketResponse = await this._issueEvent(
+      const response: WebSocketResponse = await this.issueEvent(
         channel,
         null,
         event,
@@ -197,7 +197,7 @@ class WebSocketReceiver
   };
 
   _handleDistributorError = (err: Error) => {
-    this._issueError(err);
+    this.issueError(err);
   };
 }
 

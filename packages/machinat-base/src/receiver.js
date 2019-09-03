@@ -1,4 +1,5 @@
 // @flow
+import invariant from 'invariant';
 import type {
   MachinatChannel,
   MachinatUser,
@@ -17,8 +18,8 @@ class BaseReceiver<
   Response
 > {
   _isBound: boolean;
-  _issueEvent: EventIssuer<Channel, User, Event, Metadata, Response>;
-  _issueError: Error => void;
+  _issueEvent: void | EventIssuer<Channel, User, Event, Metadata, Response>;
+  _issueError: void | (Error => void);
 
   constructor() {
     this._isBound = false;
@@ -26,6 +27,21 @@ class BaseReceiver<
 
   get isBound() {
     return this._isBound;
+  }
+
+  issueEvent(
+    channel: Channel,
+    user: User,
+    event: Event,
+    metadata: Metadata
+  ): Promise<Response> {
+    invariant(this._issueEvent, 'receiver is not bound');
+    return this._issueEvent(channel, user, event, metadata);
+  }
+
+  issueError(err: Error) {
+    invariant(this._issueError, 'receiver is not bound');
+    return this._issueError(err);
   }
 
   bindIssuer(
@@ -48,6 +64,8 @@ class BaseReceiver<
     }
 
     this._isBound = false;
+    this._issueEvent = undefined;
+    this._issueError = undefined;
     return true;
   }
 }

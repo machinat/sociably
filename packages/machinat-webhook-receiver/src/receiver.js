@@ -56,11 +56,6 @@ class WebhookReceiver<
     rawBody?: string
   ) {
     try {
-      if (!this.isBound) {
-        endRes(res, 501);
-        return;
-      }
-
       let body = rawBody;
       if (
         body === undefined &&
@@ -88,7 +83,7 @@ class WebhookReceiver<
 
         const responses = await Promise.all(
           eventReports.map(({ event, user, channel }) =>
-            this._issueEvent(channel, user, event, metadata)
+            this.issueEvent(channel, user, event, metadata)
           )
         );
 
@@ -113,7 +108,7 @@ class WebhookReceiver<
         );
       }
 
-      this._issueError(err);
+      this.issueError(err);
     }
   }
 }
