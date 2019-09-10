@@ -2,17 +2,24 @@
 import type {
   MachinatNativeComponent,
   MachinatEvent,
+  MachinatUser,
   MachinatMetadata,
 } from 'machinat/types';
 import type { BotPlugin } from 'machinat-base/types';
 import type WebSocketBot from './bot';
-import type MachinatSocket, { RegisterBody } from './socket';
-import type WebSocketChannel from './channel';
+import type MachinatSocket from './socket';
+import type { WebSocketChannel } from './channel';
 
 export type SocketId = string;
+export type ConnectionId = string;
 export type ChannelUid = string;
 
-export type ConnectionInfo = { [string]: any };
+export type Connection = {
+  id: ConnectionId,
+  user: ?MachinatUser,
+  socket: MachinatSocket,
+  channel: WebSocketChannel,
+};
 
 export type WebSocketEvent = {
   platform: 'websocket',
@@ -24,17 +31,17 @@ export type WebSocketEvent = {
 declare var e: WebSocketEvent;
 (e: MachinatEvent<any>);
 
-export type EventRenderValue = {|
+export type EventOrder = {|
   type: string,
   subtype?: string,
   payload?: string,
-  whitelist?: string[],
-  blacklist?: string[],
+  only?: ConnectionId[],
+  except?: ConnectionId[],
 |};
 
 export type WebSocketJob = {|
-  uid: ChannelUid,
-  ...EventRenderValue,
+  channel: WebSocketChannel,
+  order: EventOrder,
 |};
 
 export type WebSocketResult = {
@@ -52,7 +59,6 @@ export type WebSocketMetadata = {|
   source: 'websocket',
   socketId: SocketId,
   request: RequestInfo,
-  connectionInfo?: ConnectionInfo,
 |};
 
 declare var t: WebSocketMetadata;
@@ -60,8 +66,7 @@ declare var t: WebSocketMetadata;
 
 export type AcceptedRegisterResponse = {|
   accepted: true,
-  channel: WebSocketChannel,
-  info: ConnectionInfo,
+  user: MachinatUser,
 |};
 
 export type UnacceptedRegisterResponse = {|
@@ -77,22 +82,17 @@ export type RegisterResponse =
 
 export type WebSocketResponse = void | RegisterResponse;
 
-export type RegisterAuthenticator = (
-  socket: MachinatSocket,
-  body: RegisterBody
-) => Promise<RegisterResponse>;
-
-export type WebSocketComponent = MachinatNativeComponent<EventRenderValue>;
+export type WebSocketComponent = MachinatNativeComponent<EventOrder>;
 
 export type WebSocketBotOptions = {|
   verifyUpgrade?: RequestInfo => boolean,
   plugins?: BotPlugin<
     WebSocketChannel,
-    null,
+    ?MachinatUser,
     WebSocketEvent,
     WebSocketMetadata,
     WebSocketResponse,
-    EventRenderValue,
+    EventOrder,
     WebSocketComponent,
     WebSocketJob,
     WebSocketResult,
@@ -101,30 +101,35 @@ export type WebSocketBotOptions = {|
   >[],
 |};
 
+type ConnectionTarget = {
+  type: 'connection',
+  connectionId: ConnectionId,
+};
+
+type TopicTarget = {
+  type: 'topic',
+  channelUid: ChannelUid,
+};
+
+export type RemoteTarget = ConnectionTarget | TopicTarget;
+
 export interface SocketBroker {
-  broadcastRemote(job: WebSocketJob): Promise<null | SocketId[]>;
+  broadcastRemote(
+    target: RemoteTarget,
+    order: EventOrder
+  ): Promise<null | ConnectionId[]>;
 
-  connectRemoteSocket(
-    uid: ChannelUid,
-    socketId: SocketId,
-    info: ConnectionInfo
+  attachRemoteConnectionToTopic(
+    channel: WebSocketChannel,
+    chanUid: ChannelUid
   ): Promise<boolean>;
 
-  disconnectRemoteSocket(
-    uid: ChannelUid,
-    socketId: SocketId,
-    reason: string
+  detachRemoteConnectionFromTopic(
+    channel: WebSocketChannel,
+    chanUid: ChannelUid
   ): Promise<boolean>;
 
-  updateConnected(
-    uid: ChannelUid,
-    socketId: SocketId,
-    info: ConnectionInfo
-  ): Promise<boolean>;
-
-  updateDisconnected(uid: ChannelUid, socketId: SocketId): Promise<boolean>;
-
-  getRemoteConnections(
-    uid: ChannelUid
-  ): Promise<null | { socketId: SocketId, info: ConnectionInfo }[]>;
+  onRemoteEvent(
+    handler: (target: RemoteTarget, order: EventOrder) => void
+  ): void;
 }

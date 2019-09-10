@@ -4,20 +4,20 @@ import { Emitter, Controller, Engine, resolvePlugins } from 'machinat-base';
 import Renderer from 'machinat-renderer';
 import Queue from 'machinat-queue';
 
-import type { MachinatNode } from 'machinat/types';
+import type { MachinatNode, MachinatUser } from 'machinat/types';
 import type { MachinatBot, SegmentWithoutPause } from 'machinat-base/types';
 import type { HTTPUpgradeReceivable } from 'machinat-http-adaptor/types';
-import type WebSocketChannel from './channel';
+import type { WebSocketChannel } from './channel';
 import type {
   WebSocketEvent,
   WebSocketMetadata,
-  EventRenderValue,
+  EventOrder,
   WebSocketResponse,
   WebSocketJob,
   WebSocketResult,
   WebSocketBotOptions,
   WebSocketComponent,
-  SocketId,
+  ConnectionId,
 } from './types';
 
 import { WEBSOCKET, WEBSOCKET_NATIVE_TYPE } from './constant';
@@ -32,20 +32,22 @@ type WebSocketBotOptionsInput = $Shape<WebSocketBotOptions>;
 
 const createJobs = (
   channel: WebSocketChannel,
-  segments: SegmentWithoutPause<EventRenderValue, WebSocketComponent>[]
+  segments: SegmentWithoutPause<EventOrder, WebSocketComponent>[]
 ): WebSocketJob[] => {
   const jobs = new Array(segments.length);
   for (let i = 0; i < segments.length; i += 1) {
     const segment = segments[i];
-    jobs[i] =
-      segment.type === 'text'
-        ? {
-            type: 'message',
-            subtype: 'text',
-            payload: segment.value,
-            uid: channel.uid,
-          }
-        : { ...segment.value, uid: channel.uid };
+    jobs[i] = {
+      channel,
+      order:
+        segment.type === 'text'
+          ? {
+              type: 'message',
+              subtype: 'text',
+              payload: segment.value,
+            }
+          : segment.value,
+    };
   }
   return jobs;
 };
@@ -53,10 +55,10 @@ const createJobs = (
 class WebSocketBot
   extends Emitter<
     WebSocketChannel,
-    null,
+    ?MachinatUser,
     WebSocketEvent,
     WebSocketMetadata,
-    EventRenderValue,
+    EventOrder,
     WebSocketComponent,
     WebSocketJob,
     WebSocketResult,
@@ -66,11 +68,11 @@ class WebSocketBot
     HTTPUpgradeReceivable<WebSocketReceiver>,
     MachinatBot<
       WebSocketChannel,
-      null,
+      ?MachinatUser,
       WebSocketEvent,
       WebSocketMetadata,
       WebSocketResponse,
-      EventRenderValue,
+      EventOrder,
       WebSocketComponent,
       WebSocketJob,
       WebSocketResult,
@@ -83,18 +85,18 @@ class WebSocketBot
 
   controller: Controller<
     WebSocketChannel,
-    null,
+    ?MachinatUser,
     WebSocketEvent,
     WebSocketMetadata,
     WebSocketResponse,
-    EventRenderValue,
+    EventOrder,
     WebSocketComponent,
     void
   >;
 
   engine: Engine<
     WebSocketChannel,
-    EventRenderValue,
+    EventOrder,
     WebSocketComponent,
     WebSocketJob,
     WebSocketResult
@@ -112,7 +114,7 @@ class WebSocketBot
     this.options = options;
 
     const broker = new LocalOnlyBroker();
-    const distributor = new Distributor(broker);
+    const distributor = new Distributor(broker, err => this.emitError(err));
     this._distributor = distributor;
 
     const wsServer = new WSServer({ noServer: true });
@@ -141,7 +143,7 @@ class WebSocketBot
 
     this.engine = new Engine(
       WEBSOCKET,
-      this,
+      (this: any),
       renderer,
       queue,
       worker,
@@ -169,12 +171,8 @@ class WebSocketBot
     return response === null ? null : response.results;
   }
 
-  disconnectSocket(
-    channel: WebSocketChannel,
-    socketId: SocketId,
-    reason: string
-  ) {
-    return this._distributor.disconnectSocket(channel.uid, socketId, reason);
+  disconnect(connId: ConnectionId, reason: string) {
+    return this._distributor.disconnect(connId, reason);
   }
 }
 

@@ -1,6 +1,6 @@
 // @flow
 import WS from 'ws';
-
+import type { MachinatUser } from 'machinat/types';
 import type {
   ConnectBody,
   DisconnectBody,
@@ -8,10 +8,9 @@ import type {
   RegisterBody,
   RejectBody,
 } from '../socket';
-import type { ConnectionInfo } from '../types';
 import MachinatSocket from '../socket';
 
-import Channel from '../channel';
+import { WebSocketChannel, connectionChannel } from '../channel';
 import { ConnectionError } from '../error';
 
 export type ClientEvent = {|
@@ -21,9 +20,9 @@ export type ClientEvent = {|
 |};
 
 type ClientEventFrame = {|
-  channel: Channel,
+  user: ?MachinatUser,
+  channel: WebSocketChannel,
   event: ClientEvent,
-  connectionInfo: ConnectionInfo,
   client: WebScoketClient, // eslint-disable-line no-use-before-define
 |};
 
@@ -50,11 +49,12 @@ const createSocket = (url: string) => {
 
 class WebScoketClient {
   options: ClientOptions;
-  _connected: boolean;
   _socket: MachinatSocket;
+  _connected: boolean;
   _registerSeq: number;
-  _channel: Channel;
-  _connectionInfo: ConnectionInfo;
+  _user: ?MachinatUser;
+  _connectionId: string;
+  _connectionChannel: WebSocketChannel;
 
   _queuedEventJobs: PendingEventJob[];
 
@@ -75,34 +75,27 @@ class WebScoketClient {
     this._queuedEventJobs = [];
     this._eventListeners = [];
 
-    this._socket = createSocket(options.url);
+    const socket = createSocket(options.url);
 
-    this._socket.on('open', this._handleSocketOpen);
-    this._socket.on('close', this._handleSocketClose);
-    this._socket.on('error', this._handleSocketError);
+    socket.on('open', this._handleSocketOpen);
+    socket.on('close', this._handleSocketClose);
+    socket.on('error', this._handleSocketError);
 
-    this._socket.on('connect', this._handleConnect);
-    this._socket.on('disconnect', this._handleDisconnect);
-    this._socket.on('event', this._handleEvent);
+    socket.on('connect', this._handleConnect);
+    socket.on('disconnect', this._handleDisconnect);
+    socket.on('event', this._handleEvent);
 
-    this._socket.on('reject', this._handleReject);
-    this._socket.on('error', this._emitError);
-    this._socket.on('connect_fail', this._handleConnectFail);
-
+    socket.on('reject', this._handleReject);
+    socket.on('error', this._emitError);
+    socket.on('connect_fail', this._handleConnectFail);
     // TODO: implement answering
-    // this._socket.on('answer');
+    // socket.on('answer');
+
+    this._socket = socket;
   }
 
   get connected() {
     return this._connected;
-  }
-
-  get channel() {
-    return this._channel;
-  }
-
-  get connectionInfo() {
-    return this._connectionInfo;
   }
 
   async send(event: ClientEvent): Promise<void> {
@@ -111,7 +104,7 @@ class WebScoketClient {
         this._queuedEventJobs.push({ resolve, reject, event });
       });
     } else {
-      await this._socket.event({ ...event, uid: this._channel.uid });
+      await this._socket.event({ ...event, connectionId: this._connectionId });
     }
   }
 
@@ -119,7 +112,7 @@ class WebScoketClient {
     if (this._connected) {
       this._connected = false;
       this._socket
-        .disconnect({ uid: this._channel.uid, reason })
+        .disconnect({ connectionId: this._connectionId, reason })
         .catch(this._emitError);
     }
   }
@@ -141,12 +134,12 @@ class WebScoketClient {
     return true;
   }
 
-  _emitEvent(event: ClientEvent) {
+  _emitEvent(event: ClientEvent, channel: WebSocketChannel) {
     for (const listener of this._eventListeners) {
       listener({
         event,
-        channel: this._channel,
-        connectionInfo: this._connectionInfo,
+        user: this._user,
+        channel,
         client: this,
       });
     }
@@ -187,37 +180,37 @@ class WebScoketClient {
   _handleSocketClose = () => {
     if (this._connected === true) {
       this._connected = false;
-      this._emitEvent({
-        type: '@disconnect',
-        subtype: undefined,
-        payload: undefined,
-      });
+      this._emitEvent(
+        {
+          type: '@disconnect',
+          subtype: undefined,
+          payload: undefined,
+        },
+        this._connectionChannel
+      );
     }
   };
 
-  _handleConnect = ({ uid, req, info }: ConnectBody) => {
+  _handleConnect = ({ connectionId, req, user }: ConnectBody) => {
     if (req !== this._registerSeq) {
       return;
     }
 
-    const channel = Channel.fromUid(uid);
-    if (channel === null) {
-      this._emitError(new TypeError('invalid channel uid received'));
-      return;
-    }
-
     this._connected = true;
-    this._channel = channel;
-    this._connectionInfo = info || {};
-    this._emitEvent({
-      type: '@connect',
-      subtype: undefined,
-      payload: undefined,
-    });
+    this._connectionChannel = connectionChannel(connectionId);
+    this._user = user;
+    this._emitEvent(
+      {
+        type: '@connect',
+        subtype: undefined,
+        payload: undefined,
+      },
+      this._connectionChannel
+    );
 
     for (const { event, resolve, reject } of this._queuedEventJobs) {
       this._socket
-        .event({ ...event, uid: this._channel.uid })
+        .event({ ...event, connectionId })
         .then(resolve)
         .catch(reject);
     }
@@ -228,25 +221,23 @@ class WebScoketClient {
     this._emitError(err);
   }
 
-  _handleDisconnect = ({ uid }: DisconnectBody) => {
-    if (this._channel && this._channel.uid === uid) {
+  _handleDisconnect = ({ connectionId }: DisconnectBody) => {
+    if (this._connectionId === connectionId) {
       this._connected = false;
-      this._emitEvent({
-        type: '@disconnect',
-        subtype: undefined,
-        payload: undefined,
-      });
+      this._emitEvent(
+        {
+          type: '@disconnect',
+          subtype: undefined,
+          payload: undefined,
+        },
+        this._connectionChannel
+      );
     }
   };
 
-  _handleEvent = (body: EventBody) => {
-    const { uid, type, subtype, payload } = body;
-    if (
-      this._connected === true &&
-      this._channel &&
-      this._channel.uid === uid
-    ) {
-      this._emitEvent({ type, subtype, payload });
+  _handleEvent = ({ connectionId, type, subtype, payload }: EventBody) => {
+    if (this._connected === true && this._connectionId === connectionId) {
+      this._emitEvent({ type, subtype, payload }, this._connectionChannel);
     }
   };
 
