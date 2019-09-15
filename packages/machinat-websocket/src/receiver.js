@@ -1,6 +1,6 @@
 // @flow
 import http from 'http';
-import { generate as generateId } from 'shortid';
+import uniqid from 'uniqid';
 import { BaseReceiver } from 'machinat-base';
 
 import type { MachinatUser } from 'machinat/types';
@@ -135,7 +135,7 @@ class WebSocketReceiver
     }
 
     this._webSocketServer.handleUpgrade(req, ns, head, (ws: WebSocket) => {
-      const socket = new MachinatSocket(generateId(), ws, requestInfo);
+      const socket = new MachinatSocket(uniqid(), ws, requestInfo);
       this._socketStore.set(socket, {
         lostHeartbeat: 0,
         connsAuthInfo: new Map(),
@@ -181,7 +181,7 @@ class WebSocketReceiver
 
   _handleRegister = async (socket: Socket, body: RegisterBody, seq: number) => {
     const socketStatus = this._getSocketStatusAssertedly(socket);
-    const connectionId: string = generateId();
+    const connectionId: string = uniqid();
 
     try {
       const response = await this._processEvent(

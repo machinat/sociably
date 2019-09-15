@@ -14,7 +14,7 @@ describe('connectionScope(connection)', () => {
     expect(scope.connection).toBe(connection);
     expect(scope.platform).toBe('websocket');
     expect(scope.type).toBe('connection');
-    expect(scope.subtype).toBe('#server');
+    expect(scope.subtype).toBe(undefined);
     expect(scope.id).toBe('#conn');
   });
 });

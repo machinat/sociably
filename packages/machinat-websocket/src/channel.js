@@ -46,15 +46,11 @@ export const userScope = (user: MachinatUser): UserScope => {
 const ConnectionScopeProto = {
   platform: 'websocket',
   type: 'connection',
-  get subtype() {
-    return (this.connection: Connection).serverId;
-  },
   get id() {
     return (this.connection: Connection).id;
   },
   get uid() {
-    const { serverId, id } = (this.connection: Connection);
-    return `${WEBSOCKET}:connection:${serverId}:${id}`;
+    return `${WEBSOCKET}:connection:*:${this.connection.id}`;
   },
 };
 
