@@ -1,26 +1,35 @@
 // @flow
 import type {
   EventOrder,
-  Connection,
   ConnectionId,
   ChannelUid,
-  SocketId,
   SocketBroker,
   RemoteTarget,
+  WebSocketChannel,
+  TopicScope,
 } from './types';
-import { WebSocketChannel } from './channel';
+import type Socket from './socket';
+import type Connection from './connection';
+
+import { WEBSOCKET } from './constant';
 
 class Distributor {
+  _serverId: string;
   _broker: SocketBroker;
   _errorHandler: Error => void;
 
   _channelsConnected: Map<ChannelUid, Set<ConnectionId>>;
   _connectionsStore: Map<
     ConnectionId,
-    { connection: Connection, channels: Set<ChannelUid> }
+    { connection: Connection, socket: Socket, channels: Set<ChannelUid> }
   >;
 
-  constructor(broker: SocketBroker, handleError: Error => void) {
+  constructor(
+    serverId: string,
+    broker: SocketBroker,
+    handleError: Error => void
+  ) {
+    this._serverId = serverId;
     this._broker = broker;
     this._channelsConnected = new Map();
     this._connectionsStore = new Map();
@@ -29,20 +38,21 @@ class Distributor {
     broker.onRemoteEvent(this._handleRemoteEvent);
   }
 
-  addLocalConnection(connection: Connection): boolean {
+  addLocalConnection(socket: Socket, connection: Connection): boolean {
     const connectionId = connection.id;
     if (this._connectionsStore.has(connectionId)) {
       return false;
     }
 
     this._connectionsStore.set(connectionId, {
+      socket,
       connection,
       channels: new Set(),
     });
     return true;
   }
 
-  removeLocalConnection(connId: ConnectionId): boolean {
+  removeLocalConnection({ id: connId }: Connection): boolean {
     const status = this._connectionsStore.get(connId);
     if (status === undefined) {
       return false;
@@ -56,51 +66,54 @@ class Distributor {
     return true;
   }
 
-  async attachToTopic(
-    channel: WebSocketChannel,
-    connId: ConnectionId
+  async attachTopic(
+    connection: Connection,
+    scope: TopicScope
   ): Promise<boolean> {
-    const connStatus = this._connectionsStore.get(connId);
-    if (connStatus === undefined) {
-      const remoteResult = await this._broker.attachRemoteConnectionToTopic(
-        channel,
-        connId
-      );
-
-      return remoteResult;
+    if (this._serverId !== connection.serverId) {
+      return this._broker.attachTopicRemote(connection, scope);
     }
 
-    let connected = this._channelsConnected.get(channel.uid);
-    if (connected === undefined) {
-      connected = new Set();
-    } else if (connected.has(connId)) {
+    const connStatus = this._connectionsStore.get(connection.id);
+    if (connStatus === undefined) {
       return false;
     }
 
-    connected.add(connId);
+    const { uid } = scope;
+    connStatus.channels.add(uid);
+
+    let connected = this._channelsConnected.get(uid);
+    if (connected === undefined) {
+      connected = new Set();
+      this._channelsConnected.set(uid, connected);
+    }
+
+    connected.add(connection.id);
     return true;
   }
 
-  async detachFromTopic(
-    channel: WebSocketChannel,
-    conneId: ConnectionId
+  async detachTopic(
+    connection: Connection,
+    scope: TopicScope
   ): Promise<boolean> {
-    const connStatus = this._connectionsStore.get(conneId);
-    if (connStatus === undefined) {
-      const remoteResult = await this._broker.detachRemoteConnectionFromTopic(
-        channel,
-        conneId
-      );
-      return remoteResult;
+    if (this._serverId !== connection.serverId) {
+      return this._broker.detachTopicRemote(connection, scope);
     }
 
-    const connected = this._channelsConnected.get(channel.uid);
-    if (connected === undefined || !connected.delete(conneId)) {
+    const connStatus = this._connectionsStore.get(connection.id);
+    if (connStatus === undefined) {
       return false;
     }
 
+    const { uid } = scope;
+    const connected = this._channelsConnected.get(uid);
+    if (connected === undefined) {
+      return true;
+    }
+
+    connected.delete(connection.id);
     if (connected.size === 0) {
-      this._channelsConnected.delete(channel.uid);
+      this._channelsConnected.delete(uid);
     }
 
     return true;
@@ -109,34 +122,38 @@ class Distributor {
   async broadcast(
     channel: WebSocketChannel,
     order: EventOrder
-  ): Promise<null | SocketId[]> {
-    if (channel.type === '@socket') {
-      throw new Error();
-    }
+  ): Promise<null | Connection[]> {
+    if (channel.platform === WEBSOCKET && channel.type === 'connection') {
+      const { connection } = channel;
 
-    if (channel.type === '@connection') {
-      const connectionId: ConnectionId = (channel.id: any);
+      if (connection.serverId !== this._serverId) {
+        return this._broker.broadcastRemote(
+          { type: 'connection', connection },
+          order
+        );
+      }
+
       const sentToLocal = await this._sendToLocalConnection(
-        connectionId,
+        connection.id,
         order
       );
 
       if (!sentToLocal) {
         return this._broker.broadcastRemote(
-          { type: 'connection', connectionId },
+          { type: 'connection', connection },
           order
         );
       }
+      return [connection];
+    }
 
-      return [connectionId];
+    if (channel.platform === WEBSOCKET && channel.type === 'user') {
+      throw new Error('sending to user scope is not yet implemented');
     }
 
     const [localResults, remoteResults] = await Promise.all([
       this._broadcastLocal(channel.uid, order),
-      this._broker.broadcastRemote(
-        { type: 'topic', channelUid: channel.uid },
-        order
-      ),
+      this._broker.broadcastRemote({ type: 'topic', uid: channel.uid }, order),
     ]);
 
     return localResults === null
@@ -146,16 +163,14 @@ class Distributor {
       : [...localResults, ...remoteResults];
   }
 
-  async disconnect(connId: ConnectionId, reason: string) {
+  async disconnect(conn: Connection, reason: string) {
+    const connId = conn.id;
     const connStatus = this._connectionsStore.get(connId);
     if (connStatus === undefined) {
-      return false;
+      return this._broker.disconnectRemote(conn);
     }
 
-    const {
-      connection: { socket },
-      channels,
-    } = connStatus;
+    const { socket, channels } = connStatus;
 
     this._detachFromChannels(connId, channels);
     this._connectionsStore.delete(connId);
@@ -186,8 +201,9 @@ class Distributor {
       return false;
     }
 
-    const { socket } = connStatus.connection;
+    const { socket } = connStatus;
     const { type, subtype, payload } = order;
+
     await socket.event({
       connectionId,
       type,
@@ -201,7 +217,7 @@ class Distributor {
   async _broadcastLocal(
     chanUid: ChannelUid,
     order: EventOrder
-  ): Promise<null | ConnectionId[]> {
+  ): Promise<null | Connection[]> {
     const conneted = this._channelsConnected.get(chanUid);
     if (conneted === undefined) {
       return null;
@@ -215,8 +231,8 @@ class Distributor {
       except: blacklist,
     } = order;
 
-    const whitelistSet = whitelist && new Set(whitelist);
-    const blacklistSet = blacklist && new Set(blacklist);
+    const whiteSet = whitelist && new Set(whitelist);
+    const blackSet = blacklist && new Set(blacklist);
 
     const promises = [];
     const sentConns = [];
@@ -227,44 +243,46 @@ class Distributor {
       if (connStatus === undefined) {
         conneted.delete(connId);
       } else if (
-        (!whitelistSet || whitelistSet.has(connId)) &&
-        (!blacklistSet || !blacklistSet.has(connId))
+        (!whiteSet || whiteSet.has(connId)) &&
+        (!blackSet || !blackSet.has(connId))
       ) {
-        const { socket } = connStatus.connection;
+        const { connection, socket } = connStatus;
+
         promises.push(
           socket
             .event({ connectionId: connId, type, subtype, payload })
             .catch(this._errorHandler)
         );
-        sentConns.push(connId);
+        sentConns.push(connection);
       }
     }
 
     const results = await Promise.all(promises);
-    const connsFinished: ConnectionId[] = [];
+    const connsFinished: Connection[] = [];
 
     for (let i = 0; i < results.length; i += 1) {
-      const connId = sentConns[i];
+      const connection = sentConns[i];
 
       if (results[i] === undefined) {
+        const connId = connection.id;
         // remove errored connection
         conneted.delete(connId);
         this._connectionsStore.delete(connId);
       } else {
-        connsFinished.push(connId);
+        connsFinished.push(connection);
       }
     }
 
-    return connsFinished;
+    return connsFinished.length > 0 ? connsFinished : null;
   }
 
   _handleRemoteEvent(target: RemoteTarget, order: EventOrder) {
     if (target.type === 'connection') {
-      this._sendToLocalConnection(target.connectionId, order).catch(
+      this._sendToLocalConnection(target.connection.id, order).catch(
         this._errorHandler
       );
     } else if (target.type === 'topic') {
-      this._broadcastLocal(target.channelUid, order).catch(this._errorHandler);
+      this._broadcastLocal(target.uid, order).catch(this._errorHandler);
     } else {
       throw new Error(`unknown target received ${target.type}`);
     }

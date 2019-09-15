@@ -13,14 +13,12 @@ const asWebSocketComponent = compose(
   wrapSingleUnitSegment
 );
 
-const Event = ({
-  props: { type, subtype, payload, whitelist, blacklist },
-}) => ({
+const Event = ({ props: { type, subtype, payload, only, except } }) => ({
   type: type || 'default',
   subtype,
   payload,
-  whitelist,
-  blacklist,
+  only,
+  except,
 });
 const __Event = asWebSocketComponent(Event);
 

@@ -23,6 +23,7 @@
     "machinat-queue": "^0.0.1",
     "machinat-renderer": "^0.0.2",
     "machinat-utility": "^0.0.2",
+    "shortid": "^2.2.15",
     "thenifiedly": "^0.2.1",
     "uniqid": "^5.0.3",
     "ws": "^6.2.0"

@@ -8,7 +8,7 @@ import WebSocketBot from '../bot';
 import Receiver from '../receiver';
 import Distributor from '../distributor';
 import Worker from '../worker';
-import Channel from '../channel';
+import { topicScope } from '../channel';
 import { Event } from '../component';
 import { WEBSOCKET_NATIVE_TYPE } from '../constant';
 
@@ -34,7 +34,7 @@ describe('#constructor(options)', () => {
   });
 
   it('pass distributor to worker', () => {
-  const bot = new WebSocketBot(); // eslint-disable-line
+    const bot = new WebSocketBot(); // eslint-disable-line no-unused-vars
     expect(Worker.mock).toHaveBeenCalledWith(expect.any(Distributor));
   });
 
@@ -67,6 +67,7 @@ describe('#constructor(options)', () => {
 
     expect(Receiver.mock).toHaveBeenCalledTimes(1);
     expect(Receiver.mock).toHaveBeenCalledWith(
+      expect.any(String),
       expect.any(ws.Server),
       expect.any(Distributor),
       bot.options
@@ -155,9 +156,15 @@ describe('#render(channel, event)', () => {
     const bot = new WebSocketBot();
     const distributor = Distributor.mock.calls[0].instance;
 
-    distributor.broadcast.mock.fakeReturnValue(['1', '2', '3']);
+    const conns = new Array(3).fill(0).map((_, i) => ({
+      serverId: '#server',
+      socketId: `#socket${i}`,
+      id: `#conn${i}`,
+    }));
 
-    const channel = new Channel();
+    distributor.broadcast.mock.fakeReturnValue(conns);
+
+    const channel = topicScope('foo');
     await expect(
       bot.render(channel, [
         <Event />,
@@ -165,46 +172,85 @@ describe('#render(channel, event)', () => {
         <Event type="bar" />,
       ])
     ).resolves.toEqual([
-      { sockets: ['1', '2', '3'] },
-      { sockets: ['1', '2', '3'] },
-      { sockets: ['1', '2', '3'] },
+      { connections: conns },
+      { connections: conns },
+      { connections: conns },
     ]);
 
     expect(distributor.broadcast.mock).toHaveBeenCalledTimes(3);
-    expect(distributor.broadcast.mock).toHaveBeenCalledWith({
-      uid: channel.uid,
+    expect(distributor.broadcast.mock).toHaveBeenCalledWith(channel, {
       type: 'default',
     });
-    expect(distributor.broadcast.mock).toHaveBeenCalledWith({
-      uid: channel.uid,
+    expect(distributor.broadcast.mock).toHaveBeenCalledWith(channel, {
       type: 'foo',
     });
-    expect(distributor.broadcast.mock).toHaveBeenCalledWith({
-      uid: channel.uid,
+    expect(distributor.broadcast.mock).toHaveBeenCalledWith(channel, {
       type: 'bar',
     });
   });
 });
 
-describe('#disconnectSocket(channel, socketId, reason)', () => {
+const connection = {
+  serverId: '#server',
+  socketId: '#socket',
+  id: '#conn',
+};
+
+describe('#disconnect(channel, socketId, reason)', () => {
   it('work', async () => {
     const bot = new WebSocketBot();
     const distributor = Distributor.mock.calls[0].instance;
 
-    distributor.disconnectSocket.mock.fake(() => Promise.resolve(false));
+    distributor.disconnect.mock.fake(async () => false);
 
-    const channel = new Channel('foo');
-    await expect(bot.disconnectSocket(channel, '1', 'bye')).resolves.toBe(
-      false
+    await expect(bot.disconnect(connection, 'bye')).resolves.toBe(false);
+
+    distributor.disconnect.mock.fake(async () => true);
+    await expect(bot.disconnect(connection, 'bye')).resolves.toBe(true);
+
+    expect(distributor.disconnect.mock).toHaveBeenCalledTimes(2);
+    expect(distributor.disconnect.mock).toHaveBeenCalledWith(connection, 'bye');
+  });
+});
+
+describe('#attachTopic(channel, socketId, reason)', () => {
+  it('work', async () => {
+    const bot = new WebSocketBot();
+    const distributor = Distributor.mock.calls[0].instance;
+
+    distributor.attachTopic.mock.fake(async () => false);
+
+    const topic = topicScope('foo', 'bar');
+    await expect(bot.attachTopic(connection, topic)).resolves.toBe(false);
+
+    distributor.attachTopic.mock.fake(async () => true);
+    await expect(bot.attachTopic(connection, topic)).resolves.toBe(true);
+
+    expect(distributor.attachTopic.mock).toHaveBeenCalledTimes(2);
+    expect(distributor.attachTopic.mock).toHaveBeenCalledWith(
+      connection,
+      topic
     );
+  });
+});
 
-    distributor.disconnectSocket.mock.fake(() => Promise.resolve(true));
-    await expect(bot.disconnectSocket(channel, '2', 'bye')).resolves.toBe(true);
+describe('#detachTopic(channel, socketId, reason)', () => {
+  it('work', async () => {
+    const bot = new WebSocketBot();
+    const distributor = Distributor.mock.calls[0].instance;
 
-    expect(distributor.disconnectSocket.mock).toHaveBeenCalledTimes(2);
-    expect(distributor.disconnectSocket.mock) //
-      .toHaveBeenCalledWith(channel.uid, '1', 'bye');
-    expect(distributor.disconnectSocket.mock) //
-      .toHaveBeenCalledWith(channel.uid, '2', 'bye');
+    distributor.detachTopic.mock.fake(async () => false);
+
+    const topic = topicScope('foo', 'bar');
+    await expect(bot.detachTopic(connection, topic)).resolves.toBe(false);
+
+    distributor.detachTopic.mock.fake(async () => true);
+    await expect(bot.detachTopic(connection, topic)).resolves.toBe(true);
+
+    expect(distributor.detachTopic.mock).toHaveBeenCalledTimes(2);
+    expect(distributor.detachTopic.mock).toHaveBeenCalledWith(
+      connection,
+      topic
+    );
   });
 });

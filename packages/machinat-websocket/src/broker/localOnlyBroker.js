@@ -7,11 +7,15 @@ export default class LocalOnlyBroker implements SocketBroker {
     return Promise.resolve(null);
   }
 
-  attachRemoteConnectionToTopic() {
+  attachTopicRemote() {
     return Promise.resolve(false);
   }
 
-  detachRemoteConnectionFromTopic() {
+  detachTopicRemote() {
+    return Promise.resolve(false);
+  }
+
+  disconnectRemote() {
     return Promise.resolve(false);
   }
 

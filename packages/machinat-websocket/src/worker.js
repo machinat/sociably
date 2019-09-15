@@ -46,23 +46,23 @@ class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
   ): Promise<JobResponse<WebSocketJob, WebSocketResult>[]> => {
     const promises = [];
 
-    for (const { channel, order } of jobs) {
-      promises.push(this.distributor.broadcast(channel, order));
+    for (const { scope, order } of jobs) {
+      promises.push(this.distributor.broadcast(scope, order));
     }
 
     const socketsMetrix = await Promise.all(promises);
 
-    const results = new Array(socketsMetrix.length);
+    const response = new Array(socketsMetrix.length);
     for (let i = 0; i < socketsMetrix.length; i += 1) {
-      results[i] = {
+      response[i] = {
         success: true,
         error: undefined,
         job: jobs[i],
-        result: { sockets: socketsMetrix[i] },
+        result: { connections: socketsMetrix[i] },
       };
     }
 
-    return results;
+    return response;
   };
 }
 

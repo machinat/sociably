@@ -1,5 +1,7 @@
 // @flow
+import invariant from 'invariant';
 import WS from 'ws';
+import uniqid from 'uniqid';
 import { Emitter, Controller, Engine, resolvePlugins } from 'machinat-base';
 import Renderer from 'machinat-renderer';
 import Queue from 'machinat-queue';
@@ -7,8 +9,8 @@ import Queue from 'machinat-queue';
 import type { MachinatNode, MachinatUser } from 'machinat/types';
 import type { MachinatBot, SegmentWithoutPause } from 'machinat-base/types';
 import type { HTTPUpgradeReceivable } from 'machinat-http-adaptor/types';
-import type { WebSocketChannel } from './channel';
 import type {
+  WebSocketChannel,
   WebSocketEvent,
   WebSocketMetadata,
   EventOrder,
@@ -17,8 +19,9 @@ import type {
   WebSocketResult,
   WebSocketBotOptions,
   WebSocketComponent,
-  ConnectionId,
+  TopicScope,
 } from './types';
+import type Connection from './connection';
 
 import { WEBSOCKET, WEBSOCKET_NATIVE_TYPE } from './constant';
 import Distributor from './distributor';
@@ -31,14 +34,14 @@ const WSServer = WS.Server;
 type WebSocketBotOptionsInput = $Shape<WebSocketBotOptions>;
 
 const createJobs = (
-  channel: WebSocketChannel,
+  scope: WebSocketChannel,
   segments: SegmentWithoutPause<EventOrder, WebSocketComponent>[]
 ): WebSocketJob[] => {
   const jobs = new Array(segments.length);
   for (let i = 0; i < segments.length; i += 1) {
     const segment = segments[i];
     jobs[i] = {
-      channel,
+      scope,
       order:
         segment.type === 'text'
           ? {
@@ -114,7 +117,11 @@ class WebSocketBot
     this.options = options;
 
     const broker = new LocalOnlyBroker();
-    const distributor = new Distributor(broker, err => this.emitError(err));
+
+    const serverId = uniqid();
+    const distributor = new Distributor(serverId, broker, err =>
+      this.emitError(err)
+    );
     this._distributor = distributor;
 
     const wsServer = new WSServer({ noServer: true });
@@ -125,7 +132,12 @@ class WebSocketBot
     );
 
     this.controller = new Controller(WEBSOCKET, this, eventMiddlewares);
-    this.receiver = new WebSocketReceiver(wsServer, distributor, options);
+    this.receiver = new WebSocketReceiver(
+      serverId,
+      wsServer,
+      distributor,
+      options
+    );
 
     this.receiver.bindIssuer(
       this.controller.eventIssuerThroughMiddlewares(this.emitEvent.bind(this)),
@@ -171,8 +183,24 @@ class WebSocketBot
     return response === null ? null : response.results;
   }
 
-  disconnect(connId: ConnectionId, reason: string) {
-    return this._distributor.disconnect(connId, reason);
+  disconnect(connection: Connection, reason: string) {
+    return this._distributor.disconnect(connection, reason);
+  }
+
+  attachTopic(connection: Connection, scope: TopicScope) {
+    invariant(
+      scope.platform === WEBSOCKET && scope.type === 'topic',
+      `expect a "topic" scope to attach, get: "${scope.type}"`
+    );
+    return this._distributor.attachTopic(connection, scope);
+  }
+
+  detachTopic(connection: Connection, scope: TopicScope) {
+    invariant(
+      scope.platform === WEBSOCKET && scope.type === 'topic',
+      `expect a "topic" scope to detach, get: "${scope.type}"`
+    );
+    return this._distributor.detachTopic(connection, scope);
   }
 }
 

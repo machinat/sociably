@@ -10,8 +10,10 @@ import type {
 } from '../socket';
 import MachinatSocket from '../socket';
 
-import { WebSocketChannel, connectionChannel } from '../channel';
+import { connectionScope, userScope } from '../channel';
 import { ConnectionError } from '../error';
+import Connection from '../connection';
+import type { WebSocketChannel, UserScope, ConnectionScope } from '../types';
 
 export type ClientEvent = {|
   type: string,
@@ -44,7 +46,7 @@ const MACHINAT_WEBSOCKET_PROTOCOL_V0 = 'machinat-websocket-v0';
 const createSocket = (url: string) => {
   const webSocket = new WS(url, MACHINAT_WEBSOCKET_PROTOCOL_V0);
 
-  return new MachinatSocket(webSocket, '');
+  return new MachinatSocket('', webSocket);
 };
 
 class WebScoketClient {
@@ -54,7 +56,9 @@ class WebScoketClient {
   _registerSeq: number;
   _user: ?MachinatUser;
   _connectionId: string;
-  _connectionChannel: WebSocketChannel;
+
+  _connectionScope: ConnectionScope;
+  _userScope: null | UserScope;
 
   _queuedEventJobs: PendingEventJob[];
 
@@ -78,7 +82,6 @@ class WebScoketClient {
     const socket = createSocket(options.url);
 
     socket.on('open', this._handleSocketOpen);
-    socket.on('close', this._handleSocketClose);
     socket.on('error', this._handleSocketError);
 
     socket.on('connect', this._handleConnect);
@@ -108,7 +111,7 @@ class WebScoketClient {
     }
   }
 
-  close(reason: string) {
+  disconnect(reason: string) {
     if (this._connected) {
       this._connected = false;
       this._socket
@@ -177,35 +180,27 @@ class WebScoketClient {
     this._registerSeq = seq;
   };
 
-  _handleSocketClose = () => {
-    if (this._connected === true) {
-      this._connected = false;
-      this._emitEvent(
-        {
-          type: '@disconnect',
-          subtype: undefined,
-          payload: undefined,
-        },
-        this._connectionChannel
-      );
-    }
-  };
-
   _handleConnect = ({ connectionId, req, user }: ConnectBody) => {
     if (req !== this._registerSeq) {
       return;
     }
 
     this._connected = true;
-    this._connectionChannel = connectionChannel(connectionId);
+    this._connectionId = connectionId;
+    this._connectionScope = connectionScope(
+      new Connection('', '', connectionId, user || null, null)
+    );
+
     this._user = user;
+    this._userScope = user ? userScope(user) : null;
+
     this._emitEvent(
       {
         type: '@connect',
         subtype: undefined,
         payload: undefined,
       },
-      this._connectionChannel
+      this._connectionScope
     );
 
     for (const { event, resolve, reject } of this._queuedEventJobs) {
@@ -230,14 +225,14 @@ class WebScoketClient {
           subtype: undefined,
           payload: undefined,
         },
-        this._connectionChannel
+        this._connectionScope
       );
     }
   };
 
   _handleEvent = ({ connectionId, type, subtype, payload }: EventBody) => {
     if (this._connected === true && this._connectionId === connectionId) {
-      this._emitEvent({ type, subtype, payload }, this._connectionChannel);
+      this._emitEvent({ type, subtype, payload }, this._connectionScope);
     }
   };
 

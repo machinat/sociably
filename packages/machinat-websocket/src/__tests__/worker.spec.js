@@ -4,8 +4,7 @@ import Worker from '../worker';
 
 const distributor = moxy({
   broadcast: () => Promise.resolve(null),
-  connectSocket: () => Promise.resolve(false),
-  disconnectSocket: () => Promise.resolve(false),
+  disconnect: () => Promise.resolve(false),
 });
 
 beforeEach(() => {
@@ -28,17 +27,28 @@ it('work', async () => {
   worker.start(queue);
 
   const jobs = [
-    { uid: 'websocket:1:2:3', type: 'foo', payload: '1' },
-    { uid: 'websocket:1:2:3', type: 'foo', subtype: 'bar', payload: '2' },
     {
-      uid: 'websocket:1:2:3',
-      type: 'foo',
-      subtype: 'baz',
-      payload: '3',
-      whitelist: ['A', 'B', 'C'],
-      blacklist: ['B', 'C', 'D'],
+      scope: { type: 'connection', connection: {} },
+      order: { type: 'foo', payload: '1' },
     },
-    { uid: 'websocket:x:x:x', type: 'foo', payload: '4' },
+    {
+      scope: { type: 'topic', name: 'somthing' },
+      order: { type: 'foo', subtype: 'bar', payload: '2' },
+    },
+    {
+      scope: { type: 'topic', name: 'somthing else', id: 1 },
+      order: {
+        type: 'foo',
+        subtype: 'baz',
+        payload: '3',
+        only: ['A', 'B', 'C'],
+        except: ['B', 'C', 'D'],
+      },
+    },
+    {
+      scope: { type: 'user', user: { id: 'jojo' } },
+      order: { type: 'foo', payload: '4' },
+    },
   ];
 
   const broadcastResult = [
@@ -48,93 +58,119 @@ it('work', async () => {
     null,
   ];
 
-  let i = 0;
-  distributor.broadcast.mock.fake(() => broadcastResult[i++]); // eslint-disable-line no-plusplus
+  let r = 0;
+  distributor.broadcast.mock.fake(() => broadcastResult[r++]); // eslint-disable-line no-plusplus
 
   await expect(queue.executeJobs(jobs)).resolves.toMatchInlineSnapshot(`
-Object {
-  "batch": Array [
-    Object {
-      "error": undefined,
-      "job": Object {
-        "payload": "1",
-        "type": "foo",
-        "uid": "websocket:1:2:3",
-      },
-      "result": Object {
-        "sockets": Array [
-          "A",
-          "B",
-          "C",
-          "D",
-        ],
-      },
-      "success": true,
-    },
-    Object {
-      "error": undefined,
-      "job": Object {
-        "payload": "2",
-        "subtype": "bar",
-        "type": "foo",
-        "uid": "websocket:1:2:3",
-      },
-      "result": Object {
-        "sockets": Array [
-          "A",
-          "B",
-          "C",
-          "D",
-        ],
-      },
-      "success": true,
-    },
-    Object {
-      "error": undefined,
-      "job": Object {
-        "blacklist": Array [
-          "B",
-          "C",
-          "D",
-        ],
-        "payload": "3",
-        "subtype": "baz",
-        "type": "foo",
-        "uid": "websocket:1:2:3",
-        "whitelist": Array [
-          "A",
-          "B",
-          "C",
-        ],
-      },
-      "result": Object {
-        "sockets": Array [
-          "A",
-        ],
-      },
-      "success": true,
-    },
-    Object {
-      "error": undefined,
-      "job": Object {
-        "payload": "4",
-        "type": "foo",
-        "uid": "websocket:x:x:x",
-      },
-      "result": Object {
-        "sockets": null,
-      },
-      "success": true,
-    },
-  ],
-  "errors": null,
-  "success": true,
-}
-`);
+          Object {
+            "batch": Array [
+              Object {
+                "error": undefined,
+                "job": Object {
+                  "order": Object {
+                    "payload": "1",
+                    "type": "foo",
+                  },
+                  "scope": Object {
+                    "connection": Object {},
+                    "type": "connection",
+                  },
+                },
+                "result": Object {
+                  "connections": Array [
+                    "A",
+                    "B",
+                    "C",
+                    "D",
+                  ],
+                },
+                "success": true,
+              },
+              Object {
+                "error": undefined,
+                "job": Object {
+                  "order": Object {
+                    "payload": "2",
+                    "subtype": "bar",
+                    "type": "foo",
+                  },
+                  "scope": Object {
+                    "name": "somthing",
+                    "type": "topic",
+                  },
+                },
+                "result": Object {
+                  "connections": Array [
+                    "A",
+                    "B",
+                    "C",
+                    "D",
+                  ],
+                },
+                "success": true,
+              },
+              Object {
+                "error": undefined,
+                "job": Object {
+                  "order": Object {
+                    "except": Array [
+                      "B",
+                      "C",
+                      "D",
+                    ],
+                    "only": Array [
+                      "A",
+                      "B",
+                      "C",
+                    ],
+                    "payload": "3",
+                    "subtype": "baz",
+                    "type": "foo",
+                  },
+                  "scope": Object {
+                    "id": 1,
+                    "name": "somthing else",
+                    "type": "topic",
+                  },
+                },
+                "result": Object {
+                  "connections": Array [
+                    "A",
+                  ],
+                },
+                "success": true,
+              },
+              Object {
+                "error": undefined,
+                "job": Object {
+                  "order": Object {
+                    "payload": "4",
+                    "type": "foo",
+                  },
+                  "scope": Object {
+                    "type": "user",
+                    "user": Object {
+                      "id": "jojo",
+                    },
+                  },
+                },
+                "result": Object {
+                  "connections": null,
+                },
+                "success": true,
+              },
+            ],
+            "errors": null,
+            "success": true,
+          }
+        `);
 
   expect(distributor.broadcast.mock).toHaveBeenCalledTimes(4);
-  expect(distributor.broadcast.mock).toHaveBeenCalledWith(jobs[0]);
-  expect(distributor.broadcast.mock).toHaveBeenCalledWith(jobs[1]);
-  expect(distributor.broadcast.mock).toHaveBeenCalledWith(jobs[2]);
-  expect(distributor.broadcast.mock).toHaveBeenCalledWith(jobs[3]);
+  for (const [i, { scope, order }] of jobs.entries()) {
+    expect(distributor.broadcast.mock).toHaveBeenNthCalledWith(
+      i + 1,
+      scope,
+      order
+    );
+  }
 });

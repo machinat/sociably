@@ -3,10 +3,8 @@ import moxy from 'moxy';
 import WS from 'ws';
 import Distributor from '../distributor';
 import Socket from '../socket';
-import Channel from '../channel';
 import { LocalOnlyBroker } from '../broker';
-
-const delay = t => new Promise(resolve => setTimeout(resolve, t));
+import { topicScope, connectionScope } from '../channel';
 
 const request = {
   method: 'GET',
@@ -14,599 +12,445 @@ const request = {
   headers: { origin: 'www.machinat.com' },
 };
 
-const chanFoo = new Channel('foo', undefined, '1');
-const chanBar = new Channel('bar', undefined, '2');
-
-const info = { hello: 'world' };
-const authenticator = moxy(async (_, { type }) => ({
-  accepted: true,
-  info,
-  channel: type === 'foo' ? chanFoo : chanBar,
-}));
+const broker = moxy(new LocalOnlyBroker());
+const errorHandler = moxy();
 
 const socketMoxyOpts = { excludeProps: ['_*'] };
+const socket = moxy(new Socket('ID', new WS(), request), socketMoxyOpts);
 
-const connectSpy = moxy();
-const disconnectSpy = moxy();
-const eventSpy = moxy();
+const serverId = 'MY_SERVER';
 
-const broker = moxy(new LocalOnlyBroker());
+const scope = {
+  paltform: 'websocket',
+  type: 'topic',
+  name: 'my_room',
+  id: 1408,
+  uid: 'websocket:topic:my_room:1408',
+};
+const connection = {
+  serverId,
+  socketId: socket.id,
+  id: '#conn',
+  user: { jane: 'doe' },
+};
 
 beforeEach(() => {
   broker.mock.reset();
-  connectSpy.mock.reset();
-  disconnectSpy.mock.reset();
-  eventSpy.mock.reset();
+  socket.mock.reset();
 });
 
-test('consigning sockets', () => {
-  const skt1 = new Socket(new WS(), '1', request);
-  const skt2 = new Socket(new WS(), '2', request);
-  const distributor = new Distributor(broker);
+test('addLocalConnection() and removeLocalConnection()', () => {
+  const distributor = new Distributor(serverId, broker, errorHandler);
+  const fooConn = {
+    serverId: '#server',
+    socketId: socket.id,
+    id: '#foo',
+    user: { john: 'doe' },
+  };
+  const barConn = {
+    serverId: '#server',
+    socketId: socket.id,
+    id: '#bar',
+    user: { jane: 'doe' },
+  };
 
-  expect(distributor.consignSocket(skt1)).toBe(true);
-  expect(distributor.consignSocket(skt2)).toBe(true);
-
+  expect(distributor.addLocalConnection(socket, fooConn)).toBe(true);
+  expect(distributor.addLocalConnection(socket, barConn)).toBe(true);
   // if duplicated
-  expect(distributor.consignSocket(skt1)).toBe(false);
-  expect(distributor.consignSocket(skt2)).toBe(false);
+  expect(distributor.addLocalConnection(socket, fooConn)).toBe(false);
+  expect(distributor.addLocalConnection(socket, barConn)).toBe(false);
+
+  expect(distributor.removeLocalConnection(fooConn)).toBe(true);
+  expect(distributor.removeLocalConnection(barConn)).toBe(true);
+  // if not connected already
+  expect(distributor.removeLocalConnection(fooConn)).toBe(false);
+  expect(distributor.removeLocalConnection(barConn)).toBe(false);
 });
 
-test('handle connection events and lifecycle', async () => {
-  const distributor = new Distributor(broker);
-  distributor.setAuthenticator(authenticator);
-  distributor
-    .on('event', eventSpy)
-    .on('connect', connectSpy)
-    .on('disconnect', disconnectSpy);
+describe('attachTopic() and detachTopic()', () => {
+  it('return boolean indicate whether connection is still connected', async () => {
+    const distributor = new Distributor(serverId, broker, errorHandler);
 
-  const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-  const skt2 = moxy(new Socket(new WS(), '2', request), socketMoxyOpts);
-  distributor.consignSocket(skt1);
-  distributor.consignSocket(skt2);
+    distributor.addLocalConnection(socket, connection);
 
-  skt1.emit('register', { type: 'foo' }, 3);
-  skt1.emit('register', { type: 'bar' }, 4);
-  skt2.emit('register', { type: 'foo' }, 3);
+    await expect(distributor.attachTopic(connection, scope)).resolves.toBe(
+      true
+    );
+    await expect(distributor.attachTopic(connection, scope)).resolves.toBe(
+      true
+    );
 
-  await delay(10);
+    await expect(distributor.detachTopic(connection, scope)).resolves.toBe(
+      true
+    );
+    await expect(distributor.detachTopic(connection, scope)).resolves.toBe(
+      true
+    );
 
-  expect(authenticator.mock).toHaveBeenCalledTimes(3);
-  expect(authenticator.mock).toHaveBeenCalledWith(skt1, { type: 'foo' });
-  expect(authenticator.mock).toHaveBeenCalledWith(skt1, { type: 'bar' });
-  expect(authenticator.mock).toHaveBeenCalledWith(skt2, { type: 'foo' });
-
-  expect(skt1.connect.mock).toHaveBeenCalledTimes(2);
-  expect(skt1.connect.mock).toHaveBeenCalledWith({
-    uid: chanFoo.uid,
-    info,
-    req: 3,
-  });
-  expect(skt1.connect.mock).toHaveBeenCalledWith({
-    uid: chanBar.uid,
-    info,
-    req: 4,
-  });
-
-  expect(skt2.connect.mock).toHaveBeenCalledTimes(1);
-  expect(skt2.connect.mock).toHaveBeenCalledWith({
-    uid: chanFoo.uid,
-    info,
-    req: 3,
-  });
-
-  expect(connectSpy.mock).not.toHaveBeenCalled();
-  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt1.id)).toBe(
-    undefined
-  );
-  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt1.id)).toBe(
-    undefined
-  );
-  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt2.id)).toBe(
-    undefined
-  );
-
-  skt1.emit('connect', { uid: chanFoo.uid, req: 5 }, 7);
-  skt1.emit('connect', { uid: chanBar.uid, req: 6 }, 8);
-  skt2.emit('connect', { uid: chanFoo.uid, req: 4 }, 5);
-
-  expect(connectSpy.mock).toHaveBeenCalledTimes(3);
-  expect(connectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt1, info);
-  expect(connectSpy.mock).toHaveBeenCalledWith(chanBar.uid, skt1, info);
-  expect(connectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt2, info);
-
-  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt1.id)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt1.id)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt2.id)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt2.id)).toBe(
-    undefined
-  );
-
-  expect(broker.updateConnected.mock).toHaveBeenCalledTimes(3);
-  expect(broker.updateConnected.mock) //
-    .toHaveBeenCalledWith(chanFoo.uid, skt1.id, info);
-  expect(broker.updateConnected.mock) //
-    .toHaveBeenCalledWith(chanBar.uid, skt1.id, info);
-  expect(broker.updateConnected.mock) //
-    .toHaveBeenCalledWith(chanFoo.uid, skt2.id, info);
-
-  skt1.emit(
-    'event',
-    { uid: chanFoo.uid, type: 'greeting', payload: 'hello foo' },
-    9
-  );
-  skt1.emit(
-    'event',
-    { uid: chanBar.uid, type: 'greeting', payload: 'hello bar' },
-    10
-  );
-
-  skt2.emit(
-    'event',
-    { uid: chanFoo.uid, type: 'greeting', payload: 'hello foo' },
-    6
-  );
-
-  expect(eventSpy.mock).toHaveBeenCalledTimes(3);
-  expect(eventSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt1, info, {
-    uid: chanFoo.uid,
-    type: 'greeting',
-    payload: 'hello foo',
-  });
-  expect(eventSpy.mock).toHaveBeenCalledWith(chanBar.uid, skt1, info, {
-    uid: chanBar.uid,
-    type: 'greeting',
-    payload: 'hello bar',
-  });
-  expect(eventSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt2, info, {
-    uid: chanFoo.uid,
-    type: 'greeting',
-    payload: 'hello foo',
-  });
-
-  skt1.emit('disconnect', { uid: chanFoo.uid }, 11);
-  skt2.emit('disconnect', { uid: chanFoo.uid }, 7);
-
-  expect(disconnectSpy.mock).toHaveBeenCalledTimes(2);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt1, info);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt2, info);
-
-  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt1.id)).toBe(
-    undefined
-  );
-  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt1.id)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt2.id)).toBe(
-    undefined
-  );
-
-  expect(broker.updateDisconnected.mock).toHaveBeenCalledTimes(2);
-  expect(broker.updateDisconnected.mock) //
-    .toHaveBeenCalledWith(chanFoo.uid, skt1.id);
-  expect(broker.updateDisconnected.mock) //
-    .toHaveBeenCalledWith(chanFoo.uid, skt2.id);
-
-  skt1.emit('close', 3333, 'bye');
-
-  // TODO: move closing logic to distributor and uncomment this
-  // expect(disconnectSpy.mock).toHaveBeenCalledTimes(2);
-  // expect(disconnectSpy.mock).toHaveBeenCalledWith(
-  //   chanBar.uid,
-  //   socket,
-  //   info
-  // );
-  //
-  // expect(distributor.getLocalConnectionInfo(chanBar.uid, socket.id)).toBe(
-  //   undefined
-  // );
-});
-
-test('manipulate lifecycle of connection', async () => {
-  const distributor = new Distributor(broker);
-  distributor.setAuthenticator(authenticator);
-  distributor
-    .on('event', eventSpy)
-    .on('connect', connectSpy)
-    .on('disconnect', disconnectSpy);
-
-  const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-  const skt2 = moxy(new Socket(new WS(), '2', request), socketMoxyOpts);
-  distributor.consignSocket(skt1);
-  distributor.consignSocket(skt2);
-  ['connect', 'event', 'disconnect'].forEach(method => {
-    skt1[method].mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
-    skt2[method].mock.fake(() => Promise.resolve(skt2._seq++)); // eslint-disable-line no-plusplus
-  });
-
-  let promises;
-  promises = [
-    distributor.connectSocket(chanFoo.uid, skt1.id, info),
-    distributor.connectSocket(chanBar.uid, skt1.id, info),
-    distributor.connectSocket(chanFoo.uid, skt2.id, info),
-  ];
-
-  expect(skt1.connect.mock).toHaveBeenCalledTimes(2);
-  expect(skt1.connect.mock).toHaveBeenCalledWith({ uid: chanFoo.uid, info });
-  expect(skt1.connect.mock).toHaveBeenCalledWith({ uid: chanBar.uid, info });
-  expect(skt2.connect.mock).toHaveBeenCalledTimes(1);
-  expect(skt2.connect.mock).toHaveBeenCalledWith({ uid: chanFoo.uid, info });
-
-  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt1.id)).toBe(
-    undefined
-  );
-  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt1.id)).toBe(
-    undefined
-  );
-  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt2.id)).toBe(
-    undefined
-  );
-
-  skt1.emit('connect', { uid: chanFoo.uid });
-  skt1.emit('connect', { uid: chanBar.uid });
-  skt2.emit('connect', { uid: chanFoo.uid });
-
-  await expect(Promise.all(promises)).resolves.toEqual([true, true, true]);
-
-  expect(connectSpy.mock).toHaveBeenCalledTimes(3);
-  expect(connectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt1, info);
-  expect(connectSpy.mock).toHaveBeenCalledWith(chanBar.uid, skt1, info);
-  expect(connectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt2, info);
-
-  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt1.id)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt1.id)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt2.id)).toBe(info);
-  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt2.id)).toBe(
-    undefined
-  );
-
-  expect(broker.updateConnected.mock).toHaveBeenCalledTimes(3);
-  expect(broker.updateConnected.mock) //
-    .toHaveBeenCalledWith(chanFoo.uid, skt1.id, info);
-  expect(broker.updateConnected.mock) //
-    .toHaveBeenCalledWith(chanBar.uid, skt1.id, info);
-  expect(broker.updateConnected.mock) //
-    .toHaveBeenCalledWith(chanFoo.uid, skt2.id, info);
-
-  await expect(
-    distributor.broadcast({
-      uid: chanFoo.uid,
-      type: 'greeting',
-      payload: 'hello foo',
-    })
-  ).resolves.toEqual(expect.arrayContaining([skt1.id, skt2.id]));
-  await expect(
-    distributor.broadcast({
-      uid: chanBar.uid,
-      type: 'greeting',
-      payload: 'hello bar',
-    })
-  ).resolves.toEqual([skt1.id]);
-
-  expect(skt1.event.mock).toHaveBeenCalledTimes(2);
-  expect(skt1.event.mock).toHaveBeenCalledWith({
-    uid: chanFoo.uid,
-    type: 'greeting',
-    payload: 'hello foo',
-  });
-  expect(skt1.event.mock).toHaveBeenCalledWith({
-    uid: chanBar.uid,
-    type: 'greeting',
-    payload: 'hello bar',
-  });
-  expect(skt2.event.mock).toHaveBeenCalledTimes(1);
-  expect(skt2.event.mock).toHaveBeenCalledWith({
-    uid: chanFoo.uid,
-    type: 'greeting',
-    payload: 'hello foo',
-  });
-
-  expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(2);
-  expect(broker.broadcastRemote.mock).toHaveBeenCalledWith({
-    uid: chanFoo.uid,
-    type: 'greeting',
-    payload: 'hello foo',
-  });
-  expect(broker.broadcastRemote.mock).toHaveBeenCalledWith({
-    uid: chanBar.uid,
-    type: 'greeting',
-    payload: 'hello bar',
-  });
-
-  expect(eventSpy.mock).not.toHaveBeenCalled();
-
-  promises = [
-    distributor.disconnectSocket(chanFoo.uid, skt1.id, 'bye'),
-    distributor.disconnectSocket(chanBar.uid, skt1.id, 'bye'),
-    distributor.disconnectSocket(chanFoo.uid, skt2.id, 'bye'),
-  ];
-
-  expect(skt1.disconnect.mock).toHaveBeenCalledTimes(2);
-  expect(skt1.disconnect.mock).toHaveBeenCalledWith({
-    uid: chanFoo.uid,
-    reason: 'bye',
-  });
-  expect(skt1.disconnect.mock).toHaveBeenCalledWith({
-    uid: chanBar.uid,
-    reason: 'bye',
-  });
-  expect(skt2.disconnect.mock).toHaveBeenCalledTimes(1);
-  expect(skt2.disconnect.mock).toHaveBeenCalledWith({
-    uid: chanFoo.uid,
-    reason: 'bye',
-  });
-
-  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt1.id)).toBe(
-    undefined
-  );
-  expect(distributor.getLocalConnectionInfo(chanBar.uid, skt1.id)).toBe(
-    undefined
-  );
-  expect(distributor.getLocalConnectionInfo(chanFoo.uid, skt2.id)).toBe(
-    undefined
-  );
-
-  skt1.emit('disconnect', { uid: chanFoo.uid });
-  skt1.emit('disconnect', { uid: chanBar.uid });
-  skt2.emit('disconnect', { uid: chanFoo.uid });
-
-  await expect(Promise.all(promises)).resolves.toEqual([true, true, true]);
-
-  expect(disconnectSpy.mock).toHaveBeenCalledTimes(3);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt1, info);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(chanBar.uid, skt1, info);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(chanFoo.uid, skt2, info);
-
-  expect(broker.updateDisconnected.mock).toHaveBeenCalledTimes(3);
-  expect(broker.updateDisconnected.mock) //
-    .toHaveBeenCalledWith(chanFoo.uid, skt1.id);
-  expect(broker.updateDisconnected.mock) //
-    .toHaveBeenCalledWith(chanBar.uid, skt1.id);
-  expect(broker.updateDisconnected.mock) //
-    .toHaveBeenCalledWith(chanFoo.uid, skt2.id);
-});
-
-describe('connectSocket()', () => {
-  it('return false when already connected', async () => {
-    const distributor = new Distributor(broker);
-
-    const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-    distributor.consignSocket(skt1);
-
-    skt1.connect.mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
-
-    distributor.connectSocket(chanFoo.uid, '1', {});
-    skt1.emit('connect', { uid: chanFoo.uid });
-
-    await expect(distributor.connectSocket(chanFoo.uid, '1', {})).resolves.toBe(
+    distributor.removeLocalConnection(connection);
+    await expect(distributor.attachTopic(connection, scope)).resolves.toBe(
+      false
+    );
+    await expect(distributor.detachTopic(connection, scope)).resolves.toBe(
       false
     );
   });
 
   it('delegate to broker if socket is not local', async () => {
-    const distributor = new Distributor(broker);
+    const distributor = new Distributor(serverId, broker, errorHandler);
+    const remoteConnId = 'conn#remote';
 
-    await expect(
-      distributor.connectSocket(chanFoo.uid, '1', { hello: 'world' })
-    ).resolves.toBe(false);
-
-    expect(broker.connectRemoteSocket.mock).toHaveBeenCalledTimes(1);
-    expect(broker.connectRemoteSocket.mock).toHaveBeenCalledWith(
-      chanFoo.uid,
-      '1',
-      { hello: 'world' }
+    broker.attachTopicRemote.mock.fake(async () => true);
+    await expect(distributor.attachTopic(remoteConnId, scope)).resolves.toBe(
+      true
     );
+    expect(broker.attachTopicRemote.mock).toHaveBeenCalledTimes(1);
 
-    broker.connectRemoteSocket.mock.fake(() => Promise.resolve(true));
-
-    await expect(
-      distributor.connectSocket(chanFoo.uid, '2', { hello: 'world' })
-    ).resolves.toBe(true);
-
-    expect(broker.connectRemoteSocket.mock).toHaveBeenCalledTimes(2);
-    expect(broker.connectRemoteSocket.mock).toHaveBeenCalledWith(
-      chanFoo.uid,
-      '2',
-      { hello: 'world' }
+    broker.attachTopicRemote.mock.fake(async () => false);
+    await expect(distributor.attachTopic(remoteConnId, scope)).resolves.toBe(
+      false
     );
+    expect(broker.attachTopicRemote.mock).toHaveBeenCalledTimes(2);
+
+    broker.detachTopicRemote.mock.fake(async () => true);
+    await expect(distributor.detachTopic(remoteConnId, scope)).resolves.toBe(
+      true
+    );
+    expect(broker.detachTopicRemote.mock).toHaveBeenCalledTimes(1);
+
+    broker.detachTopicRemote.mock.fake(async () => false);
+    await expect(distributor.detachTopic(remoteConnId, scope)).resolves.toBe(
+      false
+    );
+    expect(broker.detachTopicRemote.mock).toHaveBeenCalledTimes(2);
   });
 });
 
-describe('disconnectSocket()', () => {
-  it('return false when not connected', async () => {
-    const distributor = new Distributor(broker);
+describe('disconnect()', () => {
+  it('return boolean indicate is updated or not', async () => {
+    const distributor = new Distributor(serverId, broker, errorHandler);
+    socket.disconnect.mock.fake(async () => 0);
+    distributor.addLocalConnection(socket, connection);
 
-    const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-    distributor.consignSocket(skt1);
-
-    await expect(
-      distributor.disconnectSocket(chanFoo.uid, '1', {})
-    ).resolves.toBe(false);
+    await expect(distributor.disconnect(connection, 'bye')).resolves.toBe(true);
+    await expect(distributor.disconnect(connection, 'bye')).resolves.toBe(
+      false
+    );
   });
 
   it('delegate to borker if socket is not local', async () => {
-    const distributor = new Distributor(broker);
+    const distributor = new Distributor(serverId, broker, errorHandler);
+    const remoteConn = {
+      serverId: '#remote',
+      socketId: 'xxx',
+      id: '#conn_remote',
+      user: { john: 'doe' },
+    };
 
-    await expect(
-      distributor.disconnectSocket(chanFoo.uid, '1', { hello: 'world' })
-    ).resolves.toBe(false);
-
-    expect(broker.disconnectRemoteSocket.mock).toHaveBeenCalledTimes(1);
-    expect(broker.disconnectRemoteSocket.mock).toHaveBeenCalledWith(
-      chanFoo.uid,
-      '1',
-      { hello: 'world' }
+    await expect(distributor.disconnect(remoteConn, 'bye')).resolves.toBe(
+      false
     );
 
-    broker.disconnectRemoteSocket.mock.fake(() => Promise.resolve(true));
+    broker.disconnectRemote.mock.fake(async () => true);
+    await expect(distributor.disconnect(remoteConn, 'bye')).resolves.toBe(true);
 
-    await expect(
-      distributor.disconnectSocket(chanFoo.uid, '2', { hello: 'world' })
-    ).resolves.toBe(true);
-
-    expect(broker.disconnectRemoteSocket.mock).toHaveBeenCalledTimes(2);
-    expect(broker.disconnectRemoteSocket.mock).toHaveBeenCalledWith(
-      chanFoo.uid,
-      '2',
-      { hello: 'world' }
-    );
+    expect(broker.disconnectRemote.mock).toHaveBeenCalledTimes(2);
+    expect(broker.disconnectRemote.mock).toHaveBeenCalledWith(remoteConn);
   });
 });
 
 describe('broadcast()', () => {
-  it('delegate to broker if no socket connected', async () => {
-    const distributor = new Distributor(broker);
+  const conn1 = {
+    id: 'conn#1',
+    serverId,
+    socketId: socket.id,
+    user: { jane: 'doe' },
+  };
 
-    const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-    distributor.consignSocket(skt1);
+  const conn2 = {
+    id: 'conn#2',
+    serverId,
+    socketId: socket.id,
+    user: { john: 'doe' },
+  };
+
+  it('send event with local connection scope', async () => {
+    const distributor = new Distributor(serverId, broker, errorHandler);
+    socket.event.mock.fake(async () => 0);
+
+    distributor.addLocalConnection(socket, conn1);
+    distributor.addLocalConnection(socket, conn2);
 
     await expect(
-      distributor.broadcast({
-        uid: chanFoo.uid,
-        type: 'greeting',
+      distributor.broadcast(connectionScope(conn1), {
+        type: 'foo',
+        subtype: 'bar',
+        payload: 1,
+      })
+    ).resolves.toEqual([conn1]);
+    await expect(
+      distributor.broadcast(connectionScope(conn2), {
+        type: 'foo',
+        subtype: 'baz',
+        payload: 2,
+      })
+    ).resolves.toEqual([conn2]);
+
+    expect(socket.event.mock).toHaveBeenCalledTimes(2);
+    expect(socket.event.mock).toHaveBeenNthCalledWith(1, {
+      connectionId: 'conn#1',
+      type: 'foo',
+      subtype: 'bar',
+      payload: 1,
+    });
+    expect(socket.event.mock).toHaveBeenNthCalledWith(2, {
+      connectionId: 'conn#2',
+      type: 'foo',
+      subtype: 'baz',
+      payload: 2,
+    });
+  });
+
+  it('delegate to broker if connection is not local with connection scope', async () => {
+    const distributor = new Distributor(serverId, broker, errorHandler);
+    const remoteConn = {
+      serverId: '#remote',
+      socketId: 'xxx',
+      id: '#conn_remote',
+      user: { john: 'doe' },
+    };
+    const remoteConnScope = connectionScope(remoteConn);
+
+    await expect(
+      distributor.broadcast(remoteConnScope, {
+        type: 'greet',
         payload: 'hello nobody',
       })
     ).resolves.toBe(null);
 
-    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(1);
-    expect(broker.broadcastRemote.mock).toHaveBeenCalledWith({
-      uid: chanFoo.uid,
-      type: 'greeting',
-      payload: 'hello nobody',
-    });
-
-    broker.broadcastRemote.mock.fake(() => Promise.resolve(['6', '7', '8']));
-
+    broker.broadcastRemote.mock.fake(async () => [remoteConn]);
     await expect(
-      distributor.broadcast({
-        uid: chanBar.uid,
-        type: 'greeting',
-        payload: 'hello remote friends',
+      distributor.broadcast(remoteConnScope, {
+        type: 'greet',
+        payload: 'hello somebody',
       })
-    ).resolves.toEqual(['6', '7', '8']);
+    ).resolves.toEqual([remoteConn]);
 
     expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(2);
-    expect(broker.broadcastRemote.mock).toHaveBeenCalledWith({
-      uid: chanBar.uid,
-      type: 'greeting',
-      payload: 'hello remote friends',
-    });
-  });
-
-  it('return socket ids from both remote and local merged', async () => {
-    const distributor = new Distributor(broker);
-
-    const skt = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-    distributor.consignSocket(skt);
-    skt.connect.mock.fake(() => Promise.resolve(skt._seq++)); // eslint-disable-line no-plusplus
-    skt.event.mock.fake(() => Promise.resolve(skt._seq++)); // eslint-disable-line no-plusplus
-    distributor.connectSocket(chanFoo.uid, '1', {});
-    skt.emit('connect', { uid: chanFoo.uid });
-
-    broker.broadcastRemote.mock.fake(() => Promise.resolve(['3', '4', '5']));
-
-    await expect(
-      distributor.broadcast({
-        uid: chanFoo.uid,
-        type: 'greeting',
-        payload: 'hello world',
-      })
-    ).resolves.toEqual(expect.arrayContaining(['1', '3', '4', '5']));
-
-    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(1);
-    expect(broker.broadcastRemote.mock).toHaveBeenCalledWith({
-      uid: chanFoo.uid,
-      type: 'greeting',
-      payload: 'hello world',
-    });
-  });
-
-  it('filter socket to send with whitelist and blacklist', async () => {
-    const distributor = new Distributor(broker);
-
-    const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-    const skt2 = moxy(new Socket(new WS(), '2', request), socketMoxyOpts);
-    const skt3 = moxy(new Socket(new WS(), '3', request), socketMoxyOpts);
-    distributor.consignSocket(skt1);
-    distributor.consignSocket(skt2);
-    distributor.consignSocket(skt3);
-    ['connect', 'event'].forEach(method => {
-      skt1[method].mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
-      skt2[method].mock.fake(() => Promise.resolve(skt2._seq++)); // eslint-disable-line no-plusplus
-      skt3[method].mock.fake(() => Promise.resolve(skt3._seq++)); // eslint-disable-line no-plusplus
-    });
-
-    distributor.connectSocket(chanFoo.uid, '1', {});
-    distributor.connectSocket(chanFoo.uid, '2', {});
-    distributor.connectSocket(chanFoo.uid, '3', {});
-
-    skt1.emit('connect', { uid: chanFoo.uid });
-    skt2.emit('connect', { uid: chanFoo.uid });
-    skt3.emit('connect', { uid: chanFoo.uid });
-
-    const whitelist = ['1', '2'];
-    const blacklist = ['2', '3'];
-    const job = { uid: chanFoo.uid, type: 'greeting', payload: 'hello foo' };
-
-    await expect(distributor.broadcast(job)).resolves.toEqual(['1', '2', '3']);
-    await expect(distributor.broadcast({ ...job, whitelist })).resolves.toEqual(
-      ['1', '2']
+    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+      1,
+      { type: 'connection', connection: remoteConn },
+      { type: 'greet', payload: 'hello nobody' }
     );
-    await expect(distributor.broadcast({ ...job, blacklist })).resolves.toEqual(
-      ['1']
+    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+      2,
+      { type: 'connection', connection: remoteConn },
+      { type: 'greet', payload: 'hello somebody' }
     );
-    await expect(
-      distributor.broadcast({ ...job, whitelist, blacklist })
-    ).resolves.toEqual(['1']);
-
-    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(4);
-
-    expect(skt1.event.mock).toHaveBeenCalledTimes(4);
-    expect(skt2.event.mock).toHaveBeenCalledTimes(2);
-    expect(skt3.event.mock).toHaveBeenCalledTimes(1);
   });
 
-  it('emit error when socket level error happen', async () => {
-    const distributor = new Distributor(broker);
+  it('broadcast with topic scope channel', async () => {
+    const distributor = new Distributor(serverId, broker, errorHandler);
+    socket.event.mock.fake(async () => 0);
 
-    const skt1 = moxy(new Socket(new WS(), '1', request), socketMoxyOpts);
-    const skt2 = moxy(new Socket(new WS(), '2', request), socketMoxyOpts);
-    distributor.consignSocket(skt1);
-    distributor.consignSocket(skt2);
-    skt1.connect.mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
-    skt2.connect.mock.fake(() => Promise.resolve(skt2._seq++)); // eslint-disable-line no-plusplus
-    distributor.connectSocket(chanFoo.uid, '1', {});
-    distributor.connectSocket(chanFoo.uid, '2', {});
-    skt1.emit('connect', { uid: chanFoo.uid });
-    skt2.emit('connect', { uid: chanFoo.uid });
+    const remoteConn1 = {
+      serverId: '#remote',
+      socketId: 'xxx',
+      id: '#conn1',
+      user: { john: 'doe' },
+    };
+    const remoteConn2 = {
+      serverId: '#remote',
+      socketId: 'zzz',
+      id: '#conn2',
+      user: { john: 'doe' },
+    };
 
-    const errorSpy = moxy();
-    distributor.on('error', errorSpy);
+    distributor.addLocalConnection(socket, conn1);
+    distributor.addLocalConnection(socket, conn2);
 
-    skt1.event.mock.fake(() => Promise.resolve(skt1._seq++)); // eslint-disable-line no-plusplus
-    skt2.event.mock.fake(() => Promise.reject(new Error('Wasted!')));
+    const fooScope = topicScope('foo', 'oof');
+    const barScope = topicScope('bar', 'rab');
+    const bazScope = topicScope('baz', 'zab');
 
-    await expect(
-      distributor.broadcast({
-        uid: chanFoo.uid,
-        type: 'greeting',
-        payload: 'hello dangerous',
-      })
-    ).resolves.toEqual(['1']);
-
-    skt1.event.mock.fake(() => Promise.reject(new Error('Wasted!')));
+    distributor.attachTopic(conn1, fooScope);
+    distributor.attachTopic(conn2, fooScope);
+    distributor.attachTopic(conn1, barScope);
 
     await expect(
-      distributor.broadcast({
-        uid: chanFoo.uid,
-        type: 'greeting',
-        payload: 'hello dangerous',
+      distributor.broadcast(fooScope, {
+        type: 'greet',
+        payload: 'good morning',
       })
-    ).resolves.toBe(null);
+    ).resolves.toEqual([conn1, conn2]);
 
-    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(2);
+    broker.broadcastRemote.mock.fake(async () => [remoteConn1]);
+    await expect(
+      distributor.broadcast(barScope, {
+        type: 'greet',
+        payload: 'good afternoon',
+      })
+    ).resolves.toEqual([conn1, remoteConn1]);
 
-    expect(errorSpy.mock).toHaveBeenCalledTimes(3);
-    errorSpy.mock.calls.forEach(call => {
+    broker.broadcastRemote.mock.fake(async () => [remoteConn1, remoteConn2]);
+    await expect(
+      distributor.broadcast(bazScope, {
+        type: 'greet',
+        payload: 'good evening',
+      })
+    ).resolves.toEqual([remoteConn1, remoteConn2]);
+
+    expect(socket.event.mock).toHaveBeenCalledTimes(3);
+    expect(socket.event.mock).toHaveBeenNthCalledWith(1, {
+      connectionId: conn1.id,
+      type: 'greet',
+      payload: 'good morning',
+    });
+    expect(socket.event.mock).toHaveBeenNthCalledWith(2, {
+      connectionId: conn2.id,
+      type: 'greet',
+      payload: 'good morning',
+    });
+    expect(socket.event.mock).toHaveBeenNthCalledWith(3, {
+      connectionId: conn1.id,
+      type: 'greet',
+      payload: 'good afternoon',
+    });
+
+    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(3);
+    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+      1,
+      { type: 'topic', uid: fooScope.uid },
+      { type: 'greet', payload: 'good morning' }
+    );
+    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+      2,
+      { type: 'topic', uid: barScope.uid },
+      { type: 'greet', payload: 'good afternoon' }
+    );
+    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+      3,
+      { type: 'topic', uid: bazScope.uid },
+      { type: 'greet', payload: 'good evening' }
+    );
+  });
+
+  it('filter connection to send with whitelist and blacklist', async () => {
+    const distributor = new Distributor(serverId, broker, errorHandler);
+    socket.event.mock.fake(async () => 0);
+    const conn3 = {
+      id: 'conn#3',
+      socket,
+      user: { jojo: 'doe' },
+      channel: connectionScope('conn#3'),
+    };
+
+    distributor.addLocalConnection(socket, conn1);
+    distributor.addLocalConnection(socket, conn2);
+    distributor.addLocalConnection(socket, conn3);
+
+    const fooScope = topicScope('foo', 'oof');
+
+    distributor.attachTopic(conn1, fooScope);
+    distributor.attachTopic(conn2, fooScope);
+    distributor.attachTopic(conn3, fooScope);
+
+    await expect(
+      distributor.broadcast(fooScope, {
+        type: 'greet',
+        payload: 'hi',
+        only: [conn1.id, conn2.id],
+      })
+    ).resolves.toEqual([conn1, conn2]);
+    expect(socket.event.mock).toHaveBeenCalledTimes(2);
+
+    await expect(
+      distributor.broadcast(fooScope, {
+        type: 'greet',
+        payload: 'hi',
+        except: [conn2.id, conn3.id],
+      })
+    ).resolves.toEqual([conn1]);
+    expect(socket.event.mock).toHaveBeenCalledTimes(3);
+
+    await expect(
+      distributor.broadcast(fooScope, {
+        type: 'greet',
+        payload: 'hi',
+        only: [conn1.id, conn2.id],
+        except: [conn2.id, conn3.id],
+      })
+    ).resolves.toEqual([conn1]);
+    expect(socket.event.mock).toHaveBeenCalledTimes(4);
+
+    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(3);
+    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+      1,
+      { type: 'topic', uid: fooScope.uid },
+      { type: 'greet', payload: 'hi', only: [conn1.id, conn2.id] }
+    );
+    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+      2,
+      { type: 'topic', uid: fooScope.uid },
+      { type: 'greet', payload: 'hi', except: [conn2.id, conn3.id] }
+    );
+    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+      3,
+      { type: 'topic', uid: fooScope.uid },
+      {
+        type: 'greet',
+        payload: 'hi',
+        only: [conn1.id, conn2.id],
+        except: [conn2.id, conn3.id],
+      }
+    );
+  });
+
+  it('emit error and remove errored connection when socket level error happen', async () => {
+    const distributor = new Distributor(serverId, broker, errorHandler);
+
+    distributor.addLocalConnection(socket, conn1);
+    distributor.addLocalConnection(socket, conn2);
+
+    socket.event.mock.fake(() => Promise.resolve(0));
+    socket.event.mock.fakeOnce(() => Promise.reject(new Error('Wasted!')));
+
+    const fooScope = topicScope('foo', 'ofo', 'oof');
+    distributor.attachTopic(conn1, fooScope);
+    distributor.attachTopic(conn2, fooScope);
+
+    const event = { type: 'greet', payload: 'hi danger' };
+    await expect(distributor.broadcast(fooScope, event)).resolves.toEqual([
+      conn2,
+    ]);
+    expect(errorHandler.mock).toHaveBeenCalledTimes(1);
+
+    socket.event.mock.fake(() => Promise.reject(new Error('Wasted!')));
+    await expect(distributor.broadcast(fooScope, event)).resolves.toBe(null);
+    expect(errorHandler.mock).toHaveBeenCalledTimes(2);
+
+    socket.event.mock.fake(() => Promise.resolve(0));
+    await expect(distributor.broadcast(fooScope, event)).resolves.toBe(null);
+    expect(errorHandler.mock).toHaveBeenCalledTimes(2);
+
+    errorHandler.mock.calls.forEach(call => {
       expect(call.args[0]).toEqual(new Error('Wasted!'));
+    });
+
+    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(3);
+
+    expect(socket.event.mock).toHaveBeenCalledTimes(3);
+    expect(socket.event.mock).toHaveBeenNthCalledWith(1, {
+      connectionId: conn1.id,
+      ...event,
+    });
+    expect(socket.event.mock).toHaveBeenNthCalledWith(2, {
+      connectionId: conn2.id,
+      ...event,
+    });
+    expect(socket.event.mock).toHaveBeenNthCalledWith(3, {
+      connectionId: conn2.id,
+      ...event,
     });
   });
 });

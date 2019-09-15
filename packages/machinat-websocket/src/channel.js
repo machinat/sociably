@@ -1,69 +1,65 @@
 // @flow
-import invariant from 'invariant';
-import type { MachinatChannel, MachinatUser } from 'machinat/types';
-import type { ConnectionId } from './types';
+import type { MachinatUser } from 'machinat/types';
+import type Connection from './connection';
 import { WEBSOCKET } from './constant';
+import type { TopicScope, UserScope, ConnectionScope } from './types';
 
-export class WebSocketChannel implements MachinatChannel {
-  type: string;
-  subtype: void | string;
-  id: void | string;
-  uid: string;
-
-  platform = WEBSOCKET;
-
-  static fromUid(uid: string): null | WebSocketChannel {
-    const [platform, type, subtype, id] = uid.split(':');
-    if (platform !== WEBSOCKET || !type || !id) {
-      return null;
-    }
-
-    const channel: WebSocketChannel = (Object.create(WebSocketChannel): any);
-    channel.platform = WEBSOCKET;
-    channel.type = type;
-    channel.subtype = subtype === '*' ? undefined : subtype;
-    channel.id = id;
-    channel.uid = uid;
-    return channel;
-  }
-
-  constructor(type: string, subtype?: string, id?: string) {
-    invariant(
-      type[0] !== '@',
-      'channel type prefixed with "@" is reserved for framework'
-    );
-
-    this.id = id;
-    this.type = type;
-    this.subtype = subtype;
-    this.uid = `websocket:${type}:${subtype || '*'}:${id || '*'}`;
-  }
-}
-
-export const socketChannel = (socketId: string) => {
-  const channel: any = Object.create(WebSocketChannel);
-  channel.platform = WEBSOCKET;
-  channel.type = '@socket';
-  channel.id = socketId;
-  channel.uid = `websocket:@socket:*:${socketId}`;
-  return channel;
+const TopicScopeProto = {
+  platform: 'websocket',
+  type: 'topic',
+  get subtype() {
+    return this.name;
+  },
+  get uid() {
+    return `${WEBSOCKET}:topic:${this.name}:${this.id || '*'}`;
+  },
 };
 
-export const userChannel = (user: MachinatUser): WebSocketChannel => {
-  const channel: any = Object.create(WebSocketChannel);
-  channel.platform = WEBSOCKET;
-  channel.type = '@user';
-  channel.id = user.id;
-  channel.subtype = user.platform;
-  channel.uid = `websocket:@user:${user.platform}:${user.id}`;
-  return channel;
+export const topicScope = (name?: string, id?: string): TopicScope => {
+  const scope: TopicScope = Object.create(TopicScopeProto);
+  scope.name = name || 'default';
+  scope.id = id;
+  return scope;
 };
 
-export const connectionChannel = (connId: ConnectionId): WebSocketChannel => {
-  const channel: any = Object.create(WebSocketChannel);
-  channel.platform = WEBSOCKET;
-  channel.type = '@connection';
-  channel.id = connId;
-  channel.uid = `websocket:@connection:*:${connId}`;
-  return channel;
+const UserScopeProto = {
+  platform: 'websocket',
+  type: 'user',
+  get subtype() {
+    return (this.user: MachinatUser).platform;
+  },
+  get id() {
+    return (this.user: MachinatUser).id;
+  },
+  get uid() {
+    const { platform, id } = (this.user: MachinatUser);
+    return `${WEBSOCKET}:user:${platform || '*'}:${id}`;
+  },
+};
+
+export const userScope = (user: MachinatUser): UserScope => {
+  const scope: UserScope = Object.create(UserScopeProto);
+  scope.user = user;
+  return scope;
+};
+
+const ConnectionScopeProto = {
+  platform: 'websocket',
+  type: 'connection',
+  get subtype() {
+    return (this.connection: Connection).serverId;
+  },
+  get id() {
+    return (this.connection: Connection).id;
+  },
+  get uid() {
+    const { serverId, id } = (this.connection: Connection);
+    return `${WEBSOCKET}:connection:${serverId}:${id}`;
+  },
+};
+
+export const connectionScope = (connection: Connection): ConnectionScope => {
+  const scope: ConnectionScope = Object.create(ConnectionScopeProto);
+  scope.connection = connection;
+  return scope;
 };

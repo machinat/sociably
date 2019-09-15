@@ -1,6 +1,6 @@
 // @flow
 import http from 'http';
-import uniqid from 'uniqid';
+import { generate as generateId } from 'shortid';
 import { BaseReceiver } from 'machinat-base';
 
 import type { MachinatUser } from 'machinat/types';
@@ -9,12 +9,12 @@ import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
 import type { HTTPUpgradeReceiver } from 'machinat-http-adaptor/types';
 import type {
-  Connection,
   ConnectionId,
   WebSocketEvent,
   WebSocketMetadata,
   WebSocketBotOptions,
   WebSocketResponse,
+  WebSocketChannel,
 } from './types';
 import type Distributor from './distributor';
 import type Socket, {
@@ -23,19 +23,21 @@ import type Socket, {
   ConnectBody,
   DisconnectBody,
 } from './socket';
-import type { WebSocketChannel } from './channel';
+import Connection from './connection';
 
 import MachinatSocket from './socket';
-import { socketChannel, connectionChannel } from './channel';
+import { connectionScope } from './channel';
 import createEvent from './event';
 import { WEBSOCKET } from './constant';
 
 type WebSocketServer = $ElementType<WebSocket, 'Server'>;
 
 type SocketStatus = {|
-  lostHeartbeatCount: number,
-  connsCounter: number,
-  connections: Map<ConnectionId, Connection>,
+  lostHeartbeat: number,
+  connsAuthInfo: Map<
+    ConnectionId,
+    { user: null | MachinatUser, tags: null | string[] }
+  >,
 |};
 
 const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
@@ -63,6 +65,7 @@ class WebSocketReceiver
   >
   implements HTTPUpgradeReceiver {
   options: WebSocketBotOptions;
+  _serverId: string;
   _webSocketServer: WebSocketServer;
   _distributor: Distributor;
   _socketStore: Map<Socket, SocketStatus>;
@@ -75,6 +78,7 @@ class WebSocketReceiver
   _handleSocketClose: (code: number, reason: string) => void;
 
   constructor(
+    serverId: string,
     webSocketServer: WebSocketServer,
     distributor: Distributor,
     options: WebSocketBotOptions
@@ -82,6 +86,7 @@ class WebSocketReceiver
     super();
 
     this.options = options;
+    this._serverId = serverId;
     this._webSocketServer = webSocketServer;
     this._distributor = distributor;
     this._socketStore = new Map();
@@ -91,7 +96,7 @@ class WebSocketReceiver
       self._handleEvent(this, body).catch(this._handleErrer);
     };
 
-    this._handleSocketRegister = function handleSocketRegistry(body, seq) {
+    this._handleSocketRegister = function handleSocketRegister(body, seq) {
       self._handleRegister(this, body, seq).catch(this._handleErrer);
     };
 
@@ -130,11 +135,10 @@ class WebSocketReceiver
     }
 
     this._webSocketServer.handleUpgrade(req, ns, head, (ws: WebSocket) => {
-      const socket = new MachinatSocket(ws, uniqid(), requestInfo);
+      const socket = new MachinatSocket(generateId(), ws, requestInfo);
       this._socketStore.set(socket, {
-        lostHeartbeatCount: 0,
-        connsCounter: 0,
-        connections: new Map(),
+        lostHeartbeat: 0,
+        connsAuthInfo: new Map(),
       });
 
       socket.on('event', this._handleSocketEvent);
@@ -153,7 +157,7 @@ class WebSocketReceiver
 
   _getSocketStatusAssertedly(socket: Socket) {
     const socketStatus = this._socketStore.get(socket);
-    if (!socketStatus) {
+    if (socketStatus === undefined) {
       const reason = 'unknown socket';
       socket.close(3404, reason);
       throw new Error(reason);
@@ -162,40 +166,37 @@ class WebSocketReceiver
     return socketStatus;
   }
 
-  _processEvent(
-    socket: Socket,
-    channel: WebSocketChannel,
-    user: ?MachinatUser,
-    event: WebSocketEvent
-  ) {
-    return this.issueEvent(channel, user, event, {
-      source: WEBSOCKET,
-      socketId: socket.id,
-      request: (socket.request: any), // request exist at server side
-    });
+  _processEvent(socket: Socket, connection: Connection, event: WebSocketEvent) {
+    return this.issueEvent(
+      connectionScope(connection),
+      connection.user,
+      event,
+      {
+        source: WEBSOCKET,
+        request: (socket.request: any), // request exist at server side
+        connection,
+      }
+    );
   }
 
   _handleRegister = async (socket: Socket, body: RegisterBody, seq: number) => {
-    const channel = socketChannel(socket.id);
-    const event = createEvent('@authenticate', undefined, body);
+    const socketStatus = this._getSocketStatusAssertedly(socket);
+    const connectionId: string = generateId();
 
     try {
-      const response = await this._processEvent(socket, channel, null, event);
+      const response = await this._processEvent(
+        socket,
+        new Connection(this._serverId, socket.id, connectionId, null, null),
+        createEvent('@auth', undefined, body)
+      );
 
       if (response && response.accepted) {
         const { user } = response;
-        const socketStatus = this._getSocketStatusAssertedly(socket);
-        socketStatus.connsCounter += 1;
 
-        const { connections, connsCounter } = socketStatus;
-        const connectionId = `${socket.id}#${connsCounter}`;
-        connections.set(connectionId, {
-          id: connectionId,
-          socket,
+        socketStatus.connsAuthInfo.set(connectionId, {
           user,
-          channel: connectionChannel(connectionId),
+          tags: null,
         });
-
         await socket.connect({ connectionId, req: seq, user });
       } else {
         await socket.reject({
@@ -212,20 +213,19 @@ class WebSocketReceiver
     const socketStatus = this._getSocketStatusAssertedly(socket);
 
     const { connectionId, type, subtype, payload } = body;
-    const connection = socketStatus.connections.get(connectionId);
+    const authInfo = socketStatus.connsAuthInfo.get(connectionId);
 
-    if (connection === undefined) {
+    if (authInfo === undefined) {
       // reject if not registered
       await socket.disconnect({
         connectionId,
-        reason: 'connection not found',
+        reason: 'connection not registered',
       });
     } else {
-      const { user, channel } = connection;
+      const { user, tags } = authInfo;
       await this._processEvent(
         socket,
-        channel,
-        user,
+        new Connection(this._serverId, socket.id, connectionId, user, tags),
         createEvent(type, subtype, payload)
       );
     }
@@ -235,22 +235,28 @@ class WebSocketReceiver
     const socketStatus = this._getSocketStatusAssertedly(socket);
 
     const { connectionId } = body;
-    const connection = socketStatus.connections.get(connectionId);
+    const authInfo = socketStatus.connsAuthInfo.get(connectionId);
 
-    if (connection === undefined) {
+    if (authInfo === undefined) {
       // reject if not registered
       await socket.disconnect({
         connectionId,
         reason: 'connection not registered',
       });
     } else {
-      this._distributor.addLocalConnection(connection);
-      const { user, channel } = connection;
+      const { user, tags } = authInfo;
+      const connection = new Connection(
+        this._serverId,
+        socket.id,
+        connectionId,
+        user,
+        tags
+      );
+      this._distributor.addLocalConnection(socket, connection);
 
       await this._processEvent(
         socket,
-        channel,
-        user,
+        connection,
         createEvent('@connect', undefined, undefined)
       );
     }
@@ -258,25 +264,32 @@ class WebSocketReceiver
 
   _handleConnectFail = (socket: Socket, body: DisconnectBody) => {
     const socketStatus = this._getSocketStatusAssertedly(socket);
-    socketStatus.connections.delete(body.connectionId);
+    socketStatus.connsAuthInfo.delete(body.connectionId);
   };
 
   _handleDisconnect = async (socket: Socket, body: DisconnectBody) => {
     const socketStatus = this._getSocketStatusAssertedly(socket);
 
-    const { connectionId } = body;
-    const connection = socketStatus.connections.get(connectionId);
+    const { connectionId, reason } = body;
+    const authInfo = socketStatus.connsAuthInfo.get(connectionId);
 
-    if (connection !== undefined) {
-      socketStatus.connections.delete(connectionId);
-      this._distributor.removeLocalConnection(connection.id);
+    if (authInfo !== undefined) {
+      const { user, tags } = authInfo;
+      const connection = new Connection(
+        this._serverId,
+        socket.id,
+        connectionId,
+        user,
+        tags
+      );
 
-      const { user, channel } = connection;
+      socketStatus.connsAuthInfo.delete(connectionId);
+      this._distributor.removeLocalConnection(connection);
+
       await this._processEvent(
         socket,
-        channel,
-        user,
-        createEvent('@disconnect', undefined, undefined)
+        connection,
+        createEvent('@disconnect', undefined, { reason })
       );
     }
   };

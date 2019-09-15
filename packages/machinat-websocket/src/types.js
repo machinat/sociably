@@ -1,25 +1,17 @@
 // @flow
 import type {
   MachinatNativeComponent,
+  MachinatChannel,
   MachinatEvent,
   MachinatUser,
   MachinatMetadata,
 } from 'machinat/types';
 import type { BotPlugin } from 'machinat-base/types';
 import type WebSocketBot from './bot';
-import type MachinatSocket from './socket';
-import type { WebSocketChannel } from './channel';
+import type Connection from './connection';
 
-export type SocketId = string;
 export type ConnectionId = string;
 export type ChannelUid = string;
-
-export type Connection = {
-  id: ConnectionId,
-  user: ?MachinatUser,
-  socket: MachinatSocket,
-  channel: WebSocketChannel,
-};
 
 export type WebSocketEvent = {
   platform: 'websocket',
@@ -31,6 +23,38 @@ export type WebSocketEvent = {
 declare var e: WebSocketEvent;
 (e: MachinatEvent<any>);
 
+export type TopicScope = {
+  platform: 'websocket',
+  type: 'topic',
+  name: string,
+  subtype: string,
+  id?: string,
+  uid: string,
+};
+
+export type UserScope = {
+  platform: 'websocket',
+  type: 'user',
+  user: MachinatUser,
+  subtype: string,
+  id: string,
+  uid: string,
+};
+
+export type ConnectionScope = {
+  platform: 'websocket',
+  type: 'connection',
+  connection: Connection,
+  subtype: string,
+  id: string,
+  uid: string,
+};
+
+export type WebSocketChannel = TopicScope | UserScope | ConnectionScope;
+
+declare var c: WebSocketChannel;
+(c: MachinatChannel);
+
 export type EventOrder = {|
   type: string,
   subtype?: string,
@@ -40,12 +64,12 @@ export type EventOrder = {|
 |};
 
 export type WebSocketJob = {|
-  channel: WebSocketChannel,
+  scope: WebSocketChannel,
   order: EventOrder,
 |};
 
 export type WebSocketResult = {
-  sockets: null | SocketId[],
+  connections: null | Connection[],
 };
 
 export type RequestInfo = {|
@@ -57,8 +81,8 @@ export type RequestInfo = {|
 
 export type WebSocketMetadata = {|
   source: 'websocket',
-  socketId: SocketId,
   request: RequestInfo,
+  connection: null | Connection,
 |};
 
 declare var t: WebSocketMetadata;
@@ -103,12 +127,12 @@ export type WebSocketBotOptions = {|
 
 type ConnectionTarget = {
   type: 'connection',
-  connectionId: ConnectionId,
+  connection: Connection,
 };
 
 type TopicTarget = {
   type: 'topic',
-  channelUid: ChannelUid,
+  uid: ChannelUid,
 };
 
 export type RemoteTarget = ConnectionTarget | TopicTarget;
@@ -117,17 +141,19 @@ export interface SocketBroker {
   broadcastRemote(
     target: RemoteTarget,
     order: EventOrder
-  ): Promise<null | ConnectionId[]>;
+  ): Promise<null | Connection[]>;
 
-  attachRemoteConnectionToTopic(
-    channel: WebSocketChannel,
-    chanUid: ChannelUid
+  attachTopicRemote(
+    connection: Connection,
+    channel: WebSocketChannel
   ): Promise<boolean>;
 
-  detachRemoteConnectionFromTopic(
-    channel: WebSocketChannel,
-    chanUid: ChannelUid
+  detachTopicRemote(
+    connection: Connection,
+    channel: WebSocketChannel
   ): Promise<boolean>;
+
+  disconnectRemote(connection: Connection): Promise<boolean>;
 
   onRemoteEvent(
     handler: (target: RemoteTarget, order: EventOrder) => void

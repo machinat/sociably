@@ -5,7 +5,7 @@ import type WebSocket from 'ws';
 import type { MachinatUser } from 'machinat/types';
 
 import { ConnectionError } from './error';
-import type { RequestInfo, SocketId, ConnectionId } from './types';
+import type { RequestInfo, ConnectionId } from './types';
 
 /**
  * Mahcinat Web Protocle v0
@@ -224,24 +224,23 @@ function handleWSError(err) {
  * communicating operation and notification
  */
 class MachinatSocket extends EventEmitter {
-  id: SocketId;
-  _ws: WebSocket;
-
+  id: string;
   isClient: boolean;
   request: void | RequestInfo;
 
+  _ws: WebSocket;
   _seq: number;
 
   _connectStates: Map<ConnectionId, number>;
   _handshakeTimeouts: Map<ConnectionId, TimeoutID>;
 
-  constructor(ws: WebSocket, id: SocketId, request?: RequestInfo) {
+  constructor(id: string, ws: WebSocket, request?: RequestInfo) {
     super();
 
     this.id = id;
-    this._ws = ws;
     this.request = request;
     this.isClient = !request;
+    this._ws = ws;
     this._seq = 0;
 
     this._connectStates = new Map();
@@ -258,12 +257,12 @@ class MachinatSocket extends EventEmitter {
     return this._ws.readyState;
   }
 
-  isConnectedTo(connectionId: ConnectionId): boolean {
+  isConnected(connectionId: ConnectionId): boolean {
     const state = this._connectStates.get(connectionId);
     return this._ws.readyState === SOCKET_OPEN && state === STATE_CONNECTED_OK;
   }
 
-  isConnectingTo(connectionId: ConnectionId): boolean {
+  isConnecting(connectionId: ConnectionId): boolean {
     const state = this._connectStates.get(connectionId);
     return (
       this._ws.readyState === SOCKET_OPEN &&
@@ -272,7 +271,7 @@ class MachinatSocket extends EventEmitter {
     );
   }
 
-  isDisconnectingTo(connectionId: ConnectionId) {
+  isDisconnecting(connectionId: ConnectionId) {
     const state = this._connectStates.get(connectionId);
     return (
       this._ws.readyState === SOCKET_OPEN &&

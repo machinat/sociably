@@ -50,8 +50,8 @@ it('render to valid value', async () => {
       type="foo"
       subtype="bar"
       payload="baz"
-      whitelist={['1', '2']}
-      blacklist={['2', '3']}
+      only={['1', '2']}
+      except={['2', '3']}
     />
   );
   await expect(render(eventWithBlackAndWhiteList)).resolves.toEqual([
@@ -62,8 +62,8 @@ it('render to valid value', async () => {
         type: 'foo',
         subtype: 'bar',
         payload: 'baz',
-        whitelist: ['1', '2'],
-        blacklist: ['2', '3'],
+        only: ['1', '2'],
+        except: ['2', '3'],
       },
       path: '$',
     },
