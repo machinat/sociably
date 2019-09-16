@@ -9,6 +9,7 @@ import type {
 import type { BotPlugin } from 'machinat-base/types';
 import type WebSocketBot from './bot';
 import type Connection from './connection';
+import type { RegisterBody } from './socket';
 
 export type ConnectionId = string;
 export type ChannelUid = string;
@@ -88,34 +89,43 @@ export type WebSocketMetadata = {|
 declare var t: WebSocketMetadata;
 (t: MachinatMetadata<'websocket'>);
 
-export type AcceptedRegisterResponse = {|
+type AcceptedAuthenticateResult = {|
   accepted: true,
-  user: MachinatUser,
+  user: null | MachinatUser,
+  tags: null | string[],
 |};
 
-export type UnacceptedRegisterResponse = {|
+type UnacceptedAuthenticateResult = {|
   accepted: false,
   // TODO: reject code
   // code: number,
   reason: string,
 |};
 
-export type RegisterResponse =
-  | AcceptedRegisterResponse
-  | UnacceptedRegisterResponse;
+export type AuthenticateResult =
+  | AcceptedAuthenticateResult
+  | UnacceptedAuthenticateResult;
 
-export type WebSocketResponse = void | RegisterResponse;
+export type AuthenticateFunc = (
+  body: RegisterBody,
+  request: RequestInfo
+) => Promise<AuthenticateResult>;
+
+export type ConnectionAuthenticator = (
+  pass: AuthenticateFunc
+) => AuthenticateFunc;
 
 export type WebSocketComponent = MachinatNativeComponent<EventOrder>;
 
 export type WebSocketBotOptions = {|
   verifyUpgrade?: RequestInfo => boolean,
+  authenticators?: ConnectionAuthenticator[],
   plugins?: BotPlugin<
     WebSocketChannel,
     ?MachinatUser,
     WebSocketEvent,
     WebSocketMetadata,
-    WebSocketResponse,
+    void,
     EventOrder,
     WebSocketComponent,
     WebSocketJob,

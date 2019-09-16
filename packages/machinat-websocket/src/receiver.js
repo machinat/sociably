@@ -12,9 +12,9 @@ import type {
   ConnectionId,
   WebSocketEvent,
   WebSocketMetadata,
-  WebSocketBotOptions,
-  WebSocketResponse,
   WebSocketChannel,
+  RequestInfo,
+  AuthenticateFunc,
 } from './types';
 import type Distributor from './distributor';
 import type Socket, {
@@ -34,10 +34,7 @@ type WebSocketServer = $ElementType<WebSocket, 'Server'>;
 
 type SocketStatus = {|
   lostHeartbeat: number,
-  connsAuthInfo: Map<
-    ConnectionId,
-    { user: null | MachinatUser, tags: null | string[] }
-  >,
+  connsAuthInfo: Map<ConnectionId, Connection>,
 |};
 
 const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
@@ -61,13 +58,16 @@ class WebSocketReceiver
     ?MachinatUser,
     WebSocketEvent,
     WebSocketMetadata,
-    WebSocketResponse
+    void
   >
   implements HTTPUpgradeReceiver {
-  options: WebSocketBotOptions;
   _serverId: string;
   _webSocketServer: WebSocketServer;
   _distributor: Distributor;
+
+  _verifyUpgrade: (request: RequestInfo) => boolean;
+  _authenticate: AuthenticateFunc;
+
   _socketStore: Map<Socket, SocketStatus>;
 
   _handleSocketEvent: (body: EventBody, seq: number) => void;
@@ -81,15 +81,18 @@ class WebSocketReceiver
     serverId: string,
     webSocketServer: WebSocketServer,
     distributor: Distributor,
-    options: WebSocketBotOptions
+    authenticateConn: AuthenticateFunc,
+    verifyUpgrade: (request: RequestInfo) => boolean
   ) {
     super();
 
-    this.options = options;
     this._serverId = serverId;
     this._webSocketServer = webSocketServer;
     this._distributor = distributor;
     this._socketStore = new Map();
+
+    this._verifyUpgrade = verifyUpgrade;
+    this._authenticate = authenticateConn;
 
     const self = this;
     this._handleSocketEvent = function handleSocketEvent(body) {
@@ -125,13 +128,10 @@ class WebSocketReceiver
       encrypted: !!(req: any).connection.encrypted,
     };
 
-    if (this.options.verifyUpgrade) {
-      const allowed = this.options.verifyUpgrade(requestInfo);
-
-      if (!allowed) {
-        rejectUpgrade(ns, 400);
-        return;
-      }
+    const allowed = this._verifyUpgrade(requestInfo);
+    if (!allowed) {
+      rejectUpgrade(ns, 400);
+      return;
     }
 
     this._webSocketServer.handleUpgrade(req, ns, head, (ws: WebSocket) => {
@@ -173,7 +173,7 @@ class WebSocketReceiver
       event,
       {
         source: WEBSOCKET,
-        request: (socket.request: any), // request exist at server side
+        request: socket.request,
         connection,
       }
     );
@@ -184,24 +184,20 @@ class WebSocketReceiver
     const connectionId: string = uniqid();
 
     try {
-      const response = await this._processEvent(
-        socket,
-        new Connection(this._serverId, socket.id, connectionId, null, null),
-        createEvent('@auth', undefined, body)
-      );
+      const authResult = await this._authenticate(body, socket.request);
 
-      if (response && response.accepted) {
-        const { user } = response;
+      if (authResult.accepted) {
+        const { user, tags } = authResult;
 
-        socketStatus.connsAuthInfo.set(connectionId, {
-          user,
-          tags: null,
-        });
+        socketStatus.connsAuthInfo.set(
+          connectionId,
+          new Connection(this._serverId, socket.id, connectionId, user, tags)
+        );
         await socket.connect({ connectionId, req: seq, user });
       } else {
         await socket.reject({
           req: seq,
-          reason: response ? response.reason : 'no matched auth method',
+          reason: authResult.reason,
         });
       }
     } catch (err) {
@@ -213,19 +209,18 @@ class WebSocketReceiver
     const socketStatus = this._getSocketStatusAssertedly(socket);
 
     const { connectionId, type, subtype, payload } = body;
-    const authInfo = socketStatus.connsAuthInfo.get(connectionId);
+    const connection = socketStatus.connsAuthInfo.get(connectionId);
 
-    if (authInfo === undefined) {
+    if (connection === undefined) {
       // reject if not registered
       await socket.disconnect({
         connectionId,
         reason: 'connection not registered',
       });
     } else {
-      const { user, tags } = authInfo;
       await this._processEvent(
         socket,
-        new Connection(this._serverId, socket.id, connectionId, user, tags),
+        connection,
         createEvent(type, subtype, payload)
       );
     }
@@ -235,23 +230,15 @@ class WebSocketReceiver
     const socketStatus = this._getSocketStatusAssertedly(socket);
 
     const { connectionId } = body;
-    const authInfo = socketStatus.connsAuthInfo.get(connectionId);
+    const connection = socketStatus.connsAuthInfo.get(connectionId);
 
-    if (authInfo === undefined) {
+    if (connection === undefined) {
       // reject if not registered
       await socket.disconnect({
         connectionId,
         reason: 'connection not registered',
       });
     } else {
-      const { user, tags } = authInfo;
-      const connection = new Connection(
-        this._serverId,
-        socket.id,
-        connectionId,
-        user,
-        tags
-      );
       this._distributor.addLocalConnection(socket, connection);
 
       await this._processEvent(

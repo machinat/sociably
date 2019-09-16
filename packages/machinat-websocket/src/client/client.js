@@ -46,7 +46,7 @@ const MACHINAT_WEBSOCKET_PROTOCOL_V0 = 'machinat-websocket-v0';
 const createSocket = (url: string) => {
   const webSocket = new WS(url, MACHINAT_WEBSOCKET_PROTOCOL_V0);
 
-  return new MachinatSocket('', webSocket);
+  return new MachinatSocket('', webSocket, (null: any));
 };
 
 class WebScoketClient {

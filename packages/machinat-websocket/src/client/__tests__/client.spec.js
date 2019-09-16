@@ -22,7 +22,8 @@ it('initiate ok', () => {
   expect(Socket.mock).toHaveBeenCalledTimes(1);
   expect(Socket.mock).toHaveBeenCalledWith(
     expect.any(String),
-    WS.mock.calls[0].instance
+    WS.mock.calls[0].instance,
+    null
   );
 });
 

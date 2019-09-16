@@ -3,6 +3,7 @@ import invariant from 'invariant';
 import WS from 'ws';
 import uniqid from 'uniqid';
 import { Emitter, Controller, Engine, resolvePlugins } from 'machinat-base';
+import { compose } from 'machinat-utility';
 import Renderer from 'machinat-renderer';
 import Queue from 'machinat-queue';
 
@@ -14,20 +15,22 @@ import type {
   WebSocketEvent,
   WebSocketMetadata,
   EventOrder,
-  WebSocketResponse,
   WebSocketJob,
   WebSocketResult,
   WebSocketBotOptions,
   WebSocketComponent,
   TopicScope,
+  ConnectionAuthenticator,
 } from './types';
 import type Connection from './connection';
+import type { RegisterBody } from './socket';
 
 import { WEBSOCKET, WEBSOCKET_NATIVE_TYPE } from './constant';
 import Distributor from './distributor';
 import { LocalOnlyBroker } from './broker';
 import WebSocketReceiver from './receiver';
 import WebSocketWorker from './worker';
+import { allowDefaultAnonymously } from './authenticator';
 
 const WSServer = WS.Server;
 
@@ -55,6 +58,11 @@ const createJobs = (
   return jobs;
 };
 
+const rejectAllAuth = async ({ type }: RegisterBody) => ({
+  accepted: false,
+  reason: `auth type "${type}" is not allowed`,
+});
+
 class WebSocketBot
   extends Emitter<
     WebSocketChannel,
@@ -74,7 +82,7 @@ class WebSocketBot
       ?MachinatUser,
       WebSocketEvent,
       WebSocketMetadata,
-      WebSocketResponse,
+      void,
       EventOrder,
       WebSocketComponent,
       WebSocketJob,
@@ -82,16 +90,17 @@ class WebSocketBot
       void,
       WebSocketBotOptionsInput
     > {
-  _distributor: Distributor;
   options: WebSocketBotOptions;
-  receiver: WebSocketReceiver;
+  _distributor: Distributor;
+  _authenticator: ConnectionAuthenticator;
 
+  receiver: WebSocketReceiver;
   controller: Controller<
     WebSocketChannel,
     ?MachinatUser,
     WebSocketEvent,
     WebSocketMetadata,
-    WebSocketResponse,
+    void,
     EventOrder,
     WebSocketComponent,
     void
@@ -109,20 +118,19 @@ class WebSocketBot
 
   constructor(optionsInput?: WebSocketBotOptionsInput) {
     super();
-
     const defaultOptions: WebSocketBotOptions = {
       verifyUpgrade: undefined,
     };
+
     const options = Object.assign(defaultOptions, optionsInput);
     this.options = options;
 
     const broker = new LocalOnlyBroker();
 
     const serverId = uniqid();
-    const distributor = new Distributor(serverId, broker, err =>
+    this._distributor = new Distributor(serverId, broker, err =>
       this.emitError(err)
     );
-    this._distributor = distributor;
 
     const wsServer = new WSServer({ noServer: true });
 
@@ -132,11 +140,14 @@ class WebSocketBot
     );
 
     this.controller = new Controller(WEBSOCKET, this, eventMiddlewares);
+
+    const authenticators = options.authenticators || [allowDefaultAnonymously];
     this.receiver = new WebSocketReceiver(
       serverId,
       wsServer,
-      distributor,
-      options
+      this._distributor,
+      compose(...authenticators)(rejectAllAuth),
+      options.verifyUpgrade || (() => true)
     );
 
     this.receiver.bindIssuer(
@@ -145,7 +156,7 @@ class WebSocketBot
     );
 
     const queue = new Queue();
-    const worker = new WebSocketWorker(distributor);
+    const worker = new WebSocketWorker(this._distributor);
 
     const renderer = new Renderer(WEBSOCKET, WEBSOCKET_NATIVE_TYPE, () => {
       throw new TypeError(
@@ -155,7 +166,7 @@ class WebSocketBot
 
     this.engine = new Engine(
       WEBSOCKET,
-      (this: any),
+      this,
       renderer,
       queue,
       worker,

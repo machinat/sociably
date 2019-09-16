@@ -70,7 +70,8 @@ describe('#constructor(options)', () => {
       expect.any(String),
       expect.any(ws.Server),
       expect.any(Distributor),
-      bot.options
+      expect.any(Function),
+      expect.any(Function)
     );
   });
 
@@ -148,6 +149,95 @@ describe('#constructor(options)', () => {
     expect(issueError(new Error('NO'))).toBe(undefined);
     expect(errorListener.mock).toHaveBeenCalledTimes(1);
     expect(errorListener.mock).toHaveBeenCalledWith(new Error('NO'));
+  });
+
+  test('default verifyUpgrade return true', () => {
+    const bot = new WebSocketBot(); // eslint-disable-line no-unused-vars
+    expect(Receiver.mock).toHaveBeenCalledTimes(1);
+    const verifyUpgrade = Receiver.mock.calls[0].args[4];
+
+    expect(verifyUpgrade({ url: '/', method: 'GET', headers: {} })).toBe(true);
+  });
+
+  test('override default verifyUpgrade', () => {
+    const verifyUpgrade = moxy(() => false);
+    const bot = new WebSocketBot({ verifyUpgrade }); // eslint-disable-line no-unused-vars
+
+    expect(Receiver.mock).toHaveBeenCalledTimes(1);
+    expect(Receiver.mock.calls[0].args[4]).toBe(verifyUpgrade);
+  });
+
+  test('default authenticateConn allow "default" auth type only', async () => {
+    const bot = new WebSocketBot(); // eslint-disable-line no-unused-vars
+    expect(Receiver.mock).toHaveBeenCalledTimes(1);
+    const authenticateConn = Receiver.mock.calls[0].args[3];
+
+    await expect(authenticateConn({ type: 'default' })).resolves.toEqual({
+      accepted: true,
+      user: null,
+      tags: null,
+    });
+
+    await expect(authenticateConn({ type: 'other_auth' })).resolves
+      .toMatchInlineSnapshot(`
+          Object {
+            "accepted": false,
+            "reason": "auth type \\"other_auth\\" is not allowed",
+          }
+      `);
+  });
+
+  it('compose authenticators in options', async () => {
+    const fooAuthenticator = moxy(
+      pass => async auth =>
+        auth.type === 'foo'
+          ? { accepted: true, user: { id: 'foooo' } }
+          : pass(auth),
+      { mockReturnValue: true }
+    );
+    const barAuthenticator = moxy(
+      pass => async auth =>
+        auth.type === 'bar'
+          ? { accepted: false, reason: 'bar is not good' }
+          : pass(auth),
+      { mockReturnValue: true }
+    );
+
+    // eslint-disable-next-line no-unused-vars
+    const bot = new WebSocketBot({
+      authenticators: [fooAuthenticator, barAuthenticator],
+    });
+    expect(Receiver.mock).toHaveBeenCalledTimes(1);
+    const authenticateConn = Receiver.mock.calls[0].args[3];
+
+    await expect(authenticateConn({ type: 'foo' })).resolves.toEqual({
+      accepted: true,
+      user: { id: 'foooo' },
+    });
+    await expect(authenticateConn({ type: 'bar' })).resolves.toEqual({
+      accepted: false,
+      reason: 'bar is not good',
+    });
+    await expect(authenticateConn({ type: 'baz' })).resolves
+      .toMatchInlineSnapshot(`
+        Object {
+          "accepted": false,
+          "reason": "auth type \\"baz\\" is not allowed",
+        }
+      `);
+
+    expect(fooAuthenticator.mock).toHaveBeenCalledTimes(1);
+    const authFoo = fooAuthenticator.mock.calls[0].result;
+    expect(authFoo.mock).toHaveBeenCalledTimes(3);
+    expect(authFoo.mock).toHaveBeenCalledWith({ type: 'foo' });
+    expect(authFoo.mock).toHaveBeenCalledWith({ type: 'bar' });
+    expect(authFoo.mock).toHaveBeenCalledWith({ type: 'baz' });
+
+    expect(barAuthenticator.mock).toHaveBeenCalledTimes(1);
+    const authBar = barAuthenticator.mock.calls[0].result;
+    expect(authBar.mock).toHaveBeenCalledTimes(2);
+    expect(authBar.mock).toHaveBeenCalledWith({ type: 'bar' });
+    expect(authBar.mock).toHaveBeenCalledWith({ type: 'baz' });
   });
 });
 

@@ -96,7 +96,7 @@ export type ConnectBody = {
   // the register frame seq on server
   req: number,
   connectionId: string,
-  user?: MachinatUser,
+  user?: null | MachinatUser,
 };
 
 /**
@@ -226,7 +226,7 @@ function handleWSError(err) {
 class MachinatSocket extends EventEmitter {
   id: string;
   isClient: boolean;
-  request: void | RequestInfo;
+  request: RequestInfo;
 
   _ws: WebSocket;
   _seq: number;
@@ -234,7 +234,7 @@ class MachinatSocket extends EventEmitter {
   _connectStates: Map<ConnectionId, number>;
   _handshakeTimeouts: Map<ConnectionId, TimeoutID>;
 
-  constructor(id: string, ws: WebSocket, request?: RequestInfo) {
+  constructor(id: string, ws: WebSocket, request: RequestInfo) {
     super();
 
     this.id = id;
