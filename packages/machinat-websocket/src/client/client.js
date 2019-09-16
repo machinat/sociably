@@ -9,8 +9,8 @@ import type {
   RejectBody,
 } from '../socket';
 import MachinatSocket from '../socket';
-
-import { connectionScope, userScope } from '../channel';
+import { WEBSOCKET } from '../constant';
+import { connectionScope, userScope, topicScope } from '../channel';
 import { ConnectionError } from '../error';
 import Connection from '../connection';
 import type { WebSocketChannel, UserScope, ConnectionScope } from '../types';
@@ -230,9 +230,30 @@ class WebScoketClient {
     }
   };
 
-  _handleEvent = ({ connectionId, type, subtype, payload }: EventBody) => {
+  _handleEvent = ({
+    connectionId,
+    type,
+    subtype,
+    payload,
+    scopeUId,
+  }: EventBody) => {
     if (this._connected === true && this._connectionId === connectionId) {
-      this._emitEvent({ type, subtype, payload }, this._connectionScope);
+      let scope = this._connectionScope;
+      if (scopeUId) {
+        const [platform, scopeType, scopeSubtype, scopeId] = scopeUId.split(
+          ':'
+        );
+        scope =
+          platform !== WEBSOCKET
+            ? scope
+            : scopeType === 'user'
+            ? this._userScope || scope
+            : scopeType === 'topic'
+            ? topicScope(scopeSubtype, scopeId)
+            : scope;
+      }
+
+      this._emitEvent({ type, subtype, payload }, scope);
     }
   };
 

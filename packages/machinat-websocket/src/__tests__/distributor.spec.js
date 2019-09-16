@@ -303,16 +303,19 @@ describe('broadcast()', () => {
     expect(socket.event.mock).toHaveBeenCalledTimes(3);
     expect(socket.event.mock).toHaveBeenNthCalledWith(1, {
       connectionId: conn1.id,
+      scopeUId: fooScope.uid,
       type: 'greet',
       payload: 'good morning',
     });
     expect(socket.event.mock).toHaveBeenNthCalledWith(2, {
       connectionId: conn2.id,
+      scopeUId: fooScope.uid,
       type: 'greet',
       payload: 'good morning',
     });
     expect(socket.event.mock).toHaveBeenNthCalledWith(3, {
       connectionId: conn1.id,
+      scopeUId: barScope.uid,
       type: 'greet',
       payload: 'good afternoon',
     });
@@ -442,14 +445,17 @@ describe('broadcast()', () => {
     expect(socket.event.mock).toHaveBeenCalledTimes(3);
     expect(socket.event.mock).toHaveBeenNthCalledWith(1, {
       connectionId: conn1.id,
+      scopeUId: fooScope.uid,
       ...event,
     });
     expect(socket.event.mock).toHaveBeenNthCalledWith(2, {
       connectionId: conn2.id,
+      scopeUId: fooScope.uid,
       ...event,
     });
     expect(socket.event.mock).toHaveBeenNthCalledWith(3, {
       connectionId: conn2.id,
+      scopeUId: fooScope.uid,
       ...event,
     });
   });

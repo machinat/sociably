@@ -1,7 +1,7 @@
 import moxy from 'moxy';
 import WS from 'ws';
 import Socket from '../../socket';
-import { connectionScope } from '../../channel';
+import { connectionScope, topicScope } from '../../channel';
 import Client from '../client';
 
 jest.mock('../../socket');
@@ -129,6 +129,21 @@ it('emit event when received', async () => {
       user,
       tags: null,
     }),
+    user,
+    client,
+  });
+
+  socket.emit('event', {
+    connectionId: '#conn',
+    scopeUId: 'websocket:topic:game:world',
+    type: 'resurrect',
+    payload: 'Hero never die!',
+  });
+
+  expect(eventSpy.mock).toHaveBeenCalledTimes(2);
+  expect(eventSpy.mock).toHaveBeenCalledWith({
+    event: { type: 'resurrect', payload: 'Hero never die!' },
+    channel: topicScope('game', 'world'),
     user,
     client,
   });

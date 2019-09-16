@@ -120,11 +120,11 @@ class Distributor {
   }
 
   async broadcast(
-    channel: WebSocketChannel,
+    scope: WebSocketChannel,
     order: EventOrder
   ): Promise<null | Connection[]> {
-    if (channel.platform === WEBSOCKET && channel.type === 'connection') {
-      const { connection } = channel;
+    if (scope.platform === WEBSOCKET && scope.type === 'connection') {
+      const { connection } = scope;
 
       if (connection.serverId !== this._serverId) {
         return this._broker.broadcastRemote(
@@ -147,13 +147,13 @@ class Distributor {
       return [connection];
     }
 
-    if (channel.platform === WEBSOCKET && channel.type === 'user') {
+    if (scope.platform === WEBSOCKET && scope.type === 'user') {
       throw new Error('sending to user scope is not yet implemented');
     }
 
     const [localResults, remoteResults] = await Promise.all([
-      this._broadcastLocal(channel.uid, order),
-      this._broker.broadcastRemote({ type: 'topic', uid: channel.uid }, order),
+      this._broadcastLocal(scope.uid, order),
+      this._broker.broadcastRemote({ type: 'topic', uid: scope.uid }, order),
     ]);
 
     return localResults === null
@@ -215,10 +215,10 @@ class Distributor {
   }
 
   async _broadcastLocal(
-    chanUid: ChannelUid,
+    scopeUId: ChannelUid,
     order: EventOrder
   ): Promise<null | Connection[]> {
-    const conneted = this._channelsConnected.get(chanUid);
+    const conneted = this._channelsConnected.get(scopeUId);
     if (conneted === undefined) {
       return null;
     }
@@ -250,7 +250,7 @@ class Distributor {
 
         promises.push(
           socket
-            .event({ connectionId: connId, type, subtype, payload })
+            .event({ connectionId: connId, type, subtype, payload, scopeUId })
             .catch(this._errorHandler)
         );
         sentConns.push(connection);

@@ -55,60 +55,61 @@ const FRAME_DISCONNECT = 'disconnect';
 /**
  * Event Frame carries a event which delivered with a specified connection
  */
-export type EventBody = {
+export type EventBody = {|
   connectionId: ConnectionId,
   type: string,
   subtype?: string,
   payload: any,
   requireAnswer?: boolean,
-};
+  scopeUId?: string,
+|};
 
 /**
  * Answer Frame make a reply to an event transmitted before if needed
  */
-export type AnswerBody = {
+export type AnswerBody = {|
   req: number, // seq of the answered event
   payload: any,
-};
+|};
 
 /**
  * Reject Frame reject an illegal frame transmitted before
  */
-export type RejectBody = {
+export type RejectBody = {|
   req: number, // seq of the rejected frame
   // code: number,
   reason: string,
-};
+|};
 
 /**
  * Register Frame request for registering a connection
  */
-export type RegisterBody = {
+export type RegisterBody = {|
   type: string,
   [string]: any,
-};
+|};
 
 /**
  * Connect Frame initiate a connect handshake from Server or make a confirmation
  * to the connect frame received from Client
  */
-export type ConnectBody = {
+export type ConnectBody = {|
   // the register frame seq on server
   req: number,
   connectionId: string,
   user?: null | MachinatUser,
-};
+|};
 
 /**
  * Disconnect Frame initiate a disconnect handshake or make a confirmation to
  * the disconnect frame received from Server/Client
  */
-export type DisconnectBody = {
+export type DisconnectBody = {|
   req?: number, // the disconnect frame seq received if it's a confirmation
   connectionId: string,
   // code: number,
   reason: string,
-};
+|};
 
 /**
  * Communication
