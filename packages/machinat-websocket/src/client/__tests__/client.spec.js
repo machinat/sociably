@@ -29,14 +29,18 @@ it('initiate ok', () => {
 
 it('register to server when socket open', async () => {
   const eventSpy = moxy();
-  const client = new Client({ url: '/hello', register: { type: 'test' } });
+  const register = moxy(async () => ({ type: 'test' }));
+  const client = new Client({ url: '/hello', register });
   client.onEvent(eventSpy);
 
   const socket = Socket.mock.calls[0].instance;
   expect(socket.register.mock).not.toHaveBeenCalled();
 
   socket.emit('open');
+  await delay();
 
+  expect(register.mock).toHaveBeenCalledTimes(1);
+  expect(register.mock).toHaveBeenCalledWith(/* empty */);
   expect(socket.register.mock).toHaveBeenCalledTimes(1);
   expect(socket.register.mock).toHaveBeenCalledWith({ type: 'test' });
 
@@ -68,6 +72,7 @@ it('register with {type: "default"} if empty in options', async () => {
   expect(socket.register.mock).not.toHaveBeenCalled();
 
   socket.emit('open');
+  await delay();
 
   expect(socket.register.mock).toHaveBeenCalledTimes(1);
   expect(socket.register.mock).toHaveBeenCalledWith({ type: 'default' });
@@ -75,13 +80,15 @@ it('register with {type: "default"} if empty in options', async () => {
 
 it('emit error if register rejected when socket is already open', async () => {
   const errorSpy = moxy();
-  const client = new Client({ url: '/hello', register: { type: 'test' } });
+  const client = new Client({ url: '/hello' });
   client.onError(errorSpy);
 
   const socket = Socket.mock.calls[0].instance;
   socket.register.mock.fake(() => Promise.resolve(3));
 
   socket.emit('open');
+  await delay();
+
   expect(socket.register.mock).toHaveBeenCalledTimes(1);
   await delay();
 
@@ -123,10 +130,9 @@ it('emit event when received', async () => {
       payload: 'Link is down! Legend over.',
     },
     channel: connectionScope({
-      serverId: '',
-      socketId: '',
+      serverId: '$',
+      socketId: '$',
       id: '#conn',
-      user,
       tags: null,
     }),
     user,
@@ -196,6 +202,7 @@ it('queue the sendings when not ready and fire after connected', async () => {
   expect(socket.event.mock).not.toHaveBeenCalled();
 
   socket.emit('open');
+  await delay();
 
   const req = await socket.register.mock.calls[0].result;
   socket.emit(
@@ -240,10 +247,9 @@ test('disconnect by server', () => {
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
     event: { type: '@disconnect' },
     channel: connectionScope({
-      serverId: '',
-      socketId: '',
+      serverId: '$',
+      socketId: '$',
       id: '#conn',
-      user: { id: 'xxx', name: 'jane doe' },
       tags: null,
     }),
     user: { id: 'xxx', name: 'jane doe' },
@@ -277,10 +283,9 @@ test('#disconnect()', async () => {
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
     event: { type: '@disconnect' },
     channel: connectionScope({
-      serverId: '',
-      socketId: '',
+      serverId: '$',
+      socketId: '$',
       id: '#conn',
-      user: { id: 'xxx' },
       tags: null,
     }),
     user: { id: 'xxx' },

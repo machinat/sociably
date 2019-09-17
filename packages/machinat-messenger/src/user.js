@@ -7,8 +7,8 @@ export class MessengerUser implements MachinatUser {
   source: PSIDSource;
   platform = MESSENGER;
 
-  constructor(source: PSIDSource) {
-    this.source = source;
+  constructor(source: string | PSIDSource) {
+    this.source = typeof source === 'string' ? { id: source } : source;
   }
 
   get id() {

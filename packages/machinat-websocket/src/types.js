@@ -83,7 +83,9 @@ export type RequestInfo = {|
 export type WebSocketMetadata = {|
   source: 'websocket',
   request: RequestInfo,
-  connection: null | Connection,
+  connection: Connection,
+  authType: string,
+  webContext: any,
 |};
 
 declare var t: WebSocketMetadata;
@@ -93,6 +95,7 @@ type AcceptedAuthenticateResult = {|
   accepted: true,
   user: null | MachinatUser,
   tags: null | string[],
+  webContext: any,
 |};
 
 type UnacceptedAuthenticateResult = {|

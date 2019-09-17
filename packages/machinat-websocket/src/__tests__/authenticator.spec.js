@@ -24,6 +24,7 @@ describe('allowDefaultAnonymously()', () => {
       accepted: true,
       user: null,
       tags: null,
+      webContext: null,
     });
 
     expect(pass.mock).not.toHaveBeenCalled();
@@ -53,6 +54,7 @@ describe('allowAllAnonymously()', () => {
       accepted: true,
       user: null,
       tags: null,
+      webContext: null,
     });
 
     await expect(
@@ -61,6 +63,7 @@ describe('allowAllAnonymously()', () => {
       accepted: true,
       user: null,
       tags: null,
+      webContext: null,
     });
 
     expect(pass.mock).not.toHaveBeenCalled();

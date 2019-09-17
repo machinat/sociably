@@ -17,6 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "base64url": "^3.0.1",
     "invariant": "^2.2.4",
     "jsonwebtoken": "^8.5.1",
     "machinat-base": "^0.0.2",

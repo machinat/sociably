@@ -28,9 +28,11 @@ type ClientEventFrame = {|
   client: WebScoketClient, // eslint-disable-line no-use-before-define
 |};
 
+type RegisterFunc = () => Promise<RegisterBody>;
+
 type ClientOptions = {
   url: string,
-  register: RegisterBody,
+  register: RegisterFunc,
 };
 
 type ClientOptionsInput = $Shape<ClientOptions>;
@@ -70,7 +72,7 @@ class WebScoketClient {
 
     const defaultOptions = {
       url: './',
-      register: { type: 'default' },
+      register: () => Promise.resolve({ type: 'default' }),
     };
     const options = Object.assign(defaultOptions, optionsInput);
 
@@ -81,16 +83,18 @@ class WebScoketClient {
 
     const socket = createSocket(options.url);
 
-    socket.on('open', this._handleSocketOpen);
-    socket.on('error', this._handleSocketError);
+    const handleError = this._emitError.bind(this);
+    socket.on('open', () => {
+      this._handleSocketOpen().catch(handleError);
+    });
 
-    socket.on('connect', this._handleConnect);
-    socket.on('disconnect', this._handleDisconnect);
-    socket.on('event', this._handleEvent);
+    socket.on('connect', this._handleConnect.bind(this));
+    socket.on('disconnect', this._handleDisconnect.bind(this));
+    socket.on('event', this._handleEvent.bind(this));
 
-    socket.on('reject', this._handleReject);
-    socket.on('error', this._emitError);
-    socket.on('connect_fail', this._handleConnectFail);
+    socket.on('reject', this._handleReject.bind(this));
+    socket.on('error', handleError);
+    socket.on('connect_fail', this._handleConnectFail.bind(this));
     // TODO: implement answering
     // socket.on('answer');
 
@@ -104,7 +108,7 @@ class WebScoketClient {
   async send(event: ClientEvent): Promise<void> {
     if (!this._connected) {
       await new Promise((resolve, reject) => {
-        this._queuedEventJobs.push({ resolve, reject, event });
+        this._queuedEventJobs.push({ resolve: () => resolve(), reject, event });
       });
     } else {
       await this._socket.event({ ...event, connectionId: this._connectionId });
@@ -165,7 +169,7 @@ class WebScoketClient {
     return true;
   }
 
-  _emitError = (err: Error) => {
+  _emitError(err: Error) {
     if (this._errorListeners.length === 0) {
       throw err;
     }
@@ -173,14 +177,15 @@ class WebScoketClient {
     for (const listener of this._errorListeners) {
       listener(err);
     }
-  };
+  }
 
-  _handleSocketOpen = async () => {
-    const seq = await this._socket.register(this.options.register);
+  async _handleSocketOpen() {
+    const registerBody = await this.options.register();
+    const seq = await this._socket.register(registerBody);
     this._registerSeq = seq;
-  };
+  }
 
-  _handleConnect = ({ connectionId, req, user }: ConnectBody) => {
+  _handleConnect({ connectionId, req, user }: ConnectBody) {
     if (req !== this._registerSeq) {
       return;
     }
@@ -188,7 +193,7 @@ class WebScoketClient {
     this._connected = true;
     this._connectionId = connectionId;
     this._connectionScope = connectionScope(
-      new Connection('', '', connectionId, user || null, null)
+      new Connection('$', '$', connectionId, null)
     );
 
     this._user = user;
@@ -210,13 +215,9 @@ class WebScoketClient {
         .catch(reject);
     }
     this._queuedEventJobs = [];
-  };
-
-  _handleSocketError(err: Error) {
-    this._emitError(err);
   }
 
-  _handleDisconnect = ({ connectionId }: DisconnectBody) => {
+  _handleDisconnect({ connectionId }: DisconnectBody) {
     if (this._connectionId === connectionId) {
       this._connected = false;
       this._emitEvent(
@@ -228,15 +229,9 @@ class WebScoketClient {
         this._connectionScope
       );
     }
-  };
+  }
 
-  _handleEvent = ({
-    connectionId,
-    type,
-    subtype,
-    payload,
-    scopeUId,
-  }: EventBody) => {
+  _handleEvent({ connectionId, type, subtype, payload, scopeUId }: EventBody) {
     if (this._connected === true && this._connectionId === connectionId) {
       let scope = this._connectionScope;
       if (scopeUId) {
@@ -255,20 +250,20 @@ class WebScoketClient {
 
       this._emitEvent({ type, subtype, payload }, scope);
     }
-  };
+  }
 
-  _handleReject = ({ req, reason }: RejectBody) => {
+  _handleReject({ req, reason }: RejectBody) {
     if (req === this._registerSeq) {
       this._emitError(new ConnectionError(reason));
     }
-  };
+  }
 
-  _handleConnectFail = ({ req }: DisconnectBody) => {
+  _handleConnectFail({ req }: DisconnectBody) {
     if (req === this._registerSeq) {
       const err = new ConnectionError('connect handshake fail');
       this._emitError(err);
     }
-  };
+  }
 }
 
 export default WebScoketClient;

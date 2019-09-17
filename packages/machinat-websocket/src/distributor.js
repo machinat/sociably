@@ -1,4 +1,5 @@
 // @flow
+import type { MachinatUser } from 'machinat/types';
 import type {
   EventOrder,
   ConnectionId,
@@ -21,7 +22,12 @@ class Distributor {
   _channelsConnected: Map<ChannelUid, Set<ConnectionId>>;
   _connectionsStore: Map<
     ConnectionId,
-    { connection: Connection, socket: Socket, channels: Set<ChannelUid> }
+    {
+      connection: Connection,
+      user: null | MachinatUser,
+      socket: Socket,
+      channels: Set<ChannelUid>,
+    }
   >;
 
   constructor(
@@ -38,7 +44,11 @@ class Distributor {
     broker.onRemoteEvent(this._handleRemoteEvent);
   }
 
-  addLocalConnection(socket: Socket, connection: Connection): boolean {
+  addLocalConnection(
+    socket: Socket,
+    user: null | MachinatUser,
+    connection: Connection
+  ): boolean {
     const connectionId = connection.id;
     if (this._connectionsStore.has(connectionId)) {
       return false;
@@ -47,6 +57,7 @@ class Distributor {
     this._connectionsStore.set(connectionId, {
       socket,
       connection,
+      user,
       channels: new Set(),
     });
     return true;

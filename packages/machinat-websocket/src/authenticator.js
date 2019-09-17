@@ -6,11 +6,17 @@ export const allowDefaultAnonymously: ConnectionAuthenticator = pass => async (
   request
 ) =>
   auth.type === 'default'
-    ? { accepted: true, user: null, tags: null }
+    ? {
+        accepted: true,
+        user: null,
+        tags: null,
+        webContext: null,
+      }
     : pass(auth, request);
 
 export const allowAllAnonymously: ConnectionAuthenticator = () => async () => ({
   accepted: true,
   user: null,
   tags: null,
+  webContext: null,
 });

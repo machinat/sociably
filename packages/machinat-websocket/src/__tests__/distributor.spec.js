@@ -27,11 +27,13 @@ const scope = {
   id: 1408,
   uid: 'websocket:topic:my_room:1408',
 };
-const connection = {
+
+const john = { john: 'doe' };
+const jane = { jane: 'doe' };
+const conn = {
   serverId,
   socketId: socket.id,
   id: '#conn',
-  user: { jane: 'doe' },
 };
 
 beforeEach(() => {
@@ -45,20 +47,18 @@ test('addLocalConnection() and removeLocalConnection()', () => {
     serverId: '#server',
     socketId: socket.id,
     id: '#foo',
-    user: { john: 'doe' },
   };
   const barConn = {
     serverId: '#server',
     socketId: socket.id,
     id: '#bar',
-    user: { jane: 'doe' },
   };
 
-  expect(distributor.addLocalConnection(socket, fooConn)).toBe(true);
-  expect(distributor.addLocalConnection(socket, barConn)).toBe(true);
+  expect(distributor.addLocalConnection(socket, john, fooConn)).toBe(true);
+  expect(distributor.addLocalConnection(socket, jane, barConn)).toBe(true);
   // if duplicated
-  expect(distributor.addLocalConnection(socket, fooConn)).toBe(false);
-  expect(distributor.addLocalConnection(socket, barConn)).toBe(false);
+  expect(distributor.addLocalConnection(socket, john, fooConn)).toBe(false);
+  expect(distributor.addLocalConnection(socket, jane, barConn)).toBe(false);
 
   expect(distributor.removeLocalConnection(fooConn)).toBe(true);
   expect(distributor.removeLocalConnection(barConn)).toBe(true);
@@ -71,29 +71,17 @@ describe('attachTopic() and detachTopic()', () => {
   it('return boolean indicate whether connection is still connected', async () => {
     const distributor = new Distributor(serverId, broker, errorHandler);
 
-    distributor.addLocalConnection(socket, connection);
+    distributor.addLocalConnection(socket, john, conn);
 
-    await expect(distributor.attachTopic(connection, scope)).resolves.toBe(
-      true
-    );
-    await expect(distributor.attachTopic(connection, scope)).resolves.toBe(
-      true
-    );
+    await expect(distributor.attachTopic(conn, scope)).resolves.toBe(true);
+    await expect(distributor.attachTopic(conn, scope)).resolves.toBe(true);
 
-    await expect(distributor.detachTopic(connection, scope)).resolves.toBe(
-      true
-    );
-    await expect(distributor.detachTopic(connection, scope)).resolves.toBe(
-      true
-    );
+    await expect(distributor.detachTopic(conn, scope)).resolves.toBe(true);
+    await expect(distributor.detachTopic(conn, scope)).resolves.toBe(true);
 
-    distributor.removeLocalConnection(connection);
-    await expect(distributor.attachTopic(connection, scope)).resolves.toBe(
-      false
-    );
-    await expect(distributor.detachTopic(connection, scope)).resolves.toBe(
-      false
-    );
+    distributor.removeLocalConnection(conn);
+    await expect(distributor.attachTopic(conn, scope)).resolves.toBe(false);
+    await expect(distributor.detachTopic(conn, scope)).resolves.toBe(false);
   });
 
   it('delegate to broker if socket is not local', async () => {
@@ -130,12 +118,10 @@ describe('disconnect()', () => {
   it('return boolean indicate is updated or not', async () => {
     const distributor = new Distributor(serverId, broker, errorHandler);
     socket.disconnect.mock.fake(async () => 0);
-    distributor.addLocalConnection(socket, connection);
+    distributor.addLocalConnection(socket, jane, conn);
 
-    await expect(distributor.disconnect(connection, 'bye')).resolves.toBe(true);
-    await expect(distributor.disconnect(connection, 'bye')).resolves.toBe(
-      false
-    );
+    await expect(distributor.disconnect(conn, 'bye')).resolves.toBe(true);
+    await expect(distributor.disconnect(conn, 'bye')).resolves.toBe(false);
   });
 
   it('delegate to borker if socket is not local', async () => {
@@ -164,22 +150,20 @@ describe('broadcast()', () => {
     id: 'conn#1',
     serverId,
     socketId: socket.id,
-    user: { jane: 'doe' },
   };
 
   const conn2 = {
     id: 'conn#2',
     serverId,
     socketId: socket.id,
-    user: { john: 'doe' },
   };
 
   it('send event with local connection scope', async () => {
     const distributor = new Distributor(serverId, broker, errorHandler);
     socket.event.mock.fake(async () => 0);
 
-    distributor.addLocalConnection(socket, conn1);
-    distributor.addLocalConnection(socket, conn2);
+    distributor.addLocalConnection(socket, jane, conn1);
+    distributor.addLocalConnection(socket, john, conn2);
 
     await expect(
       distributor.broadcast(connectionScope(conn1), {
@@ -217,7 +201,6 @@ describe('broadcast()', () => {
       serverId: '#remote',
       socketId: 'xxx',
       id: '#conn_remote',
-      user: { john: 'doe' },
     };
     const remoteConnScope = connectionScope(remoteConn);
 
@@ -257,17 +240,15 @@ describe('broadcast()', () => {
       serverId: '#remote',
       socketId: 'xxx',
       id: '#conn1',
-      user: { john: 'doe' },
     };
     const remoteConn2 = {
       serverId: '#remote',
       socketId: 'zzz',
       id: '#conn2',
-      user: { john: 'doe' },
     };
 
-    distributor.addLocalConnection(socket, conn1);
-    distributor.addLocalConnection(socket, conn2);
+    distributor.addLocalConnection(socket, john, conn1);
+    distributor.addLocalConnection(socket, jane, conn2);
 
     const fooScope = topicScope('foo', 'oof');
     const barScope = topicScope('bar', 'rab');
@@ -341,16 +322,16 @@ describe('broadcast()', () => {
   it('filter connection to send with whitelist and blacklist', async () => {
     const distributor = new Distributor(serverId, broker, errorHandler);
     socket.event.mock.fake(async () => 0);
+    const jojo = { jojo: 'doe' };
     const conn3 = {
       id: 'conn#3',
       socket,
-      user: { jojo: 'doe' },
       channel: connectionScope('conn#3'),
     };
 
-    distributor.addLocalConnection(socket, conn1);
-    distributor.addLocalConnection(socket, conn2);
-    distributor.addLocalConnection(socket, conn3);
+    distributor.addLocalConnection(socket, jane, conn1);
+    distributor.addLocalConnection(socket, john, conn2);
+    distributor.addLocalConnection(socket, jojo, conn3);
 
     const fooScope = topicScope('foo', 'oof');
 
@@ -412,8 +393,8 @@ describe('broadcast()', () => {
   it('emit error and remove errored connection when socket level error happen', async () => {
     const distributor = new Distributor(serverId, broker, errorHandler);
 
-    distributor.addLocalConnection(socket, conn1);
-    distributor.addLocalConnection(socket, conn2);
+    distributor.addLocalConnection(socket, jane, conn1);
+    distributor.addLocalConnection(socket, john, conn2);
 
     socket.event.mock.fake(() => Promise.resolve(0));
     socket.event.mock.fakeOnce(() => Promise.reject(new Error('Wasted!')));

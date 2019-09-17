@@ -176,6 +176,7 @@ describe('#constructor(options)', () => {
       accepted: true,
       user: null,
       tags: null,
+      webContext: null,
     });
 
     await expect(authenticateConn({ type: 'other_auth' })).resolves
