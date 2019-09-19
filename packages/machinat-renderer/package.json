@@ -1,6 +1,6 @@
 {
   "name": "machinat-renderer",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
   "dependencies": {
     "delay": "^4.0.1",
     "invariant": "^2.2.4",
-    "machinat-utility": "^0.0.8",
+    "machinat-utility": "^0.0.9",
     "warning": "^4.0.1"
   },
   "peerDependencies": {

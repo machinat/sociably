@@ -1,6 +1,6 @@
 {
   "name": "machinat-line",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -18,11 +18,11 @@
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",
-    "machinat-base": "^0.0.8",
-    "machinat-queue": "^0.0.8",
-    "machinat-renderer": "^0.0.8",
-    "machinat-utility": "^0.0.8",
-    "machinat-webhook-receiver": "^0.0.8",
+    "machinat-base": "^0.0.9",
+    "machinat-queue": "^0.0.9",
+    "machinat-renderer": "^0.0.9",
+    "machinat-utility": "^0.0.9",
+    "machinat-webhook-receiver": "^0.0.9",
     "node-fetch": "^2.2.0",
     "warning": "^4.0.2"
   },
