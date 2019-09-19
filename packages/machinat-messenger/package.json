@@ -1,6 +1,6 @@
 {
   "name": "machinat-messenger",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Messenger connector for Machinat.",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -21,11 +21,11 @@
     "form-data": "^2.3.2",
     "invariant": "^2.2.4",
     "isomorphic-fetch": "^2.2.1",
-    "machinat-base": "^0.0.5",
-    "machinat-queue": "^0.0.1",
-    "machinat-renderer": "^0.0.5",
-    "machinat-utility": "^0.0.5",
-    "machinat-webhook-receiver": "^0.0.5",
+    "machinat-base": "^0.0.6",
+    "machinat-queue": "^0.0.6",
+    "machinat-renderer": "^0.0.6",
+    "machinat-utility": "^0.0.6",
+    "machinat-webhook-receiver": "^0.0.6",
     "warning": "^4.0.2"
   },
   "devDependencies": {
