@@ -36,7 +36,7 @@ it('call next.prepare() if options.noPrepare is falsy and respond 503 before rea
     })
   );
 
-  const receiver = new NextReceiver({ nextApp });
+  const receiver = new NextReceiver(nextApp, true);
   receiver.bindIssuer(issueEvent, issueError);
   expect(nextApp.prepare.mock).toHaveBeenCalledTimes(1);
 
@@ -62,8 +62,8 @@ it('call next.prepare() if options.noPrepare is falsy and respond 503 before rea
   nextApp.prepare.mock.reset();
 });
 
-it('not call next.prepare() if options.noPrepare is true', async () => {
-  const receiver = new NextReceiver({ nextApp, noPrepare: true });
+it('not call next.prepare() if shouldPrepare is false', async () => {
+  const receiver = new NextReceiver(nextApp, false);
   receiver.bindIssuer(issueEvent, issueError);
 
   expect(nextApp.prepare.mock).not.toHaveBeenCalled();
@@ -76,7 +76,7 @@ it('not call next.prepare() if options.noPrepare is true', async () => {
 });
 
 it('call next.getRequestHandler()() if event issuer return empty', async () => {
-  const receiver = new NextReceiver({ nextApp, noPrepare: true });
+  const receiver = new NextReceiver(nextApp, false);
   receiver.bindIssuer(issueEvent, issueError);
 
   expect(receiver.handleRequest(req, res)).toBe(undefined);
@@ -93,31 +93,27 @@ it('call next.getRequestHandler()() if event issuer return empty', async () => {
   expect(nextHandler.mock).toHaveBeenCalledTimes(1);
   expect(nextHandler.mock).toHaveBeenCalledWith(req, res, expect.any(Object));
   expect(nextHandler.mock.calls[0].args[2]).toMatchInlineSnapshot(`
-        Object {
-          "auth": null,
-          "hash": null,
-          "host": "machinat.com",
-          "hostname": "machinat.com",
-          "href": "http://machinat.com/hello?foo=bar",
-          "path": "/hello?foo=bar",
-          "pathname": "/hello",
-          "port": null,
-          "protocol": "http:",
-          "query": Object {
-            "foo": "bar",
-          },
-          "search": "?foo=bar",
-          "slashes": true,
-        }
-    `);
+    Url {
+      "auth": null,
+      "hash": null,
+      "host": "machinat.com",
+      "hostname": "machinat.com",
+      "href": "http://machinat.com/hello?foo=bar",
+      "path": "/hello?foo=bar",
+      "pathname": "/hello",
+      "port": null,
+      "protocol": "http:",
+      "query": Object {
+        "foo": "bar",
+      },
+      "search": "?foo=bar",
+      "slashes": true,
+    }
+  `);
 });
 
 it('call nextHandler with basePath trimed if provided in options', async () => {
-  const receiver = new NextReceiver({
-    nextApp,
-    basePath: '/hello',
-    noPrepare: true,
-  });
+  const receiver = new NextReceiver(nextApp, false, '/hello');
   receiver.bindIssuer(issueEvent, issueError);
 
   const helloWorldReq = moxy(new IncomingMessage({}));
@@ -143,11 +139,7 @@ it('call nextHandler with basePath trimed if provided in options', async () => {
 });
 
 it('call next.renderError() with status 404 trimed if basePath not match', async () => {
-  const receiver = new NextReceiver({
-    nextApp,
-    basePath: '/hello',
-    noPrepare: true,
-  });
+  const receiver = new NextReceiver(nextApp, false, '/hello');
   receiver.bindIssuer(issueEvent, issueError);
 
   const fooWorldReq = moxy(new IncomingMessage({}));
@@ -174,7 +166,7 @@ it('call next.renderError() with status 404 trimed if basePath not match', async
 });
 
 it('call next.render() with params return by middlewares', async () => {
-  const receiver = new NextReceiver({ nextApp, noPrepare: true });
+  const receiver = new NextReceiver(nextApp, false);
   receiver.bindIssuer(issueEvent, issueError);
 
   issueEvent.mock.fake(async () => ({
@@ -195,23 +187,23 @@ it('call next.render() with params return by middlewares', async () => {
   );
 
   expect(nextApp.render.mock.calls[0].args[4]).toMatchInlineSnapshot(`
-    Url {
-      "auth": null,
-      "hash": null,
-      "host": "machinat.com",
-      "hostname": "machinat.com",
-      "href": "http://machinat.com/hello?foo=bar",
-      "path": "/hello?foo=bar",
-      "pathname": "/hello",
-      "port": null,
-      "protocol": "http:",
-      "query": Object {
-        "foo": "bar",
-      },
-      "search": "?foo=bar",
-      "slashes": true,
-    }
-  `);
+        Url {
+          "auth": null,
+          "hash": null,
+          "host": "machinat.com",
+          "hostname": "machinat.com",
+          "href": "http://machinat.com/hello?foo=bar",
+          "path": "/hello?foo=bar",
+          "pathname": "/hello",
+          "port": null,
+          "protocol": "http:",
+          "query": Object {
+            "foo": "bar",
+          },
+          "search": "?foo=bar",
+          "slashes": true,
+        }
+    `);
 
   expect(issueEvent.mock).toHaveBeenCalledTimes(1);
   expect(issueEvent.mock).toHaveBeenCalledWith(
@@ -241,11 +233,7 @@ it('call next.render() with params return by middlewares', async () => {
 });
 
 it('basePath option not affect page params from middlewares', async () => {
-  const receiver = new NextReceiver({
-    nextApp,
-    basePath: '/hello',
-    noPrepare: true,
-  });
+  const receiver = new NextReceiver(nextApp, false, '/hello');
   receiver.bindIssuer(issueEvent, issueError);
 
   issueEvent.mock.fake(async () => ({
@@ -267,7 +255,7 @@ it('basePath option not affect page params from middlewares', async () => {
 });
 
 it('set metadata.request.encrypted to true if req is encrypted', async () => {
-  const receiver = new NextReceiver({ nextApp, noPrepare: true });
+  const receiver = new NextReceiver(nextApp, false);
   receiver.bindIssuer(issueEvent, issueError);
 
   req.socket.mock.getter('encrypted').fakeReturnValue(true);
@@ -293,7 +281,7 @@ it('set metadata.request.encrypted to true if req is encrypted', async () => {
 });
 
 it('call next.renderError() if event issuer thrown', async () => {
-  const receiver = new NextReceiver({ nextApp, noPrepare: true });
+  const receiver = new NextReceiver(nextApp, false);
   receiver.bindIssuer(issueEvent, issueError);
 
   issueEvent.mock.fake(async () => {

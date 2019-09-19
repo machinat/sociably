@@ -14,6 +14,8 @@ import type {
 
 const NEXT = 'next';
 
+type NextBotOptionsInput = $Shape<NextBotOptions>;
+
 class NextServerBot
   extends Emitter<
     NextChannel,
@@ -57,13 +59,17 @@ class NextServerBot
   constructor(optionsInput?: NextBotOptions) {
     super();
 
-    invariant(
-      optionsInput && optionsInput.nextApp,
-      'options.nextApp should not be empty'
-    );
+    const defaultOptions: NextBotOptionsInput = {
+      shouldPrepare: true,
+    };
 
-    this.options = optionsInput;
-    this.receiver = new NextReceiver(this.options);
+    const options = Object.assign(defaultOptions, optionsInput);
+    invariant(options.nextApp, 'options.nextApp should not be empty');
+
+    this.options = options;
+
+    const { nextApp, shouldPrepare, basePath } = options;
+    this.receiver = new NextReceiver(nextApp, shouldPrepare, basePath);
 
     const { eventMiddlewares } = resolvePlugins(this, this.options.plugins);
     this.controller = new Controller(NEXT, this, eventMiddlewares);

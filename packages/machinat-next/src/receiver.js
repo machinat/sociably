@@ -10,7 +10,6 @@ import type {
   NextEvent,
   NextMetadata,
   NextPesponse,
-  NextBotOptions,
 } from './types';
 
 const NEXT_SERVER_CHANNEL = {
@@ -34,13 +33,11 @@ class NextReceiver
 
   _preparing: void | Promise<void>;
 
-  constructor(options: NextBotOptions) {
+  constructor(nextApp: Object, shouldPrepare: boolean, basePath?: string) {
     super();
 
-    this._basePath = options.basePath
-      ? options.basePath.replace(/\/$/, '')
-      : '';
-    this._next = options.nextApp;
+    this._next = nextApp;
+    this._basePath = basePath ? basePath.replace(/\/$/, '') : '';
     this._defaultHandler = this._next.getRequestHandler();
 
     if (this._basePath !== '') {
@@ -49,7 +46,7 @@ class NextReceiver
       );
     }
 
-    if (!options.noPrepare) {
+    if (shouldPrepare) {
       this._preparing = this._next
         .prepare()
         .then(() => {
@@ -75,7 +72,6 @@ class NextReceiver
     }
 
     const parsedUrl = parseUrl(req.url, true);
-    const { pathname, query } = parsedUrl;
 
     try {
       const response = await this.issueEvent(
@@ -106,19 +102,39 @@ class NextReceiver
           parsedUrl
         );
       } else {
-        if (!pathname || pathname.indexOf(this._basePath) !== 0) {
-          res.statusCode = 404;
-          await this._next.renderError(null, req, res, pathname, query);
-          return;
-        }
+        const { pathname, path, query } = parsedUrl;
+        const basePath = this._basePath;
 
-        await this._defaultHandler(req, res, {
-          ...parsedUrl,
-          pathname: pathname.slice(this._basePath.length) || '/',
-        });
+        // NOTE: next does not support serving under sub path now, so we have to
+        //       hack the path by ourself.
+        //       Follow https://github.com/zeit/next.js/issues/4998
+        if (this._basePath !== '') {
+          if (!pathname || pathname.indexOf(basePath) !== 0) {
+            res.statusCode = 404;
+            await this._next.renderError(null, req, res, pathname, query);
+            return;
+          }
+
+          if (
+            this._next.renderOpts.dev &&
+            req.url.slice(0, basePath.length) === basePath
+          ) {
+            req.url = req.url.slice(basePath.length); // eslint-disable-line no-param-reassign
+          }
+
+          await this._defaultHandler(req, res, {
+            ...parsedUrl,
+            pathname: pathname.slice(basePath.length) || '/',
+            path: (path: any).slice(basePath.length) || '/',
+          });
+        } else {
+          await this._defaultHandler(req, res, parsedUrl);
+        }
       }
     } catch (err) {
       this.issueError(err);
+
+      const { pathname, query } = parsedUrl;
       await this._next.renderError(err, req, res, pathname, query);
     }
   }

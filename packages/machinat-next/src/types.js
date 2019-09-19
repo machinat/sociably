@@ -49,7 +49,7 @@ export type NextPlugin = BotPlugin<
 
 export type NextBotOptions = {|
   nextApp: any,
-  noPrepare?: boolean,
+  shouldPrepare: boolean,
   basePath?: string,
   plugins?: NextPlugin[],
 |};

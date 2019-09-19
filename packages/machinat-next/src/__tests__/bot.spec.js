@@ -35,7 +35,7 @@ describe('#constructor(options)', () => {
     expect(Controller.mock).toHaveBeenCalledWith('next', bot, []);
 
     expect(Receiver.mock).toHaveBeenCalledTimes(1);
-    expect(Receiver.mock).toHaveBeenCalledWith({ nextApp, basePath: '/me' });
+    expect(Receiver.mock).toHaveBeenCalledWith(nextApp, true, '/me');
   });
 
   it('pass middlewares from plugins to controller and engine', () => {
