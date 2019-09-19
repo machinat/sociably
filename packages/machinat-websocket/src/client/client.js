@@ -1,6 +1,6 @@
 // @flow
-import WS from 'ws';
 import type { MachinatUser } from 'machinat/types';
+import WS from './ws';
 import type {
   ConnectBody,
   DisconnectBody,
