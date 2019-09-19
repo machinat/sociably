@@ -5,7 +5,8 @@ import Socket from '../../socket';
 import { connectionScope, topicScope } from '../../channel';
 import Client from '../client';
 
-global.location = url.parse('https://machinat.com/hello');
+const location = url.parse('https://machinat.com/hello');
+global.location = location;
 
 jest.mock('../../socket');
 
@@ -17,10 +18,13 @@ beforeEach(() => {
 });
 
 it('initiate ok', () => {
-  const client = new Client({ url: '/hello' }); // eslint-disable-line no-unused-vars
+  const client = new Client(); // eslint-disable-line no-unused-vars
 
   expect(WS.mock).toHaveBeenCalledTimes(1);
-  expect(WS.mock).toHaveBeenCalledWith('/hello', 'machinat-websocket-v0');
+  expect(WS.mock).toHaveBeenCalledWith(
+    'wss://machinat.com',
+    'machinat-websocket-v0'
+  );
 
   expect(Socket.mock).toHaveBeenCalledTimes(1);
   expect(Socket.mock).toHaveBeenCalledWith(
@@ -30,10 +34,20 @@ it('initiate ok', () => {
   );
 });
 
+test('specify url', () => {
+  const client = new Client({ url: 'ws://machinat.io/entry' }); // eslint-disable-line no-unused-vars
+
+  expect(WS.mock).toHaveBeenCalledTimes(1);
+  expect(WS.mock).toHaveBeenCalledWith(
+    'ws://machinat.io/entry',
+    'machinat-websocket-v0'
+  );
+});
+
 it('register to server when socket open', async () => {
   const eventSpy = moxy();
   const register = moxy(async () => ({ type: 'test' }));
-  const client = new Client({ url: '/hello', register });
+  const client = new Client({ register });
   client.onEvent(eventSpy);
 
   const socket = Socket.mock.calls[0].instance;
@@ -68,7 +82,7 @@ it('register to server when socket open', async () => {
 
 it('register with {type: "default"} if empty in options', async () => {
   const eventSpy = moxy();
-  const client = new Client({ url: '/hello' });
+  const client = new Client();
   client.onEvent(eventSpy);
 
   const socket = Socket.mock.calls[0].instance;
@@ -83,7 +97,7 @@ it('register with {type: "default"} if empty in options', async () => {
 
 it('emit error if register rejected when socket is already open', async () => {
   const errorSpy = moxy();
-  const client = new Client({ url: '/hello' });
+  const client = new Client();
   client.onError(errorSpy);
 
   const socket = Socket.mock.calls[0].instance;
@@ -104,7 +118,7 @@ it('emit error if register rejected when socket is already open', async () => {
 });
 
 it('emit event when received', async () => {
-  const client = new Client({ url: '/hello' });
+  const client = new Client();
   const socket = Socket.mock.calls[0].instance;
   const user = { id: 'xxx', jane: 'doe' };
 
@@ -159,7 +173,7 @@ it('emit event when received', async () => {
 });
 
 it('send event when connected', async () => {
-  const client = new Client({ url: '/hello' });
+  const client = new Client();
   const socket = Socket.mock.calls[0].instance;
   socket.event.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
 
@@ -188,7 +202,7 @@ it('send event when connected', async () => {
 });
 
 it('queue the sendings when not ready and fire after connected', async () => {
-  const client = new Client({ url: '/hello' });
+  const client = new Client();
 
   const socket = Socket.mock.calls[0].instance;
   socket.register.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
@@ -232,7 +246,7 @@ it('queue the sendings when not ready and fire after connected', async () => {
 });
 
 test('disconnect by server', () => {
-  const client = new Client({ url: '/hello' });
+  const client = new Client();
   const socket = Socket.mock.calls[0].instance;
 
   socket.emit('connect', {
@@ -261,7 +275,7 @@ test('disconnect by server', () => {
 });
 
 test('#disconnect()', async () => {
-  const client = new Client({ url: '/hello' });
+  const client = new Client();
   const socket = Socket.mock.calls[0].instance;
   socket.disconnect.mock.fake(() => Promise.resolve(++socket._seq)); // eslint-disable-line no-plusplus
 
@@ -298,7 +312,7 @@ test('#disconnect()', async () => {
 
 it('emit errer if connect_fail', () => {
   const errorSpy = moxy();
-  const client = new Client({ url: '/hello' });
+  const client = new Client();
   client.onError(errorSpy);
 
   const socket = Socket.mock.calls[0].instance;

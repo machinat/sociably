@@ -74,7 +74,7 @@ class WebScoketClient {
 
     const defaultOptions = {
       url: `${location.protocol === 'https:' ? 'wss' : 'ws'}://${
-        location.hostname
+        location.host
       }`,
       register: () => Promise.resolve({ type: 'default' }),
     };
