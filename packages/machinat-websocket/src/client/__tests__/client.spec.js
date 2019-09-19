@@ -1,8 +1,11 @@
+import url from 'url';
 import moxy from 'moxy';
 import WS from 'ws';
 import Socket from '../../socket';
 import { connectionScope, topicScope } from '../../channel';
 import Client from '../client';
+
+global.location = url.parse('https://machinat.com/hello');
 
 jest.mock('../../socket');
 

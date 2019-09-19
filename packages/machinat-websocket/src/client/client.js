@@ -15,6 +15,8 @@ import { ConnectionError } from '../error';
 import Connection from '../connection';
 import type { WebSocketChannel, UserScope, ConnectionScope } from '../types';
 
+declare var location: Location;
+
 export type ClientEvent = {|
   type: string,
   subtype: void | string,
@@ -71,7 +73,9 @@ class WebScoketClient {
     this._errorListeners = [];
 
     const defaultOptions = {
-      url: './',
+      url: `${location.protocol === 'https:' ? 'wss' : 'ws'}://${
+        location.hostname
+      }`,
       register: () => Promise.resolve({ type: 'default' }),
     };
     const options = Object.assign(defaultOptions, optionsInput);
