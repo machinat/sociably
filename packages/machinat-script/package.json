@@ -1,6 +1,6 @@
 {
   "name": "machinat-script",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",
-    "machinat-utility": "^0.0.9"
+    "machinat-utility": "^0.0.10"
   },
   "peerDependencies": {
     "machinat": "^0.0.1",
