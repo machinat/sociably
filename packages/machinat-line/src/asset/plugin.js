@@ -1,5 +1,5 @@
 // @flow
-import type { AssetsStore } from 'machinat-asset-store/types';
+import type { AssetsStore } from 'machinat-assets-store/types';
 import type { LineBotPlugin } from '../types';
 import type LineBot from '../bot';
 import LineAssetRepository from './repository';

@@ -1,17 +1,18 @@
 {
-  "name": "machinat-asset-store",
+  "name": "machinat-assets-store",
   "version": "0.0.10",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
     "url": "https://github.com/lrills/machinat.git",
-    "directory": "packages/machinat-asset-store"
+    "directory": "packages/machinat-assets-store"
   },
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
   "files": [
     "lib/*",
+    "file.js",
     "README.md"
   ],
   "license": "MIT",

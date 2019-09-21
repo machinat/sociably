@@ -1,6 +1,9 @@
 // @flow
 import type { MachinatNode } from 'machinat/types';
-import type { AssetsStore, AssetsRepository } from 'machinat-asset-store/types';
+import type {
+  AssetsStore,
+  AssetsRepository,
+} from 'machinat-assets-store/types';
 
 import { formatNode } from 'machinat-utility';
 import { MESSENGER, PATH_PERSONAS, PATH_CUSTOM_LABELS } from '../constant';

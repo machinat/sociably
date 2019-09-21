@@ -1,5 +1,5 @@
 // @flow
-import type { AssetsConsumerTarget } from 'machinat-asset-store/types';
+import type { AssetsConsumerTarget } from 'machinat-assets-store/types';
 import { LIFF, RICH_MENU } from './resourceType';
 
 export const liffAppId = (
