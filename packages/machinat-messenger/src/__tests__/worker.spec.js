@@ -429,3 +429,57 @@ it.each([undefined, 0])(
     await promise3;
   }
 );
+
+it('place params at query if DELETE job met', async () => {
+  const accessToken = '_graph_api_access_token_';
+  const client = new MessengerWorker({ accessToken });
+
+  const bodySpy = moxy(() => true);
+
+  const scope = graphAPI
+    .post('/v3.3/', bodySpy)
+    .reply(200, JSON.stringify([makeResponse(200, { result: 'success' })]));
+
+  client.start(queue);
+
+  const job = {
+    channelId: null,
+    request: {
+      method: 'DELETE',
+      relative_url: 'me/messenger_profile',
+      body: {
+        fields: ['whitelisted_domains'],
+      },
+    },
+  };
+
+  await expect(queue.executeJobs([job])).resolves.toEqual({
+    success: true,
+    errors: null,
+    batch: [
+      {
+        success: true,
+        job,
+        result: { code: 200, body: { result: 'success' } },
+      },
+    ],
+  });
+
+  expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+  const body = bodySpy.mock.calls[0].args[0];
+
+  expect(body.access_token).toBe(accessToken);
+  expect(body).toMatchSnapshot();
+
+  const [request] = JSON.parse(body.batch);
+
+  expect(request).toEqual({
+    method: 'DELETE',
+    relative_url: 'me/messenger_profile?fields=%5B%22whitelisted_domains%22%5D',
+    omit_response_on_success: false,
+    depends_on: undefined,
+    body: undefined,
+  });
+
+  expect(scope.isDone()).toBe(true);
+});

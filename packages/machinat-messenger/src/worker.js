@@ -52,10 +52,20 @@ const encodeURIBody = (fields: { [string]: any }): string => {
   return body;
 };
 
-const formatRequest = (request: MessengerRequest) => ({
-  ...request,
-  body: request.body && encodeURIBody(request.body),
-});
+const formatRequest = (request: MessengerRequest) =>
+  request.method === 'DELETE'
+    ? {
+        ...request,
+        // NOTE: workaround because batch api do not support DELETE with body
+        relative_url: request.body
+          ? `${request.relative_url}?${encodeURIBody(request.body)}`
+          : request.relative_url,
+        body: undefined,
+      }
+    : {
+        ...request,
+        body: request.body && encodeURIBody(request.body),
+      };
 
 const assignQueryParams = (queryParams, obj) => {
   const keys = Object.keys(obj);

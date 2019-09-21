@@ -8,6 +8,13 @@ Object {
 }
 `;
 
+exports[`place params at query if DELETE job met 1`] = `
+Object {
+  "access_token": "_graph_api_access_token_",
+  "batch": "[{\\"method\\":\\"DELETE\\",\\"relative_url\\":\\"me/messenger_profile?fields=%5B%22whitelisted_domains%22%5D\\",\\"omit_response_on_success\\":false}]",
+}
+`;
+
 exports[`sends ok 1`] = `
 Object {
   "access_token": "_graph_api_access_token_",
