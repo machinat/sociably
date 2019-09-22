@@ -1,12 +1,13 @@
 /* eslint-disable import/prefer-default-export */
-import { valuesOfAssertedType } from 'machinat-utility';
+import { valuesOfAssertedTypes } from 'machinat-utility';
 
 import { asPartComponent } from '../utils';
 
-import * as _actionModule from './action';
+import * as actionModule from './action';
 
-const actionComponents = Object.values(_actionModule);
-const getActionValues = valuesOfAssertedType(...actionComponents);
+const getActionValues = valuesOfAssertedTypes(() => [
+  ...Object.values(actionModule),
+]);
 
 const QuickReply = async ({ props: { imageURL, action } }, render) => {
   const actionSegments = await render(action, '.action');

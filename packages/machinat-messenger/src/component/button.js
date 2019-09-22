@@ -1,4 +1,4 @@
-import { valuesOfAssertedType } from 'machinat-utility';
+import { valuesOfAssertedTypes } from 'machinat-utility';
 
 import { asPartComponent } from '../utils';
 import { GenericTemplate } from './template';
@@ -23,7 +23,7 @@ const PostbackButton = async ({ props: { title, payload } }) => ({
 });
 const __PostbackButton = asPartComponent(PostbackButton);
 
-const getGenericTemplateValues = valuesOfAssertedType(GenericTemplate);
+const getGenericTemplateValues = valuesOfAssertedTypes(() => [GenericTemplate]);
 
 const ShareButton = async ({ props: { children } }, render) => {
   const sharedSegments = await render(children, '.children');

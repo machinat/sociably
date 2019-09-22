@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { valuesOfAssertedType } from 'machinat-utility';
+import { valuesOfAssertedTypes } from 'machinat-utility';
 
 import { asPartComponent, asUnitComponent } from '../utils';
 import { URIAction, MessageAction } from './action';
@@ -20,7 +20,10 @@ const Sticker = async ({ props: { stickerId, packageId } }) => ({
 });
 const __Sticker = asUnitComponent(Sticker);
 
-const getImageMapActionValues = valuesOfAssertedType(URIAction, MessageAction);
+const getImageMapActionValues = valuesOfAssertedTypes(() => [
+  URIAction,
+  MessageAction,
+]);
 
 const ImageMapArea = async (
   { props: { action, x, y, width, height } },
@@ -64,7 +67,7 @@ const ImageMapArea = async (
 };
 const __ImageMapArea = asPartComponent(ImageMapArea);
 
-const getURIActionValues = valuesOfAssertedType(URIAction);
+const getURIActionValues = valuesOfAssertedTypes(() => [URIAction]);
 
 const ImageMapVideoArea = async (
   {
@@ -102,8 +105,8 @@ const ImageMapVideoArea = async (
 };
 const __ImageMapVideoArea = asPartComponent(ImageMapVideoArea);
 
-const getVideoAreaValues = valuesOfAssertedType(__ImageMapVideoArea);
-const getActionAreaValues = valuesOfAssertedType(__ImageMapArea);
+const getVideoAreaValues = valuesOfAssertedTypes(() => [__ImageMapVideoArea]);
+const getActionAreaValues = valuesOfAssertedTypes(() => [__ImageMapArea]);
 
 const ImageMap = async (
   { props: { baseURL, baseUrl, alt, altText, height, children, video } },

@@ -1,15 +1,17 @@
 import invariant from 'invariant';
-import { joinTextualSegments, valuesOfAssertedType } from 'machinat-utility';
+import { joinTextualSegments, valuesOfAssertedTypes } from 'machinat-utility';
 
 import * as buttonModule from './button';
 import { asUnitComponent, asPartComponent } from '../utils';
 
-const buttonComponents = Object.values(buttonModule);
-
 const CHILDREN = '.children';
 
-const getButtonValues = valuesOfAssertedType(...buttonComponents);
-const getUrlButtonValues = valuesOfAssertedType(buttonModule.URLButton);
+const getButtonValues = valuesOfAssertedTypes(() => [
+  ...Object.values(buttonModule),
+]);
+const getUrlButtonValues = valuesOfAssertedTypes(() => [
+  buttonModule.URLButton,
+]);
 
 const GenericItem = async (
   {
@@ -48,7 +50,7 @@ const GenericItem = async (
 };
 const __GenericItem = asPartComponent(GenericItem);
 
-const getGenericItemValues = valuesOfAssertedType(__GenericItem);
+const getGenericItemValues = valuesOfAssertedTypes(() => [__GenericItem]);
 
 const GenericTemplate = async (
   { props: { children, sharable, imageAspectRatio } },
@@ -197,7 +199,7 @@ const ReceiptItem = async ({
 });
 const __ReceiptItem = asPartComponent(ReceiptItem);
 
-const getReceiptItemValues = valuesOfAssertedType(__ReceiptItem);
+const getReceiptItemValues = valuesOfAssertedTypes(() => [__ReceiptItem]);
 
 const ReceiptTemplate = async (
   {

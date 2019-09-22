@@ -1,10 +1,12 @@
 import invariant from 'invariant';
-import { joinTextualSegments, valuesOfAssertedType } from 'machinat-utility';
+import { joinTextualSegments, valuesOfAssertedTypes } from 'machinat-utility';
 
 import { asPartComponent, asUnitComponent } from '../utils';
 import * as actionsModule from './action';
 
-const getActionValues = valuesOfAssertedType(...Object.values(actionsModule));
+const getActionValues = valuesOfAssertedTypes(() => [
+  ...Object.values(actionsModule),
+]);
 
 const FlexButton = async (
   { props: { action, flex, margin, height, style, color, gravity } },
@@ -175,7 +177,7 @@ const FlexBox = async (
 };
 const __FlexBox = asPartComponent(FlexBox);
 
-getBoxContentValue = valuesOfAssertedType(
+getBoxContentValue = valuesOfAssertedTypes(() => [
   __FlexBox,
   __FlexButton,
   __FlexFiller,
@@ -183,8 +185,8 @@ getBoxContentValue = valuesOfAssertedType(
   __FlexImage,
   __FlexSeparator,
   __FlexSpacer,
-  __FlexText
-);
+  __FlexText,
+]);
 
 const createBlockComponent = (section, valueFetcher) => {
   const tagName = `Flex${section[0].toUpperCase()}${section.slice(1)}`;
@@ -222,20 +224,20 @@ const createBlockComponent = (section, valueFetcher) => {
   return asPartComponent(wrapper[tagName]);
 };
 
-const getBoxValues = valuesOfAssertedType(__FlexBox);
-const getImagesValues = valuesOfAssertedType(__FlexImage);
+const getBoxValues = valuesOfAssertedTypes(() => [__FlexBox]);
+const getImagesValues = valuesOfAssertedTypes(() => [__FlexImage]);
 
 const __FlexHeader = createBlockComponent('header', getBoxValues);
 const __FlexHero = createBlockComponent('hero', getImagesValues);
 const __FlexBody = createBlockComponent('body', getBoxValues);
 const __FlexFooter = createBlockComponent('footer', getBoxValues);
 
-const getBlockValues = valuesOfAssertedType(
+const getBlockValues = valuesOfAssertedTypes(() => [
   __FlexHeader,
   __FlexHero,
   __FlexBody,
-  __FlexFooter
-);
+  __FlexFooter,
+]);
 
 const FlexBubbleContainer = async (
   { props: { children, rightToLeft } },
@@ -272,7 +274,9 @@ const FlexBubbleContainer = async (
 };
 const __FlexBubbleContainer = asPartComponent(FlexBubbleContainer);
 
-const getBubbleContainerValues = valuesOfAssertedType(__FlexBubbleContainer);
+const getBubbleContainerValues = valuesOfAssertedTypes(() => [
+  __FlexBubbleContainer,
+]);
 
 const FlexCarouselContainer = async ({ props: { children } }, render) => {
   const contentSegments = await render(children, '.children');
@@ -284,10 +288,10 @@ const FlexCarouselContainer = async ({ props: { children } }, render) => {
 };
 const __FlexCarouselContainer = asPartComponent(FlexCarouselContainer);
 
-const getContainerValues = valuesOfAssertedType(
+const getContainerValues = valuesOfAssertedTypes(() => [
   __FlexBubbleContainer,
-  __FlexCarouselContainer
-);
+  __FlexCarouselContainer,
+]);
 
 const FlexMessage = async ({ props: { children, alt, altText } }, render) => {
   const contentSegments = await render(children, '.children');

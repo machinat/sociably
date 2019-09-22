@@ -1,9 +1,9 @@
 /* eslint-disable import/prefer-default-export */
-import { valuesOfAssertedType } from 'machinat-utility';
+import { valuesOfAssertedTypes } from 'machinat-utility';
 import { asContainerComponent, isMessageValue } from '../utils';
 import { QuickReply } from './quickReply';
 
-const getQuickReplyValues = valuesOfAssertedType(QuickReply);
+const getQuickReplyValues = valuesOfAssertedTypes(() => [QuickReply]);
 
 const Dialog = async ({ props: { children, quickReplies } }, render) => {
   const segments = await render(children, '.children');

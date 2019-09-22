@@ -8,10 +8,25 @@ import formatNode from './formatNode';
 
 const getTagName = t => (typeof t === 'function' ? t.name : t);
 
-const valuesOfAssertedType = <Value>(
-  ...types: (string | MachinatNativeComponent<Value>)[]
+const memoized = fn => {
+  let firstTimeCalled = false;
+  let result;
+
+  return (...args) => {
+    if (firstTimeCalled) {
+      return result;
+    }
+
+    firstTimeCalled = true;
+    result = fn(...args);
+    return result;
+  };
+};
+
+const valuesOfAssertedTypes = <Value>(
+  getTypes: () => (string | MachinatNativeComponent<Value>)[]
 ) => {
-  const allowed = new Set(types);
+  const memoizedGetTypes = memoized(getTypes);
 
   return (segments: null | InnerSegment<Value, any>[]): void | Value[] => {
     if (segments === null) {
@@ -23,10 +38,12 @@ const valuesOfAssertedType = <Value>(
 
     for (let i = 0; i < len; i += 1) {
       const { type, node, value, path } = segments[i];
+      const allowedTypes = memoizedGetTypes();
 
       invariant(
-        type === 'raw' || (typeof node === 'object' && allowed.has(node.type)),
-        `${formatNode(node)} at ${path} is invalid, only <[${types
+        type === 'raw' ||
+          (typeof node === 'object' && allowedTypes.includes(node.type)),
+        `${formatNode(node)} at ${path} is invalid, only <[${allowedTypes
           .map(getTagName)
           .join(', ')}]/> allowed`
       );
@@ -38,4 +55,4 @@ const valuesOfAssertedType = <Value>(
   };
 };
 
-export default valuesOfAssertedType;
+export default valuesOfAssertedTypes;

@@ -1,10 +1,11 @@
-import { valuesOfAssertedType } from 'machinat-utility';
+import { valuesOfAssertedTypes } from 'machinat-utility';
 
 import { asPartComponent, asUnitComponent } from '../utils';
-import * as _actionModule from './action';
+import * as actionModule from './action';
 
-const actionComponents = Object.values(_actionModule);
-const getActionValues = valuesOfAssertedType(...actionComponents);
+const getActionValues = valuesOfAssertedTypes(() => [
+  ...Object.values(actionModule),
+]);
 
 const ButtonTemplate = async (
   {
@@ -95,7 +96,7 @@ const CarouselItem = async (
 };
 const __CarouselItem = asPartComponent(CarouselItem);
 
-const getCarouselItemValues = valuesOfAssertedType(__CarouselItem);
+const getCarouselItemValues = valuesOfAssertedTypes(() => [__CarouselItem]);
 
 const CarouselTemplate = async (
   { props: { children, alt, altText, imageAspectRatio, imageSize } },
@@ -131,7 +132,9 @@ const ImageCarouselItem = async (
 
 const __ImageCarouselItem = asPartComponent(ImageCarouselItem);
 
-const getImageCarouselItemValues = valuesOfAssertedType(__ImageCarouselItem);
+const getImageCarouselItemValues = valuesOfAssertedTypes(() => [
+  __ImageCarouselItem,
+]);
 
 const ImageCarouselTemplate = async (
   { props: { children, alt, altText } },

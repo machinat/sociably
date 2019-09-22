@@ -1,5 +1,5 @@
 import Machinat from 'machinat';
-import valuesOfAssertedType from '../valuesOfAssertedType';
+import valuesOfAssertedTypes from '../valuesOfAssertedTypes';
 
 const A = () => 'a';
 const B = () => 'b';
@@ -7,7 +7,7 @@ const C = () => 'c';
 
 it('render and return values', () => {
   expect(
-    valuesOfAssertedType(A, B, C, 'foo', 'bar')([
+    valuesOfAssertedTypes(() => [A, B, C, 'foo', 'bar'])([
       { type: 'part', node: <A />, value: { x: 'a' }, path: '$#X.y:0' },
       { type: 'part', node: <foo />, value: { x: 'foo' }, path: '$#X.y:1' },
       { type: 'part', node: <B />, value: { x: 'b' }, path: '$#X.y:2' },
@@ -17,7 +17,7 @@ it('render and return values', () => {
   ).toEqual([{ x: 'a' }, { x: 'foo' }, { x: 'b' }, { x: 'bar' }, { x: 'c' }]);
 });
 
-const valuesOfAFoo = valuesOfAssertedType(A, 'foo');
+const valuesOfAFoo = valuesOfAssertedTypes(() => [A, 'foo']);
 
 it('throw if string contained', () => {
   expect(() =>
