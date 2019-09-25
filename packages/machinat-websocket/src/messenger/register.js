@@ -17,7 +17,7 @@ const registerChatExtension = (
   optionsInput?: RegisterChatExtensionOptionsInput
 ) => {
   const defaultOptions: RegisterChatExtensionOptionsInput = {
-    isExtensionReady: false,
+    isExtensionReady: true,
     initTimeout: 30000,
   };
 
@@ -32,9 +32,14 @@ const registerChatExtension = (
         reject(new Error('extension initiation timeout'));
       }, options.initTimeout);
 
+      const prevExtInitCb = window.extAsyncInit;
       window.extAsyncInit = () => {
         clearTimeout(timeoutId);
         resolve();
+
+        if (typeof prevExtInitCb === 'function') {
+          prevExtInitCb();
+        }
       };
     });
   }

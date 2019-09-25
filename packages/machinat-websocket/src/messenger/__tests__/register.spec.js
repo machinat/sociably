@@ -25,7 +25,6 @@ it('throw if appId not rpovided', () => {
 it('work', async () => {
   const registerThunk = registerChatExtension({
     appId: 'APP_ID',
-    isExtensionReady: true,
   });
 
   const promise = registerThunk();
@@ -57,7 +56,6 @@ it('work', async () => {
 it('throw if getContext fail', async () => {
   const registerThunk = registerChatExtension({
     appId: 'APP_ID',
-    isExtensionReady: true,
   });
 
   const promise = registerThunk();
@@ -72,7 +70,10 @@ it('throw if getContext fail', async () => {
 });
 
 it('wait for extAsyncInit if isExtensionReady set to false', async () => {
-  const registerThunk = registerChatExtension({ appId: 'APP_ID' });
+  const registerThunk = registerChatExtension({
+    appId: 'APP_ID',
+    isExtensionReady: false,
+  });
 
   expect(global.window.mock.setter('extAsyncInit')).toHaveBeenCalledTimes(1);
   const init = global.window.mock.setter('extAsyncInit').calls[0].args[0];
@@ -101,12 +102,13 @@ it('wait for extAsyncInit if isExtensionReady set to false', async () => {
   });
 });
 
-it('wait for extAsyncInit if isExtensionReady set to false', async () => {
+it('throw if extAsyncInit not being called in initTimeout', async () => {
   jest.useFakeTimers();
 
   const registerThunk = registerChatExtension({
     appId: 'APP_ID',
     initTimeout: 1000000,
+    isExtensionReady: false,
   });
   expect(global.window.mock.setter('extAsyncInit')).toHaveBeenCalledTimes(1);
 

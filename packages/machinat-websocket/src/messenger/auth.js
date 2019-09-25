@@ -1,7 +1,7 @@
 // @flow
 import invariant from 'invariant';
 import crypto from 'crypto';
-import { decode } from 'base64url';
+import { decode, toBuffer as decodeBuffer } from 'base64url';
 import type { ConnectionAuthenticator } from '../types';
 import { MESSENGER, MESSENGER_CHAT_EXTENSION } from './constant';
 
@@ -32,13 +32,13 @@ const authenticateChatExtenstion = (
       }
 
       const [sigEncoded, dataEncoded] = (signedRequest: string).split('.', 2);
-      const sig = decode(sigEncoded);
+      const sig: Buffer = decodeBuffer(sigEncoded);
       const expectedSig = crypto
         .createHmac('sha256', options.appSecret)
         .update(dataEncoded)
-        .digest('hex');
+        .digest();
 
-      if (sig !== expectedSig) {
+      if (!sig.equals(expectedSig)) {
         return {
           accepted: false,
           reason: 'signature verification fail',
