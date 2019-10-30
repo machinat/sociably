@@ -1,0 +1,26 @@
+{
+  "name": "machinat-auth",
+  "version": "0.0.10",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lrills/machinat.git",
+    "directory": "packages/machinat-auth"
+  },
+  "homepage": "https://github.com/lrills/machinat#readme",
+  "bugs": "https://github.com/lrills/machinat",
+  "main": "lib/index.js",
+  "files": [
+    "lib/*",
+    "README.md"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "base64url": "^3.0.1",
+    "cookie": "^0.4.0",
+    "invariant": "^2.2.4",
+    "jsonwebtoken": "^8.5.1",
+    "machinat-websocket": "^0.0.11-alpha.3",
+    "thenifiedly": "^0.2.1"
+  }
+}
