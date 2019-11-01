@@ -3,7 +3,7 @@ import type { SocketBroker } from '../types';
 
 /* eslint-disable class-methods-use-this */
 export default class LocalOnlyBroker implements SocketBroker {
-  broadcastRemote() {
+  sendRemote() {
     return Promise.resolve(null);
   }
 

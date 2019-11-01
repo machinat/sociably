@@ -2,18 +2,15 @@
 import EventEmitter from 'events';
 import thenifiedly from 'thenifiedly';
 import type WebSocket from 'ws';
-import type { MachinatUser } from 'machinat/types';
 
 import { ConnectionError } from './error';
 import type { RequestInfo, ConnectionId } from './types';
 
 /**
- * Mahcinat Web Protocle v0
+ * Mahcinat WebSocket Protocle v0
  *
- * The machinat-web builds on WebSocket to provide a Machinat interface to
+ * The machinat-websocket builds on WebSocket to provide a Machinat interface to
  * send and receive events for client side applications.
- *
- * warning: this is just an alpha attemption, and will be rewritten at beta.
  *
  * Glossary:
  *  - Socket:     the underlying tunnel which encapsulate a real WebSocket with
@@ -86,7 +83,7 @@ export type RejectBody = {|
  */
 export type RegisterBody = {|
   type: string,
-  [string]: any,
+  auth: Object,
 |};
 
 /**
@@ -94,10 +91,8 @@ export type RegisterBody = {|
  * to the connect frame received from Client
  */
 export type ConnectBody = {|
-  // the register frame seq on server
-  req: number,
-  connectionId: string,
-  user?: null | MachinatUser,
+  req: number, // the responding "register" seq on server, "connect" seq on client
+  connectionId: ConnectionId,
 |};
 
 /**
@@ -106,7 +101,7 @@ export type ConnectBody = {|
  */
 export type DisconnectBody = {|
   req?: number, // the disconnect frame seq received if it's a confirmation
-  connectionId: string,
+  connectionId: ConnectionId,
   // code: number,
   reason: string,
 |};

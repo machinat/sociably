@@ -5,15 +5,18 @@ import type {
   ConnectBody,
   DisconnectBody,
   EventBody,
-  RegisterBody,
   RejectBody,
 } from '../socket';
 import MachinatSocket from '../socket';
 import { WEBSOCKET } from '../constant';
-import { connectionScope, userScope, topicScope } from '../channel';
+import {
+  ConnectionChannel,
+  UserScopeChannel,
+  TopicScopeChannel,
+} from '../channel';
 import { ConnectionError } from '../error';
 import Connection from '../connection';
-import type { WebSocketChannel, UserScope, ConnectionScope } from '../types';
+import type { WebSocketChannel, ClientRegistratorFunc } from '../types';
 
 declare var location: Location;
 
@@ -27,14 +30,11 @@ type ClientEventFrame = {|
   user: ?MachinatUser,
   channel: WebSocketChannel,
   event: ClientEvent,
-  client: WebScoketClient, // eslint-disable-line no-use-before-define
 |};
-
-type RegisterFunc = () => Promise<RegisterBody>;
 
 type ClientOptions = {
   url: string,
-  register: RegisterFunc,
+  register: ClientRegistratorFunc,
 };
 
 type ClientOptionsInput = $Shape<ClientOptions>;
@@ -57,35 +57,38 @@ class WebScoketClient {
   options: ClientOptions;
   _socket: MachinatSocket;
   _connected: boolean;
+
   _registerSeq: number;
+  _queuedJobs: PendingEventJob[];
+
   _user: ?MachinatUser;
-  _connectionId: string;
+  _userChannel: ?UserScopeChannel;
 
-  _connectionScope: ConnectionScope;
-  _userScope: null | UserScope;
-
-  _queuedEventJobs: PendingEventJob[];
+  _connId: string;
+  _connChannel: ConnectionChannel;
 
   _eventListeners: ((ClientEventFrame) => void)[];
   _errorListeners: ((Error) => void)[];
 
   constructor(optionsInput: ClientOptionsInput) {
-    this._errorListeners = [];
-
     const defaultOptions = {
       url: `${location.protocol === 'https:' ? 'wss' : 'ws'}://${
         location.host
       }`,
-      register: () => Promise.resolve({ type: 'default' }),
+      register: () =>
+        Promise.resolve({ type: 'default', auth: null, user: null }),
     };
-    const options = Object.assign(defaultOptions, optionsInput);
 
+    const options = Object.assign(defaultOptions, optionsInput);
     this.options = options;
+
     this._connected = false;
-    this._queuedEventJobs = [];
+    this._queuedJobs = [];
     this._eventListeners = [];
+    this._errorListeners = [];
 
     const socket = createSocket(options.url);
+    this._socket = socket;
 
     const handleError = this._emitError.bind(this);
     socket.on('open', () => {
@@ -99,10 +102,6 @@ class WebScoketClient {
     socket.on('reject', this._handleReject.bind(this));
     socket.on('error', handleError);
     socket.on('connect_fail', this._handleConnectFail.bind(this));
-    // TODO: implement answering
-    // socket.on('answer');
-
-    this._socket = socket;
   }
 
   get connected() {
@@ -112,10 +111,10 @@ class WebScoketClient {
   async send(event: ClientEvent): Promise<void> {
     if (!this._connected) {
       await new Promise((resolve, reject) => {
-        this._queuedEventJobs.push({ resolve: () => resolve(), reject, event });
+        this._queuedJobs.push({ resolve: () => resolve(), reject, event });
       });
     } else {
-      await this._socket.event({ ...event, connectionId: this._connectionId });
+      await this._socket.event({ ...event, connectionId: this._connId });
     }
   }
 
@@ -123,7 +122,7 @@ class WebScoketClient {
     if (this._connected) {
       this._connected = false;
       this._socket
-        .disconnect({ connectionId: this._connectionId, reason })
+        .disconnect({ connectionId: this._connId, reason })
         .catch(this._emitError);
     }
   }
@@ -151,7 +150,6 @@ class WebScoketClient {
         event,
         user: this._user,
         channel,
-        client: this,
       });
     }
   }
@@ -184,24 +182,24 @@ class WebScoketClient {
   }
 
   async _handleSocketOpen() {
-    const registerBody = await this.options.register();
-    const seq = await this._socket.register(registerBody);
+    const { type, auth, user } = await this.options.register();
+
+    const seq = await this._socket.register({ type, auth });
     this._registerSeq = seq;
+    this._user = user;
+    this._userChannel = user && new UserScopeChannel(user);
   }
 
-  _handleConnect({ connectionId, req, user }: ConnectBody) {
+  _handleConnect({ connectionId, req }: ConnectBody) {
     if (req !== this._registerSeq) {
       return;
     }
 
     this._connected = true;
-    this._connectionId = connectionId;
-    this._connectionScope = connectionScope(
-      new Connection('$', '$', connectionId, null)
+    this._connId = connectionId;
+    this._connChannel = new ConnectionChannel(
+      new Connection('', '', connectionId, null)
     );
-
-    this._user = user;
-    this._userScope = user ? userScope(user) : null;
 
     this._emitEvent(
       {
@@ -209,20 +207,20 @@ class WebScoketClient {
         subtype: undefined,
         payload: undefined,
       },
-      this._connectionScope
+      this._connChannel
     );
 
-    for (const { event, resolve, reject } of this._queuedEventJobs) {
+    for (const { event, resolve, reject } of this._queuedJobs) {
       this._socket
         .event({ ...event, connectionId })
         .then(resolve)
         .catch(reject);
     }
-    this._queuedEventJobs = [];
+    this._queuedJobs = [];
   }
 
   _handleDisconnect({ connectionId }: DisconnectBody) {
-    if (this._connectionId === connectionId) {
+    if (this._connId === connectionId) {
       this._connected = false;
       this._emitEvent(
         {
@@ -230,29 +228,30 @@ class WebScoketClient {
           subtype: undefined,
           payload: undefined,
         },
-        this._connectionScope
+        this._connChannel
       );
     }
   }
 
   _handleEvent({ connectionId, type, subtype, payload, scopeUId }: EventBody) {
-    if (this._connected === true && this._connectionId === connectionId) {
-      let scope = this._connectionScope;
+    if (this._connected === true && this._connId === connectionId) {
+      let channel = this._connChannel;
+
       if (scopeUId) {
         const [platform, scopeType, scopeSubtype, scopeId] = scopeUId.split(
           ':'
         );
-        scope =
+        channel =
           platform !== WEBSOCKET
-            ? scope
+            ? channel
             : scopeType === 'user'
-            ? this._userScope || scope
+            ? this._userChannel || channel
             : scopeType === 'topic'
-            ? topicScope(scopeSubtype, scopeId)
-            : scope;
+            ? new TopicScopeChannel(scopeSubtype, scopeId)
+            : channel;
       }
 
-      this._emitEvent({ type, subtype, payload }, scope);
+      this._emitEvent({ type, subtype, payload }, channel);
     }
   }
 

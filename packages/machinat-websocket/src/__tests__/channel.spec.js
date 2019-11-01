@@ -1,6 +1,10 @@
-import { connectionScope, userScope, topicScope } from '../channel';
+import {
+  ConnectionChannel,
+  UserScopeChannel,
+  TopicScopeChannel,
+} from '../channel';
 
-describe('connectionScope(connection)', () => {
+describe('ConnectionChannel(connection)', () => {
   it('ok', () => {
     const connection = {
       id: '#conn',
@@ -9,7 +13,7 @@ describe('connectionScope(connection)', () => {
       user: { jane: 'doe' },
       flags: null,
     };
-    const scope = connectionScope(connection);
+    const scope = new ConnectionChannel(connection);
 
     expect(scope.connection).toBe(connection);
     expect(scope.platform).toBe('websocket');
@@ -19,35 +23,35 @@ describe('connectionScope(connection)', () => {
   });
 });
 
-describe('topicScope(name, id)', () => {
+describe('TopicScopeChannel(name, id)', () => {
   it('ok', () => {
-    let scope = topicScope();
-    expect(scope).toEqual({ name: 'default' });
+    let scope = new TopicScopeChannel();
+    expect(scope.name).toBe('default');
+    expect(scope.id).toBe(undefined);
     expect(scope.platform).toBe('websocket');
     expect(scope.type).toBe('topic');
     expect(scope.subtype).toBe('default');
-    expect(scope.id).toBe(undefined);
 
-    scope = topicScope('foo');
-    expect(scope).toEqual({ name: 'foo' });
+    scope = new TopicScopeChannel('foo');
+    expect(scope.name).toBe('foo');
+    expect(scope.id).toBe(undefined);
     expect(scope.platform).toBe('websocket');
     expect(scope.type).toBe('topic');
     expect(scope.subtype).toBe('foo');
-    expect(scope.id).toBe(undefined);
 
-    scope = topicScope('foo', 'bar');
-    expect(scope).toEqual({ name: 'foo', id: 'bar' });
+    scope = new TopicScopeChannel('foo', 'bar');
+    expect(scope.name).toEqual('foo');
+    expect(scope.id).toEqual('bar');
     expect(scope.platform).toBe('websocket');
     expect(scope.type).toBe('topic');
     expect(scope.subtype).toBe('foo');
-    expect(scope.id).toBe('bar');
   });
 });
 
-describe('userScope(user)', () => {
+describe('UserScopeChannel(user)', () => {
   it('ok', () => {
     const user = { platform: 'foo', id: 'bar' };
-    const scope = userScope(user);
+    const scope = new UserScopeChannel(user);
 
     expect(scope.user).toBe(user);
     expect(scope.platform).toBe('websocket');

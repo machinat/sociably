@@ -8,7 +8,7 @@ import WebSocketBot from '../bot';
 import Receiver from '../receiver';
 import Distributor from '../distributor';
 import Worker from '../worker';
-import { topicScope } from '../channel';
+import { TopicScopeChannel } from '../channel';
 import { Event } from '../component';
 import { WEBSOCKET_NATIVE_TYPE } from '../constant';
 
@@ -167,78 +167,78 @@ describe('#constructor(options)', () => {
     expect(Receiver.mock.calls[0].args[4]).toBe(verifyUpgrade);
   });
 
-  test('default authenticateConn allow "default" auth type only', async () => {
+  test('default authenticate allow "default" auth type only', async () => {
     const bot = new WebSocketBot(); // eslint-disable-line no-unused-vars
     expect(Receiver.mock).toHaveBeenCalledTimes(1);
-    const authenticateConn = Receiver.mock.calls[0].args[3];
+    const authenticate = Receiver.mock.calls[0].args[3];
 
-    await expect(authenticateConn({ type: 'default' })).resolves.toEqual({
+    await expect(
+      authenticate(
+        {
+          /* request */
+        },
+        { type: 'default' }
+      )
+    ).resolves.toEqual({
       accepted: true,
       user: null,
       tags: null,
-      webContext: null,
+      context: { type: 'default' },
     });
 
-    await expect(authenticateConn({ type: 'other_auth' })).resolves
-      .toMatchInlineSnapshot(`
-          Object {
-            "accepted": false,
-            "reason": "auth type \\"other_auth\\" is not allowed",
-          }
-      `);
+    await expect(
+      authenticate(
+        {
+          /* request */
+        },
+        { type: 'other_auth' }
+      )
+    ).resolves.toMatchInlineSnapshot(`
+            Object {
+              "accepted": false,
+              "reason": "only registration with \\"default\\" type allowed by default",
+            }
+          `);
   });
 
-  it('compose authenticators in options', async () => {
-    const fooAuthenticator = moxy(
-      pass => async auth =>
-        auth.type === 'foo'
-          ? { accepted: true, user: { id: 'foooo' } }
-          : pass(auth),
-      { mockReturnValue: true }
-    );
-    const barAuthenticator = moxy(
-      pass => async auth =>
-        auth.type === 'bar'
-          ? { accepted: false, reason: 'bar is not good' }
-          : pass(auth),
-      { mockReturnValue: true }
+  it('authenticate with customized option.authentocator', async () => {
+    const fooAuthenticator = moxy(async (request, auth) =>
+      auth.type === 'foo'
+        ? { accepted: true, user: { id: 'foo' } }
+        : { accepted: false, reason: 'not foo' }
     );
 
     // eslint-disable-next-line no-unused-vars
     const bot = new WebSocketBot({
-      authenticators: [fooAuthenticator, barAuthenticator],
+      authenticator: fooAuthenticator,
     });
+
     expect(Receiver.mock).toHaveBeenCalledTimes(1);
-    const authenticateConn = Receiver.mock.calls[0].args[3];
+    const authenticate = Receiver.mock.calls[0].args[3];
+    const request = { url: 'http://...' };
 
-    await expect(authenticateConn({ type: 'foo' })).resolves.toEqual({
+    await expect(
+      authenticate(request, { type: 'foo', auth: { foo: 'yes' } })
+    ).resolves.toEqual({
       accepted: true,
-      user: { id: 'foooo' },
+      user: { id: 'foo' },
     });
-    await expect(authenticateConn({ type: 'bar' })).resolves.toEqual({
+    await expect(
+      authenticate(request, { type: 'bar', auth: { bar: 'no' } })
+    ).resolves.toEqual({
       accepted: false,
-      reason: 'bar is not good',
+      reason: 'not foo',
     });
-    await expect(authenticateConn({ type: 'baz' })).resolves
-      .toMatchInlineSnapshot(`
-        Object {
-          "accepted": false,
-          "reason": "auth type \\"baz\\" is not allowed",
-        }
-      `);
 
-    expect(fooAuthenticator.mock).toHaveBeenCalledTimes(1);
-    const authFoo = fooAuthenticator.mock.calls[0].result;
-    expect(authFoo.mock).toHaveBeenCalledTimes(3);
-    expect(authFoo.mock).toHaveBeenCalledWith({ type: 'foo' });
-    expect(authFoo.mock).toHaveBeenCalledWith({ type: 'bar' });
-    expect(authFoo.mock).toHaveBeenCalledWith({ type: 'baz' });
-
-    expect(barAuthenticator.mock).toHaveBeenCalledTimes(1);
-    const authBar = barAuthenticator.mock.calls[0].result;
-    expect(authBar.mock).toHaveBeenCalledTimes(2);
-    expect(authBar.mock).toHaveBeenCalledWith({ type: 'bar' });
-    expect(authBar.mock).toHaveBeenCalledWith({ type: 'baz' });
+    expect(fooAuthenticator.mock).toHaveBeenCalledTimes(2);
+    expect(fooAuthenticator.mock).toHaveBeenCalledWith(request, {
+      type: 'foo',
+      auth: { foo: 'yes' },
+    });
+    expect(fooAuthenticator.mock).toHaveBeenCalledWith(request, {
+      type: 'bar',
+      auth: { bar: 'no' },
+    });
   });
 });
 
@@ -253,9 +253,9 @@ describe('#render(channel, event)', () => {
       id: `#conn${i}`,
     }));
 
-    distributor.broadcast.mock.fakeReturnValue(conns);
+    distributor.send.mock.fakeReturnValue(conns);
 
-    const channel = topicScope('foo');
+    const channel = new TopicScopeChannel('foo');
     await expect(
       bot.render(channel, [
         <Event />,
@@ -268,14 +268,14 @@ describe('#render(channel, event)', () => {
       { connections: conns },
     ]);
 
-    expect(distributor.broadcast.mock).toHaveBeenCalledTimes(3);
-    expect(distributor.broadcast.mock).toHaveBeenCalledWith(channel, {
+    expect(distributor.send.mock).toHaveBeenCalledTimes(3);
+    expect(distributor.send.mock).toHaveBeenCalledWith(channel, {
       type: 'default',
     });
-    expect(distributor.broadcast.mock).toHaveBeenCalledWith(channel, {
+    expect(distributor.send.mock).toHaveBeenCalledWith(channel, {
       type: 'foo',
     });
-    expect(distributor.broadcast.mock).toHaveBeenCalledWith(channel, {
+    expect(distributor.send.mock).toHaveBeenCalledWith(channel, {
       type: 'bar',
     });
   });
@@ -311,7 +311,7 @@ describe('#attachTopic(channel, socketId, reason)', () => {
 
     distributor.attachTopic.mock.fake(async () => false);
 
-    const topic = topicScope('foo', 'bar');
+    const topic = new TopicScopeChannel('foo', 'bar');
     await expect(bot.attachTopic(connection, topic)).resolves.toBe(false);
 
     distributor.attachTopic.mock.fake(async () => true);
@@ -332,7 +332,7 @@ describe('#detachTopic(channel, socketId, reason)', () => {
 
     distributor.detachTopic.mock.fake(async () => false);
 
-    const topic = topicScope('foo', 'bar');
+    const topic = new TopicScopeChannel('foo', 'bar');
     await expect(bot.detachTopic(connection, topic)).resolves.toBe(false);
 
     distributor.detachTopic.mock.fake(async () => true);

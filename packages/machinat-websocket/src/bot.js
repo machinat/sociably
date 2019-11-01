@@ -3,7 +3,6 @@ import invariant from 'invariant';
 import WS from 'ws';
 import uniqid from 'uniqid';
 import { Emitter, Controller, Engine, resolvePlugins } from 'machinat-base';
-import { compose } from 'machinat-utility';
 import Renderer from 'machinat-renderer';
 import Queue from 'machinat-queue';
 
@@ -19,49 +18,53 @@ import type {
   WebSocketResult,
   WebSocketBotOptions,
   WebSocketComponent,
-  TopicScope,
-  ConnectionAuthenticator,
+  ServerAuthenticatorFunc,
 } from './types';
+import type { TopicScopeChannel } from './channel';
 import type Connection from './connection';
-import type { RegisterBody } from './socket';
 
 import { WEBSOCKET, WEBSOCKET_NATIVE_TYPE } from './constant';
 import Distributor from './distributor';
 import { LocalOnlyBroker } from './broker';
 import WebSocketReceiver from './receiver';
 import WebSocketWorker from './worker';
-import { allowDefaultAnonymously } from './authenticator';
 
 const WSServer = WS.Server;
 
-type WebSocketBotOptionsInput = $Shape<WebSocketBotOptions>;
+const allowDefaultAuthentication: ServerAuthenticatorFunc = async (
+  request,
+  { type }
+) =>
+  type === 'default'
+    ? {
+        accepted: true,
+        user: null,
+        tags: null,
+        context: { type: 'default' },
+      }
+    : {
+        accepted: false,
+        reason: 'only registration with "default" type allowed by default',
+      };
 
 const createJobs = (
   scope: WebSocketChannel,
   segments: SegmentWithoutPause<EventOrder, WebSocketComponent>[]
 ): WebSocketJob[] => {
-  const jobs = new Array(segments.length);
-  for (let i = 0; i < segments.length; i += 1) {
-    const segment = segments[i];
-    jobs[i] = {
-      scope,
-      order:
-        segment.type === 'text'
-          ? {
-              type: 'message',
-              subtype: 'text',
-              payload: segment.value,
-            }
-          : segment.value,
-    };
-  }
-  return jobs;
+  return segments.map(seg => ({
+    scope,
+    order:
+      seg.type === 'text'
+        ? {
+            type: 'message',
+            subtype: 'text',
+            payload: seg.value,
+          }
+        : seg.value,
+  }));
 };
 
-const rejectAllAuth = async ({ type }: RegisterBody) => ({
-  accepted: false,
-  reason: `auth type "${type}" is not allowed`,
-});
+type WebSocketBotOptionsInput = $Shape<WebSocketBotOptions>;
 
 class WebSocketBot
   extends Emitter<
@@ -92,7 +95,6 @@ class WebSocketBot
     > {
   options: WebSocketBotOptions;
   _distributor: Distributor;
-  _authenticator: ConnectionAuthenticator;
 
   receiver: WebSocketReceiver;
   controller: Controller<
@@ -141,12 +143,11 @@ class WebSocketBot
 
     this.controller = new Controller(WEBSOCKET, this, eventMiddlewares);
 
-    const authenticators = options.authenticators || [allowDefaultAnonymously];
     this.receiver = new WebSocketReceiver(
       serverId,
       wsServer,
       this._distributor,
-      compose(...authenticators)(rejectAllAuth),
+      options.authenticator || allowDefaultAuthentication,
       options.verifyUpgrade || (() => true)
     );
 
@@ -198,7 +199,7 @@ class WebSocketBot
     return this._distributor.disconnect(connection, reason);
   }
 
-  attachTopic(connection: Connection, scope: TopicScope) {
+  attachTopic(connection: Connection, scope: TopicScopeChannel) {
     invariant(
       scope.platform === WEBSOCKET && scope.type === 'topic',
       `expect a "topic" scope to attach, get: "${scope.type}"`
@@ -206,7 +207,7 @@ class WebSocketBot
     return this._distributor.attachTopic(connection, scope);
   }
 
-  detachTopic(connection: Connection, scope: TopicScope) {
+  detachTopic(connection: Connection, scope: TopicScopeChannel) {
     invariant(
       scope.platform === WEBSOCKET && scope.type === 'topic',
       `expect a "topic" scope to detach, get: "${scope.type}"`

@@ -3,7 +3,7 @@ import Queue from 'machinat-queue';
 import Worker from '../worker';
 
 const distributor = moxy({
-  broadcast: () => Promise.resolve(null),
+  send: () => Promise.resolve(null),
   disconnect: () => Promise.resolve(false),
 });
 
@@ -59,7 +59,7 @@ it('work', async () => {
   ];
 
   let r = 0;
-  distributor.broadcast.mock.fake(() => broadcastResult[r++]); // eslint-disable-line no-plusplus
+  distributor.send.mock.fake(() => broadcastResult[r++]); // eslint-disable-line no-plusplus
 
   await expect(queue.executeJobs(jobs)).resolves.toMatchInlineSnapshot(`
           Object {
@@ -165,12 +165,8 @@ it('work', async () => {
           }
         `);
 
-  expect(distributor.broadcast.mock).toHaveBeenCalledTimes(4);
+  expect(distributor.send.mock).toHaveBeenCalledTimes(4);
   for (const [i, { scope, order }] of jobs.entries()) {
-    expect(distributor.broadcast.mock).toHaveBeenNthCalledWith(
-      i + 1,
-      scope,
-      order
-    );
+    expect(distributor.send.mock).toHaveBeenNthCalledWith(i + 1, scope, order);
   }
 });

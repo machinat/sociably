@@ -47,7 +47,7 @@ class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
     const promises = [];
 
     for (const { scope, order } of jobs) {
-      promises.push(this.distributor.broadcast(scope, order));
+      promises.push(this.distributor.send(scope, order));
     }
 
     const socketsMetrix = await Promise.all(promises);

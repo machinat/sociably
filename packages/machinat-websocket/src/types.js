@@ -9,7 +9,11 @@ import type {
 import type { BotPlugin } from 'machinat-base/types';
 import type WebSocketBot from './bot';
 import type Connection from './connection';
-import type { RegisterBody } from './socket';
+import type {
+  TopicScopeChannel,
+  UserScopeChannel,
+  ConnectionChannel,
+} from './channel';
 
 export type ConnectionId = string;
 export type ChannelUid = string;
@@ -24,34 +28,10 @@ export type WebSocketEvent = {
 declare var e: WebSocketEvent;
 (e: MachinatEvent<any>);
 
-export type TopicScope = {
-  platform: 'websocket',
-  type: 'topic',
-  name: string,
-  subtype: string,
-  id?: string,
-  uid: string,
-};
-
-export type UserScope = {
-  platform: 'websocket',
-  type: 'user',
-  user: MachinatUser,
-  subtype: string,
-  id: string,
-  uid: string,
-};
-
-export type ConnectionScope = {
-  platform: 'websocket',
-  type: 'connection',
-  connection: Connection,
-  subtype: string,
-  id: string,
-  uid: string,
-};
-
-export type WebSocketChannel = TopicScope | UserScope | ConnectionScope;
+export type WebSocketChannel =
+  | TopicScopeChannel
+  | UserScopeChannel
+  | ConnectionChannel;
 
 declare var c: WebSocketChannel;
 (c: MachinatChannel);
@@ -80,12 +60,16 @@ export type RequestInfo = {|
   encrypted: boolean,
 |};
 
+export type AuthContext = {
+  type: string,
+  [string]: any,
+};
+
 export type WebSocketMetadata = {|
   source: 'websocket',
   request: RequestInfo,
   connection: Connection,
-  authType: string,
-  webContext: any,
+  authContext: AuthContext,
 |};
 
 declare var t: WebSocketMetadata;
@@ -94,8 +78,8 @@ declare var t: WebSocketMetadata;
 type AcceptedAuthenticateResult = {|
   accepted: true,
   user: null | MachinatUser,
+  context: AuthContext,
   tags: null | string[],
-  webContext: any,
 |};
 
 type UnacceptedAuthenticateResult = {|
@@ -109,20 +93,21 @@ export type AuthenticateResult =
   | AcceptedAuthenticateResult
   | UnacceptedAuthenticateResult;
 
-export type AuthenticateFunc = (
-  body: RegisterBody,
-  request: RequestInfo
-) => Promise<AuthenticateResult>;
+type RegisterData = {|
+  type: string,
+  auth: Object,
+|};
 
-export type ConnectionAuthenticator = (
-  pass: AuthenticateFunc
-) => AuthenticateFunc;
+export type ServerAuthenticatorFunc = (
+  request: RequestInfo,
+  data: RegisterData
+) => Promise<AuthenticateResult>;
 
 export type WebSocketComponent = MachinatNativeComponent<EventOrder>;
 
 export type WebSocketBotOptions = {|
   verifyUpgrade?: RequestInfo => boolean,
-  authenticators?: ConnectionAuthenticator[],
+  authenticator?: ServerAuthenticatorFunc,
   plugins?: BotPlugin<
     WebSocketChannel,
     ?MachinatUser,
@@ -140,7 +125,8 @@ export type WebSocketBotOptions = {|
 
 type ConnectionTarget = {
   type: 'connection',
-  connection: Connection,
+  serverId: string,
+  connectionId: string,
 };
 
 type TopicTarget = {
@@ -151,7 +137,7 @@ type TopicTarget = {
 export type RemoteTarget = ConnectionTarget | TopicTarget;
 
 export interface SocketBroker {
-  broadcastRemote(
+  sendRemote(
     target: RemoteTarget,
     order: EventOrder
   ): Promise<null | Connection[]>;
@@ -172,3 +158,8 @@ export interface SocketBroker {
     handler: (target: RemoteTarget, order: EventOrder) => void
   ): void;
 }
+
+export type ClientRegistratorFunc = () => Promise<{
+  registerData: RegisterData,
+  user: null | MachinatUser,
+}>;

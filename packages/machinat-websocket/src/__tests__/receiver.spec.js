@@ -3,7 +3,7 @@ import WS from 'ws';
 import moxy from 'moxy';
 import Socket from '../socket';
 import Receiver from '../receiver';
-import { connectionScope } from '../channel';
+import { ConnectionChannel } from '../channel';
 
 jest.mock('../socket');
 
@@ -124,7 +124,7 @@ it('handle sockets and connections lifecycle', async () => {
     accepted: true,
     user: { john: 'doe' },
     tags: ['rookie'],
-    webContext: 101,
+    context: 101,
   }));
 
   const socket = Socket.mock.calls[0].instance;
@@ -142,21 +142,19 @@ it('handle sockets and connections lifecycle', async () => {
   const expectedMetadata = {
     source: 'websocket',
     request: expectedRequest,
-    authType: 'some_auth',
     connection: expectedConnection,
-    webContext: 101,
+    authContext: 101,
   };
 
   expect(authenticator.mock).toHaveBeenCalledTimes(1);
-  expect(authenticator.mock).toHaveBeenCalledWith(
-    { hello: 'login', type: 'some_auth' },
-    expectedRequest
-  );
+  expect(authenticator.mock).toHaveBeenCalledWith(expectedRequest, {
+    hello: 'login',
+    type: 'some_auth',
+  });
 
   expect(socket.connect.mock).toHaveBeenCalledTimes(1);
   expect(socket.connect.mock).toHaveBeenCalledWith({
     connectionId: expect.any(String),
-    user: { john: 'doe' },
   });
 
   expect(issueEvent.mock).not.toHaveBeenCalled();
@@ -174,7 +172,7 @@ it('handle sockets and connections lifecycle', async () => {
 
   expect(issueEvent.mock).toHaveBeenCalledTimes(1);
   expect(issueEvent.mock).toHaveBeenCalledWith(
-    connectionScope(expectedConnection),
+    new ConnectionChannel(expectedConnection),
     { john: 'doe' },
     { type: '@connect' },
     expectedMetadata
@@ -189,7 +187,7 @@ it('handle sockets and connections lifecycle', async () => {
 
   expect(issueEvent.mock).toHaveBeenCalledTimes(2);
   expect(issueEvent.mock).toHaveBeenCalledWith(
-    connectionScope(expectedConnection),
+    new ConnectionChannel(expectedConnection),
     { john: 'doe' },
     { type: 'greeting', subtype: 'french', payload: 'bonjour' },
     expectedMetadata
@@ -200,7 +198,7 @@ it('handle sockets and connections lifecycle', async () => {
 
   expect(issueEvent.mock).toHaveBeenCalledTimes(3);
   expect(issueEvent.mock).toHaveBeenCalledWith(
-    connectionScope(expectedConnection),
+    new ConnectionChannel(expectedConnection),
     { john: 'doe' },
     { type: '@disconnect', payload: { reason: 'bye' } },
     expectedMetadata
@@ -241,7 +239,7 @@ test('multi sockets and connections', async () => {
     accepted: true,
     user: { john: 'doe' },
     tags: ['normal'],
-    webContext: 'working',
+    context: 'working',
   }));
 
   socket1.emit('register', { type: 'my_auth', hi: 2 });
@@ -253,7 +251,7 @@ test('multi sockets and connections', async () => {
     accepted: true,
     user: { jojo: 'doe' },
     tags: ['hero'],
-    webContext: 'traveling',
+    context: 'traveling',
   }));
 
   socket1.emit('register', { type: 'my_auth', hi: 4 });
@@ -263,8 +261,8 @@ test('multi sockets and connections', async () => {
   expect(authenticator.mock).toHaveBeenCalledTimes(5);
   authenticator.mock.calls.forEach((call, i) => {
     expect(call.args).toEqual([
-      { type: 'my_auth', hi: i + 1 },
       expectedRequest,
+      { type: 'my_auth', hi: i + 1 },
     ]);
   });
 
@@ -327,47 +325,61 @@ test('multi sockets and connections', async () => {
   expect(distributor.addLocalConnection.mock) //
     .toHaveBeenNthCalledWith(5, socket2, jojo, jojoConn2);
 
-  const expectedMetadataProps = {
-    source: 'websocket',
-    request: expectedRequest,
-    authType: 'my_auth',
-  };
-
   expect(issueEvent.mock).toHaveBeenCalledTimes(5);
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     1,
-    connectionScope(nullConn),
+    new ConnectionChannel(nullConn),
     null,
     { type: '@connect' },
-    { ...expectedMetadataProps, connection: nullConn }
+    { source: 'websocket', request: expectedRequest, connection: nullConn }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     2,
-    connectionScope(johnConn1),
+    new ConnectionChannel(johnConn1),
     { john: 'doe' },
     { type: '@connect' },
-    { ...expectedMetadataProps, connection: johnConn1, webContext: 'working' }
+    {
+      source: 'websocket',
+      request: expectedRequest,
+      connection: johnConn1,
+      authContext: 'working',
+    }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     3,
-    connectionScope(johnConn2),
+    new ConnectionChannel(johnConn2),
     { john: 'doe' },
     { type: '@connect' },
-    { ...expectedMetadataProps, connection: johnConn2, webContext: 'working' }
+    {
+      source: 'websocket',
+      request: expectedRequest,
+      connection: johnConn2,
+      authContext: 'working',
+    }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     4,
-    connectionScope(jojoConn1),
+    new ConnectionChannel(jojoConn1),
     { jojo: 'doe' },
     { type: '@connect' },
-    { ...expectedMetadataProps, connection: jojoConn1, webContext: 'traveling' }
+    {
+      source: 'websocket',
+      request: expectedRequest,
+      connection: jojoConn1,
+      authContext: 'traveling',
+    }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     5,
-    connectionScope(jojoConn2),
+    new ConnectionChannel(jojoConn2),
     { jojo: 'doe' },
     { type: '@connect' },
-    { ...expectedMetadataProps, connection: jojoConn2, webContext: 'traveling' }
+    {
+      source: 'websocket',
+      request: expectedRequest,
+      connection: jojoConn2,
+      authContext: 'traveling',
+    }
   );
 
   socket1.emit('event', { connectionId: nullConn.id, type: 'a', payload: 0 });
@@ -379,38 +391,58 @@ test('multi sockets and connections', async () => {
   expect(issueEvent.mock).toHaveBeenCalledTimes(10);
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     6,
-    connectionScope(nullConn),
+    new ConnectionChannel(nullConn),
     null,
     { type: 'a', payload: 0 },
-    { ...expectedMetadataProps, connection: nullConn }
+    { source: 'websocket', request: expectedRequest, connection: nullConn }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     7,
-    connectionScope(johnConn1),
+    new ConnectionChannel(johnConn1),
     { john: 'doe' },
     { type: 'b', payload: 1 },
-    { ...expectedMetadataProps, connection: johnConn1, webContext: 'working' }
+    {
+      source: 'websocket',
+      request: expectedRequest,
+      connection: johnConn1,
+      authContext: 'working',
+    }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     8,
-    connectionScope(johnConn2),
+    new ConnectionChannel(johnConn2),
     { john: 'doe' },
     { type: 'c', payload: 2 },
-    { ...expectedMetadataProps, connection: johnConn2, webContext: 'working' }
+    {
+      source: 'websocket',
+      request: expectedRequest,
+      connection: johnConn2,
+      authContext: 'working',
+    }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     9,
-    connectionScope(jojoConn1),
+    new ConnectionChannel(jojoConn1),
     { jojo: 'doe' },
     { type: 'd', payload: 3 },
-    { ...expectedMetadataProps, connection: jojoConn1, webContext: 'traveling' }
+    {
+      source: 'websocket',
+      request: expectedRequest,
+      connection: jojoConn1,
+      authContext: 'traveling',
+    }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     10,
-    connectionScope(jojoConn2),
+    new ConnectionChannel(jojoConn2),
     { jojo: 'doe' },
     { type: 'e', payload: 4 },
-    { ...expectedMetadataProps, connection: jojoConn2, webContext: 'traveling' }
+    {
+      source: 'websocket',
+      request: expectedRequest,
+      connection: jojoConn2,
+      authContext: 'traveling',
+    }
   );
 
   socket1.emit('disconnect', { connectionId: nullConn.id, reason: 'bye0' });
@@ -425,38 +457,58 @@ test('multi sockets and connections', async () => {
   expect(issueEvent.mock).toHaveBeenCalledTimes(15);
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     11,
-    connectionScope(nullConn),
+    new ConnectionChannel(nullConn),
     null,
     { type: '@disconnect', payload: { reason: 'bye0' } },
-    { ...expectedMetadataProps, connection: nullConn }
+    { source: 'websocket', request: expectedRequest, connection: nullConn }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     12,
-    connectionScope(johnConn1),
+    new ConnectionChannel(johnConn1),
     { john: 'doe' },
     { type: '@disconnect', payload: { reason: 'bye1' } },
-    { ...expectedMetadataProps, connection: johnConn1, webContext: 'working' }
+    {
+      source: 'websocket',
+      request: expectedRequest,
+      connection: johnConn1,
+      authContext: 'working',
+    }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     13,
-    connectionScope(jojoConn2),
+    new ConnectionChannel(jojoConn2),
     { jojo: 'doe' },
     { type: '@disconnect', payload: { reason: 'bye2' } },
-    { ...expectedMetadataProps, connection: jojoConn2, webContext: 'traveling' }
+    {
+      source: 'websocket',
+      request: expectedRequest,
+      connection: jojoConn2,
+      authContext: 'traveling',
+    }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     14,
-    connectionScope(jojoConn1),
+    new ConnectionChannel(jojoConn1),
     { jojo: 'doe' },
     { type: '@disconnect', payload: { reason: 'bye3' } },
-    { ...expectedMetadataProps, connection: jojoConn1, webContext: 'traveling' }
+    {
+      source: 'websocket',
+      request: expectedRequest,
+      connection: jojoConn1,
+      authContext: 'traveling',
+    }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     15,
-    connectionScope(johnConn2),
+    new ConnectionChannel(johnConn2),
     { john: 'doe' },
     { type: '@disconnect', payload: { reason: 'bye4' } },
-    { ...expectedMetadataProps, connection: johnConn2, webContext: 'working' }
+    {
+      source: 'websocket',
+      request: expectedRequest,
+      connection: johnConn2,
+      authContext: 'working',
+    }
   );
 
   socket1.emit('close', 666, 'wth');

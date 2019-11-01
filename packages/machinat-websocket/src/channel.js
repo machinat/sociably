@@ -1,61 +1,71 @@
 // @flow
-import type { MachinatUser } from 'machinat/types';
+import type { MachinatUser, MachinatChannel } from 'machinat/types';
 import type Connection from './connection';
 import { WEBSOCKET } from './constant';
-import type { TopicScope, UserScope, ConnectionScope } from './types';
 
-const TopicScopeProto = {
-  platform: 'websocket',
-  type: 'topic',
+export class TopicScopeChannel implements MachinatChannel {
+  platform: 'websocket';
+  type: 'topic';
+  name: string;
+  id: void | string;
+
+  constructor(name?: string, id?: string) {
+    this.platform = 'websocket';
+    this.type = 'topic';
+    this.name = name || 'default';
+    this.id = id;
+  }
+
   get subtype() {
     return this.name;
-  },
+  }
+
   get uid() {
     return `${WEBSOCKET}:topic:${this.name}:${this.id || '*'}`;
-  },
-};
+  }
+}
 
-export const topicScope = (name?: string, id?: string): TopicScope => {
-  const scope: TopicScope = Object.create(TopicScopeProto);
-  scope.name = name || 'default';
-  scope.id = id;
-  return scope;
-};
+export class UserScopeChannel implements MachinatChannel {
+  platform: 'websocket';
+  type: 'user';
+  user: MachinatUser;
 
-const UserScopeProto = {
-  platform: 'websocket',
-  type: 'user',
+  constructor(user: MachinatUser) {
+    this.platform = 'websocket';
+    this.type = 'user';
+    this.user = user;
+  }
+
   get subtype() {
     return (this.user: MachinatUser).platform;
-  },
+  }
+
   get id() {
     return (this.user: MachinatUser).id;
-  },
+  }
+
   get uid() {
     const { platform, id } = (this.user: MachinatUser);
     return `${WEBSOCKET}:user:${platform || '*'}:${id}`;
-  },
-};
+  }
+}
 
-export const userScope = (user: MachinatUser): UserScope => {
-  const scope: UserScope = Object.create(UserScopeProto);
-  scope.user = user;
-  return scope;
-};
+export class ConnectionChannel implements MachinatChannel {
+  platform: 'websocket';
+  type: 'connection';
+  connection: Connection;
 
-const ConnectionScopeProto = {
-  platform: 'websocket',
-  type: 'connection',
+  constructor(connection: Connection) {
+    this.platform = 'websocket';
+    this.type = 'connection';
+    this.connection = connection;
+  }
+
   get id() {
-    return (this.connection: Connection).id;
-  },
+    return this.connection.id;
+  }
+
   get uid() {
     return `${WEBSOCKET}:connection:*:${this.connection.id}`;
-  },
-};
-
-export const connectionScope = (connection: Connection): ConnectionScope => {
-  const scope: ConnectionScope = Object.create(ConnectionScopeProto);
-  scope.connection = connection;
-  return scope;
-};
+  }
+}

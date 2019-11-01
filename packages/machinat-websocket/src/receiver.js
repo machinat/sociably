@@ -14,7 +14,7 @@ import type {
   WebSocketMetadata,
   WebSocketChannel,
   RequestInfo,
-  AuthenticateFunc,
+  ServerAuthenticatorFunc,
 } from './types';
 import type Distributor from './distributor';
 import type Socket, {
@@ -26,22 +26,21 @@ import type Socket, {
 import Connection from './connection';
 
 import MachinatSocket from './socket';
-import { connectionScope } from './channel';
+import { ConnectionChannel } from './channel';
 import createEvent from './event';
 import { WEBSOCKET } from './constant';
 
 type WebSocketServer = $ElementType<WebSocket, 'Server'>;
 
-type AuthenticationInfo = {
-  user: null | MachinatUser,
+type ConnectionInfo = {
   connection: Connection,
-  authType: string,
-  webContext: any,
+  user: null | MachinatUser,
+  authContext: any,
 };
 
 type SocketStatus = {|
   lostHeartbeat: number,
-  authedConns: Map<ConnectionId, AuthenticationInfo>,
+  connected: Map<ConnectionId, ConnectionInfo>,
 |};
 
 const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
@@ -73,7 +72,7 @@ class WebSocketReceiver
   _distributor: Distributor;
 
   _verifyUpgrade: (request: RequestInfo) => boolean;
-  _authenticate: AuthenticateFunc;
+  _authenticator: ServerAuthenticatorFunc;
 
   _socketStore: Map<Socket, SocketStatus>;
 
@@ -88,7 +87,7 @@ class WebSocketReceiver
     serverId: string,
     webSocketServer: WebSocketServer,
     distributor: Distributor,
-    authenticateConn: AuthenticateFunc,
+    authenticator: ServerAuthenticatorFunc,
     verifyUpgrade: (request: RequestInfo) => boolean
   ) {
     super();
@@ -99,7 +98,7 @@ class WebSocketReceiver
     this._socketStore = new Map();
 
     this._verifyUpgrade = verifyUpgrade;
-    this._authenticate = authenticateConn;
+    this._authenticator = authenticator;
 
     const self = this;
     this._handleSocketEvent = function handleSocketEvent(body) {
@@ -145,7 +144,7 @@ class WebSocketReceiver
       const socket = new MachinatSocket(uniqid(), ws, requestInfo);
       this._socketStore.set(socket, {
         lostHeartbeat: 0,
-        authedConns: new Map(),
+        connected: new Map(),
       });
 
       socket.on('event', this._handleSocketEvent);
@@ -176,15 +175,14 @@ class WebSocketReceiver
   _processEvent(
     socket: Socket,
     event: WebSocketEvent,
-    authenticated: AuthenticationInfo
+    authenticated: ConnectionInfo
   ) {
-    const { connection, user, authType, webContext } = authenticated;
-    return this.issueEvent(connectionScope(connection), user, event, {
+    const { connection, user, authContext } = authenticated;
+    return this.issueEvent(new ConnectionChannel(connection), user, event, {
       source: WEBSOCKET,
       request: socket.request,
       connection,
-      authType,
-      webContext,
+      authContext,
     });
   }
 
@@ -193,14 +191,13 @@ class WebSocketReceiver
     const connectionId: string = uniqid();
 
     try {
-      const authResult = await this._authenticate(body, socket.request);
+      const authResult = await this._authenticator(socket.request, body);
 
       if (authResult.accepted) {
-        const { user, tags, webContext } = authResult;
-        socketStatus.authedConns.set(connectionId, {
+        const { user, context: authContext, tags } = authResult;
+        socketStatus.connected.set(connectionId, {
           user,
-          webContext,
-          authType: body.type,
+          authContext,
           connection: new Connection(
             this._serverId,
             socket.id,
@@ -209,7 +206,7 @@ class WebSocketReceiver
           ),
         });
 
-        await socket.connect({ connectionId, req: seq, user });
+        await socket.connect({ connectionId, req: seq });
       } else {
         await socket.reject({
           req: seq,
@@ -225,7 +222,7 @@ class WebSocketReceiver
     const socketStatus = this._getSocketStatusAssertedly(socket);
 
     const { connectionId, type, subtype, payload } = body;
-    const authenticated = socketStatus.authedConns.get(connectionId);
+    const authenticated = socketStatus.connected.get(connectionId);
 
     if (authenticated === undefined) {
       // reject if not registered
@@ -246,7 +243,7 @@ class WebSocketReceiver
     const socketStatus = this._getSocketStatusAssertedly(socket);
 
     const { connectionId } = body;
-    const authenticated = socketStatus.authedConns.get(connectionId);
+    const authenticated = socketStatus.connected.get(connectionId);
 
     if (authenticated === undefined) {
       // reject if not registered
@@ -268,19 +265,19 @@ class WebSocketReceiver
 
   _handleConnectFail = (socket: Socket, body: DisconnectBody) => {
     const socketStatus = this._getSocketStatusAssertedly(socket);
-    socketStatus.authedConns.delete(body.connectionId);
+    socketStatus.connected.delete(body.connectionId);
   };
 
   _handleDisconnect = async (socket: Socket, body: DisconnectBody) => {
     const socketStatus = this._getSocketStatusAssertedly(socket);
 
     const { connectionId, reason } = body;
-    const authenticated = socketStatus.authedConns.get(connectionId);
+    const authenticated = socketStatus.connected.get(connectionId);
 
     if (authenticated !== undefined) {
       const { connection } = authenticated;
 
-      socketStatus.authedConns.delete(connectionId);
+      socketStatus.connected.delete(connectionId);
       this._distributor.removeLocalConnection(connection);
 
       await this._processEvent(

@@ -4,7 +4,7 @@ import WS from 'ws';
 import Distributor from '../distributor';
 import Socket from '../socket';
 import { LocalOnlyBroker } from '../broker';
-import { topicScope, connectionScope } from '../channel';
+import { TopicScopeChannel, ConnectionChannel } from '../channel';
 
 const request = {
   method: 'GET',
@@ -145,7 +145,7 @@ describe('disconnect()', () => {
   });
 });
 
-describe('broadcast()', () => {
+describe('send()', () => {
   const conn1 = {
     id: 'conn#1',
     serverId,
@@ -166,14 +166,14 @@ describe('broadcast()', () => {
     distributor.addLocalConnection(socket, john, conn2);
 
     await expect(
-      distributor.broadcast(connectionScope(conn1), {
+      distributor.send(new ConnectionChannel(conn1), {
         type: 'foo',
         subtype: 'bar',
         payload: 1,
       })
     ).resolves.toEqual([conn1]);
     await expect(
-      distributor.broadcast(connectionScope(conn2), {
+      distributor.send(new ConnectionChannel(conn2), {
         type: 'foo',
         subtype: 'baz',
         payload: 2,
@@ -202,37 +202,39 @@ describe('broadcast()', () => {
       socketId: 'xxx',
       id: '#conn_remote',
     };
-    const remoteConnScope = connectionScope(remoteConn);
+    const connChannel = new ConnectionChannel(remoteConn);
 
     await expect(
-      distributor.broadcast(remoteConnScope, {
-        type: 'greet',
-        payload: 'hello nobody',
-      })
+      distributor.send(connChannel, { type: 'greet', payload: 'hello nobody' })
     ).resolves.toBe(null);
 
-    broker.broadcastRemote.mock.fake(async () => [remoteConn]);
+    broker.sendRemote.mock.fake(async () => [remoteConn]);
     await expect(
-      distributor.broadcast(remoteConnScope, {
+      distributor.send(connChannel, {
         type: 'greet',
         payload: 'hello somebody',
       })
     ).resolves.toEqual([remoteConn]);
 
-    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(2);
-    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+    const connectionTarget = {
+      type: 'connection',
+      connectionId: '#conn_remote',
+      serverId: '#remote',
+    };
+    expect(broker.sendRemote.mock).toHaveBeenCalledTimes(2);
+    expect(broker.sendRemote.mock).toHaveBeenNthCalledWith(
       1,
-      { type: 'connection', connection: remoteConn },
+      connectionTarget,
       { type: 'greet', payload: 'hello nobody' }
     );
-    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+    expect(broker.sendRemote.mock).toHaveBeenNthCalledWith(
       2,
-      { type: 'connection', connection: remoteConn },
+      connectionTarget,
       { type: 'greet', payload: 'hello somebody' }
     );
   });
 
-  it('broadcast with topic scope channel', async () => {
+  it('send with topic scope channel', async () => {
     const distributor = new Distributor(serverId, broker, errorHandler);
     socket.event.mock.fake(async () => 0);
 
@@ -250,32 +252,32 @@ describe('broadcast()', () => {
     distributor.addLocalConnection(socket, john, conn1);
     distributor.addLocalConnection(socket, jane, conn2);
 
-    const fooScope = topicScope('foo', 'oof');
-    const barScope = topicScope('bar', 'rab');
-    const bazScope = topicScope('baz', 'zab');
+    const fooScope = new TopicScopeChannel('foo', 'oof');
+    const barScope = new TopicScopeChannel('bar', 'rab');
+    const bazScope = new TopicScopeChannel('baz', 'zab');
 
     distributor.attachTopic(conn1, fooScope);
     distributor.attachTopic(conn2, fooScope);
     distributor.attachTopic(conn1, barScope);
 
     await expect(
-      distributor.broadcast(fooScope, {
+      distributor.send(fooScope, {
         type: 'greet',
         payload: 'good morning',
       })
     ).resolves.toEqual([conn1, conn2]);
 
-    broker.broadcastRemote.mock.fake(async () => [remoteConn1]);
+    broker.sendRemote.mock.fake(async () => [remoteConn1]);
     await expect(
-      distributor.broadcast(barScope, {
+      distributor.send(barScope, {
         type: 'greet',
         payload: 'good afternoon',
       })
     ).resolves.toEqual([conn1, remoteConn1]);
 
-    broker.broadcastRemote.mock.fake(async () => [remoteConn1, remoteConn2]);
+    broker.sendRemote.mock.fake(async () => [remoteConn1, remoteConn2]);
     await expect(
-      distributor.broadcast(bazScope, {
+      distributor.send(bazScope, {
         type: 'greet',
         payload: 'good evening',
       })
@@ -301,18 +303,18 @@ describe('broadcast()', () => {
       payload: 'good afternoon',
     });
 
-    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(3);
-    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+    expect(broker.sendRemote.mock).toHaveBeenCalledTimes(3);
+    expect(broker.sendRemote.mock).toHaveBeenNthCalledWith(
       1,
       { type: 'topic', uid: fooScope.uid },
       { type: 'greet', payload: 'good morning' }
     );
-    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+    expect(broker.sendRemote.mock).toHaveBeenNthCalledWith(
       2,
       { type: 'topic', uid: barScope.uid },
       { type: 'greet', payload: 'good afternoon' }
     );
-    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+    expect(broker.sendRemote.mock).toHaveBeenNthCalledWith(
       3,
       { type: 'topic', uid: bazScope.uid },
       { type: 'greet', payload: 'good evening' }
@@ -326,21 +328,21 @@ describe('broadcast()', () => {
     const conn3 = {
       id: 'conn#3',
       socket,
-      channel: connectionScope('conn#3'),
+      channel: new ConnectionChannel('conn#3'),
     };
 
     distributor.addLocalConnection(socket, jane, conn1);
     distributor.addLocalConnection(socket, john, conn2);
     distributor.addLocalConnection(socket, jojo, conn3);
 
-    const fooScope = topicScope('foo', 'oof');
+    const fooScope = new TopicScopeChannel('foo', 'oof');
 
     distributor.attachTopic(conn1, fooScope);
     distributor.attachTopic(conn2, fooScope);
     distributor.attachTopic(conn3, fooScope);
 
     await expect(
-      distributor.broadcast(fooScope, {
+      distributor.send(fooScope, {
         type: 'greet',
         payload: 'hi',
         only: [conn1.id, conn2.id],
@@ -349,7 +351,7 @@ describe('broadcast()', () => {
     expect(socket.event.mock).toHaveBeenCalledTimes(2);
 
     await expect(
-      distributor.broadcast(fooScope, {
+      distributor.send(fooScope, {
         type: 'greet',
         payload: 'hi',
         except: [conn2.id, conn3.id],
@@ -358,7 +360,7 @@ describe('broadcast()', () => {
     expect(socket.event.mock).toHaveBeenCalledTimes(3);
 
     await expect(
-      distributor.broadcast(fooScope, {
+      distributor.send(fooScope, {
         type: 'greet',
         payload: 'hi',
         only: [conn1.id, conn2.id],
@@ -367,18 +369,18 @@ describe('broadcast()', () => {
     ).resolves.toEqual([conn1]);
     expect(socket.event.mock).toHaveBeenCalledTimes(4);
 
-    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(3);
-    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+    expect(broker.sendRemote.mock).toHaveBeenCalledTimes(3);
+    expect(broker.sendRemote.mock).toHaveBeenNthCalledWith(
       1,
       { type: 'topic', uid: fooScope.uid },
       { type: 'greet', payload: 'hi', only: [conn1.id, conn2.id] }
     );
-    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+    expect(broker.sendRemote.mock).toHaveBeenNthCalledWith(
       2,
       { type: 'topic', uid: fooScope.uid },
       { type: 'greet', payload: 'hi', except: [conn2.id, conn3.id] }
     );
-    expect(broker.broadcastRemote.mock).toHaveBeenNthCalledWith(
+    expect(broker.sendRemote.mock).toHaveBeenNthCalledWith(
       3,
       { type: 'topic', uid: fooScope.uid },
       {
@@ -399,29 +401,27 @@ describe('broadcast()', () => {
     socket.event.mock.fake(() => Promise.resolve(0));
     socket.event.mock.fakeOnce(() => Promise.reject(new Error('Wasted!')));
 
-    const fooScope = topicScope('foo', 'ofo', 'oof');
+    const fooScope = new TopicScopeChannel('foo', 'ofo', 'oof');
     distributor.attachTopic(conn1, fooScope);
     distributor.attachTopic(conn2, fooScope);
 
     const event = { type: 'greet', payload: 'hi danger' };
-    await expect(distributor.broadcast(fooScope, event)).resolves.toEqual([
-      conn2,
-    ]);
+    await expect(distributor.send(fooScope, event)).resolves.toEqual([conn2]);
     expect(errorHandler.mock).toHaveBeenCalledTimes(1);
 
     socket.event.mock.fake(() => Promise.reject(new Error('Wasted!')));
-    await expect(distributor.broadcast(fooScope, event)).resolves.toBe(null);
+    await expect(distributor.send(fooScope, event)).resolves.toBe(null);
     expect(errorHandler.mock).toHaveBeenCalledTimes(2);
 
     socket.event.mock.fake(() => Promise.resolve(0));
-    await expect(distributor.broadcast(fooScope, event)).resolves.toBe(null);
+    await expect(distributor.send(fooScope, event)).resolves.toBe(null);
     expect(errorHandler.mock).toHaveBeenCalledTimes(2);
 
     errorHandler.mock.calls.forEach(call => {
       expect(call.args[0]).toEqual(new Error('Wasted!'));
     });
 
-    expect(broker.broadcastRemote.mock).toHaveBeenCalledTimes(3);
+    expect(broker.sendRemote.mock).toHaveBeenCalledTimes(3);
 
     expect(socket.event.mock).toHaveBeenCalledTimes(3);
     expect(socket.event.mock).toHaveBeenNthCalledWith(1, {

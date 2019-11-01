@@ -7,15 +7,15 @@ import type {
   SocketBroker,
   RemoteTarget,
   WebSocketChannel,
-  TopicScope,
 } from './types';
 import type Socket from './socket';
 import type Connection from './connection';
+import type { TopicScopeChannel } from './channel';
 
 import { WEBSOCKET } from './constant';
 
 class Distributor {
-  _serverId: string;
+  serverId: string;
   _broker: SocketBroker;
   _errorHandler: Error => void;
 
@@ -35,7 +35,7 @@ class Distributor {
     broker: SocketBroker,
     handleError: Error => void
   ) {
-    this._serverId = serverId;
+    this.serverId = serverId;
     this._broker = broker;
     this._channelsConnected = new Map();
     this._connectionsStore = new Map();
@@ -79,9 +79,9 @@ class Distributor {
 
   async attachTopic(
     connection: Connection,
-    scope: TopicScope
+    scope: TopicScopeChannel
   ): Promise<boolean> {
-    if (this._serverId !== connection.serverId) {
+    if (this.serverId !== connection.serverId) {
       return this._broker.attachTopicRemote(connection, scope);
     }
 
@@ -105,9 +105,9 @@ class Distributor {
 
   async detachTopic(
     connection: Connection,
-    scope: TopicScope
+    scope: TopicScopeChannel
   ): Promise<boolean> {
-    if (this._serverId !== connection.serverId) {
+    if (this.serverId !== connection.serverId) {
       return this._broker.detachTopicRemote(connection, scope);
     }
 
@@ -130,32 +130,21 @@ class Distributor {
     return true;
   }
 
-  async broadcast(
+  async send(
     scope: WebSocketChannel,
     order: EventOrder
   ): Promise<null | Connection[]> {
     if (scope.platform === WEBSOCKET && scope.type === 'connection') {
-      const { connection } = scope;
+      const { serverId, id: connectionId } = scope.connection;
 
-      if (connection.serverId !== this._serverId) {
-        return this._broker.broadcastRemote(
-          { type: 'connection', connection },
+      if (serverId !== this.serverId) {
+        return this._broker.sendRemote(
+          { type: 'connection', serverId, connectionId },
           order
         );
       }
 
-      const sentToLocal = await this._sendToLocalConnection(
-        connection.id,
-        order
-      );
-
-      if (!sentToLocal) {
-        return this._broker.broadcastRemote(
-          { type: 'connection', connection },
-          order
-        );
-      }
-      return [connection];
+      return this._sendToLocalConnection(connectionId, order);
     }
 
     if (scope.platform === WEBSOCKET && scope.type === 'user') {
@@ -164,7 +153,7 @@ class Distributor {
 
     const [localResults, remoteResults] = await Promise.all([
       this._broadcastLocal(scope.uid, order),
-      this._broker.broadcastRemote({ type: 'topic', uid: scope.uid }, order),
+      this._broker.sendRemote({ type: 'topic', uid: scope.uid }, order),
     ]);
 
     return localResults === null
@@ -209,10 +198,10 @@ class Distributor {
   async _sendToLocalConnection(connectionId: ConnectionId, order: EventOrder) {
     const connStatus = this._connectionsStore.get(connectionId);
     if (connStatus === undefined) {
-      return false;
+      return null;
     }
 
-    const { socket } = connStatus;
+    const { socket, connection } = connStatus;
     const { type, subtype, payload } = order;
 
     await socket.event({
@@ -222,7 +211,7 @@ class Distributor {
       payload,
     });
 
-    return true;
+    return [connection];
   }
 
   async _broadcastLocal(
@@ -289,9 +278,11 @@ class Distributor {
 
   _handleRemoteEvent(target: RemoteTarget, order: EventOrder) {
     if (target.type === 'connection') {
-      this._sendToLocalConnection(target.connection.id, order).catch(
-        this._errorHandler
-      );
+      if (target.serverId === this.serverId) {
+        this._sendToLocalConnection(target.connectionId, order).catch(
+          this._errorHandler
+        );
+      }
     } else if (target.type === 'topic') {
       this._broadcastLocal(target.uid, order).catch(this._errorHandler);
     } else {
