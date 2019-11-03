@@ -122,7 +122,7 @@ export type MachinatMiddleware<Frame, Value> = (
   next: (Frame) => Value
 ) => Frame => Value;
 
-export type SegmentWithoutPause<SegmentValue, Native> =
+export type OutputableSegment<SegmentValue, Native> =
   | TextSegment<Native>
   | RawSegment<SegmentValue>
   | UnitSegment<SegmentValue, Native>;

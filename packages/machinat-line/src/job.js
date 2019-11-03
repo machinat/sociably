@@ -2,7 +2,7 @@
 import invariant from 'invariant';
 import { formatNode, filterSymbolKeys } from 'machinat-utility';
 
-import type { SegmentWithoutPause } from 'machinat-base/types';
+import type { OutputableSegment } from 'machinat-base/types';
 import type LineChannel from './channel';
 import type {
   LineSegmentValue,
@@ -20,7 +20,7 @@ import { isMessageValue } from './utils';
 
 export const createChatJobs = (
   channel: LineChannel,
-  segments: SegmentWithoutPause<LineSegmentValue, LineComponent>[],
+  segments: OutputableSegment<LineSegmentValue, LineComponent>[],
   options?: LineSendOptions
 ) => {
   const replyToken = options && options.replyToken;
@@ -77,7 +77,7 @@ export const createChatJobs = (
 
 export const createMulticastJobs = (
   targets: string[],
-  segments: SegmentWithoutPause<LineSegmentValue, LineComponent>[]
+  segments: OutputableSegment<LineSegmentValue, LineComponent>[]
 ) => {
   const jobs: LineJob[] = [];
   let messages: LineSegmentValue[] = [];

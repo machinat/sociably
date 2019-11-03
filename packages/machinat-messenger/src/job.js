@@ -2,7 +2,7 @@
 import invariant from 'invariant';
 import { formatNode, filterSymbolKeys } from 'machinat-utility';
 
-import type { SegmentWithoutPause } from 'machinat-base/types';
+import type { OutputableSegment } from 'machinat-base/types';
 import type {
   MessengerMessage,
   MessengerSegmentValue,
@@ -27,7 +27,7 @@ const POST = 'POST';
 
 export const createChatJobs = (
   channel: MessangerChannel,
-  segments: SegmentWithoutPause<MessengerSegmentValue, MessengerComponent>[],
+  segments: OutputableSegment<MessengerSegmentValue, MessengerComponent>[],
   options?: MessengerSendOptions
 ): MessengerJob[] => {
   const { target, uid } = channel;
@@ -94,7 +94,7 @@ export const createChatJobs = (
 
 export const createCreativeJobs = (
   channel: null,
-  segments: SegmentWithoutPause<MessengerSegmentValue, MessengerComponent>[]
+  segments: OutputableSegment<MessengerSegmentValue, MessengerComponent>[]
 ): MessengerJob[] => {
   const messages: MessengerMessage[] = new Array(segments.length);
 
@@ -134,7 +134,7 @@ export const createCreativeJobs = (
 
 export const createAttachmentJobs = (
   channel: null,
-  segments: SegmentWithoutPause<MessengerSegmentValue, MessengerComponent>[]
+  segments: OutputableSegment<MessengerSegmentValue, MessengerComponent>[]
 ): MessengerJob[] => {
   invariant(segments.length === 1, 'more than 1 message received');
 

@@ -18,7 +18,7 @@ import { validateMiddlewares } from './utils';
 import type {
   MachinatBot,
   MachinatWorker,
-  SegmentWithoutPause,
+  OutputableSegment,
   DispatchTask,
   DispatchResponse,
   DispatchFrame,
@@ -119,7 +119,7 @@ export default class MachinatEngine<
   async renderTasks<T, O>(
     createJobs: (
       target: T,
-      segments: SegmentWithoutPause<SegmentValue, Native>[],
+      segments: OutputableSegment<SegmentValue, Native>[],
       options: O
     ) => Job[],
     target: T,
@@ -134,7 +134,7 @@ export default class MachinatEngine<
 
     const tasks: DispatchTask<Job>[] = [];
     let thunksBuffer: RenderThunkFn[] = [];
-    let segmentsBuffer: SegmentWithoutPause<SegmentValue, Native>[] = [];
+    let segmentsBuffer: OutputableSegment<SegmentValue, Native>[] = [];
 
     for (let i = 0; i < segments.length; i += 1) {
       const segment = segments[i];

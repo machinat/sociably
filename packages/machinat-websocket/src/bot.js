@@ -7,7 +7,7 @@ import Renderer from 'machinat-renderer';
 import Queue from 'machinat-queue';
 
 import type { MachinatNode, MachinatUser } from 'machinat/types';
-import type { MachinatBot, SegmentWithoutPause } from 'machinat-base/types';
+import type { MachinatBot, OutputableSegment } from 'machinat-base/types';
 import type { HTTPUpgradeReceivable } from 'machinat-http-adaptor/types';
 import type {
   WebSocketChannel,
@@ -49,7 +49,7 @@ const allowDefaultAuthentication: ServerAuthenticatorFunc = async (
 
 const createJobs = (
   scope: WebSocketChannel,
-  segments: SegmentWithoutPause<EventOrder, WebSocketComponent>[]
+  segments: OutputableSegment<EventOrder, WebSocketComponent>[]
 ): WebSocketJob[] => {
   return segments.map(seg => ({
     scope,
