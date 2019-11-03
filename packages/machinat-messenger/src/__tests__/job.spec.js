@@ -242,6 +242,24 @@ describe('createChatJobs()', () => {
       expect(job.attachmentFileInfo).toEqual(i === 0 ? undefined : fileInfo);
     });
   });
+
+  it('throw if non USER_TO_PAGE channel met', () => {
+    expect(() =>
+      createChatJobs(
+        new MessengerChannel('_PAGE_ID_', { id: 'xxx' }, 'GROUP'),
+        segments
+      )
+    ).toThrowErrorMatchingInlineSnapshot(`"unable to send to GROUP channel"`);
+
+    expect(() =>
+      createChatJobs(
+        new MessengerChannel('_PAGE_ID_', { id: 'xxx' }, 'USER_TO_USER'),
+        segments
+      )
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"unable to send to USER_TO_USER channel"`
+    );
+  });
 });
 
 describe('createCreativeJobs()', () => {
