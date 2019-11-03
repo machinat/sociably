@@ -101,18 +101,20 @@ export const handleWebhook = (
       const event = createEvent(isStandby, rawEvent);
       const { type, payload } = event;
 
-      const source =
-        type === 'optin' && payload.sender === undefined
-          ? { user_ref: payload.optin.user_ref }
-          : payload.sender;
-
       if (type === 'checkout_update' || type === 'pre_checkout') {
         shouldWaitForRespond = true;
       }
 
+      const { sender } = payload;
+      const { pageId } = options;
+
       reports.push({
-        channel: new MessengerChannel(source, options.pageId),
-        user: source.id ? new MessengerUser(source) : null,
+        channel:
+          type === 'optin' && sender === undefined
+            ? new MessengerChannel(pageId, { user_ref: payload.optin.user_ref })
+            : new MessengerChannel(pageId, sender),
+        user:
+          sender !== undefined ? new MessengerUser(pageId, sender.id) : null,
         event,
         response: undefined,
       });

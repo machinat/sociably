@@ -12,14 +12,21 @@ import type MessengerChannel from './channel';
 import type { MessengerUser } from './user';
 import typeof { ENTRY_PATH } from './constant';
 
-export type PSIDSource = {| id: string |};
-export type UserRefSource = {| user_ref: string |};
-export type PhoneNumberSource = {|
+export type PSIDTarget = {| id: string |};
+export type UserRefTarget = {| user_ref: string |};
+export type PhoneNumberTarget = {|
   phone_number: string,
   name?: {| first_name: string, last_name: string |},
 |};
+export type PostPrivateReplyTarget = {| post_id: string |};
+export type CommentPrivateReplyTarget = {| comment_id: string |};
 
-export type MessengerSource = PSIDSource | UserRefSource | PhoneNumberSource;
+export type MessengerTarget =
+  | PSIDTarget
+  | UserRefTarget
+  | PhoneNumberTarget
+  | PostPrivateReplyTarget
+  | CommentPrivateReplyTarget;
 
 // TODO: type the raw event object
 export type MessengerRawEvent = Object;

@@ -2,37 +2,90 @@
 /* eslint-disable camelcase */
 import crypto from 'crypto';
 import type { MachinatChannel } from 'machinat/types';
-import type { MessengerSource } from './types';
 import { MESSENGER } from './constant';
+import type { MessengerTarget } from './types';
+
+type MessengerThreadType = 'USER_TO_PAGE' | 'USER_TO_USER' | 'GROUP';
+
+type MessengerExtensionContext = {
+  psid: string,
+  algorithm: string,
+  thread_type: MessengerThreadType,
+  tid: string,
+  issued_at: number,
+  page_id: number,
+};
 
 class MessengerChannel implements MachinatChannel {
-  uid: string;
-  source: MessengerSource;
-  pageId: string;
+  pageId: string | number;
+  threadType: MessengerThreadType;
+  _target: MessengerTarget;
 
   platform = MESSENGER;
-  type = 'chat';
-  subtype = 'user';
-  allowPause = true;
 
-  constructor(source: MessengerSource, pageId: string) {
-    this.source = source;
+  static fromExtensionContext(ctx: MessengerExtensionContext) {
+    return new MessengerChannel(ctx.page_id, { id: ctx.tid }, ctx.thread_type);
+  }
+
+  constructor(
+    pageId: string | number,
+    target: MessengerTarget,
+    threadType: MessengerThreadType = 'USER_TO_PAGE'
+  ) {
     this.pageId = pageId;
+    this.threadType = threadType;
+    this._target = target;
+  }
 
-    this.uid = `messenger:${pageId}:${
-      source.id
-        ? `user:${source.id}`
-        : source.user_ref
-        ? `user_ref:${source.user_ref}`
-        : source.phone_number
-        ? // NOTE: uid is the identity of a channel and will likely to be used
-          // and stored by 3rd-party plugins, so personal info should be hashed
-          `phone_number:${crypto
+  get type() {
+    return this.threadType;
+  }
+
+  get subtype() {
+    return this.targetType;
+  }
+
+  get targetType() {
+    return this.threadType !== 'USER_TO_PAGE' || this._target.id
+      ? 'psid'
+      : this._target.user_ref
+      ? 'user_ref'
+      : this._target.phone_number
+      ? 'phone_number'
+      : this._target.post_id
+      ? 'post_id'
+      : this._target.comment_id
+      ? 'comment_id'
+      : '';
+  }
+
+  get identifier() {
+    const { _target: target } = this;
+
+    return (
+      target.id ||
+      target.user_ref ||
+      target.post_id ||
+      target.comment_id ||
+      (target.phone_number
+        ? crypto
             .createHash('sha1')
-            .update(source.phone_number)
-            .digest('base64')}`
-        : 'chat:*'
-    }`;
+            .update(target.phone_number)
+            .digest('base64')
+        : '')
+    );
+  }
+
+  get uid(): string {
+    return `messenger:${this.pageId}:${this.targetType}:${this.identifier}`;
+  }
+
+  get sendable() {
+    return this.threadType === 'USER_TO_PAGE';
+  }
+
+  get target(): null | MessengerTarget {
+    return this.sendable ? this._target : null;
   }
 }
 

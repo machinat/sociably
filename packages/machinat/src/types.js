@@ -137,6 +137,7 @@ export interface MachinatChannel {
 export interface MachinatUser {
   +platform: string;
   +id: string;
+  +uid: string;
 }
 
 export interface MachinatEvent<Payload> {
@@ -154,9 +155,10 @@ export interface MachinatUserProfile {
   +platform: any;
   +id: string;
   +name: string;
+  +pictureURL: void | string;
 }
 
-export interface UserProfileRetrievable<
+export interface UserProfileFetchable<
   User: MachinatUser,
   Profile: MachinatUserProfile
 > {

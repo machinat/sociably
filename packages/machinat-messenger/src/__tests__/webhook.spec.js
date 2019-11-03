@@ -166,7 +166,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
 
       eventReports.forEach(({ channel, event, response }, i) => {
         expect(response).toBe(undefined);
-        expect(channel.source).toEqual({ id: '_PSID_' });
+        expect(channel.target).toEqual({ id: '_PSID_' });
 
         expect(event.platform).toBe('messenger');
         expect(event.type).toBe('message');
@@ -228,7 +228,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
       const [{ event, channel, response }] = eventReports;
 
       expect(response).toBe(undefined);
-      expect(channel.source).toEqual({ id: '_PSID_' });
+      expect(channel.target).toEqual({ id: '_PSID_' });
 
       expect(event.platform).toBe('messenger');
       expect(event.type).toBe('pre_checkout');
@@ -282,7 +282,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
       const [{ channel, event, response }] = eventReports;
 
       expect(response).toBe(undefined);
-      expect(channel.source).toEqual({ id: '_PSID_' });
+      expect(channel.target).toEqual({ id: '_PSID_' });
 
       expect(event.platform).toBe('messenger');
       expect(event.type).toBe('checkout_update');
@@ -328,7 +328,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
 
       events.forEach(({ channel, event, response }, i) => {
         expect(response).toBe(undefined);
-        expect(channel.source).toEqual(
+        expect(channel.target).toEqual(
           i === 0
             ? { id: '_PSID_' }
             : { user_ref: '<REF_FROM_CHECKBOX_PLUGIN>' }
@@ -366,7 +366,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
       expect(res.finished).toBe(true);
 
       expect(response).toBe(undefined);
-      expect(channel.source).toEqual({ id: '_PSID_' });
+      expect(channel.target).toEqual({ id: '_PSID_' });
 
       expect(event.platform).toBe('messenger');
       expect(event.type).toBe('message');

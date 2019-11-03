@@ -30,7 +30,9 @@ export const createChatJobs = (
   segments: SegmentWithoutPause<MessengerSegmentValue, MessengerComponent>[],
   options?: MessengerSendOptions
 ): MessengerJob[] => {
-  const { source, uid } = channel;
+  const { target, uid } = channel;
+  if (!target) {
+  }
 
   const jobs: MessengerJob[] = new Array(segments.length);
 
@@ -53,7 +55,7 @@ export const createChatJobs = (
       body = ({ message: { text: value } }: Object);
     }
 
-    body.recipient = source;
+    body.recipient = target;
 
     if (options && isMessageEntry(value)) {
       if (body.message) {

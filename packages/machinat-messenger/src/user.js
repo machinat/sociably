@@ -1,18 +1,23 @@
 // @flow
 import type { MachinatUser, MachinatUserProfile } from 'machinat/types';
-import type { PSIDSource } from './types';
 import { MESSENGER } from './constant';
 
 export class MessengerUser implements MachinatUser {
-  source: PSIDSource;
   platform = MESSENGER;
+  pageId: string;
+  psid: string;
 
-  constructor(source: string | PSIDSource) {
-    this.source = typeof source === 'string' ? { id: source } : source;
+  constructor(pageId: string, psid: string) {
+    this.pageId = pageId;
+    this.psid = psid;
   }
 
   get id() {
-    return this.source.id;
+    return this.psid;
+  }
+
+  get uid() {
+    return `messenger:${this.pageId}:${this.psid}`;
   }
 }
 

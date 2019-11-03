@@ -25,7 +25,7 @@ import {
 
 import type { MessengerUser } from './user';
 import type {
-  MessengerSource,
+  MessengerTarget,
   MessengerBotOptions,
   MessengerEvent,
   MessengerResponse,
@@ -169,16 +169,17 @@ export default class MessengerBot
   }
 
   async render(
-    target: string | MessengerSource | MessengerChannel,
+    target: string | MessengerTarget | MessengerChannel,
     messages: MachinatNode,
     options?: MessengerSendOptions
   ): Promise<null | MessengerAPIResult[]> {
+    const { pageId } = this.options;
     const channel =
       target instanceof MessengerChannel
         ? target
         : new MessengerChannel(
-            typeof target === 'string' ? { id: target } : target,
-            this.options.pageId
+            pageId,
+            typeof target === 'string' ? { id: target } : target
           );
 
     const tasks = await this.engine.renderTasks(

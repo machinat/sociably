@@ -36,7 +36,7 @@ describe('createChatJobs()', () => {
   ];
 
   it('create jobs to be sent', () => {
-    const channel = new MessengerChannel({ id: 'john' }, '_PAGE_ID_');
+    const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
 
     const jobs = createChatJobs(channel, segments);
 
@@ -44,7 +44,7 @@ describe('createChatJobs()', () => {
 
     jobs.forEach((job, i) => {
       expect(job).toEqual({
-        channelUid: 'messenger:_PAGE_ID_:user:john',
+        channelUid: 'messenger:_PAGE_ID_:psid:john',
         request: {
           method: 'POST',
           relative_url: i === 2 ? 'bar/baz' : 'me/messages',
@@ -58,7 +58,7 @@ describe('createChatJobs()', () => {
   });
 
   it('add coresponding options to body on messages', () => {
-    const channel = new MessengerChannel({ id: 'john' }, '_PAGE_ID_');
+    const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
 
     const jobs = createChatJobs(channel, segments, {
       messagingType: 'MESSAGE_TAG',
@@ -94,7 +94,7 @@ describe('createChatJobs()', () => {
   });
 
   it('set persona_id message and typing_on/typeing_off action', () => {
-    const channel = new MessengerChannel({ id: 'john' }, '_PAGE_ID_');
+    const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
 
     const jobs = createChatJobs(
       channel,
@@ -125,7 +125,7 @@ describe('createChatJobs()', () => {
   });
 
   it('respect options originally set in job value', () => {
-    const channel = new MessengerChannel({ id: 'Luke' }, '_PAGE_ID_');
+    const channel = new MessengerChannel('_PAGE_ID_', { id: 'Luke' });
 
     const jobs = createChatJobs(
       channel,
@@ -176,7 +176,7 @@ describe('createChatJobs()', () => {
   });
 
   it('respect the empty tag if messaging_type has already been set', () => {
-    const channel = new MessengerChannel({ id: 'Luke' }, '_PAGE_ID_');
+    const channel = new MessengerChannel('_PAGE_ID_', { id: 'Luke' });
 
     const jobs = createChatJobs(
       channel,
@@ -209,7 +209,7 @@ describe('createChatJobs()', () => {
   });
 
   it('add attached file data and info if there are', () => {
-    const channel = new MessengerChannel({ id: 'john' }, '_PAGE_ID_');
+    const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
     const fileInfo = {
       filename: 'deathangel.jpg',
       contentType: 'image/jpeg',
