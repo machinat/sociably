@@ -133,12 +133,15 @@ export type EntryGetterFn = (
   channel: LineChannel
 ) => {| method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string |};
 
+type EntryGattable = {
+  [ENTRY_GETTER]: EntryGetterFn,
+};
+
 export type LinkRichMenuSegmentValue = {|
   id: string,
-  [ENTRY_GETTER]: EntryGetterFn,
-|};
+|} & EntryGattable;
 
-export type LeaveSegmentValue = {||};
+export type LeaveSegmentValue = EntryGattable;
 
 export type LineSegmentValue =
   | TextSegmentValue

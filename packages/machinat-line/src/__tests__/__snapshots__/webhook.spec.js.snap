@@ -4,15 +4,14 @@ exports[`handleWebhook(options)(req, res, body) returns events created 1`] = `
 Array [
   Object {
     "channel": LineChannel {
+      "channelId": "_LINE_CHANNEL_ID_",
       "platform": "line",
       "source": Object {
         "type": "user",
         "userId": "U4af4980629",
       },
       "sourceId": "U4af4980629",
-      "subtype": "user",
-      "type": "chat",
-      "uid": "line:_LINE_CHANNEL_ID_:user:U4af4980629",
+      "type": "user",
     },
     "event": Object {
       "payload": Object {
@@ -34,24 +33,21 @@ Array [
     },
     "response": undefined,
     "user": LineUser {
+      "channelId": "_LINE_CHANNEL_ID_",
       "platform": "line",
-      "source": Object {
-        "type": "user",
-        "userId": "U4af4980629",
-      },
+      "userId": "U4af4980629",
     },
   },
   Object {
     "channel": LineChannel {
+      "channelId": "_LINE_CHANNEL_ID_",
       "platform": "line",
       "source": Object {
         "type": "user",
         "userId": "U4af4980629",
       },
       "sourceId": "U4af4980629",
-      "subtype": "user",
-      "type": "chat",
-      "uid": "line:_LINE_CHANNEL_ID_:user:U4af4980629",
+      "type": "user",
     },
     "event": Object {
       "payload": Object {
@@ -68,11 +64,9 @@ Array [
     },
     "response": undefined,
     "user": LineUser {
+      "channelId": "_LINE_CHANNEL_ID_",
       "platform": "line",
-      "source": Object {
-        "type": "user",
-        "userId": "U4af4980629",
-      },
+      "userId": "U4af4980629",
     },
   },
 ]

@@ -29,7 +29,7 @@ test('entry getter point to the api entry for leaving', async () => {
   const [{ value }] = await render(<Leave />);
   expect(
     value[ENTRY_GETTER](
-      new LineChannel({
+      new LineChannel('_CHANNEL_ID_', {
         type: 'group',
         groupId: '_GROUP_ID_',
         userId: '_USER_ID_',
@@ -42,7 +42,7 @@ test('entry getter point to the api entry for leaving', async () => {
 
   expect(
     value[ENTRY_GETTER](
-      new LineChannel({
+      new LineChannel('_CHANNEL_ID_', {
         type: 'room',
         roomId: '_ROOM_ID_',
         userId: '_USER_ID_',
@@ -59,7 +59,7 @@ test('entry getter throw if type of channel is user', async () => {
 
   expect(() =>
     value[ENTRY_GETTER](
-      new LineChannel({
+      new LineChannel('_CHANNEL_ID_', {
         type: 'user',
         userId: '_USER_ID_',
       })

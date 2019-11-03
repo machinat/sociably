@@ -32,8 +32,8 @@ const handleWebhook = (
   ): WebhookEventReport<LineChannel, ?LineUser, LineEvent, void> => {
     const { source } = rawEvent;
     return {
-      channel: new LineChannel(source, channelId),
-      user: new LineUser(source),
+      channel: new LineChannel(channelId, source),
+      user: new LineUser(channelId, source.userId),
       event: createEvent(rawEvent),
       response: undefined,
     };

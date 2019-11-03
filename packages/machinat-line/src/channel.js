@@ -5,15 +5,14 @@ import { LINE } from './constant';
 
 class LineChannel implements MachinatChannel {
   platform = LINE;
-  type = 'chat';
-
-  subtype: 'user' | 'room' | 'group';
-  uid: string;
+  channelId: string;
+  type: 'user' | 'room' | 'group';
   source: LineSource;
   sourceId: string;
 
-  constructor(source: LineSource, lineChannelId: string) {
-    this.subtype = source.type;
+  constructor(lineChannelId: string, source: LineSource) {
+    this.channelId = lineChannelId;
+    this.type = source.type;
 
     this.source = source;
     this.sourceId =
@@ -22,8 +21,10 @@ class LineChannel implements MachinatChannel {
         : source.type === 'room'
         ? source.roomId
         : source.userId;
+  }
 
-    this.uid = `line:${lineChannelId}:${this.subtype}:${this.sourceId}`;
+  get uid() {
+    return `line:${this.channelId}:${this.type}:${this.sourceId}`;
   }
 }
 

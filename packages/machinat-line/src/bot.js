@@ -153,10 +153,10 @@ class LineBot
       source instanceof LineChannel
         ? source
         : new LineChannel(
+            this.options.channelId,
             typeof source === 'string'
               ? { type: 'user', userId: source }
-              : source,
-            this.options.channelId
+              : source
           );
 
     const usePush = !(options && options.replyToken);

@@ -4,15 +4,15 @@ import { ENTRY_GETTER } from '../constant';
 import { asUnitComponent } from '../utils';
 
 const LEAVE_RENDERED = {
-  [ENTRY_GETTER]({ type, subtype, sourceId }) {
+  [ENTRY_GETTER]({ type, sourceId }) {
     invariant(
-      type === 'chat' && subtype !== 'user',
+      type !== 'user',
       '<Leave /> should be only used in a group or room channel'
     );
 
     return {
       method: 'POST',
-      path: `v2/bot/${subtype}/${sourceId}/leave`,
+      path: `v2/bot/${type}/${sourceId}/leave`,
     };
   },
 };

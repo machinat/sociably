@@ -31,10 +31,10 @@ describe('createChatJobs()', () => {
   ];
 
   it('work', () => {
-    const channel = new LineChannel(
-      { type: 'user', userId: 'john' },
-      '_LINE_CHANNEL_ID_'
-    );
+    const channel = new LineChannel('_LINE_CHANNEL_ID_', {
+      type: 'user',
+      userId: 'john',
+    });
 
     const jobs = createChatJobs(channel, segments);
 
@@ -58,10 +58,10 @@ describe('createChatJobs()', () => {
   });
 
   test('when useReplyAPI', () => {
-    const channel = new LineChannel(
-      { type: 'user', userId: 'john' },
-      '_LINE_CHANNEL_ID_'
-    );
+    const channel = new LineChannel('_LINE_CHANNEL_ID_', {
+      type: 'user',
+      userId: 'john',
+    });
 
     const jobs = createChatJobs(channel, segments, {
       replyToken: '__REPLY_TOKEN__',

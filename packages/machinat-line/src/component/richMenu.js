@@ -2,9 +2,9 @@ import invariant from 'invariant';
 import { ENTRY_GETTER } from '../constant';
 import { asUnitComponent } from '../utils';
 
-function getLinkRichMenuEntry({ type, subtype, source }) {
+function getLinkRichMenuEntry({ type, source }) {
   invariant(
-    type === 'chat' && subtype === 'user',
+    type === 'user',
     '<RichMenu /> can only be delivered in a user chatting channel'
   );
 
@@ -20,9 +20,9 @@ const LinkRichMenu = async ({ props: { id } }) => ({
 });
 const __LinkRichMenu = asUnitComponent(LinkRichMenu);
 
-function getUnlinkRichMenuEntry({ type, subtype, source }) {
+function getUnlinkRichMenuEntry({ type, source }) {
   invariant(
-    type === 'chat' && subtype === 'user',
+    type === 'user',
     '<UnlinkRichMenu /> can only be delivered in a user chatting channel'
   );
 

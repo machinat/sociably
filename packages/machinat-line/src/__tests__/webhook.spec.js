@@ -122,7 +122,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
       expect(response).toBe(undefined);
 
       expect(channel).toBeInstanceOf(LineChannel);
-      expect(channel.subtype).toBe('user');
+      expect(channel.type).toBe('user');
       expect(channel.source).toEqual({
         type: 'user',
         userId: 'U4af4980629',
@@ -162,7 +162,7 @@ describe('handleWebhook(options)(req, res, body)', () => {
     );
 
     expect(channel).toBeInstanceOf(LineChannel);
-    expect(channel.subtype).toBe('user');
+    expect(channel.type).toBe('user');
     expect(channel.uid).toBe('line:_my_foo_line_channel_:user:U4af4980629');
   });
 

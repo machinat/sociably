@@ -3,15 +3,21 @@ import type { MachinatUser, MachinatUserProfile } from 'machinat/types';
 import { LINE } from './constant';
 
 export class LineUser implements MachinatUser {
-  source: { userId: string };
   platform = LINE;
+  channelId: string;
+  userId: string;
 
-  constructor(source: { userId: string }) {
-    this.source = source;
+  constructor(lineChannelId: string, userId: string) {
+    this.channelId = lineChannelId;
+    this.userId = userId;
   }
 
   get id() {
-    return this.source.userId;
+    return this.userId;
+  }
+
+  get uid() {
+    return `line:${this.channelId}:${this.userId}`;
   }
 }
 
