@@ -28,6 +28,7 @@ module.exports = {
     'no-underscore-dangle': 0,
     'no-cond-assign': 0,
     'no-unused-vars': ['error', {
+      varsIgnorePattern: '^_+',
       argsIgnorePattern: '^_',
       ignoreRestSiblings: true,
     }],

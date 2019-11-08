@@ -3,21 +3,13 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import type { MachinatUser, MachinatChannel } from 'machinat/types';
 import type AuthFlowHelper from './server/helper';
 
-export type AuthContext = {
-  platform: string,
-  user: MachinatUser,
-  channel: null | MachinatChannel,
-  loginAt: Date,
-  info: any,
-};
-
-export type AuthData = {|
-  data: Object,
+export type AuthData<Data> = {|
+  data: Data,
 |};
 
-export type StateData = {|
+export type StateData<Data> = {|
   redirectTarget: void | string,
-  data: Object,
+  data: Data,
 |};
 
 export type ErrorData = {
@@ -31,24 +23,46 @@ type Payload<T> = {
   exp: number,
   scope: { domain?: string, path: string },
 } & T;
-export type AuthPayload = Payload<{ auth: AuthData }>;
-export type StatePayload = Payload<{ state: StateData }>;
+export type AuthPayload<Data> = Payload<{ auth: AuthData<Data> }>;
+export type StatePayload<Data> = Payload<{ state: StateData<Data> }>;
 export type ErrorPayload = Payload<{ error: ErrorData }>;
 
-export interface ServerAuthProvider {
+export type AuthResult<Data> = {|
+  user: MachinatUser,
+  channel: null | MachinatChannel,
+  loginAt: null | Date,
+  data: Data,
+|};
+
+export type AuthContext<Data> = {|
+  platform: string,
+  selfIssued: boolean,
+  ...AuthResult<Data>,
+|};
+
+/**
+ *
+ *
+ */
+export interface ServerAuthProvider<Data> {
   platform: string;
   handleAuthRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    accessor: AuthFlowHelper
+    helper: AuthFlowHelper
   ): Promise<void>;
-  verifyAuthData(data: AuthData): Promise<boolean>;
-  unmarshalAuthData(data: Object): null | AuthContext;
+  verifyAuthData(data: AuthData<Data>): Promise<AuthResult<Data>>;
+  refineAuthData(data: AuthData<Data>): Promise<null | AuthResult<Data>>;
 }
 
-export interface ClientAuthProvider {
+export interface ClientAuthProvider<Data> {
   platform: string;
   init(): void;
-  startFlow(authEntry: string): Promise<AuthData>;
-  unmarshalAuthData(data: Object): AuthContext;
+  startAuthFlow({ authEntry: string }): Promise<AuthResult<Data>>;
+  refineAuthData(data: AuthData<Data>): Promise<null | AuthResult<Data>>;
+}
+
+export interface MahcinatAuthError {
+  message: string;
+  code: number;
 }

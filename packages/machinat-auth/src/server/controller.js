@@ -9,6 +9,7 @@ import invariant from 'invariant';
 import { verify as verifyJWT } from 'jsonwebtoken';
 import { decode as decodeBase64URL } from 'base64url';
 import thenifiedly from 'thenifiedly';
+import AuthError from '../error';
 
 import {
   AUTH_SCHEME,
@@ -17,8 +18,8 @@ import {
 } from '../constant';
 import type {
   ServerAuthProvider,
+  AuthResult,
   AuthContext,
-  AuthData,
   AuthPayload,
 } from '../types';
 
@@ -26,7 +27,7 @@ import { respondError, getCookies, checkDomainScope } from './utils';
 import AuthFlowHelper from './helper';
 
 type FlowControllerOptions = {|
-  providers: ServerAuthProvider[],
+  providers: ServerAuthProvider<any>[],
   secret: string,
   entry: string,
   tokenAge: number,
@@ -39,25 +40,25 @@ type FlowControllerOptions = {|
 
 type FlowControllerOptionsInput = $Shape<FlowControllerOptions>;
 
-type SignedAuthParams = {|
-  signed: true,
+type SelfIssuedAuthParams = {|
   platform: string,
+  self_issued: true,
   token_content: string,
 |};
 
-type UnsignedAuthParam = {|
-  signed: false,
+type NonSelfIssuedAuthParam = {|
   platform: string,
+  self_issued: false,
   auth_data: any,
 |};
 
-type HTTPAuthorizationParams = SignedAuthParams | UnsignedAuthParam;
+type HTTPAuthorizationParams = SelfIssuedAuthParams | NonSelfIssuedAuthParam;
 
-// Auhtorization: Machinat-Auth platfrom=telegram,signed=true,token_content=xxx
-// Auhtorization: Machinat-Auth platfrom=messenger,signed=false,auth_data=xxxx
+// Auhtorization: Machinat-Auth-V0 platfrom=telegram,self_issued=true,token_content=xxx
+// Auhtorization: Machinat-Auth platfrom=messenger,self_issued=false,auth_data=xxxx
 const allowedAuthorizationFields = [
   'platfrom',
-  'signed',
+  'self_issued',
   'token_content',
   'auth_data',
 ];
@@ -83,32 +84,35 @@ const parseAuthParams = (paramsStr: string): null | HTTPAuthorizationParams => {
     params[key] = value;
   }
 
-  const polished: any = {};
-
-  if (params.signed === 'true') {
-    if (!params.token_content) {
+  if (params.self_issued === 'true') {
+    if (!params.token_content || !params.platform) {
       return null;
     }
 
-    polished.signed = true;
-    polished.tokenContent = params.token_content;
-  } else if (params.signed === 'false') {
+    return {
+      self_issued: true,
+      platform: params.platform,
+      token_content: params.token_content,
+    };
+  }
+
+  if (params.self_issued === 'false') {
     if (!params.auth_data || !params.platform) {
       return null;
     }
 
-    polished.signed = true;
-    polished.platform = params.platform;
     try {
-      polished.authData = JSON.parse(decodeBase64URL(params.auth_data));
+      return {
+        self_issued: false,
+        platform: params.platform,
+        auth_data: JSON.parse(decodeBase64URL(params.auth_data)),
+      };
     } catch (e) {
       return null;
     }
-  } else {
-    return null;
   }
 
-  return polished;
+  return null;
 };
 
 class AuthFlowController {
@@ -197,54 +201,84 @@ class AuthFlowController {
 
   async verifyHTTPAuthorization(
     req: IncomingMessage
-  ): Promise<null | AuthContext> {
+  ): Promise<AuthContext<any>> {
     const { authorization } = req.headers;
     if (!authorization) {
-      return null;
+      throw new AuthError(401, '"Authorization" header required');
     }
 
     const [scheme, rawParams] = (authorization: string).split(/\s+/, 2);
     if (scheme.toLowerCase() !== AUTH_SCHEME || !rawParams) {
-      return null;
+      throw new AuthError(400, 'unknown auth scheme');
     }
 
     const params = parseAuthParams(rawParams);
     if (!params) {
-      return null;
+      throw new AuthError(400, 'invalid authorization params');
     }
 
-    if (!params.signed) {
+    if (!params.self_issued) {
       const { platform, auth_data: authData } = params;
       if (!authData) {
-        return null;
+        throw new AuthError(400, 'invalid authorization params');
       }
 
-      return this._verifyAuthData(platform, authData);
+      const provider = this._getProviderOf(platform);
+      if (!provider) {
+        throw new AuthError(404, 'unknown platform');
+      }
+
+      try {
+        const result = await provider.verifyAuthData(authData);
+        const { channel, user, loginAt, data } = result;
+
+        return {
+          selfIssued: false,
+          platform,
+          channel,
+          user,
+          loginAt,
+          data,
+        };
+      } catch (err) {
+        if (typeof err.code !== 'number') {
+          throw new AuthError(500, err.message);
+        }
+        throw err;
+      }
     }
 
-    const { token_content: tokenContent } = params;
+    const { platform, token_content: tokenContent } = params;
     if (!tokenContent) {
-      return null;
+      throw new AuthError(400, 'invalid authorization params');
     }
 
     const cookies = getCookies(req);
-
     let signature;
-    if (
-      !cookies ||
-      !tokenContent ||
-      !(signature = cookies[TOKEN_SIGNATURE_COOKIE_KEY])
-    ) {
-      return null;
+    if (!cookies || !(signature = cookies[TOKEN_SIGNATURE_COOKIE_KEY])) {
+      throw new AuthError(401, 'signature required');
     }
 
-    return this._verifyToken(tokenContent, signature);
+    const result = await this._verifyToken(tokenContent, signature);
+    const { channel, user, loginAt, data } = result;
+
+    return {
+      selfIssued: true,
+      platform,
+      channel,
+      user,
+      loginAt,
+      data,
+    };
   }
 
-  refreshAuthCookie(req: IncomingMessage, res: ServerResponse) {
+  async refreshAuthCookie(
+    req: IncomingMessage,
+    res: ServerResponse
+  ): Promise<boolean> {
     const cookies = getCookies(req);
     if (!cookies) {
-      return;
+      return false;
     }
 
     let tokenContent;
@@ -262,39 +296,25 @@ class AuthFlowController {
       if (signature) {
         this._helper.deleteCookie(res, TOKEN_SIGNATURE_COOKIE_KEY);
       }
-      return;
+      return false;
     }
 
-    if (this._verifyToken(tokenContent, signature)) {
-      this._helper.setDataCookie(res, TOKEN_CONTENT_COOKIE_KEY, tokenContent);
-      return;
+    try {
+      this._verifyToken(tokenContent, signature);
+    } catch (e) {
+      this._helper.deleteCookie(res, TOKEN_CONTENT_COOKIE_KEY);
+      this._helper.deleteCookie(res, TOKEN_SIGNATURE_COOKIE_KEY);
+      return false;
     }
 
-    this._helper.deleteCookie(res, TOKEN_CONTENT_COOKIE_KEY);
-    this._helper.deleteCookie(res, TOKEN_SIGNATURE_COOKIE_KEY);
-  }
-
-  async _verifyAuthData(
-    platform: string,
-    data: AuthData
-  ): Promise<null | AuthContext> {
-    const provider = this._getProviderOf(platform);
-    if (!provider) {
-      return null;
-    }
-
-    const passed = await provider.verifyAuthData(data);
-    if (!passed) {
-      return null;
-    }
-
-    return provider.unmarshalAuthData(data);
+    this._helper.setDataCookie(res, TOKEN_CONTENT_COOKIE_KEY, tokenContent);
+    return true;
   }
 
   async _verifyToken(
     tokenContent: string,
     signature: string
-  ): Promise<null | AuthContext> {
+  ): Promise<AuthResult<any>> {
     let authPayload;
     try {
       authPayload = await thenifiedly.call(
@@ -302,20 +322,25 @@ class AuthFlowController {
         `${tokenContent}.${signature}`,
         this.options.secret
       );
-    } catch (e) {
-      return null;
+    } catch (err) {
+      throw new AuthError(403, err.message);
     }
 
-    const { platform, auth }: AuthPayload = authPayload;
+    const { platform, auth }: AuthPayload<any> = authPayload;
     const provider = this._getProviderOf(platform);
     if (!provider) {
-      return null;
+      throw new AuthError(404, 'unknown platform');
     }
 
-    return provider.unmarshalAuthData(auth);
+    const context = await provider.refineAuthData(auth);
+    if (!context) {
+      throw new AuthError(400, 'invalid auth data');
+    }
+
+    return context;
   }
 
-  _getProviderOf(platform: string): null | ServerAuthProvider {
+  _getProviderOf(platform: string): null | ServerAuthProvider<any> {
     for (const provider of this.options.providers) {
       if (platform === provider.platform) {
         return provider;

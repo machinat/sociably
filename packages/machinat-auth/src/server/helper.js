@@ -106,7 +106,7 @@ class AuthFlowHelper {
   async getState(
     req: IncomingMessage,
     platform: string
-  ): Promise<null | StateData> {
+  ): Promise<null | StateData<any>> {
     let stateEnceded;
     const cookies = getCookies(req);
     if (!cookies || !(stateEnceded = cookies[STATE_COOKIE_KEY])) {
@@ -114,7 +114,7 @@ class AuthFlowHelper {
     }
 
     try {
-      const payload: StatePayload = await thenifiedly.call(
+      const payload: StatePayload<any> = await thenifiedly.call(
         verifyJWT,
         stateEnceded,
         this._secret
@@ -126,7 +126,11 @@ class AuthFlowHelper {
     }
   }
 
-  async setState(res: ServerResponse, platform: string, state: StateData) {
+  async issueState(
+    res: ServerResponse,
+    platform: string,
+    state: StateData<any>
+  ) {
     const stateEnceded = await thenifiedly.call(
       signJWT,
       { platform, state, scope: this._scope },
@@ -140,7 +144,7 @@ class AuthFlowHelper {
   async getAuth(
     req: IncomingMessage,
     platform: string
-  ): Promise<null | AuthData> {
+  ): Promise<null | AuthData<any>> {
     const cookies = getCookies(req);
     if (!cookies) {
       return null;
@@ -153,7 +157,7 @@ class AuthFlowHelper {
     }
 
     try {
-      const payload: AuthPayload = await thenifiedly.call(
+      const payload: AuthPayload<any> = await thenifiedly.call(
         verifyJWT,
         `${contentVal}.${sigVal}`,
         this._secret
@@ -165,7 +169,7 @@ class AuthFlowHelper {
     }
   }
 
-  async setAuth(res: ServerResponse, platform: string, auth: AuthData) {
+  async issueAuth(res: ServerResponse, platform: string, auth: AuthData<any>) {
     const authToken = await thenifiedly.call(
       signJWT,
       { platform, auth, scope: this._scope },
@@ -205,7 +209,7 @@ class AuthFlowHelper {
     }
   }
 
-  async setError(res: ServerResponse, platform: string, error: ErrorData) {
+  async issueError(res: ServerResponse, platform: string, error: ErrorData) {
     const errEncoded = await thenifiedly.call(
       signJWT,
       { platform, error, scope: this._scope },

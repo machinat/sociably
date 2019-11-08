@@ -8,6 +8,7 @@ import {
   TOKEN_CONTENT_COOKIE_KEY,
   ERROR_COOKIE_KEY,
 } from '../constant';
+import AuthError from '../error';
 import type {
   AuthContext,
   ClientAuthProvider,
@@ -17,22 +18,17 @@ import type {
 
 type ClientFlowControllerOpts = {|
   authEntry?: string,
-  providers: ClientAuthProvider[],
+  providers: ClientAuthProvider<any>[],
 |};
-
-type AuthResult = {
-  context: AuthContext,
-  credential: string,
-};
 
 declare var location: Location;
 declare var document: Document;
 
-const signedCredential = (platform: string, tokenContent: string) =>
-  `${AUTH_SCHEME} signed=true,platform=${platform},token_content=${tokenContent}`;
+const selfIssuedCredential = (platform: string, tokenContent: string) =>
+  `${AUTH_SCHEME} platform=${platform},self_issued=true,token_content=${tokenContent}`;
 
-const unsignedCredential = (platform: string, authData: any) =>
-  `${AUTH_SCHEME} signed=false,platform=${platform},auth_data=${encodeBase64URL(
+const nonSelfIssuedCredential = (platform: string, authData: any) =>
+  `${AUTH_SCHEME} platform=${platform},self_issued=false,auth_data=${encodeBase64URL(
     JSON.stringify(authData)
   )}`;
 
@@ -45,7 +41,7 @@ const deleteCookie = (name: string, domain?: string, path?: string) => {
 };
 
 class ClientFlowController {
-  providers: ClientAuthProvider[];
+  providers: ClientAuthProvider<any>[];
   authEntry: string;
   initiated: boolean;
   _cookies: {| [string]: string |};
@@ -93,7 +89,7 @@ class ClientFlowController {
    * Resolve the auth context already assigned or context resolved by
    * provider.startFlow(), reject if error happen.
    */
-  async authenticate(): Promise<AuthResult> {
+  async authenticate(): Promise<AuthContext<any>> {
     const params = new URLSearchParams(location.search);
     const platformSpecified = params.get('platform');
 
@@ -105,11 +101,11 @@ class ClientFlowController {
       deleteCookie(ERROR_COOKIE_KEY, scope.domain, scope.path);
 
       if (!platformSpecified || errorPlatform === platformSpecified) {
-        throw new Error();
+        throw new AuthError(error.code, error.message);
       }
     }
 
-    let authPayload: void | AuthPayload;
+    let authPayload: void | AuthPayload<any>;
     if (this._cookies[TOKEN_CONTENT_COOKIE_KEY]) {
       authPayload = decodeJWT(`${this._cookies[TOKEN_CONTENT_COOKIE_KEY]}.`);
 
@@ -117,11 +113,11 @@ class ClientFlowController {
         platform: authPlatform,
         auth: authData,
         exp: expireAt,
-      } = authPayload;
+      } = (authPayload: AuthPayload<any>);
 
       const provider = this._getProviderOf(authPlatform);
       if (!provider) {
-        throw new Error();
+        throw new AuthError(404, 'unknown platform');
       }
 
       // use auth payload from cookie if it's valid
@@ -129,29 +125,58 @@ class ClientFlowController {
         (!platformSpecified || platformSpecified === authPlatform) &&
         (!expireAt || expireAt > Date.now() / 1000)
       ) {
+        const result = await provider.refineAuthData(authData);
+        if (!result) {
+          throw new AuthError(400, 'invalid auth data');
+        }
+
+        const { channel, user, loginAt, data } = result;
         return {
-          credential: signedCredential(authPlatform, authData),
-          context: provider.unmarshalAuthData(authData),
+          selfIssued: true,
+          platform: authPlatform,
+          channel,
+          user,
+          loginAt,
+          data,
         };
       }
     }
 
     // throw if no auth payload nor platform specified
     if (!platformSpecified && !authPayload) {
-      throw new Error();
+      throw new AuthError(400, 'no platform specified');
     }
 
     const platform: string = platformSpecified || (authPayload: any).platform;
     const provider = this._getProviderOf(platform);
     if (!provider) {
-      throw new Error();
+      throw new AuthError(404, 'unknown platform');
     }
 
-    const authData = provider.startFlow(`${this.authEntry}/${platform}`);
+    const result = await provider.startFlow({
+      authEntry: `${this.authEntry}/${platform}`,
+    });
+
+    const { channel, user, loginAt, data } = result;
     return {
-      credential: unsignedCredential(platform, authData),
-      context: provider.unmarshalAuthData(authData),
+      selfIssued: false,
+      platform,
+      channel,
+      user,
+      loginAt,
+      data,
     };
+  }
+
+  credential({ platform, selfIssued, data }: AuthContext<any>): string {
+    if (selfIssued) {
+      return selfIssuedCredential(
+        platform,
+        this._cookies[TOKEN_CONTENT_COOKIE_KEY]
+      );
+    }
+
+    return nonSelfIssuedCredential(platform, data);
   }
 
   _getProviderOf(platform: string) {
