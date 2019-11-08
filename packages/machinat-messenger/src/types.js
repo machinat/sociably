@@ -177,3 +177,21 @@ export type MessengerDispatchMiddleware = DispatchMiddleware<
   MessengerJob,
   MessengerAPIResult
 >;
+
+export type MessengerThreadType = 'USER_TO_PAGE' | 'USER_TO_USER' | 'GROUP';
+
+export type ExtensionContext = {
+  thread_type: MessengerThreadType,
+  tid: string,
+  psid: string,
+  signed_request: string,
+};
+
+export type ExtensionContextPayload = {
+  psid: string,
+  algorithm: string,
+  thread_type: MessengerThreadType,
+  tid: string,
+  issued_at: number,
+  page_id: number,
+};

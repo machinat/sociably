@@ -4,10 +4,10 @@ import { MESSENGER } from './constant';
 
 export class MessengerUser implements MachinatUser {
   platform = MESSENGER;
-  pageId: string;
+  pageId: string | number;
   psid: string;
 
-  constructor(pageId: string, psid: string) {
+  constructor(pageId: string | number, psid: string) {
     this.pageId = pageId;
     this.psid = psid;
   }

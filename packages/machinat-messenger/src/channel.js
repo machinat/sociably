@@ -3,18 +3,11 @@
 import crypto from 'crypto';
 import type { MachinatChannel } from 'machinat/types';
 import { MESSENGER } from './constant';
-import type { MessengerTarget } from './types';
-
-type MessengerThreadType = 'USER_TO_PAGE' | 'USER_TO_USER' | 'GROUP';
-
-type MessengerExtensionContext = {
-  psid: string,
-  algorithm: string,
-  thread_type: MessengerThreadType,
-  tid: string,
-  issued_at: number,
-  page_id: number,
-};
+import type {
+  MessengerTarget,
+  ExtensionContextPayload,
+  MessengerThreadType,
+} from './types';
 
 class MessengerChannel implements MachinatChannel {
   pageId: string | number;
@@ -23,7 +16,7 @@ class MessengerChannel implements MachinatChannel {
 
   platform = MESSENGER;
 
-  static fromExtensionContext(ctx: MessengerExtensionContext) {
+  static fromExtensionContext(ctx: ExtensionContextPayload) {
     return new MessengerChannel(ctx.page_id, { id: ctx.tid }, ctx.thread_type);
   }
 

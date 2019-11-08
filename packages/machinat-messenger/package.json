@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "glob": "^7.1.2",
+    "jsdom": "^15.2.1",
     "thenify": "^3.3.0"
   },
   "peerDependencies": {
