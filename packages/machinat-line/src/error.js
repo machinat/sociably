@@ -1,7 +1,12 @@
+// @flow
 /* eslint-disable import/prefer-default-export */
+import { STATUS_CODES } from 'http';
+
 export class LineAPIError extends Error {
-  constructor(statusText, body) {
-    // Pass remaining arguments (including vendor specific ones) to parent constructor
+  info: Object;
+  code: number;
+
+  constructor(code: number, body: Object) {
     super(
       body.message +
         (body.details
@@ -18,7 +23,8 @@ export class LineAPIError extends Error {
       Error.captureStackTrace(this, LineAPIError);
     }
 
-    this.name = statusText;
+    this.code = code;
+    this.name = STATUS_CODES[code];
     this.info = body;
   }
 }

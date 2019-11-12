@@ -7,22 +7,22 @@ import type LineChannel from './channel';
 import type { LineUser } from './user';
 import typeof { ENTRY_GETTER } from './constant';
 
-type UserSource = {|
+type UserSource = {
   type: 'user',
   userId: string,
-|};
+};
 
-type GroupSource = {|
+type GroupSource = {
   type: 'group',
   userId: string,
   groupId: string,
-|};
+};
 
-type RoomSource = {|
+type RoomSource = {
   type: 'room',
   userId: string,
   roomId: string,
-|};
+};
 
 export type LineSource = UserSource | GroupSource | RoomSource;
 
@@ -215,4 +215,22 @@ export type LineBotOptions = {
   accessToken: string,
   connectionCapicity: number,
   plugins?: LineBotPlugin[],
+};
+
+export type RawLineUserProfile = {
+  displayName: string,
+  userId: string,
+  pictureUrl?: string,
+  statusMessage?: string,
+};
+
+export type LIFFAuthData = {
+  os: 'ios' | 'android' | 'web',
+  language: string,
+  version: string,
+  isInClient: boolean,
+  idLoggedIn: boolean,
+  accessToken: string,
+  profile: RawLineUserProfile,
+  loginTime: number,
 };

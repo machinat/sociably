@@ -13,9 +13,9 @@ type MessengerClientAuthOpts = {
 
 type MessengerClientAuthOptsInput = $Shape<MessengerClientAuthOpts>;
 
-declare var document: any;
-declare var window: any;
-declare var MessengerExtensions: any;
+declare var document: Document;
+declare var window: Object;
+declare var MessengerExtensions: Object;
 
 class MessengerClientAuthProvider
   implements ClientAuthProvider<ExtensionContext> {

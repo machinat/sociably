@@ -6,7 +6,6 @@ import type { MachinatWorker } from 'machinat-base/types';
 import type Queue from 'machinat-queue';
 
 import type { LineJob, LineAPIResult } from './types';
-
 import { LineAPIError } from './error';
 
 const GET = 'GET';
@@ -60,14 +59,14 @@ export default class LineClient
     try {
       result = await response.json();
     } catch (e) {
+      // catch some line api respond empty string
       if (e.message.indexOf('Unexpected end of JSON input') === -1) {
         throw e;
       }
     }
 
     if (!response.ok) {
-      // eslint-disable-next-line no-unsafe-finally
-      throw new LineAPIError(response.statusText, result);
+      throw new LineAPIError(response.status, result);
     }
 
     return result || {};

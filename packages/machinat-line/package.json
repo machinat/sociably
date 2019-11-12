@@ -28,5 +28,8 @@
   },
   "peerDependencies": {
     "machinat": "^0.0.1"
+  },
+  "devDependencies": {
+    "jsdom": "^15.2.1"
   }
 }

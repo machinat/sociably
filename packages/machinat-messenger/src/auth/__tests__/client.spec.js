@@ -26,10 +26,6 @@ beforeEach(() => {
   `).window.document;
 });
 
-afterEach(() => {
-  global.document = undefined;
-});
-
 describe('#constructor(options)', () => {
   it('is messenger platform', () => {
     expect(new ClientAuthProvider({ appId: 'MY_APP' }).platform).toBe(

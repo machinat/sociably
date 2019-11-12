@@ -1,3 +1,3 @@
 // @flow
-export { default as ServerAuthProvider } from './server';
-export { default as ClientAuthProvider } from './client';
+export { default as MessengerServerAuthProvider } from './server';
+export { default as MessengerClientAuthProvider } from './client';

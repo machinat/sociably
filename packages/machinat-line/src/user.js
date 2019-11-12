@@ -1,6 +1,7 @@
 // @flow
 import type { MachinatUser, MachinatUserProfile } from 'machinat/types';
 import { LINE } from './constant';
+import type { RawLineUserProfile } from './types';
 
 export class LineUser implements MachinatUser {
   platform = LINE;
@@ -20,13 +21,6 @@ export class LineUser implements MachinatUser {
     return `line:${this.channelId}:${this.userId}`;
   }
 }
-
-type RawLineUserProfile = {
-  displayName: string,
-  userId: string,
-  pictureUrl?: string,
-  statusMessage?: string,
-};
 
 export class LineUserProfile implements MachinatUserProfile {
   raw: RawLineUserProfile;

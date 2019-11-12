@@ -1,6 +1,6 @@
 import moxy from 'moxy';
 import { ServerResponse } from 'http';
-import SeverAuthProvider from '../server';
+import ServerAuthProvider from '../server';
 import MessengerChannel from '../../channel';
 import { MessengerUser } from '../../user';
 
@@ -14,16 +14,16 @@ beforeEach(() => {});
 
 describe('#constructor(options)', () => {
   it('is messenger platform', () => {
-    expect(new SeverAuthProvider({ appSecret: 'SECRET' }).platform).toBe(
+    expect(new ServerAuthProvider({ appSecret: 'SECRET' }).platform).toBe(
       'messenger'
     );
   });
 
   it('throw if options.appSecret not given', () => {
-    expect(() => new SeverAuthProvider()).toThrowErrorMatchingInlineSnapshot(
+    expect(() => new ServerAuthProvider()).toThrowErrorMatchingInlineSnapshot(
       `"options.appSecret must not be empty"`
     );
-    expect(() => new SeverAuthProvider({})).toThrowErrorMatchingInlineSnapshot(
+    expect(() => new ServerAuthProvider({})).toThrowErrorMatchingInlineSnapshot(
       `"options.appSecret must not be empty"`
     );
   });
@@ -31,7 +31,7 @@ describe('#constructor(options)', () => {
 
 describe('#handleAuthRequest(req, res)', () => {
   it('respond 403', async () => {
-    const provider = new SeverAuthProvider({ appSecret: '_APP_SECRET_' });
+    const provider = new ServerAuthProvider({ appSecret: '_APP_SECRET_' });
     const res = moxy(new ServerResponse({}));
 
     await expect(provider.handleAuthRequest(request, res)).resolves.toBe(
@@ -45,7 +45,7 @@ describe('#handleAuthRequest(req, res)', () => {
 
 describe('#verifyAuthData(data)', () => {
   it('resolve auth context if verification ok', async () => {
-    const provider = new SeverAuthProvider({ appSecret: 'APP_SECRET' });
+    const provider = new ServerAuthProvider({ appSecret: 'APP_SECRET' });
     const extContext = {
       psid: '1254459154682919',
       thread_type: 'USER_TO_PAGE',
@@ -72,7 +72,7 @@ describe('#verifyAuthData(data)', () => {
   });
 
   it('reject if context invalid', async () => {
-    const provider = new SeverAuthProvider({ appSecret: 'APP_SECRET' });
+    const provider = new ServerAuthProvider({ appSecret: 'APP_SECRET' });
 
     await expect(
       provider.verifyAuthData({ data: null })
@@ -86,7 +86,7 @@ describe('#verifyAuthData(data)', () => {
   });
 
   it('reject if signature verification fail', async () => {
-    const provider = new SeverAuthProvider({ appSecret: 'APP_SECRET' });
+    const provider = new ServerAuthProvider({ appSecret: 'APP_SECRET' });
     const extContext = {
       psid: '1254459154682919',
       thread_type: 'USER_TO_PAGE',
@@ -103,7 +103,7 @@ describe('#verifyAuthData(data)', () => {
 
 describe('#refineAuthData(data)', () => {
   it('resolve auth context form extension context', async () => {
-    const provider = new SeverAuthProvider({ appSecret: 'SECRET' });
+    const provider = new ServerAuthProvider({ appSecret: 'SECRET' });
     const extCtx = {
       psid: '1254459154682919',
       thread_type: 'USER_TO_PAGE',
@@ -128,7 +128,7 @@ describe('#refineAuthData(data)', () => {
   });
 
   it('resolve null if extension context invalid', async () => {
-    const provider = new SeverAuthProvider({ appSecret: 'SECRET' });
+    const provider = new ServerAuthProvider({ appSecret: 'SECRET' });
 
     await expect(provider.refineAuthData({ data: null })).resolves.toBe(null);
     await expect(provider.refineAuthData({ data: {} })).resolves.toBe(null);
