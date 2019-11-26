@@ -146,7 +146,7 @@ Object {
     undefined,
   ],
   "errors": Array [
-    [Bad Request: The request body has 2 error(s): 1. May not be empty, at messages[0].text. 2. Must be one of the following values: [text, image, video, audio, location, sticker, template, imagemap], at messages[1].type.],
+    [Bad Request: The request body has 2 error(s): 1) May not be empty, at messages[0].text. 2) Must be one of the following values: [text, image, video, audio, location, sticker, template, imagemap], at messages[1].type.],
   ],
   "success": false,
 }

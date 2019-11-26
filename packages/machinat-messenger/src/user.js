@@ -1,6 +1,7 @@
 // @flow
 import type { MachinatUser, MachinatUserProfile } from 'machinat/types';
 import { MESSENGER } from './constant';
+import type { MessengerRawUserProfile } from './types';
 
 export class MessengerUser implements MachinatUser {
   platform = MESSENGER;
@@ -20,17 +21,6 @@ export class MessengerUser implements MachinatUser {
     return `messenger:${this.pageId}:${this.psid}`;
   }
 }
-
-type MessengerRawUserProfile = {
-  id: string,
-  name: string,
-  first_name: string,
-  last_name: string,
-  profile_pic: string,
-  locale?: string,
-  timezone?: string,
-  gender?: string,
-};
 
 export class MessengerUserProfile implements MachinatUserProfile {
   raw: MessengerRawUserProfile;

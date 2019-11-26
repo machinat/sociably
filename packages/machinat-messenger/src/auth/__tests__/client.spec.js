@@ -27,10 +27,16 @@ beforeEach(() => {
 });
 
 describe('#constructor(options)', () => {
-  it('is messenger platform', () => {
-    expect(new ClientAuthProvider({ appId: 'MY_APP' }).platform).toBe(
-      'messenger'
-    );
+  it('contain proper property', () => {
+    const provider = new ClientAuthProvider({ appId: 'MY_APP' });
+    expect(provider.platform).toBe('messenger');
+    expect(provider.appId).toBe('MY_APP');
+    expect(provider.isExtensionReady).toBe(false);
+
+    expect(
+      new ClientAuthProvider({ appId: 'MY_APP', isExtensionReady: true })
+        .isExtensionReady
+    ).toBe(true);
   });
 
   it('throw if appId not provided', () => {
@@ -44,9 +50,9 @@ describe('#constructor(options)', () => {
 });
 
 describe('#init()', () => {
-  it('add extension script and callback', () => {
+  it('add extension script and callback', async () => {
     const provider = new ClientAuthProvider({ appId: '_APP_ID_' });
-    expect(provider.init()).toBe(undefined);
+    const promise = provider.init();
 
     const extScriptEle = global.document.getElementById('Messenger');
     expect(extScriptEle.tagName).toBe('SCRIPT');
@@ -58,105 +64,20 @@ describe('#init()', () => {
     expect(typeof global.window.extAsyncInit).toBe('function');
 
     global.window.extAsyncInit();
+
+    await expect(promise).resolves.toBe(undefined);
   });
 
-  it('do nothing if options.isExtensionReady set to true', () => {
+  it('do nothing if options.isExtensionReady set to true', async () => {
     const provider = new ClientAuthProvider({
       appId: '_APP_ID_',
       isExtensionReady: true,
     });
-    expect(provider.init()).toBe(undefined);
+
+    await expect(provider.init()).resolves.toBe(undefined);
 
     expect(global.document.getElementById('Messenger')).toBe(null);
     expect(global.window.extAsyncInit).toBe(undefined);
-  });
-});
-
-describe('#startAuthFlow()', () => {
-  it('work if options.isExtensionReady set to true', async () => {
-    const provider = new ClientAuthProvider({
-      appId: 'APP_ID',
-      isExtensionReady: true,
-    });
-
-    provider.init();
-    const promise = provider.startAuthFlow();
-
-    const getContextMock = global.MessengerExtensions.getContext.mock;
-    expect(getContextMock).toHaveBeenCalledTimes(1);
-    expect(getContextMock).toHaveBeenCalledWith(
-      'APP_ID',
-      expect.any(Function),
-      expect.any(Function)
-    );
-
-    const [, resolve] = getContextMock.calls[0].args;
-    const chatContext = {
-      psid: '1254459154682919',
-      thread_type: 'USER_TO_PAGE',
-      tid: '1254459154682919',
-      signed_request:
-        '5f8i9XXH2hEaykXHKFvu-E5Nr6QRqN002JO7yl-w_9o.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTUwNDA0NjM4MCwicGFnZV9pZCI6NjgyNDk4MTcxOTQzMTY1LCJwc2lkIjoiMTI1NDQ1OTE1NDY4MjkxOSIsInRocmVhZF90eXBlIjoiVVNFUl9UT19QQUdFIiwidGlkIjoiMTI1NDQ1OTE1NDY4MjkxOSJ9',
-    };
-    resolve(chatContext);
-
-    const { channel, user, data, loginAt } = await promise;
-
-    expect(channel).toStrictEqual(
-      MessengerChannel.fromExtensionContext({
-        algorithm: 'HMAC-SHA256',
-        issued_at: 1504046380,
-        page_id: 682498171943165,
-        psid: '1254459154682919',
-        thread_type: 'USER_TO_PAGE',
-        tid: '1254459154682919',
-      })
-    );
-    expect(user).toStrictEqual(
-      new MessengerUser(682498171943165, '1254459154682919')
-    );
-    expect(loginAt.valueOf()).toBe(1504046380000);
-    expect(data).toEqual(chatContext);
-  });
-
-  it('wait extAsyncInit if options.isExtensionReady is falsy', async () => {
-    const provider = new ClientAuthProvider({
-      appId: 'APP_ID',
-    });
-
-    provider.init();
-    provider.startAuthFlow();
-
-    const getContextMock = global.MessengerExtensions.getContext.mock;
-    expect(getContextMock).not.toHaveBeenCalled();
-
-    global.window.extAsyncInit();
-    await nextTick();
-
-    expect(getContextMock).toHaveBeenCalledTimes(1);
-    expect(getContextMock).toHaveBeenCalledWith(
-      'APP_ID',
-      expect.any(Function),
-      expect.any(Function)
-    );
-  });
-
-  it('throw if getContext fail', async () => {
-    const provider = new ClientAuthProvider({
-      appId: 'APP_ID',
-      isExtensionReady: true,
-    });
-
-    provider.init();
-    const promise = provider.startAuthFlow();
-
-    const getContextMock = global.MessengerExtensions.getContext.mock;
-    expect(getContextMock).toHaveBeenCalledTimes(1);
-
-    const [, , reject] = getContextMock.calls[0].args;
-    reject(new Error('somthing wrong!'));
-
-    await expect(promise).rejects.toThrowError(new Error('somthing wrong!'));
   });
 
   it('throw if extAsyncInit not being called in initTimeout', async () => {
@@ -168,8 +89,7 @@ describe('#startAuthFlow()', () => {
       isExtensionReady: false,
     });
 
-    provider.init();
-    const promise = provider.startAuthFlow();
+    const promise = provider.init();
 
     jest.advanceTimersByTime(1000000);
     await nextTick();
@@ -177,38 +97,80 @@ describe('#startAuthFlow()', () => {
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
       `"extension initiation timeout"`
     );
-    expect(global.MessengerExtensions.getContext.mock).not.toHaveBeenCalled();
 
     jest.useRealTimers();
   });
 });
 
-describe('#refineAuthData(data)', () => {
-  it('resolve auth context form extension context', async () => {
-    const provider = new ClientAuthProvider({
-      appId: 'APP_ID',
-      isExtensionReady: true,
-    });
-    const extCtx = {
+describe('#startAuthFlow()', () => {
+  it('resolve credential with signed request', async () => {
+    const provider = new ClientAuthProvider({ appId: 'APP_ID' });
+
+    const promise = provider.startAuthFlow();
+
+    const getContextMock = global.MessengerExtensions.getContext.mock;
+    expect(getContextMock).toHaveBeenCalledTimes(1);
+    expect(getContextMock).toHaveBeenCalledWith(
+      'APP_ID',
+      expect.any(Function),
+      expect.any(Function)
+    );
+
+    const [, resolve] = getContextMock.calls[0].args;
+    resolve({
       psid: '1254459154682919',
       thread_type: 'USER_TO_PAGE',
       tid: '1254459154682919',
       signed_request:
         '5f8i9XXH2hEaykXHKFvu-E5Nr6QRqN002JO7yl-w_9o.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTUwNDA0NjM4MCwicGFnZV9pZCI6NjgyNDk4MTcxOTQzMTY1LCJwc2lkIjoiMTI1NDQ1OTE1NDY4MjkxOSIsInRocmVhZF90eXBlIjoiVVNFUl9UT19QQUdFIiwidGlkIjoiMTI1NDQ1OTE1NDY4MjkxOSJ9',
+    });
+
+    await expect(promise).resolves.toEqual({
+      accepted: true,
+      credential: {
+        signedRequest:
+          '5f8i9XXH2hEaykXHKFvu-E5Nr6QRqN002JO7yl-w_9o.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTUwNDA0NjM4MCwicGFnZV9pZCI6NjgyNDk4MTcxOTQzMTY1LCJwc2lkIjoiMTI1NDQ1OTE1NDY4MjkxOSIsInRocmVhZF90eXBlIjoiVVNFUl9UT19QQUdFIiwidGlkIjoiMTI1NDQ1OTE1NDY4MjkxOSJ9',
+      },
+    });
+  });
+
+  it('throw if getContext fail', async () => {
+    const provider = new ClientAuthProvider({ appId: 'APP_ID' });
+
+    const promise = provider.startAuthFlow();
+
+    const getContextMock = global.MessengerExtensions.getContext.mock;
+    expect(getContextMock).toHaveBeenCalledTimes(1);
+
+    const [, , reject] = getContextMock.calls[0].args;
+    reject(new Error('somthing wrong!'));
+
+    await expect(promise).resolves.toEqual({
+      accepted: false,
+      code: 401,
+      message: 'somthing wrong!',
+    });
+  });
+});
+
+describe('#refineAuth(data)', () => {
+  it('resolve auth context form extension context', async () => {
+    const provider = new ClientAuthProvider({
+      appId: 'APP_ID',
+      isExtensionReady: true,
+    });
+    const context = {
+      algorithm: 'HMAC-SHA256',
+      issued_at: 1504046380,
+      page_id: 682498171943165,
+      psid: '1254459154682919',
+      thread_type: 'USER_TO_PAGE',
+      tid: '1254459154682919',
     };
 
-    await expect(provider.refineAuthData({ data: extCtx })).resolves.toEqual({
-      channel: MessengerChannel.fromExtensionContext({
-        algorithm: 'HMAC-SHA256',
-        issued_at: 1504046380,
-        page_id: 682498171943165,
-        psid: '1254459154682919',
-        thread_type: 'USER_TO_PAGE',
-        tid: '1254459154682919',
-      }),
+    await expect(provider.refineAuth(context)).resolves.toEqual({
+      channel: MessengerChannel.fromExtensionContext(context),
       user: new MessengerUser(682498171943165, '1254459154682919'),
-      loginAt: new Date(1504046380000),
-      data: extCtx,
     });
   });
 
@@ -218,17 +180,7 @@ describe('#refineAuthData(data)', () => {
       isExtensionReady: true,
     });
 
-    await expect(provider.refineAuthData({ data: null })).resolves.toBe(null);
-    await expect(provider.refineAuthData({ data: {} })).resolves.toBe(null);
-    await expect(
-      provider.refineAuthData({
-        data: {
-          psid: '1254459154682919',
-          thread_type: 'USER_TO_PAGE',
-          tid: '1254459154682919',
-          signed_request: 'somthing invalid',
-        },
-      })
-    ).resolves.toBe(null);
+    await expect(provider.refineAuth(null)).resolves.toBe(null);
+    await expect(provider.refineAuth({})).resolves.toBe(null);
   });
 });

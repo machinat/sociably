@@ -5,7 +5,7 @@ import type { MachinatChannel } from 'machinat/types';
 import { MESSENGER } from './constant';
 import type {
   MessengerTarget,
-  ExtensionContextPayload,
+  ExtensionContext,
   MessengerThreadType,
 } from './types';
 
@@ -16,7 +16,7 @@ class MessengerChannel implements MachinatChannel {
 
   platform = MESSENGER;
 
-  static fromExtensionContext(ctx: ExtensionContextPayload) {
+  static fromExtensionContext(ctx: ExtensionContext) {
     return new MessengerChannel(ctx.page_id, { id: ctx.tid }, ctx.thread_type);
   }
 

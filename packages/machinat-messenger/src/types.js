@@ -150,6 +150,17 @@ export type MessengerBotPlugin = BotPlugin<
   MessengerBot
 >;
 
+export type MessengerRawUserProfile = {
+  id: string,
+  name: string,
+  first_name: string,
+  last_name: string,
+  profile_pic: string,
+  locale?: string,
+  timezone?: string,
+  gender?: string,
+};
+
 export type MessengerBotOptions = {
   pageId: string,
   accessToken: string,
@@ -180,14 +191,11 @@ export type MessengerDispatchMiddleware = DispatchMiddleware<
 
 export type MessengerThreadType = 'USER_TO_PAGE' | 'USER_TO_USER' | 'GROUP';
 
-export type ExtensionContext = {
-  thread_type: MessengerThreadType,
-  tid: string,
-  psid: string,
-  signed_request: string,
-};
+export type ExtensionCredential = {|
+  signedRequest: string,
+|};
 
-export type ExtensionContextPayload = {
+export type ExtensionContext = {
   psid: string,
   algorithm: string,
   thread_type: MessengerThreadType,

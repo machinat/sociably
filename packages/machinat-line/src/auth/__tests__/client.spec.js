@@ -3,8 +3,6 @@ import moxy from 'moxy';
 import LineClientAuthProvider from '../client';
 import { LineUser } from '../../user';
 
-const nextTick = () => new Promise(resolve => process.nextTick(resolve));
-
 global.liff = moxy({
   init: () => Promise.resolve(),
   getOS: () => 'ios',
@@ -40,18 +38,16 @@ beforeEach(() => {
 });
 
 describe('#constructor()', () => {
-  it('ok', () => {
+  it('contain proper property', () => {
     const provider = new LineClientAuthProvider({
       channelId: '_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
     });
 
     expect(provider.platform).toBe('line');
-    expect(provider.options).toEqual({
-      channelId: '_CHANNEL_ID_',
-      liffId: '_LIFF_ID_',
-      isSDKLoaded: false,
-    });
+    expect(provider.channelId).toBe('_CHANNEL_ID_');
+    expect(provider.liffId).toBe('_LIFF_ID_');
+    expect(provider.isSDKLoaded).toBe(false);
   });
 
   it('throw if liff id is empty', () => {
@@ -70,13 +66,13 @@ describe('#constructor()', () => {
 });
 
 describe('#init()', () => {
-  it('add liff sdk and init() after loaded', async () => {
+  it('add liff sdk and call init() after loaded', async () => {
     const provider = new LineClientAuthProvider({
       channelId: '_LINE_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
     });
 
-    provider.init();
+    const promise = provider.init();
 
     const liffScriptEle = global.document.getElementById('LIFF');
     expect(liffScriptEle.tagName).toBe('SCRIPT');
@@ -87,116 +83,89 @@ describe('#init()', () => {
 
     liffScriptEle.onload();
 
+    await expect(promise).resolves.toBe(undefined);
     expect(global.liff.init.mock).toHaveBeenCalledTimes(1);
-
-    await nextTick();
     expect(global.liff.login.mock).not.toHaveBeenCalled();
   });
 
-  it('ignore adding sdk if options.isSDKLoaded set to true', () => {
+  it('ignore adding sdk if options.isSDKLoaded set to true', async () => {
     const provider = new LineClientAuthProvider({
       channelId: '_LINE_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });
 
-    provider.init();
+    await expect(provider.init()).resolves.toBe(undefined);
 
     expect(global.document.getElementById('LIFF')).toBe(null);
     expect(global.liff.init.mock).toHaveBeenCalledTimes(1);
   });
-
-  it('login() after init() if isLoggedIn() is false', async () => {
-    const provider = new LineClientAuthProvider({
-      channelId: '_LINE_CHANNEL_ID_',
-      liffId: '_LIFF_ID_',
-    });
-
-    global.liff.isLoggedIn.mock.fakeReturnValue(false);
-
-    provider.init();
-    global.document.getElementById('LIFF').onload();
-    expect(global.liff.login.mock).not.toHaveBeenCalled();
-
-    await nextTick();
-    expect(global.liff.login.mock).toHaveBeenCalledTimes(1);
-  });
 });
 
 describe('#startAuthFlow()', () => {
-  it('wait init() then resolve liff infos', async () => {
+  it('resolve credential containt liff infos and access token', async () => {
     const provider = new LineClientAuthProvider({
       channelId: '_LINE_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });
-    provider.init();
 
-    const promise = provider.startAuthFlow();
-
-    expect(global.liff.getProfile.mock).not.toHaveBeenCalled();
-    await nextTick();
-    expect(global.liff.getProfile.mock).toHaveBeenCalledTimes(1);
-
-    await expect(promise).resolves.toEqual({
-      user: new LineUser('_LINE_CHANNEL_ID_', '_USER_ID_'),
-      channel: null,
-      loginAt: expect.any(Date),
-      data: {
+    await expect(provider.startAuthFlow()).resolves.toEqual({
+      accepted: true,
+      credential: {
         os: 'ios',
         language: 'zh-TW',
         version: 'v2.1',
         isInClient: true,
-        idLoggedIn: true,
         accessToken: '_ACCESS_TOKEN_',
-        profile: {
-          userId: '_USER_ID_',
-          displayName: 'John',
-          pictureUrl: 'https://example.com/abcdefghijklmn',
-          statusMessage: 'Hello, LINE!',
-        },
-        loginTime: expect.any(Number),
       },
     });
+
+    expect(global.liff.login.mock).not.toHaveBeenCalled();
   });
 
-  it('throw if not isLoggedIn() but not redirect in time', async () => {
+  it('login() if isLoggedIn() is false', async () => {
     jest.useFakeTimers();
     global.liff.isLoggedIn.mock.fakeReturnValue(false);
 
     const provider = new LineClientAuthProvider({
       channelId: '_LINE_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
-      isSDKLoaded: true,
     });
-    provider.init();
-    await nextTick();
+
+    expect(global.liff.login.mock).not.toHaveBeenCalled();
 
     const promise = provider.startAuthFlow();
-    jest.advanceTimersByTime(10000000);
 
-    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"timeout for redirecting to line login"`
-    );
+    expect(global.liff.isLoggedIn.mock).toHaveBeenCalledTimes(1);
+    expect(global.liff.login.mock).toHaveBeenCalledTimes(1);
+
+    // resolves unaccepted if location not redircted in time
+    jest.advanceTimersByTime(10000000);
+    await expect(promise).resolves.toMatchInlineSnapshot(`
+            Object {
+              "accepted": false,
+              "code": 408,
+              "message": "timeout for redirecting to line login",
+            }
+          `);
+
     jest.useRealTimers();
   });
 });
 
-describe('#refineAuthData(data)', () => {
+describe('#refineAuth(data)', () => {
   const authData = {
     os: 'ios',
     language: 'zh-TW',
     version: 'v2.1',
     isInClient: true,
-    idLoggedIn: true,
-    accessToken: '_ACCESS_TOKEN_',
     profile: {
       userId: '_USER_ID_',
       displayName: 'John',
       pictureUrl: 'https://example.com/abcdefghijklmn',
       statusMessage: 'Hello, LINE!',
     },
-    loginTime: 1573530545840,
   };
 
   it('resolve context according to auth data', async () => {
@@ -205,11 +174,9 @@ describe('#refineAuthData(data)', () => {
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });
-    await expect(provider.refineAuthData({ data: authData })).resolves.toEqual({
+    await expect(provider.refineAuth(authData)).resolves.toEqual({
       channel: null,
       user: new LineUser('_LINE_CHANNEL_ID_', '_USER_ID_'),
-      loginAt: new Date(1573530545840),
-      data: authData,
     });
   });
 
@@ -219,6 +186,6 @@ describe('#refineAuthData(data)', () => {
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });
-    await expect(provider.refineAuthData({ data: {} })).resolves.toBe(null);
+    await expect(provider.refineAuth({})).resolves.toBe(null);
   });
 });

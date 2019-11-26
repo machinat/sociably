@@ -3,20 +3,20 @@ import { parse as parseURL } from 'url';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { aign as signJWT, verify as verifyJWT } from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';
+import type {
+  AuthPayload,
+  StatePayload,
+  ErrorPayload,
+  AuthTokenPayload,
+  StateTokenPayload,
+  ErrorTokenPayload,
+} from '../types';
 import {
   checkPathScope,
   checkDomainScope,
   getCookies,
   setCookie,
 } from './utils';
-import type {
-  AuthPayload,
-  StatePayload,
-  ErrorPayload,
-  AuthData,
-  StateData,
-  ErrorData,
-} from '../types';
 
 import {
   STATE_COOKIE_KEY,
@@ -25,13 +25,16 @@ import {
   ERROR_COOKIE_KEY,
 } from '../constant';
 
-class AuthFlowHelper {
-  _hostname: string;
-  _secret: string;
-  _tokenAge: number;
-  _scope: { domain?: string, path: string };
+class AuthCookieSession {
+  hostname: string;
+  secret: string;
+  tokenAge: number;
+  refreshPeriod: number;
+  scopeDomain: void | string;
+  scopePath: string;
+  dev: boolean;
 
-  _dev: boolean;
+  _scope: {| domain?: string, path: string |};
 
   _dataCookieOpts: Object;
   _secretCookieOpts: Object;
@@ -40,23 +43,28 @@ class AuthFlowHelper {
   constructor(
     hostname: string,
     secret: string,
-    tokenAge: number,
     cookieAge: number,
-    scopeDomain?: string,
+    tokenAge: number,
+    refreshPeriod: number,
+    scopeDomain: void | string,
     scopePath: string,
-    sameSiteStrict: boolean,
+    sameSite: 'Strict' | 'Lax' | 'None',
     dev: boolean
   ) {
-    this._hostname = hostname;
-    this._secret = secret;
-    this._tokenAge = tokenAge;
+    this.hostname = hostname;
+    this.secret = secret;
+    this.tokenAge = tokenAge;
+    this.refreshPeriod = refreshPeriod;
+    this.scopeDomain = scopeDomain;
+    this.scopePath = scopePath;
+    this.dev = dev;
+
     this._scope = { domain: scopeDomain, path: scopePath };
-    this._dev = dev;
 
     const baseCookieOpts = {
       domain: scopeDomain,
       path: scopePath,
-      sameSite: sameSiteStrict ? 'Strict' : 'Lax',
+      sameSite,
       secure: !dev,
     };
 
@@ -77,9 +85,9 @@ class AuthFlowHelper {
     };
   }
 
-  verifyAppURLScope(url: string): boolean {
+  checkURLAuthScope(url: string): boolean {
     const { protocol, hostname, pathname } = parseURL(url);
-    const { _dev: dev, _scope: scope } = this;
+    const { dev, scopeDomain, scopePath } = this;
 
     if (
       !(
@@ -93,20 +101,20 @@ class AuthFlowHelper {
     }
 
     if (
-      !(scope.domain
-        ? checkDomainScope(hostname, scope.domain)
-        : hostname === this._hostname)
+      !(scopeDomain
+        ? checkDomainScope(hostname, scopeDomain)
+        : hostname === this.hostname)
     ) {
       return false;
     }
 
-    return checkPathScope((pathname: any), scope.path);
+    return checkPathScope((pathname: any), scopePath);
   }
 
-  async getState(
+  async getState<StateData>(
     req: IncomingMessage,
     platform: string
-  ): Promise<null | StateData<any>> {
+  ): Promise<null | StateData> {
     let stateEnceded;
     const cookies = getCookies(req);
     if (!cookies || !(stateEnceded = cookies[STATE_COOKIE_KEY])) {
@@ -114,10 +122,10 @@ class AuthFlowHelper {
     }
 
     try {
-      const payload: StatePayload<any> = await thenifiedly.call(
+      const payload: StateTokenPayload<any> = await thenifiedly.call(
         verifyJWT,
         stateEnceded,
-        this._secret
+        this.secret
       );
 
       return payload.platform === platform ? payload.state : null;
@@ -126,25 +134,26 @@ class AuthFlowHelper {
     }
   }
 
-  async issueState(
+  async issueState<StateData>(
     res: ServerResponse,
     platform: string,
-    state: StateData<any>
-  ) {
+    state: StateData
+  ): Promise<string> {
     const stateEnceded = await thenifiedly.call(
       signJWT,
-      { platform, state, scope: this._scope },
-      this._secret,
+      ({ platform, state, scope: this._scope }: StatePayload<StateData>),
+      this.secret,
       { expiresIn: 180 }
     );
 
     setCookie(res, STATE_COOKIE_KEY, stateEnceded, this._secretCookieOpts);
+    return stateEnceded;
   }
 
-  async getAuth(
+  async getAuth<AuthData>(
     req: IncomingMessage,
     platform: string
-  ): Promise<null | AuthData<any>> {
+  ): Promise<null | AuthData> {
     const cookies = getCookies(req);
     if (!cookies) {
       return null;
@@ -157,10 +166,10 @@ class AuthFlowHelper {
     }
 
     try {
-      const payload: AuthPayload<any> = await thenifiedly.call(
+      const payload: AuthTokenPayload<any> = await thenifiedly.call(
         verifyJWT,
         `${contentVal}.${sigVal}`,
-        this._secret
+        this.secret
       );
 
       return payload.platform === platform ? payload.auth : null;
@@ -169,27 +178,51 @@ class AuthFlowHelper {
     }
   }
 
-  async issueAuth(res: ServerResponse, platform: string, auth: AuthData<any>) {
-    const authToken = await thenifiedly.call(
+  async issueAuth<AuthData>(
+    res: ServerResponse,
+    platform: string,
+    auth: AuthData,
+    refreshBy?: number,
+    refreshable: boolean = true,
+    signatureOnly: boolean = false
+  ): Promise<string> {
+    const { secret, tokenAge } = this;
+
+    const now = Math.floor(Date.now() / 1000);
+    const token = await thenifiedly.call(
       signJWT,
-      { platform, auth, scope: this._scope },
-      this._secret,
-      { expiresIn: this._tokenAge }
+      ({
+        platform,
+        auth,
+        refreshLimit: !refreshable
+          ? undefined
+          : typeof refreshBy === 'number'
+          ? refreshBy
+          : now + this.refreshPeriod,
+        scope: this._scope,
+      }: AuthPayload<AuthData>),
+      secret,
+      { expiresIn: tokenAge }
     );
 
-    const [header, payload, signature] = authToken.split('.');
+    const [header, payload, signature] = token.split('.');
+    const tokenContent = `${header}.${payload}`;
 
-    this.setDataCookie(res, TOKEN_CONTENT_COOKIE_KEY, `${header}.${payload}`);
     this.setSecretCookie(res, TOKEN_SIGNATURE_COOKIE_KEY, signature);
+    if (!signatureOnly) {
+      this.setDataCookie(res, TOKEN_CONTENT_COOKIE_KEY, tokenContent);
+    }
 
     this.deleteCookie(res, STATE_COOKIE_KEY);
     this.deleteCookie(res, ERROR_COOKIE_KEY);
+
+    return tokenContent;
   }
 
   async getError(
     req: IncomingMessage,
     platform: string
-  ): Promise<null | ErrorData> {
+  ): Promise<null | { code: number, message: string }> {
     let errEncoded;
     const cookies = getCookies(req);
     if (!cookies || !(errEncoded = cookies[ERROR_COOKIE_KEY])) {
@@ -197,10 +230,10 @@ class AuthFlowHelper {
     }
 
     try {
-      const payload: ErrorPayload = await thenifiedly.call(
+      const payload: ErrorTokenPayload = await thenifiedly.call(
         verifyJWT,
         errEncoded,
-        this._secret
+        this.secret
       );
 
       return payload.platform === platform ? payload.error : null;
@@ -209,11 +242,20 @@ class AuthFlowHelper {
     }
   }
 
-  async issueError(res: ServerResponse, platform: string, error: ErrorData) {
+  async issueError(
+    res: ServerResponse,
+    platform: string,
+    code: number,
+    message: string
+  ): Promise<string> {
     const errEncoded = await thenifiedly.call(
       signJWT,
-      { platform, error, scope: this._scope },
-      this._secret
+      ({
+        platform,
+        error: { code, message },
+        scope: this._scope,
+      }: ErrorPayload),
+      this.secret
     );
 
     this.setDataCookie(res, ERROR_COOKIE_KEY, errEncoded);
@@ -221,6 +263,8 @@ class AuthFlowHelper {
     this.deleteCookie(res, STATE_COOKIE_KEY);
     this.deleteCookie(res, TOKEN_SIGNATURE_COOKIE_KEY);
     this.deleteCookie(res, TOKEN_CONTENT_COOKIE_KEY);
+
+    return errEncoded;
   }
 
   clearCookies(res: ServerResponse) {
@@ -243,4 +287,4 @@ class AuthFlowHelper {
   }
 }
 
-export default AuthFlowHelper;
+export default AuthCookieSession;

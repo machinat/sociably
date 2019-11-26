@@ -7,15 +7,6 @@ export const respondRedirect = (res: ServerResponse, url: string) => {
   res.end();
 };
 
-export const respondError = (
-  res: ServerResponse,
-  code: number,
-  message?: string
-) => {
-  res.writeHead(code);
-  res.end(message);
-};
-
 export const getCookies = (
   req: IncomingMessage
 ): null | {| [string]: string |} => {

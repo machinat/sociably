@@ -224,13 +224,18 @@ export type RawLineUserProfile = {
   statusMessage?: string,
 };
 
-export type LIFFAuthData = {
+export type LIFFAuthData = {|
   os: 'ios' | 'android' | 'web',
   language: string,
   version: string,
   isInClient: boolean,
-  idLoggedIn: boolean,
-  accessToken: string,
   profile: RawLineUserProfile,
-  loginTime: number,
-};
+|};
+
+export type LIFFCredential = {|
+  accessToken: string,
+  os: 'ios' | 'android' | 'web',
+  language: string,
+  version: string,
+  isInClient: boolean,
+|};

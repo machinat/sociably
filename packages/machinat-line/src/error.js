@@ -8,15 +8,16 @@ export class LineAPIError extends Error {
 
   constructor(code: number, body: Object) {
     super(
-      body.message +
-        (body.details
-          ? `: ${body.details
-              .map(
-                ({ property, message }, i) =>
-                  `${i + 1}. ${message}, at ${property}.`
-              )
-              .join(' ')}`
-          : '')
+      body.message
+        ? body.message +
+            (body.details
+              ? `: ${body.details
+                  .map((d, i) => `${i + 1}) ${d.message}, at ${d.property}.`)
+                  .join(' ')}`
+              : '')
+        : body.error
+        ? `${body.error}: ${body.error_description}`
+        : JSON.stringify(body)
     );
 
     if (Error.captureStackTrace) {

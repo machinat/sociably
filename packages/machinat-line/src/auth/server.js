@@ -2,65 +2,102 @@
 import invariant from 'invariant';
 import fetch from 'node-fetch';
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { AuthData, ServerAuthProvider } from 'machinat-auth/types';
+import type { ServerAuthProvider } from 'machinat-auth/types';
 import { LINE } from '../constant';
-import { LineUser } from '../user';
-import { LineAPIError } from '../error';
-import type { LIFFAuthData, RawLineUserProfile } from '../types';
+import type { LIFFAuthData, LIFFCredential } from '../types';
 import { refineLIFFContextData } from './utils';
 
 type LineServerAuthProviderOpts = {
   channelId: string,
 };
 
-class LineServerAuthProvider implements ServerAuthProvider<LIFFAuthData> {
-  options: LineServerAuthProviderOpts;
+class LineServerAuthProvider
+  implements ServerAuthProvider<LIFFAuthData, LIFFCredential> {
+  channelId: string;
   platform = LINE;
 
-  constructor(options: LineServerAuthProviderOpts) {
-    invariant(
-      options && options.channelId,
-      'options.channelId must not be empty'
-    );
+  constructor({ channelId }: LineServerAuthProviderOpts = {}) {
+    invariant(channelId, 'options.channelId must not be empty');
 
-    this.options = options;
+    this.channelId = channelId;
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async handleAuthRequest(req: IncomingMessage, res: ServerResponse) {
+  async delegateAuthRequest(req: IncomingMessage, res: ServerResponse) {
     res.writeHead(403);
     res.end();
   }
 
-  async verifyAuthData({ data }: AuthData<LIFFAuthData>) {
-    if (!data || !data.accessToken) {
-      throw new LineAPIError(400, { message: 'Empty accessToken received' });
+  async verifySigning(credential: LIFFCredential) {
+    let accessToken;
+    // eslint-disable-next-line prefer-destructuring
+    if (!credential || !(accessToken = credential.accessToken)) {
+      return {
+        accepted: false,
+        code: 400,
+        message: 'Empty accessToken received',
+      };
     }
 
-    const response = await fetch('https://api.line.me/v2/profile', {
-      headers: { Authorization: `Bearer ${data.accessToken}` },
+    const verifyRes = await fetch(
+      `https://api.line.me/oauth2/v2.1/verify?access_token=${accessToken}`
+    );
+    const verifyBody = await verifyRes.json();
+
+    if (!verifyRes.ok) {
+      return {
+        accepted: false,
+        code: verifyRes.status,
+        message: verifyBody.error_description,
+      };
+    }
+
+    if (verifyBody.client_id !== this.channelId) {
+      return {
+        accepted: false,
+        code: 400,
+        message: 'client_id not match',
+      };
+    }
+
+    const profileRes = await fetch('https://api.line.me/v2/profile', {
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
+    const profileBody = await profileRes.json();
 
-    if (!response.ok) {
-      const body = await response.json();
-      throw new LineAPIError(response.status, body);
+    if (!profileRes.ok) {
+      return {
+        accepted: false,
+        code: profileRes.status,
+        message: profileBody.message,
+      };
     }
 
-    const rawProfile: RawLineUserProfile = await response.json();
-
+    const { os, language, version, isInClient } = credential;
     return {
-      user: new LineUser(this.options.channelId, rawProfile.userId),
-      channel: null,
-      loginAt: new Date(data.loginTime),
+      accepted: true,
+      refreshable: false,
       data: {
-        ...data,
-        profile: rawProfile,
+        os,
+        language,
+        version,
+        isInClient,
+        profile: profileBody,
       },
     };
   }
 
-  async refineAuthData({ data }: AuthData<LIFFAuthData>) {
-    return refineLIFFContextData(this.options.channelId, data);
+  // eslint-disable-next-line class-methods-use-this
+  async verifyRefreshment() {
+    return {
+      accepted: false,
+      code: 403,
+      message: 'should resign only',
+    };
+  }
+
+  async refineAuth(data: LIFFAuthData) {
+    return refineLIFFContextData(this.channelId, data);
   }
 }
 

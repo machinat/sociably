@@ -1,7 +1,5 @@
 // @flow
-import type { MahcinatAuthError } from './types';
-
-class AuthError extends Error implements MahcinatAuthError {
+class AuthError extends Error {
   code: number;
 
   constructor(code: number, message: string) {
