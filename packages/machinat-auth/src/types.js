@@ -168,3 +168,7 @@ export type AuthAPIResponseErrorBody = {|
     message: string,
   },
 |};
+
+export type VerifiableRequest = {
+  headers: {| [string]: string |},
+};

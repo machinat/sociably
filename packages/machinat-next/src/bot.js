@@ -8,13 +8,11 @@ import type {
   NextChannel,
   NextEvent,
   NextMetadata,
-  NextPesponse,
+  NextResponse,
   NextBotOptions,
 } from './types';
 
 const NEXT = 'next';
-
-type NextBotOptionsInput = $Shape<NextBotOptions>;
 
 class NextServerBot
   extends Emitter<
@@ -35,7 +33,7 @@ class NextServerBot
       null,
       NextEvent,
       NextMetadata,
-      NextPesponse,
+      NextResponse,
       void,
       any,
       void,
@@ -43,35 +41,31 @@ class NextServerBot
       void,
       NextBotOptions
     > {
-  options: NextBotOptions;
   receiver: NextReceiver;
   controller: Controller<
     NextChannel,
     null,
     NextEvent,
     NextMetadata,
-    NextPesponse,
+    NextResponse,
     void,
     any,
     void
   >;
 
-  constructor(optionsInput?: NextBotOptions) {
+  constructor({
+    nextApp,
+    basePath,
+    plugins,
+    shouldPrepare = true,
+  }: NextBotOptions = {}) {
     super();
 
-    const defaultOptions: NextBotOptionsInput = {
-      shouldPrepare: true,
-    };
+    invariant(nextApp, 'options.nextApp should not be empty');
 
-    const options = Object.assign(defaultOptions, optionsInput);
-    invariant(options.nextApp, 'options.nextApp should not be empty');
-
-    this.options = options;
-
-    const { nextApp, shouldPrepare, basePath } = options;
     this.receiver = new NextReceiver(nextApp, shouldPrepare, basePath);
 
-    const { eventMiddlewares } = resolvePlugins(this, this.options.plugins);
+    const { eventMiddlewares } = resolvePlugins(this, plugins);
     this.controller = new Controller(NEXT, this, eventMiddlewares);
 
     const issueEvent = this.controller.eventIssuerThroughMiddlewares(frame => {
@@ -84,6 +78,8 @@ class NextServerBot
       };
 
       this.emitEvent(frame);
+
+      return { accepted: true };
     });
 
     this.receiver.bindIssuer(issueEvent, this.emitError.bind(this));

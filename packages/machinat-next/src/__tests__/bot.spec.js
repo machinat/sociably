@@ -84,7 +84,9 @@ describe('#constructor(options)', () => {
     const event = { platform: 'next', type: 'request', payload: { req, res } };
     const metadata = { source: 'next', request: '...' };
 
-    expect(finalPublisher({ channel, event, metadata })).toEqual(undefined);
+    expect(finalPublisher({ channel, event, metadata })).toEqual({
+      accepted: true,
+    });
 
     expect(eventListener.mock).toHaveBeenCalledTimes(1);
     expect(eventListener.mock).toHaveBeenCalledWith({

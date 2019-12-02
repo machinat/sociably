@@ -13,19 +13,25 @@ jest.mock('../../socket');
 const delay = t => new Promise(resolve => setTimeout(resolve, t));
 
 const connectionChannel = new ConnectionChannel({
-  serverId: '',
-  socketId: '',
+  serverId: '$',
+  socketId: '$',
   id: '#conn',
-  tags: null,
+  expiredAt: null,
 });
+
+const registrator = moxy(async () => ({
+  user: { john: 'doe' },
+  data: { foo: 'bar' },
+}));
 
 beforeEach(() => {
   Socket.mock.reset();
+  registrator.mock.clear();
   WS.mock.clear();
 });
 
 it('initiate ok', () => {
-  const client = new Client(); // eslint-disable-line no-unused-vars
+  const client = new Client({ registrator }); // eslint-disable-line no-unused-vars
 
   expect(WS.mock).toHaveBeenCalledTimes(1);
   expect(WS.mock).toHaveBeenCalledWith(
@@ -41,8 +47,17 @@ it('initiate ok', () => {
   );
 });
 
+it('throw if options.registrator is missing', () => {
+  expect(() => new Client()).toThrowErrorMatchingInlineSnapshot(
+    `"options.registrator should not be empty"`
+  );
+  expect(() => new Client({})).toThrowErrorMatchingInlineSnapshot(
+    `"options.registrator should not be empty"`
+  );
+});
+
 test('specify url', () => {
-  const client = new Client({ url: 'ws://machinat.io/entry' }); // eslint-disable-line no-unused-vars
+  const client = new Client({ url: 'ws://machinat.io/entry', registrator }); // eslint-disable-line no-unused-vars
 
   expect(WS.mock).toHaveBeenCalledTimes(1);
   expect(WS.mock).toHaveBeenCalledWith(
@@ -51,9 +66,9 @@ test('specify url', () => {
   );
 });
 
-it('register with {type: "default"} if empty in options', async () => {
+it('register with data from options.registrator()', async () => {
   const eventSpy = moxy();
-  const client = new Client();
+  const client = new Client({ registrator });
   client.onEvent(eventSpy);
 
   const socket = Socket.mock.calls[0].instance;
@@ -62,16 +77,18 @@ it('register with {type: "default"} if empty in options', async () => {
   socket.emit('open');
   await delay();
 
+  expect(registrator.mock).toHaveBeenCalledTimes(1);
+  expect(registrator.mock).toHaveBeenCalledWith(/* empty */);
+
   expect(socket.register.mock).toHaveBeenCalledTimes(1);
   expect(socket.register.mock).toHaveBeenCalledWith({
-    type: 'default',
-    auth: null,
+    data: { foo: 'bar' },
   });
 });
 
 it('emit error if register rejected when socket is already open', async () => {
   const errorSpy = moxy();
-  const client = new Client();
+  const client = new Client({ registrator });
   client.onError(errorSpy);
 
   const socket = Socket.mock.calls[0].instance;
@@ -92,7 +109,7 @@ it('emit error if register rejected when socket is already open', async () => {
 });
 
 it('emit event when received', async () => {
-  const client = new Client();
+  const client = new Client({ registrator });
   const socket = Socket.mock.calls[0].instance;
 
   socket.emit('open');
@@ -117,7 +134,7 @@ it('emit event when received', async () => {
       payload: 'Link is down! Legend over.',
     },
     channel: connectionChannel,
-    user: null,
+    user: { john: 'doe' },
   });
 
   socket.emit('event', {
@@ -131,64 +148,12 @@ it('emit event when received', async () => {
   expect(eventSpy.mock).toHaveBeenCalledWith({
     event: { type: 'resurrect', payload: 'Hero never die!' },
     channel: new TopicScopeChannel('game', 'world'),
-    user: null,
-  });
-});
-
-it('register with options.register()', async () => {
-  const eventSpy = moxy();
-  const register = moxy(async () => ({
-    type: 'test',
-    auth: { some: 'auth data' },
-    user: { john: 'doe' },
-  }));
-  const client = new Client({ register });
-  client.onEvent(eventSpy);
-
-  const socket = Socket.mock.calls[0].instance;
-  expect(socket.register.mock).not.toHaveBeenCalled();
-
-  socket.emit('open');
-  await delay();
-
-  expect(register.mock).toHaveBeenCalledTimes(1);
-  expect(register.mock).toHaveBeenCalledWith(/* empty */);
-  expect(socket.register.mock).toHaveBeenCalledTimes(1);
-  expect(socket.register.mock).toHaveBeenCalledWith({
-    type: 'test',
-    auth: { some: 'auth data' },
-  });
-
-  expect(client.connected).toBe(false);
-
-  const req = await socket.register.mock.calls[0].result;
-  socket.emit('connect', { connectionId: '#conn', req }, 3);
-
-  expect(client.connected).toBe(true);
-
-  expect(eventSpy.mock).toHaveBeenCalledTimes(1);
-  expect(eventSpy.mock).toHaveBeenCalledWith({
-    event: { type: '@connect' },
-    channel: connectionChannel,
-    user: { john: 'doe' },
-  });
-
-  socket.emit('event', {
-    connectionId: '#conn',
-    type: 'hello',
-    payload: 'world',
-  });
-
-  expect(eventSpy.mock).toHaveBeenCalledTimes(2);
-  expect(eventSpy.mock).toHaveBeenCalledWith({
-    event: { type: 'hello', payload: 'world' },
-    channel: connectionChannel,
     user: { john: 'doe' },
   });
 });
 
 it('send event when connected', async () => {
-  const client = new Client();
+  const client = new Client({ registrator });
   const socket = Socket.mock.calls[0].instance;
   socket.event.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
 
@@ -214,7 +179,7 @@ it('send event when connected', async () => {
 });
 
 it('queue the sendings when not ready and fire after connected', async () => {
-  const client = new Client();
+  const client = new Client({ registrator });
 
   const socket = Socket.mock.calls[0].instance;
   socket.register.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
@@ -258,7 +223,7 @@ it('queue the sendings when not ready and fire after connected', async () => {
 });
 
 test('disconnect by server', async () => {
-  const client = new Client();
+  const client = new Client({ registrator });
   const socket = Socket.mock.calls[0].instance;
 
   socket.emit('open');
@@ -275,12 +240,12 @@ test('disconnect by server', async () => {
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
     event: { type: '@disconnect' },
     channel: connectionChannel,
-    user: null,
+    user: { john: 'doe' },
   });
 });
 
 test('#disconnect()', async () => {
-  const client = new Client();
+  const client = new Client({ registrator });
   const socket = Socket.mock.calls[0].instance;
   socket.disconnect.mock.fake(() => Promise.resolve(++socket._seq)); // eslint-disable-line no-plusplus
 
@@ -307,13 +272,13 @@ test('#disconnect()', async () => {
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
     event: { type: '@disconnect' },
     channel: connectionChannel,
-    user: null,
+    user: { john: 'doe' },
   });
 });
 
 it('emit errer if connect_fail', () => {
   const errorSpy = moxy();
-  const client = new Client();
+  const client = new Client({ registrator });
   client.onError(errorSpy);
 
   const socket = Socket.mock.calls[0].instance;

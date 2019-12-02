@@ -60,26 +60,21 @@ export type RequestInfo = {|
   encrypted: boolean,
 |};
 
-export type AuthContext = {
-  type: string,
-  [string]: any,
-};
-
-export type WebSocketMetadata = {|
+export type WebSocketMetadata<AuthContext> = {|
   source: 'websocket',
   request: RequestInfo,
   connection: Connection,
   authContext: AuthContext,
 |};
 
-declare var t: WebSocketMetadata;
-(t: MachinatMetadata<'websocket'>);
+declare var m: WebSocketMetadata<any>;
+(m: MachinatMetadata<'websocket'>);
 
-type AcceptedAuthenticateResult = {|
+type AcceptedAuthenticateResult<AuthContext> = {|
   accepted: true,
   user: null | MachinatUser,
+  expireAt: null | Date,
   context: AuthContext,
-  tags: null | string[],
 |};
 
 type UnacceptedAuthenticateResult = {|
@@ -89,37 +84,32 @@ type UnacceptedAuthenticateResult = {|
   reason: string,
 |};
 
-export type AuthenticateResult =
-  | AcceptedAuthenticateResult
+export type AuthenticateResult<AuthCtx> =
+  | AcceptedAuthenticateResult<AuthCtx>
   | UnacceptedAuthenticateResult;
 
-type RegisterData = {|
-  type: string,
-  auth: Object,
-|};
-
-export type ServerAuthenticatorFunc = (
+export type ServerAuthenticatorFunc<AuthCtx, RegData> = (
   request: RequestInfo,
-  data: RegisterData
-) => Promise<AuthenticateResult>;
+  data: RegData
+) => Promise<AuthenticateResult<AuthCtx>>;
 
 export type WebSocketComponent = MachinatNativeComponent<EventOrder>;
 
-export type WebSocketBotOptions = {|
+export type WebSocketBotOptions<AuthCtx, RegData> = {|
+  authenticator: ServerAuthenticatorFunc<AuthCtx, RegData>,
   verifyUpgrade?: RequestInfo => boolean,
-  authenticator?: ServerAuthenticatorFunc,
   plugins?: BotPlugin<
     WebSocketChannel,
     ?MachinatUser,
     WebSocketEvent,
-    WebSocketMetadata,
+    WebSocketMetadata<AuthCtx>,
     void,
     EventOrder,
     WebSocketComponent,
     WebSocketJob,
     WebSocketResult,
     void,
-    WebSocketBot
+    WebSocketBot<AuthCtx, RegData>
   >[],
 |};
 
@@ -159,7 +149,7 @@ export interface SocketBroker {
   ): void;
 }
 
-export type ClientRegistratorFunc = () => Promise<{
-  registerData: RegisterData,
+export type ClientRegistratorFunc<RegisterData> = () => Promise<{
   user: null | MachinatUser,
+  data: RegisterData,
 }>;

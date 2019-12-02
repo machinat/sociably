@@ -1,4 +1,5 @@
 // @flow
+import invariant from 'invariant';
 import type { MachinatUser } from 'machinat/types';
 import WS from './ws';
 import type {
@@ -32,12 +33,10 @@ type ClientEventFrame = {|
   event: ClientEvent,
 |};
 
-type ClientOptions = {
-  url: string,
-  register: ClientRegistratorFunc,
+type ClientOptions<RegData> = {
+  url?: string,
+  registrator: ClientRegistratorFunc<RegData>,
 };
-
-type ClientOptionsInput = $Shape<ClientOptions>;
 
 type PendingEventJob = {
   event: ClientEvent,
@@ -53,8 +52,10 @@ const createSocket = (url: string) => {
   return new MachinatSocket('', webSocket, (null: any));
 };
 
-class WebScoketClient {
-  options: ClientOptions;
+class WebScoketClient<RegData> {
+  _serverLocation: string;
+  _registrator: ClientRegistratorFunc<RegData>;
+
   _socket: MachinatSocket;
   _connected: boolean;
 
@@ -70,24 +71,20 @@ class WebScoketClient {
   _eventListeners: ((ClientEventFrame) => void)[];
   _errorListeners: ((Error) => void)[];
 
-  constructor(optionsInput: ClientOptionsInput) {
-    const defaultOptions = {
-      url: `${location.protocol === 'https:' ? 'wss' : 'ws'}://${
-        location.host
-      }`,
-      register: () =>
-        Promise.resolve({ type: 'default', auth: null, user: null }),
-    };
+  constructor({ url, registrator }: ClientOptions<RegData> = {}) {
+    invariant(registrator, 'options.registrator should not be empty');
 
-    const options = Object.assign(defaultOptions, optionsInput);
-    this.options = options;
+    this._serverLocation =
+      url ||
+      `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
+    this._registrator = registrator;
 
     this._connected = false;
     this._queuedJobs = [];
     this._eventListeners = [];
     this._errorListeners = [];
 
-    const socket = createSocket(options.url);
+    const socket = createSocket(this._serverLocation);
     this._socket = socket;
 
     const handleError = this._emitError.bind(this);
@@ -111,7 +108,7 @@ class WebScoketClient {
   async send(event: ClientEvent): Promise<void> {
     if (!this._connected) {
       await new Promise((resolve, reject) => {
-        this._queuedJobs.push({ resolve: () => resolve(), reject, event });
+        this._queuedJobs.push({ resolve, reject, event });
       });
     } else {
       await this._socket.event({ ...event, connectionId: this._connId });
@@ -182,9 +179,9 @@ class WebScoketClient {
   }
 
   async _handleSocketOpen() {
-    const { type, auth, user } = await this.options.register();
+    const { data, user } = await this._registrator();
 
-    const seq = await this._socket.register({ type, auth });
+    const seq = await this._socket.register({ data });
     this._registerSeq = seq;
     this._user = user;
     this._userChannel = user && new UserScopeChannel(user);
@@ -198,7 +195,7 @@ class WebScoketClient {
     this._connected = true;
     this._connId = connectionId;
     this._connChannel = new ConnectionChannel(
-      new Connection('', '', connectionId, null)
+      new Connection('$', '$', connectionId, null)
     );
 
     this._emitEvent(

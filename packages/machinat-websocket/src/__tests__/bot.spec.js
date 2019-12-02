@@ -18,6 +18,13 @@ jest.mock('../receiver');
 jest.mock('../worker');
 jest.mock('../distributor');
 
+const authenticator = moxy(async () => ({
+  accepted: true,
+  user: null,
+  context: null,
+  expireAt: null,
+}));
+
 beforeEach(() => {
   Engine.mock.clear();
   Controller.mock.clear();
@@ -30,16 +37,16 @@ beforeEach(() => {
 
 describe('#constructor(options)', () => {
   it('extends Emitter', () => {
-    expect(new WebSocketBot()).toBeInstanceOf(Emitter);
+    expect(new WebSocketBot({ authenticator })).toBeInstanceOf(Emitter);
   });
 
   it('pass distributor to worker', () => {
-    const bot = new WebSocketBot(); // eslint-disable-line no-unused-vars
+    const bot = new WebSocketBot({ authenticator }); // eslint-disable-line no-unused-vars
     expect(Worker.mock).toHaveBeenCalledWith(expect.any(Distributor));
   });
 
   it('assemble core modules', () => {
-    const bot = new WebSocketBot();
+    const bot = new WebSocketBot({ authenticator });
 
     expect(bot.engine).toBeInstanceOf(Engine);
     expect(bot.controller).toBeInstanceOf(Controller);
@@ -93,7 +100,7 @@ describe('#constructor(options)', () => {
       })),
     ];
 
-    const bot = new WebSocketBot({ plugins });
+    const bot = new WebSocketBot({ authenticator, plugins });
 
     expect(Engine.mock).toHaveBeenCalledWith(
       'websocket',
@@ -116,7 +123,7 @@ describe('#constructor(options)', () => {
       return { eventIssuerThroughMiddlewares: () => eventIssuerSpy };
     });
 
-    const bot = new WebSocketBot();
+    const bot = new WebSocketBot({ authenticator });
 
     const eventListener = moxy();
     const errorListener = moxy();
@@ -152,7 +159,7 @@ describe('#constructor(options)', () => {
   });
 
   test('default verifyUpgrade return true', () => {
-    const bot = new WebSocketBot(); // eslint-disable-line no-unused-vars
+    const bot = new WebSocketBot({ authenticator }); // eslint-disable-line no-unused-vars
     expect(Receiver.mock).toHaveBeenCalledTimes(1);
     const verifyUpgrade = Receiver.mock.calls[0].args[4];
 
@@ -161,90 +168,63 @@ describe('#constructor(options)', () => {
 
   test('override default verifyUpgrade', () => {
     const verifyUpgrade = moxy(() => false);
-    const bot = new WebSocketBot({ verifyUpgrade }); // eslint-disable-line no-unused-vars
+    const bot = new WebSocketBot({ authenticator, verifyUpgrade }); // eslint-disable-line no-unused-vars
 
     expect(Receiver.mock).toHaveBeenCalledTimes(1);
     expect(Receiver.mock.calls[0].args[4]).toBe(verifyUpgrade);
   });
 
-  test('default authenticate allow "default" auth type only', async () => {
-    const bot = new WebSocketBot(); // eslint-disable-line no-unused-vars
-    expect(Receiver.mock).toHaveBeenCalledTimes(1);
-    const authenticate = Receiver.mock.calls[0].args[3];
-
-    await expect(
-      authenticate(
-        {
-          /* request */
-        },
-        { type: 'default' }
-      )
-    ).resolves.toEqual({
-      accepted: true,
-      user: null,
-      tags: null,
-      context: { type: 'default' },
-    });
-
-    await expect(
-      authenticate(
-        {
-          /* request */
-        },
-        { type: 'other_auth' }
-      )
-    ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "accepted": false,
-              "reason": "only registration with \\"default\\" type allowed by default",
-            }
-          `);
+  it('throw if options.authentocator not provided', () => {
+    expect(() => new WebSocketBot()).toThrowErrorMatchingInlineSnapshot(
+      `"options.authenticator should not be empty"`
+    );
+    expect(() => new WebSocketBot({})).toThrowErrorMatchingInlineSnapshot(
+      `"options.authenticator should not be empty"`
+    );
   });
 
-  it('authenticate with customized option.authentocator', async () => {
-    const fooAuthenticator = moxy(async (request, auth) =>
-      auth.type === 'foo'
-        ? { accepted: true, user: { id: 'foo' } }
-        : { accepted: false, reason: 'not foo' }
-    );
-
+  it('authenticate with option.authentocator', async () => {
     // eslint-disable-next-line no-unused-vars
-    const bot = new WebSocketBot({
-      authenticator: fooAuthenticator,
-    });
-
+    const bot = new WebSocketBot({ authenticator });
     expect(Receiver.mock).toHaveBeenCalledTimes(1);
     const authenticate = Receiver.mock.calls[0].args[3];
     const request = { url: 'http://...' };
 
-    await expect(
-      authenticate(request, { type: 'foo', auth: { foo: 'yes' } })
-    ).resolves.toEqual({
+    const authenticateResult = {
       accepted: true,
-      user: { id: 'foo' },
-    });
-    await expect(
-      authenticate(request, { type: 'bar', auth: { bar: 'no' } })
-    ).resolves.toEqual({
-      accepted: false,
-      reason: 'not foo',
-    });
+      user: { john: 'doe' },
+      context: { some: 'auth data' },
+      expireAt: new Date(),
+    };
 
-    expect(fooAuthenticator.mock).toHaveBeenCalledTimes(2);
-    expect(fooAuthenticator.mock).toHaveBeenCalledWith(request, {
-      type: 'foo',
-      auth: { foo: 'yes' },
+    authenticator.mock.fake(async () => authenticateResult);
+    await expect(authenticate(request, { foo: 'bar' })).resolves.toEqual(
+      authenticateResult
+    );
+
+    const failAuthenticateResult = {
+      accepted: false,
+      reason: 'FAILED',
+    };
+
+    authenticator.mock.fake(async () => failAuthenticateResult);
+    await expect(authenticate(request, { foo: 'baz' })).resolves.toEqual(
+      failAuthenticateResult
+    );
+
+    expect(authenticator.mock).toHaveBeenCalledTimes(2);
+    expect(authenticator.mock).toHaveBeenCalledWith(request, {
+      foo: 'bar',
     });
-    expect(fooAuthenticator.mock).toHaveBeenCalledWith(request, {
-      type: 'bar',
-      auth: { bar: 'no' },
+    expect(authenticator.mock).toHaveBeenCalledWith(request, {
+      foo: 'baz',
     });
   });
 });
 
 describe('#render(channel, event)', () => {
   it('work', async () => {
-    const bot = new WebSocketBot();
+    const bot = new WebSocketBot({ authenticator });
     const distributor = Distributor.mock.calls[0].instance;
 
     const conns = new Array(3).fill(0).map((_, i) => ({
@@ -289,7 +269,7 @@ const connection = {
 
 describe('#disconnect(channel, socketId, reason)', () => {
   it('work', async () => {
-    const bot = new WebSocketBot();
+    const bot = new WebSocketBot({ authenticator });
     const distributor = Distributor.mock.calls[0].instance;
 
     distributor.disconnect.mock.fake(async () => false);
@@ -306,7 +286,7 @@ describe('#disconnect(channel, socketId, reason)', () => {
 
 describe('#attachTopic(channel, socketId, reason)', () => {
   it('work', async () => {
-    const bot = new WebSocketBot();
+    const bot = new WebSocketBot({ authenticator });
     const distributor = Distributor.mock.calls[0].instance;
 
     distributor.attachTopic.mock.fake(async () => false);
@@ -327,7 +307,7 @@ describe('#attachTopic(channel, socketId, reason)', () => {
 
 describe('#detachTopic(channel, socketId, reason)', () => {
   it('work', async () => {
-    const bot = new WebSocketBot();
+    const bot = new WebSocketBot({ authenticator });
     const distributor = Distributor.mock.calls[0].instance;
 
     distributor.detachTopic.mock.fake(async () => false);

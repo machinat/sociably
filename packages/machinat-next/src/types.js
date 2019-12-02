@@ -13,10 +13,31 @@ export type NextMetadata = {|
   |},
 |};
 
-export type NextPesponse = void | {
+export type AcceptedResponse = {
+  accepted: true,
   page: string,
   query: {| [string]: any |},
 };
+
+export type UnacceptedResponse = {
+  accepted: false,
+  code: number,
+  reason: string,
+};
+
+type AcceptedNextResponse = {|
+  accepted: true,
+  page?: string,
+  query?: {| [string]: any |},
+|};
+
+type UnacceptedNextResponse = {|
+  accepted: false,
+  code: number,
+  message: string,
+|};
+
+export type NextResponse = AcceptedNextResponse | UnacceptedNextResponse;
 
 export type NextEvent = {|
   platform: 'next',
@@ -38,7 +59,7 @@ export type NextPlugin = BotPlugin<
   null,
   NextEvent,
   NextMetadata,
-  NextPesponse,
+  NextResponse,
   void,
   any,
   void,
@@ -50,6 +71,9 @@ export type NextPlugin = BotPlugin<
 export type NextBotOptions = {|
   nextApp: any,
   shouldPrepare: boolean,
+  // NOTE: next does not support serving under sub path now, so we
+  //       have to hack the path by ourself.
+  //       Follow https://github.com/zeit/next.js/issues/4998
   basePath?: string,
   plugins?: NextPlugin[],
 |};

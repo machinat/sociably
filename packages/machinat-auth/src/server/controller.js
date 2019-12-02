@@ -19,6 +19,7 @@ import type {
   RefreshRequestBody,
   VerifyRequestBody,
   AuthAPIResponseBody,
+  VerifiableRequest,
 } from '../types';
 
 import { getCookies, checkDomainScope } from './utils';
@@ -37,7 +38,7 @@ type ServerAuthControllerOpts = {|
   dev?: boolean,
 |};
 
-const getSignature = (req: IncomingMessage) => {
+const getSignature = (req: VerifiableRequest) => {
   const cookies = getCookies(req);
   return cookies ? cookies[TOKEN_SIGNATURE_COOKIE_KEY] : undefined;
 };
@@ -67,7 +68,7 @@ const respondAPIError = (
   res.end(JSON.stringify({ error: { code, message } }));
 };
 
-class AuthFlowController {
+class AuthServerController {
   providers: ServerAuthProvider<any, any>[];
   secret: string;
   entry: string;
@@ -132,21 +133,34 @@ class AuthFlowController {
     );
   }
 
-  async delegateAuthRequest(req: IncomingMessage, res: ServerResponse) {
-    const pathname = parseURL(req.url, true).pathname || '/';
-    const subpath = getRelativePath(this._pathname, pathname);
+  async delegateAuthRequest(
+    req: IncomingMessage,
+    res: ServerResponse
+  ): Promise<boolean> {
+    const { hostname, pathname } = parseURL(req.url, true);
 
-    if (subpath === '' || subpath.slice(0, 2) === '..') {
-      // path is not sub path of auth entry
+    if (hostname && hostname !== this._hostname) {
+      return false;
+    }
+
+    const subpath = getRelativePath(this._pathname, pathname || '/');
+
+    if (subpath === '') {
+      // directly called on auth root
       respondAPIError(res, 404, 'invalid pathname');
-      return;
+      return true;
+    }
+
+    if (subpath.slice(0, 2) === '..') {
+      // not subpath of auth root
+      return false;
     }
 
     // inner auth api for client controller
     if (subpath[0] === '_') {
       if (req.method !== 'POST') {
         respondAPIError(res, 405, 'only POST method allowed');
-        return;
+        return true;
       }
 
       if (subpath === '_sign') {
@@ -158,7 +172,7 @@ class AuthFlowController {
       } else {
         respondAPIError(res, 404, 'unknown auth api');
       }
-      return;
+      return true;
     }
 
     const [platform] = subpath.split('/');
@@ -166,7 +180,7 @@ class AuthFlowController {
     const provider = this._getProviderOf(platform);
     if (!provider) {
       respondAPIError(res, 404, `platform "${platform}" not found`);
-      return;
+      return true;
     }
 
     // delegate requests of platform specified flow to provider
@@ -176,30 +190,37 @@ class AuthFlowController {
       if (!res.finished) {
         respondAPIError(res, err.code || 500, err.message);
       }
-      return;
+      return true;
     }
 
     if (!res.finished) {
       respondAPIError(res, 501, 'connection not closed by provider');
     }
+
+    return true;
   }
 
   async verifyHTTPAuthorization(
-    req: IncomingMessage
+    req: VerifiableRequest,
+    tokenProvided?: string
   ): Promise<AuthContext<any>> {
     const { authorization } = req.headers;
     if (!authorization) {
       throw new AuthError(401, 'no Authorization header');
     }
 
-    const [scheme, token] = (authorization: string).split(/\s+/, 2);
-    if (scheme !== 'Bearer' || !token) {
-      throw new AuthError(400, 'unknown auth scheme');
-    }
-
     const signature = getSignature(req);
     if (!signature) {
       throw new AuthError(401, 'require signature');
+    }
+
+    let token = tokenProvided;
+    if (!token) {
+      const [scheme, tokenFromHeader] = (authorization: string).split(/\s+/, 2);
+      if (scheme !== 'Bearer' || !token) {
+        throw new AuthError(400, 'unknown auth scheme');
+      }
+      token = tokenFromHeader;
     }
 
     const { platform, auth, exp, iat } = await this._verifyToken(
@@ -368,4 +389,4 @@ class AuthFlowController {
   }
 }
 
-export default AuthFlowController;
+export default AuthServerController;

@@ -58,12 +58,12 @@ const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
   ns.destroy();
 };
 
-class WebSocketReceiver
+class WebSocketReceiver<AuthContext, RegisterData>
   extends BaseReceiver<
     WebSocketChannel,
     ?MachinatUser,
     WebSocketEvent,
-    WebSocketMetadata,
+    WebSocketMetadata<AuthContext>,
     void
   >
   implements HTTPUpgradeReceiver {
@@ -72,7 +72,7 @@ class WebSocketReceiver
   _distributor: Distributor;
 
   _verifyUpgrade: (request: RequestInfo) => boolean;
-  _authenticator: ServerAuthenticatorFunc;
+  _authenticator: ServerAuthenticatorFunc<AuthContext, RegisterData>;
 
   _socketStore: Map<Socket, SocketStatus>;
 
@@ -87,7 +87,7 @@ class WebSocketReceiver
     serverId: string,
     webSocketServer: WebSocketServer,
     distributor: Distributor,
-    authenticator: ServerAuthenticatorFunc,
+    authenticator: ServerAuthenticatorFunc<AuthContext, RegisterData>,
     verifyUpgrade: (request: RequestInfo) => boolean
   ) {
     super();
@@ -191,10 +191,10 @@ class WebSocketReceiver
     const connectionId: string = uniqid();
 
     try {
-      const authResult = await this._authenticator(socket.request, body);
+      const authed = await this._authenticator(socket.request, body.data);
 
-      if (authResult.accepted) {
-        const { user, context: authContext, tags } = authResult;
+      if (authed.accepted) {
+        const { user, context: authContext, expireAt } = authed;
         socketStatus.connected.set(connectionId, {
           user,
           authContext,
@@ -202,7 +202,7 @@ class WebSocketReceiver
             this._serverId,
             socket.id,
             connectionId,
-            tags
+            expireAt
           ),
         });
 
@@ -210,7 +210,7 @@ class WebSocketReceiver
       } else {
         await socket.reject({
           req: seq,
-          reason: authResult.reason,
+          reason: authed.reason,
         });
       }
     } catch (err) {

@@ -17,7 +17,7 @@ import type {
   AuthAPIResponseErrorBody,
 } from '../types';
 
-type ClientFlowControllerOpts = {|
+type AuthClientOptions = {|
   authEntry?: string,
   providers: ClientAuthProvider<any, any>[],
   refreshLeadTime?: number,
@@ -58,13 +58,18 @@ const refineAuthContext = async (
   };
 };
 
-class ClientFlowController extends EventEmitter {
+class AuthClientController extends EventEmitter {
   providers: ClientAuthProvider<any, any>[];
   refreshLeadTime: number;
 
   _platform: void | string;
-  _token: void | string;
   _authURL: URL;
+
+  _authed: null | {|
+    token: void | string,
+    payload: AuthTokenPayload<any>,
+    context: AuthContext<any>,
+  |};
 
   _initiated: boolean;
   _initPromise: null | Promise<void>;
@@ -88,15 +93,15 @@ class ClientFlowController extends EventEmitter {
     return !!this._initPromise;
   }
 
-  get isAuthenticated() {
-    return !!this._token;
+  get authContext() {
+    return this._authed && this._authed.context;
   }
 
   constructor({
     providers,
     refreshLeadTime = 300, // 5 min
     authEntry = '/auth',
-  }: ClientFlowControllerOpts = {}) {
+  }: AuthClientOptions = {}) {
     invariant(
       providers && providers.length > 0,
       'options.providers must not be empty'
@@ -115,7 +120,7 @@ class ClientFlowController extends EventEmitter {
     this._initialAuth = null;
 
     this._platform = undefined;
-    this._token = undefined;
+    this._authed = null;
 
     this._refreshTimeoutId = null;
     this._expireTimeoutId = null;
@@ -167,7 +172,6 @@ class ClientFlowController extends EventEmitter {
     if (platformSpecified && platformSpecified !== this._platform) {
       // Ignore data in cookie if different platform specified in query
       this._platform = platformSpecified;
-      this._token = undefined;
       this._initialAuth = null;
       this._initialError = null;
     }
@@ -188,7 +192,7 @@ class ClientFlowController extends EventEmitter {
    * It resolves an AuthContext object, but if any signOut() or another auth()
    * call change the auth status during operation, a null instead.
    */
-  async auth(): Promise<null | AuthContext<any>> {
+  async auth(): Promise<AuthContext<any>> {
     if (this._initPromise) {
       // Wait for initiation for the first time
       await this._initPromise;
@@ -220,14 +224,15 @@ class ClientFlowController extends EventEmitter {
     // Update auth only when no signOut() call or another succeeded auth() call
     // have happened during the operation time
     if (begin < this._minAuthBegin) {
-      return null;
+      throw new AuthError(403, 'signed out during authentication');
     }
 
     // Block any other auth() call begun before this time from updating auth
     this._minAuthBegin = begin;
-    this._setAuth(token, payload);
 
     const context = await refineAuthContext(provider, payload);
+    this._setAuth(token, payload, context);
+
     return context;
   }
 
@@ -235,21 +240,21 @@ class ClientFlowController extends EventEmitter {
    * Get a token for authorization usage. To authorize a HTTP request, put the
    * token within "Authorization" header as the format of `Bearer ${token}`.
    * The controller would automatically refresh the token, so make sure
-   * retrieving new token every time you make a request and don't need to store
+   * retrieving new token every time you make a request, you don't need to store
    * the token by yourself.
    */
   getToken() {
-    if (!this._token) {
+    if (!this._authed) {
       throw new AuthError(401, 'not authencated');
     }
-    return this._token;
+    return this._authed.token;
   }
 
   /**
-   * Sign user out and also disable all the auth operation currently executing.
+   * Sign out user.
    */
   signOut() {
-    this._token = undefined;
+    this._authed = null;
     this._clearTimeouts();
     // Make sure auth operation executing now will not update auth
     this._minAuthBegin = Date.now();
@@ -274,6 +279,7 @@ class ClientFlowController extends EventEmitter {
     if (provider.platform === this._platform) {
       // Label as initiated if platform target not change by another init()
       this._initiated = true;
+      this.emit('initiate');
     }
   }
 
@@ -294,8 +300,12 @@ class ClientFlowController extends EventEmitter {
     return token;
   }
 
-  _setAuth(token: string, payload: AuthTokenPayload<any>) {
-    this._token = token;
+  _setAuth(
+    token: string,
+    payload: AuthTokenPayload<any>,
+    context: AuthContext<any>
+  ) {
+    this._authed = { token, payload, context };
     this._clearTimeouts();
 
     const now = Date.now();
@@ -329,16 +339,16 @@ class ClientFlowController extends EventEmitter {
       newToken = await this._signToken(provider);
     }
 
-    if (this._token !== token) {
-      // give up if token updated during refreshment
+    if (!this._authed || this._authed.token !== token) {
+      // give up if auth updated during refreshment
       return;
     }
 
     const payload = getAuthPayload(newToken);
-    this._setAuth(token, payload);
-
     const context = await refineAuthContext(provider, payload);
-    this.emit('refreshed', context);
+
+    this._setAuth(token, payload, context);
+    this.emit('refresh', context);
   }
 
   _refreshAuthCallback = (token: string, payload: AuthTokenPayload<any>) => {
@@ -350,11 +360,12 @@ class ClientFlowController extends EventEmitter {
   };
 
   _expireTokenCallback = (token: string) => {
-    if (this._token === token) {
-      this._expireTimeoutId = null;
-      this._token = undefined;
+    this._expireTimeoutId = null;
 
-      this.emit('expired');
+    let authed;
+    if ((authed = this._authed) && authed.token === token) {
+      this._authed = null;
+      this.emit('expire', authed.context);
     }
   };
 
@@ -414,4 +425,4 @@ class ClientFlowController extends EventEmitter {
   }
 }
 
-export default ClientFlowController;
+export default AuthClientController;

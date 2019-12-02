@@ -22,12 +22,7 @@ const webSocketServer = moxy({
   },
 });
 
-const authenticator = moxy(async () => ({
-  accepted: true,
-  user: null,
-  tags: null,
-}));
-
+const authenticator = moxy(async () => ({ accepted: true, user: null }));
 const verifyUpgrade = moxy(() => true);
 
 const req = moxy({
@@ -123,20 +118,18 @@ it('handle sockets and connections lifecycle', async () => {
   authenticator.mock.fake(async () => ({
     accepted: true,
     user: { john: 'doe' },
-    tags: ['rookie'],
     context: 101,
   }));
 
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
-  socket.emit('register', { type: 'some_auth', hello: 'login' });
+  socket.emit('register', { data: { type: 'some_auth', hello: 'login' } });
   await nextTick();
 
   const expectedConnection = {
     id: expect.any(String),
     serverId,
     socketId: socket.id,
-    tags: ['rookie'],
   };
 
   const expectedMetadata = {
@@ -232,30 +225,28 @@ test('multi sockets and connections', async () => {
   socket2.connect.mock.fake(async () => {});
 
   expect(authenticator.mock).not.toHaveBeenCalled();
-  socket1.emit('register', { type: 'my_auth', hi: 1 });
+  socket1.emit('register', { data: { type: 'my_auth', hi: 1 } });
 
   expect(authenticator.mock).toHaveBeenCalledTimes(1);
   authenticator.mock.fake(async () => ({
     accepted: true,
     user: { john: 'doe' },
-    tags: ['normal'],
     context: 'working',
   }));
 
-  socket1.emit('register', { type: 'my_auth', hi: 2 });
-  socket2.emit('register', { type: 'my_auth', hi: 3 });
+  socket1.emit('register', { data: { type: 'my_auth', hi: 2 } });
+  socket2.emit('register', { data: { type: 'my_auth', hi: 3 } });
   await nextTick();
 
   expect(authenticator.mock).toHaveBeenCalledTimes(3);
   authenticator.mock.fake(async () => ({
     accepted: true,
     user: { jojo: 'doe' },
-    tags: ['hero'],
     context: 'traveling',
   }));
 
-  socket1.emit('register', { type: 'my_auth', hi: 4 });
-  socket2.emit('register', { type: 'my_auth', hi: 5 });
+  socket1.emit('register', { data: { type: 'my_auth', hi: 4 } });
+  socket2.emit('register', { data: { type: 'my_auth', hi: 5 } });
   await nextTick();
 
   expect(authenticator.mock).toHaveBeenCalledTimes(5);
@@ -275,7 +266,6 @@ test('multi sockets and connections', async () => {
     serverId,
     socketId: socket1.id,
     id: socket1.connect.mock.calls[0].args[0].connectionId,
-    tags: null,
   };
 
   const john = { john: 'doe' };
@@ -283,13 +273,11 @@ test('multi sockets and connections', async () => {
     serverId,
     socketId: socket1.id,
     id: socket1.connect.mock.calls[1].args[0].connectionId,
-    tags: ['normal'],
   };
   const johnConn2 = {
     serverId,
     socketId: socket2.id,
     id: socket2.connect.mock.calls[0].args[0].connectionId,
-    tags: ['normal'],
   };
 
   const jojo = { jojo: 'doe' };
@@ -297,13 +285,11 @@ test('multi sockets and connections', async () => {
     serverId,
     socketId: socket1.id,
     id: socket1.connect.mock.calls[2].args[0].connectionId,
-    tags: ['hero'],
   };
   const jojoConn2 = {
     serverId,
     socketId: socket2.id,
     id: socket2.connect.mock.calls[1].args[0].connectionId,
-    tags: ['hero'],
   };
 
   socket1.emit('connect', { connectionId: nullConn.id });

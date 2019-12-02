@@ -22,5 +22,9 @@
   "peerDependencies": {
     "machinat": "^0.0.1",
     "next": "^9.0.0"
+  },
+  "devDependencies": {
+    "next": "^9.0.6",
+    "react": "^16.9.0"
   }
 }

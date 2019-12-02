@@ -18,7 +18,6 @@ import type {
   WebSocketResult,
   WebSocketBotOptions,
   WebSocketComponent,
-  ServerAuthenticatorFunc,
 } from './types';
 import type { TopicScopeChannel } from './channel';
 import type Connection from './connection';
@@ -30,22 +29,6 @@ import WebSocketReceiver from './receiver';
 import WebSocketWorker from './worker';
 
 const WSServer = WS.Server;
-
-const allowDefaultAuthentication: ServerAuthenticatorFunc = async (
-  request,
-  { type }
-) =>
-  type === 'default'
-    ? {
-        accepted: true,
-        user: null,
-        tags: null,
-        context: { type: 'default' },
-      }
-    : {
-        accepted: false,
-        reason: 'only registration with "default" type allowed by default',
-      };
 
 const createJobs = (
   scope: WebSocketChannel,
@@ -64,14 +47,12 @@ const createJobs = (
   }));
 };
 
-type WebSocketBotOptionsInput = $Shape<WebSocketBotOptions>;
-
-class WebSocketBot
+class WebSocketBot<AuthCtx, RegData>
   extends Emitter<
     WebSocketChannel,
     ?MachinatUser,
     WebSocketEvent,
-    WebSocketMetadata,
+    WebSocketMetadata<AuthCtx>,
     EventOrder,
     WebSocketComponent,
     WebSocketJob,
@@ -79,29 +60,28 @@ class WebSocketBot
     void
   >
   implements
-    HTTPUpgradeReceivable<WebSocketReceiver>,
+    HTTPUpgradeReceivable<WebSocketReceiver<AuthCtx, RegData>>,
     MachinatBot<
       WebSocketChannel,
       ?MachinatUser,
       WebSocketEvent,
-      WebSocketMetadata,
+      WebSocketMetadata<AuthCtx>,
       void,
       EventOrder,
       WebSocketComponent,
       WebSocketJob,
       WebSocketResult,
       void,
-      WebSocketBotOptionsInput
+      WebSocketBotOptions<AuthCtx, RegData>
     > {
-  options: WebSocketBotOptions;
   _distributor: Distributor;
 
-  receiver: WebSocketReceiver;
+  receiver: WebSocketReceiver<AuthCtx, RegData>;
   controller: Controller<
     WebSocketChannel,
     ?MachinatUser,
     WebSocketEvent,
-    WebSocketMetadata,
+    WebSocketMetadata<AuthCtx>,
     void,
     EventOrder,
     WebSocketComponent,
@@ -118,14 +98,14 @@ class WebSocketBot
 
   worker: WebSocketWorker;
 
-  constructor(optionsInput?: WebSocketBotOptionsInput) {
-    super();
-    const defaultOptions: WebSocketBotOptions = {
-      verifyUpgrade: undefined,
-    };
+  constructor({
+    authenticator,
+    verifyUpgrade,
+    plugins,
+  }: WebSocketBotOptions<AuthCtx, RegData> = {}) {
+    invariant(authenticator, 'options.authenticator should not be empty');
 
-    const options = Object.assign(defaultOptions, optionsInput);
-    this.options = options;
+    super();
 
     const broker = new LocalOnlyBroker();
 
@@ -138,7 +118,7 @@ class WebSocketBot
 
     const { eventMiddlewares, dispatchMiddlewares } = resolvePlugins(
       this,
-      options.plugins
+      plugins
     );
 
     this.controller = new Controller(WEBSOCKET, this, eventMiddlewares);
@@ -147,8 +127,8 @@ class WebSocketBot
       serverId,
       wsServer,
       this._distributor,
-      options.authenticator || allowDefaultAuthentication,
-      options.verifyUpgrade || (() => true)
+      authenticator,
+      verifyUpgrade || (() => true)
     );
 
     this.receiver.bindIssuer(

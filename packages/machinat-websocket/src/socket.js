@@ -82,8 +82,7 @@ export type RejectBody = {|
  * Register Frame request for registering a connection
  */
 export type RegisterBody = {|
-  type: string,
-  auth: Object,
+  data: Object,
 |};
 
 /**

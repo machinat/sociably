@@ -1,3 +1,3 @@
 // @flow
-export { default as ClientController } from './client';
-export { default as ServerController } from './server';
+export { default as AuthClient } from './client';
+export { default as AuthServer } from './server';

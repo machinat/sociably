@@ -1,6 +1,7 @@
 // @flow
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { ServerResponse } from 'http';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
+import type { VerifiableRequest } from '../types';
 
 export const respondRedirect = (res: ServerResponse, url: string) => {
   res.writeHead(302, { Location: url });
@@ -8,7 +9,7 @@ export const respondRedirect = (res: ServerResponse, url: string) => {
 };
 
 export const getCookies = (
-  req: IncomingMessage
+  req: VerifiableRequest
 ): null | {| [string]: string |} => {
   if (!req.headers.cookie) {
     return null;

@@ -7,12 +7,8 @@ const nextTick = () => new Promise(resolve => process.nextTick(resolve));
 
 const req = moxy(new IncomingMessage({}));
 const res = moxy(new ServerResponse({ method: 'GET' }));
-req.mock.getter('method').fakeReturnValue('GET');
-req.mock.getter('url').fakeReturnValue('http://machinat.com/hello?foo=bar');
-req.mock.getter('headers').fakeReturnValue({ 'x-y-z': 'abc' });
-res.mock.setter('statusCode').fake(() => {});
 
-const issueEvent = moxy(async () => {});
+const issueEvent = moxy(async () => ({ accepted: true }));
 const issueError = moxy();
 
 const nextHandler = moxy(async () => {});
@@ -22,6 +18,12 @@ beforeEach(() => {
   nextApp.mock.clear();
   req.mock.clear();
   res.mock.clear();
+
+  req.mock.getter('method').fakeReturnValue('GET');
+  req.mock.getter('url').fakeReturnValue('http://machinat.com/hello?foo=bar');
+  req.mock.getter('headers').fakeReturnValue({ 'x-y-z': 'abc' });
+  res.mock.setter('statusCode').fake(() => {});
+  res.mock.getter('finished').fake(() => false);
 
   issueEvent.mock.reset();
   issueError.mock.reset();
@@ -75,7 +77,7 @@ it('not call next.prepare() if shouldPrepare is false', async () => {
   expect(nextHandler.mock).toHaveBeenCalled();
 });
 
-it('call next.getRequestHandler()() if event issuer return empty', async () => {
+it('use next.getRequestHandler()() if event issuer resolve accepted', async () => {
   const receiver = new NextReceiver(nextApp, false);
   receiver.bindIssuer(issueEvent, issueError);
 
@@ -112,7 +114,7 @@ it('call next.getRequestHandler()() if event issuer return empty', async () => {
   `);
 });
 
-it('call nextHandler with basePath trimed if provided in options', async () => {
+it('use nextHandler with basePath trimed if provided in options', async () => {
   const receiver = new NextReceiver(nextApp, false, '/hello');
   receiver.bindIssuer(issueEvent, issueError);
 
@@ -138,7 +140,7 @@ it('call nextHandler with basePath trimed if provided in options', async () => {
   expect(nextHandler.mock.calls[0].args[2].pathname).toBe('/world');
 });
 
-it('call next.renderError() with status 404 trimed if basePath not match', async () => {
+it('use next.renderError() with status 404 if basePath not match', async () => {
   const receiver = new NextReceiver(nextApp, false, '/hello');
   receiver.bindIssuer(issueEvent, issueError);
 
@@ -150,7 +152,7 @@ it('call next.renderError() with status 404 trimed if basePath not match', async
   expect(receiver.handleRequest(fooWorldReq, res)).toBe(undefined);
   await nextTick();
 
-  expect(issueEvent.mock).toHaveBeenCalledTimes(1);
+  expect(issueEvent.mock).not.toHaveBeenCalled();
   expect(nextApp.render.mock).not.toHaveBeenCalled();
 
   expect(nextHandler.mock).not.toHaveBeenCalled();
@@ -163,13 +165,17 @@ it('call next.renderError() with status 404 trimed if basePath not match', async
     '/foo/world',
     {}
   );
+
+  expect(res.mock.setter('statusCode')).toHaveBeenCalledTimes(1);
+  expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(404);
 });
 
-it('call next.render() with params return by middlewares', async () => {
+it('use next.render() with page and query resolves by middlewares', async () => {
   const receiver = new NextReceiver(nextApp, false);
   receiver.bindIssuer(issueEvent, issueError);
 
   issueEvent.mock.fake(async () => ({
+    accepted: true,
     page: '/hello/world',
     query: { foo: 'bar' },
   }));
@@ -232,11 +238,69 @@ it('call next.render() with params return by middlewares', async () => {
   expect(res.mock.setter('statusCode')).not.toHaveBeenCalled();
 });
 
+it('use next.renderError() if event issuer resolve unaccepted', async () => {
+  const receiver = new NextReceiver(nextApp, false);
+  receiver.bindIssuer(issueEvent, issueError);
+
+  issueEvent.mock.fake(async () => ({
+    accepted: false,
+    code: 418,
+    message: "I'm a teapot",
+  }));
+
+  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  await nextTick();
+
+  expect(issueEvent.mock).toHaveBeenCalledTimes(1);
+
+  expect(nextApp.render.mock).not.toHaveBeenCalled();
+  expect(nextApp.renderError.mock).toHaveBeenCalledTimes(1);
+  expect(nextApp.renderError.mock).toHaveBeenCalledWith(
+    new Error("I'm a teapot"),
+    req,
+    res,
+    '/hello',
+    { foo: 'bar' }
+  );
+
+  expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(418);
+
+  expect(issueError.mock).not.toHaveBeenCalled();
+});
+
+it('do nothing if res ended by  middlewares', async () => {
+  const receiver = new NextReceiver(nextApp, false);
+  receiver.bindIssuer(issueEvent, issueError);
+
+  res.mock.getter('finished').fakeReturnValue(true);
+  issueEvent.mock.fake(async () => ({
+    accepted: true,
+  }));
+
+  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  await nextTick();
+
+  issueEvent.mock.fake(async () => ({
+    accepted: false,
+    code: 666,
+    message: "this won't be sent",
+  }));
+
+  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  await nextTick();
+
+  expect(issueEvent.mock).toHaveBeenCalledTimes(2);
+  expect(nextApp.render.mock).not.toHaveBeenCalled();
+  expect(nextApp.renderError.mock).not.toHaveBeenCalled();
+  expect(issueError.mock).not.toHaveBeenCalled();
+});
+
 it('basePath option not affect page params from middlewares', async () => {
   const receiver = new NextReceiver(nextApp, false, '/hello');
   receiver.bindIssuer(issueEvent, issueError);
 
   issueEvent.mock.fake(async () => ({
+    accepted: true,
     page: '/hello/world',
     query: { foo: 'bar' },
   }));
@@ -280,7 +344,7 @@ it('set metadata.request.encrypted to true if req is encrypted', async () => {
   );
 });
 
-it('call next.renderError() if event issuer thrown', async () => {
+it('use next.renderError() if event issuer reject', async () => {
   const receiver = new NextReceiver(nextApp, false);
   receiver.bindIssuer(issueEvent, issueError);
 
@@ -302,6 +366,8 @@ it('call next.renderError() if event issuer thrown', async () => {
     '/hello',
     { foo: 'bar' }
   );
+
+  expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(500);
 
   expect(issueError.mock).toHaveBeenCalledTimes(1);
   expect(issueError.mock).toHaveBeenCalledWith(new Error("I'm a teapot"));
