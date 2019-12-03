@@ -49,12 +49,12 @@ class Distributor {
     user: null | MachinatUser,
     connection: Connection
   ): boolean {
-    const connectionId = connection.id;
-    if (this._connectionsStore.has(connectionId)) {
+    const connId = connection.id;
+    if (this._connectionsStore.has(connId)) {
       return false;
     }
 
-    this._connectionsStore.set(connectionId, {
+    this._connectionsStore.set(connId, {
       socket,
       connection,
       user,
@@ -135,16 +135,16 @@ class Distributor {
     order: EventOrder
   ): Promise<null | Connection[]> {
     if (scope.platform === WEBSOCKET && scope.type === 'connection') {
-      const { serverId, id: connectionId } = scope.connection;
+      const { serverId, id: connId } = scope.connection;
 
       if (serverId !== this.serverId) {
         return this._broker.sendRemote(
-          { type: 'connection', serverId, connectionId },
+          { type: 'connection', serverId, connId },
           order
         );
       }
 
-      return this._sendToLocalConnection(connectionId, order);
+      return this._sendToLocalConn(connId, order);
     }
 
     if (scope.platform === WEBSOCKET && scope.type === 'user') {
@@ -152,7 +152,7 @@ class Distributor {
     }
 
     const [localResults, remoteResults] = await Promise.all([
-      this._broadcastLocal(scope.uid, order),
+      this._sendLocal(scope.uid, order),
       this._broker.sendRemote({ type: 'topic', uid: scope.uid }, order),
     ]);
 
@@ -174,7 +174,7 @@ class Distributor {
 
     this._detachFromChannels(connId, channels);
     this._connectionsStore.delete(connId);
-    await socket.disconnect({ connectionId: connId, reason });
+    await socket.disconnect({ connId, reason });
 
     return true;
   }
@@ -195,8 +195,8 @@ class Distributor {
     return count;
   }
 
-  async _sendToLocalConnection(connectionId: ConnectionId, order: EventOrder) {
-    const connStatus = this._connectionsStore.get(connectionId);
+  async _sendToLocalConn(connId: ConnectionId, order: EventOrder) {
+    const connStatus = this._connectionsStore.get(connId);
     if (connStatus === undefined) {
       return null;
     }
@@ -205,7 +205,7 @@ class Distributor {
     const { type, subtype, payload } = order;
 
     await socket.event({
-      connectionId,
+      connId,
       type,
       subtype,
       payload,
@@ -214,7 +214,7 @@ class Distributor {
     return [connection];
   }
 
-  async _broadcastLocal(
+  async _sendLocal(
     scopeUId: ChannelUid,
     order: EventOrder
   ): Promise<null | Connection[]> {
@@ -250,7 +250,7 @@ class Distributor {
 
         promises.push(
           socket
-            .event({ connectionId: connId, type, subtype, payload, scopeUId })
+            .event({ connId, type, subtype, payload, scopeUId })
             .catch(this._errorHandler)
         );
         sentConns.push(connection);
@@ -279,12 +279,10 @@ class Distributor {
   _handleRemoteEvent(target: RemoteTarget, order: EventOrder) {
     if (target.type === 'connection') {
       if (target.serverId === this.serverId) {
-        this._sendToLocalConnection(target.connectionId, order).catch(
-          this._errorHandler
-        );
+        this._sendToLocalConn(target.connId, order).catch(this._errorHandler);
       }
     } else if (target.type === 'topic') {
-      this._broadcastLocal(target.uid, order).catch(this._errorHandler);
+      this._sendLocal(target.uid, order).catch(this._errorHandler);
     } else {
       throw new Error(`unknown target received ${target.type}`);
     }

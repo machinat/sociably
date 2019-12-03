@@ -147,13 +147,13 @@ it('handle sockets and connections lifecycle', async () => {
 
   expect(socket.connect.mock).toHaveBeenCalledTimes(1);
   expect(socket.connect.mock).toHaveBeenCalledWith({
-    connectionId: expect.any(String),
+    connId: expect.any(String),
   });
 
   expect(issueEvent.mock).not.toHaveBeenCalled();
 
-  const { connectionId } = socket.connect.mock.calls[0].args[0];
-  socket.emit('connect', { connectionId });
+  const { connId } = socket.connect.mock.calls[0].args[0];
+  socket.emit('connect', { connId });
   await nextTick();
 
   expect(distributor.addLocalConnection.mock).toHaveBeenCalledTimes(1);
@@ -172,7 +172,7 @@ it('handle sockets and connections lifecycle', async () => {
   );
 
   socket.emit('event', {
-    connectionId,
+    connId,
     type: 'greeting',
     subtype: 'french',
     payload: 'bonjour',
@@ -186,7 +186,7 @@ it('handle sockets and connections lifecycle', async () => {
     expectedMetadata
   );
 
-  socket.emit('disconnect', { connectionId, reason: 'bye' });
+  socket.emit('disconnect', { connId, reason: 'bye' });
   await nextTick();
 
   expect(issueEvent.mock).toHaveBeenCalledTimes(3);
@@ -265,38 +265,38 @@ test('multi sockets and connections', async () => {
   const nullConn = {
     serverId,
     socketId: socket1.id,
-    id: socket1.connect.mock.calls[0].args[0].connectionId,
+    id: socket1.connect.mock.calls[0].args[0].connId,
   };
 
   const john = { john: 'doe' };
   const johnConn1 = {
     serverId,
     socketId: socket1.id,
-    id: socket1.connect.mock.calls[1].args[0].connectionId,
+    id: socket1.connect.mock.calls[1].args[0].connId,
   };
   const johnConn2 = {
     serverId,
     socketId: socket2.id,
-    id: socket2.connect.mock.calls[0].args[0].connectionId,
+    id: socket2.connect.mock.calls[0].args[0].connId,
   };
 
   const jojo = { jojo: 'doe' };
   const jojoConn1 = {
     serverId,
     socketId: socket1.id,
-    id: socket1.connect.mock.calls[2].args[0].connectionId,
+    id: socket1.connect.mock.calls[2].args[0].connId,
   };
   const jojoConn2 = {
     serverId,
     socketId: socket2.id,
-    id: socket2.connect.mock.calls[1].args[0].connectionId,
+    id: socket2.connect.mock.calls[1].args[0].connId,
   };
 
-  socket1.emit('connect', { connectionId: nullConn.id });
-  socket1.emit('connect', { connectionId: johnConn1.id });
-  socket2.emit('connect', { connectionId: johnConn2.id });
-  socket1.emit('connect', { connectionId: jojoConn1.id });
-  socket2.emit('connect', { connectionId: jojoConn2.id });
+  socket1.emit('connect', { connId: nullConn.id });
+  socket1.emit('connect', { connId: johnConn1.id });
+  socket2.emit('connect', { connId: johnConn2.id });
+  socket1.emit('connect', { connId: jojoConn1.id });
+  socket2.emit('connect', { connId: jojoConn2.id });
   await nextTick();
 
   expect(distributor.addLocalConnection.mock).toHaveBeenCalledTimes(5);
@@ -368,11 +368,11 @@ test('multi sockets and connections', async () => {
     }
   );
 
-  socket1.emit('event', { connectionId: nullConn.id, type: 'a', payload: 0 });
-  socket1.emit('event', { connectionId: johnConn1.id, type: 'b', payload: 1 });
-  socket2.emit('event', { connectionId: johnConn2.id, type: 'c', payload: 2 });
-  socket1.emit('event', { connectionId: jojoConn1.id, type: 'd', payload: 3 });
-  socket2.emit('event', { connectionId: jojoConn2.id, type: 'e', payload: 4 });
+  socket1.emit('event', { connId: nullConn.id, type: 'a', payload: 0 });
+  socket1.emit('event', { connId: johnConn1.id, type: 'b', payload: 1 });
+  socket2.emit('event', { connId: johnConn2.id, type: 'c', payload: 2 });
+  socket1.emit('event', { connId: jojoConn1.id, type: 'd', payload: 3 });
+  socket2.emit('event', { connId: jojoConn2.id, type: 'e', payload: 4 });
 
   expect(issueEvent.mock).toHaveBeenCalledTimes(10);
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
@@ -431,13 +431,13 @@ test('multi sockets and connections', async () => {
     }
   );
 
-  socket1.emit('disconnect', { connectionId: nullConn.id, reason: 'bye0' });
-  socket1.emit('disconnect', { connectionId: johnConn1.id, reason: 'bye1' });
-  socket2.emit('disconnect', { connectionId: jojoConn2.id, reason: 'bye2' });
+  socket1.emit('disconnect', { connId: nullConn.id, reason: 'bye0' });
+  socket1.emit('disconnect', { connId: johnConn1.id, reason: 'bye1' });
+  socket2.emit('disconnect', { connId: jojoConn2.id, reason: 'bye2' });
   await nextTick();
 
-  socket1.emit('disconnect', { connectionId: jojoConn1.id, reason: 'bye3' });
-  socket2.emit('disconnect', { connectionId: johnConn2.id, reason: 'bye4' });
+  socket1.emit('disconnect', { connId: jojoConn1.id, reason: 'bye3' });
+  socket2.emit('disconnect', { connId: johnConn2.id, reason: 'bye4' });
   await nextTick();
 
   expect(issueEvent.mock).toHaveBeenCalledTimes(15);
@@ -573,10 +573,10 @@ it('generate uniq connection id', async () => {
     await nextTick(); // eslint-disable-line no-await-in-loop
 
     expect(socket.connect.mock).toHaveBeenCalledTimes(i + 1);
-    const { connectionId } = socket.connect.mock.calls[i].args[0];
+    const { connId } = socket.connect.mock.calls[i].args[0];
 
-    expect(ids.has(connectionId)).toBe(false);
-    ids.add(connectionId);
+    expect(ids.has(connId)).toBe(false);
+    ids.add(connId);
 
     ws.removeAllListeners();
   }
@@ -640,7 +640,7 @@ it('reject register if auth rejected', async () => {
   expect(socket.connect.mock).not.toHaveBeenCalled();
   expect(socket.reject.mock).toHaveBeenCalledTimes(1);
   expect(socket.reject.mock).toHaveBeenCalledWith({
-    req: 11,
+    seq: 11,
     reason: 'no no no',
   });
 });
@@ -669,7 +669,7 @@ it('reject register if auth thrown', async () => {
   expect(socket.connect.mock).not.toHaveBeenCalled();
   expect(socket.reject.mock).toHaveBeenCalledTimes(1);
   expect(socket.reject.mock).toHaveBeenCalledWith({
-    req: 11,
+    seq: 11,
     reason: 'noooooo',
   });
 });

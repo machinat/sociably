@@ -188,46 +188,43 @@ class WebSocketReceiver<AuthContext, RegisterData>
 
   _handleRegister = async (socket: Socket, body: RegisterBody, seq: number) => {
     const socketStatus = this._getSocketStatusAssertedly(socket);
-    const connectionId: string = uniqid();
+    const connId: string = uniqid();
 
     try {
       const authed = await this._authenticator(socket.request, body.data);
 
       if (authed.accepted) {
         const { user, context: authContext, expireAt } = authed;
-        socketStatus.connected.set(connectionId, {
+        socketStatus.connected.set(connId, {
           user,
           authContext,
           connection: new Connection(
             this._serverId,
             socket.id,
-            connectionId,
+            connId,
             expireAt
           ),
         });
 
-        await socket.connect({ connectionId, req: seq });
+        await socket.connect({ connId, seq });
       } else {
-        await socket.reject({
-          req: seq,
-          reason: authed.reason,
-        });
+        await socket.reject({ seq, reason: authed.reason });
       }
     } catch (err) {
-      await socket.reject({ req: seq, reason: err.message });
+      await socket.reject({ seq, reason: err.message });
     }
   };
 
   _handleEvent = async (socket: Socket, body: EventBody) => {
     const socketStatus = this._getSocketStatusAssertedly(socket);
 
-    const { connectionId, type, subtype, payload } = body;
-    const authenticated = socketStatus.connected.get(connectionId);
+    const { connId, type, subtype, payload } = body;
+    const authenticated = socketStatus.connected.get(connId);
 
     if (authenticated === undefined) {
       // reject if not registered
       await socket.disconnect({
-        connectionId,
+        connId,
         reason: 'connection is not authenticated',
       });
     } else {
@@ -242,13 +239,13 @@ class WebSocketReceiver<AuthContext, RegisterData>
   _handleConnect = async (socket: Socket, body: ConnectBody) => {
     const socketStatus = this._getSocketStatusAssertedly(socket);
 
-    const { connectionId } = body;
-    const authenticated = socketStatus.connected.get(connectionId);
+    const { connId } = body;
+    const authenticated = socketStatus.connected.get(connId);
 
     if (authenticated === undefined) {
       // reject if not registered
       await socket.disconnect({
-        connectionId,
+        connId,
         reason: 'connection is not authenticated',
       });
     } else {
@@ -265,19 +262,19 @@ class WebSocketReceiver<AuthContext, RegisterData>
 
   _handleConnectFail = (socket: Socket, body: DisconnectBody) => {
     const socketStatus = this._getSocketStatusAssertedly(socket);
-    socketStatus.connected.delete(body.connectionId);
+    socketStatus.connected.delete(body.connId);
   };
 
   _handleDisconnect = async (socket: Socket, body: DisconnectBody) => {
     const socketStatus = this._getSocketStatusAssertedly(socket);
 
-    const { connectionId, reason } = body;
-    const authenticated = socketStatus.connected.get(connectionId);
+    const { connId, reason } = body;
+    const authenticated = socketStatus.connected.get(connId);
 
     if (authenticated !== undefined) {
       const { connection } = authenticated;
 
-      socketStatus.connected.delete(connectionId);
+      socketStatus.connected.delete(connId);
       this._distributor.removeLocalConnection(connection);
 
       await this._processEvent(

@@ -182,13 +182,13 @@ describe('send()', () => {
 
     expect(socket.event.mock).toHaveBeenCalledTimes(2);
     expect(socket.event.mock).toHaveBeenNthCalledWith(1, {
-      connectionId: 'conn#1',
+      connId: 'conn#1',
       type: 'foo',
       subtype: 'bar',
       payload: 1,
     });
     expect(socket.event.mock).toHaveBeenNthCalledWith(2, {
-      connectionId: 'conn#2',
+      connId: 'conn#2',
       type: 'foo',
       subtype: 'baz',
       payload: 2,
@@ -218,7 +218,7 @@ describe('send()', () => {
 
     const connectionTarget = {
       type: 'connection',
-      connectionId: '#conn_remote',
+      connId: '#conn_remote',
       serverId: '#remote',
     };
     expect(broker.sendRemote.mock).toHaveBeenCalledTimes(2);
@@ -285,19 +285,19 @@ describe('send()', () => {
 
     expect(socket.event.mock).toHaveBeenCalledTimes(3);
     expect(socket.event.mock).toHaveBeenNthCalledWith(1, {
-      connectionId: conn1.id,
+      connId: conn1.id,
       scopeUId: fooScope.uid,
       type: 'greet',
       payload: 'good morning',
     });
     expect(socket.event.mock).toHaveBeenNthCalledWith(2, {
-      connectionId: conn2.id,
+      connId: conn2.id,
       scopeUId: fooScope.uid,
       type: 'greet',
       payload: 'good morning',
     });
     expect(socket.event.mock).toHaveBeenNthCalledWith(3, {
-      connectionId: conn1.id,
+      connId: conn1.id,
       scopeUId: barScope.uid,
       type: 'greet',
       payload: 'good afternoon',
@@ -425,17 +425,17 @@ describe('send()', () => {
 
     expect(socket.event.mock).toHaveBeenCalledTimes(3);
     expect(socket.event.mock).toHaveBeenNthCalledWith(1, {
-      connectionId: conn1.id,
+      connId: conn1.id,
       scopeUId: fooScope.uid,
       ...event,
     });
     expect(socket.event.mock).toHaveBeenNthCalledWith(2, {
-      connectionId: conn2.id,
+      connId: conn2.id,
       scopeUId: fooScope.uid,
       ...event,
     });
     expect(socket.event.mock).toHaveBeenNthCalledWith(3, {
-      connectionId: conn2.id,
+      connId: conn2.id,
       scopeUId: fooScope.uid,
       ...event,
     });

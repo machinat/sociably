@@ -113,16 +113,16 @@ export type WebSocketBotOptions<AuthCtx, RegData> = {|
   >[],
 |};
 
-type ConnectionTarget = {
+type ConnectionTarget = {|
   type: 'connection',
   serverId: string,
-  connectionId: string,
-};
+  connId: string,
+|};
 
-type TopicTarget = {
+type TopicTarget = {|
   type: 'topic',
   uid: ChannelUid,
-};
+|};
 
 export type RemoteTarget = ConnectionTarget | TopicTarget;
 

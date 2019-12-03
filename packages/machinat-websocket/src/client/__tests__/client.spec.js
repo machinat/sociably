@@ -102,7 +102,7 @@ it('emit error if register rejected when socket is already open', async () => {
   expect(socket.register.mock).toHaveBeenCalledTimes(1);
   await delay();
 
-  socket.emit('reject', { req: 3, reason: 'you are fired' }, 5);
+  socket.emit('reject', { seq: 3, reason: 'you are fired' }, 5);
 
   expect(errorSpy.mock).toHaveBeenCalledTimes(1);
   expect(errorSpy.mock.calls[0].args[0]).toMatchInlineSnapshot(
@@ -120,7 +120,7 @@ it('emit connect event when received', async () => {
 
   const regSeq = await socket.register.mock.calls[0].result;
 
-  socket.emit('connect', { connectionId: '#conn', req: regSeq });
+  socket.emit('connect', { connId: '#conn', seq: regSeq });
   await delay();
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(1);
@@ -136,13 +136,13 @@ it('emit defined event when received', async () => {
   const socket = Socket.mock.calls[0].instance;
 
   socket.emit('open');
-  socket.emit('connect', { connectionId: '#conn' });
+  socket.emit('connect', { connId: '#conn' });
   await delay();
 
   client.onEvent(eventSpy);
 
   socket.emit('event', {
-    connectionId: '#conn',
+    connId: '#conn',
     type: 'reaction',
     subtype: 'wasted',
     payload: 'Link is down! Legend over.',
@@ -160,7 +160,7 @@ it('emit defined event when received', async () => {
   });
 
   socket.emit('event', {
-    connectionId: '#conn',
+    connId: '#conn',
     scopeUId: 'websocket:topic:game:world',
     type: 'resurrect',
     payload: 'Hero never die!',
@@ -180,7 +180,7 @@ it('send queued event when connected', async () => {
   socket.event.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
 
   socket.emit('open');
-  socket.emit('connect', { connectionId: '#conn' });
+  socket.emit('connect', { connId: '#conn' });
   await delay();
 
   await expect(
@@ -193,7 +193,7 @@ it('send queued event when connected', async () => {
 
   expect(socket.event.mock).toHaveBeenCalledTimes(1);
   expect(socket.event.mock).toHaveBeenCalledWith({
-    connectionId: '#conn',
+    connId: '#conn',
     type: 'attack',
     subtype: 'chicken',
     payload: 'Chicken Attack! A~AA~AAAA~~',
@@ -220,21 +220,21 @@ it('queue the sendings when not ready and fire after connected', async () => {
   socket.emit('open');
   await delay();
 
-  const req = await socket.register.mock.calls[0].result;
+  const seq = await socket.register.mock.calls[0].result;
   socket.emit(
     'connect',
-    { connectionId: '#conn', req, user: { id: 'xxx', name: 'john doe' } },
+    { connId: '#conn', seq, user: { id: 'xxx', name: 'john doe' } },
     3
   );
 
   expect(socket.event.mock).toHaveBeenCalledTimes(2);
   expect(socket.event.mock).toHaveBeenCalledWith({
-    connectionId: '#conn',
+    connId: '#conn',
     type: 'greeting',
     payload: 'hi',
   });
   expect(socket.event.mock).toHaveBeenCalledWith({
-    connectionId: '#conn',
+    connId: '#conn',
     type: 'greeting',
     payload: 'how are you',
   });
@@ -249,13 +249,13 @@ test('disconnect by server', async () => {
   const socket = Socket.mock.calls[0].instance;
 
   socket.emit('open');
-  socket.emit('connect', { connectionId: '#conn' });
+  socket.emit('connect', { connId: '#conn' });
   await delay();
 
   client.onEvent(eventSpy);
 
   expect(client.connected).toBe(true);
-  socket.emit('disconnect', { connectionId: '#conn', reason: 'See ya!' });
+  socket.emit('disconnect', { connId: '#conn', reason: 'See ya!' });
 
   expect(client.connected).toBe(false);
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
@@ -271,7 +271,7 @@ test('#disconnect()', async () => {
   socket.disconnect.mock.fake(() => Promise.resolve(++socket._seq)); // eslint-disable-line no-plusplus
 
   socket.emit('open');
-  socket.emit('connect', { connectionId: '#conn' });
+  socket.emit('connect', { connId: '#conn' });
   await delay();
 
   client.onEvent(eventSpy);
@@ -281,13 +281,13 @@ test('#disconnect()', async () => {
 
   expect(socket.disconnect.mock).toHaveBeenCalledTimes(1);
   expect(socket.disconnect.mock).toHaveBeenCalledWith({
-    connectionId: '#conn',
+    connId: '#conn',
     reason: 'You are chicken attacked!',
   });
 
   expect(client.connected).toBe(false);
 
-  socket.emit('disconnect', { connectionId: '#conn', reason: 'See ya!' });
+  socket.emit('disconnect', { connId: '#conn', reason: 'See ya!' });
 
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
     event: { type: 'disconnect' },
@@ -302,7 +302,7 @@ it('emit errer if connect_fail', () => {
   client.onError(errorSpy);
 
   const socket = Socket.mock.calls[0].instance;
-  socket.emit('connect_fail', { connectionId: '#conn', reason: 'FAILED' }, 3);
+  socket.emit('connect_fail', { connId: '#conn', reason: 'FAILED' }, 3);
 
   expect(errorSpy.mock).toHaveBeenCalledTimes(1);
   expect(errorSpy.mock.calls[0].args[0]).toMatchInlineSnapshot(

@@ -53,7 +53,7 @@ const FRAME_DISCONNECT = 'disconnect';
  * Event Frame carries a event which delivered with a specified connection
  */
 export type EventBody = {|
-  connectionId: ConnectionId,
+  connId: ConnectionId,
   type: string,
   subtype?: string,
   payload: any,
@@ -65,7 +65,7 @@ export type EventBody = {|
  * Answer Frame make a reply to an event transmitted before if needed
  */
 export type AnswerBody = {|
-  req: number, // seq of the answered event
+  seq: number, // seq of the answered event
   payload: any,
 |};
 
@@ -73,7 +73,7 @@ export type AnswerBody = {|
  * Reject Frame reject an illegal frame transmitted before
  */
 export type RejectBody = {|
-  req: number, // seq of the rejected frame
+  seq: number, // seq of the rejected frame
   // code: number,
   reason: string,
 |};
@@ -90,8 +90,8 @@ export type RegisterBody = {|
  * to the connect frame received from Client
  */
 export type ConnectBody = {|
-  req: number, // the responding "register" seq on server, "connect" seq on client
-  connectionId: ConnectionId,
+  seq: number, // the responding "register" seq on server, "connect" seq on client
+  connId: ConnectionId,
 |};
 
 /**
@@ -99,8 +99,8 @@ export type ConnectBody = {|
  * the disconnect frame received from Server/Client
  */
 export type DisconnectBody = {|
-  req?: number, // the disconnect frame seq received if it's a confirmation
-  connectionId: ConnectionId,
+  seq?: number, // the disconnect frame seq received if it's a confirmation
+  connId: ConnectionId,
   // code: number,
   reason: string,
 |};
@@ -276,13 +276,11 @@ class MachinatSocket extends EventEmitter {
   }
 
   async event(body: EventBody): Promise<number> {
-    const { connectionId } = body;
+    const { connId } = body;
 
-    const state = this._connectStates.get(connectionId);
+    const state = this._connectStates.get(connId);
     if (state !== STATE_CONNECTED_OK) {
-      throw new ConnectionError(
-        `connection [${connectionId}] is not connected`
-      );
+      throw new ConnectionError(`connection [${connId}] is not connected`);
     }
 
     const seq = await this._send(FRAME_EVENT, body);
@@ -308,28 +306,26 @@ class MachinatSocket extends EventEmitter {
 
   // initiate CONNECT handshake
   async connect(body: ConnectBody): Promise<number> {
-    const { connectionId, req } = body;
+    const { connId } = body;
 
-    let state = this._connectStates.get(connectionId);
+    let state = this._connectStates.get(connId);
     // throw if already connected or disconnecting or waiting for CONNECT echo
     if (
       state === STATE_CONNECTED_OK ||
       (state !== undefined &&
         (state & MASK_DISCONNECTING || state & FLAG_CONNECT_SENT))
     ) {
-      throw new ConnectionError(
-        `connection [${connectionId}] is already connected`
-      );
+      throw new ConnectionError(`connection [${connId}] is already connected`);
     }
 
-    this._addHandshakeTimeout(connectionId, req);
+    this._addHandshakeTimeout(connId, undefined);
     const seq = await this._send(FRAME_CONNECT, body);
 
-    state = this._connectStates.get(connectionId);
+    state = this._connectStates.get(connId);
     if (state !== undefined) {
-      this._connectStates.set(connectionId, state & FLAG_CONNECT_SENT);
+      this._connectStates.set(connId, state & FLAG_CONNECT_SENT);
     } else {
-      this._connectStates.set(connectionId, FLAG_CONNECT_SENT);
+      this._connectStates.set(connId, FLAG_CONNECT_SENT);
     }
 
     return seq;
@@ -337,13 +333,13 @@ class MachinatSocket extends EventEmitter {
 
   // initiate DISCONNECT handshake
   async disconnect(body: DisconnectBody): Promise<void | number> {
-    const { connectionId, req } = body;
+    const { connId } = body;
 
-    let state = this._connectStates.get(connectionId);
+    let state = this._connectStates.get(connId);
     if (state === undefined) {
       // throw if not even connecting
       throw new ConnectionError(
-        `connection [${connectionId}] not existed or already disconnected`
+        `connection [${connId}] not existed or already disconnected`
       );
     } else if (state & FLAG_DISCONNECT_SENT) {
       // return nothing while waiting for echo
@@ -351,14 +347,14 @@ class MachinatSocket extends EventEmitter {
     }
 
     if (state === STATE_CONNECTED_OK) {
-      this._addHandshakeTimeout(connectionId, req);
+      this._addHandshakeTimeout(connId, undefined);
     }
 
     const seq = await this._send(FRAME_DISCONNECT, body);
 
-    state = this._connectStates.get(connectionId);
+    state = this._connectStates.get(connId);
     if (state !== undefined) {
-      this._connectStates.set(connectionId, state | FLAG_DISCONNECT_SENT);
+      this._connectStates.set(connId, state | FLAG_DISCONNECT_SENT);
     }
 
     return seq;
@@ -420,11 +416,11 @@ class MachinatSocket extends EventEmitter {
   }
 
   _emitClose(code: number, reason: string) {
-    for (const [connectionId, state] of this._connectStates.entries()) {
+    for (const [connId, state] of this._connectStates.entries()) {
       if (state === STATE_CONNECTED_OK || state & MASK_DISCONNECTING) {
-        this._emitDisconnect({ connectionId, reason });
+        this._emitDisconnect({ connId, reason });
       } else if (state & MASK_CONNECTING) {
-        this._emitConnectFail({ connectionId, reason });
+        this._emitConnectFail({ connId, reason });
       }
     }
 
@@ -456,14 +452,14 @@ class MachinatSocket extends EventEmitter {
     } else if (frameType === FRAME_DISCONNECT) {
       await this._handleDisconnect(body, seq);
     } else {
-      await this.reject({ req: seq, reason: 'unknown frame type' });
+      await this.reject({ seq, reason: 'unknown frame type' });
     }
   }
 
   async _handleEvent(body: EventBody, seq: number) {
-    const { connectionId } = body;
+    const { connId } = body;
 
-    const state = this._connectStates.get(connectionId);
+    const state = this._connectStates.get(connId);
     if (
       state === STATE_CONNECTED_OK ||
       // accept msg when DISCONNECT sent but not yet echoed back
@@ -473,14 +469,14 @@ class MachinatSocket extends EventEmitter {
     ) {
       this._emitEvent(body, seq);
     } else {
-      await this.reject({ req: seq, reason: 'channel not connected' });
+      await this.reject({ seq, reason: 'channel not connected' });
     }
   }
 
   async _handleRegister(body: RegisterBody, seq: number) {
     if (this.isClient) {
       await this.reject({
-        req: seq,
+        seq,
         reason: "can't register to client",
       });
     } else {
@@ -489,44 +485,44 @@ class MachinatSocket extends EventEmitter {
   }
 
   async _handleConnect(body: ConnectBody, seq: number) {
-    const { connectionId } = body;
+    const { connId } = body;
 
-    const state = this._connectStates.get(connectionId);
+    const state = this._connectStates.get(connId);
     if (state === undefined) {
       // handle fresh connect initiation
-      this._connectStates.set(connectionId, FLAG_CONNECT_RECEIVED);
+      this._connectStates.set(connId, FLAG_CONNECT_RECEIVED);
       if (this.isClient) {
         // confirm at client side
-        await this.connect({ connectionId, req: seq });
+        await this.connect({ connId, seq });
 
         this._accomplishConnect(body, seq);
       } else {
         // disallow initiating connect handshake from client
         await this.disconnect({
-          connectionId,
-          req: seq,
+          connId,
+          seq,
           reason: 'initiate connect handshake from client is not allowed',
         });
 
-        this._connectStates.delete(connectionId);
+        this._connectStates.delete(connId);
       }
     } else if (state & FLAG_CONNECT_SENT && !(state & MASK_DISCONNECTING)) {
       // CONNECT confirmed, set as connected
       this._accomplishConnect(body, seq);
     } else {
       // if disconnecting while connecting, add flag and do nothing
-      this._connectStates.set(connectionId, state | FLAG_CONNECT_RECEIVED);
+      this._connectStates.set(connId, state | FLAG_CONNECT_RECEIVED);
     }
   }
 
   async _handleDisconnect(body: DisconnectBody, seq: number) {
-    const { connectionId } = body;
+    const { connId } = body;
 
-    const state = this._connectStates.get(connectionId);
+    const state = this._connectStates.get(connId);
     if (state === undefined) {
       // reject if not even start connecting
       await this.reject({
-        req: seq,
+        seq,
         reason: 'channel not connected or connecting',
       });
     } else if (state & FLAG_DISCONNECT_SENT || state & MASK_CONNECTING) {
@@ -534,29 +530,29 @@ class MachinatSocket extends EventEmitter {
       this._accomplishDisconnect(body, seq);
     } else {
       // echo back to finish handshake
-      this._connectStates.set(connectionId, state | FLAG_DISCONNECT_RECEIVED);
-      await this.disconnect({ connectionId, req: seq, reason: 'echo' });
+      this._connectStates.set(connId, state | FLAG_DISCONNECT_RECEIVED);
+      await this.disconnect({ connId, seq, reason: 'echo' });
       this._accomplishDisconnect(body, seq);
     }
   }
 
-  _outdateHandshake = (connectionId: ConnectionId, req?: number) => {
-    const state = this._connectStates.get(connectionId);
+  _outdateHandshake = (connId: ConnectionId, seq?: number) => {
+    const state = this._connectStates.get(connId);
     if (state !== undefined && state !== STATE_CONNECTED_OK) {
-      this._connectStates.delete(connectionId);
+      this._connectStates.delete(connId);
 
       const reason = 'handshake timeout';
       if (state & MASK_CONNECTING) {
-        this._emitConnectFail({ connectionId, req, reason }, req);
+        this._emitConnectFail({ connId, seq, reason }, seq);
       } else {
-        this._emitDisconnect({ connectionId, req, reason }, req);
+        this._emitDisconnect({ connId, seq, reason }, seq);
       }
     }
 
-    this._handshakeTimeouts.delete(connectionId);
+    this._handshakeTimeouts.delete(connId);
   };
 
-  _addHandshakeTimeout(connectionId: ConnectionId, req?: number) {
+  _addHandshakeTimeout(connectionId: ConnectionId, seq?: number) {
     if (this._handshakeTimeouts.has(connectionId)) {
       return;
     }
@@ -570,7 +566,7 @@ class MachinatSocket extends EventEmitter {
       this._outdateHandshake,
       HANDSHAKE_TIMEOUT,
       connectionId,
-      req
+      seq
     );
     this._handshakeTimeouts.set(connectionId, timeoutId);
   }
@@ -578,19 +574,19 @@ class MachinatSocket extends EventEmitter {
   _accomplishConnect(body: ConnectBody, seq: number) {
     this._emitConnect(body, seq);
 
-    const { connectionId } = body;
-    this._connectStates.set(connectionId, STATE_CONNECTED_OK);
+    const { connId } = body;
+    this._connectStates.set(connId, STATE_CONNECTED_OK);
 
-    const timeoutId = this._handshakeTimeouts.get(connectionId);
+    const timeoutId = this._handshakeTimeouts.get(connId);
     if (timeoutId !== undefined) {
       clearTimeout(timeoutId);
-      this._handshakeTimeouts.delete(connectionId);
+      this._handshakeTimeouts.delete(connId);
     }
   }
 
   _accomplishDisconnect(body: DisconnectBody, seq?: number) {
-    const { connectionId } = body;
-    const state = this._connectStates.get(connectionId);
+    const { connId } = body;
+    const state = this._connectStates.get(connId);
 
     if (state === undefined || state & MASK_CONNECTING) {
       this._emitConnectFail(body, seq);
@@ -598,12 +594,12 @@ class MachinatSocket extends EventEmitter {
       this._emitDisconnect(body, seq);
     }
 
-    this._connectStates.delete(connectionId);
+    this._connectStates.delete(connId);
 
-    const timeoutId = this._handshakeTimeouts.get(connectionId);
+    const timeoutId = this._handshakeTimeouts.get(connId);
     if (timeoutId !== undefined) {
       clearTimeout(timeoutId);
-      this._handshakeTimeouts.delete(connectionId);
+      this._handshakeTimeouts.delete(connId);
     }
   }
 }

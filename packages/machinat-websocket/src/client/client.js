@@ -110,7 +110,7 @@ class WebScoketClient<RegData> {
         this._queuedJobs.push({ resolve, reject, event });
       });
     } else {
-      await this._socket.event({ ...event, connectionId: this._connId });
+      await this._socket.event({ ...event, connId: this._connId });
     }
   }
 
@@ -118,7 +118,7 @@ class WebScoketClient<RegData> {
     if (this._connected) {
       this._connected = false;
       this._socket
-        .disconnect({ connectionId: this._connId, reason })
+        .disconnect({ connId: this._connId, reason })
         .catch(this._emitError);
     }
   }
@@ -181,15 +181,15 @@ class WebScoketClient<RegData> {
     this._user = user;
   }
 
-  _handleConnect({ connectionId, req }: ConnectBody) {
-    if (req !== this._registerSeq) {
+  _handleConnect({ connId, seq }: ConnectBody) {
+    if (seq !== this._registerSeq) {
       return;
     }
 
     this._connected = true;
-    this._connId = connectionId;
+    this._connId = connId;
     this._connChannel = new ConnectionChannel(
-      new Connection('*', '*', connectionId, null)
+      new Connection('*', '*', connId, null)
     );
 
     this._emitEvent(
@@ -203,15 +203,15 @@ class WebScoketClient<RegData> {
 
     for (const { event, resolve, reject } of this._queuedJobs) {
       this._socket
-        .event({ ...event, connectionId })
+        .event({ ...event, connId })
         .then(resolve)
         .catch(reject);
     }
     this._queuedJobs = [];
   }
 
-  _handleDisconnect({ connectionId }: DisconnectBody) {
-    if (this._connId === connectionId) {
+  _handleDisconnect({ connId }: DisconnectBody) {
+    if (this._connId === connId) {
       this._connected = false;
       this._emitEvent(
         {
@@ -224,8 +224,8 @@ class WebScoketClient<RegData> {
     }
   }
 
-  _handleEvent({ connectionId, type, subtype, payload, scopeUId }: EventBody) {
-    if (this._connected === true && this._connId === connectionId) {
+  _handleEvent({ connId, type, subtype, payload, scopeUId }: EventBody) {
+    if (this._connected === true && this._connId === connId) {
       let channel = this._connChannel;
 
       if (scopeUId) {
@@ -246,14 +246,14 @@ class WebScoketClient<RegData> {
     }
   }
 
-  _handleReject({ req, reason }: RejectBody) {
-    if (req === this._registerSeq) {
+  _handleReject({ seq, reason }: RejectBody) {
+    if (seq === this._registerSeq) {
       this._emitError(new ConnectionError(reason));
     }
   }
 
-  _handleConnectFail({ req }: DisconnectBody) {
-    if (req === this._registerSeq) {
+  _handleConnectFail({ seq }: DisconnectBody) {
+    if (seq === this._registerSeq) {
       const err = new ConnectionError('connect handshake fail');
       this._emitError(err);
     }
