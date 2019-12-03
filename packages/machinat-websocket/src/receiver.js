@@ -257,7 +257,7 @@ class WebSocketReceiver<AuthContext, RegisterData>
 
       await this._processEvent(
         socket,
-        createEvent('@connect', undefined, undefined),
+        createEvent('connect', undefined, undefined),
         authenticated
       );
     }
@@ -282,7 +282,7 @@ class WebSocketReceiver<AuthContext, RegisterData>
 
       await this._processEvent(
         socket,
-        createEvent('@disconnect', undefined, { reason }),
+        createEvent('disconnect', undefined, { reason }),
         authenticated
       );
     }

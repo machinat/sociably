@@ -167,7 +167,7 @@ it('handle sockets and connections lifecycle', async () => {
   expect(issueEvent.mock).toHaveBeenCalledWith(
     new ConnectionChannel(expectedConnection),
     { john: 'doe' },
-    { type: '@connect' },
+    { type: 'connect' },
     expectedMetadata
   );
 
@@ -193,7 +193,7 @@ it('handle sockets and connections lifecycle', async () => {
   expect(issueEvent.mock).toHaveBeenCalledWith(
     new ConnectionChannel(expectedConnection),
     { john: 'doe' },
-    { type: '@disconnect', payload: { reason: 'bye' } },
+    { type: 'disconnect', payload: { reason: 'bye' } },
     expectedMetadata
   );
 
@@ -316,14 +316,14 @@ test('multi sockets and connections', async () => {
     1,
     new ConnectionChannel(nullConn),
     null,
-    { type: '@connect' },
+    { type: 'connect' },
     { source: 'websocket', request: expectedRequest, connection: nullConn }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     2,
     new ConnectionChannel(johnConn1),
     { john: 'doe' },
-    { type: '@connect' },
+    { type: 'connect' },
     {
       source: 'websocket',
       request: expectedRequest,
@@ -335,7 +335,7 @@ test('multi sockets and connections', async () => {
     3,
     new ConnectionChannel(johnConn2),
     { john: 'doe' },
-    { type: '@connect' },
+    { type: 'connect' },
     {
       source: 'websocket',
       request: expectedRequest,
@@ -347,7 +347,7 @@ test('multi sockets and connections', async () => {
     4,
     new ConnectionChannel(jojoConn1),
     { jojo: 'doe' },
-    { type: '@connect' },
+    { type: 'connect' },
     {
       source: 'websocket',
       request: expectedRequest,
@@ -359,7 +359,7 @@ test('multi sockets and connections', async () => {
     5,
     new ConnectionChannel(jojoConn2),
     { jojo: 'doe' },
-    { type: '@connect' },
+    { type: 'connect' },
     {
       source: 'websocket',
       request: expectedRequest,
@@ -445,14 +445,14 @@ test('multi sockets and connections', async () => {
     11,
     new ConnectionChannel(nullConn),
     null,
-    { type: '@disconnect', payload: { reason: 'bye0' } },
+    { type: 'disconnect', payload: { reason: 'bye0' } },
     { source: 'websocket', request: expectedRequest, connection: nullConn }
   );
   expect(issueEvent.mock).toHaveBeenNthCalledWith(
     12,
     new ConnectionChannel(johnConn1),
     { john: 'doe' },
-    { type: '@disconnect', payload: { reason: 'bye1' } },
+    { type: 'disconnect', payload: { reason: 'bye1' } },
     {
       source: 'websocket',
       request: expectedRequest,
@@ -464,7 +464,7 @@ test('multi sockets and connections', async () => {
     13,
     new ConnectionChannel(jojoConn2),
     { jojo: 'doe' },
-    { type: '@disconnect', payload: { reason: 'bye2' } },
+    { type: 'disconnect', payload: { reason: 'bye2' } },
     {
       source: 'websocket',
       request: expectedRequest,
@@ -476,7 +476,7 @@ test('multi sockets and connections', async () => {
     14,
     new ConnectionChannel(jojoConn1),
     { jojo: 'doe' },
-    { type: '@disconnect', payload: { reason: 'bye3' } },
+    { type: 'disconnect', payload: { reason: 'bye3' } },
     {
       source: 'websocket',
       request: expectedRequest,
@@ -488,7 +488,7 @@ test('multi sockets and connections', async () => {
     15,
     new ConnectionChannel(johnConn2),
     { john: 'doe' },
-    { type: '@disconnect', payload: { reason: 'bye4' } },
+    { type: 'disconnect', payload: { reason: 'bye4' } },
     {
       source: 'websocket',
       request: expectedRequest,

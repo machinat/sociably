@@ -63,7 +63,6 @@ class WebScoketClient<RegData> {
   _queuedJobs: PendingEventJob[];
 
   _user: ?MachinatUser;
-  _userChannel: ?UserScopeChannel;
 
   _connId: string;
   _connChannel: ConnectionChannel;
@@ -143,11 +142,7 @@ class WebScoketClient<RegData> {
 
   _emitEvent(event: ClientEvent, channel: WebSocketChannel) {
     for (const listener of this._eventListeners) {
-      listener({
-        event,
-        user: this._user,
-        channel,
-      });
+      listener({ event, channel, user: this._user });
     }
   }
 
@@ -184,7 +179,6 @@ class WebScoketClient<RegData> {
     const seq = await this._socket.register({ data });
     this._registerSeq = seq;
     this._user = user;
-    this._userChannel = user && new UserScopeChannel(user);
   }
 
   _handleConnect({ connectionId, req }: ConnectBody) {
@@ -195,12 +189,12 @@ class WebScoketClient<RegData> {
     this._connected = true;
     this._connId = connectionId;
     this._connChannel = new ConnectionChannel(
-      new Connection('$', '$', connectionId, null)
+      new Connection('*', '*', connectionId, null)
     );
 
     this._emitEvent(
       {
-        type: '@connect',
+        type: 'connect',
         subtype: undefined,
         payload: undefined,
       },
@@ -221,7 +215,7 @@ class WebScoketClient<RegData> {
       this._connected = false;
       this._emitEvent(
         {
-          type: '@disconnect',
+          type: 'disconnect',
           subtype: undefined,
           payload: undefined,
         },
@@ -241,8 +235,8 @@ class WebScoketClient<RegData> {
         channel =
           platform !== WEBSOCKET
             ? channel
-            : scopeType === 'user'
-            ? this._userChannel || channel
+            : scopeType === 'user' && this._user
+            ? new UserScopeChannel(this._user)
             : scopeType === 'topic'
             ? new TopicScopeChannel(scopeSubtype, scopeId)
             : channel;
