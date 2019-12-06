@@ -1,22 +1,18 @@
 // @flow
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { MachinatUser, MachinatChannel } from 'machinat/types';
-import type AuthCookieSession from './server/session';
+import type { CookieSession } from './server/session';
 
 type TokenBase = {|
   iat: number,
   exp: number,
 |};
 
-type PayloadBase = {|
-  platform: string,
-  scope: { domain?: string, path: string },
-|};
-
 export type AuthPayload<AuthData> = {|
+  platform: string,
   auth: AuthData,
   refreshLimit?: number,
-  ...PayloadBase,
+  scope: { domain?: string, path: string },
 |};
 
 export type AuthTokenPayload<AuthData> = {|
@@ -25,8 +21,8 @@ export type AuthTokenPayload<AuthData> = {|
 |};
 
 export type StatePayload<StateData> = {|
+  platform: string,
   state: StateData,
-  ...PayloadBase,
 |};
 
 export type StateTokenPayload<StateData> = {|
@@ -35,8 +31,9 @@ export type StateTokenPayload<StateData> = {|
 |};
 
 export type ErrorPayload = {|
+  platform: string,
   error: {| code: number, message: string |},
-  ...PayloadBase,
+  scope: { domain?: string, path: string },
 |};
 
 export type ErrorTokenPayload = {|
@@ -58,7 +55,7 @@ export type AuthContext<AuthData> = {|
   data: AuthData,
 |};
 
-export type VerifyResult<AuthData> = {|
+export type AcceptedVerifyResult<AuthData> = {|
   accepted: true,
   data: AuthData,
   refreshable: boolean,
@@ -69,6 +66,10 @@ export type ErrorResult = {|
   code: number,
   message: string,
 |};
+
+export type VerifyResult<AuthData> =
+  | AcceptedVerifyResult<AuthData>
+  | ErrorResult;
 
 export interface ServerAuthProvider<AuthData, Credential> {
   platform: string;
@@ -82,7 +83,7 @@ export interface ServerAuthProvider<AuthData, Credential> {
   delegateAuthRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    session: AuthCookieSession
+    session: CookieSession
   ): Promise<void>;
 
   /**
@@ -90,17 +91,13 @@ export interface ServerAuthProvider<AuthData, Credential> {
    * controller would sign in the user by issuing a token to client and signing
    * a signature wihtin cookie if it resolve accepted.
    */
-  verifySigning(
-    credential: Credential
-  ): Promise<VerifyResult<AuthData> | ErrorResult>;
+  verifySigning(credential: Credential): Promise<VerifyResult<AuthData>>;
 
   /**
    * This method is called when  refresh requests from client side are received,
    * controller would refresh token and signature if it resolve accepted.
    */
-  verifyRefreshment(
-    data: AuthData
-  ): Promise<VerifyResult<AuthData> | ErrorResult>;
+  verifyRefreshment(data: AuthData): Promise<VerifyResult<AuthData>>;
 
   /**
    * Refine the auth data to auth context members which fit the machinat

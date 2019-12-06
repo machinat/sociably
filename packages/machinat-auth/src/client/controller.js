@@ -3,7 +3,7 @@ import EventEmitter from 'events';
 import invariant from 'invariant';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
 import { decode as decodeJWT } from 'jsonwebtoken';
-import { TOKEN_CONTENT_COOKIE_KEY, ERROR_COOKIE_KEY } from '../constant';
+import { TOKEN_COOKIE_KEY, ERROR_COOKIE_KEY } from '../constant';
 import AuthError from '../error';
 import type {
   AuthContext,
@@ -157,9 +157,9 @@ class AuthClientController extends EventEmitter {
 
       this._platform = errorPlatform;
       this._initialError = new AuthError(code, message);
-    } else if (cookies[TOKEN_CONTENT_COOKIE_KEY]) {
+    } else if (cookies[TOKEN_COOKIE_KEY]) {
       // Auth completed in backend flow
-      const token = cookies[TOKEN_CONTENT_COOKIE_KEY];
+      const token = cookies[TOKEN_COOKIE_KEY];
       const payload = getAuthPayload(token);
 
       this._platform = payload.platform;

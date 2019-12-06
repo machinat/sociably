@@ -1,7 +1,7 @@
 // @flow
 import { parse as parseURL } from 'url';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { aign as signJWT, verify as verifyJWT } from 'jsonwebtoken';
+import { sign as signJWT, verify as verifyJWT } from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';
 import type {
   AuthPayload,
@@ -20,100 +20,128 @@ import {
 
 import {
   STATE_COOKIE_KEY,
-  TOKEN_CONTENT_COOKIE_KEY,
-  TOKEN_SIGNATURE_COOKIE_KEY,
+  TOKEN_COOKIE_KEY,
+  SIGNATURE_COOKIE_KEY,
   ERROR_COOKIE_KEY,
 } from '../constant';
 
-class AuthCookieSession {
-  hostname: string;
-  secret: string;
-  tokenAge: number;
-  refreshPeriod: number;
-  scopeDomain: void | string;
-  scopePath: string;
-  dev: boolean;
+type SessionOptions = {
+  hostname: string,
+  pathname: string,
+  secret: string,
+  authCookieAge: number,
+  dataCookieAge: number,
+  tokenAge: number,
+  refreshPeriod: number,
+  domainScope: void | string,
+  pathScope: string,
+  sameSite: 'Strict' | 'Lax' | 'None',
+  dev: boolean,
+};
 
-  _scope: {| domain?: string, path: string |};
+type IssueAuthOptions = {
+  refreshLimit?: number,
+  refreshable?: boolean,
+  signatureOnly?: boolean,
+};
 
-  _dataCookieOpts: Object;
-  _secretCookieOpts: Object;
-  deleteCookieOpts: Object;
+export class CookieSessionOperator {
+  options: SessionOptions;
 
-  constructor(
-    hostname: string,
-    secret: string,
-    cookieAge: number,
-    tokenAge: number,
-    refreshPeriod: number,
-    scopeDomain: void | string,
-    scopePath: string,
-    sameSite: 'Strict' | 'Lax' | 'None',
-    dev: boolean
-  ) {
-    this.hostname = hostname;
-    this.secret = secret;
-    this.tokenAge = tokenAge;
-    this.refreshPeriod = refreshPeriod;
-    this.scopeDomain = scopeDomain;
-    this.scopePath = scopePath;
-    this.dev = dev;
+  _scopeInfo: {| domain?: string, path: string |};
 
-    this._scope = { domain: scopeDomain, path: scopePath };
+  _tokenCookieOpts: Object;
+  _errorCookieOpts: Object;
+  _signatureCookieOpts: Object;
+  _stateCookieOpts: Object;
+  _deleteCookieOpts: Object;
+
+  constructor(options: SessionOptions) {
+    this.options = options;
+
+    const {
+      pathname,
+      authCookieAge,
+      dataCookieAge,
+      domainScope,
+      pathScope,
+      sameSite,
+      dev,
+    } = options;
+
+    this._scopeInfo = { domain: domainScope, path: pathScope };
 
     const baseCookieOpts = {
-      domain: scopeDomain,
-      path: scopePath,
+      domain: domainScope,
+      path: pathScope,
       sameSite,
       secure: !dev,
     };
 
-    this._dataCookieOpts = {
+    this._tokenCookieOpts = {
       ...baseCookieOpts,
-      maxAge: cookieAge,
+      maxAge: authCookieAge,
     };
 
-    this._secretCookieOpts = {
+    this._errorCookieOpts = {
+      ...baseCookieOpts,
+      maxAge: dataCookieAge,
+    };
+
+    this._signatureCookieOpts = {
       ...baseCookieOpts,
       httpOnly: true,
     };
 
-    this.deleteCookieOpts = {
-      domain: scopeDomain,
-      path: scopePath,
+    this._stateCookieOpts = {
+      path: pathname,
+      sameSite,
+      secure: !dev,
+      httpOnly: true,
+      maxAge: dataCookieAge,
+    };
+
+    this._deleteCookieOpts = {
+      domain: domainScope,
+      path: pathScope,
       expires: new Date(0),
     };
   }
 
-  checkURLAuthScope(url: string): boolean {
+  checkURLScope(url: string): boolean {
     const { protocol, hostname, pathname } = parseURL(url);
-    const { dev, scopeDomain, scopePath } = this;
+    const {
+      dev,
+      hostname: authHostname,
+      domainScope,
+      pathScope,
+    } = this.options;
 
     if (
       !(
+        hostname &&
         protocol &&
         /^https?:$/.test(protocol) &&
-        (dev || protocol[4] === 's') &&
-        hostname
+        (dev || protocol[4] === 's')
       )
     ) {
       return false;
     }
 
     if (
-      !(scopeDomain
-        ? checkDomainScope(hostname, scopeDomain)
-        : hostname === this.hostname)
+      !(domainScope
+        ? checkDomainScope(hostname, domainScope)
+        : hostname === authHostname)
     ) {
       return false;
     }
 
-    return checkPathScope((pathname: any), scopePath);
+    return checkPathScope((pathname: any), pathScope);
   }
 
   async getState<StateData>(
     req: IncomingMessage,
-    platform: string
+    platformAsserted: string
   ): Promise<null | StateData> {
     let stateEnceded;
     const cookies = getCookies(req);
@@ -122,13 +150,16 @@ class AuthCookieSession {
     }
 
     try {
-      const payload: StateTokenPayload<any> = await thenifiedly.call(
+      const {
+        platform,
+        state,
+      }: StateTokenPayload<any> = await thenifiedly.call(
         verifyJWT,
         stateEnceded,
-        this.secret
+        this.options.secret
       );
 
-      return payload.platform === platform ? payload.state : null;
+      return platform === platformAsserted ? state : null;
     } catch (e) {
       return null;
     }
@@ -141,38 +172,38 @@ class AuthCookieSession {
   ): Promise<string> {
     const stateEnceded = await thenifiedly.call(
       signJWT,
-      ({ platform, state, scope: this._scope }: StatePayload<StateData>),
-      this.secret,
-      { expiresIn: 180 }
+      ({ platform, state }: StatePayload<StateData>),
+      this.options.secret,
+      { expiresIn: this.options.dataCookieAge }
     );
 
-    setCookie(res, STATE_COOKIE_KEY, stateEnceded, this._secretCookieOpts);
+    setCookie(res, STATE_COOKIE_KEY, stateEnceded, this._stateCookieOpts);
     return stateEnceded;
   }
 
   async getAuth<AuthData>(
     req: IncomingMessage,
-    platform: string
+    platformAsserted: string
   ): Promise<null | AuthData> {
     const cookies = getCookies(req);
     if (!cookies) {
       return null;
     }
 
-    const contentVal = cookies[TOKEN_CONTENT_COOKIE_KEY];
-    const sigVal = cookies[TOKEN_SIGNATURE_COOKIE_KEY];
+    const contentVal = cookies[TOKEN_COOKIE_KEY];
+    const sigVal = cookies[SIGNATURE_COOKIE_KEY];
     if (!contentVal || !sigVal) {
       return null;
     }
 
     try {
-      const payload: AuthTokenPayload<any> = await thenifiedly.call(
+      const { platform, auth }: AuthTokenPayload<any> = await thenifiedly.call(
         verifyJWT,
         `${contentVal}.${sigVal}`,
-        this.secret
+        this.options.secret
       );
 
-      return payload.platform === platform ? payload.auth : null;
+      return platform === platformAsserted ? auth : null;
     } catch (e) {
       return null;
     }
@@ -182,11 +213,13 @@ class AuthCookieSession {
     res: ServerResponse,
     platform: string,
     auth: AuthData,
-    refreshBy?: number,
-    refreshable: boolean = true,
-    signatureOnly: boolean = false
+    {
+      refreshLimit,
+      refreshable = true,
+      signatureOnly = false,
+    }: IssueAuthOptions = {}
   ): Promise<string> {
-    const { secret, tokenAge } = this;
+    const { secret, tokenAge, refreshPeriod } = this.options;
 
     const now = Math.floor(Date.now() / 1000);
     const token = await thenifiedly.call(
@@ -196,10 +229,12 @@ class AuthCookieSession {
         auth,
         refreshLimit: !refreshable
           ? undefined
-          : typeof refreshBy === 'number'
-          ? refreshBy
-          : now + this.refreshPeriod,
-        scope: this._scope,
+          : !refreshLimit
+          ? now + refreshPeriod
+          : refreshLimit > now + tokenAge
+          ? refreshLimit
+          : undefined,
+        scope: this._scopeInfo,
       }: AuthPayload<AuthData>),
       secret,
       { expiresIn: tokenAge }
@@ -208,9 +243,9 @@ class AuthCookieSession {
     const [header, payload, signature] = token.split('.');
     const tokenContent = `${header}.${payload}`;
 
-    this.setSecretCookie(res, TOKEN_SIGNATURE_COOKIE_KEY, signature);
+    setCookie(res, SIGNATURE_COOKIE_KEY, signature, this._signatureCookieOpts);
     if (!signatureOnly) {
-      this.setDataCookie(res, TOKEN_CONTENT_COOKIE_KEY, tokenContent);
+      setCookie(res, TOKEN_COOKIE_KEY, tokenContent, this._tokenCookieOpts);
     }
 
     this.deleteCookie(res, STATE_COOKIE_KEY);
@@ -221,7 +256,7 @@ class AuthCookieSession {
 
   async getError(
     req: IncomingMessage,
-    platform: string
+    platformAsserted: string
   ): Promise<null | { code: number, message: string }> {
     let errEncoded;
     const cookies = getCookies(req);
@@ -230,13 +265,13 @@ class AuthCookieSession {
     }
 
     try {
-      const payload: ErrorTokenPayload = await thenifiedly.call(
+      const { platform, error }: ErrorTokenPayload = await thenifiedly.call(
         verifyJWT,
         errEncoded,
-        this.secret
+        this.options.secret
       );
 
-      return payload.platform === platform ? payload.error : null;
+      return platform === platformAsserted ? error : null;
     } catch (e) {
       return null;
     }
@@ -253,16 +288,16 @@ class AuthCookieSession {
       ({
         platform,
         error: { code, message },
-        scope: this._scope,
+        scope: this._scopeInfo,
       }: ErrorPayload),
-      this.secret
+      this.options.secret
     );
 
-    this.setDataCookie(res, ERROR_COOKIE_KEY, errEncoded);
+    setCookie(res, ERROR_COOKIE_KEY, errEncoded, this._errorCookieOpts);
 
     this.deleteCookie(res, STATE_COOKIE_KEY);
-    this.deleteCookie(res, TOKEN_SIGNATURE_COOKIE_KEY);
-    this.deleteCookie(res, TOKEN_CONTENT_COOKIE_KEY);
+    this.deleteCookie(res, SIGNATURE_COOKIE_KEY);
+    this.deleteCookie(res, TOKEN_COOKIE_KEY);
 
     return errEncoded;
   }
@@ -270,21 +305,67 @@ class AuthCookieSession {
   clearCookies(res: ServerResponse) {
     this.deleteCookie(res, ERROR_COOKIE_KEY);
     this.deleteCookie(res, STATE_COOKIE_KEY);
-    this.deleteCookie(res, TOKEN_SIGNATURE_COOKIE_KEY);
-    this.deleteCookie(res, TOKEN_CONTENT_COOKIE_KEY);
-  }
-
-  setDataCookie(res: ServerResponse, key: string, value: string) {
-    setCookie(res, key, value, this._dataCookieOpts);
-  }
-
-  setSecretCookie(res: ServerResponse, key: string, value: string) {
-    setCookie(res, key, value, this._secretCookieOpts);
+    this.deleteCookie(res, SIGNATURE_COOKIE_KEY);
+    this.deleteCookie(res, TOKEN_COOKIE_KEY);
   }
 
   deleteCookie(res: ServerResponse, key: string) {
-    setCookie(res, key, '', this.deleteCookieOpts);
+    setCookie(res, key, '', this._deleteCookieOpts);
   }
 }
 
-export default AuthCookieSession;
+export class CookieSession {
+  _req: IncomingMessage;
+  _res: ServerResponse;
+  _platform: string;
+  _operator: CookieSessionOperator;
+
+  constructor(
+    req: IncomingMessage,
+    res: ServerResponse,
+    platform: string,
+    operator: CookieSessionOperator
+  ) {
+    this._req = req;
+    this._res = res;
+    this._platform = platform;
+    this._operator = operator;
+  }
+
+  checkURLScope(url: string) {
+    return this._operator.checkURLScope(url);
+  }
+
+  getState<StateData>() {
+    return this._operator.getState<StateData>(this._req, this._platform);
+  }
+
+  issueState<StateData>(state: StateData) {
+    return this._operator.issueState<StateData>(
+      this._res,
+      this._platform,
+      state
+    );
+  }
+
+  getAuth<AuthData>() {
+    return this._operator.getAuth<AuthData>(this._req, this._platform);
+  }
+
+  issueAuth<AuthData>(auth: AuthData, options?: IssueAuthOptions) {
+    return this._operator.issueAuth<AuthData>(
+      this._res,
+      this._platform,
+      auth,
+      options
+    );
+  }
+
+  getError() {
+    return this._operator.getError(this._req, this._platform);
+  }
+
+  issueError(code: number, message: string) {
+    return this._operator.issueError(this._res, this._platform, code, message);
+  }
+}

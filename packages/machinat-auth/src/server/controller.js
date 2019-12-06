@@ -1,16 +1,13 @@
 // @flow
 import { parse as parseURL } from 'url';
-import {
-  isAbsolute as isAbsolutePath,
-  relative as getRelativePath,
-} from 'path';
+import { relative as getRelativePath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
 import invariant from 'invariant';
 import { verify as verifyJWT } from 'jsonwebtoken';
 import getRawBody from 'raw-body';
 import thenifiedly from 'thenifiedly';
 import AuthError from '../error';
-import { TOKEN_SIGNATURE_COOKIE_KEY } from '../constant';
+import { SIGNATURE_COOKIE_KEY } from '../constant';
 import type {
   ServerAuthProvider,
   AuthContext,
@@ -22,31 +19,38 @@ import type {
   VerifiableRequest,
 } from '../types';
 
-import { getCookies, checkDomainScope } from './utils';
-import AuthCookieSession from './session';
+import { getCookies, checkDomainScope, checkPathScope } from './utils';
+import { CookieSession, CookieSessionOperator } from './session';
 
 type ServerAuthControllerOpts = {|
   providers: ServerAuthProvider<any, any>[],
   secret: string,
-  entry: string,
-  cookieAge?: number,
-  refreshPeriod?: number,
+  authEntry: string,
   tokenAge?: number,
-  scopeDomain?: string,
-  scopePath?: string,
+  authCookieAge?: number,
+  dataCookieAge?: number,
+  refreshPeriod?: number,
+  domainScope?: string,
+  pathScope?: string,
   sameSite?: 'Strict' | 'Lax' | 'None',
   dev?: boolean,
 |};
 
 const getSignature = (req: VerifiableRequest) => {
   const cookies = getCookies(req);
-  return cookies ? cookies[TOKEN_SIGNATURE_COOKIE_KEY] : undefined;
+  return cookies ? cookies[SIGNATURE_COOKIE_KEY] : undefined;
 };
 
 const parseBody = async (req: IncomingMessage) => {
   try {
     const rawBody = await getRawBody(req);
-    return JSON.parse(rawBody);
+    const body = JSON.parse(rawBody);
+
+    if (typeof body !== 'object') {
+      throw new AuthError(400, 'invalid body type');
+    }
+
+    return body;
   } catch (err) {
     throw new AuthError(400, err.message);
   }
@@ -71,66 +75,69 @@ const respondAPIError = (
 class AuthServerController {
   providers: ServerAuthProvider<any, any>[];
   secret: string;
-  entry: string;
+  authEntry: string;
 
   _hostname: string;
   _pathname: string;
 
-  session: AuthCookieSession;
+  _sessionOperator: CookieSessionOperator;
 
   constructor({
     secret,
     providers,
-    entry,
-    cookieAge = 180, // 3 min
+    authEntry,
+    authCookieAge = 180, // 3 min
+    dataCookieAge = 60, // 1 min
     tokenAge = 1800, // 30 min
     refreshPeriod = 86400, // 1 day
-    scopeDomain,
-    scopePath = '/',
+    domainScope,
+    pathScope = '/',
     sameSite = 'None',
     dev = false,
   }: ServerAuthControllerOpts = {}) {
     invariant(secret, 'options.secret must not be empty');
-    invariant(entry, 'options.entry must not be empty');
+    invariant(authEntry, 'options.authEntry must not be empty');
     invariant(
       providers && providers.length > 0,
       'options.providers must not be empty'
     );
 
-    const entryURL = parseURL(entry);
+    const entryURL = parseURL(authEntry);
     invariant(
       entryURL.protocol && entryURL.host,
-      'invalid or incomplete auth entry'
-    );
-
-    invariant(
-      !scopeDomain || checkDomainScope((entryURL.hostname: any), scopeDomain),
-      'options.entry should be located under options.scopeDomain'
+      'invalid or incomplete authEntry url'
     );
 
     this._hostname = (entryURL.hostname: any);
     this._pathname = (entryURL.pathname: any);
 
     invariant(
-      isAbsolutePath(scopePath),
-      'options.scopePath should be an absolute path'
+      !domainScope || checkDomainScope(this._hostname, domainScope),
+      'options.authEntry should be located under subdomain of options.domainScope'
+    );
+
+    invariant(
+      checkPathScope(this._pathname, pathScope),
+      'options.authEntry should be located under subpath of options.pathScope'
     );
 
     this.secret = secret;
     this.providers = providers;
-    this.entry = entry;
+    this.authEntry = authEntry;
 
-    this.session = new AuthCookieSession(
-      this._hostname,
+    this._sessionOperator = new CookieSessionOperator({
+      hostname: this._hostname,
+      pathname: this._pathname,
       secret,
-      cookieAge,
+      authCookieAge,
+      dataCookieAge,
       tokenAge,
       refreshPeriod,
-      scopeDomain,
-      scopePath,
+      domainScope,
+      pathScope,
       sameSite,
-      dev
-    );
+      dev,
+    });
   }
 
   async delegateAuthRequest(
@@ -147,7 +154,7 @@ class AuthServerController {
 
     if (subpath === '') {
       // directly called on auth root
-      respondAPIError(res, 404, 'invalid pathname');
+      respondAPIError(res, 403, 'path forbidden');
       return true;
     }
 
@@ -159,18 +166,18 @@ class AuthServerController {
     // inner auth api for client controller
     if (subpath[0] === '_') {
       if (req.method !== 'POST') {
-        respondAPIError(res, 405, 'only POST method allowed');
+        respondAPIError(res, 405, 'method not allowed');
         return true;
       }
 
       if (subpath === '_sign') {
-        this._handleSignRequest(req, res);
+        await this._handleSignRequest(req, res);
       } else if (subpath === '_refresh') {
-        this._handleRefreshRequest(req, res);
+        await this._handleRefreshRequest(req, res);
       } else if (subpath === '_verify') {
-        this._handleVerifyRequest(req, res);
+        await this._handleVerifyRequest(req, res);
       } else {
-        respondAPIError(res, 404, 'unknown auth api');
+        respondAPIError(res, 404, `invalid auth api route "${subpath}"`);
       }
       return true;
     }
@@ -185,7 +192,11 @@ class AuthServerController {
 
     // delegate requests of platform specified flow to provider
     try {
-      await provider.delegateAuthRequest(req, res, this.session);
+      await provider.delegateAuthRequest(
+        req,
+        res,
+        new CookieSession(req, res, platform, this._sessionOperator)
+      );
     } catch (err) {
       if (!res.finished) {
         respondAPIError(res, err.code || 500, err.message);
@@ -204,11 +215,6 @@ class AuthServerController {
     req: VerifiableRequest,
     tokenProvided?: string
   ): Promise<AuthContext<any>> {
-    const { authorization } = req.headers;
-    if (!authorization) {
-      throw new AuthError(401, 'no Authorization header');
-    }
-
     const signature = getSignature(req);
     if (!signature) {
       throw new AuthError(401, 'require signature');
@@ -216,9 +222,14 @@ class AuthServerController {
 
     let token = tokenProvided;
     if (!token) {
-      const [scheme, tokenFromHeader] = (authorization: string).split(/\s+/, 2);
-      if (scheme !== 'Bearer' || !token) {
-        throw new AuthError(400, 'unknown auth scheme');
+      const { authorization } = req.headers;
+      if (!authorization) {
+        throw new AuthError(401, 'no Authorization header');
+      }
+
+      const [scheme, tokenFromHeader] = authorization.split(/\s+/, 2);
+      if (scheme !== 'Bearer' || !tokenFromHeader) {
+        throw new AuthError(400, 'invalid auth scheme');
       }
       token = tokenFromHeader;
     }
@@ -230,7 +241,7 @@ class AuthServerController {
 
     const provider = this._getProviderOf(platform);
     if (!provider) {
-      throw new AuthError(404, 'unknown platform');
+      throw new AuthError(404, `unknown platform "${platform}"`);
     }
 
     const result = await provider.refineAuth(auth);
@@ -250,33 +261,37 @@ class AuthServerController {
   }
 
   async _handleSignRequest(req: IncomingMessage, res: ServerResponse) {
-    const { platform, credential }: SignRequestBody<any> = await parseBody(req);
-
     try {
+      const { platform, credential }: SignRequestBody<any> = await parseBody(
+        req
+      );
+      if (!platform || !credential) {
+        respondAPIError(res, 400, 'invalid sign params');
+        return;
+      }
+
       const provider = this._getProviderOf(platform);
       if (!provider) {
-        throw new AuthError(401, 'platform not found');
+        respondAPIError(res, 404, `unknown platform "${platform}"`);
+        return;
       }
 
       const verifyResult = await provider.verifySigning(credential);
       if (!verifyResult.accepted) {
         const { code, message } = verifyResult;
-        throw new AuthError(code, message);
+        respondAPIError(res, code, message);
+        return;
       }
 
       const { data, refreshable } = verifyResult;
-      const token = await this.session.issueAuth(
-        res,
-        platform,
-        data,
-        undefined,
+      const token = await this._sessionOperator.issueAuth(res, platform, data, {
         refreshable,
-        true
-      );
+        signatureOnly: true,
+      });
 
       respondAPIOk(res, platform, token);
     } catch (err) {
-      respondAPIError(res, err.code, err.message);
+      respondAPIError(res, err.code || 500, err.message);
     }
   }
 
@@ -291,6 +306,11 @@ class AuthServerController {
     try {
       // verify token in body ignoring expiration
       const { token }: RefreshRequestBody = await parseBody(req);
+      if (!token) {
+        respondAPIError(res, 400, 'empty token received');
+        return;
+      }
+
       const payload = await this._verifyToken(token, signature, {
         ignoreExpiration: true,
       });
@@ -305,29 +325,27 @@ class AuthServerController {
         // refresh signature and issue new token
         const provider = this._getProviderOf(platform);
         if (!provider) {
-          throw new AuthError(401, 'platform not found');
+          respondAPIError(res, 404, `unknown platform "${platform}"`);
+          return;
         }
 
         const verifyResult = await provider.verifyRefreshment(auth);
         if (!verifyResult.accepted) {
           const { code, message } = verifyResult;
-          throw new AuthError(code, message);
+          respondAPIError(res, code, message);
+          return;
         }
 
         const { data } = verifyResult;
-        const newToken = await this.session.issueAuth(
+        const newToken = await this._sessionOperator.issueAuth(
           res,
           platform,
           data,
-          refreshLimit,
-          true,
-          true
+          { refreshLimit, refreshable: true, signatureOnly: true }
         );
         respondAPIOk(res, platform, newToken);
       } else {
-        // if refreshment period expired
-        this.session.clearCookies(res);
-        respondAPIError(res, 401, 'token refreshment period expired');
+        respondAPIError(res, 401, 'token refreshment period outdated');
       }
     } catch (err) {
       respondAPIError(res, err.code || 500, err.message);
@@ -345,8 +363,17 @@ class AuthServerController {
     try {
       // verify token in body
       const { token }: VerifyRequestBody = await parseBody(req);
-      const payload = await this._verifyToken(token, signature);
-      const { platform } = payload;
+      if (!token) {
+        respondAPIError(res, 400, 'empty token received');
+        return;
+      }
+
+      const { platform } = await this._verifyToken(token, signature);
+      const provider = this._getProviderOf(platform);
+      if (!provider) {
+        respondAPIError(res, 404, `unknown platform "${platform}"`);
+        return;
+      }
 
       respondAPIOk(res, platform, token);
     } catch (err) {
@@ -368,12 +395,7 @@ class AuthServerController {
         jwtVerifyOpts
       );
     } catch (err) {
-      throw new AuthError(400, err.message);
-    }
-
-    const provider = this._getProviderOf(payload.platform);
-    if (!provider) {
-      throw new AuthError(404, 'unknown platform');
+      throw new AuthError(401, err.message);
     }
 
     return payload;

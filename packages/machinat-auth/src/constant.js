@@ -1,5 +1,5 @@
 // @flow
 export const STATE_COOKIE_KEY = 'machinat_auth_state';
-export const TOKEN_CONTENT_COOKIE_KEY = 'machinat_auth_token_content';
-export const TOKEN_SIGNATURE_COOKIE_KEY = 'machinat_auth_token_signature';
-export const ERROR_COOKIE_KEY = 'mahcinat_auth_error';
+export const TOKEN_COOKIE_KEY = 'machinat_auth_token';
+export const SIGNATURE_COOKIE_KEY = 'machinat_auth_signature';
+export const ERROR_COOKIE_KEY = 'machinat_auth_error';

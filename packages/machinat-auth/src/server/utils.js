@@ -17,13 +17,25 @@ export const getCookies = (
   return parseCookie(req.headers.cookie);
 };
 
+const SET_COOKIE = 'Set-Cookie';
+
 export const setCookie = (
   res: ServerResponse,
   key: string,
   value: string,
   options: Object
 ) => {
-  res.setHeader('Set-Cookie', serializeCookie(key, value, options));
+  const cookieDesc = serializeCookie(key, value, options);
+  const cookiesAlreadySet = res.getHeader(SET_COOKIE);
+
+  const cookieToSet =
+    typeof cookiesAlreadySet === 'string'
+      ? [cookiesAlreadySet, cookieDesc]
+      : cookiesAlreadySet
+      ? [...cookiesAlreadySet, cookieDesc]
+      : cookieDesc;
+
+  res.setHeader(SET_COOKIE, cookieToSet);
 };
 
 export const checkDomainScope = (subdomain: string, domain: string) =>
