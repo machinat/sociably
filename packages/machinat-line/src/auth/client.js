@@ -30,6 +30,7 @@ class LineClientAuthProvider
   isSDKLoaded: boolean;
 
   platform = LINE;
+  shouldResign = true;
 
   constructor({
     liffId,

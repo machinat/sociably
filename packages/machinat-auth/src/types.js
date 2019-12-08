@@ -106,13 +106,18 @@ export interface ServerAuthProvider<AuthData, Credential> {
   refineAuth(data: AuthData): Promise<null | AuthRefineResult>;
 }
 
-export type CredentialResult<Credential> = {|
+export type AcceptedCredentialResult<Credential> = {|
   accepted: true,
   credential: Credential,
 |};
 
+export type CredentialResult<Credential> =
+  | AcceptedCredentialResult<Credential>
+  | ErrorResult;
+
 export interface ClientAuthProvider<AuthData, Credential> {
   platform: string;
+  shouldResign: boolean;
 
   /**
    * Initiate necessary libary like IdP SDK to start authentication works, this
@@ -130,9 +135,7 @@ export interface ClientAuthProvider<AuthData, Credential> {
    * then verified and signed at server side. If the auth flow reuqire
    * redirecting user-agent, just set the location and pend resolving.
    */
-  startAuthFlow(
-    authEntry: string
-  ): Promise<CredentialResult<Credential> | ErrorResult>;
+  startAuthFlow(authEntry: string): Promise<CredentialResult<Credential>>;
 
   /**
    * Refine the auth data into auth context members fit the machinat interfaces,

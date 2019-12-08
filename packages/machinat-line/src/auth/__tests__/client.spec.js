@@ -45,6 +45,7 @@ describe('#constructor()', () => {
     });
 
     expect(provider.platform).toBe('line');
+    expect(provider.shouldResign).toBe(true);
     expect(provider.channelId).toBe('_CHANNEL_ID_');
     expect(provider.liffId).toBe('_LIFF_ID_');
     expect(provider.isSDKLoaded).toBe(false);

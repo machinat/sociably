@@ -22,6 +22,7 @@ class MessengerClientAuthProvider
   isExtensionReady: boolean;
 
   platform = MESSENGER;
+  shouldResign = true;
 
   constructor({
     appId,

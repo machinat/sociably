@@ -21,6 +21,7 @@
     "invariant": "^2.2.4",
     "jsonwebtoken": "^8.5.1",
     "machinat-websocket": "^0.0.11-alpha.3",
+    "node-fetch": "^2.6.0",
     "raw-body": "^2.4.1",
     "thenifiedly": "^0.2.1"
   }

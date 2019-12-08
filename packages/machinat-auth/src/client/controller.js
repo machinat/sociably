@@ -15,10 +15,11 @@ import type {
   VerifyRequestBody,
   AuthAPIResponseBody,
   AuthAPIResponseErrorBody,
+  AuthRefineResult,
 } from '../types';
 
 type AuthClientOptions = {|
-  authEntry?: string,
+  authEntry: string,
   providers: ClientAuthProvider<any, any>[],
   refreshLeadTime?: number,
 |};
@@ -26,6 +27,18 @@ type AuthClientOptions = {|
 declare var location: Location;
 declare var document: Document;
 declare var fetch: (url: string, options: Object) => Object;
+
+const makeContext = (
+  { platform, iat, exp, auth }: AuthTokenPayload<any>,
+  { user, channel }: AuthRefineResult
+) => ({
+  platform,
+  loginAt: new Date(iat * 1000),
+  expireAt: new Date(exp * 1000),
+  channel,
+  user,
+  data: auth,
+});
 
 const deleteCookie = (name: string, domain?: string, path?: string) => {
   document.cookie = serializeCookie(name, '', {
@@ -38,28 +51,9 @@ const deleteCookie = (name: string, domain?: string, path?: string) => {
 const getAuthPayload = (token: string): AuthTokenPayload<any> =>
   decodeJWT(`${token}.`);
 
-const refineAuthContext = async (
-  provider: ClientAuthProvider<any, any>,
-  { exp, iat, auth }: AuthTokenPayload<any>
-): Promise<AuthContext<any>> => {
-  const refinement = await provider.refineAuth(auth);
-  if (!refinement) {
-    throw new AuthError(400, 'invalid auth info');
-  }
-
-  const { channel, user } = refinement;
-  return {
-    platform: provider.platform,
-    loginAt: new Date(iat * 1000),
-    expireAt: new Date(exp * 1000),
-    channel,
-    user,
-    data: auth,
-  };
-};
-
 class AuthClientController extends EventEmitter {
   providers: ClientAuthProvider<any, any>[];
+  authEntry: string;
   refreshLeadTime: number;
 
   _platform: void | string;
@@ -71,7 +65,8 @@ class AuthClientController extends EventEmitter {
     context: AuthContext<any>,
   |};
 
-  _initiated: boolean;
+  _initedFlag: boolean;
+  _initedPlatforms: Set<string>;
   _initPromise: null | Promise<void>;
   _minAuthBegin: number;
 
@@ -82,15 +77,19 @@ class AuthClientController extends EventEmitter {
   _expireTimeoutId: null | TimeoutID;
 
   get platform() {
-    return this.platform;
+    return this._platform;
   }
 
   get isInitiated() {
-    return this._initiated;
+    return !this._initPromise && this._initedFlag;
   }
 
   get isInitiating() {
     return !!this._initPromise;
+  }
+
+  get isAuthed() {
+    return !!this._authed;
   }
 
   get authContext() {
@@ -99,20 +98,24 @@ class AuthClientController extends EventEmitter {
 
   constructor({
     providers,
+    authEntry,
     refreshLeadTime = 300, // 5 min
-    authEntry = '/auth',
   }: AuthClientOptions = {}) {
+    invariant(authEntry, 'options.authEntry must not be empty');
     invariant(
       providers && providers.length > 0,
       'options.providers must not be empty'
     );
+
     super();
 
     this.providers = providers;
+    this.authEntry = authEntry;
     this.refreshLeadTime = refreshLeadTime;
     this._authURL = new URL(authEntry, location.href);
 
-    this._initiated = false;
+    this._initedFlag = false;
+    this._initedPlatforms = new Set();
     this._initPromise = null;
     this._minAuthBegin = -1;
 
@@ -136,16 +139,9 @@ class AuthClientController extends EventEmitter {
    * then call auth() again.
    */
   init(platformInput?: string) {
-    if (this._initiated && platformInput === this._platform) {
-      // Do not reinitiate provider of the same platform again
-      return;
-    }
-
-    // Reset auth for reinitiating as different platform
-    this._initiated = false;
-    this.signOut();
-
     const cookies = parseCookie(document.cookie);
+    let platform;
+
     if (cookies[ERROR_COOKIE_KEY]) {
       // Error happen in backend flow
       const {
@@ -155,34 +151,37 @@ class AuthClientController extends EventEmitter {
       }: ErrorTokenPayload = decodeJWT(cookies[ERROR_COOKIE_KEY]);
       deleteCookie(ERROR_COOKIE_KEY, domain, path);
 
-      this._platform = errorPlatform;
+      platform = errorPlatform;
       this._initialError = new AuthError(code, message);
     } else if (cookies[TOKEN_COOKIE_KEY]) {
       // Auth completed in backend flow
       const token = cookies[TOKEN_COOKIE_KEY];
       const payload = getAuthPayload(token);
 
-      this._platform = payload.platform;
+      ({ platform } = payload);
       this._initialAuth = { token, payload };
     }
 
     const platformSpecified =
       platformInput || new URLSearchParams(location.search).get('platform');
 
-    if (platformSpecified && platformSpecified !== this._platform) {
+    if (platformSpecified && platformSpecified !== platform) {
       // Ignore data in cookie if different platform specified in query
-      this._platform = platformSpecified;
+      platform = platformSpecified;
       this._initialAuth = null;
       this._initialError = null;
     }
 
     // Execute init work of platform, promise would be awaited within auth()
-    this._initPromise = this._initProvider()
+    this._initPromise = this._initProvider(platform)
       .catch(err => {
         this.emit('error', err);
       })
       .finally(() => {
-        this._initPromise = null;
+        // if init success and no other init() call change the platform
+        if (this._platform === platform || !this._platform) {
+          this._initPromise = null;
+        }
       });
   }
 
@@ -193,10 +192,14 @@ class AuthClientController extends EventEmitter {
    * call change the auth status during operation, a null instead.
    */
   async auth(): Promise<AuthContext<any>> {
+    const beginTime = Date.now();
     if (this._initPromise) {
       // Wait for initiation for the first time
       await this._initPromise;
-    } else if (!this._initiated) {
+    }
+
+    if (!this.isInitiated) {
+      // Initiation failed or not init() at all
       throw new AuthError(400, 'controller not initiated');
     }
 
@@ -207,12 +210,14 @@ class AuthClientController extends EventEmitter {
       throw err;
     }
 
-    const begin = Date.now();
-    const provider = this._getProviderDangerously();
+    const provider = this._getProviderAssertedly(this._platform);
 
     let token;
     let payload;
-    if (this._initialAuth) {
+    if (
+      this._initialAuth &&
+      this._initialAuth.payload.exp * 1000 > Date.now()
+    ) {
       // auth already completed in backend flow
       ({ token, payload } = this._initialAuth);
       this._initialAuth = null;
@@ -223,16 +228,19 @@ class AuthClientController extends EventEmitter {
 
     // Update auth only when no signOut() call or another succeeded auth() call
     // have happened during the operation time
-    if (begin < this._minAuthBegin) {
-      throw new AuthError(403, 'signed out during authentication');
+    if (beginTime < this._minAuthBegin) {
+      throw new AuthError(403, 'signed out during authenticating');
     }
 
+    const refinement = await provider.refineAuth(payload.auth);
+    if (!refinement) {
+      throw new AuthError(400, 'invalid auth info');
+    }
+    const context = makeContext(payload, refinement);
+
     // Block any other auth() call begun before this time from updating auth
-    this._minAuthBegin = begin;
-
-    const context = await refineAuthContext(provider, payload);
+    this._minAuthBegin = beginTime;
     this._setAuth(token, payload, context);
-
     return context;
   }
 
@@ -244,41 +252,51 @@ class AuthClientController extends EventEmitter {
    * the token by yourself.
    */
   getToken() {
-    if (!this._authed) {
-      throw new AuthError(401, 'not authencated');
-    }
-    return this._authed.token;
+    return this._authed ? this._authed.token : undefined;
   }
 
   /**
    * Sign out user.
    */
   signOut() {
-    this._authed = null;
+    if (this._authed) {
+      const { scope } = this._authed.payload;
+      deleteCookie(TOKEN_COOKIE_KEY, scope.domain, scope.path);
+      this._authed = null;
+    }
     this._clearTimeouts();
     // Make sure auth operation executing now will not update auth
     this._minAuthBegin = Date.now();
   }
 
-  async _initProvider() {
-    const provider = this._getProviderDangerously();
-    const platformAuthEntry = this._getAuthEntry(provider.platform);
+  async _initProvider(platfrom: void | string) {
+    const provider = this._getProviderAssertedly(platfrom);
+    this._platform = provider.platform;
+    this._initedFlag = false;
 
-    if (this._initialError) {
-      await provider.init(platformAuthEntry, null, this._initialError);
-    } else if (this._initialAuth) {
-      await provider.init(
-        platformAuthEntry,
-        this._initialAuth.payload.auth,
-        null
-      );
-    } else {
-      await provider.init(platformAuthEntry, null, null);
+    // not reinitiate provider of the same platform again
+    if (!this._initedPlatforms.has(provider.platform)) {
+      this._initedPlatforms.add(provider.platform);
+
+      this.signOut();
+      const platformAuthEntry = this._getAuthEntry(provider.platform);
+
+      if (this._initialError) {
+        await provider.init(platformAuthEntry, null, this._initialError);
+      } else if (this._initialAuth) {
+        await provider.init(
+          platformAuthEntry,
+          this._initialAuth.payload.auth,
+          null
+        );
+      } else {
+        await provider.init(platformAuthEntry, null, null);
+      }
     }
 
-    if (provider.platform === this._platform) {
-      // Label as initiated if platform target not change by another init()
-      this._initiated = true;
+    // set as initiated if platform is not changed by another call
+    if (this._platform === provider.platform) {
+      this._initedFlag = true;
       this.emit('initiate');
     }
   }
@@ -326,7 +344,8 @@ class AuthClientController extends EventEmitter {
   }
 
   async _refreshAuth(token: string, { refreshLimit }: AuthTokenPayload<any>) {
-    const provider = this._getProviderDangerously();
+    const provider = this._getProviderAssertedly(this._platform);
+    const beginTime = Date.now();
 
     let newToken;
     if (refreshLimit && Date.now() < refreshLimit * 1000) {
@@ -334,20 +353,31 @@ class AuthClientController extends EventEmitter {
       ({ token: newToken } = await this._fetchAuthPrivateAPI('_refresh', {
         token,
       }));
-    } else {
+    } else if (provider.shouldResign) {
       // otherwise resign
       newToken = await this._signToken(provider);
+    } else {
+      return;
     }
 
-    if (!this._authed || this._authed.token !== token) {
-      // give up if auth updated during refreshment
+    if (
+      this._authed
+        ? // give up if auth updated during refreshment
+          this._authed.token !== token
+        : // if signed out during refreshment
+          beginTime < this._minAuthBegin
+    ) {
       return;
     }
 
     const payload = getAuthPayload(newToken);
-    const context = await refineAuthContext(provider, payload);
+    const refinement = await provider.refineAuth(payload.auth);
+    if (!refinement) {
+      throw new AuthError(400, 'invalid auth info');
+    }
 
-    this._setAuth(token, payload, context);
+    const context = makeContext(payload, refinement);
+    this._setAuth(newToken, payload, context);
     this.emit('refresh', context);
   }
 
@@ -369,17 +399,11 @@ class AuthClientController extends EventEmitter {
     }
   };
 
-  _getProviderOf(platform: string) {
-    const provider = this.providers.find(p => p.platform === platform);
-    return provider || null;
-  }
-
-  _getProviderDangerously() {
-    const platform = this._platform;
+  _getProviderAssertedly(platform: void | string) {
     if (!platform) {
       throw new AuthError(400, 'no platform specified');
     }
-    const provider = this._getProviderOf(platform);
+    const provider = this.providers.find(p => p.platform === platform);
     if (!provider) {
       throw new AuthError(400, `unknown platform "${platform}"`);
     }
@@ -399,7 +423,10 @@ class AuthClientController extends EventEmitter {
     api: string,
     body: SignRequestBody<any> | RefreshRequestBody | VerifyRequestBody
   ): Promise<AuthAPIResponseBody> {
-    const res = await fetch(this._getAuthEntry(api), body);
+    const res = await fetch(this._getAuthEntry(api), {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
 
     if (!res.ok) {
       const {

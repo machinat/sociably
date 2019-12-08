@@ -30,6 +30,7 @@ describe('#constructor(options)', () => {
   it('contain proper property', () => {
     const provider = new ClientAuthProvider({ appId: 'MY_APP' });
     expect(provider.platform).toBe('messenger');
+    expect(provider.shouldResign).toBe(true);
     expect(provider.appId).toBe('MY_APP');
     expect(provider.isExtensionReady).toBe(false);
 
