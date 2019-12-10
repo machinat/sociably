@@ -27,6 +27,6 @@
     "warning": "^4.0.1"
   },
   "peerDependencies": {
-    "machinat": "^0.0.1"
+    "machinat": "^0.1.0-alpha.0"
   }
 }

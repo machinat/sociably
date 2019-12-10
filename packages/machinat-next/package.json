@@ -28,7 +28,7 @@
     "machinat-base": "^0.0.11-alpha.3"
   },
   "peerDependencies": {
-    "machinat": "^0.0.1",
+    "machinat": "^0.1.0-alpha.0",
     "next": "^9.0.0"
   },
   "devDependencies": {

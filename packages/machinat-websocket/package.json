@@ -35,7 +35,7 @@
     "ws": "^6.2.0"
   },
   "peerDependencies": {
-    "machinat": "^0.0.1"
+    "machinat": "^0.1.0-alpha.0"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.1",
