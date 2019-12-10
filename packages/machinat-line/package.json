@@ -1,6 +1,6 @@
 {
   "name": "machinat-line",
-  "version": "0.0.11-alpha.3",
+  "version": "0.1.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -14,10 +14,10 @@
     ".": {
       "default": "./lib/index.js"
     },
-    "./asset":  {
+    "./asset": {
       "default": "./lib/asset/index.js"
     },
-    "./auth":  {
+    "./auth": {
       "default": "./lib/auth/index.js"
     }
   },
@@ -28,11 +28,11 @@
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",
-    "machinat-base": "^0.0.11-alpha.3",
-    "machinat-queue": "^0.0.10",
-    "machinat-renderer": "^0.0.11-alpha.3",
-    "machinat-utility": "^0.0.11-alpha.3",
-    "machinat-webhook-receiver": "^0.0.11-alpha.3",
+    "machinat-base": "^0.1.0-alpha.0",
+    "machinat-queue": "^0.1.0-alpha.0",
+    "machinat-renderer": "^0.1.0-alpha.0",
+    "machinat-utility": "^0.1.0-alpha.0",
+    "machinat-webhook-receiver": "^0.1.0-alpha.0",
     "node-fetch": "^2.2.0",
     "warning": "^4.0.2"
   },

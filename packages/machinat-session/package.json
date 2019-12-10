@@ -1,6 +1,6 @@
 {
   "name": "machinat-session",
-  "version": "0.0.10",
+  "version": "0.1.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -14,10 +14,10 @@
     ".": {
       "default": "./lib/index.js"
     },
-    "./inMemory":  {
+    "./inMemory": {
       "default": "./lib/stores/inMemory.js"
     },
-    "./redis":  {
+    "./redis": {
       "default": "./lib/stores/redis.js"
     }
   },

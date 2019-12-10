@@ -1,6 +1,6 @@
 {
   "name": "machinat-auth",
-  "version": "0.0.10",
+  "version": "0.1.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -14,10 +14,10 @@
     ".": {
       "default": "./lib/index.js"
     },
-    "./client":  {
+    "./client": {
       "default": "./lib/client/index.js"
     },
-    "./server":  {
+    "./server": {
       "default": "./lib/server/index.js"
     }
   },
@@ -31,7 +31,7 @@
     "cookie": "^0.4.0",
     "invariant": "^2.2.4",
     "jsonwebtoken": "^8.5.1",
-    "machinat-websocket": "^0.0.11-alpha.3",
+    "machinat-websocket": "^0.1.0-alpha.0",
     "node-fetch": "^2.6.0",
     "raw-body": "^2.4.1",
     "thenifiedly": "^0.2.1"
