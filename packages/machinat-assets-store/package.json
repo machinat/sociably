@@ -10,9 +10,16 @@
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./file":  {
+      "default": "./lib/stores/file.js"
+    }
+  },
   "files": [
     "lib/*",
-    "file.js",
     "README.md"
   ],
   "license": "MIT",

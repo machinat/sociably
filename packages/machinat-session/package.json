@@ -10,6 +10,17 @@
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./inMemory":  {
+      "default": "./lib/stores/inMemory.js"
+    },
+    "./redis":  {
+      "default": "./lib/stores/redis.js"
+    }
+  },
   "files": [
     "lib/*",
     "README.md"

@@ -11,9 +11,19 @@
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./asset":  {
+      "default": "./lib/asset/index.js"
+    },
+    "./auth":  {
+      "default": "./lib/auth/index.js"
+    }
+  },
   "files": [
     "lib/*",
-    "asset.js",
     "README.md"
   ],
   "license": "MIT",

@@ -10,6 +10,17 @@
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client":  {
+      "default": "./lib/client/index.js"
+    },
+    "./server":  {
+      "default": "./lib/server/index.js"
+    }
+  },
   "files": [
     "lib/*",
     "README.md"

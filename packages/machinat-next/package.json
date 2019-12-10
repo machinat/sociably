@@ -10,6 +10,14 @@
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./auth":  {
+      "default": "./lib/auth/index.js"
+    }
+  },
   "files": [
     "lib/*",
     "README.md"
