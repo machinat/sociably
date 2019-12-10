@@ -16,4 +16,12 @@ module.exports = {
         pragmaFrag: 'Machinat.Fragment',
     }],
   ],
+  env: {
+    production: {
+      "ignore": [
+        "**/__tests__",
+        "**/__mocks__",
+      ],
+    },
+  },
 };
