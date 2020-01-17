@@ -20,5 +20,8 @@
     "lib/*",
     "README.md"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "invariant": "^2.2.4"
+  }
 }

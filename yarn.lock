@@ -7904,10 +7904,10 @@ move-concurrently@^1.0.1:
     rimraf "^2.5.4"
     run-queue "^1.0.3"
 
-moxy@0.1.0-8:
-  version "0.1.0-8"
-  resolved "http://localhost:4873/moxy/-/moxy-0.1.0-8.tgz#1b90af812782c71a345a9f0a52773dc485c287a1"
-  integrity sha512-kBMNT4ZwtIXx8yhre2kvP9mOSzaAebQJOERJMabgYyHlg7oh2dp1E1C/kfWOR1dVscC5X1DfgUa9d0+AuzuAmA==
+moxy@0.1.0-9:
+  version "0.1.0-9"
+  resolved "http://localhost:4873/moxy/-/moxy-0.1.0-9.tgz#917d506860abfbb790c5da588d1b851f2b67d4dd"
+  integrity sha512-v3wpBFzQ6GiJBAOU6fIAgYo6ugnqzjnAA2BG52PrGO3khZBhSYrjZyQ+eclseJnqz5w7Dzdc5u+/uDADpb0ETw==
   dependencies:
     fast-deep-equal "^2.0.1"
     micromatch "^4.0.2"
