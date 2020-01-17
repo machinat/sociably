@@ -8,8 +8,6 @@ import {
 import type { PhaseEnum } from './constant';
 import type ProvisionMap from './map';
 import type {
-  ContainerFunc,
-  ServiceContainer,
   Interfaceable,
   ServiceProvider,
   InjectRequirement,
@@ -154,48 +152,21 @@ export default class ServiceMaker {
   }
 
   /**
-   * makeServices create a list of services according to the requirements
+   * makeServices create a list of services according to the requirements, it
+   * returns the services made and the updated scoped cache with new lazy
+   * services possibly created.
    */
   async makeServices(
     requirements: InjectRequirement[],
     platform: void | string,
     singletonCache: ServiceCache<any>,
     scopeCache: ServiceCache<any>
-  ) {
-    const makingPromises = [];
-    const makingTracker = new Map();
-
-    for (const { require: target, optional } of requirements) {
-      const binding = this._resolveProvision(target, platform, optional);
-      /* :: invariant(binding); */
-      makingPromises.push(
-        this._makeProvision(
-          binding,
-          {
-            platform,
-            phase: PHASE_ENUM_INJECTION,
-            singletonCache,
-            scopeCache,
-            makingTracker,
-          },
-          []
-        )
-      );
-    }
-
-    return Promise.all(makingPromises);
-  }
-
-  injectContainer(
-    container: ServiceContainer<any>,
-    platform: void | string,
-    singletonCache: ServiceCache<any>,
-    scopeCache: ServiceCache<any>
-  ) {
-    const { $$deps: deps } = container;
-    return this._executeContainerFn(
-      deps,
-      container,
+  ): Promise<{
+    services: any[],
+    updatedScopeCache: ServiceCache<any>,
+  }> {
+    const services = await this._makeRequirements(
+      requirements,
       {
         platform,
         phase: PHASE_ENUM_INJECTION,
@@ -205,6 +176,8 @@ export default class ServiceMaker {
       },
       []
     );
+
+    return { services, updatedScopeCache: scopeCache };
   }
 
   _resolveProvision(
@@ -239,7 +212,7 @@ export default class ServiceMaker {
     // check for circular reference of dependencies
     invariant(refLock.indexOf(provider) === -1, 'circular dependent found');
 
-    const { $$strategy: strategy, $$deps: deps, $$factory: factory } = provider;
+    const { $$strategy: strategy } = provider;
     const { singletonCache, scopeCache, makingTracker, phase } = context;
 
     // get cached instance by strategy
@@ -275,7 +248,7 @@ export default class ServiceMaker {
       } phase`
     );
 
-    const makingPromise = this._executeContainerFn(deps, factory, context, [
+    const makingPromise = this._makeServiceInstance(provider, context, [
       ...refLock,
       provider,
     ]);
@@ -294,12 +267,11 @@ export default class ServiceMaker {
     return instance;
   }
 
-  async _executeContainerFn<T>(
+  async _makeRequirements(
     deps: InjectRequirement[],
-    container: ContainerFunc<any, T>,
     context: MakeContext,
     refLock: ServiceProvider<any>[]
-  ): Promise<T> {
+  ) {
     const { platform } = context;
     const makingArgs = [];
 
@@ -312,7 +284,17 @@ export default class ServiceMaker {
       }
     }
 
-    const args = await Promise.all(makingArgs);
-    return container(...args);
+    return Promise.all(makingArgs);
+  }
+
+  async _makeServiceInstance<T>(
+    provider: ServiceProvider<any>,
+    context: MakeContext,
+    refLock: ServiceProvider<any>[]
+  ): Promise<T> {
+    const { $$deps: deps, $$factory: factory } = provider;
+    const args = await this._makeRequirements(deps, context, refLock);
+    const result = await factory(...args);
+    return result;
   }
 }

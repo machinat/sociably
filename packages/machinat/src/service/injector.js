@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import { resolveBindings } from './utils';
+import { resolveBindings, polishInjectRequirement } from './utils';
 import ServiceMaker from './maker';
 import { MACHINAT_SERVICES_CONTAINER } from './constant';
 import type {
@@ -9,6 +9,7 @@ import type {
   ServiceCache,
   ServiceContainer,
   Interfaceable,
+  InjectRequirement,
 } from './types';
 
 /**
@@ -33,17 +34,21 @@ export class ScopeInjector {
     this.scopeCache = scopeCache;
   }
 
-  async runContainer(container: ServiceContainer<any>) {
+  async runContainer<T>(container: ServiceContainer<T>): Promise<T> {
     invariant(
       container.$$typeof === MACHINAT_SERVICES_CONTAINER,
       'invalid container'
     );
-    return this.maker.injectContainer(
-      container,
+
+    const { services: args, updatedScopeCache } = await this.maker.makeServices(
+      container.$$deps,
       this.platform,
       this.singletonCache,
       this.scopeCache
     );
+
+    this.scopeCache = updatedScopeCache;
+    return container(...args);
   }
 }
 
@@ -75,20 +80,21 @@ export class AppInjector {
     return scopeInjector;
   }
 
-  async makeServices(targets: Interfaceable[]) {
+  async useServices(targets: (Interfaceable | InjectRequirement)[]) {
+    const requirements = targets.map(polishInjectRequirement);
     const scopeCache = await this.maker.makeScopedServices(
       this.singletonCache,
       undefined
     );
 
-    const instances = await this.maker.makeServices(
-      targets,
+    const { services } = await this.maker.makeServices(
+      requirements,
       undefined,
       this.singletonCache,
       scopeCache
     );
 
-    return instances;
+    return services;
   }
 }
 

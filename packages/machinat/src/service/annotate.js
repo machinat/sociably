@@ -1,5 +1,4 @@
 // @flow
-import invariant from 'invariant';
 import {
   MACHINAT_SERVICES_PROVIDER,
   MACHINAT_SERVICES_CONTAINER,
@@ -16,24 +15,7 @@ import type {
   NamedInterfaceable,
   InjectRequirement,
 } from './types';
-import { isInterfaceable } from './utils';
-
-const mapToInjectRequirementAssertedly = (
-  deps: (Interfaceable | InjectRequirement)[]
-): InjectRequirement[] => {
-  const requirements: InjectRequirement[] = [];
-
-  for (const dep of deps) {
-    if (isInterfaceable(dep)) {
-      requirements.push({ require: dep, optional: false });
-    } else {
-      invariant(dep.require, `invalid interface received: ${(dep: any)}`);
-      requirements.push(dep);
-    }
-  }
-
-  return requirements;
-};
+import { polishInjectRequirement } from './utils';
 
 type InjectOptions = {|
   deps: (Interfaceable | InjectRequirement)[],
@@ -45,7 +27,7 @@ type InjectOptions = {|
 export const inject = <T>({ deps }: InjectOptions) => (
   func: ContainerFunc<any, T>
 ): ServiceContainer<T> => {
-  const requirements = mapToInjectRequirementAssertedly(deps);
+  const requirements = deps.map(polishInjectRequirement);
 
   return Object.defineProperties(((func: any): ServiceContainer<T>), {
     $$typeof: { value: MACHINAT_SERVICES_CONTAINER },
@@ -66,7 +48,7 @@ type ProvideOptions<T> = {
 export const provider = <T>({ deps, factory, strategy }: ProvideOptions<T>) => (
   target: Class<T>
 ): ServiceProvider<T> => {
-  const requirements = mapToInjectRequirementAssertedly(deps);
+  const requirements = deps.map(polishInjectRequirement);
 
   return Object.defineProperties(((target: any): ServiceProvider<T>), {
     $$typeof: { value: MACHINAT_SERVICES_PROVIDER },

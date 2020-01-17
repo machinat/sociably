@@ -6,7 +6,11 @@ import {
   MACHINAT_SERVICES_INTERFACEABLE,
 } from './constant';
 import ProvisionMap from './map';
-import type { ProvisionBinding } from './types';
+import type {
+  ProvisionBinding,
+  Interfaceable,
+  InjectRequirement,
+} from './types';
 
 export const isInterfaceable = (token: Object): boolean %checks =>
   token.$$typeof === MACHINAT_SERVICES_INTERFACEABLE ||
@@ -75,4 +79,15 @@ export const resolveBindings = (
     singletonIndex,
     scopedIndex,
   };
+};
+
+export const polishInjectRequirement = (
+  dep: Interfaceable | InjectRequirement
+): InjectRequirement => {
+  if (isInterfaceable(dep)) {
+    return { require: dep, optional: false };
+  }
+
+  invariant(dep.require, `invalid interface received`);
+  return dep;
 };
