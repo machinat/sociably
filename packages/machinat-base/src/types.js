@@ -5,6 +5,7 @@ import type {
   MachinatPause,
   MachinatNativeComponent,
   RenderThunkFn,
+  MachinatEntity,
   MachinatUser,
   MachinatChannel,
   MachinatEvent,
@@ -54,7 +55,7 @@ export interface MachinatBot<
 
   onEvent(
     listener: (
-      EventFrame<
+      EventContext<
         Channel,
         User,
         Event,
@@ -82,7 +83,7 @@ export interface MachinatBot<
 
   removeEventListener(
     listener: (
-      EventFrame<
+      EventContext<
         Channel,
         User,
         Event,
@@ -113,9 +114,6 @@ export interface MachinatBot<
   >;
 
   removeErrorListener(listener: (Error) => void): boolean;
-
-  // FIXME: type for oberservable
-  // [Symbol$observable](): Obserable
 }
 
 export type MachinatMiddleware<Frame, Value> = (
@@ -127,7 +125,7 @@ export type OutputableSegment<SegmentValue, Native> =
   | RawSegment<SegmentValue>
   | UnitSegment<SegmentValue, Native>;
 
-export type EventFrame<
+export type EventContext<
   Channel: MachinatChannel,
   User: ?MachinatUser,
   Event: MachinatEvent<any>,
@@ -139,6 +137,7 @@ export type EventFrame<
   SendOptions
 > = {
   platform: string,
+  entity: MachinatEntity,
   channel: Channel,
   user: User,
   event: Event,
@@ -168,7 +167,7 @@ export type EventMiddleware<
   Native,
   SendOptions
 > = MachinatMiddleware<
-  EventFrame<
+  EventContext<
     Channel,
     User,
     Event,

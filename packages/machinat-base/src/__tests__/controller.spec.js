@@ -105,7 +105,7 @@ describe('#eventIssuerThroughMiddlewares(finalHandler)', () => {
     expect(bot.render.mock).toHaveBeenCalledWith(channel, message, options);
   });
 
-  it('pass EventFrame through middlewares', async () => {
+  it('pass EventContext through middlewares', async () => {
     finalHandler.mock.fake(() => Promise.resolve('Roger'));
 
     const expectedFrame = {

@@ -11,7 +11,7 @@ import type {
 } from 'machinat/types';
 import type {
   MachinatBot,
-  EventFrame,
+  EventContext,
   EventIssuer,
   EventMiddleware,
 } from './types';
@@ -19,7 +19,7 @@ import type {
 import { validateMiddlewares } from './utils';
 
 // MachinatController controls event logic flow and the data framing within
-// machinat framework. When event flow in, controller construct EventFrame and
+// machinat framework. When event flow in, controller construct EventContext and
 // pass it throught event middlewares then publish it.
 export default class MachinatController<
   Channel: MachinatChannel,
@@ -97,7 +97,7 @@ export default class MachinatController<
   // the issuer fn created directly to the receiver.
   eventIssuerThroughMiddlewares(
     finalHandler: (
-      EventFrame<
+      EventContext<
         Channel,
         User,
         Event,

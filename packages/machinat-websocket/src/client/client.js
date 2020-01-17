@@ -27,7 +27,7 @@ export type ClientEvent = {|
   payload: any,
 |};
 
-type ClientEventFrame = {|
+type ClientEventContext = {|
   user: ?MachinatUser,
   channel: WebSocketChannel,
   event: ClientEvent,
@@ -67,7 +67,7 @@ class WebScoketClient<RegData> {
   _connId: string;
   _connChannel: ConnectionChannel;
 
-  _eventListeners: ((ClientEventFrame) => void)[];
+  _eventListeners: ((ClientEventContext) => void)[];
   _errorListeners: ((Error) => void)[];
 
   constructor({ url, registrator }: ClientOptions<RegData> = {}) {
@@ -123,14 +123,14 @@ class WebScoketClient<RegData> {
     }
   }
 
-  onEvent(listener: ClientEventFrame => void) {
+  onEvent(listener: ClientEventContext => void) {
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }
     this._eventListeners.push(listener);
   }
 
-  removeEventListener(listener: ClientEventFrame => void) {
+  removeEventListener(listener: ClientEventContext => void) {
     const idx = this._eventListeners.findIndex(fn => fn === listener);
     if (idx === -1) {
       return false;

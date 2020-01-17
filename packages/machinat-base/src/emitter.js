@@ -8,7 +8,7 @@ import type {
   MachinatEvent,
   MachinatMetadata,
 } from 'machinat/types';
-import type { EventFrame } from './types';
+import type { EventContext } from './types';
 
 // MachinatEmitter provide events and errors listening methods for machinat bot
 // implementation classes to inherit.
@@ -24,7 +24,7 @@ export default class MachinatEmitter<
   SendOptions
 > {
   _eventListeners: ((
-    EventFrame<
+    EventContext<
       Channel,
       User,
       Event,
@@ -46,7 +46,7 @@ export default class MachinatEmitter<
 
   onEvent(
     listener: (
-      EventFrame<
+      EventContext<
         Channel,
         User,
         Event,
@@ -69,7 +69,7 @@ export default class MachinatEmitter<
 
   removeEventListener(
     listener: (
-      EventFrame<
+      EventContext<
         Channel,
         User,
         Event,
@@ -92,7 +92,7 @@ export default class MachinatEmitter<
   }
 
   emitEvent(
-    frame: EventFrame<
+    frame: EventContext<
       Channel,
       User,
       Event,
@@ -142,7 +142,7 @@ export default class MachinatEmitter<
   [Symbol$observable]() {
     return {
       subscribe: observer => {
-        const eventListener = (frame: EventFrame) => {
+        const eventListener = (frame: EventContext) => {
           observer.next(frame);
         };
 

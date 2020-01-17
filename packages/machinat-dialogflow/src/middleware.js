@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import type { MachinatMiddleware, EventFrame } from 'machinat-base/types';
+import type { MachinatMiddleware, EventContext } from 'machinat-base/types';
 import { SessionsClient } from 'dialogflow';
 
 type DetectIntentQueryConfig = {
@@ -13,14 +13,14 @@ type DialogflowMiddlewareOption = {
   authConfig?: Object,
   languageCode?: string,
   getQueryConfig?: (
-    frame: EventFrame<any, any, any, any, any, any, any, any, any>
+    frame: EventContext<any, any, any, any, any, any, any, any, any>
   ) => Promise<DetectIntentQueryConfig>,
 };
 
 const attachDialogflowRecognitionMiddleware = (
   middlewareConf: DialogflowMiddlewareOption
 ): MachinatMiddleware<
-  EventFrame<any, any, any, any, any, any, any, any, any>,
+  EventContext<any, any, any, any, any, any, any, any, any>,
   any
 > => next => {
   invariant(

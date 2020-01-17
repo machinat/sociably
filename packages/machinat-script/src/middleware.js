@@ -1,6 +1,6 @@
 // @flow
 import type { SessionStore } from 'machinat-session/types';
-import type { MachinatMiddleware, EventFrame } from 'machinat-base/types';
+import type { MachinatMiddleware, EventContext } from 'machinat-base/types';
 import type { MachinatScript } from './types';
 import { processInterceptor } from './processor';
 
@@ -8,7 +8,7 @@ const interceptProcessingScriptMiddleware = (
   sessionStore: SessionStore,
   libs: MachinatScript[]
 ): MachinatMiddleware<
-  EventFrame<any, any, any, any, any, any, any, any, any>,
+  EventContext<any, any, any, any, any, any, any, any, any>,
   any
 > => next => {
   const intercept = processInterceptor(sessionStore, libs);

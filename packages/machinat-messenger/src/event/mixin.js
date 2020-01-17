@@ -13,7 +13,6 @@ export const EventBase = {
   },
 };
 
-// $FlowFixMe
 Object.defineProperties(EventBase, {
   [Symbol.toStringTag]: {
     enumerable: false,

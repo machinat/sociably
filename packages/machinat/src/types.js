@@ -127,6 +127,11 @@ export type MachinatService<Served, ProvideProps, ConsumeProps> = {|
   _serve: ServiceProvideFn<Served, ProvideProps, ConsumeProps>,
 |};
 
+export interface MachinatEntity {
+  +platform: string;
+  +id: string;
+}
+
 export interface MachinatChannel {
   +platform: string;
   +type: any;

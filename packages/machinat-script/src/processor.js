@@ -4,7 +4,7 @@ import invariant from 'invariant';
 import Machinat from 'machinat';
 import { StateService } from 'machinat-session';
 import type { SessionStore } from 'machinat-session/types';
-import type { EventFrame } from 'machinat-base/types';
+import type { EventContext } from 'machinat-base/types';
 import run from './runner';
 import { SCRIPT_STATE_KEY } from './constant';
 import { archiveScriptState } from './utils';
@@ -75,8 +75,8 @@ export const processInterceptor = (
   const linkerStatus = callingStatusLinker(libs);
 
   return async (
-    frame: EventFrame<any, any, any, any, any, any, any, any, any>
-  ): Promise<null | EventFrame<
+    frame: EventContext<any, any, any, any, any, any, any, any, any>
+  ): Promise<null | EventContext<
     any,
     any,
     any,

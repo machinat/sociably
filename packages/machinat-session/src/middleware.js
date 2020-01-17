@@ -1,11 +1,11 @@
 // @flow
-import type { MachinatMiddleware, EventFrame } from 'machinat-base/types';
+import type { MachinatMiddleware, EventContext } from 'machinat-base/types';
 import type { SessionStore } from './types';
 
 const attachSessionMeddleware = (
   store: SessionStore
 ): MachinatMiddleware<
-  EventFrame<any, any, any, any, any, any, any, any, any>,
+  EventContext<any, any, any, any, any, any, any, any, any>,
   any
 > => next => frame =>
   next({
