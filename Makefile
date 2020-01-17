@@ -1,4 +1,4 @@
-pkgs := $(shell find packages -depth 1 -type d)
+pkgs := $(shell find ./packages -mindepth 1 -maxdepth 1 -type d)
 libs := $(addsuffix /lib, $(pkgs))
 babel := node_modules/.bin/babel
 
