@@ -33,7 +33,6 @@ Array [
     },
     "response": undefined,
     "user": LineUser {
-      "channelId": "_LINE_CHANNEL_ID_",
       "platform": "line",
       "userId": "U4af4980629",
     },
@@ -64,7 +63,6 @@ Array [
     },
     "response": undefined,
     "user": LineUser {
-      "channelId": "_LINE_CHANNEL_ID_",
       "platform": "line",
       "userId": "U4af4980629",
     },

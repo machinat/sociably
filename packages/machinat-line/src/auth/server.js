@@ -96,8 +96,9 @@ class LineServerAuthProvider
     };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async refineAuth(data: LIFFAuthData) {
-    return refineLIFFContextData(this.channelId, data);
+    return refineLIFFContextData(data);
   }
 }
 

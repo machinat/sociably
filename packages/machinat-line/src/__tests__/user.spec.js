@@ -1,12 +1,11 @@
 import { LineUser, LineUserProfile } from '../user';
 
 test('LineUser ok', () => {
-  const user = new LineUser('_CHANNEL_ID_', '_USER_ID_');
+  const user = new LineUser('_USER_ID_');
 
   expect(user.platform).toBe('line');
   expect(user.id).toBe('_USER_ID_');
-  expect(user.channelId).toBe('_CHANNEL_ID_');
-  expect(user.uid).toBe('line:_CHANNEL_ID_:_USER_ID_');
+  expect(user.uid).toBe('line:*:_USER_ID_');
 });
 
 test('LineUserProfile ok', () => {

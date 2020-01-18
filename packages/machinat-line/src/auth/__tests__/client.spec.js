@@ -46,30 +46,20 @@ describe('#constructor()', () => {
 
     expect(provider.platform).toBe('line');
     expect(provider.shouldResign).toBe(true);
-    expect(provider.channelId).toBe('_CHANNEL_ID_');
     expect(provider.liffId).toBe('_LIFF_ID_');
     expect(provider.isSDKLoaded).toBe(false);
   });
 
   it('throw if liff id is empty', () => {
     expect(
-      () => new LineClientAuthProvider({ channelId: '_CHANNEL_ID_' })
+      () => new LineClientAuthProvider({})
     ).toThrowErrorMatchingInlineSnapshot(`"options.liffId must not be empty"`);
-  });
-
-  it('throw if channl id is empty', () => {
-    expect(
-      () => new LineClientAuthProvider({ liffId: '_LIFF_ID_' })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.channelId must not be empty"`
-    );
   });
 });
 
 describe('#init()', () => {
   it('add liff sdk and call init() after loaded', async () => {
     const provider = new LineClientAuthProvider({
-      channelId: '_LINE_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
     });
 
@@ -91,7 +81,6 @@ describe('#init()', () => {
 
   it('ignore adding sdk if options.isSDKLoaded set to true', async () => {
     const provider = new LineClientAuthProvider({
-      channelId: '_LINE_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });
@@ -106,7 +95,6 @@ describe('#init()', () => {
 describe('#startAuthFlow()', () => {
   it('resolve credential containt liff infos and access token', async () => {
     const provider = new LineClientAuthProvider({
-      channelId: '_LINE_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });
@@ -130,7 +118,6 @@ describe('#startAuthFlow()', () => {
     global.liff.isLoggedIn.mock.fakeReturnValue(false);
 
     const provider = new LineClientAuthProvider({
-      channelId: '_LINE_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
     });
 
@@ -171,19 +158,17 @@ describe('#refineAuth(data)', () => {
 
   it('resolve context according to auth data', async () => {
     const provider = new LineClientAuthProvider({
-      channelId: '_LINE_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });
     await expect(provider.refineAuth(authData)).resolves.toEqual({
       channel: null,
-      user: new LineUser('_LINE_CHANNEL_ID_', '_USER_ID_'),
+      user: new LineUser('_USER_ID_'),
     });
   });
 
   it('resolve null if profile is empty', async () => {
     const provider = new LineClientAuthProvider({
-      channelId: '_LINE_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });

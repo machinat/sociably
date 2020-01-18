@@ -5,11 +5,9 @@ import type { RawLineUserProfile } from './types';
 
 export class LineUser implements MachinatUser {
   platform = LINE;
-  channelId: string;
   userId: string;
 
-  constructor(lineChannelId: string, userId: string) {
-    this.channelId = lineChannelId;
+  constructor(userId: string) {
     this.userId = userId;
   }
 
@@ -18,7 +16,7 @@ export class LineUser implements MachinatUser {
   }
 
   get uid() {
-    return `line:${this.channelId}:${this.userId}`;
+    return `line:*:${this.userId}`;
   }
 }
 

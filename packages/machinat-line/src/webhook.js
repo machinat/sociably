@@ -33,7 +33,7 @@ const handleWebhook = (
     const { source } = rawEvent;
     return {
       channel: new LineChannel(channelId, source),
-      user: new LineUser(channelId, source.userId),
+      user: new LineUser(source.userId),
       event: createEvent(rawEvent),
       response: undefined,
     };

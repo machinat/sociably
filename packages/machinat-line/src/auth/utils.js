@@ -5,7 +5,6 @@ import { LineUser } from '../user';
 import type { LIFFAuthData } from '../types';
 
 export const refineLIFFContextData = (
-  channelId: string,
   data: LIFFAuthData
 ): null | AuthRefineResult => {
   const { profile } = data;
@@ -15,6 +14,6 @@ export const refineLIFFContextData = (
 
   return {
     channel: null,
-    user: new LineUser(channelId, profile.userId),
+    user: new LineUser(profile.userId),
   };
 };

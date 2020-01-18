@@ -206,7 +206,7 @@ describe('#refineAuth(data)', () => {
       })
     ).resolves.toEqual({
       channel: null,
-      user: new LineUser('_LINE_CHANNEL_ID_', '_USER_ID_'),
+      user: new LineUser('_USER_ID_'),
     });
   });
 

@@ -9,7 +9,6 @@ declare var document: Document;
 declare var liff: Object;
 
 type ClientAuthProviderOpts = {
-  channelId: string,
   liffId: string,
   isSDKLoaded?: boolean,
 };
@@ -25,22 +24,15 @@ const delay = (ms: number) =>
 
 class LineClientAuthProvider
   implements ClientAuthProvider<LIFFAuthData, LIFFCredential> {
-  channelId: string;
   liffId: string;
   isSDKLoaded: boolean;
 
   platform = LINE;
   shouldResign = true;
 
-  constructor({
-    liffId,
-    channelId,
-    isSDKLoaded = false,
-  }: ClientAuthProviderOpts = {}) {
+  constructor({ liffId, isSDKLoaded = false }: ClientAuthProviderOpts = {}) {
     invariant(liffId, 'options.liffId must not be empty');
-    invariant(channelId, 'options.channelId must not be empty');
 
-    this.channelId = channelId;
     this.liffId = liffId;
     this.isSDKLoaded = isSDKLoaded;
   }
@@ -91,8 +83,9 @@ class LineClientAuthProvider
     };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async refineAuth(data: LIFFAuthData) {
-    return refineLIFFContextData(this.channelId, data);
+    return refineLIFFContextData(data);
   }
 }
 
