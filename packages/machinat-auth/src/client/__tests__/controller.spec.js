@@ -5,15 +5,15 @@ import fetch from 'node-fetch';
 import jsonwebtoken from 'jsonwebtoken';
 import AuthClientController from '../controller';
 
-const _resolveAfterLoops = (resolve, n) => {
+const resolveAfterLoops = (resolve, n) => {
   if (n === 0) {
     resolve();
   } else {
-    setImmediate(_resolveAfterLoops, resolve, n - 1);
+    setImmediate(resolveAfterLoops, resolve, n - 1);
   }
 };
 const delayLoops = (n = 1) =>
-  new Promise(resolve => _resolveAfterLoops(resolve, n));
+  new Promise(resolve => resolveAfterLoops(resolve, n));
 
 nock.disableNetConnect();
 const serverEntry = nock('https://machinat.io');
@@ -334,7 +334,8 @@ describe('#init()', () => {
     expect(controller.isInitiated).toBe(true);
 
     controller.init('foo');
-    expect(controller.platform).toBe('bar');
+    await delayLoops();
+    expect(controller.platform).toBe('foo');
     expect(controller.isInitiating).toBe(false);
     expect(controller.isInitiated).toBe(true);
 
@@ -855,7 +856,7 @@ describe('auth refreshment and expiry', () => {
     expect(controller.getToken()).toBe(undefined);
   });
 
-  it.only('not update auth if signOut() during refreshment', async () => {
+  it('not update auth if signOut() during refreshment', async () => {
     setBackendAuthed({
       platform: 'foo',
       auth: { foo: 'data' },
