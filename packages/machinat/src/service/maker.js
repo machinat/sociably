@@ -62,8 +62,7 @@ import type {
  *   9. scoped/trasient services being created
  *   10. scoped services being cached
  *   11. inject and run the container
- *   12. lazy services being cached
- *   13. repeat from 8. if more container to run
+ *   12. repeat from 8. if more container to run
  */
 
 /**
@@ -77,6 +76,7 @@ type MakeContext = {
   phase: PhaseEnum,
   singletonCache: ServiceCache<any>,
   scopeCache: ServiceCache<any>,
+  runtimeProvisions: null | Map<Interfaceable, any>,
   makingTracker: Map<ServiceProvider<any>, Promise<any>>,
 };
 
@@ -108,11 +108,12 @@ export default class ServiceMaker {
       singletonCache: new Map(),
       scopeCache: new Map(),
       makingTracker: new Map(),
+      runtimeProvisions: null,
     };
 
     const makingPromises = [];
     for (const [target, platform] of this.singletonIndex) {
-      const binding = this._resolveProvision(target, platform, false);
+      const binding = this._resolveProvisionAssertedly(target, platform, false);
       /* :: invariant(binding); */
       makingPromises.push(this._makeProvision(binding, context, []));
     }
@@ -134,6 +135,7 @@ export default class ServiceMaker {
       singletonCache,
       scopeCache: new Map(),
       makingTracker: new Map(),
+      runtimeProvisions: null,
     };
 
     const makingPromises = [];
@@ -141,7 +143,11 @@ export default class ServiceMaker {
     for (const [target, boundPlatform] of this.scopedIndex) {
       // skip other platform
       if (!boundPlatform || boundPlatform === platform) {
-        const binding = this._resolveProvision(target, boundPlatform, false);
+        const binding = this._resolveProvisionAssertedly(
+          target,
+          boundPlatform,
+          false
+        );
         /* :: invariant(binding); */
         makingPromises.push(this._makeProvision(binding, context, []));
       }
@@ -152,19 +158,15 @@ export default class ServiceMaker {
   }
 
   /**
-   * makeServices create a list of services according to the requirements, it
-   * returns the services made and the updated scoped cache with new lazy
-   * services possibly created.
+   * makeServices create a list of services according to the requirements
    */
   async makeServices(
     requirements: InjectRequirement[],
     platform: void | string,
     singletonCache: ServiceCache<any>,
-    scopeCache: ServiceCache<any>
-  ): Promise<{
-    services: any[],
-    updatedScopeCache: ServiceCache<any>,
-  }> {
+    scopeCache: ServiceCache<any>,
+    runtimeProvisions: null | Map<Interfaceable, any>
+  ): Promise<any[]> {
     const services = await this._makeRequirements(
       requirements,
       {
@@ -173,14 +175,15 @@ export default class ServiceMaker {
         singletonCache,
         scopeCache,
         makingTracker: new Map(),
+        runtimeProvisions,
       },
       []
     );
 
-    return { services, updatedScopeCache: scopeCache };
+    return services;
   }
 
-  _resolveProvision(
+  _resolveProvisionAssertedly(
     target: Interfaceable,
     platform: void | string,
     optional: boolean
@@ -219,7 +222,7 @@ export default class ServiceMaker {
     let cached;
     if (strategy === 'singleton') {
       cached = singletonCache.get(provider);
-    } else if (strategy === 'scoped' || strategy === 'lazy') {
+    } else if (strategy === 'scoped') {
       cached = scopeCache.get(provider);
     }
 
@@ -236,7 +239,6 @@ export default class ServiceMaker {
     // verify singleton/scoped provider creating phase
     invariant(
       strategy === 'transient' ||
-        strategy === 'lazy' ||
         (strategy === 'scoped' && phase !== PHASE_ENUM_INJECTION) ||
         (strategy === 'singleton' && phase === PHASE_ENUM_INITIATION),
       `${strategy} service should not be created at ${
@@ -260,7 +262,7 @@ export default class ServiceMaker {
     // cache provided by strategy
     if (strategy === 'singleton') {
       singletonCache.set(provider, instance);
-    } else if (strategy === 'scoped' || strategy === 'lazy') {
+    } else if (strategy === 'scoped') {
       scopeCache.set(provider, instance);
     }
 
@@ -272,19 +274,34 @@ export default class ServiceMaker {
     context: MakeContext,
     refLock: ServiceProvider<any>[]
   ) {
-    const { platform } = context;
-    const makingArgs = [];
+    const { platform, runtimeProvisions } = context;
+    const makings = [];
 
     for (const { require: target, optional } of deps) {
-      const binding = this._resolveProvision(target, platform, optional);
-      if (binding) {
-        makingArgs.push(this._makeProvision(binding, context, refLock));
+      let runtimeProvided;
+      if (
+        runtimeProvisions &&
+        (runtimeProvided = runtimeProvisions.get(target))
+      ) {
+        // provided at runtime
+        makings.push(runtimeProvided);
       } else {
-        makingArgs.push(null);
+        const binding = this._resolveProvisionAssertedly(
+          target,
+          platform,
+          optional
+        );
+
+        if (binding) {
+          makings.push(this._makeProvision(binding, context, refLock));
+        } else {
+          // dep is optional and not bound
+          makings.push(null);
+        }
       }
     }
 
-    return Promise.all(makingArgs);
+    return Promise.all(makings);
   }
 
   async _makeServiceInstance<T>(

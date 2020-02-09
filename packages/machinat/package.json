@@ -22,6 +22,9 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "invariant": "^2.2.4"
+    "denque": "^1.4.0",
+    "invariant": "^2.2.4",
+    "thenifiedly": "^0.1.0",
+    "warning": "^4.0.2"
   }
 }

@@ -1,6 +1,7 @@
 // @flow
 import invariant from 'invariant';
 import {
+  MACHINAT_SERVICES_CONTAINER,
   MACHINAT_SERVICES_PROVIDER,
   MACHINAT_SERVICES_ABSTRACTION,
   MACHINAT_SERVICES_INTERFACEABLE,
@@ -12,10 +13,14 @@ import type {
   InjectRequirement,
 } from './types';
 
-export const isInterfaceable = (token: Object): boolean %checks =>
-  token.$$typeof === MACHINAT_SERVICES_INTERFACEABLE ||
-  token.$$typeof === MACHINAT_SERVICES_PROVIDER ||
-  token.$$typeof === MACHINAT_SERVICES_ABSTRACTION;
+export const isServiceContainer = (target: any): boolean %checks =>
+  typeof target === 'function' &&
+  target.$$typeof === MACHINAT_SERVICES_CONTAINER;
+
+export const isInterfaceable = (target: Object): boolean %checks =>
+  target.$$typeof === MACHINAT_SERVICES_INTERFACEABLE ||
+  target.$$typeof === MACHINAT_SERVICES_PROVIDER ||
+  target.$$typeof === MACHINAT_SERVICES_ABSTRACTION;
 
 export const resolveBindings = (
   provisions: ProvisionBinding[]

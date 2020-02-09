@@ -27,6 +27,7 @@ export type UnacceptedResponse = {
 
 type AcceptedNextResponse = {|
   accepted: true,
+  headers: {| [string]: string |},
   page?: string,
   query?: {| [string]: any |},
 |};

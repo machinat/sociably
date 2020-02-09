@@ -5,11 +5,24 @@ export const MACHINAT_FRAGMENT_TYPE = Symbol.for('machinat.element.fragment');
 
 export const MACHINAT_PAUSE_TYPE = Symbol.for('machinat.element.pause');
 
+export const MACHINAT_PROVIDER_TYPE = Symbol.for('machinat.element.provider');
+
+export const MACHINAT_THUNK_TYPE = Symbol.for('machinat.element.thunk');
+
+export const MACHINAT_RAW_TYPE = Symbol.for('machinat.element.raw');
+
 export const MACHINAT_NATIVE_TYPE = Symbol.for('machinat.component.native');
 
-export const MACHINAT_SERVICE_TYPE = Symbol.for('machinat.service');
+export const MACHINAT_SERVICES_CONTAINER = Symbol(
+  'machinat.services.container'
+);
 
-export const MACHINAT_PROVIDER_TYPE = Symbol.for('machinat.component.provider');
-export const MACHINAT_CONSUMER_TYPE = Symbol.for('machinat.component.consumer');
+export const MACHINAT_SERVICES_INTERFACEABLE = Symbol(
+  'machinat.services.interfaceable'
+);
 
-export const SEGMENT_BREAK = Symbol.for('machinat.segment.break');
+export const MACHINAT_SERVICES_PROVIDER = Symbol('machinat.services.provider');
+
+export const MACHINAT_SERVICES_ABSTRACTION = Symbol(
+  'machinat.services.abstraction'
+);

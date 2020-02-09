@@ -4,10 +4,9 @@ import {
   MACHINAT_SERVICES_CONTAINER,
   MACHINAT_SERVICES_ABSTRACTION,
   MACHINAT_SERVICES_INTERFACEABLE,
-} from './constant';
+} from '../symbol';
 import type {
   ServeStrategy,
-  ContainerFunc,
   ServiceContainer,
   ServiceProvider,
   AbstractProvider,
@@ -25,7 +24,7 @@ type InjectOptions = {|
  * inject marks a function as a container and annotate the dependencies
  */
 export const inject = <T>({ deps }: InjectOptions) => (
-  func: ContainerFunc<any, T>
+  func: (...args: any[]) => T
 ): ServiceContainer<T> => {
   const requirements = deps.map(polishInjectRequirement);
 
@@ -37,7 +36,7 @@ export const inject = <T>({ deps }: InjectOptions) => (
 
 type ProvideOptions<T> = {
   deps: (Interfaceable | InjectRequirement)[],
-  factory: ContainerFunc<any, Promise<T>>,
+  factory: (...args: any[]) => Promise<T>,
   strategy: ServeStrategy,
 };
 
@@ -61,7 +60,7 @@ export const provider = <T>({ deps, factory, strategy }: ProvideOptions<T>) => (
 /**
  * abstract mark an abstract class as a interfaceable to be implemented
  */
-export const abstract = <T>() => (target: Class<T>): AbstractProvider<T> => {
+export const abstract = <T>(target: Class<T>): AbstractProvider<T> => {
   return Object.defineProperties(((target: any): AbstractProvider<T>), {
     $$typeof: { value: MACHINAT_SERVICES_ABSTRACTION },
   });

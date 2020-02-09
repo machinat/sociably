@@ -1,131 +1,114 @@
 // @flow
 /* eslint-disable no-use-before-define */
-import type { RenderInnerFn, InnerSegment } from 'machinat-renderer/types';
+import type { InnerRenderFn, IntermediateSegment } from './renderer/types';
+import type {
+  Interfaceable,
+  ProvisionBinding,
+  ServiceContainer,
+  InjectionScope,
+} from './service/types';
+import type { DispatchFrame, DispatchResponse } from './engine/types';
 import typeof {
   MACHINAT_ELEMENT_TYPE,
+  MACHINAT_NATIVE_TYPE,
   MACHINAT_FRAGMENT_TYPE,
   MACHINAT_PAUSE_TYPE,
-  MACHINAT_NATIVE_TYPE,
-  MACHINAT_SERVICE_TYPE,
   MACHINAT_PROVIDER_TYPE,
-  MACHINAT_CONSUMER_TYPE,
+  MACHINAT_THUNK_TYPE,
+  MACHINAT_RAW_TYPE,
 } from './symbol';
 
 export type MachinatNode =
   | MachinatEmpty
   | MachinatText
-  | MachinatElement<any>
-  | MachinatPause
-  | MachinatFragment
-  | Array<MachinatNode>
-  | MachinatProvider<any, any>
-  | MachinatConsumer<any, any>;
+  | GeneralElement
+  | PauseElement
+  | FragmentElement
+  | ProviderElement
+  | RawElement
+  | ThunkElement
+  | Array<MachinatNode>;
 
 export type MachinatRenderable =
   | MachinatText
-  | MachinatElement<any>
-  | MachinatProvider<any, any>
-  | MachinatConsumer<any, any>;
+  | GeneralElement
+  | PauseElement
+  | ProviderElement
+  | RawElement
+  | ThunkElement;
 
-export type MachinatElementType =
-  | string
-  | MachinatComponentType
-  | MachinatNativeComponent<any>;
-
-export type MachinatElement<ElementType: MachinatElementType> = {|
+export type MachinatElement<P, T> = {|
   $$typeof: MACHINAT_ELEMENT_TYPE,
-  type: ElementType,
-  props: MachinatElementProps,
+  type: T,
+  props: P,
 |};
 
 export type MachinatText = string | number;
 export type MachinatEmpty = null | void | boolean;
 
-export type MachinatElementProps = {|
-  [string]: any,
-|};
+export type GeneralElement = MachinatElement<{| [string]: any |}, string>;
 
-export type MachinatComponentType = MachinatElementProps => MachinatNode;
+export type FunctionalComponent<Props> = (
+  props: Props
+) => MachinatNode | Promise<MachinatNode>;
 
-export type MachinatNativeComponent<Value> = {
+export type FunctionalElement<
+  Props,
+  Component: FunctionalComponent<Props>
+> = MachinatElement<Props, Component>;
+
+export type ContainerComponent<Props> = ServiceContainer<
+  FunctionalComponent<Props>
+>;
+
+export type ContainerElement<
+  Props,
+  Component: ContainerComponent<Props>
+> = MachinatElement<Props, Component>;
+
+export type NativeComponent<Props, Value> = {
   (
-    element: MachinatNativeElement<MachinatNativeComponent<Value>>,
-    render: RenderInnerFn<Value, MachinatNativeComponent<Value>>,
+    element: NativeElement<Props, Value, NativeComponent<Props, Value>>,
+    render: InnerRenderFn<Value, NativeComponent<Props, Value>>,
     path: string
-  ): Promise<null | InnerSegment<Value, MachinatNativeComponent<Value>>[]>,
+  ): Promise<
+    null | IntermediateSegment<Value, NativeComponent<Props, Value>>[]
+  >,
   $$typeof: MACHINAT_NATIVE_TYPE,
-  $$native: Symbol,
-  $$namespace: string,
+  $$platform: string,
 };
 
-export type MachinatNativeElement<
-  Native: MachinatNativeComponent<any>
-> = MachinatElement<Native>;
+export type NativeElement<
+  Props,
+  Value,
+  Component: NativeComponent<Props, Value>
+> = MachinatElement<Props, Component>;
 
-export type MachinatGeneralElement = MachinatElement<string>;
+export type FragmentElement = MachinatElement<
+  {| children: MachinatNode |},
+  MACHINAT_FRAGMENT_TYPE
+>;
 
-export type MachinatFragment = {|
-  $$typeof: MACHINAT_ELEMENT_TYPE,
-  type: MACHINAT_FRAGMENT_TYPE,
-  props: {|
-    children: MachinatNode,
-  |},
-|};
+export type ProviderElement = MachinatElement<
+  {| provide: Interfaceable, value: any, children: MachinatNode |},
+  MACHINAT_PROVIDER_TYPE
+>;
 
-export type MachinatPause = {|
-  $$typeof: MACHINAT_ELEMENT_TYPE,
-  type: MACHINAT_PAUSE_TYPE,
-  props: {|
-    delay: string,
-    until: () => Promise<any>,
-  |},
-|};
+export type PauseUntilFn = () => Promise<any>;
 
-export type MachinatChildren = MachinatNode;
+export type PauseElement = MachinatElement<
+  {| until?: PauseUntilFn |},
+  MACHINAT_PAUSE_TYPE
+>;
 
-type MachinatProviderType<Served, ProvideProps> = {|
-  $$typeof: MACHINAT_PROVIDER_TYPE,
-  _service: MachinatService<Served, ProvideProps, any>,
-|};
+export type ThunkEffectFn = () => Promise<any>;
 
-export type MachinatProvider<Served, ProvideProps> = {|
-  $$typeof: MACHINAT_ELEMENT_TYPE,
-  type: MachinatProviderType<Served, ProvideProps>,
-  props: {|
-    children: MachinatNode,
-    ...ProvideProps,
-  |},
-|};
+export type ThunkElement = MachinatElement<
+  {| effect: ThunkEffectFn |},
+  MACHINAT_THUNK_TYPE
+>;
 
-type MachinatConsumerType<Served, ConsumeProps> = {|
-  $$typeof: MACHINAT_CONSUMER_TYPE,
-  _service: MachinatService<Served, any, ConsumeProps>,
-|};
-
-export type MachinatConsumer<Served, ConsumeProps> = {|
-  $$typeof: MACHINAT_ELEMENT_TYPE,
-  type: MachinatConsumerType<Served, ConsumeProps>,
-  props: {|
-    children: Served => MachinatNode,
-    ...ConsumeProps,
-  |},
-|};
-
-export type RenderThunkFn = () => Promise<void>;
-
-export type ServiceProvideFn<Served, ProvideProps, ConsumeProps> = (
-  provideInput?: ProvideProps
-) => (
-  consumeInput: ConsumeProps,
-  registerThunk: (thunk: RenderThunkFn) => void
-) => Promise<Served>;
-
-export type MachinatService<Served, ProvideProps, ConsumeProps> = {|
-  $$typeof: MACHINAT_SERVICE_TYPE,
-  Consumer: MachinatConsumerType<Served, ConsumeProps>,
-  Provider: MachinatProviderType<Served, ProvideProps>,
-  _serve: ServiceProvideFn<Served, ProvideProps, ConsumeProps>,
-|};
+export type RawElement = MachinatElement<{| value: any |}, MACHINAT_RAW_TYPE>;
 
 export interface MachinatEntity {
   +platform: string;
@@ -163,16 +146,105 @@ export interface MachinatUserProfile {
   +pictureURL: void | string;
 }
 
-export interface UserProfileFetchable<
-  User: MachinatUser,
-  Profile: MachinatUserProfile
-> {
-  getUserProfile(user: User): Promise<Profile>;
-  fetchProfilePicture(
-    profile: Profile
-  ): Promise<{
-    statusCode: number,
-    data: ReadableStream,
-    headers: {| [string]: string |},
-  }>;
+export interface MachinatBot<Channel: MachinatChannel, Result, SendOptions> {
+  render(
+    channel: Channel,
+    message: MachinatNode,
+    options: SendOptions
+  ): Promise<null | Result[]>;
 }
+
+export type EventContext<
+  Channel: MachinatChannel,
+  User: ?MachinatUser,
+  Event: MachinatEvent<any>,
+  Metadata: MachinatMetadata<any>,
+  SegmentValue,
+  Native: NativeComponent<SegmentValue>
+> = {
+  platform: string,
+  entity: MachinatEntity,
+  channel: Channel,
+  user: User,
+  event: Event,
+  bot: null | MachinatBot<Channel, SegmentValue, Native, any, any>,
+  metadata: Metadata,
+};
+
+export type Middleware<Input, Output> = (
+  input: Input,
+  next: (Input) => Promise<Output>
+) => Promise<Output>;
+
+export type EventMiddleware<
+  Context: EventContext<any, any, any, any, any, any>,
+  Response
+> = Middleware<Context, Response>;
+
+export type DispatchMiddleware<
+  Job,
+  Frame: DispatchFrame<any, Job>,
+  Result
+> = Middleware<Frame, DispatchResponse<Job, Result>>;
+
+export type ServiceModule = {|
+  bindings: ProvisionBinding[],
+  startHook: null | ServiceContainer<Promise<void>>,
+|};
+
+export type CreateEventScopeFn<
+  Ctx: EventContext<any, any, any, any, any, any>,
+  Res
+> = () => Promise<{
+  scope: InjectionScope,
+  wrappedHandler: (ctx: Ctx) => Promise<Res>,
+  popError: Error => void,
+}>;
+
+export type EventScopeWrapper<
+  Ctx: EventContext<any, any, any, any, any, any>,
+  Res
+> = (finalHandler: (ctx: Ctx) => Promise<Res>) => CreateEventScopeFn<Ctx, Res>;
+
+export type CreateDispatchScopeFn<
+  Job,
+  Frm: DispatchFrame<any, Job>,
+  Result
+> = () => Promise<{
+  scope: InjectionScope,
+  wrappedDispatcher: (frm: Frm) => Promise<DispatchResponse<Job, Result>>,
+}>;
+
+export type DispatchScopeWrapper<Job, Frm: DispatchFrame<any, Job>, Result> = (
+  dispatch: (frm: Frm) => Promise<DispatchResponse<Job, Result>>
+) => CreateDispatchScopeFn<Job, Frm, Result>;
+
+export type PlatformModule<
+  Channel: MachinatChannel,
+  Context: EventContext<Channel, any, any, any, any, any>,
+  EventResponse,
+  Job,
+  Frame: DispatchFrame<Channel, Job>,
+  Result
+> = {|
+  name: string,
+  eventMiddlewares?: (
+    | EventMiddleware<Context, EventResponse>
+    | ServiceContainer<EventMiddleware<Context, EventResponse>>
+  )[],
+  dispatchMiddlewares?: (
+    | DispatchMiddleware<Job, Frame, Result>
+    | ServiceContainer<DispatchMiddleware<Job, Frame, Result>>
+  )[],
+  init: (
+    receiverWrapper: EventScopeWrapper<Context, EventResponse>,
+    dispatchWrapper: DispatchScopeWrapper<Job, Frame, Result>
+  ) => ProvisionBinding[],
+  startHook?: ServiceContainer<Promise<void>>,
+|};
+
+export type AppConfig<Context: EventContext<any, any, any, any, any, any>> = {
+  platforms?: PlatformModule<any, Context, any, any, any, any>[],
+  imports?: ServiceModule[],
+  bindings?: ProvisionBinding[],
+};

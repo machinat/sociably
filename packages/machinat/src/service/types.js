@@ -1,17 +1,14 @@
 // @flow
-import type { EventContext } from 'machinat-base/types';
 import typeof {
   MACHINAT_SERVICES_CONTAINER,
   MACHINAT_SERVICES_PROVIDER,
   MACHINAT_SERVICES_ABSTRACTION,
   MACHINAT_SERVICES_INTERFACEABLE,
-} from './constant';
-import type { AppInjector } from './injector';
+} from '../symbol';
 
-export type ServeStrategy = 'singleton' | 'scoped' | 'lazy' | 'transient';
+export type { default as InjectionScope } from './scope'; // eslint-disable-line import/prefer-default-export
 
-// eslint-disable-next-line no-use-before-define
-export type ContainerFunc<Args, T> = (...args: Args[]) => T;
+export type ServeStrategy = 'singleton' | 'scoped' | 'transient';
 
 export type AbstractProvider<T> = Class<T> & {|
   $$typeof: MACHINAT_SERVICES_ABSTRACTION,
@@ -27,7 +24,7 @@ export type ServiceProvider<T> = {|
   $$typeof: MACHINAT_SERVICES_PROVIDER,
   $$strategy: ServeStrategy,
   $$deps: InjectRequirement[], // eslint-disable-line no-use-before-define
-  $$factory: ContainerFunc<any, Promise<T>>,
+  $$factory: (...args: any[]) => Promise<T>,
 |};
 
 export type Interfaceable =
@@ -40,10 +37,11 @@ export type InjectRequirement = {|
   optional: boolean,
 |};
 
-export type ServiceContainer<T> = ContainerFunc<any, T> & {|
-  $$typeof: MACHINAT_SERVICES_CONTAINER,
-  $$deps: InjectRequirement[],
-|};
+export interface ServiceContainer<T> {
+  (...args: any[]): T;
+  $$typeof: MACHINAT_SERVICES_CONTAINER;
+  $$deps: InjectRequirement[];
+}
 
 type ProviderBinding = {|
   provide: Interfaceable,
@@ -58,16 +56,5 @@ type ValueBinding = {|
 |};
 
 export type ProvisionBinding = ProviderBinding | ValueBinding;
-
-export type ServiceModule = {|
-  provisions: ProvisionBinding[],
-  startHook: (
-    injector: AppInjector,
-    popEvent: (
-      EventContext<any, any, any, any, any, any, any, any, any>
-    ) => void,
-    popError: (Error) => void
-  ) => Promise<void>,
-|};
 
 export type ServiceCache<T> = Map<ServiceProvider<T>, T>;
