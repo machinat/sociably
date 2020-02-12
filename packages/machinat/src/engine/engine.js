@@ -81,7 +81,7 @@ export default class MachinatEngine<
       target: Target
     ) => Job[]
   ): Promise<null | DispatchResponse<Job, Result>> {
-    const { scope, wrappedDispatcher } = await this._createDispatchScope();
+    const { scope, wrappedDispatcher } = this._createDispatchScope();
 
     const segments = await this.renderer.render(scope, node);
     if (segments === null) {
@@ -152,7 +152,7 @@ export default class MachinatEngine<
     jobs: Job[],
     node?: MachinatNode
   ): Promise<DispatchResponse<Job, Result>> {
-    const { wrappedDispatcher } = await this._createDispatchScope();
+    const { wrappedDispatcher } = this._createDispatchScope();
 
     const frame: DispatchFrame<Channel, Job> = {
       platform: this.platform,

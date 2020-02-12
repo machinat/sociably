@@ -16,56 +16,6 @@ import type {
 } from './types';
 
 /**
- * Machinat DI
- *
- * container:
- *   The containter is the unit to consume the services with IoC style. It is
- *   just a plain function with services claimation annotated, the services
- *   instances will then being injected automatically within the app scope.
- *
- * token:
- *   There are three kinds of token type can be used as binding of service:
- *   1. string as token
- *   2. provider class as token
- *   3. abstract class as token
- *   the bindings must be configured before the app start. When a container
- *   claims with the token, the corresponded service bind to the token will be
- *   injected into the container.
- *
- * partially binding:
- *   A service can be bound only under specified platforms, and will be provided
- *   only under the scope of platforms bound.
- *
- * lifetime:
- *   1. "initiation" services will be created when app start and only be
- *      available by module factories while initiating. For most of time it is
- *      used to provide system utilities like HTTP server.
- *   2. "singeleton" services will be created after iniatiation, and will
- *      survive within the life of the app. All claimation of the same token
- *      would retrieve the same instance of singeleton service.
- *   3. "scoped" services will be created when it is claimed by a container
- *      within a scope, and will survive until the scope ends. For example while
- *      rendering, the same token will retrieve the same scoped service instance
- *      whereever the location of the tree is.
- *   4. "transient" services will be created every time it is claimed.
- *
- * phases:
- *   The following steps will be happen in order:
- *   1. app.start()
- *   2. initiation/singeleton services being created
- *   3. singeleton services being cached
- *   4. module.startHook being called
- *   5. startHook of initiation services being called
- *   6. app.start() resolve
- *   7. a scope being requested
- *   8. execute a container under the scope
- *   9. scoped/trasient services being created
- *   10. scoped services being cached
- *   11. inject and run the container
- *   12. repeat from 8. if more container to run
- */
-
-/**
  * MakeContext is the context passed down through the service dependencies
  * making tree. A MakeContext is created every time when a container is
  * executed or services being required with app.use(). The context itself
@@ -77,7 +27,6 @@ type MakeContext = {
   singletonCache: ServiceCache<any>,
   scopeCache: ServiceCache<any>,
   runtimeProvisions: null | Map<Interfaceable, any>,
-  makingTracker: Map<ServiceProvider<any>, Promise<any>>,
 };
 
 /**
@@ -101,44 +50,39 @@ export default class ServiceMaker {
   /**
    * makeSingletonServices creates the singleton services and return the cache
    */
-  async makeSingletonServices(): Promise<ServiceCache<any>> {
+  makeSingletonServices(): ServiceCache<any> {
     const context = {
       platform: undefined,
       phase: PHASE_ENUM_INITIATION,
       singletonCache: new Map(),
       scopeCache: new Map(),
-      makingTracker: new Map(),
       runtimeProvisions: null,
     };
 
-    const makingPromises = [];
     for (const [target, platform] of this.singletonIndex) {
       const binding = this._resolveProvisionAssertedly(target, platform, false);
       /* :: invariant(binding); */
-      makingPromises.push(this._makeProvision(binding, context, []));
+      this._makeProvision(binding, context, []);
     }
 
-    await Promise.all(makingPromises);
     return context.singletonCache;
   }
 
   /**
    * makeScopedServices creates the scoped services and return the cache
    */
-  async makeScopedServices(
+  makeScopedServices(
     singletonCache: ServiceCache<any>,
     platform: void | string
-  ): Promise<ServiceCache<any>> {
+  ): ServiceCache<any> {
     const context = {
       platform,
       phase: PHASE_ENUM_BEGIN_SCOPE,
       singletonCache,
       scopeCache: new Map(),
-      makingTracker: new Map(),
       runtimeProvisions: null,
     };
 
-    const makingPromises = [];
     // initiate provider with "scoped" strategy
     for (const [target, boundPlatform] of this.scopedIndex) {
       // skip other platform
@@ -149,32 +93,30 @@ export default class ServiceMaker {
           false
         );
         /* :: invariant(binding); */
-        makingPromises.push(this._makeProvision(binding, context, []));
+        this._makeProvision(binding, context, []);
       }
     }
 
-    await Promise.all(makingPromises);
     return context.scopeCache;
   }
 
   /**
    * makeServices create a list of services according to the requirements
    */
-  async makeServices(
+  makeServices(
     requirements: InjectRequirement[],
     platform: void | string,
     singletonCache: ServiceCache<any>,
     scopeCache: ServiceCache<any>,
     runtimeProvisions: null | Map<Interfaceable, any>
-  ): Promise<any[]> {
-    const services = await this._makeRequirements(
+  ): any[] {
+    const services = this._makeRequirements(
       requirements,
       {
         platform,
         phase: PHASE_ENUM_INJECTION,
         singletonCache,
         scopeCache,
-        makingTracker: new Map(),
         runtimeProvisions,
       },
       []
@@ -201,7 +143,7 @@ export default class ServiceMaker {
     return binding;
   }
 
-  async _makeProvision(
+  _makeProvision(
     binding: ProvisionBinding,
     context: MakeContext,
     refLock: ServiceProvider<any>[]
@@ -216,7 +158,7 @@ export default class ServiceMaker {
     invariant(refLock.indexOf(provider) === -1, 'circular dependent found');
 
     const { $$strategy: strategy } = provider;
-    const { singletonCache, scopeCache, makingTracker, phase } = context;
+    const { singletonCache, scopeCache, phase } = context;
 
     // get cached instance by strategy
     let cached;
@@ -228,12 +170,6 @@ export default class ServiceMaker {
 
     if (cached) {
       return cached;
-    }
-
-    // if the provider is now initiating, use the existing one
-    const nowMaking = makingTracker.get(provider);
-    if (nowMaking) {
-      return nowMaking;
     }
 
     // verify singleton/scoped provider creating phase
@@ -250,14 +186,10 @@ export default class ServiceMaker {
       } phase`
     );
 
-    const makingPromise = this._makeServiceInstance(provider, context, [
+    const instance = this._makeServiceInstance(provider, context, [
       ...refLock,
       provider,
     ]);
-
-    // mark the provider is currently making
-    makingTracker.set(provider, makingPromise);
-    const instance = await makingPromise;
 
     // cache provided by strategy
     if (strategy === 'singleton') {
@@ -269,13 +201,13 @@ export default class ServiceMaker {
     return instance;
   }
 
-  async _makeRequirements(
+  _makeRequirements(
     deps: InjectRequirement[],
     context: MakeContext,
     refLock: ServiceProvider<any>[]
   ) {
     const { platform, runtimeProvisions } = context;
-    const makings = [];
+    const args = [];
 
     for (const { require: target, optional } of deps) {
       let runtimeProvided;
@@ -284,7 +216,7 @@ export default class ServiceMaker {
         (runtimeProvided = runtimeProvisions.get(target))
       ) {
         // provided at runtime
-        makings.push(runtimeProvided);
+        args.push(runtimeProvided);
       } else {
         const binding = this._resolveProvisionAssertedly(
           target,
@@ -293,25 +225,25 @@ export default class ServiceMaker {
         );
 
         if (binding) {
-          makings.push(this._makeProvision(binding, context, refLock));
+          args.push(this._makeProvision(binding, context, refLock));
         } else {
           // dep is optional and not bound
-          makings.push(null);
+          args.push(null);
         }
       }
     }
 
-    return Promise.all(makings);
+    return args;
   }
 
-  async _makeServiceInstance<T>(
+  _makeServiceInstance<T>(
     provider: ServiceProvider<any>,
     context: MakeContext,
     refLock: ServiceProvider<any>[]
-  ): Promise<T> {
+  ): T {
     const { $$deps: deps, $$factory: factory } = provider;
-    const args = await this._makeRequirements(deps, context, refLock);
-    const result = await factory(...args);
+    const args = this._makeRequirements(deps, context, refLock);
+    const result = factory(...args);
     return result;
   }
 }

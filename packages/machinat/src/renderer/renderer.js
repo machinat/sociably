@@ -328,7 +328,7 @@ export default class MachinatRenderer<
     path: string
   ): Promise<null | IntermediateSegment<Value, Native>[]> {
     const { type: container, props } = node;
-    const component = await scope.executeContainer(container, servicesProvided);
+    const component = scope.injectContainer(container, servicesProvided);
 
     const rendered = await component(props);
 

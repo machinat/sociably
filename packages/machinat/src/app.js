@@ -21,7 +21,7 @@ type EventListenable<Context> =
   | ServiceContainer<(Context) => void>;
 type ErrorListenable = (Error => void) | ServiceContainer<(Error) => void>;
 
-const ENUM_NON_STARTED = 0;
+const ENUM_UNSTARTED = 0;
 const ENUM_STARTING = 1;
 const ENUM_STARTED = 2;
 
@@ -40,96 +40,96 @@ export default class MachinatApp<
 
   constructor(config: AppConfig<Context>) {
     this.config = config;
-    this._serviceSpace = new ServiceSpace();
-    this._status = ENUM_NON_STARTED;
+    this._status = ENUM_UNSTARTED;
   }
 
   async start() {
     invariant(
-      this._status === ENUM_NON_STARTED,
-      this._status === ENUM_STARTING
-        ? 'app is starting'
-        : 'app is already started'
+      this._status === ENUM_UNSTARTED,
+      `app is ${
+        this._status === ENUM_STARTING ? 'starting' : 'already started'
+      }`
     );
     this._status = ENUM_STARTING;
 
-    // add user registered bindings
-    if (this.config.bindings) {
-      this._serviceSpace.addRegisteredBindings(this.config.bindings);
-    }
+    const {
+      imports: normalModules,
+      platforms: platformModules,
+      registers: registeredBindings,
+    } = this.config;
 
-    // add bindings of each normal module import
-    if (this.config.imports) {
-      for (const { bindings } of this.config.imports) {
-        this._serviceSpace.addModuleBindings(bindings);
-      }
+    const moduleBindings = [];
+
+    // bootstrap normal modules add bindings
+    if (normalModules) {
+      const bindingsOfModules = await Promise.all(
+        normalModules.map(({ bootstrap }) => bootstrap())
+      );
+      bindingsOfModules.forEach(bindings => moduleBindings.push(...bindings));
     }
 
     // add bindings and bridge bindings of platform module
-    if (this.config.platforms) {
-      for (const platformModule of this.config.platforms) {
-        const {
-          name: platformName,
-          init,
-          eventMiddlewares,
-          dispatchMiddlewares,
-        } = platformModule;
+    if (platformModules) {
+      const bindingsOfPlatforms = await Promise.all(
+        platformModules.map(
+          ({
+            name: platformName,
+            bootstrap,
+            eventMiddlewares,
+            dispatchMiddlewares,
+          }) =>
+            bootstrap(
+              this._createEventHandlerWrapper(
+                platformName,
+                eventMiddlewares || []
+              ),
+              this._createDispatchWrapper(
+                platformName,
+                dispatchMiddlewares || []
+              )
+            )
+        )
+      );
 
-        const eventWrapper = this._createEventHandlerWrapper(
-          platformName,
-          eventMiddlewares || []
-        );
-
-        const dispatchWrapper = this._createDispatchWrapper(
-          platformName,
-          dispatchMiddlewares || []
-        );
-
-        const bindings = init(eventWrapper, dispatchWrapper);
-        this._serviceSpace.addModuleBindings(bindings);
-      }
+      bindingsOfPlatforms.forEach(bindings => moduleBindings.push(...bindings));
     }
 
-    await this._serviceSpace.init();
-    const startingScope = await this._serviceSpace.createScope(undefined);
+    this._serviceSpace = new ServiceSpace(
+      moduleBindings,
+      registeredBindings || []
+    );
+
+    const startingScope = this._serviceSpace.createScope(undefined);
 
     // run start hooks of platform modules
-    if (this.config.platforms) {
-      const platformStartingPromises = [];
-
-      for (const { startHook } of this.config.platforms) {
-        if (startHook) {
-          platformStartingPromises.push(
-            startingScope.executeContainer(startHook)
-          );
-        }
-      }
-
-      await Promise.all(platformStartingPromises);
+    if (platformModules) {
+      await Promise.all(
+        platformModules.map(({ startHook }) =>
+          startHook
+            ? startingScope.injectContainer(startHook)
+            : Promise.resolve()
+        )
+      );
     }
 
     // run start hooks of normal modules
-    if (this.config.imports) {
-      const moduleStartingPromises = [];
-
-      for (const { startHook } of this.config.imports) {
-        if (startHook) {
-          moduleStartingPromises.push(
-            startingScope.executeContainer(startHook)
-          );
-        }
-      }
-
-      await Promise.all(moduleStartingPromises);
+    if (normalModules) {
+      await Promise.all(
+        normalModules.map(({ startHook }) =>
+          startHook
+            ? startingScope.injectContainer(startHook)
+            : Promise.resolve()
+        )
+      );
     }
 
     this._status = ENUM_STARTED;
   }
 
-  async use(targets: (Interfaceable | InjectRequirement)[]) {
+  use(targets: (Interfaceable | InjectRequirement)[]) {
     invariant(this.isStarted, 'app is not started');
 
-    const scope = await this._serviceSpace.createScope();
+    const scope = this._serviceSpace.createScope();
     return scope.useServices(targets);
   }
 
@@ -155,12 +155,9 @@ export default class MachinatApp<
   _emitEvent(scope: InjectionScope, context: Context) {
     for (const listener of this._eventListeners) {
       if (isServiceContainer(listener)) {
-        scope
-          .executeContainer(listener)
-          .then(containedListener => {
-            containedListener(context);
-          })
-          .catch(this._emitError.bind(this, scope));
+        scope.injectContainer(listener)(context);
+      } else {
+        listener(context);
       }
     }
   }
@@ -191,9 +188,9 @@ export default class MachinatApp<
 
     for (const listener of this._errorListeners) {
       if (isServiceContainer(listener)) {
-        scope.executeContainer(listener).then(containedListener => {
-          containedListener(err);
-        });
+        scope.injectContainer(listener)(err);
+      } else {
+        listener(err);
       }
     }
   }
@@ -213,8 +210,8 @@ export default class MachinatApp<
       };
 
       if (middlewares.length === 0) {
-        return async () => {
-          const scope = await this._serviceSpace.createScope(platform);
+        return () => {
+          const scope = this._serviceSpace.createScope(platform);
           return {
             scope,
             wrappedHandler: handleEvent(scope),
@@ -228,7 +225,7 @@ export default class MachinatApp<
       ) => {
         let middleware = middlewares[idx];
         if (isServiceContainer(middleware)) {
-          middleware = await scope.executeContainer(middleware);
+          middleware = scope.injectContainer(middleware);
         }
 
         return middleware(
@@ -239,8 +236,8 @@ export default class MachinatApp<
         );
       };
 
-      return async () => {
-        const scope = await this._serviceSpace.createScope(platform);
+      return () => {
+        const scope = this._serviceSpace.createScope(platform);
         return {
           scope,
           wrappedHandler: execute(scope, 0),
@@ -259,18 +256,21 @@ export default class MachinatApp<
   ): DispatchScopeWrapper<any, any, any> {
     return dispatch => {
       if (middlewares.length === 0) {
-        return async () => {
-          const scope = await this._serviceSpace.createScope(platform);
-          return { scope, wrappedDispatcher: dispatch };
+        return () => {
+          const scope = this._serviceSpace.createScope(platform);
+          return {
+            scope,
+            wrappedDispatcher: dispatch,
+          };
         };
       }
 
-      const execute = (scope: InjectionScope, idx: number) => async (
+      const execute = (scope: InjectionScope, idx: number) => (
         ctx: Context
       ) => {
         let middleware = middlewares[idx];
         if (isServiceContainer(middleware)) {
-          middleware = await scope.executeContainer(middleware);
+          middleware = scope.injectContainer(middleware);
         }
 
         return ((middleware: any): DispatchMiddleware<any, any, any>)(
@@ -279,8 +279,8 @@ export default class MachinatApp<
         );
       };
 
-      return async () => {
-        const scope = await this._serviceSpace.createScope(platform);
+      return () => {
+        const scope = this._serviceSpace.createScope(platform);
         return {
           scope,
           wrappedDispatcher: execute(scope, 0),

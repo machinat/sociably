@@ -24,7 +24,7 @@ export type ServiceProvider<T> = {|
   $$typeof: MACHINAT_SERVICES_PROVIDER,
   $$strategy: ServeStrategy,
   $$deps: InjectRequirement[], // eslint-disable-line no-use-before-define
-  $$factory: (...args: any[]) => Promise<T>,
+  $$factory: (...args: any[]) => T,
 |};
 
 export type Interfaceable =

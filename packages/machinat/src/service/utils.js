@@ -5,7 +5,7 @@ import {
   MACHINAT_SERVICES_PROVIDER,
   MACHINAT_SERVICES_ABSTRACTION,
   MACHINAT_SERVICES_INTERFACEABLE,
-} from './constant';
+} from '../symbol';
 import ProvisionMap from './map';
 import type {
   ProvisionBinding,
@@ -13,11 +13,11 @@ import type {
   InjectRequirement,
 } from './types';
 
-export const isServiceContainer = (target: any): boolean %checks =>
+export const isServiceContainer = (target: any): boolean =>
   typeof target === 'function' &&
   target.$$typeof === MACHINAT_SERVICES_CONTAINER;
 
-export const isInterfaceable = (target: Object): boolean %checks =>
+export const isInterfaceable = (target: Object): boolean =>
   target.$$typeof === MACHINAT_SERVICES_INTERFACEABLE ||
   target.$$typeof === MACHINAT_SERVICES_PROVIDER ||
   target.$$typeof === MACHINAT_SERVICES_ABSTRACTION;

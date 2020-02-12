@@ -188,18 +188,18 @@ export type DispatchMiddleware<
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
 export type ServiceModule = {|
-  bindings: ProvisionBinding[],
+  bootstrap: () => Promise<ProvisionBinding[]>,
   startHook: null | ServiceContainer<Promise<void>>,
 |};
 
 export type CreateEventScopeFn<
   Ctx: EventContext<any, any, any, any, any, any>,
   Res
-> = () => Promise<{
+> = () => {
   scope: InjectionScope,
   wrappedHandler: (ctx: Ctx) => Promise<Res>,
   popError: Error => void,
-}>;
+};
 
 export type EventScopeWrapper<
   Ctx: EventContext<any, any, any, any, any, any>,
@@ -210,10 +210,10 @@ export type CreateDispatchScopeFn<
   Job,
   Frm: DispatchFrame<any, Job>,
   Result
-> = () => Promise<{
+> = () => {
   scope: InjectionScope,
   wrappedDispatcher: (frm: Frm) => Promise<DispatchResponse<Job, Result>>,
-}>;
+};
 
 export type DispatchScopeWrapper<Job, Frm: DispatchFrame<any, Job>, Result> = (
   dispatch: (frm: Frm) => Promise<DispatchResponse<Job, Result>>
@@ -236,15 +236,15 @@ export type PlatformModule<
     | DispatchMiddleware<Job, Frame, Result>
     | ServiceContainer<DispatchMiddleware<Job, Frame, Result>>
   )[],
-  init: (
+  bootstrap: (
     receiverWrapper: EventScopeWrapper<Context, EventResponse>,
     dispatchWrapper: DispatchScopeWrapper<Job, Frame, Result>
-  ) => ProvisionBinding[],
+  ) => Promise<ProvisionBinding[]>,
   startHook?: ServiceContainer<Promise<void>>,
 |};
 
 export type AppConfig<Context: EventContext<any, any, any, any, any, any>> = {
   platforms?: PlatformModule<any, Context, any, any, any, any>[],
   imports?: ServiceModule[],
-  bindings?: ProvisionBinding[],
+  registers?: ProvisionBinding[],
 };

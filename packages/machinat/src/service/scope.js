@@ -31,12 +31,12 @@ export default class InjectionScope {
     this.scopeCache = scopeCache;
   }
 
-  async useServices(
+  useServices(
     targets: $ReadOnlyArray<Interfaceable | InjectRequirement>,
     runtimeProvisions?: Map<Interfaceable, any>
-  ): Promise<any[]> {
+  ): any[] {
     const requirements = targets.map(polishInjectRequirement);
-    const services = await this.maker.makeServices(
+    const services = this.maker.makeServices(
       requirements,
       this.platform,
       this.singletonCache,
@@ -47,13 +47,13 @@ export default class InjectionScope {
     return services;
   }
 
-  async executeContainer<T>(
+  injectContainer<T>(
     container: ServiceContainer<T>,
     runtimeProvisions?: Map<Interfaceable, any>
-  ): Promise<T> {
+  ): T {
     invariant(isServiceContainer(container), 'invalid container');
 
-    const args = await this.useServices(container.$$deps, runtimeProvisions);
+    const args = this.useServices(container.$$deps, runtimeProvisions);
     return container(...args);
   }
 }
