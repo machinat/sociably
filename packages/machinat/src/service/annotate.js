@@ -1,4 +1,5 @@
 // @flow
+/* eslint-disable no-param-reassign */
 import {
   MACHINAT_SERVICES_PROVIDER,
   MACHINAT_SERVICES_CONTAINER,
@@ -24,60 +25,49 @@ type InjectOptions = {|
  * inject marks a function as a container and annotate the dependencies
  */
 export const inject = <T>({ deps }: InjectOptions) => (
-  func: (...args: any[]) => T
+  fn: (...args: any[]) => T
 ): ServiceContainer<T> => {
   const requirements = deps.map(polishInjectRequirement);
 
-  return Object.defineProperties(((func: any): ServiceContainer<T>), {
-    $$typeof: { value: MACHINAT_SERVICES_CONTAINER },
-    $$deps: { value: requirements },
-  });
+  fn.$$typeof = MACHINAT_SERVICES_CONTAINER;
+  fn.$$deps = requirements;
+  return fn;
 };
 
 type ProvideOptions<T> = {
   deps: (Interfaceable | InjectRequirement)[],
-  factory: (...args: any[]) => Promise<T>,
+  factory: (...args: any[]) => T,
   strategy: ServeStrategy,
 };
 
 /**
- * provide mark a class as a provider serving for the instance type and also an
+ * provider mark a class as a provider serving for the instance type and also an
  * interfaceable can be implemented
  */
 export const provider = <T>({ deps, factory, strategy }: ProvideOptions<T>) => (
-  target: Class<T>
+  klass: any
 ): ServiceProvider<T> => {
   const requirements = deps.map(polishInjectRequirement);
 
-  return Object.defineProperties(((target: any): ServiceProvider<T>), {
-    $$typeof: { value: MACHINAT_SERVICES_PROVIDER },
-    $$deps: { value: requirements },
-    $$factory: { value: factory },
-    $$strategy: { value: strategy },
-  });
+  klass.$$typeof = MACHINAT_SERVICES_PROVIDER;
+  klass.$$deps = requirements;
+  klass.$$factory = factory;
+  klass.$$strategy = strategy;
+  return klass;
 };
 
 /**
  * abstract mark an abstract class as a interfaceable to be implemented
  */
-export const abstract = <T>(target: Class<T>): AbstractProvider<T> => {
-  return Object.defineProperties(((target: any): AbstractProvider<T>), {
-    $$typeof: { value: MACHINAT_SERVICES_ABSTRACTION },
-  });
+export const abstract = () => <T>(klass: any): AbstractProvider<T> => {
+  klass.$$typeof = MACHINAT_SERVICES_ABSTRACTION;
+  return klass;
 };
 
 /**
- * namedInterfaceable create an interfaceable to be implemented
+ * namedInterface create an interfaceable to be implemented
  */
-export const namedInterfaceable = (name: string): NamedInterfaceable => ({
+export const namedInterface = (name: string): NamedInterfaceable => ({
   $$typeof: MACHINAT_SERVICES_INTERFACEABLE,
   name,
-});
-
-/**
- * optional marks an interfaceable as optional while annotating deps
- */
-export const optional = (target: Interfaceable): InjectRequirement => ({
-  require: target,
-  optional: true,
 });

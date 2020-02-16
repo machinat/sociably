@@ -36,7 +36,7 @@ export default class InjectionScope {
     runtimeProvisions?: Map<Interfaceable, any>
   ): any[] {
     const requirements = targets.map(polishInjectRequirement);
-    const services = this.maker.makeServices(
+    const services = this.maker.makeRequirements(
       requirements,
       this.platform,
       this.singletonCache,

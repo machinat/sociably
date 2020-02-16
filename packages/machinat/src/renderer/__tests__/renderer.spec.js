@@ -1,12 +1,12 @@
 import moxy, { Mock } from 'moxy';
 import Machinat from '../..';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
-import { inject } from '../../service';
+import { inject, namedInterface } from '../../service';
 
 import Renderer from '../renderer';
 
 const scope = moxy({
-  executeContainer(container) {
+  injectContainer(container) {
     return container();
   },
 });
@@ -392,9 +392,9 @@ describe('#render()', () => {
   });
 
   it('render container component and provide values from Machinat.Provider at render time', async () => {
-    const FooService = moxy();
-    const BarService = moxy();
-    const BazService = moxy();
+    const FooService = namedInterface('Foo');
+    const BarService = namedInterface('Bar');
+    const BazService = namedInterface('Baz');
 
     const componentMock = new Mock();
     const Container = moxy(
@@ -410,7 +410,7 @@ describe('#render()', () => {
       })
     );
 
-    scope.executeContainer.mock.fake((container, provisions) =>
+    scope.injectContainer.mock.fake((container, provisions) =>
       container(
         provisions.get(FooService),
         provisions.get(BarService),
@@ -534,8 +534,8 @@ describe('#render()', () => {
             ]
           `);
 
-    expect(scope.executeContainer.mock).toHaveBeenCalledTimes(10);
-    expect(scope.executeContainer.mock).toHaveBeenCalledWith(
+    expect(scope.injectContainer.mock).toHaveBeenCalledTimes(10);
+    expect(scope.injectContainer.mock).toHaveBeenCalledWith(
       Container,
       expect.any(Map)
     );

@@ -34,12 +34,10 @@ const wrappedDispatchMock = new Mock();
 const dispatchScopeWrapper = moxy(dispatcher => {
   const wrappedDispatcher = wrappedDispatchMock.proxify(dispatcher);
 
-  const initScope = initScopeMock.proxify(() =>
-    Promise.resolve({
-      scope,
-      wrappedDispatcher,
-    })
-  );
+  const initScope = initScopeMock.proxify(() => ({
+    scope,
+    wrappedDispatcher,
+  }));
   return initScope;
 });
 

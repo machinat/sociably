@@ -1,11 +1,5 @@
 // @flow
 import invariant from 'invariant';
-import {
-  PHASE_ENUM_INITIATION,
-  PHASE_ENUM_BEGIN_SCOPE,
-  PHASE_ENUM_INJECTION,
-} from './constant';
-import type { PhaseEnum } from './constant';
 import type ProvisionMap from './map';
 import type {
   Interfaceable,
@@ -14,6 +8,15 @@ import type {
   ServiceCache,
   ProvisionBinding,
 } from './types';
+
+const PHASE_ENUM_BOOTSTRAP: 1 = 1;
+const PHASE_ENUM_BEGIN_SCOPE: 2 = 2;
+const PHASE_ENUM_INJECTION: 3 = 3;
+
+type PhaseEnum =
+  | typeof PHASE_ENUM_BOOTSTRAP
+  | typeof PHASE_ENUM_BEGIN_SCOPE
+  | typeof PHASE_ENUM_INJECTION;
 
 /**
  * MakeContext is the context passed down through the service dependencies
@@ -45,6 +48,7 @@ export default class ServiceMaker {
     this.serviceMapping = serviceMapping;
     this.singletonIndex = singletonIndex;
     this.scopedIndex = scopedIndex;
+    this._verifyDependencies();
   }
 
   /**
@@ -53,7 +57,7 @@ export default class ServiceMaker {
   makeSingletonServices(): ServiceCache<any> {
     const context = {
       platform: undefined,
-      phase: PHASE_ENUM_INITIATION,
+      phase: PHASE_ENUM_BOOTSTRAP,
       singletonCache: new Map(),
       scopeCache: new Map(),
       runtimeProvisions: null,
@@ -62,7 +66,7 @@ export default class ServiceMaker {
     for (const [target, platform] of this.singletonIndex) {
       const binding = this._resolveProvisionAssertedly(target, platform, false);
       /* :: invariant(binding); */
-      this._makeProvision(binding, context, []);
+      this._makeProvision(binding, context);
     }
 
     return context.singletonCache;
@@ -93,7 +97,7 @@ export default class ServiceMaker {
           false
         );
         /* :: invariant(binding); */
-        this._makeProvision(binding, context, []);
+        this._makeProvision(binding, context);
       }
     }
 
@@ -101,26 +105,22 @@ export default class ServiceMaker {
   }
 
   /**
-   * makeServices create a list of services according to the requirements
+   * makeRequirements create a list of services according to the requirements
    */
-  makeServices(
+  makeRequirements(
     requirements: InjectRequirement[],
     platform: void | string,
     singletonCache: ServiceCache<any>,
     scopeCache: ServiceCache<any>,
     runtimeProvisions: null | Map<Interfaceable, any>
   ): any[] {
-    const services = this._makeRequirements(
-      requirements,
-      {
-        platform,
-        phase: PHASE_ENUM_INJECTION,
-        singletonCache,
-        scopeCache,
-        runtimeProvisions,
-      },
-      []
-    );
+    const services = this._makeRequirements(requirements, {
+      platform,
+      phase: PHASE_ENUM_INJECTION,
+      singletonCache,
+      scopeCache,
+      runtimeProvisions,
+    });
 
     return services;
   }
@@ -143,20 +143,12 @@ export default class ServiceMaker {
     return binding;
   }
 
-  _makeProvision(
-    binding: ProvisionBinding,
-    context: MakeContext,
-    refLock: ServiceProvider<any>[]
-  ) {
+  _makeProvision(binding: ProvisionBinding, context: MakeContext) {
     if (binding.withValue) {
-      // bound with value
       return binding.withValue;
     }
 
-    const provider = binding.withService;
-    // check for circular reference of dependencies
-    invariant(refLock.indexOf(provider) === -1, 'circular dependent found');
-
+    const { withProvider: provider } = binding;
     const { $$strategy: strategy } = provider;
     const { singletonCache, scopeCache, phase } = context;
 
@@ -176,20 +168,17 @@ export default class ServiceMaker {
     invariant(
       strategy === 'transient' ||
         (strategy === 'scoped' && phase !== PHASE_ENUM_INJECTION) ||
-        (strategy === 'singleton' && phase === PHASE_ENUM_INITIATION),
-      `${strategy} service should not be created at ${
-        phase === PHASE_ENUM_INITIATION
-          ? 'initiation'
+        (strategy === 'singleton' && phase === PHASE_ENUM_BOOTSTRAP),
+      `${strategy} service should not be created when ${
+        phase === PHASE_ENUM_BOOTSTRAP
+          ? 'bootstrap'
           : phase === PHASE_ENUM_BEGIN_SCOPE
           ? 'begin scope'
-          : 'injection'
+          : 'inject'
       } phase`
     );
 
-    const instance = this._makeServiceInstance(provider, context, [
-      ...refLock,
-      provider,
-    ]);
+    const instance = this._makeProviderInstance(provider, context);
 
     // cache provided by strategy
     if (strategy === 'singleton') {
@@ -201,11 +190,7 @@ export default class ServiceMaker {
     return instance;
   }
 
-  _makeRequirements(
-    deps: InjectRequirement[],
-    context: MakeContext,
-    refLock: ServiceProvider<any>[]
-  ) {
+  _makeRequirements(deps: InjectRequirement[], context: MakeContext) {
     const { platform, runtimeProvisions } = context;
     const args = [];
 
@@ -225,7 +210,7 @@ export default class ServiceMaker {
         );
 
         if (binding) {
-          args.push(this._makeProvision(binding, context, refLock));
+          args.push(this._makeProvision(binding, context));
         } else {
           // dep is optional and not bound
           args.push(null);
@@ -236,14 +221,48 @@ export default class ServiceMaker {
     return args;
   }
 
-  _makeServiceInstance<T>(
+  _makeProviderInstance<T>(
     provider: ServiceProvider<any>,
-    context: MakeContext,
-    refLock: ServiceProvider<any>[]
+    context: MakeContext
   ): T {
     const { $$deps: deps, $$factory: factory } = provider;
-    const args = this._makeRequirements(deps, context, refLock);
+    const args = this._makeRequirements(deps, context);
     const result = factory(...args);
     return result;
+  }
+
+  _verifyDependencies() {
+    for (const [, platform, binding] of this.serviceMapping) {
+      if (binding.withProvider) {
+        this._verifyProviderDependencies(binding.withProvider, platform, []);
+      }
+    }
+  }
+
+  _verifyProviderDependencies(
+    provider: ServiceProvider<any>,
+    platform: void | string,
+    refLock: ServiceProvider<any>[]
+  ) {
+    const subRefLock = [...refLock, provider];
+
+    for (const dep of provider.$$deps) {
+      const binding = this._resolveProvisionAssertedly(
+        dep.require,
+        platform,
+        dep.optional
+      );
+
+      if (binding && binding.withProvider) {
+        const { withProvider: argProvider } = binding;
+
+        invariant(
+          subRefLock.indexOf(argProvider) === -1,
+          `${argProvider.name} is circular dependent`
+        );
+
+        this._verifyProviderDependencies(argProvider, platform, subRefLock);
+      }
+    }
   }
 }

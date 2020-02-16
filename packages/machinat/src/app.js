@@ -41,6 +41,9 @@ export default class MachinatApp<
   constructor(config: AppConfig<Context>) {
     this.config = config;
     this._status = ENUM_UNSTARTED;
+
+    this._eventListeners = [];
+    this._errorListeners = [];
   }
 
   async start() {

@@ -6,6 +6,7 @@ import type {
   ProvisionBinding,
   ServiceContainer,
   InjectionScope,
+  ServiceProvider,
 } from './service/types';
 import type { DispatchFrame, DispatchResponse } from './engine/types';
 import typeof {
@@ -246,5 +247,5 @@ export type PlatformModule<
 export type AppConfig<Context: EventContext<any, any, any, any, any, any>> = {
   platforms?: PlatformModule<any, Context, any, any, any, any>[],
   imports?: ServiceModule[],
-  registers?: ProvisionBinding[],
+  registers?: (ServiceProvider<any> | ProvisionBinding)[],
 };

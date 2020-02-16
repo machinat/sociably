@@ -75,7 +75,7 @@ export default class ProvisionMap<T> {
     return this;
   }
 
-  /* :: @@iterator(): Generator<[Interfaceable, void | string, any], void, void> {return ({}: any)} */
+  /* :: @@iterator(): Generator<[Interfaceable, void | string, T], void, void> {return ({}: any)} */
   *[Symbol.iterator](): Generator<
     [Interfaceable, void | string, any],
     void,
