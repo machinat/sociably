@@ -1,5 +1,5 @@
 {
-  "name": "machinat",
+  "name": "@machinat/core",
   "version": "0.1.0-alpha.0",
   "description": "Machinat is a JavaScript library for building chat user interfaces.",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
@@ -12,9 +12,13 @@
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
   "exports": {
-    ".": {
-      "default": "./lib/index.js"
-    }
+    ".": "./lib/index.js",
+    "./engine": "./lib/engine/index.js",
+    "./iterator": "./lib/iterator",
+    "./queue": "./lib/queue",
+    "./renderer": "./lib/renderer",
+    "./service": "./lib/service",
+    "./utils/": "./lib/utils/"
   },
   "files": [
     "lib/*",
