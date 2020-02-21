@@ -1,6 +1,8 @@
 // @flow
 export { default } from './space';
 export { default as ServiceScope } from './scope';
+export { default as ServiceMaker } from './maker';
+export { default as ProvisionMap } from './provisionMap';
 export * from './annotate';
 export { isServiceContainer, isInterfaceable } from './utils';
 

@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import type ProvisionMap from './map';
+import ProvisionMap from './provisionMap';
 import type {
   Interfaceable,
   ServiceProvider,
@@ -40,15 +40,11 @@ export default class ServiceMaker {
   singletonIndex: ProvisionMap<true>;
   scopedIndex: ProvisionMap<true>;
 
-  constructor(
-    serviceMapping: ProvisionMap<ProvisionBinding>,
-    singletonIndex: ProvisionMap<true>,
-    scopedIndex: ProvisionMap<true>
-  ) {
+  constructor(serviceMapping: ProvisionMap<ProvisionBinding>) {
     this.serviceMapping = serviceMapping;
-    this.singletonIndex = singletonIndex;
-    this.scopedIndex = scopedIndex;
-    this._verifyDependencies();
+    this.singletonIndex = new ProvisionMap();
+    this.scopedIndex = new ProvisionMap();
+    this._sortOutProviders();
   }
 
   /**
@@ -231,10 +227,17 @@ export default class ServiceMaker {
     return result;
   }
 
-  _verifyDependencies() {
+  _sortOutProviders() {
     for (const [, platform, binding] of this.serviceMapping) {
       if (binding.withProvider) {
-        this._verifyProviderDependencies(binding.withProvider, platform, []);
+        const provider = binding.withProvider;
+        this._verifyProviderDependencies(provider, platform, []);
+
+        if (provider.$$strategy === 'singleton') {
+          this.singletonIndex.set(binding.provide, platform, true);
+        } else if (provider.$$strategy === 'scoped') {
+          this.scopedIndex.set(binding.provide, platform, true);
+        }
       }
     }
   }

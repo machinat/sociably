@@ -18,15 +18,16 @@ import type {
 import { polishInjectRequirement } from './utils';
 
 type InjectOptions = {|
-  deps: (Interfaceable | InjectRequirement)[],
+  deps?: (Interfaceable | InjectRequirement)[],
 |};
 
+type ContainerAnnotateFn<T> = ((...any[]) => T) => ServiceContainer<T>;
 /**
  * inject marks a function as a container and annotate the dependencies
  */
-export const inject = <T>({ deps }: InjectOptions) => (
-  fn: (...args: any[]) => T
-): ServiceContainer<T> => {
+export const inject = <T>({
+  deps = [],
+}: InjectOptions = {}): ContainerAnnotateFn<T> => fn => {
   const requirements = deps.map(polishInjectRequirement);
 
   fn.$$typeof = MACHINAT_SERVICES_CONTAINER;
@@ -35,18 +36,21 @@ export const inject = <T>({ deps }: InjectOptions) => (
 };
 
 type ProvideOptions<T> = {
-  deps: (Interfaceable | InjectRequirement)[],
+  deps?: (Interfaceable | InjectRequirement)[],
   factory: (...args: any[]) => T,
   strategy: ServeStrategy,
 };
 
+type ProviderAnnotateFn<Klass> = Klass => ServiceProvider<Klass>;
 /**
  * provider mark a class as a provider serving for the instance type and also an
  * interfaceable can be implemented
  */
-export const provider = <T>({ deps, factory, strategy }: ProvideOptions<T>) => (
-  klass: any
-): ServiceProvider<T> => {
+export const provider = <T, Klass>({
+  deps = [],
+  factory,
+  strategy,
+}: ProvideOptions<T>): ProviderAnnotateFn<Klass> => (klass: any) => {
   const requirements = deps.map(polishInjectRequirement);
 
   klass.$$typeof = MACHINAT_SERVICES_PROVIDER;
@@ -56,10 +60,11 @@ export const provider = <T>({ deps, factory, strategy }: ProvideOptions<T>) => (
   return klass;
 };
 
+type AbstractAnnotateFn<T> = (Class<T>) => AbstractProvider<Class<T>>;
 /**
  * abstract mark an abstract class as a interfaceable to be implemented
  */
-export const abstract = () => <T>(klass: any): AbstractProvider<T> => {
+export const abstract = <T>(): AbstractAnnotateFn<T> => (klass: any) => {
   klass.$$typeof = MACHINAT_SERVICES_ABSTRACTION;
   return klass;
 };

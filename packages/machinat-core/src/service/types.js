@@ -10,7 +10,7 @@ export type { default as InjectionScope } from './scope'; // eslint-disable-line
 
 export type ServeStrategy = 'singleton' | 'scoped' | 'transient';
 
-export type AbstractProvider<T> = Class<T> & {|
+export type AbstractProvider<T> = T & {|
   $$typeof: MACHINAT_SERVICES_ABSTRACTION,
 |};
 
@@ -19,7 +19,7 @@ export type NamedInterfaceable = {|
   name: string,
 |};
 
-export type ServiceProvider<T> = {|
+export type ServiceProvider<T> = T & {|
   name: string,
   $$typeof: MACHINAT_SERVICES_PROVIDER,
   $$strategy: ServeStrategy,
