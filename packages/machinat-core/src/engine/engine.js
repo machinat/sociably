@@ -2,7 +2,7 @@
 import type {
   MachinatNode,
   NativeComponent,
-  CreateDispatchScopeFn,
+  InitDispatchScopeFn,
   DispatchScopeWrapper,
   ThunkEffectFn,
   MachinatChannel,
@@ -29,30 +29,31 @@ export default class MachinatEngine<
   SegmentValue,
   Native: NativeComponent<any, SegmentValue>,
   Job,
-  Result
+  Result,
+  Bot: MachinatBot<Channel, Result, any>
 > {
   platform: string;
-  bot: MachinatBot<Channel, Result, any>;
+  bot: Bot;
 
   renderer: MachinatRenderer<SegmentValue, Native>;
   queue: MachinatQueue<Job, Result>;
   worker: MachinatWorker<Job, Result>;
 
-  _createDispatchScope: CreateDispatchScopeFn<
+  _initDispatchScope: InitDispatchScopeFn<
     Job,
-    DispatchFrame<Channel, Job>,
+    DispatchFrame<Channel, Job, Bot>,
     Result
   >;
 
   constructor(
     platform: string,
-    bot: MachinatBot<Channel, Result, any>,
+    bot: Bot,
     renderer: MachinatRenderer<SegmentValue, Native>,
     queue: MachinatQueue<Job, Result>,
     worker: MachinatWorker<Job, Result>,
     dispatchWrapper: DispatchScopeWrapper<
       Job,
-      DispatchFrame<Channel, Job>,
+      DispatchFrame<Channel, Job, Bot>,
       Result
     >
   ) {
@@ -64,7 +65,7 @@ export default class MachinatEngine<
     this.queue = queue;
     worker.start(this.queue);
 
-    this._createDispatchScope = dispatchWrapper(this._execute.bind(this));
+    this._initDispatchScope = dispatchWrapper(this._execute.bind(this));
   }
 
   // render renders machinat element tree into task to be executed. There are
@@ -81,7 +82,7 @@ export default class MachinatEngine<
       target: Target
     ) => Job[]
   ): Promise<null | DispatchResponse<Job, Result>> {
-    const { scope, wrappedDispatcher } = this._createDispatchScope();
+    const { scope, wrappedDispatcher } = this._initDispatchScope();
 
     const segments = await this.renderer.render(scope, node);
     if (segments === null) {
@@ -132,7 +133,7 @@ export default class MachinatEngine<
       tasks.push({ type: 'thunk', payload: thunkFn });
     }
 
-    const frame: DispatchFrame<Channel, Job> = {
+    const frame: DispatchFrame<Channel, Job, Bot> = {
       platform: this.platform,
       bot: this.bot,
       channel: target,
@@ -152,9 +153,9 @@ export default class MachinatEngine<
     jobs: Job[],
     node?: MachinatNode
   ): Promise<DispatchResponse<Job, Result>> {
-    const { wrappedDispatcher } = this._createDispatchScope();
+    const { wrappedDispatcher } = this._initDispatchScope();
 
-    const frame: DispatchFrame<Channel, Job> = {
+    const frame: DispatchFrame<Channel, Job, Bot> = {
       platform: this.platform,
       bot: this.bot,
       channel,
@@ -165,7 +166,7 @@ export default class MachinatEngine<
   }
 
   async _execute(
-    frame: DispatchFrame<Channel, Job>
+    frame: DispatchFrame<Channel, Job, Bot>
   ): Promise<DispatchResponse<Job, Result>> {
     const { tasks } = frame;
     const results: Result[] = [];

@@ -26,7 +26,7 @@ const ENUM_STARTING = 1;
 const ENUM_STARTED = 2;
 
 export default class MachinatApp<
-  Context: EventContext<any, any, any, any, any, any>
+  Context: EventContext<any, any, any, any, any>
 > {
   config: AppConfig<Context>;
   _status: number;

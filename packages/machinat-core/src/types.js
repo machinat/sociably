@@ -38,6 +38,17 @@ export type MachinatRenderable =
   | RawElement
   | ThunkElement;
 
+export type MachinatElementType =
+  | string
+  | FunctionalComponent<any>
+  | ContainerComponent<any>
+  | NativeComponent<any, any>
+  | MACHINAT_FRAGMENT_TYPE
+  | MACHINAT_PAUSE_TYPE
+  | MACHINAT_PROVIDER_TYPE
+  | MACHINAT_THUNK_TYPE
+  | MACHINAT_RAW_TYPE;
+
 export type MachinatElement<P, T> = {|
   $$typeof: MACHINAT_ELEMENT_TYPE,
   type: T,
@@ -160,16 +171,15 @@ export type EventContext<
   User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
-  SegmentValue,
-  Native: NativeComponent<SegmentValue>
+  Bot: null | MachinatBot<Channel, any, any>
 > = {
   platform: string,
   entity: MachinatEntity,
   channel: Channel,
   user: User,
   event: Event,
-  bot: null | MachinatBot<Channel, SegmentValue, Native, any, any>,
   metadata: Metadata,
+  bot: Bot,
 };
 
 export type Middleware<Input, Output> = (
@@ -178,23 +188,23 @@ export type Middleware<Input, Output> = (
 ) => Promise<Output>;
 
 export type EventMiddleware<
-  Context: EventContext<any, any, any, any, any, any>,
+  Context: EventContext<any, any, any, any, any>,
   Response
 > = Middleware<Context, Response>;
 
 export type DispatchMiddleware<
   Job,
-  Frame: DispatchFrame<any, Job>,
+  Frame: DispatchFrame<any, Job, any>,
   Result
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
 export type ServiceModule = {|
-  bootstrap: () => Promise<ProvisionBinding[]>,
+  bootstrap: () => Promise<(ServiceProvider<any> | ProvisionBinding)[]>,
   startHook: null | ServiceContainer<Promise<void>>,
 |};
 
-export type CreateEventScopeFn<
-  Ctx: EventContext<any, any, any, any, any, any>,
+export type InitEventScopeFn<
+  Ctx: EventContext<any, any, any, any, any>,
   Res
 > = () => {
   scope: InjectionScope,
@@ -203,29 +213,33 @@ export type CreateEventScopeFn<
 };
 
 export type EventScopeWrapper<
-  Ctx: EventContext<any, any, any, any, any, any>,
+  Ctx: EventContext<any, any, any, any, any>,
   Res
-> = (finalHandler: (ctx: Ctx) => Promise<Res>) => CreateEventScopeFn<Ctx, Res>;
+> = (finalHandler: (ctx: Ctx) => Promise<Res>) => InitEventScopeFn<Ctx, Res>;
 
-export type CreateDispatchScopeFn<
+export type InitDispatchScopeFn<
   Job,
-  Frm: DispatchFrame<any, Job>,
+  Frame: DispatchFrame<any, Job, any>,
   Result
 > = () => {
   scope: InjectionScope,
-  wrappedDispatcher: (frm: Frm) => Promise<DispatchResponse<Job, Result>>,
+  wrappedDispatcher: (frm: Frame) => Promise<DispatchResponse<Job, Result>>,
 };
 
-export type DispatchScopeWrapper<Job, Frm: DispatchFrame<any, Job>, Result> = (
-  dispatch: (frm: Frm) => Promise<DispatchResponse<Job, Result>>
-) => CreateDispatchScopeFn<Job, Frm, Result>;
+export type DispatchScopeWrapper<
+  Job,
+  Frame: DispatchFrame<any, Job, any>,
+  Result
+> = (
+  dispatch: (frm: Frame) => Promise<DispatchResponse<Job, Result>>
+) => InitDispatchScopeFn<Job, Frame, Result>;
 
 export type PlatformModule<
   Channel: MachinatChannel,
-  Context: EventContext<Channel, any, any, any, any, any>,
+  Context: EventContext<Channel, any, any, any, any>,
   EventResponse,
   Job,
-  Frame: DispatchFrame<Channel, Job>,
+  Frame: DispatchFrame<Channel, Job, any>,
   Result
 > = {|
   name: string,
@@ -240,11 +254,11 @@ export type PlatformModule<
   bootstrap: (
     receiverWrapper: EventScopeWrapper<Context, EventResponse>,
     dispatchWrapper: DispatchScopeWrapper<Job, Frame, Result>
-  ) => Promise<ProvisionBinding[]>,
+  ) => Promise<(ServiceProvider<any> | ProvisionBinding)[]>,
   startHook?: ServiceContainer<Promise<void>>,
 |};
 
-export type AppConfig<Context: EventContext<any, any, any, any, any, any>> = {
+export type AppConfig<Context: EventContext<any, any, any, any, any>> = {
   platforms?: PlatformModule<any, Context, any, any, any, any>[],
   imports?: ServiceModule[],
   registers?: (ServiceProvider<any> | ProvisionBinding)[],
