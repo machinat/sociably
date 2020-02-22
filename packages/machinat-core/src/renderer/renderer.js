@@ -13,7 +13,7 @@ import {
   isProviderElement,
   isContainerElement,
 } from '../utils/isXxx';
-import type { Interfaceable, InjectionScope } from '../service/types';
+import type { Interfaceable, ServiceScope } from '../service/types';
 import type {
   MachinatNode,
   MachinatRenderable,
@@ -42,7 +42,7 @@ type RenderTraverseContext<Value, Native> = {
     | IntermediateSegment<Value, Native>
     | IntermediateSegment<Value, Native>[]
   >[],
-  scope: InjectionScope,
+  scope: ServiceScope,
   servicesProvided: Map<Interfaceable, any>,
 };
 
@@ -71,7 +71,7 @@ export default class MachinatRenderer<
   }
 
   async render(
-    scope: InjectionScope,
+    scope: ServiceScope,
     node: MachinatNode
   ): Promise<null | OutputableSegment<Value, Native>[]> {
     const intermediates = await this._renderImpl(
@@ -108,7 +108,7 @@ export default class MachinatRenderer<
   }
 
   async _renderImpl(
-    scope: InjectionScope,
+    scope: ServiceScope,
     servicesProvided: Map<Interfaceable, any>,
     prefix: string,
     node: MachinatNode,
@@ -303,7 +303,7 @@ export default class MachinatRenderer<
 
   async _renderFunctionalElement(
     node: FunctionalElement<any, any>,
-    scope: InjectionScope,
+    scope: ServiceScope,
     servicesProvided: Map<Interfaceable, any>,
     path: string
   ): Promise<null | IntermediateSegment<Value, Native>[]> {
@@ -323,7 +323,7 @@ export default class MachinatRenderer<
 
   async _renderContainerElement(
     node: ContainerElement<any, any>,
-    scope: InjectionScope,
+    scope: ServiceScope,
     servicesProvided: Map<Interfaceable, any>,
     path: string
   ): Promise<null | IntermediateSegment<Value, Native>[]> {

@@ -6,7 +6,7 @@ import typeof {
   MACHINAT_SERVICES_INTERFACEABLE,
 } from '../symbol';
 
-export type { default as InjectionScope } from './scope'; // eslint-disable-line import/prefer-default-export
+export type { default as ServiceScope } from './scope'; // eslint-disable-line import/prefer-default-export
 
 export type ServeStrategy = 'singleton' | 'scoped' | 'transient';
 

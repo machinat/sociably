@@ -10,10 +10,10 @@ import type {
 } from './types';
 
 /**
- * InjectionScope hpld the scope cache for later injection, any container
+ * ServiceScope hpld the scope cache for later injection, any container
  * executed under the same scope share the same singleton and scoped services.
  */
-export default class InjectionScope {
+export default class ServiceScope {
   platform: void | string;
   maker: ServiceMaker;
   singletonCache: ServiceCache<any>;

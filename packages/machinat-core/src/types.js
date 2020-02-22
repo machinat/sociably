@@ -5,8 +5,8 @@ import type {
   Interfaceable,
   ProvisionBinding,
   ServiceContainer,
-  InjectionScope,
   ServiceProvider,
+  ServiceScope,
 } from './service/types';
 import type { DispatchFrame, DispatchResponse } from './engine/types';
 import typeof {
@@ -127,8 +127,9 @@ export interface MachinatEntity {
   +id: string;
 }
 
-export interface MachinatChannel {
+export interface MachinatChannel<Entity: MachinatEntity> {
   +platform: string;
+  +entity: Entity;
   +type: any;
   +subtype?: any;
   +uid: string;
@@ -158,7 +159,11 @@ export interface MachinatUserProfile {
   +pictureURL: void | string;
 }
 
-export interface MachinatBot<Channel: MachinatChannel, Result, SendOptions> {
+export interface MachinatBot<
+  Channel: MachinatChannel<any>,
+  Result,
+  SendOptions
+> {
   render(
     channel: Channel,
     message: MachinatNode,
@@ -167,14 +172,13 @@ export interface MachinatBot<Channel: MachinatChannel, Result, SendOptions> {
 }
 
 export type EventContext<
-  Channel: MachinatChannel,
+  Channel: MachinatChannel<any>,
   User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
   Bot: null | MachinatBot<Channel, any, any>
 > = {
   platform: string,
-  entity: MachinatEntity,
   channel: Channel,
   user: User,
   event: Event,
@@ -203,39 +207,30 @@ export type ServiceModule = {|
   startHook: null | ServiceContainer<Promise<void>>,
 |};
 
-export type InitEventScopeFn<
-  Ctx: EventContext<any, any, any, any, any>,
-  Res
-> = () => {
-  scope: InjectionScope,
-  wrappedHandler: (ctx: Ctx) => Promise<Res>,
-  popError: Error => void,
-};
+export type InitScopeFn = () => ServiceScope;
 
-export type EventScopeWrapper<
-  Ctx: EventContext<any, any, any, any, any>,
-  Res
-> = (finalHandler: (ctx: Ctx) => Promise<Res>) => InitEventScopeFn<Ctx, Res>;
+export type PopEventWrapper<
+  Context: EventContext<any, any, any, any, any>,
+  Response
+> = (
+  finalHandler: (Context) => Promise<Response>
+) => (scope: ServiceScope, ctx: Context) => Promise<Response>;
 
-export type InitDispatchScopeFn<
-  Job,
-  Frame: DispatchFrame<any, Job, any>,
-  Result
-> = () => {
-  scope: InjectionScope,
-  wrappedDispatcher: (frm: Frame) => Promise<DispatchResponse<Job, Result>>,
-};
+export type PopErrorFn = (scope: ServiceScope, err: Error) => void;
 
-export type DispatchScopeWrapper<
+export type DispatchWrapper<
   Job,
   Frame: DispatchFrame<any, Job, any>,
   Result
 > = (
-  dispatch: (frm: Frame) => Promise<DispatchResponse<Job, Result>>
-) => InitDispatchScopeFn<Job, Frame, Result>;
+  dispatch: (Frame) => Promise<DispatchResponse<Job, Result>>
+) => (
+  scope: ServiceScope,
+  frame: Frame
+) => Promise<DispatchResponse<Job, Result>>;
 
 export type PlatformModule<
-  Channel: MachinatChannel,
+  Channel: MachinatChannel<any>,
   Context: EventContext<Channel, any, any, any, any>,
   EventResponse,
   Job,
@@ -251,10 +246,12 @@ export type PlatformModule<
     | DispatchMiddleware<Job, Frame, Result>
     | ServiceContainer<DispatchMiddleware<Job, Frame, Result>>
   )[],
-  bootstrap: (
-    receiverWrapper: EventScopeWrapper<Context, EventResponse>,
-    dispatchWrapper: DispatchScopeWrapper<Job, Frame, Result>
-  ) => Promise<(ServiceProvider<any> | ProvisionBinding)[]>,
+  bootstrap: ({
+    popEventWrapper: PopEventWrapper<Context, EventResponse>,
+    initScope: InitScopeFn,
+    popError: PopErrorFn,
+    dispatchWrapper: DispatchWrapper<Job, Frame, Result>,
+  }) => Promise<(ServiceProvider<any> | ProvisionBinding)[]>,
   startHook?: ServiceContainer<Promise<void>>,
 |};
 

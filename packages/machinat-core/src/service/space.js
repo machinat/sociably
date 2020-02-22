@@ -3,7 +3,7 @@ import invariant from 'invariant';
 import ServiceMaker from './maker';
 import type { ProvisionBinding, ServiceCache, ServiceProvider } from './types';
 import ProvisionMap from './provisionMap';
-import InjectionScope from './scope';
+import ServiceScope from './scope';
 import { isServiceProvider } from './utils';
 
 const resolveBindings = (
@@ -47,7 +47,7 @@ const resolveBindings = (
 
 /**
  * ServiceSpaceManager resolves service binding, initiates singleton services
- * and create InjectionScope for executing containers.
+ * and create ServiceScope for executing containers.
  */
 export default class ServiceSpace {
   maker: ServiceMaker;
@@ -70,13 +70,13 @@ export default class ServiceSpace {
     this.singletonCache = this.maker.makeSingletonServices();
   }
 
-  createScope(platform: void | string): InjectionScope {
+  createScope(platform: void | string): ServiceScope {
     const scopeCache = this.maker.makeScopedServices(
       this.singletonCache,
       platform
     );
 
-    const scopeInjector = new InjectionScope(
+    const scopeInjector = new ServiceScope(
       platform,
       this.maker,
       this.singletonCache,

@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import moxy, { Mock } from 'moxy';
+import ServiceScope from '../../service/scope';
 import Machinat from '../..';
 
 import Engine from '../engine';
@@ -28,27 +29,21 @@ const worker = moxy({
 const renderer = moxy({ render: () => null });
 
 const scope = moxy();
-const initScopeMock = new Mock();
+const initScope = moxy(() => scope);
+
 const wrappedDispatchMock = new Mock();
-
-const dispatchScopeWrapper = moxy(dispatcher => {
-  const wrappedDispatcher = wrappedDispatchMock.proxify(dispatcher);
-
-  const initScope = initScopeMock.proxify(() => ({
-    scope,
-    wrappedDispatcher,
-  }));
-  return initScope;
-});
+const dispatchWrapper = moxy(dispatcher =>
+  wrappedDispatchMock.proxify((_, frame) => dispatcher(frame))
+);
 
 beforeEach(() => {
   renderer.mock.reset();
   worker.mock.reset();
   queue.mock.reset();
 
-  dispatchScopeWrapper.mock.reset();
-  initScopeMock.reset();
+  initScope.mock.reset();
   wrappedDispatchMock.reset();
+  dispatchWrapper.mock.reset();
 });
 
 describe('#constructor()', () => {
@@ -59,7 +54,8 @@ describe('#constructor()', () => {
       renderer,
       queue,
       worker,
-      dispatchScopeWrapper
+      initScope,
+      dispatchWrapper
     );
 
     expect(engine.platform).toBe('test');
@@ -105,7 +101,8 @@ describe('#render(channel, node, createJobs)', () => {
     renderer,
     queue,
     worker,
-    dispatchScopeWrapper
+    initScope,
+    dispatchWrapper
   );
 
   beforeEach(() => {
@@ -120,7 +117,7 @@ describe('#render(channel, node, createJobs)', () => {
       null
     );
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
 
@@ -140,7 +137,7 @@ describe('#render(channel, node, createJobs)', () => {
       tasks: expectedTasks,
     });
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
@@ -149,13 +146,41 @@ describe('#render(channel, node, createJobs)', () => {
     expect(createJobs.mock).toHaveBeenCalledWith(unitSegments, channel);
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
-    expect(wrappedDispatchMock).toHaveBeenCalledWith({
+    expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
       platform: 'test',
       bot,
       channel,
       node: message,
       tasks: expectedTasks,
     });
+
+    expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
+    expect(queue.executeJobs.mock).toHaveBeenCalledWith(expectedJobs);
+  });
+
+  it('work if initScope and dispatchWrapper omitted', async () => {
+    const expectedJobs = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
+
+    await expect(
+      new Engine('test', bot, renderer, queue, worker).render(
+        channel,
+        message,
+        createJobs
+      )
+    ).resolves.toEqual({
+      jobs: expectedJobs,
+      results: ['result#1', 'result#2', 'result#3', 'result#4'],
+      tasks: [{ type: 'dispatch', payload: expectedJobs }],
+    });
+
+    expect(renderer.render.mock).toHaveBeenCalledTimes(1);
+    expect(renderer.render.mock).toHaveBeenCalledWith(
+      expect.any(ServiceScope),
+      message
+    );
+
+    expect(createJobs.mock).toHaveBeenCalledTimes(1);
+    expect(createJobs.mock).toHaveBeenCalledWith(unitSegments, channel);
 
     expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
     expect(queue.executeJobs.mock).toHaveBeenCalledWith(expectedJobs);
@@ -200,7 +225,7 @@ describe('#render(channel, node, createJobs)', () => {
       tasks: expectedTasks,
     });
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
@@ -223,7 +248,7 @@ describe('#render(channel, node, createJobs)', () => {
     );
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
-    expect(wrappedDispatchMock).toHaveBeenCalledWith({
+    expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
       platform: 'test',
       bot,
       channel,
@@ -302,8 +327,8 @@ describe('#render(channel, node, createJobs)', () => {
       tasks: expectedTasks,
     });
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
@@ -326,7 +351,7 @@ describe('#render(channel, node, createJobs)', () => {
     );
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
-    expect(wrappedDispatchMock).toHaveBeenCalledWith({
+    expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
       platform: 'test',
       bot,
       channel,
@@ -416,7 +441,7 @@ describe('#render(channel, node, createJobs)', () => {
     expect(thunkEffect.mock).toHaveBeenCalledTimes(2);
     expect(failThunkEffect.mock).toHaveBeenCalledTimes(2);
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
@@ -432,7 +457,7 @@ describe('#render(channel, node, createJobs)', () => {
       'You rendered a BOMB!'
     );
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
 
@@ -450,7 +475,7 @@ describe('#render(channel, node, createJobs)', () => {
       'There is a BOMB in segments!'
     );
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
     expect(wrappedDispatchMock).not.toHaveBeenCalled();
@@ -504,7 +529,7 @@ describe('#render(channel, node, createJobs)', () => {
       });
     }
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
     expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
@@ -520,23 +545,35 @@ describe('#render(channel, node, createJobs)', () => {
     const originalTasks = [{ type: 'dispatch', payload: [{ id: 'foo' }] }];
     const modifiedTasks = [{ type: 'dispatch', payload: [{ id: 'bar' }] }];
 
-    wrappedDispatchMock.wrap(dispatch => frame =>
-      dispatch({ ...frame, tasks: modifiedTasks })
+    dispatchWrapper.mock.fake(dispatch =>
+      wrappedDispatchMock.proxify((_, frame) =>
+        dispatch({ ...frame, tasks: modifiedTasks })
+      )
     );
 
-    await expect(engine.render(channel, message, createJobs)).resolves.toEqual({
+    await expect(
+      new Engine(
+        'test',
+        bot,
+        renderer,
+        queue,
+        worker,
+        initScope,
+        dispatchWrapper
+      ).render(channel, message, createJobs)
+    ).resolves.toEqual({
       jobs: [{ id: 'bar' }],
       results: ['result#bar'],
       tasks: modifiedTasks,
     });
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
     expect(createJobs.mock).toHaveBeenCalledWith(segments, channel);
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
-    expect(wrappedDispatchMock).toHaveBeenCalledWith({
+    expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
       platform: 'test',
       bot,
       channel,
@@ -549,31 +586,43 @@ describe('#render(channel, node, createJobs)', () => {
   });
 
   test('wrapper can modify response resolved from dispatcher', async () => {
-    wrappedDispatchMock.wrap(dispatch => async frame => {
-      const response = await dispatch(frame);
-      return {
-        ...response,
-        results: response.results.map(r => `${r}👍`),
-        hello: 'world',
-      };
-    });
+    dispatchWrapper.mock.fake(dispatch =>
+      wrappedDispatchMock.proxify(async (_, frame) => {
+        const response = await dispatch(frame);
+        return {
+          ...response,
+          results: response.results.map(r => `${r}👍`),
+          hello: 'world',
+        };
+      })
+    );
 
     const expectedJobs = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
     const expectedTasks = [{ type: 'dispatch', payload: expectedJobs }];
 
-    await expect(engine.render(channel, message, createJobs)).resolves.toEqual({
+    await expect(
+      new Engine(
+        'test',
+        bot,
+        renderer,
+        queue,
+        worker,
+        initScope,
+        dispatchWrapper
+      ).render(channel, message, createJobs)
+    ).resolves.toEqual({
       tasks: expectedTasks,
       jobs: expectedJobs,
       results: ['result#1👍', 'result#2👍', 'result#3👍', 'result#4👍'],
       hello: 'world',
     });
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
-    expect(wrappedDispatchMock).toHaveBeenCalledWith({
+    expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
       platform: 'test',
       bot,
       channel,
@@ -592,7 +641,7 @@ describe('#render(channel, node, createJobs)', () => {
       null
     );
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
@@ -603,7 +652,7 @@ describe('#render(channel, node, createJobs)', () => {
     expect(queue.executeJobs.mock).not.toHaveBeenCalled();
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
-    expect(wrappedDispatchMock).toHaveBeenCalledWith({
+    expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
       platform: 'test',
       bot,
       channel,
@@ -626,10 +675,10 @@ describe('#render(channel, node, createJobs)', () => {
       'something wrong within middlewares'
     );
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
     expect(queue.executeJobs.mock).not.toHaveBeenCalled();
   });
@@ -642,7 +691,8 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
     renderer,
     queue,
     worker,
-    dispatchScopeWrapper
+    initScope,
+    dispatchWrapper
   );
 
   const channel = { foo: 'channel' };
@@ -657,13 +707,13 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
       results: ['result#1', 'result#2', 'result#3'],
     });
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
     expect(queue.executeJobs.mock).toHaveBeenCalledWith(jobs);
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
-    expect(wrappedDispatchMock).toHaveBeenCalledWith({
+    expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
       platform: 'test',
       bot,
       channel,
@@ -681,18 +731,36 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
       results: ['result#1', 'result#2', 'result#3'],
     });
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
     expect(queue.executeJobs.mock).toHaveBeenCalledWith(jobs);
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
-    expect(wrappedDispatchMock).toHaveBeenCalledWith({
+    expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
       platform: 'test',
       bot,
       channel,
       node: <foo />,
       tasks: expectedTasks,
     });
+  });
+
+  it('work if initScope and dispatchWrapper omitted', async () => {
+    const expectedTasks = [{ type: 'dispatch', payload: jobs }];
+
+    await expect(
+      new Engine('test', bot, renderer, queue, worker).dispatchJobs(
+        channel,
+        jobs
+      )
+    ).resolves.toEqual({
+      tasks: expectedTasks,
+      jobs,
+      results: ['result#1', 'result#2', 'result#3'],
+    });
+
+    expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
+    expect(queue.executeJobs.mock).toHaveBeenCalledWith(jobs);
   });
 
   it('throws if job execution fail', async () => {
@@ -732,32 +800,42 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
       });
     }
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
   });
 
-  test('wrapper can modify tasks from dispatch frame', async () => {
+  test('wrapper can modify tasks of frame', async () => {
     const modifiedTasks = [{ type: 'dispatch', payload: [{ id: 'bar' }] }];
-    wrappedDispatchMock.wrap(dispatch => frame =>
-      dispatch({
-        ...frame,
-        tasks: modifiedTasks,
-      })
+    dispatchWrapper.mock.fake(dispatch =>
+      wrappedDispatchMock.proxify((_, frame) =>
+        dispatch({
+          ...frame,
+          tasks: modifiedTasks,
+        })
+      )
     );
 
     await expect(
-      engine.dispatchJobs(channel, [{ id: 'foo' }])
+      new Engine(
+        'test',
+        bot,
+        renderer,
+        queue,
+        worker,
+        initScope,
+        dispatchWrapper
+      ).dispatchJobs(channel, [{ id: 'foo' }])
     ).resolves.toEqual({
       jobs: [{ id: 'bar' }],
       results: ['result#bar'],
       tasks: modifiedTasks,
     });
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
-    expect(wrappedDispatchMock).toHaveBeenCalledWith({
+    expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
       platform: 'test',
       bot,
       channel,
@@ -770,26 +848,38 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
   });
 
   test('wrapper can modify response resolved from dispatcher', async () => {
-    wrappedDispatchMock.wrap(dispatch => async frame => {
-      const response = await dispatch(frame);
-      return {
-        ...response,
-        results: response.results.map(r => `${r}👍`),
-        hello: 'world',
-      };
-    });
+    dispatchWrapper.mock.fake(dispatch =>
+      wrappedDispatchMock.proxify(async (_, frame) => {
+        const response = await dispatch(frame);
+        return {
+          ...response,
+          results: response.results.map(r => `${r}👍`),
+          hello: 'world',
+        };
+      })
+    );
 
-    await expect(engine.dispatchJobs(channel, jobs)).resolves.toEqual({
+    await expect(
+      new Engine(
+        'test',
+        bot,
+        renderer,
+        queue,
+        worker,
+        initScope,
+        dispatchWrapper
+      ).dispatchJobs(channel, jobs)
+    ).resolves.toEqual({
       jobs: [{ id: 1 }, { id: 2 }, { id: 3 }],
       results: ['result#1👍', 'result#2👍', 'result#3👍'],
       tasks: [{ type: 'dispatch', payload: jobs }],
       hello: 'world',
     });
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
-    expect(wrappedDispatchMock).toHaveBeenCalledWith({
+    expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
       platform: 'test',
       bot,
       channel,
@@ -805,11 +895,11 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
     wrappedDispatchMock.fake(() => Promise.resolve(null));
     await expect(engine.dispatchJobs(channel, jobs)).resolves.toBe(null);
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(queue.executeJobs.mock).not.toHaveBeenCalled();
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
-    expect(wrappedDispatchMock).toHaveBeenCalledWith({
+    expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
       platform: 'test',
       bot,
       channel,
@@ -827,7 +917,7 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
       'something wrong within middlewares'
     );
 
-    expect(initScopeMock).toHaveBeenCalledTimes(1);
+    expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
     expect(queue.executeJobs.mock).not.toHaveBeenCalled();
   });

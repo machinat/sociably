@@ -6,6 +6,9 @@ import {
   MACHINAT_SERVICES_ABSTRACTION,
   MACHINAT_SERVICES_INTERFACEABLE,
 } from '../symbol';
+import ServiceScope from './scope';
+import ServiceMaker from './maker';
+import ProvisionMap from './provisionMap';
 import type { Interfaceable, InjectRequirement } from './types';
 
 export const isServiceContainer = (target: any): boolean =>
@@ -33,3 +36,11 @@ export const polishInjectRequirement = (
   );
   return dep;
 };
+
+export const createEmptyScope = (platform?: string) =>
+  new ServiceScope(
+    platform,
+    new ServiceMaker(new ProvisionMap()),
+    new Map(),
+    new Map()
+  );

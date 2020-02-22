@@ -5,15 +5,15 @@ import type {
   Interfaceable,
   InjectRequirement,
   ServiceContainer,
-  InjectionScope,
+  ServiceScope,
 } from './service/types';
 import type {
   AppConfig,
   EventContext,
   EventMiddleware,
   DispatchMiddleware,
-  EventScopeWrapper,
-  DispatchScopeWrapper,
+  PopEventWrapper,
+  DispatchWrapper,
 } from './types';
 
 type EventListenable<Context> =
@@ -24,6 +24,36 @@ type ErrorListenable = (Error => void) | ServiceContainer<(Error) => void>;
 const ENUM_UNSTARTED = 0;
 const ENUM_STARTING = 1;
 const ENUM_STARTED = 2;
+
+const createDispatchWrapper = <Context>(
+  platform: string,
+  middlewares: (
+    | DispatchMiddleware<any, any, any>
+    | ServiceContainer<DispatchMiddleware<any, any, any>>
+  )[]
+): DispatchWrapper<any, any, any> => {
+  return dispatch => {
+    if (middlewares.length === 0) {
+      return dispatch;
+    }
+
+    const execute = (idx: number, scope: ServiceScope, ctx: Context) => {
+      let middleware = middlewares[idx];
+      if (isServiceContainer(middleware)) {
+        middleware = scope.injectContainer(middleware);
+      }
+
+      return ((middleware: any): DispatchMiddleware<any, any, any>)(
+        ctx,
+        idx + 1 < middlewares.length
+          ? execute.bind(null, idx + 1, scope)
+          : dispatch
+      );
+    };
+
+    return execute.bind(null, 0);
+  };
+};
 
 export default class MachinatApp<
   Context: EventContext<any, any, any, any, any>
@@ -81,16 +111,18 @@ export default class MachinatApp<
             eventMiddlewares,
             dispatchMiddlewares,
           }) =>
-            bootstrap(
-              this._createEventHandlerWrapper(
+            bootstrap({
+              initScope: () => this._serviceSpace.createScope(platformName),
+              popError: this._emitError.bind(this),
+              popEventWrapper: this._createPopHandlerWrapper(
                 platformName,
                 eventMiddlewares || []
               ),
-              this._createDispatchWrapper(
+              dispatchWrapper: createDispatchWrapper(
                 platformName,
                 dispatchMiddlewares || []
-              )
-            )
+              ),
+            })
         )
       );
 
@@ -155,7 +187,7 @@ export default class MachinatApp<
     return true;
   }
 
-  _emitEvent(scope: InjectionScope, context: Context) {
+  _emitEvent(scope: ServiceScope, context: Context) {
     for (const listener of this._eventListeners) {
       if (isServiceContainer(listener)) {
         scope.injectContainer(listener)(context);
@@ -184,7 +216,7 @@ export default class MachinatApp<
     return true;
   }
 
-  _emitError(scope: InjectionScope, err: Error) {
+  _emitError(scope: ServiceScope, err: Error) {
     if (this._errorListeners.length === 0) {
       throw err;
     }
@@ -198,33 +230,28 @@ export default class MachinatApp<
     }
   }
 
-  _createEventHandlerWrapper(
+  _createPopHandlerWrapper(
     platform: string,
     middlewares: (
       | EventMiddleware<Context, any>
       | ServiceContainer<EventMiddleware<Context, any>>
     )[]
-  ): EventScopeWrapper<Context, any> {
+  ): PopEventWrapper<Context, any> {
     return finalHandler => {
-      const handleEvent = (scope: InjectionScope) => async (ctx: Context) => {
-        const response = await finalHandler(ctx);
-        this._emitEvent(scope, ctx);
+      const handlePopping = async (scope: ServiceScope, context: Context) => {
+        const response = await finalHandler(context);
+        this._emitEvent(scope, context);
         return response;
       };
 
       if (middlewares.length === 0) {
-        return () => {
-          const scope = this._serviceSpace.createScope(platform);
-          return {
-            scope,
-            wrappedHandler: handleEvent(scope),
-            popError: this._emitError.bind(this, scope),
-          };
-        };
+        return handlePopping;
       }
 
-      const execute = (scope: InjectionScope, idx: number) => async (
-        ctx: Context
+      const execute = async (
+        idx: number,
+        scope: ServiceScope,
+        context: Context
       ) => {
         let middleware = middlewares[idx];
         if (isServiceContainer(middleware)) {
@@ -232,63 +259,14 @@ export default class MachinatApp<
         }
 
         return middleware(
-          ctx,
+          context,
           idx + 1 < middlewares.length
-            ? execute(scope, idx + 1)
-            : handleEvent(scope)
+            ? execute.bind(null, idx + 1, scope)
+            : handlePopping.bind(null, scope)
         );
       };
 
-      return () => {
-        const scope = this._serviceSpace.createScope(platform);
-        return {
-          scope,
-          wrappedHandler: execute(scope, 0),
-          popError: this._emitError.bind(this, scope),
-        };
-      };
-    };
-  }
-
-  _createDispatchWrapper(
-    platform: string,
-    middlewares: (
-      | DispatchMiddleware<any, any, any>
-      | ServiceContainer<DispatchMiddleware<any, any, any>>
-    )[]
-  ): DispatchScopeWrapper<any, any, any> {
-    return dispatch => {
-      if (middlewares.length === 0) {
-        return () => {
-          const scope = this._serviceSpace.createScope(platform);
-          return {
-            scope,
-            wrappedDispatcher: dispatch,
-          };
-        };
-      }
-
-      const execute = (scope: InjectionScope, idx: number) => (
-        ctx: Context
-      ) => {
-        let middleware = middlewares[idx];
-        if (isServiceContainer(middleware)) {
-          middleware = scope.injectContainer(middleware);
-        }
-
-        return ((middleware: any): DispatchMiddleware<any, any, any>)(
-          ctx,
-          idx + 1 < middlewares.length ? execute(scope, idx + 1) : dispatch
-        );
-      };
-
-      return () => {
-        const scope = this._serviceSpace.createScope(platform);
-        return {
-          scope,
-          wrappedDispatcher: execute(scope, 0),
-        };
-      };
+      return execute.bind(null, 0);
     };
   }
 }
