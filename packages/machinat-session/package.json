@@ -1,5 +1,5 @@
 {
-  "name": "machinat-session",
+  "name": "@machinat/session",
   "version": "0.1.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -32,6 +32,6 @@
     "thenifiedly": "^0.2.1"
   },
   "peerDependencies": {
-    "machinat": "^0.1.0-alpha.0"
+    "@machinat/core": "^0.1.0-alpha.0"
   }
 }

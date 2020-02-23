@@ -1,25 +1,18 @@
 {
-  "name": "@machinat/line",
+  "name": "@machinat/http",
   "version": "0.1.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
     "url": "https://github.com/lrills/machinat.git",
-    "directory": "packages/machinat-line"
+    "directory": "packages/machinat-http-adaptor"
   },
   "homepage": "https://github.com/lrills/machinat#readme",
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
   "exports": {
-    ".": {
-      "default": "./lib/index.js"
-    },
-    "./asset": {
-      "default": "./lib/asset/index.js"
-    },
-    "./auth": {
-      "default": "./lib/auth/index.js"
-    }
+    ".": "./lib/index.js",
+    "./webhook": "./lib/webhook"
   },
   "files": [
     "lib/*",
@@ -28,14 +21,10 @@
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",
-    "node-fetch": "^2.2.0",
-    "warning": "^4.0.2"
+    "raw-body": "^2.3.3",
+    "thenifiedly": "^0.1.0"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.1.0-alpha.0",
-    "@machinat/http": "^0.1.0-alpha.0"
-  },
-  "devDependencies": {
-    "jsdom": "^15.2.1"
+    "@machinat/core": "0.1.0-alpha.0"
   }
 }

@@ -4606,11 +4606,6 @@ del@^3.0.0:
     pify "^3.0.0"
     rimraf "^2.2.8"
 
-delay@^4.0.1, delay@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/delay/-/delay-4.1.0.tgz#474cd28809da41d1a048a70a1d835f47ac377cd2"
-  integrity sha512-8Hea6/aOu3bPdDBQhSRUEUzF0QwuWmSPuIK+sxNdvcJtSfzb6HXrTd9DFJBCJcV9o83fFECqTgllqdnmUfq9+w==
-
 delayed-stream@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
@@ -11008,7 +11003,7 @@ walker@^1.0.7, walker@~1.0.5:
   dependencies:
     makeerror "1.0.x"
 
-warning@^4.0.1, warning@^4.0.2:
+warning@^4.0.2:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/warning/-/warning-4.0.3.tgz#16e9e077eb8a86d6af7d64aa1e05fd85b4678ca3"
   integrity sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==

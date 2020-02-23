@@ -1,5 +1,5 @@
 {
-  "name": "machinat-script",
+  "name": "@machinat/script",
   "version": "0.1.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -21,11 +21,10 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "invariant": "^2.2.4",
-    "machinat-utility": "^0.1.0-alpha.0"
+    "invariant": "^2.2.4"
   },
   "peerDependencies": {
-    "machinat": "^0.1.0-alpha.0",
-    "machinat-session": "^0.1.0-alpha.0"
+    "@machinat/core": "^0.1.0-alpha.0",
+    "@machinat/session": "^0.1.0-alpha.0"
   }
 }

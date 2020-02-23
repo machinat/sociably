@@ -1,7 +1,7 @@
 {
-  "name": "machinat-messenger",
+  "name": "@machinat/messenger",
   "version": "0.1.0-alpha.0",
-  "description": "Messenger connector for Machinat.",
+  "description": "Messenger platform for Machinat.",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -12,15 +12,9 @@
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
   "exports": {
-    ".": {
-      "default": "./lib/index.js"
-    },
-    "./asset": {
-      "default": "./lib/asset/index.js"
-    },
-    "./auth": {
-      "default": "./lib/auth/index.js"
-    }
+    ".": "./lib/index.js",
+    "./asset": "./lib/asset/index.js",
+    "./auth": "./lib/auth/index.js"
   },
   "files": [
     "lib/*",
@@ -32,11 +26,6 @@
     "form-data": "^2.3.2",
     "invariant": "^2.2.4",
     "isomorphic-fetch": "^2.2.1",
-    "machinat-base": "^0.1.0-alpha.0",
-    "machinat-queue": "^0.1.0-alpha.0",
-    "machinat-renderer": "^0.1.0-alpha.0",
-    "machinat-utility": "^0.1.0-alpha.0",
-    "machinat-webhook-receiver": "^0.1.0-alpha.0",
     "warning": "^4.0.2"
   },
   "devDependencies": {
@@ -45,6 +34,7 @@
     "thenify": "^3.3.0"
   },
   "peerDependencies": {
-    "machinat": "^0.1.0-alpha.0"
+    "@machinat/core": "^0.1.0-alpha.0",
+    "@machinat/http": "^0.1.0-alpha.0"
   }
 }

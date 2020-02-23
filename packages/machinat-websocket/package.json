@@ -1,5 +1,5 @@
 {
-  "name": "machinat-websocket",
+  "name": "@machinat/websocket",
   "version": "0.1.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -26,16 +26,12 @@
   "dependencies": {
     "invariant": "^2.2.4",
     "jsonwebtoken": "^8.5.1",
-    "machinat-base": "^0.1.0-alpha.0",
-    "machinat-queue": "^0.1.0-alpha.0",
-    "machinat-renderer": "^0.1.0-alpha.0",
-    "machinat-utility": "^0.1.0-alpha.0",
     "thenifiedly": "^0.2.1",
     "uniqid": "^5.0.3",
     "ws": "^6.2.0"
   },
   "peerDependencies": {
-    "machinat": "^0.1.0-alpha.0"
+    "@machinat/core": "^0.1.0-alpha.0"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.1",

@@ -1,5 +1,5 @@
 {
-  "name": "machinat-next",
+  "name": "@machinat/next",
   "version": "0.1.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -24,11 +24,10 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "invariant": "^2.2.4",
-    "machinat-base": "^0.1.0-alpha.0"
+    "invariant": "^2.2.4"
   },
   "peerDependencies": {
-    "machinat": "^0.1.0-alpha.0",
+    "@machinat/core": "^0.1.0-alpha.0",
     "next": "^9.0.0"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 {
-  "name": "machinat-auth",
+  "name": "@machinat/auth",
   "version": "0.1.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -31,9 +31,11 @@
     "cookie": "^0.4.0",
     "invariant": "^2.2.4",
     "jsonwebtoken": "^8.5.1",
-    "machinat-websocket": "^0.1.0-alpha.0",
     "node-fetch": "^2.6.0",
     "raw-body": "^2.4.1",
     "thenifiedly": "^0.2.1"
+  },
+  "optionalDependencies": {
+    "@machinat/websocket": "^0.1.0-alpha.0"
   }
 }
