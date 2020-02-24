@@ -1,13 +1,11 @@
 pkgs := $(shell find ./packages -mindepth 1 -maxdepth 1 -type d)
-libs := $(addsuffix /lib, $(pkgs))
-babel := node_modules/.bin/babel
 
-.PHONY: all clean
+.PHONY: all clean $(pkgs)
 
-all: node_modules $(libs)
+all: node_modules $(pkgs)
 
-packages/%/lib: packages/%/src
-	NODE_ENV=production $(babel) $< -d $@ --verbose --delete-dir-on-start
+$(pkgs): %:
+	$(MAKE) -C $@ -f $(PWD)/build-package.mk
 
 clean:
 	rm -rf $(libs)
