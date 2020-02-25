@@ -17,7 +17,7 @@ const Machinat = {
   Thunk: MACHINAT_THUNK_TYPE,
   Raw: MACHINAT_RAW_TYPE,
   createElement,
-  createApp<Context: EventContext<any, any, any, any, any, any>>(
+  createApp<Context: EventContext<any, any, any, any, any>>(
     config: AppConfig<Context>
   ) {
     const app = new App<Context>(config);

@@ -91,7 +91,7 @@ describe('#render(channel, node, createJobs)', () => {
     { type: 'unit', node: <c id={4} />, value: { id: 4 } },
   ];
 
-  const createJobs = moxy(segemnts =>
+  const createJobs = moxy((target, segemnts) =>
     segemnts.map(({ value: { id } }) => ({ id }))
   );
 
@@ -143,7 +143,7 @@ describe('#render(channel, node, createJobs)', () => {
     expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
-    expect(createJobs.mock).toHaveBeenCalledWith(unitSegments, channel);
+    expect(createJobs.mock).toHaveBeenCalledWith(channel, unitSegments);
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
     expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
@@ -180,7 +180,7 @@ describe('#render(channel, node, createJobs)', () => {
     );
 
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
-    expect(createJobs.mock).toHaveBeenCalledWith(unitSegments, channel);
+    expect(createJobs.mock).toHaveBeenCalledWith(channel, unitSegments);
 
     expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
     expect(queue.executeJobs.mock).toHaveBeenCalledWith(expectedJobs);
@@ -231,21 +231,16 @@ describe('#render(channel, node, createJobs)', () => {
     expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(3);
-    expect(createJobs.mock).toHaveBeenNthCalledWith(
-      1,
-      [unitSegments[0]],
-      channel
-    );
-    expect(createJobs.mock).toHaveBeenNthCalledWith(
-      2,
-      [unitSegments[1], unitSegments[2]],
-      channel
-    );
-    expect(createJobs.mock).toHaveBeenNthCalledWith(
-      3,
-      [unitSegments[3]],
-      channel
-    );
+    expect(createJobs.mock).toHaveBeenNthCalledWith(1, channel, [
+      unitSegments[0],
+    ]);
+    expect(createJobs.mock).toHaveBeenNthCalledWith(2, channel, [
+      unitSegments[1],
+      unitSegments[2],
+    ]);
+    expect(createJobs.mock).toHaveBeenNthCalledWith(3, channel, [
+      unitSegments[3],
+    ]);
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
     expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
@@ -334,21 +329,16 @@ describe('#render(channel, node, createJobs)', () => {
     expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(3);
-    expect(createJobs.mock).toHaveBeenNthCalledWith(
-      1,
-      [unitSegments[0]],
-      channel
-    );
-    expect(createJobs.mock).toHaveBeenNthCalledWith(
-      2,
-      [unitSegments[1], unitSegments[2]],
-      channel
-    );
-    expect(createJobs.mock).toHaveBeenNthCalledWith(
-      3,
-      [unitSegments[3]],
-      channel
-    );
+    expect(createJobs.mock).toHaveBeenNthCalledWith(1, channel, [
+      unitSegments[0],
+    ]);
+    expect(createJobs.mock).toHaveBeenNthCalledWith(2, channel, [
+      unitSegments[1],
+      unitSegments[2],
+    ]);
+    expect(createJobs.mock).toHaveBeenNthCalledWith(3, channel, [
+      unitSegments[3],
+    ]);
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
     expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
@@ -570,7 +560,7 @@ describe('#render(channel, node, createJobs)', () => {
     expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
-    expect(createJobs.mock).toHaveBeenCalledWith(segments, channel);
+    expect(createJobs.mock).toHaveBeenCalledWith(channel, segments);
 
     expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
     expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
@@ -647,7 +637,7 @@ describe('#render(channel, node, createJobs)', () => {
     expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
-    expect(createJobs.mock).toHaveBeenCalledWith(unitSegments, channel);
+    expect(createJobs.mock).toHaveBeenCalledWith(channel, unitSegments);
 
     expect(queue.executeJobs.mock).not.toHaveBeenCalled();
 
@@ -718,29 +708,6 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
       bot,
       channel,
       node: null,
-      tasks: expectedTasks,
-    });
-  });
-
-  it('dispatch jobs with node included in frame', async () => {
-    const expectedTasks = [{ type: 'dispatch', payload: jobs }];
-
-    await expect(engine.dispatchJobs(channel, jobs, <foo />)).resolves.toEqual({
-      tasks: expectedTasks,
-      jobs,
-      results: ['result#1', 'result#2', 'result#3'],
-    });
-
-    expect(initScope.mock).toHaveBeenCalledTimes(1);
-    expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
-    expect(queue.executeJobs.mock).toHaveBeenCalledWith(jobs);
-
-    expect(wrappedDispatchMock).toHaveBeenCalledTimes(1);
-    expect(wrappedDispatchMock).toHaveBeenCalledWith(scope, {
-      platform: 'test',
-      bot,
-      channel,
-      node: <foo />,
       tasks: expectedTasks,
     });
   });

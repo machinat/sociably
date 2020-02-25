@@ -21,7 +21,7 @@ type ThunkTask = {| type: 'thunk', payload: ThunkEffectFn |};
 export type MachinatTask<Job> = DispatchTask<Job> | PauseTask | ThunkTask;
 
 export type DispatchFrame<
-  Channel: MachinatChannel,
+  Channel: MachinatChannel<any>,
   Job,
   Bot: MachinatBot<Channel, any, any>
 > = {

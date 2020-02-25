@@ -1,8 +1,8 @@
 /* eslint-disable no-await-in-loop, no-loop-func, no-return-assign, no-fallthrough, default-case */
 import moxy from 'moxy';
-import delay from 'delay';
 import MachinatQueue from '../queue';
 
+const delay = t => new Promise(resolve => setTimeout(resolve, t));
 const makeJobs = n => new Array(n).fill(0).map((_, i) => ({ id: i }));
 
 const successJobResponses = ids =>

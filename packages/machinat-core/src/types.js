@@ -159,16 +159,11 @@ export interface MachinatUserProfile {
   +pictureURL: void | string;
 }
 
-export interface MachinatBot<
-  Channel: MachinatChannel<any>,
-  Result,
-  SendOptions
-> {
+export interface MachinatBot<Channel: MachinatChannel<any>, Job, Result> {
   render(
     channel: Channel,
-    message: MachinatNode,
-    options: SendOptions
-  ): Promise<null | Result[]>;
+    message: MachinatNode
+  ): Promise<null | DispatchResponse<Job, Result>>;
 }
 
 export type EventContext<
