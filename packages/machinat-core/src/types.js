@@ -164,6 +164,8 @@ export interface MachinatBot<Channel: MachinatChannel<any>, Job, Result> {
     channel: Channel,
     message: MachinatNode
   ): Promise<null | DispatchResponse<Job, Result>>;
+  start(): void;
+  stop(): void;
 }
 
 export type EventContext<

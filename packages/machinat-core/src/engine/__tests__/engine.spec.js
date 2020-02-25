@@ -46,27 +46,44 @@ beforeEach(() => {
   dispatchWrapper.mock.reset();
 });
 
-describe('#constructor()', () => {
-  test('contstructing ok', () => {
-    const engine = new Engine(
-      'test',
-      bot,
-      renderer,
-      queue,
-      worker,
-      initScope,
-      dispatchWrapper
-    );
+test('#constructor(...) ok', () => {
+  const engine = new Engine(
+    'test',
+    bot,
+    renderer,
+    queue,
+    worker,
+    initScope,
+    dispatchWrapper
+  );
 
-    expect(engine.platform).toBe('test');
-    expect(engine.bot).toBe(bot);
-    expect(engine.renderer).toBe(renderer);
-    expect(engine.queue).toBe(queue);
-    expect(engine.worker).toBe(worker);
+  expect(engine.platform).toBe('test');
+  expect(engine.bot).toBe(bot);
+  expect(engine.renderer).toBe(renderer);
+  expect(engine.queue).toBe(queue);
+  expect(engine.worker).toBe(worker);
+});
 
-    expect(worker.start.mock).toHaveBeenCalledTimes(1);
-    expect(worker.start.mock).toHaveBeenCalledWith(queue);
-  });
+test('#start() and #stop()', () => {
+  const engine = new Engine(
+    'test',
+    bot,
+    renderer,
+    queue,
+    worker,
+    initScope,
+    dispatchWrapper
+  );
+
+  expect(worker.start.mock).not.toHaveBeenCalled();
+
+  expect(engine.start()).toBe(undefined);
+  expect(worker.start.mock).toHaveBeenCalledTimes(1);
+  expect(worker.start.mock).toHaveBeenCalledWith(queue);
+
+  expect(engine.stop()).toBe(undefined);
+  expect(worker.stop.mock).toHaveBeenCalledTimes(1);
+  expect(worker.stop.mock).toHaveBeenCalledWith(queue);
 });
 
 describe('#render(channel, node, createJobs)', () => {

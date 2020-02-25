@@ -24,9 +24,11 @@ import type {
   DispatchFrame,
 } from './types';
 
-// MachinatEngine provide helpers to render element tree into tasks to execute,
-// it pass tasks through dispatch middlewares, execute tasks and return the
-// results poped through middlewares.
+/**
+ * MachinatEngine provide helpers to render element tree into tasks to execute,
+ * it pass tasks through dispatch middlewares, execute tasks and return the
+ * results poped through middlewares.
+ */
 export default class MachinatEngine<
   Channel: MachinatChannel<any>,
   SegmentValue,
@@ -65,9 +67,7 @@ export default class MachinatEngine<
     this.bot = bot;
     this.renderer = renderer;
     this.worker = worker;
-
     this.queue = queue;
-    worker.start(this.queue);
 
     this._initScope = initScope || (() => createEmptyScope(this.platform));
     this._dispatcher = dispatchWrapper
@@ -75,12 +75,22 @@ export default class MachinatEngine<
       : (_, frame) => this._execute(frame);
   }
 
-  // render renders machinat element tree into task to be executed. There are
-  // three kinds of task: "dispatch" contains the jobs to be executed on the
-  // certain platform, "pause" represent the interval made by <Pause />
-  // element which should be waited between "dispatch" tasks, "thunk" holds a
-  // function registered by service which will be excuted after all jobs
-  // dispatched.
+  start() {
+    this.worker.start(this.queue);
+  }
+
+  stop() {
+    this.worker.stop(this.queue);
+  }
+
+  /**
+   * render renders machinat element tree into task to be executed. There are
+   * three kinds of task: "dispatch" contains the jobs to be executed on the
+   * certain platform, "pause" represent the interval made by <Pause />
+   * element which should be waited between "dispatch" tasks, "thunk" holds a
+   * function registered by service which will be excuted after all jobs
+   * dispatched.
+   */
   async render<Target: null | Channel>(
     target: Target,
     node: MachinatNode,
@@ -151,10 +161,12 @@ export default class MachinatEngine<
     return this._dispatcher(scope, frame);
   }
 
-  // dispatch construct the dispatch frame containing the tasks along with other
-  // info throught dispatch middleware. At the end of the stack of middlewares,
-  // all the tasks is executed and the response poped up along the retruning
-  // chain of the middlewares.
+  /**
+   * dispatch construct the dispatch frame containing the tasks along with other
+   * info throught dispatch middleware. At the end of the stack of middlewares,
+   * all the tasks is executed and the response poped up along the retruning
+   * chain of the middlewares.
+   */
   async dispatchJobs(
     channel: null | Channel,
     jobs: Job[]
