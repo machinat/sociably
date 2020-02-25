@@ -5,15 +5,14 @@
 
 [libs]
 ./flow-typed
-packages/*/lib
+./packages/*/lib
 
 [lints]
 
 [options]
-module.name_mapper='@machinat/\([^/]*\)\(/.*\)?$' -> '<PROJECT_ROOT>/packages/machinat-\1/src\2'
+module.name_mapper='@machinat/\([^/]*\)\(.*\)$' -> '<PROJECT_ROOT>/packages/machinat-\1/src\2'
 module.name_mapper='@machinat/\([^/]*\)/types$' -> '<PROJECT_ROOT>/packages/machinat-\1/src/types.js'
 include_warnings=true
 emoji=true
-
 
 [strict]
