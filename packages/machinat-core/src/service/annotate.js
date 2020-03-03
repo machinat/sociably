@@ -1,78 +1,136 @@
 // @flow
 /* eslint-disable no-param-reassign */
+import invariant from 'invariant';
 import {
   MACHINAT_SERVICES_PROVIDER,
   MACHINAT_SERVICES_CONTAINER,
-  MACHINAT_SERVICES_ABSTRACTION,
-  MACHINAT_SERVICES_INTERFACEABLE,
+  MACHINAT_SERVICES_INTERFACE,
 } from '../symbol';
 import type {
-  ServeStrategy,
+  ServiceLifetime,
   ServiceContainer,
   ServiceProvider,
-  AbstractProvider,
+  ServiceInterface,
   Interfaceable,
-  NamedInterfaceable,
   InjectRequirement,
 } from './types';
 import { polishInjectRequirement } from './utils';
 
 type InjectOptions = {|
+  name?: string,
   deps?: (Interfaceable | InjectRequirement)[],
 |};
 
-type ContainerAnnotateFn<T> = ((...any[]) => T) => ServiceContainer<T>;
+const validateLifetime = (lifetime: string) => {
+  invariant(
+    lifetime === 'singleton' ||
+      lifetime === 'scoped' ||
+      lifetime === 'transient',
+    `${lifetime} is not valid service lifetime`
+  );
+};
+
+type InjectFn<T> = (fn: (...any[]) => T) => ServiceContainer<T>;
+
 /**
  * inject marks a function as a container and annotate the dependencies
  */
 export const inject = <T>({
+  name,
   deps = [],
-}: InjectOptions = {}): ContainerAnnotateFn<T> => fn => {
+}: InjectOptions = {}): InjectFn<T> => (fn: any) => {
   const requirements = deps.map(polishInjectRequirement);
 
-  fn.$$typeof = MACHINAT_SERVICES_CONTAINER;
-  fn.$$deps = requirements;
-  return fn;
+  return Object.defineProperties(fn, {
+    $$typeof: { value: MACHINAT_SERVICES_CONTAINER },
+    $$name: { value: name || fn.name },
+    $$deps: { value: requirements },
+  });
 };
 
 type ProvideOptions<T> = {
+  name?: string,
   deps?: (Interfaceable | InjectRequirement)[],
-  factory: (...args: any[]) => T,
-  strategy: ServeStrategy,
+  factory?: (...args: any[]) => T,
+  lifetime: ServiceLifetime,
 };
 
-type ProviderAnnotateFn<Klass> = Klass => ServiceProvider<Klass>;
+type ProviderFn<T> = (Class<T>) => ServiceProvider<T, Class<T>>;
+
 /**
- * provider mark a class as a provider serving for the instance type and also an
- * interfaceable can be implemented
+ * provider annotate a class as a provider serving for the instance type and
+ * also an interface can be implemented
  */
-export const provider = <T, Klass>({
+export const provider = <T>({
+  name,
   deps = [],
   factory,
-  strategy,
-}: ProvideOptions<T>): ProviderAnnotateFn<Klass> => (klass: any) => {
+  lifetime,
+}: ProvideOptions<T>): ProviderFn<T> => (Klazz: any) => {
+  validateLifetime(lifetime);
   const requirements = deps.map(polishInjectRequirement);
 
-  klass.$$typeof = MACHINAT_SERVICES_PROVIDER;
-  klass.$$deps = requirements;
-  klass.$$factory = factory;
-  klass.$$strategy = strategy;
-  return klass;
+  return Object.defineProperties(Klazz, {
+    $$name: { value: name || Klazz.name },
+    $$typeof: { value: MACHINAT_SERVICES_PROVIDER },
+    $$deps: { value: requirements },
+    $$factory: { value: factory || ((...args) => new Klazz(...args)) },
+    $$lifetime: { value: lifetime },
+  });
 };
 
-type AbstractAnnotateFn<T> = (Class<T>) => AbstractProvider<Class<T>>;
-/**
- * abstract mark an abstract class as a interfaceable to be implemented
- */
-export const abstract = <T>(): AbstractAnnotateFn<T> => (klass: any) => {
-  klass.$$typeof = MACHINAT_SERVICES_ABSTRACTION;
-  return klass;
+type FactoryOptions = {
+  name?: string,
+  deps?: (Interfaceable | InjectRequirement)[],
+  lifetime: ServiceLifetime,
 };
 
+type FactoryFn<T> = (
+  factory: (...any[]) => T
+) => ServiceProvider<T, (...any[]) => T>;
+
 /**
- * namedInterface create an interfaceable to be implemented
+ * factory annotate a factory function as a provider
  */
-export const namedInterface = (name: string): NamedInterfaceable => ({
-  $$typeof: MACHINAT_SERVICES_INTERFACEABLE,
+export const factory = <T>({
   name,
+  deps = [],
+  lifetime,
+}: FactoryOptions): FactoryFn<T> => (factoryFn: any) => {
+  validateLifetime(lifetime);
+  const requirements = deps.map(polishInjectRequirement);
+
+  return Object.defineProperties(factoryFn, {
+    $$name: { value: name || factoryFn.name },
+    $$typeof: { value: MACHINAT_SERVICES_PROVIDER },
+    $$deps: { value: requirements },
+    $$factory: { value: factoryFn },
+    $$lifetime: { value: lifetime },
+  });
+};
+
+type AbstractOptions = {
+  name?: string,
+};
+
+type AbstractFn<T> = (Class<T>) => ServiceProvider<T, Class<T>>;
+
+/**
+ * abstract annotate an abstract class as a servcie interface
+ */
+export const abstractInterface = <T>({
+  name,
+}: AbstractOptions = {}): AbstractFn<T> => (Klazz: any) => {
+  return Object.defineProperties(Klazz, {
+    $$typeof: { value: MACHINAT_SERVICES_INTERFACE },
+    $$name: { value: name || Klazz.name },
+  });
+};
+
+/**
+ * namedInterface create a service interface with name
+ */
+export const namedInterface = <T>(name: string): ServiceInterface<T, {}> => ({
+  $$name: name,
+  $$typeof: MACHINAT_SERVICES_INTERFACE,
 });

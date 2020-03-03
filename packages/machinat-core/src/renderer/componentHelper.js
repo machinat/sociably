@@ -17,12 +17,7 @@ export const textSegment = (
   text: string,
   node: GeneralElement | NativeElement<any, any, any>,
   path: string
-): TextSegment => ({
-  type: 'text',
-  node,
-  value: text,
-  path,
-});
+): TextSegment => ({ type: 'text', node, value: text, path });
 
 export const annotateNativeComponent = (platform: string) => (
   Component: NativeComponent<any, any>
@@ -62,14 +57,7 @@ export const wrapPartComponent = <Props, Value>(
         return null;
       }
 
-      return [
-        {
-          type: 'part',
-          node: element,
-          value,
-          path,
-        },
-      ];
+      return [{ type: 'part', node: element, value, path }];
     },
   };
 
@@ -91,14 +79,7 @@ export const wrapUnitComponent = <Props, Value>(
         return null;
       }
 
-      return [
-        {
-          type: 'unit',
-          node: element,
-          value,
-          path,
-        },
-      ];
+      return [{ type: 'unit', node: element, value, path }];
     },
   };
 

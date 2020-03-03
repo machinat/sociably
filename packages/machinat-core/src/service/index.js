@@ -1,6 +1,6 @@
 // @flow
-export { default } from './space';
 export * from './annotate';
+export { default as ServiceSpace } from './space';
 export { isServiceContainer, isInterfaceable, createEmptyScope } from './utils';
 
 /**

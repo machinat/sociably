@@ -30,7 +30,7 @@ import type {
  * results poped through middlewares.
  */
 export default class MachinatEngine<
-  Channel: MachinatChannel<any>,
+  Channel: MachinatChannel,
   SegmentValue,
   Native: NativeComponent<any, SegmentValue>,
   Job,
@@ -46,8 +46,8 @@ export default class MachinatEngine<
 
   _initScope: InitScopeFn;
   _dispatcher: (
-    ServiceScope,
-    DispatchFrame<Channel, Job, Bot>
+    DispatchFrame<Channel, Job, Bot>,
+    ServiceScope
   ) => Promise<DispatchResponse<Job, Result>>;
 
   constructor(
@@ -72,7 +72,7 @@ export default class MachinatEngine<
     this._initScope = initScope || (() => createEmptyScope(this.platform));
     this._dispatcher = dispatchWrapper
       ? dispatchWrapper(this._execute.bind(this))
-      : (_, frame) => this._execute(frame);
+      : frame => this._execute(frame);
   }
 
   start() {
@@ -158,7 +158,7 @@ export default class MachinatEngine<
       node,
     };
 
-    return this._dispatcher(scope, frame);
+    return this._dispatcher(frame, scope);
   }
 
   /**
@@ -179,7 +179,7 @@ export default class MachinatEngine<
       node: null,
     };
 
-    return this._dispatcher(this._initScope(), frame);
+    return this._dispatcher(frame, this._initScope());
   }
 
   async _execute(

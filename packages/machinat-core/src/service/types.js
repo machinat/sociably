@@ -2,35 +2,29 @@
 import typeof {
   MACHINAT_SERVICES_CONTAINER,
   MACHINAT_SERVICES_PROVIDER,
-  MACHINAT_SERVICES_ABSTRACTION,
-  MACHINAT_SERVICES_INTERFACEABLE,
+  MACHINAT_SERVICES_INTERFACE,
 } from '../symbol';
 
 export type { default as ServiceScope } from './scope'; // eslint-disable-line import/prefer-default-export
 
-export type ServeStrategy = 'singleton' | 'scoped' | 'transient';
+export type ServiceLifetime = 'singleton' | 'scoped' | 'transient';
 
-export type AbstractProvider<T> = T & {|
-  $$typeof: MACHINAT_SERVICES_ABSTRACTION,
-|};
+export type ServiceInterface<_T, K> = K & {
+  $$name: string,
+  $$typeof: MACHINAT_SERVICES_INTERFACE,
+};
 
-export type NamedInterfaceable = {|
-  $$typeof: MACHINAT_SERVICES_INTERFACEABLE,
-  name: string,
-|};
-
-export type ServiceProvider<T> = T & {|
-  name: string,
+export type ServiceProvider<T, K> = K & {
+  $$name: string,
   $$typeof: MACHINAT_SERVICES_PROVIDER,
-  $$strategy: ServeStrategy,
+  $$lifetime: ServiceLifetime,
   $$deps: InjectRequirement[], // eslint-disable-line no-use-before-define
   $$factory: (...args: any[]) => T,
-|};
+};
 
 export type Interfaceable =
-  | NamedInterfaceable
-  | AbstractProvider<any>
-  | ServiceProvider<any>;
+  | ServiceInterface<any, any>
+  | ServiceProvider<any, any>;
 
 export type InjectRequirement = {|
   require: Interfaceable,
@@ -45,7 +39,7 @@ export interface ServiceContainer<T> {
 
 type ProviderBinding = {|
   provide: Interfaceable,
-  withProvider: ServiceProvider<any>,
+  withProvider: ServiceProvider<any, any>,
   platforms?: string[],
 |};
 
@@ -57,4 +51,4 @@ type ValueBinding = {|
 
 export type ProvisionBinding = ProviderBinding | ValueBinding;
 
-export type ServiceCache<T> = Map<ServiceProvider<T>, T>;
+export type ServiceCache = Map<ServiceProvider<any, any>, any>;

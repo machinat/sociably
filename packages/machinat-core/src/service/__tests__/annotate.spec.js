@@ -1,21 +1,27 @@
+import moxy from 'moxy';
 import {
   MACHINAT_SERVICES_PROVIDER,
   MACHINAT_SERVICES_CONTAINER,
-  MACHINAT_SERVICES_ABSTRACTION,
-  MACHINAT_SERVICES_INTERFACEABLE,
+  MACHINAT_SERVICES_INTERFACE,
 } from '../../symbol';
-import { inject, provider, abstract, namedInterface } from '../annotate';
+import {
+  inject,
+  provider,
+  factory,
+  abstractInterface,
+  namedInterface,
+} from '../annotate';
 
 const FooServiceI = {
   $$typeof: MACHINAT_SERVICES_PROVIDER,
   /* ... */
 };
 const BarServiceI = {
-  $$typeof: MACHINAT_SERVICES_ABSTRACTION,
+  $$typeof: MACHINAT_SERVICES_INTERFACE,
   /* ... */
 };
 const BazServiceI = {
-  $$typeof: MACHINAT_SERVICES_INTERFACEABLE,
+  $$typeof: MACHINAT_SERVICES_INTERFACE,
   /* ... */
 };
 
@@ -24,6 +30,7 @@ describe('inject({ deps })(fn)', () => {
     const containerFn = () => {};
 
     const container = inject({
+      name: 'myContainer',
       deps: [
         FooServiceI,
         { require: BarServiceI, optional: false },
@@ -33,6 +40,7 @@ describe('inject({ deps })(fn)', () => {
 
     expect(container).toBe(containerFn);
     expect(container.$$typeof).toBe(MACHINAT_SERVICES_CONTAINER);
+    expect(container.$$name).toBe('myContainer');
     expect(container.$$deps).toEqual([
       { require: FooServiceI, optional: false },
       { require: BarServiceI, optional: false },
@@ -40,75 +48,180 @@ describe('inject({ deps })(fn)', () => {
     ]);
   });
 
+  test('default $$name and $$deps', () => {
+    const containerFn = () => {};
+    const container = inject()(containerFn);
+
+    expect(container).toBe(containerFn);
+    expect(container.$$typeof).toBe(MACHINAT_SERVICES_CONTAINER);
+    expect(container.$$name).toBe('containerFn');
+    expect(container.$$deps).toEqual([]);
+  });
+
   it('throw if invalid deps received', () => {
-    class WhateverClass {}
+    class NonService {}
 
     expect(() => {
-      inject({ deps: [WhateverClass] })(_whatever => 'boom');
+      inject({ deps: [NonService] })(_whatever => 'boom');
     }).toThrowErrorMatchingInlineSnapshot(
-      `"WhateverClass is not a valid interfaceable"`
+      `"NonService is not a valid interface"`
     );
   });
 });
 
-describe('provider({ deps, factory, strategy })(klass)', () => {
-  it('annotate deps, factory and strategy at class', () => {
-    class MyService {}
-    const factory = (foo, bar, baz) => new MyService(foo, bar, baz);
+describe('provider({ deps, factory, lifetime })(klass)', () => {
+  it('annotate metadatas', () => {
+    class ServiceKlazz {}
+    const klazzFactory = (foo, bar, baz) => new ServiceKlazz(foo, bar, baz);
 
     const MyProvider = provider({
-      factory,
+      name: 'MyProvider',
+      factory: klazzFactory,
       deps: [
         FooServiceI,
         { require: BarServiceI, optional: false },
         { require: BazServiceI, optional: true },
       ],
-      strategy: 'scoped',
-    })(MyService);
+      lifetime: 'scoped',
+    })(ServiceKlazz);
 
-    expect(MyProvider).toBe(MyService);
+    expect(MyProvider).toBe(ServiceKlazz);
     expect(MyProvider.$$typeof).toBe(MACHINAT_SERVICES_PROVIDER);
+    expect(MyProvider.$$name).toBe('MyProvider');
     expect(MyProvider.$$deps).toEqual([
       { require: FooServiceI, optional: false },
       { require: BarServiceI, optional: false },
       { require: BazServiceI, optional: true },
     ]);
-    expect(MyProvider.$$factory).toBe(factory);
-    expect(MyProvider.$$strategy).toBe('scoped');
+    expect(MyProvider.$$factory).toBe(klazzFactory);
+    expect(MyProvider.$$lifetime).toBe('scoped');
+  });
+
+  test('default $$factory, $$name and $$deps', () => {
+    const ServiceKlazz = moxy(class ServiceKlazz {}, { mockProperty: false });
+
+    const MyProvider = provider({ lifetime: 'singleton' })(ServiceKlazz);
+
+    expect(MyProvider.$$name).toBe('ServiceKlazz');
+    expect(MyProvider.$$lifetime).toBe('singleton');
+    expect(MyProvider.$$deps).toEqual([]);
+
+    expect(MyProvider.$$factory('foo', 'bar', 'baz')).toBeInstanceOf(
+      ServiceKlazz
+    );
+    expect(ServiceKlazz.mock).toHaveBeenCalledWith('foo', 'bar', 'baz');
   });
 
   it('throw if invalid deps received', () => {
-    class WhateverClass {}
+    class NonService {}
 
     expect(() => {
       provider({
-        deps: [WhateverClass],
+        deps: [NonService],
         factory: _whatever => 'boom',
-        strategy: 'singleton',
+        lifetime: 'singleton',
       })(class MyProvider {});
     }).toThrowErrorMatchingInlineSnapshot(
-      `"WhateverClass is not a valid interfaceable"`
+      `"NonService is not a valid interface"`
+    );
+  });
+
+  it('throw if invalid lifetime received', () => {
+    expect(() => provider({ lifetime: 'singleton' })(class K {})).not.toThrow();
+    expect(() => provider({ lifetime: 'scoped' })(class K {})).not.toThrow();
+    expect(() => provider({ lifetime: 'transient' })(class K {})).not.toThrow();
+
+    expect(() => {
+      provider({ lifetime: 'elf' })(class K {});
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"elf is not valid service lifetime"`
     );
   });
 });
 
-describe('abstract()(klass)', () => {
-  it('annotate $$typeof as class', () => {
-    class MyAbstractClass {}
-    const MyAbstractClassI = abstract()(MyAbstractClass);
+describe('factory({ deps, lifetime })(factory)', () => {
+  it('annotate metadatas', () => {
+    const factoryFn = (foo, bar, baz) => ({ foo, bar, baz });
 
-    expect(MyAbstractClassI).toBe(MyAbstractClass);
-    expect(MyAbstractClassI.$$typeof).toBe(MACHINAT_SERVICES_ABSTRACTION);
+    const providerFactory = factory({
+      name: 'myFactory',
+      deps: [
+        FooServiceI,
+        { require: BarServiceI, optional: false },
+        { require: BazServiceI, optional: true },
+      ],
+      lifetime: 'transient',
+    })(factoryFn);
+
+    expect(providerFactory).toBe(factoryFn);
+    expect(providerFactory.$$typeof).toBe(MACHINAT_SERVICES_PROVIDER);
+    expect(providerFactory.$$name).toBe('myFactory');
+    expect(providerFactory.$$deps).toEqual([
+      { require: FooServiceI, optional: false },
+      { require: BarServiceI, optional: false },
+      { require: BazServiceI, optional: true },
+    ]);
+    expect(providerFactory.$$factory).toBe(factoryFn);
+    expect(providerFactory.$$lifetime).toBe('transient');
+  });
+
+  test('default $$name and $$deps', () => {
+    const factoryFn = (foo, bar, baz) => ({ foo, bar, baz });
+
+    const providerFactory = factory({ lifetime: 'scoped' })(factoryFn);
+
+    expect(providerFactory.$$name).toBe('factoryFn');
+    expect(providerFactory.$$deps).toEqual([]);
+  });
+
+  it('throw if invalid deps received', () => {
+    class NonService {}
+
+    expect(() => {
+      provider({ deps: [NonService], lifetime: 'scoped' })(foo => ({ foo }));
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"NonService is not a valid interface"`
+    );
+  });
+
+  it('throw if invalid lifetime received', () => {
+    expect(() => factory({ lifetime: 'singleton' })(() => 'foo')).not.toThrow();
+    expect(() => factory({ lifetime: 'scoped' })(() => 'foo')).not.toThrow();
+    expect(() => factory({ lifetime: 'transient' })(() => 'foo')).not.toThrow();
+
+    expect(() => {
+      factory({ lifetime: 'halfling' })(() => 'foo');
+    }).toThrowErrorMatchingInlineSnapshot(
+      `"halfling is not valid service lifetime"`
+    );
+  });
+});
+
+describe('abstractInterface(options)(klass)', () => {
+  it('annotate $$typeof as class', () => {
+    class AbstractKlazz {}
+    const AbstractInterface = abstractInterface({
+      name: 'AbstractInterface',
+    })(AbstractKlazz);
+
+    expect(AbstractInterface).toBe(AbstractKlazz);
+    expect(AbstractInterface.$$typeof).toBe(MACHINAT_SERVICES_INTERFACE);
+    expect(AbstractInterface.$$name).toBe('AbstractInterface');
+  });
+
+  test('default $$name', () => {
+    class AbstractKlazz {}
+    const AbstractInterface = abstractInterface()(AbstractKlazz);
+
+    expect(AbstractInterface.$$name).toBe('AbstractKlazz');
   });
 });
 
 describe('namedInterface(name)', () => {
   it('create annotation', () => {
-    const MyFooInterface = namedInterface('foo');
+    const MyFooInterface = namedInterface('Foo');
 
-    expect(MyFooInterface).toEqual({
-      $$typeof: MACHINAT_SERVICES_INTERFACEABLE,
-      name: 'foo',
-    });
+    expect(MyFooInterface.$$typeof).toBe(MACHINAT_SERVICES_INTERFACE);
+    expect(MyFooInterface.$$name).toBe('Foo');
   });
 });

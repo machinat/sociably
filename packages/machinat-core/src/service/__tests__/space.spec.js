@@ -1,96 +1,128 @@
 /* eslint-disable class-methods-use-this */
 import { factory as moxyFactory } from 'moxy';
 import ServiceSpace from '../space';
-import Scope from '../scope';
-import { inject, provider, namedInterface, abstract } from '../annotate';
+import ServiceScope from '../scope';
+import {
+  inject,
+  factory,
+  provider,
+  namedInterface,
+  abstractInterface,
+} from '../annotate';
 
-const moxy = moxyFactory({ excludeProps: ['$$deps'] });
+const moxy = moxyFactory({ mockProperty: false });
 
-const Foo = namedInterface('Foo');
-const staticFoo = moxy({ foo: () => 'FOO' });
+const HELLO = namedInterface('Hello');
+const staticGreeter = moxy({ hello: () => 'HI' });
 
-const Bar = moxy(
-  provider({
-    deps: [Foo],
-    factory: () => new Bar(),
-    strategy: 'singleton',
-  })(
-    class Bar {
-      bar() {
-        return 'Bar';
+const Foo = provider({ deps: [HELLO], lifetime: 'singleton' })(
+  moxy(
+    class Foo {
+      foo() {
+        return 'Foo';
       }
     }
   )
 );
 
-const Baz = abstract()(
-  class BazAbstract {
-    baz() {
+const Bar = abstractInterface()(
+  class BarAbstract {
+    bar() {
       throw new Error('too abstract');
     }
   }
 );
 
-const BazImpl = moxy(
-  provider({
-    deps: [Foo, Bar],
-    factory: () => new BazImpl(),
-    strategy: 'scoped',
-  })(
-    class BazImpl {
-      baz() {
-        return 'BazImpl';
+const BarImpl = provider({
+  deps: [Foo],
+  lifetime: 'scoped',
+})(
+  moxy(
+    class BarImpl {
+      bar() {
+        return 'BarImpl';
       }
     }
   )
 );
 
-const container = moxy(
-  inject({
-    deps: [Foo, Bar, Baz],
-  })((foo, bar, baz) => `${foo.foo()} ${bar.bar()} ${baz.baz()}`)
+const BAZ = namedInterface('Baz');
+const Baz = class Baz {
+  baz() {
+    return 'Baz';
+  }
+};
+const bazFactory = factory({ deps: [Foo, Bar], lifetime: 'transient' })(
+  moxy(() => new Baz())
+);
+
+const container = inject({
+  deps: [HELLO, Foo, Bar, BAZ],
+})(
+  moxy(
+    (greeter, foo, bar, baz) =>
+      `${greeter.hello()} ${foo.foo()} ${bar.bar()} ${baz.baz()}`
+  )
 );
 
 beforeEach(() => {
-  staticFoo.mock.reset();
-  Bar.$$factory.mock.reset();
-  BazImpl.$$factory.mock.reset();
+  Foo.mock.reset();
+  BarImpl.mock.reset();
+  bazFactory.mock.reset();
   container.mock.reset();
 });
 
 it('provide services bound in bindings', () => {
   const space = new ServiceSpace(
-    [{ provide: Baz, withProvider: BazImpl }],
-    [{ provide: Foo, withValue: staticFoo }, Bar]
+    [
+      { provide: Bar, withProvider: BarImpl },
+      { provide: BAZ, withProvider: bazFactory },
+    ],
+    [Foo, { provide: HELLO, withValue: staticGreeter }]
   );
 
+  const bootstrapScope = space.bootstrap(null);
+  expect(bootstrapScope).toBeInstanceOf(ServiceScope);
+  expect(bootstrapScope.platform).toBe(undefined);
+
+  expect(Foo.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.mock).toHaveBeenCalledTimes(1);
+
   const scope = space.createScope('test');
-  expect(scope).toBeInstanceOf(Scope);
+  expect(scope).toBeInstanceOf(ServiceScope);
 
-  expect(scope.injectContainer(container)).toBe('FOO Bar BazImpl');
+  expect(scope.injectContainer(container)).toBe('HI Foo BarImpl Baz');
 
-  const [foo, bar, baz] = scope.useServices([Foo, Bar, Baz]);
-  expect(foo).toBe(staticFoo);
-  expect(bar).toBeInstanceOf(Bar);
-  expect(baz).toBeInstanceOf(BazImpl);
+  const [greeter, foo, bar, baz] = scope.useServices([HELLO, Foo, Bar, BAZ]);
+  expect(greeter).toBe(staticGreeter);
+  expect(foo).toBeInstanceOf(Foo);
+  expect(bar).toBeInstanceOf(BarImpl);
+  expect(baz).toBeInstanceOf(Baz);
 
-  expect(Bar.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(Bar.$$factory.mock).toHaveBeenCalledWith(foo);
+  expect(Foo.mock).toHaveBeenCalledTimes(1);
+  expect(Foo.mock).toHaveBeenCalledWith(greeter);
 
-  expect(BazImpl.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(BazImpl.$$factory.mock).toHaveBeenCalledWith(foo, bar);
+  expect(BarImpl.mock).toHaveBeenCalledTimes(2);
+  expect(BarImpl.mock).toHaveBeenCalledWith(foo);
+
+  expect(bazFactory.mock).toHaveBeenCalledTimes(2);
+  expect(bazFactory.mock).toHaveBeenCalledWith(foo, bar);
 
   expect(container.mock).toHaveBeenCalledTimes(1);
-  expect(container.mock).toHaveBeenCalledWith(foo, bar, baz);
+  expect(container.mock).toHaveBeenCalledWith(
+    greeter,
+    foo,
+    bar,
+    expect.any(Baz)
+  );
 });
 
-test('registered bindings prioritized to modules bindings', () => {
-  const MyFoo = moxy(
-    provider({
-      deps: [Bar, Baz],
-      factory: () => new MyFoo(),
-      strategy: 'singleton',
-    })(
+test('registered bindings prioritize to bindings from module', () => {
+  const MyFoo = provider({
+    deps: [Bar, BAZ],
+    lifetime: 'singleton',
+  })(
+    moxy(
       class MyFoo {
         foo() {
           return 'MyFoo';
@@ -98,12 +130,11 @@ test('registered bindings prioritized to modules bindings', () => {
       }
     )
   );
-  const AnotherBar = moxy(
-    provider({
-      deps: [Baz],
-      factory: () => new AnotherBar(),
-      strategy: 'singleton',
-    })(
+  const AnotherBar = provider({
+    deps: [BAZ],
+    lifetime: 'singleton',
+  })(
+    moxy(
       class AnotherBar {
         bar() {
           return 'AnotherBar';
@@ -115,92 +146,119 @@ test('registered bindings prioritized to modules bindings', () => {
 
   const space = new ServiceSpace(
     [
-      { provide: Foo, withValue: staticFoo },
-      Bar,
-      { provide: Baz, withProvider: BazImpl },
+      { provide: HELLO, withValue: staticGreeter },
+      Foo,
+      { provide: Bar, withProvider: BarImpl },
+      { provide: BAZ, withProvider: bazFactory },
     ],
     [
       { provide: Foo, withProvider: MyFoo },
       { provide: Bar, withProvider: AnotherBar },
-      { provide: Baz, withValue: fakeBaz },
+      { provide: BAZ, withValue: fakeBaz },
     ]
   );
+  space.bootstrap(null);
 
   const scope = space.createScope('test');
-  expect(scope.injectContainer(container)).toBe('MyFoo AnotherBar NO_BAZ');
+  expect(scope.injectContainer(container)).toBe('HI MyFoo AnotherBar NO_BAZ');
 
-  const [foo, bar, baz] = scope.useServices([Foo, Bar, Baz]);
+  const [foo, bar, baz] = scope.useServices([Foo, Bar, BAZ]);
   expect(foo).toBeInstanceOf(MyFoo);
   expect(bar).toBeInstanceOf(AnotherBar);
   expect(baz).toBe(fakeBaz);
 
-  expect(MyFoo.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(MyFoo.$$factory.mock).toHaveBeenCalledWith(bar, baz);
-  expect(staticFoo.foo.mock).not.toHaveBeenCalled();
+  expect(MyFoo.mock).toHaveBeenCalledTimes(1);
+  expect(MyFoo.mock).toHaveBeenCalledWith(bar, baz);
+  expect(Foo.mock).not.toHaveBeenCalled();
 
-  expect(AnotherBar.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(AnotherBar.$$factory.mock).toHaveBeenCalledWith(baz);
-  expect(Bar.$$factory.mock).not.toHaveBeenCalled();
+  expect(AnotherBar.mock).toHaveBeenCalledTimes(1);
+  expect(AnotherBar.mock).toHaveBeenCalledWith(baz);
+  expect(BarImpl.mock).not.toHaveBeenCalled();
 
-  expect(BazImpl.$$factory.mock).not.toHaveBeenCalled();
+  expect(bazFactory.mock).not.toHaveBeenCalled();
 
   expect(container.mock).toHaveBeenCalledTimes(1);
-  expect(container.mock).toHaveBeenCalledWith(foo, bar, baz);
+  expect(container.mock).toHaveBeenCalledWith(staticGreeter, foo, bar, baz);
 });
 
 it('throw if bindings conflicted', () => {
-  const someBaz = { baz: () => 'zzz' };
+  const someBar = { bar: () => '🍻' };
   expect(
     () =>
       new ServiceSpace(
         [
-          { provide: Baz, withProvider: BazImpl },
-          { provide: Baz, withValue: someBaz },
+          { provide: Bar, withProvider: BarImpl },
+          { provide: Bar, withValue: someBar },
         ],
-        [{ provide: Foo, withValue: staticFoo }, Bar]
+        [Foo, { provide: BAZ, withValue: bazFactory }]
       )
   ).toThrowErrorMatchingInlineSnapshot(
-    `"BazAbstract is already bound on default branch"`
+    `"BarAbstract is already bound on default branch"`
   );
 
-  const someBar = { bar: () => 'rrr' };
   expect(
     () =>
       new ServiceSpace(
-        [{ provide: Baz, withProvider: BazImpl }],
+        [Foo, { provide: BAZ, withValue: bazFactory }],
         [
-          { provide: Foo, withValue: staticFoo },
+          { provide: Bar, withProvider: BarImpl },
           { provide: Bar, withValue: someBar },
-          Bar,
         ]
       )
   ).toThrowErrorMatchingInlineSnapshot(
-    `"Bar is already bound on default branch"`
+    `"BarAbstract is already bound on default branch"`
   );
 });
 
-it('throw if provider dependencies not bound', () => {
-  expect(() => new ServiceSpace([], [Bar])).toThrowErrorMatchingInlineSnapshot(
-    `"Foo is not bound"`
+it('throw if provider dependencies not bound when bootstrap', () => {
+  expect(() =>
+    new ServiceSpace([], [BarImpl]).bootstrap(null)
+  ).toThrowErrorMatchingInlineSnapshot(`"Foo is not bound"`);
+  expect(() =>
+    new ServiceSpace(
+      [{ provide: HELLO, withValue: staticGreeter }, Foo],
+      [{ provide: BAZ, platforms: ['A', 'B'], withProvider: bazFactory }]
+    ).bootstrap(null)
+  ).toThrowErrorMatchingInlineSnapshot(`"BarAbstract is not bound"`);
+});
+
+it('throw if invalid binging received', () => {
+  expect(() => new ServiceSpace([Bar], [])).toThrowErrorMatchingInlineSnapshot(`
+"invalid binding (class BarAbstract {
+  bar() {
+    throw new Error('too abstract');
+  }
+
+})"
+`);
+  expect(
+    () => new ServiceSpace([{ provide: class Bae {}, withValue: 'bae~' }], [])
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"class Bae {} is not a valid interface to provide"`
+  );
+  expect(
+    () => new ServiceSpace([{ provide: Bar, withTea: 'Oooooolong' }], [])
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"either withProvider or withValue must be provided within binding"`
   );
   expect(
     () =>
-      new ServiceSpace(
-        [{ provide: Foo, withValue: staticFoo }],
-        [{ provide: Baz, platforms: ['A', 'B'], withProvider: BazImpl }]
-      )
-  ).toThrowErrorMatchingInlineSnapshot(`"Bar is not bound"`);
+      new ServiceSpace([{ provide: Bar, withProvider: { star: 'bucks' } }], [])
+  ).toThrowErrorMatchingInlineSnapshot(`"invalid provider [object Object]"`);
 });
 
-it('throw circular dependent provider found', () => {
+it('throw circular dependent provider found when bootstrap', () => {
   const SelfDependentFoo = provider({
     deps: [Foo],
     facotry: () => {},
-    strategy: 'scoped',
+    lifetime: 'scoped',
   })(class SelfDependentFoo {});
-  expect(
-    () =>
-      new ServiceSpace([], [{ provide: Foo, withProvider: SelfDependentFoo }])
+
+  expect(() =>
+    new ServiceSpace(
+      [],
+      [{ provide: Foo, withProvider: SelfDependentFoo }]
+    ).bootstrap(null)
   ).toThrowErrorMatchingInlineSnapshot(
     `"SelfDependentFoo is circular dependent"`
   );
@@ -208,14 +266,13 @@ it('throw circular dependent provider found', () => {
   const CircularDependentFoo = provider({
     deps: [Bar],
     facotry: () => {},
-    strategy: 'scoped',
+    lifetime: 'scoped',
   })(class CircularDependentFoo {});
-  expect(
-    () =>
-      new ServiceSpace(
-        [{ provide: Foo, withProvider: CircularDependentFoo }],
-        [Bar]
-      )
+  expect(() =>
+    new ServiceSpace(
+      [{ provide: Foo, withProvider: CircularDependentFoo }],
+      [{ provide: Bar, withProvider: BarImpl }]
+    ).bootstrap(null)
   ).toThrowErrorMatchingInlineSnapshot(
     `"CircularDependentFoo is circular dependent"`
   );
@@ -223,28 +280,33 @@ it('throw circular dependent provider found', () => {
 
 it('provide service bound on specified platform within corresponded scope', () => {
   const space = new ServiceSpace(
-    [{ provide: Foo, withValue: staticFoo }, Bar],
-    [{ provide: Baz, platforms: ['A', 'B'], withProvider: BazImpl }]
+    [{ provide: HELLO, withValue: staticGreeter }],
+    [
+      Foo,
+      { provide: Bar, withProvider: BarImpl },
+      { provide: BAZ, platforms: ['A', 'B'], withProvider: bazFactory },
+    ]
   );
+  space.bootstrap(null);
 
-  const bazContainer = inject({ deps: [Baz] })(baz => baz.baz());
+  const bazContainer = inject({ deps: [BAZ] })(baz => baz.baz());
 
   const scopeA = space.createScope('A');
-  expect(scopeA.injectContainer(bazContainer)).toBe('BazImpl');
-  let [baz] = scopeA.useServices([Baz]);
-  expect(baz).toBeInstanceOf(BazImpl);
+  expect(scopeA.injectContainer(bazContainer)).toBe('Baz');
+  let [baz] = scopeA.useServices([BAZ]);
+  expect(baz).toBeInstanceOf(Baz);
 
   const scopeB = space.createScope('B');
-  expect(scopeA.injectContainer(bazContainer)).toBe('BazImpl');
-  [baz] = scopeB.useServices([Baz]);
-  expect(baz).toBeInstanceOf(BazImpl);
+  expect(scopeA.injectContainer(bazContainer)).toBe('Baz');
+  [baz] = scopeB.useServices([BAZ]);
+  expect(baz).toBeInstanceOf(Baz);
 
   const scopeC = space.createScope('C');
   expect(() =>
     scopeC.injectContainer(bazContainer)
-  ).toThrowErrorMatchingInlineSnapshot(`"BazAbstract is not bound"`);
-  expect(() => scopeC.useServices([Baz])).toThrowErrorMatchingInlineSnapshot(
-    `"BazAbstract is not bound"`
+  ).toThrowErrorMatchingInlineSnapshot(`"Baz is not bound"`);
+  expect(() => scopeC.useServices([BAZ])).toThrowErrorMatchingInlineSnapshot(
+    `"Baz is not bound"`
   );
 });
 
@@ -254,13 +316,14 @@ it('provide service bound on specified platform prior to default one', () => {
   const fooWhale = { foo: () => 'FOO_SONAR' };
 
   const space = new ServiceSpace(
-    [Bar, { provide: Baz, withProvider: BazImpl }],
+    [{ provide: Bar, withProvider: BarImpl }],
     [
       { provide: Foo, withValue: fooCat },
       { provide: Foo, platforms: ['sky', 'on_the_tree'], withValue: fooBird },
       { provide: Foo, platforms: ['under_water'], withValue: fooWhale },
     ]
   );
+  space.bootstrap(null);
 
   const fooContainer = inject({ deps: [Foo] })(foo => foo.foo());
 
@@ -290,66 +353,67 @@ it('provide service bound on specified platform prior to default one', () => {
   expect(foo).toBe(fooCat);
 });
 
-it('throw if bindings conflicted on specified platform', () => {
-  const someBaz = { baz: () => 'zzz' };
-  expect(
-    () =>
-      new ServiceSpace(
-        [
-          { provide: Baz, platforms: ['a', 'b'], withProvider: BazImpl },
-          { provide: Baz, platforms: ['b', 'c'], withValue: someBaz },
-        ],
-        [{ provide: Foo, withValue: staticFoo }, Bar]
-      )
+it('throw if bindings conflicted on specified platform when bootstrap', () => {
+  const someBar = { bar: () => 'zzz' };
+  expect(() =>
+    new ServiceSpace(
+      [
+        { provide: Bar, platforms: ['a', 'b'], withProvider: BarImpl },
+        { provide: Bar, platforms: ['b', 'c'], withValue: someBar },
+      ],
+      [Foo]
+    ).bootstrap(null)
   ).toThrowErrorMatchingInlineSnapshot(
-    `"BazAbstract is already bound on platform \\"b\\" branch"`
+    `"BarAbstract is already bound on platform \\"b\\" branch"`
   );
 
-  const someBar = { bar: () => 'rrr' };
-  expect(
-    () =>
-      new ServiceSpace(
-        [{ provide: Baz, withProvider: BazImpl }],
-        [
-          { provide: Foo, withValue: staticFoo },
-          { provide: Bar, platforms: ['a', 'b'], withValue: someBar },
-          { provide: Bar, platforms: ['b', 'c'], withProvider: Bar },
-        ]
-      )
+  expect(() =>
+    new ServiceSpace(
+      [Foo],
+      [
+        { provide: Bar, platforms: ['a', 'b'], withValue: someBar },
+        { provide: Bar, platforms: ['b', 'c'], withProvider: BarImpl },
+      ]
+    ).bootstrap(null)
   ).toThrowErrorMatchingInlineSnapshot(
-    `"Bar is already bound on platform \\"b\\" branch"`
+    `"BarAbstract is already bound on platform \\"b\\" branch"`
   );
 });
 
 it('throw if unbound service usage required', () => {
   const space = new ServiceSpace(
-    [{ provide: Foo, withValue: staticFoo }],
-    [Bar]
+    [
+      { provide: HELLO, withValue: staticGreeter },
+      { provide: Bar, withProvider: BarImpl },
+    ],
+    [Foo]
   );
+  space.bootstrap(null);
 
-  const fooContainer = inject({ deps: [Foo, Bar, Baz] })(() => 'BOOM');
+  const fooContainer = inject({ deps: [Foo, Bar, BAZ] })(() => 'BOOM');
 
   const scope = space.createScope('test');
   expect(() =>
     scope.injectContainer(fooContainer)
-  ).toThrowErrorMatchingInlineSnapshot(`"BazAbstract is not bound"`);
+  ).toThrowErrorMatchingInlineSnapshot(`"Baz is not bound"`);
 
   expect(() =>
-    scope.useServices([Foo, Bar, Baz])
-  ).toThrowErrorMatchingInlineSnapshot(`"BazAbstract is not bound"`);
+    scope.useServices([Foo, Bar, BAZ])
+  ).toThrowErrorMatchingInlineSnapshot(`"Baz is not bound"`);
 });
 
 test('optional dependency', () => {
   const space = new ServiceSpace(
-    [Bar],
-    [{ provide: Foo, withValue: staticFoo }]
+    [{ provide: HELLO, withValue: staticGreeter }, Foo],
+    [{ provide: Bar, withProvider: BarImpl }]
   );
+  space.bootstrap(null);
 
   const optionalDepsContainer = inject({
     deps: [
       Foo,
       { require: Bar, optional: true },
-      { require: Baz, optional: true },
+      { require: BAZ, optional: true },
     ],
   })(
     (foo, bar, baz) =>
@@ -357,15 +421,15 @@ test('optional dependency', () => {
   );
 
   const scope = space.createScope('test');
-  expect(scope.injectContainer(optionalDepsContainer)).toBe('FOO Bar x');
+  expect(scope.injectContainer(optionalDepsContainer)).toBe('Foo BarImpl x');
 
   const [foo, bar, baz] = scope.useServices([
     Foo,
     { require: Bar, optional: true },
-    { require: Baz, optional: true },
+    { require: BAZ, optional: true },
   ]);
-  expect(foo).toBe(staticFoo);
-  expect(bar).toBeInstanceOf(Bar);
+  expect(foo).toBeInstanceOf(Foo);
+  expect(bar).toBeInstanceOf(BarImpl);
   expect(baz).toBe(null);
 });
 
@@ -374,13 +438,14 @@ it('use the same instance of the same provider on different interface', () => {
   const JazzBar = namedInterface('JazzBar');
 
   const space = new ServiceSpace(
-    [{ provide: Foo, withValue: staticFoo }],
+    [{ provide: HELLO, withValue: staticGreeter }, Foo],
     [
-      Bar,
-      { provide: JazzBar, withProvider: Bar },
-      { provide: MusicalBar, withProvider: Bar },
+      { provide: Bar, withProvider: BarImpl },
+      { provide: JazzBar, withProvider: BarImpl },
+      { provide: MusicalBar, withProvider: BarImpl },
     ]
   );
+  space.bootstrap(null);
 
   const scope = space.createScope('test');
   const [bar, jazzBar, musicalBar] = scope.useServices([
@@ -389,101 +454,127 @@ it('use the same instance of the same provider on different interface', () => {
     MusicalBar,
   ]);
 
-  expect(bar).toBeInstanceOf(Bar);
+  expect(bar).toBeInstanceOf(BarImpl);
   expect(jazzBar).toBe(bar);
   expect(musicalBar).toBe(bar);
 
-  expect(Bar.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.mock).toHaveBeenCalledTimes(2);
 });
 
-test('lifecycle of services of different strategies', () => {
-  const Fleeting = moxy(
-    provider({
-      deps: [Foo, Bar, Baz],
-      factory: () => new Fleeting(),
-      strategy: 'transient',
-    })(class Fleeting {})
-  );
-
+test('lifecycle of services of different lifetime', () => {
   const space = new ServiceSpace(
-    [{ provide: Foo, withValue: staticFoo }, Bar],
-    [{ provide: Baz, withProvider: BazImpl }, Fleeting]
+    [Foo, { provide: Bar, withProvider: BarImpl }],
+    [
+      { provide: BAZ, withProvider: bazFactory },
+      { provide: HELLO, withValue: staticGreeter },
+    ]
   );
+  space.bootstrap(null);
 
-  const services = [Foo, Bar, Baz, Fleeting];
+  expect(Foo.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.mock).toHaveBeenCalledTimes(1);
+  expect(bazFactory.mock).not.toHaveBeenCalled();
+
+  const bootstrapedFoo = Foo.mock.calls[0].instance;
+  const bootstrapedBar = BarImpl.mock.calls[0].instance;
+
+  const services = [HELLO, Foo, Bar, BAZ];
 
   const scope1 = space.createScope('test');
-  const [foo1, bar1, baz1, fleeting1] = scope1.useServices(services);
-  expect(foo1).toBe(staticFoo);
-  expect(bar1).toBeInstanceOf(Bar);
-  expect(baz1).toBeInstanceOf(BazImpl);
-  expect(fleeting1).toBeInstanceOf(Fleeting);
+  const [greeter1, foo1, bar1, baz1] = scope1.useServices(services);
+  expect(greeter1).toBe(staticGreeter);
+  expect(foo1).toBeInstanceOf(Foo);
+  expect(foo1).toBe(bootstrapedFoo);
+  expect(bar1).toBeInstanceOf(BarImpl);
+  expect(bar1).not.toBe(bootstrapedBar);
+  expect(baz1).toBeInstanceOf(Baz);
 
-  const [foo2, bar2, baz2, fleeting2] = scope1.useServices(services);
+  const [greeter2, foo2, bar2, baz2] = scope1.useServices(services);
+  expect(greeter2).toBe(staticGreeter);
   expect(foo2).toBe(foo1);
   expect(bar2).toBe(bar1);
-  expect(baz2).toBe(baz1);
-  expect(fleeting2).not.toBe(fleeting1);
+  expect(baz2).not.toBe(baz1);
 
   const scope2 = space.createScope('test');
-  const [foo3, bar3, baz3, fleeting3] = scope2.useServices(services);
+  const [greeter3, foo3, bar3, baz3] = scope2.useServices(services);
 
+  expect(greeter3).toBe(staticGreeter);
   expect(foo3).toBe(foo1);
-  expect(bar3).toBe(bar1);
+  expect(bar3).not.toBe(bar1);
+  expect(bar3).toBeInstanceOf(BarImpl);
   expect(baz3).not.toBe(baz1);
-  expect(baz3).toBeInstanceOf(BazImpl);
-  expect(fleeting3).not.toBe(fleeting1);
-  expect(fleeting3).not.toBe(fleeting2);
+  expect(baz3).not.toBe(baz2);
 
-  expect(Bar.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(BazImpl.$$factory.mock).toHaveBeenCalledTimes(2);
-  expect(Fleeting.$$factory.mock).toHaveBeenCalledTimes(3);
+  expect(Foo.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.mock).toHaveBeenCalledTimes(3);
+  expect(bazFactory.mock).toHaveBeenCalledTimes(3);
 });
 
 test('inject time provision', () => {
-  const Fleeting = moxy(
-    provider({
-      deps: [Foo, Bar, Baz],
-      factory: () => new Fleeting(),
-      strategy: 'transient',
-    })(class Fleeting {})
-  );
-
   const space = new ServiceSpace(
-    [{ provide: Foo, withValue: staticFoo }, Bar],
-    [{ provide: Baz, withProvider: BazImpl }, Fleeting]
+    [Foo, { provide: HELLO, withValue: staticGreeter }],
+    [
+      { provide: Bar, withProvider: BarImpl },
+      { provide: BAZ, withProvider: bazFactory },
+    ]
   );
+  space.bootstrap(null);
 
   const myFoo = { my: 'foo' };
   const myBar = { my: 'bar' };
   const myBaz = { my: 'baz' };
-  const blaBlaBla = { bla: 'bla_bla' };
+  const myGreeter = { hello: 'WORLD' };
   const injectTimeProvisions = new Map([
     [Foo, myFoo],
     [Bar, myBar],
-    [Baz, myBaz],
-    [Fleeting, blaBlaBla],
+    [BAZ, myBaz],
+    [HELLO, myGreeter],
   ]);
 
   const scope = space.createScope('test');
-  const [foo, bar, baz, fleeting] = scope.useServices(
-    [Foo, Bar, Baz, Fleeting],
+  const [greeter, foo, bar, baz] = scope.useServices(
+    [HELLO, Foo, Bar, BAZ],
     injectTimeProvisions
   );
 
   expect(foo).toBe(myFoo);
   expect(bar).toBe(myBar);
   expect(baz).toBe(myBaz);
-  expect(fleeting).toBe(blaBlaBla);
+  expect(greeter).toBe(myGreeter);
 
   expect(
     scope.injectContainer(
-      inject({ deps: [Foo, Bar, Baz, Fleeting] })((...args) => args),
+      inject({ deps: [HELLO, Foo, Bar, BAZ] })((...args) => args),
       injectTimeProvisions
     )
-  ).toEqual([foo, bar, baz, fleeting]);
+  ).toEqual([greeter, foo, bar, baz]);
 
-  expect(Bar.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(BazImpl.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(Fleeting.$$factory.mock).not.toHaveBeenCalled();
+  expect(Foo.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.mock).toHaveBeenCalledTimes(2);
+  expect(bazFactory.mock).not.toHaveBeenCalled();
+});
+
+test('boostrap time provision', () => {
+  const BOOTSTRAP_TIME_INTERFACE = namedInterface('BOO');
+  const BooConsumer = provider({
+    deps: [BOOTSTRAP_TIME_INTERFACE],
+    lifetime: 'singleton',
+  })(moxy(class BooConsumer {}));
+
+  const space = new ServiceSpace(
+    [Foo, { provide: HELLO, withValue: staticGreeter }],
+    [
+      { provide: Bar, withProvider: BarImpl },
+      { provide: BAZ, withProvider: bazFactory },
+      BooConsumer,
+    ]
+  );
+  space.bootstrap(new Map([[BOOTSTRAP_TIME_INTERFACE, 'boooo~']]));
+
+  expect(BooConsumer.mock).toHaveBeenCalledTimes(1);
+  expect(BooConsumer.mock).toHaveBeenCalledWith('boooo~');
+
+  expect(() =>
+    space.createScope('test').useServices([BOOTSTRAP_TIME_INTERFACE])
+  ).toThrowErrorMatchingInlineSnapshot(`"BOO is not bound"`);
 });

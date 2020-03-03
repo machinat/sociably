@@ -3,7 +3,7 @@ import type { Interfaceable } from './types';
 
 type ProvisionBranches<T> = Map<
   Interfaceable,
-  {| default: null | T, platformBranches: null | Map<string, T> |}
+  {| default: null | T, platforms: {| [string]: T |} |}
 >;
 
 export default class ProvisionMap<T> {
@@ -14,59 +14,39 @@ export default class ProvisionMap<T> {
   }
 
   get(target: Interfaceable, platform: void | string): null | T {
-    return platform
-      ? this.getPlatform(target, platform)
-      : this.getDefault(target);
-  }
+    const registered = this._mapping.get(target);
+    if (!registered) {
+      return null;
+    }
 
-  getDefault(target: Interfaceable): null | T {
-    const reigstered = this._mapping.get(target);
-    return reigstered ? reigstered.default : null;
-  }
+    if (!platform) {
+      return registered.default;
+    }
 
-  getPlatform(target: Interfaceable, platform: string): null | T {
-    const reigstered = this._mapping.get(target);
-    return reigstered && reigstered.platformBranches
-      ? reigstered.platformBranches.get(platform) || null
-      : null;
+    return registered.platforms[platform] || registered.default;
   }
 
   set(target: Interfaceable, platform: void | string, value: T): boolean {
-    return platform
-      ? this.setPlatform(target, platform, value)
-      : this.setDefault(target, value);
-  }
-
-  setDefault(target: Interfaceable, value: T): boolean {
-    const reigstered = this._mapping.get(target);
-    if (reigstered) {
-      const isUpdating = !!reigstered.default;
-      reigstered.default = value;
-      return isUpdating;
-    }
-
-    this._mapping.set(target, { default: value, platformBranches: null });
-    return false;
-  }
-
-  setPlatform(target: Interfaceable, platform: string, value: T): boolean {
-    const reigstered = this._mapping.get(target);
-    if (!reigstered) {
-      const platformBranches = new Map();
-      platformBranches.set(platform, value);
-
-      this._mapping.set(target, { default: null, platformBranches });
+    const registered = this._mapping.get(target);
+    if (!registered) {
+      this._mapping.set(
+        target,
+        platform
+          ? { default: null, platforms: { [platform]: value } }
+          : { default: value, platforms: ({}: any) }
+      );
       return false;
     }
 
-    if (!reigstered.platformBranches) {
-      reigstered.platformBranches = new Map().set(platform, value);
-      return false;
-    }
+    let isUpdating;
 
-    const { platformBranches } = reigstered;
-    const isUpdating = platformBranches.has(platform);
-    platformBranches.set(platform, value);
+    if (platform) {
+      isUpdating = !!registered.platforms[platform];
+      registered.platforms[platform] = value;
+    } else {
+      isUpdating = !!registered.default;
+      registered.default = value;
+    }
 
     return isUpdating;
   }
@@ -74,34 +54,37 @@ export default class ProvisionMap<T> {
   merge(concatee: ProvisionMap<T>): ProvisionMap<T> {
     for (const [target, provided] of concatee._mapping) {
       if (provided.default) {
-        this.setDefault(target, provided.default);
+        this.set(target, undefined, provided.default);
       }
 
-      if (provided.platformBranches) {
-        for (const [platform, value] of provided.platformBranches) {
-          this.setPlatform(target, platform, value);
-        }
+      for (const [platform, value] of Object.entries(provided.platforms)) {
+        this.set(target, platform, (value: any));
       }
     }
 
     return this;
   }
 
-  /* :: @@iterator(): Generator<[Interfaceable, void | string, T], void, void> {return ({}: any)} */
-  *[Symbol.iterator](): Generator<
-    [Interfaceable, void | string, any],
-    void,
-    void
-  > {
+  *iterBranch(
+    platform: void | string
+  ): Generator<[Interfaceable, void | string, T], void, void> {
+    for (const [target, provided] of this._mapping) {
+      if (platform && provided.platforms[platform]) {
+        yield [target, platform, provided.platforms[platform]];
+      } else if (provided.default) {
+        yield [target, undefined, provided.default];
+      }
+    }
+  }
+
+  *iterAll(): Generator<[Interfaceable, void | string, T], void, void> {
     for (const [target, provided] of this._mapping) {
       if (provided.default) {
         yield [target, undefined, provided.default];
       }
 
-      if (provided.platformBranches) {
-        for (const [platform, value] of provided.platformBranches) {
-          yield [target, platform, value];
-        }
+      for (const [platform, value] of Object.entries(provided.platforms)) {
+        yield [target, platform, (value: any)];
       }
     }
   }

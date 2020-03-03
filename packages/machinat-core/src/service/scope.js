@@ -16,14 +16,14 @@ import type {
 export default class ServiceScope {
   platform: void | string;
   maker: ServiceMaker;
-  singletonCache: ServiceCache<any>;
-  scopeCache: ServiceCache<any>;
+  singletonCache: ServiceCache;
+  scopeCache: ServiceCache;
 
   constructor(
     platform: void | string,
     maker: ServiceMaker,
-    singletonCache: ServiceCache<any>,
-    scopeCache: ServiceCache<any>
+    singletonCache: ServiceCache,
+    scopeCache: ServiceCache
   ) {
     this.platform = platform;
     this.maker = maker;

@@ -17,12 +17,8 @@ export const MACHINAT_SERVICES_CONTAINER = Symbol(
   'machinat.services.container'
 );
 
-export const MACHINAT_SERVICES_INTERFACEABLE = Symbol(
-  'machinat.services.interfaceable'
+export const MACHINAT_SERVICES_INTERFACE = Symbol(
+  'machinat.services.interface'
 );
 
 export const MACHINAT_SERVICES_PROVIDER = Symbol('machinat.services.provider');
-
-export const MACHINAT_SERVICES_ABSTRACTION = Symbol(
-  'machinat.services.abstraction'
-);

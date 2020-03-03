@@ -6,6 +6,7 @@ import type {
   ProvisionBinding,
   ServiceContainer,
   ServiceProvider,
+  ServiceInterface,
   ServiceScope,
 } from './service/types';
 import type { DispatchFrame, DispatchResponse } from './engine/types';
@@ -122,14 +123,8 @@ export type ThunkElement = MachinatElement<
 
 export type RawElement = MachinatElement<{| value: any |}, MACHINAT_RAW_TYPE>;
 
-export interface MachinatEntity {
+export interface MachinatChannel {
   +platform: string;
-  +id: string;
-}
-
-export interface MachinatChannel<Entity: MachinatEntity> {
-  +platform: string;
-  +entity: Entity;
   +type: any;
   +subtype?: any;
   +uid: string;
@@ -159,17 +154,17 @@ export interface MachinatUserProfile {
   +pictureURL: void | string;
 }
 
-export interface MachinatBot<Channel: MachinatChannel<any>, Job, Result> {
+export interface MachinatBot<Channel: MachinatChannel, Job, Result> {
   render(
     channel: Channel,
     message: MachinatNode
   ): Promise<null | DispatchResponse<Job, Result>>;
-  start(): void;
-  stop(): void;
+  start(): MachinatBot<Channel, Job, Result>;
+  stop(): MachinatBot<Channel, Job, Result>;
 }
 
 export type EventContext<
-  Channel: MachinatChannel<any>,
+  Channel: MachinatChannel,
   User: ?MachinatUser,
   Event: MachinatEvent<any>,
   Metadata: MachinatMetadata<any>,
@@ -200,20 +195,64 @@ export type DispatchMiddleware<
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
 export type ServiceModule = {|
-  bootstrap: () => Promise<(ServiceProvider<any> | ProvisionBinding)[]>,
+  provisions: (ServiceProvider<any, any> | ProvisionBinding)[],
   startHook: null | ServiceContainer<Promise<void>>,
 |};
 
+export type PlatformModule<
+  Context: EventContext<any, any, any, any, any>,
+  EventResp,
+  Job,
+  Frame: DispatchFrame<any, Job, any>,
+  Result
+> = {|
+  name: string,
+  mounterInterface: ServiceInterface<
+    PlatformMounter<Context, EventResp, Job, Frame, Result>,
+    any
+  >,
+  provisions: (ServiceProvider<any, any> | ProvisionBinding)[],
+  startHook?: ServiceContainer<Promise<void>>,
+  eventMiddlewares?: (
+    | EventMiddleware<Context, EventResp>
+    | ServiceContainer<EventMiddleware<Context, EventResp>>
+  )[],
+  dispatchMiddlewares?: (
+    | DispatchMiddleware<Job, Frame, Result>
+    | ServiceContainer<DispatchMiddleware<Job, Frame, Result>>
+  )[],
+|};
+
+export type AppConfig<Context: EventContext<any, any, any, any, any>> = {
+  platforms?: PlatformModule<Context, any, any, any, any>[],
+  imports?: ServiceModule[],
+  registers?: (ServiceProvider<any, any> | ProvisionBinding)[],
+};
+
 export type InitScopeFn = () => ServiceScope;
+
+export type ScopedPopEventFn<
+  Context: EventContext<any, any, any, any, any>,
+  Response
+> = (context: Context, scope: ServiceScope) => Promise<Response>;
 
 export type PopEventWrapper<
   Context: EventContext<any, any, any, any, any>,
   Response
 > = (
   finalHandler: (Context) => Promise<Response>
-) => (scope: ServiceScope, ctx: Context) => Promise<Response>;
+) => ScopedPopEventFn<Context, Response>;
 
-export type PopErrorFn = (scope: ServiceScope, err: Error) => void;
+export type PopErrorFn = (err: Error, scope: ServiceScope) => void;
+
+export type ScopedDispatchFn<
+  Job,
+  Frame: DispatchFrame<any, Job, any>,
+  Result
+> = (
+  frame: Frame,
+  scope: ServiceScope
+) => Promise<DispatchResponse<Job, Result>>;
 
 export type DispatchWrapper<
   Job,
@@ -221,39 +260,17 @@ export type DispatchWrapper<
   Result
 > = (
   dispatch: (Frame) => Promise<DispatchResponse<Job, Result>>
-) => (
-  scope: ServiceScope,
-  frame: Frame
-) => Promise<DispatchResponse<Job, Result>>;
+) => ScopedDispatchFn<Job, Frame, Result>;
 
-export type PlatformModule<
-  Channel: MachinatChannel<any>,
-  Context: EventContext<Channel, any, any, any, any>,
+export type PlatformMounter<
+  Context: EventContext<any, any, any, any, any>,
   EventResponse,
   Job,
-  Frame: DispatchFrame<Channel, Job, any>,
+  Frame: DispatchFrame<any, Job, any>,
   Result
-> = {|
-  name: string,
-  eventMiddlewares?: (
-    | EventMiddleware<Context, EventResponse>
-    | ServiceContainer<EventMiddleware<Context, EventResponse>>
-  )[],
-  dispatchMiddlewares?: (
-    | DispatchMiddleware<Job, Frame, Result>
-    | ServiceContainer<DispatchMiddleware<Job, Frame, Result>>
-  )[],
-  bootstrap: ({
-    popEventWrapper: PopEventWrapper<Context, EventResponse>,
-    initScope: InitScopeFn,
-    popError: PopErrorFn,
-    dispatchWrapper: DispatchWrapper<Job, Frame, Result>,
-  }) => Promise<(ServiceProvider<any> | ProvisionBinding)[]>,
-  startHook?: ServiceContainer<Promise<void>>,
-|};
-
-export type AppConfig<Context: EventContext<any, any, any, any, any>> = {
-  platforms?: PlatformModule<any, Context, any, any, any, any>[],
-  imports?: ServiceModule[],
-  registers?: (ServiceProvider<any> | ProvisionBinding)[],
+> = {
+  initScope: InitScopeFn,
+  popError: PopErrorFn,
+  popEventWrapper: PopEventWrapper<Context, EventResponse>,
+  dispatchWrapper: DispatchWrapper<Job, Frame, Result>,
 };

@@ -9,14 +9,14 @@ import type {
   ProvisionBinding,
 } from './types';
 
-const PHASE_ENUM_BOOTSTRAP: 1 = 1;
-const PHASE_ENUM_BEGIN_SCOPE: 2 = 2;
-const PHASE_ENUM_INJECTION: 3 = 3;
+const ENUM_PHASE_BOOTSTRAP: 1 = 1;
+const ENUM_PHASE_INIT_SCOPE: 2 = 2;
+const ENUM_PHASE_INJECTION: 3 = 3;
 
 type PhaseEnum =
-  | typeof PHASE_ENUM_BOOTSTRAP
-  | typeof PHASE_ENUM_BEGIN_SCOPE
-  | typeof PHASE_ENUM_INJECTION;
+  | typeof ENUM_PHASE_BOOTSTRAP
+  | typeof ENUM_PHASE_INIT_SCOPE
+  | typeof ENUM_PHASE_INJECTION;
 
 /**
  * MakeContext is the context passed down through the service dependencies
@@ -27,8 +27,9 @@ type PhaseEnum =
 type MakeContext = {
   platform: void | string,
   phase: PhaseEnum,
-  singletonCache: ServiceCache<any>,
-  scopeCache: ServiceCache<any>,
+  singletonCache: ServiceCache,
+  scopedCache: ServiceCache,
+  transientCache: ServiceCache,
   runtimeProvisions: null | Map<Interfaceable, any>,
 };
 
@@ -40,64 +41,70 @@ export default class ServiceMaker {
   singletonIndex: ProvisionMap<true>;
   scopedIndex: ProvisionMap<true>;
 
-  constructor(serviceMapping: ProvisionMap<ProvisionBinding>) {
+  constructor(
+    serviceMapping: ProvisionMap<ProvisionBinding>,
+    singletonIndex: ProvisionMap<true>,
+    scopedIndex: ProvisionMap<true>
+  ) {
     this.serviceMapping = serviceMapping;
-    this.singletonIndex = new ProvisionMap();
-    this.scopedIndex = new ProvisionMap();
-    this._sortOutProviders();
+    this.singletonIndex = singletonIndex;
+    this.scopedIndex = scopedIndex;
   }
 
   /**
-   * makeSingletonServices creates the singleton services and return the cache
+   * makeSingletonServices creates singleton services and return the cache
    */
-  makeSingletonServices(): ServiceCache<any> {
+  makeSingletonServices(
+    bootstrapProvisions: null | Map<Interfaceable, any>
+  ): [ServiceCache, ServiceCache] {
     const context = {
       platform: undefined,
-      phase: PHASE_ENUM_BOOTSTRAP,
+      phase: ENUM_PHASE_BOOTSTRAP,
       singletonCache: new Map(),
-      scopeCache: new Map(),
-      runtimeProvisions: null,
+      scopedCache: new Map(),
+      transientCache: new Map(),
+      runtimeProvisions: bootstrapProvisions,
     };
 
-    for (const [target, platform] of this.singletonIndex) {
-      const binding = this._resolveProvisionAssertedly(target, platform, false);
-      /* :: invariant(binding); */
+    for (const [target, platform] of this.singletonIndex.iterAll()) {
+      const binding = this._resolveProvisionAssertedly(target, platform);
       this._makeProvision(binding, context);
     }
 
-    return context.singletonCache;
+    for (const [target, platform] of this.scopedIndex.iterBranch(undefined)) {
+      const binding = this._resolveProvisionAssertedly(target, platform);
+      this._makeProvision(binding, context);
+    }
+
+    return [context.singletonCache, context.scopedCache];
   }
 
   /**
    * makeScopedServices creates the scoped services and return the cache
    */
   makeScopedServices(
-    singletonCache: ServiceCache<any>,
-    platform: void | string
-  ): ServiceCache<any> {
+    platform: void | string,
+    singletonCache: ServiceCache,
+    bootstrapProvisions: null | Map<Interfaceable, any>
+  ): ServiceCache {
     const context = {
       platform,
-      phase: PHASE_ENUM_BEGIN_SCOPE,
+      phase: ENUM_PHASE_INIT_SCOPE,
       singletonCache,
-      scopeCache: new Map(),
-      runtimeProvisions: null,
+      scopedCache: new Map(),
+      transientCache: new Map(),
+      runtimeProvisions: bootstrapProvisions,
     };
 
-    // initiate provider with "scoped" strategy
-    for (const [target, boundPlatform] of this.scopedIndex) {
-      // skip other platform
-      if (!boundPlatform || boundPlatform === platform) {
-        const binding = this._resolveProvisionAssertedly(
-          target,
-          boundPlatform,
-          false
-        );
-        /* :: invariant(binding); */
-        this._makeProvision(binding, context);
-      }
+    // initiate provider with "scoped" lifetime
+    for (const [target, boundPlatform] of this.scopedIndex.iterBranch(
+      platform
+    )) {
+      const binding = this._resolveProvisionAssertedly(target, boundPlatform);
+      this._makeProvision(binding, context);
     }
 
-    return context.scopeCache;
+    return context.scopedCache;
   }
 
   /**
@@ -106,36 +113,40 @@ export default class ServiceMaker {
   makeRequirements(
     requirements: InjectRequirement[],
     platform: void | string,
-    singletonCache: ServiceCache<any>,
-    scopeCache: ServiceCache<any>,
+    singletonCache: ServiceCache,
+    scopedCache: ServiceCache,
     runtimeProvisions: null | Map<Interfaceable, any>
   ): any[] {
     const services = this._makeRequirements(requirements, {
       platform,
-      phase: PHASE_ENUM_INJECTION,
+      phase: ENUM_PHASE_INJECTION,
       singletonCache,
-      scopeCache,
+      scopedCache,
+      transientCache: new Map(),
       runtimeProvisions,
     });
 
     return services;
   }
 
-  _resolveProvisionAssertedly(
-    target: Interfaceable,
-    platform: void | string,
-    optional: boolean
-  ) {
-    let binding;
-    if (platform) {
-      binding =
-        this.serviceMapping.getPlatform(target, platform) ||
-        this.serviceMapping.getDefault(target);
-    } else {
-      binding = this.serviceMapping.getDefault(target);
+  validateProvisions(bootstrapProvisions: null | Map<Interfaceable, any>) {
+    for (const [, platform, binding] of this.serviceMapping.iterAll()) {
+      if (binding.withProvider) {
+        const provider = binding.withProvider;
+        this._validateDependencies(provider, platform, bootstrapProvisions, []);
+      }
     }
+  }
 
-    invariant(binding || optional, `${target.name} is not bound`);
+  _resolveProvisionOptionally(target: Interfaceable, platform: void | string) {
+    const binding = this.serviceMapping.get(target, platform);
+    return binding;
+  }
+
+  _resolveProvisionAssertedly(target: Interfaceable, platform: void | string) {
+    const binding = this.serviceMapping.get(target, platform);
+
+    invariant(binding, `${target.$$name} is not bound`);
     return binding;
   }
 
@@ -145,44 +156,40 @@ export default class ServiceMaker {
     }
 
     const { withProvider: provider } = binding;
-    const { $$strategy: strategy } = provider;
-    const { singletonCache, scopeCache, phase } = context;
+    const { $$lifetime: lifetime } = provider;
+    const { singletonCache, scopedCache, transientCache, phase } = context;
 
-    // get cached instance by strategy
-    let cached;
-    if (strategy === 'singleton') {
-      cached = singletonCache.get(provider);
-    } else if (strategy === 'scoped') {
-      cached = scopeCache.get(provider);
-    }
+    const cache =
+      lifetime === 'singleton'
+        ? singletonCache
+        : lifetime === 'scoped'
+        ? scopedCache
+        : transientCache;
 
+    const cached = cache.get(provider);
     if (cached) {
       return cached;
     }
 
-    // verify singleton/scoped provider creating phase
+    // verify provider creating phase
     invariant(
-      strategy === 'transient' ||
-        (strategy === 'scoped' && phase !== PHASE_ENUM_INJECTION) ||
-        (strategy === 'singleton' && phase === PHASE_ENUM_BOOTSTRAP),
-      `${strategy} service should not be created when ${
-        phase === PHASE_ENUM_BOOTSTRAP
+      lifetime === 'transient' ||
+        (lifetime === 'scoped' && phase !== ENUM_PHASE_INJECTION) ||
+        (lifetime === 'singleton' && phase === ENUM_PHASE_BOOTSTRAP),
+      `${lifetime} service ${provider.$$name} should not be created in ${
+        phase === ENUM_PHASE_BOOTSTRAP
           ? 'bootstrap'
-          : phase === PHASE_ENUM_BEGIN_SCOPE
+          : phase === ENUM_PHASE_INIT_SCOPE
           ? 'begin scope'
           : 'inject'
       } phase`
     );
 
-    const instance = this._makeProviderInstance(provider, context);
+    const { $$deps: deps, $$factory: factory } = provider;
+    const args = this._makeRequirements(deps, context);
+    const instance = factory(...args);
 
-    // cache provided by strategy
-    if (strategy === 'singleton') {
-      singletonCache.set(provider, instance);
-    } else if (strategy === 'scoped') {
-      scopeCache.set(provider, instance);
-    }
-
+    cache.set(provider, instance);
     return instance;
   }
 
@@ -199,11 +206,9 @@ export default class ServiceMaker {
         // provided at runtime
         args.push(runtimeProvided);
       } else {
-        const binding = this._resolveProvisionAssertedly(
-          target,
-          platform,
-          optional
-        );
+        const binding = optional
+          ? this._resolveProvisionOptionally(target, platform)
+          : this._resolveProvisionAssertedly(target, platform);
 
         if (binding) {
           args.push(this._makeProvision(binding, context));
@@ -217,54 +222,37 @@ export default class ServiceMaker {
     return args;
   }
 
-  _makeProviderInstance<T>(
-    provider: ServiceProvider<any>,
-    context: MakeContext
-  ): T {
-    const { $$deps: deps, $$factory: factory } = provider;
-    const args = this._makeRequirements(deps, context);
-    const result = factory(...args);
-    return result;
-  }
-
-  _sortOutProviders() {
-    for (const [, platform, binding] of this.serviceMapping) {
-      if (binding.withProvider) {
-        const provider = binding.withProvider;
-        this._verifyProviderDependencies(provider, platform, []);
-
-        if (provider.$$strategy === 'singleton') {
-          this.singletonIndex.set(binding.provide, platform, true);
-        } else if (provider.$$strategy === 'scoped') {
-          this.scopedIndex.set(binding.provide, platform, true);
-        }
-      }
-    }
-  }
-
-  _verifyProviderDependencies(
-    provider: ServiceProvider<any>,
+  _validateDependencies(
+    provider: ServiceProvider<any, any>,
     platform: void | string,
-    refLock: ServiceProvider<any>[]
+    bootstrapProvisions: null | Map<Interfaceable, any>,
+    refLock: ServiceProvider<any, any>[]
   ) {
     const subRefLock = [...refLock, provider];
 
-    for (const dep of provider.$$deps) {
-      const binding = this._resolveProvisionAssertedly(
-        dep.require,
-        platform,
-        dep.optional
-      );
+    for (const { require: target, optional } of provider.$$deps) {
+      const isProvidedOnBootstrap =
+        !!bootstrapProvisions && bootstrapProvisions.has(target);
+
+      const binding =
+        optional || isProvidedOnBootstrap
+          ? this._resolveProvisionOptionally(target, platform)
+          : this._resolveProvisionAssertedly(target, platform);
 
       if (binding && binding.withProvider) {
         const { withProvider: argProvider } = binding;
 
         invariant(
           subRefLock.indexOf(argProvider) === -1,
-          `${argProvider.name} is circular dependent`
+          `${argProvider.$$name} is circular dependent`
         );
 
-        this._verifyProviderDependencies(argProvider, platform, subRefLock);
+        this._validateDependencies(
+          argProvider,
+          platform,
+          bootstrapProvisions,
+          subRefLock
+        );
       }
     }
   }
