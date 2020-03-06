@@ -894,7 +894,7 @@ describe('dispatch through middlewares', () => {
   });
 });
 
-test('#use(requirements)', async () => {
+test('#useServices(requirements)', async () => {
   const app = new App({
     imports: [FooModule, BarModule],
     platforms: [TestPlatform, AnotherPlatform],
@@ -908,7 +908,7 @@ test('#use(requirements)', async () => {
   );
 
   expect(
-    app.use([
+    app.useServices([
       FooService,
       { require: BarService, optional: true },
       TestService,
@@ -927,7 +927,7 @@ test('#use(requirements)', async () => {
     null,
   ]);
 
-  expect(() => app.use([NoneService])).toThrowErrorMatchingInlineSnapshot(
-    `"NoneService is not bound"`
-  );
+  expect(() =>
+    app.useServices([NoneService])
+  ).toThrowErrorMatchingInlineSnapshot(`"NoneService is not bound"`);
 });

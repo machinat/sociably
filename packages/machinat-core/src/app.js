@@ -159,7 +159,7 @@ export default class MachinatApp<
     this._status = ENUM_STARTED;
   }
 
-  use(targets: (Interfaceable | InjectRequirement)[]) {
+  useServices(targets: (Interfaceable | InjectRequirement)[]) {
     invariant(this.isStarted, 'app is not started');
 
     const scope = this._serviceSpace.createScope(undefined);
