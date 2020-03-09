@@ -1,19 +1,15 @@
-/* eslint-disable import/prefer-default-export */
 import invariant from 'invariant';
-import { joinTextualSegments } from 'machinat-utility';
-import {
-  asUnitComponent,
-  asContainerComponent,
-  mapJoinedTextValues,
-} from '../utils';
+import joinTextualSegments from '@machinat/core/utils/joinTextualSegments';
+import { annotateNativeComponent } from '@machinat/core/renderer';
+import { MESSENGER } from '../constant';
+import { asUnitComponent, mapJoinedTextValues } from '../utils';
 
 const LATEX_BEGIN = '\\(';
 const LATEX_END = '\\)';
-
 const Latex = mapJoinedTextValues(v => LATEX_BEGIN + v + LATEX_END);
-const __Latex = asContainerComponent(Latex);
+const __Latex = annotateNativeComponent(MESSENGER)(Latex);
 
-const DynamicText = async ({ props: { children, fallback } }, render) => {
+const DynamicText = async ({ children, fallback }, render) => {
   const segments = await render(children, '.children');
   if (segments === null) {
     return null;

@@ -4,14 +4,10 @@ exports[`media Components match snapshot 1`] = `
 Array [
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "reusable": true,
-          "url": "http://this.is/a/picture",
-        },
-        "type": [Function],
-      },
+      "node": <Image
+        reusable={true}
+        url="http://this.is/a/picture"
+      />,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -25,22 +21,18 @@ Array [
             "type": "image",
           },
         },
-        Symbol(machinat.messenger.segment.asset_tag): undefined,
-        Symbol(machinat.messenger.segment.attachment_data): undefined,
-        Symbol(machinat.messenger.segment.attachment_info): undefined,
+        Symbol(messenger.segment.asset_tag): undefined,
+        Symbol(messenger.segment.attachment_data): undefined,
+        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "reusable": true,
-          "url": "http://this.is/a/video",
-        },
-        "type": [Function],
-      },
+      "node": <Video
+        reusable={true}
+        url="http://this.is/a/video"
+      />,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -54,22 +46,18 @@ Array [
             "type": "video",
           },
         },
-        Symbol(machinat.messenger.segment.asset_tag): undefined,
-        Symbol(machinat.messenger.segment.attachment_data): undefined,
-        Symbol(machinat.messenger.segment.attachment_info): undefined,
+        Symbol(messenger.segment.asset_tag): undefined,
+        Symbol(messenger.segment.attachment_data): undefined,
+        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "reusable": true,
-          "url": "http://this.is/an/audio",
-        },
-        "type": [Function],
-      },
+      "node": <Audio
+        reusable={true}
+        url="http://this.is/an/audio"
+      />,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -83,22 +71,18 @@ Array [
             "type": "audio",
           },
         },
-        Symbol(machinat.messenger.segment.asset_tag): undefined,
-        Symbol(machinat.messenger.segment.attachment_data): undefined,
-        Symbol(machinat.messenger.segment.attachment_info): undefined,
+        Symbol(messenger.segment.asset_tag): undefined,
+        Symbol(messenger.segment.attachment_data): undefined,
+        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "reusable": true,
-          "url": "http://this.is/a/file",
-        },
-        "type": [Function],
-      },
+      "node": <File
+        reusable={true}
+        url="http://this.is/a/file"
+      />,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -112,21 +96,17 @@ Array [
             "type": "file",
           },
         },
-        Symbol(machinat.messenger.segment.asset_tag): undefined,
-        Symbol(machinat.messenger.segment.attachment_data): undefined,
-        Symbol(machinat.messenger.segment.attachment_info): undefined,
+        Symbol(messenger.segment.asset_tag): undefined,
+        Symbol(messenger.segment.attachment_data): undefined,
+        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "attachmentId": "_I_am_Image_",
-        },
-        "type": [Function],
-      },
+      "node": <Image
+        attachmentId="_I_am_Image_"
+      />,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -140,21 +120,17 @@ Array [
             "type": "image",
           },
         },
-        Symbol(machinat.messenger.segment.asset_tag): undefined,
-        Symbol(machinat.messenger.segment.attachment_data): undefined,
-        Symbol(machinat.messenger.segment.attachment_info): undefined,
+        Symbol(messenger.segment.asset_tag): undefined,
+        Symbol(messenger.segment.attachment_data): undefined,
+        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "attachmentId": "_I_am_Video_",
-        },
-        "type": [Function],
-      },
+      "node": <Video
+        attachmentId="_I_am_Video_"
+      />,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -168,21 +144,17 @@ Array [
             "type": "video",
           },
         },
-        Symbol(machinat.messenger.segment.asset_tag): undefined,
-        Symbol(machinat.messenger.segment.attachment_data): undefined,
-        Symbol(machinat.messenger.segment.attachment_info): undefined,
+        Symbol(messenger.segment.asset_tag): undefined,
+        Symbol(messenger.segment.attachment_data): undefined,
+        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "attachmentId": "_I_am_Audio_",
-        },
-        "type": [Function],
-      },
+      "node": <Audio
+        attachmentId="_I_am_Audio_"
+      />,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -196,21 +168,17 @@ Array [
             "type": "audio",
           },
         },
-        Symbol(machinat.messenger.segment.asset_tag): undefined,
-        Symbol(machinat.messenger.segment.attachment_data): undefined,
-        Symbol(machinat.messenger.segment.attachment_info): undefined,
+        Symbol(messenger.segment.asset_tag): undefined,
+        Symbol(messenger.segment.attachment_data): undefined,
+        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "attachmentId": "_I_am_File_",
-        },
-        "type": [Function],
-      },
+      "node": <File
+        attachmentId="_I_am_File_"
+      />,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -224,9 +192,9 @@ Array [
             "type": "file",
           },
         },
-        Symbol(machinat.messenger.segment.asset_tag): undefined,
-        Symbol(machinat.messenger.segment.attachment_data): undefined,
-        Symbol(machinat.messenger.segment.attachment_info): undefined,
+        Symbol(messenger.segment.asset_tag): undefined,
+        Symbol(messenger.segment.attachment_data): undefined,
+        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
   ],

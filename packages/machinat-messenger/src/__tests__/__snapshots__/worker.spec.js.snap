@@ -8,17 +8,17 @@ Object {
 }
 `;
 
+exports[`call to graph api 1`] = `
+Object {
+  "access_token": "_graph_api_access_token_",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"bar/baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"omit_response_on_success\\":false}]",
+}
+`;
+
 exports[`place params at query if DELETE job met 1`] = `
 Object {
   "access_token": "_graph_api_access_token_",
   "batch": "[{\\"method\\":\\"DELETE\\",\\"relative_url\\":\\"me/messenger_profile?fields=%5B%22whitelisted_domains%22%5D\\",\\"omit_response_on_success\\":false}]",
-}
-`;
-
-exports[`sends ok 1`] = `
-Object {
-  "access_token": "_graph_api_access_token_",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"bar/baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"omit_response_on_success\\":false}]",
 }
 `;
 

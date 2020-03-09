@@ -1,6 +1,6 @@
 import { asPartComponent } from '../utils';
 
-const QuickReply = ({ props: { title, payload, imageURL } }) => ({
+const QuickReply = ({ title, payload, imageURL }) => ({
   content_type: 'text',
   title,
   payload,

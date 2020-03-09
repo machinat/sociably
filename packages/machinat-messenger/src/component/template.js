@@ -1,5 +1,6 @@
 import invariant from 'invariant';
-import { joinTextualSegments, valuesOfAssertedTypes } from 'machinat-utility';
+import joinTextualSegments from '@machinat/core/utils/joinTextualSegments';
+import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
 
 import * as buttonModule from './button';
 import { asUnitComponent, asPartComponent } from '../utils';
@@ -14,15 +15,8 @@ const getUrlButtonValues = valuesOfAssertedTypes(() => [
 ]);
 
 const GenericItem = async (
-  {
-    props: {
-      children,
-      title,
-      imageURL,
-      subtitle,
-      defaultAction: defaultActionProp,
-    },
-  },
+  { children, title, imageURL, subtitle, defaultAction: defaultActionProp },
+
   render
 ) => {
   const buttonSegments = await render(children, CHILDREN);
@@ -53,7 +47,7 @@ const __GenericItem = asPartComponent(GenericItem);
 const getGenericItemValues = valuesOfAssertedTypes(() => [__GenericItem]);
 
 const GenericTemplate = async (
-  { props: { children, sharable, imageAspectRatio } },
+  { children, sharable, imageAspectRatio },
   render
 ) => {
   const elementsSegments = await render(children, CHILDREN);
@@ -75,7 +69,7 @@ const GenericTemplate = async (
 const __GenericTemplate = asUnitComponent(GenericTemplate);
 
 const ListTemplate = async (
-  { props: { children, topStyle, sharable, button } },
+  { children, topStyle, sharable, button },
   render
 ) => {
   const elementSegments = await render(children, CHILDREN);
@@ -98,10 +92,7 @@ const ListTemplate = async (
 };
 const __ListTemplate = asUnitComponent(ListTemplate);
 
-const ButtonTemplate = async (
-  { props: { children, text, sharable } },
-  render
-) => {
+const ButtonTemplate = async ({ children, text, sharable }, render) => {
   const textSegments = await render(text, '.text');
   const segments = joinTextualSegments(textSegments);
 
@@ -134,7 +125,7 @@ const ButtonTemplate = async (
 const __ButtonTemplate = asUnitComponent(ButtonTemplate);
 
 const MediaTemplate = async (
-  { props: { children, type, attachmentId, url, sharable } },
+  { children, type, attachmentId, url, sharable },
   render
 ) => {
   const buttonSegments = await render(children, CHILDREN);
@@ -161,10 +152,7 @@ const MediaTemplate = async (
 };
 const __MediaTemplate = asUnitComponent(MediaTemplate);
 
-const OpenGraphTemplate = async (
-  { props: { children, url, sharable } },
-  render
-) => {
+const OpenGraphTemplate = async ({ children, url, sharable }, render) => {
   const buttonSegments = await render(children, CHILDREN);
 
   return {
@@ -188,7 +176,12 @@ const OpenGraphTemplate = async (
 const __OpenGraphTemplate = asUnitComponent(OpenGraphTemplate);
 
 const ReceiptItem = async ({
-  props: { title, subtitle, quantity, price, currency, imageURL },
+  title,
+  subtitle,
+  quantity,
+  price,
+  currency,
+  imageURL,
 }) => ({
   title,
   subtitle,
@@ -203,19 +196,17 @@ const getReceiptItemValues = valuesOfAssertedTypes(() => [__ReceiptItem]);
 
 const ReceiptTemplate = async (
   {
-    props: {
-      children,
-      sharable,
-      recipientName,
-      orderNumber,
-      currency,
-      paymentMethod,
-      orderURL,
-      timestamp,
-      address,
-      summary,
-      adjustments,
-    },
+    children,
+    sharable,
+    recipientName,
+    orderNumber,
+    currency,
+    paymentMethod,
+    orderURL,
+    timestamp,
+    address,
+    summary,
+    adjustments,
   },
   render
 ) => {

@@ -1,7 +1,7 @@
 import moxy from 'moxy';
-import Machinat, { SEGMENT_BREAK } from 'machinat';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
 
-import { MESSENGER_NATIVE_TYPE } from '../../constant';
 import {
   GenericItem,
   GenericTemplate,
@@ -13,7 +13,6 @@ import {
   ReceiptItem,
 } from '../template';
 import { URLButton, PostbackButton, CallButton } from '../button';
-import renderHelper from './renderHelper';
 
 const buttons = (
   <>
@@ -76,666 +75,664 @@ const renderWithFixtures = async node =>
     : null;
 
 const renderInner = moxy(renderWithFixtures);
-const render = renderHelper(renderInner);
+const renderHelper = element => element.type(element, renderInner, '$');
 
 afterEach(() => {
   renderInner.mock.reset();
 });
 
-describe('templates Components', () => {
-  test.each([
-    GenericTemplate,
-    ListTemplate,
-    ButtonTemplate,
-    MediaTemplate,
-    OpenGraphTemplate,
-    ReceiptTemplate,
-  ])('attribute of %p', Template => {
-    expect(typeof Template).toBe('function');
-    expect(Template.$$native).toBe(MESSENGER_NATIVE_TYPE);
-    expect(Template.$$namespace).toBe('Messenger');
-  });
+test.each([
+  GenericTemplate,
+  ListTemplate,
+  ButtonTemplate,
+  MediaTemplate,
+  OpenGraphTemplate,
+  ReceiptTemplate,
+])('attribute of %p', Template => {
+  expect(typeof Template).toBe('function');
+  expect(isNativeElement(<Template />)).toBe(true);
+  expect(Template.$$platform).toBe('messenger');
+});
 
-  test.each([GenericItem, ReceiptItem])('attribute of %p', Item => {
-    expect(typeof Item).toBe('function');
-    expect(Item.$$native).toBe(MESSENGER_NATIVE_TYPE);
-    expect(Item.$$namespace).toBe('Messenger');
-  });
+test.each([GenericItem, ReceiptItem])('attribute of %p', Item => {
+  expect(typeof Item).toBe('function');
+  expect(isNativeElement(<Item />)).toBe(true);
+  expect(Item.$$platform).toBe('messenger');
+});
 
-  describe('GenericItem', () => {
-    beforeEach(() => {
-      renderInner.mock.fake(async node =>
-        node && node.type === URLButton
-          ? [
-              {
-                type: 'part',
-                node,
-                value: {
-                  title: 'TITLE!',
-                  type: 'web_url',
-                  url: 'http://foo.bar/',
-                  webview_height_ratio: 'compact',
-                  messenger_extensions: true,
-                  fallback_url: 'http://foo.baz/login',
-                  webview_share_button: 'hide',
-                },
-              },
-            ]
-          : renderWithFixtures(node)
-      );
-    });
-
-    it('match snapshot', async () => {
-      await expect(
-        Promise.all(
-          [
-            <GenericItem title="foo" />,
-            <GenericItem title="foo" subtitle="bar" />,
-            <GenericItem title="foo" imageURL="http://foo.bar/image" />,
-            <GenericItem title="foo">{buttons}</GenericItem>,
-            <GenericItem
-              title="foo"
-              defaultAction={
-                <URLButton
-                  title="TITLE!"
-                  url="http://foo.bar/"
-                  heightRatio="compact"
-                  extensions
-                  fallbackURL="http://foo.baz/login"
-                  hideShareButton
-                />
-              }
-            />,
-            <GenericItem
-              title="foo"
-              defaultAction={{
-                type: 'web_url',
-                url: 'http://foo.bar/',
-                webview_height_ratio: 'compact',
-                messenger_extensions: true,
-                fallback_url: 'http://foo.baz/login',
-                webview_share_button: 'hide',
-              }}
-            />,
-            <GenericItem
-              title="foo"
-              subtitle="bar"
-              imageURL="http://foo.bar/image"
-              defaultAction={{
-                type: 'web_url',
-                url: 'http://foo.bar/',
-                webview_height_ratio: 'compact',
-                messenger_extensions: true,
-                fallback_url: 'http://foo.baz/login',
-                webview_share_button: 'hide',
-              }}
-            >
-              {buttons}
-            </GenericItem>,
-          ].map(render)
-        )
-      ).resolves.toMatchSnapshot();
-    });
-
-    it('throw if non URLButton element received in defaultAction', async () => {
-      const Unknown = () => {};
-
-      renderInner.mock.fake(
-        node =>
-          node && [
+describe('GenericItem', () => {
+  beforeEach(() => {
+    renderInner.mock.fake(async node =>
+      node && node.type === URLButton
+        ? [
             {
               type: 'part',
               node,
-              value: { Ihave: 'a riddle for U' },
-              path: '$:0#GenericItem.defaultAction:0',
+              value: {
+                title: 'TITLE!',
+                type: 'web_url',
+                url: 'http://foo.bar/',
+                webview_height_ratio: 'compact',
+                messenger_extensions: true,
+                fallback_url: 'http://foo.baz/login',
+                webview_share_button: 'hide',
+              },
             },
           ]
-      );
-
-      await expect(
-        render(<GenericItem title="foo" defaultAction={<Unknown />} />)
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"<Unknown /> at $:0#GenericItem.defaultAction:0 is invalid, only <[URLButton]/> allowed"`
-      );
-    });
-
-    it('render children for "buttons" field', async () => {
-      const [{ value }] = await render(
-        <GenericItem title="Look!">{buttons}</GenericItem>
-      );
-
-      expect(value.buttons).toEqual([
-        '__RENDERED_BUTTON_OBJ_1__',
-        '__RENDERED_BUTTON_OBJ_2__',
-        '__RENDERED_BUTTON_OBJ_3__',
-      ]);
-      expect(renderInner.mock).toHaveBeenCalledWith(buttons, '.children');
-    });
-
-    it('throw if non Button element in children', async () => {
-      const Unknown = () => {};
-
-      renderInner.mock.fake(async node =>
-        node === '__BUTTONS__'
-          ? [
-              ...buttonsRendered,
-              {
-                value: 'x',
-                node: <Unknown />,
-                path: '$:0#GenericItem.children:3',
-              },
-            ]
-          : null
-      );
-
-      await expect(
-        render(<GenericItem title="foo">{'__BUTTONS__'}</GenericItem>)
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"<Unknown /> at $:0#GenericItem.children:3 is invalid, only <[URLButton, PostbackButton, ShareButton, BuyButton, CallButton, LoginButton, LogoutButton, GamePlayButton]/> allowed"`
-      );
-    });
+        : renderWithFixtures(node)
+    );
   });
 
-  describe('GenericTemplate', () => {
-    it('match snapshot', async () => {
-      await expect(
-        Promise.all(
-          [
-            <GenericTemplate>{genericItems}</GenericTemplate>,
-            <GenericTemplate imageAspectRatio="square" sharable>
-              {genericItems}
-            </GenericTemplate>,
-          ].map(render)
-        )
-      ).resolves.toMatchSnapshot();
-    });
-
-    it('render children as "elements" field', async () => {
-      const [{ value }] = await render(
-        <GenericTemplate>{genericItems}</GenericTemplate>
-      );
-
-      expect(value.message.attachment.payload.elements).toEqual([
-        '__RENDERED_GENERIC_ITEM_OBJ_1__',
-        '__RENDERED_GENERIC_ITEM_OBJ_2__',
-        '__RENDERED_GENERIC_ITEM_OBJ_3__',
-      ]);
-
-      expect(renderInner.mock).toHaveBeenCalledWith(genericItems, '.children');
-    });
-
-    it('throw if non GenericItem element in children', async () => {
-      const Unknown = () => {};
-
-      renderInner.mock.fake(async node =>
-        node === '__ITEMS__'
-          ? [
-              ...genericItemsRendered,
-              {
-                type: 'part',
-                value: 'x',
-                node: <Unknown />,
-                path: '$:0#GenericTemplate.children:2',
-              },
-            ]
-          : null
-      );
-
-      await expect(
-        render(<GenericTemplate>{'__ITEMS__'}</GenericTemplate>)
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"<Unknown /> at $:0#GenericTemplate.children:2 is invalid, only <[GenericItem]/> allowed"`
-      );
-    });
+  it('match snapshot', async () => {
+    await expect(
+      Promise.all(
+        [
+          <GenericItem title="foo" />,
+          <GenericItem title="foo" subtitle="bar" />,
+          <GenericItem title="foo" imageURL="http://foo.bar/image" />,
+          <GenericItem title="foo">{buttons}</GenericItem>,
+          <GenericItem
+            title="foo"
+            defaultAction={
+              <URLButton
+                title="TITLE!"
+                url="http://foo.bar/"
+                heightRatio="compact"
+                extensions
+                fallbackURL="http://foo.baz/login"
+                hideShareButton
+              />
+            }
+          />,
+          <GenericItem
+            title="foo"
+            defaultAction={{
+              type: 'web_url',
+              url: 'http://foo.bar/',
+              webview_height_ratio: 'compact',
+              messenger_extensions: true,
+              fallback_url: 'http://foo.baz/login',
+              webview_share_button: 'hide',
+            }}
+          />,
+          <GenericItem
+            title="foo"
+            subtitle="bar"
+            imageURL="http://foo.bar/image"
+            defaultAction={{
+              type: 'web_url',
+              url: 'http://foo.bar/',
+              webview_height_ratio: 'compact',
+              messenger_extensions: true,
+              fallback_url: 'http://foo.baz/login',
+              webview_share_button: 'hide',
+            }}
+          >
+            {buttons}
+          </GenericItem>,
+        ].map(renderHelper)
+      )
+    ).resolves.toMatchSnapshot();
   });
 
-  describe('ListTemplate', () => {
-    const button = buttons.props.children[0];
-    beforeEach(() => {
-      renderInner.mock.fake(async node =>
-        node && node.type === URLButton
-          ? buttonsRendered.slice(0, 1)
-          : renderWithFixtures(node)
-      );
-    });
+  it('throw if non URLButton element received in defaultAction', async () => {
+    const Unknown = () => {};
 
-    it('match snapshot', async () => {
-      await expect(
-        Promise.all(
-          [
-            <ListTemplate>{genericItems}</ListTemplate>,
-            <ListTemplate button={button}>{genericItems}</ListTemplate>,
-            <ListTemplate button={button} imageAspectRatio="square" sharable>
-              {genericItems}
-            </ListTemplate>,
-          ].map(render)
-        )
-      ).resolves.toMatchSnapshot();
-    });
+    renderInner.mock.fake(
+      node =>
+        node && [
+          {
+            type: 'part',
+            node,
+            value: { Ihave: 'a riddle for U' },
+            path: '$:0#GenericItem.defaultAction:0',
+          },
+        ]
+    );
 
-    it('render children as "elements" field', async () => {
-      const [{ value }] = await render(
-        <ListTemplate>{genericItems}</ListTemplate>
-      );
-
-      expect(value.message.attachment.payload.elements).toEqual([
-        '__RENDERED_GENERIC_ITEM_OBJ_1__',
-        '__RENDERED_GENERIC_ITEM_OBJ_2__',
-        '__RENDERED_GENERIC_ITEM_OBJ_3__',
-      ]);
-
-      expect(renderInner.mock).toHaveBeenCalledWith(genericItems, '.children');
-    });
-
-    it('render button prop as "buttons" field', async () => {
-      const [{ value }] = await render(
-        <ListTemplate button={button}>{genericItems}</ListTemplate>
-      );
-
-      expect(value.message.attachment.payload.buttons).toEqual([
-        '__RENDERED_BUTTON_OBJ_1__',
-      ]);
-      expect(renderInner.mock).toHaveBeenCalledWith(button, '.button');
-    });
-
-    it('throw if non GenericItem element in children', async () => {
-      const Unknown = () => {};
-
-      renderInner.mock.fake(async node =>
-        node === '__ITEMS__'
-          ? [
-              ...genericItemsRendered,
-              {
-                type: 'part',
-                value: 'x',
-                node: <Unknown />,
-                path: '$:0#ListTemplate.children:3',
-              },
-            ]
-          : null
-      );
-
-      await expect(
-        render(<ListTemplate>{'__ITEMS__'}</ListTemplate>)
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"<Unknown /> at $:0#ListTemplate.children:3 is invalid, only <[GenericItem]/> allowed"`
-      );
-    });
+    await expect(
+      renderHelper(<GenericItem title="foo" defaultAction={<Unknown />} />)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"<Unknown /> at $:0#GenericItem.defaultAction:0 is invalid, only <[URLButton]/> allowed"`
+    );
   });
 
-  describe('ButtonTemplate', () => {
-    const textNodes = [<i>foo</i>, <b>bar</b>, <del>baz</del>];
-    beforeEach(() => {
-      renderInner.mock.fake(async node =>
-        node === textNodes || typeof node === 'string'
-          ? [
-              {
-                type: 'text',
-                value: '\n__RENDERED_TEXT_1__',
-                node: textNodes[0],
-              },
-              {
-                type: 'text',
-                value: '\n__RENDERED_TEXT_2__',
-                node: textNodes[1],
-              },
-              {
-                type: 'text',
-                value: '\n__RENDERED_TEXT_3__',
-                node: textNodes[2],
-              },
-            ]
-          : renderWithFixtures(node)
-      );
-    });
+  it('render children for "buttons" field', async () => {
+    const [{ value }] = await renderHelper(
+      <GenericItem title="Look!">{buttons}</GenericItem>
+    );
 
-    it('match snapshot', async () => {
-      await expect(
-        Promise.all(
-          [
-            <ButtonTemplate text="abc" sharable>
-              {buttons}
-            </ButtonTemplate>,
-            <ButtonTemplate text={textNodes}>{buttons}</ButtonTemplate>,
-          ].map(render)
-        )
-      ).resolves.toMatchSnapshot();
-    });
+    expect(value.buttons).toEqual([
+      '__RENDERED_BUTTON_OBJ_1__',
+      '__RENDERED_BUTTON_OBJ_2__',
+      '__RENDERED_BUTTON_OBJ_3__',
+    ]);
+    expect(renderInner.mock).toHaveBeenCalledWith(buttons, '.children');
+  });
 
-    it('render children as "buttons" field', async () => {
-      const [{ value }] = await render(
-        <ButtonTemplate text="abc">{buttons}</ButtonTemplate>
-      );
+  it('throw if non Button element in children', async () => {
+    const Unknown = () => {};
 
-      expect(value.message.attachment.payload.buttons).toEqual([
-        '__RENDERED_BUTTON_OBJ_1__',
-        '__RENDERED_BUTTON_OBJ_2__',
-        '__RENDERED_BUTTON_OBJ_3__',
-      ]);
+    renderInner.mock.fake(async node =>
+      node === '__BUTTONS__'
+        ? [
+            ...buttonsRendered,
+            {
+              value: 'x',
+              node: <Unknown />,
+              path: '$:0#GenericItem.children:3',
+            },
+          ]
+        : null
+    );
 
-      expect(renderInner.mock).toHaveBeenCalledWith(buttons, '.children');
-    });
+    await expect(
+      renderHelper(<GenericItem title="foo">{'__BUTTONS__'}</GenericItem>)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"<Unknown /> at $:0#GenericItem.children:3 is invalid, only <[URLButton, PostbackButton, ShareButton, BuyButton, CallButton, LoginButton, LogoutButton, GamePlayButton]/> allowed"`
+    );
+  });
+});
 
-    it('throw if non Button element in children', async () => {
-      const Unknown = () => {};
+describe('GenericTemplate', () => {
+  it('match snapshot', async () => {
+    await expect(
+      Promise.all(
+        [
+          <GenericTemplate>{genericItems}</GenericTemplate>,
+          <GenericTemplate imageAspectRatio="square" sharable>
+            {genericItems}
+          </GenericTemplate>,
+        ].map(renderHelper)
+      )
+    ).resolves.toMatchSnapshot();
+  });
 
-      renderInner.mock.fake(async node =>
-        node === '__BUTTONS__'
-          ? [
-              ...buttonsRendered,
-              {
-                type: 'part',
-                value: 'x',
-                node: <Unknown />,
-                path: '$:0#ButtonTemplate.children:3',
-              },
-            ]
-          : [{ type: 'text', value: 'foo', node }]
-      );
+  it('render children as "elements" field', async () => {
+    const [{ value }] = await renderHelper(
+      <GenericTemplate>{genericItems}</GenericTemplate>
+    );
 
-      await expect(
-        render(<ButtonTemplate text="foo">{'__BUTTONS__'}</ButtonTemplate>)
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"<Unknown /> at $:0#ButtonTemplate.children:3 is invalid, only <[URLButton, PostbackButton, ShareButton, BuyButton, CallButton, LoginButton, LogoutButton, GamePlayButton]/> allowed"`
-      );
-    });
+    expect(value.message.attachment.payload.elements).toEqual([
+      '__RENDERED_GENERIC_ITEM_OBJ_1__',
+      '__RENDERED_GENERIC_ITEM_OBJ_2__',
+      '__RENDERED_GENERIC_ITEM_OBJ_3__',
+    ]);
 
-    it('render text prop as "text" field', async () => {
-      const expectedTextOutput = `
+    expect(renderInner.mock).toHaveBeenCalledWith(genericItems, '.children');
+  });
+
+  it('throw if non GenericItem element in children', async () => {
+    const Unknown = () => {};
+
+    renderInner.mock.fake(async node =>
+      node === '__ITEMS__'
+        ? [
+            ...genericItemsRendered,
+            {
+              type: 'part',
+              value: 'x',
+              node: <Unknown />,
+              path: '$:0#GenericTemplate.children:2',
+            },
+          ]
+        : null
+    );
+
+    await expect(
+      renderHelper(<GenericTemplate>{'__ITEMS__'}</GenericTemplate>)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"<Unknown /> at $:0#GenericTemplate.children:2 is invalid, only <[GenericItem]/> allowed"`
+    );
+  });
+});
+
+describe('ListTemplate', () => {
+  const button = buttons.props.children[0];
+  beforeEach(() => {
+    renderInner.mock.fake(async node =>
+      node && node.type === URLButton
+        ? buttonsRendered.slice(0, 1)
+        : renderWithFixtures(node)
+    );
+  });
+
+  it('match snapshot', async () => {
+    await expect(
+      Promise.all(
+        [
+          <ListTemplate>{genericItems}</ListTemplate>,
+          <ListTemplate button={button}>{genericItems}</ListTemplate>,
+          <ListTemplate button={button} imageAspectRatio="square" sharable>
+            {genericItems}
+          </ListTemplate>,
+        ].map(renderHelper)
+      )
+    ).resolves.toMatchSnapshot();
+  });
+
+  it('render children as "elements" field', async () => {
+    const [{ value }] = await renderHelper(
+      <ListTemplate>{genericItems}</ListTemplate>
+    );
+
+    expect(value.message.attachment.payload.elements).toEqual([
+      '__RENDERED_GENERIC_ITEM_OBJ_1__',
+      '__RENDERED_GENERIC_ITEM_OBJ_2__',
+      '__RENDERED_GENERIC_ITEM_OBJ_3__',
+    ]);
+
+    expect(renderInner.mock).toHaveBeenCalledWith(genericItems, '.children');
+  });
+
+  it('render button prop as "buttons" field', async () => {
+    const [{ value }] = await renderHelper(
+      <ListTemplate button={button}>{genericItems}</ListTemplate>
+    );
+
+    expect(value.message.attachment.payload.buttons).toEqual([
+      '__RENDERED_BUTTON_OBJ_1__',
+    ]);
+    expect(renderInner.mock).toHaveBeenCalledWith(button, '.button');
+  });
+
+  it('throw if non GenericItem element in children', async () => {
+    const Unknown = () => {};
+
+    renderInner.mock.fake(async node =>
+      node === '__ITEMS__'
+        ? [
+            ...genericItemsRendered,
+            {
+              type: 'part',
+              value: 'x',
+              node: <Unknown />,
+              path: '$:0#ListTemplate.children:3',
+            },
+          ]
+        : null
+    );
+
+    await expect(
+      renderHelper(<ListTemplate>{'__ITEMS__'}</ListTemplate>)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"<Unknown /> at $:0#ListTemplate.children:3 is invalid, only <[GenericItem]/> allowed"`
+    );
+  });
+});
+
+describe('ButtonTemplate', () => {
+  const textNodes = [<i>foo</i>, <b>bar</b>, <del>baz</del>];
+  beforeEach(() => {
+    renderInner.mock.fake(async node =>
+      node === textNodes || typeof node === 'string'
+        ? [
+            {
+              type: 'text',
+              value: '\n__RENDERED_TEXT_1__',
+              node: textNodes[0],
+            },
+            {
+              type: 'text',
+              value: '\n__RENDERED_TEXT_2__',
+              node: textNodes[1],
+            },
+            {
+              type: 'text',
+              value: '\n__RENDERED_TEXT_3__',
+              node: textNodes[2],
+            },
+          ]
+        : renderWithFixtures(node)
+    );
+  });
+
+  it('match snapshot', async () => {
+    await expect(
+      Promise.all(
+        [
+          <ButtonTemplate text="abc" sharable>
+            {buttons}
+          </ButtonTemplate>,
+          <ButtonTemplate text={textNodes}>{buttons}</ButtonTemplate>,
+        ].map(renderHelper)
+      )
+    ).resolves.toMatchSnapshot();
+  });
+
+  it('render children as "buttons" field', async () => {
+    const [{ value }] = await renderHelper(
+      <ButtonTemplate text="abc">{buttons}</ButtonTemplate>
+    );
+
+    expect(value.message.attachment.payload.buttons).toEqual([
+      '__RENDERED_BUTTON_OBJ_1__',
+      '__RENDERED_BUTTON_OBJ_2__',
+      '__RENDERED_BUTTON_OBJ_3__',
+    ]);
+
+    expect(renderInner.mock).toHaveBeenCalledWith(buttons, '.children');
+  });
+
+  it('throw if non Button element in children', async () => {
+    const Unknown = () => {};
+
+    renderInner.mock.fake(async node =>
+      node === '__BUTTONS__'
+        ? [
+            ...buttonsRendered,
+            {
+              type: 'part',
+              value: 'x',
+              node: <Unknown />,
+              path: '$:0#ButtonTemplate.children:3',
+            },
+          ]
+        : [{ type: 'text', value: 'foo', node }]
+    );
+
+    await expect(
+      renderHelper(<ButtonTemplate text="foo">{'__BUTTONS__'}</ButtonTemplate>)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"<Unknown /> at $:0#ButtonTemplate.children:3 is invalid, only <[URLButton, PostbackButton, ShareButton, BuyButton, CallButton, LoginButton, LogoutButton, GamePlayButton]/> allowed"`
+    );
+  });
+
+  it('render text prop as "text" field', async () => {
+    const expectedTextOutput = `
 __RENDERED_TEXT_1__
 __RENDERED_TEXT_2__
 __RENDERED_TEXT_3__`;
 
-      const segments1 = await render(
-        <ButtonTemplate text="abc">{buttons}</ButtonTemplate>
-      );
-      expect(segments1[0].value.message.attachment.payload.text).toEqual(
-        expectedTextOutput
-      );
+    const segments1 = await renderHelper(
+      <ButtonTemplate text="abc">{buttons}</ButtonTemplate>
+    );
+    expect(segments1[0].value.message.attachment.payload.text).toEqual(
+      expectedTextOutput
+    );
 
-      const segments2 = await render(
-        <ButtonTemplate text={textNodes}>{buttons}</ButtonTemplate>
-      );
-      expect(segments2[0].value.message.attachment.payload.text).toEqual(
-        expectedTextOutput
-      );
+    const segments2 = await renderHelper(
+      <ButtonTemplate text={textNodes}>{buttons}</ButtonTemplate>
+    );
+    expect(segments2[0].value.message.attachment.payload.text).toEqual(
+      expectedTextOutput
+    );
 
-      expect(renderInner.mock).toHaveBeenCalledWith('abc', '.text');
-      expect(renderInner.mock).toHaveBeenCalledWith(textNodes, '.text');
-    });
-
-    it('throw if text prop is empty', async () => {
-      renderInner.mock.fake(async () => null);
-
-      await expect(
-        render(<ButtonTemplate />)
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"prop \\"text\\" of <ButtonTemplate /> should not be empty"`
-      );
-    });
-
-    it('throw if <br /> contained in text prop', async () => {
-      renderInner.mock.fake(async () => [
-        { type: 'text', value: 'foo', node: 'foo' },
-        { type: 'break', value: SEGMENT_BREAK, node: <br /> },
-        { type: 'text', value: 'bar', node: 'bar' },
-      ]);
-
-      expect(
-        render(<ButtonTemplate text={'_somthing_with_<br />_'} />)
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"<br /> in prop \\"text\\" of <ButtonTemplate /> is invalid"`
-      );
-    });
+    expect(renderInner.mock).toHaveBeenCalledWith('abc', '.text');
+    expect(renderInner.mock).toHaveBeenCalledWith(textNodes, '.text');
   });
 
-  describe('MediaTemplate', () => {
-    it('match snapshot', async () => {
-      await expect(
-        Promise.all(
-          [
-            <MediaTemplate type="image" url="http://...">
-              {buttons}
-            </MediaTemplate>,
-            <MediaTemplate type="video" attachmentId="__ID__" sharable>
-              {buttons}
-            </MediaTemplate>,
-          ].map(render)
-        )
-      ).resolves.toMatchSnapshot();
-    });
+  it('throw if text prop is empty', async () => {
+    renderInner.mock.fake(async () => null);
 
-    it('render children as "buttons" field', async () => {
-      const [{ value }] = await render(
-        <MediaTemplate type="image" url="http://...">
-          {buttons}
-        </MediaTemplate>
-      );
-
-      expect(value.message.attachment.payload.elements[0].buttons).toEqual([
-        '__RENDERED_BUTTON_OBJ_1__',
-        '__RENDERED_BUTTON_OBJ_2__',
-        '__RENDERED_BUTTON_OBJ_3__',
-      ]);
-
-      expect(renderInner.mock).toHaveBeenCalledWith(buttons, '.children');
-    });
-
-    it('throw if non Button element in children', async () => {
-      const Unknown = () => {};
-
-      renderInner.mock.fake(async () => [
-        ...buttonsRendered,
-        {
-          type: 'part',
-          value: 'x',
-          node: <Unknown />,
-          path: '$:0#MediaTemplate.children:3',
-        },
-      ]);
-
-      await expect(
-        render(<MediaTemplate>{'__BUTTONS__'}</MediaTemplate>)
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"<Unknown /> at $:0#MediaTemplate.children:3 is invalid, only <[URLButton, PostbackButton, ShareButton, BuyButton, CallButton, LoginButton, LogoutButton, GamePlayButton]/> allowed"`
-      );
-    });
+    await expect(
+      renderHelper(<ButtonTemplate />)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"prop \\"text\\" of <ButtonTemplate /> should not be empty"`
+    );
   });
 
-  describe('OpenGraphTemplate', () => {
-    it('match snapshot', async () => {
-      expect(
-        Promise.all(
-          [
-            <OpenGraphTemplate url="http://...">{buttons}</OpenGraphTemplate>,
-            <OpenGraphTemplate url="http://..." sharable>
-              {buttons}
-            </OpenGraphTemplate>,
-          ].map(render)
-        )
-      ).resolves.toMatchSnapshot();
-    });
+  it('throw if <br /> contained in text prop', async () => {
+    renderInner.mock.fake(async () => [
+      { type: 'text', value: 'foo', node: 'foo' },
+      { type: 'break', value: undefined, node: <br /> },
+      { type: 'text', value: 'bar', node: 'bar' },
+    ]);
 
-    it('render children as "buttons" field', async () => {
-      const [{ value }] = await render(
-        <OpenGraphTemplate url="http://...">{buttons}</OpenGraphTemplate>
-      );
+    expect(
+      renderHelper(<ButtonTemplate text={'_somthing_with_<br />_'} />)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"<br /> in prop \\"text\\" of <ButtonTemplate /> is invalid"`
+    );
+  });
+});
 
-      expect(value.message.attachment.payload.elements[0].buttons).toEqual([
-        '__RENDERED_BUTTON_OBJ_1__',
-        '__RENDERED_BUTTON_OBJ_2__',
-        '__RENDERED_BUTTON_OBJ_3__',
-      ]);
-
-      expect(renderInner.mock).toHaveBeenCalledWith(buttons, '.children');
-    });
-
-    it('throw if non Button element in children', async () => {
-      const Unknown = () => {};
-
-      renderInner.mock.fake(async () => [
-        ...buttonsRendered,
-        {
-          type: 'part',
-          value: 'x',
-          node: <Unknown />,
-          path: '$:0#OpenGraphTemplate.children:3',
-        },
-      ]);
-
-      await expect(
-        render(<OpenGraphTemplate>{'__BUTTONS__'}</OpenGraphTemplate>)
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"<Unknown /> at $:0#OpenGraphTemplate.children:3 is invalid, only <[URLButton, PostbackButton, ShareButton, BuyButton, CallButton, LoginButton, LogoutButton, GamePlayButton]/> allowed"`
-      );
-    });
+describe('MediaTemplate', () => {
+  it('match snapshot', async () => {
+    await expect(
+      Promise.all(
+        [
+          <MediaTemplate type="image" url="http://...">
+            {buttons}
+          </MediaTemplate>,
+          <MediaTemplate type="video" attachmentId="__ID__" sharable>
+            {buttons}
+          </MediaTemplate>,
+        ].map(renderHelper)
+      )
+    ).resolves.toMatchSnapshot();
   });
 
-  describe('ReceiptItem', () => {
-    it('match snapshot', async () => {
-      await expect(
-        render(
-          <ReceiptItem
-            title="A robot!"
-            subtitle="It's real!"
-            quantity={999}
-            price={99.99}
-            currency="USD"
-            imageURL="http://i.robot/avatar"
-          />
-        )
-      ).resolves.toMatchSnapshot();
-    });
+  it('render children as "buttons" field', async () => {
+    const [{ value }] = await renderHelper(
+      <MediaTemplate type="image" url="http://...">
+        {buttons}
+      </MediaTemplate>
+    );
+
+    expect(value.message.attachment.payload.elements[0].buttons).toEqual([
+      '__RENDERED_BUTTON_OBJ_1__',
+      '__RENDERED_BUTTON_OBJ_2__',
+      '__RENDERED_BUTTON_OBJ_3__',
+    ]);
+
+    expect(renderInner.mock).toHaveBeenCalledWith(buttons, '.children');
   });
 
-  describe('ReceiptTemplate', () => {
-    const items = [
-      <ReceiptItem title="Buzz Lightyear" />,
-      <ReceiptItem title="Woody" />,
-      <ReceiptItem title="Slinky Dog" />,
-    ];
+  it('throw if non Button element in children', async () => {
+    const Unknown = () => {};
 
-    const receiptTemplateItemSegments = [
+    renderInner.mock.fake(async () => [
+      ...buttonsRendered,
       {
         type: 'part',
-        value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__',
-        node: items[0],
-        path: '$:0#ReceiptTemplate.children:0',
+        value: 'x',
+        node: <Unknown />,
+        path: '$:0#MediaTemplate.children:3',
       },
+    ]);
+
+    await expect(
+      renderHelper(<MediaTemplate>{'__BUTTONS__'}</MediaTemplate>)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"<Unknown /> at $:0#MediaTemplate.children:3 is invalid, only <[URLButton, PostbackButton, ShareButton, BuyButton, CallButton, LoginButton, LogoutButton, GamePlayButton]/> allowed"`
+    );
+  });
+});
+
+describe('OpenGraphTemplate', () => {
+  it('match snapshot', async () => {
+    expect(
+      Promise.all(
+        [
+          <OpenGraphTemplate url="http://...">{buttons}</OpenGraphTemplate>,
+          <OpenGraphTemplate url="http://..." sharable>
+            {buttons}
+          </OpenGraphTemplate>,
+        ].map(renderHelper)
+      )
+    ).resolves.toMatchSnapshot();
+  });
+
+  it('render children as "buttons" field', async () => {
+    const [{ value }] = await renderHelper(
+      <OpenGraphTemplate url="http://...">{buttons}</OpenGraphTemplate>
+    );
+
+    expect(value.message.attachment.payload.elements[0].buttons).toEqual([
+      '__RENDERED_BUTTON_OBJ_1__',
+      '__RENDERED_BUTTON_OBJ_2__',
+      '__RENDERED_BUTTON_OBJ_3__',
+    ]);
+
+    expect(renderInner.mock).toHaveBeenCalledWith(buttons, '.children');
+  });
+
+  it('throw if non Button element in children', async () => {
+    const Unknown = () => {};
+
+    renderInner.mock.fake(async () => [
+      ...buttonsRendered,
       {
         type: 'part',
-        value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__',
-        node: items[1],
-        path: '$:0#ReceiptTemplate.children:1',
+        value: 'x',
+        node: <Unknown />,
+        path: '$:0#OpenGraphTemplate.children:3',
       },
-      {
-        type: 'part',
-        value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__',
-        node: items[2],
-        path: '$:0#ReceiptTemplate.children:2',
-      },
-    ];
+    ]);
 
-    beforeEach(() => {
-      renderInner.mock.fake(async node =>
-        node && node === items
-          ? receiptTemplateItemSegments
-          : renderWithFixtures(node)
-      );
-    });
+    await expect(
+      renderHelper(<OpenGraphTemplate>{'__BUTTONS__'}</OpenGraphTemplate>)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"<Unknown /> at $:0#OpenGraphTemplate.children:3 is invalid, only <[URLButton, PostbackButton, ShareButton, BuyButton, CallButton, LoginButton, LogoutButton, GamePlayButton]/> allowed"`
+    );
+  });
+});
 
-    it('match snapshot', async () => {
-      await expect(
-        render(
-          <ReceiptTemplate
-            sharable
-            recipientName="John Doe"
-            orderNumber="12345"
-            currency="USD"
-            paymentMethod="Visa 2345"
-            orderURL="http://what.a.shop"
-            timestamp="1428444852"
-            address={{
-              street_1: '1 Hacker Way',
-              street_2: '',
-              city: 'Menlo Park',
-              postal_code: '94025',
-              state: 'CA',
-              country: 'US',
-            }}
-            summary={{
-              subtotal: 75.0,
-              shipping_cost: 4.95,
-              total_tax: 6.19,
-              total_cost: 56.14,
-            }}
-            adjustments={[
-              {
-                name: 'New Customer Discount',
-                amount: 20,
-              },
-              {
-                name: '$10 Off Coupon',
-                amount: 10,
-              },
-            ]}
-          >
-            {items}
-          </ReceiptTemplate>
-        )
-      ).resolves.toMatchSnapshot();
-    });
+describe('ReceiptItem', () => {
+  it('match snapshot', async () => {
+    await expect(
+      renderHelper(
+        <ReceiptItem
+          title="A robot!"
+          subtitle="It's real!"
+          quantity={999}
+          price={99.99}
+          currency="USD"
+          imageURL="http://i.robot/avatar"
+        />
+      )
+    ).resolves.toMatchSnapshot();
+  });
+});
 
-    it('accept Date object for timestamp prop', async () => {
-      expect(
-        (await render(
-          <ReceiptTemplate timestamp={new Date(1535622297000)}>
-            {items}
-          </ReceiptTemplate>
-        )).value
-      ).toEqual(
-        (await render(
-          <ReceiptTemplate timestamp="1535622297">{items}</ReceiptTemplate>
-        )).value
-      );
-    });
+describe('ReceiptTemplate', () => {
+  const items = [
+    <ReceiptItem title="Buzz Lightyear" />,
+    <ReceiptItem title="Woody" />,
+    <ReceiptItem title="Slinky Dog" />,
+  ];
 
-    it('render children as "elements" field', async () => {
-      const [{ value }] = await render(
-        <ReceiptTemplate>{items}</ReceiptTemplate>
-      );
+  const receiptTemplateItemSegments = [
+    {
+      type: 'part',
+      value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__',
+      node: items[0],
+      path: '$:0#ReceiptTemplate.children:0',
+    },
+    {
+      type: 'part',
+      value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__',
+      node: items[1],
+      path: '$:0#ReceiptTemplate.children:1',
+    },
+    {
+      type: 'part',
+      value: '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__',
+      node: items[2],
+      path: '$:0#ReceiptTemplate.children:2',
+    },
+  ];
 
-      expect(value.message.attachment.payload.elements).toEqual([
-        '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__',
-        '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__',
-        '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__',
-      ]);
+  beforeEach(() => {
+    renderInner.mock.fake(async node =>
+      node && node === items
+        ? receiptTemplateItemSegments
+        : renderWithFixtures(node)
+    );
+  });
 
-      expect(renderInner.mock).toHaveBeenCalledWith(items, '.children');
-    });
+  it('match snapshot', async () => {
+    await expect(
+      renderHelper(
+        <ReceiptTemplate
+          sharable
+          recipientName="John Doe"
+          orderNumber="12345"
+          currency="USD"
+          paymentMethod="Visa 2345"
+          orderURL="http://what.a.shop"
+          timestamp="1428444852"
+          address={{
+            street_1: '1 Hacker Way',
+            street_2: '',
+            city: 'Menlo Park',
+            postal_code: '94025',
+            state: 'CA',
+            country: 'US',
+          }}
+          summary={{
+            subtotal: 75.0,
+            shipping_cost: 4.95,
+            total_tax: 6.19,
+            total_cost: 56.14,
+          }}
+          adjustments={[
+            {
+              name: 'New Customer Discount',
+              amount: 20,
+            },
+            {
+              name: '$10 Off Coupon',
+              amount: 10,
+            },
+          ]}
+        >
+          {items}
+        </ReceiptTemplate>
+      )
+    ).resolves.toMatchSnapshot();
+  });
 
-    it('throw if non GenericItem element in children', async () => {
-      const Unknown = () => {};
+  it('accept Date object for timestamp prop', async () => {
+    expect(
+      (await renderHelper(
+        <ReceiptTemplate timestamp={new Date(1535622297000)}>
+          {items}
+        </ReceiptTemplate>
+      )).value
+    ).toEqual(
+      (await renderHelper(
+        <ReceiptTemplate timestamp="1535622297">{items}</ReceiptTemplate>
+      )).value
+    );
+  });
 
-      renderInner.mock.fake(async node =>
-        node === '__ITEMS__'
-          ? [
-              ...receiptTemplateItemSegments,
-              {
-                type: 'part',
-                value: 'x',
-                node: <Unknown />,
-                path: '$:0#ReceiptTemplate.children:3',
-              },
-            ]
-          : null
-      );
+  it('render children as "elements" field', async () => {
+    const [{ value }] = await renderHelper(
+      <ReceiptTemplate>{items}</ReceiptTemplate>
+    );
 
-      await expect(
-        render(<ReceiptTemplate>{'__ITEMS__'}</ReceiptTemplate>)
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"<Unknown /> at $:0#ReceiptTemplate.children:3 is invalid, only <[ReceiptItem]/> allowed"`
-      );
-    });
+    expect(value.message.attachment.payload.elements).toEqual([
+      '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__',
+      '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__',
+      '__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__',
+    ]);
+
+    expect(renderInner.mock).toHaveBeenCalledWith(items, '.children');
+  });
+
+  it('throw if non GenericItem element in children', async () => {
+    const Unknown = () => {};
+
+    renderInner.mock.fake(async node =>
+      node === '__ITEMS__'
+        ? [
+            ...receiptTemplateItemSegments,
+            {
+              type: 'part',
+              value: 'x',
+              node: <Unknown />,
+              path: '$:0#ReceiptTemplate.children:3',
+            },
+          ]
+        : null
+    );
+
+    await expect(
+      renderHelper(<ReceiptTemplate>{'__ITEMS__'}</ReceiptTemplate>)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"<Unknown /> at $:0#ReceiptTemplate.children:3 is invalid, only <[ReceiptItem]/> allowed"`
+    );
   });
 });

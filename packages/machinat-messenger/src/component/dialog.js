@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { valuesOfAssertedTypes } from 'machinat-utility';
+import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
 
 import { asContainerComponent, isMessageEntry } from '../utils';
 import * as quickReplyModule from './quickReply';
@@ -9,31 +9,22 @@ const getQuickRepliesValues = valuesOfAssertedTypes(() => [
 ]);
 
 const Dialog = async (
-  {
-    props: {
-      children,
-      type,
-      tag,
-      notificationType,
-      metadata,
-      quickReplies,
-      personaId,
-    },
-  },
+  { children, type, tag, notificationType, metadata, quickReplies, personaId },
   render
 ) => {
-  const segments = await render(children, '.children');
-  if (segments === null) {
+  const childrenSegments = await render(children, '.children');
+  if (childrenSegments === null) {
     return null;
   }
 
   let lastMessageIdx = -1;
 
-  for (let i = 0; i < segments.length; i += 1) {
-    const segment = segments[i];
+  for (let i = 0; i < childrenSegments.length; i += 1) {
+    const segment = childrenSegments[i];
 
     // hoisting text to message object
     if (typeof segment.value === 'string') {
+      segment.type = 'unit';
       segment.value = {
         message: {
           text: segment.value,
@@ -66,7 +57,7 @@ const Dialog = async (
 
   // only attach quick_replies and metadata to last message segment
   if (lastMessageIdx !== -1) {
-    const { value } = segments[lastMessageIdx];
+    const { value } = childrenSegments[lastMessageIdx];
 
     const message = { ...value.message };
     message.metadata = metadata;
@@ -77,7 +68,7 @@ const Dialog = async (
     value.message = message;
   }
 
-  return segments;
+  return childrenSegments;
 };
 
 const __Dialog = asContainerComponent(Dialog);

@@ -1,7 +1,6 @@
 // @flow
-/* eslint-disable camelcase */
 import crypto from 'crypto';
-import type { MachinatChannel } from 'machinat/types';
+import type { MachinatChannel } from '@machinat/core/types';
 import { MESSENGER } from './constant';
 import type {
   MessengerTarget,
@@ -10,7 +9,7 @@ import type {
 } from './types';
 
 class MessengerChannel implements MachinatChannel {
-  pageId: string | number;
+  pageId: string;
   threadType: MessengerThreadType;
   _target: MessengerTarget;
 
@@ -21,13 +20,17 @@ class MessengerChannel implements MachinatChannel {
   }
 
   constructor(
-    pageId: string | number,
+    pageId: number | string,
     target: MessengerTarget,
     threadType: MessengerThreadType = 'USER_TO_PAGE'
   ) {
-    this.pageId = pageId;
+    this.pageId = String(pageId);
     this.threadType = threadType;
     this._target = target;
+  }
+
+  get entity() {
+    return { platform: MESSENGER, id: this.pageId };
   }
 
   get type() {

@@ -1,48 +1,43 @@
 // @flow
 import {
-  asNative,
-  asNamespace,
-  wrapSinglePartSegment,
-  wrapSingleUnitSegment,
-} from 'machinat-renderer';
-import { compose, joinTextualSegments } from 'machinat-utility';
-import type { MachinatElement } from 'machinat/types';
-import type { RenderInnerFn } from 'machinat-renderer/types';
+  annotateNativeComponent,
+  wrapContainerComponent,
+  wrapPartComponent,
+  wrapUnitComponent,
+} from '@machinat/core/renderer';
+import joinTextualSegments from '@machinat/core/utils/joinTextualSegments';
+import compose from '@machinat/core/utils/compose';
+import type { GeneralElement } from '@machinat/core/types';
+import type { InnerRenderFn } from '@machinat/core/renderer/types';
 
 import type { MessengerSegmentValue } from './types';
-import {
-  MESSENGER_NATIVE_TYPE,
-  MESSENGER_NAMESPACE,
-  ENTRY_PATH,
-} from './constant';
+import { MESSENGER, ENTRY_PATH } from './constant';
 
 const { hasOwnProperty } = Object.prototype;
 export const isMessageEntry = (value: string | MessengerSegmentValue) =>
   typeof value === 'string' || !hasOwnProperty.call(value, ENTRY_PATH);
 
 export const asContainerComponent = compose<any>(
-  asNative(MESSENGER_NATIVE_TYPE),
-  asNamespace(MESSENGER_NAMESPACE)
+  annotateNativeComponent(MESSENGER),
+  wrapContainerComponent
 );
 
 export const asPartComponent = compose<any>(
-  asNative(MESSENGER_NATIVE_TYPE),
-  asNamespace(MESSENGER_NAMESPACE),
-  wrapSinglePartSegment
+  annotateNativeComponent(MESSENGER),
+  wrapPartComponent
 );
 
 export const asUnitComponent = compose<any>(
-  asNative(MESSENGER_NATIVE_TYPE),
-  asNamespace(MESSENGER_NAMESPACE),
-  wrapSingleUnitSegment
+  annotateNativeComponent(MESSENGER),
+  wrapUnitComponent
 );
 
 export const mapJoinedTextValues = (mapper: string => string) => async (
-  node: MachinatElement<string>,
-  render: RenderInnerFn<any, any>,
+  node: GeneralElement,
+  render: InnerRenderFn<any, any>,
   path: string
 ) => {
-  const segments = await render((node.props.children: any), '.children');
+  const segments = await render(node.props.children, '.children');
 
   const joined = joinTextualSegments(segments, node, path);
   if (joined === null) {

@@ -1,30 +1,39 @@
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
 
-import { MESSENGER_NATIVE_TYPE } from '../../constant';
 import {
   PassThreadControl,
   RequestThreadControl,
   TakeThreadContorl,
 } from '../handoverProtocol';
-import renderHelper from './renderHelper';
 
-const render = renderHelper(null);
+const renderHelper = element => element.type(element, null, '$');
 
 it.each([PassThreadControl, RequestThreadControl, TakeThreadContorl])(
   '%p is valid root Component',
   ThreadControl => {
     expect(typeof ThreadControl).toBe('function');
-    expect(ThreadControl.$$native).toBe(MESSENGER_NATIVE_TYPE);
-    expect(ThreadControl.$$namespace).toBe('Messenger');
+    expect(isNativeElement(<ThreadControl />)).toBe(true);
+    expect(ThreadControl.$$platform).toBe('messenger');
   }
 );
 
-it.each(
-  [
-    <PassThreadControl appId="Legolas" metadata="you have my bow" />,
-    <RequestThreadControl metadata="give me the ring" />,
-    <TakeThreadContorl metadata="my precious" />,
-  ].map(ele => [ele.type.name, ele])
-)('%s match snapshot', async (_, threadControlElement) => {
-  await expect(render(threadControlElement)).resolves.toMatchSnapshot();
+test('PassThreadControl', () => {
+  expect(
+    renderHelper(
+      <PassThreadControl appId="Legolas" metadata="you have my bow" />
+    )
+  ).toMatchInlineSnapshot(`Promise {}`);
+});
+
+test('RequestThreadControl', () => {
+  expect(
+    renderHelper(<RequestThreadControl metadata="give me the ring" />)
+  ).toMatchInlineSnapshot(`Promise {}`);
+});
+
+test('TakeThreadContorl', () => {
+  expect(
+    renderHelper(<TakeThreadContorl metadata="my precious" />)
+  ).toMatchInlineSnapshot(`Promise {}`);
 });

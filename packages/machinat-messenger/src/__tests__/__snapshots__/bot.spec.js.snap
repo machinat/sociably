@@ -1,6 +1,223 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#render(message, options) works 1`] = `
+exports[`#render(channel, message, options) works 1`] = `
+Object {
+  "jobs": Array [
+    Object {
+      "attachmentAssetTag": undefined,
+      "attachmentFileData": undefined,
+      "attachmentFileInfo": undefined,
+      "channelUid": "messenger:_PAGE_ID_:psid:john",
+      "request": Object {
+        "body": Object {
+          "message": Object {
+            "text": "Hello",
+          },
+          "messaging_type": undefined,
+          "notification_type": undefined,
+          "persona_id": undefined,
+          "recipient": Object {
+            "id": "john",
+          },
+          "tag": undefined,
+        },
+        "method": "POST",
+        "name": "messenger:_PAGE_ID_:psid:john-1",
+        "omit_response_on_success": false,
+        "relative_url": "me/messages",
+      },
+    },
+    Object {
+      "attachmentAssetTag": undefined,
+      "attachmentFileData": undefined,
+      "attachmentFileInfo": undefined,
+      "channelUid": "messenger:_PAGE_ID_:psid:john",
+      "request": Object {
+        "body": Object {
+          "message": Object {
+            "text": "*World!*",
+          },
+          "messaging_type": undefined,
+          "notification_type": undefined,
+          "persona_id": undefined,
+          "recipient": Object {
+            "id": "john",
+          },
+          "tag": undefined,
+        },
+        "depends_on": "messenger:_PAGE_ID_:psid:john-1",
+        "method": "POST",
+        "name": "messenger:_PAGE_ID_:psid:john-2",
+        "omit_response_on_success": false,
+        "relative_url": "me/messages",
+      },
+    },
+    Object {
+      "attachmentAssetTag": undefined,
+      "attachmentFileData": undefined,
+      "attachmentFileInfo": undefined,
+      "channelUid": "messenger:_PAGE_ID_:psid:john",
+      "request": Object {
+        "body": Object {
+          "message": Object {
+            "attachment": Object {
+              "payload": Object {
+                "attachment_id": undefined,
+                "is_reusable": undefined,
+                "url": "https://machinat.com/greeting.png",
+              },
+              "type": "image",
+            },
+            "metadata": undefined,
+            "quick_replies": Array [
+              Object {
+                "content_type": "text",
+                "image_url": undefined,
+                "payload": undefined,
+                "title": "Hi!",
+              },
+            ],
+          },
+          "messaging_type": undefined,
+          "notification_type": undefined,
+          "persona_id": undefined,
+          "recipient": Object {
+            "id": "john",
+          },
+          "tag": undefined,
+        },
+        "depends_on": "messenger:_PAGE_ID_:psid:john-2",
+        "method": "POST",
+        "name": "messenger:_PAGE_ID_:psid:john-3",
+        "omit_response_on_success": false,
+        "relative_url": "me/messages",
+      },
+    },
+  ],
+  "results": Array [
+    Object {
+      "body": Object {
+        "message_id": "xxx",
+        "recipient_id": "xxx",
+      },
+      "code": 200,
+    },
+    Object {
+      "body": Object {
+        "message_id": "xxx",
+        "recipient_id": "xxx",
+      },
+      "code": 200,
+    },
+    Object {
+      "body": Object {
+        "message_id": "xxx",
+        "recipient_id": "xxx",
+      },
+      "code": 200,
+    },
+  ],
+  "tasks": Array [
+    Object {
+      "payload": Array [
+        Object {
+          "attachmentAssetTag": undefined,
+          "attachmentFileData": undefined,
+          "attachmentFileInfo": undefined,
+          "channelUid": "messenger:_PAGE_ID_:psid:john",
+          "request": Object {
+            "body": Object {
+              "message": Object {
+                "text": "Hello",
+              },
+              "messaging_type": undefined,
+              "notification_type": undefined,
+              "persona_id": undefined,
+              "recipient": Object {
+                "id": "john",
+              },
+              "tag": undefined,
+            },
+            "method": "POST",
+            "name": "messenger:_PAGE_ID_:psid:john-1",
+            "omit_response_on_success": false,
+            "relative_url": "me/messages",
+          },
+        },
+        Object {
+          "attachmentAssetTag": undefined,
+          "attachmentFileData": undefined,
+          "attachmentFileInfo": undefined,
+          "channelUid": "messenger:_PAGE_ID_:psid:john",
+          "request": Object {
+            "body": Object {
+              "message": Object {
+                "text": "*World!*",
+              },
+              "messaging_type": undefined,
+              "notification_type": undefined,
+              "persona_id": undefined,
+              "recipient": Object {
+                "id": "john",
+              },
+              "tag": undefined,
+            },
+            "depends_on": "messenger:_PAGE_ID_:psid:john-1",
+            "method": "POST",
+            "name": "messenger:_PAGE_ID_:psid:john-2",
+            "omit_response_on_success": false,
+            "relative_url": "me/messages",
+          },
+        },
+        Object {
+          "attachmentAssetTag": undefined,
+          "attachmentFileData": undefined,
+          "attachmentFileInfo": undefined,
+          "channelUid": "messenger:_PAGE_ID_:psid:john",
+          "request": Object {
+            "body": Object {
+              "message": Object {
+                "attachment": Object {
+                  "payload": Object {
+                    "attachment_id": undefined,
+                    "is_reusable": undefined,
+                    "url": "https://machinat.com/greeting.png",
+                  },
+                  "type": "image",
+                },
+                "metadata": undefined,
+                "quick_replies": Array [
+                  Object {
+                    "content_type": "text",
+                    "image_url": undefined,
+                    "payload": undefined,
+                    "title": "Hi!",
+                  },
+                ],
+              },
+              "messaging_type": undefined,
+              "notification_type": undefined,
+              "persona_id": undefined,
+              "recipient": Object {
+                "id": "john",
+              },
+              "tag": undefined,
+            },
+            "depends_on": "messenger:_PAGE_ID_:psid:john-2",
+            "method": "POST",
+            "name": "messenger:_PAGE_ID_:psid:john-3",
+            "omit_response_on_success": false,
+            "relative_url": "me/messages",
+          },
+        },
+      ],
+      "type": "dispatch",
+    },
+  ],
+}
+`;
+
+exports[`#render(channel, message, options) works 2`] = `
 Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
@@ -8,7 +225,7 @@ Object {
 }
 `;
 
-exports[`#render(message, options) works 2`] = `
+exports[`#render(channel, message, options) works 3`] = `
 Array [
   Object {
     "body": "message=%7B%22text%22%3A%22Hello%22%7D&recipient=%7B%22id%22%3A%22john%22%7D",
@@ -36,7 +253,224 @@ Array [
 ]
 `;
 
-exports[`#render(message, options) works with options 1`] = `
+exports[`#render(channel, message, options) works with options 1`] = `
+Object {
+  "jobs": Array [
+    Object {
+      "attachmentAssetTag": undefined,
+      "attachmentFileData": undefined,
+      "attachmentFileInfo": undefined,
+      "channelUid": "messenger:_PAGE_ID_:psid:john",
+      "request": Object {
+        "body": Object {
+          "message": Object {
+            "text": "Hello",
+          },
+          "messaging_type": "TAG",
+          "notification_type": "SILENT_PUSH",
+          "persona_id": "billy17",
+          "recipient": Object {
+            "id": "john",
+          },
+          "tag": "TRANSPORTATION_UPDATE",
+        },
+        "method": "POST",
+        "name": "messenger:_PAGE_ID_:psid:john-1",
+        "omit_response_on_success": false,
+        "relative_url": "me/messages",
+      },
+    },
+    Object {
+      "attachmentAssetTag": undefined,
+      "attachmentFileData": undefined,
+      "attachmentFileInfo": undefined,
+      "channelUid": "messenger:_PAGE_ID_:psid:john",
+      "request": Object {
+        "body": Object {
+          "message": Object {
+            "text": "*World!*",
+          },
+          "messaging_type": "TAG",
+          "notification_type": "SILENT_PUSH",
+          "persona_id": "billy17",
+          "recipient": Object {
+            "id": "john",
+          },
+          "tag": "TRANSPORTATION_UPDATE",
+        },
+        "depends_on": "messenger:_PAGE_ID_:psid:john-1",
+        "method": "POST",
+        "name": "messenger:_PAGE_ID_:psid:john-2",
+        "omit_response_on_success": false,
+        "relative_url": "me/messages",
+      },
+    },
+    Object {
+      "attachmentAssetTag": undefined,
+      "attachmentFileData": undefined,
+      "attachmentFileInfo": undefined,
+      "channelUid": "messenger:_PAGE_ID_:psid:john",
+      "request": Object {
+        "body": Object {
+          "message": Object {
+            "attachment": Object {
+              "payload": Object {
+                "attachment_id": undefined,
+                "is_reusable": undefined,
+                "url": "https://machinat.com/greeting.png",
+              },
+              "type": "image",
+            },
+            "metadata": undefined,
+            "quick_replies": Array [
+              Object {
+                "content_type": "text",
+                "image_url": undefined,
+                "payload": undefined,
+                "title": "Hi!",
+              },
+            ],
+          },
+          "messaging_type": "TAG",
+          "notification_type": "SILENT_PUSH",
+          "persona_id": "billy17",
+          "recipient": Object {
+            "id": "john",
+          },
+          "tag": "TRANSPORTATION_UPDATE",
+        },
+        "depends_on": "messenger:_PAGE_ID_:psid:john-2",
+        "method": "POST",
+        "name": "messenger:_PAGE_ID_:psid:john-3",
+        "omit_response_on_success": false,
+        "relative_url": "me/messages",
+      },
+    },
+  ],
+  "results": Array [
+    Object {
+      "body": Object {
+        "message_id": "xxx",
+        "recipient_id": "xxx",
+      },
+      "code": 200,
+    },
+    Object {
+      "body": Object {
+        "message_id": "xxx",
+        "recipient_id": "xxx",
+      },
+      "code": 200,
+    },
+    Object {
+      "body": Object {
+        "message_id": "xxx",
+        "recipient_id": "xxx",
+      },
+      "code": 200,
+    },
+  ],
+  "tasks": Array [
+    Object {
+      "payload": Array [
+        Object {
+          "attachmentAssetTag": undefined,
+          "attachmentFileData": undefined,
+          "attachmentFileInfo": undefined,
+          "channelUid": "messenger:_PAGE_ID_:psid:john",
+          "request": Object {
+            "body": Object {
+              "message": Object {
+                "text": "Hello",
+              },
+              "messaging_type": "TAG",
+              "notification_type": "SILENT_PUSH",
+              "persona_id": "billy17",
+              "recipient": Object {
+                "id": "john",
+              },
+              "tag": "TRANSPORTATION_UPDATE",
+            },
+            "method": "POST",
+            "name": "messenger:_PAGE_ID_:psid:john-1",
+            "omit_response_on_success": false,
+            "relative_url": "me/messages",
+          },
+        },
+        Object {
+          "attachmentAssetTag": undefined,
+          "attachmentFileData": undefined,
+          "attachmentFileInfo": undefined,
+          "channelUid": "messenger:_PAGE_ID_:psid:john",
+          "request": Object {
+            "body": Object {
+              "message": Object {
+                "text": "*World!*",
+              },
+              "messaging_type": "TAG",
+              "notification_type": "SILENT_PUSH",
+              "persona_id": "billy17",
+              "recipient": Object {
+                "id": "john",
+              },
+              "tag": "TRANSPORTATION_UPDATE",
+            },
+            "depends_on": "messenger:_PAGE_ID_:psid:john-1",
+            "method": "POST",
+            "name": "messenger:_PAGE_ID_:psid:john-2",
+            "omit_response_on_success": false,
+            "relative_url": "me/messages",
+          },
+        },
+        Object {
+          "attachmentAssetTag": undefined,
+          "attachmentFileData": undefined,
+          "attachmentFileInfo": undefined,
+          "channelUid": "messenger:_PAGE_ID_:psid:john",
+          "request": Object {
+            "body": Object {
+              "message": Object {
+                "attachment": Object {
+                  "payload": Object {
+                    "attachment_id": undefined,
+                    "is_reusable": undefined,
+                    "url": "https://machinat.com/greeting.png",
+                  },
+                  "type": "image",
+                },
+                "metadata": undefined,
+                "quick_replies": Array [
+                  Object {
+                    "content_type": "text",
+                    "image_url": undefined,
+                    "payload": undefined,
+                    "title": "Hi!",
+                  },
+                ],
+              },
+              "messaging_type": "TAG",
+              "notification_type": "SILENT_PUSH",
+              "persona_id": "billy17",
+              "recipient": Object {
+                "id": "john",
+              },
+              "tag": "TRANSPORTATION_UPDATE",
+            },
+            "depends_on": "messenger:_PAGE_ID_:psid:john-2",
+            "method": "POST",
+            "name": "messenger:_PAGE_ID_:psid:john-3",
+            "omit_response_on_success": false,
+            "relative_url": "me/messages",
+          },
+        },
+      ],
+      "type": "dispatch",
+    },
+  ],
+}
+`;
+
+exports[`#render(channel, message, options) works with options 2`] = `
 Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
@@ -44,7 +478,7 @@ Object {
 }
 `;
 
-exports[`#render(message, options) works with options 2`] = `
+exports[`#render(channel, message, options) works with options 3`] = `
 Array [
   Object {
     "body": "message=%7B%22text%22%3A%22Hello%22%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
@@ -74,6 +508,70 @@ Array [
 
 exports[`#renderAttachment(message) works 1`] = `
 Object {
+  "jobs": Array [
+    Object {
+      "attachmentFileData": undefined,
+      "attachmentFileInfo": undefined,
+      "request": Object {
+        "body": Object {
+          "message": Object {
+            "attachment": Object {
+              "payload": Object {
+                "attachment_id": undefined,
+                "is_reusable": undefined,
+                "url": "https://machinat.com/trollface.png",
+              },
+              "type": "image",
+            },
+          },
+        },
+        "method": "POST",
+        "omit_response_on_success": false,
+        "relative_url": "me/message_attachments",
+      },
+    },
+  ],
+  "results": Array [
+    Object {
+      "body": Object {
+        "attachment_id": 401759795,
+      },
+      "code": 200,
+    },
+  ],
+  "tasks": Array [
+    Object {
+      "payload": Array [
+        Object {
+          "attachmentFileData": undefined,
+          "attachmentFileInfo": undefined,
+          "request": Object {
+            "body": Object {
+              "message": Object {
+                "attachment": Object {
+                  "payload": Object {
+                    "attachment_id": undefined,
+                    "is_reusable": undefined,
+                    "url": "https://machinat.com/trollface.png",
+                  },
+                  "type": "image",
+                },
+              },
+            },
+            "method": "POST",
+            "omit_response_on_success": false,
+            "relative_url": "me/message_attachments",
+          },
+        },
+      ],
+      "type": "dispatch",
+    },
+  ],
+}
+`;
+
+exports[`#renderAttachment(message) works 2`] = `
+Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",
   "batch": Any<String>,
@@ -81,6 +579,100 @@ Object {
 `;
 
 exports[`#renderMessageCreative(message) works 1`] = `
+Object {
+  "jobs": Array [
+    Object {
+      "request": Object {
+        "body": Object {
+          "messages": Array [
+            Object {
+              "text": "Hello",
+            },
+            Object {
+              "text": "*World!*",
+            },
+            Object {
+              "attachment": Object {
+                "payload": Object {
+                  "attachment_id": undefined,
+                  "is_reusable": undefined,
+                  "url": "https://machinat.com/greeting.png",
+                },
+                "type": "image",
+              },
+              "metadata": undefined,
+              "quick_replies": Array [
+                Object {
+                  "content_type": "text",
+                  "image_url": undefined,
+                  "payload": undefined,
+                  "title": "Hi!",
+                },
+              ],
+            },
+          ],
+        },
+        "method": "POST",
+        "omit_response_on_success": false,
+        "relative_url": "me/message_creatives",
+      },
+    },
+  ],
+  "results": Array [
+    Object {
+      "body": Object {
+        "message_creative_id": 938461089,
+      },
+      "code": 200,
+    },
+  ],
+  "tasks": Array [
+    Object {
+      "payload": Array [
+        Object {
+          "request": Object {
+            "body": Object {
+              "messages": Array [
+                Object {
+                  "text": "Hello",
+                },
+                Object {
+                  "text": "*World!*",
+                },
+                Object {
+                  "attachment": Object {
+                    "payload": Object {
+                      "attachment_id": undefined,
+                      "is_reusable": undefined,
+                      "url": "https://machinat.com/greeting.png",
+                    },
+                    "type": "image",
+                  },
+                  "metadata": undefined,
+                  "quick_replies": Array [
+                    Object {
+                      "content_type": "text",
+                      "image_url": undefined,
+                      "payload": undefined,
+                      "title": "Hi!",
+                    },
+                  ],
+                },
+              ],
+            },
+            "method": "POST",
+            "omit_response_on_success": false,
+            "relative_url": "me/message_creatives",
+          },
+        },
+      ],
+      "type": "dispatch",
+    },
+  ],
+}
+`;
+
+exports[`#renderMessageCreative(message) works 2`] = `
 Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "8688ea46d23024c65f2e66c2b872fccd774120de9ca4a131cbb14d854ca5a4a6",

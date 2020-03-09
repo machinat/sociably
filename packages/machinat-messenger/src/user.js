@@ -1,15 +1,15 @@
 // @flow
-import type { MachinatUser, MachinatUserProfile } from 'machinat/types';
+import type { MachinatUser, MachinatUserProfile } from '@machinat/core/types';
 import { MESSENGER } from './constant';
 import type { MessengerRawUserProfile } from './types';
 
 export class MessengerUser implements MachinatUser {
   platform = MESSENGER;
-  pageId: string | number;
+  pageId: string;
   psid: string;
 
   constructor(pageId: string | number, psid: string) {
-    this.pageId = pageId;
+    this.pageId = String(pageId);
     this.psid = psid;
   }
 

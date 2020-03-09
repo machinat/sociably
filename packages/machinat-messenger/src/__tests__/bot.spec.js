@@ -1,21 +1,37 @@
 import moxy from 'moxy';
 import nock from 'nock';
-import Machinat from 'machinat';
-import Renderer from 'machinat-renderer';
-import Queue from 'machinat-queue';
-import { Emitter, Engine, Controller } from 'machinat-base';
-import WebhookReceiver from 'machinat-webhook-receiver';
+import Machinat from '@machinat/core';
+import Renderer from '@machinat/core/renderer';
+import Queue from '@machinat/core/queue';
+import Engine from '@machinat/core/engine';
+import Worker from '../worker';
 import MessengerBot from '../bot';
-import MessengerWorker from '../worker';
 import { Image, Dialog, QuickReply } from '../component';
-import { MESSENGER_NATIVE_TYPE } from '../constant';
-import { makeResponse } from './utils';
-
-jest.mock('machinat-base');
-jest.mock('machinat-renderer');
-jest.mock('machinat-webhook-receiver');
 
 nock.disableNetConnect();
+
+jest.mock('@machinat/core/engine', () =>
+  jest
+    .requireActual('moxy')
+    .default(jest.requireActual('@machinat/core/engine'), {
+      mockNewInstance: true,
+      includeProps: ['default', 'start', 'stop'],
+    })
+);
+
+jest.mock('@machinat/core/renderer', () =>
+  jest
+    .requireActual('moxy')
+    .default(jest.requireActual('@machinat/core/renderer'), {
+      includeProps: ['default'],
+    })
+);
+
+jest.mock('../worker', () =>
+  jest.requireActual('moxy').default(jest.requireActual('../worker'), {
+    includeProps: ['default'],
+  })
+);
 
 const message = (
   <Dialog quickReplies={<QuickReply title="Hi!" />}>
@@ -29,13 +45,11 @@ let graphAPI;
 const bodySpy = moxy(() => true);
 
 beforeEach(() => {
-  Renderer.mock.clear();
-  Engine.mock.clear();
-  Controller.mock.clear();
-  WebhookReceiver.mock.clear();
-
   graphAPI = nock('https://graph.facebook.com').post('/v3.3/', bodySpy);
   bodySpy.mock.clear();
+  Engine.mock.clear();
+  Renderer.mock.clear();
+  Worker.mock.clear();
 });
 
 afterEach(() => {
@@ -43,27 +57,15 @@ afterEach(() => {
 });
 
 describe('#constructor(options)', () => {
-  it('extends Emitter', () => {
-    const bot = new MessengerBot({
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-    });
-
-    expect(bot).toBeInstanceOf(Emitter);
-  });
-
   it('throw if accessToken not given', () => {
     expect(
       () =>
         new MessengerBot({
           pageId: '_PAGE_ID_',
           appSecret: '_SECRET_',
-          verifyToken: '_VERIFIY_TOKEN_',
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"should provide accessToken to send messages"`
+      `"options.accessToken should not be empty"`
     );
   });
 
@@ -73,115 +75,23 @@ describe('#constructor(options)', () => {
         new MessengerBot({
           accessToken: '_ACCESS_TOKEN_',
           appSecret: '_SECRET_',
-          verifyToken: '_VERIFIY_TOKEN_',
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"should provide pageId as the identification of resources"`
+      `"options.pageId should not be empty"`
     );
-  });
-
-  it('throw if appSecret not given', () => {
-    expect(
-      () =>
-        new MessengerBot({
-          pageId: '_PAGE_ID_',
-          accessToken: '_ACCESS_TOKEN_',
-          verifyToken: '_VERIFIY_TOKEN_',
-        })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"should provide appSecret if shouldValidateRequest set to true"`
-    );
-  });
-
-  it('is ok to have appSecret empty if shouldValidateRequest set to false', () => {
-    expect(
-      () =>
-        new MessengerBot({
-          pageId: '_PAGE_ID_',
-          accessToken: '_ACCESS_TOKEN_',
-          verifyToken: '_VERIFIY_TOKEN_',
-          shouldValidateRequest: false,
-        })
-    ).not.toThrow();
-  });
-
-  it('throw if verifyToken not given', () => {
-    expect(
-      () =>
-        new MessengerBot({
-          pageId: '_PAGE_ID_',
-          accessToken: '_ACCESS_TOKEN_',
-          appSecret: '_SECRET_',
-        })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"should provide verifyToken if shouldVerifyWebhook set to true"`
-    );
-  });
-
-  it('is ok to have verifyToken empty if shouldVerifyWebhook set to false', () => {
-    expect(
-      () =>
-        new MessengerBot({
-          pageId: '_PAGE_ID_',
-          accessToken: '_ACCESS_TOKEN_',
-          appSecret: '_SECRET_',
-          shouldVerifyWebhook: false,
-        })
-    ).not.toThrow();
-  });
-
-  it('set default options', () => {
-    expect(
-      new MessengerBot({
-        pageId: '_PAGE_ID_',
-        accessToken: '_ACCESS_TOKEN_',
-        appSecret: '_SECRET_',
-        verifyToken: '_VERIFIY_TOKEN_',
-      }).options
-    ).toMatchInlineSnapshot(`
-            Object {
-              "accessToken": "_ACCESS_TOKEN_",
-              "appSecret": "_SECRET_",
-              "pageId": "_PAGE_ID_",
-              "respondTimeout": 5000,
-              "shouldValidateRequest": true,
-              "shouldVerifyWebhook": true,
-              "verifyToken": "_VERIFIY_TOKEN_",
-            }
-        `);
-  });
-
-  it('covers default options', () => {
-    const options = {
-      pageId: '_PAGE_ID_',
-      appSecret: '_SECRET_',
-      accessToken: '_ACCESS_TOKEN_',
-      shouldValidateRequest: true,
-      shouldVerifyWebhook: true,
-      verifyToken: '_VERIFIY_TOKEN_',
-      respondTimeout: 9999,
-      consumeInterval: 10000,
-    };
-
-    expect(new MessengerBot(options).options).toEqual(options);
   });
 
   it('assemble core modules', () => {
     const bot = new MessengerBot({
       pageId: '_PAGE_ID_',
       accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
     });
 
     expect(bot.engine).toBeInstanceOf(Engine);
-    expect(bot.controller).toBeInstanceOf(Controller);
-    expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
 
     expect(Renderer.mock).toHaveBeenCalledTimes(1);
     expect(Renderer.mock).toHaveBeenCalledWith(
       'messenger',
-      MESSENGER_NATIVE_TYPE,
       expect.any(Function)
     );
 
@@ -191,129 +101,97 @@ describe('#constructor(options)', () => {
       bot,
       expect.any(Renderer),
       expect.any(Queue),
-      expect.any(MessengerWorker),
-      []
+      expect.any(Worker),
+      null,
+      null
     );
 
-    expect(Controller.mock).toHaveBeenCalledTimes(1);
-    expect(Controller.mock).toHaveBeenCalledWith('messenger', bot, []);
-
-    expect(WebhookReceiver.mock).toHaveBeenCalledTimes(1);
-    expect(WebhookReceiver.mock).toHaveBeenCalledWith(
-      expect.any(Function),
-      expect.any(Function)
-    );
+    expect(Worker.mock).toHaveBeenCalledTimes(1);
+    expect(Worker.mock).toHaveBeenCalledWith('_ACCESS_TOKEN_', 500, undefined);
   });
 
-  it('pass middlewares from plugins to controller and engine', () => {
-    const eventMiddleware1 = () => () => {};
-    const eventMiddleware2 = () => () => {};
-    const dispatchMiddleware1 = () => () => {};
-    const dispatchMiddleware2 = () => () => {};
-    const plugins = [
-      moxy(() => ({
-        dispatchMiddleware: dispatchMiddleware1,
-      })),
-      moxy(() => ({
-        eventMiddleware: eventMiddleware1,
-      })),
-      moxy(() => ({
-        dispatchMiddleware: dispatchMiddleware2,
-        eventMiddleware: eventMiddleware2,
-      })),
-    ];
+  it('pass initScope and dispatchWrapper params to Engine if existed', () => {
+    const initScope = moxy();
+    const dispatchWrapper = moxy();
+    const bot = new MessengerBot(
+      {
+        pageId: '_PAGE_ID_',
+        accessToken: '_ACCESS_TOKEN_',
+        appSecret: '_SECRET_',
+      },
+      initScope,
+      dispatchWrapper
+    );
 
-    const bot = new MessengerBot({
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-      plugins,
-    });
-
+    expect(Engine.mock).toHaveBeenCalledTimes(1);
     expect(Engine.mock).toHaveBeenCalledWith(
       'messenger',
       bot,
       expect.any(Renderer),
       expect.any(Queue),
-      expect.any(MessengerWorker),
-      [dispatchMiddleware1, dispatchMiddleware2]
+      expect.any(Worker),
+      initScope,
+      dispatchWrapper
     );
-
-    expect(Controller.mock).toHaveBeenCalledWith('messenger', bot, [
-      eventMiddleware1,
-      eventMiddleware2,
-    ]);
   });
 
-  it('issue event & error', async () => {
-    const eventIssuerSpy = moxy(() => Promise.resolve());
-    Controller.mock.fake(function FakeController() {
-      return { eventIssuerThroughMiddlewares: () => eventIssuerSpy };
-    });
-
-    const bot = new MessengerBot({
+  it('pass consumeInterval and appSecret specified to worker', () => {
+    const _bot = new MessengerBot({
       pageId: '_PAGE_ID_',
       accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
+      appSecret: '_APP_SECRET_',
+      consumeInterval: 0,
     });
 
-    const eventListener = moxy();
-    const errorListener = moxy();
-    bot.onEvent(eventListener);
-    bot.onError(errorListener);
-
-    expect(bot.receiver.bindIssuer.mock).toHaveBeenCalledTimes(1);
-    expect(
-      bot.controller.eventIssuerThroughMiddlewares.mock
-    ).toHaveBeenCalledTimes(1);
-    const finalPublisher =
-      bot.controller.eventIssuerThroughMiddlewares.mock.calls[0].args[0];
-
-    const channel = { super: 'slam' };
-    const event = { a: 'phonecall' };
-    const metadata = { champ: 'Johnnnnn Ceeeena!' };
-    const frame = { channel, event, metadata };
-
-    expect(finalPublisher(frame)).toBe(undefined);
-
-    expect(eventListener.mock).toHaveBeenCalledTimes(1);
-    expect(eventListener.mock).toHaveBeenCalledWith(frame);
-
-    const [issueEvent, issueError] = bot.receiver.bindIssuer.mock.calls[0].args;
-
-    await expect(issueEvent(channel, event, metadata)).resolves.toBe(undefined);
-    expect(eventIssuerSpy.mock).toHaveBeenCalledTimes(1);
-    expect(eventIssuerSpy.mock).toHaveBeenCalledWith(channel, event, metadata);
-
-    expect(issueError(new Error('NO'))).toBe(undefined);
-    expect(errorListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledWith(new Error('NO'));
+    expect(Worker.mock).toHaveBeenCalledTimes(1);
+    expect(Worker.mock).toHaveBeenCalledWith(
+      '_ACCESS_TOKEN_',
+      0,
+      '_APP_SECRET_'
+    );
   });
 });
 
-describe('#render(message, options)', () => {
+test('#start() and #stop() start/stop engine', () => {
+  const bot = new MessengerBot({
+    pageId: '_PAGE_ID_',
+    accessToken: '_ACCESS_TOKEN_',
+    appSecret: '_APP_SECRET_',
+  });
+
+  bot.start();
+  expect(bot.engine.start.mock).toHaveBeenCalledTimes(1);
+
+  bot.stop();
+  expect(bot.engine.stop.mock).toHaveBeenCalledTimes(1);
+});
+
+describe('#render(channel, message, options)', () => {
+  const bot = new MessengerBot({
+    pageId: '_PAGE_ID_',
+    accessToken: '_ACCESS_TOKEN_',
+    appSecret: '_SECRET_',
+  });
+
   let scope;
   beforeEach(() => {
     scope = graphAPI.reply(
       200,
-      JSON.stringify([
-        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-      ])
+      JSON.stringify(
+        new Array(3).fill(0).map(() => ({
+          code: 200,
+          body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
+        }))
+      )
     );
+    bot.start();
+  });
+
+  afterEach(() => {
+    bot.stop();
   });
 
   it('resolves null if message is empty', async () => {
-    const bot = new MessengerBot({
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-    });
-
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
@@ -323,23 +201,15 @@ describe('#render(message, options)', () => {
   });
 
   it('works', async () => {
-    const bot = new MessengerBot({
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-      plugins: [
-        () => ({
-          dispatchMiddleware: next => frame => next(frame),
-        }),
-      ],
-    });
+    const response = await bot.render('john', message);
+    expect(response).toMatchSnapshot();
 
-    await expect(bot.render('john', message)).resolves.toEqual([
-      { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
-      { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
-      { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
-    ]);
+    for (const result of response.results) {
+      expect(result).toEqual({
+        code: 200,
+        body: { message_id: 'xxx', recipient_id: 'xxx' },
+      });
+    }
 
     expect(bodySpy.mock).toHaveBeenCalledTimes(1);
     const body = bodySpy.mock.calls[0].args[0];
@@ -351,25 +221,20 @@ describe('#render(message, options)', () => {
   });
 
   it('works with options', async () => {
-    const bot = new MessengerBot({
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
+    const response = await bot.render('john', message, {
+      messagingType: 'TAG',
+      tag: 'TRANSPORTATION_UPDATE',
+      notificationType: 'SILENT_PUSH',
+      personaId: 'billy17',
     });
+    expect(response).toMatchSnapshot();
 
-    await expect(
-      bot.render('john', message, {
-        messagingType: 'TAG',
-        tag: 'TRANSPORTATION_UPDATE',
-        notificationType: 'SILENT_PUSH',
-        personaId: 'billy17',
-      })
-    ).resolves.toEqual([
-      { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
-      { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
-      { code: 200, body: { message_id: 'xxx', recipient_id: 'xxx' } },
-    ]);
+    for (const result of response.results) {
+      expect(result).toEqual({
+        code: 200,
+        body: { message_id: 'xxx', recipient_id: 'xxx' },
+      });
+    }
 
     expect(bodySpy.mock).toHaveBeenCalledTimes(1);
     const body = bodySpy.mock.calls[0].args[0];
@@ -382,14 +247,21 @@ describe('#render(message, options)', () => {
 });
 
 describe('#renderAttachment(message)', () => {
-  it('resolves null if message is empty', async () => {
-    const bot = new MessengerBot({
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-    });
+  const bot = new MessengerBot({
+    pageId: '_PAGE_ID_',
+    accessToken: '_ACCESS_TOKEN_',
+    appSecret: '_SECRET_',
+  });
 
+  beforeEach(() => {
+    bot.start();
+  });
+
+  afterEach(() => {
+    bot.stop();
+  });
+
+  it('resolves null if message is empty', async () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
       await expect(bot.renderAttachment(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
@@ -397,26 +269,23 @@ describe('#renderAttachment(message)', () => {
   });
 
   it('works', async () => {
-    const bot = new MessengerBot({
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-    });
-
     const scope = graphAPI.reply(
       200,
-      JSON.stringify([makeResponse(200, { attachment_id: 401759795 })])
+      JSON.stringify([
+        { code: 200, body: JSON.stringify({ attachment_id: 401759795 }) },
+      ])
     );
 
-    await expect(
-      bot.renderAttachment(
-        <Image sharable url="https://machinat.com/trollface.png" />
-      )
-    ).resolves.toEqual({
-      code: 200,
-      body: { attachment_id: 401759795 },
-    });
+    const response = await bot.renderAttachment(
+      <Image sharable url="https://machinat.com/trollface.png" />
+    );
+    expect(response).toMatchSnapshot();
+    expect(response.results).toEqual([
+      {
+        code: 200,
+        body: { attachment_id: 401759795 },
+      },
+    ]);
 
     expect(bodySpy.mock).toHaveBeenCalledTimes(1);
     const body = bodySpy.mock.calls[0].args[0];
@@ -438,14 +307,21 @@ describe('#renderAttachment(message)', () => {
 });
 
 describe('#renderMessageCreative(message)', () => {
-  it('resolves null if message is empty', async () => {
-    const bot = new MessengerBot({
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-    });
+  const bot = new MessengerBot({
+    pageId: '_PAGE_ID_',
+    accessToken: '_ACCESS_TOKEN_',
+    appSecret: '_SECRET_',
+  });
 
+  beforeEach(() => {
+    bot.start();
+  });
+
+  afterEach(() => {
+    bot.stop();
+  });
+
+  it('resolves null if message is empty', async () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
       await expect(bot.renderMessageCreative(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
@@ -453,22 +329,21 @@ describe('#renderMessageCreative(message)', () => {
   });
 
   it('works', async () => {
-    const bot = new MessengerBot({
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-      verifyToken: '_VERIFIY_TOKEN_',
-    });
-
     const scope = graphAPI.reply(
       200,
-      JSON.stringify([makeResponse(200, { message_creative_id: 938461089 })])
+      JSON.stringify([
+        { code: 200, body: JSON.stringify({ message_creative_id: 938461089 }) },
+      ])
     );
 
-    await expect(bot.renderMessageCreative(message)).resolves.toEqual({
-      code: 200,
-      body: { message_creative_id: 938461089 },
-    });
+    const response = await bot.renderMessageCreative(message);
+    expect(response).toMatchSnapshot();
+    expect(response.results).toEqual([
+      {
+        code: 200,
+        body: { message_creative_id: 938461089 },
+      },
+    ]);
 
     expect(bodySpy.mock).toHaveBeenCalledTimes(1);
     const body = bodySpy.mock.calls[0].args[0];

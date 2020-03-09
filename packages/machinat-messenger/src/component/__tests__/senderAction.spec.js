@@ -1,19 +1,59 @@
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
 
-import { MESSENGER_NATIVE_TYPE } from '../../constant';
 import { MarkSeen, TypingOn, TypingOff } from '../senderAction';
-import renderHelper from './renderHelper';
 
-const render = renderHelper(null);
+const renderHelper = element => element.type(element, null, '$');
 
 describe.each([MarkSeen, TypingOn, TypingOff])('%p', Action => {
   it('is valid unit Component', () => {
     expect(typeof Action).toBe('function');
-    expect(Action.$$native).toBe(MESSENGER_NATIVE_TYPE);
-    expect(Action.$$namespace).toBe('Messenger');
+    expect(isNativeElement(<Action />)).toBe(true);
+    expect(Action.$$platform).toBe('messenger');
   });
+});
 
-  it('match snapshot', async () => {
-    await expect(render(<Action />)).resolves.toMatchSnapshot();
-  });
+it('MarkSeen match snapshot', async () => {
+  await expect(renderHelper(<MarkSeen />)).resolves.toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "node": <MarkSeen />,
+              "path": "$",
+              "type": "unit",
+              "value": Object {
+                "sender_action": "mark_seen",
+              },
+            },
+          ]
+        `);
+});
+
+it('TypingOn match snapshot', async () => {
+  await expect(renderHelper(<TypingOn />)).resolves.toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "node": <TypingOn />,
+              "path": "$",
+              "type": "unit",
+              "value": Object {
+                "sender_action": "typing_on",
+              },
+            },
+          ]
+        `);
+});
+
+it('TypingOff match snapshot', async () => {
+  await expect(renderHelper(<TypingOff />)).resolves.toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "node": <TypingOff />,
+              "path": "$",
+              "type": "unit",
+              "value": Object {
+                "sender_action": "typing_off",
+              },
+            },
+          ]
+        `);
 });

@@ -1,16 +1,15 @@
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
 
-import { MESSENGER_NATIVE_TYPE } from '../../constant';
 import { Image, Video, Audio, File } from '../media';
-import renderHelper from './renderHelper';
 
-const render = renderHelper(async () => null);
+const renderHelper = element => element.type(element, null, '$');
 
 describe('media Components', () => {
   test.each([Image, Video, Audio, File])('is valid root Component', Media => {
     expect(typeof Media).toBe('function');
-    expect(Media.$$native).toBe(MESSENGER_NATIVE_TYPE);
-    expect(Media.$$namespace).toBe('Messenger');
+    expect(isNativeElement(<Media />)).toBe(true);
+    expect(Media.$$platform).toBe('messenger');
   });
 
   it('match snapshot', async () => {
@@ -25,7 +24,7 @@ describe('media Components', () => {
           <Video attachmentId="_I_am_Video_" />,
           <Audio attachmentId="_I_am_Audio_" />,
           <File attachmentId="_I_am_File_" />,
-        ].map(render)
+        ].map(renderHelper)
       )
     ).resolves.toMatchSnapshot();
   });

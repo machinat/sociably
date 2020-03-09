@@ -1,11 +1,9 @@
 import moxy from 'moxy';
-import Machinat from 'machinat';
-import { map } from 'machinat-utility';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
+import map from '@machinat/core/iterator/map';
 
-import { MESSENGER_NATIVE_TYPE } from '../../constant';
 import { Latex, DynamicText } from '../text';
-
-import renderHelper from './renderHelper';
 
 const renderInner = moxy(async message =>
   map(
@@ -27,18 +25,18 @@ beforeEach(() => {
   renderInner.mock.clear();
 });
 
-const render = renderHelper(renderInner);
+const renderHelper = element => element.type(element, renderInner, '$');
 
 describe('Latex', () => {
   it('is valid Component', () => {
     expect(typeof Latex).toBe('function');
-    expect(Latex.$$native).toBe(MESSENGER_NATIVE_TYPE);
-    expect(Latex.$$namespace).toBe('Messenger');
+    expect(isNativeElement(<Latex />)).toBe(true);
+    expect(Latex.$$platform).toBe('messenger');
   });
 
   it('render children as text', async () => {
     const nodeWithPlainText = <Latex>some text</Latex>;
-    await expect(render(nodeWithPlainText)).resolves.toEqual([
+    await expect(renderHelper(nodeWithPlainText)).resolves.toEqual([
       {
         type: 'text',
         value: '\\(some text\\)',
@@ -55,7 +53,7 @@ describe('Latex', () => {
         <c>ijkl</c>
       </Latex>
     );
-    await expect(render(nodeWithElements)).resolves.toEqual([
+    await expect(renderHelper(nodeWithElements)).resolves.toEqual([
       {
         type: 'text',
         node: nodeWithElements,
@@ -76,7 +74,7 @@ describe('Latex', () => {
         <c>ijkl</c>
       </Latex>
     );
-    await expect(render(nodeWithBreak)).resolves.toEqual([
+    await expect(renderHelper(nodeWithBreak)).resolves.toEqual([
       { type: 'text', node: nodeWithBreak, value: '\\(abcd\\)', path: '$' },
       {
         type: 'break',
@@ -100,8 +98,8 @@ describe('Latex', () => {
 describe('DynamicText', () => {
   it('is valid Component', () => {
     expect(typeof DynamicText).toBe('function');
-    expect(DynamicText.$$native).toBe(MESSENGER_NATIVE_TYPE);
-    expect(DynamicText.$$namespace).toBe('Messenger');
+    expect(isNativeElement(<DynamicText />)).toBe(true);
+    expect(DynamicText.$$platform).toBe('messenger');
   });
 
   it('renders dynamic text message object', async () => {
@@ -110,7 +108,7 @@ describe('DynamicText', () => {
         Hello {'{{first_name}}!'}
       </DynamicText>
     );
-    await expect(render(node)).resolves.toEqual([
+    await expect(renderHelper(node)).resolves.toEqual([
       {
         type: 'unit',
         node,

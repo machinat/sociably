@@ -1,5 +1,16 @@
 // @flow
-export { default } from './bot';
+import initModule from './module';
+import MessengerBot from './bot';
+import MessengerReceiver from './receiver';
+import { MESSENGER_PLATFORM_CONFIGS_I } from './constant';
+
 export * from './component';
-export { default as MessengerChannel } from './channel';
-export { MessengerUser } from './user';
+
+const Messenger = {
+  initModule,
+  Bot: MessengerBot,
+  Receiver: MessengerReceiver,
+  CONFIGS: MESSENGER_PLATFORM_CONFIGS_I,
+};
+
+export default Messenger;

@@ -2,16 +2,16 @@ import invariant from 'invariant';
 import {
   breakSegment,
   textSegment,
-  wrapSingleUnitSegment,
-} from 'machinat-renderer';
-import { joinTextualSegments } from 'machinat-utility';
+  wrapUnitComponent,
+} from '@machinat/core/renderer';
+import joinTextualSegments from '@machinat/core/utils/joinTextualSegments';
 
 import { mapJoinedTextValues } from '../utils';
 
 const identity = x => x;
 const text = mapJoinedTextValues(identity);
 
-const br = (node, _, path) => [breakSegment(node, path)];
+const br = (node, render, path) => [breakSegment(node, path)];
 
 const B = '*';
 const b = mapJoinedTextValues(v => B + v + B);
@@ -29,22 +29,9 @@ const PRE_BEGIN = '```\n';
 const PRE_END = '\n```';
 const pre = mapJoinedTextValues(v => PRE_BEGIN + v + PRE_END);
 
-const a = async (node, render, path) => {
-  const { children, href } = node.props;
-  const segments = await render(children, '.children');
-  if (segments === null) {
-    return null;
-  }
-
-  const joined = joinTextualSegments(segments);
-  const breakSeg = breakSegment(node, path);
-
-  return [...joined, breakSeg, textSegment(href), breakSeg];
-};
-
 const generalMediaFactory = (tag, type) => {
   const box = {
-    [tag]: ({ props: { src } }) => ({
+    [tag]: ({ src }) => ({
       message: {
         attachment: {
           type,
@@ -56,7 +43,7 @@ const generalMediaFactory = (tag, type) => {
     }),
   };
 
-  return wrapSingleUnitSegment(box[tag]);
+  return wrapUnitComponent(box[tag]);
 };
 
 const img = generalMediaFactory('img', 'image');
@@ -71,7 +58,6 @@ const generalComponents = {
   del,
   code,
   pre,
-  a,
   br,
   img,
   video,
@@ -81,15 +67,14 @@ const generalComponents = {
 
 const { hasOwnProperty } = Object.prototype;
 
-const generalComponentDelegate = async (node, render, path) => {
-  const { type } = node;
-
+const generalComponentDelegate = async (element, render, path) => {
+  const { type } = element;
   invariant(
     hasOwnProperty.call(generalComponents, type),
     `"${type}" is not valid general component tag on messenger`
   );
 
-  const segments = await generalComponents[type](node, render, path);
+  const segments = await generalComponents[type](element, render, path);
   return segments;
 };
 

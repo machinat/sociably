@@ -1,24 +1,13 @@
-import Machinat from 'machinat';
-import {
-  createChatJobs,
-  createCreativeJobs,
-  createAttachmentJobs,
-} from '../job';
+import Machinat from '@machinat/core';
+import { chatJobsMaker, makeCreativeJobs, makeAttachmentJobs } from '../job';
 import MessengerChannel from '../channel';
-import {
-  MESSENGER_NATIVE_TYPE,
-  ENTRY_PATH,
-  ATTACHMENT_DATA,
-  ATTACHMENT_INFO,
-} from '../constant';
+import { ENTRY_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from '../constant';
 
 const Foo = () => {};
-Foo.$$native = MESSENGER_NATIVE_TYPE;
 
 const Bar = () => {};
-Bar.$$native = MESSENGER_NATIVE_TYPE;
 
-describe('createChatJobs()', () => {
+describe('chatJobsMaker(options)(channel, segments)', () => {
   const segments = [
     { node: <Foo />, value: { sender_action: 'typing_on' } },
     { node: <Foo />, value: { message: { id: 1 } } },
@@ -38,7 +27,7 @@ describe('createChatJobs()', () => {
   it('create jobs to be sent', () => {
     const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
 
-    const jobs = createChatJobs(channel, segments);
+    const jobs = chatJobsMaker()(channel, segments);
 
     expect(jobs).toMatchSnapshot();
 
@@ -60,12 +49,12 @@ describe('createChatJobs()', () => {
   it('add coresponding options to body on messages', () => {
     const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
 
-    const jobs = createChatJobs(channel, segments, {
+    const jobs = chatJobsMaker({
       messagingType: 'MESSAGE_TAG',
       tag: 'PAYMENT_UPDATE',
       notificationType: 'SILENT_PUSH',
       personaId: 'your-dearest-friend',
-    });
+    })(channel, segments);
 
     expect(jobs).toMatchSnapshot();
 
@@ -96,28 +85,12 @@ describe('createChatJobs()', () => {
   it('set persona_id message and typing_on/typeing_off action', () => {
     const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
 
-    const jobs = createChatJobs(
-      channel,
-      [
-        {
-          node: <Foo />,
-          value: { message: { text: 'hello' } },
-        },
-        {
-          node: <Foo />,
-          value: { sender_action: 'typing_on' },
-        },
-        {
-          node: <Foo />,
-          value: { sender_action: 'typing_off' },
-        },
-        {
-          node: <Foo />,
-          value: { sender_action: 'mark_seen' },
-        },
-      ],
-      { personaId: 'droid' }
-    );
+    const jobs = chatJobsMaker({ personaId: 'droid' })(channel, [
+      { node: <Foo />, value: { message: { text: 'hello' } } },
+      { node: <Foo />, value: { sender_action: 'typing_on' } },
+      { node: <Foo />, value: { sender_action: 'typing_off' } },
+      { node: <Foo />, value: { sender_action: 'mark_seen' } },
+    ]);
 
     jobs.forEach((job, i) => {
       expect(job.request.body.persona_id).toBe(i !== 3 ? 'droid' : undefined);
@@ -127,33 +100,29 @@ describe('createChatJobs()', () => {
   it('respect options originally set in job value', () => {
     const channel = new MessengerChannel('_PAGE_ID_', { id: 'Luke' });
 
-    const jobs = createChatJobs(
-      channel,
-      [
-        {
-          node: <Foo />,
-          value: {
-            message: { text: 'bibiboo' },
-            messaging_type: 'MESSAGE_TAG',
-            tag: 'SHIPPING_UPDATE',
-          },
-        },
-        {
-          node: <Foo />,
-          value: {
-            message: { text: 'Oh! I apologize.' },
-            notification_type: 'REGULAR',
-            persona_id: 'protocol-droid',
-          },
-        },
-      ],
+    const jobs = chatJobsMaker({
+      messagingType: 'UPDATE',
+      tag: undefined,
+      notificationType: 'SILENT_PUSH',
+      personaId: 'astromech-droid',
+    })(channel, [
       {
-        messagingType: 'UPDATE',
-        tag: undefined,
-        notificationType: 'SILENT_PUSH',
-        personaId: 'astromech-droid',
-      }
-    );
+        node: <Foo />,
+        value: {
+          message: { text: 'bibiboo' },
+          messaging_type: 'MESSAGE_TAG',
+          tag: 'SHIPPING_UPDATE',
+        },
+      },
+      {
+        node: <Foo />,
+        value: {
+          message: { text: 'Oh! I apologize.' },
+          notification_type: 'REGULAR',
+          persona_id: 'protocol-droid',
+        },
+      },
+    ]);
 
     expect(jobs).toMatchSnapshot();
 
@@ -178,24 +147,20 @@ describe('createChatJobs()', () => {
   it('respect the empty tag if messaging_type has already been set', () => {
     const channel = new MessengerChannel('_PAGE_ID_', { id: 'Luke' });
 
-    const jobs = createChatJobs(
-      channel,
-      [
-        {
-          node: <Foo />,
-          value: {
-            message: { text: 'bibibooboobibooboo' },
-            messaging_type: 'RESPONSE',
-          },
-        },
-      ],
+    const jobs = chatJobsMaker({
+      messagingType: 'MESSAGE_TAG',
+      tag: 'FEATURE_FUNCTIONALITY_UPDATE',
+      notificationType: 'SILENT_PUSH',
+      personaId: 'astromech-droid',
+    })(channel, [
       {
-        messagingType: 'MESSAGE_TAG',
-        tag: 'FEATURE_FUNCTIONALITY_UPDATE',
-        notificationType: 'SILENT_PUSH',
-        personaId: 'astromech-droid',
-      }
-    );
+        node: <Foo />,
+        value: {
+          message: { text: 'bibibooboobibooboo' },
+          messaging_type: 'RESPONSE',
+        },
+      },
+    ]);
 
     expect(jobs).toMatchSnapshot();
 
@@ -216,7 +181,7 @@ describe('createChatJobs()', () => {
       knownLength: 66666,
     };
 
-    const jobs = createChatJobs(channel, [
+    const jobs = chatJobsMaker()(channel, [
       {
         node: <Foo />,
         value: { a: 'gift', [ATTACHMENT_DATA]: '_DEADLY_VIRUS_' },
@@ -245,14 +210,14 @@ describe('createChatJobs()', () => {
 
   it('throw if non USER_TO_PAGE channel met', () => {
     expect(() =>
-      createChatJobs(
+      chatJobsMaker()(
         new MessengerChannel('_PAGE_ID_', { id: 'xxx' }, 'GROUP'),
         segments
       )
     ).toThrowErrorMatchingInlineSnapshot(`"unable to send to GROUP channel"`);
 
     expect(() =>
-      createChatJobs(
+      chatJobsMaker({})(
         new MessengerChannel('_PAGE_ID_', { id: 'xxx' }, 'USER_TO_USER'),
         segments
       )
@@ -262,7 +227,7 @@ describe('createChatJobs()', () => {
   });
 });
 
-describe('createCreativeJobs()', () => {
+describe('makeCreativeJobs()', () => {
   const segments = [
     { element: <Foo />, value: { message: { id: 1 } } },
     { element: 2, value: '2' },
@@ -270,7 +235,7 @@ describe('createCreativeJobs()', () => {
   ];
 
   it('create jobs to be sent to messenge_creative', () => {
-    expect(createCreativeJobs(null, segments)).toEqual([
+    expect(makeCreativeJobs(null, segments)).toEqual([
       {
         request: {
           method: 'POST',
@@ -288,7 +253,7 @@ describe('createCreativeJobs()', () => {
       [undefined, { neither: 'am i' }, '[object Object]'],
     ].forEach(([node, value, formated]) => {
       expect(() =>
-        createCreativeJobs(null, [
+        makeCreativeJobs(null, [
           ...segments.slice(0, 2),
           { node, value },
           segments[2],
@@ -298,10 +263,10 @@ describe('createCreativeJobs()', () => {
   });
 });
 
-describe('createAttachmentJobs()', () => {
+describe('makeAttachmentJobs()', () => {
   it('work with attachment url', () => {
     expect(
-      createAttachmentJobs(null, [
+      makeAttachmentJobs(null, [
         {
           type: 'unit',
           node: <Foo />,
@@ -343,7 +308,7 @@ describe('createAttachmentJobs()', () => {
     };
 
     expect(
-      createAttachmentJobs(null, [
+      makeAttachmentJobs(null, [
         {
           type: 'unit',
           node: <Foo />,
@@ -389,13 +354,13 @@ describe('createAttachmentJobs()', () => {
     };
 
     expect(() =>
-      createAttachmentJobs(null, [cage, cage])
+      makeAttachmentJobs(null, [cage, cage])
     ).toThrowErrorMatchingInlineSnapshot(`"more than 1 message received"`);
   });
 
   it('throw if non media message passed', () => {
     expect(() =>
-      createAttachmentJobs(null, [
+      makeAttachmentJobs(null, [
         {
           type: 'unit',
           node: <Foo />,
@@ -409,7 +374,7 @@ describe('createAttachmentJobs()', () => {
     );
 
     expect(() =>
-      createAttachmentJobs(null, [
+      makeAttachmentJobs(null, [
         {
           type: 'unit',
           node: <Bar />,

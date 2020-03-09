@@ -1,12 +1,15 @@
 // @flow
-import type { MachinatNativeComponent, MachinatEvent } from 'machinat/types';
 import type {
-  BotPlugin,
+  NativeComponent,
+  MachinatEvent,
+  EventContext,
   EventMiddleware,
   DispatchMiddleware,
-} from 'machinat-base/types';
-import type MachinatQueue from 'machinat-queue';
-import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
+  PlatformMounter,
+} from '@machinat/core/types';
+import type { DispatchFrame } from '@machinat/core/engine/types';
+import type { ServiceContainer } from '@machinat/core/service/types';
+import type { WebhookMetadata } from '@machinat/http/webhook/types';
 import type MessengerBot from './bot';
 import type MessengerChannel from './channel';
 import type { MessengerUser } from './user';
@@ -44,13 +47,6 @@ declare var e: MessengerEvent;
 // TODO: detailed message type
 export type MessengerMessage = Object;
 
-type PreChackoutResponse = Object;
-type CheckoutUpdateResponse = Object;
-export type MessengerResponse =
-  | void
-  | PreChackoutResponse
-  | CheckoutUpdateResponse;
-
 type MessageValue = {|
   message: MessengerMessage,
   messaging_type?: string,
@@ -83,9 +79,9 @@ export type MessengerSegmentValue =
   | RequestThreadControlValue
   | TakeThreadControlValue;
 
-export type MessengerComponent = MachinatNativeComponent<MessengerSegmentValue>;
+export type MessengerComponent = NativeComponent<any, MessengerSegmentValue>;
 
-export type MessengerRequest = {|
+export type BatchAPIRequest = {|
   method: string,
   relative_url: string,
   body: void | Object,
@@ -96,7 +92,7 @@ export type MessengerRequest = {|
 |};
 
 export type MessengerJob = {|
-  request: MessengerRequest,
+  request: BatchAPIRequest,
   pageId?: string,
   channelUid?: string,
   attachmentAssetTag?: string,
@@ -109,7 +105,7 @@ export type MessengerJob = {|
   |},
 |};
 
-export type MessengerAPIResult = {|
+export type MessengerResult = {|
   code: number,
   headers: Object,
   body: Object,
@@ -127,29 +123,6 @@ export type GraphAPIErrorBody = {
   error: GraphAPIErrorInfo,
 };
 
-export type MessengerSendOptions = {|
-  messagingType?: 'RESPONSE' | 'UPDATE' | 'MESSAGE_TAG',
-  tag?: string,
-  notificationType?: 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH',
-  personaId?: string,
-|};
-
-export type MessengerQueue = MachinatQueue<MessengerJob, MessengerAPIResult>;
-
-export type MessengerBotPlugin = BotPlugin<
-  MessengerChannel,
-  ?MessengerUser,
-  MessengerEvent,
-  WebhookMetadata,
-  MessengerResponse,
-  MessengerSegmentValue,
-  MessengerComponent,
-  MessengerJob,
-  MessengerAPIResult,
-  MessengerSendOptions,
-  MessengerBot
->;
-
 export type MessengerRawUserProfile = {
   id: string,
   name: string,
@@ -161,33 +134,56 @@ export type MessengerRawUserProfile = {
   gender?: string,
 };
 
-export type MessengerBotOptions = {
+export type MessengerEventContext = EventContext<
+  MessengerChannel,
+  null | MessengerUser,
+  MessengerEvent,
+  WebhookMetadata,
+  MessengerBot
+>;
+
+export type MessengerEventMiddleware = EventMiddleware<
+  MessengerEventContext,
+  null
+>;
+
+export type MessengerDispatchFrame = DispatchFrame<
+  MessengerChannel,
+  MessengerJob,
+  MessengerBot
+>;
+
+export type MessengerDispatchMiddleware = DispatchMiddleware<
+  MessengerJob,
+  MessengerDispatchFrame,
+  MessengerResult
+>;
+
+export type MessengerPlatformConfigs = {
   pageId: string,
   accessToken: string,
   appSecret?: string,
   shouldValidateRequest: boolean,
-  shouldVerifyWebhook: boolean,
+  shouldHandleVerify: boolean,
   verifyToken?: string,
-  respondTimeout: number,
   consumeInterval?: number,
-  plugins?: MessengerBotPlugin[],
+  webhookPath: string,
+  eventMiddlewares?: (
+    | MessengerEventMiddleware
+    | ServiceContainer<MessengerEventMiddleware>
+  )[],
+  dispatchMiddlewares?: (
+    | MessengerDispatchMiddleware
+    | ServiceContainer<MessengerDispatchMiddleware>
+  )[],
 };
 
-export type MessengerEventMiddleware = EventMiddleware<
-  MessengerChannel,
-  ?MessengerUser,
-  MessengerEvent,
-  WebhookMetadata,
-  MessengerResponse,
-  MessengerComponent,
-  MessengerSendOptions
->;
-
-export type MessengerDispatchMiddleware = DispatchMiddleware<
-  MessengerChannel,
-  MessengerJob,
-  MessengerAPIResult
->;
+export type MessengerSendOptions = {
+  messagingType?: 'RESPONSE' | 'UPDATE' | 'MESSAGE_TAG',
+  tag?: string,
+  notificationType?: 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH',
+  personaId?: string,
+};
 
 export type MessengerThreadType = 'USER_TO_PAGE' | 'USER_TO_USER' | 'GROUP';
 
@@ -203,3 +199,11 @@ export type ExtensionContext = {
   issued_at: number,
   page_id: number,
 };
+
+export type MessengerPlatformMounter = PlatformMounter<
+  MessengerEventContext,
+  null,
+  MessengerJob,
+  MessengerDispatchFrame,
+  MessengerResult
+>;

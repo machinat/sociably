@@ -1,49 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`templates Components ButtonTemplate match snapshot 1`] = `
+exports[`ButtonTemplate match snapshot 1`] = `
 Array [
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "title": "check",
-                    "url": "http://xxx.yy.z",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "payload": "_MORE_",
-                    "title": "more",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "number": "+12345678",
-                    "title": "call us",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-          "sharable": true,
-          "text": "abc",
-        },
-        "type": [Function],
-      },
+      "node": <ButtonTemplate
+        sharable={true}
+        text="abc"
+      >
+        <Machinat.Fragment>
+          <URLButton
+            title="check"
+            url="http://xxx.yy.z"
+          />
+          <PostbackButton
+            payload="_MORE_"
+            title="more"
+          />
+          <CallButton
+            number="+12345678"
+            title="call us"
+          />
+        </Machinat.Fragment>
+      </ButtonTemplate>,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -70,67 +49,36 @@ __RENDERED_TEXT_3__",
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "title": "check",
-                    "url": "http://xxx.yy.z",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "payload": "_MORE_",
-                    "title": "more",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "number": "+12345678",
-                    "title": "call us",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-          "text": Array [
-            Object {
-              "$$typeof": Symbol(machinat.element),
-              "props": Object {
-                "children": "foo",
-              },
-              "type": "i",
-            },
-            Object {
-              "$$typeof": Symbol(machinat.element),
-              "props": Object {
-                "children": "bar",
-              },
-              "type": "b",
-            },
-            Object {
-              "$$typeof": Symbol(machinat.element),
-              "props": Object {
-                "children": "baz",
-              },
-              "type": "del",
-            },
-          ],
-        },
-        "type": [Function],
-      },
+      "node": <ButtonTemplate
+        text={
+          Array [
+            <i>
+              foo
+            </i>,
+            <b>
+              bar
+            </b>,
+            <del>
+              baz
+            </del>,
+          ]
+        }
+      >
+        <Machinat.Fragment>
+          <URLButton
+            title="check"
+            url="http://xxx.yy.z"
+          />
+          <PostbackButton
+            payload="_MORE_"
+            title="more"
+          />
+          <CallButton
+            number="+12345678"
+            title="call us"
+          />
+        </Machinat.Fragment>
+      </ButtonTemplate>,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -158,17 +106,13 @@ __RENDERED_TEXT_3__",
 ]
 `;
 
-exports[`templates Components GenericItem match snapshot 1`] = `
+exports[`GenericItem match snapshot 1`] = `
 Array [
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "title": "foo",
-        },
-        "type": [Function],
-      },
+      "node": <GenericItem
+        title="foo"
+      />,
       "path": "$",
       "type": "part",
       "value": Object {
@@ -182,14 +126,10 @@ Array [
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "subtitle": "bar",
-          "title": "foo",
-        },
-        "type": [Function],
-      },
+      "node": <GenericItem
+        subtitle="bar"
+        title="foo"
+      />,
       "path": "$",
       "type": "part",
       "value": Object {
@@ -203,14 +143,10 @@ Array [
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "imageURL": "http://foo.bar/image",
-          "title": "foo",
-        },
-        "type": [Function],
-      },
+      "node": <GenericItem
+        imageURL="http://foo.bar/image"
+        title="foo"
+      />,
       "path": "$",
       "type": "part",
       "value": Object {
@@ -224,45 +160,24 @@ Array [
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "title": "check",
-                    "url": "http://xxx.yy.z",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "payload": "_MORE_",
-                    "title": "more",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "number": "+12345678",
-                    "title": "call us",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-          "title": "foo",
-        },
-        "type": [Function],
-      },
+      "node": <GenericItem
+        title="foo"
+      >
+        <Machinat.Fragment>
+          <URLButton
+            title="check"
+            url="http://xxx.yy.z"
+          />
+          <PostbackButton
+            payload="_MORE_"
+            title="more"
+          />
+          <CallButton
+            number="+12345678"
+            title="call us"
+          />
+        </Machinat.Fragment>
+      </GenericItem>,
       "path": "$",
       "type": "part",
       "value": Object {
@@ -280,25 +195,19 @@ Array [
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "defaultAction": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "extensions": true,
-              "fallbackURL": "http://foo.baz/login",
-              "heightRatio": "compact",
-              "hideShareButton": true,
-              "title": "TITLE!",
-              "url": "http://foo.bar/",
-            },
-            "type": [Function],
-          },
-          "title": "foo",
-        },
-        "type": [Function],
-      },
+      "node": <GenericItem
+        defaultAction={
+          <URLButton
+            extensions={true}
+            fallbackURL="http://foo.baz/login"
+            heightRatio="compact"
+            hideShareButton={true}
+            title="TITLE!"
+            url="http://foo.bar/"
+          />
+        }
+        title="foo"
+      />,
       "path": "$",
       "type": "part",
       "value": Object {
@@ -319,21 +228,19 @@ Array [
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "defaultAction": Object {
+      "node": <GenericItem
+        defaultAction={
+          Object {
             "fallback_url": "http://foo.baz/login",
             "messenger_extensions": true,
             "type": "web_url",
             "url": "http://foo.bar/",
             "webview_height_ratio": "compact",
             "webview_share_button": "hide",
-          },
-          "title": "foo",
-        },
-        "type": [Function],
-      },
+          }
+        }
+        title="foo"
+      />,
       "path": "$",
       "type": "part",
       "value": Object {
@@ -354,55 +261,36 @@ Array [
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "title": "check",
-                    "url": "http://xxx.yy.z",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "payload": "_MORE_",
-                    "title": "more",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "number": "+12345678",
-                    "title": "call us",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-          "defaultAction": Object {
+      "node": <GenericItem
+        defaultAction={
+          Object {
             "fallback_url": "http://foo.baz/login",
             "messenger_extensions": true,
             "type": "web_url",
             "url": "http://foo.bar/",
             "webview_height_ratio": "compact",
             "webview_share_button": "hide",
-          },
-          "imageURL": "http://foo.bar/image",
-          "subtitle": "bar",
-          "title": "foo",
-        },
-        "type": [Function],
-      },
+          }
+        }
+        imageURL="http://foo.bar/image"
+        subtitle="bar"
+        title="foo"
+      >
+        <Machinat.Fragment>
+          <URLButton
+            title="check"
+            url="http://xxx.yy.z"
+          />
+          <PostbackButton
+            payload="_MORE_"
+            title="more"
+          />
+          <CallButton
+            number="+12345678"
+            title="call us"
+          />
+        </Machinat.Fragment>
+      </GenericItem>,
       "path": "$",
       "type": "part",
       "value": Object {
@@ -428,48 +316,26 @@ Array [
 ]
 `;
 
-exports[`templates Components GenericTemplate match snapshot 1`] = `
+exports[`GenericTemplate match snapshot 1`] = `
 Array [
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "subtitle": "bar",
-                    "title": "foo1",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "subtitle": "baz",
-                    "title": "foo2",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "imageURL": "http://foo.bar/image",
-                    "title": "foo3",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-        },
-        "type": [Function],
-      },
+      "node": <GenericTemplate>
+        <Machinat.Fragment>
+          <GenericItem
+            subtitle="bar"
+            title="foo1"
+          />
+          <GenericItem
+            subtitle="baz"
+            title="foo2"
+          />
+          <GenericItem
+            imageURL="http://foo.bar/image"
+            title="foo3"
+          />
+        </Machinat.Fragment>
+      </GenericTemplate>,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -493,46 +359,25 @@ Array [
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "subtitle": "bar",
-                    "title": "foo1",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "subtitle": "baz",
-                    "title": "foo2",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "imageURL": "http://foo.bar/image",
-                    "title": "foo3",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-          "imageAspectRatio": "square",
-          "sharable": true,
-        },
-        "type": [Function],
-      },
+      "node": <GenericTemplate
+        imageAspectRatio="square"
+        sharable={true}
+      >
+        <Machinat.Fragment>
+          <GenericItem
+            subtitle="bar"
+            title="foo1"
+          />
+          <GenericItem
+            subtitle="baz"
+            title="foo2"
+          />
+          <GenericItem
+            imageURL="http://foo.bar/image"
+            title="foo3"
+          />
+        </Machinat.Fragment>
+      </GenericTemplate>,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -557,48 +402,26 @@ Array [
 ]
 `;
 
-exports[`templates Components ListTemplate match snapshot 1`] = `
+exports[`ListTemplate match snapshot 1`] = `
 Array [
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "subtitle": "bar",
-                    "title": "foo1",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "subtitle": "baz",
-                    "title": "foo2",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "imageURL": "http://foo.bar/image",
-                    "title": "foo3",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-        },
-        "type": [Function],
-      },
+      "node": <ListTemplate>
+        <Machinat.Fragment>
+          <GenericItem
+            subtitle="bar"
+            title="foo1"
+          />
+          <GenericItem
+            subtitle="baz"
+            title="foo2"
+          />
+          <GenericItem
+            imageURL="http://foo.bar/image"
+            title="foo3"
+          />
+        </Machinat.Fragment>
+      </ListTemplate>,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -623,52 +446,29 @@ Array [
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "button": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "title": "check",
-              "url": "http://xxx.yy.z",
-            },
-            "type": [Function],
-          },
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "subtitle": "bar",
-                    "title": "foo1",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "subtitle": "baz",
-                    "title": "foo2",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "imageURL": "http://foo.bar/image",
-                    "title": "foo3",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-        },
-        "type": [Function],
-      },
+      "node": <ListTemplate
+        button={
+          <URLButton
+            title="check"
+            url="http://xxx.yy.z"
+          />
+        }
+      >
+        <Machinat.Fragment>
+          <GenericItem
+            subtitle="bar"
+            title="foo1"
+          />
+          <GenericItem
+            subtitle="baz"
+            title="foo2"
+          />
+          <GenericItem
+            imageURL="http://foo.bar/image"
+            title="foo3"
+          />
+        </Machinat.Fragment>
+      </ListTemplate>,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -695,54 +495,31 @@ Array [
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "button": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "title": "check",
-              "url": "http://xxx.yy.z",
-            },
-            "type": [Function],
-          },
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "subtitle": "bar",
-                    "title": "foo1",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "subtitle": "baz",
-                    "title": "foo2",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "imageURL": "http://foo.bar/image",
-                    "title": "foo3",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-          "imageAspectRatio": "square",
-          "sharable": true,
-        },
-        "type": [Function],
-      },
+      "node": <ListTemplate
+        button={
+          <URLButton
+            title="check"
+            url="http://xxx.yy.z"
+          />
+        }
+        imageAspectRatio="square"
+        sharable={true}
+      >
+        <Machinat.Fragment>
+          <GenericItem
+            subtitle="bar"
+            title="foo1"
+          />
+          <GenericItem
+            subtitle="baz"
+            title="foo2"
+          />
+          <GenericItem
+            imageURL="http://foo.bar/image"
+            title="foo3"
+          />
+        </Machinat.Fragment>
+      </ListTemplate>,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -770,50 +547,29 @@ Array [
 ]
 `;
 
-exports[`templates Components MediaTemplate match snapshot 1`] = `
+exports[`MediaTemplate match snapshot 1`] = `
 Array [
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "title": "check",
-                    "url": "http://xxx.yy.z",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "payload": "_MORE_",
-                    "title": "more",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "number": "+12345678",
-                    "title": "call us",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-          "type": "image",
-          "url": "http://...",
-        },
-        "type": [Function],
-      },
+      "node": <MediaTemplate
+        type="image"
+        url="http://..."
+      >
+        <Machinat.Fragment>
+          <URLButton
+            title="check"
+            url="http://xxx.yy.z"
+          />
+          <PostbackButton
+            payload="_MORE_"
+            title="more"
+          />
+          <CallButton
+            number="+12345678"
+            title="call us"
+          />
+        </Machinat.Fragment>
+      </MediaTemplate>,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -843,47 +599,26 @@ Array [
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "attachmentId": "__ID__",
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "title": "check",
-                    "url": "http://xxx.yy.z",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "payload": "_MORE_",
-                    "title": "more",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "number": "+12345678",
-                    "title": "call us",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-          "sharable": true,
-          "type": "video",
-        },
-        "type": [Function],
-      },
+      "node": <MediaTemplate
+        attachmentId="__ID__"
+        sharable={true}
+        type="video"
+      >
+        <Machinat.Fragment>
+          <URLButton
+            title="check"
+            url="http://xxx.yy.z"
+          />
+          <PostbackButton
+            payload="_MORE_"
+            title="more"
+          />
+          <CallButton
+            number="+12345678"
+            title="call us"
+          />
+        </Machinat.Fragment>
+      </MediaTemplate>,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -914,49 +649,28 @@ Array [
 ]
 `;
 
-exports[`templates Components OpenGraphTemplate match snapshot 1`] = `
+exports[`OpenGraphTemplate match snapshot 1`] = `
 Array [
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "title": "check",
-                    "url": "http://xxx.yy.z",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "payload": "_MORE_",
-                    "title": "more",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "number": "+12345678",
-                    "title": "call us",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-          "url": "http://...",
-        },
-        "type": [Function],
-      },
+      "node": <OpenGraphTemplate
+        url="http://..."
+      >
+        <Machinat.Fragment>
+          <URLButton
+            title="check"
+            url="http://xxx.yy.z"
+          />
+          <PostbackButton
+            payload="_MORE_"
+            title="more"
+          />
+          <CallButton
+            number="+12345678"
+            title="call us"
+          />
+        </Machinat.Fragment>
+      </OpenGraphTemplate>,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -984,46 +698,25 @@ Array [
   ],
   Array [
     Object {
-      "node": Object {
-        "$$typeof": Symbol(machinat.element),
-        "props": Object {
-          "children": Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "title": "check",
-                    "url": "http://xxx.yy.z",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "payload": "_MORE_",
-                    "title": "more",
-                  },
-                  "type": [Function],
-                },
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "number": "+12345678",
-                    "title": "call us",
-                  },
-                  "type": [Function],
-                },
-              ],
-            },
-            "type": Symbol(machinat.element.fragment),
-          },
-          "sharable": true,
-          "url": "http://...",
-        },
-        "type": [Function],
-      },
+      "node": <OpenGraphTemplate
+        sharable={true}
+        url="http://..."
+      >
+        <Machinat.Fragment>
+          <URLButton
+            title="check"
+            url="http://xxx.yy.z"
+          />
+          <PostbackButton
+            payload="_MORE_"
+            title="more"
+          />
+          <CallButton
+            number="+12345678"
+            title="call us"
+          />
+        </Machinat.Fragment>
+      </OpenGraphTemplate>,
       "path": "$",
       "type": "unit",
       "value": Object {
@@ -1052,21 +745,17 @@ Array [
 ]
 `;
 
-exports[`templates Components ReceiptItem match snapshot 1`] = `
+exports[`ReceiptItem match snapshot 1`] = `
 Array [
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "currency": "USD",
-        "imageURL": "http://i.robot/avatar",
-        "price": 99.99,
-        "quantity": 999,
-        "subtitle": "It's real!",
-        "title": "A robot!",
-      },
-      "type": [Function],
-    },
+    "node": <ReceiptItem
+      currency="USD"
+      imageURL="http://i.robot/avatar"
+      price={99.99}
+      quantity={999}
+      subtitle="It's real!"
+      title="A robot!"
+    />,
     "path": "$",
     "type": "part",
     "value": Object {
@@ -1081,21 +770,22 @@ Array [
 ]
 `;
 
-exports[`templates Components ReceiptTemplate match snapshot 1`] = `
+exports[`ReceiptTemplate match snapshot 1`] = `
 Array [
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "address": Object {
+    "node": <ReceiptTemplate
+      address={
+        Object {
           "city": "Menlo Park",
           "country": "US",
           "postal_code": "94025",
           "state": "CA",
           "street_1": "1 Hacker Way",
           "street_2": "",
-        },
-        "adjustments": Array [
+        }
+      }
+      adjustments={
+        Array [
           Object {
             "amount": 20,
             "name": "New Customer Discount",
@@ -1104,46 +794,34 @@ Array [
             "amount": 10,
             "name": "$10 Off Coupon",
           },
-        ],
-        "children": Array [
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "title": "Buzz Lightyear",
-            },
-            "type": [Function],
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "title": "Woody",
-            },
-            "type": [Function],
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "title": "Slinky Dog",
-            },
-            "type": [Function],
-          },
-        ],
-        "currency": "USD",
-        "orderNumber": "12345",
-        "orderURL": "http://what.a.shop",
-        "paymentMethod": "Visa 2345",
-        "recipientName": "John Doe",
-        "sharable": true,
-        "summary": Object {
+        ]
+      }
+      currency="USD"
+      orderNumber="12345"
+      orderURL="http://what.a.shop"
+      paymentMethod="Visa 2345"
+      recipientName="John Doe"
+      sharable={true}
+      summary={
+        Object {
           "shipping_cost": 4.95,
           "subtotal": 75,
           "total_cost": 56.14,
           "total_tax": 6.19,
-        },
-        "timestamp": "1428444852",
-      },
-      "type": [Function],
-    },
+        }
+      }
+      timestamp="1428444852"
+    >
+      <ReceiptItem
+        title="Buzz Lightyear"
+      />
+      <ReceiptItem
+        title="Woody"
+      />
+      <ReceiptItem
+        title="Slinky Dog"
+      />
+    </ReceiptTemplate>,
     "path": "$",
     "type": "unit",
     "value": Object {

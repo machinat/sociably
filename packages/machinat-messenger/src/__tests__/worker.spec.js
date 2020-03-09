@@ -1,8 +1,9 @@
 import moxy from 'moxy';
 import nock from 'nock';
-import Queue from 'machinat-queue';
+import Queue from '@machinat/core/queue';
 import MessengerWorker from '../worker';
-import { delay, makeResponse } from './utils';
+
+const delay = t => new Promise(resolve => setTimeout(resolve, t));
 
 nock.disableNetConnect();
 
@@ -44,24 +45,23 @@ afterEach(() => {
   nock.cleanAll();
 });
 
-it('sends ok', async () => {
+it('call to graph api', async () => {
   const accessToken = '_graph_api_access_token_';
-  const client = new MessengerWorker({ accessToken });
+  const worker = new MessengerWorker(accessToken, 0);
 
   const bodySpy = moxy(() => true);
 
-  const scope = graphAPI
-    .post('/v3.3/', bodySpy)
-    .reply(
-      200,
-      JSON.stringify([
-        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-      ])
-    );
+  const scope = graphAPI.post('/v3.3/', bodySpy).reply(
+    200,
+    JSON.stringify(
+      new Array(3).fill({
+        code: 200,
+        body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
+      })
+    )
+  );
 
-  client.start(queue);
+  worker.start(queue);
 
   const expectedResult = {
     code: 200,
@@ -109,25 +109,21 @@ it('attach appsecret_proof if appSecret option given', async () => {
   const expectedProof =
     'c3d9a02ac88561d9721b3cb2ba338c933f0666b68ad29523393b830b3916cd91';
 
-  const client = new MessengerWorker({
-    accessToken,
-    appSecret,
-  });
+  const worker = new MessengerWorker(accessToken, 0, appSecret);
 
   const bodySpy = moxy(() => true);
 
-  const scope = graphAPI
-    .post('/v3.3/', bodySpy)
-    .reply(
-      200,
-      JSON.stringify([
-        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-      ])
-    );
+  const scope = graphAPI.post('/v3.3/', bodySpy).reply(
+    200,
+    JSON.stringify(
+      new Array(3).fill({
+        code: 200,
+        body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
+      })
+    )
+  );
 
-  client.start(queue);
+  worker.start(queue);
 
   const expectedResult = {
     code: 200,
@@ -153,9 +149,7 @@ it('attach appsecret_proof if appSecret option given', async () => {
 });
 
 it('upload files with form data if binary attached on job', async () => {
-  const client = new MessengerWorker({
-    accessToken: '_graph_api_access_token_',
-  });
+  const worker = new MessengerWorker('_graph_api_access_token_', 0);
 
   const bodySpy = moxy(() => true);
 
@@ -164,14 +158,15 @@ it('upload files with form data if binary attached on job', async () => {
     .post('/v3.3/', bodySpy)
     .reply(
       200,
-      JSON.stringify([
-        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-        makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-      ])
+      JSON.stringify(
+        new Array(3).fill({
+          code: 200,
+          body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
+        })
+      )
     );
 
-  client.start(queue);
+  worker.start(queue);
 
   const jobsWithFiles = [
     { ...jobs[0], attachmentFileData: '_file0_' },
@@ -266,15 +261,13 @@ it('upload files with form data if binary attached on job', async () => {
 });
 
 it('throw if connection error happen', async () => {
-  const client = new MessengerWorker({
-    accessToken: '_graph_api_access_token_',
-  });
+  const worker = new MessengerWorker('_graph_api_access_token_', 0);
 
   const scope = graphAPI
     .post('/v3.3/')
     .replyWithError('something wrong like connection error');
 
-  client.start(queue);
+  worker.start(queue);
   await expect(queue.executeJobs(jobs)).resolves.toMatchInlineSnapshot(`
 Object {
   "batch": null,
@@ -289,9 +282,7 @@ Object {
 });
 
 it('throw if api error happen', async () => {
-  const client = new MessengerWorker({
-    accessToken: '_graph_api_access_token_',
-  });
+  const worker = new MessengerWorker('_graph_api_access_token_', 0);
 
   const scope = graphAPI.post('/v3.3/').reply(400, {
     error: {
@@ -302,7 +293,7 @@ it('throw if api error happen', async () => {
     },
   });
 
-  client.start(queue);
+  worker.start(queue);
   await expect(queue.executeJobs(jobs)).resolves.toMatchInlineSnapshot(`
 Object {
   "batch": null,
@@ -317,27 +308,34 @@ Object {
 });
 
 it('throw if one single job fail', async () => {
-  const client = new MessengerWorker({
-    accessToken: '_graph_api_access_token_',
-  });
+  const worker = new MessengerWorker('_graph_api_access_token_', 0);
 
   const scope = graphAPI.post('/v3.3/').reply(
     200,
     JSON.stringify([
-      makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
-      makeResponse(400, {
-        error: {
-          message: 'you should not passed!',
-          type: 'OAuthException',
-          code: 999,
-          fbtrace_id: 'DuNgzaHdmcb',
-        },
-      }),
-      makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' }),
+      {
+        code: 200,
+        body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
+      },
+      {
+        code: 400,
+        body: JSON.stringify({
+          error: {
+            message: 'you should not passed!',
+            type: 'OAuthException',
+            code: 999,
+            fbtrace_id: 'DuNgzaHdmcb',
+          },
+        }),
+      },
+      {
+        code: 200,
+        body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
+      },
     ])
   );
 
-  client.start(queue);
+  worker.start(queue);
   const execRes = await queue.executeJobs(jobs);
   expect(execRes.success).toBe(false);
   expect(execRes).toMatchSnapshot();
@@ -351,24 +349,20 @@ Array [
 });
 
 it('waits consumeInterval for jobs to execute if set', async () => {
-  const client = new MessengerWorker({
-    accessToken: '_graph_api_access_token_',
-    consumeInterval: 300,
-  });
+  const worker = new MessengerWorker('_graph_api_access_token_', 300);
 
   const bodySpy = moxy(() => true);
-  const scope = graphAPI
-    .post('/v3.3/', bodySpy)
-    .reply(
-      200,
-      JSON.stringify(
-        new Array(9).fill(
-          makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' })
-        )
-      )
-    );
+  const scope = graphAPI.post('/v3.3/', bodySpy).reply(
+    200,
+    JSON.stringify(
+      new Array(9).fill({
+        code: 200,
+        body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
+      })
+    )
+  );
 
-  client.start(queue);
+  worker.start(queue);
 
   const promise1 = queue.executeJobs(jobs);
   expect(bodySpy.mock).not.toHaveBeenCalled();
@@ -386,15 +380,18 @@ it('waits consumeInterval for jobs to execute if set', async () => {
   expect(scope.isDone()).toBe(true);
 
   await Promise.all([promise1, promise2, promise3]);
+
+  worker.stop(queue);
 });
 
 it.each([undefined, 0])(
   'execute immediatly if consumeInterval is %p',
   async consumeInterval => {
-    const client = new MessengerWorker({
-      accessToken: '_graph_api_access_token_',
-      consumeInterval,
-    });
+    const worker = new MessengerWorker(
+      '_graph_api_access_token_',
+      0,
+      consumeInterval
+    );
 
     const bodySpy = moxy(() => true);
     const scope = graphAPI
@@ -404,13 +401,14 @@ it.each([undefined, 0])(
       .reply(
         200,
         JSON.stringify(
-          new Array(3).fill(
-            makeResponse(200, { message_id: 'xxx', recipient_id: 'xxx' })
-          )
+          new Array(3).fill({
+            code: 200,
+            body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
+          })
         )
       );
 
-    client.start(queue);
+    worker.start(queue);
 
     const promise1 = queue.executeJobs(jobs);
     expect(bodySpy.mock).toHaveBeenCalledTimes(1);
@@ -432,15 +430,20 @@ it.each([undefined, 0])(
 
 it('place params at query if DELETE job met', async () => {
   const accessToken = '_graph_api_access_token_';
-  const client = new MessengerWorker({ accessToken });
+  const worker = new MessengerWorker(accessToken, 0);
 
   const bodySpy = moxy(() => true);
 
   const scope = graphAPI
     .post('/v3.3/', bodySpy)
-    .reply(200, JSON.stringify([makeResponse(200, { result: 'success' })]));
+    .reply(
+      200,
+      JSON.stringify([
+        { code: 200, body: JSON.stringify({ result: 'success' }) },
+      ])
+    );
 
-  client.start(queue);
+  worker.start(queue);
 
   const job = {
     channelId: null,

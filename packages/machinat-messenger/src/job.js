@@ -1,14 +1,15 @@
 // @flow
 import invariant from 'invariant';
-import { formatNode, filterSymbolKeys } from 'machinat-utility';
+import filterSymbolKeys from '@machinat/core/utils/filterSymbolKeys';
+import formatNode from '@machinat/core/utils/formatNode';
 
-import type { OutputableSegment } from 'machinat-base/types';
+import type { DispatchableSegment } from '@machinat/core/engine/types';
 import type {
   MessengerMessage,
   MessengerSegmentValue,
   MessengerComponent,
-  MessengerSendOptions,
   MessengerJob,
+  MessengerSendOptions,
 } from './types';
 import type MessangerChannel from './channel';
 
@@ -25,10 +26,9 @@ import {
 
 const POST = 'POST';
 
-export const createChatJobs = (
+export const chatJobsMaker = (options?: MessengerSendOptions) => (
   channel: MessangerChannel,
-  segments: OutputableSegment<MessengerSegmentValue, MessengerComponent>[],
-  options?: MessengerSendOptions
+  segments: DispatchableSegment<MessengerSegmentValue, MessengerComponent>[]
 ): MessengerJob[] => {
   const { target, uid } = channel;
   if (!target) {
@@ -52,8 +52,10 @@ export const createChatJobs = (
       attachmentAssetTag = value[ASSET_TAG];
       attachmentFileData = value[ATTACHMENT_DATA];
       attachmentFileInfo = value[ATTACHMENT_INFO];
-    } else {
+    } else if (typeof value === 'string') {
       body = ({ message: { text: value } }: Object);
+    } else {
+      throw new TypeError('invalid segment value');
     }
 
     body.recipient = target;
@@ -93,9 +95,9 @@ export const createChatJobs = (
   return jobs;
 };
 
-export const createCreativeJobs = (
-  channel: null,
-  segments: OutputableSegment<MessengerSegmentValue, MessengerComponent>[]
+export const makeCreativeJobs = (
+  target: null,
+  segments: DispatchableSegment<MessengerSegmentValue, MessengerComponent>[]
 ): MessengerJob[] => {
   const messages: MessengerMessage[] = new Array(segments.length);
 
@@ -133,9 +135,9 @@ export const createCreativeJobs = (
   ];
 };
 
-export const createAttachmentJobs = (
-  channel: null,
-  segments: OutputableSegment<MessengerSegmentValue, MessengerComponent>[]
+export const makeAttachmentJobs = (
+  target: null,
+  segments: DispatchableSegment<MessengerSegmentValue, MessengerComponent>[]
 ): MessengerJob[] => {
   invariant(segments.length === 1, 'more than 1 message received');
 

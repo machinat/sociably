@@ -4,25 +4,16 @@ import crypto from 'crypto';
 import fetch from 'isomorphic-fetch';
 import FormData from 'form-data';
 
-import type { MachinatWorker } from 'machinat-base/types';
-import type { JobResponse } from 'machinat-queue/types';
+import type { MachinatWorker } from '@machinat/core/engine/types';
+import type MachinatQueue from '@machinat/core/queue';
+import type { JobResponse } from '@machinat/core/queue/types';
 
 import { GraphAPIError } from './error';
 
-import type {
-  MessengerJob,
-  MessengerAPIResult,
-  MessengerQueue,
-  MessengerRequest,
-} from './types';
+import type { MessengerJob, MessengerResult, BatchAPIRequest } from './types';
 
-export type MessengerWorkerOptions = {
-  accessToken: string,
-  appSecret: ?string,
-  consumeInterval: ?number,
-};
-
-type MessengerJobResponse = JobResponse<MessengerJob, MessengerAPIResult>;
+type MessengerJobResponse = JobResponse<MessengerJob, MessengerResult>;
+type MessengerQueue = MachinatQueue<MessengerJob, MessengerResult>;
 
 const ENTRY = 'https://graph.facebook.com/v3.3/';
 
@@ -52,7 +43,7 @@ const encodeURIBody = (fields: { [string]: any }): string => {
   return body;
 };
 
-const formatRequest = (request: MessengerRequest) =>
+const formatRequest = (request: BatchAPIRequest) =>
   request.method === 'DELETE'
     ? {
         ...request,
@@ -94,20 +85,20 @@ const appendFieldsToForm = (form: FormData, body: { [string]: ?string }) => {
 };
 
 export default class MessengerWorker
-  implements MachinatWorker<MessengerJob, MessengerAPIResult> {
+  implements MachinatWorker<MessengerJob, MessengerResult> {
   token: string;
-  consumeInterval: ?number;
+  consumeInterval: number;
   _appSecretProof: ?string;
 
   _started: boolean;
   _isConsuming: boolean;
   _consumptionTimeoutId: TimeoutID | null;
 
-  constructor({
-    consumeInterval,
-    appSecret,
-    accessToken,
-  }: MessengerWorkerOptions) {
+  constructor(
+    accessToken: string,
+    consumeInterval: number,
+    appSecret: void | string
+  ) {
     this.token = accessToken;
     this.consumeInterval = consumeInterval;
 
@@ -131,8 +122,8 @@ export default class MessengerWorker
       return false;
     }
 
-    if (!this.consumeInterval) {
-      queue.onJob(this._listenJob);
+    if (this.consumeInterval === 0) {
+      queue.onJob(this._listenJobCallback);
     }
 
     this._started = true;
@@ -152,15 +143,17 @@ export default class MessengerWorker
     }
 
     this._started = false;
-    queue.offJob(this._listenJob);
+    queue.offJob(this._listenJobCallback);
     return true;
   }
 
-  _listenJob = (queue: MessengerQueue) => {
+  _listenJobCallback = this._listenJob.bind(this);
+
+  _listenJob(queue: MessengerQueue) {
     if (this._started) {
       this._consume(queue);
     }
-  };
+  }
 
   async _request(
     method: string,
@@ -200,30 +193,34 @@ export default class MessengerWorker
     return this._request(POST, path, body, query);
   }
 
-  _consume = async (queue: MessengerQueue) => {
+  _consumeCallback = this._consume.bind(this);
+
+  async _consume(queue: MessengerQueue) {
     this._isConsuming = true;
     this._consumptionTimeoutId = null;
 
     while (queue.length > 0) {
       try {
         // eslint-disable-next-line no-await-in-loop
-        await queue.acquire(50, this._consumeCallback);
+        await queue.acquire(50, this._executeJobsCallback);
       } catch (e) {
         // leave the error to request side of queue to handle
       }
     }
 
     this._isConsuming = false;
-    if (this._started && this.consumeInterval) {
+    if (this._started && this.consumeInterval !== 0) {
       this._consumptionTimeoutId = setTimeout(
-        this._consume,
+        this._consumeCallback,
         this.consumeInterval,
         queue
       );
     }
-  };
+  }
 
-  _consumeCallback = async (jobs: MessengerJob[]) => {
+  _executeJobsCallback = this._executeJobs.bind(this);
+
+  async _executeJobs(jobs: MessengerJob[]) {
     const channelSendingRec = new Map();
     let fileCount = 0;
     let filesForm: FormData;
@@ -316,5 +313,5 @@ export default class MessengerWorker
     }
 
     return jobResponses;
-  };
+  }
 }

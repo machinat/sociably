@@ -1,11 +1,11 @@
 // @flow
-import type { MachinatNode } from 'machinat/types';
+import type { MachinatNode } from '@machinat/core/types';
 import type {
   AssetsStore,
   AssetsRepository,
-} from 'machinat-assets-store/types';
+} from '@machinat/assets-store/types';
 
-import { formatNode } from 'machinat-utility';
+import formatNode from '@machinat/core/utils/formatNode';
 import { MESSENGER, PATH_PERSONAS, PATH_CUSTOM_LABELS } from '../constant';
 import MessengerBot from '../bot';
 import {
@@ -23,7 +23,7 @@ class MessengerAssetsRepository implements AssetsRepository {
   constructor(store: AssetsStore, bot: MessengerBot) {
     this.store = store;
     this.bot = bot;
-    this.pageId = bot.options.pageId;
+    this.pageId = bot.pageId;
   }
 
   getAsset(resource: string, tag: string) {

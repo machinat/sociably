@@ -1,10 +1,15 @@
-import { valuesOfAssertedTypes } from 'machinat-utility';
+import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
 
 import { asPartComponent } from '../utils';
 import { GenericTemplate } from './template';
 
 const URLButton = async ({
-  props: { title, url, heightRatio, extensions, fallbackURL, hideShareButton },
+  title,
+  url,
+  heightRatio,
+  extensions,
+  fallbackURL,
+  hideShareButton,
 }) => ({
   type: 'web_url',
   title,
@@ -16,7 +21,7 @@ const URLButton = async ({
 });
 const __URLButton = asPartComponent(URLButton);
 
-const PostbackButton = async ({ props: { title, payload } }) => ({
+const PostbackButton = async ({ title, payload }) => ({
   type: 'postback',
   title,
   payload,
@@ -25,7 +30,7 @@ const __PostbackButton = asPartComponent(PostbackButton);
 
 const getGenericTemplateValues = valuesOfAssertedTypes(() => [GenericTemplate]);
 
-const ShareButton = async ({ props: { children } }, render) => {
+const ShareButton = async ({ children }, render) => {
   const sharedSegments = await render(children, '.children');
 
   let sharedContent;
@@ -41,16 +46,14 @@ const ShareButton = async ({ props: { children } }, render) => {
 const __ShareButton = asPartComponent(ShareButton);
 
 const BuyButton = async ({
-  props: {
-    title,
-    payload,
-    currency,
-    paymentType,
-    isTest,
-    merchantName,
-    requestedInfo,
-    priceList,
-  },
+  title,
+  payload,
+  currency,
+  paymentType,
+  isTest,
+  merchantName,
+  requestedInfo,
+  priceList,
 }) => ({
   type: 'payment',
   title,
@@ -66,14 +69,14 @@ const BuyButton = async ({
 });
 const __BuyButton = asPartComponent(BuyButton);
 
-const CallButton = async ({ props: { title, number } }) => ({
+const CallButton = async ({ title, number }) => ({
   type: 'phone_number',
   title,
   number,
 });
 const __CallButton = asPartComponent(CallButton);
 
-const LoginButton = async ({ props: { url } }) => ({
+const LoginButton = async ({ url }) => ({
   type: 'account_link',
   url,
 });
@@ -83,9 +86,7 @@ const ACCOUNT_UNLINK_TYPE = { type: 'account_unlink' };
 const LogoutButton = async () => ACCOUNT_UNLINK_TYPE;
 const __LogoutButton = asPartComponent(LogoutButton);
 
-const GamePlayButton = async ({
-  props: { title, payload, playerId, contextId },
-}) => ({
+const GamePlayButton = async ({ title, payload, playerId, contextId }) => ({
   type: 'game_play',
   title,
   payload,

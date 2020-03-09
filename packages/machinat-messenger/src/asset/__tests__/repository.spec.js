@@ -9,9 +9,7 @@ const store = moxy({
   deleteById: async () => true,
 });
 
-const bot = moxy({
-  options: { pageId: '_FB_PAGE_ID_' },
-});
+const bot = moxy({ pageId: '_FB_PAGE_ID_' });
 
 beforeEach(() => {
   store.mock.reset();

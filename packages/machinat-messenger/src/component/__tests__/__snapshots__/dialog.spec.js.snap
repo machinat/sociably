@@ -4,7 +4,7 @@ exports[`Dialog with all props match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$::0",
+    "path": "$#Dialog.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -17,12 +17,8 @@ Array [
     },
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "bar",
-    },
-    "path": "$::1",
+    "node": <bar />,
+    "path": "$#Dialog.children::1",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -48,7 +44,7 @@ exports[`Dialog with metadata match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$::0",
+    "path": "$#Dialog.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -61,12 +57,8 @@ Array [
     },
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "bar",
-    },
-    "path": "$::1",
+    "node": <bar />,
+    "path": "$#Dialog.children::1",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -87,7 +79,7 @@ exports[`Dialog with notificationType match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$::0",
+    "path": "$#Dialog.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -100,12 +92,8 @@ Array [
     },
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "bar",
-    },
-    "path": "$::1",
+    "node": <bar />,
+    "path": "$#Dialog.children::1",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -126,7 +114,7 @@ exports[`Dialog with personaId match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$::0",
+    "path": "$#Dialog.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -139,12 +127,8 @@ Array [
     },
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "bar",
-    },
-    "path": "$::1",
+    "node": <bar />,
+    "path": "$#Dialog.children::1",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -165,7 +149,7 @@ exports[`Dialog with quickReplies match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$::0",
+    "path": "$#Dialog.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -178,12 +162,8 @@ Array [
     },
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "bar",
-    },
-    "path": "$::1",
+    "node": <bar />,
+    "path": "$#Dialog.children::1",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -209,7 +189,7 @@ exports[`Dialog with type and tag match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$::0",
+    "path": "$#Dialog.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -222,12 +202,8 @@ Array [
     },
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "bar",
-    },
-    "path": "$::1",
+    "node": <bar />,
+    "path": "$#Dialog.children::1",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -248,7 +224,7 @@ exports[`Dialog with type match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$::0",
+    "path": "$#Dialog.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -261,12 +237,8 @@ Array [
     },
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "bar",
-    },
-    "path": "$::1",
+    "node": <bar />,
+    "path": "$#Dialog.children::1",
     "type": "unit",
     "value": Object {
       "message": Object {
