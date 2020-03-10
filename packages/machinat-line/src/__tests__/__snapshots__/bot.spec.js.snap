@@ -1,118 +1,327 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#render(token, node, options) works 1`] = `
-Array [
-  Object {
-    "messages": Array [
-      Object {
-        "id": 0,
+exports[`#render(token, node, options) make api calls 1`] = `
+Object {
+  "jobs": Array [
+    Object {
+      "body": Object {
+        "messages": Array [
+          Object {
+            "text": "Hello",
+            "type": "text",
+          },
+          Object {
+            "text": "LINE",
+            "type": "text",
+          },
+          Object {
+            "originalContentUrl": "https://machinat.com/greeting.png",
+            "previewImageUrl": undefined,
+            "quickReply": Object {
+              "items": Array [
+                Object {
+                  "action": Object {
+                    "label": "HI",
+                    "text": "Hi!",
+                    "type": "message",
+                  },
+                  "imageUrl": undefined,
+                  "type": "action",
+                },
+              ],
+            },
+            "type": "image",
+          },
+        ],
+        "to": "john_doe",
       },
-      Object {
-        "id": 1,
-      },
-      Object {
-        "id": 2,
-      },
-      Object {
-        "id": 3,
-      },
-      Object {
-        "id": 4,
-      },
-    ],
-    "to": "john doe",
-  },
-  Object {
-    "messages": Array [
-      Object {
-        "id": 5,
-      },
-      Object {
-        "id": 6,
-      },
-    ],
-    "to": "john doe",
-  },
-  Object {
-    "id": 7,
-  },
-  Object {
-    "messages": Array [
-      Object {
-        "id": 8,
-      },
-    ],
-    "to": "john doe",
-  },
-  Object {},
-]
+      "channelUid": "line:_MY_BOT_:user:john_doe",
+      "method": "POST",
+      "path": "v2/bot/message/push",
+    },
+    Object {
+      "body": null,
+      "channelUid": "line:_MY_BOT_:user:john_doe",
+      "method": "POST",
+      "path": "v2/bot/user/john_doe/richmenu/newbie",
+    },
+  ],
+  "results": Array [
+    Object {},
+    Object {},
+  ],
+  "tasks": Array [
+    Object {
+      "payload": Array [
+        Object {
+          "body": Object {
+            "messages": Array [
+              Object {
+                "text": "Hello",
+                "type": "text",
+              },
+              Object {
+                "text": "LINE",
+                "type": "text",
+              },
+              Object {
+                "originalContentUrl": "https://machinat.com/greeting.png",
+                "previewImageUrl": undefined,
+                "quickReply": Object {
+                  "items": Array [
+                    Object {
+                      "action": Object {
+                        "label": "HI",
+                        "text": "Hi!",
+                        "type": "message",
+                      },
+                      "imageUrl": undefined,
+                      "type": "action",
+                    },
+                  ],
+                },
+                "type": "image",
+              },
+            ],
+            "to": "john_doe",
+          },
+          "channelUid": "line:_MY_BOT_:user:john_doe",
+          "method": "POST",
+          "path": "v2/bot/message/push",
+        },
+        Object {
+          "body": null,
+          "channelUid": "line:_MY_BOT_:user:john_doe",
+          "method": "POST",
+          "path": "v2/bot/user/john_doe/richmenu/newbie",
+        },
+      ],
+      "type": "dispatch",
+    },
+  ],
+}
 `;
 
 exports[`#render(token, node, options) works with replyToken 1`] = `
-Array [
-  Object {
-    "messages": Array [
-      Object {
-        "id": 0,
+Object {
+  "jobs": Array [
+    Object {
+      "body": Object {
+        "messages": Array [
+          Object {
+            "text": "Hello",
+            "type": "text",
+          },
+          Object {
+            "text": "LINE",
+            "type": "text",
+          },
+          Object {
+            "originalContentUrl": "https://machinat.com/greeting.png",
+            "previewImageUrl": undefined,
+            "quickReply": Object {
+              "items": Array [
+                Object {
+                  "action": Object {
+                    "label": "HI",
+                    "text": "Hi!",
+                    "type": "message",
+                  },
+                  "imageUrl": undefined,
+                  "type": "action",
+                },
+              ],
+            },
+            "type": "image",
+          },
+        ],
+        "replyToken": "__REPLY_TOKEN__",
       },
-      Object {
-        "id": 1,
-      },
-      Object {
-        "id": 2,
-      },
-      Object {
-        "id": 3,
-      },
-      Object {
-        "id": 4,
-      },
-    ],
-    "replyToken": "__REPLY_TOKEN__",
-  },
-]
+      "channelUid": "line:_MY_BOT_:user:john_doe",
+      "method": "POST",
+      "path": "v2/bot/message/reply",
+    },
+    Object {
+      "body": null,
+      "channelUid": "line:_MY_BOT_:user:john_doe",
+      "method": "POST",
+      "path": "v2/bot/user/john_doe/richmenu/newbie",
+    },
+  ],
+  "results": Array [
+    Object {},
+    Object {},
+  ],
+  "tasks": Array [
+    Object {
+      "payload": Array [
+        Object {
+          "body": Object {
+            "messages": Array [
+              Object {
+                "text": "Hello",
+                "type": "text",
+              },
+              Object {
+                "text": "LINE",
+                "type": "text",
+              },
+              Object {
+                "originalContentUrl": "https://machinat.com/greeting.png",
+                "previewImageUrl": undefined,
+                "quickReply": Object {
+                  "items": Array [
+                    Object {
+                      "action": Object {
+                        "label": "HI",
+                        "text": "Hi!",
+                        "type": "message",
+                      },
+                      "imageUrl": undefined,
+                      "type": "action",
+                    },
+                  ],
+                },
+                "type": "image",
+              },
+            ],
+            "replyToken": "__REPLY_TOKEN__",
+          },
+          "channelUid": "line:_MY_BOT_:user:john_doe",
+          "method": "POST",
+          "path": "v2/bot/message/reply",
+        },
+        Object {
+          "body": null,
+          "channelUid": "line:_MY_BOT_:user:john_doe",
+          "method": "POST",
+          "path": "v2/bot/user/john_doe/richmenu/newbie",
+        },
+      ],
+      "type": "dispatch",
+    },
+  ],
+}
 `;
 
 exports[`#renderMulticast(targets, node) make api call to message/mulitcast 1`] = `
-Array [
-  Object {
-    "messages": Array [
-      Object {
-        "id": 0,
+Object {
+  "jobs": Array [
+    Object {
+      "body": Object {
+        "messages": Array [
+          Object {
+            "text": "Hello",
+            "type": "text",
+          },
+          Object {
+            "text": "LINE",
+            "type": "text",
+          },
+          Object {
+            "originalContentUrl": "https://machinat.com/greeting.png",
+            "previewImageUrl": undefined,
+            "quickReply": Object {
+              "items": Array [
+                Object {
+                  "action": Object {
+                    "label": "HI",
+                    "text": "Hi!",
+                    "type": "message",
+                  },
+                  "imageUrl": undefined,
+                  "type": "action",
+                },
+              ],
+            },
+            "type": "image",
+          },
+        ],
+        "to": Array [
+          "john",
+          "wick",
+          "dog",
+        ],
       },
-      Object {
-        "id": 1,
+      "method": "POST",
+      "path": "v2/bot/message/multicast",
+    },
+    Object {
+      "body": Object {
+        "richMenuId": "newbie",
+        "userIds": Array [
+          "john",
+          "wick",
+          "dog",
+        ],
       },
-      Object {
-        "id": 2,
-      },
-      Object {
-        "id": 3,
-      },
-      Object {
-        "id": 4,
-      },
-    ],
-    "to": Array [
-      "john",
-      "wick",
-      "dog",
-    ],
-  },
-  Object {
-    "messages": Array [
-      Object {
-        "id": 5,
-      },
-      Object {
-        "id": 6,
-      },
-    ],
-    "to": Array [
-      "john",
-      "wick",
-      "dog",
-    ],
-  },
-]
+      "channelUid": undefined,
+      "method": "POST",
+      "path": "v2/bot/richmenu/bulk/link",
+    },
+  ],
+  "results": Array [
+    Object {},
+    Object {},
+  ],
+  "tasks": Array [
+    Object {
+      "payload": Array [
+        Object {
+          "body": Object {
+            "messages": Array [
+              Object {
+                "text": "Hello",
+                "type": "text",
+              },
+              Object {
+                "text": "LINE",
+                "type": "text",
+              },
+              Object {
+                "originalContentUrl": "https://machinat.com/greeting.png",
+                "previewImageUrl": undefined,
+                "quickReply": Object {
+                  "items": Array [
+                    Object {
+                      "action": Object {
+                        "label": "HI",
+                        "text": "Hi!",
+                        "type": "message",
+                      },
+                      "imageUrl": undefined,
+                      "type": "action",
+                    },
+                  ],
+                },
+                "type": "image",
+              },
+            ],
+            "to": Array [
+              "john",
+              "wick",
+              "dog",
+            ],
+          },
+          "method": "POST",
+          "path": "v2/bot/message/multicast",
+        },
+        Object {
+          "body": Object {
+            "richMenuId": "newbie",
+            "userIds": Array [
+              "john",
+              "wick",
+              "dog",
+            ],
+          },
+          "channelUid": undefined,
+          "method": "POST",
+          "path": "v2/bot/richmenu/bulk/link",
+        },
+      ],
+      "type": "dispatch",
+    },
+  ],
+}
 `;

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`sequently excute jobs of the identical channel 1`] = `
+exports[`open requests up to connectionCapicity 1`] = `
 Object {
   "batch": Array [
     Object {
@@ -22,7 +22,7 @@ Object {
         "body": Object {
           "id": 2,
         },
-        "channelUid": "bar",
+        "channelUid": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -35,7 +35,7 @@ Object {
         "body": Object {
           "id": 3,
         },
-        "channelUid": "baz",
+        "channelUid": "bar",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -48,7 +48,7 @@ Object {
         "body": Object {
           "id": 4,
         },
-        "channelUid": "foo",
+        "channelUid": "bar",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -61,7 +61,133 @@ Object {
         "body": Object {
           "id": 5,
         },
+        "channelUid": "baz",
+        "method": "POST",
+        "path": "v2/bot/message/reply",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 6,
+        },
+        "channelUid": "baz",
+        "method": "POST",
+        "path": "v2/bot/message/reply",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 7,
+        },
+        "channelUid": "foo",
+        "method": "POST",
+        "path": "v2/bot/message/push",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 8,
+        },
         "channelUid": "bar",
+        "method": "POST",
+        "path": "v2/bot/message/push",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 9,
+        },
+        "channelUid": "baz",
+        "method": "POST",
+        "path": "v2/bot/message/push",
+      },
+      "result": Object {},
+      "success": true,
+    },
+  ],
+  "errors": null,
+  "success": true,
+}
+`;
+
+exports[`sequently excute jobs within the same identical channel 1`] = `
+Object {
+  "batch": Array [
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 1,
+        },
+        "channelUid": "foo",
+        "method": "POST",
+        "path": "v2/bot/message/push",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 2,
+        },
+        "channelUid": "foo",
+        "method": "POST",
+        "path": "v2/bot/message/push",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 3,
+        },
+        "channelUid": "bar",
+        "method": "POST",
+        "path": "v2/bot/message/push",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 4,
+        },
+        "channelUid": "bar",
+        "method": "POST",
+        "path": "v2/bot/message/reply",
+      },
+      "result": Object {},
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "body": Object {
+          "id": 5,
+        },
+        "channelUid": "baz",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },

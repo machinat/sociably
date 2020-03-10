@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
-import { map } from 'machinat-utility';
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
+import map from '@machinat/core/iterator/map';
 import generalDelegate from '../general';
 
 const render = async children => {
@@ -22,7 +22,6 @@ describe('text components', () => {
   test('shallow textual elements match snapshot', async () => {
     const promise = render([
       <text>abc</text>,
-      <a href="https://machinat.world">hello</a>,
       <b>important</b>,
       <i>italic</i>,
       <del>nooooo</del>,
@@ -36,20 +35,16 @@ describe('text components', () => {
     const segments = await promise;
 
     expect(segments.map(s => s.value)).toMatchInlineSnapshot(`
-Array [
-  "abc",
-  "hello",
-  Symbol(machinat.segment.break),
-  "https://machinat.world",
-  Symbol(machinat.segment.break),
-  "important",
-  "italic",
-  "nooooo",
-  Symbol(machinat.segment.break),
-  "foo.bar()",
-  "foo.bar('hello world')",
-]
-`);
+      Array [
+        "abc",
+        "important",
+        "italic",
+        "nooooo",
+        undefined,
+        "foo.bar()",
+        "foo.bar('hello world')",
+      ]
+    `);
   });
 
   test('nested textual elements match snapshot', async () => {
@@ -66,8 +61,6 @@ Array [
           I'm your <del>FATHER</del> <code>droid</code>.
         </i>
         <br />
-        <br />
-        <a href="https://C3.PO">Check here</a>
         <pre>May the force be with you!</pre> abc
       </text>
     );
@@ -76,21 +69,16 @@ Array [
     const segments = await promise;
 
     expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
-Array [
-  "123 Hello, Luke Skywalker!",
-  Symbol(machinat.segment.break),
-  "You know what?",
-  Symbol(machinat.segment.break),
-  "I'm your FATHER droid.",
-  Symbol(machinat.segment.break),
-  Symbol(machinat.segment.break),
-  "Check here",
-  Symbol(machinat.segment.break),
-  "https://C3.PO",
-  Symbol(machinat.segment.break),
-  "May the force be with you! abc",
-]
-`);
+      Array [
+        "123 Hello, Luke Skywalker!",
+        undefined,
+        "You know what?",
+        undefined,
+        "I'm your FATHER droid.",
+        undefined,
+        "May the force be with you! abc",
+      ]
+    `);
   });
 
   test('with break placed in children', async () => {
@@ -104,7 +92,6 @@ Array [
 
     const promise = render([
       <text>{children}</text>,
-      <a href="https://machinat.world">{children}</a>,
       <b>{children}</b>,
       <i>{children}</i>,
       <del>{children}</del>,
@@ -116,33 +103,27 @@ Array [
     const segments = await promise;
 
     expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
-Array [
-  "foo",
-  Symbol(machinat.segment.break),
-  "bar",
-  "foo",
-  Symbol(machinat.segment.break),
-  "bar",
-  Symbol(machinat.segment.break),
-  "https://machinat.world",
-  Symbol(machinat.segment.break),
-  "foo",
-  Symbol(machinat.segment.break),
-  "bar",
-  "foo",
-  Symbol(machinat.segment.break),
-  "bar",
-  "foo",
-  Symbol(machinat.segment.break),
-  "bar",
-  "foo",
-  Symbol(machinat.segment.break),
-  "bar",
-  "foo",
-  Symbol(machinat.segment.break),
-  "bar",
-]
-`);
+      Array [
+        "foo",
+        undefined,
+        "bar",
+        "foo",
+        undefined,
+        "bar",
+        "foo",
+        undefined,
+        "bar",
+        "foo",
+        undefined,
+        "bar",
+        "foo",
+        undefined,
+        "bar",
+        "foo",
+        undefined,
+        "bar",
+      ]
+    `);
   });
 
   test('should throw if non string value rendered', async () => {
@@ -156,7 +137,6 @@ Array [
     );
 
     const elements = [
-      <a src="...">{children}</a>,
       <b>{children}</b>,
       <i>{children}</i>,
       <del>{children}</del>,
@@ -173,15 +153,7 @@ Array [
   });
 
   test('should return null if content is empty', async () => {
-    const elements = [
-      <a src="..." />,
-      <b />,
-      <i />,
-      <del />,
-      <text />,
-      <code />,
-      <pre />,
-    ];
+    const elements = [<b />, <i />, <del />, <text />, <code />, <pre />];
 
     for (const element of elements) {
       await expect(render(element)).resolves.toEqual([null]);

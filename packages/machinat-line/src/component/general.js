@@ -2,9 +2,9 @@ import invariant from 'invariant';
 import {
   breakSegment,
   textSegment,
-  wrapSingleUnitSegment,
-} from 'machinat-renderer';
-import { joinTextualSegments } from 'machinat-utility';
+  wrapUnitComponent,
+} from '@machinat/core/renderer';
+import joinTextualSegments from '@machinat/core/utils/joinTextualSegments';
 
 const text = async (node, render, path) => {
   const segments = await render(node.props.children, '.children');
@@ -18,21 +18,7 @@ const del = text;
 const code = text;
 const pre = text;
 
-const a = async (node, render, path) => {
-  const {
-    props: { children, href },
-  } = node;
-
-  const segments = await render(children, '.children');
-  const joined = joinTextualSegments(segments, node, path);
-  const breakSeg = breakSegment(node, path);
-
-  return joined === null
-    ? null
-    : [...joined, breakSeg, textSegment(href, node, path), breakSeg];
-};
-
-const __media = wrapSingleUnitSegment(({ props: { src } }) => ({
+const __media = wrapUnitComponent(({ src }) => ({
   type: 'text',
   text: src || '',
 }));
@@ -50,7 +36,6 @@ const generalComponents = {
   del,
   code,
   pre,
-  a,
   img,
   video,
   audio,

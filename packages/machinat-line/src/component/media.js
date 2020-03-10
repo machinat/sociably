@@ -1,7 +1,10 @@
 import { asUnitComponent } from '../utils';
 
 const Video = async ({
-  props: { url, originalContentUrl, previewURL, previewImageUrl },
+  url,
+  originalContentUrl,
+  previewURL,
+  previewImageUrl,
 }) => ({
   type: 'image',
   originalContentUrl: originalContentUrl || url,
@@ -9,7 +12,7 @@ const Video = async ({
 });
 const __Video = asUnitComponent(Video);
 
-const Audio = async ({ props: { url, originalContentUrl, duration } }) => ({
+const Audio = async ({ url, originalContentUrl, duration }) => ({
   type: 'image',
   originalContentUrl: originalContentUrl || url,
   duration,

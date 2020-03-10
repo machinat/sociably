@@ -3,625 +3,155 @@
 exports[`text components nested textual elements match snapshot 1`] = `
 Array [
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Array [
-          "123",
-          " ",
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                "Hello, ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "Luke Skywalker!",
-                  },
-                  "type": "b",
-                },
-              ],
-            },
-            "type": "code",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          "You know what?",
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                "I'm your ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "FATHER",
-                  },
-                  "type": "del",
-                },
-                " ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "droid",
-                  },
-                  "type": "code",
-                },
-                ".",
-              ],
-            },
-            "type": "i",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": "Check here",
-              "href": "https://C3.PO",
-            },
-            "type": "a",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": "May the force be with you!",
-            },
-            "type": "pre",
-          },
-          " abc",
-        ],
-      },
-      "type": "text",
-    },
+    "node": <text>
+      123
+       
+      <code>
+        Hello, 
+        <b>
+          Luke Skywalker!
+        </b>
+      </code>
+      <br />
+      You know what?
+      <br />
+      <i>
+        I'm your 
+        <del>
+          FATHER
+        </del>
+         
+        <code>
+          droid
+        </code>
+        .
+      </i>
+      <br />
+      <pre>
+        May the force be with you!
+      </pre>
+       abc
+    </text>,
     "path": "$",
     "type": "text",
     "value": "123 Hello, Luke Skywalker!",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "br",
-    },
+    "node": <br />,
     "path": "$:3",
     "type": "break",
-    "value": Symbol(machinat.segment.break),
+    "value": undefined,
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Array [
-          "123",
-          " ",
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                "Hello, ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "Luke Skywalker!",
-                  },
-                  "type": "b",
-                },
-              ],
-            },
-            "type": "code",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          "You know what?",
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                "I'm your ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "FATHER",
-                  },
-                  "type": "del",
-                },
-                " ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "droid",
-                  },
-                  "type": "code",
-                },
-                ".",
-              ],
-            },
-            "type": "i",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": "Check here",
-              "href": "https://C3.PO",
-            },
-            "type": "a",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": "May the force be with you!",
-            },
-            "type": "pre",
-          },
-          " abc",
-        ],
-      },
-      "type": "text",
-    },
+    "node": <text>
+      123
+       
+      <code>
+        Hello, 
+        <b>
+          Luke Skywalker!
+        </b>
+      </code>
+      <br />
+      You know what?
+      <br />
+      <i>
+        I'm your 
+        <del>
+          FATHER
+        </del>
+         
+        <code>
+          droid
+        </code>
+        .
+      </i>
+      <br />
+      <pre>
+        May the force be with you!
+      </pre>
+       abc
+    </text>,
     "path": "$",
     "type": "text",
     "value": "You know what?",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "br",
-    },
+    "node": <br />,
     "path": "$:5",
     "type": "break",
-    "value": Symbol(machinat.segment.break),
+    "value": undefined,
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Array [
-          "123",
-          " ",
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                "Hello, ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "Luke Skywalker!",
-                  },
-                  "type": "b",
-                },
-              ],
-            },
-            "type": "code",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          "You know what?",
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                "I'm your ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "FATHER",
-                  },
-                  "type": "del",
-                },
-                " ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "droid",
-                  },
-                  "type": "code",
-                },
-                ".",
-              ],
-            },
-            "type": "i",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": "Check here",
-              "href": "https://C3.PO",
-            },
-            "type": "a",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": "May the force be with you!",
-            },
-            "type": "pre",
-          },
-          " abc",
-        ],
-      },
-      "type": "text",
-    },
+    "node": <text>
+      123
+       
+      <code>
+        Hello, 
+        <b>
+          Luke Skywalker!
+        </b>
+      </code>
+      <br />
+      You know what?
+      <br />
+      <i>
+        I'm your 
+        <del>
+          FATHER
+        </del>
+         
+        <code>
+          droid
+        </code>
+        .
+      </i>
+      <br />
+      <pre>
+        May the force be with you!
+      </pre>
+       abc
+    </text>,
     "path": "$",
     "type": "text",
     "value": "I'm your FATHER droid.",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "br",
-    },
+    "node": <br />,
     "path": "$:7",
     "type": "break",
-    "value": Symbol(machinat.segment.break),
+    "value": undefined,
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "br",
-    },
-    "path": "$:8",
-    "type": "break",
-    "value": Symbol(machinat.segment.break),
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Array [
-          "123",
-          " ",
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                "Hello, ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "Luke Skywalker!",
-                  },
-                  "type": "b",
-                },
-              ],
-            },
-            "type": "code",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          "You know what?",
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                "I'm your ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "FATHER",
-                  },
-                  "type": "del",
-                },
-                " ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "droid",
-                  },
-                  "type": "code",
-                },
-                ".",
-              ],
-            },
-            "type": "i",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": "Check here",
-              "href": "https://C3.PO",
-            },
-            "type": "a",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": "May the force be with you!",
-            },
-            "type": "pre",
-          },
-          " abc",
-        ],
-      },
-      "type": "text",
-    },
-    "path": "$",
-    "type": "text",
-    "value": "Check here",
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": "Check here",
-        "href": "https://C3.PO",
-      },
-      "type": "a",
-    },
-    "path": "$:9",
-    "type": "break",
-    "value": Symbol(machinat.segment.break),
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Array [
-          "123",
-          " ",
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                "Hello, ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "Luke Skywalker!",
-                  },
-                  "type": "b",
-                },
-              ],
-            },
-            "type": "code",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          "You know what?",
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                "I'm your ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "FATHER",
-                  },
-                  "type": "del",
-                },
-                " ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "droid",
-                  },
-                  "type": "code",
-                },
-                ".",
-              ],
-            },
-            "type": "i",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": "Check here",
-              "href": "https://C3.PO",
-            },
-            "type": "a",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": "May the force be with you!",
-            },
-            "type": "pre",
-          },
-          " abc",
-        ],
-      },
-      "type": "text",
-    },
-    "path": "$",
-    "type": "text",
-    "value": "https://C3.PO",
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": "Check here",
-        "href": "https://C3.PO",
-      },
-      "type": "a",
-    },
-    "path": "$:9",
-    "type": "break",
-    "value": Symbol(machinat.segment.break),
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Array [
-          "123",
-          " ",
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                "Hello, ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "Luke Skywalker!",
-                  },
-                  "type": "b",
-                },
-              ],
-            },
-            "type": "code",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          "You know what?",
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": Array [
-                "I'm your ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "FATHER",
-                  },
-                  "type": "del",
-                },
-                " ",
-                Object {
-                  "$$typeof": Symbol(machinat.element),
-                  "props": Object {
-                    "children": "droid",
-                  },
-                  "type": "code",
-                },
-                ".",
-              ],
-            },
-            "type": "i",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {},
-            "type": "br",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": "Check here",
-              "href": "https://C3.PO",
-            },
-            "type": "a",
-          },
-          Object {
-            "$$typeof": Symbol(machinat.element),
-            "props": Object {
-              "children": "May the force be with you!",
-            },
-            "type": "pre",
-          },
-          " abc",
-        ],
-      },
-      "type": "text",
-    },
+    "node": <text>
+      123
+       
+      <code>
+        Hello, 
+        <b>
+          Luke Skywalker!
+        </b>
+      </code>
+      <br />
+      You know what?
+      <br />
+      <i>
+        I'm your 
+        <del>
+          FATHER
+        </del>
+         
+        <code>
+          droid
+        </code>
+        .
+      </i>
+      <br />
+      <pre>
+        May the force be with you!
+      </pre>
+       abc
+    </text>,
     "path": "$",
     "type": "text",
     "value": "May the force be with you! abc",
@@ -632,136 +162,56 @@ Array [
 exports[`text components shallow textual elements match snapshot 1`] = `
 Array [
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": "abc",
-      },
-      "type": "text",
-    },
+    "node": <text>
+      abc
+    </text>,
     "path": "$:0",
     "type": "text",
     "value": "abc",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": "hello",
-        "href": "https://machinat.world",
-      },
-      "type": "a",
-    },
+    "node": <b>
+      important
+    </b>,
     "path": "$:1",
-    "type": "text",
-    "value": "hello",
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": "hello",
-        "href": "https://machinat.world",
-      },
-      "type": "a",
-    },
-    "path": "$:1",
-    "type": "break",
-    "value": Symbol(machinat.segment.break),
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": "hello",
-        "href": "https://machinat.world",
-      },
-      "type": "a",
-    },
-    "path": "$:1",
-    "type": "text",
-    "value": "https://machinat.world",
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": "hello",
-        "href": "https://machinat.world",
-      },
-      "type": "a",
-    },
-    "path": "$:1",
-    "type": "break",
-    "value": Symbol(machinat.segment.break),
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": "important",
-      },
-      "type": "b",
-    },
-    "path": "$:2",
     "type": "text",
     "value": "important",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": "italic",
-      },
-      "type": "i",
-    },
-    "path": "$:3",
+    "node": <i>
+      italic
+    </i>,
+    "path": "$:2",
     "type": "text",
     "value": "italic",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": "nooooo",
-      },
-      "type": "del",
-    },
-    "path": "$:4",
+    "node": <del>
+      nooooo
+    </del>,
+    "path": "$:3",
     "type": "text",
     "value": "nooooo",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "br",
-    },
-    "path": "$:5",
+    "node": <br />,
+    "path": "$:4",
     "type": "break",
-    "value": Symbol(machinat.segment.break),
+    "value": undefined,
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": "foo.bar()",
-      },
-      "type": "code",
-    },
-    "path": "$:6",
+    "node": <code>
+      foo.bar()
+    </code>,
+    "path": "$:5",
     "type": "text",
     "value": "foo.bar()",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": "foo.bar('hello world')",
-      },
-      "type": "pre",
-    },
-    "path": "$:7",
+    "node": <pre>
+      foo.bar('hello world')
+    </pre>,
+    "path": "$:6",
     "type": "text",
     "value": "foo.bar('hello world')",
   },
@@ -771,519 +221,182 @@ Array [
 exports[`text components with break placed in children 1`] = `
 Array [
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-      },
-      "type": "text",
-    },
+    "node": <text>
+      <Machinat.Fragment>
+        foo
+        <br />
+        bar
+      </Machinat.Fragment>
+    </text>,
     "path": "$:0",
     "type": "text",
     "value": "foo",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "br",
-    },
+    "node": <br />,
     "path": "$::1",
     "type": "break",
-    "value": Symbol(machinat.segment.break),
+    "value": undefined,
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-      },
-      "type": "text",
-    },
+    "node": <text>
+      <Machinat.Fragment>
+        foo
+        <br />
+        bar
+      </Machinat.Fragment>
+    </text>,
     "path": "$:0",
     "type": "text",
     "value": "bar",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-        "href": "https://machinat.world",
-      },
-      "type": "a",
-    },
+    "node": <b>
+      <Machinat.Fragment>
+        foo
+        <br />
+        bar
+      </Machinat.Fragment>
+    </b>,
     "path": "$:1",
     "type": "text",
     "value": "foo",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "br",
-    },
+    "node": <br />,
     "path": "$::1",
     "type": "break",
-    "value": Symbol(machinat.segment.break),
+    "value": undefined,
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-        "href": "https://machinat.world",
-      },
-      "type": "a",
-    },
+    "node": <b>
+      <Machinat.Fragment>
+        foo
+        <br />
+        bar
+      </Machinat.Fragment>
+    </b>,
     "path": "$:1",
     "type": "text",
     "value": "bar",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-        "href": "https://machinat.world",
-      },
-      "type": "a",
-    },
-    "path": "$:1",
-    "type": "break",
-    "value": Symbol(machinat.segment.break),
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-        "href": "https://machinat.world",
-      },
-      "type": "a",
-    },
-    "path": "$:1",
-    "type": "text",
-    "value": "https://machinat.world",
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-        "href": "https://machinat.world",
-      },
-      "type": "a",
-    },
-    "path": "$:1",
-    "type": "break",
-    "value": Symbol(machinat.segment.break),
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-      },
-      "type": "b",
-    },
+    "node": <i>
+      <Machinat.Fragment>
+        foo
+        <br />
+        bar
+      </Machinat.Fragment>
+    </i>,
     "path": "$:2",
     "type": "text",
     "value": "foo",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "br",
-    },
+    "node": <br />,
     "path": "$::1",
     "type": "break",
-    "value": Symbol(machinat.segment.break),
+    "value": undefined,
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-      },
-      "type": "b",
-    },
+    "node": <i>
+      <Machinat.Fragment>
+        foo
+        <br />
+        bar
+      </Machinat.Fragment>
+    </i>,
     "path": "$:2",
     "type": "text",
     "value": "bar",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-      },
-      "type": "i",
-    },
+    "node": <del>
+      <Machinat.Fragment>
+        foo
+        <br />
+        bar
+      </Machinat.Fragment>
+    </del>,
     "path": "$:3",
     "type": "text",
     "value": "foo",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "br",
-    },
+    "node": <br />,
     "path": "$::1",
     "type": "break",
-    "value": Symbol(machinat.segment.break),
+    "value": undefined,
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-      },
-      "type": "i",
-    },
+    "node": <del>
+      <Machinat.Fragment>
+        foo
+        <br />
+        bar
+      </Machinat.Fragment>
+    </del>,
     "path": "$:3",
     "type": "text",
     "value": "bar",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-      },
-      "type": "del",
-    },
+    "node": <code>
+      <Machinat.Fragment>
+        foo
+        <br />
+        bar
+      </Machinat.Fragment>
+    </code>,
     "path": "$:4",
     "type": "text",
     "value": "foo",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "br",
-    },
+    "node": <br />,
     "path": "$::1",
     "type": "break",
-    "value": Symbol(machinat.segment.break),
+    "value": undefined,
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-      },
-      "type": "del",
-    },
+    "node": <code>
+      <Machinat.Fragment>
+        foo
+        <br />
+        bar
+      </Machinat.Fragment>
+    </code>,
     "path": "$:4",
     "type": "text",
     "value": "bar",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-      },
-      "type": "code",
-    },
+    "node": <pre>
+      <Machinat.Fragment>
+        foo
+        <br />
+        bar
+      </Machinat.Fragment>
+    </pre>,
     "path": "$:5",
     "type": "text",
     "value": "foo",
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "br",
-    },
+    "node": <br />,
     "path": "$::1",
     "type": "break",
-    "value": Symbol(machinat.segment.break),
+    "value": undefined,
   },
   Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-      },
-      "type": "code",
-    },
+    "node": <pre>
+      <Machinat.Fragment>
+        foo
+        <br />
+        bar
+      </Machinat.Fragment>
+    </pre>,
     "path": "$:5",
-    "type": "text",
-    "value": "bar",
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-      },
-      "type": "pre",
-    },
-    "path": "$:6",
-    "type": "text",
-    "value": "foo",
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {},
-      "type": "br",
-    },
-    "path": "$::1",
-    "type": "break",
-    "value": Symbol(machinat.segment.break),
-  },
-  Object {
-    "node": Object {
-      "$$typeof": Symbol(machinat.element),
-      "props": Object {
-        "children": Object {
-          "$$typeof": Symbol(machinat.element),
-          "props": Object {
-            "children": Array [
-              "foo",
-              Object {
-                "$$typeof": Symbol(machinat.element),
-                "props": Object {},
-                "type": "br",
-              },
-              "bar",
-            ],
-          },
-          "type": Symbol(machinat.element.fragment),
-        },
-      },
-      "type": "pre",
-    },
-    "path": "$:6",
     "type": "text",
     "value": "bar",
   },

@@ -1,5 +1,5 @@
 // @flow
-import { mixin } from 'machinat-utility';
+import mixin from '@machinat/core/utils/mixin';
 import {
   EventBase as Base,
   Message,

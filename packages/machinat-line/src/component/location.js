@@ -2,7 +2,12 @@
 import { asUnitComponent } from '../utils';
 
 const Location = async ({
-  props: { title, address, lat, latitude, long, longitude },
+  title,
+  address,
+  lat,
+  latitude,
+  long,
+  longitude,
 }) => ({
   type: 'location',
   title,

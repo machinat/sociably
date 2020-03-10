@@ -1,4 +1,5 @@
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
 import {
   PostbackAction,
   MessageAction,
@@ -8,10 +9,8 @@ import {
   CameraRollAction,
   LocationAction,
 } from '../action';
-import { LINE_NATIVE_TYPE } from '../../constant';
-import renderHelper from './renderHelper';
 
-const render = renderHelper(async () => null);
+const render = element => element.type(element, () => null, '$');
 
 test.each(
   [
@@ -26,55 +25,133 @@ test.each(
   ].map(C => [C.name, C])
 )('%s is valid native Component', (_, Action) => {
   expect(typeof Action).toBe('function');
-  expect(Action.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Action.$$namespace).toBe('Line');
+  expect(isNativeElement(<Action />)).toBe(true);
+  expect(Action.$$platform).toBe('line');
 });
 
-it.each(
-  [
-    <PostbackAction data="__POSTBACK_FOO__" label="Hello!" text="WORLD!" />,
-    <MessageAction label="Tick" text="Tock" />,
-    <URIAction uri="http://machinat.com" label="Try it!" />,
-    <DateTimePickerAction
-      label="Which day?"
-      data="__MEETUP_DATE__"
-      date
-      initial="2018-01-01"
-      min={new Date('2000-01-01')}
-      max={new Date('2046-01-01')}
-    />,
-    <DateTimePickerAction
-      label="What time?"
-      data="__MEETUP_TIME__"
-      time
-      initial="00:00"
-      min={new Date('2000 12:12')}
-      max={new Date('2000 21:21')}
-    />,
-    <DateTimePickerAction
-      label="Say it again?"
-      data="__MEETUP_DATETIME__"
-      initial="2000-01-01T00:00"
-      min={new Date('1990-01-01T00:00')}
-      max={new Date('2020-01-01T00:00')}
-    />,
-    <CameraAction label="Cheer!" />,
-    <CameraRollAction label="Cheer again!" />,
-    <LocationAction label="Ok, where are we?" />,
-  ].map(element => [element.type.name, element])
-)('%s match snapshot', async (_, actionElement) => {
-  const promise = render(actionElement);
-  await expect(promise).resolves.toEqual([
-    {
-      type: 'part',
-      node: actionElement,
-      value: expect.any(Object),
-      path: '$',
-    },
-  ]);
+test('<PostbackAction/>', async () => {
+  await expect(
+    render(
+      <PostbackAction data="__POSTBACK_FOO__" label="Hello!" text="WORLD!" />
+    )
+  ).resolves.toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "node": <PostbackAction
+                data="__POSTBACK_FOO__"
+                label="Hello!"
+                text="WORLD!"
+              />,
+              "path": "$",
+              "type": "part",
+              "value": Object {
+                "data": "__POSTBACK_FOO__",
+                "displayText": "WORLD!",
+                "label": "Hello!",
+                "type": "postback",
+              },
+            },
+          ]
+        `);
+});
 
-  const [{ value }] = await promise;
-  expect(value).toMatchSnapshot();
+test('<MessageAction/>', async () => {
+  await expect(render(<MessageAction label="Tick" text="Tock" />)).resolves
+    .toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "node": <MessageAction
+                label="Tick"
+                text="Tock"
+              />,
+              "path": "$",
+              "type": "part",
+              "value": Object {
+                "label": "Tick",
+                "text": "Tock",
+                "type": "message",
+              },
+            },
+          ]
+        `);
+});
+
+test('<URIAction/>', async () => {
+  await expect(render(<URIAction uri="http://machinat.com" label="Try it!" />))
+    .resolves.toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "node": <URIAction
+                label="Try it!"
+                uri="http://machinat.com"
+              />,
+              "path": "$",
+              "type": "part",
+              "value": Object {
+                "label": "Try it!",
+                "type": "uri",
+                "uri": "http://machinat.com",
+              },
+            },
+          ]
+        `);
+});
+
+test('<CameraAction/>', async () => {
+  await expect(render(<CameraAction label="Cheer!" />)).resolves
+    .toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "node": <CameraAction
+                label="Cheer!"
+              />,
+              "path": "$",
+              "type": "part",
+              "value": Object {
+                "label": "Cheer!",
+                "type": "camera",
+              },
+            },
+          ]
+        `);
+});
+
+test('<CameraRollAction/>', async () => {
+  await expect(render(<CameraRollAction label="Cheer again!" />)).resolves
+    .toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "node": <CameraRollAction
+                label="Cheer again!"
+              />,
+              "path": "$",
+              "type": "part",
+              "value": Object {
+                "label": "Cheer again!",
+                "type": "cameraRoll",
+              },
+            },
+          ]
+        `);
+});
+
+test('<LocationAction/>', async () => {
+  await expect(render(<LocationAction label="Ok, where are we?" />)).resolves
+    .toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "node": <LocationAction
+                label="Ok, where are we?"
+              />,
+              "path": "$",
+              "type": "part",
+              "value": Object {
+                "label": "Ok, where are we?",
+                "type": "location",
+              },
+            },
+          ]
+        `);
 });
 
 describe('DateTimePickerAction', () => {
@@ -82,21 +159,18 @@ describe('DateTimePickerAction', () => {
     const actions = [
       <DateTimePickerAction
         mode="datetime"
+        label="When?"
+        data="__MEETUP_DATETIME__"
         initial="2000-01-01T00:00"
-        min={new Date(1990, 0)}
-        max={new Date(2020, 0)}
+        min="1990-01-01T00:00"
+        max="2020-01-01T00:00"
       />,
       <DateTimePickerAction
-        initial="2000-01-01T00:00"
-        min={new Date(1990, 0)}
-        max={new Date(2020, 0)}
-      />,
-      <DateTimePickerAction
-        date
-        time
-        initial="2000-01-01T00:00"
-        min={new Date(1990, 0)}
-        max={new Date(2020, 0)}
+        label="When?"
+        data="__MEETUP_DATETIME__"
+        initial={new Date('2000-01-01T00:00')}
+        min={new Date('1990-01-01T00:00')}
+        max={new Date('2020-01-01T00:00')}
       />,
     ];
 
@@ -107,8 +181,10 @@ describe('DateTimePickerAction', () => {
           type: 'part',
           node: action,
           value: {
+            label: 'When?',
             type: 'datetimepicker',
             mode: 'datetime',
+            data: '__MEETUP_DATETIME__',
             initial: '2000-01-01T00:00',
             min: '1990-01-01T00:00',
             max: '2020-01-01T00:00',
@@ -123,13 +199,17 @@ describe('DateTimePickerAction', () => {
     const actions = [
       <DateTimePickerAction
         mode="date"
+        label="Which day?"
+        data="__MEETUP_DATE__"
         initial="2000-01-01"
-        min={new Date(1990, 0)}
-        max={new Date(2020, 0)}
+        min="1990-01-01"
+        max="2020-01-01"
       />,
       <DateTimePickerAction
-        date
-        initial="2000-01-01"
+        mode="date"
+        label="Which day?"
+        data="__MEETUP_DATE__"
+        initial={new Date(2000, 0)}
         min={new Date(1990, 0)}
         max={new Date(2020, 0)}
       />,
@@ -144,6 +224,8 @@ describe('DateTimePickerAction', () => {
           value: {
             type: 'datetimepicker',
             mode: 'date',
+            label: 'Which day?',
+            data: '__MEETUP_DATE__',
             initial: '2000-01-01',
             min: '1990-01-01',
             max: '2020-01-01',
@@ -158,13 +240,17 @@ describe('DateTimePickerAction', () => {
     const actions = [
       <DateTimePickerAction
         mode="time"
+        label="What time?"
+        data="__MEETUP_TIME__"
         initial="11:11"
-        min={new Date(0, 0, 0, 0, 0)}
-        max={new Date(0, 0, 0, 22, 22)}
+        min="00:00"
+        max="22:22"
       />,
       <DateTimePickerAction
-        time
-        initial="11:11"
+        mode="time"
+        label="What time?"
+        data="__MEETUP_TIME__"
+        initial={new Date(0, 0, 0, 11, 11)}
         min={new Date(0, 0, 0, 0, 0)}
         max={new Date(0, 0, 0, 22, 22)}
       />,
@@ -179,6 +265,8 @@ describe('DateTimePickerAction', () => {
           value: {
             type: 'datetimepicker',
             mode: 'time',
+            label: 'What time?',
+            data: '__MEETUP_TIME__',
             initial: '11:11',
             min: '00:00',
             max: '22:22',

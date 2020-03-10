@@ -1,17 +1,15 @@
-import Machinat from 'machinat';
-
-import { LINE_NATIVE_TYPE } from '../../constant';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
 import { Emoji } from '../text';
-import renderHelper from './renderHelper';
 
-const render = renderHelper(() => null);
+const render = element => element.type(element, () => null, '$');
 
 describe('Emoji', () => {
   it('is valid native unit component', () => {
     expect(typeof Emoji).toBe('function');
 
-    expect(Emoji.$$native).toBe(LINE_NATIVE_TYPE);
-    expect(Emoji.$$namespace).toBe('Line');
+    expect(isNativeElement(<Emoji />)).toBe(true);
+    expect(Emoji.$$platform).toBe('line');
   });
 
   it('renders to corespond unicode char', async () => {

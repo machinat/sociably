@@ -2,8 +2,8 @@
 import url from 'url';
 import fetch from 'node-fetch';
 
-import type { MachinatWorker } from 'machinat-base/types';
-import type Queue from 'machinat-queue';
+import type { MachinatWorker } from '@machinat/core/engine/types';
+import type Queue from '@machinat/core/queue';
 
 import type { LineJob, LineAPIResult } from './types';
 import { LineAPIError } from './error';
@@ -14,11 +14,6 @@ const PUT = 'PUT';
 const DELETE = 'DELETE';
 
 const API_HOST = 'https://api.line.me';
-
-type LineClientOptions = {
-  accessToken: string,
-  connectionCapicity: number,
-};
 
 type LineJobQueue = Queue<LineJob, LineAPIResult>;
 
@@ -34,7 +29,7 @@ export default class LineClient
   connectionCapicity: number;
   _lockedIds: Set<string>;
 
-  constructor({ accessToken, connectionCapicity }: LineClientOptions) {
+  constructor(accessToken: string, connectionCapicity: number) {
     this._headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
@@ -43,14 +38,15 @@ export default class LineClient
     this.connectionSize = 0;
     this.connectionCapicity = connectionCapicity;
     this._lockedIds = new Set();
+    this._started = false;
   }
 
-  async _request(method: string, path: string, body?: Object): LineAPIResult {
+  async _request(method: string, path: string, body: ?Object): LineAPIResult {
     const requestURL = new url.URL(path, API_HOST);
 
     const response = await fetch(requestURL.href, {
       method,
-      body: body && JSON.stringify(body),
+      body: body ? JSON.stringify(body) : undefined,
       headers: this._headers,
     });
 
@@ -97,7 +93,7 @@ export default class LineClient
       return false;
     }
 
-    queue.onJob(this._listenJob);
+    queue.onJob(this._consumeCallback);
     this._started = true;
 
     this._consume(queue);
@@ -110,13 +106,11 @@ export default class LineClient
     }
 
     this._started = false;
-    queue.offJob(this._listenJob);
+    queue.offJob(this._consumeCallback);
     return true;
   }
 
-  _listenJob = (queue: Queue<LineJob, LineAPIResult>) => {
-    this._consume(queue);
-  };
+  _consumeCallback = this._consume.bind(this);
 
   _consume(queue: Queue<LineJob, LineAPIResult>) {
     const { _lockedIds: lockedIds, connectionCapicity } = this;
@@ -148,7 +142,7 @@ export default class LineClient
     channelUid: void | string
   ) {
     try {
-      await queue.acquireAt(idx, 1, this._consumeCallback);
+      await queue.acquireAt(idx, 1, this._executeJobCallback);
     } catch (e) {
       // NOTE: leave the error to the request side
     } finally {
@@ -164,10 +158,12 @@ export default class LineClient
     }
   }
 
-  _consumeCallback = async ([job]: LineJob[]) => {
+  _executeJobCallback = this._executeJob.bind(this);
+
+  async _executeJob([job]: LineJob[]) {
     const { method, path, body } = job;
     const result = await this._request(method, path, body);
 
     return [{ success: true, result, job, error: undefined }];
-  };
+  }
 }

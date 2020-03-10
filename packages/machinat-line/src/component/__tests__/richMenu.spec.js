@@ -1,77 +1,171 @@
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
 
-import { LinkRichMenu } from '../richMenu';
+import { LinkRichMenu, UnlinkRichMenu } from '../richMenu';
 
-import { LINE_NATIVE_TYPE, ENTRY_GETTER } from '../../constant';
+import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
 import LineChannel from '../../channel';
 
-import renderHelper from './renderHelper';
+const render = element => element.type(element, () => null, '$');
 
-const render = renderHelper(() => null);
+describe('<LinkRichMenu/>', () => {
+  it('is valid native unit component with entry getter', () => {
+    expect(typeof LinkRichMenu).toBe('function');
+    expect(isNativeElement(<LinkRichMenu />)).toBe(true);
+    expect(LinkRichMenu.$$platform).toBe('line');
+  });
 
-it('is valid native unit component with entry getter', () => {
-  expect(typeof LinkRichMenu).toBe('function');
-  expect(LinkRichMenu.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(LinkRichMenu.$$namespace).toBe('Line');
-});
+  it('render ok', async () => {
+    await expect(render(<LinkRichMenu id="_RICH_MENU_ID_" />)).resolves.toEqual(
+      [
+        {
+          type: 'unit',
+          node: <LinkRichMenu id="_RICH_MENU_ID_" />,
+          value: {
+            id: '_RICH_MENU_ID_',
+            [CHANNEL_API_CALL_GETTER]: expect.any(Function),
+            [BULK_API_CALL_GETTER]: expect.any(Function),
+          },
+          path: '$',
+        },
+      ]
+    );
+  });
 
-it('render ok', async () => {
-  await expect(render(<LinkRichMenu id="_RICH_MENU_ID_" />)).resolves.toEqual([
-    {
-      type: 'unit',
-      node: <LinkRichMenu id="_RICH_MENU_ID_" />,
-      value: {
-        id: '_RICH_MENU_ID_',
-        [ENTRY_GETTER]: expect.any(Function),
+  test('channel api getter', async () => {
+    const [{ value }] = await render(<LinkRichMenu id="_RICH_MENU_ID_" />);
+
+    expect(
+      value[CHANNEL_API_CALL_GETTER](
+        new LineChannel('_CHANNEL_ID_', {
+          type: 'user',
+          userId: '_USER_ID_',
+        })
+      )
+    ).toEqual({
+      method: 'POST',
+      path: 'v2/bot/user/_USER_ID_/richmenu/_RICH_MENU_ID_',
+      body: null,
+    });
+  });
+
+  test('channel api call getter throw if type of channel is not user', async () => {
+    const [{ value }] = await render(<LinkRichMenu id="_RICH_MENU_ID_" />);
+
+    expect(() =>
+      value[CHANNEL_API_CALL_GETTER](
+        new LineChannel('_CHANNEL_ID_', {
+          type: 'room',
+          roomId: '_ROOM_ID_',
+          userId: '_USER_ID_',
+        })
+      )
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"<LinkRichMenu /> can only be delivered in a user chatting channel"`
+    );
+
+    expect(() =>
+      value[CHANNEL_API_CALL_GETTER](
+        new LineChannel('_CHANNEL_ID_', {
+          type: 'group',
+          groupId: '_GROUP_ID_',
+          userId: '_USER_ID_',
+        })
+      )
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"<LinkRichMenu /> can only be delivered in a user chatting channel"`
+    );
+  });
+
+  test('bulk api getter', async () => {
+    const [{ value }] = await render(<LinkRichMenu id="_RICH_MENU_ID_" />);
+
+    expect(value[BULK_API_CALL_GETTER](['foo', 'bar', 'baz'])).toEqual({
+      method: 'POST',
+      path: 'v2/bot/richmenu/bulk/link',
+      body: {
+        richMenuId: '_RICH_MENU_ID_',
+        userIds: ['foo', 'bar', 'baz'],
       },
-      path: '$',
-    },
-  ]);
-});
-
-test('entry getter point to the api entry for linking rich menu', async () => {
-  const [{ value }] = await render(<LinkRichMenu id="_RICH_MENU_ID_" />);
-
-  expect(
-    value[ENTRY_GETTER].call(
-      { id: '_RICH_MENU_ID_' },
-      new LineChannel('_CHANNEL_ID_', {
-        type: 'user',
-        userId: '_USER_ID_',
-      })
-    )
-  ).toEqual({
-    method: 'POST',
-    path: 'v2/bot/user/_USER_ID_/richmenu/_RICH_MENU_ID_',
+    });
   });
 });
 
-test('entry getter throw if type of channel is not user', async () => {
-  const [{ value }] = await render(<LinkRichMenu id="_RICH_MENU_ID_" />);
+describe('<UnlinkRichMenu/>', () => {
+  it('is valid native unit component with entry getter', () => {
+    expect(typeof UnlinkRichMenu).toBe('function');
+    expect(isNativeElement(<UnlinkRichMenu />)).toBe(true);
+    expect(UnlinkRichMenu.$$platform).toBe('line');
+  });
 
-  expect(() =>
-    value[ENTRY_GETTER].call(
-      { id: '_RICH_MENU_ID_' },
-      new LineChannel('_CHANNEL_ID_', {
-        type: 'room',
-        roomId: '_ROOM_ID_',
-        userId: '_USER_ID_',
-      })
-    )
-  ).toThrowErrorMatchingInlineSnapshot(
-    `"<RichMenu /> can only be delivered in a user chatting channel"`
-  );
+  it('render ok', async () => {
+    await expect(render(<UnlinkRichMenu />)).resolves.toEqual([
+      {
+        type: 'unit',
+        node: <UnlinkRichMenu />,
+        value: {
+          [CHANNEL_API_CALL_GETTER]: expect.any(Function),
+          [BULK_API_CALL_GETTER]: expect.any(Function),
+        },
+        path: '$',
+      },
+    ]);
+  });
 
-  expect(() =>
-    value[ENTRY_GETTER].call(
-      { id: '_RICH_MENU_ID_' },
-      new LineChannel('_CHANNEL_ID_', {
-        type: 'group',
-        groupId: '_GROUP_ID_',
-        userId: '_USER_ID_',
-      })
-    )
-  ).toThrowErrorMatchingInlineSnapshot(
-    `"<RichMenu /> can only be delivered in a user chatting channel"`
-  );
+  test('channel api getter', async () => {
+    const [{ value }] = await render(<UnlinkRichMenu />);
+
+    expect(
+      value[CHANNEL_API_CALL_GETTER](
+        new LineChannel('_CHANNEL_ID_', {
+          type: 'user',
+          userId: '_USER_ID_',
+        })
+      )
+    ).toEqual({
+      method: 'DELETE',
+      path: 'v2/bot/user/_USER_ID_/richmenu',
+      body: null,
+    });
+  });
+
+  test('channel api call getter throw if type of channel is not user', async () => {
+    const [{ value }] = await render(<UnlinkRichMenu />);
+
+    expect(() =>
+      value[CHANNEL_API_CALL_GETTER](
+        new LineChannel('_CHANNEL_ID_', {
+          type: 'room',
+          roomId: '_ROOM_ID_',
+          userId: '_USER_ID_',
+        })
+      )
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"<UnlinkRichMenu /> can only be delivered in a user chatting channel"`
+    );
+
+    expect(() =>
+      value[CHANNEL_API_CALL_GETTER](
+        new LineChannel('_CHANNEL_ID_', {
+          type: 'group',
+          groupId: '_GROUP_ID_',
+          userId: '_USER_ID_',
+        })
+      )
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"<UnlinkRichMenu /> can only be delivered in a user chatting channel"`
+    );
+  });
+
+  test('bulk api getter', async () => {
+    const [{ value }] = await render(<UnlinkRichMenu />);
+
+    expect(value[BULK_API_CALL_GETTER](['foo', 'bar', 'baz'])).toEqual({
+      method: 'POST',
+      path: 'v2/bot/richmenu/bulk/unlink',
+      body: {
+        userIds: ['foo', 'bar', 'baz'],
+      },
+    });
+  });
 });

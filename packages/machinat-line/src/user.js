@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatUser, MachinatUserProfile } from 'machinat/types';
+import type { MachinatUser, MachinatUserProfile } from '@machinat/core/types';
 import { LINE } from './constant';
 import type { RawLineUserProfile } from './types';
 

@@ -1,8 +1,6 @@
 import { asPartComponent } from '../utils';
 
-const PostbackAction = async ({
-  props: { label, data, text, displayText },
-}) => ({
+const PostbackAction = async ({ label, data, text, displayText }) => ({
   type: 'postback',
   data,
   label,
@@ -10,14 +8,14 @@ const PostbackAction = async ({
 });
 const __PostbackAction = asPartComponent(PostbackAction);
 
-const MessageAction = async ({ props: { label, text } }) => ({
+const MessageAction = async ({ label, text }) => ({
   type: 'message',
   label,
   text,
 });
 const __MessageAction = asPartComponent(MessageAction);
 
-const URIAction = async ({ props: { label, uri } }) => ({
+const URIAction = async ({ label, uri }) => ({
   type: 'uri',
   label,
   uri,
@@ -38,36 +36,38 @@ const dateToStringByMode = (mode, d) =>
     : fullHourMinute(d);
 
 const DateTimePickerAction = async ({
-  props: { label, data, mode, date, time, initial, min, max },
+  label,
+  data,
+  mode = 'datetime',
+  initial,
+  min,
+  max,
 }) => {
-  const modeRefined =
-    mode || (!date === !time ? 'datetime' : date ? 'date' : 'time');
-
   return {
     type: 'datetimepicker',
     label,
     data,
-    mode: modeRefined,
-    initial: dateToStringByMode(modeRefined, initial),
-    max: dateToStringByMode(modeRefined, max),
-    min: dateToStringByMode(modeRefined, min),
+    mode,
+    initial: dateToStringByMode(mode, initial),
+    max: dateToStringByMode(mode, max),
+    min: dateToStringByMode(mode, min),
   };
 };
 const __DateTimePickerAction = asPartComponent(DateTimePickerAction);
 
-const CameraAction = async ({ props: { label } }) => ({
+const CameraAction = async ({ label }) => ({
   type: 'camera',
   label,
 });
 const __CameraAction = asPartComponent(CameraAction);
 
-const CameraRollAction = async ({ props: { label } }) => ({
+const CameraRollAction = async ({ label }) => ({
   type: 'cameraRoll',
   label,
 });
 const __CameraRollAction = asPartComponent(CameraRollAction);
 
-const LocationAction = async ({ props: { label } }) => ({
+const LocationAction = async ({ label }) => ({
   type: 'location',
   label,
 });

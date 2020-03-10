@@ -1,33 +1,33 @@
 // @flow
-import { compose } from 'machinat-utility';
+import compose from '@machinat/core/utils/compose';
 import {
-  asNative,
-  asNamespace,
-  wrapSinglePartSegment,
-  wrapSingleUnitSegment,
-} from 'machinat-renderer';
+  annotateNativeComponent,
+  wrapContainerComponent,
+  wrapPartComponent,
+  wrapUnitComponent,
+} from '@machinat/core/renderer';
 import type { LineSegmentValue } from './types';
 
-import { LINE_NAMESPACE, LINE_NATIVE_TYPE, ENTRY_GETTER } from './constant';
-
-const { hasOwnProperty } = Object.prototype;
-
-export const isMessageValue = (value: string | LineSegmentValue) =>
-  typeof value === 'string' || !hasOwnProperty.call(value, ENTRY_GETTER);
+import { LINE, CHANNEL_API_CALL_GETTER } from './constant';
 
 export const asContainerComponent = compose<any>(
-  asNative(LINE_NATIVE_TYPE),
-  asNamespace(LINE_NAMESPACE)
+  annotateNativeComponent(LINE),
+  wrapContainerComponent
 );
 
 export const asPartComponent = compose<any>(
-  asNative(LINE_NATIVE_TYPE),
-  asNamespace(LINE_NAMESPACE),
-  wrapSinglePartSegment
+  annotateNativeComponent(LINE),
+
+  wrapPartComponent
 );
 
 export const asUnitComponent = compose<any>(
-  asNative(LINE_NATIVE_TYPE),
-  asNamespace(LINE_NAMESPACE),
-  wrapSingleUnitSegment
+  annotateNativeComponent(LINE),
+  wrapUnitComponent
 );
+
+export const isMessageValue = (
+  value: string | LineSegmentValue
+): boolean %checks =>
+  typeof value === 'string' ||
+  !Object.prototype.hasOwnProperty.call(value, CHANNEL_API_CALL_GETTER);

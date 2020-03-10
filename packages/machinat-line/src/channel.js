@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatChannel } from 'machinat/types';
+import type { MachinatChannel } from '@machinat/core/types';
 import type { LineSource } from './types';
 import { LINE } from './constant';
 

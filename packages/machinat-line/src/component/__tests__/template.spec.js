@@ -1,5 +1,6 @@
-import Machinat from 'machinat';
-import { map } from 'machinat-utility';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
+import map from '@machinat/core/iterator/map';
 
 import {
   ButtonTemplate,
@@ -10,8 +11,6 @@ import {
   ImageCarouselTemplate,
 } from '../template';
 import { URIAction } from '../action';
-import { LINE_NATIVE_TYPE } from '../../constant';
-import renderHelper from './renderHelper';
 
 const renderInner = async prop => {
   const renderings = map(prop, (node, path) =>
@@ -20,15 +19,15 @@ const renderInner = async prop => {
 
   return renderings ? [].concat(...(await Promise.all(renderings))) : null;
 };
-const render = renderHelper(renderInner);
+const render = element => element.type(element, renderInner, '$');
 
 test.each([CarouselItem, ImageCarouselItem].map(C => [C.name, C]))(
   '%s is valid native component',
   (_, Item) => {
     expect(typeof Item).toBe('function');
 
-    expect(Item.$$native).toBe(LINE_NATIVE_TYPE);
-    expect(Item.$$namespace).toBe('Line');
+    expect(isNativeElement(<Item />)).toBe(true);
+    expect(Item.$$platform).toBe('line');
   }
 );
 
@@ -42,8 +41,8 @@ test.each(
 )('%s is valid native unit component', (_, Template) => {
   expect(typeof Template).toBe('function');
 
-  expect(Template.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Template.$$namespace).toBe('Line');
+  expect(isNativeElement(<Template />)).toBe(true);
+  expect(Template.$$platform).toBe('line');
 });
 
 test.each(

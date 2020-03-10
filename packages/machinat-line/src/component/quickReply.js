@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { valuesOfAssertedTypes } from 'machinat-utility';
+import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
 
 import { asPartComponent } from '../utils';
 
@@ -9,7 +9,7 @@ const getActionValues = valuesOfAssertedTypes(() => [
   ...Object.values(actionModule),
 ]);
 
-const QuickReply = async ({ props: { imageURL, action } }, render) => {
+const QuickReply = async ({ imageURL, action }, render) => {
   const actionSegments = await render(action, '.action');
   const actionValues = getActionValues(actionSegments);
 

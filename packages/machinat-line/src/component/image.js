@@ -1,11 +1,14 @@
 import invariant from 'invariant';
-import { valuesOfAssertedTypes } from 'machinat-utility';
+import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
 
 import { asPartComponent, asUnitComponent } from '../utils';
 import { URIAction, MessageAction } from './action';
 
 const Image = async ({
-  props: { url, originalContentUrl, previewURL, previewImageUrl },
+  url,
+  originalContentUrl,
+  previewURL,
+  previewImageUrl,
 }) => ({
   type: 'image',
   originalContentUrl: originalContentUrl || url,
@@ -13,7 +16,7 @@ const Image = async ({
 });
 const __Image = asUnitComponent(Image);
 
-const Sticker = async ({ props: { stickerId, packageId } }) => ({
+const Sticker = async ({ stickerId, packageId }) => ({
   type: 'sticker',
   packageId,
   stickerId,
@@ -25,10 +28,7 @@ const getImageMapActionValues = valuesOfAssertedTypes(() => [
   MessageAction,
 ]);
 
-const ImageMapArea = async (
-  { props: { action, x, y, width, height } },
-  render
-) => {
+const ImageMapArea = async ({ action, x, y, width, height }, render) => {
   const actionSegments = await render(action, '.action');
   const actionValues = getImageMapActionValues(actionSegments);
 
@@ -71,18 +71,17 @@ const getURIActionValues = valuesOfAssertedTypes(() => [URIAction]);
 
 const ImageMapVideoArea = async (
   {
-    props: {
-      url,
-      originalContentUrl,
-      previewURL,
-      previewImageUrl,
-      x,
-      y,
-      width,
-      height,
-      action,
-    },
+    url,
+    originalContentUrl,
+    previewURL,
+    previewImageUrl,
+    x,
+    y,
+    width,
+    height,
+    action,
   },
+
   render
 ) => {
   const actionSegments = await render(action, '.action');
@@ -109,7 +108,7 @@ const getVideoAreaValues = valuesOfAssertedTypes(() => [__ImageMapVideoArea]);
 const getActionAreaValues = valuesOfAssertedTypes(() => [__ImageMapArea]);
 
 const ImageMap = async (
-  { props: { baseURL, baseUrl, alt, altText, height, children, video } },
+  { baseURL, baseUrl, alt, altText, height, children, video },
   render
 ) => {
   const videoSegments = await render(video, '.video');

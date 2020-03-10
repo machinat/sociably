@@ -1,5 +1,6 @@
 import invariant from 'invariant';
-import { joinTextualSegments, valuesOfAssertedTypes } from 'machinat-utility';
+import joinTextualSegments from '@machinat/core/utils/joinTextualSegments';
+import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
 
 import { asPartComponent, asUnitComponent } from '../utils';
 import * as actionsModule from './action';
@@ -9,7 +10,7 @@ const getActionValues = valuesOfAssertedTypes(() => [
 ]);
 
 const FlexButton = async (
-  { props: { action, flex, margin, height, style, color, gravity } },
+  { action, flex, margin, height, style, color, gravity },
   render
 ) => {
   const actionSegments = await render(action, '.action');
@@ -39,7 +40,7 @@ const FILLER_TYPE_VLUES = { type: 'filler' };
 const FlexFiller = async () => FILLER_TYPE_VLUES;
 const __FlexFiller = asPartComponent(FlexFiller);
 
-const FlexIcon = ({ props: { url, margin, size, aspectRatio } }) => ({
+const FlexIcon = ({ url, margin, size, aspectRatio }) => ({
   type: 'icon',
   url,
   margin,
@@ -50,18 +51,16 @@ const __FlexIcon = asPartComponent(FlexIcon);
 
 const FlexImage = async (
   {
-    props: {
-      url,
-      flex,
-      margin,
-      align,
-      gravity,
-      size,
-      aspectRatio,
-      aspectMode,
-      backgroundColor,
-      action,
-    },
+    url,
+    flex,
+    margin,
+    align,
+    gravity,
+    size,
+    aspectRatio,
+    aspectMode,
+    backgroundColor,
+    action,
   },
   render
 ) => {
@@ -84,14 +83,14 @@ const FlexImage = async (
 };
 const __FlexImage = asPartComponent(FlexImage);
 
-const FlexSeparator = ({ props: { margin, color } }) => ({
+const FlexSeparator = ({ margin, color }) => ({
   type: 'separator',
   margin,
   color,
 });
 const __FlexSeparator = asPartComponent(FlexSeparator);
 
-const FlexSpacer = async ({ props: { size } }) => ({
+const FlexSpacer = async ({ size }) => ({
   type: 'spacer',
   size,
 });
@@ -99,20 +98,19 @@ const __FlexSpacer = asPartComponent(FlexSpacer);
 
 const FlexText = async (
   {
-    props: {
-      children,
-      flex,
-      margin,
-      size,
-      align,
-      gravity,
-      wrap,
-      maxLines,
-      weight,
-      color,
-      action,
-    },
+    children,
+    flex,
+    margin,
+    size,
+    align,
+    gravity,
+    wrap,
+    maxLines,
+    weight,
+    color,
+    action,
   },
+
   render
 ) => {
   const textSegments = await render(children, '.children');
@@ -151,7 +149,7 @@ const __FlexText = asPartComponent(FlexText);
 let getBoxContentValue;
 
 const FlexBox = async (
-  { props: { children, layout, flex, spacing, margin, action } },
+  { children, layout, flex, spacing, margin, action },
   render
 ) => {
   const contentSegments = await render(children, '.children');
@@ -193,7 +191,7 @@ const createBlockComponent = (section, valueFetcher) => {
 
   const wrapper = {
     [tagName]: async (
-      { props: { children, backgroundColor, separator, separatorColor } },
+      { children, backgroundColor, separator, separatorColor },
       render
     ) => {
       const contentSegments = await render(children, '.children');
@@ -239,10 +237,7 @@ const getBlockValues = valuesOfAssertedTypes(() => [
   __FlexFooter,
 ]);
 
-const FlexBubbleContainer = async (
-  { props: { children, rightToLeft } },
-  render
-) => {
+const FlexBubbleContainer = async ({ children, rightToLeft }, render) => {
   const bubbleObject = {
     type: 'bubble',
     direction: rightToLeft ? 'rtl' : 'ltr',
@@ -278,7 +273,7 @@ const getBubbleContainerValues = valuesOfAssertedTypes(() => [
   __FlexBubbleContainer,
 ]);
 
-const FlexCarouselContainer = async ({ props: { children } }, render) => {
+const FlexCarouselContainer = async ({ children }, render) => {
   const contentSegments = await render(children, '.children');
 
   return {
@@ -293,7 +288,7 @@ const getContainerValues = valuesOfAssertedTypes(() => [
   __FlexCarouselContainer,
 ]);
 
-const FlexMessage = async ({ props: { children, alt, altText } }, render) => {
+const FlexMessage = async ({ children, alt, altText }, render) => {
   const contentSegments = await render(children, '.children');
   const contentValues = getContainerValues(contentSegments);
 

@@ -1,108 +1,133 @@
 // @flow
-import invariant from 'invariant';
-import { formatNode, filterSymbolKeys } from 'machinat-utility';
-
-import type { OutputableSegment } from 'machinat-base/types';
+import type { DispatchableSegment } from '@machinat/core/engine/types';
 import type LineChannel from './channel';
 import type {
   LineSegmentValue,
+  LineMessageSegmentValue,
   LineComponent,
   LineJob,
-  LineSendOptions,
 } from './types';
 import {
   PATH_PUSH,
   PATH_REPLY,
   PATH_MULTICAST,
-  ENTRY_GETTER,
+  CHANNEL_API_CALL_GETTER,
+  BULK_API_CALL_GETTER,
 } from './constant';
-import { isMessageValue } from './utils';
 
-export const createChatJobs = (
+const objectHasOwnProperty = (obj, prop) =>
+  Object.prototype.hasOwnProperty.call(obj, prop);
+
+const createMessageJob = (
   channel: LineChannel,
-  segments: OutputableSegment<LineSegmentValue, LineComponent>[],
-  options?: LineSendOptions
-) => {
-  const replyToken = options && options.replyToken;
+  messages: LineMessageSegmentValue[],
+  replyToken: void | string
+) => ({
+  method: 'POST',
+  path: replyToken ? PATH_REPLY : PATH_PUSH,
+  channelUid: channel.uid,
+  body: replyToken
+    ? { replyToken: (replyToken: string), messages }
+    : { to: channel.sourceId, messages },
+});
 
-  const jobs: LineJob[] = [];
-  let messagesBuffer: LineSegmentValue[] = [];
+export const chatJobsMaker = (replyToken: void | string) => {
+  let messagingJobsCount = 0;
 
-  for (let i = 0; i < segments.length; i += 1) {
-    const { value } = segments[i];
+  return (
+    channel: LineChannel,
+    segments: DispatchableSegment<LineSegmentValue, LineComponent>[]
+  ) => {
+    const jobs: LineJob[] = [];
+    let messagesBuffer: LineMessageSegmentValue[] = [];
 
-    const isMesssage = isMessageValue(value);
+    for (let i = 0; i < segments.length; i += 1) {
+      const { value } = segments[i];
 
-    // push message to buffer
-    if (isMesssage) {
-      messagesBuffer.push(
-        typeof value === 'string'
-          ? { type: 'text', text: (value: string) }
-          : filterSymbolKeys(value)
+      // use dynamic api call getter if existed
+      if (objectHasOwnProperty(value, CHANNEL_API_CALL_GETTER)) {
+        // push messages job before the non-message job
+        if (messagesBuffer.length > 0) {
+          jobs.push(createMessageJob(channel, messagesBuffer, replyToken));
+          messagesBuffer = [];
+          messagingJobsCount += 1;
+        }
+
+        const { method, path, body } = value[CHANNEL_API_CALL_GETTER](channel);
+        jobs.push({
+          method,
+          path,
+          channelUid: channel.uid,
+          body,
+        });
+      } else {
+        messagesBuffer.push(
+          typeof value === 'string'
+            ? { type: 'text', text: (value: string) }
+            : value
+        );
+
+        // empty messages buffer if accumlated to 5 or at the end of loop
+        if (messagesBuffer.length === 5 || i === segments.length - 1) {
+          jobs.push(createMessageJob(channel, messagesBuffer, replyToken));
+          messagesBuffer = [];
+          messagingJobsCount += 1;
+        }
+      }
+    }
+
+    if (replyToken && messagingJobsCount > 1) {
+      throw new RangeError(
+        'more then 1 messaging request rendered while using replyToken'
       );
     }
 
-    // if non-message met, loop ended or messagesBuffer accumulated up to 5
-    // move buffered messages into job
-    if (
-      messagesBuffer.length > 0 &&
-      (!isMesssage || messagesBuffer.length === 5 || i === segments.length - 1)
-    ) {
-      jobs.push({
-        method: 'POST',
-        path: replyToken ? PATH_REPLY : PATH_PUSH,
-        channelUid: channel.uid,
-        body: replyToken
-          ? { replyToken: (replyToken: string), messages: messagesBuffer }
-          : { to: (channel.sourceId: string), messages: messagesBuffer },
-      });
-      messagesBuffer = [];
-    }
-
-    // if non message met, use value as body directly and get dynamic entry
-    if (!isMesssage) {
-      const { method, path } = (value: any)[ENTRY_GETTER](channel);
-
-      jobs.push({
-        method,
-        path,
-        channelUid: channel.uid,
-        body: filterSymbolKeys(value),
-      });
-    }
-  }
-
-  return jobs;
+    return jobs;
+  };
 };
 
-export const createMulticastJobs = (
-  targets: string[],
-  segments: OutputableSegment<LineSegmentValue, LineComponent>[]
+export const multicastJobsMaker = (targets: string[]) => (
+  _: null,
+  segments: DispatchableSegment<LineSegmentValue, LineComponent>[]
 ) => {
   const jobs: LineJob[] = [];
   let messages: LineSegmentValue[] = [];
 
   for (let i = 0; i < segments.length; i += 1) {
-    const { node, value } = segments[i];
+    const { value } = segments[i];
 
-    invariant(
-      !hasOwnProperty.call(value, ENTRY_GETTER),
-      `${formatNode(node)} is invalid to be delivered in multicast`
-    );
+    if (objectHasOwnProperty(value, BULK_API_CALL_GETTER)) {
+      if (messages.length > 0) {
+        jobs.push({
+          method: 'POST',
+          path: PATH_MULTICAST,
+          body: { to: targets, messages },
+        });
+        messages = [];
+      }
 
-    messages.push(
-      typeof value === 'string'
-        ? { type: 'text', text: (value: string) }
-        : value
-    );
-
-    if (messages.length === 5 || i === segments.length - 1) {
+      const { method, path, body } = value[BULK_API_CALL_GETTER](targets);
       jobs.push({
-        method: 'POST',
-        path: PATH_MULTICAST,
-        body: { to: targets, messages },
+        method,
+        path,
+        channelUid: undefined,
+        body,
       });
-      messages = [];
+    } else {
+      messages.push(
+        typeof value === 'string'
+          ? { type: 'text', text: (value: string) }
+          : value
+      );
+
+      if (messages.length === 5 || i === segments.length - 1) {
+        jobs.push({
+          method: 'POST',
+          path: PATH_MULTICAST,
+          body: { to: targets, messages },
+        });
+        messages = [];
+      }
     }
   }
 

@@ -1,4 +1,4 @@
-import { valuesOfAssertedTypes } from 'machinat-utility';
+import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
 
 import { asPartComponent, asUnitComponent } from '../utils';
 import * as actionModule from './action';
@@ -9,19 +9,17 @@ const getActionValues = valuesOfAssertedTypes(() => [
 
 const ButtonTemplate = async (
   {
-    props: {
-      children,
-      defaultAction,
-      alt,
-      altText,
-      imageURL,
-      thumbnailImageUrl,
-      imageAspectRatio,
-      imageSize,
-      imageBackgroundColor,
-      title,
-      text,
-    },
+    children,
+    defaultAction,
+    alt,
+    altText,
+    imageURL,
+    thumbnailImageUrl,
+    imageAspectRatio,
+    imageSize,
+    imageBackgroundColor,
+    title,
+    text,
   },
   render
 ) => {
@@ -48,10 +46,7 @@ const ButtonTemplate = async (
 };
 const __ButtonTemplate = asUnitComponent(ButtonTemplate);
 
-const ConfirmTemplate = async (
-  { props: { children, alt, altText, text } },
-  render
-) => {
+const ConfirmTemplate = async ({ children, alt, altText, text }, render) => {
   const actionSegments = await render(children, '.children');
 
   return {
@@ -68,15 +63,13 @@ const __ConfirmTemplate = asUnitComponent(ConfirmTemplate);
 
 const CarouselItem = async (
   {
-    props: {
-      children,
-      defaultAction,
-      imageURL,
-      thumbnailImageUrl,
-      imageBackgroundColor,
-      title,
-      text,
-    },
+    children,
+    defaultAction,
+    imageURL,
+    thumbnailImageUrl,
+    imageBackgroundColor,
+    title,
+    text,
   },
   render
 ) => {
@@ -99,7 +92,7 @@ const __CarouselItem = asPartComponent(CarouselItem);
 const getCarouselItemValues = valuesOfAssertedTypes(() => [__CarouselItem]);
 
 const CarouselTemplate = async (
-  { props: { children, alt, altText, imageAspectRatio, imageSize } },
+  { children, alt, altText, imageAspectRatio, imageSize },
   render
 ) => {
   const columnSegments = await render(children, '.children');
@@ -117,10 +110,7 @@ const CarouselTemplate = async (
 };
 const __CarouselTemplate = asUnitComponent(CarouselTemplate);
 
-const ImageCarouselItem = async (
-  { props: { url, imageUrl, action } },
-  render
-) => {
+const ImageCarouselItem = async ({ url, imageUrl, action }, render) => {
   const actionSegments = await render(action, '.action');
   const actionValues = getActionValues(actionSegments);
 
@@ -136,10 +126,7 @@ const getImageCarouselItemValues = valuesOfAssertedTypes(() => [
   __ImageCarouselItem,
 ]);
 
-const ImageCarouselTemplate = async (
-  { props: { children, alt, altText } },
-  render
-) => {
+const ImageCarouselTemplate = async ({ children, alt, altText }, render) => {
   const columnSegments = await render(children, '.children');
 
   return {

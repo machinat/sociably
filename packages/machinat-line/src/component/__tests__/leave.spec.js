@@ -1,17 +1,17 @@
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
 
-import { LINE_NATIVE_TYPE, ENTRY_GETTER } from '../../constant';
+import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
 import LineChannel from '../../channel';
 import { Leave } from '../leave';
-import renderHelper from './renderHelper';
 
-const render = renderHelper(() => null);
+const render = element => element.type(element, () => null, '$');
 
 it('is valid native unit component with entry getter', () => {
   expect(typeof Leave).toBe('function');
 
-  expect(Leave.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Leave.$$namespace).toBe('Line');
+  expect(isNativeElement(<Leave />)).toBe(true);
+  expect(Leave.$$platform).toBe('line');
 });
 
 it('render ok with entry getter', async () => {
@@ -19,16 +19,19 @@ it('render ok with entry getter', async () => {
     {
       type: 'unit',
       node: <Leave />,
-      value: { [ENTRY_GETTER]: expect.any(Function) },
+      value: {
+        [CHANNEL_API_CALL_GETTER]: expect.any(Function),
+        [BULK_API_CALL_GETTER]: expect.any(Function),
+      },
       path: '$',
     },
   ]);
 });
 
-test('entry getter point to the api entry for leaving', async () => {
+test('channel api call getter', async () => {
   const [{ value }] = await render(<Leave />);
   expect(
-    value[ENTRY_GETTER](
+    value[CHANNEL_API_CALL_GETTER](
       new LineChannel('_CHANNEL_ID_', {
         type: 'group',
         groupId: '_GROUP_ID_',
@@ -38,10 +41,11 @@ test('entry getter point to the api entry for leaving', async () => {
   ).toEqual({
     method: 'POST',
     path: 'v2/bot/group/_GROUP_ID_/leave',
+    body: null,
   });
 
   expect(
-    value[ENTRY_GETTER](
+    value[CHANNEL_API_CALL_GETTER](
       new LineChannel('_CHANNEL_ID_', {
         type: 'room',
         roomId: '_ROOM_ID_',
@@ -51,20 +55,34 @@ test('entry getter point to the api entry for leaving', async () => {
   ).toEqual({
     method: 'POST',
     path: 'v2/bot/room/_ROOM_ID_/leave',
+    body: null,
   });
 });
 
-test('entry getter throw if type of channel is user', async () => {
+test('channel api call getter throw if type of channel is user', async () => {
   const [{ value }] = await render(<Leave />);
 
   expect(() =>
-    value[ENTRY_GETTER](
+    value[CHANNEL_API_CALL_GETTER](
       new LineChannel('_CHANNEL_ID_', {
         type: 'user',
         userId: '_USER_ID_',
       })
     )
   ).toThrowErrorMatchingInlineSnapshot(
-    `"<Leave /> should be only used in a group or room channel"`
+    `"<Leave /> should cannot be used within an user channel"`
   );
+});
+
+test('bulk api call getter throw', async () => {
+  const [{ value }] = await render(<Leave />);
+
+  expect(() =>
+    value[BULK_API_CALL_GETTER](
+      new LineChannel('_CHANNEL_ID_', {
+        type: 'user',
+        userId: '_USER_ID_',
+      })
+    )
+  ).toThrowErrorMatchingInlineSnapshot(`"cannot <Leave/> using multicast api"`);
 });

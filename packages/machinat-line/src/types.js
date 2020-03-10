@@ -1,11 +1,25 @@
 // @flow
-import type { MachinatNativeComponent, MachinatEvent } from 'machinat/types';
-import type { BotPlugin } from 'machinat-base/types';
-import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
+import type {
+  NativeComponent,
+  MachinatEvent,
+  EventContext,
+  EventMiddleware,
+  DispatchMiddleware,
+  PlatformMounter,
+} from '@machinat/core/types';
+import type {
+  DispatchFrame,
+  DispatchResponse,
+} from '@machinat/core/engine/types';
+import type { ServiceContainer } from '@machinat/core/service/types';
+import type { WebhookMetadata } from '@machinat/http/webhook/types';
 import type LineBot from './bot';
 import type LineChannel from './channel';
 import type { LineUser } from './user';
-import typeof { ENTRY_GETTER } from './constant';
+import typeof {
+  CHANNEL_API_CALL_GETTER,
+  BULK_API_CALL_GETTER,
+} from './constant';
 
 type UserSource = {
   type: 'user',
@@ -50,6 +64,14 @@ export type LineEvent = {|
 
 declare var e: LineEvent;
 (e: MachinatEvent<LineRawEvent>);
+
+export type LineEventContext = EventContext<
+  LineChannel,
+  LineUser,
+  LineEvent,
+  WebhookMetadata,
+  LineBot
+>;
 
 export type LineWebhookRequestBody = {|
   destination: string,
@@ -129,21 +151,24 @@ export type TemplateSegmentValue = {
   template: Object, // TODO: type the template object
 } & QuickRepliable;
 
-export type EntryGetterFn = (
-  channel: LineChannel
-) => {| method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string |};
-
-type EntryGattable = {
-  [ENTRY_GETTER]: EntryGetterFn,
+type DynamicAPICallGettable = {
+  [BULK_API_CALL_GETTER]: (
+    ids: string[]
+  ) => {|
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    path: string,
+    body: ?Object,
+  |},
+  [CHANNEL_API_CALL_GETTER]: (
+    channel: LineChannel
+  ) => {|
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    path: string,
+    body: ?Object,
+  |},
 };
 
-export type LinkRichMenuSegmentValue = {|
-  id: string,
-|} & EntryGattable;
-
-export type LeaveSegmentValue = EntryGattable;
-
-export type LineSegmentValue =
+export type LineMessageSegmentValue =
   | TextSegmentValue
   | StickerSegmentValue
   | ImageSegmentValue
@@ -151,29 +176,25 @@ export type LineSegmentValue =
   | AudioSegmentValue
   | LocationSegmentValue
   | ImagemapSegmentValue
-  | TemplateSegmentValue
-  | LinkRichMenuSegmentValue
-  | LeaveSegmentValue;
+  | TemplateSegmentValue;
 
-export type LineComponent = MachinatNativeComponent<LineSegmentValue>;
+export type LineSegmentValue = LineMessageSegmentValue | DynamicAPICallGettable;
 
-type MessagesBodyWithoutTarget = {|
-  messages: LineSegmentValue[],
-|};
+export type LineComponent = NativeComponent<any, LineSegmentValue>;
 
 type ReplyRequestBody = {|
   replyToken: string,
-  ...MessagesBodyWithoutTarget,
+  messages: LineMessageSegmentValue[],
 |};
 
 type PushRequestBody = {|
   to: string,
-  ...MessagesBodyWithoutTarget,
+  messages: LineMessageSegmentValue[],
 |};
 
 type MulticastRequestBody = {|
   to: string[],
-  ...MessagesBodyWithoutTarget,
+  messages: LineMessageSegmentValue[],
 |};
 
 export type LineMessageRequestBody =
@@ -183,38 +204,39 @@ export type LineMessageRequestBody =
 
 export type LineJob = {|
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
-  body?: LineMessageRequestBody | Object,
+  body: null | LineMessageRequestBody | Object,
   path: string,
   channelUid?: string,
 |};
 
 export type LineAPIResult = Object;
 
-export type LineSendOptions = {
-  replyToken?: string,
-};
+export type LineDispatchResponse = DispatchResponse<LineJob, LineAPIResult>;
 
-export type LineBotPlugin = BotPlugin<
-  LineChannel,
-  ?LineUser,
-  LineEvent,
-  WebhookMetadata,
-  void,
-  LineSegmentValue,
-  LineComponent,
+export type LineDispatchFrame = DispatchFrame<LineChannel, LineJob, LineBot>;
+
+export type LineEventMiddleware = EventMiddleware<LineEventContext, null>;
+export type LineDispatchMiddleware = DispatchMiddleware<
   LineJob,
-  LineAPIResult,
-  LineSendOptions,
-  LineBot
+  LineDispatchFrame,
+  LineAPIResult
 >;
 
-export type LineBotOptions = {
+export type LinePlatformConfigs = {
+  webhookPath: string,
   channelId: string,
   channelSecret?: string,
-  shouldValidateRequest: boolean,
+  shouldValidateRequest?: boolean,
   accessToken: string,
-  connectionCapicity: number,
-  plugins?: LineBotPlugin[],
+  connectionCapicity?: number,
+  eventMiddlewares?: (
+    | LineEventMiddleware
+    | ServiceContainer<LineEventMiddleware>
+  )[],
+  dispatchMiddlewares?: (
+    | LineDispatchMiddleware
+    | ServiceContainer<LineDispatchMiddleware>
+  )[],
 };
 
 export type RawLineUserProfile = {
@@ -239,3 +261,11 @@ export type LIFFCredential = {|
   version: string,
   isInClient: boolean,
 |};
+
+export type LinePlatformMounter = PlatformMounter<
+  LineEventContext,
+  null,
+  LineJob,
+  LineDispatchFrame,
+  LineAPIResult
+>;

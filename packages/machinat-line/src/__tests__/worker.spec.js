@@ -1,6 +1,6 @@
 import moxy from 'moxy';
 import nock from 'nock';
-import Queue from 'machinat-queue';
+import Queue from '@machinat/core/queue';
 import LineWorker from '../worker';
 
 nock.disableNetConnect();
@@ -22,12 +22,8 @@ beforeEach(() => {
   queue = new Queue();
 });
 
-it('makes calls to api ok', async () => {
-  const client = new LineWorker({
-    accessToken,
-    useReplyAPI: false,
-    connectionCapicity: 10,
-  });
+it('makes calls to api', async () => {
+  const client = new LineWorker(accessToken, 10);
 
   const pathSpy = moxy(() => true);
   const bodySpy = moxy(() => true);
@@ -63,11 +59,7 @@ it('makes calls to api ok', async () => {
 });
 
 it('throw if connection error happen', async () => {
-  const client = new LineWorker({
-    accessToken,
-    useReplyAPI: false,
-    connectionCapicity: 10,
-  });
+  const client = new LineWorker(accessToken, 10);
 
   const scope1 = lineAPI.post('/v2/bot/message/push').reply(200, {});
   const scope2 = lineAPI
@@ -104,11 +96,7 @@ it('throw if connection error happen', async () => {
 });
 
 it('throw if api error happen', async () => {
-  const client = new LineWorker({
-    accessToken,
-    useReplyAPI: false,
-    connectionCapicity: 10,
-  });
+  const client = new LineWorker(accessToken, 10);
 
   const scope1 = lineAPI.post('/v2/bot/message/push').reply(200, {});
   const scope2 = lineAPI.post('/v2/bot/message/push').reply(400, {
@@ -154,12 +142,8 @@ it('throw if api error happen', async () => {
   expect(scope2.isDone()).toBe(true);
 });
 
-it('sequently excute jobs of the identical channel', async () => {
-  const client = new LineWorker({
-    accessToken,
-    useReplyAPI: false,
-    connectionCapicity: 10,
-  });
+it('sequently excute jobs within the same identical channel', async () => {
+  const client = new LineWorker(accessToken, 10);
 
   const bodySpy = moxy(() => true);
   const msgScope = lineAPI
@@ -170,74 +154,182 @@ it('sequently excute jobs of the identical channel', async () => {
 
   client.start(queue);
 
-  const promise = expect(
-    queue.executeJobs([
-      {
-        method: 'POST',
-        path: 'v2/bot/message/push',
-        channelUid: 'foo',
-        body: { id: 1 },
-      },
-      {
-        method: 'POST',
-        path: 'v2/bot/message/push',
-        channelUid: 'bar',
-        body: { id: 2 },
-      },
-      {
-        method: 'POST',
-        path: 'v2/bot/message/push',
-        channelUid: 'baz',
-        body: { id: 3 },
-      },
-      {
-        method: 'POST',
-        path: 'v2/bot/message/reply',
-        channelUid: 'foo',
-        body: { id: 4 },
-      },
-      {
-        method: 'POST',
-        path: 'v2/bot/message/reply',
-        channelUid: 'bar',
-        body: { id: 5 },
-      },
-      {
-        method: 'POST',
-        path: 'v2/bot/message/reply',
-        channelUid: 'baz',
-        body: { id: 6 },
-      },
-      {
-        method: 'POST',
-        path: 'v2/bot/message/push',
-        channelUid: 'foo',
-        body: { id: 7 },
-      },
-      {
-        method: 'POST',
-        path: 'v2/bot/message/push',
-        channelUid: 'bar',
-        body: { id: 8 },
-      },
-      {
-        method: 'POST',
-        path: 'v2/bot/message/push',
-        channelUid: 'baz',
-        body: { id: 9 },
-      },
-    ])
-  ).resolves.toMatchSnapshot();
+  const executePromise = queue.executeJobs([
+    {
+      method: 'POST',
+      path: 'v2/bot/message/push',
+      channelUid: 'foo',
+      body: { id: 1 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/push',
+      channelUid: 'foo',
+      body: { id: 2 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/push',
+      channelUid: 'bar',
+      body: { id: 3 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/reply',
+      channelUid: 'bar',
+      body: { id: 4 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/reply',
+      channelUid: 'baz',
+      body: { id: 5 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/reply',
+      channelUid: 'baz',
+      body: { id: 6 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/push',
+      channelUid: 'foo',
+      body: { id: 7 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/push',
+      channelUid: 'bar',
+      body: { id: 8 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/push',
+      channelUid: 'baz',
+      body: { id: 9 },
+    },
+  ]);
 
-  for (let i = 0; i < 3; i += 1) {
+  for (let i = 1; i <= 3; i += 1) {
     await delay(100); // eslint-disable-line no-await-in-loop
-    expect(bodySpy.mock).toHaveBeenCalledTimes(3 * i + 3);
 
-    expect(bodySpy.mock.calls[3 * i].args[0]).toEqual({ id: 3 * i + 1 });
-    expect(bodySpy.mock.calls[3 * i + 1].args[0]).toEqual({ id: 3 * i + 2 });
-    expect(bodySpy.mock.calls[3 * i + 2].args[0]).toEqual({ id: 3 * i + 3 });
+    if (i === 1) {
+      expect(bodySpy.mock).toHaveBeenCalledTimes(3);
+      expect(bodySpy.mock.calls[0].args[0]).toEqual({ id: 1 });
+      expect(bodySpy.mock.calls[1].args[0]).toEqual({ id: 3 });
+      expect(bodySpy.mock.calls[2].args[0]).toEqual({ id: 5 });
+    } else if (i === 2) {
+      expect(bodySpy.mock).toHaveBeenCalledTimes(6);
+      expect(bodySpy.mock.calls[3].args[0]).toEqual({ id: 2 });
+      expect(bodySpy.mock.calls[4].args[0]).toEqual({ id: 4 });
+      expect(bodySpy.mock.calls[5].args[0]).toEqual({ id: 6 });
+    } else if (i === 3) {
+      expect(bodySpy.mock).toHaveBeenCalledTimes(9);
+      expect(bodySpy.mock.calls[6].args[0]).toEqual({ id: 7 });
+      expect(bodySpy.mock.calls[7].args[0]).toEqual({ id: 8 });
+      expect(bodySpy.mock.calls[8].args[0]).toEqual({ id: 9 });
+    }
   }
 
   expect(msgScope.isDone()).toBe(true);
-  await promise;
+  await expect(executePromise).resolves.toMatchSnapshot();
+});
+
+it('open requests up to connectionCapicity', async () => {
+  const client = new LineWorker(accessToken, 2);
+
+  const bodySpy = moxy(() => true);
+  const msgScope = lineAPI
+    .post(/^\/v2\/bot\/message/, bodySpy)
+    .delay(100)
+    .times(9)
+    .reply(200, '{}');
+
+  client.start(queue);
+
+  const executePromise = queue.executeJobs([
+    {
+      method: 'POST',
+      path: 'v2/bot/message/push',
+      channelUid: 'foo',
+      body: { id: 1 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/push',
+      channelUid: 'foo',
+      body: { id: 2 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/push',
+      channelUid: 'bar',
+      body: { id: 3 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/reply',
+      channelUid: 'bar',
+      body: { id: 4 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/reply',
+      channelUid: 'baz',
+      body: { id: 5 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/reply',
+      channelUid: 'baz',
+      body: { id: 6 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/push',
+      channelUid: 'foo',
+      body: { id: 7 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/push',
+      channelUid: 'bar',
+      body: { id: 8 },
+    },
+    {
+      method: 'POST',
+      path: 'v2/bot/message/push',
+      channelUid: 'baz',
+      body: { id: 9 },
+    },
+  ]);
+
+  for (let i = 1; i <= 5; i += 1) {
+    await delay(100); // eslint-disable-line no-await-in-loop
+
+    if (i === 1) {
+      expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+      expect(bodySpy.mock.calls[0].args[0]).toEqual({ id: 1 });
+      expect(bodySpy.mock.calls[1].args[0]).toEqual({ id: 3 });
+    } else if (i === 2) {
+      expect(bodySpy.mock).toHaveBeenCalledTimes(4);
+      expect(bodySpy.mock.calls[2].args[0]).toEqual({ id: 2 });
+      expect(bodySpy.mock.calls[3].args[0]).toEqual({ id: 4 });
+    } else if (i === 3) {
+      expect(bodySpy.mock).toHaveBeenCalledTimes(6);
+      expect(bodySpy.mock.calls[4].args[0]).toEqual({ id: 5 });
+      expect(bodySpy.mock.calls[5].args[0]).toEqual({ id: 7 });
+    } else if (i === 4) {
+      expect(bodySpy.mock).toHaveBeenCalledTimes(8);
+      expect(bodySpy.mock.calls[6].args[0]).toEqual({ id: 6 });
+      expect(bodySpy.mock.calls[7].args[0]).toEqual({ id: 8 });
+    } else if (i === 5) {
+      expect(bodySpy.mock).toHaveBeenCalledTimes(9);
+      expect(bodySpy.mock.calls[8].args[0]).toEqual({ id: 9 });
+    }
+  }
+
+  expect(msgScope.isDone()).toBe(true);
+  await expect(executePromise).resolves.toMatchSnapshot();
 });

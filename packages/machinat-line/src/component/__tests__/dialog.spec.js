@@ -1,15 +1,12 @@
 import moxy from 'moxy';
-import Machinat from 'machinat';
-
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
 import { Dialog } from '../dialog';
 import { QuickReply } from '../quickReply';
-
-import { LINE_NATIVE_TYPE, ENTRY_GETTER } from '../../constant';
-
-import renderHelper from './renderHelper';
+import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
 
 const renderInner = moxy(async () => null);
-const render = renderHelper(renderInner);
+const render = element => element.type(element, renderInner, '$');
 
 beforeEach(() => {
   renderInner.mock.reset();
@@ -18,8 +15,8 @@ beforeEach(() => {
 it('is valid native component', () => {
   expect(typeof Dialog).toBe('function');
 
-  expect(Dialog.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Dialog.$$namespace).toBe('Line');
+  expect(isNativeElement(<Dialog />)).toBe(true);
+  expect(Dialog.$$platform).toBe('line');
 });
 
 it('return segments of what children rendered', async () => {
@@ -102,13 +99,13 @@ it('hoist children rendered text into text message object', async () => {
 });
 
 it('attach quickReply to last message object', async () => {
-  const Something = () => {};
+  const SomeBody = () => {};
 
   const childrenSegments = [
     {
       type: 'text',
       node: <foo />,
-      value: 'Where you ganna go',
+      value: 'Where you wanna go',
       path: '$:0#Dialog.children:0',
     },
     {
@@ -116,23 +113,25 @@ it('attach quickReply to last message object', async () => {
       node: <bar />,
       value: {
         type: 'text',
-        text: 'What you ganna risk',
+        text: 'How much you wanna risk',
       },
       path: '$:0#Dialog.children:1',
     },
     {
       type: 'text',
       node: <baz />,
-      value: "I'm looking for",
+      value: "I'm not looking for",
       path: '$:0#Dialog.children:2',
     },
     {
       type: 'unit',
-      node: <Something />,
+      node: <SomeBody />,
       value: {
-        someone: 'i can kiss',
-        [ENTRY_GETTER]() {
-          return { method: 'GET', path: 'super/human/gift' };
+        [CHANNEL_API_CALL_GETTER]() {
+          return { method: 'GET', path: 'with/some', body: null };
+        },
+        [BULK_API_CALL_GETTER]() {
+          return { method: 'GET', path: 'superhuman/gift', body: null };
         },
       },
       path: '$:0#Dialog.children:3',
@@ -185,7 +184,7 @@ it('attach quickReply to last message object', async () => {
     {
       type: 'unit',
       node: <foo />,
-      value: { type: 'text', text: 'Where you ganna go' },
+      value: { type: 'text', text: 'Where you wanna go' },
       path: '$:0#Dialog.children:0',
     },
     childrenSegments[1],
@@ -194,7 +193,7 @@ it('attach quickReply to last message object', async () => {
       node: <baz />,
       value: {
         type: 'text',
-        text: "I'm looking for",
+        text: "I'm not looking for",
         quickReply: {
           items: quickReplySegments.map(seg => seg.value),
         },

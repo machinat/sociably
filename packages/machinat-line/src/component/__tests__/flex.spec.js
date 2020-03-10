@@ -1,8 +1,6 @@
-import Machinat from 'machinat';
-import { map } from 'machinat-utility';
-
-import { LINE_NATIVE_TYPE } from '../../constant';
-import renderHelper from './renderHelper';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
+import map from '@machinat/core/iterator/map';
 
 import Flex, {
   FlexBox,
@@ -38,10 +36,11 @@ const renderInner = async (message, route) => {
 
   return renderings ? [].concat(...(await Promise.all(renderings))) : null;
 };
-const render = renderHelper(renderInner);
+const render = element => element.type(element, renderInner, '$');
 
 test.each(
   [
+    FlexMessage,
     FlexBox,
     FlexButton,
     FlexFiller,
@@ -57,16 +56,10 @@ test.each(
     FlexBubbleContainer,
     FlexCarouselContainer,
   ].map(C => [C.name, C])
-)('%s is valid native Component', (_, Action) => {
-  expect(typeof Action).toBe('function');
-  expect(Action.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Action.$$namespace).toBe('Line');
-});
-
-test('FlexMessage is valid native unit Component', () => {
-  expect(typeof FlexMessage).toBe('function');
-  expect(FlexMessage.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(FlexMessage.$$namespace).toBe('Line');
+)('%s is valid native Component', (_, FlexComponent) => {
+  expect(typeof FlexComponent).toBe('function');
+  expect(isNativeElement(<FlexComponent />)).toBe(true);
+  expect(FlexComponent.$$platform).toBe('line');
 });
 
 test('Flex as a alias for flex components', () => {

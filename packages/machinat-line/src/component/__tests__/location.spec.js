@@ -1,18 +1,15 @@
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
 
 import { Location } from '../location';
 
-import { LINE_NATIVE_TYPE } from '../../constant';
-
-import renderHelper from './renderHelper';
-
-const render = renderHelper(() => null);
+const render = element => element.type(element, () => null, '$');
 
 it('is valid native unit component', () => {
   expect(typeof Location).toBe('function');
 
-  expect(Location.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Location.$$namespace).toBe('Line');
+  expect(isNativeElement(<Location />)).toBe(true);
+  expect(Location.$$platform).toBe('line');
 });
 
 it('render match snapshot', async () => {

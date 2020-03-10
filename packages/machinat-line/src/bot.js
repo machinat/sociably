@@ -1,138 +1,71 @@
 // @flow
 import invariant from 'invariant';
 
-import { Emitter, Engine, Controller, resolvePlugins } from 'machinat-base';
-import Renderer from 'machinat-renderer';
-import Queue from 'machinat-queue';
-import WebhookReceiver from 'machinat-webhook-receiver';
+import Renderer from '@machinat/core/renderer';
+import Queue from '@machinat/core/queue';
+import Engine from '@machinat/core/engine';
+import type {
+  MachinatNode,
+  MachinatBot,
+  InitScopeFn,
+  DispatchWrapper,
+} from '@machinat/core/types';
 
-import type { MachinatNode } from 'machinat/types';
-import type { MachinatBot } from 'machinat-base/types';
-import type { HTTPRequestReceivable } from 'machinat-http-adaptor/types';
-import type { WebhookMetadata } from 'machinat-webhook-receiver/types';
+import { provider } from '@machinat/core/service';
 
 import LineWorker from './worker';
-import handleWebhook from './webhook';
-import { createChatJobs, createMulticastJobs } from './job';
+import { chatJobsMaker, multicastJobsMaker } from './job';
 import LineChannel from './channel';
-import { LINE, LINE_NATIVE_TYPE, PATH_REPLY } from './constant';
+import {
+  LINE,
+  LINE_PLATFORM_CONFIGS_I,
+  LINE_PLATFORM_MOUNTER_I,
+} from './constant';
 
 import generalElementDelegate from './component/general';
 
-import type { LineUser } from './user';
 import type {
   LineSource,
-  LineBotOptions,
+  LinePlatformConfigs,
   LineSegmentValue,
   LineComponent,
   LineJob,
   LineAPIResult,
-  LineEvent,
-  LineSendOptions,
+  LineDispatchFrame,
+  LineDispatchResponse,
+  LinePlatformMounter,
 } from './types';
 
-type LineBotOptionsInput = $Shape<LineBotOptions>;
+type LineBotOptions = {
+  accessToken: string,
+  channelId: string,
+  connectionCapicity?: number,
+};
 
-type LineReceiver = WebhookReceiver<LineChannel, ?LineUser, LineEvent, void>;
-
-class LineBot
-  extends Emitter<
-    LineChannel,
-    ?LineUser,
-    LineEvent,
-    WebhookMetadata,
-    LineSegmentValue,
-    LineComponent,
-    LineJob,
-    LineAPIResult,
-    LineSendOptions
-  >
-  implements
-    HTTPRequestReceivable<LineReceiver>,
-    MachinatBot<
-      LineChannel,
-      ?LineUser,
-      LineEvent,
-      WebhookMetadata,
-      void,
-      LineSegmentValue,
-      LineComponent,
-      LineJob,
-      LineAPIResult,
-      LineSendOptions,
-      LineBotOptionsInput
-    > {
-  options: LineBotOptions;
-  controller: Controller<
-    LineChannel,
-    ?LineUser,
-    LineEvent,
-    WebhookMetadata,
-    void,
-    LineSegmentValue,
-    LineComponent,
-    LineSendOptions
-  >;
-
+class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
+  channelId: string;
   engine: Engine<
     LineChannel,
     LineSegmentValue,
     LineComponent,
     LineJob,
-    LineAPIResult
+    LineAPIResult,
+    LineBot
   >;
 
-  receiver: LineReceiver;
-  worker: LineWorker;
+  constructor(
+    { accessToken, channelId, connectionCapicity = 100 }: LineBotOptions = {},
+    initScope?: InitScopeFn,
+    dispatchWrapper?: DispatchWrapper<LineJob, LineDispatchFrame, LineAPIResult>
+  ) {
+    invariant(accessToken, 'options.accessToken should not be empty');
+    invariant(channelId, 'options.channelId should not be empty');
 
-  constructor(optionsInput: LineBotOptionsInput = {}) {
-    super();
+    this.channelId = channelId;
 
-    const defaultOpions: LineBotOptionsInput = {
-      shouldValidateRequest: true,
-      connectionCapicity: 100,
-    };
-
-    const options = Object.assign(defaultOpions, optionsInput);
-
-    invariant(
-      options.accessToken,
-      'should provide accessToken to send messenge'
-    );
-
-    invariant(
-      !options.shouldValidateRequest || options.channelSecret,
-      'should provide channelSecret if shouldValidateRequest set to true'
-    );
-
-    invariant(
-      options.channelId,
-      'should provide channelId to identify different line channel'
-    );
-
-    this.options = options;
-
-    const { eventMiddlewares, dispatchMiddlewares } = resolvePlugins(
-      this,
-      options.plugins
-    );
-
-    this.controller = new Controller(LINE, this, eventMiddlewares);
-    this.receiver = new WebhookReceiver(handleWebhook(options));
-
-    this.receiver.bindIssuer(
-      this.controller.eventIssuerThroughMiddlewares(this.emitEvent.bind(this)),
-      this.emitError.bind(this)
-    );
-
-    const renderer = new Renderer(
-      LINE,
-      LINE_NATIVE_TYPE,
-      generalElementDelegate
-    );
-
+    const renderer = new Renderer(LINE, generalElementDelegate);
     const queue = new Queue();
-    const worker = new LineWorker(options);
+    const worker = new LineWorker(accessToken, connectionCapicity);
 
     this.engine = new Engine(
       LINE,
@@ -140,96 +73,64 @@ class LineBot
       renderer,
       queue,
       worker,
-      dispatchMiddlewares
+      initScope || null,
+      dispatchWrapper || null
     );
   }
 
-  async render(
+  start() {
+    this.engine.start();
+    return this;
+  }
+
+  stop() {
+    this.engine.stop();
+    return this;
+  }
+
+  render(
     source: string | LineSource | LineChannel,
     message: MachinatNode,
-    options: LineSendOptions
-  ): Promise<null | LineAPIResult[]> {
+    options?: { replyToken?: string }
+  ): Promise<null | LineDispatchResponse> {
     const channel =
       source instanceof LineChannel
         ? source
         : new LineChannel(
-            this.options.channelId,
+            this.channelId,
             typeof source === 'string'
               ? { type: 'user', userId: source }
               : source
           );
 
-    const usePush = !(options && options.replyToken);
-
-    const tasks = await this.engine.renderTasks(
-      createChatJobs,
+    return this.engine.render(
       channel,
       message,
-      options,
-      usePush
+      chatJobsMaker(options && options.replyToken)
     );
-
-    if (tasks === null) {
-      return null;
-    }
-
-    if (!usePush) {
-      let replyFound = false;
-
-      for (const job of tasks) {
-        if (job.type === 'transmit') {
-          for (const { path } of job.payload) {
-            const isReply = path === PATH_REPLY;
-
-            invariant(
-              !(replyFound && isReply),
-              `can not send more than 5 messages with a replyToken`
-            );
-
-            replyFound = replyFound || isReply;
-          }
-        }
-      }
-    }
-
-    const response = await this.engine.dispatch(channel, tasks, message);
-    return response.results;
   }
 
-  async renderMulticast(
+  renderMulticast(
     targets: string[],
     message: MachinatNode
-  ): Promise<null | LineAPIResult[]> {
-    const tasks = await this.engine.renderTasks(
-      createMulticastJobs,
-      targets,
-      message,
-      undefined,
-      true
-    );
-
-    if (tasks === null) {
-      return null;
-    }
-
-    const response = await this.engine.dispatch(null, tasks, message);
-    return response.results;
+  ): Promise<null | LineDispatchResponse> {
+    return this.engine.render(null, message, multicastJobsMaker(targets));
   }
 
-  async dispatchAPICall(
+  dispatchAPICall(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     path: string,
     body: Object
-  ): Promise<LineAPIResult> {
-    const response = await this.engine.dispatch(null, [
-      {
-        type: 'transmit',
-        payload: [{ method, path, body }],
-      },
-    ]);
-
-    return response.results[0];
+  ): Promise<LineDispatchResponse> {
+    return this.engine.dispatchJobs(null, [{ method, path, body }]);
   }
 }
 
-export default LineBot;
+export default provider<LineBot>({
+  lifetime: 'singleton',
+  deps: [LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I],
+  factory: (
+    configs: LinePlatformConfigs,
+    { initScope, dispatchWrapper }: LinePlatformMounter
+  ) => new LineBot(configs, initScope, dispatchWrapper),
+})(LineBot);

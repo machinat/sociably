@@ -1,75 +1,61 @@
 import nock from 'nock';
 import moxy from 'moxy';
-import Machinat from 'machinat';
-import { Emitter, Engine, Controller } from 'machinat-base';
-import Renderer from 'machinat-renderer';
-import Queue from 'machinat-queue';
-import WebhookReceiver from 'machinat-webhook-receiver';
+import Machinat from '@machinat/core';
+import Engine from '@machinat/core/engine';
+import Renderer from '@machinat/core/renderer';
+import Queue from '@machinat/core/queue';
 import LineBot from '../bot';
 import LineWorker from '../worker';
-import { LINE_NATIVE_TYPE, ENTRY_GETTER } from '../constant';
+import {
+  Dialog,
+  Image,
+  QuickReply,
+  MessageAction,
+  LinkRichMenu,
+} from '../component';
 
-jest.mock('machinat-base');
-jest.mock('machinat-renderer');
-jest.mock('machinat-webhook-receiver');
+jest.mock('@machinat/core/engine', () =>
+  require('moxy').default(jest.requireActual('@machinat/core/engine'), {
+    includeProps: ['default'],
+  })
+);
+
+jest.mock('@machinat/core/renderer', () =>
+  require('moxy').default(jest.requireActual('@machinat/core/renderer'), {
+    includeProps: ['default'],
+  })
+);
+
+jest.mock('../worker', () =>
+  require('moxy').default(jest.requireActual('../worker'), {
+    includeProps: ['default'],
+    mockNewInstance: false,
+  })
+);
 
 nock.disableNetConnect();
 
-const Foo = moxy((node, _, path) => [
-  {
-    type: 'unit',
-    value: node.props,
-    node,
-    path,
-  },
-]);
-Foo.$$native = LINE_NATIVE_TYPE;
-
-const Bar = moxy((node, _, path) => [
-  {
-    type: 'unit',
-    value: {
-      ...node.props,
-      [ENTRY_GETTER]: () => ({ method: 'POST', path: 'bar' }),
-    },
-    node,
-    path,
-  },
-]);
-Bar.$$native = LINE_NATIVE_TYPE;
-
-const Baz = moxy((node, _, path) => [
-  {
-    type: 'unit',
-    value: { [ENTRY_GETTER]: () => ({ method: 'POST', path: 'baz' }) },
-    node,
-    path,
-  },
-]);
-Baz.$$native = LINE_NATIVE_TYPE;
-
-const msgs = [
-  <Foo id={0} />,
-  <Foo id={1} />,
-  <Foo id={2} />,
-  <Foo id={3} />,
-  <Foo id={4} />,
-  <Foo id={5} />,
-  <Foo id={6} />,
-  <Bar id={7} />,
-  <Foo id={8} />,
-  <Baz id={9} />,
-];
+const message = (
+  <Dialog
+    quickReplies={
+      <QuickReply action={<MessageAction text="Hi!" label="HI" />} />
+    }
+  >
+    Hello
+    <b>LINE</b>
+    <Image url="https://machinat.com/greeting.png" />
+    <LinkRichMenu id="newbie" />
+  </Dialog>
+);
 
 const pathSpy = moxy(() => true);
 const bodySpy = moxy(() => true);
 
 let lineAPI;
 beforeEach(() => {
-  Renderer.mock.reset();
   Engine.mock.reset();
-  Controller.mock.reset();
-  WebhookReceiver.mock.reset();
+  Renderer.mock.reset();
+  LineWorker.mock.reset();
 
   nock.cleanAll();
   lineAPI = nock('https://api.line.me', {
@@ -84,109 +70,59 @@ beforeEach(() => {
 });
 
 describe('#constructor(options)', () => {
-  it('extends MachinatEmitter', () => {
-    expect(
-      new LineBot({
-        accessToken: '__ACCESS_TOKEN__',
-        channelId: '_MY_BOT_',
-        channelSecret: '_SECRET_',
-      })
-    ).toBeInstanceOf(Emitter);
-  });
-
   it('throws if accessToken not given', () => {
     expect(
-      () =>
-        new LineBot({
-          channelId: '_MY_BOT_',
-          channelSecret: '_SECRET_',
-        })
+      () => new LineBot({ channelId: '_MY_BOT_' })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"should provide accessToken to send messenge"`
+      `"options.accessToken should not be empty"`
     );
   });
 
   it('throws if channelId not given', () => {
     expect(
-      () =>
-        new LineBot({
-          accessToken: '__ACCESS_TOKEN__',
-          channelSecret: '_SECRET_',
-        })
+      () => new LineBot({ accessToken: '__ACCESS_TOKEN__' })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"should provide channelId to identify different line channel"`
+      `"options.channelId should not be empty"`
     );
   });
 
-  it('throws if shouldValidateRequest but channelSecret not given', () => {
-    expect(
-      () =>
-        new LineBot({
-          accessToken: '__ACCESS_TOKEN__',
-          channelId: '_MY_BOT_',
-          shouldValidateRequest: true,
-        })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"should provide channelSecret if shouldValidateRequest set to true"`
-    );
-  });
-
-  it('is ok to have channelSecret empty if shouldValidateRequest set to false', () => {
-    expect(
-      () =>
-        new LineBot({
-          accessToken: '__ACCESS_TOKEN__',
-          channelId: '_MY_BOT_',
-          shouldValidateRequest: false,
-        })
-    ).not.toThrow();
-  });
-
-  it('sets default options', () => {
-    expect(
-      new LineBot({
-        accessToken: '__ACCESS_TOKEN__',
-        channelId: '_MY_BOT_',
-        channelSecret: '_SECRET_',
-      }).options
-    ).toMatchInlineSnapshot(`
-            Object {
-              "accessToken": "__ACCESS_TOKEN__",
-              "channelId": "_MY_BOT_",
-              "channelSecret": "_SECRET_",
-              "connectionCapicity": 100,
-              "shouldValidateRequest": true,
-            }
-        `);
-  });
-
-  it('covers default options', () => {
-    const options = {
-      accessToken: '__ACCESS_TOKEN__',
-      channelId: '_MY_BOT_',
-      shouldValidateRequest: false,
-      channelSecret: '_SECRET_',
-      connectionCapicity: 9999,
-    };
-    expect(new LineBot(options).options).toEqual(options);
-  });
-
-  it('assemble core modules', () => {
+  it('assemble engine', () => {
     const bot = new LineBot({
       accessToken: '__ACCESS_TOKEN__',
       channelId: '_MY_BOT_',
-      channelSecret: '_SECRET_',
+      connectionCapicity: 999,
     });
 
-    expect(bot.engine).toBeInstanceOf(Engine);
-    expect(bot.controller).toBeInstanceOf(Controller);
-    expect(bot.receiver).toBeInstanceOf(WebhookReceiver);
-
     expect(Renderer.mock).toHaveBeenCalledTimes(1);
-    expect(Renderer.mock).toHaveBeenCalledWith(
+    expect(Renderer.mock).toHaveBeenCalledWith('line', expect.any(Function));
+
+    expect(LineWorker.mock).toHaveBeenCalledTimes(1);
+    expect(LineWorker.mock).toHaveBeenCalledWith('__ACCESS_TOKEN__', 999);
+
+    expect(bot.engine).toBeInstanceOf(Engine);
+    expect(Engine.mock).toHaveBeenCalledTimes(1);
+    expect(Engine.mock).toHaveBeenCalledWith(
       'line',
-      LINE_NATIVE_TYPE,
-      expect.any(Function)
+      bot,
+      expect.any(Renderer),
+      expect.any(Queue),
+      expect.any(LineWorker),
+      null,
+      null
+    );
+  });
+
+  it('pass initScope and dispatchWrapper to engine if provided', () => {
+    const initScope = moxy();
+    const dispatchWrapper = moxy(x => x);
+
+    const bot = new LineBot(
+      {
+        accessToken: '__ACCESS_TOKEN__',
+        channelId: '_MY_BOT_',
+      },
+      initScope,
+      dispatchWrapper
     );
 
     expect(Engine.mock).toHaveBeenCalledTimes(1);
@@ -196,161 +132,154 @@ describe('#constructor(options)', () => {
       expect.any(Renderer),
       expect.any(Queue),
       expect.any(LineWorker),
-      []
+      initScope,
+      dispatchWrapper
     );
-
-    expect(Controller.mock).toHaveBeenCalledTimes(1);
-    expect(Controller.mock).toHaveBeenCalledWith('line', bot, []);
-
-    expect(WebhookReceiver.mock).toHaveBeenCalledTimes(1);
-    expect(WebhookReceiver.mock).toHaveBeenCalledWith(expect.any(Function));
   });
 
-  it('pass middlewares from plugins to controller and engine', () => {
-    const eventMiddleware1 = () => () => {};
-    const eventMiddleware2 = () => () => {};
-    const dispatchMiddleware1 = () => () => {};
-    const dispatchMiddleware2 = () => () => {};
-    const plugins = [
-      moxy(() => ({
-        dispatchMiddleware: dispatchMiddleware1,
-      })),
-      moxy(() => ({
-        eventMiddleware: eventMiddleware1,
-      })),
-      moxy(() => ({
-        dispatchMiddleware: dispatchMiddleware2,
-        eventMiddleware: eventMiddleware2,
-      })),
-    ];
-
-    const bot = new LineBot({
+  test('default connectionCapicity', () => {
+    const _bot = new LineBot({
       accessToken: '__ACCESS_TOKEN__',
       channelId: '_MY_BOT_',
-      channelSecret: '_SECRET_',
-      plugins,
     });
 
-    expect(Engine.mock).toHaveBeenCalledWith(
-      'line',
-      bot,
-      expect.any(Renderer),
-      expect.any(Queue),
-      expect.any(LineWorker),
-      [dispatchMiddleware1, dispatchMiddleware2]
-    );
-
-    expect(Controller.mock).toHaveBeenCalledWith('line', bot, [
-      eventMiddleware1,
-      eventMiddleware2,
-    ]);
-  });
-
-  it('issue event & error', async () => {
-    const eventIssuerSpy = moxy(() => Promise.resolve());
-    Controller.mock.fake(function FakeController() {
-      return { eventIssuerThroughMiddlewares: () => eventIssuerSpy };
-    });
-
-    const bot = new LineBot({
-      accessToken: '__ACCESS_TOKEN__',
-      channelId: '_MY_BOT_',
-      channelSecret: '_SECRET_',
-    });
-
-    const eventListener = moxy();
-    const errorListener = moxy();
-    bot.onEvent(eventListener);
-    bot.onError(errorListener);
-
-    expect(bot.receiver.bindIssuer.mock).toHaveBeenCalledTimes(1);
-    expect(
-      bot.controller.eventIssuerThroughMiddlewares.mock
-    ).toHaveBeenCalledTimes(1);
-    const finalPublisher =
-      bot.controller.eventIssuerThroughMiddlewares.mock.calls[0].args[0];
-
-    const channel = { super: 'slam' };
-    const event = { a: 'phonecall' };
-    const metadata = { champ: 'Johnnnnn Ceeeena!' };
-    const frame = { channel, event, metadata };
-
-    expect(finalPublisher(frame)).toBe(undefined);
-
-    expect(eventListener.mock).toHaveBeenCalledTimes(1);
-    expect(eventListener.mock).toHaveBeenCalledWith(frame);
-
-    const [issueEvent, issueError] = bot.receiver.bindIssuer.mock.calls[0].args;
-
-    await expect(issueEvent(channel, event, metadata)).resolves.toBe(undefined);
-    expect(eventIssuerSpy.mock).toHaveBeenCalledTimes(1);
-    expect(eventIssuerSpy.mock).toHaveBeenCalledWith(channel, event, metadata);
-
-    expect(issueError(new Error('NO'))).toBe(undefined);
-    expect(errorListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledWith(new Error('NO'));
+    expect(LineWorker.mock).toHaveBeenCalledTimes(1);
+    expect(LineWorker.mock.calls[0].args).toMatchInlineSnapshot(`
+      Array [
+        "__ACCESS_TOKEN__",
+        100,
+      ]
+    `);
   });
 });
 
 describe('#render(token, node, options)', () => {
-  it('works', async () => {
+  it('make api calls', async () => {
     const bot = new LineBot({
       accessToken: '__ACCESS_TOKEN__',
       channelId: '_MY_BOT_',
-      channelSecret: '_SECRET_',
     });
+
+    bot.start();
 
     const apiScope = lineAPI
       .post(pathSpy, bodySpy)
-      .times(5)
+      .times(2)
       .reply(200, '{}');
 
-    const results = await bot.render('john doe', msgs);
+    const response = await bot.render('john_doe', message);
 
-    expect(results).toEqual([{}, {}, {}, {}, {}]);
+    expect(response).toMatchSnapshot();
     expect(apiScope.isDone()).toBe(true);
 
-    expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
-      '/v2/bot/message/push',
-      '/v2/bot/message/push',
-      '/bar',
-      '/v2/bot/message/push',
-      '/baz',
-    ]);
-
-    expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchSnapshot();
+    expect(pathSpy.mock.calls[0].args[0]).toBe('/v2/bot/message/push');
+    expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+      Object {
+        "messages": Array [
+          Object {
+            "text": "Hello",
+            "type": "text",
+          },
+          Object {
+            "text": "LINE",
+            "type": "text",
+          },
+          Object {
+            "originalContentUrl": "https://machinat.com/greeting.png",
+            "quickReply": Object {
+              "items": Array [
+                Object {
+                  "action": Object {
+                    "label": "HI",
+                    "text": "Hi!",
+                    "type": "message",
+                  },
+                  "type": "action",
+                },
+              ],
+            },
+            "type": "image",
+          },
+        ],
+        "to": "john_doe",
+      }
+    `);
+    expect(pathSpy.mock.calls[1].args[0]).toBe(
+      '/v2/bot/user/john_doe/richmenu/newbie'
+    );
+    expect(bodySpy.mock.calls[1].args[0]).toBe('');
   });
 
   it('works with replyToken', async () => {
     const bot = new LineBot({
       accessToken: '__ACCESS_TOKEN__',
       channelId: '_MY_BOT_',
-      channelSecret: '_SECRET_',
     });
+    bot.start();
 
-    const apiScope = lineAPI.post(pathSpy, bodySpy).reply(200, '{}');
+    const apiScope = lineAPI
+      .post(pathSpy, bodySpy)
+      .times(2)
+      .reply(200, '{}');
 
-    const results = await bot.render('john doe', msgs.slice(0, 5), {
+    const response = await bot.render('john_doe', message, {
       replyToken: '__REPLY_TOKEN__',
     });
 
-    expect(results).toEqual([{}]);
+    expect(response).toMatchSnapshot();
     expect(apiScope.isDone()).toBe(true);
 
-    expect(pathSpy.mock.calls[0].args[0]).toEqual('/v2/bot/message/reply');
-    expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchSnapshot();
+    expect(pathSpy.mock).toHaveBeenCalledTimes(2);
+    expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+
+    expect(pathSpy.mock.calls[0].args[0]).toBe('/v2/bot/message/reply');
+    expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+      Object {
+        "messages": Array [
+          Object {
+            "text": "Hello",
+            "type": "text",
+          },
+          Object {
+            "text": "LINE",
+            "type": "text",
+          },
+          Object {
+            "originalContentUrl": "https://machinat.com/greeting.png",
+            "quickReply": Object {
+              "items": Array [
+                Object {
+                  "action": Object {
+                    "label": "HI",
+                    "text": "Hi!",
+                    "type": "message",
+                  },
+                  "type": "action",
+                },
+              ],
+            },
+            "type": "image",
+          },
+        ],
+        "replyToken": "__REPLY_TOKEN__",
+      }
+    `);
+
+    expect(pathSpy.mock.calls[1].args[0]).toBe(
+      '/v2/bot/user/john_doe/richmenu/newbie'
+    );
+    expect(bodySpy.mock.calls[1].args[0]).toBe('');
   });
 
   it('return null if message is empty', async () => {
     const bot = new LineBot({
       accessToken: '__ACCESS_TOKEN__',
       channelId: '_MY_BOT_',
-      channelSecret: '_SECRET_',
     });
 
     for (const empty of [null, undefined, [], <></>, true, false]) {
       // eslint-disable-next-line no-await-in-loop
-      await expect(bot.render('john doe', empty)).resolves.toBe(null);
+      await expect(bot.render('john_doe', empty)).resolves.toBe(null);
     }
   });
 
@@ -358,15 +287,15 @@ describe('#render(token, node, options)', () => {
     const bot = new LineBot({
       accessToken: '__ACCESS_TOKEN__',
       channelId: '_MY_BOT_',
-      channelSecret: '_SECRET_',
     });
+    bot.start();
 
     expect(
-      bot.render('john doe', [0, 1, 2, 3, 4, 5], {
+      bot.render('john_doe', [0, 1, 2, 3, 4, 5], {
         replyToken: '__REPLY_TOKEN__',
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"can not send more than 5 messages with a replyToken"`
+      `"more then 1 messaging request rendered while using replyToken"`
     );
   });
 });
@@ -376,7 +305,6 @@ describe('#renderMulticast(targets, node)', () => {
     const bot = new LineBot({
       accessToken: '__ACCESS_TOKEN__',
       channelId: '_MY_BOT_',
-      channelSecret: '_SECRET_',
     });
 
     for (const empty of [null, undefined, [], <></>, true, false]) {
@@ -391,27 +319,69 @@ describe('#renderMulticast(targets, node)', () => {
     const bot = new LineBot({
       accessToken: '__ACCESS_TOKEN__',
       channelId: '_MY_BOT_',
-      channelSecret: '_SECRET_',
     });
+    bot.start();
 
     const apiScope = lineAPI
       .post(pathSpy, bodySpy)
       .times(2)
       .reply(200, '{}');
 
-    const results = await bot.renderMulticast(
+    const response = await bot.renderMulticast(
       ['john', 'wick', 'dog'],
-      msgs.slice(0, 7)
+      message
     );
 
-    expect(results).toEqual([{}, {}]);
+    expect(response).toMatchSnapshot();
     expect(apiScope.isDone()).toBe(true);
 
-    expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual([
-      '/v2/bot/message/multicast',
-      '/v2/bot/message/multicast',
-    ]);
+    expect(pathSpy.mock.calls[0].args[0]).toBe('/v2/bot/message/multicast');
+    expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+      Object {
+        "messages": Array [
+          Object {
+            "text": "Hello",
+            "type": "text",
+          },
+          Object {
+            "text": "LINE",
+            "type": "text",
+          },
+          Object {
+            "originalContentUrl": "https://machinat.com/greeting.png",
+            "quickReply": Object {
+              "items": Array [
+                Object {
+                  "action": Object {
+                    "label": "HI",
+                    "text": "Hi!",
+                    "type": "message",
+                  },
+                  "type": "action",
+                },
+              ],
+            },
+            "type": "image",
+          },
+        ],
+        "to": Array [
+          "john",
+          "wick",
+          "dog",
+        ],
+      }
+    `);
 
-    expect(bodySpy.mock.calls.map(c => c.args[0])).toMatchSnapshot();
+    expect(pathSpy.mock.calls[1].args[0]).toBe('/v2/bot/richmenu/bulk/link');
+    expect(bodySpy.mock.calls[1].args[0]).toMatchInlineSnapshot(`
+      Object {
+        "richMenuId": "newbie",
+        "userIds": Array [
+          "john",
+          "wick",
+          "dog",
+        ],
+      }
+    `);
   });
 });

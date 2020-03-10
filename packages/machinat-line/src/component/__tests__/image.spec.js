@@ -1,7 +1,7 @@
-import Machinat from 'machinat';
-import { map } from 'machinat-utility';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
+import map from '@machinat/core/iterator/map';
 
-import { LINE_NATIVE_TYPE } from '../../constant';
 import {
   Image,
   Sticker,
@@ -10,7 +10,6 @@ import {
   ImageMapArea,
 } from '../image';
 import { URIAction, MessageAction } from '../action';
-import renderHelper from './renderHelper';
 
 const renderInner = async prop => {
   const renderings = map(prop, (node, path) =>
@@ -19,7 +18,7 @@ const renderInner = async prop => {
 
   return renderings ? [].concat(...(await Promise.all(renderings))) : null;
 };
-const render = renderHelper(renderInner);
+const render = element => element.type(element, renderInner, '$');
 
 it.each(
   [Image, Sticker, ImageMap, ImageMapVideoArea, ImageMapArea].map(C => [
@@ -27,8 +26,8 @@ it.each(
     C,
   ])
 )('%s is a valid component', (_, Img) => {
-  expect(Img.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(Img.$$namespace).toBe('Line');
+  expect(isNativeElement(<Img />)).toBe(true);
+  expect(Img.$$platform).toBe('line');
 });
 
 it.each(

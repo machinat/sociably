@@ -1,20 +1,17 @@
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
+import { isNativeElement } from '@machinat/core/utils/isXxx';
 
 import { QuickReply } from '../quickReply';
 import { URIAction } from '../action';
 
-import { LINE_NATIVE_TYPE } from '../../constant';
-
-import renderHelper from './renderHelper';
-
 const renderInner = (node, path) => node.type(node, renderInner, path);
-const render = renderHelper(renderInner);
+const render = element => element.type(element, renderInner, '$');
 
 it('is valid native component', () => {
   expect(typeof QuickReply).toBe('function');
 
-  expect(QuickReply.$$native).toBe(LINE_NATIVE_TYPE);
-  expect(QuickReply.$$namespace).toBe('Line');
+  expect(isNativeElement(<QuickReply />)).toBe(true);
+  expect(QuickReply.$$platform).toBe('line');
 });
 
 it('renders match snapshot', async () => {
