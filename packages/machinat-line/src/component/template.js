@@ -1,17 +1,10 @@
-import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
+import { unitSegment, partSegment } from '@machinat/core/renderer';
+import { annotateLineComponent } from '../utils';
 
-import { asPartComponent, asUnitComponent } from '../utils';
-import * as actionModule from './action';
-
-const getActionValues = valuesOfAssertedTypes(() => [
-  ...Object.values(actionModule),
-]);
-
-const ButtonTemplate = async (
-  {
-    children,
+export const ButtonTemplate = async (node, path, render) => {
+  const {
+    actions,
     defaultAction,
-    alt,
     altText,
     imageURL,
     thumbnailImageUrl,
@@ -20,131 +13,131 @@ const ButtonTemplate = async (
     imageBackgroundColor,
     title,
     text,
-  },
-  render
-) => {
+  } = node.props;
+
   const defaultActionSegments = await render(defaultAction, '.defaultAction');
-  const defaultActionValues = getActionValues(defaultActionSegments);
+  const defaultActionValue = defaultActionSegments?.[0].value;
 
-  const actionSegments = await render(children, '.children');
+  const actionSegments = await render(actions, '.actions');
+  const actionValues = actionSegments?.map(seg => seg.value);
 
-  return {
-    type: 'template',
-    altText: altText || alt,
-    template: {
-      type: 'buttons',
-      thumbnailImageUrl: thumbnailImageUrl || imageURL,
-      imageAspectRatio,
-      imageSize,
-      imageBackgroundColor,
-      title,
-      text,
-      defaultAction: defaultActionValues && defaultActionValues[0],
-      actions: getActionValues(actionSegments),
-    },
-  };
+  return [
+    unitSegment(node, path, {
+      type: 'template',
+      altText,
+      template: {
+        type: 'buttons',
+        thumbnailImageUrl: thumbnailImageUrl || imageURL,
+        imageAspectRatio,
+        imageSize,
+        imageBackgroundColor,
+        title,
+        text,
+        defaultAction: defaultActionValue,
+        actions: actionValues,
+      },
+    }),
+  ];
 };
-const __ButtonTemplate = asUnitComponent(ButtonTemplate);
+annotateLineComponent(ButtonTemplate);
 
-const ConfirmTemplate = async ({ children, alt, altText, text }, render) => {
-  const actionSegments = await render(children, '.children');
+export const ConfirmTemplate = async (node, path, render) => {
+  const { actions, altText, text } = node.props;
+  const actionSegments = await render(actions, '.actions');
+  const actionsValues = actionSegments?.map(segment => segment.value);
 
-  return {
-    type: 'template',
-    altText: altText || alt,
-    template: {
-      type: 'confirm',
-      text,
-      actions: getActionValues(actionSegments),
-    },
-  };
+  return [
+    unitSegment(node, path, {
+      type: 'template',
+      altText,
+      template: {
+        type: 'confirm',
+        text,
+        actions: actionsValues,
+      },
+    }),
+  ];
 };
-const __ConfirmTemplate = asUnitComponent(ConfirmTemplate);
+annotateLineComponent(ConfirmTemplate);
 
-const CarouselItem = async (
-  {
-    children,
+export const CarouselItem = async (node, path, render) => {
+  const {
+    actions,
     defaultAction,
     imageURL,
     thumbnailImageUrl,
     imageBackgroundColor,
     title,
     text,
-  },
-  render
-) => {
+  } = node.props;
+
   const defaultActionSegments = await render(defaultAction, '.defaultAction');
-  const defaultActionValues = getActionValues(defaultActionSegments);
+  const defaultActionValue = defaultActionSegments?.[0].value;
 
-  const actionSegments = await render(children, '.children');
+  const actionSegments = await render(actions, '.actions');
+  const actionValues = actionSegments?.map(segment => segment.value);
 
-  return {
-    thumbnailImageUrl: thumbnailImageUrl || imageURL,
-    imageBackgroundColor,
-    title,
-    text,
-    defaultAction: defaultActionValues && defaultActionValues[0],
-    actions: getActionValues(actionSegments),
-  };
+  return [
+    partSegment(node, path, {
+      thumbnailImageUrl: thumbnailImageUrl || imageURL,
+      imageBackgroundColor,
+      title,
+      text,
+      defaultAction: defaultActionValue,
+      actions: actionValues,
+    }),
+  ];
 };
-const __CarouselItem = asPartComponent(CarouselItem);
+annotateLineComponent(CarouselItem);
 
-const getCarouselItemValues = valuesOfAssertedTypes(() => [__CarouselItem]);
-
-const CarouselTemplate = async (
-  { children, alt, altText, imageAspectRatio, imageSize },
-  render
-) => {
+export const CarouselTemplate = async (node, path, render) => {
+  const { children, altText, imageAspectRatio, imageSize } = node.props;
   const columnSegments = await render(children, '.children');
+  const cloumnValues = columnSegments?.map(segment => segment.value);
 
-  return {
-    type: 'template',
-    altText: altText || alt,
-    template: {
-      type: 'carousel',
-      imageAspectRatio,
-      imageSize,
-      columns: getCarouselItemValues(columnSegments),
-    },
-  };
+  return [
+    unitSegment(node, path, {
+      type: 'template',
+      altText,
+      template: {
+        type: 'carousel',
+        imageAspectRatio,
+        imageSize,
+        columns: cloumnValues,
+      },
+    }),
+  ];
 };
-const __CarouselTemplate = asUnitComponent(CarouselTemplate);
+annotateLineComponent(CarouselTemplate);
 
-const ImageCarouselItem = async ({ url, imageUrl, action }, render) => {
+export const ImageCarouselItem = async (node, path, render) => {
+  const { url, imageUrl, action } = node.props;
   const actionSegments = await render(action, '.action');
-  const actionValues = getActionValues(actionSegments);
+  const actionValue = actionSegments?.[0].value;
 
-  return {
-    imageUrl: imageUrl || url,
-    action: actionValues && actionValues[0],
-  };
+  return [
+    partSegment(node, path, {
+      imageUrl: imageUrl || url,
+      action: actionValue,
+    }),
+  ];
 };
+annotateLineComponent(ImageCarouselItem);
 
-const __ImageCarouselItem = asPartComponent(ImageCarouselItem);
-
-const getImageCarouselItemValues = valuesOfAssertedTypes(() => [
-  __ImageCarouselItem,
-]);
-
-const ImageCarouselTemplate = async ({ children, alt, altText }, render) => {
+export const ImageCarouselTemplate = async (node, path, render) => {
+  const { children, altText } = node.props;
   const columnSegments = await render(children, '.children');
+  const columnValues = columnSegments?.map(segment => segment.value);
 
-  return {
-    type: 'template',
-    altText: altText || alt,
-    template: {
-      type: 'image_carousel',
-      columns: getImageCarouselItemValues(columnSegments),
-    },
-  };
+  return [
+    unitSegment(node, path, {
+      type: 'template',
+      altText,
+      template: {
+        type: 'image_carousel',
+        columns: columnValues,
+      },
+    }),
+  ];
 };
-const __ImageCarouselTemplate = asUnitComponent(ImageCarouselTemplate);
-
-export {
-  __ButtonTemplate as ButtonTemplate,
-  __ConfirmTemplate as ConfirmTemplate,
-  __CarouselItem as CarouselItem,
-  __CarouselTemplate as CarouselTemplate,
-  __ImageCarouselItem as ImageCarouselItem,
-  __ImageCarouselTemplate as ImageCarouselTemplate,
-};
+annotateLineComponent(ImageCarouselTemplate);

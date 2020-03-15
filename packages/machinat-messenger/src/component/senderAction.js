@@ -1,19 +1,21 @@
-import { asUnitComponent } from '../utils';
+import { unitSegment } from '@machinat/core/renderer';
+import { annotateMessengerComponent } from '../utils';
 
-const MARK_SEEN_RENDERED = { sender_action: 'mark_seen' };
-const MarkSeen = async () => MARK_SEEN_RENDERED;
-const __MarkSeen = asUnitComponent(MarkSeen);
+const MARK_SEEN_VALUE = { sender_action: 'mark_seen' };
+const TYPING_OFF_VALUE = { sender_action: 'typing_off' };
+const TYPING_ON_VALUE = { sender_action: 'typing_on' };
 
-const TYPING_ON_RENDERED = { sender_action: 'typing_on' };
-const TypingOn = async () => TYPING_ON_RENDERED;
-const __TypingOn = asUnitComponent(TypingOn);
+export const MarkSeen = (node, path) => [
+  unitSegment(node, path, MARK_SEEN_VALUE),
+];
+annotateMessengerComponent(MarkSeen);
 
-const TYPING_OFF_RENDERED = { sender_action: 'typing_off' };
-const TypingOff = async () => TYPING_OFF_RENDERED;
-const __TypingOff = asUnitComponent(TypingOff);
+export const TypingOn = (node, path) => [
+  unitSegment(node, path, TYPING_ON_VALUE),
+];
+annotateMessengerComponent(TypingOn);
 
-export {
-  __MarkSeen as MarkSeen,
-  __TypingOn as TypingOn,
-  __TypingOff as TypingOff,
-};
+export const TypingOff = (node, path) => [
+  unitSegment(node, path, TYPING_OFF_VALUE),
+];
+annotateMessengerComponent(TypingOff);

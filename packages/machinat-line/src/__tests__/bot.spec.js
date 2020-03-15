@@ -41,8 +41,7 @@ const message = (
       <QuickReply action={<MessageAction text="Hi!" label="HI" />} />
     }
   >
-    Hello
-    <b>LINE</b>
+    Hello <b>LINE</b>
     <Image url="https://machinat.com/greeting.png" />
     <LinkRichMenu id="newbie" />
   </Dialog>
@@ -177,11 +176,7 @@ describe('#render(token, node, options)', () => {
       Object {
         "messages": Array [
           Object {
-            "text": "Hello",
-            "type": "text",
-          },
-          Object {
-            "text": "LINE",
+            "text": "Hello LINE",
             "type": "text",
           },
           Object {
@@ -237,11 +232,7 @@ describe('#render(token, node, options)', () => {
       Object {
         "messages": Array [
           Object {
-            "text": "Hello",
-            "type": "text",
-          },
-          Object {
-            "text": "LINE",
+            "text": "Hello LINE",
             "type": "text",
           },
           Object {
@@ -291,9 +282,15 @@ describe('#render(token, node, options)', () => {
     bot.start();
 
     expect(
-      bot.render('john_doe', [0, 1, 2, 3, 4, 5], {
-        replyToken: '__REPLY_TOKEN__',
-      })
+      bot.render(
+        'john_doe',
+        <text>
+          1<br />2<br />3<br />4<br />5<br />6
+        </text>,
+        {
+          replyToken: '__REPLY_TOKEN__',
+        }
+      )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"more then 1 messaging request rendered while using replyToken"`
     );
@@ -340,11 +337,7 @@ describe('#renderMulticast(targets, node)', () => {
       Object {
         "messages": Array [
           Object {
-            "text": "Hello",
-            "type": "text",
-          },
-          Object {
-            "text": "LINE",
+            "text": "Hello LINE",
             "type": "text",
           },
           Object {

@@ -1,18 +1,16 @@
-import moxy from 'moxy';
-import Machinat from '../..';
+import Machinat from '@machinat/core';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
-
 import {
   annotateNativeComponent,
-  wrapContainerComponent,
-  wrapPartComponent,
-  wrapUnitComponent,
+  textSegment,
+  breakSegment,
+  partSegment,
+  unitSegment,
+  pauseSegment,
 } from '../componentHelper';
 
-const render = moxy();
-
 describe('asNativeConponent(platform)(componentFn)', () => {
-  it('set "$$native" as the sign for native component', () => {
+  it('define "$$native" and "$$platform" metadata property', () => {
     const _component = () => {};
 
     const Component = annotateNativeComponent('foo')(_component);
@@ -23,100 +21,55 @@ describe('asNativeConponent(platform)(componentFn)', () => {
   });
 });
 
-describe('wrapContainerComponent(_component)', () => {
-  it('pass props to underlying component', async () => {
-    const rendered = [
-      { type: 'text', value: 'foo', node: 'foo', path: '$#MyComponent.foo' },
-      {
-        type: 'unit',
-        value: { bar: 'yes' },
-        node: <bar />,
-        path: '$#MyComponent.bar',
-      },
-    ];
-    const _component = moxy(function MyComponent() {
-      return Promise.resolve(rendered);
-    });
-
-    const Component = wrapContainerComponent(_component);
-    expect(Component.name).toBe('MyComponent');
-
-    await expect(
-      Component(<Component foo="bar" />, render, '$')
-    ).resolves.toEqual(rendered);
-
-    expect(_component.mock).toHaveBeenCalledWith({ foo: 'bar' }, render, '$');
-  });
-
-  it('returns null if underlying value function returns null', async () => {
-    const _component = moxy(() => null);
-    const Component = wrapContainerComponent(_component);
-
-    await expect(Component(<Component />, render, '$')).resolves.toEqual(null);
-    expect(_component.mock).toHaveBeenCalledWith({}, render, '$');
+test('textSegment(node, path, text)', () => {
+  expect(textSegment(<hello />, '$::1', 'world')).toEqual({
+    type: 'text',
+    node: <hello />,
+    value: 'world',
+    path: '$::1',
   });
 });
 
-describe('wrapPartComponent(_component)', () => {
-  it('wrap the values resolved by underlying function into unit segment', async () => {
-    const _component = moxy(function MyComponent(props) {
-      return Promise.resolve(props);
-    });
-
-    const Component = wrapPartComponent(_component);
-    expect(Component.name).toBe('MyComponent');
-
-    await expect(
-      Component(<Component foo="bar" />, render, '$')
-    ).resolves.toEqual([
-      {
-        type: 'part',
-        node: <Component foo="bar" />,
-        value: { foo: 'bar' },
-        path: '$',
-      },
-    ]);
-
-    expect(_component.mock).toHaveBeenCalledWith({ foo: 'bar' }, render, '$');
-  });
-
-  it('returns null if underlying value function returns null', async () => {
-    const _component = moxy(() => Promise.resolve(null));
-    const Component = wrapPartComponent(_component);
-
-    await expect(Component(<Component />, render, '$')).resolves.toEqual(null);
-    expect(_component.mock).toHaveBeenCalledWith({}, render, '$');
+test('breakSegment(node, path)', () => {
+  expect(breakSegment(<hello world />, '$::1')).toEqual({
+    type: 'break',
+    node: <hello world />,
+    value: null,
+    path: '$::1',
   });
 });
 
-describe('wrapUnitComponent(_component)', () => {
-  it('wrap the values resolved by underlying function into unit segment', async () => {
-    const _component = moxy(function MyComponent(props) {
-      return Promise.resolve(props);
-    });
-
-    const Component = wrapUnitComponent(_component);
-    expect(Component.name).toBe('MyComponent');
-
-    await expect(
-      Component(<Component foo="bar" />, render, '$')
-    ).resolves.toEqual([
-      {
-        type: 'unit',
-        node: <Component foo="bar" />,
-        value: { foo: 'bar' },
-        path: '$',
-      },
-    ]);
-
-    expect(_component.mock).toHaveBeenCalledWith({ foo: 'bar' }, render, '$');
+test('pauseSegment(node, path, until)', () => {
+  expect(pauseSegment(<hello />, '$::1')).toEqual({
+    type: 'pause',
+    node: <hello />,
+    value: null,
+    path: '$::1',
   });
 
-  it('returns null if underlying value function returns null', async () => {
-    const _component = moxy(() => Promise.resolve(null));
-    const Component = wrapUnitComponent(_component);
+  const until = async () => 'the_end_of_the_world';
+  expect(pauseSegment(<hello />, '$::1', until)).toEqual({
+    type: 'pause',
+    node: <hello />,
+    value: until,
+    path: '$::1',
+  });
+});
 
-    await expect(Component(<Component />, render, '$')).resolves.toEqual(null);
-    expect(_component.mock).toHaveBeenCalledWith({}, render, '$');
+test('partSegment(node, path, value)', () => {
+  expect(partSegment(<hello />, '$::1', { world: 'peace' })).toEqual({
+    type: 'part',
+    node: <hello />,
+    value: { world: 'peace' },
+    path: '$::1',
+  });
+});
+
+test('unitSegment(node, path, value)', () => {
+  expect(unitSegment(<hello />, '$::1', { world: 'champion' })).toEqual({
+    type: 'unit',
+    node: <hello />,
+    value: { world: 'champion' },
+    path: '$::1',
   });
 });

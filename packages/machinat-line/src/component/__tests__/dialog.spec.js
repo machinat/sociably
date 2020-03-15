@@ -1,15 +1,20 @@
 import moxy from 'moxy';
 import Machinat from '@machinat/core';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
+import Renderer from '@machinat/core/renderer';
 import { Dialog } from '../dialog';
 import { QuickReply } from '../quickReply';
+import { MessageAction } from '../action';
 import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
 
-const renderInner = moxy(async () => null);
-const render = element => element.type(element, renderInner, '$');
+const generalComponentDelegator = moxy(async (node, path) => [
+  { type: 'unit', value: { type: 'text', text: node.type }, node, path },
+]);
+
+const renderer = new Renderer('line', generalComponentDelegator);
 
 beforeEach(() => {
-  renderInner.mock.reset();
+  generalComponentDelegator.mock.reset();
 });
 
 it('is valid native component', () => {
@@ -20,87 +25,96 @@ it('is valid native component', () => {
 });
 
 it('return segments of what children rendered', async () => {
-  const childrenSegments = [
-    {
-      type: 'unit',
-      node: <foo />,
-      value: { type: 'text', text: 'foo' },
-      path: '$:0#Dialog.children:0',
-    },
-    {
-      type: 'unit',
-      node: <bar />,
-      value: { type: 'text', text: 'bar' },
-      path: '$:0#Dialog.children:1',
-    },
-    {
-      type: 'unit',
-      node: <baz />,
-      value: { type: 'text', text: 'baz' },
-      path: '$:0#Dialog.children:2',
-    },
-  ];
-
-  renderInner.mock.fake(async node =>
-    node === '__CHILDREN__' ? childrenSegments : null
-  );
-
-  await expect(render(<Dialog>__CHILDREN__</Dialog>)).resolves.toEqual(
-    childrenSegments
-  );
+  await expect(
+    renderer.render(
+      <Dialog>
+        <foo />
+        <bar />
+        <baz />
+      </Dialog>
+    )
+  ).resolves.toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "node": <foo />,
+              "path": "$#Dialog.children:0",
+              "type": "unit",
+              "value": Object {
+                "text": "foo",
+                "type": "text",
+              },
+            },
+            Object {
+              "node": <bar />,
+              "path": "$#Dialog.children:1",
+              "type": "unit",
+              "value": Object {
+                "text": "bar",
+                "type": "text",
+              },
+            },
+            Object {
+              "node": <baz />,
+              "path": "$#Dialog.children:2",
+              "type": "unit",
+              "value": Object {
+                "text": "baz",
+                "type": "text",
+              },
+            },
+          ]
+        `);
 });
 
 it('hoist children rendered text into text message object', async () => {
-  renderInner.mock.fake(async node =>
-    node === '__CHILDREN__'
-      ? [
-          {
-            type: 'text',
-            node: <foo />,
-            value: 'foo',
-            path: '$:0#Dialog.children:0',
-          },
-          {
-            type: 'unit',
-            node: <bar />,
-            value: { type: 'text', text: 'bar' },
-            path: '$:0#Dialog.children:1',
-          },
-          {
-            type: 'text',
-            node: <baz />,
-            value: 'baz',
-            path: '$:0#Dialog.children:2',
-          },
-        ]
-      : null
-  );
-
-  await expect(render(<Dialog>__CHILDREN__</Dialog>)).resolves.toEqual([
-    {
-      type: 'unit',
-      node: <foo />,
-      value: { type: 'text', text: 'foo' },
-      path: '$:0#Dialog.children:0',
-    },
-    {
-      type: 'unit',
-      node: <bar />,
-      value: { type: 'text', text: 'bar' },
-      path: '$:0#Dialog.children:1',
-    },
-    {
-      type: 'unit',
-      node: <baz />,
-      value: { type: 'text', text: 'baz' },
-      path: '$:0#Dialog.children:2',
-    },
+  generalComponentDelegator.mock.fake(async (node, path) => [
+    { type: 'break', node, path },
   ]);
+
+  await expect(
+    renderer.render(
+      <Dialog>
+        foo
+        <br />
+        bar
+        <br />
+        baz
+      </Dialog>
+    )
+  ).resolves.toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "node": "foo",
+              "path": "$#Dialog.children:0",
+              "type": "unit",
+              "value": Object {
+                "text": "foo",
+                "type": "text",
+              },
+            },
+            Object {
+              "node": "bar",
+              "path": "$#Dialog.children:2",
+              "type": "unit",
+              "value": Object {
+                "text": "bar",
+                "type": "text",
+              },
+            },
+            Object {
+              "node": "baz",
+              "path": "$#Dialog.children:4",
+              "type": "unit",
+              "value": Object {
+                "text": "baz",
+                "type": "text",
+              },
+            },
+          ]
+        `);
 });
 
 it('attach quickReply to last message object', async () => {
-  const SomeBody = () => {};
-
   const childrenSegments = [
     {
       type: 'text',
@@ -125,7 +139,7 @@ it('attach quickReply to last message object', async () => {
     },
     {
       type: 'unit',
-      node: <SomeBody />,
+      node: <somebody />,
       value: {
         [CHANNEL_API_CALL_GETTER]() {
           return { method: 'GET', path: 'with/some', body: null };
@@ -138,89 +152,106 @@ it('attach quickReply to last message object', async () => {
     },
   ];
 
-  const quickReplySegments = [
-    {
-      type: 'part',
-      node: <QuickReply action="..." />,
-      value: {
-        type: 'action',
-        action: { type: 'message', label: '👮‍', text: 'Some superhero' },
-      },
-    },
-    {
-      type: 'part',
-      node: <QuickReply action="..." />,
-      value: {
-        type: 'action',
-        action: {
-          type: 'message',
-          label: '🧚‍',
-          text: 'Some fairytale bliss',
-        },
-      },
-    },
-    {
-      type: 'part',
-      node: <QuickReply action="..." />,
-      value: {
-        type: 'action',
-        imageUrl: 'https://somthing.just.like/this',
-        action: {
-          type: 'message',
-          label: '💑',
-          text: 'Somebody I can kiss',
-        },
-      },
-    },
-  ];
-
-  renderInner.mock.fake(async node =>
-    node === '__CHILDREN__' ? childrenSegments : quickReplySegments
-  );
+  generalComponentDelegator.mock.fakeReturnValue(childrenSegments);
 
   await expect(
-    render(<Dialog quickReplies="__QUICK_REPLIES__">__CHILDREN__</Dialog>)
-  ).resolves.toEqual([
-    {
-      type: 'unit',
-      node: <foo />,
-      value: { type: 'text', text: 'Where you wanna go' },
-      path: '$:0#Dialog.children:0',
-    },
-    childrenSegments[1],
-    {
-      type: 'unit',
-      node: <baz />,
-      value: {
-        type: 'text',
-        text: "I'm not looking for",
-        quickReply: {
-          items: quickReplySegments.map(seg => seg.value),
-        },
-      },
-      path: '$:0#Dialog.children:2',
-    },
-    childrenSegments[3],
-  ]);
+    renderer.render(
+      <Dialog
+        quickReplies={[
+          <QuickReply
+            action={<MessageAction label="👮‍" text="Some superhero" />}
+          />,
+          <QuickReply
+            action={<MessageAction label="🧚‍" text="Some fairytale bliss" />}
+          />,
+          <QuickReply
+            action={<MessageAction label="💑" text="Somebody I can kiss" />}
+            imageUrl="https://somthing.just.like/this"
+          />,
+        ]}
+      >
+        <content />
+      </Dialog>
+    )
+  ).resolves.toMatchInlineSnapshot(`
+          Array [
+            Object {
+              "node": <foo />,
+              "path": "$:0#Dialog.children:0",
+              "type": "unit",
+              "value": Object {
+                "text": "Where you wanna go",
+                "type": "text",
+              },
+            },
+            Object {
+              "node": <bar />,
+              "path": "$:0#Dialog.children:1",
+              "type": "unit",
+              "value": Object {
+                "text": "How much you wanna risk",
+                "type": "text",
+              },
+            },
+            Object {
+              "node": <baz />,
+              "path": "$:0#Dialog.children:2",
+              "type": "unit",
+              "value": Object {
+                "quickReply": Object {
+                  "items": Array [
+                    Object {
+                      "action": Object {
+                        "label": "👮‍",
+                        "text": "Some superhero",
+                        "type": "message",
+                      },
+                      "imageUrl": undefined,
+                      "type": "action",
+                    },
+                    Object {
+                      "action": Object {
+                        "label": "🧚‍",
+                        "text": "Some fairytale bliss",
+                        "type": "message",
+                      },
+                      "imageUrl": undefined,
+                      "type": "action",
+                    },
+                    Object {
+                      "action": Object {
+                        "label": "💑",
+                        "text": "Somebody I can kiss",
+                        "type": "message",
+                      },
+                      "imageUrl": undefined,
+                      "type": "action",
+                    },
+                  ],
+                },
+                "text": "I'm not looking for",
+                "type": "text",
+              },
+            },
+            Object {
+              "node": <somebody />,
+              "path": "$:0#Dialog.children:3",
+              "type": "unit",
+              "value": Object {
+                Symbol(line.segment.channel_api_call_getter): [Function],
+                Symbol(line.segment.bulk_api_call_getter): [Function],
+              },
+            },
+          ]
+        `);
 });
 
 it('return null if children is empty', async () => {
-  renderInner.mock.fake(async node =>
-    node === '__QUICK_REPLIES__'
-      ? [
-          {
-            type: 'part',
-            node: <QuickReply action="..." />,
-            value: {
-              type: 'action',
-              action: { type: 'message', text: 'just like this' },
-            },
-          },
-        ]
-      : null
-  );
-
   await expect(
-    render(<Dialog quickReplies="__QUICK_REPLIES__" />)
+    renderer.render(
+      <Dialog
+        quickReplies={[<QuickReply action={<MessageAction text="nope" />} />]}
+      />
+    )
   ).resolves.toBe(null);
 });

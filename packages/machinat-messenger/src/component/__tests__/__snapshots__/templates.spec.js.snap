@@ -2,769 +2,790 @@
 
 exports[`ButtonTemplate match snapshot 1`] = `
 Array [
-  Array [
-    Object {
-      "node": <ButtonTemplate
-        sharable={true}
-        text="abc"
-      >
-        <Machinat.Fragment>
+  Object {
+    "node": <ButtonTemplate
+      buttons={
+        Array [
           <URLButton
             title="check"
             url="http://xxx.yy.z"
-          />
+          />,
           <PostbackButton
             payload="_MORE_"
             title="more"
-          />
+          />,
           <CallButton
             number="+12345678"
             title="call us"
-          />
-        </Machinat.Fragment>
-      </ButtonTemplate>,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "buttons": Array [
-                "__RENDERED_BUTTON_OBJ_1__",
-                "__RENDERED_BUTTON_OBJ_2__",
-                "__RENDERED_BUTTON_OBJ_3__",
-              ],
-              "sharable": true,
-              "template_type": "button",
-              "text": "
-__RENDERED_TEXT_1__
-__RENDERED_TEXT_2__
-__RENDERED_TEXT_3__",
-            },
-            "type": "template",
+          />,
+        ]
+      }
+    >
+      hello button template
+    </ButtonTemplate>,
+    "path": "$::0",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "buttons": Array [
+              Object {
+                "fallback_url": undefined,
+                "messenger_extensions": undefined,
+                "title": "check",
+                "type": "web_url",
+                "url": "http://xxx.yy.z",
+                "webview_height_ratio": undefined,
+                "webview_share_button": undefined,
+              },
+              Object {
+                "payload": "_MORE_",
+                "title": "more",
+                "type": "postback",
+              },
+              Object {
+                "number": "+12345678",
+                "title": "call us",
+                "type": "phone_number",
+              },
+            ],
+            "sharable": undefined,
+            "template_type": "button",
+            "text": "hello button template",
           },
+          "type": "template",
         },
       },
     },
-  ],
-  Array [
-    Object {
-      "node": <ButtonTemplate
-        text={
-          Array [
-            <i>
-              foo
-            </i>,
-            <b>
-              bar
-            </b>,
-            <del>
-              baz
-            </del>,
-          ]
-        }
-      >
-        <Machinat.Fragment>
+  },
+  Object {
+    "node": <ButtonTemplate
+      buttons={
+        Array [
           <URLButton
             title="check"
             url="http://xxx.yy.z"
-          />
+          />,
           <PostbackButton
             payload="_MORE_"
             title="more"
-          />
+          />,
           <CallButton
             number="+12345678"
             title="call us"
-          />
-        </Machinat.Fragment>
-      </ButtonTemplate>,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "buttons": Array [
-                "__RENDERED_BUTTON_OBJ_1__",
-                "__RENDERED_BUTTON_OBJ_2__",
-                "__RENDERED_BUTTON_OBJ_3__",
-              ],
-              "sharable": undefined,
-              "template_type": "button",
-              "text": "
-__RENDERED_TEXT_1__
-__RENDERED_TEXT_2__
-__RENDERED_TEXT_3__",
-            },
-            "type": "template",
+          />,
+        ]
+      }
+      sharable={true}
+    >
+      <i>
+        foo
+      </i>
+      <b>
+        bar
+      </b>
+      <del>
+        baz
+      </del>
+    </ButtonTemplate>,
+    "path": "$::1",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "buttons": Array [
+              Object {
+                "fallback_url": undefined,
+                "messenger_extensions": undefined,
+                "title": "check",
+                "type": "web_url",
+                "url": "http://xxx.yy.z",
+                "webview_height_ratio": undefined,
+                "webview_share_button": undefined,
+              },
+              Object {
+                "payload": "_MORE_",
+                "title": "more",
+                "type": "postback",
+              },
+              Object {
+                "number": "+12345678",
+                "title": "call us",
+                "type": "phone_number",
+              },
+            ],
+            "sharable": true,
+            "template_type": "button",
+            "text": "foobarbaz",
           },
+          "type": "template",
         },
       },
     },
-  ],
-]
-`;
-
-exports[`GenericItem match snapshot 1`] = `
-Array [
-  Array [
-    Object {
-      "node": <GenericItem
-        title="foo"
-      />,
-      "path": "$",
-      "type": "part",
-      "value": Object {
-        "buttons": undefined,
-        "default_action": undefined,
-        "image_url": undefined,
-        "subtitle": undefined,
-        "title": "foo",
-      },
-    },
-  ],
-  Array [
-    Object {
-      "node": <GenericItem
-        subtitle="bar"
-        title="foo"
-      />,
-      "path": "$",
-      "type": "part",
-      "value": Object {
-        "buttons": undefined,
-        "default_action": undefined,
-        "image_url": undefined,
-        "subtitle": "bar",
-        "title": "foo",
-      },
-    },
-  ],
-  Array [
-    Object {
-      "node": <GenericItem
-        imageURL="http://foo.bar/image"
-        title="foo"
-      />,
-      "path": "$",
-      "type": "part",
-      "value": Object {
-        "buttons": undefined,
-        "default_action": undefined,
-        "image_url": "http://foo.bar/image",
-        "subtitle": undefined,
-        "title": "foo",
-      },
-    },
-  ],
-  Array [
-    Object {
-      "node": <GenericItem
-        title="foo"
-      >
-        <Machinat.Fragment>
-          <URLButton
-            title="check"
-            url="http://xxx.yy.z"
-          />
-          <PostbackButton
-            payload="_MORE_"
-            title="more"
-          />
-          <CallButton
-            number="+12345678"
-            title="call us"
-          />
-        </Machinat.Fragment>
-      </GenericItem>,
-      "path": "$",
-      "type": "part",
-      "value": Object {
-        "buttons": Array [
-          "__RENDERED_BUTTON_OBJ_1__",
-          "__RENDERED_BUTTON_OBJ_2__",
-          "__RENDERED_BUTTON_OBJ_3__",
-        ],
-        "default_action": undefined,
-        "image_url": undefined,
-        "subtitle": undefined,
-        "title": "foo",
-      },
-    },
-  ],
-  Array [
-    Object {
-      "node": <GenericItem
-        defaultAction={
-          <URLButton
-            extensions={true}
-            fallbackURL="http://foo.baz/login"
-            heightRatio="compact"
-            hideShareButton={true}
-            title="TITLE!"
-            url="http://foo.bar/"
-          />
-        }
-        title="foo"
-      />,
-      "path": "$",
-      "type": "part",
-      "value": Object {
-        "buttons": undefined,
-        "default_action": Object {
-          "fallback_url": "http://foo.baz/login",
-          "messenger_extensions": true,
-          "type": "web_url",
-          "url": "http://foo.bar/",
-          "webview_height_ratio": "compact",
-          "webview_share_button": "hide",
-        },
-        "image_url": undefined,
-        "subtitle": undefined,
-        "title": "foo",
-      },
-    },
-  ],
-  Array [
-    Object {
-      "node": <GenericItem
-        defaultAction={
-          Object {
-            "fallback_url": "http://foo.baz/login",
-            "messenger_extensions": true,
-            "type": "web_url",
-            "url": "http://foo.bar/",
-            "webview_height_ratio": "compact",
-            "webview_share_button": "hide",
-          }
-        }
-        title="foo"
-      />,
-      "path": "$",
-      "type": "part",
-      "value": Object {
-        "buttons": undefined,
-        "default_action": Object {
-          "fallback_url": "http://foo.baz/login",
-          "messenger_extensions": true,
-          "type": "web_url",
-          "url": "http://foo.bar/",
-          "webview_height_ratio": "compact",
-          "webview_share_button": "hide",
-        },
-        "image_url": undefined,
-        "subtitle": undefined,
-        "title": "foo",
-      },
-    },
-  ],
-  Array [
-    Object {
-      "node": <GenericItem
-        defaultAction={
-          Object {
-            "fallback_url": "http://foo.baz/login",
-            "messenger_extensions": true,
-            "type": "web_url",
-            "url": "http://foo.bar/",
-            "webview_height_ratio": "compact",
-            "webview_share_button": "hide",
-          }
-        }
-        imageURL="http://foo.bar/image"
-        subtitle="bar"
-        title="foo"
-      >
-        <Machinat.Fragment>
-          <URLButton
-            title="check"
-            url="http://xxx.yy.z"
-          />
-          <PostbackButton
-            payload="_MORE_"
-            title="more"
-          />
-          <CallButton
-            number="+12345678"
-            title="call us"
-          />
-        </Machinat.Fragment>
-      </GenericItem>,
-      "path": "$",
-      "type": "part",
-      "value": Object {
-        "buttons": Array [
-          "__RENDERED_BUTTON_OBJ_1__",
-          "__RENDERED_BUTTON_OBJ_2__",
-          "__RENDERED_BUTTON_OBJ_3__",
-        ],
-        "default_action": Object {
-          "fallback_url": "http://foo.baz/login",
-          "messenger_extensions": true,
-          "type": "web_url",
-          "url": "http://foo.bar/",
-          "webview_height_ratio": "compact",
-          "webview_share_button": "hide",
-        },
-        "image_url": "http://foo.bar/image",
-        "subtitle": "bar",
-        "title": "foo",
-      },
-    },
-  ],
+  },
 ]
 `;
 
 exports[`GenericTemplate match snapshot 1`] = `
 Array [
-  Array [
-    Object {
-      "node": <GenericTemplate>
-        <Machinat.Fragment>
-          <GenericItem
-            subtitle="bar"
-            title="foo1"
+  Object {
+    "node": <GenericTemplate>
+      <GenericItem
+        buttons={
+          Array [
+            <URLButton
+              title="check"
+              url="http://xxx.yy.z"
+            />,
+          ]
+        }
+        imageURL="http://foo.bar/image"
+        title="foo"
+      />
+      <GenericItem
+        buttons={
+          Array [
+            <URLButton
+              title="check"
+              url="http://xxx.yy.z"
+            />,
+            <PostbackButton
+              payload="_MORE_"
+              title="more"
+            />,
+            <CallButton
+              number="+12345678"
+              title="call us"
+            />,
+          ]
+        }
+        defaultAction={
+          <URLButton
+            title="TITLE!"
+            url="http://foo.bar/"
           />
-          <GenericItem
-            subtitle="baz"
-            title="foo2"
-          />
-          <GenericItem
-            imageURL="http://foo.bar/image"
-            title="foo3"
-          />
-        </Machinat.Fragment>
-      </GenericTemplate>,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "elements": Array [
-                "__RENDERED_GENERIC_ITEM_OBJ_1__",
-                "__RENDERED_GENERIC_ITEM_OBJ_2__",
-                "__RENDERED_GENERIC_ITEM_OBJ_3__",
-              ],
-              "image_aspect_ratio": undefined,
-              "sharable": undefined,
-              "template_type": "generic",
-            },
-            "type": "template",
+        }
+        imageURL="http://foo.bar/image"
+        subtitle="bar"
+        title="foo"
+      />
+    </GenericTemplate>,
+    "path": "$::0",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "elements": Array [
+              Object {
+                "buttons": Array [
+                  Object {
+                    "fallback_url": undefined,
+                    "messenger_extensions": undefined,
+                    "title": "check",
+                    "type": "web_url",
+                    "url": "http://xxx.yy.z",
+                    "webview_height_ratio": undefined,
+                    "webview_share_button": undefined,
+                  },
+                ],
+                "default_action": undefined,
+                "image_url": "http://foo.bar/image",
+                "subtitle": undefined,
+                "title": "foo",
+              },
+              Object {
+                "buttons": Array [
+                  Object {
+                    "fallback_url": undefined,
+                    "messenger_extensions": undefined,
+                    "title": "check",
+                    "type": "web_url",
+                    "url": "http://xxx.yy.z",
+                    "webview_height_ratio": undefined,
+                    "webview_share_button": undefined,
+                  },
+                  Object {
+                    "payload": "_MORE_",
+                    "title": "more",
+                    "type": "postback",
+                  },
+                  Object {
+                    "number": "+12345678",
+                    "title": "call us",
+                    "type": "phone_number",
+                  },
+                ],
+                "default_action": Object {
+                  "fallback_url": undefined,
+                  "messenger_extensions": undefined,
+                  "type": "web_url",
+                  "url": "http://foo.bar/",
+                  "webview_height_ratio": undefined,
+                  "webview_share_button": undefined,
+                },
+                "image_url": "http://foo.bar/image",
+                "subtitle": "bar",
+                "title": "foo",
+              },
+            ],
+            "image_aspect_ratio": undefined,
+            "sharable": undefined,
+            "template_type": "generic",
           },
+          "type": "template",
         },
       },
     },
-  ],
-  Array [
-    Object {
-      "node": <GenericTemplate
-        imageAspectRatio="square"
-        sharable={true}
-      >
-        <Machinat.Fragment>
-          <GenericItem
-            subtitle="bar"
-            title="foo1"
+  },
+  Object {
+    "node": <GenericTemplate
+      imageAspectRatio="square"
+      sharable={true}
+    >
+      <GenericItem
+        buttons={
+          Array [
+            <URLButton
+              title="check"
+              url="http://xxx.yy.z"
+            />,
+          ]
+        }
+        imageURL="http://foo.bar/image"
+        title="foo"
+      />
+      <GenericItem
+        buttons={
+          Array [
+            <URLButton
+              title="check"
+              url="http://xxx.yy.z"
+            />,
+            <PostbackButton
+              payload="_MORE_"
+              title="more"
+            />,
+            <CallButton
+              number="+12345678"
+              title="call us"
+            />,
+          ]
+        }
+        defaultAction={
+          <URLButton
+            title="TITLE!"
+            url="http://foo.bar/"
           />
-          <GenericItem
-            subtitle="baz"
-            title="foo2"
-          />
-          <GenericItem
-            imageURL="http://foo.bar/image"
-            title="foo3"
-          />
-        </Machinat.Fragment>
-      </GenericTemplate>,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "elements": Array [
-                "__RENDERED_GENERIC_ITEM_OBJ_1__",
-                "__RENDERED_GENERIC_ITEM_OBJ_2__",
-                "__RENDERED_GENERIC_ITEM_OBJ_3__",
-              ],
-              "image_aspect_ratio": "square",
-              "sharable": true,
-              "template_type": "generic",
-            },
-            "type": "template",
+        }
+        imageURL="http://foo.bar/image"
+        subtitle="bar"
+        title="foo"
+      />
+    </GenericTemplate>,
+    "path": "$::1",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "elements": Array [
+              Object {
+                "buttons": Array [
+                  Object {
+                    "fallback_url": undefined,
+                    "messenger_extensions": undefined,
+                    "title": "check",
+                    "type": "web_url",
+                    "url": "http://xxx.yy.z",
+                    "webview_height_ratio": undefined,
+                    "webview_share_button": undefined,
+                  },
+                ],
+                "default_action": undefined,
+                "image_url": "http://foo.bar/image",
+                "subtitle": undefined,
+                "title": "foo",
+              },
+              Object {
+                "buttons": Array [
+                  Object {
+                    "fallback_url": undefined,
+                    "messenger_extensions": undefined,
+                    "title": "check",
+                    "type": "web_url",
+                    "url": "http://xxx.yy.z",
+                    "webview_height_ratio": undefined,
+                    "webview_share_button": undefined,
+                  },
+                  Object {
+                    "payload": "_MORE_",
+                    "title": "more",
+                    "type": "postback",
+                  },
+                  Object {
+                    "number": "+12345678",
+                    "title": "call us",
+                    "type": "phone_number",
+                  },
+                ],
+                "default_action": Object {
+                  "fallback_url": undefined,
+                  "messenger_extensions": undefined,
+                  "type": "web_url",
+                  "url": "http://foo.bar/",
+                  "webview_height_ratio": undefined,
+                  "webview_share_button": undefined,
+                },
+                "image_url": "http://foo.bar/image",
+                "subtitle": "bar",
+                "title": "foo",
+              },
+            ],
+            "image_aspect_ratio": "square",
+            "sharable": true,
+            "template_type": "generic",
           },
+          "type": "template",
         },
       },
     },
-  ],
+  },
 ]
 `;
 
 exports[`ListTemplate match snapshot 1`] = `
 Array [
-  Array [
-    Object {
-      "node": <ListTemplate>
-        <Machinat.Fragment>
-          <GenericItem
-            subtitle="bar"
-            title="foo1"
-          />
-          <GenericItem
-            subtitle="baz"
-            title="foo2"
-          />
-          <GenericItem
-            imageURL="http://foo.bar/image"
-            title="foo3"
-          />
-        </Machinat.Fragment>
-      </ListTemplate>,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "buttons": undefined,
-              "elements": Array [
-                "__RENDERED_GENERIC_ITEM_OBJ_1__",
-                "__RENDERED_GENERIC_ITEM_OBJ_2__",
-                "__RENDERED_GENERIC_ITEM_OBJ_3__",
-              ],
-              "sharable": undefined,
-              "template_type": "list",
-              "top_element_style": undefined,
-            },
-            "type": "template",
-          },
-        },
-      },
-    },
-  ],
-  Array [
-    Object {
-      "node": <ListTemplate
-        button={
+  Object {
+    "node": <ListTemplate>
+      <GenericItem
+        buttons={
+          Array [
+            <URLButton
+              title="check"
+              url="http://xxx.yy.z"
+            />,
+          ]
+        }
+        imageURL="http://foo.bar/image"
+        title="foo"
+      />
+      <GenericItem
+        buttons={
+          Array [
+            <PostbackButton
+              payload="_MORE_"
+              title="more"
+            />,
+          ]
+        }
+        defaultAction={
           <URLButton
-            title="check"
-            url="http://xxx.yy.z"
+            title="TITLE!"
+            url="http://foo.bar/"
           />
         }
-      >
-        <Machinat.Fragment>
-          <GenericItem
-            subtitle="bar"
-            title="foo1"
-          />
-          <GenericItem
-            subtitle="baz"
-            title="foo2"
-          />
-          <GenericItem
-            imageURL="http://foo.bar/image"
-            title="foo3"
-          />
-        </Machinat.Fragment>
-      </ListTemplate>,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "buttons": Array [
-                "__RENDERED_BUTTON_OBJ_1__",
-              ],
-              "elements": Array [
-                "__RENDERED_GENERIC_ITEM_OBJ_1__",
-                "__RENDERED_GENERIC_ITEM_OBJ_2__",
-                "__RENDERED_GENERIC_ITEM_OBJ_3__",
-              ],
-              "sharable": undefined,
-              "template_type": "list",
-              "top_element_style": undefined,
-            },
-            "type": "template",
+        imageURL="http://foo.bar/image"
+        subtitle="bar"
+        title="foo"
+      />
+    </ListTemplate>,
+    "path": "$::0",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "buttons": undefined,
+            "elements": Array [
+              Object {
+                "buttons": Array [
+                  Object {
+                    "fallback_url": undefined,
+                    "messenger_extensions": undefined,
+                    "title": "check",
+                    "type": "web_url",
+                    "url": "http://xxx.yy.z",
+                    "webview_height_ratio": undefined,
+                    "webview_share_button": undefined,
+                  },
+                ],
+                "default_action": undefined,
+                "image_url": "http://foo.bar/image",
+                "subtitle": undefined,
+                "title": "foo",
+              },
+              Object {
+                "buttons": Array [
+                  Object {
+                    "payload": "_MORE_",
+                    "title": "more",
+                    "type": "postback",
+                  },
+                ],
+                "default_action": Object {
+                  "fallback_url": undefined,
+                  "messenger_extensions": undefined,
+                  "type": "web_url",
+                  "url": "http://foo.bar/",
+                  "webview_height_ratio": undefined,
+                  "webview_share_button": undefined,
+                },
+                "image_url": "http://foo.bar/image",
+                "subtitle": "bar",
+                "title": "foo",
+              },
+            ],
+            "sharable": undefined,
+            "template_type": "list",
+            "top_element_style": undefined,
           },
+          "type": "template",
         },
       },
     },
-  ],
-  Array [
-    Object {
-      "node": <ListTemplate
-        button={
+  },
+  Object {
+    "node": <ListTemplate
+      button={
+        <PostbackButton
+          payload="_MORE_"
+          title="more"
+        />
+      }
+      imageAspectRatio="square"
+      sharable={true}
+    >
+      <GenericItem
+        buttons={
+          Array [
+            <URLButton
+              title="check"
+              url="http://xxx.yy.z"
+            />,
+          ]
+        }
+        imageURL="http://foo.bar/image"
+        title="foo"
+      />
+      <GenericItem
+        buttons={
+          Array [
+            <PostbackButton
+              payload="_MORE_"
+              title="more"
+            />,
+          ]
+        }
+        defaultAction={
           <URLButton
-            title="check"
-            url="http://xxx.yy.z"
+            title="TITLE!"
+            url="http://foo.bar/"
           />
         }
-        imageAspectRatio="square"
-        sharable={true}
-      >
-        <Machinat.Fragment>
-          <GenericItem
-            subtitle="bar"
-            title="foo1"
-          />
-          <GenericItem
-            subtitle="baz"
-            title="foo2"
-          />
-          <GenericItem
-            imageURL="http://foo.bar/image"
-            title="foo3"
-          />
-        </Machinat.Fragment>
-      </ListTemplate>,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "buttons": Array [
-                "__RENDERED_BUTTON_OBJ_1__",
-              ],
-              "elements": Array [
-                "__RENDERED_GENERIC_ITEM_OBJ_1__",
-                "__RENDERED_GENERIC_ITEM_OBJ_2__",
-                "__RENDERED_GENERIC_ITEM_OBJ_3__",
-              ],
-              "sharable": true,
-              "template_type": "list",
-              "top_element_style": undefined,
-            },
-            "type": "template",
+        imageURL="http://foo.bar/image"
+        subtitle="bar"
+        title="foo"
+      />
+    </ListTemplate>,
+    "path": "$::1",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "buttons": Array [
+              Object {
+                "payload": "_MORE_",
+                "title": "more",
+                "type": "postback",
+              },
+            ],
+            "elements": Array [
+              Object {
+                "buttons": Array [
+                  Object {
+                    "fallback_url": undefined,
+                    "messenger_extensions": undefined,
+                    "title": "check",
+                    "type": "web_url",
+                    "url": "http://xxx.yy.z",
+                    "webview_height_ratio": undefined,
+                    "webview_share_button": undefined,
+                  },
+                ],
+                "default_action": undefined,
+                "image_url": "http://foo.bar/image",
+                "subtitle": undefined,
+                "title": "foo",
+              },
+              Object {
+                "buttons": Array [
+                  Object {
+                    "payload": "_MORE_",
+                    "title": "more",
+                    "type": "postback",
+                  },
+                ],
+                "default_action": Object {
+                  "fallback_url": undefined,
+                  "messenger_extensions": undefined,
+                  "type": "web_url",
+                  "url": "http://foo.bar/",
+                  "webview_height_ratio": undefined,
+                  "webview_share_button": undefined,
+                },
+                "image_url": "http://foo.bar/image",
+                "subtitle": "bar",
+                "title": "foo",
+              },
+            ],
+            "sharable": true,
+            "template_type": "list",
+            "top_element_style": undefined,
           },
+          "type": "template",
         },
       },
     },
-  ],
+  },
 ]
 `;
 
 exports[`MediaTemplate match snapshot 1`] = `
 Array [
-  Array [
-    Object {
-      "node": <MediaTemplate
-        type="image"
-        url="http://..."
-      >
-        <Machinat.Fragment>
+  Object {
+    "node": <MediaTemplate
+      buttons={
+        Array [
           <URLButton
             title="check"
             url="http://xxx.yy.z"
-          />
+          />,
           <PostbackButton
             payload="_MORE_"
             title="more"
-          />
+          />,
           <CallButton
             number="+12345678"
             title="call us"
-          />
-        </Machinat.Fragment>
-      </MediaTemplate>,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "elements": Array [
-                Object {
-                  "attachment_id": undefined,
-                  "buttons": Array [
-                    "__RENDERED_BUTTON_OBJ_1__",
-                    "__RENDERED_BUTTON_OBJ_2__",
-                    "__RENDERED_BUTTON_OBJ_3__",
-                  ],
-                  "media_type": "image",
-                  "url": "http://...",
-                },
-              ],
-              "sharable": undefined,
-              "template_type": "media",
-            },
-            "type": "template",
+          />,
+        ]
+      }
+      type="image"
+      url="http://..."
+    />,
+    "path": "$::0",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "elements": Array [
+              Object {
+                "attachment_id": undefined,
+                "buttons": Array [
+                  Object {
+                    "fallback_url": undefined,
+                    "messenger_extensions": undefined,
+                    "title": "check",
+                    "type": "web_url",
+                    "url": "http://xxx.yy.z",
+                    "webview_height_ratio": undefined,
+                    "webview_share_button": undefined,
+                  },
+                  Object {
+                    "payload": "_MORE_",
+                    "title": "more",
+                    "type": "postback",
+                  },
+                  Object {
+                    "number": "+12345678",
+                    "title": "call us",
+                    "type": "phone_number",
+                  },
+                ],
+                "media_type": "image",
+                "url": "http://...",
+              },
+            ],
+            "sharable": undefined,
+            "template_type": "media",
           },
+          "type": "template",
         },
       },
     },
-  ],
-  Array [
-    Object {
-      "node": <MediaTemplate
-        attachmentId="__ID__"
-        sharable={true}
-        type="video"
-      >
-        <Machinat.Fragment>
+  },
+  Object {
+    "node": <MediaTemplate
+      attachmentId="__ID__"
+      buttons={
+        Array [
           <URLButton
             title="check"
             url="http://xxx.yy.z"
-          />
+          />,
           <PostbackButton
             payload="_MORE_"
             title="more"
-          />
+          />,
           <CallButton
             number="+12345678"
             title="call us"
-          />
-        </Machinat.Fragment>
-      </MediaTemplate>,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "elements": Array [
-                Object {
-                  "attachment_id": "__ID__",
-                  "buttons": Array [
-                    "__RENDERED_BUTTON_OBJ_1__",
-                    "__RENDERED_BUTTON_OBJ_2__",
-                    "__RENDERED_BUTTON_OBJ_3__",
-                  ],
-                  "media_type": "video",
-                  "url": undefined,
-                },
-              ],
-              "sharable": true,
-              "template_type": "media",
-            },
-            "type": "template",
+          />,
+        ]
+      }
+      sharable={true}
+      type="video"
+    />,
+    "path": "$::1",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "elements": Array [
+              Object {
+                "attachment_id": "__ID__",
+                "buttons": Array [
+                  Object {
+                    "fallback_url": undefined,
+                    "messenger_extensions": undefined,
+                    "title": "check",
+                    "type": "web_url",
+                    "url": "http://xxx.yy.z",
+                    "webview_height_ratio": undefined,
+                    "webview_share_button": undefined,
+                  },
+                  Object {
+                    "payload": "_MORE_",
+                    "title": "more",
+                    "type": "postback",
+                  },
+                  Object {
+                    "number": "+12345678",
+                    "title": "call us",
+                    "type": "phone_number",
+                  },
+                ],
+                "media_type": "video",
+                "url": undefined,
+              },
+            ],
+            "sharable": true,
+            "template_type": "media",
           },
+          "type": "template",
         },
       },
     },
-  ],
+  },
 ]
 `;
 
 exports[`OpenGraphTemplate match snapshot 1`] = `
 Array [
-  Array [
-    Object {
-      "node": <OpenGraphTemplate
-        url="http://..."
-      >
-        <Machinat.Fragment>
-          <URLButton
-            title="check"
-            url="http://xxx.yy.z"
-          />
-          <PostbackButton
-            payload="_MORE_"
-            title="more"
-          />
-          <CallButton
-            number="+12345678"
-            title="call us"
-          />
-        </Machinat.Fragment>
-      </OpenGraphTemplate>,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "elements": Array [
-                Object {
-                  "buttons": Array [
-                    "__RENDERED_BUTTON_OBJ_1__",
-                    "__RENDERED_BUTTON_OBJ_2__",
-                    "__RENDERED_BUTTON_OBJ_3__",
-                  ],
-                  "url": "http://...",
-                },
-              ],
-              "sharable": undefined,
-              "template_type": "open_graph",
-            },
-            "type": "template",
-          },
-        },
-      },
-    },
-  ],
-  Array [
-    Object {
-      "node": <OpenGraphTemplate
-        sharable={true}
-        url="http://..."
-      >
-        <Machinat.Fragment>
-          <URLButton
-            title="check"
-            url="http://xxx.yy.z"
-          />
-          <PostbackButton
-            payload="_MORE_"
-            title="more"
-          />
-          <CallButton
-            number="+12345678"
-            title="call us"
-          />
-        </Machinat.Fragment>
-      </OpenGraphTemplate>,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "elements": Array [
-                Object {
-                  "buttons": Array [
-                    "__RENDERED_BUTTON_OBJ_1__",
-                    "__RENDERED_BUTTON_OBJ_2__",
-                    "__RENDERED_BUTTON_OBJ_3__",
-                  ],
-                  "url": "http://...",
-                },
-              ],
-              "sharable": true,
-              "template_type": "open_graph",
-            },
-            "type": "template",
-          },
-        },
-      },
-    },
-  ],
-]
-`;
-
-exports[`ReceiptItem match snapshot 1`] = `
-Array [
   Object {
-    "node": <ReceiptItem
-      currency="USD"
-      imageURL="http://i.robot/avatar"
-      price={99.99}
-      quantity={999}
-      subtitle="It's real!"
-      title="A robot!"
+    "node": <OpenGraphTemplate
+      buttons={
+        Array [
+          <URLButton
+            title="check"
+            url="http://xxx.yy.z"
+          />,
+          <PostbackButton
+            payload="_MORE_"
+            title="more"
+          />,
+          <CallButton
+            number="+12345678"
+            title="call us"
+          />,
+        ]
+      }
+      url="http://..."
     />,
-    "path": "$",
-    "type": "part",
+    "path": "$::0",
+    "type": "unit",
     "value": Object {
-      "currency": "USD",
-      "image_url": "http://i.robot/avatar",
-      "price": 99.99,
-      "quantity": 999,
-      "subtitle": "It's real!",
-      "title": "A robot!",
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "elements": Array [
+              Object {
+                "buttons": Array [
+                  Object {
+                    "fallback_url": undefined,
+                    "messenger_extensions": undefined,
+                    "title": "check",
+                    "type": "web_url",
+                    "url": "http://xxx.yy.z",
+                    "webview_height_ratio": undefined,
+                    "webview_share_button": undefined,
+                  },
+                  Object {
+                    "payload": "_MORE_",
+                    "title": "more",
+                    "type": "postback",
+                  },
+                  Object {
+                    "number": "+12345678",
+                    "title": "call us",
+                    "type": "phone_number",
+                  },
+                ],
+                "url": "http://...",
+              },
+            ],
+            "sharable": undefined,
+            "template_type": "open_graph",
+          },
+          "type": "template",
+        },
+      },
+    },
+  },
+  Object {
+    "node": <OpenGraphTemplate
+      sharablebuttons={
+        Array [
+          <URLButton
+            title="check"
+            url="http://xxx.yy.z"
+          />,
+          <PostbackButton
+            payload="_MORE_"
+            title="more"
+          />,
+          <CallButton
+            number="+12345678"
+            title="call us"
+          />,
+        ]
+      }
+      url="http://..."
+    />,
+    "path": "$::1",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "elements": Array [
+              Object {
+                "buttons": undefined,
+                "url": "http://...",
+              },
+            ],
+            "sharable": undefined,
+            "template_type": "open_graph",
+          },
+          "type": "template",
+        },
+      },
     },
   },
 ]
@@ -774,6 +795,124 @@ exports[`ReceiptTemplate match snapshot 1`] = `
 Array [
   Object {
     "node": <ReceiptTemplate
+      currency="USD"
+      orderNumber="12345"
+      orderURL="http://what.a.shop"
+      paymentMethod="Visa 2345"
+      recipientName="John Doe"
+      summary={
+        Object {
+          "total_cost": 56.14,
+        }
+      }
+    />,
+    "path": "$::0",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "address": undefined,
+            "adjustments": undefined,
+            "currency": "USD",
+            "elements": undefined,
+            "merchant_name": undefined,
+            "order_number": "12345",
+            "order_url": "http://what.a.shop",
+            "payment_method": "Visa 2345",
+            "recipient_name": "John Doe",
+            "sharable": undefined,
+            "summary": Object {
+              "total_cost": 56.14,
+            },
+            "template_type": "receipt",
+            "timestamp": undefined,
+          },
+          "type": "template",
+        },
+      },
+    },
+  },
+  Object {
+    "node": <ReceiptTemplate
+      currency="USD"
+      orderNumber="12345"
+      orderURL="http://what.a.shop"
+      paymentMethod="Visa 2345"
+      recipientName="John Doe"
+      summary={
+        Object {
+          "total_cost": 56.14,
+        }
+      }
+    >
+      <ReceiptItem
+        price={9.99}
+        title="Buzz Lightyear"
+      />
+      <ReceiptItem
+        price={9.99}
+        title="Woody"
+      />
+      <ReceiptItem
+        price={9.99}
+        title="Slinky Dog"
+      />
+    </ReceiptTemplate>,
+    "path": "$::1",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "address": undefined,
+            "adjustments": undefined,
+            "currency": "USD",
+            "elements": Array [
+              Object {
+                "currency": undefined,
+                "image_url": undefined,
+                "price": 9.99,
+                "quantity": undefined,
+                "subtitle": undefined,
+                "title": "Buzz Lightyear",
+              },
+              Object {
+                "currency": undefined,
+                "image_url": undefined,
+                "price": 9.99,
+                "quantity": undefined,
+                "subtitle": undefined,
+                "title": "Woody",
+              },
+              Object {
+                "currency": undefined,
+                "image_url": undefined,
+                "price": 9.99,
+                "quantity": undefined,
+                "subtitle": undefined,
+                "title": "Slinky Dog",
+              },
+            ],
+            "merchant_name": undefined,
+            "order_number": "12345",
+            "order_url": "http://what.a.shop",
+            "payment_method": "Visa 2345",
+            "recipient_name": "John Doe",
+            "sharable": undefined,
+            "summary": Object {
+              "total_cost": 56.14,
+            },
+            "template_type": "receipt",
+            "timestamp": undefined,
+          },
+          "type": "template",
+        },
+      },
+    },
+  },
+  Object {
+    "node": <ReceiptTemplate
       address={
         Object {
           "city": "Menlo Park",
@@ -781,7 +920,7 @@ Array [
           "postal_code": "94025",
           "state": "CA",
           "street_1": "1 Hacker Way",
-          "street_2": "",
+          "street_2": "Somewhere...",
         }
       }
       adjustments={
@@ -797,6 +936,7 @@ Array [
         ]
       }
       currency="USD"
+      merchantName="AI"
       orderNumber="12345"
       orderURL="http://what.a.shop"
       paymentMethod="Visa 2345"
@@ -813,16 +953,15 @@ Array [
       timestamp="1428444852"
     >
       <ReceiptItem
-        title="Buzz Lightyear"
-      />
-      <ReceiptItem
-        title="Woody"
-      />
-      <ReceiptItem
-        title="Slinky Dog"
+        currency="USD"
+        imageURL="http://i.robot/avatar"
+        price={99.99}
+        quantity={999}
+        subtitle="It's real!"
+        title="A robot!"
       />
     </ReceiptTemplate>,
-    "path": "$",
+    "path": "$::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -834,7 +973,7 @@ Array [
               "postal_code": "94025",
               "state": "CA",
               "street_1": "1 Hacker Way",
-              "street_2": "",
+              "street_2": "Somewhere...",
             },
             "adjustments": Array [
               Object {
@@ -848,10 +987,16 @@ Array [
             ],
             "currency": "USD",
             "elements": Array [
-              "__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_1__",
-              "__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_2__",
-              "__RENDERED_RECEIPT_TEMPLATE_ITEM_OBJ_3__",
+              Object {
+                "currency": "USD",
+                "image_url": "http://i.robot/avatar",
+                "price": 99.99,
+                "quantity": 999,
+                "subtitle": "It's real!",
+                "title": "A robot!",
+              },
             ],
+            "merchant_name": "AI",
             "order_number": "12345",
             "order_url": "http://what.a.shop",
             "payment_method": "Visa 2345",

@@ -1,7 +1,6 @@
 // @flow
 import type {
   MachinatNode,
-  MachinatText,
   NativeElement,
   GeneralElement,
   PauseElement,
@@ -13,7 +12,7 @@ import type {
 
 export type TextSegment = {|
   type: 'text',
-  node: MachinatText | GeneralElement | NativeElement<any, any, any>,
+  node: MachinatNode,
   value: string,
   path: string,
 |};
@@ -41,7 +40,7 @@ export type RawSegment<Value> = {|
 
 export type PauseSegment = {|
   type: 'pause',
-  node: PauseElement,
+  node: PauseElement | GeneralElement | NativeElement<any, any, any>,
   value: null | PauseUntilFn,
   path: string,
 |};
@@ -49,7 +48,7 @@ export type PauseSegment = {|
 export type BreakSegment = {|
   type: 'break',
   node: GeneralElement | NativeElement<any, any, any>,
-  value: void,
+  value: null,
   path: string,
 |};
 

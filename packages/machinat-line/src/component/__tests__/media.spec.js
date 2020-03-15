@@ -1,9 +1,10 @@
 import Machinat from '@machinat/core';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
+import Renderer from '@machinat/core/renderer';
 
 import { Audio, Video } from '../media';
 
-const render = element => element.type(element, () => null, '$');
+const renderer = new Renderer('line', () => null);
 
 it.each([Audio, Video].map(C => [C.name, C]))(
   '%s is valid native unit component',
@@ -21,7 +22,7 @@ it.each(
     <Video url="https://..." previewURL="https://..." />,
   ].map(e => [e.type.name, e])
 )('%s render match snapshot', async (_, mediaElement) => {
-  const promise = render(mediaElement);
+  const promise = renderer.render(mediaElement);
   await expect(promise).resolves.toEqual([
     {
       type: 'unit',

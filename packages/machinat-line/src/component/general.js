@@ -1,59 +1,94 @@
-import invariant from 'invariant';
 import {
   breakSegment,
+  unitSegment,
   textSegment,
-  wrapUnitComponent,
 } from '@machinat/core/renderer';
-import joinTextualSegments from '@machinat/core/utils/joinTextualSegments';
+import formatNode from '@machinat/core/utils/formatNode';
 
-const text = async (node, render, path) => {
-  const segments = await render(node.props.children, '.children');
-  return joinTextualSegments(segments, node, path);
+const text = async (node, path, render) => {
+  const contentRendered = await render(node.props.children, '.children');
+  if (contentRendered === null) {
+    return null;
+  }
+
+  const segments = [];
+
+  for (const segment of contentRendered) {
+    if (segment.type === 'text') {
+      segments.push({
+        type: 'unit',
+        value: { type: 'text', text: segment.value },
+        node,
+        path,
+      });
+    } else if (segment.type !== 'break') {
+      throw new TypeError(
+        `non-textual node ${formatNode(
+          segment.node
+        )} received, only textual node and <br/> allowed`
+      );
+    }
+  }
+
+  return segments;
 };
-const br = (node, _, path) => [breakSegment(node, path)];
 
-const b = text;
-const i = text;
-const del = text;
-const code = text;
-const pre = text;
+const br = (node, path) => [breakSegment(node, path)];
 
-const __media = wrapUnitComponent(({ src }) => ({
-  type: 'text',
-  text: src || '',
-}));
+const plainText = async (node, path, render) => {
+  const contentSegments = await render(node.props.children, '.children');
+  if (!contentSegments) {
+    return null;
+  }
 
-const img = __media;
-const video = __media;
-const audio = __media;
-const file = __media;
+  for (const segment of contentSegments) {
+    if (segment.type !== 'text') {
+      throw new TypeError(
+        `non-textual node ${formatNode(
+          segment.node
+        )} received, only textual nodes allowed`
+      );
+    }
+  }
+
+  return [textSegment(node, path, contentSegments[0].value)];
+};
+
+const media = (node, path) => [
+  unitSegment(node, path, {
+    type: 'text',
+    text: node.props.src || '',
+  }),
+];
 
 const generalComponents = {
   text,
   br,
-  b,
-  i,
-  del,
-  code,
-  pre,
-  img,
-  video,
-  audio,
-  file,
+  b: plainText,
+  i: plainText,
+  del: plainText,
+  code: plainText,
+  pre: plainText,
+  img: media,
+  video: media,
+  audio: media,
+  file: media,
 };
 
-const { hasOwnProperty } = Object.prototype;
+const objectHasOwnProperty = (obj, prop) =>
+  Object.prototype.hasOwnProperty.call(obj, prop);
 
-const generalComponentDelegate = async (node, render, path) => {
+const generalComponentDelegator = async (node, path, render) => {
   const { type } = node;
 
-  invariant(
-    hasOwnProperty.call(generalComponents, type),
-    `"${type}" is not valid general component tag on messenger`
-  );
+  if (!objectHasOwnProperty(generalComponents, type)) {
+    throw new Error(
+      `"${type}" is not valid general component tag on messenger`
+    );
+  }
 
-  const segments = await generalComponents[type](node, render, path);
+  const segments = await generalComponents[type](node, path, render);
   return segments;
 };
 
-export default generalComponentDelegate;
+export default generalComponentDelegator;

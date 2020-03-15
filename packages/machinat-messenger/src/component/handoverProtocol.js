@@ -1,4 +1,5 @@
-import { asUnitComponent } from '../utils';
+import { unitSegment } from '@machinat/core/renderer';
+import { annotateMessengerComponent } from '../utils';
 import {
   ENTRY_PATH,
   PATH_PASS_THREAD_CONTROL,
@@ -6,27 +7,30 @@ import {
   PATH_TAKE_THREAD_CONTROL,
 } from '../constant';
 
-const PassThreadControl = async ({ appId, metadata }) => ({
-  target_app_id: appId,
-  metadata,
-  [ENTRY_PATH]: PATH_PASS_THREAD_CONTROL,
-});
-const __PassThreadControl = asUnitComponent(PassThreadControl);
-
-const RequestThreadControl = async ({ metadata }) => ({
-  metadata,
-  [ENTRY_PATH]: PATH_REQUEST_THREAD_CONTROL,
-});
-const __RequestThreadControl = asUnitComponent(RequestThreadControl);
-
-const TakeThreadContorl = async ({ metadata }) => ({
-  metadata,
-  [ENTRY_PATH]: PATH_TAKE_THREAD_CONTROL,
-});
-const __TakeThreadContorl = asUnitComponent(TakeThreadContorl);
-
-export {
-  __PassThreadControl as PassThreadControl,
-  __RequestThreadControl as RequestThreadControl,
-  __TakeThreadContorl as TakeThreadContorl,
+export const PassThreadControl = (node, path) => {
+  const { appId, metadata } = node.props;
+  return [
+    unitSegment(node, path, {
+      target_app_id: appId,
+      metadata,
+      [ENTRY_PATH]: PATH_PASS_THREAD_CONTROL,
+    }),
+  ];
 };
+annotateMessengerComponent(PassThreadControl);
+
+export const RequestThreadControl = (node, path) => [
+  unitSegment(node, path, {
+    metadata: node.props.metadata,
+    [ENTRY_PATH]: PATH_REQUEST_THREAD_CONTROL,
+  }),
+];
+annotateMessengerComponent(RequestThreadControl);
+
+export const TakeThreadContorl = (node, path) => [
+  unitSegment(node, path, {
+    metadata: node.props.metadata,
+    [ENTRY_PATH]: PATH_TAKE_THREAD_CONTROL,
+  }),
+];
+annotateMessengerComponent(TakeThreadContorl);

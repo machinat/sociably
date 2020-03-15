@@ -1,21 +1,19 @@
 /* eslint-disable import/prefer-default-export */
-import { asUnitComponent } from '../utils';
+import { unitSegment } from '@machinat/core/renderer';
+import { annotateLineComponent } from '../utils';
 
-const Location = async ({
-  title,
-  address,
-  lat,
-  latitude,
-  long,
-  longitude,
-}) => ({
-  type: 'location',
-  title,
-  address,
-  latitude: latitude || lat,
-  longitude: longitude || long,
-});
+export const Location = (node, path) => {
+  const { title, address, latitude, longitude } = node.props;
 
-const __Location = asUnitComponent(Location);
+  return [
+    unitSegment(node, path, {
+      type: 'location',
+      title,
+      address,
+      latitude,
+      longitude,
+    }),
+  ];
+};
 
-export { __Location as Location };
+annotateLineComponent(Location);

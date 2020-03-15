@@ -101,7 +101,7 @@ export default class MachinatEngine<
   ): Promise<null | DispatchResponse<Job, Result>> {
     const scope = this._initScope();
 
-    const segments = await this.renderer.render(scope, node);
+    const segments = await this.renderer.render(node, scope);
     if (segments === null) {
       return null;
     }

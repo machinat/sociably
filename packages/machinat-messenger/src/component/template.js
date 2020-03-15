@@ -1,25 +1,19 @@
-import invariant from 'invariant';
-import joinTextualSegments from '@machinat/core/utils/joinTextualSegments';
-import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
+import formatNode from '@machinat/core/utils/formatNode';
+import { unitSegment, partSegment } from '@machinat/core/renderer';
+import { annotateMessengerComponent } from '../utils';
 
-import * as buttonModule from './button';
-import { asUnitComponent, asPartComponent } from '../utils';
+export const GenericItem = async (node, path, render) => {
+  const {
+    buttons,
+    title,
+    imageURL,
+    subtitle,
+    defaultAction: defaultActionProp,
+  } = node.props;
 
-const CHILDREN = '.children';
+  const buttonSegments = await render(buttons, '.buttons');
+  const buttonValues = buttonSegments?.map(segment => segment.value);
 
-const getButtonValues = valuesOfAssertedTypes(() => [
-  ...Object.values(buttonModule),
-]);
-const getUrlButtonValues = valuesOfAssertedTypes(() => [
-  buttonModule.URLButton,
-]);
-
-const GenericItem = async (
-  { children, title, imageURL, subtitle, defaultAction: defaultActionProp },
-
-  render
-) => {
-  const buttonSegments = await render(children, CHILDREN);
   const defaultActionSegments = await render(
     defaultActionProp,
     '.defaultAction'
@@ -27,178 +21,190 @@ const GenericItem = async (
 
   let defaultAction;
   if (defaultActionSegments !== null) {
-    const defaultActionValues = getUrlButtonValues(defaultActionSegments);
-
-    // ignore title field
-    const [{ title: _, ...defaultActionVal }] = defaultActionValues;
-    defaultAction = defaultActionVal;
+    const { title: _, ...restOfURLButton } = defaultActionSegments[0].value;
+    defaultAction = restOfURLButton;
   }
 
-  return {
-    title,
-    image_url: imageURL,
-    subtitle,
-    default_action: defaultAction,
-    buttons: getButtonValues(buttonSegments),
-  };
+  return [
+    partSegment(node, path, {
+      title,
+      image_url: imageURL,
+      subtitle,
+      default_action: defaultAction,
+      buttons: buttonValues,
+    }),
+  ];
 };
-const __GenericItem = asPartComponent(GenericItem);
+annotateMessengerComponent(GenericItem);
 
-const getGenericItemValues = valuesOfAssertedTypes(() => [__GenericItem]);
+export const GenericTemplate = async (node, path, render) => {
+  const { children, sharable, imageAspectRatio } = node.props;
+  const elementsSegments = await render(children, '.children');
+  const elementValues = elementsSegments?.map(segment => segment.value);
 
-const GenericTemplate = async (
-  { children, sharable, imageAspectRatio },
-  render
-) => {
-  const elementsSegments = await render(children, CHILDREN);
-
-  return {
-    message: {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'generic',
-          sharable,
-          image_aspect_ratio: imageAspectRatio,
-          elements: getGenericItemValues(elementsSegments),
+  return [
+    unitSegment(node, path, {
+      message: {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'generic',
+            sharable,
+            image_aspect_ratio: imageAspectRatio,
+            elements: elementValues,
+          },
         },
       },
-    },
-  };
+    }),
+  ];
 };
-const __GenericTemplate = asUnitComponent(GenericTemplate);
+annotateMessengerComponent(GenericTemplate);
 
-const ListTemplate = async (
-  { children, topStyle, sharable, button },
-  render
-) => {
-  const elementSegments = await render(children, CHILDREN);
+export const ListTemplate = async (node, path, render) => {
+  const { children, topStyle, sharable, button } = node.props;
+
+  const elementSegments = await render(children, '.children');
+  const elementValues = elementSegments?.map(segment => segment.value);
+
   const buttonSegments = await render(button, '.button');
+  const buttonValues = buttonSegments?.map(segment => segment.value);
 
-  return {
-    message: {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'list',
-          top_element_style: topStyle,
-          sharable,
-          elements: getGenericItemValues(elementSegments),
-          buttons: getButtonValues(buttonSegments),
+  return [
+    unitSegment(node, path, {
+      message: {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'list',
+            top_element_style: topStyle,
+            sharable,
+            elements: elementValues,
+            buttons: buttonValues,
+          },
         },
       },
-    },
-  };
+    }),
+  ];
 };
-const __ListTemplate = asUnitComponent(ListTemplate);
+annotateMessengerComponent(ListTemplate);
 
-const ButtonTemplate = async ({ children, text, sharable }, render) => {
-  const textSegments = await render(text, '.text');
-  const segments = joinTextualSegments(textSegments);
+export const ButtonTemplate = async (node, path, render) => {
+  const { children, buttons, sharable } = node.props;
+  const textSegments = await render(children, '.children');
+  let text = '';
 
-  let textValue;
-  invariant(
-    segments !== null &&
-      segments.length === 1 &&
-      typeof (textValue = segments[0].value) === 'string', // eslint-disable-line prefer-destructuring
-    segments
-      ? `<br /> in prop "text" of <ButtonTemplate /> is invalid`
-      : `prop "text" of <ButtonTemplate /> should not be empty`
-  );
+  if (textSegments) {
+    for (const segment of textSegments) {
+      if (segment.type !== 'text') {
+        throw new TypeError(
+          `non-textual node ${formatNode(
+            segment.node
+          )} received, only textual nodes allowed`
+        );
+      }
+    }
 
-  const buttonSegments = await render(children, CHILDREN);
+    text = textSegments[0].value;
+  }
 
-  return {
-    message: {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'button',
-          text: textValue,
-          sharable,
-          buttons: getButtonValues(buttonSegments),
+  const buttonSegments = await render(buttons, '.buttons');
+  const buttonValues = buttonSegments?.map(segment => segment.value);
+
+  return [
+    unitSegment(node, path, {
+      message: {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text,
+            sharable,
+            buttons: buttonValues,
+          },
         },
       },
-    },
-  };
+    }),
+  ];
 };
-const __ButtonTemplate = asUnitComponent(ButtonTemplate);
+annotateMessengerComponent(ButtonTemplate);
 
-const MediaTemplate = async (
-  { children, type, attachmentId, url, sharable },
-  render
-) => {
-  const buttonSegments = await render(children, CHILDREN);
+export const MediaTemplate = async (node, path, render) => {
+  const { buttons, type, attachmentId, url, sharable } = node.props;
+  const buttonSegments = await render(buttons, '.buttons');
+  const buttonValues = buttonSegments?.map(segment => segment.value);
 
-  return {
-    message: {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'media',
-          sharable,
-          elements: [
-            {
-              media_type: type,
-              url,
-              attachment_id: attachmentId,
-              buttons: getButtonValues(buttonSegments),
-            },
-          ],
+  return [
+    unitSegment(node, path, {
+      message: {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'media',
+            sharable,
+            elements: [
+              {
+                media_type: type,
+                url,
+                attachment_id: attachmentId,
+                buttons: buttonValues,
+              },
+            ],
+          },
         },
       },
-    },
-  };
+    }),
+  ];
 };
-const __MediaTemplate = asUnitComponent(MediaTemplate);
+annotateMessengerComponent(MediaTemplate);
 
-const OpenGraphTemplate = async ({ children, url, sharable }, render) => {
-  const buttonSegments = await render(children, CHILDREN);
+export const OpenGraphTemplate = async (node, path, render) => {
+  const { buttons, url, sharable } = node.props;
+  const buttonSegments = await render(buttons, '.buttons');
+  const buttonValues = buttonSegments?.map(segment => segment.value);
 
-  return {
-    message: {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'open_graph',
-          sharable,
-          elements: [
-            {
-              url,
-              buttons: getButtonValues(buttonSegments),
-            },
-          ],
+  return [
+    unitSegment(node, path, {
+      message: {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'open_graph',
+            sharable,
+            elements: [
+              {
+                url,
+                buttons: buttonValues,
+              },
+            ],
+          },
         },
       },
-    },
-  };
+    }),
+  ];
 };
-const __OpenGraphTemplate = asUnitComponent(OpenGraphTemplate);
+annotateMessengerComponent(OpenGraphTemplate);
 
-const ReceiptItem = async ({
-  title,
-  subtitle,
-  quantity,
-  price,
-  currency,
-  imageURL,
-}) => ({
-  title,
-  subtitle,
-  quantity,
-  price,
-  currency,
-  image_url: imageURL,
-});
-const __ReceiptItem = asPartComponent(ReceiptItem);
+export const ReceiptItem = async (node, path) => {
+  const { title, subtitle, quantity, price, currency, imageURL } = node.props;
+  return [
+    partSegment(node, path, {
+      title,
+      subtitle,
+      quantity,
+      price,
+      currency,
+      image_url: imageURL,
+    }),
+  ];
+};
+annotateMessengerComponent(ReceiptItem);
 
-const getReceiptItemValues = valuesOfAssertedTypes(() => [__ReceiptItem]);
-
-const ReceiptTemplate = async (
-  {
+export const ReceiptTemplate = async (node, path, render) => {
+  const {
     children,
     sharable,
     recipientName,
+    merchantName,
     orderNumber,
     currency,
     paymentMethod,
@@ -207,46 +213,37 @@ const ReceiptTemplate = async (
     address,
     summary,
     adjustments,
-  },
-  render
-) => {
-  const elementSegments = await render(children, CHILDREN);
+  } = node.props;
 
-  return {
-    message: {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'receipt',
-          sharable,
-          recipient_name: recipientName,
-          order_number: orderNumber,
-          currency,
-          payment_method: paymentMethod,
-          order_url: orderURL,
-          timestamp:
-            timestamp instanceof Date
-              ? `${Math.floor(timestamp.getTime() / 1000)}`
-              : timestamp,
-          address,
-          summary,
-          adjustments,
-          elements: getReceiptItemValues(elementSegments),
+  const elementSegments = await render(children, '.children');
+  const elementValues = elementSegments?.map(segment => segment.value);
+
+  return [
+    unitSegment(node, path, {
+      message: {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'receipt',
+            sharable,
+            recipient_name: recipientName,
+            merchant_name: merchantName,
+            order_number: orderNumber,
+            currency,
+            payment_method: paymentMethod,
+            order_url: orderURL,
+            timestamp:
+              timestamp instanceof Date
+                ? `${Math.floor(timestamp.getTime() / 1000)}`
+                : timestamp,
+            address,
+            summary,
+            adjustments,
+            elements: elementValues,
+          },
         },
       },
-    },
-  };
+    }),
+  ];
 };
-
-const __ReceiptTemplate = asUnitComponent(ReceiptTemplate);
-
-export {
-  __GenericItem as GenericItem,
-  __GenericTemplate as GenericTemplate,
-  __ListTemplate as ListTemplate,
-  __ButtonTemplate as ButtonTemplate,
-  __MediaTemplate as MediaTemplate,
-  __OpenGraphTemplate as OpenGraphTemplate,
-  __ReceiptItem as ReceiptItem,
-  __ReceiptTemplate as ReceiptTemplate,
-};
+annotateMessengerComponent(ReceiptTemplate);

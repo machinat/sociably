@@ -1,76 +1,69 @@
-import invariant from 'invariant';
-import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
+import { unitSegment, partSegment } from '@machinat/core/renderer';
+import { annotateLineComponent } from '../utils';
 
-import { asPartComponent, asUnitComponent } from '../utils';
-import { URIAction, MessageAction } from './action';
-
-const Image = async ({
-  url,
-  originalContentUrl,
-  previewURL,
-  previewImageUrl,
-}) => ({
-  type: 'image',
-  originalContentUrl: originalContentUrl || url,
-  previewImageUrl: previewImageUrl || previewURL,
-});
-const __Image = asUnitComponent(Image);
-
-const Sticker = async ({ stickerId, packageId }) => ({
-  type: 'sticker',
-  packageId,
-  stickerId,
-});
-const __Sticker = asUnitComponent(Sticker);
-
-const getImageMapActionValues = valuesOfAssertedTypes(() => [
-  URIAction,
-  MessageAction,
-]);
-
-const ImageMapArea = async ({ action, x, y, width, height }, render) => {
-  const actionSegments = await render(action, '.action');
-  const actionValues = getImageMapActionValues(actionSegments);
-
-  invariant(
-    actionValues !== undefined && actionValues.length === 1,
-    actionValues
-      ? `there should be only 1 "action" in <ImageMapArea/>, got ${actionValues.length}`
-      : `prop "action" of <ImageMapArea/> should not be empty`
-  );
-
-  const [actionValue] = actionValues;
-
-  return actionValue.type === 'uri'
-    ? {
-        type: 'uri',
-        label: actionValue.label,
-        linkUri: actionValue.uri,
-        area: {
-          x,
-          y,
-          width,
-          height,
-        },
-      }
-    : {
-        type: 'message',
-        label: actionValue.label,
-        text: actionValue.text,
-        area: {
-          x,
-          y,
-          width,
-          height,
-        },
-      };
+export const Image = (node, path) => {
+  const { url, originalContentUrl, previewURL, previewImageUrl } = node.props;
+  return [
+    unitSegment(node, path, {
+      type: 'image',
+      originalContentUrl: originalContentUrl || url,
+      previewImageUrl: previewImageUrl || previewURL,
+    }),
+  ];
 };
-const __ImageMapArea = asPartComponent(ImageMapArea);
+annotateLineComponent(Image);
 
-const getURIActionValues = valuesOfAssertedTypes(() => [URIAction]);
+export const Sticker = (node, path) => {
+  const { stickerId, packageId } = node.props;
+  return [
+    unitSegment(node, path, {
+      type: 'sticker',
+      packageId,
+      stickerId,
+    }),
+  ];
+};
+annotateLineComponent(Sticker);
 
-const ImageMapVideoArea = async (
-  {
+export const ImageMapArea = async (node, path, render) => {
+  const { action, x, y, width, height } = node.props;
+  const actionSegments = await render(action, '.action');
+  const actionValue = actionSegments?.[0].value;
+
+  return [
+    partSegment(
+      node,
+      path,
+      actionValue.type === 'uri'
+        ? {
+            type: 'uri',
+            label: actionValue.label,
+            linkUri: actionValue.uri,
+            area: {
+              x,
+              y,
+              width,
+              height,
+            },
+          }
+        : {
+            type: 'message',
+            label: actionValue.label,
+            text: actionValue.text,
+            area: {
+              x,
+              y,
+              width,
+              height,
+            },
+          }
+    ),
+  ];
+};
+annotateLineComponent(ImageMapArea);
+
+export const ImageMapVideoArea = async (node, path, render) => {
+  const {
     url,
     originalContentUrl,
     previewURL,
@@ -80,60 +73,51 @@ const ImageMapVideoArea = async (
     width,
     height,
     action,
-  },
+  } = node.props;
 
-  render
-) => {
   const actionSegments = await render(action, '.action');
-  const actionValues = getURIActionValues(actionSegments);
+  const actionValue = actionSegments?.[0].value;
 
-  return {
-    originalContentUrl: originalContentUrl || url,
-    previewImageUrl: previewImageUrl || previewURL,
-    area: {
-      x,
-      y,
-      width,
-      height,
-    },
-    externalLink: actionValues && {
-      linkUri: actionValues[0].uri,
-      label: actionValues[0].label,
-    },
-  };
+  return [
+    partSegment(node, path, {
+      originalContentUrl: originalContentUrl || url,
+      previewImageUrl: previewImageUrl || previewURL,
+      area: {
+        x,
+        y,
+        width,
+        height,
+      },
+      externalLink: actionValue && {
+        linkUri: actionValue.uri,
+        label: actionValue.label,
+      },
+    }),
+  ];
 };
-const __ImageMapVideoArea = asPartComponent(ImageMapVideoArea);
+annotateLineComponent(ImageMapVideoArea);
 
-const getVideoAreaValues = valuesOfAssertedTypes(() => [__ImageMapVideoArea]);
-const getActionAreaValues = valuesOfAssertedTypes(() => [__ImageMapArea]);
+export const ImageMap = async (node, path, render) => {
+  const { baseURL, baseUrl, altText, height, children, video } = node.props;
 
-const ImageMap = async (
-  { baseURL, baseUrl, alt, altText, height, children, video },
-  render
-) => {
   const videoSegments = await render(video, '.video');
-  const videoValues = getVideoAreaValues(videoSegments);
+  const videoValue = videoSegments?.[0].value;
 
   const actionSegments = await render(children, '.children');
+  const actionValues = actionSegments?.map(segment => segment.value);
 
-  return {
-    type: 'imagemap',
-    baseUrl: baseUrl || baseURL,
-    altText: altText || alt,
-    baseSize: {
-      width: 1040,
-      height,
-    },
-    actions: getActionAreaValues(actionSegments),
-    video: videoValues && videoValues[0],
-  };
+  return [
+    unitSegment(node, path, {
+      type: 'imagemap',
+      baseUrl: baseUrl || baseURL,
+      altText,
+      baseSize: {
+        width: 1040,
+        height,
+      },
+      actions: actionValues,
+      video: videoValue,
+    }),
+  ];
 };
-const __ImageMap = asUnitComponent(ImageMap);
-
-export {
-  __Image as Image,
-  __Sticker as Sticker,
-  __ImageMapArea as ImageMapArea,
-  __ImageMapVideoArea as ImageMapVideoArea,
-  __ImageMap as ImageMap,
-};
+annotateLineComponent(ImageMap);

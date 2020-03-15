@@ -1,28 +1,34 @@
-import { asPartComponent } from '../utils';
+import { partSegment } from '@machinat/core/renderer';
+import { annotateMessengerComponent } from '../utils';
 
-const QuickReply = ({ title, payload, imageURL }) => ({
-  content_type: 'text',
-  title,
-  payload,
-  image_url: imageURL,
-});
-const __QuickReply = asPartComponent(QuickReply);
+export const QuickReply = (node, path) => {
+  const { title, payload, imageURL } = node.props;
+  return [
+    partSegment(node, path, {
+      content_type: 'text',
+      title,
+      payload,
+      image_url: imageURL,
+    }),
+  ];
+};
+annotateMessengerComponent(QuickReply);
 
 const LOCATION_QUICK_REPLY_VALUES = { content_type: 'location' };
-const LocationQuickReply = async () => LOCATION_QUICK_REPLY_VALUES;
-const __LocationQuickReply = asPartComponent(LocationQuickReply);
-
 const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
-const PhoneQuickReply = async () => PHONE_QUICK_REPLY_VALUES;
-const __PhoneQuickReply = asPartComponent(PhoneQuickReply);
-
 const EMAIL_QUICK_REPLY_VALUES = { content_type: 'user_email' };
-const EmailQuickReply = async () => EMAIL_QUICK_REPLY_VALUES;
-const __EmailQuickReply = asPartComponent(EmailQuickReply);
 
-export {
-  __QuickReply as QuickReply,
-  __LocationQuickReply as LocationQuickReply,
-  __PhoneQuickReply as PhoneQuickReply,
-  __EmailQuickReply as EmailQuickReply,
-};
+export const LocationQuickReply = (node, path) => [
+  partSegment(node, path, LOCATION_QUICK_REPLY_VALUES),
+];
+annotateMessengerComponent(LocationQuickReply);
+
+export const PhoneQuickReply = (node, path) => [
+  partSegment(node, path, PHONE_QUICK_REPLY_VALUES),
+];
+annotateMessengerComponent(PhoneQuickReply);
+
+export const EmailQuickReply = (node, path) => [
+  partSegment(node, path, EMAIL_QUICK_REPLY_VALUES),
+];
+annotateMessengerComponent(EmailQuickReply);

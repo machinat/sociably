@@ -1,31 +1,15 @@
 import moxy from 'moxy';
 import Machinat from '@machinat/core';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
-import map from '@machinat/core/iterator/map';
-
+import Renderer from '@machinat/core/renderer';
 import { Latex, DynamicText } from '../text';
 
-const renderInner = moxy(async message =>
-  map(
-    message,
-    (node, path) =>
-      node.type === 'br'
-        ? { type: 'break', node, value: null, path }
-        : {
-            type: 'text',
-            value: typeof node === 'string' ? node : node.props.children,
-            node,
-            path,
-          },
-    '$:0#Latex.children'
-  )
-);
-
-beforeEach(() => {
-  renderInner.mock.clear();
-});
-
-const renderHelper = element => element.type(element, renderInner, '$');
+const generalComponentDelegator = moxy((node, path) => [
+  node.type === 'br'
+    ? { type: 'break', node, path }
+    : { type: 'text', value: node.type, node, path },
+]);
+const renderer = new Renderer('messenger', generalComponentDelegator);
 
 describe('Latex', () => {
   it('is valid Component', () => {
@@ -34,9 +18,9 @@ describe('Latex', () => {
     expect(Latex.$$platform).toBe('messenger');
   });
 
-  it('render children as text', async () => {
+  it('render children wrapped', async () => {
     const nodeWithPlainText = <Latex>some text</Latex>;
-    await expect(renderHelper(nodeWithPlainText)).resolves.toEqual([
+    await expect(renderer.render(nodeWithPlainText)).resolves.toEqual([
       {
         type: 'text',
         value: '\\(some text\\)',
@@ -44,16 +28,15 @@ describe('Latex', () => {
         path: '$',
       },
     ]);
-    expect(renderInner.mock).toHaveBeenCalledTimes(1);
 
     const nodeWithElements = (
       <Latex>
-        <a>abcd</a>
-        <b>efgh</b>
-        <c>ijkl</c>
+        abcd
+        <efgh />
+        ijkl
       </Latex>
     );
-    await expect(renderHelper(nodeWithElements)).resolves.toEqual([
+    await expect(renderer.render(nodeWithElements)).resolves.toEqual([
       {
         type: 'text',
         node: nodeWithElements,
@@ -61,37 +44,38 @@ describe('Latex', () => {
         path: '$',
       },
     ]);
-    expect(renderInner.mock).toHaveBeenCalledTimes(2);
   });
 
-  it('quote each text separated by break', async () => {
-    const nodeWithBreak = (
-      <Latex>
-        <a>abcd</a>
-        <br />
-        <b>efgh</b>
-        <br />
-        <c>ijkl</c>
-      </Latex>
+  it('throw if <br/> in children', async () => {
+    await expect(
+      renderer.render(
+        <Latex>
+          abcd
+          <br />
+          efgh
+        </Latex>
+      )
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"non-textual node <br /> received, only textual nodes allowed"`
     );
-    await expect(renderHelper(nodeWithBreak)).resolves.toEqual([
-      { type: 'text', node: nodeWithBreak, value: '\\(abcd\\)', path: '$' },
-      {
-        type: 'break',
-        node: <br />,
-        value: null,
-        path: '$:0#Latex.children:1',
-      },
-      { type: 'text', node: nodeWithBreak, value: '\\(efgh\\)', path: '$' },
-      {
-        type: 'break',
-        node: <br />,
-        value: null,
-        path: '$:0#Latex.children:3',
-      },
-      { type: 'text', node: nodeWithBreak, value: '\\(ijkl\\)', path: '$' },
+  });
+
+  it('throw if non-texual node in children', async () => {
+    generalComponentDelegator.mock.fake((node, path) => [
+      { type: 'unit', value: { foo: true }, node, path },
     ]);
-    expect(renderInner.mock).toHaveBeenCalledTimes(1);
+
+    await expect(
+      renderer.render(
+        <Latex>
+          abcd
+          <nonMessage />
+          efgh
+        </Latex>
+      )
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"non-textual node <nonMessage /> received, only textual nodes allowed"`
+    );
   });
 });
 
@@ -108,7 +92,7 @@ describe('DynamicText', () => {
         Hello {'{{first_name}}!'}
       </DynamicText>
     );
-    await expect(renderHelper(node)).resolves.toEqual([
+    await expect(renderer.render(node)).resolves.toEqual([
       {
         type: 'unit',
         node,
@@ -123,5 +107,37 @@ describe('DynamicText', () => {
         path: '$',
       },
     ]);
+  });
+
+  it('throw if <br/> in children', async () => {
+    await expect(
+      renderer.render(
+        <DynamicText>
+          abcd
+          <br />
+          efgh
+        </DynamicText>
+      )
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"non-textual node <br /> received, only textual nodes allowed"`
+    );
+  });
+
+  it('throw if non-texual node in children', async () => {
+    generalComponentDelegator.mock.fake((node, path) => [
+      { type: 'unit', value: { foo: true }, node, path },
+    ]);
+
+    await expect(
+      renderer.render(
+        <DynamicText>
+          abcd
+          <nonMessage />
+          efgh
+        </DynamicText>
+      )
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"non-textual node <nonMessage /> received, only textual nodes allowed"`
+    );
   });
 });

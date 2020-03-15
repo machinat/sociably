@@ -1,8 +1,9 @@
 import Machinat from '@machinat/core';
+import Renderer from '@machinat/core/renderer';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
 import { Emoji } from '../text';
 
-const render = element => element.type(element, () => null, '$');
+const renderer = new Renderer('line', () => null);
 
 describe('Emoji', () => {
   it('is valid native unit component', () => {
@@ -13,7 +14,7 @@ describe('Emoji', () => {
   });
 
   it('renders to corespond unicode char', async () => {
-    await expect(render(<Emoji code={0x100078} />)).resolves.toEqual([
+    await expect(renderer.render(<Emoji code={0x100078} />)).resolves.toEqual([
       {
         type: 'text',
         node: <Emoji code={0x100078} />,
@@ -21,7 +22,7 @@ describe('Emoji', () => {
         path: '$',
       },
     ]);
-    await expect(render(<Emoji code={0x10008b} />)).resolves.toEqual([
+    await expect(renderer.render(<Emoji code={0x10008b} />)).resolves.toEqual([
       {
         type: 'text',
         node: <Emoji code={0x10008b} />,
@@ -29,7 +30,7 @@ describe('Emoji', () => {
         path: '$',
       },
     ]);
-    await expect(render(<Emoji code={0x100096} />)).resolves.toEqual([
+    await expect(renderer.render(<Emoji code={0x100096} />)).resolves.toEqual([
       {
         type: 'text',
         node: <Emoji code={0x100096} />,

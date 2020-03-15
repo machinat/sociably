@@ -1,7 +1,8 @@
 import moxy from 'moxy';
 import Machinat from '@machinat/core';
-import map from '@machinat/core/iterator/map';
+import Renderer from '@machinat/core/renderer';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
+import { ENTRY_PATH } from '../../constant';
 import {
   QuickReply,
   LocationQuickReply,
@@ -9,6 +10,15 @@ import {
   PhoneQuickReply,
 } from '../quickReply';
 import { Dialog } from '../dialog';
+import { TypingOn, TypingOff, MarkSeen } from '../senderAction';
+
+const generalComponentDelegator = moxy((node, path) => [
+  node.type === 'br'
+    ? { type: 'break', node, path }
+    : { type: 'text', value: node.type, node, path },
+]);
+
+const renderer = new Renderer('messenger', generalComponentDelegator);
 
 const quickReplies = (
   <>
@@ -22,41 +32,14 @@ const quickReplies = (
 const children = (
   <>
     foo
+    <br />
     <bar />
   </>
 );
 
-const Unknown = () => {};
-
-const renderInner = moxy(
-  async messages =>
-    map(
-      messages,
-      (node, path) =>
-        typeof node === 'string'
-          ? { type: 'text', value: node, node, path }
-          : typeof node.type === 'string'
-          ? {
-              type: 'unit',
-              value: { message: { text: node.type } },
-              node,
-              path,
-            }
-          : node.type === Unknown
-          ? { type: 'unit', value: { you: "don't know me" }, node, path }
-          : [
-              QuickReply,
-              LocationQuickReply,
-              EmailQuickReply,
-              PhoneQuickReply,
-            ].includes(node.type)
-          ? { type: 'unit', value: '_QUICK_REPLY_RENDERED_', node, path }
-          : { type: 'raw', node: undefined, value: node, path },
-      '$#Dialog.children'
-    ) || null
-);
-
-const renderHelper = element => element.type(element, renderInner, '$');
+beforeEach(() => {
+  generalComponentDelegator.mock.reset();
+});
 
 it('is valid component', () => {
   expect(typeof Dialog).toBe('function');
@@ -102,19 +85,21 @@ it.each([
     </Dialog>,
   ],
 ])('%s match snapshot', async (_, element) => {
-  await expect(renderHelper(element)).resolves.toMatchSnapshot();
+  await expect(renderer.render(element)).resolves.toMatchSnapshot();
 });
 
 it('returns null if empty children received', async () => {
-  await expect(renderHelper(<Dialog />)).resolves.toBe(null);
-  await expect(renderHelper(<Dialog>{null}</Dialog>)).resolves.toBe(null);
+  await expect(renderer.render(<Dialog />)).resolves.toBe(null);
+  await expect(renderer.render(<Dialog>{null}</Dialog>)).resolves.toBe(null);
 });
 
 it('hoist text value into message object', async () => {
-  const segments = await renderHelper(
+  const segments = await renderer.render(
     <Dialog>
       foo
+      <br />
       <bar />
+      <br />
       baz
     </Dialog>
   );
@@ -137,7 +122,7 @@ it('hoist text value into message object', async () => {
       },
       Object {
         "node": <bar />,
-        "path": "$#Dialog.children:1",
+        "path": "$#Dialog.children:2",
         "type": "unit",
         "value": Object {
           "message": Object {
@@ -151,7 +136,7 @@ it('hoist text value into message object', async () => {
       },
       Object {
         "node": "baz",
-        "path": "$#Dialog.children:2",
+        "path": "$#Dialog.children:4",
         "type": "unit",
         "value": Object {
           "message": Object {
@@ -169,8 +154,8 @@ it('hoist text value into message object', async () => {
   `);
 });
 
-it('add attributes to action value', async () => {
-  const segments = await renderHelper(
+it('add attributes to message value', async () => {
+  const segments = await renderer.render(
     <Dialog
       type="MESSAGE_TAG"
       tag="PAYMENT_UPDATE"
@@ -178,41 +163,57 @@ it('add attributes to action value', async () => {
       personaId="_PERSONA_ID_"
     >
       <foo />
+      <br />
       <bar />
     </Dialog>
   );
 
   segments.forEach(segment => {
-    expect(segment.value.messaging_type).toBe('MESSAGE_TAG');
-    expect(segment.value.tag).toBe('PAYMENT_UPDATE');
-    expect(segment.value.notification_type).toBe('SILENT_PUSH');
-    expect(segment.value.persona_id).toBe('_PERSONA_ID_');
+    expect(segment.value).toEqual({
+      messaging_type: 'MESSAGE_TAG',
+      tag: 'PAYMENT_UPDATE',
+      notification_type: 'SILENT_PUSH',
+      persona_id: '_PERSONA_ID_',
+      message: {
+        text: expect.any(String),
+      },
+    });
   });
 });
 
 it('add persona_id to typeing_on/typeing_off sender action', async () => {
-  let [{ value }] = await renderHelper(
-    <Dialog personaId="_PERSONA_ID_">{{ sender_action: 'typing_on' }}</Dialog>
+  const segments = await renderer.render(
+    <Dialog
+      type="MESSAGE_TAG"
+      tag="PAYMENT_UPDATE"
+      notificationType="SILENT_PUSH"
+      personaId="_PERSONA_ID_"
+    >
+      foo
+      <TypingOn />
+      <TypingOff />
+      <MarkSeen />
+    </Dialog>
   );
-  expect(value.persona_id).toBe('_PERSONA_ID_');
 
-  [{ value }] = await renderHelper(
-    <Dialog personaId="_PERSONA_ID_">{{ sender_action: 'typing_off' }}</Dialog>
-  );
-  expect(value.persona_id).toBe('_PERSONA_ID_');
-
-  [{ value }] = await renderHelper(
-    <Dialog personaId="_PERSONA_ID_">{{ sender_action: 'mark_seen' }}</Dialog>
-  );
-  expect(value.persona_id).toBe(undefined);
+  expect(segments[1].value).toEqual({
+    sender_action: 'typing_on',
+    persona_id: '_PERSONA_ID_',
+  });
+  expect(segments[2].value).toEqual({
+    sender_action: 'typing_off',
+    persona_id: '_PERSONA_ID_',
+  });
+  expect(segments[3].value).toEqual({ sender_action: 'mark_seen' });
 });
 
 it('adds metadata to last message action', async () => {
-  const segments = await renderHelper(
+  const segments = await renderer.render(
     <Dialog metadata="_META_">
       <foo />
+      <br />
       bar
-      <Unknown />
+      <TypingOn />
     </Dialog>
   );
 
@@ -220,11 +221,11 @@ it('adds metadata to last message action', async () => {
   expect(segments[1].value).toEqual({
     message: { text: 'bar', metadata: '_META_' },
   });
-  expect(segments[2].value).toEqual({ you: "don't know me" });
+  expect(segments[2].value).toEqual({ sender_action: 'typing_on' });
 });
 
 it('adds quickReplies to last message action', async () => {
-  const segments = await renderHelper(
+  const segments = await renderer.render(
     <Dialog
       quickReplies={[
         <QuickReply title="foo" />,
@@ -234,8 +235,9 @@ it('adds quickReplies to last message action', async () => {
       ]}
     >
       <foo />
+      <br />
       bar
-      <Unknown />
+      <TypingOn />
     </Dialog>
   );
 
@@ -243,34 +245,83 @@ it('adds quickReplies to last message action', async () => {
   expect(segments[1].value).toEqual({
     message: {
       text: 'bar',
-      quick_replies: [
-        '_QUICK_REPLY_RENDERED_',
-        '_QUICK_REPLY_RENDERED_',
-        '_QUICK_REPLY_RENDERED_',
-        '_QUICK_REPLY_RENDERED_',
-      ],
+      quick_replies: expect.any(Array),
     },
   });
-  expect(segments[2].value).toEqual({ you: "don't know me" });
+  expect(segments[2].value).toEqual({ sender_action: 'typing_on' });
+  expect(segments[1].value.message.quick_replies).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "content_type": "text",
+        "image_url": undefined,
+        "payload": undefined,
+        "title": "foo",
+      },
+      Object {
+        "content_type": "location",
+      },
+      Object {
+        "content_type": "user_phone_number",
+      },
+      Object {
+        "content_type": "user_email",
+      },
+    ]
+  `);
 });
 
-it('throw if non QuickReply element received within prop quickReplies', async () => {
-  await expect(
-    renderHelper(
-      <Dialog
-        quickReplies={[
-          <QuickReply title="foo" />,
-          <LocationQuickReply />,
-          <Unknown />,
-          <PhoneQuickReply />,
-          <EmailQuickReply />,
-        ]}
-      >
-        <foo />
-        bar
-      </Dialog>
-    )
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"<Unknown /> at $#Dialog.children:2 is invalid, only <[QuickReply, LocationQuickReply, PhoneQuickReply, EmailQuickReply]/> allowed"`
+it('do nothing to non-messgae value', async () => {
+  generalComponentDelegator.mock.wrap(renderText => (node, path) =>
+    node.type === 'nonMessage'
+      ? [
+          {
+            type: 'unit',
+            value: {
+              something: 'else',
+              [ENTRY_PATH]: 'some/other/api',
+            },
+            node,
+            path,
+          },
+        ]
+      : renderText(node, path)
   );
+
+  const segments = await renderer.render(
+    <Dialog
+      type="MESSAGE_TAG"
+      tag="PAYMENT_UPDATE"
+      notificationType="SILENT_PUSH"
+      personaId="_PERSONA_ID_"
+      quickReplies={[<QuickReply title="foo" />]}
+    >
+      <foo />
+      <nonMessage />
+    </Dialog>
+  );
+
+  expect(segments[1].value).toEqual({
+    something: 'else',
+    [ENTRY_PATH]: 'some/other/api',
+  });
+  expect(segments[0].value).toMatchInlineSnapshot(`
+    Object {
+      "message": Object {
+        "metadata": undefined,
+        "quick_replies": Array [
+          Object {
+            "content_type": "text",
+            "image_url": undefined,
+            "payload": undefined,
+            "title": "foo",
+          },
+        ],
+        "text": "foo",
+      },
+      "messaging_type": "MESSAGE_TAG",
+      "notification_type": "SILENT_PUSH",
+      "persona_id": "_PERSONA_ID_",
+      "tag": "PAYMENT_UPDATE",
+    }
+  `);
 });

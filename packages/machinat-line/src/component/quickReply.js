@@ -1,25 +1,20 @@
 /* eslint-disable import/prefer-default-export */
-import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
+import { partSegment } from '@machinat/core/renderer';
+import { annotateLineComponent } from '../utils';
 
-import { asPartComponent } from '../utils';
+export const QuickReply = async (node, path, render) => {
+  const { imageURL, action } = node.props;
 
-import * as actionModule from './action';
-
-const getActionValues = valuesOfAssertedTypes(() => [
-  ...Object.values(actionModule),
-]);
-
-const QuickReply = async ({ imageURL, action }, render) => {
   const actionSegments = await render(action, '.action');
-  const actionValues = getActionValues(actionSegments);
+  const actionValue = actionSegments?.[0].value;
 
-  return {
-    type: 'action',
-    imageUrl: imageURL,
-    action: actionValues && actionValues[0],
-  };
+  return [
+    partSegment(node, path, {
+      type: 'action',
+      imageUrl: imageURL,
+      action: actionValue,
+    }),
+  ];
 };
 
-const __QuickReply = asPartComponent(QuickReply);
-
-export { __QuickReply as QuickReply };
+annotateLineComponent(QuickReply);

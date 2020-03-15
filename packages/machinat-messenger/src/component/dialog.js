@@ -1,15 +1,19 @@
 /* eslint-disable import/prefer-default-export */
-import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
+import { annotateMessengerComponent, isMessageEntry } from '../utils';
 
-import { asContainerComponent, isMessageEntry } from '../utils';
-import * as quickReplyModule from './quickReply';
-
-const getQuickRepliesValues = valuesOfAssertedTypes(() => [
-  ...Object.values(quickReplyModule),
-]);
-
-const Dialog = async (
-  { children, type, tag, notificationType, metadata, quickReplies, personaId },
+export const Dialog = async (
+  {
+    props: {
+      children,
+      type,
+      tag,
+      notificationType,
+      metadata,
+      quickReplies,
+      personaId,
+    },
+  },
+  path,
   render
 ) => {
   const childrenSegments = await render(children, '.children');
@@ -23,7 +27,7 @@ const Dialog = async (
     const segment = childrenSegments[i];
 
     // hoisting text to message object
-    if (typeof segment.value === 'string') {
+    if (segment.type === 'text') {
       segment.type = 'unit';
       segment.value = {
         message: {
@@ -55,7 +59,7 @@ const Dialog = async (
     }
   }
 
-  // only attach quick_replies and metadata to last message segment
+  //  attach quick_replies and metadata to last message segment
   if (lastMessageIdx !== -1) {
     const { value } = childrenSegments[lastMessageIdx];
 
@@ -63,14 +67,11 @@ const Dialog = async (
     message.metadata = metadata;
 
     const quickReplySegments = await render(quickReplies, '.quickReplies');
-    message.quick_replies = getQuickRepliesValues(quickReplySegments);
+    message.quick_replies = quickReplySegments?.map(segment => segment.value);
 
     value.message = message;
   }
 
   return childrenSegments;
 };
-
-const __Dialog = asContainerComponent(Dialog);
-
-export { __Dialog as Dialog };
+annotateMessengerComponent(Dialog);

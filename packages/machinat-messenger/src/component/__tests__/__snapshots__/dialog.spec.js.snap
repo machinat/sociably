@@ -18,16 +18,27 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::1",
+    "path": "$#Dialog.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
         "metadata": "_MY_METADATA_",
         "quick_replies": Array [
-          "_QUICK_REPLY_RENDERED_",
-          "_QUICK_REPLY_RENDERED_",
-          "_QUICK_REPLY_RENDERED_",
-          "_QUICK_REPLY_RENDERED_",
+          Object {
+            "content_type": "text",
+            "image_url": undefined,
+            "payload": undefined,
+            "title": "foo",
+          },
+          Object {
+            "content_type": "location",
+          },
+          Object {
+            "content_type": "user_phone_number",
+          },
+          Object {
+            "content_type": "user_email",
+          },
         ],
         "text": "bar",
       },
@@ -58,7 +69,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::1",
+    "path": "$#Dialog.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -93,7 +104,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::1",
+    "path": "$#Dialog.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -128,7 +139,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::1",
+    "path": "$#Dialog.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -163,16 +174,27 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::1",
+    "path": "$#Dialog.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
         "metadata": undefined,
         "quick_replies": Array [
-          "_QUICK_REPLY_RENDERED_",
-          "_QUICK_REPLY_RENDERED_",
-          "_QUICK_REPLY_RENDERED_",
-          "_QUICK_REPLY_RENDERED_",
+          Object {
+            "content_type": "text",
+            "image_url": undefined,
+            "payload": undefined,
+            "title": "foo",
+          },
+          Object {
+            "content_type": "location",
+          },
+          Object {
+            "content_type": "user_phone_number",
+          },
+          Object {
+            "content_type": "user_email",
+          },
         ],
         "text": "bar",
       },
@@ -203,7 +225,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::1",
+    "path": "$#Dialog.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -238,7 +260,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::1",
+    "path": "$#Dialog.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {

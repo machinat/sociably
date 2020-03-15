@@ -1,9 +1,10 @@
 import Machinat from '@machinat/core';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
 
+import Renderer from '@machinat/core/renderer';
 import { MarkSeen, TypingOn, TypingOff } from '../senderAction';
 
-const renderHelper = element => element.type(element, null, '$');
+const renderer = new Renderer('messenger', () => null);
 
 describe.each([MarkSeen, TypingOn, TypingOff])('%p', Action => {
   it('is valid unit Component', () => {
@@ -14,7 +15,7 @@ describe.each([MarkSeen, TypingOn, TypingOff])('%p', Action => {
 });
 
 it('MarkSeen match snapshot', async () => {
-  await expect(renderHelper(<MarkSeen />)).resolves.toMatchInlineSnapshot(`
+  await expect(renderer.render(<MarkSeen />)).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <MarkSeen />,
@@ -29,7 +30,7 @@ it('MarkSeen match snapshot', async () => {
 });
 
 it('TypingOn match snapshot', async () => {
-  await expect(renderHelper(<TypingOn />)).resolves.toMatchInlineSnapshot(`
+  await expect(renderer.render(<TypingOn />)).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <TypingOn />,
@@ -44,7 +45,7 @@ it('TypingOn match snapshot', async () => {
 });
 
 it('TypingOff match snapshot', async () => {
-  await expect(renderHelper(<TypingOff />)).resolves.toMatchInlineSnapshot(`
+  await expect(renderer.render(<TypingOff />)).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <TypingOff />,

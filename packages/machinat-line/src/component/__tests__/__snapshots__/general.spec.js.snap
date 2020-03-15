@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`text components nested textual elements match snapshot 1`] = `
+exports[`<text/> with textual nodes 2`] = `
 Array [
   Object {
     "node": <text>
@@ -9,7 +9,7 @@ Array [
       <code>
         Hello, 
         <b>
-          Luke Skywalker!
+          R2D2!
         </b>
       </code>
       <br />
@@ -22,7 +22,7 @@ Array [
         </del>
          
         <code>
-          droid
+          creator
         </code>
         .
       </i>
@@ -30,17 +30,14 @@ Array [
       <pre>
         May the force be with you!
       </pre>
-       abc
+       Bye!
     </text>,
     "path": "$",
-    "type": "text",
-    "value": "123 Hello, Luke Skywalker!",
-  },
-  Object {
-    "node": <br />,
-    "path": "$:3",
-    "type": "break",
-    "value": undefined,
+    "type": "unit",
+    "value": Object {
+      "text": "123 Hello, R2D2!",
+      "type": "text",
+    },
   },
   Object {
     "node": <text>
@@ -49,7 +46,7 @@ Array [
       <code>
         Hello, 
         <b>
-          Luke Skywalker!
+          R2D2!
         </b>
       </code>
       <br />
@@ -62,7 +59,7 @@ Array [
         </del>
          
         <code>
-          droid
+          creator
         </code>
         .
       </i>
@@ -70,17 +67,14 @@ Array [
       <pre>
         May the force be with you!
       </pre>
-       abc
+       Bye!
     </text>,
     "path": "$",
-    "type": "text",
-    "value": "You know what?",
-  },
-  Object {
-    "node": <br />,
-    "path": "$:5",
-    "type": "break",
-    "value": undefined,
+    "type": "unit",
+    "value": Object {
+      "text": "You know what?",
+      "type": "text",
+    },
   },
   Object {
     "node": <text>
@@ -89,7 +83,7 @@ Array [
       <code>
         Hello, 
         <b>
-          Luke Skywalker!
+          R2D2!
         </b>
       </code>
       <br />
@@ -102,7 +96,7 @@ Array [
         </del>
          
         <code>
-          droid
+          creator
         </code>
         .
       </i>
@@ -110,17 +104,14 @@ Array [
       <pre>
         May the force be with you!
       </pre>
-       abc
+       Bye!
     </text>,
     "path": "$",
-    "type": "text",
-    "value": "I'm your FATHER droid.",
-  },
-  Object {
-    "node": <br />,
-    "path": "$:7",
-    "type": "break",
-    "value": undefined,
+    "type": "unit",
+    "value": Object {
+      "text": "I'm your FATHER creator.",
+      "type": "text",
+    },
   },
   Object {
     "node": <text>
@@ -129,7 +120,7 @@ Array [
       <code>
         Hello, 
         <b>
-          Luke Skywalker!
+          R2D2!
         </b>
       </code>
       <br />
@@ -142,7 +133,7 @@ Array [
         </del>
          
         <code>
-          droid
+          creator
         </code>
         .
       </i>
@@ -150,11 +141,14 @@ Array [
       <pre>
         May the force be with you!
       </pre>
-       abc
+       Bye!
     </text>,
     "path": "$",
-    "type": "text",
-    "value": "May the force be with you! abc",
+    "type": "unit",
+    "value": Object {
+      "text": "May the force be with you! Bye!",
+      "type": "text",
+    },
   },
 ]
 `;
@@ -162,18 +156,10 @@ Array [
 exports[`text components shallow textual elements match snapshot 1`] = `
 Array [
   Object {
-    "node": <text>
-      abc
-    </text>,
-    "path": "$:0",
-    "type": "text",
-    "value": "abc",
-  },
-  Object {
     "node": <b>
       important
     </b>,
-    "path": "$:1",
+    "path": "$:0",
     "type": "text",
     "value": "important",
   },
@@ -189,21 +175,15 @@ Array [
     "node": <del>
       nooooo
     </del>,
-    "path": "$:3",
+    "path": "$:4",
     "type": "text",
     "value": "nooooo",
-  },
-  Object {
-    "node": <br />,
-    "path": "$:4",
-    "type": "break",
-    "value": undefined,
   },
   Object {
     "node": <code>
       foo.bar()
     </code>,
-    "path": "$:5",
+    "path": "$:6",
     "type": "text",
     "value": "foo.bar()",
   },
@@ -211,194 +191,9 @@ Array [
     "node": <pre>
       foo.bar('hello world')
     </pre>,
-    "path": "$:6",
+    "path": "$:8",
     "type": "text",
     "value": "foo.bar('hello world')",
-  },
-]
-`;
-
-exports[`text components with break placed in children 1`] = `
-Array [
-  Object {
-    "node": <text>
-      <Machinat.Fragment>
-        foo
-        <br />
-        bar
-      </Machinat.Fragment>
-    </text>,
-    "path": "$:0",
-    "type": "text",
-    "value": "foo",
-  },
-  Object {
-    "node": <br />,
-    "path": "$::1",
-    "type": "break",
-    "value": undefined,
-  },
-  Object {
-    "node": <text>
-      <Machinat.Fragment>
-        foo
-        <br />
-        bar
-      </Machinat.Fragment>
-    </text>,
-    "path": "$:0",
-    "type": "text",
-    "value": "bar",
-  },
-  Object {
-    "node": <b>
-      <Machinat.Fragment>
-        foo
-        <br />
-        bar
-      </Machinat.Fragment>
-    </b>,
-    "path": "$:1",
-    "type": "text",
-    "value": "foo",
-  },
-  Object {
-    "node": <br />,
-    "path": "$::1",
-    "type": "break",
-    "value": undefined,
-  },
-  Object {
-    "node": <b>
-      <Machinat.Fragment>
-        foo
-        <br />
-        bar
-      </Machinat.Fragment>
-    </b>,
-    "path": "$:1",
-    "type": "text",
-    "value": "bar",
-  },
-  Object {
-    "node": <i>
-      <Machinat.Fragment>
-        foo
-        <br />
-        bar
-      </Machinat.Fragment>
-    </i>,
-    "path": "$:2",
-    "type": "text",
-    "value": "foo",
-  },
-  Object {
-    "node": <br />,
-    "path": "$::1",
-    "type": "break",
-    "value": undefined,
-  },
-  Object {
-    "node": <i>
-      <Machinat.Fragment>
-        foo
-        <br />
-        bar
-      </Machinat.Fragment>
-    </i>,
-    "path": "$:2",
-    "type": "text",
-    "value": "bar",
-  },
-  Object {
-    "node": <del>
-      <Machinat.Fragment>
-        foo
-        <br />
-        bar
-      </Machinat.Fragment>
-    </del>,
-    "path": "$:3",
-    "type": "text",
-    "value": "foo",
-  },
-  Object {
-    "node": <br />,
-    "path": "$::1",
-    "type": "break",
-    "value": undefined,
-  },
-  Object {
-    "node": <del>
-      <Machinat.Fragment>
-        foo
-        <br />
-        bar
-      </Machinat.Fragment>
-    </del>,
-    "path": "$:3",
-    "type": "text",
-    "value": "bar",
-  },
-  Object {
-    "node": <code>
-      <Machinat.Fragment>
-        foo
-        <br />
-        bar
-      </Machinat.Fragment>
-    </code>,
-    "path": "$:4",
-    "type": "text",
-    "value": "foo",
-  },
-  Object {
-    "node": <br />,
-    "path": "$::1",
-    "type": "break",
-    "value": undefined,
-  },
-  Object {
-    "node": <code>
-      <Machinat.Fragment>
-        foo
-        <br />
-        bar
-      </Machinat.Fragment>
-    </code>,
-    "path": "$:4",
-    "type": "text",
-    "value": "bar",
-  },
-  Object {
-    "node": <pre>
-      <Machinat.Fragment>
-        foo
-        <br />
-        bar
-      </Machinat.Fragment>
-    </pre>,
-    "path": "$:5",
-    "type": "text",
-    "value": "foo",
-  },
-  Object {
-    "node": <br />,
-    "path": "$::1",
-    "type": "break",
-    "value": undefined,
-  },
-  Object {
-    "node": <pre>
-      <Machinat.Fragment>
-        foo
-        <br />
-        bar
-      </Machinat.Fragment>
-    </pre>,
-    "path": "$:5",
-    "type": "text",
-    "value": "bar",
   },
 ]
 `;

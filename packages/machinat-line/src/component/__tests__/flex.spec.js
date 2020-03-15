@@ -1,7 +1,6 @@
 import Machinat from '@machinat/core';
+import Renderer from '@machinat/core/renderer';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
-import map from '@machinat/core/iterator/map';
-
 import Flex, {
   FlexBox,
   FlexButton,
@@ -21,22 +20,7 @@ import Flex, {
 } from '../flex';
 import { URIAction } from '../action';
 
-const renderInner = async (message, route) => {
-  const renderings = map(
-    message || null,
-    (node, path) => {
-      if (typeof node === 'string' || typeof node === 'number') {
-        return { type: 'text', node, value: `${node}`, path };
-      }
-
-      return node.type(node, renderInner, path);
-    },
-    route
-  );
-
-  return renderings ? [].concat(...(await Promise.all(renderings))) : null;
-};
-const render = element => element.type(element, renderInner, '$');
+const renderer = new Renderer('line', () => null);
 
 test.each(
   [
@@ -322,7 +306,7 @@ it.each([
     </FlexMessage>,
   ],
 ])('%s match snapshot', async (name, fixture) => {
-  const promise = render(fixture);
+  const promise = renderer.render(fixture);
   await expect(promise).resolves.toEqual([
     { type: 'unit', node: fixture, value: expect.any(Object), path: '$' },
   ]);

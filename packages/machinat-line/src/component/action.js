@@ -1,26 +1,42 @@
-import { asPartComponent } from '../utils';
+import { partSegment } from '@machinat/core/renderer';
+import { annotateLineComponent } from '../utils';
 
-const PostbackAction = async ({ label, data, text, displayText }) => ({
-  type: 'postback',
-  data,
-  label,
-  displayText: displayText || text,
-});
-const __PostbackAction = asPartComponent(PostbackAction);
+export const PostbackAction = (node, path) => {
+  const { label, data, text, displayText } = node.props;
+  return [
+    partSegment(node, path, {
+      type: 'postback',
+      data,
+      label,
+      displayText: displayText || text,
+    }),
+  ];
+};
+annotateLineComponent(PostbackAction);
 
-const MessageAction = async ({ label, text }) => ({
-  type: 'message',
-  label,
-  text,
-});
-const __MessageAction = asPartComponent(MessageAction);
+export const MessageAction = (node, path) => {
+  const { label, text } = node.props;
+  return [
+    partSegment(node, path, {
+      type: 'message',
+      label,
+      text,
+    }),
+  ];
+};
+annotateLineComponent(MessageAction);
 
-const URIAction = async ({ label, uri }) => ({
-  type: 'uri',
-  label,
-  uri,
-});
-const __URIAction = asPartComponent(URIAction);
+export const URIAction = (node, path) => {
+  const { label, uri } = node.props;
+  return [
+    partSegment(node, path, {
+      type: 'uri',
+      label,
+      uri,
+    }),
+  ];
+};
+annotateLineComponent(URIAction);
 
 const pad2 = n => (n < 10 ? `0${n}` : n);
 const fullDate = d =>
@@ -35,50 +51,43 @@ const dateToStringByMode = (mode, d) =>
     ? fullDate(d)
     : fullHourMinute(d);
 
-const DateTimePickerAction = async ({
-  label,
-  data,
-  mode = 'datetime',
-  initial,
-  min,
-  max,
-}) => {
-  return {
-    type: 'datetimepicker',
-    label,
-    data,
-    mode,
-    initial: dateToStringByMode(mode, initial),
-    max: dateToStringByMode(mode, max),
-    min: dateToStringByMode(mode, min),
-  };
+export const DateTimePickerAction = (node, path) => {
+  const { label, data, mode = 'datetime', initial, min, max } = node.props;
+
+  return [
+    partSegment(node, path, {
+      type: 'datetimepicker',
+      label,
+      data,
+      mode,
+      initial: dateToStringByMode(mode, initial),
+      max: dateToStringByMode(mode, max),
+      min: dateToStringByMode(mode, min),
+    }),
+  ];
 };
-const __DateTimePickerAction = asPartComponent(DateTimePickerAction);
+annotateLineComponent(DateTimePickerAction);
 
-const CameraAction = async ({ label }) => ({
-  type: 'camera',
-  label,
-});
-const __CameraAction = asPartComponent(CameraAction);
+export const CameraAction = (node, path) => [
+  partSegment(node, path, {
+    type: 'camera',
+    label: node.props.label,
+  }),
+];
+annotateLineComponent(CameraAction);
 
-const CameraRollAction = async ({ label }) => ({
-  type: 'cameraRoll',
-  label,
-});
-const __CameraRollAction = asPartComponent(CameraRollAction);
+export const CameraRollAction = (node, path) => [
+  partSegment(node, path, {
+    type: 'cameraRoll',
+    label: node.props.label,
+  }),
+];
+annotateLineComponent(CameraRollAction);
 
-const LocationAction = async ({ label }) => ({
-  type: 'location',
-  label,
-});
-const __LocationAction = asPartComponent(LocationAction);
-
-export {
-  __PostbackAction as PostbackAction,
-  __MessageAction as MessageAction,
-  __URIAction as URIAction,
-  __DateTimePickerAction as DateTimePickerAction,
-  __CameraAction as CameraAction,
-  __CameraRollAction as CameraRollAction,
-  __LocationAction as LocationAction,
-};
+export const LocationAction = (node, path) => [
+  partSegment(node, path, {
+    type: 'location',
+    label: node.props.label,
+  }),
+];
+annotateLineComponent(LocationAction);

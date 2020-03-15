@@ -29,6 +29,7 @@ import type {
 } from '../types';
 import type {
   InnerRenderFn,
+  TextSegment,
   OutputableSegment,
   IntermediateSegment,
 } from './types';
@@ -37,19 +38,19 @@ const RENDER_SEPARATOR = '#';
 const RENDER_ROOT = '$';
 
 type RenderTraverseContext<Value, Native> = {
-  renderings: Promise<
+  renderings: (
     | null
-    | IntermediateSegment<Value, Native>
     | IntermediateSegment<Value, Native>[]
-  >[],
+    | Promise<null | IntermediateSegment<Value, Native>[]>
+  )[],
   scope: ServiceScope,
   servicesProvided: Map<Interfaceable, any>,
 };
 
 type GeneralComponentDelegate<Value, Native> = (
   element: GeneralElement,
-  render: InnerRenderFn<Value, Native>,
-  path: string
+  path: string,
+  render: InnerRenderFn<Value, Native>
 ) => Promise<null | IntermediateSegment<Value, Native>[]>;
 
 export default class MachinatRenderer<
@@ -57,22 +58,22 @@ export default class MachinatRenderer<
   Native: NativeComponent<any, Value>
 > {
   platform: string;
-  generalDelegate: GeneralComponentDelegate<Value, Native>;
+  generalComponentDelegator: GeneralComponentDelegate<Value, Native>;
 
   _traverseCallback: TraverseNodeCallback<RenderTraverseContext<Value, Native>>;
 
   constructor(
     platform: string,
-    generalDelegate: GeneralComponentDelegate<Value, Native>
+    generalComponentDelegator: GeneralComponentDelegate<Value, Native>
   ) {
     this.platform = platform;
-    this.generalDelegate = generalDelegate;
+    this.generalComponentDelegator = generalComponentDelegator;
     this._traverseCallback = this._renderingTraverser.bind(this);
   }
 
   async render(
-    scope: ServiceScope,
-    node: MachinatNode
+    node: MachinatNode,
+    scope: ServiceScope
   ): Promise<null | OutputableSegment<Value, Native>[]> {
     const intermediates = await this._renderImpl(
       scope,
@@ -87,7 +88,9 @@ export default class MachinatRenderer<
 
     const segments: OutputableSegment<Value, Native>[] = [];
 
-    for (const segment of intermediates) {
+    for (let i = 0; i < intermediates.length; i += 1) {
+      const segment = intermediates[i];
+
       invariant(
         segment.type !== 'part',
         `${formatNode(
@@ -110,48 +113,62 @@ export default class MachinatRenderer<
   async _renderImpl(
     scope: ServiceScope,
     servicesProvided: Map<Interfaceable, any>,
-    prefix: string,
+    location: string,
     node: MachinatNode,
-    currentPath?: string
+    path?: string
   ): Promise<null | IntermediateSegment<Value, Native>[]> {
     if (isEmpty(node)) {
       return null;
     }
 
-    const renderings: Promise<
-      | null
-      | IntermediateSegment<Value, Native>
-      | IntermediateSegment<Value, Native>[]
-    >[] = [];
+    const currentPath = location + (path || '');
+    const renderings = [];
 
     traverse(
       node,
-      prefix + (currentPath || ''),
+      currentPath,
       { renderings, scope, servicesProvided },
       this._traverseCallback
     );
 
-    const rendered: (
-      | null
-      | IntermediateSegment<Value, Native>
-      | IntermediateSegment<Value, Native>[]
-    )[] = await Promise.all(renderings);
+    const rendered = await Promise.all(renderings);
+    const results: IntermediateSegment<Value, Native>[] = [];
+    let textSlot: void | TextSegment;
 
-    const segments: IntermediateSegment<Value, Native>[] = [];
+    for (let r = 0; r < rendered.length; r += 1) {
+      const segments = rendered[r];
 
-    for (let i = 0; i < rendered.length; i += 1) {
-      const target = rendered[i];
+      if (segments !== null) {
+        for (let s = 0; s < segments.length; s += 1) {
+          const segment = segments[s];
 
-      if (target !== null) {
-        if (Array.isArray(target)) {
-          segments.push(...target);
-        } else if (target) {
-          segments.push(target);
+          if (segment.type === 'text') {
+            textSlot =
+              textSlot === undefined
+                ? segment
+                : {
+                    type: 'text',
+                    value: textSlot.value + segment.value,
+                    node,
+                    path: currentPath,
+                  };
+          } else {
+            if (textSlot !== undefined) {
+              results.push(textSlot);
+              textSlot = undefined;
+            }
+
+            results.push(segment);
+          }
         }
       }
     }
 
-    return segments.length === 0 ? null : segments;
+    if (textSlot !== undefined) {
+      results.push(textSlot);
+    }
+
+    return results.length === 0 ? null : results;
   }
 
   _renderingTraverser(
@@ -165,12 +182,14 @@ export default class MachinatRenderer<
       // add a TextSegment
 
       renderings.push(
-        Promise.resolve({
-          type: 'text',
-          node,
-          value: typeof node === 'string' ? node : String(node),
-          path,
-        })
+        Promise.resolve([
+          {
+            type: 'text',
+            node,
+            value: typeof node === 'string' ? node : String(node),
+            path,
+          },
+        ])
       );
       return;
     }
@@ -183,15 +202,15 @@ export default class MachinatRenderer<
     if (typeof node.type === 'string') {
       // delegate to the delegator function of platform
 
-      const renderPromise = this.generalDelegate(
+      const renderPromise = this.generalComponentDelegator(
         ((node: any): GeneralElement),
+        path,
         this._renderImpl.bind(
           this,
           scope,
           servicesProvided,
           `${path}#${node.type}`
-        ),
-        path
+        )
       );
 
       renderings.push(renderPromise);
@@ -200,36 +219,42 @@ export default class MachinatRenderer<
       const rawEle: RawElement = (node: any);
 
       renderings.push(
-        Promise.resolve({
-          type: 'raw',
-          node: rawEle,
-          value: rawEle.props.value,
-          path,
-        })
+        Promise.resolve([
+          {
+            type: 'raw',
+            node: rawEle,
+            value: rawEle.props.value,
+            path,
+          },
+        ])
       );
     } else if (isPauseElement(node)) {
       // add a PauseSegment
       const pauseEle: PauseElement = (node: any);
 
       renderings.push(
-        Promise.resolve({
-          type: 'pause',
-          node: pauseEle,
-          value: pauseEle.props.until || null,
-          path,
-        })
+        Promise.resolve([
+          {
+            type: 'pause',
+            node: pauseEle,
+            value: pauseEle.props.until || null,
+            path,
+          },
+        ])
       );
     } else if (isThunkElement(node)) {
       // add a ThunkSegment
       const thunkEle: ThunkElement = (node: any);
 
       renderings.push(
-        Promise.resolve({
-          type: 'thunk',
-          node: thunkEle,
-          value: thunkEle.props.effect,
-          path,
-        })
+        Promise.resolve([
+          {
+            type: 'thunk',
+            node: thunkEle,
+            value: thunkEle.props.effect,
+            path,
+          },
+        ])
       );
     } else if (isProviderElement(node)) {
       // traverse down the children of provider element with the service added
@@ -264,8 +289,8 @@ export default class MachinatRenderer<
 
       const renderPromise = nativeComponent(
         (node: any),
-        this._renderImpl.bind(this, scope, servicesProvided, pathInner),
-        path
+        path,
+        this._renderImpl.bind(this, scope, servicesProvided, pathInner)
       );
 
       renderings.push(renderPromise);

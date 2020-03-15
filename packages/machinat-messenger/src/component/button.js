@@ -1,109 +1,112 @@
-import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
+import { partSegment } from '@machinat/core/renderer';
+import { annotateMessengerComponent } from '../utils';
 
-import { asPartComponent } from '../utils';
-import { GenericTemplate } from './template';
+export const URLButton = (node, path) => {
+  const {
+    title,
+    url,
+    heightRatio,
+    extensions,
+    fallbackURL,
+    hideShareButton,
+  } = node.props;
 
-const URLButton = async ({
-  title,
-  url,
-  heightRatio,
-  extensions,
-  fallbackURL,
-  hideShareButton,
-}) => ({
-  type: 'web_url',
-  title,
-  url,
-  webview_height_ratio: heightRatio,
-  messenger_extensions: extensions,
-  fallback_url: fallbackURL,
-  webview_share_button: hideShareButton ? 'hide' : undefined,
-});
-const __URLButton = asPartComponent(URLButton);
-
-const PostbackButton = async ({ title, payload }) => ({
-  type: 'postback',
-  title,
-  payload,
-});
-const __PostbackButton = asPartComponent(PostbackButton);
-
-const getGenericTemplateValues = valuesOfAssertedTypes(() => [GenericTemplate]);
-
-const ShareButton = async ({ children }, render) => {
-  const sharedSegments = await render(children, '.children');
-
-  let sharedContent;
-  if (sharedSegments !== null) {
-    sharedContent = getGenericTemplateValues(sharedSegments)[0].message;
-  }
-
-  return {
-    type: 'element_share',
-    share_contents: sharedContent,
-  };
+  return [
+    partSegment(node, path, {
+      type: 'web_url',
+      title,
+      url,
+      webview_height_ratio: heightRatio,
+      messenger_extensions: extensions,
+      fallback_url: fallbackURL,
+      webview_share_button: hideShareButton ? 'hide' : undefined,
+    }),
+  ];
 };
-const __ShareButton = asPartComponent(ShareButton);
+annotateMessengerComponent(URLButton);
 
-const BuyButton = async ({
-  title,
-  payload,
-  currency,
-  paymentType,
-  isTest,
-  merchantName,
-  requestedInfo,
-  priceList,
-}) => ({
-  type: 'payment',
-  title,
-  payload,
-  payment_summary: {
+export const PostbackButton = (node, path) => {
+  const { title, payload } = node.props;
+  return [
+    partSegment(node, path, {
+      type: 'postback',
+      title,
+      payload,
+    }),
+  ];
+};
+annotateMessengerComponent(PostbackButton);
+
+export const BuyButton = (node, path) => {
+  const {
+    title,
+    payload,
     currency,
-    payment_type: paymentType,
-    is_test_payment: isTest,
-    merchant_name: merchantName,
-    requested_user_info: requestedInfo,
-    price_list: priceList,
-  },
-});
-const __BuyButton = asPartComponent(BuyButton);
+    paymentType,
+    isTest,
+    merchantName,
+    requestedInfo,
+    priceList,
+  } = node.props;
 
-const CallButton = async ({ title, number }) => ({
-  type: 'phone_number',
-  title,
-  number,
-});
-const __CallButton = asPartComponent(CallButton);
-
-const LoginButton = async ({ url }) => ({
-  type: 'account_link',
-  url,
-});
-const __LoginButton = asPartComponent(LoginButton);
-
-const ACCOUNT_UNLINK_TYPE = { type: 'account_unlink' };
-const LogoutButton = async () => ACCOUNT_UNLINK_TYPE;
-const __LogoutButton = asPartComponent(LogoutButton);
-
-const GamePlayButton = async ({ title, payload, playerId, contextId }) => ({
-  type: 'game_play',
-  title,
-  payload,
-  game_metadata: {
-    player_id: playerId,
-    context_id: contextId,
-  },
-});
-const __GamePlayButton = asPartComponent(GamePlayButton);
-
-export {
-  __URLButton as URLButton,
-  __PostbackButton as PostbackButton,
-  __ShareButton as ShareButton,
-  __BuyButton as BuyButton,
-  __CallButton as CallButton,
-  __LoginButton as LoginButton,
-  __LogoutButton as LogoutButton,
-  __GamePlayButton as GamePlayButton,
+  return [
+    partSegment(node, path, {
+      type: 'payment',
+      title,
+      payload,
+      payment_summary: {
+        currency,
+        payment_type: paymentType,
+        is_test_payment: isTest,
+        merchant_name: merchantName,
+        requested_user_info: requestedInfo,
+        price_list: priceList,
+      },
+    }),
+  ];
 };
+annotateMessengerComponent(BuyButton);
+
+export const CallButton = (node, path) => {
+  const { title, number } = node.props;
+  return [
+    partSegment(node, path, {
+      type: 'phone_number',
+      title,
+      number,
+    }),
+  ];
+};
+annotateMessengerComponent(CallButton);
+
+export const LoginButton = (node, path) => {
+  const { url } = node.props;
+  return [
+    partSegment(node, path, {
+      type: 'account_link',
+      url,
+    }),
+  ];
+};
+annotateMessengerComponent(LoginButton);
+
+export const LogoutButton = (node, path) => [
+  partSegment(node, path, { type: 'account_unlink' }),
+];
+annotateMessengerComponent(LogoutButton);
+
+export const GamePlayButton = (node, path) => {
+  const { title, payload, playerId, contextId } = node.props;
+  return [
+    partSegment(node, path, {
+      type: 'game_play',
+      title,
+      payload,
+      game_metadata: {
+        player_id: playerId,
+        context_id: contextId,
+      },
+    }),
+  ];
+};
+annotateMessengerComponent(GamePlayButton);

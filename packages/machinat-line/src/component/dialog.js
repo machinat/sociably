@@ -1,11 +1,11 @@
 /* eslint-disable import/prefer-default-export */
-import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
-import { asContainerComponent, isMessageValue } from '../utils';
-import { QuickReply } from './quickReply';
+import { annotateLineComponent, isMessageValue } from '../utils';
 
-const getQuickReplyValues = valuesOfAssertedTypes(() => [QuickReply]);
-
-const Dialog = async ({ children, quickReplies }, render) => {
+export const Dialog = async (
+  { props: { children, quickReplies } },
+  path,
+  render
+) => {
   const segments = await render(children, '.children');
   if (segments === null) {
     return null;
@@ -31,17 +31,17 @@ const Dialog = async ({ children, quickReplies }, render) => {
   }
 
   const quickReplySegments = await render(quickReplies, '.quickReplies');
-  const quickRepliesValues = getQuickReplyValues(quickReplySegments);
 
-  if (quickRepliesValues && lastMessageIdx !== -1) {
+  if (quickReplySegments) {
+    if (lastMessageIdx === -1) {
+      throw new Error('no message existed in children to attach quickReply');
+    }
+
     segments[lastMessageIdx].value.quickReply = {
-      items: quickRepliesValues,
+      items: quickReplySegments.map(segment => segment.value),
     };
   }
 
   return segments;
 };
-
-const __Dialog = asContainerComponent(Dialog);
-
-export { __Dialog as Dialog };
+annotateLineComponent(Dialog);

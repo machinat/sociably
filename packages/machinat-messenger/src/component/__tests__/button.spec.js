@@ -1,26 +1,31 @@
-import moxy from 'moxy';
 import Machinat from '@machinat/core';
+import Renderer from '@machinat/core/renderer';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
 
 import {
   URLButton,
   PostbackButton,
-  ShareButton,
   BuyButton,
   CallButton,
   LoginButton,
   LogoutButton,
   GamePlayButton,
 } from '../button';
-import { GenericTemplate, GenericItem } from '../template';
 
-const renderInner = moxy(() => null);
-const renderHelper = element => element.type(element, renderInner, '$');
+const render = async node => {
+  let rendered;
+  const renderer = new Renderer('messenger', async (_, __, renderInner) => {
+    rendered = await renderInner(node);
+    return null;
+  });
+
+  await renderer.render(<container />);
+  return rendered;
+};
 
 test.each([
   URLButton,
   PostbackButton,
-  ShareButton,
   BuyButton,
   CallButton,
   LoginButton,
@@ -35,7 +40,7 @@ test.each([
 describe('URLButton', () => {
   it('match snapshot', async () => {
     await expect(
-      renderHelper(<URLButton title="my button" url="http://machinat.com" />)
+      render(<URLButton title="my button" url="http://machinat.com" />)
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
@@ -43,7 +48,7 @@ describe('URLButton', () => {
                   title="my button"
                   url="http://machinat.com"
                 />,
-                "path": "$",
+                "path": "$#container",
                 "type": "part",
                 "value": Object {
                   "fallback_url": undefined,
@@ -59,7 +64,7 @@ describe('URLButton', () => {
           `);
 
     await expect(
-      renderHelper(
+      render(
         <URLButton
           title="my button"
           url="http://machinat.com"
@@ -80,7 +85,7 @@ describe('URLButton', () => {
                   title="my button"
                   url="http://machinat.com"
                 />,
-                "path": "$",
+                "path": "$#container",
                 "type": "part",
                 "value": Object {
                   "fallback_url": "http://...",
@@ -100,7 +105,7 @@ describe('URLButton', () => {
 describe('PostbackButton', () => {
   it('match snapshot', async () => {
     await expect(
-      renderHelper(<PostbackButton title="my button" payload="_MY_PAYLOAD_" />)
+      render(<PostbackButton title="my button" payload="_MY_PAYLOAD_" />)
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
@@ -108,7 +113,7 @@ describe('PostbackButton', () => {
                   payload="_MY_PAYLOAD_"
                   title="my button"
                 />,
-                "path": "$",
+                "path": "$#container",
                 "type": "part",
                 "value": Object {
                   "payload": "_MY_PAYLOAD_",
@@ -121,88 +126,10 @@ describe('PostbackButton', () => {
   });
 });
 
-describe('ShareButton', () => {
-  it('match snapshot', async () => {
-    await expect(renderHelper(<ShareButton />)).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <ShareButton />,
-                "path": "$",
-                "type": "part",
-                "value": Object {
-                  "share_contents": undefined,
-                  "type": "element_share",
-                },
-              },
-            ]
-          `);
-  });
-
-  it('match snapshot with customized template to share specified', async () => {
-    const sharedTemplate = (
-      <GenericTemplate>
-        <GenericItem title="foo" subtitle="bar" />
-      </GenericTemplate>
-    );
-    renderInner.mock.fake(async () => [
-      {
-        type: 'unit',
-        value: { message: '__RENDERED_GENERIC_TEMPLATE_MEASSGE_OBJ__' },
-        node: sharedTemplate,
-      },
-    ]);
-    await expect(renderHelper(<ShareButton>{sharedTemplate}</ShareButton>))
-      .resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <ShareButton>
-                  <GenericTemplate>
-                    <GenericItem
-                      subtitle="bar"
-                      title="foo"
-                    />
-                  </GenericTemplate>
-                </ShareButton>,
-                "path": "$",
-                "type": "part",
-                "value": Object {
-                  "share_contents": "__RENDERED_GENERIC_TEMPLATE_MEASSGE_OBJ__",
-                  "type": "element_share",
-                },
-              },
-            ]
-          `);
-
-    expect(renderInner.mock).toHaveBeenCalledWith(sharedTemplate, '.children');
-  });
-
-  it('throw if non GenericTemplate children given', async () => {
-    const Invalid = () => {};
-    renderInner.mock.fake(async node => [
-      {
-        type: 'unit',
-        value: '__SOMETHING_WRONG__',
-        node,
-        path: '$:0#ShareButton.children:0',
-      },
-    ]);
-
-    await expect(
-      renderHelper(
-        <ShareButton>
-          <Invalid />
-        </ShareButton>
-      )
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"<Invalid /> at $:0#ShareButton.children:0 is invalid, only <[GenericTemplate]/> allowed"`
-    );
-  });
-});
-
 describe('BuyButton', () => {
   it('match snapshot', async () => {
     await expect(
-      renderHelper(
+      render(
         <BuyButton
           title="my button"
           payload="_MY_PAYLOAD_"
@@ -251,7 +178,7 @@ describe('BuyButton', () => {
                   }
                   title="my button"
                 />,
-                "path": "$",
+                "path": "$#container",
                 "type": "part",
                 "value": Object {
                   "payload": "_MY_PAYLOAD_",
@@ -285,7 +212,7 @@ describe('BuyButton', () => {
 describe('CallButton', () => {
   it('match snapshot', async () => {
     await expect(
-      renderHelper(<CallButton title="call me maybe" number="+15105551234" />)
+      render(<CallButton title="call me maybe" number="+15105551234" />)
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
@@ -293,7 +220,7 @@ describe('CallButton', () => {
                   number="+15105551234"
                   title="call me maybe"
                 />,
-                "path": "$",
+                "path": "$#container",
                 "type": "part",
                 "value": Object {
                   "number": "+15105551234",
@@ -308,14 +235,14 @@ describe('CallButton', () => {
 
 describe('LoginButton', () => {
   it('match snapshot', async () => {
-    await expect(renderHelper(<LoginButton url="https://council.elrond" />))
-      .resolves.toMatchInlineSnapshot(`
+    await expect(render(<LoginButton url="https://council.elrond" />)).resolves
+      .toMatchInlineSnapshot(`
             Array [
               Object {
                 "node": <LoginButton
                   url="https://council.elrond"
                 />,
-                "path": "$",
+                "path": "$#container",
                 "type": "part",
                 "value": Object {
                   "type": "account_link",
@@ -329,14 +256,14 @@ describe('LoginButton', () => {
 
 describe('LoginButton', () => {
   it('match snapshot', async () => {
-    await expect(renderHelper(<LoginButton url="https://council.elrond" />))
-      .resolves.toMatchInlineSnapshot(`
+    await expect(render(<LoginButton url="https://council.elrond" />)).resolves
+      .toMatchInlineSnapshot(`
             Array [
               Object {
                 "node": <LoginButton
                   url="https://council.elrond"
                 />,
-                "path": "$",
+                "path": "$#container",
                 "type": "part",
                 "value": Object {
                   "type": "account_link",
@@ -350,12 +277,11 @@ describe('LoginButton', () => {
 
 describe('LogoutButton', () => {
   it('match snapshot', async () => {
-    await expect(renderHelper(<LogoutButton />)).resolves
-      .toMatchInlineSnapshot(`
+    await expect(render(<LogoutButton />)).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
                 "node": <LogoutButton />,
-                "path": "$",
+                "path": "$#container",
                 "type": "part",
                 "value": Object {
                   "type": "account_unlink",
@@ -369,7 +295,7 @@ describe('LogoutButton', () => {
 describe('GamePlayButton', () => {
   it('match snapshot', async () => {
     await expect(
-      renderHelper(
+      render(
         <GamePlayButton
           title="I want to play a game"
           payload="GAME_OVER"
@@ -386,7 +312,7 @@ describe('GamePlayButton', () => {
                   playerId="Adam"
                   title="I want to play a game"
                 />,
-                "path": "$",
+                "path": "$#container",
                 "type": "part",
                 "value": Object {
                   "game_metadata": Object {

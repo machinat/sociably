@@ -1,56 +1,49 @@
-import invariant from 'invariant';
-import joinTextualSegments from '@machinat/core/utils/joinTextualSegments';
-import valuesOfAssertedTypes from '@machinat/core/utils/valuesOfAssertedTypes';
+import { unitSegment, partSegment } from '@machinat/core/renderer';
+import { annotateLineComponent } from '../utils';
 
-import { asPartComponent, asUnitComponent } from '../utils';
-import * as actionsModule from './action';
+export const FlexButton = async (node, path, render) => {
+  const { action, flex, margin, height, style, color, gravity } = node.props;
 
-const getActionValues = valuesOfAssertedTypes(() => [
-  ...Object.values(actionsModule),
-]);
-
-const FlexButton = async (
-  { action, flex, margin, height, style, color, gravity },
-  render
-) => {
   const actionSegments = await render(action, '.action');
-  const actionValues = getActionValues(actionSegments);
+  const actionValue = actionSegments?.[0].value;
 
-  invariant(
-    actionValues !== undefined && actionValues.length === 1,
-    `there should be exactly 1 action in prop "action" of FlexButton, got ${
-      actionValues ? actionValues.length : 0
-    }`
-  );
-
-  return {
-    type: 'button',
-    flex,
-    margin,
-    height,
-    style,
-    color,
-    gravity,
-    action: actionValues[0],
-  };
+  return [
+    partSegment(node, path, {
+      type: 'button',
+      flex,
+      margin,
+      height,
+      style,
+      color,
+      gravity,
+      action: actionValue,
+    }),
+  ];
 };
-const __FlexButton = asPartComponent(FlexButton);
+annotateLineComponent(FlexButton);
 
-const FILLER_TYPE_VLUES = { type: 'filler' };
-const FlexFiller = async () => FILLER_TYPE_VLUES;
-const __FlexFiller = asPartComponent(FlexFiller);
+const FILLER_TYPE_VALUES = { type: 'filler' };
+export const FlexFiller = (node, path) => [
+  partSegment(node, path, FILLER_TYPE_VALUES),
+];
+annotateLineComponent(FlexFiller);
 
-const FlexIcon = ({ url, margin, size, aspectRatio }) => ({
-  type: 'icon',
-  url,
-  margin,
-  size,
-  aspectRatio,
-});
-const __FlexIcon = asPartComponent(FlexIcon);
+export const FlexIcon = (node, path) => {
+  const { url, margin, size, aspectRatio } = node.props;
+  return [
+    partSegment(node, path, {
+      type: 'icon',
+      url,
+      margin,
+      size,
+      aspectRatio,
+    }),
+  ];
+};
+annotateLineComponent(FlexIcon);
 
-const FlexImage = async (
-  {
+export const FlexImage = async (node, path, render) => {
+  const {
     url,
     flex,
     margin,
@@ -61,43 +54,51 @@ const FlexImage = async (
     aspectMode,
     backgroundColor,
     action,
-  },
-  render
-) => {
+  } = node.props;
+
   const actionSegments = await render(action, '.action');
-  const actionValues = getActionValues(actionSegments);
+  const actionValue = actionSegments?.[0].value;
 
-  return {
-    type: 'image',
-    url,
-    flex,
-    margin,
-    align,
-    gravity,
-    size,
-    aspectRatio,
-    aspectMode,
-    backgroundColor,
-    action: actionValues && actionValues[0],
-  };
+  return [
+    partSegment(node, path, {
+      type: 'image',
+      url,
+      flex,
+      margin,
+      align,
+      gravity,
+      size,
+      aspectRatio,
+      aspectMode,
+      backgroundColor,
+      action: actionValue,
+    }),
+  ];
 };
-const __FlexImage = asPartComponent(FlexImage);
+annotateLineComponent(FlexImage);
 
-const FlexSeparator = ({ margin, color }) => ({
-  type: 'separator',
-  margin,
-  color,
-});
-const __FlexSeparator = asPartComponent(FlexSeparator);
+export const FlexSeparator = (node, path) => {
+  const { margin, color } = node.props;
+  return [
+    partSegment(node, path, {
+      type: 'separator',
+      margin,
+      color,
+    }),
+  ];
+};
+annotateLineComponent(FlexSeparator);
 
-const FlexSpacer = async ({ size }) => ({
-  type: 'spacer',
-  size,
-});
-const __FlexSpacer = asPartComponent(FlexSpacer);
+export const FlexSpacer = (node, path) => [
+  partSegment(node, path, {
+    type: 'spacer',
+    size: node.props.size,
+  }),
+];
+annotateLineComponent(FlexSpacer);
 
-const FlexText = async (
-  {
+export const FlexText = async (node, path, render) => {
+  const {
     children,
     flex,
     margin,
@@ -109,151 +110,106 @@ const FlexText = async (
     weight,
     color,
     action,
-  },
+  } = node.props;
 
-  render
-) => {
   const textSegments = await render(children, '.children');
-  const joinedSegments = joinTextualSegments(textSegments);
-
-  let text;
-  invariant(
-    joinedSegments !== null &&
-      joinedSegments.length === 1 &&
-      typeof (text = joinedSegments[0].value) === 'string', // eslint-disable-line prefer-destructuring
-    joinedSegments
-      ? `there should be no <br/> in children of <FlexText/>`
-      : `children of <FlexText/> should not be empty`
-  );
+  const text = textSegments ? textSegments[0].value : '';
 
   const actionSegments = await render(action, '.action');
-  const actionsValue = getActionValues(actionSegments);
+  const actionValues = actionSegments?.[0].value;
 
-  return {
-    type: 'text',
-    text,
-    flex,
-    margin,
-    size,
-    align,
-    gravity,
-    wrap,
-    maxLines,
-    weight,
-    color,
-    action: actionsValue && actionsValue[0],
-  };
+  return [
+    partSegment(node, path, {
+      type: 'text',
+      text,
+      flex,
+      margin,
+      size,
+      align,
+      gravity,
+      wrap,
+      maxLines,
+      weight,
+      color,
+      action: actionValues,
+    }),
+  ];
 };
-const __FlexText = asPartComponent(FlexText);
+annotateLineComponent(FlexText);
 
-let getBoxContentValue;
-
-const FlexBox = async (
-  { children, layout, flex, spacing, margin, action },
-  render
-) => {
+export const FlexBox = async (node, path, render) => {
+  const { children, layout, flex, spacing, margin, action } = node.props;
   const contentSegments = await render(children, '.children');
-  const contentValues = getBoxContentValue(contentSegments);
+  const contentValues = contentSegments?.map(segment => segment.value);
 
   const actionSegments = await render(action, '.action');
-  const actionValues = getActionValues(actionSegments);
+  const actionValue = actionSegments?.[0].value;
 
-  invariant(
-    contentValues !== undefined,
-    `children of FlexBox should not be empty`
-  );
-
-  return {
-    type: 'box',
-    layout,
-    flex,
-    spacing,
-    margin,
-    action: actionValues && actionValues[0],
-    contents: contentValues,
-  };
+  return [
+    partSegment(node, path, {
+      type: 'box',
+      layout,
+      flex,
+      spacing,
+      margin,
+      action: actionValue,
+      contents: contentValues,
+    }),
+  ];
 };
-const __FlexBox = asPartComponent(FlexBox);
+annotateLineComponent(FlexBox);
 
-getBoxContentValue = valuesOfAssertedTypes(() => [
-  __FlexBox,
-  __FlexButton,
-  __FlexFiller,
-  __FlexIcon,
-  __FlexImage,
-  __FlexSeparator,
-  __FlexSpacer,
-  __FlexText,
-]);
-
-const createBlockComponent = (section, valueFetcher) => {
+const createBlockComponent = section => {
   const tagName = `Flex${section[0].toUpperCase()}${section.slice(1)}`;
 
   const wrapper = {
-    [tagName]: async (
-      { children, backgroundColor, separator, separatorColor },
-      render
-    ) => {
+    [tagName]: async (node, path, render) => {
+      const {
+        children,
+        backgroundColor,
+        separator,
+        separatorColor,
+      } = node.props;
+
       const contentSegments = await render(children, '.children');
-      const contentValues = valueFetcher(contentSegments);
+      const contentValue = contentSegments?.[0].value;
 
-      invariant(
-        contentValues !== undefined && contentValues.length === 1,
-        `there should be exactly 1 child in ${tagName}, got ${
-          contentValues ? contentValues.length : 0
-        }`
-      );
-
-      return {
-        name: section,
-        content: contentValues[0],
-        style:
-          backgroundColor || separator || separatorColor
-            ? {
-                backgroundColor,
-                separator,
-                separatorColor,
-              }
-            : undefined,
-      };
+      return [
+        partSegment(node, path, {
+          name: section,
+          content: contentValue,
+          style:
+            backgroundColor || separator || separatorColor
+              ? {
+                  backgroundColor,
+                  separator,
+                  separatorColor,
+                }
+              : undefined,
+        }),
+      ];
     },
   };
 
-  return asPartComponent(wrapper[tagName]);
+  return annotateLineComponent(wrapper[tagName]);
 };
 
-const getBoxValues = valuesOfAssertedTypes(() => [__FlexBox]);
-const getImagesValues = valuesOfAssertedTypes(() => [__FlexImage]);
+export const FlexHeader = createBlockComponent('header', FlexBox);
+export const FlexHero = createBlockComponent('hero', FlexImage);
+export const FlexBody = createBlockComponent('body', FlexBox);
+export const FlexFooter = createBlockComponent('footer', FlexBox);
 
-const __FlexHeader = createBlockComponent('header', getBoxValues);
-const __FlexHero = createBlockComponent('hero', getImagesValues);
-const __FlexBody = createBlockComponent('body', getBoxValues);
-const __FlexFooter = createBlockComponent('footer', getBoxValues);
-
-const getBlockValues = valuesOfAssertedTypes(() => [
-  __FlexHeader,
-  __FlexHero,
-  __FlexBody,
-  __FlexFooter,
-]);
-
-const FlexBubbleContainer = async ({ children, rightToLeft }, render) => {
+export const FlexBubbleContainer = async (node, path, render) => {
+  const { children, rightToLeft } = node.props;
   const bubbleObject = {
     type: 'bubble',
     direction: rightToLeft ? 'rtl' : 'ltr',
   };
 
   const sectionSegments = await render(children, '.children');
-  const sections = getBlockValues(sectionSegments);
+  const sections = sectionSegments?.map(segment => segment.value);
 
-  invariant(
-    sections !== undefined,
-    `there should be at least 1 block in children of <FlexBubbleContainer />`
-  );
-
-  for (let i = 0; i < sections.length; i += 1) {
-    const section = sections[i];
-
+  for (const section of sections) {
     bubbleObject[section.name] = section.content;
 
     if (section.style !== undefined) {
@@ -265,80 +221,52 @@ const FlexBubbleContainer = async ({ children, rightToLeft }, render) => {
     }
   }
 
-  return bubbleObject;
+  return [partSegment(node, path, bubbleObject)];
 };
-const __FlexBubbleContainer = asPartComponent(FlexBubbleContainer);
+annotateLineComponent(FlexBubbleContainer);
 
-const getBubbleContainerValues = valuesOfAssertedTypes(() => [
-  __FlexBubbleContainer,
-]);
+export const FlexCarouselContainer = async (node, path, render) => {
+  const contentSegments = await render(node.props.children, '.children');
+  const bubbleContainers = contentSegments?.map(segment => segment.value);
 
-const FlexCarouselContainer = async ({ children }, render) => {
+  return [
+    partSegment(node, path, {
+      type: 'carousel',
+      contents: bubbleContainers,
+    }),
+  ];
+};
+annotateLineComponent(FlexCarouselContainer);
+
+export const FlexMessage = async (node, path, render) => {
+  const { children, altText } = node.props;
   const contentSegments = await render(children, '.children');
+  const contentValue = contentSegments?.[0].value;
 
-  return {
-    type: 'carousel',
-    contents: getBubbleContainerValues(contentSegments),
-  };
+  return [
+    unitSegment(node, path, {
+      type: 'flex',
+      altText,
+      contents: contentValue,
+    }),
+  ];
 };
-const __FlexCarouselContainer = asPartComponent(FlexCarouselContainer);
-
-const getContainerValues = valuesOfAssertedTypes(() => [
-  __FlexBubbleContainer,
-  __FlexCarouselContainer,
-]);
-
-const FlexMessage = async ({ children, alt, altText }, render) => {
-  const contentSegments = await render(children, '.children');
-  const contentValues = getContainerValues(contentSegments);
-
-  invariant(
-    contentValues !== undefined && contentValues.length === 1,
-    `there should be exactly 1 conatiner in children of FlexMessage, got ${
-      contentValues ? contentValues.length : 0
-    }`
-  );
-
-  return {
-    type: 'flex',
-    altText: altText || alt,
-    contents: contentValues[0],
-  };
-};
-const __FlexMessage = asUnitComponent(FlexMessage);
+annotateLineComponent(FlexMessage);
 
 export default {
-  Box: __FlexBox,
-  Button: __FlexButton,
-  Filler: __FlexFiller,
-  Icon: __FlexIcon,
-  Image: __FlexImage,
-  Separator: __FlexSeparator,
-  Spacer: __FlexSpacer,
-  Text: __FlexText,
-  Header: __FlexHeader,
-  Hero: __FlexHero,
-  Body: __FlexBody,
-  Footer: __FlexFooter,
-  BubbleContainer: __FlexBubbleContainer,
-  CarouselContainer: __FlexCarouselContainer,
-  Message: __FlexMessage,
-};
-
-export {
-  __FlexBox as FlexBox,
-  __FlexButton as FlexButton,
-  __FlexFiller as FlexFiller,
-  __FlexIcon as FlexIcon,
-  __FlexImage as FlexImage,
-  __FlexSeparator as FlexSeparator,
-  __FlexSpacer as FlexSpacer,
-  __FlexText as FlexText,
-  __FlexHeader as FlexHeader,
-  __FlexHero as FlexHero,
-  __FlexBody as FlexBody,
-  __FlexFooter as FlexFooter,
-  __FlexBubbleContainer as FlexBubbleContainer,
-  __FlexCarouselContainer as FlexCarouselContainer,
-  __FlexMessage as FlexMessage,
+  Box: FlexBox,
+  Button: FlexButton,
+  Filler: FlexFiller,
+  Icon: FlexIcon,
+  Image: FlexImage,
+  Separator: FlexSeparator,
+  Spacer: FlexSpacer,
+  Text: FlexText,
+  Header: FlexHeader,
+  Hero: FlexHero,
+  Body: FlexBody,
+  Footer: FlexFooter,
+  BubbleContainer: FlexBubbleContainer,
+  CarouselContainer: FlexCarouselContainer,
+  Message: FlexMessage,
 };

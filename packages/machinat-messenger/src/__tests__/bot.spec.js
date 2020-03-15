@@ -35,8 +35,7 @@ jest.mock('../worker', () =>
 
 const message = (
   <Dialog quickReplies={<QuickReply title="Hi!" />}>
-    Hello
-    <b>World!</b>
+    Hello <b>World!</b>
     <Image url="https://machinat.com/greeting.png" />
   </Dialog>
 );
@@ -178,7 +177,7 @@ describe('#render(channel, message, options)', () => {
     scope = graphAPI.reply(
       200,
       JSON.stringify(
-        new Array(3).fill(0).map(() => ({
+        new Array(2).fill(0).map(() => ({
           code: 200,
           body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
         }))
@@ -350,15 +349,15 @@ describe('#renderMessageCreative(message)', () => {
 
     expect(body).toMatchSnapshot({ batch: expect.any(String) });
     expect(JSON.parse(body.batch)).toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "body": "messages=%5B%7B%22text%22%3A%22Hello%22%7D%2C%7B%22text%22%3A%22*World!*%22%7D%2C%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D%5D",
-                "method": "POST",
-                "omit_response_on_success": false,
-                "relative_url": "me/message_creatives",
-              },
-            ]
-        `);
+      Array [
+        Object {
+          "body": "messages=%5B%7B%22text%22%3A%22Hello%20*World!*%22%7D%2C%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D%5D",
+          "method": "POST",
+          "omit_response_on_success": false,
+          "relative_url": "me/message_creatives",
+        },
+      ]
+    `);
 
     expect(scope.isDone()).toBe(true);
   });

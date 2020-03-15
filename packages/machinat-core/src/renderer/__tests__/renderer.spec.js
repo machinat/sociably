@@ -11,7 +11,7 @@ const scope = moxy({
   },
 });
 
-const generalElementDelegate = moxy((node, _, path) =>
+const generalElementDelegate = moxy((node, path) =>
   Promise.resolve(
     node.type === 'a'
       ? [
@@ -36,7 +36,7 @@ describe('#render()', () => {
     const sideEffect1 = moxy();
     const sideEffect2 = moxy();
 
-    const NativeUnit1 = moxy(function NativeUnit1(node, _, path) {
+    const NativeUnit1 = moxy(function NativeUnit1(node, path) {
       return Promise.resolve([{ type: 'unit', node, value: node.props, path }]);
     });
     NativeUnit1.$$typeof = MACHINAT_NATIVE_TYPE;
@@ -53,7 +53,7 @@ describe('#render()', () => {
       );
     });
 
-    const NativeUnit2 = moxy(function NativeUnit2(node, _, path) {
+    const NativeUnit2 = moxy(function NativeUnit2(node, path) {
       return Promise.resolve([
         {
           type: 'pause',
@@ -78,9 +78,7 @@ describe('#render()', () => {
     NativeUnit2.$$typeof = MACHINAT_NATIVE_TYPE;
     NativeUnit2.$$platform = 'test';
 
-    const renderer = new Renderer('test', generalElementDelegate);
-    const renderPromise = renderer.render(
-      scope,
+    const message = (
       <>
         {123}
         abc
@@ -96,18 +94,15 @@ describe('#render()', () => {
       </>
     );
 
+    const renderer = new Renderer('test', generalElementDelegate);
+    const renderPromise = renderer.render(message, scope);
+
     await expect(renderPromise).resolves.toEqual([
       {
         type: 'text',
-        node: 123,
-        value: '123',
-        path: '$::0',
-      },
-      {
-        type: 'text',
-        node: 'abc',
-        value: 'abc',
-        path: '$::1',
+        node: message,
+        value: '123abc',
+        path: '$',
       },
       {
         type: 'pause',
@@ -208,22 +203,22 @@ describe('#render()', () => {
     expect(generalElementDelegate.mock).toHaveBeenNthCalledWith(
       1,
       <a>AAA</a>,
-      expect.any(Function),
-      '$::3'
+      '$::3',
+      expect.any(Function)
     );
     expect(generalElementDelegate.mock).toHaveBeenNthCalledWith(
       2,
       <b>BBB</b>,
-      expect.any(Function),
-      '$::4'
+      '$::4',
+      expect.any(Function)
     );
 
-    let [, renderInner] = generalElementDelegate.mock.calls[0].args;
+    let [, , renderInner] = generalElementDelegate.mock.calls[0].args;
     await expect(renderInner(['foo'], '.children')).resolves.toEqual([
       { type: 'text', node: 'foo', value: 'foo', path: `$::3#a.children:0` },
     ]);
 
-    [, renderInner] = generalElementDelegate.mock.calls[1].args;
+    [, , renderInner] = generalElementDelegate.mock.calls[1].args;
     await expect(renderInner(['foo'], '.children')).resolves.toEqual([
       { type: 'text', node: 'foo', value: 'foo', path: `$::4#b.children:0` },
     ]);
@@ -232,17 +227,17 @@ describe('#render()', () => {
     expect(NativeUnit1.mock).toHaveBeenNthCalledWith(
       1,
       <NativeUnit1 x="true" y={false} />,
-      expect.any(Function),
-      '$::6'
+      '$::6',
+      expect.any(Function)
     );
     expect(NativeUnit1.mock).toHaveBeenNthCalledWith(
       2,
       <NativeUnit1 a="A" b={2} />,
-      expect.any(Function),
-      '$::7#Custom::1'
+      '$::7#Custom::1',
+      expect.any(Function)
     );
 
-    [, renderInner] = NativeUnit1.mock.calls[0].args;
+    [, , renderInner] = NativeUnit1.mock.calls[0].args;
     await expect(renderInner(['bar'], '.children')).resolves.toEqual([
       {
         type: 'text',
@@ -251,7 +246,7 @@ describe('#render()', () => {
         path: `$::6#NativeUnit1.children:0`,
       },
     ]);
-    [, renderInner] = NativeUnit1.mock.calls[1].args;
+    [, , renderInner] = NativeUnit1.mock.calls[1].args;
     await expect(renderInner(['bar'], '.children')).resolves.toEqual([
       {
         type: 'text',
@@ -264,17 +259,102 @@ describe('#render()', () => {
     expect(NativeUnit2.mock).toHaveBeenCalledTimes(1);
     expect(NativeUnit2.mock).toHaveBeenCalledWith(
       <NativeUnit2>somthing wrapped</NativeUnit2>,
-      expect.any(Function),
-      '$::9'
+      '$::9',
+      expect.any(Function)
     );
 
-    [, renderInner] = NativeUnit2.mock.calls[0].args;
+    [, , renderInner] = NativeUnit2.mock.calls[0].args;
     await expect(renderInner(['baz'], '.children')).resolves.toEqual([
       {
         type: 'text',
         node: 'baz',
         value: 'baz',
         path: `$::9#NativeUnit2.children:0`,
+      },
+    ]);
+  });
+
+  it('join continuous text segments', async () => {
+    const renderer = new Renderer('test', (node, path) => [
+      node.type === 'br'
+        ? { type: 'break', node, path }
+        : { type: 'text', value: node.type, node, path },
+    ]);
+
+    const Vestibulum = (node, path) => [
+      { type: 'text', value: 'Vestibulum', node, path },
+    ];
+    Vestibulum.$$typeof = MACHINAT_NATIVE_TYPE;
+    Vestibulum.$$platform = 'test';
+
+    const Unit = (node, path) => [
+      { type: 'unit', value: { foo: 'bar' }, node, path },
+    ];
+    Unit.$$typeof = MACHINAT_NATIVE_TYPE;
+    Unit.$$platform = 'test';
+
+    const message = (
+      <>
+        Lorem ipsum <dolor /> {'sit amet,'}
+        <br />
+        <consectetur /> adipiscing <elit />. <Vestibulum /> interdum
+        <Machinat.Pause />
+        aliquam <justo /> ut <aliquam />.
+        <Machinat.Raw value={{ baz: 'bae' }} />
+        Donec <nec_odio /> auctor, <ultricies />
+        <Unit />
+        <elit /> at, <pretium /> erat.
+      </>
+    );
+
+    await expect(renderer.render(message)).resolves.toEqual([
+      {
+        type: 'text',
+        value: 'Lorem ipsum dolor sit amet,',
+        node: message,
+        path: '$',
+      },
+      {
+        type: 'text',
+        value: 'consectetur adipiscing elit. Vestibulum interdum',
+        node: message,
+        path: '$',
+      },
+      {
+        type: 'pause',
+        value: null,
+        node: <Machinat.Pause />,
+        path: '$::11',
+      },
+      {
+        type: 'text',
+        value: 'aliquam justo ut aliquam.',
+        node: message,
+        path: '$',
+      },
+      {
+        type: 'raw',
+        value: { baz: 'bae' },
+        node: <Machinat.Raw value={{ baz: 'bae' }} />,
+        path: '$::17',
+      },
+      {
+        type: 'text',
+        value: 'Donec nec_odio auctor, ultricies',
+        node: message,
+        path: '$',
+      },
+      {
+        type: 'unit',
+        value: { foo: 'bar' },
+        node: <Unit />,
+        path: '$::22',
+      },
+      {
+        type: 'text',
+        value: 'elit at, pretium erat.',
+        node: message,
+        path: '$',
       },
     ]);
   });
@@ -325,7 +405,7 @@ describe('#render()', () => {
 
     for (const node of emptyNodes) {
       // eslint-disable-next-line no-await-in-loop
-      await expect(renderer.render(scope, node)).resolves.toBe(null);
+      await expect(renderer.render(node, scope)).resolves.toBe(null);
     }
   });
 
@@ -343,12 +423,12 @@ describe('#render()', () => {
     Section.$$typeof = MACHINAT_NATIVE_TYPE;
     Section.$$platform = 'test';
 
-    await expect(renderer.render(scope, <Section />)).resolves.toEqual([
+    await expect(renderer.render(<Section />, scope)).resolves.toEqual([
       { type: 'text', node: 'head', value: 'head', path: '$' },
       { type: 'text', node: 'foot', value: 'foot', path: '$' },
     ]);
 
-    const renderInner = Section.mock.calls[0].args[1];
+    const renderInner = Section.mock.calls[0].args[2];
 
     await expect(renderInner(<Section />, '.children')).resolves.toEqual([
       { type: 'text', node: 'head', value: 'head', path: '$' },
@@ -375,17 +455,17 @@ describe('#render()', () => {
 
     const renderer = new Renderer('test', generalElementDelegate);
 
-    await expect(renderer.render(scope, <Unit />)).resolves.toEqual([
+    await expect(renderer.render(<Unit />, scope)).resolves.toEqual([
       { type: 'unit', node: <Unit />, value: { root: true }, path: '$' },
     ]);
 
-    const [, renderInner] = Unit.mock.calls[0].args;
+    const [, , renderInner] = Unit.mock.calls[0].args;
     await expect(renderInner(<Part />)).resolves.toEqual([
       { type: 'part', node: <Part />, value: { root: false }, path: '$' },
     ]);
 
     await expect(
-      renderer.render(scope, <Part />)
+      renderer.render(<Part />, scope)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"<Part /> is a part element and should not be placed at surface level"`
     );
@@ -403,10 +483,12 @@ describe('#render()', () => {
         bar,
         baz
       ) {
-        return componentMock.proxify(
-          ({ n }) =>
-            `#${n} foo:${foo || 'x'} bar:${bar || 'x'} baz:${baz || 'x'}`
-        );
+        return componentMock.proxify(({ n }) => (
+          <Machinat.Raw
+            value={`#${n} foo:${foo || 'x'} bar:${bar || 'x'} baz:${baz ||
+              'x'}`}
+          />
+        ));
       })
     );
 
@@ -420,7 +502,7 @@ describe('#render()', () => {
 
     const renderer = new Renderer('test', generalElementDelegate);
 
-    const Native = ({ props: { children } }, render) =>
+    const Native = ({ props: { children } }, path, render) =>
       render(children, '.children');
     Native.$$typeof = MACHINAT_NATIVE_TYPE;
     Native.$$platform = 'test';
@@ -434,7 +516,6 @@ describe('#render()', () => {
 
     await expect(
       renderer.render(
-        scope,
         <>
           <Container n={1} />
 
@@ -467,68 +548,89 @@ describe('#render()', () => {
           </Machinat.Provider>
 
           <Container n={10} />
-        </>
+        </>,
+        scope
       )
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": "#1 foo:x bar:x baz:x",
+                "node": <Machinat.Raw
+                  value="#1 foo:x bar:x baz:x"
+                />,
                 "path": "$::0#Container",
-                "type": "text",
+                "type": "raw",
                 "value": "#1 foo:x bar:x baz:x",
               },
               Object {
-                "node": "#2 foo:1 bar:x baz:x",
+                "node": <Machinat.Raw
+                  value="#2 foo:1 bar:x baz:x"
+                />,
                 "path": "$::1.children:0#Container",
-                "type": "text",
+                "type": "raw",
                 "value": "#2 foo:1 bar:x baz:x",
               },
               Object {
-                "node": "#3 foo:1 bar:1 baz:x",
+                "node": <Machinat.Raw
+                  value="#3 foo:1 bar:1 baz:x"
+                />,
                 "path": "$::1.children:1#Wrapper.children:0#Container",
-                "type": "text",
+                "type": "raw",
                 "value": "#3 foo:1 bar:1 baz:x",
               },
               Object {
-                "node": "#4 foo:1 bar:1 baz:1",
+                "node": <Machinat.Raw
+                  value="#4 foo:1 bar:1 baz:1"
+                />,
                 "path": "$::1.children:1#Wrapper.children:1.children:0#Container",
-                "type": "text",
+                "type": "raw",
                 "value": "#4 foo:1 bar:1 baz:1",
               },
               Object {
-                "node": "#5 foo:1 bar:1 baz:1",
+                "node": <Machinat.Raw
+                  value="#5 foo:1 bar:1 baz:1"
+                />,
                 "path": "$::1.children:1#Wrapper.children:1.children:1#Native.children#Container",
-                "type": "text",
+                "type": "raw",
                 "value": "#5 foo:1 bar:1 baz:1",
               },
               Object {
-                "node": "#6 foo:2 bar:1 baz:1",
+                "node": <Machinat.Raw
+                  value="#6 foo:2 bar:1 baz:1"
+                />,
                 "path": "$::1.children:1#Wrapper.children:1.children:2.children:0#Container",
-                "type": "text",
+                "type": "raw",
                 "value": "#6 foo:2 bar:1 baz:1",
               },
               Object {
-                "node": "#7 foo:2 bar:2 baz:2",
+                "node": <Machinat.Raw
+                  value="#7 foo:2 bar:2 baz:2"
+                />,
                 "path": "$::1.children:1#Wrapper.children:1.children:2.children:1.children:0.children#Container",
-                "type": "text",
+                "type": "raw",
                 "value": "#7 foo:2 bar:2 baz:2",
               },
               Object {
-                "node": "#8 foo:2 bar:2 baz:1",
+                "node": <Machinat.Raw
+                  value="#8 foo:2 bar:2 baz:1"
+                />,
                 "path": "$::1.children:1#Wrapper.children:1.children:2.children:1.children:1#Container",
-                "type": "text",
+                "type": "raw",
                 "value": "#8 foo:2 bar:2 baz:1",
               },
               Object {
-                "node": "#9 foo:1 bar:x baz:x",
+                "node": <Machinat.Raw
+                  value="#9 foo:1 bar:x baz:x"
+                />,
                 "path": "$::1.children:2#Container",
-                "type": "text",
+                "type": "raw",
                 "value": "#9 foo:1 bar:x baz:x",
               },
               Object {
-                "node": "#10 foo:x bar:x baz:x",
+                "node": <Machinat.Raw
+                  value="#10 foo:x bar:x baz:x"
+                />,
                 "path": "$::2#Container",
-                "type": "text",
+                "type": "raw",
                 "value": "#10 foo:x bar:x baz:x",
               },
             ]
@@ -551,7 +653,7 @@ describe('#render()', () => {
     };
 
     const renderer = new Renderer('test', generalElementDelegate);
-    expect(renderer.render(scope, <FunctionalComponent />)).rejects.toThrow(
+    expect(renderer.render(<FunctionalComponent />, scope)).rejects.toThrow(
       'オラオラオラ'
     );
   });
@@ -564,7 +666,7 @@ describe('#render()', () => {
     const renderer = new Renderer('test', generalElementDelegate);
 
     await expect(
-      renderer.render(scope, <ContainerFailWhenInject />)
+      renderer.render(<ContainerFailWhenInject />, scope)
     ).rejects.toThrow(new Error('無駄無駄無駄'));
 
     const ContainerFailAtComponent = inject({ deps: [] })(() => async () => {
@@ -572,7 +674,7 @@ describe('#render()', () => {
     });
 
     await expect(
-      renderer.render(scope, <ContainerFailAtComponent />)
+      renderer.render(<ContainerFailAtComponent />, scope)
     ).rejects.toThrow(new Error('オラオラオラ'));
   });
 
@@ -583,7 +685,7 @@ describe('#render()', () => {
     });
 
     await expect(
-      renderer.render(scope, <invalid />)
+      renderer.render(<invalid />, scope)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"<invalid /> is not good"`);
   });
 
@@ -593,7 +695,7 @@ describe('#render()', () => {
     const renderer = new Renderer('test', generalElementDelegate);
 
     await expect(
-      renderer.render(scope, <IllegalComponent />)
+      renderer.render(<IllegalComponent />, scope)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"[object Object] at poistion '$' is not valid element type"`
     );
@@ -607,7 +709,7 @@ describe('#render()', () => {
     const renderer = new Renderer('test', generalElementDelegate);
 
     await expect(
-      renderer.render(scope, <AnotherPlatformUnit />)
+      renderer.render(<AnotherPlatformUnit />, scope)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"native component <AnotherPlatformUnit /> at '$' is not supported by test"`
     );

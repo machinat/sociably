@@ -2,201 +2,161 @@
 
 exports[`media Components match snapshot 1`] = `
 Array [
-  Array [
-    Object {
-      "node": <Image
-        reusable={true}
-        url="http://this.is/a/picture"
-      />,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "attachment_id": undefined,
-              "is_reusable": true,
-              "url": "http://this.is/a/picture",
-            },
-            "type": "image",
+  Object {
+    "node": <Image
+      reusable={true}
+      url="http://this.is/a/picture"
+    />,
+    "path": "$::0",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "attachment_id": undefined,
+            "is_reusable": true,
+            "url": "http://this.is/a/picture",
           },
+          "type": "image",
         },
-        Symbol(messenger.segment.asset_tag): undefined,
-        Symbol(messenger.segment.attachment_data): undefined,
-        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
-  ],
-  Array [
-    Object {
-      "node": <Video
-        reusable={true}
-        url="http://this.is/a/video"
-      />,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "attachment_id": undefined,
-              "is_reusable": true,
-              "url": "http://this.is/a/video",
-            },
-            "type": "video",
+  },
+  Object {
+    "node": <Image
+      attachmentId="_I_am_Image_"
+    />,
+    "path": "$::1",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "attachment_id": "_I_am_Image_",
+            "is_reusable": undefined,
+            "url": undefined,
           },
+          "type": "image",
         },
-        Symbol(messenger.segment.asset_tag): undefined,
-        Symbol(messenger.segment.attachment_data): undefined,
-        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
-  ],
-  Array [
-    Object {
-      "node": <Audio
-        reusable={true}
-        url="http://this.is/an/audio"
-      />,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "attachment_id": undefined,
-              "is_reusable": true,
-              "url": "http://this.is/an/audio",
-            },
-            "type": "audio",
+  },
+  Object {
+    "node": <Video
+      reusable={true}
+      url="http://this.is/a/video"
+    />,
+    "path": "$::2",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "attachment_id": undefined,
+            "is_reusable": true,
+            "url": "http://this.is/a/video",
           },
+          "type": "video",
         },
-        Symbol(messenger.segment.asset_tag): undefined,
-        Symbol(messenger.segment.attachment_data): undefined,
-        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
-  ],
-  Array [
-    Object {
-      "node": <File
-        reusable={true}
-        url="http://this.is/a/file"
-      />,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "attachment_id": undefined,
-              "is_reusable": true,
-              "url": "http://this.is/a/file",
-            },
-            "type": "file",
+  },
+  Object {
+    "node": <Video
+      attachmentId="_I_am_Video_"
+    />,
+    "path": "$::3",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "attachment_id": "_I_am_Video_",
+            "is_reusable": undefined,
+            "url": undefined,
           },
+          "type": "video",
         },
-        Symbol(messenger.segment.asset_tag): undefined,
-        Symbol(messenger.segment.attachment_data): undefined,
-        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
-  ],
-  Array [
-    Object {
-      "node": <Image
-        attachmentId="_I_am_Image_"
-      />,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "attachment_id": "_I_am_Image_",
-              "is_reusable": undefined,
-              "url": undefined,
-            },
-            "type": "image",
+  },
+  Object {
+    "node": <Audio
+      reusable={true}
+      url="http://this.is/an/audio"
+    />,
+    "path": "$::4",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "attachment_id": undefined,
+            "is_reusable": true,
+            "url": "http://this.is/an/audio",
           },
+          "type": "audio",
         },
-        Symbol(messenger.segment.asset_tag): undefined,
-        Symbol(messenger.segment.attachment_data): undefined,
-        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
-  ],
-  Array [
-    Object {
-      "node": <Video
-        attachmentId="_I_am_Video_"
-      />,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "attachment_id": "_I_am_Video_",
-              "is_reusable": undefined,
-              "url": undefined,
-            },
-            "type": "video",
+  },
+  Object {
+    "node": <Audio
+      attachmentId="_I_am_Audio_"
+    />,
+    "path": "$::5",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "attachment_id": "_I_am_Audio_",
+            "is_reusable": undefined,
+            "url": undefined,
           },
+          "type": "audio",
         },
-        Symbol(messenger.segment.asset_tag): undefined,
-        Symbol(messenger.segment.attachment_data): undefined,
-        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
-  ],
-  Array [
-    Object {
-      "node": <Audio
-        attachmentId="_I_am_Audio_"
-      />,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "attachment_id": "_I_am_Audio_",
-              "is_reusable": undefined,
-              "url": undefined,
-            },
-            "type": "audio",
+  },
+  Object {
+    "node": <File
+      reusable={true}
+      url="http://this.is/a/file"
+    />,
+    "path": "$::6",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "attachment_id": undefined,
+            "is_reusable": true,
+            "url": "http://this.is/a/file",
           },
+          "type": "file",
         },
-        Symbol(messenger.segment.asset_tag): undefined,
-        Symbol(messenger.segment.attachment_data): undefined,
-        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
-  ],
-  Array [
-    Object {
-      "node": <File
-        attachmentId="_I_am_File_"
-      />,
-      "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
-              "attachment_id": "_I_am_File_",
-              "is_reusable": undefined,
-              "url": undefined,
-            },
-            "type": "file",
+  },
+  Object {
+    "node": <File
+      attachmentId="_I_am_File_"
+    />,
+    "path": "$::7",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "attachment": Object {
+          "payload": Object {
+            "attachment_id": "_I_am_File_",
+            "is_reusable": undefined,
+            "url": undefined,
           },
+          "type": "file",
         },
-        Symbol(messenger.segment.asset_tag): undefined,
-        Symbol(messenger.segment.attachment_data): undefined,
-        Symbol(messenger.segment.attachment_info): undefined,
       },
     },
-  ],
+  },
 ]
 `;

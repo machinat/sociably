@@ -82,11 +82,14 @@ export type ContainerElement<
 export type NativeComponent<Props, Value> = {
   (
     element: NativeElement<Props, Value, NativeComponent<Props, Value>>,
-    render: InnerRenderFn<Value, NativeComponent<Props, Value>>,
-    path: string
-  ): Promise<
-    null | IntermediateSegment<Value, NativeComponent<Props, Value>>[]
-  >,
+    path: string,
+    render: InnerRenderFn<Value, NativeComponent<Props, Value>>
+  ):
+    | null
+    | IntermediateSegment<Value, NativeComponent<Props, Value>>[]
+    | Promise<
+        null | IntermediateSegment<Value, NativeComponent<Props, Value>>[]
+      >,
   $$typeof: MACHINAT_NATIVE_TYPE,
   $$platform: string,
 };

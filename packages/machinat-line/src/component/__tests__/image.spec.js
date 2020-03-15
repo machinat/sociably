@@ -1,6 +1,6 @@
 import Machinat from '@machinat/core';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
-import map from '@machinat/core/iterator/map';
+import Renderer from '@machinat/core/renderer';
 
 import {
   Image,
@@ -11,14 +11,7 @@ import {
 } from '../image';
 import { URIAction, MessageAction } from '../action';
 
-const renderInner = async prop => {
-  const renderings = map(prop, (node, path) =>
-    node.type(node, renderInner, path)
-  );
-
-  return renderings ? [].concat(...(await Promise.all(renderings))) : null;
-};
-const render = element => element.type(element, renderInner, '$');
+const renderer = new Renderer('line', () => null);
 
 it.each(
   [Image, Sticker, ImageMap, ImageMapVideoArea, ImageMapArea].map(C => [
@@ -34,7 +27,7 @@ it.each(
   [
     <Image url="https://..." previewURL="https://..." />,
     <Sticker packageId={1} stickerId={2} />,
-    <ImageMap baseURL="https://..." alt="..." height={999}>
+    <ImageMap baseURL="https://..." altText="..." height={999}>
       <ImageMapArea
         label="foo"
         text="bar"
@@ -54,7 +47,7 @@ it.each(
     </ImageMap>,
     <ImageMap
       baseURL="https://..."
-      alt="..."
+      altText="..."
       height={999}
       video={
         <ImageMapVideoArea
@@ -79,7 +72,7 @@ it.each(
     </ImageMap>,
     <ImageMap
       baseURL="https://..."
-      alt="..."
+      altText="..."
       height={999}
       video={
         <ImageMapVideoArea
@@ -103,7 +96,7 @@ it.each(
     </ImageMap>,
   ].map(e => [e.type.name, e])
 )('%s match snapshot', async (_, element) => {
-  const promise = render(element);
+  const promise = renderer.render(element);
   await expect(promise).resolves.toEqual([
     {
       type: 'unit',

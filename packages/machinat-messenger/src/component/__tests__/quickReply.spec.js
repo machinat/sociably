@@ -1,6 +1,6 @@
 import Machinat from '@machinat/core';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
-
+import Renderer from '@machinat/core/renderer';
 import {
   QuickReply,
   PhoneQuickReply,
@@ -8,7 +8,16 @@ import {
   LocationQuickReply,
 } from '../quickReply';
 
-const renderHelper = element => element.type(element, null, '$');
+const render = async node => {
+  let rendered;
+  const renderer = new Renderer('messenger', (_, __, renderInner) => {
+    rendered = renderInner(node);
+    return null;
+  });
+
+  await renderer.render(<container />);
+  return rendered;
+};
 
 it.each([QuickReply, PhoneQuickReply, EmailQuickReply, LocationQuickReply])(
   '%p is valid Component',
@@ -20,15 +29,15 @@ it.each([QuickReply, PhoneQuickReply, EmailQuickReply, LocationQuickReply])(
 );
 
 test('QuickReply match snpshot', async () => {
-  expect(renderHelper(<QuickReply title="i want a pie" payload="🥧" />))
-    .resolves.toMatchInlineSnapshot(`
+  expect(render(<QuickReply title="i want a pie" payload="🥧" />)).resolves
+    .toMatchInlineSnapshot(`
     Array [
       Object {
         "node": <QuickReply
           payload="🥧"
           title="i want a pie"
         />,
-        "path": "$",
+        "path": "$#container",
         "type": "part",
         "value": Object {
           "content_type": "text",
@@ -40,7 +49,7 @@ test('QuickReply match snpshot', async () => {
     ]
   `);
   expect(
-    renderHelper(
+    render(
       <QuickReply
         title="a piece of cake"
         payload="🍰"
@@ -55,7 +64,7 @@ test('QuickReply match snpshot', async () => {
           payload="🍰"
           title="a piece of cake"
         />,
-        "path": "$",
+        "path": "$#container",
         "type": "part",
         "value": Object {
           "content_type": "text",
@@ -69,11 +78,11 @@ test('QuickReply match snpshot', async () => {
 });
 
 test('PhoneQuickReply match snpshot', async () => {
-  expect(renderHelper(<PhoneQuickReply />)).resolves.toMatchInlineSnapshot(`
+  expect(render(<PhoneQuickReply />)).resolves.toMatchInlineSnapshot(`
     Array [
       Object {
         "node": <PhoneQuickReply />,
-        "path": "$",
+        "path": "$#container",
         "type": "part",
         "value": Object {
           "content_type": "user_phone_number",
@@ -84,11 +93,11 @@ test('PhoneQuickReply match snpshot', async () => {
 });
 
 test('EmailQuickReply match snpshot', async () => {
-  expect(renderHelper(<EmailQuickReply />)).resolves.toMatchInlineSnapshot(`
+  expect(render(<EmailQuickReply />)).resolves.toMatchInlineSnapshot(`
     Array [
       Object {
         "node": <EmailQuickReply />,
-        "path": "$",
+        "path": "$#container",
         "type": "part",
         "value": Object {
           "content_type": "user_email",
@@ -99,11 +108,11 @@ test('EmailQuickReply match snpshot', async () => {
 });
 
 test('LocationQuickReply match snpshot', async () => {
-  expect(renderHelper(<LocationQuickReply />)).resolves.toMatchInlineSnapshot(`
+  expect(render(<LocationQuickReply />)).resolves.toMatchInlineSnapshot(`
     Array [
       Object {
         "node": <LocationQuickReply />,
-        "path": "$",
+        "path": "$#container",
         "type": "part",
         "value": Object {
           "content_type": "location",

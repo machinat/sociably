@@ -1,12 +1,11 @@
 import Machinat from '@machinat/core';
+import Renderer from '@machinat/core/renderer';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
-
-import { LinkRichMenu, UnlinkRichMenu } from '../richMenu';
-
 import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
 import LineChannel from '../../channel';
+import { LinkRichMenu, UnlinkRichMenu } from '../richMenu';
 
-const render = element => element.type(element, () => null, '$');
+const renderer = new Renderer('line', () => null);
 
 describe('<LinkRichMenu/>', () => {
   it('is valid native unit component with entry getter', () => {
@@ -16,24 +15,26 @@ describe('<LinkRichMenu/>', () => {
   });
 
   it('render ok', async () => {
-    await expect(render(<LinkRichMenu id="_RICH_MENU_ID_" />)).resolves.toEqual(
-      [
-        {
-          type: 'unit',
-          node: <LinkRichMenu id="_RICH_MENU_ID_" />,
-          value: {
-            id: '_RICH_MENU_ID_',
-            [CHANNEL_API_CALL_GETTER]: expect.any(Function),
-            [BULK_API_CALL_GETTER]: expect.any(Function),
-          },
-          path: '$',
+    await expect(
+      renderer.render(<LinkRichMenu id="_RICH_MENU_ID_" />)
+    ).resolves.toEqual([
+      {
+        type: 'unit',
+        node: <LinkRichMenu id="_RICH_MENU_ID_" />,
+        value: {
+          id: '_RICH_MENU_ID_',
+          [CHANNEL_API_CALL_GETTER]: expect.any(Function),
+          [BULK_API_CALL_GETTER]: expect.any(Function),
         },
-      ]
-    );
+        path: '$',
+      },
+    ]);
   });
 
   test('channel api getter', async () => {
-    const [{ value }] = await render(<LinkRichMenu id="_RICH_MENU_ID_" />);
+    const [{ value }] = await renderer.render(
+      <LinkRichMenu id="_RICH_MENU_ID_" />
+    );
 
     expect(
       value[CHANNEL_API_CALL_GETTER](
@@ -50,7 +51,9 @@ describe('<LinkRichMenu/>', () => {
   });
 
   test('channel api call getter throw if type of channel is not user', async () => {
-    const [{ value }] = await render(<LinkRichMenu id="_RICH_MENU_ID_" />);
+    const [{ value }] = await renderer.render(
+      <LinkRichMenu id="_RICH_MENU_ID_" />
+    );
 
     expect(() =>
       value[CHANNEL_API_CALL_GETTER](
@@ -78,7 +81,9 @@ describe('<LinkRichMenu/>', () => {
   });
 
   test('bulk api getter', async () => {
-    const [{ value }] = await render(<LinkRichMenu id="_RICH_MENU_ID_" />);
+    const [{ value }] = await renderer.render(
+      <LinkRichMenu id="_RICH_MENU_ID_" />
+    );
 
     expect(value[BULK_API_CALL_GETTER](['foo', 'bar', 'baz'])).toEqual({
       method: 'POST',
@@ -99,7 +104,7 @@ describe('<UnlinkRichMenu/>', () => {
   });
 
   it('render ok', async () => {
-    await expect(render(<UnlinkRichMenu />)).resolves.toEqual([
+    await expect(renderer.render(<UnlinkRichMenu />)).resolves.toEqual([
       {
         type: 'unit',
         node: <UnlinkRichMenu />,
@@ -113,7 +118,7 @@ describe('<UnlinkRichMenu/>', () => {
   });
 
   test('channel api getter', async () => {
-    const [{ value }] = await render(<UnlinkRichMenu />);
+    const [{ value }] = await renderer.render(<UnlinkRichMenu />);
 
     expect(
       value[CHANNEL_API_CALL_GETTER](
@@ -130,7 +135,7 @@ describe('<UnlinkRichMenu/>', () => {
   });
 
   test('channel api call getter throw if type of channel is not user', async () => {
-    const [{ value }] = await render(<UnlinkRichMenu />);
+    const [{ value }] = await renderer.render(<UnlinkRichMenu />);
 
     expect(() =>
       value[CHANNEL_API_CALL_GETTER](
@@ -158,7 +163,7 @@ describe('<UnlinkRichMenu/>', () => {
   });
 
   test('bulk api getter', async () => {
-    const [{ value }] = await render(<UnlinkRichMenu />);
+    const [{ value }] = await renderer.render(<UnlinkRichMenu />);
 
     expect(value[BULK_API_CALL_GETTER](['foo', 'bar', 'baz'])).toEqual({
       method: 'POST',

@@ -1,11 +1,9 @@
 /* eslint-disable import/prefer-default-export */
-import { textSegment, annotateNativeComponent } from '@machinat/core/renderer';
-import { LINE } from '../constant';
+import { textSegment } from '@machinat/core/renderer';
+import { annotateLineComponent } from '../utils';
 
-const Emoji = async (node, _, path) => [
-  textSegment(String.fromCodePoint(node.props.code), node, path),
+export const Emoji = (node, path) => [
+  textSegment(node, path, String.fromCodePoint(node.props.code), node, path),
 ];
 
-const __Emoji = annotateNativeComponent(LINE)(Emoji);
-
-export { __Emoji as Emoji };
+annotateLineComponent(Emoji);

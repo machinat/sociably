@@ -1,22 +1,27 @@
-import { asUnitComponent } from '../utils';
+import { unitSegment } from '@machinat/core/renderer';
+import { annotateLineComponent } from '../utils';
 
-const Video = async ({
-  url,
-  originalContentUrl,
-  previewURL,
-  previewImageUrl,
-}) => ({
-  type: 'image',
-  originalContentUrl: originalContentUrl || url,
-  previewImageUrl: previewImageUrl || previewURL,
-});
-const __Video = asUnitComponent(Video);
+export const Video = (node, path) => {
+  const { url, originalContentUrl, previewURL, previewImageUrl } = node.props;
 
-const Audio = async ({ url, originalContentUrl, duration }) => ({
-  type: 'image',
-  originalContentUrl: originalContentUrl || url,
-  duration,
-});
-const __Audio = asUnitComponent(Audio);
+  return [
+    unitSegment(node, path, {
+      type: 'image',
+      originalContentUrl: originalContentUrl || url,
+      previewImageUrl: previewImageUrl || previewURL,
+    }),
+  ];
+};
+annotateLineComponent(Video);
 
-export { __Video as Video, __Audio as Audio };
+export const Audio = (node, path) => {
+  const { url, originalContentUrl, duration } = node.props;
+  return [
+    unitSegment(node, path, {
+      type: 'image',
+      originalContentUrl: originalContentUrl || url,
+      duration,
+    }),
+  ];
+};
+annotateLineComponent(Audio);

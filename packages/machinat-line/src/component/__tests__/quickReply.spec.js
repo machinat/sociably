@@ -1,11 +1,9 @@
 import Machinat from '@machinat/core';
+import Renderer from '@machinat/core/renderer';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
 
 import { QuickReply } from '../quickReply';
 import { URIAction } from '../action';
-
-const renderInner = (node, path) => node.type(node, renderInner, path);
-const render = element => element.type(element, renderInner, '$');
 
 it('is valid native component', () => {
   expect(typeof QuickReply).toBe('function');
@@ -15,27 +13,43 @@ it('is valid native component', () => {
 });
 
 it('renders match snapshot', async () => {
-  const qr = (
-    <QuickReply
-      imageURL="https://..."
-      action={<URIAction uri="https://..." label="foo" />}
-    />
-  );
+  let rendered;
+  const renderer = new Renderer('line', async (_, __, render) => {
+    rendered = await render(
+      <QuickReply
+        imageURL="https://..."
+        action={<URIAction uri="https://..." label="foo" />}
+      />
+    );
+    return null;
+  });
 
-  await expect(render(qr)).resolves.toEqual([
-    {
-      type: 'part',
-      node: qr,
-      value: {
-        action: {
-          label: 'foo',
-          type: 'uri',
-          uri: 'https://...',
+  await renderer.render(<container />);
+
+  expect(rendered).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "node": <QuickReply
+          action={
+            <URIAction
+              label="foo"
+              uri="https://..."
+            />
+          }
+          imageURL="https://..."
+        />,
+        "path": "$#container",
+        "type": "part",
+        "value": Object {
+          "action": Object {
+            "label": "foo",
+            "type": "uri",
+            "uri": "https://...",
+          },
+          "imageUrl": "https://...",
+          "type": "action",
         },
-        imageUrl: 'https://...',
-        type: 'action',
       },
-      path: '$',
-    },
-  ]);
+    ]
+  `);
 });

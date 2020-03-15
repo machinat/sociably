@@ -15,7 +15,7 @@ import type {
 } from '@machinat/core/types';
 
 import MessengerWorker from './worker';
-import generalComponentDelegate from './component/general';
+import generalComponentDelegator from './component/general';
 
 import {
   MESSENGER,
@@ -76,7 +76,7 @@ class MessengerBot
 
     invariant(accessToken, 'options.accessToken should not be empty');
 
-    const renderer = new Renderer(MESSENGER, generalComponentDelegate);
+    const renderer = new Renderer(MESSENGER, generalComponentDelegator);
 
     const queue = new Queue();
     const worker = new MessengerWorker(accessToken, consumeInterval, appSecret);

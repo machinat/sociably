@@ -1,37 +1,59 @@
-import invariant from 'invariant';
-import joinTextualSegments from '@machinat/core/utils/joinTextualSegments';
-import { annotateNativeComponent } from '@machinat/core/renderer';
-import { MESSENGER } from '../constant';
-import { asUnitComponent, mapJoinedTextValues } from '../utils';
+import formatNode from '@machinat/core/utils/formatNode';
+import { unitSegment, textSegment } from '@machinat/core/renderer';
+import { annotateMessengerComponent } from '../utils';
 
 const LATEX_BEGIN = '\\(';
 const LATEX_END = '\\)';
-const Latex = mapJoinedTextValues(v => LATEX_BEGIN + v + LATEX_END);
-const __Latex = annotateNativeComponent(MESSENGER)(Latex);
+export const Latex = async (node, path, render) => {
+  const segments = await render(node.props.children, '.children');
+  if (segments === null) {
+    return null;
+  }
 
-const DynamicText = async ({ children, fallback }, render) => {
+  for (const segment of segments) {
+    if (segment.type !== 'text') {
+      throw new TypeError(
+        `non-textual node ${formatNode(
+          segment.node
+        )} received, only textual nodes allowed`
+      );
+    }
+  }
+
+  return [
+    textSegment(node, path, LATEX_BEGIN),
+    segments[0],
+    textSegment(node, path, LATEX_END),
+  ];
+};
+annotateMessengerComponent(Latex);
+
+export const DynamicText = async (node, path, render) => {
+  const { children, fallback } = node.props;
   const segments = await render(children, '.children');
   if (segments === null) {
     return null;
   }
 
-  const joined = joinTextualSegments(segments);
+  for (const segment of segments) {
+    if (segment.type !== 'text') {
+      throw new TypeError(
+        `non-textual node ${formatNode(
+          segment.node
+        )} received, only textual nodes allowed`
+      );
+    }
+  }
 
-  let textValue;
-  invariant(
-    joined.length === 1 && typeof (textValue = joined[0].value) === 'string',
-    '<br/> is invalid with in children of DynamicText'
-  );
-
-  return {
-    message: {
-      dynamic_text: {
-        text: textValue,
-        fallback_text: fallback,
+  return [
+    unitSegment(node, path, {
+      message: {
+        dynamic_text: {
+          text: segments[0].value,
+          fallback_text: fallback,
+        },
       },
-    },
-  };
+    }),
+  ];
 };
-const __DynamicText = asUnitComponent(DynamicText);
-
-export { __Latex as Latex, __DynamicText as DynamicText };
+annotateMessengerComponent(DynamicText);

@@ -1,7 +1,6 @@
 import Machinat from '@machinat/core';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
-import map from '@machinat/core/iterator/map';
-
+import Renderer from '@machinat/core/renderer';
 import {
   ButtonTemplate,
   ConfirmTemplate,
@@ -12,14 +11,7 @@ import {
 } from '../template';
 import { URIAction } from '../action';
 
-const renderInner = async prop => {
-  const renderings = map(prop, (node, path) =>
-    node.type(node, renderInner, path)
-  );
-
-  return renderings ? [].concat(...(await Promise.all(renderings))) : null;
-};
-const render = element => element.type(element, renderInner, '$');
+const renderer = new Renderer('line', () => null);
 
 test.each([CarouselItem, ImageCarouselItem].map(C => [C.name, C]))(
   '%s is valid native component',
@@ -48,7 +40,7 @@ test.each(
 test.each(
   [
     <ButtonTemplate
-      alt="xxx"
+      altText="xxx"
       imageURL="https://..."
       imageAspectRatio="square"
       imageSize="contain"
@@ -56,30 +48,46 @@ test.each(
       title="HELLO"
       text="world"
       defaultAction={<URIAction uri="https://..." label="???" />}
+      actions={[
+        <URIAction uri="https://..." label="foo" />,
+        <URIAction uri="https://..." label="bar" />,
+      ]}
+    />,
+
+    <ConfirmTemplate
+      altText="xxx"
+      text="Take a pill"
+      actions={[
+        <URIAction uri="https://matrix.io/login" label="Blue pill" />,
+        <URIAction uri="https://matrix.io/leave" label="Red pill" />,
+      ]}
+    />,
+
+    <CarouselTemplate
+      altText="xxx"
+      imageAspectRatio="square"
+      imageSize="contain"
     >
-      <URIAction uri="https://..." label="foo" />
-      <URIAction uri="https://..." label="bar" />
-    </ButtonTemplate>,
-    <ConfirmTemplate alt="xxx" text="Take a pill">
-      <URIAction uri="https://matrix.io/login" label="Blue pill" />
-      <URIAction uri="https://matrix.io/leave" label="Red pill" />
-    </ConfirmTemplate>,
-    <CarouselTemplate alt="xxx" imageAspectRatio="square" imageSize="contain">
-      <CarouselItem text="Burger">
-        <URIAction uri="https://..." label="with fries" />
-        <URIAction uri="https://..." label="with salad" />
-      </CarouselItem>
+      <CarouselItem
+        text="Burger"
+        actions={[
+          <URIAction uri="https://..." label="with fries" />,
+          <URIAction uri="https://..." label="with salad" />,
+        ]}
+      />
       <CarouselItem
         imageURL="https://..."
         imageBackgroundColor="#bbbbbb"
         title="Spaghetti"
         text="tamato sause"
-      >
-        <URIAction uri="https://..." label="with soup" />
-        <URIAction uri="https://..." label="with salad" />
-      </CarouselItem>
+        actions={[
+          <URIAction uri="https://..." label="with soup" />,
+          <URIAction uri="https://..." label="with salad" />,
+        ]}
+      />
     </CarouselTemplate>,
-    <ImageCarouselTemplate alt="xxx">
+
+    <ImageCarouselTemplate altText="xxx">
       <ImageCarouselItem
         url="https://..."
         action={<URIAction uri="https://..." label="foo" />}
@@ -91,7 +99,7 @@ test.each(
     </ImageCarouselTemplate>,
   ].map(ele => [ele.type.name, ele])
 )('%s rendered match snapshot', async (_, templateElement) => {
-  const promise = render(templateElement);
+  const promise = renderer.render(templateElement);
   await expect(promise).resolves.toEqual([
     {
       type: 'unit',

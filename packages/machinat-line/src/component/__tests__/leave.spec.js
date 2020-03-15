@@ -1,11 +1,12 @@
 import Machinat from '@machinat/core';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
+import Renderer from '@machinat/core/renderer';
 
 import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
 import LineChannel from '../../channel';
 import { Leave } from '../leave';
 
-const render = element => element.type(element, () => null, '$');
+const renderer = new Renderer('line', () => null);
 
 it('is valid native unit component with entry getter', () => {
   expect(typeof Leave).toBe('function');
@@ -15,7 +16,7 @@ it('is valid native unit component with entry getter', () => {
 });
 
 it('render ok with entry getter', async () => {
-  await expect(render(<Leave />)).resolves.toEqual([
+  await expect(renderer.render(<Leave />)).resolves.toEqual([
     {
       type: 'unit',
       node: <Leave />,
@@ -29,7 +30,7 @@ it('render ok with entry getter', async () => {
 });
 
 test('channel api call getter', async () => {
-  const [{ value }] = await render(<Leave />);
+  const [{ value }] = await renderer.render(<Leave />);
   expect(
     value[CHANNEL_API_CALL_GETTER](
       new LineChannel('_CHANNEL_ID_', {
@@ -60,7 +61,7 @@ test('channel api call getter', async () => {
 });
 
 test('channel api call getter throw if type of channel is user', async () => {
-  const [{ value }] = await render(<Leave />);
+  const [{ value }] = await renderer.render(<Leave />);
 
   expect(() =>
     value[CHANNEL_API_CALL_GETTER](
@@ -75,7 +76,7 @@ test('channel api call getter throw if type of channel is user', async () => {
 });
 
 test('bulk api call getter throw', async () => {
-  const [{ value }] = await render(<Leave />);
+  const [{ value }] = await renderer.render(<Leave />);
 
   expect(() =>
     value[BULK_API_CALL_GETTER](

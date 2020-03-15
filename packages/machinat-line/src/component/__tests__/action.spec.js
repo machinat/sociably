@@ -1,5 +1,6 @@
 import Machinat from '@machinat/core';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
+import Renderer from '@machinat/core/renderer';
 import {
   PostbackAction,
   MessageAction,
@@ -10,7 +11,16 @@ import {
   LocationAction,
 } from '../action';
 
-const render = element => element.type(element, () => null, '$');
+const render = async node => {
+  let rendered;
+  const renderer = new Renderer('line', async (_, __, renderInner) => {
+    rendered = await renderInner(node);
+    return null;
+  });
+
+  await renderer.render(<container />);
+  return rendered;
+};
 
 test.each(
   [
@@ -42,7 +52,7 @@ test('<PostbackAction/>', async () => {
                 label="Hello!"
                 text="WORLD!"
               />,
-              "path": "$",
+              "path": "$#container",
               "type": "part",
               "value": Object {
                 "data": "__POSTBACK_FOO__",
@@ -64,7 +74,7 @@ test('<MessageAction/>', async () => {
                 label="Tick"
                 text="Tock"
               />,
-              "path": "$",
+              "path": "$#container",
               "type": "part",
               "value": Object {
                 "label": "Tick",
@@ -85,7 +95,7 @@ test('<URIAction/>', async () => {
                 label="Try it!"
                 uri="http://machinat.com"
               />,
-              "path": "$",
+              "path": "$#container",
               "type": "part",
               "value": Object {
                 "label": "Try it!",
@@ -105,7 +115,7 @@ test('<CameraAction/>', async () => {
               "node": <CameraAction
                 label="Cheer!"
               />,
-              "path": "$",
+              "path": "$#container",
               "type": "part",
               "value": Object {
                 "label": "Cheer!",
@@ -124,7 +134,7 @@ test('<CameraRollAction/>', async () => {
               "node": <CameraRollAction
                 label="Cheer again!"
               />,
-              "path": "$",
+              "path": "$#container",
               "type": "part",
               "value": Object {
                 "label": "Cheer again!",
@@ -143,7 +153,7 @@ test('<LocationAction/>', async () => {
               "node": <LocationAction
                 label="Ok, where are we?"
               />,
-              "path": "$",
+              "path": "$#container",
               "type": "part",
               "value": Object {
                 "label": "Ok, where are we?",
@@ -189,7 +199,7 @@ describe('DateTimePickerAction', () => {
             min: '1990-01-01T00:00',
             max: '2020-01-01T00:00',
           },
-          path: '$',
+          path: '$#container',
         },
       ]);
     }
@@ -230,7 +240,7 @@ describe('DateTimePickerAction', () => {
             min: '1990-01-01',
             max: '2020-01-01',
           },
-          path: '$',
+          path: '$#container',
         },
       ]);
     }
@@ -271,7 +281,7 @@ describe('DateTimePickerAction', () => {
             min: '00:00',
             max: '22:22',
           },
-          path: '$',
+          path: '$#container',
         },
       ]);
     }

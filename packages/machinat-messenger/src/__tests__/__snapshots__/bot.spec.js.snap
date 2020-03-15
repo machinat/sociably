@@ -11,7 +11,7 @@ Object {
       "request": Object {
         "body": Object {
           "message": Object {
-            "text": "Hello",
+            "text": "Hello *World!*",
           },
           "messaging_type": undefined,
           "notification_type": undefined,
@@ -23,31 +23,6 @@ Object {
         },
         "method": "POST",
         "name": "messenger:_PAGE_ID_:psid:john-1",
-        "omit_response_on_success": false,
-        "relative_url": "me/messages",
-      },
-    },
-    Object {
-      "attachmentAssetTag": undefined,
-      "attachmentFileData": undefined,
-      "attachmentFileInfo": undefined,
-      "channelUid": "messenger:_PAGE_ID_:psid:john",
-      "request": Object {
-        "body": Object {
-          "message": Object {
-            "text": "*World!*",
-          },
-          "messaging_type": undefined,
-          "notification_type": undefined,
-          "persona_id": undefined,
-          "recipient": Object {
-            "id": "john",
-          },
-          "tag": undefined,
-        },
-        "depends_on": "messenger:_PAGE_ID_:psid:john-1",
-        "method": "POST",
-        "name": "messenger:_PAGE_ID_:psid:john-2",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
@@ -86,22 +61,15 @@ Object {
           },
           "tag": undefined,
         },
-        "depends_on": "messenger:_PAGE_ID_:psid:john-2",
+        "depends_on": "messenger:_PAGE_ID_:psid:john-1",
         "method": "POST",
-        "name": "messenger:_PAGE_ID_:psid:john-3",
+        "name": "messenger:_PAGE_ID_:psid:john-2",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
     },
   ],
   "results": Array [
-    Object {
-      "body": Object {
-        "message_id": "xxx",
-        "recipient_id": "xxx",
-      },
-      "code": 200,
-    },
     Object {
       "body": Object {
         "message_id": "xxx",
@@ -128,7 +96,7 @@ Object {
           "request": Object {
             "body": Object {
               "message": Object {
-                "text": "Hello",
+                "text": "Hello *World!*",
               },
               "messaging_type": undefined,
               "notification_type": undefined,
@@ -140,31 +108,6 @@ Object {
             },
             "method": "POST",
             "name": "messenger:_PAGE_ID_:psid:john-1",
-            "omit_response_on_success": false,
-            "relative_url": "me/messages",
-          },
-        },
-        Object {
-          "attachmentAssetTag": undefined,
-          "attachmentFileData": undefined,
-          "attachmentFileInfo": undefined,
-          "channelUid": "messenger:_PAGE_ID_:psid:john",
-          "request": Object {
-            "body": Object {
-              "message": Object {
-                "text": "*World!*",
-              },
-              "messaging_type": undefined,
-              "notification_type": undefined,
-              "persona_id": undefined,
-              "recipient": Object {
-                "id": "john",
-              },
-              "tag": undefined,
-            },
-            "depends_on": "messenger:_PAGE_ID_:psid:john-1",
-            "method": "POST",
-            "name": "messenger:_PAGE_ID_:psid:john-2",
             "omit_response_on_success": false,
             "relative_url": "me/messages",
           },
@@ -203,9 +146,9 @@ Object {
               },
               "tag": undefined,
             },
-            "depends_on": "messenger:_PAGE_ID_:psid:john-2",
+            "depends_on": "messenger:_PAGE_ID_:psid:john-1",
             "method": "POST",
-            "name": "messenger:_PAGE_ID_:psid:john-3",
+            "name": "messenger:_PAGE_ID_:psid:john-2",
             "omit_response_on_success": false,
             "relative_url": "me/messages",
           },
@@ -228,25 +171,17 @@ Object {
 exports[`#render(channel, message, options) works 3`] = `
 Array [
   Object {
-    "body": "message=%7B%22text%22%3A%22Hello%22%7D&recipient=%7B%22id%22%3A%22john%22%7D",
+    "body": "message=%7B%22text%22%3A%22Hello%20*World!*%22%7D&recipient=%7B%22id%22%3A%22john%22%7D",
     "method": "POST",
     "name": "messenger:_PAGE_ID_:psid:john-1",
     "omit_response_on_success": false,
     "relative_url": "me/messages",
   },
   Object {
-    "body": "message=%7B%22text%22%3A%22*World!*%22%7D&recipient=%7B%22id%22%3A%22john%22%7D",
+    "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D&recipient=%7B%22id%22%3A%22john%22%7D",
     "depends_on": "messenger:_PAGE_ID_:psid:john-1",
     "method": "POST",
     "name": "messenger:_PAGE_ID_:psid:john-2",
-    "omit_response_on_success": false,
-    "relative_url": "me/messages",
-  },
-  Object {
-    "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D&recipient=%7B%22id%22%3A%22john%22%7D",
-    "depends_on": "messenger:_PAGE_ID_:psid:john-2",
-    "method": "POST",
-    "name": "messenger:_PAGE_ID_:psid:john-3",
     "omit_response_on_success": false,
     "relative_url": "me/messages",
   },
@@ -264,7 +199,7 @@ Object {
       "request": Object {
         "body": Object {
           "message": Object {
-            "text": "Hello",
+            "text": "Hello *World!*",
           },
           "messaging_type": "TAG",
           "notification_type": "SILENT_PUSH",
@@ -276,31 +211,6 @@ Object {
         },
         "method": "POST",
         "name": "messenger:_PAGE_ID_:psid:john-1",
-        "omit_response_on_success": false,
-        "relative_url": "me/messages",
-      },
-    },
-    Object {
-      "attachmentAssetTag": undefined,
-      "attachmentFileData": undefined,
-      "attachmentFileInfo": undefined,
-      "channelUid": "messenger:_PAGE_ID_:psid:john",
-      "request": Object {
-        "body": Object {
-          "message": Object {
-            "text": "*World!*",
-          },
-          "messaging_type": "TAG",
-          "notification_type": "SILENT_PUSH",
-          "persona_id": "billy17",
-          "recipient": Object {
-            "id": "john",
-          },
-          "tag": "TRANSPORTATION_UPDATE",
-        },
-        "depends_on": "messenger:_PAGE_ID_:psid:john-1",
-        "method": "POST",
-        "name": "messenger:_PAGE_ID_:psid:john-2",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
@@ -339,22 +249,15 @@ Object {
           },
           "tag": "TRANSPORTATION_UPDATE",
         },
-        "depends_on": "messenger:_PAGE_ID_:psid:john-2",
+        "depends_on": "messenger:_PAGE_ID_:psid:john-1",
         "method": "POST",
-        "name": "messenger:_PAGE_ID_:psid:john-3",
+        "name": "messenger:_PAGE_ID_:psid:john-2",
         "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
     },
   ],
   "results": Array [
-    Object {
-      "body": Object {
-        "message_id": "xxx",
-        "recipient_id": "xxx",
-      },
-      "code": 200,
-    },
     Object {
       "body": Object {
         "message_id": "xxx",
@@ -381,7 +284,7 @@ Object {
           "request": Object {
             "body": Object {
               "message": Object {
-                "text": "Hello",
+                "text": "Hello *World!*",
               },
               "messaging_type": "TAG",
               "notification_type": "SILENT_PUSH",
@@ -393,31 +296,6 @@ Object {
             },
             "method": "POST",
             "name": "messenger:_PAGE_ID_:psid:john-1",
-            "omit_response_on_success": false,
-            "relative_url": "me/messages",
-          },
-        },
-        Object {
-          "attachmentAssetTag": undefined,
-          "attachmentFileData": undefined,
-          "attachmentFileInfo": undefined,
-          "channelUid": "messenger:_PAGE_ID_:psid:john",
-          "request": Object {
-            "body": Object {
-              "message": Object {
-                "text": "*World!*",
-              },
-              "messaging_type": "TAG",
-              "notification_type": "SILENT_PUSH",
-              "persona_id": "billy17",
-              "recipient": Object {
-                "id": "john",
-              },
-              "tag": "TRANSPORTATION_UPDATE",
-            },
-            "depends_on": "messenger:_PAGE_ID_:psid:john-1",
-            "method": "POST",
-            "name": "messenger:_PAGE_ID_:psid:john-2",
             "omit_response_on_success": false,
             "relative_url": "me/messages",
           },
@@ -456,9 +334,9 @@ Object {
               },
               "tag": "TRANSPORTATION_UPDATE",
             },
-            "depends_on": "messenger:_PAGE_ID_:psid:john-2",
+            "depends_on": "messenger:_PAGE_ID_:psid:john-1",
             "method": "POST",
-            "name": "messenger:_PAGE_ID_:psid:john-3",
+            "name": "messenger:_PAGE_ID_:psid:john-2",
             "omit_response_on_success": false,
             "relative_url": "me/messages",
           },
@@ -481,25 +359,17 @@ Object {
 exports[`#render(channel, message, options) works with options 3`] = `
 Array [
   Object {
-    "body": "message=%7B%22text%22%3A%22Hello%22%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
+    "body": "message=%7B%22text%22%3A%22Hello%20*World!*%22%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
     "method": "POST",
     "name": "messenger:_PAGE_ID_:psid:john-1",
     "omit_response_on_success": false,
     "relative_url": "me/messages",
   },
   Object {
-    "body": "message=%7B%22text%22%3A%22*World!*%22%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
+    "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
     "depends_on": "messenger:_PAGE_ID_:psid:john-1",
     "method": "POST",
     "name": "messenger:_PAGE_ID_:psid:john-2",
-    "omit_response_on_success": false,
-    "relative_url": "me/messages",
-  },
-  Object {
-    "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%7D%5D%7D&messaging_type=TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
-    "depends_on": "messenger:_PAGE_ID_:psid:john-2",
-    "method": "POST",
-    "name": "messenger:_PAGE_ID_:psid:john-3",
     "omit_response_on_success": false,
     "relative_url": "me/messages",
   },
@@ -586,10 +456,7 @@ Object {
         "body": Object {
           "messages": Array [
             Object {
-              "text": "Hello",
-            },
-            Object {
-              "text": "*World!*",
+              "text": "Hello *World!*",
             },
             Object {
               "attachment": Object {
@@ -634,10 +501,7 @@ Object {
             "body": Object {
               "messages": Array [
                 Object {
-                  "text": "Hello",
-                },
-                Object {
-                  "text": "*World!*",
+                  "text": "Hello *World!*",
                 },
                 Object {
                   "attachment": Object {

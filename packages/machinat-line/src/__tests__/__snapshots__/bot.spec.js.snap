@@ -7,11 +7,7 @@ Object {
       "body": Object {
         "messages": Array [
           Object {
-            "text": "Hello",
-            "type": "text",
-          },
-          Object {
-            "text": "LINE",
+            "text": "Hello LINE",
             "type": "text",
           },
           Object {
@@ -57,11 +53,7 @@ Object {
           "body": Object {
             "messages": Array [
               Object {
-                "text": "Hello",
-                "type": "text",
-              },
-              Object {
-                "text": "LINE",
+                "text": "Hello LINE",
                 "type": "text",
               },
               Object {
@@ -109,11 +101,7 @@ Object {
       "body": Object {
         "messages": Array [
           Object {
-            "text": "Hello",
-            "type": "text",
-          },
-          Object {
-            "text": "LINE",
+            "text": "Hello LINE",
             "type": "text",
           },
           Object {
@@ -159,11 +147,7 @@ Object {
           "body": Object {
             "messages": Array [
               Object {
-                "text": "Hello",
-                "type": "text",
-              },
-              Object {
-                "text": "LINE",
+                "text": "Hello LINE",
                 "type": "text",
               },
               Object {
@@ -211,11 +195,7 @@ Object {
       "body": Object {
         "messages": Array [
           Object {
-            "text": "Hello",
-            "type": "text",
-          },
-          Object {
-            "text": "LINE",
+            "text": "Hello LINE",
             "type": "text",
           },
           Object {
@@ -271,11 +251,7 @@ Object {
           "body": Object {
             "messages": Array [
               Object {
-                "text": "Hello",
-                "type": "text",
-              },
-              Object {
-                "text": "LINE",
+                "text": "Hello LINE",
                 "type": "text",
               },
               Object {

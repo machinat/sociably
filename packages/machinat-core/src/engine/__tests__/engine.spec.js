@@ -136,7 +136,7 @@ describe('#render(channel, node, createJobs)', () => {
 
     expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
+    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope);
 
     expect(createJobs.mock).not.toHaveBeenCalled();
     expect(wrappedDispatchMock).not.toHaveBeenCalled();
@@ -157,7 +157,7 @@ describe('#render(channel, node, createJobs)', () => {
     expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
+    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
     expect(createJobs.mock).toHaveBeenCalledWith(channel, unitSegments);
@@ -195,8 +195,8 @@ describe('#render(channel, node, createJobs)', () => {
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledWith(
-      expect.any(ServiceScope),
-      message
+      message,
+      expect.any(ServiceScope)
     );
 
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
@@ -248,7 +248,7 @@ describe('#render(channel, node, createJobs)', () => {
     expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
+    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(3);
     expect(createJobs.mock).toHaveBeenNthCalledWith(1, channel, [
@@ -349,7 +349,7 @@ describe('#render(channel, node, createJobs)', () => {
     expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
+    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(3);
     expect(createJobs.mock).toHaveBeenNthCalledWith(1, channel, [
@@ -475,7 +475,7 @@ describe('#render(channel, node, createJobs)', () => {
 
     expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
+    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope);
 
     expect(createJobs.mock).not.toHaveBeenCalled();
     expect(wrappedDispatchMock).not.toHaveBeenCalled();
@@ -666,7 +666,7 @@ describe('#render(channel, node, createJobs)', () => {
     expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(scope, message);
+    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
     expect(createJobs.mock).toHaveBeenCalledWith(channel, unitSegments);

@@ -1,12 +1,13 @@
-import invariant from 'invariant';
+import { unitSegment } from '@machinat/core/renderer';
 import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../constant';
-import { asUnitComponent } from '../utils';
+import { annotateLineComponent } from '../utils';
 
 function linkRichMenuCall({ type, source }) {
-  invariant(
-    type === 'user',
-    '<LinkRichMenu /> can only be delivered in a user chatting channel'
-  );
+  if (type !== 'user') {
+    throw new TypeError(
+      '<LinkRichMenu /> can only be delivered in a user chatting channel'
+    );
+  }
 
   return {
     method: 'POST',
@@ -26,20 +27,22 @@ function bulkLinkRichMenuCall(userIds) {
   };
 }
 
-const LinkRichMenu = async ({ id }) => ({
-  id,
-  [CHANNEL_API_CALL_GETTER]: linkRichMenuCall,
-  [BULK_API_CALL_GETTER]: bulkLinkRichMenuCall,
-});
-
-const __LinkRichMenu = asUnitComponent(LinkRichMenu);
+export const LinkRichMenu = (node, path) => [
+  unitSegment(node, path, {
+    id: node.props.id,
+    [CHANNEL_API_CALL_GETTER]: linkRichMenuCall,
+    [BULK_API_CALL_GETTER]: bulkLinkRichMenuCall,
+  }),
+];
+annotateLineComponent(LinkRichMenu);
 
 const UNLINK_RICHMENU_API_CALLER = {
   [CHANNEL_API_CALL_GETTER]({ type, source }) {
-    invariant(
-      type === 'user',
-      '<UnlinkRichMenu /> can only be delivered in a user chatting channel'
-    );
+    if (type !== 'user') {
+      throw new TypeError(
+        '<UnlinkRichMenu /> can only be delivered in a user chatting channel'
+      );
+    }
 
     return {
       method: 'DELETE',
@@ -56,7 +59,7 @@ const UNLINK_RICHMENU_API_CALLER = {
   },
 };
 
-const UnlinkRichMenu = async () => UNLINK_RICHMENU_API_CALLER;
-const __UnlinkRichMenu = asUnitComponent(UnlinkRichMenu);
-
-export { __LinkRichMenu as LinkRichMenu, __UnlinkRichMenu as UnlinkRichMenu };
+export const UnlinkRichMenu = (node, path) => [
+  unitSegment(node, path, UNLINK_RICHMENU_API_CALLER),
+];
+annotateLineComponent(UnlinkRichMenu);

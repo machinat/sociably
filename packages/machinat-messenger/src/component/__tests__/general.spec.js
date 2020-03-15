@@ -1,41 +1,48 @@
 import Machinat from '@machinat/core';
-import map from '@machinat/core/iterator/map';
-import generalDelegate from '../general';
+import Renderer from '@machinat/core/renderer';
+import generalComponentDelegator from '../general';
 
-const render = async node => {
-  const renderings = map(
-    node,
-    (element, path) =>
-      typeof element === 'string'
-        ? { type: 'text', value: element, node: element, path }
-        : typeof element.type === 'string'
-        ? generalDelegate(element, render, path)
-        : { value: { non: 'text' }, node: element, path },
-    '$'
+const renderer = new Renderer('messenger', generalComponentDelegator);
+
+test('elements match snapshot', async () => {
+  const segments = await renderer.render(
+    <>
+      <text>abc</text>
+      <br />
+      <b>important</b>
+      <br />
+      <i>italic</i>
+      <br />
+      <del>nooooo</del>
+      <br />
+      <code>foo.bar()</code>
+      <br />
+      <pre>foo.bar('hello world')</pre>
+    </>
   );
-  return renderings ? [].concat(...(await Promise.all(renderings))) : null;
-};
-
-test('shallow textual elements match snapshot', async () => {
-  await expect(
-    render(
-      <>
-        <text>abc</text>
-        <b>important</b>
-        <i>italic</i>
-        <del>nooooo</del>
-        <br />
-        <code>foo.bar()</code>
-        <pre>foo.bar('hello world')</pre>
-      </>
-    )
-  ).resolves.toMatchSnapshot();
+  expect(segments).toMatchSnapshot();
+  expect(segments.map(seg => seg.value)).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "message": Object {
+          "text": "abc",
+        },
+      },
+      "*important*",
+      "_italic_",
+      "~nooooo~",
+      "\`foo.bar()\`",
+      "\`\`\`
+    foo.bar('hello world')
+    \`\`\`",
+    ]
+  `);
 });
 
-test('nested textual elements match snapshot', async () => {
-  const segments = await render(
+test('nested elements match snapshot', async () => {
+  const segments = await renderer.render(
     <text>
-      123{' '}
+      Mic test{' '}
       <code>
         Hello, <b>Luke Skywalker!</b>
       </code>
@@ -47,13 +54,73 @@ test('nested textual elements match snapshot', async () => {
       </i>
       <br />
       <br />
-      <pre>May the force be with you!</pre> abc
+      <pre>May the force be with you!</pre> Test over
     </text>
   );
   expect(segments).toMatchSnapshot();
+  expect(segments.map(seg => seg.value)).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "message": Object {
+          "text": "Mic test \`Hello, *Luke Skywalker!*\`",
+        },
+      },
+      Object {
+        "message": Object {
+          "text": "You know what?",
+        },
+      },
+      Object {
+        "message": Object {
+          "text": "_I'm your ~FATHER~ \`droid\`._",
+        },
+      },
+      Object {
+        "message": Object {
+          "text": "\`\`\`
+    May the force be with you!
+    \`\`\` Test over",
+        },
+      },
+    ]
+  `);
 });
 
-test('with break placed in children', async () => {
+test('<text/> hoist plain text into text message object', async () => {
+  const segments = await renderer.render(
+    <text>
+      foo
+      <br />
+      bar
+      <br />
+      <br />
+      baz
+    </text>
+  );
+
+  expect(segments).toMatchSnapshot();
+  expect(segments.map(seg => seg.value)).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "message": Object {
+          "text": "foo",
+        },
+      },
+      Object {
+        "message": Object {
+          "text": "bar",
+        },
+      },
+      Object {
+        "message": Object {
+          "text": "baz",
+        },
+      },
+    ]
+  `);
+});
+
+it('texual element throw if <br/> in children', async () => {
   const children = (
     <>
       foo
@@ -62,56 +129,108 @@ test('with break placed in children', async () => {
     </>
   );
 
-  const segments = await render([
-    <text>{children}</text>,
+  for (const element of [
     <b>{children}</b>,
     <i>{children}</i>,
     <del>{children}</del>,
     <code>{children}</code>,
     <pre>{children}</pre>,
-  ]);
-  expect(segments).toMatchSnapshot();
+  ]) {
+    // eslint-disable-next-line no-await-in-loop
+    await expect(renderer.render(element)).rejects.toThrow(
+      'non-textual node <br /> received, only textual nodes allowed'
+    );
+  }
 });
 
-test('should throw if non string value rendered', async () => {
-  const NonText = () => {};
+test('throw if non-texual value received', async () => {
   const children = (
     <>
       foo
-      <NonText />
+      <img />
       bar
     </>
+  );
+
+  await expect(
+    renderer.render(<text>{children}</text>)
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"non-textual node <img /> received, only textual nodes and <br/> allowed"`
   );
 
   for (const node of [
     <b>{children}</b>,
     <i>{children}</i>,
     <del>{children}</del>,
-    <text>{children}</text>,
     <code>{children}</code>,
     <pre>{children}</pre>,
   ]) {
     // eslint-disable-next-line no-await-in-loop
-    await expect(render(node)).rejects.toThrow(
-      '<NonText /> at $::1 is not valid textual content'
+    await expect(renderer.render(node)).rejects.toThrow(
+      'non-textual node <img /> received, only textual nodes allowed'
     );
   }
 });
 
-test('media elements match snapshot', async () => {
-  await expect(
-    render([
-      <img src="http://avatar.my.bot" />,
-      <video src="http://vid.my.bot" />,
-      <audio src="http://sound.my.bot" />,
-      <file src="http://profile.my.bot" />,
-    ])
-  ).resolves.toMatchSnapshot();
-});
-
-test('return null if content is empty', async () => {
+test('render null if content is empty', async () => {
   for (const element of [<b />, <i />, <del />, <text />, <code />, <pre />]) {
     // eslint-disable-next-line no-await-in-loop
-    await expect(render(element)).resolves.toEqual([null]);
+    await expect(renderer.render(element)).resolves.toEqual(null);
   }
+});
+
+test('media elements match snapshot', async () => {
+  const segments = await renderer.render(
+    <>
+      <img src="http://avatar.my.bot" />
+      <video src="http://vid.my.bot" />
+      <audio src="http://sound.my.bot" />
+      <file src="http://profile.my.bot" />
+    </>
+  );
+  expect(segments).toMatchSnapshot();
+  expect(segments.map(seg => seg.value)).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "message": Object {
+          "attachment": Object {
+            "payload": Object {
+              "url": "http://avatar.my.bot",
+            },
+            "type": "image",
+          },
+        },
+      },
+      Object {
+        "message": Object {
+          "attachment": Object {
+            "payload": Object {
+              "url": "http://vid.my.bot",
+            },
+            "type": "video",
+          },
+        },
+      },
+      Object {
+        "message": Object {
+          "attachment": Object {
+            "payload": Object {
+              "url": "http://sound.my.bot",
+            },
+            "type": "audio",
+          },
+        },
+      },
+      Object {
+        "message": Object {
+          "attachment": Object {
+            "payload": Object {
+              "url": "http://profile.my.bot",
+            },
+            "type": "file",
+          },
+        },
+      },
+    ]
+  `);
 });

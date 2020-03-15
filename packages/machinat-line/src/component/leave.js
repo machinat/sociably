@@ -1,14 +1,15 @@
 /* eslint-disable import/prefer-default-export */
-import invariant from 'invariant';
+import { unitSegment } from '@machinat/core/renderer';
 import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../constant';
-import { asUnitComponent } from '../utils';
+import { annotateLineComponent } from '../utils';
 
 const LEAVE_API_CALLER = {
   [CHANNEL_API_CALL_GETTER]({ type, sourceId }) {
-    invariant(
-      type !== 'user',
-      '<Leave /> should cannot be used within an user channel'
-    );
+    if (type === 'user') {
+      throw new TypeError(
+        '<Leave /> should cannot be used within an user channel'
+      );
+    }
 
     return {
       method: 'POST',
@@ -21,8 +22,8 @@ const LEAVE_API_CALLER = {
   },
 };
 
-const Leave = async () => LEAVE_API_CALLER;
+export const Leave = (node, path) => [
+  unitSegment(node, path, LEAVE_API_CALLER),
+];
 
-const __Leave = asUnitComponent(Leave);
-
-export { __Leave as Leave };
+annotateLineComponent(Leave);
