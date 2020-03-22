@@ -113,7 +113,7 @@ type AbstractOptions = {
   name?: string,
 };
 
-type AbstractFn<T> = (Class<T>) => ServiceProvider<T, Class<T>>;
+type AbstractFn<T> = (Class<T>) => ServiceInterface<T, Class<T>>;
 
 /**
  * abstract annotate an abstract class as a servcie interface

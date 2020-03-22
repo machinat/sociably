@@ -13,7 +13,7 @@ import type { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
 import { provider } from '@machinat/core/service';
 
-import { HTTP_MODULE_CONFIGS_I, HTTPServer } from './interface';
+import { HTTP_MODULE_CONFIGS_I, HTTPServerI } from './interface';
 import type {
   ServerListenOptions,
   RequestHandler,
@@ -88,7 +88,7 @@ class HTTPConnector {
     return this;
   }
 
-  async connect(server: HTTPServer, options?: ServerListenOptions) {
+  async connect(server: HTTPServerI, options?: ServerListenOptions) {
     server.addListener('request', this._makeRequestHandler());
     if (this._upgradeRoutings.length > 0) {
       server.addListener('upgrade', this._makeUpgradeHandler());

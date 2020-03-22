@@ -77,7 +77,7 @@ test('change http server', async () => {
         },
       }),
     ],
-    registers: [{ provide: HTTP.Server, withValue: myServer }],
+    registers: [{ provide: HTTP.ServerI, withValue: myServer }],
   });
 
   await app.start();

@@ -10,7 +10,7 @@ const Line = {
   initModule,
   Bot: LineBot,
   Receiver: LineReceiver,
-  CONFIGS: LINE_PLATFORM_CONFIGS_I,
+  CONFIGS_I: LINE_PLATFORM_CONFIGS_I,
 };
 
 export default Line;

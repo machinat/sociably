@@ -7,7 +7,7 @@ import type { FileRepositoryConfigs } from './types';
 
 const FileStorage = {
   Repository: FileRepository,
-  CONFIGS: FILE_STORAGE_CONFIGS_I,
+  CONFIGS_I: FILE_STORAGE_CONFIGS_I,
 
   initModule: (configs: FileRepositoryConfigs): ServiceModule => ({
     provisions: [

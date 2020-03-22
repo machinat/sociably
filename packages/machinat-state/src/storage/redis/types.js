@@ -1,5 +1,4 @@
 // @flow
-export type RedisClient = any;
 
 export type RedisModuleConfigs = {
   host?: string,

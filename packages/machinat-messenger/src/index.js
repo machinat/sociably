@@ -10,7 +10,7 @@ const Messenger = {
   initModule,
   Bot: MessengerBot,
   Receiver: MessengerReceiver,
-  CONFIGS: MESSENGER_PLATFORM_CONFIGS_I,
+  CONFIGS_I: MESSENGER_PLATFORM_CONFIGS_I,
 };
 
 export default Messenger;
