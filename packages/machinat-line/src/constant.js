@@ -13,7 +13,6 @@ export const PATH_REPLY = 'v2/bot/message/reply';
 export const PATH_PUSH = 'v2/bot/message/push';
 export const PATH_MULTICAST = 'v2/bot/message/multicast';
 export const PATH_RICHMENU = 'v2/bot/richmenu';
-export const PATH_LIFFAPPS = 'liff/v1/apps';
 
 export const LINE_PLATFORM_CONFIGS_I = namedInterface<LinePlatformConfigs>(
   'LinePlatformConfigs'

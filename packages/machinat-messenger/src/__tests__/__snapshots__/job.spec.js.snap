@@ -6,7 +6,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": "_DEADLY_VIRUS_",
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:john",
+    "channelUid": "messenger._PAGE_ID_.psid.john",
     "request": Object {
       "body": Object {
         "a": "gift",
@@ -26,7 +26,7 @@ Array [
       "filename": "deathangel.jpg",
       "knownLength": 66666,
     },
-    "channelUid": "messenger:_PAGE_ID_:psid:john",
+    "channelUid": "messenger._PAGE_ID_.psid.john",
     "request": Object {
       "body": Object {
         "a": "redemption",
@@ -47,7 +47,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:john",
+    "channelUid": "messenger._PAGE_ID_.psid.john",
     "request": Object {
       "body": Object {
         "persona_id": "your-dearest-friend",
@@ -64,7 +64,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:john",
+    "channelUid": "messenger._PAGE_ID_.psid.john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -86,7 +86,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:john",
+    "channelUid": "messenger._PAGE_ID_.psid.john",
     "request": Object {
       "body": Object {
         "id": 2,
@@ -102,7 +102,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:john",
+    "channelUid": "messenger._PAGE_ID_.psid.john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -124,7 +124,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:john",
+    "channelUid": "messenger._PAGE_ID_.psid.john",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -137,97 +137,6 @@ Array [
           "id": "john",
         },
         "tag": "PAYMENT_UPDATE",
-      },
-      "method": "POST",
-      "relative_url": "me/messages",
-    },
-  },
-]
-`;
-
-exports[`chatJobsMaker(options)(channel, segments) create jobs to be sent 1`] = `
-Array [
-  Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:john",
-    "request": Object {
-      "body": Object {
-        "recipient": Object {
-          "id": "john",
-        },
-        "sender_action": "typing_on",
-      },
-      "method": "POST",
-      "relative_url": "me/messages",
-    },
-  },
-  Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:john",
-    "request": Object {
-      "body": Object {
-        "message": Object {
-          "id": 1,
-        },
-        "recipient": Object {
-          "id": "john",
-        },
-      },
-      "method": "POST",
-      "relative_url": "me/messages",
-    },
-  },
-  Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:john",
-    "request": Object {
-      "body": Object {
-        "id": 2,
-        "recipient": Object {
-          "id": "john",
-        },
-      },
-      "method": "POST",
-      "relative_url": "bar/baz",
-    },
-  },
-  Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:john",
-    "request": Object {
-      "body": Object {
-        "message": Object {
-          "text": "id:3",
-        },
-        "recipient": Object {
-          "id": "john",
-        },
-      },
-      "method": "POST",
-      "relative_url": "me/messages",
-    },
-  },
-  Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:john",
-    "request": Object {
-      "body": Object {
-        "message": Object {
-          "text": "4",
-        },
-        "recipient": Object {
-          "id": "john",
-        },
       },
       "method": "POST",
       "relative_url": "me/messages",
@@ -242,7 +151,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:Luke",
+    "channelUid": "messenger._PAGE_ID_.psid.Luke",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -264,7 +173,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:Luke",
+    "channelUid": "messenger._PAGE_ID_.psid.Luke",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -291,7 +200,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger:_PAGE_ID_:psid:Luke",
+    "channelUid": "messenger._PAGE_ID_.psid.Luke",
     "request": Object {
       "body": Object {
         "message": Object {

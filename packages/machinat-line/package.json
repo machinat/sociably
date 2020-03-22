@@ -31,5 +31,8 @@
   },
   "devDependencies": {
     "jsdom": "^15.2.1"
+  },
+  "optionalDependencies": {
+    "@machinat/state": "^0.1.0-alpha.0"
   }
 }

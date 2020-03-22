@@ -6,7 +6,9 @@ test('from id', () => {
   expect(channel.platform).toBe('messenger');
   expect(channel.type).toBe('USER_TO_PAGE');
   expect(channel.subtype).toBe('psid');
-  expect(channel.uid).toBe('messenger:_PAGE_ID_:psid:_PSID_');
+  expect(channel.uid).toMatchInlineSnapshot(
+    `"messenger._PAGE_ID_.psid._PSID_"`
+  );
 
   expect(channel.identifier).toBe('_PSID_');
   expect(channel.threadType).toBe('USER_TO_PAGE');
@@ -21,7 +23,9 @@ test('from user_ref', () => {
   expect(channel.platform).toBe('messenger');
   expect(channel.type).toBe('USER_TO_PAGE');
   expect(channel.subtype).toBe('user_ref');
-  expect(channel.uid).toBe('messenger:_PAGE_ID_:user_ref:_USER_REF_');
+  expect(channel.uid).toMatchInlineSnapshot(
+    `"messenger._PAGE_ID_.user_ref._USER_REF_"`
+  );
 
   expect(channel.identifier).toBe('_USER_REF_');
   expect(channel.threadType).toBe('USER_TO_PAGE');
@@ -40,7 +44,7 @@ test('from phone_number', () => {
   expect(channel.type).toBe('USER_TO_PAGE');
   expect(channel.subtype).toBe('phone_number');
   expect(channel.uid).toMatchInlineSnapshot(
-    `"messenger:_PAGE_ID_:phone_number:nRn5C+EX4/vdk02aEWYs2zV5sHM="`
+    `"messenger._PAGE_ID_.phone_number.nRn5C+EX4/vdk02aEWYs2zV5sHM="`
   );
 
   expect(channel.identifier).toBe('nRn5C+EX4/vdk02aEWYs2zV5sHM=');
@@ -59,7 +63,9 @@ test('from post_id', () => {
   expect(channel.platform).toBe('messenger');
   expect(channel.type).toBe('USER_TO_PAGE');
   expect(channel.subtype).toBe('post_id');
-  expect(channel.uid).toBe('messenger:_PAGE_ID_:post_id:_POST_ID_');
+  expect(channel.uid).toMatchInlineSnapshot(
+    `"messenger._PAGE_ID_.post_id._POST_ID_"`
+  );
 
   expect(channel.identifier).toBe('_POST_ID_');
   expect(channel.threadType).toBe('USER_TO_PAGE');
@@ -76,7 +82,9 @@ test('from comment_id', () => {
   expect(channel.platform).toBe('messenger');
   expect(channel.type).toBe('USER_TO_PAGE');
   expect(channel.subtype).toBe('comment_id');
-  expect(channel.uid).toBe('messenger:_PAGE_ID_:comment_id:_COMMENT_ID_');
+  expect(channel.uid).toMatchInlineSnapshot(
+    `"messenger._PAGE_ID_.comment_id._COMMENT_ID_"`
+  );
 
   expect(channel.identifier).toBe('_COMMENT_ID_');
   expect(channel.threadType).toBe('USER_TO_PAGE');
@@ -99,7 +107,9 @@ describe('.fromExtensionContext(pageId, ctx)', () => {
     expect(channel.platform).toBe('messenger');
     expect(channel.type).toBe('USER_TO_PAGE');
     expect(channel.subtype).toBe('psid');
-    expect(channel.uid).toBe('messenger:_PAGE_ID_:psid:_THREAD_ID_');
+    expect(channel.uid).toMatchInlineSnapshot(
+      `"messenger._PAGE_ID_.psid._THREAD_ID_"`
+    );
 
     expect(channel.identifier).toBe('_THREAD_ID_');
     expect(channel.threadType).toBe('USER_TO_PAGE');
@@ -121,7 +131,9 @@ describe('.fromExtensionContext(pageId, ctx)', () => {
     expect(channel.platform).toBe('messenger');
     expect(channel.type).toBe('USER_TO_USER');
     expect(channel.subtype).toBe('psid');
-    expect(channel.uid).toBe('messenger:_PAGE_ID_:psid:_THREAD_ID_');
+    expect(channel.uid).toMatchInlineSnapshot(
+      `"messenger._PAGE_ID_.psid._THREAD_ID_"`
+    );
 
     expect(channel.identifier).toBe('_THREAD_ID_');
     expect(channel.threadType).toBe('USER_TO_USER');
@@ -143,7 +155,9 @@ describe('.fromExtensionContext(pageId, ctx)', () => {
     expect(channel.platform).toBe('messenger');
     expect(channel.type).toBe('GROUP');
     expect(channel.subtype).toBe('psid');
-    expect(channel.uid).toBe('messenger:_PAGE_ID_:psid:_THREAD_ID_');
+    expect(channel.uid).toMatchInlineSnapshot(
+      `"messenger._PAGE_ID_.psid._THREAD_ID_"`
+    );
 
     expect(channel.identifier).toBe('_THREAD_ID_');
     expect(channel.threadType).toBe('GROUP');

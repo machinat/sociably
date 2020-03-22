@@ -1,5 +1,5 @@
 {
-  "name": "@machinat/session",
+  "name": "@machinat/state",
   "version": "0.1.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -11,15 +11,10 @@
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
   "exports": {
-    ".": {
-      "default": "./lib/index.js"
-    },
-    "./inMemory": {
-      "default": "./lib/stores/inMemory.js"
-    },
-    "./redis": {
-      "default": "./lib/stores/redis.js"
-    }
+    ".": "./lib/index.js",
+    "./file": "./lib/repositories/file.js",
+    "./inMemory": "./lib/repositories/inMemory.js",
+    "./redis": "./lib/repositories/redis.js"
   },
   "files": [
     "lib/*",

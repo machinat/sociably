@@ -18,7 +18,7 @@ export class MessengerUser implements MachinatUser {
   }
 
   get uid() {
-    return `messenger:${this.pageId}:${this.psid}`;
+    return `messenger.${this.pageId}.${this.psid}`;
   }
 }
 

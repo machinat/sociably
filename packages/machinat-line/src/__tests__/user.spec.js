@@ -5,7 +5,7 @@ test('LineUser ok', () => {
 
   expect(user.platform).toBe('line');
   expect(user.id).toBe('_USER_ID_');
-  expect(user.uid).toBe('line:*:_USER_ID_');
+  expect(user.uid).toMatchInlineSnapshot(`"line.*._USER_ID_"`);
 });
 
 test('LineUserProfile ok', () => {

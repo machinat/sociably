@@ -134,7 +134,7 @@ class MessengerBot
     method: 'GET' | 'POST' | 'DELETE',
     relativeURL: string,
     body?: Object
-  ): Promise<null | DispatchResponse<MessengerJob, MessengerResult>> {
+  ): Promise<DispatchResponse<MessengerJob, MessengerResult>> {
     return this.engine.dispatchJobs(null, [
       {
         request: {

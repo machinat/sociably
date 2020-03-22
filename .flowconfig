@@ -12,6 +12,7 @@
 [options]
 module.name_mapper='@machinat/\([^/]*\)\(.*\)$' -> '<PROJECT_ROOT>/packages/machinat-\1/src\2'
 module.name_mapper='@machinat/\([^/]*\)/types$' -> '<PROJECT_ROOT>/packages/machinat-\1/src/types.js'
+esproposal.optional_chaining=enable
 include_warnings=true
 emoji=true
 

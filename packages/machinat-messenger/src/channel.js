@@ -73,7 +73,7 @@ class MessengerChannel implements MachinatChannel {
   }
 
   get uid(): string {
-    return `messenger:${this.pageId}:${this.targetType}:${this.identifier}`;
+    return `messenger.${this.pageId}.${this.targetType}.${this.identifier}`;
   }
 
   get sendable() {

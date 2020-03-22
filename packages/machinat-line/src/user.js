@@ -16,7 +16,7 @@ export class LineUser implements MachinatUser {
   }
 
   get uid() {
-    return `line:*:${this.userId}`;
+    return `line.*.${this.userId}`;
   }
 }
 

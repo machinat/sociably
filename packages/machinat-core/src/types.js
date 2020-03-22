@@ -199,7 +199,7 @@ export type DispatchMiddleware<
 
 export type ServiceModule = {|
   provisions: (ServiceProvider<any, any> | ProvisionBinding)[],
-  startHook: null | ServiceContainer<Promise<void>>,
+  startHook?: null | ServiceContainer<Promise<void>>,
 |};
 
 export type PlatformModule<

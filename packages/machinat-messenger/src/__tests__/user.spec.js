@@ -6,7 +6,7 @@ test('MessengerUser', () => {
   expect(user.platform).toBe('messenger');
   expect(user.pageId).toBe('_PAGE_ID_');
   expect(user.id).toBe('foo');
-  expect(user.uid).toBe('messenger:_PAGE_ID_:foo');
+  expect(user.uid).toMatchInlineSnapshot(`"messenger._PAGE_ID_.foo"`);
 });
 
 test('MessengerUserProfile', () => {

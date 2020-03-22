@@ -24,7 +24,7 @@ class LineChannel implements MachinatChannel {
   }
 
   get uid() {
-    return `line:${this.channelId}:${this.type}:${this.sourceId}`;
+    return `line.${this.channelId}.${this.type}.${this.sourceId}`;
   }
 }
 

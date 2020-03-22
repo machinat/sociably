@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
 import type { AssetsProviderProps, AssetsConsumerProps } from './types';
 
 type AssetIdResult = void | string | number;

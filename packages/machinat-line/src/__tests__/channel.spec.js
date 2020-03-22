@@ -9,10 +9,13 @@ test('user source', () => {
   expect(channel.platform).toBe('line');
   expect(channel.type).toBe('user');
   expect(channel.subtype).toBe(undefined);
-  expect(channel.uid).toBe('line:_LINE_CHANNEL_ID_:user:foo');
 
   expect(channel.source).toEqual({ type: 'user', userId: 'foo' });
   expect(channel.sourceId).toBe('foo');
+
+  expect(channel.uid).toMatchInlineSnapshot(
+    `"line._LINE_CHANNEL_ID_.user.foo"`
+  );
 });
 
 test('room source', () => {
@@ -24,10 +27,13 @@ test('room source', () => {
   expect(channel.platform).toBe('line');
   expect(channel.type).toBe('room');
   expect(channel.subtype).toBe(undefined);
-  expect(channel.uid).toBe('line:_LINE_CHANNEL_ID_:room:foo');
 
   expect(channel.source).toEqual({ type: 'room', roomId: 'foo' });
   expect(channel.sourceId).toBe('foo');
+
+  expect(channel.uid).toMatchInlineSnapshot(
+    `"line._LINE_CHANNEL_ID_.room.foo"`
+  );
 });
 
 test('group source', () => {
@@ -39,6 +45,11 @@ test('group source', () => {
   expect(channel.platform).toBe('line');
   expect(channel.type).toBe('group');
   expect(channel.subtype).toBe(undefined);
+
   expect(channel.source).toEqual({ type: 'group', groupId: 'foo' });
   expect(channel.sourceId).toBe('foo');
+
+  expect(channel.uid).toMatchInlineSnapshot(
+    `"line._LINE_CHANNEL_ID_.group.foo"`
+  );
 });
