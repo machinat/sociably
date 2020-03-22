@@ -37,30 +37,22 @@ test('get asset id', async () => {
   await expect(registry.getAttachmentId('my_attachment')).resolves.toBe(
     undefined
   );
-  await expect(registry.getMessageCreativeId('my_creative')).resolves.toBe(
-    undefined
-  );
-  await expect(registry.getCustomLabelId('my_label')).resolves.toBe(undefined);
   await expect(registry.getPersonaId('my_persona')).resolves.toBe(undefined);
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(5);
+  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.namedState.mock.calls.map(call => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets:_PAGE_ID_:foo",
       "messenger.assets:_PAGE_ID_:attachment",
-      "messenger.assets:_PAGE_ID_:message_creative",
-      "messenger.assets:_PAGE_ID_:custom_label",
       "messenger.assets:_PAGE_ID_:persona",
     ]
   `);
 
-  expect(state.get.mock).toHaveBeenCalledTimes(5);
+  expect(state.get.mock).toHaveBeenCalledTimes(3);
   expect(state.get.mock).toHaveBeenNthCalledWith(1, 'bar');
   expect(state.get.mock).toHaveBeenNthCalledWith(2, 'my_attachment');
-  expect(state.get.mock).toHaveBeenNthCalledWith(3, 'my_creative');
-  expect(state.get.mock).toHaveBeenNthCalledWith(4, 'my_label');
-  expect(state.get.mock).toHaveBeenNthCalledWith(5, 'my_persona');
+  expect(state.get.mock).toHaveBeenNthCalledWith(3, 'my_persona');
 
   state.get.mock.fakeReturnValue('baz');
   await expect(registry.getAssetId('foo', 'bar')).resolves.toBe('baz');
@@ -70,23 +62,13 @@ test('get asset id', async () => {
     '_ATTACHMENT_ID_'
   );
 
-  state.get.mock.fakeReturnValue('_MESSAGE_CREATIVE_ID_');
-  await expect(registry.getMessageCreativeId('my_creative')).resolves.toBe(
-    '_MESSAGE_CREATIVE_ID_'
-  );
-
-  state.get.mock.fakeReturnValue('_CUSTOM_LABEL_ID_');
-  await expect(registry.getCustomLabelId('my_label')).resolves.toBe(
-    '_CUSTOM_LABEL_ID_'
-  );
-
   state.get.mock.fakeReturnValue('_PERSONA_ID_');
   await expect(registry.getPersonaId('my_persona')).resolves.toBe(
     '_PERSONA_ID_'
   );
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(10);
-  expect(state.get.mock).toHaveBeenCalledTimes(10);
+  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(6);
+  expect(state.get.mock).toHaveBeenCalledTimes(6);
 });
 
 test('set asset id', async () => {
@@ -94,45 +76,25 @@ test('set asset id', async () => {
 
   await registry.setAssetId('foo', 'bar', 'baz');
   await registry.setAttachmentId('my_attachment', '_ATTACHMENT_ID_');
-  await registry.setCustomLabelId('my_label', '_CUSTOM_LABEL_ID_');
-  await registry.setMessageCreativeId('my_creative', '_MESSAGE_CREATIVE_ID_');
   await registry.setPersonaId('my_persona', '_PERSONA_ID_');
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(5);
+  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.namedState.mock.calls.map(call => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets:_PAGE_ID_:foo",
       "messenger.assets:_PAGE_ID_:attachment",
-      "messenger.assets:_PAGE_ID_:custom_label",
-      "messenger.assets:_PAGE_ID_:message_creative",
       "messenger.assets:_PAGE_ID_:persona",
     ]
   `);
 
-  expect(state.set.mock).toHaveBeenCalledTimes(5);
+  expect(state.set.mock).toHaveBeenCalledTimes(3);
   state.set.mock.calls.forEach(({ args: [key, updator] }, i) => {
     expect(key).toBe(
-      i === 0
-        ? 'bar'
-        : i === 1
-        ? 'my_attachment'
-        : i === 2
-        ? 'my_label'
-        : i === 3
-        ? 'my_creative'
-        : 'my_persona'
+      i === 0 ? 'bar' : i === 1 ? 'my_attachment' : 'my_persona'
     );
     expect(updator(null)).toBe(
-      i === 0
-        ? 'baz'
-        : i === 1
-        ? '_ATTACHMENT_ID_'
-        : i === 2
-        ? '_CUSTOM_LABEL_ID_'
-        : i === 3
-        ? '_MESSAGE_CREATIVE_ID_'
-        : '_PERSONA_ID_'
+      i === 0 ? 'baz' : i === 1 ? '_ATTACHMENT_ID_' : '_PERSONA_ID_'
     );
   });
 
@@ -143,21 +105,13 @@ test('set asset id', async () => {
   await expect(
     registry.setAssetId('foo', 'bar', 'baz')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] already exist"`);
+
   await expect(
     registry.setAttachmentId('my_attachment', '_ATTACHMENT_ID_')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"attachment [ my_attachment ] already exist"`
   );
-  await expect(
-    registry.setCustomLabelId('my_label', '_CUSTOM_LABEL_ID_')
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"custom_label [ my_label ] already exist"`
-  );
-  await expect(
-    registry.setMessageCreativeId('my_creative', '_MESSAGE_CREATIVE_ID_')
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"message_creative [ my_creative ] already exist"`
-  );
+
   await expect(
     registry.setPersonaId('my_persona', '_PERSONA_ID_')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -170,31 +124,25 @@ test('get all assets', async () => {
 
   await expect(registry.getAllAssets('foo')).resolves.toBe(null);
   await expect(registry.getAllAttachments()).resolves.toBe(null);
-  await expect(registry.getAllCustomLabels()).resolves.toBe(null);
-  await expect(registry.getAllMessageCreatives()).resolves.toBe(null);
   await expect(registry.getAllPersonas()).resolves.toBe(null);
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(5);
+  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.namedState.mock.calls.map(call => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets:_PAGE_ID_:foo",
       "messenger.assets:_PAGE_ID_:attachment",
-      "messenger.assets:_PAGE_ID_:custom_label",
-      "messenger.assets:_PAGE_ID_:message_creative",
       "messenger.assets:_PAGE_ID_:persona",
     ]
   `);
 
-  expect(state.getAll.mock).toHaveBeenCalledTimes(5);
+  expect(state.getAll.mock).toHaveBeenCalledTimes(3);
 
   const resources = new Map([['bar', '1'], ['baz', '2']]);
   state.getAll.mock.fake(async () => resources);
 
   await expect(registry.getAllAssets('foo')).resolves.toEqual(resources);
   await expect(registry.getAllAttachments()).resolves.toEqual(resources);
-  await expect(registry.getAllCustomLabels()).resolves.toEqual(resources);
-  await expect(registry.getAllMessageCreatives()).resolves.toEqual(resources);
   await expect(registry.getAllPersonas()).resolves.toEqual(resources);
 });
 
@@ -203,48 +151,34 @@ test('remove asset id', async () => {
 
   await registry.removeAssetId('foo', 'bar');
   await registry.removeAttachmentId('my_attachment');
-  await registry.removeMessageCreativeId('my_creative');
-  await registry.removeCustomLabelId('my_label');
   await registry.removePersonaId('my_persona');
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(5);
+  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.namedState.mock.calls.map(call => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets:_PAGE_ID_:foo",
       "messenger.assets:_PAGE_ID_:attachment",
-      "messenger.assets:_PAGE_ID_:message_creative",
-      "messenger.assets:_PAGE_ID_:custom_label",
       "messenger.assets:_PAGE_ID_:persona",
     ]
   `);
 
-  expect(state.delete.mock).toHaveBeenCalledTimes(5);
+  expect(state.delete.mock).toHaveBeenCalledTimes(3);
   expect(state.delete.mock).toHaveBeenNthCalledWith(1, 'bar');
   expect(state.delete.mock).toHaveBeenNthCalledWith(2, 'my_attachment');
-  expect(state.delete.mock).toHaveBeenNthCalledWith(3, 'my_creative');
-  expect(state.delete.mock).toHaveBeenNthCalledWith(4, 'my_label');
-  expect(state.delete.mock).toHaveBeenNthCalledWith(5, 'my_persona');
+  expect(state.delete.mock).toHaveBeenNthCalledWith(3, 'my_persona');
 
   state.delete.mock.fake(async () => false);
   await expect(
     registry.removeAssetId('foo', 'bar')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] not exist"`);
+
   await expect(
     registry.removeAttachmentId('my_attachment')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"attachment [ my_attachment ] not exist"`
   );
-  await expect(
-    registry.removeMessageCreativeId('my_creative')
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"message_creative [ my_creative ] not exist"`
-  );
-  await expect(
-    registry.removeCustomLabelId('my_label')
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"custom_label [ my_label ] not exist"`
-  );
+
   await expect(
     registry.removePersonaId('my_persona')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -319,7 +253,7 @@ test('#createPersona()', async () => {
   );
 });
 
-test('#deleteRichMenu()', async () => {
+test('#deletePersona()', async () => {
   const registry = new MessengerAssetRegistry(stateManager, bot);
   bot.dispatchAPICall.mock.fake(() => ({
     jobs: [{ ...{} }],

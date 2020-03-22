@@ -2,7 +2,7 @@ import moxy from 'moxy';
 import Machinat from '@machinat/core';
 import { isNativeElement } from '@machinat/core/utils/isXxx';
 import Renderer from '@machinat/core/renderer';
-import { Latex, DynamicText } from '../text';
+import { Latex } from '../text';
 
 const generalComponentDelegator = moxy((node, path) => [
   node.type === 'br'
@@ -72,69 +72,6 @@ describe('Latex', () => {
           <nonMessage />
           efgh
         </Latex>
-      )
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"non-textual node <nonMessage /> received, only textual nodes allowed"`
-    );
-  });
-});
-
-describe('DynamicText', () => {
-  it('is valid Component', () => {
-    expect(typeof DynamicText).toBe('function');
-    expect(isNativeElement(<DynamicText />)).toBe(true);
-    expect(DynamicText.$$platform).toBe('messenger');
-  });
-
-  it('renders dynamic text message object', async () => {
-    const node = (
-      <DynamicText fallback="Hello World!">
-        Hello {'{{first_name}}!'}
-      </DynamicText>
-    );
-    await expect(renderer.render(node)).resolves.toEqual([
-      {
-        type: 'unit',
-        node,
-        value: {
-          message: {
-            dynamic_text: {
-              text: 'Hello {{first_name}}!',
-              fallback_text: 'Hello World!',
-            },
-          },
-        },
-        path: '$',
-      },
-    ]);
-  });
-
-  it('throw if <br/> in children', async () => {
-    await expect(
-      renderer.render(
-        <DynamicText>
-          abcd
-          <br />
-          efgh
-        </DynamicText>
-      )
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"non-textual node <br /> received, only textual nodes allowed"`
-    );
-  });
-
-  it('throw if non-texual node in children', async () => {
-    generalComponentDelegator.mock.fake((node, path) => [
-      { type: 'unit', value: { foo: true }, node, path },
-    ]);
-
-    await expect(
-      renderer.render(
-        <DynamicText>
-          abcd
-          <nonMessage />
-          efgh
-        </DynamicText>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"non-textual node <nonMessage /> received, only textual nodes allowed"`
