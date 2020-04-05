@@ -218,10 +218,17 @@ describe('abstractInterface(options)(klass)', () => {
 });
 
 describe('namedInterface(name)', () => {
-  it('create annotation', () => {
-    const MyFooInterface = namedInterface('Foo');
+  it('create annotation object', () => {
+    const MyFooInterface = namedInterface({ name: 'Foo' });
 
     expect(MyFooInterface.$$typeof).toBe(MACHINAT_SERVICES_INTERFACE);
     expect(MyFooInterface.$$name).toBe('Foo');
+    expect(MyFooInterface.$$multi).toBe(false);
+
+    const MyBarsInterface = namedInterface({ name: 'Bars', multi: true });
+
+    expect(MyBarsInterface.$$typeof).toBe(MACHINAT_SERVICES_INTERFACE);
+    expect(MyBarsInterface.$$name).toBe('Bars');
+    expect(MyBarsInterface.$$multi).toBe(true);
   });
 });

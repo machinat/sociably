@@ -1,5 +1,4 @@
 // @flow
-import invariant from 'invariant';
 import ServiceMaker from './maker';
 import ProvisionMap from './provisionMap';
 import ServiceScope from './scope';
@@ -17,14 +16,8 @@ const objectHasOwnProperty = (obj, prop) =>
 
 const resolveBindings = (
   bindings: (ServiceProvider<any, any> | ProvisionBinding)[]
-): {
-  provisionMapping: ProvisionMap<ProvisionBinding>,
-  singletonIndex: ProvisionMap<true>,
-  scopedIndex: ProvisionMap<true>,
-} => {
+): ProvisionMap<ProvisionBinding> => {
   const provisionMapping: ProvisionMap<ProvisionBinding> = new ProvisionMap();
-  const singletonIndex: ProvisionMap<true> = new ProvisionMap();
-  const scopedIndex: ProvisionMap<true> = new ProvisionMap();
 
   for (const bindingInput of bindings) {
     let binding;
@@ -35,66 +28,54 @@ const resolveBindings = (
         withProvider: bindingInput,
       }: ProvisionBinding);
     } else {
-      invariant(
-        isInterfaceable(bindingInput.provide),
-        bindingInput.provide
-          ? `${bindingInput.provide} is not a valid interface to provide`
-          : `invalid binding (${String(bindingInput)})`
-      );
-      invariant(
-        objectHasOwnProperty(bindingInput, 'withValue') ||
-          (bindingInput.withProvider &&
-            isServiceProvider(bindingInput.withProvider)),
-        bindingInput.withProvider
-          ? `invalid provider ${bindingInput.withProvider}`
-          : `either withProvider or withValue must be provided within binding`
-      );
+      if (!isInterfaceable(bindingInput.provide)) {
+        throw new TypeError(
+          bindingInput.provide
+            ? `${bindingInput.provide} is not a valid interface to provide`
+            : `invalid binding (${String(bindingInput)})`
+        );
+      }
+
+      if (
+        !objectHasOwnProperty(bindingInput, 'withValue') &&
+        (!bindingInput.withProvider ||
+          !isServiceProvider(bindingInput.withProvider))
+      ) {
+        throw new TypeError(
+          bindingInput.withProvider
+            ? `invalid provider ${bindingInput.withProvider}`
+            : `either withProvider or withValue must be provided within binding`
+        );
+      }
 
       binding = bindingInput;
     }
 
     const { provide: target, platforms } = binding;
+    const replacedBindings = provisionMapping.set(
+      target,
+      platforms || null,
+      binding
+    );
 
-    if (platforms) {
-      for (const platform of platforms) {
-        // annotate binding at the platform branch
-        const isUpdated = provisionMapping.set(target, platform, binding);
-        invariant(
-          !isUpdated,
-          `${target.$$name} is already bound on platform "${platform}" branch`
-        );
+    if (replacedBindings) {
+      const [{ platforms: existedPlatforms }] = replacedBindings;
+      const conflictedPlatform =
+        platforms &&
+        existedPlatforms &&
+        existedPlatforms.find(p => platforms.includes(p));
 
-        if (binding.withProvider) {
-          const provider = binding.withProvider;
-
-          if (provider.$$lifetime === 'singleton') {
-            singletonIndex.set(target, platform, true);
-          } else if (provider.$$lifetime === 'scoped') {
-            scopedIndex.set(target, platform, true);
-          }
-        }
-      }
-    } else {
-      // annotate binding at the default branch
-      const isUpdated = provisionMapping.set(target, undefined, binding);
-      invariant(
-        !isUpdated,
-        `${target.$$name} is already bound on default branch`
+      throw new Error(
+        `${target.$$name} is already bound on ${
+          conflictedPlatform
+            ? `"${conflictedPlatform}" platform`
+            : 'default branch'
+        }`
       );
-
-      if (binding.withProvider) {
-        const provider = binding.withProvider;
-
-        if (provider.$$lifetime === 'singleton') {
-          singletonIndex.set(target, undefined, true);
-        } else if (provider.$$lifetime === 'scoped') {
-          scopedIndex.set(target, undefined, true);
-        }
-      }
     }
   }
 
-  return { provisionMapping, singletonIndex, scopedIndex };
+  return provisionMapping;
 };
 
 export default class ServiceSpace {
@@ -107,27 +88,17 @@ export default class ServiceSpace {
   ) {
     // resolve bindings from modules/registraions separately, the bindings
     // cannot be conflicted within each
-    const moduleResolved = resolveBindings(moduleBindings);
-    const registerResolved = resolveBindings(registeredBindings);
+    const moduleProvisionMapping = resolveBindings(moduleBindings);
+    const registeredProvisionMapping = resolveBindings(registeredBindings);
 
     // merge the mapping and indices, bindings from registrations would replace
     // the one from modules if provided on both
-    const provisionMapping = moduleResolved.provisionMapping.merge(
-      registerResolved.provisionMapping
-    );
-    const singletonIndex = moduleResolved.singletonIndex.merge(
-      registerResolved.singletonIndex
-    );
-    const scopedIndex = moduleResolved.scopedIndex.merge(
-      registerResolved.scopedIndex
+    const provisionMapping = moduleProvisionMapping.merge(
+      registeredProvisionMapping
     );
 
+    this.maker = new ServiceMaker(provisionMapping);
     this.singletonCache = null;
-    this.maker = new ServiceMaker(
-      provisionMapping,
-      singletonIndex,
-      scopedIndex
-    );
   }
 
   bootstrap(bootstrapTimeProvisions: Map<Interfaceable, any>) {

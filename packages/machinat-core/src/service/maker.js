@@ -38,17 +38,13 @@ type MakeContext = {
  */
 export default class ServiceMaker {
   serviceMapping: ProvisionMap<ProvisionBinding>;
-  singletonIndex: ProvisionMap<true>;
-  scopedIndex: ProvisionMap<true>;
+  _singletonPropviders: Set<ServiceProvider<any, any>>;
+  _scopedPropvidersMapping: ProvisionMap<ServiceProvider<any, any>>;
 
-  constructor(
-    serviceMapping: ProvisionMap<ProvisionBinding>,
-    singletonIndex: ProvisionMap<true>,
-    scopedIndex: ProvisionMap<true>
-  ) {
+  constructor(serviceMapping: ProvisionMap<ProvisionBinding>) {
     this.serviceMapping = serviceMapping;
-    this.singletonIndex = singletonIndex;
-    this.scopedIndex = scopedIndex;
+    this._singletonPropviders = new Set();
+    this._scopedPropvidersMapping = new ProvisionMap();
   }
 
   /**
@@ -66,14 +62,14 @@ export default class ServiceMaker {
       runtimeProvisions: bootstrapProvisions,
     };
 
-    for (const [target, platform] of this.singletonIndex.iterAll()) {
-      const binding = this._resolveProvisionAssertedly(target, platform);
-      this._makeProvision(binding, context);
+    for (const provider of this._singletonPropviders) {
+      this._makeProvider(provider, context);
     }
 
-    for (const [target, platform] of this.scopedIndex.iterBranch(undefined)) {
-      const binding = this._resolveProvisionAssertedly(target, platform);
-      this._makeProvision(binding, context);
+    for (const [, , provided] of this._scopedPropvidersMapping.iterBranch()) {
+      for (const provider of Array.isArray(provided) ? provided : [provided]) {
+        this._makeProvider(provider, context);
+      }
     }
 
     return [context.singletonCache, context.scopedCache];
@@ -96,12 +92,23 @@ export default class ServiceMaker {
       runtimeProvisions: bootstrapProvisions,
     };
 
-    // initiate provider with "scoped" lifetime
-    for (const [target, boundPlatform] of this.scopedIndex.iterBranch(
-      platform
-    )) {
-      const binding = this._resolveProvisionAssertedly(target, boundPlatform);
-      this._makeProvision(binding, context);
+    for (const [
+      target,
+      platformBoundTo,
+      provided,
+    ] of this._scopedPropvidersMapping.iterBranch(platform)) {
+      if (Array.isArray(provided)) {
+        for (const provider of provided) {
+          this._makeProvider(provider, context);
+        }
+      } else if (platformBoundTo) {
+        this._makeProvider(provided, context);
+      } else {
+        const binding = this._resolveProvisionAssertedly(target, platform);
+        if (binding.withProvider && binding.withProvider === provided) {
+          this._makeProvider(provided, context);
+        }
+      }
     }
 
     return context.scopedCache;
@@ -130,32 +137,70 @@ export default class ServiceMaker {
   }
 
   validateProvisions(bootstrapProvisions: null | Map<Interfaceable, any>) {
-    for (const [, platform, binding] of this.serviceMapping.iterAll()) {
-      if (binding.withProvider) {
-        const provider = binding.withProvider;
-        this._validateDependencies(provider, platform, bootstrapProvisions, []);
+    for (const [, platform, provided] of this.serviceMapping.iterAll()) {
+      const bindings = Array.isArray(provided) ? provided : [provided];
+
+      for (const binding of bindings) {
+        if (binding.withProvider) {
+          const {
+            provide: target,
+            platforms,
+            withProvider: provider,
+          } = binding;
+
+          this._validateDependencies(
+            binding.withProvider,
+            platform,
+            bootstrapProvisions,
+            []
+          );
+
+          if (provider.$$lifetime === 'singleton') {
+            this._singletonPropviders.add(provider);
+          } else if (provider.$$lifetime === 'scoped') {
+            this._scopedPropvidersMapping.set(
+              target,
+              platforms || null,
+              provider
+            );
+          }
+        }
       }
     }
   }
 
-  _resolveProvisionOptionally(target: Interfaceable, platform: void | string) {
+  _resolveProvisionOptionaly(
+    target: Interfaceable,
+    platform: void | string
+  ): null | ProvisionBinding | ProvisionBinding[] {
     const binding = this.serviceMapping.get(target, platform);
     return binding;
   }
 
-  _resolveProvisionAssertedly(target: Interfaceable, platform: void | string) {
+  _resolveProvisionAssertedly(
+    target: Interfaceable,
+    platform: void | string
+  ): ProvisionBinding | ProvisionBinding[] {
     const binding = this.serviceMapping.get(target, platform);
+    if (!binding) {
+      if (target.$$multi) {
+        return [];
+      }
+      invariant(false, `${target.$$name} is not bound`);
+    }
 
-    invariant(binding, `${target.$$name} is not bound`);
     return binding;
   }
 
-  _makeProvision(binding: ProvisionBinding, context: MakeContext) {
+  _makeBinding(binding: ProvisionBinding, context: MakeContext) {
     if (binding.withValue) {
       return binding.withValue;
     }
 
-    const { withProvider: provider } = binding;
+    return this._makeProvider(binding.withProvider, context);
+  }
+
+  _makeProvider(provider: ServiceProvider<any, any>, context: MakeContext) {
     const { $$lifetime: lifetime } = provider;
     const { singletonCache, scopedCache, transientCache, phase } = context;
 
@@ -195,7 +240,7 @@ export default class ServiceMaker {
 
   _makeRequirements(deps: InjectRequirement[], context: MakeContext) {
     const { platform, runtimeProvisions } = context;
-    const args = [];
+    const args: (any | any[])[] = [];
 
     for (const { require: target, optional } of deps) {
       let runtimeProvided;
@@ -206,15 +251,19 @@ export default class ServiceMaker {
         // provided at runtime
         args.push(runtimeProvided);
       } else {
-        const binding = optional
-          ? this._resolveProvisionOptionally(target, platform)
+        const resolved = optional
+          ? this._resolveProvisionOptionaly(target, platform)
           : this._resolveProvisionAssertedly(target, platform);
 
-        if (binding) {
-          args.push(this._makeProvision(binding, context));
-        } else {
+        if (!resolved) {
           // dep is optional and not bound
           args.push(null);
+        } else if (Array.isArray(resolved)) {
+          args.push(
+            resolved.map(binding => this._makeBinding(binding, context))
+          );
+        } else {
+          args.push(this._makeBinding(resolved, context));
         }
       }
     }
@@ -234,25 +283,31 @@ export default class ServiceMaker {
       const isProvidedOnBootstrap =
         !!bootstrapProvisions && bootstrapProvisions.has(target);
 
-      const binding =
+      const provided =
         optional || isProvidedOnBootstrap
-          ? this._resolveProvisionOptionally(target, platform)
+          ? this._resolveProvisionOptionaly(target, platform)
           : this._resolveProvisionAssertedly(target, platform);
 
-      if (binding && binding.withProvider) {
-        const { withProvider: argProvider } = binding;
+      if (provided) {
+        const bindings = Array.isArray(provided) ? provided : [provided];
 
-        invariant(
-          subRefLock.indexOf(argProvider) === -1,
-          `${argProvider.$$name} is circular dependent`
-        );
+        for (const binding of bindings) {
+          if (binding.withProvider) {
+            const { withProvider: argProvider } = binding;
 
-        this._validateDependencies(
-          argProvider,
-          platform,
-          bootstrapProvisions,
-          subRefLock
-        );
+            invariant(
+              subRefLock.indexOf(argProvider) === -1,
+              `${argProvider.$$name} is circular dependent`
+            );
+
+            this._validateDependencies(
+              argProvider,
+              platform,
+              bootstrapProvisions,
+              subRefLock
+            );
+          }
+        }
       }
     }
   }

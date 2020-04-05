@@ -109,7 +109,7 @@ export const factory = <T>({
   });
 };
 
-type AbstractOptions = {
+type AnstractInterfaceOptions = {
   name?: string,
 };
 
@@ -120,17 +120,27 @@ type AbstractFn<T> = (Class<T>) => ServiceInterface<T, Class<T>>;
  */
 export const abstractInterface = <T>({
   name,
-}: AbstractOptions = {}): AbstractFn<T> => (Klazz: any) => {
+}: AnstractInterfaceOptions = {}): AbstractFn<T> => (Klazz: any) => {
   return Object.defineProperties(Klazz, {
     $$typeof: { value: MACHINAT_SERVICES_INTERFACE },
     $$name: { value: name || Klazz.name },
+    $$multi: { value: false },
   });
+};
+
+type NamedInterfaceOptions = {
+  multi?: boolean,
+  name: string,
 };
 
 /**
  * namedInterface create a service interface with name
  */
-export const namedInterface = <T>(name: string): ServiceInterface<T, {}> => ({
+export const namedInterface = <T>({
+  multi,
+  name,
+}: NamedInterfaceOptions): ServiceInterface<T, {}> => ({
   $$name: name,
+  $$multi: multi || false,
   $$typeof: MACHINAT_SERVICES_INTERFACE,
 });

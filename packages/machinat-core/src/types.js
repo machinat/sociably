@@ -128,14 +128,11 @@ export type RawElement = MachinatElement<{| value: any |}, MACHINAT_RAW_TYPE>;
 
 export interface MachinatChannel {
   +platform: string;
-  +type: any;
-  +subtype?: any;
   +uid: string;
 }
 
 export interface MachinatUser {
   +platform: string;
-  +id: string;
   +uid: string;
 }
 
@@ -162,8 +159,8 @@ export interface MachinatBot<Channel: MachinatChannel, Job, Result> {
     channel: Channel,
     message: MachinatNode
   ): Promise<null | DispatchResponse<Job, Result>>;
-  start(): MachinatBot<Channel, Job, Result>;
-  stop(): MachinatBot<Channel, Job, Result>;
+  start(): Promise<void>;
+  stop(): Promise<void>;
 }
 
 export type EventContext<
@@ -234,7 +231,7 @@ export type AppConfig<Context: EventContext<any, any, any, any, any>> = {
 
 export type InitScopeFn = () => ServiceScope;
 
-export type ScopedPopEventFn<
+export type PopEventFn<
   Context: EventContext<any, any, any, any, any>,
   Response
 > = (context: Context, scope: ServiceScope) => Promise<Response>;
@@ -244,15 +241,11 @@ export type PopEventWrapper<
   Response
 > = (
   finalHandler: (Context) => Promise<Response>
-) => ScopedPopEventFn<Context, Response>;
+) => PopEventFn<Context, Response>;
 
 export type PopErrorFn = (err: Error, scope: ServiceScope) => void;
 
-export type ScopedDispatchFn<
-  Job,
-  Frame: DispatchFrame<any, Job, any>,
-  Result
-> = (
+export type DispatchFn<Job, Frame: DispatchFrame<any, Job, any>, Result> = (
   frame: Frame,
   scope: ServiceScope
 ) => Promise<DispatchResponse<Job, Result>>;
@@ -263,7 +256,7 @@ export type DispatchWrapper<
   Result
 > = (
   dispatch: (Frame) => Promise<DispatchResponse<Job, Result>>
-) => ScopedDispatchFn<Job, Frame, Result>;
+) => DispatchFn<Job, Frame, Result>;
 
 export type PlatformMounter<
   Context: EventContext<any, any, any, any, any>,

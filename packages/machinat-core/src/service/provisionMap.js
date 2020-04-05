@@ -3,88 +3,277 @@ import type { Interfaceable } from './types';
 
 type ProvisionBranches<T> = Map<
   Interfaceable,
-  {| default: null | T, platforms: {| [string]: T |} |}
+  {|
+    default: null | T,
+    platforms: { [string]: T },
+  |}
 >;
+
+const setBranch = <T>(
+  branches: ProvisionBranches<T>,
+  target: Interfaceable,
+  platforms: ?(string[]),
+  value: T
+): null | T[] => {
+  const existed = branches.get(target);
+
+  if (!existed) {
+    const platformValues = {};
+    if (platforms) {
+      for (const platform of platforms) {
+        platformValues[platform] = value;
+      }
+    }
+
+    branches.set(target, {
+      default: platforms ? null : value,
+      platforms: platformValues,
+    });
+
+    return null;
+  }
+
+  if (platforms) {
+    const replaced = [];
+
+    for (const platform of platforms) {
+      const alreadyBound = existed.platforms[platform];
+      if (alreadyBound) {
+        replaced.push(alreadyBound);
+      }
+
+      existed.platforms[platform] = value;
+    }
+
+    return replaced.length > 0 ? replaced : null;
+  }
+
+  const alreadyBound = existed.default;
+  existed.default = value;
+
+  return alreadyBound ? [alreadyBound] : null;
+};
+
+const setMultiBranch = <T>(
+  branches: ProvisionBranches<T[]>,
+  target: Interfaceable,
+  platforms: ?(string[]),
+  value: T
+) => {
+  const existed = branches.get(target);
+
+  if (!existed) {
+    const platformValues = {};
+    if (platforms) {
+      for (const platform of platforms) {
+        platformValues[platform] = [value];
+      }
+    }
+
+    branches.set(target, {
+      default: platforms ? null : [value],
+      platforms: platformValues,
+    });
+  } else if (platforms) {
+    for (const platform of platforms) {
+      const values = existed.platforms[platform];
+
+      if (values) {
+        values.push(value);
+      } else {
+        existed.platforms[platform] = [value];
+      }
+    }
+  } else {
+    const values = existed.default;
+    if (values) {
+      values.push(value);
+    } else {
+      existed.default = [value];
+    }
+  }
+};
+
+const mergeBranch = <T>(
+  base: ProvisionBranches<T>,
+  mergee: ProvisionBranches<T>
+) => {
+  for (const [target, providedBranches] of mergee) {
+    const { default: defaultValue, platforms } = providedBranches;
+
+    const baseProvided = base.get(target);
+    if (baseProvided) {
+      if (defaultValue) {
+        baseProvided.default = defaultValue;
+      }
+
+      for (const [platform, value] of Object.entries(platforms)) {
+        baseProvided.platforms[platform] = value;
+      }
+    } else {
+      base.set(target, {
+        default: defaultValue,
+        platforms: { ...platforms },
+      });
+    }
+  }
+};
+
+const mergeMultiBranch = <T>(
+  base: ProvisionBranches<T[]>,
+  mergee: ProvisionBranches<T[]>
+) => {
+  for (const [target, providedBranches] of mergee) {
+    const { default: defaultValues, platforms } = providedBranches;
+
+    const baseProvided = base.get(target);
+    if (baseProvided) {
+      if (defaultValues) {
+        if (baseProvided.default) {
+          baseProvided.default.push(...defaultValues);
+        } else {
+          baseProvided.default = [...defaultValues];
+        }
+      }
+
+      for (const [platform, values] of Object.entries(platforms)) {
+        const selfProvidedOfPlatform = baseProvided.platforms[platform];
+
+        if (selfProvidedOfPlatform) {
+          selfProvidedOfPlatform.push(...values);
+        } else {
+          baseProvided.platforms[platform] = [...values];
+        }
+      }
+    } else {
+      const copy = {};
+      for (const [platform, values] of Object.entries(platforms)) {
+        copy[platform] = [...values];
+      }
+
+      base.set(target, {
+        default: defaultValues && [...defaultValues],
+        platforms: copy,
+      });
+    }
+  }
+};
 
 export default class ProvisionMap<T> {
   _mapping: ProvisionBranches<T>;
+  _multiMapping: ProvisionBranches<T[]>;
 
-  constructor(mapping?: ProvisionBranches<T>) {
-    this._mapping = mapping || new Map();
+  constructor() {
+    this._mapping = new Map();
+    this._multiMapping = new Map();
   }
 
-  get(target: Interfaceable, platform: void | string): null | T {
-    const registered = this._mapping.get(target);
-    if (!registered) {
-      return null;
+  /**
+   * get return the binding bound to the interface by default or on specified
+   * platform, return null if no binding bound. If interface.$$multi is true
+   * return all bindings as an array.
+   */
+  get(target: Interfaceable, platform: void | string): null | T | T[] {
+    if (target.$$multi) {
+      const existed = this._multiMapping.get(target);
+      if (!existed) {
+        return null;
+      }
+
+      if (!platform) {
+        return existed.default;
+      }
+
+      const defaultValues = existed.default;
+      const platformValues = existed.platforms[platform];
+
+      return !defaultValues
+        ? platformValues
+        : !platformValues
+        ? defaultValues
+        : [...defaultValues, ...platformValues];
     }
 
-    if (!platform) {
-      return registered.default;
-    }
-
-    return registered.platforms[platform] || registered.default;
+    const existed = this._mapping.get(target);
+    return !existed
+      ? null
+      : !platform
+      ? existed.default
+      : existed.platforms[platform] || existed.default;
   }
 
-  set(target: Interfaceable, platform: void | string, value: T): boolean {
-    const registered = this._mapping.get(target);
-    if (!registered) {
-      this._mapping.set(
-        target,
-        platform
-          ? { default: null, platforms: { [platform]: value } }
-          : { default: value, platforms: ({}: any) }
-      );
-      return false;
-    }
-
-    let isUpdating;
-
-    if (platform) {
-      isUpdating = !!registered.platforms[platform];
-      registered.platforms[platform] = value;
+  /**
+   * set store the binding with the associated interface as the key, returns an
+   * array of replaced bindings or null if none. If interface.$$multi is true,
+   * the binding would always being added no matter any binding bound already,
+   * otherwise the existed binding would be replaced.
+   */
+  set(target: Interfaceable, platforms: null | string[], value: T): null | T[] {
+    let replaced = null;
+    if (target.$$multi) {
+      setMultiBranch(this._multiMapping, target, platforms, value);
     } else {
-      isUpdating = !!registered.default;
-      registered.default = value;
+      replaced = setBranch(this._mapping, target, platforms, value);
     }
 
-    return isUpdating;
+    return replaced;
   }
 
-  merge(concatee: ProvisionMap<T>): ProvisionMap<T> {
-    for (const [target, provided] of concatee._mapping) {
-      if (provided.default) {
-        this.set(target, undefined, provided.default);
-      }
-
-      for (const [platform, value] of Object.entries(provided.platforms)) {
-        this.set(target, platform, (value: any));
-      }
-    }
+  merge(mergee: ProvisionMap<T>): ProvisionMap<T> {
+    mergeBranch(this._mapping, mergee._mapping);
+    mergeMultiBranch(this._multiMapping, mergee._multiMapping);
 
     return this;
   }
 
-  *iterBranch(
-    platform: void | string
-  ): Generator<[Interfaceable, void | string, T], void, void> {
+  *iterAll(): Generator<[Interfaceable, void | string, T | T[]], void, void> {
     for (const [target, provided] of this._mapping) {
-      if (platform && provided.platforms[platform]) {
-        yield [target, platform, provided.platforms[platform]];
-      } else if (provided.default) {
-        yield [target, undefined, provided.default];
+      const { default: defaultValue, platforms } = provided;
+      if (defaultValue) {
+        yield [target, undefined, defaultValue];
+      }
+
+      for (const [platform, value] of Object.entries(platforms)) {
+        yield [target, platform, (value: any)];
+      }
+    }
+
+    for (const [target, provided] of this._multiMapping) {
+      const { default: defaultValues, platforms } = provided;
+      if (defaultValues) {
+        yield [target, undefined, defaultValues];
+      }
+
+      for (const [platform, value] of Object.entries(platforms)) {
+        yield [target, platform, (value: any)];
       }
     }
   }
 
-  *iterAll(): Generator<[Interfaceable, void | string, T], void, void> {
+  *iterBranch(
+    platform?: string
+  ): Generator<[Interfaceable, void | string, T | T[]], void, void> {
     for (const [target, provided] of this._mapping) {
-      if (provided.default) {
-        yield [target, undefined, provided.default];
+      const { default: defaultValue, platforms } = provided;
+
+      let platformValue;
+      if (platform && (platformValue = platforms[platform])) {
+        yield [target, platform, platformValue];
+      } else if (defaultValue) {
+        yield [target, undefined, defaultValue];
+      }
+    }
+
+    for (const [target, provided] of this._multiMapping) {
+      const { default: defaultValues, platforms } = provided;
+
+      let platformValues;
+      if (platform && (platformValues = platforms[platform])) {
+        yield [target, platform, platformValues];
       }
 
-      for (const [platform, value] of Object.entries(provided.platforms)) {
-        yield [target, platform, (value: any)];
+      if (defaultValues) {
+        yield [target, undefined, defaultValues];
       }
     }
   }

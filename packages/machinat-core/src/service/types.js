@@ -12,6 +12,7 @@ export type ServiceLifetime = 'singleton' | 'scoped' | 'transient';
 export type ServiceInterface<_T, K> = K & {
   $$name: string,
   $$typeof: MACHINAT_SERVICES_INTERFACE,
+  $$multi: boolean,
 };
 
 export type ServiceProvider<T, K> = K & {
@@ -37,13 +38,13 @@ export interface ServiceContainer<T> {
   $$deps: InjectRequirement[];
 }
 
-type ProviderBinding = {|
+export type ProviderBinding = {|
   provide: Interfaceable,
   withProvider: ServiceProvider<any, any>,
   platforms?: string[],
 |};
 
-type ValueBinding = {|
+export type ValueBinding = {|
   provide: Interfaceable,
   withValue: any,
   platforms?: string[],

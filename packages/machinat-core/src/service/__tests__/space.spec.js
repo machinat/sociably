@@ -12,7 +12,7 @@ import {
 
 const moxy = moxyFactory({ mockProperty: false });
 
-const HELLO = namedInterface('Hello');
+const HELLO = namedInterface({ name: 'Hello' });
 const staticGreeter = moxy({ hello: () => 'HI' });
 
 const Foo = provider({ deps: [HELLO], lifetime: 'singleton' })(
@@ -46,7 +46,7 @@ const BarImpl = provider({
   )
 );
 
-const BAZ = namedInterface('Baz');
+const BAZ = namedInterface({ name: 'Baz' });
 const Baz = class Baz {
   baz() {
     return 'Baz';
@@ -364,7 +364,7 @@ it('throw if bindings conflicted on specified platform when bootstrap', () => {
       [Foo]
     ).bootstrap(null)
   ).toThrowErrorMatchingInlineSnapshot(
-    `"BarAbstract is already bound on platform \\"b\\" branch"`
+    `"BarAbstract is already bound on \\"b\\" platform"`
   );
 
   expect(() =>
@@ -376,7 +376,7 @@ it('throw if bindings conflicted on specified platform when bootstrap', () => {
       ]
     ).bootstrap(null)
   ).toThrowErrorMatchingInlineSnapshot(
-    `"BarAbstract is already bound on platform \\"b\\" branch"`
+    `"BarAbstract is already bound on \\"b\\" platform"`
   );
 });
 
@@ -434,8 +434,8 @@ test('optional dependency', () => {
 });
 
 it('use the same instance of the same provider on different interface', () => {
-  const MusicalBar = namedInterface('MusicalBar');
-  const JazzBar = namedInterface('JazzBar');
+  const MusicalBar = namedInterface({ name: 'MusicalBar' });
+  const JazzBar = namedInterface({ name: 'JazzBar' });
 
   const space = new ServiceSpace(
     [{ provide: HELLO, withValue: staticGreeter }, Foo],
@@ -510,6 +510,101 @@ test('lifecycle of services of different lifetime', () => {
   expect(bazFactory.mock).toHaveBeenCalledTimes(3);
 });
 
+test('provide multi interface as an array of bound value', async () => {
+  const MULTI_FOOD = namedInterface({ name: 'MultiFood', multi: true });
+  const bistroFactory = factory({ lifetime: 'singleton', deps: [MULTI_FOOD] })(
+    moxy(dishes => ({
+      serve: () => dishes,
+    }))
+  );
+
+  const meatFactory = factory({ lifetime: 'scoped' })(moxy(() => '🥩'));
+
+  const burgerFactory = factory({
+    lifetime: 'singleton',
+    deps: [meatFactory],
+  })(moxy(() => '🍔'));
+  const hotdogFactory = factory({
+    lifetime: 'scoped',
+    deps: [meatFactory],
+  })(moxy(() => '🌭'));
+
+  const pizzaFactory = factory({ lifetime: 'singleton' })(moxy(() => '🍕'));
+  const tacoFactory = factory({ lifetime: 'scoped' })(moxy(() => '🌮'));
+  const ramenFactory = factory({ lifetime: 'transient' })(moxy(() => '🍜'));
+
+  const space = new ServiceSpace(
+    [
+      meatFactory,
+      { provide: Bar, withProvider: bistroFactory },
+      { provide: MULTI_FOOD, withProvider: burgerFactory },
+      { provide: MULTI_FOOD, withProvider: pizzaFactory },
+      { provide: MULTI_FOOD, withProvider: tacoFactory },
+      { provide: MULTI_FOOD, withValue: '🍝' },
+    ],
+    [
+      { provide: MULTI_FOOD, withProvider: pizzaFactory },
+      { provide: MULTI_FOOD, withProvider: hotdogFactory },
+      { provide: MULTI_FOOD, withProvider: ramenFactory },
+      { provide: MULTI_FOOD, withValue: '🥙' },
+    ]
+  );
+  space.bootstrap(null);
+
+  expect(meatFactory.mock).toHaveBeenCalledTimes(1);
+  expect(bistroFactory.mock).toHaveBeenCalledTimes(1);
+  expect(bistroFactory.mock).toHaveBeenLastCalledWith([
+    '🍔',
+    '🍕',
+    '🌮',
+    '🍝',
+    '🍕',
+    '🌭',
+    '🍜',
+    '🥙',
+  ]);
+
+  expect(burgerFactory.mock).toHaveBeenCalledTimes(1);
+  expect(burgerFactory.mock).toHaveBeenCalledWith('🥩');
+
+  expect(hotdogFactory.mock).toHaveBeenCalledTimes(1);
+  expect(hotdogFactory.mock).toHaveBeenCalledWith('🥩');
+
+  expect(tacoFactory.mock).toHaveBeenCalledTimes(1);
+  expect(pizzaFactory.mock).toHaveBeenCalledTimes(1);
+  expect(ramenFactory.mock).toHaveBeenCalledTimes(1);
+
+  const scope = space.createScope('test');
+  expect(scope.useServices([MULTI_FOOD])).toEqual([
+    ['🍔', '🍕', '🌮', '🍝', '🍕', '🌭', '🍜', '🥙'],
+  ]);
+
+  expect(burgerFactory.mock).toHaveBeenCalledTimes(1);
+  expect(pizzaFactory.mock).toHaveBeenCalledTimes(1);
+  expect(hotdogFactory.mock).toHaveBeenCalledTimes(2);
+  expect(tacoFactory.mock).toHaveBeenCalledTimes(2);
+  expect(ramenFactory.mock).toHaveBeenCalledTimes(2);
+});
+
+test('provide multi interface as an empty array if no value bound', async () => {
+  const MULTI_FOO = namedInterface({ name: 'MultiFoo', multi: true });
+  const needFooFactory = factory({ lifetime: 'singleton', deps: [MULTI_FOO] })(
+    moxy(() => ({}))
+  );
+
+  const space = new ServiceSpace(
+    [{ provide: HELLO, withValue: staticGreeter }, Foo],
+    [needFooFactory]
+  );
+  space.bootstrap(null);
+
+  expect(needFooFactory.mock).toHaveBeenCalledTimes(1);
+  expect(needFooFactory.mock).toHaveBeenCalledWith([]);
+
+  const scope = space.createScope('test');
+  expect(scope.useServices([MULTI_FOO])).toEqual([[]]);
+});
+
 test('inject time provision', () => {
   const space = new ServiceSpace(
     [Foo, { provide: HELLO, withValue: staticGreeter }],
@@ -555,7 +650,7 @@ test('inject time provision', () => {
 });
 
 test('boostrap time provision', () => {
-  const BOOTSTRAP_TIME_INTERFACE = namedInterface('BOO');
+  const BOOTSTRAP_TIME_INTERFACE = namedInterface({ name: 'BOO' });
   const BooConsumer = provider({
     deps: [BOOTSTRAP_TIME_INTERFACE],
     lifetime: 'singleton',
