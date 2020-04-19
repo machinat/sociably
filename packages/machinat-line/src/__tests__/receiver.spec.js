@@ -6,8 +6,6 @@ import LineChannel from '../channel';
 import { LineUser } from '../user';
 
 const bot = moxy();
-const scope = moxy();
-const initScope = moxy(() => scope);
 
 const popEventMock = new Mock();
 const popEventWrapper = moxy(popEvent => popEventMock.proxify(popEvent));
@@ -38,7 +36,6 @@ const createRes = () =>
   });
 
 beforeEach(() => {
-  initScope.mock.reset();
   popEventMock.reset();
   popEventWrapper.mock.reset();
 });
@@ -47,12 +44,8 @@ it('throws if shouldValidateRequest but channelSecret not given', () => {
   expect(
     () =>
       new LineReceiver(
-        {
-          channelId: '_LINE_CHANNEL_ID_',
-          shouldValidateRequest: true,
-        },
+        { channelId: '_LINE_CHANNEL_ID_', shouldValidateRequest: true },
         bot,
-        initScope,
         popEventWrapper
       )
   ).toThrowErrorMatchingInlineSnapshot(
@@ -64,12 +57,8 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   'responds 405 if req.method is %s',
   async method => {
     const receiver = new LineReceiver(
-      {
-        channelId: '_LINE_CHANNEL_ID_',
-        shouldValidateRequest: false,
-      },
+      { channelId: '_LINE_CHANNEL_ID_', shouldValidateRequest: false },
       bot,
-      initScope,
       popEventWrapper
     );
 
@@ -85,12 +74,8 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 
 it('responds 400 if body is empty', async () => {
   const receiver = new LineReceiver(
-    {
-      channelId: '_LINE_CHANNEL_ID_',
-      shouldValidateRequest: false,
-    },
+    { channelId: '_LINE_CHANNEL_ID_', shouldValidateRequest: false },
     bot,
-    initScope,
     popEventWrapper
   );
 
@@ -105,12 +90,8 @@ it('responds 400 if body is empty', async () => {
 
 it('responds 400 if body is not not valid json format', async () => {
   const receiver = new LineReceiver(
-    {
-      channelId: '_LINE_CHANNEL_ID_',
-      shouldValidateRequest: false,
-    },
+    { channelId: '_LINE_CHANNEL_ID_', shouldValidateRequest: false },
     bot,
-    initScope,
     popEventWrapper
   );
 
@@ -130,7 +111,6 @@ it('responds 400 if body is in invalid format', async () => {
       shouldValidateRequest: false,
     },
     bot,
-    initScope,
     popEventWrapper
   );
 
@@ -153,7 +133,6 @@ it('respond 200 and pop events received', async () => {
       shouldValidateRequest: false,
     },
     bot,
-    initScope,
     popEventWrapper
   );
 
@@ -199,14 +178,11 @@ it('respond 200 and pop events received', async () => {
   expect(res.statusCode).toBe(200);
   expect(res.finished).toBe(true);
 
-  expect(initScope.mock).toHaveBeenCalledTimes(2);
   expect(popEventMock).toHaveBeenCalledTimes(2);
 
   for (const {
-    args: [ctx, scopeArg],
+    args: [ctx],
   } of popEventMock.calls) {
-    expect(scopeArg).toBe(scope);
-
     expect(ctx.platform).toBe('line');
     expect(ctx.bot).toBe(bot);
 
@@ -252,7 +228,6 @@ it('work if request validation passed', async () => {
       channelSecret: '__LINE_CHANNEL_SECRET__',
     },
     bot,
-    initScope,
     popEventWrapper
   );
 
@@ -296,7 +271,6 @@ it('responds 401 if request validation failed', async () => {
       channelSecret: '__LINE_CHANNEL_SECRET__',
     },
     bot,
-    initScope,
     popEventWrapper
   );
 
@@ -317,5 +291,4 @@ it('responds 401 if request validation failed', async () => {
   expect(res.finished).toBe(true);
 
   expect(popEventMock).not.toHaveBeenCalled();
-  expect(initScope.mock).not.toHaveBeenCalled();
 });

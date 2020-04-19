@@ -78,14 +78,12 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
     );
   }
 
-  start() {
+  async start() {
     this.engine.start();
-    return this;
   }
 
-  stop() {
+  async stop() {
     this.engine.stop();
-    return this;
   }
 
   render(

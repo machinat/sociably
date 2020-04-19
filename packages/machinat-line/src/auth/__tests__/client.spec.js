@@ -92,15 +92,15 @@ describe('#init()', () => {
   });
 });
 
-describe('#startAuthFlow()', () => {
+describe('#fetchCredential()', () => {
   it('resolve credential containt liff infos and access token', async () => {
     const provider = new LineClientAuthProvider({
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });
 
-    await expect(provider.startAuthFlow()).resolves.toEqual({
-      accepted: true,
+    await expect(provider.fetchCredential()).resolves.toEqual({
+      success: true,
       credential: {
         os: 'ios',
         language: 'zh-TW',
@@ -123,7 +123,7 @@ describe('#startAuthFlow()', () => {
 
     expect(global.liff.login.mock).not.toHaveBeenCalled();
 
-    const promise = provider.startAuthFlow();
+    const promise = provider.fetchCredential();
 
     expect(global.liff.isLoggedIn.mock).toHaveBeenCalledTimes(1);
     expect(global.liff.login.mock).toHaveBeenCalledTimes(1);
@@ -132,9 +132,9 @@ describe('#startAuthFlow()', () => {
     jest.advanceTimersByTime(10000000);
     await expect(promise).resolves.toMatchInlineSnapshot(`
             Object {
-              "accepted": false,
               "code": 408,
-              "message": "timeout for redirecting to line login",
+              "reason": "timeout for redirecting to line login",
+              "success": false,
             }
           `);
 
@@ -162,8 +162,8 @@ describe('#refineAuth(data)', () => {
       isSDKLoaded: true,
     });
     await expect(provider.refineAuth(authData)).resolves.toEqual({
-      channel: null,
       user: new LineUser('_USER_ID_'),
+      authorizedChannel: null,
     });
   });
 

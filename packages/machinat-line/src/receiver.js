@@ -2,7 +2,7 @@
 import crypto from 'crypto';
 import invariant from 'invariant';
 import { provider } from '@machinat/core/service';
-import type { InitScopeFn, PopEventWrapper } from '@machinat/core/types';
+import type { PopEventWrapper } from '@machinat/core/types';
 import WebhookReceiver from '@machinat/http/webhook';
 import type { WebhookHandler } from '@machinat/http/webhook/types';
 
@@ -32,7 +32,6 @@ type LineReceiverOptions = {
 const handleWebhook = (
   { shouldValidateRequest, channelSecret, channelId }: LineReceiverOptions,
   bot: LineBot,
-  initScope: InitScopeFn,
   popEventWrapper: PopEventWrapper<LineEventContext, null>
 ): WebhookHandler => {
   const popEvent = popEventWrapper(() => Promise.resolve(null));
@@ -81,17 +80,14 @@ const handleWebhook = (
       const event = createEvent(rawEvent);
 
       issuingEvents.push(
-        popEvent(
-          {
-            platform: LINE,
-            bot,
-            channel,
-            user,
-            event,
-            metadata,
-          },
-          initScope()
-        )
+        popEvent({
+          platform: LINE,
+          bot,
+          channel,
+          user,
+          event,
+          metadata,
+        })
       );
     }
 
@@ -108,7 +104,6 @@ class LineReceiver extends WebhookReceiver {
       channelSecret,
     }: LineReceiverOptions,
     bot: LineBot,
-    initScope: InitScopeFn,
     popEventWrapper: PopEventWrapper<LineEventContext, null>
   ) {
     invariant(
@@ -121,7 +116,6 @@ class LineReceiver extends WebhookReceiver {
       handleWebhook(
         { shouldValidateRequest, channelId, channelSecret },
         bot,
-        initScope,
         popEventWrapper
       )
     );
@@ -130,10 +124,10 @@ class LineReceiver extends WebhookReceiver {
 
 export default provider<LineReceiver>({
   lifetime: 'singleton',
-  deps: [LineBot, LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I],
+  deps: [LINE_PLATFORM_CONFIGS_I, LineBot, LINE_PLATFORM_MOUNTER_I],
   factory: (
-    bot: LineBot,
     configs: LinePlatformConfigs,
-    { initScope, popEventWrapper }: LinePlatformMounter
-  ) => new LineReceiver(bot, configs, initScope, popEventWrapper),
+    bot: LineBot,
+    { popEventWrapper }: LinePlatformMounter
+  ) => new LineReceiver(configs, bot, popEventWrapper),
 })(LineReceiver);

@@ -46,7 +46,7 @@ describe('#delegateAuthRequest(req, res)', () => {
   });
 });
 
-describe('#verifySigning(credential)', () => {
+describe('#verifyCredential(credential)', () => {
   const credential = {
     os: 'ios',
     language: 'zh-TW',
@@ -77,8 +77,8 @@ describe('#verifySigning(credential)', () => {
     });
     const profileScope = profileAPI.reply(200, profile);
 
-    await expect(provider.verifySigning(credential)).resolves.toEqual({
-      accepted: true,
+    await expect(provider.verifyCredential(credential)).resolves.toEqual({
+      success: true,
       refreshable: false,
       data: {
         os: 'ios',
@@ -95,13 +95,13 @@ describe('#verifySigning(credential)', () => {
 
   it('return unaccepted if accessToken is absent', async () => {
     const provider = new ServerAuthProvider({ channelId: '_LINE_CHANNEL_ID_' });
-    await expect(provider.verifySigning({})).resolves.toMatchInlineSnapshot(`
-          Object {
-            "accepted": false,
-            "code": 400,
-            "message": "Empty accessToken received",
-          }
-    `);
+    await expect(provider.verifyCredential({})).resolves.toMatchInlineSnapshot(`
+            Object {
+              "code": 400,
+              "reason": "Empty accessToken received",
+              "success": false,
+            }
+          `);
   });
 
   it('return unaccepted if token verify api respond error', async () => {
@@ -112,14 +112,14 @@ describe('#verifySigning(credential)', () => {
       error_description: 'The access token expired',
     });
 
-    await expect(provider.verifySigning(credential)).resolves
+    await expect(provider.verifyCredential(credential)).resolves
       .toMatchInlineSnapshot(`
-          Object {
-            "accepted": false,
-            "code": 400,
-            "message": "The access token expired",
-          }
-      `);
+            Object {
+              "code": 400,
+              "reason": "The access token expired",
+              "success": false,
+            }
+          `);
 
     expect(verifyScope.isDone()).toBe(true);
   });
@@ -133,14 +133,14 @@ describe('#verifySigning(credential)', () => {
       expires_in: 2591659,
     });
 
-    await expect(provider.verifySigning(credential)).resolves
+    await expect(provider.verifyCredential(credential)).resolves
       .toMatchInlineSnapshot(`
-              Object {
-                "accepted": false,
-                "code": 400,
-                "message": "client_id not match",
-              }
-      `);
+            Object {
+              "code": 400,
+              "reason": "client_id not match",
+              "success": false,
+            }
+          `);
 
     expect(verifyScope.isDone()).toBe(true);
   });
@@ -157,12 +157,12 @@ describe('#verifySigning(credential)', () => {
       message: 'The access token expired',
     });
 
-    await expect(provider.verifySigning(credential)).resolves
+    await expect(provider.verifyCredential(credential)).resolves
       .toMatchInlineSnapshot(`
             Object {
-              "accepted": false,
               "code": 401,
-              "message": "The access token expired",
+              "reason": "The access token expired",
+              "success": false,
             }
           `);
 
@@ -177,12 +177,12 @@ describe('#verifyRefreshment()', () => {
 
     await expect(provider.verifyRefreshment({})).resolves
       .toMatchInlineSnapshot(`
-          Object {
-            "accepted": false,
-            "code": 403,
-            "message": "should resign only",
-          }
-      `);
+            Object {
+              "code": 403,
+              "reason": "should resign only",
+              "success": false,
+            }
+          `);
   });
 });
 
@@ -205,8 +205,8 @@ describe('#refineAuth(data)', () => {
         },
       })
     ).resolves.toEqual({
-      channel: null,
       user: new LineUser('_USER_ID_'),
+      authorizedChannel: null,
     });
   });
 

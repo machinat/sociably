@@ -2,21 +2,26 @@
 import invariant from 'invariant';
 import fetch from 'node-fetch';
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { ServerAuthProvider } from 'machinat-auth/types';
-import { LINE } from '../constant';
-import type { LIFFAuthData, LIFFCredential } from '../types';
+import { provider } from '@machinat/core/service';
+import type { ServerAuthorizer } from '@machinat/auth/types';
+import { LINE, LINE_PLATFORM_CONFIGS_I } from '../constant';
+import type {
+  LIFFAuthData,
+  LIFFCredential,
+  LinePlatformConfigs,
+} from '../types';
 import { refineLIFFContextData } from './utils';
 
-type LineServerAuthProviderOpts = {
+type LineServerAuthorizerOpts = {
   channelId: string,
 };
 
-class LineServerAuthProvider
-  implements ServerAuthProvider<LIFFAuthData, LIFFCredential> {
+class LineServerAuthorizer
+  implements ServerAuthorizer<LIFFAuthData, LIFFCredential> {
   channelId: string;
   platform = LINE;
 
-  constructor({ channelId }: LineServerAuthProviderOpts = {}) {
+  constructor({ channelId }: LineServerAuthorizerOpts = {}) {
     invariant(channelId, 'options.channelId must not be empty');
 
     this.channelId = channelId;
@@ -28,14 +33,14 @@ class LineServerAuthProvider
     res.end();
   }
 
-  async verifySigning(credential: LIFFCredential) {
+  async verifyCredential(credential: LIFFCredential) {
     let accessToken;
     // eslint-disable-next-line prefer-destructuring
     if (!credential || !(accessToken = credential.accessToken)) {
       return {
-        accepted: false,
+        success: false,
         code: 400,
-        message: 'Empty accessToken received',
+        reason: 'Empty accessToken received',
       };
     }
 
@@ -46,17 +51,17 @@ class LineServerAuthProvider
 
     if (!verifyRes.ok) {
       return {
-        accepted: false,
+        success: false,
         code: verifyRes.status,
-        message: verifyBody.error_description,
+        reason: verifyBody.error_description,
       };
     }
 
     if (verifyBody.client_id !== this.channelId) {
       return {
-        accepted: false,
+        success: false,
         code: 400,
-        message: 'client_id not match',
+        reason: 'client_id not match',
       };
     }
 
@@ -67,15 +72,15 @@ class LineServerAuthProvider
 
     if (!profileRes.ok) {
       return {
-        accepted: false,
+        success: false,
         code: profileRes.status,
-        message: profileBody.message,
+        reason: profileBody.message,
       };
     }
 
     const { os, language, version, isInClient } = credential;
     return {
-      accepted: true,
+      success: true,
       refreshable: false,
       data: {
         os,
@@ -90,9 +95,9 @@ class LineServerAuthProvider
   // eslint-disable-next-line class-methods-use-this
   async verifyRefreshment() {
     return {
-      accepted: false,
+      success: false,
       code: 403,
-      message: 'should resign only',
+      reason: 'should resign only',
     };
   }
 
@@ -102,4 +107,8 @@ class LineServerAuthProvider
   }
 }
 
-export default LineServerAuthProvider;
+export default provider<LineServerAuthorizer>({
+  lifetime: 'transient',
+  deps: [LINE_PLATFORM_CONFIGS_I],
+  factory: (configs: LinePlatformConfigs) => new LineServerAuthorizer(configs),
+})(LineServerAuthorizer);

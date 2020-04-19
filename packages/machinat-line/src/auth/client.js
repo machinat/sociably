@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import type { ClientAuthProvider } from 'machinat-auth/types';
+import type { ClientAuthorizer } from '@machinat/auth/types';
 import { LINE } from '../constant';
 import type { LIFFAuthData, LIFFCredential } from '../types';
 import { refineLIFFContextData } from './utils';
@@ -8,7 +8,7 @@ import { refineLIFFContextData } from './utils';
 declare var document: Document;
 declare var liff: Object;
 
-type ClientAuthProviderOpts = {
+type ClientAuthorizerOpts = {
   liffId: string,
   isSDKLoaded?: boolean,
 };
@@ -22,15 +22,15 @@ const delay = (ms: number) =>
     setTimeout(resolve, ms);
   });
 
-class LineClientAuthProvider
-  implements ClientAuthProvider<LIFFAuthData, LIFFCredential> {
+class LineClientAuthorizer
+  implements ClientAuthorizer<LIFFAuthData, LIFFCredential> {
   liffId: string;
   isSDKLoaded: boolean;
 
   platform = LINE;
   shouldResign = true;
 
-  constructor({ liffId, isSDKLoaded = false }: ClientAuthProviderOpts = {}) {
+  constructor({ liffId, isSDKLoaded = false }: ClientAuthorizerOpts = {}) {
     invariant(liffId, 'options.liffId must not be empty');
 
     this.liffId = liffId;
@@ -59,20 +59,20 @@ class LineClientAuthProvider
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async startAuthFlow() {
+  async fetchCredential() {
     if (!liff.isLoggedIn()) {
       liff.login();
 
       await delay(LOGIN_TIMEOUT);
       return {
-        accepted: false,
+        success: false,
         code: 408,
-        message: 'timeout for redirecting to line login',
+        reason: 'timeout for redirecting to line login',
       };
     }
 
     return {
-      accepted: true,
+      success: true,
       credential: {
         os: liff.getOS(),
         language: liff.getLanguage(),
@@ -89,4 +89,4 @@ class LineClientAuthProvider
   }
 }
 
-export default LineClientAuthProvider;
+export default LineClientAuthorizer;

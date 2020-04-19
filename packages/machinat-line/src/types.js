@@ -223,7 +223,7 @@ export type LineDispatchMiddleware = DispatchMiddleware<
 >;
 
 export type LinePlatformConfigs = {
-  webhookPath: string,
+  webhookPath?: string,
   channelId: string,
   channelSecret?: string,
   shouldValidateRequest?: boolean,
