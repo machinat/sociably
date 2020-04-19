@@ -1,7 +1,10 @@
 // @flow
-import type { IncomingMessage, ServerResponse } from 'http';
-import type { BotPlugin } from 'machinat-base/types';
-import type NextBot from './bot';
+import type {
+  EventContext,
+  EventMiddleware,
+  PlatformMounter,
+} from '@machinat/core/types';
+import { ServiceContainer } from '@machinat/core/service/types';
 
 export type NextMetadata = {|
   source: 'next',
@@ -9,33 +12,21 @@ export type NextMetadata = {|
     method: string,
     url: string,
     headers: {| [string]: string |},
-    encrypted: boolean,
   |},
 |};
 
-export type AcceptedResponse = {
-  accepted: true,
-  page: string,
-  query: {| [string]: any |},
-};
-
-export type UnacceptedResponse = {
-  accepted: false,
-  code: number,
-  reason: string,
-};
-
 type AcceptedNextResponse = {|
   accepted: true,
-  headers: {| [string]: string |},
+  headers?: {| [string]: string |},
   page?: string,
   query?: {| [string]: any |},
 |};
 
 type UnacceptedNextResponse = {|
   accepted: false,
+  headers?: {| [string]: string |},
   code: number,
-  message: string,
+  reason: string,
 |};
 
 export type NextResponse = AcceptedNextResponse | UnacceptedNextResponse;
@@ -43,10 +34,13 @@ export type NextResponse = AcceptedNextResponse | UnacceptedNextResponse;
 export type NextEvent = {|
   platform: 'next',
   type: 'request',
-  payload: {
-    req?: IncomingMessage,
-    res?: ServerResponse,
-  },
+  payload: {|
+    request: {|
+      method: string,
+      url: string,
+      headers: {| [string]: string |},
+    |},
+  |},
 |};
 
 export type NextChannel = {|
@@ -55,26 +49,33 @@ export type NextChannel = {|
   uid: string,
 |};
 
-export type NextPlugin = BotPlugin<
+export type NextEventContext = EventContext<
   NextChannel,
   null,
   NextEvent,
   NextMetadata,
-  NextResponse,
-  void,
-  any,
-  void,
-  void,
-  void,
-  NextBot
+  null
 >;
 
-export type NextBotOptions = {|
-  nextApp: any,
-  shouldPrepare: boolean,
-  // NOTE: next does not support serving under sub path now, so we
-  //       have to hack the path by ourself.
-  //       Follow https://github.com/zeit/next.js/issues/4998
-  basePath?: string,
-  plugins?: NextPlugin[],
-|};
+export type NextEventMiddleware = EventMiddleware<
+  NextEventContext,
+  NextResponse
+>;
+
+export type NextModuleConfigs = {
+  entryPath?: string,
+  shouldPrepare?: boolean,
+  nextAppOptions?: Object,
+  eventMiddlewares?: (
+    | NextEventMiddleware
+    | ServiceContainer<NextEventMiddleware>
+  )[],
+};
+
+export type NextPlatformMounter = PlatformMounter<
+  NextEventContext,
+  NextResponse,
+  any,
+  any,
+  any
+>;

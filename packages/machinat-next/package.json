@@ -28,6 +28,7 @@
   },
   "peerDependencies": {
     "@machinat/core": "^0.1.0-alpha.0",
+    "@machinat/http": "^0.1.0-alpha.0",
     "next": "^9.0.0"
   },
   "devDependencies": {
