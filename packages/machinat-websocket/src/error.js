@@ -1,18 +1,15 @@
 // @flow
-/* eslint-disable import/prefer-default-export */
-
-export class ConnectionError extends Error {
+export default class SocketError extends Error {
   code: number;
   reason: string;
-
-  name = 'ConnectionError';
+  name = 'SocketError';
 
   // TODO: error code
   constructor(/* code: number, */ reason: string) {
     super(reason);
 
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, ConnectionError);
+      Error.captureStackTrace(this, SocketError);
     }
 
     // this.code = code;

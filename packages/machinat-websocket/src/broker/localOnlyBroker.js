@@ -1,9 +1,18 @@
 // @flow
-import type { SocketBroker } from '../types';
+import { provider } from '@machinat/core/service';
+import { ClusterBrokerI } from '../constant';
 
 /* eslint-disable class-methods-use-this */
-export default class LocalOnlyBroker implements SocketBroker {
-  sendRemote() {
+class LocalOnlyBroker implements ClusterBrokerI {
+  start() {
+    return Promise.resolve();
+  }
+
+  stop() {
+    return Promise.resolve();
+  }
+
+  dispatchRemote() {
     return Promise.resolve(null);
   }
 
@@ -21,3 +30,7 @@ export default class LocalOnlyBroker implements SocketBroker {
 
   onRemoteEvent() {}
 }
+
+export default provider<LocalOnlyBroker>({ lifetime: 'singleton' })(
+  LocalOnlyBroker
+);

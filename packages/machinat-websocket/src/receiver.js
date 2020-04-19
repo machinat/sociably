@@ -1,46 +1,53 @@
 // @flow
 import http from 'http';
 import uniqid from 'uniqid';
-import { BaseReceiver } from 'machinat-base';
-
-import type { MachinatUser } from 'machinat/types';
-import type WebSocket from 'ws';
 import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
-import type { HTTPUpgradeReceiver } from 'machinat-http-adaptor/types';
-import type {
-  ConnectionId,
-  WebSocketEvent,
-  WebSocketMetadata,
-  WebSocketChannel,
-  RequestInfo,
-  ServerAuthenticatorFunc,
-} from './types';
-import type Distributor from './distributor';
-import type Socket, {
-  EventBody,
-  RegisterBody,
-  ConnectBody,
-  DisconnectBody,
-} from './socket';
-import Connection from './connection';
 
+import { provider } from '@machinat/core/service';
+import type {
+  MachinatUser,
+  PopEventWrapper,
+  PopEventFn,
+  PopErrorFn,
+} from '@machinat/core/types';
+import Transmitter from './transmitter';
+import WebSocketBot from './bot';
 import MachinatSocket from './socket';
 import { ConnectionChannel } from './channel';
 import createEvent from './event';
-import { WEBSOCKET } from './constant';
+import {
+  WEBSOCKET,
+  WSServerI,
+  AUTH_VERIFIER_I,
+  UPGRADE_VERIFIER_I,
+  WEBSOCKET_PLATFORM_MOUNTER_I,
+} from './constant';
+import type {
+  WebSocketEvent,
+  RequestInfo,
+  VerifyAuthFn,
+  WebSocketEventContext,
+  VerifyUpgradeFn,
+  WebSocketPlatformMounter,
+} from './types';
+import type Socket, {
+  DispatchBody,
+  SignInBody,
+  ConnectBody,
+  DisconnectBody,
+} from './socket';
 
-type WebSocketServer = $ElementType<WebSocket, 'Server'>;
-
-type ConnectionInfo = {
-  connection: Connection,
+type ConnectionInfo<Auth> = {|
+  channel: ConnectionChannel,
   user: null | MachinatUser,
-  authContext: any,
-};
+  auth: Auth,
+  expireAt: null | Date,
+|};
 
-type SocketStatus = {|
-  lostHeartbeat: number,
-  connected: Map<ConnectionId, ConnectionInfo>,
+type SocketState<Auth> = {|
+  lostHeartbeatCount: number,
+  connections: Map<string, ConnectionInfo<Auth>>,
 |};
 
 const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
@@ -58,72 +65,43 @@ const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
   ns.destroy();
 };
 
-class WebSocketReceiver<AuthContext, RegisterData>
-  extends BaseReceiver<
-    WebSocketChannel,
-    ?MachinatUser,
-    WebSocketEvent,
-    WebSocketMetadata<AuthContext>,
-    void
-  >
-  implements HTTPUpgradeReceiver {
+class WebSocketReceiver<AuthInfo> {
   _serverId: string;
-  _webSocketServer: WebSocketServer;
-  _distributor: Distributor;
+  _bot: WebSocketBot;
+  _wsServer: WSServerI;
+  _transmitter: Transmitter;
 
   _verifyUpgrade: (request: RequestInfo) => boolean;
-  _authenticator: ServerAuthenticatorFunc<AuthContext, RegisterData>;
+  _verifyAuth: VerifyAuthFn<AuthInfo, any>;
 
-  _socketStore: Map<Socket, SocketStatus>;
+  _socketStates: Map<Socket, SocketState<AuthInfo>>;
 
-  _handleSocketEvent: (body: EventBody, seq: number) => void;
-  _handleSocketRegister: (body: RegisterBody, seq: number) => void;
-  _handleSocketConnect: (body: ConnectBody, seq: number) => void;
-  _handleSocketConnectFail: (body: DisconnectBody, seq: number) => void;
-  _handleSocketDisconnect: (body: DisconnectBody, seq: number) => void;
-  _handleSocketClose: (code: number, reason: string) => void;
+  _popEvent: PopEventFn<WebSocketEventContext<AuthInfo>, null>;
+  _popError: PopErrorFn;
 
   constructor(
-    serverId: string,
-    webSocketServer: WebSocketServer,
-    distributor: Distributor,
-    authenticator: ServerAuthenticatorFunc<AuthContext, RegisterData>,
-    verifyUpgrade: (request: RequestInfo) => boolean
+    bot: WebSocketBot,
+    wsServer: WSServerI,
+    transmitter: Transmitter,
+    verifyAuth: null | VerifyAuthFn<AuthInfo, any>,
+    verifyUpgrade: null | VerifyUpgradeFn,
+    popEventWrapper: PopEventWrapper<WebSocketEventContext<AuthInfo>, null>,
+    popError: PopErrorFn
   ) {
-    super();
+    this._serverId = transmitter.serverId;
+    this._bot = bot;
+    this._wsServer = wsServer;
+    this._transmitter = transmitter;
+    this._socketStates = new Map();
 
-    this._serverId = serverId;
-    this._webSocketServer = webSocketServer;
-    this._distributor = distributor;
-    this._socketStore = new Map();
+    this._verifyUpgrade = verifyUpgrade || (() => true);
+    this._verifyAuth =
+      verifyAuth ||
+      (() =>
+        Promise.resolve({ success: true, user: null, authInfo: (null: any) }));
 
-    this._verifyUpgrade = verifyUpgrade;
-    this._authenticator = authenticator;
-
-    const self = this;
-    this._handleSocketEvent = function handleSocketEvent(body) {
-      self._handleEvent(this, body).catch(this._handleErrer);
-    };
-
-    this._handleSocketRegister = function handleSocketRegister(body, seq) {
-      self._handleRegister(this, body, seq).catch(this._handleErrer);
-    };
-
-    this._handleSocketConnect = function handleSocketConnect(body) {
-      self._handleConnect(this, body).catch(this._handleErrer);
-    };
-
-    this._handleSocketConnectFail = function handleSocketConnectFail(body) {
-      self._handleConnectFail(this, body);
-    };
-
-    this._handleSocketDisconnect = function handleSocketDisconnect(body) {
-      self._handleDisconnect(this, body);
-    };
-
-    this._handleSocketClose = function handleSocketClose() {
-      self._handleClose(this);
-    };
+    this._popEvent = popEventWrapper(() => Promise.resolve(null));
+    this._popError = popError;
   }
 
   handleUpgrade(req: IncomingMessage, ns: NetSocket, head: Buffer) {
@@ -131,7 +109,6 @@ class WebSocketReceiver<AuthContext, RegisterData>
       method: req.method,
       url: req.url,
       headers: req.headers,
-      encrypted: !!(req: any).connection.encrypted,
     };
 
     const allowed = this._verifyUpgrade(requestInfo);
@@ -140,159 +117,212 @@ class WebSocketReceiver<AuthContext, RegisterData>
       return;
     }
 
-    this._webSocketServer.handleUpgrade(req, ns, head, (ws: WebSocket) => {
+    this._wsServer.handleUpgrade(req, ns, head, ws => {
       const socket = new MachinatSocket(uniqid(), ws, requestInfo);
-      this._socketStore.set(socket, {
-        lostHeartbeat: 0,
-        connected: new Map(),
+      this._socketStates.set(socket, {
+        lostHeartbeatCount: 0,
+        connections: new Map(),
       });
 
-      socket.on('event', this._handleSocketEvent);
-      socket.on('register', this._handleSocketRegister);
-      socket.on('connect', this._handleSocketConnect);
-      socket.on('connect_fail', this._handleSocketConnectFail);
-      socket.on('disconnect', this._handleSocketDisconnect);
-      socket.on('close', this._handleSocketClose);
-      socket.on('error', this._handleError);
+      socket.on('dispatch', this._handleDispatchCallback);
+      socket.on('sign_in', this._handleSignInCallback);
+      socket.on('connect', this._handleConnectCallback);
+      socket.on('connect_fail', this._handleConnectFailCallback);
+      socket.on('disconnect', this._handleDisconnectCallback);
+      socket.on('close', this._handleCloseCallback);
+      socket.on('error', this._popError);
     });
   }
 
-  callback() {
+  handleUpgradeCallback() {
     return this.handleUpgrade.bind(this);
   }
 
-  _getSocketStatusAssertedly(socket: Socket) {
-    const socketStatus = this._socketStore.get(socket);
-    if (socketStatus === undefined) {
+  _getSocketStatesAssertedly(socket: Socket): SocketState<AuthInfo> {
+    const socketState = this._socketStates.get(socket);
+    if (socketState === undefined) {
       const reason = 'unknown socket';
       socket.close(3404, reason);
       throw new Error(reason);
     }
 
-    return socketStatus;
+    return socketState;
   }
 
-  _processEvent(
+  async _issueEvent(
     socket: Socket,
     event: WebSocketEvent,
-    authenticated: ConnectionInfo
+    { channel, user, auth }: ConnectionInfo<AuthInfo>
   ) {
-    const { connection, user, authContext } = authenticated;
-    return this.issueEvent(new ConnectionChannel(connection), user, event, {
-      source: WEBSOCKET,
-      request: socket.request,
-      connection,
-      authContext,
+    await this._popEvent({
+      platform: WEBSOCKET,
+      bot: this._bot,
+      channel,
+      user,
+      event,
+      metadata: {
+        source: WEBSOCKET,
+        request: socket.request,
+        auth,
+      },
     });
   }
 
-  _handleRegister = async (socket: Socket, body: RegisterBody, seq: number) => {
-    const socketStatus = this._getSocketStatusAssertedly(socket);
+  _handleSignInCallback = (body: SignInBody, seq: number, socket: Socket) => {
+    this._handleSignIn(body, seq, socket).catch(this._popError);
+  };
+
+  async _handleSignIn(body: SignInBody, seq: number, socket: Socket) {
+    const socketState = this._getSocketStatesAssertedly(socket);
     const connId: string = uniqid();
 
     try {
-      const authed = await this._authenticator(socket.request, body.data);
+      const authResult = await this._verifyAuth(
+        socket.request,
+        body.credential
+      );
 
-      if (authed.accepted) {
-        const { user, context: authContext, expireAt } = authed;
-        socketStatus.connected.set(connId, {
+      if (authResult.success) {
+        const { authInfo, user, expireAt } = authResult;
+
+        socketState.connections.set(connId, {
           user,
-          authContext,
-          connection: new Connection(
-            this._serverId,
-            socket.id,
-            connId,
-            expireAt
-          ),
+          auth: authInfo,
+          channel: new ConnectionChannel(this._serverId, connId),
+          expireAt: expireAt || null,
         });
 
         await socket.connect({ connId, seq });
       } else {
-        await socket.reject({ seq, reason: authed.reason });
+        await socket.reject({ seq, reason: authResult.reason });
       }
     } catch (err) {
       await socket.reject({ seq, reason: err.message });
     }
+  }
+
+  _handleDispatchCallback = (
+    body: DispatchBody,
+    seq: number,
+    socket: Socket
+  ) => {
+    this._handleDispatch(body, seq, socket).catch(this._popError);
   };
 
-  _handleEvent = async (socket: Socket, body: EventBody) => {
-    const socketStatus = this._getSocketStatusAssertedly(socket);
+  async _handleDispatch(body: DispatchBody, seq: number, socket: Socket) {
+    const socketState = this._getSocketStatesAssertedly(socket);
 
-    const { connId, type, subtype, payload } = body;
-    const authenticated = socketStatus.connected.get(connId);
+    const { connId, events } = body;
+    const connInfo = socketState.connections.get(connId);
 
-    if (authenticated === undefined) {
-      // reject if not registered
+    if (connInfo === undefined) {
+      // reject if not signed in
       await socket.disconnect({
         connId,
-        reason: 'connection is not authenticated',
+        reason: 'connection is not signed in',
       });
     } else {
-      await this._processEvent(
-        socket,
-        createEvent(type, subtype, payload),
-        authenticated
+      const issuingPromises = events.map(({ type, subtype, payload }) =>
+        this._issueEvent(socket, createEvent(type, subtype, payload), connInfo)
       );
+      await Promise.all(issuingPromises);
     }
+  }
+
+  _handleConnectCallback = (body: ConnectBody, seq: number, socket: Socket) => {
+    this._handleConnect(body, seq, socket).catch(this._popError);
   };
 
-  _handleConnect = async (socket: Socket, body: ConnectBody) => {
-    const socketStatus = this._getSocketStatusAssertedly(socket);
+  async _handleConnect(body: ConnectBody, seq: number, socket: Socket) {
+    const socketState = this._getSocketStatesAssertedly(socket);
 
     const { connId } = body;
-    const authenticated = socketStatus.connected.get(connId);
+    const connInfo = socketState.connections.get(connId);
 
-    if (authenticated === undefined) {
-      // reject if not registered
+    if (connInfo === undefined) {
+      // reject if not signed in
       await socket.disconnect({
         connId,
-        reason: 'connection is not authenticated',
+        reason: 'connection is not signed in',
       });
     } else {
-      const { connection, user } = authenticated;
-      this._distributor.addLocalConnection(socket, user, connection);
+      const { channel, user } = connInfo;
+      this._transmitter.addLocalConnection(channel, socket, user);
 
-      await this._processEvent(
+      await this._issueEvent(
         socket,
         createEvent('connect', undefined, undefined),
-        authenticated
+        connInfo
       );
     }
+  }
+
+  _handleConnectFailCallback = this._handleConnectFail.bind(this);
+
+  _handleConnectFail(body: DisconnectBody, seq: number, socket: Socket) {
+    const socketState = this._getSocketStatesAssertedly(socket);
+    socketState.connections.delete(body.connId);
+  }
+
+  _handleDisconnectCallback = (
+    body: DisconnectBody,
+    seq: number,
+    socket: Socket
+  ) => {
+    this._handleDisconnect(body, seq, socket).catch(this._popError);
   };
 
-  _handleConnectFail = (socket: Socket, body: DisconnectBody) => {
-    const socketStatus = this._getSocketStatusAssertedly(socket);
-    socketStatus.connected.delete(body.connId);
-  };
-
-  _handleDisconnect = async (socket: Socket, body: DisconnectBody) => {
-    const socketStatus = this._getSocketStatusAssertedly(socket);
+  async _handleDisconnect(body: DisconnectBody, seq: number, socket: Socket) {
+    const socketState = this._getSocketStatesAssertedly(socket);
 
     const { connId, reason } = body;
-    const authenticated = socketStatus.connected.get(connId);
+    const connInfo = socketState.connections.get(connId);
 
-    if (authenticated !== undefined) {
-      const { connection } = authenticated;
+    if (connInfo !== undefined) {
+      socketState.connections.delete(connId);
+      this._transmitter.removeLocalConnection(connInfo.channel);
 
-      socketStatus.connected.delete(connId);
-      this._distributor.removeLocalConnection(connection);
-
-      await this._processEvent(
+      await this._issueEvent(
         socket,
         createEvent('disconnect', undefined, { reason }),
-        authenticated
+        connInfo
       );
     }
-  };
+  }
 
-  _handleClose = (socket: Socket) => {
+  _handleCloseCallback = this._handleClose.bind(this);
+
+  _handleClose(code, reason, socket: Socket) {
     socket.removeAllListeners();
-    this._socketStore.delete(socket);
-  };
-
-  _handleError = (err: Error) => {
-    this.issueError(err);
-  };
+    this._socketStates.delete(socket);
+  }
 }
 
-export default WebSocketReceiver;
+export default provider<WebSocketReceiver<any>>({
+  lifetime: 'singleton',
+  deps: [
+    WebSocketBot,
+    WSServerI,
+    Transmitter,
+    { require: AUTH_VERIFIER_I, optional: true },
+    { require: UPGRADE_VERIFIER_I, optional: true },
+    WEBSOCKET_PLATFORM_MOUNTER_I,
+  ],
+  factory: (
+    bot: WebSocketBot,
+    wsServer: WSServerI,
+    transmitter: Transmitter,
+    verifyAuth: null | VerifyAuthFn<any, any>,
+    verifyUpgrade: null | VerifyUpgradeFn,
+    { popEventWrapper, popError }: WebSocketPlatformMounter<any>
+  ) =>
+    new WebSocketReceiver(
+      bot,
+      wsServer,
+      transmitter,
+      verifyAuth,
+      verifyUpgrade,
+      popEventWrapper,
+      popError
+    ),
+})(WebSocketReceiver);

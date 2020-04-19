@@ -1,62 +1,31 @@
-import {
-  ConnectionChannel,
-  UserScopeChannel,
-  TopicScopeChannel,
-} from '../channel';
+import { ConnectionChannel, UserChannel, TopicChannel } from '../channel';
 
-describe('ConnectionChannel(connection)', () => {
-  it('ok', () => {
-    const connection = {
-      id: '#conn',
-      serverId: '#server',
-      socketId: '#socket',
-      user: { jane: 'doe' },
-      flags: null,
-    };
-    const scope = new ConnectionChannel(connection);
+test('ConnectionChannel(serverId, connId)', () => {
+  const scope = new ConnectionChannel('#server', '#conn');
 
-    expect(scope.connection).toBe(connection);
-    expect(scope.platform).toBe('websocket');
-    expect(scope.type).toBe('connection');
-    expect(scope.subtype).toBe(undefined);
-    expect(scope.id).toBe('#conn');
-  });
+  expect(scope.platform).toBe('websocket');
+  expect(scope.type).toBe('connection');
+  expect(scope.serverId).toBe('#server');
+  expect(scope.connectionId).toBe('#conn');
+  expect(scope.id).toBe('#conn');
+  expect(scope.uid).toMatchInlineSnapshot(`"websocket.conn.#server.#conn"`);
 });
 
-describe('TopicScopeChannel(name, id)', () => {
-  it('ok', () => {
-    let scope = new TopicScopeChannel();
-    expect(scope.name).toBe('default');
-    expect(scope.id).toBe(undefined);
-    expect(scope.platform).toBe('websocket');
-    expect(scope.type).toBe('topic');
-    expect(scope.subtype).toBe('default');
-
-    scope = new TopicScopeChannel('foo');
-    expect(scope.name).toBe('foo');
-    expect(scope.id).toBe(undefined);
-    expect(scope.platform).toBe('websocket');
-    expect(scope.type).toBe('topic');
-    expect(scope.subtype).toBe('foo');
-
-    scope = new TopicScopeChannel('foo', 'bar');
-    expect(scope.name).toEqual('foo');
-    expect(scope.id).toEqual('bar');
-    expect(scope.platform).toBe('websocket');
-    expect(scope.type).toBe('topic');
-    expect(scope.subtype).toBe('foo');
-  });
+test('TopicChannel(name, id)', () => {
+  const scope = new TopicChannel('foo');
+  expect(scope.platform).toBe('websocket');
+  expect(scope.type).toBe('topic');
+  expect(scope.name).toBe('foo');
+  expect(scope.uid).toMatchInlineSnapshot(`"websocket.topic.foo"`);
 });
 
-describe('UserScopeChannel(user)', () => {
-  it('ok', () => {
-    const user = { platform: 'foo', id: 'bar' };
-    const scope = new UserScopeChannel(user);
+test('UserChannel(user)', () => {
+  const user = { platform: 'foo', name: 'jojo', uid: 'jojo_doe' };
+  const scope = new UserChannel(user);
 
-    expect(scope.user).toBe(user);
-    expect(scope.platform).toBe('websocket');
-    expect(scope.type).toBe('user');
-    expect(scope.subtype).toBe('foo');
-    expect(scope.id).toBe('bar');
-  });
+  expect(scope.user).toBe(user);
+  expect(scope.platform).toBe('websocket');
+  expect(scope.type).toBe('user');
+  expect(scope.userUId).toBe('jojo_doe');
+  expect(scope.uid).toMatchInlineSnapshot(`"websocket.user.jojo_doe"`);
 });

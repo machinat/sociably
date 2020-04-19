@@ -1,6 +1,5 @@
-import { BaseReceiver } from 'machinat-base';
 import WS from 'ws';
-import moxy from 'moxy';
+import moxy, { Mock } from 'moxy';
 import Socket from '../socket';
 import Receiver from '../receiver';
 import { ConnectionChannel } from '../channel';
@@ -9,35 +8,34 @@ jest.mock('../socket');
 
 const nextTick = () => new Promise(process.nextTick);
 
-const distributor = moxy({
+const bot = moxy();
+
+const transmitter = moxy({
+  serverId: '#server',
   onRemoteEvent() {},
   addLocalConnection() {},
   removeLocalConnection() {},
 });
 
 const ws = new WS(/* I'm mocked */);
-const webSocketServer = moxy({
+const wsServer = moxy({
   handleUpgrade(req, skt, head, callback) {
     callback(ws);
   },
 });
 
-const authenticator = moxy(async () => ({ accepted: true, user: null }));
+const verifyAuth = moxy(async () => ({
+  success: true,
+  user: null,
+  authInfo: null,
+}));
 const verifyUpgrade = moxy(() => true);
 
 const req = moxy({
-  get method() {
-    return 'GET';
-  },
-  get url() {
-    return '/hello';
-  },
-  get headers() {
-    return { foo: 'bar' };
-  },
-  get connection() {
-    return { encrypted: false };
-  },
+  method: 'GET',
+  url: '/hello',
+  headers: { foo: 'bar' },
+  connection: { encrypted: false },
 });
 
 const netSocket = moxy({
@@ -45,66 +43,56 @@ const netSocket = moxy({
   destroy() {},
 });
 
-const serverId = 'MY_SERVER';
-
 const head = '_';
 
-const issueEvent = moxy(() => Promise.resolve());
-const issueError = moxy();
+const popEventMock = new Mock();
+const popEventWrapper = moxy(finalHandler =>
+  popEventMock.proxify(finalHandler)
+);
+const popError = moxy();
 
 const expectedRequest = {
-  encrypted: false,
-  headers: { foo: 'bar' },
   method: 'GET',
   url: '/hello',
+  headers: { foo: 'bar' },
 };
 
 beforeEach(() => {
   Socket.mock.clear();
-  distributor.mock.clear();
+  transmitter.mock.clear();
 
-  webSocketServer.mock.clear();
+  wsServer.mock.clear();
   ws.removeAllListeners();
   netSocket.mock.clear();
 
   req.mock.reset();
 
-  issueEvent.mock.reset();
-  issueError.mock.reset();
+  popEventMock.reset();
+  popEventWrapper.mock.reset();
+  popError.mock.reset();
 
-  authenticator.mock.reset();
+  verifyAuth.mock.reset();
   verifyUpgrade.mock.reset();
-});
-
-it('extends BaseReceiver', () => {
-  expect(
-    new Receiver(
-      serverId,
-      webSocketServer,
-      distributor,
-      authenticator,
-      verifyUpgrade
-    )
-  ).toBeInstanceOf(BaseReceiver);
 });
 
 it('handle sockets and connections lifecycle', async () => {
   const receiver = new Receiver(
-    serverId,
-    webSocketServer,
-    distributor,
-    authenticator,
-    verifyUpgrade
+    bot,
+    wsServer,
+    transmitter,
+    verifyAuth,
+    verifyUpgrade,
+    popEventWrapper,
+    popError
   );
-  receiver.bindIssuer(issueEvent, issueError);
 
   expect(receiver.handleUpgrade(req, netSocket, head)).toBe(undefined);
 
   expect(verifyUpgrade.mock).toHaveBeenCalledTimes(1);
   expect(verifyUpgrade.mock).toHaveBeenCalledWith(expectedRequest);
 
-  expect(webSocketServer.handleUpgrade.mock).toHaveBeenCalledTimes(1);
-  expect(webSocketServer.handleUpgrade.mock) //
+  expect(wsServer.handleUpgrade.mock).toHaveBeenCalledTimes(1);
+  expect(wsServer.handleUpgrade.mock) //
     .toHaveBeenCalledWith(req, netSocket, head, expect.any(Function));
 
   expect(Socket.mock).toHaveBeenCalledTimes(1);
@@ -112,109 +100,180 @@ it('handle sockets and connections lifecycle', async () => {
     method: 'GET',
     url: '/hello',
     headers: { foo: 'bar' },
-    encrypted: false,
   });
 
-  authenticator.mock.fake(async () => ({
-    accepted: true,
+  verifyAuth.mock.fake(async () => ({
+    success: true,
     user: { john: 'doe' },
-    context: 101,
+    authInfo: { rookie: true },
   }));
 
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
-  socket.emit('register', { data: { type: 'some_auth', hello: 'login' } });
+
+  const credential = { type: 'some_auth', hello: 'login' };
+  socket.emit('sign_in', { credential }, 0, socket);
   await nextTick();
 
-  const expectedConnection = {
-    id: expect.any(String),
-    serverId,
-    socketId: socket.id,
-  };
-
-  const expectedMetadata = {
-    source: 'websocket',
-    request: expectedRequest,
-    connection: expectedConnection,
-    authContext: 101,
-  };
-
-  expect(authenticator.mock).toHaveBeenCalledTimes(1);
-  expect(authenticator.mock).toHaveBeenCalledWith(expectedRequest, {
-    hello: 'login',
-    type: 'some_auth',
-  });
+  expect(verifyAuth.mock).toHaveBeenCalledTimes(1);
+  expect(verifyAuth.mock).toHaveBeenCalledWith(expectedRequest, credential);
 
   expect(socket.connect.mock).toHaveBeenCalledTimes(1);
   expect(socket.connect.mock).toHaveBeenCalledWith({
     connId: expect.any(String),
+    seq: 0,
   });
 
-  expect(issueEvent.mock).not.toHaveBeenCalled();
+  const expectedMetadata = {
+    source: 'websocket',
+    request: expectedRequest,
+    auth: { rookie: true },
+  };
+
+  expect(popEventMock).not.toHaveBeenCalled();
 
   const { connId } = socket.connect.mock.calls[0].args[0];
-  socket.emit('connect', { connId });
+  socket.emit('connect', { connId }, 2, socket);
   await nextTick();
 
-  expect(distributor.addLocalConnection.mock).toHaveBeenCalledTimes(1);
-  expect(distributor.addLocalConnection.mock).toHaveBeenCalledWith(
+  const channel = new ConnectionChannel('#server', connId);
+  expect(transmitter.addLocalConnection.mock).toHaveBeenCalledTimes(1);
+  expect(transmitter.addLocalConnection.mock).toHaveBeenCalledWith(
+    channel,
     socket,
-    { john: 'doe' },
-    expectedConnection
+    { john: 'doe' }
   );
 
-  expect(issueEvent.mock).toHaveBeenCalledTimes(1);
-  expect(issueEvent.mock).toHaveBeenCalledWith(
-    new ConnectionChannel(expectedConnection),
-    { john: 'doe' },
-    { type: 'connect' },
-    expectedMetadata
-  );
-
-  socket.emit('event', {
-    connId,
-    type: 'greeting',
-    subtype: 'french',
-    payload: 'bonjour',
+  expect(popEventMock).toHaveBeenCalledTimes(1);
+  expect(popEventMock).toHaveBeenCalledWith({
+    platform: 'websocket',
+    channel,
+    bot,
+    user: { john: 'doe' },
+    event: { type: 'connect' },
+    metadata: expectedMetadata,
   });
 
-  expect(issueEvent.mock).toHaveBeenCalledTimes(2);
-  expect(issueEvent.mock).toHaveBeenCalledWith(
-    new ConnectionChannel(expectedConnection),
-    { john: 'doe' },
-    { type: 'greeting', subtype: 'french', payload: 'bonjour' },
-    expectedMetadata
+  socket.emit(
+    'dispatch',
+    {
+      connId,
+      events: [{ type: 'greeting', subtype: 'french', payload: 'bonjour' }],
+    },
+    4,
+    socket
   );
 
-  socket.emit('disconnect', { connId, reason: 'bye' });
+  expect(popEventMock).toHaveBeenCalledTimes(2);
+  expect(popEventMock).toHaveBeenNthCalledWith(2, {
+    platform: 'websocket',
+    channel,
+    bot,
+    user: { john: 'doe' },
+    event: { type: 'greeting', subtype: 'french', payload: 'bonjour' },
+    metadata: expectedMetadata,
+  });
+
+  socket.emit(
+    'dispatch',
+    {
+      connId,
+      events: [{ type: 'foo', payload: 123 }, { type: 'bar', payload: 456 }],
+    },
+    5,
+    socket
+  );
+  expect(popEventMock).toHaveBeenCalledTimes(4);
+  expect(popEventMock).toHaveBeenNthCalledWith(3, {
+    platform: 'websocket',
+    channel,
+    bot,
+    user: { john: 'doe' },
+    event: { type: 'foo', payload: 123 },
+    metadata: expectedMetadata,
+  });
+  expect(popEventMock).toHaveBeenNthCalledWith(4, {
+    platform: 'websocket',
+    channel,
+    bot,
+    user: { john: 'doe' },
+    event: { type: 'bar', payload: 456 },
+    metadata: expectedMetadata,
+  });
+
+  socket.emit('disconnect', { connId, reason: 'bye' }, 7, socket);
   await nextTick();
 
-  expect(issueEvent.mock).toHaveBeenCalledTimes(3);
-  expect(issueEvent.mock).toHaveBeenCalledWith(
-    new ConnectionChannel(expectedConnection),
-    { john: 'doe' },
-    { type: 'disconnect', payload: { reason: 'bye' } },
-    expectedMetadata
+  expect(popEventMock).toHaveBeenCalledTimes(5);
+  expect(popEventMock).toHaveBeenNthCalledWith(5, {
+    platform: 'websocket',
+    channel,
+    bot,
+    user: { john: 'doe' },
+    event: { type: 'disconnect', payload: { reason: 'bye' } },
+    metadata: expectedMetadata,
+  });
+
+  socket.emit('close', 666, 'bye', socket);
+  await nextTick();
+});
+
+test('default verifyUpgrade and verifyAuth', async () => {
+  const receiver = new Receiver(
+    bot,
+    wsServer,
+    transmitter,
+    null,
+    null,
+    popEventWrapper,
+    popError
   );
 
-  socket.emit('close', 666, 'wth');
+  receiver.handleUpgrade(req, netSocket, head);
+
+  // accept upgrade by default
+  expect(wsServer.handleUpgrade.mock).toHaveBeenCalledTimes(1);
+
+  const socket = Socket.mock.calls[0].instance;
+  socket.connect.mock.fake(async () => {});
+  socket.emit('sign_in', { credential: null }, 0, socket);
   await nextTick();
+
+  const { connId } = socket.connect.mock.calls[0].args[0];
+  socket.emit('connect', { connId }, 2, socket);
+  await nextTick();
+
+  expect(popEventMock).toHaveBeenCalledTimes(1);
+  // accept auth with null user and null auth data
+  expect(popEventMock).toHaveBeenCalledWith({
+    platform: 'websocket',
+    channel: new ConnectionChannel('#server', connId),
+    bot,
+    user: null,
+    event: { type: 'connect' },
+    metadata: {
+      source: 'websocket',
+      request: expectedRequest,
+      auth: null,
+    },
+  });
 });
 
 test('multi sockets and connections', async () => {
   const receiver = new Receiver(
-    serverId,
-    webSocketServer,
-    distributor,
-    authenticator,
-    verifyUpgrade
+    bot,
+    wsServer,
+    transmitter,
+    verifyAuth,
+    verifyUpgrade,
+    popEventWrapper,
+    popError
   );
-  receiver.bindIssuer(issueEvent, issueError);
 
   receiver.handleUpgrade(req, netSocket, head);
   receiver.handleUpgrade(req, netSocket, head);
 
-  expect(webSocketServer.handleUpgrade.mock).toHaveBeenCalledTimes(2);
+  expect(wsServer.handleUpgrade.mock).toHaveBeenCalledTimes(2);
   expect(verifyUpgrade.mock).toHaveBeenCalledTimes(2);
   expect(verifyUpgrade.mock).toHaveBeenCalledWith(expectedRequest);
 
@@ -224,317 +283,241 @@ test('multi sockets and connections', async () => {
   socket1.connect.mock.fake(async () => {});
   socket2.connect.mock.fake(async () => {});
 
-  expect(authenticator.mock).not.toHaveBeenCalled();
-  socket1.emit('register', { data: { type: 'my_auth', hi: 1 } });
+  expect(verifyAuth.mock).not.toHaveBeenCalled();
+  socket1.emit('sign_in', { credential: { hi: 1 } }, 0, socket1);
 
-  expect(authenticator.mock).toHaveBeenCalledTimes(1);
-  authenticator.mock.fake(async () => ({
-    accepted: true,
+  expect(verifyAuth.mock).toHaveBeenCalledTimes(1);
+  verifyAuth.mock.fake(async () => ({
+    success: true,
     user: { john: 'doe' },
-    context: 'working',
+    authInfo: 'foo',
   }));
 
-  socket1.emit('register', { data: { type: 'my_auth', hi: 2 } });
-  socket2.emit('register', { data: { type: 'my_auth', hi: 3 } });
+  socket1.emit('sign_in', { credential: { hi: 2 } }, 1, socket1);
   await nextTick();
 
-  expect(authenticator.mock).toHaveBeenCalledTimes(3);
-  authenticator.mock.fake(async () => ({
-    accepted: true,
+  expect(verifyAuth.mock).toHaveBeenCalledTimes(2);
+  verifyAuth.mock.fake(async () => ({
+    success: true,
     user: { jojo: 'doe' },
-    context: 'traveling',
+    authInfo: 'kokoko',
   }));
 
-  socket1.emit('register', { data: { type: 'my_auth', hi: 4 } });
-  socket2.emit('register', { data: { type: 'my_auth', hi: 5 } });
+  socket2.emit('sign_in', { credential: { hi: 3 } }, 1, socket2);
   await nextTick();
 
-  expect(authenticator.mock).toHaveBeenCalledTimes(5);
-  authenticator.mock.calls.forEach((call, i) => {
-    expect(call.args).toEqual([
-      expectedRequest,
-      { type: 'my_auth', hi: i + 1 },
-    ]);
+  expect(verifyAuth.mock).toHaveBeenCalledTimes(3);
+  for (let i = 1; i <= 3; i += 1) {
+    expect(verifyAuth.mock).toHaveBeenNthCalledWith(i, expectedRequest, {
+      hi: i,
+    });
+  }
+
+  expect(popEventMock).not.toHaveBeenCalled();
+
+  expect(socket1.connect.mock).toHaveBeenCalledTimes(2);
+  expect(socket2.connect.mock).toHaveBeenCalledTimes(1);
+
+  const noUserConn = new ConnectionChannel(
+    '#server',
+    socket1.connect.mock.calls[0].args[0].connId
+  );
+  const johnConn = new ConnectionChannel(
+    '#server',
+    socket1.connect.mock.calls[1].args[0].connId
+  );
+  const jojoConn = new ConnectionChannel(
+    '#server',
+    socket2.connect.mock.calls[0].args[0].connId
+  );
+
+  socket1.emit('connect', { connId: noUserConn.id }, 4, socket1);
+  socket1.emit('connect', { connId: johnConn.id }, 5, socket1);
+  socket2.emit('connect', { connId: jojoConn.id }, 3, socket2);
+  await nextTick();
+
+  expect(transmitter.addLocalConnection.mock).toHaveBeenCalledTimes(3);
+  expect(transmitter.addLocalConnection.mock) //
+    .toHaveBeenNthCalledWith(1, noUserConn, socket1, null);
+  expect(transmitter.addLocalConnection.mock) //
+    .toHaveBeenNthCalledWith(2, johnConn, socket1, { john: 'doe' });
+  expect(transmitter.addLocalConnection.mock) //
+    .toHaveBeenNthCalledWith(3, jojoConn, socket2, { jojo: 'doe' });
+
+  expect(popEventMock).toHaveBeenCalledTimes(3);
+  expect(popEventMock).toHaveBeenNthCalledWith(1, {
+    platform: 'websocket',
+    bot,
+    channel: noUserConn,
+    user: null,
+    event: { type: 'connect' },
+    metadata: { source: 'websocket', request: expectedRequest, auth: null },
+  });
+  expect(popEventMock).toHaveBeenNthCalledWith(2, {
+    platform: 'websocket',
+    bot,
+    channel: johnConn,
+    user: { john: 'doe' },
+    event: { type: 'connect' },
+    metadata: { source: 'websocket', request: expectedRequest, auth: 'foo' },
+  });
+  expect(popEventMock).toHaveBeenNthCalledWith(3, {
+    platform: 'websocket',
+    bot,
+    channel: jojoConn,
+    user: { jojo: 'doe' },
+    event: { type: 'connect' },
+    metadata: {
+      source: 'websocket',
+      request: expectedRequest,
+      auth: 'kokoko',
+    },
   });
 
-  expect(issueEvent.mock).not.toHaveBeenCalled();
-
-  expect(socket1.connect.mock).toHaveBeenCalledTimes(3);
-  expect(socket2.connect.mock).toHaveBeenCalledTimes(2);
-
-  const nullConn = {
-    serverId,
-    socketId: socket1.id,
-    id: socket1.connect.mock.calls[0].args[0].connId,
-  };
-
-  const john = { john: 'doe' };
-  const johnConn1 = {
-    serverId,
-    socketId: socket1.id,
-    id: socket1.connect.mock.calls[1].args[0].connId,
-  };
-  const johnConn2 = {
-    serverId,
-    socketId: socket2.id,
-    id: socket2.connect.mock.calls[0].args[0].connId,
-  };
-
-  const jojo = { jojo: 'doe' };
-  const jojoConn1 = {
-    serverId,
-    socketId: socket1.id,
-    id: socket1.connect.mock.calls[2].args[0].connId,
-  };
-  const jojoConn2 = {
-    serverId,
-    socketId: socket2.id,
-    id: socket2.connect.mock.calls[1].args[0].connId,
-  };
-
-  socket1.emit('connect', { connId: nullConn.id });
-  socket1.emit('connect', { connId: johnConn1.id });
-  socket2.emit('connect', { connId: johnConn2.id });
-  socket1.emit('connect', { connId: jojoConn1.id });
-  socket2.emit('connect', { connId: jojoConn2.id });
-  await nextTick();
-
-  expect(distributor.addLocalConnection.mock).toHaveBeenCalledTimes(5);
-  expect(distributor.addLocalConnection.mock) //
-    .toHaveBeenNthCalledWith(1, socket1, null, nullConn);
-  expect(distributor.addLocalConnection.mock) //
-    .toHaveBeenNthCalledWith(2, socket1, john, johnConn1);
-  expect(distributor.addLocalConnection.mock) //
-    .toHaveBeenNthCalledWith(3, socket2, john, johnConn2);
-  expect(distributor.addLocalConnection.mock) //
-    .toHaveBeenNthCalledWith(4, socket1, jojo, jojoConn1);
-  expect(distributor.addLocalConnection.mock) //
-    .toHaveBeenNthCalledWith(5, socket2, jojo, jojoConn2);
-
-  expect(issueEvent.mock).toHaveBeenCalledTimes(5);
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    1,
-    new ConnectionChannel(nullConn),
-    null,
-    { type: 'connect' },
-    { source: 'websocket', request: expectedRequest, connection: nullConn }
-  );
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    2,
-    new ConnectionChannel(johnConn1),
-    { john: 'doe' },
-    { type: 'connect' },
+  socket1.emit(
+    'dispatch',
     {
-      source: 'websocket',
-      request: expectedRequest,
-      connection: johnConn1,
-      authContext: 'working',
-    }
-  );
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    3,
-    new ConnectionChannel(johnConn2),
-    { john: 'doe' },
-    { type: 'connect' },
-    {
-      source: 'websocket',
-      request: expectedRequest,
-      connection: johnConn2,
-      authContext: 'working',
-    }
-  );
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    4,
-    new ConnectionChannel(jojoConn1),
-    { jojo: 'doe' },
-    { type: 'connect' },
-    {
-      source: 'websocket',
-      request: expectedRequest,
-      connection: jojoConn1,
-      authContext: 'traveling',
-    }
-  );
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    5,
-    new ConnectionChannel(jojoConn2),
-    { jojo: 'doe' },
-    { type: 'connect' },
-    {
-      source: 'websocket',
-      request: expectedRequest,
-      connection: jojoConn2,
-      authContext: 'traveling',
-    }
-  );
-
-  socket1.emit('event', { connId: nullConn.id, type: 'a', payload: 0 });
-  socket1.emit('event', { connId: johnConn1.id, type: 'b', payload: 1 });
-  socket2.emit('event', { connId: johnConn2.id, type: 'c', payload: 2 });
-  socket1.emit('event', { connId: jojoConn1.id, type: 'd', payload: 3 });
-  socket2.emit('event', { connId: jojoConn2.id, type: 'e', payload: 4 });
-
-  expect(issueEvent.mock).toHaveBeenCalledTimes(10);
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    6,
-    new ConnectionChannel(nullConn),
-    null,
-    { type: 'a', payload: 0 },
-    { source: 'websocket', request: expectedRequest, connection: nullConn }
-  );
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
+      connId: noUserConn.id,
+      events: [{ type: 'a', payload: 0 }],
+    },
     7,
-    new ConnectionChannel(johnConn1),
-    { john: 'doe' },
-    { type: 'b', payload: 1 },
-    {
-      source: 'websocket',
-      request: expectedRequest,
-      connection: johnConn1,
-      authContext: 'working',
-    }
+    socket1
   );
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    8,
-    new ConnectionChannel(johnConn2),
-    { john: 'doe' },
-    { type: 'c', payload: 2 },
+  socket1.emit(
+    'dispatch',
     {
-      source: 'websocket',
-      request: expectedRequest,
-      connection: johnConn2,
-      authContext: 'working',
-    }
-  );
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
+      connId: johnConn.id,
+      events: [{ type: 'b', payload: 1 }, { type: 'c', payload: 2 }],
+    },
     9,
-    new ConnectionChannel(jojoConn1),
-    { jojo: 'doe' },
-    { type: 'd', payload: 3 },
+    socket1
+  );
+  socket2.emit(
+    'dispatch',
     {
-      source: 'websocket',
-      request: expectedRequest,
-      connection: jojoConn1,
-      authContext: 'traveling',
-    }
-  );
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    10,
-    new ConnectionChannel(jojoConn2),
-    { jojo: 'doe' },
-    { type: 'e', payload: 4 },
-    {
-      source: 'websocket',
-      request: expectedRequest,
-      connection: jojoConn2,
-      authContext: 'traveling',
-    }
+      connId: jojoConn.id,
+      events: [{ type: 'd', payload: 3 }, { type: 'e', payload: 4 }],
+    },
+    5,
+    socket2
   );
 
-  socket1.emit('disconnect', { connId: nullConn.id, reason: 'bye0' });
-  socket1.emit('disconnect', { connId: johnConn1.id, reason: 'bye1' });
-  socket2.emit('disconnect', { connId: jojoConn2.id, reason: 'bye2' });
-  await nextTick();
-
-  socket1.emit('disconnect', { connId: jojoConn1.id, reason: 'bye3' });
-  socket2.emit('disconnect', { connId: johnConn2.id, reason: 'bye4' });
-  await nextTick();
-
-  expect(issueEvent.mock).toHaveBeenCalledTimes(15);
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    11,
-    new ConnectionChannel(nullConn),
-    null,
-    { type: 'disconnect', payload: { reason: 'bye0' } },
-    { source: 'websocket', request: expectedRequest, connection: nullConn }
-  );
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    12,
-    new ConnectionChannel(johnConn1),
-    { john: 'doe' },
-    { type: 'disconnect', payload: { reason: 'bye1' } },
-    {
-      source: 'websocket',
-      request: expectedRequest,
-      connection: johnConn1,
-      authContext: 'working',
-    }
-  );
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    13,
-    new ConnectionChannel(jojoConn2),
-    { jojo: 'doe' },
-    { type: 'disconnect', payload: { reason: 'bye2' } },
-    {
-      source: 'websocket',
-      request: expectedRequest,
-      connection: jojoConn2,
-      authContext: 'traveling',
-    }
-  );
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    14,
-    new ConnectionChannel(jojoConn1),
-    { jojo: 'doe' },
-    { type: 'disconnect', payload: { reason: 'bye3' } },
-    {
-      source: 'websocket',
-      request: expectedRequest,
-      connection: jojoConn1,
-      authContext: 'traveling',
-    }
-  );
-  expect(issueEvent.mock).toHaveBeenNthCalledWith(
-    15,
-    new ConnectionChannel(johnConn2),
-    { john: 'doe' },
-    { type: 'disconnect', payload: { reason: 'bye4' } },
-    {
-      source: 'websocket',
-      request: expectedRequest,
-      connection: johnConn2,
-      authContext: 'working',
-    }
-  );
-
-  socket1.emit('close', 666, 'wth');
-  socket2.emit('close', 666, 'wth');
-  await nextTick();
-});
-
-it('set socket.request.encrypted to true if socket is encrypted', () => {
-  const receiver = new Receiver(
-    serverId,
-    webSocketServer,
-    distributor,
-    authenticator,
-    verifyUpgrade
-  );
-  receiver.bindIssuer(issueEvent, issueError);
-
-  req.mock.getter('connection').fakeReturnValue({ encrypted: true });
-  expect(receiver.handleUpgrade(req, netSocket, head)).toBe(undefined);
-
-  expect(webSocketServer.handleUpgrade.mock).toHaveBeenCalledTimes(1);
-  expect(Socket.mock).toHaveBeenCalledTimes(1);
-  expect(Socket.mock).toHaveBeenCalledWith(expect.any(String), ws, {
-    method: 'GET',
-    url: '/hello',
-    headers: { foo: 'bar' },
-    encrypted: true,
+  expect(popEventMock).toHaveBeenCalledTimes(8);
+  expect(popEventMock).toHaveBeenNthCalledWith(4, {
+    platform: 'websocket',
+    bot,
+    channel: noUserConn,
+    user: null,
+    event: { type: 'a', payload: 0 },
+    metadata: { source: 'websocket', request: expectedRequest, auth: null },
   });
+  expect(popEventMock).toHaveBeenNthCalledWith(5, {
+    platform: 'websocket',
+    bot,
+    channel: johnConn,
+    user: { john: 'doe' },
+    event: { type: 'b', payload: 1 },
+    metadata: { source: 'websocket', request: expectedRequest, auth: 'foo' },
+  });
+  expect(popEventMock).toHaveBeenNthCalledWith(6, {
+    platform: 'websocket',
+    bot,
+    channel: johnConn,
+    user: { john: 'doe' },
+    event: { type: 'c', payload: 2 },
+    metadata: { source: 'websocket', request: expectedRequest, auth: 'foo' },
+  });
+  expect(popEventMock).toHaveBeenNthCalledWith(7, {
+    platform: 'websocket',
+    bot,
+    channel: jojoConn,
+    user: { jojo: 'doe' },
+    event: { type: 'd', payload: 3 },
+    metadata: {
+      source: 'websocket',
+      request: expectedRequest,
+      auth: 'kokoko',
+    },
+  });
+  expect(popEventMock).toHaveBeenNthCalledWith(8, {
+    platform: 'websocket',
+    bot,
+    channel: jojoConn,
+    user: { jojo: 'doe' },
+    event: { type: 'e', payload: 4 },
+    metadata: {
+      source: 'websocket',
+      request: expectedRequest,
+      auth: 'kokoko',
+    },
+  });
+
+  socket1.emit(
+    'disconnect',
+    { connId: noUserConn.id, reason: 'bye0' },
+    6,
+    socket1
+  );
+  socket1.emit(
+    'disconnect',
+    { connId: johnConn.id, reason: 'bye1' },
+    7,
+    socket1
+  );
+  socket2.emit(
+    'disconnect',
+    { connId: jojoConn.id, reason: 'bye2' },
+    4,
+    socket2
+  );
+  await nextTick();
+
+  expect(popEventMock).toHaveBeenCalledTimes(11);
+  expect(popEventMock).toHaveBeenNthCalledWith(9, {
+    platform: 'websocket',
+    bot,
+    channel: noUserConn,
+    user: null,
+    event: { type: 'disconnect', payload: { reason: 'bye0' } },
+    metadata: { source: 'websocket', request: expectedRequest, auth: null },
+  });
+  expect(popEventMock).toHaveBeenNthCalledWith(10, {
+    platform: 'websocket',
+    bot,
+    channel: johnConn,
+    user: { john: 'doe' },
+    event: { type: 'disconnect', payload: { reason: 'bye1' } },
+    metadata: { source: 'websocket', request: expectedRequest, auth: 'foo' },
+  });
+  expect(popEventMock).toHaveBeenNthCalledWith(11, {
+    platform: 'websocket',
+    bot,
+    channel: jojoConn,
+    user: { jojo: 'doe' },
+    event: { type: 'disconnect', payload: { reason: 'bye2' } },
+    metadata: {
+      source: 'websocket',
+      request: expectedRequest,
+      auth: 'kokoko',
+    },
+  });
+
+  socket1.emit('close', 666, 'bye', socket1);
+  socket2.emit('close', 666, 'bye', socket2);
+  await nextTick();
 });
 
 it('generate uniq socket id', () => {
   const ids = new Set();
   const receiver = new Receiver(
-    serverId,
-    webSocketServer,
-    distributor,
-    authenticator,
-    verifyUpgrade
+    bot,
+    wsServer,
+    transmitter,
+    verifyAuth,
+    verifyUpgrade,
+    popEventWrapper,
+    popError
   );
-  receiver.bindIssuer(issueEvent, issueError);
 
   for (let i = 0; i < 500; i += 1) {
     receiver.handleUpgrade(req, netSocket, head);
@@ -551,25 +534,26 @@ it('generate uniq socket id', () => {
 it('generate uniq connection id', async () => {
   const ids = new Set();
   const receiver = new Receiver(
-    serverId,
-    webSocketServer,
-    distributor,
-    authenticator,
-    verifyUpgrade
+    bot,
+    wsServer,
+    transmitter,
+    verifyAuth,
+    verifyUpgrade,
+    popEventWrapper,
+    popError
   );
-  receiver.bindIssuer(issueEvent, issueError);
 
   receiver.handleUpgrade(req, netSocket, head);
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
 
-  authenticator.mock.fake(async () => ({
-    accepted: true,
+  verifyAuth.mock.fake(async () => ({
+    success: true,
     user: null,
   }));
 
   for (let i = 0; i < 500; i += 1) {
-    socket.emit('register', { type: 'some_auth', hello: 'login' });
+    socket.emit('sign_in', { credential: { hello: 'login' } }, 1, socket);
     await nextTick(); // eslint-disable-line no-await-in-loop
 
     expect(socket.connect.mock).toHaveBeenCalledTimes(i + 1);
@@ -584,13 +568,14 @@ it('generate uniq connection id', async () => {
 
 it('respond 404 if verifyUpgrade fn return false', () => {
   const receiver = new Receiver(
-    serverId,
-    webSocketServer,
-    distributor,
-    authenticator,
-    verifyUpgrade
+    bot,
+    wsServer,
+    transmitter,
+    verifyAuth,
+    verifyUpgrade,
+    popEventWrapper,
+    popError
   );
-  receiver.bindIssuer(issueEvent, issueError);
 
   verifyUpgrade.mock.fakeReturnValue(false);
   receiver.handleUpgrade(req, netSocket, head);
@@ -598,7 +583,7 @@ it('respond 404 if verifyUpgrade fn return false', () => {
   expect(verifyUpgrade.mock).toHaveBeenCalledTimes(1);
   expect(verifyUpgrade.mock).toHaveBeenCalledWith(expectedRequest);
 
-  expect(webSocketServer.handleUpgrade.mock).not.toHaveBeenCalled();
+  expect(wsServer.handleUpgrade.mock).not.toHaveBeenCalled();
   expect(Socket.mock).not.toHaveBeenCalled();
 
   expect(netSocket.write.mock).toHaveBeenCalledTimes(1);
@@ -614,29 +599,30 @@ it('respond 404 if verifyUpgrade fn return false', () => {
   expect(netSocket.destroy.mock).toHaveBeenCalledTimes(1);
 });
 
-it('reject register if auth rejected', async () => {
+it('reject sign in if verifyAuth resolve not sucess', async () => {
   const receiver = new Receiver(
-    serverId,
-    webSocketServer,
-    distributor,
-    authenticator,
-    verifyUpgrade
+    bot,
+    wsServer,
+    transmitter,
+    verifyAuth,
+    verifyUpgrade,
+    popEventWrapper,
+    popError
   );
-  receiver.bindIssuer(issueEvent, issueError);
   receiver.handleUpgrade(req, netSocket, head);
 
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
 
-  authenticator.mock.fake(async () => ({
-    accepted: false,
+  verifyAuth.mock.fake(async () => ({
+    success: false,
     reason: 'no no no',
   }));
 
-  socket.emit('register', { type: 'some_auth', hello: 'login' }, 11);
+  socket.emit('sign_in', { credential: { hello: 'login' } }, 11, socket);
   await nextTick();
 
-  expect(authenticator.mock).toHaveBeenCalledTimes(1);
+  expect(verifyAuth.mock).toHaveBeenCalledTimes(1);
   expect(socket.connect.mock).not.toHaveBeenCalled();
   expect(socket.reject.mock).toHaveBeenCalledTimes(1);
   expect(socket.reject.mock).toHaveBeenCalledWith({
@@ -645,27 +631,28 @@ it('reject register if auth rejected', async () => {
   });
 });
 
-it('reject register if auth thrown', async () => {
+it('reject sign in if verifyAuth thrown', async () => {
   const receiver = new Receiver(
-    serverId,
-    webSocketServer,
-    distributor,
-    authenticator,
-    verifyUpgrade
+    bot,
+    wsServer,
+    transmitter,
+    verifyAuth,
+    verifyUpgrade,
+    popEventWrapper,
+    popError
   );
-  receiver.bindIssuer(issueEvent, issueError);
   receiver.handleUpgrade(req, netSocket, head);
 
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
-  authenticator.mock.fake(async () => {
+  verifyAuth.mock.fake(async () => {
     throw new Error('noooooo');
   });
 
-  socket.emit('register', { type: 'some_auth', hello: 'login' }, 11);
+  socket.emit('sign_in', { credential: { hello: 'login' } }, 11, socket);
   await nextTick();
 
-  expect(authenticator.mock).toHaveBeenCalledTimes(1);
+  expect(verifyAuth.mock).toHaveBeenCalledTimes(1);
   expect(socket.connect.mock).not.toHaveBeenCalled();
   expect(socket.reject.mock).toHaveBeenCalledTimes(1);
   expect(socket.reject.mock).toHaveBeenCalledWith({
@@ -676,23 +663,24 @@ it('reject register if auth thrown', async () => {
 
 it('issue socket error', () => {
   const receiver = new Receiver(
-    serverId,
-    webSocketServer,
-    distributor,
-    authenticator,
-    verifyUpgrade
+    bot,
+    wsServer,
+    transmitter,
+    verifyAuth,
+    verifyUpgrade,
+    popEventWrapper,
+    popError
   );
-  receiver.bindIssuer(issueEvent, issueError);
 
   receiver.handleUpgrade(req, netSocket, head);
-  issueEvent.mock.fakeOnce(async () => ({
-    accepted: true,
+  popEventMock.fakeOnce(async () => ({
+    success: true,
     user: { john: 'doe' },
   }));
 
   const socket = Socket.mock.calls[0].instance;
   socket.emit('error', new Error("It's Bat Man!"));
 
-  expect(issueError.mock).toHaveBeenCalledTimes(1);
-  expect(issueError.mock).toHaveBeenCalledWith(new Error("It's Bat Man!"));
+  expect(popError.mock).toHaveBeenCalledTimes(1);
+  expect(popError.mock).toHaveBeenCalledWith(new Error("It's Bat Man!"));
 });

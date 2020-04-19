@@ -1,17 +1,17 @@
 // @flow
-import type { MachinatWorker } from 'machinat-base/types';
-import type MachinatQueue from 'machinat-queue';
-import type { JobResponse } from 'machinat-queue/types';
+import type { MachinatWorker } from '@machinat/core/engine/types';
+import type MachinatQueue from '@machinat/core/queue';
+import type { JobResponse } from '@machinat/core/queue/types';
 
 import type { WebSocketJob, WebSocketResult } from './types';
-import type Distributor from './distributor';
+import Transmitter from './transmitter';
 
 class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
   _started: boolean;
-  distributor: Distributor;
+  transmitter: Transmitter;
 
-  constructor(distributor: Distributor) {
-    this.distributor = distributor;
+  constructor(transmitter: Transmitter) {
+    this.transmitter = transmitter;
     this._started = false;
   }
 
@@ -44,24 +44,15 @@ class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
   _executeJobs = async (
     jobs: WebSocketJob[]
   ): Promise<JobResponse<WebSocketJob, WebSocketResult>[]> => {
-    const promises = [];
-
-    for (const { scope, order } of jobs) {
-      promises.push(this.distributor.send(scope, order));
-    }
-
+    const promises = jobs.map(job => this.transmitter.dispatch(job));
     const socketsMetrix = await Promise.all(promises);
 
-    const response = new Array(socketsMetrix.length);
-    for (let i = 0; i < socketsMetrix.length; i += 1) {
-      response[i] = {
-        success: true,
-        error: undefined,
-        job: jobs[i],
-        result: { connections: socketsMetrix[i] },
-      };
-    }
-
+    const response = socketsMetrix.map((connections, i) => ({
+      success: true,
+      error: undefined,
+      job: jobs[i],
+      result: { connections },
+    }));
     return response;
   };
 }

@@ -1,22 +1,20 @@
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
 
 import { Event } from '../component';
-import { WEBSOCKET_NATIVE_TYPE } from '../constant';
 
-const render = element => element.type(element, null, '$');
+const render = element => element.type(element, '$', () => null);
 
 it('is valid Component', () => {
-  expect(Event.$$native).toBe(WEBSOCKET_NATIVE_TYPE);
-  expect(Event.$$namespace).toBe('WebSocket');
+  expect(Event.$$platform).toBe('websocket');
   expect(typeof Event).toBe('function');
 });
 
-it('render to valid value', async () => {
-  await expect(render(<Event />)).resolves.toEqual([
+it('render to valid value', () => {
+  expect(render(<Event />)).toEqual([
     { type: 'unit', node: <Event />, value: { type: 'default' }, path: '$' },
   ]);
 
-  await expect(render(<Event type="foo" />)).resolves.toEqual([
+  expect(render(<Event type="foo" />)).toEqual([
     {
       type: 'unit',
       node: <Event type="foo" />,
@@ -25,7 +23,7 @@ it('render to valid value', async () => {
     },
   ]);
 
-  await expect(render(<Event type="foo" subtype="bar" />)).resolves.toEqual([
+  expect(render(<Event type="foo" subtype="bar" />)).toEqual([
     {
       type: 'unit',
       node: <Event type="foo" subtype="bar" />,
@@ -34,37 +32,11 @@ it('render to valid value', async () => {
     },
   ]);
 
-  await expect(
-    render(<Event type="foo" subtype="bar" payload="baz" />)
-  ).resolves.toEqual([
+  expect(render(<Event type="foo" subtype="bar" payload="baz" />)).toEqual([
     {
       type: 'unit',
       node: <Event type="foo" subtype="bar" payload="baz" />,
       value: { type: 'foo', subtype: 'bar', payload: 'baz' },
-      path: '$',
-    },
-  ]);
-
-  const eventWithBlackAndWhiteList = (
-    <Event
-      type="foo"
-      subtype="bar"
-      payload="baz"
-      only={['1', '2']}
-      except={['2', '3']}
-    />
-  );
-  await expect(render(eventWithBlackAndWhiteList)).resolves.toEqual([
-    {
-      type: 'unit',
-      node: eventWithBlackAndWhiteList,
-      value: {
-        type: 'foo',
-        subtype: 'bar',
-        payload: 'baz',
-        only: ['1', '2'],
-        except: ['2', '3'],
-      },
       path: '$',
     },
   ]);

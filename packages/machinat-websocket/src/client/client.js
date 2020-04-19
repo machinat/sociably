@@ -1,45 +1,26 @@
 // @flow
-import invariant from 'invariant';
-import type { MachinatUser } from 'machinat/types';
+import type { MachinatUser } from '@machinat/core/types';
 import WS from './ws';
 import type {
   ConnectBody,
   DisconnectBody,
-  EventBody,
+  DispatchBody,
   RejectBody,
 } from '../socket';
-import MachinatSocket from '../socket';
-import { WEBSOCKET } from '../constant';
-import {
-  ConnectionChannel,
-  UserScopeChannel,
-  TopicScopeChannel,
-} from '../channel';
-import { ConnectionError } from '../error';
-import Connection from '../connection';
-import type { WebSocketChannel, ClientRegistratorFunc } from '../types';
+import Socket from '../socket';
+import { ConnectionChannel } from '../channel';
+import SocketError from '../error';
+import type { ClientAuthorizeFn, EventValue } from '../types';
 
 declare var location: Location;
 
-export type ClientEvent = {|
-  type: string,
-  subtype: void | string,
-  payload: any,
-|};
-
-type ClientEventContext = {|
-  user: ?MachinatUser,
-  channel: WebSocketChannel,
-  event: ClientEvent,
-|};
-
-type ClientOptions<RegData> = {
+type ClientOptions<Credential> = {
   url?: string,
-  registrator: ClientRegistratorFunc<RegData>,
+  authorize?: ClientAuthorizeFn<Credential>,
 };
 
-type PendingEventJob = {
-  event: ClientEvent,
+type PendingEvent = {
+  events: EventValue[],
   resolve: () => void,
   reject: Error => void,
 };
@@ -47,41 +28,41 @@ type PendingEventJob = {
 const MACHINAT_WEBSOCKET_PROTOCOL_V0 = 'machinat-websocket-v0';
 
 const createSocket = (url: string) => {
-  const webSocket = new WS(url, MACHINAT_WEBSOCKET_PROTOCOL_V0);
+  const ws = new WS(url, MACHINAT_WEBSOCKET_PROTOCOL_V0);
 
-  return new MachinatSocket('', webSocket, (null: any));
+  return new Socket('', ws, (null: any));
 };
 
-class WebScoketClient<RegData> {
+class WebScoketClient<Credential> {
   _serverLocation: string;
-  _registrator: ClientRegistratorFunc<RegData>;
+  _authorize: ClientAuthorizeFn<Credential>;
+  _socket: Socket;
 
-  _socket: MachinatSocket;
-  _connected: boolean;
+  _signInSeq: number;
+  _queuedEvents: PendingEvent[];
 
-  _registerSeq: number;
-  _queuedJobs: PendingEventJob[];
+  _connId: void | string;
+  _user: null | MachinatUser;
+  _channel: null | ConnectionChannel;
+  _isDisconnecting: boolean;
 
-  _user: ?MachinatUser;
-
-  _connId: string;
-  _connChannel: ConnectionChannel;
-
-  _eventListeners: ((ClientEventContext) => void)[];
+  _eventListeners: ((EventValue, WebScoketClient<Credential>) => void)[];
   _errorListeners: ((Error) => void)[];
 
-  constructor({ url, registrator }: ClientOptions<RegData> = {}) {
-    invariant(registrator, 'options.registrator should not be empty');
-
+  constructor({ url, authorize }: ClientOptions<Credential> = {}) {
     this._serverLocation =
       url ||
       `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
-    this._registrator = registrator;
+    this._authorize = authorize || (() => ({ user: null, credential: null }));
 
-    this._connected = false;
-    this._queuedJobs = [];
+    this._queuedEvents = [];
     this._eventListeners = [];
     this._errorListeners = [];
+
+    this._connId = undefined;
+    this._user = null;
+    this._channel = null;
+    this._isDisconnecting = false;
 
     const socket = createSocket(this._serverLocation);
     this._socket = socket;
@@ -93,44 +74,57 @@ class WebScoketClient<RegData> {
 
     socket.on('connect', this._handleConnect.bind(this));
     socket.on('disconnect', this._handleDisconnect.bind(this));
-    socket.on('event', this._handleEvent.bind(this));
+    socket.on('dispatch', this._handleDispatch.bind(this));
 
     socket.on('reject', this._handleReject.bind(this));
     socket.on('error', handleError);
     socket.on('connect_fail', this._handleConnectFail.bind(this));
   }
 
-  get connected() {
-    return this._connected;
+  get connected(): boolean {
+    return !this._isDisconnecting && !!this._connId;
   }
 
-  async send(event: ClientEvent): Promise<void> {
-    if (!this._connected) {
+  get user() {
+    return this._user;
+  }
+
+  get channel() {
+    return this._channel;
+  }
+
+  async send(...events: EventValue[]): Promise<void> {
+    if (!this._connId) {
       await new Promise((resolve, reject) => {
-        this._queuedJobs.push({ resolve, reject, event });
+        this._queuedEvents.push({ resolve, reject, events });
       });
     } else {
-      await this._socket.event({ ...event, connId: this._connId });
+      await this._socket.dispatch({
+        connId: this._connId,
+        events,
+      });
     }
   }
 
   disconnect(reason: string) {
-    if (this._connected) {
-      this._connected = false;
+    this._isDisconnecting = true;
+    if (this._connId) {
       this._socket
         .disconnect({ connId: this._connId, reason })
         .catch(this._emitError);
     }
   }
 
-  onEvent(listener: ClientEventContext => void) {
+  onEvent(listener: (EventValue, WebScoketClient<Credential>) => void) {
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }
     this._eventListeners.push(listener);
   }
 
-  removeEventListener(listener: ClientEventContext => void) {
+  removeEventListener(
+    listener: (EventValue, WebScoketClient<Credential>) => void
+  ) {
     const idx = this._eventListeners.findIndex(fn => fn === listener);
     if (idx === -1) {
       return false;
@@ -140,9 +134,9 @@ class WebScoketClient<RegData> {
     return true;
   }
 
-  _emitEvent(event: ClientEvent, channel: WebSocketChannel) {
+  _emitEvent(event: EventValue) {
     for (const listener of this._eventListeners) {
-      listener({ event, channel, user: this._user });
+      listener(event, this);
     }
   }
 
@@ -174,87 +168,65 @@ class WebScoketClient<RegData> {
   }
 
   async _handleSocketOpen() {
-    const { data, user } = await this._registrator();
+    const { user, credential } = await this._authorize();
 
-    const seq = await this._socket.register({ data });
-    this._registerSeq = seq;
+    const seq = await this._socket.signIn({ credential });
+    this._signInSeq = seq;
     this._user = user;
   }
 
   _handleConnect({ connId, seq }: ConnectBody) {
-    if (seq !== this._registerSeq) {
+    if (seq !== this._signInSeq) {
       return;
     }
 
-    this._connected = true;
     this._connId = connId;
-    this._connChannel = new ConnectionChannel(
-      new Connection('*', '*', connId, null)
-    );
+    this._channel = new ConnectionChannel('*', connId);
 
-    this._emitEvent(
-      {
-        type: 'connect',
-        subtype: undefined,
-        payload: undefined,
-      },
-      this._connChannel
-    );
+    this._emitEvent({
+      type: 'connect',
+      subtype: undefined,
+      payload: undefined,
+    });
 
-    for (const { event, resolve, reject } of this._queuedJobs) {
+    for (const { events, resolve, reject } of this._queuedEvents) {
       this._socket
-        .event({ ...event, connId })
+        .dispatch({ events, connId })
         .then(resolve)
         .catch(reject);
     }
-    this._queuedJobs = [];
+    this._queuedEvents = [];
   }
 
   _handleDisconnect({ connId }: DisconnectBody) {
     if (this._connId === connId) {
-      this._connected = false;
-      this._emitEvent(
-        {
-          type: 'disconnect',
-          subtype: undefined,
-          payload: undefined,
-        },
-        this._connChannel
-      );
+      this._isDisconnecting = false;
+      this._connId = undefined;
+      this._emitEvent({
+        type: 'disconnect',
+        subtype: undefined,
+        payload: undefined,
+      });
     }
   }
 
-  _handleEvent({ connId, type, subtype, payload, scopeUId }: EventBody) {
-    if (this._connected === true && this._connId === connId) {
-      let channel = this._connChannel;
-
-      if (scopeUId) {
-        const [platform, scopeType, scopeSubtype, scopeId] = scopeUId.split(
-          ':'
-        );
-        channel =
-          platform !== WEBSOCKET
-            ? channel
-            : scopeType === 'user' && this._user
-            ? new UserScopeChannel(this._user)
-            : scopeType === 'topic'
-            ? new TopicScopeChannel(scopeSubtype, scopeId)
-            : channel;
+  _handleDispatch({ connId, events }: DispatchBody) {
+    if (this._connId === connId) {
+      for (const event of events) {
+        this._emitEvent(event);
       }
-
-      this._emitEvent({ type, subtype, payload }, channel);
     }
   }
 
   _handleReject({ seq, reason }: RejectBody) {
-    if (seq === this._registerSeq) {
-      this._emitError(new ConnectionError(reason));
+    if (seq === this._signInSeq) {
+      this._emitError(new SocketError(reason));
     }
   }
 
   _handleConnectFail({ seq }: DisconnectBody) {
-    if (seq === this._registerSeq) {
-      const err = new ConnectionError('connect handshake fail');
+    if (seq === this._signInSeq) {
+      const err = new SocketError('connect handshake fail');
       this._emitError(err);
     }
   }

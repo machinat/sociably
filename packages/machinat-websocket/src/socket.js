@@ -1,28 +1,9 @@
 // @flow
 import EventEmitter from 'events';
 import thenifiedly from 'thenifiedly';
-import type WebSocket from 'ws';
 
-import { ConnectionError } from './error';
-import type { RequestInfo, ConnectionId } from './types';
-
-/**
- * Mahcinat WebSocket Protocle v0
- *
- * The machinat-websocket builds on WebSocket to provide a Machinat interface to
- * send and receive events for client side applications.
- *
- * Glossary:
- *  - Socket:     the underlying tunnel which encapsulate a real WebSocket with
- *                defined prorocol to multiplexedly communicate over connections
- *  - Connection: virtual entity to send or receive event over
- *  - Channel:    a scope of a collection of connections for sending event to
- *  - Event:      an user defined MachinatEvent, sends over a connection
- *                bidirectionally
- *  - Server:     the central server receive/publish events from/to Client
- *  - Client:     client hold a connection and manage event reciving/sendering
- *                at front-end
- */
+import SocketError from './error';
+import type { RequestInfo, EventValue, WS } from './types';
 
 export const SOCKET_CONNECTING = 0;
 export const SOCKET_OPEN = 1;
@@ -42,35 +23,22 @@ export const SOCKET_CLOSED = 3;
  * body: object, body object correponded to the frame type
  */
 
-const FRAME_EVENT = 'event';
-const FRAME_ANSWER = 'answer';
+const FRAME_DISPATCH = 'dispatch';
 const FRAME_REJECT = 'reject';
-const FRAME_REGISTER = 'register';
+const FRAME_SIGN_IN = 'sign_in';
 const FRAME_CONNECT = 'connect';
 const FRAME_DISCONNECT = 'disconnect';
 
 /**
- * Event Frame carries a event which delivered with a specified connection
+ * Dispatch frame carries events delivered on a specified connection
  */
-export type EventBody = {|
-  connId: ConnectionId,
-  type: string,
-  subtype?: string,
-  payload: any,
-  requireAnswer?: boolean,
-  scopeUId?: string,
+export type DispatchBody = {|
+  connId: string,
+  events: EventValue[],
 |};
 
 /**
- * Answer Frame make a reply to an event transmitted before if needed
- */
-export type AnswerBody = {|
-  seq: number, // seq of the answered event
-  payload: any,
-|};
-
-/**
- * Reject Frame reject an illegal frame transmitted before
+ * Reject frame reject an illegal frame transmitted before
  */
 export type RejectBody = {|
   seq: number, // seq of the rejected frame
@@ -79,30 +47,30 @@ export type RejectBody = {|
 |};
 
 /**
- * Register Frame request for registering a connection
+ * SignIn frame request for signing in a connection
  */
-export type RegisterBody = {|
-  data: Object,
+export type SignInBody = {|
+  credential?: any,
 |};
 
 /**
- * Connect Frame initiate a connect handshake from Server or make a confirmation
+ * Connect frame initiate a connect handshake from Server or make a confirmation
  * to the connect frame received from Client
  */
 export type ConnectBody = {|
-  seq: number, // the responding "register" seq on server, "connect" seq on client
-  connId: ConnectionId,
+  seq: number, // reflect the responded "sign_in" seq on server, "connect" seq on client
+  connId: string,
 |};
 
 /**
- * Disconnect Frame initiate a disconnect handshake or make a confirmation to
+ * Disconnect frame initiate a disconnect handshake or make a confirmation to
  * the disconnect frame received from Server/Client
  */
 export type DisconnectBody = {|
   seq?: number, // the disconnect frame seq received if it's a confirmation
-  connId: ConnectionId,
+  connId: string,
   // code: number,
-  reason: string,
+  reason?: string,
 |};
 
 /**
@@ -114,7 +82,7 @@ export type DisconnectBody = {|
  *  | Client  |             | Server  |
  *  +---------+             +---------+
  *       |                        |
- *       | REGISTER (auth)        |
+ *       | SIGN_IN                |
  *       |----------------------->|
  *       |                        |
  *       |                        | verify auth
@@ -125,15 +93,15 @@ export type DisconnectBody = {|
  *       |                        |-| or initiative by Server |
  *       |                        | |-------------------------|
  *       |                        |
- *       |      CONNECT (channel) |
+ *       |                CONNECT |
  *       |<-----------------------|
  *       |                        |
- *       | CONNECT (channel)      |
+ *       | CONNECT                |
  *       |----------------------->|
  *       |                        | -----------------------\
  *       |                        |-| ok to emit event now |
  *       |                        | |----------------------|
- *       |        EVENT (channel) |
+ *       |               DISPATCH |
  *       |<-----------------------|
  *       |                        |
  *
@@ -144,41 +112,20 @@ export type DisconnectBody = {|
  *                        | Client  |                | Server  |
  *                        +---------+                +---------+
  *                             |                           |
- *                             |      DISCONNECT (channel) |
+ *                             |                DISCONNECT |
  *                             |<--------------------------|
  * --------------------------\ |                           |
  * | event before DISCONNECT |-|                           |
  * | echoed back still count | |                           |
  * |-------------------------| |                           |
  *                             |                           |
- *                             | EVENT (channel)           |
+ *                             | DISPATCH                  |
  *                             |-------------------------->|
  *                             |                           |
- *                             | DISCONNECT (channel)      |
+ *                             | DISCONNECT                |
  *                             |-------------------------->|
  *                             |                           |
  *
- * Event & Answer: emit event and make answer to an emmited event (optional),
- *
- *  +---------+                  +---------+
- *  | Client  |                  | Server  |
- *  +---------+                  +---------+
- *       |                            |
- *       | EVENT                      |
- *       | (requireAnswer:true)       |
- *       |--------------------------->|
- *       |                            | ---------------------\
- *       |                            |-| answer if required |
- *       |                            | |--------------------|
- *       |                            |
- *       |               ANSWER (seq) |
- *       |<---------------------------|
- *       |                            |
- *       |                      EVENT |
- *       |      (requireAnswer:false) |
- *       |<---------------------------|
- *       |                            |
-
  */
 
 const STATE_CONNECTED_OK = 0;
@@ -194,24 +141,24 @@ const MASK_DISCONNECTING = FLAG_DISCONNECT_SENT | FLAG_DISCONNECT_RECEIVED;
 
 const HANDSHAKE_TIMEOUT = 20 * 1000;
 
-type WithSocket = { socket: MachinatSocket }; // eslint-disable-line no-use-before-define
+type WSWithSocket = { socket: MachinatSocket }; // eslint-disable-line no-use-before-define
 
 function handleWSMessage(data: any) {
-  const { socket } = (this: WithSocket);
-  socket._handlePacket(data).catch(socket._emitError);
+  const { socket } = (this: WSWithSocket);
+  socket._handlePacket(data).catch(socket._emitErrorCallback);
 }
 
 function handleWSOpen() {
-  (this: WithSocket).socket._emitOpen();
+  (this: WSWithSocket).socket._emitOpen();
 }
 
 function handleWSClose(code, reason) {
-  const { socket } = (this: WithSocket);
+  const { socket } = (this: WSWithSocket);
   socket._emitClose(code, reason);
 }
 
 function handleWSError(err) {
-  (this: WithSocket).socket._emitError(err);
+  (this: WSWithSocket).socket._emitError(err);
 }
 
 /**
@@ -223,13 +170,13 @@ class MachinatSocket extends EventEmitter {
   isClient: boolean;
   request: RequestInfo;
 
-  _ws: WebSocket;
+  _ws: WS;
   _seq: number;
 
-  _connectStates: Map<ConnectionId, number>;
-  _handshakeTimeouts: Map<ConnectionId, TimeoutID>;
+  _connectStates: Map<string, number>;
+  _handshakeTimeouts: Map<string, TimeoutID>;
 
-  constructor(id: string, ws: WebSocket, request: RequestInfo) {
+  constructor(id: string, ws: WS, request: RequestInfo) {
     super();
 
     this.id = id;
@@ -252,12 +199,12 @@ class MachinatSocket extends EventEmitter {
     return this._ws.readyState;
   }
 
-  isConnected(connectionId: ConnectionId): boolean {
+  isConnected(connectionId: string): boolean {
     const state = this._connectStates.get(connectionId);
     return this._ws.readyState === SOCKET_OPEN && state === STATE_CONNECTED_OK;
   }
 
-  isConnecting(connectionId: ConnectionId): boolean {
+  isConnecting(connectionId: string): boolean {
     const state = this._connectStates.get(connectionId);
     return (
       this._ws.readyState === SOCKET_OPEN &&
@@ -266,7 +213,7 @@ class MachinatSocket extends EventEmitter {
     );
   }
 
-  isDisconnecting(connectionId: ConnectionId) {
+  isDisconnecting(connectionId: string) {
     const state = this._connectStates.get(connectionId);
     return (
       this._ws.readyState === SOCKET_OPEN &&
@@ -275,32 +222,28 @@ class MachinatSocket extends EventEmitter {
     );
   }
 
-  async event(body: EventBody): Promise<number> {
+  async dispatch(body: DispatchBody): Promise<number> {
     const { connId } = body;
 
     const state = this._connectStates.get(connId);
     if (state !== STATE_CONNECTED_OK) {
-      throw new ConnectionError(`connection [${connId}] is not connected`);
+      throw new SocketError(`connection [${connId}] is not connected`);
     }
 
-    const seq = await this._send(FRAME_EVENT, body);
+    const seq = await this._send(FRAME_DISPATCH, body);
     return seq;
-  }
-
-  answer(body: AnswerBody): Promise<number> {
-    return this._send(FRAME_ANSWER, body);
   }
 
   reject(body: RejectBody): Promise<number> {
     return this._send(FRAME_REJECT, body);
   }
 
-  async register(body: RegisterBody): Promise<number> {
+  async signIn(body: SignInBody): Promise<number> {
     if (!this.isClient) {
-      throw new ConnectionError("can't register on server side");
+      throw new SocketError("can't sign in on server side");
     }
 
-    const seq = await this._send(FRAME_REGISTER, body);
+    const seq = await this._send(FRAME_SIGN_IN, body);
     return seq;
   }
 
@@ -315,7 +258,7 @@ class MachinatSocket extends EventEmitter {
       (state !== undefined &&
         (state & MASK_DISCONNECTING || state & FLAG_CONNECT_SENT))
     ) {
-      throw new ConnectionError(`connection [${connId}] is already connected`);
+      throw new SocketError(`connection [${connId}] is already connected`);
     }
 
     this._addHandshakeTimeout(connId, undefined);
@@ -338,7 +281,7 @@ class MachinatSocket extends EventEmitter {
     let state = this._connectStates.get(connId);
     if (state === undefined) {
       // throw if not even connecting
-      throw new ConnectionError(
+      throw new SocketError(
         `connection [${connId}] not existed or already disconnected`
       );
     } else if (state & FLAG_DISCONNECT_SENT) {
@@ -367,7 +310,7 @@ class MachinatSocket extends EventEmitter {
   async _send(frame: string, body: Object): Promise<number> {
     const { readyState } = this._ws;
     if (readyState !== SOCKET_OPEN) {
-      throw new ConnectionError('socket is not ready');
+      throw new SocketError('socket is not ready');
     }
 
     this._seq += 1;
@@ -379,40 +322,38 @@ class MachinatSocket extends EventEmitter {
     return seq;
   }
 
-  _emitError = (err: Error) => {
-    this.emit('error', err);
-  };
+  _emitErrorCallback = this._emitError.bind(this);
 
-  _emitEvent(body: EventBody, seq: number) {
-    this.emit('event', body, seq);
+  _emitError(err: Error) {
+    this.emit('error', err, this);
+  }
+
+  _emitDispatch(body: DispatchBody, seq: number) {
+    this.emit('dispatch', body, seq, this);
   }
 
   _emitReject(body: RejectBody, seq: number) {
-    this.emit('reject', body, seq);
+    this.emit('reject', body, seq, this);
   }
 
-  _emitAnswer(body: AnswerBody, seq: number) {
-    this.emit('answer', body, seq);
-  }
-
-  _emitRegister(body: RegisterBody, seq: number) {
-    this.emit('register', body, seq);
+  _emitSingIn(body: SignInBody, seq: number) {
+    this.emit('sign_in', body, seq, this);
   }
 
   _emitConnect(body: ConnectBody, seq: number) {
-    this.emit('connect', body, seq);
+    this.emit('connect', body, seq, this);
   }
 
   _emitConnectFail(body: DisconnectBody, seq?: number) {
-    this.emit('connect_fail', body, seq);
+    this.emit('connect_fail', body, seq, this);
   }
 
   _emitDisconnect(body: DisconnectBody, seq?: number) {
-    this.emit('disconnect', body, seq);
+    this.emit('disconnect', body, seq, this);
   }
 
   _emitOpen() {
-    this.emit('open');
+    this.emit('open', this);
   }
 
   _emitClose(code: number, reason: string) {
@@ -431,7 +372,7 @@ class MachinatSocket extends EventEmitter {
     this._connectStates.clear();
     this._handshakeTimeouts.clear();
 
-    this.emit('close', code, reason);
+    this.emit('close', code, reason, this);
   }
 
   async _handlePacket(data: string) {
@@ -439,14 +380,12 @@ class MachinatSocket extends EventEmitter {
 
     this._seq = seq + 1;
 
-    if (frameType === FRAME_EVENT) {
-      await this._handleEvent(body, seq);
-    } else if (frameType === FRAME_ANSWER) {
-      await this._emitAnswer(body, seq);
+    if (frameType === FRAME_DISPATCH) {
+      await this._handleDispatch(body, seq);
     } else if (frameType === FRAME_REJECT) {
       await this._emitReject(body, seq);
-    } else if (frameType === FRAME_REGISTER) {
-      await this._handleRegister(body, seq);
+    } else if (frameType === FRAME_SIGN_IN) {
+      await this._handleSignIn(body, seq);
     } else if (frameType === FRAME_CONNECT) {
       await this._handleConnect(body, seq);
     } else if (frameType === FRAME_DISCONNECT) {
@@ -456,7 +395,7 @@ class MachinatSocket extends EventEmitter {
     }
   }
 
-  async _handleEvent(body: EventBody, seq: number) {
+  async _handleDispatch(body: DispatchBody, seq: number) {
     const { connId } = body;
 
     const state = this._connectStates.get(connId);
@@ -467,20 +406,20 @@ class MachinatSocket extends EventEmitter {
         !(state & MASK_CONNECTING) &&
         !(state & FLAG_DISCONNECT_RECEIVED))
     ) {
-      this._emitEvent(body, seq);
+      this._emitDispatch(body, seq);
     } else {
       await this.reject({ seq, reason: 'channel not connected' });
     }
   }
 
-  async _handleRegister(body: RegisterBody, seq: number) {
+  async _handleSignIn(body: SignInBody, seq: number) {
     if (this.isClient) {
       await this.reject({
         seq,
-        reason: "can't register to client",
+        reason: "can't sign in to client",
       });
     } else {
-      this._emitRegister(body, seq);
+      this._emitSingIn(body, seq);
     }
   }
 
@@ -536,7 +475,9 @@ class MachinatSocket extends EventEmitter {
     }
   }
 
-  _outdateHandshake = (connId: ConnectionId, seq?: number) => {
+  _outdateHandshakeCallback = this._outdateHandshake.bind(this);
+
+  _outdateHandshake(connId: string, seq?: number) {
     const state = this._connectStates.get(connId);
     if (state !== undefined && state !== STATE_CONNECTED_OK) {
       this._connectStates.delete(connId);
@@ -550,9 +491,9 @@ class MachinatSocket extends EventEmitter {
     }
 
     this._handshakeTimeouts.delete(connId);
-  };
+  }
 
-  _addHandshakeTimeout(connectionId: ConnectionId, seq?: number) {
+  _addHandshakeTimeout(connectionId: string, seq?: number) {
     if (this._handshakeTimeouts.has(connectionId)) {
       return;
     }
@@ -563,7 +504,7 @@ class MachinatSocket extends EventEmitter {
     }
 
     const timeoutId = setTimeout(
-      this._outdateHandshake,
+      this._outdateHandshakeCallback,
       HANDSHAKE_TIMEOUT,
       connectionId,
       seq

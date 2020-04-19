@@ -1,22 +1,20 @@
 // @flow
+import type EventEmitter from 'events';
 import type {
-  MachinatNativeComponent,
+  NativeComponent,
   MachinatChannel,
   MachinatEvent,
   MachinatUser,
   MachinatMetadata,
-} from 'machinat/types';
-import type { BotPlugin } from 'machinat-base/types';
-import type WebSocketBot from './bot';
-import type Connection from './connection';
-import type {
-  TopicScopeChannel,
-  UserScopeChannel,
-  ConnectionChannel,
-} from './channel';
-
-export type ConnectionId = string;
-export type ChannelUid = string;
+  EventContext,
+  PlatformMounter,
+  EventMiddleware,
+  DispatchMiddleware,
+} from '@machinat/core/types';
+import type { DispatchFrame } from '@machinat/core/engine/types';
+import type { ServiceContainer } from '@machinat/core/service/types';
+import WebSocketBot from './bot';
+import type { TopicChannel, UserChannel, ConnectionChannel } from './channel';
 
 export type WebSocketEvent = {
   platform: 'websocket',
@@ -28,128 +26,138 @@ export type WebSocketEvent = {
 declare var e: WebSocketEvent;
 (e: MachinatEvent<any>);
 
-export type WebSocketChannel =
-  | TopicScopeChannel
-  | UserScopeChannel
-  | ConnectionChannel;
+export type WebSocketChannel = TopicChannel | UserChannel | ConnectionChannel;
 
 declare var c: WebSocketChannel;
 (c: MachinatChannel);
 
-export type EventOrder = {|
+export type EventValue = {|
   type: string,
   subtype?: string,
-  payload?: string,
-  only?: ConnectionId[],
-  except?: ConnectionId[],
+  payload?: any,
 |};
 
+type ConnectionTarget = {
+  +type: 'connection',
+  +serverId: string,
+  +connectionId: string,
+};
+
+type TopicTarget = {
+  +type: 'topic',
+  +name: string,
+};
+
+type UserTarget = {
+  +type: 'user',
+  +userUId: string,
+};
+
+export type DispatchTarget = ConnectionTarget | TopicTarget | UserTarget;
+
 export type WebSocketJob = {|
-  scope: WebSocketChannel,
-  order: EventOrder,
+  target: DispatchTarget,
+  events: EventValue[],
+  whitelist: null | ConnectionChannel[],
+  blacklist: null | ConnectionChannel[],
 |};
 
 export type WebSocketResult = {
-  connections: null | Connection[],
+  connections: null | ConnectionChannel[],
 };
+
+export type WebSocketDispatchFrame = DispatchFrame<
+  WebSocketChannel,
+  WebSocketJob,
+  WebSocketBot
+>;
 
 export type RequestInfo = {|
   method: string,
   url: string,
   headers: {| [string]: string |},
-  encrypted: boolean,
 |};
 
-export type WebSocketMetadata<AuthContext> = {|
+export type WebSocketMetadata<AuthInfo> = {|
   source: 'websocket',
   request: RequestInfo,
-  connection: Connection,
-  authContext: AuthContext,
+  auth: AuthInfo,
 |};
 
 declare var m: WebSocketMetadata<any>;
 (m: MachinatMetadata<'websocket'>);
 
-type AcceptedAuthenticateResult<AuthContext> = {|
-  accepted: true,
-  user: null | MachinatUser,
-  expireAt: null | Date,
-  context: AuthContext,
-|};
+export type WebSocketComponent = NativeComponent<any, EventValue>;
 
-type UnacceptedAuthenticateResult = {|
-  accepted: false,
-  // TODO: reject code
-  // code: number,
+export type WebSocketEventContext<AuthInfo> = EventContext<
+  WebSocketChannel,
+  null | MachinatUser,
+  WebSocketEvent,
+  WebSocketMetadata<AuthInfo>,
+  WebSocketBot
+>;
+
+type SuccessVerifyAuthResult<AuthInfo> = {
+  success: true,
+  authInfo: AuthInfo,
+  user: null | MachinatUser,
+  expireAt?: Date,
+};
+
+type FailedVerifyAuthResult = {
+  success: false,
+  code: number,
   reason: string,
-|};
+};
 
-export type AuthenticateResult<AuthCtx> =
-  | AcceptedAuthenticateResult<AuthCtx>
-  | UnacceptedAuthenticateResult;
+export type VerifyAuthResult<AuthInfo> =
+  | SuccessVerifyAuthResult<AuthInfo>
+  | FailedVerifyAuthResult;
 
-export type ServerAuthenticatorFunc<AuthCtx, RegData> = (
-  request: RequestInfo,
-  data: RegData
-) => Promise<AuthenticateResult<AuthCtx>>;
+export type VerifyAuthFn<AuthInfo, Credential> = (
+  RequestInfo,
+  Credential
+) => Promise<VerifyAuthResult<AuthInfo>>;
 
-export type WebSocketComponent = MachinatNativeComponent<EventOrder>;
+export type VerifyUpgradeFn = (request: RequestInfo) => boolean;
 
-export type WebSocketBotOptions<AuthCtx, RegData> = {|
-  authenticator: ServerAuthenticatorFunc<AuthCtx, RegData>,
-  verifyUpgrade?: RequestInfo => boolean,
-  plugins?: BotPlugin<
-    WebSocketChannel,
-    ?MachinatUser,
-    WebSocketEvent,
-    WebSocketMetadata<AuthCtx>,
-    void,
-    EventOrder,
-    WebSocketComponent,
-    WebSocketJob,
-    WebSocketResult,
-    void,
-    WebSocketBot<AuthCtx, RegData>
-  >[],
-|};
-
-type ConnectionTarget = {|
-  type: 'connection',
-  serverId: string,
-  connId: string,
-|};
-
-type TopicTarget = {|
-  type: 'topic',
-  uid: ChannelUid,
-|};
-
-export type RemoteTarget = ConnectionTarget | TopicTarget;
-
-export interface SocketBroker {
-  sendRemote(
-    target: RemoteTarget,
-    order: EventOrder
-  ): Promise<null | Connection[]>;
-
-  attachTopicRemote(
-    connection: Connection,
-    channel: WebSocketChannel
-  ): Promise<boolean>;
-
-  detachTopicRemote(
-    connection: Connection,
-    channel: WebSocketChannel
-  ): Promise<boolean>;
-
-  disconnectRemote(connection: Connection): Promise<boolean>;
-
-  onRemoteEvent(
-    handler: (target: RemoteTarget, order: EventOrder) => void
-  ): void;
-}
-
-export type ClientRegistratorFunc<RegisterData> = () => Promise<{
+export type ClientAuthorizeFn<Credential> = () => Promise<{
   user: null | MachinatUser,
-  data: RegisterData,
+  credential: Credential,
 }>;
+
+export type WebSocketEventMiddleware<Auth> = EventMiddleware<
+  WebSocketEventContext<Auth>,
+  null
+>;
+
+export type WebSocketDispatchMiddleware = DispatchMiddleware<
+  WebSocketJob,
+  WebSocketDispatchFrame,
+  WebSocketResult
+>;
+
+export type WebSocketPlatformConfigs<Auth> = {
+  entryPath?: string,
+  eventMiddlewares?: (
+    | WebSocketEventMiddleware<Auth>
+    | ServiceContainer<WebSocketEventMiddleware<Auth>>
+  )[],
+  dispatchMiddlewares?: (
+    | WebSocketDispatchMiddleware
+    | ServiceContainer<WebSocketDispatchMiddleware>
+  )[],
+};
+
+export type WebSocketPlatformMounter<Auth> = PlatformMounter<
+  WebSocketEventContext<Auth>,
+  null,
+  WebSocketJob,
+  WebSocketDispatchFrame,
+  WebSocketResult
+>;
+
+export type WS = {
+  ...WebSocket,
+  ...EventEmitter,
+};

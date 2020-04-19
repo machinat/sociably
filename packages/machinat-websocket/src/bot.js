@@ -1,145 +1,87 @@
 // @flow
-import invariant from 'invariant';
-import WS from 'ws';
-import uniqid from 'uniqid';
-import { Emitter, Controller, Engine, resolvePlugins } from 'machinat-base';
-import Renderer from 'machinat-renderer';
-import Queue from 'machinat-queue';
-
-import type { MachinatNode, MachinatUser } from 'machinat/types';
-import type { MachinatBot, OutputableSegment } from 'machinat-base/types';
-import type { HTTPUpgradeReceivable } from 'machinat-http-adaptor/types';
+import Engine from '@machinat/core/engine';
+import Renderer from '@machinat/core/renderer';
+import Queue from '@machinat/core/queue';
+import { provider } from '@machinat/core/service';
+import type {
+  MachinatNode,
+  MachinatBot,
+  MachinatUser,
+  InitScopeFn,
+  DispatchWrapper,
+} from '@machinat/core/types';
+import type {
+  DispatchableSegment,
+  DispatchResponse,
+} from '@machinat/core/engine/types';
 import type {
   WebSocketChannel,
-  WebSocketEvent,
-  WebSocketMetadata,
-  EventOrder,
+  EventValue,
   WebSocketJob,
   WebSocketResult,
-  WebSocketBotOptions,
   WebSocketComponent,
+  WebSocketDispatchFrame,
+  WebSocketPlatformMounter,
 } from './types';
-import type { TopicScopeChannel } from './channel';
-import type Connection from './connection';
-
-import { WEBSOCKET, WEBSOCKET_NATIVE_TYPE } from './constant';
-import Distributor from './distributor';
-import { LocalOnlyBroker } from './broker';
-import WebSocketReceiver from './receiver';
+import { TopicChannel, ConnectionChannel, UserChannel } from './channel';
+import { WEBSOCKET, WEBSOCKET_PLATFORM_MOUNTER_I } from './constant';
+import Transmitter from './transmitter';
 import WebSocketWorker from './worker';
 
-const WSServer = WS.Server;
+type WebSocketDispatchResponse = DispatchResponse<
+  WebSocketJob,
+  WebSocketResult
+>;
 
 const createJobs = (
-  scope: WebSocketChannel,
-  segments: OutputableSegment<EventOrder, WebSocketComponent>[]
+  channel: WebSocketChannel,
+  segments: DispatchableSegment<EventValue, WebSocketComponent>[]
 ): WebSocketJob[] => {
-  return segments.map(seg => ({
-    scope,
-    order:
-      seg.type === 'text'
-        ? {
-            type: 'message',
-            subtype: 'text',
-            payload: seg.value,
-          }
-        : seg.value,
-  }));
+  return [
+    {
+      target: channel,
+      events: segments.map(seg =>
+        seg.type === 'text'
+          ? {
+              type: 'message',
+              subtype: 'text',
+              payload: seg.value,
+            }
+          : seg.value
+      ),
+      whitelist: null,
+      blacklist: null,
+    },
+  ];
 };
 
-class WebSocketBot<AuthCtx, RegData>
-  extends Emitter<
+class WebSocketBot
+  implements MachinatBot<WebSocketChannel, WebSocketJob, WebSocketResult> {
+  _transmitter: Transmitter;
+  engine: Engine<
     WebSocketChannel,
-    ?MachinatUser,
-    WebSocketEvent,
-    WebSocketMetadata<AuthCtx>,
-    EventOrder,
+    EventValue,
     WebSocketComponent,
     WebSocketJob,
     WebSocketResult,
-    void
-  >
-  implements
-    HTTPUpgradeReceivable<WebSocketReceiver<AuthCtx, RegData>>,
-    MachinatBot<
-      WebSocketChannel,
-      ?MachinatUser,
-      WebSocketEvent,
-      WebSocketMetadata<AuthCtx>,
-      void,
-      EventOrder,
-      WebSocketComponent,
+    WebSocketBot
+  >;
+
+  constructor(
+    transmitter: Transmitter,
+    initScope: InitScopeFn,
+    dispatchWrapper: DispatchWrapper<
       WebSocketJob,
-      WebSocketResult,
-      void,
-      WebSocketBotOptions<AuthCtx, RegData>
-    > {
-  _distributor: Distributor;
-
-  receiver: WebSocketReceiver<AuthCtx, RegData>;
-  controller: Controller<
-    WebSocketChannel,
-    ?MachinatUser,
-    WebSocketEvent,
-    WebSocketMetadata<AuthCtx>,
-    void,
-    EventOrder,
-    WebSocketComponent,
-    void
-  >;
-
-  engine: Engine<
-    WebSocketChannel,
-    EventOrder,
-    WebSocketComponent,
-    WebSocketJob,
-    WebSocketResult
-  >;
-
-  worker: WebSocketWorker;
-
-  constructor({
-    authenticator,
-    verifyUpgrade,
-    plugins,
-  }: WebSocketBotOptions<AuthCtx, RegData> = {}) {
-    invariant(authenticator, 'options.authenticator should not be empty');
-
-    super();
-
-    const broker = new LocalOnlyBroker();
-
-    const serverId = uniqid();
-    this._distributor = new Distributor(serverId, broker, err =>
-      this.emitError(err)
-    );
-
-    const wsServer = new WSServer({ noServer: true });
-
-    const { eventMiddlewares, dispatchMiddlewares } = resolvePlugins(
-      this,
-      plugins
-    );
-
-    this.controller = new Controller(WEBSOCKET, this, eventMiddlewares);
-
-    this.receiver = new WebSocketReceiver(
-      serverId,
-      wsServer,
-      this._distributor,
-      authenticator,
-      verifyUpgrade || (() => true)
-    );
-
-    this.receiver.bindIssuer(
-      this.controller.eventIssuerThroughMiddlewares(this.emitEvent.bind(this)),
-      this.emitError.bind(this)
-    );
+      WebSocketDispatchFrame,
+      WebSocketResult
+    >
+  ) {
+    this._transmitter = transmitter;
 
     const queue = new Queue();
-    const worker = new WebSocketWorker(this._distributor);
+    const worker = new WebSocketWorker(transmitter);
 
-    const renderer = new Renderer(WEBSOCKET, WEBSOCKET_NATIVE_TYPE, () => {
+    const renderer = new Renderer(WEBSOCKET, () => {
       throw new TypeError(
         'general component not supported at websocket platform'
       );
@@ -151,49 +93,80 @@ class WebSocketBot<AuthCtx, RegData>
       renderer,
       queue,
       worker,
-      dispatchMiddlewares
+      initScope,
+      dispatchWrapper
     );
   }
 
-  async render(
+  async start() {
+    await this._transmitter.start();
+    this.engine.start();
+  }
+
+  async stop() {
+    await this._transmitter.stop();
+    this.engine.stop();
+  }
+
+  render(
     channel: WebSocketChannel,
     message: MachinatNode
-  ): Promise<null | WebSocketResult[]> {
-    const tasks = await this.engine.renderTasks(
-      createJobs,
-      channel,
-      message,
-      undefined,
-      true
-    );
-
-    if (tasks === null) {
-      return null;
-    }
-
-    const response = await this.engine.dispatch(channel, tasks, message);
-    return response === null ? null : response.results;
+  ): Promise<null | WebSocketDispatchResponse> {
+    return this.engine.render(channel, message, createJobs);
   }
 
-  disconnect(connection: Connection, reason: string) {
-    return this._distributor.disconnect(connection, reason);
+  send(channel: WebSocketChannel, events: EventValue[]) {
+    return this.engine.dispatchJobs(channel, [
+      { target: channel, events, whitelist: null, blacklist: null },
+    ]);
   }
 
-  attachTopic(connection: Connection, scope: TopicScopeChannel) {
-    invariant(
-      scope.platform === WEBSOCKET && scope.type === 'topic',
-      `expect a "topic" scope to attach, get: "${scope.type}"`
-    );
-    return this._distributor.attachTopic(connection, scope);
+  renderUser(
+    user: MachinatUser,
+    message: MachinatNode
+  ): Promise<null | WebSocketDispatchResponse> {
+    return this.engine.render(new UserChannel(user), message, createJobs);
   }
 
-  detachTopic(connection: Connection, scope: TopicScopeChannel) {
-    invariant(
-      scope.platform === WEBSOCKET && scope.type === 'topic',
-      `expect a "topic" scope to detach, get: "${scope.type}"`
-    );
-    return this._distributor.detachTopic(connection, scope);
+  sendUser(user: MachinatUser, events: EventValue[]) {
+    const channel = new UserChannel(user);
+    return this.engine.dispatchJobs(channel, [
+      { target: channel, events, whitelist: null, blacklist: null },
+    ]);
+  }
+
+  renderTopic(
+    topic: string,
+    message: MachinatNode
+  ): Promise<null | WebSocketDispatchResponse> {
+    return this.engine.render(new TopicChannel(topic), message, createJobs);
+  }
+
+  sendTopic(topic: string, events: EventValue[]) {
+    const channel = new TopicChannel(topic);
+    return this.engine.dispatchJobs(channel, [
+      { target: channel, events, whitelist: null, blacklist: null },
+    ]);
+  }
+
+  disconnect(connection: ConnectionChannel, reason?: string) {
+    return this._transmitter.disconnect(connection, reason);
+  }
+
+  attachTopic(connection: ConnectionChannel, topic: string) {
+    return this._transmitter.attachTopic(connection, topic);
+  }
+
+  detachTopic(connection: ConnectionChannel, topic: string) {
+    return this._transmitter.detachTopic(connection, topic);
   }
 }
 
-export default WebSocketBot;
+export default provider<WebSocketBot>({
+  lifetime: 'singleton',
+  deps: [Transmitter, WEBSOCKET_PLATFORM_MOUNTER_I],
+  factory: (
+    transmitter: Transmitter,
+    { initScope, dispatchWrapper }: WebSocketPlatformMounter<any>
+  ) => new WebSocketBot(transmitter, initScope, dispatchWrapper),
+})(WebSocketBot);

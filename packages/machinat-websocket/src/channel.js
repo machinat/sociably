@@ -1,71 +1,56 @@
 // @flow
-import type { MachinatUser, MachinatChannel } from 'machinat/types';
-import type Connection from './connection';
+import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import { WEBSOCKET } from './constant';
 
-export class TopicScopeChannel implements MachinatChannel {
-  platform: 'websocket';
-  type: 'topic';
-  name: string;
-  id: void | string;
+export class ConnectionChannel implements MachinatChannel {
+  platform = WEBSOCKET;
+  type = 'connection';
+  serverId: string;
+  connectionId: string;
 
-  constructor(name?: string, id?: string) {
-    this.platform = 'websocket';
-    this.type = 'topic';
-    this.name = name || 'default';
-    this.id = id;
+  constructor(serverId: string, connectionId: string) {
+    this.serverId = serverId;
+    this.connectionId = connectionId;
   }
 
-  get subtype() {
-    return this.name;
+  get id() {
+    return this.connectionId;
   }
 
   get uid() {
-    return `${WEBSOCKET}:topic:${this.name}:${this.id || '*'}`;
+    return `${WEBSOCKET}.conn.${this.serverId}.${this.connectionId}`;
   }
 }
 
-export class UserScopeChannel implements MachinatChannel {
-  platform: 'websocket';
-  type: 'user';
+export class UserChannel implements MachinatChannel {
+  platform = WEBSOCKET;
+  type = 'user';
   user: MachinatUser;
 
   constructor(user: MachinatUser) {
-    this.platform = 'websocket';
-    this.type = 'user';
     this.user = user;
   }
 
-  get subtype() {
-    return (this.user: MachinatUser).platform;
-  }
-
-  get id() {
-    return (this.user: MachinatUser).id;
+  get userUId() {
+    return this.user.uid;
   }
 
   get uid() {
-    const { platform, id } = (this.user: MachinatUser);
-    return `${WEBSOCKET}:user:${platform || '*'}:${id}`;
+    const { uid } = (this.user: MachinatUser);
+    return `${WEBSOCKET}.user.${uid}`;
   }
 }
 
-export class ConnectionChannel implements MachinatChannel {
-  platform: 'websocket';
-  type: 'connection';
-  connection: Connection;
+export class TopicChannel implements MachinatChannel {
+  platform = WEBSOCKET;
+  type = 'topic';
+  name: string;
 
-  constructor(connection: Connection) {
-    this.platform = 'websocket';
-    this.type = 'connection';
-    this.connection = connection;
-  }
-
-  get id() {
-    return this.connection.id;
+  constructor(name: string) {
+    this.name = name;
   }
 
   get uid() {
-    return `${WEBSOCKET}:connection:*:${this.connection.id}`;
+    return `${WEBSOCKET}.topic.${this.name}`;
   }
 }
