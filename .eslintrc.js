@@ -48,7 +48,7 @@ module.exports = {
     'flowtype/no-unused-expressions': 2,
     'import/extensions': 0,
     'import/no-unresolved': ['error', {
-      ignore: ['machinat.*/types']
+      ignore: ['@machinat/.*']
     }],
     'import/no-cycle': 0,
     'react/jsx-key': 0,

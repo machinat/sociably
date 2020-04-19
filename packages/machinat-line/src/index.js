@@ -1,5 +1,4 @@
 // @flow
-import invariant from 'invariant';
 import { inject, factory } from '@machinat/core/service';
 import type { PlatformModule } from '@machinat/core/types';
 import HTTP from '@machinat/http';

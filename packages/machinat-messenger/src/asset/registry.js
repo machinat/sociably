@@ -3,11 +3,10 @@ import { provider } from '@machinat/core/service';
 import type { MachinatNode } from '@machinat/core/types';
 import StateManager from '@machinat/state'; // eslint-disable-line import/no-extraneous-dependencies
 import formatNode from '@machinat/core/utils/formatNode';
-import { PATH_PERSONAS, PATH_CUSTOM_LABELS } from '../constant';
+import { PATH_PERSONAS } from '../constant';
 import MessengerBot from '../bot';
 
 const ATTACHMENT = 'attachment';
-const CUSTOM_LABEL = 'custom_label';
 const MESSAGE_CREATIVE = 'message_creative';
 const PERSONA = 'persona';
 

@@ -1,9 +1,8 @@
 import moxy from 'moxy';
-
 import WS from 'ws';
 import Transmitter from '../transmitter';
 import Socket from '../socket';
-import { LocalOnlyBroker } from '../broker';
+import LocalOnlyBroker from '../broker/localOnlyBroker';
 import { ConnectionChannel, TopicChannel, UserChannel } from '../channel';
 
 const request = {

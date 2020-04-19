@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 import nock from 'nock';
 import moxy from 'moxy';
 import Machinat from '@machinat/core';

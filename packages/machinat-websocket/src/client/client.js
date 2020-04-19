@@ -53,7 +53,8 @@ class WebScoketClient<Credential> {
     this._serverLocation =
       url ||
       `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
-    this._authorize = authorize || (() => ({ user: null, credential: null }));
+    this._authorize =
+      authorize || (() => Promise.resolve({ user: null, credential: null }));
 
     this._queuedEvents = [];
     this._eventListeners = [];

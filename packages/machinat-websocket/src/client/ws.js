@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { ConnectionError } from '../error';
+import SocketError from '../error';
 
 const ws =
   typeof WebSocket === 'undefined'
@@ -24,7 +24,7 @@ const ws =
           };
 
           webSocket.onerror = e => {
-            this.emit('error', new ConnectionError(e.message));
+            this.emit('error', new SocketError(e.message));
           };
 
           webSocket.onopen = () => {

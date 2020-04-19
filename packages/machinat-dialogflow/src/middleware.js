@@ -1,6 +1,5 @@
 // @flow
 import invariant from 'invariant';
-import type { MachinatMiddleware, EventContext } from 'machinat-base/types';
 import { SessionsClient } from 'dialogflow';
 
 type DetectIntentQueryConfig = {

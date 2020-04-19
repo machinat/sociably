@@ -1,4 +1,4 @@
-import moxy, { Mock } from 'moxy';
+import moxy from 'moxy';
 import Machinat from '@machinat/core';
 import Engine from '@machinat/core/engine';
 import Renderer from '@machinat/core/renderer';

@@ -5,9 +5,6 @@ import type { WebhookHandler } from './types';
 
 const RAW_BODY_OPTION = { encoding: true };
 
-const objectHasOwnProperty = (obj, prop) =>
-  Object.prototype.hasOwnProperty.call(obj, prop);
-
 class WebhookReceiver {
   _handleWebhook: WebhookHandler;
 

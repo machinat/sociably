@@ -1,7 +1,5 @@
 // @flow
 import { annotateNativeComponent } from '@machinat/core/renderer';
-import type { GeneralElement } from '@machinat/core/types';
-import type { InnerRenderFn } from '@machinat/core/renderer/types';
 
 import type { MessengerSegmentValue } from './types';
 import { MESSENGER, ENTRY_PATH } from './constant';

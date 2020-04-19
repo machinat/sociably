@@ -1,6 +1,5 @@
 import { unitSegment } from '@machinat/core/renderer';
 import { annotateMessengerComponent } from '../utils';
-import { ATTACHMENT_DATA, ATTACHMENT_INFO, ASSET_TAG } from '../constant';
 
 const mediaFactory = (name, type) => {
   const container = {

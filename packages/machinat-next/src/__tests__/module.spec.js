@@ -6,6 +6,7 @@ import NextReceiver from '../receiver';
 import Next from '..';
 
 jest.mock('next', () =>
+  // eslint-disable-next-line global-require
   require('moxy').default(() => ({ prepare: async () => {} }))
 );
 
