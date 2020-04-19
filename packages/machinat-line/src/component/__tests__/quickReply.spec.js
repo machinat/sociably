@@ -1,6 +1,6 @@
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
-import { isNativeElement } from '@machinat/core/utils/isXxx';
+import { isNativeElement } from '@machinat/core/utils/isX';
 
 import { QuickReply } from '../quickReply';
 import { URIAction } from '../action';

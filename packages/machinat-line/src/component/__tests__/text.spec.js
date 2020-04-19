@@ -1,6 +1,6 @@
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
-import { isNativeElement } from '@machinat/core/utils/isXxx';
+import { isNativeElement } from '@machinat/core/utils/isX';
 import { Emoji } from '../text';
 
 const renderer = new Renderer('line', () => null);

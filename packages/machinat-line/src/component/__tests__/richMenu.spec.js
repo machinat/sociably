@@ -1,6 +1,6 @@
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
-import { isNativeElement } from '@machinat/core/utils/isXxx';
+import { isNativeElement } from '@machinat/core/utils/isX';
 import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
 import LineChannel from '../../channel';
 import { LinkRichMenu, UnlinkRichMenu } from '../richMenu';

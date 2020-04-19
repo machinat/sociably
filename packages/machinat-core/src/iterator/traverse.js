@@ -1,7 +1,7 @@
 // @flow
 import type { MachinatNode, FragmentElement } from '../types';
 
-import { isElement, isFragmentElement, isEmpty } from '../utils/isXxx';
+import { isElement, isFragmentElement, isEmpty } from '../utils/isX';
 import type { TraverseNodeCallback } from './types';
 
 const ITER_SEPARATOR = ':';

@@ -15,7 +15,7 @@ import {
   isRawElement,
   isElementTypeValid,
   isValidRenderable,
-} from '../isXxx';
+} from '../isX';
 
 const Native = () => {};
 Native.$$typeof = MACHINAT_NATIVE_TYPE;

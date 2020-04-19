@@ -5,7 +5,7 @@ import {
   isRawElement,
   isThunkElement,
   isPauseElement,
-} from '@machinat/core/utils/isXxx';
+} from '@machinat/core/utils/isX';
 
 module.exports = {
   print(element, serialize, indent) {

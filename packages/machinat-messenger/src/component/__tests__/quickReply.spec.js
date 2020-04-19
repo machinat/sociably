@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { isNativeElement } from '@machinat/core/utils/isXxx';
+import { isNativeElement } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 import {
   QuickReply,

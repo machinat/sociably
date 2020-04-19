@@ -12,7 +12,7 @@ import {
   isRawElement,
   isProviderElement,
   isContainerElement,
-} from '../utils/isXxx';
+} from '../utils/isX';
 import type { Interfaceable, ServiceScope } from '../service/types';
 import type {
   MachinatNode,
