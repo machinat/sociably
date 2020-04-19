@@ -1,242 +1,588 @@
 import moxy from 'moxy';
-import { toArray } from 'machinat-utility';
-import { StateService } from 'machinat-session';
-import { processInterceptor, initProcessComponent } from '../processor';
-import runner from '../runner';
-import { SCRIPT_STATE_KEY } from '../constant';
+import Machinat from '@machinat/core';
+import ScriptProcessor from '../processor';
+import build from '../build';
+import {
+  IF,
+  THEN,
+  ELSE,
+  WHILE,
+  PROMPT,
+  VARS,
+  LABEL,
+  CALL,
+  RETURN,
+} from '../keyword';
 
-jest.mock('../runner', () =>
-  jest.requireActual('moxy').default(() => ({
-    finished: true,
-    stack: undefined,
-    constent: ['bye'],
-  }))
+const state = moxy({
+  get: async () => {},
+  set: async () => false,
+  delete: async () => false,
+});
+
+const stateManager = moxy({
+  channelState: () => state,
+});
+
+const promptSetter = moxy(vars => vars);
+
+const AnotherScript = build(
+  'AnotherScript',
+  <>
+    {() => 'adipiscing '}
+    <PROMPT key="ask_4" set={promptSetter} />
+    {() => 'elit, '}
+  </>
 );
 
+const MyScript = build(
+  'MyScript',
+  <>
+    {() => 'Lorem '}
+
+    <LABEL key="#1" />
+
+    {() => 'ipsum '}
+
+    <IF condition={({ shouldReturn }) => !shouldReturn}>
+      <THEN>
+        <LABEL key="#2" />
+
+        {() => 'dolor '}
+
+        <PROMPT key="ask_1" set={promptSetter} />
+
+        {() => 'sit '}
+      </THEN>
+
+      <ELSE>
+        <LABEL key="#3" />
+        {() => 'est '}
+
+        <PROMPT key="ask_2" set={promptSetter} />
+
+        {() => 'laborum. '}
+        <RETURN />
+      </ELSE>
+    </IF>
+
+    {() => 'amet, '}
+
+    <PROMPT key="ask_3" set={promptSetter} />
+
+    <LABEL key="#4" />
+    {() => 'consectetur '}
+
+    <CALL key="call_1" script={AnotherScript} />
+
+    {() => 'sed '}
+
+    <VARS set={vars => ({ ...vars, i: 0 })} />
+
+    <WHILE condition={({ i }) => i < 5}>
+      <VARS set={vars => ({ ...vars, i: vars.i + 1 })} />
+
+      <PROMPT key="ask_5" set={promptSetter} />
+      {() => 'do '}
+    </WHILE>
+
+    {() => 'eiusmod '}
+  </>
+);
+
+const channel = { uid: '#channel' };
+
 beforeEach(() => {
-  runner.mock.reset();
+  state.mock.reset();
+  stateManager.mock.reset();
+  promptSetter.mock.reset();
 });
 
-describe('processInterceptor', () => {
-  const session = moxy({
-    get: async () => undefined,
-    set: async () => {},
-    delete: async () => true,
-  });
+describe('#init()', () => {
+  test('init script from begin', async () => {
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+    const runtime = await processor.init(channel, MyScript);
 
-  const sessionStore = moxy({
-    getSession: () => session,
-  });
+    expect(runtime.channel).toEqual(channel);
+    expect(runtime.isFinished).toBe(false);
+    expect(runtime.isPrompting).toBe(false);
 
-  const Script1 = { name: 'Script1' /* ... */ };
-  const Script2 = { name: 'Script2' /* ... */ };
-
-  const frame = {
-    channel: { uid: 'xxx-xxx-xxx' },
-    reply: moxy(() => [{}]),
-  };
-
-  beforeEach(() => {
-    frame.reply.mock.clear();
-    session.mock.reset();
-    sessionStore.mock.clear();
-  });
-
-  it('resolve original frame if no script processing', async () => {
-    const intercept = processInterceptor(sessionStore, [Script1, Script2]);
-
-    await expect(intercept(frame)).resolves.toEqual(frame);
-
-    expect(sessionStore.getSession.mock).toHaveBeenCalledTimes(1);
-    expect(sessionStore.getSession.mock).toHaveBeenCalledWith(frame.channel);
-
-    expect(session.get.mock).toHaveBeenCalledTimes(1);
-    expect(session.get.mock).toHaveBeenCalledWith(SCRIPT_STATE_KEY);
-
-    expect(runner.mock).not.toHaveBeenCalled();
-  });
-
-  test('script not finished', async () => {
-    const beginningState = {
-      version: 'V0',
-      callStack: [
-        { name: 'Script1', vars: { foo: 'bar' }, stoppedAt: 'somewhere' },
-      ],
-    };
-    session.get.mock.fake(async () => beginningState);
-
-    const runningResult = {
+    await expect(runtime.run()).resolves.toEqual({
       finished: false,
-      content: ['hello'],
-      stack: [
-        { script: Script1, vars: { foo: 'bar' }, at: 'somewhere' },
-        { script: Script2, vars: { foo: 'baz' }, at: 'otherwhere' },
-      ],
-    };
-    runner.mock.fakeReturnValue(runningResult);
+      content: ['Lorem ', 'ipsum ', 'dolor '],
+      currentScript: MyScript,
+      stoppedAt: 'ask_1',
+    });
 
-    const intercept = processInterceptor(sessionStore, [Script1, Script2]);
-    await expect(intercept(frame)).resolves.toBe(null);
+    expect(promptSetter.mock).not.toHaveBeenCalled();
+    expect(runtime.isFinished).toBe(false);
+    expect(runtime.isPrompting).toBe(true);
 
-    expect(sessionStore.getSession.mock).toHaveBeenCalledTimes(1);
-    expect(sessionStore.getSession.mock).toHaveBeenCalledWith(frame.channel);
+    await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
+      finished: false,
+      content: ['sit ', 'amet, '],
+      currentScript: MyScript,
+      stoppedAt: 'ask_3',
+    });
 
-    expect(session.get.mock).toHaveBeenCalledTimes(1);
-    expect(session.get.mock).toHaveBeenCalledWith(SCRIPT_STATE_KEY);
+    expect(promptSetter.mock).toHaveBeenCalledTimes(1);
+    expect(promptSetter.mock).toHaveBeenCalledWith({}, { hello: 'world' });
 
-    expect(runner.mock).toHaveBeenCalledTimes(1);
-    expect(runner.mock).toHaveBeenCalledWith(
-      [{ script: Script1, vars: { foo: 'bar' }, at: 'somewhere' }],
-      frame
+    expect(stateManager.channelState.mock).toHaveBeenCalledTimes(1);
+    expect(stateManager.channelState.mock).toHaveBeenCalledWith(channel);
+    expect(state.get.mock).toHaveBeenCalledTimes(1);
+    expect(state.get.mock.calls[0].args[0]).toMatchInlineSnapshot(
+      `"$$machinat:script"`
     );
+  });
 
-    expect(frame.reply.mock).toHaveBeenCalledTimes(1);
-    expect(frame.reply.mock).toHaveBeenCalledWith(runningResult.content);
+  test('init script at label', async () => {
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+    const runtime = await processor.init(channel, MyScript, { goto: '#1' });
 
-    expect(session.set.mock).toHaveBeenCalledTimes(1);
-    expect(session.set.mock).toHaveBeenCalledWith(SCRIPT_STATE_KEY, {
-      version: 'V0',
-      callStack: [
-        { name: 'Script1', vars: { foo: 'bar' }, stoppedAt: 'somewhere' },
-        { name: 'Script2', vars: { foo: 'baz' }, stoppedAt: 'otherwhere' },
-      ],
+    await expect(runtime.run()).resolves.toEqual({
+      finished: false,
+      content: ['ipsum ', 'dolor '],
+      currentScript: MyScript,
+      stoppedAt: 'ask_1',
     });
   });
 
-  test('script finished', async () => {
-    const beginningState = {
-      version: 'V0',
-      callStack: [
-        { name: 'Script1', vars: { foo: 'bar' }, stoppedAt: 'somewhere' },
-      ],
-    };
-    session.get.mock.fake(async () => beginningState);
+  test('init script with initial vars specified', async () => {
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+    const runtime = await processor.init(channel, MyScript, {
+      vars: { shouldReturn: true },
+    });
 
-    const runningResult = {
+    await expect(runtime.run()).resolves.toEqual({
+      finished: false,
+      content: ['Lorem ', 'ipsum ', 'est '],
+      currentScript: MyScript,
+      stoppedAt: 'ask_2',
+    });
+
+    await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: true,
-      content: ['hello'],
-      stack: undefined,
-    };
-    runner.mock.fakeReturnValue(runningResult);
+      content: ['laborum. '],
+      currentScript: null,
+      stoppedAt: undefined,
+    });
 
-    const intercept = processInterceptor(sessionStore, [Script1, Script2]);
-    await expect(intercept(frame)).resolves.toBe(null);
-
-    expect(sessionStore.getSession.mock).toHaveBeenCalledTimes(1);
-    expect(sessionStore.getSession.mock).toHaveBeenCalledWith(frame.channel);
-
-    expect(session.get.mock).toHaveBeenCalledTimes(1);
-    expect(session.get.mock).toHaveBeenCalledWith(SCRIPT_STATE_KEY);
-
-    expect(runner.mock).toHaveBeenCalledTimes(1);
-    expect(runner.mock).toHaveBeenCalledWith(
-      [{ script: Script1, vars: { foo: 'bar' }, at: 'somewhere' }],
-      frame
-    );
-
-    expect(frame.reply.mock).toHaveBeenCalledTimes(1);
-    expect(frame.reply.mock).toHaveBeenCalledWith(runningResult.content);
-
-    expect(session.delete.mock).toHaveBeenCalledTimes(1);
-    expect(session.delete.mock).toHaveBeenCalledWith(SCRIPT_STATE_KEY);
-  });
-
-  it('throw if script name duplicated', () => {
-    expect(() =>
-      processInterceptor(sessionStore, [Script1, Script2, Script1])
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"script name \\"Script1\\" duplicated"`
+    expect(promptSetter.mock).toHaveBeenCalledTimes(1);
+    expect(promptSetter.mock).toHaveBeenCalledWith(
+      { shouldReturn: true },
+      { hello: 'world' }
     );
   });
 
-  it('throw if script name not found', async () => {
-    const intercept = processInterceptor(sessionStore, [Script1, Script2]);
-    session.get.mock.fake(async () => ({
+  it('throw if there is already runtime saved on channel', async () => {
+    state.get.mock.fake(async () => ({
       version: 'V0',
-      callStack: [
-        { name: 'Script1', vars: { foo: 'bar' }, stoppedAt: 'somewhere' },
-        { name: 'ScriptUnknown', vars: { foo: 'bar' }, stoppedAt: 'somewhere' },
-        { name: 'Script2', vars: { foo: 'bar' }, stoppedAt: 'somewhere' },
-      ],
+      callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stoppedAt: '#4' }],
+      timestamp: 1587205023190,
     }));
 
-    await expect(intercept(frame)).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"ScriptUnknown\\" not found in linked scripts"`
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+
+    await expect(
+      processor.init(channel, MyScript)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"executing runtime existed on channel \\"#channel\\", cannot init until finished or exited"`
     );
   });
 });
 
-describe('initProcessComponent', () => {
-  const Script = { name: 'Script' /* ... */ };
+describe('#continue()', () => {
+  it('continue from prompt', async () => {
+    state.get.mock.fake(async () => ({
+      version: 'V0',
+      callStack: [
+        { name: 'MyScript', vars: { foo: 'bar' }, stoppedAt: 'ask_3' },
+      ],
+      timestamp: 1587205023190,
+    }));
 
-  it('render to script content if finished', () => {
-    const InitComponent = initProcessComponent(Script);
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+    const runtime = await processor.continue(channel);
 
-    runner.mock.fakeReturnValue({
-      finished: true,
-      content: ['hello'],
-      stack: undefined,
+    expect(runtime.channel).toEqual(channel);
+    expect(runtime.isPrompting).toBe(true);
+    expect(runtime.isFinished).toBe(false);
+
+    await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
+      finished: false,
+      content: ['consectetur ', 'adipiscing '],
+      currentScript: AnotherScript,
+      stoppedAt: 'ask_4',
     });
 
-    const rendered = InitComponent({ vars: { foo: 'bar' }, goto: 'baz' });
+    expect(runtime.isFinished).toBe(false);
+    expect(runtime.isPrompting).toBe(true);
+    expect(promptSetter.mock).toHaveBeenCalledTimes(1);
+    expect(promptSetter.mock).toHaveBeenCalledWith(
+      { foo: 'bar' },
+      { hello: 'world' }
+    );
 
-    expect(runner.mock).toHaveBeenCalledTimes(1);
-    expect(runner.mock).toHaveBeenCalledWith([
-      { script: Script, vars: { foo: 'bar' }, at: 'baz' },
-    ]);
+    await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
+      finished: false,
+      content: ['elit, ', 'sed '],
+      currentScript: MyScript,
+      stoppedAt: 'ask_5',
+    });
 
-    expect(rendered).toEqual(['hello']);
+    expect(promptSetter.mock).toHaveBeenCalledTimes(2);
+    expect(promptSetter.mock).toHaveBeenCalledWith({}, { hello: 'again' });
+
+    await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
+      finished: false,
+      content: ['do '],
+      currentScript: MyScript,
+      stoppedAt: 'ask_5',
+    });
+
+    expect(promptSetter.mock).toHaveBeenCalledTimes(3);
+    expect(promptSetter.mock).toHaveBeenCalledWith(
+      { foo: 'bar', i: 1 },
+      { hello: 'again' }
+    );
+
+    expect(stateManager.channelState.mock).toHaveBeenCalledTimes(1);
+    expect(stateManager.channelState.mock).toHaveBeenCalledWith(channel);
+    expect(state.get.mock).toHaveBeenCalledTimes(1);
+    expect(state.get.mock.calls[0].args[0]).toMatchInlineSnapshot(
+      `"$$machinat:script"`
+    );
   });
 
-  it('render content and update state if not finished', () => {
-    const InitComponent = initProcessComponent(Script);
-    runner.mock.fakeReturnValue({
-      finished: false,
-      content: ['hello'],
-      stack: [{ script: Script, vars: { foo: 'baz' }, at: 'over_rainbow' }],
-    });
-
-    const rendered = InitComponent({ vars: { foo: 'bar' }, goto: 'somewhere' });
-
-    expect(runner.mock).toHaveBeenCalledTimes(1);
-    expect(runner.mock).toHaveBeenCalledWith([
-      { script: Script, vars: { foo: 'bar' }, at: 'somewhere' },
-    ]);
-
-    const content = toArray(rendered);
-    expect(content.length).toBe(1);
-    expect(content[0].type).toBe(StateService.Consumer);
-
-    const consume = content[0].props.children;
-    const updateState = moxy();
-
-    expect(consume([{}, updateState])).toEqual(['hello']);
-    expect(updateState.mock).toHaveBeenCalledTimes(1);
-
-    const updator = updateState.mock.calls[0].args[0];
-
-    // write state if no script processing
-    expect(updator(undefined)).toEqual({
+  it('continue from prompt under subscript', async () => {
+    state.get.mock.fake(async () => ({
       version: 'V0',
       callStack: [
-        { name: 'Script', vars: { foo: 'baz' }, stoppedAt: 'over_rainbow' },
+        { name: 'MyScript', vars: { foo: 'bar' }, stoppedAt: 'call_1' },
+        { name: 'AnotherScript', vars: { foo: 'baz' }, stoppedAt: 'ask_4' },
       ],
+      timestamp: 1587205023190,
+    }));
+
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+    const runtime = await processor.continue(channel);
+
+    await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
+      finished: false,
+      content: ['elit, ', 'sed '],
+      currentScript: MyScript,
+      stoppedAt: 'ask_5',
     });
 
-    // append stack if already processing
-    expect(
-      updator({
+    expect(promptSetter.mock).toHaveBeenCalledTimes(1);
+    expect(promptSetter.mock).toHaveBeenCalledWith(
+      { foo: 'baz' },
+      { hello: 'world' }
+    );
+  });
+
+  it('return null if no executing runtime on chanel', async () => {
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+    await expect(processor.continue(channel)).resolves.toBe(null);
+  });
+
+  it('throw if unknown script name received', async () => {
+    state.get.mock.fake(async () => ({
+      version: 'V0',
+      callStack: [
+        { name: 'UnknownScript', vars: { foo: 'bar' }, stoppedAt: '?' },
+      ],
+      timestamp: 1587205023190,
+    }));
+    const processor = new ScriptProcessor(stateManager, [MyScript]);
+    await expect(
+      processor.continue(channel)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"\\"UnknownScript\\" not found in linked scripts"`
+    );
+  });
+});
+
+describe('#exitRumtime()', () => {
+  it('delete saved runtime state', async () => {
+    state.delete.mock.fake(async () => true);
+    const processor = new ScriptProcessor(stateManager, [MyScript]);
+    await expect(processor.exit(channel)).resolves.toBe(true);
+  });
+
+  it('return false if no saved runtime state', async () => {
+    state.delete.mock.fake(async () => false);
+    const processor = new ScriptProcessor(stateManager, [MyScript]);
+    await expect(processor.exit(channel)).resolves.toBe(false);
+  });
+});
+
+describe('#saveRuntime()', () => {
+  test('save newly initiated runtime', async () => {
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+    const runtime = await processor.init(channel, MyScript, {
+      vars: { foo: 'bar' },
+    });
+    await runtime.run();
+    await expect(processor.saveRuntime(runtime)).resolves.toBe(true);
+
+    expect(stateManager.channelState.mock).toHaveBeenCalledWith(channel);
+    expect(state.set.mock).toHaveBeenCalledTimes(1);
+
+    expect(state.set.mock).toHaveBeenCalledWith(
+      '$$machinat:script',
+      expect.any(Function)
+    );
+    let [, updater] = state.set.mock.calls[0].args;
+
+    let updatedState = updater(undefined);
+    expect(updatedState).toMatchInlineSnapshot(
+      { timestamp: expect.any(Number) },
+      `
+      Object {
+        "callStack": Array [
+          Object {
+            "name": "MyScript",
+            "stoppedAt": "ask_1",
+            "vars": Object {
+              "foo": "bar",
+            },
+          },
+        ],
+        "timestamp": Any<Number>,
+        "version": "V0",
+      }
+    `
+    );
+
+    await runtime.run({ hello: 'world' });
+    await expect(processor.saveRuntime(runtime)).resolves.toBe(true);
+    expect(state.set.mock).toHaveBeenCalledTimes(2);
+    [, updater] = state.set.mock.calls[1].args;
+
+    updatedState = updater(updatedState);
+    expect(updatedState).toMatchInlineSnapshot(
+      { timestamp: expect.any(Number) },
+      `
+      Object {
+        "callStack": Array [
+          Object {
+            "name": "MyScript",
+            "stoppedAt": "ask_3",
+            "vars": Object {
+              "foo": "bar",
+            },
+          },
+        ],
+        "timestamp": Any<Number>,
+        "version": "V0",
+      }
+    `
+    );
+
+    await runtime.run({ hello: 'world' });
+    await expect(processor.saveRuntime(runtime)).resolves.toBe(true);
+    expect(state.set.mock).toHaveBeenCalledTimes(3);
+    [, updater] = state.set.mock.calls[2].args;
+
+    updatedState = updater(updatedState);
+    expect(updatedState).toMatchInlineSnapshot(
+      {
+        timestamp: expect.any(Number),
+      },
+      `
+      Object {
+        "callStack": Array [
+          Object {
+            "name": "MyScript",
+            "stoppedAt": "call_1",
+            "vars": Object {
+              "foo": "bar",
+            },
+          },
+          Object {
+            "name": "AnotherScript",
+            "stoppedAt": "ask_4",
+            "vars": Object {},
+          },
+        ],
+        "timestamp": Any<Number>,
+        "version": "V0",
+      }
+    `
+    );
+  });
+
+  test('save continued runtime', async () => {
+    const initialState = {
+      version: 'V0',
+      callStack: [
+        { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stoppedAt: 'ask_5' },
+      ],
+      timestamp: 1587205023190,
+    };
+    state.get.mock.fake(async () => initialState);
+
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+    const runtime = await processor.continue(channel);
+    await runtime.run({ hello: 'script' });
+    await expect(processor.saveRuntime(runtime)).resolves.toBe(true);
+
+    expect(stateManager.channelState.mock).toHaveBeenCalledWith(channel);
+    expect(state.set.mock).toHaveBeenCalledTimes(1);
+
+    expect(state.set.mock).toHaveBeenCalledWith(
+      '$$machinat:script',
+      expect.any(Function)
+    );
+
+    let [, updater] = state.set.mock.calls[0].args;
+    const updatedState = updater(initialState);
+    expect(updatedState).toMatchInlineSnapshot(
+      { timestamp: expect.any(Number) },
+      `
+      Object {
+        "callStack": Array [
+          Object {
+            "name": "MyScript",
+            "stoppedAt": "ask_5",
+            "vars": Object {
+              "foo": "bar",
+              "i": 5,
+            },
+          },
+        ],
+        "timestamp": Any<Number>,
+        "version": "V0",
+      }
+    `
+    );
+
+    await runtime.run({ hello: 'script' });
+    await expect(processor.saveRuntime(runtime)).resolves.toBe(true);
+
+    [, updater] = state.set.mock.calls[1].args;
+    expect(updater(updatedState)).toBe(undefined);
+  });
+
+  test('do nothing if newly initiated runtime is finished', async () => {
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+    const runtime = await processor.init(channel, MyScript, { goto: '#3' });
+
+    await runtime.run();
+    await runtime.run({ hello: 'script' });
+
+    expect(runtime.isFinished).toBe(true);
+    await expect(processor.saveRuntime(runtime)).resolves.toBe(false);
+
+    expect(state.set.mock).not.toHaveBeenCalled();
+  });
+
+  test('throw if newly initiated runtime save while runtime state existing', async () => {
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+    const runtime = await processor.init(channel, MyScript, { goto: '#3' });
+
+    state.set.mock.fake(async (key, updater) =>
+      updater({
         version: 'V0',
         callStack: [
-          { name: 'Script2', vars: { foo: 'bar' }, stoppedAt: 'somewhere' },
+          { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stoppedAt: 'ask_5' },
         ],
+        timestamp: 1587205023190,
       })
-    ).toEqual({
+    );
+    await runtime.run();
+
+    await expect(processor.saveRuntime(runtime)).rejects.toMatchInlineSnapshot(
+      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same channel executing at the same time]`
+    );
+  });
+
+  test('throw if continued runtime save while no runtime state existing', async () => {
+    state.get.mock.fake(async () => ({
       version: 'V0',
       callStack: [
-        { name: 'Script2', vars: { foo: 'bar' }, stoppedAt: 'somewhere' },
-        { name: 'Script', vars: { foo: 'baz' }, stoppedAt: 'over_rainbow' },
+        { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stoppedAt: 'ask_5' },
       ],
-    });
+      timestamp: 1587205023190,
+    }));
+
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+    const runtime = await processor.continue(channel);
+
+    state.set.mock.fake(async (key, updater) => updater(undefined));
+    await runtime.run();
+
+    await expect(processor.saveRuntime(runtime)).rejects.toMatchInlineSnapshot(
+      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same channel executing at the same time]`
+    );
+  });
+
+  test('throw if continued runtime save while original saveTimestamp no matching', async () => {
+    state.get.mock.fake(async () => ({
+      version: 'V0',
+      callStack: [
+        { name: 'MyScript', vars: { foo: 'bar', i: 3 }, stoppedAt: 'ask_5' },
+      ],
+      timestamp: 1587205023190,
+    }));
+
+    const processor = new ScriptProcessor(stateManager, [
+      MyScript,
+      AnotherScript,
+    ]);
+    const runtime = await processor.continue(channel);
+
+    state.set.mock.fake(async (key, updater) =>
+      updater({
+        version: 'V0',
+        callStack: [
+          { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stoppedAt: 'ask_5' },
+        ],
+        timestamp: 1587205099999,
+      })
+    );
+    await runtime.run({ hello: 'script' });
+
+    await expect(processor.saveRuntime(runtime)).rejects.toMatchInlineSnapshot(
+      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same channel executing at the same time]`
+    );
   });
 });

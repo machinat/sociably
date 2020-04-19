@@ -1,74 +1,171 @@
 // @flow
 /* eslint-disable no-use-before-define */
-import type { MachinatNode, MachinatComponentType } from 'machinat/types';
+import typeof Machinat from '@machinat/core';
+import type {
+  MachinatNode,
+  MachinatEmpty,
+  MachinatElement,
+  FunctionalComponent,
+  MachinatChannel,
+} from '@machinat/core/types';
 import typeof { MACHINAT_SCRIPT_TYPE } from './constant';
+import type ScriptProcessor from './processor';
 
-export type Vars = { [string]: any };
-export type VarsMatcher = (vars: Vars) => boolean;
-export type VarsSetter = (vars: Vars) => Vars;
+export type VarsMatcher<Vars> = (vars: Vars) => boolean;
 
-export type MachinatScript = {|
+type InitScriptProps<Vars, Input> = {
+  channel: MachinatChannel,
+  processor: ScriptProcessor<Vars, Input>,
+  goto?: string,
+  vars: Vars,
+};
+
+export type MachinatScript<Vars, Input> = {|
   $$typeof: MACHINAT_SCRIPT_TYPE,
-  Init: MachinatComponentType,
+  Init: FunctionalComponent<InitScriptProps<Vars, Input>>,
   name: string,
-  _commands: ScriptCommand[],
-  _keyMapping: Map<string, number>,
+  commands: ScriptCommand<Vars, Input>[],
+  entryPointIndex: Map<string, number>,
 |};
 
-export type RenderScriptNode = (vars: Vars, props: Object) => MachinatNode;
+export type RenderContentNode<Vars> = (vars: Vars) => MachinatNode;
 
-export type MachinatScriptNode =
-  | RenderScriptNode
-  | {|
-      $$typeof: Symbol,
-      type: Symbol,
-      props: any,
-    |};
+export type IfElementProps<Vars, Input> = {
+  condition: VarsMatcher<Vars>,
+  children: (
+    | ThenElement<Vars, Input>
+    | ElseElement<Vars, Input>
+    | ElseIfElement<Vars, Input>
+  )[],
+};
 
-export type ContentSegment = {|
+export type IfElement<Vars, Input> = MachinatElement<
+  IfElementProps<Vars, Input>,
+  Symbol
+>;
+
+export type ScriptChildrenProps<Vars, Input> = {
+  children: ScriptNode<Vars, Input>,
+};
+
+export type ThenElement<Vars, Input> = MachinatElement<
+  ScriptChildrenProps<Vars, Input>,
+  Symbol
+>;
+
+export type ElseElement<Vars, Input> = MachinatElement<
+  ScriptChildrenProps<Vars, Input>,
+  Symbol
+>;
+
+export type ElseIfElementProps<Vars, Input> = {
+  condition: VarsMatcher<Vars>,
+  children: ScriptNode<Vars, Input>,
+};
+
+export type ElseIfElement<Vars, Input> = MachinatElement<
+  ElseIfElementProps<Vars, Input>,
+  Symbol
+>;
+
+export type WhileElementProps<Vars, Input> = {
+  condition: VarsMatcher<Vars>,
+  children: ScriptNode<Vars, Input>,
+};
+
+export type WhileElement<Vars, Input> = MachinatElement<
+  WhileElementProps<Vars, Input>,
+  Symbol
+>;
+
+export type PromptElementProps<Vars, Input> = {
+  set: (vars: Vars, input: Input) => Vars,
+  key: string,
+};
+
+export type PromptElement<Vars, Input> = MachinatElement<
+  PromptElementProps<Vars, Input>,
+  Symbol
+>;
+
+export type VarsElementProps<Vars> = {
+  set: (vars: Vars) => Vars,
+};
+
+export type VarsElement<Vars> = MachinatElement<VarsElementProps<Vars>, Symbol>;
+
+export type LabelElementProps = { key: string };
+export type LabelElement = MachinatElement<LabelElementProps, Symbol>;
+
+export type CallElementProps<CallerVars, CalleeVars> = {
+  script: MachinatScript<CallerVars, any>,
+  key: string,
+  withVars?: CallerVars => CalleeVars,
+  set?: (CallerVars, CalleeVars) => CallerVars,
+  goto?: string,
+};
+
+export type CallElement<CallerVars, CalleeVars> = MachinatElement<
+  CallElementProps<CallerVars, CalleeVars>,
+  Symbol
+>;
+
+export type ReturnElement = MachinatElement<{}, Symbol>;
+
+export type ScriptElement<Vars, Input> =
+  | IfElement<Vars, Input>
+  | WhileElement<Vars, Input>
+  | PromptElement<Vars, Input>
+  | VarsElement<Vars>
+  | LabelElement
+  | CallElement<Vars, any>
+  | ReturnElement;
+
+export type ScriptNode<Vars, Input> =
+  | MachinatEmpty
+  | RenderContentNode<Vars>
+  | ScriptElement<Vars, Input>
+  | ScriptElement<Vars, Input>[]
+  | MachinatElement<
+      { children: ScriptNode<Vars, Input> },
+      $PropertyType<Machinat, 'Fragment'>
+    >;
+
+export type ContentSegment<Vars> = {|
   type: 'content',
-  key?: string,
-  render: RenderScriptNode,
+  render: RenderContentNode<Vars>,
 |};
 
-export type IfSegment = {|
+export type IfSegment<Vars> = {|
   type: 'if',
-  key?: string,
-  branches: {| condition: VarsMatcher, body: ScriptSegment[] |}[],
-  fallback: void | ScriptSegment[],
+  branches: {|
+    condition: VarsMatcher<Vars>,
+    body: ScriptSegment<Vars>[],
+  |}[],
+  fallback: void | ScriptSegment<Vars>[],
 |};
 
-export type SwitchSegment = {|
+export type SwitchSegment<Vars> = {|
   type: 'switch',
-  key?: string,
-  branches: {| case: string, body: ScriptSegment[] |}[],
-  fallback: void | MachinatScriptNode,
+  branches: {| case: string, body: ScriptSegment<Vars>[] |}[],
+  fallback: void | ScriptNode<Vars>,
 |};
 
-export type ForSegment = {|
-  type: 'for',
-  key?: string,
-  varName?: string,
-  getIterable: Vars => Iterator<any>,
-  body: ScriptSegment[],
-|};
-
-export type WhileSegment = {|
+export type WhileSegment<Vars> = {|
   type: 'while',
-  key?: string,
-  condition: VarsMatcher,
-  body: ScriptSegment[],
+  condition: VarsMatcher<Vars>,
+  body: ScriptSegment<Vars>[],
 |};
 
-export type SetVarsSegment = {|
+export type SetVarsSegment<Vars> = {|
   type: 'set_vars',
-  setter: VarsSetter,
+  setter: (vars: Vars) => Vars,
 |};
 
-export type PromptSegment = {|
+export type PromptSegment<Vars> = {|
   type: 'prompt',
   key: string,
-  setter?: (vars: Vars, frame: any) => Vars,
+  setter?: (vars: Vars, input: any) => Vars,
 |};
 
 export type LabelSegment = {|
@@ -76,47 +173,53 @@ export type LabelSegment = {|
   key: string,
 |};
 
-export type CallSegment = {|
+export type CallSegment<CallerVars, CalleeVars> = {|
   type: 'call',
-  script: MachinatScript,
+  script: MachinatScript<CalleeVars, any>,
   key: string,
-  withVars?: Vars => Vars,
-  gotoKey?: string,
+  withVars?: CallerVars => CalleeVars,
+  setter?: (CallerVars, CalleeVars) => CallerVars,
+  goto?: string,
 |};
 
-export type ScriptSegment =
-  | ContentSegment
-  | SwitchSegment
-  | IfSegment
-  | ForSegment
-  | WhileSegment
-  | PromptSegment
-  | SetVarsSegment
-  | CallSegment
-  | LabelSegment;
+export type ReturnSegment = {|
+  type: 'return',
+|};
 
-export type ContentCommand = {|
+export type ScriptSegment<Vars> =
+  | ContentSegment<Vars>
+  | SwitchSegment<Vars>
+  | IfSegment<Vars>
+  | WhileSegment<Vars>
+  | PromptSegment<Vars>
+  | SetVarsSegment<Vars>
+  | CallSegment<Vars, any>
+  | LabelSegment
+  | ReturnSegment;
+
+export type ContentCommand<Vars> = {|
   type: 'content',
-  render: RenderScriptNode,
+  render: RenderContentNode<Vars>,
 |};
 
-export type PromptCommand = {|
+export type PromptCommand<Vars, Input> = {|
   type: 'prompt',
-  setter?: (vars: Vars, frame: Object) => Vars,
   key: string,
+  setter?: (vars: Vars, intput: Input) => Vars,
 |};
 
-export type CallCommand = {|
+export type CallCommand<CallerVars, CalleeVars> = {|
   type: 'call',
-  script: MachinatScript,
   key: string,
-  withVars?: Vars => Vars,
-  gotoKey?: string,
+  script: MachinatScript<CalleeVars, any>,
+  withVars?: CallerVars => CalleeVars,
+  setter?: (CallerVars, CalleeVars) => CallerVars,
+  goto?: string,
 |};
 
-export type SetVarsCommand = {|
+export type SetVarsCommand<Vars> = {|
   type: 'set_vars',
-  setter: VarsSetter,
+  setter: (vars: Vars) => Vars,
 |};
 
 export type JumpCommand = {|
@@ -124,52 +227,40 @@ export type JumpCommand = {|
   offset: number,
 |};
 
-export type JumpCondCommand = {|
+export type JumpCondCommand<Vars> = {|
   type: 'jump_cond',
   offset: number,
-  condition: VarsMatcher,
+  condition: VarsMatcher<Vars>,
   isNot: boolean,
 |};
 
-export type IterOutsetCommand = {|
-  type: 'iter_outset',
-  iterName: string,
-  getIterable: Vars => Iterator<any>,
-  varName?: string,
-  endingOffset: number,
+export type ReturnCommand = {|
+  type: 'return',
 |};
 
-export type ScriptCommand =
-  | ContentCommand
+export type ScriptCommand<Vars, Input> =
+  | ContentCommand<Vars>
   | JumpCommand
-  | JumpCondCommand
-  | PromptCommand
-  | CallCommand
-  | SetVarsCommand
-  | IterOutsetCommand;
+  | JumpCondCommand<Vars>
+  | PromptCommand<Vars, Input>
+  | CallCommand<Vars, any>
+  | SetVarsCommand<Vars>
+  | ReturnCommand;
 
-export type IterStatus = {
-  name: string,
-  originalVar?: any,
-  iterTarget: any[],
-  index: number,
-};
-
-export type CallingStatus = {
-  script: MachinatScript,
+export type CallStatus<Vars, Input> = {
+  script: MachinatScript<Vars, Input>,
   vars: Vars,
-  at: void | string,
-  iterStack: void | IterStatus[],
+  stoppedAt: void | string,
 };
 
-export type CallingStatusArchive = {
+export type SerializedCallStatus<Vars> = {
   name: string,
   vars: Vars,
   stoppedAt: string,
-  iterStack: void | IterStatus[],
 };
 
-export type ScriptProcessingState = {
+export type ScriptProcessState<Vars> = {
   version: 'V0',
-  callStack: CallingStatusArchive[],
+  timestamp: number,
+  callStack: SerializedCallStatus<Vars>[],
 };

@@ -1,17 +1,17 @@
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
 import build from '../build';
 import { MACHINAT_SCRIPT_TYPE } from '../constant';
 import {
-  If,
-  Then,
-  ElseIf,
-  Else,
-  For,
-  While,
-  Prompt,
-  Vars,
-  Label,
-  Call,
+  IF,
+  THEN,
+  ELSE_IF,
+  ELSE,
+  WHILE,
+  PROMPT,
+  VARS,
+  LABEL,
+  CALL,
+  RETURN,
 } from '../keyword';
 
 it('work', () => {
@@ -19,44 +19,44 @@ it('work', () => {
     'ChildScript',
     <>
       {() => <dolore />}
-      <Prompt setter={(_, frm) => ({ x: frm.x })} key="childPrompt" />
+      <PROMPT setter={(_, ctx) => ({ x: ctx.x })} key="childPrompt" />
     </>
   );
 
   const MyScript = build(
     'MyScript',
     <>
-      <Label key="start" />
+      <LABEL key="start" />
       {() => <b>Lorem</b>}
 
-      <If condition={() => false} key="if">
-        <Then>
-          <While condition={() => true}>
-            <Label key="first" />
+      <IF condition={() => false} key="if">
+        <THEN>
+          <WHILE condition={() => true}>
+            <LABEL key="first" />
             {() => <i>ipsum</i>}
-            <Prompt setter={(_, frm) => ({ a: frm.a })} />
-          </While>
-        </Then>
-        <ElseIf condition={() => true}>
-          <For var="n" of={() => [1, 2, 3]}>
-            <Label key="second" />
-            {() => <dolor />}
-            <Prompt setter={(_, frm) => ({ b: frm.b })} />
-          </For>
-        </ElseIf>
-        <Else>
-          <Label key="third" />
+            <PROMPT key="ask_1" setter={(_, ctx) => ({ a: ctx.a })} />
+          </WHILE>
+        </THEN>
+        <ELSE_IF condition={() => true}>
+          <LABEL key="second" />
+          {() => <dolor />}
+          <PROMPT key="ask_2" setter={(_, ctx) => ({ b: ctx.b })} />
+          <RETURN />
+        </ELSE_IF>
+        <ELSE>
+          <LABEL key="third" />
           {() => 'sit amet,'}
-          <Call
+          <CALL
             script={ChildScript}
             withVars={() => ({ foo: 'bar' })}
             goto="childPrompt"
+            key="call_1"
           />
-        </Else>
-      </If>
+        </ELSE>
+      </IF>
 
-      <Label key="end" />
-      <Vars set={_ => ({ foo: 'bar' })} />
+      <LABEL key="end" />
+      <VARS set={_ => ({ foo: 'bar' })} />
       {() => 'ad minim veniam'}
     </>
   );
@@ -65,18 +65,17 @@ it('work', () => {
   expect(MyScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
   expect(typeof MyScript.Init).toBe('function');
 
-  expect(MyScript._commands).toMatchSnapshot();
-  expect(MyScript._keyMapping).toMatchInlineSnapshot(`
+  expect(MyScript.commands).toMatchSnapshot();
+  expect(MyScript.entryPointIndex).toMatchInlineSnapshot(`
     Map {
       "start" => 0,
-      "if" => 1,
       "third" => 3,
-      "call#2" => 4,
+      "call_1" => 4,
       "first" => 7,
-      "prompt#0" => 8,
-      "second" => 12,
-      "prompt#1" => 13,
-      "end" => 16,
+      "ask_1" => 8,
+      "second" => 11,
+      "ask_2" => 12,
+      "end" => 15,
     }
   `);
 });

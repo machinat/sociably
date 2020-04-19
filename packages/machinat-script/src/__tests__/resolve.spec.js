@@ -1,16 +1,16 @@
-import Machinat from 'machinat';
+import Machinat from '@machinat/core';
 import { MACHINAT_SCRIPT_TYPE } from '../constant';
 import {
-  If,
-  Then,
-  ElseIf,
-  Else,
-  For,
-  While,
-  Prompt,
-  Vars,
-  Label,
-  Call,
+  IF,
+  THEN,
+  ELSE_IF,
+  ELSE,
+  WHILE,
+  PROMPT,
+  VARS,
+  LABEL,
+  CALL,
+  RETURN,
 } from '../keyword';
 import resolve from '../resolve';
 
@@ -18,11 +18,11 @@ const AnotherScript = {
   $$typeof: MACHINAT_SCRIPT_TYPE,
   Init: () => '(Init)',
   name: 'AnotherScript',
-  _executable: [
+  commands: [
     { type: 'content', render: () => '...' },
     { type: 'prompt', key: 'ask' },
   ],
-  _keyMapping: new Map([['foo', 3], ['bar', 8]]),
+  entryPointIndex: new Map([['foo', 3], ['bar', 8]]),
 };
 
 it('resolve content rendering fn', () => {
@@ -43,17 +43,16 @@ it('resolve content rendering fn', () => {
   expect(segments[2].render({})).toBe('baz');
 });
 
-describe('resolving <If/> segment', () => {
+describe('resolve <IF/>', () => {
   it('resolve ok', () => {
     const segments = resolve(
-      <If condition={() => true} key="an_if">
-        <Then>{() => 'foo'}</Then>
-      </If>
+      <IF condition={() => true}>
+        <THEN>{() => 'foo'}</THEN>
+      </IF>
     );
     expect(segments).toEqual([
       {
         type: 'if',
-        key: 'an_if',
         branches: [
           {
             condition: expect.any(Function),
@@ -67,17 +66,16 @@ describe('resolving <If/> segment', () => {
     expect(segments[0].branches[0].body[0].render()).toBe('foo');
   });
 
-  it('resolve ok with else', () => {
+  it('resolve with else', () => {
     const segments = resolve(
-      <If condition={() => true} key="an_if">
-        <Then>{() => 'foo'}</Then>
-        <Else>{() => 'bar'}</Else>
-      </If>
+      <IF condition={() => true}>
+        <THEN>{() => 'foo'}</THEN>
+        <ELSE>{() => 'bar'}</ELSE>
+      </IF>
     );
     expect(segments).toEqual([
       {
         type: 'if',
-        key: 'an_if',
         branches: [
           {
             condition: expect.any(Function),
@@ -90,14 +88,14 @@ describe('resolving <If/> segment', () => {
     expect(segments[0].fallback[0].render()).toBe('bar');
   });
 
-  it('resolve ok with else if conditions', () => {
+  it('resolve with else if conditions', () => {
     const segments = resolve(
-      <If condition={() => true}>
-        <Then>{() => 'foo'}</Then>
-        <ElseIf condition={() => false}>{() => 'bar'}</ElseIf>
-        <ElseIf condition={() => true}>{() => 'baz'}</ElseIf>
-        <Else>{() => 'boom boom pow'}</Else>
-      </If>
+      <IF condition={() => true}>
+        <THEN>{() => 'foo'}</THEN>
+        <ELSE_IF condition={() => false}>{() => 'bar'}</ELSE_IF>
+        <ELSE_IF condition={() => true}>{() => 'baz'}</ELSE_IF>
+        <ELSE>{() => 'boom boom pow'}</ELSE>
+      </IF>
     );
     expect(segments).toEqual([
       {
@@ -118,215 +116,151 @@ describe('resolving <If/> segment', () => {
     expect(segments[0].fallback[0].render()).toBe('boom boom pow');
   });
 
-  it('resolve ok nested', () => {
+  it('resolve nested <IF/>', () => {
     expect(
       resolve(
-        <If condition={() => true}>
-          <Then>
+        <IF condition={() => true}>
+          <THEN>
             {() => 'foo'}
-            <If condition={() => true}>
-              <Then>{() => 'fooo'}</Then>
-            </If>
+            <IF condition={() => true}>
+              <THEN>{() => 'fooo'}</THEN>
+            </IF>
             {() => 'foooo'}
-          </Then>
-          <ElseIf condition={() => true}>
+          </THEN>
+          <ELSE_IF condition={() => true}>
             {() => 'bar'}
-            <If condition={() => true}>
-              <Then>{() => 'baar'}</Then>
-              <ElseIf condition={() => true}>{() => 'baaar'}</ElseIf>
-            </If>
+            <IF condition={() => true}>
+              <THEN>{() => 'baar'}</THEN>
+              <ELSE_IF condition={() => true}>{() => 'baaar'}</ELSE_IF>
+            </IF>
             {() => 'baaaar'}
-          </ElseIf>
-          <Else>
+          </ELSE_IF>
+          <ELSE>
             {() => 'baz'}
-            <If condition={() => true}>
-              <Then>{() => 'baaz'}</Then>
-              <Else>{() => 'baaaz'}</Else>
-            </If>
+            <IF condition={() => true}>
+              <THEN>{() => 'baaz'}</THEN>
+              <ELSE>{() => 'baaaz'}</ELSE>
+            </IF>
             {() => 'baaaaz'}
-          </Else>
-        </If>
+          </ELSE>
+        </IF>
       )
     ).toMatchSnapshot();
   });
 
   it('resolve ok if no children blocks', () => {
-    expect(resolve(<If condition={() => true} key="foo"></If>)).toEqual([
-      { type: 'if', key: 'foo', branches: [] },
+    expect(resolve(<IF condition={() => true}></IF>)).toEqual([
+      { type: 'if', branches: [] },
     ]);
   });
 
   it('throw if condition is not a function', () => {
-    expect(() => resolve(<If></If>)).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"condition\\" of <If/> should be a function"`
+    expect(() => resolve(<IF></IF>)).toThrowErrorMatchingInlineSnapshot(
+      `"prop \\"condition\\" of <IF/> should be a function"`
     );
   });
 
-  it('throw if non Then, ElseIf, Else block node contained', () => {
+  it('throw if non THEN, ELSE_IF, ELSE block node contained', () => {
     expect(() =>
-      resolve(<If condition={() => true}>hello</If>)
+      resolve(<IF condition={() => true}>hello</IF>)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"only <[Then, ElseIf, Else]/> accepted within children of <If/>, got: \\"hello\\""`
+      `"only <[THEN, ELSE_IF, ELSE]/> accepted within children of <IF/>, got: \\"hello\\""`
     );
     expect(() =>
       resolve(
-        <If condition={() => true}>
-          <Prompt />
-        </If>
+        <IF condition={() => true}>
+          <PROMPT />
+        </IF>
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"only <[Then, ElseIf, Else]/> accepted within children of <If/>, got: <Symbol(machinat.script.keyword.prompt) />"`
-    );
-  });
-
-  it('throw if multiple <Then/> received', () => {
-    expect(() =>
-      resolve(
-        <If condition={() => true}>
-          <Then>{() => 'bar'}</Then>
-          <Then>{() => 'foo'}</Then>
-        </If>
-      )
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"<Then /> should be the first block wihtin <If />"`
+      `"only <[THEN, ELSE_IF, ELSE]/> accepted within children of <IF/>, got: <Symbol(machinat.script.keyword.prompt) />"`
     );
   });
 
-  it('throw if no <Then/> provided', () => {
+  it('throw if multiple <THEN/> received', () => {
     expect(() =>
       resolve(
-        <If condition={() => true}>
-          <Else>{() => 'baz'}</Else>
-        </If>
-      )
-    ).toThrowErrorMatchingInlineSnapshot(`"no <Then/> block before <Else/>"`);
-  });
-
-  it('throw if multiple <Else/> received', () => {
-    expect(() =>
-      resolve(
-        <If condition={() => true}>
-          <Then>{() => 'foo'}</Then>
-          <Else>{() => 'bar'}</Else>
-          <Else>{() => 'baz'}</Else>
-        </If>
+        <IF condition={() => true}>
+          <THEN>{() => 'bar'}</THEN>
+          <THEN>{() => 'foo'}</THEN>
+        </IF>
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"multiple <Else/> block received in <If/>"`
+      `"<THEN /> should be the first block wihtin <IF />"`
     );
   });
 
-  it('throw if <ElseIf/> not after <Then/> and before <Else/>', () => {
+  it('throw if no <THEN/> provided', () => {
     expect(() =>
       resolve(
-        <If condition={() => true}>
-          <Then>{() => 'foo'}</Then>
-          <Else>{() => 'baz'}</Else>
-          <ElseIf condition={() => true}>{() => 'bar'}</ElseIf>
-        </If>
+        <IF condition={() => true}>
+          <ELSE>{() => 'baz'}</ELSE>
+        </IF>
       )
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"<ElseIf /> should be placed between <Then /> and <Else /> blocks"`
-    );
+    ).toThrowErrorMatchingInlineSnapshot(`"no <THEN/> block before <ELSE/>"`);
+  });
+
+  it('throw if multiple <ELSE/> received', () => {
     expect(() =>
       resolve(
-        <If condition={() => true}>
-          <ElseIf condition={() => true}>{() => 'bar'}</ElseIf>
-          <Then>{() => 'foo'}</Then>
-          <Else>{() => 'baz'}</Else>
-        </If>
+        <IF condition={() => true}>
+          <THEN>{() => 'foo'}</THEN>
+          <ELSE>{() => 'bar'}</ELSE>
+          <ELSE>{() => 'baz'}</ELSE>
+        </IF>
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<ElseIf /> should be placed between <Then /> and <Else /> blocks"`
+      `"multiple <ELSE/> block received in <IF/>"`
     );
   });
 
-  it('throw if condition of <ElseIf/> is not a function', () => {
+  it('throw if <ELSE_IF/> not after <THEN/> and before <ELSE/>', () => {
     expect(() =>
       resolve(
-        <If condition={() => true}>
-          <Then>{() => 'foo'}</Then>
-          <ElseIf>{() => 'bar'}</ElseIf>
-        </If>
+        <IF condition={() => true}>
+          <THEN>{() => 'foo'}</THEN>
+          <ELSE>{() => 'baz'}</ELSE>
+          <ELSE_IF condition={() => true}>{() => 'bar'}</ELSE_IF>
+        </IF>
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"condition\\" of <ElseIf/> should be a function"`
+      `"<ELSE_IF /> should be placed between <THEN /> and <ELSE /> blocks"`
+    );
+    expect(() =>
+      resolve(
+        <IF condition={() => true}>
+          <ELSE_IF condition={() => true}>{() => 'bar'}</ELSE_IF>
+          <THEN>{() => 'foo'}</THEN>
+          <ELSE>{() => 'baz'}</ELSE>
+        </IF>
+      )
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"<ELSE_IF /> should be placed between <THEN /> and <ELSE /> blocks"`
+    );
+  });
+
+  it('throw if condition of <ELSE_IF/> is not a function', () => {
+    expect(() =>
+      resolve(
+        <IF condition={() => true}>
+          <THEN>{() => 'foo'}</THEN>
+          <ELSE_IF>{() => 'bar'}</ELSE_IF>
+        </IF>
+      )
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"prop \\"condition\\" of <ELSE_IF/> should be a function"`
     );
   });
 });
 
-describe('resolving <For/> segment', () => {
+describe('resolve <WHILE/>', () => {
   it('resolve ok', () => {
     const segments = resolve(
-      <For var="name" of={() => ['world', 'fool', 'magician']} key="a_for">
-        {({ name }) => `hello the ${name}`}
-      </For>
-    );
-    expect(segments).toEqual([
-      {
-        type: 'for',
-        key: 'a_for',
-        varName: 'name',
-        getIterable: expect.any(Function),
-        body: [{ type: 'content', render: expect.any(Function) }],
-      },
-    ]);
-    expect(segments[0].getIterable({})).toEqual(['world', 'fool', 'magician']);
-    expect(segments[0].body[0].render({ name: 'strength' })).toBe(
-      'hello the strength'
-    );
-  });
-
-  it('resolve ok nested', () => {
-    const segments = resolve(
-      <For var="name" of={() => ['wands', 'swords', 'cups']} key="father_for">
-        <For var="num" of={() => [1, 2, 3, 4, 5, 6]} key="child_for">
-          {({ name, num }) => `${name} ${num}`}
-        </For>
-      </For>
-    );
-    expect(segments).toEqual([
-      {
-        type: 'for',
-        key: 'father_for',
-        varName: 'name',
-        getIterable: expect.any(Function),
-        body: [
-          {
-            type: 'for',
-            key: 'child_for',
-            varName: 'num',
-            getIterable: expect.any(Function),
-            body: [{ type: 'content', render: expect.any(Function) }],
-          },
-        ],
-      },
-    ]);
-    expect(segments[0].getIterable({})).toEqual(['wands', 'swords', 'cups']);
-    expect(segments[0].body[0].getIterable({})).toEqual([1, 2, 3, 4, 5, 6]);
-    expect(segments[0].body[0].body[0].render({ name: 'coins', num: 5 })).toBe(
-      'coins 5'
-    );
-  });
-
-  it('throw if no iterable getter provided', () => {
-    expect(() => resolve(<For />)).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"of\\" of <For/> should be a function retruns iterable"`
-    );
-  });
-});
-
-describe('resolving <While/> segment', () => {
-  it('resolve ok', () => {
-    const segments = resolve(
-      <While condition={() => true} key="a_while">
-        {() => 'Gee'}
-      </While>
+      <WHILE condition={() => true}>{() => 'Gee'}</WHILE>
     );
     expect(segments).toEqual([
       {
         type: 'while',
-        key: 'a_while',
         condition: expect.any(Function),
         body: [{ type: 'content', render: expect.any(Function) }],
       },
@@ -335,23 +269,19 @@ describe('resolving <While/> segment', () => {
     expect(segments[0].body[0].render({})).toBe('Gee');
   });
 
-  it('resolve ok nested', () => {
+  it('resolve nested <WHILE/>', () => {
     const segments = resolve(
-      <While condition={() => true} key="father_while">
-        <While condition={() => false} key="child_while">
-          {() => 'Goo'}
-        </While>
-      </While>
+      <WHILE condition={() => true}>
+        <WHILE condition={() => false}>{() => 'Goo'}</WHILE>
+      </WHILE>
     );
     expect(segments).toEqual([
       {
         type: 'while',
-        key: 'father_while',
         condition: expect.any(Function),
         body: [
           {
             type: 'while',
-            key: 'child_while',
             condition: expect.any(Function),
             body: [{ type: 'content', render: expect.any(Function) }],
           },
@@ -365,23 +295,23 @@ describe('resolving <While/> segment', () => {
 
   it('throw if condition prop is not a function', () => {
     expect(() =>
-      resolve(<While condition="true">{() => 'foo'}</While>)
+      resolve(<WHILE condition="true">{() => 'foo'}</WHILE>)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"condition\\" of <While/> should be a function"`
+      `"prop \\"condition\\" of <WHILE/> should be a function"`
     );
   });
 });
 
-describe('resolving <Vars/> segment', () => {
+describe('resolve <VARS/>', () => {
   it('resolve ok', () => {
     const helloSetter = () => ({ hello: 'world' });
     const greetedSetter = () => ({ greeted: true });
     expect(
       resolve(
         <>
-          <Vars set={helloSetter} />
+          <VARS set={helloSetter} />
           {vars => `hello ${vars.hello}`}
-          <Vars set={greetedSetter} />
+          <VARS set={greetedSetter} />
         </>
       )
     ).toEqual([
@@ -392,21 +322,25 @@ describe('resolving <Vars/> segment', () => {
   });
 
   it('throw if set is empty', () => {
-    expect(() => resolve(<Vars />)).toThrowErrorMatchingInlineSnapshot(`""`);
+    expect(() => resolve(<VARS />)).toThrowErrorMatchingInlineSnapshot(
+      `"prop \\"set\\" of <VARS/> should be a function"`
+    );
     expect(() =>
-      resolve(<Vars set={null} />)
-    ).toThrowErrorMatchingInlineSnapshot(`""`);
+      resolve(<VARS set={null} />)
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"prop \\"set\\" of <VARS/> should be a function"`
+    );
   });
 });
 
-describe('resolving <Prompt/> segment', () => {
+describe('resolve <PROMPT/>', () => {
   it('resolve ok', () => {
     const answerSetter = (_, { event: { text } }) => ({ answer: text });
     expect(
       resolve(
         <>
           {() => 'but why!?'}
-          <Prompt set={answerSetter} key="why" />
+          <PROMPT set={answerSetter} key="why" />
         </>
       )
     ).toEqual([
@@ -418,9 +352,9 @@ describe('resolving <Prompt/> segment', () => {
       resolve(
         <>
           {() => 'where r u last night?'}
-          <Prompt set={answerSetter} key="where" />
+          <PROMPT set={answerSetter} key="where" />
           {() => 'what r u doing?'}
-          <Prompt set={answerSetter} key="what" />
+          <PROMPT set={answerSetter} key="what" />
         </>
       )
     ).toEqual([
@@ -431,34 +365,24 @@ describe('resolving <Prompt/> segment', () => {
     ]);
   });
 
-  it('add default key if not provided', () => {
-    const answerSetter = (_, { event: { text } }) => ({ answer: text });
-    expect(resolve(<Prompt set={answerSetter} />)).toEqual([
-      { type: 'prompt', setter: answerSetter, key: 'prompt#0' },
-    ]);
-
-    expect(
-      resolve(
-        <>
-          <Prompt set={answerSetter} />
-          <Prompt set={answerSetter} key="foo" />
-          <Prompt set={answerSetter} />
-        </>
-      )
-    ).toEqual([
-      { type: 'prompt', key: 'prompt#0', setter: answerSetter },
-      { type: 'prompt', key: 'foo', setter: answerSetter },
-      { type: 'prompt', key: 'prompt#2', setter: answerSetter },
-    ]);
+  it('throw if key is empty', () => {
+    expect(() =>
+      resolve(<PROMPT set={() => ({ answer: 'text' })} />)
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"prop \\"key\\" of <PROMPT/> should not be empty"`
+    );
+    expect(() => resolve(<PROMPT key="" />)).toThrowErrorMatchingInlineSnapshot(
+      `"prop \\"key\\" of <PROMPT/> should not be empty"`
+    );
   });
 });
 
-describe('resolving <Label/> segment', () => {
+describe('resolve <LABEL/>', () => {
   it('resolve ok', () => {
     expect(
       resolve(
         <>
-          <Label key="foo" />
+          <LABEL key="foo" />
           {() => 'foo'}
         </>
       )
@@ -470,9 +394,9 @@ describe('resolving <Label/> segment', () => {
     expect(
       resolve(
         <>
-          <Label key="bar" />
+          <LABEL key="bar" />
           {() => 'bar'}
-          <Label key="baz" />
+          <LABEL key="baz" />
           {() => 'baz'}
         </>
       )
@@ -485,28 +409,31 @@ describe('resolving <Label/> segment', () => {
   });
 
   it('throw if key is empyt', () => {
-    expect(() => resolve(<Label />)).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"key\\" of <Label/> should not be empty"`
+    expect(() => resolve(<LABEL />)).toThrowErrorMatchingInlineSnapshot(
+      `"prop \\"key\\" of <LABEL/> should not be empty"`
     );
-    expect(() => resolve(<Label key="" />)).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"key\\" of <Label/> should not be empty"`
+    expect(() => resolve(<LABEL key="" />)).toThrowErrorMatchingInlineSnapshot(
+      `"prop \\"key\\" of <LABEL/> should not be empty"`
     );
     expect(() =>
-      resolve(<Label key={null} />)
+      resolve(<LABEL key={null} />)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"key\\" of <Label/> should not be empty"`
+      `"prop \\"key\\" of <LABEL/> should not be empty"`
     );
   });
 });
 
-describe('resolving <Call/> segments', () => {
+describe('resolve <CALL/>', () => {
   it('resolve ok', () => {
+    const getCallVars = () => ({ hi: 'yo' });
+    const setFromVars = () => ({ foo: 'bar' });
     const segments = resolve(
       <>
         {() => 'hello'}
-        <Call
+        <CALL
           script={AnotherScript}
-          withVars={() => ({ hi: 'yo' })}
+          withVars={getCallVars}
+          set={setFromVars}
           goto="foo"
           key="waiting"
         />
@@ -517,8 +444,9 @@ describe('resolving <Call/> segments', () => {
       {
         type: 'call',
         script: AnotherScript,
-        withVars: expect.any(Function),
-        gotoKey: 'foo',
+        withVars: getCallVars,
+        setter: setFromVars,
+        goto: 'foo',
         key: 'waiting',
       },
     ]);
@@ -527,99 +455,134 @@ describe('resolving <Call/> segments', () => {
 
   it('throw if non-script received', () => {
     expect(() =>
-      resolve(<Call script={{ something: 'wrong' }} />)
+      resolve(
+        <CALL key="call_another_script" script={{ something: 'wrong' }} />
+      )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"invalid \\"script\\" prop received on <Call/>"`
+      `"invalid \\"script\\" prop received on <CALL/>"`
+    );
+  });
+
+  it('throw if key is empty', () => {
+    expect(() =>
+      resolve(<CALL script={AnotherScript} />)
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"prop \\"key\\" of <CALL/> should not be empty"`
     );
   });
 
   it('throw if goto key not existed', () => {
     expect(() =>
-      resolve(<Call script={AnotherScript} goto="not_existed_key" />)
+      resolve(
+        <CALL
+          script={AnotherScript}
+          key="call_another_script"
+          goto="not_existed_key"
+        />
+      )
     ).toThrowErrorMatchingInlineSnapshot(
       `"key \\"not_existed_key\\" not found in AnotherScript"`
     );
   });
 });
 
+test('resolve <RETURN/>', () => {
+  expect(
+    resolve(
+      <>
+        {() => 'foo'}
+        <RETURN />
+        {() => 'bar'}
+      </>
+    )
+  ).toEqual([
+    { type: 'content', render: expect.any(Function) },
+    { type: 'return' },
+    { type: 'content', render: expect.any(Function) },
+  ]);
+});
+
 test('resolve whole script', () => {
   expect(
     resolve(
       <>
-        <Label key="start" />
+        <LABEL key="start" />
         {() => <b>Lorem</b>}
 
-        <If condition={() => false} key="first">
-          <Then>
-            <While condition={() => true}>
+        <IF condition={() => false}>
+          <THEN>
+            <LABEL key="1st" />
+
+            <WHILE condition={() => true}>
               {() => <i>ipsum</i>}
-              <Prompt setter={(vars, frm) => ({ ...vars, a: frm.a })} />
-            </While>
-          </Then>
-          <ElseIf condition={() => true}>
-            <For var="n" of={() => [1, 2, 3]}>
-              {() => <dolor />}
-              <Prompt setter={(vars, frm) => ({ ...vars, b: frm.b })} />
-            </For>
-          </ElseIf>
-          <Else>
+
+              <PROMPT
+                key="ask_1"
+                setter={(vars, ctx) => ({ ...vars, a: ctx.a })}
+              />
+            </WHILE>
+          </THEN>
+          <ELSE_IF condition={() => true}>
+            {() => 'sed do'}
+            <IF condition={() => false}>
+              <THEN>
+                {() => <eiusmod />}
+
+                <PROMPT
+                  key="ask_2"
+                  setter={(vars, ctx) => ({ ...vars, c: ctx.c })}
+                />
+              </THEN>
+              <ELSE>{() => 'tempor'}</ELSE>
+            </IF>
+          </ELSE_IF>
+          <ELSE>
             {() => 'sit amet,'}
-            <Call
+            <CALL
+              key="call_1"
               script={AnotherScript}
               withVars={() => ({ x: 'xxxx' })}
               goto="bar"
             />
-          </Else>
-        </If>
+          </ELSE>
+        </IF>
 
-        <Vars set={vars => ({ ...vars, foo: 'bar' })} />
-        <Label key="second" />
+        <VARS set={vars => ({ ...vars, foo: 'bar' })} />
+        <LABEL key="2nd" />
         {() => 'consectetur'}
 
-        <For var="x" of={() => ['adipiscing', 'elit']}>
-          {() => 'sed do'}
-          <If condition={() => false}>
-            <Then>
-              {() => <eiusmod />}
-              <Prompt setter={(vars, frm) => ({ ...vars, c: frm.c })} />
-            </Then>
-            <Else>{() => 'tempor'}</Else>
-          </If>
-
-          <While condition={() => true}>
-            <Label key="three" />
-            {() => <magna />}
-          </While>
-        </For>
-
-        <Vars set={vars => ({ ...vars, foo: 'baz' })} />
-        <Label key="four" />
+        <VARS set={vars => ({ ...vars, foo: 'baz' })} />
+        <LABEL key="3rd" />
         {() => <del>incididunt</del>}
 
-        <While condition={() => false}>
+        <WHILE condition={() => false}>
           {() => 'ut labore et'}
-          <If condition={() => false}>
-            <Then>
+          <IF condition={() => false}>
+            <THEN>
+              <LABEL key="4th" />
+
               {() => <dolore />}
-              <Prompt setter={(vars, frm) => ({ ...vars, d: frm.d })} />
-            </Then>
-            <Else>
-              <For var="y" of={() => ['ex', 'ea']}>
-                {() => 'aliqua'}
-              </For>
-            </Else>
-          </If>
-        </While>
+              <PROMPT
+                key="ask_3"
+                setter={(vars, ctx) => ({ ...vars, d: ctx.d })}
+              />
+            </THEN>
+            <ELSE>
+              <RETURN />
+            </ELSE>
+          </IF>
+        </WHILE>
 
         {() => <a>Ut enim</a>}
-        <Call
+        <CALL
+          key="call_2"
           script={AnotherScript}
           withVars={() => ({ foo: 'baz' })}
           goto="foo"
         />
 
-        <Label key="end" />
-        <Prompt set={() => ({ end: true })} />
+        <LABEL key="end" />
+        <PROMPT key="ask_4" set={() => ({ end: true })} />
         {() => 'ad minim veniam'}
       </>
     )
@@ -640,7 +603,7 @@ it('throw if invalid syntax node received', () => {
     `"unexpected element: <Foo />"`
   );
 
-  expect(() => resolve(<Then />)).toThrowErrorMatchingInlineSnapshot(
+  expect(() => resolve(<THEN />)).toThrowErrorMatchingInlineSnapshot(
     `"unexpected keyword: <Symbol(machinat.script.keyword.then) />"`
   );
 });

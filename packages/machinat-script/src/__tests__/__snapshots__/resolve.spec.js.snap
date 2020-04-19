@@ -1,5 +1,110 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`resolve <IF/> resolve nested <IF/> 1`] = `
+Array [
+  Object {
+    "branches": Array [
+      Object {
+        "body": Array [
+          Object {
+            "render": [Function],
+            "type": "content",
+          },
+          Object {
+            "branches": Array [
+              Object {
+                "body": Array [
+                  Object {
+                    "render": [Function],
+                    "type": "content",
+                  },
+                ],
+                "condition": [Function],
+              },
+            ],
+            "fallback": undefined,
+            "type": "if",
+          },
+          Object {
+            "render": [Function],
+            "type": "content",
+          },
+        ],
+        "condition": [Function],
+      },
+      Object {
+        "body": Array [
+          Object {
+            "render": [Function],
+            "type": "content",
+          },
+          Object {
+            "branches": Array [
+              Object {
+                "body": Array [
+                  Object {
+                    "render": [Function],
+                    "type": "content",
+                  },
+                ],
+                "condition": [Function],
+              },
+              Object {
+                "body": Array [
+                  Object {
+                    "render": [Function],
+                    "type": "content",
+                  },
+                ],
+                "condition": [Function],
+              },
+            ],
+            "fallback": undefined,
+            "type": "if",
+          },
+          Object {
+            "render": [Function],
+            "type": "content",
+          },
+        ],
+        "condition": [Function],
+      },
+    ],
+    "fallback": Array [
+      Object {
+        "render": [Function],
+        "type": "content",
+      },
+      Object {
+        "branches": Array [
+          Object {
+            "body": Array [
+              Object {
+                "render": [Function],
+                "type": "content",
+              },
+            ],
+            "condition": [Function],
+          },
+        ],
+        "fallback": Array [
+          Object {
+            "render": [Function],
+            "type": "content",
+          },
+        ],
+        "type": "if",
+      },
+      Object {
+        "render": [Function],
+        "type": "content",
+      },
+    ],
+    "type": "if",
+  },
+]
+`;
+
 exports[`resolve whole script 1`] = `
 Array [
   Object {
@@ -15,19 +120,22 @@ Array [
       Object {
         "body": Array [
           Object {
+            "key": "1st",
+            "type": "label",
+          },
+          Object {
             "body": Array [
               Object {
                 "render": [Function],
                 "type": "content",
               },
               Object {
-                "key": "prompt#0",
+                "key": "ask_1",
                 "setter": undefined,
                 "type": "prompt",
               },
             ],
             "condition": [Function],
-            "key": undefined,
             "type": "while",
           },
         ],
@@ -36,21 +144,33 @@ Array [
       Object {
         "body": Array [
           Object {
-            "body": Array [
+            "render": [Function],
+            "type": "content",
+          },
+          Object {
+            "branches": Array [
+              Object {
+                "body": Array [
+                  Object {
+                    "render": [Function],
+                    "type": "content",
+                  },
+                  Object {
+                    "key": "ask_2",
+                    "setter": undefined,
+                    "type": "prompt",
+                  },
+                ],
+                "condition": [Function],
+              },
+            ],
+            "fallback": Array [
               Object {
                 "render": [Function],
                 "type": "content",
               },
-              Object {
-                "key": "prompt#1",
-                "setter": undefined,
-                "type": "prompt",
-              },
             ],
-            "getIterable": [Function],
-            "key": undefined,
-            "type": "for",
-            "varName": "n",
+            "type": "if",
           },
         ],
         "condition": [Function],
@@ -62,12 +182,12 @@ Array [
         "type": "content",
       },
       Object {
-        "gotoKey": "bar",
-        "key": "call#2",
+        "goto": "bar",
+        "key": "call_1",
         "script": Object {
           "$$typeof": Symbol(machinat.component.script),
           "Init": [Function],
-          "_executable": Array [
+          "commands": Array [
             Object {
               "render": [Function],
               "type": "content",
@@ -77,17 +197,17 @@ Array [
               "type": "prompt",
             },
           ],
-          "_keyMapping": Map {
+          "entryPointIndex": Map {
             "foo" => 3,
             "bar" => 8,
           },
           "name": "AnotherScript",
         },
+        "setter": undefined,
         "type": "call",
         "withVars": [Function],
       },
     ],
-    "key": "first",
     "type": "if",
   },
   Object {
@@ -95,72 +215,19 @@ Array [
     "type": "set_vars",
   },
   Object {
-    "key": "second",
+    "key": "2nd",
     "type": "label",
   },
   Object {
     "render": [Function],
     "type": "content",
-  },
-  Object {
-    "body": Array [
-      Object {
-        "render": [Function],
-        "type": "content",
-      },
-      Object {
-        "branches": Array [
-          Object {
-            "body": Array [
-              Object {
-                "render": [Function],
-                "type": "content",
-              },
-              Object {
-                "key": "prompt#3",
-                "setter": undefined,
-                "type": "prompt",
-              },
-            ],
-            "condition": [Function],
-          },
-        ],
-        "fallback": Array [
-          Object {
-            "render": [Function],
-            "type": "content",
-          },
-        ],
-        "key": undefined,
-        "type": "if",
-      },
-      Object {
-        "body": Array [
-          Object {
-            "key": "three",
-            "type": "label",
-          },
-          Object {
-            "render": [Function],
-            "type": "content",
-          },
-        ],
-        "condition": [Function],
-        "key": undefined,
-        "type": "while",
-      },
-    ],
-    "getIterable": [Function],
-    "key": undefined,
-    "type": "for",
-    "varName": "x",
   },
   Object {
     "setter": [Function],
     "type": "set_vars",
   },
   Object {
-    "key": "four",
+    "key": "3rd",
     "type": "label",
   },
   Object {
@@ -178,11 +245,15 @@ Array [
           Object {
             "body": Array [
               Object {
+                "key": "4th",
+                "type": "label",
+              },
+              Object {
                 "render": [Function],
                 "type": "content",
               },
               Object {
-                "key": "prompt#4",
+                "key": "ask_3",
                 "setter": undefined,
                 "type": "prompt",
               },
@@ -192,24 +263,13 @@ Array [
         ],
         "fallback": Array [
           Object {
-            "body": Array [
-              Object {
-                "render": [Function],
-                "type": "content",
-              },
-            ],
-            "getIterable": [Function],
-            "key": undefined,
-            "type": "for",
-            "varName": "y",
+            "type": "return",
           },
         ],
-        "key": undefined,
         "type": "if",
       },
     ],
     "condition": [Function],
-    "key": undefined,
     "type": "while",
   },
   Object {
@@ -217,12 +277,12 @@ Array [
     "type": "content",
   },
   Object {
-    "gotoKey": "foo",
-    "key": "call#5",
+    "goto": "foo",
+    "key": "call_2",
     "script": Object {
       "$$typeof": Symbol(machinat.component.script),
       "Init": [Function],
-      "_executable": Array [
+      "commands": Array [
         Object {
           "render": [Function],
           "type": "content",
@@ -232,12 +292,13 @@ Array [
           "type": "prompt",
         },
       ],
-      "_keyMapping": Map {
+      "entryPointIndex": Map {
         "foo" => 3,
         "bar" => 8,
       },
       "name": "AnotherScript",
     },
+    "setter": undefined,
     "type": "call",
     "withVars": [Function],
   },
@@ -246,122 +307,13 @@ Array [
     "type": "label",
   },
   Object {
-    "key": "prompt#6",
+    "key": "ask_4",
     "setter": [Function],
     "type": "prompt",
   },
   Object {
     "render": [Function],
     "type": "content",
-  },
-]
-`;
-
-exports[`resolving <If/> segment resolve ok nested 1`] = `
-Array [
-  Object {
-    "branches": Array [
-      Object {
-        "body": Array [
-          Object {
-            "render": [Function],
-            "type": "content",
-          },
-          Object {
-            "branches": Array [
-              Object {
-                "body": Array [
-                  Object {
-                    "render": [Function],
-                    "type": "content",
-                  },
-                ],
-                "condition": [Function],
-              },
-            ],
-            "fallback": undefined,
-            "key": undefined,
-            "type": "if",
-          },
-          Object {
-            "render": [Function],
-            "type": "content",
-          },
-        ],
-        "condition": [Function],
-      },
-      Object {
-        "body": Array [
-          Object {
-            "render": [Function],
-            "type": "content",
-          },
-          Object {
-            "branches": Array [
-              Object {
-                "body": Array [
-                  Object {
-                    "render": [Function],
-                    "type": "content",
-                  },
-                ],
-                "condition": [Function],
-              },
-              Object {
-                "body": Array [
-                  Object {
-                    "render": [Function],
-                    "type": "content",
-                  },
-                ],
-                "condition": [Function],
-              },
-            ],
-            "fallback": undefined,
-            "key": undefined,
-            "type": "if",
-          },
-          Object {
-            "render": [Function],
-            "type": "content",
-          },
-        ],
-        "condition": [Function],
-      },
-    ],
-    "fallback": Array [
-      Object {
-        "render": [Function],
-        "type": "content",
-      },
-      Object {
-        "branches": Array [
-          Object {
-            "body": Array [
-              Object {
-                "render": [Function],
-                "type": "content",
-              },
-            ],
-            "condition": [Function],
-          },
-        ],
-        "fallback": Array [
-          Object {
-            "render": [Function],
-            "type": "content",
-          },
-        ],
-        "key": undefined,
-        "type": "if",
-      },
-      Object {
-        "render": [Function],
-        "type": "content",
-      },
-    ],
-    "key": undefined,
-    "type": "if",
   },
 ]
 `;

@@ -11,9 +11,7 @@
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
   "exports": {
-    ".": {
-      "default": "./lib/index.js"
-    }
+    ".":  "./lib/index.js"
   },
   "files": [
     "lib/*",
@@ -25,6 +23,6 @@
   },
   "peerDependencies": {
     "@machinat/core": "^0.1.0-alpha.0",
-    "@machinat/session": "^0.1.0-alpha.0"
+    "@machinat/state": "^0.1.0-alpha.0"
   }
 }

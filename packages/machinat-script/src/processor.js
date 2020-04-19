@@ -1,113 +1,184 @@
 // @flow
-// @jsx Machinat.createElement
 import invariant from 'invariant';
-import Machinat from 'machinat';
-import { StateService } from 'machinat-session';
-import type { SessionStore } from 'machinat-session/types';
-import type { EventContext } from 'machinat-base/types';
-import run from './runner';
-import { SCRIPT_STATE_KEY } from './constant';
-import { archiveScriptState } from './utils';
-import type {
-  MachinatScript,
-  CallingStatus,
-  CallingStatusArchive,
-  ScriptProcessingState,
-} from './types';
+import StateManager from '@machinat/state';
+import { provider } from '@machinat/core/service';
+import type { MachinatChannel, MachinatNode } from '@machinat/core/types';
+import execute from './execute';
+import { SCRIPT_STATE_KEY, SCRIPT_LIBS_I } from './constant';
+import { serializeScriptStatus } from './utils';
+import type { MachinatScript, CallStatus, ScriptProcessState } from './types';
 
-const callingStatusLinker = (libs: MachinatScript[]) => {
-  const linkings = new Map();
-  for (const script of libs) {
-    invariant(
-      !linkings.has(script.name),
-      `script name "${script.name}" duplicated`
-    );
-    linkings.set(script.name, script);
+type RuntimeResult<Vars, Input> = {
+  finished: boolean,
+  content: MachinatNode,
+  currentScript: null | MachinatScript<Vars, Input>,
+  stoppedAt: void | string,
+};
+
+class ScriptRuntime<Vars, Input> {
+  channel: MachinatChannel;
+  callStack: null | CallStatus<Vars, Input>[];
+  saveTimestamp: void | number;
+  _isPrompting: boolean;
+
+  constructor(
+    channel: MachinatChannel,
+    stack: CallStatus<Vars, Input>[],
+    promptPointTs?: number
+  ) {
+    this.channel = channel;
+    this.callStack = stack;
+    this.saveTimestamp = promptPointTs;
+    this._isPrompting = !!promptPointTs;
   }
 
-  return (archive: CallingStatusArchive): CallingStatus => {
-    const { name, vars, stoppedAt, iterStack } = archive;
+  get isFinished() {
+    return !this.callStack;
+  }
 
-    const script = linkings.get(name);
-    invariant(script, `"${name}" not found in linked scripts`);
+  get isPrompting() {
+    return this._isPrompting;
+  }
 
-    return { script, vars, at: stoppedAt, iterStack };
-  };
-};
-
-export const initProcessComponent = (script: MachinatScript) => {
-  const Init = (props: Object) => {
-    const result = run([
-      { script, vars: props.vars, at: props.goto, iterStack: undefined },
-    ]);
-    if (result.finished) {
-      return result.content;
+  async run(input?: Input): Promise<RuntimeResult<Vars, Input>> {
+    if (!this.callStack) {
+      return {
+        finished: true,
+        content: null,
+        currentScript: null,
+        stoppedAt: undefined,
+      };
     }
 
-    return (
-      <StateService.Consumer key={SCRIPT_STATE_KEY}>
-        {([, setState]) => {
-          setState((state: ScriptProcessingState) =>
-            state
-              ? {
-                  ...state,
-                  callStack: [
-                    ...state.callStack,
-                    ...archiveScriptState(result.stack).callStack,
-                  ],
-                }
-              : archiveScriptState(result.stack)
+    const { finished, stack, content } = execute(
+      this.callStack,
+      this._isPrompting,
+      input
+    );
+    this.callStack = stack;
+    this._isPrompting = !finished;
+
+    const lastCallStatus = stack?.[stack.length - 1];
+
+    return {
+      finished,
+      content,
+      currentScript: lastCallStatus?.script || null,
+      stoppedAt: lastCallStatus?.stoppedAt,
+    };
+  }
+}
+
+type InitRuntimeOptions<Vars> = {
+  vars?: Vars,
+  goto?: string,
+};
+
+class ScriptProcessor<Vars, Input> {
+  _stateManager: StateManager;
+  _libs: Map<string, MachinatScript<Vars, Input>>;
+
+  constructor(
+    stateManager: StateManager,
+    scripts: MachinatScript<Vars, Input>[]
+  ) {
+    this._stateManager = stateManager;
+
+    const libs = new Map();
+    for (const script of scripts) {
+      invariant(
+        !libs.has(script.name),
+        `script name "${script.name}" duplicated`
+      );
+      libs.set(script.name, script);
+    }
+
+    this._libs = libs;
+  }
+
+  async init(
+    channel: MachinatChannel,
+    script: MachinatScript<Vars, Input>,
+    { vars = {}, goto }: InitRuntimeOptions<Vars> = {}
+  ): Promise<ScriptRuntime<Vars, Input>> {
+    const state = await this._stateManager
+      .channelState(channel)
+      .get<ScriptProcessState<Vars>>(SCRIPT_STATE_KEY);
+
+    if (state) {
+      throw new Error(
+        `executing runtime existed on channel "${channel.uid}", cannot init until finished or exited`
+      );
+    }
+
+    return new ScriptRuntime(channel, [{ script, vars, stoppedAt: goto }]);
+  }
+
+  async continue(
+    channel: MachinatChannel
+  ): Promise<null | ScriptRuntime<Vars, Input>> {
+    const state = await this._stateManager
+      .channelState(channel)
+      .get<ScriptProcessState<Vars>>(SCRIPT_STATE_KEY);
+
+    if (!state) {
+      return null;
+    }
+
+    const statusStack = [];
+    for (const { name, vars, stoppedAt } of state.callStack) {
+      const script = this._libs.get(name);
+      invariant(script, `"${name}" not found in linked scripts`);
+
+      statusStack.push({ script, vars, stoppedAt });
+    }
+
+    return new ScriptRuntime(channel, statusStack, state.timestamp);
+  }
+
+  async exit(channel: MachinatChannel): Promise<boolean> {
+    const isDeleted = await this._stateManager
+      .channelState(channel)
+      .delete(SCRIPT_STATE_KEY);
+    return isDeleted;
+  }
+
+  async saveRuntime(runtime: ScriptRuntime<Vars, Input>): Promise<boolean> {
+    const { channel, callStack, saveTimestamp } = runtime;
+    if (!callStack && !saveTimestamp) {
+      return false;
+    }
+
+    const timestamp = Date.now();
+    await this._stateManager
+      .channelState(channel)
+      .set<ScriptProcessState<Vars>>(SCRIPT_STATE_KEY, lastState => {
+        if (
+          saveTimestamp
+            ? !(lastState && lastState.timestamp === saveTimestamp)
+            : lastState
+        ) {
+          throw new Error(
+            'runtime state have changed while execution, there are maybe ' +
+              'mutiple runtimes of the same channel executing at the same time'
           );
+        }
 
-          return result.content;
-        }}
-      </StateService.Consumer>
-    );
-  };
+        return callStack
+          ? {
+              version: 'V0',
+              callStack: callStack.map(serializeScriptStatus),
+              timestamp,
+            }
+          : undefined;
+      });
 
-  return Init;
-};
+    runtime.saveTimestamp = timestamp; // eslint-disable-line no-param-reassign
+    return true;
+  }
+}
 
-export const processInterceptor = (
-  sessionStore: SessionStore,
-  libs: MachinatScript[]
-) => {
-  const linkerStatus = callingStatusLinker(libs);
-
-  return async (
-    frame: EventContext<any, any, any, any, any, any, any, any, any>
-  ): Promise<null | EventContext<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
-  >> => {
-    const { channel } = frame;
-    const session = sessionStore.getSession(channel);
-    const currentState = await session.get<ScriptProcessingState>(
-      SCRIPT_STATE_KEY
-    );
-
-    if (!currentState) {
-      return frame;
-    }
-
-    const stack = currentState.callStack.map(linkerStatus);
-    const result = run(stack, frame);
-
-    await frame.reply(result.content);
-
-    if (result.finished) {
-      await session.delete(SCRIPT_STATE_KEY);
-    } else {
-      await session.set(SCRIPT_STATE_KEY, archiveScriptState(result.stack));
-    }
-
-    return null;
-  };
-};
+export default provider<ScriptProcessor<any, any>>({
+  lifetime: 'singleton',
+  deps: [StateManager, SCRIPT_LIBS_I],
+})(ScriptProcessor);

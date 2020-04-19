@@ -1,43 +1,26 @@
 // @flow
-const IF = Symbol('machinat.script.keyword.if');
-const THEN = Symbol('machinat.script.keyword.then');
-const ELSE_IF = Symbol('machinat.script.keyword.else_if');
-const ELSE = Symbol('machinat.script.keyword.else');
+export const IF = Symbol('machinat.script.keyword.if');
+export const THEN = Symbol('machinat.script.keyword.then');
+export const ELSE_IF = Symbol('machinat.script.keyword.else_if');
+export const ELSE = Symbol('machinat.script.keyword.else');
 
-const FOR = Symbol('machinat.script.keyword.for');
+export const WHILE = Symbol('machinat.script.keyword.while');
 
-const WHILE = Symbol('machinat.script.keyword.while');
+export const PROMPT = Symbol('machinat.script.keyword.prompt');
 
-const PROMPT = Symbol('machinat.script.keyword.prompt');
+export const VARS = Symbol('machinat.script.keyword.vars');
 
-const VARS = Symbol('machinat.script.keyword.vars');
+export const LABEL = Symbol('machinat.script.keyword.label');
 
-const LABEL = Symbol('machinat.script.keyword.label');
+export const CALL = Symbol('machinat.script.keyword.call');
 
-const CALL = Symbol('machinat.script.keyword.call');
+export const RETURN = Symbol('machinat.script.keyword.return');
 
 // TODO: unsupported keywords
-/* eslint-disable no-unused-vars */
-const SWITCH = Symbol('machinat.script.keyword.if');
-const CASE = Symbol('machinat.script.keyword.case');
-const DEFAULT = Symbol('machinat.script.keyword.defaut');
-
-const BREAK = Symbol('machinat.script.keyword.break');
-const CONTINUE = Symbol('machinat.script.keyword.continue');
-
-const RETURN = Symbol('machinat.script.keyword.return');
-const EXIT = Symbol('machinat.script.keyword.exit');
-/* eslint-enable no-unused-vars */
-
-export {
-  IF as If,
-  THEN as Then,
-  ELSE as Else,
-  ELSE_IF as ElseIf,
-  FOR as For,
-  WHILE as While,
-  PROMPT as Prompt,
-  VARS as Vars,
-  LABEL as Label,
-  CALL as Call,
-};
+// const SWITCH = Symbol('machinat.script.keyword.if');
+// const CASE = Symbol('machinat.script.keyword.case');
+// const DEFAULT = Symbol('machinat.script.keyword.defaut');
+//
+// const BREAK = Symbol('machinat.script.keyword.break');
+// const CONTINUE = Symbol('machinat.script.keyword.continue');
+//

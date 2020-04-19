@@ -23,12 +23,12 @@ Array [
     "type": "content",
   },
   Object {
-    "gotoKey": "childPrompt",
-    "key": "call#2",
+    "goto": "childPrompt",
+    "key": "call_1",
     "script": Object {
       "$$typeof": Symbol(machinat.component.script),
       "Init": [Function],
-      "_commands": Array [
+      "commands": Array [
         Object {
           "render": [Function],
           "type": "content",
@@ -39,16 +39,17 @@ Array [
           "type": "prompt",
         },
       ],
-      "_keyMapping": Map {
+      "entryPointIndex": Map {
         "childPrompt" => 1,
       },
       "name": "ChildScript",
     },
+    "setter": undefined,
     "type": "call",
     "withVars": [Function],
   },
   Object {
-    "offset": 11,
+    "offset": 10,
     "type": "jump",
   },
   Object {
@@ -62,7 +63,7 @@ Array [
     "type": "content",
   },
   Object {
-    "key": "prompt#0",
+    "key": "ask_1",
     "setter": undefined,
     "type": "prompt",
   },
@@ -71,28 +72,20 @@ Array [
     "type": "jump",
   },
   Object {
-    "offset": 6,
+    "offset": 5,
     "type": "jump",
-  },
-  Object {
-    "endingOffset": 4,
-    "getIterable": [Function],
-    "iterName": "for_5",
-    "type": "iter_outset",
-    "varName": "n",
   },
   Object {
     "render": [Function],
     "type": "content",
   },
   Object {
-    "key": "prompt#1",
+    "key": "ask_2",
     "setter": undefined,
     "type": "prompt",
   },
   Object {
-    "offset": -3,
-    "type": "jump",
+    "type": "return",
   },
   Object {
     "offset": 1,
