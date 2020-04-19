@@ -163,11 +163,11 @@ export type MessengerPlatformConfigs = {
   pageId: string,
   accessToken: string,
   appSecret?: string,
-  shouldValidateRequest: boolean,
-  shouldHandleVerify: boolean,
+  shouldValidateRequest?: boolean,
+  shouldHandleVerify?: boolean,
   verifyToken?: string,
   consumeInterval?: number,
-  webhookPath: string,
+  webhookPath?: string,
   eventMiddlewares?: (
     | MessengerEventMiddleware
     | ServiceContainer<MessengerEventMiddleware>

@@ -28,9 +28,9 @@ export const PATH_BROADCAST_MESSAGES = 'me/broadcast_messages';
 export const PATH_CUSTOM_LABELS = 'me/custom_labels';
 
 export const MESSENGER_PLATFORM_CONFIGS_I = namedInterface<MessengerPlatformConfigs>(
-  'MessengerPlatformConfigs'
+  { name: 'MessengerPlatformConfigs' }
 );
 
 export const MESSENGER_PLATFORM_MOUNTER_I = namedInterface<MessengerPlatformMounter>(
-  'MessengerPlatformMounter'
+  { name: 'MessengerPlatformMounter' }
 );

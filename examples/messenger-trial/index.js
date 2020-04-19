@@ -9,7 +9,7 @@ dotenv.config({ path: `${__dirname}/.env` });
 const PORT = process.env.PORT || 3000;
 
 const bot = new MessengerConnector({
-  shouldVerifyWebhook: true,
+  shouldHandleVerify: true,
   verifyToken: '__VERIFY_TOKEN__',
   accessToken: process.env.TOKEN,
   appSecret: process.env.SECRET,

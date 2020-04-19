@@ -103,11 +103,11 @@ describe('#init()', () => {
   });
 });
 
-describe('#startAuthFlow()', () => {
+describe('#fetchCredential()', () => {
   it('resolve credential with signed request', async () => {
     const provider = new ClientAuthProvider({ appId: 'APP_ID' });
 
-    const promise = provider.startAuthFlow();
+    const promise = provider.fetchCredential();
 
     const getContextMock = global.MessengerExtensions.getContext.mock;
     expect(getContextMock).toHaveBeenCalledTimes(1);
@@ -127,7 +127,7 @@ describe('#startAuthFlow()', () => {
     });
 
     await expect(promise).resolves.toEqual({
-      accepted: true,
+      success: true,
       credential: {
         signedRequest:
           '5f8i9XXH2hEaykXHKFvu-E5Nr6QRqN002JO7yl-w_9o.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTUwNDA0NjM4MCwicGFnZV9pZCI6NjgyNDk4MTcxOTQzMTY1LCJwc2lkIjoiMTI1NDQ1OTE1NDY4MjkxOSIsInRocmVhZF90eXBlIjoiVVNFUl9UT19QQUdFIiwidGlkIjoiMTI1NDQ1OTE1NDY4MjkxOSJ9',
@@ -138,7 +138,7 @@ describe('#startAuthFlow()', () => {
   it('throw if getContext fail', async () => {
     const provider = new ClientAuthProvider({ appId: 'APP_ID' });
 
-    const promise = provider.startAuthFlow();
+    const promise = provider.fetchCredential();
 
     const getContextMock = global.MessengerExtensions.getContext.mock;
     expect(getContextMock).toHaveBeenCalledTimes(1);
@@ -147,9 +147,9 @@ describe('#startAuthFlow()', () => {
     reject(new Error('somthing wrong!'));
 
     await expect(promise).resolves.toEqual({
-      accepted: false,
+      success: false,
       code: 401,
-      message: 'somthing wrong!',
+      reason: 'somthing wrong!',
     });
   });
 });
@@ -170,8 +170,8 @@ describe('#refineAuth(data)', () => {
     };
 
     await expect(provider.refineAuth(context)).resolves.toEqual({
-      channel: MessengerChannel.fromExtensionContext(context),
       user: new MessengerUser(682498171943165, '1254459154682919'),
+      authorizedChannel: MessengerChannel.fromExtensionContext(context),
     });
   });
 

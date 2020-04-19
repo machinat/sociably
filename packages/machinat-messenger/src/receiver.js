@@ -6,7 +6,7 @@ import invariant from 'invariant';
 import WebhookReceiver from '@machinat/http/webhook';
 import type { WebhookHandler } from '@machinat/http/webhook/types';
 import { provider } from '@machinat/core/service';
-import type { InitScopeFn, PopEventWrapper } from '@machinat/core/types';
+import type { PopEventWrapper } from '@machinat/core/types';
 
 import createEvent from './event';
 import MessengerChannel from './channel';
@@ -26,8 +26,8 @@ import type {
 
 type MessengerReceiverOptions = {
   appSecret?: string,
-  shouldValidateRequest: boolean,
-  shouldHandleVerify: boolean,
+  shouldValidateRequest?: boolean,
+  shouldHandleVerify?: boolean,
   verifyToken?: string,
 };
 
@@ -39,7 +39,6 @@ const handleWebhook = (
     appSecret,
   }: MessengerReceiverOptions,
   bot: MessengerBot,
-  initScope: InitScopeFn,
   popEventWrapper: PopEventWrapper<MessengerEventContext, null>
 ): WebhookHandler => {
   const popEvent = popEventWrapper(() => Promise.resolve(null));
@@ -118,10 +117,7 @@ const handleWebhook = (
           sender !== undefined ? new MessengerUser(pageId, sender.id) : null;
 
         issuingEvents.push(
-          popEvent(
-            { platform: MESSENGER, bot, channel, user, event, metadata },
-            initScope()
-          )
+          popEvent({ platform: MESSENGER, bot, channel, user, event, metadata })
         );
       }
     }
@@ -133,14 +129,13 @@ const handleWebhook = (
 
 class MessengerReceiver extends WebhookReceiver {
   constructor(
-    bot: MessengerBot,
     {
       shouldHandleVerify = true,
       verifyToken,
       shouldValidateRequest = true,
       appSecret,
     }: MessengerReceiverOptions,
-    initScope: InitScopeFn,
+    bot: MessengerBot,
     popEventWrapper: PopEventWrapper<MessengerEventContext, null>
   ) {
     invariant(
@@ -162,7 +157,6 @@ class MessengerReceiver extends WebhookReceiver {
           appSecret,
         },
         bot,
-        initScope,
         popEventWrapper
       )
     );
@@ -172,13 +166,13 @@ class MessengerReceiver extends WebhookReceiver {
 export default provider<MessengerReceiver>({
   lifetime: 'singleton',
   deps: [
-    MessengerBot,
     MESSENGER_PLATFORM_CONFIGS_I,
+    MessengerBot,
     MESSENGER_PLATFORM_MOUNTER_I,
   ],
   factory: (
-    bot: MessengerBot,
     configs: MessengerPlatformConfigs,
-    { initScope, popEventWrapper }: MessengerPlatformMounter
-  ) => new MessengerReceiver(bot, configs, initScope, popEventWrapper),
+    bot: MessengerBot,
+    { popEventWrapper }: MessengerPlatformMounter
+  ) => new MessengerReceiver(configs, bot, popEventWrapper),
 })(MessengerReceiver);

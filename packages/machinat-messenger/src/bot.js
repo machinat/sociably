@@ -92,14 +92,12 @@ class MessengerBot
     );
   }
 
-  start(): MessengerBot {
+  async start() {
     this.engine.start();
-    return this;
   }
 
-  stop(): MessengerBot {
+  async stop() {
     this.engine.stop();
-    return this;
   }
 
   async render(

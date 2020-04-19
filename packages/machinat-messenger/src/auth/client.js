@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import type { ClientAuthProvider } from 'machinat-auth/types';
+import type { ClientAuthorizer } from '@machinat/auth/types';
 import { MESSENGER } from '../constant';
 import type { ExtensionContext, ExtensionCredential } from '../types';
 import { refineExtensionContext } from './utils';
@@ -16,8 +16,8 @@ declare var MessengerExtensions: Object;
 
 const INIT_TIMEOUT = 20000;
 
-class MessengerClientAuthProvider
-  implements ClientAuthProvider<ExtensionContext, ExtensionCredential> {
+class MessengerClientAuthorizer
+  implements ClientAuthorizer<ExtensionContext, ExtensionCredential> {
   appId: string;
   isExtensionReady: boolean;
 
@@ -69,21 +69,21 @@ class MessengerClientAuthProvider
     await initPromise;
   }
 
-  async startAuthFlow() {
+  async fetchCredential() {
     try {
       const context = await new Promise((resolve, reject) => {
         MessengerExtensions.getContext(this.appId, resolve, reject);
       });
 
       return {
-        accepted: true,
+        success: true,
         credential: { signedRequest: context.signed_request },
       };
     } catch (err) {
       return {
-        accepted: false,
+        success: false,
         code: 401,
-        message: err.message,
+        reason: err.message,
       };
     }
   }
@@ -94,4 +94,4 @@ class MessengerClientAuthProvider
   }
 }
 
-export default MessengerClientAuthProvider;
+export default MessengerClientAuthorizer;

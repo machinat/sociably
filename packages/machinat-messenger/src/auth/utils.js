@@ -1,6 +1,6 @@
 // @flow
 /* eslint-disable import/prefer-default-export */
-import type { AuthRefineResult } from 'machinat-auth/types';
+import type { AuthRefineResult } from '@machinat/auth/types';
 import type { ExtensionContext } from '../types';
 import MessengerChannel from '../channel';
 import { MessengerUser } from '../user';
@@ -14,6 +14,6 @@ export const refineExtensionContext = (
 
   return {
     user: new MessengerUser(ctx.page_id, ctx.psid),
-    channel: MessengerChannel.fromExtensionContext(ctx),
+    authorizedChannel: MessengerChannel.fromExtensionContext(ctx),
   };
 };

@@ -14,7 +14,8 @@
   "exports": {
     ".": "./lib/index.js",
     "./asset": "./lib/asset/index.js",
-    "./auth": "./lib/auth/index.js"
+    "./auth": "./lib/auth/index.js",
+    "./auth/client": "./lib/auth/client.js"
   },
   "files": [
     "lib/*",

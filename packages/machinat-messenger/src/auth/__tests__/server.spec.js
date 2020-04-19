@@ -43,7 +43,7 @@ describe('#delegateAuthRequest(req, res)', () => {
   });
 });
 
-describe('#verifySigning(credential)', () => {
+describe('#verifyCredential(credential)', () => {
   it('resolve auth context if verification ok', async () => {
     const provider = new ServerAuthProvider({ appSecret: 'APP_SECRET' });
     const credential = {
@@ -51,8 +51,8 @@ describe('#verifySigning(credential)', () => {
         'djtx96RQaNCtszsQ7GOIXy8jBF659cNCBVM69n3g6h8.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTUwNDA0NjM4MCwicGFnZV9pZCI6NjgyNDk4MTcxOTQzMTY1LCJwc2lkIjoiMTI1NDQ1OTE1NDY4MjkxOSIsInRocmVhZF90eXBlIjoiVVNFUl9UT19QQUdFIiwidGlkIjoiMTI1NDQ1OTE1NDY4MjkxOSJ9',
     };
 
-    await expect(provider.verifySigning(credential)).resolves.toStrictEqual({
-      accepted: true,
+    await expect(provider.verifyCredential(credential)).resolves.toStrictEqual({
+      success: true,
       refreshable: false,
       data: {
         algorithm: 'HMAC-SHA256',
@@ -68,26 +68,28 @@ describe('#verifySigning(credential)', () => {
   it('reject if context invalid', async () => {
     const provider = new ServerAuthProvider({ appSecret: 'APP_SECRET' });
 
-    await expect(provider.verifySigning(null)).resolves.toMatchInlineSnapshot(`
+    await expect(provider.verifyCredential(null)).resolves
+      .toMatchInlineSnapshot(`
             Object {
-              "accepted": false,
               "code": 400,
-              "message": "invalid extension context",
+              "reason": "invalid extension context",
+              "success": false,
             }
           `);
-    await expect(provider.verifySigning({})).resolves.toMatchInlineSnapshot(`
+    await expect(provider.verifyCredential({})).resolves.toMatchInlineSnapshot(`
             Object {
-              "accepted": false,
               "code": 400,
-              "message": "invalid extension context",
+              "reason": "invalid extension context",
+              "success": false,
             }
           `);
-    await expect(provider.verifySigning({ signed_request: 'invalid content' }))
-      .resolves.toMatchInlineSnapshot(`
+    await expect(
+      provider.verifyCredential({ signed_request: 'invalid content' })
+    ).resolves.toMatchInlineSnapshot(`
             Object {
-              "accepted": false,
               "code": 400,
-              "message": "invalid extension context",
+              "reason": "invalid extension context",
+              "success": false,
             }
           `);
   });
@@ -99,14 +101,14 @@ describe('#verifySigning(credential)', () => {
         '__invalid_signature_part__.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTUwNDA0NjM4MCwicGFnZV9pZCI6NjgyNDk4MTcxOTQzMTY1LCJwc2lkIjoiMTI1NDQ1OTE1NDY4MjkxOSIsInRocmVhZF90eXBlIjoiVVNFUl9UT19QQUdFIiwidGlkIjoiMTI1NDQ1OTE1NDY4MjkxOSJ9',
     };
 
-    await expect(provider.verifySigning(credentrial)).resolves
+    await expect(provider.verifyCredential(credentrial)).resolves
       .toMatchInlineSnapshot(`
-          Object {
-            "accepted": false,
-            "code": 401,
-            "message": "invalid signature",
-          }
-      `);
+            Object {
+              "code": 401,
+              "reason": "invalid signature",
+              "success": false,
+            }
+          `);
   });
 });
 
@@ -116,12 +118,12 @@ describe('#verifyRefreshment()', () => {
 
     await expect(provider.verifyRefreshment({})).resolves
       .toMatchInlineSnapshot(`
-          Object {
-            "accepted": false,
-            "code": 403,
-            "message": "should resign only",
-          }
-      `);
+            Object {
+              "code": 403,
+              "reason": "should resign only",
+              "success": false,
+            }
+          `);
   });
 });
 
@@ -138,8 +140,8 @@ describe('#refineAuth(data)', () => {
     };
 
     await expect(provider.refineAuth(context)).resolves.toEqual({
-      channel: MessengerChannel.fromExtensionContext(context),
       user: new MessengerUser(682498171943165, '1254459154682919'),
+      authorizedChannel: MessengerChannel.fromExtensionContext(context),
     });
   });
 

@@ -2,27 +2,30 @@
 import invariant from 'invariant';
 import crypto from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
-
 import {
   decode as decodeBase64URL,
   toBuffer as decodeBase64URLToBuffer,
 } from 'base64url';
-import type { ServerAuthProvider } from 'machinat-auth/types';
-
-import { MESSENGER } from '../constant';
-import type { ExtensionContext, ExtensionCredential } from '../types';
+import { provider } from '@machinat/core/service';
+import type { ServerAuthorizer } from '@machinat/auth/types';
+import { MESSENGER, MESSENGER_PLATFORM_CONFIGS_I } from '../constant';
+import type {
+  ExtensionContext,
+  ExtensionCredential,
+  MessengerPlatformConfigs,
+} from '../types';
 import { refineExtensionContext } from './utils';
 
-type MessengerServerAuthProviderOps = {
+type MessengerServerAuthorizerOps = {
   appSecret: string,
 };
 
-class MessengerServerAuthProvider
-  implements ServerAuthProvider<ExtensionContext, ExtensionCredential> {
+class MessengerServerAuthorizer
+  implements ServerAuthorizer<ExtensionContext, ExtensionCredential> {
   appSecret: string;
   platform = MESSENGER;
 
-  constructor(options: MessengerServerAuthProviderOps = {}) {
+  constructor(options: MessengerServerAuthorizerOps = {}) {
     invariant(options.appSecret, 'options.appSecret must not be empty');
 
     this.appSecret = options.appSecret;
@@ -34,12 +37,12 @@ class MessengerServerAuthProvider
     res.end();
   }
 
-  async verifySigning(credential: ExtensionCredential) {
+  async verifyCredential(credential: ExtensionCredential) {
     if (!credential || !credential.signedRequest) {
       return {
-        accepted: false,
+        success: false,
         code: 400,
-        message: 'invalid extension context',
+        reason: 'invalid extension context',
       };
     }
 
@@ -47,9 +50,9 @@ class MessengerServerAuthProvider
     const sig: Buffer = decodeBase64URLToBuffer(sigEncoded);
     if (!sigEncoded || !dataEncoded) {
       return {
-        accepted: false,
+        success: false,
         code: 400,
-        message: 'invalid signed request',
+        reason: 'invalid signed request',
       };
     }
 
@@ -60,16 +63,16 @@ class MessengerServerAuthProvider
 
     if (!sig.equals(expectedSig)) {
       return {
-        accepted: false,
+        success: false,
         code: 401,
-        message: 'invalid signature',
+        reason: 'invalid signature',
       };
     }
 
     const data = JSON.parse(decodeBase64URL(dataEncoded));
 
     return {
-      accepted: true,
+      success: true,
       refreshable: false,
       data,
     };
@@ -78,9 +81,9 @@ class MessengerServerAuthProvider
   // eslint-disable-next-line class-methods-use-this
   async verifyRefreshment() {
     return {
-      accepted: false,
+      success: false,
       code: 403,
-      message: 'should resign only',
+      reason: 'should resign only',
     };
   }
 
@@ -90,4 +93,14 @@ class MessengerServerAuthProvider
   }
 }
 
-export default MessengerServerAuthProvider;
+export default provider<MessengerServerAuthorizer>({
+  lifetime: 'transient',
+  deps: [MESSENGER_PLATFORM_CONFIGS_I],
+  factory: ({ appSecret }: MessengerPlatformConfigs) => {
+    invariant(
+      appSecret,
+      'configs.appSecret must not be empty to use MessengerServerAuthorizer'
+    );
+    return new MessengerServerAuthorizer({ appSecret });
+  },
+})(MessengerServerAuthorizer);

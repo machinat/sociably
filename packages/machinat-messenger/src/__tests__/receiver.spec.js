@@ -6,8 +6,6 @@ import MessengerReceiver from '../receiver';
 
 const bot = moxy();
 
-const initScope = moxy(() => moxy());
-
 const popEventMock = new Mock();
 const popEventWrapper = moxy(finalHandler =>
   popEventMock.proxify(ctx => finalHandler(ctx))
@@ -39,7 +37,6 @@ const createRes = () =>
   });
 
 beforeEach(() => {
-  initScope.mock.clear();
   popEventMock.clear();
   popEventWrapper.mock.clear();
 });
@@ -47,12 +44,7 @@ beforeEach(() => {
 it('throw if appSecret not given', () => {
   expect(
     () =>
-      new MessengerReceiver(
-        bot,
-        { shouldHandleVerify: false },
-        initScope,
-        popEventWrapper
-      )
+      new MessengerReceiver({ shouldHandleVerify: false }, bot, popEventWrapper)
   ).toThrowErrorMatchingInlineSnapshot(
     `"appSecret should not be empty if shouldValidateRequest set to true"`
   );
@@ -62,9 +54,8 @@ it('throw if verifyToken not given', () => {
   expect(
     () =>
       new MessengerReceiver(
-        bot,
         { shouldValidateRequest: false },
-        initScope,
+        bot,
         popEventWrapper
       )
   ).toThrowErrorMatchingInlineSnapshot(
@@ -75,9 +66,8 @@ it('throw if verifyToken not given', () => {
 describe('handling GET', () => {
   it('respond 403 if shouldHandleVerify set to false', async () => {
     const receiver = new MessengerReceiver(
-      bot,
       { shouldHandleVerify: false, appSecret: '_APP_SECRET_' },
-      initScope,
+      bot,
       popEventWrapper
     );
 
@@ -89,7 +79,6 @@ describe('handling GET', () => {
     expect(res.statusCode).toBe(403);
     expect(res.finished).toBe(true);
 
-    expect(initScope.mock).not.toHaveBeenCalled();
     expect(popEventMock).not.toHaveBeenCalled();
   });
 
@@ -97,9 +86,8 @@ describe('handling GET', () => {
     'respond 400 if hub.mode param is not "subscribe"',
     async mode => {
       const receiver = new MessengerReceiver(
-        bot,
         { verifyToken: '_MY_TOKEN_', shouldValidateRequest: false },
-        initScope,
+        bot,
         popEventWrapper
       );
 
@@ -114,16 +102,14 @@ describe('handling GET', () => {
       expect(res.statusCode).toBe(400);
       expect(res.finished).toBe(true);
 
-      expect(initScope.mock).not.toHaveBeenCalled();
       expect(popEventMock).not.toHaveBeenCalled();
     }
   );
 
   it('respond 400 if hub.verify_token param not matched', async () => {
     const receiver = new MessengerReceiver(
-      bot,
       { verifyToken: '_MY_TOKEN_', shouldValidateRequest: false },
-      initScope,
+      bot,
       popEventWrapper
     );
 
@@ -138,15 +124,13 @@ describe('handling GET', () => {
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
 
-    expect(initScope.mock).not.toHaveBeenCalled();
     expect(popEventMock).not.toHaveBeenCalled();
   });
 
   it('respond 200 and hub.challenge within body', async () => {
     const receiver = new MessengerReceiver(
-      bot,
       { verifyToken: '_MY_TOKEN_', shouldValidateRequest: false },
-      initScope,
+      bot,
       popEventWrapper
     );
 
@@ -163,7 +147,6 @@ describe('handling GET', () => {
     expect(res.finished).toBe(true);
     expect(res.end.mock.calls[0].args[0]).toBe('FooBarBazHub');
 
-    expect(initScope.mock).not.toHaveBeenCalled();
     expect(popEventMock).not.toHaveBeenCalled();
   });
 });
@@ -171,9 +154,8 @@ describe('handling GET', () => {
 describe('handling POST', () => {
   it('respond 400 if body is empty', async () => {
     const receiver = new MessengerReceiver(
-      bot,
       { shouldHandleVerify: false, shouldValidateRequest: false },
-      initScope,
+      bot,
       popEventWrapper
     );
 
@@ -185,15 +167,13 @@ describe('handling POST', () => {
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
 
-    expect(initScope.mock).not.toHaveBeenCalled();
     expect(popEventMock).not.toHaveBeenCalled();
   });
 
   it('respond 400 if body is not in valid JSON format', async () => {
     const receiver = new MessengerReceiver(
-      bot,
       { shouldHandleVerify: false, shouldValidateRequest: false },
-      initScope,
+      bot,
       popEventWrapper
     );
 
@@ -205,15 +185,13 @@ describe('handling POST', () => {
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
 
-    expect(initScope.mock).not.toHaveBeenCalled();
     expect(popEventMock).not.toHaveBeenCalled();
   });
 
   it('respond 404 if "object" field is not "page"', async () => {
     const receiver = new MessengerReceiver(
-      bot,
       { shouldHandleVerify: false, shouldValidateRequest: false },
-      initScope,
+      bot,
       popEventWrapper
     );
 
@@ -225,15 +203,13 @@ describe('handling POST', () => {
     expect(res.statusCode).toBe(404);
     expect(res.finished).toBe(true);
 
-    expect(initScope.mock).not.toHaveBeenCalled();
     expect(popEventMock).not.toHaveBeenCalled();
   });
 
   it('respond 200 and popEvents', async () => {
     const receiver = new MessengerReceiver(
-      bot,
       { shouldHandleVerify: false, shouldValidateRequest: false },
-      initScope,
+      bot,
       popEventWrapper
     );
 
@@ -279,13 +255,11 @@ describe('handling POST', () => {
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
 
-    expect(initScope.mock).toHaveBeenCalledTimes(2);
     expect(popEventMock).toHaveBeenCalledTimes(2);
 
-    for (const [i, { args }] of popEventMock.calls.entries()) {
-      const [context, scope] = args;
-      expect(scope).toBe(initScope.mock.calls[i].result);
-
+    for (const {
+      args: [context],
+    } of popEventMock.calls) {
       expect(context.platform).toBe('messenger');
       expect(context.bot).toBe(bot);
 
@@ -313,9 +287,8 @@ describe('handling POST', () => {
 
   it('create channel from optin.user_ref if sender not included', async () => {
     const receiver = new MessengerReceiver(
-      bot,
       { shouldHandleVerify: false, shouldValidateRequest: false },
-      initScope,
+      bot,
       popEventWrapper
     );
 
@@ -354,7 +327,6 @@ describe('handling POST', () => {
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
 
-    expect(initScope.mock).toHaveBeenCalledTimes(2);
     expect(popEventMock).toHaveBeenCalledTimes(2);
 
     const ctx1 = popEventMock.calls[0].args[0];
@@ -383,9 +355,8 @@ describe('handling POST', () => {
   it('works if signature validation passed', async () => {
     const appSecret = '_MY_SECRET_';
     const receiver = new MessengerReceiver(
-      bot,
       { appSecret, shouldHandleVerify: false },
-      initScope,
+      bot,
       popEventWrapper
     );
 
@@ -418,9 +389,8 @@ describe('handling POST', () => {
   it('respond 401 if signature is invalid', async () => {
     const appSecret = '_MY_SECRET_';
     const receiver = new MessengerReceiver(
-      bot,
       { appSecret, shouldHandleVerify: false },
-      initScope,
+      bot,
       popEventWrapper
     );
 
@@ -442,9 +412,8 @@ describe('handling POST', () => {
 
   it('respond 400 if body is empty', async () => {
     const receiver = new MessengerReceiver(
-      bot,
       { shouldHandleVerify: false, shouldValidateRequest: false },
-      initScope,
+      bot,
       popEventWrapper
     );
     const req = createReq({ method: 'POST' });
