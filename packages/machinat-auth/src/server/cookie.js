@@ -1,5 +1,4 @@
 // @flow
-import { parse as parseURL } from 'url';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { sign as signJWT, verify as verifyJWT } from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';
@@ -11,12 +10,7 @@ import type {
   StateTokenPayload,
   ErrorTokenPayload,
 } from '../types';
-import {
-  checkPathScope,
-  checkDomainScope,
-  getCookies,
-  setCookie,
-} from './utils';
+import { getCookies, setCookie } from './utils';
 
 import {
   STATE_COOKIE_KEY,
@@ -25,18 +19,17 @@ import {
   ERROR_COOKIE_KEY,
 } from '../constant';
 
-type SessionOptions = {
-  hostname: string,
-  pathname: string,
+type OperatorOptions = {
+  entryPath: string,
   secret: string,
   authCookieAge: number,
   dataCookieAge: number,
   tokenAge: number,
   refreshPeriod: number,
-  domainScope: void | string,
-  pathScope: string,
+  cookieDomain: void | string,
+  cookiePath: string,
   sameSite: 'Strict' | 'Lax' | 'None',
-  dev: boolean,
+  secure: boolean,
 };
 
 type IssueAuthOptions = {
@@ -45,10 +38,10 @@ type IssueAuthOptions = {
   signatureOnly?: boolean,
 };
 
-export class CookieSessionOperator {
-  options: SessionOptions;
+export class CookieOperator {
+  options: OperatorOptions;
 
-  _scopeInfo: {| domain?: string, path: string |};
+  _cookieScope: {| domain?: string, path: string |};
 
   _tokenCookieOpts: Object;
   _errorCookieOpts: Object;
@@ -56,26 +49,26 @@ export class CookieSessionOperator {
   _stateCookieOpts: Object;
   _deleteCookieOpts: Object;
 
-  constructor(options: SessionOptions) {
+  constructor(options: OperatorOptions) {
     this.options = options;
 
     const {
-      pathname,
+      entryPath,
       authCookieAge,
       dataCookieAge,
-      domainScope,
-      pathScope,
+      cookieDomain,
+      cookiePath,
       sameSite,
-      dev,
+      secure,
     } = options;
 
-    this._scopeInfo = { domain: domainScope, path: pathScope };
+    this._cookieScope = { domain: cookieDomain, path: cookiePath };
 
     const baseCookieOpts = {
-      domain: domainScope,
-      path: pathScope,
+      domain: cookieDomain,
+      path: cookiePath,
       sameSite,
-      secure: !dev,
+      secure,
     };
 
     this._tokenCookieOpts = {
@@ -94,49 +87,18 @@ export class CookieSessionOperator {
     };
 
     this._stateCookieOpts = {
-      path: pathname,
+      path: entryPath,
       sameSite,
-      secure: !dev,
+      secure,
       httpOnly: true,
       maxAge: dataCookieAge,
     };
 
     this._deleteCookieOpts = {
-      domain: domainScope,
-      path: pathScope,
+      domain: cookieDomain,
+      path: cookiePath,
       expires: new Date(0),
     };
-  }
-
-  checkURLScope(url: string): boolean {
-    const { protocol, hostname, pathname } = parseURL(url);
-    const {
-      dev,
-      hostname: authHostname,
-      domainScope,
-      pathScope,
-    } = this.options;
-
-    if (
-      !(
-        hostname &&
-        protocol &&
-        /^https?:$/.test(protocol) &&
-        (dev || protocol[4] === 's')
-      )
-    ) {
-      return false;
-    }
-
-    if (
-      !(domainScope
-        ? checkDomainScope(hostname, domainScope)
-        : hostname === authHostname)
-    ) {
-      return false;
-    }
-
-    return checkPathScope((pathname: any), pathScope);
   }
 
   async getState<StateData>(
@@ -197,13 +159,13 @@ export class CookieSessionOperator {
     }
 
     try {
-      const { platform, auth }: AuthTokenPayload<any> = await thenifiedly.call(
+      const { platform, data }: AuthTokenPayload<any> = await thenifiedly.call(
         verifyJWT,
         `${contentVal}.${sigVal}`,
         this.options.secret
       );
 
-      return platform === platformAsserted ? auth : null;
+      return platform === platformAsserted ? data : null;
     } catch (e) {
       return null;
     }
@@ -212,7 +174,7 @@ export class CookieSessionOperator {
   async issueAuth<AuthData>(
     res: ServerResponse,
     platform: string,
-    auth: AuthData,
+    data: AuthData,
     {
       refreshLimit,
       refreshable = true,
@@ -226,7 +188,7 @@ export class CookieSessionOperator {
       signJWT,
       ({
         platform,
-        auth,
+        data,
         refreshLimit: !refreshable
           ? undefined
           : !refreshLimit
@@ -234,7 +196,7 @@ export class CookieSessionOperator {
           : refreshLimit > now + tokenAge
           ? refreshLimit
           : undefined,
-        scope: this._scopeInfo,
+        scope: this._cookieScope,
       }: AuthPayload<AuthData>),
       secret,
       { expiresIn: tokenAge }
@@ -257,7 +219,7 @@ export class CookieSessionOperator {
   async getError(
     req: IncomingMessage,
     platformAsserted: string
-  ): Promise<null | { code: number, message: string }> {
+  ): Promise<null | { code: number, reason: string }> {
     let errEncoded;
     const cookies = getCookies(req);
     if (!cookies || !(errEncoded = cookies[ERROR_COOKIE_KEY])) {
@@ -281,14 +243,14 @@ export class CookieSessionOperator {
     res: ServerResponse,
     platform: string,
     code: number,
-    message: string
+    reason: string
   ): Promise<string> {
     const errEncoded = await thenifiedly.call(
       signJWT,
       ({
         platform,
-        error: { code, message },
-        scope: this._scopeInfo,
+        error: { code, reason },
+        scope: this._cookieScope,
       }: ErrorPayload),
       this.options.secret
     );
@@ -314,26 +276,22 @@ export class CookieSessionOperator {
   }
 }
 
-export class CookieSession {
+export class CookieAccessor {
   _req: IncomingMessage;
   _res: ServerResponse;
   _platform: string;
-  _operator: CookieSessionOperator;
+  _operator: CookieOperator;
 
   constructor(
     req: IncomingMessage,
     res: ServerResponse,
     platform: string,
-    operator: CookieSessionOperator
+    operator: CookieOperator
   ) {
     this._req = req;
     this._res = res;
     this._platform = platform;
     this._operator = operator;
-  }
-
-  checkURLScope(url: string) {
-    return this._operator.checkURLScope(url);
   }
 
   getState<StateData>() {

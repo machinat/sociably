@@ -38,13 +38,13 @@ export const setCookie = (
   res.setHeader(SET_COOKIE, cookieToSet);
 };
 
-export const checkDomainScope = (subdomain: string, domain: string) =>
+export const isSubdomain = (domain: string, subdomain: string) =>
   subdomain.slice(-domain.length) === domain &&
   (subdomain.length === domain.length ||
     subdomain[subdomain.length - domain.length - 1] === '.');
 
-export const checkPathScope = (subpath: string, path: string) =>
+export const isSubpath = (path: string, subpath: string) =>
   subpath.slice(0, path.length) === path &&
   (subpath.length === path.length ||
     path[path.length - 1] === '/' ||
-    subpath[subpath.length - path.length] === '/');
+    subpath[path.length] === '/');

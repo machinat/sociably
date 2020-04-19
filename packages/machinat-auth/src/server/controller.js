@@ -1,4 +1,5 @@
 // @flow
+import { provider } from '@machinat/core/service';
 import { parse as parseURL } from 'url';
 import { relative as getRelativePath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
@@ -6,53 +7,54 @@ import invariant from 'invariant';
 import { verify as verifyJWT } from 'jsonwebtoken';
 import getRawBody from 'raw-body';
 import thenifiedly from 'thenifiedly';
-import AuthError from '../error';
-import { SIGNATURE_COOKIE_KEY } from '../constant';
+import {
+  SIGNATURE_COOKIE_KEY,
+  AUTH_SERVER_AUTHORIZERS_I,
+  AUTH_MODULE_CONFIGS_I,
+} from '../constant';
 import type {
-  ServerAuthProvider,
-  AuthContext,
+  ServerAuthorizer,
+  AuthInfo,
   AuthTokenPayload,
   SignRequestBody,
   RefreshRequestBody,
   VerifyRequestBody,
   AuthAPIResponseBody,
   VerifiableRequest,
+  AuthModuleConfigs,
 } from '../types';
 
-import { getCookies, checkDomainScope, checkPathScope } from './utils';
-import { CookieSession, CookieSessionOperator } from './session';
+import { getCookies, isSubpath } from './utils';
+import { CookieAccessor, CookieOperator } from './cookie';
 
-type ServerAuthControllerOpts = {|
-  providers: ServerAuthProvider<any, any>[],
-  secret: string,
-  authEntry: string,
-  tokenAge?: number,
-  authCookieAge?: number,
-  dataCookieAge?: number,
-  refreshPeriod?: number,
-  domainScope?: string,
-  pathScope?: string,
-  sameSite?: 'Strict' | 'Lax' | 'None',
-  dev?: boolean,
-|};
+type SuccessAuthorizationResult = {
+  success: true,
+  auth: AuthInfo<any>,
+};
+
+type FailedAuthorizationResult = {
+  success: false,
+  code: number,
+  reason: string,
+};
+
+type AuthorizationResult =
+  | SuccessAuthorizationResult
+  | FailedAuthorizationResult;
 
 const getSignature = (req: VerifiableRequest) => {
   const cookies = getCookies(req);
   return cookies ? cookies[SIGNATURE_COOKIE_KEY] : undefined;
 };
 
-const parseBody = async (req: IncomingMessage) => {
+const parseBody = async (req: IncomingMessage): null | Object => {
   try {
     const rawBody = await getRawBody(req);
     const body = JSON.parse(rawBody);
 
-    if (typeof body !== 'object') {
-      throw new AuthError(400, 'invalid body type');
-    }
-
-    return body;
+    return typeof body === 'object' ? body : null;
   } catch (err) {
-    throw new AuthError(400, err.message);
+    return null;
   }
 };
 
@@ -73,101 +75,73 @@ const respondAPIError = (
 };
 
 class AuthServerController {
-  providers: ServerAuthProvider<any, any>[];
+  authorizers: ServerAuthorizer<any, any>[];
   secret: string;
-  authEntry: string;
+  entryPath: string;
 
-  _hostname: string;
-  _pathname: string;
+  _sessionOperator: CookieOperator;
 
-  _sessionOperator: CookieSessionOperator;
-
-  constructor({
-    secret,
-    providers,
-    authEntry,
-    authCookieAge = 180, // 3 min
-    dataCookieAge = 60, // 1 min
-    tokenAge = 1800, // 30 min
-    refreshPeriod = 86400, // 1 day
-    domainScope,
-    pathScope = '/',
-    sameSite = 'None',
-    dev = false,
-  }: ServerAuthControllerOpts = {}) {
+  constructor(
+    authorizers: ServerAuthorizer<any, any>[],
+    {
+      secret,
+      entryPath = '/',
+      authCookieAge = 180, // 3 min
+      dataCookieAge = 60, // 1 min
+      tokenAge = 1800, // 30 min
+      refreshPeriod = 86400, // 1 day
+      cookieDomain,
+      cookiePath = '/',
+      sameSite = 'None',
+      secure = true,
+    }: AuthModuleConfigs = {}
+  ) {
     invariant(secret, 'options.secret must not be empty');
-    invariant(authEntry, 'options.authEntry must not be empty');
     invariant(
-      providers && providers.length > 0,
-      'options.providers must not be empty'
-    );
-
-    const entryURL = parseURL(authEntry);
-    invariant(
-      entryURL.protocol && entryURL.host,
-      'invalid or incomplete authEntry url'
-    );
-
-    this._hostname = (entryURL.hostname: any);
-    this._pathname = (entryURL.pathname: any);
-
-    invariant(
-      !domainScope || checkDomainScope(this._hostname, domainScope),
-      'options.authEntry should be located under subdomain of options.domainScope'
+      authorizers && authorizers.length > 0,
+      'options.authorizers must not be empty'
     );
 
     invariant(
-      checkPathScope(this._pathname, pathScope),
-      'options.authEntry should be located under subpath of options.pathScope'
+      isSubpath(cookiePath, entryPath),
+      'options.entryPath should be a subpath of options.cookiePath'
     );
 
     this.secret = secret;
-    this.providers = providers;
-    this.authEntry = authEntry;
+    this.authorizers = authorizers;
+    this.entryPath = entryPath;
 
-    this._sessionOperator = new CookieSessionOperator({
-      hostname: this._hostname,
-      pathname: this._pathname,
+    this._sessionOperator = new CookieOperator({
+      entryPath,
       secret,
       authCookieAge,
       dataCookieAge,
       tokenAge,
       refreshPeriod,
-      domainScope,
-      pathScope,
+      cookieDomain,
+      cookiePath,
       sameSite,
-      dev,
+      secure,
     });
   }
 
   async delegateAuthRequest(
     req: IncomingMessage,
     res: ServerResponse
-  ): Promise<boolean> {
-    const { hostname, pathname } = parseURL(req.url, true);
+  ): Promise<void> {
+    const { pathname } = parseURL(req.url, true);
 
-    if (hostname && hostname !== this._hostname) {
-      return false;
-    }
-
-    const subpath = getRelativePath(this._pathname, pathname || '/');
-
-    if (subpath === '') {
-      // directly called on auth root
+    const subpath = getRelativePath(this.entryPath, pathname || '/');
+    if (subpath === '' || subpath.slice(0, 2) === '..') {
       respondAPIError(res, 403, 'path forbidden');
-      return true;
-    }
-
-    if (subpath.slice(0, 2) === '..') {
-      // not subpath of auth root
-      return false;
+      return;
     }
 
     // inner auth api for client controller
     if (subpath[0] === '_') {
       if (req.method !== 'POST') {
         respondAPIError(res, 405, 'method not allowed');
-        return true;
+        return;
       }
 
       if (subpath === '_sign') {
@@ -179,107 +153,133 @@ class AuthServerController {
       } else {
         respondAPIError(res, 404, `invalid auth api route "${subpath}"`);
       }
-      return true;
+      return;
     }
 
     const [platform] = subpath.split('/');
 
-    const provider = this._getProviderOf(platform);
-    if (!provider) {
+    const authorizer = this._getAuthorizerOf(platform);
+    if (!authorizer) {
       respondAPIError(res, 404, `platform "${platform}" not found`);
-      return true;
+      return;
     }
 
-    // delegate requests of platform specified flow to provider
     try {
-      await provider.delegateAuthRequest(
+      await authorizer.delegateAuthRequest(
         req,
         res,
-        new CookieSession(req, res, platform, this._sessionOperator)
+        new CookieAccessor(req, res, platform, this._sessionOperator)
       );
     } catch (err) {
       if (!res.finished) {
         respondAPIError(res, err.code || 500, err.message);
       }
-      return true;
+      return;
     }
 
     if (!res.finished) {
-      respondAPIError(res, 501, 'connection not closed by provider');
+      respondAPIError(res, 501, 'connection not closed by authorizer');
     }
-
-    return true;
   }
 
   async verifyHTTPAuthorization(
     req: VerifiableRequest,
     tokenProvided?: string
-  ): Promise<AuthContext<any>> {
+  ): Promise<AuthorizationResult> {
     const signature = getSignature(req);
     if (!signature) {
-      throw new AuthError(401, 'require signature');
+      return {
+        success: false,
+        code: 401,
+        reason: 'require signature',
+      };
     }
 
     let token = tokenProvided;
     if (!token) {
       const { authorization } = req.headers;
       if (!authorization) {
-        throw new AuthError(401, 'no Authorization header');
+        return {
+          success: false,
+          code: 401,
+          reason: 'no Authorization header',
+        };
       }
 
       const [scheme, tokenFromHeader] = authorization.split(/\s+/, 2);
       if (scheme !== 'Bearer' || !tokenFromHeader) {
-        throw new AuthError(400, 'invalid auth scheme');
+        return {
+          success: false,
+          code: 400,
+          reason: 'invalid auth scheme',
+        };
       }
       token = tokenFromHeader;
     }
 
-    const { platform, auth, exp, iat } = await this._verifyToken(
-      token,
-      signature
-    );
-
-    const provider = this._getProviderOf(platform);
-    if (!provider) {
-      throw new AuthError(404, `unknown platform "${platform}"`);
+    const verifyResult = await this._verifyToken(token, signature);
+    if (!verifyResult.success) {
+      return verifyResult;
     }
 
-    const result = await provider.refineAuth(auth);
+    const { platform, data, exp, iat } = verifyResult.payload;
+
+    const authorizer = this._getAuthorizerOf(platform);
+    if (!authorizer) {
+      return {
+        success: false,
+        code: 404,
+        reason: `unknown platform "${platform}"`,
+      };
+    }
+
+    const result = await authorizer.refineAuth(data);
     if (!result) {
-      throw new AuthError(400, 'invalid auth data');
+      return {
+        success: false,
+        code: 400,
+        reason: 'invalid auth data',
+      };
     }
 
-    const { channel, user } = result;
+    const { authorizedChannel, user } = result;
     return {
-      platform,
-      channel,
-      user,
-      data: auth,
-      loginAt: new Date(iat * 1000),
-      expireAt: new Date(exp * 1000),
+      success: true,
+      auth: {
+        platform,
+        authorizedChannel,
+        user,
+        data,
+        loginAt: new Date(iat * 1000),
+        expireAt: new Date(exp * 1000),
+      },
     };
   }
 
   async _handleSignRequest(req: IncomingMessage, res: ServerResponse) {
     try {
-      const { platform, credential }: SignRequestBody<any> = await parseBody(
-        req
-      );
+      const body = await parseBody(req);
+      if (!body) {
+        respondAPIError(res, 400, 'invalid body format');
+        return;
+      }
+
+      const { platform, credential } = (body: SignRequestBody<any>);
       if (!platform || !credential) {
         respondAPIError(res, 400, 'invalid sign params');
         return;
       }
 
-      const provider = this._getProviderOf(platform);
-      if (!provider) {
+      const authorizer = this._getAuthorizerOf(platform);
+      if (!authorizer) {
         respondAPIError(res, 404, `unknown platform "${platform}"`);
         return;
       }
 
-      const verifyResult = await provider.verifySigning(credential);
-      if (!verifyResult.accepted) {
-        const { code, message } = verifyResult;
-        respondAPIError(res, code, message);
+      const verifyResult = await authorizer.verifyCredential(credential);
+      if (!verifyResult.success) {
+        const { code, reason } = verifyResult;
+        respondAPIError(res, code, reason);
         return;
       }
 
@@ -291,7 +291,7 @@ class AuthServerController {
 
       respondAPIOk(res, platform, token);
     } catch (err) {
-      respondAPIError(res, err.code || 500, err.message);
+      respondAPIError(res, 500, err.message);
     }
   }
 
@@ -305,17 +305,28 @@ class AuthServerController {
 
     try {
       // verify token in body ignoring expiration
-      const { token }: RefreshRequestBody = await parseBody(req);
+      const body = await parseBody(req);
+      if (!body) {
+        respondAPIError(res, 400, 'invalid body format');
+        return;
+      }
+
+      const { token } = (body: RefreshRequestBody);
       if (!token) {
         respondAPIError(res, 400, 'empty token received');
         return;
       }
 
-      const payload = await this._verifyToken(token, signature, {
+      const tokenResult = await this._verifyToken(token, signature, {
         ignoreExpiration: true,
       });
+      if (!tokenResult.success) {
+        const { code, reason } = tokenResult;
+        respondAPIError(res, code, reason);
+        return;
+      }
 
-      const { refreshLimit, platform, auth } = payload;
+      const { refreshLimit, platform, data } = tokenResult.payload;
       if (!refreshLimit) {
         respondAPIError(res, 400, 'token not refreshable');
         return;
@@ -323,32 +334,31 @@ class AuthServerController {
 
       if (refreshLimit * 1000 >= Date.now()) {
         // refresh signature and issue new token
-        const provider = this._getProviderOf(platform);
-        if (!provider) {
+        const authorizer = this._getAuthorizerOf(platform);
+        if (!authorizer) {
           respondAPIError(res, 404, `unknown platform "${platform}"`);
           return;
         }
 
-        const verifyResult = await provider.verifyRefreshment(auth);
-        if (!verifyResult.accepted) {
-          const { code, message } = verifyResult;
-          respondAPIError(res, code, message);
+        const refreshResult = await authorizer.verifyRefreshment(data);
+        if (!refreshResult.success) {
+          const { code, reason } = refreshResult;
+          respondAPIError(res, code, reason);
           return;
         }
 
-        const { data } = verifyResult;
         const newToken = await this._sessionOperator.issueAuth(
           res,
           platform,
-          data,
+          refreshResult.data,
           { refreshLimit, refreshable: true, signatureOnly: true }
         );
         respondAPIOk(res, platform, newToken);
       } else {
-        respondAPIError(res, 401, 'token refreshment period outdated');
+        respondAPIError(res, 401, 'refreshment period expired');
       }
     } catch (err) {
-      respondAPIError(res, err.code || 500, err.message);
+      respondAPIError(res, 500, err.message);
     }
   }
 
@@ -362,22 +372,35 @@ class AuthServerController {
 
     try {
       // verify token in body
-      const { token }: VerifyRequestBody = await parseBody(req);
+      const body = await parseBody(req);
+      if (!body) {
+        respondAPIError(res, 400, 'invalid body format');
+        return;
+      }
+
+      const { token } = (body: VerifyRequestBody);
       if (!token) {
         respondAPIError(res, 400, 'empty token received');
         return;
       }
 
-      const { platform } = await this._verifyToken(token, signature);
-      const provider = this._getProviderOf(platform);
-      if (!provider) {
+      const verifyResult = await this._verifyToken(token, signature);
+      if (!verifyResult.success) {
+        const { code, reason } = verifyResult;
+        respondAPIError(res, code, reason);
+        return;
+      }
+
+      const { platform } = verifyResult.payload;
+      const authorizer = this._getAuthorizerOf(platform);
+      if (!authorizer) {
         respondAPIError(res, 404, `unknown platform "${platform}"`);
         return;
       }
 
       respondAPIOk(res, platform, token);
     } catch (err) {
-      respondAPIError(res, err.code || 500, err.message);
+      respondAPIError(res, 500, err.message);
     }
   }
 
@@ -385,30 +408,40 @@ class AuthServerController {
     token: string,
     signature: string,
     jwtVerifyOpts?: Object
-  ): Promise<AuthTokenPayload<any>> {
-    let payload: AuthTokenPayload<any>;
+  ): Promise<
+    | { success: true, payload: AuthTokenPayload<any> }
+    | { success: false, code: number, reason: string }
+  > {
     try {
-      payload = await thenifiedly.call(
+      const payload: AuthTokenPayload<any> = await thenifiedly.call(
         verifyJWT,
         `${token}.${signature}`,
         this.secret,
         jwtVerifyOpts
       );
-    } catch (err) {
-      throw new AuthError(401, err.message);
-    }
 
-    return payload;
+      return { success: true, payload };
+    } catch (err) {
+      const code =
+        err.name === 'TokenExpiredError' || err.name === 'NotBeforeError'
+          ? 401
+          : 400;
+
+      return { success: false, code, reason: err.message };
+    }
   }
 
-  _getProviderOf(platform: string): null | ServerAuthProvider<any, any> {
-    for (const provider of this.providers) {
-      if (platform === provider.platform) {
-        return provider;
+  _getAuthorizerOf(platform: string): null | ServerAuthorizer<any, any> {
+    for (const authorizer of this.authorizers) {
+      if (platform === authorizer.platform) {
+        return authorizer;
       }
     }
     return null;
   }
 }
 
-export default AuthServerController;
+export default provider<AuthServerController>({
+  lifetime: 'singleton',
+  deps: [AUTH_SERVER_AUTHORIZERS_I, AUTH_MODULE_CONFIGS_I],
+})(AuthServerController);

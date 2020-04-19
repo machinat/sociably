@@ -1,7 +1,7 @@
 // @flow
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { MachinatUser, MachinatChannel } from 'machinat/types';
-import type { CookieSession } from './server/session';
+import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
+import type { CookieAccessor } from './server/cookie';
 
 type TokenBase = {|
   iat: number,
@@ -10,7 +10,7 @@ type TokenBase = {|
 
 export type AuthPayload<AuthData> = {|
   platform: string,
-  auth: AuthData,
+  data: AuthData,
   refreshLimit?: number,
   scope: { domain?: string, path: string },
 |};
@@ -32,7 +32,7 @@ export type StateTokenPayload<StateData> = {|
 
 export type ErrorPayload = {|
   platform: string,
-  error: {| code: number, message: string |},
+  error: {| code: number, reason: string |},
   scope: { domain?: string, path: string },
 |};
 
@@ -41,37 +41,37 @@ export type ErrorTokenPayload = {|
   ...ErrorPayload,
 |};
 
-export type AuthRefineResult = {|
-  user: MachinatUser,
-  channel: null | MachinatChannel,
-|};
-
-export type AuthContext<AuthData> = {|
+export type AuthInfo<AuthData> = {|
   platform: string,
   user: MachinatUser,
-  channel: null | MachinatChannel,
+  authorizedChannel: null | MachinatChannel,
   loginAt: Date,
   expireAt: Date,
   data: AuthData,
 |};
 
-export type AcceptedVerifyResult<AuthData> = {|
-  accepted: true,
+export type AuthRefineResult = {|
+  user: MachinatUser,
+  authorizedChannel: null | MachinatChannel,
+|};
+
+export type SuccessVerifyResult<AuthData> = {|
+  success: true,
   data: AuthData,
   refreshable: boolean,
 |};
 
 export type ErrorResult = {|
-  accepted: false,
+  success: false,
   code: number,
-  message: string,
+  reason: string,
 |};
 
 export type VerifyResult<AuthData> =
-  | AcceptedVerifyResult<AuthData>
+  | SuccessVerifyResult<AuthData>
   | ErrorResult;
 
-export interface ServerAuthProvider<AuthData, Credential> {
+export interface ServerAuthorizer<Data, Credential> {
   platform: string;
 
   /**
@@ -83,39 +83,40 @@ export interface ServerAuthProvider<AuthData, Credential> {
   delegateAuthRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    session: CookieSession
+    cookieAccessor: CookieAccessor
   ): Promise<void>;
 
   /**
-   * This method is called when sign requests from client side are received,
+   * verifyCredential called when sign requests from client side are received,
    * controller would sign in the user by issuing a token to client and signing
-   * a signature wihtin cookie if it resolve accepted.
+   * a signature wihtin cookie if it resolve success.
    */
-  verifySigning(credential: Credential): Promise<VerifyResult<AuthData>>;
+  verifyCredential(credential: Credential): Promise<VerifyResult<Data>>;
 
   /**
-   * This method is called when  refresh requests from client side are received,
-   * controller would refresh token and signature if it resolve accepted.
+   * verifyRefreshment is called when refresh requests from client side are
+   * received, controller would refresh token and signature if it resolve
+   * success.
    */
-  verifyRefreshment(data: AuthData): Promise<VerifyResult<AuthData>>;
+  verifyRefreshment(data: Data): Promise<VerifyResult<Data>>;
 
   /**
-   * Refine the auth data to auth context members which fit the machinat
-   * interfaces, the context would then be passed to the appliction.
+   * refineAuthr efine the auth data to auth context members which fit the
+   * machinat interfaces, the context would then be passed to the appliction.
    */
-  refineAuth(data: AuthData): Promise<null | AuthRefineResult>;
+  refineAuth(data: Data): Promise<null | AuthRefineResult>;
 }
 
-export type AcceptedCredentialResult<Credential> = {|
-  accepted: true,
+export type SuccessCredentialResult<Credential> = {|
+  success: true,
   credential: Credential,
 |};
 
 export type CredentialResult<Credential> =
-  | AcceptedCredentialResult<Credential>
+  | SuccessCredentialResult<Credential>
   | ErrorResult;
 
-export interface ClientAuthProvider<AuthData, Credential> {
+export interface ClientAuthorizer<Data, Credential> {
   platform: string;
   shouldResign: boolean;
 
@@ -126,7 +127,7 @@ export interface ClientAuthProvider<AuthData, Credential> {
    */
   init(
     authEntry: string,
-    auth: null | AuthData,
+    auth: null | Data,
     error: null | Error
   ): Promise<void>;
 
@@ -135,13 +136,13 @@ export interface ClientAuthProvider<AuthData, Credential> {
    * then verified and signed at server side. If the auth flow reuqire
    * redirecting user-agent, just set the location and pend resolving.
    */
-  startAuthFlow(authEntry: string): Promise<CredentialResult<Credential>>;
+  fetchCredential(authEntry: string): Promise<CredentialResult<Credential>>;
 
   /**
    * Refine the auth data into auth context members fit the machinat interfaces,
    * the context would then be passed to the appliction.
    */
-  refineAuth(data: AuthData): Promise<null | AuthRefineResult>;
+  refineAuth(data: Data): Promise<null | AuthRefineResult>;
 }
 
 export type SignRequestBody<Credential> = {|
@@ -165,10 +166,23 @@ export type AuthAPIResponseBody = {|
 export type AuthAPIResponseErrorBody = {|
   error: {
     code: number,
-    message: string,
+    reason: string,
   },
 |};
 
 export type VerifiableRequest = {
   headers: {| [string]: string |},
 };
+
+export type AuthModuleConfigs = {|
+  secret: string,
+  entryPath?: string,
+  tokenAge?: number,
+  authCookieAge?: number,
+  dataCookieAge?: number,
+  refreshPeriod?: number,
+  cookieDomain?: string,
+  cookiePath?: string,
+  sameSite?: 'Strict' | 'Lax' | 'None',
+  secure?: boolean,
+|};

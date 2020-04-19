@@ -49,14 +49,14 @@ const fooProvider = moxy({
   async init() {
     return undefined;
   },
-  async startAuthFlow() {
+  async fetchCredential() {
     return {
-      accepted: true,
+      success: true,
       credential: { foo: 'credential' },
     };
   },
   async refineAuth() {
-    return { user: { id: 'foo' }, channel: { id: 'foo' } };
+    return { user: { id: 'foo' }, authorizedChannel: { id: 'foo' } };
   },
 });
 
@@ -66,15 +66,15 @@ const barProvider = moxy({
   async init() {
     return undefined;
   },
-  async startAuthFlow() {
+  async fetchCredential() {
     return {
-      accepted: false,
+      success: false,
       code: 418,
-      message: "I'm drunk",
+      reason: "I'm drunk",
     };
   },
   async refineAuth() {
-    return { user: { id: 'bar' }, channel: { id: 'bar' } };
+    return { user: { id: 'bar' }, authorizedChannel: { id: 'bar' } };
   },
 });
 
@@ -195,7 +195,7 @@ describe('#init()', () => {
       if (authed) {
         setBackendAuthed({
           platform: authed,
-          auth: { [authed]: 'data' },
+          data: { [authed]: 'data' },
           scope: { path: '/' },
           iat: SEC_NOW - 9,
           exp: SEC_NOW + 9999,
@@ -204,7 +204,7 @@ describe('#init()', () => {
       if (errored) {
         setBackendErrored({
           platform: errored,
-          error: { code: 418, message: "I'm a teapot" },
+          error: { code: 418, reason: "I'm a teapot" },
           scope: { path: '/' },
         });
       }
@@ -250,7 +250,7 @@ describe('#init()', () => {
   it('remove error from cookie once retrieved', () => {
     setBackendErrored({
       platform: 'foo',
-      error: { code: 418, message: "I'm a teapot" },
+      error: { code: 418, reason: "I'm a teapot" },
       scope: { domain: 'machinat.io', path: '/entry' },
     });
 
@@ -357,7 +357,7 @@ describe('#init()', () => {
   it('sign out if already signed in', async () => {
     setBackendAuthed({
       platform: 'foo',
-      auth: { foo: 'data' },
+      data: { foo: 'data' },
       scope: { path: '/' },
       iat: SEC_NOW - 9,
       exp: SEC_NOW + 9999,
@@ -374,14 +374,18 @@ describe('#init()', () => {
 });
 
 describe('#auth()', () => {
+  const authPayload = {
+    platform: 'foo',
+    data: { foo: 'data' },
+    scope: { path: '/' },
+    iat: SEC_NOW - 10,
+    exp: SEC_NOW + 1000,
+    refreshLimit: SEC_NOW + 10000,
+  };
+  const token = makeToken(authPayload);
+
   test('already signed in within backend flow', async () => {
-    setBackendAuthed({
-      platform: 'foo',
-      auth: { foo: 'data' },
-      scope: { path: '/' },
-      iat: SEC_NOW - 9,
-      exp: SEC_NOW + 9999,
-    });
+    setBackendAuthed(authPayload);
 
     const controller = new AuthClientController({ providers, authEntry });
     controller.init('foo');
@@ -389,10 +393,10 @@ describe('#auth()', () => {
     const expectedCtx = {
       platform: 'foo',
       user: { id: 'foo' },
-      channel: { id: 'foo' },
+      authorizedChannel: { id: 'foo' },
       data: { foo: 'data' },
-      loginAt: new Date(FAKE_NOW - 9000),
-      expireAt: new Date(FAKE_NOW + 9999000),
+      loginAt: new Date(FAKE_NOW - 10000),
+      expireAt: new Date(FAKE_NOW + 1000000),
     };
 
     await expect(controller.auth()).resolves.toEqual(expectedCtx);
@@ -400,7 +404,7 @@ describe('#auth()', () => {
     expect(controller.isAuthed).toBe(true);
     expect(controller.authContext).toEqual(expectedCtx);
     expect(controller.getToken()).toMatchInlineSnapshot(
-      `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImF1dGgiOnsiZm9vIjoiZGF0YSJ9LCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1Njk5OTk5OTEsImV4cCI6MTU3MDAwOTk5OX0"`
+      `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1Njk5OTk5OTAsImV4cCI6MTU3MDAwMTAwMCwicmVmcmVzaExpbWl0IjoxNTcwMDEwMDAwfQ"`
     );
     expect(fooProvider.refineAuth.mock).toHaveBeenCalledTimes(1);
     expect(fooProvider.refineAuth.mock).toHaveBeenCalledWith({ foo: 'data' });
@@ -409,7 +413,7 @@ describe('#auth()', () => {
   it('throw if error in backend flow happen', async () => {
     setBackendErrored({
       platform: 'foo',
-      error: { code: 418, message: "I'm a teapot" },
+      error: { code: 418, reason: "I'm a teapot" },
       scope: { path: '/' },
     });
 
@@ -427,8 +431,6 @@ describe('#auth()', () => {
   });
 
   it('get credential from provider and sign in', async () => {
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImF1dGgiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoTGltaXQiOjE1NzAwODY0MDAsInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDAxODAwfQ';
     const signingCall = serverEntry
       .post('/auth/_sign', {
         platform: 'foo',
@@ -441,14 +443,14 @@ describe('#auth()', () => {
 
     await expect(controller.auth()).resolves.toMatchInlineSnapshot(`
             Object {
-              "channel": Object {
+              "authorizedChannel": Object {
                 "id": "foo",
               },
               "data": Object {
                 "foo": "data",
               },
-              "expireAt": 2019-10-02T07:36:40.000Z,
-              "loginAt": 2019-10-02T07:06:40.000Z,
+              "expireAt": 2019-10-02T07:23:20.000Z,
+              "loginAt": 2019-10-02T07:06:30.000Z,
               "platform": "foo",
               "user": Object {
                 "id": "foo",
@@ -459,8 +461,8 @@ describe('#auth()', () => {
     expect(signingCall.isDone()).toBe(true);
     expect(controller.isAuthed).toBe(true);
     expect(controller.getToken()).toBe(token);
-    expect(fooProvider.startAuthFlow.mock).toHaveBeenCalledTimes(1);
-    expect(fooProvider.startAuthFlow.mock).toHaveBeenCalledWith(
+    expect(fooProvider.fetchCredential.mock).toHaveBeenCalledTimes(1);
+    expect(fooProvider.fetchCredential.mock).toHaveBeenCalledWith(
       'https://machinat.io/auth/foo'
     );
     expect(fooProvider.refineAuth.mock).toHaveBeenCalledTimes(1);
@@ -470,14 +472,12 @@ describe('#auth()', () => {
   it('sign again if token in cookie expired', async () => {
     setBackendAuthed({
       platform: 'foo',
-      auth: { foo: 'data' },
+      data: { foo: 'data' },
       scope: { path: '/' },
       iat: SEC_NOW - 9999,
       exp: SEC_NOW - 99,
     });
 
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImF1dGgiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoTGltaXQiOjE1NzAwODY0MDAsInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDAxODAwfQ';
     const signingCall = serverEntry
       .post('/auth/_sign', {
         platform: 'foo',
@@ -490,14 +490,14 @@ describe('#auth()', () => {
 
     await expect(controller.auth()).resolves.toMatchInlineSnapshot(`
             Object {
-              "channel": Object {
+              "authorizedChannel": Object {
                 "id": "foo",
               },
               "data": Object {
                 "foo": "data",
               },
-              "expireAt": 2019-10-02T07:36:40.000Z,
-              "loginAt": 2019-10-02T07:06:40.000Z,
+              "expireAt": 2019-10-02T07:23:20.000Z,
+              "loginAt": 2019-10-02T07:06:30.000Z,
               "platform": "foo",
               "user": Object {
                 "id": "foo",
@@ -514,7 +514,7 @@ describe('#auth()', () => {
         platform: 'foo',
         credential: { foo: 'credential' },
       })
-      .reply(418, { error: { code: 418, message: "I'm a teapot" } });
+      .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
 
     const controller = new AuthClientController({ providers, authEntry });
     controller.init('foo');
@@ -525,7 +525,7 @@ describe('#auth()', () => {
 
     expect(signingCall.isDone()).toBe(true);
     expect(controller.isAuthed).toBe(false);
-    expect(fooProvider.startAuthFlow.mock).toHaveBeenCalledTimes(1);
+    expect(fooProvider.fetchCredential.mock).toHaveBeenCalledTimes(1);
     expect(fooProvider.refineAuth.mock).not.toHaveBeenCalled();
   });
 
@@ -547,8 +547,7 @@ describe('#auth()', () => {
       })
       .reply(200, {
         platform: 'foo',
-        token:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImF1dGgiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoTGltaXQiOjE1NzAwODY0MDAsInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDAxODAwfQ',
+        token,
       });
 
     fooProvider.refineAuth.mock.fake(() => null);
@@ -563,7 +562,7 @@ describe('#auth()', () => {
     expect(signingCall.isDone()).toBe(true);
     expect(controller.isAuthed).toBe(false);
     expect(controller.getToken()).toBe(undefined);
-    expect(fooProvider.startAuthFlow.mock).toHaveBeenCalledTimes(1);
+    expect(fooProvider.fetchCredential.mock).toHaveBeenCalledTimes(1);
     expect(fooProvider.refineAuth.mock).toHaveBeenCalledTimes(1);
     expect(fooProvider.refineAuth.mock).toHaveBeenCalledWith({ foo: 'data' });
   });
@@ -576,8 +575,7 @@ describe('#auth()', () => {
       })
       .reply(200, {
         platform: 'foo',
-        token:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImF1dGgiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoTGltaXQiOjE1NzAwODY0MDAsInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDAxODAwfQ',
+        token,
       });
 
     const controller = new AuthClientController({ providers, authEntry });
@@ -619,7 +617,7 @@ describe('auth refreshment and expiry', () => {
   it('refresh token at "refreshLeadTime" before expiry', async () => {
     setBackendAuthed({
       platform: 'foo',
-      auth: { foo: 'data' },
+      data: { foo: 'data' },
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
@@ -634,7 +632,7 @@ describe('auth refreshment and expiry', () => {
       const token = controller.getToken();
       const newToken = makeToken({
         platform: 'foo',
-        auth: { foo: 'data' },
+        data: { foo: 'data' },
         scope: { path: '/' },
         iat: SEC_NOW + 990 * i,
         exp: SEC_NOW + 1990 * i,
@@ -654,7 +652,7 @@ describe('auth refreshment and expiry', () => {
       expect(refreshSpy.mock).toHaveBeenCalledTimes(i);
     }
 
-    expect(fooProvider.startAuthFlow.mock).not.toHaveBeenCalled();
+    expect(fooProvider.fetchCredential.mock).not.toHaveBeenCalled();
     expect(expireSpy.mock).not.toHaveBeenCalled();
     expect(errorSpy.mock).not.toHaveBeenCalled();
   });
@@ -662,7 +660,7 @@ describe('auth refreshment and expiry', () => {
   it('emit error if _refresh api respond error', async () => {
     setBackendAuthed({
       platform: 'foo',
-      auth: { foo: 'data' },
+      data: { foo: 'data' },
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
@@ -678,7 +676,7 @@ describe('auth refreshment and expiry', () => {
 
     const refreshingCall = serverEntry
       .post('/auth/_refresh', { token })
-      .reply(418, { error: { code: 418, message: "I'm a teapot" } });
+      .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
 
     jest.advanceTimersToNextTimer(1);
     await delayLoops(5);
@@ -698,13 +696,13 @@ describe('auth refreshment and expiry', () => {
     expect(refreshSpy.mock).not.toHaveBeenCalled();
     expect(expireSpy.mock).toHaveBeenCalledTimes(1);
     expect(expireSpy.mock).toHaveBeenCalledWith(initialCtx);
-    expect(fooProvider.startAuthFlow.mock).not.toHaveBeenCalled();
+    expect(fooProvider.fetchCredential.mock).not.toHaveBeenCalled();
   });
 
   it('resign when not refreshable if provider.shouldResign', async () => {
     setBackendAuthed({
       platform: 'foo',
-      auth: { foo: 'data' },
+      data: { foo: 'data' },
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
@@ -717,7 +715,7 @@ describe('auth refreshment and expiry', () => {
     for (let i = 1; i <= 10; i += 1) {
       const newToken = makeToken({
         platform: 'foo',
-        auth: { foo: 'data' },
+        data: { foo: 'data' },
         scope: { path: '/' },
         iat: SEC_NOW + 990 * i,
         exp: SEC_NOW + 1990 * i,
@@ -737,26 +735,26 @@ describe('auth refreshment and expiry', () => {
       expect(controller.isAuthed).toBe(true);
       expect(controller.getToken()).toBe(newToken);
       expect(refreshSpy.mock).toHaveBeenCalledTimes(i);
-      expect(fooProvider.startAuthFlow.mock).toHaveBeenCalledTimes(i);
+      expect(fooProvider.fetchCredential.mock).toHaveBeenCalledTimes(i);
     }
 
     expect(expireSpy.mock).not.toHaveBeenCalled();
     expect(errorSpy.mock).not.toHaveBeenCalled();
   });
 
-  it('emit error if provider.startAuthFlow() resolve unaccepted', async () => {
+  it('emit error if provider.fetchCredential() resolve not success', async () => {
     setBackendAuthed({
       platform: 'foo',
-      auth: { foo: 'data' },
+      data: { foo: 'data' },
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
     });
 
-    fooProvider.startAuthFlow.mock.fake(() => ({
-      accepted: false,
+    fooProvider.fetchCredential.mock.fake(() => ({
+      success: false,
       code: 404,
-      message: "You don't see me",
+      reason: "You don't see me",
     }));
 
     controller.init();
@@ -768,7 +766,7 @@ describe('auth refreshment and expiry', () => {
     await delayLoops(5);
 
     expect(controller.isAuthed).toBe(true);
-    expect(fooProvider.startAuthFlow.mock).toHaveBeenCalledTimes(1);
+    expect(fooProvider.fetchCredential.mock).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock).toHaveBeenCalledTimes(1);
 
     const error = errorSpy.mock.calls[0].args[0];
@@ -787,7 +785,7 @@ describe('auth refreshment and expiry', () => {
   it('emit error if _sign api respond error', async () => {
     setBackendAuthed({
       platform: 'foo',
-      auth: { foo: 'data' },
+      data: { foo: 'data' },
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
@@ -803,14 +801,14 @@ describe('auth refreshment and expiry', () => {
         platform: 'foo',
         credential: { foo: 'credential' },
       })
-      .reply(418, { error: { code: 418, message: "I'm a teapot" } });
+      .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
 
     jest.advanceTimersToNextTimer(1);
     await delayLoops(5);
 
     expect(refreshingCall.isDone()).toBe(true);
     expect(controller.isAuthed).toBe(true);
-    expect(fooProvider.startAuthFlow.mock).toHaveBeenCalledTimes(1);
+    expect(fooProvider.fetchCredential.mock).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock).toHaveBeenCalledTimes(1);
 
     const error = errorSpy.mock.calls[0].args[0];
@@ -831,7 +829,7 @@ describe('auth refreshment and expiry', () => {
 
     setBackendAuthed({
       platform: 'foo',
-      auth: { foo: 'data' },
+      data: { foo: 'data' },
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
@@ -849,7 +847,7 @@ describe('auth refreshment and expiry', () => {
     jest.advanceTimersToNextTimer(1);
     await delayLoops();
 
-    expect(fooProvider.startAuthFlow.mock).not.toHaveBeenCalled();
+    expect(fooProvider.fetchCredential.mock).not.toHaveBeenCalled();
     expect(errorSpy.mock).not.toHaveBeenCalled();
     expect(expireSpy.mock).toHaveBeenCalledTimes(1);
     expect(controller.isAuthed).toBe(false);
@@ -859,7 +857,7 @@ describe('auth refreshment and expiry', () => {
   it('not update auth if signOut() during refreshment', async () => {
     setBackendAuthed({
       platform: 'foo',
-      auth: { foo: 'data' },
+      data: { foo: 'data' },
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
@@ -876,7 +874,7 @@ describe('auth refreshment and expiry', () => {
       .reply(200, {
         token: makeToken({
           platform: 'foo',
-          auth: { foo: 'data' },
+          data: { foo: 'data' },
           scope: { path: '/' },
           iat: SEC_NOW + 990,
           exp: SEC_NOW + 1999,
@@ -900,14 +898,14 @@ describe('auth refreshment and expiry', () => {
     expect(errorSpy.mock).not.toHaveBeenCalled();
     expect(refreshSpy.mock).not.toHaveBeenCalled();
     expect(expireSpy.mock).not.toHaveBeenCalled();
-    expect(fooProvider.startAuthFlow.mock).not.toHaveBeenCalled();
+    expect(fooProvider.fetchCredential.mock).not.toHaveBeenCalled();
   });
 });
 
 test('#signOut()', async () => {
   setBackendAuthed({
     platform: 'foo',
-    auth: { foo: 'data' },
+    data: { foo: 'data' },
     scope: { path: '/' },
     iat: SEC_NOW - 1,
     exp: SEC_NOW + 999,

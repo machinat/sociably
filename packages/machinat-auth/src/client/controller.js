@@ -4,10 +4,9 @@ import invariant from 'invariant';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
 import { decode as decodeJWT } from 'jsonwebtoken';
 import { TOKEN_COOKIE_KEY, ERROR_COOKIE_KEY } from '../constant';
-import AuthError from '../error';
 import type {
-  AuthContext,
-  ClientAuthProvider,
+  AuthInfo,
+  ClientAuthorizer,
   AuthTokenPayload,
   ErrorTokenPayload,
   SignRequestBody,
@@ -17,10 +16,11 @@ import type {
   AuthAPIResponseErrorBody,
   AuthRefineResult,
 } from '../types';
+import AuthError from './error';
 
 type AuthClientOptions = {|
   authEntry: string,
-  providers: ClientAuthProvider<any, any>[],
+  providers: ClientAuthorizer<any, any>[],
   refreshLeadTime?: number,
 |};
 
@@ -29,15 +29,15 @@ declare var document: Document;
 declare var fetch: (url: string, options: Object) => Object;
 
 const makeContext = (
-  { platform, iat, exp, auth }: AuthTokenPayload<any>,
-  { user, channel }: AuthRefineResult
+  { platform, iat, exp, data }: AuthTokenPayload<any>,
+  { user, authorizedChannel }: AuthRefineResult
 ) => ({
   platform,
   loginAt: new Date(iat * 1000),
   expireAt: new Date(exp * 1000),
-  channel,
+  authorizedChannel,
   user,
-  data: auth,
+  data,
 });
 
 const deleteCookie = (name: string, domain?: string, path?: string) => {
@@ -52,7 +52,7 @@ const getAuthPayload = (token: string): AuthTokenPayload<any> =>
   decodeJWT(`${token}.`);
 
 class AuthClientController extends EventEmitter {
-  providers: ClientAuthProvider<any, any>[];
+  providers: ClientAuthorizer<any, any>[];
   authEntry: string;
   refreshLeadTime: number;
 
@@ -62,7 +62,7 @@ class AuthClientController extends EventEmitter {
   _authed: null | {|
     token: void | string,
     payload: AuthTokenPayload<any>,
-    context: AuthContext<any>,
+    context: AuthInfo<any>,
   |};
 
   _initedFlag: boolean;
@@ -146,13 +146,13 @@ class AuthClientController extends EventEmitter {
       // Error happen in backend flow
       const {
         platform: errorPlatform,
-        error: { code, message },
+        error: { code, reason },
         scope: { domain, path },
       }: ErrorTokenPayload = decodeJWT(cookies[ERROR_COOKIE_KEY]);
       deleteCookie(ERROR_COOKIE_KEY, domain, path);
 
       platform = errorPlatform;
-      this._initialError = new AuthError(code, message);
+      this._initialError = new AuthError(code, reason);
     } else if (cookies[TOKEN_COOKIE_KEY]) {
       // Auth completed in backend flow
       const token = cookies[TOKEN_COOKIE_KEY];
@@ -188,10 +188,10 @@ class AuthClientController extends EventEmitter {
   /**
    * Execute the auth flow immediatly. If user is already signed in, it would
    * update auth after succeeded but remain the original auth status when fail.
-   * It resolves an AuthContext object, but if any signOut() or another auth()
+   * It resolves an AuthInfo object, but if any signOut() or another auth()
    * call change the auth status during operation, a null instead.
    */
-  async auth(): Promise<AuthContext<any>> {
+  async auth(): Promise<AuthInfo<any>> {
     const beginTime = Date.now();
     if (this._initPromise) {
       // Wait for initiation for the first time
@@ -232,7 +232,7 @@ class AuthClientController extends EventEmitter {
       throw new AuthError(403, 'signed out during authenticating');
     }
 
-    const refinement = await provider.refineAuth(payload.auth);
+    const refinement = await provider.refineAuth(payload.data);
     if (!refinement) {
       throw new AuthError(400, 'invalid auth info');
     }
@@ -286,7 +286,7 @@ class AuthClientController extends EventEmitter {
       } else if (this._initialAuth) {
         await provider.init(
           platformAuthEntry,
-          this._initialAuth.payload.auth,
+          this._initialAuth.payload.data,
           null
         );
       } else {
@@ -301,13 +301,13 @@ class AuthClientController extends EventEmitter {
     }
   }
 
-  async _signToken(provider: ClientAuthProvider<any, any>): Promise<string> {
+  async _signToken(provider: ClientAuthorizer<any, any>): Promise<string> {
     const { platform } = provider;
-    const result = await provider.startAuthFlow(this._getAuthEntry(platform));
+    const result = await provider.fetchCredential(this._getAuthEntry(platform));
 
-    if (!result.accepted) {
-      const { code, message } = result;
-      throw new AuthError(code, message);
+    if (!result.success) {
+      const { code, reason } = result;
+      throw new AuthError(code, reason);
     }
 
     const { token } = await this._fetchAuthPrivateAPI('_sign', {
@@ -321,7 +321,7 @@ class AuthClientController extends EventEmitter {
   _setAuth(
     token: string,
     payload: AuthTokenPayload<any>,
-    context: AuthContext<any>
+    context: AuthInfo<any>
   ) {
     this._authed = { token, payload, context };
     this._clearTimeouts();
@@ -371,7 +371,7 @@ class AuthClientController extends EventEmitter {
     }
 
     const payload = getAuthPayload(newToken);
-    const refinement = await provider.refineAuth(payload.auth);
+    const refinement = await provider.refineAuth(payload.data);
     if (!refinement) {
       throw new AuthError(400, 'invalid auth info');
     }
@@ -399,7 +399,7 @@ class AuthClientController extends EventEmitter {
     }
   };
 
-  _getProviderAssertedly(platform: void | string) {
+  _getProviderAssertedly(platform: void | string): ClientAuthorizer<any, any> {
     if (!platform) {
       throw new AuthError(400, 'no platform specified');
     }
@@ -430,9 +430,9 @@ class AuthClientController extends EventEmitter {
 
     if (!res.ok) {
       const {
-        error: { code, message },
+        error: { code, reason },
       }: AuthAPIResponseErrorBody = await res.json();
-      throw new AuthError(code, message);
+      throw new AuthError(code, reason);
     }
 
     const result = await res.json();
