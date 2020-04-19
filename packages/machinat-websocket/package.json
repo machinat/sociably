@@ -31,6 +31,7 @@
     "@machinat/http": "^0.1.0-alpha.0"
   },
   "optionalDependencies": {
+    "@machinat/auth": "^0.1.0-alpha.0",
     "bufferutil": "^4.0.1",
     "utf-8-validate": "^5.0.2"
   }

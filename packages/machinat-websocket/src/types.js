@@ -97,27 +97,27 @@ export type WebSocketEventContext<AuthInfo> = EventContext<
   WebSocketBot
 >;
 
-type SuccessVerifyAuthResult<AuthInfo> = {
+type SuccessVerifySignInResult<AuthInfo> = {|
   success: true,
   authInfo: AuthInfo,
   user: null | MachinatUser,
   expireAt?: Date,
-};
+|};
 
-type FailedVerifyAuthResult = {
+type FailedVerifySignInResult = {|
   success: false,
   code: number,
   reason: string,
-};
+|};
 
-export type VerifyAuthResult<AuthInfo> =
-  | SuccessVerifyAuthResult<AuthInfo>
-  | FailedVerifyAuthResult;
+export type VerifySignInResult<AuthInfo> =
+  | SuccessVerifySignInResult<AuthInfo>
+  | FailedVerifySignInResult;
 
-export type VerifyAuthFn<AuthInfo, Credential> = (
+export type VerifySignInFn<AuthInfo, Credential> = (
   RequestInfo,
   Credential
-) => Promise<VerifyAuthResult<AuthInfo>>;
+) => Promise<VerifySignInResult<AuthInfo>>;
 
 export type VerifyUpgradeFn = (request: RequestInfo) => boolean;
 

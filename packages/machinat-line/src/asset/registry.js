@@ -1,6 +1,6 @@
 // @flow
 import { provider } from '@machinat/core/service';
-import StateManager from '@machinat/state'; // eslint-disable-line import/no-extraneous-dependencies
+import StateManager from '@machinat/state';
 import LineBot from '../bot';
 import { PATH_RICHMENU } from '../constant';
 

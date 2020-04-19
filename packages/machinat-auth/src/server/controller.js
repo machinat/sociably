@@ -27,16 +27,16 @@ import type {
 import { getCookies, isSubpath } from './utils';
 import { CookieAccessor, CookieOperator } from './cookie';
 
-type SuccessAuthorizationResult = {
+type SuccessAuthorizationResult = {|
   success: true,
   auth: AuthInfo<any>,
-};
+|};
 
-type FailedAuthorizationResult = {
+type FailedAuthorizationResult = {|
   success: false,
   code: number,
   reason: string,
-};
+|};
 
 type AuthorizationResult =
   | SuccessAuthorizationResult

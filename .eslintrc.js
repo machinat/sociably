@@ -50,6 +50,9 @@ module.exports = {
     'import/no-unresolved': ['error', {
       ignore: ['@machinat/.*']
     }],
+    'import/no-extraneous-dependencies': ['error', {
+      optionalDependencies: true
+    }],
     'import/no-cycle': 0,
     'react/jsx-key': 0,
     'react/display-name': 0,

@@ -5,7 +5,7 @@ import type { Socket as NetSocket } from 'net';
 import type { ConnectionChannel } from './channel';
 import type {
   WebSocketJob,
-  VerifyAuthFn,
+  VerifySignInFn,
   VerifyUpgradeFn,
   WebSocketPlatformMounter,
   WebSocketPlatformConfigs,
@@ -54,8 +54,8 @@ export const UPGRADE_VERIFIER_I = namedInterface<VerifyUpgradeFn>({
   name: 'WebSocketUpgradeVerifier',
 });
 
-export const AUTH_VERIFIER_I = namedInterface<VerifyAuthFn<any, any>>({
-  name: 'WebSocketAuthVerifier',
+export const SIGN_IN_VERIFIER_I = namedInterface<VerifySignInFn<any, any>>({
+  name: 'WebSocketSignInVerifier',
 });
 
 export const SERVER_ID_I = namedInterface<string>({

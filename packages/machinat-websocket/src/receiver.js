@@ -19,14 +19,14 @@ import createEvent from './event';
 import {
   WEBSOCKET,
   WSServerI,
-  AUTH_VERIFIER_I,
+  SIGN_IN_VERIFIER_I,
   UPGRADE_VERIFIER_I,
   WEBSOCKET_PLATFORM_MOUNTER_I,
 } from './constant';
 import type {
   WebSocketEvent,
   RequestInfo,
-  VerifyAuthFn,
+  VerifySignInFn,
   WebSocketEventContext,
   VerifyUpgradeFn,
   WebSocketPlatformMounter,
@@ -72,7 +72,7 @@ class WebSocketReceiver<AuthInfo> {
   _transmitter: Transmitter;
 
   _verifyUpgrade: (request: RequestInfo) => boolean;
-  _verifyAuth: VerifyAuthFn<AuthInfo, any>;
+  _verifySignIn: VerifySignInFn<AuthInfo, any>;
 
   _socketStates: Map<Socket, SocketState<AuthInfo>>;
 
@@ -83,7 +83,7 @@ class WebSocketReceiver<AuthInfo> {
     bot: WebSocketBot,
     wsServer: WSServerI,
     transmitter: Transmitter,
-    verifyAuth: null | VerifyAuthFn<AuthInfo, any>,
+    verifySignIn: null | VerifySignInFn<AuthInfo, any>,
     verifyUpgrade: null | VerifyUpgradeFn,
     popEventWrapper: PopEventWrapper<WebSocketEventContext<AuthInfo>, null>,
     popError: PopErrorFn
@@ -95,8 +95,8 @@ class WebSocketReceiver<AuthInfo> {
     this._socketStates = new Map();
 
     this._verifyUpgrade = verifyUpgrade || (() => true);
-    this._verifyAuth =
-      verifyAuth ||
+    this._verifySignIn =
+      verifySignIn ||
       (() =>
         Promise.resolve({ success: true, user: null, authInfo: (null: any) }));
 
@@ -177,7 +177,7 @@ class WebSocketReceiver<AuthInfo> {
     const connId: string = uniqid();
 
     try {
-      const authResult = await this._verifyAuth(
+      const authResult = await this._verifySignIn(
         socket.request,
         body.credential
       );
@@ -304,7 +304,7 @@ export default provider<WebSocketReceiver<any>>({
     WebSocketBot,
     WSServerI,
     Transmitter,
-    { require: AUTH_VERIFIER_I, optional: true },
+    { require: SIGN_IN_VERIFIER_I, optional: true },
     { require: UPGRADE_VERIFIER_I, optional: true },
     WEBSOCKET_PLATFORM_MOUNTER_I,
   ],
@@ -312,7 +312,7 @@ export default provider<WebSocketReceiver<any>>({
     bot: WebSocketBot,
     wsServer: WSServerI,
     transmitter: Transmitter,
-    verifyAuth: null | VerifyAuthFn<any, any>,
+    verifySignIn: null | VerifySignInFn<any, any>,
     verifyUpgrade: null | VerifyUpgradeFn,
     { popEventWrapper, popError }: WebSocketPlatformMounter<any>
   ) =>
@@ -320,7 +320,7 @@ export default provider<WebSocketReceiver<any>>({
       bot,
       wsServer,
       transmitter,
-      verifyAuth,
+      verifySignIn,
       verifyUpgrade,
       popEventWrapper,
       popError
