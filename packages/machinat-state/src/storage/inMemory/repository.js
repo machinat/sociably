@@ -10,7 +10,7 @@ class InMemoryRepositroy implements StateRepositoryI {
 
   async get(name: string, key: string) {
     const states = this._storage.get(name);
-    return states?.get(key) || null;
+    return states?.get(key);
   }
 
   async set(name: string, key: string, state: any) {

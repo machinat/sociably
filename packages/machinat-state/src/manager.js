@@ -12,16 +12,22 @@ class StateAccessor {
     this.name = name;
   }
 
-  async get<T>(key: string): Promise<null | T> {
+  async get<T>(key: string): Promise<void | T> {
     return this._repository.get(this.name, key);
   }
 
   async set<T>(
     key: string,
-    updator: (state: null | T) => null | T
+    updator: (state: void | T) => void | T
   ): Promise<boolean> {
-    const state = await this._repository.get(this.name, key);
-    return this._repository.set(this.name, key, updator(state));
+    const state = await this._repository.get<T>(this.name, key);
+    const updated = updator(state);
+
+    if (updated === undefined) {
+      return this._repository.delete(this.name, key);
+    }
+
+    return this._repository.set(this.name, key, updated);
   }
 
   async delete(key: string): Promise<boolean> {

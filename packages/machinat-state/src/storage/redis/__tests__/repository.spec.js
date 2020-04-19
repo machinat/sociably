@@ -14,7 +14,7 @@ test('#get()', async () => {
 
   const repo = new RedisRepository(client);
 
-  await expect(repo.get('my_resource', 'key1')).resolves.toBe(null);
+  await expect(repo.get('my_resource', 'key1')).resolves.toBe(undefined);
   expect(hget.mock).toHaveBeenCalledTimes(1);
   expect(hget.mock).toHaveBeenCalledWith(
     'my_resource',

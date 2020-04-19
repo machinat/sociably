@@ -19,7 +19,7 @@ class RedisRepository implements StateRepositoryI {
       key
     );
 
-    return result ? JSON.parse(result) : null;
+    return result ? JSON.parse(result) : undefined;
   }
 
   async set(name: string, key: string, state: any) {

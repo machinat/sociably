@@ -3,7 +3,7 @@ import InMemoryRepositroy from '../repository';
 test('ok', async () => {
   const repo = new InMemoryRepositroy();
 
-  await expect(repo.get('my_resource', 'key1')).resolves.toBe(null);
+  await expect(repo.get('my_resource', 'key1')).resolves.toBe(undefined);
 
   await expect(repo.set('my_resource', 'key1', 'foo')).resolves.toBe(false);
   await expect(repo.get('my_resource', 'key1')).resolves.toBe('foo');
@@ -39,7 +39,7 @@ test('ok', async () => {
         `);
 
   await expect(repo.delete('my_resource', 'key2')).resolves.toBe(true);
-  await expect(repo.get('my_resource', 'key2')).resolves.toBe(null);
+  await expect(repo.get('my_resource', 'key2')).resolves.toBe(undefined);
 
   await expect(repo.delete('my_resource', 'key2')).resolves.toBe(false);
   await expect(repo.getAll('my_resource')).resolves.toMatchInlineSnapshot(`
@@ -52,6 +52,6 @@ test('ok', async () => {
   await expect(repo.getAll('my_resource')).resolves.toBe(null);
 
   await expect(repo.clear('some_resource')).resolves.toBe(undefined);
-  await expect(repo.get('some_resource', 'key1')).resolves.toBe(null);
+  await expect(repo.get('some_resource', 'key1')).resolves.toBe(undefined);
   await expect(repo.getAll('some_resource')).resolves.toBe(null);
 });

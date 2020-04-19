@@ -40,7 +40,7 @@ class FileRepository implements StateRepositoryI {
 
     try {
       const data = await readData(fd);
-      return data[name]?.[key] || null;
+      return data[name]?.[key];
     } finally {
       await thenifiedly.call(fs.close, fd);
     }
