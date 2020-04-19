@@ -103,13 +103,9 @@ export default class ServiceSpace {
 
   bootstrap(bootstrapTimeProvisions: Map<Interfaceable, any>) {
     this.maker.validateProvisions(bootstrapTimeProvisions);
-    const [singletonCache, scopedCache] = this.maker.makeSingletonServices(
+    this.singletonCache = this.maker.makeSingletonServices(
       bootstrapTimeProvisions
     );
-
-    this.singletonCache = singletonCache;
-
-    return new ServiceScope(undefined, this.maker, singletonCache, scopedCache);
   }
 
   createScope(platform: void | string): ServiceScope {

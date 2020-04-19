@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import { ServiceSpace, isServiceContainer } from './service';
+import ServiceSpace, { isServiceContainer } from './service';
 import type {
   Interfaceable,
   InjectRequirement,
@@ -26,36 +26,6 @@ type ErrorListenable = (Error => void) | ServiceContainer<(Error) => void>;
 const ENUM_UNSTARTED = 0;
 const ENUM_STARTING = 1;
 const ENUM_STARTED = 2;
-
-const createDispatchWrapper = <Frame>(
-  platform: string,
-  middlewares: (
-    | DispatchMiddleware<any, any, any>
-    | ServiceContainer<DispatchMiddleware<any, any, any>>
-  )[]
-): DispatchWrapper<any, any, any> => {
-  return dispatch => {
-    if (middlewares.length === 0) {
-      return dispatch;
-    }
-
-    const execute = (idx: number, scope: ServiceScope, frame: Frame) => {
-      let middleware = middlewares[idx];
-      if (isServiceContainer(middleware)) {
-        middleware = scope.injectContainer(middleware);
-      }
-
-      return ((middleware: any): DispatchMiddleware<any, any, any>)(
-        frame,
-        idx + 1 < middlewares.length
-          ? execute.bind(null, idx + 1, scope)
-          : dispatch
-      );
-    };
-
-    return (frame: Frame, scope: ServiceScope) => execute(0, scope, frame);
-  };
-};
 
 export default class MachinatApp<
   Context: EventContext<any, any, any, any, any>
@@ -132,7 +102,8 @@ export default class MachinatApp<
       registeredBindings || []
     );
 
-    const startingScope = this._serviceSpace.bootstrap(mounterProvisions);
+    this._serviceSpace.bootstrap(mounterProvisions);
+    const startingScope = this._serviceSpace.createScope();
 
     // run start hooks of platform modules
     if (platforms) {
@@ -241,19 +212,19 @@ export default class MachinatApp<
   ): PlatformMounter<Context, any, any, any, any> {
     return {
       initScope: () => this._serviceSpace.createScope(platform),
-      popError: this._emitError.bind(this),
-      popEventWrapper: this._createPopHandlerWrapper(
+      popError: this._createPopErrorFn(platform),
+      popEventWrapper: this._createPopEventWrapper(
         platform,
         eventMiddlewares || []
       ),
-      dispatchWrapper: createDispatchWrapper(
+      dispatchWrapper: this._createDispatchWrapper(
         platform,
         dispatchMiddlewares || []
       ),
     };
   }
 
-  _createPopHandlerWrapper(
+  _createPopEventWrapper(
     platform: string,
     middlewares: (
       | EventMiddleware<Context, any>
@@ -261,9 +232,9 @@ export default class MachinatApp<
     )[]
   ): PopEventWrapper<Context, any> {
     return makeResponse => {
-      const handlePopping = async (ctx: Context, scope: ServiceScope) => {
+      const handlePopping = async (ctx: Context, scope?: ServiceScope) => {
         const response = await makeResponse(ctx);
-        this._emitEvent(ctx, scope);
+        this._emitEvent(ctx, scope || this._serviceSpace.createScope(platform));
         return response;
       };
 
@@ -274,9 +245,7 @@ export default class MachinatApp<
       const finalHandler = (scope: ServiceScope) => (ctx: Context) =>
         handlePopping(ctx, scope);
 
-      const execute = async (
-        idx: number,
-        scope: ServiceScope,
+      const execute = (idx: number, scope: ServiceScope) => async (
         ctx: Context
       ) => {
         let middleware = middlewares[idx];
@@ -287,12 +256,57 @@ export default class MachinatApp<
         return middleware(
           ctx,
           idx + 1 < middlewares.length
-            ? execute.bind(null, idx + 1, scope)
+            ? execute(idx + 1, scope)
             : finalHandler(scope)
         );
       };
 
-      return (ctx: Context, scope: ServiceScope) => execute(0, scope, ctx);
+      return async (ctx: Context, scopeInput?: ServiceScope) => {
+        const scope = scopeInput || this._serviceSpace.createScope(platform);
+        try {
+          const response = await execute(0, scope)(ctx);
+          return response;
+        } catch (err) {
+          this._emitError(err, scope);
+          throw err;
+        }
+      };
     };
+  }
+
+  _createDispatchWrapper<Frame>(
+    platform: string,
+    middlewares: (
+      | DispatchMiddleware<any, any, any>
+      | ServiceContainer<DispatchMiddleware<any, any, any>>
+    )[]
+  ): DispatchWrapper<any, any, any> {
+    return dispatch => {
+      if (middlewares.length === 0) {
+        return dispatch;
+      }
+
+      const execute = (idx: number, scope: ServiceScope) => async (
+        frame: Frame
+      ) => {
+        let middleware = middlewares[idx];
+        if (isServiceContainer(middleware)) {
+          middleware = scope.injectContainer(middleware);
+        }
+
+        return ((middleware: any): DispatchMiddleware<any, any, any>)(
+          frame,
+          idx + 1 < middlewares.length ? execute(idx + 1, scope) : dispatch
+        );
+      };
+
+      return (frame: Frame, scope?: ServiceScope) =>
+        execute(0, scope || this._serviceSpace.createScope(platform))(frame);
+    };
+  }
+
+  _createPopErrorFn(platform: string) {
+    return (err: Error, scope?: ServiceScope) =>
+      this._emitError(err, scope || this._serviceSpace.createScope(platform));
   }
 }

@@ -194,10 +194,10 @@ export type DispatchMiddleware<
   Result
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
-export type ServiceModule = {|
+export type ServiceModule = {
   provisions: (ServiceProvider<any, any> | ProvisionBinding)[],
   startHook?: null | ServiceContainer<Promise<void>>,
-|};
+};
 
 export type PlatformModule<
   Context: EventContext<any, any, any, any, any>,
@@ -205,7 +205,7 @@ export type PlatformModule<
   Job,
   Frame: DispatchFrame<any, Job, any>,
   Result
-> = {|
+> = {
   name: string,
   mounterInterface: ServiceInterface<
     PlatformMounter<Context, EventResp, Job, Frame, Result>,
@@ -221,7 +221,7 @@ export type PlatformModule<
     | DispatchMiddleware<Job, Frame, Result>
     | ServiceContainer<DispatchMiddleware<Job, Frame, Result>>
   )[],
-|};
+};
 
 export type AppConfig<Context: EventContext<any, any, any, any, any>> = {
   platforms?: PlatformModule<Context, any, any, any, any>[],
@@ -234,7 +234,7 @@ export type InitScopeFn = () => ServiceScope;
 export type PopEventFn<
   Context: EventContext<any, any, any, any, any>,
   Response
-> = (context: Context, scope: ServiceScope) => Promise<Response>;
+> = (context: Context, scope?: ServiceScope) => Promise<Response>;
 
 export type PopEventWrapper<
   Context: EventContext<any, any, any, any, any>,
@@ -243,11 +243,11 @@ export type PopEventWrapper<
   finalHandler: (Context) => Promise<Response>
 ) => PopEventFn<Context, Response>;
 
-export type PopErrorFn = (err: Error, scope: ServiceScope) => void;
+export type PopErrorFn = (err: Error, scope?: ServiceScope) => void;
 
 export type DispatchFn<Job, Frame: DispatchFrame<any, Job, any>, Result> = (
   frame: Frame,
-  scope: ServiceScope
+  scope?: ServiceScope
 ) => Promise<DispatchResponse<Job, Result>>;
 
 export type DispatchWrapper<

@@ -129,13 +129,14 @@ it('start modules', async () => {
 
   await app.start();
 
-  // trasient service created when boostrap and each module start
-  expect(FooService.$$factory.mock).toHaveBeenCalledTimes(5);
+  // trasient service created when boostrap, init start scope and each time module startHook injected
+  expect(FooService.$$factory.mock).toHaveBeenCalledTimes(6);
   expect(FooService.$$factory.mock).toHaveBeenCalledWith(/* empty */);
   expect(FooModule.startHook.mock).toHaveBeenCalledTimes(1);
   expect(FooModule.startHook.mock).toHaveBeenCalledWith(expect.any(FooService));
 
-  expect(BarService.$$factory.mock).toHaveBeenCalledTimes(1);
+  // scoped service created when boostrap and init start scope
+  expect(BarService.$$factory.mock).toHaveBeenCalledTimes(2);
   expect(BarService.$$factory.mock).toHaveBeenCalledWith(
     expect.any(FooService)
   );
@@ -205,7 +206,7 @@ it('provide mounter utilities by PlatformModule.mounterInterface', async () => {
   });
 });
 
-test('mounter.initScope() provided to platform module', async () => {
+test('mounter.initScope() provide services to platform module', async () => {
   const app = new App({
     imports: [FooModule, BarModule],
     platforms: [TestPlatform, AnotherPlatform],
@@ -267,15 +268,9 @@ describe('poping event from platform module', () => {
 
     await app.start();
 
-    const {
-      initScope,
-      popEventWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await expect(
-      popEventWrapper(finalHandler)(eventContext, scope)
-    ).resolves.toEqual({
+    await expect(popEventWrapper(finalHandler)(eventContext)).resolves.toEqual({
       only: 49.99,
     });
 
@@ -319,15 +314,9 @@ describe('poping event from platform module', () => {
       long: 2,
     }));
 
-    const {
-      initScope,
-      popEventWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await expect(
-      popEventWrapper(finalHandler)(eventContext, scope)
-    ).resolves.toEqual({
+    await expect(popEventWrapper(finalHandler)(eventContext)).resolves.toEqual({
       only: 49.99,
       pong: 0,
       dong: 1,
@@ -359,15 +348,9 @@ describe('poping event from platform module', () => {
       hello: 'and bye!',
     }));
 
-    const {
-      initScope,
-      popEventWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await expect(
-      popEventWrapper(finalHandler)(eventContext, scope)
-    ).resolves.toEqual({
+    await expect(popEventWrapper(finalHandler)(eventContext)).resolves.toEqual({
       hello: 'and bye!',
     });
 
@@ -379,7 +362,7 @@ describe('poping event from platform module', () => {
     expect(errorListener.mock).not.toHaveBeenCalled();
   });
 
-  test('wrappedHandler throw if middleware throw', async () => {
+  test('throw and popError if error thrown in middlewares', async () => {
     const app = new App({
       imports: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
@@ -394,27 +377,57 @@ describe('poping event from platform module', () => {
       throw new Error("I'll call police!");
     });
 
-    const {
-      initScope,
-      popEventWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await expect(
-      popEventWrapper(finalHandler)(eventContext, scope)
-    ).rejects.toThrow("I'll call police!");
+    await expect(popEventWrapper(finalHandler)(eventContext)).rejects.toThrow(
+      "I'll call police!"
+    );
 
     expect(TestPlatform.eventMiddlewares[0].mock).toHaveBeenCalledTimes(1);
     expect(TestPlatform.eventMiddlewares[1].mock).toHaveBeenCalledTimes(1);
     expect(TestPlatform.eventMiddlewares[2].mock).not.toHaveBeenCalled();
     expect(finalHandler.mock).not.toHaveBeenCalled();
     expect(eventListener.mock).not.toHaveBeenCalled();
-    expect(errorListener.mock).not.toHaveBeenCalled();
+    expect(errorListener.mock).toHaveBeenCalledTimes(1);
+    expect(errorListener.mock).toHaveBeenCalledWith(
+      new Error("I'll call police!")
+    );
+  });
+
+  test('throw and popError if error thrown in finalHandler', async () => {
+    finalHandler.mock.fake(async () => {
+      throw new Error('DO~DOO~DOOOO~DO~');
+    });
+
+    const app = new App({
+      imports: [FooModule, BarModule],
+      platforms: [TestPlatform, AnotherPlatform],
+      registers: [MyService, YourService],
+    })
+      .onEvent(eventListener)
+      .onError(errorListener);
+
+    await app.start();
+
+    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
+
+    await expect(popEventWrapper(finalHandler)(eventContext)).rejects.toThrow(
+      'DO~DOO~DOOOO~DO~'
+    );
+
+    expect(TestPlatform.eventMiddlewares[0].mock).toHaveBeenCalledTimes(1);
+    expect(TestPlatform.eventMiddlewares[1].mock).toHaveBeenCalledTimes(1);
+    expect(TestPlatform.eventMiddlewares[2].mock).toHaveBeenCalledTimes(1);
+    expect(eventListener.mock).not.toHaveBeenCalled();
+    expect(errorListener.mock).toHaveBeenCalledTimes(1);
+    expect(errorListener.mock).toHaveBeenCalledWith(
+      new Error('DO~DOO~DOOOO~DO~')
+    );
   });
 
   test('middleware can catch error', async () => {
     finalHandler.mock.fake(async () => {
-      throw new Error('dodoodoooodo');
+      throw new Error('DO~DOO~DOOOO~DO~');
     });
 
     const app = new App({
@@ -436,16 +449,10 @@ describe('poping event from platform module', () => {
       }
     });
 
-    const {
-      initScope,
-      popEventWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await expect(
-      popEventWrapper(finalHandler)(eventContext, scope)
-    ).resolves.toEqual({
-      hello: 'dodoodoooodo',
+    await expect(popEventWrapper(finalHandler)(eventContext)).resolves.toEqual({
+      hello: 'DO~DOO~DOOOO~DO~',
     });
 
     expect(TestPlatform.eventMiddlewares[0].mock).toHaveBeenCalledTimes(1);
@@ -480,13 +487,9 @@ describe('poping event from platform module', () => {
       .onError(errorListener);
 
     await app.start();
-    const {
-      initScope,
-      popEventWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await popEventWrapper(finalHandler)(eventContext, scope);
+    await popEventWrapper(finalHandler)(eventContext);
 
     expect(eventListenerContainer.mock).toHaveBeenCalledTimes(1);
     expect(eventListenerContainer.mock).toHaveBeenCalledWith(
@@ -531,15 +534,9 @@ describe('poping event from platform module', () => {
 
     await app.start();
 
-    const {
-      initScope,
-      popEventWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await expect(
-      popEventWrapper(finalHandler)(eventContext, scope)
-    ).resolves.toEqual({
+    await expect(popEventWrapper(finalHandler)(eventContext)).resolves.toEqual({
       only: 49.99,
     });
 
@@ -583,9 +580,8 @@ describe('poping error from platform module', () => {
 
     await app.start();
 
-    const { initScope, popError } = consumeTestMounter.mock.calls[0].args[0];
-    const scope = initScope();
-    expect(popError(new Error("Don't call again!"), scope)).toBe(undefined);
+    const { popError } = consumeTestMounter.mock.calls[0].args[0];
+    expect(popError(new Error("Don't call again!"))).toBe(undefined);
 
     expect(eventListener.mock).not.toHaveBeenCalled();
     expect(errorListener.mock).toHaveBeenCalledTimes(1);
@@ -619,10 +615,8 @@ describe('poping error from platform module', () => {
 
     await app.start();
 
-    const { initScope, popError } = consumeTestMounter.mock.calls[0].args[0];
-
-    const scope = initScope();
-    popError(new Error('hello container'), scope);
+    const { popError } = consumeTestMounter.mock.calls[0].args[0];
+    popError(new Error('hello container'));
 
     expect(errorListnerContainer.mock).toHaveBeenCalledTimes(1);
     expect(errorListnerContainer.mock).toHaveBeenCalledWith(
@@ -669,15 +663,11 @@ describe('dispatch through middlewares', () => {
     });
     await app.start();
 
-    const {
-      initScope,
-      dispatchWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { dispatchWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await expect(
-      dispatchWrapper(dispatcher)(dispatchFrame, scope)
-    ).resolves.toEqual(dispatchResponse);
+    await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual(
+      dispatchResponse
+    );
 
     expect(dispatcher.mock).toHaveBeenCalledTimes(1);
     expect(dispatcher.mock).toHaveBeenCalledWith(dispatchFrame);
@@ -712,15 +702,9 @@ describe('dispatch through middlewares', () => {
       long: 2,
     }));
 
-    const {
-      initScope,
-      dispatchWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { dispatchWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await expect(
-      dispatchWrapper(dispatcher)(dispatchFrame, scope)
-    ).resolves.toEqual({
+    await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual({
       ...dispatchResponse,
       pong: 0,
       dong: 1,
@@ -748,15 +732,9 @@ describe('dispatch through middlewares', () => {
       captured: 'by empire',
     }));
 
-    const {
-      initScope,
-      dispatchWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { dispatchWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await expect(
-      dispatchWrapper(dispatcher)(dispatchFrame, scope)
-    ).resolves.toEqual({
+    await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual({
       captured: 'by empire',
     });
 
@@ -778,15 +756,11 @@ describe('dispatch through middlewares', () => {
       throw new Error('Obi-Wan vanished');
     });
 
-    const {
-      initScope,
-      dispatchWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { dispatchWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await expect(
-      dispatchWrapper(dispatcher)(dispatchFrame, scope)
-    ).rejects.toThrow('Obi-Wan vanished');
+    await expect(dispatchWrapper(dispatcher)(dispatchFrame)).rejects.toThrow(
+      'Obi-Wan vanished'
+    );
 
     expect(TestPlatform.dispatchMiddlewares[0].mock).toHaveBeenCalledTimes(1);
     expect(TestPlatform.dispatchMiddlewares[1].mock).toHaveBeenCalledTimes(1);
@@ -821,15 +795,11 @@ describe('dispatch through middlewares', () => {
       }
     });
 
-    const {
-      initScope,
-      dispatchWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { dispatchWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await expect(
-      dispatchWrapper(dispatcher)(dispatchFrame, scope)
-    ).resolves.toEqual(newResponse);
+    await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual(
+      newResponse
+    );
 
     expect(TestPlatform.dispatchMiddlewares[0].mock).toHaveBeenCalledTimes(1);
     expect(TestPlatform.dispatchMiddlewares[1].mock).toHaveBeenCalledTimes(1);
@@ -863,15 +833,11 @@ describe('dispatch through middlewares', () => {
     });
     await app.start();
 
-    const {
-      initScope,
-      dispatchWrapper,
-    } = consumeTestMounter.mock.calls[0].args[0];
+    const { dispatchWrapper } = consumeTestMounter.mock.calls[0].args[0];
 
-    const scope = initScope();
-    await expect(
-      dispatchWrapper(dispatcher)(dispatchFrame, scope)
-    ).resolves.toEqual(dispatchResponse);
+    await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual(
+      dispatchResponse
+    );
 
     expect(middlewareContainer.mock).toHaveBeenCalledTimes(1);
     expect(middlewareContainer.mock).toHaveBeenCalledWith(

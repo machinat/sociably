@@ -52,7 +52,7 @@ export default class ServiceMaker {
    */
   makeSingletonServices(
     bootstrapProvisions: null | Map<Interfaceable, any>
-  ): [ServiceCache, ServiceCache] {
+  ): ServiceCache {
     const context = {
       platform: undefined,
       phase: ENUM_PHASE_BOOTSTRAP,
@@ -66,13 +66,7 @@ export default class ServiceMaker {
       this._makeProvider(provider, context);
     }
 
-    for (const [, , provided] of this._scopedPropvidersMapping.iterBranch()) {
-      for (const provider of Array.isArray(provided) ? provided : [provided]) {
-        this._makeProvider(provider, context);
-      }
-    }
-
-    return [context.singletonCache, context.scopedCache];
+    return context.singletonCache;
   }
 
   /**

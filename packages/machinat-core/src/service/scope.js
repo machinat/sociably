@@ -1,6 +1,7 @@
 // @flow
 import invariant from 'invariant';
 import { polishInjectRequirement, isServiceContainer } from './utils';
+import { MACHINAT_SERVICES_PROVIDER } from '../symbol';
 import ServiceMaker from './maker';
 import type {
   ServiceCache,
@@ -14,6 +15,10 @@ import type {
  * executed under the same scope share the same singleton and scoped services.
  */
 export default class ServiceScope {
+  static $$typeof = MACHINAT_SERVICES_PROVIDER;
+  static $$name = 'ServiceScope';
+  static $$multi = false;
+
   platform: void | string;
   maker: ServiceMaker;
   singletonCache: ServiceCache;
@@ -36,12 +41,18 @@ export default class ServiceScope {
     runtimeProvisions?: Map<Interfaceable, any>
   ): any[] {
     const requirements = targets.map(polishInjectRequirement);
+
+    const provisions = runtimeProvisions
+      ? new Map(runtimeProvisions)
+      : new Map();
+    provisions.set(ServiceScope, this);
+
     const services = this.maker.makeRequirements(
       requirements,
       this.platform,
       this.singletonCache,
       this.scopeCache,
-      runtimeProvisions || null
+      provisions
     );
 
     return services;
@@ -53,7 +64,12 @@ export default class ServiceScope {
   ): T {
     invariant(isServiceContainer(container), 'invalid container');
 
-    const args = this.useServices(container.$$deps, runtimeProvisions);
+    const provisions = runtimeProvisions
+      ? new Map(runtimeProvisions)
+      : new Map();
+    provisions.set(ServiceScope, this);
+
+    const args = this.useServices(container.$$deps, provisions);
     return container(...args);
   }
 }

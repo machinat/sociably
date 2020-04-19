@@ -48,12 +48,12 @@ export const inject = <T>({
   });
 };
 
-type ProvideOptions<T> = {
+type ProvideOptions<T> = {|
   name?: string,
   deps?: (Interfaceable | InjectRequirement)[],
   factory?: (...args: any[]) => T,
   lifetime: ServiceLifetime,
-};
+|};
 
 type ProviderFn<T> = (Class<T>) => ServiceProvider<T, Class<T>>;
 
@@ -79,11 +79,11 @@ export const provider = <T>({
   });
 };
 
-type FactoryOptions = {
+type FactoryOptions = {|
   name?: string,
   deps?: (Interfaceable | InjectRequirement)[],
   lifetime: ServiceLifetime,
-};
+|};
 
 type FactoryFn<T> = (
   factory: (...any[]) => T
@@ -109,9 +109,9 @@ export const factory = <T>({
   });
 };
 
-type AnstractInterfaceOptions = {
+type AnstractInterfaceOptions = {|
   name?: string,
-};
+|};
 
 type AbstractFn<T> = (Class<T>) => ServiceInterface<T, Class<T>>;
 
@@ -128,10 +128,10 @@ export const abstractInterface = <T>({
   });
 };
 
-type NamedInterfaceOptions = {
+type NamedInterfaceOptions = {|
   multi?: boolean,
   name: string,
-};
+|};
 
 /**
  * namedInterface create a service interface with name
