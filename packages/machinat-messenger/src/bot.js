@@ -23,7 +23,7 @@ import {
   MESSENGER_PLATFORM_MOUNTER_I,
 } from './constant';
 import MessengerChannel from './channel';
-import { chatJobsMaker, makeCreativeJobs, makeAttachmentJobs } from './job';
+import { chatJobsMaker, makeAttachmentJobs } from './job';
 
 import type {
   MessengerTarget,
@@ -120,12 +120,6 @@ class MessengerBot
     node: MachinatNode
   ): Promise<null | DispatchResponse<MessengerJob, MessengerResult>> {
     return this.engine.render(null, node, makeAttachmentJobs);
-  }
-
-  renderMessageCreative(
-    node: MachinatNode
-  ): Promise<null | DispatchResponse<MessengerJob, MessengerResult>> {
-    return this.engine.render(null, node, makeCreativeJobs);
   }
 
   dispatchAPICall(

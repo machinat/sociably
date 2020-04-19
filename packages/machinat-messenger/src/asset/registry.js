@@ -7,7 +7,6 @@ import { PATH_PERSONAS } from '../constant';
 import MessengerBot from '../bot';
 
 const ATTACHMENT = 'attachment';
-const MESSAGE_CREATIVE = 'message_creative';
 const PERSONA = 'persona';
 
 class MessengerAssetsRegistry {
@@ -87,7 +86,7 @@ class MessengerAssetsRegistry {
     }
 
     const { attachment_id: id } = response.results[0].body;
-    await this.setAssetId(MESSAGE_CREATIVE, tag, id);
+    await this.setAssetId(ATTACHMENT, tag, id);
     return id;
   }
 

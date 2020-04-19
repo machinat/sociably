@@ -5,7 +5,6 @@ import formatNode from '@machinat/core/utils/formatNode';
 
 import type { DispatchableSegment } from '@machinat/core/engine/types';
 import type {
-  MessengerMessage,
   MessengerSegmentValue,
   MessengerComponent,
   MessengerJob,
@@ -17,7 +16,6 @@ import { isMessageEntry } from './utils';
 import {
   ENTRY_PATH,
   PATH_MESSAGES,
-  PATH_MESSAGE_CREATIVES,
   PATH_MESSAGE_ATTACHMENTS,
   ATTACHMENT_DATA,
   ATTACHMENT_INFO,
@@ -93,46 +91,6 @@ export const chatJobsMaker = (options?: MessengerSendOptions) => (
   }
 
   return jobs;
-};
-
-export const makeCreativeJobs = (
-  target: null,
-  segments: DispatchableSegment<MessengerSegmentValue, MessengerComponent>[]
-): MessengerJob[] => {
-  const messages: MessengerMessage[] = new Array(segments.length);
-
-  for (let i = 0; i < segments.length; i += 1) {
-    const { node, value } = segments[i];
-
-    if (typeof value === 'string') {
-      messages[i] = { text: value };
-    } else {
-      // only message pass
-      invariant(
-        isMessageEntry(value) && value.message,
-        `${formatNode(
-          node || value
-        )} is unable to be delivered in message_creatives api`
-      );
-
-      invariant(
-        !value[ATTACHMENT_DATA],
-        `unable to upload binary data in message_creatives api`
-      );
-
-      messages[i] = typeof value === 'string' ? { text: value } : value.message;
-    }
-  }
-
-  return [
-    {
-      request: {
-        method: POST,
-        body: { messages },
-        relative_url: PATH_MESSAGE_CREATIVES,
-      },
-    },
-  ];
 };
 
 export const makeAttachmentJobs = (

@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { chatJobsMaker, makeCreativeJobs, makeAttachmentJobs } from '../job';
+import { chatJobsMaker, makeAttachmentJobs } from '../job';
 import MessengerChannel from '../channel';
 import { ENTRY_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from '../constant';
 
@@ -222,42 +222,6 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
     ).toThrowErrorMatchingInlineSnapshot(
       `"unable to send to USER_TO_USER channel"`
     );
-  });
-});
-
-describe('makeCreativeJobs()', () => {
-  const segments = [
-    { element: <Foo />, value: { message: { id: 1 } } },
-    { element: 2, value: '2' },
-    { element: 'id:3', value: 'id:3' },
-  ];
-
-  it('create jobs to be sent to messenge_creative', () => {
-    expect(makeCreativeJobs(null, segments)).toEqual([
-      {
-        request: {
-          method: 'POST',
-          relative_url: 'me/message_creatives',
-          body: { messages: [{ id: 1 }, { text: '2' }, { text: 'id:3' }] },
-        },
-      },
-    ]);
-  });
-
-  it('throw if non messages element met', () => {
-    [
-      [<Bar />, {}, '<Bar />'],
-      [<Foo />, { i: 'am not a message' }, '<Foo />'],
-      [undefined, { neither: 'am i' }, '[object Object]'],
-    ].forEach(([node, value, formated]) => {
-      expect(() =>
-        makeCreativeJobs(null, [
-          ...segments.slice(0, 2),
-          { node, value },
-          segments[2],
-        ])
-      ).toThrow(`${formated} is unable to be delivered in message_creatives`);
-    });
   });
 });
 

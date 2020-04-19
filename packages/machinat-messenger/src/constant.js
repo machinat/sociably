@@ -23,9 +23,6 @@ export const PATH_TAKE_THREAD_CONTROL = 'me/take_thread_control';
 export const PATH_MESSAGE_ATTACHMENTS = 'me/message_attachments';
 export const PATH_MESSENGER_PROFILE = 'me/messenger_profile';
 export const PATH_PERSONAS = 'me/personas';
-export const PATH_MESSAGE_CREATIVES = 'me/message_creatives';
-export const PATH_BROADCAST_MESSAGES = 'me/broadcast_messages';
-export const PATH_CUSTOM_LABELS = 'me/custom_labels';
 
 export const MESSENGER_PLATFORM_CONFIGS_I = namedInterface<MessengerPlatformConfigs>(
   { name: 'MessengerPlatformConfigs' }
