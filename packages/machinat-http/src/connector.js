@@ -1,24 +1,24 @@
 // @flow
 import { parse as parseURL } from 'url';
 import { STATUS_CODES as HTTP_STATUS_CODES } from 'http';
-import {
-  isAbsolute as isAbsolutePath,
-  normalize as normalizePath,
-  join as joinPath,
-  relative as getRelativePath,
-} from 'path';
+import { relative as getRelativePath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { Socket } from 'net';
-
 import thenifiedly from 'thenifiedly';
 import { provider } from '@machinat/core/service';
-
-import { HTTP_MODULE_CONFIGS_I, HTTPServerI } from './interface';
+import {
+  HTTPServerI,
+  HTTP_MODULE_CONFIGS_I,
+  HTTP_REQUEST_ROUTINGS_I,
+  HTTP_UPGRADE_ROUTINGS_I,
+} from './interface';
 import type {
   ServerListenOptions,
   RequestHandler,
   UpgradeHandler,
   HTTPModuleConfigs,
+  HTTPRequestRouting,
+  HTTPUpgradeRouting,
 } from './types';
 
 const isSubPath = (parent: string, child: string) => {
@@ -26,14 +26,16 @@ const isSubPath = (parent: string, child: string) => {
   return relativePath === '' || relativePath.slice(0, 2) !== '..';
 };
 
-const verifyRoutesConfiction = (
-  existedRoutes: $ReadOnlyArray<{ path: string }>,
-  path: string
+const verifyRoutesConfliction = (
+  existedRoutings: $ReadOnlyArray<{ name?: string, path: string }>,
+  routing: { name?: string, path: string }
 ) => {
-  for (const { path: existedPath } of existedRoutes) {
-    if (isSubPath(path, existedPath) || isSubPath(existedPath, path)) {
+  for (const { name, path } of existedRoutings) {
+    if (isSubPath(path, routing.path) || isSubPath(routing.path, path)) {
       throw new Error(
-        `"${path}" is conficted with existed route "${existedPath}"`
+        `${routing.name || 'unknown'} routing "${
+          routing.path
+        }" is conflicted with ${name || 'unknown'} routing "${path}"`
       );
     }
   }
@@ -57,49 +59,45 @@ const respondUpgrade = (socket: Socket, code: number) => {
 };
 
 class HTTPConnector {
-  basePath: string;
+  _requestRoutings: HTTPRequestRouting[];
+  _upgradeRoutings: HTTPUpgradeRouting[];
 
-  _requestRoutings: { path: string, handler: RequestHandler }[];
-  _upgradeRoutings: { path: string, handler: UpgradeHandler }[];
-
-  constructor(basePath?: string = '/') {
-    if (!isAbsolutePath(basePath)) {
-      throw Error('basePath path should be absolute');
-    }
-
-    this.basePath = normalizePath(basePath);
+  constructor() {
     this._requestRoutings = [];
     this._upgradeRoutings = [];
   }
 
-  addRequestRoute(routePath: string, handler: RequestHandler) {
-    const path = joinPath(this.basePath, routePath);
-    verifyRoutesConfiction(this._requestRoutings, path);
+  addRequestRouting(...routings: HTTPRequestRouting[]) {
+    for (const routing of routings) {
+      verifyRoutesConfliction(this._requestRoutings, routing);
 
-    this._requestRoutings.push({ path, handler });
+      this._requestRoutings.push(routing);
+    }
+
     return this;
   }
 
-  addUpgradeRoute(routePath: string, handler: UpgradeHandler) {
-    const path = joinPath(this.basePath, routePath);
-    verifyRoutesConfiction(this._upgradeRoutings, path);
+  addUpgradeRouting(...routings: HTTPUpgradeRouting[]) {
+    for (const routing of routings) {
+      verifyRoutesConfliction(this._upgradeRoutings, routing);
 
-    this._upgradeRoutings.push({ path, handler });
+      this._upgradeRoutings.push(routing);
+    }
+
     return this;
   }
 
   async connect(server: HTTPServerI, options?: ServerListenOptions) {
-    server.addListener('request', this._makeRequestHandler());
+    server.addListener('request', this._makeRequestCallback());
     if (this._upgradeRoutings.length > 0) {
-      server.addListener('upgrade', this._makeUpgradeHandler());
+      server.addListener('upgrade', this._makeUpgradeCallback());
     }
 
     await thenifiedly.callMethod('listen', server, options || {});
   }
 
-  _makeRequestHandler(): RequestHandler {
-    const requestRoutings = [...this._requestRoutings];
-
+  _makeRequestCallback(): RequestHandler {
+    const requestRoutings = this._requestRoutings;
     if (requestRoutings.length === 0) {
       return (_, res) => {
         endRes(res, 403);
@@ -130,9 +128,8 @@ class HTTPConnector {
     };
   }
 
-  _makeUpgradeHandler(): UpgradeHandler {
-    const upgradeRoutings = [...this._upgradeRoutings];
-
+  _makeUpgradeCallback(): UpgradeHandler {
+    const upgradeRoutings = this._upgradeRoutings;
     if (upgradeRoutings.length === 0) {
       return (_, socket) => {
         respondUpgrade(socket, 403);
@@ -166,6 +163,21 @@ class HTTPConnector {
 
 export default provider<HTTPConnector>({
   lifetime: 'singleton',
-  deps: [HTTP_MODULE_CONFIGS_I],
-  factory: (configs: HTTPModuleConfigs) => new HTTPConnector(configs.basePath),
+  deps: [
+    HTTP_MODULE_CONFIGS_I,
+    HTTP_REQUEST_ROUTINGS_I,
+    HTTP_UPGRADE_ROUTINGS_I,
+  ],
+  factory: (
+    configs: HTTPModuleConfigs,
+    requestRoutings: HTTPRequestRouting[],
+    upgradeRoutings: HTTPUpgradeRouting[]
+  ) => {
+    const connector = new HTTPConnector();
+
+    connector.addRequestRouting(...requestRoutings);
+    connector.addUpgradeRouting(...upgradeRoutings);
+
+    return connector;
+  },
 })(HTTPConnector);

@@ -1,6 +1,7 @@
 import { createServer } from 'http';
 import moxy from 'moxy';
 import Machinat from '@machinat/core';
+import Connector from '../connector';
 import HTTP from '..';
 
 jest.mock('http', () => require('moxy').default({ createServer() {} })); // eslint-disable-line global-require
@@ -18,20 +19,53 @@ beforeEach(() => {
   server.mock.reset();
 });
 
+it('export interfaces', () => {
+  expect(HTTP.Connector).toBe(Connector);
+
+  expect(typeof HTTP.ServerI).toBe('function');
+  const { $$name, $$multi, $$typeof } = HTTP.ServerI;
+  expect({ $$name, $$multi, $$typeof }).toMatchInlineSnapshot(`
+    Object {
+      "$$multi": false,
+      "$$name": "AbstractServer",
+      "$$typeof": Symbol(machinat.services.interface),
+    }
+  `);
+
+  expect(HTTP.REQUEST_ROUTINGS_I).toMatchInlineSnapshot(`
+    Object {
+      "$$multi": true,
+      "$$name": "HTTPRequestRoutingsList",
+      "$$typeof": Symbol(machinat.services.interface),
+    }
+  `);
+  expect(HTTP.UPGRADE_ROUTINGS_I).toMatchInlineSnapshot(`
+    Object {
+      "$$multi": true,
+      "$$name": "HTTPUpgradeRoutingsList",
+      "$$typeof": Symbol(machinat.services.interface),
+    }
+  `);
+  expect(HTTP.CONFIGS_I).toMatchInlineSnapshot(`
+    Object {
+      "$$multi": false,
+      "$$name": "HTTPModuleConfigs",
+      "$$typeof": Symbol(machinat.services.interface),
+    }
+  `);
+});
+
 it('provide configs', async () => {
   const configs = {
-    basePath: '/foo',
-    listenOptions: {
-      host: 'localhost',
-      port: 8888,
-    },
+    host: 'localhost',
+    port: 8888,
   };
   const app = Machinat.createApp({
     imports: [HTTP.initModule(configs)],
   });
   await app.start();
 
-  expect(app.useServices([HTTP.CONFIGS])).toEqual([configs]);
+  expect(app.useServices([HTTP.CONFIGS_I])).toEqual([configs]);
 });
 
 it('provide http server by default', async () => {
@@ -40,11 +74,8 @@ it('provide http server by default', async () => {
   const app = Machinat.createApp({
     imports: [
       HTTP.initModule({
-        basePath: '/foo',
-        listenOptions: {
-          host: 'localhost',
-          port: 8888,
-        },
+        host: 'localhost',
+        port: 8888,
       }),
     ],
     registers: [{ provide: HTTP.Connector, withValue: connector }],
@@ -70,11 +101,8 @@ test('change http server', async () => {
   const app = Machinat.createApp({
     imports: [
       HTTP.initModule({
-        basePath: '/foo',
-        listenOptions: {
-          host: 'localhost',
-          port: 8888,
-        },
+        host: 'localhost',
+        port: 8888,
       }),
     ],
     registers: [{ provide: HTTP.ServerI, withValue: myServer }],

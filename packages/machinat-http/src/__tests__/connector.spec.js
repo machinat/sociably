@@ -27,11 +27,11 @@ const createRes = () =>
   });
 
 describe('handling requests', () => {
-  test('connect with root route', () => {
+  test('connect with root routing', () => {
     const connector = new HTTPConnector();
 
     const handler = moxy();
-    connector.addRequestRoute('/', handler);
+    connector.addRequestRouting({ path: '/', handler });
 
     const server = moxy(new FakeServer());
     connector.connect(server, { port: 8888 });
@@ -61,14 +61,15 @@ describe('handling requests', () => {
     expect(res.end.mock).not.toHaveBeenCalled();
   });
 
-  test('connect with multiple routes', () => {
+  test('connect with multiple routings', () => {
     const connector = new HTTPConnector();
 
     const fooHandler = moxy();
     const barHandler = moxy();
-    connector
-      .addRequestRoute('/foo', fooHandler)
-      .addRequestRoute('/bar', barHandler);
+    connector.addRequestRouting(
+      { path: '/foo', handler: fooHandler },
+      { path: '/bar', handler: barHandler }
+    );
 
     const server = moxy(new FakeServer());
     connector.connect(server, { port: 8888 });
@@ -104,11 +105,11 @@ describe('handling requests', () => {
     expect(barHandler.mock).toHaveBeenCalledTimes(1);
   });
 
-  test('connect with deeper route path', () => {
+  test('connect with deeper routing path', () => {
     const connector = new HTTPConnector();
 
     const handler = moxy();
-    connector.addRequestRoute('/foo/bar', handler);
+    connector.addRequestRouting({ path: '/foo/bar', handler });
 
     const server = moxy(new FakeServer());
     connector.connect(server, { port: 8888 });
@@ -128,7 +129,7 @@ describe('handling requests', () => {
     expect(res.statusCode).toBe(404);
   });
 
-  test('connect with no route registered', () => {
+  test('connect with no routing registered', () => {
     const connector = new HTTPConnector();
 
     const server = moxy(new FakeServer());
@@ -144,64 +145,23 @@ describe('handling requests', () => {
     expect(res.statusCode).toBe(403);
   });
 
-  it('throw if routes conflict', () => {
+  it('throw if routings conflict', () => {
     expect(() =>
-      new HTTPConnector()
-        .addRequestRoute('/', moxy())
-        .addRequestRoute('/foo', moxy())
+      new HTTPConnector().addRequestRouting(
+        { name: 'root', path: '/', handler: moxy() },
+        { name: 'foo', path: '/foo', handler: moxy() }
+      )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\\"/foo\\" is conficted with existed route \\"/\\""`
+      `"foo routing \\"/foo\\" is conflicted with root routing \\"/\\""`
     );
     expect(() =>
-      new HTTPConnector()
-        .addRequestRoute('/bar', moxy())
-        .addRequestRoute('/bar/baz', moxy())
+      new HTTPConnector().addRequestRouting(
+        { name: 'bar', path: '/bar', handler: moxy() },
+        { path: '/bar/baz', handler: moxy() }
+      )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\\"/bar/baz\\" is conficted with existed route \\"/bar\\""`
+      `"unknown routing \\"/bar/baz\\" is conflicted with bar routing \\"/bar\\""`
     );
-  });
-
-  test('connect with basePath', () => {
-    const connector = new HTTPConnector('/foo');
-
-    const barHandler = moxy();
-    const bazHandler = moxy();
-    connector
-      .addRequestRoute('/bar', barHandler)
-      .addRequestRoute('/baz', bazHandler);
-
-    const server = moxy(new FakeServer());
-    connector.connect(server, { port: 8888 });
-
-    expect(server.listen.mock).toHaveBeenCalledTimes(1);
-    expect(server.on.mock).toHaveBeenCalledTimes(1);
-
-    let res = createRes();
-
-    server.emit('request', moxy({ url: '/foo/bar' }), res);
-    expect(barHandler.mock).toHaveBeenCalledTimes(1);
-    expect(bazHandler.mock).not.toHaveBeenCalled();
-
-    server.emit('request', moxy({ url: '/foo/baz' }), res);
-    expect(barHandler.mock).toHaveBeenCalledTimes(1);
-    expect(bazHandler.mock).toHaveBeenCalledTimes(1);
-
-    server.emit('request', moxy({ url: '/foo/bar/baz' }), res);
-    expect(barHandler.mock).toHaveBeenCalledTimes(2);
-    expect(bazHandler.mock).toHaveBeenCalledTimes(1);
-    expect(res.end.mock).not.toHaveBeenCalled();
-
-    server.emit('request', moxy({ url: '/foo' }), res);
-    expect(res.end.mock).toHaveBeenCalledTimes(1);
-    expect(res.statusCode).toBe(404);
-
-    res = createRes();
-    server.emit('request', moxy({ url: '/' }), res);
-    expect(res.end.mock).toHaveBeenCalledTimes(1);
-    expect(res.statusCode).toBe(404);
-
-    expect(barHandler.mock).toHaveBeenCalledTimes(2);
-    expect(bazHandler.mock).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -217,11 +177,11 @@ describe('handling upgrade', () => {
     socket.mock.clear();
   });
 
-  test('connect with root route', () => {
+  test('connect with root routing', () => {
     const connector = new HTTPConnector();
 
     const handler = moxy();
-    connector.addUpgradeRoute('/', handler);
+    connector.addUpgradeRouting({ path: '/', handler });
 
     const server = moxy(new FakeServer());
     connector.connect(server, { port: 8888 });
@@ -254,14 +214,15 @@ describe('handling upgrade', () => {
     expect(socket.write.mock).not.toHaveBeenCalled();
   });
 
-  test('connect with multiple routes', () => {
+  test('connect with multiple routings', () => {
     const connector = new HTTPConnector();
 
     const fooHandler = moxy();
     const barHandler = moxy();
-    connector
-      .addUpgradeRoute('/foo', fooHandler)
-      .addUpgradeRoute('/bar', barHandler);
+    connector.addUpgradeRouting(
+      { path: '/foo', handler: fooHandler },
+      { path: '/bar', handler: barHandler }
+    );
 
     const server = moxy(new FakeServer());
     connector.connect(server, { port: 8888 });
@@ -300,11 +261,11 @@ describe('handling upgrade', () => {
     expect(barHandler.mock).toHaveBeenCalledTimes(1);
   });
 
-  test('connect with deeper route path', () => {
+  test('connect with deeper routing path', () => {
     const connector = new HTTPConnector();
 
     const handler = moxy();
-    connector.addUpgradeRoute('/foo/bar', handler);
+    connector.addUpgradeRouting({ path: '/foo/bar', handler });
 
     const server = moxy(new FakeServer());
     connector.connect(server, { port: 8888 });
@@ -321,58 +282,22 @@ describe('handling upgrade', () => {
     expect(socket.destroy.mock).toHaveBeenCalledTimes(1);
   });
 
-  it('throw if routes conflict', () => {
+  it('throw if routings conflict', () => {
     expect(() =>
-      new HTTPConnector()
-        .addUpgradeRoute('/', moxy())
-        .addUpgradeRoute('/foo', moxy())
+      new HTTPConnector().addUpgradeRouting(
+        { name: 'root', path: '/', handler: moxy() },
+        { name: 'foo', path: '/foo', handler: moxy() }
+      )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\\"/foo\\" is conficted with existed route \\"/\\""`
+      `"foo routing \\"/foo\\" is conflicted with root routing \\"/\\""`
     );
     expect(() =>
-      new HTTPConnector()
-        .addUpgradeRoute('/bar', moxy())
-        .addUpgradeRoute('/bar/baz', moxy())
+      new HTTPConnector().addUpgradeRouting(
+        { name: 'bar', path: '/bar', handler: moxy() },
+        { path: '/bar/baz', handler: moxy() }
+      )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\\"/bar/baz\\" is conficted with existed route \\"/bar\\""`
+      `"unknown routing \\"/bar/baz\\" is conflicted with bar routing \\"/bar\\""`
     );
-  });
-
-  test('connect with basePath', () => {
-    const connector = new HTTPConnector('/foo');
-
-    const barHandler = moxy();
-    const bazHandler = moxy();
-    connector
-      .addUpgradeRoute('/bar', barHandler)
-      .addUpgradeRoute('/baz', bazHandler);
-
-    const server = moxy(new FakeServer());
-    connector.connect(server, { port: 8888 });
-    expect(server.listen.mock).toHaveBeenCalledTimes(1);
-
-    server.emit('upgrade', moxy({ url: '/foo/bar' }), socket, head);
-    expect(barHandler.mock).toHaveBeenCalledTimes(1);
-    expect(bazHandler.mock).not.toHaveBeenCalled();
-
-    server.emit('upgrade', moxy({ url: '/foo/baz' }), socket, head);
-    expect(barHandler.mock).toHaveBeenCalledTimes(1);
-    expect(bazHandler.mock).toHaveBeenCalledTimes(1);
-
-    server.emit('upgrade', moxy({ url: '/foo/bar/baz' }), socket, head);
-    expect(barHandler.mock).toHaveBeenCalledTimes(2);
-    expect(bazHandler.mock).toHaveBeenCalledTimes(1);
-    expect(socket.write.mock).not.toHaveBeenCalled();
-
-    server.emit('upgrade', moxy({ url: '/foo' }), socket, head);
-    expect(socket.write.mock).toHaveBeenCalledTimes(1);
-    expect(socket.destroy.mock).toHaveBeenCalledTimes(1);
-
-    server.emit('upgrade', moxy({ url: '/' }), socket, head);
-    expect(socket.write.mock).toHaveBeenCalledTimes(2);
-    expect(socket.destroy.mock).toHaveBeenCalledTimes(2);
-
-    expect(barHandler.mock).toHaveBeenCalledTimes(2);
-    expect(bazHandler.mock).toHaveBeenCalledTimes(1);
   });
 });

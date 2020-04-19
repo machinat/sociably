@@ -7,11 +7,23 @@ export type RequestHandler = (
   res: ServerResponse
 ) => void;
 
+export type HTTPRequestRouting = {|
+  name?: string,
+  path: string,
+  handler: RequestHandler,
+|};
+
 export type UpgradeHandler = (
   req: IncomingMessage,
   socket: Socket,
   head: Buffer
 ) => void;
+
+export type HTTPUpgradeRouting = {|
+  name?: string,
+  path: string,
+  handler: UpgradeHandler,
+|};
 
 export type ServerListenOptions = {|
   port?: number,
@@ -24,7 +36,4 @@ export type ServerListenOptions = {|
   ipv6Only?: boolean,
 |};
 
-export type HTTPModuleConfigs = {|
-  basePath?: string,
-  listenOptions?: ServerListenOptions,
-|};
+export type HTTPModuleConfigs = ServerListenOptions;
