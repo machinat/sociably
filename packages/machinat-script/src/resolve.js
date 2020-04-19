@@ -96,9 +96,9 @@ const resolveIf = (
     'prop "condition" of <IF/> should be a function'
   );
 
-  return reduce(
+  return reduce<IfSegment<any>, { condition: VarsMatcher<any> }>(
     (children: any),
-    ifChildrenReducer,
+    (ifChildrenReducer: any),
     {
       type: 'if',
       branches: [],
@@ -198,17 +198,17 @@ const segmentsReducer = (
 
     let segment;
     if (type === KEYWORDS.IF) {
-      segment = resolveIf(node.props, path);
+      segment = resolveIf((node.props: any), path);
     } else if (type === KEYWORDS.WHILE) {
-      segment = resolveWhile(node.props, path);
+      segment = resolveWhile((node.props: any), path);
     } else if (type === KEYWORDS.VARS) {
-      segment = resolveVars(node.props);
+      segment = resolveVars((node.props: any));
     } else if (type === KEYWORDS.PROMPT) {
-      segment = resolvePrompt(node.props);
+      segment = resolvePrompt((node.props: any));
     } else if (type === KEYWORDS.LABEL) {
-      segment = resolveLabel(node.props);
+      segment = resolveLabel((node.props: any));
     } else if (type === KEYWORDS.CALL) {
-      segment = resolveCall(node.props);
+      segment = resolveCall((node.props: any));
     } else if (type === KEYWORDS.RETURN) {
       segment = { type: 'return' };
     } else {
@@ -231,12 +231,20 @@ const segmentsReducer = (
   return segments;
 };
 
-const resolveSegments = <Vars>(node: ScriptNode<Vars, any>, path: string) => {
-  return reduce(node, segmentsReducer, [], path);
+const resolveSegments = <Vars>(
+  node: ScriptNode<Vars, any>,
+  path: string
+): ScriptSegment<Vars>[] => {
+  return reduce<ScriptSegment<Vars>[], void>(
+    (node: any),
+    (segmentsReducer: any),
+    [],
+    path
+  );
 };
 
 const resolve = <Vars>(node: ScriptNode<Vars, any>): ScriptSegment<Vars>[] => {
-  return resolveSegments(node, '$');
+  return resolveSegments<Vars>(node, '$');
 };
 
 export default resolve;
