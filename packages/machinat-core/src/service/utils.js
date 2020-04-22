@@ -36,13 +36,4 @@ export const polishInjectRequirement = (
 };
 
 export const createEmptyScope = (platform?: string) =>
-  new ServiceScope(
-    platform,
-    new ServiceMaker(
-      new ProvisionMap(),
-      new ProvisionMap(),
-      new ProvisionMap()
-    ),
-    new Map(),
-    new Map()
-  );
+  new ServiceScope(platform, new ServiceMaker(new ProvisionMap()), new Map());

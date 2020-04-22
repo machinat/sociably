@@ -1,5 +1,5 @@
 // @flow
-import ServiceMaker from './maker';
+import ServiceMaker, { ENUM_PHASE_BOOTSTRAP } from './maker';
 import ProvisionMap from './provisionMap';
 import ServiceScope from './scope';
 import { isServiceProvider, isInterfaceable } from './utils';
@@ -80,7 +80,8 @@ const resolveBindings = (
 
 export default class ServiceSpace {
   maker: ServiceMaker;
-  singletonCache: null | ServiceCache;
+  _provisionMapping: ProvisionMap<ProvisionBinding>;
+  _singletonCache: null | ServiceCache;
 
   constructor(
     moduleBindings: (ServiceProvider<any, any> | ProvisionBinding)[],
@@ -98,35 +99,91 @@ export default class ServiceSpace {
     );
 
     this.maker = new ServiceMaker(provisionMapping);
-    this.singletonCache = null;
+    this._provisionMapping = provisionMapping;
+    this._singletonCache = null;
   }
 
-  bootstrap(bootstrapTimeProvisions: Map<Interfaceable, any>) {
-    this.maker.validateProvisions(bootstrapTimeProvisions);
-    this.singletonCache = this.maker.makeSingletonServices(
-      bootstrapTimeProvisions
-    );
+  bootstrap(bootstrapProvisions: Map<Interfaceable, any>) {
+    const singletonCache = new Map();
+    const scopedCache = new Map();
+
+    for (const [, platform, provided] of this._provisionMapping.iterAll()) {
+      const bindings = Array.isArray(provided) ? provided : [provided];
+
+      for (const binding of bindings) {
+        if (binding.withProvider) {
+          const { withProvider: provider } = binding;
+          this._verifyDependencies(provider, platform, bootstrapProvisions, []);
+
+          if (provider.$$lifetime === 'singleton') {
+            this.maker.makeProvider(
+              provider,
+              ENUM_PHASE_BOOTSTRAP,
+              platform,
+              singletonCache,
+              scopedCache,
+              bootstrapProvisions
+            );
+          }
+        }
+      }
+    }
+
+    this._singletonCache = singletonCache;
   }
 
   createScope(platform: void | string): ServiceScope {
-    const { singletonCache } = this;
+    const singletonCache = this._singletonCache;
     if (!singletonCache) {
-      throw new Error('space not bootstraped');
+      throw new Error('service space has not bootstraped');
     }
-
-    const scopedCache = this.maker.makeScopedServices(
-      platform,
-      singletonCache,
-      null
-    );
 
     const scopeInjector = new ServiceScope(
       platform,
       this.maker,
-      singletonCache,
-      scopedCache
+      singletonCache
     );
 
     return scopeInjector;
+  }
+
+  _verifyDependencies(
+    provider: ServiceProvider<any, any>,
+    platform: void | string,
+    bootstrapProvisions: null | Map<Interfaceable, any>,
+    refLock: ServiceProvider<any, any>[]
+  ) {
+    const subRefLock = [...refLock, provider];
+
+    for (const { require: target, optional } of provider.$$deps) {
+      const isProvidedOnBootstrap =
+        !!bootstrapProvisions && bootstrapProvisions.has(target);
+
+      const provided = this._provisionMapping.get(target, platform);
+      if (!provided && !optional && !isProvidedOnBootstrap) {
+        throw new TypeError(`${target.$$name} is not bound`);
+      }
+
+      if (provided) {
+        const bindings = Array.isArray(provided) ? provided : [provided];
+
+        for (const binding of bindings) {
+          if (binding.withProvider) {
+            const { withProvider: argProvider } = binding;
+
+            if (subRefLock.indexOf(argProvider) !== -1) {
+              throw new Error(`${argProvider.$$name} is circular dependent`);
+            }
+
+            this._verifyDependencies(
+              argProvider,
+              platform,
+              bootstrapProvisions,
+              subRefLock
+            );
+          }
+        }
+      }
+    }
   }
 }

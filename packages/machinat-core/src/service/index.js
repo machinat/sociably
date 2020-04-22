@@ -37,14 +37,14 @@ export { isServiceContainer, isInterfaceable, createEmptyScope } from './utils';
  *   be provided prioritized to the default one if both provided.
  *
  * service lifetime:
- *   1. "singeleton" services will be created after iniatiation, and will
+ *   1. "singeleton" services would be created after iniatiation, and would
  *      survive within the life of the app. All claimation of the same token
  *      would retrieve the same instance of singeleton service.
- *   2. "scoped" services will be created when it is claimed by a container
- *      within a scope, and will survive until the scope ends. For example while
- *      rendering, the same token will retrieve the same scoped service instance
- *      whereever the location of the tree is.
- *   3. "transient" services will be created every time it is claimed.
+ *   2. "scoped" services would be created when it is claimed by a container
+ *      within a scope, and would survive until the scope ends. For example while
+ *      rendering message, the same instance of scoped provider would be
+ *      retrieved whereever the location of the tree is.
+ *   3. "transient" services would be created every time it is claimed.
  *
  * phases:
  *   The following steps will be happen in order:

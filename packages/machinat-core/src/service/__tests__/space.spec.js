@@ -219,7 +219,7 @@ it('throw if provider dependencies not bound when bootstrap', () => {
   ).toThrowErrorMatchingInlineSnapshot(`"BarAbstract is not bound"`);
 });
 
-it('throw if invalid binging received', () => {
+it('throw if invalid binding received', () => {
   expect(() => new ServiceSpace([Bar], [])).toThrowErrorMatchingInlineSnapshot(`
 "invalid binding (class BarAbstract {
   bar() {
@@ -504,7 +504,7 @@ test('lifecycle of services of different lifetime', () => {
   expect(bazFactory.mock).toHaveBeenCalledTimes(3);
 });
 
-test('provide multi interface as an array of bound value', async () => {
+test('provide multi interface as an array of bound value', () => {
   const MULTI_FOOD = namedInterface({ name: 'MultiFood', multi: true });
   const bistroFactory = factory({ lifetime: 'singleton', deps: [MULTI_FOOD] })(
     moxy(dishes => ({
@@ -580,7 +580,7 @@ test('provide multi interface as an array of bound value', async () => {
   expect(ramenFactory.mock).toHaveBeenCalledTimes(2);
 });
 
-test('provide multi interface as an empty array if no value bound', async () => {
+test('provide multi interface as an empty array if no value bound', () => {
   const MULTI_FOO = namedInterface({ name: 'MultiFoo', multi: true });
   const needFooFactory = factory({ lifetime: 'singleton', deps: [MULTI_FOO] })(
     moxy(() => ({}))
@@ -639,7 +639,7 @@ test('inject time provision', () => {
   ).toEqual([greeter, foo, bar, baz]);
 
   expect(Foo.mock).toHaveBeenCalledTimes(1);
-  expect(BarImpl.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.mock).not.toHaveBeenCalled();
   expect(bazFactory.mock).not.toHaveBeenCalled();
 });
 
@@ -668,7 +668,7 @@ test('boostrap time provision', () => {
   ).toThrowErrorMatchingInlineSnapshot(`"BOO is not bound"`);
 });
 
-test('require underlying ServiceScope', async () => {
+test('require underlying ServiceScope', () => {
   const scopeConsumer = inject({ deps: [ServiceScope] })(moxy(() => ({})));
 
   const space = new ServiceSpace(

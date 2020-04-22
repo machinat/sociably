@@ -129,13 +129,13 @@ it('start modules', async () => {
 
   await app.start();
 
-  // trasient service created when boostrap, init start scope and each time module startHook injected
-  expect(FooService.$$factory.mock).toHaveBeenCalledTimes(6);
+  // trasient service created when boostrap and each time module startHook injected
+  expect(FooService.$$factory.mock).toHaveBeenCalledTimes(5);
   expect(FooService.$$factory.mock).toHaveBeenCalledWith(/* empty */);
   expect(FooModule.startHook.mock).toHaveBeenCalledTimes(1);
   expect(FooModule.startHook.mock).toHaveBeenCalledWith(expect.any(FooService));
 
-  // scoped service created when boostrap and init start scope
+  // scoped service created when required under boostrap and starting scope
   expect(BarService.$$factory.mock).toHaveBeenCalledTimes(2);
   expect(BarService.$$factory.mock).toHaveBeenCalledWith(
     expect.any(FooService)
@@ -170,14 +170,7 @@ it('start modules', async () => {
     expect.any(AnotherService)
   );
 
-  expect(MyService.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(MyService.$$factory.mock).toHaveBeenCalledWith(
-    expect.any(FooService),
-    expect.any(BarService),
-    expect.any(TestService),
-    expect.any(AnotherService)
-  );
-
+  expect(MyService.$$factory.mock).not.toHaveBeenCalled();
   expect(YourService.$$factory.mock).not.toHaveBeenCalled();
 });
 

@@ -159,6 +159,9 @@ const mergeMultiBranch = <T>(
   }
 };
 
+const mergeOptionalArray = <T>(arr: null | T[], brr: null | T[]): null | T[] =>
+  !arr ? brr : !brr ? arr : [...arr, ...brr];
+
 export default class ProvisionMap<T> {
   _mapping: ProvisionBranches<T>;
   _multiMapping: ProvisionBranches<T[]>;
@@ -177,7 +180,7 @@ export default class ProvisionMap<T> {
     if (target.$$multi) {
       const existed = this._multiMapping.get(target);
       if (!existed) {
-        return null;
+        return [];
       }
 
       if (!platform) {
@@ -187,11 +190,7 @@ export default class ProvisionMap<T> {
       const defaultValues = existed.default;
       const platformValues = existed.platforms[platform];
 
-      return !defaultValues
-        ? platformValues
-        : !platformValues
-        ? defaultValues
-        : [...defaultValues, ...platformValues];
+      return mergeOptionalArray(defaultValues, platformValues);
     }
 
     const existed = this._mapping.get(target);
@@ -250,30 +249,29 @@ export default class ProvisionMap<T> {
     }
   }
 
-  *iterBranch(
-    platform?: string
-  ): Generator<[Interfaceable, void | string, T | T[]], void, void> {
+  *iterPlatform(
+    platform: void | string
+  ): Generator<[Interfaceable, T | T[]], void, void> {
     for (const [target, provided] of this._mapping) {
       const { default: defaultValue, platforms } = provided;
 
-      let platformValue;
-      if (platform && (platformValue = platforms[platform])) {
-        yield [target, platform, platformValue];
-      } else if (defaultValue) {
-        yield [target, undefined, defaultValue];
+      const value = platform
+        ? platforms[platform] || defaultValue
+        : defaultValue;
+      if (value) {
+        yield [target, value];
       }
     }
 
     for (const [target, provided] of this._multiMapping) {
       const { default: defaultValues, platforms } = provided;
 
-      let platformValues;
-      if (platform && (platformValues = platforms[platform])) {
-        yield [target, platform, platformValues];
-      }
-
-      if (defaultValues) {
-        yield [target, undefined, defaultValues];
+      const values = mergeOptionalArray(
+        defaultValues,
+        platform ? platforms[platform] : null
+      );
+      if (values) {
+        yield [target, values];
       }
     }
   }

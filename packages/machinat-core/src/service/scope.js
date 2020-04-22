@@ -2,7 +2,7 @@
 import invariant from 'invariant';
 import { polishInjectRequirement, isServiceContainer } from './utils';
 import { MACHINAT_SERVICES_PROVIDER } from '../symbol';
-import ServiceMaker from './maker';
+import ServiceMaker, { ENUM_PHASE_INJECTION } from './maker';
 import type {
   ServiceCache,
   ServiceContainer,
@@ -27,13 +27,12 @@ export default class ServiceScope {
   constructor(
     platform: void | string,
     maker: ServiceMaker,
-    singletonCache: ServiceCache,
-    scopeCache: ServiceCache
+    singletonCache: ServiceCache
   ) {
     this.platform = platform;
     this.maker = maker;
     this.singletonCache = singletonCache;
-    this.scopeCache = scopeCache;
+    this.scopeCache = new Map();
   }
 
   useServices(
@@ -49,6 +48,7 @@ export default class ServiceScope {
 
     const services = this.maker.makeRequirements(
       requirements,
+      ENUM_PHASE_INJECTION,
       this.platform,
       this.singletonCache,
       this.scopeCache,

@@ -64,11 +64,16 @@ export default class MachinatApp<
     } = this.config;
 
     const moduleBindings = [];
+    const startHooks = [];
 
     // bootstrap normal modules add bindings
     if (modules) {
-      for (const { provisions } of modules) {
+      for (const { provisions, startHook } of modules) {
         moduleBindings.push(...provisions);
+
+        if (startHook) {
+          startHooks.push(startHook);
+        }
       }
     }
 
@@ -76,16 +81,16 @@ export default class MachinatApp<
 
     // add bindings and bridge bindings of platform module
     if (platforms) {
-      for (const platform of platforms) {
-        const {
-          name,
-          provisions,
-          mounterInterface,
-          eventMiddlewares,
-          dispatchMiddlewares,
-        } = platform;
-
+      for (const {
+        name,
+        provisions,
+        mounterInterface,
+        eventMiddlewares,
+        dispatchMiddlewares,
+        startHook,
+      } of platforms) {
         moduleBindings.push(...provisions);
+
         mounterProvisions.set(
           mounterInterface,
           this._createPlatformMounter(
@@ -94,6 +99,10 @@ export default class MachinatApp<
             dispatchMiddlewares || []
           )
         );
+
+        if (startHook) {
+          startHooks.push(startHook);
+        }
       }
     }
 
@@ -103,29 +112,11 @@ export default class MachinatApp<
     );
 
     this._serviceSpace.bootstrap(mounterProvisions);
-    const startingScope = this._serviceSpace.createScope();
 
-    // run start hooks of platform modules
-    if (platforms) {
-      const startingPlaforms = [];
-      for (const { startHook } of platforms) {
-        if (startHook) {
-          startingPlaforms.push(startingScope.injectContainer(startHook));
-        }
-      }
-      await Promise.all(startingPlaforms);
-    }
-
-    // run start hooks of normal modules
-    if (modules) {
-      const startingPlaforms = [];
-      for (const { startHook } of modules) {
-        if (startHook) {
-          startingPlaforms.push(startingScope.injectContainer(startHook));
-        }
-      }
-      await Promise.all(startingPlaforms);
-    }
+    const startingScope = this._serviceSpace.createScope(undefined);
+    await Promise.all(
+      startHooks.map(startHook => startingScope.injectContainer(startHook))
+    );
 
     this._status = ENUM_STARTED;
   }
