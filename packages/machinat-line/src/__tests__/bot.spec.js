@@ -51,6 +51,10 @@ const message = (
 const pathSpy = moxy(() => true);
 const bodySpy = moxy(() => true);
 
+const scope = moxy();
+const initScope = moxy(() => scope);
+const dispatchWrapper = moxy(x => x);
+
 let lineAPI;
 beforeEach(() => {
   Engine.mock.reset();
@@ -72,7 +76,7 @@ beforeEach(() => {
 describe('#constructor(options)', () => {
   it('throws if accessToken not given', () => {
     expect(
-      () => new LineBot({ channelId: '_MY_BOT_' })
+      () => new LineBot({ channelId: '_MY_BOT_' }, initScope, dispatchWrapper)
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.accessToken should not be empty"`
     );
@@ -80,18 +84,27 @@ describe('#constructor(options)', () => {
 
   it('throws if channelId not given', () => {
     expect(
-      () => new LineBot({ accessToken: '__ACCESS_TOKEN__' })
+      () =>
+        new LineBot(
+          { accessToken: '__ACCESS_TOKEN__' },
+          initScope,
+          dispatchWrapper
+        )
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.channelId should not be empty"`
     );
   });
 
   it('assemble engine', () => {
-    const bot = new LineBot({
-      accessToken: '__ACCESS_TOKEN__',
-      channelId: '_MY_BOT_',
-      connectionCapicity: 999,
-    });
+    const bot = new LineBot(
+      {
+        accessToken: '__ACCESS_TOKEN__',
+        channelId: '_MY_BOT_',
+        connectionCapicity: 999,
+      },
+      initScope,
+      dispatchWrapper
+    );
 
     expect(Renderer.mock).toHaveBeenCalledTimes(1);
     expect(Renderer.mock).toHaveBeenCalledWith('line', expect.any(Function));
@@ -107,16 +120,13 @@ describe('#constructor(options)', () => {
       expect.any(Renderer),
       expect.any(Queue),
       expect.any(LineWorker),
-      null,
-      null
+      initScope,
+      dispatchWrapper
     );
   });
 
-  it('pass initScope and dispatchWrapper to engine if provided', () => {
-    const initScope = moxy();
-    const dispatchWrapper = moxy(x => x);
-
-    const bot = new LineBot(
+  test('default connectionCapicity', () => {
+    const _bot = new LineBot(
       {
         accessToken: '__ACCESS_TOKEN__',
         channelId: '_MY_BOT_',
@@ -124,24 +134,6 @@ describe('#constructor(options)', () => {
       initScope,
       dispatchWrapper
     );
-
-    expect(Engine.mock).toHaveBeenCalledTimes(1);
-    expect(Engine.mock).toHaveBeenCalledWith(
-      'line',
-      bot,
-      expect.any(Renderer),
-      expect.any(Queue),
-      expect.any(LineWorker),
-      initScope,
-      dispatchWrapper
-    );
-  });
-
-  test('default connectionCapicity', () => {
-    const _bot = new LineBot({
-      accessToken: '__ACCESS_TOKEN__',
-      channelId: '_MY_BOT_',
-    });
 
     expect(LineWorker.mock).toHaveBeenCalledTimes(1);
     expect(LineWorker.mock.calls[0].args).toMatchInlineSnapshot(`
@@ -155,14 +147,18 @@ describe('#constructor(options)', () => {
 
 describe('#render(token, node, options)', () => {
   it('make api calls', async () => {
-    const bot = new LineBot({
-      accessToken: '__ACCESS_TOKEN__',
-      channelId: '_MY_BOT_',
-    });
+    const bot = new LineBot(
+      {
+        accessToken: '__ACCESS_TOKEN__',
+        channelId: '_MY_BOT_',
+      },
+      initScope,
+      dispatchWrapper
+    );
 
     bot.start();
 
-    const apiScope = lineAPI
+    const apiStatus = lineAPI
       .post(pathSpy, bodySpy)
       .times(2)
       .reply(200, '{}');
@@ -170,7 +166,7 @@ describe('#render(token, node, options)', () => {
     const response = await bot.render('john_doe', message);
 
     expect(response).toMatchSnapshot();
-    expect(apiScope.isDone()).toBe(true);
+    expect(apiStatus.isDone()).toBe(true);
 
     expect(pathSpy.mock.calls[0].args[0]).toBe('/v2/bot/message/push');
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
@@ -207,13 +203,17 @@ describe('#render(token, node, options)', () => {
   });
 
   it('works with replyToken', async () => {
-    const bot = new LineBot({
-      accessToken: '__ACCESS_TOKEN__',
-      channelId: '_MY_BOT_',
-    });
+    const bot = new LineBot(
+      {
+        accessToken: '__ACCESS_TOKEN__',
+        channelId: '_MY_BOT_',
+      },
+      initScope,
+      dispatchWrapper
+    );
     bot.start();
 
-    const apiScope = lineAPI
+    const apiStatus = lineAPI
       .post(pathSpy, bodySpy)
       .times(2)
       .reply(200, '{}');
@@ -223,7 +223,7 @@ describe('#render(token, node, options)', () => {
     });
 
     expect(response).toMatchSnapshot();
-    expect(apiScope.isDone()).toBe(true);
+    expect(apiStatus.isDone()).toBe(true);
 
     expect(pathSpy.mock).toHaveBeenCalledTimes(2);
     expect(bodySpy.mock).toHaveBeenCalledTimes(2);
@@ -264,10 +264,14 @@ describe('#render(token, node, options)', () => {
   });
 
   it('return null if message is empty', async () => {
-    const bot = new LineBot({
-      accessToken: '__ACCESS_TOKEN__',
-      channelId: '_MY_BOT_',
-    });
+    const bot = new LineBot(
+      {
+        accessToken: '__ACCESS_TOKEN__',
+        channelId: '_MY_BOT_',
+      },
+      initScope,
+      dispatchWrapper
+    );
 
     for (const empty of [null, undefined, [], <></>, true, false]) {
       // eslint-disable-next-line no-await-in-loop
@@ -276,10 +280,14 @@ describe('#render(token, node, options)', () => {
   });
 
   it('throw if messages length more than 5 when using replyToken', () => {
-    const bot = new LineBot({
-      accessToken: '__ACCESS_TOKEN__',
-      channelId: '_MY_BOT_',
-    });
+    const bot = new LineBot(
+      {
+        accessToken: '__ACCESS_TOKEN__',
+        channelId: '_MY_BOT_',
+      },
+      initScope,
+      dispatchWrapper
+    );
     bot.start();
 
     expect(
@@ -300,10 +308,14 @@ describe('#render(token, node, options)', () => {
 
 describe('#renderMulticast(targets, node)', () => {
   it('return null if message is empty', async () => {
-    const bot = new LineBot({
-      accessToken: '__ACCESS_TOKEN__',
-      channelId: '_MY_BOT_',
-    });
+    const bot = new LineBot(
+      {
+        accessToken: '__ACCESS_TOKEN__',
+        channelId: '_MY_BOT_',
+      },
+      initScope,
+      dispatchWrapper
+    );
 
     for (const empty of [null, undefined, [], <></>, true, false]) {
       // eslint-disable-next-line no-await-in-loop
@@ -314,13 +326,17 @@ describe('#renderMulticast(targets, node)', () => {
   });
 
   it('make api call to message/mulitcast', async () => {
-    const bot = new LineBot({
-      accessToken: '__ACCESS_TOKEN__',
-      channelId: '_MY_BOT_',
-    });
+    const bot = new LineBot(
+      {
+        accessToken: '__ACCESS_TOKEN__',
+        channelId: '_MY_BOT_',
+      },
+      initScope,
+      dispatchWrapper
+    );
     bot.start();
 
-    const apiScope = lineAPI
+    const apiStatus = lineAPI
       .post(pathSpy, bodySpy)
       .times(2)
       .reply(200, '{}');
@@ -331,7 +347,7 @@ describe('#renderMulticast(targets, node)', () => {
     );
 
     expect(response).toMatchSnapshot();
-    expect(apiScope.isDone()).toBe(true);
+    expect(apiStatus.isDone()).toBe(true);
 
     expect(pathSpy.mock.calls[0].args[0]).toBe('/v2/bot/message/multicast');
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`

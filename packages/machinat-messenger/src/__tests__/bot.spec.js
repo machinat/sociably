@@ -33,6 +33,10 @@ jest.mock('../worker', () =>
   })
 );
 
+const scope = moxy();
+const initScope = moxy(() => scope);
+const dispatchWrapper = moxy(x => x);
+
 const message = (
   <Dialog quickReplies={<QuickReply title="Hi!" />}>
     Hello <b>World!</b>
@@ -59,10 +63,11 @@ describe('#constructor(options)', () => {
   it('throw if accessToken not given', () => {
     expect(
       () =>
-        new MessengerBot({
-          pageId: '_PAGE_ID_',
-          appSecret: '_SECRET_',
-        })
+        new MessengerBot(
+          { pageId: '_PAGE_ID_', appSecret: '_SECRET_' },
+          initScope,
+          dispatchWrapper
+        )
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.accessToken should not be empty"`
     );
@@ -71,20 +76,22 @@ describe('#constructor(options)', () => {
   it('throw if pageId not given', () => {
     expect(
       () =>
-        new MessengerBot({
-          accessToken: '_ACCESS_TOKEN_',
-          appSecret: '_SECRET_',
-        })
+        new MessengerBot(
+          { accessToken: '_ACCESS_TOKEN_', appSecret: '_SECRET_' },
+          initScope,
+          dispatchWrapper
+        )
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.pageId should not be empty"`
     );
   });
 
   it('assemble core modules', () => {
-    const bot = new MessengerBot({
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-    });
+    const bot = new MessengerBot(
+      { pageId: '_PAGE_ID_', accessToken: '_ACCESS_TOKEN_' },
+      initScope,
+      dispatchWrapper
+    );
 
     expect(bot.engine).toBeInstanceOf(Engine);
 
@@ -101,46 +108,25 @@ describe('#constructor(options)', () => {
       expect.any(Renderer),
       expect.any(Queue),
       expect.any(Worker),
-      null,
-      null
+      initScope,
+      dispatchWrapper
     );
 
     expect(Worker.mock).toHaveBeenCalledTimes(1);
     expect(Worker.mock).toHaveBeenCalledWith('_ACCESS_TOKEN_', 500, undefined);
   });
 
-  it('pass initScope and dispatchWrapper params to Engine if existed', () => {
-    const initScope = moxy();
-    const dispatchWrapper = moxy();
-    const bot = new MessengerBot(
+  it('pass consumeInterval and appSecret specified to worker', () => {
+    const _bot = new MessengerBot(
       {
         pageId: '_PAGE_ID_',
         accessToken: '_ACCESS_TOKEN_',
-        appSecret: '_SECRET_',
+        appSecret: '_APP_SECRET_',
+        consumeInterval: 0,
       },
       initScope,
       dispatchWrapper
     );
-
-    expect(Engine.mock).toHaveBeenCalledTimes(1);
-    expect(Engine.mock).toHaveBeenCalledWith(
-      'messenger',
-      bot,
-      expect.any(Renderer),
-      expect.any(Queue),
-      expect.any(Worker),
-      initScope,
-      dispatchWrapper
-    );
-  });
-
-  it('pass consumeInterval and appSecret specified to worker', () => {
-    const _bot = new MessengerBot({
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_APP_SECRET_',
-      consumeInterval: 0,
-    });
 
     expect(Worker.mock).toHaveBeenCalledTimes(1);
     expect(Worker.mock).toHaveBeenCalledWith(
@@ -152,11 +138,15 @@ describe('#constructor(options)', () => {
 });
 
 test('#start() and #stop() start/stop engine', () => {
-  const bot = new MessengerBot({
-    pageId: '_PAGE_ID_',
-    accessToken: '_ACCESS_TOKEN_',
-    appSecret: '_APP_SECRET_',
-  });
+  const bot = new MessengerBot(
+    {
+      pageId: '_PAGE_ID_',
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_APP_SECRET_',
+    },
+    initScope,
+    dispatchWrapper
+  );
 
   bot.start();
   expect(bot.engine.start.mock).toHaveBeenCalledTimes(1);
@@ -166,15 +156,19 @@ test('#start() and #stop() start/stop engine', () => {
 });
 
 describe('#render(channel, message, options)', () => {
-  const bot = new MessengerBot({
-    pageId: '_PAGE_ID_',
-    accessToken: '_ACCESS_TOKEN_',
-    appSecret: '_SECRET_',
-  });
+  const bot = new MessengerBot(
+    {
+      pageId: '_PAGE_ID_',
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+    },
+    initScope,
+    dispatchWrapper
+  );
 
-  let scope;
+  let apiStatus;
   beforeEach(() => {
-    scope = graphAPI.reply(
+    apiStatus = graphAPI.reply(
       200,
       JSON.stringify(
         new Array(2).fill(0).map(() => ({
@@ -195,7 +189,7 @@ describe('#render(channel, message, options)', () => {
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
       await expect(bot.render('john', empty)).resolves.toBe(null);
-      expect(scope.isDone()).toBe(false);
+      expect(apiStatus.isDone()).toBe(false);
     }
   });
 
@@ -216,7 +210,7 @@ describe('#render(channel, message, options)', () => {
     expect(body).toMatchSnapshot({ batch: expect.any(String) });
     expect(JSON.parse(body.batch)).toMatchSnapshot();
 
-    expect(scope.isDone()).toBe(true);
+    expect(apiStatus.isDone()).toBe(true);
   });
 
   it('works with options', async () => {
@@ -241,16 +235,20 @@ describe('#render(channel, message, options)', () => {
     expect(body).toMatchSnapshot({ batch: expect.any(String) });
     expect(JSON.parse(body.batch)).toMatchSnapshot();
 
-    expect(scope.isDone()).toBe(true);
+    expect(apiStatus.isDone()).toBe(true);
   });
 });
 
 describe('#renderAttachment(message)', () => {
-  const bot = new MessengerBot({
-    pageId: '_PAGE_ID_',
-    accessToken: '_ACCESS_TOKEN_',
-    appSecret: '_SECRET_',
-  });
+  const bot = new MessengerBot(
+    {
+      pageId: '_PAGE_ID_',
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_SECRET_',
+    },
+    initScope,
+    dispatchWrapper
+  );
 
   beforeEach(() => {
     bot.start();
@@ -268,7 +266,7 @@ describe('#renderAttachment(message)', () => {
   });
 
   it('works', async () => {
-    const scope = graphAPI.reply(
+    const apiStatus = graphAPI.reply(
       200,
       JSON.stringify([
         { code: 200, body: JSON.stringify({ attachment_id: 401759795 }) },
@@ -301,6 +299,6 @@ describe('#renderAttachment(message)', () => {
       ]
     `);
 
-    expect(scope.isDone()).toBe(true);
+    expect(apiStatus.isDone()).toBe(true);
   });
 });

@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import moxy, { Mock } from 'moxy';
-import ServiceScope from '../../service/scope';
 import Machinat from '../..';
 
 import Engine from '../engine';
@@ -173,34 +172,6 @@ describe('#render(channel, node, createJobs)', () => {
       },
       scope
     );
-
-    expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
-    expect(queue.executeJobs.mock).toHaveBeenCalledWith(expectedJobs);
-  });
-
-  it('work if initScope and dispatchWrapper omitted', async () => {
-    const expectedJobs = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
-
-    await expect(
-      new Engine('test', bot, renderer, queue, worker).render(
-        channel,
-        message,
-        createJobs
-      )
-    ).resolves.toEqual({
-      jobs: expectedJobs,
-      results: ['result#1', 'result#2', 'result#3', 'result#4'],
-      tasks: [{ type: 'dispatch', payload: expectedJobs }],
-    });
-
-    expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(
-      message,
-      expect.any(ServiceScope)
-    );
-
-    expect(createJobs.mock).toHaveBeenCalledTimes(1);
-    expect(createJobs.mock).toHaveBeenCalledWith(channel, unitSegments);
 
     expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
     expect(queue.executeJobs.mock).toHaveBeenCalledWith(expectedJobs);
@@ -748,24 +719,6 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
       },
       scope
     );
-  });
-
-  it('work if initScope and dispatchWrapper omitted', async () => {
-    const expectedTasks = [{ type: 'dispatch', payload: jobs }];
-
-    await expect(
-      new Engine('test', bot, renderer, queue, worker).dispatchJobs(
-        channel,
-        jobs
-      )
-    ).resolves.toEqual({
-      tasks: expectedTasks,
-      jobs,
-      results: ['result#1', 'result#2', 'result#3'],
-    });
-
-    expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
-    expect(queue.executeJobs.mock).toHaveBeenCalledWith(jobs);
   });
 
   it('throws if job execution fail', async () => {

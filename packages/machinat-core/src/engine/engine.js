@@ -11,8 +11,6 @@ import type {
 import type MachinatRenderer from '../renderer';
 import type MachinatQueue from '../queue';
 import type { JobBatchResponse } from '../queue/types';
-
-import { createEmptyScope } from '../service';
 import type { ServiceScope } from '../service/types';
 
 import DispatchError from './error';
@@ -56,8 +54,8 @@ export default class MachinatEngine<
     renderer: MachinatRenderer<SegmentValue, Native>,
     queue: MachinatQueue<Job, Result>,
     worker: MachinatWorker<Job, Result>,
-    initScope: null | InitScopeFn,
-    dispatchWrapper: null | DispatchWrapper<
+    initScope: InitScopeFn,
+    dispatchWrapper: DispatchWrapper<
       Job,
       DispatchFrame<Channel, Job, Bot>,
       Result
@@ -69,10 +67,8 @@ export default class MachinatEngine<
     this.worker = worker;
     this.queue = queue;
 
-    this._initScope = initScope || (() => createEmptyScope(this.platform));
-    this._dispatcher = dispatchWrapper
-      ? dispatchWrapper(this._execute.bind(this))
-      : frame => this._execute(frame);
+    this._initScope = initScope;
+    this._dispatcher = dispatchWrapper(this._execute.bind(this));
   }
 
   start() {

@@ -64,8 +64,8 @@ class MessengerBot
       appSecret,
       consumeInterval = 500,
     }: MessengerBotOptions = {},
-    initScope?: InitScopeFn,
-    dispatchWrapper?: DispatchWrapper<
+    initScope: InitScopeFn,
+    dispatchWrapper: DispatchWrapper<
       MessengerJob,
       MessengerDispatchFrame,
       MessengerResult
@@ -87,8 +87,8 @@ class MessengerBot
       renderer,
       queue,
       worker,
-      initScope || null,
-      dispatchWrapper || null
+      initScope,
+      dispatchWrapper
     );
   }
 

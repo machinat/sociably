@@ -55,8 +55,8 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
 
   constructor(
     { accessToken, channelId, connectionCapicity = 100 }: LineBotOptions = {},
-    initScope?: InitScopeFn,
-    dispatchWrapper?: DispatchWrapper<LineJob, LineDispatchFrame, LineAPIResult>
+    initScope: InitScopeFn,
+    dispatchWrapper: DispatchWrapper<LineJob, LineDispatchFrame, LineAPIResult>
   ) {
     invariant(accessToken, 'options.accessToken should not be empty');
     invariant(channelId, 'options.channelId should not be empty');
@@ -73,8 +73,8 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
       renderer,
       queue,
       worker,
-      initScope || null,
-      dispatchWrapper || null
+      initScope,
+      dispatchWrapper
     );
   }
 
