@@ -57,11 +57,7 @@ export default class MachinatApp<
     );
     this._status = ENUM_STARTING;
 
-    const {
-      imports: modules,
-      platforms,
-      registers: registeredBindings,
-    } = this.config;
+    const { modules, platforms, bindings } = this.config;
 
     const moduleBindings = [];
     const startHooks = [];
@@ -106,11 +102,7 @@ export default class MachinatApp<
       }
     }
 
-    this._serviceSpace = new ServiceSpace(
-      moduleBindings,
-      registeredBindings || []
-    );
-
+    this._serviceSpace = new ServiceSpace(moduleBindings, bindings || []);
     this._serviceSpace.bootstrap(mounterProvisions);
 
     const startingScope = this._serviceSpace.createScope(undefined);

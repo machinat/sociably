@@ -61,7 +61,7 @@ it('provide configs', async () => {
     port: 8888,
   };
   const app = Machinat.createApp({
-    imports: [HTTP.initModule(configs)],
+    modules: [HTTP.initModule(configs)],
   });
   await app.start();
 
@@ -72,13 +72,13 @@ it('provide http server by default', async () => {
   const connector = moxy({ connect: async () => {} });
 
   const app = Machinat.createApp({
-    imports: [
+    modules: [
       HTTP.initModule({
         host: 'localhost',
         port: 8888,
       }),
     ],
-    registers: [{ provide: HTTP.Connector, withValue: connector }],
+    bindings: [{ provide: HTTP.Connector, withValue: connector }],
   });
 
   await app.start();
@@ -99,13 +99,13 @@ test('change http server', async () => {
   });
 
   const app = Machinat.createApp({
-    imports: [
+    modules: [
       HTTP.initModule({
         host: 'localhost',
         port: 8888,
       }),
     ],
-    registers: [{ provide: HTTP.ServerI, withValue: myServer }],
+    bindings: [{ provide: HTTP.ServerI, withValue: myServer }],
   });
 
   await app.start();

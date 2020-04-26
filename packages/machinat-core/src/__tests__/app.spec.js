@@ -122,9 +122,9 @@ beforeEach(() => {
 
 it('start modules', async () => {
   const app = new App({
-    imports: [FooModule, BarModule],
+    modules: [FooModule, BarModule],
     platforms: [TestPlatform, AnotherPlatform],
-    registers: [MyService, YourService],
+    bindings: [MyService, YourService],
   });
 
   await app.start();
@@ -176,9 +176,9 @@ it('start modules', async () => {
 
 it('provide mounter utilities by PlatformModule.mounterInterface', async () => {
   const app = new App({
-    imports: [FooModule, BarModule],
+    modules: [FooModule, BarModule],
     platforms: [TestPlatform, AnotherPlatform],
-    registers: [MyService, YourService],
+    bindings: [MyService, YourService],
   });
 
   await app.start();
@@ -201,9 +201,9 @@ it('provide mounter utilities by PlatformModule.mounterInterface', async () => {
 
 test('mounter.initScope() provide services to platform module', async () => {
   const app = new App({
-    imports: [FooModule, BarModule],
+    modules: [FooModule, BarModule],
     platforms: [TestPlatform, AnotherPlatform],
-    registers: [MyService, YourService],
+    bindings: [MyService, YourService],
   });
 
   await app.start();
@@ -252,9 +252,9 @@ describe('poping event from platform module', () => {
 
   test('emit event', async () => {
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -285,9 +285,9 @@ describe('poping event from platform module', () => {
 
   test('middlewares can modify context and reponse', async () => {
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -328,9 +328,9 @@ describe('poping event from platform module', () => {
 
   test('middleware can bypass the finalHandler', async () => {
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -357,9 +357,9 @@ describe('poping event from platform module', () => {
 
   test('throw and popError if error thrown in middlewares', async () => {
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -393,9 +393,9 @@ describe('poping event from platform module', () => {
     });
 
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -424,9 +424,9 @@ describe('poping event from platform module', () => {
     });
 
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -472,9 +472,9 @@ describe('poping event from platform module', () => {
     );
 
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     })
       .onEvent(eventListenerContainer)
       .onError(errorListener);
@@ -518,9 +518,9 @@ describe('poping event from platform module', () => {
       .fakeReturnValue([middlewareContainer]);
 
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -564,9 +564,9 @@ describe('poping error from platform module', () => {
 
   test('pop error from platform', async () => {
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -599,9 +599,9 @@ describe('poping error from platform module', () => {
     );
 
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListnerContainer);
@@ -650,9 +650,9 @@ describe('dispatch through middlewares', () => {
 
   it('dispatch through middlewares', async () => {
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     });
     await app.start();
 
@@ -676,9 +676,9 @@ describe('dispatch through middlewares', () => {
 
   test('middlewares can modify context and reponse', async () => {
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     });
     await app.start();
 
@@ -715,9 +715,9 @@ describe('dispatch through middlewares', () => {
 
   test('middleware can bypass the finalHandler', async () => {
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     });
     await app.start();
 
@@ -739,9 +739,9 @@ describe('dispatch through middlewares', () => {
 
   test('wrappedHandler throw if middleware throw', async () => {
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     });
     await app.start();
 
@@ -767,9 +767,9 @@ describe('dispatch through middlewares', () => {
     });
 
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     });
     await app.start();
 
@@ -820,9 +820,9 @@ describe('dispatch through middlewares', () => {
       .fakeReturnValue([middlewareContainer]);
 
     const app = new App({
-      imports: [FooModule, BarModule],
+      modules: [FooModule, BarModule],
       platforms: [TestPlatform, AnotherPlatform],
-      registers: [MyService, YourService],
+      bindings: [MyService, YourService],
     });
     await app.start();
 
@@ -855,9 +855,9 @@ describe('dispatch through middlewares', () => {
 
 test('#useServices(requirements)', async () => {
   const app = new App({
-    imports: [FooModule, BarModule],
+    modules: [FooModule, BarModule],
     platforms: [TestPlatform, AnotherPlatform],
-    registers: [MyService, YourService],
+    bindings: [MyService, YourService],
   });
 
   await app.start();

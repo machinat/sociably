@@ -218,8 +218,8 @@ export type PlatformModule<
 
 export type AppConfig<Context: EventContext<any, any, any, any, any>> = {
   platforms?: PlatformModule<Context, any, any, any, any>[],
-  imports?: ServiceModule[],
-  registers?: (ServiceProvider<any, any> | ProvisionBinding)[],
+  modules?: ServiceModule[],
+  bindings?: (ServiceProvider<any, any> | ProvisionBinding)[],
 };
 
 export type InitScopeFn = () => ServiceScope;

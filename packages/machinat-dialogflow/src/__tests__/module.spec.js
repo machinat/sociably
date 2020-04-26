@@ -38,7 +38,7 @@ describe('initModule()', () => {
 
   it('', async () => {
     const app = Machinat.createApp({
-      imports: [DialogFlow.initModule(configs)],
+      modules: [DialogFlow.initModule(configs)],
     });
     await app.start();
 

@@ -144,7 +144,7 @@ describe('initModule()', () => {
 
   test('default webhookPath to "/"', async () => {
     const app = Machinat.createApp({
-      imports: [
+      modules: [
         Next.initModule({ shouldPrepare: true, nextAppOptions: { dev: true } }),
       ],
     });

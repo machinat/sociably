@@ -109,7 +109,7 @@ describe('initModule()', () => {
 
     const app = Machinat.createApp({
       platforms: [WebSocket.initModule()],
-      registers: [{ provide: WebSocket.Bot, withValue: fakeBot }],
+      bindings: [{ provide: WebSocket.Bot, withValue: fakeBot }],
     });
     await app.start();
 

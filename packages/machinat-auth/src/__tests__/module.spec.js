@@ -25,8 +25,8 @@ it('export interfaces', () => {
 describe('initModule()', () => {
   test('provisions', async () => {
     const app = Machinat.createApp({
-      imports: [Auth.initModule({ secret: '_SECRET_', entryPath: '/auth' })],
-      registers: [{ provide: Auth.AUTHORIZERS_I, withValue: moxy() }],
+      modules: [Auth.initModule({ secret: '_SECRET_', entryPath: '/auth' })],
+      bindings: [{ provide: Auth.AUTHORIZERS_I, withValue: moxy() }],
     });
     await app.start();
 
@@ -56,8 +56,8 @@ describe('initModule()', () => {
       includeProps: ['$$factory'],
     });
     const app = Machinat.createApp({
-      imports: [Auth.initModule({ secret: '_SECRET_', entryPath: '/auth' })],
-      registers: [
+      modules: [Auth.initModule({ secret: '_SECRET_', entryPath: '/auth' })],
+      bindings: [
         { provide: Auth.AUTHORIZERS_I, withValue: fooAuthorizer },
         { provide: Auth.AUTHORIZERS_I, withValue: barAuthorizer },
         {
@@ -78,8 +78,8 @@ describe('initModule()', () => {
   test('provide request handler calls to ServerController#delegateAuthRequest()', async () => {
     const fakeController = moxy({ delegateAuthRequest: async () => {} });
     const app = Machinat.createApp({
-      imports: [Auth.initModule({ secret: '_SECRET_', entryPath: '/auth' })],
-      registers: [
+      modules: [Auth.initModule({ secret: '_SECRET_', entryPath: '/auth' })],
+      bindings: [
         {
           provide: Auth.Controller,
           withValue: fakeController,
