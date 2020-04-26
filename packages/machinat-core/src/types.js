@@ -147,13 +147,6 @@ export interface MachinatMetadata<Source: string> {
   +source: Source;
 }
 
-export interface MachinatUserProfile {
-  +platform: any;
-  +id: string;
-  +name: string;
-  +pictureURL: void | string;
-}
-
 export interface MachinatBot<Channel: MachinatChannel, Job, Result> {
   render(
     channel: Channel,
