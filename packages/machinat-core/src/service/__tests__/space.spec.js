@@ -3,7 +3,7 @@ import { factory as moxyFactory } from 'moxy';
 import ServiceSpace from '../space';
 import ServiceScope from '../scope';
 import {
-  inject,
+  container,
   factory,
   provider,
   namedInterface,
@@ -56,7 +56,7 @@ const bazFactory = factory({ deps: [Foo, Bar], lifetime: 'transient' })(
   moxy(() => new Baz())
 );
 
-const container = inject({
+const myContainer = container({
   deps: [HELLO, Foo, Bar, BAZ],
 })(
   moxy(
@@ -69,7 +69,7 @@ beforeEach(() => {
   Foo.mock.reset();
   BarImpl.mock.reset();
   bazFactory.mock.reset();
-  container.mock.reset();
+  myContainer.mock.reset();
 });
 
 it('provide services bound in bindings', () => {
@@ -88,7 +88,7 @@ it('provide services bound in bindings', () => {
   const scope = space.createScope('test');
   expect(scope).toBeInstanceOf(ServiceScope);
 
-  expect(scope.injectContainer(container)).toBe('HI Foo BarImpl Baz');
+  expect(scope.injectContainer(myContainer)).toBe('HI Foo BarImpl Baz');
 
   const [greeter, foo, bar, baz] = scope.useServices([HELLO, Foo, Bar, BAZ]);
   expect(greeter).toBe(staticGreeter);
@@ -105,8 +105,8 @@ it('provide services bound in bindings', () => {
   expect(bazFactory.mock).toHaveBeenCalledTimes(2);
   expect(bazFactory.mock).toHaveBeenCalledWith(foo, bar);
 
-  expect(container.mock).toHaveBeenCalledTimes(1);
-  expect(container.mock).toHaveBeenCalledWith(
+  expect(myContainer.mock).toHaveBeenCalledTimes(1);
+  expect(myContainer.mock).toHaveBeenCalledWith(
     greeter,
     foo,
     bar,
@@ -157,7 +157,7 @@ test('registered bindings prioritize to bindings from module', () => {
   space.bootstrap(null);
 
   const scope = space.createScope('test');
-  expect(scope.injectContainer(container)).toBe('HI MyFoo AnotherBar NO_BAZ');
+  expect(scope.injectContainer(myContainer)).toBe('HI MyFoo AnotherBar NO_BAZ');
 
   const [foo, bar, baz] = scope.useServices([Foo, Bar, BAZ]);
   expect(foo).toBeInstanceOf(MyFoo);
@@ -174,8 +174,8 @@ test('registered bindings prioritize to bindings from module', () => {
 
   expect(bazFactory.mock).not.toHaveBeenCalled();
 
-  expect(container.mock).toHaveBeenCalledTimes(1);
-  expect(container.mock).toHaveBeenCalledWith(staticGreeter, foo, bar, baz);
+  expect(myContainer.mock).toHaveBeenCalledTimes(1);
+  expect(myContainer.mock).toHaveBeenCalledWith(staticGreeter, foo, bar, baz);
 });
 
 it('throw if bindings conflicted', () => {
@@ -286,7 +286,7 @@ it('provide service bound on specified platform within corresponded scope', () =
   );
   space.bootstrap(null);
 
-  const bazContainer = inject({ deps: [BAZ] })(baz => baz.baz());
+  const bazContainer = container({ deps: [BAZ] })(baz => baz.baz());
 
   const scopeA = space.createScope('A');
   expect(scopeA.injectContainer(bazContainer)).toBe('Baz');
@@ -322,7 +322,7 @@ it('provide service bound on specified platform prior to default one', () => {
   );
   space.bootstrap(null);
 
-  const fooContainer = inject({ deps: [Foo] })(foo => foo.foo());
+  const fooContainer = container({ deps: [Foo] })(foo => foo.foo());
 
   let scope = space.createScope();
   expect(scope.injectContainer(fooContainer)).toBe('FOO_MEOW');
@@ -387,7 +387,7 @@ it('throw if unbound service usage required', () => {
   );
   space.bootstrap(null);
 
-  const fooContainer = inject({ deps: [Foo, Bar, BAZ] })(() => 'BOOM');
+  const fooContainer = container({ deps: [Foo, Bar, BAZ] })(() => 'BOOM');
 
   const scope = space.createScope('test');
   expect(() =>
@@ -406,7 +406,7 @@ test('optional dependency', () => {
   );
   space.bootstrap(null);
 
-  const optionalDepsContainer = inject({
+  const optionalDepsContainer = container({
     deps: [
       Foo,
       { require: Bar, optional: true },
@@ -633,7 +633,7 @@ test('inject time provision', () => {
 
   expect(
     scope.injectContainer(
-      inject({ deps: [HELLO, Foo, Bar, BAZ] })((...args) => args),
+      container({ deps: [HELLO, Foo, Bar, BAZ] })((...args) => args),
       injectTimeProvisions
     )
   ).toEqual([greeter, foo, bar, baz]);
@@ -669,7 +669,7 @@ test('boostrap time provision', () => {
 });
 
 test('require underlying ServiceScope', () => {
-  const scopeConsumer = inject({ deps: [ServiceScope] })(moxy(() => ({})));
+  const scopeConsumer = container({ deps: [ServiceScope] })(moxy(() => ({})));
 
   const space = new ServiceSpace(
     [{ provide: HELLO, withValue: staticGreeter }],

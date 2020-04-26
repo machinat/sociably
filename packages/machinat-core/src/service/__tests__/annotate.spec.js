@@ -5,7 +5,7 @@ import {
   MACHINAT_SERVICES_INTERFACE,
 } from '../../symbol';
 import {
-  inject,
+  container,
   provider,
   factory,
   abstractInterface,
@@ -25,11 +25,11 @@ const BazServiceI = {
   /* ... */
 };
 
-describe('inject({ deps })(fn)', () => {
+describe('container({ deps })(fn)', () => {
   it('annotate deps of container', () => {
     const containerFn = () => {};
 
-    const container = inject({
+    const myContainer = container({
       name: 'myContainer',
       deps: [
         FooServiceI,
@@ -38,10 +38,10 @@ describe('inject({ deps })(fn)', () => {
       ],
     })(containerFn);
 
-    expect(container).toBe(containerFn);
-    expect(container.$$typeof).toBe(MACHINAT_SERVICES_CONTAINER);
-    expect(container.$$name).toBe('myContainer');
-    expect(container.$$deps).toEqual([
+    expect(myContainer).toBe(containerFn);
+    expect(myContainer.$$typeof).toBe(MACHINAT_SERVICES_CONTAINER);
+    expect(myContainer.$$name).toBe('myContainer');
+    expect(myContainer.$$deps).toEqual([
       { require: FooServiceI, optional: false },
       { require: BarServiceI, optional: false },
       { require: BazServiceI, optional: true },
@@ -50,19 +50,19 @@ describe('inject({ deps })(fn)', () => {
 
   test('default $$name and $$deps', () => {
     const containerFn = () => {};
-    const container = inject()(containerFn);
+    const myContainer = container()(containerFn);
 
-    expect(container).toBe(containerFn);
-    expect(container.$$typeof).toBe(MACHINAT_SERVICES_CONTAINER);
-    expect(container.$$name).toBe('containerFn');
-    expect(container.$$deps).toEqual([]);
+    expect(myContainer).toBe(containerFn);
+    expect(myContainer.$$typeof).toBe(MACHINAT_SERVICES_CONTAINER);
+    expect(myContainer.$$name).toBe('containerFn');
+    expect(myContainer.$$deps).toEqual([]);
   });
 
   it('throw if invalid deps received', () => {
     class NonService {}
 
     expect(() => {
-      inject({ deps: [NonService] })(_whatever => 'boom');
+      container({ deps: [NonService] })(_whatever => 'boom');
     }).toThrowErrorMatchingInlineSnapshot(
       `"NonService is not a valid interface"`
     );

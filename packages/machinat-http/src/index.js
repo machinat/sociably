@@ -1,6 +1,6 @@
 // @flow
 import { createServer } from 'http';
-import { inject, factory } from '@machinat/core/service';
+import { container, factory } from '@machinat/core/service';
 import type { ServiceModule } from '@machinat/core/types';
 import {
   HTTPServerI,
@@ -28,7 +28,7 @@ const HTTP = {
       { provide: HTTP_MODULE_CONFIGS_I, withValue: configsInput },
       { provide: HTTPServerI, withProvider: nodeServerFactory },
     ],
-    startHook: inject({
+    startHook: container({
       deps: [HTTPConnector, HTTPServerI, HTTP_MODULE_CONFIGS_I],
     })(
       (

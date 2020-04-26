@@ -1,5 +1,5 @@
 // @flow
-import { inject } from '@machinat/core/service';
+import { container } from '@machinat/core/service';
 import type { ServiceContainer } from '@machinat/core/service/types';
 import type { MessengerDispatchMiddleware } from '../types';
 import MessengerAssetRegistry from './registry';
@@ -27,6 +27,6 @@ const collectSharableAttachments: ServiceContainer<MessengerDispatchMiddleware> 
   return response;
 };
 
-export default inject<MessengerDispatchMiddleware>({
+export default container<MessengerDispatchMiddleware>({
   deps: [MessengerAssetRegistry],
 })(collectSharableAttachments);

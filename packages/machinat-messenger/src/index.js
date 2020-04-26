@@ -1,5 +1,5 @@
 // @flow
-import { inject, factory } from '@machinat/core/service';
+import { container, factory } from '@machinat/core/service';
 import type { PlatformModule } from '@machinat/core/types';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
@@ -55,7 +55,7 @@ const Messenger = {
     ],
     eventMiddlewares: configs.eventMiddlewares,
     dispatchMiddlewares: configs.dispatchMiddlewares,
-    startHook: inject({ deps: [MessengerBot] })(async (bot: MessengerBot) =>
+    startHook: container({ deps: [MessengerBot] })(async (bot: MessengerBot) =>
       bot.start()
     ),
   }),

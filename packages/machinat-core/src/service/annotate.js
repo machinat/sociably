@@ -30,15 +30,15 @@ const validateLifetime = (lifetime: string) => {
   );
 };
 
-type InjectFn<T> = (fn: (...any[]) => T) => ServiceContainer<T>;
+type ContainerFn<T> = (fn: (...any[]) => T) => ServiceContainer<T>;
 
 /**
- * inject marks a function as a container and annotate the dependencies
+ * container marks a function as a container and annotate the dependencies
  */
-export const inject = <T>({
+export const container = <T>({
   name,
   deps = [],
-}: InjectOptions = {}): InjectFn<T> => (fn: any) => {
+}: InjectOptions = {}): ContainerFn<T> => (fn: any) => {
   const requirements = deps.map(polishInjectRequirement);
 
   return Object.defineProperties(fn, {

@@ -1,6 +1,6 @@
 // @flow
 import redis from 'redis';
-import { factory, inject } from '@machinat/core/service';
+import { factory, container } from '@machinat/core/service';
 import { StateRepositoryI } from '../../interface';
 import RedisRepository from './repository';
 import { REDIS_MODULE_CONFIGS_I, RedisClientI } from './interface';
@@ -23,7 +23,7 @@ const RedisStorage = {
       { provide: RedisClientI, withProvider: createRedisClient },
       { provide: REDIS_MODULE_CONFIGS_I, withValue: configs },
     ],
-    startHook: inject<Promise<void>>({ deps: [RedisClientI] })(
+    startHook: container<Promise<void>>({ deps: [RedisClientI] })(
       async (client: RedisClientI) => {
         if (!client.connected) {
           await new Promise((resolve, reject) => {

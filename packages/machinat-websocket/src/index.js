@@ -1,7 +1,7 @@
 // @flow
 import WS from 'ws';
 import uniqid from 'uniqid';
-import { inject, factory } from '@machinat/core/service';
+import { container, factory } from '@machinat/core/service';
 import type { PlatformModule } from '@machinat/core/types';
 import HTTP from '@machinat/http';
 import type { HTTPUpgradeRouting } from '@machinat/http/types';
@@ -80,7 +80,7 @@ const WebSocket = {
     ],
     eventMiddlewares: configs.eventMiddlewares,
     dispatchMiddlewares: configs.dispatchMiddlewares,
-    startHook: inject({
+    startHook: container({
       deps: [WebSocketBot],
     })(async (bot: WebSocketBot) => {
       await bot.start();

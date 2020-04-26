@@ -1,5 +1,5 @@
 import { factory as moxyFactory } from 'moxy';
-import { inject, provider, factory, namedInterface } from '../service';
+import { container, provider, factory, namedInterface } from '../service';
 import ServiceScope from '../service/scope';
 import App from '../app';
 
@@ -13,7 +13,7 @@ const FooService = moxy(
 
 const FooModule = moxy({
   provisions: [FooService],
-  startHook: inject({ deps: [FooService] })(async () => {}),
+  startHook: container({ deps: [FooService] })(async () => {}),
 });
 
 const BarService = moxy(
@@ -25,7 +25,7 @@ const BarService = moxy(
 
 const BarModule = moxy({
   provisions: [BarService],
-  startHook: inject({ deps: [FooService, BarService] })(async () => {}),
+  startHook: container({ deps: [FooService, BarService] })(async () => {}),
 });
 
 const TestService = moxy(
@@ -47,7 +47,7 @@ const TestPlatform = moxy(
     name: 'foo',
     provisions: [TestService, testMountingFactory],
     mounterInterface: TEST_PLATFORM_MOUNTER,
-    startHook: inject({
+    startHook: container({
       deps: [FooService, BarService, TestService],
     })(async () => {}),
     eventMiddlewares: [
@@ -83,7 +83,7 @@ const AnotherPlatform = moxy(
     name: 'bar',
     mounterInterface: ANOTHER_PLATFORM_MOUNTER,
     provisions: [AnotherService, anotherMountingFactory],
-    startHook: inject({ deps: [FooService, BarService, AnotherService] })(
+    startHook: container({ deps: [FooService, BarService, AnotherService] })(
       async () => {}
     ),
   },
@@ -459,7 +459,7 @@ describe('poping event from platform module', () => {
   test('DI within event listener', async () => {
     const containedListener = moxy();
     const eventListenerContainer = moxy(
-      inject({
+      container({
         deps: [
           TestService,
           AnotherService,
@@ -501,7 +501,7 @@ describe('poping event from platform module', () => {
   test('DI within event middleware', async () => {
     const containedMiddleware = moxy((ctx, next) => next(ctx));
     const middlewareContainer = moxy(
-      inject({
+      container({
         deps: [
           TestService,
           AnotherService,
@@ -586,7 +586,7 @@ describe('poping error from platform module', () => {
   test('DI within error listener', async () => {
     const containedListener = moxy();
     const errorListnerContainer = moxy(
-      inject({
+      container({
         deps: [
           TestService,
           AnotherService,
@@ -803,7 +803,7 @@ describe('dispatch through middlewares', () => {
   test('DI within dispatch middleware', async () => {
     const containedMiddleware = moxy((ctx, next) => next(ctx));
     const middlewareContainer = moxy(
-      inject({
+      container({
         deps: [
           TestService,
           AnotherService,

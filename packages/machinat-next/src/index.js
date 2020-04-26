@@ -1,6 +1,6 @@
 // @flow
 import createNextApp from 'next';
-import { factory, inject } from '@machinat/core/service';
+import { factory, container } from '@machinat/core/service';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
 import type { PlatformModule, ServiceModule } from '@machinat/core/types';
@@ -47,7 +47,7 @@ const Next = {
       { provide: NextServerI, withProvider: nextServerFactory },
       { provide: HTTP.REQUEST_ROUTINGS_I, withProvider: routingFactory },
     ],
-    startHook: inject<Promise<void>>({ deps: [NextReceiver] })(
+    startHook: container<Promise<void>>({ deps: [NextReceiver] })(
       (receiver: NextReceiver) => receiver.prepare()
     ),
     eventMiddlewares: configs.eventMiddlewares,

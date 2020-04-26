@@ -1,13 +1,13 @@
 import moxy, { Mock } from 'moxy';
 import Machinat from '../..';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
-import { inject, namedInterface } from '../../service';
+import { container, namedInterface } from '../../service';
 
 import Renderer from '../renderer';
 
 const scope = moxy({
-  injectContainer(container) {
-    return container();
+  injectContainer(containerFn) {
+    return containerFn();
   },
 });
 
@@ -478,22 +478,20 @@ describe('#render()', () => {
 
     const componentMock = new Mock();
     const Container = moxy(
-      inject({ deps: [FooService, BarService, BazService] })(function Container(
-        foo,
-        bar,
-        baz
-      ) {
-        return componentMock.proxify(({ n }) => (
-          <Machinat.Raw
-            value={`#${n} foo:${foo || 'x'} bar:${bar || 'x'} baz:${baz ||
-              'x'}`}
-          />
-        ));
-      })
+      container({ deps: [FooService, BarService, BazService] })(
+        function Container(foo, bar, baz) {
+          return componentMock.proxify(({ n }) => (
+            <Machinat.Raw
+              value={`#${n} foo:${foo || 'x'} bar:${bar || 'x'} baz:${baz ||
+                'x'}`}
+            />
+          ));
+        }
+      )
     );
 
-    scope.injectContainer.mock.fake((container, provisions) =>
-      container(
+    scope.injectContainer.mock.fake((containerFn, provisions) =>
+      containerFn(
         provisions.get(FooService),
         provisions.get(BarService),
         provisions.get(BazService)
@@ -659,7 +657,7 @@ describe('#render()', () => {
   });
 
   it('reject when container component fail', async () => {
-    const ContainerFailWhenInject = inject({ deps: [] })(() => {
+    const ContainerFailWhenInject = container({ deps: [] })(() => {
       throw new Error('無駄無駄無駄');
     });
 
@@ -669,7 +667,7 @@ describe('#render()', () => {
       renderer.render(<ContainerFailWhenInject />, scope)
     ).rejects.toThrow(new Error('無駄無駄無駄'));
 
-    const ContainerFailAtComponent = inject({ deps: [] })(() => async () => {
+    const ContainerFailAtComponent = container({ deps: [] })(() => async () => {
       throw new Error('オラオラオラ');
     });
 
