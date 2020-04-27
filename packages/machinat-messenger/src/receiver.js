@@ -10,13 +10,13 @@ import type { PopEventWrapper } from '@machinat/core/types';
 
 import createEvent from './event';
 import MessengerChannel from './channel';
-import { MessengerUser } from './user';
+import MessengerUser from './user';
 import MessengerBot from './bot';
 import {
-  MESSENGER,
   MESSENGER_PLATFORM_CONFIGS_I,
   MESSENGER_PLATFORM_MOUNTER_I,
-} from './constant';
+} from './interface';
+import { MESSENGER } from './constant';
 
 import type {
   MessengerEventContext,

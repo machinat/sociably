@@ -9,7 +9,6 @@ import type MachinatQueue from '@machinat/core/queue';
 import type { JobResponse } from '@machinat/core/queue/types';
 
 import { GraphAPIError } from './error';
-
 import type { MessengerJob, MessengerResult, BatchAPIRequest } from './types';
 
 type MessengerJobResponse = JobResponse<MessengerJob, MessengerResult>;

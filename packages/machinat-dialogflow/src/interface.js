@@ -1,4 +1,5 @@
 // @flow
+/* eslint-disable class-methods-use-this */
 import { namedInterface, abstractInterface } from '@machinat/core/service';
 import type { DialogFlowModuleConfigs } from './types';
 
@@ -7,12 +8,17 @@ export const MODULE_CONFIGS_I = namedInterface<DialogFlowModuleConfigs>({
 });
 
 class AbstractDialogFlowClient {
-  +sessionPath: (projectId: string, sessionId: string) => Object;
-  +detectIntent: (opions: {
+  sessionPath(_projectId: string, _sessionId: string): Object {
+    throw new TypeError('method called on abstract class');
+  }
+
+  detectIntent(_opions: {
     session: Object,
     queryInput: Object,
     queryParams: Object,
-  }) => Object;
+  }): Object {
+    throw new TypeError('method called on abstract class');
+  }
 }
 
 export const DialogFlowClientI = abstractInterface<AbstractDialogFlowClient>({

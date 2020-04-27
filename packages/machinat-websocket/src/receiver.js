@@ -17,12 +17,12 @@ import MachinatSocket from './socket';
 import { ConnectionChannel } from './channel';
 import createEvent from './event';
 import {
-  WEBSOCKET,
   WSServerI,
   SIGN_IN_VERIFIER_I,
   UPGRADE_VERIFIER_I,
   WEBSOCKET_PLATFORM_MOUNTER_I,
-} from './constant';
+} from './interface';
+import { WEBSOCKET } from './constant';
 import type {
   WebSocketEvent,
   RequestInfo,

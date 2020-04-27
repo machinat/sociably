@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import StateManager from '@machinat/state';
+import StateControllerI from '@machinat/core/base/StateControllerI';
 import { provider } from '@machinat/core/service';
 import type { MachinatChannel, MachinatNode } from '@machinat/core/types';
 import execute from './execute';
@@ -75,14 +75,14 @@ type InitRuntimeOptions<Vars> = {
 };
 
 class ScriptProcessor<Vars, Input> {
-  _stateManager: StateManager;
+  _stateContoller: StateControllerI;
   _libs: Map<string, MachinatScript<Vars, Input>>;
 
   constructor(
-    stateManager: StateManager,
+    stateManager: StateControllerI,
     scripts: MachinatScript<Vars, Input>[]
   ) {
-    this._stateManager = stateManager;
+    this._stateContoller = stateManager;
 
     const libs = new Map();
     for (const script of scripts) {
@@ -101,7 +101,7 @@ class ScriptProcessor<Vars, Input> {
     script: MachinatScript<Vars, Input>,
     { vars = {}, goto }: InitRuntimeOptions<Vars> = {}
   ): Promise<ScriptRuntime<Vars, Input>> {
-    const state = await this._stateManager
+    const state = await this._stateContoller
       .channelState(channel)
       .get<ScriptProcessState<Vars>>(SCRIPT_STATE_KEY);
 
@@ -117,7 +117,7 @@ class ScriptProcessor<Vars, Input> {
   async continue(
     channel: MachinatChannel
   ): Promise<null | ScriptRuntime<Vars, Input>> {
-    const state = await this._stateManager
+    const state = await this._stateContoller
       .channelState(channel)
       .get<ScriptProcessState<Vars>>(SCRIPT_STATE_KEY);
 
@@ -137,7 +137,7 @@ class ScriptProcessor<Vars, Input> {
   }
 
   async exit(channel: MachinatChannel): Promise<boolean> {
-    const isDeleted = await this._stateManager
+    const isDeleted = await this._stateContoller
       .channelState(channel)
       .delete(SCRIPT_STATE_KEY);
     return isDeleted;
@@ -150,7 +150,7 @@ class ScriptProcessor<Vars, Input> {
     }
 
     const timestamp = Date.now();
-    await this._stateManager
+    await this._stateContoller
       .channelState(channel)
       .set<ScriptProcessState<Vars>>(SCRIPT_STATE_KEY, lastState => {
         if (
@@ -180,5 +180,5 @@ class ScriptProcessor<Vars, Input> {
 
 export default provider<ScriptProcessor<any, any>>({
   lifetime: 'singleton',
-  deps: [StateManager, SCRIPT_LIBS_I],
+  deps: [StateControllerI, SCRIPT_LIBS_I],
 })(ScriptProcessor);

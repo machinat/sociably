@@ -3,6 +3,6 @@
 import { namedInterface } from '@machinat/core/service';
 import type { FileRepositoryConfigs } from './types';
 
-export const FILE_STORAGE_CONFIGS_I = namedInterface<FileRepositoryConfigs>({
-  name: 'FileStorageConfigs',
+export const FILE_STATE_CONFIGS_I = namedInterface<FileRepositoryConfigs>({
+  name: 'FileStateConfigs',
 });

@@ -3,7 +3,7 @@ import moxy, { Mock } from 'moxy';
 
 import LineReceiver from '../receiver';
 import LineChannel from '../channel';
-import { LineUser } from '../user';
+import LineUser from '../user';
 
 const bot = moxy();
 

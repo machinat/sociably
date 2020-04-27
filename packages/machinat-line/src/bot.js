@@ -10,19 +10,14 @@ import type {
   InitScopeFn,
   DispatchWrapper,
 } from '@machinat/core/types';
-
 import { provider } from '@machinat/core/service';
 
-import LineWorker from './worker';
 import { chatJobsMaker, multicastJobsMaker } from './job';
-import LineChannel from './channel';
-import {
-  LINE,
-  LINE_PLATFORM_CONFIGS_I,
-  LINE_PLATFORM_MOUNTER_I,
-} from './constant';
-
 import generalElementDelegate from './component/general';
+import LineWorker from './worker';
+import LineChannel from './channel';
+import { LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I } from './interface';
+import { LINE } from './constant';
 
 import type {
   LineSource,

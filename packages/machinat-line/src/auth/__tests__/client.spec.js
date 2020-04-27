@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom';
 import moxy from 'moxy';
 import LineClientAuthProvider from '../client';
-import { LineUser } from '../../user';
+import LineUser from '../../user';
 
 global.liff = moxy({
   init: () => Promise.resolve(),

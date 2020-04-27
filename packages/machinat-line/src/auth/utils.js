@@ -1,7 +1,7 @@
 // @flow
 /* eslint-disable import/prefer-default-export  */
 import type { AuthRefineResult } from '@machinat/auth/types';
-import { LineUser } from '../user';
+import LineUser from '../user';
 import type { LIFFAuthData } from '../types';
 
 export const refineLIFFContextData = (

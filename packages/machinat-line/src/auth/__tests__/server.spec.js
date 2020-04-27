@@ -1,7 +1,7 @@
 import { ServerResponse } from 'http';
 import nock from 'nock';
 import moxy from 'moxy';
-import { LineUser } from '../../user';
+import LineUser from '../../user';
 import ServerAuthProvider from '../server';
 
 nock.disableNetConnect();

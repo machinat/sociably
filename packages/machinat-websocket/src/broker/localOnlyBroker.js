@@ -1,6 +1,6 @@
 // @flow
 import { provider } from '@machinat/core/service';
-import { ClusterBrokerI } from '../constant';
+import { ClusterBrokerI } from '../interface';
 
 /* eslint-disable class-methods-use-this */
 class LocalOnlyBroker implements ClusterBrokerI {

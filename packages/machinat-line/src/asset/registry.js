@@ -1,6 +1,6 @@
 // @flow
 import { provider } from '@machinat/core/service';
-import StateManager from '@machinat/state';
+import { StateControllerI } from '@machinat/core/base';
 import LineBot from '../bot';
 import { PATH_RICHMENU } from '../constant';
 
@@ -9,12 +9,12 @@ const RICH_MENU = 'rich_menu';
 
 class LineAssetsRegistry {
   channelId: string;
-  _stateManager: StateManager;
+  _stateController: StateControllerI;
   _bot: LineBot;
 
-  constructor(stateMaanger: StateManager, bot: LineBot) {
+  constructor(stateMaanger: StateControllerI, bot: LineBot) {
     this.channelId = bot.channelId;
-    this._stateManager = stateMaanger;
+    this._stateController = stateMaanger;
     this._bot = bot;
   }
 
@@ -23,7 +23,7 @@ class LineAssetsRegistry {
   }
 
   async getAssetId(resource: string, tag: string): Promise<void | string> {
-    const existed = await this._stateManager
+    const existed = await this._stateController
       .namedState(this._makeResourceToken(resource))
       .get<string>(tag);
 
@@ -31,7 +31,7 @@ class LineAssetsRegistry {
   }
 
   async setAssetId(resource: string, tag: string, id: string): Promise<void> {
-    await this._stateManager
+    await this._stateController
       .namedState(this._makeResourceToken(resource))
       .set<string>(tag, existed => {
         if (existed) {
@@ -42,13 +42,13 @@ class LineAssetsRegistry {
   }
 
   getAllAssets(resource: string): Promise<null | Map<string, string>> {
-    return this._stateManager
+    return this._stateController
       .namedState(this._makeResourceToken(resource))
       .getAll();
   }
 
   async removeAssetId(resource: string, tag: string): Promise<void> {
-    const isDeleted = await this._stateManager
+    const isDeleted = await this._stateController
       .namedState(this._makeResourceToken(resource))
       .delete(tag);
 
@@ -118,5 +118,5 @@ class LineAssetsRegistry {
 
 export default provider<LineAssetsRegistry>({
   lifetime: 'scoped',
-  deps: [StateManager, LineBot],
+  deps: [StateControllerI, LineBot],
 })(LineAssetsRegistry);

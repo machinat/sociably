@@ -1,27 +1,32 @@
 // @flow
 import redis from 'redis';
 import { factory, container } from '@machinat/core/service';
+import Base from '@machinat/core/base';
+import StateController from '../../controller';
 import { StateRepositoryI } from '../../interface';
 import RedisRepository from './repository';
-import { REDIS_MODULE_CONFIGS_I, RedisClientI } from './interface';
-import type { RedisModuleConfigs } from './types';
+import { REDIS_STATE_CONFIGS_I, RedisClientI } from './interface';
+import type { RedisStateConfigs } from './types';
 
 const createRedisClient = factory<RedisClientI>({
   lifetime: 'singleton',
-  deps: [REDIS_MODULE_CONFIGS_I],
+  deps: [REDIS_STATE_CONFIGS_I],
 })(configs => redis.createClient(configs));
 
-const RedisStorage = {
+const RedisState = {
   ClientI: RedisClientI,
   Repository: RedisRepository,
-  CONFIGS_I: REDIS_MODULE_CONFIGS_I,
+  CONFIGS_I: REDIS_STATE_CONFIGS_I,
 
-  initModule: (configs: RedisModuleConfigs) => ({
+  initModule: (configs: RedisStateConfigs) => ({
     provisions: [
+      StateController,
+      { provide: Base.StateControllerI, withProvider: StateController },
+
       RedisRepository,
       { provide: StateRepositoryI, withProvider: RedisRepository },
       { provide: RedisClientI, withProvider: createRedisClient },
-      { provide: REDIS_MODULE_CONFIGS_I, withValue: configs },
+      { provide: REDIS_STATE_CONFIGS_I, withValue: configs },
     ],
     startHook: container<Promise<void>>({ deps: [RedisClientI] })(
       async (client: RedisClientI) => {
@@ -36,4 +41,4 @@ const RedisStorage = {
   }),
 };
 
-export default RedisStorage;
+export default RedisState;

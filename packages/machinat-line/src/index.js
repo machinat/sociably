@@ -1,15 +1,14 @@
 // @flow
 import { container, factory } from '@machinat/core/service';
 import type { PlatformModule } from '@machinat/core/types';
+import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
-import {
-  LINE,
-  LINE_PLATFORM_CONFIGS_I,
-  LINE_PLATFORM_MOUNTER_I,
-} from './constant';
+import { LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I } from './interface';
+import { LINE } from './constant';
 import LineReceiver from './receiver';
 import LineBot from './bot';
+import LineProfileFetcher from './profile';
 import type {
   LinePlatformConfigs,
   LineEventContext,
@@ -34,6 +33,7 @@ const requestRoutingFactory = factory<HTTPRequestRouting>({
 const Line = {
   Bot: LineBot,
   Receiver: LineReceiver,
+  ProfileFetcher: LineProfileFetcher,
   CONFIGS_I: LINE_PLATFORM_CONFIGS_I,
 
   initModule: (
@@ -49,6 +49,15 @@ const Line = {
     mounterInterface: LINE_PLATFORM_MOUNTER_I,
     provisions: [
       LineBot,
+      { provide: Base.BotI, withProvider: LineBot, platforms: [LINE] },
+
+      LineProfileFetcher,
+      {
+        provide: Base.ProfileFetcherI,
+        withProvider: LineProfileFetcher,
+        platforms: [LINE],
+      },
+
       LineReceiver,
       { provide: LINE_PLATFORM_CONFIGS_I, withValue: configs },
       { provide: HTTP.REQUEST_ROUTINGS_I, withProvider: requestRoutingFactory },

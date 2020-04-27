@@ -8,7 +8,8 @@ import {
 } from 'base64url';
 import { provider } from '@machinat/core/service';
 import type { ServerAuthorizer } from '@machinat/auth/types';
-import { MESSENGER, MESSENGER_PLATFORM_CONFIGS_I } from '../constant';
+import { MESSENGER_PLATFORM_CONFIGS_I } from '../interface';
+import { MESSENGER } from '../constant';
 import type {
   ExtensionContext,
   ExtensionCredential,

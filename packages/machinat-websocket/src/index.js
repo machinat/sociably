@@ -2,15 +2,11 @@
 import WS from 'ws';
 import uniqid from 'uniqid';
 import { container, factory } from '@machinat/core/service';
+import Base from '@machinat/core/base';
 import type { PlatformModule } from '@machinat/core/types';
 import HTTP from '@machinat/http';
 import type { HTTPUpgradeRouting } from '@machinat/http/types';
-import WebSocketBot from './bot';
-import Transmitter from './transmitter';
-import WebSocketReceiver from './receiver';
-import LocalOnlyBroker from './broker/localOnlyBroker';
 import {
-  WEBSOCKET,
   WSServerI,
   ClusterBrokerI,
   UPGRADE_VERIFIER_I,
@@ -18,7 +14,12 @@ import {
   SERVER_ID_I,
   WEBSOCKET_PLATFORM_MOUNTER_I,
   WEBSOCKET_PLATFORM_CONFIGS_I,
-} from './constant';
+} from './interface';
+import WebSocketBot from './bot';
+import Transmitter from './transmitter';
+import WebSocketReceiver from './receiver';
+import LocalOnlyBroker from './broker/localOnlyBroker';
+import { WEBSOCKET } from './constant';
 import type {
   WebSocketEventContext,
   WebSocketJob,
@@ -70,11 +71,18 @@ const WebSocket = {
     mounterInterface: WEBSOCKET_PLATFORM_MOUNTER_I,
     provisions: [
       WebSocketBot,
-      WebSocketReceiver,
+      {
+        provide: Base.BotI,
+        withProvider: WebSocketBot,
+        platforms: [WEBSOCKET],
+      },
+
       Transmitter,
+      { provide: SERVER_ID_I, withProvider: createUniqServerId },
       { provide: WSServerI, withProvider: createWSServer },
       { provide: ClusterBrokerI, withProvider: LocalOnlyBroker },
-      { provide: SERVER_ID_I, withProvider: createUniqServerId },
+
+      WebSocketReceiver,
       { provide: WEBSOCKET_PLATFORM_CONFIGS_I, withValue: configs },
       { provide: HTTP.UPGRADE_ROUTINGS_I, withProvider: upgradeRoutingFactory },
     ],

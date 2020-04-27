@@ -13,9 +13,9 @@ import type {
 } from '@machinat/core/engine/types';
 import type { ServiceContainer } from '@machinat/core/service/types';
 import type { WebhookMetadata } from '@machinat/http/webhook/types';
-import type LineBot from './bot';
+import LineBot from './bot';
 import type LineChannel from './channel';
-import type { LineUser } from './user';
+import type LineUser from './user';
 import typeof {
   CHANNEL_API_CALL_GETTER,
   BULK_API_CALL_GETTER,
@@ -229,6 +229,7 @@ export type LinePlatformConfigs = {
   shouldValidateRequest?: boolean,
   accessToken: string,
   connectionCapicity?: number,
+  profileCacheTime?: number,
   eventMiddlewares?: (
     | LineEventMiddleware
     | ServiceContainer<LineEventMiddleware>
@@ -242,6 +243,7 @@ export type LinePlatformConfigs = {
 export type RawLineUserProfile = {
   displayName: string,
   userId: string,
+  language?: string,
   pictureUrl?: string,
   statusMessage?: string,
 };

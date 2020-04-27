@@ -1,3 +1,3 @@
 // @flow
-export { default } from './manager';
+export { default } from './controller';
 export { StateRepositoryI } from './interface';

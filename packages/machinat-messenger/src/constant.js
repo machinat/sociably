@@ -1,10 +1,4 @@
 // @flow
-import { namedInterface } from '@machinat/core/service';
-import type {
-  MessengerPlatformMounter,
-  MessengerPlatformConfigs,
-} from './types';
-
 export const MESSENGER = 'messenger';
 
 export const ATTACHMENT_DATA = Symbol('messenger.segment.attachment_data');
@@ -23,11 +17,3 @@ export const PATH_TAKE_THREAD_CONTROL = 'me/take_thread_control';
 export const PATH_MESSAGE_ATTACHMENTS = 'me/message_attachments';
 export const PATH_MESSENGER_PROFILE = 'me/messenger_profile';
 export const PATH_PERSONAS = 'me/personas';
-
-export const MESSENGER_PLATFORM_CONFIGS_I = namedInterface<MessengerPlatformConfigs>(
-  { name: 'MessengerPlatformConfigs' }
-);
-
-export const MESSENGER_PLATFORM_MOUNTER_I = namedInterface<MessengerPlatformMounter>(
-  { name: 'MessengerPlatformMounter' }
-);

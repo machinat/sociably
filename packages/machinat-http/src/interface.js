@@ -1,4 +1,5 @@
 // @flow
+/* eslint-disable class-methods-use-this */
 import { namedInterface, abstractInterface } from '@machinat/core/service';
 import type {
   ServerListenOptions,
@@ -8,8 +9,13 @@ import type {
 } from './types';
 
 class AbstractServer {
-  +listen: (options: ServerListenOptions, cb: () => void) => void;
-  +addListener: (name: string, cb: Function) => void;
+  listen(_options: ServerListenOptions, _cb: () => void): void {
+    throw new TypeError('method called on abstract class');
+  }
+
+  addListener(_name: string, _cb: Function): void {
+    throw new TypeError('method called on abstract class');
+  }
 }
 
 export const HTTPServerI = abstractInterface<AbstractServer>()(AbstractServer);

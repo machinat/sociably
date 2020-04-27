@@ -5,7 +5,7 @@ import {
   ClusterBrokerI,
   SERVER_ID_I,
   WEBSOCKET_PLATFORM_MOUNTER_I,
-} from './constant';
+} from './interface';
 import type {
   EventValue,
   WebSocketJob,

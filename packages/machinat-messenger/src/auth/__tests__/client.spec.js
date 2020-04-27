@@ -2,7 +2,7 @@ import moxy from 'moxy';
 import { JSDOM } from 'jsdom';
 import ClientAuthProvider from '../client';
 import MessengerChannel from '../../channel';
-import { MessengerUser } from '../../user';
+import MessengerUser from '../../user';
 
 const nextTick = () => new Promise(process.nextTick);
 

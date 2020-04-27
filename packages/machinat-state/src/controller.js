@@ -1,5 +1,6 @@
 // @flow
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
+import { StateControllerI } from '@machinat/core/base';
 import { provider } from '@machinat/core/service';
 import { StateRepositoryI } from './interface';
 
@@ -43,7 +44,7 @@ class StateAccessor {
   }
 }
 
-class StateManager {
+class StateController implements StateControllerI {
   repository: StateRepositoryI;
 
   constructor(repository: StateRepositoryI) {
@@ -63,7 +64,7 @@ class StateManager {
   }
 }
 
-export default provider<StateManager>({
+export default provider<StateController>({
   lifetime: 'scoped',
   deps: [StateRepositoryI],
-})(StateManager);
+})(StateController);

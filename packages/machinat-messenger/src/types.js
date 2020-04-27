@@ -10,9 +10,9 @@ import type {
 import type { DispatchFrame } from '@machinat/core/engine/types';
 import type { ServiceContainer } from '@machinat/core/service/types';
 import type { WebhookMetadata } from '@machinat/http/webhook/types';
-import type MessengerBot from './bot';
+import MessengerBot from './bot';
 import type MessengerChannel from './channel';
-import type { MessengerUser } from './user';
+import type MessengerUser from './user';
 import typeof { ENTRY_PATH } from './constant';
 
 export type PSIDTarget = {| id: string |};

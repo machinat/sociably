@@ -3,7 +3,7 @@
 import type { AuthRefineResult } from '@machinat/auth/types';
 import type { ExtensionContext } from '../types';
 import MessengerChannel from '../channel';
-import { MessengerUser } from '../user';
+import MessengerUser from '../user';
 
 export const refineExtensionContext = (
   ctx: ExtensionContext

@@ -1,8 +1,9 @@
 // @flow
+/* eslint-disable class-methods-use-this */
 import { abstractInterface } from '../service';
 import { MachinatUser } from '../types';
 
-interface MachinatUserProfile {
+export interface MachinatUserProfile {
   +platform: any;
   +id: string;
   +name: string;
@@ -10,9 +11,11 @@ interface MachinatUserProfile {
 }
 
 class AbstractProfileFetcher {
-  +fetchProfile: (user: MachinatUser) => MachinatUserProfile;
+  fetchProfile(_user: MachinatUser): MachinatUserProfile {
+    throw new TypeError('method called on abstract class');
+  }
 }
 
 export default abstractInterface<AbstractProfileFetcher>({
-  name: 'ProfileFetcher',
+  name: 'BaseProfileFetcher',
 })(AbstractProfileFetcher);

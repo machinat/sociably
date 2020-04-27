@@ -9,7 +9,7 @@ import type {
   MachinatChannel,
 } from '@machinat/core/types';
 import typeof { MACHINAT_SCRIPT_TYPE } from './constant';
-import type ScriptProcessor from './processor';
+import ScriptProcessor from './processor';
 
 export type VarsMatcher<Vars> = (vars: Vars) => boolean;
 

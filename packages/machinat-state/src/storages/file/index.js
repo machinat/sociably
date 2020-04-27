@@ -1,21 +1,26 @@
 // @flow
 import type { ServiceModule } from '@machinat/core/types';
+import Base from '@machinat/core/base';
+import StateController from '../../controller';
 import { StateRepositoryI } from '../../interface';
 import FileRepository from './repository';
-import { FILE_STORAGE_CONFIGS_I } from './interface';
+import { FILE_STATE_CONFIGS_I } from './interface';
 import type { FileRepositoryConfigs } from './types';
 
-const FileStorage = {
+const FileState = {
   Repository: FileRepository,
-  CONFIGS_I: FILE_STORAGE_CONFIGS_I,
+  CONFIGS_I: FILE_STATE_CONFIGS_I,
 
   initModule: (configs: FileRepositoryConfigs): ServiceModule => ({
     provisions: [
+      StateController,
+      { provide: Base.StateControllerI, withProvider: StateController },
+
       FileRepository,
       { provide: StateRepositoryI, withProvider: FileRepository },
-      { provide: FILE_STORAGE_CONFIGS_I, withValue: configs },
+      { provide: FILE_STATE_CONFIGS_I, withValue: configs },
     ],
   }),
 };
 
-export default FileStorage;
+export default FileState;

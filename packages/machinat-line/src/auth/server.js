@@ -4,7 +4,8 @@ import fetch from 'node-fetch';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { provider } from '@machinat/core/service';
 import type { ServerAuthorizer } from '@machinat/auth/types';
-import { LINE, LINE_PLATFORM_CONFIGS_I } from '../constant';
+import { LINE_PLATFORM_CONFIGS_I } from '../interface';
+import { LINE } from '../constant';
 import type {
   LIFFAuthData,
   LIFFCredential,

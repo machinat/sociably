@@ -2,7 +2,7 @@ import moxy from 'moxy';
 import { ServerResponse } from 'http';
 import ServerAuthProvider from '../server';
 import MessengerChannel from '../../channel';
-import { MessengerUser } from '../../user';
+import MessengerUser from '../../user';
 
 const request = {
   url: '/foo',

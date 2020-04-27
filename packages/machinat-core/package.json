@@ -18,7 +18,7 @@
     "./queue": "./lib/queue",
     "./renderer": "./lib/renderer",
     "./service": "./lib/service",
-    "./base": "./lib/base/",
+    "./base": "./lib/base",
     "./utils/": "./lib/utils/"
   },
   "files": [

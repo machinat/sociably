@@ -1,7 +1,6 @@
 // @flow
 import { annotateNativeComponent } from '@machinat/core/renderer';
 import type { LineSegmentValue } from './types';
-
 import { LINE, CHANNEL_API_CALL_GETTER } from './constant';
 
 export const annotateLineComponent = annotateNativeComponent(LINE);

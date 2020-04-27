@@ -24,7 +24,8 @@ import type {
   WebSocketPlatformMounter,
 } from './types';
 import { TopicChannel, ConnectionChannel, UserChannel } from './channel';
-import { WEBSOCKET, WEBSOCKET_PLATFORM_MOUNTER_I } from './constant';
+import { WEBSOCKET_PLATFORM_MOUNTER_I } from './interface';
+import { WEBSOCKET } from './constant';
 import Transmitter from './transmitter';
 import WebSocketWorker from './worker';
 
@@ -115,7 +116,10 @@ class WebSocketBot
     return this.engine.render(channel, message, createJobs);
   }
 
-  send(channel: WebSocketChannel, events: EventValue[]) {
+  send(
+    channel: WebSocketChannel,
+    events: EventValue[]
+  ): Promise<WebSocketDispatchResponse> {
     return this.engine.dispatchJobs(channel, [
       { target: channel, events, whitelist: null, blacklist: null },
     ]);
@@ -128,7 +132,10 @@ class WebSocketBot
     return this.engine.render(new UserChannel(user), message, createJobs);
   }
 
-  sendUser(user: MachinatUser, events: EventValue[]) {
+  sendUser(
+    user: MachinatUser,
+    events: EventValue[]
+  ): Promise<WebSocketDispatchResponse> {
     const channel = new UserChannel(user);
     return this.engine.dispatchJobs(channel, [
       { target: channel, events, whitelist: null, blacklist: null },
@@ -142,7 +149,10 @@ class WebSocketBot
     return this.engine.render(new TopicChannel(topic), message, createJobs);
   }
 
-  sendTopic(topic: string, events: EventValue[]) {
+  sendTopic(
+    topic: string,
+    events: EventValue[]
+  ): Promise<WebSocketDispatchResponse> {
     const channel = new TopicChannel(topic);
     return this.engine.dispatchJobs(channel, [
       { target: channel, events, whitelist: null, blacklist: null },

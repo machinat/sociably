@@ -1,4 +1,5 @@
 // @flow
+import { provider } from '@machinat/core/service';
 import { StateRepositoryI } from '../../interface';
 
 class InMemoryRepositroy implements StateRepositoryI {
@@ -50,4 +51,6 @@ class InMemoryRepositroy implements StateRepositoryI {
   }
 }
 
-export default InMemoryRepositroy;
+export default provider<InMemoryRepositroy>({ lifetime: 'singleton' })(
+  InMemoryRepositroy
+);

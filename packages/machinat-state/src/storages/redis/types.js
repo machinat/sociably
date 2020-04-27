@@ -1,6 +1,6 @@
 // @flow
 
-export type RedisModuleConfigs = {
+export type RedisStateConfigs = {
   host?: string,
   port?: number,
   path?: string,

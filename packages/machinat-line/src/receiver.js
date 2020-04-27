@@ -8,14 +8,10 @@ import type { WebhookHandler } from '@machinat/http/webhook/types';
 
 import createEvent from './event';
 import LineChannel from './channel';
-import { LineUser } from './user';
+import LineUser from './user';
 import LineBot from './bot';
-import {
-  LINE,
-  LINE_PLATFORM_CONFIGS_I,
-  LINE_PLATFORM_MOUNTER_I,
-} from './constant';
-
+import { LINE } from './constant';
+import { LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I } from './interface';
 import type {
   LineWebhookRequestBody,
   LineEventContext,

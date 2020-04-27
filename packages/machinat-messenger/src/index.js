@@ -1,15 +1,17 @@
 // @flow
 import { container, factory } from '@machinat/core/service';
 import type { PlatformModule } from '@machinat/core/types';
+import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
 import MessengerBot from './bot';
 import {
-  MESSENGER,
   MESSENGER_PLATFORM_CONFIGS_I,
   MESSENGER_PLATFORM_MOUNTER_I,
-} from './constant';
+} from './interface';
+import { MESSENGER } from './constant';
 import MessengerReceiver from './receiver';
+import MessengerProfileFetcher from './profile';
 import type {
   MessengerPlatformConfigs,
   MessengerEventContext,
@@ -34,6 +36,7 @@ const requestRoutingFactory = factory<HTTPRequestRouting>({
 const Messenger = {
   Bot: MessengerBot,
   Receiver: MessengerReceiver,
+  ProfileFetcher: MessengerProfileFetcher,
   CONFIGS_I: MESSENGER_PLATFORM_CONFIGS_I,
 
   initModule: (
@@ -49,6 +52,19 @@ const Messenger = {
     mounterInterface: MESSENGER_PLATFORM_MOUNTER_I,
     provisions: [
       MessengerBot,
+      {
+        provide: Base.BotI,
+        withProvider: MessengerBot,
+        platforms: [MESSENGER],
+      },
+
+      MessengerProfileFetcher,
+      {
+        provide: Base.ProfileFetcherI,
+        withProvider: MessengerProfileFetcher,
+        platforms: [MESSENGER],
+      },
+
       MessengerReceiver,
       { provide: MESSENGER_PLATFORM_CONFIGS_I, withValue: configs },
       { provide: HTTP.REQUEST_ROUTINGS_I, withProvider: requestRoutingFactory },

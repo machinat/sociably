@@ -3,7 +3,7 @@ import fs from 'fs';
 import thenifiedly from 'thenifiedly';
 import { provider } from '@machinat/core/service';
 import typeof { StateRepositoryI } from '../../interface';
-import { FILE_STORAGE_CONFIGS_I } from './interface';
+import { FILE_STATE_CONFIGS_I } from './interface';
 import type { FileRepositoryConfigs } from './types';
 
 const { O_RDONLY, O_RDWR, O_CREAT } = fs.constants;
@@ -134,5 +134,5 @@ class FileRepository implements StateRepositoryI {
 
 export default provider<FileRepository>({
   lifetime: 'singleton',
-  deps: [FILE_STORAGE_CONFIGS_I],
+  deps: [FILE_STATE_CONFIGS_I],
 })(FileRepository);

@@ -1,0 +1,89 @@
+// @flow
+/* eslint-disable class-methods-use-this */
+import { abstractInterface, namedInterface } from '@machinat/core/service';
+import type { IncomingMessage } from 'http';
+import type { Socket as NetSocket } from 'net';
+import type { ConnectionChannel } from './channel';
+import type {
+  WebSocketJob,
+  VerifySignInFn,
+  VerifyUpgradeFn,
+  WebSocketPlatformMounter,
+  WebSocketPlatformConfigs,
+  WS,
+} from './types';
+
+export const WEBSOCKET = 'websocket';
+
+class AbstractWSServer {
+  handleUpgrade(
+    _req: IncomingMessage,
+    _socket: NetSocket,
+    _head: Buffer,
+    _cb: WS => void
+  ): void {
+    throw new TypeError('method called on abstract class');
+  }
+}
+
+export const WSServerI = abstractInterface<AbstractWSServer>()(
+  AbstractWSServer
+);
+
+class ClusterBroker {
+  start(): Promise<void> {
+    throw new TypeError('method called on abstract class');
+  }
+
+  stop(): Promise<void> {
+    throw new TypeError('method called on abstract class');
+  }
+
+  dispatchRemote(_job: WebSocketJob): Promise<null | ConnectionChannel[]> {
+    throw new TypeError('method called on abstract class');
+  }
+
+  attachTopicRemote(
+    _connection: ConnectionChannel,
+    _topic: string
+  ): Promise<boolean> {
+    throw new TypeError('method called on abstract class');
+  }
+
+  detachTopicRemote(
+    _connection: ConnectionChannel,
+    _topic: string
+  ): Promise<boolean> {
+    throw new TypeError('method called on abstract class');
+  }
+
+  disconnectRemote(_connection: ConnectionChannel): Promise<boolean> {
+    throw new TypeError('method called on abstract class');
+  }
+
+  onRemoteEvent(_handler: (job: WebSocketJob) => void): void {
+    throw new TypeError('method called on abstract class');
+  }
+}
+
+export const ClusterBrokerI = abstractInterface<ClusterBroker>()(ClusterBroker);
+
+export const UPGRADE_VERIFIER_I = namedInterface<VerifyUpgradeFn>({
+  name: 'WebSocketUpgradeVerifier',
+});
+
+export const SIGN_IN_VERIFIER_I = namedInterface<VerifySignInFn<any, any>>({
+  name: 'WebSocketSignInVerifier',
+});
+
+export const SERVER_ID_I = namedInterface<string>({
+  name: 'WebSocketServerId',
+});
+
+export const WEBSOCKET_PLATFORM_MOUNTER_I = namedInterface<
+  WebSocketPlatformMounter<any>
+>({ name: 'WebSocketPlatformMounter' });
+
+export const WEBSOCKET_PLATFORM_CONFIGS_I = namedInterface<
+  WebSocketPlatformConfigs<any>
+>({ name: 'WebSocketPlatformConfigs' });

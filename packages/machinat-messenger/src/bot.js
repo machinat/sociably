@@ -1,6 +1,5 @@
 // @flow
 import invariant from 'invariant';
-
 import Engine from '@machinat/core/engine';
 import type { DispatchResponse } from '@machinat/core/engine/types';
 import Queue from '@machinat/core/queue';
@@ -17,11 +16,11 @@ import type {
 import MessengerWorker from './worker';
 import generalComponentDelegator from './component/general';
 
+import { MESSENGER } from './constant';
 import {
-  MESSENGER,
   MESSENGER_PLATFORM_CONFIGS_I,
   MESSENGER_PLATFORM_MOUNTER_I,
-} from './constant';
+} from './interface';
 import MessengerChannel from './channel';
 import { chatJobsMaker, makeAttachmentJobs } from './job';
 

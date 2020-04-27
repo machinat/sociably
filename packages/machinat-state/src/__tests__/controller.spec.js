@@ -1,5 +1,5 @@
 import moxy from 'moxy';
-import StateManager from '../manager';
+import StateController from '../controller';
 
 const repository = moxy({
   get: () => null,
@@ -14,7 +14,7 @@ beforeEach(() => {
 });
 
 test('channel state', async () => {
-  const manager = new StateManager(repository);
+  const manager = new StateController(repository);
   const channel = { uid: 'foo.channel' };
 
   const state = manager.channelState(channel);
@@ -107,7 +107,7 @@ test('channel state', async () => {
 });
 
 test('user state', async () => {
-  const manager = new StateManager(repository);
+  const manager = new StateController(repository);
   const user = { uid: 'john.doe' };
 
   const state = manager.userState(user);
@@ -200,7 +200,7 @@ test('user state', async () => {
 });
 
 test('named state', async () => {
-  const manager = new StateManager(repository);
+  const manager = new StateController(repository);
 
   const state = manager.namedState('_HELLO_STATE_');
 

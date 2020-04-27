@@ -12,9 +12,9 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "./file": "./lib/repositories/file.js",
-    "./inMemory": "./lib/repositories/inMemory.js",
-    "./redis": "./lib/repositories/redis.js"
+    "./file": "./lib/storages/file",
+    "./inMemory": "./lib/storages/inMemory",
+    "./redis": "./lib/storages/redis"
   },
   "files": [
     "lib/*",

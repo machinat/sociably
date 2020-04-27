@@ -1,7 +1,7 @@
 // @flow
 import { provider } from '@machinat/core/service';
 import type { MachinatNode } from '@machinat/core/types';
-import StateManager from '@machinat/state';
+import { StateControllerI } from '@machinat/core/base';
 import formatNode from '@machinat/core/utils/formatNode';
 import { PATH_PERSONAS } from '../constant';
 import MessengerBot from '../bot';
@@ -12,10 +12,10 @@ const PERSONA = 'persona';
 class MessengerAssetsRegistry {
   bot: MessengerBot;
   pageId: string;
-  _stateManager: StateManager;
+  _stateController: StateControllerI;
 
-  constructor(stateManager: StateManager, bot: MessengerBot) {
-    this._stateManager = stateManager;
+  constructor(stateManager: StateControllerI, bot: MessengerBot) {
+    this._stateController = stateManager;
     this.bot = bot;
     this.pageId = bot.pageId;
   }
@@ -25,14 +25,14 @@ class MessengerAssetsRegistry {
   }
 
   async getAssetId(resource: string, tag: string): Promise<void | string> {
-    const existed = await this._stateManager
+    const existed = await this._stateController
       .namedState(this._makeResourceToken(resource))
       .get(tag);
     return existed || undefined;
   }
 
   async setAssetId(resource: string, tag: string, id: string): Promise<void> {
-    await this._stateManager
+    await this._stateController
       .namedState(this._makeResourceToken(resource))
       .set<string>(tag, existed => {
         if (existed) {
@@ -43,13 +43,13 @@ class MessengerAssetsRegistry {
   }
 
   getAllAssets(resource: string): Promise<null | Map<string, string>> {
-    return this._stateManager
+    return this._stateController
       .namedState(this._makeResourceToken(resource))
       .getAll();
   }
 
   async removeAssetId(resource: string, tag: string): Promise<void> {
-    const isDeleted = await this._stateManager
+    const isDeleted = await this._stateController
       .namedState(this._makeResourceToken(resource))
       .delete(tag);
 
@@ -136,5 +136,5 @@ class MessengerAssetsRegistry {
 
 export default provider<MessengerAssetsRegistry>({
   lifetime: 'scoped',
-  deps: [StateManager, MessengerBot],
+  deps: [StateControllerI, MessengerBot],
 })(MessengerAssetsRegistry);

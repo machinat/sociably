@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import moxy, { Mock } from 'moxy';
 import Channel from '../channel';
-import { MessengerUser as User } from '../user';
+import MessengerUser from '../user';
 import MessengerReceiver from '../receiver';
 
 const bot = moxy();
@@ -263,7 +263,7 @@ describe('handling POST', () => {
       expect(context.platform).toBe('messenger');
       expect(context.bot).toBe(bot);
 
-      expect(context.user).toEqual(new User('_PAGE_ID_', '_PSID_'));
+      expect(context.user).toEqual(new MessengerUser('_PAGE_ID_', '_PSID_'));
       expect(context.channel).toEqual(
         new Channel('_PAGE_ID_', { id: '_PSID_' })
       );
@@ -330,7 +330,7 @@ describe('handling POST', () => {
     expect(popEventMock).toHaveBeenCalledTimes(2);
 
     const ctx1 = popEventMock.calls[0].args[0];
-    expect(ctx1.user).toEqual(new User('_PAGE_ID_', '_PSID_'));
+    expect(ctx1.user).toEqual(new MessengerUser('_PAGE_ID_', '_PSID_'));
     expect(ctx1.channel).toEqual(new Channel('_PAGE_ID_', { id: '_PSID_' }));
 
     const ctx2 = popEventMock.calls[1].args[0];
@@ -377,7 +377,7 @@ describe('handling POST', () => {
     expect(res.finished).toBe(true);
 
     const { channel, user, event } = popEventMock.calls[0].args[0];
-    expect(user).toEqual(new User('_PAGE_ID_', '_PSID_'));
+    expect(user).toEqual(new MessengerUser('_PAGE_ID_', '_PSID_'));
     expect(channel).toEqual(new Channel('_PAGE_ID_', { id: '_PSID_' }));
 
     expect(event.platform).toBe('messenger');

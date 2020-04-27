@@ -1,13 +1,16 @@
 import moxy from 'moxy';
 import Machinat from '@machinat/core';
+import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import Messenger from '..';
+import MessengerProfileFetcher from '../profile';
 import MessengerReceiver from '../receiver';
 import MessengerBot from '../bot';
 
 it('export interfaces', () => {
   expect(Messenger.Receiver).toBe(MessengerReceiver);
   expect(Messenger.Bot).toBe(MessengerBot);
+  expect(Messenger.ProfileFetcher).toBe(MessengerProfileFetcher);
   expect(Messenger.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
@@ -59,15 +62,23 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, receiver, configsProvided, routings] = app.useServices([
+    const [
+      bot,
+      receiver,
+      profiler,
+      configsProvided,
+      routings,
+    ] = app.useServices([
       Messenger.Bot,
       Messenger.Receiver,
+      Messenger.ProfileFetcher,
       Messenger.CONFIGS_I,
       HTTP.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
     expect(receiver).toBeInstanceOf(MessengerReceiver);
+    expect(profiler).toBeInstanceOf(MessengerProfileFetcher);
     expect(configsProvided).toEqual(configs);
     expect(routings).toEqual([
       {
@@ -76,6 +87,69 @@ describe('initModule(configs)', () => {
         handler: expect.any(Function),
       },
     ]);
+  });
+
+  test('provisions', async () => {
+    const configs = {
+      pageId: '_PAGE_ID_',
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
+      webhookPath: '/webhook/messenger',
+      eventMiddlewares: [(ctx, next) => next(ctx)],
+    };
+
+    const app = Machinat.createApp({
+      platforms: [Messenger.initModule(configs)],
+    });
+    await app.start();
+
+    const [
+      bot,
+      receiver,
+      profiler,
+      configsProvided,
+      routings,
+    ] = app.useServices([
+      Messenger.Bot,
+      Messenger.Receiver,
+      Messenger.ProfileFetcher,
+      Messenger.CONFIGS_I,
+      HTTP.REQUEST_ROUTINGS_I,
+    ]);
+
+    expect(bot).toBeInstanceOf(MessengerBot);
+    expect(receiver).toBeInstanceOf(MessengerReceiver);
+    expect(profiler).toBeInstanceOf(MessengerProfileFetcher);
+    expect(configsProvided).toEqual(configs);
+    expect(routings).toEqual([
+      {
+        name: 'messenger',
+        path: '/webhook/messenger',
+        handler: expect.any(Function),
+      },
+    ]);
+  });
+
+  test('provide base interfaces', async () => {
+    const app = Machinat.createApp({
+      platforms: [
+        Messenger.initModule({
+          pageId: '_PAGE_ID_',
+          accessToken: '_ACCESS_TOKEN_',
+          appSecret: '_APP_SECRET_',
+          verifyToken: '_VERIFY_TOKEN_',
+        }),
+      ],
+    });
+    await app.start();
+
+    const [bot, profiler] = app.useServices([Base.BotI, Base.ProfileFetcherI], {
+      platform: 'messenger',
+    });
+
+    expect(bot).toBeInstanceOf(MessengerBot);
+    expect(profiler).toBeInstanceOf(MessengerProfileFetcher);
   });
 
   test('default webhookPath to "/"', async () => {
