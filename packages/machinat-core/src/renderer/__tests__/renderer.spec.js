@@ -197,7 +197,10 @@ describe('#render()', () => {
     ]);
 
     expect(Custom.mock).toHaveBeenCalledTimes(1);
-    expect(Custom.mock.calls[0].args).toEqual([{ a: 'A', b: 2 }]);
+    expect(Custom.mock).toHaveBeenCalledWith(
+      { a: 'A', b: 2 },
+      { platform: 'test' }
+    );
 
     expect(generalElementDelegate.mock).toHaveBeenCalledTimes(2);
     expect(generalElementDelegate.mock).toHaveBeenNthCalledWith(
@@ -642,7 +645,10 @@ describe('#render()', () => {
 
     expect(Container.mock).toHaveBeenCalledTimes(10);
     expect(componentMock).toHaveBeenCalledTimes(10);
-    expect(componentMock).toHaveBeenCalledWith({ n: expect.any(Number) });
+    expect(componentMock).toHaveBeenCalledWith(
+      { n: expect.any(Number) },
+      { platform: 'test' }
+    );
   });
 
   it('reject when functional component fail', async () => {

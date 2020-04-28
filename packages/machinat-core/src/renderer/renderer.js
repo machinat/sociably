@@ -26,6 +26,8 @@ import type {
   ContainerElement,
   FunctionalElement,
   NativeComponent,
+  FunctionalComponent,
+  ContainerComponent,
 } from '../types';
 import type {
   InnerRenderFn,
@@ -327,13 +329,13 @@ export default class MachinatRenderer<
   }
 
   async _renderFunctionalElement(
-    node: FunctionalElement<any, any>,
+    node: FunctionalElement<any, FunctionalComponent<any>>,
     scope: ServiceScope,
     servicesProvided: Map<Interfaceable, any>,
     path: string
   ): Promise<null | IntermediateSegment<Value, Native>[]> {
     const { type: component, props } = node;
-    const rendered = await component(props);
+    const rendered = await component(props, { platform: this.platform });
 
     const segments = await this._renderImpl(
       scope,
@@ -347,7 +349,7 @@ export default class MachinatRenderer<
   }
 
   async _renderContainerElement(
-    node: ContainerElement<any, any>,
+    node: ContainerElement<any, ContainerComponent<any>>,
     scope: ServiceScope,
     servicesProvided: Map<Interfaceable, any>,
     path: string
@@ -355,7 +357,7 @@ export default class MachinatRenderer<
     const { type: container, props } = node;
     const component = scope.injectContainer(container, servicesProvided);
 
-    const rendered = await component(props);
+    const rendered = await component(props, { platform: this.platform });
 
     const segments = await this._renderImpl(
       scope,
