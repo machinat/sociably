@@ -9399,9 +9399,9 @@ pnp-webpack-plugin@1.5.0:
     ts-pnp "^1.1.2"
 
 polyfill-exports@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/polyfill-exports/-/polyfill-exports-0.1.2.tgz#12a58cb3b33979669b93936beeb8b95107b85bd6"
-  integrity sha512-A6IPOQardnuKmIJB2yQJLMOfY7/VwWAbK1N8uhwY5VnyuERTwyCpfFKYA2U9PIX2qoZy0L2KE2fx0DtSkK0T9w==
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/polyfill-exports/-/polyfill-exports-0.1.4.tgz#4d5174d7a1d47eb28b0f1d8b8234c55e15fd305a"
+  integrity sha512-2SChxUezAw7/wSTDaQ6aHt8YZ8jwi8KbTSWl2sct2RRg7ODqzqMYtTicF+2pfHOMU9pJ0VEOkv4GfbV+AKEDhw==
 
 posix-character-classes@^0.1.0:
   version "0.1.1"
