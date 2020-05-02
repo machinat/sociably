@@ -31,7 +31,7 @@ import type {
 export { Event } from './component';
 
 const createWSServer = factory<() => WS>({ lifetime: 'singleton' })(
-  () => new WS({ noServer: true })
+  () => new WS.Server({ noServer: true })
 );
 
 const createUniqServerId = factory<() => string>({ lifetime: 'transient' })(
@@ -41,11 +41,16 @@ const createUniqServerId = factory<() => string>({ lifetime: 'transient' })(
 const upgradeRoutingFactory = factory<HTTPUpgradeRouting>({
   lifetime: 'transient',
   deps: [WEBSOCKET_PLATFORM_CONFIGS_I, WebSocketReceiver],
-})((configs: WebSocketPlatformConfigs<any>, receiver: WebSocketReceiver) => ({
-  name: 'websocket',
-  path: configs.entryPath || '/',
-  handler: receiver.handleUpgradeCallback(),
-}));
+})(
+  (
+    configs: WebSocketPlatformConfigs<any, any>,
+    receiver: WebSocketReceiver
+  ) => ({
+    name: 'websocket',
+    path: configs.entryPath || '/',
+    handler: receiver.handleUpgradeCallback(),
+  })
+);
 
 const WebSocket = {
   Bot: WebSocketBot,
@@ -58,18 +63,16 @@ const WebSocket = {
   SERVER_ID_I,
   CONFIGS_I: WEBSOCKET_PLATFORM_CONFIGS_I,
 
-  initModule: (
-    configs: WebSocketPlatformConfigs<any> = {}
+  initModule: <AuthInfo, Credential>(
+    configs: WebSocketPlatformConfigs<AuthInfo, Credential> = {}
   ): PlatformModule<
-    WebSocketEventContext<any>,
+    WebSocketEventContext<AuthInfo>,
     null,
     WebSocketJob,
     WebSocketDispatchFrame,
     WebSocketResult
-  > => ({
-    name: WEBSOCKET,
-    mounterInterface: WEBSOCKET_PLATFORM_MOUNTER_I,
-    provisions: [
+  > => {
+    const provisions = [
       WebSocketBot,
       {
         provide: Base.BotI,
@@ -85,15 +88,35 @@ const WebSocket = {
       WebSocketReceiver,
       { provide: WEBSOCKET_PLATFORM_CONFIGS_I, withValue: configs },
       { provide: HTTP.UPGRADE_ROUTINGS_I, withProvider: upgradeRoutingFactory },
-    ],
-    eventMiddlewares: configs.eventMiddlewares,
-    dispatchMiddlewares: configs.dispatchMiddlewares,
-    startHook: container({
-      deps: [WebSocketBot],
-    })(async (bot: WebSocketBot) => {
-      await bot.start();
-    }),
-  }),
+    ];
+
+    if (configs.verifyUpgrade) {
+      provisions.push({
+        provide: UPGRADE_VERIFIER_I,
+        withValue: configs.verifyUpgrade,
+      });
+    }
+
+    if (configs.verifySignIn) {
+      provisions.push({
+        provide: SIGN_IN_VERIFIER_I,
+        withValue: configs.verifySignIn,
+      });
+    }
+
+    return {
+      name: WEBSOCKET,
+      mounterInterface: WEBSOCKET_PLATFORM_MOUNTER_I,
+      provisions,
+      eventMiddlewares: configs.eventMiddlewares,
+      dispatchMiddlewares: configs.dispatchMiddlewares,
+      startHook: container({
+        deps: [WebSocketBot],
+      })(async (bot: WebSocketBot) => {
+        await bot.start();
+      }),
+    };
+  },
 };
 
 export default WebSocket;

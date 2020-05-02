@@ -86,7 +86,7 @@ it('handle sockets and connections lifecycle', async () => {
     popError
   );
 
-  expect(receiver.handleUpgrade(req, netSocket, head)).toBe(undefined);
+  await receiver.handleUpgrade(req, netSocket, head);
 
   expect(verifyUpgrade.mock).toHaveBeenCalledTimes(1);
   expect(verifyUpgrade.mock).toHaveBeenCalledWith(expectedRequest);
@@ -229,7 +229,7 @@ test('default verifyUpgrade and verifyAuth', async () => {
     popError
   );
 
-  receiver.handleUpgrade(req, netSocket, head);
+  await receiver.handleUpgrade(req, netSocket, head);
 
   // accept upgrade by default
   expect(wsServer.handleUpgrade.mock).toHaveBeenCalledTimes(1);
@@ -270,8 +270,8 @@ test('multi sockets and connections', async () => {
     popError
   );
 
-  receiver.handleUpgrade(req, netSocket, head);
-  receiver.handleUpgrade(req, netSocket, head);
+  await receiver.handleUpgrade(req, netSocket, head);
+  await receiver.handleUpgrade(req, netSocket, head);
 
   expect(wsServer.handleUpgrade.mock).toHaveBeenCalledTimes(2);
   expect(verifyUpgrade.mock).toHaveBeenCalledTimes(2);
@@ -507,7 +507,7 @@ test('multi sockets and connections', async () => {
   await nextTick();
 });
 
-it('generate uniq socket id', () => {
+it('generate uniq socket id', async () => {
   const ids = new Set();
   const receiver = new Receiver(
     bot,
@@ -520,7 +520,7 @@ it('generate uniq socket id', () => {
   );
 
   for (let i = 0; i < 500; i += 1) {
-    receiver.handleUpgrade(req, netSocket, head);
+    await receiver.handleUpgrade(req, netSocket, head); // eslint-disable-line no-await-in-loop
     const socket = Socket.mock.calls[i].instance;
 
     expect(typeof socket.id).toBe('string');
@@ -543,7 +543,7 @@ it('generate uniq connection id', async () => {
     popError
   );
 
-  receiver.handleUpgrade(req, netSocket, head);
+  await receiver.handleUpgrade(req, netSocket, head);
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
 
@@ -566,7 +566,7 @@ it('generate uniq connection id', async () => {
   }
 });
 
-it('respond 404 if verifyUpgrade fn return false', () => {
+it('respond 404 if verifyUpgrade fn return false', async () => {
   const receiver = new Receiver(
     bot,
     wsServer,
@@ -578,7 +578,7 @@ it('respond 404 if verifyUpgrade fn return false', () => {
   );
 
   verifyUpgrade.mock.fakeReturnValue(false);
-  receiver.handleUpgrade(req, netSocket, head);
+  await receiver.handleUpgrade(req, netSocket, head);
 
   expect(verifyUpgrade.mock).toHaveBeenCalledTimes(1);
   expect(verifyUpgrade.mock).toHaveBeenCalledWith(expectedRequest);
@@ -609,7 +609,7 @@ it('reject sign in if verifyAuth resolve not sucess', async () => {
     popEventWrapper,
     popError
   );
-  receiver.handleUpgrade(req, netSocket, head);
+  await receiver.handleUpgrade(req, netSocket, head);
 
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
@@ -641,7 +641,7 @@ it('reject sign in if verifyAuth thrown', async () => {
     popEventWrapper,
     popError
   );
-  receiver.handleUpgrade(req, netSocket, head);
+  await receiver.handleUpgrade(req, netSocket, head);
 
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
@@ -661,7 +661,7 @@ it('reject sign in if verifyAuth thrown', async () => {
   });
 });
 
-it('issue socket error', () => {
+it('issue socket error', async () => {
   const receiver = new Receiver(
     bot,
     wsServer,
@@ -672,7 +672,7 @@ it('issue socket error', () => {
     popError
   );
 
-  receiver.handleUpgrade(req, netSocket, head);
+  await receiver.handleUpgrade(req, netSocket, head);
   popEventMock.fakeOnce(async () => ({
     success: true,
     user: { john: 'doe' },

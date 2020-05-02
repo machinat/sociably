@@ -90,6 +90,34 @@ describe('initModule()', () => {
     ]);
   });
 
+  test('provide upgrade verifier if options.verifyUpgrade given', async () => {
+    const verifyUpgrade = moxy(() => true);
+    const app = Machinat.createApp({
+      platforms: [WebSocket.initModule({ verifyUpgrade })],
+    });
+    await app.start();
+
+    const [upgradeVerifierProvided] = app.useServices([
+      WebSocket.UPGRADE_VERIFIER_I,
+    ]);
+
+    expect(upgradeVerifierProvided).toBe(verifyUpgrade);
+  });
+
+  test('provide sign in verifier if options.verifySignIn given', async () => {
+    const verifySignIn = moxy(() => true);
+    const app = Machinat.createApp({
+      platforms: [WebSocket.initModule({ verifySignIn })],
+    });
+    await app.start();
+
+    const [signInVerifierProvided] = app.useServices([
+      WebSocket.SIGN_IN_VERIFIER_I,
+    ]);
+
+    expect(signInVerifierProvided).toBe(verifySignIn);
+  });
+
   test('set default routing path to "/"', async () => {
     const app = Machinat.createApp({ platforms: [WebSocket.initModule()] });
     await app.start();

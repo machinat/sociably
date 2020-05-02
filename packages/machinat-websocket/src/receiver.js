@@ -1,6 +1,7 @@
 // @flow
 import http from 'http';
 import uniqid from 'uniqid';
+import thenifiedly from 'thenifiedly';
 import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
 
@@ -25,7 +26,6 @@ import {
 import { WEBSOCKET } from './constant';
 import type {
   WebSocketEvent,
-  RequestInfo,
   VerifySignInFn,
   WebSocketEventContext,
   VerifyUpgradeFn,
@@ -37,6 +37,11 @@ import type Socket, {
   ConnectBody,
   DisconnectBody,
 } from './socket';
+
+const getWSFromServer = thenifiedly.factory(
+  (cb, [wsServer, req, ns, head]) => wsServer.handleUpgrade(req, ns, head, cb),
+  { beginningError: false }
+);
 
 type ConnectionInfo<Auth> = {|
   channel: ConnectionChannel,
@@ -71,7 +76,7 @@ class WebSocketReceiver<AuthInfo> {
   _wsServer: WSServerI;
   _transmitter: Transmitter;
 
-  _verifyUpgrade: (request: RequestInfo) => boolean;
+  _verifyUpgrade: VerifyUpgradeFn;
   _verifySignIn: VerifySignInFn<AuthInfo, any>;
 
   _socketStates: Map<Socket, SocketState<AuthInfo>>;
@@ -104,34 +109,34 @@ class WebSocketReceiver<AuthInfo> {
     this._popError = popError;
   }
 
-  handleUpgrade(req: IncomingMessage, ns: NetSocket, head: Buffer) {
+  async handleUpgrade(req: IncomingMessage, ns: NetSocket, head: Buffer) {
     const requestInfo = {
       method: req.method,
       url: req.url,
       headers: req.headers,
     };
 
-    const allowed = this._verifyUpgrade(requestInfo);
+    const allowed = await this._verifyUpgrade(requestInfo);
     if (!allowed) {
       rejectUpgrade(ns, 400);
       return;
     }
 
-    this._wsServer.handleUpgrade(req, ns, head, ws => {
-      const socket = new MachinatSocket(uniqid(), ws, requestInfo);
-      this._socketStates.set(socket, {
-        lostHeartbeatCount: 0,
-        connections: new Map(),
-      });
+    const ws = await getWSFromServer(this._wsServer, req, ns, head);
+    const socket = new MachinatSocket(uniqid(), ws, requestInfo);
 
-      socket.on('dispatch', this._handleDispatchCallback);
-      socket.on('sign_in', this._handleSignInCallback);
-      socket.on('connect', this._handleConnectCallback);
-      socket.on('connect_fail', this._handleConnectFailCallback);
-      socket.on('disconnect', this._handleDisconnectCallback);
-      socket.on('close', this._handleCloseCallback);
-      socket.on('error', this._popError);
+    this._socketStates.set(socket, {
+      lostHeartbeatCount: 0,
+      connections: new Map(),
     });
+
+    socket.on('dispatch', this._handleDispatchCallback);
+    socket.on('sign_in', this._handleSignInCallback);
+    socket.on('connect', this._handleConnectCallback);
+    socket.on('connect_fail', this._handleConnectFailCallback);
+    socket.on('disconnect', this._handleDisconnectCallback);
+    socket.on('close', this._handleCloseCallback);
+    socket.on('error', this._popError);
   }
 
   handleUpgradeCallback() {

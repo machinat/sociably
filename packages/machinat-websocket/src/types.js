@@ -119,7 +119,9 @@ export type VerifySignInFn<AuthInfo, Credential> = (
   Credential
 ) => Promise<VerifySignInResult<AuthInfo>>;
 
-export type VerifyUpgradeFn = (request: RequestInfo) => boolean;
+export type VerifyUpgradeFn = (
+  request: RequestInfo
+) => boolean | Promise<boolean>;
 
 export type ClientAuthorizeFn<Credential> = () => Promise<{
   user: null | MachinatUser,
@@ -137,11 +139,13 @@ export type WebSocketDispatchMiddleware = DispatchMiddleware<
   WebSocketResult
 >;
 
-export type WebSocketPlatformConfigs<Auth> = {
+export type WebSocketPlatformConfigs<AuthInfo, Credential> = {
   entryPath?: string,
+  verifyUpgrade?: VerifyUpgradeFn,
+  verifySignIn?: VerifySignInFn<AuthInfo, Credential>,
   eventMiddlewares?: (
-    | WebSocketEventMiddleware<Auth>
-    | ServiceContainer<WebSocketEventMiddleware<Auth>>
+    | WebSocketEventMiddleware<AuthInfo>
+    | ServiceContainer<WebSocketEventMiddleware<AuthInfo>>
   )[],
   dispatchMiddlewares?: (
     | WebSocketDispatchMiddleware
