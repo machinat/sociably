@@ -6,7 +6,7 @@ import Queue from '@machinat/core/queue';
 import Engine from '@machinat/core/engine';
 import Worker from '../worker';
 import MessengerBot from '../bot';
-import { Image, Dialog, QuickReply } from '../component';
+import { Image, Dialog, QuickReply } from '../components';
 
 nock.disableNetConnect();
 

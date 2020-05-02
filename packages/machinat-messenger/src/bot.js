@@ -14,7 +14,7 @@ import type {
 } from '@machinat/core/types';
 
 import MessengerWorker from './worker';
-import generalComponentDelegator from './component/general';
+import generalComponentDelegator from './components/general';
 
 import { MESSENGER } from './constant';
 import {

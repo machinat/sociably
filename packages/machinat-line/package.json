@@ -12,6 +12,7 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
+    "./components": "./lib/components/index.js",
     "./asset": "./lib/asset/index.js",
     "./auth": "./lib/auth/index.js",
     "./auth/client": "./lib/auth/client.js"

@@ -20,7 +20,7 @@ import type {
   MessengerResult,
 } from './types';
 
-export * from './component';
+export * from './components';
 
 const requestRoutingFactory = factory<HTTPRequestRouting>({
   lifetime: 'transient',

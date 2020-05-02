@@ -13,7 +13,7 @@ import type {
 import { provider } from '@machinat/core/service';
 
 import { chatJobsMaker, multicastJobsMaker } from './job';
-import generalElementDelegate from './component/general';
+import generalElementDelegate from './components/general';
 import LineWorker from './worker';
 import LineChannel from './channel';
 import { LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I } from './interface';

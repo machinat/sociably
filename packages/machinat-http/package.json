@@ -12,7 +12,7 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "./webhook": "./lib/webhook"
+    "./webhook": "./lib/webhook/index.js"
   },
   "files": [
     "lib/*",

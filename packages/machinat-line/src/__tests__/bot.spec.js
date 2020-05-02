@@ -13,7 +13,7 @@ import {
   QuickReply,
   MessageAction,
   LinkRichMenu,
-} from '../component';
+} from '../components';
 
 jest.mock('@machinat/core/engine', () =>
   require('moxy').default(jest.requireActual('@machinat/core/engine'), {
