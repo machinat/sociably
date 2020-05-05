@@ -13,7 +13,8 @@
   "exports": {
     ".": "./lib/index.js",
     "./client": "./lib/client/index.js",
-    "./auth": "./lib/auth/index.js"
+    "./auth": "./lib/auth/index.js",
+    "./auth/client": "./lib/auth/client.js"
   },
   "files": [
     "lib/*",
