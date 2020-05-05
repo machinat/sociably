@@ -19,21 +19,21 @@ import { ConnectionChannel } from './channel';
 import createEvent from './event';
 import {
   WSServerI,
-  SIGN_IN_VERIFIER_I,
+  LOGIN_VERIFIER_I,
   UPGRADE_VERIFIER_I,
   WEBSOCKET_PLATFORM_MOUNTER_I,
 } from './interface';
 import { WEBSOCKET } from './constant';
 import type {
   WebSocketEvent,
-  VerifySignInFn,
+  VerifyLoginFn,
   WebSocketEventContext,
   VerifyUpgradeFn,
   WebSocketPlatformMounter,
 } from './types';
 import type Socket, {
   DispatchBody,
-  SignInBody,
+  LoginBody,
   ConnectBody,
   DisconnectBody,
 } from './socket';
@@ -77,7 +77,7 @@ class WebSocketReceiver<AuthInfo> {
   _transmitter: Transmitter;
 
   _verifyUpgrade: VerifyUpgradeFn;
-  _verifySignIn: VerifySignInFn<AuthInfo, any>;
+  _verifyLogin: VerifyLoginFn<AuthInfo, any>;
 
   _socketStates: Map<Socket, SocketState<AuthInfo>>;
 
@@ -88,7 +88,7 @@ class WebSocketReceiver<AuthInfo> {
     bot: WebSocketBot,
     wsServer: WSServerI,
     transmitter: Transmitter,
-    verifySignIn: null | VerifySignInFn<AuthInfo, any>,
+    verifyLogin: null | VerifyLoginFn<AuthInfo, any>,
     verifyUpgrade: null | VerifyUpgradeFn,
     popEventWrapper: PopEventWrapper<WebSocketEventContext<AuthInfo>, null>,
     popError: PopErrorFn
@@ -100,8 +100,8 @@ class WebSocketReceiver<AuthInfo> {
     this._socketStates = new Map();
 
     this._verifyUpgrade = verifyUpgrade || (() => true);
-    this._verifySignIn =
-      verifySignIn ||
+    this._verifyLogin =
+      verifyLogin ||
       (() =>
         Promise.resolve({ success: true, user: null, authInfo: (null: any) }));
 
@@ -131,7 +131,7 @@ class WebSocketReceiver<AuthInfo> {
     });
 
     socket.on('dispatch', this._handleDispatchCallback);
-    socket.on('sign_in', this._handleSignInCallback);
+    socket.on('login', this._handleLoginCallback);
     socket.on('connect', this._handleConnectCallback);
     socket.on('connect_fail', this._handleConnectFailCallback);
     socket.on('disconnect', this._handleDisconnectCallback);
@@ -173,16 +173,16 @@ class WebSocketReceiver<AuthInfo> {
     });
   }
 
-  _handleSignInCallback = (body: SignInBody, seq: number, socket: Socket) => {
-    this._handleSignIn(body, seq, socket).catch(this._popError);
+  _handleLoginCallback = (body: LoginBody, seq: number, socket: Socket) => {
+    this._handleLogin(body, seq, socket).catch(this._popError);
   };
 
-  async _handleSignIn(body: SignInBody, seq: number, socket: Socket) {
+  async _handleLogin(body: LoginBody, seq: number, socket: Socket) {
     const socketState = this._getSocketStatesAssertedly(socket);
     const connId: string = uniqid();
 
     try {
-      const authResult = await this._verifySignIn(
+      const authResult = await this._verifyLogin(
         socket.request,
         body.credential
       );
@@ -224,7 +224,7 @@ class WebSocketReceiver<AuthInfo> {
       // reject if not signed in
       await socket.disconnect({
         connId,
-        reason: 'connection is not signed in',
+        reason: 'connection is not logged in',
       });
     } else {
       const issuingPromises = events.map(({ type, subtype, payload }) =>
@@ -309,7 +309,7 @@ export default provider<WebSocketReceiver<any>>({
     WebSocketBot,
     WSServerI,
     Transmitter,
-    { require: SIGN_IN_VERIFIER_I, optional: true },
+    { require: LOGIN_VERIFIER_I, optional: true },
     { require: UPGRADE_VERIFIER_I, optional: true },
     WEBSOCKET_PLATFORM_MOUNTER_I,
   ],
@@ -317,7 +317,7 @@ export default provider<WebSocketReceiver<any>>({
     bot: WebSocketBot,
     wsServer: WSServerI,
     transmitter: Transmitter,
-    verifySignIn: null | VerifySignInFn<any, any>,
+    verifyLogin: null | VerifyLoginFn<any, any>,
     verifyUpgrade: null | VerifyUpgradeFn,
     { popEventWrapper, popError }: WebSocketPlatformMounter<any>
   ) =>
@@ -325,7 +325,7 @@ export default provider<WebSocketReceiver<any>>({
       bot,
       wsServer,
       transmitter,
-      verifySignIn,
+      verifyLogin,
       verifyUpgrade,
       popEventWrapper,
       popError

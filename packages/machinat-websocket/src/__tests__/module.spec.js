@@ -10,10 +10,10 @@ it('export interfaces', () => {
   expect(WebSocket.Bot).toBe(WebSocketBot);
   expect(WebSocket.Receiver).toBe(WebSocketReceiver);
   expect(WebSocket.Transmitter).toBe(Transmitter);
-  expect(WebSocket.SIGN_IN_VERIFIER_I).toMatchInlineSnapshot(`
+  expect(WebSocket.LOGIN_VERIFIER_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebSocketSignInVerifier",
+      "$$name": "WebSocketLoginVerifier",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
@@ -112,7 +112,7 @@ describe('initModule()', () => {
     await app.start();
 
     const [signInVerifierProvided] = app.useServices([
-      WebSocket.SIGN_IN_VERIFIER_I,
+      WebSocket.LOGIN_VERIFIER_I,
     ]);
 
     expect(signInVerifierProvided).toBe(verifySignIn);

@@ -112,7 +112,7 @@ it('handle sockets and connections lifecycle', async () => {
   socket.connect.mock.fake(async () => {});
 
   const credential = { type: 'some_auth', hello: 'login' };
-  socket.emit('sign_in', { credential }, 0, socket);
+  socket.emit('login', { credential }, 0, socket);
   await nextTick();
 
   expect(verifyAuth.mock).toHaveBeenCalledTimes(1);
@@ -236,7 +236,7 @@ test('default verifyUpgrade and verifyAuth', async () => {
 
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
-  socket.emit('sign_in', { credential: null }, 0, socket);
+  socket.emit('login', { credential: null }, 0, socket);
   await nextTick();
 
   const { connId } = socket.connect.mock.calls[0].args[0];
@@ -284,7 +284,7 @@ test('multi sockets and connections', async () => {
   socket2.connect.mock.fake(async () => {});
 
   expect(verifyAuth.mock).not.toHaveBeenCalled();
-  socket1.emit('sign_in', { credential: { hi: 1 } }, 0, socket1);
+  socket1.emit('login', { credential: { hi: 1 } }, 0, socket1);
 
   expect(verifyAuth.mock).toHaveBeenCalledTimes(1);
   verifyAuth.mock.fake(async () => ({
@@ -293,7 +293,7 @@ test('multi sockets and connections', async () => {
     authInfo: 'foo',
   }));
 
-  socket1.emit('sign_in', { credential: { hi: 2 } }, 1, socket1);
+  socket1.emit('login', { credential: { hi: 2 } }, 1, socket1);
   await nextTick();
 
   expect(verifyAuth.mock).toHaveBeenCalledTimes(2);
@@ -303,7 +303,7 @@ test('multi sockets and connections', async () => {
     authInfo: 'kokoko',
   }));
 
-  socket2.emit('sign_in', { credential: { hi: 3 } }, 1, socket2);
+  socket2.emit('login', { credential: { hi: 3 } }, 1, socket2);
   await nextTick();
 
   expect(verifyAuth.mock).toHaveBeenCalledTimes(3);
@@ -553,7 +553,7 @@ it('generate uniq connection id', async () => {
   }));
 
   for (let i = 0; i < 500; i += 1) {
-    socket.emit('sign_in', { credential: { hello: 'login' } }, 1, socket);
+    socket.emit('login', { credential: { hello: 'socket' } }, 1, socket);
     await nextTick(); // eslint-disable-line no-await-in-loop
 
     expect(socket.connect.mock).toHaveBeenCalledTimes(i + 1);
@@ -619,7 +619,7 @@ it('reject sign in if verifyAuth resolve not sucess', async () => {
     reason: 'no no no',
   }));
 
-  socket.emit('sign_in', { credential: { hello: 'login' } }, 11, socket);
+  socket.emit('login', { credential: { hello: 'login' } }, 11, socket);
   await nextTick();
 
   expect(verifyAuth.mock).toHaveBeenCalledTimes(1);
@@ -649,7 +649,7 @@ it('reject sign in if verifyAuth thrown', async () => {
     throw new Error('noooooo');
   });
 
-  socket.emit('sign_in', { credential: { hello: 'login' } }, 11, socket);
+  socket.emit('login', { credential: { hello: 'login' } }, 11, socket);
   await nextTick();
 
   expect(verifyAuth.mock).toHaveBeenCalledTimes(1);

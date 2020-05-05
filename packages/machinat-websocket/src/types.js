@@ -97,33 +97,33 @@ export type WebSocketEventContext<AuthInfo> = EventContext<
   WebSocketBot
 >;
 
-type SuccessVerifySignInResult<AuthInfo> = {|
+type SuccessVerifyLoginResult<AuthInfo> = {|
   success: true,
   authInfo: AuthInfo,
   user: null | MachinatUser,
   expireAt?: Date,
 |};
 
-type FailedVerifySignInResult = {|
+type FailedVerifyLoginResult = {|
   success: false,
   code: number,
   reason: string,
 |};
 
-export type VerifySignInResult<AuthInfo> =
-  | SuccessVerifySignInResult<AuthInfo>
-  | FailedVerifySignInResult;
+export type VerifyLoginResult<AuthInfo> =
+  | SuccessVerifyLoginResult<AuthInfo>
+  | FailedVerifyLoginResult;
 
-export type VerifySignInFn<AuthInfo, Credential> = (
+export type VerifyLoginFn<AuthInfo, Credential> = (
   RequestInfo,
   Credential
-) => Promise<VerifySignInResult<AuthInfo>>;
+) => Promise<VerifyLoginResult<AuthInfo>>;
 
 export type VerifyUpgradeFn = (
   request: RequestInfo
 ) => boolean | Promise<boolean>;
 
-export type ClientAuthorizeFn<Credential> = () => Promise<{
+export type ClientLoginFn<Credential> = () => Promise<{
   user: null | MachinatUser,
   credential: Credential,
 }>;
@@ -142,7 +142,7 @@ export type WebSocketDispatchMiddleware = DispatchMiddleware<
 export type WebSocketPlatformConfigs<AuthInfo, Credential> = {
   entryPath?: string,
   verifyUpgrade?: VerifyUpgradeFn,
-  verifySignIn?: VerifySignInFn<AuthInfo, Credential>,
+  verifySignIn?: VerifyLoginFn<AuthInfo, Credential>,
   eventMiddlewares?: (
     | WebSocketEventMiddleware<AuthInfo>
     | ServiceContainer<WebSocketEventMiddleware<AuthInfo>>

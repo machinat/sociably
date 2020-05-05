@@ -121,12 +121,12 @@ it('propagate "error" event', () => {
   expect(errorSpy.mock).toHaveBeenCalledWith(err, socket);
 });
 
-describe('sing_in', () => {
-  test('sign in from client work', async () => {
+describe('login', () => {
+  test('login in from client work', async () => {
     const singInSpy = moxy();
-    serverSocket.on('sign_in', singInSpy);
+    serverSocket.on('login', singInSpy);
 
-    await clientSocket.signIn({ credential: '***' });
+    await clientSocket.login({ credential: '***' });
 
     await delay(100);
 
@@ -139,7 +139,7 @@ describe('sing_in', () => {
 
     const seq = singInSpy.mock.calls[0].args[1];
     expect(clientWS.send.mock).toHaveBeenCalledWith(
-      JSON.stringify(['sign_in', seq, { credential: '***' }]),
+      JSON.stringify(['login', seq, { credential: '***' }]),
       expect.any(Function)
     );
   });
@@ -147,20 +147,20 @@ describe('sing_in', () => {
   it('throws if the socket is not ready', async () => {
     clientWS.mock.getter('readyState').fakeReturnValue(0);
     await expect(
-      clientSocket.signIn({ credential: '***' })
+      clientSocket.login({ credential: '***' })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"socket is not ready"`);
   });
 
   it('throws when register on server side', async () => {
     await expect(
-      serverSocket.signIn({ credential: '***' })
+      serverSocket.login({ credential: '***' })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"can't sign in on server side"`
     );
   });
 
   test('client reject if register frame received', async () => {
-    clientWS.emit('message', JSON.stringify(['sign_in', 1, { type: 'test' }]));
+    clientWS.emit('message', JSON.stringify(['login', 1, { type: 'test' }]));
 
     await delay(100);
 

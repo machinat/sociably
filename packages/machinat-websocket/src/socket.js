@@ -25,7 +25,7 @@ export const SOCKET_CLOSED = 3;
 
 const FRAME_DISPATCH = 'dispatch';
 const FRAME_REJECT = 'reject';
-const FRAME_SIGN_IN = 'sign_in';
+const FRAME_LOGIN = 'login';
 const FRAME_CONNECT = 'connect';
 const FRAME_DISCONNECT = 'disconnect';
 
@@ -47,9 +47,9 @@ export type RejectBody = {|
 |};
 
 /**
- * SignIn frame request for signing in a connection
+ * Login frame request for signing in a connection
  */
-export type SignInBody = {|
+export type LoginBody = {|
   credential?: any,
 |};
 
@@ -58,7 +58,7 @@ export type SignInBody = {|
  * to the connect frame received from Client
  */
 export type ConnectBody = {|
-  seq: number, // reflect the responded "sign_in" seq on server, "connect" seq on client
+  seq: number, // reflect the responded "login" seq on server, "connect" seq on client
   connId: string,
 |};
 
@@ -82,7 +82,7 @@ export type DisconnectBody = {|
  *  | Client  |             | Server  |
  *  +---------+             +---------+
  *       |                        |
- *       | SIGN_IN                |
+ *       | LOGIN                |
  *       |----------------------->|
  *       |                        |
  *       |                        | verify auth
@@ -238,12 +238,12 @@ class MachinatSocket extends EventEmitter {
     return this._send(FRAME_REJECT, body);
   }
 
-  async signIn(body: SignInBody): Promise<number> {
+  async login(body: LoginBody): Promise<number> {
     if (!this.isClient) {
       throw new SocketError("can't sign in on server side");
     }
 
-    const seq = await this._send(FRAME_SIGN_IN, body);
+    const seq = await this._send(FRAME_LOGIN, body);
     return seq;
   }
 
@@ -336,8 +336,8 @@ class MachinatSocket extends EventEmitter {
     this.emit('reject', body, seq, this);
   }
 
-  _emitSingIn(body: SignInBody, seq: number) {
-    this.emit('sign_in', body, seq, this);
+  _emitLogin(body: LoginBody, seq: number) {
+    this.emit('login', body, seq, this);
   }
 
   _emitConnect(body: ConnectBody, seq: number) {
@@ -384,8 +384,8 @@ class MachinatSocket extends EventEmitter {
       await this._handleDispatch(body, seq);
     } else if (frameType === FRAME_REJECT) {
       await this._emitReject(body, seq);
-    } else if (frameType === FRAME_SIGN_IN) {
-      await this._handleSignIn(body, seq);
+    } else if (frameType === FRAME_LOGIN) {
+      await this._handleLogin(body, seq);
     } else if (frameType === FRAME_CONNECT) {
       await this._handleConnect(body, seq);
     } else if (frameType === FRAME_DISCONNECT) {
@@ -412,14 +412,14 @@ class MachinatSocket extends EventEmitter {
     }
   }
 
-  async _handleSignIn(body: SignInBody, seq: number) {
+  async _handleLogin(body: LoginBody, seq: number) {
     if (this.isClient) {
       await this.reject({
         seq,
         reason: "can't sign in to client",
       });
     } else {
-      this._emitSingIn(body, seq);
+      this._emitLogin(body, seq);
     }
   }
 

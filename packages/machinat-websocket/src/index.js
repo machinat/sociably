@@ -10,7 +10,7 @@ import {
   WSServerI,
   ClusterBrokerI,
   UPGRADE_VERIFIER_I,
-  SIGN_IN_VERIFIER_I,
+  LOGIN_VERIFIER_I,
   SERVER_ID_I,
   WEBSOCKET_PLATFORM_MOUNTER_I,
   WEBSOCKET_PLATFORM_CONFIGS_I,
@@ -59,7 +59,7 @@ const WebSocket = {
   WSServerI,
   ClusterBrokerI,
   UPGRADE_VERIFIER_I,
-  SIGN_IN_VERIFIER_I,
+  LOGIN_VERIFIER_I,
   SERVER_ID_I,
   CONFIGS_I: WEBSOCKET_PLATFORM_CONFIGS_I,
 
@@ -99,7 +99,7 @@ const WebSocket = {
 
     if (configs.verifySignIn) {
       provisions.push({
-        provide: SIGN_IN_VERIFIER_I,
+        provide: LOGIN_VERIFIER_I,
         withValue: configs.verifySignIn,
       });
     }

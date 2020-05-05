@@ -10,13 +10,13 @@ import type {
 import Socket from '../socket';
 import { ConnectionChannel } from '../channel';
 import SocketError from '../error';
-import type { ClientAuthorizeFn, EventValue } from '../types';
+import type { ClientLoginFn, EventValue } from '../types';
 
 declare var location: Location;
 
 type ClientOptions<Credential> = {
   url?: string,
-  authorize?: ClientAuthorizeFn<Credential>,
+  login?: ClientLoginFn<Credential>,
 };
 
 type PendingEvent = {
@@ -33,12 +33,12 @@ const createSocket = (url: string) => {
   return new Socket('', ws, (null: any));
 };
 
-class WebScoketClient<Credential> {
+class WebScoketClient<Credential = null> {
   _serverLocation: string;
-  _authorize: ClientAuthorizeFn<Credential>;
+  _getLoginAuth: ClientLoginFn<Credential>;
   _socket: Socket;
 
-  _signInSeq: number;
+  _loginSeq: number;
   _queuedEvents: PendingEvent[];
 
   _connId: void | string;
@@ -49,12 +49,12 @@ class WebScoketClient<Credential> {
   _eventListeners: ((EventValue, WebScoketClient<Credential>) => void)[];
   _errorListeners: ((Error) => void)[];
 
-  constructor({ url, authorize }: ClientOptions<Credential> = {}) {
+  constructor({ url, login }: ClientOptions<Credential> = {}) {
     this._serverLocation =
       url ||
       `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
-    this._authorize =
-      authorize || (() => Promise.resolve({ user: null, credential: null }));
+    this._getLoginAuth =
+      login || (() => Promise.resolve({ user: null, credential: (null: any) }));
 
     this._queuedEvents = [];
     this._eventListeners = [];
@@ -169,15 +169,15 @@ class WebScoketClient<Credential> {
   }
 
   async _handleSocketOpen() {
-    const { user, credential } = await this._authorize();
+    const { user, credential } = await this._getLoginAuth();
 
-    const seq = await this._socket.signIn({ credential });
-    this._signInSeq = seq;
+    const seq = await this._socket.login({ credential });
+    this._loginSeq = seq;
     this._user = user;
   }
 
   _handleConnect({ connId, seq }: ConnectBody) {
-    if (seq !== this._signInSeq) {
+    if (seq !== this._loginSeq) {
       return;
     }
 
@@ -220,13 +220,13 @@ class WebScoketClient<Credential> {
   }
 
   _handleReject({ seq, reason }: RejectBody) {
-    if (seq === this._signInSeq) {
+    if (seq === this._loginSeq) {
       this._emitError(new SocketError(reason));
     }
   }
 
   _handleConnectFail({ seq }: DisconnectBody) {
-    if (seq === this._signInSeq) {
+    if (seq === this._loginSeq) {
       const err = new SocketError('connect handshake fail');
       this._emitError(err);
     }

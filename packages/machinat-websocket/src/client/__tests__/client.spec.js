@@ -12,7 +12,7 @@ jest.mock('../../socket');
 
 const delay = t => new Promise(resolve => setTimeout(resolve, t));
 
-const authorize = moxy(async () => ({
+const login = moxy(async () => ({
   user: { john: 'doe' },
   credential: { foo: 'bar' },
 }));
@@ -22,12 +22,12 @@ const eventSpy = moxy();
 beforeEach(() => {
   Socket.mock.reset();
   WS.mock.clear();
-  authorize.mock.clear();
+  login.mock.clear();
   eventSpy.mock.clear();
 });
 
 it('initiate ok', () => {
-  const client = new Client({ authorize }); // eslint-disable-line no-unused-vars
+  const client = new Client({ login }); // eslint-disable-line no-unused-vars
 
   expect(WS.mock).toHaveBeenCalledTimes(1);
   expect(WS.mock).toHaveBeenCalledWith(
@@ -44,7 +44,7 @@ it('initiate ok', () => {
 });
 
 test('specify url', () => {
-  const client = new Client({ url: 'ws://machinat.io/entry', authorize }); // eslint-disable-line no-unused-vars
+  const client = new Client({ url: 'ws://machinat.io/entry', login }); // eslint-disable-line no-unused-vars
 
   expect(WS.mock).toHaveBeenCalledTimes(1);
   expect(WS.mock).toHaveBeenCalledWith(
@@ -58,20 +58,20 @@ it('sign in end emit "connect" when connected', async () => {
   client.onEvent(eventSpy);
 
   const socket = Socket.mock.calls[0].instance;
-  expect(socket.signIn.mock).not.toHaveBeenCalled();
+  expect(socket.login.mock).not.toHaveBeenCalled();
 
   expect(client.user).toBe(null);
 
   socket.emit('open');
   await delay();
 
-  expect(socket.signIn.mock).toHaveBeenCalledTimes(1);
-  expect(socket.signIn.mock).toHaveBeenCalledWith({
+  expect(socket.login.mock).toHaveBeenCalledTimes(1);
+  expect(socket.login.mock).toHaveBeenCalledWith({
     credential: null,
   });
   expect(client.user).toEqual(null);
 
-  const regSeq = await socket.signIn.mock.calls[0].result;
+  const regSeq = await socket.login.mock.calls[0].result;
   socket.emit('connect', { connId: '#conn', seq: regSeq });
   await delay();
 
@@ -81,30 +81,30 @@ it('sign in end emit "connect" when connected', async () => {
   expect(client.channel).toEqual(new ConnectionChannel('*', '#conn'));
 });
 
-it('signIn with credential from options.authorize()', async () => {
-  const client = new Client({ authorize });
+it('login with credential from options.login()', async () => {
+  const client = new Client({ login });
   client.onEvent(eventSpy);
 
   const socket = Socket.mock.calls[0].instance;
-  expect(socket.signIn.mock).not.toHaveBeenCalled();
+  expect(socket.login.mock).not.toHaveBeenCalled();
 
   expect(client.user).toBe(null);
 
   socket.emit('open');
   await delay();
 
-  expect(authorize.mock).toHaveBeenCalledTimes(1);
-  expect(authorize.mock).toHaveBeenCalledWith(/* empty */);
+  expect(login.mock).toHaveBeenCalledTimes(1);
+  expect(login.mock).toHaveBeenCalledWith(/* empty */);
 
-  expect(socket.signIn.mock).toHaveBeenCalledTimes(1);
-  expect(socket.signIn.mock).toHaveBeenCalledWith({
+  expect(socket.login.mock).toHaveBeenCalledTimes(1);
+  expect(socket.login.mock).toHaveBeenCalledWith({
     credential: { foo: 'bar' },
   });
 
   expect(client.user).toEqual({ john: 'doe' });
   expect(client.channel).toBe(null);
 
-  const regSeq = await socket.signIn.mock.calls[0].result;
+  const regSeq = await socket.login.mock.calls[0].result;
   socket.emit('connect', { connId: '#conn', seq: regSeq });
   await delay();
 
@@ -116,16 +116,16 @@ it('signIn with credential from options.authorize()', async () => {
 
 it('emit "error" if sign in rejected when socket is already open', async () => {
   const errorSpy = moxy();
-  const client = new Client({ authorize });
+  const client = new Client({ login });
   client.onError(errorSpy);
 
   const socket = Socket.mock.calls[0].instance;
-  socket.signIn.mock.fake(() => Promise.resolve(3));
+  socket.login.mock.fake(() => Promise.resolve(3));
 
   socket.emit('open');
   await delay();
 
-  expect(socket.signIn.mock).toHaveBeenCalledTimes(1);
+  expect(socket.login.mock).toHaveBeenCalledTimes(1);
   await delay();
 
   socket.emit('reject', { seq: 3, reason: 'you are fired' }, 5);
@@ -137,7 +137,7 @@ it('emit "error" if sign in rejected when socket is already open', async () => {
 });
 
 it('emit "event" when dispatched events received', async () => {
-  const client = new Client({ authorize });
+  const client = new Client({ login });
   const socket = Socket.mock.calls[0].instance;
 
   socket.emit('open');
@@ -187,7 +187,7 @@ it('emit "event" when dispatched events received', async () => {
 });
 
 it('send events when already connected', async () => {
-  const client = new Client({ authorize });
+  const client = new Client({ login });
   const socket = Socket.mock.calls[0].instance;
   socket.dispatch.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
 
@@ -222,10 +222,10 @@ it('send events when already connected', async () => {
 });
 
 it('queue dispatches if not ready and fire after connected', async () => {
-  const client = new Client({ authorize });
+  const client = new Client({ login });
 
   const socket = Socket.mock.calls[0].instance;
-  socket.signIn.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
+  socket.login.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
   socket.dispatch.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
 
   const done = moxy();
@@ -241,7 +241,7 @@ it('queue dispatches if not ready and fire after connected', async () => {
   socket.emit('open');
   await delay();
 
-  const seq = await socket.signIn.mock.calls[0].result;
+  const seq = await socket.login.mock.calls[0].result;
   socket.emit('connect', { connId: '#conn', seq }, 3);
 
   expect(socket.dispatch.mock).toHaveBeenCalledTimes(2);
@@ -260,7 +260,7 @@ it('queue dispatches if not ready and fire after connected', async () => {
 });
 
 test('disconnect by server', async () => {
-  const client = new Client({ authorize });
+  const client = new Client({ login });
   const socket = Socket.mock.calls[0].instance;
 
   socket.emit('open');
@@ -280,7 +280,7 @@ test('disconnect by server', async () => {
 });
 
 test('#disconnect()', async () => {
-  const client = new Client({ authorize });
+  const client = new Client({ login });
   const socket = Socket.mock.calls[0].instance;
   socket.disconnect.mock.fake(() => Promise.resolve(++socket._seq)); // eslint-disable-line no-plusplus
 
@@ -311,7 +311,7 @@ test('#disconnect()', async () => {
 
 it('emit errer if connect_fail', () => {
   const errorSpy = moxy();
-  const client = new Client({ authorize });
+  const client = new Client({ login });
   client.onError(errorSpy);
 
   const socket = Socket.mock.calls[0].instance;
