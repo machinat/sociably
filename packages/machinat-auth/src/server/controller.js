@@ -14,7 +14,6 @@ import {
 } from '../constant';
 import type {
   ServerAuthorizer,
-  AuthInfo,
   AuthTokenPayload,
   SignRequestBody,
   RefreshRequestBody,
@@ -22,25 +21,11 @@ import type {
   AuthAPIResponseBody,
   VerifiableRequest,
   AuthModuleConfigs,
+  AuthContext,
 } from '../types';
 
 import { getCookies, isSubpath } from './utils';
-import { CookieAccessor, CookieOperator } from './cookie';
-
-type SuccessAuthorizationResult = {|
-  success: true,
-  auth: AuthInfo<any>,
-|};
-
-type FailedAuthorizationResult = {|
-  success: false,
-  code: number,
-  reason: string,
-|};
-
-type AuthorizationResult =
-  | SuccessAuthorizationResult
-  | FailedAuthorizationResult;
+import { CookieAccessor, CookieController } from './cookie';
 
 const getSignature = (req: VerifiableRequest) => {
   const cookies = getCookies(req);
@@ -74,12 +59,16 @@ const respondAPIError = (
   res.end(JSON.stringify({ error: { code, message } }));
 };
 
+type AuthVerifyResult<AuthData> =
+  | { success: true, token: string, auth: AuthContext<AuthData> }
+  | { success: false, token: void | string, code: number, reason: string };
+
 class AuthServerController {
   authorizers: ServerAuthorizer<any, any>[];
   secret: string;
   entryPath: string;
 
-  _sessionOperator: CookieOperator;
+  _cookieController: CookieController;
 
   constructor(
     authorizers: ServerAuthorizer<any, any>[],
@@ -111,7 +100,7 @@ class AuthServerController {
     this.authorizers = authorizers;
     this.entryPath = entryPath;
 
-    this._sessionOperator = new CookieOperator({
+    this._cookieController = new CookieController({
       entryPath,
       secret,
       authCookieAge,
@@ -168,7 +157,7 @@ class AuthServerController {
       await authorizer.delegateAuthRequest(
         req,
         res,
-        new CookieAccessor(req, res, platform, this._sessionOperator)
+        new CookieAccessor(req, res, platform, this._cookieController)
       );
     } catch (err) {
       if (!res.finished) {
@@ -182,25 +171,17 @@ class AuthServerController {
     }
   }
 
-  async verifyHTTPAuthorization(
+  async verifyAuth(
     req: VerifiableRequest,
     tokenProvided?: string
-  ): Promise<AuthorizationResult> {
-    const signature = getSignature(req);
-    if (!signature) {
-      return {
-        success: false,
-        code: 401,
-        reason: 'require signature',
-      };
-    }
-
+  ): Promise<AuthVerifyResult<any>> {
     let token = tokenProvided;
     if (!token) {
       const { authorization } = req.headers;
       if (!authorization) {
         return {
           success: false,
+          token: undefined,
           code: 401,
           reason: 'no Authorization header',
         };
@@ -210,6 +191,7 @@ class AuthServerController {
       if (scheme !== 'Bearer' || !tokenFromHeader) {
         return {
           success: false,
+          token: undefined,
           code: 400,
           reason: 'invalid auth scheme',
         };
@@ -217,9 +199,25 @@ class AuthServerController {
       token = tokenFromHeader;
     }
 
+    const signature = getSignature(req);
+    if (!signature) {
+      return {
+        success: false,
+        token,
+        code: 401,
+        reason: 'require signature',
+      };
+    }
+
     const verifyResult = await this._verifyToken(token, signature);
     if (!verifyResult.success) {
-      return verifyResult;
+      const { code, reason } = verifyResult;
+      return {
+        success: false,
+        token,
+        code,
+        reason,
+      };
     }
 
     const { platform, data, exp, iat } = verifyResult.payload;
@@ -228,6 +226,7 @@ class AuthServerController {
     if (!authorizer) {
       return {
         success: false,
+        token,
         code: 404,
         reason: `unknown platform "${platform}"`,
       };
@@ -237,6 +236,7 @@ class AuthServerController {
     if (!result) {
       return {
         success: false,
+        token,
         code: 400,
         reason: 'invalid auth data',
       };
@@ -245,6 +245,7 @@ class AuthServerController {
     const { authorizedChannel, user } = result;
     return {
       success: true,
+      token,
       auth: {
         platform,
         authorizedChannel,
@@ -284,10 +285,15 @@ class AuthServerController {
       }
 
       const { data, refreshable } = verifyResult;
-      const token = await this._sessionOperator.issueAuth(res, platform, data, {
-        refreshable,
-        signatureOnly: true,
-      });
+      const token = await this._cookieController.issueAuth(
+        res,
+        platform,
+        data,
+        {
+          refreshable,
+          signatureOnly: true,
+        }
+      );
 
       respondAPIOk(res, platform, token);
     } catch (err) {
@@ -347,7 +353,7 @@ class AuthServerController {
           return;
         }
 
-        const newToken = await this._sessionOperator.issueAuth(
+        const newToken = await this._cookieController.issueAuth(
           res,
           platform,
           refreshResult.data,
@@ -409,8 +415,8 @@ class AuthServerController {
     signature: string,
     jwtVerifyOpts?: Object
   ): Promise<
-    | { success: true, payload: AuthTokenPayload<any> }
-    | { success: false, code: number, reason: string }
+    | {| success: true, payload: AuthTokenPayload<any> |}
+    | {| success: false, code: number, reason: string |}
   > {
     try {
       const payload: AuthTokenPayload<any> = await thenifiedly.call(

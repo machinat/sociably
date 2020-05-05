@@ -1,11 +1,12 @@
 // @flow
+/* eslint no-shadow: ["error", { "allow": ["err"] }] */
 import EventEmitter from 'events';
 import invariant from 'invariant';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
 import { decode as decodeJWT } from 'jsonwebtoken';
 import { TOKEN_COOKIE_KEY, ERROR_COOKIE_KEY } from '../constant';
 import type {
-  AuthInfo,
+  AuthContext,
   ClientAuthorizer,
   AuthTokenPayload,
   ErrorTokenPayload,
@@ -14,12 +15,11 @@ import type {
   VerifyRequestBody,
   AuthAPIResponseBody,
   AuthAPIResponseErrorBody,
-  AuthRefineResult,
 } from '../types';
 import AuthError from './error';
 
 type AuthClientOptions = {|
-  authEntry: string,
+  serverURL: string,
   providers: ClientAuthorizer<any, any>[],
   refreshLeadTime?: number,
 |};
@@ -27,18 +27,6 @@ type AuthClientOptions = {|
 declare var location: Location;
 declare var document: Document;
 declare var fetch: (url: string, options: Object) => Object;
-
-const makeContext = (
-  { platform, iat, exp, data }: AuthTokenPayload<any>,
-  { user, authorizedChannel }: AuthRefineResult
-) => ({
-  platform,
-  loginAt: new Date(iat * 1000),
-  expireAt: new Date(exp * 1000),
-  authorizedChannel,
-  user,
-  data,
-});
 
 const deleteCookie = (name: string, domain?: string, path?: string) => {
   document.cookie = serializeCookie(name, '', {
@@ -51,37 +39,42 @@ const deleteCookie = (name: string, domain?: string, path?: string) => {
 const getAuthPayload = (token: string): AuthTokenPayload<any> =>
   decodeJWT(`${token}.`);
 
+type ServerSideResult =
+  | { success: false, platform: string, code: number, reason: string }
+  | {
+      success: true,
+      platform: string,
+      token: string,
+      payload: AuthTokenPayload<any>,
+    };
+
 class AuthClientController extends EventEmitter {
   providers: ClientAuthorizer<any, any>[];
-  authEntry: string;
+  serverURL: string;
   refreshLeadTime: number;
 
   _platform: void | string;
   _authURL: URL;
 
+  _serverSideResult: ?ServerSideResult;
   _authed: null | {|
-    token: void | string,
+    token: string,
     payload: AuthTokenPayload<any>,
-    context: AuthInfo<any>,
+    context: AuthContext<any>,
   |};
 
-  _initedFlag: boolean;
-  _initedPlatforms: Set<string>;
-  _initPromise: null | Promise<void>;
-  _minAuthBegin: number;
+  _initiatingPlatforms: Set<string>;
+  _initiatedPlatforms: Set<string>;
 
-  _initialError: null | Error;
-  _initialAuth: null | {| token: string, payload: AuthTokenPayload<any> |};
+  _initPromise: null | Promise<void>;
+  _authPromise: null | Promise<{ token: string, context: AuthContext<any> }>;
+  _minAuthBeginTime: number;
 
   _refreshTimeoutId: null | TimeoutID;
   _expireTimeoutId: null | TimeoutID;
 
   get platform() {
     return this._platform;
-  }
-
-  get isInitiated() {
-    return !this._initPromise && this._initedFlag;
   }
 
   get isInitiating() {
@@ -92,16 +85,12 @@ class AuthClientController extends EventEmitter {
     return !!this._authed;
   }
 
-  get authContext() {
-    return this._authed && this._authed.context;
-  }
-
   constructor({
     providers,
-    authEntry,
+    serverURL,
     refreshLeadTime = 300, // 5 min
   }: AuthClientOptions = {}) {
-    invariant(authEntry, 'options.authEntry must not be empty');
+    invariant(serverURL, 'options.serverURL must not be empty');
     invariant(
       providers && providers.length > 0,
       'options.providers must not be empty'
@@ -110,17 +99,14 @@ class AuthClientController extends EventEmitter {
     super();
 
     this.providers = providers;
-    this.authEntry = authEntry;
+    this.serverURL = serverURL;
     this.refreshLeadTime = refreshLeadTime;
-    this._authURL = new URL(authEntry, location.href);
+    this._authURL = new URL(serverURL, location.href);
 
-    this._initedFlag = false;
-    this._initedPlatforms = new Set();
+    this._initiatingPlatforms = new Set();
+    this._initiatedPlatforms = new Set();
     this._initPromise = null;
-    this._minAuthBegin = -1;
-
-    this._initialError = null;
-    this._initialAuth = null;
+    this._minAuthBeginTime = -1;
 
     this._platform = undefined;
     this._authed = null;
@@ -129,130 +115,112 @@ class AuthClientController extends EventEmitter {
     this._expireTimeoutId = null;
   }
 
+  isInitiated(platform: string) {
+    return this._initiatedPlatforms.has(platform);
+  }
+
   /**
-   * Initiate the nessesary libs or works for the following auth flow. It should
-   * be called as earlier as possible before your app start rendering, you can
-   * then call auth() to sign in after your app is ready.
-   * The platform to sign user in is decided with the order below:
-   *   init() param -> "platform" querystring param -> backend flow setup
-   * If you want to change the platform, call init() again with new platform
-   * then call auth() again.
+   * Initiate the nessesary libs or works for the following auth flow. You might
+   * want to call it as earlier as possible before your app start rendering, you
+   * can then call auth() to sign in after your app is ready.
+   * The platform to log user in is decided with the order below:
+   *   bootstrap() param -> "platform" querystring param -> backend flow setup
+   * If you want to change the platform, call bootstrap() again with new
+   * platform then call auth() again.
    */
-  init(platformInput?: string) {
+  bootstrap(platformInput?: string): AuthClientController {
     const cookies = parseCookie(document.cookie);
-    let platform;
+    let serverSideResult = null;
 
     if (cookies[ERROR_COOKIE_KEY]) {
       // Error happen in backend flow
       const {
-        platform: errorPlatform,
+        platform,
         error: { code, reason },
         scope: { domain, path },
       }: ErrorTokenPayload = decodeJWT(cookies[ERROR_COOKIE_KEY]);
       deleteCookie(ERROR_COOKIE_KEY, domain, path);
 
-      platform = errorPlatform;
-      this._initialError = new AuthError(code, reason);
+      serverSideResult = {
+        success: false,
+        platform,
+        code,
+        reason,
+      };
     } else if (cookies[TOKEN_COOKIE_KEY]) {
       // Auth completed in backend flow
       const token = cookies[TOKEN_COOKIE_KEY];
       const payload = getAuthPayload(token);
 
-      ({ platform } = payload);
-      this._initialAuth = { token, payload };
+      if (payload.exp * 1000 > Date.now()) {
+        serverSideResult = {
+          success: true,
+          platform: payload.platform,
+          token,
+          payload,
+        };
+      }
     }
 
-    const platformSpecified =
-      platformInput || new URLSearchParams(location.search).get('platform');
+    const platformToBootstrap =
+      platformInput ||
+      new URLSearchParams(location.search).get('platform') ||
+      serverSideResult?.platform;
 
-    if (platformSpecified && platformSpecified !== platform) {
-      // Ignore data in cookie if different platform specified in query
-      platform = platformSpecified;
-      this._initialAuth = null;
-      this._initialError = null;
+    const [err, provider] = this._getProvider(platformToBootstrap);
+    if (err) {
+      this.emit('error', err, this._authed?.context || null);
+      return this;
     }
+
+    if (this._platform && this._platform !== platformToBootstrap) {
+      this.signOut();
+    }
+
+    this._platform = platformToBootstrap;
+    this._serverSideResult =
+      serverSideResult?.platform === platformToBootstrap
+        ? serverSideResult
+        : null;
 
     // Execute init work of platform, promise would be awaited within auth()
-    this._initPromise = this._initProvider(platform)
+    const initPromise = this._initPlatform(provider, this._serverSideResult)
       .catch(err => {
-        this.emit('error', err);
+        this.emit('error', err, this._authed?.context || null);
       })
       .finally(() => {
-        // if init success and no other init() call change the platform
-        if (this._platform === platform || !this._platform) {
+        // if init success and no other init() call make the platform changed
+        if (this._initPromise === initPromise) {
           this._initPromise = null;
         }
       });
+
+    this._initPromise = initPromise;
+    return this;
   }
 
   /**
-   * Execute the auth flow immediatly. If user is already signed in, it would
-   * update auth after succeeded but remain the original auth status when fail.
-   * It resolves an AuthInfo object, but if any signOut() or another auth()
-   * call change the auth status during operation, a null instead.
+   * Return the current token and auth context. For the first time being called,
+   * controller starts the auth flow of the platform selected. The auth status
+   * and following the refreshment and resign work would be managed by the
+   * controller, so any auth() call after the first one do not trigger the auth
+   * flow but just return the current status.
    */
-  async auth(): Promise<AuthInfo<any>> {
-    const beginTime = Date.now();
-    if (this._initPromise) {
-      // Wait for initiation for the first time
-      await this._initPromise;
+  async auth(): Promise<{ token: string, context: AuthContext<any> }> {
+    if (this._authPromise) {
+      return this._authPromise;
     }
 
-    if (!this.isInitiated) {
-      // Initiation failed or not init() at all
-      throw new AuthError(400, 'controller not initiated');
+    if (this._authed) {
+      const { token, context } = this._authed;
+      return { token, context };
     }
 
-    if (this._initialError) {
-      // Throw if error happen in backend flow
-      const err = this._initialError;
-      this._initialError = null;
-      throw err;
-    }
+    this._authPromise = this._auth().finally(() => {
+      this._authPromise = null;
+    });
 
-    const provider = this._getProviderAssertedly(this._platform);
-
-    let token;
-    let payload;
-    if (
-      this._initialAuth &&
-      this._initialAuth.payload.exp * 1000 > Date.now()
-    ) {
-      // auth already completed in backend flow
-      ({ token, payload } = this._initialAuth);
-      this._initialAuth = null;
-    } else {
-      token = await this._signToken(provider);
-      payload = getAuthPayload(token);
-    }
-
-    // Update auth only when no signOut() call or another succeeded auth() call
-    // have happened during the operation time
-    if (beginTime < this._minAuthBegin) {
-      throw new AuthError(403, 'signed out during authenticating');
-    }
-
-    const refinement = await provider.refineAuth(payload.data);
-    if (!refinement) {
-      throw new AuthError(400, 'invalid auth info');
-    }
-    const context = makeContext(payload, refinement);
-
-    // Block any other auth() call begun before this time from updating auth
-    this._minAuthBegin = beginTime;
-    this._setAuth(token, payload, context);
-    return context;
-  }
-
-  /**
-   * Get a token for authorization usage. To authorize a HTTP request, put the
-   * token within "Authorization" header as the format of `Bearer ${token}`.
-   * The controller would automatically refresh the token, so make sure
-   * retrieving new token every time you make a request, you don't need to store
-   * the token by yourself.
-   */
-  getToken() {
-    return this._authed ? this._authed.token : undefined;
+    return this._authPromise;
   }
 
   /**
@@ -266,62 +234,145 @@ class AuthClientController extends EventEmitter {
     }
     this._clearTimeouts();
     // Make sure auth operation executing now will not update auth
-    this._minAuthBegin = Date.now();
+    this._minAuthBeginTime = Date.now();
   }
 
-  async _initProvider(platfrom: void | string) {
-    const provider = this._getProviderAssertedly(platfrom);
-    this._platform = provider.platform;
-    this._initedFlag = false;
+  async _initPlatform(
+    authorizer: ClientAuthorizer<any, any>,
+    serverSideResult: null | ServerSideResult
+  ): Promise<void> {
+    // not initiate for the same platform again
+    if (
+      !this._initiatedPlatforms.has(authorizer.platform) &&
+      !this._initiatingPlatforms.has(authorizer.platform)
+    ) {
+      const platformAuthEntry = this._getAuthEntry(authorizer.platform);
 
-    // not reinitiate provider of the same platform again
-    if (!this._initedPlatforms.has(provider.platform)) {
-      this._initedPlatforms.add(provider.platform);
+      this._initiatingPlatforms.add(authorizer.platform);
+      try {
+        if (serverSideResult) {
+          if (serverSideResult.success) {
+            await authorizer.init(
+              platformAuthEntry,
+              serverSideResult.payload.data,
+              null
+            );
+          } else {
+            const { code, reason } = serverSideResult;
+            await authorizer.init(platformAuthEntry, null, { code, reason });
+          }
+        } else {
+          await authorizer.init(platformAuthEntry, null, null);
+        }
+      } finally {
+        this._initiatingPlatforms.delete(authorizer.platform);
+      }
 
-      this.signOut();
-      const platformAuthEntry = this._getAuthEntry(provider.platform);
-
-      if (this._initialError) {
-        await provider.init(platformAuthEntry, null, this._initialError);
-      } else if (this._initialAuth) {
-        await provider.init(
-          platformAuthEntry,
-          this._initialAuth.payload.data,
-          null
-        );
-      } else {
-        await provider.init(platformAuthEntry, null, null);
+      this._initiatedPlatforms.add(authorizer.platform);
+      // set as initiated if platform is not changed by another call
+      if (this._platform === authorizer.platform) {
+        this.emit('initiate');
       }
     }
-
-    // set as initiated if platform is not changed by another call
-    if (this._platform === provider.platform) {
-      this._initedFlag = true;
-      this.emit('initiate');
-    }
   }
 
-  async _signToken(provider: ClientAuthorizer<any, any>): Promise<string> {
+  async _auth(): Promise<{ token: string, context: AuthContext<any> }> {
+    const beginTime = Date.now();
+    let err;
+
+    while (this._initPromise) {
+      // Wait for initiation for the first time
+      await this._initPromise; // eslint-disable-line no-await-in-loop
+    }
+
+    if (!this._platform) {
+      // Initiation failed or not init() at all
+      throw new AuthError(400, 'controller not boostrapped');
+    }
+
+    const [providerErr, provider] = this._getProvider(this._platform);
+    if (providerErr) {
+      throw providerErr;
+    }
+
+    const serverSideResult = this._serverSideResult;
+    let token;
+    let payload;
+
+    if (
+      !serverSideResult ||
+      (serverSideResult.success &&
+        serverSideResult.payload.exp * 1000 < Date.now())
+    ) {
+      [err, token] = await this._signToken(provider);
+      if (err) {
+        throw err;
+      }
+
+      payload = getAuthPayload(token);
+    } else if (!serverSideResult.success) {
+      const { code, reason } = serverSideResult;
+      throw new AuthError(code, reason);
+    } else {
+      ({ token, payload } = serverSideResult);
+    }
+
+    // Update auth only when no signOut() call or another succeeded auth() call
+    // have happened during the operation time
+    if (beginTime < this._minAuthBeginTime) {
+      throw new AuthError(403, 'signed out during authenticating');
+    }
+
+    const refinement = await provider.refineAuth(payload.data);
+    if (!refinement) {
+      throw new AuthError(400, 'invalid auth info');
+    }
+
+    const { iat, exp, data } = payload;
+    const { authorizedChannel, user } = refinement;
+    const context = {
+      platform: provider.platform,
+      loginAt: new Date(iat * 1000),
+      expireAt: new Date(exp * 1000),
+      authorizedChannel,
+      user,
+      data,
+    };
+
+    // Block any other auth() call begun before this time from updating auth
+    this._minAuthBeginTime = beginTime;
+    this._setAuth(token, payload, context);
+
+    return { token, context };
+  }
+
+  async _signToken(
+    provider: ClientAuthorizer<any, any>
+  ): Promise<[?Error, string]> {
     const { platform } = provider;
     const result = await provider.fetchCredential(this._getAuthEntry(platform));
 
     if (!result.success) {
       const { code, reason } = result;
-      throw new AuthError(code, reason);
+      return [new AuthError(code, reason), ''];
     }
 
-    const { token } = await this._fetchAuthPrivateAPI('_sign', {
+    const [err, body] = await this._callAuthPrivateAPI('_sign', {
       platform,
       credential: result.credential,
     });
 
-    return token;
+    if (err) {
+      return [err, ''];
+    }
+
+    return [null, body.token];
   }
 
   _setAuth(
     token: string,
     payload: AuthTokenPayload<any>,
-    context: AuthInfo<any>
+    context: AuthContext<any>
   ) {
     this._authed = { token, payload, context };
     this._clearTimeouts();
@@ -343,19 +394,36 @@ class AuthClientController extends EventEmitter {
     );
   }
 
-  async _refreshAuth(token: string, { refreshLimit }: AuthTokenPayload<any>) {
-    const provider = this._getProviderAssertedly(this._platform);
+  async _refreshAuth(
+    token: string,
+    { refreshLimit }: AuthTokenPayload<any>
+  ): Promise<void> {
     const beginTime = Date.now();
+    let err;
+
+    const [providerErr, provider] = this._getProvider(this._platform);
+    if (providerErr) {
+      throw providerErr;
+    }
 
     let newToken;
     if (refreshLimit && Date.now() < refreshLimit * 1000) {
       // refresh if token is refreshable
-      ({ token: newToken } = await this._fetchAuthPrivateAPI('_refresh', {
+      const [err, body] = await this._callAuthPrivateAPI('_refresh', {
         token,
-      }));
+      });
+
+      if (err) {
+        throw err;
+      }
+
+      newToken = body.token;
     } else if (provider.shouldResign) {
       // otherwise resign
-      newToken = await this._signToken(provider);
+      [err, newToken] = await this._signToken(provider);
+      if (err) {
+        throw err;
+      }
     } else {
       return;
     }
@@ -365,7 +433,7 @@ class AuthClientController extends EventEmitter {
         ? // give up if auth updated during refreshment
           this._authed.token !== token
         : // if signed out during refreshment
-          beginTime < this._minAuthBegin
+          beginTime < this._minAuthBeginTime
     ) {
       return;
     }
@@ -376,7 +444,17 @@ class AuthClientController extends EventEmitter {
       throw new AuthError(400, 'invalid auth info');
     }
 
-    const context = makeContext(payload, refinement);
+    const { iat, exp, data } = payload;
+    const { authorizedChannel, user } = refinement;
+    const context = {
+      platform: provider.platform,
+      loginAt: new Date(iat * 1000),
+      expireAt: new Date(exp * 1000),
+      authorizedChannel,
+      user,
+      data,
+    };
+
     this._setAuth(newToken, payload, context);
     this.emit('refresh', context);
   }
@@ -385,7 +463,7 @@ class AuthClientController extends EventEmitter {
     this._refreshTimeoutId = null;
 
     this._refreshAuth(token, payload).catch(err => {
-      this.emit('error', err);
+      this.emit('error', err, this._authed?.context || null);
     });
   };
 
@@ -399,15 +477,18 @@ class AuthClientController extends EventEmitter {
     }
   };
 
-  _getProviderAssertedly(platform: void | string): ClientAuthorizer<any, any> {
+  _getProvider(platform: void | string): [?Error, ClientAuthorizer<any, any>] {
     if (!platform) {
-      throw new AuthError(400, 'no platform specified');
+      return [new AuthError(400, 'no platform specified'), (null: any)];
     }
     const provider = this.providers.find(p => p.platform === platform);
     if (!provider) {
-      throw new AuthError(400, `unknown platform "${platform}"`);
+      return [
+        new AuthError(400, `unknown platform "${platform}"`),
+        (null: any),
+      ];
     }
-    return provider;
+    return [null, provider];
   }
 
   _getAuthEntry(route: string) {
@@ -419,10 +500,10 @@ class AuthClientController extends EventEmitter {
     return componentURL.href;
   }
 
-  async _fetchAuthPrivateAPI(
+  async _callAuthPrivateAPI(
     api: string,
     body: SignRequestBody<any> | RefreshRequestBody | VerifyRequestBody
-  ): Promise<AuthAPIResponseBody> {
+  ): Promise<[?Error, AuthAPIResponseBody]> {
     const res = await fetch(this._getAuthEntry(api), {
       method: 'POST',
       body: JSON.stringify(body),
@@ -432,11 +513,11 @@ class AuthClientController extends EventEmitter {
       const {
         error: { code, reason },
       }: AuthAPIResponseErrorBody = await res.json();
-      throw new AuthError(code, reason);
+      return [new AuthError(code, reason), (null: any)];
     }
 
     const result = await res.json();
-    return result;
+    return [null, result];
   }
 
   _clearTimeouts() {

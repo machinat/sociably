@@ -38,7 +38,7 @@ type IssueAuthOptions = {
   signatureOnly?: boolean,
 };
 
-export class CookieOperator {
+export class CookieController {
   options: OperatorOptions;
 
   _cookieScope: {| domain?: string, path: string |};
@@ -280,26 +280,26 @@ export class CookieAccessor {
   _req: IncomingMessage;
   _res: ServerResponse;
   _platform: string;
-  _operator: CookieOperator;
+  _controller: CookieController;
 
   constructor(
     req: IncomingMessage,
     res: ServerResponse,
     platform: string,
-    operator: CookieOperator
+    operator: CookieController
   ) {
     this._req = req;
     this._res = res;
     this._platform = platform;
-    this._operator = operator;
+    this._controller = operator;
   }
 
   getState<StateData>() {
-    return this._operator.getState<StateData>(this._req, this._platform);
+    return this._controller.getState<StateData>(this._req, this._platform);
   }
 
   issueState<StateData>(state: StateData) {
-    return this._operator.issueState<StateData>(
+    return this._controller.issueState<StateData>(
       this._res,
       this._platform,
       state
@@ -307,11 +307,11 @@ export class CookieAccessor {
   }
 
   getAuth<AuthData>() {
-    return this._operator.getAuth<AuthData>(this._req, this._platform);
+    return this._controller.getAuth<AuthData>(this._req, this._platform);
   }
 
   issueAuth<AuthData>(auth: AuthData, options?: IssueAuthOptions) {
-    return this._operator.issueAuth<AuthData>(
+    return this._controller.issueAuth<AuthData>(
       this._res,
       this._platform,
       auth,
@@ -320,10 +320,15 @@ export class CookieAccessor {
   }
 
   getError() {
-    return this._operator.getError(this._req, this._platform);
+    return this._controller.getError(this._req, this._platform);
   }
 
   issueError(code: number, message: string) {
-    return this._operator.issueError(this._res, this._platform, code, message);
+    return this._controller.issueError(
+      this._res,
+      this._platform,
+      code,
+      message
+    );
   }
 }

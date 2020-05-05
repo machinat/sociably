@@ -79,7 +79,7 @@ const barProvider = moxy({
 });
 
 const providers = [fooProvider, barProvider];
-const authEntry = '/auth';
+const serverURL = '/auth';
 
 const _DateNow = Date.now;
 const FAKE_NOW = 1570000000000;
@@ -105,59 +105,54 @@ afterAll(() => {
 });
 
 describe('#constructor(options)', () => {
-  it('has basic props', () => {
-    let controller = new AuthClientController({ providers, authEntry });
+  test('basic props', () => {
+    let controller = new AuthClientController({ providers, serverURL });
     expect(controller.providers).toEqual(providers);
-    expect(controller.authEntry).toBe('/auth');
+    expect(controller.serverURL).toBe('/auth');
     expect(controller.refreshLeadTime).toBe(300);
 
     controller = new AuthClientController({
       providers,
-      authEntry: '/auth',
+      serverURL: '/auth',
       refreshLeadTime: 999,
     });
     expect(controller.refreshLeadTime).toBe(999);
 
     expect(controller.platform).toBe(undefined);
-    expect(controller.isInitiated).toBe(false);
     expect(controller.isInitiating).toBe(false);
-    expect(controller.authContext).toBe(null);
-    expect(controller.getToken()).toBe(undefined);
   });
 
   it('throw if provider is empty', () => {
     expect(
-      () => new AuthClientController({ authEntry: '/auth' })
+      () => new AuthClientController({ serverURL: '/auth' })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.providers must not be empty"`
     );
     expect(
-      () => new AuthClientController({ providers: [], authEntry: '/auth' })
+      () => new AuthClientController({ providers: [], serverURL: '/auth' })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.providers must not be empty"`
     );
   });
 
-  it('throw if authEntry is empty', () => {
+  it('throw if serverURL is empty', () => {
     expect(
       () => new AuthClientController({ providers })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.authEntry must not be empty"`
+      `"options.serverURL must not be empty"`
     );
   });
 });
 
 describe('#init()', () => {
-  it('call provider.init() of the corresonded platform', async () => {
-    const controller = new AuthClientController({ providers, authEntry });
+  it('call provider.bootstrap() of the corresonded platform', async () => {
+    const controller = new AuthClientController({ providers, serverURL });
 
-    controller.init();
+    controller.bootstrap();
 
     expect(controller.platform).toBe('foo');
     expect(controller.isInitiating).toBe(true);
-    expect(controller.isInitiated).toBe(false);
-    expect(controller.authContext).toBe(null);
-    expect(controller.getToken()).toBe(undefined);
+    expect(controller.isInitiated('foo')).toBe(false);
 
     expect(fooProvider.init.mock).toHaveBeenCalledTimes(1);
     expect(fooProvider.init.mock).toHaveBeenCalledWith(
@@ -169,9 +164,7 @@ describe('#init()', () => {
     await delayLoops();
     expect(controller.platform).toBe('foo');
     expect(controller.isInitiating).toBe(false);
-    expect(controller.isInitiated).toBe(true);
-    expect(controller.authContext).toBe(null);
-    expect(controller.getToken()).toBe(undefined);
+    expect(controller.isInitiated('foo')).toBe(true);
   });
 
   test.each`
@@ -186,7 +179,7 @@ describe('#init()', () => {
     ${undefined} | ${'bar'}     | ${undefined} | ${'foo'}     | ${'bar'}
     ${'bar'}     | ${undefined} | ${undefined} | ${'foo'}     | ${'bar'}
   `(
-    'platform choosing priority and data or error arg from backend flow',
+    'platform choosing priority',
     async ({ param, query, authed, errored, toInit }) => {
       global.location.mock
         .getter('search')
@@ -211,15 +204,14 @@ describe('#init()', () => {
 
       const controller = new AuthClientController({
         providers,
-        authEntry: '/auth',
+        serverURL: '/auth',
       });
-      controller.init(param);
+
+      expect(controller.isInitiated(toInit)).toBe(false);
+      controller.bootstrap(param);
 
       expect(controller.platform).toBe(toInit);
       expect(controller.isInitiating).toBe(true);
-      expect(controller.isInitiated).toBe(false);
-      expect(controller.authContext).toBe(null);
-      expect(controller.getToken()).toBe(undefined);
 
       await delayLoops();
 
@@ -228,22 +220,20 @@ describe('#init()', () => {
         expect(fooProvider.init.mock).toHaveBeenCalledWith(
           'https://machinat.io/auth/foo',
           authed === 'foo' ? { foo: 'data' } : null,
-          errored === 'foo' ? new Error("I'm a teapot") : null
+          errored === 'foo' ? { code: 418, reason: "I'm a teapot" } : null
         );
       } else if (toInit === 'bar') {
         expect(barProvider.init.mock).toHaveBeenCalledTimes(1);
         expect(barProvider.init.mock).toHaveBeenCalledWith(
           'https://machinat.io/auth/bar',
           authed === 'bar' ? { bar: 'data' } : null,
-          errored === 'bar' ? new Error("I'm a teapot") : null
+          errored === 'bar' ? { code: 418, reason: "I'm a teapot" } : null
         );
       }
 
       expect(controller.platform).toBe(toInit);
       expect(controller.isInitiating).toBe(false);
-      expect(controller.isInitiated).toBe(true);
-      expect(controller.authContext).toBe(null);
-      expect(controller.getToken()).toBe(undefined);
+      expect(controller.isInitiated(toInit)).toBe(true);
     }
   );
 
@@ -254,8 +244,8 @@ describe('#init()', () => {
       scope: { domain: 'machinat.io', path: '/entry' },
     });
 
-    const controller = new AuthClientController({ providers, authEntry });
-    controller.init();
+    const controller = new AuthClientController({ providers, serverURL });
+    controller.bootstrap();
 
     expect(global.document.mock.setter('cookie')).toHaveBeenCalledTimes(1);
     expect(
@@ -265,79 +255,82 @@ describe('#init()', () => {
     );
   });
 
-  it('emit error if provider.init() reject', async () => {
-    const controller = new AuthClientController({ providers, authEntry });
+  it('emit error if provider.bootstrap() reject', async () => {
+    const controller = new AuthClientController({ providers, serverURL });
     const errorSpy = moxy();
     controller.on('error', errorSpy);
-    controller.init('baz');
+    controller.bootstrap('baz');
 
     await delayLoops();
     expect(errorSpy.mock).toHaveBeenCalledTimes(1);
-    expect(errorSpy.mock.calls[0].args[0]).toMatchInlineSnapshot(
-      `[Error: unknown platform "baz"]`
+    expect(errorSpy.mock).toHaveBeenCalledWith(
+      new Error('unknown platform "baz"'),
+      null
     );
   });
 
   it('emit error if no platform specified or paltform unknown', async () => {
-    const controller = new AuthClientController({ providers, authEntry });
+    const controller = new AuthClientController({ providers, serverURL });
     const errorSpy = moxy();
     controller.on('error', errorSpy);
 
     global.location.mock.getter('search').fakeReturnValue('');
 
-    controller.init();
+    controller.bootstrap();
     await delayLoops();
     expect(errorSpy.mock).toHaveBeenCalledTimes(1);
-    expect(errorSpy.mock.calls[0].args[0]).toMatchInlineSnapshot(
-      `[Error: no platform specified]`
+    expect(errorSpy.mock).toHaveBeenCalledWith(
+      new Error('no platform specified'),
+      null
     );
 
-    controller.init('baz');
+    controller.bootstrap('baz');
     expect(controller.platform).toBe(undefined);
 
     await delayLoops();
     expect(errorSpy.mock).toHaveBeenCalledTimes(2);
-    expect(errorSpy.mock.calls[1].args[0]).toMatchInlineSnapshot(
-      `[Error: unknown platform "baz"]`
+    expect(errorSpy.mock).toHaveBeenCalledWith(
+      new Error('unknown platform "baz"'),
+      null
     );
   });
 
   it('ignore reinit the same platform again', async () => {
-    const controller = new AuthClientController({ providers, authEntry });
+    const controller = new AuthClientController({ providers, serverURL });
 
-    controller.init('foo');
-    controller.init('foo');
+    controller.bootstrap('foo');
+    controller.bootstrap('foo');
     await delayLoops();
-    controller.init('foo');
+    controller.bootstrap('foo');
     await delayLoops();
 
     expect(fooProvider.init.mock).toHaveBeenCalledTimes(1);
 
     expect(controller.platform).toBe('foo');
     expect(controller.isInitiating).toBe(false);
-    expect(controller.isInitiated).toBe(true);
+    expect(controller.isInitiated('foo')).toBe(true);
   });
 
   it('can reinit with another platform specified', async () => {
-    const controller = new AuthClientController({ providers, authEntry });
-    controller.init('foo');
+    const controller = new AuthClientController({ providers, serverURL });
+    controller.bootstrap('foo');
     expect(controller.platform).toBe('foo');
 
-    controller.init('bar');
+    controller.bootstrap('bar');
     expect(controller.platform).toBe('bar');
     expect(controller.isInitiating).toBe(true);
-    expect(controller.isInitiated).toBe(false);
+    expect(controller.isInitiated('bar')).toBe(false);
 
     await delayLoops();
     expect(controller.platform).toBe('bar');
     expect(controller.isInitiating).toBe(false);
-    expect(controller.isInitiated).toBe(true);
+    expect(controller.isInitiated('bar')).toBe(true);
 
-    controller.init('foo');
+    controller.bootstrap('foo');
     await delayLoops();
     expect(controller.platform).toBe('foo');
     expect(controller.isInitiating).toBe(false);
-    expect(controller.isInitiated).toBe(true);
+    expect(controller.isInitiated('foo')).toBe(true);
 
     expect(fooProvider.init.mock).toHaveBeenCalledTimes(1);
     expect(fooProvider.init.mock).toHaveBeenCalledWith(
@@ -363,12 +356,12 @@ describe('#init()', () => {
       exp: SEC_NOW + 9999,
     });
 
-    const controller = new AuthClientController({ providers, authEntry });
-    controller.init('foo');
+    const controller = new AuthClientController({ providers, serverURL });
+    controller.bootstrap('foo');
     await controller.auth();
     expect(controller.isAuthed).toBe(true);
 
-    controller.init('bar');
+    controller.bootstrap('bar');
     expect(controller.isAuthed).toBe(false);
   });
 });
@@ -382,52 +375,52 @@ describe('#auth()', () => {
     exp: SEC_NOW + 1000,
     refreshLimit: SEC_NOW + 10000,
   };
+
+  const expectedContext = {
+    platform: 'foo',
+    user: { id: 'foo' },
+    authorizedChannel: { id: 'foo' },
+    data: { foo: 'data' },
+    loginAt: new Date(authPayload.iat * 1000),
+    expireAt: new Date(authPayload.exp * 1000),
+  };
+
   const token = makeToken(authPayload);
 
-  test('already signed in within backend flow', async () => {
+  test('auth flow already finished in server side', async () => {
     setBackendAuthed(authPayload);
 
-    const controller = new AuthClientController({ providers, authEntry });
-    controller.init('foo');
+    const controller = new AuthClientController({ providers, serverURL });
+    controller.bootstrap('foo');
 
-    const expectedCtx = {
-      platform: 'foo',
-      user: { id: 'foo' },
-      authorizedChannel: { id: 'foo' },
-      data: { foo: 'data' },
-      loginAt: new Date(FAKE_NOW - 10000),
-      expireAt: new Date(FAKE_NOW + 1000000),
-    };
+    await expect(controller.auth()).resolves.toEqual({
+      token,
+      context: expectedContext,
+    });
 
-    await expect(controller.auth()).resolves.toEqual(expectedCtx);
-    expect(controller.isInitiated).toBe(true);
+    expect(controller.isInitiated('foo')).toBe(true);
     expect(controller.isAuthed).toBe(true);
-    expect(controller.authContext).toEqual(expectedCtx);
-    expect(controller.getToken()).toMatchInlineSnapshot(
-      `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1Njk5OTk5OTAsImV4cCI6MTU3MDAwMTAwMCwicmVmcmVzaExpbWl0IjoxNTcwMDEwMDAwfQ"`
-    );
+
     expect(fooProvider.refineAuth.mock).toHaveBeenCalledTimes(1);
     expect(fooProvider.refineAuth.mock).toHaveBeenCalledWith({ foo: 'data' });
   });
 
-  it('throw if error in backend flow happen', async () => {
+  it('throw if error in server side auth flow happen', async () => {
     setBackendErrored({
       platform: 'foo',
       error: { code: 418, reason: "I'm a teapot" },
       scope: { path: '/' },
     });
 
-    const controller = new AuthClientController({ providers, authEntry });
-    controller.init('foo');
+    const controller = new AuthClientController({ providers, serverURL });
+    controller.bootstrap('foo');
 
     await expect(controller.auth()).rejects.toThrowErrorMatchingInlineSnapshot(
       `"I'm a teapot"`
     );
 
-    expect(controller.isInitiated).toBe(true);
+    expect(controller.isInitiated('foo')).toBe(true);
     expect(controller.isAuthed).toBe(false);
-    expect(controller.authContext).toBe(null);
-    expect(controller.getToken()).toBe(undefined);
   });
 
   it('get credential from provider and sign in', async () => {
@@ -438,35 +431,49 @@ describe('#auth()', () => {
       })
       .reply(200, { platform: 'foo', token });
 
-    const controller = new AuthClientController({ providers, authEntry });
-    controller.init('foo');
+    const controller = new AuthClientController({ providers, serverURL });
+    controller.bootstrap('foo');
 
-    await expect(controller.auth()).resolves.toMatchInlineSnapshot(`
-            Object {
-              "authorizedChannel": Object {
-                "id": "foo",
-              },
-              "data": Object {
-                "foo": "data",
-              },
-              "expireAt": 2019-10-02T07:23:20.000Z,
-              "loginAt": 2019-10-02T07:06:30.000Z,
-              "platform": "foo",
-              "user": Object {
-                "id": "foo",
-              },
-            }
-          `);
+    await expect(controller.auth()).resolves.toEqual({
+      token,
+      context: expectedContext,
+    });
 
     expect(signingCall.isDone()).toBe(true);
     expect(controller.isAuthed).toBe(true);
-    expect(controller.getToken()).toBe(token);
     expect(fooProvider.fetchCredential.mock).toHaveBeenCalledTimes(1);
     expect(fooProvider.fetchCredential.mock).toHaveBeenCalledWith(
       'https://machinat.io/auth/foo'
     );
     expect(fooProvider.refineAuth.mock).toHaveBeenCalledTimes(1);
     expect(fooProvider.refineAuth.mock).toHaveBeenCalledWith({ foo: 'data' });
+  });
+
+  it('return the the current auth status if it is already authed or authenticating', async () => {
+    const signingCall = serverEntry
+      .post('/auth/_sign', {
+        platform: 'foo',
+        credential: { foo: 'credential' },
+      })
+      .reply(200, { platform: 'foo', token });
+
+    const controller = new AuthClientController({ providers, serverURL });
+    controller.bootstrap('foo');
+
+    const expectedResult = { token, context: expectedContext };
+
+    const promise1 = controller.auth();
+    const promise2 = controller.auth();
+
+    await expect(promise1).resolves.toEqual(expectedResult);
+    await expect(promise2).resolves.toEqual(expectedResult);
+
+    await expect(controller.auth()).resolves.toEqual(expectedResult);
+
+    expect(signingCall.isDone()).toBe(true);
+    expect(controller.isAuthed).toBe(true);
+    expect(fooProvider.fetchCredential.mock).toHaveBeenCalledTimes(1);
+    expect(fooProvider.refineAuth.mock).toHaveBeenCalledTimes(1);
   });
 
   it('sign again if token in cookie expired', async () => {
@@ -485,26 +492,14 @@ describe('#auth()', () => {
       })
       .reply(200, { platform: 'foo', token });
 
-    const controller = new AuthClientController({ providers, authEntry });
-    controller.init('foo');
+    const controller = new AuthClientController({ providers, serverURL });
+    controller.bootstrap('foo');
 
-    await expect(controller.auth()).resolves.toMatchInlineSnapshot(`
-            Object {
-              "authorizedChannel": Object {
-                "id": "foo",
-              },
-              "data": Object {
-                "foo": "data",
-              },
-              "expireAt": 2019-10-02T07:23:20.000Z,
-              "loginAt": 2019-10-02T07:06:30.000Z,
-              "platform": "foo",
-              "user": Object {
-                "id": "foo",
-              },
-            }
-          `);
-    expect(controller.getToken()).toBe(token);
+    await expect(controller.auth()).resolves.toEqual({
+      token,
+      context: expectedContext,
+    });
+
     expect(signingCall.isDone()).toBe(true);
   });
 
@@ -516,8 +511,8 @@ describe('#auth()', () => {
       })
       .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
 
-    const controller = new AuthClientController({ providers, authEntry });
-    controller.init('foo');
+    const controller = new AuthClientController({ providers, serverURL });
+    controller.bootstrap('foo');
 
     await expect(controller.auth()).rejects.toThrowErrorMatchingInlineSnapshot(
       `"I'm a teapot"`
@@ -530,12 +525,11 @@ describe('#auth()', () => {
   });
 
   it('throw if controller not initiated', async () => {
-    const controller = new AuthClientController({ providers, authEntry });
+    const controller = new AuthClientController({ providers, serverURL });
 
     await expect(controller.auth()).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"controller not initiated"`
+      `"controller not boostrapped"`
     );
-    expect(controller.isInitiated).toBe(false);
     expect(controller.isAuthed).toBe(false);
   });
 
@@ -552,8 +546,8 @@ describe('#auth()', () => {
 
     fooProvider.refineAuth.mock.fake(() => null);
 
-    const controller = new AuthClientController({ providers, authEntry });
-    controller.init('foo');
+    const controller = new AuthClientController({ providers, serverURL });
+    controller.bootstrap('foo');
 
     await expect(controller.auth()).rejects.toThrowErrorMatchingInlineSnapshot(
       `"invalid auth info"`
@@ -561,7 +555,6 @@ describe('#auth()', () => {
 
     expect(signingCall.isDone()).toBe(true);
     expect(controller.isAuthed).toBe(false);
-    expect(controller.getToken()).toBe(undefined);
     expect(fooProvider.fetchCredential.mock).toHaveBeenCalledTimes(1);
     expect(fooProvider.refineAuth.mock).toHaveBeenCalledTimes(1);
     expect(fooProvider.refineAuth.mock).toHaveBeenCalledWith({ foo: 'data' });
@@ -578,8 +571,8 @@ describe('#auth()', () => {
         token,
       });
 
-    const controller = new AuthClientController({ providers, authEntry });
-    controller.init();
+    const controller = new AuthClientController({ providers, serverURL });
+    controller.bootstrap();
 
     const promise = controller.auth();
     Date.now.mock.fake(() => FAKE_NOW + 50);
@@ -606,7 +599,7 @@ describe('auth refreshment and expiry', () => {
 
     controller = new AuthClientController({
       providers,
-      authEntry,
+      serverURL,
       refreshLeadTime: 10,
     });
     controller.on('expire', expireSpy);
@@ -623,21 +616,19 @@ describe('auth refreshment and expiry', () => {
       exp: SEC_NOW + 999,
       refreshLimit: SEC_NOW + 99999,
     });
-
-    controller.init();
-    await controller.auth();
-    expect(controller.isAuthed).toBe(true);
+    controller.bootstrap();
 
     for (let i = 1; i <= 10; i += 1) {
-      const token = controller.getToken();
-      const newToken = makeToken({
+      const { token } = await controller.auth(); // eslint-disable-line no-await-in-loop
+      const newPayload = {
         platform: 'foo',
         data: { foo: 'data' },
         scope: { path: '/' },
         iat: SEC_NOW + 990 * i,
         exp: SEC_NOW + 1990 * i,
         refreshLimit: SEC_NOW + 99999,
-      });
+      };
+      const newToken = makeToken(newPayload);
 
       const refreshingCall = serverEntry
         .post('/auth/_refresh', { token })
@@ -648,8 +639,20 @@ describe('auth refreshment and expiry', () => {
 
       expect(refreshingCall.isDone()).toBe(true);
       expect(controller.isAuthed).toBe(true);
-      expect(controller.getToken()).toBe(newToken);
       expect(refreshSpy.mock).toHaveBeenCalledTimes(i);
+
+      // eslint-disable-next-line no-await-in-loop
+      await expect(controller.auth()).resolves.toEqual({
+        token: newToken,
+        context: {
+          platform: 'foo',
+          user: { id: 'foo' },
+          authorizedChannel: { id: 'foo' },
+          data: { foo: 'data' },
+          loginAt: new Date(newPayload.iat * 1000),
+          expireAt: new Date(newPayload.exp * 1000),
+        },
+      });
     }
 
     expect(fooProvider.fetchCredential.mock).not.toHaveBeenCalled();
@@ -667,12 +670,9 @@ describe('auth refreshment and expiry', () => {
       refreshLimit: SEC_NOW + 99999,
     });
 
-    controller.init();
-    await controller.auth();
+    controller.bootstrap();
+    const { token, context } = await controller.auth();
     expect(controller.isAuthed).toBe(true);
-    const initialCtx = controller.authContext;
-
-    const token = controller.getToken();
 
     const refreshingCall = serverEntry
       .post('/auth/_refresh', { token })
@@ -684,22 +684,27 @@ describe('auth refreshment and expiry', () => {
     expect(refreshingCall.isDone()).toBe(true);
     expect(controller.isAuthed).toBe(true);
     expect(errorSpy.mock).toHaveBeenCalledTimes(1);
-
-    const error = errorSpy.mock.calls[0].args[0];
-    expect(error).toMatchInlineSnapshot(`[Error: I'm a teapot]`);
-    expect(error.code).toBe(418);
+    expect(errorSpy.mock).toHaveBeenCalledWith(
+      new Error("I'm a teapot"),
+      context
+    );
     expect(expireSpy.mock).not.toHaveBeenCalled();
+
+    await expect(controller.auth()).resolves.toEqual({
+      token,
+      context,
+    });
 
     jest.advanceTimersToNextTimer(1);
     await delayLoops();
 
     expect(refreshSpy.mock).not.toHaveBeenCalled();
     expect(expireSpy.mock).toHaveBeenCalledTimes(1);
-    expect(expireSpy.mock).toHaveBeenCalledWith(initialCtx);
+    expect(expireSpy.mock).toHaveBeenCalledWith(context);
     expect(fooProvider.fetchCredential.mock).not.toHaveBeenCalled();
   });
 
-  it('resign when not refreshable if provider.shouldResign', async () => {
+  it('resign instead of refresh if provider.shouldResign', async () => {
     setBackendAuthed({
       platform: 'foo',
       data: { foo: 'data' },
@@ -708,18 +713,19 @@ describe('auth refreshment and expiry', () => {
       exp: SEC_NOW + 999,
     });
 
-    controller.init();
+    controller.bootstrap();
     await controller.auth();
     expect(controller.isAuthed).toBe(true);
 
     for (let i = 1; i <= 10; i += 1) {
-      const newToken = makeToken({
+      const newPayload = {
         platform: 'foo',
         data: { foo: 'data' },
         scope: { path: '/' },
         iat: SEC_NOW + 990 * i,
         exp: SEC_NOW + 1990 * i,
-      });
+      };
+      const newToken = makeToken(newPayload);
 
       const refreshingCall = serverEntry
         .post('/auth/_sign', {
@@ -733,9 +739,21 @@ describe('auth refreshment and expiry', () => {
 
       expect(refreshingCall.isDone()).toBe(true);
       expect(controller.isAuthed).toBe(true);
-      expect(controller.getToken()).toBe(newToken);
       expect(refreshSpy.mock).toHaveBeenCalledTimes(i);
       expect(fooProvider.fetchCredential.mock).toHaveBeenCalledTimes(i);
+
+      // eslint-disable-next-line
+      await expect(controller.auth()).resolves.toEqual({
+        token: newToken,
+        context: {
+          platform: 'foo',
+          user: { id: 'foo' },
+          authorizedChannel: { id: 'foo' },
+          data: { foo: 'data' },
+          loginAt: new Date(newPayload.iat * 1000),
+          expireAt: new Date(newPayload.exp * 1000),
+        },
+      });
     }
 
     expect(expireSpy.mock).not.toHaveBeenCalled();
@@ -757,28 +775,33 @@ describe('auth refreshment and expiry', () => {
       reason: "You don't see me",
     }));
 
-    controller.init();
-    await controller.auth();
+    controller.bootstrap();
+    const { token, context } = await controller.auth();
     expect(controller.isAuthed).toBe(true);
-    const initialCtx = controller.authContext;
 
     jest.advanceTimersToNextTimer(1);
     await delayLoops(5);
 
     expect(controller.isAuthed).toBe(true);
     expect(fooProvider.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(errorSpy.mock).toHaveBeenCalledTimes(1);
 
-    const error = errorSpy.mock.calls[0].args[0];
-    expect(error).toMatchInlineSnapshot(`[Error: You don't see me]`);
-    expect(error.code).toBe(404);
+    expect(errorSpy.mock).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock).toHaveBeenCalledWith(
+      new Error("You don't see me"),
+      context
+    );
     expect(expireSpy.mock).not.toHaveBeenCalled();
+
+    await expect(controller.auth()).resolves.toEqual({
+      token,
+      context,
+    });
 
     jest.advanceTimersToNextTimer(1);
     await delayLoops();
 
     expect(expireSpy.mock).toHaveBeenCalledTimes(1);
-    expect(expireSpy.mock).toHaveBeenCalledWith(initialCtx);
+    expect(expireSpy.mock).toHaveBeenCalledWith(context);
     expect(refreshSpy.mock).not.toHaveBeenCalled();
   });
 
@@ -791,10 +814,9 @@ describe('auth refreshment and expiry', () => {
       exp: SEC_NOW + 999,
     });
 
-    controller.init();
-    await controller.auth();
+    controller.bootstrap();
+    const { token, context } = await controller.auth();
     expect(controller.isAuthed).toBe(true);
-    const initialCtx = controller.authContext;
 
     const refreshingCall = serverEntry
       .post('/auth/_sign', {
@@ -809,22 +831,28 @@ describe('auth refreshment and expiry', () => {
     expect(refreshingCall.isDone()).toBe(true);
     expect(controller.isAuthed).toBe(true);
     expect(fooProvider.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(errorSpy.mock).toHaveBeenCalledTimes(1);
 
-    const error = errorSpy.mock.calls[0].args[0];
-    expect(error).toMatchInlineSnapshot(`[Error: I'm a teapot]`);
-    expect(error.code).toBe(418);
+    expect(errorSpy.mock).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock).toHaveBeenCalledWith(
+      new Error("I'm a teapot"),
+      context
+    );
     expect(expireSpy.mock).not.toHaveBeenCalled();
+
+    await expect(controller.auth()).resolves.toEqual({
+      token,
+      context,
+    });
 
     jest.advanceTimersToNextTimer(1);
     await delayLoops();
 
     expect(expireSpy.mock).toHaveBeenCalledTimes(1);
-    expect(expireSpy.mock).toHaveBeenCalledWith(initialCtx);
+    expect(expireSpy.mock).toHaveBeenCalledWith(context);
     expect(refreshSpy.mock).not.toHaveBeenCalled();
   });
 
-  it('let it expire when not refreshable if not provider.shouldResign', async () => {
+  it('expire if not refreshable when provider.shouldResign is false', async () => {
     fooProvider.mock.getter('shouldResign').fakeReturnValue(false);
 
     setBackendAuthed({
@@ -835,7 +863,7 @@ describe('auth refreshment and expiry', () => {
       exp: SEC_NOW + 999,
     });
 
-    controller.init();
+    controller.bootstrap();
     await controller.auth();
     expect(controller.isAuthed).toBe(true);
 
@@ -851,7 +879,6 @@ describe('auth refreshment and expiry', () => {
     expect(errorSpy.mock).not.toHaveBeenCalled();
     expect(expireSpy.mock).toHaveBeenCalledTimes(1);
     expect(controller.isAuthed).toBe(false);
-    expect(controller.getToken()).toBe(undefined);
   });
 
   it('not update auth if signOut() during refreshment', async () => {
@@ -864,12 +891,12 @@ describe('auth refreshment and expiry', () => {
       refreshLimit: SEC_NOW + 99999,
     });
 
-    controller.init();
-    await controller.auth();
+    controller.bootstrap();
+    const { token } = await controller.auth();
     expect(controller.isAuthed).toBe(true);
 
     const refreshingCall = serverEntry
-      .post('/auth/_refresh', { token: controller.getToken() })
+      .post('/auth/_refresh', { token })
       .delay(10)
       .reply(200, {
         token: makeToken({
@@ -912,20 +939,19 @@ test('#signOut()', async () => {
     refreshLimit: SEC_NOW + 99999,
   });
 
-  const controller = new AuthClientController({ providers, authEntry });
+  const controller = new AuthClientController({ providers, serverURL });
   const expireSpy = moxy();
   const errorSpy = moxy();
   controller.on('expire', expireSpy);
   controller.on('error', errorSpy);
 
-  controller.init();
+  controller.bootstrap();
   await controller.auth();
   expect(controller.isAuthed).toBe(true);
 
   expect(controller.signOut()).toBe(undefined);
 
   expect(controller.isAuthed).toBe(false);
-  expect(controller.getToken()).toBe(undefined);
   expect(expireSpy.mock).not.toHaveBeenCalled();
   expect(errorSpy.mock).not.toHaveBeenCalled();
 });

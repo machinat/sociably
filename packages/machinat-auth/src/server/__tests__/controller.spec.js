@@ -1721,7 +1721,7 @@ describe('#delegateAuthRequest(req, res)', () => {
   });
 });
 
-describe('#verifyHTTPAuthorization(req)', () => {
+describe('#verifyAuth(req)', () => {
   const [token, signature] = prepareToken({
     platform: 'foo',
     data: { foo: 'data' },
@@ -1734,7 +1734,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
   it('resolve auth context if authorization verified', async () => {
     const controller = new ServerController(authorizers, { secret });
     await expect(
-      controller.verifyHTTPAuthorization(
+      controller.verifyAuth(
         prepareReq(
           'POST',
           'https://auth.machinat.com/foo',
@@ -1762,6 +1762,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
                 },
               },
               "success": true,
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwicmVmcmVzaExpbWl0IjoxNTcwMDk5OTk5LCJzY29wZSI6eyJwYXRoIjoiLyJ9fQ",
             }
           `);
 
@@ -1772,7 +1773,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
   it('work with token passed as 2nd param', async () => {
     const controller = new ServerController(authorizers, { secret });
     await expect(
-      controller.verifyHTTPAuthorization(
+      controller.verifyAuth(
         prepareReq(
           'POST',
           'https://auth.machinat.com/foo',
@@ -1798,6 +1799,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
                 },
               },
               "success": true,
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwicmVmcmVzaExpbWl0IjoxNTcwMDk5OTk5LCJzY29wZSI6eyJwYXRoIjoiLyJ9fQ",
             }
           `);
 
@@ -1808,7 +1810,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
   it('throw 401 if signature invalid', async () => {
     const controller = new ServerController(authorizers, { secret });
     await expect(
-      controller.verifyHTTPAuthorization(
+      controller.verifyAuth(
         prepareReq(
           'POST',
           'https://auth.machinat.com/foo',
@@ -1824,6 +1826,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
               "code": 400,
               "reason": "invalid signature",
               "success": false,
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwicmVmcmVzaExpbWl0IjoxNTcwMDk5OTk5LCJzY29wZSI6eyJwYXRoIjoiLyJ9fQ",
             }
           `);
 
@@ -1833,7 +1836,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
   it('throw 401 if no signature in cookies', async () => {
     const controller = new ServerController(authorizers, { secret });
     await expect(
-      controller.verifyHTTPAuthorization(
+      controller.verifyAuth(
         prepareReq(
           'POST',
           'https://auth.machinat.com/foo',
@@ -1846,6 +1849,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
               "code": 401,
               "reason": "require signature",
               "success": false,
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwicmVmcmVzaExpbWl0IjoxNTcwMDk5OTk5LCJzY29wZSI6eyJwYXRoIjoiLyJ9fQ",
             }
           `);
 
@@ -1855,7 +1859,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
   it('throw 401 if no token provided', async () => {
     const controller = new ServerController(authorizers, { secret });
     await expect(
-      controller.verifyHTTPAuthorization(
+      controller.verifyAuth(
         prepareReq(
           'POST',
           'https://auth.machinat.com/foo',
@@ -1868,6 +1872,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
               "code": 401,
               "reason": "no Authorization header",
               "success": false,
+              "token": undefined,
             }
           `);
 
@@ -1877,7 +1882,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
   it('throw 400 if no invalid authorization format received', async () => {
     const controller = new ServerController(authorizers, { secret });
     await expect(
-      controller.verifyHTTPAuthorization(
+      controller.verifyAuth(
         prepareReq(
           'POST',
           'https://auth.machinat.com/foo',
@@ -1893,6 +1898,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
               "code": 400,
               "reason": "invalid auth scheme",
               "success": false,
+              "token": undefined,
             }
           `);
 
@@ -1911,7 +1917,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
 
     const controller = new ServerController(authorizers, { secret });
     await expect(
-      controller.verifyHTTPAuthorization(
+      controller.verifyAuth(
         prepareReq(
           'POST',
           'https://auth.machinat.com/foo',
@@ -1927,6 +1933,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
               "code": 404,
               "reason": "unknown platform \\"baz\\"",
               "success": false,
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImJheiIsImRhdGEiOnsiYmF6IjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwicmVmcmVzaExpbWl0IjoxNTcwMDk5OTk5LCJzY29wZSI6eyJwYXRoIjoiLyJ9fQ",
             }
           `);
 
@@ -1940,7 +1947,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
 
     const controller = new ServerController(authorizers, { secret });
     await expect(
-      controller.verifyHTTPAuthorization(
+      controller.verifyAuth(
         prepareReq(
           'POST',
           'https://auth.machinat.com/foo',
@@ -1956,6 +1963,7 @@ describe('#verifyHTTPAuthorization(req)', () => {
               "code": 400,
               "reason": "invalid auth data",
               "success": false,
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwicmVmcmVzaExpbWl0IjoxNTcwMDk5OTk5LCJzY29wZSI6eyJwYXRoIjoiLyJ9fQ",
             }
           `);
 
