@@ -50,13 +50,9 @@ const respondAPIOk = (res: ServerResponse, platform: string, token: string) => {
   res.end(JSON.stringify(({ platform, token }: AuthAPIResponseBody)));
 };
 
-const respondAPIError = (
-  res: ServerResponse,
-  code: number,
-  message: string
-) => {
+const respondAPIError = (res: ServerResponse, code: number, reason: string) => {
   res.writeHead(code, CONTENT_TYPE_JSON);
-  res.end(JSON.stringify({ error: { code, message } }));
+  res.end(JSON.stringify({ error: { code, reason } }));
 };
 
 type AuthVerifyResult<AuthData> =

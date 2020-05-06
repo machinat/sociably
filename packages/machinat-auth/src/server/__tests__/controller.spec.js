@@ -159,12 +159,12 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.statusCode).toBe(403);
       expect(res.end.mock).toHaveBeenCalled();
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-          Object {
-            "error": Object {
-              "code": 403,
-              "message": "path forbidden",
-            },
-          }
+        Object {
+          "error": Object {
+            "code": 403,
+            "reason": "path forbidden",
+          },
+        }
       `);
 
       res = moxy(new ServerResponse({}));
@@ -173,12 +173,12 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.statusCode).toBe(403);
       expect(res.end.mock).toHaveBeenCalled();
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-          Object {
-            "error": Object {
-              "code": 403,
-              "message": "path forbidden",
-            },
-          }
+        Object {
+          "error": Object {
+            "code": 403,
+            "reason": "path forbidden",
+          },
+        }
       `);
     });
 
@@ -191,12 +191,12 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.statusCode).toBe(403);
       expect(res.end.mock).toHaveBeenCalled();
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-          Object {
-            "error": Object {
-              "code": 403,
-              "message": "path forbidden",
-            },
-          }
+        Object {
+          "error": Object {
+            "code": 403,
+            "reason": "path forbidden",
+          },
+        }
       `);
     });
 
@@ -235,7 +235,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 501,
-            "message": "connection not closed by authorizer",
+            "reason": "connection not closed by authorizer",
           },
         }
       `);
@@ -253,12 +253,12 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.statusCode).toBe(404);
       expect(res.end.mock).toHaveBeenCalledTimes(1);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-          Object {
-            "error": Object {
-              "code": 404,
-              "message": "platform \\"baz\\" not found",
-            },
-          }
+        Object {
+          "error": Object {
+            "code": 404,
+            "reason": "platform \\"baz\\" not found",
+          },
+        }
       `);
     });
 
@@ -277,7 +277,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 404,
-            "message": "invalid auth api route \\"_unknown\\"",
+            "reason": "invalid auth api route \\"_unknown\\"",
           },
         }
       `);
@@ -1016,7 +1016,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 404,
-            "message": "unknown platform \\"baz\\"",
+            "reason": "unknown platform \\"baz\\"",
           },
         }
       `);
@@ -1041,7 +1041,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 418,
-            "message": "I'm a teapot",
+            "reason": "I'm a teapot",
           },
         }
       `);
@@ -1061,7 +1061,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 400,
-            "message": "invalid body format",
+            "reason": "invalid body format",
           },
         }
       `);
@@ -1075,7 +1075,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 400,
-            "message": "invalid body format",
+            "reason": "invalid body format",
           },
         }
       `);
@@ -1089,7 +1089,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 400,
-            "message": "invalid sign params",
+            "reason": "invalid sign params",
           },
         }
       `);
@@ -1108,7 +1108,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 500,
-            "message": "Broken inside",
+            "reason": "Broken inside",
           },
         }
       `);
@@ -1125,7 +1125,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 405,
-            "message": "method not allowed",
+            "reason": "method not allowed",
           },
         }
       `);
@@ -1293,7 +1293,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 404,
-            "message": "unknown platform \\"baz\\"",
+            "reason": "unknown platform \\"baz\\"",
           },
         }
       `);
@@ -1317,7 +1317,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 418,
-            "message": "I'm a teapot",
+            "reason": "I'm a teapot",
           },
         }
       `);
@@ -1335,7 +1335,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 401,
-            "message": "no signature found",
+            "reason": "no signature found",
           },
         }
       `);
@@ -1352,7 +1352,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 400,
-            "message": "invalid signature",
+            "reason": "invalid signature",
           },
         }
       `);
@@ -1386,7 +1386,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 401,
-            "message": "refreshment period expired",
+            "reason": "refreshment period expired",
           },
         }
       `);
@@ -1419,7 +1419,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 400,
-            "message": "token not refreshable",
+            "reason": "token not refreshable",
           },
         }
       `);
@@ -1440,7 +1440,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 400,
-            "message": "invalid body format",
+            "reason": "invalid body format",
           },
         }
       `);
@@ -1454,7 +1454,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 400,
-            "message": "invalid body format",
+            "reason": "invalid body format",
           },
         }
       `);
@@ -1468,7 +1468,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 400,
-            "message": "empty token received",
+            "reason": "empty token received",
           },
         }
       `);
@@ -1486,7 +1486,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 500,
-            "message": "Broken inside",
+            "reason": "Broken inside",
           },
         }
       `);
@@ -1503,7 +1503,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 405,
-            "message": "method not allowed",
+            "reason": "method not allowed",
           },
         }
       `);
@@ -1570,7 +1570,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 401,
-            "message": "jwt expired",
+            "reason": "jwt expired",
           },
         }
       `);
@@ -1604,7 +1604,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 404,
-            "message": "unknown platform \\"baz\\"",
+            "reason": "unknown platform \\"baz\\"",
           },
         }
       `);
@@ -1625,7 +1625,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 401,
-            "message": "no signature found",
+            "reason": "no signature found",
           },
         }
       `);
@@ -1645,7 +1645,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 400,
-            "message": "invalid signature",
+            "reason": "invalid signature",
           },
         }
       `);
@@ -1667,7 +1667,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 400,
-            "message": "invalid body format",
+            "reason": "invalid body format",
           },
         }
       `);
@@ -1681,7 +1681,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 400,
-            "message": "invalid body format",
+            "reason": "invalid body format",
           },
         }
       `);
@@ -1695,7 +1695,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 400,
-            "message": "empty token received",
+            "reason": "empty token received",
           },
         }
       `);
@@ -1713,7 +1713,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Object {
           "error": Object {
             "code": 405,
-            "message": "method not allowed",
+            "reason": "method not allowed",
           },
         }
       `);
