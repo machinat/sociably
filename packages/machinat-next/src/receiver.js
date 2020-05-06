@@ -27,7 +27,7 @@ type NextReceiverOptions = {
   shouldPrepare?: boolean,
 };
 
-type ParsedURL = $Call<typeof parseURL>;
+type ParsedURL = $Call<typeof parseURL, string>;
 
 class NextReceiver {
   _next: Object;
@@ -113,6 +113,13 @@ class NextReceiver {
     };
 
     if (trimedPath.slice(1, 6) === '_next') {
+      if (this._next.renderOpts.dev && pathPrefix !== '') {
+        // HACK: to make react hot loader server recognize the request in
+        //       dev environment
+        // eslint-disable-next-line no-param-reassign
+        req.url = trimedPath;
+      }
+
       this._defaultNextHandler(req, res, parsedURLWithPathPrefixTrimed);
       return;
     }
@@ -134,13 +141,6 @@ class NextReceiver {
       });
 
       if (response.accepted) {
-        if (this._next.renderOpts.dev && pathPrefix !== '') {
-          // HACK: to make react hot loader server recognize the request in
-          //       dev environment
-          // eslint-disable-next-line no-param-reassign
-          req.url = trimedPath;
-        }
-
         const { page, query, headers } = response;
         if (headers) {
           for (const [key, value] of Object.entries(headers)) {
