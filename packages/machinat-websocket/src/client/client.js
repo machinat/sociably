@@ -50,9 +50,11 @@ class WebScoketClient<Credential = null> {
   _errorListeners: ((Error) => void)[];
 
   constructor({ url, login }: ClientOptions<Credential> = {}) {
-    this._serverLocation =
-      url ||
-      `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
+    this._serverLocation = new URL(
+      url || '',
+      `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`
+    ).href;
+
     this._getLoginAuth =
       login || (() => Promise.resolve({ user: null, credential: (null: any) }));
 

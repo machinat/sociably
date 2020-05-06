@@ -31,7 +31,7 @@ it('initiate ok', () => {
 
   expect(WS.mock).toHaveBeenCalledTimes(1);
   expect(WS.mock).toHaveBeenCalledWith(
-    'wss://machinat.com',
+    'wss://machinat.com/',
     'machinat-websocket-v0'
   );
 
@@ -44,11 +44,19 @@ it('initiate ok', () => {
 });
 
 test('specify url', () => {
-  const client = new Client({ url: 'ws://machinat.io/entry', login }); // eslint-disable-line no-unused-vars
+  const client = new Client({ url: 'ws://machinat.io/websocket', login }); // eslint-disable-line no-unused-vars
 
   expect(WS.mock).toHaveBeenCalledTimes(1);
   expect(WS.mock).toHaveBeenCalledWith(
-    'ws://machinat.io/entry',
+    'ws://machinat.io/websocket',
+    'machinat-websocket-v0'
+  );
+
+  const client2 = new Client({ url: '/foo/websocket/server', login }); // eslint-disable-line no-unused-vars
+
+  expect(WS.mock).toHaveBeenCalledTimes(2);
+  expect(WS.mock).toHaveBeenCalledWith(
+    'wss://machinat.com/foo/websocket/server',
     'machinat-websocket-v0'
   );
 });
