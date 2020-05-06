@@ -1,0 +1,145 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`call next.render() if there is cutomized page or query return by middlewares 1`] = `
+Object {
+  "bot": null,
+  "channel": Object {
+    "platform": "next",
+    "type": "server",
+    "uid": "next.server",
+  },
+  "event": Object {
+    "payload": Object {
+      "request": Object {
+        "headers": Object {
+          "x-y-z": "abc",
+        },
+        "method": "GET",
+        "url": "http://machinat.com/hello?foo=bar",
+      },
+    },
+    "platform": "next",
+    "type": "request",
+  },
+  "metadata": Object {
+    "request": Object {
+      "headers": Object {
+        "x-y-z": "abc",
+      },
+      "method": "GET",
+      "url": "http://machinat.com/hello?foo=bar",
+    },
+    "source": "next",
+  },
+  "platform": "next",
+  "user": null,
+}
+`;
+
+exports[`call next.renderError() if middlewares resolve unaccepted 1`] = `
+Object {
+  "bot": null,
+  "channel": Object {
+    "platform": "next",
+    "type": "server",
+    "uid": "next.server",
+  },
+  "event": Object {
+    "payload": Object {
+      "request": Object {
+        "headers": Object {
+          "x-y-z": "abc",
+        },
+        "method": "GET",
+        "url": "http://machinat.com/hello?foo=bar",
+      },
+    },
+    "platform": "next",
+    "type": "request",
+  },
+  "metadata": Object {
+    "request": Object {
+      "headers": Object {
+        "x-y-z": "abc",
+      },
+      "method": "GET",
+      "url": "http://machinat.com/hello?foo=bar",
+    },
+    "source": "next",
+  },
+  "platform": "next",
+  "user": null,
+}
+`;
+
+exports[`set customized headers return by middlewares on res 1`] = `
+Object {
+  "bot": null,
+  "channel": Object {
+    "platform": "next",
+    "type": "server",
+    "uid": "next.server",
+  },
+  "event": Object {
+    "payload": Object {
+      "request": Object {
+        "headers": Object {
+          "x-y-z": "abc",
+        },
+        "method": "GET",
+        "url": "http://machinat.com/hello?foo=bar",
+      },
+    },
+    "platform": "next",
+    "type": "request",
+  },
+  "metadata": Object {
+    "request": Object {
+      "headers": Object {
+        "x-y-z": "abc",
+      },
+      "method": "GET",
+      "url": "http://machinat.com/hello?foo=bar",
+    },
+    "source": "next",
+  },
+  "platform": "next",
+  "user": null,
+}
+`;
+
+exports[`trim the entryPath from the url passed to next handler 1`] = `
+Object {
+  "bot": null,
+  "channel": Object {
+    "platform": "next",
+    "type": "server",
+    "uid": "next.server",
+  },
+  "event": Object {
+    "payload": Object {
+      "request": Object {
+        "headers": Object {
+          "x-y-z": "abc",
+        },
+        "method": "GET",
+        "url": "http://machinat.com/hello/world",
+      },
+    },
+    "platform": "next",
+    "type": "request",
+  },
+  "metadata": Object {
+    "request": Object {
+      "headers": Object {
+        "x-y-z": "abc",
+      },
+      "method": "GET",
+      "url": "http://machinat.com/hello/world",
+    },
+    "source": "next",
+  },
+  "platform": "next",
+  "user": null,
+}
+`;

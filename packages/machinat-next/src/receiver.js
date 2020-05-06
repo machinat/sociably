@@ -27,8 +27,12 @@ type NextReceiverOptions = {
   shouldPrepare?: boolean,
 };
 
+type ParsedURL = $Call<typeof parseURL>;
+
 class NextReceiver {
   _next: Object;
+  _defaultNextHandler: (IncomingMessage, ServerResponse, ParsedURL) => void;
+
   _pathPrefix: string;
   _shouldPrepare: boolean;
   _prepared: boolean;
@@ -43,6 +47,7 @@ class NextReceiver {
     popError: ?PopErrorFn
   ) {
     this._next = nextApp;
+    this._defaultNextHandler = nextApp.getRequestHandler();
     this._pathPrefix = entryPath ? entryPath.replace(/\/$/, '') : '';
     this._shouldPrepare = shouldPrepare;
     this._prepared = false;
@@ -101,6 +106,17 @@ class NextReceiver {
       return;
     }
 
+    const parsedURLWithPathPrefixTrimed = {
+      ...parsedURL,
+      pathname: trimedPath,
+      path: (parsedURL.path: any).slice(pathPrefix.length) || '/',
+    };
+
+    if (trimedPath.slice(1, 6) === '_next') {
+      this._defaultNextHandler(req, res, parsedURLWithPathPrefixTrimed);
+      return;
+    }
+
     try {
       const request = {
         method: req.method,
@@ -132,13 +148,17 @@ class NextReceiver {
           }
         }
 
-        await this._next.render(
-          req,
-          res,
-          page || trimedPath,
-          query || parsedURL.query,
-          parsedURL
-        );
+        if (page || query) {
+          await this._next.render(
+            req,
+            res,
+            page || trimedPath,
+            query || parsedURL.query,
+            parsedURLWithPathPrefixTrimed
+          );
+        } else {
+          this._defaultNextHandler(req, res, parsedURLWithPathPrefixTrimed);
+        }
       } else {
         const { code, reason, headers } = response;
         res.writeHead(code, headers);

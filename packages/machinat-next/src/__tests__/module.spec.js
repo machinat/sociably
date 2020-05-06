@@ -5,10 +5,14 @@ import createNextApp from 'next';
 import NextReceiver from '../receiver';
 import Next from '..';
 
-jest.mock('next', () =>
+jest.mock('next', () => {
   // eslint-disable-next-line global-require
-  require('moxy').default(() => ({ prepare: async () => {} }))
-);
+  const _moxy = require('moxy').default;
+  return _moxy(() => ({
+    prepare: async () => {},
+    getRequestHandler: () => {},
+  }));
+});
 
 it('exports interfaces', () => {
   expect(Next.Receiver).toBe(NextReceiver);
