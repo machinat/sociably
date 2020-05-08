@@ -4,17 +4,15 @@ import { LINE } from './constant';
 
 export default class LineUser implements MachinatUser {
   platform = LINE;
-  userId: string;
+  providerId: string;
+  id: string;
 
-  constructor(userId: string) {
-    this.userId = userId;
-  }
-
-  get id() {
-    return this.userId;
+  constructor(providerId: string, id: string) {
+    this.providerId = providerId;
+    this.id = id;
   }
 
   get uid() {
-    return `line.*.${this.userId}`;
+    return `line.${this.providerId}.${this.id}`;
   }
 }

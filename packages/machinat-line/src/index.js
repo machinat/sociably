@@ -1,4 +1,5 @@
 // @flow
+import invariant from 'invariant';
 import { container, factory } from '@machinat/core/service';
 import type { PlatformModule } from '@machinat/core/types';
 import Base from '@machinat/core/base';
@@ -44,28 +45,36 @@ const Line = {
     LineJob,
     LineDispatchFrame,
     LineAPIResult
-  > => ({
-    name: LINE,
-    mounterInterface: LINE_PLATFORM_MOUNTER_I,
-    provisions: [
-      LineBot,
-      { provide: Base.BotI, withProvider: LineBot, platforms: [LINE] },
+  > => {
+    invariant(configs.providerId, 'configs.providerId should not be empty');
+    invariant(configs.botChannelId, 'configs.botChannelId should not be empty');
 
-      LineProfileFetcher,
-      {
-        provide: Base.ProfileFetcherI,
-        withProvider: LineProfileFetcher,
-        platforms: [LINE],
-      },
+    return {
+      name: LINE,
+      mounterInterface: LINE_PLATFORM_MOUNTER_I,
+      provisions: [
+        LineBot,
+        { provide: Base.BotI, withProvider: LineBot, platforms: [LINE] },
 
-      LineReceiver,
-      { provide: LINE_PLATFORM_CONFIGS_I, withValue: configs },
-      { provide: HTTP.REQUEST_ROUTINGS_I, withProvider: requestRoutingFactory },
-    ],
-    eventMiddlewares: configs.eventMiddlewares,
-    dispatchMiddlewares: configs.dispatchMiddlewares,
-    startHook: container({ deps: [LineBot] })((bot: LineBot) => bot.start()),
-  }),
+        LineProfileFetcher,
+        {
+          provide: Base.ProfileFetcherI,
+          withProvider: LineProfileFetcher,
+          platforms: [LINE],
+        },
+
+        LineReceiver,
+        { provide: LINE_PLATFORM_CONFIGS_I, withValue: configs },
+        {
+          provide: HTTP.REQUEST_ROUTINGS_I,
+          withProvider: requestRoutingFactory,
+        },
+      ],
+      eventMiddlewares: configs.eventMiddlewares,
+      dispatchMiddlewares: configs.dispatchMiddlewares,
+      startHook: container({ deps: [LineBot] })((bot: LineBot) => bot.start()),
+    };
+  },
 };
 
 export default Line;

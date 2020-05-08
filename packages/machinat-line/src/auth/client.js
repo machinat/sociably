@@ -5,17 +5,19 @@ import { LINE } from '../constant';
 import type { LIFFAuthData, LIFFCredential } from '../types';
 import { refineLIFFContextData } from './utils';
 
+declare var location: Location;
 declare var document: Document;
 declare var liff: Object;
 
-type ClientAuthorizerOpts = {
+type ClientAuthorizerOptions = {
+  providerId: string,
+  botChannelId: string,
   liffId: string,
   isSDKLoaded?: boolean,
 };
 
-const LIFF = 'LIFF';
-
 const LOGIN_TIMEOUT = 10000;
+const DEFAULT_BOT_CHANNEL_LABEL_KEY = 'onLineBotChannel';
 
 const delay = (ms: number) =>
   new Promise(resolve => {
@@ -25,16 +27,33 @@ const delay = (ms: number) =>
 class LineClientAuthorizer
   implements ClientAuthorizer<LIFFAuthData, LIFFCredential> {
   liffId: string;
+  providerId: string;
+  botChannelId: string;
+
   isSDKLoaded: boolean;
+  isOnBotChannel: boolean;
 
   platform = LINE;
   shouldResign = true;
 
-  constructor({ liffId, isSDKLoaded = false }: ClientAuthorizerOpts = {}) {
+  constructor({
+    providerId,
+    botChannelId,
+    liffId,
+    isSDKLoaded = false,
+  }: ClientAuthorizerOptions = {}) {
+    invariant(providerId, 'options.providerId must not be empty');
+    invariant(botChannelId, 'options.botChannelId must not be empty');
     invariant(liffId, 'options.liffId must not be empty');
 
     this.liffId = liffId;
+    this.providerId = providerId;
+    this.botChannelId = botChannelId;
     this.isSDKLoaded = isSDKLoaded;
+
+    this.isOnBotChannel = !!new URLSearchParams(location.search).get(
+      DEFAULT_BOT_CHANNEL_LABEL_KEY
+    );
   }
 
   async init() {
@@ -43,7 +62,7 @@ class LineClientAuthorizer
     if (!isSDKLoaded) {
       const SCRIPT = 'script';
       const js = document.createElement(SCRIPT);
-      js.id = LIFF;
+      js.id = 'LIFF';
       js.src = 'https://static.line-scdn.net/liff/edge/2.1/sdk.js';
       const loadingSDK = new Promise(resolve => {
         js.onload = resolve;
@@ -71,13 +90,18 @@ class LineClientAuthorizer
       };
     }
 
+    const liffContext = liff.getContext();
+
     return {
       success: true,
       credential: {
         os: liff.getOS(),
         language: liff.getLanguage(),
-        version: liff.getVersion(),
-        isInClient: liff.isInClient(),
+        botChannelId:
+          liffContext.type === 'utou' && this.isOnBotChannel
+            ? this.botChannelId
+            : undefined,
+        context: liffContext,
         accessToken: liff.getAccessToken(),
       },
     };
@@ -85,7 +109,7 @@ class LineClientAuthorizer
 
   // eslint-disable-next-line class-methods-use-this
   async refineAuth(data: LIFFAuthData) {
-    return refineLIFFContextData(data);
+    return refineLIFFContextData(this.providerId, this.botChannelId, data);
   }
 }
 

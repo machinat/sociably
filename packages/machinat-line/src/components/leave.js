@@ -4,8 +4,8 @@ import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../constant';
 import { annotateLineComponent } from '../utils';
 
 const LEAVE_API_CALLER = {
-  [CHANNEL_API_CALL_GETTER]({ type, sourceId }) {
-    if (type === 'user') {
+  [CHANNEL_API_CALL_GETTER]({ type, id }) {
+    if (type !== 'group' && type !== 'room') {
       throw new TypeError(
         '<Leave /> should cannot be used within an user channel'
       );
@@ -13,7 +13,7 @@ const LEAVE_API_CALLER = {
 
     return {
       method: 'POST',
-      path: `v2/bot/${type}/${sourceId}/leave`,
+      path: `v2/bot/${type}/${id}/leave`,
       body: null,
     };
   },

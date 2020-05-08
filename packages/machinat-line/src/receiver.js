@@ -20,13 +20,19 @@ import type {
 } from './types';
 
 type LineReceiverOptions = {
+  providerId: string,
+  botChannelId: string,
   shouldValidateRequest?: boolean,
   channelSecret?: string,
-  channelId: string,
 };
 
 const handleWebhook = (
-  { shouldValidateRequest, channelSecret, channelId }: LineReceiverOptions,
+  {
+    providerId,
+    botChannelId,
+    shouldValidateRequest,
+    channelSecret,
+  }: LineReceiverOptions,
   bot: LineBot,
   popEventWrapper: PopEventWrapper<LineEventContext, null>
 ): WebhookHandler => {
@@ -71,8 +77,12 @@ const handleWebhook = (
 
     for (const rawEvent of events) {
       const { source } = rawEvent;
-      const channel = new LineChannel(channelId, source);
-      const user = new LineUser(source.userId);
+      const channel = LineChannel.fromMessagingSource(
+        providerId,
+        botChannelId,
+        source
+      );
+      const user = new LineUser(providerId, source.userId);
       const event = createEvent(rawEvent);
 
       issuingEvents.push(
@@ -96,7 +106,8 @@ class LineReceiver extends WebhookReceiver {
   constructor(
     {
       shouldValidateRequest = true,
-      channelId,
+      botChannelId,
+      providerId,
       channelSecret,
     }: LineReceiverOptions,
     bot: LineBot,
@@ -106,11 +117,10 @@ class LineReceiver extends WebhookReceiver {
       !shouldValidateRequest || channelSecret,
       'should provide channelSecret if shouldValidateRequest set to true'
     );
-    invariant(channelId, 'options.channelId should not be empty');
 
     super(
       handleWebhook(
-        { shouldValidateRequest, channelId, channelSecret },
+        { shouldValidateRequest, providerId, botChannelId, channelSecret },
         bot,
         popEventWrapper
       )

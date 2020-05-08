@@ -4,7 +4,7 @@ import { ProfileFetcherI, StateControllerI } from '@machinat/core/base';
 import type LineUser from '../user';
 import LineBot from '../bot';
 import LineUserProfile from './profile';
-import type { RawLineUserProfile } from '../types';
+import type { RawLineUserProfile } from './profile';
 
 const PROFILE_KEY = '$$line:user:profile';
 

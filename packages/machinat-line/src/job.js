@@ -25,10 +25,10 @@ const createMessageJob = (
 ) => ({
   method: 'POST',
   path: replyToken ? PATH_REPLY : PATH_PUSH,
-  channelUid: channel.uid,
+  executionKey: channel.uid,
   body: replyToken
     ? { replyToken: (replyToken: string), messages }
-    : { to: channel.sourceId, messages },
+    : { to: channel.id, messages },
 });
 
 export const chatJobsMaker = (replyToken: void | string) => {
@@ -57,7 +57,7 @@ export const chatJobsMaker = (replyToken: void | string) => {
         jobs.push({
           method,
           path,
-          channelUid: channel.uid,
+          executionKey: channel.uid,
           body,
         });
       } else {
@@ -86,6 +86,8 @@ export const chatJobsMaker = (replyToken: void | string) => {
   };
 };
 
+const MULITCAST_EXECUTION_KEY = '$$_multicast_$$';
+
 export const multicastJobsMaker = (targets: string[]) => (
   _: null,
   segments: DispatchableSegment<LineSegmentValue, LineComponent>[]
@@ -102,6 +104,7 @@ export const multicastJobsMaker = (targets: string[]) => (
           method: 'POST',
           path: PATH_MULTICAST,
           body: { to: targets, messages },
+          executionKey: MULITCAST_EXECUTION_KEY,
         });
         messages = [];
       }
@@ -110,7 +113,7 @@ export const multicastJobsMaker = (targets: string[]) => (
       jobs.push({
         method,
         path,
-        channelUid: undefined,
+        executionKey: MULITCAST_EXECUTION_KEY,
         body,
       });
     } else {
@@ -125,6 +128,7 @@ export const multicastJobsMaker = (targets: string[]) => (
           method: 'POST',
           path: PATH_MULTICAST,
           body: { to: targets, messages },
+          executionKey: MULITCAST_EXECUTION_KEY,
         });
         messages = [];
       }

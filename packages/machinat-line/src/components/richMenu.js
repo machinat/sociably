@@ -2,16 +2,16 @@ import { unitSegment } from '@machinat/core/renderer';
 import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../constant';
 import { annotateLineComponent } from '../utils';
 
-function linkRichMenuCall({ type, source }) {
-  if (type !== 'user') {
+function linkRichMenuCall(channel) {
+  if (channel.type !== 'utob') {
     throw new TypeError(
-      '<LinkRichMenu /> can only be delivered in a user chatting channel'
+      '<LinkRichMenu /> can only be delivered in a utob chatting channel'
     );
   }
 
   return {
     method: 'POST',
-    path: `v2/bot/user/${source.userId}/richmenu/${this.id}`,
+    path: `v2/bot/user/${channel.id}/richmenu/${this.id}`,
     body: null,
   };
 }
@@ -37,16 +37,16 @@ export const LinkRichMenu = (node, path) => [
 annotateLineComponent(LinkRichMenu);
 
 const UNLINK_RICHMENU_API_CALLER = {
-  [CHANNEL_API_CALL_GETTER]({ type, source }) {
-    if (type !== 'user') {
+  [CHANNEL_API_CALL_GETTER](channel) {
+    if (channel.type !== 'utob') {
       throw new TypeError(
-        '<UnlinkRichMenu /> can only be delivered in a user chatting channel'
+        '<UnlinkRichMenu /> can only be delivered in a utob chatting channel'
       );
     }
 
     return {
       method: 'DELETE',
-      path: `v2/bot/user/${source.userId}/richmenu`,
+      path: `v2/bot/user/${channel.id}/richmenu`,
       body: null,
     };
   },

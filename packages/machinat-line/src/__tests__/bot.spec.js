@@ -65,7 +65,7 @@ beforeEach(() => {
   lineAPI = nock('https://api.line.me', {
     reqheaders: {
       'content-type': 'application/json',
-      authorization: 'Bearer __ACCESS_TOKEN__',
+      authorization: 'Bearer _ACCESS_TOKEN_',
     },
   });
 
@@ -76,30 +76,19 @@ beforeEach(() => {
 describe('#constructor(options)', () => {
   it('throws if accessToken not given', () => {
     expect(
-      () => new LineBot({ channelId: '_MY_BOT_' }, initScope, dispatchWrapper)
+      () =>
+        new LineBot({ providerId: '_PROVIDER_ID_' }, initScope, dispatchWrapper)
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.accessToken should not be empty"`
-    );
-  });
-
-  it('throws if channelId not given', () => {
-    expect(
-      () =>
-        new LineBot(
-          { accessToken: '__ACCESS_TOKEN__' },
-          initScope,
-          dispatchWrapper
-        )
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.channelId should not be empty"`
     );
   });
 
   it('assemble engine', () => {
     const bot = new LineBot(
       {
-        accessToken: '__ACCESS_TOKEN__',
-        channelId: '_MY_BOT_',
+        accessToken: '_ACCESS_TOKEN_',
+        providerId: '_PROVIDER_ID_',
+        botChannelId: '_BOT_CHANNEL_ID_',
         connectionCapicity: 999,
       },
       initScope,
@@ -110,7 +99,7 @@ describe('#constructor(options)', () => {
     expect(Renderer.mock).toHaveBeenCalledWith('line', expect.any(Function));
 
     expect(LineWorker.mock).toHaveBeenCalledTimes(1);
-    expect(LineWorker.mock).toHaveBeenCalledWith('__ACCESS_TOKEN__', 999);
+    expect(LineWorker.mock).toHaveBeenCalledWith('_ACCESS_TOKEN_', 999);
 
     expect(bot.engine).toBeInstanceOf(Engine);
     expect(Engine.mock).toHaveBeenCalledTimes(1);
@@ -128,8 +117,9 @@ describe('#constructor(options)', () => {
   test('default connectionCapicity', () => {
     const _bot = new LineBot(
       {
-        accessToken: '__ACCESS_TOKEN__',
-        channelId: '_MY_BOT_',
+        accessToken: '_ACCESS_TOKEN_',
+        providerId: '_PROVIDER_ID_',
+        botChannelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper
@@ -138,7 +128,7 @@ describe('#constructor(options)', () => {
     expect(LineWorker.mock).toHaveBeenCalledTimes(1);
     expect(LineWorker.mock.calls[0].args).toMatchInlineSnapshot(`
       Array [
-        "__ACCESS_TOKEN__",
+        "_ACCESS_TOKEN_",
         100,
       ]
     `);
@@ -149,8 +139,9 @@ describe('#render(token, node, options)', () => {
   it('make api calls', async () => {
     const bot = new LineBot(
       {
-        accessToken: '__ACCESS_TOKEN__',
-        channelId: '_MY_BOT_',
+        accessToken: '_ACCESS_TOKEN_',
+        providerId: '_PROVIDER_ID_',
+        botChannelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper
@@ -205,8 +196,9 @@ describe('#render(token, node, options)', () => {
   it('works with replyToken', async () => {
     const bot = new LineBot(
       {
-        accessToken: '__ACCESS_TOKEN__',
-        channelId: '_MY_BOT_',
+        accessToken: '_ACCESS_TOKEN_',
+        providerId: '_PROVIDER_ID_',
+        botChannelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper
@@ -266,8 +258,9 @@ describe('#render(token, node, options)', () => {
   it('return null if message is empty', async () => {
     const bot = new LineBot(
       {
-        accessToken: '__ACCESS_TOKEN__',
-        channelId: '_MY_BOT_',
+        accessToken: '_ACCESS_TOKEN_',
+        providerId: '_PROVIDER_ID_',
+        botChannelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper
@@ -282,8 +275,9 @@ describe('#render(token, node, options)', () => {
   it('throw if messages length more than 5 when using replyToken', () => {
     const bot = new LineBot(
       {
-        accessToken: '__ACCESS_TOKEN__',
-        channelId: '_MY_BOT_',
+        accessToken: '_ACCESS_TOKEN_',
+        providerId: '_PROVIDER_ID_',
+        botChannelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper
@@ -310,8 +304,9 @@ describe('#renderMulticast(targets, node)', () => {
   it('return null if message is empty', async () => {
     const bot = new LineBot(
       {
-        accessToken: '__ACCESS_TOKEN__',
-        channelId: '_MY_BOT_',
+        accessToken: '_ACCESS_TOKEN_',
+        providerId: '_PROVIDER_ID_',
+        botChannelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper
@@ -328,8 +323,9 @@ describe('#renderMulticast(targets, node)', () => {
   it('make api call to message/mulitcast', async () => {
     const bot = new LineBot(
       {
-        accessToken: '__ACCESS_TOKEN__',
-        channelId: '_MY_BOT_',
+        accessToken: '_ACCESS_TOKEN_',
+        providerId: '_PROVIDER_ID_',
+        botChannelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper

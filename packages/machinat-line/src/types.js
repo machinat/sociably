@@ -206,7 +206,7 @@ export type LineJob = {|
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   body: null | LineMessageRequestBody | Object,
   path: string,
-  channelUid?: string,
+  executionKey: void | string,
 |};
 
 export type LineAPIResult = Object;
@@ -224,12 +224,14 @@ export type LineDispatchMiddleware = DispatchMiddleware<
 
 export type LinePlatformConfigs = {
   webhookPath?: string,
-  channelId: string,
+  providerId: string,
+  botChannelId: string,
   channelSecret?: string,
   shouldValidateRequest?: boolean,
   accessToken: string,
   connectionCapicity?: number,
   profileCacheTime?: number,
+  liffChannelIds?: string[],
   eventMiddlewares?: (
     | LineEventMiddleware
     | ServiceContainer<LineEventMiddleware>
@@ -240,28 +242,31 @@ export type LinePlatformConfigs = {
   )[],
 };
 
-export type RawLineUserProfile = {
-  displayName: string,
+export type LIFFContext = {
+  type: 'utou' | 'group' | 'room' | 'external' | 'none',
+  viewType: 'compact' | 'tall' | 'full',
   userId: string,
-  language?: string,
-  pictureUrl?: string,
-  statusMessage?: string,
+  utouId?: string,
+  groupId?: string,
+  roomId?: string,
+  availability: {
+    shareTargetPicker: {
+      permission: boolean,
+      minVer: string,
+    },
+  },
 };
 
 export type LIFFAuthData = {|
   os: 'ios' | 'android' | 'web',
   language: string,
-  version: string,
-  isInClient: boolean,
-  profile: RawLineUserProfile,
+  botChannelId: void | string,
+  context: LIFFContext,
 |};
 
 export type LIFFCredential = {|
+  ...LIFFAuthData,
   accessToken: string,
-  os: 'ios' | 'android' | 'web',
-  language: string,
-  version: string,
-  isInClient: boolean,
 |};
 
 export type LinePlatformMounter = PlatformMounter<

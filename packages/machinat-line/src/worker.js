@@ -27,7 +27,7 @@ export default class LineClient
   _started: boolean;
   connectionSize: number;
   connectionCapicity: number;
-  _lockedIds: Set<string>;
+  _lockedKeys: Set<string>;
 
   constructor(accessToken: string, connectionCapicity: number) {
     this._headers = {
@@ -37,7 +37,7 @@ export default class LineClient
 
     this.connectionSize = 0;
     this.connectionCapicity = connectionCapicity;
-    this._lockedIds = new Set();
+    this._lockedKeys = new Set();
     this._started = false;
   }
 
@@ -113,7 +113,7 @@ export default class LineClient
   _consumeCallback = this._consume.bind(this);
 
   _consume(queue: Queue<LineJob, LineAPIResult>) {
-    const { _lockedIds: lockedIds, connectionCapicity } = this;
+    const { _lockedKeys: lockedIds, connectionCapicity } = this;
 
     for (let i = 0; i < queue.length; ) {
       if (this.connectionSize >= connectionCapicity) {
@@ -121,16 +121,16 @@ export default class LineClient
       }
 
       // $FlowFixMe i is in valid range
-      const { channelUid }: LineJob = queue.peekAt(i);
-      if (channelUid !== undefined && lockedIds.has(channelUid)) {
+      const { executionKey }: LineJob = queue.peekAt(i);
+      if (executionKey !== undefined && lockedIds.has(executionKey)) {
         i += 1;
       } else {
-        this._consumeJobAt(queue, i, channelUid);
+        this._consumeJobAt(queue, i, executionKey);
 
         this.connectionSize += 1;
 
-        if (channelUid !== undefined) {
-          lockedIds.add(channelUid);
+        if (executionKey !== undefined) {
+          lockedIds.add(executionKey);
         }
       }
     }
@@ -139,7 +139,7 @@ export default class LineClient
   async _consumeJobAt(
     queue: Queue<LineJob, LineAPIResult>,
     idx: number,
-    channelUid: void | string
+    executionKey: void | string
   ) {
     try {
       await queue.acquireAt(idx, 1, this._executeJobCallback);
@@ -148,8 +148,8 @@ export default class LineClient
     } finally {
       this.connectionSize -= 1;
 
-      if (channelUid !== undefined) {
-        this._lockedIds.delete(channelUid);
+      if (executionKey !== undefined) {
+        this._lockedKeys.delete(executionKey);
       }
 
       if (this._started) {

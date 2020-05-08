@@ -33,12 +33,14 @@ import type {
 
 type LineBotOptions = {
   accessToken: string,
-  channelId: string,
+  providerId: string,
+  botChannelId: string,
   connectionCapicity?: number,
 };
 
 class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
-  channelId: string;
+  providerId: string;
+  botChannelId: string;
   engine: Engine<
     LineChannel,
     LineSegmentValue,
@@ -49,14 +51,19 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
   >;
 
   constructor(
-    { accessToken, channelId, connectionCapicity = 100 }: LineBotOptions = {},
+    {
+      accessToken,
+      providerId,
+      botChannelId,
+      connectionCapicity = 100,
+    }: LineBotOptions = {},
     initScope: InitScopeFn,
     dispatchWrapper: DispatchWrapper<LineJob, LineDispatchFrame, LineAPIResult>
   ) {
     invariant(accessToken, 'options.accessToken should not be empty');
-    invariant(channelId, 'options.channelId should not be empty');
 
-    this.channelId = channelId;
+    this.providerId = providerId;
+    this.botChannelId = botChannelId;
 
     const renderer = new Renderer(LINE, generalElementDelegate);
     const queue = new Queue();
@@ -89,11 +96,12 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
     const channel =
       source instanceof LineChannel
         ? source
-        : new LineChannel(
-            this.channelId,
-            typeof source === 'string'
-              ? { type: 'user', userId: source }
-              : source
+        : typeof source === 'string'
+        ? new LineChannel(this.providerId, this.botChannelId, 'utob', source)
+        : LineChannel.fromMessagingSource(
+            this.providerId,
+            this.botChannelId,
+            source
           );
 
     return this.engine.render(
@@ -115,7 +123,9 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
     path: string,
     body: Object
   ): Promise<LineDispatchResponse> {
-    return this.engine.dispatchJobs(null, [{ method, path, body }]);
+    return this.engine.dispatchJobs(null, [
+      { method, path, body, executionKey: undefined },
+    ]);
   }
 }
 

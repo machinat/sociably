@@ -9,7 +9,7 @@ Object {
         "body": Object {
           "id": 1,
         },
-        "channelUid": "foo",
+        "executionKey": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -22,7 +22,7 @@ Object {
         "body": Object {
           "id": 2,
         },
-        "channelUid": "foo",
+        "executionKey": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -35,7 +35,7 @@ Object {
         "body": Object {
           "id": 3,
         },
-        "channelUid": "bar",
+        "executionKey": "bar",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -48,7 +48,7 @@ Object {
         "body": Object {
           "id": 4,
         },
-        "channelUid": "bar",
+        "executionKey": "bar",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -61,7 +61,7 @@ Object {
         "body": Object {
           "id": 5,
         },
-        "channelUid": "baz",
+        "executionKey": "baz",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -74,7 +74,7 @@ Object {
         "body": Object {
           "id": 6,
         },
-        "channelUid": "baz",
+        "executionKey": "baz",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -87,7 +87,7 @@ Object {
         "body": Object {
           "id": 7,
         },
-        "channelUid": "foo",
+        "executionKey": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -100,7 +100,7 @@ Object {
         "body": Object {
           "id": 8,
         },
-        "channelUid": "bar",
+        "executionKey": "bar",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -113,7 +113,7 @@ Object {
         "body": Object {
           "id": 9,
         },
-        "channelUid": "baz",
+        "executionKey": "baz",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -135,7 +135,7 @@ Object {
         "body": Object {
           "id": 1,
         },
-        "channelUid": "foo",
+        "executionKey": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -148,7 +148,7 @@ Object {
         "body": Object {
           "id": 2,
         },
-        "channelUid": "foo",
+        "executionKey": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -161,7 +161,7 @@ Object {
         "body": Object {
           "id": 3,
         },
-        "channelUid": "bar",
+        "executionKey": "bar",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -174,7 +174,7 @@ Object {
         "body": Object {
           "id": 4,
         },
-        "channelUid": "bar",
+        "executionKey": "bar",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -187,7 +187,7 @@ Object {
         "body": Object {
           "id": 5,
         },
-        "channelUid": "baz",
+        "executionKey": "baz",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -200,7 +200,7 @@ Object {
         "body": Object {
           "id": 6,
         },
-        "channelUid": "baz",
+        "executionKey": "baz",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -213,7 +213,7 @@ Object {
         "body": Object {
           "id": 7,
         },
-        "channelUid": "foo",
+        "executionKey": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -226,7 +226,7 @@ Object {
         "body": Object {
           "id": 8,
         },
-        "channelUid": "bar",
+        "executionKey": "bar",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -239,7 +239,7 @@ Object {
         "body": Object {
           "id": 9,
         },
-        "channelUid": "baz",
+        "executionKey": "baz",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -261,7 +261,7 @@ Object {
         "body": Object {
           "id": 1,
         },
-        "channelUid": "foo",
+        "executionKey": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -287,7 +287,7 @@ Object {
         "body": Object {
           "id": 1,
         },
-        "channelUid": "foo",
+        "executionKey": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },

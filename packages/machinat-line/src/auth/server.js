@@ -14,18 +14,31 @@ import type {
 import { refineLIFFContextData } from './utils';
 
 type LineServerAuthorizerOpts = {
-  channelId: string,
+  providerId: string,
+  botChannelId: string,
+  liffChannelIds: string[],
 };
 
 class LineServerAuthorizer
   implements ServerAuthorizer<LIFFAuthData, LIFFCredential> {
-  channelId: string;
+  providerId: string;
+  botChannelId: string;
+  liffChannelIds: string[];
+
   platform = LINE;
 
-  constructor({ channelId }: LineServerAuthorizerOpts = {}) {
-    invariant(channelId, 'options.channelId must not be empty');
-
-    this.channelId = channelId;
+  constructor({
+    providerId,
+    botChannelId,
+    liffChannelIds,
+  }: LineServerAuthorizerOpts = {}) {
+    invariant(
+      liffChannelIds && liffChannelIds.length,
+      'options.liffChannelIds should not be empty'
+    );
+    this.providerId = providerId;
+    this.botChannelId = botChannelId;
+    this.liffChannelIds = liffChannelIds;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -37,11 +50,20 @@ class LineServerAuthorizer
   async verifyCredential(credential: LIFFCredential) {
     let accessToken;
     // eslint-disable-next-line prefer-destructuring
-    if (!credential || !(accessToken = credential.accessToken)) {
+    if (!(accessToken = credential?.accessToken)) {
       return {
         success: false,
         code: 400,
         reason: 'Empty accessToken received',
+      };
+    }
+
+    const { os, language, context, botChannelId } = credential;
+    if (botChannelId && botChannelId !== this.botChannelId) {
+      return {
+        success: false,
+        code: 400,
+        reason: 'botChannelId not match',
       };
     }
 
@@ -58,38 +80,18 @@ class LineServerAuthorizer
       };
     }
 
-    if (verifyBody.client_id !== this.channelId) {
+    if (!this.liffChannelIds.includes(verifyBody.client_id)) {
       return {
         success: false,
         code: 400,
-        reason: 'client_id not match',
+        reason: 'unknown client_id of the access token',
       };
     }
 
-    const profileRes = await fetch('https://api.line.me/v2/profile', {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    const profileBody = await profileRes.json();
-
-    if (!profileRes.ok) {
-      return {
-        success: false,
-        code: profileRes.status,
-        reason: profileBody.message,
-      };
-    }
-
-    const { os, language, version, isInClient } = credential;
     return {
       success: true,
       refreshable: false,
-      data: {
-        os,
-        language,
-        version,
-        isInClient,
-        profile: profileBody,
-      },
+      data: { os, language, context, botChannelId },
     };
   }
 
@@ -104,12 +106,29 @@ class LineServerAuthorizer
 
   // eslint-disable-next-line class-methods-use-this
   async refineAuth(data: LIFFAuthData) {
-    return refineLIFFContextData(data);
+    const { providerId } = this;
+    return refineLIFFContextData(providerId, this.botChannelId, data);
   }
 }
 
 export default provider<LineServerAuthorizer>({
   lifetime: 'transient',
   deps: [LINE_PLATFORM_CONFIGS_I],
-  factory: (configs: LinePlatformConfigs) => new LineServerAuthorizer(configs),
+
+  factory: ({
+    providerId,
+    botChannelId,
+    liffChannelIds,
+  }: LinePlatformConfigs) => {
+    invariant(
+      liffChannelIds,
+      'provide configs.liffChannelIds to authorize with liff'
+    );
+
+    return new LineServerAuthorizer({
+      providerId,
+      botChannelId,
+      liffChannelIds,
+    });
+  },
 })(LineServerAuthorizer);

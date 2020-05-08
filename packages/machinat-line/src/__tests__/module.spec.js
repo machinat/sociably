@@ -21,12 +21,29 @@ it('export interfaces', () => {
 });
 
 describe('initModule(configs)', () => {
+  it('throw if configs.providerId is empty', () => {
+    expect(() =>
+      Line.initModule({ botChannelId: '_BOT_CHANNEL_ID_' })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"configs.providerId should not be empty"`
+    );
+  });
+
+  it('throw if configs.botChannelId is empty', () => {
+    expect(() =>
+      Line.initModule({ providerId: '_PROVIDER_ID_' })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"configs.botChannelId should not be empty"`
+    );
+  });
+
   it('create module object', () => {
     const eventMiddlewares = [(ctx, next) => next(ctx)];
     const dispatchMiddlewares = [(ctx, next) => next(ctx)];
     expect(
       Line.initModule({
-        channelId: '_CHANNEL_ID_',
+        providerId: '_PROVIDER_ID_',
+        botChannelId: '_BOT_CHANNEL_ID_',
         accessToken: '_ACCESS_TOKEN_',
         eventMiddlewares,
         dispatchMiddlewares,
@@ -47,7 +64,8 @@ describe('initModule(configs)', () => {
 
   test('provisions', async () => {
     const configs = {
-      channelId: '_CHANNEL_ID_',
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
       accessToken: '_ACCESS_TOKEN_',
       channelSecret: '_CHANNEL_SECRET_',
       webhookPath: '/webhook/line',
@@ -86,7 +104,8 @@ describe('initModule(configs)', () => {
     const app = Machinat.createApp({
       platforms: [
         Line.initModule({
-          channelId: '_CHANNEL_ID_',
+          providerId: '_PROVIDER_ID_',
+          botChannelId: '_BOT_CHANNEL_ID_',
           accessToken: '_ACCESS_TOKEN_',
           channelSecret: '_CHANNEL_SECRET_',
         }),
@@ -104,7 +123,8 @@ describe('initModule(configs)', () => {
 
   test('default webhookPath to "/"', async () => {
     const configs = {
-      channelId: '_CHANNEL_ID_',
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
       accessToken: '_ACCESS_TOKEN_',
       shouldValidateRequest: false,
     };
@@ -123,7 +143,10 @@ describe('initModule(configs)', () => {
   test('#startHook() start bot', async () => {
     const bot = moxy({ start: async () => {} });
     const module = Line.initModule({
-      /* ... */
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
+      accessToken: '_ACCESS_TOKEN_',
+      shouldValidateRequest: false,
     });
 
     await expect(module.startHook(bot)).resolves.toBe(undefined);

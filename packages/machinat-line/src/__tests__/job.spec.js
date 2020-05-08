@@ -40,10 +40,12 @@ beforeEach(() => {
 
 describe('chatJobsMaker()', () => {
   it('make push jobs', () => {
-    const channel = new LineChannel('_LINE_CHANNEL_ID_', {
-      type: 'user',
-      userId: 'john',
-    });
+    const channel = new LineChannel(
+      '_PROVIDER_ID_',
+      '_BOT_CHANNEL_ID_',
+      'utob',
+      'john'
+    );
 
     const jobs = chatJobsMaker()(channel, segments);
 
@@ -70,7 +72,7 @@ describe('chatJobsMaker()', () => {
             ],
             "to": "john",
           },
-          "channelUid": "line._LINE_CHANNEL_ID_.user.john",
+          "executionKey": "line._PROVIDER_ID_._BOT_CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/push",
         },
@@ -86,7 +88,7 @@ describe('chatJobsMaker()', () => {
             ],
             "to": "john",
           },
-          "channelUid": "line._LINE_CHANNEL_ID_.user.john",
+          "executionKey": "line._PROVIDER_ID_._BOT_CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/push",
         },
@@ -94,7 +96,7 @@ describe('chatJobsMaker()', () => {
           "body": Object {
             "do": "something",
           },
-          "channelUid": "line._LINE_CHANNEL_ID_.user.john",
+          "executionKey": "line._PROVIDER_ID_._BOT_CHANNEL_ID_.john",
           "method": "POST",
           "path": "some/channel/api",
         },
@@ -107,7 +109,7 @@ describe('chatJobsMaker()', () => {
             ],
             "to": "john",
           },
-          "channelUid": "line._LINE_CHANNEL_ID_.user.john",
+          "executionKey": "line._PROVIDER_ID_._BOT_CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/push",
         },
@@ -115,7 +117,7 @@ describe('chatJobsMaker()', () => {
           "body": Object {
             "do": "something",
           },
-          "channelUid": "line._LINE_CHANNEL_ID_.user.john",
+          "executionKey": "line._PROVIDER_ID_._BOT_CHANNEL_ID_.john",
           "method": "POST",
           "path": "some/channel/api",
         },
@@ -131,10 +133,12 @@ describe('chatJobsMaker()', () => {
   });
 
   test('make reply job', () => {
-    const channel = new LineChannel('_LINE_CHANNEL_ID_', {
-      type: 'user',
-      userId: 'john',
-    });
+    const channel = new LineChannel(
+      '_PROVIDER_ID_',
+      '_BOT_CHANNEL_ID_',
+      'utob',
+      'john'
+    );
 
     const jobs = chatJobsMaker('__REPLY_TOKEN__')(
       channel,
@@ -164,7 +168,7 @@ describe('chatJobsMaker()', () => {
             ],
             "replyToken": "__REPLY_TOKEN__",
           },
-          "channelUid": "line._LINE_CHANNEL_ID_.user.john",
+          "executionKey": "line._PROVIDER_ID_._BOT_CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/reply",
         },
@@ -173,10 +177,12 @@ describe('chatJobsMaker()', () => {
   });
 
   it('throw if multiple messaging job made when reply', () => {
-    const channel = new LineChannel('_LINE_CHANNEL_ID_', {
-      type: 'user',
-      userId: 'john',
-    });
+    const channel = new LineChannel(
+      '_PROVIDER_ID_',
+      '_BOT_CHANNEL_ID_',
+      'utob',
+      'john'
+    );
 
     expect(() =>
       chatJobsMaker('__REPLY_TOKEN__')(channel, segments)
@@ -217,6 +223,7 @@ describe('multicastJobsMaker()', () => {
               "baz",
             ],
           },
+          "executionKey": "$$_multicast_$$",
           "method": "POST",
           "path": "v2/bot/message/multicast",
         },
@@ -236,6 +243,7 @@ describe('multicastJobsMaker()', () => {
               "baz",
             ],
           },
+          "executionKey": "$$_multicast_$$",
           "method": "POST",
           "path": "v2/bot/message/multicast",
         },
@@ -243,7 +251,7 @@ describe('multicastJobsMaker()', () => {
           "body": Object {
             "bulk": "do something",
           },
-          "channelUid": undefined,
+          "executionKey": "$$_multicast_$$",
           "method": "POST",
           "path": "some/bulk/api",
         },
@@ -260,6 +268,7 @@ describe('multicastJobsMaker()', () => {
               "baz",
             ],
           },
+          "executionKey": "$$_multicast_$$",
           "method": "POST",
           "path": "v2/bot/message/multicast",
         },
@@ -267,7 +276,7 @@ describe('multicastJobsMaker()', () => {
           "body": Object {
             "bulk": "do something",
           },
-          "channelUid": undefined,
+          "executionKey": "$$_multicast_$$",
           "method": "POST",
           "path": "some/bulk/api",
         },

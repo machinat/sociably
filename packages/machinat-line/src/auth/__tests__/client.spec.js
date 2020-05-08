@@ -1,24 +1,46 @@
+import url from 'url';
 import { JSDOM } from 'jsdom';
 import moxy from 'moxy';
-import LineClientAuthProvider from '../client';
+import ClientAuthorizer from '../client';
+import LineChannel from '../../channel';
 import LineUser from '../../user';
 
-global.liff = moxy({
-  init: () => Promise.resolve(),
-  getOS: () => 'ios',
-  getLanguage: () => 'zh-TW',
-  getVersion: () => 'v2.1',
-  isInClient: () => true,
-  isLoggedIn: () => true,
-  login: () => {},
-  getAccessToken: () => '_ACCESS_TOKEN_',
-  getProfile: () =>
-    Promise.resolve({
-      userId: '_USER_ID_',
-      displayName: 'John',
-      pictureUrl: 'https://example.com/abcdefghijklmn',
-      statusMessage: 'Hello, LINE!',
-    }),
+const liffContext = {
+  type: 'utou',
+  utouId:
+    'UU29e6eb36812f484fd275d41b5af4e760926c516d8c9faa35…b1e8de8fbb6ecb263ee8724e48118565e3368d39778fe648d',
+  userId: 'U70e153189a29f1188b045366285346bc',
+  viewType: 'full',
+  accessTokenHash: 'ArIXhlwQMAZyW7SDHm7L2g',
+  availability: {
+    shareTargetPicker: {
+      permission: true,
+      minVer: '10.3.0',
+    },
+  },
+};
+
+beforeAll(() => {
+  global.location = moxy(url.parse('/'));
+
+  global.liff = moxy({
+    init: () => Promise.resolve(),
+    getOS: () => 'ios',
+    getLanguage: () => 'zh-TW',
+    getVersion: () => 'v2.1',
+    isInClient: () => true,
+    isLoggedIn: () => true,
+    login: () => {},
+    getAccessToken: () => '_ACCESS_TOKEN_',
+    getContext: () => liffContext,
+    getProfile: () =>
+      Promise.resolve({
+        userId: '_USER_ID_',
+        displayName: 'John',
+        pictureUrl: 'https://example.com/abcdefghijklmn',
+        statusMessage: 'Hello, LINE!',
+      }),
+  });
 });
 
 beforeEach(() => {
@@ -39,31 +61,63 @@ beforeEach(() => {
 
 describe('#constructor()', () => {
   it('contain proper property', () => {
-    const provider = new LineClientAuthProvider({
-      channelId: '_CHANNEL_ID_',
+    const authorizer = new ClientAuthorizer({
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
     });
 
-    expect(provider.platform).toBe('line');
-    expect(provider.shouldResign).toBe(true);
-    expect(provider.liffId).toBe('_LIFF_ID_');
-    expect(provider.isSDKLoaded).toBe(false);
+    expect(authorizer.platform).toBe('line');
+    expect(authorizer.shouldResign).toBe(true);
+    expect(authorizer.liffId).toBe('_LIFF_ID_');
+    expect(authorizer.providerId).toBe('_PROVIDER_ID_');
+    expect(authorizer.isSDKLoaded).toBe(false);
+  });
+
+  it('throw if providerId id is empty', () => {
+    expect(
+      () =>
+        new ClientAuthorizer({
+          botChannelId: '_BOT_CHANNEL_ID_',
+          liffId: '_LIFF_ID_',
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"options.providerId must not be empty"`
+    );
+  });
+
+  it('throw if botChannelId id is empty', () => {
+    expect(
+      () =>
+        new ClientAuthorizer({
+          providerId: '_PROVIDER_ID_',
+          liffId: '_LIFF_ID_',
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"options.botChannelId must not be empty"`
+    );
   });
 
   it('throw if liff id is empty', () => {
     expect(
-      () => new LineClientAuthProvider({})
+      () =>
+        new ClientAuthorizer({
+          providerId: '_PROVIDER_ID_',
+          botChannelId: '_BOT_CHANNEL_ID_',
+        })
     ).toThrowErrorMatchingInlineSnapshot(`"options.liffId must not be empty"`);
   });
 });
 
 describe('#init()', () => {
   it('add liff sdk and call init() after loaded', async () => {
-    const provider = new LineClientAuthProvider({
+    const authorizer = new ClientAuthorizer({
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
     });
 
-    const promise = provider.init();
+    const promise = authorizer.init();
 
     const liffScriptEle = global.document.getElementById('LIFF');
     expect(liffScriptEle.tagName).toBe('SCRIPT');
@@ -80,12 +134,14 @@ describe('#init()', () => {
   });
 
   it('ignore adding sdk if options.isSDKLoaded set to true', async () => {
-    const provider = new LineClientAuthProvider({
+    const authorizer = new ClientAuthorizer({
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });
 
-    await expect(provider.init()).resolves.toBe(undefined);
+    await expect(authorizer.init()).resolves.toBe(undefined);
 
     expect(global.document.getElementById('LIFF')).toBe(null);
     expect(global.liff.init.mock).toHaveBeenCalledTimes(1);
@@ -94,19 +150,20 @@ describe('#init()', () => {
 
 describe('#fetchCredential()', () => {
   it('resolve credential containt liff infos and access token', async () => {
-    const provider = new LineClientAuthProvider({
+    const authorizer = new ClientAuthorizer({
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });
 
-    await expect(provider.fetchCredential()).resolves.toEqual({
+    await expect(authorizer.fetchCredential()).resolves.toEqual({
       success: true,
       credential: {
         os: 'ios',
         language: 'zh-TW',
-        version: 'v2.1',
-        isInClient: true,
         accessToken: '_ACCESS_TOKEN_',
+        context: liffContext,
       },
     });
 
@@ -117,13 +174,15 @@ describe('#fetchCredential()', () => {
     jest.useFakeTimers();
     global.liff.isLoggedIn.mock.fakeReturnValue(false);
 
-    const provider = new LineClientAuthProvider({
+    const authorizer = new ClientAuthorizer({
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
     });
 
     expect(global.liff.login.mock).not.toHaveBeenCalled();
 
-    const promise = provider.fetchCredential();
+    const promise = authorizer.fetchCredential();
 
     expect(global.liff.isLoggedIn.mock).toHaveBeenCalledTimes(1);
     expect(global.liff.login.mock).toHaveBeenCalledTimes(1);
@@ -140,38 +199,143 @@ describe('#fetchCredential()', () => {
 
     jest.useRealTimers();
   });
-});
 
-describe('#refineAuth(data)', () => {
-  const authData = {
-    os: 'ios',
-    language: 'zh-TW',
-    version: 'v2.1',
-    isInClient: true,
-    profile: {
-      userId: '_USER_ID_',
-      displayName: 'John',
-      pictureUrl: 'https://example.com/abcdefghijklmn',
-      statusMessage: 'Hello, LINE!',
-    },
-  };
+  it('set botChannelId in auth date if "onLineBotChannel" in query is truthy', async () => {
+    global.location.mock
+      .getter('search')
+      .fakeReturnValue('?onLineBotChannel=true');
 
-  it('resolve context according to auth data', async () => {
-    const provider = new LineClientAuthProvider({
+    const authorizer = new ClientAuthorizer({
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });
-    await expect(provider.refineAuth(authData)).resolves.toEqual({
-      user: new LineUser('_USER_ID_'),
+
+    await expect(authorizer.fetchCredential()).resolves.toEqual({
+      success: true,
+      credential: {
+        botChannelId: '_BOT_CHANNEL_ID_',
+        os: 'ios',
+        language: 'zh-TW',
+        accessToken: '_ACCESS_TOKEN_',
+        context: liffContext,
+      },
+    });
+
+    expect(global.liff.login.mock).not.toHaveBeenCalled();
+  });
+});
+
+describe('#refineAuth(data)', () => {
+  it('return channel and user according to auth data', async () => {
+    const authorizer = new ClientAuthorizer({
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
+      liffId: '_LIFF_ID_',
+      isSDKLoaded: true,
+    });
+
+    await expect(
+      authorizer.refineAuth({
+        os: 'ios',
+        language: 'zh-TW',
+        context: {
+          ...liffContext,
+          type: 'utou',
+          utouId: '_UTOU_ID_',
+          userId: '_USER_ID_',
+        },
+      })
+    ).resolves.toEqual({
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      authorizedChannel: new LineChannel(
+        '_PROVIDER_ID_',
+        '_BOT_CHANNEL_ID_',
+        'utou',
+        '_UTOU_ID_'
+      ),
+    });
+
+    await expect(
+      authorizer.refineAuth({
+        os: 'ios',
+        language: 'zh-TW',
+        context: {
+          ...liffContext,
+          type: 'external',
+          userId: '_USER_ID_',
+        },
+      })
+    ).resolves.toEqual({
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
       authorizedChannel: null,
     });
   });
 
-  it('resolve null if profile is empty', async () => {
-    const provider = new LineClientAuthProvider({
+  it('return utob channel if botChannelId exist in data', async () => {
+    const authorizer = new ClientAuthorizer({
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       isSDKLoaded: true,
     });
-    await expect(provider.refineAuth({})).resolves.toBe(null);
+
+    await expect(
+      authorizer.refineAuth({
+        os: 'ios',
+        language: 'zh-TW',
+        botChannelId: '_BOT_CHANNEL_ID_',
+        context: {
+          ...liffContext,
+          type: 'utou',
+          utouId: '_UTOU_ID_',
+          userId: '_USER_ID_',
+        },
+      })
+    ).resolves.toEqual({
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      authorizedChannel: new LineChannel(
+        '_PROVIDER_ID_',
+        '_BOT_CHANNEL_ID_',
+        'utob',
+        '_USER_ID_'
+      ),
+    });
+  });
+
+  it('return null if botChannelId in data not match', async () => {
+    const authorizer = new ClientAuthorizer({
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
+      liffId: '_LIFF_ID_',
+      isSDKLoaded: true,
+    });
+
+    await expect(
+      authorizer.refineAuth({
+        os: 'ios',
+        language: 'zh-TW',
+        botChannelId: '_SOME_OTHER_BOT_CHANNEL_ID_',
+        context: {
+          ...liffContext,
+          type: 'utou',
+          utouId: '_UTOU_ID_',
+          userId: '_USER_ID_',
+        },
+      })
+    ).resolves.toBe(null);
+  });
+
+  it('return null if context is empty', async () => {
+    const authorizer = new ClientAuthorizer({
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
+      liffId: '_LIFF_ID_',
+      isSDKLoaded: true,
+    });
+    await expect(
+      authorizer.refineAuth({ os: 'ios', language: 'zh-TW' })
+    ).resolves.toBe(null);
   });
 });

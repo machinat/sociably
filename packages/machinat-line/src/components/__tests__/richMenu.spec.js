@@ -38,10 +38,7 @@ describe('<LinkRichMenu/>', () => {
 
     expect(
       value[CHANNEL_API_CALL_GETTER](
-        new LineChannel('_CHANNEL_ID_', {
-          type: 'user',
-          userId: '_USER_ID_',
-        })
+        new LineChannel('_CHANNEL_ID_', '_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
       )
     ).toEqual({
       method: 'POST',
@@ -57,26 +54,23 @@ describe('<LinkRichMenu/>', () => {
 
     expect(() =>
       value[CHANNEL_API_CALL_GETTER](
-        new LineChannel('_CHANNEL_ID_', {
-          type: 'room',
-          roomId: '_ROOM_ID_',
-          userId: '_USER_ID_',
-        })
+        new LineChannel('_CHANNEL_ID_', '_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_')
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<LinkRichMenu /> can only be delivered in a user chatting channel"`
+      `"<LinkRichMenu /> can only be delivered in a utob chatting channel"`
     );
 
     expect(() =>
       value[CHANNEL_API_CALL_GETTER](
-        new LineChannel('_CHANNEL_ID_', {
-          type: 'group',
-          groupId: '_GROUP_ID_',
-          userId: '_USER_ID_',
-        })
+        new LineChannel(
+          '_CHANNEL_ID_',
+          '_BOT_CHANNEL_ID_',
+          'group',
+          '_GROUP_ID_'
+        )
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<LinkRichMenu /> can only be delivered in a user chatting channel"`
+      `"<LinkRichMenu /> can only be delivered in a utob chatting channel"`
     );
   });
 
@@ -122,10 +116,7 @@ describe('<UnlinkRichMenu/>', () => {
 
     expect(
       value[CHANNEL_API_CALL_GETTER](
-        new LineChannel('_CHANNEL_ID_', {
-          type: 'user',
-          userId: '_USER_ID_',
-        })
+        new LineChannel('_CHANNEL_ID_', '_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
       )
     ).toEqual({
       method: 'DELETE',
@@ -139,26 +130,23 @@ describe('<UnlinkRichMenu/>', () => {
 
     expect(() =>
       value[CHANNEL_API_CALL_GETTER](
-        new LineChannel('_CHANNEL_ID_', {
-          type: 'room',
-          roomId: '_ROOM_ID_',
-          userId: '_USER_ID_',
-        })
+        new LineChannel('_CHANNEL_ID_', '_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_')
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<UnlinkRichMenu /> can only be delivered in a user chatting channel"`
+      `"<UnlinkRichMenu /> can only be delivered in a utob chatting channel"`
     );
 
     expect(() =>
       value[CHANNEL_API_CALL_GETTER](
-        new LineChannel('_CHANNEL_ID_', {
-          type: 'group',
-          groupId: '_GROUP_ID_',
-          userId: '_USER_ID_',
-        })
+        new LineChannel(
+          '_CHANNEL_ID_',
+          '_BOT_CHANNEL_ID_',
+          'group',
+          '_GROUP_ID_'
+        )
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<UnlinkRichMenu /> can only be delivered in a user chatting channel"`
+      `"<UnlinkRichMenu /> can only be delivered in a utob chatting channel"`
     );
   });
 

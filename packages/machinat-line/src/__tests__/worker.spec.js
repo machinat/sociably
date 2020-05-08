@@ -36,12 +36,12 @@ it('makes calls to api', async () => {
   client.start(queue);
 
   const jobs = [
-    { method: 'POST', path: 'foo/1', body: { id: 1 }, channelUid: '_CHAN_' },
-    { method: 'POST', path: 'bar/1', body: { id: 2 }, channelUid: '_CHAN_' },
-    { method: 'POST', path: 'baz/1', body: { id: 3 }, channelUid: '_CHAN_' },
-    { method: 'POST', path: 'foo/2', body: { id: 4 }, channelUid: '_CHAN_' },
-    { method: 'POST', path: 'bar/2', body: { id: 5 }, channelUid: '_CHAN_' },
-    { method: 'POST', path: 'baz/2', body: { id: 6 }, channelUid: '_CHAN_' },
+    { method: 'POST', path: 'foo/1', body: { id: 1 }, executionKey: '_CHAN_' },
+    { method: 'POST', path: 'bar/1', body: { id: 2 }, executionKey: '_CHAN_' },
+    { method: 'POST', path: 'baz/1', body: { id: 3 }, executionKey: '_CHAN_' },
+    { method: 'POST', path: 'foo/2', body: { id: 4 }, executionKey: '_CHAN_' },
+    { method: 'POST', path: 'bar/2', body: { id: 5 }, executionKey: '_CHAN_' },
+    { method: 'POST', path: 'baz/2', body: { id: 6 }, executionKey: '_CHAN_' },
   ];
 
   await expect(queue.executeJobs(jobs)).resolves.toEqual({
@@ -74,19 +74,19 @@ it('throw if connection error happen', async () => {
         method: 'POST',
         path: 'v2/bot/message/push',
         body: { id: 1 },
-        channelUid: 'foo',
+        executionKey: 'foo',
       },
       {
         method: 'POST',
         path: 'v2/bot/message/push',
         body: { id: 2 },
-        channelUid: 'foo',
+        executionKey: 'foo',
       },
       {
         method: 'POST',
         path: 'v2/bot/message/push',
         body: { id: 3 },
-        channelUid: 'foo',
+        executionKey: 'foo',
       },
     ])
   ).resolves.toMatchSnapshot();
@@ -121,19 +121,19 @@ it('throw if api error happen', async () => {
         method: 'POST',
         path: 'v2/bot/message/push',
         body: { id: 1 },
-        channelUid: 'foo',
+        executionKey: 'foo',
       },
       {
         method: 'POST',
         path: 'v2/bot/message/push',
         body: { id: 2 },
-        channelUid: 'foo',
+        executionKey: 'foo',
       },
       {
         method: 'POST',
         path: 'v2/bot/message/push',
         body: { id: 3 },
-        channelUid: 'foo',
+        executionKey: 'foo',
       },
     ])
   ).resolves.toMatchSnapshot();
@@ -158,55 +158,55 @@ it('sequently excute jobs within the same identical channel', async () => {
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      channelUid: 'foo',
+      executionKey: 'foo',
       body: { id: 1 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      channelUid: 'foo',
+      executionKey: 'foo',
       body: { id: 2 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      channelUid: 'bar',
+      executionKey: 'bar',
       body: { id: 3 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/reply',
-      channelUid: 'bar',
+      executionKey: 'bar',
       body: { id: 4 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/reply',
-      channelUid: 'baz',
+      executionKey: 'baz',
       body: { id: 5 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/reply',
-      channelUid: 'baz',
+      executionKey: 'baz',
       body: { id: 6 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      channelUid: 'foo',
+      executionKey: 'foo',
       body: { id: 7 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      channelUid: 'bar',
+      executionKey: 'bar',
       body: { id: 8 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      channelUid: 'baz',
+      executionKey: 'baz',
       body: { id: 9 },
     },
   ]);
@@ -252,55 +252,55 @@ it('open requests up to connectionCapicity', async () => {
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      channelUid: 'foo',
+      executionKey: 'foo',
       body: { id: 1 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      channelUid: 'foo',
+      executionKey: 'foo',
       body: { id: 2 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      channelUid: 'bar',
+      executionKey: 'bar',
       body: { id: 3 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/reply',
-      channelUid: 'bar',
+      executionKey: 'bar',
       body: { id: 4 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/reply',
-      channelUid: 'baz',
+      executionKey: 'baz',
       body: { id: 5 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/reply',
-      channelUid: 'baz',
+      executionKey: 'baz',
       body: { id: 6 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      channelUid: 'foo',
+      executionKey: 'foo',
       body: { id: 7 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      channelUid: 'bar',
+      executionKey: 'bar',
       body: { id: 8 },
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      channelUid: 'baz',
+      executionKey: 'baz',
       body: { id: 9 },
     },
   ]);
