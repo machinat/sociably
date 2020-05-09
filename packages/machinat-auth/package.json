@@ -34,8 +34,5 @@
   "peerDependencies": {
     "@machinat/core": "0.2.0-alpha.1",
     "@machinat/http": "0.2.0-alpha.1"
-  },
-  "optionalDependencies": {
-    "@machinat/websocket": "^0.2.0-alpha.1"
   }
 }
