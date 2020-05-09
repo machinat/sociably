@@ -48,12 +48,9 @@ const message = (
   </Dialog>
 );
 
-const pathSpy = moxy(() => true);
-const bodySpy = moxy(() => true);
-
 const scope = moxy();
 const initScope = moxy(() => scope);
-const dispatchWrapper = moxy(x => x);
+const dispatchWrapper = moxy((x) => x);
 
 let lineAPI;
 beforeEach(() => {
@@ -68,9 +65,6 @@ beforeEach(() => {
       authorization: 'Bearer _ACCESS_TOKEN_',
     },
   });
-
-  pathSpy.mock.clear();
-  bodySpy.mock.clear();
 });
 
 describe('#constructor(options)', () => {
@@ -149,48 +143,35 @@ describe('#render(token, node, options)', () => {
 
     bot.start();
 
-    const apiStatus = lineAPI
-      .post(pathSpy, bodySpy)
-      .times(2)
+    const apiCall1 = lineAPI
+      .post('/v2/bot/message/push', {
+        to: 'john_doe',
+        messages: [
+          { text: 'Hello LINE', type: 'text' },
+          {
+            type: 'image',
+            originalContentUrl: 'https://machinat.com/greeting.png',
+            quickReply: {
+              items: [
+                {
+                  action: { label: 'HI', text: 'Hi!', type: 'message' },
+                  type: 'action',
+                },
+              ],
+            },
+          },
+        ],
+      })
+      .reply(200, '{}');
+    const apiCall2 = lineAPI
+      .post('/v2/bot/user/john_doe/richmenu/newbie', '')
       .reply(200, '{}');
 
     const response = await bot.render('john_doe', message);
 
     expect(response).toMatchSnapshot();
-    expect(apiStatus.isDone()).toBe(true);
-
-    expect(pathSpy.mock.calls[0].args[0]).toBe('/v2/bot/message/push');
-    expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "messages": Array [
-          Object {
-            "text": "Hello LINE",
-            "type": "text",
-          },
-          Object {
-            "originalContentUrl": "https://machinat.com/greeting.png",
-            "quickReply": Object {
-              "items": Array [
-                Object {
-                  "action": Object {
-                    "label": "HI",
-                    "text": "Hi!",
-                    "type": "message",
-                  },
-                  "type": "action",
-                },
-              ],
-            },
-            "type": "image",
-          },
-        ],
-        "to": "john_doe",
-      }
-    `);
-    expect(pathSpy.mock.calls[1].args[0]).toBe(
-      '/v2/bot/user/john_doe/richmenu/newbie'
-    );
-    expect(bodySpy.mock.calls[1].args[0]).toBe('');
+    expect(apiCall1.isDone()).toBe(true);
+    expect(apiCall2.isDone()).toBe(true);
   });
 
   it('works with replyToken', async () => {
@@ -205,9 +186,29 @@ describe('#render(token, node, options)', () => {
     );
     bot.start();
 
-    const apiStatus = lineAPI
-      .post(pathSpy, bodySpy)
-      .times(2)
+    const apiCall1 = lineAPI
+      .post('/v2/bot/message/reply', {
+        replyToken: '__REPLY_TOKEN__',
+        messages: [
+          { text: 'Hello LINE', type: 'text' },
+          {
+            type: 'image',
+            originalContentUrl: 'https://machinat.com/greeting.png',
+            quickReply: {
+              items: [
+                {
+                  type: 'action',
+                  action: { label: 'HI', text: 'Hi!', type: 'message' },
+                },
+              ],
+            },
+          },
+        ],
+      })
+      .reply(200, '{}');
+
+    const apiCall2 = lineAPI
+      .post('/v2/bot/user/john_doe/richmenu/newbie', '')
       .reply(200, '{}');
 
     const response = await bot.render('john_doe', message, {
@@ -215,44 +216,8 @@ describe('#render(token, node, options)', () => {
     });
 
     expect(response).toMatchSnapshot();
-    expect(apiStatus.isDone()).toBe(true);
-
-    expect(pathSpy.mock).toHaveBeenCalledTimes(2);
-    expect(bodySpy.mock).toHaveBeenCalledTimes(2);
-
-    expect(pathSpy.mock.calls[0].args[0]).toBe('/v2/bot/message/reply');
-    expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "messages": Array [
-          Object {
-            "text": "Hello LINE",
-            "type": "text",
-          },
-          Object {
-            "originalContentUrl": "https://machinat.com/greeting.png",
-            "quickReply": Object {
-              "items": Array [
-                Object {
-                  "action": Object {
-                    "label": "HI",
-                    "text": "Hi!",
-                    "type": "message",
-                  },
-                  "type": "action",
-                },
-              ],
-            },
-            "type": "image",
-          },
-        ],
-        "replyToken": "__REPLY_TOKEN__",
-      }
-    `);
-
-    expect(pathSpy.mock.calls[1].args[0]).toBe(
-      '/v2/bot/user/john_doe/richmenu/newbie'
-    );
-    expect(bodySpy.mock.calls[1].args[0]).toBe('');
+    expect(apiCall1.isDone()).toBe(true);
+    expect(apiCall2.isDone()).toBe(true);
   });
 
   it('return null if message is empty', async () => {
@@ -332,9 +297,32 @@ describe('#renderMulticast(targets, node)', () => {
     );
     bot.start();
 
-    const apiStatus = lineAPI
-      .post(pathSpy, bodySpy)
-      .times(2)
+    const apiCall1 = lineAPI
+      .post('/v2/bot/message/multicast', {
+        to: ['john', 'wick', 'dog'],
+        messages: [
+          { text: 'Hello LINE', type: 'text' },
+          {
+            type: 'image',
+            originalContentUrl: 'https://machinat.com/greeting.png',
+            quickReply: {
+              items: [
+                {
+                  type: 'action',
+                  action: { label: 'HI', text: 'Hi!', type: 'message' },
+                },
+              ],
+            },
+          },
+        ],
+      })
+      .reply(200, '{}');
+
+    const apiCall2 = lineAPI
+      .post('/v2/bot/richmenu/bulk/link', {
+        userIds: ['john', 'wick', 'dog'],
+        richMenuId: 'newbie',
+      })
       .reply(200, '{}');
 
     const response = await bot.renderMulticast(
@@ -343,51 +331,7 @@ describe('#renderMulticast(targets, node)', () => {
     );
 
     expect(response).toMatchSnapshot();
-    expect(apiStatus.isDone()).toBe(true);
-
-    expect(pathSpy.mock.calls[0].args[0]).toBe('/v2/bot/message/multicast');
-    expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "messages": Array [
-          Object {
-            "text": "Hello LINE",
-            "type": "text",
-          },
-          Object {
-            "originalContentUrl": "https://machinat.com/greeting.png",
-            "quickReply": Object {
-              "items": Array [
-                Object {
-                  "action": Object {
-                    "label": "HI",
-                    "text": "Hi!",
-                    "type": "message",
-                  },
-                  "type": "action",
-                },
-              ],
-            },
-            "type": "image",
-          },
-        ],
-        "to": Array [
-          "john",
-          "wick",
-          "dog",
-        ],
-      }
-    `);
-
-    expect(pathSpy.mock.calls[1].args[0]).toBe('/v2/bot/richmenu/bulk/link');
-    expect(bodySpy.mock.calls[1].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "richMenuId": "newbie",
-        "userIds": Array [
-          "john",
-          "wick",
-          "dog",
-        ],
-      }
-    `);
+    expect(apiCall1.isDone()).toBe(true);
+    expect(apiCall2.isDone()).toBe(true);
   });
 });

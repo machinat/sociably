@@ -1,7 +1,7 @@
 // @flow
 import url from 'url';
 import crypto from 'crypto';
-import fetch from 'isomorphic-fetch';
+import fetch from 'node-fetch';
 import FormData from 'form-data';
 
 import type { MachinatWorker } from '@machinat/core/engine/types';
@@ -68,7 +68,7 @@ const assignQueryParams = (queryParams, obj) => {
 const makeRequestName = (channelId: string, count: number) =>
   `${channelId}-${count}`;
 
-const makeFileName = num => `file_${num}`;
+const makeFileName = (num) => `file_${num}`;
 
 const appendFieldsToForm = (form: FormData, body: { [string]: ?string }) => {
   const fields = Object.keys(body);
@@ -102,10 +102,7 @@ export default class MessengerWorker
     this.consumeInterval = consumeInterval;
 
     this._appSecretProof = appSecret
-      ? crypto
-          .createHmac('sha256', appSecret)
-          .update(accessToken)
-          .digest('hex')
+      ? crypto.createHmac('sha256', appSecret).update(accessToken).digest('hex')
       : undefined;
 
     this._started = false;

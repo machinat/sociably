@@ -2,19 +2,19 @@
 import moxy from 'moxy';
 import MachinatQueue from '../queue';
 
-const delay = t => new Promise(resolve => setTimeout(resolve, t));
-const makeJobs = n => new Array(n).fill(0).map((_, i) => ({ id: i }));
+const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+const makeJobs = (n) => new Array(n).fill(0).map((_, i) => ({ id: i }));
 
-const successJobResponses = ids =>
-  ids.map(id => ({
+const successJobResponses = (ids) =>
+  ids.map((id) => ({
     success: true,
     result: `Success${id}`,
     error: undefined,
     job: { id },
   }));
 
-const failedJobResponses = ids =>
-  ids.map(id => ({
+const failedJobResponses = (ids) =>
+  ids.map((id) => ({
     success: false,
     result: `Fail${id}`,
     error: new Error(`Fail${id}`),
@@ -30,12 +30,12 @@ const batch2Resolved = jest.fn();
 const batch3Resolved = jest.fn();
 
 beforeEach(() => {
-  jest.useFakeTimers();
+  jest.useFakeTimers('modern');
   queue = new MachinatQueue();
 
-  consume.mockImplementation(async acquired => {
+  consume.mockImplementation(async (acquired) => {
     await delay(10);
-    return successJobResponses(acquired.map(job => job.id));
+    return successJobResponses(acquired.map((job) => job.id));
   });
 
   batch1Resolved.mockClear();
@@ -150,9 +150,10 @@ describe('as a FIFO queue', () => {
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     for (let i = 0; i < 5; i += 1) {
-      setImmediate(jest.runOnlyPendingTimers);
+      const promise = queue.acquire(2, consume);
+      jest.runOnlyPendingTimers();
 
-      await expect(queue.acquire(2, consume)).resolves.toEqual(
+      await expect(promise).resolves.toEqual(
         successJobResponses(i === 4 ? [8] : [i * 2, i * 2 + 1])
       );
       expect(queue.length).toBe(Math.max(0, 9 - i * 2 - 2));
@@ -199,8 +200,10 @@ describe('as a FIFO queue', () => {
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     for (let i = 0; i < 2; i += 1) {
-      setImmediate(jest.runOnlyPendingTimers);
-      await expect(queue.acquire(5, consume)).resolves.toEqual(
+      const promise = queue.acquire(5, consume);
+      jest.runOnlyPendingTimers();
+
+      await expect(promise).resolves.toEqual(
         successJobResponses(i === 0 ? [0, 1, 2, 3, 4] : [5, 6, 7, 8])
       );
 
@@ -236,25 +239,24 @@ describe('as a FIFO queue', () => {
     queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
-    consume.mockImplementation(async acquired => {
+    consume.mockImplementation(async (acquired) => {
       await delay(10);
       if (acquired[0].id === 2 || acquired[0].id === 4) {
         throw new Error('somthing wrong');
       }
-      return successJobResponses(acquired.map(j => j.id));
+      return successJobResponses(acquired.map((j) => j.id));
     });
 
     for (let i = 0; i < 5; i += 1) {
-      setImmediate(jest.runOnlyPendingTimers);
+      const promise = queue.acquire(2, consume);
+      jest.runOnlyPendingTimers();
 
       if (i === 1) {
-        await expect(queue.acquire(2, consume)).rejects.toThrow(
-          'somthing wrong'
-        );
+        await expect(promise).rejects.toThrow('somthing wrong');
       } else if (i === 4) {
-        await expect(queue.acquire(2, consume)).resolves.toBe(undefined);
+        await expect(promise).resolves.toBe(undefined);
       } else {
-        await expect(queue.acquire(2, consume)).resolves.toEqual(
+        await expect(promise).resolves.toEqual(
           successJobResponses(
             i === 3 ? [8] : i === 2 ? [6, 7] : [i * 2, i * 2 + 1]
           )
@@ -312,9 +314,9 @@ describe('as a FIFO queue', () => {
     queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
-    consume.mockImplementation(async acquired => {
+    consume.mockImplementation(async (acquired) => {
       await delay(10);
-      return acquired.map(job => {
+      return acquired.map((job) => {
         const success = ![3, 6, 8].includes(job.id);
 
         const [response] = success
@@ -324,8 +326,10 @@ describe('as a FIFO queue', () => {
       });
     });
 
-    setImmediate(jest.runOnlyPendingTimers);
-    await expect(queue.acquire(5, consume)).resolves.toEqual([
+    let promise = queue.acquire(5, consume);
+    jest.runOnlyPendingTimers();
+
+    await expect(promise).resolves.toEqual([
       ...successJobResponses([0, 1, 2]),
       ...failedJobResponses([3]),
       ...successJobResponses([4]),
@@ -337,8 +341,10 @@ describe('as a FIFO queue', () => {
     expect(batch2Resolved).toHaveBeenCalled();
     expect(batch3Resolved).not.toHaveBeenCalled();
 
-    setImmediate(jest.runOnlyPendingTimers);
-    await expect(queue.acquire(5, consume)).resolves.toEqual([
+    promise = queue.acquire(5, consume);
+    jest.runOnlyPendingTimers();
+
+    await expect(promise).resolves.toEqual([
       ...failedJobResponses([6]),
       ...successJobResponses([7]),
       ...failedJobResponses([8]),
@@ -388,7 +394,7 @@ describe('as a FIFO queue', () => {
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     const promises = new Array(5).fill(0).map(async (_, i) =>
-      queue.acquire(2, async acquired => {
+      queue.acquire(2, async (acquired) => {
         expect(acquired).toEqual(jobs.slice(i * 2, i * 2 + 2));
         expect(queue.length).toBe(Math.max(0, 9 - i * 2 - 2));
 
@@ -410,7 +416,7 @@ describe('as a FIFO queue', () => {
             break;
         }
 
-        return successJobResponses(acquired.map(job => job.id));
+        return successJobResponses(acquired.map((job) => job.id));
       })
     );
     expect(queue.length).toBe(0);
@@ -444,7 +450,7 @@ describe('as a FIFO queue', () => {
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     const promises = new Array(2).fill(0).map(async (_, i) =>
-      queue.acquire(5, async acquired => {
+      queue.acquire(5, async (acquired) => {
         expect(acquired).toEqual(jobs.slice(i * 5, i * 5 + 5));
         expect(queue.length).toBe(Math.max(0, 9 - i * 5 - 5));
 
@@ -461,7 +467,7 @@ describe('as a FIFO queue', () => {
             break;
         }
 
-        return successJobResponses(acquired.map(job => job.id));
+        return successJobResponses(acquired.map((job) => job.id));
       })
     );
     expect(queue.length).toBe(0);
@@ -492,7 +498,7 @@ describe('as a FIFO queue', () => {
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     const promises = new Array(5).fill(0).map(async (_, i) =>
-      queue.acquire(2, async acquired => {
+      queue.acquire(2, async (acquired) => {
         expect(acquired).toEqual(jobs.slice(i * 2, i * 2 + 2));
         expect(queue.length).toBe(Math.max(0, 9 - (i + 1) * 2));
 
@@ -518,7 +524,7 @@ describe('as a FIFO queue', () => {
           throw new Error('something wrong');
         }
 
-        return successJobResponses(acquired.map(job => job.id));
+        return successJobResponses(acquired.map((job) => job.id));
       })
     );
     expect(queue.length).toBe(0);
@@ -554,7 +560,7 @@ describe('as a FIFO queue', () => {
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     const promises = new Array(5).fill(0).map(async (_, i) =>
-      queue.acquire(2, async acquired => {
+      queue.acquire(2, async (acquired) => {
         expect(acquired).toEqual(jobs.slice(i * 2, i * 2 + 2));
         expect(queue.length).toBe(Math.max(0, 9 - (i + 1) * 2));
 
@@ -576,7 +582,7 @@ describe('as a FIFO queue', () => {
             break;
         }
 
-        return acquired.map(job => {
+        return acquired.map((job) => {
           const success = job.id % 2 === 1;
           return {
             success,
@@ -636,11 +642,10 @@ describe('as a FILO queue', () => {
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     for (let i = 0; i < 5; i += 1) {
-      setImmediate(jest.runOnlyPendingTimers);
+      const promise = queue.acquireAt(Math.max(9 - i * 2 - 2, 0), 2, consume);
+      jest.runOnlyPendingTimers();
 
-      await expect(
-        queue.acquireAt(Math.max(9 - i * 2 - 2, 0), 2, consume)
-      ).resolves.toEqual(
+      await expect(promise).resolves.toEqual(
         successJobResponses(i !== 4 ? [9 - i * 2 - 2, 9 - i * 2 - 1] : [0])
       );
 
@@ -674,6 +679,7 @@ describe('as a FILO queue', () => {
     expect(queue.length).toBe(0);
     [batch1Resolved, batch2Resolved, batch3Resolved].forEach((resolved, i) => {
       const s = i * 3;
+      queue.acquireAt(Math.max(9 - i * 2 - 2, 0), 2, consume);
       expect(resolved).toHaveBeenCalledWith({
         success: true,
         errors: null,
@@ -688,10 +694,10 @@ describe('as a FILO queue', () => {
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     for (let i = 0; i < 2; i += 1) {
-      setImmediate(jest.runOnlyPendingTimers);
-      await expect(
-        queue.acquireAt(i === 0 ? 4 : 0, 5, consume)
-      ).resolves.toEqual(
+      const promise = queue.acquireAt(i === 0 ? 4 : 0, 5, consume);
+      jest.runOnlyPendingTimers();
+
+      await expect(promise).resolves.toEqual(
         successJobResponses(!i ? [4, 5, 6, 7, 8] : [0, 1, 2, 3])
       );
 
@@ -727,29 +733,25 @@ describe('as a FILO queue', () => {
     queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
-    consume.mockImplementation(async acquired => {
+    consume.mockImplementation(async (acquired) => {
       await delay(10);
       if (acquired[0].id === 5 || acquired[0].id === 3) {
         throw new Error('somthing wrong');
       }
-      return successJobResponses(acquired.map(j => j.id));
+      return successJobResponses(acquired.map((j) => j.id));
     });
 
     for (let i = 0; i < 5; i += 1) {
-      setImmediate(jest.runOnlyPendingTimers);
-
       const begin = Math.max(queue.length - 2, 0);
+      const promise = queue.acquireAt(begin, 2, consume);
+      jest.runOnlyPendingTimers();
 
       if (i === 1) {
-        await expect(queue.acquireAt(begin, 2, consume)).rejects.toThrow(
-          'somthing wrong'
-        );
+        await expect(promise).rejects.toThrow('somthing wrong');
       } else if (i === 4) {
-        await expect(queue.acquireAt(begin, 2, consume)).resolves.toBe(
-          undefined
-        );
+        await expect(promise).resolves.toBe(undefined);
       } else {
-        await expect(queue.acquireAt(begin, 2, consume)).resolves.toEqual(
+        await expect(promise).resolves.toEqual(
           successJobResponses(i === 3 ? [0] : i === 2 ? [1, 2] : [7, 8])
         );
       }
@@ -807,9 +809,9 @@ describe('as a FILO queue', () => {
     queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
-    consume.mockImplementation(async acquired => {
+    consume.mockImplementation(async (acquired) => {
       await delay(10);
-      return acquired.map(job => {
+      return acquired.map((job) => {
         const success = ![0, 2, 5].includes(job.id);
 
         const [response] = success
@@ -819,8 +821,10 @@ describe('as a FILO queue', () => {
       });
     });
 
-    setImmediate(jest.runOnlyPendingTimers);
-    await expect(queue.acquireAt(4, 5, consume)).resolves.toEqual([
+    let promise = queue.acquireAt(4, 5, consume);
+    jest.runOnlyPendingTimers();
+
+    await expect(promise).resolves.toEqual([
       ...successJobResponses([4]),
       ...failedJobResponses([5]),
       ...successJobResponses([6, 7, 8]),
@@ -832,8 +836,9 @@ describe('as a FILO queue', () => {
     expect(batch2Resolved).toHaveBeenCalled();
     expect(batch1Resolved).not.toHaveBeenCalled();
 
-    setImmediate(jest.runOnlyPendingTimers);
-    await expect(queue.acquireAt(0, 5, consume)).resolves.toEqual([
+    promise = queue.acquireAt(0, 5, consume);
+    jest.runOnlyPendingTimers();
+    await expect(promise).resolves.toEqual([
       ...failedJobResponses([0]),
       ...successJobResponses([1]),
       ...failedJobResponses([2]),
@@ -881,51 +886,51 @@ describe('acquire disorderly', () => {
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     for (let i = 0; i < 5; i += 1) {
-      setImmediate(jest.runOnlyPendingTimers);
+      let promise;
 
       switch (i) {
         case 0:
-          await expect(queue.acquireAt(5, 2, consume)).resolves.toEqual(
-            successJobResponses([5, 6])
-          );
+          promise = queue.acquireAt(5, 2, consume);
+          jest.runOnlyPendingTimers();
 
+          await expect(promise).resolves.toEqual(successJobResponses([5, 6]));
           expect(consume).toHaveBeenNthCalledWith(i + 1, jobs.slice(5, 7));
           break;
-        case 1:
-          await expect(queue.acquireAt(2, 2, consume)).resolves.toEqual(
-            successJobResponses([2, 3])
-          );
 
+        case 1:
+          promise = queue.acquireAt(2, 2, consume);
+          jest.runOnlyPendingTimers();
+
+          await expect(promise).resolves.toEqual(successJobResponses([2, 3]));
           expect(consume).toHaveBeenNthCalledWith(i + 1, jobs.slice(2, 4));
           expect(batch2Resolved).not.toHaveBeenCalled();
           break;
         case 2:
-          await expect(queue.acquireAt(2, 2, consume)).resolves.toEqual(
-            successJobResponses([4, 7])
-          );
+          promise = queue.acquireAt(2, 2, consume);
+          jest.runOnlyPendingTimers();
 
+          await expect(promise).resolves.toEqual(successJobResponses([4, 7]));
           expect(consume).toHaveBeenNthCalledWith(i + 1, [jobs[4], jobs[7]]);
 
           expect(batch2Resolved).toHaveBeenCalled();
           expect(batch3Resolved).not.toHaveBeenCalled();
           break;
         case 3:
-          await expect(queue.acquireAt(1, 2, consume)).resolves.toEqual(
-            successJobResponses([1, 8])
-          );
+          promise = queue.acquireAt(1, 2, consume);
+          jest.runOnlyPendingTimers();
 
+          await expect(promise).resolves.toEqual(successJobResponses([1, 8]));
           expect(consume).toHaveBeenNthCalledWith(i + 1, [jobs[1], jobs[8]]);
 
           expect(batch3Resolved).toHaveBeenCalled();
           expect(batch1Resolved).not.toHaveBeenCalled();
           break;
         case 4:
-          await expect(queue.acquireAt(0, 2, consume)).resolves.toEqual(
-            successJobResponses([0])
-          );
+          promise = queue.acquireAt(0, 2, consume);
+          jest.runOnlyPendingTimers();
 
+          await expect(promise).resolves.toEqual(successJobResponses([0]));
           expect(consume).toHaveBeenNthCalledWith(i + 1, [jobs[0]]);
-
           expect(batch1Resolved).toHaveBeenCalled();
           break;
       }
@@ -950,22 +955,22 @@ describe('acquire disorderly', () => {
     queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
-    consume.mockImplementation(async acquired => {
+    consume.mockImplementation(async (acquired) => {
       await delay(10);
       if (acquired[0].id === 2 || acquired[0].id === 7) {
         throw new Error('somthing wrong');
       }
-      return successJobResponses(acquired.map(j => j.id));
+      return successJobResponses(acquired.map((j) => j.id));
     });
 
     for (let i = 0; i < 3; i += 1) {
-      setImmediate(jest.runOnlyPendingTimers);
+      let promise;
 
       switch (i) {
         case 0:
-          await expect(queue.acquireAt(5, 2, consume)).resolves.toEqual(
-            successJobResponses([5, 6])
-          );
+          promise = queue.acquireAt(5, 2, consume);
+          jest.runOnlyPendingTimers();
+          await expect(promise).resolves.toEqual(successJobResponses([5, 6]));
 
           expect(consume).toHaveBeenNthCalledWith(i + 1, jobs.slice(5, 7));
           expect(queue.length).toBe(7);
@@ -973,11 +978,12 @@ describe('acquire disorderly', () => {
           expect(batch1Resolved).not.toHaveBeenCalled();
           expect(batch2Resolved).not.toHaveBeenCalled();
           break;
-        case 1:
-          await expect(queue.acquireAt(2, 2, consume)).rejects.toThrow(
-            'somthing wrong'
-          );
 
+        case 1:
+          promise = queue.acquireAt(2, 2, consume);
+          jest.runOnlyPendingTimers();
+
+          await expect(promise).rejects.toThrow('somthing wrong');
           expect(consume).toHaveBeenNthCalledWith(i + 1, jobs.slice(2, 4));
           expect(queue.length).toBe(2);
 
@@ -985,14 +991,14 @@ describe('acquire disorderly', () => {
           expect(batch2Resolved).toHaveBeenCalled();
           expect(batch3Resolved).not.toHaveBeenCalled();
           break;
-        case 2:
-          await expect(queue.acquireAt(0, 2, consume)).rejects.toThrow(
-            'somthing wrong'
-          );
 
+        case 2:
+          promise = queue.acquireAt(0, 2, consume);
+          jest.runOnlyPendingTimers();
+
+          await expect(promise).rejects.toThrow('somthing wrong');
           expect(consume).toHaveBeenNthCalledWith(i + 1, [jobs[7], jobs[8]]);
           expect(queue.length).toBe(0);
-
           expect(batch3Resolved).toHaveBeenCalled();
           break;
       }
@@ -1022,9 +1028,9 @@ describe('acquire disorderly', () => {
     queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
-    consume.mockImplementation(async acquired => {
+    consume.mockImplementation(async (acquired) => {
       await delay(10);
-      return acquired.map(job => {
+      return acquired.map((job) => {
         const success = ![1, 3, 8].includes(job.id);
 
         const [response] = success
@@ -1035,21 +1041,23 @@ describe('acquire disorderly', () => {
     });
 
     for (let i = 0; i < 4; i += 1) {
-      setImmediate(jest.runOnlyPendingTimers);
+      let promise;
 
       switch (i) {
         case 0:
-          await expect(queue.acquireAt(5, 2, consume)).resolves.toEqual(
-            successJobResponses([5, 6])
-          );
+          promise = queue.acquireAt(5, 2, consume);
+          jest.runOnlyPendingTimers();
 
+          await expect(promise).resolves.toEqual(successJobResponses([5, 6]));
           expect(consume).toHaveBeenNthCalledWith(i + 1, jobs.slice(5, 7));
           expect(queue.length).toBe(7);
-
           expect(batch2Resolved).not.toHaveBeenCalled();
           break;
         case 1:
-          await expect(queue.acquireAt(2, 2, consume)).resolves.toEqual([
+          promise = queue.acquireAt(2, 2, consume);
+          jest.runOnlyPendingTimers();
+
+          await expect(promise).resolves.toEqual([
             ...successJobResponses([2]),
             ...failedJobResponses([3]),
           ]);
@@ -1060,8 +1068,12 @@ describe('acquire disorderly', () => {
           expect(batch2Resolved).toHaveBeenCalled();
           expect(batch1Resolved).not.toHaveBeenCalled();
           break;
+
         case 2:
-          await expect(queue.acquireAt(1, 2, consume)).resolves.toEqual([
+          promise = queue.acquireAt(1, 2, consume);
+          jest.runOnlyPendingTimers();
+
+          await expect(promise).resolves.toEqual([
             ...failedJobResponses([1]),
             ...successJobResponses([7]),
           ]);
@@ -1072,14 +1084,14 @@ describe('acquire disorderly', () => {
           expect(batch1Resolved).toHaveBeenCalled();
           expect(batch3Resolved).not.toHaveBeenCalled();
           break;
-        case 3:
-          await expect(queue.acquireAt(0, 2, consume)).resolves.toEqual(
-            failedJobResponses([8])
-          );
 
+        case 3:
+          promise = queue.acquireAt(0, 2, consume);
+          jest.runOnlyPendingTimers();
+
+          await expect(promise).resolves.toEqual(failedJobResponses([8]));
           expect(consume).toHaveBeenNthCalledWith(i + 1, [jobs[8]]);
           expect(queue.length).toBe(0);
-
           expect(batch3Resolved).toHaveBeenCalled();
           break;
       }

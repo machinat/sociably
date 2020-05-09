@@ -25,9 +25,9 @@
   "license": "MIT",
   "dependencies": {
     "base64url": "^3.0.1",
-    "form-data": "^2.3.2",
+    "form-data": "^3.0.0",
     "invariant": "^2.2.4",
-    "isomorphic-fetch": "^2.2.1",
+    "node-fetch": "^2.6.0",
     "warning": "^4.0.2"
   },
   "devDependencies": {

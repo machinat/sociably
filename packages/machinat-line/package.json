@@ -24,7 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",
-    "node-fetch": "^2.2.0",
+    "node-fetch": "^2.6.0",
     "warning": "^4.0.2"
   },
   "peerDependencies": {

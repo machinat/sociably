@@ -1,5 +1,3 @@
-const path = require('path');
-
 module.exports = {
   parser: 'babel-eslint',
   env: {
@@ -9,7 +7,6 @@ module.exports = {
     __DEV__: false
   },
   plugins: [
-    'json',
     'prettier',
     'flowtype',
   ],

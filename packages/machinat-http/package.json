@@ -21,8 +21,8 @@
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",
-    "raw-body": "^2.3.3",
-    "thenifiedly": "^0.1.0"
+    "raw-body": "^2.4.1",
+    "thenifiedly": "^0.2.1"
   },
   "peerDependencies": {
     "@machinat/core": "0.1.0-alpha.0"

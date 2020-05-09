@@ -5,7 +5,7 @@ import LineWorker from '../worker';
 
 nock.disableNetConnect();
 
-const delay = t => new Promise(resolve => setTimeout(resolve, t));
+const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 const accessToken = '__LINE_CHANNEL_TOKEN__';
 
@@ -25,37 +25,38 @@ beforeEach(() => {
 it('makes calls to api', async () => {
   const client = new LineWorker(accessToken, 10);
 
-  const pathSpy = moxy(() => true);
-  const bodySpy = moxy(() => true);
-
-  const scope = lineAPI
-    .post(pathSpy, bodySpy)
-    .times(6)
-    .reply(200, '{}');
+  const apiAssertions = [
+    lineAPI.post('/foo/1', { id: 1 }).delay(100).reply(200, '{}'),
+    lineAPI.post('/bar/1', { id: 2 }).delay(100).reply(200, '{}'),
+    lineAPI.post('/baz/1', { id: 3 }).delay(100).reply(200, '{}'),
+    lineAPI.post('/foo/2', { id: 4 }).delay(100).reply(200, '{}'),
+    lineAPI.post('/bar/2', { id: 5 }).delay(100).reply(200, '{}'),
+    lineAPI.post('/baz/2', { id: 6 }).delay(100).reply(200, '{}'),
+  ];
 
   client.start(queue);
 
   const jobs = [
-    { method: 'POST', path: 'foo/1', body: { id: 1 }, executionKey: '_CHAN_' },
-    { method: 'POST', path: 'bar/1', body: { id: 2 }, executionKey: '_CHAN_' },
-    { method: 'POST', path: 'baz/1', body: { id: 3 }, executionKey: '_CHAN_' },
-    { method: 'POST', path: 'foo/2', body: { id: 4 }, executionKey: '_CHAN_' },
-    { method: 'POST', path: 'bar/2', body: { id: 5 }, executionKey: '_CHAN_' },
-    { method: 'POST', path: 'baz/2', body: { id: 6 }, executionKey: '_CHAN_' },
+    { method: 'POST', path: 'foo/1', body: { id: 1 }, executionKey: undefined },
+    { method: 'POST', path: 'bar/1', body: { id: 2 }, executionKey: undefined },
+    { method: 'POST', path: 'baz/1', body: { id: 3 }, executionKey: undefined },
+    { method: 'POST', path: 'foo/2', body: { id: 4 }, executionKey: undefined },
+    { method: 'POST', path: 'bar/2', body: { id: 5 }, executionKey: undefined },
+    { method: 'POST', path: 'baz/2', body: { id: 6 }, executionKey: undefined },
   ];
 
-  await expect(queue.executeJobs(jobs)).resolves.toEqual({
+  const promise = queue.executeJobs(jobs);
+
+  await delay(100);
+  for (const scope of apiAssertions) {
+    expect(scope.isDone()).toBe(true);
+  }
+
+  await expect(promise).resolves.toEqual({
     success: true,
     errors: null,
-    batch: jobs.map(job => ({ success: true, job, result: {} })),
+    batch: jobs.map((job) => ({ success: true, job, result: {} })),
   });
-
-  expect(pathSpy.mock.calls.map(c => c.args[0])).toEqual(
-    jobs.map(j => `/${j.path}`)
-  );
-  expect(bodySpy.mock.calls.map(c => c.args[0])).toEqual(jobs.map(j => j.body));
-
-  expect(scope.isDone()).toBe(true);
 });
 
 it('throw if connection error happen', async () => {
