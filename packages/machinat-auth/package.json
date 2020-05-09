@@ -1,6 +1,6 @@
 {
   "name": "@machinat/auth",
-  "version": "0.2.0-alpha.0",
+  "version": "0.2.0-alpha.1",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -36,6 +36,6 @@
     "@machinat/http": "0.2.0-alpha.1"
   },
   "optionalDependencies": {
-    "@machinat/websocket": "^0.2.0-alpha.0"
+    "@machinat/websocket": "^0.2.0-alpha.1"
   }
 }
