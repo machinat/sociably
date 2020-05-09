@@ -31,8 +31,8 @@
     "warning": "^4.0.2"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.1.0-alpha.0",
-    "@machinat/http": "^0.1.0-alpha.0"
+    "@machinat/core": "^0.2.0-alpha.1",
+    "@machinat/http": "^0.2.0-alpha.1"
   },
   "devDependencies": {
     "jsdom": "^15.2.1"
