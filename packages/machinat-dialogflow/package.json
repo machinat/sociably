@@ -1,6 +1,6 @@
 {
   "name": "@machinat/dialogflow",
-  "version": "0.1.0-alpha.0",
+  "version": "0.2.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "dialogflow": "^0.10.3",
     "invariant": "^2.2.4"
   },
-  "peerDependencies":{
+  "peerDependencies": {
     "@machinat/core": "0.1.0-alpha.0"
   }
 }
