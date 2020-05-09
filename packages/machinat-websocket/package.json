@@ -20,7 +20,7 @@
     "lib/*",
     "README.md",
     "auth/*",
-    "client,js"
+    "client.js"
   ],
   "license": "MIT",
   "dependencies": {
