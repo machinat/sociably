@@ -30,8 +30,8 @@
     "ws": "^7.2.5"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.2.0-alpha.1",
-    "@machinat/http": "^0.2.0-alpha.1"
+    "@machinat/core": "^0.2.0-alpha.2",
+    "@machinat/http": "^0.2.0-alpha.2"
   },
   "optionalDependencies": {
     "@machinat/auth": "^0.2.0-alpha.1",

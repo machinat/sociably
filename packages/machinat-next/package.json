@@ -22,8 +22,8 @@
     "invariant": "^2.2.4"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.2.0-alpha.1",
-    "@machinat/http": "^0.2.0-alpha.1",
+    "@machinat/core": "^0.2.0-alpha.2",
+    "@machinat/http": "^0.2.0-alpha.2",
     "next": "^9.0.0"
   },
   "devDependencies": {

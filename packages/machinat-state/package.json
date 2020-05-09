@@ -30,6 +30,6 @@
     "thenifiedly": "^0.2.1"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.2.0-alpha.1"
+    "@machinat/core": "^0.2.0-alpha.2"
   }
 }

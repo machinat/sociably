@@ -39,7 +39,7 @@
     "thenify": "^3.3.0"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.2.0-alpha.1",
-    "@machinat/http": "^0.2.0-alpha.1"
+    "@machinat/core": "^0.2.0-alpha.2",
+    "@machinat/http": "^0.2.0-alpha.2"
   }
 }
