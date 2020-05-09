@@ -11,7 +11,7 @@ import type { RedisStateConfigs } from './types';
 const createRedisClient = factory<RedisClientI>({
   lifetime: 'singleton',
   deps: [REDIS_STATE_CONFIGS_I],
-})(configs => redis.createClient(configs));
+})((configs) => redis.createClient(configs));
 
 const RedisState = {
   ClientI: RedisClientI,

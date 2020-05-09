@@ -21,7 +21,7 @@ test('elements match snapshot', async () => {
     </>
   );
   expect(segments).toMatchSnapshot();
-  expect(segments.map(seg => seg.value)).toMatchInlineSnapshot(`
+  expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
     Array [
       Object {
         "message": Object {
@@ -58,7 +58,7 @@ test('nested elements match snapshot', async () => {
     </text>
   );
   expect(segments).toMatchSnapshot();
-  expect(segments.map(seg => seg.value)).toMatchInlineSnapshot(`
+  expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
     Array [
       Object {
         "message": Object {
@@ -99,7 +99,7 @@ test('<text/> hoist plain text into text message object', async () => {
   );
 
   expect(segments).toMatchSnapshot();
-  expect(segments.map(seg => seg.value)).toMatchInlineSnapshot(`
+  expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
     Array [
       Object {
         "message": Object {
@@ -189,7 +189,7 @@ test('media elements match snapshot', async () => {
     </>
   );
   expect(segments).toMatchSnapshot();
-  expect(segments.map(seg => seg.value)).toMatchInlineSnapshot(`
+  expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
     Array [
       Object {
         "message": Object {

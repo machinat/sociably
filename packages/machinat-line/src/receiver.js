@@ -38,7 +38,7 @@ const handleWebhook = (
 ): WebhookHandler => {
   const popEvent = popEventWrapper(() => Promise.resolve(null));
 
-  return async metadata => {
+  return async (metadata) => {
     const {
       request: { method, body, headers },
     } = metadata;

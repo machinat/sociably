@@ -38,10 +38,10 @@ export const URIAction = (node, path) => {
 };
 annotateLineComponent(URIAction);
 
-const pad2 = n => (n < 10 ? `0${n}` : n);
-const fullDate = d =>
+const pad2 = (n) => (n < 10 ? `0${n}` : n);
+const fullDate = (d) =>
   `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-const fullHourMinute = d => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+const fullHourMinute = (d) => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 const dateToStringByMode = (mode, d) =>
   !(d instanceof Date)
     ? d

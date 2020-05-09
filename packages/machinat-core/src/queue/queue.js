@@ -140,7 +140,7 @@ export default class MachinatQueue<Job, Result> {
     addAcquireCountOfJobs(boxes);
 
     try {
-      const jobs = boxes.map(box => box.job);
+      const jobs = boxes.map((box) => box.job);
       const jobsResult = await consume(jobs);
 
       this._finishJobs(boxes, jobsResult);

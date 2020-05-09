@@ -34,9 +34,9 @@ const createWSServer = factory<() => WS>({ lifetime: 'singleton' })(
   () => new WS.Server({ noServer: true })
 );
 
-const createUniqServerId = factory<() => string>({ lifetime: 'transient' })(
-  () => uniqid()
-);
+const createUniqServerId = factory<() => string>({
+  lifetime: 'transient',
+})(() => uniqid());
 
 const upgradeRoutingFactory = factory<HTTPUpgradeRouting>({
   lifetime: 'transient',

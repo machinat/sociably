@@ -1,5 +1,3 @@
 // @flow
 export { default } from './registry';
-export {
-  default as collectSharableAttachments,
-} from './collectSharableAttachments';
+export { default as collectSharableAttachments } from './collectSharableAttachments';

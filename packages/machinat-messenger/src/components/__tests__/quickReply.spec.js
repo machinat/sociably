@@ -8,7 +8,7 @@ import {
   LocationQuickReply,
 } from '../quickReply';
 
-const render = async node => {
+const render = async (node) => {
   let rendered;
   const renderer = new Renderer('messenger', (_, __, renderInner) => {
     rendered = renderInner(node);
@@ -21,7 +21,7 @@ const render = async node => {
 
 it.each([QuickReply, PhoneQuickReply, EmailQuickReply, LocationQuickReply])(
   '%p is valid Component',
-  Reply => {
+  (Reply) => {
     expect(typeof Reply).toBe('function');
     expect(isNativeElement(<Reply />)).toBe(true);
     expect(Reply.$$platform).toBe('messenger');

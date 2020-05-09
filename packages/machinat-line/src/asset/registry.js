@@ -33,7 +33,7 @@ class LineAssetsRegistry {
   async setAssetId(resource: string, tag: string, id: string): Promise<void> {
     await this._stateController
       .namedState(this._makeResourceToken(resource))
-      .set<string>(tag, existed => {
+      .set<string>(tag, (existed) => {
         if (existed) {
           throw new Error(`${resource} [ ${tag} ] already exist`);
         }

@@ -11,9 +11,9 @@ test.each([
 ])('making %s:%s messaging event', async (type, subtype, fixturesGlob) => {
   const fixtures = await getFixtures(fixturesGlob);
 
-  const events = fixtures.map(fixt => mainFactory(false, fixt));
+  const events = fixtures.map((fixt) => mainFactory(false, fixt));
 
-  events.forEach(event => {
+  events.forEach((event) => {
     expect(event.type).toEqual(type);
     expect(event.subtype).toEqual(subtype);
     expect(event.platform).toEqual('messenger');

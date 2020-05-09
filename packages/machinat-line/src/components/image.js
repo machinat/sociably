@@ -104,7 +104,7 @@ export const ImageMap = async (node, path, render) => {
   const videoValue = videoSegments?.[0].value;
 
   const actionSegments = await render(children, '.children');
-  const actionValues = actionSegments?.map(segment => segment.value);
+  const actionValues = actionSegments?.map((segment) => segment.value);
 
   return [
     unitSegment(node, path, {

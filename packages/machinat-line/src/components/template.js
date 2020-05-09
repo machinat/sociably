@@ -19,7 +19,7 @@ export const ButtonTemplate = async (node, path, render) => {
   const defaultActionValue = defaultActionSegments?.[0].value;
 
   const actionSegments = await render(actions, '.actions');
-  const actionValues = actionSegments?.map(seg => seg.value);
+  const actionValues = actionSegments?.map((seg) => seg.value);
 
   return [
     unitSegment(node, path, {
@@ -44,7 +44,7 @@ annotateLineComponent(ButtonTemplate);
 export const ConfirmTemplate = async (node, path, render) => {
   const { actions, altText, text } = node.props;
   const actionSegments = await render(actions, '.actions');
-  const actionsValues = actionSegments?.map(segment => segment.value);
+  const actionsValues = actionSegments?.map((segment) => segment.value);
 
   return [
     unitSegment(node, path, {
@@ -75,7 +75,7 @@ export const CarouselItem = async (node, path, render) => {
   const defaultActionValue = defaultActionSegments?.[0].value;
 
   const actionSegments = await render(actions, '.actions');
-  const actionValues = actionSegments?.map(segment => segment.value);
+  const actionValues = actionSegments?.map((segment) => segment.value);
 
   return [
     partSegment(node, path, {
@@ -93,7 +93,7 @@ annotateLineComponent(CarouselItem);
 export const CarouselTemplate = async (node, path, render) => {
   const { children, altText, imageAspectRatio, imageSize } = node.props;
   const columnSegments = await render(children, '.children');
-  const cloumnValues = columnSegments?.map(segment => segment.value);
+  const cloumnValues = columnSegments?.map((segment) => segment.value);
 
   return [
     unitSegment(node, path, {
@@ -127,7 +127,7 @@ annotateLineComponent(ImageCarouselItem);
 export const ImageCarouselTemplate = async (node, path, render) => {
   const { children, altText } = node.props;
   const columnSegments = await render(children, '.children');
-  const columnValues = columnSegments?.map(segment => segment.value);
+  const columnValues = columnSegments?.map((segment) => segment.value);
 
   return [
     unitSegment(node, path, {

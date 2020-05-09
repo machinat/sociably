@@ -47,9 +47,9 @@ const Next = {
       { provide: NextServerI, withProvider: nextServerFactory },
       { provide: HTTP.REQUEST_ROUTINGS_I, withProvider: routingFactory },
     ],
-    startHook: container<Promise<void>>({ deps: [NextReceiver] })(
-      (receiver: NextReceiver) => receiver.prepare()
-    ),
+    startHook: container<Promise<void>>({
+      deps: [NextReceiver],
+    })((receiver: NextReceiver) => receiver.prepare()),
     eventMiddlewares: configs.eventMiddlewares,
   }),
 };

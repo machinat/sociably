@@ -63,7 +63,7 @@ const resolveBindings = (
       const conflictedPlatform =
         platforms &&
         existedPlatforms &&
-        existedPlatforms.find(p => platforms.includes(p));
+        existedPlatforms.find((p) => platforms.includes(p));
 
       throw new Error(
         `${target.$$name} is already bound on ${

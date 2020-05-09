@@ -13,7 +13,7 @@ import { URIAction } from '../action';
 
 const renderer = new Renderer('line', () => null);
 
-test.each([CarouselItem, ImageCarouselItem].map(C => [C.name, C]))(
+test.each([CarouselItem, ImageCarouselItem].map((C) => [C.name, C]))(
   '%s is valid native component',
   (_, Item) => {
     expect(typeof Item).toBe('function');
@@ -29,7 +29,7 @@ test.each(
     ConfirmTemplate,
     CarouselTemplate,
     ImageCarouselTemplate,
-  ].map(C => [C.name, C])
+  ].map((C) => [C.name, C])
 )('%s is valid native unit component', (_, Template) => {
   expect(typeof Template).toBe('function');
 
@@ -97,7 +97,7 @@ test.each(
         action={<URIAction uri="https://..." label="bar" />}
       />
     </ImageCarouselTemplate>,
-  ].map(ele => [ele.type.name, ele])
+  ].map((ele) => [ele.type.name, ele])
 )('%s rendered match snapshot', async (_, templateElement) => {
   const promise = renderer.render(templateElement);
   await expect(promise).resolves.toEqual([

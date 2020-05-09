@@ -13,7 +13,7 @@ const resolveAfterLoops = (resolve, n) => {
   }
 };
 const delayLoops = (n = 1) =>
-  new Promise(resolve => resolveAfterLoops(resolve, n));
+  new Promise((resolve) => resolveAfterLoops(resolve, n));
 
 nock.disableNetConnect();
 const serverEntry = nock('https://machinat.io');
@@ -22,21 +22,17 @@ global.location = moxy(url.parse('https://machinat.io/app?platform=foo'));
 global.document = moxy({ cookie: '' });
 global.fetch = fetch;
 
-const makeToken = payload =>
-  jsonwebtoken
-    .sign(payload, '__SECRET__')
-    .split('.')
-    .slice(0, 2)
-    .join('.');
+const makeToken = (payload) =>
+  jsonwebtoken.sign(payload, '__SECRET__').split('.').slice(0, 2).join('.');
 
-const setBackendAuthed = payload => {
+const setBackendAuthed = (payload) => {
   const token = makeToken(payload);
   global.document.mock
     .getter('cookie')
     .fakeReturnValue(`machinat_auth_token=${token}`);
 };
 
-const setBackendErrored = payload => {
+const setBackendErrored = (payload) => {
   const errorEncoded = jsonwebtoken.sign(payload, '__SECRET__');
   global.document.mock
     .getter('cookie')

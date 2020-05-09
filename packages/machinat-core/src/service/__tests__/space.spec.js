@@ -286,7 +286,7 @@ it('provide service bound on specified platform within corresponded scope', () =
   );
   space.bootstrap(null);
 
-  const bazContainer = container({ deps: [BAZ] })(baz => baz.baz());
+  const bazContainer = container({ deps: [BAZ] })((baz) => baz.baz());
 
   const scopeA = space.createScope('A');
   expect(scopeA.injectContainer(bazContainer)).toBe('Baz');
@@ -322,7 +322,7 @@ it('provide service bound on specified platform prior to default one', () => {
   );
   space.bootstrap(null);
 
-  const fooContainer = container({ deps: [Foo] })(foo => foo.foo());
+  const fooContainer = container({ deps: [Foo] })((foo) => foo.foo());
 
   let scope = space.createScope();
   expect(scope.injectContainer(fooContainer)).toBe('FOO_MEOW');
@@ -507,7 +507,7 @@ test('lifecycle of services of different lifetime', () => {
 test('provide multi interface as an array of bound value', () => {
   const MULTI_FOOD = namedInterface({ name: 'MultiFood', multi: true });
   const bistroFactory = factory({ lifetime: 'singleton', deps: [MULTI_FOOD] })(
-    moxy(dishes => ({
+    moxy((dishes) => ({
       serve: () => dishes,
     }))
   );

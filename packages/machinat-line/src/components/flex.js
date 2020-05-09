@@ -140,7 +140,7 @@ annotateLineComponent(FlexText);
 export const FlexBox = async (node, path, render) => {
   const { children, layout, flex, spacing, margin, action } = node.props;
   const contentSegments = await render(children, '.children');
-  const contentValues = contentSegments?.map(segment => segment.value);
+  const contentValues = contentSegments?.map((segment) => segment.value);
 
   const actionSegments = await render(action, '.action');
   const actionValue = actionSegments?.[0].value;
@@ -159,7 +159,7 @@ export const FlexBox = async (node, path, render) => {
 };
 annotateLineComponent(FlexBox);
 
-const createBlockComponent = section => {
+const createBlockComponent = (section) => {
   const tagName = `Flex${section[0].toUpperCase()}${section.slice(1)}`;
 
   const wrapper = {
@@ -207,7 +207,7 @@ export const FlexBubbleContainer = async (node, path, render) => {
   };
 
   const sectionSegments = await render(children, '.children');
-  const sections = sectionSegments?.map(segment => segment.value);
+  const sections = sectionSegments?.map((segment) => segment.value);
 
   for (const section of sections) {
     bubbleObject[section.name] = section.content;
@@ -227,7 +227,7 @@ annotateLineComponent(FlexBubbleContainer);
 
 export const FlexCarouselContainer = async (node, path, render) => {
   const contentSegments = await render(node.props.children, '.children');
-  const bubbleContainers = contentSegments?.map(segment => segment.value);
+  const bubbleContainers = contentSegments?.map((segment) => segment.value);
 
   return [
     partSegment(node, path, {

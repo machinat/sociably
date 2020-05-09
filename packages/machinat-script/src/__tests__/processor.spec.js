@@ -24,7 +24,7 @@ const stateManager = moxy({
   channelState: () => state,
 });
 
-const promptSetter = moxy(vars => vars);
+const promptSetter = moxy((vars) => vars);
 
 const AnotherScript = build(
   'AnotherScript',
@@ -77,10 +77,10 @@ const MyScript = build(
 
     {() => 'sed '}
 
-    <VARS set={vars => ({ ...vars, i: 0 })} />
+    <VARS set={(vars) => ({ ...vars, i: 0 })} />
 
     <WHILE condition={({ i }) => i < 5}>
-      <VARS set={vars => ({ ...vars, i: vars.i + 1 })} />
+      <VARS set={(vars) => ({ ...vars, i: vars.i + 1 })} />
 
       <PROMPT key="ask_5" set={promptSetter} />
       {() => 'do '}

@@ -59,7 +59,7 @@ describe('behavior of commands', () => {
     };
     const setVarsCommand = {
       type: 'set_vars',
-      setter: moxy(vars => ({ ...vars, t: vars.t + 1 })),
+      setter: moxy((vars) => ({ ...vars, t: vars.t + 1 })),
     };
 
     expect(
@@ -122,7 +122,7 @@ describe('behavior of commands', () => {
   test('continue from prompt', () => {
     const promptCommand = moxy({
       type: 'prompt',
-      setter: vars => ({ ...vars, answer: 'no' }),
+      setter: (vars) => ({ ...vars, answer: 'no' }),
       key: 'prompt#0',
     });
 
@@ -398,11 +398,14 @@ describe('run whole script', () => {
       { type: 'jump_cond', condition: () => true, isNot: false, offset: 2 },
       {
         type: 'prompt',
-        setter: vars => ({ ...vars, promptFromBottom: true }),
+        setter: (vars) => ({ ...vars, promptFromBottom: true }),
         key: 'CHILD_PROMPT',
       },
     ],
-    new Map([['BEGIN', 0], ['CHILD_PROMPT', 2]]),
+    new Map([
+      ['BEGIN', 0],
+      ['CHILD_PROMPT', 2],
+    ]),
     'SubScript'
   );
 
@@ -414,7 +417,10 @@ describe('run whole script', () => {
       { type: 'content', render: () => 'bye' },
       { type: 'return' },
       { type: 'jump_cond', condition: () => true, isNot: true, offset: 5 },
-      { type: 'set_vars', setter: vars => ({ ...vars, t: (vars.t || 0) + 1 }) },
+      {
+        type: 'set_vars',
+        setter: (vars) => ({ ...vars, t: (vars.t || 0) + 1 }),
+      },
       {
         type: 'prompt',
         setter: (vars, { desc }) => ({ ...vars, desc }),
@@ -431,7 +437,11 @@ describe('run whole script', () => {
       { type: 'jump', offset: -4 },
       { type: 'content', render: () => 'world' },
     ],
-    new Map([['BEGIN', 0], ['PROMPT', 7], ['CALL', 8]]),
+    new Map([
+      ['BEGIN', 0],
+      ['PROMPT', 7],
+      ['CALL', 8],
+    ]),
     'MockScript'
   );
 
@@ -643,7 +653,10 @@ describe('run whole script', () => {
 it('throw if stopped point key not found', () => {
   const script = mockScript(
     [{}, {}],
-    new Map([['foo', 0], ['bar', 1]]),
+    new Map([
+      ['foo', 0],
+      ['bar', 1],
+    ]),
     'MyScript'
   );
   expect(() =>
@@ -659,7 +672,10 @@ it('throw if stopped point is not <Prompt/>', () => {
       { type: 'content', render: () => 'R U Cathy?' },
       { type: 'prompt', key: 'prompt#0' },
     ],
-    new Map([['ask', 0], ['prompt#0', 1]]),
+    new Map([
+      ['ask', 0],
+      ['prompt#0', 1],
+    ]),
     'MyScript'
   );
   expect(() =>
@@ -677,7 +693,10 @@ it('throw if returned point is not <Call/>', () => {
       { type: 'content', render: () => 'how R U?' },
       { type: 'prompt', key: 'prompt#0' },
     ],
-    new Map([['ask', 0], ['prompt#0', 1]]),
+    new Map([
+      ['ask', 0],
+      ['prompt#0', 1],
+    ]),
     'SubScript'
   );
   const script = mockScript(
@@ -685,7 +704,10 @@ it('throw if returned point is not <Call/>', () => {
       { type: 'content', render: () => 'hi' },
       { type: 'call', script: subScript, key: 'call#0' },
     ],
-    new Map([['greet', 0], ['call#0', 1]]),
+    new Map([
+      ['greet', 0],
+      ['call#0', 1],
+    ]),
     'MyScript'
   );
   expect(() =>

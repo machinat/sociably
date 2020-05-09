@@ -18,10 +18,10 @@ import type {
 } from './types';
 
 type EventListenable<Context> =
-  | (Context => void)
+  | ((Context) => void)
   | ServiceContainer<(Context) => void>;
 
-type ErrorListenable = (Error => void) | ServiceContainer<(Error) => void>;
+type ErrorListenable = ((Error) => void) | ServiceContainer<(Error) => void>;
 
 const ENUM_UNSTARTED = 0;
 const ENUM_STARTING = 1;
@@ -107,7 +107,7 @@ export default class MachinatApp<
 
     const startingScope = this._serviceSpace.createScope(undefined);
     await Promise.all(
-      startHooks.map(startHook => startingScope.injectContainer(startHook))
+      startHooks.map((startHook) => startingScope.injectContainer(startHook))
     );
 
     this._status = ENUM_STARTED;
@@ -133,7 +133,7 @@ export default class MachinatApp<
   }
 
   removeEventListener(listener: EventListenable<Context>) {
-    const idx = this._eventListeners.findIndex(fn => fn === listener);
+    const idx = this._eventListeners.findIndex((fn) => fn === listener);
     if (idx === -1) {
       return false;
     }
@@ -162,7 +162,7 @@ export default class MachinatApp<
   }
 
   removeErrorListener(listener: ErrorListenable) {
-    const idx = this._errorListeners.findIndex(fn => fn === listener);
+    const idx = this._errorListeners.findIndex((fn) => fn === listener);
     if (idx === -1) {
       return false;
     }
@@ -217,7 +217,7 @@ export default class MachinatApp<
       | ServiceContainer<EventMiddleware<Context, any>>
     )[]
   ): PopEventWrapper<Context, any> {
-    return makeResponse => {
+    return (makeResponse) => {
       const handlePopping = async (ctx: Context, scope?: ServiceScope) => {
         const response = await makeResponse(ctx);
         this._emitEvent(ctx, scope || this._serviceSpace.createScope(platform));
@@ -267,7 +267,7 @@ export default class MachinatApp<
       | ServiceContainer<DispatchMiddleware<any, any, any>>
     )[]
   ): DispatchWrapper<any, any, any> {
-    return dispatch => {
+    return (dispatch) => {
       if (middlewares.length === 0) {
         return dispatch;
       }

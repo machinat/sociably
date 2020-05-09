@@ -7,9 +7,9 @@
     "build": "make",
     "exports:polyfill": "lerna exec -- polyfill-exports",
     "exports:clear": "lerna exec -- polyfill-exports --clear",
-    "lint": "eslint --ext .json --ext .js ./packages/*/src",
+    "lint": "eslint --ext .js ./packages/*/src",
     "lint:fix": "yarn run lint -- --fix",
-    "prettier": "prettier --write packages/**/*.js scripts/*.js types/*.js flow-typed/*.js",
+    "prettier": "prettier --write packages/**/*.js flow-typed/*.js",
     "test": "jest"
   },
   "husky": {

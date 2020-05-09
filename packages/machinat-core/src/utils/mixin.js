@@ -4,7 +4,7 @@ const mixin = (...prototypes: Array<Object>) =>
     {},
     Object.assign(
       {},
-      ...prototypes.map(proto => Object.getOwnPropertyDescriptors(proto))
+      ...prototypes.map((proto) => Object.getOwnPropertyDescriptors(proto))
     )
   );
 

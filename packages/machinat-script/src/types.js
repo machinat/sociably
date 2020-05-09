@@ -100,7 +100,7 @@ export type LabelElement = MachinatElement<LabelElementProps, Symbol>;
 export type CallElementProps<CallerVars, CalleeVars> = {
   script: MachinatScript<CallerVars, any>,
   key: string,
-  withVars?: CallerVars => CalleeVars,
+  withVars?: (CallerVars) => CalleeVars,
   set?: (CallerVars, CalleeVars) => CallerVars,
   goto?: string,
 };
@@ -177,7 +177,7 @@ export type CallSegment<CallerVars, CalleeVars> = {|
   type: 'call',
   script: MachinatScript<CalleeVars, any>,
   key: string,
-  withVars?: CallerVars => CalleeVars,
+  withVars?: (CallerVars) => CalleeVars,
   setter?: (CallerVars, CalleeVars) => CallerVars,
   goto?: string,
 |};
@@ -212,7 +212,7 @@ export type CallCommand<CallerVars, CalleeVars> = {|
   type: 'call',
   key: string,
   script: MachinatScript<CalleeVars, any>,
-  withVars?: CallerVars => CalleeVars,
+  withVars?: (CallerVars) => CalleeVars,
   setter?: (CallerVars, CalleeVars) => CallerVars,
   goto?: string,
 |};

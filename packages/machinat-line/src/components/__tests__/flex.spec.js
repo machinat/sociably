@@ -39,7 +39,7 @@ test.each(
     FlexFooter,
     FlexBubbleContainer,
     FlexCarouselContainer,
-  ].map(C => [C.name, C])
+  ].map((C) => [C.name, C])
 )('%s is valid native Component', (_, FlexComponent) => {
   expect(typeof FlexComponent).toBe('function');
   expect(isNativeElement(<FlexComponent />)).toBe(true);

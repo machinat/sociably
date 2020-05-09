@@ -46,7 +46,7 @@ const netSocket = moxy({
 const head = '_';
 
 const popEventMock = new Mock();
-const popEventWrapper = moxy(finalHandler =>
+const popEventWrapper = moxy((finalHandler) =>
   popEventMock.proxify(finalHandler)
 );
 const popError = moxy();
@@ -178,7 +178,10 @@ it('handle sockets and connections lifecycle', async () => {
     'dispatch',
     {
       connId,
-      events: [{ type: 'foo', payload: 123 }, { type: 'bar', payload: 456 }],
+      events: [
+        { type: 'foo', payload: 123 },
+        { type: 'bar', payload: 456 },
+      ],
     },
     5,
     socket
@@ -387,7 +390,10 @@ test('multi sockets and connections', async () => {
     'dispatch',
     {
       connId: johnConn.id,
-      events: [{ type: 'b', payload: 1 }, { type: 'c', payload: 2 }],
+      events: [
+        { type: 'b', payload: 1 },
+        { type: 'c', payload: 2 },
+      ],
     },
     9,
     socket1
@@ -396,7 +402,10 @@ test('multi sockets and connections', async () => {
     'dispatch',
     {
       connId: jojoConn.id,
-      events: [{ type: 'd', payload: 3 }, { type: 'e', payload: 4 }],
+      events: [
+        { type: 'd', payload: 3 },
+        { type: 'e', payload: 4 },
+      ],
     },
     5,
     socket2

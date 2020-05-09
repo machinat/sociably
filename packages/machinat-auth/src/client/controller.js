@@ -185,7 +185,7 @@ class AuthClientController extends EventEmitter {
 
     // Execute init work of platform, promise would be awaited within auth()
     const initPromise = this._initPlatform(provider, this._serverSideResult)
-      .catch(err => {
+      .catch((err) => {
         this.emit('error', err, this._authed?.context || null);
       })
       .finally(() => {
@@ -462,7 +462,7 @@ class AuthClientController extends EventEmitter {
   _refreshAuthCallback = (token: string, payload: AuthTokenPayload<any>) => {
     this._refreshTimeoutId = null;
 
-    this._refreshAuth(token, payload).catch(err => {
+    this._refreshAuth(token, payload).catch((err) => {
       this.emit('error', err, this._authed?.context || null);
     });
   };
@@ -481,7 +481,7 @@ class AuthClientController extends EventEmitter {
     if (!platform) {
       return [new AuthError(400, 'no platform specified'), (null: any)];
     }
-    const provider = this.providers.find(p => p.platform === platform);
+    const provider = this.providers.find((p) => p.platform === platform);
     if (!provider) {
       return [
         new AuthError(400, `unknown platform "${platform}"`),

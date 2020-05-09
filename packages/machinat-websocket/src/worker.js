@@ -44,7 +44,7 @@ class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
   _executeJobs = async (
     jobs: WebSocketJob[]
   ): Promise<JobResponse<WebSocketJob, WebSocketResult>[]> => {
-    const promises = jobs.map(job => this.transmitter.dispatch(job));
+    const promises = jobs.map((job) => this.transmitter.dispatch(job));
     const socketsMetrix = await Promise.all(promises);
 
     const response = socketsMetrix.map((connections, i) => ({

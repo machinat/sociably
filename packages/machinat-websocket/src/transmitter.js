@@ -24,7 +24,8 @@ type ConnectionState = {
 const findConnection = (
   { serverId, connectionId }: ConnectionChannel,
   list: ConnectionChannel[]
-) => list.find(c => c.serverId === serverId && c.connectionId === connectionId);
+) =>
+  list.find((c) => c.serverId === serverId && c.connectionId === connectionId);
 
 class Transmitter {
   serverId: string;
@@ -34,12 +35,12 @@ class Transmitter {
   _userMapping: Map<string, Set<string>>;
   _connectionStates: Map<string, ConnectionState>;
 
-  _errorHandler: Error => void;
+  _errorHandler: (Error) => void;
 
   constructor(
     serverId: string,
     broker: ClusterBrokerI,
-    errorHandler: Error => void
+    errorHandler: (Error) => void
   ) {
     this.serverId = serverId;
     this._broker = broker;
@@ -276,7 +277,7 @@ class Transmitter {
         (!blacklist || !findConnection(channel, blacklist))
       ) {
         promises.push(
-          socket.dispatch({ connId: channel.id, events }).catch(err => {
+          socket.dispatch({ connId: channel.id, events }).catch((err) => {
             this._errorHandler(err);
             return null;
           })
@@ -389,5 +390,5 @@ export default provider<Transmitter>({
     serverId: string,
     broker: ClusterBrokerI,
     { initScope, popError }: WebSocketPlatformMounter<any>
-  ) => new Transmitter(serverId, broker, err => popError(err, initScope())),
+  ) => new Transmitter(serverId, broker, (err) => popError(err, initScope())),
 })(Transmitter);

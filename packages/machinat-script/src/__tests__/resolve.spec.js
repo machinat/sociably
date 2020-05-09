@@ -22,7 +22,10 @@ const AnotherScript = {
     { type: 'content', render: () => '...' },
     { type: 'prompt', key: 'ask' },
   ],
-  entryPointIndex: new Map([['foo', 3], ['bar', 8]]),
+  entryPointIndex: new Map([
+    ['foo', 3],
+    ['bar', 8],
+  ]),
 };
 
 it('resolve content rendering fn', () => {
@@ -310,7 +313,7 @@ describe('resolve <VARS/>', () => {
       resolve(
         <>
           <VARS set={helloSetter} />
-          {vars => `hello ${vars.hello}`}
+          {(vars) => `hello ${vars.hello}`}
           <VARS set={greetedSetter} />
         </>
       )
@@ -547,11 +550,11 @@ test('resolve whole script', () => {
           </ELSE>
         </IF>
 
-        <VARS set={vars => ({ ...vars, foo: 'bar' })} />
+        <VARS set={(vars) => ({ ...vars, foo: 'bar' })} />
         <LABEL key="2nd" />
         {() => 'consectetur'}
 
-        <VARS set={vars => ({ ...vars, foo: 'baz' })} />
+        <VARS set={(vars) => ({ ...vars, foo: 'baz' })} />
         <LABEL key="3rd" />
         {() => <del>incididunt</del>}
 

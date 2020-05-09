@@ -7,8 +7,8 @@ import MessengerReceiver from '../receiver';
 const bot = moxy();
 
 const popEventMock = new Mock();
-const popEventWrapper = moxy(finalHandler =>
-  popEventMock.proxify(ctx => finalHandler(ctx))
+const popEventWrapper = moxy((finalHandler) =>
+  popEventMock.proxify((ctx) => finalHandler(ctx))
 );
 
 const createReq = ({ method, url = '/', body = '', headers = {} }) => {
@@ -84,7 +84,7 @@ describe('handling GET', () => {
 
   it.each([undefined, '', 'xxx', 'not subscribe'])(
     'respond 400 if hub.mode param is not "subscribe"',
-    async mode => {
+    async (mode) => {
       const receiver = new MessengerReceiver(
         { verifyToken: '_MY_TOKEN_', shouldValidateRequest: false },
         bot,

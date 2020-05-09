@@ -14,7 +14,7 @@ import { URIAction, MessageAction } from '../action';
 const renderer = new Renderer('line', () => null);
 
 it.each(
-  [Image, Sticker, ImageMap, ImageMapVideoArea, ImageMapArea].map(C => [
+  [Image, Sticker, ImageMap, ImageMapVideoArea, ImageMapArea].map((C) => [
     C.name,
     C,
   ])
@@ -94,7 +94,7 @@ it.each(
         action={<URIAction label="foo" uri="https://..." />}
       />
     </ImageMap>,
-  ].map(e => [e.type.name, e])
+  ].map((e) => [e.type.name, e])
 )('%s match snapshot', async (_, element) => {
   const promise = renderer.render(element);
   await expect(promise).resolves.toEqual([

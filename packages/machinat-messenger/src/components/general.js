@@ -35,7 +35,7 @@ const text = async (node, path, render) => {
 
 const br = (node, path) => [breakSegment(node, path)];
 
-const transormText = transformer => async (node, path, render) => {
+const transormText = (transformer) => async (node, path, render) => {
   const childrenSegments = await render(node.props.children);
   if (!childrenSegments) {
     return null;
@@ -55,20 +55,20 @@ const transormText = transformer => async (node, path, render) => {
 };
 
 const B = '*';
-const b = transormText(v => B + v + B);
+const b = transormText((v) => B + v + B);
 
 const I = '_';
-const i = transormText(v => I + v + I);
+const i = transormText((v) => I + v + I);
 
 const DEL = '~';
-const del = transormText(v => DEL + v + DEL);
+const del = transormText((v) => DEL + v + DEL);
 
 const CODE = '`';
-const code = transormText(v => CODE + v + CODE);
+const code = transormText((v) => CODE + v + CODE);
 
 const PRE_BEGIN = '```\n';
 const PRE_END = '\n```';
-const pre = transormText(v => PRE_BEGIN + v + PRE_END);
+const pre = transormText((v) => PRE_BEGIN + v + PRE_END);
 
 const generalMediaFactory = (tag, type) => {
   const box = {

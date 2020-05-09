@@ -11,7 +11,7 @@ const renderer = new Renderer('messenger', () => null);
 
 it.each([PassThreadControl, RequestThreadControl, TakeThreadContorl])(
   '%p is valid root Component',
-  ThreadControl => {
+  (ThreadControl) => {
     expect(typeof ThreadControl).toBe('function');
     expect(isNativeElement(<ThreadControl />)).toBe(true);
     expect(ThreadControl.$$platform).toBe('messenger');

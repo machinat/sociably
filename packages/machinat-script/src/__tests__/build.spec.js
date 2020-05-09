@@ -56,7 +56,7 @@ it('work', () => {
       </IF>
 
       <LABEL key="end" />
-      <VARS set={_ => ({ foo: 'bar' })} />
+      <VARS set={(_) => ({ foo: 'bar' })} />
       {() => 'ad minim veniam'}
     </>
   );

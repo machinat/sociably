@@ -168,7 +168,7 @@ it('add attributes to message value', async () => {
     </Dialog>
   );
 
-  segments.forEach(segment => {
+  segments.forEach((segment) => {
     expect(segment.value).toEqual({
       messaging_type: 'MESSAGE_TAG',
       tag: 'PAYMENT_UPDATE',
@@ -271,7 +271,7 @@ it('adds quickReplies to last message action', async () => {
 });
 
 it('do nothing to non-messgae value', async () => {
-  generalComponentDelegator.mock.wrap(renderText => (node, path) =>
+  generalComponentDelegator.mock.wrap((renderText) => (node, path) =>
     node.type === 'nonMessage'
       ? [
           {

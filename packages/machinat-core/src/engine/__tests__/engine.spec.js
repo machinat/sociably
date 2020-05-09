@@ -11,7 +11,7 @@ const queue = moxy({
   executeJobs(jobs) {
     return Promise.resolve({
       success: true,
-      batch: jobs.map(job => ({
+      batch: jobs.map((job) => ({
         job,
         success: true,
         result: `result#${job.id}`,
@@ -31,8 +31,8 @@ const scope = moxy();
 const initScope = moxy(() => scope);
 
 const wrappedDispatchMock = new Mock();
-const dispatchWrapper = moxy(dispatcher =>
-  wrappedDispatchMock.proxify(frame => dispatcher(frame))
+const dispatchWrapper = moxy((dispatcher) =>
+  wrappedDispatchMock.proxify((frame) => dispatcher(frame))
 );
 
 beforeEach(() => {
@@ -532,8 +532,8 @@ describe('#render(channel, node, createJobs)', () => {
     const originalTasks = [{ type: 'dispatch', payload: [{ id: 'foo' }] }];
     const modifiedTasks = [{ type: 'dispatch', payload: [{ id: 'bar' }] }];
 
-    dispatchWrapper.mock.fake(dispatch =>
-      wrappedDispatchMock.proxify(frame =>
+    dispatchWrapper.mock.fake((dispatch) =>
+      wrappedDispatchMock.proxify((frame) =>
         dispatch({ ...frame, tasks: modifiedTasks })
       )
     );
@@ -576,12 +576,12 @@ describe('#render(channel, node, createJobs)', () => {
   });
 
   test('wrapper can modify response resolved from dispatcher', async () => {
-    dispatchWrapper.mock.fake(dispatch =>
-      wrappedDispatchMock.proxify(async frame => {
+    dispatchWrapper.mock.fake((dispatch) =>
+      wrappedDispatchMock.proxify(async (frame) => {
         const response = await dispatch(frame);
         return {
           ...response,
-          results: response.results.map(r => `${r}👍`),
+          results: response.results.map((r) => `${r}👍`),
           hello: 'world',
         };
       })
@@ -765,8 +765,8 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
 
   test('wrapper can modify tasks of frame', async () => {
     const modifiedTasks = [{ type: 'dispatch', payload: [{ id: 'bar' }] }];
-    dispatchWrapper.mock.fake(dispatch =>
-      wrappedDispatchMock.proxify(frame =>
+    dispatchWrapper.mock.fake((dispatch) =>
+      wrappedDispatchMock.proxify((frame) =>
         dispatch({
           ...frame,
           tasks: modifiedTasks,
@@ -809,12 +809,12 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
   });
 
   test('wrapper can modify response resolved from dispatcher', async () => {
-    dispatchWrapper.mock.fake(dispatch =>
-      wrappedDispatchMock.proxify(async frame => {
+    dispatchWrapper.mock.fake((dispatch) =>
+      wrappedDispatchMock.proxify(async (frame) => {
         const response = await dispatch(frame);
         return {
           ...response,
-          results: response.results.map(r => `${r}👍`),
+          results: response.results.map((r) => `${r}👍`),
           hello: 'world',
         };
       })

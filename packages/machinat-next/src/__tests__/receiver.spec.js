@@ -13,10 +13,10 @@ const nextApp = moxy({
   renderOpts: { assetPrefix: '' },
 });
 
-const nextTick = () => new Promise(resolve => process.nextTick(resolve));
+const nextTick = () => new Promise((resolve) => process.nextTick(resolve));
 
 const popEventMock = new Mock();
-const popEventWrapper = moxy(finalHandler =>
+const popEventWrapper = moxy((finalHandler) =>
   popEventMock.proxify(finalHandler)
 );
 const popError = moxy();

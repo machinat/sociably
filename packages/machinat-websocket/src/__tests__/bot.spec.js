@@ -41,7 +41,7 @@ const transmitter = moxy({
 });
 
 const initScope = moxy();
-const dispatchWrapper = moxy(dispatch => dispatch);
+const dispatchWrapper = moxy((dispatch) => dispatch);
 
 beforeEach(() => {
   transmitter.mock.reset();

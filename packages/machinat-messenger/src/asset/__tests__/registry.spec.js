@@ -40,7 +40,7 @@ test('get asset id', async () => {
   await expect(registry.getPersonaId('my_persona')).resolves.toBe(undefined);
 
   expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map(call => call.args[0]))
+  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets:_PAGE_ID_:foo",
@@ -79,7 +79,7 @@ test('set asset id', async () => {
   await registry.setPersonaId('my_persona', '_PERSONA_ID_');
 
   expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map(call => call.args[0]))
+  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets:_PAGE_ID_:foo",
@@ -127,7 +127,7 @@ test('get all assets', async () => {
   await expect(registry.getAllPersonas()).resolves.toBe(null);
 
   expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map(call => call.args[0]))
+  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets:_PAGE_ID_:foo",
@@ -138,7 +138,10 @@ test('get all assets', async () => {
 
   expect(state.getAll.mock).toHaveBeenCalledTimes(3);
 
-  const resources = new Map([['bar', '1'], ['baz', '2']]);
+  const resources = new Map([
+    ['bar', '1'],
+    ['baz', '2'],
+  ]);
   state.getAll.mock.fake(async () => resources);
 
   await expect(registry.getAllAssets('foo')).resolves.toEqual(resources);
@@ -154,7 +157,7 @@ test('remove asset id', async () => {
   await registry.removePersonaId('my_persona');
 
   expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map(call => call.args[0]))
+  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets:_PAGE_ID_:foo",

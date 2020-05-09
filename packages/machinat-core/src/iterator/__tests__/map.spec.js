@@ -2,7 +2,7 @@ import Machinat from '../..';
 import map from '../map';
 
 it('maps all elements', () => {
-  const callback = jest.fn(e => ({ e }));
+  const callback = jest.fn((e) => ({ e }));
   const context = {};
   expect(
     map(

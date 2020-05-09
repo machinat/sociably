@@ -69,7 +69,9 @@ describe('initModule()', () => {
     await app.start();
 
     expect(ServerControllerSpy.$$factory.mock).toHaveBeenCalledTimes(1);
-    expect(ServerControllerSpy.$$factory.mock).toHaveBeenCalledWith(
+    expect(
+      ServerControllerSpy.$$factory.mock
+    ).toHaveBeenCalledWith(
       expect.arrayContaining([fooAuthorizer, barAuthorizer]),
       { secret: '_SECRET_', entryPath: '/auth' }
     );

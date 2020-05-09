@@ -7,7 +7,7 @@ import {
   MACHINAT_RAW_TYPE,
 } from '../symbol';
 
-const formatProps = props => {
+const formatProps = (props) => {
   const keys = Object.keys(props);
   let formated = '';
 

@@ -8,7 +8,7 @@ import LineUser from '../user';
 const bot = moxy();
 
 const popEventMock = new Mock();
-const popEventWrapper = moxy(popEvent => popEventMock.proxify(popEvent));
+const popEventWrapper = moxy((popEvent) => popEventMock.proxify(popEvent));
 
 const createReq = ({ method, url = '/', body = '', headers = {} }) => {
   const req = new Readable({
@@ -59,7 +59,7 @@ it('throws if shouldValidateRequest but channelSecret not given', () => {
 
 it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   'responds 405 if req.method is %s',
-  async method => {
+  async (method) => {
     const receiver = new LineReceiver(
       { botChannelId: '_BOT_CHANNEL_ID_', shouldValidateRequest: false },
       bot,

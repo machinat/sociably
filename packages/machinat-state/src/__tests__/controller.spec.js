@@ -92,7 +92,10 @@ test('channel state', async () => {
 
   repository.getAll.mock.fake(
     async () =>
-      new Map([['foo_status', 'HANGOVER'], ['bar_status', { revenue: '++' }]])
+      new Map([
+        ['foo_status', 'HANGOVER'],
+        ['bar_status', { revenue: '++' }],
+      ])
   );
 
   await expect(state.getAll()).resolves.toMatchInlineSnapshot(`
@@ -185,7 +188,10 @@ test('user state', async () => {
 
   repository.getAll.mock.fake(
     async () =>
-      new Map([['foo_status', 'HANGOVER'], ['bar_status', { revenue: '++' }]])
+      new Map([
+        ['foo_status', 'HANGOVER'],
+        ['bar_status', { revenue: '++' }],
+      ])
   );
 
   await expect(state.getAll()).resolves.toMatchInlineSnapshot(`
@@ -277,7 +283,10 @@ test('named state', async () => {
 
   repository.getAll.mock.fake(
     async () =>
-      new Map([['foo_status', 'HANGOVER'], ['bar_status', { revenue: '++' }]])
+      new Map([
+        ['foo_status', 'HANGOVER'],
+        ['bar_status', { revenue: '++' }],
+      ])
   );
 
   await expect(state.getAll()).resolves.toMatchInlineSnapshot(`

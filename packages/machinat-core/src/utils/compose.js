@@ -1,7 +1,7 @@
 // @flow
 const identity = (x: any) => x;
 
-const compose = <T>(...fns: ((T) => T)[]): (T => T) => {
+const compose = <T>(...fns: ((T) => T)[]): ((T) => T) => {
   if (fns.length === 0) return identity;
   if (fns.length === 1) return fns[0];
 

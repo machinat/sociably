@@ -16,8 +16,9 @@ class DispatchError<Job, Result> extends Error {
     const message = errors
       ? errors.reduce(
           (msg, err, idx) =>
-            `${msg}\n\t${idx + 1}) ${err.name}: ${err.message ||
-              err.toString()}`,
+            `${msg}\n\t${idx + 1}) ${err.name}: ${
+              err.message || err.toString()
+            }`,
           'Errors happen while sending:'
         )
       : 'Unknown error happen while sending';

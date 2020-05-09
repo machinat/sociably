@@ -20,7 +20,7 @@ const Script = {
 
     if (libs) {
       provisions.push(
-        ...libs.map(lib => ({ provide: SCRIPT_LIBS_I, withValue: lib }))
+        ...libs.map((lib) => ({ provide: SCRIPT_LIBS_I, withValue: lib }))
       );
     }
 

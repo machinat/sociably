@@ -10,7 +10,7 @@ global.location = location;
 
 jest.mock('../../socket');
 
-const delay = t => new Promise(resolve => setTimeout(resolve, t));
+const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 const login = moxy(async () => ({
   user: { john: 'doe' },

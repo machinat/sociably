@@ -3,7 +3,7 @@ import nock from 'nock';
 import Queue from '@machinat/core/queue';
 import MessengerWorker from '../worker';
 
-const delay = t => new Promise(resolve => setTimeout(resolve, t));
+const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 nock.disableNetConnect();
 
@@ -386,7 +386,7 @@ it('waits consumeInterval for jobs to execute if set', async () => {
 
 it.each([undefined, 0])(
   'execute immediatly if consumeInterval is %p',
-  async consumeInterval => {
+  async (consumeInterval) => {
     const worker = new MessengerWorker(
       '_graph_api_access_token_',
       0,

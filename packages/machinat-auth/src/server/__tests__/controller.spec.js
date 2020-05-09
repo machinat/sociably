@@ -5,7 +5,7 @@ import moxy from 'moxy';
 import ServerController from '../controller';
 import { CookieAccessor } from '../cookie';
 
-const parseSetCookies = res => {
+const parseSetCookies = (res) => {
   let setCookieHeaders = res.getHeader('Set-Cookie');
   if (typeof setCookieHeaders === 'string') {
     setCookieHeaders = [setCookieHeaders];
@@ -24,7 +24,7 @@ const parseSetCookies = res => {
   return cookies;
 };
 
-const prepareToken = payload => {
+const prepareToken = (payload) => {
   const [head, body, signature] = jsonwebtoken
     .sign(payload, '__SECRET__')
     .split('.');

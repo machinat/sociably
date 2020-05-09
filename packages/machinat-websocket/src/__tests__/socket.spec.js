@@ -2,7 +2,7 @@ import moxy from 'moxy';
 import EventEmitter from 'events';
 import Socket from '../socket';
 
-const delay = t => new Promise(resolve => setTimeout(resolve, t));
+const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 const connId = 'conn#id';
 

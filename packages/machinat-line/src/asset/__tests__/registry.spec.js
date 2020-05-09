@@ -34,7 +34,7 @@ test('get asset id', async () => {
   await expect(registry.getRichMenuId('my_rich_menu')).resolves.toBe(undefined);
 
   expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map(call => call.args[0]))
+  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "line.assets:_LINE_CHANNEL_ID_:foo",
@@ -71,7 +71,7 @@ test('set asset id', async () => {
   await registry.setRichMenuId('my_rich_menu', '_RICH_MENU_ID_');
 
   expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map(call => call.args[0]))
+  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "line.assets:_LINE_CHANNEL_ID_:foo",
@@ -116,7 +116,7 @@ test('get all assets', async () => {
   await expect(registry.getAllRichMenus()).resolves.toBe(null);
 
   expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map(call => call.args[0]))
+  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "line.assets:_LINE_CHANNEL_ID_:foo",
@@ -127,7 +127,10 @@ test('get all assets', async () => {
 
   expect(state.getAll.mock).toHaveBeenCalledTimes(3);
 
-  const resources = new Map([['bar', '1'], ['baz', '2']]);
+  const resources = new Map([
+    ['bar', '1'],
+    ['baz', '2'],
+  ]);
   state.getAll.mock.fake(async () => resources);
 
   await expect(registry.getAllAssets('foo')).resolves.toEqual(resources);
@@ -146,7 +149,7 @@ test('remove asset id', async () => {
   await registry.removeRichMenuId('my_rich_menu');
 
   expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map(call => call.args[0]))
+  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "line.assets:_LINE_CHANNEL_ID_:foo",

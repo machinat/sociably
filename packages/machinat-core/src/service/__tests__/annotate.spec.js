@@ -62,7 +62,7 @@ describe('container({ deps })(fn)', () => {
     class NonService {}
 
     expect(() => {
-      container({ deps: [NonService] })(_whatever => 'boom');
+      container({ deps: [NonService] })((_whatever) => 'boom');
     }).toThrowErrorMatchingInlineSnapshot(
       `"NonService is not a valid interface"`
     );
@@ -118,7 +118,7 @@ describe('provider({ deps, factory, lifetime })(klass)', () => {
     expect(() => {
       provider({
         deps: [NonService],
-        factory: _whatever => 'boom',
+        factory: (_whatever) => 'boom',
         lifetime: 'singleton',
       })(class MyProvider {});
     }).toThrowErrorMatchingInlineSnapshot(
@@ -178,7 +178,7 @@ describe('factory({ deps, lifetime })(factory)', () => {
     class NonService {}
 
     expect(() => {
-      provider({ deps: [NonService], lifetime: 'scoped' })(foo => ({ foo }));
+      provider({ deps: [NonService], lifetime: 'scoped' })((foo) => ({ foo }));
     }).toThrowErrorMatchingInlineSnapshot(
       `"NonService is not a valid interface"`
     );

@@ -27,7 +27,7 @@ const MyContainer = container({ deps: [] })(() => () => <bar />);
 describe('isEmpty', () => {
   it('return true if empty node passed', () => {
     const empties = [null, undefined, true, false];
-    empties.forEach(ele => {
+    empties.forEach((ele) => {
       expect(isEmpty(ele)).toBe(true);
     });
   });
@@ -42,7 +42,7 @@ describe('isEmpty', () => {
       <Machinat.Pause />,
       <MyComponent />,
     ];
-    nonEmpties.forEach(ele => {
+    nonEmpties.forEach((ele) => {
       expect(isEmpty(ele)).toBe(false);
     });
   });
@@ -57,7 +57,7 @@ describe('isElement', () => {
       <MyComponent />,
       <Machinat.Pause />,
     ];
-    elements.forEach(ele => {
+    elements.forEach((ele) => {
       expect(isElement(ele)).toBe(true);
     });
   });
@@ -73,7 +73,7 @@ describe('isElement', () => {
       true,
       123,
     ];
-    nonElements.forEach(ele => {
+    nonElements.forEach((ele) => {
       expect(isElement(ele)).toBe(false);
     });
   });
@@ -82,7 +82,7 @@ describe('isElement', () => {
 describe('isGeneralElement', () => {
   it('return true if general element passed', () => {
     const fragments = [<foo />, <bar x="y" />, <baz>zzz</baz>];
-    fragments.forEach(ele => {
+    fragments.forEach((ele) => {
       expect(isGeneralElement(ele)).toBe(true);
     });
   });
@@ -95,7 +95,7 @@ describe('isGeneralElement', () => {
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
-    nonFragments.forEach(ele => {
+    nonFragments.forEach((ele) => {
       expect(isGeneralElement(ele)).toBe(false);
     });
   });
@@ -104,7 +104,7 @@ describe('isGeneralElement', () => {
 describe('isNativeElement', () => {
   it('return true if native element passed', () => {
     const fragments = [<Native />, <Native x="y" />, <Native>zzz</Native>];
-    fragments.forEach(ele => {
+    fragments.forEach((ele) => {
       expect(isNativeElement(ele)).toBe(true);
     });
   });
@@ -118,7 +118,7 @@ describe('isNativeElement', () => {
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
-    nonFragments.forEach(ele => {
+    nonFragments.forEach((ele) => {
       expect(isNativeElement(ele)).toBe(false);
     });
   });
@@ -131,7 +131,7 @@ describe('isFunctionalElement', () => {
       <MyComponent x="y" />,
       <MyComponent>zzz</MyComponent>,
     ];
-    fragments.forEach(ele => {
+    fragments.forEach((ele) => {
       expect(isFunctionalElement(ele)).toBe(true);
     });
   });
@@ -146,7 +146,7 @@ describe('isFunctionalElement', () => {
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
-    nonFragments.forEach(ele => {
+    nonFragments.forEach((ele) => {
       expect(isFunctionalElement(ele)).toBe(false);
     });
   });
@@ -159,7 +159,7 @@ describe('isContainerElement', () => {
       <MyContainer x="y" />,
       <MyContainer>zzz</MyContainer>,
     ];
-    fragments.forEach(ele => {
+    fragments.forEach((ele) => {
       expect(isContainerElement(ele)).toBe(true);
     });
   });
@@ -174,7 +174,7 @@ describe('isContainerElement', () => {
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
-    nonFragments.forEach(ele => {
+    nonFragments.forEach((ele) => {
       expect(isContainerElement(ele)).toBe(false);
     });
   });
@@ -183,7 +183,7 @@ describe('isContainerElement', () => {
 describe('isFragmentElement', () => {
   it('return true if Fragment element passed', () => {
     const fragments = [<>123</>, <Machinat.Fragment />];
-    fragments.forEach(ele => {
+    fragments.forEach((ele) => {
       expect(isFragmentElement(ele)).toBe(true);
     });
   });
@@ -197,7 +197,7 @@ describe('isFragmentElement', () => {
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
-    nonFragments.forEach(ele => {
+    nonFragments.forEach((ele) => {
       expect(isFragmentElement(ele)).toBe(false);
     });
   });
@@ -209,7 +209,7 @@ describe('isPauseElement', () => {
       <Machinat.Pause />,
       <Machinat.Pause until={() => Promise.reoslve()} />,
     ];
-    pauses.forEach(ele => {
+    pauses.forEach((ele) => {
       expect(isPauseElement(ele)).toBe(true);
     });
   });
@@ -223,7 +223,7 @@ describe('isPauseElement', () => {
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
-    nonPauselies.forEach(ele => {
+    nonPauselies.forEach((ele) => {
       expect(isPauseElement(ele)).toBe(false);
     });
   });
@@ -247,7 +247,7 @@ describe('isProviderElement', () => {
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
-    nonPauselies.forEach(ele => {
+    nonPauselies.forEach((ele) => {
       expect(isProviderElement(ele)).toBe(false);
     });
   });
@@ -269,7 +269,7 @@ describe('isThunkElement', () => {
       <Machinat.Provider provide={function Foo() {}} value="foo" />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
-    nonPauselies.forEach(ele => {
+    nonPauselies.forEach((ele) => {
       expect(isThunkElement(ele)).toBe(false);
     });
   });
@@ -290,7 +290,7 @@ describe('isRawElement', () => {
       <Machinat.Provider provide={function Foo() {}} value="foo" />,
       <Machinat.Thunk effect={async () => {}} />,
     ];
-    nonPauselies.forEach(ele => {
+    nonPauselies.forEach((ele) => {
       expect(isRawElement(ele)).toBe(false);
     });
   });
@@ -309,7 +309,7 @@ describe('isElementTypeValid', () => {
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
-    validEles.forEach(ele => {
+    validEles.forEach((ele) => {
       expect(isElementTypeValid(ele)).toBe(true);
     });
   });
@@ -319,7 +319,7 @@ describe('isElementTypeValid', () => {
     const Sym = Symbol('foo');
     const Num = 123;
     const invalidEles = [<Obj />, <Sym />, <Num />];
-    invalidEles.forEach(ele => {
+    invalidEles.forEach((ele) => {
       expect(isElementTypeValid(ele)).toBe(false);
     });
   });
@@ -335,7 +335,7 @@ describe('isValidRenderable', () => {
       <MyContainer />,
       <Native />,
     ];
-    natives.forEach(ele => {
+    natives.forEach((ele) => {
       expect(isValidRenderable(ele)).toBe(true);
     });
   });
@@ -350,7 +350,7 @@ describe('isValidRenderable', () => {
       <Machinat.Fragment />,
       <Machinat.Pause />,
     ];
-    nonEmpties.forEach(ele => {
+    nonEmpties.forEach((ele) => {
       expect(isValidRenderable(ele)).toBe(false);
     });
   });

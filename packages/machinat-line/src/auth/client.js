@@ -20,7 +20,7 @@ const LOGIN_TIMEOUT = 10000;
 const DEFAULT_BOT_CHANNEL_LABEL_KEY = 'onLineBotChannel';
 
 const delay = (ms: number) =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 
@@ -64,7 +64,7 @@ class LineClientAuthorizer
       const js = document.createElement(SCRIPT);
       js.id = 'LIFF';
       js.src = 'https://static.line-scdn.net/liff/edge/2.1/sdk.js';
-      const loadingSDK = new Promise(resolve => {
+      const loadingSDK = new Promise((resolve) => {
         js.onload = resolve;
       });
 

@@ -57,7 +57,7 @@ class MessengerClientAuthorizer
     });
 
     // eslint-disable-next-line func-names
-    (function(d, s, id) {
+    (function (d, s, id) {
       if (d.getElementById(id)) return;
       const fjs: any = d.getElementsByTagName(s)[0];
       const js: any = d.createElement(s);

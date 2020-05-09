@@ -219,8 +219,9 @@ const execute = <Vars, Input>(
 
         invariant(
           awaitingPrompt && awaitingPrompt.type === 'prompt',
-          `stopped point "${stoppedAt ||
-            ''}" is not a <Prompt/>, the key mapping of ${
+          `stopped point "${
+            stoppedAt || ''
+          }" is not a <Prompt/>, the key mapping of ${
             script.name
           } might have been changed`
         );
@@ -235,8 +236,9 @@ const execute = <Vars, Input>(
 
       invariant(
         awaitingCall.type === 'call',
-        `returned point "${stoppedAt ||
-          ''}" is not a <Call/>, the key mapping of ${
+        `returned point "${
+          stoppedAt || ''
+        }" is not a <Call/>, the key mapping of ${
           script.name
         } might have been changed`
       );

@@ -64,10 +64,7 @@ class MessengerChannel implements MachinatChannel {
       target.post_id ||
       target.comment_id ||
       (target.phone_number
-        ? crypto
-            .createHash('sha1')
-            .update(target.phone_number)
-            .digest('base64')
+        ? crypto.createHash('sha1').update(target.phone_number).digest('base64')
         : '')
     );
   }

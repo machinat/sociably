@@ -204,7 +204,7 @@ export default class MachinatEngine<
 
           throw new DispatchError(errors, tasks, jobsExecuted, [
             ...results,
-            ...(batch ? batch.map(jobResp => jobResp && jobResp.result) : []),
+            ...(batch ? batch.map((jobResp) => jobResp && jobResp.result) : []),
           ]);
         }
       } else if (task.type === 'pause') {
@@ -224,7 +224,7 @@ export default class MachinatEngine<
       const errors: Error[] = [];
 
       await Promise.all(
-        thunks.map(async thunk => {
+        thunks.map(async (thunk) => {
           try {
             await thunk();
           } catch (err) {

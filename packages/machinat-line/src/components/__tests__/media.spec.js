@@ -6,7 +6,7 @@ import { Audio, Video } from '../media';
 
 const renderer = new Renderer('line', () => null);
 
-it.each([Audio, Video].map(C => [C.name, C]))(
+it.each([Audio, Video].map((C) => [C.name, C]))(
   '%s is valid native unit component',
   (_, Media) => {
     expect(typeof Media).toBe('function');
@@ -20,7 +20,7 @@ it.each(
   [
     <Audio url="https://..." duration={6666} />,
     <Video url="https://..." previewURL="https://..." />,
-  ].map(e => [e.type.name, e])
+  ].map((e) => [e.type.name, e])
 )('%s render match snapshot', async (_, mediaElement) => {
   const promise = renderer.render(mediaElement);
   await expect(promise).resolves.toEqual([

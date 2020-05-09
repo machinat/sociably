@@ -35,7 +35,7 @@ jest.mock('../worker', () =>
 
 const scope = moxy();
 const initScope = moxy(() => scope);
-const dispatchWrapper = moxy(x => x);
+const dispatchWrapper = moxy((x) => x);
 
 const message = (
   <Dialog quickReplies={<QuickReply title="Hi!" />}>

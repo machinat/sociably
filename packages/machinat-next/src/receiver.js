@@ -37,8 +37,8 @@ class NextReceiver {
   _shouldPrepare: boolean;
   _prepared: boolean;
 
-  _popEvent: NextEventContext => Promise<NextResponse>;
-  _popError: Error => void;
+  _popEvent: (NextEventContext) => Promise<NextResponse>;
+  _popError: (Error) => void;
 
   constructor(
     nextApp: Object,

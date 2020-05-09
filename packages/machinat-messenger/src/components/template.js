@@ -12,7 +12,7 @@ export const GenericItem = async (node, path, render) => {
   } = node.props;
 
   const buttonSegments = await render(buttons, '.buttons');
-  const buttonValues = buttonSegments?.map(segment => segment.value);
+  const buttonValues = buttonSegments?.map((segment) => segment.value);
 
   const defaultActionSegments = await render(
     defaultActionProp,
@@ -40,7 +40,7 @@ annotateMessengerComponent(GenericItem);
 export const GenericTemplate = async (node, path, render) => {
   const { children, sharable, imageAspectRatio } = node.props;
   const elementsSegments = await render(children, '.children');
-  const elementValues = elementsSegments?.map(segment => segment.value);
+  const elementValues = elementsSegments?.map((segment) => segment.value);
 
   return [
     unitSegment(node, path, {
@@ -64,10 +64,10 @@ export const ListTemplate = async (node, path, render) => {
   const { children, topStyle, sharable, button } = node.props;
 
   const elementSegments = await render(children, '.children');
-  const elementValues = elementSegments?.map(segment => segment.value);
+  const elementValues = elementSegments?.map((segment) => segment.value);
 
   const buttonSegments = await render(button, '.button');
-  const buttonValues = buttonSegments?.map(segment => segment.value);
+  const buttonValues = buttonSegments?.map((segment) => segment.value);
 
   return [
     unitSegment(node, path, {
@@ -108,7 +108,7 @@ export const ButtonTemplate = async (node, path, render) => {
   }
 
   const buttonSegments = await render(buttons, '.buttons');
-  const buttonValues = buttonSegments?.map(segment => segment.value);
+  const buttonValues = buttonSegments?.map((segment) => segment.value);
 
   return [
     unitSegment(node, path, {
@@ -131,7 +131,7 @@ annotateMessengerComponent(ButtonTemplate);
 export const MediaTemplate = async (node, path, render) => {
   const { buttons, type, attachmentId, url, sharable } = node.props;
   const buttonSegments = await render(buttons, '.buttons');
-  const buttonValues = buttonSegments?.map(segment => segment.value);
+  const buttonValues = buttonSegments?.map((segment) => segment.value);
 
   return [
     unitSegment(node, path, {
@@ -160,7 +160,7 @@ annotateMessengerComponent(MediaTemplate);
 export const OpenGraphTemplate = async (node, path, render) => {
   const { buttons, url, sharable } = node.props;
   const buttonSegments = await render(buttons, '.buttons');
-  const buttonValues = buttonSegments?.map(segment => segment.value);
+  const buttonValues = buttonSegments?.map((segment) => segment.value);
 
   return [
     unitSegment(node, path, {
@@ -216,7 +216,7 @@ export const ReceiptTemplate = async (node, path, render) => {
   } = node.props;
 
   const elementSegments = await render(children, '.children');
-  const elementValues = elementSegments?.map(segment => segment.value);
+  const elementValues = elementSegments?.map((segment) => segment.value);
 
   return [
     unitSegment(node, path, {

@@ -67,7 +67,7 @@ export const Dialog = async (
     message.metadata = metadata;
 
     const quickReplySegments = await render(quickReplies, '.quickReplies');
-    message.quick_replies = quickReplySegments?.map(segment => segment.value);
+    message.quick_replies = quickReplySegments?.map((segment) => segment.value);
 
     value.message = message;
   }

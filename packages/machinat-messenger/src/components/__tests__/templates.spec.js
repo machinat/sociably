@@ -25,13 +25,13 @@ test.each([
   MediaTemplate,
   OpenGraphTemplate,
   ReceiptTemplate,
-])('attribute of %p', Template => {
+])('attribute of %p', (Template) => {
   expect(typeof Template).toBe('function');
   expect(isNativeElement(<Template />)).toBe(true);
   expect(Template.$$platform).toBe('messenger');
 });
 
-test.each([GenericItem, ReceiptItem])('attribute of %p', Item => {
+test.each([GenericItem, ReceiptItem])('attribute of %p', (Item) => {
   expect(typeof Item).toBe('function');
   expect(isNativeElement(<Item />)).toBe(true);
   expect(Item.$$platform).toBe('messenger');
@@ -308,9 +308,11 @@ describe('ReceiptTemplate', () => {
 
   it('accept Date object for timestamp prop', async () => {
     expect(
-      (await renderer.render(
-        <ReceiptTemplate timestamp={new Date(1535622297000)} />
-      )).value
+      (
+        await renderer.render(
+          <ReceiptTemplate timestamp={new Date(1535622297000)} />
+        )
+      ).value
     ).toEqual(
       (await renderer.render(<ReceiptTemplate timestamp="1535622297" />)).value
     );

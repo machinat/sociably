@@ -38,7 +38,7 @@ export const Dialog = async (
     }
 
     segments[lastMessageIdx].value.quickReply = {
-      items: quickReplySegments.map(segment => segment.value),
+      items: quickReplySegments.map((segment) => segment.value),
     };
   }
 

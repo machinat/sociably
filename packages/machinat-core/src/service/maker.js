@@ -150,7 +150,7 @@ export default class ServiceMaker {
           args.push(null);
         } else if (Array.isArray(resolved)) {
           args.push(
-            resolved.map(binding => this._makeBinding(binding, context))
+            resolved.map((binding) => this._makeBinding(binding, context))
           );
         } else {
           args.push(this._makeBinding(resolved, context));

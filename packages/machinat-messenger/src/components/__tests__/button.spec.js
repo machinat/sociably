@@ -12,7 +12,7 @@ import {
   GamePlayButton,
 } from '../button';
 
-const render = async node => {
+const render = async (node) => {
   let rendered;
   const renderer = new Renderer('messenger', async (_, __, renderInner) => {
     rendered = await renderInner(node);
@@ -31,7 +31,7 @@ test.each([
   LoginButton,
   LogoutButton,
   GamePlayButton,
-])('is valid Component', Button => {
+])('is valid Component', (Button) => {
   expect(typeof Button).toBe('function');
   expect(isNativeElement(<Button />)).toBe(true);
   expect(Button.$$platform).toBe('messenger');

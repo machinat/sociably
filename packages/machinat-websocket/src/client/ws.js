@@ -15,15 +15,15 @@ const ws =
 
           const webSocket = new WebSocket(url, protocols); // eslint-disable-line no-undef
 
-          webSocket.onmessage = e => {
+          webSocket.onmessage = (e) => {
             this.emit('message', e.data);
           };
 
-          webSocket.onclose = e => {
+          webSocket.onclose = (e) => {
             this.emit('close', e.code, e.reason);
           };
 
-          webSocket.onerror = e => {
+          webSocket.onerror = (e) => {
             this.emit('error', new SocketError(e.message));
           };
 

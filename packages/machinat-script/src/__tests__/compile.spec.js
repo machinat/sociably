@@ -59,7 +59,11 @@ it('compile if segment ok', () => {
   expect(commands[8].render({})).toBe('bar');
 
   expect(entryPointIndex).toEqual(
-    new Map([['ask1', 6], ['ask2', 9], ['ask3', 3]])
+    new Map([
+      ['ask1', 6],
+      ['ask2', 9],
+      ['ask3', 3],
+    ])
   );
 });
 

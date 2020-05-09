@@ -2,7 +2,7 @@ import Machinat from '@machinat/core';
 
 import { Event } from '../component';
 
-const render = element => element.type(element, '$', () => null);
+const render = (element) => element.type(element, '$', () => null);
 
 it('is valid Component', () => {
   expect(Event.$$platform).toBe('websocket');

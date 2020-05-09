@@ -485,8 +485,9 @@ describe('#render()', () => {
         function Container(foo, bar, baz) {
           return componentMock.proxify(({ n }) => (
             <Machinat.Raw
-              value={`#${n} foo:${foo || 'x'} bar:${bar || 'x'} baz:${baz ||
-                'x'}`}
+              value={`#${n} foo:${foo || 'x'} bar:${bar || 'x'} baz:${
+                baz || 'x'
+              }`}
             />
           ));
         }

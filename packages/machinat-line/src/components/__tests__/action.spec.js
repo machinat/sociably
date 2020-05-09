@@ -11,7 +11,7 @@ import {
   LocationAction,
 } from '../action';
 
-const render = async node => {
+const render = async (node) => {
   let rendered;
   const renderer = new Renderer('line', async (_, __, renderInner) => {
     rendered = await renderInner(node);
@@ -32,7 +32,7 @@ test.each(
     CameraAction,
     CameraRollAction,
     LocationAction,
-  ].map(C => [C.name, C])
+  ].map((C) => [C.name, C])
 )('%s is valid native Component', (_, Action) => {
   expect(typeof Action).toBe('function');
   expect(isNativeElement(<Action />)).toBe(true);

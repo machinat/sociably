@@ -475,7 +475,7 @@ describe('dispatch()', () => {
     ).resolves.toBe(null);
     expect(errorHandler.mock).toHaveBeenCalledTimes(3);
 
-    errorHandler.mock.calls.forEach(call => {
+    errorHandler.mock.calls.forEach((call) => {
       expect(call.args[0]).toEqual(new Error('Wasted!'));
     });
 

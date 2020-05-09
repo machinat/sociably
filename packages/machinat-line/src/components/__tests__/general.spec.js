@@ -105,7 +105,7 @@ describe('<text/>', () => {
     await expect(promise).resolves.toMatchSnapshot();
     const segments = await promise;
 
-    expect(segments.map(r => r.value)).toMatchInlineSnapshot(`
+    expect(segments.map((r) => r.value)).toMatchInlineSnapshot(`
       Array [
         Object {
           "text": "123 Hello, R2D2!",
@@ -146,7 +146,7 @@ describe('text components', () => {
 
     const segments = await promise;
 
-    expect(segments.map(s => s.value)).toMatchInlineSnapshot(`
+    expect(segments.map((s) => s.value)).toMatchInlineSnapshot(`
       Array [
         "important",
         "italic",

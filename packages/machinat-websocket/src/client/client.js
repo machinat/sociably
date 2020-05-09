@@ -22,7 +22,7 @@ type ClientOptions<Credential> = {
 type PendingEvent = {
   events: EventValue[],
   resolve: () => void,
-  reject: Error => void,
+  reject: (Error) => void,
 };
 
 const MACHINAT_WEBSOCKET_PROTOCOL_V0 = 'machinat-websocket-v0';
@@ -128,7 +128,7 @@ class WebScoketClient<Credential = null> {
   removeEventListener(
     listener: (EventValue, WebScoketClient<Credential>) => void
   ) {
-    const idx = this._eventListeners.findIndex(fn => fn === listener);
+    const idx = this._eventListeners.findIndex((fn) => fn === listener);
     if (idx === -1) {
       return false;
     }
@@ -143,15 +143,15 @@ class WebScoketClient<Credential = null> {
     }
   }
 
-  onError(listener: Error => void) {
+  onError(listener: (Error) => void) {
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }
     this._errorListeners.push(listener);
   }
 
-  removeErrorListener(listener: Error => void) {
-    const idx = this._errorListeners.findIndex(fn => fn === listener);
+  removeErrorListener(listener: (Error) => void) {
+    const idx = this._errorListeners.findIndex((fn) => fn === listener);
     if (idx === -1) {
       return false;
     }
@@ -193,10 +193,7 @@ class WebScoketClient<Credential = null> {
     });
 
     for (const { events, resolve, reject } of this._queuedEvents) {
-      this._socket
-        .dispatch({ events, connId })
-        .then(resolve)
-        .catch(reject);
+      this._socket.dispatch({ events, connId }).then(resolve).catch(reject);
     }
     this._queuedEvents = [];
   }

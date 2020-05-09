@@ -20,7 +20,7 @@ class AbstractWSServer {
     _req: IncomingMessage,
     _socket: NetSocket,
     _head: Buffer,
-    _cb: WS => void
+    _cb: (WS) => void
   ): void {
     throw new TypeError('method called on abstract class');
   }

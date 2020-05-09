@@ -6,7 +6,7 @@ import { MarkSeen, TypingOn, TypingOff } from '../senderAction';
 
 const renderer = new Renderer('messenger', () => null);
 
-describe.each([MarkSeen, TypingOn, TypingOff])('%p', Action => {
+describe.each([MarkSeen, TypingOn, TypingOff])('%p', (Action) => {
   it('is valid unit Component', () => {
     expect(typeof Action).toBe('function');
     expect(isNativeElement(<Action />)).toBe(true);
