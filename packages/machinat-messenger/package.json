@@ -20,7 +20,10 @@
   },
   "files": [
     "lib/*",
-    "README.md"
+    "README.md",
+    "auth/*",
+    "asset.js",
+    "components.js"
   ],
   "license": "MIT",
   "dependencies": {

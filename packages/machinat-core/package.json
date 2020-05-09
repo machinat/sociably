@@ -23,7 +23,14 @@
   },
   "files": [
     "lib/*",
-    "README.md"
+    "README.md",
+    "engine.js",
+    "queue.js",
+    "renderer.js",
+    "service.js",
+    "base.js",
+    "iterator",
+    "utils"
   ],
   "license": "MIT",
   "dependencies": {

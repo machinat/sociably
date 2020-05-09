@@ -18,7 +18,10 @@
   },
   "files": [
     "lib/*",
-    "README.md"
+    "README.md",
+    "file.js",
+    "inMemory.js",
+    "redis.js"
   ],
   "license": "MIT",
   "dependencies": {

@@ -11,12 +11,7 @@
   "bugs": "https://github.com/lrills/machinat",
   "main": "lib/index.js",
   "exports": {
-    ".": {
-      "default": "./lib/index.js"
-    },
-    "./auth": {
-      "default": "./lib/auth/index.js"
-    }
+    ".":  "./lib/index.js"
   },
   "files": [
     "lib/*",
