@@ -23,10 +23,11 @@
   },
   "files": [
     "lib/*",
-    "README.md"
+    "README.md",
+    "polyfill-exports"
   ],
   "scripts": {
-    "postpack": "./polyfill-exports"
+    "postinstall": "./polyfill-exports"
   },
   "license": "MIT",
   "dependencies": {

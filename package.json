@@ -43,7 +43,7 @@
     "lerna": "^3.20.2",
     "moxy": "0.1.0-9",
     "nock": "^12.0.0",
-    "polyfill-exports": "^0.3.0-beta",
+    "polyfill-exports": "^0.3.0-beta.1",
     "prettier": "^2.0.5"
   },
   "workspaces": [
