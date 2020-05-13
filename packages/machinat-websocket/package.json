@@ -21,7 +21,7 @@
     "README.md"
   ],
   "scripts": {
-    "postinstall": "./polyfill-exports"
+    "postpack": "./polyfill-exports"
   },
   "license": "MIT",
   "dependencies": {
