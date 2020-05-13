@@ -19,11 +19,11 @@
   },
   "files": [
     "lib/*",
-    "README.md",
-    "auth/*",
-    "asset.js",
-    "components.js"
+    "README.md"
   ],
+  "scripts": {
+    "postinstall": "./polyfill-exports"
+  },
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",

@@ -18,11 +18,11 @@
   },
   "files": [
     "lib/*",
-    "README.md",
-    "file.js",
-    "inMemory.js",
-    "redis.js"
+    "README.md"
   ],
+  "scripts": {
+    "postinstall": "./polyfill-exports"
+  },
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",

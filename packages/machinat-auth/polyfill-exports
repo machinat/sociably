@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+'use strict';
+
+var fs = require('fs');
+
+fs.symlinkSync('./lib/client/index.js', './client.js');
+fs.symlinkSync('./lib/server/index.js', './server.js');

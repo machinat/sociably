@@ -16,9 +16,11 @@
   },
   "files": [
     "lib/*",
-    "README.md",
-    "webhook.js"
+    "README.md"
   ],
+  "scripts": {
+    "postinstall": "./polyfill-exports"
+  },
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",

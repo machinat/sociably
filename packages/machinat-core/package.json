@@ -23,15 +23,11 @@
   },
   "files": [
     "lib/*",
-    "README.md",
-    "engine.js",
-    "queue.js",
-    "renderer.js",
-    "service.js",
-    "base.js",
-    "iterator",
-    "utils"
+    "README.md"
   ],
+  "scripts": {
+    "postinstall": "./polyfill-exports"
+  },
   "license": "MIT",
   "dependencies": {
     "denque": "^1.4.1",

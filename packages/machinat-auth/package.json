@@ -17,10 +17,11 @@
   },
   "files": [
     "lib/*",
-    "README.md",
-    "client.js",
-    "server.js"
+    "README.md"
   ],
+  "scripts": {
+    "postinstall": "./polyfill-exports"
+  },
   "license": "MIT",
   "dependencies": {
     "base64url": "^3.0.1",

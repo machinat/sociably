@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+'use strict';
+
+var fs = require('fs');
+
+fs.symlinkSync('./lib/storages/file/index.js', './file.js');
+fs.symlinkSync('./lib/storages/inMemory/index.js', './inMemory.js');
+fs.symlinkSync('./lib/storages/redis/index.js', './redis.js');

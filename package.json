@@ -5,8 +5,7 @@
     "bootstrap": "lerna bootstrap && yarn run build",
     "build-clean": "make clean",
     "build": "make",
-    "exports:polyfill": "lerna exec -- polyfill-exports",
-    "exports:clear": "lerna exec -- polyfill-exports --clear",
+    "polyfill-exports": "lerna exec -- polyfill-exports",
     "lint": "eslint --ext .js ./packages/*/src",
     "lint:fix": "yarn run lint -- --fix",
     "prettier": "prettier --write packages/**/*.js flow-typed/*.js",
@@ -44,7 +43,7 @@
     "lerna": "^3.20.2",
     "moxy": "0.1.0-9",
     "nock": "^12.0.0",
-    "polyfill-exports": "^0.2.0-beta.1",
+    "polyfill-exports": "^0.3.0-beta",
     "prettier": "^2.0.5"
   },
   "workspaces": [
