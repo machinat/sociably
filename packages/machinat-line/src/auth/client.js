@@ -2,7 +2,7 @@
 import invariant from 'invariant';
 import type { ClientAuthorizer } from '@machinat/auth/types';
 import { LINE } from '../constant';
-import type { LIFFAuthData, LIFFCredential } from '../types';
+import type { LIFFAuthData, LIFFCredential, LIFFContext } from '../types';
 import { refineLIFFContextData } from './utils';
 
 declare var location: Location;
@@ -90,19 +90,31 @@ class LineClientAuthorizer
       };
     }
 
-    const liffContext = liff.getContext();
+    const {
+      type: contextType,
+      userId,
+      utouId,
+      groupId,
+      roomId,
+    }: LIFFContext = liff.getContext();
 
     return {
       success: true,
       credential: {
-        os: liff.getOS(),
-        language: liff.getLanguage(),
-        botChannelId:
-          liffContext.type === 'utou' && this.isOnBotChannel
-            ? this.botChannelId
-            : undefined,
-        context: liffContext,
         accessToken: liff.getAccessToken(),
+        data: {
+          os: liff.getOS(),
+          language: liff.getLanguage(),
+          fromBotChannel:
+            contextType === 'utou' && this.isOnBotChannel
+              ? this.botChannelId
+              : undefined,
+          contextType,
+          userId,
+          utouId,
+          groupId,
+          roomId,
+        },
       },
     };
   }

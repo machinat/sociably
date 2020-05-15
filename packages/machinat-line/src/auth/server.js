@@ -48,9 +48,9 @@ class LineServerAuthorizer
   }
 
   async verifyCredential(credential: LIFFCredential) {
-    let accessToken;
+    const { accessToken, data } = credential;
     // eslint-disable-next-line prefer-destructuring
-    if (!(accessToken = credential?.accessToken)) {
+    if (!accessToken) {
       return {
         success: false,
         code: 400,
@@ -58,8 +58,8 @@ class LineServerAuthorizer
       };
     }
 
-    const { os, language, context, botChannelId } = credential;
-    if (botChannelId && botChannelId !== this.botChannelId) {
+    const { fromBotChannel } = data;
+    if (fromBotChannel && fromBotChannel !== this.botChannelId) {
       return {
         success: false,
         code: 400,
@@ -91,7 +91,7 @@ class LineServerAuthorizer
     return {
       success: true,
       refreshable: false,
-      data: { os, language, context, botChannelId },
+      data,
     };
   }
 

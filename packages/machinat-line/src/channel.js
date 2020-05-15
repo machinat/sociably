@@ -1,8 +1,7 @@
 // @flow
-import invariant from 'invariant';
 import type { MachinatChannel } from '@machinat/core/types';
 import { LINE } from './constant';
-import type { LineSource, LIFFContext } from './types';
+import type { LineSource } from './types';
 
 type LineChannelType = 'room' | 'group' | 'utou' | 'utob';
 
@@ -26,47 +25,6 @@ class LineChannel implements MachinatChannel {
         );
       default:
         throw new Error(`unknown source type "${source.type}"`);
-    }
-  }
-
-  static fromLIFFContext(
-    providerId: string,
-    botChannelId: string,
-    context: LIFFContext,
-    isOnBotChannel: boolean = false
-  ): null | LineChannel {
-    if (isOnBotChannel) {
-      invariant(
-        context.type === 'utou',
-        `cannot create an utob channel from a "${context.type}" context`
-      );
-      return new LineChannel(providerId, botChannelId, 'utob', context.userId);
-    }
-
-    switch (context.type) {
-      case 'utou':
-        return new LineChannel(
-          providerId,
-          botChannelId || '*',
-          'utou',
-          (context.utouId: any)
-        );
-      case 'room':
-        return new LineChannel(
-          providerId,
-          botChannelId || '*',
-          'room',
-          (context.roomId: any)
-        );
-      case 'group':
-        return new LineChannel(
-          providerId,
-          botChannelId || '*',
-          'group',
-          (context.groupId: any)
-        );
-      default:
-        return null;
     }
   }
 

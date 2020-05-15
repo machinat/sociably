@@ -260,13 +260,17 @@ export type LIFFContext = {
 export type LIFFAuthData = {|
   os: 'ios' | 'android' | 'web',
   language: string,
-  botChannelId: void | string,
-  context: LIFFContext,
+  fromBotChannel: void | string,
+  contextType: 'utou' | 'group' | 'room' | 'external' | 'none',
+  userId: string,
+  utouId?: string,
+  groupId?: string,
+  roomId?: string,
 |};
 
 export type LIFFCredential = {|
-  ...LIFFAuthData,
   accessToken: string,
+  data: LIFFAuthData,
 |};
 
 export type LinePlatformMounter = PlatformMounter<

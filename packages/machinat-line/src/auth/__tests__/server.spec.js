@@ -7,21 +7,6 @@ import ServerAuthorizer from '../server';
 
 nock.disableNetConnect();
 
-const liffContext = {
-  type: 'utou',
-  utouId:
-    'UU29e6eb36812f484fd275d41b5af4e760926c516d8c9faa35…b1e8de8fbb6ecb263ee8724e48118565e3368d39778fe648d',
-  userId: 'U70e153189a29f1188b045366285346bc',
-  viewType: 'full',
-  accessTokenHash: 'ArIXhlwQMAZyW7SDHm7L2g',
-  availability: {
-    shareTargetPicker: {
-      permission: true,
-      minVer: '10.3.0',
-    },
-  },
-};
-
 const request = {
   url: '/foo/auth/line',
   type: 'GET',
@@ -75,10 +60,14 @@ describe('#delegateAuthRequest(req, res)', () => {
 
 describe('#verifyCredential(credential)', () => {
   const credential = {
-    os: 'ios',
-    language: 'zh-TW',
-    context: liffContext,
     accessToken: '_ACCESS_TOKEN_',
+    data: {
+      os: 'ios',
+      language: 'zh-TW',
+      contextType: 'utou',
+      utouId: '_UTOU_ID_',
+      userId: '_USER_ID_',
+    },
   };
 
   const verifyAPI = nock('https://api.line.me')
@@ -104,7 +93,9 @@ describe('#verifyCredential(credential)', () => {
       data: {
         os: 'ios',
         language: 'zh-TW',
-        context: liffContext,
+        contextType: 'utou',
+        utouId: '_UTOU_ID_',
+        userId: '_USER_ID_',
       },
     });
 
@@ -126,17 +117,22 @@ describe('#verifyCredential(credential)', () => {
 
     await expect(
       authorizer.verifyCredential({
-        ...credential,
-        botChannelId: '_BOT_CHANNEL_ID_',
+        accessToken: credential.accessToken,
+        data: {
+          ...credential.data,
+          fromBotChannel: '_BOT_CHANNEL_ID_',
+        },
       })
     ).resolves.toEqual({
       success: true,
       refreshable: false,
       data: {
-        botChannelId: '_BOT_CHANNEL_ID_',
+        fromBotChannel: '_BOT_CHANNEL_ID_',
         os: 'ios',
         language: 'zh-TW',
-        context: liffContext,
+        contextType: 'utou',
+        utouId: '_UTOU_ID_',
+        userId: '_USER_ID_',
       },
     });
   });
@@ -206,7 +202,7 @@ describe('#verifyCredential(credential)', () => {
     expect(verifyScope.isDone()).toBe(true);
   });
 
-  it('return unaccepted if botChannelId in credential not matched', async () => {
+  it('return unaccepted if fromBotChannel in credential not matched', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
       botChannelId: '_BOT_CHANNEL_ID_',
@@ -215,8 +211,11 @@ describe('#verifyCredential(credential)', () => {
 
     await expect(
       authorizer.verifyCredential({
-        ...credential,
-        botChannelId: '_ANOTHER_BOT_ID_',
+        accessToken: credential.accessToken,
+        data: {
+          ...credential,
+          fromBotChannel: '_ANOTHER_BOT_ID_',
+        },
       })
     ).resolves.toMatchInlineSnapshot(`
             Object {
@@ -283,12 +282,9 @@ describe('#refineAuth(data)', () => {
       authorizer.refineAuth({
         os: 'ios',
         language: 'zh-TW',
-        context: {
-          ...liffContext,
-          type: 'utou',
-          utouId: '_UTOU_ID_',
-          userId: '_USER_ID_',
-        },
+        contextType: 'utou',
+        utouId: '_UTOU_ID_',
+        userId: '_USER_ID_',
       })
     ).resolves.toEqual({
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
@@ -304,11 +300,8 @@ describe('#refineAuth(data)', () => {
       authorizer.refineAuth({
         os: 'ios',
         language: 'zh-TW',
-        context: {
-          ...liffContext,
-          type: 'external',
-          userId: '_USER_ID_',
-        },
+        contextType: 'external',
+        userId: '_USER_ID_',
       })
     ).resolves.toEqual({
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
@@ -316,7 +309,7 @@ describe('#refineAuth(data)', () => {
     });
   });
 
-  it('return utob channel if botChannelId exist in data', async () => {
+  it('return utob channel if fromBotChannel exist in data', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
       botChannelId: '_BOT_CHANNEL_ID_',
@@ -327,13 +320,10 @@ describe('#refineAuth(data)', () => {
       authorizer.refineAuth({
         os: 'ios',
         language: 'zh-TW',
-        botChannelId: '_BOT_CHANNEL_ID_',
-        context: {
-          ...liffContext,
-          type: 'utou',
-          utouId: '_UTOU_ID_',
-          userId: '_USER_ID_',
-        },
+        fromBotChannel: '_BOT_CHANNEL_ID_',
+        contextType: 'utou',
+        utouId: '_UTOU_ID_',
+        userId: '_USER_ID_',
       })
     ).resolves.toEqual({
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
@@ -346,7 +336,7 @@ describe('#refineAuth(data)', () => {
     });
   });
 
-  it('return null if botChannelId in data not match', async () => {
+  it('return null if fromBotChannel in data not match', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
       botChannelId: '_BOT_CHANNEL_ID_',
@@ -357,25 +347,11 @@ describe('#refineAuth(data)', () => {
       authorizer.refineAuth({
         os: 'ios',
         language: 'zh-TW',
-        botChannelId: '_SOME_OTHER_BOT_CHANNEL_ID_',
-        context: {
-          ...liffContext,
-          type: 'utou',
-          utouId: '_UTOU_ID_',
-          userId: '_USER_ID_',
-        },
+        fromBotChannel: '_SOME_OTHER_BOT_CHANNEL_ID_',
+        contextType: 'utou',
+        utouId: '_UTOU_ID_',
+        userId: '_USER_ID_',
       })
-    ).resolves.toBe(null);
-  });
-
-  it('return null if context is empty', async () => {
-    const authorizer = new ServerAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
-    });
-    await expect(
-      authorizer.refineAuth({ os: 'ios', language: 'zh-TW' })
     ).resolves.toBe(null);
   });
 });

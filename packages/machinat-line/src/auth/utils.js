@@ -10,22 +10,49 @@ export const refineLIFFContextData = (
   botChannelId: string,
   data: LIFFAuthData
 ): null | AuthorizerRefineResult => {
-  const { context, botChannelId: botChannelIdFromData } = data;
-  if (!context) {
-    return null;
-  }
+  const { contextType, userId, utouId, groupId, roomId, fromBotChannel } = data;
 
-  if (botChannelIdFromData && botChannelIdFromData !== botChannelId) {
-    return null;
+  let authorizedChannel;
+
+  if (fromBotChannel) {
+    if (fromBotChannel !== botChannelId || contextType !== 'utou') {
+      return null;
+    }
+
+    authorizedChannel = new LineChannel(
+      providerId,
+      botChannelId,
+      'utob',
+      userId
+    );
+  } else {
+    authorizedChannel =
+      contextType === 'utou'
+        ? new LineChannel(
+            providerId,
+            botChannelId || '*',
+            'utou',
+            (utouId: any)
+          )
+        : contextType === 'room'
+        ? new LineChannel(
+            providerId,
+            botChannelId || '*',
+            'room',
+            (roomId: any)
+          )
+        : contextType === 'group'
+        ? new LineChannel(
+            providerId,
+            botChannelId || '*',
+            'group',
+            (groupId: any)
+          )
+        : null;
   }
 
   return {
-    user: new LineUser(providerId, context.userId),
-    authorizedChannel: LineChannel.fromLIFFContext(
-      providerId,
-      botChannelId,
-      context,
-      !!botChannelIdFromData
-    ),
+    user: new LineUser(providerId, userId),
+    authorizedChannel,
   };
 };

@@ -7,11 +7,10 @@ import LineUser from '../../user';
 
 const liffContext = {
   type: 'utou',
-  utouId:
-    'UU29e6eb36812f484fd275d41b5af4e760926c516d8c9faa35…b1e8de8fbb6ecb263ee8724e48118565e3368d39778fe648d',
-  userId: 'U70e153189a29f1188b045366285346bc',
+  utouId: '_UTOU_ID_',
+  userId: '_USER_ID_',
   viewType: 'full',
-  accessTokenHash: 'ArIXhlwQMAZyW7SDHm7L2g',
+  accessTokenHash: 'XXXXXX',
   availability: {
     shareTargetPicker: {
       permission: true,
@@ -160,10 +159,14 @@ describe('#fetchCredential()', () => {
     await expect(authorizer.fetchCredential()).resolves.toEqual({
       success: true,
       credential: {
-        os: 'ios',
-        language: 'zh-TW',
         accessToken: '_ACCESS_TOKEN_',
-        context: liffContext,
+        data: {
+          os: 'ios',
+          language: 'zh-TW',
+          contextType: 'utou',
+          utouId: '_UTOU_ID_',
+          userId: '_USER_ID_',
+        },
       },
     });
 
@@ -200,7 +203,7 @@ describe('#fetchCredential()', () => {
     jest.useRealTimers();
   });
 
-  it('set botChannelId in auth date if "onLineBotChannel" in query is truthy', async () => {
+  it('set fromBotChannel if "onLineBotChannel" in query param is truthy', async () => {
     global.location.mock
       .getter('search')
       .fakeReturnValue('?onLineBotChannel=true');
@@ -215,11 +218,15 @@ describe('#fetchCredential()', () => {
     await expect(authorizer.fetchCredential()).resolves.toEqual({
       success: true,
       credential: {
-        botChannelId: '_BOT_CHANNEL_ID_',
-        os: 'ios',
-        language: 'zh-TW',
         accessToken: '_ACCESS_TOKEN_',
-        context: liffContext,
+        data: {
+          fromBotChannel: '_BOT_CHANNEL_ID_',
+          os: 'ios',
+          language: 'zh-TW',
+          contextType: 'utou',
+          utouId: '_UTOU_ID_',
+          userId: '_USER_ID_',
+        },
       },
     });
 
@@ -240,12 +247,9 @@ describe('#refineAuth(data)', () => {
       authorizer.refineAuth({
         os: 'ios',
         language: 'zh-TW',
-        context: {
-          ...liffContext,
-          type: 'utou',
-          utouId: '_UTOU_ID_',
-          userId: '_USER_ID_',
-        },
+        contextType: 'utou',
+        utouId: '_UTOU_ID_',
+        userId: '_USER_ID_',
       })
     ).resolves.toEqual({
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
@@ -261,11 +265,8 @@ describe('#refineAuth(data)', () => {
       authorizer.refineAuth({
         os: 'ios',
         language: 'zh-TW',
-        context: {
-          ...liffContext,
-          type: 'external',
-          userId: '_USER_ID_',
-        },
+        contextType: 'external',
+        userId: '_USER_ID_',
       })
     ).resolves.toEqual({
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
@@ -285,13 +286,10 @@ describe('#refineAuth(data)', () => {
       authorizer.refineAuth({
         os: 'ios',
         language: 'zh-TW',
-        botChannelId: '_BOT_CHANNEL_ID_',
-        context: {
-          ...liffContext,
-          type: 'utou',
-          utouId: '_UTOU_ID_',
-          userId: '_USER_ID_',
-        },
+        fromBotChannel: '_BOT_CHANNEL_ID_',
+        contextType: 'utou',
+        utouId: '_UTOU_ID_',
+        userId: '_USER_ID_',
       })
     ).resolves.toEqual({
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
@@ -304,7 +302,7 @@ describe('#refineAuth(data)', () => {
     });
   });
 
-  it('return null if botChannelId in data not match', async () => {
+  it('return null if data.fromBotChannel not match', async () => {
     const authorizer = new ClientAuthorizer({
       providerId: '_PROVIDER_ID_',
       botChannelId: '_BOT_CHANNEL_ID_',
@@ -316,26 +314,11 @@ describe('#refineAuth(data)', () => {
       authorizer.refineAuth({
         os: 'ios',
         language: 'zh-TW',
-        botChannelId: '_SOME_OTHER_BOT_CHANNEL_ID_',
-        context: {
-          ...liffContext,
-          type: 'utou',
-          utouId: '_UTOU_ID_',
-          userId: '_USER_ID_',
-        },
+        fromBotChannel: '_SOME_OTHER_BOT_CHANNEL_ID_',
+        contextType: 'utou',
+        utouId: '_UTOU_ID_',
+        userId: '_USER_ID_',
       })
-    ).resolves.toBe(null);
-  });
-
-  it('return null if context is empty', async () => {
-    const authorizer = new ClientAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
-      liffId: '_LIFF_ID_',
-      isSDKLoaded: true,
-    });
-    await expect(
-      authorizer.refineAuth({ os: 'ios', language: 'zh-TW' })
     ).resolves.toBe(null);
   });
 });
