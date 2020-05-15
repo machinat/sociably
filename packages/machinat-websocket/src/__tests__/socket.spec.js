@@ -128,7 +128,7 @@ describe('login', () => {
 
     await clientSocket.login({ credential: '***' });
 
-    await delay(100);
+    await delay(50);
 
     expect(singInSpy.mock).toHaveBeenCalledTimes(1);
     expect(singInSpy.mock).toHaveBeenCalledWith(
@@ -162,7 +162,7 @@ describe('login', () => {
   test('client reject if register frame received', async () => {
     clientWS.emit('message', JSON.stringify(['login', 1, { type: 'test' }]));
 
-    await delay(100);
+    await delay(50);
 
     expect(clientWS.send.mock).toHaveBeenCalledTimes(1);
 
@@ -201,7 +201,7 @@ describe('connecting handshake', () => {
     expect(serverSocket.isConnecting(connId)).toBe(true);
     expect(serverSocket.isConnected(connId)).toBe(false);
 
-    await delay(100);
+    await delay(50);
 
     expect(clientSocket.isConnected(connId)).toBe(true);
     expect(clientSocket.isConnecting(connId)).toBe(false);
@@ -240,7 +240,7 @@ describe('connecting handshake', () => {
 
   test('server respond disconnect if connect initiated by client', async () => {
     const seq = await clientSocket.connect({ connId, user });
-    await delay(100);
+    await delay(50);
 
     expect(clientSocket.isConnected(connId)).toBe(false);
     expect(clientSocket.isConnecting(connId)).toBe(false);
@@ -275,7 +275,7 @@ describe('connecting handshake', () => {
     expect(serverSocket.isConnecting(connId)).toBe(true);
     expect(serverSocket.isDisconnecting(connId)).toBe(true);
 
-    await delay(100);
+    await delay(50);
 
     expect(clientSocket.isConnected(connId)).toBe(false);
     expect(clientSocket.isConnecting(connId)).toBe(false);
@@ -315,7 +315,7 @@ describe('connecting handshake', () => {
 
   it('throw if already connected', async () => {
     serverSocket.connect({ connId });
-    await delay(100);
+    await delay(50);
     await expect(
       serverSocket.connect({ connId, user })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -337,13 +337,13 @@ describe('disconnect handshake', () => {
 
   it('finish handshake when initiated by server', async () => {
     serverSocket.connect({ connId });
-    await delay(100);
+    await delay(50);
 
     expect(serverSocket.isConnected(connId)).toBe(true);
     expect(clientSocket.isConnected(connId)).toBe(true);
 
     const seq = await serverSocket.disconnect({ connId, reason: 'bye!' });
-    await delay(100);
+    await delay(50);
 
     expect(clientDisconnectSpy.mock).toHaveBeenCalledTimes(1);
     expect(clientDisconnectSpy.mock).toHaveBeenCalledWith(
@@ -361,13 +361,13 @@ describe('disconnect handshake', () => {
 
   it('finish handshake when initiated by client', async () => {
     serverSocket.connect({ connId });
-    await delay(100);
+    await delay(50);
 
     expect(serverSocket.isConnected(connId)).toBe(true);
     expect(clientSocket.isConnected(connId)).toBe(true);
 
     const seq = await clientSocket.disconnect({ connId, reason: 'bye!' });
-    await delay(100);
+    await delay(50);
 
     expect(serverDisconnectSpy.mock).toHaveBeenCalledTimes(1);
     expect(serverDisconnectSpy.mock).toHaveBeenCalledWith(
@@ -393,7 +393,7 @@ describe('disconnect handshake', () => {
 
   it('do nothing if disconnect handshake alreay initiated', async () => {
     serverSocket.connect({ connId });
-    await delay(100);
+    await delay(50);
 
     expect(serverSocket.isConnected(connId)).toBe(true);
     expect(clientSocket.isConnected(connId)).toBe(true);
@@ -402,7 +402,7 @@ describe('disconnect handshake', () => {
     await expect(
       serverSocket.disconnect({ connId, reason: 'bye2' })
     ).resolves.toBe(undefined);
-    await delay(100);
+    await delay(50);
 
     expect(clientDisconnectSpy.mock).toHaveBeenCalledTimes(1);
     expect(clientDisconnectSpy.mock).toHaveBeenCalledWith(
@@ -439,7 +439,7 @@ describe('dispatch events', () => {
 
   test('send events from client to server', async () => {
     serverSocket.connect({ connId });
-    await delay(100);
+    await delay(50);
 
     const seq = await clientSocket.dispatch(dispatchBody);
     await delay(50);
@@ -463,7 +463,7 @@ describe('dispatch events', () => {
 
   test('send event from server to client', async () => {
     serverSocket.connect({ connId });
-    await delay(100);
+    await delay(50);
 
     const seq = await serverSocket.dispatch(dispatchBody);
     await delay(50);
@@ -507,7 +507,7 @@ describe('dispatch events', () => {
 
   it('throw when connecting', async () => {
     serverSocket.connect({ connId });
-    await delay(100);
+    await delay(50);
     await serverSocket.disconnect({ connId });
     expect(serverSocket.isDisconnecting(connId)).toBe(true);
 
@@ -533,12 +533,12 @@ describe('reject', () => {
 
   test('propagate "reject" event', async () => {
     serverSocket.connect({ connId });
-    await delay(100);
+    await delay(50);
 
     const seq1 = await serverSocket.reject({ seq: 1, reason: 'foo' });
     const seq2 = await clientSocket.reject({ seq: 2, reason: 'bar' });
 
-    await delay(100);
+    await delay(50);
 
     expect(clientRejectSpy.mock).toHaveBeenCalledTimes(1);
     expect(clientRejectSpy.mock).toHaveBeenCalledWith(
@@ -569,7 +569,7 @@ describe('closing', () => {
 
   test('close from server', async () => {
     expect(serverSocket.close(888, 'Bye!')).toBe(undefined);
-    await delay(100);
+    await delay(50);
 
     expect(serverCloseSpy.mock).toHaveBeenCalledTimes(1);
     expect(serverCloseSpy.mock).toHaveBeenCalledWith(888, 'Bye!', serverSocket);
@@ -579,7 +579,7 @@ describe('closing', () => {
 
   test('close from client', async () => {
     expect(clientSocket.close(888, 'Bye!')).toBe(undefined);
-    await delay(100);
+    await delay(50);
 
     expect(serverCloseSpy.mock).toHaveBeenCalledTimes(1);
     expect(serverCloseSpy.mock).toHaveBeenCalledWith(888, 'Bye!', serverSocket);
@@ -595,10 +595,10 @@ describe('closing', () => {
 
     serverSocket.connect({ connId: 'conn#1' });
     serverSocket.connect({ connId: 'conn#2' });
-    await delay(100);
+    await delay(50);
 
     expect(clientSocket.close(888, 'Bye!')).toBe(undefined);
-    await delay(100);
+    await delay(50);
 
     expect(serverCloseSpy.mock).toHaveBeenCalledTimes(1);
     expect(serverCloseSpy.mock).toHaveBeenCalledWith(888, 'Bye!', serverSocket);

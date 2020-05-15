@@ -1,10 +1,14 @@
+// @flow
 import EventEmitter from 'events';
+import Socket from '../socket';
 import SocketError from '../error';
 
-const ws =
+const WS =
   typeof WebSocket === 'undefined'
     ? require('ws')
     : class EmittableWebSocket extends EventEmitter {
+        _ws: WebSocket;
+
         static CONNECTING = 0;
         static OPEN = 1;
         static CLOSING = 2;
@@ -72,4 +76,27 @@ const ws =
         }
       };
 
-export default ws;
+const MACHINAT_WEBSOCKET_PROTOCOL_V0 = 'machinat-websocket-v0';
+
+const openSocket = (url: string): Promise<Socket> => {
+  const ws = new WS(url, MACHINAT_WEBSOCKET_PROTOCOL_V0);
+  const socket = new Socket('', ws, (null: any));
+
+  return new Promise((resolve, reject) => {
+    let errorListener;
+    const openListener = () => {
+      resolve(socket);
+      socket.removeListener('open', openListener);
+      socket.removeListener('error', errorListener);
+    };
+    errorListener = (err) => {
+      reject(err);
+      socket.removeListener('open', openListener);
+      socket.removeListener('error', errorListener);
+    };
+    socket.on('open', openListener);
+    socket.on('error', errorListener);
+  });
+};
+
+export default openSocket;

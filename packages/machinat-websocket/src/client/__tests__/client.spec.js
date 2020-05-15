@@ -10,9 +10,9 @@ global.location = location;
 
 jest.mock('../../socket');
 
-const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+const nextTick = () => new Promise(process.nextTick);
 
-const login = moxy(async () => ({
+const authorizeLogin = moxy(async () => ({
   user: { john: 'doe' },
   credential: { foo: 'bar' },
 }));
@@ -22,12 +22,13 @@ const eventSpy = moxy();
 beforeEach(() => {
   Socket.mock.reset();
   WS.mock.clear();
-  login.mock.clear();
+  authorizeLogin.mock.clear();
   eventSpy.mock.clear();
 });
 
-it('initiate ok', () => {
-  const client = new Client({ login }); // eslint-disable-line no-unused-vars
+it('initiate ok', async () => {
+  const client = new Client({ authorizeLogin }); // eslint-disable-line no-unused-vars
+  await nextTick();
 
   expect(WS.mock).toHaveBeenCalledTimes(1);
   expect(WS.mock).toHaveBeenCalledWith(
@@ -43,8 +44,13 @@ it('initiate ok', () => {
   );
 });
 
-test('specify url', () => {
-  const client = new Client({ url: 'ws://machinat.io/websocket', login }); // eslint-disable-line no-unused-vars
+test('specify url', async () => {
+  // eslint-disable-next-line no-unused-vars
+  const client = new Client({
+    url: 'ws://machinat.io/websocket',
+    authorizeLogin,
+  });
+  await nextTick();
 
   expect(WS.mock).toHaveBeenCalledTimes(1);
   expect(WS.mock).toHaveBeenCalledWith(
@@ -52,7 +58,8 @@ test('specify url', () => {
     'machinat-websocket-v0'
   );
 
-  const client2 = new Client({ url: '/foo/websocket/server', login }); // eslint-disable-line no-unused-vars
+  const client2 = new Client({ url: '/foo/websocket/server', authorizeLogin }); // eslint-disable-line no-unused-vars
+  await nextTick();
 
   expect(WS.mock).toHaveBeenCalledTimes(2);
   expect(WS.mock).toHaveBeenCalledWith(
@@ -64,14 +71,15 @@ test('specify url', () => {
 it('sign in end emit "connect" when connected', async () => {
   const client = new Client();
   client.onEvent(eventSpy);
+  await nextTick();
 
   const socket = Socket.mock.calls[0].instance;
   expect(socket.login.mock).not.toHaveBeenCalled();
 
   expect(client.user).toBe(null);
 
-  socket.emit('open');
-  await delay();
+  socket.emit('open', socket);
+  await nextTick();
 
   expect(socket.login.mock).toHaveBeenCalledTimes(1);
   expect(socket.login.mock).toHaveBeenCalledWith({
@@ -79,9 +87,8 @@ it('sign in end emit "connect" when connected', async () => {
   });
   expect(client.user).toEqual(null);
 
-  const regSeq = await socket.login.mock.calls[0].result;
-  socket.emit('connect', { connId: '#conn', seq: regSeq });
-  await delay();
+  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
+  await nextTick();
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(1);
   expect(eventSpy.mock).toHaveBeenCalledWith({ type: 'connect' }, client);
@@ -89,20 +96,18 @@ it('sign in end emit "connect" when connected', async () => {
   expect(client.channel).toEqual(new ConnectionChannel('*', '#conn'));
 });
 
-it('login with credential from options.login()', async () => {
-  const client = new Client({ login });
+it('login with credential from options.authorizeLogin()', async () => {
+  const client = new Client({ authorizeLogin });
   client.onEvent(eventSpy);
+  await nextTick();
+
+  expect(authorizeLogin.mock).toHaveBeenCalledTimes(1);
+  expect(authorizeLogin.mock).toHaveBeenCalledWith(/* empty */);
 
   const socket = Socket.mock.calls[0].instance;
   expect(socket.login.mock).not.toHaveBeenCalled();
-
-  expect(client.user).toBe(null);
-
-  socket.emit('open');
-  await delay();
-
-  expect(login.mock).toHaveBeenCalledTimes(1);
-  expect(login.mock).toHaveBeenCalledWith(/* empty */);
+  socket.emit('open', socket);
+  await nextTick();
 
   expect(socket.login.mock).toHaveBeenCalledTimes(1);
   expect(socket.login.mock).toHaveBeenCalledWith({
@@ -112,9 +117,8 @@ it('login with credential from options.login()', async () => {
   expect(client.user).toEqual({ john: 'doe' });
   expect(client.channel).toBe(null);
 
-  const regSeq = await socket.login.mock.calls[0].result;
-  socket.emit('connect', { connId: '#conn', seq: regSeq });
-  await delay();
+  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
+  await nextTick();
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(1);
   expect(eventSpy.mock).toHaveBeenCalledWith({ type: 'connect' }, client);
@@ -122,49 +126,54 @@ it('login with credential from options.login()', async () => {
   expect(client.channel).toEqual(new ConnectionChannel('*', '#conn'));
 });
 
-it('emit "error" if sign in rejected when socket is already open', async () => {
+it('emit "error" if login rejected', async () => {
+  const client = new Client({ authorizeLogin });
   const errorSpy = moxy();
-  const client = new Client({ login });
   client.onError(errorSpy);
+  await nextTick();
 
   const socket = Socket.mock.calls[0].instance;
-  socket.login.mock.fake(() => Promise.resolve(3));
 
-  socket.emit('open');
-  await delay();
+  socket.emit('open', socket);
+  await nextTick();
 
   expect(socket.login.mock).toHaveBeenCalledTimes(1);
-  await delay();
+  await nextTick();
 
-  socket.emit('reject', { seq: 3, reason: 'you are fired' }, 5);
+  socket.emit('reject', { seq: 1, reason: 'you shall not pass' }, 2);
 
   expect(errorSpy.mock).toHaveBeenCalledTimes(1);
   expect(errorSpy.mock.calls[0].args[0]).toMatchInlineSnapshot(
-    `[SocketError: you are fired]`
+    `[SocketError: you shall not pass]`
   );
 });
 
 it('emit "event" when dispatched events received', async () => {
-  const client = new Client({ login });
-  const socket = Socket.mock.calls[0].instance;
+  const client = new Client({ authorizeLogin });
+  await nextTick();
 
-  socket.emit('open');
-  socket.emit('connect', { connId: '#conn' });
-  await delay();
+  const socket = Socket.mock.calls[0].instance;
+  socket.emit('open', socket);
+  await nextTick();
+  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
 
   client.onEvent(eventSpy);
-
-  socket.emit('dispatch', {
-    connId: '#conn',
-    events: [
-      { type: 'start', payload: 'Welcome to Hyrule' },
-      {
-        type: 'reaction',
-        subtype: 'wasted',
-        payload: 'Link is down! Legend over.',
-      },
-    ],
-  });
+  socket.emit(
+    'dispatch',
+    {
+      connId: '#conn',
+      events: [
+        { type: 'start', payload: 'Welcome to Hyrule' },
+        {
+          type: 'reaction',
+          subtype: 'wasted',
+          payload: 'Link is down! Legend over.',
+        },
+      ],
+    },
+    3,
+    socket
+  );
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(2);
   expect(eventSpy.mock).toHaveBeenNthCalledWith(
@@ -182,10 +191,15 @@ it('emit "event" when dispatched events received', async () => {
     client
   );
 
-  socket.emit('dispatch', {
-    connId: '#conn',
-    events: [{ type: 'resurrect', payload: 'Hero never die!' }],
-  });
+  socket.emit(
+    'dispatch',
+    {
+      connId: '#conn',
+      events: [{ type: 'resurrect', payload: 'Hero never die!' }],
+    },
+    4,
+    socket
+  );
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(3);
   expect(eventSpy.mock).toHaveBeenCalledWith(
@@ -195,13 +209,14 @@ it('emit "event" when dispatched events received', async () => {
 });
 
 it('send events when already connected', async () => {
-  const client = new Client({ login });
+  const client = new Client({ authorizeLogin });
+  await nextTick();
+
   const socket = Socket.mock.calls[0].instance;
   socket.dispatch.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
-
-  socket.emit('open');
-  socket.emit('connect', { connId: '#conn' });
-  await delay();
+  socket.emit('open', socket);
+  await nextTick();
+  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
 
   await expect(
     client.send(
@@ -229,8 +244,9 @@ it('send events when already connected', async () => {
   });
 });
 
-it('queue dispatches if not ready and fire after connected', async () => {
-  const client = new Client({ login });
+it('queue events when not ready and fire them after connected', async () => {
+  const client = new Client({ authorizeLogin });
+  await nextTick();
 
   const socket = Socket.mock.calls[0].instance;
   socket.login.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
@@ -242,15 +258,14 @@ it('queue dispatches if not ready and fire after connected', async () => {
     .send({ type: 'greeting', payload: 'how are you' })
     .then(done);
 
-  await delay(5);
+  await nextTick();
   expect(done.mock).not.toHaveBeenCalled();
   expect(socket.dispatch.mock).not.toHaveBeenCalled();
 
-  socket.emit('open');
-  await delay();
+  socket.emit('open', socket);
+  await nextTick();
 
-  const seq = await socket.login.mock.calls[0].result;
-  socket.emit('connect', { connId: '#conn', seq }, 3);
+  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
 
   expect(socket.dispatch.mock).toHaveBeenCalledTimes(2);
   expect(socket.dispatch.mock).toHaveBeenCalledWith({
@@ -268,17 +283,18 @@ it('queue dispatches if not ready and fire after connected', async () => {
 });
 
 test('disconnect by server', async () => {
-  const client = new Client({ login });
-  const socket = Socket.mock.calls[0].instance;
+  const client = new Client({ authorizeLogin });
+  await nextTick();
 
-  socket.emit('open');
-  socket.emit('connect', { connId: '#conn' });
-  await delay();
+  const socket = Socket.mock.calls[0].instance;
+  socket.emit('open', socket);
+  await nextTick();
+  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
 
   client.onEvent(eventSpy);
 
   expect(client.connected).toBe(true);
-  socket.emit('disconnect', { connId: '#conn', reason: 'See ya!' });
+  socket.emit('disconnect', { connId: '#conn', reason: 'See ya!' }, 3, socket);
 
   expect(client.connected).toBe(false);
   expect(eventSpy.mock).toHaveBeenLastCalledWith(
@@ -288,45 +304,32 @@ test('disconnect by server', async () => {
 });
 
 test('#disconnect()', async () => {
-  const client = new Client({ login });
-  const socket = Socket.mock.calls[0].instance;
-  socket.disconnect.mock.fake(() => Promise.resolve(++socket._seq)); // eslint-disable-line no-plusplus
+  const client = new Client({ authorizeLogin });
+  await nextTick();
 
-  socket.emit('open');
-  socket.emit('connect', { connId: '#conn' });
-  await delay();
+  const socket = Socket.mock.calls[0].instance;
+  socket.disconnect.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
+  socket.emit('open', socket);
+  await nextTick();
+  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
 
   client.onEvent(eventSpy);
 
   expect(client.connected).toBe(true);
-  expect(client.disconnect('You are chicken attacked!')).toBe(undefined);
+  expect(client.disconnect('Bye!')).toBe(undefined);
 
   expect(socket.disconnect.mock).toHaveBeenCalledTimes(1);
   expect(socket.disconnect.mock).toHaveBeenCalledWith({
     connId: '#conn',
-    reason: 'You are chicken attacked!',
+    reason: 'Bye!',
   });
 
   expect(client.connected).toBe(false);
 
-  socket.emit('disconnect', { connId: '#conn', reason: 'See ya!' });
+  socket.emit('disconnect', { connId: '#conn', reason: 'Bye!' }, 4, socket);
 
   expect(eventSpy.mock).toHaveBeenLastCalledWith(
     { type: 'disconnect' },
     client
-  );
-});
-
-it('emit errer if connect_fail', () => {
-  const errorSpy = moxy();
-  const client = new Client({ login });
-  client.onError(errorSpy);
-
-  const socket = Socket.mock.calls[0].instance;
-  socket.emit('connect_fail', { connId: '#conn', reason: 'FAILED' }, 3);
-
-  expect(errorSpy.mock).toHaveBeenCalledTimes(1);
-  expect(errorSpy.mock.calls[0].args[0]).toMatchInlineSnapshot(
-    `[SocketError: connect handshake fail]`
   );
 });
