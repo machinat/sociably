@@ -4,42 +4,53 @@ import type { MessengerRawUserProfile } from '../types';
 import { MESSENGER } from '../constant';
 
 export default class MessengerUserProfile implements MachinatUserProfile {
-  rawData: MessengerRawUserProfile;
+  data: MessengerRawUserProfile;
   platform = MESSENGER;
 
   constructor(rawProfile: MessengerRawUserProfile) {
-    this.rawData = rawProfile;
+    this.data = rawProfile;
   }
 
   get id() {
-    return this.rawData.id;
+    return this.data.id;
   }
 
   get name() {
-    return this.rawData.name;
+    return this.data.name;
   }
 
   get firstName() {
-    return this.rawData.first_name;
+    return this.data.first_name;
   }
 
   get lastName() {
-    return this.rawData.last_name;
+    return this.data.last_name;
   }
 
   get pictureURL() {
-    return this.rawData.profile_pic;
+    return this.data.profile_pic;
   }
 
   get locale() {
-    return this.rawData.locale;
+    return this.data.locale;
   }
 
   get timezone() {
-    return this.rawData.timezone;
+    return this.data.timezone;
   }
 
   get gender() {
-    return this.rawData.gender;
+    return this.data.gender;
+  }
+
+  toJSON() {
+    const { data, id, name, pictureURL } = this;
+    return {
+      platform: MESSENGER,
+      data,
+      id,
+      name,
+      pictureURL,
+    };
   }
 }

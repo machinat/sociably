@@ -11,26 +11,37 @@ export type RawLineUserProfile = {
 };
 
 export default class LineUserProfile implements MachinatUserProfile {
-  rawData: RawLineUserProfile;
+  data: RawLineUserProfile;
   platform = LINE;
 
-  constructor(rawData: RawLineUserProfile) {
-    this.rawData = rawData;
+  constructor(data: RawLineUserProfile) {
+    this.data = data;
   }
 
   get id() {
-    return this.rawData.userId;
+    return this.data.userId;
   }
 
   get name() {
-    return this.rawData.displayName;
+    return this.data.displayName;
   }
 
   get pictureURL() {
-    return this.rawData.pictureUrl;
+    return this.data.pictureUrl;
   }
 
   get statusMessage() {
-    return this.rawData.statusMessage;
+    return this.data.statusMessage;
+  }
+
+  toJSON() {
+    const { data, id, name, pictureURL } = this;
+    return {
+      platform: LINE,
+      data,
+      id,
+      name,
+      pictureURL,
+    };
   }
 }

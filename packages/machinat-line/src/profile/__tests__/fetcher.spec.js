@@ -1,5 +1,6 @@
 import moxy from 'moxy';
 import LineUser from '../../user';
+import LineUserProfile from '../profile';
 import ProfileFetcher from '../fetcher';
 
 jest.useFakeTimers();
@@ -45,25 +46,14 @@ test('fetch profile from api and cache it', async () => {
   const profiler = new ProfileFetcher(bot, stateController);
   const profile = await profiler.fetchProfile(user);
 
-  expect(profile).toMatchInlineSnapshot(`
-    LineUserProfile {
-      "platform": "line",
-      "rawData": Object {
-        "displayName": "LINE taro",
-        "language": "en",
-        "pictureUrl": "https://obs.line-apps.com/...",
-        "statusMessage": "Hello, LINE!",
-        "userId": "U4af4980629...",
-      },
-    }
-  `);
+  expect(profile).toBeInstanceOf(LineUserProfile);
 
   expect(profile.platform).toBe('line');
   expect(profile.name).toBe('LINE taro');
   expect(profile.id).toBe('U4af4980629...');
   expect(profile.pictureURL).toBe('https://obs.line-apps.com/...');
   expect(profile.statusMessage).toBe('Hello, LINE!');
-  expect(profile.rawData).toEqual(rawProfileData);
+  expect(profile.data).toEqual(rawProfileData);
 
   expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
   expect(bot.dispatchAPICall.mock.calls[0].args).toMatchInlineSnapshot(`
@@ -105,7 +95,7 @@ it('return with cached profile data if existed', async () => {
   }));
 
   const profile = await profiler.fetchProfile(user);
-  expect(profile.rawData).toEqual(rawProfileData);
+  expect(profile.data).toEqual(rawProfileData);
 
   expect(state.get.mock).toHaveReturnedTimes(1);
 
@@ -124,7 +114,7 @@ it('update new profile data if profileCacheTime expired', async () => {
   }));
 
   const profile = await profiler.fetchProfile(user);
-  expect(profile.rawData).toEqual(rawProfileData);
+  expect(profile.data).toEqual(rawProfileData);
 
   expect(state.get.mock).toHaveReturnedTimes(1);
   expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(1);

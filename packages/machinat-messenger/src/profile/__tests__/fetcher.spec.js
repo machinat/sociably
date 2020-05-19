@@ -1,6 +1,7 @@
 import moxy from 'moxy';
 import MessengerUser from '../../user';
 import ProfileFetcher from '../fetcher';
+import MessengerUserProfile from '../profile';
 
 jest.useFakeTimers();
 
@@ -20,9 +21,6 @@ const rawProfileData = {
   last_name: 'Chang',
   profile_pic:
     'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpf1/v/t1.0-1/p200x200/13055603_10105219398495383_8237637584159975445_n.jpg?oh=1d241d4b6d4dac50eaf9bb73288ea192&oe=57AF5C03&__gda__=1470213755_ab17c8c8e3a0a447fed3f272fa2179ce',
-  // locale: 'en_US',
-  // timezone: -7,
-  // gender: 'male',
 };
 
 const bot = moxy({
@@ -49,18 +47,7 @@ test('fetch profile from api and cache it', async () => {
   const profiler = new ProfileFetcher(bot, stateController);
   const profile = await profiler.fetchProfile(user);
 
-  expect(profile).toMatchInlineSnapshot(`
-    MessengerUserProfile {
-      "platform": "messenger",
-      "rawData": Object {
-        "first_name": "Peter",
-        "id": "xxxxxxxxx",
-        "last_name": "Chang",
-        "name": "Peter Chang",
-        "profile_pic": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpf1/v/t1.0-1/p200x200/13055603_10105219398495383_8237637584159975445_n.jpg?oh=1d241d4b6d4dac50eaf9bb73288ea192&oe=57AF5C03&__gda__=1470213755_ab17c8c8e3a0a447fed3f272fa2179ce",
-      },
-    }
-  `);
+  expect(profile).toBeInstanceOf(MessengerUserProfile);
 
   expect(profile.id).toBe('xxxxxxxxx');
   expect(profile.name).toBe('Peter Chang');
@@ -72,7 +59,7 @@ test('fetch profile from api and cache it', async () => {
   expect(profile.locale).toBe(undefined);
   expect(profile.timezone).toBe(undefined);
   expect(profile.gender).toBe(undefined);
-  expect(profile.rawData).toEqual(rawProfileData);
+  expect(profile.data).toEqual(rawProfileData);
 
   expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
   expect(bot.dispatchAPICall.mock.calls[0].args).toMatchInlineSnapshot(`
@@ -117,7 +104,7 @@ it('return with cached profile data if existed', async () => {
   }));
 
   const profile = await profiler.fetchProfile(user);
-  expect(profile.rawData).toEqual(rawProfileData);
+  expect(profile.data).toEqual(rawProfileData);
 
   expect(state.get.mock).toHaveReturnedTimes(1);
 
@@ -136,7 +123,7 @@ it('update new profile data if profileCacheTime expired', async () => {
   }));
 
   const profile = await profiler.fetchProfile(user);
-  expect(profile.rawData).toEqual(rawProfileData);
+  expect(profile.data).toEqual(rawProfileData);
 
   expect(state.get.mock).toHaveReturnedTimes(1);
   expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(1);
@@ -171,26 +158,10 @@ it('query additional optionalProfileFields if given', async () => {
   });
   const profile = await profiler.fetchProfile(user);
 
-  expect(profile).toMatchInlineSnapshot(`
-    MessengerUserProfile {
-      "platform": "messenger",
-      "rawData": Object {
-        "first_name": "Peter",
-        "gender": "male",
-        "id": "xxxxxxxxx",
-        "last_name": "Chang",
-        "locale": "en_US",
-        "name": "Peter Chang",
-        "profile_pic": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpf1/v/t1.0-1/p200x200/13055603_10105219398495383_8237637584159975445_n.jpg?oh=1d241d4b6d4dac50eaf9bb73288ea192&oe=57AF5C03&__gda__=1470213755_ab17c8c8e3a0a447fed3f272fa2179ce",
-        "timezone": -7,
-      },
-    }
-  `);
-
   expect(profile.locale).toBe('en_US');
   expect(profile.timezone).toBe(-7);
   expect(profile.gender).toBe('male');
-  expect(profile.rawData).toEqual(profileWithMoreFields);
+  expect(profile.data).toEqual(profileWithMoreFields);
 
   expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
   expect(bot.dispatchAPICall.mock.calls[0].args).toMatchInlineSnapshot(`
