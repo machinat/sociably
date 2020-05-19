@@ -16,6 +16,10 @@ type StorageObj = {|
 
 const readData = async (fd: number): Promise<StorageObj> => {
   const content = await thenifiedly.call(fs.readFile, fd, 'utf8');
+  if (content === '') {
+    return ({}: any);
+  }
+
   return JSON.parse(content);
 };
 
