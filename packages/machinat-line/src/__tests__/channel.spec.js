@@ -1,3 +1,4 @@
+import LineUser from '../user';
 import LineChannel from '../channel';
 
 test('utob channel', () => {
@@ -106,4 +107,12 @@ describe('LineChannel.fromMessagingSource()', () => {
       )
     );
   });
+});
+
+test('LineChannel.fromUser()', () => {
+  const user = new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_');
+
+  expect(LineChannel.fromUser(user)).toEqual(
+    new LineChannel('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
+  );
 });

@@ -82,7 +82,7 @@ const handleWebhook = (
         botChannelId,
         source
       );
-      const user = new LineUser(providerId, source.userId);
+      const user = new LineUser(providerId, botChannelId, source.userId);
       const event = createEvent(rawEvent);
 
       issuingEvents.push(

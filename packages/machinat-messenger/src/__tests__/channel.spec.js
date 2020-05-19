@@ -1,3 +1,4 @@
+import MessengerUser from '../user';
 import MessengerChannel from '../channel';
 
 test('from id', () => {
@@ -165,4 +166,12 @@ describe('.fromExtensionContext(pageId, ctx)', () => {
     expect(channel.target).toEqual(null);
     expect(channel.sendable).toBe(false);
   });
+});
+
+test('MessengerChannel.fromUser()', () => {
+  const user = new MessengerUser('_PAGE_ID_', '_USER_ID_');
+
+  expect(MessengerChannel.fromUser(user)).toEqual(
+    new MessengerChannel('_PAGE_ID_', { id: '_USER_ID_' }, 'USER_TO_PAGE')
+  );
 });

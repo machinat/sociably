@@ -19,6 +19,8 @@ import type {
 } from './types';
 
 export * from './components';
+export { default as LineChannel } from './channel';
+export { default as LineUser } from './user';
 
 const requestRoutingFactory = factory<HTTPRequestRouting>({
   lifetime: 'transient',

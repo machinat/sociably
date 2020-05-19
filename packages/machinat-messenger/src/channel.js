@@ -2,6 +2,7 @@
 import crypto from 'crypto';
 import type { MachinatChannel } from '@machinat/core/types';
 import { MESSENGER } from './constant';
+import type MessengerUser from './user';
 import type {
   MessengerTarget,
   ExtensionContext,
@@ -17,6 +18,10 @@ class MessengerChannel implements MachinatChannel {
 
   static fromExtensionContext(ctx: ExtensionContext) {
     return new MessengerChannel(ctx.page_id, { id: ctx.tid }, ctx.thread_type);
+  }
+
+  static fromUser(user: MessengerUser) {
+    return new MessengerChannel(user.pageId, { id: user.id });
   }
 
   constructor(
@@ -63,6 +68,7 @@ class MessengerChannel implements MachinatChannel {
       target.user_ref ||
       target.post_id ||
       target.comment_id ||
+      // hash phone_number for personal data concern
       (target.phone_number
         ? crypto.createHash('sha1').update(target.phone_number).digest('base64')
         : '')

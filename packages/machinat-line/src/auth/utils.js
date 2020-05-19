@@ -28,31 +28,16 @@ export const refineLIFFContextData = (
   } else {
     authorizedChannel =
       contextType === 'utou'
-        ? new LineChannel(
-            providerId,
-            botChannelId || '*',
-            'utou',
-            (utouId: any)
-          )
+        ? new LineChannel(providerId, botChannelId, 'utou', (utouId: any))
         : contextType === 'room'
-        ? new LineChannel(
-            providerId,
-            botChannelId || '*',
-            'room',
-            (roomId: any)
-          )
+        ? new LineChannel(providerId, botChannelId, 'room', (roomId: any))
         : contextType === 'group'
-        ? new LineChannel(
-            providerId,
-            botChannelId || '*',
-            'group',
-            (groupId: any)
-          )
+        ? new LineChannel(providerId, botChannelId, 'group', (groupId: any))
         : null;
   }
 
   return {
-    user: new LineUser(providerId, userId),
+    user: new LineUser(providerId, botChannelId, userId),
     authorizedChannel,
   };
 };

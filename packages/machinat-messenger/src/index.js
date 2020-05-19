@@ -21,6 +21,8 @@ import type {
 } from './types';
 
 export * from './components';
+export { default as MessengerChannel } from './channel';
+export { default as MessengerUser } from './user';
 
 const requestRoutingFactory = factory<HTTPRequestRouting>({
   lifetime: 'transient',

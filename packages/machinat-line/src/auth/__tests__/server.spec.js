@@ -287,7 +287,7 @@ describe('#refineAuth(data)', () => {
         userId: '_USER_ID_',
       })
     ).resolves.toEqual({
-      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      user: new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_'),
       authorizedChannel: new LineChannel(
         '_PROVIDER_ID_',
         '_BOT_CHANNEL_ID_',
@@ -304,7 +304,7 @@ describe('#refineAuth(data)', () => {
         userId: '_USER_ID_',
       })
     ).resolves.toEqual({
-      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      user: new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_'),
       authorizedChannel: null,
     });
   });
@@ -326,7 +326,7 @@ describe('#refineAuth(data)', () => {
         userId: '_USER_ID_',
       })
     ).resolves.toEqual({
-      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      user: new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_'),
       authorizedChannel: new LineChannel(
         '_PROVIDER_ID_',
         '_BOT_CHANNEL_ID_',

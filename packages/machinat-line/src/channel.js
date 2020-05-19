@@ -1,6 +1,7 @@
 // @flow
 import type { MachinatChannel } from '@machinat/core/types';
 import { LINE } from './constant';
+import type LineUser from './user';
 import type { LineSource } from './types';
 
 type LineChannelType = 'room' | 'group' | 'utou' | 'utob';
@@ -26,6 +27,10 @@ class LineChannel implements MachinatChannel {
       default:
         throw new Error(`unknown source type "${source.type}"`);
     }
+  }
+
+  static fromUser(user: LineUser) {
+    return new LineChannel(user.providerId, user.botChannelId, 'utob', user.id);
   }
 
   platform = LINE;

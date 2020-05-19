@@ -207,7 +207,9 @@ it('respond 200 and pop events received', async () => {
         'U4af4980629'
       )
     );
-    expect(user).toEqual(new LineUser('_PROVIDER_ID_', 'U4af4980629'));
+    expect(user).toEqual(
+      new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'U4af4980629')
+    );
 
     expect(metadata).toEqual({
       source: 'webhook',
