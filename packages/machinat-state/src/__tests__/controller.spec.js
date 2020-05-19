@@ -208,7 +208,7 @@ test('user state', async () => {
 test('named state', async () => {
   const manager = new StateController(repository);
 
-  const state = manager.namedState('_HELLO_STATE_');
+  const state = manager.globalState('_HELLO_STATE_');
 
   // get
   await expect(state.get('foo_status')).resolves.toBe(null);

@@ -59,7 +59,7 @@ class StateController implements StateControllerI {
     return new StateAccessor(this.repository, `user:${user.uid}`);
   }
 
-  namedState(name: string): StateAccessor {
+  globalState(name: string): StateAccessor {
     return new StateAccessor(this.repository, name);
   }
 }

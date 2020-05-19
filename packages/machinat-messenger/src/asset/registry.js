@@ -26,14 +26,14 @@ class MessengerAssetsRegistry {
 
   async getAssetId(resource: string, tag: string): Promise<void | string> {
     const existed = await this._stateController
-      .namedState(this._makeResourceToken(resource))
+      .globalState(this._makeResourceToken(resource))
       .get(tag);
     return existed || undefined;
   }
 
   async setAssetId(resource: string, tag: string, id: string): Promise<void> {
     await this._stateController
-      .namedState(this._makeResourceToken(resource))
+      .globalState(this._makeResourceToken(resource))
       .set<string>(tag, (existed) => {
         if (existed) {
           throw new Error(`${resource} [ ${tag} ] already exist`);
@@ -44,13 +44,13 @@ class MessengerAssetsRegistry {
 
   getAllAssets(resource: string): Promise<null | Map<string, string>> {
     return this._stateController
-      .namedState(this._makeResourceToken(resource))
+      .globalState(this._makeResourceToken(resource))
       .getAll();
   }
 
   async removeAssetId(resource: string, tag: string): Promise<void> {
     const isDeleted = await this._stateController
-      .namedState(this._makeResourceToken(resource))
+      .globalState(this._makeResourceToken(resource))
       .delete(tag);
 
     if (!isDeleted) {

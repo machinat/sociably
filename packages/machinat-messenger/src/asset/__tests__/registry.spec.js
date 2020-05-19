@@ -11,7 +11,7 @@ const state = moxy({
 });
 
 const stateManager = moxy({
-  namedState() {
+  globalState() {
     return state;
   },
 });
@@ -39,8 +39,8 @@ test('get asset id', async () => {
   );
   await expect(registry.getPersonaId('my_persona')).resolves.toBe(undefined);
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
+  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets:_PAGE_ID_:foo",
@@ -67,7 +67,7 @@ test('get asset id', async () => {
     '_PERSONA_ID_'
   );
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(6);
+  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(6);
   expect(state.get.mock).toHaveBeenCalledTimes(6);
 });
 
@@ -78,8 +78,8 @@ test('set asset id', async () => {
   await registry.setAttachmentId('my_attachment', '_ATTACHMENT_ID_');
   await registry.setPersonaId('my_persona', '_PERSONA_ID_');
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
+  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets:_PAGE_ID_:foo",
@@ -126,8 +126,8 @@ test('get all assets', async () => {
   await expect(registry.getAllAttachments()).resolves.toBe(null);
   await expect(registry.getAllPersonas()).resolves.toBe(null);
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
+  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets:_PAGE_ID_:foo",
@@ -156,8 +156,8 @@ test('remove asset id', async () => {
   await registry.removeAttachmentId('my_attachment');
   await registry.removePersonaId('my_persona');
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
+  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets:_PAGE_ID_:foo",

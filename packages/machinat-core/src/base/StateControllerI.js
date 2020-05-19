@@ -20,7 +20,7 @@ class AbstractStateController {
     throw new TypeError('method called on abstract class');
   }
 
-  namedState(_name: string): StateAccessor {
+  globalState(_name: string): StateAccessor {
     throw new TypeError('method called on abstract class');
   }
 }

@@ -10,7 +10,7 @@ const state = moxy({
 });
 
 const stateManager = moxy({
-  namedState() {
+  globalState() {
     return state;
   },
 });
@@ -33,8 +33,8 @@ test('get asset id', async () => {
   await expect(registry.getLIFFAppId('my_liff_app')).resolves.toBe(undefined);
   await expect(registry.getRichMenuId('my_rich_menu')).resolves.toBe(undefined);
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
+  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "line.assets:_LINE_CHANNEL_ID_:foo",
@@ -59,7 +59,7 @@ test('get asset id', async () => {
     '_RICH_MENU_ID_'
   );
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(6);
+  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(6);
   expect(state.get.mock).toHaveBeenCalledTimes(6);
 });
 
@@ -70,8 +70,8 @@ test('set asset id', async () => {
   await registry.setLIFFAppId('my_liff_app', '_LIFF_APP_ID_');
   await registry.setRichMenuId('my_rich_menu', '_RICH_MENU_ID_');
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
+  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "line.assets:_LINE_CHANNEL_ID_:foo",
@@ -115,8 +115,8 @@ test('get all assets', async () => {
   await expect(registry.getAllLIFFApps()).resolves.toBe(null);
   await expect(registry.getAllRichMenus()).resolves.toBe(null);
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
+  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "line.assets:_LINE_CHANNEL_ID_:foo",
@@ -137,7 +137,7 @@ test('get all assets', async () => {
   await expect(registry.getAllLIFFApps()).resolves.toEqual(resources);
   await expect(registry.getAllRichMenus()).resolves.toEqual(resources);
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(6);
+  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(6);
   expect(state.getAll.mock).toHaveBeenCalledTimes(6);
 });
 
@@ -148,8 +148,8 @@ test('remove asset id', async () => {
   await registry.removeLIFFAppId('my_liff_app');
   await registry.removeRichMenuId('my_rich_menu');
 
-  expect(stateManager.namedState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.namedState.mock.calls.map((call) => call.args[0]))
+  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "line.assets:_LINE_CHANNEL_ID_:foo",
