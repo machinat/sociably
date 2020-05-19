@@ -238,13 +238,13 @@ class AuthServerController {
       };
     }
 
-    const { authorizedChannel, user } = result;
+    const { sourceChannel, user } = result;
     return {
       success: true,
       token,
       auth: {
         platform,
-        authorizedChannel,
+        sourceChannel,
         user,
         data,
         loginAt: new Date(iat * 1000),

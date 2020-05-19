@@ -14,6 +14,6 @@ export const refineExtensionContext = (
 
   return {
     user: new MessengerUser(ctx.page_id, ctx.psid),
-    authorizedChannel: MessengerChannel.fromExtensionContext(ctx),
+    sourceChannel: MessengerChannel.fromExtensionContext(ctx),
   };
 };

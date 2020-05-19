@@ -44,7 +44,7 @@ export type ErrorTokenPayload = {|
 export type AuthContext<AuthData> = {|
   platform: string,
   user: MachinatUser,
-  authorizedChannel: null | MachinatChannel,
+  sourceChannel: null | MachinatChannel,
   loginAt: Date,
   expireAt: Date,
   data: AuthData,
@@ -52,7 +52,7 @@ export type AuthContext<AuthData> = {|
 
 export type AuthorizerRefineResult = {|
   user: MachinatUser,
-  authorizedChannel: null | MachinatChannel,
+  sourceChannel: null | MachinatChannel,
 |};
 
 type ErrorResult = {|

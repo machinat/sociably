@@ -59,7 +59,7 @@ const fooAuthorizer = moxy({
     return { success: true, data: { foo: 'data' }, refreshable: true };
   },
   async refineAuth() {
-    return { user: { john: 'doe' }, authorizedChannel: { uid: 'foo.channel' } };
+    return { user: { john: 'doe' }, sourceChannel: { uid: 'foo.channel' } };
   },
 });
 
@@ -73,7 +73,7 @@ const barAuhtorizer = moxy({
     return { success: false, code: 400, reason: 'bar' };
   },
   async refineAuth() {
-    return { user: { jojo: 'doe' }, authorizedChannel: { uid: 'bar.channel' } };
+    return { user: { jojo: 'doe' }, sourceChannel: { uid: 'bar.channel' } };
   },
 });
 
@@ -1748,15 +1748,15 @@ describe('#verifyAuth(req)', () => {
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "auth": Object {
-                "authorizedChannel": Object {
-                  "uid": "foo.channel",
-                },
                 "data": Object {
                   "foo": "data",
                 },
                 "expireAt": 2019-10-02T09:53:19.000Z,
                 "loginAt": 2019-10-02T06:50:01.000Z,
                 "platform": "foo",
+                "sourceChannel": Object {
+                  "uid": "foo.channel",
+                },
                 "user": Object {
                   "john": "doe",
                 },
@@ -1785,15 +1785,15 @@ describe('#verifyAuth(req)', () => {
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "auth": Object {
-                "authorizedChannel": Object {
-                  "uid": "foo.channel",
-                },
                 "data": Object {
                   "foo": "data",
                 },
                 "expireAt": 2019-10-02T09:53:19.000Z,
                 "loginAt": 2019-10-02T06:50:01.000Z,
                 "platform": "foo",
+                "sourceChannel": Object {
+                  "uid": "foo.channel",
+                },
                 "user": Object {
                   "john": "doe",
                 },

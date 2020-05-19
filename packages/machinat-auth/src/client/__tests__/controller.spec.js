@@ -52,7 +52,7 @@ const fooProvider = moxy({
     };
   },
   async refineAuth() {
-    return { user: { id: 'foo' }, authorizedChannel: { id: 'foo' } };
+    return { user: { id: 'foo' }, sourceChannel: { id: 'foo' } };
   },
 });
 
@@ -70,7 +70,7 @@ const barProvider = moxy({
     };
   },
   async refineAuth() {
-    return { user: { id: 'bar' }, authorizedChannel: { id: 'bar' } };
+    return { user: { id: 'bar' }, sourceChannel: { id: 'bar' } };
   },
 });
 
@@ -375,7 +375,7 @@ describe('#auth()', () => {
   const expectedContext = {
     platform: 'foo',
     user: { id: 'foo' },
-    authorizedChannel: { id: 'foo' },
+    sourceChannel: { id: 'foo' },
     data: { foo: 'data' },
     loginAt: new Date(authPayload.iat * 1000),
     expireAt: new Date(authPayload.exp * 1000),
@@ -643,7 +643,7 @@ describe('auth refreshment and expiry', () => {
         context: {
           platform: 'foo',
           user: { id: 'foo' },
-          authorizedChannel: { id: 'foo' },
+          sourceChannel: { id: 'foo' },
           data: { foo: 'data' },
           loginAt: new Date(newPayload.iat * 1000),
           expireAt: new Date(newPayload.exp * 1000),
@@ -744,7 +744,7 @@ describe('auth refreshment and expiry', () => {
         context: {
           platform: 'foo',
           user: { id: 'foo' },
-          authorizedChannel: { id: 'foo' },
+          sourceChannel: { id: 'foo' },
           data: { foo: 'data' },
           loginAt: new Date(newPayload.iat * 1000),
           expireAt: new Date(newPayload.exp * 1000),

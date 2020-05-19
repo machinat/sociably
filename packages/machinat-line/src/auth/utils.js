@@ -12,21 +12,16 @@ export const refineLIFFContextData = (
 ): null | AuthorizerRefineResult => {
   const { contextType, userId, utouId, groupId, roomId, fromBotChannel } = data;
 
-  let authorizedChannel;
+  let sourceChannel;
 
   if (fromBotChannel) {
     if (fromBotChannel !== botChannelId || contextType !== 'utou') {
       return null;
     }
 
-    authorizedChannel = new LineChannel(
-      providerId,
-      botChannelId,
-      'utob',
-      userId
-    );
+    sourceChannel = new LineChannel(providerId, botChannelId, 'utob', userId);
   } else {
-    authorizedChannel =
+    sourceChannel =
       contextType === 'utou'
         ? new LineChannel(providerId, botChannelId, 'utou', (utouId: any))
         : contextType === 'room'
@@ -38,6 +33,6 @@ export const refineLIFFContextData = (
 
   return {
     user: new LineUser(providerId, botChannelId, userId),
-    authorizedChannel,
+    sourceChannel,
   };
 };

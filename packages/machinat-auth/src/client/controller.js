@@ -329,12 +329,12 @@ class AuthClientController extends EventEmitter {
     }
 
     const { iat, exp, data } = payload;
-    const { authorizedChannel, user } = refinement;
+    const { sourceChannel, user } = refinement;
     const context = {
       platform: provider.platform,
       loginAt: new Date(iat * 1000),
       expireAt: new Date(exp * 1000),
-      authorizedChannel,
+      sourceChannel,
       user,
       data,
     };
@@ -445,12 +445,12 @@ class AuthClientController extends EventEmitter {
     }
 
     const { iat, exp, data } = payload;
-    const { authorizedChannel, user } = refinement;
+    const { sourceChannel, user } = refinement;
     const context = {
       platform: provider.platform,
       loginAt: new Date(iat * 1000),
       expireAt: new Date(exp * 1000),
-      authorizedChannel,
+      sourceChannel,
       user,
       data,
     };
