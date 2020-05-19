@@ -27,12 +27,13 @@ export default class ServiceScope {
   constructor(
     platform: void | string,
     maker: ServiceMaker,
-    singletonCache: ServiceCache
+    singletonCache: ServiceCache,
+    scopedCache?: ServiceCache
   ) {
     this.platform = platform;
     this.maker = maker;
     this.singletonCache = singletonCache;
-    this.scopeCache = new Map();
+    this.scopeCache = scopedCache || new Map();
   }
 
   useServices(
@@ -71,5 +72,14 @@ export default class ServiceScope {
 
     const args = this.useServices(container.$$deps, provisions);
     return container(...args);
+  }
+
+  duplicate(platform: void | string) {
+    return new ServiceScope(
+      platform,
+      this.maker,
+      this.singletonCache,
+      new Map(this.scopeCache)
+    );
   }
 }
