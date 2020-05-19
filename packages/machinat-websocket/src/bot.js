@@ -118,7 +118,7 @@ class WebSocketBot
 
   send(
     channel: WebSocketChannel,
-    events: EventValue[]
+    ...events: EventValue[]
   ): Promise<WebSocketDispatchResponse> {
     return this.engine.dispatchJobs(channel, [
       { target: channel, events, whitelist: null, blacklist: null },
@@ -134,7 +134,7 @@ class WebSocketBot
 
   sendUser(
     user: MachinatUser,
-    events: EventValue[]
+    ...events: EventValue[]
   ): Promise<WebSocketDispatchResponse> {
     const channel = new UserChannel(user);
     return this.engine.dispatchJobs(channel, [
@@ -151,7 +151,7 @@ class WebSocketBot
 
   sendTopic(
     topic: string,
-    events: EventValue[]
+    ...events: EventValue[]
   ): Promise<WebSocketDispatchResponse> {
     const channel = new TopicChannel(topic);
     return this.engine.dispatchJobs(channel, [

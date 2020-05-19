@@ -215,6 +215,35 @@ describe('#render(channel, events)', () => {
   });
 });
 
+test('#send()', async () => {
+  const bot = new WebSocketBot(transmitter, initScope, dispatchWrapper);
+  await bot.start();
+
+  const connection = new ConnectionChannel('#server', `#conn`);
+  transmitter.dispatch.mock.fake(async () => [connection]);
+
+  const events = [
+    { type: 'foo' },
+    { type: 'bar', subtype: 'baz', payload: 'beer' },
+  ];
+
+  const expectedJob = {
+    target: connection,
+    events,
+    whitelist: null,
+    blacklist: null,
+  };
+
+  await expect(bot.send(connection, ...events)).resolves.toEqual({
+    jobs: [expectedJob],
+    results: [{ connections: [connection] }],
+    tasks: [{ type: 'dispatch', payload: [expectedJob] }],
+  });
+
+  expect(transmitter.dispatch.mock).toHaveBeenCalledTimes(1);
+  expect(transmitter.dispatch.mock).toHaveBeenCalledWith(expectedJob);
+});
+
 test('#sendUser()', async () => {
   const bot = new WebSocketBot(transmitter, initScope, dispatchWrapper);
   await bot.start();
@@ -237,7 +266,7 @@ test('#sendUser()', async () => {
     blacklist: null,
   };
 
-  await expect(bot.sendUser(user, events)).resolves.toEqual({
+  await expect(bot.sendUser(user, ...events)).resolves.toEqual({
     jobs: [expectedJob],
     results: [{ connections }],
     tasks: [{ type: 'dispatch', payload: [expectedJob] }],
@@ -269,7 +298,7 @@ test('#sendTopic()', async () => {
     blacklist: null,
   };
 
-  await expect(bot.sendTopic(topic, events)).resolves.toEqual({
+  await expect(bot.sendTopic(topic, ...events)).resolves.toEqual({
     jobs: [expectedJob],
     results: [{ connections }],
     tasks: [{ type: 'dispatch', payload: [expectedJob] }],
