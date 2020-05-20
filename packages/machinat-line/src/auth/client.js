@@ -14,10 +14,11 @@ type ClientAuthorizerOptions = {
   botChannelId: string,
   liffId: string,
   isSDKLoaded?: boolean,
+  fromBotChannel?: boolean,
 };
 
 const LOGIN_TIMEOUT = 10000;
-const DEFAULT_BOT_CHANNEL_LABEL_KEY = 'onLineBotChannel';
+const BOT_CHANNEL_LABEL_QUERY_KEY = 'fromBotChannel';
 
 const delay = (ms: number) =>
   new Promise((resolve) => {
@@ -31,7 +32,7 @@ class LineClientAuthorizer
   botChannelId: string;
 
   isSDKLoaded: boolean;
-  isOnBotChannel: boolean;
+  isFromBotChannel: boolean;
 
   platform = LINE;
   shouldResign = true;
@@ -41,6 +42,7 @@ class LineClientAuthorizer
     botChannelId,
     liffId,
     isSDKLoaded = false,
+    fromBotChannel,
   }: ClientAuthorizerOptions = {}) {
     invariant(providerId, 'options.providerId must not be empty');
     invariant(botChannelId, 'options.botChannelId must not be empty');
@@ -51,9 +53,12 @@ class LineClientAuthorizer
     this.botChannelId = botChannelId;
     this.isSDKLoaded = isSDKLoaded;
 
-    this.isOnBotChannel = !!new URLSearchParams(location.search).get(
-      DEFAULT_BOT_CHANNEL_LABEL_KEY
-    );
+    this.isFromBotChannel =
+      typeof fromBotChannel === 'boolean'
+        ? fromBotChannel
+        : new URLSearchParams(location.search).get(
+            BOT_CHANNEL_LABEL_QUERY_KEY
+          ) === 'true';
   }
 
   async init() {
@@ -106,7 +111,7 @@ class LineClientAuthorizer
           os: liff.getOS(),
           language: liff.getLanguage(),
           fromBotChannel:
-            contextType === 'utou' && this.isOnBotChannel
+            contextType === 'utou' && this.isFromBotChannel
               ? this.botChannelId
               : undefined,
           contextType,

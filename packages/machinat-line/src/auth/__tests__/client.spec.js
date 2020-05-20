@@ -203,10 +203,37 @@ describe('#fetchCredential()', () => {
     jest.useRealTimers();
   });
 
-  it('set fromBotChannel if "onLineBotChannel" in query param is truthy', async () => {
+  it('set fromBotChannel options.fromBotChannel is true', async () => {
+    const authorizer = new ClientAuthorizer({
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
+      liffId: '_LIFF_ID_',
+      isSDKLoaded: true,
+      fromBotChannel: true,
+    });
+
+    await expect(authorizer.fetchCredential()).resolves.toEqual({
+      success: true,
+      credential: {
+        accessToken: '_ACCESS_TOKEN_',
+        data: {
+          fromBotChannel: '_BOT_CHANNEL_ID_',
+          os: 'ios',
+          language: 'zh-TW',
+          contextType: 'utou',
+          utouId: '_UTOU_ID_',
+          userId: '_USER_ID_',
+        },
+      },
+    });
+
+    expect(global.liff.login.mock).not.toHaveBeenCalled();
+  });
+
+  it('set fromBotChannel if "fromBotChannel" in query param is truthy', async () => {
     global.location.mock
       .getter('search')
-      .fakeReturnValue('?onLineBotChannel=true');
+      .fakeReturnValue('?fromBotChannel=true');
 
     const authorizer = new ClientAuthorizer({
       providerId: '_PROVIDER_ID_',
