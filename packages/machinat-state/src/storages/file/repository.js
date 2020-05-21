@@ -3,7 +3,7 @@ import fs from 'fs';
 import thenifiedly from 'thenifiedly';
 import { provider } from '@machinat/core/service';
 import typeof { StateRepositoryI } from '../../interface';
-import { FILE_STATE_CONFIGS_I } from './interface';
+import { FILE_STATE_CONFIGS_I, FileStateSerializerI } from './interface';
 import type { FileRepositoryConfigs } from './types';
 
 const { O_RDONLY, O_RDWR, O_CREAT } = fs.constants;
@@ -14,36 +14,26 @@ type StorageObj = {|
   |},
 |};
 
-const readData = async (fd: number): Promise<StorageObj> => {
-  const content = await thenifiedly.call(fs.readFile, fd, 'utf8');
-  if (content === '') {
-    return ({}: any);
-  }
-
-  return JSON.parse(content);
-};
-
-const writeData = async (fd: number, data: StorageObj): Promise<void> => {
-  const content = JSON.stringify(data);
-  await thenifiedly.call(fs.ftruncate, fd, 1);
-  await thenifiedly.call(fs.write, fd, content, 0);
-};
-
 const objectHasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
 class FileRepository implements StateRepositoryI {
   path: string;
+  _serializer: FileStateSerializerI;
 
-  constructor(options: FileRepositoryConfigs) {
+  constructor(
+    options: FileRepositoryConfigs,
+    serializer?: FileStateSerializerI = JSON
+  ) {
     this.path = options.path;
+    this._serializer = serializer;
   }
 
   async get(name: string, key: string) {
     const fd = await this._open(false);
 
     try {
-      const data = await readData(fd);
+      const data = await this._readData(fd);
       return data[name]?.[key];
     } finally {
       await thenifiedly.call(fs.close, fd);
@@ -54,7 +44,7 @@ class FileRepository implements StateRepositoryI {
     const fd = await this._open(true);
 
     try {
-      const data = await readData(fd);
+      const data = await this._readData(fd);
 
       let valueExisted = false;
       if (objectHasOwnProperty(data, name)) {
@@ -64,7 +54,7 @@ class FileRepository implements StateRepositoryI {
         data[name] = { [key]: value };
       }
 
-      await writeData(fd, data);
+      await this._writeData(fd, data);
       return valueExisted;
     } finally {
       await thenifiedly.call(fs.close, fd);
@@ -75,7 +65,7 @@ class FileRepository implements StateRepositoryI {
     const fd = await this._open(false);
 
     try {
-      const data = await readData(fd);
+      const data = await this._readData(fd);
       if (!objectHasOwnProperty(data, name)) {
         return null;
       }
@@ -90,7 +80,7 @@ class FileRepository implements StateRepositoryI {
     const fd = await this._open(true);
 
     try {
-      const data = await readData(fd);
+      const data = await this._readData(fd);
 
       if (
         objectHasOwnProperty(data, name) &&
@@ -102,7 +92,7 @@ class FileRepository implements StateRepositoryI {
           delete data[name];
         }
 
-        await writeData(fd, data);
+        await this._writeData(fd, data);
         return true;
       }
 
@@ -116,11 +106,11 @@ class FileRepository implements StateRepositoryI {
     const fd = await this._open(true);
 
     try {
-      const data = await readData(fd);
+      const data = await this._readData(fd);
 
       if (objectHasOwnProperty(data, name)) {
         delete data[name];
-        await writeData(fd, data);
+        await this._writeData(fd, data);
       }
     } finally {
       await thenifiedly.call(fs.close, fd);
@@ -134,9 +124,27 @@ class FileRepository implements StateRepositoryI {
       (toWrite ? O_RDWR : O_RDONLY) | O_CREAT
     );
   }
+
+  async _readData(fd: number): Promise<StorageObj> {
+    const content = await thenifiedly.call(fs.readFile, fd, 'utf8');
+    if (content === '') {
+      return ({}: any);
+    }
+
+    return this._serializer.parse(content);
+  }
+
+  async _writeData(fd: number, data: StorageObj): Promise<void> {
+    const content = this._serializer.stringify(data);
+    await thenifiedly.call(fs.ftruncate, fd, 1);
+    await thenifiedly.call(fs.write, fd, content, 0);
+  }
 }
 
 export default provider<FileRepository>({
   lifetime: 'singleton',
-  deps: [FILE_STATE_CONFIGS_I],
+  deps: [
+    FILE_STATE_CONFIGS_I,
+    { require: FileStateSerializerI, optional: true },
+  ],
 })(FileRepository);

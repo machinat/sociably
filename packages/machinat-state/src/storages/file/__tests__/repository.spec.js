@@ -1,4 +1,5 @@
 import fs from 'fs';
+import moxy from 'moxy';
 import { tmpNameSync } from 'tmp';
 import FileRepository from '../repository';
 
@@ -115,11 +116,11 @@ describe('#set()', () => {
     fs.writeFileSync(
       tmpPath,
       `{
-       "my_resource": {
-         "key1": "foo",
-         "key2": 123
-       }
-     }`
+         "my_resource": {
+           "key1": "foo",
+           "key2": 123
+         }
+       }`
     );
 
     const repo = new FileRepository({ path: tmpPath });
@@ -190,14 +191,14 @@ describe('#delete()', () => {
     fs.writeFileSync(
       tmpPath,
       `{
-       "my_resource": {
-         "key1": "foo",
-         "key2": 123
-       },
-       "another_resource": {
-         "key1": "bar"
-       }
-     }`
+         "my_resource": {
+           "key1": "foo",
+           "key2": 123
+         },
+         "another_resource": {
+           "key1": "bar"
+         }
+       }`
     );
 
     const repo = new FileRepository({ path: tmpPath });
@@ -240,14 +241,14 @@ describe('#clear()', () => {
     fs.writeFileSync(
       tmpPath,
       `{
-       "my_resource": {
-         "key1": "foo",
-         "key2": 123
-       },
-       "another_resource": {
-         "key1": "bar"
-       }
-     }`
+         "my_resource": {
+           "key1": "foo",
+           "key2": 123
+         },
+         "another_resource": {
+           "key1": "bar"
+         }
+       }`
     );
 
     const repo = new FileRepository({ path: tmpPath });
@@ -271,4 +272,33 @@ describe('#clear()', () => {
 
     await expect(repo.clear('my_resource')).resolves.toBe(undefined);
   });
+});
+
+test('custom serielizer', async () => {
+  const serializer = moxy({
+    stringify() {
+      return '_MAGICALLY_ENCODED_DATA_';
+    },
+    parse() {
+      return {
+        my_resource: {
+          from: 'MAGIC',
+        },
+      };
+    },
+  });
+
+  const tmpPath = tmpNameSync();
+  const repo = new FileRepository({ path: tmpPath }, serializer);
+
+  await expect(repo.set('my_resource', 'is', 'magical')).resolves.toBe(false);
+  expect(fs.readFileSync(tmpPath, 'utf8')).toBe('_MAGICALLY_ENCODED_DATA_');
+  expect(serializer.stringify.mock).toHaveBeenCalledWith({
+    my_resource: { is: 'magical' },
+  });
+
+  await expect(repo.get('my_resource', 'from')).resolves.toBe('MAGIC');
+  expect(serializer.parse.mock).toHaveBeenCalledWith(
+    '_MAGICALLY_ENCODED_DATA_'
+  );
 });

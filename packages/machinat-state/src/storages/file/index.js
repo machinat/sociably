@@ -4,12 +4,13 @@ import Base from '@machinat/core/base';
 import StateController from '../../controller';
 import { StateRepositoryI } from '../../interface';
 import FileRepository from './repository';
-import { FILE_STATE_CONFIGS_I } from './interface';
+import { FILE_STATE_CONFIGS_I, FileStateSerializerI } from './interface';
 import type { FileRepositoryConfigs } from './types';
 
 const FileState = {
   Repository: FileRepository,
   CONFIGS_I: FILE_STATE_CONFIGS_I,
+  SerializerI: FileStateSerializerI,
 
   initModule: (configs: FileRepositoryConfigs): ServiceModule => ({
     provisions: [

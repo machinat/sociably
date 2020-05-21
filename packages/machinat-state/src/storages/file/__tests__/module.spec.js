@@ -13,6 +13,15 @@ test('export interfaces', () => {
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
+
+  const { $$multi, $$name, $$typeof } = FileState.SerializerI;
+  expect({ $$multi, $$name, $$typeof }).toMatchInlineSnapshot(`
+    Object {
+      "$$multi": false,
+      "$$name": "FileStateSerializer",
+      "$$typeof": Symbol(machinat.services.interface),
+    }
+  `);
 });
 
 test('provisions', async () => {
