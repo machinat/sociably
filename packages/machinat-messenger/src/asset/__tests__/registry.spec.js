@@ -43,9 +43,9 @@ test('get asset id', async () => {
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "messenger.assets:_PAGE_ID_:foo",
-      "messenger.assets:_PAGE_ID_:attachment",
-      "messenger.assets:_PAGE_ID_:persona",
+      "messenger.assets._PAGE_ID_.foo",
+      "messenger.assets._PAGE_ID_.attachment",
+      "messenger.assets._PAGE_ID_.persona",
     ]
   `);
 
@@ -82,9 +82,9 @@ test('set asset id', async () => {
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "messenger.assets:_PAGE_ID_:foo",
-      "messenger.assets:_PAGE_ID_:attachment",
-      "messenger.assets:_PAGE_ID_:persona",
+      "messenger.assets._PAGE_ID_.foo",
+      "messenger.assets._PAGE_ID_.attachment",
+      "messenger.assets._PAGE_ID_.persona",
     ]
   `);
 
@@ -130,9 +130,9 @@ test('get all assets', async () => {
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "messenger.assets:_PAGE_ID_:foo",
-      "messenger.assets:_PAGE_ID_:attachment",
-      "messenger.assets:_PAGE_ID_:persona",
+      "messenger.assets._PAGE_ID_.foo",
+      "messenger.assets._PAGE_ID_.attachment",
+      "messenger.assets._PAGE_ID_.persona",
     ]
   `);
 
@@ -160,9 +160,9 @@ test('remove asset id', async () => {
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "messenger.assets:_PAGE_ID_:foo",
-      "messenger.assets:_PAGE_ID_:attachment",
-      "messenger.assets:_PAGE_ID_:persona",
+      "messenger.assets._PAGE_ID_.foo",
+      "messenger.assets._PAGE_ID_.attachment",
+      "messenger.assets._PAGE_ID_.persona",
     ]
   `);
 

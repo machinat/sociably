@@ -16,7 +16,7 @@ const stateManager = moxy({
 });
 
 const bot = moxy({
-  channelId: '_LINE_CHANNEL_ID_',
+  botChannelId: '_LINE_CHANNEL_ID_',
   dispatchAPICall() {},
 });
 
@@ -37,9 +37,9 @@ test('get asset id', async () => {
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "line.assets:_LINE_CHANNEL_ID_:foo",
-      "line.assets:_LINE_CHANNEL_ID_:liff",
-      "line.assets:_LINE_CHANNEL_ID_:rich_menu",
+      "line.assets._LINE_CHANNEL_ID_.foo",
+      "line.assets._LINE_CHANNEL_ID_.liff",
+      "line.assets._LINE_CHANNEL_ID_.rich_menu",
     ]
   `);
 
@@ -74,9 +74,9 @@ test('set asset id', async () => {
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "line.assets:_LINE_CHANNEL_ID_:foo",
-      "line.assets:_LINE_CHANNEL_ID_:liff",
-      "line.assets:_LINE_CHANNEL_ID_:rich_menu",
+      "line.assets._LINE_CHANNEL_ID_.foo",
+      "line.assets._LINE_CHANNEL_ID_.liff",
+      "line.assets._LINE_CHANNEL_ID_.rich_menu",
     ]
   `);
 
@@ -119,9 +119,9 @@ test('get all assets', async () => {
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "line.assets:_LINE_CHANNEL_ID_:foo",
-      "line.assets:_LINE_CHANNEL_ID_:liff",
-      "line.assets:_LINE_CHANNEL_ID_:rich_menu",
+      "line.assets._LINE_CHANNEL_ID_.foo",
+      "line.assets._LINE_CHANNEL_ID_.liff",
+      "line.assets._LINE_CHANNEL_ID_.rich_menu",
     ]
   `);
 
@@ -152,9 +152,9 @@ test('remove asset id', async () => {
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "line.assets:_LINE_CHANNEL_ID_:foo",
-      "line.assets:_LINE_CHANNEL_ID_:liff",
-      "line.assets:_LINE_CHANNEL_ID_:rich_menu",
+      "line.assets._LINE_CHANNEL_ID_.foo",
+      "line.assets._LINE_CHANNEL_ID_.liff",
+      "line.assets._LINE_CHANNEL_ID_.rich_menu",
     ]
   `);
 

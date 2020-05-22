@@ -21,22 +21,22 @@ class MessengerAssetsRegistry {
   }
 
   _makeResourceToken(resource: string) {
-    return `messenger.assets:${this.pageId}:${resource}`;
+    return `messenger.assets.${this.pageId}.${resource}`;
   }
 
-  async getAssetId(resource: string, tag: string): Promise<void | string> {
+  async getAssetId(resource: string, name: string): Promise<void | string> {
     const existed = await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .get(tag);
+      .get(name);
     return existed || undefined;
   }
 
-  async setAssetId(resource: string, tag: string, id: string): Promise<void> {
+  async setAssetId(resource: string, name: string, id: string): Promise<void> {
     await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .set<string>(tag, (existed) => {
+      .set<string>(name, (existed) => {
         if (existed) {
-          throw new Error(`${resource} [ ${tag} ] already exist`);
+          throw new Error(`${resource} [ ${name} ] already exist`);
         }
         return id;
       });
@@ -48,36 +48,36 @@ class MessengerAssetsRegistry {
       .getAll();
   }
 
-  async removeAssetId(resource: string, tag: string): Promise<void> {
+  async removeAssetId(resource: string, name: string): Promise<void> {
     const isDeleted = await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .delete(tag);
+      .delete(name);
 
     if (!isDeleted) {
-      throw new Error(`${resource} [ ${tag} ] not exist`);
+      throw new Error(`${resource} [ ${name} ] not exist`);
     }
   }
 
-  getAttachmentId(tag: string): Promise<void | string> {
-    return this.getAssetId(ATTACHMENT, tag);
+  getAttachmentId(name: string): Promise<void | string> {
+    return this.getAssetId(ATTACHMENT, name);
   }
 
-  setAttachmentId(tag: string, id: string) {
-    return this.setAssetId(ATTACHMENT, tag, id);
+  setAttachmentId(name: string, id: string) {
+    return this.setAssetId(ATTACHMENT, name, id);
   }
 
   getAllAttachments() {
     return this.getAllAssets(ATTACHMENT);
   }
 
-  removeAttachmentId(tag: string) {
-    return this.removeAssetId(ATTACHMENT, tag);
+  removeAttachmentId(name: string) {
+    return this.removeAssetId(ATTACHMENT, name);
   }
 
-  async renderAttachment(tag: string, node: MachinatNode): Promise<string> {
-    const existed = await this.getAttachmentId(tag);
+  async renderAttachment(name: string, node: MachinatNode): Promise<string> {
+    const existed = await this.getAttachmentId(name);
     if (existed !== undefined) {
-      throw new Error(`attachment [ ${tag} ] already exist`);
+      throw new Error(`attachment [ ${name} ] already exist`);
     }
 
     const response = await this.bot.renderAttachment(node);
@@ -86,30 +86,30 @@ class MessengerAssetsRegistry {
     }
 
     const { attachment_id: id } = response.results[0].body;
-    await this.setAssetId(ATTACHMENT, tag, id);
+    await this.setAssetId(ATTACHMENT, name, id);
     return id;
   }
 
-  getPersonaId(tag: string): Promise<void | string> {
-    return (this.getAssetId(PERSONA, tag): any);
+  getPersonaId(name: string): Promise<void | string> {
+    return (this.getAssetId(PERSONA, name): any);
   }
 
-  setPersonaId(tag: string, id: string) {
-    return this.setAssetId(PERSONA, tag, id);
+  setPersonaId(name: string, id: string) {
+    return this.setAssetId(PERSONA, name, id);
   }
 
   getAllPersonas() {
     return this.getAllAssets(PERSONA);
   }
 
-  removePersonaId(tag: string) {
-    return this.removeAssetId(PERSONA, tag);
+  removePersonaId(name: string) {
+    return this.removeAssetId(PERSONA, name);
   }
 
-  async createPersona(tag: string, body: Object): Promise<string> {
-    const existed = await this.getPersonaId(tag);
+  async createPersona(name: string, body: Object): Promise<string> {
+    const existed = await this.getPersonaId(name);
     if (existed !== undefined) {
-      throw new Error(`persona [ ${tag} ] already exist`);
+      throw new Error(`persona [ ${name} ] already exist`);
     }
 
     const response = await this.bot.dispatchAPICall(
@@ -119,14 +119,14 @@ class MessengerAssetsRegistry {
     );
     const { id } = response.results[0].body;
 
-    await this.setAssetId(PERSONA, tag, id);
+    await this.setAssetId(PERSONA, name, id);
     return id;
   }
 
-  async deletePersona(tag: string): Promise<string> {
-    const id = await this.getPersonaId(tag);
+  async deletePersona(name: string): Promise<string> {
+    const id = await this.getPersonaId(name);
     if (id === undefined) {
-      throw new Error(`persona [ ${tag} ] not exist`);
+      throw new Error(`persona [ ${name} ] not exist`);
     }
 
     await this.bot.dispatchAPICall('DELETE', id);

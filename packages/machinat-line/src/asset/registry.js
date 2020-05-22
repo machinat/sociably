@@ -8,34 +8,34 @@ const LIFF = 'liff';
 const RICH_MENU = 'rich_menu';
 
 class LineAssetsRegistry {
-  channelId: string;
+  botChannelId: string;
   _stateController: StateControllerI;
   _bot: LineBot;
 
   constructor(stateMaanger: StateControllerI, bot: LineBot) {
-    this.channelId = bot.channelId;
+    this.botChannelId = bot.botChannelId;
     this._stateController = stateMaanger;
     this._bot = bot;
   }
 
   _makeResourceToken(resource: string) {
-    return `line.assets:${this.channelId}:${resource}`;
+    return `line.assets.${this.botChannelId}.${resource}`;
   }
 
-  async getAssetId(resource: string, tag: string): Promise<void | string> {
+  async getAssetId(resource: string, name: string): Promise<void | string> {
     const existed = await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .get<string>(tag);
+      .get<string>(name);
 
     return existed || undefined;
   }
 
-  async setAssetId(resource: string, tag: string, id: string): Promise<void> {
+  async setAssetId(resource: string, name: string, id: string): Promise<void> {
     await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .set<string>(tag, (existed) => {
+      .set<string>(name, (existed) => {
         if (existed) {
-          throw new Error(`${resource} [ ${tag} ] already exist`);
+          throw new Error(`${resource} [ ${name} ] already exist`);
         }
         return id;
       });
@@ -47,71 +47,71 @@ class LineAssetsRegistry {
       .getAll();
   }
 
-  async removeAssetId(resource: string, tag: string): Promise<void> {
+  async removeAssetId(resource: string, name: string): Promise<void> {
     const isDeleted = await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .delete(tag);
+      .delete(name);
 
     if (!isDeleted) {
-      throw new Error(`${resource} [ ${tag} ] not exist`);
+      throw new Error(`${resource} [ ${name} ] not exist`);
     }
   }
 
-  getLIFFAppId(tag: string): Promise<void | string> {
-    return this.getAssetId(LIFF, tag);
+  getLIFFAppId(name: string): Promise<void | string> {
+    return this.getAssetId(LIFF, name);
   }
 
-  setLIFFAppId(tag: string, id: string) {
-    return this.setAssetId(LIFF, tag, id);
+  setLIFFAppId(name: string, id: string) {
+    return this.setAssetId(LIFF, name, id);
   }
 
   getAllLIFFApps() {
     return this.getAllAssets(LIFF);
   }
 
-  removeLIFFAppId(tag: string) {
-    return this.removeAssetId(LIFF, tag);
+  removeLIFFAppId(name: string) {
+    return this.removeAssetId(LIFF, name);
   }
 
-  getRichMenuId(tag: string) {
-    return this.getAssetId(RICH_MENU, tag);
+  getRichMenuId(name: string) {
+    return this.getAssetId(RICH_MENU, name);
   }
 
-  setRichMenuId(tag: string, id: string) {
-    return this.setAssetId(RICH_MENU, tag, id);
+  setRichMenuId(name: string, id: string) {
+    return this.setAssetId(RICH_MENU, name, id);
   }
 
   getAllRichMenus() {
     return this.getAllAssets(RICH_MENU);
   }
 
-  removeRichMenuId(tag: string) {
-    return this.removeAssetId(RICH_MENU, tag);
+  removeRichMenuId(name: string) {
+    return this.removeAssetId(RICH_MENU, name);
   }
 
-  async createRichMenu(tag: string, body: Object): Promise<string> {
-    const existed = await this.getRichMenuId(tag);
+  async createRichMenu(name: string, body: Object): Promise<string> {
+    const existed = await this.getRichMenuId(name);
     if (existed) {
-      throw new Error(`rich menu [ ${tag} ] already exist`);
+      throw new Error(`rich menu [ ${name} ] already exist`);
     }
 
     const {
       results: [{ richMenuId }],
     } = await this._bot.dispatchAPICall('POST', PATH_RICHMENU, body);
 
-    await this.setAssetId(RICH_MENU, tag, richMenuId);
+    await this.setAssetId(RICH_MENU, name, richMenuId);
     return richMenuId;
   }
 
-  async deleteRichMenu(tag: string): Promise<string> {
-    const id = await this.getRichMenuId(tag);
+  async deleteRichMenu(name: string): Promise<string> {
+    const id = await this.getRichMenuId(name);
     if (id === undefined) {
-      throw new Error(`rich menu [ ${tag} ] not exist`);
+      throw new Error(`rich menu [ ${name} ] not exist`);
     }
 
     await this._bot.dispatchAPICall('DELETE', `${PATH_RICHMENU}/${id}`);
 
-    await this.removeAssetId(RICH_MENU, tag);
+    await this.removeAssetId(RICH_MENU, name);
     return id;
   }
 }
