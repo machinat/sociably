@@ -1,7 +1,7 @@
 import moxy, { Mock } from 'moxy';
 import Machinat from '../..';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
-import { container, namedInterface } from '../../service';
+import { container, makeInterface } from '../../service';
 
 import Renderer from '../renderer';
 
@@ -475,9 +475,9 @@ describe('#render()', () => {
   });
 
   it('render container component and provide values from Machinat.Provider at render time', async () => {
-    const FooService = namedInterface('Foo');
-    const BarService = namedInterface('Bar');
-    const BazService = namedInterface('Baz');
+    const FooService = makeInterface('Foo');
+    const BarService = makeInterface('Bar');
+    const BazService = makeInterface('Baz');
 
     const componentMock = new Mock();
     const Container = moxy(

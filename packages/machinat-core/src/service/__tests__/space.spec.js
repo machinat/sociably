@@ -6,13 +6,13 @@ import {
   container,
   factory,
   provider,
-  namedInterface,
+  makeInterface,
   abstractInterface,
 } from '../annotate';
 
 const moxy = moxyFactory({ mockProperty: false });
 
-const HELLO = namedInterface({ name: 'Hello' });
+const HELLO = makeInterface({ name: 'Hello' });
 const staticGreeter = moxy({ hello: () => 'HI' });
 
 const Foo = provider({ deps: [HELLO], lifetime: 'singleton' })(
@@ -46,7 +46,7 @@ const BarImpl = provider({
   )
 );
 
-const BAZ = namedInterface({ name: 'Baz' });
+const BAZ = makeInterface({ name: 'Baz' });
 const Baz = class Baz {
   baz() {
     return 'Baz';
@@ -431,8 +431,8 @@ test('optional dependency', () => {
 });
 
 it('use the same instance of the same provider on different interface', () => {
-  const MusicalBar = namedInterface({ name: 'MusicalBar' });
-  const JazzBar = namedInterface({ name: 'JazzBar' });
+  const MusicalBar = makeInterface({ name: 'MusicalBar' });
+  const JazzBar = makeInterface({ name: 'JazzBar' });
 
   const space = new ServiceSpace(
     [{ provide: HELLO, withValue: staticGreeter }, Foo],
@@ -505,7 +505,7 @@ test('lifecycle of services of different lifetime', () => {
 });
 
 test('provide multi interface as an array of bound value', () => {
-  const MULTI_FOOD = namedInterface({ name: 'MultiFood', multi: true });
+  const MULTI_FOOD = makeInterface({ name: 'MultiFood', multi: true });
   const bistroFactory = factory({ lifetime: 'singleton', deps: [MULTI_FOOD] })(
     moxy((dishes) => ({
       serve: () => dishes,
@@ -581,7 +581,7 @@ test('provide multi interface as an array of bound value', () => {
 });
 
 test('provide multi interface as an empty array if no value bound', () => {
-  const MULTI_FOO = namedInterface({ name: 'MultiFoo', multi: true });
+  const MULTI_FOO = makeInterface({ name: 'MultiFoo', multi: true });
   const needFooFactory = factory({ lifetime: 'singleton', deps: [MULTI_FOO] })(
     moxy(() => ({}))
   );
@@ -644,7 +644,7 @@ test('inject time provision', () => {
 });
 
 test('boostrap time provision', () => {
-  const BOOTSTRAP_TIME_INTERFACE = namedInterface({ name: 'BOO' });
+  const BOOTSTRAP_TIME_INTERFACE = makeInterface({ name: 'BOO' });
   const BooConsumer = provider({
     deps: [BOOTSTRAP_TIME_INTERFACE],
     lifetime: 'singleton',

@@ -128,19 +128,19 @@ export const abstractInterface = <T>({
   });
 };
 
-type NamedInterfaceOptions = {|
+type makeInterfaceOptions = {|
   multi?: boolean,
   name: string,
 |};
 
 /**
- * namedInterface create a service interface with name
+ * makeInterface make a non class service interface
  */
-export const namedInterface = <T>({
-  multi,
+export const makeInterface = <T>({
+  multi = false,
   name,
-}: NamedInterfaceOptions): ServiceInterface<T, {}> => ({
+}: makeInterfaceOptions): ServiceInterface<T, {}> => ({
   $$name: name,
-  $$multi: multi || false,
+  $$multi: multi,
   $$typeof: MACHINAT_SERVICES_INTERFACE,
 });

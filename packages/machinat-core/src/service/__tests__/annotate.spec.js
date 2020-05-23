@@ -9,7 +9,7 @@ import {
   provider,
   factory,
   abstractInterface,
-  namedInterface,
+  makeInterface,
 } from '../annotate';
 
 const FooServiceI = {
@@ -217,15 +217,15 @@ describe('abstractInterface(options)(klass)', () => {
   });
 });
 
-describe('namedInterface(name)', () => {
+describe('makeInterface(name)', () => {
   it('create annotation object', () => {
-    const MyFooInterface = namedInterface({ name: 'Foo' });
+    const MyFooInterface = makeInterface({ name: 'Foo' });
 
     expect(MyFooInterface.$$typeof).toBe(MACHINAT_SERVICES_INTERFACE);
     expect(MyFooInterface.$$name).toBe('Foo');
     expect(MyFooInterface.$$multi).toBe(false);
 
-    const MyBarsInterface = namedInterface({ name: 'Bars', multi: true });
+    const MyBarsInterface = makeInterface({ name: 'Bars', multi: true });
 
     expect(MyBarsInterface.$$typeof).toBe(MACHINAT_SERVICES_INTERFACE);
     expect(MyBarsInterface.$$name).toBe('Bars');

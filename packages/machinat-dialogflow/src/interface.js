@@ -1,9 +1,9 @@
 // @flow
 /* eslint-disable class-methods-use-this */
-import { namedInterface, abstractInterface } from '@machinat/core/service';
+import { makeInterface, abstractInterface } from '@machinat/core/service';
 import type { DialogFlowModuleConfigs } from './types';
 
-export const MODULE_CONFIGS_I = namedInterface<DialogFlowModuleConfigs>({
+export const MODULE_CONFIGS_I = makeInterface<DialogFlowModuleConfigs>({
   name: 'DialogFlowModuleConfigs',
 });
 

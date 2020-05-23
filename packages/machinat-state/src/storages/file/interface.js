@@ -1,9 +1,9 @@
 // @flow
 /* eslint-disable class-methods-use-this, no-unused-vars */
-import { namedInterface, abstractInterface } from '@machinat/core/service';
+import { makeInterface, abstractInterface } from '@machinat/core/service';
 import type { FileRepositoryConfigs } from './types';
 
-export const FILE_STATE_CONFIGS_I = namedInterface<FileRepositoryConfigs>({
+export const FILE_STATE_CONFIGS_I = makeInterface<FileRepositoryConfigs>({
   name: 'FileStateConfigs',
 });
 

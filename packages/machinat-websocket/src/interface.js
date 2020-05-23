@@ -1,6 +1,6 @@
 // @flow
 /* eslint-disable class-methods-use-this */
-import { abstractInterface, namedInterface } from '@machinat/core/service';
+import { abstractInterface, makeInterface } from '@machinat/core/service';
 import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
 import type { ConnectionChannel } from './channel';
@@ -68,22 +68,22 @@ class ClusterBroker {
 
 export const ClusterBrokerI = abstractInterface<ClusterBroker>()(ClusterBroker);
 
-export const UPGRADE_VERIFIER_I = namedInterface<VerifyUpgradeFn>({
+export const UPGRADE_VERIFIER_I = makeInterface<VerifyUpgradeFn>({
   name: 'WebSocketUpgradeVerifier',
 });
 
-export const LOGIN_VERIFIER_I = namedInterface<VerifyLoginFn<any, any>>({
+export const LOGIN_VERIFIER_I = makeInterface<VerifyLoginFn<any, any>>({
   name: 'WebSocketLoginVerifier',
 });
 
-export const SERVER_ID_I = namedInterface<string>({
+export const SERVER_ID_I = makeInterface<string>({
   name: 'WebSocketServerId',
 });
 
-export const WEBSOCKET_PLATFORM_MOUNTER_I = namedInterface<
+export const WEBSOCKET_PLATFORM_MOUNTER_I = makeInterface<
   WebSocketPlatformMounter<any>
 >({ name: 'WebSocketPlatformMounter' });
 
-export const WEBSOCKET_PLATFORM_CONFIGS_I = namedInterface<
+export const WEBSOCKET_PLATFORM_CONFIGS_I = makeInterface<
   WebSocketPlatformConfigs<any>
 >({ name: 'WebSocketPlatformConfigs' });

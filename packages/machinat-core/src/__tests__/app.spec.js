@@ -1,5 +1,5 @@
 import { factory as moxyFactory } from 'moxy';
-import { container, provider, factory, namedInterface } from '../service';
+import { container, provider, factory, makeInterface } from '../service';
 import ServiceScope from '../service/scope';
 import App from '../app';
 
@@ -35,7 +35,7 @@ const FooService = moxy(
   })(class FooService {})
 );
 
-const TEST_PLATFORM_MOUNTER = namedInterface('TestMounter');
+const TEST_PLATFORM_MOUNTER = makeInterface('TestMounter');
 const consumeTestMounter = moxy();
 const testMountingFactory = factory({
   deps: [TEST_PLATFORM_MOUNTER],
@@ -71,7 +71,7 @@ const BarService = moxy(
   })(class BarService {})
 );
 
-const ANOTHER_PLATFORM_MOUNTER = namedInterface('AnotherMounter');
+const ANOTHER_PLATFORM_MOUNTER = makeInterface('AnotherMounter');
 const consumeAnotherMounter = moxy();
 const anotherMountingFactory = factory({
   deps: [ANOTHER_PLATFORM_MOUNTER],

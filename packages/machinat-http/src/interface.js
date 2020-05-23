@@ -1,6 +1,6 @@
 // @flow
 /* eslint-disable class-methods-use-this */
-import { namedInterface, abstractInterface } from '@machinat/core/service';
+import { makeInterface, abstractInterface } from '@machinat/core/service';
 import type {
   ServerListenOptions,
   HTTPModuleConfigs,
@@ -20,16 +20,16 @@ class AbstractServer {
 
 export const HTTPServerI = abstractInterface<AbstractServer>()(AbstractServer);
 
-export const HTTP_MODULE_CONFIGS_I = namedInterface<HTTPModuleConfigs>({
+export const HTTP_MODULE_CONFIGS_I = makeInterface<HTTPModuleConfigs>({
   name: 'HTTPModuleConfigs',
 });
 
-export const HTTP_REQUEST_ROUTINGS_I = namedInterface<HTTPRequestRouting[]>({
+export const HTTP_REQUEST_ROUTINGS_I = makeInterface<HTTPRequestRouting[]>({
   name: 'HTTPRequestRoutingsList',
   multi: true,
 });
 
-export const HTTP_UPGRADE_ROUTINGS_I = namedInterface<HTTPUpgradeRouting[]>({
+export const HTTP_UPGRADE_ROUTINGS_I = makeInterface<HTTPUpgradeRouting[]>({
   name: 'HTTPUpgradeRoutingsList',
   multi: true,
 });
