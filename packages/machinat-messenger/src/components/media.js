@@ -4,7 +4,7 @@ import { annotateMessengerComponent } from '../utils';
 const mediaFactory = (name, type) => {
   const container = {
     [name]: (node, path) => {
-      const { url, reusable, attachmentId } = node.props;
+      const { url, isReusable, attachmentId } = node.props;
 
       return [
         unitSegment(node, path, {
@@ -13,7 +13,7 @@ const mediaFactory = (name, type) => {
               type,
               payload: {
                 url,
-                is_reusable: reusable,
+                is_reusable: isReusable,
                 attachment_id: attachmentId,
               },
             },

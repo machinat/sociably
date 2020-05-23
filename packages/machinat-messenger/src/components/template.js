@@ -60,34 +60,6 @@ export const GenericTemplate = async (node, path, render) => {
 };
 annotateMessengerComponent(GenericTemplate);
 
-export const ListTemplate = async (node, path, render) => {
-  const { children, topStyle, sharable, button } = node.props;
-
-  const elementSegments = await render(children, '.children');
-  const elementValues = elementSegments?.map((segment) => segment.value);
-
-  const buttonSegments = await render(button, '.button');
-  const buttonValues = buttonSegments?.map((segment) => segment.value);
-
-  return [
-    unitSegment(node, path, {
-      message: {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'list',
-            top_element_style: topStyle,
-            sharable,
-            elements: elementValues,
-            buttons: buttonValues,
-          },
-        },
-      },
-    }),
-  ];
-};
-annotateMessengerComponent(ListTemplate);
-
 export const ButtonTemplate = async (node, path, render) => {
   const { children, buttons, sharable } = node.props;
   const textSegments = await render(children, '.children');

@@ -16,13 +16,13 @@ describe('media Components', () => {
   it('match snapshot', async () => {
     const segments = await renderer.render(
       <>
-        <Image url="http://this.is/a/picture" reusable />
+        <Image url="http://this.is/a/picture" isReusable />
         <Image attachmentId="_I_am_Image_" />
-        <Video url="http://this.is/a/video" reusable />
+        <Video url="http://this.is/a/video" isReusable />
         <Video attachmentId="_I_am_Video_" />
-        <Audio url="http://this.is/an/audio" reusable />
+        <Audio url="http://this.is/an/audio" isReusable />
         <Audio attachmentId="_I_am_Audio_" />
-        <File url="http://this.is/a/file" reusable />
+        <File url="http://this.is/a/file" isReusable />
         <File attachmentId="_I_am_File_" />
       </>
     );

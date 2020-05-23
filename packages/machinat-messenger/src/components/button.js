@@ -5,10 +5,12 @@ export const URLButton = (node, path) => {
   const {
     title,
     url,
-    heightRatio,
-    extensions,
     fallbackURL,
-    hideShareButton,
+    messengerExtensions,
+    webviewHeightRatio,
+    webviewShareButton,
+
+    hideWebviewShare,
   } = node.props;
 
   return [
@@ -16,10 +18,11 @@ export const URLButton = (node, path) => {
       type: 'web_url',
       title,
       url,
-      webview_height_ratio: heightRatio,
-      messenger_extensions: extensions,
+      webview_height_ratio: webviewHeightRatio,
+      messenger_extensions: messengerExtensions,
       fallback_url: fallbackURL,
-      webview_share_button: hideShareButton ? 'hide' : undefined,
+      webview_share_button:
+        webviewShareButton || hideWebviewShare ? 'hide' : undefined,
     }),
   ];
 };
@@ -102,10 +105,13 @@ export const GamePlayButton = (node, path) => {
       type: 'game_play',
       title,
       payload,
-      game_metadata: {
-        player_id: playerId,
-        context_id: contextId,
-      },
+      game_metadata:
+        playerId || contextId
+          ? {
+              player_id: playerId,
+              context_id: contextId,
+            }
+          : undefined,
     }),
   ];
 };

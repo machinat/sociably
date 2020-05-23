@@ -8,10 +8,10 @@ import {
 } from '../constant';
 
 export const PassThreadControl = (node, path) => {
-  const { appId, metadata } = node.props;
+  const { targetAppId, metadata } = node.props;
   return [
     unitSegment(node, path, {
-      target_app_id: appId,
+      target_app_id: targetAppId,
       metadata,
       [ENTRY_PATH]: PATH_PASS_THREAD_CONTROL,
     }),

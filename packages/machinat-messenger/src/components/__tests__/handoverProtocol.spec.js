@@ -21,14 +21,14 @@ it.each([PassThreadControl, RequestThreadControl, TakeThreadContorl])(
 test('PassThreadControl', async () => {
   await expect(
     renderer.render(
-      <PassThreadControl appId="Legolas" metadata="you have my bow" />
+      <PassThreadControl targetAppId="Legolas" metadata="you have my bow" />
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <PassThreadControl
-                appId="Legolas"
                 metadata="you have my bow"
+                targetAppId="Legolas"
               />,
               "path": "$",
               "type": "unit",

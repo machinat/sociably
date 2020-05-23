@@ -3,7 +3,7 @@ import { partSegment } from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 
 export const QuickReply = async (node, path, render) => {
-  const { imageURL, action } = node.props;
+  const { imageUrl, imageURL, action } = node.props;
 
   const actionSegments = await render(action, '.action');
   const actionValue = actionSegments?.[0].value;
@@ -11,7 +11,7 @@ export const QuickReply = async (node, path, render) => {
   return [
     partSegment(node, path, {
       type: 'action',
-      imageUrl: imageURL,
+      imageUrl: imageUrl || imageURL,
       action: actionValue,
     }),
   ];

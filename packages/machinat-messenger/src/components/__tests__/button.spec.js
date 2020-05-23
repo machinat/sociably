@@ -68,22 +68,22 @@ describe('URLButton', () => {
         <URLButton
           title="my button"
           url="http://machinat.com"
-          heightRatio="compact"
-          extensions
+          webviewHeightRatio="compact"
+          messengerExtensions
           fallbackURL="http://..."
-          hideShareButton
+          hideWebviewShare
         />
       )
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
                 "node": <URLButton
-                  extensions={true}
                   fallbackURL="http://..."
-                  heightRatio="compact"
-                  hideShareButton={true}
+                  hideWebviewShare={true}
+                  messengerExtensions={true}
                   title="my button"
                   url="http://machinat.com"
+                  webviewHeightRatio="compact"
                 />,
                 "path": "$#container",
                 "type": "part",

@@ -6,7 +6,6 @@ import { isNativeElement } from '@machinat/core/utils/isX';
 import {
   GenericItem,
   GenericTemplate,
-  ListTemplate,
   ButtonTemplate,
   MediaTemplate,
   OpenGraphTemplate,
@@ -20,7 +19,6 @@ const renderer = new Renderer('messenger', generalComponentDelegator);
 
 test.each([
   GenericTemplate,
-  ListTemplate,
   ButtonTemplate,
   MediaTemplate,
   OpenGraphTemplate,
@@ -65,40 +63,6 @@ describe('GenericTemplate', () => {
           <GenericTemplate imageAspectRatio="square" sharable>
             {items}
           </GenericTemplate>
-        </>
-      )
-    ).resolves.toMatchSnapshot();
-  });
-});
-
-describe('ListTemplate', () => {
-  it('match snapshot', async () => {
-    const items = [
-      <GenericItem
-        title="foo"
-        imageURL="http://foo.bar/image"
-        buttons={[<URLButton title="check" url="http://xxx.yy.z" />]}
-      />,
-      <GenericItem
-        title="foo"
-        subtitle="bar"
-        imageURL="http://foo.bar/image"
-        defaultAction={<URLButton title="TITLE!" url="http://foo.bar/" />}
-        buttons={[<PostbackButton title="more" payload="_MORE_" />]}
-      />,
-    ];
-
-    await expect(
-      renderer.render(
-        <>
-          <ListTemplate>{items}</ListTemplate>
-          <ListTemplate
-            button={<PostbackButton title="more" payload="_MORE_" />}
-            imageAspectRatio="square"
-            sharable
-          >
-            {items}
-          </ListTemplate>
         </>
       )
     ).resolves.toMatchSnapshot();
