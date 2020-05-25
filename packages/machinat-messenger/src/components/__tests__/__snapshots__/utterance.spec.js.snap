@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Dialog with all props match snapshot 1`] = `
+exports[`Utterance with all props match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Dialog.children::0",
+    "path": "$#Utterance.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -18,7 +18,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::2",
+    "path": "$#Utterance.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -29,9 +29,6 @@ Array [
             "image_url": undefined,
             "payload": undefined,
             "title": "foo",
-          },
-          Object {
-            "content_type": "location",
           },
           Object {
             "content_type": "user_phone_number",
@@ -51,11 +48,11 @@ Array [
 ]
 `;
 
-exports[`Dialog with metadata match snapshot 1`] = `
+exports[`Utterance with metadata match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Dialog.children::0",
+    "path": "$#Utterance.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -69,7 +66,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::2",
+    "path": "$#Utterance.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -86,11 +83,11 @@ Array [
 ]
 `;
 
-exports[`Dialog with notificationType match snapshot 1`] = `
+exports[`Utterance with notificationType match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Dialog.children::0",
+    "path": "$#Utterance.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -104,7 +101,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::2",
+    "path": "$#Utterance.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -121,11 +118,11 @@ Array [
 ]
 `;
 
-exports[`Dialog with personaId match snapshot 1`] = `
+exports[`Utterance with personaId match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Dialog.children::0",
+    "path": "$#Utterance.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -139,7 +136,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::2",
+    "path": "$#Utterance.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -156,11 +153,11 @@ Array [
 ]
 `;
 
-exports[`Dialog with quickReplies match snapshot 1`] = `
+exports[`Utterance with quickReplies match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Dialog.children::0",
+    "path": "$#Utterance.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -174,7 +171,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::2",
+    "path": "$#Utterance.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -185,9 +182,6 @@ Array [
             "image_url": undefined,
             "payload": undefined,
             "title": "foo",
-          },
-          Object {
-            "content_type": "location",
           },
           Object {
             "content_type": "user_phone_number",
@@ -207,11 +201,11 @@ Array [
 ]
 `;
 
-exports[`Dialog with type and tag match snapshot 1`] = `
+exports[`Utterance with type and tag match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Dialog.children::0",
+    "path": "$#Utterance.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -225,7 +219,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::2",
+    "path": "$#Utterance.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -242,11 +236,11 @@ Array [
 ]
 `;
 
-exports[`Dialog with type match snapshot 1`] = `
+exports[`Utterance with type match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Dialog.children::0",
+    "path": "$#Utterance.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -260,7 +254,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Dialog.children::2",
+    "path": "$#Utterance.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {

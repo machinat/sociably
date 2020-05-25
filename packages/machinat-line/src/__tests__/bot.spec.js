@@ -8,7 +8,7 @@ import Queue from '@machinat/core/queue';
 import LineBot from '../bot';
 import LineWorker from '../worker';
 import {
-  Dialog,
+  Utterance,
   Image,
   QuickReply,
   MessageAction,
@@ -37,7 +37,7 @@ jest.mock('../worker', () =>
 nock.disableNetConnect();
 
 const message = (
-  <Dialog
+  <Utterance
     quickReplies={
       <QuickReply action={<MessageAction text="Hi!" label="HI" />} />
     }
@@ -45,7 +45,7 @@ const message = (
     Hello <b>LINE</b>
     <Image url="https://machinat.com/greeting.png" />
     <LinkRichMenu id="newbie" />
-  </Dialog>
+  </Utterance>
 );
 
 const scope = moxy();

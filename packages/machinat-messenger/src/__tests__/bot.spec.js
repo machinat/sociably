@@ -6,7 +6,7 @@ import Queue from '@machinat/core/queue';
 import Engine from '@machinat/core/engine';
 import Worker from '../worker';
 import MessengerBot from '../bot';
-import { Image, Dialog, QuickReply } from '../components';
+import { Image, Utterance, QuickReply } from '../components';
 
 nock.disableNetConnect();
 
@@ -38,10 +38,10 @@ const initScope = moxy(() => scope);
 const dispatchWrapper = moxy((x) => x);
 
 const message = (
-  <Dialog quickReplies={<QuickReply title="Hi!" />}>
+  <Utterance quickReplies={<QuickReply title="Hi!" />}>
     Hello <b>World!</b>
     <Image url="https://machinat.com/greeting.png" />
-  </Dialog>
+  </Utterance>
 );
 
 let graphAPI;

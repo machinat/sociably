@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { annotateLineComponent, isMessageValue } from '../utils';
 
-export const Dialog = async (
+export const Utterance = async (
   { props: { children, quickReplies } },
   path,
   render
@@ -44,4 +44,4 @@ export const Dialog = async (
 
   return segments;
 };
-annotateLineComponent(Dialog);
+annotateLineComponent(Utterance);

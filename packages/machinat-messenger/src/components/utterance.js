@@ -1,11 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import { annotateMessengerComponent, isMessageEntry } from '../utils';
 
-export const Dialog = async (
+export const Utterance = async (
   {
     props: {
       children,
-      type,
+      messagingType,
       tag,
       notificationType,
       metadata,
@@ -42,7 +42,7 @@ export const Dialog = async (
       const copied = { ...value };
 
       if (value.message) {
-        copied.messaging_type = type;
+        copied.messaging_type = messagingType;
         copied.tag = tag;
         copied.notification_type = notificationType;
         copied.persona_id = personaId;
@@ -74,4 +74,4 @@ export const Dialog = async (
 
   return childrenSegments;
 };
-annotateMessengerComponent(Dialog);
+annotateMessengerComponent(Utterance);

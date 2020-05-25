@@ -1,12 +1,7 @@
 import Machinat from '@machinat/core';
 import { isNativeElement } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
-import {
-  QuickReply,
-  PhoneQuickReply,
-  EmailQuickReply,
-  LocationQuickReply,
-} from '../quickReply';
+import { QuickReply, PhoneQuickReply, EmailQuickReply } from '../quickReply';
 
 const render = async (node) => {
   let rendered;
@@ -19,7 +14,7 @@ const render = async (node) => {
   return rendered;
 };
 
-it.each([QuickReply, PhoneQuickReply, EmailQuickReply, LocationQuickReply])(
+it.each([QuickReply, PhoneQuickReply, EmailQuickReply])(
   '%p is valid Component',
   (Reply) => {
     expect(typeof Reply).toBe('function');
@@ -101,21 +96,6 @@ test('EmailQuickReply match snpshot', async () => {
         "type": "part",
         "value": Object {
           "content_type": "user_email",
-        },
-      },
-    ]
-  `);
-});
-
-test('LocationQuickReply match snpshot', async () => {
-  expect(render(<LocationQuickReply />)).resolves.toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "node": <LocationQuickReply />,
-        "path": "$#container",
-        "type": "part",
-        "value": Object {
-          "content_type": "location",
         },
       },
     ]

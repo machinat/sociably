@@ -3,13 +3,8 @@ import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
 import { isNativeElement } from '@machinat/core/utils/isX';
 import { ENTRY_PATH } from '../../constant';
-import {
-  QuickReply,
-  LocationQuickReply,
-  EmailQuickReply,
-  PhoneQuickReply,
-} from '../quickReply';
-import { Dialog } from '../dialog';
+import { QuickReply, EmailQuickReply, PhoneQuickReply } from '../quickReply';
+import { Utterance } from '../utterance';
 import { TypingOn, TypingOff, MarkSeen } from '../senderAction';
 
 const generalComponentDelegator = moxy((node, path) => [
@@ -23,7 +18,6 @@ const renderer = new Renderer('messenger', generalComponentDelegator);
 const quickReplies = (
   <>
     <QuickReply title="foo" />
-    <LocationQuickReply />
     <PhoneQuickReply />
     <EmailQuickReply />
   </>
@@ -42,39 +36,42 @@ beforeEach(() => {
 });
 
 it('is valid component', () => {
-  expect(typeof Dialog).toBe('function');
-  expect(isNativeElement(<Dialog />)).toBe(true);
-  expect(Dialog.$$platform).toBe('messenger');
+  expect(typeof Utterance).toBe('function');
+  expect(isNativeElement(<Utterance />)).toBe(true);
+  expect(Utterance.$$platform).toBe('messenger');
 });
 
 it.each([
-  ['Dialog with type', <Dialog type="UPDATE">{children}</Dialog>],
   [
-    'Dialog with type and tag',
-    <Dialog type="MESSAGE_TAG" tag="COMMUNITY_ALERT">
+    'Utterance with type',
+    <Utterance messagingType="UPDATE">{children}</Utterance>,
+  ],
+  [
+    'Utterance with type and tag',
+    <Utterance messagingType="MESSAGE_TAG" tag="COMMUNITY_ALERT">
       {children}
-    </Dialog>,
+    </Utterance>,
   ],
   [
-    'Dialog with notificationType',
-    <Dialog notificationType="NO_PUSH">{children}</Dialog>,
+    'Utterance with notificationType',
+    <Utterance notificationType="NO_PUSH">{children}</Utterance>,
   ],
   [
-    'Dialog with metadata',
-    <Dialog metadata="_SOME_METADATA_">{children}</Dialog>,
+    'Utterance with metadata',
+    <Utterance metadata="_SOME_METADATA_">{children}</Utterance>,
   ],
   [
-    'Dialog with quickReplies',
-    <Dialog quickReplies={quickReplies}>{children}</Dialog>,
+    'Utterance with quickReplies',
+    <Utterance quickReplies={quickReplies}>{children}</Utterance>,
   ],
   [
-    'Dialog with personaId',
-    <Dialog personaId="_PERSONA_ID_">{children}</Dialog>,
+    'Utterance with personaId',
+    <Utterance personaId="_PERSONA_ID_">{children}</Utterance>,
   ],
   [
-    'Dialog with all props',
-    <Dialog
-      type="MESSAGE_TAG"
+    'Utterance with all props',
+    <Utterance
+      messagingType="MESSAGE_TAG"
       tag="PAYMENT_UPDATE"
       notificationType="SILENT_PUSH"
       metadata="_MY_METADATA_"
@@ -82,33 +79,35 @@ it.each([
       personaId="_PERSONA_ID_"
     >
       {children}
-    </Dialog>,
+    </Utterance>,
   ],
 ])('%s match snapshot', async (_, element) => {
   await expect(renderer.render(element)).resolves.toMatchSnapshot();
 });
 
 it('returns null if empty children received', async () => {
-  await expect(renderer.render(<Dialog />)).resolves.toBe(null);
-  await expect(renderer.render(<Dialog>{null}</Dialog>)).resolves.toBe(null);
+  await expect(renderer.render(<Utterance />)).resolves.toBe(null);
+  await expect(renderer.render(<Utterance>{null}</Utterance>)).resolves.toBe(
+    null
+  );
 });
 
 it('hoist text value into message object', async () => {
   const segments = await renderer.render(
-    <Dialog>
+    <Utterance>
       foo
       <br />
       <bar />
       <br />
       baz
-    </Dialog>
+    </Utterance>
   );
 
   expect(segments).toMatchInlineSnapshot(`
     Array [
       Object {
         "node": "foo",
-        "path": "$#Dialog.children:0",
+        "path": "$#Utterance.children:0",
         "type": "unit",
         "value": Object {
           "message": Object {
@@ -122,7 +121,7 @@ it('hoist text value into message object', async () => {
       },
       Object {
         "node": <bar />,
-        "path": "$#Dialog.children:2",
+        "path": "$#Utterance.children:2",
         "type": "unit",
         "value": Object {
           "message": Object {
@@ -136,7 +135,7 @@ it('hoist text value into message object', async () => {
       },
       Object {
         "node": "baz",
-        "path": "$#Dialog.children:4",
+        "path": "$#Utterance.children:4",
         "type": "unit",
         "value": Object {
           "message": Object {
@@ -156,8 +155,8 @@ it('hoist text value into message object', async () => {
 
 it('add attributes to message value', async () => {
   const segments = await renderer.render(
-    <Dialog
-      type="MESSAGE_TAG"
+    <Utterance
+      messagingType="MESSAGE_TAG"
       tag="PAYMENT_UPDATE"
       notificationType="SILENT_PUSH"
       personaId="_PERSONA_ID_"
@@ -165,7 +164,7 @@ it('add attributes to message value', async () => {
       <foo />
       <br />
       <bar />
-    </Dialog>
+    </Utterance>
   );
 
   segments.forEach((segment) => {
@@ -183,8 +182,8 @@ it('add attributes to message value', async () => {
 
 it('add persona_id to typeing_on/typeing_off sender action', async () => {
   const segments = await renderer.render(
-    <Dialog
-      type="MESSAGE_TAG"
+    <Utterance
+      messagingType="MESSAGE_TAG"
       tag="PAYMENT_UPDATE"
       notificationType="SILENT_PUSH"
       personaId="_PERSONA_ID_"
@@ -193,7 +192,7 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
       <TypingOn />
       <TypingOff />
       <MarkSeen />
-    </Dialog>
+    </Utterance>
   );
 
   expect(segments[1].value).toEqual({
@@ -209,12 +208,12 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
 
 it('adds metadata to last message action', async () => {
   const segments = await renderer.render(
-    <Dialog metadata="_META_">
+    <Utterance metadata="_META_">
       <foo />
       <br />
       bar
       <TypingOn />
-    </Dialog>
+    </Utterance>
   );
 
   expect(segments[0].value).toEqual({ message: { text: 'foo' } });
@@ -226,10 +225,9 @@ it('adds metadata to last message action', async () => {
 
 it('adds quickReplies to last message action', async () => {
   const segments = await renderer.render(
-    <Dialog
+    <Utterance
       quickReplies={[
         <QuickReply title="foo" />,
-        <LocationQuickReply />,
         <PhoneQuickReply />,
         <EmailQuickReply />,
       ]}
@@ -238,7 +236,7 @@ it('adds quickReplies to last message action', async () => {
       <br />
       bar
       <TypingOn />
-    </Dialog>
+    </Utterance>
   );
 
   expect(segments[0].value).toEqual({ message: { text: 'foo' } });
@@ -256,9 +254,6 @@ it('adds quickReplies to last message action', async () => {
         "image_url": undefined,
         "payload": undefined,
         "title": "foo",
-      },
-      Object {
-        "content_type": "location",
       },
       Object {
         "content_type": "user_phone_number",
@@ -288,8 +283,8 @@ it('do nothing to non-messgae value', async () => {
   );
 
   const segments = await renderer.render(
-    <Dialog
-      type="MESSAGE_TAG"
+    <Utterance
+      messagingType="MESSAGE_TAG"
       tag="PAYMENT_UPDATE"
       notificationType="SILENT_PUSH"
       personaId="_PERSONA_ID_"
@@ -297,7 +292,7 @@ it('do nothing to non-messgae value', async () => {
     >
       <foo />
       <nonMessage />
-    </Dialog>
+    </Utterance>
   );
 
   expect(segments[1].value).toEqual({

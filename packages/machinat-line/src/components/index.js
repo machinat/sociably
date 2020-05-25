@@ -2,7 +2,7 @@ import Flex from './flex';
 
 export { Flex };
 export * from './action';
-export * from './dialog';
+export * from './utterance';
 export * from './flex';
 export * from './image';
 export * from './location';

@@ -14,19 +14,14 @@ export const QuickReply = (node, path) => {
 };
 annotateMessengerComponent(QuickReply);
 
-const LOCATION_QUICK_REPLY_VALUES = { content_type: 'location' };
 const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
-const EMAIL_QUICK_REPLY_VALUES = { content_type: 'user_email' };
-
-export const LocationQuickReply = (node, path) => [
-  partSegment(node, path, LOCATION_QUICK_REPLY_VALUES),
-];
-annotateMessengerComponent(LocationQuickReply);
 
 export const PhoneQuickReply = (node, path) => [
   partSegment(node, path, PHONE_QUICK_REPLY_VALUES),
 ];
 annotateMessengerComponent(PhoneQuickReply);
+
+const EMAIL_QUICK_REPLY_VALUES = { content_type: 'user_email' };
 
 export const EmailQuickReply = (node, path) => [
   partSegment(node, path, EMAIL_QUICK_REPLY_VALUES),

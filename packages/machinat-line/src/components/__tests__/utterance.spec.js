@@ -2,7 +2,7 @@ import moxy from 'moxy';
 import Machinat from '@machinat/core';
 import { isNativeElement } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
-import { Dialog } from '../dialog';
+import { Utterance } from '../utterance';
 import { QuickReply } from '../quickReply';
 import { MessageAction } from '../action';
 import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
@@ -18,26 +18,26 @@ beforeEach(() => {
 });
 
 it('is valid native component', () => {
-  expect(typeof Dialog).toBe('function');
+  expect(typeof Utterance).toBe('function');
 
-  expect(isNativeElement(<Dialog />)).toBe(true);
-  expect(Dialog.$$platform).toBe('line');
+  expect(isNativeElement(<Utterance />)).toBe(true);
+  expect(Utterance.$$platform).toBe('line');
 });
 
 it('return segments of what children rendered', async () => {
   await expect(
     renderer.render(
-      <Dialog>
+      <Utterance>
         <foo />
         <bar />
         <baz />
-      </Dialog>
+      </Utterance>
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <foo />,
-              "path": "$#Dialog.children:0",
+              "path": "$#Utterance.children:0",
               "type": "unit",
               "value": Object {
                 "text": "foo",
@@ -46,7 +46,7 @@ it('return segments of what children rendered', async () => {
             },
             Object {
               "node": <bar />,
-              "path": "$#Dialog.children:1",
+              "path": "$#Utterance.children:1",
               "type": "unit",
               "value": Object {
                 "text": "bar",
@@ -55,7 +55,7 @@ it('return segments of what children rendered', async () => {
             },
             Object {
               "node": <baz />,
-              "path": "$#Dialog.children:2",
+              "path": "$#Utterance.children:2",
               "type": "unit",
               "value": Object {
                 "text": "baz",
@@ -73,19 +73,19 @@ it('hoist children rendered text into text message object', async () => {
 
   await expect(
     renderer.render(
-      <Dialog>
+      <Utterance>
         foo
         <br />
         bar
         <br />
         baz
-      </Dialog>
+      </Utterance>
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": "foo",
-              "path": "$#Dialog.children:0",
+              "path": "$#Utterance.children:0",
               "type": "unit",
               "value": Object {
                 "text": "foo",
@@ -94,7 +94,7 @@ it('hoist children rendered text into text message object', async () => {
             },
             Object {
               "node": "bar",
-              "path": "$#Dialog.children:2",
+              "path": "$#Utterance.children:2",
               "type": "unit",
               "value": Object {
                 "text": "bar",
@@ -103,7 +103,7 @@ it('hoist children rendered text into text message object', async () => {
             },
             Object {
               "node": "baz",
-              "path": "$#Dialog.children:4",
+              "path": "$#Utterance.children:4",
               "type": "unit",
               "value": Object {
                 "text": "baz",
@@ -120,7 +120,7 @@ it('attach quickReply to last message object', async () => {
       type: 'text',
       node: <foo />,
       value: 'Where you wanna go',
-      path: '$:0#Dialog.children:0',
+      path: '$:0#Utterance.children:0',
     },
     {
       type: 'unit',
@@ -129,13 +129,13 @@ it('attach quickReply to last message object', async () => {
         type: 'text',
         text: 'How much you wanna risk',
       },
-      path: '$:0#Dialog.children:1',
+      path: '$:0#Utterance.children:1',
     },
     {
       type: 'text',
       node: <baz />,
       value: "I'm not looking for",
-      path: '$:0#Dialog.children:2',
+      path: '$:0#Utterance.children:2',
     },
     {
       type: 'unit',
@@ -148,7 +148,7 @@ it('attach quickReply to last message object', async () => {
           return { method: 'GET', path: 'superhuman/gift', body: null };
         },
       },
-      path: '$:0#Dialog.children:3',
+      path: '$:0#Utterance.children:3',
     },
   ];
 
@@ -156,7 +156,7 @@ it('attach quickReply to last message object', async () => {
 
   await expect(
     renderer.render(
-      <Dialog
+      <Utterance
         quickReplies={[
           <QuickReply
             action={<MessageAction label="👮‍" text="Some superhero" />}
@@ -171,13 +171,13 @@ it('attach quickReply to last message object', async () => {
         ]}
       >
         <content />
-      </Dialog>
+      </Utterance>
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <foo />,
-              "path": "$:0#Dialog.children:0",
+              "path": "$:0#Utterance.children:0",
               "type": "unit",
               "value": Object {
                 "text": "Where you wanna go",
@@ -186,7 +186,7 @@ it('attach quickReply to last message object', async () => {
             },
             Object {
               "node": <bar />,
-              "path": "$:0#Dialog.children:1",
+              "path": "$:0#Utterance.children:1",
               "type": "unit",
               "value": Object {
                 "text": "How much you wanna risk",
@@ -195,7 +195,7 @@ it('attach quickReply to last message object', async () => {
             },
             Object {
               "node": <baz />,
-              "path": "$:0#Dialog.children:2",
+              "path": "$:0#Utterance.children:2",
               "type": "unit",
               "value": Object {
                 "quickReply": Object {
@@ -235,7 +235,7 @@ it('attach quickReply to last message object', async () => {
             },
             Object {
               "node": <somebody />,
-              "path": "$:0#Dialog.children:3",
+              "path": "$:0#Utterance.children:3",
               "type": "unit",
               "value": Object {
                 Symbol(line.segment.channel_api_call_getter): [Function],
@@ -249,7 +249,7 @@ it('attach quickReply to last message object', async () => {
 it('return null if children is empty', async () => {
   await expect(
     renderer.render(
-      <Dialog
+      <Utterance
         quickReplies={[<QuickReply action={<MessageAction text="nope" />} />]}
       />
     )

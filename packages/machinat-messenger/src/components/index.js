@@ -5,4 +5,4 @@ export * from './quickReply';
 export * from './senderAction';
 export * from './template';
 export * from './text';
-export * from './dialog';
+export * from './utterance';
