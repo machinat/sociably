@@ -8,32 +8,37 @@ import * as KEYWORDS from './keyword';
 import { isKeyword, isScript } from './utils';
 import type {
   ScriptNode,
-  VarsMatcher,
+  ConditionMatcher,
   IfElementProps,
   WhileElementProps,
   VarsElementProps,
   LabelElementProps,
   PromptElementProps,
   CallElementProps,
+  ReturnElementProps,
   RenderContentNode,
   ScriptElement,
   ThenElement,
   ElseElement,
   ElseIfElement,
   ScriptSegment,
-  IfSegment,
+  ConditionsSegment,
   WhileSegment,
   SetVarsSegment,
   PromptSegment,
   LabelSegment,
   CallSegment,
+  ReturnSegment,
 } from './types';
 
 const ifChildrenReducer = (
-  segment: IfSegment<any>,
-  node: ThenElement<any, any> | ElseElement<any, any> | ElseIfElement<any, any>,
+  segment: ConditionsSegment<any>,
+  node:
+    | ThenElement<any, any, any>
+    | ElseElement<any, any, any>
+    | ElseIfElement<any, any, any>,
   path: string,
-  { condition }: { condition: VarsMatcher<any> }
+  { condition }: { condition: ConditionMatcher<any> }
 ) => {
   invariant(
     isElement(node) &&
@@ -88,19 +93,19 @@ const ifChildrenReducer = (
 };
 
 const resolveIf = (
-  { condition, children }: IfElementProps<any, any>,
+  { condition, children }: IfElementProps<any, any, any>,
   path: string
-): IfSegment<any> => {
+): ConditionsSegment<any> => {
   invariant(
     typeof condition === 'function',
     'prop "condition" of <IF/> should be a function'
   );
 
-  return reduce<IfSegment<any>, { condition: VarsMatcher<any> }>(
+  return reduce<ConditionsSegment<any>, { condition: ConditionMatcher<any> }>(
     (children: any),
     (ifChildrenReducer: any),
     {
-      type: 'if',
+      type: 'conditions',
       branches: [],
       fallback: undefined,
     },
@@ -110,7 +115,7 @@ const resolveIf = (
 };
 
 const resolveWhile = (
-  { condition, children }: WhileElementProps<any, any>,
+  { condition, children }: WhileElementProps<any, any, any>,
   path: string
 ): WhileSegment<any> => {
   invariant(
@@ -151,7 +156,7 @@ const resolveLabel = ({ key }: LabelElementProps): LabelSegment => {
 const resolvePrompt = ({
   set: setter,
   key,
-}: PromptElementProps<any, any>): PromptSegment<any> => {
+}: PromptElementProps<any, any>): PromptSegment<any, any> => {
   invariant(key, 'prop "key" of <PROMPT/> should not be empty');
   return {
     type: 'prompt',
@@ -166,13 +171,13 @@ const resolveCall = ({
   set: setter,
   key,
   goto,
-}: CallElementProps<any, any>): CallSegment<any, any> => {
+}: CallElementProps<any, any, any>): CallSegment<any, any, any> => {
   invariant(isScript(script), `invalid "script" prop received on <CALL/>`);
   invariant(key, 'prop "key" of <CALL/> should not be empty');
 
   if (goto) {
     invariant(
-      script.entryPointIndex.has(goto),
+      script.entryKeysIndex.has(goto),
       `key "${goto}" not found in ${script.name}`
     );
   }
@@ -187,30 +192,35 @@ const resolveCall = ({
   };
 };
 
+const resolveReturn = ({
+  value,
+}: ReturnElementProps<any>): ReturnSegment<any> => {
+  return { type: 'return', valueGetter: value };
+};
+
 const segmentsReducer = (
-  segments: ScriptSegment<any>[],
-  node: ScriptElement<any, any> | RenderContentNode<any>,
+  segments: ScriptSegment<any, any, any>[],
+  node: ScriptElement<any, any, any> | RenderContentNode<any>,
   path: string
 ) => {
   if (isElement(node)) {
-    const { type } = node;
-    invariant(isKeyword(type), `unexpected element: ${formatNode(node)}`);
+    invariant(isKeyword(node.type), `unexpected element: ${formatNode(node)}`);
 
-    let segment;
-    if (type === KEYWORDS.IF) {
-      segment = resolveIf((node.props: any), path);
-    } else if (type === KEYWORDS.WHILE) {
-      segment = resolveWhile((node.props: any), path);
-    } else if (type === KEYWORDS.VARS) {
-      segment = resolveVars((node.props: any));
-    } else if (type === KEYWORDS.PROMPT) {
-      segment = resolvePrompt((node.props: any));
-    } else if (type === KEYWORDS.LABEL) {
-      segment = resolveLabel((node.props: any));
-    } else if (type === KEYWORDS.CALL) {
-      segment = resolveCall((node.props: any));
-    } else if (type === KEYWORDS.RETURN) {
-      segment = { type: 'return' };
+    let segment: ScriptSegment<any, any, any>;
+    if (node.type === KEYWORDS.IF) {
+      segment = resolveIf(node.props, path);
+    } else if (node.type === KEYWORDS.WHILE) {
+      segment = resolveWhile(node.props, path);
+    } else if (node.type === KEYWORDS.VARS) {
+      segment = resolveVars(node.props);
+    } else if (node.type === KEYWORDS.PROMPT) {
+      segment = resolvePrompt(node.props);
+    } else if (node.type === KEYWORDS.LABEL) {
+      segment = resolveLabel(node.props);
+    } else if (node.type === KEYWORDS.CALL) {
+      segment = resolveCall(node.props);
+    } else if (node.type === KEYWORDS.RETURN) {
+      segment = resolveReturn(node.props);
     } else {
       invariant(false, `unexpected keyword: ${formatNode(node)}`);
     }
@@ -232,10 +242,10 @@ const segmentsReducer = (
 };
 
 const resolveSegments = <Vars>(
-  node: ScriptNode<Vars, any>,
+  node: ScriptNode<Vars, any, any>,
   path: string
-): ScriptSegment<Vars>[] => {
-  return reduce<ScriptSegment<Vars>[], void>(
+): ScriptSegment<Vars, any, any>[] => {
+  return reduce<ScriptSegment<Vars, any, any>[], void>(
     (node: any),
     (segmentsReducer: any),
     [],
@@ -243,7 +253,9 @@ const resolveSegments = <Vars>(
   );
 };
 
-const resolve = <Vars>(node: ScriptNode<Vars, any>): ScriptSegment<Vars>[] => {
+const resolve = <Vars>(
+  node: ScriptNode<Vars, any, any>
+): ScriptSegment<Vars, any, any>[] => {
   return resolveSegments<Vars>(node, '$');
 };
 

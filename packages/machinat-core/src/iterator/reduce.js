@@ -15,7 +15,7 @@ const reduceCallback = <Reduced, Payload>(
   context: ReduceTraverseContext<Reduced, Payload>
 ) => {
   const { reduced, reducer, payload } = context;
-  context.reduced = reducer(reduced, child, path, payload);
+  context.reduced = reducer(reduced, child, path, payload); // eslint-disable-line no-param-reassign
 };
 
 const reduce = <Reduced, Payload>(

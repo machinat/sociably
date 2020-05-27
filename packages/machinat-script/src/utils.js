@@ -10,11 +10,11 @@ export const isKeyword = (type: any) => keyworsSymbols.includes(type);
 export const isScript = (type: any): boolean %checks =>
   typeof type === 'object' && type.$$typeof === MACHINAT_SCRIPT_TYPE;
 
-export const serializeScriptStatus = <Vars, Input>({
+export const serializeScriptStatus = <Vars, Input, ReturnValue>({
   script,
   stoppedAt,
   vars,
-}: CallStatus<Vars, Input>): SerializedCallStatus<Vars> => {
+}: CallStatus<Vars, Input, ReturnValue>): SerializedCallStatus<Vars> => {
   invariant(
     stoppedAt,
     'call status is not stopped at any break point when serialize'

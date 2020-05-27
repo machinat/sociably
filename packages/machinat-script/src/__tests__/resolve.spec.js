@@ -16,13 +16,12 @@ import resolve from '../resolve';
 
 const AnotherScript = {
   $$typeof: MACHINAT_SCRIPT_TYPE,
-  Init: () => '(Init)',
   name: 'AnotherScript',
   commands: [
     { type: 'content', render: () => '...' },
     { type: 'prompt', key: 'ask' },
   ],
-  entryPointIndex: new Map([
+  entryKeysIndex: new Map([
     ['foo', 3],
     ['bar', 8],
   ]),
@@ -55,7 +54,7 @@ describe('resolve <IF/>', () => {
     );
     expect(segments).toEqual([
       {
-        type: 'if',
+        type: 'conditions',
         branches: [
           {
             condition: expect.any(Function),
@@ -78,7 +77,7 @@ describe('resolve <IF/>', () => {
     );
     expect(segments).toEqual([
       {
-        type: 'if',
+        type: 'conditions',
         branches: [
           {
             condition: expect.any(Function),
@@ -102,7 +101,7 @@ describe('resolve <IF/>', () => {
     );
     expect(segments).toEqual([
       {
-        type: 'if',
+        type: 'conditions',
         branches: new Array(3).fill({
           condition: expect.any(Function),
           body: [{ type: 'content', render: expect.any(Function) }],
@@ -153,7 +152,7 @@ describe('resolve <IF/>', () => {
 
   it('resolve ok if no children blocks', () => {
     expect(resolve(<IF condition={() => true}></IF>)).toEqual([
-      { type: 'if', branches: [] },
+      { type: 'conditions', branches: [] },
     ]);
   });
 
@@ -313,7 +312,7 @@ describe('resolve <VARS/>', () => {
       resolve(
         <>
           <VARS set={helloSetter} />
-          {(vars) => `hello ${vars.hello}`}
+          {({ vars }) => `hello ${vars.hello}`}
           <VARS set={greetedSetter} />
         </>
       )
@@ -429,31 +428,46 @@ describe('resolve <LABEL/>', () => {
 describe('resolve <CALL/>', () => {
   it('resolve ok', () => {
     const getCallVars = () => ({ hi: 'yo' });
-    const setFromVars = () => ({ foo: 'bar' });
-    const segments = resolve(
-      <>
-        {() => 'hello'}
-        <CALL
-          script={AnotherScript}
-          withVars={getCallVars}
-          set={setFromVars}
-          goto="foo"
-          key="waiting"
-        />
-      </>
-    );
-    expect(segments).toEqual([
+    const setFromReturn = () => ({ foo: 'bar' });
+    expect(
+      resolve(
+        <>
+          {() => 'hello'}
+          <CALL script={AnotherScript} key="waiting" />
+        </>
+      )
+    ).toEqual([
+      { type: 'content', render: expect.any(Function) },
+      {
+        type: 'call',
+        script: AnotherScript,
+        key: 'waiting',
+      },
+    ]);
+    expect(
+      resolve(
+        <>
+          {() => 'hello'}
+          <CALL
+            script={AnotherScript}
+            withVars={getCallVars}
+            set={setFromReturn}
+            goto="foo"
+            key="waiting"
+          />
+        </>
+      )
+    ).toEqual([
       { type: 'content', render: expect.any(Function) },
       {
         type: 'call',
         script: AnotherScript,
         withVars: getCallVars,
-        setter: setFromVars,
+        setter: setFromReturn,
         goto: 'foo',
         key: 'waiting',
       },
     ]);
-    expect(segments[1].withVars({})).toEqual({ hi: 'yo' });
   });
 
   it('throw if non-script received', () => {
@@ -503,6 +517,10 @@ test('resolve <RETURN/>', () => {
     { type: 'return' },
     { type: 'content', render: expect.any(Function) },
   ]);
+
+  expect(resolve(<RETURN value={({ vars }) => vars.foo} />)).toEqual([
+    { type: 'return', valueGetter: expect.any(Function) },
+  ]);
 });
 
 test('resolve whole script', () => {
@@ -521,7 +539,7 @@ test('resolve whole script', () => {
 
               <PROMPT
                 key="ask_1"
-                setter={(vars, ctx) => ({ ...vars, a: ctx.a })}
+                set={({ vars }, ctx) => ({ ...vars, a: ctx.a })}
               />
             </WHILE>
           </THEN>
@@ -533,7 +551,7 @@ test('resolve whole script', () => {
 
                 <PROMPT
                   key="ask_2"
-                  setter={(vars, ctx) => ({ ...vars, c: ctx.c })}
+                  set={({ vars }, ctx) => ({ ...vars, c: ctx.c })}
                 />
               </THEN>
               <ELSE>{() => 'tempor'}</ELSE>
@@ -545,16 +563,17 @@ test('resolve whole script', () => {
               key="call_1"
               script={AnotherScript}
               withVars={() => ({ x: 'xxxx' })}
+              set={() => ({ from: 'another script' })}
               goto="bar"
             />
           </ELSE>
         </IF>
 
-        <VARS set={(vars) => ({ ...vars, foo: 'bar' })} />
+        <VARS set={({ vars }) => ({ ...vars, foo: 'bar' })} />
         <LABEL key="2nd" />
         {() => 'consectetur'}
 
-        <VARS set={(vars) => ({ ...vars, foo: 'baz' })} />
+        <VARS set={({ vars }) => ({ ...vars, foo: 'baz' })} />
         <LABEL key="3rd" />
         {() => <del>incididunt</del>}
 
@@ -567,11 +586,11 @@ test('resolve whole script', () => {
               {() => <dolore />}
               <PROMPT
                 key="ask_3"
-                setter={(vars, ctx) => ({ ...vars, d: ctx.d })}
+                set={({ vars }, ctx) => ({ ...vars, d: ctx.d })}
               />
             </THEN>
             <ELSE>
-              <RETURN />
+              <RETURN value={() => 'fooo'} />
             </ELSE>
           </IF>
         </WHILE>

@@ -23,7 +23,7 @@ Array [
               },
             ],
             "fallback": undefined,
-            "type": "if",
+            "type": "conditions",
           },
           Object {
             "render": [Function],
@@ -60,7 +60,7 @@ Array [
               },
             ],
             "fallback": undefined,
-            "type": "if",
+            "type": "conditions",
           },
           Object {
             "render": [Function],
@@ -93,14 +93,14 @@ Array [
             "type": "content",
           },
         ],
-        "type": "if",
+        "type": "conditions",
       },
       Object {
         "render": [Function],
         "type": "content",
       },
     ],
-    "type": "if",
+    "type": "conditions",
   },
 ]
 `;
@@ -131,7 +131,7 @@ Array [
               },
               Object {
                 "key": "ask_1",
-                "setter": undefined,
+                "setter": [Function],
                 "type": "prompt",
               },
             ],
@@ -157,7 +157,7 @@ Array [
                   },
                   Object {
                     "key": "ask_2",
-                    "setter": undefined,
+                    "setter": [Function],
                     "type": "prompt",
                   },
                 ],
@@ -170,7 +170,7 @@ Array [
                 "type": "content",
               },
             ],
-            "type": "if",
+            "type": "conditions",
           },
         ],
         "condition": [Function],
@@ -186,7 +186,6 @@ Array [
         "key": "call_1",
         "script": Object {
           "$$typeof": Symbol(machinat.component.script),
-          "Init": [Function],
           "commands": Array [
             Object {
               "render": [Function],
@@ -197,18 +196,18 @@ Array [
               "type": "prompt",
             },
           ],
-          "entryPointIndex": Map {
+          "entryKeysIndex": Map {
             "foo" => 3,
             "bar" => 8,
           },
           "name": "AnotherScript",
         },
-        "setter": undefined,
+        "setter": [Function],
         "type": "call",
         "withVars": [Function],
       },
     ],
-    "type": "if",
+    "type": "conditions",
   },
   Object {
     "setter": [Function],
@@ -254,7 +253,7 @@ Array [
               },
               Object {
                 "key": "ask_3",
-                "setter": undefined,
+                "setter": [Function],
                 "type": "prompt",
               },
             ],
@@ -264,9 +263,10 @@ Array [
         "fallback": Array [
           Object {
             "type": "return",
+            "valueGetter": [Function],
           },
         ],
-        "type": "if",
+        "type": "conditions",
       },
     ],
     "condition": [Function],
@@ -281,7 +281,6 @@ Array [
     "key": "call_2",
     "script": Object {
       "$$typeof": Symbol(machinat.component.script),
-      "Init": [Function],
       "commands": Array [
         Object {
           "render": [Function],
@@ -292,7 +291,7 @@ Array [
           "type": "prompt",
         },
       ],
-      "entryPointIndex": Map {
+      "entryKeysIndex": Map {
         "foo" => 3,
         "bar" => 8,
       },

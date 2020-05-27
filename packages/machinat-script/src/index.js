@@ -8,7 +8,7 @@ export { default as build } from './build';
 export * from './keyword';
 
 type ScriptModuleConfigs = {
-  libs?: MachinatScript<any, any>[],
+  libs?: MachinatScript<any, any, any>[],
 };
 
 const Script = {

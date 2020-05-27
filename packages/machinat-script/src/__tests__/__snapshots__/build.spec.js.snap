@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`work 1`] = `
+exports[`built script object 1`] = `
 Array [
   Object {
     "render": [Function],
@@ -35,11 +35,11 @@ Array [
         },
         Object {
           "key": "childPrompt",
-          "setter": undefined,
+          "setter": [Function],
           "type": "prompt",
         },
       ],
-      "entryPointIndex": Map {
+      "entryKeysIndex": Map {
         "childPrompt" => 1,
       },
       "name": "ChildScript",
@@ -64,7 +64,7 @@ Array [
   },
   Object {
     "key": "ask_1",
-    "setter": undefined,
+    "setter": [Function],
     "type": "prompt",
   },
   Object {
@@ -81,11 +81,12 @@ Array [
   },
   Object {
     "key": "ask_2",
-    "setter": undefined,
+    "setter": [Function],
     "type": "prompt",
   },
   Object {
     "type": "return",
+    "valueGetter": [Function],
   },
   Object {
     "offset": 1,

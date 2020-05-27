@@ -1,10 +1,10 @@
 import compile from '../compile';
 
-it('compile if segment ok', () => {
-  const { commands, entryPointIndex } = compile(
+it('compile conditions segment ok', () => {
+  const { commands, entryKeysIndex } = compile(
     [
       {
-        type: 'if',
+        type: 'conditions',
         branches: [
           {
             condition: () => false,
@@ -58,7 +58,7 @@ it('compile if segment ok', () => {
   expect(commands[5].render({})).toBe('foo');
   expect(commands[8].render({})).toBe('bar');
 
-  expect(entryPointIndex).toEqual(
+  expect(entryKeysIndex).toEqual(
     new Map([
       ['ask1', 6],
       ['ask2', 9],
@@ -68,7 +68,7 @@ it('compile if segment ok', () => {
 });
 
 it('compile while segment ok', () => {
-  const { commands, entryPointIndex } = compile(
+  const { commands, entryKeysIndex } = compile(
     [
       {
         type: 'while',
@@ -92,7 +92,7 @@ it('compile while segment ok', () => {
     { type: 'prompt', key: 'ask' },
     { type: 'jump', offset: -3 },
   ]);
-  expect(entryPointIndex).toEqual(new Map([['ask', 2]]));
+  expect(entryKeysIndex).toEqual(new Map([['ask', 2]]));
 
   expect(commands[0].condition({})).toBe(true);
   expect(commands[1].render({ target: 'world' })).toBe('hello world');
@@ -101,7 +101,7 @@ it('compile while segment ok', () => {
 it('compile other segments type ok', () => {
   const OrderScript = { fake: 'script' };
 
-  const { commands, entryPointIndex } = compile(
+  const { commands, entryKeysIndex } = compile(
     [
       { type: 'content', render: () => 'hello' },
       { type: 'label', key: 'begin' },
@@ -123,7 +123,7 @@ it('compile other segments type ok', () => {
       { type: 'set_vars', setter: () => ({ ordered: true }) },
       { type: 'label', key: 'end' },
       { type: 'content', render: () => 'enjoy ur meal' },
-      { type: 'return' },
+      { type: 'return', valueGetter: () => 'foo' },
     ],
     { scriptName: 'MyScript' }
   );
@@ -146,9 +146,9 @@ it('compile other segments type ok', () => {
     },
     { type: 'set_vars', setter: expect.any(Function) },
     { type: 'content', render: expect.any(Function) },
-    { type: 'return' },
+    { type: 'return', valueGetter: expect.any(Function) },
   ]);
-  expect(entryPointIndex).toEqual(
+  expect(entryKeysIndex).toEqual(
     new Map([
       ['begin', 1],
       ['ask_something', 2],
@@ -165,7 +165,7 @@ it('compile other segments type ok', () => {
   expect(commands[6].render({})).toBe('enjoy ur meal');
 });
 
-it('throw if key duplicated', () => {
+it('throw conditions key duplicated', () => {
   expect(() =>
     compile(
       [

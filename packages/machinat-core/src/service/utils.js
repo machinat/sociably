@@ -8,7 +8,11 @@ import {
 import ServiceScope from './scope';
 import ServiceMaker from './maker';
 import ProvisionMap from './provisionMap';
-import type { Interfaceable, InjectRequirement } from './types';
+import type {
+  Interfaceable,
+  InjectRequirement,
+  ServiceContainer,
+} from './types';
 
 export const isServiceContainer = (target: any): boolean %checks =>
   typeof target === 'function' &&
@@ -18,6 +22,14 @@ export const isServiceProvider = (target: any): boolean %checks =>
   /* :: target.$$typeof && */
   (typeof target === 'function' || typeof target === 'object') &&
   target.$$typeof === MACHINAT_SERVICES_PROVIDER;
+
+export const maybeInjectContainer = <T>(
+  scope: ServiceScope,
+  maybeContainer: T | ServiceContainer<T>
+): T =>
+  isServiceContainer(maybeContainer)
+    ? scope.injectContainer(maybeContainer)
+    : maybeContainer;
 
 export const isInterfaceable = (target: Object): boolean %checks =>
   (typeof target === 'function' || typeof target === 'object') &&

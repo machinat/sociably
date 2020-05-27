@@ -1,7 +1,8 @@
 // @flow
-/* eslint no-use-before-define: ["error", { "variables": false }] */
 import invariant from 'invariant';
-import type { MachinatNode } from '@machinat/core/types';
+import type { MachinatNode, MachinatChannel } from '@machinat/core/types';
+import { maybeInjectContainer } from '@machinat/core/service';
+import type { ServiceScope } from '@machinat/core/service/types';
 import type {
   MachinatScript,
   CallStatus,
@@ -11,169 +12,213 @@ import type {
   JumpCondCommand,
   PromptCommand,
   CallCommand,
+  RenderContentFn,
+  ConditionMatchFn,
+  VarsSetFn,
+  PromptSetFn,
+  CallWithVarsFn,
+  CallReturnSetFn,
+  ReturnValueFn,
 } from './types';
 
-export const getCursorIndexAssertedly = (
-  script: MachinatScript<any, any>,
+const getCursorIndexAssertedly = (
+  script: MachinatScript<any, any, any>,
   key: string
 ): number => {
-  const index = script.entryPointIndex.get(key);
+  const index = script.entryKeysIndex.get(key);
 
   invariant(index !== undefined, `key "${key}" not found in ${script.name}`);
   return index;
 };
 
-type FinishedExecuteResult<Vars> = {
+type FinishedExecuteResult<ReturnValue> = {
   finished: true,
-  finalVars: Vars,
+  returnValue: ReturnValue,
   stack: null,
   content: MachinatNode[],
 };
 
-type UnfinishedExecuteResult<Vars> = {
+type UnfinishedExecuteResult<Vars, ReturnValue> = {
   finished: false,
-  finalVars: null,
-  stack: CallStatus<Vars, any>[],
+  returnValue: void,
+  stack: CallStatus<Vars, any, ReturnValue>[],
   content: MachinatNode[],
 };
 
-type ExecuteResult<Vars> =
-  | FinishedExecuteResult<Vars>
-  | UnfinishedExecuteResult<Vars>;
+type ExecuteResult<Vars, ReturnValue> =
+  | FinishedExecuteResult<ReturnValue>
+  | UnfinishedExecuteResult<Vars, ReturnValue>;
 
-type ExecuteContext<Vars> = {
+type ExecuteContext<Vars> = {|
+  channel: MachinatChannel,
+  scope: ServiceScope,
   finished: boolean,
   stoppedAt: void | string,
   cursor: number,
   content: MachinatNode[],
   vars: Vars,
-  descendantCallStack: void | CallStatus<Vars, any>[],
+  descendantCallStack: void | CallStatus<Vars, any, any>[],
+|};
+
+const executeContentCommand = async <Vars>(
+  { render }: ContentCommand<Vars>,
+  context: ExecuteContext<Vars>
+): Promise<ExecuteContext<Vars>> => {
+  const { cursor, content, vars, channel, scope } = context;
+  const rendered = await maybeInjectContainer<RenderContentFn<Vars>>(
+    scope,
+    render
+  )({ channel, vars });
+
+  return {
+    ...context,
+    cursor: cursor + 1,
+    content: [...content, rendered],
+  };
 };
 
-const executeContentCommand = (
-  { render }: ContentCommand<any>,
-  context: ExecuteContext<any>
-): ExecuteContext<any> => {
-  const { content, vars } = context;
-  content.push(render(vars));
+const executeSetVarsCommand = async <Vars>(
+  { setter }: SetVarsCommand<Vars>,
+  context: ExecuteContext<Vars>
+): Promise<ExecuteContext<Vars>> => {
+  const { cursor, vars, scope, channel } = context;
+  const updatedVars = await maybeInjectContainer<VarsSetFn<Vars>>(
+    scope,
+    setter
+  )({ channel, vars });
 
-  context.cursor += 1;
-  return context;
-};
-
-const executeSetVarsCommand = (
-  { setter }: SetVarsCommand<any>,
-  context: ExecuteContext<any>
-): ExecuteContext<any> => {
-  context.vars = setter(context.vars);
-
-  context.cursor += 1;
-  return context;
+  return { ...context, cursor: cursor + 1, vars: updatedVars };
 };
 
 const executeJumpCommand = (
   { offset }: JumpCommand,
   context: ExecuteContext<any>
 ): ExecuteContext<any> => {
-  context.cursor += offset;
-  return context;
+  return { ...context, cursor: context.cursor + offset };
 };
 
-const executeJumpCondCommand = (
-  { condition, isNot, offset }: JumpCondCommand<any>,
-  context: ExecuteContext<any>
-): ExecuteContext<any> => {
-  if (condition(context.vars) !== isNot) {
-    context.cursor += offset;
-  } else {
-    context.cursor += 1;
-  }
-  return context;
+const executeJumpCondCommand = async <Vars>(
+  { condition, isNot, offset }: JumpCondCommand<Vars>,
+  context: ExecuteContext<Vars>
+): Promise<ExecuteContext<Vars>> => {
+  const { cursor, scope, vars, channel } = context;
+  const isMatched = await maybeInjectContainer<ConditionMatchFn<Vars>>(
+    scope,
+    condition
+  )({ channel, vars });
+
+  return {
+    ...context,
+    cursor: cursor + (isMatched !== isNot ? offset : 1),
+  };
 };
 
-const executePromptCommand = (
-  command: PromptCommand<any, any>,
-  context: ExecuteContext<any>
-): ExecuteContext<any> => {
-  context.stoppedAt = command.key;
-  return context;
+const executePromptCommand = async <Vars>(
+  command: PromptCommand<Vars, any>,
+  context: ExecuteContext<Vars>
+): Promise<ExecuteContext<Vars>> => {
+  return { ...context, stoppedAt: command.key };
 };
 
-const executeCallCommand = (
-  { script, key, withVars, goto, setter }: CallCommand<any, any>,
-  context: ExecuteContext<any>
-): ExecuteContext<any> => {
-  const { vars, content } = context;
+const executeCallCommand = async <Vars>(
+  { script, key, withVars, setter, goto }: CallCommand<Vars, any, any>,
+  context: ExecuteContext<Vars>
+): Promise<ExecuteContext<Vars>> => {
+  const { vars, content, scope, channel, cursor } = context;
   const index = goto ? getCursorIndexAssertedly(script, goto) : 0;
 
-  const result = executeScript(script, index, withVars ? withVars(vars) : {});
-  content.push(...result.content);
+  const calleeVars = withVars
+    ? await maybeInjectContainer<CallWithVarsFn<Vars, any>>(
+        scope,
+        withVars
+      )({ channel, vars })
+    : ({}: any);
+
+  const result = await executeScript(scope, channel, script, index, calleeVars); // eslint-disable-line no-use-before-define
+  const concatedContent = [...content, ...result.content];
 
   if (!result.finished) {
-    context.stoppedAt = key;
-    context.descendantCallStack = result.stack;
-  } else {
-    context.cursor += 1;
-
-    if (setter) {
-      context.vars = setter(vars, result.finalVars);
-    }
+    return {
+      ...context,
+      content: concatedContent,
+      stoppedAt: key,
+      descendantCallStack: result.stack,
+    };
   }
 
-  return context;
+  let updatedVars = vars;
+  if (setter) {
+    updatedVars = await maybeInjectContainer<CallReturnSetFn<Vars, any>>(
+      scope,
+      setter
+    )({ channel, vars }, result.returnValue);
+  }
+
+  return {
+    ...context,
+    vars: updatedVars,
+    cursor: cursor + 1,
+    content: concatedContent,
+  };
 };
 
-const executeScript = <Vars>(
-  script: MachinatScript<Vars, any>,
+async function executeScript<Vars, Input, ReturnValue>(
+  scope: ServiceScope,
+  channel: MachinatChannel,
+  script: MachinatScript<Vars, Input, ReturnValue>,
   begin: number,
   initialVars: Vars
-): ExecuteResult<Vars> => {
+): Promise<ExecuteResult<Vars, ReturnValue>> {
   const { commands } = script;
 
   let context: ExecuteContext<Vars> = {
     finished: false,
-    returnValue: undefined,
     stoppedAt: undefined,
     cursor: begin,
     content: [],
     vars: initialVars,
     descendantCallStack: undefined,
+    scope,
+    channel,
   };
 
   while (context.cursor < commands.length) {
+    /* eslint-disable no-await-in-loop */
     const command = commands[context.cursor];
 
     if (command.type === 'content') {
-      context = executeContentCommand(command, context);
+      context = await executeContentCommand(command, context);
     } else if (command.type === 'set_vars') {
-      context = executeSetVarsCommand(command, context);
+      context = await executeSetVarsCommand(command, context);
     } else if (command.type === 'jump') {
       context = executeJumpCommand(command, context);
     } else if (command.type === 'jump_cond') {
-      context = executeJumpCondCommand(command, context);
+      context = await executeJumpCondCommand(command, context);
     } else if (command.type === 'prompt') {
-      context = executePromptCommand(command, context);
+      context = await executePromptCommand(command, context);
     } else if (command.type === 'call') {
-      context = executeCallCommand(command, context);
+      context = await executeCallCommand(command, context);
     } else if (command.type === 'return') {
+      const { valueGetter } = command;
+
+      let returnValue;
+      if (valueGetter) {
+        returnValue = await maybeInjectContainer<ReturnValueFn<any>>(
+          scope,
+          valueGetter
+        )({ vars: context.vars, channel });
+      }
+
       return {
         finished: true,
-        finalVars: context.vars,
+        returnValue: (returnValue: any),
         content: context.content,
         stack: null,
       };
     } else {
       throw new TypeError(`unknow command type ${command.type}`);
     }
-
-    if (context.finished) {
-      return {
-        finished: true,
-        finalVars: context.vars,
-        content: context.content,
-        stack: null,
-      };
-    }
+    /* eslint-enable no-await-in-loop */
 
     if (context.stoppedAt) {
       const { stoppedAt, content, vars, descendantCallStack } = context;
@@ -181,7 +226,7 @@ const executeScript = <Vars>(
 
       return {
         finished: false,
-        finalVars: null,
+        returnValue: undefined,
         content,
         stack: descendantCallStack
           ? [stackStatus, ...descendantCallStack]
@@ -192,20 +237,22 @@ const executeScript = <Vars>(
 
   return {
     finished: true,
-    finalVars: context.vars,
+    returnValue: (undefined: any),
     content: context.content,
     stack: null,
   };
-};
+}
 
-const execute = <Vars, Input>(
-  beginningStack: CallStatus<Vars, any>[],
+async function execute<Vars, Input, ReturnValue>(
+  scope: ServiceScope,
+  channel: MachinatChannel,
+  beginningStack: CallStatus<Vars, Input, ReturnValue>[],
   isPrompting: boolean,
   input?: Input
-): ExecuteResult<Vars> => {
+): Promise<ExecuteResult<Vars, ReturnValue>> {
   const callingDepth = beginningStack.length;
   const content = [];
-  let currentCallVars: Vars;
+  let currentReturnValue: ReturnValue;
 
   for (let d = callingDepth - 1; d >= 0; d -= 1) {
     const { script, vars: beginningVars, stoppedAt } = beginningStack[d];
@@ -215,6 +262,7 @@ const execute = <Vars, Input>(
 
     if (d === callingDepth - 1) {
       if (isPrompting) {
+        // handle begin from prompt point
         const awaitingPrompt = script.commands[index];
 
         invariant(
@@ -227,11 +275,17 @@ const execute = <Vars, Input>(
         );
 
         vars = awaitingPrompt.setter
-          ? awaitingPrompt.setter(beginningVars, input)
+          ? // eslint-disable-next-line no-await-in-loop
+            await maybeInjectContainer<PromptSetFn<any, any>>(
+              scope,
+              awaitingPrompt.setter
+            )({ channel, vars: beginningVars }, input)
           : vars;
+
         index += 1;
       }
     } else {
+      // handle descendant script call return
       const awaitingCall = script.commands[index];
 
       invariant(
@@ -243,33 +297,40 @@ const execute = <Vars, Input>(
         } might have been changed`
       );
 
-      vars = awaitingCall.setter
-        ? awaitingCall.setter(beginningVars, currentCallVars)
-        : vars;
+      const { setter } = awaitingCall;
+      if (setter) {
+        // eslint-disable-next-line no-await-in-loop
+        vars = await maybeInjectContainer<CallReturnSetFn<Vars, ReturnValue>>(
+          scope,
+          setter
+        )({ vars, channel }, (currentReturnValue: any));
+      }
+
       index += 1;
     }
 
-    const result = executeScript(script, index, vars);
+    // eslint-disable-next-line no-await-in-loop
+    const result = await executeScript(scope, channel, script, index, vars);
     content.push(...result.content);
 
     if (!result.finished) {
       return {
         finished: false,
-        finalVars: null,
+        returnValue: undefined,
         stack: [...beginningStack.slice(0, d), ...result.stack],
         content,
       };
     }
 
-    currentCallVars = result.finalVars;
+    currentReturnValue = result.returnValue;
   }
 
   return {
     finished: true,
-    finalVars: currentCallVars,
+    returnValue: (currentReturnValue: any),
     stack: null,
     content,
   };
-};
+}
 
 export default execute;

@@ -2,7 +2,12 @@
 export * from './annotate';
 export { default } from './space';
 export { default as ServiceScope } from './scope';
-export { isServiceContainer, isInterfaceable, createEmptyScope } from './utils';
+export {
+  isServiceContainer,
+  isInterfaceable,
+  createEmptyScope,
+  maybeInjectContainer,
+} from './utils';
 
 /**
  * Machinat DI

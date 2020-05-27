@@ -1,32 +1,35 @@
 // @flow
 import invariant from 'invariant';
 import StateControllerI from '@machinat/core/base/StateControllerI';
-import { provider } from '@machinat/core/service';
+import { ServiceScope, provider } from '@machinat/core/service';
 import type { MachinatChannel, MachinatNode } from '@machinat/core/types';
 import execute from './execute';
 import { SCRIPT_STATE_KEY, SCRIPT_LIBS_I } from './constant';
 import { serializeScriptStatus } from './utils';
 import type { MachinatScript, CallStatus, ScriptProcessState } from './types';
 
-type RuntimeResult<Vars, Input> = {
+type RuntimeResult<Vars, Input, ReturnValue> = {
   finished: boolean,
   content: MachinatNode,
-  currentScript: null | MachinatScript<Vars, Input>,
+  currentScript: null | MachinatScript<Vars, Input, ReturnValue>,
   stoppedAt: void | string,
 };
 
-class ScriptRuntime<Vars, Input> {
+class ScriptRuntime {
   channel: MachinatChannel;
-  callStack: null | CallStatus<Vars, Input>[];
+  callStack: null | CallStatus<any, any, any>[];
   saveTimestamp: void | number;
+  _serviceScope: ServiceScope;
   _isPrompting: boolean;
 
   constructor(
+    scope: ServiceScope,
     channel: MachinatChannel,
-    stack: CallStatus<Vars, Input>[],
+    stack: CallStatus<any, any, any>[],
     promptPointTs?: number
   ) {
     this.channel = channel;
+    this._serviceScope = scope;
     this.callStack = stack;
     this.saveTimestamp = promptPointTs;
     this._isPrompting = !!promptPointTs;
@@ -40,7 +43,7 @@ class ScriptRuntime<Vars, Input> {
     return this._isPrompting;
   }
 
-  async run(input?: Input): Promise<RuntimeResult<Vars, Input>> {
+  async run(input?: any): Promise<RuntimeResult<any, any, any>> {
     if (!this.callStack) {
       return {
         finished: true,
@@ -50,7 +53,9 @@ class ScriptRuntime<Vars, Input> {
       };
     }
 
-    const { finished, stack, content } = execute(
+    const { finished, stack, content } = await execute(
+      this._serviceScope,
+      this.channel,
       this.callStack,
       this._isPrompting,
       input
@@ -74,15 +79,18 @@ type InitRuntimeOptions<Vars> = {
   goto?: string,
 };
 
-class ScriptProcessor<Vars, Input> {
+class ScriptProcessor {
   _stateContoller: StateControllerI;
-  _libs: Map<string, MachinatScript<Vars, Input>>;
+  _serviceScope: ServiceScope;
+  _libs: Map<string, MachinatScript<any, any, any>>;
 
   constructor(
     stateManager: StateControllerI,
-    scripts: MachinatScript<Vars, Input>[]
+    scope: ServiceScope,
+    scripts: MachinatScript<any, any, any>[]
   ) {
     this._stateContoller = stateManager;
+    this._serviceScope = scope;
 
     const libs = new Map();
     for (const script of scripts) {
@@ -98,12 +106,12 @@ class ScriptProcessor<Vars, Input> {
 
   async init(
     channel: MachinatChannel,
-    script: MachinatScript<Vars, Input>,
-    { vars = {}, goto }: InitRuntimeOptions<Vars> = {}
-  ): Promise<ScriptRuntime<Vars, Input>> {
+    script: MachinatScript<any, any, any>,
+    { vars = {}, goto }: InitRuntimeOptions<any> = {}
+  ): Promise<ScriptRuntime> {
     const state = await this._stateContoller
       .channelState(channel)
-      .get<ScriptProcessState<Vars>>(SCRIPT_STATE_KEY);
+      .get<ScriptProcessState>(SCRIPT_STATE_KEY);
 
     if (state) {
       throw new Error(
@@ -111,15 +119,15 @@ class ScriptProcessor<Vars, Input> {
       );
     }
 
-    return new ScriptRuntime(channel, [{ script, vars, stoppedAt: goto }]);
+    return new ScriptRuntime(this._serviceScope, channel, [
+      { script, vars, stoppedAt: goto },
+    ]);
   }
 
-  async continue(
-    channel: MachinatChannel
-  ): Promise<null | ScriptRuntime<Vars, Input>> {
+  async continue(channel: MachinatChannel): Promise<null | ScriptRuntime> {
     const state = await this._stateContoller
       .channelState(channel)
-      .get<ScriptProcessState<Vars>>(SCRIPT_STATE_KEY);
+      .get<ScriptProcessState>(SCRIPT_STATE_KEY);
 
     if (!state) {
       return null;
@@ -133,7 +141,12 @@ class ScriptProcessor<Vars, Input> {
       statusStack.push({ script, vars, stoppedAt });
     }
 
-    return new ScriptRuntime(channel, statusStack, state.timestamp);
+    return new ScriptRuntime(
+      this._serviceScope,
+      channel,
+      statusStack,
+      state.timestamp
+    );
   }
 
   async exit(channel: MachinatChannel): Promise<boolean> {
@@ -143,7 +156,7 @@ class ScriptProcessor<Vars, Input> {
     return isDeleted;
   }
 
-  async saveRuntime(runtime: ScriptRuntime<Vars, Input>): Promise<boolean> {
+  async save(runtime: ScriptRuntime): Promise<boolean> {
     const { channel, callStack, saveTimestamp } = runtime;
     if (!callStack && !saveTimestamp) {
       return false;
@@ -152,7 +165,7 @@ class ScriptProcessor<Vars, Input> {
     const timestamp = Date.now();
     await this._stateContoller
       .channelState(channel)
-      .set<ScriptProcessState<Vars>>(SCRIPT_STATE_KEY, (lastState) => {
+      .set<ScriptProcessState>(SCRIPT_STATE_KEY, (lastState) => {
         if (
           saveTimestamp
             ? !(lastState && lastState.timestamp === saveTimestamp)
@@ -178,7 +191,7 @@ class ScriptProcessor<Vars, Input> {
   }
 }
 
-export default provider<ScriptProcessor<any, any>>({
+export default provider<ScriptProcessor>({
   lifetime: 'singleton',
-  deps: [StateControllerI, SCRIPT_LIBS_I],
+  deps: [StateControllerI, ServiceScope, SCRIPT_LIBS_I],
 })(ScriptProcessor);
