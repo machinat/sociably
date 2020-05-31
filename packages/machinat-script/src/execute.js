@@ -68,7 +68,7 @@ const executeContentCommand = async <Vars>(
   const rendered = await maybeInjectContainer<RenderContentFn<Vars>>(
     scope,
     render
-  )({ channel, vars });
+  )({ platform: channel.platform, channel, vars });
 
   return {
     ...context,
@@ -85,7 +85,7 @@ const executeSetVarsCommand = async <Vars>(
   const updatedVars = await maybeInjectContainer<VarsSetFn<Vars>>(
     scope,
     setter
-  )({ channel, vars });
+  )({ platform: channel.platform, channel, vars });
 
   return { ...context, cursor: cursor + 1, vars: updatedVars };
 };
@@ -105,7 +105,7 @@ const executeJumpCondCommand = async <Vars>(
   const isMatched = await maybeInjectContainer<ConditionMatchFn<Vars>>(
     scope,
     condition
-  )({ channel, vars });
+  )({ platform: channel.platform, channel, vars });
 
   return {
     ...context,
@@ -131,7 +131,7 @@ const executeCallCommand = async <Vars>(
     ? await maybeInjectContainer<CallWithVarsFn<Vars, any>>(
         scope,
         withVars
-      )({ channel, vars })
+      )({ platform: channel.platform, channel, vars })
     : ({}: any);
 
   const result = await executeScript(scope, channel, script, index, calleeVars); // eslint-disable-line no-use-before-define
@@ -151,7 +151,7 @@ const executeCallCommand = async <Vars>(
     updatedVars = await maybeInjectContainer<CallReturnSetFn<Vars, any>>(
       scope,
       setter
-    )({ channel, vars }, result.returnValue);
+    )({ platform: channel.platform, channel, vars }, result.returnValue);
   }
 
   return {
@@ -206,7 +206,7 @@ async function executeScript<Vars, Input, ReturnValue>(
         returnValue = await maybeInjectContainer<ReturnValueFn<any>>(
           scope,
           valueGetter
-        )({ vars: context.vars, channel });
+        )({ platform: channel.platform, vars: context.vars, channel });
       }
 
       return {
@@ -279,7 +279,10 @@ async function execute<Vars, Input, ReturnValue>(
             await maybeInjectContainer<PromptSetFn<any, any>>(
               scope,
               awaitingPrompt.setter
-            )({ channel, vars: beginningVars }, input)
+            )(
+              { platform: channel.platform, channel, vars: beginningVars },
+              input
+            )
           : vars;
 
         index += 1;
@@ -303,7 +306,10 @@ async function execute<Vars, Input, ReturnValue>(
         vars = await maybeInjectContainer<CallReturnSetFn<Vars, ReturnValue>>(
           scope,
           setter
-        )({ vars, channel }, (currentReturnValue: any));
+        )(
+          { platform: channel.platform, vars, channel },
+          (currentReturnValue: any)
+        );
       }
 
       index += 1;

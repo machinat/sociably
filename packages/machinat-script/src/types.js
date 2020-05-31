@@ -26,6 +26,7 @@ export type MachinatScript<Vars, Input, RetrunValue> = {|
 |};
 
 type ScriptCircumstances<Vars> = {
+  platform: string,
   channel: MachinatChannel,
   vars: Vars,
 };

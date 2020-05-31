@@ -10,7 +10,7 @@ const scope = moxy({
   },
 });
 
-const channel = { uid: '_MY_CHANNEL_' };
+const channel = { platform: 'test', uid: '_MY_CHANNEL_' };
 
 const mockScript = (commands, entryKeysIndex, name) =>
   moxy(
@@ -43,6 +43,7 @@ describe('executing content command', () => {
     });
     expect(contentCommand.render.mock).toHaveBeenCalledTimes(1);
     expect(contentCommand.render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar' },
     });
@@ -69,11 +70,13 @@ describe('executing content command', () => {
     });
     expect(contentCommand1.render.mock).toHaveBeenCalledTimes(1);
     expect(contentCommand1.render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'baz' },
     });
     expect(contentCommand2.render.mock).toHaveBeenCalledTimes(1);
     expect(contentCommand2.render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'baz' },
     });
@@ -109,6 +112,7 @@ describe('executing content command', () => {
     for (const { render } of commands) {
       expect(render.mock).toHaveBeenCalledTimes(1);
       expect(render.mock).toHaveBeenCalledWith({
+        platform: 'test',
         channel,
         vars: { foo: 'bar' },
       });
@@ -143,6 +147,7 @@ describe('executing content command', () => {
     });
     expect(render.mock).toHaveBeenCalledTimes(1);
     expect(render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar' },
     });
@@ -178,10 +183,12 @@ describe('executing set_vars command', () => {
     });
     expect(setVarsCmd.setter.mock).toHaveBeenCalledTimes(2);
     expect(setVarsCmd.setter.mock).toHaveBeenNthCalledWith(1, {
+      platform: 'test',
       channel,
       vars: { foo: 'bar', t: 0 },
     });
     expect(setVarsCmd.setter.mock).toHaveBeenNthCalledWith(2, {
+      platform: 'test',
       channel,
       vars: { foo: 'bar', t: 1 },
     });
@@ -203,10 +210,12 @@ describe('executing set_vars command', () => {
     });
     expect(setVarsCmd.setter.mock).toHaveBeenCalledTimes(2);
     expect(setVarsCmd.setter.mock).toHaveBeenNthCalledWith(1, {
+      platform: 'test',
       channel,
       vars: { foo: 'bar', t: 0 },
     });
     expect(setVarsCmd.setter.mock).toHaveBeenNthCalledWith(2, {
+      platform: 'test',
       channel,
       vars: { foo: 'bar', t: 1 },
     });
@@ -230,10 +239,12 @@ describe('executing set_vars command', () => {
 
     expect(setter.mock).toHaveBeenCalledTimes(2);
     expect(setter.mock).toHaveBeenNthCalledWith(1, {
+      platform: 'test',
       channel,
       vars: { foo: 'bar', t: 0 },
     });
     expect(setter.mock).toHaveBeenNthCalledWith(2, {
+      platform: 'test',
       channel,
       vars: { foo: 'bar', t: 1 },
     });
@@ -292,10 +303,11 @@ describe('executing prompt command', () => {
 
     expect(promptCommand.setter.mock).toHaveBeenCalledTimes(1);
     expect(promptCommand.setter.mock).toHaveBeenCalledWith(
-      { channel, vars: { foo: 'bar' } },
+      { platform: 'test', channel, vars: { foo: 'bar' } },
       { answer: 'yes' }
     );
     expect(script.commands[2].render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar', answer: 'yes' },
     });
@@ -324,10 +336,11 @@ describe('executing prompt command', () => {
 
     expect(promptCommand.setter.mock).toHaveBeenCalledTimes(1);
     expect(promptCommand.setter.mock).toHaveBeenCalledWith(
-      { channel, vars: { foo: 'bar' } },
+      { platform: 'test', channel, vars: { foo: 'bar' } },
       { answer: 'no' }
     );
     expect(script.commands[2].render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar', answer: 'no' },
     });
@@ -358,10 +371,11 @@ describe('executing prompt command', () => {
 
     expect(setter.mock).toHaveBeenCalledTimes(1);
     expect(setter.mock).toHaveBeenCalledWith(
-      { channel, vars: { foo: 'bar' } },
+      { platform: 'test', channel, vars: { foo: 'bar' } },
       { answer: 'maybe' }
     );
     expect(script.commands[2].render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar', answer: 'maybe' },
     });
@@ -390,11 +404,13 @@ describe('executing call command', () => {
     });
     expect(subScript.commands[0].render.mock).toHaveBeenCalledTimes(1);
     expect(subScript.commands[0].render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: {},
     });
     expect(script.commands[1].render.mock).toHaveBeenCalledTimes(1);
     expect(script.commands[1].render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar' },
     });
@@ -437,21 +453,24 @@ describe('executing call command', () => {
       });
       expect(subScript.commands[1].valueGetter.mock).toHaveBeenCalledTimes(1);
       expect(subScript.commands[1].valueGetter.mock).toHaveBeenCalledWith({
+        platform: 'test',
         channel,
         vars: { hello: 'from top' },
       });
       expect(script.commands[0].withVars.mock).toHaveBeenCalledTimes(1);
       expect(script.commands[0].withVars.mock).toHaveBeenCalledWith({
+        platform: 'test',
         channel,
         vars: { foo: 'bar' },
       });
       expect(script.commands[0].setter.mock).toHaveBeenCalledTimes(1);
       expect(script.commands[0].setter.mock).toHaveBeenCalledWith(
-        { channel, vars: { foo: 'bar' } },
+        { platform: 'test', channel, vars: { foo: 'bar' } },
         { hello: 'from bottom' }
       );
       expect(script.commands[1].render.mock).toHaveBeenCalledTimes(1);
       expect(script.commands[1].render.mock).toHaveBeenCalledWith({
+        platform: 'test',
         channel,
         vars: { foo: 'bar', hello: 'from bottom' },
       });
@@ -474,17 +493,19 @@ describe('executing call command', () => {
       });
       expect(subScript.commands[1].valueGetter.mock).toHaveBeenCalledTimes(1);
       expect(subScript.commands[1].valueGetter.mock).toHaveBeenCalledWith({
+        platform: 'test',
         channel,
         vars: { hello: 'async from top' },
       });
       expect(script.commands[0].withVars.mock).toHaveBeenCalledTimes(1);
       expect(script.commands[0].withVars.mock).toHaveBeenCalledWith({
+        platform: 'test',
         channel,
         vars: { foo: 'bar' },
       });
       expect(script.commands[0].setter.mock).toHaveBeenCalledTimes(1);
       expect(script.commands[0].setter.mock).toHaveBeenCalledWith(
-        { channel, vars: { foo: 'bar' } },
+        { platform: 'test', channel, vars: { foo: 'bar' } },
         { hello: 'from bottom' }
       );
     });
@@ -511,6 +532,7 @@ describe('executing call command', () => {
       });
       expect(subScript.commands[1].valueGetter.mock).toHaveBeenCalledTimes(1);
       expect(subScript.commands[1].valueGetter.mock).toHaveBeenCalledWith({
+        platform: 'test',
         channel,
         vars: { hello: 'from top container' },
       });
@@ -518,6 +540,7 @@ describe('executing call command', () => {
       expect(withVarsContainer.mock).toHaveBeenCalledWith('FOO_SERVICE');
       expect(withVarsFn.mock).toHaveBeenCalledTimes(1);
       expect(withVarsFn.mock).toHaveBeenCalledWith({
+        platform: 'test',
         channel,
         vars: { foo: 'bar' },
       });
@@ -525,7 +548,7 @@ describe('executing call command', () => {
       expect(setterContainer.mock).toHaveBeenCalledWith('FOO_SERVICE');
       expect(setterFn.mock).toHaveBeenCalledTimes(1);
       expect(setterFn.mock).toHaveBeenCalledWith(
-        { channel, vars: { foo: 'bar' } },
+        { platform: 'test', channel, vars: { foo: 'bar' } },
         { hello: 'from bottom' }
       );
     });
@@ -563,6 +586,7 @@ describe('executing call command', () => {
     });
     expect(subScript.commands[0].render.mock).toHaveBeenCalledTimes(1);
     expect(subScript.commands[0].render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'baz' },
     });
@@ -602,6 +626,7 @@ describe('executing call command', () => {
     expect(subScript.commands[0].render.mock).not.toHaveBeenCalled();
     expect(subScript.commands[1].render.mock).toHaveBeenCalledTimes(1);
     expect(subScript.commands[1].render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: {},
     });
@@ -805,6 +830,7 @@ describe('executing return command', () => {
 
     expect(returnCommand.valueGetter.mock).toHaveBeenCalledTimes(1);
     expect(returnCommand.valueGetter.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar' },
     });
@@ -822,6 +848,7 @@ describe('executing return command', () => {
     });
     expect(returnCommand.valueGetter.mock).toHaveBeenCalledTimes(1);
     expect(returnCommand.valueGetter.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar' },
     });
@@ -845,6 +872,7 @@ describe('executing return command', () => {
 
     expect(valueFn.mock).toHaveBeenCalledTimes(1);
     expect(valueFn.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar' },
     });
@@ -937,17 +965,20 @@ describe('run whole script', () => {
     expect(commands[0].condition.mock).toHaveBeenCalledTimes(1);
     expect(commands[1].render.mock).toHaveBeenCalledTimes(1);
     expect(commands[1].render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar' },
     });
     expect(commands[3].render.mock).not.toHaveBeenCalled();
     expect(commands[5].condition.mock).toHaveBeenCalledTimes(1);
     expect(commands[5].condition.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar' },
     });
     expect(commands[6].setter.mock).toHaveBeenCalledTimes(1);
     expect(commands[6].setter.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar' },
     });
@@ -976,6 +1007,7 @@ describe('run whole script', () => {
     expect(commands[1].render.mock).not.toHaveBeenCalled();
     expect(commands[3].render.mock).toHaveBeenCalledTimes(1);
     expect(commands[3].render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'bar' },
     });
@@ -1071,11 +1103,13 @@ describe('run whole script', () => {
 
     expect(SubScript.commands[0].render.mock).toHaveBeenCalledTimes(1);
     expect(SubScript.commands[0].render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { desc: 'fabulous' },
     });
     expect(SubScript.commands[1].condition.mock).toHaveBeenCalledTimes(1);
     expect(SubScript.commands[1].condition.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { desc: 'fabulous' },
     });
@@ -1115,6 +1149,7 @@ describe('run whole script', () => {
     expect(commands[3].render.mock).not.toHaveBeenCalled();
     expect(commands[5].condition.mock).toHaveBeenCalledTimes(1);
     expect(commands[5].condition.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'baz', hello: 'subscript' },
     });
@@ -1122,11 +1157,12 @@ describe('run whole script', () => {
     expect(commands[8].withVars.mock).not.toHaveBeenCalled();
     expect(commands[8].setter.mock).toHaveBeenCalledTimes(1);
     expect(commands[8].setter.mock).toHaveBeenCalledWith(
-      { channel, vars: { foo: 'bar' } },
+      { platform: 'test', channel, vars: { foo: 'bar' } },
       { foo: 'baz', hello: 'subscript' }
     );
     expect(commands[10].render.mock).toHaveBeenCalledTimes(1);
     expect(commands[10].render.mock).toHaveBeenCalledWith({
+      platform: 'test',
       channel,
       vars: { foo: 'baz', hello: 'subscript' },
     });
@@ -1136,7 +1172,7 @@ describe('run whole script', () => {
     expect(commands[1].condition.mock).not.toHaveBeenCalled();
     expect(commands[2].setter.mock).toHaveBeenCalledTimes(1);
     expect(commands[2].setter.mock).toHaveBeenCalledWith(
-      { channel, vars: { foo: 'baz' } },
+      { platform: 'test', channel, vars: { foo: 'baz' } },
       { hello: 'subscript' }
     );
   });
