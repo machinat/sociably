@@ -132,12 +132,9 @@ export default class ServiceMaker {
     const args: (any | any[])[] = [];
 
     for (const { require: target, optional } of deps) {
-      let runtimeProvided;
-      if (
-        runtimeProvisions &&
-        (runtimeProvided = runtimeProvisions.get(target))
-      ) {
-        // provided at runtime
+      if (runtimeProvisions && runtimeProvisions.has(target)) {
+        // service provided at runtime
+        const runtimeProvided = runtimeProvisions.get(target);
         args.push(runtimeProvided);
       } else {
         const resolved = this.provisionMapping.get(target, platform);
