@@ -192,6 +192,6 @@ class ScriptProcessor {
 }
 
 export default provider<ScriptProcessor>({
-  lifetime: 'singleton',
+  lifetime: 'scoped',
   deps: [StateControllerI, ServiceScope, SCRIPT_LIBS_I],
 })(ScriptProcessor);
