@@ -1,6 +1,6 @@
 // @flow
 import invariant from 'invariant';
-import StateControllerI from '@machinat/core/base/StateControllerI';
+import { StateControllerI } from '@machinat/core/base';
 import { ServiceScope, provider } from '@machinat/core/service';
 import type { MachinatChannel, MachinatNode } from '@machinat/core/types';
 import execute from './execute';
