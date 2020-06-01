@@ -103,9 +103,19 @@ export default class ServiceSpace {
     this._singletonCache = null;
   }
 
-  bootstrap(bootstrapProvisions: Map<Interfaceable, any>) {
+  bootstrap(provisions?: Map<Interfaceable, any> = new Map()): ServiceScope {
     const singletonCache = new Map();
     const scopedCache = new Map();
+
+    const bootstrapScope = new ServiceScope(
+      undefined,
+      this.maker,
+      singletonCache,
+      scopedCache
+    );
+
+    const bootstrapProvisions = new Map(provisions);
+    bootstrapProvisions.set(ServiceScope, bootstrapScope);
 
     for (const [, platform, provided] of this._provisionMapping.iterAll()) {
       const bindings = Array.isArray(provided) ? provided : [provided];
@@ -130,6 +140,7 @@ export default class ServiceSpace {
     }
 
     this._singletonCache = singletonCache;
+    return bootstrapScope;
   }
 
   createScope(platform: void | string): ServiceScope {

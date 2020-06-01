@@ -80,7 +80,7 @@ it('provide services bound in bindings', () => {
     ],
     [Foo, { provide: HELLO, withValue: staticGreeter }]
   );
-  space.bootstrap(null);
+  space.bootstrap();
 
   expect(Foo.mock).toHaveBeenCalledTimes(1);
   expect(BarImpl.mock).not.toHaveBeenCalled();
@@ -154,7 +154,7 @@ test('registered bindings prioritize to bindings from module', () => {
       { provide: BAZ, withValue: fakeBaz },
     ]
   );
-  space.bootstrap(null);
+  space.bootstrap();
 
   const scope = space.createScope('test');
   expect(scope.injectContainer(myContainer)).toBe('HI MyFoo AnotherBar NO_BAZ');
@@ -209,13 +209,13 @@ it('throw if bindings conflicted', () => {
 
 it('throw if provider dependencies not bound when bootstrap', () => {
   expect(() =>
-    new ServiceSpace([], [BarImpl]).bootstrap(null)
+    new ServiceSpace([], [BarImpl]).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(`"Foo is not bound"`);
   expect(() =>
     new ServiceSpace(
       [{ provide: HELLO, withValue: staticGreeter }, Foo],
       [{ provide: BAZ, platforms: ['A', 'B'], withProvider: bazFactory }]
-    ).bootstrap(null)
+    ).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(`"BarAbstract is not bound"`);
 });
 
@@ -255,7 +255,7 @@ it('throw circular dependent provider found when bootstrap', () => {
     new ServiceSpace(
       [],
       [{ provide: Foo, withProvider: SelfDependentFoo }]
-    ).bootstrap(null)
+    ).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
     `"SelfDependentFoo is circular dependent"`
   );
@@ -269,7 +269,7 @@ it('throw circular dependent provider found when bootstrap', () => {
     new ServiceSpace(
       [{ provide: Foo, withProvider: CircularDependentFoo }],
       [{ provide: Bar, withProvider: BarImpl }]
-    ).bootstrap(null)
+    ).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
     `"CircularDependentFoo is circular dependent"`
   );
@@ -284,7 +284,7 @@ it('provide service bound on specified platform within corresponded scope', () =
       { provide: BAZ, platforms: ['A', 'B'], withProvider: bazFactory },
     ]
   );
-  space.bootstrap(null);
+  space.bootstrap();
 
   const bazContainer = container({ deps: [BAZ] })((baz) => baz.baz());
 
@@ -320,7 +320,7 @@ it('provide service bound on specified platform prior to default one', () => {
       { provide: Foo, platforms: ['under_water'], withValue: fooWhale },
     ]
   );
-  space.bootstrap(null);
+  space.bootstrap();
 
   const fooContainer = container({ deps: [Foo] })((foo) => foo.foo());
 
@@ -359,7 +359,7 @@ it('throw if bindings conflicted on specified platform when bootstrap', () => {
         { provide: Bar, platforms: ['b', 'c'], withValue: someBar },
       ],
       [Foo]
-    ).bootstrap(null)
+    ).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
     `"BarAbstract is already bound on \\"b\\" platform"`
   );
@@ -371,7 +371,7 @@ it('throw if bindings conflicted on specified platform when bootstrap', () => {
         { provide: Bar, platforms: ['a', 'b'], withValue: someBar },
         { provide: Bar, platforms: ['b', 'c'], withProvider: BarImpl },
       ]
-    ).bootstrap(null)
+    ).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
     `"BarAbstract is already bound on \\"b\\" platform"`
   );
@@ -385,7 +385,7 @@ it('throw if unbound service usage required', () => {
     ],
     [Foo]
   );
-  space.bootstrap(null);
+  space.bootstrap();
 
   const fooContainer = container({ deps: [Foo, Bar, BAZ] })(() => 'BOOM');
 
@@ -404,7 +404,7 @@ test('optional dependency', () => {
     [{ provide: HELLO, withValue: staticGreeter }, Foo],
     [{ provide: Bar, withProvider: BarImpl }]
   );
-  space.bootstrap(null);
+  space.bootstrap();
 
   const optionalDepsContainer = container({
     deps: [
@@ -442,7 +442,7 @@ it('use the same instance of the same provider on different interface', () => {
       { provide: MusicalBar, withProvider: BarImpl },
     ]
   );
-  space.bootstrap(null);
+  space.bootstrap();
 
   const scope = space.createScope('test');
   const [bar, jazzBar, musicalBar] = scope.useServices([
@@ -466,7 +466,7 @@ test('lifecycle of services of different lifetime', () => {
       { provide: HELLO, withValue: staticGreeter },
     ]
   );
-  space.bootstrap(null);
+  space.bootstrap();
 
   expect(Foo.mock).toHaveBeenCalledTimes(1);
   expect(BarImpl.mock).not.toHaveBeenCalled();
@@ -543,7 +543,7 @@ test('provide multi interface as an array of bound value', () => {
       { provide: MULTI_FOOD, withValue: '🥙' },
     ]
   );
-  space.bootstrap(null);
+  space.bootstrap();
 
   expect(meatFactory.mock).toHaveBeenCalledTimes(1);
   expect(bistroFactory.mock).toHaveBeenCalledTimes(1);
@@ -590,7 +590,7 @@ test('provide multi interface as an empty array if no value bound', () => {
     [{ provide: HELLO, withValue: staticGreeter }, Foo],
     [needFooFactory]
   );
-  space.bootstrap(null);
+  space.bootstrap();
 
   expect(needFooFactory.mock).toHaveBeenCalledTimes(1);
   expect(needFooFactory.mock).toHaveBeenCalledWith([]);
@@ -607,7 +607,7 @@ test('inject time provision', () => {
       { provide: BAZ, withProvider: bazFactory },
     ]
   );
-  space.bootstrap(null);
+  space.bootstrap();
 
   const myFoo = { my: 'foo' };
   const myBar = { my: 'bar' };
@@ -668,6 +668,21 @@ test('boostrap time provision', () => {
   ).toThrowErrorMatchingInlineSnapshot(`"BOO is not bound"`);
 });
 
+test('bootstrap time scope', () => {
+  const NeedServiceScope = provider({
+    deps: [ServiceScope],
+    lifetime: 'singleton',
+    factory: moxy(() => ({})),
+  })(class {});
+
+  const space = new ServiceSpace([NeedServiceScope], []);
+  const scope = space.bootstrap();
+
+  expect(scope).toBeInstanceOf(ServiceScope);
+  expect(NeedServiceScope.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(NeedServiceScope.$$factory.mock.calls[0].args[0]).toBe(scope);
+});
+
 test('require underlying ServiceScope', () => {
   const scopeConsumer = container({ deps: [ServiceScope] })(moxy(() => ({})));
 
@@ -675,7 +690,7 @@ test('require underlying ServiceScope', () => {
     [{ provide: HELLO, withValue: staticGreeter }],
     [Foo]
   );
-  space.bootstrap(null);
+  space.bootstrap();
 
   const scope = space.createScope('test');
   scope.injectContainer(scopeConsumer);

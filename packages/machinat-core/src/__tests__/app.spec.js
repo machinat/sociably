@@ -137,8 +137,7 @@ it('start modules', async () => {
     expect.any(TestService)
   );
 
-  // scoped service created when required under boostrap and starting scope
-  expect(AnotherService.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(AnotherService.$$factory.mock).toHaveBeenCalledTimes(1);
   expect(AnotherService.$$factory.mock).toHaveBeenCalledWith(
     expect.any(TestService)
   );

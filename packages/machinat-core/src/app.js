@@ -103,11 +103,10 @@ export default class MachinatApp<
     }
 
     this._serviceSpace = new ServiceSpace(moduleBindings, bindings || []);
-    this._serviceSpace.bootstrap(mounterProvisions);
+    const bootstrapScope = this._serviceSpace.bootstrap(mounterProvisions);
 
-    const startingScope = this._serviceSpace.createScope(undefined);
     await Promise.all(
-      startHooks.map((startHook) => startingScope.injectContainer(startHook))
+      startHooks.map((startHook) => bootstrapScope.injectContainer(startHook))
     );
 
     this._status = ENUM_STARTED;
