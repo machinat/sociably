@@ -59,7 +59,7 @@ const compileContentSegment = (
 ): CompileIntermediate[] => [{ type: 'content', render: segment.render }];
 
 const compileConditionsSegment = (
-  { branches, fallback }: ConditionsSegment<any>,
+  { branches, fallbackBody }: ConditionsSegment<any>,
   uniqCounter: () => number
 ): CompileIntermediate[] => {
   const n: number = uniqCounter();
@@ -100,11 +100,11 @@ const compileConditionsSegment = (
   }
 
   const commands: CompileIntermediate[] = [...conditionsSection];
-  if (fallback) {
-    commands.push(...compileSegments(fallback, uniqCounter), jumpToEnd);
+  if (fallbackBody) {
+    commands.push(...compileSegments(fallbackBody, uniqCounter));
   }
 
-  commands.push(...bodiesSections, endTag);
+  commands.push(jumpToEnd, ...bodiesSections, endTag);
   return commands;
 };
 
@@ -228,7 +228,7 @@ const compile = <Vars, Input, RetrunValue>(
   const keyIndex = new Map();
   const entryKeysIndex = new Map();
 
-  // remove labels and store their indexes
+  // remove tags and store their indexes
   const mediateCommands = [];
   for (const intermediate of intermediates) {
     if (intermediate.type === 'tag') {
@@ -249,6 +249,7 @@ const compile = <Vars, Input, RetrunValue>(
 
   // translate "goto tag" to "jump index"
   const commands: ScriptCommand<Vars, Input, RetrunValue>[] = [];
+
   for (const [idx, command] of mediateCommands.entries()) {
     if (command.type === 'goto') {
       const targetIdx = keyIndex.get(command.to);

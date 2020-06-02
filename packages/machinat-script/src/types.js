@@ -208,7 +208,7 @@ export type ConditionsSegment<Vars> = {|
     condition: ConditionMatcher<Vars>,
     body: ScriptSegment<Vars>[],
   |}[],
-  fallback: void | ScriptSegment<Vars, any, any>[],
+  fallbackBody: null | ScriptSegment<Vars, any, any>[],
 |};
 
 export type WhileSegment<Vars> = {|

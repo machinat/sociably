@@ -1,73 +1,135 @@
 import compile from '../compile';
 
-it('compile conditions segment ok', () => {
-  const { commands, entryKeysIndex } = compile(
-    [
+describe('compile conditions segment', () => {
+  test('with multi conditions', () => {
+    const { commands, entryKeysIndex } = compile(
+      [
+        {
+          type: 'conditions',
+          branches: [
+            {
+              condition: () => false,
+              body: [
+                { type: 'content', render: () => 'foo' },
+                { type: 'prompt', key: 'ask1' },
+              ],
+            },
+            {
+              condition: () => true,
+              body: [
+                { type: 'content', render: () => 'bar' },
+                { type: 'prompt', key: 'ask2' },
+              ],
+            },
+          ],
+          fallbackBody: null,
+        },
+      ],
+      { scriptName: 'MyScript' }
+    );
+    expect(commands).toEqual([
       {
-        type: 'conditions',
-        branches: [
-          {
-            condition: () => false,
-            body: [
-              { type: 'content', render: () => 'foo' },
-              { type: 'prompt', key: 'ask1' },
-            ],
-          },
-          {
-            condition: () => true,
-            body: [
-              { type: 'content', render: () => 'bar' },
-              { type: 'prompt', key: 'ask2' },
-            ],
-          },
-        ],
-        fallback: [
-          { type: 'content', render: () => 'baz' },
-          { type: 'prompt', key: 'ask3' },
-        ],
+        type: 'jump_cond',
+        condition: expect.any(Function),
+        offset: 3,
+        isNot: false,
       },
-    ],
-    { scriptName: 'MyScript' }
-  );
-  expect(commands).toEqual([
-    {
-      type: 'jump_cond',
-      condition: expect.any(Function),
-      offset: 5,
-      isNot: false,
-    },
-    {
-      type: 'jump_cond',
-      condition: expect.any(Function),
-      offset: 7,
-      isNot: false,
-    },
-    { type: 'content', render: expect.any(Function) },
-    { type: 'prompt', key: 'ask3' },
-    { type: 'jump', offset: 7 },
-    { type: 'content', render: expect.any(Function) },
-    { type: 'prompt', key: 'ask1' },
-    { type: 'jump', offset: 4 },
-    { type: 'content', render: expect.any(Function) },
-    { type: 'prompt', key: 'ask2' },
-    { type: 'jump', offset: 1 },
-  ]);
-  expect(commands[0].condition({})).toBe(false);
-  expect(commands[1].condition({})).toBe(true);
-  expect(commands[2].render({})).toBe('baz');
-  expect(commands[5].render({})).toBe('foo');
-  expect(commands[8].render({})).toBe('bar');
+      {
+        type: 'jump_cond',
+        condition: expect.any(Function),
+        offset: 5,
+        isNot: false,
+      },
+      { type: 'jump', offset: 7 },
+      { type: 'content', render: expect.any(Function) },
+      { type: 'prompt', key: 'ask1' },
+      { type: 'jump', offset: 4 },
+      { type: 'content', render: expect.any(Function) },
+      { type: 'prompt', key: 'ask2' },
+      { type: 'jump', offset: 1 },
+    ]);
+    expect(commands[0].condition({})).toBe(false);
+    expect(commands[1].condition({})).toBe(true);
+    expect(commands[3].render({})).toBe('foo');
+    expect(commands[6].render({})).toBe('bar');
 
-  expect(entryKeysIndex).toEqual(
-    new Map([
-      ['ask1', 6],
-      ['ask2', 9],
-      ['ask3', 3],
-    ])
-  );
+    expect(entryKeysIndex).toEqual(
+      new Map([
+        ['ask1', 4],
+        ['ask2', 7],
+      ])
+    );
+  });
+
+  test('with multi conditions and fallback', () => {
+    const { commands, entryKeysIndex } = compile(
+      [
+        {
+          type: 'conditions',
+          branches: [
+            {
+              condition: () => false,
+              body: [
+                { type: 'content', render: () => 'foo' },
+                { type: 'prompt', key: 'ask1' },
+              ],
+            },
+            {
+              condition: () => true,
+              body: [
+                { type: 'content', render: () => 'bar' },
+                { type: 'prompt', key: 'ask2' },
+              ],
+            },
+          ],
+          fallbackBody: [
+            { type: 'content', render: () => 'baz' },
+            { type: 'prompt', key: 'ask3' },
+          ],
+        },
+      ],
+      { scriptName: 'MyScript' }
+    );
+    expect(commands).toEqual([
+      {
+        type: 'jump_cond',
+        condition: expect.any(Function),
+        offset: 5,
+        isNot: false,
+      },
+      {
+        type: 'jump_cond',
+        condition: expect.any(Function),
+        offset: 7,
+        isNot: false,
+      },
+      { type: 'content', render: expect.any(Function) },
+      { type: 'prompt', key: 'ask3' },
+      { type: 'jump', offset: 7 },
+      { type: 'content', render: expect.any(Function) },
+      { type: 'prompt', key: 'ask1' },
+      { type: 'jump', offset: 4 },
+      { type: 'content', render: expect.any(Function) },
+      { type: 'prompt', key: 'ask2' },
+      { type: 'jump', offset: 1 },
+    ]);
+    expect(commands[0].condition({})).toBe(false);
+    expect(commands[1].condition({})).toBe(true);
+    expect(commands[2].render({})).toBe('baz');
+    expect(commands[5].render({})).toBe('foo');
+    expect(commands[8].render({})).toBe('bar');
+
+    expect(entryKeysIndex).toEqual(
+      new Map([
+        ['ask1', 6],
+        ['ask2', 9],
+        ['ask3', 3],
+      ])
+    );
+  });
 });
 
-it('compile while segment ok', () => {
+it('compile while segment', () => {
   const { commands, entryKeysIndex } = compile(
     [
       {
@@ -98,7 +160,7 @@ it('compile while segment ok', () => {
   expect(commands[1].render({ target: 'world' })).toBe('hello world');
 });
 
-it('compile other segments type ok', () => {
+it('compile other segments type', () => {
   const OrderScript = { fake: 'script' };
 
   const { commands, entryKeysIndex } = compile(
@@ -165,7 +227,7 @@ it('compile other segments type ok', () => {
   expect(commands[6].render({})).toBe('enjoy ur meal');
 });
 
-it('throw conditions key duplicated', () => {
+it('throw if conditions key duplicated', () => {
   expect(() =>
     compile(
       [

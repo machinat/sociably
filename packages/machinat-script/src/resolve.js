@@ -50,7 +50,7 @@ const ifChildrenReducer = (
     )}`
   );
 
-  const { branches, fallback } = segment;
+  const { branches, fallbackBody } = segment;
 
   if (node.type === KEYWORDS.THEN) {
     invariant(
@@ -64,7 +64,7 @@ const ifChildrenReducer = (
     });
   } else if (node.type === KEYWORDS.ELSE_IF) {
     invariant(
-      branches.length > 0 && !fallback,
+      branches.length > 0 && !fallbackBody,
       '<ELSE_IF /> should be placed between <THEN /> and <ELSE /> blocks'
     );
 
@@ -79,14 +79,17 @@ const ifChildrenReducer = (
     });
   } else if (node.type === KEYWORDS.ELSE) {
     invariant(
-      branches.length > 0 && !fallback,
-      fallback
+      branches.length > 0 && !fallbackBody,
+      fallbackBody
         ? 'multiple <ELSE/> block received in <IF/>'
         : 'no <THEN/> block before <ELSE/>'
     );
 
     // eslint-disable-next-line no-param-reassign
-    segment.fallback = resolveSegments(node.props.children, `${path}.children`);
+    segment.fallbackBody = resolveSegments(
+      node.props.children,
+      `${path}.children`
+    );
   }
 
   return segment;
@@ -107,7 +110,7 @@ const resolveIf = (
     {
       type: 'conditions',
       branches: [],
-      fallback: undefined,
+      fallbackBody: null,
     },
     `${path}.children`,
     { condition }

@@ -61,7 +61,7 @@ describe('resolve <IF/>', () => {
             body: [{ type: 'content', render: expect.any(Function) }],
           },
         ],
-        fallback: undefined,
+        fallbackBody: null,
       },
     ]);
     expect(segments[0].branches[0].condition()).toBe(true);
@@ -84,10 +84,10 @@ describe('resolve <IF/>', () => {
             body: [{ type: 'content', render: expect.any(Function) }],
           },
         ],
-        fallback: [{ type: 'content', render: expect.any(Function) }],
+        fallbackBody: [{ type: 'content', render: expect.any(Function) }],
       },
     ]);
-    expect(segments[0].fallback[0].render()).toBe('bar');
+    expect(segments[0].fallbackBody[0].render()).toBe('bar');
   });
 
   it('resolve with else if conditions', () => {
@@ -106,7 +106,7 @@ describe('resolve <IF/>', () => {
           condition: expect.any(Function),
           body: [{ type: 'content', render: expect.any(Function) }],
         }),
-        fallback: [{ type: 'content', render: expect.any(Function) }],
+        fallbackBody: [{ type: 'content', render: expect.any(Function) }],
       },
     ]);
     expect(segments[0].branches[0].condition()).toBe(true);
@@ -115,7 +115,7 @@ describe('resolve <IF/>', () => {
     expect(segments[0].branches[1].body[0].render()).toBe('bar');
     expect(segments[0].branches[2].condition()).toBe(true);
     expect(segments[0].branches[2].body[0].render()).toBe('baz');
-    expect(segments[0].fallback[0].render()).toBe('boom boom pow');
+    expect(segments[0].fallbackBody[0].render()).toBe('boom boom pow');
   });
 
   it('resolve nested <IF/>', () => {
@@ -152,7 +152,7 @@ describe('resolve <IF/>', () => {
 
   it('resolve ok if no children blocks', () => {
     expect(resolve(<IF condition={() => true}></IF>)).toEqual([
-      { type: 'conditions', branches: [] },
+      { type: 'conditions', branches: [], fallbackBody: null },
     ]);
   });
 

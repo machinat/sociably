@@ -22,7 +22,7 @@ Array [
                 "condition": [Function],
               },
             ],
-            "fallback": undefined,
+            "fallbackBody": null,
             "type": "conditions",
           },
           Object {
@@ -59,7 +59,7 @@ Array [
                 "condition": [Function],
               },
             ],
-            "fallback": undefined,
+            "fallbackBody": null,
             "type": "conditions",
           },
           Object {
@@ -70,7 +70,7 @@ Array [
         "condition": [Function],
       },
     ],
-    "fallback": Array [
+    "fallbackBody": Array [
       Object {
         "render": [Function],
         "type": "content",
@@ -87,7 +87,7 @@ Array [
             "condition": [Function],
           },
         ],
-        "fallback": Array [
+        "fallbackBody": Array [
           Object {
             "render": [Function],
             "type": "content",
@@ -164,7 +164,7 @@ Array [
                 "condition": [Function],
               },
             ],
-            "fallback": Array [
+            "fallbackBody": Array [
               Object {
                 "render": [Function],
                 "type": "content",
@@ -176,7 +176,7 @@ Array [
         "condition": [Function],
       },
     ],
-    "fallback": Array [
+    "fallbackBody": Array [
       Object {
         "render": [Function],
         "type": "content",
@@ -260,7 +260,7 @@ Array [
             "condition": [Function],
           },
         ],
-        "fallback": Array [
+        "fallbackBody": Array [
           Object {
             "type": "return",
             "valueGetter": [Function],
