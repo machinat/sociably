@@ -3,11 +3,18 @@ import invariant from 'invariant';
 import { provider } from '@machinat/core/service';
 import type { MachinatChannel } from '@machinat/core/types';
 import { DialogFlowClientI, MODULE_CONFIGS_I } from './interface';
-import type { DialogFlowModuleConfigs } from './types';
+
+type RecognizerOptions = {
+  projectId: string,
+  defaultLanguageCode: string,
+};
 
 type DetectIntentOptions = {
   languageCode?: string,
-  queryParams?: Object,
+  timeZone?: string,
+  geoLocation?: Object,
+  contexts?: string[],
+  resetContexts?: boolean,
 };
 
 class DialogFlowIntentRecognizer {
@@ -17,10 +24,13 @@ class DialogFlowIntentRecognizer {
 
   constructor(
     client: DialogFlowClientI,
-    projectId: string,
-    defaultLanguageCode?: string
+    { projectId, defaultLanguageCode }: RecognizerOptions = {}
   ) {
-    invariant(projectId, 'projectId should not be empty');
+    invariant(projectId, 'options.projectId should not be empty');
+    invariant(
+      defaultLanguageCode,
+      'options.defaultLanguageCode should not be empty'
+    );
 
     this._client = client;
     this.projectId = projectId;
@@ -42,7 +52,16 @@ class DialogFlowIntentRecognizer {
           languageCode: options?.languageCode || this.defaultLanguageCode,
         },
       },
-      queryParams: options?.queryParams,
+      queryParams: options
+        ? {
+            timeZone: options.timeZone,
+            geoLocation: options.geoLocation,
+            resetContexts: options.resetContexts,
+            contexts: options.contexts?.map((contextName) => ({
+              name: `projects/${this.projectId}/agent/sessions/${channel.uid}/contexts/${contextName}`,
+            })),
+          }
+        : undefined,
     });
 
     return queryResult;
@@ -52,10 +71,4 @@ class DialogFlowIntentRecognizer {
 export default provider<DialogFlowIntentRecognizer>({
   lifetime: 'scoped',
   deps: [DialogFlowClientI, MODULE_CONFIGS_I],
-  factory: (client: DialogFlowClientI, configs: DialogFlowModuleConfigs) =>
-    new DialogFlowIntentRecognizer(
-      client,
-      configs.projectId,
-      configs.defaultLanguageCode
-    ),
 })(DialogFlowIntentRecognizer);

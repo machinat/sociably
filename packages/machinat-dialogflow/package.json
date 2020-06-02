@@ -19,7 +19,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "dialogflow": "^0.10.3",
+    "dialogflow": "^1.2.0",
     "invariant": "^2.2.4"
   },
   "peerDependencies": {

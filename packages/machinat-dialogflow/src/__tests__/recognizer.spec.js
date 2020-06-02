@@ -30,14 +30,27 @@ beforeEach(() => {
 });
 
 test('throw if porjectId is empty', () => {
-  expect(() => new Recognizer(client)).toThrowErrorMatchingInlineSnapshot(
-    `"projectId should not be empty"`
+  expect(
+    () => new Recognizer(client, { defaultLanguageCode: 'en-US' })
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"options.projectId should not be empty"`
+  );
+});
+
+test('throw if defaultLanguageCode is empty', () => {
+  expect(
+    () => new Recognizer(client, { projectId: '_PROJECT_ID_' })
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"options.defaultLanguageCode should not be empty"`
   );
 });
 
 describe('#recognizeText()', () => {
-  it('detect intent and return queryResult', async () => {
-    const recognizer = new Recognizer(client, '_PROJECT_ID_');
+  test('use default language', async () => {
+    const recognizer = new Recognizer(client, {
+      projectId: '_PROJECT_ID_',
+      defaultLanguageCode: 'en-US',
+    });
     const channel = { uid: 'chat.with.somoeone' };
 
     await expect(
@@ -49,21 +62,6 @@ describe('#recognizeText()', () => {
       '_PROJECT_ID_',
       'chat.with.somoeone'
     );
-
-    expect(client.detectIntent.mock).toHaveBeenCalledTimes(1);
-    expect(client.detectIntent.mock).toHaveBeenCalledWith({
-      session: 'projects/foo/agent/sessions/bar',
-      queryInput: { text: { text: 'hello bot' } },
-    });
-  });
-
-  test('use default language', async () => {
-    const recognizer = new Recognizer(client, '_PROJECT_ID_', 'en-US');
-    const channel = { uid: 'chat.with.somoeone' };
-
-    await expect(
-      recognizer.recognizeText(channel, 'hello bot')
-    ).resolves.toEqual(queryResult);
 
     expect(client.detectIntent.mock).toHaveBeenCalledTimes(1);
     expect(client.detectIntent.mock).toHaveBeenCalledWith({
@@ -73,29 +71,45 @@ describe('#recognizeText()', () => {
   });
 
   test('detect intent with options', async () => {
-    const recognizer = new Recognizer(client, '_PROJECT_ID_', 'en-US');
-    const channel = { uid: 'chat.with.somoeone' };
-
-    const queryParams = { contexts: [{ some: 'context' }] };
+    const recognizer = new Recognizer(client, {
+      projectId: '_PROJECT_ID_',
+      defaultLanguageCode: 'en-US',
+    });
+    const channel = { uid: 'foo.chat' };
 
     await expect(
       recognizer.recognizeText(channel, 'hello bot', {
-        queryParams,
         languageCode: 'zh-TW',
+        timeZone: 'Asia/Taipei',
+        geoLocation: { latitude: 25.0456, longitude: 121.5196 },
+        resetContexts: true,
+        contexts: ['bar', 'baz'],
       })
     ).resolves.toEqual(queryResult);
 
     expect(client.sessionPath.mock).toHaveBeenCalledTimes(1);
     expect(client.sessionPath.mock).toHaveBeenCalledWith(
       '_PROJECT_ID_',
-      'chat.with.somoeone'
+      'foo.chat'
     );
 
     expect(client.detectIntent.mock).toHaveBeenCalledTimes(1);
     expect(client.detectIntent.mock).toHaveBeenCalledWith({
       session: 'projects/foo/agent/sessions/bar',
       queryInput: { text: { text: 'hello bot', languageCode: 'zh-TW' } },
-      queryParams,
+      queryParams: {
+        timeZone: 'Asia/Taipei',
+        geoLocation: { latitude: 25.0456, longitude: 121.5196 },
+        resetContexts: true,
+        contexts: [
+          {
+            name: 'projects/_PROJECT_ID_/agent/sessions/foo.chat/contexts/bar',
+          },
+          {
+            name: 'projects/_PROJECT_ID_/agent/sessions/foo.chat/contexts/baz',
+          },
+        ],
+      },
     });
   });
 });
