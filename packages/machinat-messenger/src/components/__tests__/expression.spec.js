@@ -9,7 +9,7 @@ import { TypingOn, TypingOff, MarkSeen } from '../senderAction';
 
 const generalComponentDelegator = moxy((node, path) => [
   node.type === 'br'
-    ? { type: 'break', node, path }
+    ? { type: 'break', value: null, node, path }
     : { type: 'text', value: node.type, node, path },
 ]);
 
@@ -79,6 +79,17 @@ it.each([
       personaId="_PERSONA_ID_"
     >
       {children}
+    </Expression>,
+  ],
+  [
+    'Expression with break, pause and thunk in children',
+    <Expression>
+      foo
+      <br />
+      bar
+      <Machinat.Pause until={async () => {}} />
+      baz
+      <Machinat.Thunk effect={async () => {}} />
     </Expression>,
   ],
 ])('%s match snapshot', async (_, element) => {

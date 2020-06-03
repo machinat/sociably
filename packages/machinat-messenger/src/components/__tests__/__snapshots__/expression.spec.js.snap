@@ -48,6 +48,71 @@ Array [
 ]
 `;
 
+exports[`Expression with break, pause and thunk in children match snapshot 1`] = `
+Array [
+  Object {
+    "node": "foo",
+    "path": "$#Expression.children:0",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "text": "foo",
+      },
+      "messaging_type": undefined,
+      "notification_type": undefined,
+      "persona_id": undefined,
+      "tag": undefined,
+    },
+  },
+  Object {
+    "node": "bar",
+    "path": "$#Expression.children:2",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "text": "bar",
+      },
+      "messaging_type": undefined,
+      "notification_type": undefined,
+      "persona_id": undefined,
+      "tag": undefined,
+    },
+  },
+  Object {
+    "node": <Machinat.Pause
+      until={[Function]}
+    />,
+    "path": "$#Expression.children:3",
+    "type": "pause",
+    "value": [Function],
+  },
+  Object {
+    "node": "baz",
+    "path": "$#Expression.children:4",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "metadata": undefined,
+        "quick_replies": undefined,
+        "text": "baz",
+      },
+      "messaging_type": undefined,
+      "notification_type": undefined,
+      "persona_id": undefined,
+      "tag": undefined,
+    },
+  },
+  Object {
+    "node": <Machinat.Thunk
+      effect={[Function]}
+    />,
+    "path": "$#Expression.children:5",
+    "type": "thunk",
+    "value": [Function],
+  },
+]
+`;
+
 exports[`Expression with metadata match snapshot 1`] = `
 Array [
   Object {
