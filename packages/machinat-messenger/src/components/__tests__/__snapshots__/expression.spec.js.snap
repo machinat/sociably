@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Utterance with all props match snapshot 1`] = `
+exports[`Expression with all props match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Utterance.children::0",
+    "path": "$#Expression.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -18,7 +18,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Utterance.children::2",
+    "path": "$#Expression.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -48,11 +48,11 @@ Array [
 ]
 `;
 
-exports[`Utterance with metadata match snapshot 1`] = `
+exports[`Expression with metadata match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Utterance.children::0",
+    "path": "$#Expression.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -66,7 +66,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Utterance.children::2",
+    "path": "$#Expression.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -83,11 +83,11 @@ Array [
 ]
 `;
 
-exports[`Utterance with notificationType match snapshot 1`] = `
+exports[`Expression with notificationType match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Utterance.children::0",
+    "path": "$#Expression.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -101,7 +101,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Utterance.children::2",
+    "path": "$#Expression.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -118,11 +118,11 @@ Array [
 ]
 `;
 
-exports[`Utterance with personaId match snapshot 1`] = `
+exports[`Expression with personaId match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Utterance.children::0",
+    "path": "$#Expression.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -136,7 +136,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Utterance.children::2",
+    "path": "$#Expression.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -153,11 +153,11 @@ Array [
 ]
 `;
 
-exports[`Utterance with quickReplies match snapshot 1`] = `
+exports[`Expression with quickReplies match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Utterance.children::0",
+    "path": "$#Expression.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -171,7 +171,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Utterance.children::2",
+    "path": "$#Expression.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -201,11 +201,11 @@ Array [
 ]
 `;
 
-exports[`Utterance with type and tag match snapshot 1`] = `
+exports[`Expression with type and tag match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Utterance.children::0",
+    "path": "$#Expression.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -219,7 +219,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Utterance.children::2",
+    "path": "$#Expression.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -236,11 +236,11 @@ Array [
 ]
 `;
 
-exports[`Utterance with type match snapshot 1`] = `
+exports[`Expression with type match snapshot 1`] = `
 Array [
   Object {
     "node": "foo",
-    "path": "$#Utterance.children::0",
+    "path": "$#Expression.children::0",
     "type": "unit",
     "value": Object {
       "message": Object {
@@ -254,7 +254,7 @@ Array [
   },
   Object {
     "node": <bar />,
-    "path": "$#Utterance.children::2",
+    "path": "$#Expression.children::2",
     "type": "unit",
     "value": Object {
       "message": Object {

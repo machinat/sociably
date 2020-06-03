@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { annotateMessengerComponent, isMessageEntry } from '../utils';
 
-export const Utterance = async (
+export const Expression = async (
   {
     props: {
       children,
@@ -74,4 +74,5 @@ export const Utterance = async (
 
   return childrenSegments;
 };
-annotateMessengerComponent(Utterance);
+
+annotateMessengerComponent(Expression);
