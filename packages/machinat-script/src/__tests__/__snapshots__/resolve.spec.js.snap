@@ -130,6 +130,7 @@ Array [
                 "type": "content",
               },
               Object {
+                "escape": [Function],
                 "key": "ask_1",
                 "setter": [Function],
                 "type": "prompt",
@@ -156,6 +157,7 @@ Array [
                     "type": "content",
                   },
                   Object {
+                    "escape": [Function],
                     "key": "ask_2",
                     "setter": [Function],
                     "type": "prompt",
@@ -252,6 +254,7 @@ Array [
                 "type": "content",
               },
               Object {
+                "escape": [Function],
                 "key": "ask_3",
                 "setter": [Function],
                 "type": "prompt",
@@ -306,6 +309,7 @@ Array [
     "type": "label",
   },
   Object {
+    "escape": undefined,
     "key": "ask_4",
     "setter": [Function],
     "type": "prompt",

@@ -34,6 +34,7 @@ Array [
           "type": "content",
         },
         Object {
+          "escape": [Function],
           "key": "childPrompt",
           "setter": [Function],
           "type": "prompt",
@@ -63,6 +64,7 @@ Array [
     "type": "content",
   },
   Object {
+    "escape": [Function],
     "key": "ask_1",
     "setter": [Function],
     "type": "prompt",
@@ -80,6 +82,7 @@ Array [
     "type": "content",
   },
   Object {
+    "escape": [Function],
     "key": "ask_2",
     "setter": [Function],
     "type": "prompt",

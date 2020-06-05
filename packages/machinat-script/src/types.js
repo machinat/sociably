@@ -104,9 +104,19 @@ export type PromptSetter<Vars, Input> =
   | PromptSetFn<Vars, Input>
   | ServiceContainer<PromptSetFn<Vars, Input>>;
 
+export type PromptEscapePredecateFn<Vars, Input> = (
+  circumstances: ScriptCircumstances<Vars>,
+  input: Input
+) => boolean | Promise<boolean>;
+
+export type PromptEscapePredecator<Vars, Input> =
+  | PromptEscapePredecateFn<Vars, Input>
+  | ServiceContainer<PromptEscapePredecateFn<Vars, Input>>;
+
 export type PromptElementProps<Vars, Input> = {
-  set: PromptSetter<Vars, Input>,
   key: string,
+  set?: PromptSetter<Vars, Input>,
+  escape?: PromptEscapePredecator<Vars, Input>,
 };
 
 export type PromptElement<Vars, Input> = MachinatElement<
@@ -226,6 +236,7 @@ export type PromptSegment<Vars, Input> = {|
   type: 'prompt',
   key: string,
   setter: ?PromptSetter<Vars, Input>,
+  escape?: PromptEscapePredecator<Vars, Input>,
 |};
 
 export type LabelSegment = {|
@@ -266,6 +277,7 @@ export type PromptCommand<Vars, Input> = {|
   type: 'prompt',
   key: string,
   setter: ?PromptSetter<Vars, Input>,
+  escape?: PromptEscapePredecator<Vars, Input>,
 |};
 
 export type CallCommand<CallerVars, CalleeVars, RetrunValue> = {|
@@ -311,13 +323,13 @@ export type ScriptCommand<Vars, Input, RetrunValue> =
 export type CallStatus<Vars, Input, RetrunValue> = {
   script: MachinatScript<Vars, Input, RetrunValue>,
   vars: Vars,
-  stoppedAt: void | string,
+  stopAt: void | string,
 };
 
 export type SerializedCallStatus<Vars> = {
   name: string,
   vars: Vars,
-  stoppedAt: string,
+  stopAt: string,
 };
 
 export type ScriptProcessState = {

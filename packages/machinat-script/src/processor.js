@@ -10,9 +10,10 @@ import type { MachinatScript, CallStatus, ScriptProcessState } from './types';
 
 type RuntimeResult<Vars, Input, ReturnValue> = {
   finished: boolean,
+  escaped: boolean,
   content: MachinatNode,
   currentScript: null | MachinatScript<Vars, Input, ReturnValue>,
-  stoppedAt: void | string,
+  stopAt: void | string,
 };
 
 class ScriptRuntime {
@@ -47,13 +48,14 @@ class ScriptRuntime {
     if (!this.callStack) {
       return {
         finished: true,
+        escaped: false,
         content: null,
         currentScript: null,
-        stoppedAt: undefined,
+        stopAt: undefined,
       };
     }
 
-    const { finished, stack, content } = await execute(
+    const { finished, escaped, stack, content } = await execute(
       this._serviceScope,
       this.channel,
       this.callStack,
@@ -67,9 +69,10 @@ class ScriptRuntime {
 
     return {
       finished,
+      escaped,
       content,
       currentScript: lastCallStatus?.script || null,
-      stoppedAt: lastCallStatus?.stoppedAt,
+      stopAt: lastCallStatus?.stopAt,
     };
   }
 }
@@ -120,7 +123,7 @@ class ScriptProcessor {
     }
 
     return new ScriptRuntime(this._serviceScope, channel, [
-      { script, vars, stoppedAt: goto },
+      { script, vars, stopAt: goto },
     ]);
   }
 
@@ -134,11 +137,11 @@ class ScriptProcessor {
     }
 
     const statusStack = [];
-    for (const { name, vars, stoppedAt } of state.callStack) {
+    for (const { name, vars, stopAt } of state.callStack) {
       const script = this._libs.get(name);
       invariant(script, `"${name}" not found in linked scripts`);
 
-      statusStack.push({ script, vars, stoppedAt });
+      statusStack.push({ script, vars, stopAt });
     }
 
     return new ScriptRuntime(

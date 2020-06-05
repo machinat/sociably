@@ -12,17 +12,17 @@ export const isScript = (type: any): boolean %checks =>
 
 export const serializeScriptStatus = <Vars, Input, ReturnValue>({
   script,
-  stoppedAt,
+  stopAt,
   vars,
 }: CallStatus<Vars, Input, ReturnValue>): SerializedCallStatus<Vars> => {
   invariant(
-    stoppedAt,
+    stopAt,
     'call status is not stopped at any break point when serialize'
   );
 
   return {
     name: script.name,
-    stoppedAt,
+    stopAt,
     vars,
   };
 };

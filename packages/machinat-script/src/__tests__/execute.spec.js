@@ -37,6 +37,7 @@ describe('executing content command', () => {
       )
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['hello world'],
       stack: null,
@@ -64,6 +65,7 @@ describe('executing content command', () => {
       )
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['hello', 'world'],
       stack: null,
@@ -105,6 +107,7 @@ describe('executing content command', () => {
       )
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['hello', 'it is an', 'async', 'world'],
       stack: null,
@@ -141,6 +144,7 @@ describe('executing content command', () => {
       )
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['hello', 'a contained', 'world'],
       stack: null,
@@ -177,6 +181,7 @@ describe('executing set_vars command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar', t: 0 } }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['hi#1', 'hi#2'],
       stack: null,
@@ -204,6 +209,7 @@ describe('executing set_vars command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar', t: 0 } }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['hi#1', 'hi#2'],
       stack: null,
@@ -230,6 +236,7 @@ describe('executing set_vars command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar', t: 0 } }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['hi#1', 'hi#2'],
       stack: null,
@@ -277,9 +284,10 @@ describe('executing prompt command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: false,
+      escaped: false,
       returnValue: undefined,
       content: ['foo'],
-      stack: [{ script, vars: { foo: 'bar' }, stoppedAt: 'prompt#0' }],
+      stack: [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
     });
 
     expect(promptCommand.setter.mock).not.toHaveBeenCalled();
@@ -290,12 +298,13 @@ describe('executing prompt command', () => {
       execute(
         scope,
         channel,
-        [{ script, vars: { foo: 'bar' }, stoppedAt: 'prompt#0' }],
+        [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
         true,
         { answer: 'yes' }
       )
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['yes'],
       stack: null,
@@ -323,12 +332,13 @@ describe('executing prompt command', () => {
       execute(
         scope,
         channel,
-        [{ script, vars: { foo: 'bar' }, stoppedAt: 'prompt#0' }],
+        [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
         true,
         { answer: 'no' }
       )
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['no'],
       stack: null,
@@ -355,12 +365,13 @@ describe('executing prompt command', () => {
       execute(
         scope,
         channel,
-        [{ script, vars: { foo: 'bar' }, stoppedAt: 'prompt#0' }],
+        [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
         true,
         { answer: 'maybe' }
       )
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['maybe'],
       stack: null,
@@ -380,6 +391,52 @@ describe('executing prompt command', () => {
       vars: { foo: 'bar', answer: 'maybe' },
     });
   });
+
+  it('escape if escape function exist and return true', async () => {
+    promptCommand.mock.getter('escape').fakeReturnValue(() => true);
+
+    await expect(
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
+        true,
+        { answer: 'ok' }
+      )
+    ).resolves.toEqual({
+      finished: false,
+      escaped: true,
+      returnValue: undefined,
+      content: [],
+      stack: [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
+    });
+
+    expect(promptCommand.setter.mock).not.toHaveBeenCalled();
+    expect(script.commands[2].render.mock).not.toHaveBeenCalled();
+  });
+
+  it('continue if escape function exist and return false', async () => {
+    promptCommand.mock.getter('escape').fakeReturnValue(() => false);
+
+    await expect(
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
+        true,
+        { answer: 'ok' }
+      )
+    ).resolves.toEqual({
+      finished: true,
+      escaped: false,
+      returnValue: undefined,
+      content: ['ok'],
+      stack: null,
+    });
+
+    expect(promptCommand.setter.mock).toHaveBeenCalled();
+    expect(script.commands[2].render.mock).toHaveBeenCalled();
+  });
 });
 
 describe('executing call command', () => {
@@ -398,6 +455,7 @@ describe('executing call command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['at skyfall', 'aww~awwww~awwwwwwwwww~'],
       stack: null,
@@ -447,6 +505,7 @@ describe('executing call command', () => {
         execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
       ).resolves.toEqual({
         finished: true,
+        escaped: false,
         returnValue: undefined,
         content: ['hello the other side', 'yaaaaaay'],
         stack: null,
@@ -487,6 +546,7 @@ describe('executing call command', () => {
         execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
       ).resolves.toEqual({
         finished: true,
+        escaped: false,
         returnValue: undefined,
         content: ['hello the other side', 'yaaaaaay'],
         stack: null,
@@ -526,6 +586,7 @@ describe('executing call command', () => {
         execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
       ).resolves.toEqual({
         finished: true,
+        escaped: false,
         returnValue: undefined,
         content: ['hello the other side', 'yaaaaaay'],
         stack: null,
@@ -577,11 +638,12 @@ describe('executing call command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: false,
+      escaped: false,
       returnValue: undefined,
       content: ["i can't go back"],
       stack: [
-        { script, vars: { foo: 'bar' }, stoppedAt: 'motherCall' },
-        { script: subScript, vars: { foo: 'baz' }, stoppedAt: 'childPrompt' },
+        { script, vars: { foo: 'bar' }, stopAt: 'motherCall' },
+        { script: subScript, vars: { foo: 'baz' }, stopAt: 'childPrompt' },
       ],
     });
     expect(subScript.commands[0].render.mock).toHaveBeenCalledTimes(1);
@@ -619,6 +681,7 @@ describe('executing call command', () => {
       )
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['starting in my heart'],
       stack: null,
@@ -645,6 +708,7 @@ describe('executing jump command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['foo', 'baz'],
       stack: null,
@@ -662,6 +726,7 @@ describe('executing jump command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['foo'],
       stack: null,
@@ -694,6 +759,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['foo', 'baz'],
       stack: null,
@@ -705,6 +771,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['foo', 'bar', 'baz'],
       stack: null,
@@ -718,6 +785,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['foo', 'baz'],
       stack: null,
@@ -728,6 +796,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['foo', 'bar', 'baz'],
       stack: null,
@@ -743,6 +812,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['foo', 'baz'],
       stack: null,
@@ -753,6 +823,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['foo', 'bar', 'baz'],
       stack: null,
@@ -766,6 +837,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['foo', 'bar', 'baz'],
       stack: null,
@@ -777,6 +849,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['foo', 'baz'],
       stack: null,
@@ -796,6 +869,7 @@ describe('executing return command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: undefined,
       content: ['hello'],
       stack: null,
@@ -823,6 +897,7 @@ describe('executing return command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: 'bar',
       content: ['hello'],
       stack: null,
@@ -842,6 +917,7 @@ describe('executing return command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: 'bar',
       content: ['hello'],
       stack: null,
@@ -863,6 +939,7 @@ describe('executing return command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: 'bar',
       content: ['hello'],
       stack: null,
@@ -950,12 +1027,13 @@ describe('run whole script', () => {
       )
     ).resolves.toEqual({
       finished: false,
+      escaped: false,
       returnValue: undefined,
       stack: [
         {
           script: MockScript,
           vars: { foo: 'bar', t: 1 },
-          stoppedAt: 'PROMPT',
+          stopAt: 'PROMPT',
         },
       ],
       content: ['hello'],
@@ -997,6 +1075,7 @@ describe('run whole script', () => {
       )
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: { foo: 'bar' },
       stack: null,
       content: ['bye'],
@@ -1019,7 +1098,7 @@ describe('run whole script', () => {
 
   test('continue from prompt within the loops', async () => {
     let stack = [
-      { script: MockScript, vars: { foo: 'bar' }, stoppedAt: 'PROMPT' },
+      { script: MockScript, vars: { foo: 'bar' }, stopAt: 'PROMPT' },
     ];
 
     const descriptions = ['fun', 'beautyful', 'wonderful'];
@@ -1028,12 +1107,13 @@ describe('run whole script', () => {
 
       expect(result).toEqual({
         finished: false,
+        escaped: false,
         returnValue: undefined,
         stack: [
           {
             script: MockScript,
             vars: { foo: 'bar', desc: word, t: idx + 1 },
-            stoppedAt: 'PROMPT',
+            stopAt: 'PROMPT',
           },
         ],
         content: [word],
@@ -1046,6 +1126,7 @@ describe('run whole script', () => {
       execute(scope, channel, stack, true, { desc: 'fascinating' })
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: { foo: 'bar', t: 3, desc: 'fascinating' },
       stack: null,
       content: ['fascinating', 'world'],
@@ -1070,23 +1151,24 @@ describe('run whole script', () => {
       execute(
         scope,
         channel,
-        [{ script: MockScript, vars: { foo: 'bar' }, stoppedAt: 'PROMPT' }],
+        [{ script: MockScript, vars: { foo: 'bar' }, stopAt: 'PROMPT' }],
         true,
         { desc: 'fabulous' }
       )
     ).resolves.toEqual({
       finished: false,
+      escaped: false,
       returnValue: undefined,
       stack: [
         {
           script: MockScript,
           vars: { foo: 'bar', desc: 'fabulous' },
-          stoppedAt: 'CALL',
+          stopAt: 'CALL',
         },
         {
           script: SubScript,
           vars: { desc: 'fabulous' },
-          stoppedAt: 'CHILD_PROMPT',
+          stopAt: 'CHILD_PROMPT',
         },
       ],
       content: ['fabulous'],
@@ -1125,12 +1207,12 @@ describe('run whole script', () => {
           {
             script: MockScript,
             vars: { foo: 'bar' },
-            stoppedAt: 'CALL',
+            stopAt: 'CALL',
           },
           {
             script: SubScript,
             vars: { foo: 'baz' },
-            stoppedAt: 'CHILD_PROMPT',
+            stopAt: 'CHILD_PROMPT',
           },
         ],
         true,
@@ -1138,6 +1220,7 @@ describe('run whole script', () => {
       )
     ).resolves.toEqual({
       finished: true,
+      escaped: false,
       returnValue: { foo: 'baz', hello: 'subscript' },
       stack: null,
       content: ['world'],
@@ -1188,7 +1271,7 @@ it('throw if stopped point key not found', async () => {
     'MyScript'
   );
   await expect(() =>
-    execute(scope, channel, [{ script, vars: {}, stoppedAt: 'UNKNOWN' }], {})
+    execute(scope, channel, [{ script, vars: {}, stopAt: 'UNKNOWN' }], {})
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"key \\"UNKNOWN\\" not found in MyScript"`
   );
@@ -1207,7 +1290,7 @@ it('throw if stopped point is not <Prompt/>', async () => {
     'MyScript'
   );
   await expect(() =>
-    execute(scope, channel, [{ script, vars: {}, stoppedAt: 'ask' }], {
+    execute(scope, channel, [{ script, vars: {}, stopAt: 'ask' }], {
       event: { text: 'yes' },
     })
   ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -1243,8 +1326,8 @@ it('throw if returned point is not <Call/>', async () => {
       scope,
       channel,
       [
-        { script, vars: {}, stoppedAt: 'greet' },
-        { script: subScript, vars: {}, stoppedAt: 'prompt#0' },
+        { script, vars: {}, stopAt: 'greet' },
+        { script: subScript, vars: {}, stopAt: 'prompt#0' },
       ],
       { event: { text: 'fine' } }
     )

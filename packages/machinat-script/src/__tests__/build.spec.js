@@ -20,7 +20,11 @@ test('built script object', () => {
     'ChildScript',
     <>
       {() => <dolore />}
-      <PROMPT set={(_, ctx) => ({ x: ctx.x })} key="childPrompt" />
+      <PROMPT
+        escape={(_, ctx) => !ctx.x}
+        set={(_, ctx) => ({ x: ctx.x })}
+        key="childPrompt"
+      />
     </>
   );
 
@@ -35,13 +39,21 @@ test('built script object', () => {
           <WHILE condition={() => true}>
             <LABEL key="first" />
             {() => <i>ipsum</i>}
-            <PROMPT key="ask_1" set={(_, ctx) => ({ a: ctx.a })} />
+            <PROMPT
+              key="ask_1"
+              escape={(_, ctx) => !ctx.a}
+              set={(_, ctx) => ({ a: ctx.a })}
+            />
           </WHILE>
         </THEN>
         <ELSE_IF condition={() => true}>
           <LABEL key="second" />
           {() => <dolor />}
-          <PROMPT key="ask_2" set={(_, ctx) => ({ b: ctx.b })} />
+          <PROMPT
+            key="ask_2"
+            escape={(_, ctx) => !ctx.b}
+            set={(_, ctx) => ({ b: ctx.b })}
+          />
           <RETURN value={() => 'fooo'} />
         </ELSE_IF>
         <ELSE>
@@ -98,7 +110,7 @@ test('Init component', async () => {
       finished: false,
       content: ['hello'],
       currentScript: HelloScript,
-      stoppedAt: 'WORLD',
+      stopAt: 'WORLD',
     }),
   });
   const processor = moxy({

@@ -118,9 +118,10 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run()).resolves.toEqual({
       finished: false,
+      escaped: false,
       content: ['Lorem ', 'ipsum ', 'dolor '],
       currentScript: MyScript,
-      stoppedAt: 'ask_1',
+      stopAt: 'ask_1',
     });
 
     expect(promptSetter.mock).not.toHaveBeenCalled();
@@ -129,9 +130,10 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
+      escaped: false,
       content: ['sit ', 'amet, '],
       currentScript: MyScript,
-      stoppedAt: 'ask_3',
+      stopAt: 'ask_3',
     });
 
     expect(promptSetter.mock).toHaveBeenCalledTimes(1);
@@ -157,9 +159,10 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run()).resolves.toEqual({
       finished: false,
+      escaped: false,
       content: ['ipsum ', 'dolor '],
       currentScript: MyScript,
-      stoppedAt: 'ask_1',
+      stopAt: 'ask_1',
     });
   });
 
@@ -174,16 +177,18 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run()).resolves.toEqual({
       finished: false,
+      escaped: false,
       content: ['Lorem ', 'ipsum ', 'est '],
       currentScript: MyScript,
-      stoppedAt: 'ask_2',
+      stopAt: 'ask_2',
     });
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: true,
+      escaped: false,
       content: ['laborum. '],
       currentScript: null,
-      stoppedAt: undefined,
+      stopAt: undefined,
     });
 
     expect(promptSetter.mock).toHaveBeenCalledTimes(1);
@@ -196,7 +201,7 @@ describe('#init(channel)', () => {
   it('throw if there is already runtime saved on channel', async () => {
     state.get.mock.fake(async () => ({
       version: 'V0',
-      callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stoppedAt: '#4' }],
+      callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: '#4' }],
       timestamp: 1587205023190,
     }));
 
@@ -217,9 +222,7 @@ describe('#continue(channel)', () => {
   it('continue from prompt', async () => {
     state.get.mock.fake(async () => ({
       version: 'V0',
-      callStack: [
-        { name: 'MyScript', vars: { foo: 'bar' }, stoppedAt: 'ask_3' },
-      ],
+      callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
     }));
 
@@ -235,9 +238,10 @@ describe('#continue(channel)', () => {
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
+      escaped: false,
       content: ['consectetur ', 'adipiscing '],
       currentScript: AnotherScript,
-      stoppedAt: 'ask_4',
+      stopAt: 'ask_4',
     });
 
     expect(runtime.isFinished).toBe(false);
@@ -250,9 +254,10 @@ describe('#continue(channel)', () => {
 
     await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
       finished: false,
+      escaped: false,
       content: ['elit, ', 'sed '],
       currentScript: MyScript,
-      stoppedAt: 'ask_5',
+      stopAt: 'ask_5',
     });
 
     expect(promptSetter.mock).toHaveBeenCalledTimes(2);
@@ -263,9 +268,10 @@ describe('#continue(channel)', () => {
 
     await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
       finished: false,
+      escaped: false,
       content: ['do '],
       currentScript: MyScript,
-      stoppedAt: 'ask_5',
+      stopAt: 'ask_5',
     });
 
     expect(promptSetter.mock).toHaveBeenCalledTimes(3);
@@ -286,8 +292,8 @@ describe('#continue(channel)', () => {
     state.get.mock.fake(async () => ({
       version: 'V0',
       callStack: [
-        { name: 'MyScript', vars: { foo: 'bar' }, stoppedAt: 'call_1' },
-        { name: 'AnotherScript', vars: { foo: 'baz' }, stoppedAt: 'ask_4' },
+        { name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'call_1' },
+        { name: 'AnotherScript', vars: { foo: 'baz' }, stopAt: 'ask_4' },
       ],
       timestamp: 1587205023190,
     }));
@@ -300,9 +306,10 @@ describe('#continue(channel)', () => {
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
+      escaped: false,
       content: ['elit, ', 'sed '],
       currentScript: MyScript,
-      stoppedAt: 'ask_5',
+      stopAt: 'ask_5',
     });
 
     expect(promptSetter.mock).toHaveBeenCalledTimes(1);
@@ -323,9 +330,7 @@ describe('#continue(channel)', () => {
   it('throw if unknown script name received', async () => {
     state.get.mock.fake(async () => ({
       version: 'V0',
-      callStack: [
-        { name: 'UnknownScript', vars: { foo: 'bar' }, stoppedAt: '?' },
-      ],
+      callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
     }));
     const processor = new ScriptProcessor(stateManager, scope, [MyScript]);
@@ -380,7 +385,7 @@ describe('#save(runtime)', () => {
         "callStack": Array [
           Object {
             "name": "MyScript",
-            "stoppedAt": "ask_1",
+            "stopAt": "ask_1",
             "vars": Object {
               "foo": "bar",
             },
@@ -405,7 +410,7 @@ describe('#save(runtime)', () => {
         "callStack": Array [
           Object {
             "name": "MyScript",
-            "stoppedAt": "ask_3",
+            "stopAt": "ask_3",
             "vars": Object {
               "foo": "bar",
             },
@@ -424,22 +429,20 @@ describe('#save(runtime)', () => {
 
     updatedState = updater(updatedState);
     expect(updatedState).toMatchInlineSnapshot(
-      {
-        timestamp: expect.any(Number),
-      },
+      { timestamp: expect.any(Number) },
       `
       Object {
         "callStack": Array [
           Object {
             "name": "MyScript",
-            "stoppedAt": "call_1",
+            "stopAt": "call_1",
             "vars": Object {
               "foo": "bar",
             },
           },
           Object {
             "name": "AnotherScript",
-            "stoppedAt": "ask_4",
+            "stopAt": "ask_4",
             "vars": Object {},
           },
         ],
@@ -454,7 +457,7 @@ describe('#save(runtime)', () => {
     const initialState = {
       version: 'V0',
       callStack: [
-        { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stoppedAt: 'ask_5' },
+        { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },
       ],
       timestamp: 1587205023190,
     };
@@ -485,7 +488,7 @@ describe('#save(runtime)', () => {
         "callStack": Array [
           Object {
             "name": "MyScript",
-            "stoppedAt": "ask_5",
+            "stopAt": "ask_5",
             "vars": Object {
               "foo": "bar",
               "i": 5,
@@ -532,7 +535,7 @@ describe('#save(runtime)', () => {
       updater({
         version: 'V0',
         callStack: [
-          { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stoppedAt: 'ask_5' },
+          { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },
         ],
         timestamp: 1587205023190,
       })
@@ -548,7 +551,7 @@ describe('#save(runtime)', () => {
     state.get.mock.fake(async () => ({
       version: 'V0',
       callStack: [
-        { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stoppedAt: 'ask_5' },
+        { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
       ],
       timestamp: 1587205023190,
     }));
@@ -571,7 +574,7 @@ describe('#save(runtime)', () => {
     state.get.mock.fake(async () => ({
       version: 'V0',
       callStack: [
-        { name: 'MyScript', vars: { foo: 'bar', i: 3 }, stoppedAt: 'ask_5' },
+        { name: 'MyScript', vars: { foo: 'bar', i: 3 }, stopAt: 'ask_5' },
       ],
       timestamp: 1587205023190,
     }));
@@ -586,7 +589,7 @@ describe('#save(runtime)', () => {
       updater({
         version: 'V0',
         callStack: [
-          { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stoppedAt: 'ask_5' },
+          { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },
         ],
         timestamp: 1587205099999,
       })

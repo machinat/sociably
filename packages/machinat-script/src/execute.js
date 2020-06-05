@@ -15,6 +15,7 @@ import type {
   RenderContentFn,
   ConditionMatchFn,
   VarsSetFn,
+  PromptEscapePredecateFn,
   PromptSetFn,
   CallWithVarsFn,
   CallReturnSetFn,
@@ -34,6 +35,7 @@ const getCursorIndexAssertedly = (
 type FinishedExecuteResult<ReturnValue> = {
   finished: true,
   returnValue: ReturnValue,
+  escaped: false,
   stack: null,
   content: MachinatNode[],
 };
@@ -41,6 +43,7 @@ type FinishedExecuteResult<ReturnValue> = {
 type UnfinishedExecuteResult<Vars, ReturnValue> = {
   finished: false,
   returnValue: void,
+  escaped: boolean,
   stack: CallStatus<Vars, any, ReturnValue>[],
   content: MachinatNode[],
 };
@@ -53,7 +56,7 @@ type ExecuteContext<Vars> = {|
   channel: MachinatChannel,
   scope: ServiceScope,
   finished: boolean,
-  stoppedAt: void | string,
+  stopAt: void | string,
   cursor: number,
   content: MachinatNode[],
   vars: Vars,
@@ -117,7 +120,7 @@ const executePromptCommand = async <Vars>(
   command: PromptCommand<Vars, any>,
   context: ExecuteContext<Vars>
 ): Promise<ExecuteContext<Vars>> => {
-  return { ...context, stoppedAt: command.key };
+  return { ...context, stopAt: command.key };
 };
 
 const executeCallCommand = async <Vars>(
@@ -141,7 +144,7 @@ const executeCallCommand = async <Vars>(
     return {
       ...context,
       content: concatedContent,
-      stoppedAt: key,
+      stopAt: key,
       descendantCallStack: result.stack,
     };
   }
@@ -168,12 +171,12 @@ async function executeScript<Vars, Input, ReturnValue>(
   script: MachinatScript<Vars, Input, ReturnValue>,
   begin: number,
   initialVars: Vars
-): Promise<ExecuteResult<Vars, ReturnValue>> {
+): Promise<$Diff<ExecuteResult<Vars, ReturnValue>, {| escaped: boolean |}>> {
   const { commands } = script;
 
   let context: ExecuteContext<Vars> = {
     finished: false,
-    stoppedAt: undefined,
+    stopAt: undefined,
     cursor: begin,
     content: [],
     vars: initialVars,
@@ -220,9 +223,9 @@ async function executeScript<Vars, Input, ReturnValue>(
     }
     /* eslint-enable no-await-in-loop */
 
-    if (context.stoppedAt) {
-      const { stoppedAt, content, vars, descendantCallStack } = context;
-      const stackStatus = { script, vars, stoppedAt };
+    if (context.stopAt) {
+      const { stopAt, content, vars, descendantCallStack } = context;
+      const stackStatus = { script, vars, stopAt };
 
       return {
         finished: false,
@@ -255,9 +258,9 @@ async function execute<Vars, Input, ReturnValue>(
   let currentReturnValue: ReturnValue;
 
   for (let d = callingDepth - 1; d >= 0; d -= 1) {
-    const { script, vars: beginningVars, stoppedAt } = beginningStack[d];
+    const { script, vars: beginningVars, stopAt } = beginningStack[d];
 
-    let index = stoppedAt ? getCursorIndexAssertedly(script, stoppedAt) : 0;
+    let index = stopAt ? getCursorIndexAssertedly(script, stopAt) : 0;
     let vars = beginningVars;
 
     if (d === callingDepth - 1) {
@@ -268,19 +271,40 @@ async function execute<Vars, Input, ReturnValue>(
         invariant(
           awaitingPrompt && awaitingPrompt.type === 'prompt',
           `stopped point "${
-            stoppedAt || ''
+            stopAt || ''
           }" is not a <Prompt/>, the key mapping of ${
             script.name
           } might have been changed`
         );
 
-        vars = awaitingPrompt.setter
+        const { setter, escape } = awaitingPrompt;
+        const circumstances = {
+          platform: channel.platform,
+          channel,
+          vars: beginningVars,
+        };
+
+        if (escape) {
+          // eslint-disable-next-line no-await-in-loop
+          const shouldEscape = await maybeInjectContainer<
+            PromptEscapePredecateFn<any, any>
+          >(scope, escape)(circumstances, input);
+
+          if (shouldEscape) {
+            return {
+              finished: false,
+              returnValue: undefined,
+              escaped: true,
+              stack: beginningStack,
+              content: [],
+            };
+          }
+        }
+
+        vars = setter
           ? // eslint-disable-next-line no-await-in-loop
-            await maybeInjectContainer<PromptSetFn<any, any>>(
-              scope,
-              awaitingPrompt.setter
-            )(
-              { platform: channel.platform, channel, vars: beginningVars },
+            await maybeInjectContainer<PromptSetFn<any, any>>(scope, setter)(
+              circumstances,
               input
             )
           : vars;
@@ -294,7 +318,7 @@ async function execute<Vars, Input, ReturnValue>(
       invariant(
         awaitingCall.type === 'call',
         `returned point "${
-          stoppedAt || ''
+          stopAt || ''
         }" is not a <Call/>, the key mapping of ${
           script.name
         } might have been changed`
@@ -323,6 +347,7 @@ async function execute<Vars, Input, ReturnValue>(
       return {
         finished: false,
         returnValue: undefined,
+        escaped: false,
         stack: [...beginningStack.slice(0, d), ...result.stack],
         content,
       };
@@ -334,6 +359,7 @@ async function execute<Vars, Input, ReturnValue>(
   return {
     finished: true,
     returnValue: (currentReturnValue: any),
+    escaped: false,
     stack: null,
     content,
   };

@@ -158,12 +158,14 @@ const resolveLabel = ({ key }: LabelElementProps): LabelSegment => {
 
 const resolvePrompt = ({
   set: setter,
+  escape,
   key,
 }: PromptElementProps<any, any>): PromptSegment<any, any> => {
   invariant(key, 'prop "key" of <PROMPT/> should not be empty');
   return {
     type: 'prompt',
     setter,
+    escape,
     key,
   };
 };

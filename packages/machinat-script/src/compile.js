@@ -145,11 +145,12 @@ const compileWhileSegment = (
 
 const compilePromptSegment = ({
   setter,
+  escape,
   key,
 }: PromptSegment<any, any>): CompileIntermediate[] => {
   return [
     { type: 'tag', key, isEntryPoint: true },
-    { type: 'prompt', setter, key },
+    { type: 'prompt', setter, escape, key },
   ];
 };
 

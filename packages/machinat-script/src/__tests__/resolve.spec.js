@@ -338,17 +338,7 @@ describe('resolve <VARS/>', () => {
 describe('resolve <PROMPT/>', () => {
   it('resolve ok', () => {
     const answerSetter = (_, { event: { text } }) => ({ answer: text });
-    expect(
-      resolve(
-        <>
-          {() => 'but why!?'}
-          <PROMPT set={answerSetter} key="why" />
-        </>
-      )
-    ).toEqual([
-      { type: 'content', render: expect.any(Function) },
-      { type: 'prompt', setter: answerSetter, key: 'why' },
-    ]);
+    const escapePredicator = (_, { event: { type } }) => type !== 'message';
 
     expect(
       resolve(
@@ -357,6 +347,8 @@ describe('resolve <PROMPT/>', () => {
           <PROMPT set={answerSetter} key="where" />
           {() => 'what r u doing?'}
           <PROMPT set={answerSetter} key="what" />
+          {() => 'how can you do this to me?'}
+          <PROMPT set={answerSetter} escape={escapePredicator} key="how" />
         </>
       )
     ).toEqual([
@@ -364,6 +356,13 @@ describe('resolve <PROMPT/>', () => {
       { type: 'prompt', key: 'where', setter: answerSetter },
       { type: 'content', render: expect.any(Function) },
       { type: 'prompt', key: 'what', setter: answerSetter },
+      { type: 'content', render: expect.any(Function) },
+      {
+        type: 'prompt',
+        key: 'how',
+        setter: answerSetter,
+        escape: escapePredicator,
+      },
     ]);
   });
 
@@ -539,6 +538,7 @@ test('resolve whole script', () => {
 
               <PROMPT
                 key="ask_1"
+                escape={(_, ctx) => !ctx.a}
                 set={({ vars }, ctx) => ({ ...vars, a: ctx.a })}
               />
             </WHILE>
@@ -551,6 +551,7 @@ test('resolve whole script', () => {
 
                 <PROMPT
                   key="ask_2"
+                  escape={(_, ctx) => !ctx.c}
                   set={({ vars }, ctx) => ({ ...vars, c: ctx.c })}
                 />
               </THEN>
@@ -586,6 +587,7 @@ test('resolve whole script', () => {
               {() => <dolore />}
               <PROMPT
                 key="ask_3"
+                escape={(_, ctx) => !ctx.d}
                 set={({ vars }, ctx) => ({ ...vars, d: ctx.d })}
               />
             </THEN>
