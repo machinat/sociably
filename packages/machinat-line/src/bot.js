@@ -1,6 +1,5 @@
 // @flow
 import invariant from 'invariant';
-
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
 import Engine from '@machinat/core/engine';
@@ -10,7 +9,7 @@ import type {
   InitScopeFn,
   DispatchWrapper,
 } from '@machinat/core/types';
-import { provider } from '@machinat/core/service';
+import { provider, createEmptyScope } from '@machinat/core/service';
 
 import { chatJobsMaker, multicastJobsMaker } from './job';
 import generalElementDelegate from './components/general';
@@ -57,8 +56,12 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
       botChannelId,
       connectionCapicity = 100,
     }: LineBotOptions = {},
-    initScope: InitScopeFn,
-    dispatchWrapper: DispatchWrapper<LineJob, LineDispatchFrame, LineAPIResult>
+    initScope?: InitScopeFn = () => createEmptyScope(LINE),
+    dispatchWrapper?: DispatchWrapper<
+      LineJob,
+      LineDispatchFrame,
+      LineAPIResult
+    > = (dispatch) => dispatch
   ) {
     invariant(accessToken, 'options.accessToken should not be empty');
 
@@ -131,9 +134,12 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
 
 export default provider<LineBot>({
   lifetime: 'singleton',
-  deps: [LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I],
+  deps: [
+    LINE_PLATFORM_CONFIGS_I,
+    { require: LINE_PLATFORM_MOUNTER_I, optional: true },
+  ],
   factory: (
     configs: LinePlatformConfigs,
-    { initScope, dispatchWrapper }: LinePlatformMounter
-  ) => new LineBot(configs, initScope, dispatchWrapper),
+    mounter: null | LinePlatformMounter
+  ) => new LineBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
 })(LineBot);

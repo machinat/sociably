@@ -2,7 +2,7 @@
 import Engine from '@machinat/core/engine';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
-import { provider } from '@machinat/core/service';
+import { provider, createEmptyScope } from '@machinat/core/service';
 import type {
   MachinatNode,
   MachinatBot,
@@ -70,12 +70,12 @@ class WebSocketBot
 
   constructor(
     transmitter: Transmitter,
-    initScope: InitScopeFn,
-    dispatchWrapper: DispatchWrapper<
+    initScope?: InitScopeFn = () => createEmptyScope(WEBSOCKET),
+    dispatchWrapper?: DispatchWrapper<
       WebSocketJob,
       WebSocketDispatchFrame,
       WebSocketResult
-    >
+    > = (dispatch) => dispatch
   ) {
     this._transmitter = transmitter;
 
@@ -174,9 +174,13 @@ class WebSocketBot
 
 export default provider<WebSocketBot>({
   lifetime: 'singleton',
-  deps: [Transmitter, WEBSOCKET_PLATFORM_MOUNTER_I],
+  deps: [
+    Transmitter,
+    { require: WEBSOCKET_PLATFORM_MOUNTER_I, optional: true },
+  ],
   factory: (
     transmitter: Transmitter,
-    { initScope, dispatchWrapper }: WebSocketPlatformMounter<any>
-  ) => new WebSocketBot(transmitter, initScope, dispatchWrapper),
+    mounter: null | WebSocketPlatformMounter<any>
+  ) =>
+    new WebSocketBot(transmitter, mounter?.initScope, mounter?.dispatchWrapper),
 })(WebSocketBot);

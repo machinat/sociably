@@ -4,7 +4,7 @@ import Engine from '@machinat/core/engine';
 import type { DispatchResponse } from '@machinat/core/engine/types';
 import Queue from '@machinat/core/queue';
 import Renderer from '@machinat/core/renderer';
-import { provider } from '@machinat/core/service';
+import { provider, createEmptyScope } from '@machinat/core/service';
 
 import type {
   MachinatNode,
@@ -63,12 +63,12 @@ class MessengerBot
       appSecret,
       consumeInterval = 500,
     }: MessengerBotOptions = {},
-    initScope: InitScopeFn,
-    dispatchWrapper: DispatchWrapper<
+    initScope?: InitScopeFn = () => createEmptyScope(MESSENGER),
+    dispatchWrapper?: DispatchWrapper<
       MessengerJob,
       MessengerDispatchFrame,
       MessengerResult
-    >
+    > = (dispatch) => dispatch
   ) {
     invariant(pageId, 'options.pageId should not be empty');
     this.pageId = pageId;
@@ -140,9 +140,12 @@ class MessengerBot
 
 export default provider<MessengerBot>({
   lifetime: 'singleton',
-  deps: [MESSENGER_PLATFORM_CONFIGS_I, MESSENGER_PLATFORM_MOUNTER_I],
+  deps: [
+    MESSENGER_PLATFORM_CONFIGS_I,
+    { require: MESSENGER_PLATFORM_MOUNTER_I, optional: true },
+  ],
   factory: (
     configs: MessengerPlatformConfigs,
-    { initScope, dispatchWrapper }: MessengerPlatformMounter
-  ) => new MessengerBot(configs, initScope, dispatchWrapper),
+    mounter: null | MessengerPlatformMounter
+  ) => new MessengerBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
 })(MessengerBot);
