@@ -23,10 +23,10 @@ class FileRepository implements StateRepositoryI {
 
   constructor(
     options: FileRepositoryConfigs,
-    serializer?: FileStateSerializerI = JSON
+    serializer?: ?FileStateSerializerI
   ) {
     this.path = options.path;
-    this._serializer = serializer;
+    this._serializer = serializer || JSON;
   }
 
   async get(name: string, key: string) {
