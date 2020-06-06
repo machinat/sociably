@@ -104,19 +104,19 @@ export type PromptSetter<Vars, Input> =
   | PromptSetFn<Vars, Input>
   | ServiceContainer<PromptSetFn<Vars, Input>>;
 
-export type PromptEscapePredecateFn<Vars, Input> = (
+export type PromptFilterPredecateFn<Vars, Input> = (
   circumstances: ScriptCircumstances<Vars>,
   input: Input
 ) => boolean | Promise<boolean>;
 
-export type PromptEscapePredecator<Vars, Input> =
-  | PromptEscapePredecateFn<Vars, Input>
-  | ServiceContainer<PromptEscapePredecateFn<Vars, Input>>;
+export type PromptFilterPredecator<Vars, Input> =
+  | PromptFilterPredecateFn<Vars, Input>
+  | ServiceContainer<PromptFilterPredecateFn<Vars, Input>>;
 
 export type PromptElementProps<Vars, Input> = {
   key: string,
   set?: PromptSetter<Vars, Input>,
-  escape?: PromptEscapePredecator<Vars, Input>,
+  filter?: PromptFilterPredecator<Vars, Input>,
 };
 
 export type PromptElement<Vars, Input> = MachinatElement<
@@ -236,7 +236,7 @@ export type PromptSegment<Vars, Input> = {|
   type: 'prompt',
   key: string,
   setter: ?PromptSetter<Vars, Input>,
-  escape?: PromptEscapePredecator<Vars, Input>,
+  filter?: PromptFilterPredecator<Vars, Input>,
 |};
 
 export type LabelSegment = {|
@@ -277,7 +277,7 @@ export type PromptCommand<Vars, Input> = {|
   type: 'prompt',
   key: string,
   setter: ?PromptSetter<Vars, Input>,
-  escape?: PromptEscapePredecator<Vars, Input>,
+  filter?: PromptFilterPredecator<Vars, Input>,
 |};
 
 export type CallCommand<CallerVars, CalleeVars, RetrunValue> = {|

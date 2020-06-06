@@ -118,7 +118,7 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run()).resolves.toEqual({
       finished: false,
-      escaped: false,
+      filterPassed: true,
       content: ['Lorem ', 'ipsum ', 'dolor '],
       currentScript: MyScript,
       stopAt: 'ask_1',
@@ -130,7 +130,7 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
-      escaped: false,
+      filterPassed: true,
       content: ['sit ', 'amet, '],
       currentScript: MyScript,
       stopAt: 'ask_3',
@@ -159,7 +159,7 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run()).resolves.toEqual({
       finished: false,
-      escaped: false,
+      filterPassed: true,
       content: ['ipsum ', 'dolor '],
       currentScript: MyScript,
       stopAt: 'ask_1',
@@ -177,7 +177,7 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run()).resolves.toEqual({
       finished: false,
-      escaped: false,
+      filterPassed: true,
       content: ['Lorem ', 'ipsum ', 'est '],
       currentScript: MyScript,
       stopAt: 'ask_2',
@@ -185,7 +185,7 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: true,
-      escaped: false,
+      filterPassed: true,
       content: ['laborum. '],
       currentScript: null,
       stopAt: undefined,
@@ -238,7 +238,7 @@ describe('#continue(channel)', () => {
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
-      escaped: false,
+      filterPassed: true,
       content: ['consectetur ', 'adipiscing '],
       currentScript: AnotherScript,
       stopAt: 'ask_4',
@@ -254,7 +254,7 @@ describe('#continue(channel)', () => {
 
     await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
       finished: false,
-      escaped: false,
+      filterPassed: true,
       content: ['elit, ', 'sed '],
       currentScript: MyScript,
       stopAt: 'ask_5',
@@ -268,7 +268,7 @@ describe('#continue(channel)', () => {
 
     await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
       finished: false,
-      escaped: false,
+      filterPassed: true,
       content: ['do '],
       currentScript: MyScript,
       stopAt: 'ask_5',
@@ -306,7 +306,7 @@ describe('#continue(channel)', () => {
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
-      escaped: false,
+      filterPassed: true,
       content: ['elit, ', 'sed '],
       currentScript: MyScript,
       stopAt: 'ask_5',

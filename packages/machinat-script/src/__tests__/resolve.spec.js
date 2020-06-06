@@ -338,7 +338,7 @@ describe('resolve <VARS/>', () => {
 describe('resolve <PROMPT/>', () => {
   it('resolve ok', () => {
     const answerSetter = (_, { event: { text } }) => ({ answer: text });
-    const escapePredicator = (_, { event: { type } }) => type !== 'message';
+    const filterPredicator = (_, { event: { type } }) => type === 'message';
 
     expect(
       resolve(
@@ -348,7 +348,7 @@ describe('resolve <PROMPT/>', () => {
           {() => 'what r u doing?'}
           <PROMPT set={answerSetter} key="what" />
           {() => 'how can you do this to me?'}
-          <PROMPT set={answerSetter} escape={escapePredicator} key="how" />
+          <PROMPT set={answerSetter} filter={filterPredicator} key="how" />
         </>
       )
     ).toEqual([
@@ -361,7 +361,7 @@ describe('resolve <PROMPT/>', () => {
         type: 'prompt',
         key: 'how',
         setter: answerSetter,
-        escape: escapePredicator,
+        filter: filterPredicator,
       },
     ]);
   });
@@ -538,7 +538,7 @@ test('resolve whole script', () => {
 
               <PROMPT
                 key="ask_1"
-                escape={(_, ctx) => !ctx.a}
+                filter={(_, ctx) => ctx.a}
                 set={({ vars }, ctx) => ({ ...vars, a: ctx.a })}
               />
             </WHILE>
@@ -551,7 +551,7 @@ test('resolve whole script', () => {
 
                 <PROMPT
                   key="ask_2"
-                  escape={(_, ctx) => !ctx.c}
+                  filter={(_, ctx) => ctx.c}
                   set={({ vars }, ctx) => ({ ...vars, c: ctx.c })}
                 />
               </THEN>
@@ -587,7 +587,7 @@ test('resolve whole script', () => {
               {() => <dolore />}
               <PROMPT
                 key="ask_3"
-                escape={(_, ctx) => !ctx.d}
+                filter={(_, ctx) => ctx.d}
                 set={({ vars }, ctx) => ({ ...vars, d: ctx.d })}
               />
             </THEN>

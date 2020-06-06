@@ -15,7 +15,7 @@ import type {
   RenderContentFn,
   ConditionMatchFn,
   VarsSetFn,
-  PromptEscapePredecateFn,
+  PromptFilterPredecateFn,
   PromptSetFn,
   CallWithVarsFn,
   CallReturnSetFn,
@@ -35,7 +35,7 @@ const getCursorIndexAssertedly = (
 type FinishedExecuteResult<ReturnValue> = {
   finished: true,
   returnValue: ReturnValue,
-  escaped: false,
+  filterPassed: boolean,
   stack: null,
   content: MachinatNode[],
 };
@@ -43,7 +43,7 @@ type FinishedExecuteResult<ReturnValue> = {
 type UnfinishedExecuteResult<Vars, ReturnValue> = {
   finished: false,
   returnValue: void,
-  escaped: boolean,
+  filterPassed: boolean,
   stack: CallStatus<Vars, any, ReturnValue>[],
   content: MachinatNode[],
 };
@@ -171,7 +171,9 @@ async function executeScript<Vars, Input, ReturnValue>(
   script: MachinatScript<Vars, Input, ReturnValue>,
   begin: number,
   initialVars: Vars
-): Promise<$Diff<ExecuteResult<Vars, ReturnValue>, {| escaped: boolean |}>> {
+): Promise<
+  $Diff<ExecuteResult<Vars, ReturnValue>, {| filterPassed: boolean |}>
+> {
   const { commands } = script;
 
   let context: ExecuteContext<Vars> = {
@@ -277,24 +279,24 @@ async function execute<Vars, Input, ReturnValue>(
           } might have been changed`
         );
 
-        const { setter, escape } = awaitingPrompt;
+        const { setter, filter } = awaitingPrompt;
         const circumstances = {
           platform: channel.platform,
           channel,
           vars: beginningVars,
         };
 
-        if (escape) {
+        if (filter) {
           // eslint-disable-next-line no-await-in-loop
-          const shouldEscape = await maybeInjectContainer<
-            PromptEscapePredecateFn<any, any>
-          >(scope, escape)(circumstances, input);
+          const filterPassed = await maybeInjectContainer<
+            PromptFilterPredecateFn<any, any>
+          >(scope, filter)(circumstances, input);
 
-          if (shouldEscape) {
+          if (!filterPassed) {
             return {
               finished: false,
               returnValue: undefined,
-              escaped: true,
+              filterPassed: false,
               stack: beginningStack,
               content: [],
             };
@@ -347,7 +349,7 @@ async function execute<Vars, Input, ReturnValue>(
       return {
         finished: false,
         returnValue: undefined,
-        escaped: false,
+        filterPassed: true,
         stack: [...beginningStack.slice(0, d), ...result.stack],
         content,
       };
@@ -359,7 +361,7 @@ async function execute<Vars, Input, ReturnValue>(
   return {
     finished: true,
     returnValue: (currentReturnValue: any),
-    escaped: false,
+    filterPassed: true,
     stack: null,
     content,
   };

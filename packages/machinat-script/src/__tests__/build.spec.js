@@ -21,7 +21,7 @@ test('built script object', () => {
     <>
       {() => <dolore />}
       <PROMPT
-        escape={(_, ctx) => !ctx.x}
+        filter={(_, ctx) => ctx.x}
         set={(_, ctx) => ({ x: ctx.x })}
         key="childPrompt"
       />
@@ -41,7 +41,7 @@ test('built script object', () => {
             {() => <i>ipsum</i>}
             <PROMPT
               key="ask_1"
-              escape={(_, ctx) => !ctx.a}
+              filter={(_, ctx) => ctx.a}
               set={(_, ctx) => ({ a: ctx.a })}
             />
           </WHILE>
@@ -51,7 +51,7 @@ test('built script object', () => {
           {() => <dolor />}
           <PROMPT
             key="ask_2"
-            escape={(_, ctx) => !ctx.b}
+            filter={(_, ctx) => ctx.b}
             set={(_, ctx) => ({ b: ctx.b })}
           />
           <RETURN value={() => 'fooo'} />

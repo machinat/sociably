@@ -10,7 +10,7 @@ import type { MachinatScript, CallStatus, ScriptProcessState } from './types';
 
 type RuntimeResult<Vars, Input, ReturnValue> = {
   finished: boolean,
-  escaped: boolean,
+  filterPassed: boolean,
   content: MachinatNode,
   currentScript: null | MachinatScript<Vars, Input, ReturnValue>,
   stopAt: void | string,
@@ -48,14 +48,14 @@ class ScriptRuntime {
     if (!this.callStack) {
       return {
         finished: true,
-        escaped: false,
+        filterPassed: false,
         content: null,
         currentScript: null,
         stopAt: undefined,
       };
     }
 
-    const { finished, escaped, stack, content } = await execute(
+    const { finished, filterPassed, stack, content } = await execute(
       this._serviceScope,
       this.channel,
       this.callStack,
@@ -69,7 +69,7 @@ class ScriptRuntime {
 
     return {
       finished,
-      escaped,
+      filterPassed,
       content,
       currentScript: lastCallStatus?.script || null,
       stopAt: lastCallStatus?.stopAt,
