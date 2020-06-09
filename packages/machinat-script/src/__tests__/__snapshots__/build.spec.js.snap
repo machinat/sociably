@@ -40,8 +40,11 @@ Array [
           "type": "prompt",
         },
       ],
-      "entryKeysIndex": Map {
+      "entriesIndex": Map {
         "childPrompt" => 1,
+      },
+      "meta": Object {
+        "foo": "baz",
       },
       "name": "ChildScript",
     },
@@ -102,6 +105,21 @@ Array [
   Object {
     "render": [Function],
     "type": "content",
+  },
+]
+`;
+
+exports[`built script object 3`] = `
+Array [
+  Object {
+    "render": [Function],
+    "type": "content",
+  },
+  Object {
+    "filter": [Function],
+    "key": "childPrompt",
+    "setter": [Function],
+    "type": "prompt",
   },
 ]
 `;

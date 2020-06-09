@@ -23,10 +23,10 @@ import type {
 } from './types';
 
 const getCursorIndexAssertedly = (
-  script: MachinatScript<any, any, any>,
+  script: MachinatScript<any, any, any, any>,
   key: string
 ): number => {
-  const index = script.entryKeysIndex.get(key);
+  const index = script.entriesIndex.get(key);
 
   invariant(index !== undefined, `key "${key}" not found in ${script.name}`);
   return index;
@@ -168,7 +168,7 @@ const executeCallCommand = async <Vars>(
 async function executeScript<Vars, Input, ReturnValue>(
   scope: ServiceScope,
   channel: MachinatChannel,
-  script: MachinatScript<Vars, Input, ReturnValue>,
+  script: MachinatScript<Vars, Input, ReturnValue, any>,
   begin: number,
   initialVars: Vars
 ): Promise<

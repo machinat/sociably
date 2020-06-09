@@ -2,7 +2,7 @@ import compile from '../compile';
 
 describe('compile conditions segment', () => {
   test('with multi conditions', () => {
-    const { commands, entryKeysIndex } = compile(
+    const { commands, entriesIndex } = compile(
       [
         {
           type: 'conditions',
@@ -53,7 +53,7 @@ describe('compile conditions segment', () => {
     expect(commands[3].render({})).toBe('foo');
     expect(commands[6].render({})).toBe('bar');
 
-    expect(entryKeysIndex).toEqual(
+    expect(entriesIndex).toEqual(
       new Map([
         ['ask1', 4],
         ['ask2', 7],
@@ -62,7 +62,7 @@ describe('compile conditions segment', () => {
   });
 
   test('with multi conditions and fallback', () => {
-    const { commands, entryKeysIndex } = compile(
+    const { commands, entriesIndex } = compile(
       [
         {
           type: 'conditions',
@@ -119,7 +119,7 @@ describe('compile conditions segment', () => {
     expect(commands[5].render({})).toBe('foo');
     expect(commands[8].render({})).toBe('bar');
 
-    expect(entryKeysIndex).toEqual(
+    expect(entriesIndex).toEqual(
       new Map([
         ['ask1', 6],
         ['ask2', 9],
@@ -130,7 +130,7 @@ describe('compile conditions segment', () => {
 });
 
 it('compile while segment', () => {
-  const { commands, entryKeysIndex } = compile(
+  const { commands, entriesIndex } = compile(
     [
       {
         type: 'while',
@@ -154,7 +154,7 @@ it('compile while segment', () => {
     { type: 'prompt', key: 'ask' },
     { type: 'jump', offset: -3 },
   ]);
-  expect(entryKeysIndex).toEqual(new Map([['ask', 2]]));
+  expect(entriesIndex).toEqual(new Map([['ask', 2]]));
 
   expect(commands[0].condition({})).toBe(true);
   expect(commands[1].render({ target: 'world' })).toBe('hello world');
@@ -163,7 +163,7 @@ it('compile while segment', () => {
 it('compile other segments type', () => {
   const OrderScript = { fake: 'script' };
 
-  const { commands, entryKeysIndex } = compile(
+  const { commands, entriesIndex } = compile(
     [
       { type: 'content', render: () => 'hello' },
       { type: 'label', key: 'begin' },
@@ -212,7 +212,7 @@ it('compile other segments type', () => {
     { type: 'content', render: expect.any(Function) },
     { type: 'return', valueGetter: expect.any(Function) },
   ]);
-  expect(entryKeysIndex).toEqual(
+  expect(entriesIndex).toEqual(
     new Map([
       ['begin', 1],
       ['ask_something', 2],

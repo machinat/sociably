@@ -51,7 +51,7 @@ type CompileIntermediate =
 
 type CompileResult<Vars, Input, RetrunValue> = {
   commands: ScriptCommand<Vars, Input, RetrunValue>[],
-  entryKeysIndex: Map<string, number>,
+  entriesIndex: Map<string, number>,
 };
 
 const compileContentSegment = (
@@ -227,7 +227,7 @@ const compile = <Vars, Input, RetrunValue>(
   const intermediates = compileSegments(segments, counter());
 
   const keyIndex = new Map();
-  const entryKeysIndex = new Map();
+  const entriesIndex = new Map();
 
   // remove tags and store their indexes
   const mediateCommands = [];
@@ -241,7 +241,7 @@ const compile = <Vars, Input, RetrunValue>(
 
       keyIndex.set(key, mediateCommands.length);
       if (isEntryPoint) {
-        entryKeysIndex.set(key, mediateCommands.length);
+        entriesIndex.set(key, mediateCommands.length);
       }
     } else {
       mediateCommands.push(intermediate);
@@ -276,7 +276,7 @@ const compile = <Vars, Input, RetrunValue>(
     }
   }
 
-  return { commands, entryKeysIndex };
+  return { commands, entriesIndex };
 };
 
 export default compile;

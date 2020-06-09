@@ -68,7 +68,7 @@ const MyScript = build(
         <PROMPT key="ask_2" set={promptSetter} />
 
         {() => 'laborum. '}
-        <RETURN />
+        <RETURN value={() => ({ foo: 'bar' })} />
       </ELSE>
     </IF>
 
@@ -93,6 +93,7 @@ const MyScript = build(
     </WHILE>
 
     {() => 'eiusmod '}
+    <RETURN value={() => ({ foo: 'baz' })} />
   </>
 );
 
@@ -118,6 +119,7 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run()).resolves.toEqual({
       finished: false,
+      returnValue: undefined,
       filterPassed: true,
       content: ['Lorem ', 'ipsum ', 'dolor '],
     });
@@ -130,6 +132,7 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
+      returnValue: undefined,
       filterPassed: true,
       content: ['sit ', 'amet, '],
     });
@@ -160,6 +163,7 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run()).resolves.toEqual({
       finished: false,
+      returnValue: undefined,
       filterPassed: true,
       content: ['ipsum ', 'dolor '],
     });
@@ -179,6 +183,7 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run()).resolves.toEqual({
       finished: false,
+      returnValue: undefined,
       filterPassed: true,
       content: ['Lorem ', 'ipsum ', 'est '],
     });
@@ -188,6 +193,7 @@ describe('#init(channel)', () => {
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: true,
+      returnValue: { foo: 'bar' },
       filterPassed: true,
       content: ['laborum. '],
     });
@@ -241,6 +247,7 @@ describe('#continue(channel)', () => {
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
+      returnValue: undefined,
       filterPassed: true,
       content: ['consectetur ', 'adipiscing '],
     });
@@ -258,6 +265,7 @@ describe('#continue(channel)', () => {
 
     await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
       finished: false,
+      returnValue: undefined,
       filterPassed: true,
       content: ['elit, ', 'sed '],
     });
@@ -271,20 +279,31 @@ describe('#continue(channel)', () => {
       { hello: 'again' }
     );
 
+    for (let i = 0; i < 4; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
+        finished: false,
+        returnValue: undefined,
+        filterPassed: true,
+        content: ['do '],
+      });
+
+      expect(runtime.currentScript).toBe(MyScript);
+      expect(runtime.stopAt).toBe('ask_5');
+
+      expect(promptSetter.mock).toHaveBeenCalledTimes(3 + i);
+      expect(promptSetter.mock).toHaveBeenCalledWith(
+        { channel, vars: { foo: 'bar', i: 1 + i } },
+        { hello: 'again' }
+      );
+    }
+
     await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
-      finished: false,
+      finished: true,
+      returnValue: { foo: 'baz' },
       filterPassed: true,
-      content: ['do '],
+      content: ['do ', 'eiusmod '],
     });
-
-    expect(runtime.currentScript).toBe(MyScript);
-    expect(runtime.stopAt).toBe('ask_5');
-
-    expect(promptSetter.mock).toHaveBeenCalledTimes(3);
-    expect(promptSetter.mock).toHaveBeenCalledWith(
-      { channel, vars: { foo: 'bar', i: 1 } },
-      { hello: 'again' }
-    );
 
     expect(stateManager.channelState.mock).toHaveBeenCalledTimes(1);
     expect(stateManager.channelState.mock).toHaveBeenCalledWith(channel);
@@ -312,6 +331,7 @@ describe('#continue(channel)', () => {
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
+      returnValue: undefined,
       filterPassed: true,
       content: ['elit, ', 'sed '],
     });

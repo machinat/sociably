@@ -21,7 +21,7 @@ const AnotherScript = {
     { type: 'content', render: () => '...' },
     { type: 'prompt', key: 'ask' },
   ],
-  entryKeysIndex: new Map([
+  entriesIndex: new Map([
     ['foo', 3],
     ['bar', 8],
   ]),

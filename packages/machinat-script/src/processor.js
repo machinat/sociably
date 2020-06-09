@@ -8,15 +8,16 @@ import { SCRIPT_STATE_KEY, SCRIPT_LIBS_I } from './constant';
 import { serializeScriptStatus } from './utils';
 import type { MachinatScript, CallStatus, ScriptProcessState } from './types';
 
-type RuntimeResult = {|
+type RuntimeResult<ReturnValue> = {|
   finished: boolean,
+  returnValue: void | ReturnValue,
   filterPassed: boolean,
   content: MachinatNode,
 |};
 
-class ScriptRuntime {
+class ScriptRuntime<Input, ReturnValue> {
   channel: MachinatChannel;
-  callStack: null | CallStatus<any, any, any>[];
+  callStack: null | CallStatus<any, Input, ReturnValue>[];
   saveTimestamp: void | number;
   _serviceScope: ServiceScope;
   _isPrompting: boolean;
@@ -24,7 +25,7 @@ class ScriptRuntime {
   constructor(
     scope: ServiceScope,
     channel: MachinatChannel,
-    stack: CallStatus<any, any, any>[],
+    stack: CallStatus<any, Input, ReturnValue>[],
     promptPointTs?: number
   ) {
     this.channel = channel;
@@ -42,7 +43,7 @@ class ScriptRuntime {
     return this._isPrompting;
   }
 
-  get currentScript(): null | MachinatScript<any, any, any> {
+  get currentScript(): null | MachinatScript<any, Input, ReturnValue, any> {
     const stack = this.callStack;
     return stack?.[stack.length - 1].script || null;
   }
@@ -52,16 +53,23 @@ class ScriptRuntime {
     return stack?.[stack.length - 1].stopAt;
   }
 
-  async run(input?: any): Promise<RuntimeResult> {
+  async run(input?: Input): Promise<RuntimeResult<ReturnValue>> {
     if (!this.callStack) {
       return {
         finished: true,
+        returnValue: undefined,
         filterPassed: false,
         content: null,
       };
     }
 
-    const { finished, filterPassed, stack, content } = await execute(
+    const {
+      finished,
+      returnValue,
+      filterPassed,
+      stack,
+      content,
+    } = await execute(
       this._serviceScope,
       this.channel,
       this.callStack,
@@ -73,6 +81,7 @@ class ScriptRuntime {
 
     return {
       finished,
+      returnValue,
       filterPassed,
       content,
     };
@@ -84,15 +93,15 @@ type InitRuntimeOptions<Vars> = {
   goto?: string,
 };
 
-class ScriptProcessor {
+class ScriptProcessor<Input, ReturnValue> {
   _stateContoller: StateControllerI;
   _serviceScope: ServiceScope;
-  _libs: Map<string, MachinatScript<any, any, any>>;
+  _libs: Map<string, MachinatScript<any, Input, ReturnValue, any>>;
 
   constructor(
     stateManager: StateControllerI,
     scope: ServiceScope,
-    scripts: MachinatScript<any, any, any>[]
+    scripts: MachinatScript<any, Input, ReturnValue, any>[]
   ) {
     this._stateContoller = stateManager;
     this._serviceScope = scope;
@@ -109,11 +118,11 @@ class ScriptProcessor {
     this._libs = libs;
   }
 
-  async init(
+  async init<Vars>(
     channel: MachinatChannel,
-    script: MachinatScript<any, any, any>,
-    { vars = {}, goto }: InitRuntimeOptions<any> = {}
-  ): Promise<ScriptRuntime> {
+    script: MachinatScript<Vars, Input, ReturnValue, any>,
+    { vars = {}, goto }: InitRuntimeOptions<Vars> = {}
+  ): Promise<ScriptRuntime<Input, ReturnValue>> {
     const state = await this._stateContoller
       .channelState(channel)
       .get<ScriptProcessState>(SCRIPT_STATE_KEY);
@@ -129,7 +138,9 @@ class ScriptProcessor {
     ]);
   }
 
-  async continue(channel: MachinatChannel): Promise<null | ScriptRuntime> {
+  async continue(
+    channel: MachinatChannel
+  ): Promise<null | ScriptRuntime<Input, ReturnValue>> {
     const state = await this._stateContoller
       .channelState(channel)
       .get<ScriptProcessState>(SCRIPT_STATE_KEY);
@@ -161,7 +172,7 @@ class ScriptProcessor {
     return isDeleted;
   }
 
-  async save(runtime: ScriptRuntime): Promise<boolean> {
+  async save(runtime: ScriptRuntime<Input, ReturnValue>): Promise<boolean> {
     const { channel, callStack, saveTimestamp } = runtime;
     if (!callStack && !saveTimestamp) {
       return false;
@@ -196,7 +207,7 @@ class ScriptProcessor {
   }
 }
 
-export default provider<ScriptProcessor>({
+export default provider<ScriptProcessor<any, any>>({
   lifetime: 'scoped',
   deps: [StateControllerI, ServiceScope, SCRIPT_LIBS_I],
 })(ScriptProcessor);

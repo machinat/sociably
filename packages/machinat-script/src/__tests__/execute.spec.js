@@ -12,14 +12,14 @@ const scope = moxy({
 
 const channel = { platform: 'test', uid: '_MY_CHANNEL_' };
 
-const mockScript = (commands, entryKeysIndex, name) =>
+const mockScript = (commands, entriesIndex, name) =>
   moxy(
     {
       name: name || 'MockScript',
       commands,
-      entryKeysIndex: entryKeysIndex || new Map(),
+      entriesIndex: entriesIndex || new Map(),
     },
-    { excludeProps: ['entryKeysIndex'] }
+    { excludeProps: ['entriesIndex'] }
   );
 
 describe('executing content command', () => {
@@ -444,7 +444,7 @@ describe('executing call command', () => {
     const subScript = {
       name: 'SubScript',
       commands: [{ type: 'content', render: moxy(() => 'at skyfall') }],
-      entryKeysIndex: new Map(),
+      entriesIndex: new Map(),
     };
     const script = mockScript([
       { type: 'call', script: subScript },
@@ -662,7 +662,7 @@ describe('executing call command', () => {
         { type: 'content', render: moxy(() => 'there is a fire') },
         { type: 'content', render: moxy(() => 'starting in my heart') },
       ],
-      entryKeysIndex: new Map([['where', 1]]),
+      entriesIndex: new Map([['where', 1]]),
     };
 
     await expect(

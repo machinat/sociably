@@ -17,11 +17,12 @@ type InitScriptProps<Vars> = {
   goto?: string,
 };
 
-export type MachinatScript<Vars, Input, RetrunValue> = {|
+export type MachinatScript<Vars, Input, RetrunValue, Meta> = {|
   $$typeof: MACHINAT_SCRIPT_TYPE,
   name: string,
   commands: ScriptCommand<Vars, Input, RetrunValue>[],
-  entryKeysIndex: Map<string, number>,
+  entriesIndex: Map<string, number>,
+  meta: Meta,
   Init: ServiceContainer<FunctionalComponent<InitScriptProps<Vars>>>,
 |};
 
@@ -159,7 +160,7 @@ export type CallReturnSetter<CallerVars, RetrunValue> =
   | ServiceContainer<CallReturnSetFn<CallerVars, RetrunValue>>;
 
 export type CallElementProps<CallerVars, CalleeVars, RetrunValue> = {
-  script: MachinatScript<CallerVars, any, RetrunValue>,
+  script: MachinatScript<CallerVars, any, RetrunValue, any>,
   key: string,
   withVars?: CallWithVarsGetter<CallerVars, CalleeVars>,
   set?: CallReturnSetter<CallerVars, RetrunValue>,
@@ -246,7 +247,7 @@ export type LabelSegment = {|
 
 export type CallSegment<CallerVars, CalleeVars, RetrunValue> = {|
   type: 'call',
-  script: MachinatScript<CalleeVars, any, RetrunValue>,
+  script: MachinatScript<CalleeVars, any, RetrunValue, any>,
   key: string,
   withVars: ?CallWithVarsGetter<CallerVars, CalleeVars>,
   setter: ?CallReturnSetter<CallerVars, RetrunValue>,
@@ -283,7 +284,7 @@ export type PromptCommand<Vars, Input> = {|
 export type CallCommand<CallerVars, CalleeVars, RetrunValue> = {|
   type: 'call',
   key: string,
-  script: MachinatScript<CalleeVars, any, RetrunValue>,
+  script: MachinatScript<CalleeVars, any, RetrunValue, any>,
   withVars: ?CallWithVarsGetter<CallerVars, CalleeVars>,
   setter: ?CallReturnSetter<CallerVars, RetrunValue>,
   goto: void | string,
@@ -321,7 +322,7 @@ export type ScriptCommand<Vars, Input, RetrunValue> =
   | ReturnCommand<RetrunValue>;
 
 export type CallStatus<Vars, Input, RetrunValue> = {
-  script: MachinatScript<Vars, Input, RetrunValue>,
+  script: MachinatScript<Vars, Input, RetrunValue, any>,
   vars: Vars,
   stopAt: void | string,
 };

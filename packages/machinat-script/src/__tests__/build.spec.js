@@ -25,7 +25,8 @@ test('built script object', () => {
         set={(_, ctx) => ({ x: ctx.x })}
         key="childPrompt"
       />
-    </>
+    </>,
+    { meta: { foo: 'baz' } }
   );
 
   const MyScript = build(
@@ -71,7 +72,8 @@ test('built script object', () => {
       <LABEL key="end" />
       <VARS set={(_) => ({ foo: 'bar' })} />
       {() => 'ad minim veniam'}
-    </>
+    </>,
+    { meta: { foo: 'bar' } }
   );
 
   expect(MyScript.name).toBe('MyScript');
@@ -79,7 +81,7 @@ test('built script object', () => {
   expect(MyScript.Init).toBeInstanceOf(Function);
 
   expect(MyScript.commands).toMatchSnapshot();
-  expect(MyScript.entryKeysIndex).toMatchInlineSnapshot(`
+  expect(MyScript.entriesIndex).toMatchInlineSnapshot(`
     Map {
       "start" => 0,
       "third" => 3,
@@ -91,6 +93,19 @@ test('built script object', () => {
       "end" => 15,
     }
   `);
+  expect(MyScript.meta).toEqual({ foo: 'bar' });
+
+  expect(ChildScript.name).toBe('ChildScript');
+  expect(ChildScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
+  expect(ChildScript.Init).toBeInstanceOf(Function);
+
+  expect(ChildScript.commands).toMatchSnapshot();
+  expect(ChildScript.entriesIndex).toMatchInlineSnapshot(`
+    Map {
+      "childPrompt" => 1,
+    }
+    `);
+  expect(ChildScript.meta).toEqual({ foo: 'baz' });
 });
 
 test('Init component', async () => {

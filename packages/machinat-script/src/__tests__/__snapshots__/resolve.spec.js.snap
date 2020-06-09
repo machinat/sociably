@@ -198,7 +198,7 @@ Array [
               "type": "prompt",
             },
           ],
-          "entryKeysIndex": Map {
+          "entriesIndex": Map {
             "foo" => 3,
             "bar" => 8,
           },
@@ -294,7 +294,7 @@ Array [
           "type": "prompt",
         },
       ],
-      "entryKeysIndex": Map {
+      "entriesIndex": Map {
         "foo" => 3,
         "bar" => 8,
       },

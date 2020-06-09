@@ -182,7 +182,7 @@ const resolveCall = ({
 
   if (goto) {
     invariant(
-      script.entryKeysIndex.has(goto),
+      script.entriesIndex.has(goto),
       `key "${goto}" not found in ${script.name}`
     );
   }
