@@ -8,13 +8,11 @@ import { SCRIPT_STATE_KEY, SCRIPT_LIBS_I } from './constant';
 import { serializeScriptStatus } from './utils';
 import type { MachinatScript, CallStatus, ScriptProcessState } from './types';
 
-type RuntimeResult<Vars, Input, ReturnValue> = {
+type RuntimeResult = {|
   finished: boolean,
   filterPassed: boolean,
   content: MachinatNode,
-  currentScript: null | MachinatScript<Vars, Input, ReturnValue>,
-  stopAt: void | string,
-};
+|};
 
 class ScriptRuntime {
   channel: MachinatChannel;
@@ -44,14 +42,22 @@ class ScriptRuntime {
     return this._isPrompting;
   }
 
-  async run(input?: any): Promise<RuntimeResult<any, any, any>> {
+  get currentScript(): null | MachinatScript<any, any, any> {
+    const stack = this.callStack;
+    return stack?.[stack.length - 1].script || null;
+  }
+
+  get stopAt(): void | string {
+    const stack = this.callStack;
+    return stack?.[stack.length - 1].stopAt;
+  }
+
+  async run(input?: any): Promise<RuntimeResult> {
     if (!this.callStack) {
       return {
         finished: true,
         filterPassed: false,
         content: null,
-        currentScript: null,
-        stopAt: undefined,
       };
     }
 
@@ -65,14 +71,10 @@ class ScriptRuntime {
     this.callStack = stack;
     this._isPrompting = !finished;
 
-    const lastCallStatus = stack?.[stack.length - 1];
-
     return {
       finished,
       filterPassed,
       content,
-      currentScript: lastCallStatus?.script || null,
-      stopAt: lastCallStatus?.stopAt,
     };
   }
 }

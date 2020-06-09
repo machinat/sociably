@@ -120,21 +120,22 @@ describe('#init(channel)', () => {
       finished: false,
       filterPassed: true,
       content: ['Lorem ', 'ipsum ', 'dolor '],
-      currentScript: MyScript,
-      stopAt: 'ask_1',
     });
 
     expect(promptSetter.mock).not.toHaveBeenCalled();
     expect(runtime.isFinished).toBe(false);
     expect(runtime.isPrompting).toBe(true);
+    expect(runtime.currentScript).toBe(MyScript);
+    expect(runtime.stopAt).toBe('ask_1');
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
       filterPassed: true,
       content: ['sit ', 'amet, '],
-      currentScript: MyScript,
-      stopAt: 'ask_3',
     });
+
+    expect(runtime.currentScript).toBe(MyScript);
+    expect(runtime.stopAt).toBe('ask_3');
 
     expect(promptSetter.mock).toHaveBeenCalledTimes(1);
     expect(promptSetter.mock).toHaveBeenCalledWith(
@@ -161,9 +162,10 @@ describe('#init(channel)', () => {
       finished: false,
       filterPassed: true,
       content: ['ipsum ', 'dolor '],
-      currentScript: MyScript,
-      stopAt: 'ask_1',
     });
+
+    expect(runtime.currentScript).toBe(MyScript);
+    expect(runtime.stopAt).toBe('ask_1');
   });
 
   test('init script with initial vars specified', async () => {
@@ -179,17 +181,18 @@ describe('#init(channel)', () => {
       finished: false,
       filterPassed: true,
       content: ['Lorem ', 'ipsum ', 'est '],
-      currentScript: MyScript,
-      stopAt: 'ask_2',
     });
+
+    expect(runtime.currentScript).toBe(MyScript);
+    expect(runtime.stopAt).toBe('ask_2');
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: true,
       filterPassed: true,
       content: ['laborum. '],
-      currentScript: null,
-      stopAt: undefined,
     });
+    expect(runtime.currentScript).toBe(null);
+    expect(runtime.stopAt).toBe(undefined);
 
     expect(promptSetter.mock).toHaveBeenCalledTimes(1);
     expect(promptSetter.mock).toHaveBeenCalledWith(
@@ -240,9 +243,10 @@ describe('#continue(channel)', () => {
       finished: false,
       filterPassed: true,
       content: ['consectetur ', 'adipiscing '],
-      currentScript: AnotherScript,
-      stopAt: 'ask_4',
     });
+
+    expect(runtime.currentScript).toBe(AnotherScript);
+    expect(runtime.stopAt).toBe('ask_4');
 
     expect(runtime.isFinished).toBe(false);
     expect(runtime.isPrompting).toBe(true);
@@ -256,9 +260,10 @@ describe('#continue(channel)', () => {
       finished: false,
       filterPassed: true,
       content: ['elit, ', 'sed '],
-      currentScript: MyScript,
-      stopAt: 'ask_5',
     });
+
+    expect(runtime.currentScript).toBe(MyScript);
+    expect(runtime.stopAt).toBe('ask_5');
 
     expect(promptSetter.mock).toHaveBeenCalledTimes(2);
     expect(promptSetter.mock).toHaveBeenCalledWith(
@@ -270,9 +275,10 @@ describe('#continue(channel)', () => {
       finished: false,
       filterPassed: true,
       content: ['do '],
-      currentScript: MyScript,
-      stopAt: 'ask_5',
     });
+
+    expect(runtime.currentScript).toBe(MyScript);
+    expect(runtime.stopAt).toBe('ask_5');
 
     expect(promptSetter.mock).toHaveBeenCalledTimes(3);
     expect(promptSetter.mock).toHaveBeenCalledWith(
@@ -308,9 +314,10 @@ describe('#continue(channel)', () => {
       finished: false,
       filterPassed: true,
       content: ['elit, ', 'sed '],
-      currentScript: MyScript,
-      stopAt: 'ask_5',
     });
+
+    expect(runtime.currentScript).toBe(MyScript);
+    expect(runtime.stopAt).toBe('ask_5');
 
     expect(promptSetter.mock).toHaveBeenCalledTimes(1);
     expect(promptSetter.mock).toHaveBeenCalledWith(
