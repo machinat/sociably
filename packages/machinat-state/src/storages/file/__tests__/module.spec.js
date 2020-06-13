@@ -1,8 +1,11 @@
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
+import { tmpNameSync } from 'tmp';
 import FileState from '..';
 import FileRepository from '../repository';
 import StateController from '../../..';
+
+const storageFilePath = tmpNameSync();
 
 test('export interfaces', () => {
   expect(FileState.Repository).toBe(FileRepository);
@@ -26,7 +29,7 @@ test('export interfaces', () => {
 
 test('provisions', async () => {
   const app = Machinat.createApp({
-    modules: [FileState.initModule({ path: '/stroage/file/path' })],
+    modules: [FileState.initModule({ path: storageFilePath })],
   });
   await app.start();
 
@@ -38,12 +41,12 @@ test('provisions', async () => {
 
   expect(controller).toBeInstanceOf(StateController);
   expect(repository).toBeInstanceOf(FileRepository);
-  expect(configs).toEqual({ path: '/stroage/file/path' });
+  expect(configs).toEqual({ path: storageFilePath });
 });
 
 test('provide base state controller', async () => {
   const app = Machinat.createApp({
-    modules: [FileState.initModule({ path: '/stroage/file/path' })],
+    modules: [FileState.initModule({ path: storageFilePath })],
   });
   await app.start();
 

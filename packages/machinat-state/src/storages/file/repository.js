@@ -1,12 +1,18 @@
 // @flow
-import fs from 'fs';
-import thenifiedly from 'thenifiedly';
+import {
+  promises as fsPromises,
+  constants as fsConstants,
+  watch,
+  FSWatcher,
+  FileHandle,
+} from 'fs';
 import { provider } from '@machinat/core/service';
 import typeof { StateRepositoryI } from '../../interface';
 import { FILE_STATE_CONFIGS_I, FileStateSerializerI } from './interface';
 import type { FileRepositoryConfigs } from './types';
 
-const { O_RDONLY, O_RDWR, O_CREAT } = fs.constants;
+const { O_RDWR, O_CREAT } = fsConstants;
+const { open: openFile } = fsPromises;
 
 type StorageObj = {|
   [string]: {|
@@ -19,125 +25,123 @@ const objectHasOwnProperty = (obj, prop) =>
 
 class FileRepository implements StateRepositoryI {
   path: string;
-  _serializer: FileStateSerializerI;
+  serializer: FileStateSerializerI;
+
+  _data: StorageObj;
+  _fileHandle: FileHandle;
+  _watcher: FSWatcher;
+
+  _openingJob: Promise<void>;
+  _writingJob: Promise<void>;
+  _isWriting: boolean;
 
   constructor(
     options: FileRepositoryConfigs,
     serializer?: ?FileStateSerializerI
   ) {
     this.path = options.path;
-    this._serializer = serializer || JSON;
+    this.serializer = serializer || JSON;
+
+    this._openingJob = this._open();
+    this._writingJob = Promise.resolve();
   }
 
   async get(name: string, key: string) {
-    const fd = await this._open(false);
-
-    try {
-      const data = await this._readData(fd);
-      return data[name]?.[key];
-    } finally {
-      await thenifiedly.call(fs.close, fd);
-    }
+    await this._openingJob;
+    return this._data[name]?.[key];
   }
 
   async set(name: string, key: string, value: any) {
-    const fd = await this._open(true);
+    await this._openingJob;
 
-    try {
-      const data = await this._readData(fd);
+    const data = this._data;
+    let valueExisted = false;
 
-      let valueExisted = false;
-      if (objectHasOwnProperty(data, name)) {
-        valueExisted = objectHasOwnProperty(data[name], key);
-        data[name][key] = value;
-      } else {
-        data[name] = { [key]: value };
-      }
-
-      await this._writeData(fd, data);
-      return valueExisted;
-    } finally {
-      await thenifiedly.call(fs.close, fd);
+    if (objectHasOwnProperty(data, name)) {
+      valueExisted = objectHasOwnProperty(data[name], key);
+      data[name][key] = value;
+    } else {
+      data[name] = { [key]: value };
     }
+
+    this._registerWriteData();
+    return valueExisted;
   }
 
   async getAll(name: string) {
-    const fd = await this._open(false);
+    await this._openingJob;
 
-    try {
-      const data = await this._readData(fd);
-      if (!objectHasOwnProperty(data, name)) {
-        return null;
-      }
-
-      return new Map<string, any>(Object.entries(data[name]));
-    } finally {
-      await thenifiedly.call(fs.close, fd);
+    const data = this._data;
+    if (!objectHasOwnProperty(data, name)) {
+      return null;
     }
+
+    return new Map<string, any>(Object.entries(data[name]));
   }
 
   async delete(name: string, key: string) {
-    const fd = await this._open(true);
+    await this._openingJob;
 
-    try {
-      const data = await this._readData(fd);
+    const data = this._data;
+    if (
+      objectHasOwnProperty(data, name) &&
+      objectHasOwnProperty(data[name], key)
+    ) {
+      delete data[name][key];
 
-      if (
-        objectHasOwnProperty(data, name) &&
-        objectHasOwnProperty(data[name], key)
-      ) {
-        delete data[name][key];
-
-        if (Object.keys(data[name]).length === 0) {
-          delete data[name];
-        }
-
-        await this._writeData(fd, data);
-        return true;
+      if (Object.keys(data[name]).length === 0) {
+        delete data[name];
       }
 
-      return false;
-    } finally {
-      await thenifiedly.call(fs.close, fd);
+      this._registerWriteData();
+      return true;
     }
+
+    return false;
   }
 
   async clear(name: string) {
-    const fd = await this._open(true);
+    await this._openingJob;
+    const data = this._data;
 
-    try {
-      const data = await this._readData(fd);
+    if (objectHasOwnProperty(data, name)) {
+      delete data[name];
+      this._registerWriteData();
+    }
+  }
 
-      if (objectHasOwnProperty(data, name)) {
-        delete data[name];
-        await this._writeData(fd, data);
+  async _open(): Promise<void> {
+    if (this._fileHandle) {
+      await this._fileHandle.close();
+    }
+
+    this._fileHandle = await openFile(this.path, O_RDWR | O_CREAT);
+    this._watcher = watch(this.path, { persistent: false }, () => {
+      if (!this._isWriting) {
+        this._openingJob = this._open();
       }
-    } finally {
-      await thenifiedly.call(fs.close, fd);
-    }
-  }
+    });
 
-  _open(toWrite: boolean): Promise<number> {
-    return thenifiedly.call(
-      fs.open,
-      this.path,
-      (toWrite ? O_RDWR : O_RDONLY) | O_CREAT
-    );
-  }
-
-  async _readData(fd: number): Promise<StorageObj> {
-    const content = await thenifiedly.call(fs.readFile, fd, 'utf8');
+    const content = await this._fileHandle.readFile('utf8');
     if (content === '') {
-      return ({}: any);
+      this._data = ({}: any);
+    } else {
+      this._data = this.serializer.parse(content);
     }
-
-    return this._serializer.parse(content);
   }
 
-  async _writeData(fd: number, data: StorageObj): Promise<void> {
-    const content = this._serializer.stringify(data);
-    await thenifiedly.call(fs.ftruncate, fd, 1);
-    await thenifiedly.call(fs.write, fd, content, 0);
+  async _writeData(): Promise<void> {
+    this._isWriting = true;
+    const content = this.serializer.stringify(this._data);
+
+    await this._fileHandle.truncate();
+    await this._fileHandle.write(content, 0);
+
+    this._isWriting = false;
+  }
+
+  async _registerWriteData() {
+    this._writingJob = this._writingJob.then(this._writeData.bind(this));
   }
 }
 

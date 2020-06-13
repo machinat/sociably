@@ -3,6 +3,8 @@ import moxy from 'moxy';
 import { tmpNameSync } from 'tmp';
 import FileRepository from '../repository';
 
+const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+
 describe('#get()', () => {
   test('get value from storage file', async () => {
     const tmpPath = tmpNameSync();
@@ -126,6 +128,9 @@ describe('#set()', () => {
     const repo = new FileRepository({ path: tmpPath });
 
     await expect(repo.set('my_resource', 'key3', 'bar')).resolves.toBe(false);
+    await expect(repo.get('my_resource', 'key3')).resolves.toBe('bar');
+
+    await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toEqual({
       my_resource: {
         key1: 'foo',
@@ -135,6 +140,9 @@ describe('#set()', () => {
     });
 
     await expect(repo.set('my_resource', 'key1', 'bar')).resolves.toBe(true);
+    await expect(repo.get('my_resource', 'key1')).resolves.toBe('bar');
+
+    await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toEqual({
       my_resource: {
         key1: 'bar',
@@ -146,6 +154,11 @@ describe('#set()', () => {
     await expect(
       repo.set('another_resource', 'key1', { bar: 'yes' })
     ).resolves.toBe(false);
+    await expect(repo.get('another_resource', 'key1')).resolves.toEqual({
+      bar: 'yes',
+    });
+
+    await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toEqual({
       my_resource: {
         key1: 'bar',
@@ -160,6 +173,11 @@ describe('#set()', () => {
     await expect(
       repo.set('another_resource', 'key1', { bar: false })
     ).resolves.toBe(true);
+    await expect(repo.get('another_resource', 'key1')).resolves.toEqual({
+      bar: false,
+    });
+
+    await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toEqual({
       my_resource: {
         key1: 'bar',
@@ -177,6 +195,8 @@ describe('#set()', () => {
     const repo = new FileRepository({ path: tmpPath });
 
     await expect(repo.set('my_resource', 'foo', 'bar')).resolves.toBe(false);
+
+    await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toEqual({
       my_resource: {
         foo: 'bar',
@@ -204,8 +224,12 @@ describe('#delete()', () => {
     const repo = new FileRepository({ path: tmpPath });
 
     await expect(repo.delete('my_resource', 'key3')).resolves.toBe(false);
-    await expect(repo.delete('my_resource', 'key2')).resolves.toBe(true);
+    await expect(repo.get('my_resource', 'key3')).resolves.toBe(undefined);
 
+    await expect(repo.delete('my_resource', 'key2')).resolves.toBe(true);
+    await expect(repo.get('my_resource', 'key2')).resolves.toBe(undefined);
+
+    await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toEqual({
       my_resource: {
         key1: 'foo',
@@ -216,6 +240,9 @@ describe('#delete()', () => {
     });
 
     await expect(repo.delete('my_resource', 'key1')).resolves.toBe(true);
+    await expect(repo.get('my_resource', 'key1')).resolves.toBe(undefined);
+
+    await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toEqual({
       another_resource: {
         key1: 'bar',
@@ -224,6 +251,8 @@ describe('#delete()', () => {
 
     await expect(repo.delete('empty_resource', 'key1')).resolves.toBe(false);
     await expect(repo.delete('another_resource', 'key1')).resolves.toBe(true);
+
+    await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toEqual({});
   });
 
@@ -254,7 +283,9 @@ describe('#clear()', () => {
     const repo = new FileRepository({ path: tmpPath });
 
     await expect(repo.clear('my_resource')).resolves.toBe(undefined);
+    await expect(repo.get('my_resource', 'key1')).resolves.toBe(undefined);
 
+    await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toEqual({
       another_resource: {
         key1: 'bar',
@@ -263,6 +294,9 @@ describe('#clear()', () => {
 
     await expect(repo.clear('empty_resource')).resolves.toBe(undefined);
     await expect(repo.clear('another_resource')).resolves.toBe(undefined);
+    await expect(repo.get('another_resource', 'key1')).resolves.toBe(undefined);
+
+    await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toEqual({});
   });
 
@@ -274,10 +308,52 @@ describe('#clear()', () => {
   });
 });
 
+test('reflect content changes on storage file', async () => {
+  const tmpPath = tmpNameSync();
+  fs.writeFileSync(
+    tmpPath,
+    `{
+      "my_resource": {
+        "key1": "foo",
+        "key2": "bar"
+       }
+     }`
+  );
+
+  const repo = new FileRepository({ path: tmpPath });
+
+  await expect(repo.get('my_resource', 'key1')).resolves.toBe('foo');
+  await expect(repo.getAll('my_resource')).resolves.toEqual(
+    new Map([
+      ['key1', 'foo'],
+      ['key2', 'bar'],
+    ])
+  );
+
+  fs.writeFileSync(
+    tmpPath,
+    `{
+      "my_resource": {
+        "key1": "foooo",
+        "key2": "baz"
+       }
+     }`
+  );
+
+  await delay(20);
+  await expect(repo.get('my_resource', 'key1')).resolves.toBe('foooo');
+  await expect(repo.getAll('my_resource')).resolves.toEqual(
+    new Map([
+      ['key1', 'foooo'],
+      ['key2', 'baz'],
+    ])
+  );
+});
+
 test('custom serielizer', async () => {
   const serializer = moxy({
     stringify() {
-      return '_MAGICALLY_ENCODED_DATA_';
+      return '_UPDATED_MAGICALLY_ENCODED_DATA_';
     },
     parse() {
       return {
@@ -289,16 +365,23 @@ test('custom serielizer', async () => {
   });
 
   const tmpPath = tmpNameSync();
-  const repo = new FileRepository({ path: tmpPath }, serializer);
+  fs.writeFileSync(tmpPath, '_MAGICALLY_ENCODED_DATA_');
 
-  await expect(repo.set('my_resource', 'is', 'magical')).resolves.toBe(false);
-  expect(fs.readFileSync(tmpPath, 'utf8')).toBe('_MAGICALLY_ENCODED_DATA_');
-  expect(serializer.stringify.mock).toHaveBeenCalledWith({
-    my_resource: { is: 'magical' },
-  });
+  const repo = new FileRepository({ path: tmpPath }, serializer);
 
   await expect(repo.get('my_resource', 'from')).resolves.toBe('MAGIC');
   expect(serializer.parse.mock).toHaveBeenCalledWith(
     '_MAGICALLY_ENCODED_DATA_'
   );
+
+  await expect(repo.set('my_resource', 'is', 'magical')).resolves.toBe(false);
+  await expect(repo.get('my_resource', 'is')).resolves.toBe('magical');
+
+  await delay(20);
+  expect(fs.readFileSync(tmpPath, 'utf8')).toBe(
+    '_UPDATED_MAGICALLY_ENCODED_DATA_'
+  );
+  expect(serializer.stringify.mock).toHaveBeenCalledWith({
+    my_resource: { from: 'MAGIC', is: 'magical' },
+  });
 });
