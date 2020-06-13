@@ -121,7 +121,7 @@ describe('#init()', () => {
     const liffScriptEle = global.document.getElementById('LIFF');
     expect(liffScriptEle.tagName).toBe('SCRIPT');
     expect(liffScriptEle.getAttribute('src')).toBe(
-      'https://static.line-scdn.net/liff/edge/2.1/sdk.js'
+      'https://static.line-scdn.net/liff/edge/2/sdk.js'
     );
     expect(global.liff.init.mock).not.toHaveBeenCalled();
 

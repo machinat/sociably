@@ -68,7 +68,7 @@ class LineClientAuthorizer
       const SCRIPT = 'script';
       const js = document.createElement(SCRIPT);
       js.id = 'LIFF';
-      js.src = 'https://static.line-scdn.net/liff/edge/2.1/sdk.js';
+      js.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
       const loadingSDK = new Promise((resolve) => {
         js.onload = resolve;
       });
