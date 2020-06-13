@@ -55,8 +55,18 @@ describe('initModule()', () => {
   });
 
   test('provisions', async () => {
+    const verifyLogin = moxy();
+    const verifyUpgrade = moxy();
+
     const app = Machinat.createApp({
-      platforms: [WebSocket.initModule({ entryPath: '/my_web_socket_server' })],
+      platforms: [
+        WebSocket.initModule({
+          entryPath: '/my_web_socket_server',
+          heartbeatInterval: 999,
+          verifyLogin,
+          verifyUpgrade,
+        }),
+      ],
     });
     await app.start();
 
@@ -79,7 +89,12 @@ describe('initModule()', () => {
     expect(bot).toBeInstanceOf(WebSocketBot);
     expect(receiver).toBeInstanceOf(WebSocketReceiver);
     expect(transmitter).toBeInstanceOf(Transmitter);
-    expect(configs).toEqual({ entryPath: '/my_web_socket_server' });
+    expect(configs).toEqual({
+      entryPath: '/my_web_socket_server',
+      heartbeatInterval: 999,
+      verifyLogin,
+      verifyUpgrade,
+    });
     expect(typeof serverId).toBe('string');
     expect(upgradeRoutings).toEqual([
       {
@@ -88,34 +103,6 @@ describe('initModule()', () => {
         handler: expect.any(Function),
       },
     ]);
-  });
-
-  test('provide upgrade verifier if options.verifyUpgrade given', async () => {
-    const verifyUpgrade = moxy(() => true);
-    const app = Machinat.createApp({
-      platforms: [WebSocket.initModule({ verifyUpgrade })],
-    });
-    await app.start();
-
-    const [upgradeVerifierProvided] = app.useServices([
-      WebSocket.UPGRADE_VERIFIER_I,
-    ]);
-
-    expect(upgradeVerifierProvided).toBe(verifyUpgrade);
-  });
-
-  test('provide sign in verifier if options.verifySignIn given', async () => {
-    const verifySignIn = moxy(() => true);
-    const app = Machinat.createApp({
-      platforms: [WebSocket.initModule({ verifySignIn })],
-    });
-    await app.start();
-
-    const [signInVerifierProvided] = app.useServices([
-      WebSocket.LOGIN_VERIFIER_I,
-    ]);
-
-    expect(signInVerifierProvided).toBe(verifySignIn);
   });
 
   test('set default routing path to "/"', async () => {

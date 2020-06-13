@@ -72,44 +72,31 @@ const WebSocket = {
     WebSocketDispatchFrame,
     WebSocketResult
   > => {
-    const provisions = [
-      WebSocketBot,
-      {
-        provide: Base.BotI,
-        withProvider: WebSocketBot,
-        platforms: [WEBSOCKET],
-      },
-
-      Transmitter,
-      { provide: SERVER_ID_I, withProvider: createUniqServerId },
-      { provide: WSServerI, withProvider: createWSServer },
-      { provide: ClusterBrokerI, withProvider: LocalOnlyBroker },
-
-      WebSocketReceiver,
-      { provide: WEBSOCKET_PLATFORM_CONFIGS_I, withValue: configs },
-      { provide: HTTP.UPGRADE_ROUTINGS_I, withProvider: upgradeRoutingFactory },
-    ];
-
-    if (configs.verifyUpgrade) {
-      provisions.push({
-        provide: UPGRADE_VERIFIER_I,
-        withValue: configs.verifyUpgrade,
-      });
-    }
-
-    if (configs.verifySignIn) {
-      provisions.push({
-        provide: LOGIN_VERIFIER_I,
-        withValue: configs.verifySignIn,
-      });
-    }
-
     return {
       name: WEBSOCKET,
       mounterInterface: WEBSOCKET_PLATFORM_MOUNTER_I,
-      provisions,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
+      provisions: [
+        WebSocketBot,
+        {
+          provide: Base.BotI,
+          withProvider: WebSocketBot,
+          platforms: [WEBSOCKET],
+        },
+
+        Transmitter,
+        { provide: SERVER_ID_I, withProvider: createUniqServerId },
+        { provide: WSServerI, withProvider: createWSServer },
+        { provide: ClusterBrokerI, withProvider: LocalOnlyBroker },
+
+        WebSocketReceiver,
+        { provide: WEBSOCKET_PLATFORM_CONFIGS_I, withValue: configs },
+        {
+          provide: HTTP.UPGRADE_ROUTINGS_I,
+          withProvider: upgradeRoutingFactory,
+        },
+      ],
       startHook: container({
         deps: [WebSocketBot],
       })(async (bot: WebSocketBot) => {

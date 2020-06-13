@@ -24,7 +24,7 @@ const wsServer = moxy({
   },
 });
 
-const verifyAuth = moxy(async () => ({
+const verifyLogin = moxy(async () => ({
   success: true,
   user: null,
   authInfo: null,
@@ -71,7 +71,7 @@ beforeEach(() => {
   popEventWrapper.mock.reset();
   popError.mock.reset();
 
-  verifyAuth.mock.reset();
+  verifyLogin.mock.reset();
   verifyUpgrade.mock.reset();
 });
 
@@ -80,10 +80,9 @@ it('handle sockets and connections lifecycle', async () => {
     bot,
     wsServer,
     transmitter,
-    verifyAuth,
-    verifyUpgrade,
     popEventWrapper,
-    popError
+    popError,
+    { verifyLogin, verifyUpgrade }
   );
 
   await receiver.handleUpgrade(req, netSocket, head);
@@ -102,7 +101,7 @@ it('handle sockets and connections lifecycle', async () => {
     headers: { foo: 'bar' },
   });
 
-  verifyAuth.mock.fake(async () => ({
+  verifyLogin.mock.fake(async () => ({
     success: true,
     user: { john: 'doe' },
     authInfo: { rookie: true },
@@ -115,8 +114,8 @@ it('handle sockets and connections lifecycle', async () => {
   socket.emit('login', { credential }, 0, socket);
   await nextTick();
 
-  expect(verifyAuth.mock).toHaveBeenCalledTimes(1);
-  expect(verifyAuth.mock).toHaveBeenCalledWith(expectedRequest, credential);
+  expect(verifyLogin.mock).toHaveBeenCalledTimes(1);
+  expect(verifyLogin.mock).toHaveBeenCalledWith(expectedRequest, credential);
 
   expect(socket.connect.mock).toHaveBeenCalledTimes(1);
   expect(socket.connect.mock).toHaveBeenCalledWith({
@@ -221,13 +220,11 @@ it('handle sockets and connections lifecycle', async () => {
   await nextTick();
 });
 
-test('default verifyUpgrade and verifyAuth', async () => {
+test('default verifyUpgrade and verifyLogin', async () => {
   const receiver = new Receiver(
     bot,
     wsServer,
     transmitter,
-    null,
-    null,
     popEventWrapper,
     popError
   );
@@ -267,10 +264,9 @@ test('multi sockets and connections', async () => {
     bot,
     wsServer,
     transmitter,
-    verifyAuth,
-    verifyUpgrade,
     popEventWrapper,
-    popError
+    popError,
+    { verifyLogin, verifyUpgrade }
   );
 
   await receiver.handleUpgrade(req, netSocket, head);
@@ -286,11 +282,11 @@ test('multi sockets and connections', async () => {
   socket1.connect.mock.fake(async () => {});
   socket2.connect.mock.fake(async () => {});
 
-  expect(verifyAuth.mock).not.toHaveBeenCalled();
+  expect(verifyLogin.mock).not.toHaveBeenCalled();
   socket1.emit('login', { credential: { hi: 1 } }, 0, socket1);
 
-  expect(verifyAuth.mock).toHaveBeenCalledTimes(1);
-  verifyAuth.mock.fake(async () => ({
+  expect(verifyLogin.mock).toHaveBeenCalledTimes(1);
+  verifyLogin.mock.fake(async () => ({
     success: true,
     user: { john: 'doe' },
     authInfo: 'foo',
@@ -299,8 +295,8 @@ test('multi sockets and connections', async () => {
   socket1.emit('login', { credential: { hi: 2 } }, 1, socket1);
   await nextTick();
 
-  expect(verifyAuth.mock).toHaveBeenCalledTimes(2);
-  verifyAuth.mock.fake(async () => ({
+  expect(verifyLogin.mock).toHaveBeenCalledTimes(2);
+  verifyLogin.mock.fake(async () => ({
     success: true,
     user: { jojo: 'doe' },
     authInfo: 'kokoko',
@@ -309,9 +305,9 @@ test('multi sockets and connections', async () => {
   socket2.emit('login', { credential: { hi: 3 } }, 1, socket2);
   await nextTick();
 
-  expect(verifyAuth.mock).toHaveBeenCalledTimes(3);
+  expect(verifyLogin.mock).toHaveBeenCalledTimes(3);
   for (let i = 1; i <= 3; i += 1) {
-    expect(verifyAuth.mock).toHaveBeenNthCalledWith(i, expectedRequest, {
+    expect(verifyLogin.mock).toHaveBeenNthCalledWith(i, expectedRequest, {
       hi: i,
     });
   }
@@ -522,8 +518,6 @@ it('generate uniq socket id', async () => {
     bot,
     wsServer,
     transmitter,
-    verifyAuth,
-    verifyUpgrade,
     popEventWrapper,
     popError
   );
@@ -546,8 +540,6 @@ it('generate uniq connection id', async () => {
     bot,
     wsServer,
     transmitter,
-    verifyAuth,
-    verifyUpgrade,
     popEventWrapper,
     popError
   );
@@ -555,11 +547,6 @@ it('generate uniq connection id', async () => {
   await receiver.handleUpgrade(req, netSocket, head);
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
-
-  verifyAuth.mock.fake(async () => ({
-    success: true,
-    user: null,
-  }));
 
   for (let i = 0; i < 500; i += 1) {
     socket.emit('login', { credential: { hello: 'socket' } }, 1, socket);
@@ -580,10 +567,9 @@ it('respond 404 if verifyUpgrade fn return false', async () => {
     bot,
     wsServer,
     transmitter,
-    verifyAuth,
-    verifyUpgrade,
     popEventWrapper,
-    popError
+    popError,
+    { verifyUpgrade }
   );
 
   verifyUpgrade.mock.fakeReturnValue(false);
@@ -608,22 +594,21 @@ it('respond 404 if verifyUpgrade fn return false', async () => {
   expect(netSocket.destroy.mock).toHaveBeenCalledTimes(1);
 });
 
-it('reject sign in if verifyAuth resolve not sucess', async () => {
+it('reject sign in if verifyLogin resolve not sucess', async () => {
   const receiver = new Receiver(
     bot,
     wsServer,
     transmitter,
-    verifyAuth,
-    verifyUpgrade,
     popEventWrapper,
-    popError
+    popError,
+    { verifyLogin }
   );
   await receiver.handleUpgrade(req, netSocket, head);
 
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
 
-  verifyAuth.mock.fake(async () => ({
+  verifyLogin.mock.fake(async () => ({
     success: false,
     reason: 'no no no',
   }));
@@ -631,7 +616,7 @@ it('reject sign in if verifyAuth resolve not sucess', async () => {
   socket.emit('login', { credential: { hello: 'login' } }, 11, socket);
   await nextTick();
 
-  expect(verifyAuth.mock).toHaveBeenCalledTimes(1);
+  expect(verifyLogin.mock).toHaveBeenCalledTimes(1);
   expect(socket.connect.mock).not.toHaveBeenCalled();
   expect(socket.reject.mock).toHaveBeenCalledTimes(1);
   expect(socket.reject.mock).toHaveBeenCalledWith({
@@ -640,28 +625,27 @@ it('reject sign in if verifyAuth resolve not sucess', async () => {
   });
 });
 
-it('reject sign in if verifyAuth thrown', async () => {
+it('reject sign in if verifyLogin thrown', async () => {
   const receiver = new Receiver(
     bot,
     wsServer,
     transmitter,
-    verifyAuth,
-    verifyUpgrade,
     popEventWrapper,
-    popError
+    popError,
+    { verifyLogin }
   );
   await receiver.handleUpgrade(req, netSocket, head);
 
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
-  verifyAuth.mock.fake(async () => {
+  verifyLogin.mock.fake(async () => {
     throw new Error('noooooo');
   });
 
   socket.emit('login', { credential: { hello: 'login' } }, 11, socket);
   await nextTick();
 
-  expect(verifyAuth.mock).toHaveBeenCalledTimes(1);
+  expect(verifyLogin.mock).toHaveBeenCalledTimes(1);
   expect(socket.connect.mock).not.toHaveBeenCalled();
   expect(socket.reject.mock).toHaveBeenCalledTimes(1);
   expect(socket.reject.mock).toHaveBeenCalledWith({
@@ -670,13 +654,11 @@ it('reject sign in if verifyAuth thrown', async () => {
   });
 });
 
-it('issue socket error', async () => {
+it('pop socket error', async () => {
   const receiver = new Receiver(
     bot,
     wsServer,
     transmitter,
-    verifyAuth,
-    verifyUpgrade,
     popEventWrapper,
     popError
   );
@@ -692,4 +674,48 @@ it('issue socket error', async () => {
 
   expect(popError.mock).toHaveBeenCalledTimes(1);
   expect(popError.mock).toHaveBeenCalledWith(new Error("It's Bat Man!"));
+});
+
+test('ping socket per heartbeatInterval', async () => {
+  jest.useFakeTimers();
+
+  const receiver = new Receiver(
+    bot,
+    wsServer,
+    transmitter,
+    popEventWrapper,
+    popError,
+    { heartbeatInterval: 100 }
+  );
+
+  await receiver.handleUpgrade(req, netSocket, head);
+  await receiver.handleUpgrade(req, netSocket, head);
+
+  const socket1 = Socket.mock.calls[0].instance;
+  const socket2 = Socket.mock.calls[1].instance;
+  socket1.connect.mock.fake(async () => {});
+
+  // test socket1 with connection
+  socket1.emit('login', { credential: { hi: 1 } }, 0, socket1);
+  await nextTick();
+  const { connId } = socket1.connect.mock.calls[0].args[0];
+  socket1.emit('connect', { connId }, 2, socket1);
+  await nextTick();
+
+  jest.advanceTimersByTime(100);
+
+  expect(socket1.ping.mock).toHaveBeenCalledTimes(1);
+  expect(socket2.ping.mock).toHaveBeenCalledTimes(1);
+
+  jest.advanceTimersByTime(100);
+
+  expect(socket1.ping.mock).toHaveBeenCalledTimes(2);
+  expect(socket2.ping.mock).toHaveBeenCalledTimes(2);
+
+  jest.advanceTimersByTime(100);
+
+  expect(socket1.ping.mock).toHaveBeenCalledTimes(3);
+  expect(socket2.ping.mock).toHaveBeenCalledTimes(3);
+
+  jest.useRealTimers();
 });

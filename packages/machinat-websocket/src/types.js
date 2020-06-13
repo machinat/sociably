@@ -142,7 +142,8 @@ export type WebSocketDispatchMiddleware = DispatchMiddleware<
 export type WebSocketPlatformConfigs<AuthInfo, Credential> = {
   entryPath?: string,
   verifyUpgrade?: VerifyUpgradeFn,
-  verifySignIn?: VerifyLoginFn<AuthInfo, Credential>,
+  verifyLogin?: VerifyLoginFn<AuthInfo, Credential>,
+  heartbeatInterval?: number,
   eventMiddlewares?: (
     | WebSocketEventMiddleware<AuthInfo>
     | ServiceContainer<WebSocketEventMiddleware<AuthInfo>>

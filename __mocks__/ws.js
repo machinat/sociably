@@ -9,6 +9,8 @@ class WebSocket extends EventEmitter {
     cb();
   }
 
+  ping() {}
+
   close(code, reason) {
     setTimeout(() => {
       this.emit('close', code, reason);

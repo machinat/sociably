@@ -303,6 +303,10 @@ class MachinatSocket extends EventEmitter {
     return seq;
   }
 
+  ping() {
+    this._ws.ping();
+  }
+
   close(code: number, reason: string) {
     this._ws.close(code, reason);
   }

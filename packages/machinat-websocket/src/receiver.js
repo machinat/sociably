@@ -12,6 +12,7 @@ import type {
   PopEventFn,
   PopErrorFn,
 } from '@machinat/core/types';
+
 import Transmitter from './transmitter';
 import WebSocketBot from './bot';
 import MachinatSocket from './socket';
@@ -22,6 +23,7 @@ import {
   LOGIN_VERIFIER_I,
   UPGRADE_VERIFIER_I,
   WEBSOCKET_PLATFORM_MOUNTER_I,
+  WEBSOCKET_PLATFORM_CONFIGS_I,
 } from './interface';
 import { WEBSOCKET } from './constant';
 import type {
@@ -30,6 +32,7 @@ import type {
   WebSocketEventContext,
   VerifyUpgradeFn,
   WebSocketPlatformMounter,
+  WebSocketPlatformConfigs,
 } from './types';
 import type Socket, {
   DispatchBody,
@@ -37,11 +40,6 @@ import type Socket, {
   ConnectBody,
   DisconnectBody,
 } from './socket';
-
-const getWSFromServer = thenifiedly.factory(
-  (cb, [wsServer, req, ns, head]) => wsServer.handleUpgrade(req, ns, head, cb),
-  { beginningError: false }
-);
 
 type ConnectionInfo<Auth> = {|
   channel: ConnectionChannel,
@@ -54,6 +52,12 @@ type SocketState<Auth> = {|
   lostHeartbeatCount: number,
   connections: Map<string, ConnectionInfo<Auth>>,
 |};
+
+type WebSocketReceiverOptions<AuthInfo> = {
+  heartbeatInterval?: number,
+  verifyLogin?: VerifyLoginFn<AuthInfo, any>,
+  verifyUpgrade?: VerifyUpgradeFn,
+};
 
 const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
   const codeName = http.STATUS_CODES[code];
@@ -70,6 +74,11 @@ const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
   ns.destroy();
 };
 
+const getWSFromServer = thenifiedly.factory(
+  (cb, [wsServer, req, ns, head]) => wsServer.handleUpgrade(req, ns, head, cb),
+  { beginningError: false }
+);
+
 class WebSocketReceiver<AuthInfo> {
   _serverId: string;
   _bot: WebSocketBot;
@@ -84,14 +93,19 @@ class WebSocketReceiver<AuthInfo> {
   _popEvent: PopEventFn<WebSocketEventContext<AuthInfo>, null>;
   _popError: PopErrorFn;
 
+  _heartbeatIntervalId: IntervalID;
+
   constructor(
     bot: WebSocketBot,
     wsServer: WSServerI,
     transmitter: Transmitter,
-    verifyLogin: null | VerifyLoginFn<AuthInfo, any>,
-    verifyUpgrade: null | VerifyUpgradeFn,
     popEventWrapper: PopEventWrapper<WebSocketEventContext<AuthInfo>, null>,
-    popError: PopErrorFn
+    popError: PopErrorFn,
+    {
+      heartbeatInterval = 60000,
+      verifyUpgrade,
+      verifyLogin,
+    }: WebSocketReceiverOptions<AuthInfo> = {}
   ) {
     this._serverId = transmitter.serverId;
     this._bot = bot;
@@ -107,6 +121,11 @@ class WebSocketReceiver<AuthInfo> {
 
     this._popEvent = popEventWrapper(() => Promise.resolve(null));
     this._popError = popError;
+
+    this._heartbeatIntervalId = setInterval(
+      this._heartbeat.bind(this),
+      heartbeatInterval
+    ).unref();
   }
 
   async handleUpgrade(req: IncomingMessage, ns: NetSocket, head: Buffer) {
@@ -301,6 +320,13 @@ class WebSocketReceiver<AuthInfo> {
     socket.removeAllListeners();
     this._socketStates.delete(socket);
   }
+
+  _heartbeat() {
+    for (const [socket, _] of this._socketStates) {
+      // TODO: remove unresponding sockets
+      socket.ping();
+    }
+  }
 }
 
 export default provider<WebSocketReceiver<any>>({
@@ -312,6 +338,7 @@ export default provider<WebSocketReceiver<any>>({
     { require: LOGIN_VERIFIER_I, optional: true },
     { require: UPGRADE_VERIFIER_I, optional: true },
     WEBSOCKET_PLATFORM_MOUNTER_I,
+    WEBSOCKET_PLATFORM_CONFIGS_I,
   ],
   factory: (
     bot: WebSocketBot,
@@ -319,15 +346,19 @@ export default provider<WebSocketReceiver<any>>({
     transmitter: Transmitter,
     verifyLogin: null | VerifyLoginFn<any, any>,
     verifyUpgrade: null | VerifyUpgradeFn,
-    { popEventWrapper, popError }: WebSocketPlatformMounter<any>
+    { popEventWrapper, popError }: WebSocketPlatformMounter<any>,
+    configs: WebSocketPlatformConfigs<any, any>
   ) =>
     new WebSocketReceiver(
       bot,
       wsServer,
       transmitter,
-      verifyLogin,
-      verifyUpgrade,
       popEventWrapper,
-      popError
+      popError,
+      {
+        heartbeatInterval: configs.heartbeatInterval,
+        verifyLogin: verifyLogin || configs.verifyLogin,
+        verifyUpgrade: verifyUpgrade || configs.verifyUpgrade,
+      }
     ),
 })(WebSocketReceiver);

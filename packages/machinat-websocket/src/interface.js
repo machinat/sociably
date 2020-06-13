@@ -85,5 +85,5 @@ export const WEBSOCKET_PLATFORM_MOUNTER_I = makeInterface<
 >({ name: 'WebSocketPlatformMounter' });
 
 export const WEBSOCKET_PLATFORM_CONFIGS_I = makeInterface<
-  WebSocketPlatformConfigs<any>
+  WebSocketPlatformConfigs<any, any>
 >({ name: 'WebSocketPlatformConfigs' });
