@@ -1,0 +1,235 @@
+# Integrate with WebView
+
+CUI brings us a new way to communicate with user, but it's not a replacement of GUI totally. GUI is still outperforming especially on the operations need precision, instant interactions or multitasking in an app.
+
+The best practice we suggest is a hybrid experience combining the advantage of both. While CUI is easy to use, easy to broadcast and more closed to the user, GUI can be used to provide more enriched and advanced features.
+
+## WebView and WebSocket
+
+Opening an web page is the simplest way extend chat experience with GUI. Machinat have a `websocket` platform to provide event-based communication between your webview client and server:
+
+```js
+import Machinat from '@machinat/core'
+import WebSocket from '@machinat/websocket';
+
+const app = Machinat.createApp({
+  ...
+  platforms: [
+    ...
+    WebSocket.initModule({
+      entryPath: '/websocket',
+    }),
+  ],
+})
+```
+
+### Handle Events in Server
+
+Receiving event from the webview clients is the same as other platforms:
+
+```js
+app.onEvent(async context => {
+  const { event, bot, channel } = context;
+
+  if (event.platform === 'websocket') {
+    if (event.type === 'greeting') {
+      return bot.send(channel, {
+        type: 'greeting',
+        payload : '👋',
+      });
+    }
+    // handle other event types ...
+  }
+});
+```
+
+The `channel` received in `websocket` platform refers to a websocket connection. You can use it to send the response message back.
+
+The `event` contains `type`, `subtype` and `payload` sent from clients, you are free to send any data can be serialized with `JSON.stringify` in the `payload`. There are also two native event type:
+
+- `'connect'` - emit when a connection is connected.
+- `'disconnect'` - emit when a connection is disconnected.
+
+`bot.send(channel, event)` method sends an event object with the same structure as event interface:
+
+- `type` - required, `string`
+- `subtype` - optional, `string`
+- `payload` - optional, `any`
+
+### In WebView Client
+
+In the client side, you can easily communicate with server with:
+
+```js
+import WebClient from '@machinat/websocket/client';
+
+const client = new WebClient({
+  url: '/websocket',
+});
+
+client.onError(console.error);
+
+client.onEvent(({ event }) => {
+  if (event.type === 'connect') {
+    client.send({
+      type: 'greeting',
+      payload : '👋',
+    });
+  }
+})
+```
+
+Callback pass to `client.onEvent` receive a similar context as server-side app, but contains only `event`, `channel` and `user` property. The `'connect'` and `'disconnect'` event would also be emitted when connected/disconnected.
+
+`client.send(event)` receive an event object and send it to server. You don't have to wait `'connect'` event for sending, events would be queued before connection made and fire after it.
+
+## Integrate with other Platform
+
+Now you are able to communicate with Machinat app from web. But to make the page as an extended view of chatroom, you have to integrate `websocket` with other chat platforms.
+
+First need to add some more services in the app:
+
+```js
+import Machinat from '@machinat/core'
+import WebSocket from '@machinat/websocket';
+import useAuthController from '@machinat/websocket/auth';
+import Auth from '@machinat/Auth';
+import MessengerAuthorizer from '@machinat/messenger/auth';
+import LineAuthorizer from '@machinat/line/auth';
+
+const app = Machinat.createApp({
+  ...
+  platforms: [
+    ...
+    WebSocket.initModule({
+      entryPath: '/websocket',
+    }),
+    Auth.initModule({
+      entryPath: '/auth',
+      secret: '__SECRET_STRING__',
+    }),
+  ],
+  bindings: [
+    { provide: Auth.AUTHORIZERS_I, withProvider: MessengerAuthorizer },
+    { provide: Auth.AUTHORIZERS_I, withProvider: LineAuthorizer },
+    { provide: WebSocket.LOGIN_VERIFIER_I, withProvider: useAuthController },
+  ],
+})
+```
+
+The `Auth` module provide an united interface to authorize users at web page with the platform they come from. Then we can register `Auth.AUTHORIZERS_I` with authorizer plugins from the chat platforms. Finally, register `WebSocket.LOGIN_VERIFIER_I` with `useAuthController` to connect `Auth` module.
+
+And in the client:
+
+```js
+import WebSocketClient from '@machinat/websocket/client';
+import useAuth from '@machinat/websocket/auth/client';
+import AuthController from '@machinat/websocket/client';
+import MessengerAuthorizer from '@machinat/messenger/auth/client'
+import LineAuthorizer from '@machinat/messenger/auth/client'
+
+const authController = new AuthController({
+  serverURL: '/auth',
+  authorizers: [
+    new MessengerAuthorizer({
+      appId: fbAppId,
+    }),
+    new LineAuthorizer({
+      providerId: lineProviderId,
+      botChannelId: lineBotChannelId,
+      liffId: lineLIFFId,
+    }),
+  ],
+});
+
+const client = new WebSocketClient({
+  url: '/websocket',
+  authorize: useAuth(authController),
+});
+
+authController.bootstrap();
+```
+
+First we initiate an `AuthController` with the authorizer plugins of chat platforms. Then bind it the `authorize` option of websocket client with `useAuth`.
+
+The final step is to call `authController.bootstrap(platform)`, this initiate necessary works of the platform specified. If the platform argument is omitted, `platform` param in querystring is used.
+
+### Get Auth Info of Event
+
+After setup, the `user` would be set to the chat platform user instead of `null`. And more info about auth can be found at `metadata.auth`:
+
+
+```js
+app.onEvent(container({
+  deps: [Messenger.Bot]
+})(messengerBot => async context => {
+  const { platform, metadata, event } = context;
+
+  if (platform === 'websocket' && event.type === 'greeting') {
+    const {
+      platform: sourcePlatform,
+      channel: sourceChannel,
+    } = metadata.auth;
+
+    if (sourcePlatform === 'messenger') {
+      await messengerBot.render(
+        sourceChannel,
+        'I see you in the webview!'
+      );
+    }
+  }
+}));
+```
+
+The example above will send a message to the source chatroom when user opens a webview in it. The `metadata.auth` has following informations:
+
+- `platform` - `string`, source platform name.
+- `user` - `object`, user from source platform.
+- `channel` - `null | object`, the source channel user comes from.
+- `loginAt` - `Date`, the time user logged in.
+- `expireAt` - `Date`, the time auth would expired.
+- `data` - `any`, raw auth data from chat platform.
+
+This is useful to provide chatroom/user scoped features or data in your webview. For example: share memos with friends, a cooperative whiteboard or even multi-player board games.
+
+## Broadcast by Topic
+
+In some case you would need to send to many connection at one time, for example an in-chatroom multi-player game. You can broadcast message to by a topic like this:
+
+```js
+app.onEvent(async context => {
+  const { event, bot, channel, metadata } = context;
+  const { channel: source } = metadata.auth;
+
+  if (event.type === 'connect') {
+    return bot.subscribeTopic(channel, source.uid);
+  } else if (event.type === 'greeting') {
+    return bot.sendTopic(source.uid, event);
+  }
+});
+```
+
+In the example above the source chat channel uid is used as the topic name, then you can use the topic to provide in-chatroom scoped features.
+
+`bot.subscribeTopic` labels a connection channel subscribing to a topic. `bot.sendTopic` sends messages to all connections subscribing the specific topic. And a topic can be unsubscribe with `bot.unsubscribeTopic`:
+
+```js
+bot.unsubscribeTopic(channel, 'foo_topic');
+```
+
+## Send by User
+
+Since an user can opens many webview at a time, you might want keep the content of all webviews consistent. You can use `bot.sendUser` for sending to all the clients logged in as the same user.
+
+```js
+app.onEvent(async context => {
+  const { event, bot, user } = context;
+
+  if (event.type === 'new_todo') {
+    return bot.sendUser(user, {
+      type: 'todo_added',
+      payload: event.payload,
+    });
+  }
+});
+```
