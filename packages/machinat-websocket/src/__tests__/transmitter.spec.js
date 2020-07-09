@@ -45,51 +45,53 @@ test('addLocalConnection() and removeLocalConnection()', () => {
   expect(transmitter.removeLocalConnection(barConn)).toBe(false);
 });
 
-describe('attachTopic() and detachTopic()', () => {
+describe('subscribeTopic() and unsubscribeTopic()', () => {
   it('return boolean indicate whether connection is connected', async () => {
     const transmitter = new Transmitter(serverId, broker, errorHandler);
     const conn = new ConnectionChannel(serverId, '#conn');
 
     transmitter.addLocalConnection(conn, socket, john);
 
-    await expect(transmitter.attachTopic(conn, 'foo')).resolves.toBe(true);
-    await expect(transmitter.attachTopic(conn, 'bar')).resolves.toBe(true);
+    await expect(transmitter.subscribeTopic(conn, 'foo')).resolves.toBe(true);
+    await expect(transmitter.subscribeTopic(conn, 'bar')).resolves.toBe(true);
 
-    await expect(transmitter.detachTopic(conn, 'foo')).resolves.toBe(true);
-    await expect(transmitter.detachTopic(conn, 'bar')).resolves.toBe(true);
+    await expect(transmitter.unsubscribeTopic(conn, 'foo')).resolves.toBe(true);
+    await expect(transmitter.unsubscribeTopic(conn, 'bar')).resolves.toBe(true);
 
     transmitter.removeLocalConnection(conn);
-    await expect(transmitter.attachTopic(conn, 'foo')).resolves.toBe(false);
-    await expect(transmitter.detachTopic(conn, 'foo')).resolves.toBe(false);
+    await expect(transmitter.subscribeTopic(conn, 'foo')).resolves.toBe(false);
+    await expect(transmitter.unsubscribeTopic(conn, 'foo')).resolves.toBe(
+      false
+    );
   });
 
   it('delegate to broker if socket is not local', async () => {
     const transmitter = new Transmitter(serverId, broker, errorHandler);
     const remoteConn = new ConnectionChannel('#remote', '#conn');
 
-    broker.attachTopicRemote.mock.fake(async () => true);
-    await expect(transmitter.attachTopic(remoteConn, 'foo')).resolves.toBe(
+    broker.subscribeTopicRemote.mock.fake(async () => true);
+    await expect(transmitter.subscribeTopic(remoteConn, 'foo')).resolves.toBe(
       true
     );
-    expect(broker.attachTopicRemote.mock).toHaveBeenCalledTimes(1);
+    expect(broker.subscribeTopicRemote.mock).toHaveBeenCalledTimes(1);
 
-    broker.attachTopicRemote.mock.fake(async () => false);
-    await expect(transmitter.attachTopic(remoteConn, 'foo')).resolves.toBe(
+    broker.subscribeTopicRemote.mock.fake(async () => false);
+    await expect(transmitter.subscribeTopic(remoteConn, 'foo')).resolves.toBe(
       false
     );
-    expect(broker.attachTopicRemote.mock).toHaveBeenCalledTimes(2);
+    expect(broker.subscribeTopicRemote.mock).toHaveBeenCalledTimes(2);
 
-    broker.detachTopicRemote.mock.fake(async () => true);
-    await expect(transmitter.detachTopic(remoteConn, 'foo')).resolves.toBe(
+    broker.unsubscribeTopicRemote.mock.fake(async () => true);
+    await expect(transmitter.unsubscribeTopic(remoteConn, 'foo')).resolves.toBe(
       true
     );
-    expect(broker.detachTopicRemote.mock).toHaveBeenCalledTimes(1);
+    expect(broker.unsubscribeTopicRemote.mock).toHaveBeenCalledTimes(1);
 
-    broker.detachTopicRemote.mock.fake(async () => false);
-    await expect(transmitter.detachTopic(remoteConn, 'foo')).resolves.toBe(
+    broker.unsubscribeTopicRemote.mock.fake(async () => false);
+    await expect(transmitter.unsubscribeTopic(remoteConn, 'foo')).resolves.toBe(
       false
     );
-    expect(broker.detachTopicRemote.mock).toHaveBeenCalledTimes(2);
+    expect(broker.unsubscribeTopicRemote.mock).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -210,9 +212,9 @@ describe('dispatch()', () => {
     const barChannel = new TopicChannel('bar');
     const bazChannel = new TopicChannel('baz');
 
-    transmitter.attachTopic(conn1, fooChannel);
-    transmitter.attachTopic(conn2, fooChannel);
-    transmitter.attachTopic(conn1, barChannel);
+    transmitter.subscribeTopic(conn1, fooChannel);
+    transmitter.subscribeTopic(conn2, fooChannel);
+    transmitter.subscribeTopic(conn1, barChannel);
 
     await expect(
       transmitter.dispatch({
@@ -338,9 +340,9 @@ describe('dispatch()', () => {
 
     const fooChannel = new TopicChannel('foo');
 
-    transmitter.attachTopic(conn1, fooChannel);
-    transmitter.attachTopic(conn2, fooChannel);
-    transmitter.attachTopic(conn3, fooChannel);
+    transmitter.subscribeTopic(conn1, fooChannel);
+    transmitter.subscribeTopic(conn2, fooChannel);
+    transmitter.subscribeTopic(conn3, fooChannel);
 
     const events = [{ type: 'greet', payload: 'hi' }];
 
@@ -460,8 +462,8 @@ describe('dispatch()', () => {
     socket.dispatch.mock.fakeOnce(() => Promise.reject(new Error('Wasted!')));
 
     const fooChannel = new TopicChannel('foo');
-    transmitter.attachTopic(conn1, fooChannel);
-    transmitter.attachTopic(conn2, fooChannel);
+    transmitter.subscribeTopic(conn1, fooChannel);
+    transmitter.subscribeTopic(conn2, fooChannel);
 
     const event = { type: 'greet', payload: 'hi danger' };
     await expect(
@@ -493,7 +495,7 @@ test('handle remote dispatch', () => {
   transmitter.addLocalConnection(conn2, socket, john);
 
   const fooChannel = new TopicChannel('foo');
-  transmitter.attachTopic(conn1, fooChannel);
+  transmitter.subscribeTopic(conn1, fooChannel);
 
   expect(broker.onRemoteEvent.mock).toHaveBeenCalledTimes(1);
   const remoteEventHandler = broker.onRemoteEvent.mock.calls[0].args[0];

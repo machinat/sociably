@@ -20,7 +20,7 @@ import { ConnectionChannel } from './channel';
 import createEvent from './event';
 import {
   WSServerI,
-  LOGIN_VERIFIER_I,
+  AUTHENTICATOR_I,
   UPGRADE_VERIFIER_I,
   WEBSOCKET_PLATFORM_MOUNTER_I,
   WEBSOCKET_PLATFORM_CONFIGS_I,
@@ -335,7 +335,7 @@ export default provider<WebSocketReceiver<any>>({
     WebSocketBot,
     WSServerI,
     Transmitter,
-    { require: LOGIN_VERIFIER_I, optional: true },
+    { require: AUTHENTICATOR_I, optional: true },
     { require: UPGRADE_VERIFIER_I, optional: true },
     WEBSOCKET_PLATFORM_MOUNTER_I,
     WEBSOCKET_PLATFORM_CONFIGS_I,

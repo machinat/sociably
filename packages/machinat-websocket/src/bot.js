@@ -163,12 +163,12 @@ class WebSocketBot
     return this._transmitter.disconnect(connection, reason);
   }
 
-  attachTopic(connection: ConnectionChannel, topic: string) {
-    return this._transmitter.attachTopic(connection, topic);
+  subscribeTopic(connection: ConnectionChannel, topic: string) {
+    return this._transmitter.subscribeTopic(connection, topic);
   }
 
-  detachTopic(connection: ConnectionChannel, topic: string) {
-    return this._transmitter.detachTopic(connection, topic);
+  unsubscribeTopic(connection: ConnectionChannel, topic: string) {
+    return this._transmitter.unsubscribeTopic(connection, topic);
   }
 }
 

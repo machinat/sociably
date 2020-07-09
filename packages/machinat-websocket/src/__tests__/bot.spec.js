@@ -35,8 +35,8 @@ const transmitter = moxy({
   start: async () => {},
   stop: async () => {},
   dispatch: async () => null,
-  attachTopic: async () => false,
-  detachTopic: async () => false,
+  subscribeTopic: async () => false,
+  unsubscribeTopic: async () => false,
   disconnect: async () => false,
 });
 
@@ -323,34 +323,40 @@ test('#disconnect(channel, socketId, reason)', async () => {
   expect(transmitter.disconnect.mock).toHaveBeenCalledWith(connection, 'bye');
 });
 
-test('#attachTopic(channel, socketId, reason)', async () => {
+test('#subscribeTopic(channel, socketId, reason)', async () => {
   const bot = new WebSocketBot(transmitter, initScope, dispatchWrapper);
   const connection = new ConnectionChannel('#server', '#conn');
 
-  transmitter.attachTopic.mock.fake(async () => false);
+  transmitter.subscribeTopic.mock.fake(async () => false);
 
   const topic = new TopicChannel('foo', 'bar');
-  await expect(bot.attachTopic(connection, topic)).resolves.toBe(false);
+  await expect(bot.subscribeTopic(connection, topic)).resolves.toBe(false);
 
-  transmitter.attachTopic.mock.fake(async () => true);
-  await expect(bot.attachTopic(connection, topic)).resolves.toBe(true);
+  transmitter.subscribeTopic.mock.fake(async () => true);
+  await expect(bot.subscribeTopic(connection, topic)).resolves.toBe(true);
 
-  expect(transmitter.attachTopic.mock).toHaveBeenCalledTimes(2);
-  expect(transmitter.attachTopic.mock).toHaveBeenCalledWith(connection, topic);
+  expect(transmitter.subscribeTopic.mock).toHaveBeenCalledTimes(2);
+  expect(transmitter.subscribeTopic.mock).toHaveBeenCalledWith(
+    connection,
+    topic
+  );
 });
 
-test('#detachTopic(channel, socketId, reason)', async () => {
+test('#unsubscribeTopic(channel, socketId, reason)', async () => {
   const bot = new WebSocketBot(transmitter, initScope, dispatchWrapper);
   const connection = new ConnectionChannel('#server', '#conn');
 
-  transmitter.detachTopic.mock.fake(async () => false);
+  transmitter.unsubscribeTopic.mock.fake(async () => false);
 
   const topic = new TopicChannel('foo', 'bar');
-  await expect(bot.detachTopic(connection, topic)).resolves.toBe(false);
+  await expect(bot.unsubscribeTopic(connection, topic)).resolves.toBe(false);
 
-  transmitter.detachTopic.mock.fake(async () => true);
-  await expect(bot.detachTopic(connection, topic)).resolves.toBe(true);
+  transmitter.unsubscribeTopic.mock.fake(async () => true);
+  await expect(bot.unsubscribeTopic(connection, topic)).resolves.toBe(true);
 
-  expect(transmitter.detachTopic.mock).toHaveBeenCalledTimes(2);
-  expect(transmitter.detachTopic.mock).toHaveBeenCalledWith(connection, topic);
+  expect(transmitter.unsubscribeTopic.mock).toHaveBeenCalledTimes(2);
+  expect(transmitter.unsubscribeTopic.mock).toHaveBeenCalledWith(
+    connection,
+    topic
+  );
 });

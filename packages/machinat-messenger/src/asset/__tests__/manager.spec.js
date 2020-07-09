@@ -1,6 +1,6 @@
 import moxy from 'moxy';
 import Machinat from '@machinat/core';
-import MessengerAssetRegistry from '../registry';
+import MessengerAssetManager from '../manager';
 
 const state = moxy({
   get: async () => null,
@@ -31,13 +31,13 @@ beforeEach(() => {
 });
 
 test('get asset id', async () => {
-  const registry = new MessengerAssetRegistry(stateManager, bot);
+  const manager = new MessengerAssetManager(stateManager, bot);
 
-  await expect(registry.getAssetId('foo', 'bar')).resolves.toBe(undefined);
-  await expect(registry.getAttachmentId('my_attachment')).resolves.toBe(
+  await expect(manager.getAssetId('foo', 'bar')).resolves.toBe(undefined);
+  await expect(manager.getAttachmentId('my_attachment')).resolves.toBe(
     undefined
   );
-  await expect(registry.getPersonaId('my_persona')).resolves.toBe(undefined);
+  await expect(manager.getPersonaId('my_persona')).resolves.toBe(undefined);
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
@@ -55,15 +55,15 @@ test('get asset id', async () => {
   expect(state.get.mock).toHaveBeenNthCalledWith(3, 'my_persona');
 
   state.get.mock.fakeReturnValue('baz');
-  await expect(registry.getAssetId('foo', 'bar')).resolves.toBe('baz');
+  await expect(manager.getAssetId('foo', 'bar')).resolves.toBe('baz');
 
   state.get.mock.fakeReturnValue('_ATTACHMENT_ID_');
-  await expect(registry.getAttachmentId('my_attachment')).resolves.toBe(
+  await expect(manager.getAttachmentId('my_attachment')).resolves.toBe(
     '_ATTACHMENT_ID_'
   );
 
   state.get.mock.fakeReturnValue('_PERSONA_ID_');
-  await expect(registry.getPersonaId('my_persona')).resolves.toBe(
+  await expect(manager.getPersonaId('my_persona')).resolves.toBe(
     '_PERSONA_ID_'
   );
 
@@ -72,11 +72,11 @@ test('get asset id', async () => {
 });
 
 test('set asset id', async () => {
-  const registry = new MessengerAssetRegistry(stateManager, bot);
+  const manager = new MessengerAssetManager(stateManager, bot);
 
-  await registry.setAssetId('foo', 'bar', 'baz');
-  await registry.setAttachmentId('my_attachment', '_ATTACHMENT_ID_');
-  await registry.setPersonaId('my_persona', '_PERSONA_ID_');
+  await manager.setAssetId('foo', 'bar', 'baz');
+  await manager.setAttachmentId('my_attachment', '_ATTACHMENT_ID_');
+  await manager.setPersonaId('my_persona', '_PERSONA_ID_');
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
@@ -103,28 +103,28 @@ test('set asset id', async () => {
   });
 
   await expect(
-    registry.setAssetId('foo', 'bar', 'baz')
+    manager.setAssetId('foo', 'bar', 'baz')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] already exist"`);
 
   await expect(
-    registry.setAttachmentId('my_attachment', '_ATTACHMENT_ID_')
+    manager.setAttachmentId('my_attachment', '_ATTACHMENT_ID_')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"attachment [ my_attachment ] already exist"`
   );
 
   await expect(
-    registry.setPersonaId('my_persona', '_PERSONA_ID_')
+    manager.setPersonaId('my_persona', '_PERSONA_ID_')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"persona [ my_persona ] already exist"`
   );
 });
 
 test('get all assets', async () => {
-  const registry = new MessengerAssetRegistry(stateManager, bot);
+  const manager = new MessengerAssetManager(stateManager, bot);
 
-  await expect(registry.getAllAssets('foo')).resolves.toBe(null);
-  await expect(registry.getAllAttachments()).resolves.toBe(null);
-  await expect(registry.getAllPersonas()).resolves.toBe(null);
+  await expect(manager.getAllAssets('foo')).resolves.toBe(null);
+  await expect(manager.getAllAttachments()).resolves.toBe(null);
+  await expect(manager.getAllPersonas()).resolves.toBe(null);
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
@@ -144,17 +144,17 @@ test('get all assets', async () => {
   ]);
   state.getAll.mock.fake(async () => resources);
 
-  await expect(registry.getAllAssets('foo')).resolves.toEqual(resources);
-  await expect(registry.getAllAttachments()).resolves.toEqual(resources);
-  await expect(registry.getAllPersonas()).resolves.toEqual(resources);
+  await expect(manager.getAllAssets('foo')).resolves.toEqual(resources);
+  await expect(manager.getAllAttachments()).resolves.toEqual(resources);
+  await expect(manager.getAllPersonas()).resolves.toEqual(resources);
 });
 
 test('remove asset id', async () => {
-  const registry = new MessengerAssetRegistry(stateManager, bot);
+  const manager = new MessengerAssetManager(stateManager, bot);
 
-  await registry.removeAssetId('foo', 'bar');
-  await registry.removeAttachmentId('my_attachment');
-  await registry.removePersonaId('my_persona');
+  await manager.removeAssetId('foo', 'bar');
+  await manager.removeAttachmentId('my_attachment');
+  await manager.removePersonaId('my_persona');
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
@@ -173,24 +173,24 @@ test('remove asset id', async () => {
 
   state.delete.mock.fake(async () => false);
   await expect(
-    registry.removeAssetId('foo', 'bar')
+    manager.removeAssetId('foo', 'bar')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] not exist"`);
 
   await expect(
-    registry.removeAttachmentId('my_attachment')
+    manager.removeAttachmentId('my_attachment')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"attachment [ my_attachment ] not exist"`
   );
 
   await expect(
-    registry.removePersonaId('my_persona')
+    manager.removePersonaId('my_persona')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"persona [ my_persona ] not exist"`
   );
 });
 
 test('#renderAttachment()', async () => {
-  const registry = new MessengerAssetRegistry(stateManager, bot);
+  const manager = new MessengerAssetManager(stateManager, bot);
   bot.renderAttachment.mock.fake(async () => ({
     jobs: [{ ...{} }],
     results: [
@@ -203,7 +203,7 @@ test('#renderAttachment()', async () => {
   }));
 
   await expect(
-    registry.renderAttachment('my_avatar', <img src="http://foo.bar/avatar" />)
+    manager.renderAttachment('my_avatar', <img src="http://foo.bar/avatar" />)
   ).resolves.toBe('1857777774821032');
 
   expect(bot.renderAttachment.mock).toHaveBeenCalledTimes(1);
@@ -213,14 +213,14 @@ test('#renderAttachment()', async () => {
 
   state.get.mock.fakeReturnValue('_ALREADY_EXISTED_ATTACHMENT_');
   await expect(
-    registry.renderAttachment('my_avatar', <img src="http://foo.bar/avatar" />)
+    manager.renderAttachment('my_avatar', <img src="http://foo.bar/avatar" />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"attachment [ my_avatar ] already exist"`
   );
 });
 
 test('#createPersona()', async () => {
-  const registry = new MessengerAssetRegistry(stateManager, bot);
+  const manager = new MessengerAssetManager(stateManager, bot);
   bot.dispatchAPICall.mock.fake(() => ({
     jobs: [{ ...{} }],
     results: [
@@ -233,7 +233,7 @@ test('#createPersona()', async () => {
   }));
 
   await expect(
-    registry.createPersona('cute_persona', {
+    manager.createPersona('cute_persona', {
       name: 'Baby Yoda',
       profile_picture_url: '_URL_',
     })
@@ -247,7 +247,7 @@ test('#createPersona()', async () => {
 
   state.get.mock.fakeReturnValue('_ALREADY_EXISTED_PERSONA_');
   await expect(
-    registry.createPersona('cute_persona', {
+    manager.createPersona('cute_persona', {
       name: 'BB8',
       profile_picture_url: '_URL_',
     })
@@ -257,7 +257,7 @@ test('#createPersona()', async () => {
 });
 
 test('#deletePersona()', async () => {
-  const registry = new MessengerAssetRegistry(stateManager, bot);
+  const manager = new MessengerAssetManager(stateManager, bot);
   bot.dispatchAPICall.mock.fake(() => ({
     jobs: [{ ...{} }],
     results: [
@@ -270,13 +270,13 @@ test('#deletePersona()', async () => {
   }));
 
   await expect(
-    registry.deletePersona('my_persona')
+    manager.deletePersona('my_persona')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"persona [ my_persona ] not exist"`
   );
 
   state.get.mock.fakeReturnValue('_PERSONA_ID_');
-  await expect(registry.deletePersona('my_persona')).resolves.toBe(
+  await expect(manager.deletePersona('my_persona')).resolves.toBe(
     '_PERSONA_ID_'
   );
 

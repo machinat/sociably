@@ -145,6 +145,24 @@ describe('#init()', () => {
     expect(global.document.getElementById('LIFF')).toBe(null);
     expect(global.liff.init.mock).toHaveBeenCalledTimes(1);
   });
+
+  it('call liff.login() if isLoggedIn() is false', async () => {
+    global.liff.isLoggedIn.mock.fakeReturnValue(false);
+
+    const authorizer = new ClientAuthorizer({
+      providerId: '_PROVIDER_ID_',
+      botChannelId: '_BOT_CHANNEL_ID_',
+      liffId: '_LIFF_ID_',
+      isSDKLoaded: true,
+    });
+
+    expect(global.liff.login.mock).not.toHaveBeenCalled();
+
+    await authorizer.init();
+
+    expect(global.liff.isLoggedIn.mock).toHaveBeenCalledTimes(1);
+    expect(global.liff.login.mock).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('#fetchCredential()', () => {
@@ -171,36 +189,6 @@ describe('#fetchCredential()', () => {
     });
 
     expect(global.liff.login.mock).not.toHaveBeenCalled();
-  });
-
-  it('login() if isLoggedIn() is false', async () => {
-    jest.useFakeTimers();
-    global.liff.isLoggedIn.mock.fakeReturnValue(false);
-
-    const authorizer = new ClientAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
-      liffId: '_LIFF_ID_',
-    });
-
-    expect(global.liff.login.mock).not.toHaveBeenCalled();
-
-    const promise = authorizer.fetchCredential();
-
-    expect(global.liff.isLoggedIn.mock).toHaveBeenCalledTimes(1);
-    expect(global.liff.login.mock).toHaveBeenCalledTimes(1);
-
-    // resolves unaccepted if location not redircted in time
-    jest.advanceTimersByTime(10000000);
-    await expect(promise).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 408,
-              "reason": "timeout for redirecting to line login",
-              "success": false,
-            }
-          `);
-
-    jest.useRealTimers();
   });
 
   it('set fromBotChannel options.fromBotChannel is true', async () => {
@@ -280,7 +268,7 @@ describe('#refineAuth(data)', () => {
       })
     ).resolves.toEqual({
       user: new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_'),
-      sourceChannel: new LineChannel(
+      channel: new LineChannel(
         '_PROVIDER_ID_',
         '_BOT_CHANNEL_ID_',
         'utou',
@@ -297,7 +285,7 @@ describe('#refineAuth(data)', () => {
       })
     ).resolves.toEqual({
       user: new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_'),
-      sourceChannel: null,
+      channel: null,
     });
   });
 
@@ -320,7 +308,7 @@ describe('#refineAuth(data)', () => {
       })
     ).resolves.toEqual({
       user: new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_'),
-      sourceChannel: new LineChannel(
+      channel: new LineChannel(
         '_PROVIDER_ID_',
         '_BOT_CHANNEL_ID_',
         'utob',

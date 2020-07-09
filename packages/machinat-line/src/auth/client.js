@@ -17,13 +17,7 @@ type ClientAuthorizerOptions = {
   fromBotChannel?: boolean,
 };
 
-const LOGIN_TIMEOUT = 10000;
 const BOT_CHANNEL_LABEL_QUERY_KEY = 'fromBotChannel';
-
-const delay = (ms: number) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
 
 class LineClientAuthorizer
   implements ClientAuthorizer<LIFFAuthData, LIFFCredential> {
@@ -80,21 +74,14 @@ class LineClientAuthorizer
     }
 
     await liff.init({ liffId });
+
+    if (!liff.isLoggedIn()) {
+      liff.login();
+    }
   }
 
   // eslint-disable-next-line class-methods-use-this
   async fetchCredential() {
-    if (!liff.isLoggedIn()) {
-      liff.login();
-
-      await delay(LOGIN_TIMEOUT);
-      return {
-        success: false,
-        code: 408,
-        reason: 'timeout for redirecting to line login',
-      };
-    }
-
     const {
       type: contextType,
       userId,

@@ -142,12 +142,12 @@ export default class MachinatApp<
   }
 
   _emitEvent(context: Context, scope: ServiceScope) {
-    for (const listener of this._eventListeners) {
-      if (isServiceContainer(listener)) {
-        scope.injectContainer(listener)(context);
-      } else {
-        listener(context);
-      }
+    for (const listenerOrContainer of this._eventListeners) {
+      const listener = isServiceContainer(listenerOrContainer)
+        ? scope.injectContainer(listenerOrContainer)
+        : listenerOrContainer;
+
+      listener.call(this, context);
     }
   }
 

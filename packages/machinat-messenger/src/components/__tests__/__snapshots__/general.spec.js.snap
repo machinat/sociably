@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<text/> hoist plain text into text message object 1`] = `
+exports[`<p/> hoist plain text into text message object 1`] = `
 Array [
   Object {
-    "node": <text>
+    "node": <p>
       foo
       <br />
       bar
       <br />
       <br />
       baz
-    </text>,
+    </p>,
     "path": "$",
     "type": "unit",
     "value": Object {
@@ -20,14 +20,14 @@ Array [
     },
   },
   Object {
-    "node": <text>
+    "node": <p>
       foo
       <br />
       bar
       <br />
       <br />
       baz
-    </text>,
+    </p>,
     "path": "$",
     "type": "unit",
     "value": Object {
@@ -37,14 +37,14 @@ Array [
     },
   },
   Object {
-    "node": <text>
+    "node": <p>
       foo
       <br />
       bar
       <br />
       <br />
       baz
-    </text>,
+    </p>,
     "path": "$",
     "type": "unit",
     "value": Object {
@@ -59,9 +59,9 @@ Array [
 exports[`elements match snapshot 1`] = `
 Array [
   Object {
-    "node": <text>
+    "node": <p>
       abc
-    </text>,
+    </p>,
     "path": "$::0",
     "type": "unit",
     "value": Object {
@@ -191,7 +191,7 @@ Array [
 exports[`nested elements match snapshot 1`] = `
 Array [
   Object {
-    "node": <text>
+    "node": <p>
       Mic test
        
       <code>
@@ -220,7 +220,7 @@ Array [
         May the force be with you!
       </pre>
        Test over
-    </text>,
+    </p>,
     "path": "$",
     "type": "unit",
     "value": Object {
@@ -230,7 +230,7 @@ Array [
     },
   },
   Object {
-    "node": <text>
+    "node": <p>
       Mic test
        
       <code>
@@ -259,7 +259,7 @@ Array [
         May the force be with you!
       </pre>
        Test over
-    </text>,
+    </p>,
     "path": "$",
     "type": "unit",
     "value": Object {
@@ -269,7 +269,7 @@ Array [
     },
   },
   Object {
-    "node": <text>
+    "node": <p>
       Mic test
        
       <code>
@@ -298,7 +298,7 @@ Array [
         May the force be with you!
       </pre>
        Test over
-    </text>,
+    </p>,
     "path": "$",
     "type": "unit",
     "value": Object {
@@ -308,7 +308,7 @@ Array [
     },
   },
   Object {
-    "node": <text>
+    "node": <p>
       Mic test
        
       <code>
@@ -337,7 +337,7 @@ Array [
         May the force be with you!
       </pre>
        Test over
-    </text>,
+    </p>,
     "path": "$",
     "type": "unit",
     "value": Object {

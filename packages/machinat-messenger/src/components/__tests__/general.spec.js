@@ -7,7 +7,7 @@ const renderer = new Renderer('messenger', generalComponentDelegator);
 test('elements match snapshot', async () => {
   const segments = await renderer.render(
     <>
-      <text>abc</text>
+      <p>abc</p>
       <br />
       <b>important</b>
       <br />
@@ -41,7 +41,7 @@ test('elements match snapshot', async () => {
 
 test('nested elements match snapshot', async () => {
   const segments = await renderer.render(
-    <text>
+    <p>
       Mic test{' '}
       <code>
         Hello, <b>Luke Skywalker!</b>
@@ -55,7 +55,7 @@ test('nested elements match snapshot', async () => {
       <br />
       <br />
       <pre>May the force be with you!</pre> Test over
-    </text>
+    </p>
   );
   expect(segments).toMatchSnapshot();
   expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
@@ -86,16 +86,16 @@ test('nested elements match snapshot', async () => {
   `);
 });
 
-test('<text/> hoist plain text into text message object', async () => {
+test('<p/> hoist plain text into text message object', async () => {
   const segments = await renderer.render(
-    <text>
+    <p>
       foo
       <br />
       bar
       <br />
       <br />
       baz
-    </text>
+    </p>
   );
 
   expect(segments).toMatchSnapshot();
@@ -153,7 +153,7 @@ test('throw if non-texual value received', async () => {
   );
 
   await expect(
-    renderer.render(<text>{children}</text>)
+    renderer.render(<p>{children}</p>)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"non-textual node <img /> received, only textual nodes and <br/> allowed"`
   );
@@ -173,7 +173,7 @@ test('throw if non-texual value received', async () => {
 });
 
 test('render null if content is empty', async () => {
-  for (const element of [<b />, <i />, <del />, <text />, <code />, <pre />]) {
+  for (const element of [<b />, <i />, <del />, <p />, <code />, <pre />]) {
     // eslint-disable-next-line no-await-in-loop
     await expect(renderer.render(element)).resolves.toEqual(null);
   }

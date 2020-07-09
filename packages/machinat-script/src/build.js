@@ -26,10 +26,10 @@ const build = <Value, Input, ReturnValue, Meta>(
     entriesIndex,
     commands,
     meta: (options?.meta: any),
-    Init: (null: any),
+    Start: (null: any),
   };
 
-  script.Init = container({ deps: [ScriptProcessor] })(
+  script.Start = container({ deps: [ScriptProcessor] })(
     (processor: ScriptProcessor) => async ({ channel, goto, vars }) => {
       const runtime = await processor.init(channel, script, {
         vars,

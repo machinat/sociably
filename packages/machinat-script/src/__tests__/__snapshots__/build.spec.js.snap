@@ -27,7 +27,7 @@ Array [
     "key": "call_1",
     "script": Object {
       "$$typeof": Symbol(machinat.component.script),
-      "Init": [Function],
+      "Start": [Function],
       "commands": Array [
         Object {
           "render": [Function],

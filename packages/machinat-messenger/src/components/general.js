@@ -6,7 +6,7 @@ import {
   unitSegment,
 } from '@machinat/core/renderer';
 
-const text = async (node, path, render) => {
+const p = async (node, path, render) => {
   const childrenSegments = await render(node.props.children);
   if (!childrenSegments) {
     return null;
@@ -95,7 +95,7 @@ const audio = generalMediaFactory('audio', 'audio');
 const file = generalMediaFactory('file', 'file');
 
 const generalComponents = {
-  text,
+  p,
   b,
   i,
   del,

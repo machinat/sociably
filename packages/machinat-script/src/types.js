@@ -23,7 +23,7 @@ export type MachinatScript<Vars, Input, RetrunValue, Meta> = {|
   commands: ScriptCommand<Vars, Input, RetrunValue>[],
   entriesIndex: Map<string, number>,
   meta: Meta,
-  Init: ServiceContainer<FunctionalComponent<InitScriptProps<Vars>>>,
+  Start: ServiceContainer<FunctionalComponent<InitScriptProps<Vars>>>,
 |};
 
 type ScriptCircumstances<Vars> = {

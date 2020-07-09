@@ -43,14 +43,14 @@ class ClusterBroker {
     throw new TypeError('method called on abstract class');
   }
 
-  attachTopicRemote(
+  subscribeTopicRemote(
     _connection: ConnectionChannel,
     _topic: string
   ): Promise<boolean> {
     throw new TypeError('method called on abstract class');
   }
 
-  detachTopicRemote(
+  unsubscribeTopicRemote(
     _connection: ConnectionChannel,
     _topic: string
   ): Promise<boolean> {
@@ -72,8 +72,8 @@ export const UPGRADE_VERIFIER_I = makeInterface<VerifyUpgradeFn>({
   name: 'WebSocketUpgradeVerifier',
 });
 
-export const LOGIN_VERIFIER_I = makeInterface<VerifyLoginFn<any, any>>({
-  name: 'WebSocketLoginVerifier',
+export const AUTHENTICATOR_I = makeInterface<VerifyLoginFn<any, any>>({
+  name: 'WebSocketAuthenticator',
 });
 
 export const SERVER_ID_I = makeInterface<string>({

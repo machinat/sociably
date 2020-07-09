@@ -112,12 +112,12 @@ const app = Machinat.createApp({
   bindings: [
     { provide: Auth.AUTHORIZERS_I, withProvider: MessengerAuthorizer },
     { provide: Auth.AUTHORIZERS_I, withProvider: LineAuthorizer },
-    { provide: WebSocket.LOGIN_VERIFIER_I, withProvider: useAuthController },
+    { provide: WebSocket.AUTHENTICATOR_I, withProvider: useAuthController },
   ],
 })
 ```
 
-The `Auth` module provide an united interface to authorize users at web page with the platform they come from. Then we can register `Auth.AUTHORIZERS_I` with authorizer plugins from the chat platforms. Finally, register `WebSocket.LOGIN_VERIFIER_I` with `useAuthController` to connect `Auth` module.
+The `Auth` module provide an united interface to authorize users at web page with the platform they come from. Then we can register `Auth.AUTHORIZERS_I` with authorizer plugins from the chat platforms. Finally, register `WebSocket.AUTHENTICATOR_I` with `useAuthController` to connect `Auth` module.
 
 And in the client:
 

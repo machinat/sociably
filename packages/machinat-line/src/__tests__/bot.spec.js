@@ -252,9 +252,9 @@ describe('#render(token, node, options)', () => {
     expect(
       bot.render(
         'john_doe',
-        <text>
+        <p>
           1<br />2<br />3<br />4<br />5<br />6
-        </text>,
+        </p>,
         {
           replyToken: '__REPLY_TOKEN__',
         }

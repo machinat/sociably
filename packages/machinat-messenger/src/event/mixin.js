@@ -152,6 +152,9 @@ export const Postback = {
   get postback() {
     return this.payload.postback;
   },
+  get data() {
+    return this.payload.postback.payload;
+  },
 };
 
 export const PreCheckout = {

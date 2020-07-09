@@ -16,11 +16,11 @@ class LocalOnlyBroker implements ClusterBrokerI {
     return Promise.resolve(null);
   }
 
-  attachTopicRemote() {
+  subscribeTopicRemote() {
     return Promise.resolve(false);
   }
 
-  detachTopicRemote() {
+  unsubscribeTopicRemote() {
     return Promise.resolve(false);
   }
 

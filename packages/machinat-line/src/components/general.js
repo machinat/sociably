@@ -5,7 +5,7 @@ import {
 } from '@machinat/core/renderer';
 import formatNode from '@machinat/core/utils/formatNode';
 
-const text = async (node, path, render) => {
+const p = async (node, path, render) => {
   const contentRendered = await render(node.props.children, '.children');
   if (contentRendered === null) {
     return null;
@@ -62,7 +62,7 @@ const media = (node, path) => [
 ];
 
 const generalComponents = {
-  text,
+  p,
   br,
   b: plainText,
   i: plainText,

@@ -7,7 +7,7 @@ import { PATH_RICHMENU } from '../constant';
 const LIFF = 'liff';
 const RICH_MENU = 'rich_menu';
 
-class LineAssetsRegistry {
+class LineAssetsManager {
   botChannelId: string;
   _stateController: StateControllerI;
   _bot: LineBot;
@@ -116,7 +116,7 @@ class LineAssetsRegistry {
   }
 }
 
-export default provider<LineAssetsRegistry>({
+export default provider<LineAssetsManager>({
   lifetime: 'scoped',
   deps: [StateControllerI, LineBot],
-})(LineAssetsRegistry);
+})(LineAssetsManager);

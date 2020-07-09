@@ -20,7 +20,7 @@ import AuthError from './error';
 
 type AuthClientOptions = {|
   serverURL: string,
-  providers: ClientAuthorizer<any, any>[],
+  authorizers: ClientAuthorizer<any, any>[],
   refreshLeadTime?: number,
 |};
 
@@ -49,7 +49,7 @@ type ServerSideResult =
     };
 
 class AuthClientController extends EventEmitter {
-  providers: ClientAuthorizer<any, any>[];
+  authorizers: ClientAuthorizer<any, any>[];
   serverURL: string;
   refreshLeadTime: number;
 
@@ -86,19 +86,19 @@ class AuthClientController extends EventEmitter {
   }
 
   constructor({
-    providers,
+    authorizers,
     serverURL,
     refreshLeadTime = 300, // 5 min
   }: AuthClientOptions = {}) {
     invariant(serverURL, 'options.serverURL must not be empty');
     invariant(
-      providers && providers.length > 0,
-      'options.providers must not be empty'
+      authorizers && authorizers.length > 0,
+      'options.authorizers must not be empty'
     );
 
     super();
 
-    this.providers = providers;
+    this.authorizers = authorizers;
     this.serverURL = serverURL;
     this.refreshLeadTime = refreshLeadTime;
     this._authURL = new URL(serverURL, location.href);
@@ -329,12 +329,12 @@ class AuthClientController extends EventEmitter {
     }
 
     const { iat, exp, data } = payload;
-    const { sourceChannel, user } = refinement;
+    const { channel, user } = refinement;
     const context = {
       platform: provider.platform,
       loginAt: new Date(iat * 1000),
       expireAt: new Date(exp * 1000),
-      sourceChannel,
+      channel,
       user,
       data,
     };
@@ -445,12 +445,12 @@ class AuthClientController extends EventEmitter {
     }
 
     const { iat, exp, data } = payload;
-    const { sourceChannel, user } = refinement;
+    const { channel, user } = refinement;
     const context = {
       platform: provider.platform,
       loginAt: new Date(iat * 1000),
       expireAt: new Date(exp * 1000),
-      sourceChannel,
+      channel,
       user,
       data,
     };
@@ -481,14 +481,14 @@ class AuthClientController extends EventEmitter {
     if (!platform) {
       return [new AuthError(400, 'no platform specified'), (null: any)];
     }
-    const provider = this.providers.find((p) => p.platform === platform);
-    if (!provider) {
+    const authorizer = this.authorizers.find((p) => p.platform === platform);
+    if (!authorizer) {
       return [
         new AuthError(400, `unknown platform "${platform}"`),
         (null: any),
       ];
     }
-    return [null, provider];
+    return [null, authorizer];
   }
 
   _getAuthEntry(route: string) {

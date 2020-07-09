@@ -9,7 +9,7 @@ import MessengerBot from '../bot';
 const ATTACHMENT = 'attachment';
 const PERSONA = 'persona';
 
-class MessengerAssetsRegistry {
+class MessengerAssetsManager {
   bot: MessengerBot;
   pageId: string;
   _stateController: StateControllerI;
@@ -134,7 +134,7 @@ class MessengerAssetsRegistry {
   }
 }
 
-export default provider<MessengerAssetsRegistry>({
+export default provider<MessengerAssetsManager>({
   lifetime: 'scoped',
   deps: [StateControllerI, MessengerBot],
-})(MessengerAssetsRegistry);
+})(MessengerAssetsManager);

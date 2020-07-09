@@ -5,28 +5,28 @@ import generalComponentDelegator from '../general';
 
 const renderer = new Renderer('line', generalComponentDelegator);
 
-describe('<text/>', () => {
+describe('<p/>', () => {
   it('hoist text to text message object', async () => {
     await expect(
       renderer.render(
-        <text>
+        <p>
           foo
           <br />
           bar
           <br />
           baz
-        </text>
+        </p>
       )
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <text>
+                "node": <p>
                   foo
                   <br />
                   bar
                   <br />
                   baz
-                </text>,
+                </p>,
                 "path": "$",
                 "type": "unit",
                 "value": Object {
@@ -35,13 +35,13 @@ describe('<text/>', () => {
                 },
               },
               Object {
-                "node": <text>
+                "node": <p>
                   foo
                   <br />
                   bar
                   <br />
                   baz
-                </text>,
+                </p>,
                 "path": "$",
                 "type": "unit",
                 "value": Object {
@@ -50,13 +50,13 @@ describe('<text/>', () => {
                 },
               },
               Object {
-                "node": <text>
+                "node": <p>
                   foo
                   <br />
                   bar
                   <br />
                   baz
-                </text>,
+                </p>,
                 "path": "$",
                 "type": "unit",
                 "value": Object {
@@ -69,15 +69,15 @@ describe('<text/>', () => {
   });
 
   it('return null if content is empty', async () => {
-    await expect(renderer.render(<text />)).resolves.toBe(null);
+    await expect(renderer.render(<p />)).resolves.toBe(null);
   });
 
   it('throw if non-text received', async () => {
     expect(
       renderer.render(
-        <text>
+        <p>
           <img />
-        </text>
+        </p>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"non-textual node <img /> received, only textual node and <br/> allowed"`
@@ -86,7 +86,7 @@ describe('<text/>', () => {
 
   test('with textual nodes', async () => {
     const promise = renderer.render(
-      <text>
+      <p>
         123{' '}
         <code>
           Hello, <b>R2D2!</b>
@@ -99,7 +99,7 @@ describe('<text/>', () => {
         </i>
         <br />
         <pre>May the force be with you!</pre> Bye!
-      </text>
+      </p>
     );
 
     await expect(promise).resolves.toMatchSnapshot();
@@ -202,7 +202,7 @@ describe('text components', () => {
   });
 
   test('should return null if content is empty', async () => {
-    const elements = [<b />, <i />, <del />, <text />, <code />, <pre />];
+    const elements = [<b />, <i />, <del />, <p />, <code />, <pre />];
 
     for (const element of elements) {
       await expect(renderer.render(element)).resolves.toEqual(null);

@@ -1,5 +1,5 @@
 import moxy from 'moxy';
-import LineAssetRegistry from '../registry';
+import LineAssetManager from '../manager';
 
 const state = moxy({
   get: async () => null,
@@ -27,11 +27,11 @@ beforeEach(() => {
 });
 
 test('get asset id', async () => {
-  const registry = new LineAssetRegistry(stateManager, bot);
+  const manager = new LineAssetManager(stateManager, bot);
 
-  await expect(registry.getAssetId('foo', 'bar')).resolves.toBe(undefined);
-  await expect(registry.getLIFFAppId('my_liff_app')).resolves.toBe(undefined);
-  await expect(registry.getRichMenuId('my_rich_menu')).resolves.toBe(undefined);
+  await expect(manager.getAssetId('foo', 'bar')).resolves.toBe(undefined);
+  await expect(manager.getLIFFAppId('my_liff_app')).resolves.toBe(undefined);
+  await expect(manager.getRichMenuId('my_rich_menu')).resolves.toBe(undefined);
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
@@ -49,13 +49,13 @@ test('get asset id', async () => {
   expect(state.get.mock).toHaveBeenNthCalledWith(3, 'my_rich_menu');
 
   state.get.mock.fakeReturnValue('baz');
-  await expect(registry.getAssetId('foo', 'bar')).resolves.toBe('baz');
+  await expect(manager.getAssetId('foo', 'bar')).resolves.toBe('baz');
 
   state.get.mock.fakeReturnValue('_LIFF_ID_');
-  await expect(registry.getLIFFAppId('my_liff_app')).resolves.toBe('_LIFF_ID_');
+  await expect(manager.getLIFFAppId('my_liff_app')).resolves.toBe('_LIFF_ID_');
 
   state.get.mock.fakeReturnValue('_RICH_MENU_ID_');
-  await expect(registry.getRichMenuId('my_rich_menu')).resolves.toBe(
+  await expect(manager.getRichMenuId('my_rich_menu')).resolves.toBe(
     '_RICH_MENU_ID_'
   );
 
@@ -64,11 +64,11 @@ test('get asset id', async () => {
 });
 
 test('set asset id', async () => {
-  const registry = new LineAssetRegistry(stateManager, bot);
+  const manager = new LineAssetManager(stateManager, bot);
 
-  await registry.setAssetId('foo', 'bar', 'baz');
-  await registry.setLIFFAppId('my_liff_app', '_LIFF_APP_ID_');
-  await registry.setRichMenuId('my_rich_menu', '_RICH_MENU_ID_');
+  await manager.setAssetId('foo', 'bar', 'baz');
+  await manager.setLIFFAppId('my_liff_app', '_LIFF_APP_ID_');
+  await manager.setRichMenuId('my_rich_menu', '_RICH_MENU_ID_');
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
@@ -109,11 +109,11 @@ test('set asset id', async () => {
 });
 
 test('get all assets', async () => {
-  const registry = new LineAssetRegistry(stateManager, bot);
+  const manager = new LineAssetManager(stateManager, bot);
 
-  await expect(registry.getAllAssets('foo')).resolves.toBe(null);
-  await expect(registry.getAllLIFFApps()).resolves.toBe(null);
-  await expect(registry.getAllRichMenus()).resolves.toBe(null);
+  await expect(manager.getAllAssets('foo')).resolves.toBe(null);
+  await expect(manager.getAllLIFFApps()).resolves.toBe(null);
+  await expect(manager.getAllRichMenus()).resolves.toBe(null);
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
@@ -133,20 +133,20 @@ test('get all assets', async () => {
   ]);
   state.getAll.mock.fake(async () => resources);
 
-  await expect(registry.getAllAssets('foo')).resolves.toEqual(resources);
-  await expect(registry.getAllLIFFApps()).resolves.toEqual(resources);
-  await expect(registry.getAllRichMenus()).resolves.toEqual(resources);
+  await expect(manager.getAllAssets('foo')).resolves.toEqual(resources);
+  await expect(manager.getAllLIFFApps()).resolves.toEqual(resources);
+  await expect(manager.getAllRichMenus()).resolves.toEqual(resources);
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(6);
   expect(state.getAll.mock).toHaveBeenCalledTimes(6);
 });
 
 test('remove asset id', async () => {
-  const registry = new LineAssetRegistry(stateManager, bot);
+  const manager = new LineAssetManager(stateManager, bot);
 
-  await registry.removeAssetId('foo', 'bar');
-  await registry.removeLIFFAppId('my_liff_app');
-  await registry.removeRichMenuId('my_rich_menu');
+  await manager.removeAssetId('foo', 'bar');
+  await manager.removeLIFFAppId('my_liff_app');
+  await manager.removeRichMenuId('my_rich_menu');
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
@@ -165,22 +165,22 @@ test('remove asset id', async () => {
 
   state.delete.mock.fakeReturnValue(false);
   await expect(
-    registry.removeAssetId('foo', 'bar')
+    manager.removeAssetId('foo', 'bar')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] not exist"`);
   await expect(
-    registry.removeLIFFAppId('my_liff_app')
+    manager.removeLIFFAppId('my_liff_app')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"liff [ my_liff_app ] not exist"`
   );
   await expect(
-    registry.removeRichMenuId('my_rich_menu')
+    manager.removeRichMenuId('my_rich_menu')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"rich_menu [ my_rich_menu ] not exist"`
   );
 });
 
 test('#createRichMenu()', async () => {
-  const registry = new LineAssetRegistry(stateManager, bot);
+  const manager = new LineAssetManager(stateManager, bot);
   bot.dispatchAPICall.mock.fake(() => ({
     jobs: [{ ...{} }],
     results: [{ richMenuId: '_RICH_MENU_ID_' }],
@@ -200,7 +200,7 @@ test('#createRichMenu()', async () => {
   };
 
   await expect(
-    registry.createRichMenu('my_rich_menu', richMenuBody)
+    manager.createRichMenu('my_rich_menu', richMenuBody)
   ).resolves.toBe('_RICH_MENU_ID_');
 
   expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(1);
@@ -212,27 +212,27 @@ test('#createRichMenu()', async () => {
 
   state.get.mock.fakeReturnValue('_ALREADY_EXISTED_ID_');
   await expect(
-    registry.createRichMenu('my_rich_menu', richMenuBody)
+    manager.createRichMenu('my_rich_menu', richMenuBody)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"rich menu [ my_rich_menu ] already exist"`
   );
 });
 
 test('#deleteRichMenu()', async () => {
-  const registry = new LineAssetRegistry(stateManager, bot);
+  const manager = new LineAssetManager(stateManager, bot);
   bot.dispatchAPICall.mock.fake(() => ({
     jobs: [{ ...{} }],
     results: [{}],
   }));
 
   await expect(
-    registry.deleteRichMenu('my_rich_menu')
+    manager.deleteRichMenu('my_rich_menu')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"rich menu [ my_rich_menu ] not exist"`
   );
 
   state.get.mock.fakeReturnValue('_RICH_MENU_ID_');
-  await expect(registry.deleteRichMenu('my_rich_menu')).resolves.toBe(
+  await expect(manager.deleteRichMenu('my_rich_menu')).resolves.toBe(
     '_RICH_MENU_ID_'
   );
 

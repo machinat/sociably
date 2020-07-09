@@ -106,14 +106,14 @@ class Transmitter {
     return true;
   }
 
-  async attachTopic(
+  async subscribeTopic(
     conn: ConnectionChannel,
     topic: string | TopicChannel
   ): Promise<boolean> {
     const topicName = typeof topic === 'string' ? topic : topic.name;
 
     if (this.serverId !== conn.serverId) {
-      return this._broker.attachTopicRemote(conn, topicName);
+      return this._broker.subscribeTopicRemote(conn, topicName);
     }
 
     const connState = this._connectionStates.get(conn.id);
@@ -133,14 +133,14 @@ class Transmitter {
     return true;
   }
 
-  async detachTopic(
+  async unsubscribeTopic(
     conn: ConnectionChannel,
     topic: string | TopicChannel
   ): Promise<boolean> {
     const topicName = typeof topic === 'string' ? topic : topic.name;
 
     if (this.serverId !== conn.serverId) {
-      return this._broker.detachTopicRemote(conn, topicName);
+      return this._broker.unsubscribeTopicRemote(conn, topicName);
     }
 
     const connState = this._connectionStates.get(conn.id);

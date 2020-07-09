@@ -78,7 +78,7 @@ test('built script object', () => {
 
   expect(MyScript.name).toBe('MyScript');
   expect(MyScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
-  expect(MyScript.Init).toBeInstanceOf(Function);
+  expect(MyScript.Start).toBeInstanceOf(Function);
 
   expect(MyScript.commands).toMatchSnapshot();
   expect(MyScript.entriesIndex).toMatchInlineSnapshot(`
@@ -97,7 +97,7 @@ test('built script object', () => {
 
   expect(ChildScript.name).toBe('ChildScript');
   expect(ChildScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
-  expect(ChildScript.Init).toBeInstanceOf(Function);
+  expect(ChildScript.Start).toBeInstanceOf(Function);
 
   expect(ChildScript.commands).toMatchSnapshot();
   expect(ChildScript.entriesIndex).toMatchInlineSnapshot(`
@@ -108,7 +108,7 @@ test('built script object', () => {
   expect(ChildScript.meta).toEqual({ foo: 'baz' });
 });
 
-test('Init component', async () => {
+test('Start component', async () => {
   const HelloScript = build(
     'FooScript',
     <>
@@ -134,7 +134,7 @@ test('Init component', async () => {
   });
 
   const channel = { uid: '_FOO_CHANNEL_' };
-  const renderPromise = HelloScript.Init(processor)({
+  const renderPromise = HelloScript.Start(processor)({
     channel,
     vars: { foo: 'bar' },
     goto: 'HELLO',
