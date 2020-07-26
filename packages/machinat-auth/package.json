@@ -18,10 +18,10 @@
   "files": [
     "lib/*",
     "README.md",
-    "polyfill-exports"
+    "polyfill-exports.js"
   ],
   "scripts": {
-    "postinstall": "./polyfill-exports"
+    "postinstall": "./polyfill-exports.js"
   },
   "license": "MIT",
   "dependencies": {

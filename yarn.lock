@@ -9317,10 +9317,10 @@ pnp-webpack-plugin@1.5.0:
   dependencies:
     ts-pnp "^1.1.2"
 
-polyfill-exports@^0.3.0-beta.1:
-  version "0.3.0-beta.1"
-  resolved "https://registry.yarnpkg.com/polyfill-exports/-/polyfill-exports-0.3.0-beta.1.tgz#b139c7d5b6d7fb13237134a788dc14852125cb37"
-  integrity sha512-7L4wi6RqaOrMMf6vXLMzD+Mm93iERLXTvVwsVLJoS0dyEGYeEshrX6HYu+RJlb27Jp136/VwimGGEoCjlQmfnA==
+polyfill-exports@^0.3.0-beta.3:
+  version "0.3.0-beta.3"
+  resolved "https://registry.yarnpkg.com/polyfill-exports/-/polyfill-exports-0.3.0-beta.3.tgz#19dfb4e8821b62e381d46beb35123a2ea14fc3a2"
+  integrity sha512-fYpdJoE2e0Os9qaqXVmEm0GsNwoFlTpe2snterm01hSf8/dSdCBIddovUH7PXCO0r7dRfsAB+A+EReNPlLoENw==
   dependencies:
     meow "^6.1.1"
 

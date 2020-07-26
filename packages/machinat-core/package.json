@@ -1,7 +1,7 @@
 {
   "name": "@machinat/core",
   "version": "0.2.0-alpha.18",
-  "description": "Machinat is a JavaScript library for building chat user interfaces.",
+  "description": "A declarative, progressive and cross-platform JavaScript framework for building conversational interfaces.",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -17,17 +17,17 @@
     "./queue": "./lib/queue/index.js",
     "./renderer": "./lib/renderer/index.js",
     "./service": "./lib/service/index.js",
-    "./base": "./lib/base/index.js",
+    "./base/": "./lib/base/",
     "./iterator/": "./lib/iterator/",
     "./utils/": "./lib/utils/"
   },
   "files": [
     "lib/*",
     "README.md",
-    "polyfill-exports"
+    "polyfill-exports.js"
   ],
   "scripts": {
-    "postinstall": "./polyfill-exports"
+    "postinstall": "./polyfill-exports.js"
   },
   "license": "MIT",
   "dependencies": {
