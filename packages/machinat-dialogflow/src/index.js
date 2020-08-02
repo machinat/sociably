@@ -1,6 +1,7 @@
 // @flow
 import { SessionsClient } from 'dialogflow';
 import { factory } from '@machinat/core/service';
+import Base from '@machinat/core/base';
 import type { ServiceModule } from '@machinat/core/types';
 import IntentRecognizer from './recognizer';
 import { DialogFlowClientI, MODULE_CONFIGS_I } from './interface';
@@ -22,6 +23,7 @@ const DialogFlow = {
   initModule: (configs: DialogFlowModuleConfigs): ServiceModule => ({
     provisions: [
       IntentRecognizer,
+      { provide: Base.IntentRecognizerI, withProvider: IntentRecognizer },
       { provide: DialogFlowClientI, withProvider: dialogFlowClientFactory },
       { provide: MODULE_CONFIGS_I, withValue: configs },
     ],

@@ -1,6 +1,7 @@
 // @flow
 import invariant from 'invariant';
 import { provider } from '@machinat/core/service';
+import { AbstractIntentRecognizer } from '@machinat/core/base/IntentRecognizerI';
 import type { MachinatChannel } from '@machinat/core/types';
 import { DialogFlowClientI, MODULE_CONFIGS_I } from './interface';
 
@@ -17,7 +18,7 @@ type DetectIntentOptions = {
   resetContexts?: boolean,
 };
 
-class DialogFlowIntentRecognizer {
+class DialogFlowIntentRecognizer implements AbstractIntentRecognizer {
   _client: DialogFlowClientI;
   projectId: string;
   defaultLanguageCode: void | string;
@@ -37,7 +38,7 @@ class DialogFlowIntentRecognizer {
     this.defaultLanguageCode = defaultLanguageCode;
   }
 
-  async recognizeText(
+  async detectText(
     channel: MachinatChannel,
     text: string,
     options?: DetectIntentOptions
@@ -64,7 +65,11 @@ class DialogFlowIntentRecognizer {
         : undefined,
     });
 
-    return queryResult;
+    return {
+      intentType: queryResult.intent?.displayName || undefined,
+      confidence: queryResult.intentDetectionConfidence || 0,
+      payload: queryResult,
+    };
   }
 }
 

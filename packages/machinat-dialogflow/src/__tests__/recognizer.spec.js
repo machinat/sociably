@@ -1,7 +1,7 @@
 import moxy from 'moxy';
 import Recognizer from '../recognizer';
 
-const queryResult = {
+const detectTextResponse = {
   responseId: 'xxx',
   queryResult: {
     queryText: 'hello bot',
@@ -22,7 +22,7 @@ const queryResult = {
 const sessionPath = 'projects/foo/agent/sessions/bar';
 const client = moxy({
   sessionPath: () => sessionPath,
-  detectIntent: () => [{ responseId: 'xxx', queryResult }],
+  detectIntent: () => [detectTextResponse],
 });
 
 beforeEach(() => {
@@ -45,7 +45,7 @@ test('throw if defaultLanguageCode is empty', () => {
   );
 });
 
-describe('#recognizeText()', () => {
+describe('#detectText()', () => {
   test('use default language', async () => {
     const recognizer = new Recognizer(client, {
       projectId: '_PROJECT_ID_',
@@ -53,9 +53,11 @@ describe('#recognizeText()', () => {
     });
     const channel = { uid: 'chat.with.somoeone' };
 
-    await expect(
-      recognizer.recognizeText(channel, 'hello bot')
-    ).resolves.toEqual(queryResult);
+    await expect(recognizer.detectText(channel, 'hello bot')).resolves.toEqual({
+      intentType: 'Default Welcome Intent',
+      confidence: 0.46481857,
+      payload: detectTextResponse.queryResult,
+    });
 
     expect(client.sessionPath.mock).toHaveBeenCalledTimes(1);
     expect(client.sessionPath.mock).toHaveBeenCalledWith(
@@ -78,14 +80,18 @@ describe('#recognizeText()', () => {
     const channel = { uid: 'foo.chat' };
 
     await expect(
-      recognizer.recognizeText(channel, 'hello bot', {
+      recognizer.detectText(channel, 'hello bot', {
         languageCode: 'zh-TW',
         timeZone: 'Asia/Taipei',
         geoLocation: { latitude: 25.0456, longitude: 121.5196 },
         resetContexts: true,
         contexts: ['bar', 'baz'],
       })
-    ).resolves.toEqual(queryResult);
+    ).resolves.toEqual({
+      intentType: 'Default Welcome Intent',
+      confidence: 0.46481857,
+      payload: detectTextResponse.queryResult,
+    });
 
     expect(client.sessionPath.mock).toHaveBeenCalledTimes(1);
     expect(client.sessionPath.mock).toHaveBeenCalledWith(

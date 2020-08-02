@@ -1,7 +1,8 @@
 import Machinat from '@machinat/core';
+import Base from '@machinat/core/base';
 import { SessionsClient } from 'dialogflow';
 import DialogFlow from '..';
-import DialogFlowIntentRecognizer from '../recognizer';
+import IntentRecognizer from '../recognizer';
 
 jest.mock(
   'dialogflow',
@@ -9,7 +10,7 @@ jest.mock(
 );
 
 it('export interfaces', () => {
-  expect(DialogFlow.IntentRecognizer).toBe(DialogFlowIntentRecognizer);
+  expect(DialogFlow.IntentRecognizer).toBe(IntentRecognizer);
   expect(DialogFlow.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
@@ -36,7 +37,7 @@ describe('initModule()', () => {
     defaultLanguageCode: 'en-US',
   };
 
-  it('', async () => {
+  it('provide services', async () => {
     const app = Machinat.createApp({
       modules: [DialogFlow.initModule(configs)],
     });
@@ -52,8 +53,18 @@ describe('initModule()', () => {
 
     expect(SessionsClient.mock).toHaveBeenCalledTimes(1);
 
-    expect(recognizer).toBeInstanceOf(DialogFlowIntentRecognizer);
+    expect(recognizer).toBeInstanceOf(IntentRecognizer);
     expect(client).toBe(SessionsClient.mock.calls[0].instance);
     expect(configsProvided).toEqual(configs);
+  });
+
+  it('provide Base.IntentRecognizerI', async () => {
+    const app = Machinat.createApp({
+      modules: [DialogFlow.initModule(configs)],
+    });
+    await app.start();
+
+    const [recognizer] = app.useServices([Base.IntentRecognizerI]);
+    expect(recognizer).toBeInstanceOf(IntentRecognizer);
   });
 });
