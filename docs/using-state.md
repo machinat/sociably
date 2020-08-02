@@ -1,14 +1,14 @@
 # Using State
 
-Conversation is contextual, it's a process of interactions across a period of time. During the conversation proceed, a chatbot needs the state of the conversation/user in order to:
+While having a conversation, knowing about the context is the key proceeding the topic. A chatbot may needs the state of the conversation in order to remember:
 
-- know about basic information, favor or other knowledge of the user.
-- remember topic and stop point of the conversation in order to continue later.
-- store necessary data to provide more features.
+- the current topic of the conversation for continuing.
+- user answer/choices/behavior to know more about the user.
+- which information have been said/notified for not being duplicated.
 
 ## State Module
 
-To enable state in Machinat add one state storage module from `@machinat/state`:
+To enable state in Machinat, add one of state storage modules from `@machinat/state`:
 
 ```js
 import FileState from '@machinat/state/file';
@@ -21,12 +21,12 @@ Machinat.createApp({
 })
 ```
 
-For now there are three storage types supported: `inMemory`, `file` and `redis`, check the module docs for more details.
+For now there are three storage types supported: `inMemory`, `file` and `redis`, check the package readme for more details.
 
 ## Use the State
 
 All state modules provide the `Base.StateControllerI` interface, you can
-use it without worrying which storage is it. Let's get the conversation state in a container:
+use it without worrying which storage is it. Let's try getting the conversation state in a container:
 
 ```js
 import { StateControllerI } from '@machinat/core/base';

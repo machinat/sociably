@@ -21,7 +21,7 @@ import type {
 
 type LineReceiverOptions = {
   providerId: string,
-  botChannelId: string,
+  channelId: string,
   shouldValidateRequest?: boolean,
   channelSecret?: string,
 };
@@ -29,7 +29,7 @@ type LineReceiverOptions = {
 const handleWebhook = (
   {
     providerId,
-    botChannelId,
+    channelId: botChannelId,
     shouldValidateRequest,
     channelSecret,
   }: LineReceiverOptions,
@@ -106,7 +106,7 @@ class LineReceiver extends WebhookReceiver {
   constructor(
     {
       shouldValidateRequest = true,
-      botChannelId,
+      channelId,
       providerId,
       channelSecret,
     }: LineReceiverOptions,
@@ -120,7 +120,7 @@ class LineReceiver extends WebhookReceiver {
 
     super(
       handleWebhook(
-        { shouldValidateRequest, providerId, botChannelId, channelSecret },
+        { shouldValidateRequest, providerId, channelId, channelSecret },
         bot,
         popEventWrapper
       )

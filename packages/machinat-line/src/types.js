@@ -225,7 +225,7 @@ export type LineDispatchMiddleware = DispatchMiddleware<
 export type LinePlatformConfigs = {
   webhookPath?: string,
   providerId: string,
-  botChannelId: string,
+  channelId: string,
   channelSecret?: string,
   shouldValidateRequest?: boolean,
   accessToken: string,

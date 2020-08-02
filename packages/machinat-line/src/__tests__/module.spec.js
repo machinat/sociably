@@ -23,17 +23,17 @@ it('export interfaces', () => {
 describe('initModule(configs)', () => {
   it('throw if configs.providerId is empty', () => {
     expect(() =>
-      Line.initModule({ botChannelId: '_BOT_CHANNEL_ID_' })
+      Line.initModule({ channelId: '_BOT_CHANNEL_ID_' })
     ).toThrowErrorMatchingInlineSnapshot(
       `"configs.providerId should not be empty"`
     );
   });
 
-  it('throw if configs.botChannelId is empty', () => {
+  it('throw if configs.channelId is empty', () => {
     expect(() =>
       Line.initModule({ providerId: '_PROVIDER_ID_' })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"configs.botChannelId should not be empty"`
+      `"configs.channelId should not be empty"`
     );
   });
 
@@ -43,7 +43,7 @@ describe('initModule(configs)', () => {
     expect(
       Line.initModule({
         providerId: '_PROVIDER_ID_',
-        botChannelId: '_BOT_CHANNEL_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
         accessToken: '_ACCESS_TOKEN_',
         eventMiddlewares,
         dispatchMiddlewares,
@@ -65,7 +65,7 @@ describe('initModule(configs)', () => {
   test('provisions', async () => {
     const configs = {
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       accessToken: '_ACCESS_TOKEN_',
       channelSecret: '_CHANNEL_SECRET_',
       webhookPath: '/webhook/line',
@@ -105,7 +105,7 @@ describe('initModule(configs)', () => {
       platforms: [
         Line.initModule({
           providerId: '_PROVIDER_ID_',
-          botChannelId: '_BOT_CHANNEL_ID_',
+          channelId: '_BOT_CHANNEL_ID_',
           accessToken: '_ACCESS_TOKEN_',
           channelSecret: '_CHANNEL_SECRET_',
         }),
@@ -124,7 +124,7 @@ describe('initModule(configs)', () => {
   test('default webhookPath to "/"', async () => {
     const configs = {
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       accessToken: '_ACCESS_TOKEN_',
       shouldValidateRequest: false,
     };
@@ -144,7 +144,7 @@ describe('initModule(configs)', () => {
     const bot = moxy({ start: async () => {} });
     const module = Line.initModule({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       accessToken: '_ACCESS_TOKEN_',
       shouldValidateRequest: false,
     });

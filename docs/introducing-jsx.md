@@ -1,6 +1,6 @@
 # Introducing JSX
 
-Machinat use the JSX syntax API to build the _Chat User Interface_ (CUI).
+In Machinat, you can use the _JSX_ syntax API to build the _Conversational User Interface_ (CUI) more expressively.
 
 ```js
 app.onEvent(async ({ bot, channel }) => {
@@ -16,14 +16,21 @@ app.onEvent(async ({ bot, channel }) => {
 
 If you have used [React.js](https://reactjs.org) before, you might be familiar with it already. Machinat share almost the same syntax and element structure with React, and have an alike rendering system we will discuss in the next section.
 
+## JSX Syntax
+
+This part is WIP, you can check [the doc of React.js](https://reactjs.org/docs/introducing-jsx.html) since Machinat and React share the same JSX syntax.
+
 ## Why JSX?
 
-During the experiences buiding chatbots, we find out _Chat User Interface_ and _Graphical User Interface_ have some common ground and both need a declarative way to make the complex UI. JSX, which has proved to be an extraordinary tool to build GUI, could benefit us building CUI in several aspects.
+During the experiences buiding chatbots, we find out _Conversational User Interface_ and _Graphical User Interface_ have some common ground and both need a declarative way to make the complex UI.
 
-### Expressive way to talk
+JSX, which has proved to be an extraordinary tool to build GUI, could benefit us building CUI in several aspects.
+
+### Declarative way to talk
 
 Consider the following dialogue in a chat room:
 
+![]()
 
 As you see a dialogue is usually proceed by a collection of messages each time, let's call them an *expression*. In Machinat, an expression is the atomic unit for sending. You don't have to call many API to make the expression, the upper example can be made by:
 
@@ -38,11 +45,57 @@ bot.render(
 );
 ```
 
-This provide a way to build CUI declaratively and expressively. The sending of all messages in an expression is managed and promised by Machinat, and you can focus on crafting the UI.
+This provide a way to build CUI more declaratively. The sending of all messages in an expression is managed and promised by Machinat, so you can focus on crafting the UI.
+
+### Rich formatting view
+
+Most platform provide some ways to send rich formatting text message or more complex widgets in the chatroom. JSX is better to show the "view" of an expression in codes declaratively than huge and nested JSON.
+
+```js
+bot.render(
+  channel,
+  <>
+    <p>
+      <b>foo</b>
+      <i>bar</i>
+      <code>baz</code>
+    </p>
+
+    <Messenger.GenericTemplate>
+      <Messenger.GenericItem
+        title="Hello"
+        subtitile="world"
+        imageURL="http://..."
+      />
+    </Messenger.GenericTemplate>
+  </>
+);
+```
+
+### Pause and other in-chat behavior
+
+Proper pause may make your speech more understandable and comfortable in a chat. Pause and other in-chat behaviors thus should be able to a part of the user experience.
+
+In Machinat these can all be done in a JSX expression:
+
+```js
+bot.render(
+  channel,
+  <>
+    Hakuna Matata!
+    <Messenger.TypingOn />
+
+    <Machinat.Pause until={() => delay(2000)} />
+
+    {/* will be sent 2 sec after */}
+    It means no worry!
+  </>
+);
+```
 
 ### Cross-platform API
 
-Cross-platform is a big issue for chatbot because of the fact that there is no dominant messaging/voice assistant platform for now. JSX provide a [domain-specific language](https://en.wikipedia.org/wiki/Domain-specific_language) flexible enough to serve an unified cross-platform API along with complete features of any particular platform.
+Cross-platform is a big issue for chatbot because of the fact that there is no dominant messaging platform for now. JSX provide a [domain-specific language](https://en.wikipedia.org/wiki/Domain-specific_language) flexible enough to serve cross-platform API along with complete features of any particular platform.
 
   ```js
   bot.render(
@@ -55,52 +108,10 @@ Cross-platform is a big issue for chatbot because of the fact that there is no d
   );
   ```
 
-  The details of how to make a cross-platform expression is describe at next section.
+In the case above, the `<video ... />` element is a general API that can be sent to all platforms. The `<Messenger.Video ... />` element is a native API only works in `messenger` platform.
 
-  ### Rich formatting view
+We will discuss more about how to make a cross-platform expression in the [next section](docs/rendering-elements.md).
 
-  Most platform provide some ways to send rich formatting text message or more complex widgets in the chatroom. JSX is better to show the "view" of an expression in codes declaratively than huge and nested JSON.
+## Next
 
-  ```js
-  bot.render(
-    channel,
-    <>
-      <p>
-        <b>foo</b>
-        <i>bar</i>
-        <code>baz</code>
-      </p>
-
-      <Messenger.GenericTemplate>
-        <Messenger.GenericItem
-          title="Hello"
-          subtitile="world"
-          imageURL="http://..."
-        />
-      </Messenger.GenericTemplate>
-    </>
-  );
-  ```
-
-### Pause and other in-chat behavior
-
-Proper pause may make your speech more understandable and comfortable in a chat. Machinat support pause and other in-chat behavior in an expression as a part of CUI.
-
-```js
-bot.render(
-  channel,
-  <>
-    Hello World!
-    <Messenger.TypingOn />
-
-    <Machinat.Pause until={() => delay(2000)} />
-
-    {/* will be sent 2 sec after */}
-    What a wonderful world!
-  </>
-);
-```
-
-## JSX Syntax
-
-This part is WIP, you can check [the doc of React.js](https://reactjs.org/docs/introducing-jsx.html#embedding-expressions-in-jsx) since Machinat and React share the same JSX syntax.
+In next section [Rendering Elements](docx/rendering-elements.md), we'll show you how the message made with JSX being rendered then sent.

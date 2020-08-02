@@ -49,7 +49,7 @@ const Line = {
     LineAPIResult
   > => {
     invariant(configs.providerId, 'configs.providerId should not be empty');
-    invariant(configs.botChannelId, 'configs.botChannelId should not be empty');
+    invariant(configs.channelId, 'configs.channelId should not be empty');
 
     return {
       name: LINE,

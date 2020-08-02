@@ -1,121 +1,117 @@
 # Reactive Programming
 
-We have introduced powerful utilities Machinat have shipped, now it's time to glue them together. Consider a simplest chat app with a workflow like this:
+While your app grows and ships more features, how to organize all the utilities would become a problem. Since the rendering mechanism handles only UI logic, an additional control flow library is required to handle business logic.
 
-!()[]
+Machinat is flexible enough to integrate with any flow model. But among all of them, [_Reactive Programming_](https://en.wikipedia.org/wiki/Reactive_programming) might fit the conversational UI/UX the best.
 
-Here we need a model to handle such sequences of asynchronous jobs and conditional branches in the _back-end_.
+Reactive programming is a declarative programming paradigm to handle asynchronous workflows in data streams. [@andrestaltz](https://twitter.com/andrestaltz) have a [great article](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754) introducing the concept of reactive programming using [_Rx_]((http://reactivex.io/)), you should check it if the idea is pretty fresh to you.
 
-## Handling Events as Stream
+### Handling Events as Stream
 
-Reactive programming is a declarative programming paradigm to handle asynchronous workflows in data streams. That sounds exactly what we need!
+A conversation can be treated as a stream, where expressions between people flows within a period of time. So reactive programming can naturally handle the conversation behavior and the the derived asynchronous tasks.
 
-If you come from front-end world, you might have heard [_Rx_](http://reactivex.io/) before. [@andrestaltz](https://twitter.com/andrestaltz) have a [great article](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754) introducing reactive programming using _Rx_, you should check it if the idea is pretty fresh to you.
+For example, continuous messages in a moment should be treated as one. In a callback style model, this require some additional works. But in reactive programming, this can be solved with a simple streaming operator like `Buffer`.
 
-The workflow above described in functional reactive programming may look like:
+![buffer operator](http://reactivex.io/documentation/operators/images/Buffer.png)
+
+> _Buffer Stream Operator -- image from [reactivex.io](http://reactivex.io/documentation/operators/buffer.html)_
+
+
+## X-Machinat
+
+`X-Machinat` is an extensional library to experiment reactive programming with conversational UI/UX. Consider an application flow for simple CRUD actions like:
+
+![]()
+
+It can be described in a reactive programming way like this:
 
 ```js
-const [postback$, textMsg$, unknownMsg$] = events$.conditions([
+import { fromApp, conditions, merge } from 'x-machinat';
+import { map, filter } from 'x-machinat/operators';
+
+const event$ = fromApp(app);
+
+const [postback$, textMsg$, unknownMsg$] = conditions(events$, [
   isPostback,
   isText,
   () => true,
 ]);
 
-const intent$ = textMsg$.map(recognizeIntent);
+const intendedMsg$ = textMsg$.pipe(map(recognizeIntent));
 
-const operation$ = merge(
-  postback$
-    .map(getOperationFromPostback),
-  intent$
-    .filter(isOperation)
-    .map(getOperationFromIntent)
+const action$ = merge(
+  postback$.pipe(
+    map(actionFromPostback)
+  ),
+  intendedMsg$.pipe(
+    filter(isAction),
+    map(actionFromIntent)
+  )
 );
-operation$
-  .map(executeOperation)
-  .map(replyResult);
+
+action$.pipe(
+  map(executeAction),
+  map(replyResult)
+);
 
 merge(
   unknownMsg$,
-  intent$.filter(not(isOperation))
-).map(perfunctory);
+  intendedMsg$.filter(not(isAction))
+).pipe(map(replyRandomEmoji));
 ```
 
-initiate
+Now the control flow can be describe as a declarative pipeline instead of imperative code.
 
+### Challenges on Back-end
 
-throttle
+The package is still on experiment because there are still some challenges to overcome. Different from front-end, a modern back-end based app is expected to be [stateless](https://12factor.net/processes), [multi-process friendly](https://12factor.net/concurrency) and [disposable](https://12factor.net/disposability). To achieve these on production, the stream must match the following requirements:
 
-## Challenges on Back-end
+#### Persistence
 
-Unfortunately most popular reactive programming frameworks have some problems to be directly used on the back-end. Different from front-end, a modern back-end based app is expected to be [stateless](https://12factor.net/processes), [multi-process friendly](https://12factor.net/concurrency) and [disposable](https://12factor.net/disposability). To make a event streaming framework
-
-
-### Persistence
-
-Many of the stream operators are stateful like `scan`, these states must be stored in the persistent data service like database. The state should be recovered if a process is created due to scaling or recovery from error.
+Many of the stream operators are stateful like [`scan`](http://reactivex.io/documentation/operators/scan.html), these states must be stored in the persistent data service like database. The state should be recovered when a process is created due to scaling or recovery from error.
 
 ```js
 // the last seen time should be persistent
-const lastSeenAt$ = chatroom$.scan(() => new Date())
+const seenAt$ = chatroom$.pipe(scan(() => new Date()));
 ```
 
-### Concurrency
+#### Concurrency
 
 The stateful operations should be safe from race condition. It should works identically while being accessed from different process or machine.
 
 ```js
 // event on every server should be counted
-const msgCount$ = message$.count();
+const msgCount$ = message$.pipe(count());
 ```
 
-### Order
+#### Order
 
-The events should be proceeded in the strictly same order as received while executing asynchronous jobs. This is difficult because continuous events could be dispatched to different servers.
+The events should be proceeded in the same order as received while executing asynchronous jobs. This is difficult because events could be distributed to different processes.
 
 ```js
-// mirror the message in the receiving order
-message$
-  .map(someAsyncWork)
-  .map(async ({ bot, channel, event }) => {
+// mirroring the message in the receiving order
+message$.pipe(
+  map(someAsyncWork),
+  map(async ({ bot, channel, event }) => {
     await bot.render(channel, event.text + '!!!');
-  });
+  })
+);
 ```
 
-### Exactly Once
+#### Exactly Once
 
-A event should be proceeded exactly once, not omitted and not duplicated. If a server unexpectedly down, the unfinished events should be able to resume.
+A event should be proceeded exactly once in the stream, not omitted and not duplicated. If a server is unexpectedly down, the unfinished events should be able to resume.
 
-```js
+## The Solution
 
-```
+Streaming architectures is not new on back-end, they are widely used in data pipeline or handling long running tasks. Generally the whole architecture is formed by a series of service workers around a [Message Queue](https://en.wikipedia.org/wiki/Message_queue).
 
+But development of applications need to handle many detailed UI/UX logic, and require frequent updating and releasing. You might not want to separate your app into a dozen microservices listening to jobs from broker.
 
-##
-
-A back-end developer might might have already found out that the features we listed above can be supported by a message queue. Events driven streaming architecture is not a new face on back-end, but now we need it to solve a new problem: application logic for end users.
-
-Unlike data pipeline and and business logic, application may have more details, more branches and more frequent releases. You might prefer describing your app like this:
-
-```js
-events$
-  .filter(isFromMessenger)
-  .map(doSomeAsyncWorks)
-  .map(async ({ bot, channel }) => {
-    await bot.render(
-      channel,
-      `Hello, traveler from Messenger!`
-    );
-  });
-```
-
-instead of separating them into several micro-services.
+So could there be a monolithic way to have a message queue powered reactive programming lib for building UI/UX? There is actually a prior art on Java, the [_Kafka Stream_](https://kafka.apache.org/documentation/streams/) based on [_Apache Kafka_](https://kafka.apache.org/). The streaming operations are backed with external message queue to match the guarantees describe above.
 
 ## Plan
 
-Could there be a declarative way to have a message queue powered reactive programming lib? There is actually a prior art on Java, the [_Kafka Stream_](https://kafka.apache.org/documentation/streams/) based on [_Apache Kafka_](https://kafka.apache.org/).
+_X-Machinat_ aims to provide message queue backed reactive programming control flow for Machinat apps. And hopefully the streaming utilities can be extracted out as an independent library for general purpose.
 
-The next big goal of Machinat is a message queue backed reactive programming library for back-end. We wish to have an Node.js implementation, and support some Machinat utilities like service container over it. A rough roadmap is:
-
-1. Provide a single point viable API work without the message broker in 0.X. Able to be used without multi-process and error recovery guarantees.
-2. Backed with an external message broker in 1.0 beta with all the guarantees a message queue should have.
-3. Support more utilities like dashboard/logger for streams, multiple broker type supporting, DevOps automation, etc.
+If you are interested, check the package [readme]() for the usage and development schedule.

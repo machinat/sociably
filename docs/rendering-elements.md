@@ -1,10 +1,12 @@
 # Rendering Elements
 
+In Machinat, **Bot** is an abstraction which in charge of dispatching actions to a [channel](). Depends on the platform it belongs to, it can send message to a chatroom, emit event to a webview or reply on voice assistant.
+
 ### `Bot#render(channel, message)`
 
-Bots of all the platforms implement the `render` method. For the most of time, `render` is the only entry you need to send various kinds of messages.
+Bots from all the platforms have to implement the `render` method. For the most of time, `render` is the only entry you need to send various kinds of messages.
 
-- `channel` - the target to send the rendered messages, typically refers to a chat room.
+- `channel` - the target to send the rendered messages.
 - `message` - string or message element to be rendered.
 
 ### Sending Text
@@ -15,7 +17,7 @@ The most basic way to to send a message is render string directly:
 bot.render(channel, 'hello world');
 ```
 
-this is supported by all the platforms.
+Render a string is supported by all platforms of bot.
 
 ### Fragment
 
@@ -32,7 +34,11 @@ bot.render(
 );
 ```
 
-When you render with a fragment, all of the messages rendered from children will be sent in order.
+The message above is rendered into three messaging actions look like:
+
+![]()
+
+When you call `render` with a fragment, all the actions rendered from the message will be sent in order. Bot would dispatch message as an atomic operation. All you need to do is focusing on the UI!
 
 ### Textual Node
 
@@ -119,7 +125,8 @@ You can only use native component corresponded to the platform of bot. If a bot 
 
 ### Pause
 
-`Machinat.Pause` is an utility to make a pause between messages. Add a `<Machinat.Pause/>` element and set `until` prop to an async function. The `until` function will be awaited while sending and postpone sending of the rest messages afterward.
+`Machinat.Pause` is an utility to make a pause between messages. It can be done by adding a `<Machinat.Pause/>` element and optionally set the `until` prop with an async function.
+
 
 ```js
 import delay from 'delay';
@@ -138,3 +145,9 @@ bot.render(channel,
   </>
 );
 ```
+
+The `delayOneSec` function will be called and awaited between actions. This would postpone the sending of the rest actions afterward.
+
+## Next
+
+In [next section](docs/components-for-cui.md), we will introduce how to modularize CUI with **component**.

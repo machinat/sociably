@@ -82,7 +82,7 @@ describe('#constructor(options)', () => {
       {
         accessToken: '_ACCESS_TOKEN_',
         providerId: '_PROVIDER_ID_',
-        botChannelId: '_BOT_CHANNEL_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
         connectionCapicity: 999,
       },
       initScope,
@@ -113,7 +113,7 @@ describe('#constructor(options)', () => {
       {
         accessToken: '_ACCESS_TOKEN_',
         providerId: '_PROVIDER_ID_',
-        botChannelId: '_BOT_CHANNEL_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper
@@ -135,7 +135,7 @@ describe('#render(token, node, options)', () => {
       {
         accessToken: '_ACCESS_TOKEN_',
         providerId: '_PROVIDER_ID_',
-        botChannelId: '_BOT_CHANNEL_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper
@@ -179,7 +179,7 @@ describe('#render(token, node, options)', () => {
       {
         accessToken: '_ACCESS_TOKEN_',
         providerId: '_PROVIDER_ID_',
-        botChannelId: '_BOT_CHANNEL_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper
@@ -225,7 +225,7 @@ describe('#render(token, node, options)', () => {
       {
         accessToken: '_ACCESS_TOKEN_',
         providerId: '_PROVIDER_ID_',
-        botChannelId: '_BOT_CHANNEL_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper
@@ -242,7 +242,7 @@ describe('#render(token, node, options)', () => {
       {
         accessToken: '_ACCESS_TOKEN_',
         providerId: '_PROVIDER_ID_',
-        botChannelId: '_BOT_CHANNEL_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper
@@ -271,7 +271,7 @@ describe('#renderMulticast(targets, node)', () => {
       {
         accessToken: '_ACCESS_TOKEN_',
         providerId: '_PROVIDER_ID_',
-        botChannelId: '_BOT_CHANNEL_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper
@@ -290,7 +290,7 @@ describe('#renderMulticast(targets, node)', () => {
       {
         accessToken: '_ACCESS_TOKEN_',
         providerId: '_PROVIDER_ID_',
-        botChannelId: '_BOT_CHANNEL_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
       },
       initScope,
       dispatchWrapper

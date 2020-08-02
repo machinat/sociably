@@ -46,7 +46,7 @@ it('throws if shouldValidateRequest but channelSecret not given', () => {
       new LineReceiver(
         {
           providerId: '_PROVIDER_ID_',
-          botChannelId: '_BOT_CHANNEL_ID_',
+          channelId: '_BOT_CHANNEL_ID_',
           shouldValidateRequest: true,
         },
         bot,
@@ -61,7 +61,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   'responds 405 if req.method is %s',
   async (method) => {
     const receiver = new LineReceiver(
-      { botChannelId: '_BOT_CHANNEL_ID_', shouldValidateRequest: false },
+      { channelId: '_BOT_CHANNEL_ID_', shouldValidateRequest: false },
       bot,
       popEventWrapper
     );
@@ -80,7 +80,7 @@ it('responds 400 if body is empty', async () => {
   const receiver = new LineReceiver(
     {
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       shouldValidateRequest: false,
     },
     bot,
@@ -98,7 +98,7 @@ it('responds 400 if body is empty', async () => {
 
 it('responds 400 if body is not not valid json format', async () => {
   const receiver = new LineReceiver(
-    { botChannelId: '_BOT_CHANNEL_ID_', shouldValidateRequest: false },
+    { channelId: '_BOT_CHANNEL_ID_', shouldValidateRequest: false },
     bot,
     popEventWrapper
   );
@@ -115,7 +115,7 @@ it('responds 400 if body is not not valid json format', async () => {
 it('responds 400 if body is in invalid format', async () => {
   const receiver = new LineReceiver(
     {
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       shouldValidateRequest: false,
     },
     bot,
@@ -138,7 +138,7 @@ it('respond 200 and pop events received', async () => {
   const receiver = new LineReceiver(
     {
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       shouldValidateRequest: false,
     },
     bot,
@@ -237,7 +237,7 @@ it('work if request validation passed', async () => {
   const receiver = new LineReceiver(
     {
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       shouldValidateRequest: true,
       channelSecret: '__LINE_CHANNEL_SECRET__',
     },
@@ -283,7 +283,7 @@ it('responds 401 if request validation failed', async () => {
   const receiver = new LineReceiver(
     {
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       shouldValidateRequest: true,
       channelSecret: '__LINE_CHANNEL_SECRET__',
     },

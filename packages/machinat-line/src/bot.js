@@ -33,7 +33,7 @@ import type {
 type LineBotOptions = {
   accessToken: string,
   providerId: string,
-  botChannelId: string,
+  channelId: string,
   connectionCapicity?: number,
 };
 
@@ -53,7 +53,7 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
     {
       accessToken,
       providerId,
-      botChannelId,
+      channelId,
       connectionCapicity = 100,
     }: LineBotOptions = {},
     initScope?: InitScopeFn = () => createEmptyScope(LINE),
@@ -66,7 +66,7 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
     invariant(accessToken, 'options.accessToken should not be empty');
 
     this.providerId = providerId;
-    this.botChannelId = botChannelId;
+    this.botChannelId = channelId;
 
     const renderer = new Renderer(LINE, generalElementDelegate);
     const queue = new Queue();
