@@ -10,12 +10,12 @@ export interface MachinatUserProfile {
   +pictureURL: void | string;
 }
 
-class AbstractProfileFetcher {
+export class AbstractUserProfiler {
   fetchProfile(_user: MachinatUser): MachinatUserProfile {
     throw new TypeError('method called on abstract class');
   }
 }
 
-export default abstractInterface<AbstractProfileFetcher>({
-  name: 'BaseProfileFetcher',
-})(AbstractProfileFetcher);
+export default abstractInterface<AbstractUserProfiler>({
+  name: 'BaseUserProfiler',
+})(AbstractUserProfiler);

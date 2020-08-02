@@ -1,6 +1,6 @@
 // @flow
 import { provider } from '@machinat/core/service';
-import { ProfileFetcherI, StateControllerI } from '@machinat/core/base';
+import { UserProfilerI, StateControllerI } from '@machinat/core/base';
 import type LineUser from '../user';
 import LineBot from '../bot';
 import LineUserProfile from './profile';
@@ -13,11 +13,11 @@ type ProfileCache = {
   fetchAt: number,
 };
 
-type ProfileFetcherOptions = {
+type ProfilerOptions = {
   profileCacheTime?: number,
 };
 
-class LineUserProfileFetcher implements ProfileFetcherI {
+class LineUserProfiler implements UserProfilerI {
   bot: LineBot;
   stateController: null | StateControllerI;
   profileCacheTime: number;
@@ -25,7 +25,7 @@ class LineUserProfileFetcher implements ProfileFetcherI {
   constructor(
     bot: LineBot,
     stateController: null | StateControllerI,
-    { profileCacheTime }: ProfileFetcherOptions = {}
+    { profileCacheTime }: ProfilerOptions = {}
   ) {
     this.bot = bot;
     this.stateController = stateController;
@@ -62,7 +62,7 @@ class LineUserProfileFetcher implements ProfileFetcherI {
   }
 }
 
-export default provider<LineUserProfileFetcher>({
+export default provider<LineUserProfiler>({
   lifetime: 'scoped',
   deps: [LineBot, { require: StateControllerI, optional: true }],
-})(LineUserProfileFetcher);
+})(LineUserProfiler);

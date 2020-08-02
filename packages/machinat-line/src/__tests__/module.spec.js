@@ -4,13 +4,13 @@ import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import Line from '..';
 import LineReceiver from '../receiver';
-import LineProfileFetcher from '../profile';
+import LineUserProfiler from '../profile';
 import LineBot from '../bot';
 
 it('export interfaces', () => {
   expect(Line.Receiver).toBe(LineReceiver);
   expect(Line.Bot).toBe(LineBot);
-  expect(Line.ProfileFetcher).toBe(LineProfileFetcher);
+  expect(Line.UserProfiler).toBe(LineUserProfiler);
   expect(Line.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
@@ -87,13 +87,13 @@ describe('initModule(configs)', () => {
       Line.Bot,
       Line.Receiver,
       Line.CONFIGS_I,
-      Line.ProfileFetcher,
+      Line.UserProfiler,
       HTTP.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(LineBot);
     expect(receiver).toBeInstanceOf(LineReceiver);
-    expect(profiler).toBeInstanceOf(LineProfileFetcher);
+    expect(profiler).toBeInstanceOf(LineUserProfiler);
     expect(configsProvided).toEqual(configs);
     expect(routings).toEqual([
       { name: 'line', path: '/webhook/line', handler: expect.any(Function) },
@@ -113,12 +113,12 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, profiler] = app.useServices([Base.BotI, Base.ProfileFetcherI], {
+    const [bot, profiler] = app.useServices([Base.BotI, Base.UserProfilerI], {
       platform: 'line',
     });
 
     expect(bot).toBeInstanceOf(LineBot);
-    expect(profiler).toBeInstanceOf(LineProfileFetcher);
+    expect(profiler).toBeInstanceOf(LineUserProfiler);
   });
 
   test('default webhookPath to "/"', async () => {

@@ -3,14 +3,14 @@ import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import Messenger from '..';
-import MessengerProfileFetcher from '../profile';
+import MessengerUserProfiler from '../profile';
 import MessengerReceiver from '../receiver';
 import MessengerBot from '../bot';
 
 it('export interfaces', () => {
   expect(Messenger.Receiver).toBe(MessengerReceiver);
   expect(Messenger.Bot).toBe(MessengerBot);
-  expect(Messenger.ProfileFetcher).toBe(MessengerProfileFetcher);
+  expect(Messenger.UserProfiler).toBe(MessengerUserProfiler);
   expect(Messenger.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
@@ -71,14 +71,14 @@ describe('initModule(configs)', () => {
     ] = app.useServices([
       Messenger.Bot,
       Messenger.Receiver,
-      Messenger.ProfileFetcher,
+      Messenger.UserProfiler,
       Messenger.CONFIGS_I,
       HTTP.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
     expect(receiver).toBeInstanceOf(MessengerReceiver);
-    expect(profiler).toBeInstanceOf(MessengerProfileFetcher);
+    expect(profiler).toBeInstanceOf(MessengerUserProfiler);
     expect(configsProvided).toEqual(configs);
     expect(routings).toEqual([
       {
@@ -104,12 +104,12 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, profiler] = app.useServices([Base.BotI, Base.ProfileFetcherI], {
+    const [bot, profiler] = app.useServices([Base.BotI, Base.UserProfilerI], {
       platform: 'messenger',
     });
 
     expect(bot).toBeInstanceOf(MessengerBot);
-    expect(profiler).toBeInstanceOf(MessengerProfileFetcher);
+    expect(profiler).toBeInstanceOf(MessengerUserProfiler);
 
     bot.stop();
   });

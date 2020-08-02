@@ -1,13 +1,13 @@
 // @flow
 import BotI from './BotI';
-import ProfileFetcherI from './ProfileFetcherI';
+import UserProfilerI from './UserProfilerI';
 import StateControllerI from './StateControllerI';
 
 const Base = {
   BotI,
-  ProfileFetcherI,
+  UserProfilerI,
   StateControllerI,
 };
 
 export default Base;
-export { BotI, ProfileFetcherI, StateControllerI };
+export { BotI, UserProfilerI, StateControllerI };

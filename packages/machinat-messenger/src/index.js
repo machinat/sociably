@@ -11,7 +11,7 @@ import {
 } from './interface';
 import { MESSENGER } from './constant';
 import MessengerReceiver from './receiver';
-import MessengerProfileFetcher from './profile';
+import MessengerUserProfiler from './profile';
 import type {
   MessengerPlatformConfigs,
   MessengerEventContext,
@@ -38,7 +38,7 @@ const requestRoutingFactory = factory<HTTPRequestRouting>({
 const Messenger = {
   Bot: MessengerBot,
   Receiver: MessengerReceiver,
-  ProfileFetcher: MessengerProfileFetcher,
+  UserProfiler: MessengerUserProfiler,
   CONFIGS_I: MESSENGER_PLATFORM_CONFIGS_I,
 
   initModule: (
@@ -60,10 +60,10 @@ const Messenger = {
         platforms: [MESSENGER],
       },
 
-      MessengerProfileFetcher,
+      MessengerUserProfiler,
       {
-        provide: Base.ProfileFetcherI,
-        withProvider: MessengerProfileFetcher,
+        provide: Base.UserProfilerI,
+        withProvider: MessengerUserProfiler,
         platforms: [MESSENGER],
       },
 

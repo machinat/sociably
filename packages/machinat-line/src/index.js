@@ -9,7 +9,7 @@ import { LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I } from './interface';
 import { LINE } from './constant';
 import LineReceiver from './receiver';
 import LineBot from './bot';
-import LineProfileFetcher from './profile';
+import LineUserProfiler from './profile';
 import type {
   LinePlatformConfigs,
   LineEventContext,
@@ -36,7 +36,7 @@ const requestRoutingFactory = factory<HTTPRequestRouting>({
 const Line = {
   Bot: LineBot,
   Receiver: LineReceiver,
-  ProfileFetcher: LineProfileFetcher,
+  UserProfiler: LineUserProfiler,
   CONFIGS_I: LINE_PLATFORM_CONFIGS_I,
 
   initModule: (
@@ -58,10 +58,10 @@ const Line = {
         LineBot,
         { provide: Base.BotI, withProvider: LineBot, platforms: [LINE] },
 
-        LineProfileFetcher,
+        LineUserProfiler,
         {
-          provide: Base.ProfileFetcherI,
-          withProvider: LineProfileFetcher,
+          provide: Base.UserProfilerI,
+          withProvider: LineUserProfiler,
           platforms: [LINE],
         },
 

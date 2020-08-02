@@ -77,7 +77,7 @@ import Messenger from '@machinat/messenger';
 
 app.onEvent(
   container({
-    deps: [Messenger.ProfileFetcher]
+    deps: [Messenger.UserProfiler]
   })(profiler => async ({ channel, user, bot } ) => {
     const profiler = await profiler.fetchProfile(user);
 
@@ -86,7 +86,7 @@ app.onEvent(
 );
 ```
 
-The handler container above is a curried function receives a `Messenger.ProfileFetcher` and returns an ordinary handler function. It works just like the ordinary handler is being contained!
+The handler container above is a curried function receives a `Messenger.UserProfiler` and returns an ordinary handler function. It works just like the ordinary handler is being contained!
 
 When a event/error popped, app would inject the container then call the handler returned immediately.
 
@@ -107,7 +107,7 @@ const Hello = profiler => async props => {
 }
 
 export default container({
-  deps: [Messenger.ProfileFetcher],
+  deps: [Messenger.UserProfiler],
 })(Hello);
 ```
 
@@ -305,7 +305,7 @@ import Base from '@machinat/core/base';
 app.onEvent(
   container({
     deps: [
-      { require: Base.ProfileFetcherI, optional: true },
+      { require: Base.UserProfilerI, optional: true },
     ],
   })(profiler => context => {
     const { bot, channel, user } = context;
@@ -320,6 +320,6 @@ app.onEvent(
 );
 ```
 
-The `Base` module provide a set of common interfaces for modules to register their implementation. In the example above, `Base.ProfileFetcherI` is used to fetch the user profile if it is provided by the current platform.
+The `Base` module provide a set of common interfaces for modules to register their implementation. In the example above, `Base.UserProfilerI` is used to fetch the user profile if it is provided by the current platform.
 
 This lets you use a cross-platform utility  without requiring implementations of every platforms.

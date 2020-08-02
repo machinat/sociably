@@ -1,5 +1,5 @@
 // @flow
-import type { MachinatUserProfile } from '@machinat/core/base/ProfileFetcherI';
+import type { MachinatUserProfile } from '@machinat/core/base/UserProfilerI';
 import { LINE } from '../constant';
 
 export type RawLineUserProfile = {
