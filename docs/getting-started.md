@@ -42,11 +42,11 @@ Machinat.createApp({
   .start();
 ```
 
-This docs will bring you through how to make a cross-platform app with enriched conversational UIs step by step!
+This document will bring you through how to make a cross-platform app with enriched conversational UIs step by step.
 
 ## Install
 
-Machinat codebase is separated into packages that you can optionally install only what you need. First add the _core_ and _http_ module:
+Machinat codebase is separated into packages that you can optionally install only what you need. First you need to add the `core` module and the `http` module for receiving HTTP request:
 
 ```sh
 npm install @machinat/core @machinat/http
@@ -54,11 +54,11 @@ npm install @machinat/core @machinat/http
 yarn add @machinat/core @machinat/http
 ```
 
-## Platforms
+### Platforms
 
-A platform is an external source where events would receive from and possibly you can dispatch reactions to. It could be any event-based source like webhook, websocket, e-mail or even console!
+Platform modules would listen to external events from sources like webhook, then emit the events through the app. They also provide utilities to make reaction if possible.
 
-The example app above subscribe events from 2 platforms: `Messenger` and `Line`. You can add your ones:
+You are free to pick any platforms you need to communicate with. The example app above subscribe events from 2 platforms: `Messenger` and `Line`. Install the platform module packages like:
 
 ```sh
 npm install @machinat/messenger @machinat/line # ...
@@ -66,12 +66,57 @@ npm install @machinat/messenger @machinat/line # ...
 yarn add @machinat/messenger @machinat/line # ...
 ```
 
-For now we support these platforms below, please check the docs in the package for the usage.
+For now we support the platforms listed below, please check the readme of the package for the usage guide.
 
-- [`@machinat/messenger`](packages/machinat-messenger)
-- [`@machinat/line`](packages/machinat-line)
-- [`@machinat/next`](packages/machinat-next)
-- [`@machinat/websocket`](packages/machinat-websocket)
+- Messenger - [`@machinat/messenger`](packages/machinat-messenger), receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
+- LINE - [`@machinat/line`](packages/machinat-line), receive/send messages as a [LINE](https://line.me) official account.
+- Next.js - [`@machinat/next`](packages/machinat-next), serve your web app with [Next.js](https://nextjs.org/).
+- WebSocket - [`@machinat/websocket`](packages/machinat-websocket), connect to the web front-end with [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
+
+## Enabling JSX
+
+To enable Machinat JSX syntax, you might need to configure the transpiling environment first. After setup, you can import `Machinat` at the file to make JSX syntax worked like:
+
+```js
+import Machinat from '@machinat/core';
+
+const greeting = <p>Hello World!</p>;
+```
+
+If you are not familiar with transpiling JavaScript, we recommend [Babel.js](https://babeljs.io/docs/en/) for beginners. Check [this example]() about how to set up the project.
+
+### With Babel
+
+First install `@machinat/babel-preset` package:
+
+```sh
+npm install --save-dev @machinat/babel-preset
+# or using yarn
+yarn --dev @machinat/babel-preset
+```
+
+Then add it into `babel.config.json`:
+
+```json
+{
+  "presets": ["@machinat/babel-preset"]
+}
+```
+
+### With TypeScript
+
+Add the following settings of the `compilerOptions` in `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    ...
+    "jsx": "react",
+    "jsxFactory": "Machinat.createElement",
+    "jsxFragmentFactory": "Machinat.Fragment"
+  }
+}
+```
 
 ## Listening to HTTP
 
@@ -85,9 +130,9 @@ HTTP.initModule({
 })
 ```
 
-When `app.start()`, a HTTP server will then be created and start listening for requests.
+When `app.start()`, a HTTP server will be created and start listening for requests.
 
-If you have several platforms you might need to setup the routes for each one like in the example:
+If you have multiple platforms requiring HTTP entry, you need to set the route path at platform options like in the example:
 
 ```js
 Messenger.initModule({
@@ -96,9 +141,9 @@ Messenger.initModule({
 })
 ```
 
-The route path should be configure at platform options for registering. Please check the docs of platform package for the details!
+Each platform's route path should be configured with no conflict. Please check the docs of platform package for more usage details.
 
-## Start App
+## Starting App
 
 After all modules configured, you must call `app.start()` to make everything work. It initiate the necessary services for the app to run.
 

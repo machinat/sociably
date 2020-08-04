@@ -20,7 +20,7 @@ Machinat is a declarative, progressive and cross-platform JavaScript framework f
 
 - Render dynamic and modular UI with customizable component.
 
-- Develop interactive Q&A dialog flow in flexible [_Script_]().
+- Develop interactive Q&A dialog flow in flexible [_Script_](docs/stage-dialog.md).
 
 - Make hybrid experience of CUI and GUI by integrating webview within the chatroom.
 
@@ -43,9 +43,20 @@ Machinat is a declarative, progressive and cross-platform JavaScript framework f
   - [Dependencies Injection](docs/dependencies-injection.md)
   - [Using State](docs/using-state.md)
   - [Recognizing Intent](docs/recognizing-intetn.md)
-  - [Staged Dialog](docs/stage-dialog.md)
+  - [Staged Dialog](docs/stage-dialog.mddocs/stage-dialog.md)
   - [Integration with Webview](docs/integration-with-webview.md)
   - [Reactive Programming](docs/reactive-programming.md)
+
+## Platforms
+
+Platforms are sources that app would receive events from and make reactions to. Machinat is flexible enough to works as a hub to communicate to all the channels, including instant messaging, voice assistant, SMS, e-mail, terminal console or any other event-based sources.
+
+The following platforms are officially supported for now:
+
+- Messenger - [`@machinat/messenger`](packages/machinat-messenger), receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
+- LINE - [`@machinat/line`](packages/machinat-line), receive/send messages as a [LINE](https://line.me) official account.
+- Next.js - [`@machinat/next`](packages/machinat-next), serve your web app with [Next.js](https://nextjs.org/).
+- WebSocket - [`@machinat/websocket`](packages/machinat-websocket), connect to the web front-end with [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
 
 ## Examples
 
