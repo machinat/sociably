@@ -113,9 +113,11 @@ class LineReceiver extends WebhookReceiver {
     bot: LineBot,
     popEventWrapper: PopEventWrapper<LineEventContext, null>
   ) {
+    invariant(providerId, 'configs.providerId should not be empty');
+    invariant(channelId, 'configs.channelId should not be empty');
     invariant(
       !shouldValidateRequest || channelSecret,
-      'should provide channelSecret if shouldValidateRequest set to true'
+      'should provide configs.channelSecret when shouldValidateRequest set to true'
     );
 
     super(

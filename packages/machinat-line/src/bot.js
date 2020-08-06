@@ -63,7 +63,9 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
       LineAPIResult
     > = (dispatch) => dispatch
   ) {
-    invariant(accessToken, 'options.accessToken should not be empty');
+    invariant(accessToken, 'configs.accessToken should not be empty');
+    invariant(providerId, 'configs.providerId should not be empty');
+    invariant(channelId, 'configs.channelId should not be empty');
 
     this.providerId = providerId;
     this.botChannelId = channelId;

@@ -232,6 +232,7 @@ export type LinePlatformConfigs = {
   connectionCapicity?: number,
   profileCacheTime?: number,
   liffChannelIds?: string[],
+  noServer?: boolean,
   eventMiddlewares?: (
     | LineEventMiddleware
     | ServiceContainer<LineEventMiddleware>

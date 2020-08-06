@@ -91,6 +91,39 @@ describe('initModule(configs)', () => {
     bot.stop();
   });
 
+  test('provisions when noServer', async () => {
+    const configs = {
+      noServer: true,
+      pageId: '_PAGE_ID_',
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_APP_SECRET_',
+    };
+
+    const app = Machinat.createApp({
+      platforms: [Messenger.initModule(configs)],
+    });
+    await app.start();
+
+    const [bot, profiler, configsProvided, routings] = app.useServices([
+      Messenger.Bot,
+      Messenger.UserProfiler,
+      Messenger.CONFIGS_I,
+      HTTP.REQUEST_ROUTINGS_I,
+    ]);
+
+    expect(bot).toBeInstanceOf(MessengerBot);
+    expect(profiler).toBeInstanceOf(MessengerUserProfiler);
+    expect(configsProvided).toEqual(configs);
+
+    expect(routings).toEqual([]);
+
+    expect(() => {
+      app.useServices([Messenger.Receiver]);
+    }).toThrowErrorMatchingInlineSnapshot(`"MessengerReceiver is not bound"`);
+
+    bot.stop();
+  });
+
   test('provide base interfaces', async () => {
     const app = Machinat.createApp({
       platforms: [

@@ -68,12 +68,42 @@ beforeEach(() => {
 });
 
 describe('#constructor(options)', () => {
+  it('throw if configs.providerId is empty', () => {
+    expect(
+      () =>
+        new LineBot(
+          { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
+          initScope,
+          dispatchWrapper
+        )
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"configs.providerId should not be empty"`
+    );
+  });
+
+  it('throw if configs.channelId is empty', () => {
+    expect(
+      () =>
+        new LineBot(
+          { accessToken: '_ACCESS_TOKEN_', providerId: '_PROVIDER_ID_' },
+          initScope,
+          dispatchWrapper
+        )
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"configs.channelId should not be empty"`
+    );
+  });
+
   it('throws if accessToken not given', () => {
     expect(
       () =>
-        new LineBot({ providerId: '_PROVIDER_ID_' }, initScope, dispatchWrapper)
+        new LineBot(
+          { providerId: '_PROVIDER_ID_', channelId: '_BOT_CHANNEL_ID_' },
+          initScope,
+          dispatchWrapper
+        )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.accessToken should not be empty"`
+      `"configs.accessToken should not be empty"`
     );
   });
 

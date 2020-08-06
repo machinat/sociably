@@ -49,10 +49,8 @@ const Messenger = {
     MessengerJob,
     MessengerDispatchFrame,
     MessengerResult
-  > => ({
-    name: MESSENGER,
-    mounterInterface: MESSENGER_PLATFORM_MOUNTER_I,
-    provisions: [
+  > => {
+    const provisions = [
       MessengerBot,
       {
         provide: Base.BotI,
@@ -67,16 +65,27 @@ const Messenger = {
         platforms: [MESSENGER],
       },
 
-      MessengerReceiver,
       { provide: MESSENGER_PLATFORM_CONFIGS_I, withValue: configs },
-      { provide: HTTP.REQUEST_ROUTINGS_I, withProvider: requestRoutingFactory },
-    ],
-    eventMiddlewares: configs.eventMiddlewares,
-    dispatchMiddlewares: configs.dispatchMiddlewares,
-    startHook: container({ deps: [MessengerBot] })(async (bot: MessengerBot) =>
-      bot.start()
-    ),
-  }),
+    ];
+
+    if (configs.noServer !== true) {
+      provisions.push(MessengerReceiver, {
+        provide: HTTP.REQUEST_ROUTINGS_I,
+        withProvider: requestRoutingFactory,
+      });
+    }
+
+    return {
+      name: MESSENGER,
+      mounterInterface: MESSENGER_PLATFORM_MOUNTER_I,
+      provisions,
+      eventMiddlewares: configs.eventMiddlewares,
+      dispatchMiddlewares: configs.dispatchMiddlewares,
+      startHook: container({
+        deps: [MessengerBot],
+      })(async (bot: MessengerBot) => bot.start()),
+    };
+  },
 };
 
 export default Messenger;

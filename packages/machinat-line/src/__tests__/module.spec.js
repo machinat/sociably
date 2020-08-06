@@ -21,22 +21,6 @@ it('export interfaces', () => {
 });
 
 describe('initModule(configs)', () => {
-  it('throw if configs.providerId is empty', () => {
-    expect(() =>
-      Line.initModule({ channelId: '_BOT_CHANNEL_ID_' })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"configs.providerId should not be empty"`
-    );
-  });
-
-  it('throw if configs.channelId is empty', () => {
-    expect(() =>
-      Line.initModule({ providerId: '_PROVIDER_ID_' })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"configs.channelId should not be empty"`
-    );
-  });
-
   it('create module object', () => {
     const eventMiddlewares = [(ctx, next) => next(ctx)];
     const dispatchMiddlewares = [(ctx, next) => next(ctx)];
@@ -98,6 +82,37 @@ describe('initModule(configs)', () => {
     expect(routings).toEqual([
       { name: 'line', path: '/webhook/line', handler: expect.any(Function) },
     ]);
+  });
+
+  test('provisions when noServer', async () => {
+    const configs = {
+      providerId: '_PROVIDER_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
+      accessToken: '_ACCESS_TOKEN_',
+      noServer: true,
+    };
+
+    const app = Machinat.createApp({
+      platforms: [Line.initModule(configs)],
+    });
+    await app.start();
+
+    const [bot, configsProvided, profiler, routings] = app.useServices([
+      Line.Bot,
+      Line.CONFIGS_I,
+      Line.UserProfiler,
+      HTTP.REQUEST_ROUTINGS_I,
+    ]);
+
+    expect(bot).toBeInstanceOf(LineBot);
+    expect(profiler).toBeInstanceOf(LineUserProfiler);
+    expect(configsProvided).toEqual(configs);
+
+    expect(routings).toEqual([]);
+
+    expect(() =>
+      app.useServices([Line.Receiver])
+    ).toThrowErrorMatchingInlineSnapshot(`"LineReceiver is not bound"`);
   });
 
   test('provide base interfaces', async () => {

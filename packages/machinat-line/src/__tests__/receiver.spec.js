@@ -40,6 +40,32 @@ beforeEach(() => {
   popEventWrapper.mock.reset();
 });
 
+it('throw if configs.providerId is empty', () => {
+  expect(
+    () =>
+      new LineReceiver(
+        { channelId: '_BOT_CHANNEL_ID_', shouldValidateRequest: false },
+        bot,
+        popEventWrapper
+      )
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"configs.providerId should not be empty"`
+  );
+});
+
+it('throw if configs.channelId is empty', () => {
+  expect(
+    () =>
+      new LineReceiver(
+        { providerId: '_PROVIDER_ID_', shouldValidateRequest: false },
+        bot,
+        popEventWrapper
+      )
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"configs.channelId should not be empty"`
+  );
+});
+
 it('throws if shouldValidateRequest but channelSecret not given', () => {
   expect(
     () =>
@@ -53,7 +79,7 @@ it('throws if shouldValidateRequest but channelSecret not given', () => {
         popEventWrapper
       )
   ).toThrowErrorMatchingInlineSnapshot(
-    `"should provide channelSecret if shouldValidateRequest set to true"`
+    `"should provide configs.channelSecret when shouldValidateRequest set to true"`
   );
 });
 
@@ -61,7 +87,11 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   'responds 405 if req.method is %s',
   async (method) => {
     const receiver = new LineReceiver(
-      { channelId: '_BOT_CHANNEL_ID_', shouldValidateRequest: false },
+      {
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        shouldValidateRequest: false,
+      },
       bot,
       popEventWrapper
     );
@@ -98,7 +128,11 @@ it('responds 400 if body is empty', async () => {
 
 it('responds 400 if body is not not valid json format', async () => {
   const receiver = new LineReceiver(
-    { channelId: '_BOT_CHANNEL_ID_', shouldValidateRequest: false },
+    {
+      providerId: '_PROVIDER_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
+      shouldValidateRequest: false,
+    },
     bot,
     popEventWrapper
   );
@@ -115,6 +149,7 @@ it('responds 400 if body is not not valid json format', async () => {
 it('responds 400 if body is in invalid format', async () => {
   const receiver = new LineReceiver(
     {
+      providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',
       shouldValidateRequest: false,
     },

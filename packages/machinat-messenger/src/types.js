@@ -168,6 +168,7 @@ export type MessengerPlatformConfigs = {
   verifyToken?: string,
   consumeInterval?: number,
   webhookPath?: string,
+  noServer?: boolean,
   eventMiddlewares?: (
     | MessengerEventMiddleware
     | ServiceContainer<MessengerEventMiddleware>
