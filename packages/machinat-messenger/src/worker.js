@@ -226,23 +226,23 @@ export default class MessengerWorker
     for (let i = 0; i < jobs.length; i += 1) {
       const {
         request,
-        channelUid,
+        channelUId,
         attachmentFileData,
         attachmentFileInfo,
       } = jobs[i];
 
-      if (channelUid !== undefined) {
+      if (channelUId !== undefined) {
         // keep the order of requests per channel
-        let count = channelSendingRec.get(channelUid);
+        let count = channelSendingRec.get(channelUId);
         if (count !== undefined) {
-          request.depends_on = makeRequestName(channelUid, count);
+          request.depends_on = makeRequestName(channelUId, count);
           count += 1;
         } else {
           count = 1;
         }
 
-        channelSendingRec.set(channelUid, count);
-        request.name = makeRequestName(channelUid, count);
+        channelSendingRec.set(channelUId, count);
+        request.name = makeRequestName(channelUId, count);
       }
 
       request.omit_response_on_success = false;

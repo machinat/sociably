@@ -283,9 +283,6 @@ describe('multicastJobsMaker()', () => {
       ]
     `);
 
-    expect(jobs[0].channelUid).toBe(undefined);
-    expect(jobs[0].channelUid).toBe(undefined);
-
     expect(dynamicAPICaller[BULK_API_CALL_GETTER].mock).toHaveBeenCalledTimes(
       2
     );

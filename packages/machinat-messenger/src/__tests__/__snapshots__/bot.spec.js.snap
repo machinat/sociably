@@ -7,7 +7,7 @@ Object {
       "attachmentAssetTag": undefined,
       "attachmentFileData": undefined,
       "attachmentFileInfo": undefined,
-      "channelUid": "messenger._PAGE_ID_.psid.john",
+      "channelUId": "messenger._PAGE_ID_.psid.john",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -31,7 +31,7 @@ Object {
       "attachmentAssetTag": undefined,
       "attachmentFileData": undefined,
       "attachmentFileInfo": undefined,
-      "channelUid": "messenger._PAGE_ID_.psid.john",
+      "channelUId": "messenger._PAGE_ID_.psid.john",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -92,7 +92,7 @@ Object {
           "attachmentAssetTag": undefined,
           "attachmentFileData": undefined,
           "attachmentFileInfo": undefined,
-          "channelUid": "messenger._PAGE_ID_.psid.john",
+          "channelUId": "messenger._PAGE_ID_.psid.john",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -116,7 +116,7 @@ Object {
           "attachmentAssetTag": undefined,
           "attachmentFileData": undefined,
           "attachmentFileInfo": undefined,
-          "channelUid": "messenger._PAGE_ID_.psid.john",
+          "channelUId": "messenger._PAGE_ID_.psid.john",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -195,7 +195,7 @@ Object {
       "attachmentAssetTag": undefined,
       "attachmentFileData": undefined,
       "attachmentFileInfo": undefined,
-      "channelUid": "messenger._PAGE_ID_.psid.john",
+      "channelUId": "messenger._PAGE_ID_.psid.john",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -219,7 +219,7 @@ Object {
       "attachmentAssetTag": undefined,
       "attachmentFileData": undefined,
       "attachmentFileInfo": undefined,
-      "channelUid": "messenger._PAGE_ID_.psid.john",
+      "channelUId": "messenger._PAGE_ID_.psid.john",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -280,7 +280,7 @@ Object {
           "attachmentAssetTag": undefined,
           "attachmentFileData": undefined,
           "attachmentFileInfo": undefined,
-          "channelUid": "messenger._PAGE_ID_.psid.john",
+          "channelUId": "messenger._PAGE_ID_.psid.john",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -304,7 +304,7 @@ Object {
           "attachmentAssetTag": undefined,
           "attachmentFileData": undefined,
           "attachmentFileInfo": undefined,
-          "channelUid": "messenger._PAGE_ID_.psid.john",
+          "channelUId": "messenger._PAGE_ID_.psid.john",
           "request": Object {
             "body": Object {
               "message": Object {

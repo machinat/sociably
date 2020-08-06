@@ -31,7 +31,7 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
 
     jobs.forEach((job, i) => {
       expect(job).toEqual({
-        channelUid: 'messenger._PAGE_ID_.psid.john',
+        channelUId: 'messenger._PAGE_ID_.psid.john',
         request: {
           method: 'POST',
           relative_url: i === 2 ? 'bar/baz' : 'me/messages',
