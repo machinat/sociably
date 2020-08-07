@@ -1,0 +1,3 @@
+{
+  "presets": ["@machinat/babel-preset"]
+}

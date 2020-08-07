@@ -1,7 +1,0 @@
-{
-  "name": "line-trial",
-  "private": true,
-  "dependencies": {
-    "dotenv": "^6.0.0"
-  }
-}

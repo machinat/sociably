@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "babel -d ./lib src",
+    "dev": "babel-node ./src/index.js",
+    "setup": "node ./lib/cli/setup.js",
+    "setup:dev": "babel-node ./src/cli/setup.js",
+    "start": "node ./lib/index.js"
+  },
+  "dependencies": {
+    "@machinat/core": "0.2.0-beta",
+    "@machinat/http": "0.2.0-beta",
+    "@machinat/messenger": "0.2.0-beta",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.1",
+    "@babel/node": "^7.10.5",
+    "@machinat/babel-preset": "0.1.0-beta"
+  }
+}
