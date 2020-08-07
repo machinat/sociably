@@ -3,12 +3,11 @@ import { MESSENGER } from '../constant';
 
 export const EventBase = {
   platform: MESSENGER,
-
-  get user() {
+  isStandby: false,
+  get sender() {
     return this.payload.sender;
   },
-
-  get userId() {
+  get senderId() {
     return this.payload.sender.id;
   },
 };
@@ -36,14 +35,18 @@ export const Text = {
   get text() {
     return this.payload.message.text;
   },
-
-  get quickReply() {
-    return this.payload.message.quick_reply;
-  },
-
   get fallback() {
     const { attachments } = this.payload.message;
     return attachments && attachments[0];
+  },
+};
+
+export const QuickReplyPostback = {
+  get quickReply() {
+    return this.payload.message.quick_reply;
+  },
+  get data() {
+    return this.payload.message.quick_reply.payload;
   },
 };
 
@@ -167,4 +170,8 @@ export const Referral = {
   get referral() {
     return this.payload.referral;
   },
+};
+
+export const Standby = {
+  isStandby: true,
 };

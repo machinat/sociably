@@ -1,6 +1,7 @@
 // @flow
 import {
   text,
+  quickReplyPostback,
   image,
   video,
   audio,
@@ -47,6 +48,10 @@ const hasOwnProperty = (obj, prop) => objectHasOwnProperty.call(obj, prop);
 const createMessageEvent = (payload, isStandby) => {
   const { message } = payload;
   if (hasOwnProperty(message, 'text')) {
+    if (hasOwnProperty(message, 'quick_reply')) {
+      return quickReplyPostback(payload);
+    }
+
     return isStandby
       ? standbyText(payload)
       : message.is_echo

@@ -4,6 +4,7 @@ import {
   EventBase as Base,
   Message,
   Text,
+  QuickReplyPostback,
   NLP,
   Media,
   Location,
@@ -24,6 +25,7 @@ import {
   Postback,
   PreCheckout,
   Referral,
+  Standby,
 } from './mixin';
 import type { MessengerRawEvent, MessengerEvent } from '../types';
 
@@ -41,7 +43,17 @@ const eventFactory = (proto: Object, type: string, subtype?: string) => (
 
 const TextProto = mixin(Base, Message, Text, NLP);
 export const text = eventFactory(TextProto, 'message', 'text');
-export const standbyText = eventFactory(TextProto, 'standby', 'text');
+export const standbyText = eventFactory(
+  mixin(TextProto, Standby),
+  'message',
+  'text'
+);
+
+export const quickReplyPostback = eventFactory(
+  mixin(Base, Message, Text, QuickReplyPostback),
+  'postback',
+  'quick_reply'
+);
 
 const MediaProto = mixin(Base, Message, Media);
 export const image = eventFactory(MediaProto, 'message', 'image');
@@ -49,16 +61,17 @@ export const video = eventFactory(MediaProto, 'message', 'video');
 export const audio = eventFactory(MediaProto, 'message', 'audio');
 export const file = eventFactory(MediaProto, 'message', 'file');
 
-export const standbyImage = eventFactory(MediaProto, 'standby', 'image');
-export const standbyVideo = eventFactory(MediaProto, 'standby', 'video');
-export const standbyAudio = eventFactory(MediaProto, 'standby', 'audio');
-export const standbyFile = eventFactory(MediaProto, 'standby', 'file');
+const StandbyMediaProto = mixin(MediaProto, Standby);
+export const standbyImage = eventFactory(StandbyMediaProto, 'message', 'image');
+export const standbyVideo = eventFactory(StandbyMediaProto, 'message', 'video');
+export const standbyAudio = eventFactory(StandbyMediaProto, 'message', 'audio');
+export const standbyFile = eventFactory(StandbyMediaProto, 'message', 'file');
 
 const LocationProto = mixin(Base, Message, Location);
 export const location = eventFactory(LocationProto, 'message', 'location');
 export const standbyLocation = eventFactory(
-  LocationProto,
-  'standby',
+  mixin(LocationProto, Standby),
+  'message',
   'location'
 );
 
@@ -87,13 +100,12 @@ export const echoedTemplate = eventFactory(
 
 const ReadProto = mixin(Base, Read);
 export const read = eventFactory(ReadProto, 'read');
-export const standbyRead = eventFactory(ReadProto, 'standby', 'read');
+export const standbyRead = eventFactory(mixin(ReadProto, Standby), 'read');
 
 const DeliveryProto = mixin(Base, Delivery);
 export const delivery = eventFactory(DeliveryProto, 'delivery');
 export const standbyDelivery = eventFactory(
-  DeliveryProto,
-  'standby',
+  mixin(DeliveryProto, Standby),
   'delivery'
 );
 
@@ -127,11 +139,11 @@ export const policyEnforcement = eventFactory(
 );
 
 const PostbackProto = mixin(Base, Postback);
-export const postback = eventFactory(PostbackProto, 'postback');
+export const postback = eventFactory(PostbackProto, 'postback', 'button');
 export const standbyPostback = eventFactory(
-  PostbackProto,
-  'standby',
-  'postback'
+  mixin(PostbackProto, Standby),
+  'postback',
+  'button'
 );
 
 export const preCheckout = eventFactory(
