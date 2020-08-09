@@ -223,7 +223,7 @@ Other keywords help you to handle the flow control flow surrounding `PROMPT`. Li
 
 ### Using Containers
 
-Every functional prop of keyword elements can be changed to an asynchronous [container]() version. It helps you to use services like recognizing intent in the dialog flow.
+Every functional prop of keyword elements can be changed to an asynchronous [container](dependency-injection.md#service-container) version. It helps you to use services like recognizing intent in the dialog flow.
 
 ```js
 ...
@@ -311,8 +311,7 @@ Once a script is triggered by `<MyScript.Start />`, all events would be delegate
 
 Overall, the events is handled under a flow like this:
 
-![]()
-
+![Script Saga Flow](assets/script-saga-flow.png)
 
 ### The Saga Pattern
 
@@ -321,3 +320,7 @@ Machinat Script is a saga pattern implementation with the flow keywords sugar. A
 When you write a **script** with keywords, you define a saga that instruct `Processor` how to proceed the dialog. After a saga is triggered, all the contents and `PROMPT`s are promised to be finished before it successfully end or abort.
 
 The major benefit of saga pattern is composing many atomic operations (promptings) into one atomic transaction (a dialog). You only have to declare the flow within script, then start it when you need. The script processor would handle the rest of all.
+
+## Next
+
+Learn how to extend the experience with GUI by integrating a webview in [next section](integration-with-webview.md).

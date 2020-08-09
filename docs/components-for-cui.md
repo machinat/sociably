@@ -7,12 +7,12 @@ Components make your code DRY and help you to build a complex, intelligent and c
 Mastering conversations is difficult! Think about a simple greeting, it might be far more complex than sending a `'Hi!'`. There are some considerations like:
 
 - Bot should greet for the first time met or when user come back after leaving for a while.
-- Choose the words depends on context like: current time, blessing for festivals, how much familiar or some more information about the user.
+- Choose the words depends on context like: current time, blessing for festivals, how much familiar or other user information.
 - Have some randomness like telling a joke sometimes.
 - Continuing the topic from last conversation.
 - Hello in multi-languages.
 
-This is just merely a greeting. Such the issues might happen anywhere else in the conversations. That's why we need components to encapsulate these detailed conversational UI logic.
+This is just merely a greeting. Such the issues might happen anywhere else in the conversations. That's why we need components to encapsulate these detailed conversational logic.
 
 Components let you split the UI into independent, reusable pieces, and think about each piece in isolation.
 
@@ -196,3 +196,5 @@ If you are interested about the theory behind, check [Cognitive Linguistics](htt
 
 
 ## Next
+
+By now you know about the core mechanism of Machinat for building CUI. Lean how to use more utilities with dependency injection in [next section](dependency-injection.md).

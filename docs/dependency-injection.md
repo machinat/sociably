@@ -65,7 +65,7 @@ const fooBarContainer = container({
 
 In the example above, the `container` helper annotate the `fooBarContainer` function needs two dependencies `FooI` and `BarI`. The `foo` and `bar` instances will be injected later into the container while running.
 
-Machinat by default support dependencies injection for event/error handlers and components (experimental). It could also work in [`@machinat/script`](docs/staged-dialog.md) and [`x-machinat`](docs/reactive-programming.md).
+Machinat by default support dependencies injection for event/error handlers and components (experimental). It could also work in [`@machinat/script`](staged-dialog.md) and [`x-machinat`](reactive-programming.md).
 
 ### Container Handler
 
@@ -323,3 +323,7 @@ app.onEvent(
 The `Base` module provide a set of common interfaces for modules to register their implementation. In the example above, `Base.UserProfilerI` is used to fetch the user profile if it is provided by the current platform.
 
 This lets you use a cross-platform utility  without requiring implementations of every platforms.
+
+## Next
+
+Learn how to use intent recognition service in [next section](recognizing-intent.md).

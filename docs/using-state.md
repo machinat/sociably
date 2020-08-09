@@ -149,3 +149,7 @@ const favorOfAll = await stateController
 ```
 
 For example each `AssetManager` of official platform modules stores the assets id mapping in global state.
+
+## Next
+
+Learn how to make more complex dialog flow in [next section](staged-dialog.md)

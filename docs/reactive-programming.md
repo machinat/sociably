@@ -8,7 +8,7 @@ Reactive programming is a declarative programming paradigm to handle asynchronou
 
 ### Handling Events as Stream
 
-A conversation can be treated as a stream, where expressions between people flows within a period of time. So reactive programming can naturally handle the conversation behavior and the the derived asynchronous tasks.
+A conversation can be treated as a stream, where expressions between people flows in a period of time. So reactive programming can naturally handle the conversation behavior and the the derived asynchronous tasks well.
 
 For example, continuous messages in a moment should be treated as one. In a callback style model, this require some additional works. But in reactive programming, this can be solved with a simple streaming operator like `Buffer`.
 
@@ -21,7 +21,7 @@ For example, continuous messages in a moment should be treated as one. In a call
 
 `X-Machinat` is an extensional library to experiment reactive programming with conversational UI/UX. Consider an application flow for simple CRUD actions like:
 
-![]()
+![Example App Control Flow](assets/example-app-control-flow.png)
 
 It can be described in a reactive programming way like this:
 
@@ -110,8 +110,8 @@ But development of applications need to handle many detailed UI/UX logic, and re
 
 So could there be a monolithic way to have a message queue powered reactive programming lib for building UI/UX? There is actually a prior art on Java, the [_Kafka Stream_](https://kafka.apache.org/documentation/streams/) based on [_Apache Kafka_](https://kafka.apache.org/). The streaming operations are backed with external message queue to match the guarantees describe above.
 
-## Plan
+## Our Plan
 
 _X-Machinat_ aims to provide message queue backed reactive programming control flow for Machinat apps. And hopefully the streaming utilities can be extracted out as an independent library for general purpose.
 
-If you are interested, check the package [readme]() for the usage and development schedule.
+If you are interested, check the package [readme](https://github.com/machinat/x-machinat) for the usage and development schedule.

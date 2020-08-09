@@ -30,7 +30,7 @@ JSX, which has proved to be an extraordinary tool to build GUI, could benefit us
 
 Consider the following dialogue in a chat room:
 
-![]()
+![Example Message as view](assets/example-message-as-view.png)
 
 As you see a dialogue is usually proceed by a collection of messages each time, let's call them an *expression*. In Machinat, an expression is the atomic unit for sending. You don't have to call many API to make the expression, the upper example can be made by:
 
@@ -38,7 +38,7 @@ As you see a dialogue is usually proceed by a collection of messages each time, 
 bot.render(
   channel,
   <>
-    This is my cat.
+    This is my cat!
     <img src="http://foo.bar/cat.jpg" />
     Do you like it?
   </>
@@ -110,8 +110,6 @@ Cross-platform is a big issue for chatbot because of the fact that there is no d
 
 In the case above, the `<video ... />` element is a general API that can be sent to all platforms. The `<Messenger.Video ... />` element is a native API only works in `messenger` platform.
 
-We will discuss more about how to make a cross-platform expression in the [next section](docs/rendering-elements.md).
-
 ## Next
 
-In next section [Rendering Elements](docx/rendering-elements.md), we'll show you how the message made with JSX being rendered then sent.
+Learn how the messages composed with JSX syntax being rendered then sent in [next section](rendering-elements.md).

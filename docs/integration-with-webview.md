@@ -1,12 +1,14 @@
-# Integrate with WebView
+# Integrate with Webview
 
-CUI brings us a new way to communicate with user, but it's not a replacement of GUI totally. GUI is still outperforming especially on the operations need precision, instant interactions or multitasking in an app.
+CUI brings us a new way to communicate with users, but it's not a replacement of GUI totally. GUI is still outperforming to control the operations need precision, instant interactions or multitasking in an app.
 
-The best practice we suggest is a hybrid experience combining the advantage of both. While CUI is easy to use, easy to broadcast and more closed to the user, GUI can be used to provide more enriched and advanced features.
+The best practice we suggest is a hybrid experience combining the advantage of both. While CUI is easy to use, easy to broadcast and more closed to the user, GUI can be used to provide more advanced and complicated features.
 
 ## WebView and WebSocket
 
-Opening an web page is the simplest way extend chat experience with GUI. Machinat have a `websocket` platform to provide event-based communication between your webview client and server:
+Opening an web page is the simplest way extend chat experience with GUI. Machinat have a `websocket` platform to provide event-based communication between your webview client and server.
+
+Add the `WebSocket` as a platform like this:
 
 ```js
 import Machinat from '@machinat/core'
@@ -25,7 +27,7 @@ const app = Machinat.createApp({
 
 ### Handle Events in Server
 
-Receiving event from the webview clients is the same as other platforms:
+Now you can receive event from the client in webviews as other platforms:
 
 ```js
 app.onEvent(async context => {
@@ -56,7 +58,7 @@ The `event` contains `type`, `subtype` and `payload` sent from clients, you are 
 - `subtype` - optional, `string`
 - `payload` - optional, `any`
 
-### In WebView Client
+### Client Side
 
 In the client side, you can easily communicate with server with:
 
@@ -79,15 +81,23 @@ client.onEvent(({ event }) => {
 })
 ```
 
-Callback pass to `client.onEvent` receive a similar context as server-side app, but contains only `event`, `channel` and `user` property. The `'connect'` and `'disconnect'` event would also be emitted when connected/disconnected.
+Callback pass to `client.onEvent` would receive a similar context as server-side app, but contains only `event`, `channel` and `user` properties. The `'connect'` and `'disconnect'` event would also be emitted when connected/disconnected.
 
-`client.send(event)` receive an event object and send it to server. You don't have to wait `'connect'` event for sending, events would be queued before connection made and fire after it.
+`client.send(event)` take an event object parameter like `bot.send()` and send it to the server. You don't have to wait `'connect'` event for sending, events would be queued before connection made and fire after it.
 
-## Integrate with other Platform
+### Serve the Web App
 
-Now you are able to communicate with Machinat app from web. But to make the page as an extended view of chatroom, you have to integrate `websocket` with other chat platforms.
+You are free to choose any way to build and serve the web app. But if you are using React and Next.js for server rendering, you can use [`@machinat/next`](../packages/machinat-next) to serve a Next.js server along with your Machinat app.
 
-First need to add some more services in the app:
+## Integrate Authorization
+
+Now you are able to communicate with Machinat app from web. But to make the web page as an extended view of chatroom, you have to integrate the authorization with the original chat platforms.
+
+With the auth information, you are able to provide chatroom/user scoped features or data in your webview. For example: memos for chatroom, cooperative whiteboard or even multi-player games in a chat group.
+
+### Auth Module and Authorizers
+
+First you have to add some more services like:
 
 ```js
 import Machinat from '@machinat/core'
@@ -117,7 +127,7 @@ const app = Machinat.createApp({
 })
 ```
 
-The `Auth` module provide an united interface to authorize users at web page with the platform they come from. Then we can register `Auth.AUTHORIZERS_I` with authorizer plugins from the chat platforms. Finally, register `WebSocket.AUTHENTICATOR_I` with `useAuthController` to connect `Auth` module.
+The `Auth` module provide an interface to authorize users with the chat platform they come from. Then register `Auth.AUTHORIZERS_I`interface with the authorizers provided by supported chat platforms. Finally, register `WebSocket.AUTHENTICATOR_I` with `useAuthController` adapter to connect with `Auth` module.
 
 And in the client:
 
@@ -150,13 +160,13 @@ const client = new WebSocketClient({
 authController.bootstrap();
 ```
 
-First we initiate an `AuthController` with the authorizer plugins of chat platforms. Then bind it the `authorize` option of websocket client with `useAuth`.
+First we initiate an `AuthController` with the authorizers of supported chat platforms. Then bind it the `authorize` option of websocket client with the `useAuth` adapter.
 
-The final step is to call `authController.bootstrap(platform)`, this initiate necessary works of the platform specified. If the platform argument is omitted, `platform` param in querystring is used.
+The final step is to call `authController.bootstrap(platform)`, it initiate necessary works to register user on the specified platform. If the platform argument is omitted, `platform` param in querystring is used.
 
-### Get Auth Info of Event
+### Get Auth Information
 
-After setup, the `user` would be set to the chat platform user instead of `null`. And more info about auth can be found at `metadata.auth`:
+After setup, the `user` would be set to the chat platform user instead of `null` while receiving `WebSocket` events. And more info about auth can be found at `metadata.auth`:
 
 
 ```js
@@ -181,16 +191,14 @@ app.onEvent(container({
 }));
 ```
 
-The example above will send a message to the source chatroom when user opens a webview in it. The `metadata.auth` has following informations:
+The example above sends a message to the source chatroom when user opens a webview in it. The `metadata.auth` object contains the following information:
 
 - `platform` - `string`, source platform name.
-- `user` - `object`, user from source platform.
-- `channel` - `null | object`, the source channel user comes from.
+- `user` - `object`, the user from source platform.
+- `channel` - `null | object`, the source channel user comes from. The value would be `null` if not able to determine.
 - `loginAt` - `Date`, the time user logged in.
 - `expireAt` - `Date`, the time auth would expired.
 - `data` - `any`, raw auth data from chat platform.
-
-This is useful to provide chatroom/user scoped features or data in your webview. For example: share memos with friends, a cooperative whiteboard or even multi-player board games.
 
 ## Broadcast by Topic
 
@@ -219,7 +227,7 @@ bot.unsubscribeTopic(channel, 'foo_topic');
 
 ## Send by User
 
-Since an user can opens many webview at a time, you might want keep the content of all webviews consistent. You can use `bot.sendUser` for sending to all the clients logged in as the same user.
+Since an user can opens many webviews at a time, you might want keep the content of all webviews consistent. Use the `bot.sendUser(user, event)` for sending to all the clients logged in as the same user.
 
 ```js
 app.onEvent(async context => {
@@ -233,3 +241,7 @@ app.onEvent(async context => {
   }
 });
 ```
+
+## Next
+
+Learn how to build the application control flow with reactive programming in [next section](reactive-programming.md).

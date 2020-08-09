@@ -18,7 +18,7 @@ The event context is a plain object containing the following properties:
 
 - `platform` - `string`, the platform name.
 
-- `event` - `object`, represent the event has happened. Despite the basic properties listed here, there are some [standard mixins]() interface on specific type/subtype of event.
+- `event` - `object`, represent the event has happened. Despite the basic properties listed here, there are some [standard mixins](#standard-event-mixins) interface on specific type/subtype of event.
   - `platform` - `string`, platform the event belongs to.
   - `type` - `string`, the platform defined event type.
   - `subtype` - `string`,  the platform defined event subtype.
@@ -41,17 +41,17 @@ The event context is a plain object containing the following properties:
 
 - `bot` - `null | object`, bot corresponded to the platform. If the platform doesn't support replying, the value would be null.
   - `platform` - `string`, platform the channel belongs to.
-  - `render(channel, message)` - `function`, reply message to the channel.  Check [_Rendering Elements_](docs/rendering-elements.md) for more usage guides.
+  - `render(channel, message)` - `function`, reply message to the channel.  Check [_Rendering Elements_](rendering-elements.md) for more usage guides.
     - `channel` - `object`, the channel object from `context.chareceivednnel`.
     - `message` - `string | element`, the message to reply.
 
 ### The Channel
 
-_Channel_ is a special abstraction in Machinat, it refer to an unique location which an event is happen at. It might be a chat thread, a WebSocket connection or something else depends on platform implementation.
+_Channel_ is a special abstraction in Machinat, it refer to an unique location which an event is happen at. It could be a chat thread, a WebSocket connection or something else depends on platform implementation.
 
-The `uid` of a channel is an unique string that should be unique across all the platforms. Since it's unique, it can be used as the key while storing data like session state.
+The `uid` of a channel is an unique string that would promised to be unique across all the platforms. Since it's unique, it can be used as the key while storing data like conversation state.
 
-The channel is also being used as the target to send reaction back with `bot.render()`.
+The channel is also being used as the target to send action back with `bot.render()`.
 
 ### Standard Event Mixins
 
@@ -84,7 +84,7 @@ Here we define some common event types and the standard mixins for them. The mix
   -  `type` - `'postback'`
   -  `data` - `string`, the postback data received.
 
-Each platform might have their own mixins on the event, check docs of platform module for details.
+Each platform might have their own mixins on the event, check the docs of platform module for details.
 
 ### Strategies for Multiple Platforms
 
@@ -92,7 +92,7 @@ To sum up a little bit, here are some strategies for you to handle events from m
 
 1. **By branches**: check `context.platform` to have different reaction logic for different platforms.
 2. **Use standard event mixin**: reply to specific message type with the information get from standard mixin.
-3. **Cross-platform UI**: reply with a string or an element that is safe for cross-platform. We will discuss more about this at [_Rendering Elements_](docs/rendering-elements.md) later.
+3. **Cross-platform UI**: reply with a string or an element that is safe for cross-platform. We will discuss more about this at [_Rendering Elements_](rendering-elements.md) later.
 
 Let's put them together:
 
@@ -139,4 +139,4 @@ app.onError(err => {
 
 ## Next
 
-Now you should able to make a simple _hello world_ bot work! Next section will show you how to make a more enriched reply using [JSX](docs/introducing-jsx.md).
+Learn how to make rich expressions with _JSX_ in [next section](introducing-jsx.md).

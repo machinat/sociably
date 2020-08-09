@@ -1,6 +1,6 @@
 # Rendering Elements
 
-In Machinat, **Bot** is an abstraction which in charge of dispatching actions to a [channel](). Depends on the platform it belongs to, it can send message to a chatroom, emit event to a webview or reply on voice assistant.
+In Machinat, **Bot** is an abstraction which in charge of dispatching actions to a [channel](receiving-events.md#the-channel). Depends on the platform it belongs to, it can send message to a chatroom, emit event to a webview or reply on voice assistant.
 
 ### `Bot#render(channel, message)`
 
@@ -33,10 +33,6 @@ bot.render(
   </>
 );
 ```
-
-The message above is rendered into three messaging actions look like:
-
-![]()
 
 When you call `render` with a fragment, all the actions rendered from the message will be sent in order. Bot would dispatch message as an atomic operation. All you need to do is focusing on the UI!
 
@@ -150,4 +146,4 @@ The `delayOneSec` function will be called and awaited between actions. This woul
 
 ## Next
 
-In [next section](docs/components-for-cui.md), we will introduce how to modularize CUI with **component**.
+Learn how to modularize CUI with **component** in [next section](components-for-cui.md).

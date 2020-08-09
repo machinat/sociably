@@ -56,7 +56,7 @@ yarn add @machinat/core @machinat/http
 
 ### Platforms
 
-Platform modules would listen to external events from sources like webhook, then emit the events through the app. They also provide utilities to make reaction if possible.
+Platform modules listen to external events from sources like webhook, then emit the events through the app. They also provide utilities to make reaction if possible.
 
 You are free to pick any platforms you need to communicate with. The example app above subscribe events from 2 platforms: `Messenger` and `Line`. Install the platform module packages like:
 
@@ -68,10 +68,10 @@ yarn add @machinat/messenger @machinat/line # ...
 
 For now we support the platforms listed below, please check the readme of the package for the usage guide.
 
-- Messenger - [`@machinat/messenger`](packages/machinat-messenger), receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
-- LINE - [`@machinat/line`](packages/machinat-line), receive/send messages as a [LINE](https://line.me) official account.
-- Next.js - [`@machinat/next`](packages/machinat-next), serve your web app with [Next.js](https://nextjs.org/).
-- WebSocket - [`@machinat/websocket`](packages/machinat-websocket), connect to the web front-end with [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
+- Messenger - [`@machinat/messenger`](../packages/machinat-messenger), receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
+- LINE - [`@machinat/line`](../packages/machinat-line), receive/send messages as a [LINE](https://line.me) official account.
+- Next.js - [`@machinat/next`](../packages/machinat-next), serve your web app with [Next.js](https://nextjs.org/).
+- WebSocket - [`@machinat/websocket`](../packages/machinat-websocket), connect to the web front-end with [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
 
 ## Enabling JSX
 
@@ -83,7 +83,7 @@ import Machinat from '@machinat/core';
 const greeting = <p>Hello World!</p>;
 ```
 
-If you are not familiar with transpiling JavaScript, we recommend [Babel.js](https://babeljs.io/docs/en/) for beginners. Check [this example]() about how to set up the project.
+If you are not familiar with transpiling JavaScript, we recommend [Babel.js](https://babeljs.io/docs/en/) for beginners. Check [this example](../examples/cross-platform) about how to set up the project.
 
 ### With Babel
 
@@ -160,4 +160,4 @@ app
 
 ## Next
 
-Now you are able to make your first app run! The next section will guide you how to [Receive Events](docs/receive-event.md) and handle them.
+Learn how to receive and handle events in [next section](receiving-events.md).

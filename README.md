@@ -1,8 +1,9 @@
-# Machinat
+<h1 align="center">
+  <img width="600" src="media/logo.svg" alt="Machinat" />
+  <br/>
+</h1>
 
 > Conversational UI Framework for The Future
-
-<br />
 
 Machinat is a declarative, progressive and cross-platform JavaScript framework for building conversational UI/UX.
 
@@ -22,7 +23,7 @@ Machinat is a declarative, progressive and cross-platform JavaScript framework f
 
 - Develop interactive Q&A dialog flow in flexible [_Script_](docs/stage-dialog.md).
 
-- Make hybrid experience of CUI and GUI by integrating webview within the chatroom.
+- Make hybrid experience of CUI and GUI by integrating webview within the chat platform.
 
 - Standard interfaces for external services, include accessing state data and intent recognizing.
 
@@ -40,16 +41,16 @@ Machinat is a declarative, progressive and cross-platform JavaScript framework f
   - [Components for CUI](docs/components-for-cui.md)
 
 - Advanced topic
-  - [Dependencies Injection](docs/dependencies-injection.md)
-  - [Using State](docs/using-state.md)
+  - [Dependency Injection](docs/dependency-injection.md)
   - [Recognizing Intent](docs/recognizing-intetn.md)
+  - [Using State](docs/using-state.md)
   - [Staged Dialog](docs/stage-dialog.mddocs/stage-dialog.md)
   - [Integration with Webview](docs/integration-with-webview.md)
   - [Reactive Programming](docs/reactive-programming.md)
 
 ## Platforms
 
-Platforms are sources that app would receive events from and make reactions to. Machinat is flexible enough to works as a hub to communicate to all the channels, including instant messaging, voice assistant, SMS, e-mail, terminal console or any other event-based sources.
+Platforms are sources where events come from and possibly you can make reactions to. Machinat works like as a hub to communicate to all the channels, including instant messaging, voice assistant, SMS, e-mail, terminal console or any other event-based sources.
 
 The following platforms are officially supported for now:
 
@@ -95,9 +96,9 @@ Machinat.createApp({
 
 The code above start a server on port 8080 listening to the webhooks from _Messenger_. Each time receive an event, it replies to user like this:
 
-![]()
+![Hello Messages](media/example-message.png)
 
-The HTML like syntax is called JSX, you might have seen it in some fornt-end framework like [React.js](https://reactjs.org/docs/introducing-jsx.html) or [Vue.js](https://vuejs.org/v2/guide/render-function.html#JSX). But instead of being rendered into HTML in a web page, it's rendered into a chatroom of the messaging platform or somewhere else the conversation is happening.
+The HTML like syntax is called JSX, you might have seen it in some fornt-end framework like [React.js](https://reactjs.org/docs/introducing-jsx.html) or [Vue.js](https://vuejs.org/v2/guide/render-function.html#JSX). But instead of being rendered into HTML in a web page, it's rendered into a chatroom or somewhere else the conversation is happening.
 
 ## Philosophy
 
@@ -116,3 +117,5 @@ The HTML like syntax is called JSX, you might have seen it in some fornt-end fra
   With Machinat all the greeting logic can be encapsulated into a reusable `Hello` component. Components help to build conversational UI/UX in many aspects, including identical character, composing complex expressions and more skillful talk.
 
 ## Compare
+
+WIP
