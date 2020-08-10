@@ -14,7 +14,7 @@ import type { MessengerJob, MessengerResult, BatchAPIRequest } from './types';
 type MessengerJobResponse = JobResponse<MessengerJob, MessengerResult>;
 type MessengerQueue = MachinatQueue<MessengerJob, MessengerResult>;
 
-const ENTRY = 'https://graph.facebook.com/v3.3/';
+const ENTRY = 'https://graph.facebook.com/v7.0/';
 
 const GET = 'GET';
 const POST = 'POST';

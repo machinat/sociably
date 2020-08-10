@@ -51,7 +51,7 @@ it('call to graph api', async () => {
 
   const bodySpy = moxy(() => true);
 
-  const scope = graphAPI.post('/v3.3/', bodySpy).reply(
+  const scope = graphAPI.post('/v7.0/', bodySpy).reply(
     200,
     JSON.stringify(
       new Array(3).fill({
@@ -113,7 +113,7 @@ it('attach appsecret_proof if appSecret option given', async () => {
 
   const bodySpy = moxy(() => true);
 
-  const scope = graphAPI.post('/v3.3/', bodySpy).reply(
+  const scope = graphAPI.post('/v7.0/', bodySpy).reply(
     200,
     JSON.stringify(
       new Array(3).fill({
@@ -155,7 +155,7 @@ it('upload files with form data if binary attached on job', async () => {
 
   const scope = graphAPI
     .matchHeader('content-type', /multipart\/form-data.*/)
-    .post('/v3.3/', bodySpy)
+    .post('/v7.0/', bodySpy)
     .reply(
       200,
       JSON.stringify(
@@ -264,7 +264,7 @@ it('throw if connection error happen', async () => {
   const worker = new MessengerWorker('_graph_api_access_token_', 0);
 
   const scope = graphAPI
-    .post('/v3.3/')
+    .post('/v7.0/')
     .replyWithError('something wrong like connection error');
 
   worker.start(queue);
@@ -272,7 +272,7 @@ it('throw if connection error happen', async () => {
 Object {
   "batch": null,
   "errors": Array [
-    [FetchError: request to https://graph.facebook.com/v3.3/ failed, reason: something wrong like connection error],
+    [FetchError: request to https://graph.facebook.com/v7.0/ failed, reason: something wrong like connection error],
   ],
   "success": false,
 }
@@ -284,7 +284,7 @@ Object {
 it('throw if api error happen', async () => {
   const worker = new MessengerWorker('_graph_api_access_token_', 0);
 
-  const scope = graphAPI.post('/v3.3/').reply(400, {
+  const scope = graphAPI.post('/v7.0/').reply(400, {
     error: {
       message: 'The access token could not be decrypted',
       type: 'OAuthException',
@@ -310,7 +310,7 @@ Object {
 it('throw if one single job fail', async () => {
   const worker = new MessengerWorker('_graph_api_access_token_', 0);
 
-  const scope = graphAPI.post('/v3.3/').reply(
+  const scope = graphAPI.post('/v7.0/').reply(
     200,
     JSON.stringify([
       {
@@ -352,7 +352,7 @@ it('waits consumeInterval for jobs to execute if set', async () => {
   const worker = new MessengerWorker('_graph_api_access_token_', 300);
 
   const bodySpy = moxy(() => true);
-  const scope = graphAPI.post('/v3.3/', bodySpy).reply(
+  const scope = graphAPI.post('/v7.0/', bodySpy).reply(
     200,
     JSON.stringify(
       new Array(9).fill({
@@ -395,7 +395,7 @@ it.each([undefined, 0])(
 
     const bodySpy = moxy(() => true);
     const scope = graphAPI
-      .post('/v3.3/', bodySpy)
+      .post('/v7.0/', bodySpy)
       .times(3)
       .delay(50)
       .reply(
@@ -435,7 +435,7 @@ it('place params at query if DELETE job met', async () => {
   const bodySpy = moxy(() => true);
 
   const scope = graphAPI
-    .post('/v3.3/', bodySpy)
+    .post('/v7.0/', bodySpy)
     .reply(
       200,
       JSON.stringify([

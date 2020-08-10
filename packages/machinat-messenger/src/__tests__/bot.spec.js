@@ -48,7 +48,7 @@ let graphAPI;
 const bodySpy = moxy(() => true);
 
 beforeEach(() => {
-  graphAPI = nock('https://graph.facebook.com').post('/v3.3/', bodySpy);
+  graphAPI = nock('https://graph.facebook.com').post('/v7.0/', bodySpy);
   bodySpy.mock.clear();
   Engine.mock.clear();
   Renderer.mock.clear();
