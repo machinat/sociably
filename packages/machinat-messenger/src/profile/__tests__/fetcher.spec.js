@@ -65,10 +65,7 @@ test('fetch profile from api and cache it', async () => {
   expect(bot.dispatchAPICall.mock.calls[0].args).toMatchInlineSnapshot(`
     Array [
       "GET",
-      "_USER_ID_",
-      Object {
-        "fields": "id,name,first_name,last_name,profile_pic",
-      },
+      "_USER_ID_?fields=id,name,first_name,last_name,profile_pic",
     ]
   `);
 
@@ -167,10 +164,7 @@ it('query additional optionalProfileFields if given', async () => {
   expect(bot.dispatchAPICall.mock.calls[0].args).toMatchInlineSnapshot(`
     Array [
       "GET",
-      "_USER_ID_",
-      Object {
-        "fields": "locale,timezone,gender,id,name,first_name,last_name,profile_pic",
-      },
+      "_USER_ID_?fields=locale,timezone,gender,id,name,first_name,last_name,profile_pic",
     ]
   `);
 

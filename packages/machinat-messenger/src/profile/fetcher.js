@@ -30,19 +30,20 @@ class MessengerUserProfiler implements UserProfilerI {
   bot: MessengerBot;
   stateController: null | StateControllerI;
   profileCacheTime: number;
-  _fields: string[];
+  _fieldsParam: string;
 
   constructor(
     bot: MessengerBot,
     stateController: null | StateControllerI,
-    { profileCacheTime, optionalProfileFields }: ProfilerOptions = {}
+    { profileCacheTime, optionalProfileFields = [] }: ProfilerOptions = {}
   ) {
     this.bot = bot;
     this.stateController = stateController;
     this.profileCacheTime = profileCacheTime || 86400000;
-    this._fields = optionalProfileFields
-      ? [...optionalProfileFields, ...DEFAULT_PROFILE_FIELDS]
-      : DEFAULT_PROFILE_FIELDS;
+    this._fieldsParam = [
+      ...optionalProfileFields,
+      ...DEFAULT_PROFILE_FIELDS,
+    ].join(',');
   }
 
   async fetchProfile(user: MessengerUser): Promise<MessengerUserProfile> {
@@ -56,9 +57,10 @@ class MessengerUserProfiler implements UserProfilerI {
       }
     }
 
-    const response = await this.bot.dispatchAPICall('GET', user.id, {
-      fields: this._fields.join(','),
-    });
+    const response = await this.bot.dispatchAPICall(
+      'GET',
+      `${user.id}?fields=${this._fieldsParam}`
+    );
     const rawProfile: MessengerRawUserProfile = response.results[0].body;
 
     if (this.stateController) {
