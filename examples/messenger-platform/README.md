@@ -49,10 +49,11 @@ yarn run setup
 yarn start
 ```
 
-5. At the messenger setting page in Facebook app dashboard, set up the webhook with these information:
+5. Subscribe `messages` and `messaging_postbacks` events of the page at the messenger setting in the Facebook app dashboard.
+
+6. Set up the webhook url at the messenger setting with these information:
   - The ngrok https tunnel url from step 3.
   - The verifying token set in step 2.
-
 
 The chatbot should work in Messenger platform now.
 

@@ -3,7 +3,7 @@ import {
   Expression,
   QuickReply,
   PostbackAction,
-} from '@machinat/messenger/components';
+} from '@machinat/line/components';
 import { GIMME_FOX_KEY } from '../constant';
 
 const Hello = ({ name }) => {
@@ -11,7 +11,7 @@ const Hello = ({ name }) => {
     <Expression
       quickReplies={
         <QuickReply
-          action={<PostbackAction title="🦊💕" payload={GIMME_FOX_KEY} />}
+          action={<PostbackAction label="🦊💕" data={GIMME_FOX_KEY} />}
         />
       }
     >

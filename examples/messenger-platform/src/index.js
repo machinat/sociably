@@ -6,8 +6,7 @@ import dotenv from 'dotenv';
 import { GET_STARTED_KEY, GIMME_FOX_KEY } from './constant';
 import Hello from './components/Hello';
 import ReplyMessage from './components/ReplyMessage';
-import RandomFoxImage from './components/RandomFoxImage';
-import WithFoxButton from './components/WithFoxButton';
+import FoxCard from './components/FoxCard';
 
 dotenv.config();
 
@@ -25,6 +24,13 @@ const app = Machinat.createApp({
       accessToken: ENV.MESSENGER_ACCESS_TOKEN,
       appSecret: ENV.MESSENGER_APP_SECRET,
       verifyToken: ENV.MESSENGER_VERIFY_TOKEN,
+      dispatchMiddlewares: [
+        async (frame, next) => {
+          const r = await next(frame);
+
+          return r;
+        },
+      ],
     }),
   ],
 });
@@ -40,12 +46,7 @@ app.onEvent(
         await bot.render(channel, <Hello name={profile.name} />);
       } else if (event.data === GIMME_FOX_KEY) {
         // More fox button pressed
-        await bot.render(
-          channel,
-          <WithFoxButton>
-            <RandomFoxImage />
-          </WithFoxButton>
-        );
+        await bot.render(channel, <FoxCard />);
       }
     }
 

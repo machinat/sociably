@@ -1,6 +1,5 @@
 import Machinat from '@machinat/core';
-import WithFoxButton from './WithFoxButton';
-import RandomFoxImage from './RandomFoxImage';
+import FoxCard from './FoxCard';
 
 const ReplyMessage = ({ text, unknown, image }) => {
   let words;
@@ -18,10 +17,10 @@ const ReplyMessage = ({ text, unknown, image }) => {
   }
 
   return (
-    <WithFoxButton>
+    <>
       <p>{words}</p>
-      <RandomFoxImage />
-    </WithFoxButton>
+      <FoxCard />
+    </>
   );
 };
 
