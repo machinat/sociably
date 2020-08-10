@@ -17,7 +17,7 @@
     "./queue": "./lib/queue/index.js",
     "./renderer": "./lib/renderer/index.js",
     "./service": "./lib/service/index.js",
-    "./base/": "./lib/base/",
+    "./base": "./lib/base/index.js",
     "./iterator/": "./lib/iterator/",
     "./utils/": "./lib/utils/"
   },

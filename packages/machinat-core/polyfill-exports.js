@@ -11,6 +11,6 @@ fs.symlinkSync('./lib/engine/index.js', './engine.js');
 fs.symlinkSync('./lib/queue/index.js', './queue.js');
 fs.symlinkSync('./lib/renderer/index.js', './renderer.js');
 fs.symlinkSync('./lib/service/index.js', './service.js');
-fs.symlinkSync('./lib/base', './base');
+fs.symlinkSync('./lib/base/index.js', './base.js');
 fs.symlinkSync('./lib/iterator', './iterator');
 fs.symlinkSync('./lib/utils', './utils');
