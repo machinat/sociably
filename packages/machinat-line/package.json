@@ -26,6 +26,9 @@
     "postinstall": "./polyfill-exports.js"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "invariant": "^2.2.4",
     "node-fetch": "^2.6.0",

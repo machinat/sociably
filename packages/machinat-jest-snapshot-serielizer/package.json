@@ -18,6 +18,9 @@
     "README.md"
   ],
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "@machinat/core": "^0.2.0-alpha.2"
   }

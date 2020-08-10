@@ -18,6 +18,9 @@
     "README.md"
   ],
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "invariant": "^2.2.4"
   },
