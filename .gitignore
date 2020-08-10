@@ -1,4 +1,4 @@
-packages/*/lib/*
+lib
 
 # Logs
 logs

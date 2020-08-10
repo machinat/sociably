@@ -1,18 +1,15 @@
 import Machinat from '@machinat/core';
-import { Expression, QuickReply } from '@machinat/messenger/components';
-import { GIMME_FOX_KEY } from '../constant';
+import WithFoxButton from './WithFoxButton';
 
 const Hello = ({ name }) => {
   return (
-    <Expression
-      quickReplies={<QuickReply title="🦊💕" payload={GIMME_FOX_KEY} />}
-    >
+    <WithFoxButton replyTitle="🦊💕">
       <p>
         Hello {name}!
         <br />
         Do you like fox?
       </p>
-    </Expression>
+    </WithFoxButton>
   );
 };
 

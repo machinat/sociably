@@ -1,13 +1,12 @@
 import Machinat from '@machinat/core';
-import container from '@machinat/core/service';
+import { container } from '@machinat/core/service';
 import HTTP from '@machinat/http';
 import Line from '@machinat/line';
 import dotenv from 'dotenv';
-import { GET_STARTED_KEY, GIMME_FOX_KEY } from './constant';
+import { GIMME_FOX_KEY } from './constant';
 import Hello from './components/Hello';
 import FoxCard from './components/FoxCard';
-import ReplyText from './components/ReplyText';
-import ReplyUnknown from './components/ReplyUnknown';
+import ReplyMessage from './components/ReplyMessage';
 
 dotenv.config();
 
@@ -33,28 +32,27 @@ app.onEvent(
   container({
     deps: [Line.UserProfiler],
   })((profiler) => async ({ bot, channel, event, user }) => {
-    if (event.type === 'postback') {
-      if (event.data === GET_STARTED_KEY) {
-        const profile = await profiler.fetchProfile(user);
-        return bot.render(channel, <Hello name={profile.name} />);
-      }
+    if (event.type === 'follow') {
+      const profile = await profiler.fetchProfile(user);
+      await bot.render(channel, <Hello name={profile.name} />);
+    }
 
-      if (event.data === GIMME_FOX_KEY) {
-        return bot.render(channel, <FoxCard />);
-      }
+    if (event.type === 'postback' && event.data === GIMME_FOX_KEY) {
+      await bot.render(channel, <FoxCard />);
     }
 
     if (event.type === 'message') {
-      if (event.subtype === 'text') {
-        return bot.render(channel, <ReplyText text={event.text} />);
-      }
-
-      if (event.subtype === 'image') {
-        return bot.render(channel, <FoxCard />);
-      }
+      await bot.render(
+        channel,
+        event.subtype === 'text' ? (
+          <ReplyMessage text={event.text} />
+        ) : event.subtype === 'image' ? (
+          <ReplyMessage image />
+        ) : (
+          <ReplyMessage unknown />
+        )
+      );
     }
-
-    return bot.render(channel, <ReplyUnknown />);
   })
 );
 

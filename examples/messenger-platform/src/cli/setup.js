@@ -8,7 +8,7 @@ dotenv.config();
 const ENV = process.env;
 
 const app = Machinat.createApp({
-  plaforms: [
+  platforms: [
     Messenger.initModule({
       pageId: ENV.MESSENGER_PAGE_ID,
       accessToken: ENV.MESSENGER_ACCESS_TOKEN,
@@ -21,15 +21,17 @@ const app = Machinat.createApp({
 app.start().then(async () => {
   const [bot] = app.useServices([Messenger.Bot]);
 
-  bot.dispatchAPICall('POST', 'me/messenger_profile', {
+  await bot.dispatchAPICall('POST', 'me/messenger_profile', {
     get_started: {
       payload: GET_STARTED_KEY,
     },
     greeting: [
       {
         locale: 'default',
-        text: 'Example Messenger App',
+        text: 'Example Fox App',
       },
     ],
   });
+
+  console.log('Finish setup page in Messenger.');
 });

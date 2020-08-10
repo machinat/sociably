@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { ButtonTemplate, PostbackAction } from '@machinat/line/compnents';
+import { ButtonTemplate, PostbackAction } from '@machinat/line/components';
 import { GIMME_FOX_KEY } from '../constant';
 
 const FoxCard = () => {

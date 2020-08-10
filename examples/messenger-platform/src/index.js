@@ -1,13 +1,13 @@
 import Machinat from '@machinat/core';
-import container from '@machinat/core/service';
+import { container } from '@machinat/core/service';
 import HTTP from '@machinat/http';
 import Messenger from '@machinat/messenger';
 import dotenv from 'dotenv';
 import { GET_STARTED_KEY, GIMME_FOX_KEY } from './constant';
 import Hello from './components/Hello';
-import FoxCard from './components/FoxCard';
-import ReplyText from './components/ReplyText';
-import ReplyUnknown from './components/ReplyUnknown';
+import ReplyMessage from './components/ReplyMessage';
+import RandomFoxImage from './components/RandomFoxImage';
+import WithFoxButton from './components/WithFoxButton';
 
 dotenv.config();
 
@@ -35,26 +35,33 @@ app.onEvent(
   })((profiler) => async ({ bot, channel, event, user }) => {
     if (event.type === 'postback') {
       if (event.data === GET_STARTED_KEY) {
+        // Get Started button pressed
         const profile = await profiler.fetchProfile(user);
-        return bot.render(channel, <Hello name={profile.name} />);
-      }
-
-      if (event.data === GIMME_FOX_KEY) {
-        return bot.render(channel, <FoxCard />);
+        await bot.render(channel, <Hello name={profile.name} />);
+      } else if (event.data === GIMME_FOX_KEY) {
+        // More fox button pressed
+        await bot.render(
+          channel,
+          <WithFoxButton>
+            <RandomFoxImage />
+          </WithFoxButton>
+        );
       }
     }
 
     if (event.type === 'message') {
-      if (event.subtype === 'text') {
-        return bot.render(channel, <ReplyText text={event.text} />);
-      }
-
-      if (event.subtype === 'image') {
-        return bot.render(channel, <FoxCard />);
-      }
+      // reply message
+      await bot.render(
+        channel,
+        event.subtype === 'text' ? (
+          <ReplyMessage text={event.text} />
+        ) : event.subtype === 'image' ? (
+          <ReplyMessage image />
+        ) : (
+          <ReplyMessage unknown />
+        )
+      );
     }
-
-    return bot.render(channel, <ReplyUnknown />);
   })
 );
 
