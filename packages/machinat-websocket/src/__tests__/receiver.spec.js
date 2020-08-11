@@ -1,10 +1,13 @@
 import WS from 'ws';
-import moxy, { Mock } from 'moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import Socket from '../socket';
 import Receiver from '../receiver';
 import { ConnectionChannel } from '../channel';
 
-jest.mock('../socket');
+jest.mock(
+  '../socket',
+  () => require('@moxyjs/moxy').default(jest.requireActual('../socket')) // eslint-disable-line global-require
+);
 
 const nextTick = () => new Promise(process.nextTick);
 

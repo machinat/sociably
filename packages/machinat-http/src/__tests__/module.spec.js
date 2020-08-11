@@ -1,10 +1,10 @@
 import { createServer } from 'http';
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Connector from '../connector';
 import HTTP from '..';
 
-jest.mock('http', () => require('moxy').default({ createServer() {} })); // eslint-disable-line global-require
+jest.mock('http', () => require('@moxyjs/moxy').default({ createServer() {} })); // eslint-disable-line global-require
 
 const server = moxy({
   addListener() {},

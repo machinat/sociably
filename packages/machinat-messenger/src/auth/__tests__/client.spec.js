@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import { JSDOM } from 'jsdom';
 import ClientAuthProvider from '../client';
 import MessengerChannel from '../../channel';

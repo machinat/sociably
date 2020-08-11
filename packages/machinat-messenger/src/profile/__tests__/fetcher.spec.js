@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import MessengerUser from '../../user';
 import UserProfiler from '../fetcher';
 import MessengerUserProfile from '../profile';

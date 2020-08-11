@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import { ServerResponse } from 'http';
 import ServerAuthProvider from '../server';
 import MessengerChannel from '../../channel';

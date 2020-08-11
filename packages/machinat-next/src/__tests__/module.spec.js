@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import HTTP from '@machinat/http';
 import createNextApp from 'next';
@@ -7,7 +7,7 @@ import Next from '..';
 
 jest.mock('next', () => {
   // eslint-disable-next-line global-require
-  const _moxy = require('moxy').default;
+  const _moxy = require('@moxyjs/moxy').default;
   return _moxy(() => ({
     prepare: async () => {},
     getRequestHandler: () => {},

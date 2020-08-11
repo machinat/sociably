@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import Recognizer from '../recognizer';
 
 const detectTextResponse = {

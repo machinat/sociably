@@ -6,7 +6,7 @@ import IntentRecognizer from '../recognizer';
 
 jest.mock(
   'dialogflow',
-  () => require('moxy').default({ SessionsClient: class {} }) // eslint-disable-line global-require
+  () => require('@moxyjs/moxy').default({ SessionsClient: class {} }) // eslint-disable-line global-require
 );
 
 it('export interfaces', () => {

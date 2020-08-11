@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
 import { isNativeElement } from '@machinat/core/utils/isX';

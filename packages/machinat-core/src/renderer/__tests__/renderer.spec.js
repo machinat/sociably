@@ -1,4 +1,4 @@
-import moxy, { Mock } from 'moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import Machinat from '../..';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
 import { container, makeInterface } from '../../service';

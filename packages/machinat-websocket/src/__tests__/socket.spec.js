@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import EventEmitter from 'events';
 import Socket from '../socket';
 
@@ -9,9 +9,8 @@ const connId = 'conn#id';
 const _ws = new EventEmitter();
 _ws.readyState = 1;
 
-const moxyOpts = { includeProps: ['emit'] };
-const clientWS = moxy(_ws, moxyOpts);
-const serverWS = moxy(_ws, moxyOpts);
+const clientWS = moxy(_ws);
+const serverWS = moxy(_ws);
 
 let clientTimeoutId;
 let serverTimeoutId;

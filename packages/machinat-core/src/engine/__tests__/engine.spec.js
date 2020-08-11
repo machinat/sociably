@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import moxy, { Mock } from 'moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import Machinat from '../..';
 
 import Engine from '../engine';

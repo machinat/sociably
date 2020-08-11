@@ -1,6 +1,6 @@
 import { ServerResponse } from 'http';
 import nock from 'nock';
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import LineChannel from '../../channel';
 import LineUser from '../../user';
 import ServerAuthorizer from '../server';

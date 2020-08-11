@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import HTTPConnector from '../connector';
 
 class FakeServer extends EventEmitter {

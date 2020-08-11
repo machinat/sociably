@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import build from '../build';
 import { MACHINAT_SCRIPT_TYPE } from '../constant';

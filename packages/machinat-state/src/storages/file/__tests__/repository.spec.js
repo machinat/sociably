@@ -1,5 +1,5 @@
 import fs from 'fs';
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import { tmpNameSync } from 'tmp';
 import FileRepository from '../repository';
 

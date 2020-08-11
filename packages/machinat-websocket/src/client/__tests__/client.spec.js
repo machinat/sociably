@@ -1,5 +1,5 @@
 import url from 'url';
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import WS from 'ws';
 import Socket from '../../socket';
 import { ConnectionChannel } from '../../channel';
@@ -8,7 +8,10 @@ import Client from '../client';
 const location = url.parse('https://machinat.com/hello');
 global.location = location;
 
-jest.mock('../../socket');
+jest.mock(
+  '../../socket',
+  () => require('@moxyjs/moxy').default(jest.requireActual('../../socket')) // eslint-disable-line global-require
+);
 
 const nextTick = () => new Promise(process.nextTick);
 

@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../constant';
 import LineChannel from '../channel';

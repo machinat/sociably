@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import moxy, { Mock } from 'moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import Channel from '../channel';
 import MessengerUser from '../user';
 import MessengerReceiver from '../receiver';

@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { factory as moxyFactory } from 'moxy';
+import { factory as moxyFactory } from '@moxyjs/moxy';
 import ServiceSpace from '../space';
 import ServiceScope from '../scope';
 import {
@@ -10,7 +10,7 @@ import {
   abstractInterface,
 } from '../annotate';
 
-const moxy = moxyFactory({ mockProperty: false });
+const moxy = moxyFactory({ mockMethod: false });
 
 const HELLO = makeInterface({ name: 'Hello' });
 const staticGreeter = moxy({ hello: () => 'HI' });
@@ -672,19 +672,18 @@ test('bootstrap time scope', () => {
   const NeedServiceScope = provider({
     deps: [ServiceScope],
     lifetime: 'singleton',
-    factory: moxy(() => ({})),
-  })(class {});
+  })(moxy());
 
   const space = new ServiceSpace([NeedServiceScope], []);
   const scope = space.bootstrap();
 
   expect(scope).toBeInstanceOf(ServiceScope);
-  expect(NeedServiceScope.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(NeedServiceScope.$$factory.mock.calls[0].args[0]).toBe(scope);
+  expect(NeedServiceScope.mock).toHaveBeenCalledTimes(1);
+  expect(NeedServiceScope.mock.calls[0].args[0]).toBe(scope);
 });
 
 test('require underlying ServiceScope', () => {
-  const scopeConsumer = container({ deps: [ServiceScope] })(moxy(() => ({})));
+  const scopeConsumer = moxy(container({ deps: [ServiceScope] })(() => ({})));
 
   const space = new ServiceSpace(
     [{ provide: HELLO, withValue: staticGreeter }],

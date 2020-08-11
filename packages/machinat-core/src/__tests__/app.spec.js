@@ -1,9 +1,12 @@
-import { factory as moxyFactory } from 'moxy';
+import { factory as moxyFactory } from '@moxyjs/moxy';
 import { container, provider, factory, makeInterface } from '../service';
 import ServiceScope from '../service/scope';
 import App from '../app';
 
-const moxy = moxyFactory({ excludeProps: ['$$deps'] });
+const moxy = moxyFactory({
+  includeProperties: ['*'],
+  excludeProperties: ['$$deps', 'provisions', 'mounterInterface'],
+});
 
 const TestService = moxy(
   provider({
@@ -42,27 +45,24 @@ const testMountingFactory = factory({
   lifetime: 'singleton',
 })(consumeTestMounter);
 
-const FooPlatform = moxy(
-  {
-    name: 'foo',
-    provisions: [FooService, testMountingFactory],
-    mounterInterface: TEST_PLATFORM_MOUNTER,
-    startHook: container({
-      deps: [TestService, AnotherService, FooService],
-    })(async () => {}),
-    eventMiddlewares: [
-      (ctx, next) => next(ctx),
-      (ctx, next) => next(ctx),
-      (ctx, next) => next(ctx),
-    ],
-    dispatchMiddlewares: [
-      (frame, next) => next(frame),
-      (frame, next) => next(frame),
-      (frame, next) => next(frame),
-    ],
-  },
-  { excludeProps: ['provisions', 'mounterInterface'] }
-);
+const FooPlatform = moxy({
+  name: 'foo',
+  provisions: [FooService, testMountingFactory],
+  mounterInterface: TEST_PLATFORM_MOUNTER,
+  startHook: container({
+    deps: [TestService, AnotherService, FooService],
+  })(async () => {}),
+  eventMiddlewares: [
+    (ctx, next) => next(ctx),
+    (ctx, next) => next(ctx),
+    (ctx, next) => next(ctx),
+  ],
+  dispatchMiddlewares: [
+    (frame, next) => next(frame),
+    (frame, next) => next(frame),
+    (frame, next) => next(frame),
+  ],
+});
 
 const BarService = moxy(
   provider({
@@ -78,17 +78,14 @@ const anotherMountingFactory = factory({
   lifetime: 'singleton',
 })(consumeAnotherMounter);
 
-const BarPlatform = moxy(
-  {
-    name: 'bar',
-    mounterInterface: ANOTHER_PLATFORM_MOUNTER,
-    provisions: [BarService, anotherMountingFactory],
-    startHook: container({
-      deps: [TestService, AnotherService, BarService],
-    })(async () => {}),
-  },
-  { excludeProps: ['provisions', 'mounterInterface'] }
-);
+const BarPlatform = moxy({
+  name: 'bar',
+  mounterInterface: ANOTHER_PLATFORM_MOUNTER,
+  provisions: [BarService, anotherMountingFactory],
+  startHook: container({
+    deps: [TestService, AnotherService, BarService],
+  })(async () => {}),
+});
 
 const MyService = moxy(
   provider({

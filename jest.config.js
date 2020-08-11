@@ -7,6 +7,6 @@ module.exports = {
   moduleNameMapper: {
     '^@machinat/([^/]*)(.*)$': '<rootDir>/packages/machinat-$1/src$2',
   },
-  setupFiles: ['<rootDir>/node_modules/moxy/lib/extends/jest.js'],
+  setupFiles: ['<rootDir>/node_modules/@moxyjs/moxy/lib/extends/jest.js'],
   snapshotSerializers: ['@machinat/jest-snapshot-serielizer'],
 };

@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
 import jsonwebtoken from 'jsonwebtoken';
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import ServerController from '../controller';
 import { CookieAccessor } from '../cookie';
 
@@ -39,8 +39,7 @@ const prepareReq = (method, url, headers, body) => {
         this.push(typeof body === 'string' ? body : JSON.stringify(body));
         this.push(null);
       },
-    }),
-    { mockProperty: false }
+    })
   );
   req.mock.getter('url').fake(() => url);
   req.mock.getter('method').fake(() => method);

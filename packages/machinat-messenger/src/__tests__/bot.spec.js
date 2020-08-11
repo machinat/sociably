@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
@@ -12,25 +12,18 @@ nock.disableNetConnect();
 
 jest.mock('@machinat/core/engine', () =>
   jest
-    .requireActual('moxy')
-    .default(jest.requireActual('@machinat/core/engine'), {
-      mockNewInstance: true,
-      includeProps: ['default', 'start', 'stop'],
-    })
+    .requireActual('@moxyjs/moxy')
+    .default(jest.requireActual('@machinat/core/engine'))
 );
 
 jest.mock('@machinat/core/renderer', () =>
   jest
-    .requireActual('moxy')
-    .default(jest.requireActual('@machinat/core/renderer'), {
-      includeProps: ['default'],
-    })
+    .requireActual('@moxyjs/moxy')
+    .default(jest.requireActual('@machinat/core/renderer'))
 );
 
 jest.mock('../worker', () =>
-  jest.requireActual('moxy').default(jest.requireActual('../worker'), {
-    includeProps: ['default'],
-  })
+  jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../worker'))
 );
 
 const scope = moxy();

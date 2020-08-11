@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import LineUser from '../../user';
 import LineUserProfile from '../profile';
 import UserProfiler from '../fetcher';

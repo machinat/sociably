@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop, no-loop-func, no-return-assign, no-fallthrough, default-case */
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import MachinatQueue from '../queue';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));

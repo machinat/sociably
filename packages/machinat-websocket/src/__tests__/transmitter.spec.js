@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import WS from 'ws';
 import Transmitter from '../transmitter';
 import Socket from '../socket';
@@ -14,8 +14,7 @@ const request = {
 const broker = moxy(new LocalOnlyBroker());
 const errorHandler = moxy();
 
-const socketMoxyOpts = { excludeProps: ['_*'] };
-const socket = moxy(new Socket('ID', new WS(), request), socketMoxyOpts);
+const socket = moxy(new Socket('ID', new WS(), request));
 
 const serverId = 'MY_SERVER';
 

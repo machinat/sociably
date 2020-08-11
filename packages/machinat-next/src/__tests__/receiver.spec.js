@@ -1,4 +1,4 @@
-import moxy, { Mock } from 'moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import { ServerResponse } from 'http';
 import NextReceiver from '../receiver';
 

@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import EventEmitter from 'events';
 
 class WebSocket extends EventEmitter {
@@ -25,4 +25,4 @@ WebSocket.CLOSED = 3;
 
 WebSocket.Server = class WebSocketServer {};
 
-module.exports = moxy(WebSocket, { excludeProps: ['_*'] });
+module.exports = moxy(WebSocket);

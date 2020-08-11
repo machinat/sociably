@@ -1,6 +1,6 @@
 import url from 'url';
 import { JSDOM } from 'jsdom';
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import ClientAuthorizer from '../client';
 import LineChannel from '../../channel';
 import LineUser from '../../user';

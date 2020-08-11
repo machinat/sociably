@@ -1,5 +1,5 @@
 /* eslint-disable prefer-destructuring, no-await-in-loop */
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import RedisRepository from '../repository';
 
 const client = moxy({});

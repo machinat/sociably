@@ -1,5 +1,5 @@
 import url from 'url';
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import fetch from 'node-fetch';
 import jsonwebtoken from 'jsonwebtoken';

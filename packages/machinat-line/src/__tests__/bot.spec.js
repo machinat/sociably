@@ -1,6 +1,6 @@
 /* eslint-disable global-require */
 import nock from 'nock';
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Engine from '@machinat/core/engine';
 import Renderer from '@machinat/core/renderer';
@@ -16,20 +16,15 @@ import {
 } from '../components';
 
 jest.mock('@machinat/core/engine', () =>
-  require('moxy').default(jest.requireActual('@machinat/core/engine'), {
-    includeProps: ['default'],
-  })
+  require('@moxyjs/moxy').default(jest.requireActual('@machinat/core/engine'))
 );
 
 jest.mock('@machinat/core/renderer', () =>
-  require('moxy').default(jest.requireActual('@machinat/core/renderer'), {
-    includeProps: ['default'],
-  })
+  require('@moxyjs/moxy').default(jest.requireActual('@machinat/core/renderer'))
 );
 
 jest.mock('../worker', () =>
-  require('moxy').default(jest.requireActual('../worker'), {
-    includeProps: ['default'],
+  require('@moxyjs/moxy').default(jest.requireActual('../worker'), {
     mockNewInstance: false,
   })
 );
@@ -267,7 +262,7 @@ describe('#render(token, node, options)', () => {
     }
   });
 
-  it('throw if messages length more than 5 when using replyToken', () => {
+  it('throw if messages length more than 5 when using replyToken', async () => {
     const bot = new LineBot(
       {
         accessToken: '_ACCESS_TOKEN_',
@@ -279,7 +274,7 @@ describe('#render(token, node, options)', () => {
     );
     bot.start();
 
-    expect(
+    await expect(
       bot.render(
         'john_doe',
         <p>

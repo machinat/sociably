@@ -2263,6 +2263,14 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
+"@moxyjs/moxy@0.1.0-beta.0":
+  version "0.1.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@moxyjs/moxy/-/moxy-0.1.0-beta.0.tgz#4db59206187cc874018a18766bf8a79e51620a0f"
+  integrity sha512-zLDEYzSdOHYY/+KGly4V2a5pqsSo+KQaujoqkqD59tyzCPAxATe0TNZK0yB4fpe9iUhANzCvXbyLgKxR77wEyg==
+  dependencies:
+    fast-deep-equal "^2.0.1"
+    micromatch "^4.0.2"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -8257,14 +8265,6 @@ move-concurrently@^1.0.1:
     mkdirp "^0.5.1"
     rimraf "^2.5.4"
     run-queue "^1.0.3"
-
-moxy@0.1.0-9:
-  version "0.1.0-9"
-  resolved "http://localhost:4873/moxy/-/moxy-0.1.0-9.tgz#917d506860abfbb790c5da588d1b851f2b67d4dd"
-  integrity sha512-v3wpBFzQ6GiJBAOU6fIAgYo6ugnqzjnAA2BG52PrGO3khZBhSYrjZyQ+eclseJnqz5w7Dzdc5u+/uDADpb0ETw==
-  dependencies:
-    fast-deep-equal "^2.0.1"
-    micromatch "^4.0.2"
 
 ms@2.0.0:
   version "2.0.0"

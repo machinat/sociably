@@ -27,6 +27,7 @@
     "@babel/plugin-transform-react-jsx": "^7.8.0",
     "@babel/preset-env": "^7.8.0",
     "@babel/preset-flow": "^7.8.0",
+    "@moxyjs/moxy": "0.1.0-beta.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.0.1",
     "babel-plugin-dev-expression": "^0.2.2",
@@ -41,7 +42,6 @@
     "husky": "^3.0.0",
     "jest": "^26.0.1",
     "lerna": "^3.22.1",
-    "moxy": "0.1.0-9",
     "nock": "^12.0.0",
     "polyfill-exports": "^0.3.0-beta.3",
     "prettier": "^2.0.5"

@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import { container } from '@machinat/core/service';
 import execute from '../execute';
 
@@ -19,7 +19,7 @@ const mockScript = (commands, entriesIndex, name) =>
       commands,
       entriesIndex: entriesIndex || new Map(),
     },
-    { excludeProps: ['entriesIndex'] }
+    { includeProperties: ['*'], excludeProperties: ['entriesIndex'] }
   );
 
 describe('executing content command', () => {
@@ -85,18 +85,21 @@ describe('executing content command', () => {
   });
 
   test('with async render function', async () => {
-    const commands = moxy([
-      { type: 'content', render: () => 'hello' },
-      {
-        type: 'content',
-        render: async () => {
-          await delay(10);
-          return 'it is an';
+    const commands = moxy(
+      [
+        { type: 'content', render: () => 'hello' },
+        {
+          type: 'content',
+          render: async () => {
+            await delay(10);
+            return 'it is an';
+          },
         },
-      },
-      { type: 'content', render: async () => 'async' },
-      { type: 'content', render: () => 'world' },
-    ]);
+        { type: 'content', render: async () => 'async' },
+        { type: 'content', render: () => 'world' },
+      ],
+      { includeProperties: ['*'] }
+    );
 
     await expect(
       execute(

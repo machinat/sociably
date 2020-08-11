@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import WebhookReceiver from '../receiver';
 
 const createReq = ({ method, url = '/', body = '', headers = {} }) => {

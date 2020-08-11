@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import {
   MACHINAT_SERVICES_PROVIDER,
   MACHINAT_SERVICES_CONTAINER,
@@ -98,7 +98,7 @@ describe('provider({ deps, factory, lifetime })(klass)', () => {
   });
 
   test('default $$factory, $$name and $$deps', () => {
-    const ServiceKlazz = moxy(class ServiceKlazz {}, { mockProperty: false });
+    const ServiceKlazz = moxy(class ServiceKlazz {}, { mockMethod: false });
 
     const MyProvider = provider({ lifetime: 'singleton' })(ServiceKlazz);
 

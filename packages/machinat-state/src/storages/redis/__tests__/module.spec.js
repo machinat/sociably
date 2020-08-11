@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import redis from 'redis';
 import EventEmitter from 'events';
 import Machinat from '@machinat/core';
@@ -7,9 +7,12 @@ import RedisState from '..';
 import RedisRepository from '../repository';
 import StateController from '../../..';
 
-jest.mock('redis', () => {
-  return { createClient: require('moxy').default(() => ({ connected: true })) }; // eslint-disable-line global-require
-});
+jest.mock('redis', () =>
+  // eslint-disable-next-line global-require
+  require('@moxyjs/moxy').default({
+    createClient: () => ({ connected: true }),
+  })
+);
 
 test('export interfaces', () => {
   expect(RedisState.Repository).toBe(RedisRepository);

@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@machinat/core/queue';
 import MessengerWorker from '../worker';

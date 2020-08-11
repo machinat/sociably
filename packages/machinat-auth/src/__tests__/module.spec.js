@@ -1,4 +1,4 @@
-import moxy from 'moxy';
+import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import HTTP from '@machinat/http';
 import Auth from '..';
@@ -52,9 +52,7 @@ describe('initModule()', () => {
   test('provide authorizers to controller', async () => {
     const fooAuthorizer = moxy();
     const barAuthorizer = moxy();
-    const ServerControllerSpy = moxy(ServerController, {
-      includeProps: ['$$factory'],
-    });
+    const ServerControllerSpy = moxy(ServerController);
     const app = Machinat.createApp({
       modules: [Auth.initModule({ secret: '_SECRET_', entryPath: '/auth' })],
       bindings: [
