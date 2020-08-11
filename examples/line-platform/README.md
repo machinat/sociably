@@ -46,7 +46,7 @@ yarn run build
 yarn start
 ```
 
-5. At the messenger setting page in Facebook app dashboard, set up the webhook with the ngrok https tunnel url.
+5. At the LINE channel setting page, set up the webhook with the ngrok https tunnel url. The url should be like `https://xxxxxxxx.ngrok.io`
 
 The chatbot should work in Messenger platform now.
 

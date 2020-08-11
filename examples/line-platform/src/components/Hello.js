@@ -7,11 +7,19 @@ import {
 import { GIMME_FOX_KEY } from '../constant';
 
 const Hello = ({ name }) => {
+  const buttonTitle = '🦊💕';
+
   return (
     <Expression
       quickReplies={
         <QuickReply
-          action={<PostbackAction label="🦊💕" data={GIMME_FOX_KEY} />}
+          action={
+            <PostbackAction
+              label={buttonTitle}
+              text={buttonTitle}
+              data={GIMME_FOX_KEY}
+            />
+          }
         />
       }
     >

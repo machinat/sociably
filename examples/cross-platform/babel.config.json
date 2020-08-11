@@ -1,0 +1,10 @@
+{
+  "presets": [
+    ["@babel/preset-env", {
+      "targets": {
+        "node": "10"
+      }
+    }],
+    "@machinat/babel-preset"
+  ]
+}
