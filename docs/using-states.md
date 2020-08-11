@@ -21,12 +21,11 @@ Machinat.createApp({
 })
 ```
 
-For now there are three storage types supported: `inMemory`, `file` and `redis`, check the package readme for more details.
+For now there are three storage types supported: `inMemory`, `file` and `redis`, please check the package readme for more details.
 
 ## Use the State
 
-All state modules provide the `Base.StateControllerI` interface, you can
-use it without worrying which storage is it. Let's try getting the conversation state in a container:
+All state modules provide the `Base.StateControllerI` interface, you can use it without worrying which storage is it. Let's try getting the conversation state in a container:
 
 ```js
 import { StateControllerI } from '@machinat/core/base';
@@ -56,7 +55,7 @@ app.onEvent(
 );
 ```
 
-The `#channelState()` method returns a state accessor of a channel, which typically refer to a chat thread. `#get(key)` returns a promise of state value on a specific key, it resolve `undefined` if no value have been saved.
+The `#channelState(channel)` method returns a state accessor of a channel, which typically refer to a chat thread. `#get(key)` returns a promise of state value on a specific key, it resolve `undefined` if no value have been saved.
 
 To set state use the `#set(key, updater)` method:
 
@@ -97,9 +96,9 @@ app.onEvent(
 
 ### User State
 
-User state might have different usage scope to channel state, since a user might show up in different chat rooms.
+Sometime you might want to save the state of the user instead of channel. User state have different usage scope to channel state, since a user can show up in many chatrooms.
 
-To use state on an user instead of a channel, use `#userState()` method:
+To use state on an user instead of a channel, use `#userState(user)` method:
 
 ```js
 app.onEvent(
@@ -148,7 +147,7 @@ const favorOfAll = await stateController
   .get('pizza_or_hotdog');
 ```
 
-For example each `AssetManager` of official platform modules stores the assets id mapping in global state.
+For example, the `AssetsManager` service of each platform stores the assets id mapping in global state.
 
 ## Next
 
