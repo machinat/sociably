@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 
 import {
@@ -19,7 +19,7 @@ it.each(
     C,
   ])
 )('%s is a valid component', (_, Img) => {
-  expect(isNativeElement(<Img />)).toBe(true);
+  expect(isNativeType(<Img />)).toBe(true);
   expect(Img.$$platform).toBe('line');
 });
 

@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 
 import { Audio, Video } from '../media';
@@ -11,7 +11,7 @@ it.each([Audio, Video].map((C) => [C.name, C]))(
   (_, Media) => {
     expect(typeof Media).toBe('function');
 
-    expect(isNativeElement(<Media />)).toBe(true);
+    expect(isNativeType(<Media />)).toBe(true);
     expect(Media.$$platform).toBe('line');
   }
 );

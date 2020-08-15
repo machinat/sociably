@@ -1,23 +1,23 @@
 import {
   isElement,
-  isFragmentElement,
-  isProviderElement,
-  isRawElement,
-  isThunkElement,
-  isPauseElement,
+  isFragmentType,
+  isProviderType,
+  isRawType,
+  isThunkType,
+  isPauseType,
 } from '@machinat/core/utils/isX';
 
 module.exports = {
   print(element, serialize, indent) {
-    const type = isFragmentElement(element)
+    const type = isFragmentType(element)
       ? 'Machinat.Fragment'
-      : isProviderElement(element)
+      : isProviderType(element)
       ? 'Machinat.Provider'
-      : isRawElement(element)
+      : isRawType(element)
       ? 'Machinat.Raw'
-      : isThunkElement(element)
+      : isThunkType(element)
       ? 'Machinat.Thunk'
-      : isPauseElement(element)
+      : isPauseType(element)
       ? 'Machinat.Pause'
       : element.type;
 

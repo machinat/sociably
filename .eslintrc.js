@@ -1,5 +1,5 @@
 module.exports = {
-  parser: 'babel-eslint',
+  parser: '@typescript-eslint/parser',
   env: {
     jest: true,
   },
@@ -8,15 +8,17 @@ module.exports = {
   },
   plugins: [
     'prettier',
-    'flowtype',
+    '@typescript-eslint',
   ],
   extends: [
     'airbnb-base',
+    'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:prettier/recommended',
-    'prettier/flowtype',
     'prettier/react',
     'prettier/standard',
+    "prettier/@typescript-eslint",
+    'plugin:import/typescript',
   ],
   rules: {
     strict: 0,
@@ -42,8 +44,6 @@ module.exports = {
       'always', { exceptAfterSingleLine: true }
     ],
     'max-classes-per-file': 0,
-    'flowtype/define-flow-type': 2,
-    'flowtype/no-unused-expressions': 2,
     'import/extensions': 0,
     'import/no-unresolved': ['error', {
       ignore: ['@machinat/.*']
@@ -71,5 +71,5 @@ module.exports = {
     react: {
       pragma: 'Machinat',
     },
-  }
+  },
 };

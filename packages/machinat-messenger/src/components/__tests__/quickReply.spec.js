@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 import { QuickReply, PhoneQuickReply, EmailQuickReply } from '../quickReply';
 
@@ -18,7 +18,7 @@ it.each([QuickReply, PhoneQuickReply, EmailQuickReply])(
   '%p is valid Component',
   (Reply) => {
     expect(typeof Reply).toBe('function');
-    expect(isNativeElement(<Reply />)).toBe(true);
+    expect(isNativeType(<Reply />)).toBe(true);
     expect(Reply.$$platform).toBe('messenger');
   }
 );

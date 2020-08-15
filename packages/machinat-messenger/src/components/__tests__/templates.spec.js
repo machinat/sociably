@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 
 import {
   GenericItem,
@@ -25,13 +25,13 @@ test.each([
   ReceiptTemplate,
 ])('attribute of %p', (Template) => {
   expect(typeof Template).toBe('function');
-  expect(isNativeElement(<Template />)).toBe(true);
+  expect(isNativeType(<Template />)).toBe(true);
   expect(Template.$$platform).toBe('messenger');
 });
 
 test.each([GenericItem, ReceiptItem])('attribute of %p', (Item) => {
   expect(typeof Item).toBe('function');
-  expect(isNativeElement(<Item />)).toBe(true);
+  expect(isNativeType(<Item />)).toBe(true);
   expect(Item.$$platform).toBe('messenger');
 });
 

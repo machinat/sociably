@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 import {
   ButtonTemplate,
@@ -18,7 +18,7 @@ test.each([CarouselItem, ImageCarouselItem].map((C) => [C.name, C]))(
   (_, Item) => {
     expect(typeof Item).toBe('function');
 
-    expect(isNativeElement(<Item />)).toBe(true);
+    expect(isNativeType(<Item />)).toBe(true);
     expect(Item.$$platform).toBe('line');
   }
 );
@@ -33,7 +33,7 @@ test.each(
 )('%s is valid native unit component', (_, Template) => {
   expect(typeof Template).toBe('function');
 
-  expect(isNativeElement(<Template />)).toBe(true);
+  expect(isNativeType(<Template />)).toBe(true);
   expect(Template.$$platform).toBe('line');
 });
 

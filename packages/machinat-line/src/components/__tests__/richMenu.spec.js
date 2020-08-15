@@ -1,6 +1,6 @@
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
 import LineChannel from '../../channel';
 import { LinkRichMenu, UnlinkRichMenu } from '../richMenu';
@@ -10,7 +10,7 @@ const renderer = new Renderer('line', () => null);
 describe('<LinkRichMenu/>', () => {
   it('is valid native unit component with entry getter', () => {
     expect(typeof LinkRichMenu).toBe('function');
-    expect(isNativeElement(<LinkRichMenu />)).toBe(true);
+    expect(isNativeType(<LinkRichMenu />)).toBe(true);
     expect(LinkRichMenu.$$platform).toBe('line');
   });
 
@@ -93,7 +93,7 @@ describe('<LinkRichMenu/>', () => {
 describe('<UnlinkRichMenu/>', () => {
   it('is valid native unit component with entry getter', () => {
     expect(typeof UnlinkRichMenu).toBe('function');
-    expect(isNativeElement(<UnlinkRichMenu />)).toBe(true);
+    expect(isNativeType(<UnlinkRichMenu />)).toBe(true);
     expect(UnlinkRichMenu.$$platform).toBe('line');
   });
 
