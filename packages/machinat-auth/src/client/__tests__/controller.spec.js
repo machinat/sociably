@@ -22,6 +22,8 @@ global.location = moxy(url.parse('https://machinat.io/app?platform=foo'));
 global.document = moxy({ cookie: '' });
 global.fetch = fetch;
 
+global.window = { location: global.location, document: global.location, fetch };
+
 const makeToken = (payload) =>
   jsonwebtoken.sign(payload, '__SECRET__').split('.').slice(0, 2).join('.');
 

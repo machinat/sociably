@@ -1,6 +1,6 @@
-// @flow
-/* eslint no-shadow: ["error", { "allow": ["err"] }] */
-import EventEmitter from 'events';
+// eslint-disable-next-line spaced-comment
+/// <reference lib="DOM" />
+import { EventEmitter } from 'events';
 import invariant from 'invariant';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
 import { decode as decodeJWT } from 'jsonwebtoken';
@@ -14,19 +14,15 @@ import type {
   RefreshRequestBody,
   VerifyRequestBody,
   AuthAPIResponseBody,
-  AuthAPIResponseErrorBody,
+  AuthAPIErrorBody,
 } from '../types';
 import AuthError from './error';
 
-type AuthClientOptions = {|
-  serverURL: string,
-  authorizers: ClientAuthorizer<any, any>[],
-  refreshLeadTime?: number,
-|};
-
-declare var location: Location;
-declare var document: Document;
-declare var fetch: (url: string, options: Object) => Object;
+type AuthClientOptions = {
+  serverURL: string;
+  authorizers: ClientAuthorizer<any, any>[];
+  refreshLeadTime?: number;
+};
 
 const deleteCookie = (name: string, domain?: string, path?: string) => {
   document.cookie = serializeCookie(name, '', {
@@ -37,71 +33,79 @@ const deleteCookie = (name: string, domain?: string, path?: string) => {
 };
 
 const getAuthPayload = (token: string): AuthTokenPayload<any> =>
-  decodeJWT(`${token}.`);
+  decodeJWT(`${token}.`) as AuthTokenPayload<any>;
 
 type ServerSideResult =
-  | { success: false, platform: string, code: number, reason: string }
+  | { success: false; platform: string; code: number; reason: string }
   | {
-      success: true,
-      platform: string,
-      token: string,
-      payload: AuthTokenPayload<any>,
+      success: true;
+      platform: string;
+      token: string;
+      payload: AuthTokenPayload<any>;
     };
+
+type TimeoutID = ReturnType<typeof setTimeout>;
 
 class AuthClientController extends EventEmitter {
   authorizers: ClientAuthorizer<any, any>[];
   serverURL: string;
   refreshLeadTime: number;
 
-  _platform: void | string;
-  _authURL: URL;
+  private _platform: undefined | string;
+  private _authURL: URL;
 
-  _serverSideResult: ?ServerSideResult;
-  _authed: null | {|
-    token: string,
-    payload: AuthTokenPayload<any>,
-    context: AuthContext<any>,
-  |};
+  private _serverSideResult: ServerSideResult | null | undefined;
+  private _authed: null | {
+    token: string;
+    payload: AuthTokenPayload<any>;
+    context: AuthContext<any>;
+  };
 
-  _initiatingPlatforms: Set<string>;
-  _initiatedPlatforms: Set<string>;
+  private _initiatingPlatforms: Set<string>;
+  private _initiatedPlatforms: Set<string>;
 
-  _initPromise: null | Promise<void>;
-  _authPromise: null | Promise<{ token: string, context: AuthContext<any> }>;
-  _minAuthBeginTime: number;
+  private _initPromise: null | Promise<void>;
+  private _authPromise: null | Promise<{
+    token: string;
+    context: AuthContext<any>;
+  }>;
 
-  _refreshTimeoutId: null | TimeoutID;
-  _expireTimeoutId: null | TimeoutID;
+  private _minAuthBeginTime: number;
 
-  get platform() {
+  private _refreshTimeoutId: null | TimeoutID;
+  private _expireTimeoutId: null | TimeoutID;
+
+  get platform(): undefined | string {
     return this._platform;
   }
 
-  get isInitiating() {
+  get isInitiating(): boolean {
     return !!this._initPromise;
   }
 
-  get isAuthed() {
+  get isAuthed(): boolean {
     return !!this._authed;
   }
 
-  constructor({
-    authorizers,
-    serverURL,
-    refreshLeadTime = 300, // 5 min
-  }: AuthClientOptions = {}) {
+  constructor(
+    {
+      authorizers,
+      serverURL,
+      refreshLeadTime = 300, // 5 min
+    }: AuthClientOptions = {} as any
+  ) {
+    super();
+
     invariant(serverURL, 'options.serverURL must not be empty');
     invariant(
       authorizers && authorizers.length > 0,
       'options.authorizers must not be empty'
     );
 
-    super();
-
     this.authorizers = authorizers;
     this.serverURL = serverURL;
     this.refreshLeadTime = refreshLeadTime;
-    this._authURL = new URL(serverURL, location.href);
+    this._authURL = new URL(serverURL, window.location.href);
 
     this._initiatingPlatforms = new Set();
     this._initiatedPlatforms = new Set();
@@ -115,7 +119,7 @@ class AuthClientController extends EventEmitter {
     this._expireTimeoutId = null;
   }
 
-  isInitiated(platform: string) {
+  isInitiated(platform: string): boolean {
     return this._initiatedPlatforms.has(platform);
   }
 
@@ -130,23 +134,29 @@ class AuthClientController extends EventEmitter {
    */
   bootstrap(platformInput?: string): AuthClientController {
     const cookies = parseCookie(document.cookie);
-    let serverSideResult = null;
+    let serverSideResult: null | ServerSideResult = null;
 
     if (cookies[ERROR_COOKIE_KEY]) {
       // Error happen in backend flow
-      const {
-        platform,
-        error: { code, reason },
-        scope: { domain, path },
-      }: ErrorTokenPayload = decodeJWT(cookies[ERROR_COOKIE_KEY]);
-      deleteCookie(ERROR_COOKIE_KEY, domain, path);
+      const decodedToken = decodeJWT(cookies[ERROR_COOKIE_KEY], { json: true });
 
-      serverSideResult = {
-        success: false,
-        platform,
-        code,
-        reason,
-      };
+      if (decodedToken !== null) {
+        const {
+          platform,
+          error: { code, reason },
+          scope: { domain, path },
+        } = decodedToken as ErrorTokenPayload;
+
+        deleteCookie(ERROR_COOKIE_KEY, domain, path);
+        serverSideResult = {
+          success: false,
+          platform,
+          code,
+          reason,
+        };
+      } else {
+        deleteCookie(ERROR_COOKIE_KEY);
+      }
     } else if (cookies[TOKEN_COOKIE_KEY]) {
       // Auth completed in backend flow
       const token = cookies[TOKEN_COOKIE_KEY];
@@ -164,7 +174,7 @@ class AuthClientController extends EventEmitter {
 
     const platformToBootstrap =
       platformInput ||
-      new URLSearchParams(location.search).get('platform') ||
+      new URLSearchParams(window.location.search).get('platform') ||
       serverSideResult?.platform;
 
     const [err, provider] = this._getProvider(platformToBootstrap);
@@ -185,8 +195,8 @@ class AuthClientController extends EventEmitter {
 
     // Execute init work of platform, promise would be awaited within auth()
     const initPromise = this._initPlatform(provider, this._serverSideResult)
-      .catch((err) => {
-        this.emit('error', err, this._authed?.context || null);
+      .catch((initErr) => {
+        this.emit('error', initErr, this._authed?.context || null);
       })
       .finally(() => {
         // if init success and no other init() call make the platform changed
@@ -206,7 +216,7 @@ class AuthClientController extends EventEmitter {
    * controller, so any auth() call after the first one do not trigger the auth
    * flow but just return the current status.
    */
-  async auth(): Promise<{ token: string, context: AuthContext<any> }> {
+  async auth(): Promise<{ token: string; context: AuthContext<any> }> {
     if (this._authPromise) {
       return this._authPromise;
     }
@@ -226,7 +236,7 @@ class AuthClientController extends EventEmitter {
   /**
    * Sign out user.
    */
-  signOut() {
+  signOut(): void {
     if (this._authed) {
       const { scope } = this._authed.payload;
       deleteCookie(TOKEN_COOKIE_KEY, scope.domain, scope.path);
@@ -237,7 +247,7 @@ class AuthClientController extends EventEmitter {
     this._minAuthBeginTime = Date.now();
   }
 
-  async _initPlatform(
+  private async _initPlatform(
     authorizer: ClientAuthorizer<any, any>,
     serverSideResult: null | ServerSideResult
   ): Promise<void> {
@@ -276,9 +286,9 @@ class AuthClientController extends EventEmitter {
     }
   }
 
-  async _auth(): Promise<{ token: string, context: AuthContext<any> }> {
+  private async _auth(): Promise<{ token: string; context: AuthContext<any> }> {
     const beginTime = Date.now();
-    let err;
+    let err: undefined | null | Error;
 
     while (this._initPromise) {
       // Wait for initiation for the first time
@@ -296,8 +306,8 @@ class AuthClientController extends EventEmitter {
     }
 
     const serverSideResult = this._serverSideResult;
-    let token;
-    let payload;
+    let token: string;
+    let payload: AuthTokenPayload<any>;
 
     if (
       !serverSideResult ||
@@ -346,9 +356,9 @@ class AuthClientController extends EventEmitter {
     return { token, context };
   }
 
-  async _signToken(
+  private async _signToken(
     provider: ClientAuthorizer<any, any>
-  ): Promise<[?Error, string]> {
+  ): Promise<[Error | null, string]> {
     const { platform } = provider;
     const result = await provider.fetchCredential(this._getAuthEntry(platform));
 
@@ -369,7 +379,7 @@ class AuthClientController extends EventEmitter {
     return [null, body.token];
   }
 
-  _setAuth(
+  private _setAuth(
     token: string,
     payload: AuthTokenPayload<any>,
     context: AuthContext<any>
@@ -394,24 +404,24 @@ class AuthClientController extends EventEmitter {
     );
   }
 
-  async _refreshAuth(
+  private async _refreshAuth(
     token: string,
     { refreshLimit }: AuthTokenPayload<any>
   ): Promise<void> {
     const beginTime = Date.now();
-    let err;
 
-    const [providerErr, provider] = this._getProvider(this._platform);
-    if (providerErr) {
-      throw providerErr;
+    let err: null | Error;
+    let provider: ClientAuthorizer<any, any>;
+    [err, provider] = this._getProvider(this._platform); // eslint-disable-line prefer-const
+    if (err) {
+      throw err;
     }
 
-    let newToken;
+    let newToken: string;
     if (refreshLimit && Date.now() < refreshLimit * 1000) {
       // refresh if token is refreshable
-      const [err, body] = await this._callAuthPrivateAPI('_refresh', {
-        token,
-      });
+      let body: AuthAPIResponseBody;
+      [err, body] = await this._callAuthPrivateAPI('_refresh', { token });
 
       if (err) {
         throw err;
@@ -430,7 +440,7 @@ class AuthClientController extends EventEmitter {
 
     if (
       this._authed
-        ? // give up if auth updated during refreshment
+        ? // if auth updated during refreshment
           this._authed.token !== token
         : // if signed out during refreshment
           beginTime < this._minAuthBeginTime
@@ -459,7 +469,10 @@ class AuthClientController extends EventEmitter {
     this.emit('refresh', context);
   }
 
-  _refreshAuthCallback = (token: string, payload: AuthTokenPayload<any>) => {
+  private _refreshAuthCallback = (
+    token: string,
+    payload: AuthTokenPayload<any>
+  ) => {
     this._refreshTimeoutId = null;
 
     this._refreshAuth(token, payload).catch((err) => {
@@ -467,31 +480,33 @@ class AuthClientController extends EventEmitter {
     });
   };
 
-  _expireTokenCallback = (token: string) => {
+  private _expireTokenCallback = (token: string) => {
     this._expireTimeoutId = null;
 
-    let authed;
-    if ((authed = this._authed) && authed.token === token) {
+    const authed = this._authed;
+    if (authed && authed.token === token) {
       this._authed = null;
       this.emit('expire', authed.context);
     }
   };
 
-  _getProvider(platform: void | string): [?Error, ClientAuthorizer<any, any>] {
+  private _getProvider(
+    platform: undefined | string
+  ): [Error | null, ClientAuthorizer<any, any>] {
     if (!platform) {
-      return [new AuthError(400, 'no platform specified'), (null: any)];
+      return [new AuthError(400, 'no platform specified'), null as any];
     }
     const authorizer = this.authorizers.find((p) => p.platform === platform);
     if (!authorizer) {
       return [
         new AuthError(400, `unknown platform "${platform}"`),
-        (null: any),
+        null as any,
       ];
     }
     return [null, authorizer];
   }
 
-  _getAuthEntry(route: string) {
+  private _getAuthEntry(route: string) {
     const rootURL = this._authURL;
     const componentURL = new URL(
       rootURL.pathname.replace(/\/?$/, `/${route}`),
@@ -500,10 +515,10 @@ class AuthClientController extends EventEmitter {
     return componentURL.href;
   }
 
-  async _callAuthPrivateAPI(
+  private async _callAuthPrivateAPI(
     api: string,
     body: SignRequestBody<any> | RefreshRequestBody | VerifyRequestBody
-  ): Promise<[?Error, AuthAPIResponseBody]> {
+  ): Promise<[Error | null, AuthAPIResponseBody]> {
     const res = await fetch(this._getAuthEntry(api), {
       method: 'POST',
       body: JSON.stringify(body),
@@ -512,15 +527,15 @@ class AuthClientController extends EventEmitter {
     if (!res.ok) {
       const {
         error: { code, reason },
-      }: AuthAPIResponseErrorBody = await res.json();
-      return [new AuthError(code, reason), (null: any)];
+      }: AuthAPIErrorBody = await res.json();
+      return [new AuthError(code, reason), null as any];
     }
 
     const result = await res.json();
     return [null, result];
   }
 
-  _clearTimeouts() {
+  private _clearTimeouts() {
     if (this._refreshTimeoutId) {
       clearTimeout(this._refreshTimeoutId);
       this._refreshTimeoutId = null;

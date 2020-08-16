@@ -1,5 +1,5 @@
-// @flow
 import type { IncomingMessage, ServerResponse } from 'http';
+import type { CookieSerializeOptions } from 'cookie';
 import { sign as signJWT, verify as verifyJWT } from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';
 import type {
@@ -9,6 +9,7 @@ import type {
   AuthTokenPayload,
   StateTokenPayload,
   ErrorTokenPayload,
+  ErrorMessage,
 } from '../types';
 import { getCookies, setCookie } from './utils';
 
@@ -20,34 +21,34 @@ import {
 } from '../constant';
 
 type OperatorOptions = {
-  entryPath: string,
-  secret: string,
-  authCookieAge: number,
-  dataCookieAge: number,
-  tokenAge: number,
-  refreshPeriod: number,
-  cookieDomain: void | string,
-  cookiePath: string,
-  sameSite: 'Strict' | 'Lax' | 'None',
-  secure: boolean,
+  entryPath: string;
+  secret: string;
+  authCookieAge: number;
+  dataCookieAge: number;
+  tokenAge: number;
+  refreshPeriod: number;
+  cookieDomain?: string;
+  cookiePath: string;
+  sameSite: 'strict' | 'lax' | 'none';
+  secure: boolean;
 };
 
 type IssueAuthOptions = {
-  refreshLimit?: number,
-  refreshable?: boolean,
-  signatureOnly?: boolean,
+  refreshLimit?: number;
+  refreshable?: boolean;
+  signatureOnly?: boolean;
 };
 
 export class CookieController {
   options: OperatorOptions;
 
-  _cookieScope: {| domain?: string, path: string |};
+  private _cookieScope: { domain?: string; path: string };
 
-  _tokenCookieOpts: Object;
-  _errorCookieOpts: Object;
-  _signatureCookieOpts: Object;
-  _stateCookieOpts: Object;
-  _deleteCookieOpts: Object;
+  private _tokenCookieOpts: CookieSerializeOptions;
+  private _errorCookieOpts: CookieSerializeOptions;
+  private _signatureCookieOpts: CookieSerializeOptions;
+  private _stateCookieOpts: CookieSerializeOptions;
+  private _deleteCookieOpts: CookieSerializeOptions;
 
   constructor(options: OperatorOptions) {
     this.options = options;
@@ -105,9 +106,9 @@ export class CookieController {
     req: IncomingMessage,
     platformAsserted: string
   ): Promise<null | StateData> {
-    let stateEnceded;
+    let encodedState: string;
     const cookies = getCookies(req);
-    if (!cookies || !(stateEnceded = cookies[STATE_COOKIE_KEY])) {
+    if (!cookies || !(encodedState = cookies[STATE_COOKIE_KEY])) {
       return null;
     }
 
@@ -117,7 +118,7 @@ export class CookieController {
         state,
       }: StateTokenPayload<any> = await thenifiedly.call(
         verifyJWT,
-        stateEnceded,
+        encodedState,
         this.options.secret
       );
 
@@ -132,15 +133,15 @@ export class CookieController {
     platform: string,
     state: StateData
   ): Promise<string> {
-    const stateEnceded = await thenifiedly.call(
+    const encodedState = await thenifiedly.call(
       signJWT,
-      ({ platform, state }: StatePayload<StateData>),
+      { platform, state } as StatePayload<StateData>,
       this.options.secret,
       { expiresIn: this.options.dataCookieAge }
     );
 
-    setCookie(res, STATE_COOKIE_KEY, stateEnceded, this._stateCookieOpts);
-    return stateEnceded;
+    setCookie(res, STATE_COOKIE_KEY, encodedState, this._stateCookieOpts);
+    return encodedState;
   }
 
   async getAuth<AuthData>(
@@ -186,7 +187,7 @@ export class CookieController {
     const now = Math.floor(Date.now() / 1000);
     const token = await thenifiedly.call(
       signJWT,
-      ({
+      {
         platform,
         data,
         refreshLimit: !refreshable
@@ -197,7 +198,7 @@ export class CookieController {
           ? refreshLimit
           : undefined,
         scope: this._cookieScope,
-      }: AuthPayload<AuthData>),
+      } as AuthPayload<AuthData>,
       secret,
       { expiresIn: tokenAge }
     );
@@ -219,8 +220,8 @@ export class CookieController {
   async getError(
     req: IncomingMessage,
     platformAsserted: string
-  ): Promise<null | { code: number, reason: string }> {
-    let errEncoded;
+  ): Promise<null | ErrorMessage> {
+    let errEncoded: string;
     const cookies = getCookies(req);
     if (!cookies || !(errEncoded = cookies[ERROR_COOKIE_KEY])) {
       return null;
@@ -247,11 +248,11 @@ export class CookieController {
   ): Promise<string> {
     const errEncoded = await thenifiedly.call(
       signJWT,
-      ({
+      {
         platform,
         error: { code, reason },
         scope: this._cookieScope,
-      }: ErrorPayload),
+      } as ErrorPayload,
       this.options.secret
     );
 
@@ -264,14 +265,14 @@ export class CookieController {
     return errEncoded;
   }
 
-  clearCookies(res: ServerResponse) {
+  clearCookies(res: ServerResponse): void {
     this.deleteCookie(res, ERROR_COOKIE_KEY);
     this.deleteCookie(res, STATE_COOKIE_KEY);
     this.deleteCookie(res, SIGNATURE_COOKIE_KEY);
     this.deleteCookie(res, TOKEN_COOKIE_KEY);
   }
 
-  deleteCookie(res: ServerResponse, key: string) {
+  deleteCookie(res: ServerResponse, key: string): void {
     setCookie(res, key, '', this._deleteCookieOpts);
   }
 }
@@ -294,11 +295,11 @@ export class CookieAccessor {
     this._controller = operator;
   }
 
-  getState<StateData>() {
+  getState<StateData>(): Promise<null | StateData> {
     return this._controller.getState<StateData>(this._req, this._platform);
   }
 
-  issueState<StateData>(state: StateData) {
+  issueState<StateData>(state: StateData): Promise<string> {
     return this._controller.issueState<StateData>(
       this._res,
       this._platform,
@@ -306,11 +307,14 @@ export class CookieAccessor {
     );
   }
 
-  getAuth<AuthData>() {
+  getAuth<AuthData>(): Promise<null | AuthData> {
     return this._controller.getAuth<AuthData>(this._req, this._platform);
   }
 
-  issueAuth<AuthData>(auth: AuthData, options?: IssueAuthOptions) {
+  issueAuth<AuthData>(
+    auth: AuthData,
+    options?: IssueAuthOptions
+  ): Promise<string> {
     return this._controller.issueAuth<AuthData>(
       this._res,
       this._platform,
@@ -319,11 +323,11 @@ export class CookieAccessor {
     );
   }
 
-  getError() {
+  getError(): Promise<null | ErrorMessage> {
     return this._controller.getError(this._req, this._platform);
   }
 
-  issueError(code: number, message: string) {
+  issueError(code: number, message: string): Promise<string> {
     return this._controller.issueError(
       this._res,
       this._platform,

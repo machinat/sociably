@@ -1,10 +1,12 @@
-// @flow
 import { provider } from '@machinat/core/service';
 import { parse as parseURL } from 'url';
 import { relative as getRelativePath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
 import invariant from 'invariant';
-import { verify as verifyJWT } from 'jsonwebtoken';
+import {
+  verify as verifyJWT,
+  VerifyOptions as JWTVerifyOptions,
+} from 'jsonwebtoken';
 import getRawBody from 'raw-body';
 import thenifiedly from 'thenifiedly';
 import {
@@ -19,7 +21,7 @@ import type {
   RefreshRequestBody,
   VerifyRequestBody,
   AuthAPIResponseBody,
-  VerifiableRequest,
+  AuthAPIErrorBody,
   AuthModuleConfigs,
   AuthContext,
 } from '../types';
@@ -27,14 +29,14 @@ import type {
 import { getCookies, isSubpath } from './utils';
 import { CookieAccessor, CookieController } from './cookie';
 
-const getSignature = (req: VerifiableRequest) => {
+const getSignature = (req: IncomingMessage) => {
   const cookies = getCookies(req);
   return cookies ? cookies[SIGNATURE_COOKIE_KEY] : undefined;
 };
 
-const parseBody = async (req: IncomingMessage): null | Object => {
+const parseBody = async (req: IncomingMessage): Promise<null | any> => {
   try {
-    const rawBody = await getRawBody(req);
+    const rawBody = await getRawBody(req, { encoding: true });
     const body = JSON.parse(rawBody);
 
     return typeof body === 'object' ? body : null;
@@ -47,24 +49,30 @@ const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
 
 const respondAPIOk = (res: ServerResponse, platform: string, token: string) => {
   res.writeHead(200, CONTENT_TYPE_JSON);
-  res.end(JSON.stringify(({ platform, token }: AuthAPIResponseBody)));
+  const body: AuthAPIResponseBody = { platform, token };
+  res.end(JSON.stringify(body));
 };
 
 const respondAPIError = (res: ServerResponse, code: number, reason: string) => {
   res.writeHead(code, CONTENT_TYPE_JSON);
-  res.end(JSON.stringify({ error: { code, reason } }));
+  const body: AuthAPIErrorBody = { error: { code, reason } };
+  res.end(JSON.stringify(body));
 };
 
 type AuthVerifyResult<AuthData> =
-  | { success: true, token: string, auth: AuthContext<AuthData> }
-  | { success: false, token: void | string, code: number, reason: string };
+  | { success: true; token: string; auth: AuthContext<AuthData> }
+  | { success: false; token: void | string; code: number; reason: string };
 
+@provider<AuthServerController>({
+  lifetime: 'singleton',
+  deps: [AUTH_SERVER_AUTHORIZERS_I, AUTH_MODULE_CONFIGS_I],
+})
 class AuthServerController {
   authorizers: ServerAuthorizer<any, any>[];
   secret: string;
   entryPath: string;
 
-  _cookieController: CookieController;
+  private _cookieController: CookieController;
 
   constructor(
     authorizers: ServerAuthorizer<any, any>[],
@@ -79,7 +87,7 @@ class AuthServerController {
       cookiePath = '/',
       sameSite = 'None',
       secure = true,
-    }: AuthModuleConfigs = {}
+    }: AuthModuleConfigs = {} as any
   ) {
     invariant(secret, 'options.secret must not be empty');
     invariant(
@@ -114,7 +122,7 @@ class AuthServerController {
     req: IncomingMessage,
     res: ServerResponse
   ): Promise<void> {
-    const { pathname } = parseURL(req.url, true);
+    const { pathname } = parseURL(req.url as string, true);
 
     const subpath = getRelativePath(this.entryPath, pathname || '/');
     if (subpath === '' || subpath.slice(0, 2) === '..') {
@@ -156,19 +164,19 @@ class AuthServerController {
         new CookieAccessor(req, res, platform, this._cookieController)
       );
     } catch (err) {
-      if (!res.finished) {
+      if (!res.writableEnded) {
         respondAPIError(res, err.code || 500, err.message);
       }
       return;
     }
 
-    if (!res.finished) {
+    if (!res.writableEnded) {
       respondAPIError(res, 501, 'connection not closed by authorizer');
     }
   }
 
   async verifyAuth(
-    req: VerifiableRequest,
+    req: IncomingMessage,
     tokenProvided?: string
   ): Promise<AuthVerifyResult<any>> {
     let token = tokenProvided;
@@ -253,7 +261,7 @@ class AuthServerController {
     };
   }
 
-  async _handleSignRequest(req: IncomingMessage, res: ServerResponse) {
+  private async _handleSignRequest(req: IncomingMessage, res: ServerResponse) {
     try {
       const body = await parseBody(req);
       if (!body) {
@@ -261,7 +269,7 @@ class AuthServerController {
         return;
       }
 
-      const { platform, credential } = (body: SignRequestBody<any>);
+      const { platform, credential } = body as SignRequestBody<any>;
       if (!platform || !credential) {
         respondAPIError(res, 400, 'invalid sign params');
         return;
@@ -297,7 +305,10 @@ class AuthServerController {
     }
   }
 
-  async _handleRefreshRequest(req: IncomingMessage, res: ServerResponse) {
+  private async _handleRefreshRequest(
+    req: IncomingMessage,
+    res: ServerResponse
+  ) {
     // get signature from cookie
     const signature = getSignature(req);
     if (!signature) {
@@ -313,7 +324,7 @@ class AuthServerController {
         return;
       }
 
-      const { token } = (body: RefreshRequestBody);
+      const { token } = body as RefreshRequestBody;
       if (!token) {
         respondAPIError(res, 400, 'empty token received');
         return;
@@ -364,7 +375,10 @@ class AuthServerController {
     }
   }
 
-  async _handleVerifyRequest(req: IncomingMessage, res: ServerResponse) {
+  private async _handleVerifyRequest(
+    req: IncomingMessage,
+    res: ServerResponse
+  ) {
     // get signature from cookie
     const signature = getSignature(req);
     if (!signature) {
@@ -380,7 +394,7 @@ class AuthServerController {
         return;
       }
 
-      const { token } = (body: VerifyRequestBody);
+      const { token } = body as VerifyRequestBody;
       if (!token) {
         respondAPIError(res, 400, 'empty token received');
         return;
@@ -406,20 +420,20 @@ class AuthServerController {
     }
   }
 
-  async _verifyToken(
+  private async _verifyToken(
     token: string,
     signature: string,
-    jwtVerifyOpts?: Object
+    jwtVerifyOptions?: JWTVerifyOptions
   ): Promise<
-    | {| success: true, payload: AuthTokenPayload<any> |}
-    | {| success: false, code: number, reason: string |}
+    | { success: true; payload: AuthTokenPayload<any> }
+    | { success: false; code: number; reason: string }
   > {
     try {
       const payload: AuthTokenPayload<any> = await thenifiedly.call(
         verifyJWT,
         `${token}.${signature}`,
         this.secret,
-        jwtVerifyOpts
+        jwtVerifyOptions
       );
 
       return { success: true, payload };
@@ -433,7 +447,9 @@ class AuthServerController {
     }
   }
 
-  _getAuthorizerOf(platform: string): null | ServerAuthorizer<any, any> {
+  private _getAuthorizerOf(
+    platform: string
+  ): null | ServerAuthorizer<any, any> {
     for (const authorizer of this.authorizers) {
       if (platform === authorizer.platform) {
         return authorizer;
@@ -443,7 +459,4 @@ class AuthServerController {
   }
 }
 
-export default provider<AuthServerController>({
-  lifetime: 'singleton',
-  deps: [AUTH_SERVER_AUTHORIZERS_I, AUTH_MODULE_CONFIGS_I],
-})(AuthServerController);
+export default AuthServerController;

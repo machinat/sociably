@@ -1,16 +1,20 @@
-// @flow
-import type { ServerResponse } from 'http';
-import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
-import type { VerifiableRequest } from '../types';
+import type { IncomingMessage, ServerResponse } from 'http';
+import {
+  parse as parseCookie,
+  serialize as serializeCookie,
+  CookieSerializeOptions,
+} from 'cookie';
 
-export const respondRedirect = (res: ServerResponse, url: string) => {
+export const respondRedirect = (res: ServerResponse, url: string): void => {
   res.writeHead(302, { Location: url });
   res.end();
 };
 
 export const getCookies = (
-  req: VerifiableRequest
-): null | {| [string]: string |} => {
+  req: IncomingMessage
+): null | {
+  [key: string]: string;
+} => {
   if (!req.headers.cookie) {
     return null;
   }
@@ -23,27 +27,27 @@ export const setCookie = (
   res: ServerResponse,
   key: string,
   value: string,
-  options: Object
-) => {
+  options: CookieSerializeOptions
+): void => {
   const cookieDesc = serializeCookie(key, value, options);
   const cookiesAlreadySet = res.getHeader(SET_COOKIE);
 
-  const cookieToSet =
-    typeof cookiesAlreadySet === 'string'
-      ? [cookiesAlreadySet, cookieDesc]
-      : cookiesAlreadySet
+  res.setHeader(
+    SET_COOKIE,
+    Array.isArray(cookiesAlreadySet)
       ? [...cookiesAlreadySet, cookieDesc]
-      : cookieDesc;
-
-  res.setHeader(SET_COOKIE, cookieToSet);
+      : typeof cookiesAlreadySet === 'string'
+      ? [cookiesAlreadySet, cookieDesc]
+      : cookieDesc
+  );
 };
 
-export const isSubdomain = (domain: string, subdomain: string) =>
+export const isSubdomain = (domain: string, subdomain: string): boolean =>
   subdomain.slice(-domain.length) === domain &&
   (subdomain.length === domain.length ||
     subdomain[subdomain.length - domain.length - 1] === '.');
 
-export const isSubpath = (path: string, subpath: string) =>
+export const isSubpath = (path: string, subpath: string): boolean =>
   subpath.slice(0, path.length) === path &&
   (subpath.length === path.length ||
     path[path.length - 1] === '/' ||

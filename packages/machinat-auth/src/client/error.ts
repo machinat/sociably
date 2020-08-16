@@ -1,4 +1,3 @@
-// @flow
 class AuthError extends Error {
   code: number;
 

@@ -1,4 +1,4 @@
-// @flow
+import type { ServiceModule } from '@machinat/core/types';
 import { factory } from '@machinat/core/service';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
@@ -22,7 +22,7 @@ const Auth = {
   CONFIGS_I: AUTH_MODULE_CONFIGS_I,
   AUTHORIZERS_I: AUTH_SERVER_AUTHORIZERS_I,
 
-  initModule: (configs: AuthModuleConfigs) => ({
+  initModule: (configs: AuthModuleConfigs): ServiceModule => ({
     provisions: [
       AuthServerController,
       { provide: AUTH_MODULE_CONFIGS_I, withValue: configs },

@@ -1,4 +1,3 @@
-// @flow
 import { makeInterface } from '@machinat/core/service';
 import type { ServerAuthorizer, AuthModuleConfigs } from './types';
 

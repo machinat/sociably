@@ -1,68 +1,60 @@
-// @flow
-import type { IncomingMessage, ServerResponse } from 'http';
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
+import type { IncomingMessage, ServerResponse } from 'http';
 import type { CookieAccessor } from './server/cookie';
 
-type TokenBase = {|
-  iat: number,
-  exp: number,
-|};
+type TokenBase = {
+  iat: number;
+  exp: number;
+};
 
-export type AuthPayload<AuthData> = {|
-  platform: string,
-  data: AuthData,
-  refreshLimit?: number,
-  scope: { domain?: string, path: string },
-|};
+export type AuthPayload<AuthData> = {
+  platform: string;
+  data: AuthData;
+  refreshLimit?: number;
+  scope: { domain?: string; path: string };
+};
 
-export type AuthTokenPayload<AuthData> = {|
-  ...TokenBase,
-  ...AuthPayload<AuthData>,
-|};
+export type AuthTokenPayload<AuthData> = TokenBase & AuthPayload<AuthData>;
 
-export type StatePayload<StateData> = {|
-  platform: string,
-  state: StateData,
-|};
+export type StatePayload<StateData> = {
+  platform: string;
+  state: StateData;
+};
 
-export type StateTokenPayload<StateData> = {|
-  ...TokenBase,
-  ...StatePayload<StateData>,
-|};
+export type StateTokenPayload<StateData> = TokenBase & StatePayload<StateData>;
 
-export type ErrorPayload = {|
-  platform: string,
-  error: {| code: number, reason: string |},
-  scope: { domain?: string, path: string },
-|};
+export type ErrorMessage = { code: number; reason: string };
 
-export type ErrorTokenPayload = {|
-  ...TokenBase,
-  ...ErrorPayload,
-|};
+export type ErrorPayload = {
+  platform: string;
+  error: ErrorMessage;
+  scope: { domain?: string; path: string };
+};
 
-export type AuthContext<AuthData> = {|
-  platform: string,
-  user: MachinatUser,
-  channel: null | MachinatChannel,
-  loginAt: Date,
-  expireAt: Date,
-  data: AuthData,
-|};
+export type ErrorTokenPayload = TokenBase & ErrorPayload;
 
-export type AuthorizerRefineResult = {|
-  user: MachinatUser,
-  channel: null | MachinatChannel,
-|};
+export type AuthContext<AuthData> = {
+  platform: string;
+  user: MachinatUser;
+  channel: null | MachinatChannel;
+  loginAt: Date;
+  expireAt: Date;
+  data: AuthData;
+};
 
-type ErrorResult = {|
-  success: false,
-  code: number,
-  reason: string,
-|};
+export type AuthorizerRefineResult = {
+  user: MachinatUser;
+  channel: null | MachinatChannel;
+};
+
+type ErrorResult = {
+  success: false;
+  code: number;
+  reason: string;
+};
 
 type AuthorizerVerifyResult<AuthData> =
-  | {| success: true, data: AuthData, refreshable: boolean |}
+  | { success: true; data: AuthData; refreshable: boolean }
   | ErrorResult;
 
 export interface ServerAuthorizer<AuthData, Credential> {
@@ -104,7 +96,7 @@ export interface ServerAuthorizer<AuthData, Credential> {
 }
 
 type AuthorizerCredentialResult<Credential> =
-  | {| success: true, credential: Credential |}
+  | { success: true; credential: Credential }
   | ErrorResult;
 
 export interface ClientAuthorizer<AuthData, Credential> {
@@ -119,7 +111,7 @@ export interface ClientAuthorizer<AuthData, Credential> {
   init(
     authEntry: string,
     authFromServer: null | AuthData,
-    errorFromServer: null | {| code: number, reason: string |}
+    errorFromServer: null | ErrorMessage
   ): Promise<void>;
 
   /**
@@ -138,44 +130,37 @@ export interface ClientAuthorizer<AuthData, Credential> {
   refineAuth(data: AuthData): Promise<null | AuthorizerRefineResult>;
 }
 
-export type SignRequestBody<Credential> = {|
-  platform: string,
-  credential: Credential,
-|};
-
-export type RefreshRequestBody = {|
-  token: string,
-|};
-
-export type VerifyRequestBody = {|
-  token: string,
-|};
-
-export type AuthAPIResponseBody = {|
-  platform: string,
-  token: string,
-|};
-
-export type AuthAPIResponseErrorBody = {|
-  error: {
-    code: number,
-    reason: string,
-  },
-|};
-
-export type VerifiableRequest = {
-  headers: {| [string]: string |},
+export type SignRequestBody<Credential> = {
+  platform: string;
+  credential: Credential;
 };
 
-export type AuthModuleConfigs = {|
-  secret: string,
-  entryPath?: string,
-  tokenAge?: number,
-  authCookieAge?: number,
-  dataCookieAge?: number,
-  refreshPeriod?: number,
-  cookieDomain?: string,
-  cookiePath?: string,
-  sameSite?: 'Strict' | 'Lax' | 'None',
-  secure?: boolean,
-|};
+export type RefreshRequestBody = {
+  token: string;
+};
+
+export type VerifyRequestBody = {
+  token: string;
+};
+
+export type AuthAPIResponseBody = {
+  platform: string;
+  token: string;
+};
+
+export type AuthAPIErrorBody = {
+  error: ErrorMessage;
+};
+
+export type AuthModuleConfigs = {
+  secret: string;
+  entryPath?: string;
+  tokenAge?: number;
+  authCookieAge?: number;
+  dataCookieAge?: number;
+  refreshPeriod?: number;
+  cookieDomain?: string;
+  cookiePath?: string;
+  sameSite?: 'Strict' | 'Lax' | 'None';
+  secure?: boolean;
+};
