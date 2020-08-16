@@ -7,6 +7,16 @@
     "esModuleInterop": true,
     "jsx": "react",
     "jsxFactory": "Machinat.createElement",
-    "jsxFragmentFactory": "Machinat.Fragment"
+    "jsxFragmentFactory": "Machinat.Fragment",
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "@machinat/auth": ["packages/machinat-auth/src/index.js"],
+      "@machinat/auth/*": ["packages/machinat-auth/src/*"],
+      "@machinat/core": ["packages/machinat-core/src/index.js"],
+      "@machinat/core/*": ["packages/machinat-core/src/*"],
+      "@machinat/http": ["packages/machinat-http/src/index.js"],
+      "@machinat/http/*": ["packages/machinat-http/src/*"]
+    }
   }
 }

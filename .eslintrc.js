@@ -31,7 +31,6 @@ module.exports = {
       argsIgnorePattern: '^_',
       ignoreRestSiblings: true,
     }],
-    'no-cond-assign': 0,
     'no-unused-expressions': 0,
     'no-param-reassign': ['error', {
       props: true,
