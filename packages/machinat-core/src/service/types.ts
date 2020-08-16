@@ -46,7 +46,7 @@ export interface ServiceContainer<T> {
 
 export type ProviderBinding<T> = {
   provide: Interfaceable<T> | ClassType<T>;
-  withProvider: ServiceProvider<T>;
+  withProvider: ServiceProvider<T> | ClassType<T>;
   platforms?: string[];
 };
 

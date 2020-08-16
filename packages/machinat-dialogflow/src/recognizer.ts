@@ -1,30 +1,41 @@
-// @flow
 import invariant from 'invariant';
 import { provider } from '@machinat/core/service';
+import type { IntentRecognizerI } from '@machinat/core/base';
+import type { TextIntentDetectResult } from '@machinat/core/base/IntentRecognizerI';
 import type { MachinatChannel } from '@machinat/core/types';
-import { DialogFlowClientI, MODULE_CONFIGS_I } from './interface';
+import { SESSION_CLIENT_I, MODULE_CONFIGS_I } from './interface';
+import { SessionClient, DetactIntentPayload } from './types';
+import DialogFlowAPIError from './error';
 
 type RecognizerOptions = {
-  projectId: string,
-  defaultLanguageCode: string,
+  projectId: string;
+  defaultLanguageCode: string;
 };
 
 type DetectIntentOptions = {
-  languageCode?: string,
-  timeZone?: string,
-  geoLocation?: Object,
-  contexts?: string[],
-  resetContexts?: boolean,
+  languageCode?: string;
+  timeZone?: string;
+  geoLocation?: {
+    latitude?: number;
+    longitude?: number;
+  };
+  contexts?: string[];
+  resetContexts?: boolean;
 };
 
-class DialogFlowIntentRecognizer {
-  _client: DialogFlowClientI;
+@provider<DialogFlowIntentRecognizer>({
+  lifetime: 'scoped',
+  deps: [SESSION_CLIENT_I, MODULE_CONFIGS_I],
+})
+class DialogFlowIntentRecognizer
+  implements IntentRecognizerI<DetactIntentPayload> {
+  _client: SessionClient;
   projectId: string;
-  defaultLanguageCode: void | string;
+  defaultLanguageCode: undefined | string;
 
   constructor(
-    client: DialogFlowClientI,
-    { projectId, defaultLanguageCode }: RecognizerOptions = {}
+    client: SessionClient,
+    { projectId, defaultLanguageCode }: RecognizerOptions = {} as any
   ) {
     invariant(projectId, 'options.projectId should not be empty');
     invariant(
@@ -41,10 +52,15 @@ class DialogFlowIntentRecognizer {
     channel: MachinatChannel,
     text: string,
     options?: DetectIntentOptions
-  ) {
-    const sessionPath = this._client.sessionPath(this.projectId, channel.uid);
+  ): Promise<TextIntentDetectResult<DetactIntentPayload>> {
+    const sessionPath = this._client.projectAgentSessionPath(
+      this.projectId,
+      channel.uid
+    );
 
-    const [{ queryResult }] = await this._client.detectIntent({
+    const [
+      { responseId, webhookStatus, queryResult },
+    ] = await this._client.detectIntent({
       session: sessionPath,
       queryInput: {
         text: {
@@ -64,6 +80,10 @@ class DialogFlowIntentRecognizer {
         : undefined,
     });
 
+    if (!queryResult) {
+      throw new DialogFlowAPIError(responseId, webhookStatus);
+    }
+
     return {
       intentType: queryResult.intent?.displayName || undefined,
       confidence: queryResult.intentDetectionConfidence || 0,
@@ -72,7 +92,4 @@ class DialogFlowIntentRecognizer {
   }
 }
 
-export default provider<DialogFlowIntentRecognizer>({
-  lifetime: 'scoped',
-  deps: [DialogFlowClientI, MODULE_CONFIGS_I],
-})(DialogFlowIntentRecognizer);
+export default DialogFlowIntentRecognizer;

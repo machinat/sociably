@@ -21,7 +21,7 @@ const detectTextResponse = {
 
 const sessionPath = 'projects/foo/agent/sessions/bar';
 const client = moxy({
-  sessionPath: () => sessionPath,
+  projectAgentSessionPath: () => sessionPath,
   detectIntent: () => [detectTextResponse],
 });
 
@@ -59,8 +59,8 @@ describe('#detectText()', () => {
       payload: detectTextResponse.queryResult,
     });
 
-    expect(client.sessionPath.mock).toHaveBeenCalledTimes(1);
-    expect(client.sessionPath.mock).toHaveBeenCalledWith(
+    expect(client.projectAgentSessionPath.mock).toHaveBeenCalledTimes(1);
+    expect(client.projectAgentSessionPath.mock).toHaveBeenCalledWith(
       '_PROJECT_ID_',
       'chat.with.somoeone'
     );
@@ -93,8 +93,8 @@ describe('#detectText()', () => {
       payload: detectTextResponse.queryResult,
     });
 
-    expect(client.sessionPath.mock).toHaveBeenCalledTimes(1);
-    expect(client.sessionPath.mock).toHaveBeenCalledWith(
+    expect(client.projectAgentSessionPath.mock).toHaveBeenCalledTimes(1);
+    expect(client.projectAgentSessionPath.mock).toHaveBeenCalledWith(
       '_PROJECT_ID_',
       'foo.chat'
     );

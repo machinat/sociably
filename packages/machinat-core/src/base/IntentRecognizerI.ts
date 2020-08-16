@@ -1,7 +1,7 @@
 import type { MachinatChannel } from '../types';
 import { abstractInterface } from '../service';
 
-interface TextIntentDetectResult<Payload> {
+export interface TextIntentDetectResult<Payload> {
   intentType?: string;
   confidence: number;
   payload: Payload;
@@ -14,7 +14,7 @@ abstract class IntentRecognizerI<Payload> {
   abstract detectText(
     channel: MachinatChannel,
     text: string
-  ): TextIntentDetectResult<Payload>;
+  ): Promise<TextIntentDetectResult<Payload>>;
 }
 
 export default IntentRecognizerI;

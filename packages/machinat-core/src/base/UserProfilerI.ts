@@ -1,7 +1,7 @@
 import type { MachinatUser } from '../types';
 import { abstractInterface } from '../service';
 
-interface MachinatUserProfile {
+export interface MachinatUserProfile {
   readonly platform: string;
   readonly id: string;
   readonly name: string;

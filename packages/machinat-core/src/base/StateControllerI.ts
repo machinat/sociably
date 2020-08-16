@@ -1,7 +1,7 @@
 import type { MachinatChannel, MachinatUser } from '../types';
 import { abstractInterface } from '../service';
 
-interface StateAccessor {
+export interface StateAccessor {
   get<T>(key: string): Promise<void | T>;
   set<T>(key: string, updator: (state: void | T) => void | T): Promise<boolean>;
   delete(key: string): Promise<boolean>;
