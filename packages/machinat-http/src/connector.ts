@@ -1,9 +1,8 @@
-// @flow
 import { parse as parseURL } from 'url';
 import { STATUS_CODES as HTTP_STATUS_CODES } from 'http';
-import { relative as getRelativePath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { Socket } from 'net';
+import { relative as getRelativePath } from 'path';
+import { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
 import { provider } from '@machinat/core/service';
 import {
@@ -12,7 +11,7 @@ import {
   HTTP_REQUEST_ROUTINGS_I,
   HTTP_UPGRADE_ROUTINGS_I,
 } from './interface';
-import type {
+import {
   ServerListenOptions,
   RequestHandler,
   UpgradeHandler,
@@ -27,8 +26,8 @@ const isSubPath = (parent: string, child: string) => {
 };
 
 const verifyRoutesConfliction = (
-  existedRoutings: $ReadOnlyArray<{ name?: string, path: string }>,
-  routing: { name?: string, path: string }
+  existedRoutings: ReadonlyArray<{ name?: string; path: string }>,
+  routing: { name?: string; path: string }
 ) => {
   for (const { name, path } of existedRoutings) {
     if (isSubPath(path, routing.path) || isSubPath(routing.path, path)) {
@@ -47,7 +46,7 @@ const endRes = (res: ServerResponse, code: number) => {
 };
 
 const respondUpgrade = (socket: Socket, code: number) => {
-  const codeName = HTTP_STATUS_CODES[code];
+  const codeName = HTTP_STATUS_CODES[code] as string;
   socket.write(
     `HTTP/1.1 ${code} ${codeName}\r\n` +
       'Connection: close\r\n' +
@@ -58,16 +57,28 @@ const respondUpgrade = (socket: Socket, code: number) => {
   socket.destroy();
 };
 
+@provider<HTTPConnector>({
+  lifetime: 'singleton',
+  deps: [
+    HTTP_MODULE_CONFIGS_I,
+    HTTP_REQUEST_ROUTINGS_I,
+    HTTP_UPGRADE_ROUTINGS_I,
+  ],
+})
 class HTTPConnector {
-  _requestRoutings: HTTPRequestRouting[];
-  _upgradeRoutings: HTTPUpgradeRouting[];
+  private _requestRoutings: HTTPRequestRouting[];
+  private _upgradeRoutings: HTTPUpgradeRouting[];
 
-  constructor() {
-    this._requestRoutings = [];
-    this._upgradeRoutings = [];
+  constructor(
+    configs: HTTPModuleConfigs,
+    requestRoutings?: null | HTTPRequestRouting[],
+    upgradeRoutings?: null | HTTPUpgradeRouting[]
+  ) {
+    this._requestRoutings = requestRoutings ? [...requestRoutings] : [];
+    this._upgradeRoutings = upgradeRoutings ? [...upgradeRoutings] : [];
   }
 
-  addRequestRouting(...routings: HTTPRequestRouting[]) {
+  addRequestRouting(...routings: HTTPRequestRouting[]): this {
     for (const routing of routings) {
       verifyRoutesConfliction(this._requestRoutings, routing);
 
@@ -77,7 +88,7 @@ class HTTPConnector {
     return this;
   }
 
-  addUpgradeRouting(...routings: HTTPUpgradeRouting[]) {
+  addUpgradeRouting(...routings: HTTPUpgradeRouting[]): this {
     for (const routing of routings) {
       verifyRoutesConfliction(this._upgradeRoutings, routing);
 
@@ -87,17 +98,20 @@ class HTTPConnector {
     return this;
   }
 
-  async connect(server: HTTPServerI, options?: ServerListenOptions) {
-    server.addListener('request', this._makeRequestCallback());
+  async connect(
+    server: HTTPServerI,
+    options?: ServerListenOptions
+  ): Promise<void> {
+    server.addListener('request', this.makeRequestCallback());
     if (this._upgradeRoutings.length > 0) {
-      server.addListener('upgrade', this._makeUpgradeCallback());
+      server.addListener('upgrade', this.makeUpgradeCallback());
     }
 
     await thenifiedly.callMethod('listen', server, options || {});
   }
 
-  _makeRequestCallback(): RequestHandler {
-    const requestRoutings = this._requestRoutings;
+  makeRequestCallback(): RequestHandler {
+    const requestRoutings = [...this._requestRoutings];
     if (requestRoutings.length === 0) {
       return (_, res) => {
         endRes(res, 403);
@@ -112,7 +126,7 @@ class HTTPConnector {
     }
 
     return (req: IncomingMessage, res: ServerResponse) => {
-      const { pathname } = parseURL(req.url);
+      const { pathname } = parseURL(req.url as string);
       if (!pathname) {
         endRes(res, 400);
         return;
@@ -128,8 +142,8 @@ class HTTPConnector {
     };
   }
 
-  _makeUpgradeCallback(): UpgradeHandler {
-    const upgradeRoutings = this._upgradeRoutings;
+  makeUpgradeCallback(): UpgradeHandler {
+    const upgradeRoutings = [...this._upgradeRoutings];
     if (upgradeRoutings.length === 0) {
       return (_, socket) => {
         respondUpgrade(socket, 403);
@@ -144,7 +158,7 @@ class HTTPConnector {
     }
 
     return (req: IncomingMessage, socket: Socket, head: Buffer) => {
-      const { pathname } = parseURL(req.url);
+      const { pathname } = parseURL(req.url as string);
       if (!pathname) {
         respondUpgrade(socket, 403);
         return;
@@ -161,23 +175,4 @@ class HTTPConnector {
   }
 }
 
-export default provider<HTTPConnector>({
-  lifetime: 'singleton',
-  deps: [
-    HTTP_MODULE_CONFIGS_I,
-    HTTP_REQUEST_ROUTINGS_I,
-    HTTP_UPGRADE_ROUTINGS_I,
-  ],
-  factory: (
-    configs: HTTPModuleConfigs,
-    requestRoutings: HTTPRequestRouting[],
-    upgradeRoutings: HTTPUpgradeRouting[]
-  ) => {
-    const connector = new HTTPConnector();
-
-    connector.addRequestRouting(...requestRoutings);
-    connector.addUpgradeRouting(...upgradeRoutings);
-
-    return connector;
-  },
-})(HTTPConnector);
+export default HTTPConnector;

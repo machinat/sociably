@@ -27,7 +27,7 @@ it('export interfaces', () => {
   expect({ $$name, $$multi, $$typeof }).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "AbstractServer",
+      "$$name": "HTTPServerI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);

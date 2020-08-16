@@ -1,7 +1,6 @@
-// @flow
 import { createServer } from 'http';
 import { container, factory } from '@machinat/core/service';
-import type { ServiceModule } from '@machinat/core/types';
+import { ServiceModule } from '@machinat/core/types';
 import {
   HTTPServerI,
   HTTP_MODULE_CONFIGS_I,
@@ -9,7 +8,7 @@ import {
   HTTP_UPGRADE_ROUTINGS_I,
 } from './interface';
 import HTTPConnector from './connector';
-import type { HTTPModuleConfigs } from './types';
+import { HTTPModuleConfigs } from './types';
 
 const nodeServerFactory = factory({
   lifetime: 'singleton',
@@ -28,7 +27,7 @@ const HTTP = {
       { provide: HTTP_MODULE_CONFIGS_I, withValue: configsInput },
       { provide: HTTPServerI, withProvider: nodeServerFactory },
     ],
-    startHook: container({
+    startHook: container<Promise<void>>({
       deps: [HTTPConnector, HTTPServerI, HTTP_MODULE_CONFIGS_I],
     })(
       (

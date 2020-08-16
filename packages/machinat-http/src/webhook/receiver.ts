@@ -1,9 +1,9 @@
-// @flow
 import type { IncomingMessage, ServerResponse } from 'http';
 import readRawBody from 'raw-body';
+import type { RequestHandler } from '../types';
 import type { WebhookHandler } from './types';
 
-const RAW_BODY_OPTION = { encoding: true };
+const RAW_BODY_OPTION = { encoding: true as const };
 
 class WebhookReceiver {
   _handleWebhook: WebhookHandler;
@@ -12,13 +12,16 @@ class WebhookReceiver {
     this._handleWebhook = webhookHandler;
   }
 
-  handleRequestCallback() {
+  handleRequestCallback(): RequestHandler {
     return this.handleRequest.bind(this);
   }
 
-  async handleRequest(req: IncomingMessage, res: ServerResponse) {
+  async handleRequest(
+    req: IncomingMessage,
+    res: ServerResponse
+  ): Promise<void> {
     try {
-      let body;
+      let body: undefined | string;
       if (
         req.method === 'POST' ||
         req.method === 'PUT' ||
@@ -29,10 +32,10 @@ class WebhookReceiver {
       }
 
       const metadata = {
-        source: 'webhook',
+        source: 'webhook' as const,
         request: {
-          method: req.method,
-          url: req.url,
+          method: req.method as string,
+          url: req.url as string,
           headers: req.headers,
           body,
         },

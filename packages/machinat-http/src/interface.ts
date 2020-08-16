@@ -1,24 +1,28 @@
-// @flow
 /* eslint-disable class-methods-use-this */
+import type { IncomingMessage, ServerResponse } from 'http';
+import type { Socket } from 'net';
 import { makeInterface, abstractInterface } from '@machinat/core/service';
-import type {
+import {
   ServerListenOptions,
   HTTPModuleConfigs,
   HTTPRequestRouting,
   HTTPUpgradeRouting,
 } from './types';
 
-class AbstractServer {
-  listen(_options: ServerListenOptions, _cb: () => void): void {
-    throw new TypeError('method called on abstract class');
-  }
+@abstractInterface<HTTPServerI>()
+export abstract class HTTPServerI {
+  abstract listen(options: ServerListenOptions, cb: () => void): void;
 
-  addListener(_name: string, _cb: Function): void {
-    throw new TypeError('method called on abstract class');
-  }
+  abstract addListener(
+    name: 'request',
+    cb: (req: IncomingMessage, res: ServerResponse) => void
+  ): void;
+
+  abstract addListener(
+    name: 'upgrade',
+    cb: (req: IncomingMessage, socket: Socket, head: Buffer) => void
+  ): void;
 }
-
-export const HTTPServerI = abstractInterface<AbstractServer>()(AbstractServer);
 
 export const HTTP_MODULE_CONFIGS_I = makeInterface<HTTPModuleConfigs>({
   name: 'HTTPModuleConfigs',
