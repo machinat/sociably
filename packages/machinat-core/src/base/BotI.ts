@@ -2,7 +2,10 @@ import type { MachinatBot, MachinatChannel, MachinatNode } from '../types';
 import type { DispatchResponse } from '../engine/types';
 import { abstractInterface } from '../service';
 
-export abstract class AbstractBot<Channel extends MachinatChannel, Job, Result>
+@abstractInterface<BotI<any, any, any>>({
+  name: 'BaseBot',
+})
+abstract class BotI<Channel extends MachinatChannel, Job, Result>
   implements MachinatBot<Channel, Job, Result> {
   abstract render(
     channel: Channel,
@@ -14,6 +17,4 @@ export abstract class AbstractBot<Channel extends MachinatChannel, Job, Result>
   abstract stop(): Promise<void>;
 }
 
-export default abstractInterface<AbstractBot<any, any, any>>({
-  name: 'BaseBot',
-})(AbstractBot);
+export default BotI;

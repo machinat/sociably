@@ -2,9 +2,9 @@ import ProvisionMap from './provisionMap';
 import type {
   Interfaceable,
   ServiceProvider,
-  InjectRequirement,
+  ServiceRequirement,
   ServiceCache,
-  ProvisionBinding,
+  ServiceBinding,
 } from './types';
 
 export const ENUM_PHASE_BOOTSTRAP = 1;
@@ -25,29 +25,29 @@ type PhaseEnum =
 type MakeContext = {
   platform: void | string;
   phase: PhaseEnum;
-  singletonCache: ServiceCache;
-  scopedCache: ServiceCache;
-  transientCache: ServiceCache;
-  runtimeProvisions: null | Map<Interfaceable, any>;
+  singletonCache: ServiceCache<any>;
+  scopedCache: ServiceCache<any>;
+  transientCache: ServiceCache<any>;
+  runtimeProvisions: null | Map<Interfaceable<any>, any>;
 };
 
 /**
  * ServiceMaker makes services according to the services mapping resolved
  */
 export default class ServiceMaker {
-  provisionMapping: ProvisionMap<ProvisionBinding>;
+  provisionMapping: ProvisionMap<ServiceBinding<any>>;
 
-  constructor(provisionMapping: ProvisionMap<ProvisionBinding>) {
+  constructor(provisionMapping: ProvisionMap<ServiceBinding<any>>) {
     this.provisionMapping = provisionMapping;
   }
 
   makeRequirements(
-    requirements: InjectRequirement[],
+    requirements: ServiceRequirement<any>[],
     phase: PhaseEnum,
     platform: void | string,
-    singletonCache: ServiceCache,
-    scopedCache: ServiceCache,
-    runtimeProvisions: null | Map<Interfaceable, any>
+    singletonCache: ServiceCache<any>,
+    scopedCache: ServiceCache<any>,
+    runtimeProvisions: null | Map<Interfaceable<any>, any>
   ): any[] {
     const services = this._makeRequirements(requirements, {
       platform,
@@ -62,13 +62,13 @@ export default class ServiceMaker {
   }
 
   makeProvider(
-    provider: ServiceProvider<any, any>,
+    provider: ServiceProvider<any>,
     phase: PhaseEnum,
     platform: void | string,
-    singletonCache: ServiceCache,
-    scopedCache: ServiceCache,
-    runtimeProvisions: null | Map<Interfaceable, any>
-  ): ServiceProvider<any, any> {
+    singletonCache: ServiceCache<any>,
+    scopedCache: ServiceCache<any>,
+    runtimeProvisions: null | Map<Interfaceable<any>, any>
+  ): ServiceProvider<any> {
     const instance = this._makeProvider(provider, {
       platform,
       phase,
@@ -81,7 +81,7 @@ export default class ServiceMaker {
     return instance;
   }
 
-  private _makeBinding(binding: ProvisionBinding, context: MakeContext) {
+  private _makeBinding(binding: ServiceBinding<any>, context: MakeContext) {
     if ('withValue' in binding) {
       return binding.withValue;
     }
@@ -89,10 +89,7 @@ export default class ServiceMaker {
     return this._makeProvider(binding.withProvider, context);
   }
 
-  private _makeProvider(
-    provider: ServiceProvider<any, any>,
-    context: MakeContext
-  ) {
+  private _makeProvider(provider: ServiceProvider<any>, context: MakeContext) {
     const { $$lifetime: lifetime } = provider;
     const { singletonCache, scopedCache, transientCache, phase } = context;
 
@@ -125,7 +122,10 @@ export default class ServiceMaker {
     return instance;
   }
 
-  private _makeRequirements(deps: InjectRequirement[], context: MakeContext) {
+  private _makeRequirements(
+    deps: ServiceRequirement<any>[],
+    context: MakeContext
+  ) {
     const { platform, runtimeProvisions } = context;
     const args: (any | any[])[] = [];
 

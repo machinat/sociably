@@ -1,7 +1,7 @@
 import type { Interfaceable } from './types';
 
 type ProvisionBranches<T> = Map<
-  Interfaceable,
+  Interfaceable<T>,
   {
     default: null | T;
     platforms: { [key: string]: T };
@@ -10,7 +10,7 @@ type ProvisionBranches<T> = Map<
 
 const setBranch = <T>(
   branches: ProvisionBranches<T>,
-  target: Interfaceable,
+  target: Interfaceable<T>,
   platforms: string[] | null | undefined,
   value: T
 ): null | T[] => {
@@ -55,7 +55,7 @@ const setBranch = <T>(
 
 const setMultiBranch = <T>(
   branches: ProvisionBranches<T[]>,
-  target: Interfaceable,
+  target: Interfaceable<T>,
   platforms: string[] | null | undefined,
   value: T
 ) => {
@@ -175,7 +175,7 @@ export default class ProvisionMap<T> {
    * platform, return null if no binding bound. If interface.$$multi is true
    * return all bindings as an array.
    */
-  get(target: Interfaceable, platform: void | string): null | T | T[] {
+  get(target: Interfaceable<T>, platform: void | string): null | T | T[] {
     if (target.$$multi) {
       const existed = this._multiMapping.get(target);
       if (!existed) {
@@ -206,7 +206,11 @@ export default class ProvisionMap<T> {
    * the binding would always being added no matter any binding bound already,
    * otherwise the existed binding would be replaced.
    */
-  set(target: Interfaceable, platforms: null | string[], value: T): null | T[] {
+  set(
+    target: Interfaceable<T>,
+    platforms: null | string[],
+    value: T
+  ): null | T[] {
     let replaced: null | T[] = null;
     if (target.$$multi) {
       setMultiBranch(this._multiMapping, target, platforms, value);
@@ -224,7 +228,11 @@ export default class ProvisionMap<T> {
     return this;
   }
 
-  *iterAll(): Generator<[Interfaceable, void | string, T | T[]], void, void> {
+  *iterAll(): Generator<
+    [Interfaceable<T>, void | string, T | T[]],
+    void,
+    void
+  > {
     for (const [target, provided] of this._mapping) {
       const { default: defaultValue, platforms } = provided;
       if (defaultValue) {
@@ -250,7 +258,7 @@ export default class ProvisionMap<T> {
 
   *iterPlatform(
     platform: void | string
-  ): Generator<[Interfaceable, T | T[]], void, void> {
+  ): Generator<[Interfaceable<T>, T | T[]], void, void> {
     for (const [target, provided] of this._mapping) {
       const { default: defaultValue, platforms } = provided;
 

@@ -2,7 +2,7 @@
 import type { InnerRenderFn, IntermediateSegment } from './renderer/types';
 import type {
   Interfaceable,
-  ProvisionBinding,
+  AppProvision,
   ServiceContainer,
   ServiceProvider,
   ServiceInterface,
@@ -105,7 +105,7 @@ export type FragmentElement = MachinatElement<
 >;
 
 export type ProviderElement = MachinatElement<
-  { provide: Interfaceable; value: any; children: MachinatNode },
+  { provide: Interfaceable<any>; value: any; children: MachinatNode },
   typeof MACHINAT_PROVIDER_TYPE
 >;
 
@@ -190,7 +190,7 @@ export type DispatchMiddleware<
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
 export type ServiceModule = {
-  provisions: (ServiceProvider<any, any> | ProvisionBinding)[];
+  provisions: (ServiceProvider<any> | AppProvision<any>)[];
   startHook?: null | ServiceContainer<Promise<void>>;
 };
 
@@ -203,10 +203,9 @@ export type PlatformModule<
 > = {
   name: string;
   mounterInterface: ServiceInterface<
-    PlatformMounter<Context, EventResp, Job, Frame, Result>,
-    any
+    PlatformMounter<Context, EventResp, Job, Frame, Result>
   >;
-  provisions: (ServiceProvider<any, any> | ProvisionBinding)[];
+  provisions: (ServiceProvider<any> | AppProvision<any>)[];
   startHook?: ServiceContainer<Promise<void>>;
   eventMiddlewares?: (
     | EventMiddleware<Context, EventResp>
@@ -221,7 +220,7 @@ export type PlatformModule<
 export type AppConfig<Context extends EventContext<any, any, any, any, any>> = {
   platforms?: PlatformModule<Context, any, any, any, any>[];
   modules?: ServiceModule[];
-  bindings?: (ServiceProvider<any, any> | ProvisionBinding)[];
+  bindings?: (ServiceProvider<any> | AppProvision<any>)[];
 };
 
 export type InitScopeFn = () => ServiceScope;

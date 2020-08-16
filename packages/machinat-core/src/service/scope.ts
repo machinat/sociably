@@ -1,12 +1,12 @@
 import invariant from 'invariant';
-import { polishInjectRequirement, isServiceContainer } from './utils';
-import { MACHINAT_SERVICES_PROVIDER } from '../symbol';
+import { polishServiceRequirement, isServiceContainer } from './utils';
+import { MACHINAT_SERVICES_INTERFACE } from '../symbol';
 import ServiceMaker, { ENUM_PHASE_INJECTION } from './maker';
 import type {
   ServiceCache,
   ServiceContainer,
   Interfaceable,
-  InjectRequirement,
+  ServiceDependency,
 } from './types';
 
 /**
@@ -14,20 +14,20 @@ import type {
  * executed under the same scope share the same singleton and scoped services.
  */
 export default class ServiceScope {
-  static $$typeof: typeof MACHINAT_SERVICES_PROVIDER = MACHINAT_SERVICES_PROVIDER;
+  static $$typeof: typeof MACHINAT_SERVICES_INTERFACE = MACHINAT_SERVICES_INTERFACE;
   static $$name = 'ServiceScope';
   static $$multi = false;
 
   platform: void | string;
   maker: ServiceMaker;
-  singletonCache: ServiceCache;
-  scopeCache: ServiceCache;
+  singletonCache: ServiceCache<any>;
+  scopeCache: ServiceCache<any>;
 
   constructor(
     platform: void | string,
     maker: ServiceMaker,
-    singletonCache: ServiceCache,
-    scopedCache?: ServiceCache
+    singletonCache: ServiceCache<any>,
+    scopedCache?: ServiceCache<any>
   ) {
     this.platform = platform;
     this.maker = maker;
@@ -36,10 +36,10 @@ export default class ServiceScope {
   }
 
   useServices(
-    targets: ReadonlyArray<Interfaceable | InjectRequirement>,
-    runtimeProvisions?: Map<Interfaceable, any>
+    targets: ServiceDependency<any>[],
+    runtimeProvisions?: Map<Interfaceable<any>, any>
   ): any[] {
-    const requirements = targets.map(polishInjectRequirement);
+    const requirements = targets.map(polishServiceRequirement);
 
     const provisions = runtimeProvisions
       ? new Map(runtimeProvisions)
@@ -60,7 +60,7 @@ export default class ServiceScope {
 
   injectContainer<T>(
     container: ServiceContainer<T>,
-    runtimeProvisions?: Map<Interfaceable, any>
+    runtimeProvisions?: Map<Interfaceable<any>, any>
   ): T {
     invariant(isServiceContainer(container), 'invalid container');
 
@@ -73,7 +73,7 @@ export default class ServiceScope {
     return container(...args);
   }
 
-  duplicate(platform: void | string) {
+  duplicate(platform: void | string): ServiceScope {
     return new ServiceScope(
       platform,
       this.maker,

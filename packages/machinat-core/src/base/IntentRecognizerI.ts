@@ -7,13 +7,14 @@ interface TextIntentDetectResult<Payload> {
   payload: Payload;
 }
 
-export abstract class AbstractIntentRecognizer<Payload> {
+@abstractInterface<IntentRecognizerI<any>>({
+  name: 'BaseIntentRecognizer',
+})
+abstract class IntentRecognizerI<Payload> {
   abstract detectText(
     channel: MachinatChannel,
     text: string
   ): TextIntentDetectResult<Payload>;
 }
 
-export default abstractInterface<AbstractIntentRecognizer<any>>({
-  name: 'BaseIntentRecognizer',
-})(AbstractIntentRecognizer);
+export default IntentRecognizerI;

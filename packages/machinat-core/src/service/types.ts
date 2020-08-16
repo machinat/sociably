@@ -8,54 +8,59 @@ export { default as ServiceScope } from './scope';
 
 export type ServiceLifetime = 'singleton' | 'scoped' | 'transient';
 
-export type ServiceInterface<_T, K> = K & {
+export interface ServiceInterface<T> {
   $$name: string;
   $$typeof: typeof MACHINAT_SERVICES_INTERFACE;
   $$multi: boolean;
-};
+}
 
-export type ServiceProvider<T, K> = K & {
+export type ServiceProvider<T> = {
   $$name: string;
   $$typeof: typeof MACHINAT_SERVICES_PROVIDER;
   $$lifetime: ServiceLifetime;
-  $$deps: InjectRequirement[]; // eslint-disable-line no-use-before-define
+  $$deps: ServiceRequirement<T>[];
   $$factory: (...args: any[]) => T;
   $$multi: false;
 };
 
-export type Interfaceable = {
-  $$name: string;
-  $$multi: boolean;
-  $$typeof:
-    | typeof MACHINAT_SERVICES_INTERFACE
-    | typeof MACHINAT_SERVICES_PROVIDER;
-};
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type ClassType<T> = Function & { prototype: T };
 
-export type InjectRequirement = {
-  require: Interfaceable;
+export type Interfaceable<T> = ServiceInterface<T> | ServiceProvider<T>;
+
+export type ServiceRequirement<T> = {
+  require: Interfaceable<T>;
   optional: boolean;
 };
+
+export type ServiceDependency<T> =
+  | ServiceRequirement<T>
+  | Interfaceable<T>
+  | ClassType<T>;
 
 export interface ServiceContainer<T> {
   (...args: any[]): T;
   $$typeof: typeof MACHINAT_SERVICES_CONTAINER;
-  $$deps: InjectRequirement[];
+  $$deps: ServiceRequirement<T>[];
 }
 
-export type ProviderBinding = {
-  provide: Interfaceable;
-  withProvider: ServiceProvider<any, any>;
+export type ProviderBinding<T> = {
+  provide: Interfaceable<T> | ClassType<T>;
+  withProvider: ServiceProvider<T>;
   platforms?: string[];
 };
 
-export type ValueBinding = {
-  provide: Interfaceable;
-  withValue: any;
+export type ValueBinding<T> = {
+  provide: Interfaceable<T> | ClassType<T>;
+  withValue: T;
   platforms?: string[];
 };
 
-export type ProvisionBinding = ProviderBinding | ValueBinding;
+export type ServiceBinding<T> = ProviderBinding<T> | ValueBinding<T>;
 
-export type ServiceProvidable = ServiceProvider<any, any> | ProvisionBinding;
+export type AppProvision<T> =
+  | ServiceBinding<T>
+  | ServiceProvider<T>
+  | ClassType<T>;
 
-export type ServiceCache = Map<ServiceProvider<any, any>, any>;
+export type ServiceCache<T> = Map<ServiceProvider<T>, T>;

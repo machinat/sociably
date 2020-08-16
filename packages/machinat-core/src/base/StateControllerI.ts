@@ -9,7 +9,10 @@ interface StateAccessor {
   clear(): Promise<void | number>;
 }
 
-export abstract class AbstractStateController {
+@abstractInterface<StateControllerI>({
+  name: 'BaseStateController',
+})
+abstract class StateControllerI {
   abstract channelState(channel: MachinatChannel): StateAccessor;
 
   abstract userState(user: MachinatUser): StateAccessor;
@@ -17,6 +20,4 @@ export abstract class AbstractStateController {
   abstract globalState(name: string): StateAccessor;
 }
 
-export default abstractInterface<AbstractStateController>({
-  name: 'BaseStateController',
-})(AbstractStateController);
+export default StateControllerI;

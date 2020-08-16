@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import invariant from 'invariant';
 import {
   MACHINAT_SERVICES_PROVIDER,
@@ -11,13 +10,14 @@ import type {
   ServiceProvider,
   ServiceInterface,
   Interfaceable,
-  InjectRequirement,
+  ClassType,
+  ServiceRequirement,
 } from './types';
-import { polishInjectRequirement } from './utils';
+import { polishServiceRequirement } from './utils';
 
 type InjectOptions = {
   name?: string;
-  deps?: (Interfaceable | InjectRequirement)[];
+  deps?: (ServiceRequirement<any> | Interfaceable<any> | ClassType<any>)[];
 };
 
 const validateLifetime = (lifetime: string) => {
@@ -35,7 +35,7 @@ const validateLifetime = (lifetime: string) => {
 export const container = <T>({ name, deps = [] }: InjectOptions = {}) => (
   fn: (...args: any[]) => T
 ): ServiceContainer<T> => {
-  const requirements = deps.map(polishInjectRequirement);
+  const requirements = deps.map(polishServiceRequirement);
 
   return Object.defineProperties(fn, {
     $$typeof: { value: MACHINAT_SERVICES_CONTAINER },
@@ -46,12 +46,13 @@ export const container = <T>({ name, deps = [] }: InjectOptions = {}) => (
 
 type ProvideOptions<T> = {
   name?: string;
-  deps?: (Interfaceable | InjectRequirement)[];
+  deps?: (ServiceRequirement<any> | Interfaceable<any> | ClassType<any>)[];
   factory?: (...args: any[]) => T;
   lifetime: ServiceLifetime;
 };
 
-type Constructor<T> = {
+// eslint-disable-next-line @typescript-eslint/ban-types
+type Constructor<T> = Function & {
   new (...args: any[]): T;
 };
 
@@ -65,16 +66,16 @@ export const provider = <T>({
   factory,
   lifetime,
 }: ProvideOptions<T>) => (
-  Klazz: Constructor<T>
-): ServiceProvider<T, Constructor<T>> => {
+  klazz: Constructor<T>
+): Constructor<T> & ServiceProvider<T> => {
   validateLifetime(lifetime);
-  const requirements = deps.map(polishInjectRequirement);
+  const requirements = deps.map(polishServiceRequirement);
 
-  return Object.defineProperties(Klazz, {
-    $$name: { value: name || Klazz.name },
+  return Object.defineProperties(klazz, {
+    $$name: { value: name || klazz.name },
     $$typeof: { value: MACHINAT_SERVICES_PROVIDER },
     $$deps: { value: requirements },
-    $$factory: { value: factory || ((...args) => new Klazz(...args)) },
+    $$factory: { value: factory || ((...args) => new klazz(...args)) }, // eslint-disable-line new-cap
     $$lifetime: { value: lifetime },
     $$multi: { value: false },
   });
@@ -82,7 +83,7 @@ export const provider = <T>({
 
 type FactoryOptions = {
   name?: string;
-  deps?: (Interfaceable | InjectRequirement)[];
+  deps?: (ServiceRequirement<any> | Interfaceable<any> | ClassType<any>)[];
   lifetime: ServiceLifetime;
 };
 
@@ -91,9 +92,9 @@ type FactoryOptions = {
  */
 export const factory = <T>({ name, deps = [], lifetime }: FactoryOptions) => (
   factoryFn: (...args: any[]) => T
-): ServiceProvider<T, (...args: any[]) => T> => {
+): ServiceProvider<T> => {
   validateLifetime(lifetime);
-  const requirements = deps.map(polishInjectRequirement);
+  const requirements = deps.map(polishServiceRequirement);
 
   return Object.defineProperties(factoryFn, {
     $$name: { value: name || factoryFn.name },
@@ -120,7 +121,7 @@ export const abstractInterface = <T>({
   name,
 }: AnstractInterfaceOptions = {}) => (
   klazz: AbstractConstructor<T>
-): ServiceInterface<T, AbstractConstructor<T>> => {
+): Constructor<T> & Interfaceable<T> => {
   return Object.defineProperties(klazz, {
     $$typeof: { value: MACHINAT_SERVICES_INTERFACE },
     $$name: { value: name || klazz.name },
@@ -139,7 +140,7 @@ type makeInterfaceOptions = {
 export const makeInterface = <T>({
   multi = false,
   name,
-}: makeInterfaceOptions): ServiceInterface<T, unknown> => ({
+}: makeInterfaceOptions): ServiceInterface<T> => ({
   $$name: name,
   $$multi: multi,
   $$typeof: MACHINAT_SERVICES_INTERFACE,

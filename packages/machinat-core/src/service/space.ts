@@ -3,52 +3,60 @@ import ProvisionMap from './provisionMap';
 import ServiceScope from './scope';
 import { isServiceProvider, isInterfaceable } from './utils';
 import type {
-  ProvisionBinding,
+  ServiceBinding,
+  AppProvision,
   ServiceCache,
   ServiceProvider,
   Interfaceable,
-  ServiceProvidable,
 } from './types';
 
 const Object$hasOwnProperty = Object.prototype.hasOwnProperty;
 const objectHasOwnProperty = (obj, prop) =>
   Object$hasOwnProperty.call(obj, prop);
 
+const getNameOrToString = (obj: any) => obj?.name || String(obj);
+
 const resolveBindings = (
-  bindings: ServiceProvidable[]
-): ProvisionMap<ProvisionBinding> => {
-  const provisionMapping: ProvisionMap<ProvisionBinding> = new ProvisionMap();
+  bindings: AppProvision<any>[]
+): ProvisionMap<ServiceBinding<any>> => {
+  const provisionMapping = new ProvisionMap<ServiceBinding<any>>();
 
   for (const bindingInput of bindings) {
-    let binding: ProvisionBinding;
+    let binding: ServiceBinding<any>;
 
-    if (isServiceProvider(bindingInput)) {
-      binding = {
-        provide: bindingInput,
-        withProvider: bindingInput,
-      };
-    } else {
+    if ('provide' in bindingInput) {
       if (!isInterfaceable(bindingInput.provide)) {
         throw new TypeError(
-          bindingInput.provide
-            ? `${bindingInput.provide} is not a valid interface to provide`
-            : `invalid binding (${String(bindingInput)})`
+          `invalid interface ${getNameOrToString(bindingInput.provide)}`
         );
       }
 
       if (
-        !objectHasOwnProperty(bindingInput, 'withValue') &&
-        (!bindingInput.withProvider ||
-          !isServiceProvider(bindingInput.withProvider))
+        !(
+          objectHasOwnProperty(bindingInput, 'withValue') ||
+          ('withProvider' in bindingInput &&
+            isServiceProvider(bindingInput.withProvider))
+        )
       ) {
         throw new TypeError(
-          bindingInput.withProvider
-            ? `invalid provider ${bindingInput.withProvider}`
+          'withProvider' in bindingInput
+            ? `invalid provider ${getNameOrToString(bindingInput.withProvider)}`
             : `either withProvider or withValue must be provided within binding`
         );
       }
 
       binding = bindingInput;
+    } else {
+      if (!isServiceProvider(bindingInput)) {
+        throw new TypeError(
+          `invalid provider ${getNameOrToString(bindingInput)}`
+        );
+      }
+
+      binding = {
+        provide: bindingInput,
+        withProvider: bindingInput,
+      };
     }
 
     const { provide: target, platforms } = binding;
@@ -80,12 +88,12 @@ const resolveBindings = (
 
 export default class ServiceSpace {
   maker: ServiceMaker;
-  _provisionMapping: ProvisionMap<ProvisionBinding>;
-  _singletonCache: null | ServiceCache;
+  _provisionMapping: ProvisionMap<ServiceBinding<any>>;
+  _singletonCache: null | ServiceCache<any>;
 
   constructor(
-    moduleBindings: ServiceProvidable[],
-    registeredBindings: ServiceProvidable[]
+    moduleBindings: AppProvision<any>[],
+    registeredBindings: AppProvision<any>[]
   ) {
     // resolve bindings from modules/registraions separately, the bindings
     // cannot be conflicted within each
@@ -103,7 +111,9 @@ export default class ServiceSpace {
     this._singletonCache = null;
   }
 
-  bootstrap(provisions: Map<Interfaceable, any> = new Map()): ServiceScope {
+  bootstrap(
+    provisions: Map<Interfaceable<any>, any> = new Map()
+  ): ServiceScope {
     const singletonCache = new Map();
     const scopedCache = new Map();
 
@@ -159,10 +169,10 @@ export default class ServiceSpace {
   }
 
   private _verifyDependencies(
-    provider: ServiceProvider<any, any>,
+    provider: ServiceProvider<any>,
     platform: void | string,
-    bootstrapProvisions: null | Map<Interfaceable, any>,
-    refLock: ServiceProvider<any, any>[]
+    bootstrapProvisions: null | Map<Interfaceable<any>, any>,
+    refLock: ServiceProvider<any>[]
   ) {
     const subRefLock = [...refLock, provider];
 

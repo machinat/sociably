@@ -1,11 +1,10 @@
 import invariant from 'invariant';
 import ServiceSpace, { isServiceContainer } from './service';
 import type {
-  Interfaceable,
-  InjectRequirement,
+  ServiceDependency,
   ServiceContainer,
   ServiceScope,
-  ServiceProvidable,
+  AppProvision,
 } from './service/types';
 import type {
   AppConfig,
@@ -61,13 +60,13 @@ export default class MachinatApp<
 
     const { modules, platforms, bindings } = this.config;
 
-    const moduleBindings: ServiceProvidable = [];
+    const moduleProvisions: AppProvision<any>[] = [];
     const startHooks: ServiceContainer<Promise<void>>[] = [];
 
     // bootstrap normal modules add bindings
     if (modules) {
       for (const { provisions, startHook } of modules) {
-        moduleBindings.push(...provisions);
+        moduleProvisions.push(...provisions);
 
         if (startHook) {
           startHooks.push(startHook);
@@ -75,7 +74,7 @@ export default class MachinatApp<
       }
     }
 
-    const mounterProvisions = new Map();
+    const platformMountingUtils = new Map();
 
     // add bindings and bridge bindings of platform module
     if (platforms) {
@@ -87,9 +86,9 @@ export default class MachinatApp<
         dispatchMiddlewares,
         startHook,
       } of platforms) {
-        moduleBindings.push(...provisions);
+        moduleProvisions.push(...provisions);
 
-        mounterProvisions.set(
+        platformMountingUtils.set(
           mounterInterface,
           this._createPlatformMounter(
             name,
@@ -104,8 +103,8 @@ export default class MachinatApp<
       }
     }
 
-    this._serviceSpace = new ServiceSpace(moduleBindings, bindings || []);
-    const bootstrapScope = this._serviceSpace.bootstrap(mounterProvisions);
+    this._serviceSpace = new ServiceSpace(moduleProvisions, bindings || []);
+    const bootstrapScope = this._serviceSpace.bootstrap(platformMountingUtils);
 
     await Promise.all(
       startHooks.map((hook) => bootstrapScope.injectContainer(hook))
@@ -115,7 +114,7 @@ export default class MachinatApp<
   }
 
   useServices(
-    targets: (Interfaceable | InjectRequirement)[],
+    targets: ServiceDependency<any>[],
     options?: { platform?: void | string }
   ): any[] {
     invariant(this.isStarted, 'app is not started');
