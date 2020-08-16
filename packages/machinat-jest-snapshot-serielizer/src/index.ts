@@ -1,3 +1,4 @@
+import type { MachinatElement } from '@machinat/core/types';
 import {
   isElement,
   isFragmentType,
@@ -8,7 +9,7 @@ import {
 } from '@machinat/core/utils/isX';
 
 module.exports = {
-  print(element, serialize, indent) {
+  print(element: MachinatElement<any, any>, serialize, indent) {
     const type = isFragmentType(element)
       ? 'Machinat.Fragment'
       : isProviderType(element)
@@ -31,7 +32,7 @@ module.exports = {
     );
   },
 
-  test(val) {
+  test(val: unknown) {
     return isElement(val);
   },
 };
