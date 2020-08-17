@@ -1,15 +1,12 @@
-// @flow
-import { parse as parseURL } from 'url';
-import { STATUS_CODES } from 'http';
+import { parse as parseURL, UrlWithParsedQuery } from 'url';
+import { STATUS_CODES, IncomingMessage, ServerResponse } from 'http';
 import { provider } from '@machinat/core/service';
-import type { IncomingMessage, ServerResponse } from 'http';
+
 import type { PopEventWrapper, PopErrorFn } from '@machinat/core/types';
-import {
-  NextServerI,
-  NEXT_MODULE_CONFIGS_I,
-  NEXT_PLATFORM_MOUNTER_I,
-} from './interface';
+import type { RequestHandler } from '@machinat/http/types';
+import { SERVER_I, MODULE_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import type {
+  NextServer,
   NextEventContext,
   NextResponse,
   NextModuleConfigs,
@@ -23,28 +20,52 @@ const NEXT_SERVER_CHANNEL = {
 };
 
 type NextReceiverOptions = {
-  entryPath?: string,
-  shouldPrepare?: boolean,
+  entryPath?: string;
+  shouldPrepare?: boolean;
 };
 
-type ParsedURL = $Call<typeof parseURL, string>;
-
+@provider<NextReceiver>({
+  lifetime: 'singleton',
+  deps: [
+    SERVER_I,
+    MODULE_CONFIGS_I,
+    { require: PLATFORM_MOUNTER_I, optional: true },
+  ],
+  factory: (
+    nextApp: NextServer,
+    configs: NextModuleConfigs,
+    mounter: null | NextPlatformMounter
+  ) =>
+    new NextReceiver( // eslint-disable-line no-use-before-define
+      nextApp,
+      configs,
+      mounter?.popEventWrapper,
+      mounter?.popError
+    ),
+})
 class NextReceiver {
-  _next: Object;
-  _defaultNextHandler: (IncomingMessage, ServerResponse, ParsedURL) => void;
+  private _next: NextServer;
+  private _defaultNextHandler: (
+    req: IncomingMessage,
+    res: ServerResponse,
+    parsedURL: UrlWithParsedQuery
+  ) => void;
 
-  _pathPrefix: string;
-  _shouldPrepare: boolean;
-  _prepared: boolean;
+  private _pathPrefix: string;
+  private _shouldPrepare: boolean;
+  private _prepared: boolean;
 
-  _popEvent: (NextEventContext) => Promise<NextResponse>;
-  _popError: (Error) => void;
+  private _popEvent: (ctx: NextEventContext) => Promise<NextResponse>;
+  private _popError: (err: Error) => void;
 
   constructor(
-    nextApp: Object,
+    nextApp: NextServer,
     { shouldPrepare = true, entryPath }: NextReceiverOptions,
-    popEventWrapper: ?PopEventWrapper<NextEventContext, NextResponse>,
-    popError: ?PopErrorFn
+    popEventWrapper:
+      | PopEventWrapper<NextEventContext, NextResponse>
+      | null
+      | undefined,
+    popError?: PopErrorFn | null
   ) {
     this._next = nextApp;
     this._defaultNextHandler = nextApp.getRequestHandler();
@@ -52,37 +73,41 @@ class NextReceiver {
     this._shouldPrepare = shouldPrepare;
     this._prepared = false;
 
-    const finalHandler = () => Promise.resolve({ accepted: true });
+    const finalHandler = () => Promise.resolve({ accepted: true as const });
 
     this._popEvent = popEventWrapper
       ? popEventWrapper(finalHandler)
       : finalHandler;
-    this._popError = popError || (() => {});
+    this._popError =
+      popError ||
+      (() => {
+        // do nothing
+      });
   }
 
-  async prepare() {
+  async prepare(): Promise<void> {
     if (this._shouldPrepare) {
       await this._next.prepare();
     }
     this._prepared = true;
   }
 
-  handleRequest(req: IncomingMessage, res: ServerResponse) {
+  handleRequest(req: IncomingMessage, res: ServerResponse): void {
     this._handleRequestImpl(req, res).catch(this._popError);
   }
 
-  handleRequestCallback() {
+  handleRequestCallback(): RequestHandler {
     return this.handleRequest.bind(this);
   }
 
-  async _handleRequestImpl(req: IncomingMessage, res: ServerResponse) {
+  private async _handleRequestImpl(req: IncomingMessage, res: ServerResponse) {
     if (!this._prepared) {
       res.statusCode = 503; // eslint-disable-line no-param-reassign
       res.end(STATUS_CODES[503]);
       return;
     }
 
-    const parsedURL = parseURL(req.url, true);
+    const parsedURL = parseURL(req.url as string, true);
     const pathPrefix = this._pathPrefix;
 
     const { pathname } = parsedURL;
@@ -100,7 +125,7 @@ class NextReceiver {
         null,
         req,
         res,
-        parsedURL.pathname,
+        pathname as string,
         parsedURL.query
       );
       return;
@@ -109,7 +134,7 @@ class NextReceiver {
     const parsedURLWithPathPrefixTrimed = {
       ...parsedURL,
       pathname: trimedPath,
-      path: (parsedURL.path: any).slice(pathPrefix.length) || '/',
+      path: (parsedURL.path as string).slice(pathPrefix.length) || '/',
     };
 
     if (trimedPath.slice(1, 6) === '_next') {
@@ -126,8 +151,8 @@ class NextReceiver {
 
     try {
       const request = {
-        method: req.method,
-        url: req.url,
+        method: req.method as string,
+        url: req.url as string,
         headers: req.headers,
       };
 
@@ -144,7 +169,7 @@ class NextReceiver {
         const { page, query, headers } = response;
         if (headers) {
           for (const [key, value] of Object.entries(headers)) {
-            res.setHeader(key, (value: any));
+            res.setHeader(key, value as string);
           }
         }
 
@@ -179,22 +204,4 @@ class NextReceiver {
   }
 }
 
-export default provider<NextReceiver>({
-  lifetime: 'singleton',
-  deps: [
-    NextServerI,
-    NEXT_MODULE_CONFIGS_I,
-    { require: NEXT_PLATFORM_MOUNTER_I, optional: true },
-  ],
-  factory: (
-    nextApp: Object,
-    configs: NextModuleConfigs,
-    mounter: null | NextPlatformMounter
-  ) =>
-    new NextReceiver(
-      nextApp,
-      configs,
-      mounter?.popEventWrapper,
-      mounter?.popError
-    ),
-})(NextReceiver);
+export default NextReceiver;

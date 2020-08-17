@@ -5,14 +5,12 @@ import createNextApp from 'next';
 import NextReceiver from '../receiver';
 import Next from '..';
 
-jest.mock('next', () => {
-  // eslint-disable-next-line global-require
-  const _moxy = require('@moxyjs/moxy').default;
-  return _moxy(() => ({
+jest.mock('next', () =>
+  jest.requireActual('@moxyjs/moxy').default(() => ({
     prepare: async () => {},
     getRequestHandler: () => {},
-  }));
-});
+  }))
+);
 
 it('exports interfaces', () => {
   expect(Next.Receiver).toBe(NextReceiver);
@@ -23,11 +21,10 @@ it('exports interfaces', () => {
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
-  const { $$name, $$multi, $$typeof } = Next.ServerI;
-  expect({ $$name, $$multi, $$typeof }).toMatchInlineSnapshot(`
+  expect(Next.SERVER_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "AbstractNextServer",
+      "$$name": "NextServer",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
@@ -73,7 +70,11 @@ describe('initModule()', () => {
             },
           },
           Object {
-            "provide": [Function],
+            "provide": Object {
+              "$$multi": false,
+              "$$name": "NextServer",
+              "$$typeof": Symbol(machinat.services.interface),
+            },
             "withProvider": [Function],
           },
           Object {
@@ -104,7 +105,7 @@ describe('initModule()', () => {
 
     const [receiver, nextApp, configs, routings] = app.useServices([
       Next.Receiver,
-      Next.ServerI,
+      Next.SERVER_I,
       Next.CONFIGS_I,
       HTTP.REQUEST_ROUTINGS_I,
     ]);
