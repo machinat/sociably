@@ -8,8 +8,7 @@ import RedisRepository from '../repository';
 import StateController from '../../..';
 
 jest.mock('redis', () =>
-  // eslint-disable-next-line global-require
-  require('@moxyjs/moxy').default({
+  jest.requireActual('@moxyjs/moxy').default({
     createClient: () => ({ connected: true }),
   })
 );
@@ -19,37 +18,56 @@ test('export interfaces', () => {
   expect(RedisState.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "RedisStateConfigs",
+      "$$name": "RedisStateModuleConfigs",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
-  expect(RedisState.ClientI).toMatchInlineSnapshot(`[Function]`);
+  expect(RedisState.CLIENT_I).toMatchInlineSnapshot(`
+    Object {
+      "$$multi": false,
+      "$$name": "RedisClient",
+      "$$typeof": Symbol(machinat.services.interface),
+    }
+  `);
 });
 
 test('provisions', async () => {
   const app = Machinat.createApp({
-    modules: [RedisState.initModule({ host: 'my.redis.com', port: 23456 })],
+    modules: [
+      RedisState.initModule({
+        clientOptions: { host: 'my.redis.com', port: 23456 },
+      }),
+    ],
   });
   await app.start();
 
   const [controller, repository, client, configs] = app.useServices([
     StateController,
     RedisState.Repository,
-    RedisState.ClientI,
+    RedisState.CLIENT_I,
     RedisState.CONFIGS_I,
   ]);
 
   expect(controller).toBeInstanceOf(StateController);
   expect(repository).toBeInstanceOf(RedisRepository);
   expect(client).toBe(redis.createClient.mock.calls[0].result);
-  expect(configs).toEqual({ host: 'my.redis.com', port: 23456 });
+  expect(configs).toEqual({
+    clientOptions: { host: 'my.redis.com', port: 23456 },
+  });
 
-  expect(redis.createClient.mock).toHaveBeenCalledWith(configs);
+  expect(redis.createClient.mock).toHaveBeenCalledWith({
+    host: 'my.redis.com',
+    port: 23456,
+  });
 });
 
 test('provide base state controller', async () => {
   const app = Machinat.createApp({
-    modules: [RedisState.initModule({ host: 'my.redis.com', port: 23456 })],
+    modules: [
+      RedisState.initModule({
+        clientOptions: { host: 'my.redis.com', port: 23456 },
+      }),
+    ],
   });
   await app.start();
 
@@ -59,7 +77,11 @@ test('provide base state controller', async () => {
 
 test('startHook wait for client connected', async () => {
   const app = Machinat.createApp({
-    modules: [RedisState.initModule({ host: 'my.redis.com', port: 23456 })],
+    modules: [
+      RedisState.initModule({
+        clientOptions: { host: 'my.redis.com', port: 23456 },
+      }),
+    ],
   });
 
   const client = moxy(new EventEmitter());
@@ -80,7 +102,11 @@ test('startHook wait for client connected', async () => {
 
 test('startHook throw if error happen when connect', async () => {
   const app = Machinat.createApp({
-    modules: [RedisState.initModule({ host: 'my.redis.com', port: 23456 })],
+    modules: [
+      RedisState.initModule({
+        clientOptions: { host: 'my.redis.com', port: 23456 },
+      }),
+    ],
   });
 
   const client = moxy(new EventEmitter());

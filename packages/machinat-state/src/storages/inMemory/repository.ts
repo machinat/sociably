@@ -1,7 +1,7 @@
-// @flow
 import { provider } from '@machinat/core/service';
-import { StateRepositoryI } from '../../interface';
+import type { StateRepositoryI } from '../../interface';
 
+@provider<InMemoryRepositroy>({ lifetime: 'singleton' })
 class InMemoryRepositroy implements StateRepositoryI {
   _storage: Map<string, Map<string, any>>;
 
@@ -9,12 +9,12 @@ class InMemoryRepositroy implements StateRepositoryI {
     this._storage = new Map();
   }
 
-  async get(name: string, key: string) {
+  async get<T>(name: string, key: string): Promise<T> {
     const states = this._storage.get(name);
     return states?.get(key);
   }
 
-  async set(name: string, key: string, state: any) {
+  async set<T>(name: string, key: string, state: T): Promise<boolean> {
     const states = this._storage.get(name);
 
     let isExisted = false;
@@ -28,7 +28,7 @@ class InMemoryRepositroy implements StateRepositoryI {
     return isExisted;
   }
 
-  async delete(name: string, key: string) {
+  async delete(name: string, key: string): Promise<boolean> {
     const states = this._storage.get(name);
     if (!states) {
       return false;
@@ -42,15 +42,13 @@ class InMemoryRepositroy implements StateRepositoryI {
     return isExisted;
   }
 
-  async getAll(name: string) {
+  async getAll(name: string): Promise<null | Map<string, any>> {
     return this._storage.get(name) || null;
   }
 
-  async clear(name: string) {
+  async clear(name: string): Promise<void> {
     this._storage.delete(name);
   }
 }
 
-export default provider<InMemoryRepositroy>({ lifetime: 'singleton' })(
-  InMemoryRepositroy
-);
+export default InMemoryRepositroy;

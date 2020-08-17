@@ -1,4 +1,3 @@
-// @flow
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import { StateControllerI } from '@machinat/core/base';
 import { provider } from '@machinat/core/service';
@@ -35,7 +34,7 @@ class StateAccessor {
     return this._repository.delete(this.name, key);
   }
 
-  async getAll(): Promise<null | Map<string, Object>> {
+  async getAll(): Promise<null | Map<string, any>> {
     return this._repository.getAll(this.name);
   }
 
@@ -44,6 +43,10 @@ class StateAccessor {
   }
 }
 
+@provider<StateController>({
+  lifetime: 'scoped',
+  deps: [StateRepositoryI],
+})
 class StateController implements StateControllerI {
   repository: StateRepositoryI;
 
@@ -64,7 +67,4 @@ class StateController implements StateControllerI {
   }
 }
 
-export default provider<StateController>({
-  lifetime: 'scoped',
-  deps: [StateRepositoryI],
-})(StateController);
+export default StateController;

@@ -1,17 +1,21 @@
-// @flow
+import { RedisClient } from 'redis';
 import thenifiedly from 'thenifiedly';
 import { provider } from '@machinat/core/service';
-import { StateRepositoryI } from '../../interface';
-import { RedisClientI } from './interface';
+import type { StateRepositoryI } from '../../interface';
+import { CLIENT_I } from './interface';
 
+@provider<RedisRepository>({
+  lifetime: 'singleton',
+  deps: [CLIENT_I],
+})
 class RedisRepository implements StateRepositoryI {
-  _client: RedisClientI;
+  _client: RedisClient;
 
-  constructor(client: RedisClientI) {
+  constructor(client: RedisClient) {
     this._client = client;
   }
 
-  async get(name: string, key: string) {
+  async get<T>(name: string, key: string): Promise<T> {
     const result = await thenifiedly.callMethod(
       'hget',
       this._client,
@@ -22,7 +26,7 @@ class RedisRepository implements StateRepositoryI {
     return result ? JSON.parse(result) : undefined;
   }
 
-  async set(name: string, key: string, state: any) {
+  async set<T>(name: string, key: string, state: T): Promise<boolean> {
     const result = await thenifiedly.callMethod(
       'hset',
       this._client,
@@ -34,7 +38,7 @@ class RedisRepository implements StateRepositoryI {
     return !!result;
   }
 
-  async delete(name: string, key: string) {
+  async delete(name: string, key: string): Promise<boolean> {
     const result = await thenifiedly.callMethod(
       'hdel',
       this._client,
@@ -45,26 +49,23 @@ class RedisRepository implements StateRepositoryI {
     return !!result;
   }
 
-  async getAll(name: string) {
+  async getAll(name: string): Promise<null | Map<string, any>> {
     const result = await thenifiedly.callMethod('hgetall', this._client, name);
     if (!result) {
       return null;
     }
 
     return new Map<string, any>(
-      Object.entries(result).map(([key, value]) => [
+      Object.entries<string>(result).map(([key, value]) => [
         key,
-        JSON.parse((value: any)),
+        JSON.parse(value),
       ])
     );
   }
 
-  async clear(name: string) {
+  async clear(name: string): Promise<void> {
     await thenifiedly.callMethod('del', this._client, name);
   }
 }
 
-export default provider<RedisRepository>({
-  lifetime: 'singleton',
-  deps: [RedisClientI],
-})(RedisRepository);
+export default RedisRepository;

@@ -1,43 +1,50 @@
-// @flow
 import {
   promises as fsPromises,
   constants as fsConstants,
   watch,
   FSWatcher,
-  FileHandle,
 } from 'fs';
 import { provider } from '@machinat/core/service';
-import typeof { StateRepositoryI } from '../../interface';
+import type { StateRepositoryI } from '../../interface';
 import { FILE_STATE_CONFIGS_I, FileStateSerializerI } from './interface';
 import type { FileRepositoryConfigs } from './types';
+
+type FileHandle = fsPromises.FileHandle;
 
 const { O_RDWR, O_CREAT } = fsConstants;
 const { open: openFile } = fsPromises;
 
-type StorageObj = {|
-  [string]: {|
-    [string]: any,
-  |},
-|};
+type StorageObj = {
+  [key: string]: {
+    [key: string]: any;
+  };
+};
 
 const objectHasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
+@provider<FileRepository>({
+  lifetime: 'singleton',
+  deps: [
+    FILE_STATE_CONFIGS_I,
+    { require: FileStateSerializerI, optional: true },
+  ],
+})
 class FileRepository implements StateRepositoryI {
   path: string;
   serializer: FileStateSerializerI;
 
-  _data: StorageObj;
-  _fileHandle: FileHandle;
-  _watcher: FSWatcher;
+  private _data: StorageObj;
+  private _fileHandle: FileHandle;
+  private _watcher: FSWatcher;
 
-  _openingJob: Promise<void>;
-  _writingJob: Promise<void>;
-  _isWriting: boolean;
+  private _openingJob: Promise<void>;
+  private _writingJob: Promise<void>;
+  private _isWriting: boolean;
 
   constructor(
     options: FileRepositoryConfigs,
-    serializer?: ?FileStateSerializerI
+    serializer?: FileStateSerializerI | null
   ) {
     this.path = options.path;
     this.serializer = serializer || JSON;
@@ -46,12 +53,12 @@ class FileRepository implements StateRepositoryI {
     this._writingJob = Promise.resolve();
   }
 
-  async get(name: string, key: string) {
+  async get<T>(name: string, key: string): Promise<T> {
     await this._openingJob;
     return this._data[name]?.[key];
   }
 
-  async set(name: string, key: string, value: any) {
+  async set<T>(name: string, key: string, value: T): Promise<boolean> {
     await this._openingJob;
 
     const data = this._data;
@@ -68,7 +75,7 @@ class FileRepository implements StateRepositoryI {
     return valueExisted;
   }
 
-  async getAll(name: string) {
+  async getAll(name: string): Promise<null | Map<string, any>> {
     await this._openingJob;
 
     const data = this._data;
@@ -79,7 +86,7 @@ class FileRepository implements StateRepositoryI {
     return new Map<string, any>(Object.entries(data[name]));
   }
 
-  async delete(name: string, key: string) {
+  async delete(name: string, key: string): Promise<boolean> {
     await this._openingJob;
 
     const data = this._data;
@@ -100,7 +107,7 @@ class FileRepository implements StateRepositoryI {
     return false;
   }
 
-  async clear(name: string) {
+  async clear(name: string): Promise<void> {
     await this._openingJob;
     const data = this._data;
 
@@ -110,7 +117,7 @@ class FileRepository implements StateRepositoryI {
     }
   }
 
-  async _open(): Promise<void> {
+  private async _open(): Promise<void> {
     if (this._fileHandle) {
       await this._fileHandle.close();
     }
@@ -124,13 +131,13 @@ class FileRepository implements StateRepositoryI {
 
     const content = await this._fileHandle.readFile('utf8');
     if (content === '') {
-      this._data = ({}: any);
+      this._data = {} as any;
     } else {
       this._data = this.serializer.parse(content);
     }
   }
 
-  async _writeData(): Promise<void> {
+  private async _writeData(): Promise<void> {
     this._isWriting = true;
     const content = this.serializer.stringify(this._data);
 
@@ -140,15 +147,9 @@ class FileRepository implements StateRepositoryI {
     this._isWriting = false;
   }
 
-  async _registerWriteData() {
+  private async _registerWriteData() {
     this._writingJob = this._writingJob.then(this._writeData.bind(this));
   }
 }
 
-export default provider<FileRepository>({
-  lifetime: 'singleton',
-  deps: [
-    FILE_STATE_CONFIGS_I,
-    { require: FileStateSerializerI, optional: true },
-  ],
-})(FileRepository);
+export default FileRepository;

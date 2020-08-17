@@ -1,4 +1,3 @@
-// @flow
 import type { ServiceModule } from '@machinat/core/types';
 import Base from '@machinat/core/base';
 import StateController from '../../controller';
