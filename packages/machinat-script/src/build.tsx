@@ -1,7 +1,6 @@
-// @flow
-// @jsx Machinat.createElement
 import Machinat from '@machinat/core';
 import { container } from '@machinat/core/service';
+import type { FunctionalComponent } from '@machinat/core/types';
 import { MACHINAT_SCRIPT_TYPE } from './constant';
 import ScriptProcessor from './processor';
 import resolveScript from './resolve';
@@ -9,7 +8,7 @@ import compile from './compile';
 import type { MachinatScript, ScriptNode } from './types';
 
 type ScriptBuildOtions<Meta> = {
-  meta: Meta,
+  meta: Meta;
 };
 
 const build = <Value, Input, ReturnValue, Meta>(
@@ -25,12 +24,18 @@ const build = <Value, Input, ReturnValue, Meta>(
     name: scriptName,
     entriesIndex,
     commands,
-    meta: (options?.meta: any),
-    Start: (null: any),
+    meta: options?.meta as Meta,
+    Start: null as any,
   };
 
-  script.Start = container({ deps: [ScriptProcessor] })(
-    (processor: ScriptProcessor) => async ({ channel, goto, vars }) => {
+  script.Start = container<FunctionalComponent<any>>({
+    deps: [ScriptProcessor],
+  })(
+    (processor: ScriptProcessor<Input, ReturnValue>) => async ({
+      channel,
+      goto,
+      vars,
+    }) => {
       const runtime = await processor.init(channel, script, {
         vars,
         goto,
@@ -39,6 +44,7 @@ const build = <Value, Input, ReturnValue, Meta>(
 
       return [
         result.content,
+        // @ts-ignore allow symbol type, follow microsoft/TypeScript/issues/38367
         <Machinat.Thunk effect={() => processor.save(runtime)} />,
       ];
     }

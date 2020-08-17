@@ -1,4 +1,3 @@
-// @flow
 /* eslint no-use-before-define: ["error", { "variables": false }] */
 import invariant from 'invariant';
 import { counter } from './utils';
@@ -21,23 +20,23 @@ import type {
   ScriptCommand,
 } from './types';
 
-type GotoIntermediate = {|
-  type: 'goto',
-  to: string,
-|};
+type GotoIntermediate = {
+  type: 'goto';
+  to: string;
+};
 
-type GotoCondIntermediate<Vars> = {|
-  type: 'goto_cond',
-  to: string,
-  condition: ConditionMatcher<Vars>,
-  isNot: boolean,
-|};
+type GotoCondIntermediate<Vars> = {
+  type: 'goto_cond';
+  to: string;
+  condition: ConditionMatcher<Vars>;
+  isNot: boolean;
+};
 
-type TagIntermediate = {|
-  type: 'tag',
-  key: string,
-  isEntryPoint: boolean,
-|};
+type TagIntermediate = {
+  type: 'tag';
+  key: string;
+  isEntryPoint: boolean;
+};
 
 type CompileIntermediate =
   | ContentCommand<any>
@@ -50,8 +49,8 @@ type CompileIntermediate =
   | TagIntermediate;
 
 type CompileResult<Vars, Input, RetrunValue> = {
-  commands: ScriptCommand<Vars, Input, RetrunValue>[],
-  entriesIndex: Map<string, number>,
+  commands: ScriptCommand<Vars, Input, RetrunValue>[];
+  entriesIndex: Map<string, number>;
 };
 
 const compileContentSegment = (
@@ -65,13 +64,13 @@ const compileConditionsSegment = (
   const n: number = uniqCounter();
 
   const endTag = {
-    type: 'tag',
+    type: 'tag' as const,
     key: `end_if_${n}`,
     isEntryPoint: false,
   };
 
   const jumpToEnd = {
-    type: 'goto',
+    type: 'goto' as const,
     to: endTag.key,
   };
 
@@ -80,7 +79,7 @@ const compileConditionsSegment = (
 
   for (const [i, { condition, body }] of branches.entries()) {
     const bodyBeginTag = {
-      type: 'tag',
+      type: 'tag' as const,
       key: `if_${n}_branch_${i}`,
       isEntryPoint: false,
     };
@@ -115,13 +114,13 @@ const compileWhileSegment = (
   const n: number = uniqCounter();
 
   const startTag = {
-    type: 'tag',
+    type: 'tag' as const,
     key: `while_${n}`,
     isEntryPoint: false,
   };
 
   const endTag = {
-    type: 'tag',
+    type: 'tag' as const,
     key: `end_while_${n}`,
     isEntryPoint: false,
   };
@@ -191,7 +190,7 @@ const compileSegments = (
   const commands: CompileIntermediate[] = [];
 
   for (const segment of segments) {
-    const commandsFromSegment: ?(CompileIntermediate[]) =
+    const commandsFromSegment: CompileIntermediate[] | null | undefined =
       segment.type === 'content'
         ? compileContentSegment(segment)
         : segment.type === 'conditions'
@@ -230,10 +229,12 @@ const compile = <Vars, Input, RetrunValue>(
   const entriesIndex = new Map();
 
   // remove tags and store their indexes
-  const mediateCommands = [];
+  const mediateCommands: Exclude<CompileIntermediate, TagIntermediate>[] = [];
+
   for (const intermediate of intermediates) {
     if (intermediate.type === 'tag') {
       const { isEntryPoint, key } = intermediate;
+
       invariant(
         !keyIndex.has(key),
         `key "${key}" duplicated in ${meta.scriptName}`

@@ -1,4 +1,3 @@
-// @flow
 /* eslint no-use-before-define: ["error", { "variables": false }] */
 import invariant from 'invariant';
 import reduce from '@machinat/core/iterator/reduce';
@@ -105,8 +104,8 @@ const resolveIf = (
   );
 
   return reduce<ConditionsSegment<any>, { condition: ConditionMatcher<any> }>(
-    (children: any),
-    (ifChildrenReducer: any),
+    children as any,
+    ifChildrenReducer as any,
     {
       type: 'conditions',
       branches: [],
@@ -251,10 +250,11 @@ const resolveSegments = <Vars>(
   path: string
 ): ScriptSegment<Vars, any, any>[] => {
   return reduce<ScriptSegment<Vars, any, any>[], void>(
-    (node: any),
-    (segmentsReducer: any),
+    node as any,
+    segmentsReducer as any,
     [],
-    path
+    path,
+    undefined
   );
 };
 

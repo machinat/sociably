@@ -1,7 +1,6 @@
-// @flow
 import invariant from 'invariant';
-import type { MachinatNode, MachinatChannel } from '@machinat/core/types';
 import { maybeInjectContainer } from '@machinat/core/service';
+import type { MachinatNode, MachinatChannel } from '@machinat/core/types';
 import type { ServiceScope } from '@machinat/core/service/types';
 import type {
   MachinatScript,
@@ -33,35 +32,35 @@ const getCursorIndexAssertedly = (
 };
 
 type FinishedExecuteResult<ReturnValue> = {
-  finished: true,
-  returnValue: ReturnValue,
-  filterPassed: boolean,
-  stack: null,
-  content: MachinatNode[],
+  finished: true;
+  returnValue: ReturnValue;
+  filterPassed: boolean;
+  stack: null;
+  content: MachinatNode[];
 };
 
 type UnfinishedExecuteResult<Vars, ReturnValue> = {
-  finished: false,
-  returnValue: void,
-  filterPassed: boolean,
-  stack: CallStatus<Vars, any, ReturnValue>[],
-  content: MachinatNode[],
+  finished: false;
+  returnValue: void;
+  filterPassed: boolean;
+  stack: CallStatus<Vars, any, ReturnValue>[];
+  content: MachinatNode[];
 };
 
 type ExecuteResult<Vars, ReturnValue> =
   | FinishedExecuteResult<ReturnValue>
   | UnfinishedExecuteResult<Vars, ReturnValue>;
 
-type ExecuteContext<Vars> = {|
-  channel: MachinatChannel,
-  scope: ServiceScope,
-  finished: boolean,
-  stopAt: void | string,
-  cursor: number,
-  content: MachinatNode[],
-  vars: Vars,
-  descendantCallStack: void | CallStatus<Vars, any, any>[],
-|};
+type ExecuteContext<Vars> = {
+  channel: MachinatChannel;
+  scope: ServiceScope;
+  finished: boolean;
+  stopAt: void | string;
+  cursor: number;
+  content: MachinatNode[];
+  vars: Vars;
+  descendantCallStack: null | CallStatus<Vars, any, any>[];
+};
 
 const executeContentCommand = async <Vars>(
   { render }: ContentCommand<Vars>,
@@ -135,7 +134,7 @@ const executeCallCommand = async <Vars>(
         scope,
         withVars
       )({ platform: channel.platform, channel, vars })
-    : ({}: any);
+    : {};
 
   const result = await executeScript(scope, channel, script, index, calleeVars); // eslint-disable-line no-use-before-define
   const concatedContent = [...content, ...result.content];
@@ -171,9 +170,7 @@ async function executeScript<Vars, Input, ReturnValue>(
   script: MachinatScript<Vars, Input, ReturnValue, any>,
   begin: number,
   initialVars: Vars
-): Promise<
-  $Diff<ExecuteResult<Vars, ReturnValue>, {| filterPassed: boolean |}>
-> {
+): Promise<ExecuteResult<Vars, ReturnValue>> {
   const { commands } = script;
 
   let context: ExecuteContext<Vars> = {
@@ -182,7 +179,7 @@ async function executeScript<Vars, Input, ReturnValue>(
     cursor: begin,
     content: [],
     vars: initialVars,
-    descendantCallStack: undefined,
+    descendantCallStack: null,
     scope,
     channel,
   };
@@ -206,7 +203,7 @@ async function executeScript<Vars, Input, ReturnValue>(
     } else if (command.type === 'return') {
       const { valueGetter } = command;
 
-      let returnValue;
+      let returnValue: undefined | ReturnValue;
       if (valueGetter) {
         returnValue = await maybeInjectContainer<ReturnValueFn<any>>(
           scope,
@@ -216,12 +213,15 @@ async function executeScript<Vars, Input, ReturnValue>(
 
       return {
         finished: true,
-        returnValue: (returnValue: any),
+        returnValue: returnValue as ReturnValue,
         content: context.content,
         stack: null,
+        filterPassed: true,
       };
     } else {
-      throw new TypeError(`unknow command type ${command.type}`);
+      throw new TypeError(
+        `unknow command type ${(command as any).type || String(command)}`
+      );
     }
     /* eslint-enable no-await-in-loop */
 
@@ -236,15 +236,17 @@ async function executeScript<Vars, Input, ReturnValue>(
         stack: descendantCallStack
           ? [stackStatus, ...descendantCallStack]
           : [stackStatus],
+        filterPassed: true,
       };
     }
   }
 
   return {
     finished: true,
-    returnValue: (undefined: any),
+    returnValue: undefined as any,
     content: context.content,
     stack: null,
+    filterPassed: true,
   };
 }
 
@@ -256,8 +258,8 @@ async function execute<Vars, Input, ReturnValue>(
   input?: Input
 ): Promise<ExecuteResult<Vars, ReturnValue>> {
   const callingDepth = beginningStack.length;
-  const content = [];
-  let currentReturnValue: ReturnValue;
+  const content: MachinatNode[] = [];
+  let currentReturnValue: void | ReturnValue;
 
   for (let d = callingDepth - 1; d >= 0; d -= 1) {
     const { script, vars: beginningVars, stopAt } = beginningStack[d];
@@ -303,9 +305,8 @@ async function execute<Vars, Input, ReturnValue>(
           }
         }
 
-        vars = setter
-          ? // eslint-disable-next-line no-await-in-loop
-            await maybeInjectContainer<PromptSetFn<any, any>>(scope, setter)(
+        vars = setter // eslint-disable-next-line no-await-in-loop
+          ? await maybeInjectContainer<PromptSetFn<any, any>>(scope, setter)(
               circumstances,
               input
             )
@@ -334,7 +335,7 @@ async function execute<Vars, Input, ReturnValue>(
           setter
         )(
           { platform: channel.platform, vars, channel },
-          (currentReturnValue: any)
+          currentReturnValue as ReturnValue
         );
       }
 
@@ -360,7 +361,7 @@ async function execute<Vars, Input, ReturnValue>(
 
   return {
     finished: true,
-    returnValue: (currentReturnValue: any),
+    returnValue: currentReturnValue as ReturnValue,
     filterPassed: true,
     stack: null,
     content,

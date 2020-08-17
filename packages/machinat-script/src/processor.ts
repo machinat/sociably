@@ -1,4 +1,3 @@
-// @flow
 import invariant from 'invariant';
 import { StateControllerI } from '@machinat/core/base';
 import { ServiceScope, provider } from '@machinat/core/service';
@@ -8,19 +7,19 @@ import { SCRIPT_STATE_KEY, SCRIPT_LIBS_I } from './constant';
 import { serializeScriptStatus } from './utils';
 import type { MachinatScript, CallStatus, ScriptProcessState } from './types';
 
-type RuntimeResult<ReturnValue> = {|
-  finished: boolean,
-  returnValue: void | ReturnValue,
-  filterPassed: boolean,
-  content: MachinatNode,
-|};
+type RuntimeResult<ReturnValue> = {
+  finished: boolean;
+  returnValue: void | ReturnValue;
+  filterPassed: boolean;
+  content: MachinatNode;
+};
 
 class ScriptRuntime<Input, ReturnValue> {
   channel: MachinatChannel;
   callStack: null | CallStatus<any, Input, ReturnValue>[];
   saveTimestamp: void | number;
-  _serviceScope: ServiceScope;
-  _isPrompting: boolean;
+  private _serviceScope: ServiceScope;
+  private _isPrompting: boolean;
 
   constructor(
     scope: ServiceScope,
@@ -89,14 +88,18 @@ class ScriptRuntime<Input, ReturnValue> {
 }
 
 type InitRuntimeOptions<Vars> = {
-  vars?: Vars,
-  goto?: string,
+  vars?: Vars;
+  goto?: string;
 };
 
+@provider<ScriptProcessor<any, any>>({
+  lifetime: 'scoped',
+  deps: [StateControllerI, ServiceScope, SCRIPT_LIBS_I],
+})
 class ScriptProcessor<Input, ReturnValue> {
-  _stateContoller: StateControllerI;
-  _serviceScope: ServiceScope;
-  _libs: Map<string, MachinatScript<any, Input, ReturnValue, any>>;
+  private _stateContoller: StateControllerI;
+  private _serviceScope: ServiceScope;
+  private _libs: Map<string, MachinatScript<any, Input, ReturnValue, any>>;
 
   constructor(
     stateManager: StateControllerI,
@@ -121,7 +124,7 @@ class ScriptProcessor<Input, ReturnValue> {
   async init<Vars>(
     channel: MachinatChannel,
     script: MachinatScript<Vars, Input, ReturnValue, any>,
-    { vars = {}, goto }: InitRuntimeOptions<Vars> = {}
+    { vars = {} as Vars, goto }: InitRuntimeOptions<Vars> = {}
   ): Promise<ScriptRuntime<Input, ReturnValue>> {
     const state = await this._stateContoller
       .channelState(channel)
@@ -149,7 +152,7 @@ class ScriptProcessor<Input, ReturnValue> {
       return null;
     }
 
-    const statusStack = [];
+    const statusStack: CallStatus<any, Input, ReturnValue>[] = [];
     for (const { name, vars, stopAt } of state.callStack) {
       const script = this._libs.get(name);
       invariant(script, `"${name}" not found in linked scripts`);
@@ -207,7 +210,4 @@ class ScriptProcessor<Input, ReturnValue> {
   }
 }
 
-export default provider<ScriptProcessor<any, any>>({
-  lifetime: 'scoped',
-  deps: [StateControllerI, ServiceScope, SCRIPT_LIBS_I],
-})(ScriptProcessor);
+export default ScriptProcessor;

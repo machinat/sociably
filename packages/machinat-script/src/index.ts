@@ -1,5 +1,5 @@
-// @flow
 import type { ServiceModule } from '@machinat/core/types';
+import type { AppProvision } from '@machinat/core/service/types';
 import ScriptProcessor from './processor';
 import { SCRIPT_LIBS_I } from './constant';
 import type { MachinatScript } from './types';
@@ -9,7 +9,7 @@ export { default as Execute } from './Execute';
 export * from './keyword';
 
 type ScriptModuleConfigs = {
-  libs?: MachinatScript<any, any, any, any>[],
+  libs?: MachinatScript<any, any, any, any>[];
 };
 
 const Script = {
@@ -17,7 +17,7 @@ const Script = {
   LIBS_I: SCRIPT_LIBS_I,
 
   initModule: ({ libs }: ScriptModuleConfigs = {}): ServiceModule => {
-    const provisions = [ScriptProcessor];
+    const provisions: AppProvision<any>[] = [ScriptProcessor];
 
     if (libs) {
       provisions.push(

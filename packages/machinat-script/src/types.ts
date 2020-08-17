@@ -1,6 +1,4 @@
-// @flow
-/* eslint-disable no-use-before-define */
-import typeof Machinat from '@machinat/core';
+import type Machinat from '@machinat/core';
 import type { ServiceContainer } from '@machinat/core/service/types';
 import type {
   FunctionalComponent,
@@ -9,27 +7,28 @@ import type {
   MachinatElement,
   MachinatChannel,
 } from '@machinat/core/types';
-import typeof { MACHINAT_SCRIPT_TYPE } from './constant';
+import type { MACHINAT_SCRIPT_TYPE } from './constant';
+import type * as KEYWORDS from './keyword';
 
 type InitScriptProps<Vars> = {
-  channel: MachinatChannel,
-  vars?: Vars,
-  goto?: string,
+  channel: MachinatChannel;
+  vars?: Vars;
+  goto?: string;
 };
 
-export type MachinatScript<Vars, Input, RetrunValue, Meta> = {|
-  $$typeof: MACHINAT_SCRIPT_TYPE,
-  name: string,
-  commands: ScriptCommand<Vars, Input, RetrunValue>[],
-  entriesIndex: Map<string, number>,
-  meta: Meta,
-  Start: ServiceContainer<FunctionalComponent<InitScriptProps<Vars>>>,
-|};
+export type MachinatScript<Vars, Input, RetrunValue, Meta> = {
+  $$typeof: typeof MACHINAT_SCRIPT_TYPE;
+  name: string;
+  commands: ScriptCommand<Vars, Input, RetrunValue>[];
+  entriesIndex: Map<string, number>;
+  meta: Meta;
+  Start: ServiceContainer<FunctionalComponent<InitScriptProps<Vars>>>;
+};
 
 type ScriptCircumstances<Vars> = {
-  platform: string,
-  channel: MachinatChannel,
-  vars: Vars,
+  platform: string;
+  channel: MachinatChannel;
+  vars: Vars;
 };
 
 export type RenderContentFn<Vars> = (
@@ -49,51 +48,51 @@ export type ConditionMatcher<Vars> =
   | ServiceContainer<ConditionMatchFn<Vars>>;
 
 export type IfElementProps<Vars, Input, RetrunValue> = {
-  condition: ConditionMatcher<Vars>,
+  condition: ConditionMatcher<Vars>;
   children: (
     | ThenElement<Vars, Input, RetrunValue>
     | ElseElement<Vars, Input, RetrunValue>
     | ElseIfElement<Vars, Input, RetrunValue>
-  )[],
+  )[];
 };
 
 export type IfElement<Vars, Input, RetrunValue> = MachinatElement<
   IfElementProps<Vars, Input, RetrunValue>,
-  Symbol
+  typeof KEYWORDS.IF
 >;
 
 export type ScriptChildrenProps<Vars, Input, RetrunValue> = {
-  children: ScriptNode<Vars, Input, RetrunValue>,
+  children: ScriptNode<Vars, Input, RetrunValue>;
 };
 
 export type ThenElement<Vars, Input, RetrunValue> = MachinatElement<
   ScriptChildrenProps<Vars, Input, RetrunValue>,
-  Symbol
+  typeof KEYWORDS.THEN
 >;
 
 export type ElseElement<Vars, Input, RetrunValue> = MachinatElement<
   ScriptChildrenProps<Vars, Input, RetrunValue>,
-  Symbol
+  typeof KEYWORDS.ELSE
 >;
 
 export type ElseIfElementProps<Vars, Input, RetrunValue> = {
-  condition: ConditionMatcher<Vars>,
-  children: ScriptNode<Vars, Input, RetrunValue>,
+  condition: ConditionMatcher<Vars>;
+  children: ScriptNode<Vars, Input, RetrunValue>;
 };
 
 export type ElseIfElement<Vars, Input, RetrunValue> = MachinatElement<
   ElseIfElementProps<Vars, Input, RetrunValue>,
-  Symbol
+  typeof KEYWORDS.ELSE_IF
 >;
 
 export type WhileElementProps<Vars, Input, RetrunValue> = {
-  condition: ConditionMatcher<Vars>,
-  children: ScriptNode<Vars, Input, RetrunValue>,
+  condition: ConditionMatcher<Vars>;
+  children: ScriptNode<Vars, Input, RetrunValue>;
 };
 
 export type WhileElement<Vars, Input, RetrunValue> = MachinatElement<
   WhileElementProps<Vars, Input, RetrunValue>,
-  Symbol
+  typeof KEYWORDS.WHILE
 >;
 
 export type PromptSetFn<Vars, Input> = (
@@ -115,14 +114,14 @@ export type PromptFilterPredecator<Vars, Input> =
   | ServiceContainer<PromptFilterPredecateFn<Vars, Input>>;
 
 export type PromptElementProps<Vars, Input> = {
-  key: string,
-  set?: PromptSetter<Vars, Input>,
-  filter?: PromptFilterPredecator<Vars, Input>,
+  key: string;
+  set?: PromptSetter<Vars, Input>;
+  filter?: PromptFilterPredecator<Vars, Input>;
 };
 
 export type PromptElement<Vars, Input> = MachinatElement<
   PromptElementProps<Vars, Input>,
-  Symbol
+  typeof KEYWORDS.PROMPT
 >;
 
 export type VarsSetFn<Vars> = (
@@ -134,13 +133,19 @@ export type VarsSetter<Vars> =
   | ServiceContainer<VarsSetFn<Vars>>;
 
 export type VarsElementProps<Vars> = {
-  set: VarsSetter<Vars>,
+  set: VarsSetter<Vars>;
 };
 
-export type VarsElement<Vars> = MachinatElement<VarsElementProps<Vars>, Symbol>;
+export type VarsElement<Vars> = MachinatElement<
+  VarsElementProps<Vars>,
+  typeof KEYWORDS.VARS
+>;
 
 export type LabelElementProps = { key: string };
-export type LabelElement = MachinatElement<LabelElementProps, Symbol>;
+export type LabelElement = MachinatElement<
+  LabelElementProps,
+  typeof KEYWORDS.LABEL
+>;
 
 export type CallWithVarsFn<CallerVars, CalleeVars> = (
   circumstances: ScriptCircumstances<CallerVars>
@@ -160,16 +165,16 @@ export type CallReturnSetter<CallerVars, RetrunValue> =
   | ServiceContainer<CallReturnSetFn<CallerVars, RetrunValue>>;
 
 export type CallElementProps<CallerVars, CalleeVars, RetrunValue> = {
-  script: MachinatScript<CallerVars, any, RetrunValue, any>,
-  key: string,
-  withVars?: CallWithVarsGetter<CallerVars, CalleeVars>,
-  set?: CallReturnSetter<CallerVars, RetrunValue>,
-  goto?: string,
+  script: MachinatScript<CallerVars, any, RetrunValue, any>;
+  key: string;
+  withVars?: CallWithVarsGetter<CallerVars, CalleeVars>;
+  set?: CallReturnSetter<CallerVars, RetrunValue>;
+  goto?: string;
 };
 
 export type CallElement<CallerVars, CalleeVars, RetrunValue> = MachinatElement<
   CallElementProps<CallerVars, CalleeVars, RetrunValue>,
-  Symbol
+  typeof KEYWORDS.CALL
 >;
 
 export type ReturnValueFn<Value> = (
@@ -181,12 +186,12 @@ export type ReturnValueGetter<Value> =
   | ServiceContainer<ReturnValueFn<Value>>;
 
 export type ReturnElementProps<Value> = {
-  value?: ReturnValueGetter<Value>,
+  value?: ReturnValueGetter<Value>;
 };
 
 export type ReturnElement<Value> = MachinatElement<
   ReturnElementProps<Value>,
-  Symbol
+  typeof KEYWORDS.RETURN
 >;
 
 export type ScriptElement<Vars, Input, RetrunValue> =
@@ -205,59 +210,59 @@ export type ScriptNode<Vars, Input, RetrunValue> =
   | ScriptElement<Vars, Input, RetrunValue>[]
   | MachinatElement<
       { children: ScriptNode<Vars, Input, RetrunValue> },
-      $PropertyType<Machinat, 'Fragment'>
+      typeof Machinat.Fragment
     >;
 
-export type ContentSegment<Vars> = {|
-  type: 'content',
-  render: RenderContentNode<Vars>,
-|};
+export type ContentSegment<Vars> = {
+  type: 'content';
+  render: RenderContentNode<Vars>;
+};
 
-export type ConditionsSegment<Vars> = {|
-  type: 'conditions',
-  branches: {|
-    condition: ConditionMatcher<Vars>,
-    body: ScriptSegment<Vars>[],
-  |}[],
-  fallbackBody: null | ScriptSegment<Vars, any, any>[],
-|};
+export type ConditionsSegment<Vars> = {
+  type: 'conditions';
+  branches: {
+    condition: ConditionMatcher<Vars>;
+    body: ScriptSegment<Vars, any, any>[];
+  }[];
+  fallbackBody: null | ScriptSegment<Vars, any, any>[];
+};
 
-export type WhileSegment<Vars> = {|
-  type: 'while',
-  condition: ConditionMatcher<Vars>,
-  body: ScriptSegment<Vars, any, any>[],
-|};
+export type WhileSegment<Vars> = {
+  type: 'while';
+  condition: ConditionMatcher<Vars>;
+  body: ScriptSegment<Vars, any, any>[];
+};
 
-export type SetVarsSegment<Vars> = {|
-  type: 'set_vars',
-  setter: VarsSetter<Vars>,
-|};
+export type SetVarsSegment<Vars> = {
+  type: 'set_vars';
+  setter: VarsSetter<Vars>;
+};
 
-export type PromptSegment<Vars, Input> = {|
-  type: 'prompt',
-  key: string,
-  setter: ?PromptSetter<Vars, Input>,
-  filter?: PromptFilterPredecator<Vars, Input>,
-|};
+export type PromptSegment<Vars, Input> = {
+  type: 'prompt';
+  key: string;
+  setter: PromptSetter<Vars, Input> | null | undefined;
+  filter?: PromptFilterPredecator<Vars, Input>;
+};
 
-export type LabelSegment = {|
-  type: 'label',
-  key: string,
-|};
+export type LabelSegment = {
+  type: 'label';
+  key: string;
+};
 
-export type CallSegment<CallerVars, CalleeVars, RetrunValue> = {|
-  type: 'call',
-  script: MachinatScript<CalleeVars, any, RetrunValue, any>,
-  key: string,
-  withVars: ?CallWithVarsGetter<CallerVars, CalleeVars>,
-  setter: ?CallReturnSetter<CallerVars, RetrunValue>,
-  goto: void | string,
-|};
+export type CallSegment<CallerVars, CalleeVars, RetrunValue> = {
+  type: 'call';
+  script: MachinatScript<CalleeVars, any, RetrunValue, any>;
+  key: string;
+  withVars: CallWithVarsGetter<CallerVars, CalleeVars> | null | undefined;
+  setter: CallReturnSetter<CallerVars, RetrunValue> | null | undefined;
+  goto: void | string;
+};
 
-export type ReturnSegment<Value> = {|
-  type: 'return',
-  valueGetter: ?ReturnValueGetter<Value>,
-|};
+export type ReturnSegment<Value> = {
+  type: 'return';
+  valueGetter: ReturnValueGetter<Value> | null | undefined;
+};
 
 export type ScriptSegment<Vars, Input, RetrunValue> =
   | ContentSegment<Vars>
@@ -269,48 +274,48 @@ export type ScriptSegment<Vars, Input, RetrunValue> =
   | LabelSegment
   | ReturnSegment<RetrunValue>;
 
-export type ContentCommand<Vars> = {|
-  type: 'content',
-  render: RenderContentNode<Vars>,
-|};
+export type ContentCommand<Vars> = {
+  type: 'content';
+  render: RenderContentNode<Vars>;
+};
 
-export type PromptCommand<Vars, Input> = {|
-  type: 'prompt',
-  key: string,
-  setter: ?PromptSetter<Vars, Input>,
-  filter?: PromptFilterPredecator<Vars, Input>,
-|};
+export type PromptCommand<Vars, Input> = {
+  type: 'prompt';
+  key: string;
+  setter: PromptSetter<Vars, Input> | null | undefined;
+  filter?: PromptFilterPredecator<Vars, Input>;
+};
 
-export type CallCommand<CallerVars, CalleeVars, RetrunValue> = {|
-  type: 'call',
-  key: string,
-  script: MachinatScript<CalleeVars, any, RetrunValue, any>,
-  withVars: ?CallWithVarsGetter<CallerVars, CalleeVars>,
-  setter: ?CallReturnSetter<CallerVars, RetrunValue>,
-  goto: void | string,
-|};
+export type CallCommand<CallerVars, CalleeVars, RetrunValue> = {
+  type: 'call';
+  key: string;
+  script: MachinatScript<CalleeVars, any, RetrunValue, any>;
+  withVars: CallWithVarsGetter<CallerVars, CalleeVars> | null | undefined;
+  setter: CallReturnSetter<CallerVars, RetrunValue> | null | undefined;
+  goto: void | string;
+};
 
-export type SetVarsCommand<Vars> = {|
-  type: 'set_vars',
-  setter: VarsSetter<Vars>,
-|};
+export type SetVarsCommand<Vars> = {
+  type: 'set_vars';
+  setter: VarsSetter<Vars>;
+};
 
-export type JumpCommand = {|
-  type: 'jump',
-  offset: number,
-|};
+export type JumpCommand = {
+  type: 'jump';
+  offset: number;
+};
 
-export type JumpCondCommand<Vars> = {|
-  type: 'jump_cond',
-  offset: number,
-  condition: ConditionMatcher<Vars>,
-  isNot: boolean,
-|};
+export type JumpCondCommand<Vars> = {
+  type: 'jump_cond';
+  offset: number;
+  condition: ConditionMatcher<Vars>;
+  isNot: boolean;
+};
 
-export type ReturnCommand<Value> = {|
-  type: 'return',
-  valueGetter: ?ReturnValueGetter<Value>,
-|};
+export type ReturnCommand<Value> = {
+  type: 'return';
+  valueGetter: ReturnValueGetter<Value> | null | undefined;
+};
 
 export type ScriptCommand<Vars, Input, RetrunValue> =
   | ContentCommand<Vars>
@@ -322,19 +327,19 @@ export type ScriptCommand<Vars, Input, RetrunValue> =
   | ReturnCommand<RetrunValue>;
 
 export type CallStatus<Vars, Input, RetrunValue> = {
-  script: MachinatScript<Vars, Input, RetrunValue, any>,
-  vars: Vars,
-  stopAt: void | string,
+  script: MachinatScript<Vars, Input, RetrunValue, any>;
+  vars: Vars;
+  stopAt: void | string;
 };
 
 export type SerializedCallStatus<Vars> = {
-  name: string,
-  vars: Vars,
-  stopAt: string,
+  name: string;
+  vars: Vars;
+  stopAt: string;
 };
 
 export type ScriptProcessState = {
-  version: 'V0',
-  timestamp: number,
-  callStack: SerializedCallStatus<any>[],
+  version: 'V0';
+  timestamp: number;
+  callStack: SerializedCallStatus<any>[];
 };
