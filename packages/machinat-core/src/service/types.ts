@@ -14,14 +14,14 @@ export interface ServiceInterface<T> {
   $$multi: boolean;
 }
 
-export type ServiceProvider<T> = {
+export interface ServiceProvider<T> {
   $$name: string;
   $$typeof: typeof MACHINAT_SERVICES_PROVIDER;
+  $$multi: false;
   $$lifetime: ServiceLifetime;
   $$deps: ServiceRequirement<T>[];
   $$factory: (...args: any[]) => T;
-  $$multi: false;
-};
+}
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type ClassType<T> = Function & { prototype: T };
@@ -29,7 +29,7 @@ export type ClassType<T> = Function & { prototype: T };
 export type Interfaceable<T> = ServiceInterface<T> | ServiceProvider<T>;
 
 export type ServiceRequirement<T> = {
-  require: Interfaceable<T>;
+  require: Interfaceable<T> | ClassType<T>;
   optional: boolean;
 };
 
