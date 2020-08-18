@@ -16,15 +16,19 @@ import {
 } from '../components';
 
 jest.mock('@machinat/core/engine', () =>
-  require('@moxyjs/moxy').default(jest.requireActual('@machinat/core/engine'))
+  jest
+    .requireActual('@moxyjs/moxy')
+    .default(jest.requireActual('@machinat/core/engine'))
 );
 
 jest.mock('@machinat/core/renderer', () =>
-  require('@moxyjs/moxy').default(jest.requireActual('@machinat/core/renderer'))
+  jest
+    .requireActual('@moxyjs/moxy')
+    .default(jest.requireActual('@machinat/core/renderer'))
 );
 
 jest.mock('../worker', () =>
-  require('@moxyjs/moxy').default(jest.requireActual('../worker'), {
+  jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../worker'), {
     mockNewInstance: false,
   })
 );

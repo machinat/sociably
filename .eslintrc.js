@@ -57,7 +57,10 @@ module.exports = {
     'react/no-unescaped-entities': ['error', {
       forbid: ['<', '>', '{', '}']
     }],
-    '@typescript-eslint/no-empty-function': 0
+    '@typescript-eslint/no-empty-function': 0,
+    '@typescript-eslint/no-namespace': ['error', {
+      'allowDeclarations': true,
+    }],
   },
   overrides: [
     {

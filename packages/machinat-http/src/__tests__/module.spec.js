@@ -4,7 +4,9 @@ import Machinat from '@machinat/core';
 import Connector from '../connector';
 import HTTP from '..';
 
-jest.mock('http', () => require('@moxyjs/moxy').default({ createServer() {} })); // eslint-disable-line global-require
+jest.mock('http', () =>
+  jest.requireActual('@moxyjs/moxy').default({ createServer() {} })
+);
 
 const server = moxy({
   addListener() {},

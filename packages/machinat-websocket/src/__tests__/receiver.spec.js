@@ -6,7 +6,8 @@ import { ConnectionChannel } from '../channel';
 
 jest.mock(
   '../socket',
-  () => require('@moxyjs/moxy').default(jest.requireActual('../socket')) // eslint-disable-line global-require
+  () =>
+    jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../socket')) // eslint-disable-line global-require
 );
 
 const nextTick = () => new Promise(process.nextTick);

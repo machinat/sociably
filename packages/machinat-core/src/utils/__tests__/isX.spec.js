@@ -254,9 +254,7 @@ describe('isProviderType', () => {
 
 describe('isThunkType', () => {
   it('return true if Thunk passed', () => {
-    expect(isThunkType(<Machinat.Thunk effect={async () => {}} />)).toBe(
-      true
-    );
+    expect(isThunkType(<Machinat.Thunk effect={async () => {}} />)).toBe(true);
   });
 
   it('return false if non Pause element passed', () => {

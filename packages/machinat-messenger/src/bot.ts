@@ -16,10 +16,7 @@ import MessengerWorker from './worker';
 import generalComponentDelegator from './components/general';
 
 import { MESSENGER } from './constant';
-import {
-  PLATFORM_CONFIGS_I,
-  PLATFORM_MOUNTER_I,
-} from './interface';
+import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import MessengerChannel from './channel';
 import { chatJobsMaker, makeAttachmentJobs } from './job';
 
@@ -44,10 +41,7 @@ type MessengerBotOptions = {
 
 @provider<MessengerBot>({
   lifetime: 'singleton',
-  deps: [
-    PLATFORM_CONFIGS_I,
-    { require: PLATFORM_MOUNTER_I, optional: true },
-  ],
+  deps: [PLATFORM_CONFIGS_I, { require: PLATFORM_MOUNTER_I, optional: true }],
   factory: (
     configs: MessengerPlatformConfigs,
     mounter: null | MessengerPlatformMounter

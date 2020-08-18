@@ -11,10 +11,7 @@ import createEvent from './event';
 import MessengerChannel from './channel';
 import MessengerUser from './user';
 import MessengerBot from './bot';
-import {
-  PLATFORM_CONFIGS_I,
-  PLATFORM_MOUNTER_I,
-} from './interface';
+import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { MESSENGER } from './constant';
 
 import type {
@@ -127,11 +124,7 @@ const handleWebhook = (
 
 @provider<MessengerReceiver>({
   lifetime: 'singleton',
-  deps: [
-    PLATFORM_CONFIGS_I,
-    MessengerBot,
-    PLATFORM_MOUNTER_I,
-  ],
+  deps: [PLATFORM_CONFIGS_I, MessengerBot, PLATFORM_MOUNTER_I],
   factory: (
     configs: MessengerPlatformConfigs,
     bot: MessengerBot,

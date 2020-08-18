@@ -3,7 +3,6 @@ import LineChannel from './channel';
 import type {
   LineSegmentValue,
   LineMessageSegmentValue,
-  LineComponent,
   LineJob,
 } from './types';
 import {
@@ -13,9 +12,7 @@ import {
   CHANNEL_API_CALL_GETTER,
   BULK_API_CALL_GETTER,
 } from './constant';
-
-const objectHasOwnProperty = (obj, prop) =>
-  Object.prototype.hasOwnProperty.call(obj, prop);
+import { isMessageValue } from './utils';
 
 const createMessageJob = (
   channel: LineChannel,
@@ -43,15 +40,28 @@ export const chatJobsMaker = (replyToken: void | string) => {
     for (let i = 0; i < segments.length; i += 1) {
       const { value } = segments[i];
 
-      // use dynamic api call getter if existed
-      if (objectHasOwnProperty(value, CHANNEL_API_CALL_GETTER)) {
-        // push messages job before the non-message job
+      if (isMessageValue(value)) {
+        messagesBuffer.push(
+          typeof value === 'string'
+            ? { type: 'text', text: value as string }
+            : value
+        );
+
+        // flush messages buffer if accumlated to 5 or at the end of loop
+        if (messagesBuffer.length === 5 || i === segments.length - 1) {
+          jobs.push(createMessageJob(channel, messagesBuffer, replyToken));
+          messagesBuffer = [];
+          messagingJobsCount += 1;
+        }
+      } else {
+        // push buffered messages first
         if (messagesBuffer.length > 0) {
           jobs.push(createMessageJob(channel, messagesBuffer, replyToken));
           messagesBuffer = [];
           messagingJobsCount += 1;
         }
 
+        // get dynamic api request
         const { method, path, body } = value[CHANNEL_API_CALL_GETTER](channel);
         jobs.push({
           method,
@@ -59,19 +69,6 @@ export const chatJobsMaker = (replyToken: void | string) => {
           executionKey: channel.uid,
           body,
         });
-      } else {
-        messagesBuffer.push(
-          typeof value === 'string'
-            ? { type: 'text', text: value as string }
-            : value
-        );
-
-        // empty messages buffer if accumlated to 5 or at the end of loop
-        if (messagesBuffer.length === 5 || i === segments.length - 1) {
-          jobs.push(createMessageJob(channel, messagesBuffer, replyToken));
-          messagesBuffer = [];
-          messagingJobsCount += 1;
-        }
       }
     }
 
@@ -97,7 +94,25 @@ export const multicastJobsMaker = (targets: string[]) => (
   for (let i = 0; i < segments.length; i += 1) {
     const { value } = segments[i];
 
-    if (objectHasOwnProperty(value, BULK_API_CALL_GETTER)) {
+    if (isMessageValue(value)) {
+      messages.push(
+        typeof value === 'string'
+          ? { type: 'text', text: value as string }
+          : value
+      );
+
+      // flush messages buffer if accumlated to 5 or at the end of loop
+      if (messages.length === 5 || i === segments.length - 1) {
+        jobs.push({
+          method: 'POST',
+          path: PATH_MULTICAST,
+          body: { to: targets, messages },
+          executionKey: MULITCAST_EXECUTION_KEY,
+        });
+        messages = [];
+      }
+    } else {
+      // push buffered messages first
       if (messages.length > 0) {
         jobs.push({
           method: 'POST',
@@ -108,6 +123,7 @@ export const multicastJobsMaker = (targets: string[]) => (
         messages = [];
       }
 
+      // get dynamic api request
       const { method, path, body } = value[BULK_API_CALL_GETTER](targets);
       jobs.push({
         method,
@@ -115,22 +131,6 @@ export const multicastJobsMaker = (targets: string[]) => (
         executionKey: MULITCAST_EXECUTION_KEY,
         body,
       });
-    } else {
-      messages.push(
-        typeof value === 'string'
-          ? { type: 'text', text: value as string }
-          : value
-      );
-
-      if (messages.length === 5 || i === segments.length - 1) {
-        jobs.push({
-          method: 'POST',
-          path: PATH_MULTICAST,
-          body: { to: targets, messages },
-          executionKey: MULITCAST_EXECUTION_KEY,
-        });
-        messages = [];
-      }
     }
   }
 
