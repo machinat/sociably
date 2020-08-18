@@ -1,4 +1,3 @@
-// @flow
 import invariant from 'invariant';
 import filterSymbolKeys from '@machinat/core/utils/filterSymbolKeys';
 import formatNode from '@machinat/core/utils/formatNode';
@@ -6,7 +5,6 @@ import formatNode from '@machinat/core/utils/formatNode';
 import type { DispatchableSegment } from '@machinat/core/engine/types';
 import type {
   MessengerSegmentValue,
-  MessengerComponent,
   MessengerJob,
   MessengerSendOptions,
 } from './types';
@@ -26,11 +24,11 @@ const POST = 'POST';
 
 export const chatJobsMaker = (options?: MessengerSendOptions) => (
   channel: MessangerChannel,
-  segments: DispatchableSegment<MessengerSegmentValue, MessengerComponent>[]
+  segments: DispatchableSegment<MessengerSegmentValue>[]
 ): MessengerJob[] => {
   const { target, uid } = channel;
   if (!target) {
-    throw new Error(`unable to send to ${channel.type} channel`);
+    throw new Error(`unable to send to ${channel.threadType} channel`);
   }
 
   const jobs: MessengerJob[] = new Array(segments.length);
@@ -38,11 +36,11 @@ export const chatJobsMaker = (options?: MessengerSendOptions) => (
   for (let i = 0; i < segments.length; i += 1) {
     const { value } = segments[i];
 
-    let body: Object;
-    let specifiedURL: void | string;
-    let attachmentAssetTag: void | string;
-    let attachmentFileData: void | Object;
-    let attachmentFileInfo: void | Object;
+    let body: any;
+    let specifiedURL: undefined | string;
+    let attachmentAssetTag: undefined | string;
+    let attachmentFileData: undefined | any;
+    let attachmentFileInfo: undefined | any;
 
     if (typeof value === 'object') {
       body = filterSymbolKeys(value);
@@ -51,7 +49,7 @@ export const chatJobsMaker = (options?: MessengerSendOptions) => (
       attachmentFileData = value[ATTACHMENT_DATA];
       attachmentFileInfo = value[ATTACHMENT_INFO];
     } else if (typeof value === 'string') {
-      body = ({ message: { text: value } }: Object);
+      body = { message: { text: value } };
     } else {
       throw new TypeError('invalid segment value');
     }
@@ -95,26 +93,26 @@ export const chatJobsMaker = (options?: MessengerSendOptions) => (
 
 export const makeAttachmentJobs = (
   target: null,
-  segments: DispatchableSegment<MessengerSegmentValue, MessengerComponent>[]
+  segments: DispatchableSegment<MessengerSegmentValue>[]
 ): MessengerJob[] => {
   invariant(segments.length === 1, 'more than 1 message received');
 
   const [{ value, node }] = segments;
-
-  let attachmentType;
   invariant(
-    typeof value === 'object' &&
-      value.message &&
-      value.message.attachment &&
-      ((attachmentType = value.message.attachment.type) === 'image' ||
-        attachmentType === 'video' ||
-        attachmentType === 'audio' ||
-        attachmentType === 'file'),
+    typeof value === 'object' && 'message' in value && value.message.attachment,
     `non attachment message ${formatNode(node || value)} received`
   );
 
-  const body = filterSymbolKeys(value);
+  const attachmentType = value.message.attachment.type;
+  invariant(
+    attachmentType === 'image' ||
+      attachmentType === 'video' ||
+      attachmentType === 'audio' ||
+      attachmentType === 'file',
+    `invalid attachment type "${attachmentType}" to be uploaded`
+  );
 
+  const body = filterSymbolKeys(value);
   return [
     {
       attachmentFileData: value[ATTACHMENT_DATA],

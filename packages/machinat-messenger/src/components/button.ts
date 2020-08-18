@@ -9,7 +9,6 @@ export const URLButton = (node, path) => {
     messengerExtensions,
     webviewHeightRatio,
     webviewShareButton,
-
     hideWebviewShare,
   } = node.props;
 

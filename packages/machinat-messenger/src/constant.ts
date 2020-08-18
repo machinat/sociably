@@ -1,4 +1,3 @@
-// @flow
 export const MESSENGER = 'messenger';
 
 export const ATTACHMENT_DATA = Symbol('messenger.segment.attachment_data');

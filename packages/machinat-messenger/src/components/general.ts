@@ -5,6 +5,8 @@ import {
   textSegment,
   unitSegment,
 } from '@machinat/core/renderer';
+import type { UnitSegment } from '@machinat/core/renderer/types';
+import type { MessageValue } from '../types';
 
 const p = async (node, path, render) => {
   const childrenSegments = await render(node.props.children);
@@ -12,7 +14,7 @@ const p = async (node, path, render) => {
     return null;
   }
 
-  const segments = [];
+  const segments: UnitSegment<MessageValue>[] = [];
   for (const segment of childrenSegments) {
     if (segment.type === 'text') {
       segments.push({

@@ -1,11 +1,10 @@
-// @flow
 import url from 'url';
 import crypto from 'crypto';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
 
 import type { MachinatWorker } from '@machinat/core/engine/types';
-import type MachinatQueue from '@machinat/core/queue';
+import MachinatQueue from '@machinat/core/queue';
 import type { JobResponse } from '@machinat/core/queue/types';
 
 import { GraphAPIError } from './error';
@@ -15,8 +14,6 @@ type MessengerJobResponse = JobResponse<MessengerJob, MessengerResult>;
 type MessengerQueue = MachinatQueue<MessengerJob, MessengerResult>;
 
 const ENTRY = 'https://graph.facebook.com/v7.0/';
-
-const GET = 'GET';
 const POST = 'POST';
 
 const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
@@ -24,7 +21,7 @@ const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
 const appendField = (body: string, key: string, value: string) =>
   `${body.length === 0 ? body : `${body}&`}${key}=${encodeURIComponent(value)}`;
 
-const encodeURIBody = (fields: { [string]: any }): string => {
+const encodeURIBody = (fields: { [key: string]: any }): string => {
   let body = '';
 
   for (const key of Object.keys(fields)) {
@@ -57,7 +54,10 @@ const formatRequest = (request: BatchAPIRequest) =>
         body: request.body && encodeURIBody(request.body),
       };
 
-const assignQueryParams = (queryParams, obj) => {
+const assignQueryParams = (
+  queryParams: URLSearchParams,
+  obj: Record<string, string>
+) => {
   const keys = Object.keys(obj);
   for (let i = 0; i < keys.length; i += 1) {
     const key = keys[i];
@@ -68,9 +68,12 @@ const assignQueryParams = (queryParams, obj) => {
 const makeRequestName = (channelId: string, count: number) =>
   `${channelId}-${count}`;
 
-const makeFileName = (num) => `file_${num}`;
+const makeFileName = (num: number) => `file_${num}`;
 
-const appendFieldsToForm = (form: FormData, body: { [string]: ?string }) => {
+const appendFieldsToForm = (
+  form: FormData,
+  body: { [key: string]: string | null | undefined }
+) => {
   const fields = Object.keys(body);
 
   for (let k = 0; k < fields.length; k += 1) {
@@ -83,15 +86,17 @@ const appendFieldsToForm = (form: FormData, body: { [string]: ?string }) => {
   return form;
 };
 
+type TimeoutID = ReturnType<typeof setTimeout>;
+
 export default class MessengerWorker
   implements MachinatWorker<MessengerJob, MessengerResult> {
   token: string;
   consumeInterval: number;
-  _appSecretProof: ?string;
+  private _appSecretProof: string | undefined;
 
-  _started: boolean;
-  _isConsuming: boolean;
-  _consumptionTimeoutId: TimeoutID | null;
+  private _started: boolean;
+  private _isConsuming: boolean;
+  private _consumptionTimeoutId: TimeoutID | null;
 
   constructor(
     accessToken: string,
@@ -109,11 +114,11 @@ export default class MessengerWorker
     this._consumptionTimeoutId = null;
   }
 
-  get started() {
+  get started(): boolean {
     return this._started;
   }
 
-  start(queue: MessengerQueue) {
+  start(queue: MessengerQueue): boolean {
     if (this._started) {
       return false;
     }
@@ -128,7 +133,7 @@ export default class MessengerWorker
     return true;
   }
 
-  stop(queue: MessengerQueue) {
+  stop(queue: MessengerQueue): boolean {
     if (!this._started) {
       return false;
     }
@@ -143,19 +148,19 @@ export default class MessengerWorker
     return true;
   }
 
-  _listenJobCallback = this._listenJob.bind(this);
+  private _listenJobCallback = this._listenJob.bind(this);
 
-  _listenJob(queue: MessengerQueue) {
+  private _listenJob(queue: MessengerQueue) {
     if (this._started) {
       this._consume(queue);
     }
   }
 
-  async _request(
+  private async _request(
     method: string,
     path: string,
-    body: ?Object,
-    query: { [string]: string }
+    body: any | null,
+    query: { [key: string]: string }
   ) {
     const requestURL = new url.URL(path, ENTRY);
     requestURL.searchParams.set('access_token', this.token);
@@ -181,17 +186,9 @@ export default class MessengerWorker
     return result;
   }
 
-  get(path: string, query: Object) {
-    return this._request(GET, path, undefined, query);
-  }
+  private _consumeCallback = this._consume.bind(this);
 
-  post(path: string, body: Object, query: Object) {
-    return this._request(POST, path, body, query);
-  }
-
-  _consumeCallback = this._consume.bind(this);
-
-  async _consume(queue: MessengerQueue) {
+  private async _consume(queue: MessengerQueue) {
     this._isConsuming = true;
     this._consumptionTimeoutId = null;
 
@@ -214,12 +211,12 @@ export default class MessengerWorker
     }
   }
 
-  _executeJobsCallback = this._executeJobs.bind(this);
+  private _executeJobsCallback = this._executeJobs.bind(this);
 
-  async _executeJobs(jobs: MessengerJob[]) {
+  private async _executeJobs(jobs: MessengerJob[]) {
     const channelSendingRec = new Map();
     let fileCount = 0;
-    let filesForm: FormData;
+    let filesForm: undefined | FormData;
 
     const requests = new Array(jobs.length);
 
@@ -263,9 +260,6 @@ export default class MessengerWorker
       requests[i] = formatRequest(request);
     }
 
-    const hasFiles = filesForm !== undefined;
-    const headers = hasFiles ? undefined : REQEST_JSON_HEADERS;
-
     const batchBody = {
       access_token: this.token,
       appsecret_proof: this._appSecretProof || undefined,
@@ -273,11 +267,16 @@ export default class MessengerWorker
     };
 
     // use formdata if files attached, otherwise json
-    const body = hasFiles
-      ? appendFieldsToForm(filesForm, batchBody)
-      : JSON.stringify(batchBody);
+    const body =
+      filesForm !== undefined
+        ? appendFieldsToForm(filesForm, batchBody)
+        : JSON.stringify(batchBody);
 
-    const apiResponse = await fetch(ENTRY, { method: POST, headers, body });
+    const apiResponse = await fetch(ENTRY, {
+      method: POST,
+      headers: filesForm !== undefined ? undefined : REQEST_JSON_HEADERS,
+      body,
+    });
 
     // if batch respond with error, throw it
     const apiBody = await apiResponse.json();

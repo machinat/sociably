@@ -1,4 +1,3 @@
-// @flow
 import { parse as parseURL } from 'url';
 import crypto from 'crypto';
 import invariant from 'invariant';
@@ -13,8 +12,8 @@ import MessengerChannel from './channel';
 import MessengerUser from './user';
 import MessengerBot from './bot';
 import {
-  MESSENGER_PLATFORM_CONFIGS_I,
-  MESSENGER_PLATFORM_MOUNTER_I,
+  PLATFORM_CONFIGS_I,
+  PLATFORM_MOUNTER_I,
 } from './interface';
 import { MESSENGER } from './constant';
 
@@ -25,10 +24,10 @@ import type {
 } from './types';
 
 type MessengerReceiverOptions = {
-  appSecret?: string,
-  shouldValidateRequest?: boolean,
-  shouldHandleVerify?: boolean,
-  verifyToken?: string,
+  appSecret?: string;
+  shouldValidateRequest?: boolean;
+  shouldHandleVerify?: boolean;
+  verifyToken?: string;
 };
 
 const handleWebhook = (
@@ -52,8 +51,7 @@ const handleWebhook = (
         return { code: 403 };
       }
 
-      const query: { [string]: string } = (parseURL(url, true).query: any);
-
+      const { query } = parseURL(url, true);
       if (
         query['hub.mode'] !== 'subscribe' ||
         query['hub.verify_token'] !== verifyToken
@@ -85,7 +83,7 @@ const handleWebhook = (
       }
     }
 
-    let body;
+    let body: any;
     try {
       body = JSON.parse(rawBody);
     } catch (e) {
@@ -96,7 +94,7 @@ const handleWebhook = (
       return { code: 404 };
     }
 
-    const issuingEvents = [];
+    const issuingEvents: Promise<null>[] = [];
 
     // parse and pop event context
     for (const { id: pageId, messaging, stanby } of body.entry) {
@@ -127,6 +125,19 @@ const handleWebhook = (
   };
 };
 
+@provider<MessengerReceiver>({
+  lifetime: 'singleton',
+  deps: [
+    PLATFORM_CONFIGS_I,
+    MessengerBot,
+    PLATFORM_MOUNTER_I,
+  ],
+  factory: (
+    configs: MessengerPlatformConfigs,
+    bot: MessengerBot,
+    { popEventWrapper }: MessengerPlatformMounter
+  ) => new MessengerReceiver(configs, bot, popEventWrapper), // eslint-disable-line no-use-before-define
+})
 class MessengerReceiver extends WebhookReceiver {
   constructor(
     {
@@ -163,16 +174,4 @@ class MessengerReceiver extends WebhookReceiver {
   }
 }
 
-export default provider<MessengerReceiver>({
-  lifetime: 'singleton',
-  deps: [
-    MESSENGER_PLATFORM_CONFIGS_I,
-    MessengerBot,
-    MESSENGER_PLATFORM_MOUNTER_I,
-  ],
-  factory: (
-    configs: MessengerPlatformConfigs,
-    bot: MessengerBot,
-    { popEventWrapper }: MessengerPlatformMounter
-  ) => new MessengerReceiver(configs, bot, popEventWrapper),
-})(MessengerReceiver);
+export default MessengerReceiver;

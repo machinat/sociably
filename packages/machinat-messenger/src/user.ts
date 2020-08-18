@@ -1,4 +1,3 @@
-// @flow
 import type { MachinatUser } from '@machinat/core/types';
 import { MESSENGER } from './constant';
 
@@ -12,11 +11,11 @@ export default class MessengerUser implements MachinatUser {
     this.psid = psid;
   }
 
-  get id() {
+  get id(): string {
     return this.psid;
   }
 
-  get uid() {
+  get uid(): string {
     return `messenger.${this.pageId}.${this.psid}`;
   }
 }

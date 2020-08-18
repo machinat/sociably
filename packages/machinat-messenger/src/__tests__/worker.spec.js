@@ -269,14 +269,14 @@ it('throw if connection error happen', async () => {
 
   worker.start(queue);
   await expect(queue.executeJobs(jobs)).resolves.toMatchInlineSnapshot(`
-Object {
-  "batch": null,
-  "errors": Array [
-    [FetchError: request to https://graph.facebook.com/v7.0/ failed, reason: something wrong like connection error],
-  ],
-  "success": false,
-}
-`);
+    Object {
+      "batch": null,
+      "errors": Array [
+        [FetchError: request to https://graph.facebook.com/v7.0/ failed, reason: something wrong like connection error],
+      ],
+      "success": false,
+    }
+  `);
 
   expect(scope.isDone()).toBe(true);
 });
@@ -295,14 +295,14 @@ it('throw if api error happen', async () => {
 
   worker.start(queue);
   await expect(queue.executeJobs(jobs)).resolves.toMatchInlineSnapshot(`
-Object {
-  "batch": null,
-  "errors": Array [
-    [OAuthException: The access token could not be decrypted],
-  ],
-  "success": false,
-}
-`);
+    Object {
+      "batch": null,
+      "errors": Array [
+        [GraphAPIError (OAuthException): The access token could not be decrypted],
+      ],
+      "success": false,
+    }
+  `);
 
   expect(scope.isDone()).toBe(true);
 });
@@ -340,10 +340,10 @@ it('throw if one single job fail', async () => {
   expect(execRes.success).toBe(false);
   expect(execRes).toMatchSnapshot();
   expect(execRes.errors).toMatchInlineSnapshot(`
-Array [
-  [OAuthException: you should not passed!],
-]
-`);
+    Array [
+      [GraphAPIError (OAuthException): you should not passed!],
+    ]
+  `);
 
   expect(scope.isDone()).toBe(true);
 });

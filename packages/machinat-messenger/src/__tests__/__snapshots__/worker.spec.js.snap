@@ -52,7 +52,7 @@ Object {
       "success": true,
     },
     Object {
-      "error": [OAuthException: you should not passed!],
+      "error": [GraphAPIError (OAuthException): you should not passed!],
       "job": Object {
         "channelId": "messenger:default:id:foo",
         "request": Object {
@@ -108,7 +108,7 @@ Object {
     },
   ],
   "errors": Array [
-    [OAuthException: you should not passed!],
+    [GraphAPIError (OAuthException): you should not passed!],
   ],
   "success": false,
 }

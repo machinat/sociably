@@ -1,44 +1,54 @@
-// @flow
 import invariant from 'invariant';
 import crypto from 'crypto';
-import type { IncomingMessage, ServerResponse } from 'http';
-import {
-  decode as decodeBase64URL,
-  toBuffer as decodeBase64URLToBuffer,
-} from 'base64url';
+import { IncomingMessage, ServerResponse } from 'http';
+import base64url from 'base64url';
 import { provider } from '@machinat/core/service';
-import type { ServerAuthorizer } from '@machinat/auth/types';
-import { MESSENGER_PLATFORM_CONFIGS_I } from '../interface';
+import { ServerAuthorizer, AuthorizerVerifyResult } from '@machinat/auth/types';
+import { PLATFORM_CONFIGS_I } from '../interface';
 import { MESSENGER } from '../constant';
+import { refinementFromExtensionPayload } from './utils';
 import type {
-  ExtensionContext,
+  ExtensionPayload,
   ExtensionCredential,
-  MessengerPlatformConfigs,
-} from '../types';
-import { refineExtensionContext } from './utils';
+  AuthorizerRefinement,
+} from './types';
 
-type MessengerServerAuthorizerOps = {
-  appSecret: string,
+const {
+  decode: decodeBase64URL,
+  toBuffer: decodeBase64URLToBuffer,
+} = base64url;
+
+type MessengerServerAuthorizerOptions = {
+  appSecret: string;
 };
 
+@provider<MessengerServerAuthorizer>({
+  lifetime: 'transient',
+  deps: [PLATFORM_CONFIGS_I],
+})
 class MessengerServerAuthorizer
-  implements ServerAuthorizer<ExtensionContext, ExtensionCredential> {
+  implements ServerAuthorizer<ExtensionPayload, ExtensionCredential> {
   appSecret: string;
   platform = MESSENGER;
 
-  constructor(options: MessengerServerAuthorizerOps = {}) {
+  constructor(options: MessengerServerAuthorizerOptions = {} as any) {
     invariant(options.appSecret, 'options.appSecret must not be empty');
 
     this.appSecret = options.appSecret;
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async delegateAuthRequest(req: IncomingMessage, res: ServerResponse) {
+  async delegateAuthRequest(
+    req: IncomingMessage,
+    res: ServerResponse
+  ): Promise<void> {
     res.writeHead(403);
     res.end();
   }
 
-  async verifyCredential(credential: ExtensionCredential) {
+  async verifyCredential(
+    credential: ExtensionCredential
+  ): Promise<AuthorizerVerifyResult<ExtensionPayload>> {
     if (!credential || !credential.signedRequest) {
       return {
         success: false,
@@ -80,7 +90,7 @@ class MessengerServerAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async verifyRefreshment() {
+  async verifyRefreshment(): Promise<AuthorizerVerifyResult<ExtensionPayload>> {
     return {
       success: false,
       code: 403,
@@ -89,19 +99,11 @@ class MessengerServerAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async refineAuth(context: ExtensionContext) {
-    return refineExtensionContext(context);
+  async refineAuth(
+    payload: ExtensionPayload
+  ): Promise<null | AuthorizerRefinement> {
+    return refinementFromExtensionPayload(payload);
   }
 }
 
-export default provider<MessengerServerAuthorizer>({
-  lifetime: 'transient',
-  deps: [MESSENGER_PLATFORM_CONFIGS_I],
-  factory: ({ appSecret }: MessengerPlatformConfigs) => {
-    invariant(
-      appSecret,
-      'configs.appSecret must not be empty to use MessengerServerAuthorizer'
-    );
-    return new MessengerServerAuthorizer({ appSecret });
-  },
-})(MessengerServerAuthorizer);
+export default MessengerServerAuthorizer;

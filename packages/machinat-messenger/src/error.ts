@@ -1,4 +1,3 @@
-// @flow
 import { MESSENGER } from './constant';
 import type { GraphAPIErrorInfo, GraphAPIErrorBody } from './types';
 
@@ -12,7 +11,7 @@ export class GraphAPIError extends Error {
       Error.captureStackTrace(this, GraphAPIError);
     }
 
-    this.name = body.error.type;
+    this.name = `GraphAPIError (${body.error.type})`;
     this.info = body.error;
   }
 }

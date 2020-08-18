@@ -1,4 +1,3 @@
-// @flow
 import {
   text,
   quickReplyPostback,
@@ -40,12 +39,12 @@ import {
   referral,
   unknown,
 } from './factory';
-import type { MessengerRawEvent } from '../types';
+import type { MessengerRawEvent, MessengerEvent } from '../types';
 
 const objectHasOwnProperty = Object.prototype.hasOwnProperty;
 const hasOwnProperty = (obj, prop) => objectHasOwnProperty.call(obj, prop);
 
-const createMessageEvent = (payload, isStandby) => {
+const createMessageEvent = (payload: MessengerRawEvent, isStandby: boolean) => {
   const { message } = payload;
   if (hasOwnProperty(message, 'text')) {
     if (hasOwnProperty(message, 'quick_reply')) {
@@ -97,7 +96,10 @@ const createMessageEvent = (payload, isStandby) => {
   }
 };
 
-const createEvent = (isStandby: boolean, payload: MessengerRawEvent) =>
+const createEvent = (
+  isStandby: boolean,
+  payload: MessengerRawEvent
+): MessengerEvent =>
   hasOwnProperty(payload, 'message')
     ? createMessageEvent(payload, isStandby)
     : hasOwnProperty(payload, 'read')

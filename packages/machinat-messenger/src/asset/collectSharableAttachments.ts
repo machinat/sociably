@@ -1,16 +1,15 @@
-// @flow
 import { container } from '@machinat/core/service';
-import type { ServiceContainer } from '@machinat/core/service/types';
 import type { MessengerDispatchMiddleware } from '../types';
 import MessengerAssetManager from './manager';
 
-const collectSharableAttachments: ServiceContainer<MessengerDispatchMiddleware> = (
-  manager: MessengerAssetManager
-) => async (frame, next) => {
+const collectSharableAttachments = (manager: MessengerAssetManager) => async (
+  frame,
+  next
+) => {
   const response = await next(frame);
   const { jobs, results } = response;
 
-  const updatingAssets = [];
+  const updatingAssets: Promise<void>[] = [];
 
   for (let i = 0; i < jobs.length; i += 1) {
     const { attachmentAssetTag } = jobs[i];

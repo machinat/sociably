@@ -1,4 +1,3 @@
-// @flow
 import { MESSENGER } from '../constant';
 
 export const EventBase = {

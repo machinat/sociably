@@ -1,4 +1,3 @@
-// @flow
 import { provider } from '@machinat/core/service';
 import type { MachinatNode } from '@machinat/core/types';
 import { StateControllerI } from '@machinat/core/base';
@@ -9,6 +8,10 @@ import MessengerBot from '../bot';
 const ATTACHMENT = 'attachment';
 const PERSONA = 'persona';
 
+@provider<MessengerAssetsManager>({
+  lifetime: 'scoped',
+  deps: [StateControllerI, MessengerBot],
+})
 class MessengerAssetsManager {
   bot: MessengerBot;
   pageId: string;
@@ -20,14 +23,17 @@ class MessengerAssetsManager {
     this.pageId = bot.pageId;
   }
 
-  _makeResourceToken(resource: string) {
+  private _makeResourceToken(resource: string): string {
     return `messenger.assets.${this.pageId}.${resource}`;
   }
 
-  async getAssetId(resource: string, name: string): Promise<void | string> {
+  async getAssetId(
+    resource: string,
+    name: string
+  ): Promise<undefined | string> {
     const existed = await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .get(name);
+      .get<string>(name);
     return existed || undefined;
   }
 
@@ -62,15 +68,15 @@ class MessengerAssetsManager {
     return this.getAssetId(ATTACHMENT, name);
   }
 
-  setAttachmentId(name: string, id: string) {
+  setAttachmentId(name: string, id: string): Promise<void> {
     return this.setAssetId(ATTACHMENT, name, id);
   }
 
-  getAllAttachments() {
+  getAllAttachments(): Promise<null | Map<string, string>> {
     return this.getAllAssets(ATTACHMENT);
   }
 
-  removeAttachmentId(name: string) {
+  removeAttachmentId(name: string): Promise<void> {
     return this.removeAssetId(ATTACHMENT, name);
   }
 
@@ -91,22 +97,22 @@ class MessengerAssetsManager {
   }
 
   getPersonaId(name: string): Promise<void | string> {
-    return (this.getAssetId(PERSONA, name): any);
+    return this.getAssetId(PERSONA, name);
   }
 
-  setPersonaId(name: string, id: string) {
+  setPersonaId(name: string, id: string): Promise<void> {
     return this.setAssetId(PERSONA, name, id);
   }
 
-  getAllPersonas() {
+  getAllPersonas(): Promise<null | Map<string, string>> {
     return this.getAllAssets(PERSONA);
   }
 
-  removePersonaId(name: string) {
+  removePersonaId(name: string): Promise<void> {
     return this.removeAssetId(PERSONA, name);
   }
 
-  async createPersona(name: string, body: Object): Promise<string> {
+  async createPersona(name: string, body: any): Promise<string> {
     const existed = await this.getPersonaId(name);
     if (existed !== undefined) {
       throw new Error(`persona [ ${name} ] already exist`);
@@ -134,7 +140,4 @@ class MessengerAssetsManager {
   }
 }
 
-export default provider<MessengerAssetsManager>({
-  lifetime: 'scoped',
-  deps: [StateControllerI, MessengerBot],
-})(MessengerAssetsManager);
+export default MessengerAssetsManager;

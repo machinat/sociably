@@ -1,5 +1,7 @@
 /* eslint-disable import/prefer-default-export */
+import type { UnitSegment } from '@machinat/core/renderer/types';
 import formatNode from '@machinat/core/utils/formatNode';
+import type { MessengerSegmentValue, MessageValue } from '../types';
 import { annotateMessengerComponent, isMessageEntry } from '../utils';
 
 export const Expression = async (
@@ -22,7 +24,7 @@ export const Expression = async (
     return null;
   }
 
-  const segments = [];
+  const segments: UnitSegment<MessengerSegmentValue>[] = [];
   let lastMessageIdx = -1;
 
   for (const segment of childrenSegments) {
@@ -52,8 +54,8 @@ export const Expression = async (
         node,
         path,
       });
-    } else if (isMessageEntry(value)) {
-      if (value.message) {
+    } else if (isMessageEntry(value as MessengerSegmentValue)) {
+      if ('message' in value) {
         lastMessageIdx = segments.length;
 
         segments.push({
@@ -88,12 +90,14 @@ export const Expression = async (
 
     const quickReplySegments = await render(quickReplies, '.quickReplies');
 
+    const { value } = lastMessageSeg as UnitSegment<MessageValue>;
+
     segments.splice(lastMessageIdx, 1, {
       ...lastMessageSeg,
       value: {
-        ...lastMessageSeg.value,
+        ...value,
         message: {
-          ...lastMessageSeg.value.message,
+          ...value.message,
           metadata,
           quick_replies: quickReplySegments?.map((segment) => segment.value),
         },

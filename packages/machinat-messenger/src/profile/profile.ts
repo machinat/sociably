@@ -1,4 +1,3 @@
-// @flow
 import type { MachinatUserProfile } from '@machinat/core/base/UserProfilerI';
 import type { MessengerRawUserProfile } from '../types';
 import { MESSENGER } from '../constant';
@@ -11,39 +10,39 @@ export default class MessengerUserProfile implements MachinatUserProfile {
     this.data = rawProfile;
   }
 
-  get id() {
+  get id(): string {
     return this.data.id;
   }
 
-  get name() {
+  get name(): string {
     return this.data.name;
   }
 
-  get firstName() {
+  get firstName(): string {
     return this.data.first_name;
   }
 
-  get lastName() {
+  get lastName(): string {
     return this.data.last_name;
   }
 
-  get pictureURL() {
+  get pictureURL(): string {
     return this.data.profile_pic;
   }
 
-  get locale() {
+  get locale(): undefined | string {
     return this.data.locale;
   }
 
-  get timezone() {
+  get timezone(): undefined | string {
     return this.data.timezone;
   }
 
-  get gender() {
+  get gender(): undefined | string {
     return this.data.gender;
   }
 
-  toJSON() {
+  toJSON(): any {
     const { data, id, name, pictureURL } = this;
     return {
       platform: MESSENGER,

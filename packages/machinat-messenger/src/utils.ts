@@ -1,10 +1,15 @@
-// @flow
 import { annotateNativeComponent } from '@machinat/core/renderer';
-import type { MessengerSegmentValue } from './types';
+import type {
+  MessengerSegmentValue,
+  MessageValue,
+  SenderActionValue,
+} from './types';
 import { MESSENGER, ENTRY_PATH } from './constant';
 
 const { hasOwnProperty } = Object.prototype;
-export const isMessageEntry = (value: string | MessengerSegmentValue) =>
+export const isMessageEntry = (
+  value: string | MessengerSegmentValue
+): value is string | MessageValue | SenderActionValue =>
   typeof value === 'string' ||
   (typeof value === 'object' &&
     value !== null &&

@@ -141,7 +141,9 @@ describe('#refineAuth(data)', () => {
 
     await expect(provider.refineAuth(context)).resolves.toEqual({
       user: new MessengerUser(682498171943165, '1254459154682919'),
-      channel: MessengerChannel.fromExtensionContext(context),
+      channel: new MessengerChannel(682498171943165, {
+        id: '1254459154682919',
+      }),
     });
   });
 

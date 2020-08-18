@@ -1,4 +1,3 @@
-// @flow
 import mixin from '@machinat/core/utils/mixin';
 import {
   EventBase as Base,
@@ -29,10 +28,10 @@ import {
 } from './mixin';
 import type { MessengerRawEvent, MessengerEvent } from '../types';
 
-const eventFactory = (proto: Object, type: string, subtype?: string) => (
+const eventFactory = (proto: any, type: string, subtype?: string) => (
   payload: MessengerRawEvent
 ): MessengerEvent => {
-  const event: MessengerEvent = (Object.create(proto): any);
+  const event: MessengerEvent = Object.create(proto);
 
   event.payload = payload;
   event.type = type;

@@ -1,8 +1,7 @@
-// @flow
 import { provider } from '@machinat/core/service';
 import { UserProfilerI, StateControllerI } from '@machinat/core/base';
-import type MessengerUser from '../user';
 import MessengerBot from '../bot';
+import type MessengerUser from '../user';
 import MessengerUserProfile from './profile';
 import type { MessengerRawUserProfile } from '../types';
 
@@ -17,15 +16,19 @@ const DEFAULT_PROFILE_FIELDS = [
 ];
 
 type ProfileCache = {
-  data: MessengerRawUserProfile,
-  fetchAt: number,
+  data: MessengerRawUserProfile;
+  fetchAt: number;
 };
 
 type ProfilerOptions = {
-  profileCacheTime?: number,
-  optionalProfileFields?: ('locale' | 'timezone' | 'gender')[],
+  profileCacheTime?: number;
+  optionalProfileFields?: ('locale' | 'timezone' | 'gender')[];
 };
 
+@provider<MessengerUserProfiler>({
+  lifetime: 'scoped',
+  deps: [MessengerBot, { require: StateControllerI, optional: true }],
+})
 class MessengerUserProfiler implements UserProfilerI {
   bot: MessengerBot;
   stateController: null | StateControllerI;
@@ -76,7 +79,4 @@ class MessengerUserProfiler implements UserProfilerI {
   }
 }
 
-export default provider<MessengerUserProfiler>({
-  lifetime: 'scoped',
-  deps: [MessengerBot, { require: StateControllerI, optional: true }],
-})(MessengerUserProfiler);
+export default MessengerUserProfiler;

@@ -1,33 +1,37 @@
-// @flow
 import invariant from 'invariant';
 import type { ClientAuthorizer } from '@machinat/auth/types';
 import { MESSENGER } from '../constant';
-import type { ExtensionContext, ExtensionCredential } from '../types';
-import { refineExtensionContext } from './utils';
+import type {
+  ExtensionPayload,
+  ExtensionCredential,
+  ExtensionContext,
+  AuthorizerCredentialResult,
+  AuthorizerRefinement,
+} from './types';
+import { refinementFromExtensionPayload } from './utils';
 
 type MessengerClientAuthOpts = {
-  appId: string,
-  isExtensionReady?: boolean,
+  appId: string;
+  isExtensionReady?: boolean;
 };
 
-declare var document: Document;
-declare var window: Object;
-declare var MessengerExtensions: Object;
+declare let document: Document;
+declare let window: any;
+declare let MessengerExtensions: any;
 
 const INIT_TIMEOUT = 20000;
 
 class MessengerClientAuthorizer
-  implements ClientAuthorizer<ExtensionContext, ExtensionCredential> {
+  implements ClientAuthorizer<ExtensionPayload, ExtensionCredential> {
   appId: string;
   isExtensionReady: boolean;
 
   platform = MESSENGER;
   shouldResign = true;
 
-  constructor({
-    appId,
-    isExtensionReady = false,
-  }: MessengerClientAuthOpts = {}) {
+  constructor(
+    { appId, isExtensionReady = false }: MessengerClientAuthOpts = {} as any
+  ) {
     invariant(appId, 'options.appId is required to retrieve chat context');
 
     this.appId = appId;
@@ -35,7 +39,7 @@ class MessengerClientAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async init() {
+  async init(): Promise<void> {
     if (this.isExtensionReady) {
       return;
     }
@@ -69,9 +73,9 @@ class MessengerClientAuthorizer
     await initPromise;
   }
 
-  async fetchCredential() {
+  async fetchCredential(): Promise<AuthorizerCredentialResult> {
     try {
-      const context = await new Promise((resolve, reject) => {
+      const context: ExtensionContext = await new Promise((resolve, reject) => {
         MessengerExtensions.getContext(this.appId, resolve, reject);
       });
 
@@ -89,8 +93,10 @@ class MessengerClientAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async refineAuth(context: ExtensionContext) {
-    return refineExtensionContext(context);
+  async refineAuth(
+    payload: ExtensionPayload
+  ): Promise<null | AuthorizerRefinement> {
+    return refinementFromExtensionPayload(payload);
   }
 }
 

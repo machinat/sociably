@@ -1,4 +1,3 @@
-// @flow
 import invariant from 'invariant';
 import Engine from '@machinat/core/engine';
 import type { DispatchResponse } from '@machinat/core/engine/types';
@@ -18,8 +17,8 @@ import generalComponentDelegator from './components/general';
 
 import { MESSENGER } from './constant';
 import {
-  MESSENGER_PLATFORM_CONFIGS_I,
-  MESSENGER_PLATFORM_MOUNTER_I,
+  PLATFORM_CONFIGS_I,
+  PLATFORM_MOUNTER_I,
 } from './interface';
 import MessengerChannel from './channel';
 import { chatJobsMaker, makeAttachmentJobs } from './job';
@@ -37,12 +36,23 @@ import type {
 } from './types';
 
 type MessengerBotOptions = {
-  pageId: string,
-  accessToken: string,
-  appSecret?: string,
-  consumeInterval?: number,
+  pageId: string;
+  accessToken: string;
+  appSecret?: string;
+  consumeInterval?: number;
 };
 
+@provider<MessengerBot>({
+  lifetime: 'singleton',
+  deps: [
+    PLATFORM_CONFIGS_I,
+    { require: PLATFORM_MOUNTER_I, optional: true },
+  ],
+  factory: (
+    configs: MessengerPlatformConfigs,
+    mounter: null | MessengerPlatformMounter
+  ) => new MessengerBot(configs, mounter?.initScope, mounter?.dispatchWrapper), // eslint-disable-line no-use-before-define
+})
 class MessengerBot
   implements MachinatBot<MessengerChannel, MessengerJob, MessengerResult> {
   pageId: string;
@@ -62,9 +72,9 @@ class MessengerBot
       accessToken,
       appSecret,
       consumeInterval = 500,
-    }: MessengerBotOptions = {},
-    initScope?: InitScopeFn = () => createEmptyScope(MESSENGER),
-    dispatchWrapper?: DispatchWrapper<
+    }: MessengerBotOptions = {} as any,
+    initScope: InitScopeFn = () => createEmptyScope(MESSENGER),
+    dispatchWrapper: DispatchWrapper<
       MessengerJob,
       MessengerDispatchFrame,
       MessengerResult
@@ -91,11 +101,11 @@ class MessengerBot
     );
   }
 
-  async start() {
+  async start(): Promise<void> {
     this.engine.start();
   }
 
-  async stop() {
+  async stop(): Promise<void> {
     this.engine.stop();
   }
 
@@ -124,7 +134,7 @@ class MessengerBot
   dispatchAPICall(
     method: 'GET' | 'POST' | 'DELETE',
     relativeURL: string,
-    body?: Object
+    body?: null | any
   ): Promise<DispatchResponse<MessengerJob, MessengerResult>> {
     return this.engine.dispatchJobs(null, [
       {
@@ -138,14 +148,4 @@ class MessengerBot
   }
 }
 
-export default provider<MessengerBot>({
-  lifetime: 'singleton',
-  deps: [
-    MESSENGER_PLATFORM_CONFIGS_I,
-    { require: MESSENGER_PLATFORM_MOUNTER_I, optional: true },
-  ],
-  factory: (
-    configs: MessengerPlatformConfigs,
-    mounter: null | MessengerPlatformMounter
-  ) => new MessengerBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
-})(MessengerBot);
+export default MessengerBot;
