@@ -1,9 +1,12 @@
-// @flow
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import thenifiedly from 'thenifiedly';
-
+import type WSSocket from 'ws';
 import SocketError from './error';
-import type { RequestInfo, EventValue, WS } from './types';
+import type { RequestInfo, EventValue } from './types';
+
+type TimeoutID = ReturnType<typeof setTimeout>;
+
+type WithSocket = { socket: Socket };
 
 export const SOCKET_CONNECTING = 0;
 export const SOCKET_OPEN = 1;
@@ -22,7 +25,6 @@ export const SOCKET_CLOSED = 3;
  * sequence: number, the message sequence on the socket it transmitted on
  * body: object, body object correponded to the frame type
  */
-
 const FRAME_DISPATCH = 'dispatch';
 const FRAME_REJECT = 'reject';
 const FRAME_LOGIN = 'login';
@@ -32,46 +34,46 @@ const FRAME_DISCONNECT = 'disconnect';
 /**
  * Dispatch frame carries events delivered on a specified connection
  */
-export type DispatchBody = {|
-  connId: string,
-  events: EventValue[],
-|};
+export type DispatchBody = {
+  connId: string;
+  events: EventValue[];
+};
 
 /**
  * Reject frame reject an illegal frame transmitted before
  */
-export type RejectBody = {|
-  seq: number, // seq of the rejected frame
+export type RejectBody = {
+  seq: number; // seq of the rejected frame
   // code: number,
-  reason: string,
-|};
+  reason: string;
+};
 
 /**
  * Login frame request for signing in a connection
  */
-export type LoginBody = {|
-  credential?: any,
-|};
+export type LoginBody = {
+  credential?: any;
+};
 
 /**
  * Connect frame initiate a connect handshake from Server or make a confirmation
  * to the connect frame received from Client
  */
-export type ConnectBody = {|
-  seq: number, // reflect the responded "login" seq on server, "connect" seq on client
-  connId: string,
-|};
+export type ConnectBody = {
+  seq: number; // reflect the responded "login" seq on server, "connect" seq on client
+  connId: string;
+};
 
 /**
  * Disconnect frame initiate a disconnect handshake or make a confirmation to
  * the disconnect frame received from Server/Client
  */
-export type DisconnectBody = {|
-  seq?: number, // the disconnect frame seq received if it's a confirmation
-  connId: string,
+export type DisconnectBody = {
+  seq?: number; // the disconnect frame seq received if it's a confirmation
+  connId: string;
   // code: number,
-  reason?: string,
-|};
+  reason?: string;
+};
 
 /**
  * Communication
@@ -127,7 +129,6 @@ export type DisconnectBody = {|
  *                             |                           |
  *
  */
-
 const STATE_CONNECTED_OK = 0;
 
 const FLAG_CONNECT_SENT = 1;
@@ -141,61 +142,65 @@ const MASK_DISCONNECTING = FLAG_DISCONNECT_SENT | FLAG_DISCONNECT_RECEIVED;
 
 const HANDSHAKE_TIMEOUT = 20 * 1000;
 
-type WSWithSocket = { socket: MachinatSocket }; // eslint-disable-line no-use-before-define
-
-function handleWSMessage(data: any) {
-  const { socket } = (this: WSWithSocket);
-  socket._handlePacket(data).catch(socket._emitErrorCallback);
+function handleWSMessage(this: WSSocket & WithSocket, data: any) {
+  const { socket } = this;
+  socket._handlePacket(data).catch(socket._emitError.bind(socket));
 }
 
-function handleWSOpen() {
-  (this: WSWithSocket).socket._emitOpen();
+function handleWSOpen(this: WSSocket & WithSocket) {
+  this.socket._emitOpen();
 }
 
-function handleWSClose(code, reason) {
-  const { socket } = (this: WSWithSocket);
+function handleWSClose(
+  this: WSSocket & WithSocket,
+  code: number,
+  reason: string
+) {
+  const { socket } = this;
   socket._emitClose(code, reason);
 }
 
-function handleWSError(err) {
-  (this: WSWithSocket).socket._emitError(err);
+function handleWSError(this: WSSocket & WithSocket, err: Error) {
+  this.socket._emitError(err);
 }
 
 /**
  * Socket encapsulate protocol detail and provide a high level api for
  * communicating operation and notification
  */
-class MachinatSocket extends EventEmitter {
+class Socket extends EventEmitter {
   id: string;
   isClient: boolean;
   request: RequestInfo;
 
-  _ws: WS;
-  _seq: number;
+  private _ws: WSSocket & WithSocket;
+  private _seq: number;
 
-  _connectStates: Map<string, number>;
-  _handshakeTimeouts: Map<string, TimeoutID>;
+  private _connectStates: Map<string, number>;
+  private _handshakeTimeouts: Map<string, TimeoutID>;
 
-  constructor(id: string, ws: WS, request: RequestInfo) {
+  constructor(id: string, wsSocket: WSSocket, request: RequestInfo) {
     super();
 
     this.id = id;
     this.request = request;
     this.isClient = !request;
-    this._ws = ws;
     this._seq = 0;
 
     this._connectStates = new Map();
     this._handshakeTimeouts = new Map();
 
-    ws.socket = this; // eslint-disable-line no-param-reassign
-    ws.on('message', handleWSMessage);
-    ws.on('open', handleWSOpen);
-    ws.on('close', handleWSClose);
-    ws.on('error', handleWSError);
+    const wss = wsSocket as WSSocket & WithSocket;
+    wss.socket = this;
+
+    wss.on('message', handleWSMessage);
+    wss.on('open', handleWSOpen);
+    wss.on('close', handleWSClose);
+    wss.on('error', handleWSError);
+    this._ws = wss;
   }
 
-  readyState() {
+  readyState(): number {
     return this._ws.readyState;
   }
 
@@ -213,7 +218,7 @@ class MachinatSocket extends EventEmitter {
     );
   }
 
-  isDisconnecting(connectionId: string) {
+  isDisconnecting(connectionId: string): boolean {
     const state = this._connectStates.get(connectionId);
     return (
       this._ws.readyState === SOCKET_OPEN &&
@@ -303,15 +308,15 @@ class MachinatSocket extends EventEmitter {
     return seq;
   }
 
-  ping() {
+  ping(): void {
     this._ws.ping();
   }
 
-  close(code: number, reason: string) {
+  close(code: number, reason: string): void {
     this._ws.close(code, reason);
   }
 
-  async _send(frame: string, body: Object): Promise<number> {
+  async _send(frame: string, body: any): Promise<number> {
     const { readyState } = this._ws;
     if (readyState !== SOCKET_OPEN) {
       throw new SocketError('socket is not ready');
@@ -326,41 +331,39 @@ class MachinatSocket extends EventEmitter {
     return seq;
   }
 
-  _emitErrorCallback = this._emitError.bind(this);
-
-  _emitError(err: Error) {
+  _emitError(err: Error): void {
     this.emit('error', err, this);
   }
 
-  _emitDispatch(body: DispatchBody, seq: number) {
+  _emitDispatch(body: DispatchBody, seq: number): void {
     this.emit('dispatch', body, seq, this);
   }
 
-  _emitReject(body: RejectBody, seq: number) {
+  _emitReject(body: RejectBody, seq: number): void {
     this.emit('reject', body, seq, this);
   }
 
-  _emitLogin(body: LoginBody, seq: number) {
+  _emitLogin(body: LoginBody, seq: number): void {
     this.emit('login', body, seq, this);
   }
 
-  _emitConnect(body: ConnectBody, seq: number) {
+  _emitConnect(body: ConnectBody, seq: number): void {
     this.emit('connect', body, seq, this);
   }
 
-  _emitConnectFail(body: DisconnectBody, seq?: number) {
+  _emitConnectFail(body: DisconnectBody, seq?: number): void {
     this.emit('connect_fail', body, seq, this);
   }
 
-  _emitDisconnect(body: DisconnectBody, seq?: number) {
+  _emitDisconnect(body: DisconnectBody, seq?: number): void {
     this.emit('disconnect', body, seq, this);
   }
 
-  _emitOpen() {
+  _emitOpen(): void {
     this.emit('open', this);
   }
 
-  _emitClose(code: number, reason: string) {
+  _emitClose(code: number, reason: string): void {
     for (const [connId, state] of this._connectStates.entries()) {
       if (state === STATE_CONNECTED_OK || state & MASK_DISCONNECTING) {
         this._emitDisconnect({ connId, reason });
@@ -379,7 +382,7 @@ class MachinatSocket extends EventEmitter {
     this.emit('close', code, reason, this);
   }
 
-  async _handlePacket(data: string) {
+  async _handlePacket(data: string): Promise<void> {
     const [frameType, seq, body] = JSON.parse(data);
 
     this._seq = seq + 1;
@@ -387,7 +390,7 @@ class MachinatSocket extends EventEmitter {
     if (frameType === FRAME_DISPATCH) {
       await this._handleDispatch(body, seq);
     } else if (frameType === FRAME_REJECT) {
-      await this._emitReject(body, seq);
+      this._emitReject(body, seq);
     } else if (frameType === FRAME_LOGIN) {
       await this._handleLogin(body, seq);
     } else if (frameType === FRAME_CONNECT) {
@@ -399,13 +402,12 @@ class MachinatSocket extends EventEmitter {
     }
   }
 
-  async _handleDispatch(body: DispatchBody, seq: number) {
+  async _handleDispatch(body: DispatchBody, seq: number): Promise<void> {
     const { connId } = body;
 
     const state = this._connectStates.get(connId);
     if (
-      state === STATE_CONNECTED_OK ||
-      // accept msg when DISCONNECT sent but not yet echoed back
+      state === STATE_CONNECTED_OK || // accept msg when DISCONNECT sent but not yet echoed back
       (state !== undefined &&
         !(state & MASK_CONNECTING) &&
         !(state & FLAG_DISCONNECT_RECEIVED))
@@ -416,7 +418,7 @@ class MachinatSocket extends EventEmitter {
     }
   }
 
-  async _handleLogin(body: LoginBody, seq: number) {
+  async _handleLogin(body: LoginBody, seq: number): Promise<void> {
     if (this.isClient) {
       await this.reject({
         seq,
@@ -427,7 +429,7 @@ class MachinatSocket extends EventEmitter {
     }
   }
 
-  async _handleConnect(body: ConnectBody, seq: number) {
+  async _handleConnect(body: ConnectBody, seq: number): Promise<void> {
     const { connId } = body;
 
     const state = this._connectStates.get(connId);
@@ -458,7 +460,7 @@ class MachinatSocket extends EventEmitter {
     }
   }
 
-  async _handleDisconnect(body: DisconnectBody, seq: number) {
+  async _handleDisconnect(body: DisconnectBody, seq: number): Promise<void> {
     const { connId } = body;
 
     const state = this._connectStates.get(connId);
@@ -481,7 +483,7 @@ class MachinatSocket extends EventEmitter {
 
   _outdateHandshakeCallback = this._outdateHandshake.bind(this);
 
-  _outdateHandshake(connId: string, seq?: number) {
+  _outdateHandshake(connId: string, seq?: number): void {
     const state = this._connectStates.get(connId);
     if (state !== undefined && state !== STATE_CONNECTED_OK) {
       this._connectStates.delete(connId);
@@ -497,7 +499,7 @@ class MachinatSocket extends EventEmitter {
     this._handshakeTimeouts.delete(connId);
   }
 
-  _addHandshakeTimeout(connectionId: string, seq?: number) {
+  _addHandshakeTimeout(connectionId: string, seq?: number): void {
     if (this._handshakeTimeouts.has(connectionId)) {
       return;
     }
@@ -516,7 +518,7 @@ class MachinatSocket extends EventEmitter {
     this._handshakeTimeouts.set(connectionId, timeoutId);
   }
 
-  _accomplishConnect(body: ConnectBody, seq: number) {
+  _accomplishConnect(body: ConnectBody, seq: number): void {
     this._emitConnect(body, seq);
 
     const { connId } = body;
@@ -529,7 +531,7 @@ class MachinatSocket extends EventEmitter {
     }
   }
 
-  _accomplishDisconnect(body: DisconnectBody, seq?: number) {
+  _accomplishDisconnect(body: DisconnectBody, seq?: number): void {
     const { connId } = body;
     const state = this._connectStates.get(connId);
 
@@ -549,4 +551,4 @@ class MachinatSocket extends EventEmitter {
   }
 }
 
-export default MachinatSocket;
+export default Socket;

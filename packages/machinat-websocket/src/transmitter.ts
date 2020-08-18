@@ -1,24 +1,15 @@
-// @flow
 import { provider } from '@machinat/core/service';
-import type { MachinatUser } from '@machinat/core/types';
-import {
-  ClusterBrokerI,
-  SERVER_ID_I,
-  WEBSOCKET_PLATFORM_MOUNTER_I,
-} from './interface';
-import type {
-  EventValue,
-  WebSocketJob,
-  WebSocketPlatformMounter,
-} from './types';
-import type Socket from './socket';
-import type { ConnectionChannel, TopicChannel } from './channel';
+import { MachinatUser } from '@machinat/core/types';
+import { ClusterBrokerI, SERVER_ID_I, PLATFORM_MOUNTER_I } from './interface';
+import { EventValue, WebSocketJob, WebSocketPlatformMounter } from './types';
+import Socket from './socket';
+import { ConnectionChannel, TopicChannel } from './channel';
 
 type ConnectionState = {
-  channel: ConnectionChannel,
-  user: null | MachinatUser,
-  socket: Socket,
-  attachedTopics: Set<string>,
+  channel: ConnectionChannel;
+  user: null | MachinatUser;
+  socket: Socket;
+  attachedTopics: Set<string>;
 };
 
 const findConnection = (
@@ -27,20 +18,31 @@ const findConnection = (
 ) =>
   list.find((c) => c.serverId === serverId && c.connectionId === connectionId);
 
+@provider<Transmitter>({
+  lifetime: 'singleton',
+  deps: [SERVER_ID_I, ClusterBrokerI, PLATFORM_MOUNTER_I],
+  factory: (
+    serverId: string,
+    broker: ClusterBrokerI,
+    { initScope, popError }: WebSocketPlatformMounter<any>
+  ) =>
+    // eslint-disable-next-line no-use-before-define
+    new Transmitter(serverId, broker, (err) => popError(err, initScope())),
+})
 class Transmitter {
   serverId: string;
-  _broker: ClusterBrokerI;
+  private _broker: ClusterBrokerI;
 
-  _topicMapping: Map<string, Set<string>>;
-  _userMapping: Map<string, Set<string>>;
-  _connectionStates: Map<string, ConnectionState>;
+  private _topicMapping: Map<string, Set<string>>;
+  private _userMapping: Map<string, Set<string>>;
+  private _connectionStates: Map<string, ConnectionState>;
 
-  _errorHandler: (Error) => void;
+  private _errorHandler: (err: Error) => void;
 
   constructor(
     serverId: string,
     broker: ClusterBrokerI,
-    errorHandler: (Error) => void
+    errorHandler: (arg0: Error) => void
   ) {
     this.serverId = serverId;
     this._broker = broker;
@@ -52,11 +54,11 @@ class Transmitter {
     broker.onRemoteEvent(this._handleRemoteEventCallback);
   }
 
-  async start() {
+  async start(): Promise<void> {
     await this._broker.start();
   }
 
-  async stop() {
+  async stop(): Promise<void> {
     await this._broker.stop();
   }
 
@@ -180,7 +182,7 @@ class Transmitter {
 
     const remotePromise = this._broker.dispatchRemote(job);
 
-    let localPromise;
+    let localPromise: Promise<ConnectionChannel[] | null> | null;
     if (target.type === 'user') {
       const connections = this._getLocalConnectionsOfUser(target.userUId);
 
@@ -209,7 +211,7 @@ class Transmitter {
       : [...localResults, ...remoteResults];
   }
 
-  async disconnect(conn: ConnectionChannel, reason?: string) {
+  async disconnect(conn: ConnectionChannel, reason?: string): Promise<boolean> {
     const { serverId, connectionId } = conn;
     if (serverId !== this.serverId) {
       return this._broker.disconnectRemote(conn);
@@ -233,7 +235,7 @@ class Transmitter {
     return true;
   }
 
-  _deleteFromTopicMapping(connId: string, topics: Set<string>): number {
+  private _deleteFromTopicMapping(connId: string, topics: Set<string>): number {
     let count = 0;
     for (const topicName of topics) {
       const connsOfTopic = this._topicMapping.get(topicName);
@@ -249,7 +251,7 @@ class Transmitter {
     return count;
   }
 
-  _deleteFromUserMapping(connId: string, user: MachinatUser): boolean {
+  private _deleteFromUserMapping(connId: string, user: MachinatUser): boolean {
     const connsOfUser = this._userMapping.get(user.uid);
     if (connsOfUser) {
       const isDeleted = connsOfUser.delete(connId);
@@ -262,14 +264,14 @@ class Transmitter {
     return false;
   }
 
-  async _sendLocalConnections(
+  private async _sendLocalConnections(
     connections: ConnectionState[],
     events: EventValue[],
     whitelist: null | ConnectionChannel[],
     blacklist: null | ConnectionChannel[]
   ): Promise<null | ConnectionChannel[]> {
-    const promises = [];
-    const sentChannels = [];
+    const promises: Promise<number | null>[] = [];
+    const sentChannels: ConnectionChannel[] = [];
 
     for (const { channel, socket } of connections) {
       if (
@@ -293,13 +295,13 @@ class Transmitter {
     return channelsFinished.length > 0 ? channelsFinished : null;
   }
 
-  _getLocalConnectionsOfUser(uid: string) {
+  private _getLocalConnectionsOfUser(uid: string) {
     const connsOfUser = this._userMapping.get(uid);
     if (!connsOfUser) {
       return null;
     }
 
-    const connections = [];
+    const connections: ConnectionState[] = [];
     for (const connId of connsOfUser) {
       const connection = this._connectionStates.get(connId);
 
@@ -316,13 +318,13 @@ class Transmitter {
     return connections.length === 0 ? null : connections;
   }
 
-  _getLocalConnectionsOfTopic(topic: string) {
+  private _getLocalConnectionsOfTopic(topic: string) {
     const connsOfTopic = this._topicMapping.get(topic);
     if (!connsOfTopic) {
       return null;
     }
 
-    const connections = [];
+    const connections: ConnectionState[] = [];
     for (const connId of connsOfTopic) {
       const connection = this._connectionStates.get(connId);
 
@@ -339,9 +341,14 @@ class Transmitter {
     return connections.length === 0 ? null : connections;
   }
 
-  _handleRemoteEventCallback = this._handleRemoteEvent.bind(this);
+  private _handleRemoteEventCallback = this._handleRemoteEvent.bind(this);
 
-  _handleRemoteEvent({ target, events, whitelist, blacklist }: WebSocketJob) {
+  private _handleRemoteEvent({
+    target,
+    events,
+    whitelist,
+    blacklist,
+  }: WebSocketJob) {
     if (target.type === 'connection') {
       if (target.serverId === this.serverId) {
         const connection = this._connectionStates.get(target.connectionId);
@@ -378,17 +385,11 @@ class Transmitter {
         blacklist
       ).catch(this._errorHandler);
     } else {
-      throw new Error(`unknown target received ${target.type}`);
+      throw new Error(
+        `unknown target received ${(target as any).type || String(target)}`
+      );
     }
   }
 }
 
-export default provider<Transmitter>({
-  lifetime: 'singleton',
-  deps: [SERVER_ID_I, ClusterBrokerI, WEBSOCKET_PLATFORM_MOUNTER_I],
-  factory: (
-    serverId: string,
-    broker: ClusterBrokerI,
-    { initScope, popError }: WebSocketPlatformMounter<any>
-  ) => new Transmitter(serverId, broker, (err) => popError(err, initScope())),
-})(Transmitter);
+export default Transmitter;

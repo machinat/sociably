@@ -1,6 +1,6 @@
-// @flow
 import type { MachinatUser } from '@machinat/core/types';
-import type Socket, {
+import type {
+  default as Socket, // eslint-disable-line import/no-named-default
   ConnectBody,
   DisconnectBody,
   DispatchBody,
@@ -17,40 +17,42 @@ import type {
 } from '../types';
 import openSocket from './ws';
 
-declare var location: Location;
+declare let location: Location;
 
 type ClientOptions<Credential> = {
-  url?: string,
-  authorize?: ClientLoginFn<Credential>,
+  url?: string;
+  authorize?: ClientLoginFn<Credential>;
 };
 
 type PendingEvent = {
-  events: EventValue[],
-  resolve: () => void,
-  reject: (Error) => void,
+  events: EventValue[];
+  resolve: () => void;
+  reject: (err: Error) => void;
 };
 
 type ClientEventContext = {
-  user: null | MachinatUser,
-  channel: WebSocketChannel,
-  event: WebSocketEvent,
+  user: null | MachinatUser;
+  channel: WebSocketChannel;
+  event: WebSocketEvent;
 };
 
+type ClientEventListener = (ctx: ClientEventContext) => void;
+
 class WebScoketClient<Credential = null> {
-  _serverURL: string;
-  _authorize: ClientLoginFn<Credential>;
-  _socket: null | Socket;
+  private _serverURL: string;
+  private _authorize: ClientLoginFn<Credential>;
+  private _socket: null | Socket;
 
-  _loginSeq: number;
-  _queuedEvents: PendingEvent[];
+  private _loginSeq: number;
+  private _queuedEvents: PendingEvent[];
 
-  _connId: void | string;
-  _user: null | MachinatUser;
-  _channel: null | ConnectionChannel;
-  _isDisconnecting: boolean;
+  private _connId: void | string;
+  private _user: null | MachinatUser;
+  private _channel: null | ConnectionChannel;
+  private _isDisconnecting: boolean;
 
-  _eventListeners: ((ClientEventContext) => void)[];
-  _errorListeners: ((Error) => void)[];
+  private _eventListeners: ClientEventListener[];
+  private _errorListeners: ((err: Error) => void)[];
 
   constructor({ url, authorize }: ClientOptions<Credential> = {}) {
     this._serverURL = new URL(
@@ -60,7 +62,7 @@ class WebScoketClient<Credential = null> {
 
     this._authorize =
       authorize ||
-      (() => Promise.resolve({ user: null, credential: (null: any) }));
+      (() => Promise.resolve({ user: null, credential: null as any }));
 
     this._queuedEvents = [];
     this._eventListeners = [];
@@ -78,11 +80,11 @@ class WebScoketClient<Credential = null> {
     return !this._isDisconnecting && !!this._connId;
   }
 
-  get user() {
+  get user(): null | MachinatUser {
     return this._user;
   }
 
-  get channel() {
+  get channel(): null | ConnectionChannel {
     return this._channel;
   }
 
@@ -99,7 +101,7 @@ class WebScoketClient<Credential = null> {
     }
   }
 
-  disconnect(reason: string) {
+  disconnect(reason: string): void {
     if (!this._socket) {
       return;
     }
@@ -112,16 +114,14 @@ class WebScoketClient<Credential = null> {
     }
   }
 
-  onEvent(listener: (ClientEventContext) => void) {
+  onEvent(listener: ClientEventListener): void {
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }
     this._eventListeners.push(listener);
   }
 
-  removeEventListener(
-    listener: (EventValue, WebScoketClient<Credential>) => void
-  ) {
+  removeEventListener(listener: ClientEventListener): boolean {
     const idx = this._eventListeners.findIndex((fn) => fn === listener);
     if (idx === -1) {
       return false;
@@ -131,14 +131,14 @@ class WebScoketClient<Credential = null> {
     return true;
   }
 
-  onError(listener: (Error) => void) {
+  onError(listener: (err: Error) => void): void {
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }
     this._errorListeners.push(listener);
   }
 
-  removeErrorListener(listener: (Error) => void) {
+  removeErrorListener(listener: (err: Error) => void): boolean {
     const idx = this._errorListeners.findIndex((fn) => fn === listener);
     if (idx === -1) {
       return false;
@@ -148,7 +148,7 @@ class WebScoketClient<Credential = null> {
     return true;
   }
 
-  async _start() {
+  private async _start() {
     const { user, credential } = await this._authorize();
     this._user = user;
 
@@ -164,9 +164,9 @@ class WebScoketClient<Credential = null> {
     this._loginSeq = await socket.login({ credential });
   }
 
-  _emitEvent(type: string, subtype: void | string, payload: any) {
+  private _emitEvent(type: string, subtype: undefined | string, payload: any) {
     const context = {
-      channel: (this._channel: any),
+      channel: this._channel as any,
       user: this._user,
       event: createEvent(type, subtype, payload),
     };
@@ -175,7 +175,7 @@ class WebScoketClient<Credential = null> {
     }
   }
 
-  _emitError(err: Error) {
+  private _emitError(err: Error) {
     if (this._errorListeners.length === 0) {
       throw err;
     }
@@ -185,7 +185,11 @@ class WebScoketClient<Credential = null> {
     }
   }
 
-  _handleConnect({ connId, seq }: ConnectBody, _seq: number, socket: Socket) {
+  private _handleConnect(
+    { connId, seq }: ConnectBody,
+    _seq: number,
+    socket: Socket
+  ) {
     if (seq !== this._loginSeq) {
       return;
     }
@@ -193,7 +197,7 @@ class WebScoketClient<Credential = null> {
     this._connId = connId;
     this._channel = new ConnectionChannel('*', connId);
 
-    this._emitEvent('connect');
+    this._emitEvent('connect', undefined, undefined);
 
     for (const { events, resolve, reject } of this._queuedEvents) {
       socket.dispatch({ events, connId }).then(resolve).catch(reject);
@@ -201,15 +205,15 @@ class WebScoketClient<Credential = null> {
     this._queuedEvents = [];
   }
 
-  _handleDisconnect({ connId }: DisconnectBody) {
+  private _handleDisconnect({ connId }: DisconnectBody) {
     if (this._connId === connId) {
       this._isDisconnecting = false;
       this._connId = undefined;
-      this._emitEvent('disconnect');
+      this._emitEvent('disconnect', undefined, undefined);
     }
   }
 
-  _handleDispatch({ connId, events }: DispatchBody) {
+  private _handleDispatch({ connId, events }: DispatchBody) {
     if (this._connId === connId) {
       for (const { type, subtype, payload } of events) {
         this._emitEvent(type, subtype, payload);
@@ -217,7 +221,7 @@ class WebScoketClient<Credential = null> {
     }
   }
 
-  _handleReject({ seq, reason }: RejectBody) {
+  private _handleReject({ seq, reason }: RejectBody) {
     if (seq === this._loginSeq) {
       this._emitError(new SocketError(reason));
     }

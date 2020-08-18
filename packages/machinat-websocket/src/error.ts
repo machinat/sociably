@@ -1,11 +1,13 @@
-// @flow
 export default class SocketError extends Error {
   code: number;
   reason: string;
   name = 'SocketError';
 
   // TODO: error code
-  constructor(/* code: number, */ reason: string) {
+  constructor(
+    /* code: number, */
+    reason: string
+  ) {
     super(reason);
 
     if (Error.captureStackTrace) {

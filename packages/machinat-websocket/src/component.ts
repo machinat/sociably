@@ -1,8 +1,8 @@
-// @flow
+/* eslint-disable import/prefer-default-export */
 import { annotateNativeComponent, unitSegment } from '@machinat/core/renderer';
 import { WEBSOCKET } from './constant';
 
-const Event = (node, path) => {
+export const Event = (node, path) => {
   const { type, subtype, payload } = node.props;
   return [
     unitSegment(node, path, {
@@ -12,6 +12,4 @@ const Event = (node, path) => {
     }),
   ];
 };
-const __Event = annotateNativeComponent(WEBSOCKET)(Event);
-
-export { __Event as Event }; // eslint-disable-line import/prefer-default-export
+annotateNativeComponent(WEBSOCKET)(Event);

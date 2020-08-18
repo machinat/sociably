@@ -1,4 +1,3 @@
-// @flow
 import Engine from '@machinat/core/engine';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
@@ -24,7 +23,7 @@ import type {
   WebSocketPlatformMounter,
 } from './types';
 import { TopicChannel, ConnectionChannel, UserChannel } from './channel';
-import { WEBSOCKET_PLATFORM_MOUNTER_I } from './interface';
+import { PLATFORM_MOUNTER_I } from './interface';
 import { WEBSOCKET } from './constant';
 import Transmitter from './transmitter';
 import WebSocketWorker from './worker';
@@ -36,7 +35,7 @@ type WebSocketDispatchResponse = DispatchResponse<
 
 const createJobs = (
   channel: WebSocketChannel,
-  segments: DispatchableSegment<EventValue, WebSocketComponent>[]
+  segments: DispatchableSegment<EventValue>[]
 ): WebSocketJob[] => {
   return [
     {
@@ -56,9 +55,19 @@ const createJobs = (
   ];
 };
 
+@provider<WebSocketBot>({
+  lifetime: 'singleton',
+  deps: [Transmitter, { require: PLATFORM_MOUNTER_I, optional: true }],
+  factory: (
+    transmitter: Transmitter,
+    mounter: null | WebSocketPlatformMounter<any>
+  ) =>
+    // eslint-disable-next-line no-use-before-define
+    new WebSocketBot(transmitter, mounter?.initScope, mounter?.dispatchWrapper),
+})
 class WebSocketBot
   implements MachinatBot<WebSocketChannel, WebSocketJob, WebSocketResult> {
-  _transmitter: Transmitter;
+  private _transmitter: Transmitter;
   engine: Engine<
     WebSocketChannel,
     EventValue,
@@ -70,8 +79,8 @@ class WebSocketBot
 
   constructor(
     transmitter: Transmitter,
-    initScope?: InitScopeFn = () => createEmptyScope(WEBSOCKET),
-    dispatchWrapper?: DispatchWrapper<
+    initScope: InitScopeFn = () => createEmptyScope(WEBSOCKET),
+    dispatchWrapper: DispatchWrapper<
       WebSocketJob,
       WebSocketDispatchFrame,
       WebSocketResult
@@ -79,14 +88,17 @@ class WebSocketBot
   ) {
     this._transmitter = transmitter;
 
-    const queue = new Queue();
+    const queue = new Queue<WebSocketJob, WebSocketResult>();
     const worker = new WebSocketWorker(transmitter);
 
-    const renderer = new Renderer(WEBSOCKET, () => {
-      throw new TypeError(
-        'general component not supported at websocket platform'
-      );
-    });
+    const renderer = new Renderer<EventValue, WebSocketComponent>(
+      WEBSOCKET,
+      () => {
+        throw new TypeError(
+          'general component not supported at websocket platform'
+        );
+      }
+    );
 
     this.engine = new Engine(
       WEBSOCKET,
@@ -99,12 +111,12 @@ class WebSocketBot
     );
   }
 
-  async start() {
+  async start(): Promise<void> {
     await this._transmitter.start();
     this.engine.start();
   }
 
-  async stop() {
+  async stop(): Promise<void> {
     await this._transmitter.stop();
     this.engine.stop();
   }
@@ -159,28 +171,23 @@ class WebSocketBot
     ]);
   }
 
-  disconnect(connection: ConnectionChannel, reason?: string) {
+  disconnect(connection: ConnectionChannel, reason?: string): Promise<boolean> {
     return this._transmitter.disconnect(connection, reason);
   }
 
-  subscribeTopic(connection: ConnectionChannel, topic: string) {
+  subscribeTopic(
+    connection: ConnectionChannel,
+    topic: string
+  ): Promise<boolean> {
     return this._transmitter.subscribeTopic(connection, topic);
   }
 
-  unsubscribeTopic(connection: ConnectionChannel, topic: string) {
+  unsubscribeTopic(
+    connection: ConnectionChannel,
+    topic: string
+  ): Promise<boolean> {
     return this._transmitter.unsubscribeTopic(connection, topic);
   }
 }
 
-export default provider<WebSocketBot>({
-  lifetime: 'singleton',
-  deps: [
-    Transmitter,
-    { require: WEBSOCKET_PLATFORM_MOUNTER_I, optional: true },
-  ],
-  factory: (
-    transmitter: Transmitter,
-    mounter: null | WebSocketPlatformMounter<any>
-  ) =>
-    new WebSocketBot(transmitter, mounter?.initScope, mounter?.dispatchWrapper),
-})(WebSocketBot);
+export default WebSocketBot;

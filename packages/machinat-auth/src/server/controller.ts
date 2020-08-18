@@ -1,7 +1,8 @@
-import { provider } from '@machinat/core/service';
 import { parse as parseURL } from 'url';
 import { relative as getRelativePath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
+import { provider } from '@machinat/core/service';
+import { HTTPRequestInfo } from '@machinat/http/types';
 import invariant from 'invariant';
 import {
   verify as verifyJWT,
@@ -11,8 +12,8 @@ import getRawBody from 'raw-body';
 import thenifiedly from 'thenifiedly';
 import {
   SIGNATURE_COOKIE_KEY,
-  AUTH_SERVER_AUTHORIZERS_I,
-  AUTH_MODULE_CONFIGS_I,
+  SERVER_AUTHORIZERS_I,
+  MODULE_CONFIGS_I,
 } from '../constant';
 import type {
   ServerAuthorizer,
@@ -24,12 +25,13 @@ import type {
   AuthAPIErrorBody,
   AuthModuleConfigs,
   AuthContext,
+  WithHeaders,
 } from '../types';
 
 import { getCookies, isSubpath } from './utils';
 import { CookieAccessor, CookieController } from './cookie';
 
-const getSignature = (req: IncomingMessage) => {
+const getSignature = (req: WithHeaders) => {
   const cookies = getCookies(req);
   return cookies ? cookies[SIGNATURE_COOKIE_KEY] : undefined;
 };
@@ -65,7 +67,7 @@ type AuthVerifyResult<AuthData> =
 
 @provider<AuthServerController>({
   lifetime: 'singleton',
-  deps: [AUTH_SERVER_AUTHORIZERS_I, AUTH_MODULE_CONFIGS_I],
+  deps: [SERVER_AUTHORIZERS_I, MODULE_CONFIGS_I],
 })
 class AuthServerController {
   authorizers: ServerAuthorizer<any, any>[];
@@ -85,7 +87,7 @@ class AuthServerController {
       refreshPeriod = 86400, // 1 day
       cookieDomain,
       cookiePath = '/',
-      sameSite = 'None',
+      sameSite = 'none',
       secure = true,
     }: AuthModuleConfigs = {} as any
   ) {
@@ -176,7 +178,7 @@ class AuthServerController {
   }
 
   async verifyAuth(
-    req: IncomingMessage,
+    req: HTTPRequestInfo,
     tokenProvided?: string
   ): Promise<AuthVerifyResult<any>> {
     let token = tokenProvided;

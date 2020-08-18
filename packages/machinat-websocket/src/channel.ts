@@ -1,10 +1,11 @@
-// @flow
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import { WEBSOCKET } from './constant';
+import type { ConnectionTarget, UserTarget, TopicTarget } from './types';
 
-export class ConnectionChannel implements MachinatChannel {
+export class ConnectionChannel implements MachinatChannel, ConnectionTarget {
   platform = WEBSOCKET;
-  type = 'connection';
+  type = 'connection' as const;
+
   serverId: string;
   connectionId: string;
 
@@ -13,44 +14,45 @@ export class ConnectionChannel implements MachinatChannel {
     this.connectionId = connectionId;
   }
 
-  get id() {
+  get id(): string {
     return this.connectionId;
   }
 
-  get uid() {
+  get uid(): string {
     return `${WEBSOCKET}.conn.${this.serverId}.${this.connectionId}`;
   }
 }
 
-export class UserChannel implements MachinatChannel {
+export class UserChannel implements MachinatChannel, UserTarget {
   platform = WEBSOCKET;
-  type = 'user';
+  type = 'user' as const;
+
   user: MachinatUser;
 
   constructor(user: MachinatUser) {
     this.user = user;
   }
 
-  get userUId() {
+  get userUId(): string {
     return this.user.uid;
   }
 
-  get uid() {
-    const { uid } = (this.user: MachinatUser);
+  get uid(): string {
+    const { uid } = this.user as MachinatUser;
     return `${WEBSOCKET}.user.${uid}`;
   }
 }
 
-export class TopicChannel implements MachinatChannel {
+export class TopicChannel implements MachinatChannel, TopicTarget {
   platform = WEBSOCKET;
-  type = 'topic';
+  type = 'topic' as const;
   name: string;
 
   constructor(name: string) {
     this.name = name;
   }
 
-  get uid() {
+  get uid(): string {
     return `${WEBSOCKET}.topic.${this.name}`;
   }
 }

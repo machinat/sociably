@@ -1,15 +1,17 @@
 import type { ServiceModule } from '@machinat/core/types';
 import { factory } from '@machinat/core/service';
+
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
-import AuthServerController from './server';
-import { AUTH_MODULE_CONFIGS_I, AUTH_SERVER_AUTHORIZERS_I } from './constant';
+
+import ServerController from './server';
+import { MODULE_CONFIGS_I, SERVER_AUTHORIZERS_I } from './constant';
 import type { AuthModuleConfigs } from './types';
 
 const authRoutingFactory = factory<HTTPRequestRouting>({
   lifetime: 'transient',
-  deps: [AuthServerController, AUTH_MODULE_CONFIGS_I],
-})((controller: AuthServerController, configs: AuthModuleConfigs) => ({
+  deps: [ServerController, MODULE_CONFIGS_I],
+})((controller: ServerController, configs: AuthModuleConfigs) => ({
   name: 'auth',
   path: configs.entryPath || '/',
   handler: (req, res) => {
@@ -18,17 +20,21 @@ const authRoutingFactory = factory<HTTPRequestRouting>({
 }));
 
 const Auth = {
-  Controller: AuthServerController,
-  CONFIGS_I: AUTH_MODULE_CONFIGS_I,
-  AUTHORIZERS_I: AUTH_SERVER_AUTHORIZERS_I,
+  Controller: ServerController,
+  CONFIGS_I: MODULE_CONFIGS_I,
+  AUTHORIZERS_I: SERVER_AUTHORIZERS_I,
 
   initModule: (configs: AuthModuleConfigs): ServiceModule => ({
     provisions: [
-      AuthServerController,
-      { provide: AUTH_MODULE_CONFIGS_I, withValue: configs },
+      ServerController,
+      { provide: MODULE_CONFIGS_I, withValue: configs },
       { provide: HTTP.REQUEST_ROUTINGS_I, withProvider: authRoutingFactory },
     ],
   }),
 };
+
+declare namespace Auth {
+  export type Controller = ServerController;
+}
 
 export default Auth;

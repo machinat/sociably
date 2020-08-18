@@ -11,7 +11,7 @@ import {
   HTTP_REQUEST_ROUTINGS_I,
   HTTP_UPGRADE_ROUTINGS_I,
 } from './interface';
-import {
+import type {
   ServerListenOptions,
   RequestHandler,
   UpgradeHandler,

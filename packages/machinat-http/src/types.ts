@@ -1,5 +1,9 @@
-import { IncomingMessage, ServerResponse } from 'http';
-import { Socket } from 'net';
+import type {
+  IncomingMessage,
+  ServerResponse,
+  IncomingHttpHeaders,
+} from 'http';
+import type { Socket } from 'net';
 
 export type RequestHandler = (
   req: IncomingMessage,
@@ -33,6 +37,13 @@ export type ServerListenOptions = {
   readableAll?: boolean;
   writableAll?: boolean;
   ipv6Only?: boolean;
+};
+
+export type HTTPRequestInfo = {
+  method: string;
+  url: string;
+  headers: IncomingHttpHeaders;
+  body?: string;
 };
 
 export type HTTPModuleConfigs = ServerListenOptions;

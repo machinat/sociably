@@ -1,4 +1,3 @@
-// @flow
 import type AuthClientController from '@machinat/auth/client';
 import type { ClientLoginFn } from '../types';
 

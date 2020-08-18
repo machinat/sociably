@@ -1,10 +1,9 @@
-// @flow
 import Auth from '@machinat/auth';
 import type { AuthContext } from '@machinat/auth/types';
 import { factory } from '@machinat/core/service';
 import type { VerifyLoginFn } from '../types';
 
-const connectAuthVerifier = factory<VerifyLoginFn<AuthContext<any>, string>>({
+const connectAuthClient = factory<VerifyLoginFn<AuthContext<any>, string>>({
   lifetime: 'transient',
   deps: [Auth.Controller],
 })((controller: Auth.Controller) => async (request, credential: string) => {
@@ -24,4 +23,4 @@ const connectAuthVerifier = factory<VerifyLoginFn<AuthContext<any>, string>>({
   };
 });
 
-export default connectAuthVerifier;
+export default connectAuthClient;

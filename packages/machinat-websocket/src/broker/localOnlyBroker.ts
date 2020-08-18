@@ -1,4 +1,3 @@
-// @flow
 import { provider } from '@machinat/core/service';
 import { ClusterBrokerI } from '../interface';
 

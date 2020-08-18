@@ -1,4 +1,3 @@
-// @flow
 import WS from 'ws';
 import uniqid from 'uniqid';
 import { container, factory } from '@machinat/core/service';
@@ -7,13 +6,13 @@ import type { PlatformModule } from '@machinat/core/types';
 import HTTP from '@machinat/http';
 import type { HTTPUpgradeRouting } from '@machinat/http/types';
 import {
-  WSServerI,
   ClusterBrokerI,
+  WS_SERVER_I,
   UPGRADE_VERIFIER_I,
   AUTHENTICATOR_I,
   SERVER_ID_I,
-  WEBSOCKET_PLATFORM_MOUNTER_I,
-  WEBSOCKET_PLATFORM_CONFIGS_I,
+  PLATFORM_MOUNTER_I,
+  PLATFORM_CONFIGS_I,
 } from './interface';
 import WebSocketBot from './bot';
 import Transmitter from './transmitter';
@@ -30,7 +29,7 @@ import type {
 
 export { Event } from './component';
 
-const createWSServer = factory<() => WS>({ lifetime: 'singleton' })(
+const createWSServer = factory<WS.Server>({ lifetime: 'singleton' })(
   () => new WS.Server({ noServer: true })
 );
 
@@ -40,11 +39,11 @@ const createUniqServerId = factory<() => string>({
 
 const upgradeRoutingFactory = factory<HTTPUpgradeRouting>({
   lifetime: 'transient',
-  deps: [WEBSOCKET_PLATFORM_CONFIGS_I, WebSocketReceiver],
+  deps: [PLATFORM_CONFIGS_I, WebSocketReceiver],
 })(
   (
     configs: WebSocketPlatformConfigs<any, any>,
-    receiver: WebSocketReceiver
+    receiver: WebSocketReceiver<any>
   ) => ({
     name: 'websocket',
     path: configs.entryPath || '/',
@@ -56,12 +55,12 @@ const WebSocket = {
   Bot: WebSocketBot,
   Receiver: WebSocketReceiver,
   Transmitter,
-  WSServerI,
   ClusterBrokerI,
+  SERVER_I: WS_SERVER_I,
   UPGRADE_VERIFIER_I,
   AUTHENTICATOR_I,
   SERVER_ID_I,
-  CONFIGS_I: WEBSOCKET_PLATFORM_CONFIGS_I,
+  CONFIGS_I: PLATFORM_CONFIGS_I,
 
   initModule: <AuthInfo, Credential>(
     configs: WebSocketPlatformConfigs<AuthInfo, Credential> = {}
@@ -74,10 +73,13 @@ const WebSocket = {
   > => {
     return {
       name: WEBSOCKET,
-      mounterInterface: WEBSOCKET_PLATFORM_MOUNTER_I,
+      mounterInterface: PLATFORM_MOUNTER_I,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions: [
+        { provide: PLATFORM_CONFIGS_I, withValue: configs },
+        { provide: WS_SERVER_I, withProvider: createWSServer },
+
         WebSocketBot,
         {
           provide: Base.BotI,
@@ -87,17 +89,16 @@ const WebSocket = {
 
         Transmitter,
         { provide: SERVER_ID_I, withProvider: createUniqServerId },
-        { provide: WSServerI, withProvider: createWSServer },
         { provide: ClusterBrokerI, withProvider: LocalOnlyBroker },
 
         WebSocketReceiver,
-        { provide: WEBSOCKET_PLATFORM_CONFIGS_I, withValue: configs },
         {
           provide: HTTP.UPGRADE_ROUTINGS_I,
           withProvider: upgradeRoutingFactory,
         },
       ],
-      startHook: container({
+
+      startHook: container<Promise<void>>({
         deps: [WebSocketBot],
       })(async (bot: WebSocketBot) => {
         await bot.start();

@@ -1,4 +1,3 @@
-// @flow
 import { WEBSOCKET } from './constant';
 import type { WebSocketEvent } from './types';
 

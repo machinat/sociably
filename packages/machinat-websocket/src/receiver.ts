@@ -1,10 +1,8 @@
-// @flow
-import http from 'http';
+import { STATUS_CODES, IncomingMessage } from 'http';
+import type { Socket as NetSocket } from 'net';
+import type { Server as WSServer } from 'ws';
 import uniqid from 'uniqid';
 import thenifiedly from 'thenifiedly';
-import type { IncomingMessage } from 'http';
-import type { Socket as NetSocket } from 'net';
-
 import { provider } from '@machinat/core/service';
 import type {
   MachinatUser,
@@ -12,55 +10,58 @@ import type {
   PopEventFn,
   PopErrorFn,
 } from '@machinat/core/types';
+import type { UpgradeHandler } from '@machinat/http/types';
 
 import Transmitter from './transmitter';
 import WebSocketBot from './bot';
-import MachinatSocket from './socket';
 import { ConnectionChannel } from './channel';
 import createEvent from './event';
 import {
-  WSServerI,
+  WS_SERVER_I,
   AUTHENTICATOR_I,
   UPGRADE_VERIFIER_I,
-  WEBSOCKET_PLATFORM_MOUNTER_I,
-  WEBSOCKET_PLATFORM_CONFIGS_I,
+  PLATFORM_MOUNTER_I,
+  PLATFORM_CONFIGS_I,
 } from './interface';
 import { WEBSOCKET } from './constant';
 import type {
   WebSocketEvent,
   VerifyLoginFn,
+  UpgradeRequestInfo,
   WebSocketEventContext,
   VerifyUpgradeFn,
   WebSocketPlatformMounter,
   WebSocketPlatformConfigs,
 } from './types';
-import type Socket, {
+import Socket, {
   DispatchBody,
   LoginBody,
   ConnectBody,
   DisconnectBody,
 } from './socket';
 
-type ConnectionInfo<Auth> = {|
-  channel: ConnectionChannel,
-  user: null | MachinatUser,
-  auth: Auth,
-  expireAt: null | Date,
-|};
+type IntervalID = ReturnType<typeof setInterval>;
 
-type SocketState<Auth> = {|
-  lostHeartbeatCount: number,
-  connections: Map<string, ConnectionInfo<Auth>>,
-|};
+type ConnectionInfo<Auth> = {
+  channel: ConnectionChannel;
+  user: null | MachinatUser;
+  auth: Auth;
+  expireAt: null | Date;
+};
+
+type SocketState<Auth> = {
+  lostHeartbeatCount: number;
+  connections: Map<string, ConnectionInfo<Auth>>;
+};
 
 type WebSocketReceiverOptions<AuthInfo> = {
-  heartbeatInterval?: number,
-  verifyLogin?: VerifyLoginFn<AuthInfo, any>,
-  verifyUpgrade?: VerifyUpgradeFn,
+  heartbeatInterval?: number;
+  verifyLogin?: VerifyLoginFn<AuthInfo, any>;
+  verifyUpgrade?: VerifyUpgradeFn;
 };
 
 const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
-  const codeName = http.STATUS_CODES[code];
+  const codeName = STATUS_CODES[code] as string;
   const body = message || codeName;
 
   ns.write(
@@ -79,25 +80,58 @@ const getWSFromServer = thenifiedly.factory(
   { beginningError: false }
 );
 
+@provider<WebSocketReceiver<any>>({
+  lifetime: 'singleton',
+  deps: [
+    WebSocketBot,
+    WS_SERVER_I,
+    Transmitter,
+    { require: AUTHENTICATOR_I, optional: true },
+    { require: UPGRADE_VERIFIER_I, optional: true },
+    PLATFORM_MOUNTER_I,
+    PLATFORM_CONFIGS_I,
+  ],
+  factory: (
+    bot: WebSocketBot,
+    wsServer: WSServer,
+    transmitter: Transmitter,
+    verifyLogin: null | VerifyLoginFn<any, any>,
+    verifyUpgrade: null | VerifyUpgradeFn,
+    { popEventWrapper, popError }: WebSocketPlatformMounter<any>,
+    configs: WebSocketPlatformConfigs<any, any>
+  ) =>
+    new WebSocketReceiver( // eslint-disable-line no-use-before-define
+      bot,
+      wsServer,
+      transmitter,
+      popEventWrapper,
+      popError,
+      {
+        heartbeatInterval: configs.heartbeatInterval,
+        verifyLogin: verifyLogin || configs.verifyLogin,
+        verifyUpgrade: verifyUpgrade || configs.verifyUpgrade,
+      }
+    ),
+})
 class WebSocketReceiver<AuthInfo> {
-  _serverId: string;
-  _bot: WebSocketBot;
-  _wsServer: WSServerI;
-  _transmitter: Transmitter;
+  private _serverId: string;
+  private _bot: WebSocketBot;
+  private _wsServer: WSServer;
+  private _transmitter: Transmitter;
 
-  _verifyUpgrade: VerifyUpgradeFn;
-  _verifyLogin: VerifyLoginFn<AuthInfo, any>;
+  private _verifyUpgrade: VerifyUpgradeFn;
+  private _verifyLogin: VerifyLoginFn<AuthInfo, any>;
 
-  _socketStates: Map<Socket, SocketState<AuthInfo>>;
+  private _socketStates: Map<Socket, SocketState<AuthInfo>>;
 
-  _popEvent: PopEventFn<WebSocketEventContext<AuthInfo>, null>;
-  _popError: PopErrorFn;
+  private _popEvent: PopEventFn<WebSocketEventContext<AuthInfo>, null>;
+  private _popError: PopErrorFn;
 
-  _heartbeatIntervalId: IntervalID;
+  private _heartbeatIntervalId: IntervalID;
 
   constructor(
     bot: WebSocketBot,
-    wsServer: WSServerI,
+    wsServer: WSServer,
     transmitter: Transmitter,
     popEventWrapper: PopEventWrapper<WebSocketEventContext<AuthInfo>, null>,
     popError: PopErrorFn,
@@ -117,7 +151,7 @@ class WebSocketReceiver<AuthInfo> {
     this._verifyLogin =
       verifyLogin ||
       (() =>
-        Promise.resolve({ success: true, user: null, authInfo: (null: any) }));
+        Promise.resolve({ success: true, user: null, authInfo: null as any }));
 
     this._popEvent = popEventWrapper(() => Promise.resolve(null));
     this._popError = popError;
@@ -128,10 +162,14 @@ class WebSocketReceiver<AuthInfo> {
     ).unref();
   }
 
-  async handleUpgrade(req: IncomingMessage, ns: NetSocket, head: Buffer) {
-    const requestInfo = {
-      method: req.method,
-      url: req.url,
+  async handleUpgrade(
+    req: IncomingMessage,
+    ns: NetSocket,
+    head: Buffer
+  ): Promise<void> {
+    const requestInfo: UpgradeRequestInfo = {
+      method: req.method as string,
+      url: req.url as string,
       headers: req.headers,
     };
 
@@ -142,7 +180,7 @@ class WebSocketReceiver<AuthInfo> {
     }
 
     const ws = await getWSFromServer(this._wsServer, req, ns, head);
-    const socket = new MachinatSocket(uniqid(), ws, requestInfo);
+    const socket = new Socket(uniqid(), ws, requestInfo);
 
     this._socketStates.set(socket, {
       lostHeartbeatCount: 0,
@@ -158,11 +196,11 @@ class WebSocketReceiver<AuthInfo> {
     socket.on('error', this._popError);
   }
 
-  handleUpgradeCallback() {
+  handleUpgradeCallback(): UpgradeHandler {
     return this.handleUpgrade.bind(this);
   }
 
-  _getSocketStatesAssertedly(socket: Socket): SocketState<AuthInfo> {
+  private _getSocketStatesAssertedly(socket: Socket): SocketState<AuthInfo> {
     const socketState = this._socketStates.get(socket);
     if (socketState === undefined) {
       const reason = 'unknown socket';
@@ -173,7 +211,7 @@ class WebSocketReceiver<AuthInfo> {
     return socketState;
   }
 
-  async _issueEvent(
+  private async _issueEvent(
     socket: Socket,
     event: WebSocketEvent,
     { channel, user, auth }: ConnectionInfo<AuthInfo>
@@ -192,11 +230,15 @@ class WebSocketReceiver<AuthInfo> {
     });
   }
 
-  _handleLoginCallback = (body: LoginBody, seq: number, socket: Socket) => {
+  private _handleLoginCallback = (
+    body: LoginBody,
+    seq: number,
+    socket: Socket
+  ) => {
     this._handleLogin(body, seq, socket).catch(this._popError);
   };
 
-  async _handleLogin(body: LoginBody, seq: number, socket: Socket) {
+  private async _handleLogin(body: LoginBody, seq: number, socket: Socket) {
     const socketState = this._getSocketStatesAssertedly(socket);
     const connId: string = uniqid();
 
@@ -225,7 +267,7 @@ class WebSocketReceiver<AuthInfo> {
     }
   }
 
-  _handleDispatchCallback = (
+  private _handleDispatchCallback = (
     body: DispatchBody,
     seq: number,
     socket: Socket
@@ -233,7 +275,11 @@ class WebSocketReceiver<AuthInfo> {
     this._handleDispatch(body, seq, socket).catch(this._popError);
   };
 
-  async _handleDispatch(body: DispatchBody, seq: number, socket: Socket) {
+  private async _handleDispatch(
+    body: DispatchBody,
+    seq: number,
+    socket: Socket
+  ) {
     const socketState = this._getSocketStatesAssertedly(socket);
 
     const { connId, events } = body;
@@ -253,11 +299,15 @@ class WebSocketReceiver<AuthInfo> {
     }
   }
 
-  _handleConnectCallback = (body: ConnectBody, seq: number, socket: Socket) => {
+  private _handleConnectCallback = (
+    body: ConnectBody,
+    seq: number,
+    socket: Socket
+  ) => {
     this._handleConnect(body, seq, socket).catch(this._popError);
   };
 
-  async _handleConnect(body: ConnectBody, seq: number, socket: Socket) {
+  private async _handleConnect(body: ConnectBody, seq: number, socket: Socket) {
     const socketState = this._getSocketStatesAssertedly(socket);
 
     const { connId } = body;
@@ -281,14 +331,18 @@ class WebSocketReceiver<AuthInfo> {
     }
   }
 
-  _handleConnectFailCallback = this._handleConnectFail.bind(this);
+  private _handleConnectFailCallback = this._handleConnectFail.bind(this);
 
-  _handleConnectFail(body: DisconnectBody, seq: number, socket: Socket) {
+  private _handleConnectFail(
+    body: DisconnectBody,
+    seq: number,
+    socket: Socket
+  ) {
     const socketState = this._getSocketStatesAssertedly(socket);
     socketState.connections.delete(body.connId);
   }
 
-  _handleDisconnectCallback = (
+  private _handleDisconnectCallback = (
     body: DisconnectBody,
     seq: number,
     socket: Socket
@@ -296,7 +350,11 @@ class WebSocketReceiver<AuthInfo> {
     this._handleDisconnect(body, seq, socket).catch(this._popError);
   };
 
-  async _handleDisconnect(body: DisconnectBody, seq: number, socket: Socket) {
+  private async _handleDisconnect(
+    body: DisconnectBody,
+    seq: number,
+    socket: Socket
+  ) {
     const socketState = this._getSocketStatesAssertedly(socket);
 
     const { connId, reason } = body;
@@ -314,14 +372,14 @@ class WebSocketReceiver<AuthInfo> {
     }
   }
 
-  _handleCloseCallback = this._handleClose.bind(this);
+  private _handleCloseCallback = this._handleClose.bind(this);
 
-  _handleClose(code, reason, socket: Socket) {
+  private _handleClose(code, reason, socket: Socket) {
     socket.removeAllListeners();
     this._socketStates.delete(socket);
   }
 
-  _heartbeat() {
+  private _heartbeat() {
     for (const [socket, _] of this._socketStates) {
       // TODO: remove unresponding sockets
       socket.ping();
@@ -329,36 +387,4 @@ class WebSocketReceiver<AuthInfo> {
   }
 }
 
-export default provider<WebSocketReceiver<any>>({
-  lifetime: 'singleton',
-  deps: [
-    WebSocketBot,
-    WSServerI,
-    Transmitter,
-    { require: AUTHENTICATOR_I, optional: true },
-    { require: UPGRADE_VERIFIER_I, optional: true },
-    WEBSOCKET_PLATFORM_MOUNTER_I,
-    WEBSOCKET_PLATFORM_CONFIGS_I,
-  ],
-  factory: (
-    bot: WebSocketBot,
-    wsServer: WSServerI,
-    transmitter: Transmitter,
-    verifyLogin: null | VerifyLoginFn<any, any>,
-    verifyUpgrade: null | VerifyUpgradeFn,
-    { popEventWrapper, popError }: WebSocketPlatformMounter<any>,
-    configs: WebSocketPlatformConfigs<any, any>
-  ) =>
-    new WebSocketReceiver(
-      bot,
-      wsServer,
-      transmitter,
-      popEventWrapper,
-      popError,
-      {
-        heartbeatInterval: configs.heartbeatInterval,
-        verifyLogin: verifyLogin || configs.verifyLogin,
-        verifyUpgrade: verifyUpgrade || configs.verifyUpgrade,
-      }
-    ),
-})(WebSocketReceiver);
+export default WebSocketReceiver;

@@ -1,5 +1,4 @@
-// @flow
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import Socket from '../socket';
 import SocketError from '../error';
 
@@ -17,7 +16,7 @@ const WS =
         constructor(url, protocols) {
           super();
 
-          const webSocket = new WebSocket(url, protocols); // eslint-disable-line no-undef
+          const webSocket = new WebSocket(url, protocols);
 
           webSocket.onmessage = (e) => {
             this.emit('message', e.data);
@@ -27,7 +26,7 @@ const WS =
             this.emit('close', e.code, e.reason);
           };
 
-          webSocket.onerror = (e) => {
+          webSocket.onerror = (e: ErrorEvent) => {
             this.emit('error', new SocketError(e.message));
           };
 
@@ -80,7 +79,7 @@ const MACHINAT_WEBSOCKET_PROTOCOL_V0 = 'machinat-websocket-v0';
 
 const openSocket = (url: string): Promise<Socket> => {
   const ws = new WS(url, MACHINAT_WEBSOCKET_PROTOCOL_V0);
-  const socket = new Socket('', ws, (null: any));
+  const socket = new Socket('', ws, null as any);
 
   return new Promise((resolve, reject) => {
     let errorListener;

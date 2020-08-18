@@ -1,11 +1,8 @@
+import type { HTTPRequestInfo } from '../types';
+
 export interface WebhookMetadata {
   source: 'webhook';
-  request: {
-    method: string;
-    url: string;
-    headers: { [key: string]: string };
-    body: void | string;
-  };
+  request: HTTPRequestInfo;
 }
 
 export type WebhookHandler = (

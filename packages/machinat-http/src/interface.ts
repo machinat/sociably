@@ -2,7 +2,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { Socket } from 'net';
 import { makeInterface, abstractInterface } from '@machinat/core/service';
-import {
+import type {
   ServerListenOptions,
   HTTPModuleConfigs,
   HTTPRequestRouting,

@@ -1,5 +1,9 @@
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
-import type { IncomingMessage, ServerResponse } from 'http';
+import type {
+  IncomingMessage,
+  ServerResponse,
+  IncomingHttpHeaders,
+} from 'http';
 import type { CookieAccessor } from './server/cookie';
 
 type TokenBase = {
@@ -161,6 +165,10 @@ export type AuthModuleConfigs = {
   refreshPeriod?: number;
   cookieDomain?: string;
   cookiePath?: string;
-  sameSite?: 'Strict' | 'Lax' | 'None';
+  sameSite?: 'strict' | 'lax' | 'none';
   secure?: boolean;
+};
+
+export type WithHeaders = {
+  headers: IncomingHttpHeaders;
 };
