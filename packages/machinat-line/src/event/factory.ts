@@ -1,4 +1,3 @@
-// @flow
 import mixin from '@machinat/core/utils/mixin';
 import {
   EventBase as Base,
@@ -19,7 +18,7 @@ import {
 } from './mixin';
 import type { LineRawEvent, LineEvent } from '../types';
 
-export const eventFactory = (proto: Object, type: string, subtype?: string) => (
+export const eventFactory = (proto: any, type: string, subtype?: string) => (
   payload: LineRawEvent
 ): LineEvent => {
   const event = Object.create(proto);
@@ -28,8 +27,7 @@ export const eventFactory = (proto: Object, type: string, subtype?: string) => (
   event.type = type;
   event.subtype = subtype;
 
-  // TODO: type the line events
-  return (event: any);
+  return event;
 };
 
 export const text = eventFactory(

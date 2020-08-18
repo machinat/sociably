@@ -1,18 +1,16 @@
-// @flow
 /* eslint-disable import/prefer-default-export  */
-import type { AuthorizerRefineResult } from '@machinat/auth/types';
 import LineUser from '../user';
 import LineChannel from '../channel';
-import type { LIFFAuthData } from '../types';
+import { LIFFAuthData, AuthorizerRefinement } from './types';
 
-export const refineLIFFContextData = (
+export const refinementFromLIFFAuthData = (
   providerId: string,
   botChannelId: string,
   data: LIFFAuthData
-): null | AuthorizerRefineResult => {
+): null | AuthorizerRefinement => {
   const { contextType, userId, utouId, groupId, roomId, fromBotChannel } = data;
 
-  let channel;
+  let channel: null | LineChannel;
 
   if (fromBotChannel) {
     if (fromBotChannel !== botChannelId || contextType !== 'utou') {
@@ -23,11 +21,11 @@ export const refineLIFFContextData = (
   } else {
     channel =
       contextType === 'utou'
-        ? new LineChannel(providerId, botChannelId, 'utou', (utouId: any))
+        ? new LineChannel(providerId, botChannelId, 'utou', utouId as string)
         : contextType === 'room'
-        ? new LineChannel(providerId, botChannelId, 'room', (roomId: any))
+        ? new LineChannel(providerId, botChannelId, 'room', roomId as string)
         : contextType === 'group'
-        ? new LineChannel(providerId, botChannelId, 'group', (groupId: any))
+        ? new LineChannel(providerId, botChannelId, 'group', groupId as string)
         : null;
   }
 

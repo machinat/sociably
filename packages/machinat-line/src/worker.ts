@@ -1,17 +1,9 @@
-// @flow
 import url from 'url';
 import fetch from 'node-fetch';
-
 import type { MachinatWorker } from '@machinat/core/engine/types';
-import type Queue from '@machinat/core/queue';
-
+import Queue from '@machinat/core/queue';
 import type { LineJob, LineAPIResult } from './types';
 import { LineAPIError } from './error';
-
-const GET = 'GET';
-const POST = 'POST';
-const PUT = 'PUT';
-const DELETE = 'DELETE';
 
 const API_HOST = 'https://api.line.me';
 
@@ -19,15 +11,16 @@ type LineJobQueue = Queue<LineJob, LineAPIResult>;
 
 export default class LineClient
   implements MachinatWorker<LineJob, LineAPIResult> {
-  _headers: {
-    'Content-Type': 'application/json',
-    Authorization: string,
+  private _headers: {
+    'Content-Type': 'application/json';
+    Authorization: string;
   };
 
-  _started: boolean;
+  private _started: boolean;
+
   connectionSize: number;
   connectionCapicity: number;
-  _lockedKeys: Set<string>;
+  private _lockedKeys: Set<string>;
 
   constructor(accessToken: string, connectionCapicity: number) {
     this._headers = {
@@ -41,7 +34,11 @@ export default class LineClient
     this._started = false;
   }
 
-  async _request(method: string, path: string, body: ?Object): LineAPIResult {
+  async _request(
+    method: string,
+    path: string,
+    body: any | null
+  ): Promise<LineAPIResult> {
     const requestURL = new url.URL(path, API_HOST);
 
     const response = await fetch(requestURL.href, {
@@ -50,8 +47,8 @@ export default class LineClient
       headers: this._headers,
     });
 
-    let result;
-    // catch parsing error since body can be empty in some api
+    let result: LineAPIResult;
+    // catch parsing error, body can be empty string in some api
     try {
       result = await response.json();
     } catch (e) {
@@ -68,27 +65,11 @@ export default class LineClient
     return result || {};
   }
 
-  get(path: string) {
-    return this._request(GET, path);
-  }
-
-  post(path: string, body?: Object) {
-    return this._request(POST, path, body);
-  }
-
-  put(path: string, body?: Object) {
-    return this._request(PUT, path, body);
-  }
-
-  delete(path: string, body?: Object) {
-    return this._request(DELETE, path, body);
-  }
-
-  get started() {
+  get started(): boolean {
     return this._started;
   }
 
-  start(queue: LineJobQueue) {
+  start(queue: LineJobQueue): boolean {
     if (this._started) {
       return false;
     }
@@ -100,7 +81,7 @@ export default class LineClient
     return true;
   }
 
-  stop(queue: LineJobQueue) {
+  stop(queue: LineJobQueue): boolean {
     if (!this._started) {
       return false;
     }
@@ -110,9 +91,9 @@ export default class LineClient
     return true;
   }
 
-  _consumeCallback = this._consume.bind(this);
+  private _consumeCallback = this._consume.bind(this);
 
-  _consume(queue: Queue<LineJob, LineAPIResult>) {
+  private _consume(queue: Queue<LineJob, LineAPIResult>) {
     const { _lockedKeys: lockedIds, connectionCapicity } = this;
 
     for (let i = 0; i < queue.length; ) {
@@ -120,8 +101,7 @@ export default class LineClient
         break;
       }
 
-      // $FlowFixMe i is in valid range
-      const { executionKey }: LineJob = queue.peekAt(i);
+      const { executionKey } = queue.peekAt(i) as LineJob;
       if (executionKey !== undefined && lockedIds.has(executionKey)) {
         i += 1;
       } else {
@@ -136,7 +116,7 @@ export default class LineClient
     }
   }
 
-  async _consumeJobAt(
+  private async _consumeJobAt(
     queue: Queue<LineJob, LineAPIResult>,
     idx: number,
     executionKey: void | string
@@ -158,9 +138,9 @@ export default class LineClient
     }
   }
 
-  _executeJobCallback = this._executeJob.bind(this);
+  private _executeJobCallback = this._executeJob.bind(this);
 
-  async _executeJob([job]: LineJob[]) {
+  private async _executeJob([job]: LineJob[]) {
     const { method, path, body } = job;
     const result = await this._request(method, path, body);
 

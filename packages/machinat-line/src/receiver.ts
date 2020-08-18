@@ -1,4 +1,3 @@
-// @flow
 import crypto from 'crypto';
 import invariant from 'invariant';
 import { provider } from '@machinat/core/service';
@@ -20,10 +19,10 @@ import type {
 } from './types';
 
 type LineReceiverOptions = {
-  providerId: string,
-  channelId: string,
-  shouldValidateRequest?: boolean,
-  channelSecret?: string,
+  providerId: string;
+  channelId: string;
+  shouldValidateRequest?: boolean;
+  channelSecret?: string;
 };
 
 const handleWebhook = (
@@ -61,9 +60,9 @@ const handleWebhook = (
       }
     }
 
-    let parsedBody;
+    let parsedBody: LineWebhookRequestBody;
     try {
-      parsedBody = (JSON.parse(body): LineWebhookRequestBody);
+      parsedBody = JSON.parse(body);
     } catch (e) {
       return { code: 400 };
     }
@@ -73,7 +72,7 @@ const handleWebhook = (
       return { code: 400 };
     }
 
-    const issuingEvents = [];
+    const issuingEvents: Promise<null>[] = [];
 
     for (const rawEvent of events) {
       const { source } = rawEvent;
@@ -102,6 +101,15 @@ const handleWebhook = (
   };
 };
 
+@provider<LineReceiver>({
+  lifetime: 'singleton',
+  deps: [LINE_PLATFORM_CONFIGS_I, LineBot, LINE_PLATFORM_MOUNTER_I],
+  factory: (
+    configs: LinePlatformConfigs,
+    bot: LineBot,
+    { popEventWrapper }: LinePlatformMounter
+  ) => new LineReceiver(configs, bot, popEventWrapper), // eslint-disable-line no-use-before-define
+})
 class LineReceiver extends WebhookReceiver {
   constructor(
     {
@@ -130,12 +138,4 @@ class LineReceiver extends WebhookReceiver {
   }
 }
 
-export default provider<LineReceiver>({
-  lifetime: 'singleton',
-  deps: [LINE_PLATFORM_CONFIGS_I, LineBot, LINE_PLATFORM_MOUNTER_I],
-  factory: (
-    configs: LinePlatformConfigs,
-    bot: LineBot,
-    { popEventWrapper }: LinePlatformMounter
-  ) => new LineReceiver(configs, bot, popEventWrapper),
-})(LineReceiver);
+export default LineReceiver;

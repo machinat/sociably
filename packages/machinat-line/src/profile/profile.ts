@@ -1,14 +1,6 @@
-// @flow
-import type { MachinatUserProfile } from '@machinat/core/base/UserProfilerI';
+import { MachinatUserProfile } from '@machinat/core/base/UserProfilerI';
 import { LINE } from '../constant';
-
-export type RawLineUserProfile = {
-  displayName: string,
-  userId: string,
-  language?: string,
-  pictureUrl?: string,
-  statusMessage?: string,
-};
+import type { RawLineUserProfile } from './types';
 
 export default class LineUserProfile implements MachinatUserProfile {
   data: RawLineUserProfile;
@@ -18,23 +10,23 @@ export default class LineUserProfile implements MachinatUserProfile {
     this.data = data;
   }
 
-  get id() {
+  get id(): string {
     return this.data.userId;
   }
 
-  get name() {
+  get name(): string {
     return this.data.displayName;
   }
 
-  get pictureURL() {
+  get pictureURL(): undefined | string {
     return this.data.pictureUrl;
   }
 
-  get statusMessage() {
+  get statusMessage(): undefined | string {
     return this.data.statusMessage;
   }
 
-  toJSON() {
+  toJSON(): any {
     const { data, id, name, pictureURL } = this;
     return {
       platform: LINE,

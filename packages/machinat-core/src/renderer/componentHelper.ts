@@ -13,10 +13,14 @@ import type {
   PauseSegment,
 } from './types';
 
+type FunctionOf<Fn extends (...args: unknown[]) => unknown> = (
+  ...args: Parameters<Fn>
+) => ReturnType<Fn>;
+
 export const annotateNativeComponent = (platform: string) => (
-  Component: NativeComponent<any, any>
+  componentFn: FunctionOf<NativeComponent<any, any>>
 ): NativeComponent<any, any> =>
-  Object.defineProperties(Component, {
+  Object.defineProperties(componentFn, {
     $$typeof: { value: MACHINAT_NATIVE_TYPE },
     $$platform: { value: platform },
   });

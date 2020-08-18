@@ -12,7 +12,7 @@ export interface MachinatUserProfile {
   name: 'BaseUserProfiler',
 })
 abstract class UserProfilerI {
-  abstract fetchProfile(user: MachinatUser): MachinatUserProfile;
+  abstract fetchProfile(user: MachinatUser): Promise<MachinatUserProfile>;
 }
 
 export default UserProfilerI;

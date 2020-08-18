@@ -1,6 +1,5 @@
-// @flow
 import type { DispatchableSegment } from '@machinat/core/engine/types';
-import type LineChannel from './channel';
+import LineChannel from './channel';
 import type {
   LineSegmentValue,
   LineMessageSegmentValue,
@@ -22,12 +21,12 @@ const createMessageJob = (
   channel: LineChannel,
   messages: LineMessageSegmentValue[],
   replyToken: void | string
-) => ({
+): LineJob => ({
   method: 'POST',
   path: replyToken ? PATH_REPLY : PATH_PUSH,
   executionKey: channel.uid,
   body: replyToken
-    ? { replyToken: (replyToken: string), messages }
+    ? { replyToken: replyToken as string, messages }
     : { to: channel.id, messages },
 });
 
@@ -36,8 +35,8 @@ export const chatJobsMaker = (replyToken: void | string) => {
 
   return (
     channel: LineChannel,
-    segments: DispatchableSegment<LineSegmentValue, LineComponent>[]
-  ) => {
+    segments: DispatchableSegment<LineSegmentValue>[]
+  ): LineJob[] => {
     const jobs: LineJob[] = [];
     let messagesBuffer: LineMessageSegmentValue[] = [];
 
@@ -63,7 +62,7 @@ export const chatJobsMaker = (replyToken: void | string) => {
       } else {
         messagesBuffer.push(
           typeof value === 'string'
-            ? { type: 'text', text: (value: string) }
+            ? { type: 'text', text: value as string }
             : value
         );
 
@@ -90,7 +89,7 @@ const MULITCAST_EXECUTION_KEY = '$$_multicast_$$';
 
 export const multicastJobsMaker = (targets: string[]) => (
   _: null,
-  segments: DispatchableSegment<LineSegmentValue, LineComponent>[]
+  segments: DispatchableSegment<LineSegmentValue>[]
 ) => {
   const jobs: LineJob[] = [];
   let messages: LineSegmentValue[] = [];
@@ -119,7 +118,7 @@ export const multicastJobsMaker = (targets: string[]) => (
     } else {
       messages.push(
         typeof value === 'string'
-          ? { type: 'text', text: (value: string) }
+          ? { type: 'text', text: value as string }
           : value
       );
 

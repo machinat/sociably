@@ -2,7 +2,7 @@
 import { unitSegment } from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 
-export const Location = (node, path) => {
+const LineLocation = (node, path) => {
   const { title, address, latitude, longitude } = node.props;
 
   return [
@@ -16,4 +16,4 @@ export const Location = (node, path) => {
   ];
 };
 
-annotateLineComponent(Location);
+export const Location = annotateLineComponent(LineLocation);

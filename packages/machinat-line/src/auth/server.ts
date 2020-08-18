@@ -1,4 +1,3 @@
-// @flow
 import invariant from 'invariant';
 import fetch from 'node-fetch';
 import type { IncomingMessage, ServerResponse } from 'http';
@@ -6,64 +5,91 @@ import { provider } from '@machinat/core/service';
 import type { ServerAuthorizer } from '@machinat/auth/types';
 import { LINE_PLATFORM_CONFIGS_I } from '../interface';
 import { LINE } from '../constant';
+import type { LinePlatformConfigs } from '../types';
 import type {
   LIFFAuthData,
   LIFFCredential,
-  LinePlatformConfigs,
-} from '../types';
-import { refineLIFFContextData } from './utils';
+  LineVerifyAuthResult,
+  AuthorizerRefinement,
+} from './types';
+import { refinementFromLIFFAuthData } from './utils';
 
 type LineServerAuthorizerOpts = {
-  providerId: string,
-  botChannelId: string,
-  liffChannelIds: string[],
+  providerId: string;
+  channelId: string;
+  liffChannelIds: string[];
 };
 
+@provider<LineServerAuthorizer>({
+  lifetime: 'transient',
+  deps: [LINE_PLATFORM_CONFIGS_I],
+
+  factory: ({ providerId, channelId, liffChannelIds }: LinePlatformConfigs) => {
+    invariant(
+      liffChannelIds,
+      'provide configs.liffChannelIds to authorize with liff'
+    );
+
+    // eslint-disable-next-line no-use-before-define
+    return new LineServerAuthorizer({
+      providerId,
+      channelId,
+      liffChannelIds,
+    });
+  },
+})
 class LineServerAuthorizer
   implements ServerAuthorizer<LIFFAuthData, LIFFCredential> {
   providerId: string;
-  botChannelId: string;
+  channelId: string;
   liffChannelIds: string[];
 
   platform = LINE;
 
-  constructor({
-    providerId,
-    botChannelId,
-    liffChannelIds,
-  }: LineServerAuthorizerOpts = {}) {
+  constructor(
+    {
+      providerId,
+      channelId,
+      liffChannelIds,
+    }: LineServerAuthorizerOpts = {} as any
+  ) {
     invariant(
       liffChannelIds && liffChannelIds.length,
       'options.liffChannelIds should not be empty'
     );
     this.providerId = providerId;
-    this.botChannelId = botChannelId;
+    this.channelId = channelId;
     this.liffChannelIds = liffChannelIds;
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async delegateAuthRequest(req: IncomingMessage, res: ServerResponse) {
+  async delegateAuthRequest(
+    req: IncomingMessage,
+    res: ServerResponse
+  ): Promise<void> {
     res.writeHead(403);
     res.end();
   }
 
-  async verifyCredential(credential: LIFFCredential) {
+  async verifyCredential(
+    credential: LIFFCredential
+  ): Promise<LineVerifyAuthResult> {
     const { accessToken, data } = credential;
     // eslint-disable-next-line prefer-destructuring
     if (!accessToken) {
       return {
-        success: false,
+        success: false as const,
         code: 400,
         reason: 'Empty accessToken received',
       };
     }
 
     const { fromBotChannel } = data;
-    if (fromBotChannel && fromBotChannel !== this.botChannelId) {
+    if (fromBotChannel && fromBotChannel !== this.channelId) {
       return {
-        success: false,
+        success: false as const,
         code: 400,
-        reason: 'botChannelId not match',
+        reason: 'channelId not match',
       };
     }
 
@@ -74,7 +100,7 @@ class LineServerAuthorizer
 
     if (!verifyRes.ok) {
       return {
-        success: false,
+        success: false as const,
         code: verifyRes.status,
         reason: verifyBody.error_description,
       };
@@ -82,53 +108,32 @@ class LineServerAuthorizer
 
     if (!this.liffChannelIds.includes(verifyBody.client_id)) {
       return {
-        success: false,
+        success: false as const,
         code: 400,
         reason: 'unknown client_id of the access token',
       };
     }
 
     return {
-      success: true,
-      refreshable: false,
+      success: true as const,
+      refreshable: false as const,
       data,
     };
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async verifyRefreshment() {
+  async verifyRefreshment(): Promise<LineVerifyAuthResult> {
     return {
-      success: false,
+      success: false as const,
       code: 403,
       reason: 'should resign only',
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  async refineAuth(data: LIFFAuthData) {
+  async refineAuth(data: LIFFAuthData): Promise<null | AuthorizerRefinement> {
     const { providerId } = this;
-    return refineLIFFContextData(providerId, this.botChannelId, data);
+    return refinementFromLIFFAuthData(providerId, this.channelId, data);
   }
 }
 
-export default provider<LineServerAuthorizer>({
-  lifetime: 'transient',
-  deps: [LINE_PLATFORM_CONFIGS_I],
-
-  factory: ({
-    providerId,
-    botChannelId,
-    liffChannelIds,
-  }: LinePlatformConfigs) => {
-    invariant(
-      liffChannelIds,
-      'provide configs.liffChannelIds to authorize with liff'
-    );
-
-    return new LineServerAuthorizer({
-      providerId,
-      botChannelId,
-      liffChannelIds,
-    });
-  },
-})(LineServerAuthorizer);
+export default LineServerAuthorizer;

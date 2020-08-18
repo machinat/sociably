@@ -1,4 +1,3 @@
-// @flow
 import type { LineRawEvent, LineEvent } from '../types';
 import {
   text,

@@ -19,6 +19,8 @@ import type {
   MACHINAT_RAW_TYPE,
 } from './symbol';
 
+export { AppProvision } from './service/types';
+
 export type MachinatRenderable =
   | MachinatText
   | GeneralElement

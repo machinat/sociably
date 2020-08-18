@@ -1,9 +1,8 @@
-// @flow
+import type { PlatformModule, AppProvision } from '@machinat/core/types';
 import { container, factory } from '@machinat/core/service';
-import type { PlatformModule } from '@machinat/core/types';
 import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
-import type { HTTPRequestRouting } from '@machinat/http/types';
+import { HTTPRequestRouting } from '@machinat/http/types';
 import { LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I } from './interface';
 import { LINE } from './constant';
 import LineReceiver from './receiver';
@@ -47,7 +46,7 @@ const Line = {
     LineDispatchFrame,
     LineAPIResult
   > => {
-    const provisions = [
+    const provisions: AppProvision<any>[] = [
       LineBot,
       { provide: Base.BotI, withProvider: LineBot, platforms: [LINE] },
 
@@ -74,7 +73,10 @@ const Line = {
       provisions,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
-      startHook: container({ deps: [LineBot] })((bot: LineBot) => bot.start()),
+
+      startHook: container<Promise<void>>({ deps: [LineBot] })((bot: LineBot) =>
+        bot.start()
+      ),
     };
   },
 };

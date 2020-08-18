@@ -1,4 +1,3 @@
-// @flow
 export const LINE = 'line';
 
 export const CHANNEL_API_CALL_GETTER = Symbol(

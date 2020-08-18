@@ -159,8 +159,8 @@ export const FlexBox = async (node, path, render) => {
 };
 annotateLineComponent(FlexBox);
 
-const createBlockComponent = (section) => {
-  const tagName = `Flex${section[0].toUpperCase()}${section.slice(1)}`;
+const createBlockComponent = (section, _childrenType) => {
+  const tagName = `LineFlex${section[0].toUpperCase()}${section.slice(1)}`;
 
   const wrapper = {
     [tagName]: async (node, path, render) => {
@@ -173,7 +173,6 @@ const createBlockComponent = (section) => {
 
       const contentSegments = await render(children, '.children');
       const contentValue = contentSegments?.[0].value;
-
       return [
         partSegment(node, path, {
           name: section,
@@ -201,25 +200,20 @@ export const FlexFooter = createBlockComponent('footer', FlexBox);
 
 export const FlexBubbleContainer = async (node, path, render) => {
   const { children, rightToLeft } = node.props;
-  const bubbleObject = {
-    type: 'bubble',
-    direction: rightToLeft ? 'rtl' : 'ltr',
-  };
 
   const sectionSegments = await render(children, '.children');
-  const sections = sectionSegments?.map((segment) => segment.value);
-
-  for (const section of sections) {
-    bubbleObject[section.name] = section.content;
-
-    if (section.style !== undefined) {
-      if (bubbleObject.styles === undefined) {
-        bubbleObject.styles = {};
-      }
-
-      bubbleObject.style[section.name] = section.style;
-    }
-  }
+  const bubbleObject = (sectionSegments || []).reduce(
+    (bubble, { value: section }) => ({
+      ...bubble,
+      [section.name]: section.content,
+      styles: bubble.styles
+        ? { ...bubble.styles, [section.name]: section.style }
+        : section.style
+        ? { [section.name]: section.style }
+        : undefined,
+    }),
+    { type: 'bubble', direction: rightToLeft ? 'rtl' : 'ltr' }
+  );
 
   return [partSegment(node, path, bubbleObject)];
 };

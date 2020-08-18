@@ -2,13 +2,20 @@ import { unitSegment } from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 
 export const Video = (node, path) => {
-  const { url, originalContentUrl, previewURL, previewImageUrl } = node.props;
+  const {
+    url,
+    originalContentUrl,
+    previewURL,
+    previewImageUrl,
+    trackingId,
+  } = node.props;
 
   return [
     unitSegment(node, path, {
-      type: 'image',
+      type: 'video',
       originalContentUrl: originalContentUrl || url,
       previewImageUrl: previewImageUrl || previewURL,
+      trackingId,
     }),
   ];
 };
@@ -18,7 +25,7 @@ export const Audio = (node, path) => {
   const { url, originalContentUrl, duration } = node.props;
   return [
     unitSegment(node, path, {
-      type: 'image',
+      type: 'audio',
       originalContentUrl: originalContentUrl || url,
       duration,
     }),

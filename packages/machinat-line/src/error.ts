@@ -1,12 +1,12 @@
-// @flow
 /* eslint-disable import/prefer-default-export */
 import { STATUS_CODES } from 'http';
 
 export class LineAPIError extends Error {
-  info: Object;
+  info: any;
   code: number;
+  status: string;
 
-  constructor(code: number, body: Object) {
+  constructor(code: number, body: any) {
     super(
       body.message
         ? body.message +
@@ -25,7 +25,8 @@ export class LineAPIError extends Error {
     }
 
     this.code = code;
-    this.name = STATUS_CODES[code];
+    this.status = STATUS_CODES[code] as string;
+    this.name = `LineAPIError (${this.status})`;
     this.info = body;
   }
 }

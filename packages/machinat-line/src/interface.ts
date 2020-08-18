@@ -1,4 +1,3 @@
-// @flow
 import { makeInterface } from '@machinat/core/service';
 import type { LinePlatformConfigs, LinePlatformMounter } from './types';
 

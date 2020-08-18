@@ -1,4 +1,3 @@
-// @flow
 import invariant from 'invariant';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
@@ -31,12 +30,23 @@ import type {
 } from './types';
 
 type LineBotOptions = {
-  accessToken: string,
-  providerId: string,
-  channelId: string,
-  connectionCapicity?: number,
+  accessToken: string;
+  providerId: string;
+  channelId: string;
+  connectionCapicity?: number;
 };
 
+@provider<LineBot>({
+  lifetime: 'singleton',
+  deps: [
+    LINE_PLATFORM_CONFIGS_I,
+    { require: LINE_PLATFORM_MOUNTER_I, optional: true },
+  ],
+  factory: (
+    configs: LinePlatformConfigs,
+    mounter: null | LinePlatformMounter
+  ) => new LineBot(configs, mounter?.initScope, mounter?.dispatchWrapper), // eslint-disable-line no-use-before-define
+})
 class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
   providerId: string;
   botChannelId: string;
@@ -55,9 +65,9 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
       providerId,
       channelId,
       connectionCapicity = 100,
-    }: LineBotOptions = {},
-    initScope?: InitScopeFn = () => createEmptyScope(LINE),
-    dispatchWrapper?: DispatchWrapper<
+    }: LineBotOptions = {} as any,
+    initScope: InitScopeFn = () => createEmptyScope(LINE),
+    dispatchWrapper: DispatchWrapper<
       LineJob,
       LineDispatchFrame,
       LineAPIResult
@@ -70,9 +80,12 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
     this.providerId = providerId;
     this.botChannelId = channelId;
 
-    const renderer = new Renderer(LINE, generalElementDelegate);
     const queue = new Queue();
     const worker = new LineWorker(accessToken, connectionCapicity);
+    const renderer = new Renderer<LineSegmentValue, LineComponent>(
+      LINE,
+      generalElementDelegate
+    );
 
     this.engine = new Engine(
       LINE,
@@ -85,11 +98,11 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
     );
   }
 
-  async start() {
+  async start(): Promise<void> {
     this.engine.start();
   }
 
-  async stop() {
+  async stop(): Promise<void> {
     this.engine.stop();
   }
 
@@ -126,7 +139,7 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
   dispatchAPICall(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     path: string,
-    body: Object
+    body: null | Record<string, unknown>
   ): Promise<LineDispatchResponse> {
     return this.engine.dispatchJobs(null, [
       { method, path, body, executionKey: undefined },
@@ -134,14 +147,4 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
   }
 }
 
-export default provider<LineBot>({
-  lifetime: 'singleton',
-  deps: [
-    LINE_PLATFORM_CONFIGS_I,
-    { require: LINE_PLATFORM_MOUNTER_I, optional: true },
-  ],
-  factory: (
-    configs: LinePlatformConfigs,
-    mounter: null | LinePlatformMounter
-  ) => new LineBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
-})(LineBot);
+export default LineBot;

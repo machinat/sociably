@@ -42,7 +42,7 @@ export type AuthContext<AuthData> = {
   data: AuthData;
 };
 
-export type AuthorizerRefineResult = {
+export type AuthorizerRefinement = {
   user: MachinatUser;
   channel: null | MachinatChannel;
 };
@@ -53,7 +53,7 @@ type ErrorResult = {
   reason: string;
 };
 
-type AuthorizerVerifyResult<AuthData> =
+export type AuthorizerVerifyResult<AuthData> =
   | { success: true; data: AuthData; refreshable: boolean }
   | ErrorResult;
 
@@ -92,7 +92,7 @@ export interface ServerAuthorizer<AuthData, Credential> {
    * refineAuthr efine the auth data to auth context members which fit the
    * machinat interfaces, the context would then be passed to the appliction.
    */
-  refineAuth(data: AuthData): Promise<null | AuthorizerRefineResult>;
+  refineAuth(data: AuthData): Promise<null | AuthorizerRefinement>;
 }
 
 type AuthorizerCredentialResult<Credential> =
@@ -127,7 +127,7 @@ export interface ClientAuthorizer<AuthData, Credential> {
    * Refine the auth data into auth context members fit the machinat interfaces,
    * the context would then be passed to the appliction.
    */
-  refineAuth(data: AuthData): Promise<null | AuthorizerRefineResult>;
+  refineAuth(data: AuthData): Promise<null | AuthorizerRefinement>;
 }
 
 export type SignRequestBody<Credential> = {

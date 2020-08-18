@@ -1,22 +1,25 @@
-// @flow
 import { provider } from '@machinat/core/service';
 import { UserProfilerI, StateControllerI } from '@machinat/core/base';
-import type LineUser from '../user';
 import LineBot from '../bot';
 import LineUserProfile from './profile';
-import type { RawLineUserProfile } from './profile';
+import type LineUser from '../user';
+import type { RawLineUserProfile } from './types';
 
 const PROFILE_KEY = '$$line:user:profile';
 
 type ProfileCache = {
-  data: RawLineUserProfile,
-  fetchAt: number,
+  data: RawLineUserProfile;
+  fetchAt: number;
 };
 
 type ProfilerOptions = {
-  profileCacheTime?: number,
+  profileCacheTime?: number;
 };
 
+@provider<LineUserProfiler>({
+  lifetime: 'scoped',
+  deps: [LineBot, { require: StateControllerI, optional: true }],
+})
 class LineUserProfiler implements UserProfilerI {
   bot: LineBot;
   stateController: null | StateControllerI;
@@ -45,7 +48,8 @@ class LineUserProfiler implements UserProfilerI {
 
     const response = await this.bot.dispatchAPICall(
       'GET',
-      `v2/bot/profile/${user.id}`
+      `v2/bot/profile/${user.id}`,
+      null
     );
     const rawProfile: RawLineUserProfile = response.results[0];
 
@@ -62,7 +66,4 @@ class LineUserProfiler implements UserProfilerI {
   }
 }
 
-export default provider<LineUserProfiler>({
-  lifetime: 'scoped',
-  deps: [LineBot, { require: StateControllerI, optional: true }],
-})(LineUserProfiler);
+export default LineUserProfiler;

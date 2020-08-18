@@ -1,10 +1,8 @@
-// @flow
 export const EventBase = {
   platform: 'line',
 
-  get user() {
-    const { source } = this.payload;
-    return source.userId === undefined ? null : source;
+  get source() {
+    return this.payload.source;
   },
 
   get userId() {

@@ -1,5 +1,4 @@
-// @flow
-import type { MachinatUser } from '@machinat/core/types';
+import { MachinatUser } from '@machinat/core/types';
 import { LINE } from './constant';
 
 export default class LineUser implements MachinatUser {
@@ -14,7 +13,7 @@ export default class LineUser implements MachinatUser {
     this.id = id;
   }
 
-  get uid() {
+  get uid(): string {
     return `line.${this.providerId}.${this.id}`;
   }
 }

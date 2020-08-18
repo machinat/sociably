@@ -1,9 +1,5 @@
 import type {
-  MachinatNode,
-  NativeElement,
-  GeneralElement,
-  PauseElement,
-  ThunkElement,
+  MachinatRenderable,
   RawElement,
   ThunkEffectFn,
   PauseUntilFn,
@@ -11,21 +7,21 @@ import type {
 
 export type TextSegment = {
   type: 'text';
-  node: MachinatNode;
+  node: MachinatRenderable;
   value: string;
   path: string;
 };
 
 export type PartSegment<Value> = {
   type: 'part';
-  node: GeneralElement | NativeElement<any, Value, any>;
+  node: MachinatRenderable;
   value: Value;
   path: string;
 };
 
 export type UnitSegment<Value> = {
   type: 'unit';
-  node: GeneralElement | NativeElement<any, Value, any>;
+  node: MachinatRenderable;
   value: Value;
   path: string;
 };
@@ -39,21 +35,21 @@ export type RawSegment<Value> = {
 
 export type PauseSegment = {
   type: 'pause';
-  node: PauseElement | GeneralElement | NativeElement<any, any, any>;
+  node: MachinatRenderable;
   value: null | PauseUntilFn;
   path: string;
 };
 
 export type BreakSegment = {
   type: 'break';
-  node: GeneralElement | NativeElement<any, any, any>;
+  node: MachinatRenderable;
   value: null;
   path: string;
 };
 
 export type ThunkSegment = {
   type: 'thunk';
-  node: ThunkElement;
+  node: MachinatRenderable;
   value: ThunkEffectFn;
   path: string;
 };
@@ -71,6 +67,6 @@ export type IntermediateSegment<Value> =
   | PartSegment<Value>;
 
 export type InnerRenderFn<Value> = (
-  node: MachinatNode,
+  node: MachinatRenderable,
   path: string
 ) => Promise<null | IntermediateSegment<Value>[]>;

@@ -1,20 +1,25 @@
-// @flow
 import invariant from 'invariant';
 import type { ClientAuthorizer } from '@machinat/auth/types';
 import { LINE } from '../constant';
-import type { LIFFAuthData, LIFFCredential, LIFFContext } from '../types';
-import { refineLIFFContextData } from './utils';
+import type {
+  LIFFAuthData,
+  LIFFCredential,
+  LIFFContext,
+  AuthorizerRefinement,
+  AuthorizerCredentialResult,
+} from './types';
+import { refinementFromLIFFAuthData } from './utils';
 
-declare var location: Location;
-declare var document: Document;
-declare var liff: Object;
+declare let location: Location;
+declare let document: Document;
+declare let liff: any;
 
 type ClientAuthorizerOptions = {
-  providerId: string,
-  botChannelId: string,
-  liffId: string,
-  isSDKLoaded?: boolean,
-  fromBotChannel?: boolean,
+  providerId: string;
+  botChannelId: string;
+  liffId: string;
+  isSDKLoaded?: boolean;
+  fromBotChannel?: boolean;
 };
 
 const BOT_CHANNEL_LABEL_QUERY_KEY = 'fromBotChannel';
@@ -31,13 +36,15 @@ class LineClientAuthorizer
   platform = LINE;
   shouldResign = true;
 
-  constructor({
-    providerId,
-    botChannelId,
-    liffId,
-    isSDKLoaded = false,
-    fromBotChannel,
-  }: ClientAuthorizerOptions = {}) {
+  constructor(
+    {
+      providerId,
+      botChannelId,
+      liffId,
+      isSDKLoaded = false,
+      fromBotChannel,
+    }: ClientAuthorizerOptions = {} as any
+  ) {
     invariant(providerId, 'options.providerId must not be empty');
     invariant(botChannelId, 'options.botChannelId must not be empty');
     invariant(liffId, 'options.liffId must not be empty');
@@ -55,7 +62,7 @@ class LineClientAuthorizer
           ) === 'true';
   }
 
-  async init() {
+  async init(): Promise<void> {
     const { liffId, isSDKLoaded } = this;
 
     if (!isSDKLoaded) {
@@ -80,8 +87,7 @@ class LineClientAuthorizer
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  async fetchCredential() {
+  async fetchCredential(): Promise<AuthorizerCredentialResult> {
     const {
       type: contextType,
       userId,
@@ -111,9 +117,8 @@ class LineClientAuthorizer
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  async refineAuth(data: LIFFAuthData) {
-    return refineLIFFContextData(this.providerId, this.botChannelId, data);
+  async refineAuth(data: LIFFAuthData): Promise<null | AuthorizerRefinement> {
+    return refinementFromLIFFAuthData(this.providerId, this.botChannelId, data);
   }
 }
 

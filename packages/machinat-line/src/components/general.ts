@@ -3,7 +3,9 @@ import {
   unitSegment,
   textSegment,
 } from '@machinat/core/renderer';
+import type { UnitSegment } from '@machinat/core/renderer/types';
 import formatNode from '@machinat/core/utils/formatNode';
+import type { LineSegmentValue } from '../types';
 
 const p = async (node, path, render) => {
   const contentRendered = await render(node.props.children, '.children');
@@ -11,7 +13,7 @@ const p = async (node, path, render) => {
     return null;
   }
 
-  const segments = [];
+  const segments: UnitSegment<LineSegmentValue>[] = [];
 
   for (const segment of contentRendered) {
     if (segment.type === 'text') {
