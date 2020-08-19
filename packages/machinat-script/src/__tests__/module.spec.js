@@ -1,5 +1,5 @@
 import Script from '..';
-import ScriptProcessor from '../processor';
+import { ScriptProcessor } from '../processor';
 
 it('exports interfaces', () => {
   expect(Script.Processor).toBe(ScriptProcessor);

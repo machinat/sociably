@@ -12,8 +12,8 @@ import type {
 } from '@machinat/core/types';
 import type { UpgradeHandler } from '@machinat/http/types';
 
-import Transmitter from './transmitter';
-import WebSocketBot from './bot';
+import TransmitterP, { WebSocketTransmitter } from './transmitter';
+import BotP, { WebSocketBot } from './bot';
 import { ConnectionChannel } from './channel';
 import createEvent from './event';
 import {
@@ -80,44 +80,11 @@ const getWSFromServer = thenifiedly.factory(
   { beginningError: false }
 );
 
-@provider<WebSocketReceiver<any>>({
-  lifetime: 'singleton',
-  deps: [
-    WebSocketBot,
-    WS_SERVER_I,
-    Transmitter,
-    { require: AUTHENTICATOR_I, optional: true },
-    { require: UPGRADE_VERIFIER_I, optional: true },
-    PLATFORM_MOUNTER_I,
-    PLATFORM_CONFIGS_I,
-  ],
-  factory: (
-    bot: WebSocketBot,
-    wsServer: WSServer,
-    transmitter: Transmitter,
-    verifyLogin: null | VerifyLoginFn<any, any>,
-    verifyUpgrade: null | VerifyUpgradeFn,
-    { popEventWrapper, popError }: WebSocketPlatformMounter<any>,
-    configs: WebSocketPlatformConfigs<any, any>
-  ) =>
-    new WebSocketReceiver( // eslint-disable-line no-use-before-define
-      bot,
-      wsServer,
-      transmitter,
-      popEventWrapper,
-      popError,
-      {
-        heartbeatInterval: configs.heartbeatInterval,
-        verifyLogin: verifyLogin || configs.verifyLogin,
-        verifyUpgrade: verifyUpgrade || configs.verifyUpgrade,
-      }
-    ),
-})
-class WebSocketReceiver<AuthInfo> {
+export class WebSocketReceiver<AuthInfo> {
   private _serverId: string;
   private _bot: WebSocketBot;
   private _wsServer: WSServer;
-  private _transmitter: Transmitter;
+  private _transmitter: WebSocketTransmitter;
 
   private _verifyUpgrade: VerifyUpgradeFn;
   private _verifyLogin: VerifyLoginFn<AuthInfo, any>;
@@ -132,7 +99,7 @@ class WebSocketReceiver<AuthInfo> {
   constructor(
     bot: WebSocketBot,
     wsServer: WSServer,
-    transmitter: Transmitter,
+    transmitter: WebSocketTransmitter,
     popEventWrapper: PopEventWrapper<WebSocketEventContext<AuthInfo>, null>,
     popError: PopErrorFn,
     {
@@ -387,4 +354,36 @@ class WebSocketReceiver<AuthInfo> {
   }
 }
 
-export default WebSocketReceiver;
+export default provider<WebSocketReceiver<any>>({
+  lifetime: 'singleton',
+  deps: [
+    BotP,
+    WS_SERVER_I,
+    TransmitterP,
+    { require: AUTHENTICATOR_I, optional: true },
+    { require: UPGRADE_VERIFIER_I, optional: true },
+    PLATFORM_MOUNTER_I,
+    PLATFORM_CONFIGS_I,
+  ],
+  factory: (
+    bot: WebSocketBot,
+    wsServer: WSServer,
+    transmitter: WebSocketTransmitter,
+    verifyLogin: null | VerifyLoginFn<any, any>,
+    verifyUpgrade: null | VerifyUpgradeFn,
+    { popEventWrapper, popError }: WebSocketPlatformMounter<any>,
+    configs: WebSocketPlatformConfigs<any, any>
+  ) =>
+    new WebSocketReceiver(
+      bot,
+      wsServer,
+      transmitter,
+      popEventWrapper,
+      popError,
+      {
+        heartbeatInterval: configs.heartbeatInterval,
+        verifyLogin: verifyLogin || configs.verifyLogin,
+        verifyUpgrade: verifyUpgrade || configs.verifyUpgrade,
+      }
+    ),
+})(WebSocketReceiver);

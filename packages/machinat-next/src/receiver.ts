@@ -24,26 +24,7 @@ type NextReceiverOptions = {
   shouldPrepare?: boolean;
 };
 
-@provider<NextReceiver>({
-  lifetime: 'singleton',
-  deps: [
-    SERVER_I,
-    MODULE_CONFIGS_I,
-    { require: PLATFORM_MOUNTER_I, optional: true },
-  ],
-  factory: (
-    nextApp: NextServer,
-    configs: NextModuleConfigs,
-    mounter: null | NextPlatformMounter
-  ) =>
-    new NextReceiver( // eslint-disable-line no-use-before-define
-      nextApp,
-      configs,
-      mounter?.popEventWrapper,
-      mounter?.popError
-    ),
-})
-class NextReceiver {
+export class NextReceiver {
   private _next: NextServer;
   private _defaultNextHandler: (
     req: IncomingMessage,
@@ -204,4 +185,22 @@ class NextReceiver {
   }
 }
 
-export default NextReceiver;
+export default provider<NextReceiver>({
+  lifetime: 'singleton',
+  deps: [
+    SERVER_I,
+    MODULE_CONFIGS_I,
+    { require: PLATFORM_MOUNTER_I, optional: true },
+  ],
+  factory: (
+    nextApp: NextServer,
+    configs: NextModuleConfigs,
+    mounter: null | NextPlatformMounter
+  ) =>
+    new NextReceiver(
+      nextApp,
+      configs,
+      mounter?.popEventWrapper,
+      mounter?.popError
+    ),
+})(NextReceiver);

@@ -8,7 +8,7 @@ import type { WebhookHandler } from '@machinat/http/webhook/types';
 import createEvent from './event';
 import LineChannel from './channel';
 import LineUser from './user';
-import LineBot from './bot';
+import BotP, { LineBot } from './bot';
 import { LINE } from './constant';
 import { LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I } from './interface';
 import type {
@@ -101,16 +101,7 @@ const handleWebhook = (
   };
 };
 
-@provider<LineReceiver>({
-  lifetime: 'singleton',
-  deps: [LINE_PLATFORM_CONFIGS_I, LineBot, LINE_PLATFORM_MOUNTER_I],
-  factory: (
-    configs: LinePlatformConfigs,
-    bot: LineBot,
-    { popEventWrapper }: LinePlatformMounter
-  ) => new LineReceiver(configs, bot, popEventWrapper), // eslint-disable-line no-use-before-define
-})
-class LineReceiver extends WebhookReceiver {
+export class LineReceiver extends WebhookReceiver {
   constructor(
     {
       shouldValidateRequest = true,
@@ -138,4 +129,12 @@ class LineReceiver extends WebhookReceiver {
   }
 }
 
-export default LineReceiver;
+export default provider<LineReceiver>({
+  lifetime: 'singleton',
+  deps: [LINE_PLATFORM_CONFIGS_I, BotP, LINE_PLATFORM_MOUNTER_I],
+  factory: (
+    configs: LinePlatformConfigs,
+    bot: LineBot,
+    { popEventWrapper }: LinePlatformMounter
+  ) => new LineReceiver(configs, bot, popEventWrapper),
+})(LineReceiver);

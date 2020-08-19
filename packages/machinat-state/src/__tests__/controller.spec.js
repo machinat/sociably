@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import StateController from '../controller';
+import { StateController } from '../controller';
 
 const repository = moxy({
   get: () => null,

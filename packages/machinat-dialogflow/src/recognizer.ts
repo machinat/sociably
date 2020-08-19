@@ -1,7 +1,9 @@
 import invariant from 'invariant';
 import { provider } from '@machinat/core/service';
-import type { IntentRecognizerI } from '@machinat/core/base';
-import type { TextIntentDetectResult } from '@machinat/core/base/IntentRecognizerI';
+import type {
+  TextIntentDetectResult,
+  BaseIntentRecognizer,
+} from '@machinat/core/base/IntentRecognizerI';
 import type { MachinatChannel } from '@machinat/core/types';
 import { SESSION_CLIENT_I, MODULE_CONFIGS_I } from './interface';
 import { SessionClient, DetactIntentPayload } from './types';
@@ -23,12 +25,8 @@ type DetectIntentOptions = {
   resetContexts?: boolean;
 };
 
-@provider<DialogFlowIntentRecognizer>({
-  lifetime: 'scoped',
-  deps: [SESSION_CLIENT_I, MODULE_CONFIGS_I],
-})
-class DialogFlowIntentRecognizer
-  implements IntentRecognizerI<DetactIntentPayload> {
+export class DialogFlowIntentRecognizer
+  implements BaseIntentRecognizer<DetactIntentPayload> {
   _client: SessionClient;
   projectId: string;
   defaultLanguageCode: undefined | string;
@@ -92,4 +90,7 @@ class DialogFlowIntentRecognizer
   }
 }
 
-export default DialogFlowIntentRecognizer;
+export default provider<DialogFlowIntentRecognizer>({
+  lifetime: 'scoped',
+  deps: [SESSION_CLIENT_I, MODULE_CONFIGS_I],
+})(DialogFlowIntentRecognizer);

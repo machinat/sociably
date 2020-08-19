@@ -5,7 +5,10 @@ import Base from '@machinat/core/base';
 import type { PlatformModule } from '@machinat/core/types';
 import HTTP from '@machinat/http';
 import type { HTTPUpgradeRouting } from '@machinat/http/types';
+
+import { WEBSOCKET } from './constant';
 import {
+  ClusterBroker,
   ClusterBrokerI,
   WS_SERVER_I,
   UPGRADE_VERIFIER_I,
@@ -14,11 +17,10 @@ import {
   PLATFORM_MOUNTER_I,
   PLATFORM_CONFIGS_I,
 } from './interface';
-import WebSocketBot from './bot';
-import Transmitter from './transmitter';
-import WebSocketReceiver from './receiver';
+import BotP, { WebSocketBot } from './bot';
+import TransmitterP, { WebSocketTransmitter } from './transmitter';
+import ReceiverP, { WebSocketReceiver } from './receiver';
 import LocalOnlyBroker from './broker/localOnlyBroker';
-import { WEBSOCKET } from './constant';
 import type {
   WebSocketEventContext,
   WebSocketJob,
@@ -39,7 +41,7 @@ const createUniqServerId = factory<() => string>({
 
 const upgradeRoutingFactory = factory<HTTPUpgradeRouting>({
   lifetime: 'transient',
-  deps: [PLATFORM_CONFIGS_I, WebSocketReceiver],
+  deps: [PLATFORM_CONFIGS_I, ReceiverP],
 })(
   (
     configs: WebSocketPlatformConfigs<any, any>,
@@ -52,9 +54,9 @@ const upgradeRoutingFactory = factory<HTTPUpgradeRouting>({
 );
 
 const WebSocket = {
-  Bot: WebSocketBot,
-  Receiver: WebSocketReceiver,
-  Transmitter,
+  Bot: BotP,
+  Receiver: ReceiverP,
+  Transmitter: TransmitterP,
   ClusterBrokerI,
   SERVER_I: WS_SERVER_I,
   UPGRADE_VERIFIER_I,
@@ -80,18 +82,18 @@ const WebSocket = {
         { provide: PLATFORM_CONFIGS_I, withValue: configs },
         { provide: WS_SERVER_I, withProvider: createWSServer },
 
-        WebSocketBot,
+        BotP,
         {
           provide: Base.BotI,
-          withProvider: WebSocketBot,
+          withProvider: BotP,
           platforms: [WEBSOCKET],
         },
 
-        Transmitter,
+        TransmitterP,
         { provide: SERVER_ID_I, withProvider: createUniqServerId },
         { provide: ClusterBrokerI, withProvider: LocalOnlyBroker },
 
-        WebSocketReceiver,
+        ReceiverP,
         {
           provide: HTTP.UPGRADE_ROUTINGS_I,
           withProvider: upgradeRoutingFactory,
@@ -99,12 +101,19 @@ const WebSocket = {
       ],
 
       startHook: container<Promise<void>>({
-        deps: [WebSocketBot],
+        deps: [BotP],
       })(async (bot: WebSocketBot) => {
         await bot.start();
       }),
     };
   },
 };
+
+declare namespace WebSocket {
+  export type Bot = WebSocketBot;
+  export type Receiver = InstanceType<typeof WebSocketReceiver>;
+  export type Transmitter = WebSocketTransmitter;
+  export type ClusterBrokerI = ClusterBroker;
+}
 
 export default WebSocket;

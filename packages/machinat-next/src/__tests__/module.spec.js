@@ -2,7 +2,7 @@ import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import HTTP from '@machinat/http';
 import createNextApp from 'next';
-import NextReceiver from '../receiver';
+import { NextReceiver } from '../receiver';
 import Next from '..';
 
 jest.mock('next', () =>
@@ -17,14 +17,14 @@ it('exports interfaces', () => {
   expect(Next.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "NextModuleConfigs",
+      "$$name": "NextModuleConfigsI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
   expect(Next.SERVER_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "NextServer",
+      "$$name": "NextServerI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
@@ -46,7 +46,7 @@ describe('initModule()', () => {
         ],
         "mounterInterface": Object {
           "$$multi": false,
-          "$$name": "NextPlatformMounter",
+          "$$name": "NextPlatformMounterI",
           "$$typeof": Symbol(machinat.services.interface),
         },
         "name": "next",
@@ -55,7 +55,7 @@ describe('initModule()', () => {
           Object {
             "provide": Object {
               "$$multi": false,
-              "$$name": "NextModuleConfigs",
+              "$$name": "NextModuleConfigsI",
               "$$typeof": Symbol(machinat.services.interface),
             },
             "withValue": Object {
@@ -72,7 +72,7 @@ describe('initModule()', () => {
           Object {
             "provide": Object {
               "$$multi": false,
-              "$$name": "NextServer",
+              "$$name": "NextServerI",
               "$$typeof": Symbol(machinat.services.interface),
             },
             "withProvider": [Function],
@@ -80,7 +80,7 @@ describe('initModule()', () => {
           Object {
             "provide": Object {
               "$$multi": true,
-              "$$name": "HTTPRequestRoutingsList",
+              "$$name": "HTTPRequestRoutingsListI",
               "$$typeof": Symbol(machinat.services.interface),
             },
             "withProvider": [Function],

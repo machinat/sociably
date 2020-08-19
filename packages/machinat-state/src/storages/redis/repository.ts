@@ -1,14 +1,10 @@
 import { RedisClient } from 'redis';
 import thenifiedly from 'thenifiedly';
 import { provider } from '@machinat/core/service';
-import type { StateRepositoryI } from '../../interface';
+import type { StateRepository } from '../../interface';
 import { CLIENT_I } from './interface';
 
-@provider<RedisRepository>({
-  lifetime: 'singleton',
-  deps: [CLIENT_I],
-})
-class RedisRepository implements StateRepositoryI {
+export class RedisRepository implements StateRepository {
   _client: RedisClient;
 
   constructor(client: RedisClient) {
@@ -68,4 +64,7 @@ class RedisRepository implements StateRepositoryI {
   }
 }
 
-export default RedisRepository;
+export default provider<RedisRepository>({
+  lifetime: 'singleton',
+  deps: [CLIENT_I],
+})(RedisRepository);

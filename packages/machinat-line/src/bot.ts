@@ -36,18 +36,8 @@ type LineBotOptions = {
   connectionCapicity?: number;
 };
 
-@provider<LineBot>({
-  lifetime: 'singleton',
-  deps: [
-    LINE_PLATFORM_CONFIGS_I,
-    { require: LINE_PLATFORM_MOUNTER_I, optional: true },
-  ],
-  factory: (
-    configs: LinePlatformConfigs,
-    mounter: null | LinePlatformMounter
-  ) => new LineBot(configs, mounter?.initScope, mounter?.dispatchWrapper), // eslint-disable-line no-use-before-define
-})
-class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
+export class LineBot
+  implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
   providerId: string;
   botChannelId: string;
   engine: Engine<
@@ -80,7 +70,7 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
     this.providerId = providerId;
     this.botChannelId = channelId;
 
-    const queue = new Queue();
+    const queue = new Queue<LineJob, LineAPIResult>();
     const worker = new LineWorker(accessToken, connectionCapicity);
     const renderer = new Renderer<LineSegmentValue, LineComponent>(
       LINE,
@@ -147,4 +137,14 @@ class LineBot implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
   }
 }
 
-export default LineBot;
+export default provider<LineBot>({
+  lifetime: 'singleton',
+  deps: [
+    LINE_PLATFORM_CONFIGS_I,
+    { require: LINE_PLATFORM_MOUNTER_I, optional: true },
+  ],
+  factory: (
+    configs: LinePlatformConfigs,
+    mounter: null | LinePlatformMounter
+  ) => new LineBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
+})(LineBot);

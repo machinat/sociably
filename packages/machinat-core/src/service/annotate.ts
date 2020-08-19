@@ -10,14 +10,13 @@ import type {
   ServiceProvider,
   ServiceInterface,
   Interfaceable,
-  ClassType,
   ServiceRequirement,
 } from './types';
 import { polishServiceRequirement } from './utils';
 
 type InjectOptions = {
   name?: string;
-  deps?: (ServiceRequirement<any> | Interfaceable<any> | ClassType<any>)[];
+  deps?: (ServiceRequirement<any> | Interfaceable<any>)[];
 };
 
 const validateLifetime = (lifetime: string) => {
@@ -46,7 +45,7 @@ export const container = <T>({ name, deps = [] }: InjectOptions = {}) => (
 
 type ProvideOptions<T> = {
   name?: string;
-  deps?: (ServiceRequirement<any> | Interfaceable<any> | ClassType<any>)[];
+  deps?: (ServiceRequirement<any> | Interfaceable<any>)[];
   factory?: (...args: any[]) => T;
   lifetime: ServiceLifetime;
 };
@@ -83,7 +82,7 @@ export const provider = <T>({
 
 type FactoryOptions = {
   name?: string;
-  deps?: (ServiceRequirement<any> | Interfaceable<any> | ClassType<any>)[];
+  deps?: (ServiceRequirement<any> | Interfaceable<any>)[];
   lifetime: ServiceLifetime;
 };
 
@@ -121,7 +120,7 @@ export const abstractInterface = <T>({
   name,
 }: AnstractInterfaceOptions = {}) => (
   klazz: AbstractConstructor<T>
-): Constructor<T> & Interfaceable<T> => {
+): Constructor<T> & ServiceInterface<T> => {
   return Object.defineProperties(klazz, {
     $$typeof: { value: MACHINAT_SERVICES_INTERFACE },
     $$name: { value: name || klazz.name },

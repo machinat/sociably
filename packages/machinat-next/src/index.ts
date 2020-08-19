@@ -3,7 +3,8 @@ import { factory, container } from '@machinat/core/service';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
 import type { PlatformModule, ServiceModule } from '@machinat/core/types';
-import NextReceiver from './receiver';
+
+import ReceiverP, { NextReceiver } from './receiver';
 import { MODULE_CONFIGS_I, PLATFORM_MOUNTER_I, SERVER_I } from './interface';
 import type {
   NextServer,
@@ -19,7 +20,7 @@ const nextServerFactory = factory<NextServer>({
 
 const routingFactory = factory<HTTPRequestRouting>({
   lifetime: 'transient',
-  deps: [NextReceiver, MODULE_CONFIGS_I],
+  deps: [ReceiverP, MODULE_CONFIGS_I],
 })((receiver: NextReceiver, configs: NextModuleConfigs) => ({
   name: 'next',
   path: configs.entryPath || '/',
@@ -27,7 +28,7 @@ const routingFactory = factory<HTTPRequestRouting>({
 }));
 
 const Next = {
-  Receiver: NextReceiver,
+  Receiver: ReceiverP,
   CONFIGS_I: MODULE_CONFIGS_I,
   SERVER_I,
 
@@ -40,16 +41,20 @@ const Next = {
     eventMiddlewares: configs.eventMiddlewares,
 
     provisions: [
-      NextReceiver,
+      ReceiverP,
       { provide: MODULE_CONFIGS_I, withValue: configs },
       { provide: SERVER_I, withProvider: nextServerFactory },
       { provide: HTTP.REQUEST_ROUTINGS_I, withProvider: routingFactory },
     ],
 
     startHook: container<Promise<void>>({
-      deps: [NextReceiver],
+      deps: [ReceiverP],
     })((receiver: NextReceiver) => receiver.prepare()),
   }),
 };
+
+declare namespace Next {
+  export type Receiver = NextReceiver;
+}
 
 export default Next;

@@ -3,13 +3,13 @@ import MachinatQueue from '@machinat/core/queue';
 import type { JobResponse } from '@machinat/core/queue/types';
 
 import type { WebSocketJob, WebSocketResult } from './types';
-import Transmitter from './transmitter';
+import { WebSocketTransmitter } from './transmitter';
 
 class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
   _started: boolean;
-  transmitter: Transmitter;
+  transmitter: WebSocketTransmitter;
 
-  constructor(transmitter: Transmitter) {
+  constructor(transmitter: WebSocketTransmitter) {
     this.transmitter = transmitter;
     this._started = false;
   }

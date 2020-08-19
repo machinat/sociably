@@ -1,6 +1,7 @@
 import type { ServiceModule } from '@machinat/core/types';
 import type { AppProvision } from '@machinat/core/service/types';
-import ScriptProcessor from './processor';
+
+import ProcessorP from './processor';
 import { SCRIPT_LIBS_I } from './constant';
 import type { MachinatScript } from './types';
 
@@ -13,11 +14,11 @@ type ScriptModuleConfigs = {
 };
 
 const Script = {
-  Processor: ScriptProcessor,
+  Processor: ProcessorP,
   LIBS_I: SCRIPT_LIBS_I,
 
   initModule: ({ libs }: ScriptModuleConfigs = {}): ServiceModule => {
-    const provisions: AppProvision<any>[] = [ScriptProcessor];
+    const provisions: AppProvision<any>[] = [ProcessorP];
 
     if (libs) {
       provisions.push(
@@ -28,5 +29,9 @@ const Script = {
     return { provisions };
   },
 };
+
+declare namespace Script {
+  export type Proccessor = InstanceType<typeof ProcessorP>;
+}
 
 export default Script;

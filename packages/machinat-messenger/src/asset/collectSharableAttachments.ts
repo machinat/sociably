@@ -1,11 +1,10 @@
 import { container } from '@machinat/core/service';
 import type { MessengerDispatchMiddleware } from '../types';
-import MessengerAssetManager from './manager';
+import ManagerP, { MessengerAssetsManager } from './manager';
 
-const collectSharableAttachments = (manager: MessengerAssetManager) => async (
-  frame,
-  next
-) => {
+const collectSharableAttachments = (
+  manager: MessengerAssetsManager
+): MessengerDispatchMiddleware => async (frame, next) => {
   const response = await next(frame);
   const { jobs, results } = response;
 
@@ -27,5 +26,5 @@ const collectSharableAttachments = (manager: MessengerAssetManager) => async (
 };
 
 export default container<MessengerDispatchMiddleware>({
-  deps: [MessengerAssetManager],
+  deps: [ManagerP],
 })(collectSharableAttachments);

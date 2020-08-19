@@ -1,6 +1,6 @@
 import moxy, { Mock } from '@moxyjs/moxy';
 import { ServerResponse } from 'http';
-import NextReceiver from '../receiver';
+import { NextReceiver } from '../receiver';
 
 const nextDefaultHandler = moxy();
 

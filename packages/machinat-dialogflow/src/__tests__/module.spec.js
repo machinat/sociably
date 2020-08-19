@@ -13,7 +13,7 @@ it('export interfaces', () => {
   expect(DialogFlow.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "DialogFlowModuleConfigs",
+      "$$name": "DialogFlowModuleConfigsI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
@@ -21,7 +21,7 @@ it('export interfaces', () => {
   expect(DialogFlow.SESSION_CLIENT_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "DialogFlowSessionClient",
+      "$$name": "DialogFlowSessionClientI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);

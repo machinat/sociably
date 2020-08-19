@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { StateControllerI } from '@machinat/core/base';
+import Base from '@machinat/core/base';
 import { ServiceScope, provider } from '@machinat/core/service';
 import type { MachinatChannel, MachinatNode } from '@machinat/core/types';
 import execute from './execute';
@@ -14,7 +14,7 @@ type RuntimeResult<ReturnValue> = {
   content: MachinatNode;
 };
 
-class ScriptRuntime<Input, ReturnValue> {
+export class ScriptRuntime<Input, ReturnValue> {
   channel: MachinatChannel;
   callStack: null | CallStatus<any, Input, ReturnValue>[];
   saveTimestamp: void | number;
@@ -92,17 +92,13 @@ type InitRuntimeOptions<Vars> = {
   goto?: string;
 };
 
-@provider<ScriptProcessor<any, any>>({
-  lifetime: 'scoped',
-  deps: [StateControllerI, ServiceScope, SCRIPT_LIBS_I],
-})
-class ScriptProcessor<Input, ReturnValue> {
-  private _stateContoller: StateControllerI;
+export class ScriptProcessor<Input, ReturnValue> {
+  private _stateContoller: Base.StateControllerI;
   private _serviceScope: ServiceScope;
   private _libs: Map<string, MachinatScript<any, Input, ReturnValue, any>>;
 
   constructor(
-    stateManager: StateControllerI,
+    stateManager: Base.StateControllerI,
     scope: ServiceScope,
     scripts: MachinatScript<any, Input, ReturnValue, any>[]
   ) {
@@ -210,4 +206,7 @@ class ScriptProcessor<Input, ReturnValue> {
   }
 }
 
-export default ScriptProcessor;
+export default provider<ScriptProcessor<any, any>>({
+  lifetime: 'scoped',
+  deps: [Base.StateControllerI, ServiceScope, SCRIPT_LIBS_I],
+})(ScriptProcessor);

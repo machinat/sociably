@@ -5,8 +5,12 @@ import {
   FSWatcher,
 } from 'fs';
 import { provider } from '@machinat/core/service';
-import type { StateRepositoryI } from '../../interface';
-import { FILE_STATE_CONFIGS_I, FileStateSerializerI } from './interface';
+import type { StateRepository } from '../../interface';
+import {
+  FILE_STATE_CONFIGS_I,
+  FileStateSerializerI,
+  FileStateSerializer,
+} from './interface';
 import type { FileRepositoryConfigs } from './types';
 
 type FileHandle = fsPromises.FileHandle;
@@ -23,16 +27,9 @@ type StorageObj = {
 const objectHasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
-@provider<FileRepository>({
-  lifetime: 'singleton',
-  deps: [
-    FILE_STATE_CONFIGS_I,
-    { require: FileStateSerializerI, optional: true },
-  ],
-})
-class FileRepository implements StateRepositoryI {
+export class FileRepository implements StateRepository {
   path: string;
-  serializer: FileStateSerializerI;
+  serializer: FileStateSerializer;
 
   private _data: StorageObj;
   private _fileHandle: FileHandle;
@@ -44,7 +41,7 @@ class FileRepository implements StateRepositoryI {
 
   constructor(
     options: FileRepositoryConfigs,
-    serializer?: FileStateSerializerI | null
+    serializer?: FileStateSerializer | null
   ) {
     this.path = options.path;
     this.serializer = serializer || JSON;
@@ -152,4 +149,10 @@ class FileRepository implements StateRepositoryI {
   }
 }
 
-export default FileRepository;
+export default provider<FileRepository>({
+  lifetime: 'singleton',
+  deps: [
+    FILE_STATE_CONFIGS_I,
+    { require: FileStateSerializerI, optional: true },
+  ],
+})(FileRepository);

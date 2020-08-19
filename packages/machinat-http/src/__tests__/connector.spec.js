@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import moxy from '@moxyjs/moxy';
-import HTTPConnector from '../connector';
+import { HTTPConnector } from '../connector';
 
 class FakeServer extends EventEmitter {
   // eslint-disable-next-line

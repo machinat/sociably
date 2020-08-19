@@ -10,10 +10,9 @@ import type { PopEventWrapper } from '@machinat/core/types';
 import createEvent from './event';
 import MessengerChannel from './channel';
 import MessengerUser from './user';
-import MessengerBot from './bot';
+import BotP, { MessengerBot } from './bot';
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { MESSENGER } from './constant';
-
 import type {
   MessengerEventContext,
   MessengerPlatformConfigs,
@@ -122,16 +121,7 @@ const handleWebhook = (
   };
 };
 
-@provider<MessengerReceiver>({
-  lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I, MessengerBot, PLATFORM_MOUNTER_I],
-  factory: (
-    configs: MessengerPlatformConfigs,
-    bot: MessengerBot,
-    { popEventWrapper }: MessengerPlatformMounter
-  ) => new MessengerReceiver(configs, bot, popEventWrapper), // eslint-disable-line no-use-before-define
-})
-class MessengerReceiver extends WebhookReceiver {
+export class MessengerReceiver extends WebhookReceiver {
   constructor(
     {
       shouldHandleVerify = true,
@@ -167,4 +157,12 @@ class MessengerReceiver extends WebhookReceiver {
   }
 }
 
-export default MessengerReceiver;
+export default provider<MessengerReceiver>({
+  lifetime: 'singleton',
+  deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I],
+  factory: (
+    configs: MessengerPlatformConfigs,
+    bot: MessengerBot,
+    { popEventWrapper }: MessengerPlatformMounter
+  ) => new MessengerReceiver(configs, bot, popEventWrapper), // eslint-disable-line no-use-before-define
+})(MessengerReceiver);

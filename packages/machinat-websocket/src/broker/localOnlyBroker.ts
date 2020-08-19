@@ -1,8 +1,8 @@
 import { provider } from '@machinat/core/service';
-import { ClusterBrokerI } from '../interface';
+import { ClusterBroker } from '../interface';
 
 /* eslint-disable class-methods-use-this */
-class LocalOnlyBroker implements ClusterBrokerI {
+class LocalOnlyBroker implements ClusterBroker {
   start() {
     return Promise.resolve();
   }
@@ -30,6 +30,6 @@ class LocalOnlyBroker implements ClusterBrokerI {
   onRemoteEvent() {}
 }
 
-export default provider<LocalOnlyBroker>({ lifetime: 'singleton' })(
-  LocalOnlyBroker
-);
+export default provider<LocalOnlyBroker>({
+  lifetime: 'singleton',
+})(LocalOnlyBroker);

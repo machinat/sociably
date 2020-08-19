@@ -1,15 +1,15 @@
 import { parse as parseURL } from 'url';
-import { STATUS_CODES as HTTP_STATUS_CODES } from 'http';
+import { STATUS_CODES } from 'http';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { relative as getRelativePath } from 'path';
 import { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
 import { provider } from '@machinat/core/service';
 import {
-  HTTPServerI,
-  HTTP_MODULE_CONFIGS_I,
-  HTTP_REQUEST_ROUTINGS_I,
-  HTTP_UPGRADE_ROUTINGS_I,
+  HTTPServer,
+  MODULE_CONFIGS_I,
+  REQUEST_ROUTINGS_I,
+  UPGRADE_ROUTINGS_I,
 } from './interface';
 import type {
   ServerListenOptions,
@@ -42,11 +42,11 @@ const verifyRoutesConfliction = (
 
 const endRes = (res: ServerResponse, code: number) => {
   res.statusCode = code;
-  res.end(HTTP_STATUS_CODES[code]);
+  res.end(STATUS_CODES[code]);
 };
 
 const respondUpgrade = (socket: Socket, code: number) => {
-  const codeName = HTTP_STATUS_CODES[code] as string;
+  const codeName = STATUS_CODES[code] as string;
   socket.write(
     `HTTP/1.1 ${code} ${codeName}\r\n` +
       'Connection: close\r\n' +
@@ -57,15 +57,7 @@ const respondUpgrade = (socket: Socket, code: number) => {
   socket.destroy();
 };
 
-@provider<HTTPConnector>({
-  lifetime: 'singleton',
-  deps: [
-    HTTP_MODULE_CONFIGS_I,
-    HTTP_REQUEST_ROUTINGS_I,
-    HTTP_UPGRADE_ROUTINGS_I,
-  ],
-})
-class HTTPConnector {
+export class HTTPConnector {
   private _requestRoutings: HTTPRequestRouting[];
   private _upgradeRoutings: HTTPUpgradeRouting[];
 
@@ -99,7 +91,7 @@ class HTTPConnector {
   }
 
   async connect(
-    server: HTTPServerI,
+    server: HTTPServer,
     options?: ServerListenOptions
   ): Promise<void> {
     server.addListener('request', this.makeRequestCallback());
@@ -175,4 +167,7 @@ class HTTPConnector {
   }
 }
 
-export default HTTPConnector;
+export default provider<HTTPConnector>({
+  lifetime: 'singleton',
+  deps: [MODULE_CONFIGS_I, REQUEST_ROUTINGS_I, UPGRADE_ROUTINGS_I],
+})(HTTPConnector);

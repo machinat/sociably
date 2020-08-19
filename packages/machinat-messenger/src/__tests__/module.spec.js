@@ -3,9 +3,9 @@ import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import Messenger from '..';
-import MessengerUserProfiler from '../profile';
-import MessengerReceiver from '../receiver';
-import MessengerBot from '../bot';
+import { MessengerUserProfiler } from '../profile';
+import { MessengerReceiver } from '../receiver';
+import { MessengerBot } from '../bot';
 
 it('export interfaces', () => {
   expect(Messenger.Receiver).toBe(MessengerReceiver);
@@ -14,7 +14,7 @@ it('export interfaces', () => {
   expect(Messenger.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "MessengerPlatformConfigs",
+      "$$name": "MessengerPlatformConfigsI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
@@ -24,27 +24,28 @@ describe('initModule(configs)', () => {
   it('create module object', () => {
     const eventMiddlewares = [(ctx, next) => next(ctx)];
     const dispatchMiddlewares = [(ctx, next) => next(ctx)];
-    expect(
-      Messenger.initModule({
-        pageId: '_PAGE_ID_',
-        accessToken: '_ACCESS_TOKEN_',
-        appSecret: '_APP_SECRET_',
-        verifyToken: '_VERIFY_TOKEN_',
-        eventMiddlewares,
-        dispatchMiddlewares,
-      })
-    ).toEqual({
-      name: 'messenger',
-      mounterInterface: {
-        $$multi: false,
-        $$name: 'MessengerPlatformMounter',
-        $$typeof: expect.anything(),
-      },
-      provisions: expect.any(Array),
-      startHook: expect.any(Function),
+
+    const module = Messenger.initModule({
+      pageId: '_PAGE_ID_',
+      accessToken: '_ACCESS_TOKEN_',
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
       eventMiddlewares,
       dispatchMiddlewares,
     });
+
+    expect(module.name).toBe('messenger');
+    expect(module.mounterInterface).toMatchInlineSnapshot(`
+      Object {
+        "$$multi": false,
+        "$$name": "MessengerPlatformMounterI",
+        "$$typeof": Symbol(machinat.services.interface),
+      }
+    `);
+    expect(module.provisions).toBeInstanceOf(Array);
+    expect(typeof module.startHook).toBe('function');
+    expect(module.eventMiddlewares).toEqual(eventMiddlewares);
+    expect(module.dispatchMiddlewares).toEqual(dispatchMiddlewares);
   });
 
   test('provisions', async () => {

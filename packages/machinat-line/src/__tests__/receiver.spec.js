@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import moxy, { Mock } from '@moxyjs/moxy';
 
-import LineReceiver from '../receiver';
+import { LineReceiver } from '../receiver';
 import LineChannel from '../channel';
 import LineUser from '../user';
 

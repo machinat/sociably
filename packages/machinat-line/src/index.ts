@@ -3,11 +3,12 @@ import { container, factory } from '@machinat/core/service';
 import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import { HTTPRequestRouting } from '@machinat/http/types';
+
 import { LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I } from './interface';
 import { LINE } from './constant';
-import LineReceiver from './receiver';
-import LineBot from './bot';
-import LineUserProfiler from './profile';
+import ReceiverP, { LineReceiver } from './receiver';
+import BotP, { LineBot } from './bot';
+import UserProfilerP, { LineUserProfiler } from './profile';
 import type {
   LinePlatformConfigs,
   LineEventContext,
@@ -16,13 +17,12 @@ import type {
   LineAPIResult,
 } from './types';
 
-export * from './components';
 export { default as LineChannel } from './channel';
 export { default as LineUser } from './user';
 
 const requestRoutingFactory = factory<HTTPRequestRouting>({
   lifetime: 'transient',
-  deps: [LINE_PLATFORM_CONFIGS_I, LineReceiver],
+  deps: [LINE_PLATFORM_CONFIGS_I, ReceiverP],
 })((configs: LinePlatformConfigs, receiver: LineReceiver) => {
   return {
     name: LINE,
@@ -32,9 +32,9 @@ const requestRoutingFactory = factory<HTTPRequestRouting>({
 });
 
 const Line = {
-  Bot: LineBot,
-  Receiver: LineReceiver,
-  UserProfiler: LineUserProfiler,
+  Bot: BotP,
+  Receiver: ReceiverP,
+  UserProfiler: UserProfilerP,
   CONFIGS_I: LINE_PLATFORM_CONFIGS_I,
 
   initModule: (
@@ -47,13 +47,13 @@ const Line = {
     LineAPIResult
   > => {
     const provisions: AppProvision<any>[] = [
-      LineBot,
-      { provide: Base.BotI, withProvider: LineBot, platforms: [LINE] },
+      BotP,
+      { provide: Base.BotI, withProvider: BotP, platforms: [LINE] },
 
-      LineUserProfiler,
+      UserProfilerP,
       {
         provide: Base.UserProfilerI,
-        withProvider: LineUserProfiler,
+        withProvider: UserProfilerP,
         platforms: [LINE],
       },
 
@@ -61,7 +61,7 @@ const Line = {
     ];
 
     if (configs.noServer !== true) {
-      provisions.push(LineReceiver, {
+      provisions.push(ReceiverP, {
         provide: HTTP.REQUEST_ROUTINGS_I,
         withProvider: requestRoutingFactory,
       });
@@ -74,11 +74,17 @@ const Line = {
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
 
-      startHook: container<Promise<void>>({ deps: [LineBot] })((bot: LineBot) =>
+      startHook: container<Promise<void>>({ deps: [BotP] })((bot: LineBot) =>
         bot.start()
       ),
     };
   },
 };
+
+declare namespace Line {
+  export type Bot = LineBot;
+  export type Receiver = LineReceiver;
+  export type UserProfiler = LineUserProfiler;
+}
 
 export default Line;

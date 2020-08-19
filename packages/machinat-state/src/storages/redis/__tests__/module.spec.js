@@ -4,7 +4,7 @@ import EventEmitter from 'events';
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import RedisState from '..';
-import RedisRepository from '../repository';
+import { RedisRepository } from '../repository';
 import StateController from '../../..';
 
 jest.mock('redis', () =>
@@ -18,14 +18,14 @@ test('export interfaces', () => {
   expect(RedisState.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "RedisStateModuleConfigs",
+      "$$name": "RedisStateModuleConfigsI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
   expect(RedisState.CLIENT_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "RedisClient",
+      "$$name": "RedisClientI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);

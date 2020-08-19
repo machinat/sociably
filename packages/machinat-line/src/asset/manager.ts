@@ -1,21 +1,17 @@
 import { provider } from '@machinat/core/service';
-import { StateControllerI } from '@machinat/core/base';
-import LineBot from '../bot';
+import Base from '@machinat/core/base';
+import BotP, { LineBot } from '../bot';
 import { PATH_RICHMENU } from '../constant';
 
 const LIFF = 'liff';
 const RICH_MENU = 'rich_menu';
 
-@provider<LineAssetsManager>({
-  lifetime: 'scoped',
-  deps: [StateControllerI, LineBot],
-})
-class LineAssetsManager {
+export class LineAssetsManager {
   botChannelId: string;
-  private _stateController: StateControllerI;
+  private _stateController: Base.StateControllerI;
   private _bot: LineBot;
 
-  constructor(stateMaanger: StateControllerI, bot: LineBot) {
+  constructor(stateMaanger: Base.StateControllerI, bot: LineBot) {
     this.botChannelId = bot.botChannelId;
     this._stateController = stateMaanger;
     this._bot = bot;
@@ -122,4 +118,7 @@ class LineAssetsManager {
   }
 }
 
-export default LineAssetsManager;
+export default provider<LineAssetsManager>({
+  lifetime: 'scoped',
+  deps: [Base.StateControllerI, BotP],
+})(LineAssetsManager);

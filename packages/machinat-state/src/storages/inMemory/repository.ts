@@ -1,8 +1,7 @@
 import { provider } from '@machinat/core/service';
-import type { StateRepositoryI } from '../../interface';
+import type { StateRepository } from '../../interface';
 
-@provider<InMemoryRepositroy>({ lifetime: 'singleton' })
-class InMemoryRepositroy implements StateRepositoryI {
+export class InMemoryRepository implements StateRepository {
   _storage: Map<string, Map<string, any>>;
 
   constructor() {
@@ -51,4 +50,6 @@ class InMemoryRepositroy implements StateRepositoryI {
   }
 }
 
-export default InMemoryRepositroy;
+export default provider<InMemoryRepository>({
+  lifetime: 'singleton',
+})(InMemoryRepository);

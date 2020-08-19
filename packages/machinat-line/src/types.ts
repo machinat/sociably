@@ -4,7 +4,6 @@ import type {
   EventMiddleware,
   DispatchMiddleware,
   PlatformMounter,
-  FunctionOf,
 } from '@machinat/core/types';
 import type {
   DispatchFrame,
@@ -12,7 +11,7 @@ import type {
 } from '@machinat/core/engine/types';
 import type { ServiceContainer } from '@machinat/core/service/types';
 import type { WebhookMetadata } from '@machinat/http/webhook/types';
-import LineBot from './bot';
+import { LineBot } from './bot';
 import type LineChannel from './channel';
 import type LineUser from './user';
 import type { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from './constant';
@@ -178,8 +177,6 @@ export type LineMessageSegmentValue =
 export type LineSegmentValue = LineMessageSegmentValue | DynamicAPICallGettable;
 
 export type LineComponent = NativeComponent<any, LineSegmentValue>;
-
-export type LineComponentFn = FunctionOf<LineComponent>;
 
 type ReplyRequestBody = {
   replyToken: string;

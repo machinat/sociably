@@ -13,6 +13,12 @@ import type {
   DispatchableSegment,
   DispatchResponse,
 } from '@machinat/core/engine/types';
+
+import { WEBSOCKET } from './constant';
+import { PLATFORM_MOUNTER_I } from './interface';
+import TransmitterP, { WebSocketTransmitter } from './transmitter';
+import { TopicChannel, ConnectionChannel, UserChannel } from './channel';
+import WebSocketWorker from './worker';
 import type {
   WebSocketChannel,
   EventValue,
@@ -22,11 +28,6 @@ import type {
   WebSocketDispatchFrame,
   WebSocketPlatformMounter,
 } from './types';
-import { TopicChannel, ConnectionChannel, UserChannel } from './channel';
-import { PLATFORM_MOUNTER_I } from './interface';
-import { WEBSOCKET } from './constant';
-import Transmitter from './transmitter';
-import WebSocketWorker from './worker';
 
 type WebSocketDispatchResponse = DispatchResponse<
   WebSocketJob,
@@ -55,19 +56,9 @@ const createJobs = (
   ];
 };
 
-@provider<WebSocketBot>({
-  lifetime: 'singleton',
-  deps: [Transmitter, { require: PLATFORM_MOUNTER_I, optional: true }],
-  factory: (
-    transmitter: Transmitter,
-    mounter: null | WebSocketPlatformMounter<any>
-  ) =>
-    // eslint-disable-next-line no-use-before-define
-    new WebSocketBot(transmitter, mounter?.initScope, mounter?.dispatchWrapper),
-})
-class WebSocketBot
+export class WebSocketBot
   implements MachinatBot<WebSocketChannel, WebSocketJob, WebSocketResult> {
-  private _transmitter: Transmitter;
+  private _transmitter: WebSocketTransmitter;
   engine: Engine<
     WebSocketChannel,
     EventValue,
@@ -78,7 +69,7 @@ class WebSocketBot
   >;
 
   constructor(
-    transmitter: Transmitter,
+    transmitter: WebSocketTransmitter,
     initScope: InitScopeFn = () => createEmptyScope(WEBSOCKET),
     dispatchWrapper: DispatchWrapper<
       WebSocketJob,
@@ -190,4 +181,12 @@ class WebSocketBot
   }
 }
 
-export default WebSocketBot;
+export default provider<WebSocketBot>({
+  lifetime: 'singleton',
+  deps: [TransmitterP, { require: PLATFORM_MOUNTER_I, optional: true }],
+  factory: (
+    transmitter: WebSocketTransmitter,
+    mounter: null | WebSocketPlatformMounter<any>
+  ) =>
+    new WebSocketBot(transmitter, mounter?.initScope, mounter?.dispatchWrapper),
+})(WebSocketBot);

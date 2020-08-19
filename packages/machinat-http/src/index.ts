@@ -2,12 +2,13 @@ import { createServer } from 'http';
 import { container, factory } from '@machinat/core/service';
 import { ServiceModule } from '@machinat/core/types';
 import {
-  HTTPServerI,
-  HTTP_MODULE_CONFIGS_I,
-  HTTP_REQUEST_ROUTINGS_I,
-  HTTP_UPGRADE_ROUTINGS_I,
+  ServerI,
+  HTTPServer,
+  MODULE_CONFIGS_I,
+  REQUEST_ROUTINGS_I,
+  UPGRADE_ROUTINGS_I,
 } from './interface';
-import HTTPConnector from './connector';
+import ConnectorP, { HTTPConnector } from './connector';
 import { HTTPModuleConfigs } from './types';
 
 const nodeServerFactory = factory({
@@ -15,28 +16,33 @@ const nodeServerFactory = factory({
 })(() => createServer());
 
 const HTTP = {
-  CONFIGS_I: HTTP_MODULE_CONFIGS_I,
-  REQUEST_ROUTINGS_I: HTTP_REQUEST_ROUTINGS_I,
-  UPGRADE_ROUTINGS_I: HTTP_UPGRADE_ROUTINGS_I,
-  ServerI: HTTPServerI,
-  Connector: HTTPConnector,
+  CONFIGS_I: MODULE_CONFIGS_I,
+  REQUEST_ROUTINGS_I,
+  UPGRADE_ROUTINGS_I,
+  ServerI,
+  Connector: ConnectorP,
 
   initModule: (configsInput: HTTPModuleConfigs): ServiceModule => ({
     provisions: [
-      HTTPConnector,
-      { provide: HTTP_MODULE_CONFIGS_I, withValue: configsInput },
-      { provide: HTTPServerI, withProvider: nodeServerFactory },
+      ConnectorP,
+      { provide: MODULE_CONFIGS_I, withValue: configsInput },
+      { provide: ServerI, withProvider: nodeServerFactory },
     ],
     startHook: container<Promise<void>>({
-      deps: [HTTPConnector, HTTPServerI, HTTP_MODULE_CONFIGS_I],
+      deps: [ConnectorP, ServerI, MODULE_CONFIGS_I],
     })(
       (
         connector: HTTPConnector,
-        server: HTTPServerI,
+        server: HTTPServer,
         configs: HTTPModuleConfigs
       ) => connector.connect(server, configs)
     ),
   }),
 };
+
+declare namespace HTTP {
+  export type Connector = HTTPConnector;
+  export type ServerI = HTTPServer;
+}
 
 export default HTTP;

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import moxy from '@moxyjs/moxy';
 import { tmpNameSync } from 'tmp';
-import FileRepository from '../repository';
+import { FileRepository } from '../repository';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 

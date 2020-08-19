@@ -6,7 +6,7 @@ import Queue from '@machinat/core/queue';
 import Worker from '../worker';
 import { ConnectionChannel, UserChannel, TopicChannel } from '../channel';
 import { Event } from '../component';
-import WebSocketBot from '../bot';
+import { WebSocketBot } from '../bot';
 
 jest.mock('@machinat/core/engine', () =>
   jest

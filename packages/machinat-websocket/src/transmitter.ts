@@ -1,6 +1,11 @@
 import { provider } from '@machinat/core/service';
 import { MachinatUser } from '@machinat/core/types';
-import { ClusterBrokerI, SERVER_ID_I, PLATFORM_MOUNTER_I } from './interface';
+import {
+  ClusterBroker,
+  ClusterBrokerI,
+  SERVER_ID_I,
+  PLATFORM_MOUNTER_I,
+} from './interface';
 import { EventValue, WebSocketJob, WebSocketPlatformMounter } from './types';
 import Socket from './socket';
 import { ConnectionChannel, TopicChannel } from './channel';
@@ -18,20 +23,9 @@ const findConnection = (
 ) =>
   list.find((c) => c.serverId === serverId && c.connectionId === connectionId);
 
-@provider<Transmitter>({
-  lifetime: 'singleton',
-  deps: [SERVER_ID_I, ClusterBrokerI, PLATFORM_MOUNTER_I],
-  factory: (
-    serverId: string,
-    broker: ClusterBrokerI,
-    { initScope, popError }: WebSocketPlatformMounter<any>
-  ) =>
-    // eslint-disable-next-line no-use-before-define
-    new Transmitter(serverId, broker, (err) => popError(err, initScope())),
-})
-class Transmitter {
+export class WebSocketTransmitter {
   serverId: string;
-  private _broker: ClusterBrokerI;
+  private _broker: ClusterBroker;
 
   private _topicMapping: Map<string, Set<string>>;
   private _userMapping: Map<string, Set<string>>;
@@ -41,8 +35,8 @@ class Transmitter {
 
   constructor(
     serverId: string,
-    broker: ClusterBrokerI,
-    errorHandler: (arg0: Error) => void
+    broker: ClusterBroker,
+    errorHandler: (err: Error) => void
   ) {
     this.serverId = serverId;
     this._broker = broker;
@@ -392,4 +386,15 @@ class Transmitter {
   }
 }
 
-export default Transmitter;
+export default provider<WebSocketTransmitter>({
+  lifetime: 'singleton',
+  deps: [SERVER_ID_I, ClusterBrokerI, PLATFORM_MOUNTER_I],
+  factory: (
+    serverId: string,
+    broker: ClusterBroker,
+    { initScope, popError }: WebSocketPlatformMounter<any>
+  ) =>
+    new WebSocketTransmitter(serverId, broker, (err) =>
+      popError(err, initScope())
+    ),
+})(WebSocketTransmitter);

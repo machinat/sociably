@@ -1,9 +1,10 @@
 import invariant from 'invariant';
 import crypto from 'crypto';
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import base64url from 'base64url';
 import { provider } from '@machinat/core/service';
 import { ServerAuthorizer, AuthorizerVerifyResult } from '@machinat/auth/types';
+
 import { PLATFORM_CONFIGS_I } from '../interface';
 import { MESSENGER } from '../constant';
 import { refinementFromExtensionPayload } from './utils';
@@ -22,11 +23,7 @@ type MessengerServerAuthorizerOptions = {
   appSecret: string;
 };
 
-@provider<MessengerServerAuthorizer>({
-  lifetime: 'transient',
-  deps: [PLATFORM_CONFIGS_I],
-})
-class MessengerServerAuthorizer
+export class MessengerServerAuthorizer
   implements ServerAuthorizer<ExtensionPayload, ExtensionCredential> {
   appSecret: string;
   platform = MESSENGER;
@@ -106,4 +103,7 @@ class MessengerServerAuthorizer
   }
 }
 
-export default MessengerServerAuthorizer;
+export default provider<MessengerServerAuthorizer>({
+  lifetime: 'transient',
+  deps: [PLATFORM_CONFIGS_I],
+})(MessengerServerAuthorizer);

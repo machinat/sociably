@@ -2,8 +2,8 @@ import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import HTTP from '@machinat/http';
 import Transmitter from '../transmitter';
-import WebSocketReceiver from '../receiver';
-import WebSocketBot from '../bot';
+import { WebSocketReceiver } from '../receiver';
+import { WebSocketBot } from '../bot';
 import WebSocket from '..';
 
 it('export interfaces', () => {
@@ -13,21 +13,21 @@ it('export interfaces', () => {
   expect(WebSocket.AUTHENTICATOR_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebSocketAuthenticator",
+      "$$name": "WebSocketAuthenticatorI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
   expect(WebSocket.UPGRADE_VERIFIER_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebSocketUpgradeVerifier",
+      "$$name": "WebSocketUpgradeVerifierI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
   expect(WebSocket.SERVER_ID_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebSocketServerId",
+      "$$name": "WebSocketServerIdI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
@@ -38,20 +38,23 @@ describe('initModule()', () => {
     const eventMiddlewares = [moxy((ctx, next) => next(ctx))];
     const dispatchMiddlewares = [moxy((ctx, next) => next(ctx))];
 
-    expect(
-      WebSocket.initModule({ eventMiddlewares, dispatchMiddlewares })
-    ).toEqual({
-      name: 'websocket',
-      mounterInterface: {
-        $$multi: false,
-        $$name: 'WebSocketPlatformMounter',
-        $$typeof: expect.anything(),
-      },
-      provisions: expect.any(Array),
-      startHook: expect.any(Function),
+    const module = WebSocket.initModule({
       eventMiddlewares,
       dispatchMiddlewares,
     });
+
+    expect(module.name).toBe('websocket');
+    expect(module.mounterInterface).toMatchInlineSnapshot(`
+      Object {
+        "$$multi": false,
+        "$$name": "WebSocketPlatformMounterI",
+        "$$typeof": Symbol(machinat.services.interface),
+      }
+    `);
+    expect(module.provisions).toBeInstanceOf(Array);
+    expect(typeof module.startHook).toBe('function');
+    expect(module.eventMiddlewares).toEqual(eventMiddlewares);
+    expect(module.dispatchMiddlewares).toEqual(dispatchMiddlewares);
   });
 
   test('provisions', async () => {

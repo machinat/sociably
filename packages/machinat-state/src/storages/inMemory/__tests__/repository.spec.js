@@ -1,7 +1,7 @@
-import InMemoryRepositroy from '../repository';
+import { InMemoryRepository } from '../repository';
 
 test('ok', async () => {
-  const repo = new InMemoryRepositroy();
+  const repo = new InMemoryRepository();
 
   await expect(repo.get('my_resource', 'key1')).resolves.toBe(undefined);
 

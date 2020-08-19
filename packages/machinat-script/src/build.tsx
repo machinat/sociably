@@ -2,7 +2,7 @@ import Machinat from '@machinat/core';
 import { container } from '@machinat/core/service';
 import type { FunctionalComponent } from '@machinat/core/types';
 import { MACHINAT_SCRIPT_TYPE } from './constant';
-import ScriptProcessor from './processor';
+import ProcessorP, { ScriptProcessor } from './processor';
 import resolveScript from './resolve';
 import compile from './compile';
 import type { MachinatScript, ScriptNode } from './types';
@@ -29,7 +29,7 @@ const build = <Value, Input, ReturnValue, Meta>(
   };
 
   script.Start = container<FunctionalComponent<any>>({
-    deps: [ScriptProcessor],
+    deps: [ProcessorP],
   })(
     (processor: ScriptProcessor<Input, ReturnValue>) => async ({
       channel,

@@ -3,11 +3,12 @@ import { container, factory } from '@machinat/core/service';
 import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
-import MessengerBot from './bot';
+
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { MESSENGER } from './constant';
-import MessengerReceiver from './receiver';
-import MessengerUserProfiler from './profile';
+import BotP, { MessengerBot } from './bot';
+import ReceiverP, { MessengerReceiver } from './receiver';
+import UserProfilerP, { MessengerUserProfiler } from './profile';
 import type {
   MessengerPlatformConfigs,
   MessengerEventContext,
@@ -16,13 +17,12 @@ import type {
   MessengerResult,
 } from './types';
 
-export * from './components';
 export { default as MessengerChannel } from './channel';
 export { default as MessengerUser } from './user';
 
 const requestRoutingFactory = factory<HTTPRequestRouting>({
   lifetime: 'transient',
-  deps: [PLATFORM_CONFIGS_I, MessengerReceiver],
+  deps: [PLATFORM_CONFIGS_I, ReceiverP],
 })((configs: MessengerPlatformConfigs, receiver: MessengerReceiver) => {
   return {
     name: MESSENGER,
@@ -47,17 +47,17 @@ const Messenger = {
     MessengerResult
   > => {
     const provisions: AppProvision<any>[] = [
-      MessengerBot,
+      BotP,
       {
         provide: Base.BotI,
-        withProvider: MessengerBot,
+        withProvider: BotP,
         platforms: [MESSENGER],
       },
 
-      MessengerUserProfiler,
+      UserProfilerP,
       {
         provide: Base.UserProfilerI,
-        withProvider: MessengerUserProfiler,
+        withProvider: UserProfilerP,
         platforms: [MESSENGER],
       },
 
@@ -65,7 +65,7 @@ const Messenger = {
     ];
 
     if (configs.noServer !== true) {
-      provisions.push(MessengerReceiver, {
+      provisions.push(ReceiverP, {
         provide: HTTP.REQUEST_ROUTINGS_I,
         withProvider: requestRoutingFactory,
       });
@@ -79,10 +79,16 @@ const Messenger = {
       provisions,
 
       startHook: container<Promise<void>>({
-        deps: [MessengerBot],
+        deps: [BotP],
       })(async (bot: MessengerBot) => bot.start()),
     };
   },
 };
+
+declare namespace Messenger {
+  export type Bot = MessengerBot;
+  export type Receiver = MessengerReceiver;
+  export type UserProfiler = MessengerUserProfiler;
+}
 
 export default Messenger;

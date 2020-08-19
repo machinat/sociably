@@ -2,9 +2,10 @@ import redis, { RedisClient } from 'redis';
 import { factory, container } from '@machinat/core/service';
 import type { ServiceModule } from '@machinat/core/types';
 import Base from '@machinat/core/base';
-import StateController from '../../controller';
+
+import ControllerP from '../../controller';
 import { StateRepositoryI } from '../../interface';
-import RedisRepository from './repository';
+import RepositoryP, { RedisRepository } from './repository';
 import { MODULE_CONFIGS_I, CLIENT_I } from './interface';
 import type { RedisStateModuleConfigs } from './types';
 
@@ -16,17 +17,17 @@ const createRedisClient = factory<RedisClient>({
 );
 
 const RedisState = {
-  Repository: RedisRepository,
+  Repository: RepositoryP,
   CLIENT_I,
   CONFIGS_I: MODULE_CONFIGS_I,
 
   initModule: (configs: RedisStateModuleConfigs): ServiceModule => ({
     provisions: [
-      StateController,
-      { provide: Base.StateControllerI, withProvider: StateController },
+      ControllerP,
+      { provide: Base.StateControllerI, withProvider: ControllerP },
 
-      RedisRepository,
-      { provide: StateRepositoryI, withProvider: RedisRepository },
+      RepositoryP,
+      { provide: StateRepositoryI, withProvider: RepositoryP },
 
       { provide: CLIENT_I, withProvider: createRedisClient },
       { provide: MODULE_CONFIGS_I, withValue: configs },
@@ -44,5 +45,9 @@ const RedisState = {
     ),
   }),
 };
+
+declare namespace RedisState {
+  export type Repository = RedisRepository;
+}
 
 export default RedisState;

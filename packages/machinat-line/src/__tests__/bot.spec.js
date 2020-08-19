@@ -5,7 +5,7 @@ import Machinat from '@machinat/core';
 import Engine from '@machinat/core/engine';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
-import LineBot from '../bot';
+import { LineBot } from '../bot';
 import LineWorker from '../worker';
 import {
   Expression,

@@ -65,11 +65,7 @@ type AuthVerifyResult<AuthData> =
   | { success: true; token: string; auth: AuthContext<AuthData> }
   | { success: false; token: void | string; code: number; reason: string };
 
-@provider<AuthServerController>({
-  lifetime: 'singleton',
-  deps: [SERVER_AUTHORIZERS_I, MODULE_CONFIGS_I],
-})
-class AuthServerController {
+export class AuthServerController {
   authorizers: ServerAuthorizer<any, any>[];
   secret: string;
   entryPath: string;
@@ -461,4 +457,7 @@ class AuthServerController {
   }
 }
 
-export default AuthServerController;
+export default provider<AuthServerController>({
+  lifetime: 'singleton',
+  deps: [SERVER_AUTHORIZERS_I, MODULE_CONFIGS_I],
+})(AuthServerController);

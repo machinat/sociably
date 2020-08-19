@@ -9,8 +9,7 @@ import type {
   HTTPUpgradeRouting,
 } from './types';
 
-@abstractInterface<HTTPServerI>()
-export abstract class HTTPServerI {
+export abstract class HTTPServer {
   abstract listen(options: ServerListenOptions, cb: () => void): void;
 
   abstract addListener(
@@ -23,17 +22,20 @@ export abstract class HTTPServerI {
     cb: (req: IncomingMessage, socket: Socket, head: Buffer) => void
   ): void;
 }
+export const ServerI = abstractInterface<HTTPServer>({
+  name: 'HTTPServerI',
+})(HTTPServer);
 
-export const HTTP_MODULE_CONFIGS_I = makeInterface<HTTPModuleConfigs>({
-  name: 'HTTPModuleConfigs',
+export const MODULE_CONFIGS_I = makeInterface<HTTPModuleConfigs>({
+  name: 'HTTPModuleConfigsI',
 });
 
-export const HTTP_REQUEST_ROUTINGS_I = makeInterface<HTTPRequestRouting[]>({
-  name: 'HTTPRequestRoutingsList',
+export const REQUEST_ROUTINGS_I = makeInterface<HTTPRequestRouting[]>({
+  name: 'HTTPRequestRoutingsListI',
   multi: true,
 });
 
-export const HTTP_UPGRADE_ROUTINGS_I = makeInterface<HTTPUpgradeRouting[]>({
-  name: 'HTTPUpgradeRoutingsList',
+export const UPGRADE_ROUTINGS_I = makeInterface<HTTPUpgradeRouting[]>({
+  name: 'HTTPUpgradeRoutingsListI',
   multi: true,
 });

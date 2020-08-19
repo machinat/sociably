@@ -37,21 +37,21 @@ it('export interfaces', () => {
   expect(HTTP.REQUEST_ROUTINGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": true,
-      "$$name": "HTTPRequestRoutingsList",
+      "$$name": "HTTPRequestRoutingsListI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
   expect(HTTP.UPGRADE_ROUTINGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": true,
-      "$$name": "HTTPUpgradeRoutingsList",
+      "$$name": "HTTPUpgradeRoutingsListI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
   expect(HTTP.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "HTTPModuleConfigs",
+      "$$name": "HTTPModuleConfigsI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);

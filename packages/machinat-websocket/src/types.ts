@@ -9,7 +9,7 @@ import type {
 import type { DispatchFrame } from '@machinat/core/engine/types';
 import type { ServiceContainer } from '@machinat/core/service/types';
 import type { HTTPRequestInfo } from '@machinat/http/types';
-import type WebSocketBot from './bot';
+import type { WebSocketBot } from './bot';
 import type { TopicChannel, UserChannel, ConnectionChannel } from './channel';
 
 export type UpgradeRequestInfo = Omit<HTTPRequestInfo, 'body'>;

@@ -8,7 +8,6 @@ import ServiceScope from './scope';
 import ServiceMaker from './maker';
 import ProvisionMap from './provisionMap';
 import type {
-  ClassType,
   Interfaceable,
   ServiceRequirement,
   ServiceContainer,
@@ -45,7 +44,7 @@ export const isInterfaceable = (
     target.$$typeof === MACHINAT_SERVICES_PROVIDER);
 
 export const polishServiceRequirement = <T>(
-  dep: Interfaceable<T> | ServiceRequirement<T> | ClassType<T>
+  dep: Interfaceable<T> | ServiceRequirement<T>
 ): ServiceRequirement<T> => {
   if (isInterfaceable(dep)) {
     return { require: dep, optional: false };

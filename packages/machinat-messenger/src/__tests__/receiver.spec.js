@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 import moxy, { Mock } from '@moxyjs/moxy';
 import Channel from '../channel';
 import MessengerUser from '../user';
-import MessengerReceiver from '../receiver';
+import { MessengerReceiver } from '../receiver';
 
 const bot = moxy();
 

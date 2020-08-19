@@ -39,15 +39,7 @@ type MessengerBotOptions = {
   consumeInterval?: number;
 };
 
-@provider<MessengerBot>({
-  lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I, { require: PLATFORM_MOUNTER_I, optional: true }],
-  factory: (
-    configs: MessengerPlatformConfigs,
-    mounter: null | MessengerPlatformMounter
-  ) => new MessengerBot(configs, mounter?.initScope, mounter?.dispatchWrapper), // eslint-disable-line no-use-before-define
-})
-class MessengerBot
+export class MessengerBot
   implements MachinatBot<MessengerChannel, MessengerJob, MessengerResult> {
   pageId: string;
   worker: MessengerWorker;
@@ -79,9 +71,12 @@ class MessengerBot
 
     invariant(accessToken, 'options.accessToken should not be empty');
 
-    const renderer = new Renderer(MESSENGER, generalComponentDelegator);
+    const renderer = new Renderer<MessengerSegmentValue, MessengerComponent>(
+      MESSENGER,
+      generalComponentDelegator
+    );
 
-    const queue = new Queue();
+    const queue = new Queue<MessengerJob, MessengerResult>();
     const worker = new MessengerWorker(accessToken, consumeInterval, appSecret);
 
     this.engine = new Engine(
@@ -142,4 +137,11 @@ class MessengerBot
   }
 }
 
-export default MessengerBot;
+export default provider<MessengerBot>({
+  lifetime: 'singleton',
+  deps: [PLATFORM_CONFIGS_I, { require: PLATFORM_MOUNTER_I, optional: true }],
+  factory: (
+    configs: MessengerPlatformConfigs,
+    mounter: null | MessengerPlatformMounter
+  ) => new MessengerBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
+})(MessengerBot);

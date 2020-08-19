@@ -1,21 +1,25 @@
 import type { ServiceModule } from '@machinat/core/types';
 import Base from '@machinat/core/base';
-import StateController from '../../controller';
+import ControllerP from '../../controller';
 import { StateRepositoryI } from '../../interface';
-import InMemoryRepository from './repository';
+import RepositoryP, { InMemoryRepository } from './repository';
 
 const InMemoryState = {
-  Repository: InMemoryRepository,
+  Repository: RepositoryP,
 
   initModule: (): ServiceModule => ({
     provisions: [
-      StateController,
-      { provide: Base.StateControllerI, withProvider: StateController },
+      ControllerP,
+      { provide: Base.StateControllerI, withProvider: ControllerP },
 
-      InMemoryRepository,
-      { provide: StateRepositoryI, withProvider: InMemoryRepository },
+      RepositoryP,
+      { provide: StateRepositoryI, withProvider: RepositoryP },
     ],
   }),
 };
+
+declare namespace InMemoryState {
+  export type Repository = InMemoryRepository;
+}
 
 export default InMemoryState;

@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { provider } from '@machinat/core/service';
 import type { ServerAuthorizer } from '@machinat/auth/types';
+
 import { LINE_PLATFORM_CONFIGS_I } from '../interface';
 import { LINE } from '../constant';
 import type { LinePlatformConfigs } from '../types';
@@ -20,24 +21,6 @@ type LineServerAuthorizerOpts = {
   liffChannelIds: string[];
 };
 
-@provider<LineServerAuthorizer>({
-  lifetime: 'transient',
-  deps: [LINE_PLATFORM_CONFIGS_I],
-
-  factory: ({ providerId, channelId, liffChannelIds }: LinePlatformConfigs) => {
-    invariant(
-      liffChannelIds,
-      'provide configs.liffChannelIds to authorize with liff'
-    );
-
-    // eslint-disable-next-line no-use-before-define
-    return new LineServerAuthorizer({
-      providerId,
-      channelId,
-      liffChannelIds,
-    });
-  },
-})
 class LineServerAuthorizer
   implements ServerAuthorizer<LIFFAuthData, LIFFCredential> {
   providerId: string;
@@ -136,4 +119,20 @@ class LineServerAuthorizer
   }
 }
 
-export default LineServerAuthorizer;
+export default provider<LineServerAuthorizer>({
+  lifetime: 'transient',
+  deps: [LINE_PLATFORM_CONFIGS_I],
+
+  factory: ({ providerId, channelId, liffChannelIds }: LinePlatformConfigs) => {
+    invariant(
+      liffChannelIds,
+      'provide configs.liffChannelIds to authorize with liff'
+    );
+
+    return new LineServerAuthorizer({
+      providerId,
+      channelId,
+      liffChannelIds,
+    });
+  },
+})(LineServerAuthorizer);

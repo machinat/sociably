@@ -6,13 +6,13 @@ import type {
 } from './types';
 
 export const PLATFORM_MOUNTER_I = makeInterface<NextPlatformMounter>({
-  name: 'NextPlatformMounter',
+  name: 'NextPlatformMounterI',
 });
 
 export const MODULE_CONFIGS_I = makeInterface<NextModuleConfigs>({
-  name: 'NextModuleConfigs',
+  name: 'NextModuleConfigsI',
 });
 
 export const SERVER_I = makeInterface<NextServer>({
-  name: 'NextServer',
+  name: 'NextServerI',
 });
