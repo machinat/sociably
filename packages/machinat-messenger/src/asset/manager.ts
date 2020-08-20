@@ -1,6 +1,6 @@
 import { provider } from '@machinat/core/service';
 import type { MachinatNode } from '@machinat/core/types';
-import Base from '@machinat/core/base';
+import { StateControllerI } from '@machinat/core/base';
 import formatNode from '@machinat/core/utils/formatNode';
 import { PATH_PERSONAS } from '../constant';
 import BotP, { MessengerBot } from '../bot';
@@ -11,9 +11,9 @@ const PERSONA = 'persona';
 export class MessengerAssetsManager {
   bot: MessengerBot;
   pageId: string;
-  _stateController: Base.StateControllerI;
+  _stateController: StateControllerI;
 
-  constructor(stateManager: Base.StateControllerI, bot: MessengerBot) {
+  constructor(stateManager: StateControllerI, bot: MessengerBot) {
     this._stateController = stateManager;
     this.bot = bot;
     this.pageId = bot.pageId;
@@ -138,5 +138,5 @@ export class MessengerAssetsManager {
 
 export default provider<MessengerAssetsManager>({
   lifetime: 'scoped',
-  deps: [Base.StateControllerI, BotP],
+  deps: [StateControllerI, BotP],
 })(MessengerAssetsManager);
