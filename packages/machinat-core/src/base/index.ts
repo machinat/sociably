@@ -1,21 +1,35 @@
-import BotI from './BotI';
-import UserProfilerI from './UserProfilerI';
-import StateControllerI from './StateControllerI';
-import IntentRecognizerI from './IntentRecognizerI';
+import { MachinatChannel } from '../types';
+import BaseBotI, { BaseBot } from './BotI';
+import BaseUserProfilerI, { BaseUserProfiler } from './UserProfilerI';
+import BaseStateControllerI, { BaseStateController } from './StateControllerI';
+import BaseIntentRecognizerI, {
+  BaseIntentRecognizer,
+} from './IntentRecognizerI';
 
 const Base = {
-  BotI,
-  UserProfilerI,
-  StateControllerI,
-  IntentRecognizerI,
+  BotI: BaseBotI,
+  UserProfilerI: BaseUserProfilerI,
+  StateControllerI: BaseStateControllerI,
+  IntentRecognizerI: BaseIntentRecognizerI,
 };
 
 declare namespace Base {
-  export type BotI = InstanceType<typeof BotI>;
-  export type UserProfilerI = InstanceType<typeof UserProfilerI>;
-  export type StateControllerI = InstanceType<typeof StateControllerI>;
-  export type IntentRecognizerI = InstanceType<typeof IntentRecognizerI>;
+  export type BotI<C extends MachinatChannel, J, R> = BaseBot<C, J, R>;
+  export type UserProfilerI = BaseUserProfiler;
+  export type StateControllerI = BaseStateController;
+  export type IntentRecognizerI<P> = BaseIntentRecognizer<P>;
 }
 
 export default Base;
-export { BotI, UserProfilerI, StateControllerI, IntentRecognizerI };
+
+export const BotI = BaseBotI;
+export type BotI<C extends MachinatChannel, J, R> = BaseBot<C, J, R>;
+
+export const UserProfilerI = BaseUserProfilerI;
+export type UserProfilerI = BaseUserProfiler;
+
+export const IntentRecognizerI = BaseIntentRecognizerI;
+export type IntentRecognizerI<P> = BaseIntentRecognizer<P>;
+
+export const StateControllerI = BaseStateControllerI;
+export type StateControllerI = BaseStateController;
