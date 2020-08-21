@@ -4,7 +4,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { provider } from '@machinat/core/service';
 import type { ServerAuthorizer } from '@machinat/auth/types';
 
-import { LINE_PLATFORM_CONFIGS_I } from '../interface';
+import { PLATFORM_CONFIGS_I } from '../interface';
 import { LINE } from '../constant';
 import type { LinePlatformConfigs } from '../types';
 import type {
@@ -121,7 +121,7 @@ class LineServerAuthorizer
 
 export default provider<LineServerAuthorizer>({
   lifetime: 'transient',
-  deps: [LINE_PLATFORM_CONFIGS_I],
+  deps: [PLATFORM_CONFIGS_I],
 
   factory: ({ providerId, channelId, liffChannelIds }: LinePlatformConfigs) => {
     invariant(

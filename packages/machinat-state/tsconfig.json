@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"],
+  "compilerOptions": {
+    "outFile": "index.d.ts"
+  }
+}

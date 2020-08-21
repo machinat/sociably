@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import thenifiedly from 'thenifiedly';
 import type WSSocket from 'ws';
 import SocketError from './error';
-import type { RequestInfo, EventValue } from './types';
+import type { UpgradeRequestInfo, EventValue } from './types';
 
 type TimeoutID = ReturnType<typeof setTimeout>;
 
@@ -171,7 +171,7 @@ function handleWSError(this: WSSocket & WithSocket, err: Error) {
 class Socket extends EventEmitter {
   id: string;
   isClient: boolean;
-  request: RequestInfo;
+  request: UpgradeRequestInfo;
 
   private _ws: WSSocket & WithSocket;
   private _seq: number;
@@ -179,7 +179,7 @@ class Socket extends EventEmitter {
   private _connectStates: Map<string, number>;
   private _handshakeTimeouts: Map<string, TimeoutID>;
 
-  constructor(id: string, wsSocket: WSSocket, request: RequestInfo) {
+  constructor(id: string, wsSocket: WSSocket, request: UpgradeRequestInfo) {
     super();
 
     this.id = id;

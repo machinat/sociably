@@ -17,9 +17,6 @@ import type {
   MessengerResult,
 } from './types';
 
-export { default as MessengerChannel } from './channel';
-export { default as MessengerUser } from './user';
-
 const requestRoutingFactory = factory<HTTPRequestRouting>({
   lifetime: 'transient',
   deps: [PLATFORM_CONFIGS_I, ReceiverP],
@@ -32,9 +29,9 @@ const requestRoutingFactory = factory<HTTPRequestRouting>({
 });
 
 const Messenger = {
-  Bot: MessengerBot,
-  Receiver: MessengerReceiver,
-  UserProfiler: MessengerUserProfiler,
+  Bot: BotP,
+  Receiver: ReceiverP,
+  UserProfiler: UserProfilerP,
   CONFIGS_I: PLATFORM_CONFIGS_I,
 
   initModule: (
@@ -48,11 +45,7 @@ const Messenger = {
   > => {
     const provisions: AppProvision<any>[] = [
       BotP,
-      {
-        provide: Base.BotI,
-        withProvider: BotP,
-        platforms: [MESSENGER],
-      },
+      { provide: Base.BotI, withProvider: BotP, platforms: [MESSENGER] },
 
       UserProfilerP,
       {

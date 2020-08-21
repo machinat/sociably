@@ -4,7 +4,7 @@ import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import { HTTPRequestRouting } from '@machinat/http/types';
 
-import { LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I } from './interface';
+import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { LINE } from './constant';
 import ReceiverP, { LineReceiver } from './receiver';
 import BotP, { LineBot } from './bot';
@@ -22,7 +22,7 @@ export { default as LineUser } from './user';
 
 const requestRoutingFactory = factory<HTTPRequestRouting>({
   lifetime: 'transient',
-  deps: [LINE_PLATFORM_CONFIGS_I, ReceiverP],
+  deps: [PLATFORM_CONFIGS_I, ReceiverP],
 })((configs: LinePlatformConfigs, receiver: LineReceiver) => {
   return {
     name: LINE,
@@ -35,7 +35,7 @@ const Line = {
   Bot: BotP,
   Receiver: ReceiverP,
   UserProfiler: UserProfilerP,
-  CONFIGS_I: LINE_PLATFORM_CONFIGS_I,
+  CONFIGS_I: PLATFORM_CONFIGS_I,
 
   initModule: (
     configs: LinePlatformConfigs
@@ -57,7 +57,7 @@ const Line = {
         platforms: [LINE],
       },
 
-      { provide: LINE_PLATFORM_CONFIGS_I, withValue: configs },
+      { provide: PLATFORM_CONFIGS_I, withValue: configs },
     ];
 
     if (configs.noServer !== true) {
@@ -69,7 +69,7 @@ const Line = {
 
     return {
       name: LINE,
-      mounterInterface: LINE_PLATFORM_MOUNTER_I,
+      mounterInterface: PLATFORM_MOUNTER_I,
       provisions,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,

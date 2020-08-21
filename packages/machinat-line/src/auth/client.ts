@@ -1,3 +1,5 @@
+// eslint-disable-next-line spaced-comment
+/// <reference lib="DOM" />
 import invariant from 'invariant';
 import type { ClientAuthorizer } from '@machinat/auth/types';
 import { LINE } from '../constant';

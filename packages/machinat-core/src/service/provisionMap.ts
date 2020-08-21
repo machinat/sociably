@@ -2,10 +2,7 @@ import type { Interfaceable } from './types';
 
 type ProvisionBranches<T> = Map<
   Interfaceable<T>,
-  {
-    default: null | T;
-    platforms: { [key: string]: T };
-  }
+  { default: null | T; platforms: { [key: string]: T } }
 >;
 
 const setBranch = <T>(
@@ -55,7 +52,7 @@ const setBranch = <T>(
 
 const setMultiBranch = <T>(
   branches: ProvisionBranches<T[]>,
-  target: Interfaceable<T>,
+  target: Interfaceable<T[]>,
   platforms: string[] | null | undefined,
   value: T
 ) => {
@@ -229,7 +226,8 @@ export default class ProvisionMap<T> {
   }
 
   *iterAll(): Generator<
-    [Interfaceable<T>, void | string, T | T[]],
+    | [Interfaceable<T>, void | string, T]
+    | [Interfaceable<T[]>, void | string, T[]],
     void,
     void
   > {
@@ -258,7 +256,7 @@ export default class ProvisionMap<T> {
 
   *iterPlatform(
     platform: void | string
-  ): Generator<[Interfaceable<T>, T | T[]], void, void> {
+  ): Generator<[Interfaceable<T>, T] | [Interfaceable<T[]>, T[]], void, void> {
     for (const [target, provided] of this._mapping) {
       const { default: defaultValue, platforms } = provided;
 

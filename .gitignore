@@ -1,4 +1,7 @@
+# Built
 lib
+*.d.ts
+*.d.ts.map
 
 # Logs
 logs

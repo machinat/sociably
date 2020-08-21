@@ -10,7 +10,7 @@ import LineChannel from './channel';
 import LineUser from './user';
 import BotP, { LineBot } from './bot';
 import { LINE } from './constant';
-import { LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I } from './interface';
+import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import type {
   LineWebhookRequestBody,
   LineEventContext,
@@ -131,7 +131,7 @@ export class LineReceiver extends WebhookReceiver {
 
 export default provider<LineReceiver>({
   lifetime: 'singleton',
-  deps: [LINE_PLATFORM_CONFIGS_I, BotP, LINE_PLATFORM_MOUNTER_I],
+  deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I],
   factory: (
     configs: LinePlatformConfigs,
     bot: LineBot,

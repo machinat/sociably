@@ -1,3 +1,5 @@
+// eslint-disable-next-line spaced-comment
+/// <reference lib="DOM" />
 import invariant from 'invariant';
 import type { ClientAuthorizer } from '@machinat/auth/types';
 import { MESSENGER } from '../constant';
@@ -16,7 +18,7 @@ type MessengerClientAuthOpts = {
 };
 
 declare let document: Document;
-declare let window: any;
+declare let window: Window & { extAsyncInit(): void };
 declare let MessengerExtensions: any;
 
 const INIT_TIMEOUT = 20000;

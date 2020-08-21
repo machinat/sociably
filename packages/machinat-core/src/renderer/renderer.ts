@@ -46,7 +46,7 @@ type RenderResult<Value> =
 type RenderTraverseContext<Value> = {
   renderings: RenderResult<Value>[];
   scope: ServiceScope;
-  servicesProvided: Map<Interfaceable, any>;
+  servicesProvided: Map<Interfaceable<any>, any>;
 };
 
 type GeneralComponentDelegate<Value> = (
@@ -114,7 +114,7 @@ export default class MachinatRenderer<
 
   private async _renderImpl(
     scope: ServiceScope,
-    servicesProvided: Map<Interfaceable, any>,
+    servicesProvided: Map<Interfaceable<any>, any>,
     location: string,
     node: MachinatNode,
     path?: string
@@ -149,7 +149,7 @@ export default class MachinatRenderer<
               textSlot === undefined
                 ? segment
                 : {
-                    type: 'text',
+                    type: 'text' as const,
                     value: textSlot.value + segment.value,
                     node,
                     path: currentPath,
@@ -332,7 +332,7 @@ export default class MachinatRenderer<
   private async _renderFunctionalElement(
     node: FunctionalElement<any, FunctionalComponent<any>>,
     scope: ServiceScope,
-    servicesProvided: Map<Interfaceable, any>,
+    servicesProvided: Map<Interfaceable<any>, any>,
     path: string
   ): Promise<null | IntermediateSegment<Value>[]> {
     const { type: component, props } = node;
@@ -352,7 +352,7 @@ export default class MachinatRenderer<
   private async _renderContainerElement(
     node: ContainerElement<any, ContainerComponent<any>>,
     scope: ServiceScope,
-    servicesProvided: Map<Interfaceable, any>,
+    servicesProvided: Map<Interfaceable<any>, any>,
     path: string
   ): Promise<null | IntermediateSegment<Value>[]> {
     const { type: container, props } = node;

@@ -14,7 +14,7 @@ import { chatJobsMaker, multicastJobsMaker } from './job';
 import generalElementDelegate from './components/general';
 import LineWorker from './worker';
 import LineChannel from './channel';
-import { LINE_PLATFORM_CONFIGS_I, LINE_PLATFORM_MOUNTER_I } from './interface';
+import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { LINE } from './constant';
 
 import type {
@@ -139,10 +139,7 @@ export class LineBot
 
 export default provider<LineBot>({
   lifetime: 'singleton',
-  deps: [
-    LINE_PLATFORM_CONFIGS_I,
-    { require: LINE_PLATFORM_MOUNTER_I, optional: true },
-  ],
+  deps: [PLATFORM_CONFIGS_I, { require: PLATFORM_MOUNTER_I, optional: true }],
   factory: (
     configs: LinePlatformConfigs,
     mounter: null | LinePlatformMounter

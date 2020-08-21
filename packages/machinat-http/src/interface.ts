@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { Socket } from 'net';
 import { makeInterface, abstractInterface } from '@machinat/core/service';
