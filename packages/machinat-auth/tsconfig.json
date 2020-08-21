@@ -3,6 +3,11 @@
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.spec.ts"],
   "compilerOptions": {
-    "outFile": "index.d.ts"
-  }
+    "rootDir": "./src",
+    "outDir": "./lib"
+  },
+  "references": [
+    { "path": "../machinat-core" },
+    { "path": "../machinat-http" }
+  ]
 }

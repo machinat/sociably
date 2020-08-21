@@ -9,14 +9,15 @@
     "jsxFactory": "Machinat.createElement",
     "jsxFragmentFactory": "Machinat.Fragment",
     "experimentalDecorators": true,
-    "baseUrl": ".",
+    "rootDir": ".",
+    "baseUrl": "./packages",
     "paths": {
-      "@machinat/auth": ["packages/machinat-auth/src/index.js"],
-      "@machinat/auth/*": ["packages/machinat-auth/src/*"],
-      "@machinat/core": ["packages/machinat-core/src/index.js"],
-      "@machinat/core/*": ["packages/machinat-core/src/*"],
-      "@machinat/http": ["packages/machinat-http/src/index.js"],
-      "@machinat/http/*": ["packages/machinat-http/src/*"]
+      "@machinat/auth": ["machinat-auth/src/index.js"],
+      "@machinat/auth/*": ["machinat-auth/src/*"],
+      "@machinat/core": ["machinat-core/src/index.js"],
+      "@machinat/core/*": ["machinat-core/src/*"],
+      "@machinat/http": ["machinat-http/src/index.js"],
+      "@machinat/http/*": ["machinat-http/src/*"]
     }
   }
 }

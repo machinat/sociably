@@ -3,9 +3,7 @@
   "exports": false,
   "scripts": {
     "bootstrap": "lerna bootstrap && yarn run build",
-    "build-clean": "make clean",
     "build": "make",
-    "polyfill-exports": "lerna exec -- polyfill-exports",
     "lint": "eslint --ext .js --ext .ts ./packages/*/src",
     "prettier": "prettier --write packages/**/*.js flow-typed/*.js",
     "test": "jest"
