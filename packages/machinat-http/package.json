@@ -5,7 +5,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/machinat/machinat.git",
-    "directory": "packages/machinat-http-adaptor"
+    "directory": "packages/machinat-http"
   },
   "homepage": "https://github.com/machinat/machinat#readme",
   "bugs": "https://github.com/machinat/machinat/issues",

@@ -11,6 +11,7 @@
     { "path": "./machinat-next" },
     { "path": "./machinat-script" },
     { "path": "./machinat-state" },
-    { "path": "./machinat-websocket" }
+    { "path": "./machinat-websocket" },
+    { "path": "./machinat-jest-snapshot-serializer" }
   ]
 }

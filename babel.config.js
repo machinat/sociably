@@ -1,23 +1,17 @@
 module.exports = {
   presets: [
-    '@babel/preset-typescript',
+    ['@babel/preset-typescript', {
+      isTSX: true,
+      allExtensions: true,
+      jsxPragma: 'Machinat',
+      onlyRemoveTypeImports: true,
+    }],
     ['@babel/preset-env', {
         targets: {
           node: '8',
         },
     }],
     '@machinat/babel-preset',
-  ],
-  plugins: [
-    'babel-plugin-dev-expression',
-    '@babel/plugin-proposal-object-rest-spread',
-    '@babel/plugin-proposal-optional-chaining',
-    ['@babel/plugin-proposal-decorators', {
-      legacy: true,
-    }],
-    ['@babel/plugin-proposal-class-properties', {
-      loose: true,
-    }],
   ],
   env: {
     production: {

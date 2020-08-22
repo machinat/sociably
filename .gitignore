@@ -1,6 +1,7 @@
 # Built
 lib
 tsconfig.tsbuildinfo
+polyfill-exports.js
 
 # Logs
 logs
