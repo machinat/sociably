@@ -17,7 +17,7 @@ describe('#constructor(options)', () => {
   it('ok', () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -44,7 +44,7 @@ describe('#delegateAuthRequest(req, res)', () => {
   it('respond 403', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
     const res = moxy(new ServerResponse({}));
@@ -77,7 +77,7 @@ describe('#verifyCredential(credential)', () => {
   it('calls line social api to verify the access token', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -102,10 +102,10 @@ describe('#verifyCredential(credential)', () => {
     expect(verifyScope.isDone()).toBe(true);
   });
 
-  test('verify with botChannelId in auth data', async () => {
+  test('verify with channelId in auth data', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_'],
     });
 
@@ -140,7 +140,7 @@ describe('#verifyCredential(credential)', () => {
   it('return unaccepted if accessToken is absent', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
     await expect(authorizer.verifyCredential({})).resolves
@@ -156,7 +156,7 @@ describe('#verifyCredential(credential)', () => {
   it('return unaccepted if token verify api respond error', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -180,7 +180,7 @@ describe('#verifyCredential(credential)', () => {
   it('return unaccepted if client_id from token not in options.liffChannelIds', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -205,7 +205,7 @@ describe('#verifyCredential(credential)', () => {
   it('return unaccepted if fromBotChannel in credential not matched', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -220,7 +220,7 @@ describe('#verifyCredential(credential)', () => {
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "code": 400,
-              "reason": "botChannelId not match",
+              "reason": "channelId not match",
               "success": false,
             }
           `);
@@ -229,7 +229,7 @@ describe('#verifyCredential(credential)', () => {
   it('throw if profile api respond error', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -255,7 +255,7 @@ describe('#verifyRefreshment()', () => {
   it('return unaccepted anyway', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -274,7 +274,7 @@ describe('#refineAuth(data)', () => {
   it('return channel and user according to auth data', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -312,7 +312,7 @@ describe('#refineAuth(data)', () => {
   it('return utob channel if fromBotChannel exist in data', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -339,7 +339,7 @@ describe('#refineAuth(data)', () => {
   it('return null if fromBotChannel in data not match', async () => {
     const authorizer = new ServerAuthorizer({
       providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 

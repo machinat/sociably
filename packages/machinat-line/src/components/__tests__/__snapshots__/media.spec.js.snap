@@ -4,7 +4,7 @@ exports[`Audio render match snapshot 1`] = `
 Object {
   "duration": 6666,
   "originalContentUrl": "https://...",
-  "type": "image",
+  "type": "audio",
 }
 `;
 
@@ -12,6 +12,7 @@ exports[`Video render match snapshot 1`] = `
 Object {
   "originalContentUrl": "https://...",
   "previewImageUrl": "https://...",
-  "type": "image",
+  "trackingId": undefined,
+  "type": "video",
 }
 `;

@@ -3,9 +3,9 @@ import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import Line from '..';
-import LineReceiver from '../receiver';
-import LineUserProfiler from '../profile';
-import LineBot from '../bot';
+import { LineReceiver } from '../receiver';
+import { LineUserProfiler } from '../profile';
+import { LineBot } from '../bot';
 
 it('export interfaces', () => {
   expect(Line.Receiver).toBe(LineReceiver);
@@ -14,7 +14,7 @@ it('export interfaces', () => {
   expect(Line.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "LinePlatformConfigs",
+      "$$name": "LinePlatformConfigsI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
@@ -24,26 +24,27 @@ describe('initModule(configs)', () => {
   it('create module object', () => {
     const eventMiddlewares = [(ctx, next) => next(ctx)];
     const dispatchMiddlewares = [(ctx, next) => next(ctx)];
-    expect(
-      Line.initModule({
-        providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
-        accessToken: '_ACCESS_TOKEN_',
-        eventMiddlewares,
-        dispatchMiddlewares,
-      })
-    ).toEqual({
-      name: 'line',
-      mounterInterface: {
-        $$multi: false,
-        $$name: 'LinePlatformMounter',
-        $$typeof: expect.anything(),
-      },
-      provisions: expect.any(Array),
-      startHook: expect.any(Function),
+
+    const module = Line.initModule({
+      providerId: '_PROVIDER_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
+      accessToken: '_ACCESS_TOKEN_',
       eventMiddlewares,
       dispatchMiddlewares,
     });
+
+    expect(module.name).toBe('line');
+    expect(module.mounterInterface).toMatchInlineSnapshot(`
+      Object {
+        "$$multi": false,
+        "$$name": "LinePlatformMounterI",
+        "$$typeof": Symbol(machinat.services.interface),
+      }
+    `);
+    expect(module.provisions).toBeInstanceOf(Array);
+    expect(typeof module.startHook).toBe('function');
+    expect(module.eventMiddlewares).toEqual(eventMiddlewares);
+    expect(module.dispatchMiddlewares).toEqual(dispatchMiddlewares);
   });
 
   test('provisions', async () => {

@@ -1,12 +1,13 @@
 import WS from 'ws';
 import moxy, { Mock } from '@moxyjs/moxy';
 import Socket from '../socket';
-import Receiver from '../receiver';
+import { WebSocketReceiver } from '../receiver';
 import { ConnectionChannel } from '../channel';
 
 jest.mock(
   '../socket',
-  () => require('@moxyjs/moxy').default(jest.requireActual('../socket')) // eslint-disable-line global-require
+  () =>
+    jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../socket')) // eslint-disable-line global-require
 );
 
 const nextTick = () => new Promise(process.nextTick);
@@ -79,7 +80,7 @@ beforeEach(() => {
 });
 
 it('handle sockets and connections lifecycle', async () => {
-  const receiver = new Receiver(
+  const receiver = new WebSocketReceiver(
     bot,
     wsServer,
     transmitter,
@@ -224,7 +225,7 @@ it('handle sockets and connections lifecycle', async () => {
 });
 
 test('default verifyUpgrade and verifyLogin', async () => {
-  const receiver = new Receiver(
+  const receiver = new WebSocketReceiver(
     bot,
     wsServer,
     transmitter,
@@ -263,7 +264,7 @@ test('default verifyUpgrade and verifyLogin', async () => {
 });
 
 test('multi sockets and connections', async () => {
-  const receiver = new Receiver(
+  const receiver = new WebSocketReceiver(
     bot,
     wsServer,
     transmitter,
@@ -517,7 +518,7 @@ test('multi sockets and connections', async () => {
 
 it('generate uniq socket id', async () => {
   const ids = new Set();
-  const receiver = new Receiver(
+  const receiver = new WebSocketReceiver(
     bot,
     wsServer,
     transmitter,
@@ -539,7 +540,7 @@ it('generate uniq socket id', async () => {
 
 it('generate uniq connection id', async () => {
   const ids = new Set();
-  const receiver = new Receiver(
+  const receiver = new WebSocketReceiver(
     bot,
     wsServer,
     transmitter,
@@ -566,7 +567,7 @@ it('generate uniq connection id', async () => {
 });
 
 it('respond 404 if verifyUpgrade fn return false', async () => {
-  const receiver = new Receiver(
+  const receiver = new WebSocketReceiver(
     bot,
     wsServer,
     transmitter,
@@ -598,7 +599,7 @@ it('respond 404 if verifyUpgrade fn return false', async () => {
 });
 
 it('reject sign in if verifyLogin resolve not sucess', async () => {
-  const receiver = new Receiver(
+  const receiver = new WebSocketReceiver(
     bot,
     wsServer,
     transmitter,
@@ -629,7 +630,7 @@ it('reject sign in if verifyLogin resolve not sucess', async () => {
 });
 
 it('reject sign in if verifyLogin thrown', async () => {
-  const receiver = new Receiver(
+  const receiver = new WebSocketReceiver(
     bot,
     wsServer,
     transmitter,
@@ -658,7 +659,7 @@ it('reject sign in if verifyLogin thrown', async () => {
 });
 
 it('pop socket error', async () => {
-  const receiver = new Receiver(
+  const receiver = new WebSocketReceiver(
     bot,
     wsServer,
     transmitter,
@@ -682,7 +683,7 @@ it('pop socket error', async () => {
 test('ping socket per heartbeatInterval', async () => {
   jest.useFakeTimers();
 
-  const receiver = new Receiver(
+  const receiver = new WebSocketReceiver(
     bot,
     wsServer,
     transmitter,

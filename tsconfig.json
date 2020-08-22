@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "lib": ["es2018"],
+    "module": "commonjs",
+    "target": "es2018",
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "jsxFactory": "Machinat.createElement",
+    "jsxFragmentFactory": "Machinat.Fragment",
+    "experimentalDecorators": true,
+    "rootDir": ".",
+    "baseUrl": "./packages",
+    "paths": {
+      "@machinat/auth": ["machinat-auth/src/index.js"],
+      "@machinat/auth/*": ["machinat-auth/src/*"],
+      "@machinat/core": ["machinat-core/src/index.js"],
+      "@machinat/core/*": ["machinat-core/src/*"],
+      "@machinat/http": ["machinat-http/src/index.js"],
+      "@machinat/http/*": ["machinat-http/src/*"]
+    }
+  }
+}

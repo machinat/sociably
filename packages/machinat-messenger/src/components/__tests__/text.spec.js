@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 import { Latex } from '../text';
 
@@ -14,7 +14,7 @@ const renderer = new Renderer('messenger', generalComponentDelegator);
 describe('Latex', () => {
   it('is valid Component', () => {
     expect(typeof Latex).toBe('function');
-    expect(isNativeElement(<Latex />)).toBe(true);
+    expect(isNativeType(<Latex />)).toBe(true);
     expect(Latex.$$platform).toBe('messenger');
   });
 

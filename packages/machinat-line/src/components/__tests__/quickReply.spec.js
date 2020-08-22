@@ -1,6 +1,6 @@
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 
 import { QuickReply } from '../quickReply';
 import { URIAction } from '../action';
@@ -8,7 +8,7 @@ import { URIAction } from '../action';
 it('is valid native component', () => {
   expect(typeof QuickReply).toBe('function');
 
-  expect(isNativeElement(<QuickReply />)).toBe(true);
+  expect(isNativeType(<QuickReply />)).toBe(true);
   expect(QuickReply.$$platform).toBe('line');
 });
 

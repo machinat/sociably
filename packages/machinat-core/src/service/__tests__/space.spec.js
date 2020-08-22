@@ -220,19 +220,12 @@ it('throw if provider dependencies not bound when bootstrap', () => {
 });
 
 it('throw if invalid binding received', () => {
-  expect(() => new ServiceSpace([Bar], [])).toThrowErrorMatchingInlineSnapshot(`
-"invalid binding (class BarAbstract {
-  bar() {
-    throw new Error('too abstract');
-  }
-
-})"
-`);
+  expect(() => new ServiceSpace([Bar], [])).toThrowErrorMatchingInlineSnapshot(
+    `"invalid provider BarAbstract"`
+  );
   expect(
     () => new ServiceSpace([{ provide: class Bae {}, withValue: 'bae~' }], [])
-  ).toThrowErrorMatchingInlineSnapshot(
-    `"class Bae {} is not a valid interface to provide"`
-  );
+  ).toThrowErrorMatchingInlineSnapshot(`"invalid interface Bae"`);
   expect(
     () => new ServiceSpace([{ provide: Bar, withTea: 'Oooooolong' }], [])
   ).toThrowErrorMatchingInlineSnapshot(

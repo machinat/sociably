@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 import { Expression } from '../expression';
 import { QuickReply } from '../quickReply';
@@ -20,7 +20,7 @@ beforeEach(() => {
 it('is valid native component', () => {
   expect(typeof Expression).toBe('function');
 
-  expect(isNativeElement(<Expression />)).toBe(true);
+  expect(isNativeType(<Expression />)).toBe(true);
   expect(Expression.$$platform).toBe('line');
 });
 

@@ -95,6 +95,7 @@ describe('provider({ deps, factory, lifetime })(klass)', () => {
     ]);
     expect(MyProvider.$$factory).toBe(klazzFactory);
     expect(MyProvider.$$lifetime).toBe('scoped');
+    expect(MyProvider.$$multi).toBe(false);
   });
 
   test('default $$factory, $$name and $$deps', () => {
@@ -105,6 +106,7 @@ describe('provider({ deps, factory, lifetime })(klass)', () => {
     expect(MyProvider.$$name).toBe('ServiceKlazz');
     expect(MyProvider.$$lifetime).toBe('singleton');
     expect(MyProvider.$$deps).toEqual([]);
+    expect(MyProvider.$$multi).toBe(false);
 
     expect(MyProvider.$$factory('foo', 'bar', 'baz')).toBeInstanceOf(
       ServiceKlazz

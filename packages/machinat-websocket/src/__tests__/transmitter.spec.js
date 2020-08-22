@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import WS from 'ws';
-import Transmitter from '../transmitter';
+import { WebSocketTransmitter } from '../transmitter';
 import Socket from '../socket';
 import LocalOnlyBroker from '../broker/localOnlyBroker';
 import { ConnectionChannel, TopicChannel, UserChannel } from '../channel';
@@ -27,7 +27,7 @@ beforeEach(() => {
 });
 
 test('addLocalConnection() and removeLocalConnection()', () => {
-  const transmitter = new Transmitter(serverId, broker, errorHandler);
+  const transmitter = new WebSocketTransmitter(serverId, broker, errorHandler);
   const fooConn = new ConnectionChannel('#server', '#foo');
   const barConn = new ConnectionChannel('#server', '#bar');
 
@@ -46,7 +46,11 @@ test('addLocalConnection() and removeLocalConnection()', () => {
 
 describe('subscribeTopic() and unsubscribeTopic()', () => {
   it('return boolean indicate whether connection is connected', async () => {
-    const transmitter = new Transmitter(serverId, broker, errorHandler);
+    const transmitter = new WebSocketTransmitter(
+      serverId,
+      broker,
+      errorHandler
+    );
     const conn = new ConnectionChannel(serverId, '#conn');
 
     transmitter.addLocalConnection(conn, socket, john);
@@ -65,7 +69,11 @@ describe('subscribeTopic() and unsubscribeTopic()', () => {
   });
 
   it('delegate to broker if socket is not local', async () => {
-    const transmitter = new Transmitter(serverId, broker, errorHandler);
+    const transmitter = new WebSocketTransmitter(
+      serverId,
+      broker,
+      errorHandler
+    );
     const remoteConn = new ConnectionChannel('#remote', '#conn');
 
     broker.subscribeTopicRemote.mock.fake(async () => true);
@@ -96,7 +104,11 @@ describe('subscribeTopic() and unsubscribeTopic()', () => {
 
 describe('disconnect()', () => {
   it('return boolean indicate is updated or not', async () => {
-    const transmitter = new Transmitter(serverId, broker, errorHandler);
+    const transmitter = new WebSocketTransmitter(
+      serverId,
+      broker,
+      errorHandler
+    );
     const conn = new ConnectionChannel(serverId, '#conn');
 
     socket.disconnect.mock.fake(async () => 0);
@@ -107,7 +119,11 @@ describe('disconnect()', () => {
   });
 
   it('delegate to borker if socket is not local', async () => {
-    const transmitter = new Transmitter(serverId, broker, errorHandler);
+    const transmitter = new WebSocketTransmitter(
+      serverId,
+      broker,
+      errorHandler
+    );
     const remoteConn = {
       serverId: '#remote',
       socketId: 'xxx',
@@ -132,7 +148,11 @@ describe('dispatch()', () => {
   const conn2 = new ConnectionChannel(serverId, 'conn#2');
 
   it('dispatch events to local connection target', async () => {
-    const transmitter = new Transmitter(serverId, broker, errorHandler);
+    const transmitter = new WebSocketTransmitter(
+      serverId,
+      broker,
+      errorHandler
+    );
     socket.dispatch.mock.fake(async () => 0);
 
     transmitter.addLocalConnection(conn1, socket, jane);
@@ -169,7 +189,11 @@ describe('dispatch()', () => {
   });
 
   it('dispatch events to remote connection target', async () => {
-    const transmitter = new Transmitter(serverId, broker, errorHandler);
+    const transmitter = new WebSocketTransmitter(
+      serverId,
+      broker,
+      errorHandler
+    );
     const remoteConn = new ConnectionChannel('#remote', '#conn_remote');
 
     const events = [
@@ -198,7 +222,11 @@ describe('dispatch()', () => {
   });
 
   it('dispatch with topic channel', async () => {
-    const transmitter = new Transmitter(serverId, broker, errorHandler);
+    const transmitter = new WebSocketTransmitter(
+      serverId,
+      broker,
+      errorHandler
+    );
     socket.dispatch.mock.fake(async () => 0);
 
     const remoteConn1 = new ConnectionChannel('#remote', '#conn1');
@@ -268,7 +296,11 @@ describe('dispatch()', () => {
   });
 
   it('dispatch with user channel', async () => {
-    const transmitter = new Transmitter(serverId, broker, errorHandler);
+    const transmitter = new WebSocketTransmitter(
+      serverId,
+      broker,
+      errorHandler
+    );
     socket.dispatch.mock.fake(async () => 0);
 
     const remoteConn = new ConnectionChannel('#remote', '#conn');
@@ -329,7 +361,11 @@ describe('dispatch()', () => {
   });
 
   test('filter connection send to topic', async () => {
-    const transmitter = new Transmitter(serverId, broker, errorHandler);
+    const transmitter = new WebSocketTransmitter(
+      serverId,
+      broker,
+      errorHandler
+    );
     socket.dispatch.mock.fake(async () => 0);
     const conn3 = new ConnectionChannel(serverId, 'conn#3');
 
@@ -393,7 +429,11 @@ describe('dispatch()', () => {
   });
 
   test('filter connection send to user', async () => {
-    const transmitter = new Transmitter(serverId, broker, errorHandler);
+    const transmitter = new WebSocketTransmitter(
+      serverId,
+      broker,
+      errorHandler
+    );
     socket.dispatch.mock.fake(async () => 0);
     const conn3 = new ConnectionChannel(serverId, 'conn#3');
 
@@ -452,7 +492,11 @@ describe('dispatch()', () => {
   });
 
   it('emit error when socket level error happen', async () => {
-    const transmitter = new Transmitter(serverId, broker, errorHandler);
+    const transmitter = new WebSocketTransmitter(
+      serverId,
+      broker,
+      errorHandler
+    );
 
     transmitter.addLocalConnection(conn1, socket, jane);
     transmitter.addLocalConnection(conn2, socket, john);
@@ -486,7 +530,7 @@ describe('dispatch()', () => {
 });
 
 test('handle remote dispatch', () => {
-  const transmitter = new Transmitter(serverId, broker, errorHandler);
+  const transmitter = new WebSocketTransmitter(serverId, broker, errorHandler);
   const conn1 = new ConnectionChannel(serverId, '#conn1');
   const conn2 = new ConnectionChannel(serverId, '#conn2');
 

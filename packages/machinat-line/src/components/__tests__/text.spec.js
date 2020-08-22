@@ -1,6 +1,6 @@
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import { Emoji } from '../text';
 
 const renderer = new Renderer('line', () => null);
@@ -9,7 +9,7 @@ describe('Emoji', () => {
   it('is valid native unit component', () => {
     expect(typeof Emoji).toBe('function');
 
-    expect(isNativeElement(<Emoji />)).toBe(true);
+    expect(isNativeType(<Emoji />)).toBe(true);
     expect(Emoji.$$platform).toBe('line');
   });
 

@@ -60,6 +60,7 @@ test('fetch profile from api and cache it', async () => {
     Array [
       "GET",
       "v2/bot/profile/_USER_ID_",
+      null,
     ]
   `);
 

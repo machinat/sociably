@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 import {
   PassThreadControl,
@@ -13,7 +13,7 @@ it.each([PassThreadControl, RequestThreadControl, TakeThreadContorl])(
   '%p is valid root Component',
   (ThreadControl) => {
     expect(typeof ThreadControl).toBe('function');
-    expect(isNativeElement(<ThreadControl />)).toBe(true);
+    expect(isNativeType(<ThreadControl />)).toBe(true);
     expect(ThreadControl.$$platform).toBe('messenger');
   }
 );

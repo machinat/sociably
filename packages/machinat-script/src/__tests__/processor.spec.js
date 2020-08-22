@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import ScriptProcessor from '../processor';
+import { ScriptProcessor } from '../processor';
 import build from '../build';
 import {
   IF,

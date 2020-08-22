@@ -1,5 +1,5 @@
 module.exports = {
   trailingComma: 'es5',
   singleQuote: true,
-  parser: 'babel',
+  parser: 'typescript',
 };

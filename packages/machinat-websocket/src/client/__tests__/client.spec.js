@@ -8,9 +8,8 @@ import Client from '../client';
 const location = url.parse('https://machinat.com/hello');
 global.location = location;
 
-jest.mock(
-  '../../socket',
-  () => require('@moxyjs/moxy').default(jest.requireActual('../../socket')) // eslint-disable-line global-require
+jest.mock('../../socket', () =>
+  jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../../socket'))
 );
 
 const nextTick = () => new Promise(process.nextTick);

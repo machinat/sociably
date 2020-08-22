@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 import {
   PostbackAction,
@@ -35,7 +35,7 @@ test.each(
   ].map((C) => [C.name, C])
 )('%s is valid native Component', (_, Action) => {
   expect(typeof Action).toBe('function');
-  expect(isNativeElement(<Action />)).toBe(true);
+  expect(isNativeType(<Action />)).toBe(true);
   expect(Action.$$platform).toBe('line');
 });
 

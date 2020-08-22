@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "lib": ["DOM", "es2015"]
+  },
+  "references": [
+    { "path": "../machinat-core" },
+    { "path": "../machinat-http" }
+  ]
+}

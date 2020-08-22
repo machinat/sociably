@@ -353,7 +353,7 @@ describe('makeAttachmentJobs()', () => {
         },
       ])
     ).toThrowErrorMatchingInlineSnapshot(
-      `"non attachment message <Bar /> received"`
+      `"invalid attachment type \\"template\\" to be uploaded"`
     );
   });
 });

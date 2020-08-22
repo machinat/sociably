@@ -1,6 +1,6 @@
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import Flex, {
   FlexBox,
   FlexButton,
@@ -42,7 +42,7 @@ test.each(
   ].map((C) => [C.name, C])
 )('%s is valid native Component', (_, FlexComponent) => {
   expect(typeof FlexComponent).toBe('function');
-  expect(isNativeElement(<FlexComponent />)).toBe(true);
+  expect(isNativeType(<FlexComponent />)).toBe(true);
   expect(FlexComponent.$$platform).toBe('line');
 });
 

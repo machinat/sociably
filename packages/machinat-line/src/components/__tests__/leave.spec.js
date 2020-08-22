@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 
 import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
@@ -11,7 +11,7 @@ const renderer = new Renderer('line', () => null);
 it('is valid native unit component with entry getter', () => {
   expect(typeof Leave).toBe('function');
 
-  expect(isNativeElement(<Leave />)).toBe(true);
+  expect(isNativeType(<Leave />)).toBe(true);
   expect(Leave.$$platform).toBe('line');
 });
 

@@ -1,6 +1,6 @@
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 
 import {
   URLButton,
@@ -33,7 +33,7 @@ test.each([
   GamePlayButton,
 ])('is valid Component', (Button) => {
   expect(typeof Button).toBe('function');
-  expect(isNativeElement(<Button />)).toBe(true);
+  expect(isNativeType(<Button />)).toBe(true);
   expect(Button.$$platform).toBe('messenger');
 });
 

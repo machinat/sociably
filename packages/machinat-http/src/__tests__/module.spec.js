@@ -4,7 +4,9 @@ import Machinat from '@machinat/core';
 import Connector from '../connector';
 import HTTP from '..';
 
-jest.mock('http', () => require('@moxyjs/moxy').default({ createServer() {} })); // eslint-disable-line global-require
+jest.mock('http', () =>
+  jest.requireActual('@moxyjs/moxy').default({ createServer() {} })
+);
 
 const server = moxy({
   addListener() {},
@@ -27,7 +29,7 @@ it('export interfaces', () => {
   expect({ $$name, $$multi, $$typeof }).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "AbstractServer",
+      "$$name": "HTTPServerI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
@@ -35,21 +37,21 @@ it('export interfaces', () => {
   expect(HTTP.REQUEST_ROUTINGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": true,
-      "$$name": "HTTPRequestRoutingsList",
+      "$$name": "HTTPRequestRoutingsListI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
   expect(HTTP.UPGRADE_ROUTINGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": true,
-      "$$name": "HTTPUpgradeRoutingsList",
+      "$$name": "HTTPUpgradeRoutingsListI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);
   expect(HTTP.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "HTTPModuleConfigs",
+      "$$name": "HTTPModuleConfigsI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);

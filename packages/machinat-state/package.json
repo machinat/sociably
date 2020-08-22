@@ -35,5 +35,8 @@
   },
   "peerDependencies": {
     "@machinat/core": "^0.2.0-alpha.2"
+  },
+  "devDependencies": {
+    "@types/redis": "^2.8.25"
   }
 }

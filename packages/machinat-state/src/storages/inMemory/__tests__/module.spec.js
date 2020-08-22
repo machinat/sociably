@@ -1,7 +1,7 @@
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import InMemoryState from '..';
-import InMemoryRepository from '../repository';
+import { InMemoryRepository } from '../repository';
 import StateController from '../../..';
 
 test('export interfaces', () => {

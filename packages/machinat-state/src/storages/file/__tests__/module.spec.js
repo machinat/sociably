@@ -2,7 +2,7 @@ import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import { tmpNameSync } from 'tmp';
 import FileState from '..';
-import FileRepository from '../repository';
+import { FileRepository } from '../repository';
 import StateController from '../../..';
 
 const storageFilePath = tmpNameSync();
@@ -12,7 +12,7 @@ test('export interfaces', () => {
   expect(FileState.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "FileStateConfigs",
+      "$$name": "FileStateConfigsI",
       "$$typeof": Symbol(machinat.services.interface),
     }
   `);

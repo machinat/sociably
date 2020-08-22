@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { isNativeElement } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 
 import { Image, Video, Audio, File } from '../media';
@@ -9,7 +9,7 @@ const renderer = new Renderer('messenger', () => null);
 describe('media Components', () => {
   test.each([Image, Video, Audio, File])('is valid root Component', (Media) => {
     expect(typeof Media).toBe('function');
-    expect(isNativeElement(<Media />)).toBe(true);
+    expect(isNativeType(<Media />)).toBe(true);
     expect(Media.$$platform).toBe('messenger');
   });
 

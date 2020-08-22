@@ -239,6 +239,7 @@ test('#deleteRichMenu()', async () => {
   expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(1);
   expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith(
     'DELETE',
-    'v2/bot/richmenu/_RICH_MENU_ID_'
+    'v2/bot/richmenu/_RICH_MENU_ID_',
+    null
   );
 });
