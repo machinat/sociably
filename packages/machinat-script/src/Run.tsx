@@ -3,7 +3,7 @@ import { FunctionalComponent } from '@machinat/core/types';
 import { container } from '@machinat/core/service';
 import ProcessorP, { ScriptProcessor } from './processor';
 
-const Execute = (processor: ScriptProcessor<any, any>) => async ({
+const Run = (processor: ScriptProcessor<any, any>) => async ({
   runtime,
   input,
 }) => {
@@ -18,4 +18,4 @@ const Execute = (processor: ScriptProcessor<any, any>) => async ({
 
 export default container<FunctionalComponent<any>>({
   deps: [ProcessorP],
-})(Execute);
+})(Run);

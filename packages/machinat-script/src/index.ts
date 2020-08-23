@@ -6,7 +6,7 @@ import { SCRIPT_LIBS_I } from './constant';
 import type { MachinatScript } from './types';
 
 export { default as build } from './build';
-export { default as Execute } from './Execute';
+export { default as Run } from './Run';
 export * from './keyword';
 
 type ScriptModuleConfigs = {

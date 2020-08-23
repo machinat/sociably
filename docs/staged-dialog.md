@@ -12,8 +12,8 @@ Here is a simple Machinat script for making order:
 import Machinat from '@machinat/core';
 import { container } from '@machinat/core/service';
 import Base from '@machinat/core/base';
+import { build } from '@machinat/script';
 import {
-  build,
   WHILE,
   PROMPT,
   IF,
@@ -21,7 +21,7 @@ import {
   ELSE,
   CALL,
   RETURN,
-} from '@machinat/script';
+} from '@machinat/script/keywords';
 import OrderSideDish from './OrderSideDish';
 
 const MAIN_DISHES = ['steak', 'chicken', 'pork'];
@@ -279,7 +279,7 @@ Then add the following code in your event handler:
 
 ```js
 import { container } from '@machinat/core/service';
-import Script, { Execute } from '@machinat/script';
+import Script, { Run } from '@machinat/script';
 
 app.onEvent(
   container({
@@ -293,7 +293,7 @@ app.onEvent(
       // execute from the prompt point
       return bot.render(
         channel,
-        <Execute runtime={runtime} input={context} />
+        <Run runtime={runtime} input={context} />
       );
     }
     // default logic while not prompting...

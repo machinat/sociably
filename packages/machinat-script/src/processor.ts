@@ -34,11 +34,11 @@ export class ScriptRuntime<Input, ReturnValue> {
     this._isPrompting = !!promptPointTs;
   }
 
-  get isFinished() {
+  get isFinished(): boolean {
     return !this.callStack;
   }
 
-  get isPrompting() {
+  get isPrompting(): boolean {
     return this._isPrompting;
   }
 
