@@ -1,11 +1,11 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import HTTP from '@machinat/http';
-import Auth from '..';
-import ServerController from '../server';
+import Auth from '../module';
+import { AuthServerController } from '../controller';
 
 it('export interfaces', () => {
-  expect(Auth.Controller).toBe(ServerController);
+  expect(Auth.Controller).toBe(AuthServerController);
   expect(Auth.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
@@ -36,7 +36,7 @@ describe('initModule()', () => {
       HTTP.REQUEST_ROUTINGS_I,
     ]);
 
-    expect(controller).toBeInstanceOf(ServerController);
+    expect(controller).toBeInstanceOf(AuthServerController);
     expect(configs).toEqual({ secret: '_SECRET_', entryPath: '/auth' });
     expect(routings).toMatchInlineSnapshot(`
       Array [
@@ -52,7 +52,7 @@ describe('initModule()', () => {
   test('provide authorizers to controller', async () => {
     const fooAuthorizer = moxy();
     const barAuthorizer = moxy();
-    const ServerControllerSpy = moxy(ServerController);
+    const ControllerSpy = moxy(AuthServerController);
     const app = Machinat.createApp({
       modules: [Auth.initModule({ secret: '_SECRET_', entryPath: '/auth' })],
       bindings: [
@@ -60,15 +60,15 @@ describe('initModule()', () => {
         { provide: Auth.AUTHORIZERS_I, withValue: barAuthorizer },
         {
           provide: Auth.Controller,
-          withProvider: ServerControllerSpy,
+          withProvider: ControllerSpy,
         },
       ],
     });
     await app.start();
 
-    expect(ServerControllerSpy.$$factory.mock).toHaveBeenCalledTimes(1);
+    expect(ControllerSpy.$$factory.mock).toHaveBeenCalledTimes(1);
     expect(
-      ServerControllerSpy.$$factory.mock
+      ControllerSpy.$$factory.mock
     ).toHaveBeenCalledWith(
       expect.arrayContaining([fooAuthorizer, barAuthorizer]),
       { secret: '_SECRET_', entryPath: '/auth' }

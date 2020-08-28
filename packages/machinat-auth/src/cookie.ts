@@ -10,7 +10,7 @@ import type {
   StateTokenPayload,
   ErrorTokenPayload,
   ErrorMessage,
-} from '../types';
+} from './types';
 import { getCookies, setCookie } from './utils';
 
 import {
@@ -18,7 +18,7 @@ import {
   TOKEN_COOKIE_KEY,
   SIGNATURE_COOKIE_KEY,
   ERROR_COOKIE_KEY,
-} from '../constant';
+} from './constant';
 
 type OperatorOptions = {
   entryPath: string;

@@ -24,6 +24,7 @@ type AuthClientOptions = {
   refreshLeadTime?: number;
 };
 
+/** @internal */
 const deleteCookie = (name: string, domain?: string, path?: string) => {
   document.cookie = serializeCookie(name, '', {
     expires: new Date(0),
@@ -32,6 +33,7 @@ const deleteCookie = (name: string, domain?: string, path?: string) => {
   });
 };
 
+/** @internal */
 const getAuthPayload = (token: string): AuthTokenPayload<any> =>
   decodeJWT(`${token}.`) as AuthTokenPayload<any>;
 

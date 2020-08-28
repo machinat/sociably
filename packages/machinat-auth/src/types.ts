@@ -4,7 +4,7 @@ import type {
   ServerResponse,
   IncomingHttpHeaders,
 } from 'http';
-import type { CookieAccessor } from './server/cookie';
+import type { CookieAccessor } from './cookie';
 
 type TokenBase = {
   iat: number;

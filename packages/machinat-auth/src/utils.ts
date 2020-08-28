@@ -1,10 +1,11 @@
+/** @internal */ /** */
 import type { ServerResponse } from 'http';
 import {
   parse as parseCookie,
   serialize as serializeCookie,
   CookieSerializeOptions,
 } from 'cookie';
-import type { WithHeaders } from '../types';
+import type { WithHeaders } from './types';
 
 export const respondRedirect = (res: ServerResponse, url: string): void => {
   res.writeHead(302, { Location: url });

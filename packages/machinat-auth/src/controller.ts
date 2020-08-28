@@ -10,11 +10,8 @@ import {
 } from 'jsonwebtoken';
 import getRawBody from 'raw-body';
 import thenifiedly from 'thenifiedly';
-import {
-  SIGNATURE_COOKIE_KEY,
-  SERVER_AUTHORIZERS_I,
-  MODULE_CONFIGS_I,
-} from '../constant';
+import { SIGNATURE_COOKIE_KEY } from './constant';
+import { SERVER_AUTHORIZERS_I, MODULE_CONFIGS_I } from './interface';
 import type {
   ServerAuthorizer,
   AuthTokenPayload,
@@ -26,16 +23,18 @@ import type {
   AuthModuleConfigs,
   AuthContext,
   WithHeaders,
-} from '../types';
+} from './types';
 
 import { getCookies, isSubpath } from './utils';
 import { CookieAccessor, CookieController } from './cookie';
 
+/** @internal */
 const getSignature = (req: WithHeaders) => {
   const cookies = getCookies(req);
   return cookies ? cookies[SIGNATURE_COOKIE_KEY] : undefined;
 };
 
+/** @internal */
 const parseBody = async (req: IncomingMessage): Promise<null | any> => {
   try {
     const rawBody = await getRawBody(req, { encoding: true });
@@ -47,14 +46,17 @@ const parseBody = async (req: IncomingMessage): Promise<null | any> => {
   }
 };
 
+/** @ignore */
 const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
 
+/** @internal */
 const respondAPIOk = (res: ServerResponse, platform: string, token: string) => {
   res.writeHead(200, CONTENT_TYPE_JSON);
   const body: AuthAPIResponseBody = { platform, token };
   res.end(JSON.stringify(body));
 };
 
+/** @internal */
 const respondAPIError = (res: ServerResponse, code: number, reason: string) => {
   res.writeHead(code, CONTENT_TYPE_JSON);
   const body: AuthAPIErrorBody = { error: { code, reason } };
@@ -65,6 +67,9 @@ type AuthVerifyResult<AuthData> =
   | { success: true; token: string; auth: AuthContext<AuthData> }
   | { success: false; token: void | string; code: number; reason: string };
 
+/**
+ * @category Provider
+ */
 export class AuthServerController {
   authorizers: ServerAuthorizer<any, any>[];
   secret: string;
@@ -457,7 +462,9 @@ export class AuthServerController {
   }
 }
 
-export default provider<AuthServerController>({
+export const ServerControllerP = provider<AuthServerController>({
   lifetime: 'singleton',
   deps: [SERVER_AUTHORIZERS_I, MODULE_CONFIGS_I],
 })(AuthServerController);
+
+export type ServerControllerP = AuthServerController;
