@@ -20,11 +20,13 @@ import type {
   HTTPUpgradeRouting,
 } from './types';
 
+/** @internal */
 const isSubPath = (parent: string, child: string) => {
   const relativePath = getRelativePath(parent, child);
   return relativePath === '' || relativePath.slice(0, 2) !== '..';
 };
 
+/** @internal */
 const verifyRoutesConfliction = (
   existedRoutings: ReadonlyArray<{ name?: string; path: string }>,
   routing: { name?: string; path: string }
@@ -40,11 +42,13 @@ const verifyRoutesConfliction = (
   }
 };
 
+/** @internal */
 const endRes = (res: ServerResponse, code: number) => {
   res.statusCode = code;
   res.end(STATUS_CODES[code]);
 };
 
+/** @internal */
 const respondUpgrade = (socket: Socket, code: number) => {
   const codeName = STATUS_CODES[code] as string;
   socket.write(
@@ -57,6 +61,9 @@ const respondUpgrade = (socket: Socket, code: number) => {
   socket.destroy();
 };
 
+/**
+ * @category Provider
+ */
 export class HTTPConnector {
   private _requestRoutings: HTTPRequestRouting[];
   private _upgradeRoutings: HTTPUpgradeRouting[];
@@ -167,7 +174,9 @@ export class HTTPConnector {
   }
 }
 
-export default provider<HTTPConnector>({
+export const ConnectorP = provider<HTTPConnector>({
   lifetime: 'singleton',
   deps: [MODULE_CONFIGS_I, REQUEST_ROUTINGS_I, UPGRADE_ROUTINGS_I],
 })(HTTPConnector);
+
+export type ConnectorP = HTTPConnector;

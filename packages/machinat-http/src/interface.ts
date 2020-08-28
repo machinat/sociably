@@ -8,6 +8,9 @@ import type {
   HTTPUpgradeRouting,
 } from './types';
 
+/**
+ * @category Interface
+ */
 export abstract class HTTPServer {
   abstract listen(options: ServerListenOptions, cb: () => void): void;
 
@@ -21,19 +24,30 @@ export abstract class HTTPServer {
     cb: (req: IncomingMessage, socket: Socket, head: Buffer) => void
   ): void;
 }
-export const ServerI = abstractInterface<HTTPServer>({
+export const HTTPServerI = abstractInterface<HTTPServer>({
   name: 'HTTPServerI',
 })(HTTPServer);
 
+export type HTTPServerI = HTTPServer;
+
+/**
+ * @category Interface
+ */
 export const MODULE_CONFIGS_I = makeInterface<HTTPModuleConfigs>({
   name: 'HTTPModuleConfigsI',
 });
 
+/**
+ * @category Interface
+ */
 export const REQUEST_ROUTINGS_I = makeInterface<HTTPRequestRouting[]>({
   name: 'HTTPRequestRoutingsListI',
   multi: true,
 });
 
+/**
+ * @category Interface
+ */
 export const UPGRADE_ROUTINGS_I = makeInterface<HTTPUpgradeRouting[]>({
   name: 'HTTPUpgradeRoutingsListI',
   multi: true,

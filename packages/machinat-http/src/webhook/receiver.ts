@@ -3,6 +3,7 @@ import readRawBody from 'raw-body';
 import type { RequestHandler } from '../types';
 import type { WebhookHandler } from './types';
 
+/** @ignore */
 const RAW_BODY_OPTION = { encoding: true as const };
 
 class WebhookReceiver {

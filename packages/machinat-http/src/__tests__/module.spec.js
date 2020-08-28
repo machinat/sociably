@@ -1,8 +1,8 @@
 import { createServer } from 'http';
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import Connector from '../connector';
-import HTTP from '..';
+import { HTTPConnector } from '../connector';
+import HTTP from '../module';
 
 jest.mock('http', () =>
   jest.requireActual('@moxyjs/moxy').default({ createServer() {} })
@@ -22,7 +22,7 @@ beforeEach(() => {
 });
 
 it('export interfaces', () => {
-  expect(HTTP.Connector).toBe(Connector);
+  expect(HTTP.Connector).toBe(HTTPConnector);
 
   expect(typeof HTTP.ServerI).toBe('function');
   const { $$name, $$multi, $$typeof } = HTTP.ServerI;
