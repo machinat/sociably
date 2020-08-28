@@ -1,12 +1,57 @@
 import { provider } from '@machinat/core/service';
-import Base from '@machinat/core/base';
-import BotP, { MessengerBot } from '../bot';
-import type MessengerUser from '../user';
-import MessengerUserProfile from './profile';
-import type { MessengerRawUserProfile } from '../types';
+import { UserProfilerI, StateControllerI } from '@machinat/core/base';
+import type { MachinatUserProfile } from '@machinat/core/base/UserProfilerI';
 
+import { BotP } from './bot';
+import type MessengerUser from './user';
+import type { MessengerRawUserProfile } from './types';
+import { MESSENGER } from './constant';
+
+export class MessengerUserProfile implements MachinatUserProfile {
+  data: MessengerRawUserProfile;
+  platform = MESSENGER;
+
+  constructor(rawProfile: MessengerRawUserProfile) {
+    this.data = rawProfile;
+  }
+
+  get id(): string {
+    return this.data.id;
+  }
+
+  get name(): string {
+    return this.data.name;
+  }
+
+  get firstName(): string {
+    return this.data.first_name;
+  }
+
+  get lastName(): string {
+    return this.data.last_name;
+  }
+
+  get pictureURL(): string {
+    return this.data.profile_pic;
+  }
+
+  get locale(): undefined | string {
+    return this.data.locale;
+  }
+
+  get timezone(): undefined | string {
+    return this.data.timezone;
+  }
+
+  get gender(): undefined | string {
+    return this.data.gender;
+  }
+}
+
+/** @ignore */
 const PROFILE_KEY = '$$messenger:user:profile';
 
+/** @ignore */
 const DEFAULT_PROFILE_FIELDS = [
   'id',
   'name',
@@ -25,15 +70,19 @@ type ProfilerOptions = {
   optionalProfileFields?: ('locale' | 'timezone' | 'gender')[];
 };
 
-export class MessengerUserProfiler implements Base.UserProfilerI {
-  bot: MessengerBot;
-  stateController: null | Base.StateControllerI;
+/**
+ * MessengerUserProfiler fetch user profile from Messenger platform.
+ * @category Provider
+ */
+export class MessengerUserProfiler implements UserProfilerI {
+  bot: BotP;
+  stateController: null | StateControllerI;
   profileCacheTime: number;
   _fieldsParam: string;
 
   constructor(
-    bot: MessengerBot,
-    stateController: null | Base.StateControllerI,
+    bot: BotP,
+    stateController: null | StateControllerI,
     { profileCacheTime, optionalProfileFields = [] }: ProfilerOptions = {}
   ) {
     this.bot = bot;
@@ -75,7 +124,9 @@ export class MessengerUserProfiler implements Base.UserProfilerI {
   }
 }
 
-export default provider<MessengerUserProfiler>({
+export const UserProfilerP = provider<MessengerUserProfiler>({
   lifetime: 'scoped',
-  deps: [BotP, { require: Base.StateControllerI, optional: true }],
+  deps: [BotP, { require: StateControllerI, optional: true }],
 })(MessengerUserProfiler);
+
+export type UserProfilerP = MessengerUserProfiler;

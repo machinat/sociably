@@ -1,10 +1,11 @@
+/** @internal */ /** */
 import { annotateNativeComponent } from '@machinat/core/renderer';
 import type {
   MessengerSegmentValue,
   MessageValue,
   SenderActionValue,
 } from './types';
-import { MESSENGER, ENTRY_PATH } from './constant';
+import { MESSENGER, API_PATH } from './constant';
 
 const { hasOwnProperty } = Object.prototype;
 export const isMessageEntry = (
@@ -13,6 +14,6 @@ export const isMessageEntry = (
   typeof value === 'string' ||
   (typeof value === 'object' &&
     value !== null &&
-    !hasOwnProperty.call(value, ENTRY_PATH));
+    !hasOwnProperty.call(value, API_PATH));
 
 export const annotateMessengerComponent = annotateNativeComponent(MESSENGER);

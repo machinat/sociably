@@ -66,7 +66,7 @@ export const provider = <T>({
   lifetime,
 }: ProvideOptions<T>) => (
   klazz: Constructor<T>
-): Constructor<T> & ServiceProvider<T> => {
+): ServiceProvider<T> & Constructor<T> => {
   validateLifetime(lifetime);
   const requirements = deps.map(polishServiceRequirement);
 
@@ -120,7 +120,7 @@ export const abstractInterface = <T>({
   name,
 }: AnstractInterfaceOptions = {}) => (
   klazz: AbstractConstructor<T>
-): Constructor<T> & ServiceInterface<T> => {
+): ServiceInterface<T> & Constructor<T> => {
   return Object.defineProperties(klazz, {
     $$typeof: { value: MACHINAT_SERVICES_INTERFACE },
     $$name: { value: name || klazz.name },

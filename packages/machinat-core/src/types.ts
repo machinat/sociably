@@ -82,23 +82,19 @@ export type ContainerElement<
   Component extends ContainerComponent<Props>
 > = MachinatElement<Props, Component>;
 
-export type NativeComponent<Props, Value> = {
+export type NativeComponent<Props, Segment extends IntermediateSegment<any>> = {
   (
-    element: NativeElement<Props, Value, NativeComponent<Props, Value>>,
+    element: NativeElement<Props, NativeComponent<Props, Segment>>,
     path: string,
-    render: InnerRenderFn<Value>
-  ):
-    | null
-    | IntermediateSegment<Value>[]
-    | Promise<null | IntermediateSegment<Value>[]>;
+    render: InnerRenderFn<any>
+  ): null | Segment[] | Promise<null | Segment[]>;
   $$typeof: typeof MACHINAT_NATIVE_TYPE;
   $$platform: string;
 };
 
 export type NativeElement<
   Props,
-  Value,
-  Component extends NativeComponent<Props, Value>
+  Component extends NativeComponent<Props, any>
 > = MachinatElement<Props, Component>;
 
 export type FragmentElement = MachinatElement<

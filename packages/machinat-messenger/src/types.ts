@@ -8,11 +8,12 @@ import type {
 } from '@machinat/core/types';
 import type { DispatchFrame } from '@machinat/core/engine/types';
 import type { ServiceContainer } from '@machinat/core/service/types';
+import type { IntermediateSegment } from '@machinat/core/renderer/types';
 import type { WebhookMetadata } from '@machinat/http/webhook/types';
 import type { MessengerBot } from './bot';
 import type MessengerChannel from './channel';
 import type MessengerUser from './user';
-import type { ENTRY_PATH } from './constant';
+import type { API_PATH } from './constant';
 
 export type PSIDTarget = { id: string };
 export type UserRefTarget = { user_ref: string };
@@ -52,30 +53,38 @@ export type MessageValue = {
 };
 
 export type SenderActionValue = {
-  sender_action: 'mark_seen' | 'typing_on' | 'typing_off';
+  sender_action: 'mark_seen' | 'typing_on' | 'typing_off'; // eslint-disable-line camelcase
 };
 
 export type PassThreadControlValue = {
-  target_app_id: string;
+  target_app_id: string; // eslint-disable-line camelcase
   metadata: string;
-  [ENTRY_PATH]: any;
+  [API_PATH]: any;
 };
 
 export type RequestThreadControlValue = {
   metadata: string;
-  [ENTRY_PATH]: any;
+  [API_PATH]: any;
 };
 
-type TakeThreadControlValue = RequestThreadControlValue;
+export type TakeThreadControlValue = RequestThreadControlValue;
 
-export type MessengerSegmentValue =
-  | MessageValue
-  | SenderActionValue
+export type HandoverProtocolValue =
   | PassThreadControlValue
   | RequestThreadControlValue
   | TakeThreadControlValue;
 
-export type MessengerComponent = NativeComponent<any, MessengerSegmentValue>;
+export type MessengerSegmentValue =
+  | MessageValue
+  | SenderActionValue
+  | HandoverProtocolValue;
+
+export type MessengerComponent<
+  Props,
+  Segment extends IntermediateSegment<
+    MessengerSegmentValue
+  > = IntermediateSegment<MessengerSegmentValue>
+> = NativeComponent<Props, Segment>;
 
 export type BatchAPIRequest = {
   method: string;

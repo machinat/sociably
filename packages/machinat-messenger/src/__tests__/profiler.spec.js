@@ -1,7 +1,6 @@
 import moxy from '@moxyjs/moxy';
-import MessengerUser from '../../user';
-import UserProfiler from '../fetcher';
-import MessengerUserProfile from '../profile';
+import MessengerUser from '../user';
+import { MessengerUserProfiler } from '../profiler';
 
 jest.useFakeTimers();
 
@@ -44,10 +43,8 @@ beforeEach(() => {
 });
 
 test('fetch profile from api and cache it', async () => {
-  const profiler = new UserProfiler(bot, stateController);
+  const profiler = new MessengerUserProfiler(bot, stateController);
   const profile = await profiler.fetchProfile(user);
-
-  expect(profile).toBeInstanceOf(MessengerUserProfile);
 
   expect(profile.id).toBe('xxxxxxxxx');
   expect(profile.name).toBe('Peter Chang');
@@ -93,7 +90,7 @@ test('fetch profile from api and cache it', async () => {
 });
 
 it('return with cached profile data if existed', async () => {
-  const profiler = new UserProfiler(bot, stateController);
+  const profiler = new MessengerUserProfiler(bot, stateController);
 
   state.get.mock.fake(async () => ({
     data: rawProfileData,
@@ -110,7 +107,7 @@ it('return with cached profile data if existed', async () => {
 });
 
 it('update new profile data if profileCacheTime expired', async () => {
-  const profiler = new UserProfiler(bot, stateController, {
+  const profiler = new MessengerUserProfiler(bot, stateController, {
     profileCacheTime: 99999999,
   });
 
@@ -150,7 +147,7 @@ it('query additional optionalProfileFields if given', async () => {
     results: [{ code: 200, headers: {}, body: profileWithMoreFields }],
   }));
 
-  const profiler = new UserProfiler(bot, stateController, {
+  const profiler = new MessengerUserProfiler(bot, stateController, {
     optionalProfileFields: ['locale', 'timezone', 'gender'],
   });
   const profile = await profiler.fetchProfile(user);

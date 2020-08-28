@@ -2,8 +2,8 @@ import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
-import Messenger from '..';
-import { MessengerUserProfiler } from '../profile';
+import Messenger from '../module';
+import { MessengerUserProfiler } from '../profiler';
 import { MessengerReceiver } from '../receiver';
 import { MessengerBot } from '../bot';
 

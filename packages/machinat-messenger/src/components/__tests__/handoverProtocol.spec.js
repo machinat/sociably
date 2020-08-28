@@ -35,7 +35,7 @@ test('PassThreadControl', async () => {
               "value": Object {
                 "metadata": "you have my bow",
                 "target_app_id": "Legolas",
-                Symbol(messenger.segment.entry): "me/pass_thread_control",
+                Symbol(api_path.messenger.machinat): "me/pass_thread_control",
               },
             },
           ]
@@ -55,7 +55,7 @@ test('RequestThreadControl', async () => {
               "type": "unit",
               "value": Object {
                 "metadata": "give me the ring",
-                Symbol(messenger.segment.entry): "me/request_thread_control",
+                Symbol(api_path.messenger.machinat): "me/request_thread_control",
               },
             },
           ]
@@ -74,7 +74,7 @@ test('TakeThreadContorl', async () => {
               "type": "unit",
               "value": Object {
                 "metadata": "my precious",
-                Symbol(messenger.segment.entry): "me/take_thread_control",
+                Symbol(api_path.messenger.machinat): "me/take_thread_control",
               },
             },
           ]

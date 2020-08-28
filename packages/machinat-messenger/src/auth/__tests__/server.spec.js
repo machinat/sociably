@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import { ServerResponse } from 'http';
-import ServerAuthProvider from '../server';
+import { MessengerServerAuthorizer } from '../server';
 import MessengerChannel from '../../channel';
 import MessengerUser from '../../user';
 
@@ -14,16 +14,20 @@ beforeEach(() => {});
 
 describe('#constructor(options)', () => {
   it('is messenger platform', () => {
-    expect(new ServerAuthProvider({ appSecret: 'SECRET' }).platform).toBe(
-      'messenger'
-    );
+    expect(
+      new MessengerServerAuthorizer({ appSecret: 'SECRET' }).platform
+    ).toBe('messenger');
   });
 
   it('throw if options.appSecret not given', () => {
-    expect(() => new ServerAuthProvider()).toThrowErrorMatchingInlineSnapshot(
+    expect(
+      () => new MessengerServerAuthorizer()
+    ).toThrowErrorMatchingInlineSnapshot(
       `"options.appSecret must not be empty"`
     );
-    expect(() => new ServerAuthProvider({})).toThrowErrorMatchingInlineSnapshot(
+    expect(
+      () => new MessengerServerAuthorizer({})
+    ).toThrowErrorMatchingInlineSnapshot(
       `"options.appSecret must not be empty"`
     );
   });
@@ -31,7 +35,9 @@ describe('#constructor(options)', () => {
 
 describe('#delegateAuthRequest(req, res)', () => {
   it('respond 403', async () => {
-    const provider = new ServerAuthProvider({ appSecret: '_APP_SECRET_' });
+    const provider = new MessengerServerAuthorizer({
+      appSecret: '_APP_SECRET_',
+    });
     const res = moxy(new ServerResponse({}));
 
     await expect(provider.delegateAuthRequest(request, res)).resolves.toBe(
@@ -45,7 +51,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
 describe('#verifyCredential(credential)', () => {
   it('resolve auth context if verification ok', async () => {
-    const provider = new ServerAuthProvider({ appSecret: 'APP_SECRET' });
+    const provider = new MessengerServerAuthorizer({ appSecret: 'APP_SECRET' });
     const credential = {
       signedRequest:
         'djtx96RQaNCtszsQ7GOIXy8jBF659cNCBVM69n3g6h8.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTUwNDA0NjM4MCwicGFnZV9pZCI6NjgyNDk4MTcxOTQzMTY1LCJwc2lkIjoiMTI1NDQ1OTE1NDY4MjkxOSIsInRocmVhZF90eXBlIjoiVVNFUl9UT19QQUdFIiwidGlkIjoiMTI1NDQ1OTE1NDY4MjkxOSJ9',
@@ -66,7 +72,7 @@ describe('#verifyCredential(credential)', () => {
   });
 
   it('reject if context invalid', async () => {
-    const provider = new ServerAuthProvider({ appSecret: 'APP_SECRET' });
+    const provider = new MessengerServerAuthorizer({ appSecret: 'APP_SECRET' });
 
     await expect(provider.verifyCredential(null)).resolves
       .toMatchInlineSnapshot(`
@@ -95,7 +101,7 @@ describe('#verifyCredential(credential)', () => {
   });
 
   it('reject if signature verification fail', async () => {
-    const provider = new ServerAuthProvider({ appSecret: 'APP_SECRET' });
+    const provider = new MessengerServerAuthorizer({ appSecret: 'APP_SECRET' });
     const credentrial = {
       signedRequest:
         '__invalid_signature_part__.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTUwNDA0NjM4MCwicGFnZV9pZCI6NjgyNDk4MTcxOTQzMTY1LCJwc2lkIjoiMTI1NDQ1OTE1NDY4MjkxOSIsInRocmVhZF90eXBlIjoiVVNFUl9UT19QQUdFIiwidGlkIjoiMTI1NDQ1OTE1NDY4MjkxOSJ9',
@@ -114,7 +120,7 @@ describe('#verifyCredential(credential)', () => {
 
 describe('#verifyRefreshment()', () => {
   it('return unaccepted anyway', async () => {
-    const provider = new ServerAuthProvider({ appSecret: 'SECRET' });
+    const provider = new MessengerServerAuthorizer({ appSecret: 'SECRET' });
 
     await expect(provider.verifyRefreshment({})).resolves
       .toMatchInlineSnapshot(`
@@ -129,7 +135,7 @@ describe('#verifyRefreshment()', () => {
 
 describe('#refineAuth(data)', () => {
   it('resolve auth context form extension context', async () => {
-    const provider = new ServerAuthProvider({ appSecret: 'SECRET' });
+    const provider = new MessengerServerAuthorizer({ appSecret: 'SECRET' });
     const context = {
       algorithm: 'HMAC-SHA256',
       issued_at: 1504046380,
@@ -148,7 +154,7 @@ describe('#refineAuth(data)', () => {
   });
 
   it('resolve null if extension context invalid', async () => {
-    const provider = new ServerAuthProvider({ appSecret: 'SECRET' });
+    const provider = new MessengerServerAuthorizer({ appSecret: 'SECRET' });
 
     await expect(provider.refineAuth()).resolves.toBe(null);
     await expect(provider.refineAuth({})).resolves.toBe(null);

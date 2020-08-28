@@ -376,7 +376,7 @@ Array [
           />,
         ]
       }
-      type="image"
+      mediaType="image"
       url="http://..."
     />,
     "path": "$::0",
@@ -440,8 +440,8 @@ Array [
           />,
         ]
       }
+      mediaType="video"
       sharable={true}
-      type="video"
     />,
     "path": "$::1",
     "type": "unit",
@@ -479,111 +479,6 @@ Array [
             ],
             "sharable": true,
             "template_type": "media",
-          },
-          "type": "template",
-        },
-      },
-    },
-  },
-]
-`;
-
-exports[`OpenGraphTemplate match snapshot 1`] = `
-Array [
-  Object {
-    "node": <OpenGraphTemplate
-      buttons={
-        Array [
-          <URLButton
-            title="check"
-            url="http://xxx.yy.z"
-          />,
-          <PostbackButton
-            payload="_MORE_"
-            title="more"
-          />,
-          <CallButton
-            number="+12345678"
-            title="call us"
-          />,
-        ]
-      }
-      url="http://..."
-    />,
-    "path": "$::0",
-    "type": "unit",
-    "value": Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
-            "elements": Array [
-              Object {
-                "buttons": Array [
-                  Object {
-                    "fallback_url": undefined,
-                    "messenger_extensions": undefined,
-                    "title": "check",
-                    "type": "web_url",
-                    "url": "http://xxx.yy.z",
-                    "webview_height_ratio": undefined,
-                    "webview_share_button": undefined,
-                  },
-                  Object {
-                    "payload": "_MORE_",
-                    "title": "more",
-                    "type": "postback",
-                  },
-                  Object {
-                    "number": "+12345678",
-                    "title": "call us",
-                    "type": "phone_number",
-                  },
-                ],
-                "url": "http://...",
-              },
-            ],
-            "sharable": undefined,
-            "template_type": "open_graph",
-          },
-          "type": "template",
-        },
-      },
-    },
-  },
-  Object {
-    "node": <OpenGraphTemplate
-      sharablebuttons={
-        Array [
-          <URLButton
-            title="check"
-            url="http://xxx.yy.z"
-          />,
-          <PostbackButton
-            payload="_MORE_"
-            title="more"
-          />,
-          <CallButton
-            number="+12345678"
-            title="call us"
-          />,
-        ]
-      }
-      url="http://..."
-    />,
-    "path": "$::1",
-    "type": "unit",
-    "value": Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
-            "elements": Array [
-              Object {
-                "buttons": undefined,
-                "url": "http://...",
-              },
-            ],
-            "sharable": undefined,
-            "template_type": "open_graph",
           },
           "type": "template",
         },

@@ -1,3 +1,4 @@
+/** @internal */ /** */
 import invariant from 'invariant';
 import filterSymbolKeys from '@machinat/core/utils/filterSymbolKeys';
 import formatNode from '@machinat/core/utils/formatNode';
@@ -12,12 +13,13 @@ import type MessangerChannel from './channel';
 
 import { isMessageEntry } from './utils';
 import {
-  ENTRY_PATH,
+  API_PATH,
   PATH_MESSAGES,
   PATH_MESSAGE_ATTACHMENTS,
   ATTACHMENT_DATA,
   ATTACHMENT_INFO,
-  ASSET_TAG,
+  ATTACHMENT_ASSET_TAG,
+  MESSENGER_MESSAGING_TYPE_RESPONSE,
 } from './constant';
 
 const POST = 'POST';
@@ -37,15 +39,15 @@ export const chatJobsMaker = (options?: MessengerSendOptions) => (
     const { value } = segments[i];
 
     let body: any;
-    let specifiedURL: undefined | string;
+    let relativeURL: undefined | string;
     let attachmentAssetTag: undefined | string;
     let attachmentFileData: undefined | any;
     let attachmentFileInfo: undefined | any;
 
     if (typeof value === 'object') {
       body = filterSymbolKeys(value);
-      specifiedURL = value[ENTRY_PATH];
-      attachmentAssetTag = value[ASSET_TAG];
+      relativeURL = value[API_PATH];
+      attachmentAssetTag = value[ATTACHMENT_ASSET_TAG];
       attachmentFileData = value[ATTACHMENT_DATA];
       attachmentFileInfo = value[ATTACHMENT_INFO];
     } else if (typeof value === 'string') {
@@ -59,7 +61,8 @@ export const chatJobsMaker = (options?: MessengerSendOptions) => (
     if (options && isMessageEntry(value)) {
       if (body.message) {
         if (body.messaging_type === undefined) {
-          body.messaging_type = options.messagingType;
+          body.messaging_type =
+            options.messagingType || MESSENGER_MESSAGING_TYPE_RESPONSE;
           body.tag = options.tag;
         }
 
@@ -78,7 +81,7 @@ export const chatJobsMaker = (options?: MessengerSendOptions) => (
     jobs[i] = {
       request: {
         method: POST,
-        relative_url: specifiedURL || PATH_MESSAGES,
+        relative_url: relativeURL || PATH_MESSAGES,
         body,
       },
       channelUId: uid,

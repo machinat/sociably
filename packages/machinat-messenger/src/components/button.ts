@@ -1,7 +1,40 @@
 import { partSegment } from '@machinat/core/renderer';
+import type { PartSegment } from '@machinat/core/renderer/types';
 import { annotateMessengerComponent } from '../utils';
+import type { MessengerComponent } from '../types';
 
-export const URLButton = (node, path) => {
+/**
+ * @category Props
+ */
+type URLButtonsProps = {
+  /** Button title. 20 character limit. */
+  title: string;
+  /**
+   * This URL is opened in a mobile browser when the button is tapped. Must use
+   * HTTPS protocol if messenger_extensions is true.
+   */
+  url: string;
+  /**
+   * The URL to use on clients that don't support Messenger Extensions. If this
+   * is not defined, the url will be used as the fallback. It may only be
+   * specified if messenger_extensions is true.
+   */
+  fallbackURL?: string;
+  /** Must be true if using Messenger Extensions. */
+  messengerExtensions?: boolean;
+  /** Height of the Webview. */
+  webviewHeightRatio?: 'compact' | 'tall' | 'full';
+  /**
+   * Set to hide to disable the share button in the Webview (for sensitive
+   * info).
+   */
+  webviewShareButton?: 'hide';
+  /** Alias of `webviewShareButton="hide"` when set to true. */
+  hideWebviewShare?: boolean;
+};
+
+/** @ignore */
+const _URLButton = function URLButton(node, path) {
   const {
     title,
     url,
@@ -25,9 +58,31 @@ export const URLButton = (node, path) => {
     }),
   ];
 };
-annotateMessengerComponent(URLButton);
+/**
+ * The URL Button opens a webpage in the Messenger webview. This button can be
+ * used with the Button and Generic Templates.
+ * @category Component
+ * @props {@link URLButtonsProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/reference/buttons/url)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#url).
+ */
+export const URLButton: MessengerComponent<
+  URLButtonsProps,
+  PartSegment<any>
+> = annotateMessengerComponent(_URLButton);
 
-export const PostbackButton = (node, path) => {
+/**
+ * @category Props
+ */
+type PostbackButtonProps = {
+  /** Button title. 20 character limit. */
+  title: string;
+  /** This data will be sent back to your webhook. 1000 character limit. */
+  payload: string;
+};
+
+/** @ignore */
+const _PostbackButton = function PostbackButton(node, path) {
   const { title, payload } = node.props;
   return [
     partSegment(node, path, {
@@ -37,39 +92,36 @@ export const PostbackButton = (node, path) => {
     }),
   ];
 };
-annotateMessengerComponent(PostbackButton);
+/**
+ * When the postback button is tapped, the Messenger Platform sends an event to
+ * your postback webhook. This is useful when you want to invoke an action in
+ * your bot. This button can be used with the Button Template and Generic
+ * Template.
+ * @category Component
+ * @props {@link PostbackButtonProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/postback).
+ */
+export const PostbackButton: MessengerComponent<
+  PostbackButtonProps,
+  PartSegment<any>
+> = annotateMessengerComponent(_PostbackButton);
 
-export const BuyButton = (node, path) => {
-  const {
-    title,
-    payload,
-    currency,
-    paymentType,
-    isTest,
-    merchantName,
-    requestedInfo,
-    priceList,
-  } = node.props;
-
-  return [
-    partSegment(node, path, {
-      type: 'payment',
-      title,
-      payload,
-      payment_summary: {
-        currency,
-        payment_type: paymentType,
-        is_test_payment: isTest,
-        merchant_name: merchantName,
-        requested_user_info: requestedInfo,
-        price_list: priceList,
-      },
-    }),
-  ];
+/**
+ * @category Props
+ */
+type CallButtonProps = {
+  /** Button title, 20 character limit. */
+  title: string;
+  /**
+   * Format must have "+" prefix followed by the country code, area code and
+   * local number.
+   */
+  number: string;
 };
-annotateMessengerComponent(BuyButton);
 
-export const CallButton = (node, path) => {
+/** @ignore */
+const _CallButton = function CallButton(node, path) {
   const { title, number } = node.props;
   return [
     partSegment(node, path, {
@@ -79,9 +131,29 @@ export const CallButton = (node, path) => {
     }),
   ];
 };
-annotateMessengerComponent(CallButton);
+/**
+ * The Call Button can be used to initiate a phone call. This button can be used
+ * with the Button and Generic Templates.
+ * @category Component
+ * @props {@link CallButtonProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#call)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/call).
+ */
+export const CallButton: MessengerComponent<
+  CallButtonProps,
+  PartSegment<any>
+> = annotateMessengerComponent(_CallButton);
 
-export const LoginButton = (node, path) => {
+/**
+ * @category Props
+ */
+type LoginButtonProps = {
+  /** Authentication callback URL. Must use HTTPS protocol. */
+  url: string;
+};
+
+/** @ignore */
+const _LoginButton = function LoginButton(node, path) {
   const { url } = node.props;
   return [
     partSegment(node, path, {
@@ -90,14 +162,50 @@ export const LoginButton = (node, path) => {
     }),
   ];
 };
-annotateMessengerComponent(LoginButton);
+/**
+ * The log in button triggers the [account linking authentication flow](https://developers.facebook.com/docs/messenger-platform/account-linking/authentication).
+ * @category Component
+ * @props {@link LoginButtonProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#login)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/login).
+ */
+export const LoginButton: MessengerComponent<
+  LoginButtonProps,
+  PartSegment<any>
+> = annotateMessengerComponent(_LoginButton);
 
-export const LogoutButton = (node, path) => [
-  partSegment(node, path, { type: 'account_unlink' }),
-];
-annotateMessengerComponent(LogoutButton);
+/** @ignore */
+const _LogoutButton = function LogoutButton(node, path) {
+  return [partSegment(node, path, { type: 'account_unlink' })];
+};
+/**
+ * The log out button triggers the account unlinking flow.
+ * @category Component
+ * @props `{}`
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#game_play)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/game-play).
+ */
+export const LogoutButton: MessengerComponent<
+  {}, // eslint-disable-line @typescript-eslint/ban-types
+  PartSegment<any>
+> = annotateMessengerComponent(_LogoutButton);
 
-export const GamePlayButton = (node, path) => {
+/**
+ * @category Props
+ */
+type GamePlayButtonProps = {
+  /** Button title, 20 character limit. */
+  title: string;
+  /** This data will be sent to the game. */
+  payload?: string;
+  /** Player ID (Instant Game name-space) to play against. */
+  playerId?: string;
+  /** ontext ID (Instant Game name-space) of the THREAD to play in. */
+  contextId?: string;
+};
+
+/** @ignore */
+const _GamePlayButton = function GamePlayButton(node, path) {
   const { title, payload, playerId, contextId } = node.props;
   return [
     partSegment(node, path, {
@@ -114,4 +222,15 @@ export const GamePlayButton = (node, path) => {
     }),
   ];
 };
-annotateMessengerComponent(GamePlayButton);
+/**
+ * The game play button launches an Instant Game that is associated with the bot
+ * page.
+ * @category Component
+ * @props {@link GamePlayButtonProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#logout)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/logout).
+ */
+export const GamePlayButton: MessengerComponent<
+  GamePlayButtonProps,
+  PartSegment<any>
+> = annotateMessengerComponent(_GamePlayButton);

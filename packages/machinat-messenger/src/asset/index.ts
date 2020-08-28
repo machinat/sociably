@@ -1,7 +1,2 @@
-import AssetsManagerP, { MessengerAssetsManager } from './manager';
-
-export { default } from './manager';
-export { default as collectSharableAttachments } from './collectSharableAttachments';
-
-export const AssetsManager = AssetsManagerP;
-export type AssetsManager = MessengerAssetsManager;
+export { AssetsManagerP as MessengerAssetsManager } from './manager';
+export { default as collectReusableAttachments } from './collectReusableAttachments';

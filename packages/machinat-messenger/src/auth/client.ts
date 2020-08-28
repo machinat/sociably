@@ -17,10 +17,13 @@ type MessengerClientAuthOpts = {
   isExtensionReady?: boolean;
 };
 
-declare let document: Document;
-declare let window: Window & { extAsyncInit(): void };
-declare let MessengerExtensions: any;
+/** @ignore */
+declare const window: Window & { extAsyncInit(): void };
 
+/** @ignore */
+declare const MessengerExtensions: any;
+
+/** @ignore */
 const INIT_TIMEOUT = 20000;
 
 class MessengerClientAuthorizer

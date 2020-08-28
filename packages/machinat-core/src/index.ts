@@ -1,3 +1,7 @@
+/**
+ * This is the doc comment for file1.ts
+ * @packageDocumentation
+ */
 import {
   MACHINAT_FRAGMENT_TYPE,
   MACHINAT_PAUSE_TYPE,
@@ -9,6 +13,9 @@ import createElement from './createElement';
 import App from './app';
 import type { AppConfig, EventContext } from './types';
 
+/**
+ * @category Core
+ */
 const Machinat = {
   Fragment: MACHINAT_FRAGMENT_TYPE,
   Pause: MACHINAT_PAUSE_TYPE,

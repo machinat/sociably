@@ -70,9 +70,9 @@ export const isGeneralType = (
   node: MachinatElement<any, any>
 ): node is GeneralElement => typeof node.type === 'string';
 
-export const isNativeType = <Native extends NativeComponent<any, any>>(
+export const isNativeType = <Component extends NativeComponent<any, any>>(
   node: MachinatElement<any, any>
-): node is NativeElement<any, any, Native> =>
+): node is NativeElement<any, Component> =>
   typeof node.type === 'function' &&
   node.type.$$typeof === MACHINAT_NATIVE_TYPE;
 

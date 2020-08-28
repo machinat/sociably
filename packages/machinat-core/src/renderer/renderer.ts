@@ -57,7 +57,7 @@ type GeneralComponentDelegate<Value> = (
 
 export default class MachinatRenderer<
   Value,
-  Native extends NativeComponent<any, Value>
+  Component extends NativeComponent<any, any>
 > {
   platform: string;
   generalComponentDelegator: GeneralComponentDelegate<Value>;
@@ -274,9 +274,9 @@ export default class MachinatRenderer<
         { ...context, servicesProvided: newProvided },
         this._traverseCallback
       );
-    } else if (isNativeType<Native>(node)) {
+    } else if (isNativeType<Component>(node)) {
       // render native element of the platform
-      const { type: nativeComponent }: NativeElement<any, any, Native> = node;
+      const { type: nativeComponent }: NativeElement<any, Component> = node;
 
       invariant(
         this._checkNativeComponentPlatform(nativeComponent),

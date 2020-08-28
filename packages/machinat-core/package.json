@@ -38,5 +38,6 @@
     "invariant": "^2.2.4",
     "thenifiedly": "^0.2.1",
     "warning": "^4.0.2"
-  }
+  },
+  "devDependencies": {}
 }

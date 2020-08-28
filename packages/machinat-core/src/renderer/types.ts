@@ -70,3 +70,7 @@ export type InnerRenderFn<Value> = (
   node: MachinatNode,
   path: string
 ) => Promise<null | IntermediateSegment<Value>[]>;
+
+export type FunctionOf<Fn extends (...args: unknown[]) => unknown> = (
+  ...args: Parameters<Fn>
+) => ReturnType<Fn>;

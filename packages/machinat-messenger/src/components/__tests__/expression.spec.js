@@ -2,7 +2,7 @@ import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
 import { isNativeType } from '@machinat/core/utils/isX';
-import { ENTRY_PATH } from '../../constant';
+import { API_PATH } from '../../constant';
 import { QuickReply, EmailQuickReply, PhoneQuickReply } from '../quickReply';
 import { Expression } from '../expression';
 import { TypingOn, TypingOff, MarkSeen } from '../senderAction';
@@ -284,7 +284,7 @@ it('do nothing to non-messgae value', async () => {
             type: 'unit',
             value: {
               something: 'else',
-              [ENTRY_PATH]: 'some/other/api',
+              [API_PATH]: 'some/other/api',
             },
             node,
             path,
@@ -308,7 +308,7 @@ it('do nothing to non-messgae value', async () => {
 
   expect(segments[1].value).toEqual({
     something: 'else',
-    [ENTRY_PATH]: 'some/other/api',
+    [API_PATH]: 'some/other/api',
   });
   expect(segments[0].value).toMatchInlineSnapshot(`
     Object {

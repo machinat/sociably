@@ -29,7 +29,7 @@ import {
 export default class MachinatEngine<
   Channel extends MachinatChannel,
   SegmentValue,
-  Native extends NativeComponent<any, SegmentValue>,
+  Component extends NativeComponent<any, any>,
   Job,
   Result,
   Bot extends MachinatBot<Channel, Job, Result>
@@ -37,7 +37,7 @@ export default class MachinatEngine<
   platform: string;
   bot: Bot;
 
-  renderer: MachinatRenderer<SegmentValue, Native>;
+  renderer: MachinatRenderer<SegmentValue, Component>;
   queue: MachinatQueue<Job, Result>;
   worker: MachinatWorker<Job, Result>;
 
@@ -50,7 +50,7 @@ export default class MachinatEngine<
   constructor(
     platform: string,
     bot: Bot,
-    renderer: MachinatRenderer<SegmentValue, Native>,
+    renderer: MachinatRenderer<SegmentValue, Component>,
     queue: MachinatQueue<Job, Result>,
     worker: MachinatWorker<Job, Result>,
     initScope: InitScopeFn,

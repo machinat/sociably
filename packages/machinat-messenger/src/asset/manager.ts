@@ -3,17 +3,25 @@ import type { MachinatNode } from '@machinat/core/types';
 import { StateControllerI } from '@machinat/core/base';
 import formatNode from '@machinat/core/utils/formatNode';
 import { PATH_PERSONAS } from '../constant';
-import BotP, { MessengerBot } from '../bot';
+import { BotP } from '../bot';
 
+/** @ignore */
 const ATTACHMENT = 'attachment';
+
+/** @ignore */
 const PERSONA = 'persona';
 
+/**
+ * MessengerAssetsManager stores name-to-id mapping for assets created in
+ * Messenger platform.
+ * @category Provider
+ */
 export class MessengerAssetsManager {
-  bot: MessengerBot;
+  bot: BotP;
   pageId: string;
   _stateController: StateControllerI;
 
-  constructor(stateManager: StateControllerI, bot: MessengerBot) {
+  constructor(stateManager: StateControllerI, bot: BotP) {
     this._stateController = stateManager;
     this.bot = bot;
     this.pageId = bot.pageId;
@@ -136,7 +144,9 @@ export class MessengerAssetsManager {
   }
 }
 
-export default provider<MessengerAssetsManager>({
+export const AssetsManagerP = provider<MessengerAssetsManager>({
   lifetime: 'scoped',
   deps: [StateControllerI, BotP],
 })(MessengerAssetsManager);
+
+export type AssetsManagerP = MessengerAssetsManager;

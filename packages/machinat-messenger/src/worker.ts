@@ -1,3 +1,4 @@
+/** @internal */ /** */
 import url from 'url';
 import crypto from 'crypto';
 import fetch from 'node-fetch';

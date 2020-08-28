@@ -11,22 +11,21 @@ import type {
   PartSegment,
   UnitSegment,
   PauseSegment,
+  FunctionOf,
 } from './types';
 
-type FunctionOf<Fn extends (...args: unknown[]) => unknown> = (
-  ...args: Parameters<Fn>
-) => ReturnType<Fn>;
-
-export const annotateNativeComponent = (platform: string) => (
-  componentFn: FunctionOf<NativeComponent<any, any>>
-): NativeComponent<any, any> =>
+export const annotateNativeComponent = (platform: string) => <
+  Component extends NativeComponent<any, any>
+>(
+  componentFn: FunctionOf<Component>
+): Component =>
   Object.defineProperties(componentFn, {
     $$typeof: { value: MACHINAT_NATIVE_TYPE },
     $$platform: { value: platform },
   });
 
 export const breakSegment = (
-  node: GeneralElement | NativeElement<any, any, any>,
+  node: GeneralElement | NativeElement<any, any>,
   path: string
 ): BreakSegment => ({
   type: 'break',
@@ -36,7 +35,7 @@ export const breakSegment = (
 });
 
 export const textSegment = (
-  node: GeneralElement | NativeElement<any, any, any>,
+  node: GeneralElement | NativeElement<any, any>,
   path: string,
   text: string
 ): TextSegment => ({
@@ -47,7 +46,7 @@ export const textSegment = (
 });
 
 export const partSegment = <Value>(
-  node: GeneralElement | NativeElement<any, Value, any>,
+  node: GeneralElement | NativeElement<any, any>,
   path: string,
   value: Value
 ): PartSegment<Value> => ({
@@ -58,7 +57,7 @@ export const partSegment = <Value>(
 });
 
 export const unitSegment = <Value>(
-  node: GeneralElement | NativeElement<any, Value, any>,
+  node: GeneralElement | NativeElement<any, any>,
   path: string,
   value: Value
 ): UnitSegment<Value> => ({
@@ -69,7 +68,7 @@ export const unitSegment = <Value>(
 });
 
 export const pauseSegment = <Value>(
-  node: GeneralElement | NativeElement<any, Value, any>,
+  node: GeneralElement | NativeElement<any, any>,
   path: string,
   value?: PauseUntilFn
 ): PauseSegment => ({

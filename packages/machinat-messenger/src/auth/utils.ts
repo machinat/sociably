@@ -1,3 +1,4 @@
+/** @internal */ /** */
 /* eslint-disable import/prefer-default-export */
 import MessengerChannel from '../channel';
 import MessengerUser from '../user';

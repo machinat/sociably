@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import { JSDOM } from 'jsdom';
-import ClientAuthProvider from '../client';
+import MessengerClientAuthorizer from '../client';
 import MessengerChannel from '../../channel';
 import MessengerUser from '../../user';
 
@@ -28,23 +28,27 @@ beforeEach(() => {
 
 describe('#constructor(options)', () => {
   it('contain proper property', () => {
-    const provider = new ClientAuthProvider({ appId: 'MY_APP' });
+    const provider = new MessengerClientAuthorizer({ appId: 'MY_APP' });
     expect(provider.platform).toBe('messenger');
     expect(provider.shouldResign).toBe(true);
     expect(provider.appId).toBe('MY_APP');
     expect(provider.isExtensionReady).toBe(false);
 
     expect(
-      new ClientAuthProvider({ appId: 'MY_APP', isExtensionReady: true })
+      new MessengerClientAuthorizer({ appId: 'MY_APP', isExtensionReady: true })
         .isExtensionReady
     ).toBe(true);
   });
 
   it('throw if appId not provided', () => {
-    expect(() => new ClientAuthProvider()).toThrowErrorMatchingInlineSnapshot(
+    expect(
+      () => new MessengerClientAuthorizer()
+    ).toThrowErrorMatchingInlineSnapshot(
       `"options.appId is required to retrieve chat context"`
     );
-    expect(() => new ClientAuthProvider({})).toThrowErrorMatchingInlineSnapshot(
+    expect(
+      () => new MessengerClientAuthorizer({})
+    ).toThrowErrorMatchingInlineSnapshot(
       `"options.appId is required to retrieve chat context"`
     );
   });
@@ -52,7 +56,7 @@ describe('#constructor(options)', () => {
 
 describe('#init()', () => {
   it('add extension script and callback', async () => {
-    const provider = new ClientAuthProvider({ appId: '_APP_ID_' });
+    const provider = new MessengerClientAuthorizer({ appId: '_APP_ID_' });
     const promise = provider.init();
 
     const extScriptEle = global.document.getElementById('Messenger');
@@ -70,7 +74,7 @@ describe('#init()', () => {
   });
 
   it('do nothing if options.isExtensionReady set to true', async () => {
-    const provider = new ClientAuthProvider({
+    const provider = new MessengerClientAuthorizer({
       appId: '_APP_ID_',
       isExtensionReady: true,
     });
@@ -84,7 +88,7 @@ describe('#init()', () => {
   it('throw if extAsyncInit not being called in initTimeout', async () => {
     jest.useFakeTimers();
 
-    const provider = new ClientAuthProvider({
+    const provider = new MessengerClientAuthorizer({
       appId: 'APP_ID',
       initTimeout: 1000000,
       isExtensionReady: false,
@@ -105,7 +109,7 @@ describe('#init()', () => {
 
 describe('#fetchCredential()', () => {
   it('resolve credential with signed request', async () => {
-    const provider = new ClientAuthProvider({ appId: 'APP_ID' });
+    const provider = new MessengerClientAuthorizer({ appId: 'APP_ID' });
 
     const promise = provider.fetchCredential();
 
@@ -136,7 +140,7 @@ describe('#fetchCredential()', () => {
   });
 
   it('throw if getContext fail', async () => {
-    const provider = new ClientAuthProvider({ appId: 'APP_ID' });
+    const provider = new MessengerClientAuthorizer({ appId: 'APP_ID' });
 
     const promise = provider.fetchCredential();
 
@@ -156,7 +160,7 @@ describe('#fetchCredential()', () => {
 
 describe('#refineAuth(data)', () => {
   it('resolve auth context form extension context', async () => {
-    const provider = new ClientAuthProvider({
+    const provider = new MessengerClientAuthorizer({
       appId: 'APP_ID',
       isExtensionReady: true,
     });
@@ -178,7 +182,7 @@ describe('#refineAuth(data)', () => {
   });
 
   it('resolve null if extension context invalid', async () => {
-    const provider = new ClientAuthProvider({
+    const provider = new MessengerClientAuthorizer({
       appId: 'APP_ID',
       isExtensionReady: true,
     });

@@ -5,7 +5,6 @@ import { isNativeType } from '@machinat/core/utils/isX';
 import {
   URLButton,
   PostbackButton,
-  BuyButton,
   CallButton,
   LoginButton,
   LogoutButton,
@@ -26,7 +25,6 @@ const render = async (node) => {
 test.each([
   URLButton,
   PostbackButton,
-  BuyButton,
   CallButton,
   LoginButton,
   LogoutButton,
@@ -119,89 +117,6 @@ describe('PostbackButton', () => {
                   "payload": "_MY_PAYLOAD_",
                   "title": "my button",
                   "type": "postback",
-                },
-              },
-            ]
-          `);
-  });
-});
-
-describe('BuyButton', () => {
-  it('match snapshot', async () => {
-    await expect(
-      render(
-        <BuyButton
-          title="my button"
-          payload="_MY_PAYLOAD_"
-          currency="USD"
-          isTest
-          paymentType="FIXED_AMOUNT"
-          merchantName="My Fake Business"
-          requestedInfo={[
-            'shipping_address',
-            'contact_name',
-            'contact_phone',
-            'contact_email',
-          ]}
-          priceList={[
-            {
-              label: 'subtotal',
-              amount: '12.75',
-            },
-          ]}
-        />
-      )
-    ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <BuyButton
-                  currency="USD"
-                  isTest={true}
-                  merchantName="My Fake Business"
-                  payload="_MY_PAYLOAD_"
-                  paymentType="FIXED_AMOUNT"
-                  priceList={
-                    Array [
-                      Object {
-                        "amount": "12.75",
-                        "label": "subtotal",
-                      },
-                    ]
-                  }
-                  requestedInfo={
-                    Array [
-                      "shipping_address",
-                      "contact_name",
-                      "contact_phone",
-                      "contact_email",
-                    ]
-                  }
-                  title="my button"
-                />,
-                "path": "$#container",
-                "type": "part",
-                "value": Object {
-                  "payload": "_MY_PAYLOAD_",
-                  "payment_summary": Object {
-                    "currency": "USD",
-                    "is_test_payment": true,
-                    "merchant_name": "My Fake Business",
-                    "payment_type": "FIXED_AMOUNT",
-                    "price_list": Array [
-                      Object {
-                        "amount": "12.75",
-                        "label": "subtotal",
-                      },
-                    ],
-                    "requested_user_info": Array [
-                      "shipping_address",
-                      "contact_name",
-                      "contact_phone",
-                      "contact_email",
-                    ],
-                  },
-                  "title": "my button",
-                  "type": "payment",
                 },
               },
             ]

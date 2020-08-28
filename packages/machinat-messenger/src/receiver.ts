@@ -10,7 +10,7 @@ import type { PopEventWrapper } from '@machinat/core/types';
 import createEvent from './event';
 import MessengerChannel from './channel';
 import MessengerUser from './user';
-import BotP, { MessengerBot } from './bot';
+import { BotP } from './bot';
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { MESSENGER } from './constant';
 import type {
@@ -26,6 +26,7 @@ type MessengerReceiverOptions = {
   verifyToken?: string;
 };
 
+/** @internal */
 const handleWebhook = (
   {
     shouldHandleVerify,
@@ -33,7 +34,7 @@ const handleWebhook = (
     shouldValidateRequest,
     appSecret,
   }: MessengerReceiverOptions,
-  bot: MessengerBot,
+  bot: BotP,
   popEventWrapper: PopEventWrapper<MessengerEventContext, null>
 ): WebhookHandler => {
   const popEvent = popEventWrapper(() => Promise.resolve(null));
@@ -121,6 +122,10 @@ const handleWebhook = (
   };
 };
 
+/**
+ * MessengerReceiver receive and pop events from Messenger platform.
+ * @category Provider
+ */
 export class MessengerReceiver extends WebhookReceiver {
   constructor(
     {
@@ -129,7 +134,7 @@ export class MessengerReceiver extends WebhookReceiver {
       shouldValidateRequest = true,
       appSecret,
     }: MessengerReceiverOptions,
-    bot: MessengerBot,
+    bot: BotP,
     popEventWrapper: PopEventWrapper<MessengerEventContext, null>
   ) {
     invariant(
@@ -157,12 +162,14 @@ export class MessengerReceiver extends WebhookReceiver {
   }
 }
 
-export default provider<MessengerReceiver>({
+export const ReceiverP = provider<MessengerReceiver>({
   lifetime: 'singleton',
   deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I],
   factory: (
     configs: MessengerPlatformConfigs,
-    bot: MessengerBot,
+    bot: BotP,
     { popEventWrapper }: MessengerPlatformMounter
-  ) => new MessengerReceiver(configs, bot, popEventWrapper), // eslint-disable-line no-use-before-define
+  ) => new MessengerReceiver(configs, bot, popEventWrapper),
 })(MessengerReceiver);
+
+export type ReceiverP = MessengerReceiver;

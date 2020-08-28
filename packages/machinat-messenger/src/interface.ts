@@ -4,10 +4,16 @@ import type {
   MessengerPlatformConfigs,
 } from './types';
 
+/**
+ * @category Interface
+ */
 export const PLATFORM_CONFIGS_I = makeInterface<MessengerPlatformConfigs>({
   name: 'MessengerPlatformConfigsI',
 });
 
+/**
+ * @category Interface
+ */
 export const PLATFORM_MOUNTER_I = makeInterface<MessengerPlatformMounter>({
   name: 'MessengerPlatformMounterI',
 });

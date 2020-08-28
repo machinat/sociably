@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import collectSharableAttachments from '../collectSharableAttachments';
+import collectReusableAttachments from '../collectReusableAttachments';
 
 const registry = moxy({
   setAttachmentId: async () => {},
@@ -46,7 +46,7 @@ it('register asset created within send api', async () => {
   const context = { hello: 'droid' };
 
   await expect(
-    collectSharableAttachments(registry)(context, next)
+    collectReusableAttachments(registry)(context, next)
   ).resolves.toEqual(response);
 
   expect(next.mock).toHaveBeenCalledTimes(1);

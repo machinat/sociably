@@ -1,3 +1,4 @@
+/** @internal */ /** */
 import {
   text,
   quickReplyPostback,
@@ -96,6 +97,7 @@ const createMessageEvent = (payload: MessengerRawEvent, isStandby: boolean) => {
   }
 };
 
+/** @internal */
 const createEvent = (
   isStandby: boolean,
   payload: MessengerRawEvent

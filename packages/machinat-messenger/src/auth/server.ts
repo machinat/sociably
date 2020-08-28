@@ -15,7 +15,9 @@ import type {
 } from './types';
 
 const {
+  /** @ignore */
   decode: decodeBase64URL,
+  /** @ignore */
   toBuffer: decodeBase64URLToBuffer,
 } = base64url;
 
@@ -23,6 +25,11 @@ type MessengerServerAuthorizerOptions = {
   appSecret: string;
 };
 
+/**
+ * MessengerServerAuthorizer provide auth flow implementation for
+ * `@machinat/auth`.
+ * @category Provider
+ */
 export class MessengerServerAuthorizer
   implements ServerAuthorizer<ExtensionPayload, ExtensionCredential> {
   appSecret: string;
@@ -103,7 +110,9 @@ export class MessengerServerAuthorizer
   }
 }
 
-export default provider<MessengerServerAuthorizer>({
+export const ServerAuthorizerP = provider<MessengerServerAuthorizer>({
   lifetime: 'transient',
   deps: [PLATFORM_CONFIGS_I],
 })(MessengerServerAuthorizer);
+
+export type ServerAuthorizerP = MessengerServerAuthorizer;

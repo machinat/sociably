@@ -8,7 +8,6 @@ import {
   GenericTemplate,
   ButtonTemplate,
   MediaTemplate,
-  OpenGraphTemplate,
   ReceiptTemplate,
   ReceiptItem,
 } from '../template';
@@ -17,17 +16,14 @@ import { URLButton, PostbackButton, CallButton } from '../button';
 const generalComponentDelegator = moxy(() => null);
 const renderer = new Renderer('messenger', generalComponentDelegator);
 
-test.each([
-  GenericTemplate,
-  ButtonTemplate,
-  MediaTemplate,
-  OpenGraphTemplate,
-  ReceiptTemplate,
-])('attribute of %p', (Template) => {
-  expect(typeof Template).toBe('function');
-  expect(isNativeType(<Template />)).toBe(true);
-  expect(Template.$$platform).toBe('messenger');
-});
+test.each([GenericTemplate, ButtonTemplate, MediaTemplate, ReceiptTemplate])(
+  'attribute of %p',
+  (Template) => {
+    expect(typeof Template).toBe('function');
+    expect(isNativeType(<Template />)).toBe(true);
+    expect(Template.$$platform).toBe('messenger');
+  }
+);
 
 test.each([GenericItem, ReceiptItem])('attribute of %p', (Item) => {
   expect(typeof Item).toBe('function');
@@ -170,31 +166,13 @@ describe('MediaTemplate', () => {
     await expect(
       renderer.render(
         <>
-          <MediaTemplate type="image" url="http://..." buttons={buttons} />
+          <MediaTemplate mediaType="image" url="http://..." buttons={buttons} />
           <MediaTemplate
-            type="video"
+            mediaType="video"
             attachmentId="__ID__"
             sharable
             buttons={buttons}
           />
-        </>
-      )
-    ).resolves.toMatchSnapshot();
-  });
-});
-
-describe('OpenGraphTemplate', () => {
-  it('match snapshot', async () => {
-    const buttons = [
-      <URLButton title="check" url="http://xxx.yy.z" />,
-      <PostbackButton title="more" payload="_MORE_" />,
-      <CallButton title="call us" number="+12345678" />,
-    ];
-    expect(
-      renderer.render(
-        <>
-          <OpenGraphTemplate url="http://..." buttons={buttons} />
-          <OpenGraphTemplate url="http://..." sharablebuttons={buttons} />
         </>
       )
     ).resolves.toMatchSnapshot();

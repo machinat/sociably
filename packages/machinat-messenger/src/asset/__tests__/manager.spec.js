@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import MessengerAssetManager from '../manager';
+import { MessengerAssetsManager } from '../manager';
 
 const state = moxy({
   get: async () => null,
@@ -31,7 +31,7 @@ beforeEach(() => {
 });
 
 test('get asset id', async () => {
-  const manager = new MessengerAssetManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateManager, bot);
 
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe(undefined);
   await expect(manager.getAttachmentId('my_attachment')).resolves.toBe(
@@ -72,7 +72,7 @@ test('get asset id', async () => {
 });
 
 test('set asset id', async () => {
-  const manager = new MessengerAssetManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateManager, bot);
 
   await manager.setAssetId('foo', 'bar', 'baz');
   await manager.setAttachmentId('my_attachment', '_ATTACHMENT_ID_');
@@ -120,7 +120,7 @@ test('set asset id', async () => {
 });
 
 test('get all assets', async () => {
-  const manager = new MessengerAssetManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateManager, bot);
 
   await expect(manager.getAllAssets('foo')).resolves.toBe(null);
   await expect(manager.getAllAttachments()).resolves.toBe(null);
@@ -150,7 +150,7 @@ test('get all assets', async () => {
 });
 
 test('remove asset id', async () => {
-  const manager = new MessengerAssetManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateManager, bot);
 
   await manager.removeAssetId('foo', 'bar');
   await manager.removeAttachmentId('my_attachment');
@@ -190,7 +190,7 @@ test('remove asset id', async () => {
 });
 
 test('#renderAttachment()', async () => {
-  const manager = new MessengerAssetManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateManager, bot);
   bot.renderAttachment.mock.fake(async () => ({
     jobs: [{ ...{} }],
     results: [
@@ -220,7 +220,7 @@ test('#renderAttachment()', async () => {
 });
 
 test('#createPersona()', async () => {
-  const manager = new MessengerAssetManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateManager, bot);
   bot.dispatchAPICall.mock.fake(() => ({
     jobs: [{ ...{} }],
     results: [
@@ -257,7 +257,7 @@ test('#createPersona()', async () => {
 });
 
 test('#deletePersona()', async () => {
-  const manager = new MessengerAssetManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateManager, bot);
   bot.dispatchAPICall.mock.fake(() => ({
     jobs: [{ ...{} }],
     results: [

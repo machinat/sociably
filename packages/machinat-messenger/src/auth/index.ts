@@ -1,2 +1,2 @@
-export { default } from './server';
-export { default as ClientAuthorizer } from './client';
+export { ServerAuthorizerP as MessengerServerAuthorizer } from './server';
+export { default as MesssengerClientAuthorizer } from './client';

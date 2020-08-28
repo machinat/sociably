@@ -39,6 +39,10 @@ type MessengerBotOptions = {
   consumeInterval?: number;
 };
 
+/**
+ * MessengerBot render messages and make API call to Messenger platform.
+ * @category Provider
+ */
 export class MessengerBot
   implements MachinatBot<MessengerChannel, MessengerJob, MessengerResult> {
   pageId: string;
@@ -46,7 +50,7 @@ export class MessengerBot
   engine: Engine<
     MessengerChannel,
     MessengerSegmentValue,
-    MessengerComponent,
+    MessengerComponent<any>,
     MessengerJob,
     MessengerResult,
     MessengerBot
@@ -71,10 +75,10 @@ export class MessengerBot
 
     invariant(accessToken, 'options.accessToken should not be empty');
 
-    const renderer = new Renderer<MessengerSegmentValue, MessengerComponent>(
-      MESSENGER,
-      generalComponentDelegator
-    );
+    const renderer = new Renderer<
+      MessengerSegmentValue,
+      MessengerComponent<any>
+    >(MESSENGER, generalComponentDelegator);
 
     const queue = new Queue<MessengerJob, MessengerResult>();
     const worker = new MessengerWorker(accessToken, consumeInterval, appSecret);
@@ -137,7 +141,7 @@ export class MessengerBot
   }
 }
 
-export default provider<MessengerBot>({
+export const BotP = provider<MessengerBot>({
   lifetime: 'singleton',
   deps: [PLATFORM_CONFIGS_I, { require: PLATFORM_MOUNTER_I, optional: true }],
   factory: (
@@ -145,3 +149,5 @@ export default provider<MessengerBot>({
     mounter: null | MessengerPlatformMounter
   ) => new MessengerBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
 })(MessengerBot);
+
+export type BotP = MessengerBot;

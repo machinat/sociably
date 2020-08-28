@@ -1,7 +1,7 @@
 import Machinat from '@machinat/core';
 import { chatJobsMaker, makeAttachmentJobs } from '../job';
 import MessengerChannel from '../channel';
-import { ENTRY_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from '../constant';
+import { API_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from '../constant';
 
 const Foo = () => {};
 
@@ -11,7 +11,7 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
   const segments = [
     { node: <Foo />, value: { sender_action: 'typing_on' } },
     { node: <Foo />, value: { message: { id: 1 } } },
-    { node: <Bar />, value: { id: 2, [ENTRY_PATH]: 'bar/baz' } },
+    { node: <Bar />, value: { id: 2, [API_PATH]: 'bar/baz' } },
     { node: 'id:3', value: 'id:3' },
     { node: 4, value: '4' },
   ];
@@ -188,7 +188,7 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
         node: <Bar />,
         value: {
           a: 'redemption',
-          [ENTRY_PATH]: 'bar/baz',
+          [API_PATH]: 'bar/baz',
           [ATTACHMENT_DATA]: '_MERCY_CURE_',
           [ATTACHMENT_INFO]: fileInfo,
         },
