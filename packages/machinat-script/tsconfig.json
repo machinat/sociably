@@ -4,8 +4,7 @@
   "exclude": ["src/**/*.spec.ts"],
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./lib",
-    "types": []
+    "outDir": "./lib"
   },
   "references": [
     { "path": "../machinat-core" }

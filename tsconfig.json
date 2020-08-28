@@ -9,6 +9,7 @@
     "jsxFactory": "Machinat.createElement",
     "jsxFragmentFactory": "Machinat.Fragment",
     "experimentalDecorators": true,
+    "types": ["node"],
     "rootDir": ".",
     "baseUrl": "./packages",
     "paths": {
@@ -19,5 +20,22 @@
       "@machinat/http": ["machinat-http/src/index.js"],
       "@machinat/http/*": ["machinat-http/src/*"]
     }
+  },
+  "typedocOptions": {
+    "name": "Machinat",
+    "mode": "modules",
+    "out": "api",
+    "readme": "./README.md",
+    "stripInternal": true,
+    "excludePrivate": true,
+    "ignoreCompilerErrors": true,
+    "external-modulemap": ".*packages/machinat-([^/]+)/.*",
+    "categoryOrder": [
+      "Component",
+      "Provider",
+      "Interface",
+      "Container",
+      "Props"
+    ]
   }
 }

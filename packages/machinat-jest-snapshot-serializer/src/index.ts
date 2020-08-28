@@ -8,7 +8,7 @@ import {
   isPauseType,
 } from '@machinat/core/utils/isX';
 
-module.exports = {
+const machinatElementSerializer = {
   print(element: MachinatElement<any, any>, serialize, indent) {
     const type = isFragmentType(element)
       ? 'Machinat.Fragment'
@@ -36,3 +36,5 @@ module.exports = {
     return isElement(val);
   },
 };
+
+module.exports = machinatElementSerializer;

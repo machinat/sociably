@@ -10,7 +10,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn test && yarn lint",
+      "pre-commit": "yarn test && yarn lint --quiet",
       "post-commit": "yarn build"
     }
   },
@@ -20,6 +20,7 @@
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-typescript": "^7.10.4",
     "@machinat/babel-preset": "^0.1.0-beta",
+    "@machinat/typedoc-plugin-monorepo": "^0.3.2-0",
     "@moxyjs/moxy": "0.1.0-beta.0",
     "@types/invariant": "^2.2.33",
     "@types/jest": "^26.0.10",
@@ -39,6 +40,7 @@
     "nock": "^12.0.0",
     "polyfill-exports": "^0.3.0-beta.3",
     "prettier": "^2.0.5",
+    "typedoc": "^0.18.0",
     "typescript": "^4.0.2"
   },
   "workspaces": [
