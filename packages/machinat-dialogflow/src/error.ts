@@ -2,8 +2,8 @@ import type { protos } from '@google-cloud/dialogflow';
 
 type Status = protos.google.rpc.IStatus;
 
-class DialogFlowAPIError extends Error {
-  name = 'DialogFlowAPIError';
+class DialogflowAPIError extends Error {
+  name = 'DialogflowAPIError';
 
   responseId: undefined | string;
   status: null | Status;
@@ -12,7 +12,7 @@ class DialogFlowAPIError extends Error {
     super(status?.message || 'unknown error');
 
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, DialogFlowAPIError);
+      Error.captureStackTrace(this, DialogflowAPIError);
     }
 
     this.responseId = responseId || undefined;
@@ -20,4 +20,4 @@ class DialogFlowAPIError extends Error {
   }
 }
 
-export default DialogFlowAPIError;
+export default DialogflowAPIError;

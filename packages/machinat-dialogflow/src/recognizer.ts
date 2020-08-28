@@ -7,7 +7,7 @@ import type {
 import type { MachinatChannel } from '@machinat/core/types';
 import { SESSION_CLIENT_I, MODULE_CONFIGS_I } from './interface';
 import { SessionClient, DetactIntentPayload } from './types';
-import DialogFlowAPIError from './error';
+import DialogflowAPIError from './error';
 
 type RecognizerOptions = {
   projectId: string;
@@ -25,7 +25,10 @@ type DetectIntentOptions = {
   resetContexts?: boolean;
 };
 
-export class DialogFlowIntentRecognizer
+/**
+ * @category Provider
+ */
+export class DialogflowIntentRecognizer
   implements BaseIntentRecognizer<DetactIntentPayload> {
   _client: SessionClient;
   projectId: string;
@@ -79,7 +82,7 @@ export class DialogFlowIntentRecognizer
     });
 
     if (!queryResult) {
-      throw new DialogFlowAPIError(responseId, webhookStatus);
+      throw new DialogflowAPIError(responseId, webhookStatus);
     }
 
     return {
@@ -90,7 +93,9 @@ export class DialogFlowIntentRecognizer
   }
 }
 
-export default provider<DialogFlowIntentRecognizer>({
+export const IntentRecognizerP = provider<DialogflowIntentRecognizer>({
   lifetime: 'scoped',
   deps: [SESSION_CLIENT_I, MODULE_CONFIGS_I],
-})(DialogFlowIntentRecognizer);
+})(DialogflowIntentRecognizer);
+
+export type IntentRecognizerP = DialogflowIntentRecognizer;

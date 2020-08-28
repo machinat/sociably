@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import Recognizer from '../recognizer';
+import { DialogflowIntentRecognizer as Recognizer } from '../recognizer';
 
 const detectTextResponse = {
   responseId: 'xxx',
