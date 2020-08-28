@@ -10,14 +10,14 @@ it('export interfaces', () => {
     Object {
       "$$multi": false,
       "$$name": "AuthModuleConfigs",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(Auth.AUTHORIZERS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": true,
       "$$name": "ServerAuthorizersList",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 });

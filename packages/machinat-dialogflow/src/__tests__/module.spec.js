@@ -14,7 +14,7 @@ it('export interfaces', () => {
     Object {
       "$$multi": false,
       "$$name": "DialogFlowModuleConfigsI",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 
@@ -22,7 +22,7 @@ it('export interfaces', () => {
     Object {
       "$$multi": false,
       "$$name": "DialogFlowSessionClientI",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 });

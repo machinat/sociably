@@ -7,6 +7,9 @@ export interface TextIntentDetectResult<Payload> {
   payload: Payload;
 }
 
+/**
+ * @category Base
+ */
 export abstract class BaseIntentRecognizer<Payload> {
   abstract detectText(
     channel: MachinatChannel,
@@ -14,6 +17,8 @@ export abstract class BaseIntentRecognizer<Payload> {
   ): Promise<TextIntentDetectResult<Payload>>;
 }
 
-export default abstractInterface<BaseIntentRecognizer<any>>({
+export const IntentRecognizerI = abstractInterface<BaseIntentRecognizer<any>>({
   name: 'BaseIntentRecognizerI',
 })(BaseIntentRecognizer);
+
+export type IntentRecognizerI<Payload> = BaseIntentRecognizer<Payload>;

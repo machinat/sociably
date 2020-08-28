@@ -35,7 +35,9 @@ import type {
   IntermediateSegment,
 } from './types';
 
+/** @ignore */
 const RENDER_SEPARATOR = '#';
+/** @ignore */
 const RENDER_ROOT = '$';
 
 type RenderResult<Value> =

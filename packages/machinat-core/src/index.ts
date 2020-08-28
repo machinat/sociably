@@ -14,7 +14,7 @@ import App from './app';
 import type { AppConfig, EventContext } from './types';
 
 /**
- * @category Core
+ * @category Root
  */
 const Machinat = {
   Fragment: MACHINAT_FRAGMENT_TYPE,

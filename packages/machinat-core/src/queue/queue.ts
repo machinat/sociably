@@ -27,6 +27,7 @@ type ConsumeJobsFn<Job, Result> = (
   job: Job[]
 ) => Promise<JobResponse<Job, Result>[]>;
 
+/** @internal */
 const reduceRequestsOfBoxes = <Job, Result, Acc>(
   boxes: JobBox<Job>[],
   reducer: (
@@ -59,6 +60,7 @@ const reduceRequestsOfBoxes = <Job, Result, Acc>(
   return reduced;
 };
 
+/** @internal */
 const addAcquireCountReducer = <Job, Result>(
   _: void,
   request: BatchRequest<Job, Result>
@@ -66,6 +68,7 @@ const addAcquireCountReducer = <Job, Result>(
   request.acquiredCount += 1;
 };
 
+/** @internal */
 const addAcquireCountOfJobs = <Job>(boxes: JobBox<Job>[]) => {
   reduceRequestsOfBoxes(boxes, addAcquireCountReducer, undefined as void);
 };

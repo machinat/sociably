@@ -1,3 +1,4 @@
+/** @internal */ /** */
 import type { Interfaceable } from './types';
 
 type ProvisionBranches<T> = Map<

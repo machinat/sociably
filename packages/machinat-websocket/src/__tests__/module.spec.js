@@ -14,21 +14,21 @@ it('export interfaces', () => {
     Object {
       "$$multi": false,
       "$$name": "WebSocketAuthenticatorI",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(WebSocket.UPGRADE_VERIFIER_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
       "$$name": "WebSocketUpgradeVerifierI",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(WebSocket.SERVER_ID_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
       "$$name": "WebSocketServerIdI",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 });
@@ -48,7 +48,7 @@ describe('initModule()', () => {
       Object {
         "$$multi": false,
         "$$name": "WebSocketPlatformMounterI",
-        "$$typeof": Symbol(machinat.services.interface),
+        "$$typeof": Symbol(interface.service.machinat),
       }
     `);
     expect(module.provisions).toBeInstanceOf(Array);

@@ -1,6 +1,7 @@
 import type { MachinatNode, MachinatRenderable } from '../types';
 import map from './map';
 
+/** @internal */
 const identity = <T>(x: T) => x;
 
 const toArray = (

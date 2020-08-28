@@ -13,7 +13,7 @@ test('export interfaces', () => {
     Object {
       "$$multi": false,
       "$$name": "FileStateConfigsI",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 
@@ -22,7 +22,7 @@ test('export interfaces', () => {
     Object {
       "$$multi": false,
       "$$name": "FileStateSerializer",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 });

@@ -3,6 +3,7 @@ export { default } from './space';
 export { default as ServiceScope } from './scope';
 export {
   isServiceContainer,
+  isServiceProvider,
   isInterfaceable,
   createEmptyScope,
   maybeInjectContainer,

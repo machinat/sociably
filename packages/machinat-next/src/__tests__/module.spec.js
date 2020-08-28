@@ -18,14 +18,14 @@ it('exports interfaces', () => {
     Object {
       "$$multi": false,
       "$$name": "NextModuleConfigsI",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(Next.SERVER_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
       "$$name": "NextServerI",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 });
@@ -47,7 +47,7 @@ describe('initModule()', () => {
         "mounterInterface": Object {
           "$$multi": false,
           "$$name": "NextPlatformMounterI",
-          "$$typeof": Symbol(machinat.services.interface),
+          "$$typeof": Symbol(interface.service.machinat),
         },
         "name": "next",
         "provisions": Array [
@@ -56,7 +56,7 @@ describe('initModule()', () => {
             "provide": Object {
               "$$multi": false,
               "$$name": "NextModuleConfigsI",
-              "$$typeof": Symbol(machinat.services.interface),
+              "$$typeof": Symbol(interface.service.machinat),
             },
             "withValue": Object {
               "entryPath": "/webview",
@@ -73,7 +73,7 @@ describe('initModule()', () => {
             "provide": Object {
               "$$multi": false,
               "$$name": "NextServerI",
-              "$$typeof": Symbol(machinat.services.interface),
+              "$$typeof": Symbol(interface.service.machinat),
             },
             "withProvider": [Function],
           },
@@ -81,7 +81,7 @@ describe('initModule()', () => {
             "provide": Object {
               "$$multi": true,
               "$$name": "HTTPRequestRoutingsListI",
-              "$$typeof": Symbol(machinat.services.interface),
+              "$$typeof": Symbol(interface.service.machinat),
             },
             "withProvider": [Function],
           },

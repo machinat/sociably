@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 import { polishServiceRequirement, isServiceContainer } from './utils';
-import { MACHINAT_SERVICES_INTERFACE } from '../symbol';
+import { MACHINAT_SERVICE_INTERFACE } from '../symbol';
 import ServiceMaker, { ENUM_PHASE_INJECTION } from './maker';
 import type {
   ServiceCache,
@@ -14,7 +14,7 @@ import type {
  * executed under the same scope share the same singleton and scoped services.
  */
 export default class ServiceScope {
-  static $$typeof: typeof MACHINAT_SERVICES_INTERFACE = MACHINAT_SERVICES_INTERFACE;
+  static $$typeof: typeof MACHINAT_SERVICE_INTERFACE = MACHINAT_SERVICE_INTERFACE;
   static $$name = 'ServiceScope';
   static $$multi = false;
 

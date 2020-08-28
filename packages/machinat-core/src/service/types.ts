@@ -1,7 +1,7 @@
 import {
-  MACHINAT_SERVICES_CONTAINER,
-  MACHINAT_SERVICES_PROVIDER,
-  MACHINAT_SERVICES_INTERFACE,
+  MACHINAT_SERVICE_CONTAINER,
+  MACHINAT_SERVICE_PROVIDER,
+  MACHINAT_SERVICE_INTERFACE,
 } from '../symbol';
 
 export { default as ServiceScope } from './scope';
@@ -10,13 +10,13 @@ export type ServiceLifetime = 'singleton' | 'scoped' | 'transient';
 
 export interface ServiceInterface<T> {
   $$name: string;
-  $$typeof: typeof MACHINAT_SERVICES_INTERFACE;
+  $$typeof: typeof MACHINAT_SERVICE_INTERFACE;
   $$multi: boolean;
 }
 
 export interface ServiceProvider<T> {
   $$name: string;
-  $$typeof: typeof MACHINAT_SERVICES_PROVIDER;
+  $$typeof: typeof MACHINAT_SERVICE_PROVIDER;
   $$multi: false;
   $$lifetime: ServiceLifetime;
   $$deps: ServiceRequirement<T>[];
@@ -34,7 +34,7 @@ export type ServiceDependency<T> = ServiceRequirement<T> | Interfaceable<T>;
 
 export interface ServiceContainer<T> {
   (...args: any[]): T;
-  $$typeof: typeof MACHINAT_SERVICES_CONTAINER;
+  $$typeof: typeof MACHINAT_SERVICE_CONTAINER;
   $$deps: ServiceRequirement<T>[];
 }
 

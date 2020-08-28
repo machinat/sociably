@@ -1,23 +1,19 @@
-export const MACHINAT_ELEMENT_TYPE = Symbol('machinat.element');
+export const MACHINAT_ELEMENT_TYPE = Symbol('element.machinat');
 
-export const MACHINAT_FRAGMENT_TYPE = Symbol('machinat.element.fragment');
+export const MACHINAT_FRAGMENT_TYPE = Symbol('fragment.element.machinat');
 
-export const MACHINAT_PAUSE_TYPE = Symbol('machinat.element.pause');
+export const MACHINAT_PAUSE_TYPE = Symbol('pause.element.machinat');
 
-export const MACHINAT_PROVIDER_TYPE = Symbol('machinat.element.provider');
+export const MACHINAT_PROVIDER_TYPE = Symbol('provider.element.machinat');
 
-export const MACHINAT_THUNK_TYPE = Symbol('machinat.element.thunk');
+export const MACHINAT_THUNK_TYPE = Symbol('thunk.element.machinat');
 
-export const MACHINAT_RAW_TYPE = Symbol('machinat.element.raw');
+export const MACHINAT_RAW_TYPE = Symbol('raw.element.machinat');
 
-export const MACHINAT_NATIVE_TYPE = Symbol('machinat.component.native');
+export const MACHINAT_NATIVE_TYPE = Symbol('native.component.machinat');
 
-export const MACHINAT_SERVICES_CONTAINER = Symbol(
-  'machinat.services.container'
-);
+export const MACHINAT_SERVICE_CONTAINER = Symbol('container.service.machinat');
 
-export const MACHINAT_SERVICES_INTERFACE = Symbol(
-  'machinat.services.interface'
-);
+export const MACHINAT_SERVICE_INTERFACE = Symbol('interface.service.machinat');
 
-export const MACHINAT_SERVICES_PROVIDER = Symbol('machinat.services.provider');
+export const MACHINAT_SERVICE_PROVIDER = Symbol('provider.service.machinat');

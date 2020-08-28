@@ -8,10 +8,15 @@ export interface MachinatUserProfile {
   readonly pictureURL: void | string;
 }
 
+/**
+ * @category Base
+ */
 export abstract class BaseUserProfiler {
   abstract fetchProfile(user: MachinatUser): Promise<MachinatUserProfile>;
 }
 
-export default abstractInterface<BaseUserProfiler>({
+export const UserProfilerI = abstractInterface<BaseUserProfiler>({
   name: 'BaseUserProfilerI',
 })(BaseUserProfiler);
+
+export type UserProfilerI = BaseUserProfiler;

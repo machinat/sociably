@@ -24,8 +24,11 @@ type ErrorListenable =
   | ((err: Error) => void)
   | ServiceContainer<(err: Error) => void>;
 
+/** @ignore */
 const ENUM_UNSTARTED = 0;
+/** @ignore */
 const ENUM_STARTING = 1;
+/** @ignore */
 const ENUM_STARTED = 2;
 
 export default class MachinatApp<

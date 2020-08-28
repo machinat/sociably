@@ -1,5 +1,5 @@
 import { provider } from '@machinat/core/service';
-import { UserProfilerI, StateControllerI } from '@machinat/core/base';
+import { BaseUserProfilerI, BaseStateControllerI } from '@machinat/core/base';
 import type { MachinatUserProfile } from '@machinat/core/base/UserProfilerI';
 
 import { BotP } from './bot';
@@ -74,15 +74,15 @@ type ProfilerOptions = {
  * MessengerUserProfiler fetch user profile from Messenger platform.
  * @category Provider
  */
-export class MessengerUserProfiler implements UserProfilerI {
+export class MessengerUserProfiler implements BaseUserProfilerI {
   bot: BotP;
-  stateController: null | StateControllerI;
+  stateController: null | BaseStateControllerI;
   profileCacheTime: number;
   _fieldsParam: string;
 
   constructor(
     bot: BotP,
-    stateController: null | StateControllerI,
+    stateController: null | BaseStateControllerI,
     { profileCacheTime, optionalProfileFields = [] }: ProfilerOptions = {}
   ) {
     this.bot = bot;
@@ -126,7 +126,7 @@ export class MessengerUserProfiler implements UserProfilerI {
 
 export const UserProfilerP = provider<MessengerUserProfiler>({
   lifetime: 'scoped',
-  deps: [BotP, { require: StateControllerI, optional: true }],
+  deps: [BotP, { require: BaseStateControllerI, optional: true }],
 })(MessengerUserProfiler);
 
 export type UserProfilerP = MessengerUserProfiler;

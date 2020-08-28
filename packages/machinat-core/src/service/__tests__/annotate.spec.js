@@ -1,8 +1,8 @@
 import moxy from '@moxyjs/moxy';
 import {
-  MACHINAT_SERVICES_PROVIDER,
-  MACHINAT_SERVICES_CONTAINER,
-  MACHINAT_SERVICES_INTERFACE,
+  MACHINAT_SERVICE_PROVIDER,
+  MACHINAT_SERVICE_CONTAINER,
+  MACHINAT_SERVICE_INTERFACE,
 } from '../../symbol';
 import {
   container,
@@ -13,15 +13,15 @@ import {
 } from '../annotate';
 
 const FooServiceI = {
-  $$typeof: MACHINAT_SERVICES_PROVIDER,
+  $$typeof: MACHINAT_SERVICE_PROVIDER,
   /* ... */
 };
 const BarServiceI = {
-  $$typeof: MACHINAT_SERVICES_INTERFACE,
+  $$typeof: MACHINAT_SERVICE_INTERFACE,
   /* ... */
 };
 const BazServiceI = {
-  $$typeof: MACHINAT_SERVICES_INTERFACE,
+  $$typeof: MACHINAT_SERVICE_INTERFACE,
   /* ... */
 };
 
@@ -39,7 +39,7 @@ describe('container({ deps })(fn)', () => {
     })(containerFn);
 
     expect(myContainer).toBe(containerFn);
-    expect(myContainer.$$typeof).toBe(MACHINAT_SERVICES_CONTAINER);
+    expect(myContainer.$$typeof).toBe(MACHINAT_SERVICE_CONTAINER);
     expect(myContainer.$$name).toBe('myContainer');
     expect(myContainer.$$deps).toEqual([
       { require: FooServiceI, optional: false },
@@ -53,7 +53,7 @@ describe('container({ deps })(fn)', () => {
     const myContainer = container()(containerFn);
 
     expect(myContainer).toBe(containerFn);
-    expect(myContainer.$$typeof).toBe(MACHINAT_SERVICES_CONTAINER);
+    expect(myContainer.$$typeof).toBe(MACHINAT_SERVICE_CONTAINER);
     expect(myContainer.$$name).toBe('containerFn');
     expect(myContainer.$$deps).toEqual([]);
   });
@@ -86,7 +86,7 @@ describe('provider({ deps, factory, lifetime })(klass)', () => {
     })(ServiceKlazz);
 
     expect(MyProvider).toBe(ServiceKlazz);
-    expect(MyProvider.$$typeof).toBe(MACHINAT_SERVICES_PROVIDER);
+    expect(MyProvider.$$typeof).toBe(MACHINAT_SERVICE_PROVIDER);
     expect(MyProvider.$$name).toBe('MyProvider');
     expect(MyProvider.$$deps).toEqual([
       { require: FooServiceI, optional: false },
@@ -156,7 +156,7 @@ describe('factory({ deps, lifetime })(factory)', () => {
     })(factoryFn);
 
     expect(providerFactory).toBe(factoryFn);
-    expect(providerFactory.$$typeof).toBe(MACHINAT_SERVICES_PROVIDER);
+    expect(providerFactory.$$typeof).toBe(MACHINAT_SERVICE_PROVIDER);
     expect(providerFactory.$$name).toBe('myFactory');
     expect(providerFactory.$$deps).toEqual([
       { require: FooServiceI, optional: false },
@@ -207,7 +207,7 @@ describe('abstractInterface(options)(klass)', () => {
     })(AbstractKlazz);
 
     expect(AbstractInterface).toBe(AbstractKlazz);
-    expect(AbstractInterface.$$typeof).toBe(MACHINAT_SERVICES_INTERFACE);
+    expect(AbstractInterface.$$typeof).toBe(MACHINAT_SERVICE_INTERFACE);
     expect(AbstractInterface.$$name).toBe('AbstractInterface');
   });
 
@@ -223,13 +223,13 @@ describe('makeInterface(name)', () => {
   it('create annotation object', () => {
     const MyFooInterface = makeInterface({ name: 'Foo' });
 
-    expect(MyFooInterface.$$typeof).toBe(MACHINAT_SERVICES_INTERFACE);
+    expect(MyFooInterface.$$typeof).toBe(MACHINAT_SERVICE_INTERFACE);
     expect(MyFooInterface.$$name).toBe('Foo');
     expect(MyFooInterface.$$multi).toBe(false);
 
     const MyBarsInterface = makeInterface({ name: 'Bars', multi: true });
 
-    expect(MyBarsInterface.$$typeof).toBe(MACHINAT_SERVICES_INTERFACE);
+    expect(MyBarsInterface.$$typeof).toBe(MACHINAT_SERVICE_INTERFACE);
     expect(MyBarsInterface.$$name).toBe('Bars');
     expect(MyBarsInterface.$$multi).toBe(true);
   });

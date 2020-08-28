@@ -10,12 +10,14 @@ import type {
   Interfaceable,
 } from './types';
 
-const Object$hasOwnProperty = Object.prototype.hasOwnProperty;
+/** @internal */
 const objectHasOwnProperty = (obj, prop) =>
-  Object$hasOwnProperty.call(obj, prop);
+  Object.prototype.hasOwnProperty.call(obj, prop);
 
+/** @internal */
 const getNameOrToString = (obj: any) => obj?.name || String(obj);
 
+/** @internal */
 const resolveBindings = (
   bindings: AppProvision<any>[]
 ): ProvisionMap<ServiceBinding<any>> => {

@@ -22,7 +22,7 @@ import {
   MACHINAT_RAW_TYPE,
   MACHINAT_PROVIDER_TYPE,
   MACHINAT_NATIVE_TYPE,
-  MACHINAT_SERVICES_CONTAINER,
+  MACHINAT_SERVICE_CONTAINER,
 } from '../symbol';
 
 export const isEmpty = (node: unknown): node is MachinatEmpty =>
@@ -58,13 +58,13 @@ export const isFunctionalType = (
 ): node is FunctionalElement<any, FunctionalComponent<any>> =>
   typeof node.type === 'function' &&
   node.type.$$typeof !== MACHINAT_NATIVE_TYPE &&
-  node.type.$$typeof !== MACHINAT_SERVICES_CONTAINER;
+  node.type.$$typeof !== MACHINAT_SERVICE_CONTAINER;
 
 export const isContainerType = (
   node: MachinatElement<any, any>
 ): node is ContainerElement<any, ContainerComponent<any>> =>
   typeof node.type === 'function' &&
-  node.type.$$typeof === MACHINAT_SERVICES_CONTAINER;
+  node.type.$$typeof === MACHINAT_SERVICE_CONTAINER;
 
 export const isGeneralType = (
   node: MachinatElement<any, any>

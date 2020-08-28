@@ -15,7 +15,7 @@ it('export interfaces', () => {
     Object {
       "$$multi": false,
       "$$name": "LinePlatformConfigsI",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 });
@@ -38,7 +38,7 @@ describe('initModule(configs)', () => {
       Object {
         "$$multi": false,
         "$$name": "LinePlatformMounterI",
-        "$$typeof": Symbol(machinat.services.interface),
+        "$$typeof": Symbol(interface.service.machinat),
       }
     `);
     expect(module.provisions).toBeInstanceOf(Array);

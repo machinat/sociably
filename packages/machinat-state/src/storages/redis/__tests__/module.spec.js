@@ -19,14 +19,14 @@ test('export interfaces', () => {
     Object {
       "$$multi": false,
       "$$name": "RedisStateModuleConfigsI",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(RedisState.CLIENT_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
       "$$name": "RedisClientI",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 });

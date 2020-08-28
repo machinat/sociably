@@ -1,3 +1,4 @@
+/** @internal */ /** */
 import ProvisionMap from './provisionMap';
 import type {
   Interfaceable,
@@ -32,7 +33,7 @@ type MakeContext = {
 };
 
 /**
- * ServiceMaker makes services according to the services mapping resolved
+ * ServiceMaker makes services according to the services mapping resolved.
  */
 export default class ServiceMaker {
   provisionMapping: ProvisionMap<ServiceBinding<any>>;

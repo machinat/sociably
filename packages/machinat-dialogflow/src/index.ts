@@ -1,6 +1,6 @@
 import { SessionsClient } from '@google-cloud/dialogflow';
 import { factory } from '@machinat/core/service';
-import { IntentRecognizerI } from '@machinat/core/base';
+import { BaseIntentRecognizerI } from '@machinat/core/base';
 import type { ServiceModule } from '@machinat/core/types';
 
 import IntentRecognizerP, { DialogFlowIntentRecognizer } from './recognizer';
@@ -20,7 +20,7 @@ const DialogFlow = {
   initModule: (configs: ModuleConfigs): ServiceModule => ({
     provisions: [
       IntentRecognizerP,
-      { provide: IntentRecognizerI, withProvider: IntentRecognizerP },
+      { provide: BaseIntentRecognizerI, withProvider: IntentRecognizerP },
       { provide: SESSION_CLIENT_I, withProvider: dialogFlowClientFactory },
       { provide: MODULE_CONFIGS_I, withValue: configs },
     ],

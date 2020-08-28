@@ -1,8 +1,8 @@
 import invariant from 'invariant';
 import {
-  MACHINAT_SERVICES_PROVIDER,
-  MACHINAT_SERVICES_CONTAINER,
-  MACHINAT_SERVICES_INTERFACE,
+  MACHINAT_SERVICE_PROVIDER,
+  MACHINAT_SERVICE_CONTAINER,
+  MACHINAT_SERVICE_INTERFACE,
 } from '../symbol';
 import type {
   ServiceLifetime,
@@ -19,6 +19,7 @@ type InjectOptions = {
   deps?: (ServiceRequirement<any> | Interfaceable<any>)[];
 };
 
+/** @internal */
 const validateLifetime = (lifetime: string) => {
   invariant(
     lifetime === 'singleton' ||
@@ -29,7 +30,8 @@ const validateLifetime = (lifetime: string) => {
 };
 
 /**
- * container marks a function as a container and annotate the dependencies
+ * container marks a function as a container and annotate the dependencies.
+ * @category Service Registry
  */
 export const container = <T>({ name, deps = [] }: InjectOptions = {}) => (
   fn: (...args: any[]) => T
@@ -37,7 +39,7 @@ export const container = <T>({ name, deps = [] }: InjectOptions = {}) => (
   const requirements = deps.map(polishServiceRequirement);
 
   return Object.defineProperties(fn, {
-    $$typeof: { value: MACHINAT_SERVICES_CONTAINER },
+    $$typeof: { value: MACHINAT_SERVICE_CONTAINER },
     $$name: { value: name || fn.name },
     $$deps: { value: requirements },
   });
@@ -57,7 +59,8 @@ type Constructor<T> = Function & {
 
 /**
  * provider annotate a class as a provider serving for the instance type and
- * also an interface can be implemented
+ * also an interface can be implemented.
+ * @category Service Registry
  */
 export const provider = <T>({
   name,
@@ -72,7 +75,7 @@ export const provider = <T>({
 
   return Object.defineProperties(klazz, {
     $$name: { value: name || klazz.name },
-    $$typeof: { value: MACHINAT_SERVICES_PROVIDER },
+    $$typeof: { value: MACHINAT_SERVICE_PROVIDER },
     $$deps: { value: requirements },
     $$factory: { value: factory || ((...args) => new klazz(...args)) }, // eslint-disable-line new-cap
     $$lifetime: { value: lifetime },
@@ -87,7 +90,8 @@ type FactoryOptions = {
 };
 
 /**
- * factory annotate a factory function as a provider
+ * factory annotate a factory function as a provider.
+ * @category Service Registry
  */
 export const factory = <T>({ name, deps = [], lifetime }: FactoryOptions) => (
   factoryFn: (...args: any[]) => T
@@ -97,7 +101,7 @@ export const factory = <T>({ name, deps = [], lifetime }: FactoryOptions) => (
 
   return Object.defineProperties(factoryFn, {
     $$name: { value: name || factoryFn.name },
-    $$typeof: { value: MACHINAT_SERVICES_PROVIDER },
+    $$typeof: { value: MACHINAT_SERVICE_PROVIDER },
     $$deps: { value: requirements },
     $$factory: { value: factoryFn },
     $$lifetime: { value: lifetime },
@@ -114,7 +118,8 @@ type AbstractConstructor<T> = Function & {
 };
 
 /**
- * abstract annotate an abstract class as a servcie interface
+ * abstract annotate an abstract class as a servcie interface.
+ * @category Service Registry
  */
 export const abstractInterface = <T>({
   name,
@@ -122,7 +127,7 @@ export const abstractInterface = <T>({
   klazz: AbstractConstructor<T>
 ): ServiceInterface<T> & Constructor<T> => {
   return Object.defineProperties(klazz, {
-    $$typeof: { value: MACHINAT_SERVICES_INTERFACE },
+    $$typeof: { value: MACHINAT_SERVICE_INTERFACE },
     $$name: { value: name || klazz.name },
     $$multi: { value: false },
   });
@@ -135,6 +140,7 @@ type makeInterfaceOptions = {
 
 /**
  * makeInterface make a non class service interface
+ * @category Service Registry
  */
 export const makeInterface = <T>({
   multi = false,
@@ -142,5 +148,5 @@ export const makeInterface = <T>({
 }: makeInterfaceOptions): ServiceInterface<T> => ({
   $$name: name,
   $$multi: multi,
-  $$typeof: MACHINAT_SERVICES_INTERFACE,
+  $$typeof: MACHINAT_SERVICE_INTERFACE,
 });

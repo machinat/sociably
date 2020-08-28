@@ -1,8 +1,8 @@
 import invariant from 'invariant';
 import {
-  MACHINAT_SERVICES_CONTAINER,
-  MACHINAT_SERVICES_PROVIDER,
-  MACHINAT_SERVICES_INTERFACE,
+  MACHINAT_SERVICE_CONTAINER,
+  MACHINAT_SERVICE_PROVIDER,
+  MACHINAT_SERVICE_INTERFACE,
 } from '../symbol';
 import ServiceScope from './scope';
 import ServiceMaker from './maker';
@@ -18,14 +18,14 @@ export const isServiceContainer = (
   target: any
 ): target is ServiceContainer<unknown> =>
   typeof target === 'function' &&
-  target.$$typeof === MACHINAT_SERVICES_CONTAINER;
+  target.$$typeof === MACHINAT_SERVICE_CONTAINER;
 
 export const isServiceProvider = (
   target: any
 ): target is ServiceProvider<unknown> =>
   (typeof target === 'function' ||
     (typeof target === 'object' && target !== null)) &&
-  target.$$typeof === MACHINAT_SERVICES_PROVIDER;
+  target.$$typeof === MACHINAT_SERVICE_PROVIDER;
 
 export const maybeInjectContainer = <T>(
   scope: ServiceScope,
@@ -40,9 +40,13 @@ export const isInterfaceable = (
 ): target is Interfaceable<unknown> =>
   (typeof target === 'function' ||
     (typeof target === 'object' && target !== null)) &&
-  (target.$$typeof === MACHINAT_SERVICES_INTERFACE ||
-    target.$$typeof === MACHINAT_SERVICES_PROVIDER);
+  (target.$$typeof === MACHINAT_SERVICE_INTERFACE ||
+    target.$$typeof === MACHINAT_SERVICE_PROVIDER);
 
+export const createEmptyScope = (platform?: string): ServiceScope =>
+  new ServiceScope(platform, new ServiceMaker(new ProvisionMap()), new Map());
+
+/** @internal */
 export const polishServiceRequirement = <T>(
   dep: Interfaceable<T> | ServiceRequirement<T>
 ): ServiceRequirement<T> => {
@@ -52,13 +56,10 @@ export const polishServiceRequirement = <T>(
 
   invariant(
     'require' in dep &&
-      (dep.require.$$typeof === MACHINAT_SERVICES_INTERFACE ||
-        dep.require.$$typeof === MACHINAT_SERVICES_PROVIDER),
+      (dep.require.$$typeof === MACHINAT_SERVICE_INTERFACE ||
+        dep.require.$$typeof === MACHINAT_SERVICE_PROVIDER),
     `${(dep as any).name || String(dep)} is not a valid interface`
   );
 
   return dep;
 };
-
-export const createEmptyScope = (platform?: string): ServiceScope =>
-  new ServiceScope(platform, new ServiceMaker(new ProvisionMap()), new Map());

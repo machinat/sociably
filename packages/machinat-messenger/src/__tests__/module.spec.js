@@ -15,7 +15,7 @@ it('export interfaces', () => {
     Object {
       "$$multi": false,
       "$$name": "MessengerPlatformConfigsI",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 });
@@ -39,7 +39,7 @@ describe('initModule(configs)', () => {
       Object {
         "$$multi": false,
         "$$name": "MessengerPlatformMounterI",
-        "$$typeof": Symbol(machinat.services.interface),
+        "$$typeof": Symbol(interface.service.machinat),
       }
     `);
     expect(module.provisions).toBeInstanceOf(Array);

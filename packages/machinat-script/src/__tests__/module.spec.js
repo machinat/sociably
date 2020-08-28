@@ -7,7 +7,7 @@ it('exports interfaces', () => {
     Object {
       "$$multi": true,
       "$$name": "ScriptLibsList",
-      "$$typeof": Symbol(machinat.services.interface),
+      "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 });
