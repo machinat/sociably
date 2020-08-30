@@ -1,3 +1,4 @@
+/** @internal */ /** */
 import type { DispatchableSegment } from '@machinat/core/engine/types';
 import LineChannel from './channel';
 import type {
@@ -9,8 +10,8 @@ import {
   PATH_PUSH,
   PATH_REPLY,
   PATH_MULTICAST,
-  CHANNEL_API_CALL_GETTER,
-  BULK_API_CALL_GETTER,
+  CHANNEL_REQUEST_GETTER,
+  BULK_REQUEST_GETTER,
 } from './constant';
 import { isMessageValue } from './utils';
 
@@ -62,7 +63,7 @@ export const chatJobsMaker = (replyToken: void | string) => {
         }
 
         // get dynamic api request
-        const { method, path, body } = value[CHANNEL_API_CALL_GETTER](channel);
+        const { method, path, body } = value[CHANNEL_REQUEST_GETTER](channel);
         jobs.push({
           method,
           path,
@@ -124,7 +125,7 @@ export const multicastJobsMaker = (targets: string[]) => (
       }
 
       // get dynamic api request
-      const { method, path, body } = value[BULK_API_CALL_GETTER](targets);
+      const { method, path, body } = value[BULK_REQUEST_GETTER](targets);
       jobs.push({
         method,
         path,

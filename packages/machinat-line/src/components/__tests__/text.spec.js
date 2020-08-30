@@ -1,9 +1,7 @@
 import Machinat from '@machinat/core';
-import Renderer from '@machinat/core/renderer';
 import { isNativeType } from '@machinat/core/utils/isX';
 import { Emoji } from '../text';
-
-const renderer = new Renderer('line', () => null);
+import { renderInner } from './utils';
 
 describe('Emoji', () => {
   it('is valid native unit component', () => {
@@ -14,29 +12,23 @@ describe('Emoji', () => {
   });
 
   it('renders to corespond unicode char', async () => {
-    await expect(renderer.render(<Emoji code={0x100078} />)).resolves.toEqual([
-      {
-        type: 'text',
-        node: <Emoji code={0x100078} />,
-        value: '\u{100078}',
-        path: '$',
-      },
-    ]);
-    await expect(renderer.render(<Emoji code={0x10008b} />)).resolves.toEqual([
-      {
-        type: 'text',
-        node: <Emoji code={0x10008b} />,
-        value: '\u{10008b}',
-        path: '$',
-      },
-    ]);
-    await expect(renderer.render(<Emoji code={0x100096} />)).resolves.toEqual([
-      {
-        type: 'text',
-        node: <Emoji code={0x100096} />,
-        value: '\u{100096}',
-        path: '$',
-      },
-    ]);
+    await expect(renderInner(<Emoji productId="foo" emojiId="bar" />)).resolves
+      .toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "node": <Emoji
+            emojiId="bar"
+            productId="foo"
+          />,
+          "path": "$#container",
+          "type": "part",
+          "value": Object {
+            "emojiId": "bar",
+            "productId": "foo",
+            "type": "emoji_placeholder",
+          },
+        },
+      ]
+    `);
   });
 });

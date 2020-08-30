@@ -1,2 +1,2 @@
-export { default } from './server';
-export { default as ClientAuthorizer } from './client';
+export { ServerAuthorizerP as LineServerAuthorizer } from './server';
+export { default as LineClientAuthorizer } from './client';

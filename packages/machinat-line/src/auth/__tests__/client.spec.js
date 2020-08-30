@@ -19,9 +19,12 @@ const liffContext = {
   },
 };
 
-beforeAll(() => {
-  global.location = moxy(url.parse('/'));
+global.window = moxy(
+  { location: url.parse('/') },
+  { includeProperties: ['location'] }
+);
 
+beforeAll(() => {
   global.liff = moxy({
     init: () => Promise.resolve(),
     getOS: () => 'ios',
@@ -43,7 +46,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  global.window = moxy();
+  global.window.mock.reset();
   global.liff.mock.reset();
 
   global.document = new JSDOM(`
@@ -219,7 +222,7 @@ describe('#fetchCredential()', () => {
   });
 
   it('set fromBotChannel if "fromBotChannel" in query param is truthy', async () => {
-    global.location.mock
+    global.window.location.mock
       .getter('search')
       .fakeReturnValue('?fromBotChannel=true');
 

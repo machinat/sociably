@@ -8,7 +8,7 @@ import type { WebhookHandler } from '@machinat/http/webhook/types';
 import createEvent from './event';
 import LineChannel from './channel';
 import LineUser from './user';
-import BotP, { LineBot } from './bot';
+import { BotP } from './bot';
 import { LINE } from './constant';
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import type {
@@ -25,6 +25,7 @@ type LineReceiverOptions = {
   channelSecret?: string;
 };
 
+/** @internal */
 const handleWebhook = (
   {
     providerId,
@@ -32,7 +33,7 @@ const handleWebhook = (
     shouldValidateRequest,
     channelSecret,
   }: LineReceiverOptions,
-  bot: LineBot,
+  bot: BotP,
   popEventWrapper: PopEventWrapper<LineEventContext, null>
 ): WebhookHandler => {
   const popEvent = popEventWrapper(() => Promise.resolve(null));
@@ -101,6 +102,9 @@ const handleWebhook = (
   };
 };
 
+/**
+ * @category Provider
+ */
 export class LineReceiver extends WebhookReceiver {
   constructor(
     {
@@ -109,7 +113,7 @@ export class LineReceiver extends WebhookReceiver {
       providerId,
       channelSecret,
     }: LineReceiverOptions,
-    bot: LineBot,
+    bot: BotP,
     popEventWrapper: PopEventWrapper<LineEventContext, null>
   ) {
     invariant(providerId, 'configs.providerId should not be empty');
@@ -129,12 +133,14 @@ export class LineReceiver extends WebhookReceiver {
   }
 }
 
-export default provider<LineReceiver>({
+export const ReceiverP = provider<LineReceiver>({
   lifetime: 'singleton',
   deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I],
   factory: (
     configs: LinePlatformConfigs,
-    bot: LineBot,
+    bot: BotP,
     { popEventWrapper }: LinePlatformMounter
   ) => new LineReceiver(configs, bot, popEventWrapper),
 })(LineReceiver);
+
+export type ReceiverP = LineReceiver;

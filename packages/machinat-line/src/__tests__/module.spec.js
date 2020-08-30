@@ -2,9 +2,9 @@ import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
-import Line from '..';
+import Line from '../module';
 import { LineReceiver } from '../receiver';
-import { LineUserProfiler } from '../profile';
+import { LineUserProfiler } from '../profiler';
 import { LineBot } from '../bot';
 
 it('export interfaces', () => {

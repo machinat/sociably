@@ -1,7 +1,6 @@
 import moxy from '@moxyjs/moxy';
-import LineUser from '../../user';
-import LineUserProfile from '../profile';
-import UserProfiler from '../fetcher';
+import LineUser from '../user';
+import { LineUserProfile, LineUserProfiler } from '../profiler';
 
 jest.useFakeTimers();
 
@@ -43,7 +42,7 @@ beforeEach(() => {
 });
 
 test('fetch profile from api and cache it', async () => {
-  const profiler = new UserProfiler(bot, stateController);
+  const profiler = new LineUserProfiler(bot, stateController);
   const profile = await profiler.fetchProfile(user);
 
   expect(profile).toBeInstanceOf(LineUserProfile);
@@ -88,7 +87,7 @@ test('fetch profile from api and cache it', async () => {
 });
 
 it('return with cached profile data if existed', async () => {
-  const profiler = new UserProfiler(bot, stateController);
+  const profiler = new LineUserProfiler(bot, stateController);
 
   state.get.mock.fake(async () => ({
     data: rawProfileData,
@@ -105,7 +104,7 @@ it('return with cached profile data if existed', async () => {
 });
 
 it('update new profile data if profileCacheTime expired', async () => {
-  const profiler = new UserProfiler(bot, stateController, {
+  const profiler = new LineUserProfiler(bot, stateController, {
     profileCacheTime: 99999999,
   });
 

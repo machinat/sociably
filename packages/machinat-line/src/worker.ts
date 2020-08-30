@@ -5,11 +5,12 @@ import Queue from '@machinat/core/queue';
 import type { LineJob, LineAPIResult } from './types';
 import { LineAPIError } from './error';
 
+/** @ignore */
 const API_HOST = 'https://api.line.me';
 
 type LineJobQueue = Queue<LineJob, LineAPIResult>;
 
-export default class LineClient
+export default class LineWorker
   implements MachinatWorker<LineJob, LineAPIResult> {
   private _headers: {
     'Content-Type': 'application/json';

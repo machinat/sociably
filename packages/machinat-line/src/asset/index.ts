@@ -1,6 +1,2 @@
-import AssetsManagerP, { LineAssetsManager } from './manager';
-
-export { default } from './manager';
-
-export const AssetsManager = AssetsManagerP;
-export type AssetsManager = LineAssetsManager;
+// eslint-disable-next-line import/prefer-default-export
+export { AssetsManagerP as LineAssetsManager } from './manager';

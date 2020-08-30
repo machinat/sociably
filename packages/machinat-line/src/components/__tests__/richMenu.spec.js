@@ -1,7 +1,7 @@
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
 import { isNativeType } from '@machinat/core/utils/isX';
-import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
+import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../../constant';
 import LineChannel from '../../channel';
 import { LinkRichMenu, UnlinkRichMenu } from '../richMenu';
 
@@ -23,8 +23,8 @@ describe('<LinkRichMenu/>', () => {
         node: <LinkRichMenu id="_RICH_MENU_ID_" />,
         value: {
           id: '_RICH_MENU_ID_',
-          [CHANNEL_API_CALL_GETTER]: expect.any(Function),
-          [BULK_API_CALL_GETTER]: expect.any(Function),
+          [CHANNEL_REQUEST_GETTER]: expect.any(Function),
+          [BULK_REQUEST_GETTER]: expect.any(Function),
         },
         path: '$',
       },
@@ -37,7 +37,7 @@ describe('<LinkRichMenu/>', () => {
     );
 
     expect(
-      value[CHANNEL_API_CALL_GETTER](
+      value[CHANNEL_REQUEST_GETTER](
         new LineChannel('_CHANNEL_ID_', '_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
       )
     ).toEqual({
@@ -53,7 +53,7 @@ describe('<LinkRichMenu/>', () => {
     );
 
     expect(() =>
-      value[CHANNEL_API_CALL_GETTER](
+      value[CHANNEL_REQUEST_GETTER](
         new LineChannel('_CHANNEL_ID_', '_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_')
       )
     ).toThrowErrorMatchingInlineSnapshot(
@@ -61,7 +61,7 @@ describe('<LinkRichMenu/>', () => {
     );
 
     expect(() =>
-      value[CHANNEL_API_CALL_GETTER](
+      value[CHANNEL_REQUEST_GETTER](
         new LineChannel(
           '_CHANNEL_ID_',
           '_BOT_CHANNEL_ID_',
@@ -79,7 +79,7 @@ describe('<LinkRichMenu/>', () => {
       <LinkRichMenu id="_RICH_MENU_ID_" />
     );
 
-    expect(value[BULK_API_CALL_GETTER](['foo', 'bar', 'baz'])).toEqual({
+    expect(value[BULK_REQUEST_GETTER](['foo', 'bar', 'baz'])).toEqual({
       method: 'POST',
       path: 'v2/bot/richmenu/bulk/link',
       body: {
@@ -103,8 +103,8 @@ describe('<UnlinkRichMenu/>', () => {
         type: 'unit',
         node: <UnlinkRichMenu />,
         value: {
-          [CHANNEL_API_CALL_GETTER]: expect.any(Function),
-          [BULK_API_CALL_GETTER]: expect.any(Function),
+          [CHANNEL_REQUEST_GETTER]: expect.any(Function),
+          [BULK_REQUEST_GETTER]: expect.any(Function),
         },
         path: '$',
       },
@@ -115,7 +115,7 @@ describe('<UnlinkRichMenu/>', () => {
     const [{ value }] = await renderer.render(<UnlinkRichMenu />);
 
     expect(
-      value[CHANNEL_API_CALL_GETTER](
+      value[CHANNEL_REQUEST_GETTER](
         new LineChannel('_CHANNEL_ID_', '_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
       )
     ).toEqual({
@@ -129,7 +129,7 @@ describe('<UnlinkRichMenu/>', () => {
     const [{ value }] = await renderer.render(<UnlinkRichMenu />);
 
     expect(() =>
-      value[CHANNEL_API_CALL_GETTER](
+      value[CHANNEL_REQUEST_GETTER](
         new LineChannel('_CHANNEL_ID_', '_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_')
       )
     ).toThrowErrorMatchingInlineSnapshot(
@@ -137,7 +137,7 @@ describe('<UnlinkRichMenu/>', () => {
     );
 
     expect(() =>
-      value[CHANNEL_API_CALL_GETTER](
+      value[CHANNEL_REQUEST_GETTER](
         new LineChannel(
           '_CHANNEL_ID_',
           '_BOT_CHANNEL_ID_',
@@ -153,7 +153,7 @@ describe('<UnlinkRichMenu/>', () => {
   test('bulk api getter', async () => {
     const [{ value }] = await renderer.render(<UnlinkRichMenu />);
 
-    expect(value[BULK_API_CALL_GETTER](['foo', 'bar', 'baz'])).toEqual({
+    expect(value[BULK_REQUEST_GETTER](['foo', 'bar', 'baz'])).toEqual({
       method: 'POST',
       path: 'v2/bot/richmenu/bulk/unlink',
       body: {

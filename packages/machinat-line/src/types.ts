@@ -10,24 +10,26 @@ import type {
   DispatchResponse,
 } from '@machinat/core/engine/types';
 import type { ServiceContainer } from '@machinat/core/service/types';
+import type { IntermediateSegment } from '@machinat/core/renderer/types';
 import type { WebhookMetadata } from '@machinat/http/webhook/types';
 import { LineBot } from './bot';
 import type LineChannel from './channel';
 import type LineUser from './user';
-import type { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from './constant';
+import type { LineEvent, LineRawEvent } from './event/types';
+import type { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from './constant';
 
-type UserSource = {
+export type UserSource = {
   type: 'user';
   userId: string;
 };
 
-type GroupSource = {
+export type GroupSource = {
   type: 'group';
   userId: string;
   groupId: string;
 };
 
-type RoomSource = {
+export type RoomSource = {
   type: 'room';
   userId: string;
   roomId: string;
@@ -35,26 +37,12 @@ type RoomSource = {
 
 export type LineSource = UserSource | GroupSource | RoomSource;
 
-// TODO: complete type of the raw event
-export type LineRawEvent = {
-  type: string;
-  timestamp: number;
-  source: LineSource;
-  replytoken: string;
-  message: any;
-  joined: any;
-  left: any;
-  postback: any;
-  beacon: any;
-  link: any;
-  things: any;
-};
-
-export type LineEvent = {
-  platform: 'line';
-  type: string;
-  subtype: undefined | string;
-  payload: LineRawEvent;
+export type LineRawUserProfile = {
+  displayName: string;
+  userId: string;
+  language?: string;
+  pictureUrl?: string;
+  statusMessage?: string;
 };
 
 export type LineEventContext = EventContext<
@@ -121,7 +109,6 @@ export type LocationSegmentValue = {
 export type ImagemapSegmentValue = {
   type: 'imagemap';
   altText: string;
-  address: string;
   baseSize: {
     width: 1040;
     height: number;
@@ -147,15 +134,21 @@ export type TemplateSegmentValue = {
   template: any; // TODO: type the template object
 } & QuickRepliable;
 
-type DynamicAPICallGettable = {
-  [BULK_API_CALL_GETTER]: (
+export type FlexSegmentValue = {
+  type: 'flex';
+  altText: string;
+  contents: any;
+} & QuickRepliable;
+
+export type DynamicAPICallGettable = {
+  [BULK_REQUEST_GETTER]: (
     ids: string[]
   ) => {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';
     path: string;
     body: any;
   };
-  [CHANNEL_API_CALL_GETTER]: (
+  [CHANNEL_REQUEST_GETTER]: (
     channel: LineChannel
   ) => {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -172,11 +165,17 @@ export type LineMessageSegmentValue =
   | AudioSegmentValue
   | LocationSegmentValue
   | ImagemapSegmentValue
-  | TemplateSegmentValue;
+  | TemplateSegmentValue
+  | FlexSegmentValue;
 
 export type LineSegmentValue = LineMessageSegmentValue | DynamicAPICallGettable;
 
-export type LineComponent = NativeComponent<any, LineSegmentValue>;
+export type LineComponent<
+  Props,
+  Segment extends IntermediateSegment<LineSegmentValue> = IntermediateSegment<
+    LineSegmentValue
+  >
+> = NativeComponent<Props, Segment>;
 
 type ReplyRequestBody = {
   replyToken: string;

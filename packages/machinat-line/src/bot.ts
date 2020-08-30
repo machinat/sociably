@@ -36,6 +36,9 @@ type LineBotOptions = {
   connectionCapicity?: number;
 };
 
+/**
+ * @category Provider
+ */
 export class LineBot
   implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
   providerId: string;
@@ -43,7 +46,7 @@ export class LineBot
   engine: Engine<
     LineChannel,
     LineSegmentValue,
-    LineComponent,
+    LineComponent<any>,
     LineJob,
     LineAPIResult,
     LineBot
@@ -72,7 +75,7 @@ export class LineBot
 
     const queue = new Queue<LineJob, LineAPIResult>();
     const worker = new LineWorker(accessToken, connectionCapicity);
-    const renderer = new Renderer<LineSegmentValue, LineComponent>(
+    const renderer = new Renderer<LineSegmentValue, LineComponent<any>>(
       LINE,
       generalElementDelegate
     );
@@ -137,7 +140,7 @@ export class LineBot
   }
 }
 
-export default provider<LineBot>({
+export const BotP = provider<LineBot>({
   lifetime: 'singleton',
   deps: [PLATFORM_CONFIGS_I, { require: PLATFORM_MOUNTER_I, optional: true }],
   factory: (
@@ -145,3 +148,5 @@ export default provider<LineBot>({
     mounter: null | LinePlatformMounter
   ) => new LineBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
 })(LineBot);
+
+export type BotP = LineBot;

@@ -61,6 +61,11 @@ module.exports = {
     '@typescript-eslint/no-namespace': ['error', {
       'allowDeclarations': true,
     }],
+    '@typescript-eslint/ban-types': ['error', {
+      types: {
+        '{}': false,
+      },
+    }]
   },
   overrides: [
     {

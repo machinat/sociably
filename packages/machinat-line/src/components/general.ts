@@ -1,3 +1,4 @@
+/** @internal */ /** */
 import {
   breakSegment,
   unitSegment,

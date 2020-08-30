@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import LineAssetManager from '../manager';
+import { LineAssetsManager } from '../manager';
 
 const state = moxy({
   get: async () => null,
@@ -27,7 +27,7 @@ beforeEach(() => {
 });
 
 test('get asset id', async () => {
-  const manager = new LineAssetManager(stateManager, bot);
+  const manager = new LineAssetsManager(stateManager, bot);
 
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe(undefined);
   await expect(manager.getLIFFAppId('my_liff_app')).resolves.toBe(undefined);
@@ -64,7 +64,7 @@ test('get asset id', async () => {
 });
 
 test('set asset id', async () => {
-  const manager = new LineAssetManager(stateManager, bot);
+  const manager = new LineAssetsManager(stateManager, bot);
 
   await manager.setAssetId('foo', 'bar', 'baz');
   await manager.setLIFFAppId('my_liff_app', '_LIFF_APP_ID_');
@@ -109,7 +109,7 @@ test('set asset id', async () => {
 });
 
 test('get all assets', async () => {
-  const manager = new LineAssetManager(stateManager, bot);
+  const manager = new LineAssetsManager(stateManager, bot);
 
   await expect(manager.getAllAssets('foo')).resolves.toBe(null);
   await expect(manager.getAllLIFFApps()).resolves.toBe(null);
@@ -142,7 +142,7 @@ test('get all assets', async () => {
 });
 
 test('remove asset id', async () => {
-  const manager = new LineAssetManager(stateManager, bot);
+  const manager = new LineAssetsManager(stateManager, bot);
 
   await manager.removeAssetId('foo', 'bar');
   await manager.removeLIFFAppId('my_liff_app');
@@ -180,7 +180,7 @@ test('remove asset id', async () => {
 });
 
 test('#createRichMenu()', async () => {
-  const manager = new LineAssetManager(stateManager, bot);
+  const manager = new LineAssetsManager(stateManager, bot);
   bot.dispatchAPICall.mock.fake(() => ({
     jobs: [{ ...{} }],
     results: [{ richMenuId: '_RICH_MENU_ID_' }],
@@ -219,7 +219,7 @@ test('#createRichMenu()', async () => {
 });
 
 test('#deleteRichMenu()', async () => {
-  const manager = new LineAssetManager(stateManager, bot);
+  const manager = new LineAssetsManager(stateManager, bot);
   bot.dispatchAPICall.mock.fake(() => ({
     jobs: [{ ...{} }],
     results: [{}],

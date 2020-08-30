@@ -21,7 +21,10 @@ type LineServerAuthorizerOpts = {
   liffChannelIds: string[];
 };
 
-class LineServerAuthorizer
+/**
+ * @category Provider
+ */
+export class LineServerAuthorizer
   implements ServerAuthorizer<LIFFAuthData, LIFFCredential> {
   providerId: string;
   channelId: string;
@@ -119,7 +122,7 @@ class LineServerAuthorizer
   }
 }
 
-export default provider<LineServerAuthorizer>({
+export const ServerAuthorizerP = provider<LineServerAuthorizer>({
   lifetime: 'transient',
   deps: [PLATFORM_CONFIGS_I],
 
@@ -136,3 +139,5 @@ export default provider<LineServerAuthorizer>({
     });
   },
 })(LineServerAuthorizer);
+
+export type ServerAuthorizerP = LineServerAuthorizer;

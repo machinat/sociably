@@ -1,14 +1,52 @@
 import { provider } from '@machinat/core/service';
 import Base from '@machinat/core/base';
-import BotP, { LineBot } from '../bot';
-import LineUserProfile from './profile';
-import type LineUser from '../user';
-import type { RawLineUserProfile } from './types';
+import { MachinatUserProfile } from '@machinat/core/base/UserProfilerI';
+import { BotP } from './bot';
+import type LineUser from './user';
+import type { LineRawUserProfile } from './types';
+import { LINE } from './constant';
 
+export class LineUserProfile implements MachinatUserProfile {
+  data: LineRawUserProfile;
+  platform = LINE;
+
+  constructor(data: LineRawUserProfile) {
+    this.data = data;
+  }
+
+  get id(): string {
+    return this.data.userId;
+  }
+
+  get name(): string {
+    return this.data.displayName;
+  }
+
+  get pictureURL(): undefined | string {
+    return this.data.pictureUrl;
+  }
+
+  get statusMessage(): undefined | string {
+    return this.data.statusMessage;
+  }
+
+  toJSON(): any {
+    const { data, id, name, pictureURL } = this;
+    return {
+      platform: LINE,
+      data,
+      id,
+      name,
+      pictureURL,
+    };
+  }
+}
+
+/** @ignore */
 const PROFILE_KEY = '$$line:user:profile';
 
 type ProfileCache = {
-  data: RawLineUserProfile;
+  data: LineRawUserProfile;
   fetchAt: number;
 };
 
@@ -16,13 +54,16 @@ type ProfilerOptions = {
   profileCacheTime?: number;
 };
 
+/**
+ * @category Provider
+ */
 export class LineUserProfiler implements Base.UserProfilerI {
-  bot: LineBot;
+  bot: BotP;
   stateController: null | Base.StateControllerI;
   profileCacheTime: number;
 
   constructor(
-    bot: LineBot,
+    bot: BotP,
     stateController: null | Base.StateControllerI,
     { profileCacheTime }: ProfilerOptions = {}
   ) {
@@ -47,7 +88,7 @@ export class LineUserProfiler implements Base.UserProfilerI {
       `v2/bot/profile/${user.id}`,
       null
     );
-    const rawProfile: RawLineUserProfile = response.results[0];
+    const rawProfile: LineRawUserProfile = response.results[0];
 
     if (this.stateController) {
       await this.stateController
@@ -62,7 +103,9 @@ export class LineUserProfiler implements Base.UserProfilerI {
   }
 }
 
-export default provider<LineUserProfiler>({
+export const UserProfilerP = provider<LineUserProfiler>({
   lifetime: 'scoped',
   deps: [BotP, { require: Base.StateControllerI, optional: true }],
 })(LineUserProfiler);
+
+export type UserProfilerP = LineUserProfiler;

@@ -2,7 +2,7 @@ import Machinat from '@machinat/core';
 import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 
-import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
+import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../../constant';
 import LineChannel from '../../channel';
 import { Leave } from '../leave';
 
@@ -21,8 +21,8 @@ it('render ok with entry getter', async () => {
       type: 'unit',
       node: <Leave />,
       value: {
-        [CHANNEL_API_CALL_GETTER]: expect.any(Function),
-        [BULK_API_CALL_GETTER]: expect.any(Function),
+        [CHANNEL_REQUEST_GETTER]: expect.any(Function),
+        [BULK_REQUEST_GETTER]: expect.any(Function),
       },
       path: '$',
     },
@@ -32,7 +32,7 @@ it('render ok with entry getter', async () => {
 test('channel api call getter', async () => {
   const [{ value }] = await renderer.render(<Leave />);
   expect(
-    value[CHANNEL_API_CALL_GETTER](
+    value[CHANNEL_REQUEST_GETTER](
       new LineChannel(
         '_PROVIDER_ID_',
         '_BOT_CHANNEL_ID_',
@@ -47,7 +47,7 @@ test('channel api call getter', async () => {
   });
 
   expect(
-    value[CHANNEL_API_CALL_GETTER](
+    value[CHANNEL_REQUEST_GETTER](
       new LineChannel('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_')
     )
   ).toEqual({
@@ -61,7 +61,7 @@ test('channel api call getter throw if type of channel is user', async () => {
   const [{ value }] = await renderer.render(<Leave />);
 
   expect(() =>
-    value[CHANNEL_API_CALL_GETTER](
+    value[CHANNEL_REQUEST_GETTER](
       new LineChannel('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
     )
   ).toThrowErrorMatchingInlineSnapshot(
@@ -73,7 +73,7 @@ test('bulk api call getter throw', async () => {
   const [{ value }] = await renderer.render(<Leave />);
 
   expect(() =>
-    value[BULK_API_CALL_GETTER](
+    value[BULK_REQUEST_GETTER](
       new LineChannel('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
     )
   ).toThrowErrorMatchingInlineSnapshot(`"cannot <Leave/> using multicast api"`);

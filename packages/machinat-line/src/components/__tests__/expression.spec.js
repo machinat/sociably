@@ -5,7 +5,7 @@ import Renderer from '@machinat/core/renderer';
 import { Expression } from '../expression';
 import { QuickReply } from '../quickReply';
 import { MessageAction } from '../action';
-import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../../constant';
+import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../../constant';
 
 const generalComponentDelegator = moxy(async (node, path) => [
   { type: 'unit', value: { type: 'text', text: node.type }, node, path },
@@ -141,10 +141,10 @@ it('attach quickReply to last message object', async () => {
       type: 'unit',
       node: <somebody />,
       value: {
-        [CHANNEL_API_CALL_GETTER]() {
+        [CHANNEL_REQUEST_GETTER]() {
           return { method: 'GET', path: 'with/some', body: null };
         },
-        [BULK_API_CALL_GETTER]() {
+        [BULK_REQUEST_GETTER]() {
           return { method: 'GET', path: 'superhuman/gift', body: null };
         },
       },
@@ -238,8 +238,8 @@ it('attach quickReply to last message object', async () => {
               "path": "$:0#Expression.children:3",
               "type": "unit",
               "value": Object {
-                Symbol(line.segment.channel_api_call_getter): [Function],
-                Symbol(line.segment.bulk_api_call_getter): [Function],
+                Symbol(channel_request_getter.line.machinat): [Function],
+                Symbol(bulk_request_getter.line.machinat): [Function],
               },
             },
           ]

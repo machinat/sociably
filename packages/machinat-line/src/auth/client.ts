@@ -12,8 +12,7 @@ import type {
 } from './types';
 import { refinementFromLIFFAuthData } from './utils';
 
-declare let location: Location;
-declare let document: Document;
+/** @ignore */
 declare let liff: any;
 
 type ClientAuthorizerOptions = {
@@ -59,7 +58,7 @@ class LineClientAuthorizer
     this.isFromBotChannel =
       typeof fromBotChannel === 'boolean'
         ? fromBotChannel
-        : new URLSearchParams(location.search).get(
+        : new URLSearchParams(window.location.search).get(
             BOT_CHANNEL_LABEL_QUERY_KEY
           ) === 'true';
   }

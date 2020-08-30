@@ -1,10 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 import { unitSegment } from '@machinat/core/renderer';
-import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../constant';
+import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../constant';
 import { annotateLineComponent } from '../utils';
+import { LineComponent } from '../types';
 
-const LEAVE_API_CALLER = {
-  [CHANNEL_API_CALL_GETTER]({ type, id }) {
+/** @ignore */
+const LEAVE_REQUESTER = {
+  [CHANNEL_REQUEST_GETTER]({ type, id }) {
     if (type !== 'group' && type !== 'room') {
       throw new TypeError(
         '<Leave /> should cannot be used within an user channel'
@@ -12,18 +14,25 @@ const LEAVE_API_CALLER = {
     }
 
     return {
-      method: 'POST',
+      method: 'POST' as const,
       path: `v2/bot/${type}/${id}/leave`,
       body: null,
     };
   },
-  [BULK_API_CALL_GETTER]() {
+  [BULK_REQUEST_GETTER]() {
     throw new Error('cannot <Leave/> using multicast api');
   },
 };
 
-export const Leave = (node, path) => [
-  unitSegment(node, path, LEAVE_API_CALLER),
-];
+/** @internal */
+const __Leave = function Leave(node, path) {
+  return [unitSegment(node, path, LEAVE_REQUESTER)];
+};
 
-annotateLineComponent(Leave);
+/**
+ * Leave a room or group. It throw when being sent to an user or by multicast.
+ * @category Component
+ * @props `{}`
+ * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/group-chats/).
+ */
+export const Leave: LineComponent<{}> = annotateLineComponent(__Leave);

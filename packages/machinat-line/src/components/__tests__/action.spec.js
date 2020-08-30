@@ -1,6 +1,5 @@
 import Machinat from '@machinat/core';
 import { isNativeType } from '@machinat/core/utils/isX';
-import Renderer from '@machinat/core/renderer';
 import {
   PostbackAction,
   MessageAction,
@@ -10,17 +9,7 @@ import {
   CameraRollAction,
   LocationAction,
 } from '../action';
-
-const render = async (node) => {
-  let rendered;
-  const renderer = new Renderer('line', async (_, __, renderInner) => {
-    rendered = await renderInner(node);
-    return null;
-  });
-
-  await renderer.render(<container />);
-  return rendered;
-};
+import { renderInner } from './utils';
 
 test.each(
   [
@@ -41,7 +30,7 @@ test.each(
 
 test('<PostbackAction/>', async () => {
   await expect(
-    render(
+    renderInner(
       <PostbackAction data="__POSTBACK_FOO__" label="Hello!" text="WORLD!" />
     )
   ).resolves.toMatchInlineSnapshot(`
@@ -66,7 +55,7 @@ test('<PostbackAction/>', async () => {
 });
 
 test('<MessageAction/>', async () => {
-  await expect(render(<MessageAction label="Tick" text="Tock" />)).resolves
+  await expect(renderInner(<MessageAction label="Tick" text="Tock" />)).resolves
     .toMatchInlineSnapshot(`
           Array [
             Object {
@@ -87,8 +76,9 @@ test('<MessageAction/>', async () => {
 });
 
 test('<URIAction/>', async () => {
-  await expect(render(<URIAction uri="http://machinat.com" label="Try it!" />))
-    .resolves.toMatchInlineSnapshot(`
+  await expect(
+    renderInner(<URIAction uri="http://machinat.com" label="Try it!" />)
+  ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <URIAction
@@ -108,7 +98,7 @@ test('<URIAction/>', async () => {
 });
 
 test('<CameraAction/>', async () => {
-  await expect(render(<CameraAction label="Cheer!" />)).resolves
+  await expect(renderInner(<CameraAction label="Cheer!" />)).resolves
     .toMatchInlineSnapshot(`
           Array [
             Object {
@@ -127,7 +117,7 @@ test('<CameraAction/>', async () => {
 });
 
 test('<CameraRollAction/>', async () => {
-  await expect(render(<CameraRollAction label="Cheer again!" />)).resolves
+  await expect(renderInner(<CameraRollAction label="Cheer again!" />)).resolves
     .toMatchInlineSnapshot(`
           Array [
             Object {
@@ -146,8 +136,8 @@ test('<CameraRollAction/>', async () => {
 });
 
 test('<LocationAction/>', async () => {
-  await expect(render(<LocationAction label="Ok, where are we?" />)).resolves
-    .toMatchInlineSnapshot(`
+  await expect(renderInner(<LocationAction label="Ok, where are we?" />))
+    .resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <LocationAction
@@ -186,7 +176,7 @@ describe('DateTimePickerAction', () => {
 
     for (const action of actions) {
       // eslint-disable-next-line no-await-in-loop
-      await expect(render(action)).resolves.toEqual([
+      await expect(renderInner(action)).resolves.toEqual([
         {
           type: 'part',
           node: action,
@@ -227,7 +217,7 @@ describe('DateTimePickerAction', () => {
 
     for (const action of actions) {
       // eslint-disable-next-line no-await-in-loop
-      await expect(render(action)).resolves.toEqual([
+      await expect(renderInner(action)).resolves.toEqual([
         {
           type: 'part',
           node: action,
@@ -268,7 +258,7 @@ describe('DateTimePickerAction', () => {
 
     for (const action of actions) {
       // eslint-disable-next-line no-await-in-loop
-      await expect(render(action)).resolves.toEqual([
+      await expect(renderInner(action)).resolves.toEqual([
         {
           type: 'part',
           node: action,

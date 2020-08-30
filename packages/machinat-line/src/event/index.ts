@@ -1,4 +1,4 @@
-import type { LineRawEvent, LineEvent } from '../types';
+/** @internal */ /** */
 import {
   text,
   image,
@@ -7,10 +7,13 @@ import {
   file,
   location,
   sticker,
+  unsend,
   follow,
   unfollow,
   join,
   leave,
+  memberJoined,
+  memberLeft,
   postback,
   postbackDate,
   postbackTime,
@@ -19,10 +22,14 @@ import {
   accountLink,
   deviceLink,
   deviceUnlink,
+  deviceScenarioResult,
   unknown,
 } from './factory';
+import { LineEvent, MessageEvent, UnknownEvent, LineRawEvent } from './types';
 
-const createMessageEvent = (payload: LineRawEvent): LineEvent => {
+const createMessageEvent = (
+  payload: LineRawEvent
+): MessageEvent | UnknownEvent => {
   const { type: messageType } = payload.message;
   return messageType === 'text'
     ? text(payload)
@@ -58,6 +65,8 @@ const createEvent = (payload: LineRawEvent): LineEvent => {
   const { type: eventType } = payload;
   return eventType === 'message'
     ? createMessageEvent(payload)
+    : eventType === 'unsend'
+    ? unsend(payload)
     : eventType === 'follow'
     ? follow(payload)
     : eventType === 'unfollow'
@@ -66,6 +75,10 @@ const createEvent = (payload: LineRawEvent): LineEvent => {
     ? join(payload)
     : eventType === 'leave'
     ? leave(payload)
+    : eventType === 'memberJoined'
+    ? memberJoined(payload)
+    : eventType === 'memberLeft'
+    ? memberLeft(payload)
     : eventType === 'postback'
     ? createPostbackEvent(payload)
     : eventType === 'beacon'
@@ -75,7 +88,11 @@ const createEvent = (payload: LineRawEvent): LineEvent => {
     : eventType === 'things'
     ? payload.things.type === 'link'
       ? deviceLink(payload)
-      : deviceUnlink(payload)
+      : payload.things.type === 'unlink'
+      ? deviceUnlink(payload)
+      : payload.things.type === 'scenarioResult'
+      ? deviceScenarioResult(payload)
+      : unknown(payload)
     : unknown(payload);
 };
 

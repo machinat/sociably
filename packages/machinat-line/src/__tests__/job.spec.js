@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import { CHANNEL_API_CALL_GETTER, BULK_API_CALL_GETTER } from '../constant';
+import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../constant';
 import LineChannel from '../channel';
 import { chatJobsMaker, multicastJobsMaker } from '../job';
 
@@ -9,12 +9,12 @@ const Bar = () => {};
 const Baz = () => {};
 
 const dynamicAPICaller = moxy({
-  [CHANNEL_API_CALL_GETTER]: () => ({
+  [CHANNEL_REQUEST_GETTER]: () => ({
     method: 'POST',
     path: 'some/channel/api',
     body: { do: 'something' },
   }),
-  [BULK_API_CALL_GETTER]: () => ({
+  [BULK_REQUEST_GETTER]: () => ({
     method: 'POST',
     path: 'some/bulk/api',
     body: { bulk: 'do something' },
@@ -124,10 +124,10 @@ describe('chatJobsMaker()', () => {
       ]
     `);
 
-    expect(
-      dynamicAPICaller[CHANNEL_API_CALL_GETTER].mock
-    ).toHaveBeenCalledTimes(2);
-    expect(dynamicAPICaller[CHANNEL_API_CALL_GETTER].mock).toHaveBeenCalledWith(
+    expect(dynamicAPICaller[CHANNEL_REQUEST_GETTER].mock).toHaveBeenCalledTimes(
+      2
+    );
+    expect(dynamicAPICaller[CHANNEL_REQUEST_GETTER].mock).toHaveBeenCalledWith(
       channel
     );
   });
@@ -283,10 +283,8 @@ describe('multicastJobsMaker()', () => {
       ]
     `);
 
-    expect(dynamicAPICaller[BULK_API_CALL_GETTER].mock).toHaveBeenCalledTimes(
-      2
-    );
-    expect(dynamicAPICaller[BULK_API_CALL_GETTER].mock).toHaveBeenCalledWith([
+    expect(dynamicAPICaller[BULK_REQUEST_GETTER].mock).toHaveBeenCalledTimes(2);
+    expect(dynamicAPICaller[BULK_REQUEST_GETTER].mock).toHaveBeenCalledWith([
       'foo',
       'bar',
       'baz',

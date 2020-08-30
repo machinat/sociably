@@ -1,3 +1,4 @@
+/** @internal */ /** */
 /* eslint-disable import/prefer-default-export  */
 import LineUser from '../user';
 import LineChannel from '../channel';
