@@ -30,7 +30,7 @@ type GenericItemProps = {
 };
 
 /** @ignore */
-const _GenericItem = async function GenericItem(node, path, render) {
+const __GenericItem = async function GenericItem(node, path, render) {
   const {
     buttons,
     title,
@@ -73,7 +73,7 @@ const _GenericItem = async function GenericItem(node, path, render) {
 export const GenericItem: MessengerComponent<
   GenericItemProps,
   PartSegment<any>
-> = annotateMessengerComponent(_GenericItem);
+> = annotateMessengerComponent(__GenericItem);
 
 /**
  * @category Props
@@ -94,7 +94,7 @@ type GenericTemplateProps = {
 };
 
 /** @ignore */
-const _GenericTemplate = async function GenericTemplate(node, path, render) {
+const __GenericTemplate = async function GenericTemplate(node, path, render) {
   const { children, sharable, imageAspectRatio } = node.props;
   const elementsSegments = await render(children, '.children');
   const elementValues = elementsSegments?.map((segment) => segment.value);
@@ -128,7 +128,7 @@ const _GenericTemplate = async function GenericTemplate(node, path, render) {
 export const GenericTemplate: MessengerComponent<
   GenericTemplateProps,
   UnitSegment<MessageValue>
-> = annotateMessengerComponent(_GenericTemplate);
+> = annotateMessengerComponent(__GenericTemplate);
 
 /**
  * @category Props
@@ -145,7 +145,7 @@ type ButtonTemplateProps = {
 };
 
 /** @ignore */
-const _ButtonTemplate = async function ButtonTemplate(node, path, render) {
+const __ButtonTemplate = async function ButtonTemplate(node, path, render) {
   const { children, buttons, sharable } = node.props;
   const textSegments = await render(children, '.children');
   let text = '';
@@ -194,7 +194,7 @@ const _ButtonTemplate = async function ButtonTemplate(node, path, render) {
 export const ButtonTemplate: MessengerComponent<
   ButtonTemplateProps,
   UnitSegment<MessageValue>
-> = annotateMessengerComponent(_ButtonTemplate);
+> = annotateMessengerComponent(__ButtonTemplate);
 
 /**
  * @category Props
@@ -216,7 +216,7 @@ type MediaTemplateProps = {
 };
 
 /** @ignore */
-const _MediaTemplate = async function MediaTemplate(node, path, render) {
+const __MediaTemplate = async function MediaTemplate(node, path, render) {
   const { buttons, mediaType, attachmentId, url, sharable } = node.props;
   const buttonSegments = await render(buttons, '.buttons');
   const buttonValues = buttonSegments?.map((segment) => segment.value);
@@ -254,7 +254,7 @@ const _MediaTemplate = async function MediaTemplate(node, path, render) {
 export const MediaTemplate: MessengerComponent<
   MediaTemplateProps,
   UnitSegment<MessageValue>
-> = annotateMessengerComponent(_MediaTemplate);
+> = annotateMessengerComponent(__MediaTemplate);
 
 /**
  * @category Props
@@ -275,7 +275,7 @@ type ReceiptItemProps = {
 };
 
 /** @ignore */
-const _ReceiptItem = async function ReceiptItem(node, path) {
+const __ReceiptItem = async function ReceiptItem(node, path) {
   const { title, subtitle, quantity, price, currency, imageURL } = node.props;
   return [
     partSegment(node, path, {
@@ -298,7 +298,7 @@ const _ReceiptItem = async function ReceiptItem(node, path) {
 export const ReceiptItem: MessengerComponent<
   ReceiptItemProps,
   PartSegment<any>
-> = annotateMessengerComponent(_ReceiptItem);
+> = annotateMessengerComponent(__ReceiptItem);
 
 /**
  * @category Props
@@ -352,7 +352,7 @@ type ReceiptTemplateProps = {
 };
 
 /** @ignore */
-const _ReceiptTemplate = async function ReceiptTemplate(node, path, render) {
+const __ReceiptTemplate = async function ReceiptTemplate(node, path, render) {
   const {
     children,
     sharable,
@@ -410,4 +410,4 @@ const _ReceiptTemplate = async function ReceiptTemplate(node, path, render) {
 export const ReceiptTemplate: MessengerComponent<
   ReceiptTemplateProps,
   UnitSegment<MessageValue>
-> = annotateMessengerComponent(_ReceiptTemplate);
+> = annotateMessengerComponent(__ReceiptTemplate);

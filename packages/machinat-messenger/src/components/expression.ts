@@ -49,7 +49,7 @@ type ExpressionProps = {
 };
 
 /** @ignore */
-const _Expression = async function Expression(
+const __Expression = async function Expression(
   {
     props: {
       children,
@@ -164,4 +164,4 @@ const _Expression = async function Expression(
 export const Expression: MessengerComponent<
   ExpressionProps,
   UnitSegment<MessengerSegmentValue>
-> = annotateMessengerComponent(_Expression);
+> = annotateMessengerComponent(__Expression);

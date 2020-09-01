@@ -1,43 +1,34 @@
 /** @internal */ /** */
 import {
   text,
-  quickReplyPostback,
+  echoText,
   image,
+  echoImage,
   video,
+  echoVideo,
   audio,
+  echoAudio,
   file,
+  echoFile,
   location,
-  echoedText,
-  echoedImage,
-  echoedVideo,
-  echoedAudio,
-  echoedFile,
-  echoedLocation,
-  echoedTemplate,
-  standbyText,
-  standbyImage,
-  standbyVideo,
-  standbyAudio,
-  standbyFile,
-  standbyLocation,
+  productTemplate,
+  echoTemplate,
+  fallback,
+  echoFallback,
+  quickReplyPostback,
+  postback,
+  reaction,
+  referral,
   read,
-  standbyRead,
   delivery,
-  standbyDelivery,
   accountLinking,
-  checkoutUpdate,
   gamePlay,
   passThreadControl,
   takeThreadControl,
   requestThreadControl,
   appRoles,
   optin,
-  payment,
   policyEnforcement,
-  postback,
-  standbyPostback,
-  preCheckout,
-  referral,
   unknown,
 } from './factory';
 import type { MessengerRawEvent, MessengerEvent } from '../types';
@@ -49,49 +40,31 @@ const createMessageEvent = (payload: MessengerRawEvent, isStandby: boolean) => {
   const { message } = payload;
   if (hasOwnProperty(message, 'text')) {
     if (hasOwnProperty(message, 'quick_reply')) {
-      return quickReplyPostback(payload);
+      return quickReplyPostback(payload, isStandby);
     }
 
-    return isStandby
-      ? standbyText(payload)
-      : message.is_echo
-      ? echoedText(payload)
-      : text(payload);
+    return message.is_echo ? echoText(payload) : text(payload, isStandby);
   }
 
   switch (message.attachments[0].type) {
     case 'image':
-      return isStandby
-        ? standbyImage(payload)
-        : message.is_echo
-        ? echoedImage(payload)
-        : image(payload);
+      return message.is_echo ? echoImage(payload) : image(payload, isStandby);
     case 'video':
-      return isStandby
-        ? standbyVideo(payload)
-        : message.is_echo
-        ? echoedVideo(payload)
-        : video(payload);
+      return message.is_echo ? echoVideo(payload) : video(payload, isStandby);
     case 'audio':
-      return isStandby
-        ? standbyAudio(payload)
-        : message.is_echo
-        ? echoedAudio(payload)
-        : audio(payload);
+      return message.is_echo ? echoAudio(payload) : audio(payload, isStandby);
     case 'file':
-      return isStandby
-        ? standbyFile(payload)
-        : message.is_echo
-        ? echoedFile(payload)
-        : file(payload);
+      return message.is_echo ? echoFile(payload) : file(payload, isStandby);
     case 'location':
-      return isStandby
-        ? standbyLocation(payload)
-        : message.is_echo
-        ? echoedLocation(payload)
-        : location(payload);
+      return location(payload, isStandby);
     case 'template':
-      return echoedTemplate(payload);
+      return message.is_echo
+        ? echoTemplate(payload)
+        : hasOwnProperty(message.attachments[0].payload, 'product')
+        ? productTemplate(payload, isStandby)
+        : unknown(payload);
+    case 'fallback':
+      return message.is_echo ? echoFallback(payload) : fallback(payload);
     default:
       return unknown(payload);
   }
@@ -104,18 +77,14 @@ const createEvent = (
 ): MessengerEvent =>
   hasOwnProperty(payload, 'message')
     ? createMessageEvent(payload, isStandby)
+    : hasOwnProperty(payload, 'reaction')
+    ? reaction(payload)
     : hasOwnProperty(payload, 'read')
-    ? isStandby
-      ? standbyRead(payload)
-      : read(payload)
+    ? read(payload, isStandby)
     : hasOwnProperty(payload, 'delivery')
-    ? isStandby
-      ? standbyDelivery(payload)
-      : delivery(payload)
+    ? delivery(payload, isStandby)
     : hasOwnProperty(payload, 'account_linking')
     ? accountLinking(payload)
-    : hasOwnProperty(payload, 'checkout_update')
-    ? checkoutUpdate(payload)
     : hasOwnProperty(payload, 'game_play')
     ? gamePlay(payload)
     : hasOwnProperty(payload, 'take_thread_control')
@@ -128,16 +97,10 @@ const createEvent = (
     ? appRoles(payload)
     : hasOwnProperty(payload, 'optin')
     ? optin(payload)
-    : hasOwnProperty(payload, 'payment')
-    ? payment(payload)
     : hasOwnProperty(payload, 'policy-enforcement')
     ? policyEnforcement(payload)
     : hasOwnProperty(payload, 'postback')
-    ? isStandby
-      ? standbyPostback(payload)
-      : postback(payload)
-    : hasOwnProperty(payload, 'pre_checkout')
-    ? preCheckout(payload)
+    ? postback(payload, isStandby)
     : hasOwnProperty(payload, 'referral')
     ? referral(payload)
     : unknown(payload);

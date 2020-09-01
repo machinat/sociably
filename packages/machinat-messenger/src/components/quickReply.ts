@@ -23,7 +23,7 @@ type TextQuickReplyProps = {
 };
 
 /** @ignore */
-const _QuickReply = function QuickReply(node, path) {
+const __QuickReply = function QuickReply(node, path) {
   const { title, payload, imageURL } = node.props;
   return [
     partSegment(node, path, {
@@ -45,13 +45,13 @@ const _QuickReply = function QuickReply(node, path) {
 export const QuickReply: MessengerComponent<
   TextQuickReplyProps,
   PartSegment<any>
-> = annotateMessengerComponent(_QuickReply);
+> = annotateMessengerComponent(__QuickReply);
 
 /** @ignore */
 const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
 
 /** @ignore */
-const _PhoneQuickReply = function PhoneQuickReply(node, path) {
+const __PhoneQuickReply = function PhoneQuickReply(node, path) {
   return [partSegment(node, path, PHONE_QUICK_REPLY_VALUES)];
 };
 /**
@@ -62,15 +62,15 @@ const _PhoneQuickReply = function PhoneQuickReply(node, path) {
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/quick-replies).
  */
 export const PhoneQuickReply: MessengerComponent<
-  {}, // eslint-disable-line @typescript-eslint/ban-types
+  {},
   PartSegment<any>
-> = annotateMessengerComponent(_PhoneQuickReply);
+> = annotateMessengerComponent(__PhoneQuickReply);
 
 /** @ignore */
 const EMAIL_QUICK_REPLY_VALUES = { content_type: 'user_email' };
 
 /** @ignore */
-const _EmailQuickReply = function EmailQuickReply(node, path) {
+const __EmailQuickReply = function EmailQuickReply(node, path) {
   return [partSegment(node, path, EMAIL_QUICK_REPLY_VALUES)];
 };
 /**
@@ -81,6 +81,6 @@ const _EmailQuickReply = function EmailQuickReply(node, path) {
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/quick-replies).
  */
 export const EmailQuickReply: MessengerComponent<
-  {}, // eslint-disable-line @typescript-eslint/ban-types
+  {},
   PartSegment<any>
-> = annotateMessengerComponent(_EmailQuickReply);
+> = annotateMessengerComponent(__EmailQuickReply);

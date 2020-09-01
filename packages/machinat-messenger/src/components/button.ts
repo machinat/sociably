@@ -34,7 +34,7 @@ type URLButtonsProps = {
 };
 
 /** @ignore */
-const _URLButton = function URLButton(node, path) {
+const __URLButton = function URLButton(node, path) {
   const {
     title,
     url,
@@ -69,7 +69,7 @@ const _URLButton = function URLButton(node, path) {
 export const URLButton: MessengerComponent<
   URLButtonsProps,
   PartSegment<any>
-> = annotateMessengerComponent(_URLButton);
+> = annotateMessengerComponent(__URLButton);
 
 /**
  * @category Props
@@ -82,7 +82,7 @@ type PostbackButtonProps = {
 };
 
 /** @ignore */
-const _PostbackButton = function PostbackButton(node, path) {
+const __PostbackButton = function PostbackButton(node, path) {
   const { title, payload } = node.props;
   return [
     partSegment(node, path, {
@@ -105,7 +105,7 @@ const _PostbackButton = function PostbackButton(node, path) {
 export const PostbackButton: MessengerComponent<
   PostbackButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(_PostbackButton);
+> = annotateMessengerComponent(__PostbackButton);
 
 /**
  * @category Props
@@ -121,7 +121,7 @@ type CallButtonProps = {
 };
 
 /** @ignore */
-const _CallButton = function CallButton(node, path) {
+const __CallButton = function CallButton(node, path) {
   const { title, number } = node.props;
   return [
     partSegment(node, path, {
@@ -142,7 +142,7 @@ const _CallButton = function CallButton(node, path) {
 export const CallButton: MessengerComponent<
   CallButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(_CallButton);
+> = annotateMessengerComponent(__CallButton);
 
 /**
  * @category Props
@@ -153,7 +153,7 @@ type LoginButtonProps = {
 };
 
 /** @ignore */
-const _LoginButton = function LoginButton(node, path) {
+const __LoginButton = function LoginButton(node, path) {
   const { url } = node.props;
   return [
     partSegment(node, path, {
@@ -172,10 +172,10 @@ const _LoginButton = function LoginButton(node, path) {
 export const LoginButton: MessengerComponent<
   LoginButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(_LoginButton);
+> = annotateMessengerComponent(__LoginButton);
 
 /** @ignore */
-const _LogoutButton = function LogoutButton(node, path) {
+const __LogoutButton = function LogoutButton(node, path) {
   return [partSegment(node, path, { type: 'account_unlink' })];
 };
 /**
@@ -186,9 +186,9 @@ const _LogoutButton = function LogoutButton(node, path) {
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/game-play).
  */
 export const LogoutButton: MessengerComponent<
-  {}, // eslint-disable-line @typescript-eslint/ban-types
+  {},
   PartSegment<any>
-> = annotateMessengerComponent(_LogoutButton);
+> = annotateMessengerComponent(__LogoutButton);
 
 /**
  * @category Props
@@ -205,7 +205,7 @@ type GamePlayButtonProps = {
 };
 
 /** @ignore */
-const _GamePlayButton = function GamePlayButton(node, path) {
+const __GamePlayButton = function GamePlayButton(node, path) {
   const { title, payload, playerId, contextId } = node.props;
   return [
     partSegment(node, path, {
@@ -233,4 +233,4 @@ const _GamePlayButton = function GamePlayButton(node, path) {
 export const GamePlayButton: MessengerComponent<
   GamePlayButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(_GamePlayButton);
+> = annotateMessengerComponent(__GamePlayButton);

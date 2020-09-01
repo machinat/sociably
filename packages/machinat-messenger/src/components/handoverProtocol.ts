@@ -33,7 +33,7 @@ type PassThreadControlProps = {
 };
 
 /** @ignore */
-const _PassThreadControl = function PassThreadControl(node, path) {
+const __PassThreadControl = function PassThreadControl(node, path) {
   const { targetAppId, metadata } = node.props;
   return [
     unitSegment(node, path, {
@@ -54,10 +54,10 @@ const _PassThreadControl = function PassThreadControl(node, path) {
 export const PassThreadControl: MessengerComponent<
   PassThreadControlProps,
   UnitSegment<PassThreadControlValue>
-> = annotateMessengerComponent(_PassThreadControl);
+> = annotateMessengerComponent(__PassThreadControl);
 
 /** @ignore */
-const _RequestThreadControl = function RequestThreadControl(node, path) {
+const __RequestThreadControl = function RequestThreadControl(node, path) {
   return [
     unitSegment(node, path, {
       metadata: node.props.metadata,
@@ -75,12 +75,12 @@ const _RequestThreadControl = function RequestThreadControl(node, path) {
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol/request-thread-control).
  */
 export const RequestThreadControl: MessengerComponent<
-  {}, // eslint-disable-line @typescript-eslint/ban-types
+  {},
   UnitSegment<RequestThreadControlValue>
-> = annotateMessengerComponent(_RequestThreadControl);
+> = annotateMessengerComponent(__RequestThreadControl);
 
 /** @ignore */
-const _TakeThreadContorl = function TakeThreadContorl(node, path) {
+const __TakeThreadContorl = function TakeThreadContorl(node, path) {
   return [
     unitSegment(node, path, {
       metadata: node.props.metadata,
@@ -98,6 +98,6 @@ const _TakeThreadContorl = function TakeThreadContorl(node, path) {
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol/take-thread-control).
  */
 export const TakeThreadContorl: MessengerComponent<
-  {}, // eslint-disable-line @typescript-eslint/ban-types
+  {},
   UnitSegment<TakeThreadControlValue>
-> = annotateMessengerComponent(_TakeThreadContorl);
+> = annotateMessengerComponent(__TakeThreadContorl);

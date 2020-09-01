@@ -13,7 +13,7 @@ const TYPING_OFF_VALUE = { sender_action: 'typing_off' as const };
 const TYPING_ON_VALUE = { sender_action: 'typing_on' as const };
 
 /** @ignore */
-const _MarkSeen = function MarkSeen(node, path) {
+const __MarkSeen = function MarkSeen(node, path) {
   return [unitSegment(node, path, MARK_SEEN_VALUE)];
 };
 /**
@@ -24,12 +24,12 @@ const _MarkSeen = function MarkSeen(node, path) {
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
 export const MarkSeen: MessengerComponent<
-  {}, // eslint-disable-line @typescript-eslint/ban-types
+  {},
   UnitSegment<SenderActionValue>
-> = annotateMessengerComponent(_MarkSeen);
+> = annotateMessengerComponent(__MarkSeen);
 
 /** @ignore */
-const _TypingOn = function TypingOn(node, path) {
+const __TypingOn = function TypingOn(node, path) {
   return [unitSegment(node, path, TYPING_ON_VALUE)];
 };
 /**
@@ -40,12 +40,12 @@ const _TypingOn = function TypingOn(node, path) {
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
 export const TypingOn: MessengerComponent<
-  {}, // eslint-disable-line @typescript-eslint/ban-types
+  {},
   UnitSegment<SenderActionValue>
-> = annotateMessengerComponent(_TypingOn);
+> = annotateMessengerComponent(__TypingOn);
 
 /** @ignore */
-const _TypingOff = function TypingOff(node, path) {
+const __TypingOff = function TypingOff(node, path) {
   return [unitSegment(node, path, TYPING_OFF_VALUE)];
 };
 /**
@@ -56,6 +56,6 @@ const _TypingOff = function TypingOff(node, path) {
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
 export const TypingOff: MessengerComponent<
-  {}, // eslint-disable-line @typescript-eslint/ban-types
+  {},
   UnitSegment<SenderActionValue>
-> = annotateMessengerComponent(_TypingOff);
+> = annotateMessengerComponent(__TypingOff);

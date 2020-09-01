@@ -21,7 +21,7 @@ const LATEX_BEGIN = '\\(';
 const LATEX_END = '\\)';
 
 /** @ignore */
-const _Latex = async function Latex(node, path, render) {
+const __Latex = async function Latex(node, path, render) {
   const segments = await render(node.props.children, '.children');
   if (segments === null) {
     return null;
@@ -53,4 +53,4 @@ const _Latex = async function Latex(node, path, render) {
 export const Latex: MessengerComponent<
   LatexProps,
   TextSegment
-> = annotateMessengerComponent(_Latex);
+> = annotateMessengerComponent(__Latex);

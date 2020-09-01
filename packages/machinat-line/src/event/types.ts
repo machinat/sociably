@@ -35,305 +35,248 @@ export type LineRawEvent = {
   things: any;
 };
 
-type WithPayload = {
+interface EventObject<
+  Type extends string,
+  Subtype extends undefined | string = undefined
+> {
+  type: Type;
+  subtype: Subtype;
   payload: LineRawEvent;
-};
+}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-text).
  */
 export interface TextMessageEvent
-  extends WithPayload,
+  extends EventObject<'message', 'text'>,
     EventBase,
     Message,
     Repliable,
-    Text {
-  type: 'message';
-  subtype: 'text';
-}
+    Text {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-image).
  */
 export interface ImageMessageEvent
-  extends WithPayload,
+  extends EventObject<'message', 'image'>,
     EventBase,
     Message,
     Repliable,
-    Media {
-  type: 'message';
-  subtype: 'image';
-}
+    Media {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-video).
  */
 export interface VideoMessageEvent
-  extends WithPayload,
+  extends EventObject<'message', 'video'>,
     EventBase,
     Message,
     Repliable,
     Media,
-    Playable {
-  type: 'message';
-  subtype: 'video';
-}
+    Playable {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-audio).
  */
 export interface AudioMessageEvent
-  extends WithPayload,
+  extends EventObject<'message', 'audio'>,
     EventBase,
     Message,
     Repliable,
     Media,
-    Playable {
-  type: 'message';
-  subtype: 'audio';
-}
+    Playable {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-file).
  */
 export interface FileMessageEvent
-  extends WithPayload,
+  extends EventObject<'message', 'file'>,
     EventBase,
     Message,
     Repliable,
-    File {
-  type: 'message';
-  subtype: 'file';
-}
+    File {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-location).
  */
 export interface LocationMessageEvent
-  extends WithPayload,
+  extends EventObject<'message', 'location'>,
     EventBase,
     Message,
     Repliable,
-    Location {
-  type: 'message';
-  subtype: 'location';
-}
+    Location {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-sticker).
  */
 export interface StickerMessageEvent
-  extends WithPayload,
+  extends EventObject<'message', 'sticker'>,
     EventBase,
     Message,
     Repliable,
-    Sticker {
-  type: 'message';
-  subtype: 'sticker';
-}
+    Sticker {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#unsend-event).
  */
-export interface UnsendEvent extends WithPayload, EventBase, Message {
-  type: 'unsend';
-  subtype: undefined;
-}
+export interface UnsendEvent
+  extends EventObject<'unsend'>,
+    EventBase,
+    Message {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#follow-event).
  */
-export interface FollowEvent extends WithPayload, EventBase, Repliable {
-  type: 'follow';
-  subtype: undefined;
-}
+export interface FollowEvent
+  extends EventObject<'follow'>,
+    EventBase,
+    Repliable {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#unfollow-event).
  */
-export interface UnfollowEvent extends WithPayload, EventBase {
-  type: 'unfollow';
-  subtype: undefined;
-}
+export interface UnfollowEvent extends EventObject<'unfollow'>, EventBase {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#join-event).
  */
-export interface JoinEvent extends WithPayload, EventBase, Repliable {
-  type: 'join';
-  subtype: undefined;
-}
+export interface JoinEvent extends EventObject<'join'>, EventBase, Repliable {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#leave-event).
  */
-export interface LeaveEvent extends WithPayload, EventBase {
-  type: 'leave';
-  subtype: undefined;
-}
+export interface LeaveEvent extends EventObject<'leave'>, EventBase {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#member-joined-event).
  */
 export interface MemberJoinedEvent
-  extends WithPayload,
+  extends EventObject<'member_joined'>,
     EventBase,
     Repliable,
-    Members {
-  type: 'member_joined';
-  subtype: undefined;
-}
+    Members {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#member-left-event).
  */
 export interface MemberLeftEvent
-  extends WithPayload,
+  extends EventObject<'member_left'>,
     EventBase,
     Repliable,
-    Members {
-  type: 'member_left';
-  subtype: undefined;
-}
+    Members {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-event).
  */
 export interface PostbackEvent
-  extends WithPayload,
+  extends EventObject<'postback'>,
     EventBase,
     Repliable,
-    Postback {
-  type: 'postback';
-  subtype: undefined;
-}
+    Postback {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
 export interface DatePostbackEvent
-  extends WithPayload,
+  extends EventObject<'postback', 'date'>,
     EventBase,
     Repliable,
     Postback,
-    DateParam {
-  type: 'postback';
-  subtype: 'date';
-}
+    DateParam {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
 export interface TimePostbackEvent
-  extends WithPayload,
+  extends EventObject<'postback', 'time'>,
     EventBase,
     Repliable,
     Postback,
-    TimeParam {
-  type: 'postback';
-  subtype: 'time';
-}
+    TimeParam {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
 export interface DateTimePostbackEvent
-  extends WithPayload,
+  extends EventObject<'postback', 'datetime'>,
     EventBase,
     Repliable,
     Postback,
-    DatetimeParam {
-  type: 'postback';
-  subtype: 'datetime';
-}
+    DatetimeParam {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#beacon-event).
  */
-export interface BeaconEvent extends WithPayload, EventBase, Repliable, Beacon {
-  type: 'beacon';
-  subtype: undefined;
-}
+export interface BeaconEvent
+  extends EventObject<'beacon'>,
+    EventBase,
+    Repliable,
+    Beacon {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#account-link-event).
  */
 export interface AccountLinkEvent
-  extends WithPayload,
+  extends EventObject<'account_link'>,
     EventBase,
     Repliable,
-    AccountLink {
-  type: 'account_link';
-  subtype: undefined;
-}
+    AccountLink {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#device-link-event).
  */
 export interface DeviceLinkEvent
-  extends WithPayload,
+  extends EventObject<'things', 'link'>,
     EventBase,
     Repliable,
-    DeviceLink {
-  type: 'things';
-  subtype: 'link';
-}
+    DeviceLink {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#device-unlink-event).
  */
 export interface DeviceUnlinkEvent
-  extends WithPayload,
+  extends EventObject<'things', 'unlink'>,
     EventBase,
     Repliable,
-    DeviceLink {
-  type: 'things';
-  subtype: 'unlink';
-}
+    DeviceLink {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#device-unlink-event).
  */
 export interface ThingsScenarioExecutionEvent
-  extends WithPayload,
+  extends EventObject<'things', 'scenario_result'>,
     EventBase,
     Repliable,
     DeviceLink,
-    ThingsScenarioExecution {
-  type: 'things';
-  subtype: 'scenario_result';
-}
+    ThingsScenarioExecution {}
 
 /**
  * @category Event
  */
-export interface UnknownEvent extends WithPayload, EventBase {
-  type: 'unknown';
-  subtype: undefined;
-}
+export interface UnknownEvent extends EventObject<'unknown'>, EventBase {}
 
 export type MessageEvent =
   | TextMessageEvent
