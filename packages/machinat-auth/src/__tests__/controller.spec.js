@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
 import jsonwebtoken from 'jsonwebtoken';
 import moxy from '@moxyjs/moxy';
-import { AuthServerController } from '../controller';
+import { AuthController } from '../controller';
 import { CookieAccessor } from '../cookie';
 
 const parseSetCookies = (res) => {
@@ -95,20 +95,19 @@ afterAll(() => {
 
 describe('#constructor()', () => {
   it('initiate ok', () => {
-    const controller = new AuthServerController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret });
     expect(controller.authorizers).toBe(authorizers);
     expect(controller.secret).toBe(secret);
   });
 
   it('throw if options.authorizers is empty', () => {
     expect(
-      () =>
-        new AuthServerController(null, { secret, entryHost: 'machinat.com' })
+      () => new AuthController(null, { secret, entryHost: 'machinat.com' })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.authorizers must not be empty"`
     );
     expect(
-      () => new AuthServerController([], { secret, entryHost: 'machinat.com' })
+      () => new AuthController([], { secret, entryHost: 'machinat.com' })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.authorizers must not be empty"`
     );
@@ -116,11 +115,11 @@ describe('#constructor()', () => {
 
   it('throw if options.secret is empty', () => {
     expect(
-      () => new AuthServerController(authorizers, { entryHost: 'machinat.com' })
+      () => new AuthController(authorizers, { entryHost: 'machinat.com' })
     ).toThrowErrorMatchingInlineSnapshot(`"options.secret must not be empty"`);
     expect(
       () =>
-        new AuthServerController(authorizers, {
+        new AuthController(authorizers, {
           secret: '',
           entryHost: 'machinat.com',
         })
@@ -130,7 +129,7 @@ describe('#constructor()', () => {
   it('check entryPath is a subpath of cookiePath if both given', () => {
     expect(
       () =>
-        new AuthServerController(authorizers, {
+        new AuthController(authorizers, {
           secret,
           entryPath: '/auth',
           cookiePath: '/api',
@@ -149,7 +148,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 403 if being called outside fo entryPath scope', async () => {
-      const controller = new AuthServerController(authorizers, {
+      const controller = new AuthController(authorizers, {
         secret,
         entryPath: '/auth',
       });
@@ -183,7 +182,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 403 if being called on entryPath directly', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       const req = prepareReq('GET', 'https://auth.machinat.com', {}, '');
 
       await controller.delegateAuthRequest(req, res);
@@ -201,7 +200,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('delegate to provider correponded to the platform in the route', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       res.mock.getter('finished').fakeReturnValue(true);
 
       let req = prepareReq('GET', 'https://auth.machinat.com/foo', {}, '');
@@ -222,7 +221,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 501 if res not closed by provider', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       const req = prepareReq('GET', 'https://auth.machinat.com/foo', {}, '');
 
       await controller.delegateAuthRequest(req, res);
@@ -242,7 +241,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 404 if no matched provider', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       const req = prepareReq('GET', 'https://auth.machinat.com/baz', {}, '');
 
       await controller.delegateAuthRequest(req, res);
@@ -265,7 +264,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 404 if unknown private api called', async () => {
       const req = prepareReq('POST', 'https://machinat.com/_unknown', {}, '');
 
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(req, res);
 
       expect(fooAuthorizer.mock).not.toHaveBeenCalled();
@@ -308,7 +307,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         return [cookies, payload];
       }
 
-      const controller = new AuthServerController(authorizers, {
+      const controller = new AuthController(authorizers, {
         secret,
         entryPath: '/auth',
       });
@@ -334,7 +333,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       `);
 
       [cookies, payload] = await testIssueState(
-        new AuthServerController(authorizers, {
+        new AuthController(authorizers, {
           secret,
           entryPath: '/api/auth',
           dataCookieAge: 99,
@@ -389,7 +388,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         return [cookies, payload];
       }
 
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       let [cookies, payload] = await testIssueAuth(controller);
       expect(cookies).toMatchInlineSnapshot(`
         Map {
@@ -426,7 +425,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         }
       `);
 
-      const customizedController = new AuthServerController(authorizers, {
+      const customizedController = new AuthController(authorizers, {
         secret,
         entryPath: '/api/auth',
         authCookieAge: 999,
@@ -566,7 +565,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         return [cookies, payload];
       }
 
-      const controller = new AuthServerController(authorizers, {
+      const controller = new AuthController(authorizers, {
         secret,
         entryPath: '/auth',
       });
@@ -606,7 +605,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       `);
 
       [cookies, payload] = await testIssueError(
-        new AuthServerController(authorizers, {
+        new AuthController(authorizers, {
           secret,
           entryPath: '/api/auth',
           dataCookieAge: 99,
@@ -654,7 +653,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
     it('get state from cookies', async () => {
       const [req, , cookieAccessor] = getDelegateArgs(
-        new AuthServerController(authorizers, { secret })
+        new AuthController(authorizers, { secret })
       );
       const platform = 'foo';
       const state = { foo: 'state' };
@@ -713,7 +712,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       }
 
       const [req, , cookieAccessor] = getDelegateArgs(
-        new AuthServerController(authorizers, { secret })
+        new AuthController(authorizers, { secret })
       );
       const platform = 'foo';
       const data = { foo: 'data' };
@@ -791,7 +790,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
     it('get error from cookies', async () => {
       const [req, , cookieAccessor] = getDelegateArgs(
-        new AuthServerController(authorizers, { secret })
+        new AuthController(authorizers, { secret })
       );
       const platform = 'foo';
       const error = { code: 418, reason: "I'm a teapot" };
@@ -845,7 +844,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('sign cookie and respond token if provider verfication passed', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(req, res);
 
       expect(fooAuthorizer.verifyCredential.mock).toHaveBeenCalledTimes(1);
@@ -906,7 +905,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         .getter('url')
         .fakeReturnValue('https://machinat.io/api/auth/_sign');
 
-      const controller = new AuthServerController(authorizers, {
+      const controller = new AuthController(authorizers, {
         secret,
         entryPath: '/api/auth',
         dataCookieAge: 99,
@@ -974,7 +973,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         refreshable: false,
       }));
 
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(req, res);
 
       const sig = parseSetCookies(res).get('machinat_auth_signature').value;
@@ -1004,7 +1003,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         { platform: 'baz', credential: { baz: 'data' } }
       );
 
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(req, res);
 
       expect(fooAuthorizer.verifyCredential.mock).not.toHaveBeenCalled();
@@ -1030,7 +1029,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         reason: "I'm a teapot",
       }));
 
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(418);
@@ -1049,7 +1048,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 400 if invalid body received', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       const url = 'http://auth.machinat.com/_sign';
 
       await controller.delegateAuthRequest(
@@ -1100,7 +1099,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         throw new Error('Broken inside');
       });
 
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(500);
@@ -1115,7 +1114,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 405 if non POST request called on prvate api', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(
         prepareReq('GET', 'https://auth.machinat.com/_sign', {}, ''),
         res
@@ -1154,7 +1153,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('refresh token if provider.verifyRefreshment() passed', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(200);
@@ -1209,7 +1208,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         .getter('url')
         .fake(() => 'https://machinat.io/api/auth/_refresh');
 
-      const controller = new AuthServerController(authorizers, {
+      const controller = new AuthController(authorizers, {
         secret,
         entryPath: '/api/auth',
         dataCookieAge: 99,
@@ -1283,7 +1282,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         { token }
       );
 
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(404);
@@ -1307,7 +1306,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         reason: "I'm a teapot",
       }));
 
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(418);
@@ -1327,7 +1326,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 401 if signature not found or invalid', async () => {
       req.mock.getter('headers').fakeReturnValue({});
 
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(401);
@@ -1360,7 +1359,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 401 if refreshPeriod outdated', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
 
       const [token, signature] = prepareToken({
         platform: 'foo',
@@ -1394,7 +1393,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 400 if no refreshLimit existed in payload', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
 
       const [token, signature] = prepareToken({
         platform: 'foo',
@@ -1427,7 +1426,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 400 if invalid body received', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       const url = 'http://auth.machinat.com/_refresh';
       const header = { cookie: `machinat_auth_signature=SOMETHING_WHATEVER` };
 
@@ -1478,7 +1477,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       fooAuthorizer.verifyRefreshment.mock.fake(() => {
         throw new Error('Broken inside');
       });
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(500);
@@ -1493,7 +1492,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 405 if non POST request called on prvate api', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(
         prepareReq('get', 'https://auth.machinat.com/_refresh', {}, ''),
         res
@@ -1525,7 +1524,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 200 if token and signature valid', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
 
       const req = prepareReq(
         'POST',
@@ -1545,7 +1544,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 401 if token expired', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
 
       [token, signature] = prepareToken({
         platform: 'foo',
@@ -1579,7 +1578,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 404 platform not found', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
 
       [token, signature] = prepareToken({
         platform: 'baz',
@@ -1612,7 +1611,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 401 if signature not found or invalid', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       let res;
 
       await controller.delegateAuthRequest(
@@ -1653,7 +1652,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 400 if invalid body received', async () => {
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       const url = 'http://auth.machinat.com/_verify';
       const header = { cookie: `machinat_auth_signature=SOMETHING_WHATEVER` };
       let res;
@@ -1703,7 +1702,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
     it('respond 405 if non POST request called on prvate api', async () => {
       const res = moxy(new ServerResponse({}));
-      const controller = new AuthServerController(authorizers, { secret });
+      const controller = new AuthController(authorizers, { secret });
       await controller.delegateAuthRequest(
         prepareReq('GET', 'https://auth.machinat.com/_verify', {}, ''),
         res
@@ -1732,7 +1731,7 @@ describe('#verifyAuth(req)', () => {
   });
 
   it('resolve auth context if authorization verified', async () => {
-    const controller = new AuthServerController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1771,7 +1770,7 @@ describe('#verifyAuth(req)', () => {
   });
 
   it('work with token passed as 2nd param', async () => {
-    const controller = new AuthServerController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1808,7 +1807,7 @@ describe('#verifyAuth(req)', () => {
   });
 
   it('throw 401 if signature invalid', async () => {
-    const controller = new AuthServerController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1834,7 +1833,7 @@ describe('#verifyAuth(req)', () => {
   });
 
   it('throw 401 if no signature in cookies', async () => {
-    const controller = new AuthServerController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1857,7 +1856,7 @@ describe('#verifyAuth(req)', () => {
   });
 
   it('throw 401 if no token provided', async () => {
-    const controller = new AuthServerController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1880,7 +1879,7 @@ describe('#verifyAuth(req)', () => {
   });
 
   it('throw 400 if no invalid authorization format received', async () => {
-    const controller = new AuthServerController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1915,7 +1914,7 @@ describe('#verifyAuth(req)', () => {
       scope: { path: '/' },
     });
 
-    const controller = new AuthServerController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1945,7 +1944,7 @@ describe('#verifyAuth(req)', () => {
       return null;
     });
 
-    const controller = new AuthServerController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret });
     await expect(
       controller.verifyAuth(
         prepareReq(

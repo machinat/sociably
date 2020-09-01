@@ -11,7 +11,7 @@ import {
 import getRawBody from 'raw-body';
 import thenifiedly from 'thenifiedly';
 import { SIGNATURE_COOKIE_KEY } from './constant';
-import { SERVER_AUTHORIZERS_I, MODULE_CONFIGS_I } from './interface';
+import { AUTHORIZERS_I, MODULE_CONFIGS_I } from './interface';
 import type {
   ServerAuthorizer,
   AuthTokenPayload,
@@ -70,7 +70,7 @@ type AuthVerifyResult<AuthData> =
 /**
  * @category Provider
  */
-export class AuthServerController {
+export class AuthController {
   authorizers: ServerAuthorizer<any, any>[];
   secret: string;
   entryPath: string;
@@ -462,9 +462,9 @@ export class AuthServerController {
   }
 }
 
-export const ServerControllerP = provider<AuthServerController>({
+export const ControllerP = provider<AuthController>({
   lifetime: 'singleton',
-  deps: [SERVER_AUTHORIZERS_I, MODULE_CONFIGS_I],
-})(AuthServerController);
+  deps: [AUTHORIZERS_I, MODULE_CONFIGS_I],
+})(AuthController);
 
-export type ServerControllerP = AuthServerController;
+export type ControllerP = AuthController;

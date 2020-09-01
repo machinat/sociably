@@ -48,7 +48,7 @@ type ServerSideResult =
 
 type TimeoutID = ReturnType<typeof setTimeout>;
 
-class AuthClientController extends EventEmitter {
+class AuthClient extends EventEmitter {
   authorizers: ClientAuthorizer<any, any>[];
   serverURL: string;
   refreshLeadTime: number;
@@ -134,7 +134,7 @@ class AuthClientController extends EventEmitter {
    * If you want to change the platform, call bootstrap() again with new
    * platform then call auth() again.
    */
-  bootstrap(platformInput?: string): AuthClientController {
+  bootstrap(platformInput?: string): AuthClient {
     const cookies = parseCookie(document.cookie);
     let serverSideResult: null | ServerSideResult = null;
 
@@ -550,4 +550,4 @@ class AuthClientController extends EventEmitter {
   }
 }
 
-export default AuthClientController;
+export default AuthClient;

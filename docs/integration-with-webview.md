@@ -63,9 +63,9 @@ The `event` contains `type`, `subtype` and `payload` sent from clients, you are 
 In the client side, you can easily communicate with server with:
 
 ```js
-import WebClient from '@machinat/websocket/client';
+import WebSocketClient from '@machinat/websocket/client';
 
-const client = new WebClient({
+const client = new WebSocketClient({
   url: '/websocket',
 });
 
@@ -134,11 +134,11 @@ And in the client:
 ```js
 import WebSocketClient from '@machinat/websocket/client';
 import useAuth from '@machinat/websocket/auth/client';
-import AuthController from '@machinat/websocket/client';
+import AuthClient from '@machinat/websocket/client';
 import MessengerAuthorizer from '@machinat/messenger/auth/client'
 import LineAuthorizer from '@machinat/messenger/auth/client'
 
-const authController = new AuthController({
+const authClient = new AuthClient({
   serverURL: '/auth',
   authorizers: [
     new MessengerAuthorizer({
@@ -152,17 +152,17 @@ const authController = new AuthController({
   ],
 });
 
-const client = new WebSocketClient({
+const webSocketClient = new WebSocketClient({
   url: '/websocket',
-  authorize: useAuth(authController),
+  authorize: useAuth(authClient),
 });
 
-authController.bootstrap();
+authClient.bootstrap();
 ```
 
-First we initiate an `AuthController` with the authorizers of supported chat platforms. Then bind it the `authorize` option of websocket client with the `useAuth` adapter.
+First we initiate an `AuthClient` with the authorizers of supported chat platforms. Then bind it the `authorize` option of websocket client with the `useAuth` adapter.
 
-The final step is to call `authController.bootstrap(platform)`, it initiate necessary works to register user on the specified platform. If the platform argument is omitted, `platform` param in querystring is used.
+The final step is to call `authClient.bootstrap(platform)`, it initiate necessary works to register user on the specified platform. If the platform argument is omitted, `platform` param in querystring is used.
 
 ### Get Auth Information
 

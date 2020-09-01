@@ -3,7 +3,7 @@ import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import fetch from 'node-fetch';
 import jsonwebtoken from 'jsonwebtoken';
-import AuthClientController from '../controller';
+import AuthClient from '../client';
 
 const resolveAfterLoops = (resolve, n) => {
   if (n === 0) {
@@ -104,12 +104,12 @@ afterAll(() => {
 
 describe('#constructor(options)', () => {
   test('basic props', () => {
-    let controller = new AuthClientController({ authorizers, serverURL });
+    let controller = new AuthClient({ authorizers, serverURL });
     expect(controller.authorizers).toEqual(authorizers);
     expect(controller.serverURL).toBe('/auth');
     expect(controller.refreshLeadTime).toBe(300);
 
-    controller = new AuthClientController({
+    controller = new AuthClient({
       authorizers,
       serverURL: '/auth',
       refreshLeadTime: 999,
@@ -122,12 +122,12 @@ describe('#constructor(options)', () => {
 
   it('throw if provider is empty', () => {
     expect(
-      () => new AuthClientController({ serverURL: '/auth' })
+      () => new AuthClient({ serverURL: '/auth' })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.authorizers must not be empty"`
     );
     expect(
-      () => new AuthClientController({ authorizers: [], serverURL: '/auth' })
+      () => new AuthClient({ authorizers: [], serverURL: '/auth' })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.authorizers must not be empty"`
     );
@@ -135,7 +135,7 @@ describe('#constructor(options)', () => {
 
   it('throw if serverURL is empty', () => {
     expect(
-      () => new AuthClientController({ authorizers })
+      () => new AuthClient({ authorizers })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.serverURL must not be empty"`
     );
@@ -144,7 +144,7 @@ describe('#constructor(options)', () => {
 
 describe('#init()', () => {
   it('call provider.bootstrap() of the corresonded platform', async () => {
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
 
     controller.bootstrap();
 
@@ -200,7 +200,7 @@ describe('#init()', () => {
         });
       }
 
-      const controller = new AuthClientController({
+      const controller = new AuthClient({
         authorizers,
         serverURL: '/auth',
       });
@@ -242,7 +242,7 @@ describe('#init()', () => {
       scope: { domain: 'machinat.io', path: '/entry' },
     });
 
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     controller.bootstrap();
 
     expect(global.document.mock.setter('cookie')).toHaveBeenCalledTimes(1);
@@ -254,7 +254,7 @@ describe('#init()', () => {
   });
 
   it('emit error if provider.bootstrap() reject', async () => {
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     const errorSpy = moxy();
     controller.on('error', errorSpy);
     controller.bootstrap('baz');
@@ -268,7 +268,7 @@ describe('#init()', () => {
   });
 
   it('emit error if no platform specified or paltform unknown', async () => {
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     const errorSpy = moxy();
     controller.on('error', errorSpy);
 
@@ -294,7 +294,7 @@ describe('#init()', () => {
   });
 
   it('ignore reinit the same platform again', async () => {
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
 
     controller.bootstrap('foo');
     controller.bootstrap('foo');
@@ -310,7 +310,7 @@ describe('#init()', () => {
   });
 
   it('can reinit with another platform specified', async () => {
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     controller.bootstrap('foo');
     expect(controller.platform).toBe('foo');
 
@@ -354,7 +354,7 @@ describe('#init()', () => {
       exp: SEC_NOW + 9999,
     });
 
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     controller.bootstrap('foo');
     await controller.auth();
     expect(controller.isAuthed).toBe(true);
@@ -388,7 +388,7 @@ describe('#auth()', () => {
   test('auth flow already finished in server side', async () => {
     setBackendAuthed(authPayload);
 
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     controller.bootstrap('foo');
 
     await expect(controller.auth()).resolves.toEqual({
@@ -410,7 +410,7 @@ describe('#auth()', () => {
       scope: { path: '/' },
     });
 
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     controller.bootstrap('foo');
 
     await expect(controller.auth()).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -429,7 +429,7 @@ describe('#auth()', () => {
       })
       .reply(200, { platform: 'foo', token });
 
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     controller.bootstrap('foo');
 
     await expect(controller.auth()).resolves.toEqual({
@@ -455,7 +455,7 @@ describe('#auth()', () => {
       })
       .reply(200, { platform: 'foo', token });
 
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     controller.bootstrap('foo');
 
     const expectedResult = { token, context: expectedContext };
@@ -490,7 +490,7 @@ describe('#auth()', () => {
       })
       .reply(200, { platform: 'foo', token });
 
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     controller.bootstrap('foo');
 
     await expect(controller.auth()).resolves.toEqual({
@@ -509,7 +509,7 @@ describe('#auth()', () => {
       })
       .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
 
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     controller.bootstrap('foo');
 
     await expect(controller.auth()).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -523,7 +523,7 @@ describe('#auth()', () => {
   });
 
   it('throw if controller not initiated', async () => {
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
 
     await expect(controller.auth()).rejects.toThrowErrorMatchingInlineSnapshot(
       `"controller not boostrapped"`
@@ -544,7 +544,7 @@ describe('#auth()', () => {
 
     fooAuthorizer.refineAuth.mock.fake(() => null);
 
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     controller.bootstrap('foo');
 
     await expect(controller.auth()).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -569,7 +569,7 @@ describe('#auth()', () => {
         token,
       });
 
-    const controller = new AuthClientController({ authorizers, serverURL });
+    const controller = new AuthClient({ authorizers, serverURL });
     controller.bootstrap();
 
     const promise = controller.auth();
@@ -595,7 +595,7 @@ describe('auth refreshment and expiry', () => {
     refreshSpy.mock.clear();
     errorSpy.mock.clear();
 
-    controller = new AuthClientController({
+    controller = new AuthClient({
       authorizers,
       serverURL,
       refreshLeadTime: 10,
@@ -937,7 +937,7 @@ test('#signOut()', async () => {
     refreshLimit: SEC_NOW + 99999,
   });
 
-  const controller = new AuthClientController({ authorizers, serverURL });
+  const controller = new AuthClient({ authorizers, serverURL });
   const expireSpy = moxy();
   const errorSpy = moxy();
   controller.on('expire', expireSpy);
