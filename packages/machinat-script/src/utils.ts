@@ -1,3 +1,4 @@
+/** @internal */ /** */
 import invariant from 'invariant';
 import { MACHINAT_SCRIPT_TYPE } from './constant';
 import * as KEYWORDS from './keyword';

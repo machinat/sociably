@@ -187,7 +187,7 @@ Array [
         "goto": "bar",
         "key": "call_1",
         "script": Object {
-          "$$typeof": Symbol(machinat.component.script),
+          "$$typeof": Symbol(lib.script.machinat),
           "commands": Array [
             Object {
               "render": [Function],
@@ -283,7 +283,7 @@ Array [
     "goto": "foo",
     "key": "call_2",
     "script": Object {
-      "$$typeof": Symbol(machinat.component.script),
+      "$$typeof": Symbol(lib.script.machinat),
       "commands": Array [
         Object {
           "render": [Function],

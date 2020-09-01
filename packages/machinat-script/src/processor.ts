@@ -206,7 +206,12 @@ export class ScriptProcessor<Input, ReturnValue> {
   }
 }
 
-export default provider<ScriptProcessor<any, any>>({
+export const ProcessorP = provider<ScriptProcessor<any, any>>({
   lifetime: 'scoped',
   deps: [Base.StateControllerI, ServiceScope, SCRIPT_LIBS_I],
 })(ScriptProcessor);
+
+export type ProcessorP<Input, ReturnValue> = ScriptProcessor<
+  Input,
+  ReturnValue
+>;

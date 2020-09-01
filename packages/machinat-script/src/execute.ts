@@ -1,3 +1,4 @@
+/** @internal */ /** */
 import invariant from 'invariant';
 import { maybeInjectContainer } from '@machinat/core/service';
 import type { MachinatNode, MachinatChannel } from '@machinat/core/types';

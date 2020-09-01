@@ -175,7 +175,7 @@ describe('resolve <IF/>', () => {
         </IF>
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"only <[THEN, ELSE_IF, ELSE]/> accepted within children of <IF/>, got: <Symbol(machinat.script.keyword.prompt) />"`
+      `"only <[THEN, ELSE_IF, ELSE]/> accepted within children of <IF/>, got: <Symbol(prompt.keyword.script.machinat) />"`
     );
   });
 
@@ -628,6 +628,6 @@ it('throw if invalid syntax node received', () => {
   );
 
   expect(() => resolve(<THEN />)).toThrowErrorMatchingInlineSnapshot(
-    `"unexpected keyword: <Symbol(machinat.script.keyword.then) />"`
+    `"unexpected keyword: <Symbol(then.keyword.script.machinat) />"`
   );
 });

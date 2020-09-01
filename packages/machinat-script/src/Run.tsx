@@ -1,12 +1,9 @@
 import Machinat from '@machinat/core';
 import { FunctionalComponent } from '@machinat/core/types';
 import { container } from '@machinat/core/service';
-import ProcessorP, { ScriptProcessor } from './processor';
+import { ProcessorP } from './processor';
 
-const Run = (processor: ScriptProcessor<any, any>) => async ({
-  runtime,
-  input,
-}) => {
+const Run = (processor: ProcessorP<any, any>) => async ({ runtime, input }) => {
   const result = await runtime.run(input);
 
   return [
@@ -16,6 +13,8 @@ const Run = (processor: ScriptProcessor<any, any>) => async ({
   ];
 };
 
-export default container<FunctionalComponent<any>>({
+export const RunC = container<FunctionalComponent<any>>({
   deps: [ProcessorP],
 })(Run);
+
+export default RunC;
