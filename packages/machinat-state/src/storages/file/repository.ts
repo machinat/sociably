@@ -6,17 +6,20 @@ import {
 } from 'fs';
 import { provider } from '@machinat/core/service';
 import type { StateRepository } from '../../interface';
-import {
-  FILE_STATE_CONFIGS_I,
-  FileStateSerializerI,
-  FileStateSerializer,
-} from './interface';
+import { MODULE_CONFIGS_I, SerializerI } from './interface';
 import type { FileRepositoryConfigs } from './types';
 
 type FileHandle = fsPromises.FileHandle;
 
-const { O_RDWR, O_CREAT } = fsConstants;
-const { open: openFile } = fsPromises;
+const {
+  /** @ignore */
+  O_RDWR,
+  /** @ignore */
+  O_CREAT,
+} = fsConstants;
+
+/** @ignore */
+const openFile = fsPromises.open;
 
 type StorageObj = {
   [key: string]: {
@@ -24,12 +27,16 @@ type StorageObj = {
   };
 };
 
+/** @internal */
 const objectHasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
-export class FileRepository implements StateRepository {
+/**
+ * @category Provider
+ */
+export class FileStateRepository implements StateRepository {
   path: string;
-  serializer: FileStateSerializer;
+  serializer: SerializerI;
 
   private _data: StorageObj;
   private _fileHandle: FileHandle;
@@ -39,10 +46,7 @@ export class FileRepository implements StateRepository {
   private _writingJob: Promise<void>;
   private _isWriting: boolean;
 
-  constructor(
-    options: FileRepositoryConfigs,
-    serializer?: FileStateSerializer | null
-  ) {
+  constructor(options: FileRepositoryConfigs, serializer?: SerializerI | null) {
     this.path = options.path;
     this.serializer = serializer || JSON;
 
@@ -149,10 +153,9 @@ export class FileRepository implements StateRepository {
   }
 }
 
-export default provider<FileRepository>({
+export const FileRepositoryP = provider<FileStateRepository>({
   lifetime: 'singleton',
-  deps: [
-    FILE_STATE_CONFIGS_I,
-    { require: FileStateSerializerI, optional: true },
-  ],
-})(FileRepository);
+  deps: [MODULE_CONFIGS_I, { require: SerializerI, optional: true }],
+})(FileStateRepository);
+
+export type FileRepositoryP = FileStateRepository;

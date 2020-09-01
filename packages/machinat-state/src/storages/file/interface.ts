@@ -1,7 +1,10 @@
 import { makeInterface, abstractInterface } from '@machinat/core/service';
 import type { FileRepositoryConfigs } from './types';
 
-export const FILE_STATE_CONFIGS_I = makeInterface<FileRepositoryConfigs>({
+/**
+ * @category Interface
+ */
+export const MODULE_CONFIGS_I = makeInterface<FileRepositoryConfigs>({
   name: 'FileStateConfigsI',
 });
 
@@ -10,6 +13,11 @@ export abstract class FileStateSerializer {
   abstract stringify(obj: any): string;
 }
 
-export const FileStateSerializerI = abstractInterface<FileStateSerializer>({
-  name: 'FileStateSerializer',
+/**
+ * @category Interface
+ */
+export const SerializerI = abstractInterface<FileStateSerializer>({
+  name: 'FileStateSerializerI',
 })(FileStateSerializer);
+
+export type SerializerI = FileStateSerializer;

@@ -4,7 +4,10 @@ import { provider } from '@machinat/core/service';
 import type { StateRepository } from '../../interface';
 import { CLIENT_I } from './interface';
 
-export class RedisRepository implements StateRepository {
+/**
+ * @category Provider
+ */
+export class RedisStateRepository implements StateRepository {
   _client: RedisClient;
 
   constructor(client: RedisClient) {
@@ -64,7 +67,9 @@ export class RedisRepository implements StateRepository {
   }
 }
 
-export default provider<RedisRepository>({
+export const RedisRepositoryP = provider<RedisStateRepository>({
   lifetime: 'singleton',
   deps: [CLIENT_I],
-})(RedisRepository);
+})(RedisStateRepository);
+
+export type RedisRepositoryP = RedisStateRepository;

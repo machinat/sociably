@@ -8,6 +8,8 @@ export abstract class StateRepository {
   abstract clear(name: string): Promise<void>;
 }
 
-export const StateRepositoryI = abstractInterface<StateRepository>({
+export const RepositoryI = abstractInterface<StateRepository>({
   name: 'StateRepositoryI',
 })(StateRepository);
+
+export type RepositoryI = StateRepository;

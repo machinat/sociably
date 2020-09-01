@@ -1,7 +1,7 @@
 import fs from 'fs';
 import moxy from '@moxyjs/moxy';
 import { tmpNameSync } from 'tmp';
-import { FileRepository } from '../repository';
+import { FileStateRepository } from '../repository';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
@@ -26,7 +26,7 @@ describe('#get()', () => {
        }`
     );
 
-    const repo = new FileRepository({ path: tmpPath });
+    const repo = new FileStateRepository({ path: tmpPath });
 
     await expect(repo.get('my_resource', 'key1')).resolves.toBe('foo');
     await expect(repo.get('my_resource', 'key2')).resolves.toBe(123);
@@ -45,7 +45,7 @@ describe('#get()', () => {
 
   test('when sotrage file is empty', async () => {
     const tmpPath = tmpNameSync();
-    const repo = new FileRepository({ path: tmpPath });
+    const repo = new FileStateRepository({ path: tmpPath });
     await expect(repo.get('my_resource', 'key')).resolves.toBe(undefined);
   });
 });
@@ -71,7 +71,7 @@ describe('#getAll()', () => {
      }`
     );
 
-    const repo = new FileRepository({ path: tmpPath });
+    const repo = new FileStateRepository({ path: tmpPath });
 
     await expect(repo.getAll('my_resource')).resolves.toMatchInlineSnapshot(`
           Map {
@@ -106,7 +106,7 @@ describe('#getAll()', () => {
 
   test('when storage file is empty', async () => {
     const tmpPath = tmpNameSync();
-    const repo = new FileRepository({ path: tmpPath });
+    const repo = new FileStateRepository({ path: tmpPath });
 
     await expect(repo.getAll('my_resource')).resolves.toBe(null);
   });
@@ -125,7 +125,7 @@ describe('#set()', () => {
        }`
     );
 
-    const repo = new FileRepository({ path: tmpPath });
+    const repo = new FileStateRepository({ path: tmpPath });
 
     await expect(repo.set('my_resource', 'key3', 'bar')).resolves.toBe(false);
     await expect(repo.get('my_resource', 'key3')).resolves.toBe('bar');
@@ -192,7 +192,7 @@ describe('#set()', () => {
 
   test('write value when storage file is empty', async () => {
     const tmpPath = tmpNameSync();
-    const repo = new FileRepository({ path: tmpPath });
+    const repo = new FileStateRepository({ path: tmpPath });
 
     await expect(repo.set('my_resource', 'foo', 'bar')).resolves.toBe(false);
 
@@ -221,7 +221,7 @@ describe('#delete()', () => {
        }`
     );
 
-    const repo = new FileRepository({ path: tmpPath });
+    const repo = new FileStateRepository({ path: tmpPath });
 
     await expect(repo.delete('my_resource', 'key3')).resolves.toBe(false);
     await expect(repo.get('my_resource', 'key3')).resolves.toBe(undefined);
@@ -258,7 +258,7 @@ describe('#delete()', () => {
 
   test('delete when storage file is empty', async () => {
     const tmpPath = tmpNameSync();
-    const repo = new FileRepository({ path: tmpPath });
+    const repo = new FileStateRepository({ path: tmpPath });
 
     await expect(repo.delete('my_resource', 'key')).resolves.toBe(false);
   });
@@ -280,7 +280,7 @@ describe('#clear()', () => {
        }`
     );
 
-    const repo = new FileRepository({ path: tmpPath });
+    const repo = new FileStateRepository({ path: tmpPath });
 
     await expect(repo.clear('my_resource')).resolves.toBe(undefined);
     await expect(repo.get('my_resource', 'key1')).resolves.toBe(undefined);
@@ -302,7 +302,7 @@ describe('#clear()', () => {
 
   test('clear when storage file is empty', async () => {
     const tmpPath = tmpNameSync();
-    const repo = new FileRepository({ path: tmpPath });
+    const repo = new FileStateRepository({ path: tmpPath });
 
     await expect(repo.clear('my_resource')).resolves.toBe(undefined);
   });
@@ -320,7 +320,7 @@ test('reflect content changes on storage file', async () => {
      }`
   );
 
-  const repo = new FileRepository({ path: tmpPath });
+  const repo = new FileStateRepository({ path: tmpPath });
 
   await expect(repo.get('my_resource', 'key1')).resolves.toBe('foo');
   await expect(repo.getAll('my_resource')).resolves.toEqual(
@@ -367,7 +367,7 @@ test('custom serielizer', async () => {
   const tmpPath = tmpNameSync();
   fs.writeFileSync(tmpPath, '_MAGICALLY_ENCODED_DATA_');
 
-  const repo = new FileRepository({ path: tmpPath }, serializer);
+  const repo = new FileStateRepository({ path: tmpPath }, serializer);
 
   await expect(repo.get('my_resource', 'from')).resolves.toBe('MAGIC');
   expect(serializer.parse.mock).toHaveBeenCalledWith(

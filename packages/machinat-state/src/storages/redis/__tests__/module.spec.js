@@ -3,9 +3,9 @@ import redis from 'redis';
 import EventEmitter from 'events';
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
-import RedisState from '..';
-import { RedisRepository } from '../repository';
-import StateController from '../../..';
+import RedisState from '../module';
+import { RedisStateRepository } from '../repository';
+import { StateController } from '../../..';
 
 jest.mock('redis', () =>
   jest.requireActual('@moxyjs/moxy').default({
@@ -14,7 +14,7 @@ jest.mock('redis', () =>
 );
 
 test('export interfaces', () => {
-  expect(RedisState.Repository).toBe(RedisRepository);
+  expect(RedisState.Repository).toBe(RedisStateRepository);
   expect(RedisState.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
@@ -49,7 +49,7 @@ test('provisions', async () => {
   ]);
 
   expect(controller).toBeInstanceOf(StateController);
-  expect(repository).toBeInstanceOf(RedisRepository);
+  expect(repository).toBeInstanceOf(RedisStateRepository);
   expect(client).toBe(redis.createClient.mock.calls[0].result);
   expect(configs).toEqual({
     clientOptions: { host: 'my.redis.com', port: 23456 },

@@ -1,2 +1,2 @@
-export { default } from './controller';
-export { StateRepositoryI } from './interface';
+export { ControllerP as StateController } from './controller';
+export { RepositoryI as StateRepositoryI } from './interface';

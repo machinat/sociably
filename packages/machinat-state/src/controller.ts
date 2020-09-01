@@ -1,13 +1,13 @@
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import type Base from '@machinat/core/base';
 import { provider } from '@machinat/core/service';
-import { StateRepository, StateRepositoryI } from './interface';
+import { RepositoryI } from './interface';
 
 class StateAccessor {
-  _repository: StateRepository;
+  _repository: RepositoryI;
   name: string;
 
-  constructor(repository: StateRepository, name: string) {
+  constructor(repository: RepositoryI, name: string) {
     this._repository = repository;
     this.name = name;
   }
@@ -43,10 +43,13 @@ class StateAccessor {
   }
 }
 
+/**
+ * @category Provider
+ */
 export class StateController implements Base.StateControllerI {
-  repository: StateRepository;
+  repository: RepositoryI;
 
-  constructor(repository: StateRepository) {
+  constructor(repository: RepositoryI) {
     this.repository = repository;
   }
 
@@ -63,7 +66,9 @@ export class StateController implements Base.StateControllerI {
   }
 }
 
-export default provider<StateController>({
+export const ControllerP = provider<StateController>({
   lifetime: 'scoped',
-  deps: [StateRepositoryI],
+  deps: [RepositoryI],
 })(StateController);
+
+export type ControllerP = StateController;

@@ -1,11 +1,11 @@
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
-import InMemoryState from '..';
-import { InMemoryRepository } from '../repository';
-import StateController from '../../..';
+import InMemoryState from '../module';
+import { InMemoryStateRepository } from '../repository';
+import { StateController } from '../../../controller';
 
 test('export interfaces', () => {
-  expect(InMemoryState.Repository).toBe(InMemoryRepository);
+  expect(InMemoryState.Repository).toBe(InMemoryStateRepository);
 });
 
 test('provisions', async () => {
@@ -18,7 +18,7 @@ test('provisions', async () => {
   ]);
 
   expect(controller).toBeInstanceOf(StateController);
-  expect(repository).toBeInstanceOf(InMemoryRepository);
+  expect(repository).toBeInstanceOf(InMemoryStateRepository);
 });
 
 test('provide base state controller', async () => {

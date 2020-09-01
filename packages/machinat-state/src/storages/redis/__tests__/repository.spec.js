@@ -1,6 +1,6 @@
 /* eslint-disable prefer-destructuring, no-await-in-loop */
 import moxy from '@moxyjs/moxy';
-import { RedisRepository } from '../repository';
+import { RedisStateRepository } from '../repository';
 
 const client = moxy({});
 
@@ -12,7 +12,7 @@ test('#get()', async () => {
   const hget = moxy((_, __, cb) => cb(null, null));
   client.mock.getter('hget').fakeReturnValue(hget);
 
-  const repo = new RedisRepository(client);
+  const repo = new RedisStateRepository(client);
 
   await expect(repo.get('my_resource', 'key1')).resolves.toBe(undefined);
   expect(hget.mock).toHaveBeenCalledTimes(1);
@@ -37,7 +37,7 @@ test('#set()', async () => {
   const hset = moxy((_, __, ___, cb) => cb(null, 1));
   client.mock.getter('hset').fakeReturnValue(hset);
 
-  const repo = new RedisRepository(client);
+  const repo = new RedisStateRepository(client);
 
   await expect(repo.set('my_resource', 'key1', 'foo')).resolves.toBe(true);
   expect(hset.mock).toHaveBeenCalledTimes(1);
@@ -66,7 +66,7 @@ test('#delete()', async () => {
   const hdel = moxy((_, __, cb) => cb(null, 1));
   client.mock.getter('hdel').fakeReturnValue(hdel);
 
-  const repo = new RedisRepository(client);
+  const repo = new RedisStateRepository(client);
 
   await expect(repo.delete('my_resource', 'key1')).resolves.toBe(true);
   expect(hdel.mock).toHaveBeenCalledTimes(1);
@@ -86,7 +86,7 @@ test('#clear()', async () => {
   const del = moxy((_, cb) => cb(null, 1));
   client.mock.getter('del').fakeReturnValue(del);
 
-  const repo = new RedisRepository(client);
+  const repo = new RedisStateRepository(client);
 
   await expect(repo.clear('my_resource')).resolves.toBe(undefined);
   expect(del.mock).toHaveBeenCalledTimes(1);
@@ -102,7 +102,7 @@ test('#getAll()', async () => {
   const hgetall = moxy((_, cb) => cb(null, null));
   client.mock.getter('hgetall').fakeReturnValue(hgetall);
 
-  const repo = new RedisRepository(client);
+  const repo = new RedisStateRepository(client);
 
   await expect(repo.getAll('my_resource')).resolves.toBe(null);
   expect(hgetall.mock).toHaveBeenCalledTimes(1);
