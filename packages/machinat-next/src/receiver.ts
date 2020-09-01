@@ -13,6 +13,7 @@ import type {
   NextPlatformMounter,
 } from './types';
 
+/** @ignore */
 const NEXT_SERVER_CHANNEL = {
   platform: 'next',
   type: 'server',
@@ -24,6 +25,9 @@ type NextReceiverOptions = {
   shouldPrepare?: boolean;
 };
 
+/**
+ * @category Provider
+ */
 export class NextReceiver {
   private _next: NextServer;
   private _defaultNextHandler: (
@@ -185,7 +189,7 @@ export class NextReceiver {
   }
 }
 
-export default provider<NextReceiver>({
+export const ReceiverP = provider<NextReceiver>({
   lifetime: 'singleton',
   deps: [
     SERVER_I,
@@ -204,3 +208,5 @@ export default provider<NextReceiver>({
       mounter?.popError
     ),
 })(NextReceiver);
+
+export type ReceiverP = NextReceiver;

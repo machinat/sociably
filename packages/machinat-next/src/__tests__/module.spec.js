@@ -3,7 +3,7 @@ import Machinat from '@machinat/core';
 import HTTP from '@machinat/http';
 import createNextApp from 'next';
 import { NextReceiver } from '../receiver';
-import Next from '..';
+import Next from '../module';
 
 jest.mock('next', () =>
   jest.requireActual('@moxyjs/moxy').default(() => ({
