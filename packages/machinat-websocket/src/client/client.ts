@@ -11,13 +11,11 @@ import createEvent from '../event';
 import SocketError from '../error';
 import type {
   ClientLoginFn,
-  EventValue,
+  CustomEventValue,
   WebSocketChannel,
   WebSocketEvent,
 } from '../types';
 import openSocket from './ws';
-
-declare let location: Location;
 
 type ClientOptions<Credential> = {
   url?: string;
@@ -25,7 +23,7 @@ type ClientOptions<Credential> = {
 };
 
 type PendingEvent = {
-  events: EventValue[];
+  events: CustomEventValue[];
   resolve: () => void;
   reject: (err: Error) => void;
 };
@@ -55,9 +53,11 @@ class WebScoketClient<Credential = null> {
   private _errorListeners: ((err: Error) => void)[];
 
   constructor({ url, authorize }: ClientOptions<Credential> = {}) {
+    const { protocol, host } = window.location;
+
     this._serverURL = new URL(
       url || '',
-      `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`
+      `${protocol === 'https:' ? 'wss' : 'ws'}://${host}`
     ).href;
 
     this._authorize =
@@ -88,7 +88,7 @@ class WebScoketClient<Credential = null> {
     return this._channel;
   }
 
-  async send(...events: EventValue[]): Promise<void> {
+  async send(...events: CustomEventValue[]): Promise<void> {
     if (!this._socket || !this._connId) {
       await new Promise((resolve, reject) => {
         this._queuedEvents.push({ resolve, reject, events });

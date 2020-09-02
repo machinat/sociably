@@ -9,31 +9,49 @@ import type {
   WebSocketPlatformConfigs,
 } from './types';
 
+/**
+ * @category Interface
+ */
 export const WS_SERVER_I = makeInterface<WebScoketServer>({
   name: 'WebSocketServerI',
 });
 
+/**
+ * @category Interface
+ */
 export const UPGRADE_VERIFIER_I = makeInterface<VerifyUpgradeFn>({
   name: 'WebSocketUpgradeVerifierI',
 });
 
+/**
+ * @category Interface
+ */
 export const AUTHENTICATOR_I = makeInterface<VerifyLoginFn<any, any>>({
   name: 'WebSocketAuthenticatorI',
 });
 
+/**
+ * @category Interface
+ */
 export const SERVER_ID_I = makeInterface<string>({
   name: 'WebSocketServerIdI',
 });
 
+/**
+ * @category Interface
+ */
 export const PLATFORM_MOUNTER_I = makeInterface<WebSocketPlatformMounter<any>>({
   name: 'WebSocketPlatformMounterI',
 });
 
+/**
+ * @category Interface
+ */
 export const PLATFORM_CONFIGS_I = makeInterface<
   WebSocketPlatformConfigs<any, any>
 >({ name: 'WebSocketPlatformConfigsI' });
 
-export abstract class ClusterBroker {
+export abstract class WebSocketClusterBroker {
   abstract start(): Promise<void>;
   abstract stop(): Promise<void>;
   abstract dispatchRemote(
@@ -54,6 +72,11 @@ export abstract class ClusterBroker {
   abstract onRemoteEvent(_handler: (job: WebSocketJob) => void): void;
 }
 
-export const ClusterBrokerI = abstractInterface<ClusterBroker>({
+/**
+ * @category Interface
+ */
+export const BrokerI = abstractInterface<WebSocketClusterBroker>({
   name: 'WebSocketClusterBrokerI',
-})(ClusterBroker);
+})(WebSocketClusterBroker);
+
+export type BrokerI = WebSocketClusterBroker;

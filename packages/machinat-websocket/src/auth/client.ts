@@ -1,11 +1,11 @@
-import type AuthClientController from '@machinat/auth/client';
+import type AuthClient from '@machinat/auth/client';
 import type { ClientLoginFn } from '../types';
 
-const authorizeClientLogin = (
-  controller: AuthClientController
+const useAuthClient = (
+  controller: AuthClient
 ): ClientLoginFn<string> => async () => {
   const { token, context } = await controller.auth();
   return { user: context.user, credential: token };
 };
 
-export default authorizeClientLogin;
+export default useAuthClient;

@@ -6,7 +6,7 @@ import { ConnectionChannel } from '../../channel';
 import Client from '../client';
 
 const location = url.parse('https://machinat.com/hello');
-global.location = location;
+global.window = { location };
 
 jest.mock('../../socket', () =>
   jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../../socket'))

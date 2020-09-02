@@ -33,7 +33,7 @@ Now you can receive event from the client in webviews as other platforms:
 app.onEvent(async context => {
   const { event, bot, channel } = context;
 
-  if (event.platform === 'websocket') {
+  if (event.platform === 'web_socket') {
     if (event.type === 'greeting') {
       return bot.send(channel, {
         type: 'greeting',
@@ -102,7 +102,7 @@ First you have to add some more services like:
 ```js
 import Machinat from '@machinat/core'
 import WebSocket from '@machinat/websocket';
-import useAuthController from '@machinat/websocket/auth';
+import { useAuthController } from '@machinat/websocket/auth';
 import Auth from '@machinat/Auth';
 import MessengerAuthorizer from '@machinat/messenger/auth';
 import LineAuthorizer from '@machinat/line/auth';
@@ -133,8 +133,8 @@ And in the client:
 
 ```js
 import WebSocketClient from '@machinat/websocket/client';
-import useAuth from '@machinat/websocket/auth/client';
-import AuthClient from '@machinat/websocket/client';
+import useAuthClient from '@machinat/websocket/auth/client';
+import AuthClient from '@machinat/auth/client';
 import MessengerAuthorizer from '@machinat/messenger/auth/client'
 import LineAuthorizer from '@machinat/messenger/auth/client'
 
@@ -154,7 +154,7 @@ const authClient = new AuthClient({
 
 const webSocketClient = new WebSocketClient({
   url: '/websocket',
-  authorize: useAuth(authClient),
+  authorize: useAuthClient(authClient),
 });
 
 authClient.bootstrap();
@@ -175,7 +175,7 @@ app.onEvent(container({
 })(messengerBot => async context => {
   const { platform, metadata, event } = context;
 
-  if (platform === 'websocket' && event.type === 'greeting') {
+  if (platform === 'web_socket' && event.type === 'greeting') {
     const {
       platform: sourcePlatform,
       channel: sourceChannel,

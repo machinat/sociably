@@ -128,7 +128,7 @@ it('handle sockets and connections lifecycle', async () => {
   });
 
   const expectedMetadata = {
-    source: 'websocket',
+    source: 'web_socket',
     request: expectedRequest,
     auth: { rookie: true },
   };
@@ -149,7 +149,7 @@ it('handle sockets and connections lifecycle', async () => {
 
   expect(popEventMock).toHaveBeenCalledTimes(1);
   expect(popEventMock).toHaveBeenCalledWith({
-    platform: 'websocket',
+    platform: 'web_socket',
     channel,
     bot,
     user: { john: 'doe' },
@@ -169,7 +169,7 @@ it('handle sockets and connections lifecycle', async () => {
 
   expect(popEventMock).toHaveBeenCalledTimes(2);
   expect(popEventMock).toHaveBeenNthCalledWith(2, {
-    platform: 'websocket',
+    platform: 'web_socket',
     channel,
     bot,
     user: { john: 'doe' },
@@ -191,7 +191,7 @@ it('handle sockets and connections lifecycle', async () => {
   );
   expect(popEventMock).toHaveBeenCalledTimes(4);
   expect(popEventMock).toHaveBeenNthCalledWith(3, {
-    platform: 'websocket',
+    platform: 'web_socket',
     channel,
     bot,
     user: { john: 'doe' },
@@ -199,7 +199,7 @@ it('handle sockets and connections lifecycle', async () => {
     metadata: expectedMetadata,
   });
   expect(popEventMock).toHaveBeenNthCalledWith(4, {
-    platform: 'websocket',
+    platform: 'web_socket',
     channel,
     bot,
     user: { john: 'doe' },
@@ -212,7 +212,7 @@ it('handle sockets and connections lifecycle', async () => {
 
   expect(popEventMock).toHaveBeenCalledTimes(5);
   expect(popEventMock).toHaveBeenNthCalledWith(5, {
-    platform: 'websocket',
+    platform: 'web_socket',
     channel,
     bot,
     user: { john: 'doe' },
@@ -250,13 +250,13 @@ test('default verifyUpgrade and verifyLogin', async () => {
   expect(popEventMock).toHaveBeenCalledTimes(1);
   // accept auth with null user and null auth data
   expect(popEventMock).toHaveBeenCalledWith({
-    platform: 'websocket',
+    platform: 'web_socket',
     channel: new ConnectionChannel('#server', connId),
     bot,
     user: null,
     event: { type: 'connect' },
     metadata: {
-      source: 'websocket',
+      source: 'web_socket',
       request: expectedRequest,
       auth: null,
     },
@@ -349,29 +349,29 @@ test('multi sockets and connections', async () => {
 
   expect(popEventMock).toHaveBeenCalledTimes(3);
   expect(popEventMock).toHaveBeenNthCalledWith(1, {
-    platform: 'websocket',
+    platform: 'web_socket',
     bot,
     channel: noUserConn,
     user: null,
     event: { type: 'connect' },
-    metadata: { source: 'websocket', request: expectedRequest, auth: null },
+    metadata: { source: 'web_socket', request: expectedRequest, auth: null },
   });
   expect(popEventMock).toHaveBeenNthCalledWith(2, {
-    platform: 'websocket',
+    platform: 'web_socket',
     bot,
     channel: johnConn,
     user: { john: 'doe' },
     event: { type: 'connect' },
-    metadata: { source: 'websocket', request: expectedRequest, auth: 'foo' },
+    metadata: { source: 'web_socket', request: expectedRequest, auth: 'foo' },
   });
   expect(popEventMock).toHaveBeenNthCalledWith(3, {
-    platform: 'websocket',
+    platform: 'web_socket',
     bot,
     channel: jojoConn,
     user: { jojo: 'doe' },
     event: { type: 'connect' },
     metadata: {
-      source: 'websocket',
+      source: 'web_socket',
       request: expectedRequest,
       auth: 'kokoko',
     },
@@ -413,49 +413,49 @@ test('multi sockets and connections', async () => {
 
   expect(popEventMock).toHaveBeenCalledTimes(8);
   expect(popEventMock).toHaveBeenNthCalledWith(4, {
-    platform: 'websocket',
+    platform: 'web_socket',
     bot,
     channel: noUserConn,
     user: null,
     event: { type: 'a', payload: 0 },
-    metadata: { source: 'websocket', request: expectedRequest, auth: null },
+    metadata: { source: 'web_socket', request: expectedRequest, auth: null },
   });
   expect(popEventMock).toHaveBeenNthCalledWith(5, {
-    platform: 'websocket',
+    platform: 'web_socket',
     bot,
     channel: johnConn,
     user: { john: 'doe' },
     event: { type: 'b', payload: 1 },
-    metadata: { source: 'websocket', request: expectedRequest, auth: 'foo' },
+    metadata: { source: 'web_socket', request: expectedRequest, auth: 'foo' },
   });
   expect(popEventMock).toHaveBeenNthCalledWith(6, {
-    platform: 'websocket',
+    platform: 'web_socket',
     bot,
     channel: johnConn,
     user: { john: 'doe' },
     event: { type: 'c', payload: 2 },
-    metadata: { source: 'websocket', request: expectedRequest, auth: 'foo' },
+    metadata: { source: 'web_socket', request: expectedRequest, auth: 'foo' },
   });
   expect(popEventMock).toHaveBeenNthCalledWith(7, {
-    platform: 'websocket',
+    platform: 'web_socket',
     bot,
     channel: jojoConn,
     user: { jojo: 'doe' },
     event: { type: 'd', payload: 3 },
     metadata: {
-      source: 'websocket',
+      source: 'web_socket',
       request: expectedRequest,
       auth: 'kokoko',
     },
   });
   expect(popEventMock).toHaveBeenNthCalledWith(8, {
-    platform: 'websocket',
+    platform: 'web_socket',
     bot,
     channel: jojoConn,
     user: { jojo: 'doe' },
     event: { type: 'e', payload: 4 },
     metadata: {
-      source: 'websocket',
+      source: 'web_socket',
       request: expectedRequest,
       auth: 'kokoko',
     },
@@ -483,29 +483,29 @@ test('multi sockets and connections', async () => {
 
   expect(popEventMock).toHaveBeenCalledTimes(11);
   expect(popEventMock).toHaveBeenNthCalledWith(9, {
-    platform: 'websocket',
+    platform: 'web_socket',
     bot,
     channel: noUserConn,
     user: null,
     event: { type: 'disconnect', payload: { reason: 'bye0' } },
-    metadata: { source: 'websocket', request: expectedRequest, auth: null },
+    metadata: { source: 'web_socket', request: expectedRequest, auth: null },
   });
   expect(popEventMock).toHaveBeenNthCalledWith(10, {
-    platform: 'websocket',
+    platform: 'web_socket',
     bot,
     channel: johnConn,
     user: { john: 'doe' },
     event: { type: 'disconnect', payload: { reason: 'bye1' } },
-    metadata: { source: 'websocket', request: expectedRequest, auth: 'foo' },
+    metadata: { source: 'web_socket', request: expectedRequest, auth: 'foo' },
   });
   expect(popEventMock).toHaveBeenNthCalledWith(11, {
-    platform: 'websocket',
+    platform: 'web_socket',
     bot,
     channel: jojoConn,
     user: { jojo: 'doe' },
     event: { type: 'disconnect', payload: { reason: 'bye2' } },
     metadata: {
-      source: 'websocket',
+      source: 'web_socket',
       request: expectedRequest,
       auth: 'kokoko',
     },

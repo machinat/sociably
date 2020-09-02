@@ -1,3 +1,4 @@
+/** @internal */ /** */
 import { EventEmitter } from 'events';
 import Socket from '../socket';
 import SocketError from '../error';

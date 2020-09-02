@@ -16,12 +16,12 @@ import type {
 
 import { WEBSOCKET } from './constant';
 import { PLATFORM_MOUNTER_I } from './interface';
-import TransmitterP, { WebSocketTransmitter } from './transmitter';
+import { TransmitterP } from './transmitter';
 import { TopicChannel, ConnectionChannel, UserChannel } from './channel';
 import WebSocketWorker from './worker';
 import type {
   WebSocketChannel,
-  EventValue,
+  CustomEventValue,
   WebSocketJob,
   WebSocketResult,
   WebSocketComponent,
@@ -34,9 +34,10 @@ type WebSocketDispatchResponse = DispatchResponse<
   WebSocketResult
 >;
 
+/** @internal */
 const createJobs = (
   channel: WebSocketChannel,
-  segments: DispatchableSegment<EventValue>[]
+  segments: DispatchableSegment<CustomEventValue>[]
 ): WebSocketJob[] => {
   return [
     {
@@ -56,12 +57,15 @@ const createJobs = (
   ];
 };
 
+/**
+ * @category Provider
+ */
 export class WebSocketBot
   implements MachinatBot<WebSocketChannel, WebSocketJob, WebSocketResult> {
-  private _transmitter: WebSocketTransmitter;
+  private _transmitter: TransmitterP;
   engine: Engine<
     WebSocketChannel,
-    EventValue,
+    CustomEventValue,
     WebSocketComponent,
     WebSocketJob,
     WebSocketResult,
@@ -69,7 +73,7 @@ export class WebSocketBot
   >;
 
   constructor(
-    transmitter: WebSocketTransmitter,
+    transmitter: TransmitterP,
     initScope: InitScopeFn = () => createEmptyScope(WEBSOCKET),
     dispatchWrapper: DispatchWrapper<
       WebSocketJob,
@@ -82,7 +86,7 @@ export class WebSocketBot
     const queue = new Queue<WebSocketJob, WebSocketResult>();
     const worker = new WebSocketWorker(transmitter);
 
-    const renderer = new Renderer<EventValue, WebSocketComponent>(
+    const renderer = new Renderer<CustomEventValue, WebSocketComponent>(
       WEBSOCKET,
       () => {
         throw new TypeError(
@@ -121,7 +125,7 @@ export class WebSocketBot
 
   send(
     channel: WebSocketChannel,
-    ...events: EventValue[]
+    ...events: CustomEventValue[]
   ): Promise<WebSocketDispatchResponse> {
     return this.engine.dispatchJobs(channel, [
       { target: channel, events, whitelist: null, blacklist: null },
@@ -137,7 +141,7 @@ export class WebSocketBot
 
   sendUser(
     user: MachinatUser,
-    ...events: EventValue[]
+    ...events: CustomEventValue[]
   ): Promise<WebSocketDispatchResponse> {
     const channel = new UserChannel(user);
     return this.engine.dispatchJobs(channel, [
@@ -154,7 +158,7 @@ export class WebSocketBot
 
   sendTopic(
     topic: string,
-    ...events: EventValue[]
+    ...events: CustomEventValue[]
   ): Promise<WebSocketDispatchResponse> {
     const channel = new TopicChannel(topic);
     return this.engine.dispatchJobs(channel, [
@@ -181,12 +185,14 @@ export class WebSocketBot
   }
 }
 
-export default provider<WebSocketBot>({
+export const BotP = provider<WebSocketBot>({
   lifetime: 'singleton',
   deps: [TransmitterP, { require: PLATFORM_MOUNTER_I, optional: true }],
   factory: (
-    transmitter: WebSocketTransmitter,
+    transmitter: TransmitterP,
     mounter: null | WebSocketPlatformMounter<any>
   ) =>
     new WebSocketBot(transmitter, mounter?.initScope, mounter?.dispatchWrapper),
 })(WebSocketBot);
+
+export type BotP = WebSocketBot;

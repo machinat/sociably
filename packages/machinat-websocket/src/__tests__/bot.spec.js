@@ -56,13 +56,13 @@ describe('#constructor(options)', () => {
 
     expect(Renderer.mock).toHaveBeenCalledTimes(1);
     expect(Renderer.mock).toHaveBeenCalledWith(
-      'websocket',
+      'web_socket',
       expect.any(Function)
     );
 
     expect(Engine.mock).toHaveBeenCalledTimes(1);
     expect(Engine.mock).toHaveBeenCalledWith(
-      'websocket',
+      'web_socket',
       bot,
       expect.any(Renderer),
       expect.any(Queue),

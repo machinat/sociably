@@ -1,31 +1,31 @@
 import { ConnectionChannel, UserChannel, TopicChannel } from '../channel';
 
 test('ConnectionChannel(serverId, connId)', () => {
-  const scope = new ConnectionChannel('#server', '#conn');
+  const channel = new ConnectionChannel('#server', '#conn');
 
-  expect(scope.platform).toBe('websocket');
-  expect(scope.type).toBe('connection');
-  expect(scope.serverId).toBe('#server');
-  expect(scope.connectionId).toBe('#conn');
-  expect(scope.id).toBe('#conn');
-  expect(scope.uid).toMatchInlineSnapshot(`"websocket.conn.#server.#conn"`);
+  expect(channel.platform).toBe('web_socket');
+  expect(channel.type).toBe('connection');
+  expect(channel.serverId).toBe('#server');
+  expect(channel.connectionId).toBe('#conn');
+  expect(channel.id).toBe('#conn');
+  expect(channel.uid).toMatchInlineSnapshot(`"web_socket.conn.#server.#conn"`);
 });
 
 test('TopicChannel(name, id)', () => {
-  const scope = new TopicChannel('foo');
-  expect(scope.platform).toBe('websocket');
-  expect(scope.type).toBe('topic');
-  expect(scope.name).toBe('foo');
-  expect(scope.uid).toMatchInlineSnapshot(`"websocket.topic.foo"`);
+  const channel = new TopicChannel('foo');
+  expect(channel.platform).toBe('web_socket');
+  expect(channel.type).toBe('topic');
+  expect(channel.name).toBe('foo');
+  expect(channel.uid).toMatchInlineSnapshot(`"web_socket.topic.foo"`);
 });
 
 test('UserChannel(user)', () => {
   const user = { platform: 'foo', name: 'jojo', uid: 'jojo_doe' };
-  const scope = new UserChannel(user);
+  const channel = new UserChannel(user);
 
-  expect(scope.user).toBe(user);
-  expect(scope.platform).toBe('websocket');
-  expect(scope.type).toBe('user');
-  expect(scope.userUId).toBe('jojo_doe');
-  expect(scope.uid).toMatchInlineSnapshot(`"websocket.user.jojo_doe"`);
+  expect(channel.user).toBe(user);
+  expect(channel.platform).toBe('web_socket');
+  expect(channel.type).toBe('user');
+  expect(channel.userUId).toBe('jojo_doe');
+  expect(channel.uid).toMatchInlineSnapshot(`"web_socket.user.jojo_doe"`);
 });

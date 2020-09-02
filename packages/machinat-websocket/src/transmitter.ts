@@ -1,12 +1,11 @@
 import { provider } from '@machinat/core/service';
 import { MachinatUser } from '@machinat/core/types';
+import { BrokerI, SERVER_ID_I, PLATFORM_MOUNTER_I } from './interface';
 import {
-  ClusterBroker,
-  ClusterBrokerI,
-  SERVER_ID_I,
-  PLATFORM_MOUNTER_I,
-} from './interface';
-import { EventValue, WebSocketJob, WebSocketPlatformMounter } from './types';
+  CustomEventValue,
+  WebSocketJob,
+  WebSocketPlatformMounter,
+} from './types';
 import Socket from './socket';
 import { ConnectionChannel, TopicChannel } from './channel';
 
@@ -17,15 +16,19 @@ type ConnectionState = {
   attachedTopics: Set<string>;
 };
 
+/** @internal */
 const findConnection = (
   { serverId, connectionId }: ConnectionChannel,
   list: ConnectionChannel[]
 ) =>
   list.find((c) => c.serverId === serverId && c.connectionId === connectionId);
 
+/**
+ * @category Provider
+ */
 export class WebSocketTransmitter {
   serverId: string;
-  private _broker: ClusterBroker;
+  private _broker: BrokerI;
 
   private _topicMapping: Map<string, Set<string>>;
   private _userMapping: Map<string, Set<string>>;
@@ -35,7 +38,7 @@ export class WebSocketTransmitter {
 
   constructor(
     serverId: string,
-    broker: ClusterBroker,
+    broker: BrokerI,
     errorHandler: (err: Error) => void
   ) {
     this.serverId = serverId;
@@ -260,7 +263,7 @@ export class WebSocketTransmitter {
 
   private async _sendLocalConnections(
     connections: ConnectionState[],
-    events: EventValue[],
+    events: CustomEventValue[],
     whitelist: null | ConnectionChannel[],
     blacklist: null | ConnectionChannel[]
   ): Promise<null | ConnectionChannel[]> {
@@ -386,15 +389,17 @@ export class WebSocketTransmitter {
   }
 }
 
-export default provider<WebSocketTransmitter>({
+export const TransmitterP = provider<WebSocketTransmitter>({
   lifetime: 'singleton',
-  deps: [SERVER_ID_I, ClusterBrokerI, PLATFORM_MOUNTER_I],
+  deps: [SERVER_ID_I, BrokerI, PLATFORM_MOUNTER_I],
   factory: (
     serverId: string,
-    broker: ClusterBroker,
+    broker: BrokerI,
     { initScope, popError }: WebSocketPlatformMounter<any>
   ) =>
     new WebSocketTransmitter(serverId, broker, (err) =>
       popError(err, initScope())
     ),
 })(WebSocketTransmitter);
+
+export type TransmitterP = WebSocketTransmitter;

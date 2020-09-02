@@ -1,8 +1,11 @@
-import { provider } from '@machinat/core/service';
-import { ClusterBroker } from '../interface';
-
 /* eslint-disable class-methods-use-this */
-class LocalOnlyBroker implements ClusterBroker {
+import { provider } from '@machinat/core/service';
+import { BrokerI } from '../interface';
+
+/**
+ * @category Provider
+ */
+class LocalOnlyBroker implements BrokerI {
   start() {
     return Promise.resolve();
   }

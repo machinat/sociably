@@ -12,8 +12,8 @@ import type {
 } from '@machinat/core/types';
 import type { UpgradeHandler } from '@machinat/http/types';
 
-import TransmitterP, { WebSocketTransmitter } from './transmitter';
-import BotP, { WebSocketBot } from './bot';
+import { TransmitterP } from './transmitter';
+import { BotP } from './bot';
 import { ConnectionChannel } from './channel';
 import createEvent from './event';
 import {
@@ -60,6 +60,7 @@ type WebSocketReceiverOptions<AuthInfo> = {
   verifyUpgrade?: VerifyUpgradeFn;
 };
 
+/** @internal */
 const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
   const codeName = STATUS_CODES[code] as string;
   const body = message || codeName;
@@ -75,16 +76,20 @@ const rejectUpgrade = (ns: NetSocket, code: number, message?: string) => {
   ns.destroy();
 };
 
+/** @internal */
 const getWSFromServer = thenifiedly.factory(
   (cb, [wsServer, req, ns, head]) => wsServer.handleUpgrade(req, ns, head, cb),
   { beginningError: false }
 );
 
+/**
+ * @category Provider
+ */
 export class WebSocketReceiver<AuthInfo> {
   private _serverId: string;
-  private _bot: WebSocketBot;
+  private _bot: BotP;
   private _wsServer: WSServer;
-  private _transmitter: WebSocketTransmitter;
+  private _transmitter: TransmitterP;
 
   private _verifyUpgrade: VerifyUpgradeFn;
   private _verifyLogin: VerifyLoginFn<AuthInfo, any>;
@@ -97,9 +102,9 @@ export class WebSocketReceiver<AuthInfo> {
   private _heartbeatIntervalId: IntervalID;
 
   constructor(
-    bot: WebSocketBot,
+    bot: BotP,
     wsServer: WSServer,
-    transmitter: WebSocketTransmitter,
+    transmitter: TransmitterP,
     popEventWrapper: PopEventWrapper<WebSocketEventContext<AuthInfo>, null>,
     popError: PopErrorFn,
     {
@@ -354,7 +359,7 @@ export class WebSocketReceiver<AuthInfo> {
   }
 }
 
-export default provider<WebSocketReceiver<any>>({
+export const ReceiverP = provider<WebSocketReceiver<any>>({
   lifetime: 'singleton',
   deps: [
     BotP,
@@ -366,9 +371,9 @@ export default provider<WebSocketReceiver<any>>({
     PLATFORM_CONFIGS_I,
   ],
   factory: (
-    bot: WebSocketBot,
+    bot: BotP,
     wsServer: WSServer,
-    transmitter: WebSocketTransmitter,
+    transmitter: TransmitterP,
     verifyLogin: null | VerifyLoginFn<any, any>,
     verifyUpgrade: null | VerifyUpgradeFn,
     { popEventWrapper, popError }: WebSocketPlatformMounter<any>,
@@ -387,3 +392,5 @@ export default provider<WebSocketReceiver<any>>({
       }
     ),
 })(WebSocketReceiver);
+
+export type ReceiverP<AuthInfo> = WebSocketReceiver<AuthInfo>;

@@ -8,23 +8,40 @@ import type {
 } from '@machinat/core/types';
 import type { DispatchFrame } from '@machinat/core/engine/types';
 import type { ServiceContainer } from '@machinat/core/service/types';
+import type { UnitSegment } from '@machinat/core/renderer/types';
 import type { HTTPRequestInfo } from '@machinat/http/types';
 import type { WebSocketBot } from './bot';
 import type { TopicChannel, UserChannel, ConnectionChannel } from './channel';
 
 export type UpgradeRequestInfo = Omit<HTTPRequestInfo, 'body'>;
 
-export type WebSocketEvent = {
-  platform: 'websocket';
-  type: string;
-  subtype?: string;
+export type WebSocketChannel = TopicChannel | UserChannel | ConnectionChannel;
+
+export type ConnectEvent = {
+  platform: 'web_sokcet';
+  type: 'connect';
+  subtype: undefined;
+  payload: undefined;
+};
+
+export type DisconnectEvent = {
+  platform: 'web_sokcet';
+  type: 'disconnect';
+  subtype: undefined;
+  payload: undefined;
+};
+
+export type CustomEvent = {
+  platform: 'web_sokcet';
+  type: Exclude<string, 'connect' | 'disconnect'>;
+  subtype: undefined | string;
   payload: any;
 };
 
-export type WebSocketChannel = TopicChannel | UserChannel | ConnectionChannel;
+export type WebSocketEvent = ConnectEvent | DisconnectEvent | CustomEvent;
 
-export type EventValue = {
-  type: string;
+export type CustomEventValue = {
+  type: Exclude<string, 'connect' | 'disconnect'>;
   subtype?: string;
   payload?: any;
 };
@@ -49,7 +66,7 @@ export type DispatchTarget = ConnectionTarget | TopicTarget | UserTarget;
 
 export type WebSocketJob = {
   target: DispatchTarget;
-  events: EventValue[];
+  events: CustomEventValue[];
   whitelist: null | ConnectionChannel[];
   blacklist: null | ConnectionChannel[];
 };
@@ -65,12 +82,15 @@ export type WebSocketDispatchFrame = DispatchFrame<
 >;
 
 export type WebSocketMetadata<AuthInfo> = {
-  source: 'websocket';
+  source: 'web_socket';
   request: UpgradeRequestInfo;
   auth: AuthInfo;
 };
 
-export type WebSocketComponent = NativeComponent<any, EventValue>;
+export type WebSocketComponent = NativeComponent<
+  any,
+  UnitSegment<CustomEventValue>
+>;
 
 export type WebSocketEventContext<AuthInfo> = EventContext<
   WebSocketChannel,

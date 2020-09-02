@@ -1,15 +1,15 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import HTTP from '@machinat/http';
-import Transmitter from '../transmitter';
+import { WebSocketTransmitter } from '../transmitter';
 import { WebSocketReceiver } from '../receiver';
 import { WebSocketBot } from '../bot';
-import WebSocket from '..';
+import WebSocket from '../module';
 
 it('export interfaces', () => {
   expect(WebSocket.Bot).toBe(WebSocketBot);
   expect(WebSocket.Receiver).toBe(WebSocketReceiver);
-  expect(WebSocket.Transmitter).toBe(Transmitter);
+  expect(WebSocket.Transmitter).toBe(WebSocketTransmitter);
   expect(WebSocket.AUTHENTICATOR_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
@@ -43,7 +43,7 @@ describe('initModule()', () => {
       dispatchMiddlewares,
     });
 
-    expect(module.name).toBe('websocket');
+    expect(module.name).toBe('web_socket');
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
         "$$multi": false,
@@ -91,7 +91,7 @@ describe('initModule()', () => {
 
     expect(bot).toBeInstanceOf(WebSocketBot);
     expect(receiver).toBeInstanceOf(WebSocketReceiver);
-    expect(transmitter).toBeInstanceOf(Transmitter);
+    expect(transmitter).toBeInstanceOf(WebSocketTransmitter);
     expect(configs).toEqual({
       entryPath: '/my_web_socket_server',
       heartbeatInterval: 999,
@@ -101,7 +101,7 @@ describe('initModule()', () => {
     expect(typeof serverId).toBe('string');
     expect(upgradeRoutings).toEqual([
       {
-        name: 'websocket',
+        name: 'web_socket',
         path: '/my_web_socket_server',
         handler: expect.any(Function),
       },
@@ -115,7 +115,7 @@ describe('initModule()', () => {
     const [upgradeRoutings] = app.useServices([HTTP.UPGRADE_ROUTINGS_I]);
     expect(upgradeRoutings).toEqual([
       {
-        name: 'websocket',
+        name: 'web_socket',
         path: '/',
         handler: expect.any(Function),
       },

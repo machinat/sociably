@@ -1,8 +1,9 @@
+/** @internal */ /** */
 import { EventEmitter } from 'events';
 import thenifiedly from 'thenifiedly';
 import type WSSocket from 'ws';
 import SocketError from './error';
-import type { UpgradeRequestInfo, EventValue } from './types';
+import type { UpgradeRequestInfo, CustomEventValue } from './types';
 
 type TimeoutID = ReturnType<typeof setTimeout>;
 
@@ -36,7 +37,7 @@ const FRAME_DISCONNECT = 'disconnect';
  */
 export type DispatchBody = {
   connId: string;
-  events: EventValue[];
+  events: CustomEventValue[];
 };
 
 /**

@@ -1,2 +1,3 @@
+/** @internal */ /** */
 /* eslint-disable import/prefer-default-export */
-export const WEBSOCKET = 'websocket';
+export const WEBSOCKET = 'web_socket';
