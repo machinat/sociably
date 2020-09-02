@@ -409,7 +409,7 @@ interface PolicyEnforcementEvent
  */
 interface UnknownEvent extends EventObject<'unknown'>, EventBase {}
 
-export type MessnegerEvent =
+export type MessengerEvent =
   | TextMessageEvent
   | TextEchoEvent
   | ImageMessageEvent

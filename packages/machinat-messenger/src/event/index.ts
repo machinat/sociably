@@ -31,7 +31,8 @@ import {
   policyEnforcement,
   unknown,
 } from './factory';
-import type { MessengerRawEvent, MessengerEvent } from '../types';
+import type { MessengerRawEvent } from '../types';
+import type { MessengerEvent } from './types';
 
 const objectHasOwnProperty = Object.prototype.hasOwnProperty;
 const hasOwnProperty = (obj, prop) => objectHasOwnProperty.call(obj, prop);

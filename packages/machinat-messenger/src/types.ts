@@ -13,7 +13,10 @@ import type { WebhookMetadata } from '@machinat/http/webhook/types';
 import type { MessengerBot } from './bot';
 import type MessengerChannel from './channel';
 import type MessengerUser from './user';
+import type { MessengerEvent } from './event/types';
 import type { API_PATH } from './constant';
+
+export { MessengerEvent } from './event/types';
 
 export type PSIDTarget = { id: string };
 export type UserRefTarget = { user_ref: string };
@@ -33,13 +36,6 @@ export type MessengerTarget =
 
 // TODO: type the raw event object
 export type MessengerRawEvent = any;
-
-export type MessengerEvent = {
-  platform: 'messenger';
-  type: string;
-  subtype?: string;
-  payload: MessengerRawEvent;
-};
 
 // TODO: detailed message type
 export type MessengerMessage = any;
