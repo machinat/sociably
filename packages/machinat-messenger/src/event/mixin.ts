@@ -13,6 +13,7 @@ export interface EventBase {
   readonly isEcho: boolean;
   /** The user that triggered the webhook event. */
   readonly sender: PSIDTarget | UserRefTarget;
+  readonly timestamp: number;
   readonly [Symbol.toStringTag]: 'MessengerEvent';
 }
 
@@ -22,6 +23,10 @@ export const EventBase: EventBase = {
   isStandby: false,
   isEcho: false,
   [Symbol.toStringTag]: 'MessengerEvent',
+
+  get timestamp(): number {
+    return this.payload.timestamp;
+  },
 
   get sender() {
     return this.payload.sender;
