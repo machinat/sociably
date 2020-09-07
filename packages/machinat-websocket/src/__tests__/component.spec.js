@@ -10,10 +10,6 @@ it('is valid Component', () => {
 });
 
 it('render to valid value', () => {
-  expect(render(<Event />)).toEqual([
-    { type: 'unit', node: <Event />, value: { type: 'default' }, path: '$' },
-  ]);
-
   expect(render(<Event type="foo" />)).toEqual([
     {
       type: 'unit',
@@ -23,20 +19,20 @@ it('render to valid value', () => {
     },
   ]);
 
-  expect(render(<Event type="foo" subtype="bar" />)).toEqual([
+  expect(render(<Event type="foo" category="bar" />)).toEqual([
     {
       type: 'unit',
-      node: <Event type="foo" subtype="bar" />,
-      value: { type: 'foo', subtype: 'bar' },
+      node: <Event type="foo" category="bar" />,
+      value: { type: 'foo', category: 'bar' },
       path: '$',
     },
   ]);
 
-  expect(render(<Event type="foo" subtype="bar" payload="baz" />)).toEqual([
+  expect(render(<Event type="foo" category="bar" payload="baz" />)).toEqual([
     {
       type: 'unit',
-      node: <Event type="foo" subtype="bar" payload="baz" />,
-      value: { type: 'foo', subtype: 'bar', payload: 'baz' },
+      node: <Event type="foo" category="bar" payload="baz" />,
+      value: { type: 'foo', category: 'bar', payload: 'baz' },
       path: '$',
     },
   ]);

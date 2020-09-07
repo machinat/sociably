@@ -422,8 +422,8 @@ describe('dispatch events', () => {
   const dispatchBody = {
     connId,
     events: [
-      { type: 'foo', subtype: 'bar', payload: 'baz' },
-      { type: 'foo', subtype: 'bar', payload: 'baz' },
+      { type: 'foo', category: 'bar', payload: 'baz' },
+      { type: 'foo', category: 'bar', payload: 'baz' },
     ],
   };
   const serverDispatchSpy = moxy();

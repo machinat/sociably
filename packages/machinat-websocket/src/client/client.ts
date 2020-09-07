@@ -11,7 +11,7 @@ import createEvent from '../event';
 import SocketError from '../error';
 import type {
   ClientLoginFn,
-  CustomEventValue,
+  EventInput,
   WebSocketChannel,
   WebSocketEvent,
 } from '../types';
@@ -23,7 +23,7 @@ type ClientOptions<Credential> = {
 };
 
 type PendingEvent = {
-  events: CustomEventValue[];
+  events: EventInput[];
   resolve: () => void;
   reject: (err: Error) => void;
 };
@@ -88,10 +88,14 @@ class WebScoketClient<Credential = null> {
     return this._channel;
   }
 
-  async send(...events: CustomEventValue[]): Promise<void> {
+  async send(...events: EventInput[]): Promise<void> {
     if (!this._socket || !this._connId) {
       await new Promise((resolve, reject) => {
-        this._queuedEvents.push({ resolve, reject, events });
+        this._queuedEvents.push({
+          resolve,
+          reject,
+          events,
+        });
       });
     } else {
       await this._socket.dispatch({
@@ -164,11 +168,11 @@ class WebScoketClient<Credential = null> {
     this._loginSeq = await socket.login({ credential });
   }
 
-  private _emitEvent(type: string, subtype: undefined | string, payload: any) {
+  private _emitEvent(category: undefined | string, type: string, payload: any) {
     const context = {
-      channel: this._channel as any,
+      channel: this._channel as ConnectionChannel,
       user: this._user,
-      event: createEvent(type, subtype, payload),
+      event: createEvent(category, type, payload),
     };
     for (const listener of this._eventListeners) {
       listener.call(this, context);
@@ -197,7 +201,7 @@ class WebScoketClient<Credential = null> {
     this._connId = connId;
     this._channel = new ConnectionChannel('*', connId);
 
-    this._emitEvent('connect', undefined, undefined);
+    this._emitEvent('connection', 'connect', undefined);
 
     for (const { events, resolve, reject } of this._queuedEvents) {
       socket.dispatch({ events, connId }).then(resolve).catch(reject);
@@ -209,14 +213,14 @@ class WebScoketClient<Credential = null> {
     if (this._connId === connId) {
       this._isDisconnecting = false;
       this._connId = undefined;
-      this._emitEvent('disconnect', undefined, undefined);
+      this._emitEvent('connection', 'disconnect', undefined);
     }
   }
 
   private _handleDispatch({ connId, events }: DispatchBody) {
     if (this._connId === connId) {
-      for (const { type, subtype, payload } of events) {
-        this._emitEvent(type, subtype, payload);
+      for (const { type, category, payload } of events) {
+        this._emitEvent(category, type, payload);
       }
     }
   }

@@ -19,31 +19,37 @@ export type WebSocketChannel = TopicChannel | UserChannel | ConnectionChannel;
 
 export type ConnectEvent = {
   platform: 'web_sokcet';
+  category: 'connection';
   type: 'connect';
-  subtype: undefined;
   payload: undefined;
 };
 
 export type DisconnectEvent = {
   platform: 'web_sokcet';
+  category: 'connection';
   type: 'disconnect';
-  subtype: undefined;
-  payload: undefined;
+  payload: { reason: string };
 };
 
 export type CustomEvent = {
   platform: 'web_sokcet';
-  type: Exclude<string, 'connect' | 'disconnect'>;
-  subtype: undefined | string;
+  category: string;
+  type: string;
   payload: any;
 };
 
 export type WebSocketEvent = ConnectEvent | DisconnectEvent | CustomEvent;
 
-export type CustomEventValue = {
-  type: Exclude<string, 'connect' | 'disconnect'>;
-  subtype?: string;
+export type EventInput = {
+  category?: string;
+  type: string;
   payload?: any;
+};
+
+export type EventValue = {
+  category: string;
+  type: string;
+  payload: any;
 };
 
 export interface ConnectionTarget {
@@ -66,7 +72,7 @@ export type DispatchTarget = ConnectionTarget | TopicTarget | UserTarget;
 
 export type WebSocketJob = {
   target: DispatchTarget;
-  events: CustomEventValue[];
+  events: EventInput[];
   whitelist: null | ConnectionChannel[];
   blacklist: null | ConnectionChannel[];
 };
@@ -87,10 +93,7 @@ export type WebSocketMetadata<AuthInfo> = {
   auth: AuthInfo;
 };
 
-export type WebSocketComponent = NativeComponent<
-  any,
-  UnitSegment<CustomEventValue>
->;
+export type WebSocketComponent = NativeComponent<any, UnitSegment<EventInput>>;
 
 export type WebSocketEventContext<AuthInfo> = EventContext<
   WebSocketChannel,

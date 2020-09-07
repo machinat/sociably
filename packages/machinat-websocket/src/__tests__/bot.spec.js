@@ -97,17 +97,17 @@ describe('#render(channel, events)', () => {
   const message = (
     <>
       foo
-      <Event />
+      <Event type="foo" />
       <Event type="bar" payload="beer" />
-      <Event type="baz" subtype="zaq" />
+      <Event type="baz" category="zaq" />
     </>
   );
 
   const expectedEventValues = [
-    { type: 'message', subtype: 'text', payload: 'foo' },
-    { type: 'default' },
+    { type: 'text', category: 'message', payload: 'foo' },
+    { type: 'foo' },
     { type: 'bar', payload: 'beer' },
-    { type: 'baz', subtype: 'zaq' },
+    { category: 'zaq', type: 'baz' },
   ];
 
   it('send to connection channel', async () => {
@@ -178,10 +178,10 @@ describe('#render(channel, events)', () => {
     const expectedJob = {
       target: channel,
       events: [
-        { type: 'default' },
-        { type: 'message', subtype: 'text', payload: 'foo' },
+        { type: 'foo' },
+        { type: 'text', category: 'message', payload: 'foo' },
         { type: 'bar', payload: 'beer' },
-        { type: 'baz', subtype: 'zaq' },
+        { type: 'baz', category: 'zaq' },
       ],
       whitelist: null,
       blacklist: null,
@@ -191,10 +191,10 @@ describe('#render(channel, events)', () => {
       bot.render(
         channel,
         <>
-          <Event />
+          <Event type="foo" />
           foo
           <Event type="bar" payload="beer" />
-          <Event type="baz" subtype="zaq" />
+          <Event type="baz" category="zaq" />
         </>
       )
     ).resolves.toEqual({
@@ -217,7 +217,7 @@ test('#send()', async () => {
 
   const events = [
     { type: 'foo' },
-    { type: 'bar', subtype: 'baz', payload: 'beer' },
+    { type: 'bar', category: 'baz', payload: 'beer' },
   ];
 
   const expectedJob = {
@@ -249,7 +249,7 @@ test('#sendUser()', async () => {
   const user = { platform: 'test', uid: 'jojo.doe' };
   const events = [
     { type: 'foo' },
-    { type: 'bar', subtype: 'baz', payload: 'beer' },
+    { type: 'bar', category: 'baz', payload: 'beer' },
   ];
 
   const expectedJob = {
@@ -281,7 +281,7 @@ test('#sendTopic()', async () => {
   const topic = 'hello_world';
   const events = [
     { type: 'foo' },
-    { type: 'bar', subtype: 'baz', payload: 'beer' },
+    { type: 'bar', category: 'baz', payload: 'beer' },
   ];
 
   const expectedJob = {

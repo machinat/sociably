@@ -1,11 +1,7 @@
 import { provider } from '@machinat/core/service';
 import { MachinatUser } from '@machinat/core/types';
 import { BrokerI, SERVER_ID_I, PLATFORM_MOUNTER_I } from './interface';
-import {
-  CustomEventValue,
-  WebSocketJob,
-  WebSocketPlatformMounter,
-} from './types';
+import { EventInput, WebSocketJob, WebSocketPlatformMounter } from './types';
 import Socket from './socket';
 import { ConnectionChannel, TopicChannel } from './channel';
 
@@ -263,7 +259,7 @@ export class WebSocketTransmitter {
 
   private async _sendLocalConnections(
     connections: ConnectionState[],
-    events: CustomEventValue[],
+    events: EventInput[],
     whitelist: null | ConnectionChannel[],
     blacklist: null | ConnectionChannel[]
   ): Promise<null | ConnectionChannel[]> {

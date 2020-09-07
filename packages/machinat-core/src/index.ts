@@ -25,7 +25,7 @@ const Machinat = {
   createElement,
   createApp<Context extends EventContext<any, any, any, any, any>>(
     config: AppConfig<Context>
-  ) {
+  ): App<Context> {
     const app = new App<Context>(config);
     return app;
   },

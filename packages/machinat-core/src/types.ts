@@ -137,10 +137,35 @@ export interface MachinatUser {
 }
 
 export interface MachinatEvent<Payload> {
-  readonly platform: any;
-  readonly type: any;
-  readonly subtype?: any;
+  readonly platform: string;
+  readonly category: string;
+  readonly type: string;
   readonly payload: Payload;
+}
+
+export interface TextMessageMixin {
+  category: 'message';
+  type: 'text';
+  text: string;
+}
+
+export interface MediaMessageMixin {
+  category: 'message';
+  type: 'image' | 'video' | 'audio' | 'file';
+  url?: string;
+}
+
+export interface LocationMessageMixin {
+  category: 'message';
+  type: 'location';
+  latitude: number;
+  longitude: number;
+}
+
+export interface PostbackMixin {
+  category: 'postback';
+  type: any;
+  data: string;
 }
 
 export interface MachinatMetadata<Source extends string> {

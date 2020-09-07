@@ -27,12 +27,9 @@ import type {
 } from './mixin';
 import type { MessengerRawEvent } from '../types';
 
-interface EventObject<
-  Type extends string,
-  Subtype extends undefined | string = undefined
-> {
+interface EventObject<Category extends string, Type extends string> {
+  category: Category;
   type: Type;
-  subtype: Subtype;
   payload: MessengerRawEvent;
 }
 
@@ -40,11 +37,10 @@ interface EventObject<
  * This callback will occur when a text message has been sent to your Page.
  * @category Event
  * @subscription `messages`
- * @guides Check official [doc]()
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
+ * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
 interface TextMessageEvent
-  extends EventObject<'message', 'text'>,
+  extends EventObject<'message' | 'standby', 'text'>,
     EventBase,
     Message,
     Text,
@@ -69,11 +65,10 @@ interface TextEchoEvent
  * This callback will occur when an image message has been sent to your Page.
  * @category Event
  * @subscription `messages`
- * @guides Check official [doc]()
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
+ * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
 interface ImageMessageEvent
-  extends EventObject<'message', 'image'>,
+  extends EventObject<'message' | 'standby', 'image'>,
     EventBase,
     Message,
     Media,
@@ -96,11 +91,10 @@ interface ImageEchoEvent
  * This callback will occur when a video message has been sent to your Page.
  * @category Event
  * @subscription `messages`
- * @guides Check official [doc]()
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
+ * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
 interface VideoMessageEvent
-  extends EventObject<'message', 'video'>,
+  extends EventObject<'message' | 'standby', 'video'>,
     EventBase,
     Message,
     Media {}
@@ -122,11 +116,10 @@ interface VideoEchoEvent
  * This callback will occur when an audio message has been sent to your Page.
  * @category Event
  * @subscription `messages`
- * @guides Check official [doc]()
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
+ * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
 interface AudioMessageEvent
-  extends EventObject<'message', 'audio'>,
+  extends EventObject<'message' | 'standby', 'audio'>,
     EventBase,
     Message,
     Media {}
@@ -148,11 +141,10 @@ interface AudioEchoEvent
  * This callback will occur when a file message has been sent to your Page.
  * @category Event
  * @subscription `messages`
- * @guides Check official [doc]()
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
+ * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
 interface FileMessageEvent
-  extends EventObject<'message', 'file'>,
+  extends EventObject<'message' | 'standby', 'file'>,
     EventBase,
     Message,
     Media {}
@@ -174,11 +166,10 @@ interface FileEchoEvent
  * This callback will occur when a location message has been sent to your Page.
  * @category Event
  * @subscription `messages`
- * @guides Check official [doc]()
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
+ * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
 interface LocationMessageEvent
-  extends EventObject<'message', 'location'>,
+  extends EventObject<'message' | 'standby', 'location'>,
     EventBase,
     Message,
     Location {}
@@ -186,11 +177,10 @@ interface LocationMessageEvent
 /**
  * @category Event
  * @subscription `messages`
- * @guides Check official [doc]()
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
+ * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
 interface ProductTemplateMessageEvent
-  extends EventObject<'message', 'product_template'>,
+  extends EventObject<'message' | 'standby', 'product_template'>,
     EventBase,
     Message,
     Template,
@@ -218,7 +208,7 @@ interface TemplateEchoEvent
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
 interface FallbackMessageEvent
-  extends EventObject<'message', 'fallback'>,
+  extends EventObject<'message' | 'standby', 'fallback'>,
     EventBase,
     Message,
     Fallback {}
@@ -243,7 +233,10 @@ interface FallbackEchoEvent
  * @subscription `message_reactions`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-reactions).
  */
-interface ReactionEvent extends EventObject<'reaction'>, EventBase, Reaction {}
+interface ReactionEvent
+  extends EventObject<'action', 'reaction'>,
+    EventBase,
+    Reaction {}
 
 /**
  * QuickReplyPostbackEvent occur when a {@link QuickReply} button is tapped.
@@ -253,14 +246,14 @@ interface ReactionEvent extends EventObject<'reaction'>, EventBase, Reaction {}
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
 interface QuickReplyPostbackEvent
-  extends EventObject<'postback', 'quick_reply'>,
+  extends EventObject<'postback' | 'standby', 'quick_reply'>,
     EventBase,
     Message,
     Text,
     QuickReplyPostback {}
 
 /**
- * ButtonPostbackEvent occur when a [postback button](https://developers.facebook.com/docs/messenger-platform/send-api-reference/postback-button),
+ * PostbackEvent occur when a [postback button](https://developers.facebook.com/docs/messenger-platform/send-api-reference/postback-button),
  * [Get Started button](https://developers.facebook.com/docs/messenger-platform/messenger-profile/get-started-button),
  * or [persistent menu item](https://developers.facebook.com/docs/messenger-platform/messenger-profile/persistent-menu)
  * is tapped.
@@ -268,8 +261,8 @@ interface QuickReplyPostbackEvent
  * @subscription `messaging_postbacks`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_postbacks).
  */
-interface ButtonPostbackEvent
-  extends EventObject<'postback', 'button'>,
+interface PostbackEvent
+  extends EventObject<'postback' | 'standby', 'postback'>,
     EventBase,
     Postback {}
 
@@ -288,7 +281,10 @@ interface ButtonPostbackEvent
  * @subscription `messaging_referrals`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_referrals).
  */
-interface ReferralEvent extends EventObject<'referral'>, EventBase, Referral {}
+interface ReferralEvent
+  extends EventObject<'action', 'referral'>,
+    EventBase,
+    Referral {}
 
 /**
  * ReadEvent will be sent to your webhook when a message a Page has sent has
@@ -297,7 +293,10 @@ interface ReferralEvent extends EventObject<'referral'>, EventBase, Referral {}
  * @subscription `message_reads`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-reads).
  */
-interface ReadEvent extends EventObject<'read'>, EventBase, Read {}
+interface ReadEvent
+  extends EventObject<'action' | 'standby', 'read'>,
+    EventBase,
+    Read {}
 
 /**
  * DeliveryEvent will occur when a message a Page has sent has been delivered.
@@ -305,7 +304,10 @@ interface ReadEvent extends EventObject<'read'>, EventBase, Read {}
  * @subscription `message_deliveries`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-deliveries).
  */
-interface DeliveryEvent extends EventObject<'delivery'>, EventBase, Delivery {}
+interface DeliveryEvent
+  extends EventObject<'system' | 'standby', 'delivery'>,
+    EventBase,
+    Delivery {}
 
 /**
  * AccountLinkingEvent will occur when the Link Account or Unlink Account button
@@ -316,7 +318,7 @@ interface DeliveryEvent extends EventObject<'delivery'>, EventBase, Delivery {}
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_account_linking).
  */
 interface AccountLinkingEvent
-  extends EventObject<'account_linking'>,
+  extends EventObject<'action', 'account_linking'>,
     EventBase,
     AccountLinking {}
 
@@ -324,10 +326,12 @@ interface AccountLinkingEvent
  * GamePlayEvent occurs after a person played a round of Instant Games.
  * @category Event
  * @subscription `messaging_game_plays`
- * @guides Check official [doc]()
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_game_plays).
+ * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_game_plays).
  */
-interface GamePlayEvent extends EventObject<'game_play'>, EventBase, GamePlay {}
+interface GamePlayEvent
+  extends EventObject<'action', 'game_play'>,
+    EventBase,
+    GamePlay {}
 
 /**
  * PassThreadControlEvent will occur when thread ownership for a user has been
@@ -338,7 +342,7 @@ interface GamePlayEvent extends EventObject<'game_play'>, EventBase, GamePlay {}
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#pass_thread_control).
  */
 interface PassThreadControlEvent
-  extends EventObject<'pass_thread_control'>,
+  extends EventObject<'handover_protocol', 'pass_thread_control'>,
     EventBase,
     PassThreadControl {}
 
@@ -351,7 +355,7 @@ interface PassThreadControlEvent
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#take_thread_control).
  */
 interface TakeThreadControlEvent
-  extends EventObject<'take_thread_control'>,
+  extends EventObject<'handover_protocol', 'take_thread_control'>,
     EventBase,
     TakeThreadControl {}
 
@@ -366,7 +370,7 @@ interface TakeThreadControlEvent
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#request_thread_control).
  */
 interface RequestThreadControlEvent
-  extends EventObject<'request_thread_control'>,
+  extends EventObject<'handover_protocol', 'request_thread_control'>,
     EventBase,
     RequestThreadControl {}
 
@@ -379,7 +383,10 @@ interface RequestThreadControlEvent
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/handover-protocol/assign-app-roles)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#app_roles).
  */
-interface AppRolesEvent extends EventObject<'app_roles'>, EventBase, AppRoles {}
+interface AppRolesEvent
+  extends EventObject<'handover_protocol', 'app_roles'>,
+    EventBase,
+    AppRoles {}
 
 /**
  * OptinEvent will occur when the [send to Messenger](https://developers.facebook.com/docs/messenger-platform/plugin-reference/send-to-messenger)
@@ -390,7 +397,7 @@ interface AppRolesEvent extends EventObject<'app_roles'>, EventBase, AppRoles {}
  * @subscription `messaging_optins`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_optins).
  */
-interface OptinEvent extends EventObject<'optin'>, EventBase, Optin {}
+interface OptinEvent extends EventObject<'action', 'optin'>, EventBase, Optin {}
 
 /**
  * PolicyEnforcementEvent will be sent to an app if the page it manages does not
@@ -400,14 +407,14 @@ interface OptinEvent extends EventObject<'optin'>, EventBase, Optin {}
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_policy_enforcement).
  */
 interface PolicyEnforcementEvent
-  extends EventObject<'policy_enforcement'>,
+  extends EventObject<'system', 'policy_enforcement'>,
     EventBase,
     PolicyEnforcement {}
 
 /**
  * @category Event
  */
-interface UnknownEvent extends EventObject<'unknown'>, EventBase {}
+interface UnknownEvent extends EventObject<'unknown', 'unknown'>, EventBase {}
 
 export type MessengerEvent =
   | TextMessageEvent
@@ -427,7 +434,7 @@ export type MessengerEvent =
   | FallbackEchoEvent
   | ReactionEvent
   | QuickReplyPostbackEvent
-  | ButtonPostbackEvent
+  | PostbackEvent
   | ReferralEvent
   | ReadEvent
   | DeliveryEvent

@@ -164,8 +164,8 @@ app.onEvent(async ({ event, bot, channel }) => {
     return bot.render(channel, <Welcome />)
   }
 
-  if (event.type === 'message') {
-    if (event.subtype === 'text') {
+  if (event.category === 'message') {
+    if (event.type === 'text') {
       const intent = await recognizeIntent(event.text);
 
       if (intent === 'order') {

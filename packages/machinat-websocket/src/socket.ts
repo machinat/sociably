@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import thenifiedly from 'thenifiedly';
 import type WSSocket from 'ws';
 import SocketError from './error';
-import type { UpgradeRequestInfo, CustomEventValue } from './types';
+import type { UpgradeRequestInfo, EventInput } from './types';
 
 type TimeoutID = ReturnType<typeof setTimeout>;
 
@@ -37,7 +37,7 @@ const FRAME_DISCONNECT = 'disconnect';
  */
 export type DispatchBody = {
   connId: string;
-  events: CustomEventValue[];
+  events: EventInput[];
 };
 
 /**

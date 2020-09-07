@@ -6,9 +6,9 @@ The best practice we suggest is a hybrid experience combining the advantage of b
 
 ## WebView and WebSocket
 
-Opening an web page is the simplest way extend chat experience with GUI. Machinat have a `websocket` platform to provide event-based communication between your webview client and server.
+Opening an web page is the simplest way extend chat experience with GUI. Machinat have a `WebSocket` platform to provide event-based communication between your webview client and server.
 
-Add the `WebSocket` as a platform like this:
+Add the `WebSocket` platform like this:
 
 ```js
 import Machinat from '@machinat/core'
@@ -27,13 +27,11 @@ const app = Machinat.createApp({
 
 ### Handle Events in Server
 
-Now you can receive event from the client in webviews as other platforms:
+Now you can receive events from the client in the webviews as other platforms do:
 
 ```js
-app.onEvent(async context => {
-  const { event, bot, channel } = context;
-
-  if (event.platform === 'web_socket') {
+app.onEvent(async ({ platform, event, bot, channel }) => {
+  if (platform === 'web_socket') {
     if (event.type === 'greeting') {
       return bot.send(channel, {
         type: 'greeting',
@@ -45,22 +43,30 @@ app.onEvent(async context => {
 });
 ```
 
-The `channel` received in `websocket` platform refers to a websocket connection. You can use it to send the response message back.
+##### `channel`
 
-The `event` contains `type`, `subtype` and `payload` sent from clients, you are free to send any data can be serialized with `JSON.stringify` in the `payload`. There are also two native event type:
+The `context.channel` received in `WebSocket` platform refers to a websocket connection. You can use it to send the response message back.
+
+##### `event`
+
+The `context.event` object contains `category`, `type` and `payload` sent from clients. You are free to send any data that can be serialized with `JSON.stringify` in the `payload`. There are also two native event type of `'connection'` category:
 
 - `'connect'` - emit when a connection is connected.
 - `'disconnect'` - emit when a connection is disconnected.
 
-`bot.send(channel, event)` method sends an event object with the same structure as event interface:
+##### `bot`
 
-- `type` - required, `string`
-- `subtype` - optional, `string`
-- `payload` - optional, `any`
+Normally you don't need the rendering process to communicate with client since there is no UI involved. So the `bot.send()` method of the `WebSocketBot` is recommended over `bot.render()`.
+
+`bot.send(channel, event)` method take the connection channel and an event object with the same structure as `context.event`:
+
+- `category` - optional, `string`, set to `'default'` if not specified.
+- `type` - required, `string`, the event type.
+- `payload` - optional, `any`.
 
 ### Client Side
 
-In the client side, you can easily communicate with server with:
+In the client-side, you can easily communicate with server with:
 
 ```js
 import WebSocketClient from '@machinat/websocket/client';
@@ -81,9 +87,9 @@ client.onEvent(({ event }) => {
 })
 ```
 
-Callback pass to `client.onEvent` would receive a similar context as server-side app, but contains only `event`, `channel` and `user` properties. The `'connect'` and `'disconnect'` event would also be emitted when connected/disconnected.
+Callback pass to `client.onEvent()` would receive a similar context as server-side app, but contains only `event`, `channel` and `user` properties. The `'connect'` and `'disconnect'` event would also be emitted when the connection is connected/disconnected.
 
-`client.send(event)` take an event object parameter like `bot.send()` and send it to the server. You don't have to wait `'connect'` event for sending, events would be queued before connection made and fire after it.
+`client.send(event)` take an event object parameter like `bot.send` and send it to the server. You don't have to wait `'connect'` event for sending. Events being sent before connection is made would be queued, and fire after it is connected.
 
 ### Serve the Web App
 

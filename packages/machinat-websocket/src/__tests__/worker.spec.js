@@ -39,7 +39,7 @@ it('work', async () => {
       target: { type: 'topic', name: 'somthing' },
       events: [
         { type: 'foo', payload: '2' },
-        { type: 'bar', subtype: 'baz', payload: '3' },
+        { type: 'bar', category: 'baz', payload: '3' },
       ],
       whitelist: ['A', 'B', 'C'],
       blacklist: ['B', 'C', 'D'],
@@ -103,8 +103,8 @@ it('work', async () => {
                       "type": "foo",
                     },
                     Object {
+                      "category": "baz",
                       "payload": "3",
-                      "subtype": "baz",
                       "type": "bar",
                     },
                   ],

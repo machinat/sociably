@@ -161,15 +161,15 @@ describe('dispatch()', () => {
     await expect(
       transmitter.dispatch({
         target: conn1,
-        events: [{ type: 'foo', subtype: 'bar', payload: 1 }],
+        events: [{ type: 'foo', category: 'bar', payload: 1 }],
       })
     ).resolves.toEqual([conn1]);
     await expect(
       transmitter.dispatch({
         target: conn2,
         events: [
-          { type: 'foo', subtype: 'bar', payload: 2 },
-          { type: 'foo', subtype: 'baz', payload: 3 },
+          { type: 'foo', category: 'bar', payload: 2 },
+          { type: 'foo', category: 'baz', payload: 3 },
         ],
       })
     ).resolves.toEqual([conn2]);
@@ -177,13 +177,13 @@ describe('dispatch()', () => {
     expect(socket.dispatch.mock).toHaveBeenCalledTimes(2);
     expect(socket.dispatch.mock).toHaveBeenNthCalledWith(1, {
       connId: 'conn#1',
-      events: [{ type: 'foo', subtype: 'bar', payload: 1 }],
+      events: [{ type: 'foo', category: 'bar', payload: 1 }],
     });
     expect(socket.dispatch.mock).toHaveBeenNthCalledWith(2, {
       connId: 'conn#2',
       events: [
-        { type: 'foo', subtype: 'bar', payload: 2 },
-        { type: 'foo', subtype: 'baz', payload: 3 },
+        { type: 'foo', category: 'bar', payload: 2 },
+        { type: 'foo', category: 'baz', payload: 3 },
       ],
     });
   });
@@ -198,7 +198,7 @@ describe('dispatch()', () => {
 
     const events = [
       { type: 'greet', payload: 'hello' },
-      { type: 'message', subtype: 'text', payload: 'world' },
+      { type: 'message', category: 'text', payload: 'world' },
     ];
 
     await expect(

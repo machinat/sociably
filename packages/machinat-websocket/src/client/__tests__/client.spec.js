@@ -99,7 +99,7 @@ test('login with no options.authorize', async () => {
   expect(eventSpy.mock).toHaveBeenCalledWith({
     user: null,
     channel: expectedChannel,
-    event: { type: 'connect' },
+    event: { category: 'connection', type: 'connect' },
   });
 
   expect(client.channel).toEqual(expectedChannel);
@@ -133,7 +133,7 @@ it('login with credential from options.authorize()', async () => {
   expect(eventSpy.mock).toHaveBeenCalledWith({
     user,
     channel: expectedChannel,
-    event: { type: 'connect' },
+    event: { category: 'connection', type: 'connect' },
   });
 
   expect(client.channel).toEqual(new ConnectionChannel('*', '#conn'));
@@ -178,8 +178,8 @@ it('emit "event" when dispatched events received', async () => {
       events: [
         { type: 'start', payload: 'Welcome to Hyrule' },
         {
-          type: 'reaction',
-          subtype: 'wasted',
+          category: 'reaction',
+          type: 'wasted',
           payload: 'Link is down! Legend over.',
         },
       ],
@@ -193,6 +193,7 @@ it('emit "event" when dispatched events received', async () => {
     user,
     channel: expectedChannel,
     event: {
+      category: 'default',
       type: 'start',
       payload: 'Welcome to Hyrule',
     },
@@ -201,8 +202,8 @@ it('emit "event" when dispatched events received', async () => {
     user,
     channel: expectedChannel,
     event: {
-      type: 'reaction',
-      subtype: 'wasted',
+      category: 'reaction',
+      type: 'wasted',
       payload: 'Link is down! Legend over.',
     },
   });
@@ -222,6 +223,7 @@ it('emit "event" when dispatched events received', async () => {
     user,
     channel: expectedChannel,
     event: {
+      category: 'default',
       type: 'resurrect',
       payload: 'Hero never die!',
     },
@@ -241,7 +243,7 @@ it('send events when already connected', async () => {
   await expect(
     client.send(
       { type: 'foo', payload: 1 },
-      { type: 'bar', subtype: 'beer', payload: 2 }
+      { type: 'bar', category: 'beer', payload: 2 }
     )
   ).resolves.toBe(undefined);
 
@@ -250,7 +252,7 @@ it('send events when already connected', async () => {
     connId: '#conn',
     events: [
       { type: 'foo', payload: 1 },
-      { type: 'bar', subtype: 'beer', payload: 2 },
+      { type: 'bar', category: 'beer', payload: 2 },
     ],
   });
 
@@ -320,7 +322,7 @@ test('disconnect by server', async () => {
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
     user,
     channel: expectedChannel,
-    event: { type: 'disconnect' },
+    event: { category: 'connection', type: 'disconnect' },
   });
 });
 
@@ -352,6 +354,6 @@ test('#disconnect()', async () => {
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
     user,
     channel: expectedChannel,
-    event: { type: 'disconnect' },
+    event: { category: 'connection', type: 'disconnect' },
   });
 });

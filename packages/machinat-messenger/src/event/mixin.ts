@@ -144,7 +144,7 @@ export const QuickReplyPostback: QuickReplyPostback = {
  */
 export interface NLP {
   /** The raw nlp object. */
-  readonly nlp: undefined | any;
+  readonly nlp?: any;
 }
 
 /** @internal */
@@ -337,6 +337,19 @@ export const Echo: Echo = {
   get metadata() {
     return this.payload.message.metadata;
   },
+};
+
+/**
+ * @category Event Mixin
+ */
+export interface Standby {
+  /** Indicate whether the event is sent to a standby channel. */
+  readonly isStandby: boolean;
+}
+
+/** @internal */
+export const Standby: Standby = {
+  isStandby: true,
 };
 
 /**

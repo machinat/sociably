@@ -7,14 +7,14 @@ const WebEventProto = {
 };
 
 const createEvent = (
+  category: undefined | string,
   type: string,
-  subtype: void | string,
   payload: any
 ): WebSocketEvent => {
-  const event = Object.create(WebEventProto);
+  const event: WebSocketEvent = Object.create(WebEventProto);
 
+  event.category = category || 'default';
   event.type = type;
-  event.subtype = subtype;
   event.payload = payload;
 
   return event;

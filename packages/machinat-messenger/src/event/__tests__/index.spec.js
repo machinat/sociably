@@ -14,8 +14,8 @@ test('text message event', async () => {
     expect(event.platform).toBe('messenger');
     expect(event.isStandby).toBe(false);
 
-    expect(event.type).toBe('message');
-    expect(event.subtype).toBe('text');
+    expect(event.category).toBe('message');
+    expect(event.type).toBe('text');
 
     expect(event.sender).toBe(rawEvent.sender);
 
@@ -34,8 +34,8 @@ test('quick_reply postback event', async () => {
     expect(event.isStandby).toBe(false);
     expect(event.sender).toBe(rawEvent.sender);
 
-    expect(event.type).toBe('postback');
-    expect(event.subtype).toBe('quick_reply');
+    expect(event.category).toBe('postback');
+    expect(event.type).toBe('quick_reply');
 
     expect(event.data).toBe(rawEvent.message.quick_reply.payload);
     expect(event.messageId).toBe(rawEvent.message.mid);
@@ -51,8 +51,8 @@ test('image message event', async () => {
     expect(event.isStandby).toBe(false);
     expect(event.sender).toBe(rawEvent.sender);
 
-    expect(event.type).toBe('message');
-    expect(event.subtype).toBe('image');
+    expect(event.category).toBe('message');
+    expect(event.type).toBe('image');
 
     expect(event.url).toBe(rawEvent.message.attachments[0].payload.url);
     expect(event.messageId).toBe(rawEvent.message.mid);

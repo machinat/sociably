@@ -11,6 +11,7 @@ import {
   Location,
   Fallback,
   Echo,
+  Standby,
   Template,
   TemplateProduct,
   Reaction,
@@ -31,27 +32,24 @@ import type { MessengerRawEvent } from '../types';
 
 const eventFactory = <
   P extends object, // eslint-disable-line @typescript-eslint/ban-types
-  T extends string,
-  S extends undefined | string
+  C extends string,
+  T extends string
 >(
   proto: P,
-  type: T,
-  subtype: S
+  category: C,
+  type: T
 ) => (
-  payload: MessengerRawEvent,
-  isStandby = false
+  payload: MessengerRawEvent
 ): {
+  category: C;
   type: T;
-  subtype: S;
   payload: MessengerRawEvent;
-  isStandby: boolean;
 } & P => {
   const event = Object.create(proto);
 
   event.payload = payload;
   event.type = type;
-  event.subtype = subtype;
-  event.isStandby = isStandby;
+  event.category = category;
 
   return event;
 };
@@ -60,10 +58,17 @@ const TextProto = mixin(Base, Message, Text, Fallback);
 export const text = eventFactory(mixin(TextProto, NLP), 'message', 'text');
 
 export const echoText = eventFactory(mixin(TextProto, Echo), 'echo', 'text');
+export const standbyText = eventFactory(
+  mixin(TextProto, Standby),
+  'standby',
+  'text'
+);
 
 const MediaProto = mixin(Base, Message, Media);
+
 const ImageProto = mixin(MediaProto, Sticker);
 export const image = eventFactory(ImageProto, 'message', 'image');
+
 export const video = eventFactory(MediaProto, 'message', 'video');
 export const audio = eventFactory(MediaProto, 'message', 'audio');
 export const file = eventFactory(MediaProto, 'message', 'file');
@@ -74,13 +79,35 @@ export const echoVideo = eventFactory(EchoMediaProto, 'echo', 'video');
 export const echoAudio = eventFactory(EchoMediaProto, 'echo', 'audio');
 export const echoFile = eventFactory(EchoMediaProto, 'echo', 'file');
 
+export const standbyImage = eventFactory(
+  mixin(ImageProto, Standby),
+  'standby',
+  'image'
+);
+
+const StandbyMediaProto = mixin(MediaProto, Standby);
+export const standbyVideo = eventFactory(StandbyMediaProto, 'standby', 'video');
+export const standbyAudio = eventFactory(StandbyMediaProto, 'standby', 'audio');
+export const standbyFile = eventFactory(StandbyMediaProto, 'standby', 'file');
+
 const LocationProto = mixin(Base, Message, Location);
 export const location = eventFactory(LocationProto, 'message', 'location');
+export const standbyLocation = eventFactory(
+  mixin(LocationProto, Standby),
+  'standby',
+  'location'
+);
 
 const TemplateProductProto = mixin(Base, Message, Template, TemplateProduct);
 export const productTemplate = eventFactory(
   TemplateProductProto,
   'message',
+  'product_template'
+);
+
+export const standbyProductTemplate = eventFactory(
+  mixin(TemplateProductProto, Standby),
+  'standby',
   'product_template'
 );
 
@@ -92,16 +119,23 @@ export const echoTemplate = eventFactory(
 
 const FallbackProto = mixin(Base, Message, Fallback);
 export const fallback = eventFactory(FallbackProto, 'message', 'fallback');
+
 export const echoFallback = eventFactory(
   mixin(FallbackProto, Echo),
   'echo',
   'fallback'
 );
 
+export const standbyFallback = eventFactory(
+  mixin(FallbackProto, Standby),
+  'standby',
+  'fallback'
+);
+
 export const reaction = eventFactory(
   mixin(Base, Reaction),
-  'reaction',
-  undefined
+  'action',
+  'reaction'
 );
 
 const QuickReplyPostbackProto = mixin(Base, Message, Text, QuickReplyPostback);
@@ -111,62 +145,85 @@ export const quickReplyPostback = eventFactory(
   'quick_reply'
 );
 
+export const standbyQuickReplyPostback = eventFactory(
+  mixin(QuickReplyPostbackProto, Standby),
+  'standby',
+  'quick_reply'
+);
+
 const PostbackProto = mixin(Base, Postback);
-export const postback = eventFactory(PostbackProto, 'postback', 'button');
+export const postback = eventFactory(PostbackProto, 'postback', 'postback');
+
+export const standbyPostback = eventFactory(
+  mixin(PostbackProto, Standby),
+  'standby',
+  'postback'
+);
 
 export const referral = eventFactory(
   mixin(Base, Referral),
-  'referral',
-  undefined
+  'action',
+  'referral'
 );
 
+export const optin = eventFactory(mixin(Base, Optin), 'action', 'optin');
+
 const ReadProto = mixin(Base, Read);
-export const read = eventFactory(ReadProto, 'read', undefined);
+export const read = eventFactory(ReadProto, 'action', 'read');
+export const standbyRead = eventFactory(
+  mixin(ReadProto, Standby),
+  'standby',
+  'read'
+);
 
 const DeliveryProto = mixin(Base, Delivery);
-export const delivery = eventFactory(DeliveryProto, 'delivery', undefined);
+export const delivery = eventFactory(DeliveryProto, 'system', 'delivery');
+export const standbyDelivery = eventFactory(
+  mixin(DeliveryProto, Standby),
+  'standby',
+  'delivery'
+);
 
 export const accountLinking = eventFactory(
   mixin(Base, AccountLinking),
-  'account_linking',
-  undefined
+  'action',
+  'account_linking'
 );
 
 export const gamePlay = eventFactory(
   mixin(Base, GamePlay),
-  'game_play',
-  undefined
+  'action',
+  'game_play'
 );
 
 export const passThreadControl = eventFactory(
   mixin(Base, PassThreadControl),
-  'pass_thread_control',
-  undefined
+  'handover_protocol',
+  'pass_thread_control'
 );
 
 export const takeThreadControl = eventFactory(
   mixin(Base, TakeThreadControl),
-  'take_thread_control',
-  undefined
+  'handover_protocol',
+  'take_thread_control'
 );
 
 export const requestThreadControl = eventFactory(
   mixin(Base, RequestThreadControl),
-  'request_thread_control',
-  undefined
+  'handover_protocol',
+  'request_thread_control'
 );
 
 export const appRoles = eventFactory(
   mixin(Base, AppRoles),
-  'app_roles',
-  undefined
+  'handover_protocol',
+  'app_roles'
 );
-export const optin = eventFactory(mixin(Base, Optin), 'optin', undefined);
 
 export const policyEnforcement = eventFactory(
   mixin(Base, PolicyEnforcement),
-  'policy_enforcement',
-  undefined
+  'system',
+  'policy_enforcement'
 );
 
-export const unknown = eventFactory(Base, 'unknown', undefined);
+export const unknown = eventFactory(Base, 'unknown', 'unknown');

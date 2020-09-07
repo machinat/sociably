@@ -38,13 +38,22 @@ export type MessengerTarget =
 export type MessengerRawEvent = any;
 
 // TODO: detailed message type
-export type MessengerMessage = any;
+export type RawMessage = any;
+
+type MessagingType = 'RESPONSE' | 'UPDATE' | 'MESSAGE_TAG';
+type NotificationType = 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH';
+type MessageTags =
+  | 'CONFIRMED_EVENT_UPDATE'
+  | 'POST_PURCHASE_UPDATE'
+  | 'ACCOUNT_UPDATE'
+  | 'HUMAN_AGENT';
 
 export type MessageValue = {
-  message: MessengerMessage;
-  messaging_type?: string;
-  notification_type?: string;
-  tag?: string;
+  message: RawMessage;
+  messaging_type?: MessagingType;
+  notification_type?: NotificationType;
+  tag?: MessageTags;
+
   persona_id?: string;
 };
 
@@ -181,9 +190,9 @@ export type MessengerPlatformConfigs = {
 };
 
 export type MessengerSendOptions = {
-  messagingType?: 'RESPONSE' | 'UPDATE' | 'MESSAGE_TAG';
+  messagingType?: MessagingType;
   tag?: string;
-  notificationType?: 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH';
+  notificationType?: NotificationType;
   personaId?: string;
 };
 

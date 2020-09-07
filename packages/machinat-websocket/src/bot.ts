@@ -21,7 +21,7 @@ import { TopicChannel, ConnectionChannel, UserChannel } from './channel';
 import WebSocketWorker from './worker';
 import type {
   WebSocketChannel,
-  CustomEventValue,
+  EventInput,
   WebSocketJob,
   WebSocketResult,
   WebSocketComponent,
@@ -37,7 +37,7 @@ type WebSocketDispatchResponse = DispatchResponse<
 /** @internal */
 const createJobs = (
   channel: WebSocketChannel,
-  segments: DispatchableSegment<CustomEventValue>[]
+  segments: DispatchableSegment<EventInput>[]
 ): WebSocketJob[] => {
   return [
     {
@@ -45,8 +45,8 @@ const createJobs = (
       events: segments.map((seg) =>
         seg.type === 'text'
           ? {
-              type: 'message',
-              subtype: 'text',
+              category: 'message',
+              type: 'text',
               payload: seg.value,
             }
           : seg.value
@@ -65,7 +65,7 @@ export class WebSocketBot
   private _transmitter: TransmitterP;
   engine: Engine<
     WebSocketChannel,
-    CustomEventValue,
+    EventInput,
     WebSocketComponent,
     WebSocketJob,
     WebSocketResult,
@@ -86,7 +86,7 @@ export class WebSocketBot
     const queue = new Queue<WebSocketJob, WebSocketResult>();
     const worker = new WebSocketWorker(transmitter);
 
-    const renderer = new Renderer<CustomEventValue, WebSocketComponent>(
+    const renderer = new Renderer<EventInput, WebSocketComponent>(
       WEBSOCKET,
       () => {
         throw new TypeError(
@@ -125,10 +125,15 @@ export class WebSocketBot
 
   send(
     channel: WebSocketChannel,
-    ...events: CustomEventValue[]
+    ...events: EventInput[]
   ): Promise<WebSocketDispatchResponse> {
     return this.engine.dispatchJobs(channel, [
-      { target: channel, events, whitelist: null, blacklist: null },
+      {
+        target: channel,
+        events,
+        whitelist: null,
+        blacklist: null,
+      },
     ]);
   }
 
@@ -141,11 +146,16 @@ export class WebSocketBot
 
   sendUser(
     user: MachinatUser,
-    ...events: CustomEventValue[]
+    ...events: EventInput[]
   ): Promise<WebSocketDispatchResponse> {
     const channel = new UserChannel(user);
     return this.engine.dispatchJobs(channel, [
-      { target: channel, events, whitelist: null, blacklist: null },
+      {
+        target: channel,
+        events,
+        whitelist: null,
+        blacklist: null,
+      },
     ]);
   }
 
@@ -158,11 +168,16 @@ export class WebSocketBot
 
   sendTopic(
     topic: string,
-    ...events: CustomEventValue[]
+    ...events: EventInput[]
   ): Promise<WebSocketDispatchResponse> {
     const channel = new TopicChannel(topic);
     return this.engine.dispatchJobs(channel, [
-      { target: channel, events, whitelist: null, blacklist: null },
+      {
+        target: channel,
+        events,
+        whitelist: null,
+        blacklist: null,
+      },
     ]);
   }
 

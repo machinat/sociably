@@ -35,12 +35,9 @@ export type LineRawEvent = {
   things: any;
 };
 
-interface EventObject<
-  Type extends string,
-  Subtype extends undefined | string = undefined
-> {
+interface EventObject<Categroy extends string, Type extends string> {
+  category: Categroy;
   type: Type;
-  subtype: Subtype;
   payload: LineRawEvent;
 }
 
@@ -128,7 +125,7 @@ export interface StickerMessageEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#unsend-event).
  */
 export interface UnsendEvent
-  extends EventObject<'unsend'>,
+  extends EventObject<'action', 'unsend'>,
     EventBase,
     Message {}
 
@@ -137,7 +134,7 @@ export interface UnsendEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#follow-event).
  */
 export interface FollowEvent
-  extends EventObject<'follow'>,
+  extends EventObject<'action', 'follow'>,
     EventBase,
     Repliable {}
 
@@ -145,26 +142,31 @@ export interface FollowEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#unfollow-event).
  */
-export interface UnfollowEvent extends EventObject<'unfollow'>, EventBase {}
+export interface UnfollowEvent
+  extends EventObject<'action', 'unfollow'>,
+    EventBase {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#join-event).
  */
-export interface JoinEvent extends EventObject<'join'>, EventBase, Repliable {}
+export interface JoinEvent
+  extends EventObject<'action', 'join'>,
+    EventBase,
+    Repliable {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#leave-event).
  */
-export interface LeaveEvent extends EventObject<'leave'>, EventBase {}
+export interface LeaveEvent extends EventObject<'action', 'leave'>, EventBase {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#member-joined-event).
  */
 export interface MemberJoinedEvent
-  extends EventObject<'member_joined'>,
+  extends EventObject<'action', 'member_joined'>,
     EventBase,
     Repliable,
     Members {}
@@ -174,7 +176,7 @@ export interface MemberJoinedEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#member-left-event).
  */
 export interface MemberLeftEvent
-  extends EventObject<'member_left'>,
+  extends EventObject<'action', 'member_left'>,
     EventBase,
     Repliable,
     Members {}
@@ -184,7 +186,7 @@ export interface MemberLeftEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-event).
  */
 export interface PostbackEvent
-  extends EventObject<'postback'>,
+  extends EventObject<'postback', 'postback'>,
     EventBase,
     Repliable,
     Postback {}
@@ -194,7 +196,7 @@ export interface PostbackEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
 export interface DatePostbackEvent
-  extends EventObject<'postback', 'date'>,
+  extends EventObject<'postback', 'date_postback'>,
     EventBase,
     Repliable,
     Postback,
@@ -205,7 +207,7 @@ export interface DatePostbackEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
 export interface TimePostbackEvent
-  extends EventObject<'postback', 'time'>,
+  extends EventObject<'postback', 'time_postback'>,
     EventBase,
     Repliable,
     Postback,
@@ -216,7 +218,7 @@ export interface TimePostbackEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
 export interface DateTimePostbackEvent
-  extends EventObject<'postback', 'datetime'>,
+  extends EventObject<'postback', 'datetime_postback'>,
     EventBase,
     Repliable,
     Postback,
@@ -227,7 +229,7 @@ export interface DateTimePostbackEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#beacon-event).
  */
 export interface BeaconEvent
-  extends EventObject<'beacon'>,
+  extends EventObject<'beacon', 'beacon'>,
     EventBase,
     Repliable,
     Beacon {}
@@ -237,7 +239,7 @@ export interface BeaconEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#account-link-event).
  */
 export interface AccountLinkEvent
-  extends EventObject<'account_link'>,
+  extends EventObject<'action', 'account_link'>,
     EventBase,
     Repliable,
     AccountLink {}
@@ -247,7 +249,7 @@ export interface AccountLinkEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#device-link-event).
  */
 export interface DeviceLinkEvent
-  extends EventObject<'things', 'link'>,
+  extends EventObject<'things', 'device_link'>,
     EventBase,
     Repliable,
     DeviceLink {}
@@ -257,7 +259,7 @@ export interface DeviceLinkEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#device-unlink-event).
  */
 export interface DeviceUnlinkEvent
-  extends EventObject<'things', 'unlink'>,
+  extends EventObject<'things', 'device_unlink'>,
     EventBase,
     Repliable,
     DeviceLink {}
@@ -276,7 +278,9 @@ export interface ThingsScenarioExecutionEvent
 /**
  * @category Event
  */
-export interface UnknownEvent extends EventObject<'unknown'>, EventBase {}
+export interface UnknownEvent
+  extends EventObject<'unknown', 'unknown'>,
+    EventBase {}
 
 export type MessageEvent =
   | TextMessageEvent

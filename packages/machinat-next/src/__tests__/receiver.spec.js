@@ -109,6 +109,7 @@ it('call next request handler if middlewares resolve accepted', async () => {
     bot: null,
     event: {
       platform: 'next',
+      category: 'request',
       type: 'request',
       payload: { request: expectedRequestObj },
     },
@@ -300,6 +301,7 @@ it('call next.render() if there is cutomized page or query return by middlewares
     bot: null,
     event: {
       platform: 'next',
+      category: 'request',
       type: 'request',
       payload: { request: expectedRequestObj },
     },

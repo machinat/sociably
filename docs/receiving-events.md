@@ -1,6 +1,6 @@
 # Receive Events
 
-After successfully start, the app should be able to receive events from registered platforms. The event can be listened with `app.onEvent()` method like:
+After successfully start, the app should be able to receive events from registered platforms. Events of all the platforms can be listened with `app.onEvent()` method like this:
 
 ```js
 app.onEvent(context => {
@@ -10,40 +10,47 @@ app.onEvent(context => {
 })
 ```
 
-To handle events from different platforms, Machinat have a common event context interface that every platform should implement.
+Every platform implementation emit kinds of events in the format of the event context interface. This helps you to make a cross-platform app with an unified abstraction.
 
 ## Event Context Object
 
-The event context is a plain object containing the following properties:
+The event context is a **plain object** containing the following properties:
 
-- `platform` - `string`, the platform name.
+- `platform`: `string`, the platform name.
 
-- `event` - `object`, represent the event has happened. Despite the basic properties listed here, there are some [standard mixins](#standard-event-mixins) interface on specific type/subtype of event.
-  - `platform` - `string`, platform the event belongs to.
-  - `type` - `string`, the platform defined event type.
-  - `subtype` - `string`,  the platform defined event subtype.
-  - `payload` - `object`, the raw event received and parsed from platform.
+- `event`: `object`, represent the event has happened. Despite the basic properties listed here, some [standard mixins](#standard-event-mixins) are added on the specific category/type of event.
+  - `platform`: `string`, platform where the event comes from.
 
+  - `category`: `string`, rough classification of the events. Here are some common categories used by most platforms:
+    - `'message'`: a text or media message is sent by the user.
+    - `'postback'`: the user interact with an app defined UI (like a button) and post data back.
+    - `'action'`: a non-message action is initiatively triggered by the user.
+    - `'system'`: the event is only between the platform and your app, no user activity is involved.
 
-- `channel` - `object`, refer to the location where the event has happened. Check the [channel details here](#the-channel).
-  - `platform` - `string`, platform the channel belongs to.
-  - `uid` - `string`, unique id in Machinat.
+  - `type`: `string`, the accurate event type.
 
-
-- `user` - `null | object`, refer to the user related to the event if exist.
-  - `platform` - `string`, platform the channel belongs to.
-  - `uid` - `string`, unique id in Machinat.
+  - `payload`: `object`, the raw event received and parsed from platform.
 
 
-- `metadata` - `object`, the metadata of how the event being transmitted depends on platform implementation.
-  - `source` - `string`, the source type of the event.
+- `channel`: `object`, refer to the location where the event has happened. Check the [channel details here](#the-channel).
+  - `platform`: `string`, platform the channel belongs to.
+  - `uid`: `string`, unique id in Machinat.
 
 
-- `bot` - `null | object`, bot corresponded to the platform. If the platform doesn't support replying, the value would be null.
-  - `platform` - `string`, platform the channel belongs to.
-  - `render(channel, message)` - `function`, reply message to the channel.  Check [_Rendering Elements_](rendering-elements.md) for more usage guides.
-    - `channel` - `object`, the channel object from `context.chareceivednnel`.
-    - `message` - `string | element`, the message to reply.
+- `user`: `null|object`, refer to the user related to the event if exist.
+  - `platform`: `string`, platform the user belongs to.
+  - `uid`: `string`, unique id in Machinat.
+
+
+- `metadata`: `object`, the metadata about how the event being transmitted. There could be more information properties depends on platform implementation.
+  - `source`: `string`, the source type of the event.
+
+
+- `bot`: `null|object`, bot corresponded to the platform. If the platform doesn't support replying, the value would be null.
+  - `platform`: `string`, platform the bot belongs to.
+  - `render(channel, message)`: `function`, reply message to the channel.  Check [_Rendering Elements_](rendering-elements.md) for more details.
+    - `channel`: `object`, the channel object.
+    - `message`: `string|element`, the message to reply.
 
 ### The Channel
 
@@ -60,31 +67,37 @@ To help you to get information from the various of events, some helper getters a
 
 ```js
 bot.onEvent(({ event, bot, channel }) => {
-  if (event.type === 'message' && event.subtype === 'text') {
+  if (event.category === 'message' && event.type === 'text') {
     bot.render(channel, `${event.text} is good!`);
   }
 });
 ```
 
-Here we define some common event types and the standard mixins for them. The mixins listed here should be implement on specific type/subtype by all platforms. You can use them without knowing the platform and the shape of event payload.
+Here we define some common event types and the standard mixins for them. The mixins listed here should be implement on specific category/type by all platforms. You can use them without knowing the platform and the shape of event payload.
 
-- Text Message
-  - `type` - `'message'`
-  - `subtype` - `'text'`
-  - `text` - `string`, the text message.
-
-
-- Media Message
-  - `type` - `'message'`
-  - `subtype` - `'image' | 'video' | 'audio' | 'file'`
-  - `url` - `void | string`, the url of the image if exist.
+###### Text Message
+- `category`: `'message'`
+- `type`: `'text'`
+- `text`: `string`, the text message.
 
 
-- Postback
-  -  `type` - `'postback'`
-  -  `data` - `string`, the postback data received.
+###### Media Message
+- `category`: `'message'`
+- `type`: `'image'|'video'|'audio'|'file'`
+- `url`: `void|string`, the url of the media if exist.
 
-Each platform might have their own mixins on the event, check the docs of platform module for details.
+###### Location Message
+- `category`: `'message'`
+- `type`: `'location'`
+- `latitude`: `number`, latitude.
+- `longitude`: `number`, longitude.
+
+###### Postback
+-  `category`: `'postback'`
+- `type`: `any`
+- `data`: `string`, the postback data received.
+
+Each platform might have their own mixins on events, check the docs of platform packages for more details.
 
 ### Strategies for Multiple Platforms
 
@@ -98,7 +111,7 @@ Let's put them together:
 
 ```js
 app.onEvent(({ platform, event, bot, channel }) => {
-  if (event.type === 'message' && event.subtype === 'text') {
+  if (event.category === 'message' && event.type === 'text') {
     // reply for a text message
     bot.render(channel, `Hello ${event.text}!`);
   } else if (platform === 'messenger') {

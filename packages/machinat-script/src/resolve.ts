@@ -9,13 +9,13 @@ import { isKeyword, isScript } from './utils';
 import type {
   ScriptNode,
   ConditionMatcher,
-  IfElementProps,
-  WhileElementProps,
-  VarsElementProps,
-  LabelElementProps,
-  PromptElementProps,
-  CallElementProps,
-  ReturnElementProps,
+  IfProps,
+  WhileProps,
+  VarsProps,
+  LabelProps,
+  PromptProps,
+  CallProps,
+  ReturnProps,
   RenderContentNode,
   ScriptElement,
   ThenElement,
@@ -96,7 +96,7 @@ const ifChildrenReducer = (
 };
 
 const resolveIf = (
-  { condition, children }: IfElementProps<any, any, any>,
+  { condition, children }: IfProps<any, any, any>,
   path: string
 ): ConditionsSegment<any> => {
   invariant(
@@ -118,7 +118,7 @@ const resolveIf = (
 };
 
 const resolveWhile = (
-  { condition, children }: WhileElementProps<any, any, any>,
+  { condition, children }: WhileProps<any, any, any>,
   path: string
 ): WhileSegment<any> => {
   invariant(
@@ -133,9 +133,7 @@ const resolveWhile = (
   };
 };
 
-const resolveVars = ({
-  set: setter,
-}: VarsElementProps<any>): SetVarsSegment<any> => {
+const resolveVars = ({ set: setter }: VarsProps<any>): SetVarsSegment<any> => {
   invariant(
     typeof setter === 'function',
     'prop "set" of <VARS/> should be a function'
@@ -147,7 +145,7 @@ const resolveVars = ({
   };
 };
 
-const resolveLabel = ({ key }: LabelElementProps): LabelSegment => {
+const resolveLabel = ({ key }: LabelProps): LabelSegment => {
   invariant(key, 'prop "key" of <LABEL/> should not be empty');
 
   return {
@@ -160,7 +158,7 @@ const resolvePrompt = ({
   set: setter,
   filter,
   key,
-}: PromptElementProps<any, any>): PromptSegment<any, any> => {
+}: PromptProps<any, any>): PromptSegment<any, any> => {
   invariant(key, 'prop "key" of <PROMPT/> should not be empty');
   return {
     type: 'prompt',
@@ -176,7 +174,7 @@ const resolveCall = ({
   set: setter,
   key,
   goto,
-}: CallElementProps<any, any, any>): CallSegment<any, any, any> => {
+}: CallProps<any, any, any>): CallSegment<any, any, any> => {
   invariant(isScript(script), `invalid "script" prop received on <CALL/>`);
   invariant(key, 'prop "key" of <CALL/> should not be empty');
 
@@ -197,9 +195,7 @@ const resolveCall = ({
   };
 };
 
-const resolveReturn = ({
-  value,
-}: ReturnElementProps<any>): ReturnSegment<any> => {
+const resolveReturn = ({ value }: ReturnProps<any>): ReturnSegment<any> => {
   return { type: 'return', valueGetter: value };
 };
 

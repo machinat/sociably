@@ -35,10 +35,10 @@ export default class MachinatApp<
   Context extends EventContext<any, any, any, any, any>
 > {
   config: AppConfig<Context>;
-  _status: number;
-  _serviceSpace: ServiceSpace;
-  _eventListeners: EventListenable<Context>[];
-  _errorListeners: ErrorListenable[];
+  private _status: number;
+  private _serviceSpace: ServiceSpace;
+  private _eventListeners: EventListenable<Context>[];
+  private _errorListeners: ErrorListenable[];
 
   get isStarted(): boolean {
     return this._status === ENUM_STARTED;

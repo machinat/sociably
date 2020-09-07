@@ -144,7 +144,12 @@ export class NextReceiver {
       const response = await this._popEvent({
         platform: 'next',
         channel: NEXT_SERVER_CHANNEL,
-        event: { platform: 'next', type: 'request', payload: { request } },
+        event: {
+          platform: 'next',
+          category: 'request',
+          type: 'request',
+          payload: { request },
+        },
         metadata: { source: 'next', request },
         bot: null,
         user: null,

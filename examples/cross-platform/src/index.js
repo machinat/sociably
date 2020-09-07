@@ -53,23 +53,20 @@ app.onEvent(
       await bot.render(channel, <Hello name={profile.name} />);
     }
 
-    if (event.type === 'postback' && event.data === GIMME_FOX_KEY) {
+    if (event.category === 'postback' && event.data === GIMME_FOX_KEY) {
       // More fox button pressed
       await bot.render(channel, <FoxCard />);
     }
 
-    if (event.type === 'message') {
-      // reply message
-      await bot.render(
-        channel,
-        event.subtype === 'text' ? (
-          <ReplyMessage text={event.text} />
-        ) : event.subtype === 'image' ? (
-          <ReplyMessage image />
-        ) : (
-          <ReplyMessage unknown />
-        )
-      );
+    // reply message
+    if (event.category === 'message') {
+      if (event.type === 'text') {
+        await bot.render(channel, <ReplyMessage text={event.text} />);
+      } else if (event.type === 'image') {
+        await bot.render(channel, <ReplyMessage image />);
+      } else {
+        await bot.render(channel, <ReplyMessage unknown />);
+      }
     }
   })
 );

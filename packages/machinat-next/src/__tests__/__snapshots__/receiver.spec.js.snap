@@ -9,6 +9,7 @@ Object {
     "uid": "next.server",
   },
   "event": Object {
+    "category": "request",
     "payload": Object {
       "request": Object {
         "headers": Object {
@@ -45,6 +46,7 @@ Object {
     "uid": "next.server",
   },
   "event": Object {
+    "category": "request",
     "payload": Object {
       "request": Object {
         "headers": Object {
@@ -81,6 +83,7 @@ Object {
     "uid": "next.server",
   },
   "event": Object {
+    "category": "request",
     "payload": Object {
       "request": Object {
         "headers": Object {
@@ -117,6 +120,7 @@ Object {
     "uid": "next.server",
   },
   "event": Object {
+    "category": "request",
     "payload": Object {
       "request": Object {
         "headers": Object {

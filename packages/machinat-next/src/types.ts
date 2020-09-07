@@ -40,6 +40,7 @@ export type NextResponse = AcceptedNextResponse | UnacceptedNextResponse;
 
 export type NextEvent = {
   platform: 'next';
+  category: 'request';
   type: 'request';
   payload: {
     request: {
