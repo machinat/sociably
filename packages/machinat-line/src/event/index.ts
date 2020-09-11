@@ -12,8 +12,8 @@ import {
   unfollow,
   join,
   leave,
-  memberJoined,
-  memberLeft,
+  memberJoin,
+  memberLeave,
   postback,
   postbackDate,
   postbackTime,
@@ -76,9 +76,9 @@ const createEvent = (payload: LineRawEvent): LineEvent => {
     : eventType === 'leave'
     ? leave(payload)
     : eventType === 'memberJoined'
-    ? memberJoined(payload)
+    ? memberJoin(payload)
     : eventType === 'memberLeft'
-    ? memberLeft(payload)
+    ? memberLeave(payload)
     : eventType === 'postback'
     ? createPostbackEvent(payload)
     : eventType === 'beacon'

@@ -89,16 +89,16 @@ export const unfollow = eventFactory(EventBase, 'action', 'unfollow');
 export const join = eventFactory(RepliableProto, 'action', 'join');
 export const leave = eventFactory(EventBase, 'action', 'leave');
 
-export const memberJoined = eventFactory(
+export const memberJoin = eventFactory(
   mixin(RepliableProto, MemberJoined),
   'action',
-  'member_joined'
+  'member_join'
 );
 
-export const memberLeft = eventFactory(
+export const memberLeave = eventFactory(
   mixin(RepliableProto, MemberLeft),
   'action',
-  'member_left'
+  'member_leave'
 );
 
 export const postback = eventFactory(

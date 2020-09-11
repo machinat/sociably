@@ -165,8 +165,8 @@ export interface LeaveEvent extends EventObject<'action', 'leave'>, EventBase {}
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#member-joined-event).
  */
-export interface MemberJoinedEvent
-  extends EventObject<'action', 'member_joined'>,
+export interface MemberJoinEvent
+  extends EventObject<'action', 'member_join'>,
     EventBase,
     Repliable,
     Members {}
@@ -175,8 +175,8 @@ export interface MemberJoinedEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#member-left-event).
  */
-export interface MemberLeftEvent
-  extends EventObject<'action', 'member_left'>,
+export interface MemberLeaveEvent
+  extends EventObject<'action', 'member_leave'>,
     EventBase,
     Repliable,
     Members {}
@@ -298,8 +298,8 @@ export type LineEvent =
   | UnfollowEvent
   | JoinEvent
   | LeaveEvent
-  | MemberJoinedEvent
-  | MemberLeftEvent
+  | MemberJoinEvent
+  | MemberLeaveEvent
   | PostbackEvent
   | TimePostbackEvent
   | DatePostbackEvent
