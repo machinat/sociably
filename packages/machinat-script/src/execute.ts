@@ -221,7 +221,7 @@ async function executeScript<Vars, Input, ReturnValue>(
       };
     } else {
       throw new TypeError(
-        `unknow command type ${(command as any).type || String(command)}`
+        `unknown command type ${(command as any).type || String(command)}`
       );
     }
     /* eslint-enable no-await-in-loop */
