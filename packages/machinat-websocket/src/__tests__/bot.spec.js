@@ -99,15 +99,15 @@ describe('#render(channel, events)', () => {
       foo
       <Event type="foo" />
       <Event type="bar" payload="beer" />
-      <Event type="baz" category="zaq" />
+      <Event type="baz" kind="zaq" />
     </>
   );
 
   const expectedEventValues = [
-    { type: 'text', category: 'message', payload: 'foo' },
+    { type: 'text', kind: 'message', payload: 'foo' },
     { type: 'foo' },
     { type: 'bar', payload: 'beer' },
-    { category: 'zaq', type: 'baz' },
+    { type: 'baz', kind: 'zaq' },
   ];
 
   it('send to connection channel', async () => {
@@ -179,9 +179,9 @@ describe('#render(channel, events)', () => {
       target: channel,
       events: [
         { type: 'foo' },
-        { type: 'text', category: 'message', payload: 'foo' },
+        { type: 'text', kind: 'message', payload: 'foo' },
         { type: 'bar', payload: 'beer' },
-        { type: 'baz', category: 'zaq' },
+        { type: 'baz', kind: 'zaq' },
       ],
       whitelist: null,
       blacklist: null,
@@ -194,7 +194,7 @@ describe('#render(channel, events)', () => {
           <Event type="foo" />
           foo
           <Event type="bar" payload="beer" />
-          <Event type="baz" category="zaq" />
+          <Event type="baz" kind="zaq" />
         </>
       )
     ).resolves.toEqual({
@@ -217,7 +217,7 @@ test('#send()', async () => {
 
   const events = [
     { type: 'foo' },
-    { type: 'bar', category: 'baz', payload: 'beer' },
+    { type: 'bar', kind: 'baz', payload: 'beer' },
   ];
 
   const expectedJob = {
@@ -249,7 +249,7 @@ test('#sendUser()', async () => {
   const user = { platform: 'test', uid: 'jojo.doe' };
   const events = [
     { type: 'foo' },
-    { type: 'bar', category: 'baz', payload: 'beer' },
+    { type: 'bar', kind: 'baz', payload: 'beer' },
   ];
 
   const expectedJob = {
@@ -281,7 +281,7 @@ test('#sendTopic()', async () => {
   const topic = 'hello_world';
   const events = [
     { type: 'foo' },
-    { type: 'bar', category: 'baz', payload: 'beer' },
+    { type: 'bar', kind: 'baz', payload: 'beer' },
   ];
 
   const expectedJob = {

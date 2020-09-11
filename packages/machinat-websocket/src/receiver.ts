@@ -264,8 +264,8 @@ export class WebSocketReceiver<AuthInfo> {
         reason: 'connection is not logged in',
       });
     } else {
-      const issuingPromises = events.map(({ category, type, payload }) =>
-        this._issueEvent(socket, createEvent(category, type, payload), connInfo)
+      const issuingPromises = events.map(({ kind, type, payload }) =>
+        this._issueEvent(socket, createEvent(kind, type, payload), connInfo)
       );
       await Promise.all(issuingPromises);
     }

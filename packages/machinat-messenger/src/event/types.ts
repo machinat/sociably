@@ -27,8 +27,8 @@ import type {
 } from './mixin';
 import type { MessengerRawEvent } from '../types';
 
-interface EventObject<Category extends string, Type extends string> {
-  category: Category;
+interface EventObject<Kind extends string, Type extends string> {
+  kind: Kind;
   type: Type;
   payload: MessengerRawEvent;
 }

@@ -32,7 +32,7 @@ app.onEvent(
   container({
     deps: [Messenger.UserProfiler],
   })((profiler) => async ({ bot, channel, event, user }) => {
-    if (event.category === 'postback') {
+    if (event.kind === 'postback') {
       if (event.data === GET_STARTED_KEY) {
         // Get Started button pressed
         const profile = await profiler.fetchProfile(user);
@@ -44,7 +44,7 @@ app.onEvent(
     }
 
     // reply message
-    if (event.category === 'message') {
+    if (event.kind === 'message') {
       if (event.type === 'text') {
         await bot.render(channel, <ReplyMessage text={event.text} />);
       } else if (event.type === 'image') {

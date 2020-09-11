@@ -168,11 +168,11 @@ class WebScoketClient<Credential = null> {
     this._loginSeq = await socket.login({ credential });
   }
 
-  private _emitEvent(category: undefined | string, type: string, payload: any) {
+  private _emitEvent(kind: undefined | string, type: string, payload: any) {
     const context = {
       channel: this._channel as ConnectionChannel,
       user: this._user,
-      event: createEvent(category, type, payload),
+      event: createEvent(kind, type, payload),
     };
     for (const listener of this._eventListeners) {
       listener.call(this, context);
@@ -219,8 +219,8 @@ class WebScoketClient<Credential = null> {
 
   private _handleDispatch({ connId, events }: DispatchBody) {
     if (this._connId === connId) {
-      for (const { type, category, payload } of events) {
-        this._emitEvent(category, type, payload);
+      for (const { type, kind, payload } of events) {
+        this._emitEvent(kind, type, payload);
       }
     }
   }

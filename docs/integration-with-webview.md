@@ -49,7 +49,7 @@ The `context.channel` received in `WebSocket` platform refers to a websocket con
 
 ##### `event`
 
-The `context.event` object contains `category`, `type` and `payload` sent from clients. You are free to send any data that can be serialized with `JSON.stringify` in the `payload`. There are also two native event type of `'connection'` category:
+The `context.event` object contains `kind`, `type` and `payload` sent from clients. You are free to send any data that can be serialized with `JSON.stringify` in the `payload`. There are also two native event type of `'connection'` kind:
 
 - `'connect'` - emit when a connection is connected.
 - `'disconnect'` - emit when a connection is disconnected.
@@ -60,7 +60,7 @@ Normally you don't need the rendering process to communicate with client since t
 
 `bot.send(channel, event)` method take the connection channel and an event object with the same structure as `context.event`:
 
-- `category` - optional, `string`, set to `'default'` if not specified.
+- `kind` - optional, `string`, set to `'default'` if not specified.
 - `type` - required, `string`, the event type.
 - `payload` - optional, `any`.
 

@@ -6,17 +6,17 @@ import { WEBSOCKET } from './constant';
 import type { EventInput } from './types';
 
 type EventProps = {
-  category?: string;
+  kind?: string;
   type: Exclude<string, 'connect' | 'disconnect'>;
   payload?: any;
 };
 
 /** @internal */
 const __Event = function Event(node, path) {
-  const { type, category, payload } = node.props;
+  const { type, kind, payload } = node.props;
   return [
     unitSegment(node, path, {
-      category,
+      kind,
       type,
       payload,
     }),

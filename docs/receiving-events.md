@@ -18,10 +18,10 @@ The event context is a **plain object** containing the following properties:
 
 - `platform`: `string`, the platform name.
 
-- `event`: `object`, represent the event has happened. Despite the basic properties listed here, some [standard mixins](#standard-event-mixins) are added on the specific category/type of event.
+- `event`: `object`, represent the event has happened. Despite the basic properties listed here, some [standard mixins](#standard-event-mixins) are added on the specific kind/type of event.
   - `platform`: `string`, platform where the event comes from.
 
-  - `category`: `string`, rough classification of the events. Here are some common categories used by most platforms:
+  - `kind`: `string`, rough classification of the events. Here are some common categories used by most platforms:
     - `'message'`: a text or media message is sent by the user.
     - `'postback'`: the user interact with an app defined UI (like a button) and post data back.
     - `'action'`: a non-message action is initiatively triggered by the user.
@@ -37,7 +37,7 @@ The event context is a **plain object** containing the following properties:
   - `uid`: `string`, unique id in Machinat.
 
 
-- `user`: `null|object`, refer to the user related to the event if exist.
+- `user`: `null | object`, refer to the user related to the event if exist.
   - `platform`: `string`, platform the user belongs to.
   - `uid`: `string`, unique id in Machinat.
 
@@ -46,7 +46,7 @@ The event context is a **plain object** containing the following properties:
   - `source`: `string`, the source type of the event.
 
 
-- `bot`: `null|object`, bot corresponded to the platform. If the platform doesn't support replying, the value would be null.
+- `bot`: `null | object`, bot corresponded to the platform. If the platform doesn't support replying, the value would be null.
   - `platform`: `string`, platform the bot belongs to.
   - `render(channel, message)`: `function`, reply message to the channel.  Check [_Rendering Elements_](rendering-elements.md) for more details.
     - `channel`: `object`, the channel object.
@@ -67,35 +67,35 @@ To help you to get information from the various of events, some helper getters a
 
 ```js
 bot.onEvent(({ event, bot, channel }) => {
-  if (event.category === 'message' && event.type === 'text') {
+  if (event.kind === 'message' && event.type === 'text') {
     bot.render(channel, `${event.text} is good!`);
   }
 });
 ```
 
-Here we define some common event types and the standard mixins for them. The mixins listed here should be implement on specific category/type by all platforms. You can use them without knowing the platform and the shape of event payload.
+Here we define some common event types and the standard mixins for them. The mixins listed here should be implement on specific kind/type by all platforms. You can use them without knowing the platform and the shape of event payload.
 
-###### Text Message
-- `category`: `'message'`
+###### Text Message Event
+- `kind`: `'message'`
 - `type`: `'text'`
 - `text`: `string`, the text message.
 
 
-###### Media Message
-- `category`: `'message'`
-- `type`: `'image'|'video'|'audio'|'file'`
-- `url`: `void|string`, the url of the media if exist.
+###### Media Message Event
+- `kind`: `'message'`
+- `type`: `'image' | 'video' | 'audio' | 'file'`
+- `url`: `void|string`, the url of the media if available.
 
-###### Location Message
-- `category`: `'message'`
+###### Location Message Event
+- `kind`: `'message'`
 - `type`: `'location'`
 - `latitude`: `number`, latitude.
 - `longitude`: `number`, longitude.
 
-###### Postback
--  `category`: `'postback'`
+###### Postback Event
+- `kind`: `'postback'`
 - `type`: `any`
-- `data`: `string`, the postback data received.
+- `data`: `void | string`, the postback data defined by your app if available.
 
 Each platform might have their own mixins on events, check the docs of platform packages for more details.
 
@@ -111,7 +111,7 @@ Let's put them together:
 
 ```js
 app.onEvent(({ platform, event, bot, channel }) => {
-  if (event.category === 'message' && event.type === 'text') {
+  if (event.kind === 'message' && event.type === 'text') {
     // reply for a text message
     bot.render(channel, `Hello ${event.text}!`);
   } else if (platform === 'messenger') {

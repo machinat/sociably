@@ -32,16 +32,16 @@ import type { MessengerRawEvent } from '../types';
 
 const eventFactory = <
   P extends object, // eslint-disable-line @typescript-eslint/ban-types
-  C extends string,
+  K extends string,
   T extends string
 >(
   proto: P,
-  category: C,
+  kind: K,
   type: T
 ) => (
   payload: MessengerRawEvent
 ): {
-  category: C;
+  kind: K;
   type: T;
   payload: MessengerRawEvent;
 } & P => {
@@ -49,7 +49,7 @@ const eventFactory = <
 
   event.payload = payload;
   event.type = type;
-  event.category = category;
+  event.kind = kind;
 
   return event;
 };

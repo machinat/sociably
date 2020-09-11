@@ -138,32 +138,32 @@ export interface MachinatUser {
 
 export interface MachinatEvent<Payload> {
   readonly platform: string;
-  readonly category: string;
+  readonly kind: string;
   readonly type: string;
   readonly payload: Payload;
 }
 
 export interface TextMessageMixin {
-  category: 'message';
+  kind: 'message';
   type: 'text';
   text: string;
 }
 
 export interface MediaMessageMixin {
-  category: 'message';
+  kind: 'message';
   type: 'image' | 'video' | 'audio' | 'file';
   url?: string;
 }
 
 export interface LocationMessageMixin {
-  category: 'message';
+  kind: 'message';
   type: 'location';
   latitude: number;
   longitude: number;
 }
 
 export interface PostbackMixin {
-  category: 'postback';
+  kind: 'postback';
   type: any;
   data: string;
 }

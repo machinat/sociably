@@ -45,7 +45,7 @@ const createJobs = (
       events: segments.map((seg) =>
         seg.type === 'text'
           ? {
-              category: 'message',
+              kind: 'message',
               type: 'text',
               payload: seg.value,
             }

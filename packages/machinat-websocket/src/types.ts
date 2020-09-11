@@ -19,21 +19,21 @@ export type WebSocketChannel = TopicChannel | UserChannel | ConnectionChannel;
 
 export type ConnectEvent = {
   platform: 'web_sokcet';
-  category: 'connection';
+  kind: 'connection';
   type: 'connect';
   payload: undefined;
 };
 
 export type DisconnectEvent = {
   platform: 'web_sokcet';
-  category: 'connection';
+  kind: 'connection';
   type: 'disconnect';
   payload: { reason: string };
 };
 
 export type CustomEvent = {
   platform: 'web_sokcet';
-  category: string;
+  kind: string;
   type: string;
   payload: any;
 };
@@ -41,13 +41,13 @@ export type CustomEvent = {
 export type WebSocketEvent = ConnectEvent | DisconnectEvent | CustomEvent;
 
 export type EventInput = {
-  category?: string;
+  kind?: string;
   type: string;
   payload?: any;
 };
 
 export type EventValue = {
-  category: string;
+  kind: string;
   type: string;
   payload: any;
 };

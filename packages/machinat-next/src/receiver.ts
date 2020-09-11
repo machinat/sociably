@@ -146,7 +146,7 @@ export class NextReceiver {
         channel: NEXT_SERVER_CHANNEL,
         event: {
           platform: 'next',
-          category: 'request',
+          kind: 'request',
           type: 'request',
           payload: { request },
         },

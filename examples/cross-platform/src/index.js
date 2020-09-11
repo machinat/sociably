@@ -53,13 +53,13 @@ app.onEvent(
       await bot.render(channel, <Hello name={profile.name} />);
     }
 
-    if (event.category === 'postback' && event.data === GIMME_FOX_KEY) {
+    if (event.kind === 'postback' && event.data === GIMME_FOX_KEY) {
       // More fox button pressed
       await bot.render(channel, <FoxCard />);
     }
 
     // reply message
-    if (event.category === 'message') {
+    if (event.kind === 'message') {
       if (event.type === 'text') {
         await bot.render(channel, <ReplyMessage text={event.text} />);
       } else if (event.type === 'image') {

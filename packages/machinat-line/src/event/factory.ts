@@ -26,19 +26,19 @@ import type { LineRawEvent } from './types';
 
 export const eventFactory = <
   P extends object, // eslint-disable-line @typescript-eslint/ban-types
-  C extends string,
+  K extends string,
   T extends string
 >(
   proto: P,
-  category: C,
+  kind: K,
   type: T
 ) => (
   payload: LineRawEvent
-): { category: C; type: T; payload: LineRawEvent } & P => {
+): { kind: K; type: T; payload: LineRawEvent } & P => {
   const event = Object.create(proto);
 
   event.payload = payload;
-  event.category = category;
+  event.kind = kind;
   event.type = type;
 
   return event;
