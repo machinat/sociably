@@ -479,7 +479,12 @@ export interface ChooseInlineResultEvent
  * @type `'callback_query'`
  */
 export interface CallbackQueryEvent
-  extends EventObject<'postback', 'callback_query', null, TelegramUser>,
+  extends EventObject<
+      'postback',
+      'callback_query',
+      null | TelegramChat,
+      TelegramUser
+    >,
     EventBase,
     CallbackQuery {}
 

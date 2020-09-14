@@ -693,9 +693,11 @@ const createEvent = (payload: TelegramRawEvent): TelegramEvent => {
   }
 
   if (payload.callback_query) {
-    const { from: fromUser } = payload.callback_query;
+    const { from: fromUser, message } = payload.callback_query;
     const user = new TelegramUser(fromUser);
-    return makeEvent(payload, null, user, CallbackQueryPostbackProto);
+    const channel = message ? new TelegramChat(message.chat) : null;
+
+    return makeEvent(payload, channel, user, CallbackQueryPostbackProto);
   }
 
   if (payload.poll) {
