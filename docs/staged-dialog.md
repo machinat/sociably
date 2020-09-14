@@ -285,14 +285,14 @@ app.onEvent(
   container({
     deps: [Script.Processor] }
   )(processor => async context => {
-    const { channel, bot } = context;
+    const { event, bot } = context;
 
     // check if any script is running
-    const runtime = await processor.continue(channel);
+    const runtime = await processor.continue(event.channel);
     if (runtime) {
       // execute from the prompt point
       return bot.render(
-        channel,
+        event.channel,
         <Run runtime={runtime} input={context} />
       );
     }

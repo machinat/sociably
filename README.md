@@ -88,8 +88,8 @@ Machinat.createApp({
     Messenger.initModule({ ... }),
   ],
 })
-  .onEvent(async ({ bot, channel }) => {
-    await bot.render(channel, <Hello name="Jojo" />);
+  .onEvent(async ({ bot, event }) => {
+    await bot.render(event.channel, <Hello name="Jojo" />);
   })
   .start();
 ```

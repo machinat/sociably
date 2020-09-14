@@ -41,7 +41,7 @@ const app = Machinat.createApp({
 app.onEvent(
   container({
     deps: [Base.UserProfilerI],
-  })((profiler) => async ({ platform, bot, channel, event, user }) => {
+  })((profiler) => async ({ platform, bot, event }) => {
     if (
       (platform === 'line' && event.type === 'follow') ||
       (platform === 'messenger' &&
@@ -49,23 +49,23 @@ app.onEvent(
         event.data === GET_STARTED_KEY)
     ) {
       // User enter the chatroom
-      const profile = await profiler.fetchProfile(user);
-      await bot.render(channel, <Hello name={profile.name} />);
+      const profile = await profiler.fetchProfile(event.user);
+      await bot.render(event.channel, <Hello name={profile.name} />);
     }
 
     if (event.kind === 'postback' && event.data === GIMME_FOX_KEY) {
       // More fox button pressed
-      await bot.render(channel, <FoxCard />);
+      await bot.render(event.channel, <FoxCard />);
     }
 
     // reply message
     if (event.kind === 'message') {
       if (event.type === 'text') {
-        await bot.render(channel, <ReplyMessage text={event.text} />);
+        await bot.render(event.channel, <ReplyMessage text={event.text} />);
       } else if (event.type === 'image') {
-        await bot.render(channel, <ReplyMessage image />);
+        await bot.render(event.channel, <ReplyMessage image />);
       } else {
-        await bot.render(channel, <ReplyMessage unknown />);
+        await bot.render(event.channel, <ReplyMessage unknown />);
       }
     }
   })

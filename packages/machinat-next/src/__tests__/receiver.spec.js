@@ -104,14 +104,14 @@ it('call next request handler if middlewares resolve accepted', async () => {
   expect(popEventMock).toHaveBeenCalledTimes(1);
   expect(popEventMock.calls[0].args[0]).toEqual({
     platform: 'next',
-    channel: { platform: 'next', type: 'server', uid: 'next.server' },
-    user: null,
     bot: null,
     event: {
       platform: 'next',
       kind: 'request',
       type: 'request',
       payload: { request: expectedRequestObj },
+      channel: null,
+      user: null,
     },
     metadata: { source: 'next', request: expectedRequestObj },
   });
@@ -296,14 +296,14 @@ it('call next.render() if there is cutomized page or query return by middlewares
   expect(popEventMock).toHaveBeenCalledTimes(1);
   expect(popEventMock.calls[0].args[0]).toEqual({
     platform: 'next',
-    channel: { platform: 'next', type: 'server', uid: 'next.server' },
-    user: null,
     bot: null,
     event: {
       platform: 'next',
       kind: 'request',
       type: 'request',
       payload: { request: expectedRequestObj },
+      channel: null,
+      user: null,
     },
     metadata: { source: 'next', request: expectedRequestObj },
   });

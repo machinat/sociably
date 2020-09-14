@@ -3,8 +3,8 @@
 In Machinat, you can use the _JSX_ syntax API to build the _Conversational User Interface_ (CUI) more expressively.
 
 ```js
-app.onEvent(async ({ bot, channel }) => {
-  await bot.render(channel, (
+app.onEvent(async ({ bot, event }) => {
+  await bot.render(event.channel, (
     <p>
       Hello,
       <br />

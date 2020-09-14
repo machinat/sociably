@@ -84,7 +84,7 @@ The stateful operations should be safe from race condition. It should works iden
 const msgCount$ = message$.pipe(count());
 ```
 
-#### Order
+#### Ordering
 
 The events should be proceeded in the same order as received while executing asynchronous jobs. This is difficult because events could be distributed to different processes.
 
@@ -92,8 +92,8 @@ The events should be proceeded in the same order as received while executing asy
 // mirroring the message in the receiving order
 message$.pipe(
   map(someAsyncWork),
-  map(async ({ bot, channel, event }) => {
-    await bot.render(channel, event.text + '!!!');
+  map(async ({ bot, event }) => {
+    await bot.render(event.channel, event.text + '!!!');
   })
 );
 ```

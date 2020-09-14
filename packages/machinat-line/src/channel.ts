@@ -3,26 +3,21 @@ import { LINE } from './constant';
 import LineUser from './user';
 import type { LineSource } from './types';
 
-type LineChannelType = 'room' | 'group' | 'utou' | 'utob';
+type LineChatType = 'room' | 'group' | 'utou' | 'utob';
 
-class LineChannel implements MachinatChannel {
+class LineChat implements MachinatChannel {
   static fromMessagingSource(
     providerId: string,
     botChannelId: string,
     source: LineSource
-  ): LineChannel {
+  ): LineChat {
     switch (source.type) {
       case 'user':
-        return new LineChannel(providerId, botChannelId, 'utob', source.userId);
+        return new LineChat(providerId, botChannelId, 'utob', source.userId);
       case 'room':
-        return new LineChannel(providerId, botChannelId, 'room', source.roomId);
+        return new LineChat(providerId, botChannelId, 'room', source.roomId);
       case 'group':
-        return new LineChannel(
-          providerId,
-          botChannelId,
-          'group',
-          source.groupId
-        );
+        return new LineChat(providerId, botChannelId, 'group', source.groupId);
       default:
         throw new Error(
           `unknown source "${(source as any).type || String(source)}"`
@@ -30,20 +25,20 @@ class LineChannel implements MachinatChannel {
     }
   }
 
-  static fromUser(user: LineUser): LineChannel {
-    return new LineChannel(user.providerId, user.botChannelId, 'utob', user.id);
+  static fromUser(user: LineUser): LineChat {
+    return new LineChat(user.providerId, user.botChannelId, 'utob', user.id);
   }
 
   platform = LINE;
   providerId: string;
   botChannelId: string;
-  type: LineChannelType;
+  type: LineChatType;
   id: string;
 
   constructor(
     providerId: string,
     botChannelId: string,
-    type: LineChannelType,
+    type: LineChatType,
     id: string
   ) {
     this.providerId = providerId;
@@ -59,4 +54,4 @@ class LineChannel implements MachinatChannel {
   }
 }
 
-export default LineChannel;
+export default LineChat;

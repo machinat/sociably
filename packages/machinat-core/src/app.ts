@@ -31,9 +31,7 @@ const ENUM_STARTING = 1;
 /** @ignore */
 const ENUM_STARTED = 2;
 
-export default class MachinatApp<
-  Context extends EventContext<any, any, any, any, any>
-> {
+export default class MachinatApp<Context extends EventContext<any, any, any>> {
   config: AppConfig<Context>;
   private _status: number;
   private _serviceSpace: ServiceSpace;

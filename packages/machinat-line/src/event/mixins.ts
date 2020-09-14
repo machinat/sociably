@@ -1,10 +1,10 @@
-import { LineSource, UserSource } from '../types';
+import type { LineSource, UserSource } from '../types';
 
 /**
  * @category Event Mixin
  */
 export interface EventBase {
-  platform: 'line';
+  readonly platform: 'line';
   /**
    * Source user, group, or room object with information about the source of the
    * event.

@@ -20,6 +20,7 @@ import type {
 } from './symbol';
 
 export { AppProvision } from './service/types';
+export { DispatchFrame, DispatchResponse } from './engine/types';
 
 export type MachinatRenderable =
   | MachinatText
@@ -141,31 +142,33 @@ export interface MachinatEvent<Payload> {
   readonly kind: string;
   readonly type: string;
   readonly payload: Payload;
+  readonly channel: null | MachinatChannel;
+  readonly user: null | MachinatUser;
 }
 
 export interface TextMessageMixin {
-  kind: 'message';
-  type: 'text';
-  text: string;
+  readonly kind: 'message';
+  readonly type: 'text';
+  readonly text: string;
 }
 
 export interface MediaMessageMixin {
-  kind: 'message';
-  type: 'image' | 'video' | 'audio' | 'file';
-  url?: string;
+  readonly kind: 'message';
+  readonly type: 'image' | 'video' | 'audio' | 'file';
+  readonly url?: string;
 }
 
 export interface LocationMessageMixin {
-  kind: 'message';
-  type: 'location';
-  latitude: number;
-  longitude: number;
+  readonly kind: 'message';
+  readonly type: 'location';
+  readonly latitude: number;
+  readonly longitude: number;
 }
 
 export interface PostbackMixin {
-  kind: 'postback';
-  type: any;
-  data: string;
+  readonly kind: 'postback';
+  readonly type: any;
+  readonly data: string;
 }
 
 export interface MachinatMetadata<Source extends string> {
@@ -182,15 +185,11 @@ export interface MachinatBot<Channel extends MachinatChannel, Job, Result> {
 }
 
 export type EventContext<
-  Channel extends MachinatChannel,
-  User extends MachinatUser | null | undefined,
   Event extends MachinatEvent<any>,
   Metadata extends MachinatMetadata<any>,
-  Bot extends null | MachinatBot<Channel, any, any>
+  Bot extends null | MachinatBot<any, any, any>
 > = {
   platform: string;
-  channel: Channel;
-  user: User;
   event: Event;
   metadata: Metadata;
   bot: Bot;
@@ -202,7 +201,7 @@ export type Middleware<Input, Output> = (
 ) => Promise<Output>;
 
 export type EventMiddleware<
-  Context extends EventContext<any, any, any, any, any>,
+  Context extends EventContext<any, any, any>,
   Response
 > = Middleware<Context, Response>;
 
@@ -218,7 +217,7 @@ export type ServiceModule = {
 };
 
 export type PlatformModule<
-  Context extends EventContext<any, any, any, any, any>,
+  Context extends EventContext<any, any, any>,
   EventResp,
   Job,
   Frame extends DispatchFrame<any, Job, any>,
@@ -240,7 +239,7 @@ export type PlatformModule<
   )[];
 };
 
-export type AppConfig<Context extends EventContext<any, any, any, any, any>> = {
+export type AppConfig<Context extends EventContext<any, any, any>> = {
   platforms?: PlatformModule<Context, any, any, any, any>[];
   modules?: ServiceModule[];
   bindings?: (ServiceProvider<any> | AppProvision<any>)[];
@@ -249,12 +248,12 @@ export type AppConfig<Context extends EventContext<any, any, any, any, any>> = {
 export type InitScopeFn = () => ServiceScope;
 
 export type PopEventFn<
-  Context extends EventContext<any, any, any, any, any>,
+  Context extends EventContext<any, any, any>,
   Response
 > = (context: Context, scope?: ServiceScope) => Promise<Response>;
 
 export type PopEventWrapper<
-  Context extends EventContext<any, any, any, any, any>,
+  Context extends EventContext<any, any, any>,
   Response
 > = (
   finalHandler: (ctx: Context) => Promise<Response>
@@ -280,7 +279,7 @@ export type DispatchWrapper<
 ) => DispatchFn<Job, Frame, Result>;
 
 export type PlatformMounter<
-  Context extends EventContext<any, any, any, any, any>,
+  Context extends EventContext<any, any, any>,
   EventResponse,
   Job,
   Frame extends DispatchFrame<any, Job, any>,

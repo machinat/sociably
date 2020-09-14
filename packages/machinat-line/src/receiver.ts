@@ -5,9 +5,7 @@ import type { PopEventWrapper } from '@machinat/core/types';
 import WebhookReceiver from '@machinat/http/webhook';
 import type { WebhookHandler } from '@machinat/http/webhook/types';
 
-import createEvent from './event';
-import LineChannel from './channel';
-import LineUser from './user';
+import eventFactory from './event/factory';
 import { BotP } from './bot';
 import { LINE } from './constant';
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
@@ -29,7 +27,7 @@ type LineReceiverOptions = {
 const handleWebhook = (
   {
     providerId,
-    channelId: botChannelId,
+    channelId,
     shouldValidateRequest,
     channelSecret,
   }: LineReceiverOptions,
@@ -76,21 +74,12 @@ const handleWebhook = (
     const issuingEvents: Promise<null>[] = [];
 
     for (const rawEvent of events) {
-      const { source } = rawEvent;
-      const channel = LineChannel.fromMessagingSource(
-        providerId,
-        botChannelId,
-        source
-      );
-      const user = new LineUser(providerId, botChannelId, source.userId);
-      const event = createEvent(rawEvent);
+      const event = eventFactory(providerId, channelId, rawEvent);
 
       issuingEvents.push(
         popEvent({
           platform: LINE,
           bot,
-          channel,
-          user,
           event,
           metadata,
         })

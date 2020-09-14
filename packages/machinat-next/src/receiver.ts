@@ -13,13 +13,6 @@ import type {
   NextPlatformMounter,
 } from './types';
 
-/** @ignore */
-const NEXT_SERVER_CHANNEL = {
-  platform: 'next',
-  type: 'server',
-  uid: 'next.server',
-};
-
 type NextReceiverOptions = {
   entryPath?: string;
   shouldPrepare?: boolean;
@@ -143,16 +136,16 @@ export class NextReceiver {
 
       const response = await this._popEvent({
         platform: 'next',
-        channel: NEXT_SERVER_CHANNEL,
         event: {
           platform: 'next',
           kind: 'request',
           type: 'request',
           payload: { request },
+          channel: null,
+          user: null,
         },
         metadata: { source: 'next', request },
         bot: null,
-        user: null,
       });
 
       if (response.accepted) {

@@ -263,8 +263,10 @@ describe('handling POST', () => {
       expect(context.platform).toBe('messenger');
       expect(context.bot).toBe(bot);
 
-      expect(context.user).toEqual(new MessengerUser('_PAGE_ID_', '_PSID_'));
-      expect(context.channel).toEqual(
+      expect(context.event.user).toEqual(
+        new MessengerUser('_PAGE_ID_', '_PSID_')
+      );
+      expect(context.event.channel).toEqual(
         new Channel('_PAGE_ID_', { id: '_PSID_' })
       );
 
@@ -330,12 +332,14 @@ describe('handling POST', () => {
     expect(popEventMock).toHaveBeenCalledTimes(2);
 
     const ctx1 = popEventMock.calls[0].args[0];
-    expect(ctx1.user).toEqual(new MessengerUser('_PAGE_ID_', '_PSID_'));
-    expect(ctx1.channel).toEqual(new Channel('_PAGE_ID_', { id: '_PSID_' }));
+    expect(ctx1.event.user).toEqual(new MessengerUser('_PAGE_ID_', '_PSID_'));
+    expect(ctx1.event.channel).toEqual(
+      new Channel('_PAGE_ID_', { id: '_PSID_' })
+    );
 
     const ctx2 = popEventMock.calls[1].args[0];
-    expect(ctx2.user).toBe(null);
-    expect(ctx2.channel).toEqual(
+    expect(ctx2.event.user).toBe(null);
+    expect(ctx2.event.channel).toEqual(
       new Channel('_PAGE_ID_', { user_ref: '<REF_FROM_CHECKBOX_PLUGIN>' })
     );
 
@@ -376,9 +380,9 @@ describe('handling POST', () => {
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
 
-    const { channel, user, event } = popEventMock.calls[0].args[0];
-    expect(user).toEqual(new MessengerUser('_PAGE_ID_', '_PSID_'));
-    expect(channel).toEqual(new Channel('_PAGE_ID_', { id: '_PSID_' }));
+    const { event } = popEventMock.calls[0].args[0];
+    expect(event.user).toEqual(new MessengerUser('_PAGE_ID_', '_PSID_'));
+    expect(event.channel).toEqual(new Channel('_PAGE_ID_', { id: '_PSID_' }));
 
     expect(event.platform).toBe('messenger');
     expect(event.kind).toBe('message');

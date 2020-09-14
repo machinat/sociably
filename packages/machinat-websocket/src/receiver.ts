@@ -25,7 +25,6 @@ import {
 } from './interface';
 import { WEBSOCKET } from './constant';
 import type {
-  WebSocketEvent,
   VerifyLoginFn,
   UpgradeRequestInfo,
   WebSocketEventContext,
@@ -185,15 +184,15 @@ export class WebSocketReceiver<AuthInfo> {
 
   private async _issueEvent(
     socket: Socket,
-    event: WebSocketEvent,
+    kind: undefined | string,
+    type: string,
+    payload: any,
     { channel, user, auth }: ConnectionInfo<AuthInfo>
   ) {
     await this._popEvent({
       platform: WEBSOCKET,
       bot: this._bot,
-      channel,
-      user,
-      event,
+      event: createEvent(kind, type, payload, channel, user),
       metadata: {
         source: WEBSOCKET,
         request: socket.request,
@@ -265,7 +264,7 @@ export class WebSocketReceiver<AuthInfo> {
       });
     } else {
       const issuingPromises = events.map(({ kind, type, payload }) =>
-        this._issueEvent(socket, createEvent(kind, type, payload), connInfo)
+        this._issueEvent(socket, kind, type, payload, connInfo)
       );
       await Promise.all(issuingPromises);
     }
@@ -297,7 +296,9 @@ export class WebSocketReceiver<AuthInfo> {
 
       await this._issueEvent(
         socket,
-        createEvent('connection', 'connect', undefined),
+        'connection',
+        'connect',
+        undefined,
         connInfo
       );
     }
@@ -338,7 +339,9 @@ export class WebSocketReceiver<AuthInfo> {
 
       await this._issueEvent(
         socket,
-        createEvent('connection', 'disconnect', { reason }),
+        'connection',
+        'disconnect',
+        { reason },
         connInfo
       );
     }
@@ -346,7 +349,7 @@ export class WebSocketReceiver<AuthInfo> {
 
   private _handleCloseCallback = this._handleClose.bind(this);
 
-  private _handleClose(code, reason, socket: Socket) {
+  private _handleClose(code: number, reason: string, socket: Socket) {
     socket.removeAllListeners();
     this._socketStates.delete(socket);
   }

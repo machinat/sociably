@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { MESSENGER } from '../constant';
-import { PSIDTarget, UserRefTarget } from '../types';
+import type { PSIDTarget, UserRefTarget } from '../types';
 
 /**
  * @category Event Mixin
@@ -126,14 +126,14 @@ export const Sticker: Sticker = {
 /**
  * @category Event Mixin
  */
-export interface QuickReplyPostback {
+export interface QuickReply {
   /** Custom data provided by the app with the quick_reply. */
   readonly data: string;
 }
 
 /** @internal */
 
-export const QuickReplyPostback: QuickReplyPostback = {
+export const QuickReply: QuickReply = {
   get data() {
     return this.payload.message.quick_reply.payload;
   },

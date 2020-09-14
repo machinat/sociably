@@ -230,11 +230,10 @@ it('respond 200 and pop events received', async () => {
     expect(ctx.platform).toBe('line');
     expect(ctx.bot).toBe(bot);
 
-    const { channel, user, metadata, event } = ctx;
+    const { metadata, event } = ctx;
 
     expect(event.platform).toBe('line');
-
-    expect(channel).toEqual(
+    expect(event.channel).toEqual(
       new LineChannel(
         '_PROVIDER_ID_',
         '_BOT_CHANNEL_ID_',
@@ -242,7 +241,7 @@ it('respond 200 and pop events received', async () => {
         'U4af4980629'
       )
     );
-    expect(user).toEqual(
+    expect(event.user).toEqual(
       new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'U4af4980629')
     );
 
@@ -297,10 +296,13 @@ it('work if request validation passed', async () => {
   expect(res.finished).toBe(true);
 
   expect(popEventMock).toHaveBeenCalledTimes(1);
-  const { channel, event } = popEventMock.calls[0].args[0];
+  const { event } = popEventMock.calls[0].args[0];
 
-  expect(channel).toEqual(
+  expect(event.channel).toEqual(
     new LineChannel('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'utob', 'xxx')
+  );
+  expect(event.user).toEqual(
+    new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'xxx')
   );
 
   expect(event.kind).toBe('message');

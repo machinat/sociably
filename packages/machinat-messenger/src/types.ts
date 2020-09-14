@@ -5,14 +5,13 @@ import type {
   EventMiddleware,
   DispatchMiddleware,
   PlatformMounter,
+  DispatchFrame,
 } from '@machinat/core/types';
-import type { DispatchFrame } from '@machinat/core/engine/types';
 import type { ServiceContainer } from '@machinat/core/service/types';
 import type { IntermediateSegment } from '@machinat/core/renderer/types';
 import type { WebhookMetadata } from '@machinat/http/webhook/types';
 import type { MessengerBot } from './bot';
 import type MessengerChannel from './channel';
-import type MessengerUser from './user';
 import type { MessengerEvent } from './event/types';
 import type { API_PATH } from './constant';
 
@@ -145,8 +144,6 @@ export type MessengerRawUserProfile = {
 };
 
 export type MessengerEventContext = EventContext<
-  MessengerChannel,
-  null | MessengerUser,
   MessengerEvent,
   WebhookMetadata,
   MessengerBot

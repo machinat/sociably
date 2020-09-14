@@ -78,10 +78,10 @@ import Messenger from '@machinat/messenger';
 app.onEvent(
   container({
     deps: [Messenger.UserProfiler]
-  })(profiler => async ({ channel, user, bot } ) => {
-    const profiler = await profiler.fetchProfile(user);
+  })(profiler => async ({ event, bot } ) => {
+    const profiler = await profiler.fetchProfile(event.user);
 
-    await bot.render(channel, `Hello ${profile.name}!`)
+    await bot.render(event.channel, `Hello ${profile.name}!`)
   })
 );
 ```
@@ -308,13 +308,13 @@ app.onEvent(
       { require: Base.UserProfilerI, optional: true },
     ],
   })(profiler => context => {
-    const { bot, channel, user } = context;
+    const { bot, event } = context;
 
     if (profiler) {
-      const profile = await profiler.fetchProfile(user);
-      await bot.render(channel, `Hello ${profile.name}!`);
+      const profile = await profiler.fetchProfile(event.user);
+      await bot.render(event.channel, `Hello ${profile.name}!`);
     } else {
-      await bot.render(channel, `Hello!`);
+      await bot.render(event.channel, `Hello!`);
     }
   });
 );

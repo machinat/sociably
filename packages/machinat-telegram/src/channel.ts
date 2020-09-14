@@ -1,8 +1,19 @@
 import { MachinatChannel } from '@machinat/core/types';
 import { TELEGRAM } from './constant';
 import { RawChat, TelegramChatType } from './types';
+import TelegramUser from './user';
 
 class TelegramChat implements MachinatChannel {
+  static fromUser(user: TelegramUser): TelegramChat {
+    return new TelegramChat({
+      id: user.id,
+      type: 'private',
+      username: user.username,
+      first_name: user.firstName,
+      last_name: user.lastName,
+    });
+  }
+
   chat: RawChat;
   platform = TELEGRAM;
 
@@ -26,7 +37,7 @@ class TelegramChat implements MachinatChannel {
   }
 
   get uid(): string {
-    return `telegram.${this.type}.${this.id}`;
+    return `telegram.${this.id}`;
   }
 }
 

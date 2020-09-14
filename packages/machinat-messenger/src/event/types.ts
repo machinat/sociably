@@ -2,7 +2,7 @@ import type {
   EventBase,
   Message,
   Text,
-  QuickReplyPostback,
+  QuickReply,
   NLP,
   Media,
   Sticker,
@@ -25,11 +25,20 @@ import type {
   Postback,
   Referral,
 } from './mixin';
+import type MessengerChat from '../channel';
+import type MessengerUser from '../user';
 import type { MessengerRawEvent } from '../types';
 
-interface EventObject<Kind extends string, Type extends string> {
+interface EventObject<
+  Kind extends string,
+  Type extends string,
+  Channel extends null | MessengerChat = MessengerChat,
+  User extends null | MessengerUser = MessengerUser
+> {
   kind: Kind;
   type: Type;
+  channel: Channel;
+  user: User;
   payload: MessengerRawEvent;
 }
 
@@ -239,18 +248,18 @@ interface ReactionEvent
     Reaction {}
 
 /**
- * QuickReplyPostbackEvent occur when a {@link QuickReply} button is tapped.
+ * QuickReplyEvent occur when a {@link QuickReply} button is tapped.
  * @category Event
  * @subscription `messages`
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
-interface QuickReplyPostbackEvent
+interface QuickReplyEvent
   extends EventObject<'postback' | 'standby', 'quick_reply'>,
     EventBase,
     Message,
     Text,
-    QuickReplyPostback {}
+    QuickReply {}
 
 /**
  * PostbackEvent occur when a [postback button](https://developers.facebook.com/docs/messenger-platform/send-api-reference/postback-button),
@@ -282,7 +291,12 @@ interface PostbackEvent
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_referrals).
  */
 interface ReferralEvent
-  extends EventObject<'action', 'referral'>,
+  extends EventObject<
+      'action',
+      'referral',
+      MessengerChat,
+      null | MessengerUser
+    >,
     EventBase,
     Referral {}
 
@@ -397,7 +411,10 @@ interface AppRolesEvent
  * @subscription `messaging_optins`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_optins).
  */
-interface OptinEvent extends EventObject<'action', 'optin'>, EventBase, Optin {}
+interface OptinEvent
+  extends EventObject<'action', 'optin', MessengerChat, null | MessengerUser>,
+    EventBase,
+    Optin {}
 
 /**
  * PolicyEnforcementEvent will be sent to an app if the page it manages does not
@@ -407,7 +424,7 @@ interface OptinEvent extends EventObject<'action', 'optin'>, EventBase, Optin {}
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_policy_enforcement).
  */
 interface PolicyEnforcementEvent
-  extends EventObject<'system', 'policy_enforcement'>,
+  extends EventObject<'system', 'policy_enforcement', null, null>,
     EventBase,
     PolicyEnforcement {}
 
@@ -433,7 +450,7 @@ export type MessengerEvent =
   | FallbackMessageEvent
   | FallbackEchoEvent
   | ReactionEvent
-  | QuickReplyPostbackEvent
+  | QuickReplyEvent
   | PostbackEvent
   | ReferralEvent
   | ReadEvent

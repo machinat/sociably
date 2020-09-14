@@ -22,6 +22,8 @@ export type ConnectEvent = {
   kind: 'connection';
   type: 'connect';
   payload: undefined;
+  channel: ConnectionChannel;
+  user: null | MachinatUser;
 };
 
 export type DisconnectEvent = {
@@ -29,6 +31,8 @@ export type DisconnectEvent = {
   kind: 'connection';
   type: 'disconnect';
   payload: { reason: string };
+  channel: ConnectionChannel;
+  user: null | MachinatUser;
 };
 
 export type CustomEvent = {
@@ -36,6 +40,8 @@ export type CustomEvent = {
   kind: string;
   type: string;
   payload: any;
+  channel: ConnectionChannel;
+  user: null | MachinatUser;
 };
 
 export type WebSocketEvent = ConnectEvent | DisconnectEvent | CustomEvent;
@@ -96,8 +102,6 @@ export type WebSocketMetadata<AuthInfo> = {
 export type WebSocketComponent = NativeComponent<any, UnitSegment<EventInput>>;
 
 export type WebSocketEventContext<AuthInfo> = EventContext<
-  WebSocketChannel,
-  null | MachinatUser,
   WebSocketEvent,
   WebSocketMetadata<AuthInfo>,
   WebSocketBot

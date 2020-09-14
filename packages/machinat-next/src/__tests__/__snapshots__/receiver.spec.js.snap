@@ -3,12 +3,8 @@
 exports[`call next.render() if there is cutomized page or query return by middlewares 1`] = `
 Object {
   "bot": null,
-  "channel": Object {
-    "platform": "next",
-    "type": "server",
-    "uid": "next.server",
-  },
   "event": Object {
+    "channel": null,
     "kind": "request",
     "payload": Object {
       "request": Object {
@@ -21,6 +17,7 @@ Object {
     },
     "platform": "next",
     "type": "request",
+    "user": null,
   },
   "metadata": Object {
     "request": Object {
@@ -33,19 +30,14 @@ Object {
     "source": "next",
   },
   "platform": "next",
-  "user": null,
 }
 `;
 
 exports[`call next.renderError() if middlewares resolve unaccepted 1`] = `
 Object {
   "bot": null,
-  "channel": Object {
-    "platform": "next",
-    "type": "server",
-    "uid": "next.server",
-  },
   "event": Object {
+    "channel": null,
     "kind": "request",
     "payload": Object {
       "request": Object {
@@ -58,6 +50,7 @@ Object {
     },
     "platform": "next",
     "type": "request",
+    "user": null,
   },
   "metadata": Object {
     "request": Object {
@@ -70,19 +63,14 @@ Object {
     "source": "next",
   },
   "platform": "next",
-  "user": null,
 }
 `;
 
 exports[`set customized headers return by middlewares on res 1`] = `
 Object {
   "bot": null,
-  "channel": Object {
-    "platform": "next",
-    "type": "server",
-    "uid": "next.server",
-  },
   "event": Object {
+    "channel": null,
     "kind": "request",
     "payload": Object {
       "request": Object {
@@ -95,6 +83,7 @@ Object {
     },
     "platform": "next",
     "type": "request",
+    "user": null,
   },
   "metadata": Object {
     "request": Object {
@@ -107,19 +96,14 @@ Object {
     "source": "next",
   },
   "platform": "next",
-  "user": null,
 }
 `;
 
 exports[`trim the entryPath from the url passed to next handler 1`] = `
 Object {
   "bot": null,
-  "channel": Object {
-    "platform": "next",
-    "type": "server",
-    "uid": "next.server",
-  },
   "event": Object {
+    "channel": null,
     "kind": "request",
     "payload": Object {
       "request": Object {
@@ -132,6 +116,7 @@ Object {
     },
     "platform": "next",
     "type": "request",
+    "user": null,
   },
   "metadata": Object {
     "request": Object {
@@ -144,6 +129,5 @@ Object {
     "source": "next",
   },
   "platform": "next",
-  "user": null,
 }
 `;

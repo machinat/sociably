@@ -7,9 +7,7 @@ import type { WebhookHandler } from '@machinat/http/webhook/types';
 import { provider } from '@machinat/core/service';
 import type { PopEventWrapper } from '@machinat/core/types';
 
-import createEvent from './event';
-import MessengerChannel from './channel';
-import MessengerUser from './user';
+import eventFactory from './event/factory';
 import { BotP } from './bot';
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { MESSENGER } from './constant';
@@ -99,20 +97,10 @@ const handleWebhook = (
       const rawEvents = isStandby ? stanby : messaging;
 
       for (const rawEvent of rawEvents) {
-        const event = createEvent(isStandby, rawEvent);
-        const { type, payload } = event;
-        const { sender } = payload;
-
-        const channel =
-          type === 'optin' && sender === undefined
-            ? new MessengerChannel(pageId, { user_ref: payload.optin.user_ref })
-            : new MessengerChannel(pageId, sender);
-
-        const user =
-          sender !== undefined ? new MessengerUser(pageId, sender.id) : null;
+        const event = eventFactory(pageId, isStandby, rawEvent);
 
         issuingEvents.push(
-          popEvent({ platform: MESSENGER, bot, channel, user, event, metadata })
+          popEvent({ platform: MESSENGER, bot, event, metadata })
         );
       }
     }

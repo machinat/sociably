@@ -30,10 +30,10 @@ const app = Machinat.createApp({
 Now you can receive events from the client in the webviews as other platforms do:
 
 ```js
-app.onEvent(async ({ platform, event, bot, channel }) => {
+app.onEvent(async ({ platform, event, bot }) => {
   if (platform === 'web_socket') {
     if (event.type === 'greeting') {
-      return bot.send(channel, {
+      return bot.send(event.channel, {
         type: 'greeting',
         payload : '👋',
       });

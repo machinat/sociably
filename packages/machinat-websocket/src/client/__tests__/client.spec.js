@@ -97,9 +97,10 @@ test('login with no options.authorize', async () => {
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(1);
   expect(eventSpy.mock).toHaveBeenCalledWith({
+    kind: 'connection',
+    type: 'connect',
     user: null,
     channel: expectedChannel,
-    event: { kind: 'connection', type: 'connect' },
   });
 
   expect(client.channel).toEqual(expectedChannel);
@@ -131,9 +132,10 @@ it('login with credential from options.authorize()', async () => {
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(1);
   expect(eventSpy.mock).toHaveBeenCalledWith({
+    kind: 'connection',
+    type: 'connect',
     user,
     channel: expectedChannel,
-    event: { kind: 'connection', type: 'connect' },
   });
 
   expect(client.channel).toEqual(new ConnectionChannel('*', '#conn'));
@@ -190,22 +192,18 @@ it('emit "event" when dispatched events received', async () => {
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(2);
   expect(eventSpy.mock).toHaveBeenNthCalledWith(1, {
+    kind: 'default',
+    type: 'start',
+    payload: 'Welcome to Hyrule',
     user,
     channel: expectedChannel,
-    event: {
-      kind: 'default',
-      type: 'start',
-      payload: 'Welcome to Hyrule',
-    },
   });
   expect(eventSpy.mock).toHaveBeenNthCalledWith(2, {
+    kind: 'reaction',
+    type: 'wasted',
+    payload: 'Link is down! Legend over.',
     user,
     channel: expectedChannel,
-    event: {
-      kind: 'reaction',
-      type: 'wasted',
-      payload: 'Link is down! Legend over.',
-    },
   });
 
   socket.emit(
@@ -220,13 +218,11 @@ it('emit "event" when dispatched events received', async () => {
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(3);
   expect(eventSpy.mock).toHaveBeenCalledWith({
+    kind: 'default',
+    type: 'resurrect',
+    payload: 'Hero never die!',
     user,
     channel: expectedChannel,
-    event: {
-      kind: 'default',
-      type: 'resurrect',
-      payload: 'Hero never die!',
-    },
   });
 });
 
@@ -320,9 +316,10 @@ test('disconnect by server', async () => {
 
   expect(client.connected).toBe(false);
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
+    kind: 'connection',
+    type: 'disconnect',
     user,
     channel: expectedChannel,
-    event: { kind: 'connection', type: 'disconnect' },
   });
 });
 
@@ -352,8 +349,9 @@ test('#disconnect()', async () => {
   socket.emit('disconnect', { connId: '#conn', reason: 'Bye!' }, 4, socket);
 
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
+    kind: 'connection',
+    type: 'disconnect',
     user,
     channel: expectedChannel,
-    event: { kind: 'connection', type: 'disconnect' },
   });
 });

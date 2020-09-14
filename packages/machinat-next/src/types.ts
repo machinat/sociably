@@ -49,21 +49,11 @@ export type NextEvent = {
       headers: IncomingHttpHeaders;
     };
   };
+  channel: null;
+  user: null;
 };
 
-export type NextChannel = {
-  platform: string;
-  type: string;
-  uid: string;
-};
-
-export type NextEventContext = EventContext<
-  NextChannel,
-  null,
-  NextEvent,
-  NextMetadata,
-  null
->;
+export type NextEventContext = EventContext<NextEvent, NextMetadata, null>;
 
 export type NextEventMiddleware = EventMiddleware<
   NextEventContext,

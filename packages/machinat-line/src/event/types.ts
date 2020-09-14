@@ -1,4 +1,6 @@
 import { LineSource } from '../types';
+import LineUser from '../user';
+import LineChat from '../channel';
 import {
   EventBase,
   Message,
@@ -39,6 +41,8 @@ interface EventObject<Kind extends string, Type extends string> {
   kind: Kind;
   type: Type;
   payload: LineRawEvent;
+  user: LineUser;
+  channel: LineChat;
 }
 
 /**

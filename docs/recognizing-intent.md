@@ -35,21 +35,21 @@ app.onEvent(
   container({
     deps: [Base.IntentRecognizer],
   })(
-    recognizer => async ({ bot, channel, event }) => {
+    recognizer => async ({ bot, event }) => {
       if (event.kind === 'message' && event.type === 'text') {
         const {
           intentType,
           confidence,
-        } = await recognizer.detectText(channel, event.text);
+        } = await recognizer.detectText(event.channel, event.text);
 
         if (intentType === 'marry_me') {
           if (confidence > 0.5) {
-            return bot.render(channel, 'Yes! I Do!');
+            return bot.render(event.channel, 'Yes! I Do!');
           } else {
-            return bot.render(channel, 'Are you kidding!?');
+            return bot.render(event.channel, 'Are you kidding!?');
           }
         } else {
-          return bot.render(channel, '🙂');
+          return bot.render(event.channel, '🙂');
         }
       }
     }

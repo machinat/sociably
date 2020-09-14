@@ -31,15 +31,14 @@ The event context is a **plain object** containing the following properties:
 
   - `payload`: `object`, the raw event received and parsed from platform.
 
+  - `channel`: `object`, refer to the abstract location where the event has happened. Check the [channel details here](#the-channel).
+    - `platform`: `string`, platform the channel belongs to.
+    - `uid`: `string`, unique id in Machinat.
 
-- `channel`: `object`, refer to the location where the event has happened. Check the [channel details here](#the-channel).
-  - `platform`: `string`, platform the channel belongs to.
-  - `uid`: `string`, unique id in Machinat.
 
-
-- `user`: `null | object`, refer to the user related to the event if exist.
-  - `platform`: `string`, platform the user belongs to.
-  - `uid`: `string`, unique id in Machinat.
+  - `user`: `null | object`, refer to the user which trigger the event if exist.
+    - `platform`: `string`, platform the user belongs to.
+    - `uid`: `string`, unique id in Machinat.
 
 
 - `metadata`: `object`, the metadata about how the event being transmitted. There could be more information properties depends on platform implementation.
@@ -66,9 +65,9 @@ To help you to get information from the various of events, some helper getters a
 
 
 ```js
-bot.onEvent(({ event, bot, channel }) => {
+bot.onEvent(({ event, bot }) => {
   if (event.kind === 'message' && event.type === 'text') {
-    bot.render(channel, `${event.text} is good!`);
+    bot.render(event.channel, `${event.text} is good!`);
   }
 });
 ```
@@ -110,16 +109,16 @@ To sum up a little bit, here are some strategies for you to handle events from m
 Let's put them together:
 
 ```js
-app.onEvent(({ platform, event, bot, channel }) => {
+app.onEvent(({ platform, event, bot }) => {
   if (event.kind === 'message' && event.type === 'text') {
     // reply for a text message
-    bot.render(channel, `Hello ${event.text}!`);
+    bot.render(event.channel, `Hello ${event.text}!`);
   } else if (platform === 'messenger') {
     // reply for messenger platform
-    bot.render(channel, 'Hello Messenger!');
+    bot.render(event.channel, 'Hello Messenger!');
   } else {
     // default reply
-    bot.render(channel, 'Hello World!');
+    bot.render(event.channel, 'Hello World!');
   }
 })
 ```

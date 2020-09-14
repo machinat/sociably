@@ -31,24 +31,24 @@ const app = Machinat.createApp({
 app.onEvent(
   container({
     deps: [Line.UserProfiler],
-  })((profiler) => async ({ bot, channel, event, user }) => {
+  })((profiler) => async ({ bot, event }) => {
     if (event.type === 'follow') {
-      const profile = await profiler.fetchProfile(user);
-      await bot.render(channel, <Hello name={profile.name} />);
+      const profile = await profiler.fetchProfile(event.user);
+      await bot.render(event.channel, <Hello name={profile.name} />);
     }
 
     if (event.kind === 'postback' && event.data === GIMME_FOX_KEY) {
-      await bot.render(channel, <FoxCard />);
+      await bot.render(event.channel, <FoxCard />);
     }
 
     // reply message
     if (event.kind === 'message') {
       if (event.type === 'text') {
-        await bot.render(channel, <ReplyMessage text={event.text} />);
+        await bot.render(event.channel, <ReplyMessage text={event.text} />);
       } else if (event.type === 'image') {
-        await bot.render(channel, <ReplyMessage image />);
+        await bot.render(event.channel, <ReplyMessage image />);
       } else {
-        await bot.render(channel, <ReplyMessage unknown />);
+        await bot.render(event.channel, <ReplyMessage unknown />);
       }
     }
   })

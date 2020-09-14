@@ -31,8 +31,8 @@ Machinat.createApp({
     }),
   ],
 })
-  .onEvent(async ({ bot, channel }) => {
-    await bot.render(channel, (
+  .onEvent(async ({ bot, event }) => {
+    await bot.render(event.channel, (
       <>
         Hello World!
         <img src="http://machinat.io/greeting.png" />

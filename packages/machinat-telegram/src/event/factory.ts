@@ -32,7 +32,6 @@ import {
   MigrateToChatId,
   MigrateFromChatId,
   PinnedMessage,
-  Invoice,
   SuccessfulPayment,
   InlineQuery,
   ChosenInlineResult,
@@ -43,26 +42,28 @@ import {
   PollAnswer,
 } from './mixins';
 import { TelegramRawEvent } from '../types';
+import TelegramChat from '../channel';
+import TelegramUser from '../user';
+import { TelegramEvent } from './types';
 
-const eventFactory = <
-  P extends object, // eslint-disable-line @typescript-eslint/ban-types
-  K extends string,
-  T extends string
+const makeEvent = <
+  Proto extends object, // eslint-disable-line @typescript-eslint/ban-types
+  Channel extends null | TelegramChat,
+  User extends null | TelegramUser
 >(
-  proto: P,
-  kind: K,
-  type: T
-) => (
-  payload: TelegramRawEvent
+  payload: TelegramRawEvent,
+  channel: Channel,
+  user: User,
+  proto: Proto
 ): {
-  kind: K;
-  type: T;
+  channel: Channel;
+  user: User;
   payload: TelegramRawEvent;
-} & P => {
+} & Proto => {
   const event = Object.create(proto);
 
-  event.kind = kind;
-  event.type = type;
+  event.channel = channel;
+  event.user = user;
   event.payload = payload;
 
   return event;
@@ -77,367 +78,637 @@ const EditedChannelPostProto = mixin(
   MessageDetail
 );
 
-export const textMessage = eventFactory(
-  mixin(MessageProto, Text),
-  'message',
-  'text'
-);
-export const editedTextMessage = eventFactory(
-  mixin(EditedMessageProto, Text),
-  'edit_message',
-  'text'
-);
-export const textChannelPost = eventFactory(
-  mixin(ChannelPostProto, Text),
-  'channel_post',
-  'text'
-);
-export const editedTextChannelPost = eventFactory(
-  mixin(EditedChannelPostProto, Text),
-  'edit_channel_post',
-  'text'
-);
+const TextMessageProto = mixin(MessageProto, Text, {
+  kind: 'message' as const,
+  type: 'text' as const,
+});
+const TextEditedMessageProto = mixin(EditedMessageProto, Text, {
+  kind: 'edit_message' as const,
+  type: 'text' as const,
+});
+const TextChannelPostProto = mixin(ChannelPostProto, Text, {
+  kind: 'channel_post' as const,
+  type: 'text' as const,
+});
+const TextEditedChannelPostProto = mixin(EditedChannelPostProto, Text, {
+  kind: 'edit_channel_post' as const,
+  type: 'text' as const,
+});
 
-export const animationMessage = eventFactory(
-  mixin(MessageProto, Animation, FileDetail, Caption),
-  'message',
-  'animation'
-);
-export const editedAnimationMessage = eventFactory(
-  mixin(EditedMessageProto, Animation, FileDetail, Caption),
-  'edit_message',
-  'animation'
-);
-export const animationChannelPost = eventFactory(
-  mixin(ChannelPostProto, Animation, FileDetail, Caption),
-  'channel_post',
-  'animation'
-);
-export const editedAnimationChannelPost = eventFactory(
-  mixin(EditedChannelPostProto, Animation, FileDetail, Caption),
-  'edit_channel_post',
-  'animation'
-);
-
-export const audioMessage = eventFactory(
-  mixin(MessageProto, Audio, FileDetail, Caption),
-  'message',
-  'audio'
-);
-export const editedAudioMessage = eventFactory(
-  mixin(EditedMessageProto, Audio, FileDetail, Caption),
-  'edit_message',
-  'audio'
-);
-export const audioChannelPost = eventFactory(
-  mixin(ChannelPostProto, Audio, FileDetail, Caption),
-  'channel_post',
-  'audio'
-);
-export const editedAudioChannelPost = eventFactory(
-  mixin(EditedChannelPostProto, Audio, FileDetail, Caption),
-  'edit_channel_post',
-  'audio'
-);
-
-export const documentMessage = eventFactory(
-  mixin(MessageProto, Document, FileDetail, Caption),
-  'message',
-  'document'
-);
-export const editedDocumentMessage = eventFactory(
-  mixin(EditedMessageProto, Document, FileDetail, Caption),
-  'edit_message',
-  'document'
-);
-export const documentChannelPost = eventFactory(
-  mixin(ChannelPostProto, Document, FileDetail, Caption),
-  'channel_post',
-  'document'
-);
-export const editedDocumentChannelPost = eventFactory(
-  mixin(EditedChannelPostProto, Document, FileDetail, Caption),
-  'edit_channel_post',
-  'document'
-);
-
-export const photoMessage = eventFactory(
-  mixin(MessageProto, Photo, FileDetail, Caption),
-  'message',
-  'photo'
-);
-export const editedPhotoMessage = eventFactory(
-  mixin(EditedMessageProto, Photo, FileDetail, Caption),
-  'edit_message',
-  'photo'
-);
-export const photoChannelPost = eventFactory(
-  mixin(ChannelPostProto, Photo, FileDetail, Caption),
-  'channel_post',
-  'photo'
-);
-export const editedPhotoChannelPost = eventFactory(
-  mixin(EditedChannelPostProto, Photo, FileDetail, Caption),
-  'edit_channel_post',
-  'photo'
-);
-
-export const stickerMessage = eventFactory(
-  mixin(MessageProto, Sticker, FileDetail, Caption),
-  'message',
-  'sticker'
-);
-export const editedStickerMessage = eventFactory(
-  mixin(EditedMessageProto, Sticker, FileDetail, Caption),
-  'edit_message',
-  'sticker'
-);
-export const stickerChannelPost = eventFactory(
-  mixin(ChannelPostProto, Sticker, FileDetail, Caption),
-  'channel_post',
-  'sticker'
-);
-export const editedStickerChannelPost = eventFactory(
-  mixin(EditedChannelPostProto, Sticker, FileDetail, Caption),
-  'edit_channel_post',
-  'sticker'
-);
-
-export const videoMessage = eventFactory(
-  mixin(MessageProto, Video, FileDetail, Caption),
-  'message',
-  'video'
-);
-export const editedVideoMessage = eventFactory(
-  mixin(EditedMessageProto, Video, FileDetail, Caption),
-  'edit_message',
-  'video'
-);
-export const videoChannelPost = eventFactory(
-  mixin(ChannelPostProto, Video, FileDetail, Caption),
-  'channel_post',
-  'video'
-);
-export const editedVideoChannelPost = eventFactory(
-  mixin(EditedChannelPostProto, Video, FileDetail, Caption),
-  'edit_channel_post',
-  'video'
-);
-
-export const videoNoteMessage = eventFactory(
-  mixin(MessageProto, VideoNote, FileDetail, Caption),
-  'message',
-  'video_note'
-);
-export const editedVideoNoteMessage = eventFactory(
-  mixin(EditedMessageProto, VideoNote, FileDetail, Caption),
-  'edit_message',
-  'video_note'
-);
-export const videoNoteChannelPost = eventFactory(
-  mixin(ChannelPostProto, VideoNote, FileDetail, Caption),
-  'channel_post',
-  'video_note'
-);
-export const editedVideoNoteChannelPost = eventFactory(
-  mixin(EditedChannelPostProto, VideoNote, FileDetail, Caption),
-  'edit_channel_post',
-  'video_note'
-);
-
-export const voiceMessage = eventFactory(
-  mixin(MessageProto, Voice, FileDetail, Caption),
-  'message',
-  'voice'
-);
-export const editedVoiceMessage = eventFactory(
-  mixin(EditedMessageProto, Voice, FileDetail, Caption),
-  'edit_message',
-  'voice'
-);
-export const voiceChannelPost = eventFactory(
-  mixin(ChannelPostProto, Voice, FileDetail, Caption),
-  'channel_post',
-  'voice'
-);
-export const editedVoiceChannelPost = eventFactory(
-  mixin(EditedChannelPostProto, Voice, FileDetail, Caption),
-  'edit_channel_post',
-  'voice'
-);
-
-export const contactMessage = eventFactory(
-  mixin(MessageProto, Contact),
-  'message',
-  'contact'
-);
-export const contactChannelPost = eventFactory(
-  mixin(ChannelPostProto, Contact),
-  'channel_post',
-  'contact'
-);
-
-export const diceMessage = eventFactory(
-  mixin(MessageProto, Dice),
-  'message',
-  'dice'
-);
-export const diceChannelPost = eventFactory(
-  mixin(ChannelPostProto, Dice),
-  'channel_post',
-  'dice'
-);
-
-export const gameMessage = eventFactory(
-  mixin(MessageProto, Game),
-  'message',
-  'game'
-);
-export const editedGameMessage = eventFactory(
-  mixin(EditedMessageProto, Game),
-  'edit_message',
-  'game'
-);
-
-export const pollMessage = eventFactory(
-  mixin(MessageProto, MessagePoll, PollDetail),
-  'message',
-  'poll'
-);
-export const pollChannelPost = eventFactory(
-  mixin(ChannelPostProto, MessagePoll, PollDetail),
-  'channel_post',
-  'poll'
-);
-
-export const venueMessage = eventFactory(
-  mixin(MessageProto, Venue),
-  'message',
-  'venue'
-);
-export const venueChannelPost = eventFactory(
-  mixin(ChannelPostProto, Venue),
-  'channel_post',
-  'venue'
-);
-
-export const locationMessage = eventFactory(
-  mixin(MessageProto, Location),
-  'message',
-  'location'
-);
-export const locationChannelPost = eventFactory(
-  mixin(ChannelPostProto, Location),
-  'channel_post',
-  'location'
-);
-
-export const memberJoinAction = eventFactory(
-  mixin(MessageProto, NewChatMembers),
-  'action',
-  'member_join'
-);
-
-export const memberLeave = eventFactory(
-  mixin(MessageProto, LeftChatMember),
-  'action',
-  'member_leave'
-);
-
-export const newChatTitleAction = eventFactory(
-  mixin(MessageProto, NewChatTitle),
-  'action',
-  'new_chat_title'
-);
-
-export const newChatPhotoAction = eventFactory(
-  mixin(MessageProto, NewChatPhoto),
-  'action',
-  'new_chat_photo'
-);
-
-export const deleteChatPhotoAction = eventFactory(
+const AnimationMessageProto = mixin(
   MessageProto,
-  'action',
-  'delete_chat_photo'
+  Animation,
+  FileDetail,
+  Caption,
+  {
+    kind: 'message' as const,
+    type: 'animation' as const,
+  }
+);
+const AnimationEditedMessageProto = mixin(
+  EditedMessageProto,
+  Animation,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_message' as const,
+    type: 'animation' as const,
+  }
+);
+const AnimationChannelPostProto = mixin(
+  ChannelPostProto,
+  Animation,
+  FileDetail,
+  Caption,
+  {
+    kind: 'channel_post' as const,
+    type: 'animation' as const,
+  }
+);
+const AnimationEditedChannelPostProto = mixin(
+  EditedChannelPostProto,
+  Animation,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_channel_post' as const,
+    type: 'animation' as const,
+  }
 );
 
-export const createGroupChatAction = eventFactory(
+const AudioMessageProto = mixin(MessageProto, Audio, FileDetail, Caption, {
+  kind: 'message' as const,
+  type: 'audio' as const,
+});
+const AudioEditedMessageProto = mixin(
+  EditedMessageProto,
+  Audio,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_message' as const,
+    type: 'audio' as const,
+  }
+);
+const AudioChannelPostProto = mixin(
+  ChannelPostProto,
+  Audio,
+  FileDetail,
+  Caption,
+  {
+    kind: 'channel_post' as const,
+    type: 'audio' as const,
+  }
+);
+const AudioEditedChannelPostProto = mixin(
+  EditedChannelPostProto,
+  Audio,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_channel_post' as const,
+    type: 'audio' as const,
+  }
+);
+
+const DocumentMessageProto = mixin(
   MessageProto,
-  'action',
-  'create_group_chat'
+  Document,
+  FileDetail,
+  Caption,
+  {
+    kind: 'message' as const,
+    type: 'document' as const,
+  }
+);
+const DocumentEditedMessageProto = mixin(
+  EditedMessageProto,
+  Document,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_message' as const,
+    type: 'document' as const,
+  }
+);
+const DocumentChannelPostProto = mixin(
+  ChannelPostProto,
+  Document,
+  FileDetail,
+  Caption,
+  {
+    kind: 'channel_post' as const,
+    type: 'document' as const,
+  }
+);
+const DocumentEditedChannelPostProto = mixin(
+  EditedChannelPostProto,
+  Document,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_channel_post' as const,
+    type: 'document' as const,
+  }
 );
 
-export const migrateToChatAction = eventFactory(
-  mixin(MessageProto, MigrateToChatId),
-  'action',
-  'migrate_to_chat'
+const PhotoMessageProto = mixin(MessageProto, Photo, FileDetail, Caption, {
+  kind: 'message' as const,
+  type: 'photo' as const,
+});
+const PhotoEditedMessageProto = mixin(
+  EditedMessageProto,
+  Photo,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_message' as const,
+    type: 'photo' as const,
+  }
+);
+const PhotoChannelPostProto = mixin(
+  ChannelPostProto,
+  Photo,
+  FileDetail,
+  Caption,
+  {
+    kind: 'channel_post' as const,
+    type: 'photo' as const,
+  }
+);
+const PhotoEditedChannelPostProto = mixin(
+  EditedChannelPostProto,
+  Photo,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_channel_post' as const,
+    type: 'photo' as const,
+  }
 );
 
-export const migrateFromChatAction = eventFactory(
-  mixin(MessageProto, MigrateFromChatId),
-  'action',
-  'migrate_from_chat'
+const StickerMessageProto = mixin(MessageProto, Sticker, FileDetail, Caption, {
+  kind: 'message' as const,
+  type: 'sticker' as const,
+});
+const StickerEditedMessageProto = mixin(
+  EditedMessageProto,
+  Sticker,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_message' as const,
+    type: 'sticker' as const,
+  }
+);
+const StickerChannelPostProto = mixin(
+  ChannelPostProto,
+  Sticker,
+  FileDetail,
+  Caption,
+  {
+    kind: 'channel_post' as const,
+    type: 'sticker' as const,
+  }
+);
+const StickerEditedChannelPostProto = mixin(
+  EditedChannelPostProto,
+  Sticker,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_channel_post' as const,
+    type: 'sticker' as const,
+  }
 );
 
-export const pinMessageAction = eventFactory(
-  mixin(MessageProto, PinnedMessage),
-  'action',
-  'pin_message'
+const VideoMessageProto = mixin(MessageProto, Video, FileDetail, Caption, {
+  kind: 'message' as const,
+  type: 'video' as const,
+});
+const VideoEditedMessageProto = mixin(
+  EditedMessageProto,
+  Video,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_message' as const,
+    type: 'video' as const,
+  }
+);
+const VideoChannelPostProto = mixin(
+  ChannelPostProto,
+  Video,
+  FileDetail,
+  Caption,
+  {
+    kind: 'channel_post' as const,
+    type: 'video' as const,
+  }
+);
+const VideoEditedChannelPostProto = mixin(
+  EditedChannelPostProto,
+  Video,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_channel_post' as const,
+    type: 'video' as const,
+  }
 );
 
-export const invoiceMessage = eventFactory(
-  mixin(MessageProto, Invoice),
-  'message',
-  'invoice'
+const VideoNoteMessageProto = mixin(
+  MessageProto,
+  VideoNote,
+  FileDetail,
+  Caption,
+  {
+    kind: 'message' as const,
+    type: 'video_note' as const,
+  }
+);
+const VideoNoteChannelPostProto = mixin(
+  ChannelPostProto,
+  VideoNote,
+  FileDetail,
+  Caption,
+  {
+    kind: 'channel_post' as const,
+    type: 'video_note' as const,
+  }
 );
 
-export const successfulPaymentPostback = eventFactory(
-  mixin(MessageProto, SuccessfulPayment),
-  'postback',
-  'successful_payment'
+const VoiceMessageProto = mixin(MessageProto, Voice, FileDetail, Caption, {
+  kind: 'message' as const,
+  type: 'voice' as const,
+});
+const VoiceEditedMessageProto = mixin(
+  EditedMessageProto,
+  Voice,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_message' as const,
+    type: 'voice' as const,
+  }
+);
+const VoiceChannelPostProto = mixin(
+  ChannelPostProto,
+  Voice,
+  FileDetail,
+  Caption,
+  {
+    kind: 'channel_post' as const,
+    type: 'voice' as const,
+  }
+);
+const VoiceEditedChannelPostProto = mixin(
+  EditedChannelPostProto,
+  Voice,
+  FileDetail,
+  Caption,
+  {
+    kind: 'edit_channel_post' as const,
+    type: 'voice' as const,
+  }
 );
 
-export const inlineQueryPostback = eventFactory(
-  mixin(EventBase, InlineQuery),
-  'postback',
-  'inline_query'
-);
+const ContactMessageProto = mixin(MessageProto, Contact, {
+  kind: 'message' as const,
+  type: 'contact' as const,
+});
+const ContactChannelPostProto = mixin(ChannelPostProto, Contact, {
+  kind: 'channel_post' as const,
+  type: 'contact' as const,
+});
 
-export const chooseInlineResultPostback = eventFactory(
-  mixin(EventBase, ChosenInlineResult),
-  'postback',
-  'choose_inline_result'
-);
+const DiceMessageProto = mixin(MessageProto, Dice, {
+  kind: 'message' as const,
+  type: 'dice' as const,
+});
+const DiceChannelPostProto = mixin(ChannelPostProto, Dice, {
+  kind: 'channel_post' as const,
+  type: 'dice' as const,
+});
 
-export const callbackQueryPostback = eventFactory(
-  mixin(EventBase, CallbackQuery),
-  'postback',
-  'callback_query'
-);
+const GameMessageProto = mixin(MessageProto, Game, {
+  kind: 'message' as const,
+  type: 'game' as const,
+});
+const GameEditedMessageProto = mixin(EditedMessageProto, Game, {
+  kind: 'edit_message' as const,
+  type: 'game' as const,
+});
 
-export const shippingQueryPostback = eventFactory(
-  mixin(EventBase, ShippingQuery),
-  'postback',
-  'shipping_query'
-);
+const PollMessageProto = mixin(MessageProto, MessagePoll, PollDetail, {
+  kind: 'message' as const,
+  type: 'poll' as const,
+});
+const PollChannelPostProto = mixin(ChannelPostProto, MessagePoll, PollDetail, {
+  kind: 'channel_post' as const,
+  type: 'poll' as const,
+});
 
-export const preCheckoutQueryPostback = eventFactory(
-  mixin(EventBase, PreCheckoutQuery),
-  'postback',
-  'pre_checkout_query'
-);
+const VenueMessageProto = mixin(MessageProto, Venue, {
+  kind: 'message' as const,
+  type: 'venue' as const,
+});
+const VenueChannelPostProto = mixin(ChannelPostProto, Venue, {
+  kind: 'channel_post' as const,
+  type: 'venue' as const,
+});
 
-export const pollChangePostback = eventFactory(
-  mixin(EventBase, Poll, PollDetail),
-  'postback',
-  'poll_change'
-);
+const LocationMessageProto = mixin(MessageProto, Location, {
+  kind: 'message' as const,
+  type: 'location' as const,
+});
+const LocationChannelPostProto = mixin(ChannelPostProto, Location, {
+  kind: 'channel_post' as const,
+  type: 'location' as const,
+});
 
-export const pollAnswerChangePostback = eventFactory(
-  mixin(EventBase, PollAnswer),
-  'postback',
-  'poll_answer_change'
-);
+const MemberJoinActionProto = mixin(MessageProto, NewChatMembers, {
+  kind: 'action' as const,
+  type: 'member_join' as const,
+});
 
-export const unknown = eventFactory(EventBase, 'unknown', 'unknown');
+const MemberLeaveActionProto = mixin(MessageProto, LeftChatMember, {
+  kind: 'action' as const,
+  type: 'member_leave' as const,
+});
+
+const NewChatTitleActionProto = mixin(MessageProto, NewChatTitle, {
+  kind: 'action' as const,
+  type: 'new_chat_title' as const,
+});
+
+const NewChatPhotoActionProto = mixin(MessageProto, NewChatPhoto, {
+  kind: 'action' as const,
+  type: 'new_chat_photo' as const,
+});
+
+const DeleteChatPhotoActionProto = mixin(MessageProto, {
+  kind: 'action' as const,
+  type: 'delete_chat_photo' as const,
+});
+
+const CreateGroupChatActionProto = mixin(MessageProto, {
+  kind: 'action' as const,
+  type: 'create_group_chat' as const,
+});
+
+const MigrateToChatActionProto = mixin(MessageProto, MigrateToChatId, {
+  kind: 'action' as const,
+  type: 'migrate_to_chat' as const,
+});
+
+const MigrateFromChatActionProto = mixin(MessageProto, MigrateFromChatId, {
+  kind: 'action' as const,
+  type: 'migrate_from_chat' as const,
+});
+
+const PinMessageActionProto = mixin(MessageProto, PinnedMessage, {
+  kind: 'action' as const,
+  type: 'pin_message' as const,
+});
+
+const SuccessfulPaymentPostbackProto = mixin(MessageProto, SuccessfulPayment, {
+  kind: 'postback' as const,
+  type: 'successful_payment' as const,
+});
+
+const InlineQueryPostbackProto = mixin(EventBase, InlineQuery, {
+  kind: 'postback' as const,
+  type: 'inline_query' as const,
+});
+
+const ChooseInlineResultPostbackProto = mixin(EventBase, ChosenInlineResult, {
+  kind: 'postback' as const,
+  type: 'choose_inline_result' as const,
+});
+
+const CallbackQueryPostbackProto = mixin(EventBase, CallbackQuery, {
+  kind: 'postback' as const,
+  type: 'callback_query' as const,
+});
+
+const ShippingQueryPostbackProto = mixin(EventBase, ShippingQuery, {
+  kind: 'postback' as const,
+  type: 'shipping_query' as const,
+});
+
+const PreCheckoutQueryPostbackProto = mixin(EventBase, PreCheckoutQuery, {
+  kind: 'postback' as const,
+  type: 'pre_checkout_query' as const,
+});
+
+const PollChangePostbackProto = mixin(EventBase, Poll, PollDetail, {
+  kind: 'postback' as const,
+  type: 'poll_change' as const,
+});
+
+const PollAnswerChangePostbackProto = mixin(EventBase, PollAnswer, {
+  kind: 'postback' as const,
+  type: 'poll_answer_change' as const,
+});
+
+const UnknownProto = mixin(EventBase, {
+  kind: 'unknown' as const,
+  type: 'unknown' as const,
+});
+
+const createEvent = (payload: TelegramRawEvent): TelegramEvent => {
+  if (payload.message) {
+    const { message } = payload;
+    const channel = new TelegramChat(message.chat);
+
+    if (message.successful_payment) {
+      const user = new TelegramUser(message.from);
+      return makeEvent(payload, channel, user, SuccessfulPaymentPostbackProto);
+    }
+
+    const user = message.from ? new TelegramUser(message.from) : null;
+
+    return message.text
+      ? makeEvent(payload, channel, user, TextMessageProto)
+      : message.animation
+      ? makeEvent(payload, channel, user, AnimationMessageProto)
+      : message.audio
+      ? makeEvent(payload, channel, user, AudioMessageProto)
+      : message.document
+      ? makeEvent(payload, channel, user, DocumentMessageProto)
+      : message.photo
+      ? makeEvent(payload, channel, user, PhotoMessageProto)
+      : message.sticker
+      ? makeEvent(payload, channel, user, StickerMessageProto)
+      : message.video
+      ? makeEvent(payload, channel, user, VideoMessageProto)
+      : message.video_note
+      ? makeEvent(payload, channel, user, VideoNoteMessageProto)
+      : message.voice
+      ? makeEvent(payload, channel, user, VoiceMessageProto)
+      : message.contact
+      ? makeEvent(payload, channel, user, ContactMessageProto)
+      : message.dice
+      ? makeEvent(payload, channel, user, DiceMessageProto)
+      : message.game
+      ? makeEvent(payload, channel, user, GameMessageProto)
+      : message.poll
+      ? makeEvent(payload, channel, user, PollMessageProto)
+      : message.venue
+      ? makeEvent(payload, channel, user, VenueMessageProto)
+      : message.location
+      ? makeEvent(payload, channel, user, LocationMessageProto)
+      : message.new_chat_members
+      ? makeEvent(payload, channel, user, MemberJoinActionProto)
+      : message.left_chat_member
+      ? makeEvent(payload, channel, user, MemberLeaveActionProto)
+      : message.new_chat_title
+      ? makeEvent(payload, channel, user, NewChatTitleActionProto)
+      : message.new_chat_photo
+      ? makeEvent(payload, channel, user, NewChatPhotoActionProto)
+      : message.delete_chat_photo
+      ? makeEvent(payload, channel, user, DeleteChatPhotoActionProto)
+      : message.group_chat_created
+      ? makeEvent(payload, channel, user, CreateGroupChatActionProto)
+      : message.migrate_to_chat_id
+      ? makeEvent(payload, channel, user, MigrateToChatActionProto)
+      : message.migrate_from_chat_id
+      ? makeEvent(payload, channel, user, MigrateFromChatActionProto)
+      : message.pinned_message
+      ? makeEvent(payload, channel, user, PinMessageActionProto)
+      : makeEvent(payload, channel, user, UnknownProto);
+  }
+
+  if (payload.edited_message) {
+    const { edited_message: message } = payload;
+    const channel = new TelegramChat(message.chat);
+    const user = message.from ? new TelegramUser(message.from) : null;
+
+    return message.text
+      ? makeEvent(payload, channel, user, TextEditedMessageProto)
+      : message.animation
+      ? makeEvent(payload, channel, user, AnimationEditedMessageProto)
+      : message.audio
+      ? makeEvent(payload, channel, user, AudioEditedMessageProto)
+      : message.document
+      ? makeEvent(payload, channel, user, DocumentEditedMessageProto)
+      : message.photo
+      ? makeEvent(payload, channel, user, PhotoEditedMessageProto)
+      : message.sticker
+      ? makeEvent(payload, channel, user, StickerEditedMessageProto)
+      : message.video
+      ? makeEvent(payload, channel, user, VideoEditedMessageProto)
+      : message.voice
+      ? makeEvent(payload, channel, user, VoiceEditedMessageProto)
+      : message.game
+      ? makeEvent(payload, channel, user, GameEditedMessageProto)
+      : makeEvent(payload, channel, user, UnknownProto);
+  }
+
+  if (payload.channel_post) {
+    const { channel_post: message } = payload;
+    const channel = new TelegramChat(message.chat);
+
+    return message.text
+      ? makeEvent(payload, channel, null, TextChannelPostProto)
+      : message.animation
+      ? makeEvent(payload, channel, null, AnimationChannelPostProto)
+      : message.audio
+      ? makeEvent(payload, channel, null, AudioChannelPostProto)
+      : message.document
+      ? makeEvent(payload, channel, null, DocumentChannelPostProto)
+      : message.photo
+      ? makeEvent(payload, channel, null, PhotoChannelPostProto)
+      : message.sticker
+      ? makeEvent(payload, channel, null, StickerChannelPostProto)
+      : message.video
+      ? makeEvent(payload, channel, null, VideoChannelPostProto)
+      : message.video_note
+      ? makeEvent(payload, channel, null, VideoNoteChannelPostProto)
+      : message.voice
+      ? makeEvent(payload, channel, null, VoiceChannelPostProto)
+      : message.contact
+      ? makeEvent(payload, channel, null, ContactChannelPostProto)
+      : message.dice
+      ? makeEvent(payload, channel, null, DiceChannelPostProto)
+      : message.poll
+      ? makeEvent(payload, channel, null, PollChannelPostProto)
+      : message.venue
+      ? makeEvent(payload, channel, null, VenueChannelPostProto)
+      : message.location
+      ? makeEvent(payload, channel, null, LocationChannelPostProto)
+      : makeEvent(payload, channel, null, UnknownProto);
+  }
+
+  if (payload.edited_channel_post) {
+    const { edited_channel_post: message } = payload;
+    const channel = new TelegramChat(message.chat);
+
+    return message.text
+      ? makeEvent(payload, channel, null, TextEditedChannelPostProto)
+      : message.animation
+      ? makeEvent(payload, channel, null, AnimationEditedChannelPostProto)
+      : message.audio
+      ? makeEvent(payload, channel, null, AudioEditedChannelPostProto)
+      : message.document
+      ? makeEvent(payload, channel, null, DocumentEditedChannelPostProto)
+      : message.photo
+      ? makeEvent(payload, channel, null, PhotoEditedChannelPostProto)
+      : message.sticker
+      ? makeEvent(payload, channel, null, StickerEditedChannelPostProto)
+      : message.video
+      ? makeEvent(payload, channel, null, VideoEditedChannelPostProto)
+      : message.voice
+      ? makeEvent(payload, channel, null, VoiceEditedChannelPostProto)
+      : makeEvent(payload, channel, null, UnknownProto);
+  }
+
+  if (payload.shipping_query) {
+    const { from: fromUser } = payload.shipping_query;
+    const user = new TelegramUser(fromUser);
+    const channel = TelegramChat.fromUser(user);
+
+    return makeEvent(payload, channel, user, ShippingQueryPostbackProto);
+  }
+
+  if (payload.pre_checkout_query) {
+    const { from: fromUser } = payload.pre_checkout_query;
+    const user = new TelegramUser(fromUser);
+    const channel = TelegramChat.fromUser(user);
+
+    return makeEvent(payload, channel, user, PreCheckoutQueryPostbackProto);
+  }
+
+  if (payload.inline_query) {
+    const { from: fromUser } = payload.inline_query;
+    const user = new TelegramUser(fromUser);
+    return makeEvent(payload, null, user, InlineQueryPostbackProto);
+  }
+
+  if (payload.chosen_inline_result) {
+    const { from: fromUser } = payload.chosen_inline_result;
+    const user = new TelegramUser(fromUser);
+    return makeEvent(payload, null, user, ChooseInlineResultPostbackProto);
+  }
+
+  if (payload.callback_query) {
+    const { from: fromUser } = payload.callback_query;
+    const user = new TelegramUser(fromUser);
+    return makeEvent(payload, null, user, CallbackQueryPostbackProto);
+  }
+
+  if (payload.poll) {
+    return makeEvent(payload, null, null, PollChangePostbackProto);
+  }
+
+  if (payload.poll_answer) {
+    const { user: fromUser } = payload.poll_answer;
+    const user = new TelegramUser(fromUser);
+    return makeEvent(payload, null, user, PollAnswerChangePostbackProto);
+  }
+
+  return makeEvent(payload, null, null, UnknownProto);
+};
+
+export default createEvent;

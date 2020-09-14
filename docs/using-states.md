@@ -32,21 +32,19 @@ import { StateControllerI } from '@machinat/core/base';
 
 app.onEvent(
   container({ deps: [StateControllerI] })(
-    stateController => async context => {
-      const { channel, bot } = context;
-
+    stateController => async ({ event, bot }) => {
       const bookmarks = await stateController
-        .channelState(channel)
+        .channelState(event.channel)
         .get('bookmarks');
 
       if (bookmarks) {
         await bot.render(
-          channel,
+          event.channel,
           `You have unread bookmarks:\n${bookmarks.join('\n')}`
         );
       } else {
         await bot.render(
-          channel,
+          event.channel,
           "You have no bookmark saved yet."
         );
       }
@@ -62,9 +60,7 @@ To set state use the `#set(key, updater)` method:
 ```js
 app.onEvent(
   container({ deps: [StateControllerI] })(
-    stateController => async context => {
-      const { channel, bot, event } = context;
-
+    stateController => async ({ bot, event } ) => {
       let matched;
       if (
         event.text &&
@@ -73,7 +69,7 @@ app.onEvent(
         const newBookmark = matched[1];
 
         await stateController
-          .channelState(channel)
+          .channelState(event.channel)
           .set(
             'bookmarks',
             bookmarks => bookmarks
@@ -82,7 +78,7 @@ app.onEvent(
           )
 
         await bot.render(
-          channel,
+          event.channel,
           `New bookmark "${newBookmark}" added.`
         );
       }
@@ -103,9 +99,7 @@ To use state on an user instead of a channel, use `#userState(user)` method:
 ```js
 app.onEvent(
   container({ deps: [StateControllerI] })(
-    stateController => async context => {
-      const { user, channel, bot, event } = context;
-
+    stateController => async ({ bot, event }) => {
       let matched;
       if (
         event.text &&
@@ -114,17 +108,17 @@ app.onEvent(
         const nickname = matched[1];
 
         await stateController
-          .userState(user)
+          .userState(event.user)
           .set('nickname', () => nickname);
 
-        await bot.render(channel, `OK ${nickname}!`);
+        await bot.render(event.channel, `OK ${nickname}!`);
       } else {
         const nickname = await stateController
-          .userState(user)
+          .userState(event.user)
           .get('nickname');
 
         await bot.render(
-          channel,
+          event.channel,
           nickname
             ? `Hi ${nickname}!`
             : 'What should I call you?'

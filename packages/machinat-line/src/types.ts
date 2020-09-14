@@ -4,17 +4,14 @@ import type {
   EventMiddleware,
   DispatchMiddleware,
   PlatformMounter,
-} from '@machinat/core/types';
-import type {
   DispatchFrame,
   DispatchResponse,
-} from '@machinat/core/engine/types';
+} from '@machinat/core/types';
 import type { ServiceContainer } from '@machinat/core/service/types';
 import type { IntermediateSegment } from '@machinat/core/renderer/types';
 import type { WebhookMetadata } from '@machinat/http/webhook/types';
 import { LineBot } from './bot';
 import type LineChannel from './channel';
-import type LineUser from './user';
 import type { LineEvent, LineRawEvent } from './event/types';
 import type { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from './constant';
 
@@ -46,8 +43,6 @@ export type LineRawUserProfile = {
 };
 
 export type LineEventContext = EventContext<
-  LineChannel,
-  LineUser,
   LineEvent,
   WebhookMetadata,
   LineBot
@@ -201,7 +196,7 @@ export type LineJob = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body: null | LineMessageRequestBody | Record<string, unknown>;
   path: string;
-  executionKey: void | string;
+  executionKey: undefined | string;
 };
 
 export type LineAPIResult = any;

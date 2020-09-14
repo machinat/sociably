@@ -1,3 +1,4 @@
+import { TELEGRAM } from '../constant';
 import type {
   RawChat,
   RawUser,
@@ -18,7 +19,6 @@ import type {
   RawPollOption,
   RawLocation,
   RawVenue,
-  RawInvoice,
   RawMessageEntity,
   RawMaskPosition,
   RawPassportData,
@@ -35,11 +35,13 @@ import type {
 } from '../types';
 
 export interface EventBase {
+  platform: typeof TELEGRAM;
   /** The update's unique identifier. Update identifiers start from a certain positive number and increase sequentially. This ID becomes especially handy if you're using Webhooks, since it allows you to ignore repeated updates or to restore the correct update sequence, should they get out of order. If there are no new updates for at least a week, then identifier of the next update will be chosen randomly instead of sequentially. */
   updateId: string;
 }
 
 export const EventBase: EventBase = {
+  platform: TELEGRAM,
   get updateId() {
     return this.payload.update_id;
   },
@@ -545,7 +547,7 @@ export interface Poll {
 
 export interface PollDetail {
   /** Unique poll identifier */
-  id: string;
+  pollId: string;
   /** Poll question, 1-255 characters */
   question: string;
   /** List of poll options */
@@ -573,7 +575,7 @@ export interface PollDetail {
 }
 
 export const PollDetail: PollDetail = {
-  get id() {
+  get pollId() {
     return this.message.poll.id;
   },
   get question() {
@@ -754,42 +756,6 @@ export const PinnedMessage: PinnedMessage = {
   },
 };
 
-export interface Invoice {
-  /** Invoice object. */
-  invoice: RawInvoice;
-  /** Product name */
-  title: string;
-  /** Product description */
-  description: string;
-  /** Unique bot deep-linking parameter that can be used to generate this invoice */
-  startParameter: string;
-  /** Three-letter ISO 4217 currency code */
-  currency: string;
-  /** Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). */
-  totalAmount: number;
-}
-
-export const Invoice: Invoice = {
-  get invoice() {
-    return this.message.invoice;
-  },
-  get title() {
-    return this.message.invoice.title;
-  },
-  get description() {
-    return this.message.invoice.description;
-  },
-  get startParameter() {
-    return this.message.invoice.start_parameter;
-  },
-  get currency() {
-    return this.message.invoice.currency;
-  },
-  get totalAmount() {
-    return this.message.invoice.total_amount;
-  },
-};
-
 export interface SuccessfulPayment {
   /** Successful payment information object. */
   successfulPayment: RawSuccessfulPayment;
@@ -840,9 +806,9 @@ export interface InlineQuery {
   /** Inline query object. */
   inlineQuery: RawInlineQuery;
   /**	Unique identifier for this query */
-  id: string;
+  queryId: string;
   /** Sender */
-  from: RawUser;
+  fromUser: RawUser;
   /** Sender location, only for bots that request user location */
   location?: RawLocation;
   /** Text of the query (up to 256 characters) */
@@ -855,10 +821,10 @@ export const InlineQuery: InlineQuery = {
   get inlineQuery() {
     return this.payload.inline_query;
   },
-  get id() {
+  get queryId() {
     return this.payload.inline_query.id;
   },
-  get from() {
+  get fromUser() {
     return this.payload.inline_query.from;
   },
   get location() {
@@ -878,7 +844,7 @@ export interface ChosenInlineResult {
   /**	The unique identifier for the result that was chosen */
   resultId: string;
   /**	The user that chose the result */
-  from: RawUser;
+  fromUser: RawUser;
   /** Sender location, only for bots that require user location */
   location?: RawLocation;
   /** Identifier of the sent inline message. Available only if there is an inline keyboard attached to the message. Will be also received in callback queries and can be used to edit the message. */
@@ -894,7 +860,7 @@ export const ChosenInlineResult: ChosenInlineResult = {
   get resultId() {
     return this.payload.chosen_inline_result.result_id;
   },
-  get from() {
+  get fromUser() {
     return this.payload.chosen_inline_result.from;
   },
   get location() {
@@ -912,9 +878,9 @@ export interface CallbackQuery {
   /** Callback query object. */
   callbackQuery: RawCallbackQuery;
   /** Unique identifier for this query */
-  id: string;
+  queryId: string;
   /** Sender */
-  from: RawUser;
+  fromUser: RawUser;
   /** Message with the callback button that originated the query. Note that message content and message date will not be available if the message is too old */
   message?: RawMessage;
   /** Identifier of the message sent via the bot in inline mode, that originated the query. */
@@ -931,10 +897,10 @@ export const CallbackQuery: CallbackQuery = {
   get callbackQuery() {
     return this.payload.callback_query;
   },
-  get id() {
+  get queryId() {
     return this.payload.callback_query.id;
   },
-  get from() {
+  get fromUser() {
     return this.payload.callback_query.from;
   },
   get message() {
@@ -958,9 +924,9 @@ export interface ShippingQuery {
   /** Shipping query object. */
   shippingQuery: RawShippingQuery;
   /** Unique query identifier */
-  id: string;
+  queryId: string;
   /** User who sent the query */
-  from: RawUser;
+  fromUser: RawUser;
   /** Bot specified invoice payload */
   invoicePayload: string;
   /** User specified shipping address */
@@ -971,10 +937,10 @@ export const ShippingQuery: ShippingQuery = {
   get shippingQuery() {
     return this.payload.shipping_query;
   },
-  get id() {
+  get queryId() {
     return this.payload.shipping_query.id;
   },
-  get from() {
+  get fromUser() {
     return this.payload.shipping_query.from;
   },
   get invoicePayload() {
@@ -989,9 +955,9 @@ export interface PreCheckoutQuery {
   /** Pre-checkout query object. */
   preCheckoutQuery: RawPreCheckoutQuery;
   /** Unique query identifier */
-  id: string;
+  queryId: string;
   /** User who sent the query */
-  from: RawUser;
+  fromUser: RawUser;
   /** Three-letter ISO 4217 currency code */
   currency: string;
   /** Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). */
@@ -1008,10 +974,10 @@ export const PreCheckoutQuery: PreCheckoutQuery = {
   get preCheckoutQuery() {
     return this.payload.pre_checkout_query;
   },
-  get id() {
+  get queryId() {
     return this.payload.pre_checkout_query.id;
   },
-  get from() {
+  get fromUser() {
     return this.payload.pre_checkout_query.from;
   },
   get currency() {
@@ -1043,7 +1009,7 @@ export interface PollAnswer {
   /** Unique poll identifier */
   pollId: string;
   /** The user, who changed the answer to the poll */
-  user: RawUser;
+  fromUser: RawUser;
   /**	0-based identifiers of answer options, chosen by the user. May be empty if the user retracted their vote. */
   optionIds: number[];
 }
@@ -1055,7 +1021,7 @@ export const PollAnswer: PollAnswer = {
   get pollId() {
     return this.payload.poll_answer.poll_id;
   },
-  get user() {
+  get fromUser() {
     return this.payload.poll_answer.user;
   },
   get optionIds() {

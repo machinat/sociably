@@ -1,4 +1,15 @@
 /* eslint-disable camelcase */
+import {
+  PlatformMounter,
+  EventContext,
+  EventMiddleware,
+  DispatchFrame,
+  DispatchMiddleware,
+} from '@machinat/core/types';
+import { WebhookMetadata } from '@machinat/http/webhook/types';
+import { TelegramEvent } from './event/types';
+import TelegramChat from './channel';
+
 // TODO: detailed raw types
 export type RawMessage = any;
 export type RawInlineQuery = any;
@@ -88,4 +99,38 @@ export type TelegramPlatformConfigs = {
 export type TelegramJob = {
   method: string;
   parameters: { [k: string]: any };
+  executionKey: undefined | string;
 };
+
+export type TelegramEventContext = EventContext<
+  TelegramEvent,
+  WebhookMetadata,
+  TelegramBot
+>;
+
+export type TelegramEventMiddleware = EventMiddleware<
+  TelegramEventContext,
+  null
+>;
+
+export type TelegramDispatchFrame = DispatchFrame<
+  TelegramChat,
+  TelegramJob,
+  TelegramBot
+>;
+
+export type TelegramAPIResult = any;
+
+export type TelegramDispatchMiddleware = DispatchMiddleware<
+  TelegramJob,
+  TelegramDispatchFrame,
+  TelegramAPIResult
+>;
+
+export type TelegramPlatformMounter = PlatformMounter<
+  TelegramEventContext,
+  null,
+  TelegramJob,
+  TelegramDispatchFrame,
+  TelegramAPIResult
+>;

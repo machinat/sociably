@@ -159,9 +159,9 @@ The separation of presentation is an important principle in application developm
 It is recommended to wrap your expression within a root expression component (the View), and leave the event handler with only control flow logic (the Controller). So your handler might look tidy like this:
 
 ```js
-app.onEvent(async ({ event, bot, channel }) => {
+app.onEvent(async ({ event, bot }) => {
   if (isFirstTime(event)) {
-    return bot.render(channel, <Welcome />)
+    return bot.render(event.channel, <Welcome />)
   }
 
   if (event.kind === 'message') {
@@ -169,12 +169,12 @@ app.onEvent(async ({ event, bot, channel }) => {
       const intent = await recognizeIntent(event.text);
 
       if (intent === 'order') {
-        bot.render(channel, <MakeOrder />);
+        bot.render(event.channel, <MakeOrder />);
       } else {
-        bot.render(channel,<NonSupport intent={intent} />);
+        bot.render(event.channel,<NonSupport intent={intent} />);
       }
     } else {
-      bot.render(channel, <RandomMeme />);
+      bot.render(event.channel, <RandomMeme />);
     }
   } else {
     // ...

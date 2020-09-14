@@ -9,12 +9,7 @@ import type {
 import { ConnectionChannel } from '../channel';
 import createEvent from '../event';
 import SocketError from '../error';
-import type {
-  ClientLoginFn,
-  EventInput,
-  WebSocketChannel,
-  WebSocketEvent,
-} from '../types';
+import type { ClientLoginFn, EventInput, WebSocketEvent } from '../types';
 import openSocket from './ws';
 
 type ClientOptions<Credential> = {
@@ -28,13 +23,7 @@ type PendingEvent = {
   reject: (err: Error) => void;
 };
 
-type ClientEventContext = {
-  user: null | MachinatUser;
-  channel: WebSocketChannel;
-  event: WebSocketEvent;
-};
-
-type ClientEventListener = (ctx: ClientEventContext) => void;
+type ClientEventListener = (event: WebSocketEvent) => void;
 
 class WebScoketClient<Credential = null> {
   private _serverURL: string;
@@ -169,13 +158,16 @@ class WebScoketClient<Credential = null> {
   }
 
   private _emitEvent(kind: undefined | string, type: string, payload: any) {
-    const context = {
-      channel: this._channel as ConnectionChannel,
-      user: this._user,
-      event: createEvent(kind, type, payload),
-    };
+    const event = createEvent(
+      kind,
+      type,
+      payload,
+      this._channel as ConnectionChannel,
+      this._user
+    );
+
     for (const listener of this._eventListeners) {
-      listener.call(this, context);
+      listener.call(this, event);
     }
   }
 

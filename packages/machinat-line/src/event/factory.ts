@@ -1,5 +1,7 @@
 /** @internal */ /** */
 import mixin from '@machinat/core/utils/mixin';
+import LineUser from '../user';
+import LineChat from '../channel';
 import {
   EventBase,
   Message,
@@ -22,136 +24,217 @@ import {
   DeviceLink,
   ThingsScenarioExecution,
 } from './mixins';
-import type { LineRawEvent } from './types';
+import { LineEvent, LineRawEvent } from './types';
 
-export const eventFactory = <
-  P extends object, // eslint-disable-line @typescript-eslint/ban-types
-  K extends string,
-  T extends string
+export const makeEvent = <
+  Proto extends object // eslint-disable-line @typescript-eslint/ban-types
 >(
-  proto: P,
-  kind: K,
-  type: T
-) => (
-  payload: LineRawEvent
-): { kind: K; type: T; payload: LineRawEvent } & P => {
+  payload: LineRawEvent,
+  channel: LineChat,
+  user: LineUser,
+  proto: Proto
+): {
+  payload: LineRawEvent;
+  user: LineUser;
+  channel: LineChat;
+} & Proto => {
   const event = Object.create(proto);
 
   event.payload = payload;
-  event.kind = kind;
-  event.type = type;
+  event.channel = channel;
+  event.user = user;
 
   return event;
 };
 
-export const text = eventFactory(
-  mixin(EventBase, Message, Repliable, Text),
-  'message',
-  'text'
-);
+const TextProto = mixin(EventBase, Message, Repliable, Text, {
+  kind: 'message' as const,
+  type: 'text' as const,
+});
 
 const MediaProto = mixin(EventBase, Message, Repliable, Media);
-export const image = eventFactory(MediaProto, 'message', 'image');
+const ImageProto = mixin(MediaProto, {
+  kind: 'message' as const,
+  type: 'image' as const,
+});
 
 const PlayableMediaProto = mixin(MediaProto, Playable);
-export const video = eventFactory(PlayableMediaProto, 'message', 'video');
-export const audio = eventFactory(PlayableMediaProto, 'message', 'audio');
+const VedioProto = mixin(PlayableMediaProto, {
+  kind: 'message' as const,
+  type: 'video' as const,
+});
+const AudioProto = mixin(PlayableMediaProto, {
+  kind: 'message' as const,
+  type: 'audio' as const,
+});
 
-export const file = eventFactory(
-  mixin(EventBase, Message, Repliable, File),
-  'message',
-  'file'
-);
+const FileProto = mixin(EventBase, Message, Repliable, File, {
+  kind: 'message' as const,
+  type: 'file' as const,
+});
 
-export const location = eventFactory(
-  mixin(EventBase, Message, Repliable, Location),
-  'message',
-  'location'
-);
+const LocationProto = mixin(EventBase, Message, Repliable, Location, {
+  kind: 'message' as const,
+  type: 'location' as const,
+});
 
-export const sticker = eventFactory(
-  mixin(EventBase, Message, Repliable, Sticker),
-  'message',
-  'sticker'
-);
+const StickerProto = mixin(EventBase, Message, Repliable, Sticker, {
+  kind: 'message' as const,
+  type: 'sticker' as const,
+});
 
-export const unsend = eventFactory(
-  mixin(EventBase, Unsend),
-  'action',
-  'unsend'
-);
+const UnsendProto = mixin(EventBase, Unsend, {
+  kind: 'action' as const,
+  type: 'unsend' as const,
+});
 
-const RepliableProto = mixin(EventBase, Repliable);
+const FollowProto = mixin(EventBase, Repliable, {
+  kind: 'action' as const,
+  type: 'follow' as const,
+});
 
-export const follow = eventFactory(RepliableProto, 'action', 'follow');
-export const unfollow = eventFactory(EventBase, 'action', 'unfollow');
+const UnfollowProto = mixin(EventBase, {
+  kind: 'action' as const,
+  type: 'unfollow' as const,
+});
 
-export const join = eventFactory(RepliableProto, 'action', 'join');
-export const leave = eventFactory(EventBase, 'action', 'leave');
+const JoinProto = mixin(EventBase, Repliable, {
+  kind: 'action' as const,
+  type: 'join' as const,
+});
 
-export const memberJoin = eventFactory(
-  mixin(RepliableProto, MemberJoined),
-  'action',
-  'member_join'
-);
+const LeaveProto = mixin(EventBase, {
+  kind: 'action' as const,
+  type: 'leave' as const,
+});
 
-export const memberLeave = eventFactory(
-  mixin(RepliableProto, MemberLeft),
-  'action',
-  'member_leave'
-);
+const MemberJoinProto = mixin(EventBase, Repliable, MemberJoined, {
+  kind: 'action' as const,
+  type: 'member_join' as const,
+});
 
-export const postback = eventFactory(
-  mixin(EventBase, Repliable, Postback),
-  'postback',
-  'postback'
-);
-export const postbackDate = eventFactory(
-  mixin(EventBase, Repliable, Postback, DateParam),
-  'postback',
-  'date_postback'
-);
-export const postbackTime = eventFactory(
-  mixin(EventBase, Repliable, Postback, TimeParam),
-  'postback',
-  'time_postback'
-);
-export const postbackDatetime = eventFactory(
-  mixin(EventBase, Repliable, Postback, DatetimeParam),
-  'postback',
-  'datetime_postback'
-);
+const MemberLeaveProto = mixin(EventBase, Repliable, MemberLeft, {
+  kind: 'action' as const,
+  type: 'member_leave' as const,
+});
 
-export const beacon = eventFactory(
-  mixin(EventBase, Repliable, Beacon),
-  'beacon',
-  'beacon'
-);
+const PostbackProto = mixin(EventBase, Repliable, Postback, {
+  kind: 'postback' as const,
+  type: 'postback' as const,
+});
 
-export const accountLink = eventFactory(
-  mixin(EventBase, Repliable, AccountLink),
-  'action',
-  'account_link'
-);
+const PostbackDateProto = mixin(PostbackProto, DateParam, {
+  kind: 'postback' as const,
+  type: 'date_postback' as const,
+});
+const PostbackTimeProto = mixin(EventBase, Repliable, Postback, TimeParam, {
+  kind: 'postback' as const,
+  type: 'time_postback' as const,
+});
+const PostbackDatetimeProto = mixin(PostbackProto, DatetimeParam, {
+  kind: 'postback' as const,
+  type: 'datetime_postback' as const,
+});
 
-const DeviceLinkProto = mixin(EventBase, Repliable, DeviceLink);
+const BeaconProto = mixin(EventBase, Repliable, Beacon, {
+  kind: 'beacon' as const,
+  type: 'beacon' as const,
+});
 
-export const deviceLink = eventFactory(
-  DeviceLinkProto,
-  'things',
-  'device_link'
-);
+const AccountLinkProto = mixin(EventBase, Repliable, AccountLink, {
+  kind: 'action' as const,
+  type: 'account_link' as const,
+});
 
-export const deviceUnlink = eventFactory(
-  DeviceLinkProto,
-  'things',
-  'device_unlink'
-);
+const DeviceLinkProto = mixin(EventBase, Repliable, DeviceLink, {
+  kind: 'things' as const,
+  type: 'device_link' as const,
+});
 
-export const deviceScenarioResult = eventFactory(
-  mixin(DeviceLinkProto, ThingsScenarioExecution),
-  'things',
-  'scenario_result'
-);
+const DeviceUnlinkProto = mixin(EventBase, Repliable, DeviceLink, {
+  kind: 'things' as const,
+  type: 'device_unlink' as const,
+});
 
-export const unknown = eventFactory(EventBase, 'unknown', 'unknown');
+const ScenarioExecutionProto = mixin(DeviceLinkProto, ThingsScenarioExecution, {
+  kind: 'things' as const,
+  type: 'scenario_result' as const,
+});
+
+const UnknownProto = mixin(EventBase, {
+  kind: 'unknown' as const,
+  type: 'unknown' as const,
+});
+
+const eventFactory = (
+  providerId: string,
+  channelId: string,
+  payload: LineRawEvent
+): LineEvent => {
+  const { type: eventType, source } = payload;
+  const channel = LineChat.fromMessagingSource(providerId, channelId, source);
+  const user = new LineUser(providerId, channelId, source.userId);
+
+  if (eventType === 'message') {
+    const { type: messageType } = payload.message;
+    return messageType === 'text'
+      ? makeEvent(payload, channel, user, TextProto)
+      : messageType === 'image'
+      ? makeEvent(payload, channel, user, ImageProto)
+      : messageType === 'video'
+      ? makeEvent(payload, channel, user, AudioProto)
+      : messageType === 'audio'
+      ? makeEvent(payload, channel, user, VedioProto)
+      : messageType === 'file'
+      ? makeEvent(payload, channel, user, FileProto)
+      : messageType === 'location'
+      ? makeEvent(payload, channel, user, LocationProto)
+      : messageType === 'sticker'
+      ? makeEvent(payload, channel, user, StickerProto)
+      : makeEvent(payload, channel, user, UnknownProto);
+  }
+
+  if (eventType === 'postback') {
+    const { params } = payload.postback;
+
+    return params === undefined
+      ? makeEvent(payload, channel, user, PostbackProto)
+      : params.date !== undefined
+      ? makeEvent(payload, channel, user, PostbackDateProto)
+      : params.time !== undefined
+      ? makeEvent(payload, channel, user, PostbackTimeProto)
+      : params.datetime !== undefined
+      ? makeEvent(payload, channel, user, PostbackDatetimeProto)
+      : makeEvent(payload, channel, user, UnknownProto);
+  }
+
+  return eventType === 'unsend'
+    ? makeEvent(payload, channel, user, UnsendProto)
+    : eventType === 'follow'
+    ? makeEvent(payload, channel, user, FollowProto)
+    : eventType === 'unfollow'
+    ? makeEvent(payload, channel, user, UnfollowProto)
+    : eventType === 'join'
+    ? makeEvent(payload, channel, user, JoinProto)
+    : eventType === 'leave'
+    ? makeEvent(payload, channel, user, LeaveProto)
+    : eventType === 'memberJoined'
+    ? makeEvent(payload, channel, user, MemberJoinProto)
+    : eventType === 'memberLeft'
+    ? makeEvent(payload, channel, user, MemberLeaveProto)
+    : eventType === 'beacon'
+    ? makeEvent(payload, channel, user, BeaconProto)
+    : eventType === 'accountLink'
+    ? makeEvent(payload, channel, user, AccountLinkProto)
+    : eventType === 'things'
+    ? payload.things.type === 'link'
+      ? makeEvent(payload, channel, user, DeviceLinkProto)
+      : payload.things.type === 'unlink'
+      ? makeEvent(payload, channel, user, DeviceUnlinkProto)
+      : payload.things.type === 'scenarioResult'
+      ? makeEvent(payload, channel, user, ScenarioExecutionProto)
+      : makeEvent(payload, channel, user, UnknownProto)
+    : makeEvent(payload, channel, user, UnknownProto);
+};
+
+export default eventFactory;
