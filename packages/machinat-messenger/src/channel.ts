@@ -4,15 +4,15 @@ import { MESSENGER } from './constant';
 import MessengerUser from './user';
 import type { MessengerTarget, MessengerThreadType } from './types';
 
-class MessengerChannel implements MachinatChannel {
+class MessengerChat implements MachinatChannel {
   pageId: string;
   threadType: MessengerThreadType;
   private _target: MessengerTarget;
 
   platform = MESSENGER;
 
-  static fromUser(user: MessengerUser): MessengerChannel {
-    return new MessengerChannel(user.pageId, { id: user.psid });
+  static fromUser(user: MessengerUser): MessengerChat {
+    return new MessengerChat(user.pageId, { id: user.psid });
   }
 
   constructor(
@@ -65,4 +65,4 @@ class MessengerChannel implements MachinatChannel {
   }
 }
 
-export default MessengerChannel;
+export default MessengerChat;

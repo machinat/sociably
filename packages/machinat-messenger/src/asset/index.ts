@@ -1,2 +1,2 @@
 export { AssetsManagerP as MessengerAssetsManager } from './manager';
-export { default as collectReusableAttachments } from './collectReusableAttachments';
+export { default as saveReusableAttachments } from './saveReusableAttachments';

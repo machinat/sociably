@@ -73,29 +73,23 @@ const PRE_BEGIN = '```\n';
 const PRE_END = '\n```';
 const pre = transormText((v) => PRE_BEGIN + v + PRE_END);
 
-const generalMediaFactory = (tag, type) => {
-  const box = {
-    [tag]: (node, path) => [
-      unitSegment(node, path, {
-        message: {
-          attachment: {
-            type,
-            payload: {
-              url: node.props.src,
-            },
-          },
+const generalMediaFactory = (type) => (node, path) => [
+  unitSegment(node, path, {
+    message: {
+      attachment: {
+        type,
+        payload: {
+          url: node.props.src,
         },
-      }),
-    ],
-  };
+      },
+    },
+  }),
+];
 
-  return box[tag];
-};
-
-const img = generalMediaFactory('img', 'image');
-const video = generalMediaFactory('video', 'video');
-const audio = generalMediaFactory('audio', 'audio');
-const file = generalMediaFactory('file', 'file');
+const img = generalMediaFactory('image');
+const video = generalMediaFactory('video');
+const audio = generalMediaFactory('audio');
+const file = generalMediaFactory('file');
 
 const generalComponents = {
   p,

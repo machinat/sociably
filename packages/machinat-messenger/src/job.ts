@@ -9,7 +9,7 @@ import type {
   MessengerJob,
   MessengerSendOptions,
 } from './types';
-import type MessangerChannel from './channel';
+import type MessengerChat from './channel';
 
 import { isMessageEntry } from './utils';
 import {
@@ -25,7 +25,7 @@ import {
 const POST = 'POST';
 
 export const chatJobsMaker = (options?: MessengerSendOptions) => (
-  channel: MessangerChannel,
+  channel: MessengerChat,
   segments: DispatchableSegment<MessengerSegmentValue>[]
 ): MessengerJob[] => {
   const { target, uid } = channel;

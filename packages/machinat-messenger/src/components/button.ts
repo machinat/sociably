@@ -6,7 +6,7 @@ import type { MessengerComponent } from '../types';
 /**
  * @category Props
  */
-type URLButtonsProps = {
+type URLButtonProps = {
   /** Button title. 20 character limit. */
   title: string;
   /**
@@ -62,12 +62,12 @@ const __URLButton = function URLButton(node, path) {
  * The URL Button opens a webpage in the Messenger webview. This button can be
  * used with the Button and Generic Templates.
  * @category Component
- * @props {@link URLButtonsProps}
+ * @props {@link URLButtonProps}
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/reference/buttons/url)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#url).
  */
 export const URLButton: MessengerComponent<
-  URLButtonsProps,
+  URLButtonProps,
   PartSegment<any>
 > = annotateMessengerComponent(__URLButton);
 

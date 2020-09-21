@@ -1,6 +1,5 @@
 import type { MachinatChannel } from '@machinat/core/types';
 import { LINE } from './constant';
-import LineUser from './user';
 import type { LineSource } from './types';
 
 type LineChatType = 'room' | 'group' | 'utou' | 'utob';
