@@ -2,7 +2,7 @@ import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
 import { isNativeType } from '@machinat/core/utils/isX';
 import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../../constant';
-import LineChannel from '../../channel';
+import LineChat from '../../channel';
 import { LinkRichMenu, UnlinkRichMenu } from '../richMenu';
 
 const renderer = new Renderer('line', () => null);
@@ -38,7 +38,7 @@ describe('<LinkRichMenu/>', () => {
 
     expect(
       value[CHANNEL_REQUEST_GETTER](
-        new LineChannel('_CHANNEL_ID_', '_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
+        new LineChat('_CHANNEL_ID_', 'utob', '_USER_ID_')
       )
     ).toEqual({
       method: 'POST',
@@ -54,7 +54,7 @@ describe('<LinkRichMenu/>', () => {
 
     expect(() =>
       value[CHANNEL_REQUEST_GETTER](
-        new LineChannel('_CHANNEL_ID_', '_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_')
+        new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_')
       )
     ).toThrowErrorMatchingInlineSnapshot(
       `"<LinkRichMenu /> can only be delivered in a utob chatting channel"`
@@ -62,12 +62,7 @@ describe('<LinkRichMenu/>', () => {
 
     expect(() =>
       value[CHANNEL_REQUEST_GETTER](
-        new LineChannel(
-          '_CHANNEL_ID_',
-          '_BOT_CHANNEL_ID_',
-          'group',
-          '_GROUP_ID_'
-        )
+        new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_')
       )
     ).toThrowErrorMatchingInlineSnapshot(
       `"<LinkRichMenu /> can only be delivered in a utob chatting channel"`
@@ -116,7 +111,7 @@ describe('<UnlinkRichMenu/>', () => {
 
     expect(
       value[CHANNEL_REQUEST_GETTER](
-        new LineChannel('_CHANNEL_ID_', '_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
+        new LineChat('_CHANNEL_ID_', 'utob', '_USER_ID_')
       )
     ).toEqual({
       method: 'DELETE',
@@ -130,7 +125,7 @@ describe('<UnlinkRichMenu/>', () => {
 
     expect(() =>
       value[CHANNEL_REQUEST_GETTER](
-        new LineChannel('_CHANNEL_ID_', '_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_')
+        new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_')
       )
     ).toThrowErrorMatchingInlineSnapshot(
       `"<UnlinkRichMenu /> can only be delivered in a utob chatting channel"`
@@ -138,12 +133,7 @@ describe('<UnlinkRichMenu/>', () => {
 
     expect(() =>
       value[CHANNEL_REQUEST_GETTER](
-        new LineChannel(
-          '_CHANNEL_ID_',
-          '_BOT_CHANNEL_ID_',
-          'group',
-          '_GROUP_ID_'
-        )
+        new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_')
       )
     ).toThrowErrorMatchingInlineSnapshot(
       `"<UnlinkRichMenu /> can only be delivered in a utob chatting channel"`

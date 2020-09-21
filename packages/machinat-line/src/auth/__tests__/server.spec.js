@@ -1,7 +1,7 @@
 import { ServerResponse } from 'http';
 import nock from 'nock';
 import moxy from '@moxyjs/moxy';
-import LineChannel from '../../channel';
+import LineChat from '../../channel';
 import LineUser from '../../user';
 import { LineServerAuthorizer } from '../server';
 
@@ -122,14 +122,14 @@ describe('#verifyCredential(credential)', () => {
         accessToken: credential.accessToken,
         data: {
           ...credential.data,
-          fromBotChannel: '_BOT_CHANNEL_ID_',
+          botChannel: '_BOT_CHANNEL_ID_',
         },
       })
     ).resolves.toEqual({
       success: true,
       refreshable: false,
       data: {
-        fromBotChannel: '_BOT_CHANNEL_ID_',
+        botChannel: '_BOT_CHANNEL_ID_',
         os: 'ios',
         language: 'zh-TW',
         contextType: 'utou',
@@ -204,7 +204,7 @@ describe('#verifyCredential(credential)', () => {
     expect(verifyScope.isDone()).toBe(true);
   });
 
-  it('return unaccepted if fromBotChannel in credential not matched', async () => {
+  it('return unaccepted if botChannel in credential not matched', async () => {
     const authorizer = new LineServerAuthorizer({
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',
@@ -216,7 +216,7 @@ describe('#verifyCredential(credential)', () => {
         accessToken: credential.accessToken,
         data: {
           ...credential,
-          fromBotChannel: '_ANOTHER_BOT_ID_',
+          botChannel: '_ANOTHER_BOT_ID_',
         },
       })
     ).resolves.toMatchInlineSnapshot(`
@@ -289,13 +289,8 @@ describe('#refineAuth(data)', () => {
         userId: '_USER_ID_',
       })
     ).resolves.toEqual({
-      user: new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_'),
-      channel: new LineChannel(
-        '_PROVIDER_ID_',
-        '_BOT_CHANNEL_ID_',
-        'utou',
-        '_UTOU_ID_'
-      ),
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      channel: new LineChat('_BOT_CHANNEL_ID_', 'utou', '_UTOU_ID_'),
     });
 
     await expect(
@@ -306,12 +301,12 @@ describe('#refineAuth(data)', () => {
         userId: '_USER_ID_',
       })
     ).resolves.toEqual({
-      user: new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_'),
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
       channel: null,
     });
   });
 
-  it('return utob channel if fromBotChannel exist in data', async () => {
+  it('return utob channel if botChannel exist in data', async () => {
     const authorizer = new LineServerAuthorizer({
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',
@@ -322,23 +317,18 @@ describe('#refineAuth(data)', () => {
       authorizer.refineAuth({
         os: 'ios',
         language: 'zh-TW',
-        fromBotChannel: '_BOT_CHANNEL_ID_',
+        botChannel: '_BOT_CHANNEL_ID_',
         contextType: 'utou',
         utouId: '_UTOU_ID_',
         userId: '_USER_ID_',
       })
     ).resolves.toEqual({
-      user: new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_'),
-      channel: new LineChannel(
-        '_PROVIDER_ID_',
-        '_BOT_CHANNEL_ID_',
-        'utob',
-        '_USER_ID_'
-      ),
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      channel: new LineChat('_BOT_CHANNEL_ID_', 'utob', '_USER_ID_'),
     });
   });
 
-  it('return null if fromBotChannel in data not match', async () => {
+  it('return null if botChannel in data not match', async () => {
     const authorizer = new LineServerAuthorizer({
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',
@@ -349,7 +339,7 @@ describe('#refineAuth(data)', () => {
       authorizer.refineAuth({
         os: 'ios',
         language: 'zh-TW',
-        fromBotChannel: '_SOME_OTHER_BOT_CHANNEL_ID_',
+        botChannel: '_SOME_OTHER_BOT_CHANNEL_ID_',
         contextType: 'utou',
         utouId: '_UTOU_ID_',
         userId: '_USER_ID_',

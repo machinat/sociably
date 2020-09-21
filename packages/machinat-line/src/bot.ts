@@ -13,7 +13,7 @@ import { provider, createEmptyScope } from '@machinat/core/service';
 import { chatJobsMaker, multicastJobsMaker } from './job';
 import generalElementDelegate from './components/general';
 import LineWorker from './worker';
-import LineChannel from './channel';
+import LineChat from './channel';
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { LINE } from './constant';
 
@@ -31,7 +31,6 @@ import type {
 
 type LineBotOptions = {
   accessToken: string;
-  providerId: string;
   channelId: string;
   connectionCapicity?: number;
 };
@@ -39,12 +38,11 @@ type LineBotOptions = {
 /**
  * @category Provider
  */
-export class LineBot
-  implements MachinatBot<LineChannel, LineJob, LineAPIResult> {
+export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
   providerId: string;
   botChannelId: string;
   engine: Engine<
-    LineChannel,
+    LineChat,
     LineSegmentValue,
     LineComponent<any>,
     LineJob,
@@ -55,7 +53,6 @@ export class LineBot
   constructor(
     {
       accessToken,
-      providerId,
       channelId,
       connectionCapicity = 100,
     }: LineBotOptions = {} as any,
@@ -67,10 +64,8 @@ export class LineBot
     > = (dispatch) => dispatch
   ) {
     invariant(accessToken, 'configs.accessToken should not be empty');
-    invariant(providerId, 'configs.providerId should not be empty');
     invariant(channelId, 'configs.channelId should not be empty');
 
-    this.providerId = providerId;
     this.botChannelId = channelId;
 
     const queue = new Queue<LineJob, LineAPIResult>();
@@ -100,20 +95,16 @@ export class LineBot
   }
 
   render(
-    source: string | LineSource | LineChannel,
+    source: string | LineSource | LineChat,
     message: MachinatNode,
     options?: { replyToken?: string }
   ): Promise<null | LineDispatchResponse> {
     const channel =
-      source instanceof LineChannel
+      source instanceof LineChat
         ? source
         : typeof source === 'string'
-        ? new LineChannel(this.providerId, this.botChannelId, 'utob', source)
-        : LineChannel.fromMessagingSource(
-            this.providerId,
-            this.botChannelId,
-            source
-          );
+        ? new LineChat(this.botChannelId, 'utob', source)
+        : LineChat.fromMessagingSource(this.botChannelId, source);
 
     return this.engine.render(
       channel,

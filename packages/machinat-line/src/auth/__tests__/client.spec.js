@@ -2,7 +2,7 @@ import url from 'url';
 import { JSDOM } from 'jsdom';
 import moxy from '@moxyjs/moxy';
 import ClientAuthorizer from '../client';
-import LineChannel from '../../channel';
+import LineChat from '../../channel';
 import LineUser from '../../user';
 
 const liffContext = {
@@ -73,7 +73,7 @@ describe('#constructor()', () => {
     expect(authorizer.shouldResign).toBe(true);
     expect(authorizer.liffId).toBe('_LIFF_ID_');
     expect(authorizer.providerId).toBe('_PROVIDER_ID_');
-    expect(authorizer.isSDKLoaded).toBe(false);
+    expect(authorizer.shouldLoadSDK).toBe(true);
   });
 
   it('throw if providerId id is empty', () => {
@@ -135,12 +135,12 @@ describe('#init()', () => {
     expect(global.liff.login.mock).not.toHaveBeenCalled();
   });
 
-  it('ignore adding sdk if options.isSDKLoaded set to true', async () => {
+  it('skip adding sdk if options.shouldLoadSDK set to false', async () => {
     const authorizer = new ClientAuthorizer({
       providerId: '_PROVIDER_ID_',
       botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
-      isSDKLoaded: true,
+      shouldLoadSDK: false,
     });
 
     await expect(authorizer.init()).resolves.toBe(undefined);
@@ -156,7 +156,7 @@ describe('#init()', () => {
       providerId: '_PROVIDER_ID_',
       botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
-      isSDKLoaded: true,
+      shouldLoadSDK: false,
     });
 
     expect(global.liff.login.mock).not.toHaveBeenCalled();
@@ -174,7 +174,7 @@ describe('#fetchCredential()', () => {
       providerId: '_PROVIDER_ID_',
       botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
-      isSDKLoaded: true,
+      shouldLoadSDK: false,
     });
 
     await expect(authorizer.fetchCredential()).resolves.toEqual({
@@ -194,13 +194,13 @@ describe('#fetchCredential()', () => {
     expect(global.liff.login.mock).not.toHaveBeenCalled();
   });
 
-  it('set fromBotChannel options.fromBotChannel is true', async () => {
+  it('set onBotChannel options.onBotChannel is true', async () => {
     const authorizer = new ClientAuthorizer({
       providerId: '_PROVIDER_ID_',
       botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
-      isSDKLoaded: true,
-      fromBotChannel: true,
+      shouldLoadSDK: false,
+      onBotChannel: true,
     });
 
     await expect(authorizer.fetchCredential()).resolves.toEqual({
@@ -208,7 +208,7 @@ describe('#fetchCredential()', () => {
       credential: {
         accessToken: '_ACCESS_TOKEN_',
         data: {
-          fromBotChannel: '_BOT_CHANNEL_ID_',
+          botChannel: '_BOT_CHANNEL_ID_',
           os: 'ios',
           language: 'zh-TW',
           contextType: 'utou',
@@ -221,16 +221,16 @@ describe('#fetchCredential()', () => {
     expect(global.liff.login.mock).not.toHaveBeenCalled();
   });
 
-  it('set fromBotChannel if "fromBotChannel" in query param is truthy', async () => {
+  it('set onBotChannel if "onBotChannel" in query param is truthy', async () => {
     global.window.location.mock
       .getter('search')
-      .fakeReturnValue('?fromBotChannel=true');
+      .fakeReturnValue('?onBotChannel=true');
 
     const authorizer = new ClientAuthorizer({
       providerId: '_PROVIDER_ID_',
       botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
-      isSDKLoaded: true,
+      shouldLoadSDK: false,
     });
 
     await expect(authorizer.fetchCredential()).resolves.toEqual({
@@ -238,7 +238,7 @@ describe('#fetchCredential()', () => {
       credential: {
         accessToken: '_ACCESS_TOKEN_',
         data: {
-          fromBotChannel: '_BOT_CHANNEL_ID_',
+          botChannel: '_BOT_CHANNEL_ID_',
           os: 'ios',
           language: 'zh-TW',
           contextType: 'utou',
@@ -258,7 +258,7 @@ describe('#refineAuth(data)', () => {
       providerId: '_PROVIDER_ID_',
       botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
-      isSDKLoaded: true,
+      shouldLoadSDK: false,
     });
 
     await expect(
@@ -270,13 +270,8 @@ describe('#refineAuth(data)', () => {
         userId: '_USER_ID_',
       })
     ).resolves.toEqual({
-      user: new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_'),
-      channel: new LineChannel(
-        '_PROVIDER_ID_',
-        '_BOT_CHANNEL_ID_',
-        'utou',
-        '_UTOU_ID_'
-      ),
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      channel: new LineChat('_BOT_CHANNEL_ID_', 'utou', '_UTOU_ID_'),
     });
 
     await expect(
@@ -287,7 +282,7 @@ describe('#refineAuth(data)', () => {
         userId: '_USER_ID_',
       })
     ).resolves.toEqual({
-      user: new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_'),
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
       channel: null,
     });
   });
@@ -297,42 +292,37 @@ describe('#refineAuth(data)', () => {
       providerId: '_PROVIDER_ID_',
       botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
-      isSDKLoaded: true,
+      shouldLoadSDK: false,
     });
 
     await expect(
       authorizer.refineAuth({
         os: 'ios',
         language: 'zh-TW',
-        fromBotChannel: '_BOT_CHANNEL_ID_',
+        botChannel: '_BOT_CHANNEL_ID_',
         contextType: 'utou',
         utouId: '_UTOU_ID_',
         userId: '_USER_ID_',
       })
     ).resolves.toEqual({
-      user: new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_'),
-      channel: new LineChannel(
-        '_PROVIDER_ID_',
-        '_BOT_CHANNEL_ID_',
-        'utob',
-        '_USER_ID_'
-      ),
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      channel: new LineChat('_BOT_CHANNEL_ID_', 'utob', '_USER_ID_'),
     });
   });
 
-  it('return null if data.fromBotChannel not match', async () => {
+  it('return null if data.onBotChannel not match', async () => {
     const authorizer = new ClientAuthorizer({
       providerId: '_PROVIDER_ID_',
       botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
-      isSDKLoaded: true,
+      shouldLoadSDK: false,
     });
 
     await expect(
       authorizer.refineAuth({
         os: 'ios',
         language: 'zh-TW',
-        fromBotChannel: '_SOME_OTHER_BOT_CHANNEL_ID_',
+        botChannel: '_SOME_OTHER_BOT_CHANNEL_ID_',
         contextType: 'utou',
         utouId: '_UTOU_ID_',
         userId: '_USER_ID_',

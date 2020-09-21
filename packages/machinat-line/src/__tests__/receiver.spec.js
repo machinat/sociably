@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 import moxy, { Mock } from '@moxyjs/moxy';
 
 import { LineReceiver } from '../receiver';
-import LineChannel from '../channel';
+import LineChat from '../channel';
 import LineUser from '../user';
 
 const bot = moxy();
@@ -234,16 +234,9 @@ it('respond 200 and pop events received', async () => {
 
     expect(event.platform).toBe('line');
     expect(event.channel).toEqual(
-      new LineChannel(
-        '_PROVIDER_ID_',
-        '_BOT_CHANNEL_ID_',
-        'utob',
-        'U4af4980629'
-      )
+      new LineChat('_BOT_CHANNEL_ID_', 'utob', 'U4af4980629')
     );
-    expect(event.user).toEqual(
-      new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'U4af4980629')
-    );
+    expect(event.user).toEqual(new LineUser('_PROVIDER_ID_', 'U4af4980629'));
 
     expect(metadata).toEqual({
       source: 'webhook',
@@ -299,11 +292,9 @@ it('work if request validation passed', async () => {
   const { event } = popEventMock.calls[0].args[0];
 
   expect(event.channel).toEqual(
-    new LineChannel('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'utob', 'xxx')
+    new LineChat('_BOT_CHANNEL_ID_', 'utob', 'xxx')
   );
-  expect(event.user).toEqual(
-    new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'xxx')
-  );
+  expect(event.user).toEqual(new LineUser('_PROVIDER_ID_', 'xxx'));
 
   expect(event.kind).toBe('message');
   expect(event.type).toBe('text');

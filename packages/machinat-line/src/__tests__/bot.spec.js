@@ -67,24 +67,11 @@ beforeEach(() => {
 });
 
 describe('#constructor(options)', () => {
-  it('throw if configs.providerId is empty', () => {
-    expect(
-      () =>
-        new LineBot(
-          { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
-          initScope,
-          dispatchWrapper
-        )
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"configs.providerId should not be empty"`
-    );
-  });
-
   it('throw if configs.channelId is empty', () => {
     expect(
       () =>
         new LineBot(
-          { accessToken: '_ACCESS_TOKEN_', providerId: '_PROVIDER_ID_' },
+          { accessToken: '_ACCESS_TOKEN_' },
           initScope,
           dispatchWrapper
         )
@@ -97,7 +84,7 @@ describe('#constructor(options)', () => {
     expect(
       () =>
         new LineBot(
-          { providerId: '_PROVIDER_ID_', channelId: '_BOT_CHANNEL_ID_' },
+          { channelId: '_BOT_CHANNEL_ID_' },
           initScope,
           dispatchWrapper
         )
@@ -110,7 +97,7 @@ describe('#constructor(options)', () => {
     const bot = new LineBot(
       {
         accessToken: '_ACCESS_TOKEN_',
-        providerId: '_PROVIDER_ID_',
+
         channelId: '_BOT_CHANNEL_ID_',
         connectionCapicity: 999,
       },
@@ -139,11 +126,7 @@ describe('#constructor(options)', () => {
 
   test('default connectionCapicity', () => {
     const _bot = new LineBot(
-      {
-        accessToken: '_ACCESS_TOKEN_',
-        providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
-      },
+      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
       initScope,
       dispatchWrapper
     );
@@ -161,11 +144,7 @@ describe('#constructor(options)', () => {
 describe('#render(token, node, options)', () => {
   it('make api calls', async () => {
     const bot = new LineBot(
-      {
-        accessToken: '_ACCESS_TOKEN_',
-        providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
-      },
+      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
       initScope,
       dispatchWrapper
     );
@@ -205,11 +184,7 @@ describe('#render(token, node, options)', () => {
 
   it('works with replyToken', async () => {
     const bot = new LineBot(
-      {
-        accessToken: '_ACCESS_TOKEN_',
-        providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
-      },
+      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
       initScope,
       dispatchWrapper
     );
@@ -251,11 +226,7 @@ describe('#render(token, node, options)', () => {
 
   it('return null if message is empty', async () => {
     const bot = new LineBot(
-      {
-        accessToken: '_ACCESS_TOKEN_',
-        providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
-      },
+      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
       initScope,
       dispatchWrapper
     );
@@ -268,11 +239,7 @@ describe('#render(token, node, options)', () => {
 
   it('throw if messages length more than 5 when using replyToken', async () => {
     const bot = new LineBot(
-      {
-        accessToken: '_ACCESS_TOKEN_',
-        providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
-      },
+      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
       initScope,
       dispatchWrapper
     );
@@ -297,11 +264,7 @@ describe('#render(token, node, options)', () => {
 describe('#renderMulticast(targets, node)', () => {
   it('return null if message is empty', async () => {
     const bot = new LineBot(
-      {
-        accessToken: '_ACCESS_TOKEN_',
-        providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
-      },
+      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
       initScope,
       dispatchWrapper
     );
@@ -316,11 +279,7 @@ describe('#renderMulticast(targets, node)', () => {
 
   it('make api call to message/mulitcast', async () => {
     const bot = new LineBot(
-      {
-        accessToken: '_ACCESS_TOKEN_',
-        providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
-      },
+      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
       initScope,
       dispatchWrapper
     );

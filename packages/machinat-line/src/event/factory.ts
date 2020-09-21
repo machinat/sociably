@@ -172,8 +172,8 @@ const eventFactory = (
   payload: LineRawEvent
 ): LineEvent => {
   const { type: eventType, source } = payload;
-  const channel = LineChat.fromMessagingSource(providerId, channelId, source);
-  const user = new LineUser(providerId, channelId, source.userId);
+  const channel = LineChat.fromMessagingSource(channelId, source);
+  const user = new LineUser(providerId, source.userId);
 
   if (eventType === 'message') {
     const { type: messageType } = payload.message;

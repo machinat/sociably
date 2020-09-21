@@ -33,7 +33,7 @@ const bot = moxy({
   }),
 });
 
-const user = new LineUser('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', '_USER_ID_');
+const user = new LineUser('_PROVIDER_ID_', '_USER_ID_');
 
 beforeEach(() => {
   state.mock.reset();

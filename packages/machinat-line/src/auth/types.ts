@@ -1,5 +1,5 @@
 import type LineUser from '../user';
-import type LineChannel from '../channel';
+import type LineChat from '../channel';
 
 export type LIFFContext = {
   type: 'utou' | 'group' | 'room' | 'external' | 'none';
@@ -19,7 +19,7 @@ export type LIFFContext = {
 export type LIFFAuthData = {
   os: 'ios' | 'android' | 'web';
   language: string;
-  fromBotChannel: void | string;
+  botChannel: void | string;
   contextType: 'utou' | 'group' | 'room' | 'external' | 'none';
   userId: string;
   utouId?: string;
@@ -38,7 +38,7 @@ export type LineVerifyAuthResult =
 
 export type AuthorizerRefinement = {
   user: LineUser;
-  channel: null | LineChannel;
+  channel: null | LineChat;
 };
 
 export type AuthorizerCredentialResult = {

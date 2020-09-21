@@ -19,11 +19,11 @@ type ClientAuthorizerOptions = {
   providerId: string;
   botChannelId: string;
   liffId: string;
-  isSDKLoaded?: boolean;
-  fromBotChannel?: boolean;
+  shouldLoadSDK?: boolean;
+  onBotChannel?: boolean;
 };
 
-const BOT_CHANNEL_LABEL_QUERY_KEY = 'fromBotChannel';
+const BOT_CHANNEL_LABEL_QUERY_KEY = 'onBotChannel';
 
 class LineClientAuthorizer
   implements ClientAuthorizer<LIFFAuthData, LIFFCredential> {
@@ -31,8 +31,8 @@ class LineClientAuthorizer
   providerId: string;
   botChannelId: string;
 
-  isSDKLoaded: boolean;
-  isFromBotChannel: boolean;
+  shouldLoadSDK: boolean;
+  isOnBotChannel: boolean;
 
   platform = LINE;
   shouldResign = true;
@@ -42,8 +42,8 @@ class LineClientAuthorizer
       providerId,
       botChannelId,
       liffId,
-      isSDKLoaded = false,
-      fromBotChannel,
+      shouldLoadSDK = true,
+      onBotChannel,
     }: ClientAuthorizerOptions = {} as any
   ) {
     invariant(providerId, 'options.providerId must not be empty');
@@ -53,20 +53,20 @@ class LineClientAuthorizer
     this.liffId = liffId;
     this.providerId = providerId;
     this.botChannelId = botChannelId;
-    this.isSDKLoaded = isSDKLoaded;
+    this.shouldLoadSDK = shouldLoadSDK;
 
-    this.isFromBotChannel =
-      typeof fromBotChannel === 'boolean'
-        ? fromBotChannel
+    this.isOnBotChannel =
+      typeof onBotChannel === 'boolean'
+        ? onBotChannel
         : new URLSearchParams(window.location.search).get(
             BOT_CHANNEL_LABEL_QUERY_KEY
           ) === 'true';
   }
 
   async init(): Promise<void> {
-    const { liffId, isSDKLoaded } = this;
+    const { liffId, shouldLoadSDK } = this;
 
-    if (!isSDKLoaded) {
+    if (shouldLoadSDK) {
       const SCRIPT = 'script';
       const js = document.createElement(SCRIPT);
       js.id = 'LIFF';
@@ -104,8 +104,8 @@ class LineClientAuthorizer
         data: {
           os: liff.getOS(),
           language: liff.getLanguage(),
-          fromBotChannel:
-            contextType === 'utou' && this.isFromBotChannel
+          botChannel:
+            contextType === 'utou' && this.isOnBotChannel
               ? this.botChannelId
               : undefined,
           contextType,

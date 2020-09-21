@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../constant';
-import LineChannel from '../channel';
+import LineChat from '../channel';
 import { chatJobsMaker, multicastJobsMaker } from '../job';
 
 const Foo = () => {};
@@ -40,12 +40,7 @@ beforeEach(() => {
 
 describe('chatJobsMaker()', () => {
   it('make push jobs', () => {
-    const channel = new LineChannel(
-      '_PROVIDER_ID_',
-      '_BOT_CHANNEL_ID_',
-      'utob',
-      'john'
-    );
+    const channel = new LineChat('_CHANNEL_ID_', 'utob', 'john');
 
     const jobs = chatJobsMaker()(channel, segments);
 
@@ -72,7 +67,7 @@ describe('chatJobsMaker()', () => {
             ],
             "to": "john",
           },
-          "executionKey": "line._PROVIDER_ID_._BOT_CHANNEL_ID_.john",
+          "executionKey": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/push",
         },
@@ -88,7 +83,7 @@ describe('chatJobsMaker()', () => {
             ],
             "to": "john",
           },
-          "executionKey": "line._PROVIDER_ID_._BOT_CHANNEL_ID_.john",
+          "executionKey": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/push",
         },
@@ -96,7 +91,7 @@ describe('chatJobsMaker()', () => {
           "body": Object {
             "do": "something",
           },
-          "executionKey": "line._PROVIDER_ID_._BOT_CHANNEL_ID_.john",
+          "executionKey": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "some/channel/api",
         },
@@ -109,7 +104,7 @@ describe('chatJobsMaker()', () => {
             ],
             "to": "john",
           },
-          "executionKey": "line._PROVIDER_ID_._BOT_CHANNEL_ID_.john",
+          "executionKey": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/push",
         },
@@ -117,7 +112,7 @@ describe('chatJobsMaker()', () => {
           "body": Object {
             "do": "something",
           },
-          "executionKey": "line._PROVIDER_ID_._BOT_CHANNEL_ID_.john",
+          "executionKey": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "some/channel/api",
         },
@@ -133,12 +128,7 @@ describe('chatJobsMaker()', () => {
   });
 
   test('make reply job', () => {
-    const channel = new LineChannel(
-      '_PROVIDER_ID_',
-      '_BOT_CHANNEL_ID_',
-      'utob',
-      'john'
-    );
+    const channel = new LineChat('_CHANNEL_ID_', 'utob', 'john');
 
     const jobs = chatJobsMaker('__REPLY_TOKEN__')(
       channel,
@@ -168,7 +158,7 @@ describe('chatJobsMaker()', () => {
             ],
             "replyToken": "__REPLY_TOKEN__",
           },
-          "executionKey": "line._PROVIDER_ID_._BOT_CHANNEL_ID_.john",
+          "executionKey": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/reply",
         },
@@ -177,12 +167,7 @@ describe('chatJobsMaker()', () => {
   });
 
   it('throw if multiple messaging job made when reply', () => {
-    const channel = new LineChannel(
-      '_PROVIDER_ID_',
-      '_BOT_CHANNEL_ID_',
-      'utob',
-      'john'
-    );
+    const channel = new LineChat('_CHANNEL_ID_', 'utob', 'john');
 
     expect(() =>
       chatJobsMaker('__REPLY_TOKEN__')(channel, segments)

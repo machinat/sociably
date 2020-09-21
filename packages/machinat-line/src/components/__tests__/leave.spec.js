@@ -3,7 +3,7 @@ import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
 
 import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../../constant';
-import LineChannel from '../../channel';
+import LineChat from '../../channel';
 import { Leave } from '../leave';
 
 const renderer = new Renderer('line', () => null);
@@ -33,12 +33,7 @@ test('channel api call getter', async () => {
   const [{ value }] = await renderer.render(<Leave />);
   expect(
     value[CHANNEL_REQUEST_GETTER](
-      new LineChannel(
-        '_PROVIDER_ID_',
-        '_BOT_CHANNEL_ID_',
-        'group',
-        '_GROUP_ID_'
-      )
+      new LineChat('_BOT_CHANNEL_ID_', 'group', '_GROUP_ID_')
     )
   ).toEqual({
     method: 'POST',
@@ -48,7 +43,7 @@ test('channel api call getter', async () => {
 
   expect(
     value[CHANNEL_REQUEST_GETTER](
-      new LineChannel('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_')
+      new LineChat('_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_')
     )
   ).toEqual({
     method: 'POST',
@@ -62,7 +57,7 @@ test('channel api call getter throw if type of channel is user', async () => {
 
   expect(() =>
     value[CHANNEL_REQUEST_GETTER](
-      new LineChannel('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
+      new LineChat('_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
     )
   ).toThrowErrorMatchingInlineSnapshot(
     `"<Leave /> should cannot be used within an user channel"`
@@ -74,7 +69,7 @@ test('bulk api call getter throw', async () => {
 
   expect(() =>
     value[BULK_REQUEST_GETTER](
-      new LineChannel('_PROVIDER_ID_', '_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
+      new LineChat('_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
     )
   ).toThrowErrorMatchingInlineSnapshot(`"cannot <Leave/> using multicast api"`);
 });

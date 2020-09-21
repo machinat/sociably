@@ -70,8 +70,8 @@ export class LineServerAuthorizer
       };
     }
 
-    const { fromBotChannel } = data;
-    if (fromBotChannel && fromBotChannel !== this.channelId) {
+    const { botChannel } = data;
+    if (botChannel && botChannel !== this.channelId) {
       return {
         success: false as const,
         code: 400,
