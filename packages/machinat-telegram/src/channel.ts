@@ -1,44 +1,81 @@
 import { MachinatChannel } from '@machinat/core/types';
 import { TELEGRAM } from './constant';
-import { RawChat, TelegramChatType } from './types';
+import { TelegramChatType, RawChat } from './types';
 import TelegramUser from './user';
 
-class TelegramChat implements MachinatChannel {
-  static fromUser(user: TelegramUser): TelegramChat {
-    return new TelegramChat({
+export class TelegramChat implements MachinatChannel {
+  static fromUser(botId: number, user: TelegramUser): TelegramChat {
+    return new TelegramChat(botId, {
       id: user.id,
       type: 'private',
       username: user.username,
-      first_name: user.firstName,
-      last_name: user.lastName,
     });
   }
 
-  chat: RawChat;
+  private _raw: RawChat;
+  botId: number;
   platform = TELEGRAM;
 
-  constructor(chat: RawChat) {
-    this.chat = chat;
+  constructor(botId: number, chat: RawChat) {
+    this.botId = botId;
+    this._raw = chat;
   }
 
   /** Unique identifier for this chat. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier. */
   get id(): number {
-    return this.chat.id;
+    return this._raw.id;
   }
 
-  /** Type of chat, can be either “private”, “group”, “supergroup” or “channel” */
+  /** Type of chat */
   get type(): TelegramChatType {
-    return this.chat.type;
+    return this._raw.type;
   }
 
   /** Title, for supergroups, channels and group chats */
   get title(): undefined | string {
-    return this.chat.title;
+    return this._raw.title;
+  }
+
+  /** Username, for private chats, supergroups and channels if available */
+  get username(): undefined | string {
+    return this._raw.username;
   }
 
   get uid(): string {
-    return `telegram.${this.id}`;
+    return `telegram.${this.botId}.${this.id}`;
   }
 }
 
-export default TelegramChat;
+export class TelegramChatInstance implements MachinatChannel {
+  botId: number;
+  chatInstance: string;
+
+  platform = TELEGRAM;
+  type = 'chat_instance' as const;
+
+  constructor(botId: number, chatInstance: string) {
+    this.botId = botId;
+    this.chatInstance = chatInstance;
+  }
+
+  get uid(): string {
+    return `telegram.${this.botId}.${this.chatInstance}`;
+  }
+}
+
+export class TelegramChatTarget implements MachinatChannel {
+  botId: number;
+  target: string | number;
+
+  platform = TELEGRAM;
+  type = 'unknown' as const;
+
+  constructor(botId: number, target: number | string) {
+    this.botId = botId;
+    this.target = target;
+  }
+
+  get uid(): string {
+    return `telegram.${this.botId}.${this.target}`;
+  }
+}

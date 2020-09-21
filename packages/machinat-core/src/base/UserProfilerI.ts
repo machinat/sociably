@@ -3,7 +3,7 @@ import { abstractInterface } from '../service';
 
 export interface MachinatUserProfile {
   readonly platform: string;
-  readonly id: string;
+  readonly id: string | number;
   readonly name: string;
   readonly pictureURL: void | string;
 }

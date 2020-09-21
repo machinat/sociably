@@ -61,10 +61,10 @@ export type OutputableSegment<Value> =
   | PauseSegment
   | ThunkSegment;
 
-export type IntermediateSegment<Value> =
-  | OutputableSegment<Value>
+export type IntermediateSegment<UnitValue, PartValue = any> =
+  | OutputableSegment<UnitValue>
   | BreakSegment
-  | PartSegment<Value>;
+  | PartSegment<PartValue>;
 
 export type InnerRenderFn<Value> = (
   node: MachinatNode,

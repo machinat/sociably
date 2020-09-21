@@ -1,14 +1,21 @@
 /* eslint-disable camelcase */
-import {
+import type {
   PlatformMounter,
   EventContext,
   EventMiddleware,
-  DispatchFrame,
   DispatchMiddleware,
+  MachinatNode,
+  NativeComponent,
 } from '@machinat/core/types';
-import { WebhookMetadata } from '@machinat/http/webhook/types';
-import { TelegramEvent } from './event/types';
-import TelegramChat from './channel';
+import {
+  IntermediateSegment,
+  UnitSegment,
+} from '@machinat/core/renderer/types';
+import { DispatchFrame, DispatchResponse } from '@machinat/core/engine/types';
+import type { WebhookMetadata } from '@machinat/http/webhook/types';
+import type { TelegramEvent } from './event/types';
+import type { TelegramChat } from './channel';
+import type { TelegramBot } from './bot';
 
 // TODO: detailed raw types
 export type RawMessage = any;
@@ -44,6 +51,8 @@ export type RawShippingAddress = any;
 export type RawOrderInfo = any;
 
 export type TelegramChatType = 'private' | 'group' | 'supergroup' | 'channel';
+
+export type TelegramParseMode = 'HTML' | 'MarkdownV2' | 'Markdown' | 'None';
 
 export type RawUser = {
   id: number;
@@ -90,16 +99,47 @@ export type TelegramRawEvent = {
   poll_answer?: RawPollAnswer;
 };
 
-export type TelegramPlatformConfigs = {
-  webhookPath?: string;
-  secretPath?: string;
-  botToken: string;
+export type UploadingFileInfo = {
+  filename?: string;
+  filepath?: string;
+  contentType?: string;
+  knownLength?: number;
 };
+
+export type UploadingFile = {
+  fieldName: string;
+  fileData: string | Buffer | NodeJS.ReadableStream;
+  fileInfo?: UploadingFileInfo;
+  fileAssetTag: undefined | string;
+};
+
+export type TelegramSegmentValue = {
+  method: string;
+  parameters: { [k: string]: any };
+  uploadingFiles?: UploadingFile[];
+};
+
+export type MessageProps = {
+  /** Sends the message silently. Users will receive a notification with no sound. */
+  disableNotification?: boolean;
+  /** If the message is a reply, ID of the original message */
+  replyToMessageId?: number;
+  /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
+  replyMarkup?: MachinatNode;
+};
+
+export type TelegramComponent<
+  Props,
+  Segment extends IntermediateSegment<TelegramSegmentValue> = UnitSegment<
+    TelegramSegmentValue
+  >
+> = NativeComponent<Props, Segment>;
 
 export type TelegramJob = {
   method: string;
   parameters: { [k: string]: any };
   executionKey: undefined | string;
+  uploadingFiles: null | UploadingFile[];
 };
 
 export type TelegramEventContext = EventContext<
@@ -119,7 +159,26 @@ export type TelegramDispatchFrame = DispatchFrame<
   TelegramBot
 >;
 
-export type TelegramAPIResult = any;
+export type TelegramAPIResult = {
+  ok: true;
+  description?: string;
+  result: any;
+};
+
+export type FailAPIResult = {
+  ok: false;
+  description?: string;
+  error_code: number;
+  parameters?: {
+    migrate_to_chat_id?: number;
+    retry_after?: number;
+  };
+};
+
+export type TelegramDispatchResponse = DispatchResponse<
+  TelegramJob,
+  TelegramAPIResult
+>;
 
 export type TelegramDispatchMiddleware = DispatchMiddleware<
   TelegramJob,
@@ -134,3 +193,14 @@ export type TelegramPlatformMounter = PlatformMounter<
   TelegramDispatchFrame,
   TelegramAPIResult
 >;
+
+export type TelegramPlatformConfigs = {
+  botToken: string;
+  webhookPath?: string;
+  secretPath?: string;
+  authRedirectURL?: string;
+  connectionCapicity?: number;
+  noServer?: boolean;
+  eventMiddlewares?: TelegramEventMiddleware[];
+  dispatchMiddlewares?: TelegramDispatchMiddleware[];
+};

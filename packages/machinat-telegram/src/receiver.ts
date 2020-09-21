@@ -1,12 +1,12 @@
 import { parse as parseURL } from 'url';
-import { basename } from 'path';
+import { join as joinPath } from 'path';
 
 import WebhookReceiver from '@machinat/http/webhook';
 import type { WebhookHandler } from '@machinat/http/webhook/types';
 import { provider } from '@machinat/core/service';
 import type { PopEventWrapper } from '@machinat/core/types';
 
-import createEvent from './event/factory';
+import eventFactory from './event/factory';
 import { BotP } from './bot';
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { TELEGRAM } from './constant';
@@ -18,18 +18,21 @@ import type {
 } from './types';
 
 type TelegramReceiverOptions = {
+  botId: number;
+  webhookPath?: string;
   secretPath?: string;
 };
 
 /** @internal */
 const handleWebhook = (
-  { secretPath }: TelegramReceiverOptions,
+  { botId, secretPath, webhookPath = '/' }: TelegramReceiverOptions,
   bot: BotP,
   popEventWrapper: PopEventWrapper<TelegramEventContext, null>
 ): WebhookHandler => {
   const popEvent = popEventWrapper(async () => null);
+  const createEvent = eventFactory(botId);
 
-  return async (metadata) => {
+  return async (metadata, routingInfo) => {
     const { method, url, body: rawBody } = metadata.request;
 
     // method not allowed
@@ -43,9 +46,12 @@ const handleWebhook = (
 
     // validate secret path
     if (secretPath) {
-      const { pathname } = parseURL(url);
+      if (routingInfo && routingInfo.trailingPath !== secretPath) {
+        return { code: 401 };
+      }
 
-      if (!pathname || basename(pathname) !== secretPath) {
+      const { pathname } = parseURL(url);
+      if (pathname !== joinPath(webhookPath, secretPath)) {
         return { code: 401 };
       }
     }
@@ -70,11 +76,11 @@ const handleWebhook = (
  */
 export class TelegramReceiver extends WebhookReceiver {
   constructor(
-    { secretPath }: TelegramReceiverOptions,
+    options: TelegramReceiverOptions,
     bot: BotP,
     popEventWrapper: PopEventWrapper<TelegramEventContext, null>
   ) {
-    super(handleWebhook({ secretPath }, bot, popEventWrapper));
+    super(handleWebhook(options, bot, popEventWrapper));
   }
 }
 
@@ -82,10 +88,17 @@ export const ReceiverP = provider<TelegramReceiver>({
   lifetime: 'singleton',
   deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I],
   factory: (
-    configs: TelegramPlatformConfigs,
+    { botToken, secretPath, webhookPath }: TelegramPlatformConfigs,
     bot: BotP,
     { popEventWrapper }: TelegramPlatformMounter
-  ) => new TelegramReceiver(configs, bot, popEventWrapper),
+  ) => {
+    const botId = Number(botToken.split(':', 1)[0]);
+    return new TelegramReceiver(
+      { botId, secretPath, webhookPath },
+      bot,
+      popEventWrapper
+    );
+  },
 })(TelegramReceiver);
 
 export type ReceiverP = TelegramReceiver;

@@ -42,7 +42,7 @@ import {
   PollAnswer,
 } from './mixins';
 import { TelegramRawEvent } from '../types';
-import TelegramChat from '../channel';
+import { TelegramChat } from '../channel';
 import TelegramUser from '../user';
 import { TelegramEvent } from './types';
 
@@ -517,10 +517,12 @@ const UnknownProto = mixin(EventBase, {
   type: 'unknown' as const,
 });
 
-const createEvent = (payload: TelegramRawEvent): TelegramEvent => {
+const eventFactory = (botId: number) => (
+  payload: TelegramRawEvent
+): TelegramEvent => {
   if (payload.message) {
     const { message } = payload;
-    const channel = new TelegramChat(message.chat);
+    const channel = new TelegramChat(botId, message.chat);
 
     if (message.successful_payment) {
       const user = new TelegramUser(message.from);
@@ -582,7 +584,7 @@ const createEvent = (payload: TelegramRawEvent): TelegramEvent => {
 
   if (payload.edited_message) {
     const { edited_message: message } = payload;
-    const channel = new TelegramChat(message.chat);
+    const channel = new TelegramChat(botId, message.chat);
     const user = message.from ? new TelegramUser(message.from) : null;
 
     return message.text
@@ -608,7 +610,7 @@ const createEvent = (payload: TelegramRawEvent): TelegramEvent => {
 
   if (payload.channel_post) {
     const { channel_post: message } = payload;
-    const channel = new TelegramChat(message.chat);
+    const channel = new TelegramChat(botId, message.chat);
 
     return message.text
       ? makeEvent(payload, channel, null, TextChannelPostProto)
@@ -643,7 +645,7 @@ const createEvent = (payload: TelegramRawEvent): TelegramEvent => {
 
   if (payload.edited_channel_post) {
     const { edited_channel_post: message } = payload;
-    const channel = new TelegramChat(message.chat);
+    const channel = new TelegramChat(botId, message.chat);
 
     return message.text
       ? makeEvent(payload, channel, null, TextEditedChannelPostProto)
@@ -667,7 +669,7 @@ const createEvent = (payload: TelegramRawEvent): TelegramEvent => {
   if (payload.shipping_query) {
     const { from: fromUser } = payload.shipping_query;
     const user = new TelegramUser(fromUser);
-    const channel = TelegramChat.fromUser(user);
+    const channel = TelegramChat.fromUser(botId, user);
 
     return makeEvent(payload, channel, user, ShippingQueryPostbackProto);
   }
@@ -675,7 +677,7 @@ const createEvent = (payload: TelegramRawEvent): TelegramEvent => {
   if (payload.pre_checkout_query) {
     const { from: fromUser } = payload.pre_checkout_query;
     const user = new TelegramUser(fromUser);
-    const channel = TelegramChat.fromUser(user);
+    const channel = TelegramChat.fromUser(botId, user);
 
     return makeEvent(payload, channel, user, PreCheckoutQueryPostbackProto);
   }
@@ -695,7 +697,7 @@ const createEvent = (payload: TelegramRawEvent): TelegramEvent => {
   if (payload.callback_query) {
     const { from: fromUser, message } = payload.callback_query;
     const user = new TelegramUser(fromUser);
-    const channel = message ? new TelegramChat(message.chat) : null;
+    const channel = message ? new TelegramChat(botId, message.chat) : null;
 
     return makeEvent(payload, channel, user, CallbackQueryPostbackProto);
   }
@@ -713,4 +715,4 @@ const createEvent = (payload: TelegramRawEvent): TelegramEvent => {
   return makeEvent(payload, null, null, UnknownProto);
 };
 
-export default createEvent;
+export default eventFactory;

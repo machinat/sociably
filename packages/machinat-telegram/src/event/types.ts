@@ -36,7 +36,7 @@ import type {
   PollAnswer,
 } from './mixins';
 import type { TelegramRawEvent } from '../types';
-import TelegramChat from '../channel';
+import { TelegramChat } from '../channel';
 import TelegramUser from '../user';
 
 interface EventObject<
