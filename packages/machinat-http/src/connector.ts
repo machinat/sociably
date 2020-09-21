@@ -13,17 +13,17 @@ import {
 } from './interface';
 import type {
   ServerListenOptions,
-  RequestHandler,
-  UpgradeHandler,
   HTTPModuleConfigs,
   HTTPRequestRouting,
   HTTPUpgradeRouting,
 } from './types';
 
 /** @internal */
-const isSubPath = (parent: string, child: string) => {
+const getTrailingPath = (parent: string, child: string): string | undefined => {
   const relativePath = getRelativePath(parent, child);
-  return relativePath === '' || relativePath.slice(0, 2) !== '..';
+  return relativePath === '' || relativePath.slice(0, 2) !== '..'
+    ? relativePath
+    : undefined;
 };
 
 /** @internal */
@@ -32,7 +32,10 @@ const verifyRoutesConfliction = (
   routing: { name?: string; path: string }
 ) => {
   for (const { name, path } of existedRoutings) {
-    if (isSubPath(path, routing.path) || isSubPath(routing.path, path)) {
+    if (
+      getTrailingPath(path, routing.path) ||
+      getTrailingPath(routing.path, path)
+    ) {
       throw new Error(
         `${routing.name || 'unknown'} routing "${
           routing.path
@@ -109,7 +112,7 @@ export class HTTPConnector {
     await thenifiedly.callMethod('listen', server, options || {});
   }
 
-  makeRequestCallback(): RequestHandler {
+  makeRequestCallback(): (req: IncomingMessage, res: ServerResponse) => void {
     const requestRoutings = [...this._requestRoutings];
     if (requestRoutings.length === 0) {
       return (_, res) => {
@@ -120,7 +123,14 @@ export class HTTPConnector {
     if (requestRoutings.length === 1) {
       const [{ path, handler }] = requestRoutings;
       if (path === '/') {
-        return handler;
+        return (req: IncomingMessage, res: ServerResponse) => {
+          const pathname = parseURL(req.url as string).pathname || '/';
+          handler(req, res, {
+            originalPath: pathname,
+            matchedPath: '/',
+            trailingPath: pathname.replace(/^\//, ''),
+          });
+        };
       }
     }
 
@@ -132,8 +142,13 @@ export class HTTPConnector {
       }
 
       for (const { path: routePath, handler } of requestRoutings) {
-        if (isSubPath(routePath, pathname)) {
-          handler(req, res);
+        const trailingPath = getTrailingPath(routePath, pathname);
+        if (trailingPath !== undefined) {
+          handler(req, res, {
+            originalPath: pathname,
+            matchedPath: routePath,
+            trailingPath,
+          });
           return;
         }
       }
@@ -141,7 +156,11 @@ export class HTTPConnector {
     };
   }
 
-  makeUpgradeCallback(): UpgradeHandler {
+  makeUpgradeCallback(): (
+    req: IncomingMessage,
+    socket: Socket,
+    head: Buffer
+  ) => void {
     const upgradeRoutings = [...this._upgradeRoutings];
     if (upgradeRoutings.length === 0) {
       return (_, socket) => {
@@ -152,7 +171,14 @@ export class HTTPConnector {
     if (upgradeRoutings.length === 1) {
       const [{ path, handler }] = upgradeRoutings;
       if (path === '/') {
-        return handler;
+        return (req: IncomingMessage, socket: Socket, head: Buffer) => {
+          const pathname = parseURL(req.url as string).pathname || '/';
+          handler(req, socket, head, {
+            originalPath: pathname,
+            matchedPath: '/',
+            trailingPath: pathname.replace(/^\//, ''),
+          });
+        };
       }
     }
 
@@ -164,8 +190,13 @@ export class HTTPConnector {
       }
 
       for (const { path: routePath, handler } of upgradeRoutings) {
-        if (isSubPath(routePath, pathname)) {
-          handler(req, socket, head);
+        const trailingPath = getTrailingPath(routePath, pathname);
+        if (trailingPath !== undefined) {
+          handler(req, socket, head, {
+            originalPath: pathname,
+            matchedPath: routePath,
+            trailingPath,
+          });
           return;
         }
       }

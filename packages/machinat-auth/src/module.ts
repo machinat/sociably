@@ -14,8 +14,8 @@ const authRoutingFactory = factory<HTTPRequestRouting>({
 })((controller: ControllerP, configs: AuthModuleConfigs) => ({
   name: 'auth',
   path: configs.entryPath || '/',
-  handler: (req, res) => {
-    controller.delegateAuthRequest(req, res);
+  handler: (req, res, routingInfo) => {
+    controller.delegateAuthRequest(req, res, routingInfo);
   },
 }));
 

@@ -207,15 +207,23 @@ describe('#delegateAuthRequest(req, res)', () => {
       await controller.delegateAuthRequest(req, res);
 
       expect(fooAuthorizer.delegateAuthRequest.mock).toHaveBeenCalledTimes(1);
-      expect(fooAuthorizer.delegateAuthRequest.mock) //
-        .toHaveBeenCalledWith(req, res, expect.any(CookieAccessor));
+      expect(fooAuthorizer.delegateAuthRequest.mock).toHaveBeenCalledWith(
+        req,
+        res,
+        expect.any(CookieAccessor),
+        { originalPath: '/foo', matchedPath: '/foo', trailingPath: '' }
+      );
 
-      req = prepareReq('GET', 'https://auth.machinat.com/bar/subpath', {}, '');
+      req = prepareReq('GET', 'https://auth.machinat.com/bar/baz', {}, '');
       await controller.delegateAuthRequest(req, res);
 
       expect(barAuhtorizer.delegateAuthRequest.mock).toHaveBeenCalledTimes(1);
-      expect(barAuhtorizer.delegateAuthRequest.mock) //
-        .toHaveBeenCalledWith(req, res, expect.any(CookieAccessor));
+      expect(barAuhtorizer.delegateAuthRequest.mock).toHaveBeenCalledWith(
+        req,
+        res,
+        expect.any(CookieAccessor),
+        { originalPath: '/bar/baz', matchedPath: '/bar', trailingPath: 'baz' }
+      );
 
       expect(res.end.mock).not.toHaveBeenCalled();
     });

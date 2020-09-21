@@ -1,8 +1,8 @@
 import { parse as parseURL } from 'url';
-import { relative as getRelativePath } from 'path';
+import { relative as getRelativePath, join as joinPath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { provider } from '@machinat/core/service';
-import { HTTPRequestInfo } from '@machinat/http/types';
+import { HTTPRequestInfo, RoutingInfo } from '@machinat/http/types';
 import invariant from 'invariant';
 import {
   verify as verifyJWT,
@@ -123,11 +123,14 @@ export class AuthController {
 
   async delegateAuthRequest(
     req: IncomingMessage,
-    res: ServerResponse
+    res: ServerResponse,
+    routingInfo?: RoutingInfo
   ): Promise<void> {
-    const { pathname } = parseURL(req.url as string, true);
+    const { pathname } = parseURL(req.url as string);
+    const subpath =
+      routingInfo?.trailingPath ||
+      getRelativePath(this.entryPath, pathname || '/');
 
-    const subpath = getRelativePath(this.entryPath, pathname || '/');
     if (subpath === '' || subpath.slice(0, 2) === '..') {
       respondAPIError(res, 403, 'path forbidden');
       return;
@@ -164,7 +167,15 @@ export class AuthController {
       await authorizer.delegateAuthRequest(
         req,
         res,
-        new CookieAccessor(req, res, platform, this._cookieController)
+        new CookieAccessor(req, res, platform, this._cookieController),
+        {
+          originalPath: pathname || '/',
+          matchedPath: joinPath(
+            routingInfo ? routingInfo.matchedPath : this.entryPath,
+            platform
+          ),
+          trailingPath: getRelativePath(platform, subpath),
+        }
       );
     } catch (err) {
       if (!res.writableEnded) {

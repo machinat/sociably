@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import readRawBody from 'raw-body';
-import type { RequestHandler } from '../types';
+import type { RequestHandler, RoutingInfo } from '../types';
 import type { WebhookHandler } from './types';
 
 /** @ignore */
@@ -19,7 +19,8 @@ class WebhookReceiver {
 
   async handleRequest(
     req: IncomingMessage,
-    res: ServerResponse
+    res: ServerResponse,
+    routingInfo?: RoutingInfo
   ): Promise<void> {
     try {
       let body: undefined | string;
@@ -43,7 +44,8 @@ class WebhookReceiver {
       };
 
       const { code, headers, body: resBody } = await this._handleWebhook(
-        metadata
+        metadata,
+        routingInfo
       );
 
       res.writeHead(code, headers);

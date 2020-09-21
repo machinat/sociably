@@ -53,10 +53,20 @@ describe('handling requests', () => {
     server.emit('request', req, res);
 
     expect(handler.mock).toHaveBeenCalledTimes(1);
-    expect(handler.mock).toHaveBeenCalledWith(req, res);
+    expect(handler.mock).toHaveBeenCalledWith(req, res, {
+      originalPath: '/',
+      matchedPath: '/',
+      trailingPath: '',
+    });
 
-    server.emit('request', moxy({ url: '/foo' }), res);
+    const fooReq = moxy({ url: '/foo' });
+    server.emit('request', fooReq, res);
     expect(handler.mock).toHaveBeenCalledTimes(2);
+    expect(handler.mock).toHaveBeenCalledWith(fooReq, res, {
+      originalPath: '/foo',
+      matchedPath: '/',
+      trailingPath: 'foo',
+    });
 
     expect(res.end.mock).not.toHaveBeenCalled();
   });
@@ -79,16 +89,34 @@ describe('handling requests', () => {
 
     let res = createRes();
 
-    server.emit('request', moxy({ url: '/foo' }), res);
+    const fooReq = moxy({ url: '/foo' });
+    server.emit('request', fooReq, res);
     expect(fooHandler.mock).toHaveBeenCalledTimes(1);
+    expect(fooHandler.mock).toHaveBeenCalledWith(fooReq, res, {
+      originalPath: '/foo',
+      matchedPath: '/foo',
+      trailingPath: '',
+    });
     expect(barHandler.mock).not.toHaveBeenCalled();
 
-    server.emit('request', moxy({ url: '/bar' }), res);
+    const barReq = moxy({ url: '/bar' });
+    server.emit('request', barReq, res);
     expect(fooHandler.mock).toHaveBeenCalledTimes(1);
     expect(barHandler.mock).toHaveBeenCalledTimes(1);
+    expect(barHandler.mock).toHaveBeenCalledWith(barReq, res, {
+      originalPath: '/bar',
+      matchedPath: '/bar',
+      trailingPath: '',
+    });
 
-    server.emit('request', moxy({ url: '/foo/bar' }), res);
+    const fooBarReq = moxy({ url: '/foo/bar' });
+    server.emit('request', fooBarReq, res);
     expect(fooHandler.mock).toHaveBeenCalledTimes(2);
+    expect(fooHandler.mock).toHaveBeenCalledWith(fooBarReq, res, {
+      originalPath: '/foo/bar',
+      matchedPath: '/foo',
+      trailingPath: 'bar',
+    });
     expect(barHandler.mock).toHaveBeenCalledTimes(1);
     expect(res.end.mock).not.toHaveBeenCalled();
 
@@ -117,12 +145,24 @@ describe('handling requests', () => {
     expect(server.listen.mock).toHaveBeenCalledTimes(1);
     expect(server.on.mock).toHaveBeenCalledTimes(1);
 
+    const fooBarReq = moxy({ url: '/foo/bar' });
     const res = createRes();
-    server.emit('request', moxy({ url: '/foo/bar' }), res);
+    server.emit('request', fooBarReq, res);
     expect(handler.mock).toHaveBeenCalledTimes(1);
+    expect(handler.mock).toHaveBeenCalledWith(fooBarReq, res, {
+      originalPath: '/foo/bar',
+      matchedPath: '/foo/bar',
+      trailingPath: '',
+    });
 
-    server.emit('request', moxy({ url: '/foo/bar/baz' }), res);
+    const fooBarBazReq = moxy({ url: '/foo/bar/baz' });
+    server.emit('request', fooBarBazReq, res);
     expect(handler.mock).toHaveBeenCalledTimes(2);
+    expect(handler.mock).toHaveBeenCalledWith(fooBarBazReq, res, {
+      originalPath: '/foo/bar/baz',
+      matchedPath: '/foo/bar',
+      trailingPath: 'baz',
+    });
 
     server.emit('request', moxy({ url: '/foo' }), res);
     expect(res.end.mock).toHaveBeenCalledTimes(1);
@@ -206,10 +246,20 @@ describe('handling upgrade', () => {
     server.emit('upgrade', req, socket, head);
 
     expect(handler.mock).toHaveBeenCalledTimes(1);
-    expect(handler.mock).toHaveBeenCalledWith(req, socket, head);
+    expect(handler.mock).toHaveBeenCalledWith(req, socket, head, {
+      originalPath: '/',
+      matchedPath: '/',
+      trailingPath: '',
+    });
 
-    server.emit('upgrade', moxy({ url: '/foo' }), socket, head);
+    const fooReq = moxy({ url: '/foo' });
+    server.emit('upgrade', fooReq, socket, head);
     expect(handler.mock).toHaveBeenCalledTimes(2);
+    expect(handler.mock).toHaveBeenCalledWith(fooReq, socket, head, {
+      originalPath: '/foo',
+      matchedPath: '/',
+      trailingPath: 'foo',
+    });
 
     expect(socket.write.mock).not.toHaveBeenCalled();
   });
@@ -228,16 +278,34 @@ describe('handling upgrade', () => {
     connector.connect(server, { port: 8888 });
     expect(server.listen.mock).toHaveBeenCalledTimes(1);
 
-    server.emit('upgrade', moxy({ url: '/foo' }), socket, head);
+    const fooReq = moxy({ url: '/foo' });
+    server.emit('upgrade', fooReq, socket, head);
     expect(fooHandler.mock).toHaveBeenCalledTimes(1);
+    expect(fooHandler.mock).toHaveBeenCalledWith(fooReq, socket, head, {
+      originalPath: '/foo',
+      matchedPath: '/foo',
+      trailingPath: '',
+    });
     expect(barHandler.mock).not.toHaveBeenCalled();
 
-    server.emit('upgrade', moxy({ url: '/bar' }), socket, head);
+    const barReq = moxy({ url: '/bar' });
+    server.emit('upgrade', barReq, socket, head);
     expect(fooHandler.mock).toHaveBeenCalledTimes(1);
     expect(barHandler.mock).toHaveBeenCalledTimes(1);
+    expect(barHandler.mock).toHaveBeenCalledWith(barReq, socket, head, {
+      originalPath: '/bar',
+      matchedPath: '/bar',
+      trailingPath: '',
+    });
 
-    server.emit('upgrade', moxy({ url: '/foo/bar' }), socket, head);
+    const fooBarReq = moxy({ url: '/foo/bar' });
+    server.emit('upgrade', fooBarReq, socket, head);
     expect(fooHandler.mock).toHaveBeenCalledTimes(2);
+    expect(fooHandler.mock).toHaveBeenCalledWith(fooBarReq, socket, head, {
+      originalPath: '/foo/bar',
+      matchedPath: '/foo',
+      trailingPath: 'bar',
+    });
     expect(barHandler.mock).toHaveBeenCalledTimes(1);
     expect(socket.write.mock).not.toHaveBeenCalled();
 
@@ -271,11 +339,23 @@ describe('handling upgrade', () => {
     connector.connect(server, { port: 8888 });
     expect(server.listen.mock).toHaveBeenCalledTimes(1);
 
-    server.emit('upgrade', moxy({ url: '/foo/bar' }), socket, head);
+    const fooBarReq = moxy({ url: '/foo/bar' });
+    server.emit('upgrade', fooBarReq, socket, head);
     expect(handler.mock).toHaveBeenCalledTimes(1);
+    expect(handler.mock).toHaveBeenCalledWith(fooBarReq, socket, head, {
+      originalPath: '/foo/bar',
+      matchedPath: '/foo/bar',
+      trailingPath: '',
+    });
 
-    server.emit('upgrade', moxy({ url: '/foo/bar/baz' }), socket, head);
+    const fooBarBazReq = moxy({ url: '/foo/bar/baz' });
+    server.emit('upgrade', fooBarBazReq, socket, head);
     expect(handler.mock).toHaveBeenCalledTimes(2);
+    expect(handler.mock).toHaveBeenCalledWith(fooBarBazReq, socket, head, {
+      originalPath: '/foo/bar/baz',
+      matchedPath: '/foo/bar',
+      trailingPath: 'baz',
+    });
 
     server.emit('upgrade', moxy({ url: '/foo' }), socket, head);
     expect(socket.write.mock).toHaveBeenCalledTimes(1);

@@ -1,4 +1,4 @@
-import type { HTTPRequestInfo } from '../types';
+import type { HTTPRequestInfo, RoutingInfo } from '../types';
 
 export interface WebhookMetadata {
   source: 'webhook';
@@ -6,7 +6,8 @@ export interface WebhookMetadata {
 }
 
 export type WebhookHandler = (
-  metadata: WebhookMetadata
+  metadata: WebhookMetadata,
+  routingInfo?: RoutingInfo
 ) => Promise<{
   code: number;
   headers?: {

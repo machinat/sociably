@@ -5,9 +5,16 @@ import type {
 } from 'http';
 import type { Socket } from 'net';
 
+export type RoutingInfo = {
+  originalPath: string;
+  matchedPath: string;
+  trailingPath: string;
+};
+
 export type RequestHandler = (
   req: IncomingMessage,
-  res: ServerResponse
+  res: ServerResponse,
+  routingInfo: RoutingInfo
 ) => void;
 
 export type HTTPRequestRouting = {
@@ -19,7 +26,8 @@ export type HTTPRequestRouting = {
 export type UpgradeHandler = (
   req: IncomingMessage,
   socket: Socket,
-  head: Buffer
+  head: Buffer,
+  routingInfo: RoutingInfo
 ) => void;
 
 export type HTTPUpgradeRouting = {

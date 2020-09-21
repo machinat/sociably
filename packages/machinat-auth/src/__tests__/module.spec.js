@@ -92,12 +92,17 @@ describe('initModule()', () => {
 
     const req = moxy();
     const res = moxy();
-    await handler(req, res);
+    await handler(req, res, {
+      originalPath: '/auth/foo',
+      matchedPath: '/auth',
+      trailingPath: 'foo',
+    });
 
     expect(fakeController.delegateAuthRequest.mock).toHaveBeenCalledTimes(1);
     expect(fakeController.delegateAuthRequest.mock).toHaveBeenCalledWith(
       req,
-      res
+      res,
+      { originalPath: '/auth/foo', matchedPath: '/auth', trailingPath: 'foo' }
     );
   });
 });

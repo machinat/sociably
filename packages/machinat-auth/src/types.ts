@@ -1,10 +1,13 @@
-import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import type {
   IncomingMessage,
   ServerResponse,
   IncomingHttpHeaders,
 } from 'http';
+import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
+import type { RoutingInfo } from '@machinat/http/types';
 import type { CookieAccessor } from './cookie';
+
+export type { CookieAccessor } from './cookie';
 
 type TokenBase = {
   iat: number;
@@ -73,7 +76,8 @@ export interface ServerAuthorizer<AuthData, Credential> {
   delegateAuthRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    cookieAccessor: CookieAccessor
+    cookieAccessor: CookieAccessor,
+    routingInfo: RoutingInfo
   ): Promise<void>;
 
   /**
@@ -99,7 +103,7 @@ export interface ServerAuthorizer<AuthData, Credential> {
   refineAuth(data: AuthData): Promise<null | AuthorizerRefinement>;
 }
 
-type AuthorizerCredentialResult<Credential> =
+export type AuthorizerCredentialResult<Credential> =
   | { success: true; credential: Credential }
   | ErrorResult;
 

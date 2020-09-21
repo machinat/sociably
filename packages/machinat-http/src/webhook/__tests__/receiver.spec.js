@@ -137,6 +137,39 @@ it("respond JSON of the body if it's an object", async () => {
   );
 });
 
+it('pass routing info down to the handler if received', async () => {
+  const req = createReq({ method: 'GET', url: '/foo/bar/baz' });
+  const res = createRes();
+
+  const receiver = new WebhookReceiver(webhookHandler);
+  await receiver.handleRequest(req, res, {
+    originalPath: '/foo/bar/baz',
+    matchedPath: '/foo',
+    trailingPath: 'bar/baz',
+  });
+
+  expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+  expect(webhookHandler.mock).toHaveBeenCalledWith(
+    {
+      request: {
+        body: undefined,
+        headers: {},
+        method: 'GET',
+        url: '/foo/bar/baz',
+      },
+      source: 'webhook',
+    },
+    {
+      originalPath: '/foo/bar/baz',
+      matchedPath: '/foo',
+      trailingPath: 'bar/baz',
+    }
+  );
+
+  expect(res.statusCode).toBe(200);
+  expect(res.end.mock).toHaveBeenCalledTimes(1);
+});
+
 it('ends res with 500 if error thrown in webhookHandler', async () => {
   const req = createReq({ method: 'GET' });
   const res = createRes();
