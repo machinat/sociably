@@ -16,10 +16,13 @@ Array [
       You know what?
       <br />
       <i>
-        I'm your 
-        <del>
+        <u>
+          I'm your
+        </u>
+         
+        <s>
           FATHER
-        </del>
+        </s>
          
         <code>
           creator
@@ -53,10 +56,13 @@ Array [
       You know what?
       <br />
       <i>
-        I'm your 
-        <del>
+        <u>
+          I'm your
+        </u>
+         
+        <s>
           FATHER
-        </del>
+        </s>
          
         <code>
           creator
@@ -90,10 +96,13 @@ Array [
       You know what?
       <br />
       <i>
-        I'm your 
-        <del>
+        <u>
+          I'm your
+        </u>
+         
+        <s>
           FATHER
-        </del>
+        </s>
          
         <code>
           creator
@@ -127,10 +136,13 @@ Array [
       You know what?
       <br />
       <i>
-        I'm your 
-        <del>
+        <u>
+          I'm your
+        </u>
+         
+        <s>
           FATHER
-        </del>
+        </s>
          
         <code>
           creator
@@ -172,18 +184,26 @@ Array [
     "value": "italic",
   },
   Object {
-    "node": <del>
+    "node": <s>
       nooooo
-    </del>,
+    </s>,
     "path": "$:4",
     "type": "text",
     "value": "nooooo",
   },
   Object {
+    "node": <u>
+      underlined
+    </u>,
+    "path": "$:6",
+    "type": "text",
+    "value": "underlined",
+  },
+  Object {
     "node": <code>
       foo.bar()
     </code>,
-    "path": "$:6",
+    "path": "$:8",
     "type": "text",
     "value": "foo.bar()",
   },
@@ -191,7 +211,7 @@ Array [
     "node": <pre>
       foo.bar('hello world')
     </pre>,
-    "path": "$:8",
+    "path": "$:10",
     "type": "text",
     "value": "foo.bar('hello world')",
   },

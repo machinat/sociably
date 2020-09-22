@@ -57,21 +57,17 @@ const transormText = (transformer) => async (node, path, render) => {
   return [textSegment(node, path, transformer(childrenSegments[0].value))];
 };
 
-const B = '*';
-const b = transormText((v) => B + v + B);
+const b = transormText((v) => `*${v}*`);
 
-const I = '_';
-const i = transormText((v) => I + v + I);
+const i = transormText((v) => `_${v}_`);
 
-const DEL = '~';
-const del = transormText((v) => DEL + v + DEL);
+const s = transormText((v) => `~${v}~`);
 
-const CODE = '`';
-const code = transormText((v) => CODE + v + CODE);
+const u = transormText((v) => v);
 
-const PRE_BEGIN = '```\n';
-const PRE_END = '\n```';
-const pre = transormText((v) => PRE_BEGIN + v + PRE_END);
+const code = transormText((v) => `\`${v}\``);
+
+const pre = transormText((v) => `\`\`\`\n${v}\n\`\`\``);
 
 const generalMediaFactory = (type) => (node, path) => [
   unitSegment(node, path, {
@@ -95,7 +91,8 @@ const generalComponents = {
   p,
   b,
   i,
-  del,
+  s,
+  u,
   code,
   pre,
   br,

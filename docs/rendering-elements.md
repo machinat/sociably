@@ -55,29 +55,33 @@ Element with string type (lower cased beginning JSX tag) in Machinat is _general
 
 Textual element types:
 
-- `b` - make children bold if supported.
+- `b` - render children text bold if supported.
   - `children` - textual node.
 
 
-- `i` - make children italic if supported.
+- `i` - render children text italic if supported.
   - `children` - textual nodes.
 
 
-- `del` - mark the children as deleted if supported.
+- `s` - render the children text with strikethrough if supported.
   - `children` - textual nodes.
 
 
-- `code` - make children monospaced if supported.
+- `s` - render the children text with underline if supported.
   - `children` - textual nodes.
 
 
-- `pre` - mark children as preformatted if supported.
+- `code` - render children text as monospaced if supported.
+  - `children` - textual nodes.
+
+
+- `pre` - render children text as preformatted if supported.
   - `children` - textual nodes.
 
 
 Non-textual element types:
 
-- `br` - add a break, in IM platforms it separate content into different text bubbles. It worth noting `<br/>` is not textual so something like `<i><br/></i>` would throw when render.
+- `br` - add a break, in most IM platforms it separate content into different text bubbles. It worth noting `<br/>` is not textual so something like `<i><br/></i>` would throw when render.
 
 - `p` - wrap textual content paragraph as text messages. It accepts `<br/>` in the children for separation, in IM platforms `<p>foo<br/>bar</p>` renders into 2 text bubbles.
   - `children` - textual nodes but includes `<br/>`.

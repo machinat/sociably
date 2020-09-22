@@ -13,7 +13,9 @@ test('elements match snapshot', async () => {
       <br />
       <i>italic</i>
       <br />
-      <del>nooooo</del>
+      <s>nooooo</s>
+      <br />
+      <u>underlined</u>
       <br />
       <code>foo.bar()</code>
       <br />
@@ -31,6 +33,7 @@ test('elements match snapshot', async () => {
       "*important*",
       "_italic_",
       "~nooooo~",
+      "underlined",
       "\`foo.bar()\`",
       "\`\`\`
     foo.bar('hello world')
@@ -50,7 +53,7 @@ test('nested elements match snapshot', async () => {
       You know what?
       <br />
       <i>
-        I'm your <del>FATHER</del> <code>droid</code>.
+        <u>I'm your</u> <s>FATHER</s> <code>droid</code>.
       </i>
       <br />
       <br />
@@ -132,7 +135,8 @@ it('texual element throw if <br/> in children', async () => {
   for (const element of [
     <b>{children}</b>,
     <i>{children}</i>,
-    <del>{children}</del>,
+    <s>{children}</s>,
+    <u>{children}</u>,
     <code>{children}</code>,
     <pre>{children}</pre>,
   ]) {
@@ -161,7 +165,8 @@ test('throw if non-texual value received', async () => {
   for (const node of [
     <b>{children}</b>,
     <i>{children}</i>,
-    <del>{children}</del>,
+    <s>{children}</s>,
+    <u>{children}</u>,
     <code>{children}</code>,
     <pre>{children}</pre>,
   ]) {
@@ -173,7 +178,8 @@ test('throw if non-texual value received', async () => {
 });
 
 test('render null if content is empty', async () => {
-  for (const element of [<b />, <i />, <del />, <p />, <code />, <pre />]) {
+  const elements = [<b />, <i />, <s />, <u />, <p />, <code />, <pre />];
+  for (const element of elements) {
     // eslint-disable-next-line no-await-in-loop
     await expect(renderer.render(element)).resolves.toEqual(null);
   }

@@ -95,7 +95,7 @@ describe('<p/>', () => {
         You know what?
         <br />
         <i>
-          I'm your <del>FATHER</del> <code>creator</code>.
+          <u>I'm your</u> <s>FATHER</s> <code>creator</code>.
         </i>
         <br />
         <pre>May the force be with you!</pre> Bye!
@@ -135,7 +135,9 @@ describe('text components', () => {
       <br />,
       <i>italic</i>,
       <br />,
-      <del>nooooo</del>,
+      <s>nooooo</s>,
+      <br />,
+      <u>underlined</u>,
       <br />,
       <code>foo.bar()</code>,
       <br />,
@@ -151,6 +153,7 @@ describe('text components', () => {
         "important",
         "italic",
         "nooooo",
+        "underlined",
         "foo.bar()",
         "foo.bar('hello world')",
       ]
@@ -169,7 +172,8 @@ describe('text components', () => {
     for (const node of [
       <b>{children}</b>,
       <i>{children}</i>,
-      <del>{children}</del>,
+      <s>{children}</s>,
+      <u>{children}</u>,
       <code>{children}</code>,
       <pre>{children}</pre>,
     ]) {
@@ -191,7 +195,8 @@ describe('text components', () => {
     for (const node of [
       <b>{children}</b>,
       <i>{children}</i>,
-      <del>{children}</del>,
+      <s>{children}</s>,
+      <u>{children}</u>,
       <code>{children}</code>,
       <pre>{children}</pre>,
     ]) {
@@ -202,7 +207,7 @@ describe('text components', () => {
   });
 
   test('should return null if content is empty', async () => {
-    const elements = [<b />, <i />, <del />, <p />, <code />, <pre />];
+    const elements = [<b />, <i />, <s />, <u />, <p />, <code />, <pre />];
 
     for (const element of elements) {
       await expect(renderer.render(element)).resolves.toEqual(null);

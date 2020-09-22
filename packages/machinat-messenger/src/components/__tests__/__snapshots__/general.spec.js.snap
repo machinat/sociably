@@ -87,18 +87,26 @@ Array [
     "value": "_italic_",
   },
   Object {
-    "node": <del>
+    "node": <s>
       nooooo
-    </del>,
+    </s>,
     "path": "$::6",
     "type": "text",
     "value": "~nooooo~",
   },
   Object {
+    "node": <u>
+      underlined
+    </u>,
+    "path": "$::8",
+    "type": "text",
+    "value": "underlined",
+  },
+  Object {
     "node": <code>
       foo.bar()
     </code>,
-    "path": "$::8",
+    "path": "$::10",
     "type": "text",
     "value": "\`foo.bar()\`",
   },
@@ -106,7 +114,7 @@ Array [
     "node": <pre>
       foo.bar('hello world')
     </pre>,
-    "path": "$::10",
+    "path": "$::12",
     "type": "text",
     "value": "\`\`\`
 foo.bar('hello world')
@@ -204,10 +212,13 @@ Array [
       You know what?
       <br />
       <i>
-        I'm your 
-        <del>
+        <u>
+          I'm your
+        </u>
+         
+        <s>
           FATHER
-        </del>
+        </s>
          
         <code>
           droid
@@ -243,10 +254,13 @@ Array [
       You know what?
       <br />
       <i>
-        I'm your 
-        <del>
+        <u>
+          I'm your
+        </u>
+         
+        <s>
           FATHER
-        </del>
+        </s>
          
         <code>
           droid
@@ -282,10 +296,13 @@ Array [
       You know what?
       <br />
       <i>
-        I'm your 
-        <del>
+        <u>
+          I'm your
+        </u>
+         
+        <s>
           FATHER
-        </del>
+        </s>
          
         <code>
           droid
@@ -321,10 +338,13 @@ Array [
       You know what?
       <br />
       <i>
-        I'm your 
-        <del>
+        <u>
+          I'm your
+        </u>
+         
+        <s>
           FATHER
-        </del>
+        </s>
          
         <code>
           droid
