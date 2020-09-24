@@ -18,7 +18,7 @@ type WithFileProps = {
   /** HTTP URL for the file to be sent. */
   url?: string;
   /** The file content data when uploading the file directly. */
-  fileData?: Buffer | NodeJS.ReadableStream;
+  fileData?: string | Buffer | NodeJS.ReadableStream;
   /** Metadata about the uploading `fileData` if needed (while using Buffer). */
   fileInfo?: UploadingFileInfo;
   /**
@@ -66,13 +66,14 @@ const __Photo: FunctionOf<TelegramComponent<
     fileAssetTag,
   } = node.props;
 
+  const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
     unitSegment(node, path, {
       method: 'sendPhoto',
       parameters: {
         photo: fileId || url || undefined,
-        caption,
+        caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
         disable_notification: disableNotification,
         reply_to_message_id: replyToMessageId,
@@ -139,6 +140,7 @@ const __Audio: FunctionOf<TelegramComponent<
     fileAssetTag,
   } = node.props;
 
+  const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   const uploadingFiles: UploadingFile[] = [];
 
@@ -165,7 +167,7 @@ const __Audio: FunctionOf<TelegramComponent<
       method: 'sendAudio',
       parameters: {
         audio: fileId || url || undefined,
-        caption,
+        caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
         disable_notification: disableNotification,
         reply_to_message_id: replyToMessageId,
@@ -217,6 +219,7 @@ const __Document: FunctionOf<TelegramComponent<
     fileAssetTag,
   } = node.props;
 
+  const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   const uploadingFiles: UploadingFile[] = [];
 
@@ -243,7 +246,7 @@ const __Document: FunctionOf<TelegramComponent<
       method: 'sendDocument',
       parameters: {
         document: fileId || url || undefined,
-        caption,
+        caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
         disable_notification: disableNotification,
         reply_to_message_id: replyToMessageId,
@@ -305,6 +308,7 @@ const __Video: FunctionOf<TelegramComponent<
     fileAssetTag,
   } = node.props;
 
+  const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   const uploadingFiles: UploadingFile[] = [];
 
@@ -331,7 +335,7 @@ const __Video: FunctionOf<TelegramComponent<
       method: 'sendVideo',
       parameters: {
         video: fileId || url || undefined,
-        caption,
+        caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
         disable_notification: disableNotification,
         reply_to_message_id: replyToMessageId,
@@ -394,6 +398,7 @@ const __Animation: FunctionOf<TelegramComponent<
     fileAssetTag,
   } = node.props;
 
+  const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   const uploadingFiles: UploadingFile[] = [];
 
@@ -420,7 +425,7 @@ const __Animation: FunctionOf<TelegramComponent<
       method: 'sendAnimation',
       parameters: {
         animation: fileId || url || undefined,
-        caption,
+        caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
         disable_notification: disableNotification,
         reply_to_message_id: replyToMessageId,
@@ -473,13 +478,14 @@ const __Voice: FunctionOf<TelegramComponent<
     fileAssetTag,
   } = node.props;
 
+  const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
     unitSegment(node, path, {
       method: 'sendVoice',
       parameters: {
         voice: fileId || url || undefined,
-        caption,
+        caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
         disable_notification: disableNotification,
         reply_to_message_id: replyToMessageId,
@@ -545,6 +551,7 @@ const __VideoNote: FunctionOf<TelegramComponent<
     fileAssetTag,
   } = node.props;
 
+  const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   const uploadingFiles: UploadingFile[] = [];
 
@@ -571,7 +578,7 @@ const __VideoNote: FunctionOf<TelegramComponent<
       method: 'sendVideoNote',
       parameters: {
         video_note: fileId || url || undefined,
-        caption,
+        caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
         disable_notification: disableNotification,
         reply_to_message_id: replyToMessageId,
@@ -625,7 +632,7 @@ const __MediaGroup: FunctionOf<TelegramComponent<
   mediaSegments.forEach(({ node: inputNode, value }) => {
     const { parameters, uploadingFiles } = value;
 
-    let inputType: string;
+    let inputType;
     if ('video' in parameters) {
       inputType = 'video';
     } else if ('photo' in parameters) {
@@ -636,17 +643,25 @@ const __MediaGroup: FunctionOf<TelegramComponent<
       );
     }
 
-    const input = {
-      type: inputType,
-      media: parameters.video,
-      caption: parameters.caption,
-      thumb: parameters.thumb,
-      parse_mode: parameters.parseMode,
-      width: parameters.width,
-      height: parameters.height,
-      duration: parameters.duration,
-      supports_streaming: parameters.supports_streaming,
-    };
+    const input =
+      inputType === 'photo'
+        ? {
+            type: 'photo',
+            media: parameters.photo,
+            caption: parameters.caption,
+            parse_mode: parameters.parse_mode,
+          }
+        : {
+            type: 'video',
+            media: parameters.video,
+            caption: parameters.caption,
+            thumb: parameters.thumb,
+            parse_mode: parameters.parse_mode,
+            width: parameters.width,
+            height: parameters.height,
+            duration: parameters.duration,
+            supports_streaming: parameters.supports_streaming,
+          };
 
     if (uploadingFiles) {
       uploadingFiles.forEach(

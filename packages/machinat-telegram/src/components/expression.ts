@@ -78,7 +78,9 @@ const __Expression: FunctionOf<TelegramComponent<
             parameters: {
               ...parameters,
               disable_notification:
-                parameters.disable_notification || disableNotification,
+                typeof parameters.disable_notification === 'undefined'
+                  ? disableNotification
+                  : parameters.disable_notification,
             },
           },
         });
@@ -88,23 +90,22 @@ const __Expression: FunctionOf<TelegramComponent<
     } else if (segment.type !== 'break') {
       outputSegments.push(segment);
     }
-
-    if (replyMarkupSegments !== null) {
-      if (lastReplyMarkupableIdx === -1) {
-        throw new Error('no valid message for attaching reply markup onto');
-      }
-
-      const lastReplyMarkupable = outputSegments[lastReplyMarkupableIdx].value;
-      if (lastReplyMarkupable.parameters.reply_markup) {
-        throw new Error(
-          'there is already a reply markup attached at the last message'
-        );
-      }
-
-      lastReplyMarkupable.parameters.reply_markup =
-        replyMarkupSegments[0].value;
-    }
   });
+
+  if (replyMarkupSegments !== null) {
+    if (lastReplyMarkupableIdx === -1) {
+      throw new Error('no valid message for attaching reply markup onto');
+    }
+
+    const lastReplyMarkupable = outputSegments[lastReplyMarkupableIdx].value;
+    if (lastReplyMarkupable.parameters.reply_markup) {
+      throw new Error(
+        'there is already a reply markup attached at the last message'
+      );
+    }
+
+    lastReplyMarkupable.parameters.reply_markup = replyMarkupSegments[0].value;
+  }
 
   return outputSegments;
 };

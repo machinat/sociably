@@ -233,7 +233,7 @@ const __EditMedia: FunctionOf<TelegramComponent<
       if (fieldName === 'thumb') {
         mediaInput.thumb = 'attach://thumb';
       } else {
-        mediaInput[fieldName] = `attach://${fieldName}`;
+        mediaInput.media = `attach://${fieldName}`;
       }
     }
   }
@@ -306,7 +306,7 @@ export const StopPoll: TelegramComponent<
  * @category Props
  */
 type DeleteMessageProps = {
-  /**  	Identifier of the original message with the poll */
+  /**	Identifier of the original message with the poll */
   messageId: number;
 };
 

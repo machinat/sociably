@@ -1,0 +1,376 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<p/> hoist plain text into text message object 1`] = `
+Array [
+  Object {
+    "node": <p>
+      foo
+      <br />
+      bar
+      <br />
+      <br />
+      baz
+    </p>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "sendMessage",
+      "parameters": Object {
+        "parse_mode": "HTML",
+        "text": "foo",
+      },
+    },
+  },
+  Object {
+    "node": <p>
+      foo
+      <br />
+      bar
+      <br />
+      <br />
+      baz
+    </p>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "sendMessage",
+      "parameters": Object {
+        "parse_mode": "HTML",
+        "text": "bar",
+      },
+    },
+  },
+  Object {
+    "node": <p>
+      foo
+      <br />
+      bar
+      <br />
+      <br />
+      baz
+    </p>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "sendMessage",
+      "parameters": Object {
+        "parse_mode": "HTML",
+        "text": "baz",
+      },
+    },
+  },
+]
+`;
+
+exports[`elements match snapshot 1`] = `
+Array [
+  Object {
+    "node": <p>
+      abc
+    </p>,
+    "path": "$::0",
+    "type": "unit",
+    "value": Object {
+      "method": "sendMessage",
+      "parameters": Object {
+        "parse_mode": "HTML",
+        "text": "abc",
+      },
+    },
+  },
+  Object {
+    "node": <b>
+      important
+    </b>,
+    "path": "$::2",
+    "type": "text",
+    "value": "<b>important</b>",
+  },
+  Object {
+    "node": <i>
+      italic
+    </i>,
+    "path": "$::4",
+    "type": "text",
+    "value": "<i>italic</i>",
+  },
+  Object {
+    "node": <s>
+      nooooo
+    </s>,
+    "path": "$::6",
+    "type": "text",
+    "value": "<s>nooooo</s>",
+  },
+  Object {
+    "node": <u>
+      underlined
+    </u>,
+    "path": "$::8",
+    "type": "text",
+    "value": "<u>underlined</u>",
+  },
+  Object {
+    "node": <code>
+      foo.bar()
+    </code>,
+    "path": "$::10",
+    "type": "text",
+    "value": "<code>foo.bar()</code>",
+  },
+  Object {
+    "node": <pre>
+      foo.bar('hello world')
+    </pre>,
+    "path": "$::12",
+    "type": "text",
+    "value": "<pre>foo.bar('hello world')</pre>",
+  },
+]
+`;
+
+exports[`media elements match snapshot 1`] = `
+Array [
+  Object {
+    "node": <img
+      src="http://avatar.my.bot"
+    />,
+    "path": "$::0",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "method": "sendPhoto",
+        "parameters": Object {
+          "photo": "http://avatar.my.bot",
+        },
+      },
+    },
+  },
+  Object {
+    "node": <video
+      src="http://vid.my.bot"
+    />,
+    "path": "$::1",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "method": "sendVideo",
+        "parameters": Object {
+          "video": "http://vid.my.bot",
+        },
+      },
+    },
+  },
+  Object {
+    "node": <audio
+      src="http://sound.my.bot"
+    />,
+    "path": "$::2",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "method": "sendAudio",
+        "parameters": Object {
+          "audio": "http://sound.my.bot",
+        },
+      },
+    },
+  },
+  Object {
+    "node": <file
+      src="http://profile.my.bot"
+    />,
+    "path": "$::3",
+    "type": "unit",
+    "value": Object {
+      "message": Object {
+        "method": "sendDocument",
+        "parameters": Object {
+          "document": "http://profile.my.bot",
+        },
+      },
+    },
+  },
+]
+`;
+
+exports[`nested elements match snapshot 1`] = `
+Array [
+  Object {
+    "node": <p>
+      Mic test
+       
+      <code>
+        Hello, 
+        <b>
+          Luke Skywalker!
+        </b>
+      </code>
+      <br />
+      You know what?
+      <br />
+      <i>
+        <u>
+          I'm your
+        </u>
+         
+        <s>
+          FATHER
+        </s>
+         
+        <code>
+          droid
+        </code>
+        .
+      </i>
+      <br />
+      <br />
+      <pre>
+        May the force be with you!
+      </pre>
+       Test over
+    </p>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "sendMessage",
+      "parameters": Object {
+        "parse_mode": "HTML",
+        "text": "Mic test <code>Hello, <b>Luke Skywalker!</b></code>",
+      },
+    },
+  },
+  Object {
+    "node": <p>
+      Mic test
+       
+      <code>
+        Hello, 
+        <b>
+          Luke Skywalker!
+        </b>
+      </code>
+      <br />
+      You know what?
+      <br />
+      <i>
+        <u>
+          I'm your
+        </u>
+         
+        <s>
+          FATHER
+        </s>
+         
+        <code>
+          droid
+        </code>
+        .
+      </i>
+      <br />
+      <br />
+      <pre>
+        May the force be with you!
+      </pre>
+       Test over
+    </p>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "sendMessage",
+      "parameters": Object {
+        "parse_mode": "HTML",
+        "text": "You know what?",
+      },
+    },
+  },
+  Object {
+    "node": <p>
+      Mic test
+       
+      <code>
+        Hello, 
+        <b>
+          Luke Skywalker!
+        </b>
+      </code>
+      <br />
+      You know what?
+      <br />
+      <i>
+        <u>
+          I'm your
+        </u>
+         
+        <s>
+          FATHER
+        </s>
+         
+        <code>
+          droid
+        </code>
+        .
+      </i>
+      <br />
+      <br />
+      <pre>
+        May the force be with you!
+      </pre>
+       Test over
+    </p>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "sendMessage",
+      "parameters": Object {
+        "parse_mode": "HTML",
+        "text": "<i><u>I'm your</u> <s>FATHER</s> <code>droid</code>.</i>",
+      },
+    },
+  },
+  Object {
+    "node": <p>
+      Mic test
+       
+      <code>
+        Hello, 
+        <b>
+          Luke Skywalker!
+        </b>
+      </code>
+      <br />
+      You know what?
+      <br />
+      <i>
+        <u>
+          I'm your
+        </u>
+         
+        <s>
+          FATHER
+        </s>
+         
+        <code>
+          droid
+        </code>
+        .
+      </i>
+      <br />
+      <br />
+      <pre>
+        May the force be with you!
+      </pre>
+       Test over
+    </p>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "sendMessage",
+      "parameters": Object {
+        "parse_mode": "HTML",
+        "text": "<pre>May the force be with you!</pre> Test over",
+      },
+    },
+  },
+]
+`;

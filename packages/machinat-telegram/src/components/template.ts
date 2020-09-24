@@ -142,15 +142,15 @@ type PollProps = MessageProps & {
   /** True, if the poll needs to be anonymous, defaults to True */
   isAnonymous?: boolean;
   /** Poll type, “quiz” or “regular”, defaults to “regular” */
-  type?: string;
+  type?: 'quiz' | 'regular';
   /** True, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to False */
   allowsMultipleAnswers?: boolean;
   /** 0-based identifier of the correct answer option, required for polls in quiz mode */
   correctOptionId?: number;
-  /** Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line feeds after entities parsing */
-  explanation?: string;
-  /** Mode for parsing entities in the explanation. See formatting options for more details. */
-  explanationParseMode?: string;
+  /** Textual node that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line feeds after entities parsing */
+  explanation?: MachinatNode;
+  /** Mode for parsing entities in the explanation. */
+  explanationParseMode?: TelegramParseMode;
   /** Amount of time in seconds the poll will be active after creation, 5-600. Can't be used together with closeDate. */
   openPeriod?: number;
   /** Point in time (Unix timestamp) when the poll will be automatically closed. Must be at least 5 and no more than 600 seconds in the future. Can't be used together with openPeriod. */
@@ -172,7 +172,7 @@ const __Poll: FunctionOf<TelegramComponent<
     allowsMultipleAnswers,
     correctOptionId,
     explanation,
-    explanationParseMode,
+    explanationParseMode = 'HTML',
     openPeriod,
     closeDate,
     isClosed,
@@ -182,6 +182,7 @@ const __Poll: FunctionOf<TelegramComponent<
   } = node.props;
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
+  const explanationSegments = await render(explanation, '.explanation');
   return [
     unitSegment(node, path, {
       method: 'sendPoll',
@@ -192,8 +193,9 @@ const __Poll: FunctionOf<TelegramComponent<
         type,
         allows_multiple_answers: allowsMultipleAnswers,
         correct_option_id: correctOptionId,
-        explanation,
-        explanation_parse_mode: explanationParseMode,
+        explanation: explanationSegments?.[0].value,
+        explanation_parse_mode:
+          explanationParseMode === 'None' ? undefined : explanationParseMode,
         open_period: openPeriod,
         close_date:
           closeDate instanceof Date
