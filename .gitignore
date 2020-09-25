@@ -1,6 +1,6 @@
 # Built
 lib
-tsconfig.tsbuildinfo
+*.tsbuildinfo
 polyfill-exports.js
 api
 

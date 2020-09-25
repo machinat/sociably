@@ -14,15 +14,15 @@ lib/%.js: src/%.ts*
 
 build: | lib
 	if [ -f $(CURDIR)/.mark_require_building ]; then \
-		$(babel) --config-file $(babel_conifg) --verbose --source-maps --extensions .ts,.tsx -d lib src; \
+		NODE_ENV=production $(babel) --config-file $(babel_conifg) --verbose --source-maps --extensions .ts,.tsx -d lib src; \
 		rm $(CURDIR)/.mark_require_building; \
 	fi
 
 lib:
 	mkdir lib
 
-tsconfig.tsbuildinfo: $(source_files)
-	$(tsc) -b --listEmittedFiles $(CURDIR)
+tsconfig.tsbuildinfo: $(source_files) lib
+	$(tsc) -b --listEmittedFiles $(CURDIR)/tsconfig.build.json
 
 polyfill-exports.js: $(CURDIR)/package.json
 	$(polyfill_exports) $(CURDIR)

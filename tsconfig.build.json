@@ -4,5 +4,27 @@
     "composite": true,
     "declaration": true,
     "emitDeclarationOnly": true
+  },
+  "typedocOptions": {
+    "name": "Machinat",
+    "mode": "modules",
+    "out": "api",
+    "readme": "./README.md",
+    "exclude": [
+      "**/machinat-jest-snapshot-serializer/**",
+      "**/__tests__/*",
+      "**/__mocks__/*"
+    ],
+    "stripInternal": true,
+    "excludePrivate": true,
+    "ignoreCompilerErrors": true,
+    "external-modulemap": ".*packages/machinat-([^/]+)/.*",
+    "categoryOrder": [
+      "Component",
+      "Provider",
+      "Interface",
+      "Container",
+      "Props"
+    ]
   }
 }

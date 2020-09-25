@@ -1,6 +1,6 @@
 module.exports = {
   testEnvironment: 'node',
-  testMatch: ['**/__tests__/**/*.spec.js?(x)'],
+  testMatch: ['**/__tests__/**/*.spec.[jt]s?(x)'],
   moduleNameMapper: {
     '^@machinat/([^/]*)(.*)$': '<rootDir>/packages/machinat-$1/src$2',
   },

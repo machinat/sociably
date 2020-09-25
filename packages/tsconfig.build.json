@@ -1,0 +1,17 @@
+{
+  "files": [],
+  "include": [],
+  "references": [
+    { "path": "./machinat-auth/tsconfig.build.json" },
+    { "path": "./machinat-core/tsconfig.build.json" },
+    { "path": "./machinat-dialogflow/tsconfig.build.json" },
+    { "path": "./machinat-http/tsconfig.build.json" },
+    { "path": "./machinat-line/tsconfig.build.json" },
+    { "path": "./machinat-messenger/tsconfig.build.json" },
+    { "path": "./machinat-next/tsconfig.build.json" },
+    { "path": "./machinat-script/tsconfig.build.json" },
+    { "path": "./machinat-state/tsconfig.build.json" },
+    { "path": "./machinat-websocket/tsconfig.build.json" },
+    { "path": "./machinat-jest-snapshot-serializer/tsconfig.build.json" }
+  ]
+}
