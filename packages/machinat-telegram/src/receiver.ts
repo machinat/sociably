@@ -19,19 +19,18 @@ import type {
 } from './types';
 
 type TelegramReceiverOptions = {
-  botToken: string;
+  botId: number;
   entryPath?: string;
   secretPath?: string;
 };
 
 /** @internal */
 const handleWebhook = (
-  { botToken, secretPath, entryPath = '/' }: TelegramReceiverOptions,
+  { botId, secretPath, entryPath = '/' }: TelegramReceiverOptions,
   bot: BotP,
   popEventWrapper: PopEventWrapper<TelegramEventContext, null>
 ): WebhookHandler => {
   const popEvent = popEventWrapper(async () => null);
-  const botId = Number(botToken.split(':', 1)[0]);
   const createEvent = eventFactory(botId);
 
   return async (metadata, routingInfo) => {
@@ -84,7 +83,7 @@ export class TelegramReceiver extends WebhookReceiver {
     bot: BotP,
     popEventWrapper: PopEventWrapper<TelegramEventContext, null>
   ) {
-    invariant(options?.botToken, 'options.botToken should not be empty');
+    invariant(options?.botId, 'options.botId should not be empty');
 
     super(handleWebhook(options, bot, popEventWrapper));
   }
@@ -98,8 +97,9 @@ export const ReceiverP = provider<TelegramReceiver>({
     bot: BotP,
     { popEventWrapper }: TelegramPlatformMounter
   ) => {
+    const botId = Number(botToken.split(':', 1)[0]);
     return new TelegramReceiver(
-      { botToken, secretPath, entryPath },
+      { botId, secretPath, entryPath },
       bot,
       popEventWrapper
     );

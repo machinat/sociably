@@ -63,19 +63,17 @@ beforeEach(() => {
   popEventWrapper.mock.reset();
 });
 
-it('throw if options.botToken is empty', () => {
+it('throw if options.botId is empty', () => {
   expect(
     () => new TelegramReceiver({} as any, bot, popEventWrapper)
-  ).toThrowErrorMatchingInlineSnapshot(
-    `"options.botToken should not be empty"`
-  );
+  ).toThrowErrorMatchingInlineSnapshot(`"options.botId should not be empty"`);
 });
 
 it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   'responds 405 if req.method is %s',
   async (method) => {
     const receiver = new TelegramReceiver(
-      { botToken: '12345:_BOT_TOKEN_' },
+      { botId: 12345 },
       bot,
       popEventWrapper
     );
@@ -91,11 +89,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 );
 
 it('responds 400 if body is empty', async () => {
-  const receiver = new TelegramReceiver(
-    { botToken: '12345:_BOT_TOKEN_' },
-    bot,
-    popEventWrapper
-  );
+  const receiver = new TelegramReceiver({ botId: 12345 }, bot, popEventWrapper);
 
   const req = createReq({ method: 'POST' });
   const res = createRes();
@@ -107,11 +101,7 @@ it('responds 400 if body is empty', async () => {
 });
 
 it('responds 400 if body is not in valid json format', async () => {
-  const receiver = new TelegramReceiver(
-    { botToken: '12345:_BOT_TOKEN_' },
-    bot,
-    popEventWrapper
-  );
+  const receiver = new TelegramReceiver({ botId: 12345 }, bot, popEventWrapper);
 
   const req = createReq({ method: 'POST', body: "I'm Jason" });
   const res = createRes();
@@ -123,11 +113,7 @@ it('responds 400 if body is not in valid json format', async () => {
 });
 
 it('respond 200 and pop events received', async () => {
-  const receiver = new TelegramReceiver(
-    { botToken: '12345:_BOT_TOKEN_' },
-    bot,
-    popEventWrapper
-  );
+  const receiver = new TelegramReceiver({ botId: 12345 }, bot, popEventWrapper);
 
   const bodyStr = JSON.stringify(updateBody);
 
@@ -166,7 +152,7 @@ it('respond 200 and pop events received', async () => {
 
 it('verify request path is options.secretPath, respond 401 if fail', async () => {
   const receiver = new TelegramReceiver(
-    { botToken: '12345:_BOT_TOKEN_', secretPath: '__SECRET_PATH__' },
+    { botId: 12345, secretPath: '__SECRET_PATH__' },
     bot,
     popEventWrapper
   );
@@ -211,7 +197,7 @@ it('verify request path is options.secretPath, respond 401 if fail', async () =>
 it('verify secretPath with entryPath', async () => {
   const receiver = new TelegramReceiver(
     {
-      botToken: '12345:_BOT_TOKEN_',
+      botId: 12345,
       secretPath: '__SECRET_PATH__',
       entryPath: '/telegram',
     },
@@ -258,10 +244,7 @@ it('verify secretPath with entryPath', async () => {
 
 it('verify secretPath when RoutingInfo given', async () => {
   const receiver = new TelegramReceiver(
-    {
-      botToken: '12345:_BOT_TOKEN_',
-      secretPath: '__SECRET_PATH__',
-    },
+    { botId: 12345, secretPath: '__SECRET_PATH__' },
     bot,
     popEventWrapper
   );
