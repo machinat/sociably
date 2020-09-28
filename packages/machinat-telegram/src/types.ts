@@ -196,7 +196,7 @@ export type TelegramPlatformMounter = PlatformMounter<
 
 export type TelegramPlatformConfigs = {
   botToken: string;
-  webhookPath?: string;
+  entryPath?: string;
   secretPath?: string;
   authRedirectURL?: string;
   connectionCapicity?: number;

@@ -213,7 +213,7 @@ it('verify secretPath with entryPath', async () => {
     {
       botToken: '12345:_BOT_TOKEN_',
       secretPath: '__SECRET_PATH__',
-      webhookPath: '/telegram',
+      entryPath: '/telegram',
     },
     bot,
     popEventWrapper

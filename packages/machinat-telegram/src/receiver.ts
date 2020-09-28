@@ -20,13 +20,13 @@ import type {
 
 type TelegramReceiverOptions = {
   botToken: string;
-  webhookPath?: string;
+  entryPath?: string;
   secretPath?: string;
 };
 
 /** @internal */
 const handleWebhook = (
-  { botToken, secretPath, webhookPath = '/' }: TelegramReceiverOptions,
+  { botToken, secretPath, entryPath = '/' }: TelegramReceiverOptions,
   bot: BotP,
   popEventWrapper: PopEventWrapper<TelegramEventContext, null>
 ): WebhookHandler => {
@@ -54,7 +54,7 @@ const handleWebhook = (
         }
       } else {
         const { pathname } = parseURL(url);
-        if (pathname !== joinPath(webhookPath, secretPath)) {
+        if (pathname !== joinPath(entryPath, secretPath)) {
           return { code: 401 };
         }
       }
@@ -94,12 +94,12 @@ export const ReceiverP = provider<TelegramReceiver>({
   lifetime: 'singleton',
   deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I],
   factory: (
-    { botToken, secretPath, webhookPath }: TelegramPlatformConfigs,
+    { botToken, secretPath, entryPath }: TelegramPlatformConfigs,
     bot: BotP,
     { popEventWrapper }: TelegramPlatformMounter
   ) => {
     return new TelegramReceiver(
-      { botToken, secretPath, webhookPath },
+      { botToken, secretPath, entryPath },
       bot,
       popEventWrapper
     );

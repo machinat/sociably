@@ -54,7 +54,7 @@ describe('initModule(configs)', () => {
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
-      webhookPath: '/webhook/messenger',
+      entryPath: '/webhook/messenger',
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 
@@ -148,7 +148,7 @@ describe('initModule(configs)', () => {
     bot.stop();
   });
 
-  test('default webhookPath to "/"', async () => {
+  test('default entryPath to "/"', async () => {
     const app = Machinat.createApp({
       platforms: [
         Messenger.initModule({

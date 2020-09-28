@@ -27,7 +27,7 @@ describe('initModule(configs)', () => {
 
     const module = Telegram.initModule({
       botToken: '12345:_BOT_TOKEN_',
-      webhookPath: '/webhook/telegram',
+      entryPath: '/webhook/telegram',
       secretPath: '_SECRET_',
       authRedirectURL: '/webview/index.html',
       connectionCapicity: 999,
@@ -52,7 +52,7 @@ describe('initModule(configs)', () => {
   test('provisions', async () => {
     const configs = {
       botToken: '12345:_BOT_TOKEN_',
-      webhookPath: '/webhook/telegram',
+      entryPath: '/webhook/telegram',
       secretPath: '_SECRET_',
       authRedirectURL: '/webview/index.html',
       connectionCapicity: 999,
@@ -134,7 +134,7 @@ describe('initModule(configs)', () => {
     expect(profiler).toBeInstanceOf(TelegramProfiler);
   });
 
-  test('default webhookPath to "/"', async () => {
+  test('default entryPath to "/"', async () => {
     const configs = {
       botToken: '12345:_BOT_TOKEN_',
     };

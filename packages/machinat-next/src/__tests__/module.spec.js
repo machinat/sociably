@@ -147,7 +147,7 @@ describe('initModule()', () => {
     expect(receiver.prepare.mock).toHaveBeenCalledWith();
   });
 
-  test('default webhookPath to "/"', async () => {
+  test('default entryPath to "/"', async () => {
     const app = Machinat.createApp({
       modules: [
         Next.initModule({ shouldPrepare: true, nextAppOptions: { dev: true } }),

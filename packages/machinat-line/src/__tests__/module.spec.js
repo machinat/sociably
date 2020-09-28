@@ -53,7 +53,7 @@ describe('initModule(configs)', () => {
       channelId: '_BOT_CHANNEL_ID_',
       accessToken: '_ACCESS_TOKEN_',
       channelSecret: '_CHANNEL_SECRET_',
-      webhookPath: '/webhook/line',
+      entryPath: '/webhook/line',
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 
@@ -137,7 +137,7 @@ describe('initModule(configs)', () => {
     expect(profiler).toBeInstanceOf(LineUserProfiler);
   });
 
-  test('default webhookPath to "/"', async () => {
+  test('default entryPath to "/"', async () => {
     const configs = {
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',

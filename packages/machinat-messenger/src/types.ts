@@ -174,7 +174,7 @@ export type MessengerPlatformConfigs = {
   shouldHandleVerify?: boolean;
   verifyToken?: string;
   consumeInterval?: number;
-  webhookPath?: string;
+  entryPath?: string;
   noServer?: boolean;
   eventMiddlewares?: (
     | MessengerEventMiddleware

@@ -22,14 +22,14 @@ const app = Machinat.createApp({
   ],
   platforms: [
     Messenger.initModule({
-      webhookPath: '/messenger',
+      entryPath: '/messenger',
       pageId: ENV.MESSENGER_PAGE_ID,
       accessToken: ENV.MESSENGER_ACCESS_TOKEN,
       appSecret: ENV.MESSENGER_APP_SECRET,
       verifyToken: ENV.MESSENGER_VERIFY_TOKEN,
     }),
     Line.initModule({
-      webhookPath: '/line',
+      entryPath: '/line',
       providerId: ENV.LINE_PROVIDER_ID,
       channelId: ENV.LINE_CHANNEL_ID,
       channelSecret: ENV.LINE_CHANNEL_SECRET,

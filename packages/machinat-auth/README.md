@@ -28,7 +28,7 @@ import Next from '@machinat/messenger/next';
 const app = Machinat.createApp({
   platforms: [
     Messenger.initModule({
-      webhookPath: '/webhook',
+      entryPath: '/webhook',
     }),
   ],
   modules: [
@@ -45,7 +45,10 @@ const app = Machinat.createApp({
     }),
   ],
   bindings: [
-    { porvide: Auth.AUTHORIZERS_I, withProvider: MessengerServerAuthorizer },
+    {
+      porvide: Auth.AUTHORIZERS_I,
+      withProvider: MessengerServerAuthorizer,
+    },
   ]
 });
 

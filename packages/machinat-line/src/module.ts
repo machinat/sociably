@@ -24,7 +24,7 @@ const requestRoutingFactory = factory<HTTPRequestRouting>({
 })((configs: LinePlatformConfigs, receiver: ReceiverP) => {
   return {
     name: LINE,
-    path: configs.webhookPath || '/',
+    path: configs.entryPath || '/',
     handler: receiver.handleRequestCallback(),
   };
 });

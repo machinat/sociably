@@ -24,7 +24,7 @@ const requestRoutingFactory = factory<HTTPRequestRouting>({
 })((configs: MessengerPlatformConfigs, receiver: ReceiverP) => {
   return {
     name: MESSENGER,
-    path: configs.webhookPath || '/',
+    path: configs.entryPath || '/',
     handler: receiver.handleRequestCallback(),
   };
 });

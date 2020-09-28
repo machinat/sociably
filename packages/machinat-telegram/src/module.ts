@@ -24,7 +24,7 @@ const requestRoutingFactory = factory<HTTPRequestRouting>({
 })((configs: TelegramPlatformConfigs, receiver: ReceiverP) => {
   return {
     name: TELEGRAM,
-    path: configs.webhookPath || '/',
+    path: configs.entryPath || '/',
     handler: receiver.handleRequestCallback(),
   };
 });
