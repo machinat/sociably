@@ -1,5 +1,6 @@
 import { parse as parseURL } from 'url';
 import { join as joinPath } from 'path';
+import invariant from 'invariant';
 
 import WebhookReceiver from '@machinat/http/webhook';
 import type { WebhookHandler } from '@machinat/http/webhook/types';
@@ -18,18 +19,19 @@ import type {
 } from './types';
 
 type TelegramReceiverOptions = {
-  botId: number;
+  botToken: string;
   webhookPath?: string;
   secretPath?: string;
 };
 
 /** @internal */
 const handleWebhook = (
-  { botId, secretPath, webhookPath = '/' }: TelegramReceiverOptions,
+  { botToken, secretPath, webhookPath = '/' }: TelegramReceiverOptions,
   bot: BotP,
   popEventWrapper: PopEventWrapper<TelegramEventContext, null>
 ): WebhookHandler => {
   const popEvent = popEventWrapper(async () => null);
+  const botId = Number(botToken.split(':', 1)[0]);
   const createEvent = eventFactory(botId);
 
   return async (metadata, routingInfo) => {
@@ -46,13 +48,15 @@ const handleWebhook = (
 
     // validate secret path
     if (secretPath) {
-      if (routingInfo && routingInfo.trailingPath !== secretPath) {
-        return { code: 401 };
-      }
-
-      const { pathname } = parseURL(url);
-      if (pathname !== joinPath(webhookPath, secretPath)) {
-        return { code: 401 };
+      if (routingInfo) {
+        if (routingInfo.trailingPath !== secretPath) {
+          return { code: 401 };
+        }
+      } else {
+        const { pathname } = parseURL(url);
+        if (pathname !== joinPath(webhookPath, secretPath)) {
+          return { code: 401 };
+        }
       }
     }
 
@@ -80,6 +84,8 @@ export class TelegramReceiver extends WebhookReceiver {
     bot: BotP,
     popEventWrapper: PopEventWrapper<TelegramEventContext, null>
   ) {
+    invariant(options?.botToken, 'options.botToken should not be empty');
+
     super(handleWebhook(options, bot, popEventWrapper));
   }
 }
@@ -92,9 +98,8 @@ export const ReceiverP = provider<TelegramReceiver>({
     bot: BotP,
     { popEventWrapper }: TelegramPlatformMounter
   ) => {
-    const botId = Number(botToken.split(':', 1)[0]);
     return new TelegramReceiver(
-      { botId, secretPath, webhookPath },
+      { botToken, secretPath, webhookPath },
       bot,
       popEventWrapper
     );

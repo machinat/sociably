@@ -48,18 +48,22 @@ export class TelegramChat implements MachinatChannel {
 
 export class TelegramChatInstance implements MachinatChannel {
   botId: number;
-  chatInstance: string;
+  _chatInstanceId: string;
 
   platform = TELEGRAM;
   type = 'chat_instance' as const;
 
   constructor(botId: number, chatInstance: string) {
     this.botId = botId;
-    this.chatInstance = chatInstance;
+    this._chatInstanceId = chatInstance;
+  }
+
+  get id(): string {
+    return this._chatInstanceId;
   }
 
   get uid(): string {
-    return `telegram.${this.botId}.${this.chatInstance}`;
+    return `telegram.${this.botId}.${this._chatInstanceId}`;
   }
 }
 
@@ -73,6 +77,10 @@ export class TelegramChatTarget implements MachinatChannel {
   constructor(botId: number, target: number | string) {
     this.botId = botId;
     this.target = target;
+  }
+
+  get id(): string | number {
+    return this.target;
   }
 
   get uid(): string {

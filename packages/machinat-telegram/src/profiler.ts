@@ -2,9 +2,18 @@ import { provider } from '@machinat/core/service';
 import { BaseUserProfilerI, BaseStateControllerI } from '@machinat/core/base';
 import type { MachinatUserProfile } from '@machinat/core/base/UserProfilerI';
 import type TelegramUser from './user';
+import type { TelegramChat, TelegramChatTarget } from './channel';
 import { TELEGRAM } from './constant';
 import { BotP } from './bot';
 import { RawPhotoSize } from './types';
+
+type PhotoResponse = {
+  content: NodeJS.ReadableStream;
+  contentType: string;
+  contentLength: number;
+  width: number;
+  height: number;
+};
 
 export class TelegramUserProfile implements MachinatUserProfile {
   user: TelegramUser;
@@ -22,7 +31,7 @@ export class TelegramUserProfile implements MachinatUserProfile {
 
   get name(): string {
     const { firstName, lastName } = this.user;
-    return `${firstName} ${lastName}`;
+    return lastName ? `${firstName} ${lastName}` : firstName;
   }
 
   get firstName(): undefined | string {
@@ -37,8 +46,26 @@ export class TelegramUserProfile implements MachinatUserProfile {
 /**
  * @category Provider
  */
-export class TelegramUserProfiler implements BaseUserProfilerI {
+export class TelegramProfiler implements BaseUserProfilerI {
   bot: BotP;
+
+  static async photoDataURI(photoResponse: PhotoResponse): Promise<string> {
+    const { content, contentType } = photoResponse;
+
+    const data: Buffer = await new Promise((resolve, reject) => {
+      const chunks: Buffer[] = [];
+
+      content.on('data', (chunk) => {
+        chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+      });
+      content.on('end', () => {
+        resolve(Buffer.concat(chunks));
+      });
+      content.on('error', reject);
+    });
+
+    return `data:${contentType};base64,${data.toString('base64')}`;
+  }
 
   constructor(bot: BotP) {
     this.bot = bot;
@@ -49,25 +76,19 @@ export class TelegramUserProfiler implements BaseUserProfilerI {
     return new TelegramUserProfile(user);
   }
 
-  async fetchPhotoData(
+  async fetchUserPhoto(
     user: TelegramUser,
     options?: {
-      /** The photo with the closest width is chosen. Default to the largest one if omitted. */
-      preferedWidth?: number;
+      /** If set, the minimum size above the value is chosen. Otherwise the largest one */
+      minWidth?: number;
     }
-  ): Promise<null | {
-    content: NodeJS.ReadableStream;
-    contentType: string;
-    contentLength: number;
-    width: number;
-    height: number;
-  }> {
-    const photosResponse = await this.bot.dispatchAPICall(
-      'getUserProfilePhotos',
-      { user_id: user.id }
-    );
+  ): Promise<null | PhotoResponse> {
+    const {
+      result: { photos },
+    } = await this.bot.dispatchAPICall('getUserProfilePhotos', {
+      user_id: user.id,
+    });
 
-    const { photos } = photosResponse.result;
     if (photos.length === 0) {
       return null;
     }
@@ -75,24 +96,21 @@ export class TelegramUserProfiler implements BaseUserProfilerI {
     const sizes: RawPhotoSize[] = photos[0];
     let selectedSize: RawPhotoSize;
 
-    if (options?.preferedWidth) {
-      const { preferedWidth } = options;
-      const [sizeIdx] = sizes.reduce<[number, number]>(
-        ([selectedIdx, diff], { width }, curIdx) => {
-          const curDiff = Math.abs(width - preferedWidth);
-          return curDiff <= diff ? [curIdx, curDiff] : [selectedIdx, diff];
-        },
-        [-1, Infinity]
-      );
+    if (options?.minWidth) {
+      const { minWidth } = options;
+      const photoSize = sizes.find(({ width }) => width > minWidth);
 
-      selectedSize = sizes[sizeIdx];
+      selectedSize = photoSize || sizes[sizes.length - 1];
     } else {
       selectedSize = sizes[sizes.length - 1];
     }
 
-    const { content, contentType, contentLength } = await this.bot.fetchFile(
-      selectedSize.file_id
-    );
+    const fileResponse = await this.bot.fetchFile(selectedSize.file_id);
+    if (!fileResponse) {
+      return null;
+    }
+
+    const { content, contentType, contentLength } = fileResponse;
     return {
       content,
       contentType,
@@ -101,11 +119,45 @@ export class TelegramUserProfiler implements BaseUserProfilerI {
       height: selectedSize.height,
     };
   }
+
+  async fetchChatPhoto(
+    chat: number | string | TelegramChat | TelegramChatTarget,
+    options?: { size?: 'big' | 'small' }
+  ): Promise<null | PhotoResponse> {
+    const {
+      result: { photo },
+    } = await this.bot.dispatchAPICall('getChat', {
+      chat_id:
+        typeof chat === 'string' || typeof chat === 'number' ? chat : chat.id,
+    });
+
+    if (!photo) {
+      return null;
+    }
+
+    const fileResponse = await this.bot.fetchFile(
+      options?.size === 'small' ? photo.small_file_id : photo.big_file_id
+    );
+    if (!fileResponse) {
+      return null;
+    }
+
+    const width = options?.size === 'small' ? 160 : 640;
+
+    const { content, contentType, contentLength } = fileResponse;
+    return {
+      content,
+      contentType,
+      contentLength,
+      width,
+      height: width,
+    };
+  }
 }
 
-export const UserProfilerP = provider<TelegramUserProfiler>({
+export const UserProfilerP = provider<TelegramProfiler>({
   lifetime: 'scoped',
   deps: [BotP, { require: BaseStateControllerI, optional: true }],
-})(TelegramUserProfiler);
+})(TelegramProfiler);
 
-export type UserProfilerP = TelegramUserProfiler;
+export type UserProfilerP = TelegramProfiler;

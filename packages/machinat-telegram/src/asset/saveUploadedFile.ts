@@ -2,7 +2,7 @@ import { container } from '@machinat/core/service';
 import type { TelegramDispatchMiddleware } from '../types';
 import { AssetsManagerP } from './manager';
 
-const SINGLE_MEDIA_MESSAGE_METHODS_PATTERN = /^send(Audio|Document|Animation|Video|VideoNote|Voice)$/;
+const SINGLE_MEDIA_MESSAGE_METHODS_PATTERN = /^send(Audio|Document|Animation|Video|VideoNote|Voice|Sticker)$/;
 
 /** @internal */
 const getLargestFileIdOfPhotoMessage = (message) => {
@@ -51,7 +51,7 @@ const saveUplodedFile = (
             );
 
             if (inputIdx !== -1) {
-              const input = result.media[inputIdx];
+              const input = parameters.media[inputIdx];
               fileId =
                 input.type === 'photo'
                   ? getLargestFileIdOfPhotoMessage(result[inputIdx])

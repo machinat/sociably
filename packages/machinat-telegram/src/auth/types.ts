@@ -1,17 +1,23 @@
-import { RawUser, RawChat } from '../types';
+import { TelegramChatType } from '../types';
 
 export type TelegramAuthData = {
   botId: number;
   channel:
     | null
     | {
-        type: 'chat';
-        chat: RawChat;
+        type: TelegramChatType;
+        id: number;
+        title?: string;
+        username?: string;
       }
     | {
         type: 'chat_instance';
-        instance: string;
+        id: string;
       };
-  user: RawUser;
+  userId: number;
+  firstName: string;
+  lastName?: string;
+  username?: string;
   photoURL?: string;
+  languageCode?: string;
 };

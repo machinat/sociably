@@ -31,7 +31,6 @@ import type {
 } from './types';
 
 type TelegramBotOptions = {
-  botId: number;
   botToken: string;
   connectionCapicity?: number;
 };
@@ -58,11 +57,7 @@ export class TelegramBot
   >;
 
   constructor(
-    {
-      botId,
-      botToken,
-      connectionCapicity = 100,
-    }: TelegramBotOptions = {} as any,
+    { botToken, connectionCapicity = 100 }: TelegramBotOptions = {} as any,
     initScope: InitScopeFn = () => createEmptyScope(TELEGRAM),
     dispatchWrapper: DispatchWrapper<
       TelegramJob,
@@ -70,10 +65,10 @@ export class TelegramBot
       TelegramAPIResult
     > = (dispatch) => dispatch
   ) {
-    invariant(botToken, 'configs.botToken should not be empty');
+    invariant(botToken, 'options.botToken should not be empty');
 
     this.botToken = botToken;
-    this.botId = botId;
+    this.botId = Number(botToken.split(':', 1)[0]);
 
     const queue = new Queue<TelegramJob, TelegramAPIResult>();
     const worker = new TelegramWorker(botToken, connectionCapicity);
@@ -121,7 +116,7 @@ export class TelegramBot
 
   async fetchFile(
     fileId: string
-  ): Promise<{
+  ): Promise<null | {
     content: NodeJS.ReadableStream;
     contentType: string;
     contentLength: number;
@@ -129,6 +124,9 @@ export class TelegramBot
     const {
       result: { file_path: filePath },
     } = await this.dispatchAPICall('getFile', { file_id: fileId });
+    if (!filePath) {
+      return null;
+    }
 
     const fetchResponse = await fetch(
       `https://api.telegram.org/file/bot${this.botToken}/${filePath}`
@@ -174,9 +172,8 @@ export const BotP = provider<TelegramBot>({
     { botToken, connectionCapicity }: TelegramPlatformConfigs,
     mounter: null | TelegramPlatformMounter
   ) => {
-    const botId = Number(botToken.split(':', 1)[0]);
     return new TelegramBot(
-      { botId, botToken, connectionCapicity },
+      { botToken, connectionCapicity },
       mounter?.initScope,
       mounter?.dispatchWrapper
     );
