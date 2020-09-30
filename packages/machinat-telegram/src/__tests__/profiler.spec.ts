@@ -21,11 +21,11 @@ beforeEach(() => {
   bot.mock.reset();
 });
 
-describe('#fetchProfile(user)', () => {
+describe('#getUserProfile(user)', () => {
   it('return profile object to fit the base interface', async () => {
     const profiler = new TelegramProfiler(bot);
 
-    const userProfile1 = await profiler.fetchProfile(
+    const userProfile1 = await profiler.getUserProfile(
       new TelegramUser({
         id: 12345,
         is_bot: false,
@@ -40,7 +40,7 @@ describe('#fetchProfile(user)', () => {
     expect(userProfile1.firstName).toBe('Jane');
     expect(userProfile1.lastName).toBe('Doe');
 
-    const userProfile2 = await profiler.fetchProfile(
+    const userProfile2 = await profiler.getUserProfile(
       new TelegramUser({
         id: 12345,
         is_bot: false,

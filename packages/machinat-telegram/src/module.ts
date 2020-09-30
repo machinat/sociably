@@ -8,7 +8,7 @@ import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { TELEGRAM } from './constant';
 import { BotP } from './bot';
 import { ReceiverP } from './receiver';
-import { UserProfilerP } from './profiler';
+import { ProfilerP } from './profiler';
 import type {
   TelegramPlatformConfigs,
   TelegramEventContext,
@@ -32,7 +32,7 @@ const requestRoutingFactory = factory<HTTPRequestRouting>({
 const Telegram = {
   Bot: BotP,
   Receiver: ReceiverP,
-  UserProfiler: UserProfilerP,
+  Profiler: ProfilerP,
   CONFIGS_I: PLATFORM_CONFIGS_I,
 
   initModule: (
@@ -48,10 +48,10 @@ const Telegram = {
       BotP,
       { provide: Base.BotI, withProvider: BotP, platforms: [TELEGRAM] },
 
-      UserProfilerP,
+      ProfilerP,
       {
-        provide: Base.UserProfilerI,
-        withProvider: UserProfilerP,
+        provide: Base.ProfilerI,
+        withProvider: ProfilerP,
         platforms: [TELEGRAM],
       },
 
@@ -82,7 +82,7 @@ const Telegram = {
 declare namespace Telegram {
   export type Bot = BotP;
   export type Receiver = ReceiverP;
-  export type UserProfiler = UserProfilerP;
+  export type Profiler = ProfilerP;
 }
 
 export default Telegram;

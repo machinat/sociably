@@ -1,6 +1,6 @@
 import { provider } from '@machinat/core/service';
 import Base from '@machinat/core/base';
-import { MachinatUserProfile } from '@machinat/core/base/UserProfilerI';
+import { MachinatUserProfile } from '@machinat/core/base/ProfilerI';
 import { BotP } from './bot';
 import type LineUser from './user';
 import type { LineRawUserProfile } from './types';
@@ -57,7 +57,7 @@ type ProfilerOptions = {
 /**
  * @category Provider
  */
-export class LineUserProfiler implements Base.UserProfilerI {
+export class LineProfiler implements Base.ProfilerI {
   bot: BotP;
   stateController: null | Base.StateControllerI;
   profileCacheTime: number;
@@ -72,7 +72,7 @@ export class LineUserProfiler implements Base.UserProfilerI {
     this.profileCacheTime = profileCacheTime || 86400000;
   }
 
-  async fetchProfile(user: LineUser): Promise<LineUserProfile> {
+  async getUserProfile(user: LineUser): Promise<LineUserProfile> {
     if (this.stateController) {
       const cached = await this.stateController
         .userState(user)
@@ -93,19 +93,19 @@ export class LineUserProfiler implements Base.UserProfilerI {
     if (this.stateController) {
       await this.stateController
         .userState(user)
-        .set<ProfileCache>(PROFILE_KEY, () => ({
+        .set<ProfileCache>(PROFILE_KEY, {
           data: rawProfile,
           fetchAt: Date.now(),
-        }));
+        });
     }
 
     return new LineUserProfile(rawProfile);
   }
 }
 
-export const UserProfilerP = provider<LineUserProfiler>({
+export const ProfilerP = provider<LineProfiler>({
   lifetime: 'scoped',
   deps: [BotP, { require: Base.StateControllerI, optional: true }],
-})(LineUserProfiler);
+})(LineProfiler);
 
-export type UserProfilerP = LineUserProfiler;
+export type ProfilerP = LineProfiler;

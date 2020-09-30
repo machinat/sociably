@@ -180,7 +180,7 @@ export class ScriptProcessor<Input, ReturnValue> {
     const timestamp = Date.now();
     await this._stateContoller
       .channelState(channel)
-      .set<ScriptProcessState>(SCRIPT_STATE_KEY, (lastState) => {
+      .update<ScriptProcessState>(SCRIPT_STATE_KEY, (lastState) => {
         if (
           saveTimestamp
             ? !(lastState && lastState.timestamp === saveTimestamp)

@@ -77,16 +77,16 @@ import Messenger from '@machinat/messenger';
 
 app.onEvent(
   container({
-    deps: [Messenger.UserProfiler]
+    deps: [Messenger.Profiler]
   })(profiler => async ({ event, bot } ) => {
-    const profiler = await profiler.fetchProfile(event.user);
+    const profiler = await profiler.getUserProfile(event.user);
 
     await bot.render(event.channel, `Hello ${profile.name}!`)
   })
 );
 ```
 
-The handler container above is a curried function receives a `Messenger.UserProfiler` and returns an ordinary handler function. It works just like the ordinary handler is being contained!
+The handler container above is a curried function receives a `Messenger.Profiler` and returns an ordinary handler function. It works just like the ordinary handler is being contained!
 
 When a event/error popped, app would inject the container then call the handler returned immediately.
 
@@ -102,12 +102,12 @@ The hello logic in the upper handler example can be rewrite into a component lik
 import Messenger from '@machinat/messenger';
 
 const Hello = profiler => async props => {
-  const profile = await profiler.fetchProfile(props.user);
+  const profile = await profiler.getUserProfile(props.user);
   return `Hello ${profile.name}!`;
 }
 
 export default container({
-  deps: [Messenger.UserProfiler],
+  deps: [Messenger.Profiler],
 })(Hello);
 ```
 
@@ -305,13 +305,13 @@ import Base from '@machinat/core/base';
 app.onEvent(
   container({
     deps: [
-      { require: Base.UserProfilerI, optional: true },
+      { require: Base.ProfilerI, optional: true },
     ],
   })(profiler => context => {
     const { bot, event } = context;
 
     if (profiler) {
-      const profile = await profiler.fetchProfile(event.user);
+      const profile = await profiler.getUserProfile(event.user);
       await bot.render(event.channel, `Hello ${profile.name}!`);
     } else {
       await bot.render(event.channel, `Hello!`);
@@ -320,7 +320,7 @@ app.onEvent(
 );
 ```
 
-The `Base` module provide a set of common interfaces for modules to register their implementation. In the example above, `Base.UserProfilerI` is used to fetch the user profile if it is provided by the current platform.
+The `Base` module provide a set of common interfaces for modules to register their implementation. In the example above, `Base.ProfilerI` is used to fetch the user profile if it is provided by the current platform.
 
 This lets you use a cross-platform utility  without requiring implementations of every platforms.
 

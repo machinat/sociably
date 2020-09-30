@@ -66,7 +66,7 @@ const makeMediaResult = (mediaType: string) => ({
 });
 
 const manager = moxy({
-  async setFileId() {},
+  async saveFile() {},
 });
 
 const mediaMethodPairs = [
@@ -117,7 +117,7 @@ it('ignore noraml messages and media message without fileAssetTag', async () => 
   const next: any = async () => response;
 
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
-  expect(manager.setFileId.mock).not.toHaveBeenCalled();
+  expect(manager.saveFile.mock).not.toHaveBeenCalled();
 });
 
 it('save files uploaded when sending media with fileAssetTag', async () => {
@@ -169,15 +169,15 @@ it('save files uploaded when sending media with fileAssetTag', async () => {
 
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
 
-  expect(manager.setFileId.mock).toHaveBeenCalledTimes(
+  expect(manager.saveFile.mock).toHaveBeenCalledTimes(
     mediaMethodPairs.length + 1
   );
-  expect(manager.setFileId.mock).toHaveBeenCalledWith(
+  expect(manager.saveFile.mock).toHaveBeenCalledWith(
     'my_photo',
     '_PHOTO_L_ID_'
   );
   mediaMethodPairs.forEach(([mediaType]) => {
-    expect(manager.setFileId.mock).toHaveBeenCalledWith(
+    expect(manager.saveFile.mock).toHaveBeenCalledWith(
       `my_${mediaType}`,
       `_${mediaType.toUpperCase()}_ID_`
     );
@@ -247,13 +247,13 @@ it('save files uploaded by editMessageMedia with fileAssetTag', async () => {
 
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
 
-  expect(manager.setFileId.mock).toHaveBeenCalledTimes(5);
-  expect(manager.setFileId.mock).toHaveBeenCalledWith(
+  expect(manager.saveFile.mock).toHaveBeenCalledTimes(5);
+  expect(manager.saveFile.mock).toHaveBeenCalledWith(
     'my_photo',
     '_PHOTO_L_ID_'
   );
   editableMedias.forEach((mediaType) => {
-    expect(manager.setFileId.mock).toHaveBeenCalledWith(
+    expect(manager.saveFile.mock).toHaveBeenCalledWith(
       `my_${mediaType}`,
       `_${mediaType.toUpperCase()}_ID_`
     );
@@ -319,10 +319,10 @@ it('save files uploaded by sendMediaGroup with fileAssetTag', async () => {
 
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
 
-  expect(manager.setFileId.mock).toHaveBeenCalledTimes(2);
-  expect(manager.setFileId.mock).toHaveBeenCalledWith(
+  expect(manager.saveFile.mock).toHaveBeenCalledTimes(2);
+  expect(manager.saveFile.mock).toHaveBeenCalledWith(
     'my_photo',
     '_PHOTO_L_ID_'
   );
-  expect(manager.setFileId.mock).toHaveBeenCalledWith('my_video', '_VIDEO_ID_');
+  expect(manager.saveFile.mock).toHaveBeenCalledWith('my_video', '_VIDEO_ID_');
 });

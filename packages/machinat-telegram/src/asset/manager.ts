@@ -35,10 +35,10 @@ export class TelegramAssetsManager {
     return existed || undefined;
   }
 
-  async setAssetId(resource: string, name: string, id: string): Promise<void> {
+  async saveAssetId(resource: string, name: string, id: string): Promise<void> {
     await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .set<string>(name, (existed) => {
+      .update<string>(name, (existed) => {
         if (existed) {
           throw new Error(`${resource} [ ${name} ] already exist`);
         }
@@ -52,7 +52,7 @@ export class TelegramAssetsManager {
       .getAll();
   }
 
-  async removeAssetId(resource: string, name: string): Promise<void> {
+  async discardAssetId(resource: string, name: string): Promise<void> {
     const isDeleted = await this._stateController
       .globalState(this._makeResourceToken(resource))
       .delete(name);
@@ -66,16 +66,16 @@ export class TelegramAssetsManager {
     return this.getAssetId(FILE, name);
   }
 
-  setFileId(name: string, id: string): Promise<void> {
-    return this.setAssetId(FILE, name, id);
+  saveFile(name: string, id: string): Promise<void> {
+    return this.saveAssetId(FILE, name, id);
   }
 
   getAllFiles(): Promise<null | Map<string, string>> {
     return this.getAllAssets(FILE);
   }
 
-  removeFileId(name: string): Promise<void> {
-    return this.removeAssetId(FILE, name);
+  discardFile(name: string): Promise<void> {
+    return this.discardAssetId(FILE, name);
   }
 }
 

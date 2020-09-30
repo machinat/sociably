@@ -4,7 +4,8 @@ import { MessengerAssetsManager } from '../manager';
 
 const state = moxy({
   get: async () => null,
-  set: async () => true,
+  set: async () => {},
+  update: async () => true,
   getAll: async () => null,
   delete: async () => true,
   clear: () => {},
@@ -34,10 +35,8 @@ test('get asset id', async () => {
   const manager = new MessengerAssetsManager(stateManager, bot);
 
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe(undefined);
-  await expect(manager.getAttachmentId('my_attachment')).resolves.toBe(
-    undefined
-  );
-  await expect(manager.getPersonaId('my_persona')).resolves.toBe(undefined);
+  await expect(manager.getAttachment('my_attachment')).resolves.toBe(undefined);
+  await expect(manager.getPersona('my_persona')).resolves.toBe(undefined);
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
@@ -58,14 +57,12 @@ test('get asset id', async () => {
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe('baz');
 
   state.get.mock.fakeReturnValue('_ATTACHMENT_ID_');
-  await expect(manager.getAttachmentId('my_attachment')).resolves.toBe(
+  await expect(manager.getAttachment('my_attachment')).resolves.toBe(
     '_ATTACHMENT_ID_'
   );
 
   state.get.mock.fakeReturnValue('_PERSONA_ID_');
-  await expect(manager.getPersonaId('my_persona')).resolves.toBe(
-    '_PERSONA_ID_'
-  );
+  await expect(manager.getPersona('my_persona')).resolves.toBe('_PERSONA_ID_');
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(6);
   expect(state.get.mock).toHaveBeenCalledTimes(6);
@@ -74,9 +71,9 @@ test('get asset id', async () => {
 test('set asset id', async () => {
   const manager = new MessengerAssetsManager(stateManager, bot);
 
-  await manager.setAssetId('foo', 'bar', 'baz');
-  await manager.setAttachmentId('my_attachment', '_ATTACHMENT_ID_');
-  await manager.setPersonaId('my_persona', '_PERSONA_ID_');
+  await manager.saveAssetId('foo', 'bar', 'baz');
+  await manager.saveAttachment('my_attachment', '_ATTACHMENT_ID_');
+  await manager.savePersona('my_persona', '_PERSONA_ID_');
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
@@ -88,8 +85,8 @@ test('set asset id', async () => {
     ]
   `);
 
-  expect(state.set.mock).toHaveBeenCalledTimes(3);
-  state.set.mock.calls.forEach(({ args: [key, updator] }, i) => {
+  expect(state.update.mock).toHaveBeenCalledTimes(3);
+  state.update.mock.calls.forEach(({ args: [key, updator] }, i) => {
     expect(key).toBe(
       i === 0 ? 'bar' : i === 1 ? 'my_attachment' : 'my_persona'
     );
@@ -98,22 +95,22 @@ test('set asset id', async () => {
     );
   });
 
-  state.set.mock.fake(async (_, updator) => {
+  state.update.mock.fake(async (_, updator) => {
     updator('_EXISTED_RESOURCE_ID_');
   });
 
   await expect(
-    manager.setAssetId('foo', 'bar', 'baz')
+    manager.saveAssetId('foo', 'bar', 'baz')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] already exist"`);
 
   await expect(
-    manager.setAttachmentId('my_attachment', '_ATTACHMENT_ID_')
+    manager.saveAttachment('my_attachment', '_ATTACHMENT_ID_')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"attachment [ my_attachment ] already exist"`
   );
 
   await expect(
-    manager.setPersonaId('my_persona', '_PERSONA_ID_')
+    manager.savePersona('my_persona', '_PERSONA_ID_')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"persona [ my_persona ] already exist"`
   );
@@ -152,9 +149,9 @@ test('get all assets', async () => {
 test('remove asset id', async () => {
   const manager = new MessengerAssetsManager(stateManager, bot);
 
-  await manager.removeAssetId('foo', 'bar');
-  await manager.removeAttachmentId('my_attachment');
-  await manager.removePersonaId('my_persona');
+  await manager.discardAssetId('foo', 'bar');
+  await manager.discardAttachment('my_attachment');
+  await manager.discardPersona('my_persona');
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
@@ -173,17 +170,17 @@ test('remove asset id', async () => {
 
   state.delete.mock.fake(async () => false);
   await expect(
-    manager.removeAssetId('foo', 'bar')
+    manager.discardAssetId('foo', 'bar')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] not exist"`);
 
   await expect(
-    manager.removeAttachmentId('my_attachment')
+    manager.discardAttachment('my_attachment')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"attachment [ my_attachment ] not exist"`
   );
 
   await expect(
-    manager.removePersonaId('my_persona')
+    manager.discardPersona('my_persona')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"persona [ my_persona ] not exist"`
   );

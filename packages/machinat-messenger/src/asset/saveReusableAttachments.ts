@@ -21,7 +21,7 @@ const collectReusableAttachments = (
 
     if (attachmentAssetTag && body.attachment_id) {
       updatingAssets.push(
-        manager.setAttachmentId(attachmentAssetTag, body.attachment_id)
+        manager.saveAttachment(attachmentAssetTag, body.attachment_id)
       );
     }
   }

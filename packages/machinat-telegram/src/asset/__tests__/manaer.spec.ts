@@ -4,6 +4,7 @@ import { TelegramAssetsManager } from '../manager';
 const state = moxy({
   get: async () => null,
   set: async () => true,
+  update: async () => true,
   getAll: async () => null,
   delete: async () => true,
   clear: () => {},
@@ -62,8 +63,8 @@ test('get asset id', async () => {
 test('set asset id', async () => {
   const manager = new TelegramAssetsManager(stateManager, bot);
 
-  await manager.setAssetId('foo', 'bar', 'baz');
-  await manager.setFileId('my_file', '_FILE_ID_');
+  await manager.saveAssetId('foo', 'bar', 'baz');
+  await manager.saveFile('my_file', '_FILE_ID_');
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(2);
   expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
@@ -74,15 +75,15 @@ test('set asset id', async () => {
     ]
   `);
 
-  expect(state.set.mock).toHaveBeenCalledTimes(2);
-  let [key, updator] = state.set.mock.calls[0].args;
+  expect(state.update.mock).toHaveBeenCalledTimes(2);
+  let [key, updator] = state.update.mock.calls[0].args;
   expect(key).toBe('bar');
   expect(updator(null)).toBe('baz');
   expect(() =>
     updator('_EXISTED_BAR_RESOURCE_ID_')
   ).toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] already exist"`);
 
-  [key, updator] = state.set.mock.calls[1].args;
+  [key, updator] = state.update.mock.calls[1].args;
   expect(key).toBe('my_file');
   expect(updator(null)).toBe('_FILE_ID_');
   expect(() =>
@@ -125,18 +126,18 @@ test('get all assets', async () => {
 test('remove asset id', async () => {
   const manager = new TelegramAssetsManager(stateManager, bot);
 
-  await manager.removeAssetId('foo', 'bar');
-  await manager.removeFileId('my_file');
+  await manager.discardAssetId('foo', 'bar');
+  await manager.discardFile('my_file');
 
   expect(stateManager.globalState.mock).toHaveBeenCalledTimes(2);
   expect(state.delete.mock).toHaveBeenCalledTimes(2);
 
   state.delete.mock.fakeReturnValue(false);
   await expect(
-    manager.removeAssetId('foo', 'bar')
+    manager.discardAssetId('foo', 'bar')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] not exist"`);
   await expect(
-    manager.removeFileId('my_file')
+    manager.discardFile('my_file')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"file [ my_file ] not exist"`);
 
   expect(state.delete.mock).toHaveBeenCalledTimes(4);

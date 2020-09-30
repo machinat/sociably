@@ -30,12 +30,12 @@ const app = Machinat.createApp({
 
 app.onEvent(
   container({
-    deps: [Messenger.UserProfiler],
+    deps: [Messenger.Profiler],
   })((profiler) => async ({ bot, event }) => {
     if (event.kind === 'postback') {
       if (event.data === GET_STARTED_KEY) {
         // Get Started button pressed
-        const profile = await profiler.fetchProfile(event.user);
+        const profile = await profiler.getUserProfile(event.user);
         await bot.render(event.channel, <Hello name={profile.name} />);
       } else if (event.data === GIMME_FOX_KEY) {
         // More fox button pressed

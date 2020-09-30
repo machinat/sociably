@@ -4,13 +4,13 @@ import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import Line from '../module';
 import { LineReceiver } from '../receiver';
-import { LineUserProfiler } from '../profiler';
+import { LineProfiler } from '../profiler';
 import { LineBot } from '../bot';
 
 it('export interfaces', () => {
   expect(Line.Receiver).toBe(LineReceiver);
   expect(Line.Bot).toBe(LineBot);
-  expect(Line.UserProfiler).toBe(LineUserProfiler);
+  expect(Line.Profiler).toBe(LineProfiler);
   expect(Line.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
@@ -72,13 +72,13 @@ describe('initModule(configs)', () => {
       Line.Bot,
       Line.Receiver,
       Line.CONFIGS_I,
-      Line.UserProfiler,
+      Line.Profiler,
       HTTP.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(LineBot);
     expect(receiver).toBeInstanceOf(LineReceiver);
-    expect(profiler).toBeInstanceOf(LineUserProfiler);
+    expect(profiler).toBeInstanceOf(LineProfiler);
     expect(configsProvided).toEqual(configs);
     expect(routings).toEqual([
       { name: 'line', path: '/webhook/line', handler: expect.any(Function) },
@@ -101,12 +101,12 @@ describe('initModule(configs)', () => {
     const [bot, configsProvided, profiler, routings] = app.useServices([
       Line.Bot,
       Line.CONFIGS_I,
-      Line.UserProfiler,
+      Line.Profiler,
       HTTP.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(LineBot);
-    expect(profiler).toBeInstanceOf(LineUserProfiler);
+    expect(profiler).toBeInstanceOf(LineProfiler);
     expect(configsProvided).toEqual(configs);
 
     expect(routings).toEqual([]);
@@ -129,12 +129,12 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, profiler] = app.useServices([Base.BotI, Base.UserProfilerI], {
+    const [bot, profiler] = app.useServices([Base.BotI, Base.ProfilerI], {
       platform: 'line',
     });
 
     expect(bot).toBeInstanceOf(LineBot);
-    expect(profiler).toBeInstanceOf(LineUserProfiler);
+    expect(profiler).toBeInstanceOf(LineProfiler);
   });
 
   test('default entryPath to "/"', async () => {

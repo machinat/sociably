@@ -40,7 +40,7 @@ const app = Machinat.createApp({
 
 app.onEvent(
   container({
-    deps: [Base.UserProfilerI],
+    deps: [Base.ProfilerI],
   })((profiler) => async ({ platform, bot, event }) => {
     if (
       (platform === 'line' && event.type === 'follow') ||
@@ -49,7 +49,7 @@ app.onEvent(
         event.data === GET_STARTED_KEY)
     ) {
       // User enter the chatroom
-      const profile = await profiler.fetchProfile(event.user);
+      const profile = await profiler.getUserProfile(event.user);
       await bot.render(event.channel, <Hello name={profile.name} />);
     }
 

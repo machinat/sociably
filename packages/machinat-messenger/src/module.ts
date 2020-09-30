@@ -8,7 +8,7 @@ import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { MESSENGER } from './constant';
 import { BotP } from './bot';
 import { ReceiverP } from './receiver';
-import { UserProfilerP } from './profiler';
+import { ProfilerP } from './profiler';
 import type {
   MessengerPlatformConfigs,
   MessengerEventContext,
@@ -32,7 +32,7 @@ const requestRoutingFactory = factory<HTTPRequestRouting>({
 const Messenger = {
   Bot: BotP,
   Receiver: ReceiverP,
-  UserProfiler: UserProfilerP,
+  Profiler: ProfilerP,
   CONFIGS_I: PLATFORM_CONFIGS_I,
 
   initModule: (
@@ -48,10 +48,10 @@ const Messenger = {
       BotP,
       { provide: Base.BotI, withProvider: BotP, platforms: [MESSENGER] },
 
-      UserProfilerP,
+      ProfilerP,
       {
-        provide: Base.UserProfilerI,
-        withProvider: UserProfilerP,
+        provide: Base.ProfilerI,
+        withProvider: ProfilerP,
         platforms: [MESSENGER],
       },
 
@@ -82,7 +82,7 @@ const Messenger = {
 declare namespace Messenger {
   export type Bot = BotP;
   export type Receiver = ReceiverP;
-  export type UserProfiler = UserProfilerP;
+  export type Profiler = ProfilerP;
 }
 
 export default Messenger;

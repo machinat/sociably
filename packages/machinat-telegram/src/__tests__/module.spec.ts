@@ -10,7 +10,7 @@ import { TelegramBot } from '../bot';
 it('export interfaces', () => {
   expect(Telegram.Receiver).toBe(TelegramReceiver);
   expect(Telegram.Bot).toBe(TelegramBot);
-  expect(Telegram.UserProfiler).toBe(TelegramProfiler);
+  expect(Telegram.Profiler).toBe(TelegramProfiler);
   expect(Telegram.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
@@ -74,7 +74,7 @@ describe('initModule(configs)', () => {
       Telegram.Bot,
       Telegram.Receiver,
       Telegram.CONFIGS_I,
-      Telegram.UserProfiler,
+      Telegram.Profiler,
       HTTP.REQUEST_ROUTINGS_I,
     ]);
 
@@ -105,7 +105,7 @@ describe('initModule(configs)', () => {
     const [bot, configsProvided, profiler, routings] = app.useServices([
       Telegram.Bot,
       Telegram.CONFIGS_I,
-      Telegram.UserProfiler,
+      Telegram.Profiler,
       HTTP.REQUEST_ROUTINGS_I,
     ]);
 
@@ -126,7 +126,7 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, profiler] = app.useServices([Base.BotI, Base.UserProfilerI], {
+    const [bot, profiler] = app.useServices([Base.BotI, Base.ProfilerI], {
       platform: 'telegram',
     });
 

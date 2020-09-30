@@ -62,7 +62,7 @@ const saveUplodedFile = (
           }
 
           if (fileId) {
-            updatingAssets.push(manager.setFileId(fileAssetTag, fileId));
+            updatingAssets.push(manager.saveFile(fileAssetTag, fileId));
           }
         }
       }

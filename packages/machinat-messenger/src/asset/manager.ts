@@ -41,10 +41,10 @@ export class MessengerAssetsManager {
     return existed || undefined;
   }
 
-  async setAssetId(resource: string, name: string, id: string): Promise<void> {
+  async saveAssetId(resource: string, name: string, id: string): Promise<void> {
     await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .set<string>(name, (existed) => {
+      .update<string>(name, (existed) => {
         if (existed) {
           throw new Error(`${resource} [ ${name} ] already exist`);
         }
@@ -58,7 +58,7 @@ export class MessengerAssetsManager {
       .getAll();
   }
 
-  async removeAssetId(resource: string, name: string): Promise<void> {
+  async discardAssetId(resource: string, name: string): Promise<void> {
     const isDeleted = await this._stateController
       .globalState(this._makeResourceToken(resource))
       .delete(name);
@@ -68,24 +68,24 @@ export class MessengerAssetsManager {
     }
   }
 
-  getAttachmentId(name: string): Promise<void | string> {
+  getAttachment(name: string): Promise<void | string> {
     return this.getAssetId(ATTACHMENT, name);
   }
 
-  setAttachmentId(name: string, id: string): Promise<void> {
-    return this.setAssetId(ATTACHMENT, name, id);
+  saveAttachment(name: string, id: string): Promise<void> {
+    return this.saveAssetId(ATTACHMENT, name, id);
   }
 
   getAllAttachments(): Promise<null | Map<string, string>> {
     return this.getAllAssets(ATTACHMENT);
   }
 
-  removeAttachmentId(name: string): Promise<void> {
-    return this.removeAssetId(ATTACHMENT, name);
+  discardAttachment(name: string): Promise<void> {
+    return this.discardAssetId(ATTACHMENT, name);
   }
 
   async renderAttachment(name: string, node: MachinatNode): Promise<string> {
-    const existed = await this.getAttachmentId(name);
+    const existed = await this.getAttachment(name);
     if (existed !== undefined) {
       throw new Error(`attachment [ ${name} ] already exist`);
     }
@@ -96,28 +96,28 @@ export class MessengerAssetsManager {
     }
 
     const { attachment_id: id } = response.results[0].body;
-    await this.setAssetId(ATTACHMENT, name, id);
+    await this.saveAssetId(ATTACHMENT, name, id);
     return id;
   }
 
-  getPersonaId(name: string): Promise<void | string> {
+  getPersona(name: string): Promise<void | string> {
     return this.getAssetId(PERSONA, name);
   }
 
-  setPersonaId(name: string, id: string): Promise<void> {
-    return this.setAssetId(PERSONA, name, id);
+  savePersona(name: string, id: string): Promise<void> {
+    return this.saveAssetId(PERSONA, name, id);
   }
 
   getAllPersonas(): Promise<null | Map<string, string>> {
     return this.getAllAssets(PERSONA);
   }
 
-  removePersonaId(name: string): Promise<void> {
-    return this.removeAssetId(PERSONA, name);
+  discardPersona(name: string): Promise<void> {
+    return this.discardAssetId(PERSONA, name);
   }
 
   async createPersona(name: string, body: any): Promise<string> {
-    const existed = await this.getPersonaId(name);
+    const existed = await this.getPersona(name);
     if (existed !== undefined) {
       throw new Error(`persona [ ${name} ] already exist`);
     }
@@ -129,12 +129,12 @@ export class MessengerAssetsManager {
     );
     const { id } = response.results[0].body;
 
-    await this.setAssetId(PERSONA, name, id);
+    await this.saveAssetId(PERSONA, name, id);
     return id;
   }
 
   async deletePersona(name: string): Promise<string> {
-    const id = await this.getPersonaId(name);
+    const id = await this.getPersona(name);
     if (id === undefined) {
       throw new Error(`persona [ ${name} ] not exist`);
     }

@@ -2,11 +2,15 @@ import type { MachinatChannel, MachinatUser } from '../types';
 import { abstractInterface } from '../service';
 
 export interface StateAccessor {
-  get<T>(key: string): Promise<void | T>;
-  set<T>(key: string, updator: (state: void | T) => void | T): Promise<boolean>;
+  get<T>(key: string): Promise<undefined | T>;
+  set<T>(key: string, value: T): Promise<boolean>;
+  update<T>(
+    key: string,
+    updator: (state: undefined | T) => undefined | T
+  ): Promise<boolean>;
   delete(key: string): Promise<boolean>;
-  getAll(): Promise<null | Map<string, any>>;
-  clear(): Promise<void | number>;
+  getAll(): Promise<Map<string, any>>;
+  clear(): Promise<undefined | number>;
 }
 
 /**

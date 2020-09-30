@@ -5,7 +5,7 @@ export { default as MessengerUser } from './user';
 
 export { BotP as MessengerBot } from './bot';
 export { ReceiverP as MessengerReceiver } from './receiver';
-export { UserProfilerP as MessengerUserProfiler } from './profiler';
+export { ProfilerP as MessengerProfiler } from './profiler';
 
 export { PLATFORM_CONFIGS_I as MESSENGER_CONFIGS_I } from './interface';
 

@@ -1,6 +1,6 @@
 import { provider } from '@machinat/core/service';
-import { BaseUserProfilerI, BaseStateControllerI } from '@machinat/core/base';
-import type { MachinatUserProfile } from '@machinat/core/base/UserProfilerI';
+import { BaseProfilerI, BaseStateControllerI } from '@machinat/core/base';
+import type { MachinatUserProfile } from '@machinat/core/base/ProfilerI';
 import type TelegramUser from './user';
 import type { TelegramChat, TelegramChatTarget } from './channel';
 import { TELEGRAM } from './constant';
@@ -46,7 +46,7 @@ export class TelegramUserProfile implements MachinatUserProfile {
 /**
  * @category Provider
  */
-export class TelegramProfiler implements BaseUserProfilerI {
+export class TelegramProfiler implements BaseProfilerI {
   bot: BotP;
 
   static async photoDataURI(photoResponse: PhotoResponse): Promise<string> {
@@ -72,7 +72,7 @@ export class TelegramProfiler implements BaseUserProfilerI {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async fetchProfile(user: TelegramUser): Promise<TelegramUserProfile> {
+  async getUserProfile(user: TelegramUser): Promise<TelegramUserProfile> {
     return new TelegramUserProfile(user);
   }
 
@@ -155,9 +155,9 @@ export class TelegramProfiler implements BaseUserProfilerI {
   }
 }
 
-export const UserProfilerP = provider<TelegramProfiler>({
+export const ProfilerP = provider<TelegramProfiler>({
   lifetime: 'scoped',
   deps: [BotP, { require: BaseStateControllerI, optional: true }],
 })(TelegramProfiler);
 
-export type UserProfilerP = TelegramProfiler;
+export type ProfilerP = TelegramProfiler;

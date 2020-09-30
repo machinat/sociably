@@ -1,6 +1,6 @@
 import type { PlatformModule, AppProvision } from '@machinat/core/types';
 import { container, factory } from '@machinat/core/service';
-import { BaseBotI, BaseUserProfilerI } from '@machinat/core/base';
+import { BaseBotI, BaseProfilerI } from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import { HTTPRequestRouting } from '@machinat/http/types';
 
@@ -8,7 +8,7 @@ import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { LINE } from './constant';
 import { ReceiverP } from './receiver';
 import { BotP } from './bot';
-import { UserProfilerP } from './profiler';
+import { ProfilerP } from './profiler';
 import type {
   LinePlatformConfigs,
   LineEventContext,
@@ -32,7 +32,7 @@ const requestRoutingFactory = factory<HTTPRequestRouting>({
 const Line = {
   Bot: BotP,
   Receiver: ReceiverP,
-  UserProfiler: UserProfilerP,
+  Profiler: ProfilerP,
   CONFIGS_I: PLATFORM_CONFIGS_I,
 
   initModule: (
@@ -48,10 +48,10 @@ const Line = {
       BotP,
       { provide: BaseBotI, withProvider: BotP, platforms: [LINE] },
 
-      UserProfilerP,
+      ProfilerP,
       {
-        provide: BaseUserProfilerI,
-        withProvider: UserProfilerP,
+        provide: BaseProfilerI,
+        withProvider: ProfilerP,
         platforms: [LINE],
       },
 
@@ -82,7 +82,7 @@ const Line = {
 declare namespace Line {
   export type Bot = BotP;
   export type Receiver = ReceiverP;
-  export type UserProfiler = UserProfilerP;
+  export type Profiler = ProfilerP;
 }
 
 export default Line;

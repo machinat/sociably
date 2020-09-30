@@ -3,14 +3,14 @@ import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import Messenger from '../module';
-import { MessengerUserProfiler } from '../profiler';
+import { MessengerProfiler } from '../profiler';
 import { MessengerReceiver } from '../receiver';
 import { MessengerBot } from '../bot';
 
 it('export interfaces', () => {
   expect(Messenger.Receiver).toBe(MessengerReceiver);
   expect(Messenger.Bot).toBe(MessengerBot);
-  expect(Messenger.UserProfiler).toBe(MessengerUserProfiler);
+  expect(Messenger.Profiler).toBe(MessengerProfiler);
   expect(Messenger.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
@@ -72,14 +72,14 @@ describe('initModule(configs)', () => {
     ] = app.useServices([
       Messenger.Bot,
       Messenger.Receiver,
-      Messenger.UserProfiler,
+      Messenger.Profiler,
       Messenger.CONFIGS_I,
       HTTP.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
     expect(receiver).toBeInstanceOf(MessengerReceiver);
-    expect(profiler).toBeInstanceOf(MessengerUserProfiler);
+    expect(profiler).toBeInstanceOf(MessengerProfiler);
     expect(configsProvided).toEqual(configs);
     expect(routings).toEqual([
       {
@@ -107,13 +107,13 @@ describe('initModule(configs)', () => {
 
     const [bot, profiler, configsProvided, routings] = app.useServices([
       Messenger.Bot,
-      Messenger.UserProfiler,
+      Messenger.Profiler,
       Messenger.CONFIGS_I,
       HTTP.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
-    expect(profiler).toBeInstanceOf(MessengerUserProfiler);
+    expect(profiler).toBeInstanceOf(MessengerProfiler);
     expect(configsProvided).toEqual(configs);
 
     expect(routings).toEqual([]);
@@ -138,12 +138,12 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, profiler] = app.useServices([Base.BotI, Base.UserProfilerI], {
+    const [bot, profiler] = app.useServices([Base.BotI, Base.ProfilerI], {
       platform: 'messenger',
     });
 
     expect(bot).toBeInstanceOf(MessengerBot);
-    expect(profiler).toBeInstanceOf(MessengerUserProfiler);
+    expect(profiler).toBeInstanceOf(MessengerProfiler);
 
     bot.stop();
   });

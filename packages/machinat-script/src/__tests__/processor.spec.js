@@ -16,7 +16,7 @@ import {
 
 const state = moxy({
   get: async () => {},
-  set: async () => false,
+  update: async () => false,
   delete: async () => false,
 });
 
@@ -396,13 +396,13 @@ describe('#save(runtime)', () => {
     await expect(processor.save(runtime)).resolves.toBe(true);
 
     expect(stateManager.channelState.mock).toHaveBeenCalledWith(channel);
-    expect(state.set.mock).toHaveBeenCalledTimes(1);
+    expect(state.update.mock).toHaveBeenCalledTimes(1);
 
-    expect(state.set.mock).toHaveBeenCalledWith(
+    expect(state.update.mock).toHaveBeenCalledWith(
       '$$machinat:script',
       expect.any(Function)
     );
-    let [, updater] = state.set.mock.calls[0].args;
+    let [, updater] = state.update.mock.calls[0].args;
 
     let updatedState = updater(undefined);
     expect(updatedState).toMatchInlineSnapshot(
@@ -426,8 +426,8 @@ describe('#save(runtime)', () => {
 
     await runtime.run({ hello: 'world' });
     await expect(processor.save(runtime)).resolves.toBe(true);
-    expect(state.set.mock).toHaveBeenCalledTimes(2);
-    [, updater] = state.set.mock.calls[1].args;
+    expect(state.update.mock).toHaveBeenCalledTimes(2);
+    [, updater] = state.update.mock.calls[1].args;
 
     updatedState = updater(updatedState);
     expect(updatedState).toMatchInlineSnapshot(
@@ -451,8 +451,8 @@ describe('#save(runtime)', () => {
 
     await runtime.run({ hello: 'world' });
     await expect(processor.save(runtime)).resolves.toBe(true);
-    expect(state.set.mock).toHaveBeenCalledTimes(3);
-    [, updater] = state.set.mock.calls[2].args;
+    expect(state.update.mock).toHaveBeenCalledTimes(3);
+    [, updater] = state.update.mock.calls[2].args;
 
     updatedState = updater(updatedState);
     expect(updatedState).toMatchInlineSnapshot(
@@ -499,14 +499,14 @@ describe('#save(runtime)', () => {
     await expect(processor.save(runtime)).resolves.toBe(true);
 
     expect(stateManager.channelState.mock).toHaveBeenCalledWith(channel);
-    expect(state.set.mock).toHaveBeenCalledTimes(1);
+    expect(state.update.mock).toHaveBeenCalledTimes(1);
 
-    expect(state.set.mock).toHaveBeenCalledWith(
+    expect(state.update.mock).toHaveBeenCalledWith(
       '$$machinat:script',
       expect.any(Function)
     );
 
-    let [, updater] = state.set.mock.calls[0].args;
+    let [, updater] = state.update.mock.calls[0].args;
     const updatedState = updater(initialState);
     expect(updatedState).toMatchInlineSnapshot(
       { timestamp: expect.any(Number) },
@@ -531,7 +531,7 @@ describe('#save(runtime)', () => {
     await runtime.run({ hello: 'script' });
     await expect(processor.save(runtime)).resolves.toBe(true);
 
-    [, updater] = state.set.mock.calls[1].args;
+    [, updater] = state.update.mock.calls[1].args;
     expect(updater(updatedState)).toBe(undefined);
   });
 
@@ -548,7 +548,7 @@ describe('#save(runtime)', () => {
     expect(runtime.isFinished).toBe(true);
     await expect(processor.save(runtime)).resolves.toBe(false);
 
-    expect(state.set.mock).not.toHaveBeenCalled();
+    expect(state.update.mock).not.toHaveBeenCalled();
   });
 
   test('throw if newly initiated runtime save while runtime state existing', async () => {
@@ -558,7 +558,7 @@ describe('#save(runtime)', () => {
     ]);
     const runtime = await processor.init(channel, MyScript, { goto: '#3' });
 
-    state.set.mock.fake(async (key, updater) =>
+    state.update.mock.fake(async (key, updater) =>
       updater({
         version: 'V0',
         callStack: [
@@ -589,7 +589,7 @@ describe('#save(runtime)', () => {
     ]);
     const runtime = await processor.continue(channel);
 
-    state.set.mock.fake(async (key, updater) => updater(undefined));
+    state.update.mock.fake(async (key, updater) => updater(undefined));
     await runtime.run();
 
     await expect(processor.save(runtime)).rejects.toMatchInlineSnapshot(
@@ -612,7 +612,7 @@ describe('#save(runtime)', () => {
     ]);
     const runtime = await processor.continue(channel);
 
-    state.set.mock.fake(async (key, updater) =>
+    state.update.mock.fake(async (key, updater) =>
       updater({
         version: 'V0',
         callStack: [

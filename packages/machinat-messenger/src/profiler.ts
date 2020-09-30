@@ -1,6 +1,6 @@
 import { provider } from '@machinat/core/service';
-import { BaseUserProfilerI, BaseStateControllerI } from '@machinat/core/base';
-import type { MachinatUserProfile } from '@machinat/core/base/UserProfilerI';
+import { BaseProfilerI, BaseStateControllerI } from '@machinat/core/base';
+import type { MachinatUserProfile } from '@machinat/core/base/ProfilerI';
 
 import { BotP } from './bot';
 import type MessengerUser from './user';
@@ -71,10 +71,10 @@ type ProfilerOptions = {
 };
 
 /**
- * MessengerUserProfiler fetch user profile from Messenger platform.
+ * MessengerProfiler fetch user profile from Messenger platform.
  * @category Provider
  */
-export class MessengerUserProfiler implements BaseUserProfilerI {
+export class MessengerProfiler implements BaseProfilerI {
   bot: BotP;
   stateController: null | BaseStateControllerI;
   profileCacheTime: number;
@@ -94,7 +94,7 @@ export class MessengerUserProfiler implements BaseUserProfilerI {
     ].join(',');
   }
 
-  async fetchProfile(user: MessengerUser): Promise<MessengerUserProfile> {
+  async getUserProfile(user: MessengerUser): Promise<MessengerUserProfile> {
     if (this.stateController) {
       const cached = await this.stateController
         .userState(user)
@@ -114,19 +114,19 @@ export class MessengerUserProfiler implements BaseUserProfilerI {
     if (this.stateController) {
       await this.stateController
         .userState(user)
-        .set<ProfileCache>(PROFILE_KEY, () => ({
+        .set<ProfileCache>(PROFILE_KEY, {
           data: rawProfile,
           fetchAt: Date.now(),
-        }));
+        });
     }
 
     return new MessengerUserProfile(rawProfile);
   }
 }
 
-export const UserProfilerP = provider<MessengerUserProfiler>({
+export const ProfilerP = provider<MessengerProfiler>({
   lifetime: 'scoped',
   deps: [BotP, { require: BaseStateControllerI, optional: true }],
-})(MessengerUserProfiler);
+})(MessengerProfiler);
 
-export type UserProfilerP = MessengerUserProfiler;
+export type ProfilerP = MessengerProfiler;
