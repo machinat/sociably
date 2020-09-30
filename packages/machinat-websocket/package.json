@@ -35,11 +35,11 @@
     "ws": "^7.2.5"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.2.0-alpha.2",
-    "@machinat/http": "^0.2.0-alpha.2"
+    "@machinat/core": "^0.3.0-beta.0",
+    "@machinat/http": "^0.3.0-beta.0"
   },
   "optionalDependencies": {
-    "@machinat/auth": "^0.2.0-beta.0",
+    "@machinat/auth": "^0.3.0-beta.0",
     "bufferutil": "^4.0.1",
     "utf-8-validate": "^5.0.2"
   },

@@ -26,6 +26,6 @@
     "invariant": "^2.2.4"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.2.0-alpha.2"
+    "@machinat/core": "^0.3.0-beta.0"
   }
 }
