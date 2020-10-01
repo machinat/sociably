@@ -14,7 +14,8 @@
     ".": "./lib/index.js",
     "./client": "./lib/client/index.js",
     "./auth": "./lib/auth/index.js",
-    "./auth/client": "./lib/auth/client.js"
+    "./auth/client": "./lib/auth/client.js",
+    "./types": "./lib/types.js"
   },
   "files": [
     "lib/*",

@@ -19,7 +19,8 @@
     "./service": "./lib/service/index.js",
     "./base": "./lib/base/index.js",
     "./iterator/": "./lib/iterator/",
-    "./utils/": "./lib/utils/"
+    "./utils/": "./lib/utils/",
+    "./types": "./lib/types.js"
   },
   "files": [
     "lib/*",

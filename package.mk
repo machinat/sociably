@@ -14,7 +14,12 @@ lib/%.js: src/%.ts*
 
 build: | lib
 	if [ -f $(CURDIR)/.mark_require_building ]; then \
-		NODE_ENV=production $(babel) --config-file $(babel_conifg) --verbose --source-maps --extensions .ts,.tsx -d lib src; \
+		NODE_ENV=production $(babel) src \
+		  -d lib \
+		  --config-file $(babel_conifg) \
+		  --extensions .ts,.tsx \
+		  --source-maps \
+		  --verbose; \
 		rm $(CURDIR)/.mark_require_building; \
 	fi
 

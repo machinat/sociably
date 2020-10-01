@@ -12,7 +12,8 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "keywords": "./lib/keyword.ts"
+    "./keywords": "./lib/keyword.js",
+    "./types": "./lib/types.js"
   },
   "files": [
     "lib/*",

@@ -4,7 +4,11 @@
   "exclude": ["src/**/__tests__/*", "**/__mocks__/*"],
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "baseUrl": ".",
+    "paths": {
+      "@machinat/core/*": ["../core/lib/*"]
+    }
   },
   "references": [
     { "path": "../core/tsconfig.build.json" }

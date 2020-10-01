@@ -38,7 +38,7 @@
     "jest": "^26.4.1",
     "lerna": "^3.22.1",
     "nock": "^12.0.0",
-    "polyfill-exports": "^0.3.0-beta.4",
+    "polyfill-exports": "^0.3.0-beta.6",
     "prettier": "^2.0.5",
     "typedoc": "^0.18.0",
     "typescript": "^4.0.2"

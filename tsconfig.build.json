@@ -3,17 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
-    "emitDeclarationOnly": true,
-    "rootDir": "./packages",
-    "baseUrl": "./packages",
-    "paths": {
-      "@machinat/auth": ["auth/lib/index.js"],
-      "@machinat/auth/*": ["auth/lib/*"],
-      "@machinat/core": ["core/lib/index.js"],
-      "@machinat/core/*": ["core/lib/*"],
-      "@machinat/http": ["http/lib/index.js"],
-      "@machinat/http/*": ["http/lib/*"]
-    }
+    "emitDeclarationOnly": true
   },
   "typedocOptions": {
     "name": "Machinat",

@@ -13,7 +13,8 @@
   "exports": {
     ".": "./lib/index.js",
     "./file": "./lib/file/index.js",
-    "./inMemory": "./lib/inMemory/index.js"
+    "./inMemory": "./lib/inMemory/index.js",
+    "./types": "./lib/types.js"
   },
   "files": [
     "lib/*",
