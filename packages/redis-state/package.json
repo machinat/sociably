@@ -1,6 +1,6 @@
 {
   "name": "@machinat/redis-state",
-  "version": "0.3.0-beta.1",
+  "version": "0.3.0-beta.2",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
