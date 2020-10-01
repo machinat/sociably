@@ -68,10 +68,10 @@ yarn add @machinat/messenger @machinat/line # ...
 
 For now we support the platforms listed below, please check the readme of the package for the usage guide.
 
-- Messenger - [`@machinat/messenger`](../packages/machinat-messenger), receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
-- LINE - [`@machinat/line`](../packages/machinat-line), receive/send messages as a [LINE](https://line.me) official account.
-- Next.js - [`@machinat/next`](../packages/machinat-next), serve your web app with [Next.js](https://nextjs.org/).
-- WebSocket - [`@machinat/websocket`](../packages/machinat-websocket), connect to the web front-end with [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
+- Messenger - [`@machinat/messenger`](../packages/messenger), receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
+- LINE - [`@machinat/line`](../packages/line), receive/send messages as a [LINE](https://line.me) official account.
+- Next.js - [`@machinat/next`](../packages/next), serve your web app with [Next.js](https://nextjs.org/).
+- WebSocket - [`@machinat/websocket`](../packages/websocket), connect to the web front-end with [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
 
 ## Enabling JSX
 

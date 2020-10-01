@@ -1,9 +1,19 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
     "declaration": true,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "rootDir": "./packages",
+    "baseUrl": "./packages",
+    "paths": {
+      "@machinat/auth": ["auth/lib/index.js"],
+      "@machinat/auth/*": ["auth/lib/*"],
+      "@machinat/core": ["core/lib/index.js"],
+      "@machinat/core/*": ["core/lib/*"],
+      "@machinat/http": ["http/lib/index.js"],
+      "@machinat/http/*": ["http/lib/*"]
+    }
   },
   "typedocOptions": {
     "name": "Machinat",
@@ -11,14 +21,14 @@
     "out": "api",
     "readme": "./README.md",
     "exclude": [
-      "**/machinat-jest-snapshot-serializer/**",
+      "**/jest-snapshot-serializer/**",
       "**/__tests__/*",
       "**/__mocks__/*"
     ],
     "stripInternal": true,
     "excludePrivate": true,
     "ignoreCompilerErrors": true,
-    "external-modulemap": ".*packages/machinat-([^/]+)/.*",
+    "external-modulemap": ".*packages/([^/]+)/.*",
     "categoryOrder": [
       "Component",
       "Provider",

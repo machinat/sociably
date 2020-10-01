@@ -1,0 +1,36 @@
+{
+  "name": "@machinat/simple-state",
+  "version": "0.3.0-beta.0",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/machinat/machinat.git",
+    "directory": "packages/session"
+  },
+  "homepage": "https://github.com/machinat/machinat#readme",
+  "bugs": "https://github.com/machinat/machinat/issues",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./file": "./lib/file/index.js",
+    "./inMemory": "./lib/inMemory/index.js"
+  },
+  "files": [
+    "lib/*",
+    "README.md",
+    "polyfill-exports.js"
+  ],
+  "scripts": {
+    "postinstall": "./polyfill-exports.js"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4"
+  },
+  "peerDependencies": {
+    "@machinat/core": "^0.3.0-beta.0"
+  }
+}

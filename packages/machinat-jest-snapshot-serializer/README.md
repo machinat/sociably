@@ -1,1 +1,0 @@
-# machinat-jest-snapshot-serializer

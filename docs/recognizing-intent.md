@@ -4,7 +4,7 @@ Intent recognition is one essential step to understand your user while building 
 
 ## Install
 
-For now we support `DialogFlow` only, check [the package](../packages/machinat-dialogflow) for the install details. There would be more intent recognition suppliers supported in the future.
+For now we support `DialogFlow` only, check [the package](../packages/dialogflow) for the install details. There would be more intent recognition suppliers supported in the future.
 
 Add the module into your app like:
 

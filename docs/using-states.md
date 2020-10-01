@@ -23,8 +23,8 @@ Machinat.createApp({
 
 For now the modules listed below with different kinds of storage are officially supported, please check the package readme for more details.
 
-- [`@machinat/simple-state`](/packages/machinat-simple-state): provide `FileState` and `InMemoryState` for testing purposes, using in production environment is not recommended.
-- [`@machinat/redis-state`](/packages/machinat-redis-state): save and load state with [Redis](https://redis.io/) in-memory database.
+- [`@machinat/simple-state`](/packages/simple-state): provide `FileState` and `InMemoryState` for testing purposes, using in production environment is not recommended.
+- [`@machinat/redis-state`](/packages/redis-state): save and load state with [Redis](https://redis.io/) in-memory database.
 
 ## Use the State
 

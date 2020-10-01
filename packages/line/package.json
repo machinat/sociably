@@ -1,0 +1,44 @@
+{
+  "name": "@machinat/line",
+  "version": "0.3.0-beta.0",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/machinat/machinat.git",
+    "directory": "packages/line"
+  },
+  "homepage": "https://github.com/machinat/machinat#readme",
+  "bugs": "https://github.com/machinat/machinat/issues",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./components": "./lib/components/index.js",
+    "./asset": "./lib/asset/index.js",
+    "./auth": "./lib/auth/index.js",
+    "./auth/client": "./lib/auth/client.js"
+  },
+  "files": [
+    "lib/*",
+    "README.md",
+    "polyfill-exports.js"
+  ],
+  "scripts": {
+    "postinstall": "./polyfill-exports.js"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4",
+    "node-fetch": "^2.6.0",
+    "warning": "^4.0.2"
+  },
+  "peerDependencies": {
+    "@machinat/core": "^0.3.0-beta.0",
+    "@machinat/http": "^0.3.0-beta.0"
+  },
+  "devDependencies": {
+    "jsdom": "^15.2.1"
+  }
+}

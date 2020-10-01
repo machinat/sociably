@@ -93,7 +93,7 @@ Callback pass to `client.onEvent()` would receive a similar context as server-si
 
 ### Serve the Web App
 
-You are free to choose any way to build and serve the web app. But if you are using React and Next.js for server rendering, you can use [`@machinat/next`](../packages/machinat-next) to serve a Next.js server along with your Machinat app.
+You are free to choose any way to build and serve the web app. But if you are using React and Next.js for server rendering, you can use [`@machinat/next`](../packages/next) to serve a Next.js server along with your Machinat app.
 
 ## Integrate Authorization
 

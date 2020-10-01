@@ -25,8 +25,8 @@ tsconfig.tsbuildinfo: $(source_files) lib
 	$(tsc) -b --listEmittedFiles $(CURDIR)/tsconfig.build.json
 
 polyfill-exports.js: $(CURDIR)/package.json
-	$(polyfill_exports) $(CURDIR)
+	$(polyfill_exports) $(CURDIR) --ts-declaration
 
 clean:
 	rm -rf lib
-	rm -f tsconfig.tsbuildinfo polyfill-exports.js
+	rm -f tsconfig.build.tsbuildinfo polyfill-exports.js

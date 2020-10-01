@@ -1,0 +1,1 @@
+# @machinat/jest-snapshot-serializer

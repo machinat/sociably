@@ -1,0 +1,49 @@
+{
+  "name": "@machinat/websocket",
+  "version": "0.3.0-beta.0",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/machinat/machinat.git",
+    "directory": "packages/websocket"
+  },
+  "homepage": "https://github.com/machinat/machinat#readme",
+  "bugs": "https://github.com/machinat/machinat/issues",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client/index.js",
+    "./auth": "./lib/auth/index.js",
+    "./auth/client": "./lib/auth/client.js"
+  },
+  "files": [
+    "lib/*",
+    "README.md",
+    "polyfill-exports.js"
+  ],
+  "scripts": {
+    "postinstall": "./polyfill-exports.js"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4",
+    "thenifiedly": "^0.2.1",
+    "uniqid": "^5.2.0",
+    "ws": "^7.2.5"
+  },
+  "peerDependencies": {
+    "@machinat/core": "^0.3.0-beta.0",
+    "@machinat/http": "^0.3.0-beta.0"
+  },
+  "optionalDependencies": {
+    "@machinat/auth": "^0.3.0-beta.0",
+    "bufferutil": "^4.0.1",
+    "utf-8-validate": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/ws": "^7.2.6"
+  }
+}

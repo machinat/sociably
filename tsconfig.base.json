@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": ["es2018"],
+    "module": "commonjs",
+    "target": "es2018",
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "jsxFactory": "Machinat.createElement",
+    "jsxFragmentFactory": "Machinat.Fragment",
+    "experimentalDecorators": true,
+    "types": ["node"]
+  }
+}
