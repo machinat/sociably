@@ -11,7 +11,12 @@ import {
 } from './symbol';
 import createElement from './createElement';
 import App from './app';
-import type { AppConfig, EventContext } from './types';
+import type {
+  AppConfig,
+  PlatformModule,
+  MachinatElement,
+  NativeComponent,
+} from './types';
 
 /**
  * @category Root
@@ -23,12 +28,32 @@ const Machinat = {
   Thunk: MACHINAT_THUNK_TYPE,
   Raw: MACHINAT_RAW_TYPE,
   createElement,
-  createApp<Context extends EventContext<any, any, any>>(
-    config: AppConfig<Context>
-  ): App<Context> {
-    const app = new App<Context>(config);
+  createApp<Platform extends PlatformModule<any, any, any, any, any>>(
+    config: AppConfig<Platform>
+  ): App<Platform> {
+    const app = new App(config);
     return app;
   },
 };
 
 export default Machinat;
+
+declare global {
+  namespace JSX {
+    type Element = MachinatElement<any, any>;
+    type ElementClass = NativeComponent<any, any>;
+
+    interface ElementChildrenAttribute {
+      children: {};
+    }
+
+    type LibraryManagedAttributes<C, P> = C extends NativeComponent<
+      infer T,
+      any
+    >
+      ? T
+      : P;
+
+    // interface IntrinsicElements {}
+  }
+}

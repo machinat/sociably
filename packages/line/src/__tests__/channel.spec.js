@@ -1,3 +1,4 @@
+import LineUser from '../user';
 import LineChat from '../channel';
 
 test('utob channel', () => {
@@ -40,7 +41,7 @@ test('group channel', () => {
   expect(channel.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._GROUP_ID_"`);
 });
 
-describe('LineChat.fromMessagingSource()', () => {
+describe('LineChat.fromMessagingSource(channelId, source)', () => {
   test('user source', () => {
     expect(
       LineChat.fromMessagingSource('_CHANNEL_ID_', {
@@ -69,4 +70,13 @@ describe('LineChat.fromMessagingSource()', () => {
       })
     ).toEqual(new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'));
   });
+});
+
+test('LineChat.fromUser(channelId, user)', () => {
+  expect(
+    LineChat.fromUser(
+      '_CHANNEL_ID_',
+      new LineUser('_PORVIDER_ID_', '_USER_ID_')
+    )
+  ).toEqual(new LineChat('_CHANNEL_ID_', 'utob', '_USER_ID_'));
 });

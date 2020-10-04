@@ -1,6 +1,10 @@
 export { default } from './module';
 
-export { TelegramChat, TelegramChatInstance } from './channel';
+export {
+  TelegramChat,
+  TelegramChatInstance,
+  TelegramChatTarget,
+} from './channel';
 export { default as TelegramUser } from './user';
 
 export { BotP as TelegramBot } from './bot';

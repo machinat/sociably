@@ -1,6 +1,6 @@
 export { default } from './module';
 
-export { default as MessengerChannel } from './channel';
+export { default as MessengerChat } from './channel';
 export { default as MessengerUser } from './user';
 
 export { BotP as MessengerBot } from './bot';

@@ -9,6 +9,8 @@
     "jsxFactory": "Machinat.createElement",
     "jsxFragmentFactory": "Machinat.Fragment",
     "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
     "types": ["node"]
   }
 }

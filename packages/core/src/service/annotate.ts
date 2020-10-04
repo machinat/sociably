@@ -33,7 +33,9 @@ const validateLifetime = (lifetime: string) => {
  * container marks a function as a container and annotate the dependencies.
  * @category Service Registry
  */
-export const container = <T>({ name, deps = [] }: InjectOptions = {}) => (
+export const container = <_T>({ name, deps = [] }: InjectOptions = {}) => <
+  T = _T
+>(
   fn: (...args: any[]) => T
 ): ServiceContainer<T> => {
   const requirements = deps.map(polishServiceRequirement);
@@ -62,12 +64,12 @@ type Constructor<T> = Function & {
  * also an interface can be implemented.
  * @category Service Registry
  */
-export const provider = <T>({
+export const provider = <_T>({
   name,
   deps = [],
   factory,
   lifetime,
-}: ProvideOptions<T>) => (
+}: ProvideOptions<_T>) => <T extends _T = _T>(
   klazz: Constructor<T>
 ): ServiceProvider<T> & Constructor<T> => {
   validateLifetime(lifetime);
@@ -93,7 +95,9 @@ type FactoryOptions = {
  * factory annotate a factory function as a provider.
  * @category Service Registry
  */
-export const factory = <T>({ name, deps = [], lifetime }: FactoryOptions) => (
+export const factory = <_T>({ name, deps = [], lifetime }: FactoryOptions) => <
+  T = _T
+>(
   factoryFn: (...args: any[]) => T
 ): ServiceProvider<T> => {
   validateLifetime(lifetime);
@@ -121,14 +125,14 @@ type AbstractConstructor<T> = Function & {
  * abstract annotate an abstract class as a servcie interface.
  * @category Service Registry
  */
-export const abstractInterface = <T>({
-  name,
-}: AnstractInterfaceOptions = {}) => (
+export const abstractInterface = <_T>(options?: AnstractInterfaceOptions) => <
+  T = _T
+>(
   klazz: AbstractConstructor<T>
 ): ServiceInterface<T> & Constructor<T> => {
   return Object.defineProperties(klazz, {
     $$typeof: { value: MACHINAT_SERVICE_INTERFACE },
-    $$name: { value: name || klazz.name },
+    $$name: { value: options?.name || klazz.name },
     $$multi: { value: false },
   });
 };

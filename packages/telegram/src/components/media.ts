@@ -12,13 +12,19 @@ import {
   TelegramParseMode,
 } from '../types';
 
-type WithFileProps = {
+type FileIdProps = {
   /** The file id already stored somewhere on the Telegram servers. */
-  fileId?: string;
+  fileId: string;
+};
+
+type FileURLProps = {
   /** HTTP URL for the file to be sent. */
-  url?: string;
+  url: string;
+};
+
+type FileDataProps = {
   /** The file content data when uploading the file directly. */
-  fileData?: string | Buffer | NodeJS.ReadableStream;
+  fileData: string | Buffer | NodeJS.ReadableStream;
   /** Metadata about the uploading `fileData` if needed (while using Buffer). */
   fileInfo?: UploadingFileInfo;
   /**
@@ -28,6 +34,13 @@ type WithFileProps = {
    */
   fileAssetTag?: string;
 };
+
+type WithFileProps = FileIdProps | FileURLProps | FileDataProps;
+
+type FlattenFileProps<T> = Omit<T, keyof WithFileProps> &
+  Partial<FileIdProps> &
+  Partial<FileURLProps> &
+  Partial<FileDataProps>;
 
 type WithCaptionProps = {
   /** File caption (may also be used when resending photos by file_id), 0-1024 characters after entities parsing */
@@ -64,7 +77,7 @@ const __Photo: FunctionOf<TelegramComponent<
     replyToMessageId,
     replyMarkup,
     fileAssetTag,
-  } = node.props;
+  } = node.props as FlattenFileProps<PhotoProps>;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -138,7 +151,7 @@ const __Audio: FunctionOf<TelegramComponent<
     thumbnailFileData,
     thumbnailFileInfo,
     fileAssetTag,
-  } = node.props;
+  } = node.props as FlattenFileProps<AudioProps>;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -217,7 +230,7 @@ const __Document: FunctionOf<TelegramComponent<
     thumbnailFileData,
     thumbnailFileInfo,
     fileAssetTag,
-  } = node.props;
+  } = node.props as FlattenFileProps<DocumentProps>;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -306,7 +319,7 @@ const __Video: FunctionOf<TelegramComponent<
     height,
     supportsStreaming,
     fileAssetTag,
-  } = node.props;
+  } = node.props as FlattenFileProps<VideoProps>;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -396,7 +409,7 @@ const __Animation: FunctionOf<TelegramComponent<
     width,
     height,
     fileAssetTag,
-  } = node.props;
+  } = node.props as FlattenFileProps<AnimationProps>;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -476,7 +489,7 @@ const __Voice: FunctionOf<TelegramComponent<
     replyMarkup,
     duration,
     fileAssetTag,
-  } = node.props;
+  } = node.props as FlattenFileProps<VoiceProps>;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -549,7 +562,7 @@ const __VideoNote: FunctionOf<TelegramComponent<
     duration,
     length,
     fileAssetTag,
-  } = node.props;
+  } = node.props as FlattenFileProps<VideoNoteProps>;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -730,7 +743,7 @@ const __Sticker: FunctionOf<TelegramComponent<
     replyToMessageId,
     replyMarkup,
     fileAssetTag,
-  } = node.props;
+  } = node.props as FlattenFileProps<StickerProps>;
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   const uploadingFiles: UploadingFile[] = [];

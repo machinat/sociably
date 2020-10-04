@@ -91,6 +91,8 @@ export type NativeComponent<Props, Segment extends IntermediateSegment<any>> = {
   ): null | Segment[] | Promise<null | Segment[]>;
   $$typeof: typeof MACHINAT_NATIVE_TYPE;
   $$platform: string;
+  // HACK: make ts compiler accept it as class component
+  new (): NativeComponent<any, any>;
 };
 
 export type NativeElement<
@@ -239,11 +241,19 @@ export type PlatformModule<
   )[];
 };
 
-export type AppConfig<Context extends EventContext<any, any, any>> = {
-  platforms?: PlatformModule<Context, any, any, any, any>[];
+export type AppConfig<
+  Platform extends PlatformModule<any, any, any, any, any>
+> = {
+  platforms?: Platform[];
   modules?: ServiceModule[];
   bindings?: (ServiceProvider<any> | AppProvision<any>)[];
 };
+
+export type GetAppContext<
+  Platform extends PlatformModule<any, any, any, any, any>
+> = Platform extends PlatformModule<infer Context, any, any, any, any>
+  ? Context
+  : never;
 
 export type InitScopeFn = () => ServiceScope;
 

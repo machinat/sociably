@@ -9,11 +9,13 @@ import type {
 import type {
   AppConfig,
   EventContext,
+  GetAppContext,
   EventMiddleware,
   DispatchMiddleware,
   PopEventWrapper,
   DispatchWrapper,
   PlatformMounter,
+  PlatformModule,
 } from './types';
 
 type EventListenable<Context> =
@@ -31,8 +33,11 @@ const ENUM_STARTING = 1;
 /** @ignore */
 const ENUM_STARTED = 2;
 
-export default class MachinatApp<Context extends EventContext<any, any, any>> {
-  config: AppConfig<Context>;
+export default class MachinatApp<
+  Platform extends PlatformModule<any, any, any, any, any>,
+  Context extends EventContext<any, any, any> = GetAppContext<Platform>
+> {
+  config: AppConfig<Platform>;
   private _status: number;
   private _serviceSpace: ServiceSpace;
   private _eventListeners: EventListenable<Context>[];
@@ -42,7 +47,7 @@ export default class MachinatApp<Context extends EventContext<any, any, any>> {
     return this._status === ENUM_STARTED;
   }
 
-  constructor(config: AppConfig<Context>) {
+  constructor(config: AppConfig<Platform>) {
     this.config = config;
     this._status = ENUM_UNSTARTED;
 
@@ -124,7 +129,7 @@ export default class MachinatApp<Context extends EventContext<any, any, any>> {
     return scope.useServices(targets);
   }
 
-  onEvent(listener: EventListenable<Context>): MachinatApp<Context> {
+  onEvent(listener: EventListenable<Context>): MachinatApp<Platform, Context> {
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }
@@ -153,7 +158,7 @@ export default class MachinatApp<Context extends EventContext<any, any, any>> {
     }
   }
 
-  onError(listener: ErrorListenable): MachinatApp<Context> {
+  onError(listener: ErrorListenable): MachinatApp<Platform, Context> {
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }

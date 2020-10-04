@@ -98,6 +98,7 @@ export class WebSocketReceiver<AuthInfo> {
   private _popEvent: PopEventFn<WebSocketEventContext<AuthInfo>, null>;
   private _popError: PopErrorFn;
 
+  // @ts-expect-error: use when implement cancelation
   private _heartbeatIntervalId: IntervalID;
 
   constructor(

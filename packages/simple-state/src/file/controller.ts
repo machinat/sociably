@@ -169,6 +169,7 @@ export class FileStateController implements BaseStateController {
   private async _open(): Promise<void> {
     if (this._fileHandle) {
       await this._fileHandle.close();
+      this._watcher.close();
     }
 
     this._fileHandle = await openFile(this.path, O_RDWR | O_CREAT);

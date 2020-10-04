@@ -31,7 +31,6 @@
     "next": "^9.0.0"
   },
   "devDependencies": {
-    "@types/react-dom": "^16.9.8",
     "next": "^9.3.6"
   }
 }

@@ -26,11 +26,6 @@ module.exports = {
     'no-nested-ternary': 0,
     'no-underscore-dangle': 0,
     'no-cond-assign': 0,
-    'no-unused-vars': ['error', {
-      varsIgnorePattern: '^_+',
-      argsIgnorePattern: '^_',
-      ignoreRestSiblings: true,
-    }],
     'no-unused-expressions': 0,
     'no-param-reassign': ['error', {
       props: true,
@@ -57,6 +52,7 @@ module.exports = {
     'react/no-unescaped-entities': ['error', {
       forbid: ['<', '>', '{', '}']
     }],
+    '@typescript-eslint/no-unused-vars': 0,
     '@typescript-eslint/no-empty-function': 0,
     '@typescript-eslint/no-namespace': ['error', {
       'allowDeclarations': true,

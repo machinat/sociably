@@ -15,9 +15,13 @@
     "./keywords": "./lib/keyword.js",
     "./types": "./lib/types.js"
   },
+  "scripts": {
+    "postinstall": "./polyfill-exports.js"
+  },
   "files": [
     "lib/*",
-    "README.md"
+    "README.md",
+    "polyfill-exports.js"
   ],
   "license": "MIT",
   "publishConfig": {

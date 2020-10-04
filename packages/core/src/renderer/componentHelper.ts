@@ -67,7 +67,7 @@ export const unitSegment = <Value>(
   path,
 });
 
-export const pauseSegment = <Value>(
+export const pauseSegment = (
   node: GeneralElement | NativeElement<any, any>,
   path: string,
   value?: PauseUntilFn

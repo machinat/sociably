@@ -1,10 +1,15 @@
 import type { MachinatChannel } from '@machinat/core/types';
 import { LINE } from './constant';
+import type LineUser from './user';
 import type { LineSource } from './types';
 
 type LineChatType = 'room' | 'group' | 'utou' | 'utob';
 
 class LineChat implements MachinatChannel {
+  static fromUser(channelId: string, user: LineUser): LineChat {
+    return new LineChat(channelId, 'utob', user.id);
+  }
+
   static fromMessagingSource(channelId: string, source: LineSource): LineChat {
     switch (source.type) {
       case 'user':

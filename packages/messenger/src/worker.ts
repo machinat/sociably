@@ -1,5 +1,4 @@
 /** @internal */ /** */
-import url from 'url';
 import crypto from 'crypto';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
@@ -55,17 +54,6 @@ const formatRequest = (request: BatchAPIRequest) =>
         body: request.body && encodeURIBody(request.body),
       };
 
-const assignQueryParams = (
-  queryParams: URLSearchParams,
-  obj: Record<string, string>
-) => {
-  const keys = Object.keys(obj);
-  for (let i = 0; i < keys.length; i += 1) {
-    const key = keys[i];
-    queryParams.set(key, obj[key]);
-  }
-};
-
 const makeRequestName = (channelId: string, count: number) =>
   `${channelId}-${count}`;
 
@@ -96,6 +84,7 @@ export default class MessengerWorker
   private _appSecretProof: string | undefined;
 
   private _started: boolean;
+  // @ts-expect-error: keep for later use
   private _isConsuming: boolean;
   private _consumptionTimeoutId: TimeoutID | null;
 
@@ -155,36 +144,6 @@ export default class MessengerWorker
     if (this._started) {
       this._consume(queue);
     }
-  }
-
-  private async _request(
-    method: string,
-    path: string,
-    body: any | null,
-    query: { [key: string]: string }
-  ) {
-    const requestURL = new url.URL(path, ENTRY);
-    requestURL.searchParams.set('access_token', this.token);
-
-    if (this._appSecretProof) {
-      requestURL.searchParams.set('appsecret_proof', this._appSecretProof);
-    }
-
-    if (query !== undefined) {
-      assignQueryParams(requestURL.searchParams, query);
-    }
-
-    const response = await fetch(requestURL.href, {
-      method,
-      body: body && JSON.stringify(body),
-    });
-
-    const result = await response.json();
-    if (!response.ok) {
-      throw new GraphAPIError(result);
-    }
-
-    return result;
   }
 
   private _consumeCallback = this._consume.bind(this);
