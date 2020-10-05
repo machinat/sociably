@@ -4,9 +4,11 @@ import type {
   EventMiddleware,
   DispatchMiddleware,
   PlatformMounter,
+} from '@machinat/core/types';
+import type {
   DispatchFrame,
   DispatchResponse,
-} from '@machinat/core/types';
+} from '@machinat/core/engine/types';
 import type { ServiceContainer } from '@machinat/core/service/types';
 import type { IntermediateSegment } from '@machinat/core/renderer/types';
 import type { WebhookMetadata } from '@machinat/http/webhook/types';

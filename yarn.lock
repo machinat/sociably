@@ -2584,10 +2584,10 @@
     "@babel/plugin-syntax-jsx" "^7.10.4"
     "@babel/plugin-transform-react-jsx" "^7.10.4"
 
-"@machinat/typedoc-plugin-monorepo@^0.3.2-0":
-  version "0.3.2-0"
-  resolved "https://registry.yarnpkg.com/@machinat/typedoc-plugin-monorepo/-/typedoc-plugin-monorepo-0.3.2-0.tgz#fc6c2535e3f894e003ce45b5d8a2de99e19a2154"
-  integrity sha512-Li+atPBXu2erkSrNPPT50nH5mMksID+w0+feQl4rAA69YXKAFISUewB9QHueVeWSVX4vZbARLNF+spo3/lNeag==
+"@machinat/typedoc-plugin-monorepo@^0.3.2-1":
+  version "0.3.2-1"
+  resolved "https://registry.yarnpkg.com/@machinat/typedoc-plugin-monorepo/-/typedoc-plugin-monorepo-0.3.2-1.tgz#891b0b4446df0ec56bf324c513ff1e5af3fe3174"
+  integrity sha512-NE4j8Dn/TiPtUfCKM/AnGRAfQhilnWAJZ9UHzf4+MKzdJmPxyqua5Dd6YDd7Yho/q7Sf2IK2trfrCBt7NdQVXA==
   dependencies:
     highlight.js "^9.15.6"
 

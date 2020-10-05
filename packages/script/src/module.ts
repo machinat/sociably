@@ -1,5 +1,5 @@
 import type { ServiceModule } from '@machinat/core/types';
-import type { AppProvision } from '@machinat/core/service/types';
+import type { ServiceProvision } from '@machinat/core/service/types';
 
 import { ProcessorP } from './processor';
 import { SCRIPT_LIBS_I } from './constant';
@@ -14,7 +14,7 @@ const Script = {
   LIBS_I: SCRIPT_LIBS_I,
 
   initModule: ({ libs }: ScriptModuleConfigs = {}): ServiceModule => {
-    const provisions: AppProvision<any>[] = [ProcessorP];
+    const provisions: ServiceProvision<any>[] = [ProcessorP];
 
     if (libs) {
       provisions.push(

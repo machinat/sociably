@@ -4,7 +4,7 @@ import type {
   ServiceDependency,
   ServiceContainer,
   ServiceScope,
-  AppProvision,
+  ServiceProvision,
 } from './service/types';
 import type {
   AppConfig,
@@ -66,7 +66,7 @@ export default class MachinatApp<
 
     const { modules, platforms, bindings } = this.config;
 
-    const moduleProvisions: AppProvision<any>[] = [];
+    const moduleProvisions: ServiceProvision<any>[] = [];
     const startHooks: ServiceContainer<Promise<void>>[] = [];
 
     // bootstrap normal modules add bindings

@@ -20,7 +20,7 @@
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-typescript": "^7.10.4",
     "@machinat/babel-preset": "^0.1.0-beta",
-    "@machinat/typedoc-plugin-monorepo": "^0.3.2-0",
+    "@machinat/typedoc-plugin-monorepo": "^0.3.2-1",
     "@moxyjs/moxy": "0.1.0-beta.0",
     "@types/invariant": "^2.2.33",
     "@types/jest": "^26.0.14",

@@ -4,7 +4,7 @@ import ServiceScope from './scope';
 import { isServiceProvider, isInterfaceable } from './utils';
 import type {
   ServiceBinding,
-  AppProvision,
+  ServiceProvision,
   ServiceCache,
   ServiceProvider,
   Interfaceable,
@@ -19,7 +19,7 @@ const getNameOrToString = (obj: any) => obj?.name || String(obj);
 
 /** @internal */
 const resolveBindings = (
-  bindings: AppProvision<any>[]
+  bindings: ServiceProvision<any>[]
 ): ProvisionMap<ServiceBinding<any>> => {
   const provisionMapping = new ProvisionMap<ServiceBinding<any>>();
 
@@ -94,8 +94,8 @@ export default class ServiceSpace {
   _singletonCache: null | ServiceCache<any>;
 
   constructor(
-    moduleBindings: AppProvision<any>[],
-    registeredBindings: AppProvision<any>[]
+    moduleBindings: ServiceProvision<any>[],
+    registeredBindings: ServiceProvision<any>[]
   ) {
     // resolve bindings from modules/registraions separately, the bindings
     // cannot be conflicted within each

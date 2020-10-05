@@ -52,6 +52,6 @@ export type ValueBinding<T> = {
 
 export type ServiceBinding<T> = ProviderBinding<T> | ValueBinding<T>;
 
-export type AppProvision<T> = ServiceBinding<T> | ServiceProvider<T>;
+export type ServiceProvision<T> = ServiceBinding<T> | ServiceProvider<T>;
 
 export type ServiceCache<T> = Map<ServiceProvider<T>, T>;

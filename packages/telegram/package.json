@@ -17,6 +17,7 @@
     "./asset": "./lib/asset/index.js",
     "./auth": "./lib/auth/index.js",
     "./auth/client": "./lib/auth/client.js",
+    "./auth/types": "./lib/auth/types.js",
     "./types": "./lib/types.js"
   },
   "files": [

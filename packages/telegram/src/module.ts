@@ -1,4 +1,5 @@
-import type { PlatformModule, AppProvision } from '@machinat/core/types';
+import type { PlatformModule } from '@machinat/core/types';
+import type { ServiceProvision } from '@machinat/core/service/types';
 import { container, factory } from '@machinat/core/service';
 import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
@@ -44,7 +45,7 @@ const Telegram = {
     TelegramDispatchFrame,
     TelegramAPIResult
   > => {
-    const provisions: AppProvision<any>[] = [
+    const provisions: ServiceProvision<any>[] = [
       BotP,
       { provide: Base.BotI, withProvider: BotP, platforms: [TELEGRAM] },
 

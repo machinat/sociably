@@ -2,7 +2,7 @@
 import type { InnerRenderFn, IntermediateSegment } from './renderer/types';
 import type {
   Interfaceable,
-  AppProvision,
+  ServiceProvision,
   ServiceContainer,
   ServiceProvider,
   ServiceInterface,
@@ -18,9 +18,6 @@ import type {
   MACHINAT_THUNK_TYPE,
   MACHINAT_RAW_TYPE,
 } from './symbol';
-
-export { AppProvision } from './service/types';
-export { DispatchFrame, DispatchResponse } from './engine/types';
 
 export type MachinatRenderable =
   | MachinatText
@@ -214,7 +211,7 @@ export type DispatchMiddleware<
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
 export type ServiceModule = {
-  provisions: (ServiceProvider<any> | AppProvision<any>)[];
+  provisions: (ServiceProvider<any> | ServiceProvision<any>)[];
   startHook?: null | ServiceContainer<Promise<void>>;
 };
 
@@ -229,7 +226,7 @@ export type PlatformModule<
   mounterInterface: ServiceInterface<
     PlatformMounter<Context, EventResp, Job, Frame, Result>
   >;
-  provisions: (ServiceProvider<any> | AppProvision<any>)[];
+  provisions: (ServiceProvider<any> | ServiceProvision<any>)[];
   startHook?: ServiceContainer<Promise<void>>;
   eventMiddlewares?: (
     | EventMiddleware<Context, EventResp>
@@ -246,7 +243,7 @@ export type AppConfig<
 > = {
   platforms?: Platform[];
   modules?: ServiceModule[];
-  bindings?: (ServiceProvider<any> | AppProvision<any>)[];
+  bindings?: (ServiceProvider<any> | ServiceProvision<any>)[];
 };
 
 export type GetAppContext<
