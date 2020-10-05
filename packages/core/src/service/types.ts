@@ -32,11 +32,13 @@ export type ServiceRequirement<T> = {
 
 export type ServiceDependency<T> = ServiceRequirement<T> | Interfaceable<T>;
 
-export interface ServiceContainer<T> {
+export type ServiceContainer<T> = {
   (...args: any[]): T;
   $$typeof: typeof MACHINAT_SERVICE_CONTAINER;
   $$deps: ServiceRequirement<T>[];
-}
+  // HACK: make ts compiler accept it as class component
+  new (): ServiceContainer<T>;
+};
 
 export type ProviderBinding<T> = {
   provide: Interfaceable<T>;
