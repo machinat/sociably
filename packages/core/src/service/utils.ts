@@ -14,15 +14,16 @@ import type {
   ServiceProvider,
 } from './types';
 
-export const isServiceContainer = (
-  target: any
-): target is ServiceContainer<unknown> =>
+export const isServiceContainer = <T>(
+  target: T | ServiceContainer<T>
+): target is ServiceContainer<T> =>
   typeof target === 'function' &&
+  '$$typeof' in target &&
   target.$$typeof === MACHINAT_SERVICE_CONTAINER;
 
 export const isServiceProvider = (
   target: any
-): target is ServiceProvider<unknown> =>
+): target is ServiceProvider<any> =>
   (typeof target === 'function' ||
     (typeof target === 'object' && target !== null)) &&
   target.$$typeof === MACHINAT_SERVICE_PROVIDER;
@@ -35,9 +36,7 @@ export const maybeInjectContainer = <T>(
     ? scope.injectContainer(maybeContainer)
     : maybeContainer;
 
-export const isInterfaceable = (
-  target: any
-): target is Interfaceable<unknown> =>
+export const isInterfaceable = (target: any): target is Interfaceable<any> =>
   (typeof target === 'function' ||
     (typeof target === 'object' && target !== null)) &&
   (target.$$typeof === MACHINAT_SERVICE_INTERFACE ||
