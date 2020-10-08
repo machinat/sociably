@@ -47,6 +47,9 @@ declare global {
       | NativeComponent<any, any>
       | ServiceContainer<FunctionalComponent<any>>;
 
+    interface ElementAttributesProperty {
+      $$typeof: {};
+    }
     interface ElementChildrenAttribute {
       children: {};
     }

@@ -4,6 +4,7 @@ import { EventEmitter } from 'events';
 import invariant from 'invariant';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
 import { decode as decodeJWT } from 'jsonwebtoken';
+import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import { TOKEN_COOKIE_KEY, ERROR_COOKIE_KEY } from '../constant';
 import type {
   AuthContext,
@@ -18,9 +19,13 @@ import type {
 } from '../types';
 import AuthError from './error';
 
-type AuthClientOptions = {
+type AuthClientOptions<
+  User extends MachinatUser,
+  Channel extends null | MachinatChannel,
+  AuthData
+> = {
   serverURL: string;
-  authorizers: ClientAuthorizer<any, any>[];
+  authorizers: ClientAuthorizer<User, Channel, AuthData, any>[];
   refreshLeadTime?: number;
 };
 
@@ -37,30 +42,34 @@ const deleteCookie = (name: string, domain?: string, path?: string) => {
 const getAuthPayload = (token: string): AuthTokenPayload<any> =>
   decodeJWT(`${token}.`) as AuthTokenPayload<any>;
 
-type ServerSideResult =
+type CookieAuthResult<AuthData> =
   | { success: false; platform: string; code: number; reason: string }
   | {
       success: true;
       platform: string;
       token: string;
-      payload: AuthTokenPayload<any>;
+      payload: AuthTokenPayload<AuthData>;
     };
 
 type TimeoutID = ReturnType<typeof setTimeout>;
 
-class AuthClient extends EventEmitter {
-  authorizers: ClientAuthorizer<any, any>[];
+class AuthClient<
+  User extends MachinatUser,
+  Channel extends null | MachinatChannel,
+  AuthData
+> extends EventEmitter {
+  authorizers: ClientAuthorizer<User, Channel, AuthData, any>[];
   serverURL: string;
   refreshLeadTime: number;
 
   private _platform: undefined | string;
   private _authURL: URL;
 
-  private _serverSideResult: ServerSideResult | null | undefined;
+  private _cookieAuthResult: CookieAuthResult<AuthData> | null | undefined;
   private _authed: null | {
     token: string;
-    payload: AuthTokenPayload<any>;
-    context: AuthContext<any>;
+    payload: AuthTokenPayload<AuthData>;
+    context: AuthContext<User, Channel, AuthData>;
   };
 
   private _initiatingPlatforms: Set<string>;
@@ -69,7 +78,7 @@ class AuthClient extends EventEmitter {
   private _initPromise: null | Promise<void>;
   private _authPromise: null | Promise<{
     token: string;
-    context: AuthContext<any>;
+    context: AuthContext<User, Channel, AuthData>;
   }>;
 
   private _minAuthBeginTime: number;
@@ -94,7 +103,7 @@ class AuthClient extends EventEmitter {
       authorizers,
       serverURL,
       refreshLeadTime = 300, // 5 min
-    }: AuthClientOptions = {} as any
+    }: AuthClientOptions<User, Channel, AuthData> = {} as any
   ) {
     super();
 
@@ -134,9 +143,9 @@ class AuthClient extends EventEmitter {
    * If you want to change the platform, call bootstrap() again with new
    * platform then call auth() again.
    */
-  bootstrap(platformInput?: string): AuthClient {
+  bootstrap(platformInput?: string): AuthClient<User, Channel, AuthData> {
     const cookies = parseCookie(document.cookie);
-    let serverSideResult: null | ServerSideResult = null;
+    let cookieAuthResult: null | CookieAuthResult<AuthData> = null;
 
     if (cookies[ERROR_COOKIE_KEY]) {
       // Error happen in backend flow
@@ -150,7 +159,7 @@ class AuthClient extends EventEmitter {
         } = decodedToken as ErrorTokenPayload;
 
         deleteCookie(ERROR_COOKIE_KEY, domain, path);
-        serverSideResult = {
+        cookieAuthResult = {
           success: false,
           platform,
           code,
@@ -165,7 +174,7 @@ class AuthClient extends EventEmitter {
       const payload = getAuthPayload(token);
 
       if (payload.exp * 1000 > Date.now()) {
-        serverSideResult = {
+        cookieAuthResult = {
           success: true,
           platform: payload.platform,
           token,
@@ -177,7 +186,7 @@ class AuthClient extends EventEmitter {
     const platformToBootstrap =
       platformInput ||
       new URLSearchParams(window.location.search).get('platform') ||
-      serverSideResult?.platform;
+      cookieAuthResult?.platform;
 
     const [err, provider] = this._getProvider(platformToBootstrap);
     if (err) {
@@ -190,13 +199,13 @@ class AuthClient extends EventEmitter {
     }
 
     this._platform = platformToBootstrap;
-    this._serverSideResult =
-      serverSideResult?.platform === platformToBootstrap
-        ? serverSideResult
+    this._cookieAuthResult =
+      cookieAuthResult?.platform === platformToBootstrap
+        ? cookieAuthResult
         : null;
 
     // Execute init work of platform, promise would be awaited within auth()
-    const initPromise = this._initPlatform(provider, this._serverSideResult)
+    const initPromise = this._initPlatform(provider, this._cookieAuthResult)
       .catch((initErr) => {
         this.emit('error', initErr, this._authed?.context || null);
       })
@@ -218,7 +227,10 @@ class AuthClient extends EventEmitter {
    * controller, so any auth() call after the first one do not trigger the auth
    * flow but just return the current status.
    */
-  async auth(): Promise<{ token: string; context: AuthContext<any> }> {
+  async auth(): Promise<{
+    token: string;
+    context: AuthContext<User, Channel, AuthData>;
+  }> {
     if (this._authPromise) {
       return this._authPromise;
     }
@@ -250,8 +262,8 @@ class AuthClient extends EventEmitter {
   }
 
   private async _initPlatform(
-    authorizer: ClientAuthorizer<any, any>,
-    serverSideResult: null | ServerSideResult
+    authorizer: ClientAuthorizer<User, Channel, AuthData, any>,
+    cookieAuthResult: null | CookieAuthResult<AuthData>
   ): Promise<void> {
     // not initiate for the same platform again
     if (
@@ -262,15 +274,15 @@ class AuthClient extends EventEmitter {
 
       this._initiatingPlatforms.add(authorizer.platform);
       try {
-        if (serverSideResult) {
-          if (serverSideResult.success) {
+        if (cookieAuthResult) {
+          if (cookieAuthResult.success) {
             await authorizer.init(
               platformAuthEntry,
-              serverSideResult.payload.data,
+              cookieAuthResult.payload.data,
               null
             );
           } else {
-            const { code, reason } = serverSideResult;
+            const { code, reason } = cookieAuthResult;
             await authorizer.init(platformAuthEntry, null, { code, reason });
           }
         } else {
@@ -288,7 +300,10 @@ class AuthClient extends EventEmitter {
     }
   }
 
-  private async _auth(): Promise<{ token: string; context: AuthContext<any> }> {
+  private async _auth(): Promise<{
+    token: string;
+    context: AuthContext<User, Channel, AuthData>;
+  }> {
     const beginTime = Date.now();
     let err: undefined | null | Error;
 
@@ -307,14 +322,14 @@ class AuthClient extends EventEmitter {
       throw providerErr;
     }
 
-    const serverSideResult = this._serverSideResult;
+    const cookieAuthResult = this._cookieAuthResult;
     let token: string;
-    let payload: AuthTokenPayload<any>;
+    let payload: AuthTokenPayload<AuthData>;
 
     if (
-      !serverSideResult ||
-      (serverSideResult.success &&
-        serverSideResult.payload.exp * 1000 < Date.now())
+      !cookieAuthResult ||
+      (cookieAuthResult.success &&
+        cookieAuthResult.payload.exp * 1000 < Date.now())
     ) {
       [err, token] = await this._signToken(provider);
       if (err) {
@@ -322,11 +337,11 @@ class AuthClient extends EventEmitter {
       }
 
       payload = getAuthPayload(token);
-    } else if (!serverSideResult.success) {
-      const { code, reason } = serverSideResult;
+    } else if (!cookieAuthResult.success) {
+      const { code, reason } = cookieAuthResult;
       throw new AuthError(code, reason);
     } else {
-      ({ token, payload } = serverSideResult);
+      ({ token, payload } = cookieAuthResult);
     }
 
     // Update auth only when no signOut() call or another succeeded auth() call
@@ -359,7 +374,7 @@ class AuthClient extends EventEmitter {
   }
 
   private async _signToken(
-    provider: ClientAuthorizer<any, any>
+    provider: ClientAuthorizer<User, Channel, AuthData, any>
   ): Promise<[Error | null, string]> {
     const { platform } = provider;
     const result = await provider.fetchCredential(this._getAuthEntry(platform));
@@ -383,8 +398,8 @@ class AuthClient extends EventEmitter {
 
   private _setAuth(
     token: string,
-    payload: AuthTokenPayload<any>,
-    context: AuthContext<any>
+    payload: AuthTokenPayload<AuthData>,
+    context: AuthContext<User, Channel, AuthData>
   ) {
     this._authed = { token, payload, context };
     this._clearTimeouts();
@@ -408,12 +423,12 @@ class AuthClient extends EventEmitter {
 
   private async _refreshAuth(
     token: string,
-    { refreshLimit }: AuthTokenPayload<any>
+    { refreshLimit }: AuthTokenPayload<AuthData>
   ): Promise<void> {
     const beginTime = Date.now();
 
     let err: null | Error;
-    let provider: ClientAuthorizer<any, any>;
+    let provider: ClientAuthorizer<User, Channel, AuthData, any>;
     [err, provider] = this._getProvider(this._platform); // eslint-disable-line prefer-const
     if (err) {
       throw err;
@@ -473,7 +488,7 @@ class AuthClient extends EventEmitter {
 
   private _refreshAuthCallback = (
     token: string,
-    payload: AuthTokenPayload<any>
+    payload: AuthTokenPayload<AuthData>
   ) => {
     this._refreshTimeoutId = null;
 
@@ -494,7 +509,7 @@ class AuthClient extends EventEmitter {
 
   private _getProvider(
     platform: undefined | string
-  ): [Error | null, ClientAuthorizer<any, any>] {
+  ): [Error | null, ClientAuthorizer<User, Channel, AuthData, any>] {
     if (!platform) {
       return [new AuthError(400, 'no platform specified'), null as any];
     }

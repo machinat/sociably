@@ -6,6 +6,8 @@ import type { ServerAuthorizer } from '@machinat/auth/types';
 
 import { PLATFORM_CONFIGS_I } from '../interface';
 import { LINE } from '../constant';
+import type LineUser from '../user';
+import type LineChat from '../channel';
 import type { LinePlatformConfigs } from '../types';
 import type {
   LIFFAuthData,
@@ -25,7 +27,8 @@ type LineServerAuthorizerOpts = {
  * @category Provider
  */
 export class LineServerAuthorizer
-  implements ServerAuthorizer<LIFFAuthData, LIFFCredential> {
+  implements
+    ServerAuthorizer<LineUser, null | LineChat, LIFFAuthData, LIFFCredential> {
   providerId: string;
   channelId: string;
   liffChannelIds: string[];

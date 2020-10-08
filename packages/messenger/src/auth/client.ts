@@ -3,6 +3,8 @@
 import invariant from 'invariant';
 import type { ClientAuthorizer } from '@machinat/auth/types';
 import { MESSENGER } from '../constant';
+import type MessengerChat from '../channel';
+import type MessengerUser from '../user';
 import type {
   ExtensionPayload,
   ExtensionCredential,
@@ -27,7 +29,13 @@ declare const MessengerExtensions: any;
 const INIT_TIMEOUT = 20000;
 
 class MessengerClientAuthorizer
-  implements ClientAuthorizer<ExtensionPayload, ExtensionCredential> {
+  implements
+    ClientAuthorizer<
+      MessengerUser,
+      MessengerChat,
+      ExtensionPayload,
+      ExtensionCredential
+    > {
   appId: string;
   isExtensionReady: boolean;
 

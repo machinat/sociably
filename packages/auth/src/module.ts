@@ -1,4 +1,8 @@
-import type { ServiceModule } from '@machinat/core/types';
+import type {
+  ServiceModule,
+  MachinatUser,
+  MachinatChannel,
+} from '@machinat/core/types';
 import { factory } from '@machinat/core/service';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
@@ -11,7 +15,7 @@ import type { AuthModuleConfigs } from './types';
 const authRoutingFactory = factory<HTTPRequestRouting>({
   lifetime: 'transient',
   deps: [ControllerP, MODULE_CONFIGS_I],
-})((controller: ControllerP, configs: AuthModuleConfigs) => ({
+})((controller: ControllerP<any, any, any>, configs: AuthModuleConfigs) => ({
   name: 'auth',
   path: configs.entryPath || '/',
   handler: (req, res, routingInfo) => {
@@ -34,7 +38,11 @@ const Auth = {
 };
 
 declare namespace Auth {
-  export type Controller = ControllerP;
+  export type Controller<
+    User extends MachinatUser,
+    Channel extends null | MachinatChannel,
+    AuthData
+  > = ControllerP<User, Channel, AuthData>;
 }
 
 export default Auth;

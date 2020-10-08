@@ -1,13 +1,13 @@
 import type {
   NativeComponent,
   MachinatUser,
-  EventContext,
+  MachinatChannel,
   PlatformMounter,
   EventMiddleware,
   DispatchMiddleware,
 } from '@machinat/core/types';
 import type { DispatchFrame } from '@machinat/core/engine/types';
-import type { ServiceContainer } from '@machinat/core/service/types';
+import type { MaybeContainerOf } from '@machinat/core/service/types';
 import type { UnitSegment } from '@machinat/core/renderer/types';
 import type { HTTPRequestInfo } from '@machinat/http/types';
 import type { WebSocketBot } from './bot';
@@ -17,45 +17,54 @@ export type UpgradeRequestInfo = Omit<HTTPRequestInfo, 'body'>;
 
 export type WebSocketChannel = TopicChannel | UserChannel | ConnectionChannel;
 
-export type ConnectEvent = {
+export type ConnectEvent<User extends null | MachinatUser> = {
   platform: 'web_sokcet';
   kind: 'connection';
   type: 'connect';
   payload: undefined;
   channel: ConnectionChannel;
-  user: null | MachinatUser;
+  user: User;
 };
 
-export type DisconnectEvent = {
+export type DisconnectEvent<User extends null | MachinatUser> = {
   platform: 'web_sokcet';
   kind: 'connection';
   type: 'disconnect';
   payload: { reason: string };
   channel: ConnectionChannel;
-  user: null | MachinatUser;
+  user: User;
 };
 
-export type CustomEvent = {
-  platform: 'web_sokcet';
-  kind: string;
-  type: string;
-  payload: any;
-  channel: ConnectionChannel;
-  user: null | MachinatUser;
+export type EventValue<Kind extends string, Type extends string, Payload> = {
+  kind: Kind;
+  type: Type;
+  payload: Payload;
 };
 
-export type WebSocketEvent = ConnectEvent | DisconnectEvent | CustomEvent;
+export type CustomEvent<
+  Value extends EventValue<any, any, any>,
+  User extends null | MachinatUser,
+  Channel extends MachinatChannel = ConnectionChannel
+> = Value extends EventValue<infer Kind, infer Type, infer Payload>
+  ? {
+      platform: 'web_sokcet';
+      kind: Kind;
+      type: Type;
+      payload: Payload;
+      channel: Channel;
+      user: User;
+    }
+  : never;
+
+export type WebSocketEvent<
+  Value extends EventValue<any, any, any>,
+  User extends null | MachinatUser
+> = ConnectEvent<User> | DisconnectEvent<User> | CustomEvent<Value, User>;
 
 export type EventInput = {
   kind?: string;
   type: string;
   payload?: any;
-};
-
-export type EventValue = {
-  kind: string;
-  type: string;
-  payload: any;
 };
 
 export interface ConnectionTarget {
@@ -101,16 +110,21 @@ export type WebSocketMetadata<AuthInfo> = {
 
 export type WebSocketComponent = NativeComponent<any, UnitSegment<EventInput>>;
 
-export type WebSocketEventContext<AuthInfo> = EventContext<
-  WebSocketEvent,
-  WebSocketMetadata<AuthInfo>,
-  WebSocketBot
->;
+export type WebSocketEventContext<
+  Value extends EventValue<any, any, any>,
+  User extends null | MachinatUser,
+  AuthInfo
+> = {
+  platform: 'web_socket';
+  event: WebSocketEvent<Value, User>;
+  metadata: WebSocketMetadata<AuthInfo>;
+  bot: WebSocketBot;
+};
 
-type SuccessVerifyLoginResult<AuthInfo> = {
+type SuccessVerifyLoginResult<User extends null | MachinatUser, AuthInfo> = {
   success: true;
+  user: User;
   authInfo: AuthInfo;
-  user: null | MachinatUser;
   expireAt?: Date;
 };
 
@@ -120,28 +134,34 @@ type FailedVerifyLoginResult = {
   reason: string;
 };
 
-export type VerifyLoginResult<AuthInfo> =
-  | SuccessVerifyLoginResult<AuthInfo>
-  | FailedVerifyLoginResult;
-
-export type VerifyLoginFn<AuthInfo, Credential> = (
+export type VerifyLoginFn<
+  User extends null | MachinatUser,
+  AuthInfo,
+  Credential
+> = (
   request: UpgradeRequestInfo,
   credential: Credential
-) => Promise<VerifyLoginResult<AuthInfo>>;
+) => Promise<
+  SuccessVerifyLoginResult<User, AuthInfo> | FailedVerifyLoginResult
+>;
 
 export type VerifyUpgradeFn = (
   request: UpgradeRequestInfo
 ) => boolean | Promise<boolean>;
 
-export type ClientLoginFn<Credential> = () => Promise<{
-  user: null | MachinatUser;
+export type ClientLoginFn<
+  User extends null | MachinatUser,
+  Credential
+> = () => Promise<{
+  user: User;
   credential: Credential;
 }>;
 
-export type WebSocketEventMiddleware<Auth> = EventMiddleware<
-  WebSocketEventContext<Auth>,
-  null
->;
+export type WebSocketEventMiddleware<
+  Value extends EventValue<any, any, any>,
+  User extends null | MachinatUser,
+  Auth
+> = EventMiddleware<WebSocketEventContext<Value, User, Auth>, null>;
 
 export type WebSocketDispatchMiddleware = DispatchMiddleware<
   WebSocketJob,
@@ -149,23 +169,28 @@ export type WebSocketDispatchMiddleware = DispatchMiddleware<
   WebSocketResult
 >;
 
-export type WebSocketPlatformConfigs<AuthInfo, Credential> = {
+export type WebSocketPlatformConfigs<
+  Value extends EventValue<any, any, any>,
+  LoginVerifier extends void | VerifyLoginFn<any, any, any> = void
+> = {
   entryPath?: string;
   verifyUpgrade?: VerifyUpgradeFn;
-  verifyLogin?: VerifyLoginFn<AuthInfo, Credential>;
+  verifyLogin: LoginVerifier;
   heartbeatInterval?: number;
-  eventMiddlewares?: (
-    | WebSocketEventMiddleware<AuthInfo>
-    | ServiceContainer<WebSocketEventMiddleware<AuthInfo>>
-  )[];
-  dispatchMiddlewares?: (
-    | WebSocketDispatchMiddleware
-    | ServiceContainer<WebSocketDispatchMiddleware>
-  )[];
+  eventMiddlewares?: MaybeContainerOf<
+    LoginVerifier extends VerifyLoginFn<infer User, infer AuthInfo, any>
+      ? WebSocketEventMiddleware<Value, User, AuthInfo>
+      : WebSocketEventMiddleware<Value, null, null>
+  >[];
+  dispatchMiddlewares?: MaybeContainerOf<WebSocketDispatchMiddleware>[];
 };
 
-export type WebSocketPlatformMounter<Auth> = PlatformMounter<
-  WebSocketEventContext<Auth>,
+export type WebSocketPlatformMounter<
+  Value extends EventValue<any, any, any>,
+  User extends null | MachinatUser,
+  Auth
+> = PlatformMounter<
+  WebSocketEventContext<Value, User, Auth>,
   null,
   WebSocketJob,
   WebSocketDispatchFrame,

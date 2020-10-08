@@ -7,6 +7,8 @@ import { ServerAuthorizer, AuthorizerVerifyResult } from '@machinat/auth/types';
 
 import { PLATFORM_CONFIGS_I } from '../interface';
 import { MESSENGER } from '../constant';
+import type MessengerChat from '../channel';
+import type MessengerUser from '../user';
 import { refinementFromExtensionPayload } from './utils';
 import type {
   ExtensionPayload,
@@ -31,7 +33,13 @@ type MessengerServerAuthorizerOptions = {
  * @category Provider
  */
 export class MessengerServerAuthorizer
-  implements ServerAuthorizer<ExtensionPayload, ExtensionCredential> {
+  implements
+    ServerAuthorizer<
+      MessengerUser,
+      MessengerChat,
+      ExtensionPayload,
+      ExtensionCredential
+    > {
   appSecret: string;
   platform = MESSENGER;
 

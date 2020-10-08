@@ -1,7 +1,6 @@
-import { AuthorizerRefinement } from '@machinat/auth/types';
-import { TelegramAuthData } from './types';
 import TelegramUser from '../user';
 import { TelegramChat, TelegramChatInstance } from '../channel';
+import { TelegramAuthData, TelegramAuthRefinement } from './types';
 
 // eslint-disable-next-line import/prefer-default-export
 export const refineTelegramAuthData = ({
@@ -12,7 +11,7 @@ export const refineTelegramAuthData = ({
   lastName,
   username,
   languageCode,
-}: TelegramAuthData): AuthorizerRefinement => ({
+}: TelegramAuthData): TelegramAuthRefinement => ({
   user: new TelegramUser({
     id: userId,
     is_bot: false,

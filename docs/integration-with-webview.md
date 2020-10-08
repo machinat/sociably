@@ -128,12 +128,12 @@ const app = Machinat.createApp({
   bindings: [
     { provide: Auth.AUTHORIZERS_I, withProvider: MessengerAuthorizer },
     { provide: Auth.AUTHORIZERS_I, withProvider: LineAuthorizer },
-    { provide: WebSocket.AUTHENTICATOR_I, withProvider: useAuthController },
+    { provide: WebSocket.LOGIN_VERIFIER_I, withProvider: useAuthController },
   ],
 })
 ```
 
-The `Auth` module provide an interface to authorize users with the chat platform they come from. Then register `Auth.AUTHORIZERS_I`interface with the authorizers provided by supported chat platforms. Finally, register `WebSocket.AUTHENTICATOR_I` with `useAuthController` adapter to connect with `Auth` module.
+The `Auth` module provide an interface to authorize users with the chat platform they come from. Then register `Auth.AUTHORIZERS_I`interface with the authorizers provided by supported chat platforms. Finally, register `WebSocket.LOGIN_VERIFIER_I` with `useAuthController` adapter to connect with `Auth` module.
 
 And in the client:
 
@@ -160,13 +160,13 @@ const authClient = new AuthClient({
 
 const webSocketClient = new WebSocketClient({
   url: '/websocket',
-  authorize: useAuthClient(authClient),
+  login: useAuthClient(authClient),
 });
 
 authClient.bootstrap();
 ```
 
-First we initiate an `AuthClient` with the authorizers of supported chat platforms. Then bind it the `authorize` option of websocket client with the `useAuth` adapter.
+First we initiate an `AuthClient` with the authorizers of supported chat platforms. Then bind it the `login` option of websocket client with the `useAuth` adapter.
 
 The final step is to call `authClient.bootstrap(platform)`, it initiate necessary works to register user on the specified platform. If the platform argument is omitted, `platform` param in querystring is used.
 

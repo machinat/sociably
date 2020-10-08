@@ -40,18 +40,25 @@ export type ErrorPayload = {
 
 export type ErrorTokenPayload = TokenBase & ErrorPayload;
 
-export type AuthContext<AuthData> = {
+export type AuthContext<
+  User extends MachinatUser,
+  Channel extends null | MachinatChannel,
+  AuthData
+> = {
   platform: string;
-  user: MachinatUser;
-  channel: null | MachinatChannel;
+  user: User;
+  channel: Channel;
   loginAt: Date;
   expireAt: Date;
   data: AuthData;
 };
 
-export type AuthorizerRefinement = {
-  user: MachinatUser;
-  channel: null | MachinatChannel;
+export type AuthorizerRefinement<
+  User extends MachinatUser,
+  Channel extends null | MachinatChannel
+> = {
+  user: User;
+  channel: Channel;
 };
 
 type ErrorResult = {
@@ -64,7 +71,12 @@ export type AuthorizerVerifyResult<AuthData> =
   | { success: true; data: AuthData; refreshable: boolean }
   | ErrorResult;
 
-export interface ServerAuthorizer<AuthData, Credential> {
+export interface ServerAuthorizer<
+  User extends MachinatUser,
+  Channel extends null | MachinatChannel,
+  AuthData,
+  Credential
+> {
   platform: string;
 
   /**
@@ -100,14 +112,21 @@ export interface ServerAuthorizer<AuthData, Credential> {
    * refineAuthr efine the auth data to auth context members which fit the
    * machinat interfaces, the context would then be passed to the appliction.
    */
-  refineAuth(data: AuthData): Promise<null | AuthorizerRefinement>;
+  refineAuth(
+    data: AuthData
+  ): Promise<null | AuthorizerRefinement<User, Channel>>;
 }
 
 export type AuthorizerCredentialResult<Credential> =
   | { success: true; credential: Credential }
   | ErrorResult;
 
-export interface ClientAuthorizer<AuthData, Credential> {
+export interface ClientAuthorizer<
+  User extends MachinatUser,
+  Channel extends null | MachinatChannel,
+  AuthData,
+  Credential
+> {
   platform: string;
   shouldResign: boolean;
 
@@ -135,7 +154,9 @@ export interface ClientAuthorizer<AuthData, Credential> {
    * Refine the auth data into auth context members fit the machinat interfaces,
    * the context would then be passed to the appliction.
    */
-  refineAuth(data: AuthData): Promise<null | AuthorizerRefinement>;
+  refineAuth(
+    data: AuthData
+  ): Promise<null | AuthorizerRefinement<User, Channel>>;
 }
 
 export type SignRequestBody<Credential> = {

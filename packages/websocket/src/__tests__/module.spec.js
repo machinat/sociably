@@ -10,10 +10,10 @@ it('export interfaces', () => {
   expect(WebSocket.Bot).toBe(WebSocketBot);
   expect(WebSocket.Receiver).toBe(WebSocketReceiver);
   expect(WebSocket.Transmitter).toBe(WebSocketTransmitter);
-  expect(WebSocket.AUTHENTICATOR_I).toMatchInlineSnapshot(`
+  expect(WebSocket.LOGIN_VERIFIER_I).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebSocketAuthenticatorI",
+      "$$name": "WebSocketLoginVerifierI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);

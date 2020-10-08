@@ -1,3 +1,4 @@
+import { MachinatUser } from '@machinat/core/types';
 import Auth from '@machinat/auth';
 import type { AuthContext } from '@machinat/auth/types';
 import { factory } from '@machinat/core/service';
@@ -6,10 +7,9 @@ import type { VerifyLoginFn } from '../types';
 /**
  * @category Provider
  */
-const useAuthController = (controller: Auth.Controller) => async (
-  request,
-  credential: string
-) => {
+const useAuthController = (
+  controller: Auth.Controller<any, any, any>
+) => async (request, credential: string) => {
   const result = await controller.verifyAuth(request, credential);
 
   if (!result.success) {
@@ -26,7 +26,9 @@ const useAuthController = (controller: Auth.Controller) => async (
   };
 };
 
-const useAuthControllerP = factory<VerifyLoginFn<AuthContext<any>, string>>({
+const useAuthControllerP = factory<
+  VerifyLoginFn<MachinatUser, AuthContext<any, any, any>, string>
+>({
   lifetime: 'transient',
   deps: [Auth.Controller],
 })(useAuthController);

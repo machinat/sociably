@@ -1,21 +1,24 @@
 /** @internal */ /** */
 import { MachinatUser } from '@machinat/core/types';
 import { WEBSOCKET } from './constant';
-import type { WebSocketEvent } from './types';
+import type { WebSocketEvent, EventValue } from './types';
 import { ConnectionChannel } from './channel';
 
 const WebEventProto = {
   platform: WEBSOCKET,
 };
 
-const createEvent = (
+const createEvent = <
+  Value extends EventValue<any, any, any>,
+  User extends null | MachinatUser
+>(
   kind: undefined | string,
   type: string,
   payload: any,
   channel: ConnectionChannel,
-  user: null | MachinatUser
-): WebSocketEvent => {
-  const event: WebSocketEvent = Object.create(WebEventProto);
+  user: User
+): WebSocketEvent<Value, User> => {
+  const event: WebSocketEvent<Value, User> = Object.create(WebEventProto);
 
   event.kind = kind || 'default';
   event.type = type;

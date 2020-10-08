@@ -11,7 +11,7 @@ import {
   BrokerI,
   WS_SERVER_I,
   UPGRADE_VERIFIER_I,
-  AUTHENTICATOR_I,
+  LOGIN_VERIFIER_I,
   SERVER_ID_I,
   PLATFORM_MOUNTER_I,
   PLATFORM_CONFIGS_I,
@@ -21,6 +21,8 @@ import { TransmitterP } from './transmitter';
 import { ReceiverP } from './receiver';
 import LocalOnlyBroker from './broker/localOnlyBroker';
 import type {
+  EventValue,
+  VerifyLoginFn,
   WebSocketEventContext,
   WebSocketJob,
   WebSocketDispatchFrame,
@@ -42,11 +44,16 @@ const createUniqServerId = factory<() => string>({
 const upgradeRoutingFactory = factory<HTTPUpgradeRouting>({
   lifetime: 'transient',
   deps: [PLATFORM_CONFIGS_I, ReceiverP],
-})((configs: WebSocketPlatformConfigs<any, any>, receiver: ReceiverP<any>) => ({
-  name: WEBSOCKET,
-  path: configs.entryPath || '/',
-  handler: receiver.handleUpgradeCallback(),
-}));
+})(
+  (
+    configs: WebSocketPlatformConfigs<any, any>,
+    receiver: ReceiverP<any, any>
+  ) => ({
+    name: WEBSOCKET,
+    path: configs.entryPath || '/',
+    handler: receiver.handleUpgradeCallback(),
+  })
+);
 
 const WebSocket = {
   Bot: BotP,
@@ -55,14 +62,19 @@ const WebSocket = {
   ClusterBrokerI: BrokerI,
   SERVER_I: WS_SERVER_I,
   UPGRADE_VERIFIER_I,
-  AUTHENTICATOR_I,
+  LOGIN_VERIFIER_I,
   SERVER_ID_I,
   CONFIGS_I: PLATFORM_CONFIGS_I,
 
-  initModule: <AuthInfo, Credential>(
-    configs: WebSocketPlatformConfigs<AuthInfo, Credential> = {}
+  initModule: <
+    Value extends EventValue<any, any, any> = EventValue<string, string, any>,
+    LoginVerifier extends void | VerifyLoginFn<any, any, any> = void
+  >(
+    configs: WebSocketPlatformConfigs<Value, LoginVerifier> = {} as any
   ): PlatformModule<
-    WebSocketEventContext<AuthInfo>,
+    LoginVerifier extends VerifyLoginFn<infer User, infer AuthInfo, any>
+      ? WebSocketEventContext<Value, User, AuthInfo>
+      : WebSocketEventContext<Value, null, null>,
     null,
     WebSocketJob,
     WebSocketDispatchFrame,
@@ -71,7 +83,7 @@ const WebSocket = {
     return {
       name: WEBSOCKET,
       mounterInterface: PLATFORM_MOUNTER_I,
-      eventMiddlewares: configs.eventMiddlewares,
+      eventMiddlewares: configs.eventMiddlewares as any,
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions: [
         { provide: PLATFORM_CONFIGS_I, withValue: configs },
@@ -106,7 +118,18 @@ const WebSocket = {
 
 declare namespace WebSocket {
   export type Bot = BotP;
-  export type Receiver<AuthInfo> = ReceiverP<AuthInfo>;
+  export type Receiver<
+    Value extends EventValue<any, any, any> = EventValue<
+      string,
+      string,
+      unknown
+    >,
+    LoginVerifier extends VerifyLoginFn<any, any, any> = VerifyLoginFn<
+      null,
+      null,
+      unknown
+    >
+  > = ReceiverP<Value, LoginVerifier>;
   export type Transmitter = TransmitterP;
   export type ClusterBrokerI = BrokerI;
 }

@@ -9,12 +9,17 @@ import type {
 import { ConnectionChannel } from '../channel';
 import createEvent from '../event';
 import SocketError from '../error';
-import type { ClientLoginFn, EventInput, WebSocketEvent } from '../types';
+import type {
+  ClientLoginFn,
+  EventInput,
+  WebSocketEvent,
+  EventValue,
+} from '../types';
 import openSocket from './ws';
 
-type ClientOptions<Credential> = {
+type ClientOptions<Login extends ClientLoginFn<any, any>> = {
   url?: string;
-  authorize?: ClientLoginFn<Credential>;
+  login?: Login;
 };
 
 type PendingEvent = {
@@ -23,11 +28,17 @@ type PendingEvent = {
   reject: (err: Error) => void;
 };
 
-type ClientEventListener = (event: WebSocketEvent) => void;
+type ClientEventListener<
+  Value extends EventValue<any, any, any>,
+  User extends null | MachinatUser
+> = (event: WebSocketEvent<Value, User>) => void;
 
-class WebScoketClient<Credential = null> {
+class WebScoketClient<
+  Value extends EventValue<any, any, any> = EventValue<string, string, unknown>,
+  Login extends ClientLoginFn<any, any> = ClientLoginFn<null, null>
+> {
   private _serverURL: string;
-  private _authorize: ClientLoginFn<Credential>;
+  private _login: ClientLoginFn<any, any>;
   private _socket: null | Socket;
 
   private _loginSeq: number;
@@ -38,10 +49,14 @@ class WebScoketClient<Credential = null> {
   private _channel: null | ConnectionChannel;
   private _isDisconnecting: boolean;
 
-  private _eventListeners: ClientEventListener[];
+  private _eventListeners: ClientEventListener<
+    Value,
+    Login extends ClientLoginFn<infer User, any> ? User : never
+  >[];
+
   private _errorListeners: ((err: Error) => void)[];
 
-  constructor({ url, authorize }: ClientOptions<Credential> = {}) {
+  constructor({ url, login }: ClientOptions<Login> = {} as any) {
     const { protocol, host } = window.location;
 
     this._serverURL = new URL(
@@ -49,9 +64,8 @@ class WebScoketClient<Credential = null> {
       `${protocol === 'https:' ? 'wss' : 'ws'}://${host}`
     ).href;
 
-    this._authorize =
-      authorize ||
-      (() => Promise.resolve({ user: null, credential: null as any }));
+    this._login =
+      login || (() => Promise.resolve({ user: null, credential: null }));
 
     this._queuedEvents = [];
     this._eventListeners = [];
@@ -107,14 +121,24 @@ class WebScoketClient<Credential = null> {
     }
   }
 
-  onEvent(listener: ClientEventListener): void {
+  onEvent(
+    listener: ClientEventListener<
+      Value,
+      Login extends ClientLoginFn<infer User, any> ? User : never
+    >
+  ): void {
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }
     this._eventListeners.push(listener);
   }
 
-  removeEventListener(listener: ClientEventListener): boolean {
+  removeEventListener(
+    listener: ClientEventListener<
+      Value,
+      Login extends ClientLoginFn<infer User, any> ? User : never
+    >
+  ): boolean {
     const idx = this._eventListeners.findIndex((fn) => fn === listener);
     if (idx === -1) {
       return false;
@@ -142,7 +166,7 @@ class WebScoketClient<Credential = null> {
   }
 
   private async _start() {
-    const { user, credential } = await this._authorize();
+    const { user, credential } = await this._login();
     this._user = user;
 
     const socket = await openSocket(this._serverURL);

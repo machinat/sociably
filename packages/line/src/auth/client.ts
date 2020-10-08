@@ -3,6 +3,8 @@
 import invariant from 'invariant';
 import type { ClientAuthorizer } from '@machinat/auth/types';
 import { LINE } from '../constant';
+import type LineUser from '../user';
+import type LineChat from '../channel';
 import type {
   LIFFAuthData,
   LIFFCredential,
@@ -26,7 +28,8 @@ type ClientAuthorizerOptions = {
 const BOT_CHANNEL_LABEL_QUERY_KEY = 'onBotChannel';
 
 class LineClientAuthorizer
-  implements ClientAuthorizer<LIFFAuthData, LIFFCredential> {
+  implements
+    ClientAuthorizer<LineUser, null | LineChat, LIFFAuthData, LIFFCredential> {
   liffId: string;
   providerId: string;
   botChannelId: string;

@@ -16,7 +16,7 @@ const nextTick = () => new Promise(process.nextTick);
 
 const user = { john: 'doe' };
 
-const authorize = moxy(async () => ({
+const login = moxy(async () => ({
   user,
   credential: { foo: 'bar' },
 }));
@@ -27,12 +27,12 @@ const eventSpy = moxy();
 beforeEach(() => {
   Socket.mock.reset();
   WS.mock.clear();
-  authorize.mock.clear();
+  login.mock.clear();
   eventSpy.mock.clear();
 });
 
 it('initiate ok', async () => {
-  const client = new Client({ authorize }); // eslint-disable-line no-unused-vars
+  const client = new Client({ login }); // eslint-disable-line no-unused-vars
   await nextTick();
 
   expect(WS.mock).toHaveBeenCalledTimes(1);
@@ -53,7 +53,7 @@ test('specify url', async () => {
   // eslint-disable-next-line no-unused-vars
   const client = new Client({
     url: 'ws://machinat.io/websocket',
-    authorize,
+    login,
   });
   await nextTick();
 
@@ -63,7 +63,7 @@ test('specify url', async () => {
     'machinat-websocket-v0'
   );
 
-  const client2 = new Client({ url: '/foo/websocket/server', authorize }); // eslint-disable-line no-unused-vars
+  const client2 = new Client({ url: '/foo/websocket/server', login }); // eslint-disable-line no-unused-vars
   await nextTick();
 
   expect(WS.mock).toHaveBeenCalledTimes(2);
@@ -73,7 +73,7 @@ test('specify url', async () => {
   );
 });
 
-test('login with no options.authorize', async () => {
+test('login with no options.login', async () => {
   const client = new Client();
   client.onEvent(eventSpy);
   await nextTick();
@@ -106,13 +106,13 @@ test('login with no options.authorize', async () => {
   expect(client.channel).toEqual(expectedChannel);
 });
 
-it('login with credential from options.authorize()', async () => {
-  const client = new Client({ authorize });
+it('login with credential from options.login()', async () => {
+  const client = new Client({ login });
   client.onEvent(eventSpy);
   await nextTick();
 
-  expect(authorize.mock).toHaveBeenCalledTimes(1);
-  expect(authorize.mock).toHaveBeenCalledWith(/* empty */);
+  expect(login.mock).toHaveBeenCalledTimes(1);
+  expect(login.mock).toHaveBeenCalledWith(/* empty */);
 
   const socket = Socket.mock.calls[0].instance;
   expect(socket.login.mock).not.toHaveBeenCalled();
@@ -142,7 +142,7 @@ it('login with credential from options.authorize()', async () => {
 });
 
 it('emit "error" if login rejected', async () => {
-  const client = new Client({ authorize });
+  const client = new Client({ login });
   const errorSpy = moxy();
   client.onError(errorSpy);
   await nextTick();
@@ -164,7 +164,7 @@ it('emit "error" if login rejected', async () => {
 });
 
 it('emit "event" when dispatched events received', async () => {
-  const client = new Client({ authorize });
+  const client = new Client({ login });
   await nextTick();
 
   const socket = Socket.mock.calls[0].instance;
@@ -227,7 +227,7 @@ it('emit "event" when dispatched events received', async () => {
 });
 
 it('send events when already connected', async () => {
-  const client = new Client({ authorize });
+  const client = new Client({ login });
   await nextTick();
 
   const socket = Socket.mock.calls[0].instance;
@@ -263,7 +263,7 @@ it('send events when already connected', async () => {
 });
 
 it('queue events when not ready and fire them after connected', async () => {
-  const client = new Client({ authorize });
+  const client = new Client({ login });
   await nextTick();
 
   const socket = Socket.mock.calls[0].instance;
@@ -301,7 +301,7 @@ it('queue events when not ready and fire them after connected', async () => {
 });
 
 test('disconnect by server', async () => {
-  const client = new Client({ authorize });
+  const client = new Client({ login });
   await nextTick();
 
   const socket = Socket.mock.calls[0].instance;
@@ -324,7 +324,7 @@ test('disconnect by server', async () => {
 });
 
 test('#disconnect()', async () => {
-  const client = new Client({ authorize });
+  const client = new Client({ login });
   await nextTick();
 
   const socket = Socket.mock.calls[0].instance;

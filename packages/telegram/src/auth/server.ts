@@ -9,7 +9,6 @@ import type {
   ServerAuthorizer,
   CookieAccessor,
   AuthorizerVerifyResult,
-  AuthorizerRefinement,
 } from '@machinat/auth/types';
 import type { RoutingInfo } from '@machinat/http/types';
 
@@ -18,7 +17,7 @@ import { TELEGRAM } from '../constant';
 import { TelegramChat, TelegramChatInstance } from '../channel';
 import TelegramUser from '../user';
 import type { TelegramPlatformConfigs } from '../types';
-import type { TelegramAuthData } from './types';
+import type { TelegramAuthData, TelegramAuthRefinement } from './types';
 import { refineTelegramAuthData } from './utils';
 
 type TelegramServerAuthorizerOpts = {
@@ -47,7 +46,13 @@ const makeParamsCheckingString = (query) =>
  * @category Provider
  */
 export class TelegramServerAuthorizer
-  implements ServerAuthorizer<TelegramAuthData, void> {
+  implements
+    ServerAuthorizer<
+      TelegramUser,
+      null | TelegramChat | TelegramChatInstance,
+      TelegramAuthData,
+      void
+    > {
   botToken: string;
   botId: number;
   redirectURL: string;
@@ -237,7 +242,7 @@ export class TelegramServerAuthorizer
   // eslint-disable-next-line class-methods-use-this
   async refineAuth(
     data: TelegramAuthData
-  ): Promise<null | AuthorizerRefinement> {
+  ): Promise<null | TelegramAuthRefinement> {
     return refineTelegramAuthData(data);
   }
 }

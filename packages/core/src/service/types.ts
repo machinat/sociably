@@ -40,6 +40,8 @@ export type ServiceContainer<T> = {
   new (): ServiceContainer<T>;
 };
 
+export type MaybeContainerOf<T> = T | ServiceContainer<T>;
+
 export type ProviderBinding<T> = {
   provide: Interfaceable<T>;
   withProvider: ServiceProvider<T>;

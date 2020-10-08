@@ -18,13 +18,14 @@ import { ConnectionChannel } from './channel';
 import createEvent from './event';
 import {
   WS_SERVER_I,
-  AUTHENTICATOR_I,
+  LOGIN_VERIFIER_I,
   UPGRADE_VERIFIER_I,
   PLATFORM_MOUNTER_I,
   PLATFORM_CONFIGS_I,
 } from './interface';
 import { WEBSOCKET } from './constant';
 import type {
+  EventValue,
   VerifyLoginFn,
   UpgradeRequestInfo,
   WebSocketEventContext,
@@ -53,10 +54,12 @@ type SocketState<Auth> = {
   connections: Map<string, ConnectionInfo<Auth>>;
 };
 
-type WebSocketReceiverOptions<AuthInfo> = {
-  heartbeatInterval?: number;
-  verifyLogin?: VerifyLoginFn<AuthInfo, any>;
+type WebSocketReceiverOptions<
+  LoginVerifier extends VerifyLoginFn<any, any, any>
+> = {
+  verifyLogin?: LoginVerifier;
   verifyUpgrade?: VerifyUpgradeFn;
+  heartbeatInterval?: number;
 };
 
 /** @internal */
@@ -84,18 +87,22 @@ const getWSFromServer = thenifiedly.factory(
 /**
  * @category Provider
  */
-export class WebSocketReceiver<AuthInfo> {
+export class WebSocketReceiver<
+  Value extends EventValue<any, any, any>,
+  LoginVerifier extends VerifyLoginFn<any, any, any>
+> {
   private _serverId: string;
   private _bot: BotP;
   private _wsServer: WSServer;
   private _transmitter: TransmitterP;
 
   private _verifyUpgrade: VerifyUpgradeFn;
-  private _verifyLogin: VerifyLoginFn<AuthInfo, any>;
+  private _verifyLogin: VerifyLoginFn<any, any, any>;
 
-  private _socketStates: Map<Socket, SocketState<AuthInfo>>;
+  private _socketStates: Map<Socket, SocketState<any>>;
 
-  private _popEvent: PopEventFn<WebSocketEventContext<AuthInfo>, null>;
+  private _popEvent: PopEventFn<WebSocketEventContext<Value, any, any>, null>;
+
   private _popError: PopErrorFn;
 
   // @ts-expect-error: use when implement cancelation
@@ -105,13 +112,16 @@ export class WebSocketReceiver<AuthInfo> {
     bot: BotP,
     wsServer: WSServer,
     transmitter: TransmitterP,
-    popEventWrapper: PopEventWrapper<WebSocketEventContext<AuthInfo>, null>,
+    popEventWrapper: PopEventWrapper<
+      WebSocketEventContext<Value, any, any>,
+      null
+    >,
     popError: PopErrorFn,
     {
       heartbeatInterval = 60000,
       verifyUpgrade,
       verifyLogin,
-    }: WebSocketReceiverOptions<AuthInfo> = {}
+    }: WebSocketReceiverOptions<LoginVerifier> = {} as any
   ) {
     this._serverId = transmitter.serverId;
     this._bot = bot;
@@ -122,8 +132,7 @@ export class WebSocketReceiver<AuthInfo> {
     this._verifyUpgrade = verifyUpgrade || (() => true);
     this._verifyLogin =
       verifyLogin ||
-      (() =>
-        Promise.resolve({ success: true, user: null, authInfo: null as any }));
+      (() => Promise.resolve({ success: true, user: null, authInfo: null }));
 
     this._popEvent = popEventWrapper(() => Promise.resolve(null));
     this._popError = popError;
@@ -172,7 +181,7 @@ export class WebSocketReceiver<AuthInfo> {
     return this.handleUpgrade.bind(this);
   }
 
-  private _getSocketStatesAssertedly(socket: Socket): SocketState<AuthInfo> {
+  private _getSocketStatesAssertedly(socket: Socket): SocketState<any> {
     const socketState = this._socketStates.get(socket);
     if (socketState === undefined) {
       const reason = 'unknown socket';
@@ -188,7 +197,7 @@ export class WebSocketReceiver<AuthInfo> {
     kind: undefined | string,
     type: string,
     payload: any,
-    { channel, user, auth }: ConnectionInfo<AuthInfo>
+    { channel, user, auth }: ConnectionInfo<any>
   ) {
     await this._popEvent({
       platform: WEBSOCKET,
@@ -363,13 +372,13 @@ export class WebSocketReceiver<AuthInfo> {
   }
 }
 
-export const ReceiverP = provider<WebSocketReceiver<any>>({
+export const ReceiverP = provider<WebSocketReceiver<any, any>>({
   lifetime: 'singleton',
   deps: [
     BotP,
     WS_SERVER_I,
     TransmitterP,
-    { require: AUTHENTICATOR_I, optional: true },
+    { require: LOGIN_VERIFIER_I, optional: true },
     { require: UPGRADE_VERIFIER_I, optional: true },
     PLATFORM_MOUNTER_I,
     PLATFORM_CONFIGS_I,
@@ -378,9 +387,9 @@ export const ReceiverP = provider<WebSocketReceiver<any>>({
     bot: BotP,
     wsServer: WSServer,
     transmitter: TransmitterP,
-    verifyLogin: null | VerifyLoginFn<any, any>,
+    verifyLogin: null | VerifyLoginFn<any, any, any>,
     verifyUpgrade: null | VerifyUpgradeFn,
-    { popEventWrapper, popError }: WebSocketPlatformMounter<any>,
+    { popEventWrapper, popError }: WebSocketPlatformMounter<any, any, any>,
     configs: WebSocketPlatformConfigs<any, any>
   ) =>
     new WebSocketReceiver(
@@ -397,4 +406,11 @@ export const ReceiverP = provider<WebSocketReceiver<any>>({
     ),
 })(WebSocketReceiver);
 
-export type ReceiverP<AuthInfo> = WebSocketReceiver<AuthInfo>;
+export type ReceiverP<
+  Value extends EventValue<any, any, any> = EventValue<string, string, unknown>,
+  LoginVerifier extends VerifyLoginFn<any, any, any> = VerifyLoginFn<
+    null,
+    null,
+    unknown
+  >
+> = WebSocketReceiver<Value, LoginVerifier>;

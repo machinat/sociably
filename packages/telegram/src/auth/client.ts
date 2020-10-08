@@ -1,15 +1,22 @@
 import {
   ClientAuthorizer,
-  AuthorizerRefinement,
   AuthorizerCredentialResult,
 } from '@machinat/auth/types';
 import { TELEGRAM } from '../constant';
+import type { TelegramChat, TelegramChatInstance } from '../channel';
+import type TelegramUser from '../user';
 import { refineTelegramAuthData } from './utils';
-import { TelegramAuthData } from './types';
+import { TelegramAuthData, TelegramAuthRefinement } from './types';
 
 /* eslint-disable class-methods-use-this */
 export default class TelegramClientAuthorizer
-  implements ClientAuthorizer<TelegramAuthData, void> {
+  implements
+    ClientAuthorizer<
+      TelegramUser,
+      null | TelegramChat | TelegramChatInstance,
+      TelegramAuthData,
+      void
+    > {
   platform = TELEGRAM;
   shouldResign = false;
 
@@ -28,7 +35,7 @@ export default class TelegramClientAuthorizer
   // eslint-disable-next-line class-methods-use-this
   async refineAuth(
     data: TelegramAuthData
-  ): Promise<null | AuthorizerRefinement> {
+  ): Promise<null | TelegramAuthRefinement> {
     return refineTelegramAuthData(data);
   }
 }

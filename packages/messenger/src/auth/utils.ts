@@ -1,6 +1,6 @@
 /** @internal */ /** */
 /* eslint-disable import/prefer-default-export */
-import MessengerChannel from '../channel';
+import MessengerChat from '../channel';
 import MessengerUser from '../user';
 import type { ExtensionPayload, AuthorizerRefinement } from './types';
 
@@ -13,7 +13,7 @@ export const refinementFromExtensionPayload = (
 
   return {
     user: new MessengerUser(payload.page_id, payload.psid),
-    channel: new MessengerChannel(
+    channel: new MessengerChat(
       payload.page_id,
       { id: payload.tid },
       payload.thread_type

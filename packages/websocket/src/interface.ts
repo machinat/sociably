@@ -26,8 +26,8 @@ export const UPGRADE_VERIFIER_I = makeInterface<VerifyUpgradeFn>({
 /**
  * @category Interface
  */
-export const AUTHENTICATOR_I = makeInterface<VerifyLoginFn<any, any>>({
-  name: 'WebSocketAuthenticatorI',
+export const LOGIN_VERIFIER_I = makeInterface<VerifyLoginFn<any, any, any>>({
+  name: 'WebSocketLoginVerifierI',
 });
 
 /**
@@ -40,7 +40,9 @@ export const SERVER_ID_I = makeInterface<string>({
 /**
  * @category Interface
  */
-export const PLATFORM_MOUNTER_I = makeInterface<WebSocketPlatformMounter<any>>({
+export const PLATFORM_MOUNTER_I = makeInterface<
+  WebSocketPlatformMounter<any, any, any>
+>({
   name: 'WebSocketPlatformMounterI',
 });
 
