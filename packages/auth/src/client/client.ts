@@ -24,9 +24,19 @@ type AuthClientOptions<
   Channel extends null | MachinatChannel,
   AuthData
 > = {
+  platform?: string;
   serverURL: string;
   authorizers: ClientAuthorizer<User, Channel, AuthData, any>[];
   refreshLeadTime?: number;
+};
+
+type AuthResult<
+  User extends MachinatUser,
+  Channel extends null | MachinatChannel,
+  AuthData
+> = {
+  token: string;
+  context: AuthContext<User, Channel, AuthData>;
 };
 
 /** @internal */
@@ -41,6 +51,48 @@ const deleteCookie = (name: string, domain?: string, path?: string) => {
 /** @internal */
 const getAuthPayload = (token: string): AuthTokenPayload<any> =>
   decodeJWT(`${token}.`) as AuthTokenPayload<any>;
+
+/** @internal */
+const getCookieAuthResult = <AuthData>(): null | CookieAuthResult<AuthData> => {
+  const cookies = parseCookie(document.cookie);
+
+  if (cookies[ERROR_COOKIE_KEY]) {
+    // Error happen in backend flow
+    const decodedToken = decodeJWT(cookies[ERROR_COOKIE_KEY], { json: true });
+
+    if (decodedToken !== null) {
+      const {
+        platform,
+        error: { code, reason },
+        scope: { domain, path },
+      } = decodedToken as ErrorTokenPayload;
+
+      deleteCookie(ERROR_COOKIE_KEY, domain, path);
+      return {
+        success: false,
+        platform,
+        code,
+        reason,
+      };
+    }
+    deleteCookie(ERROR_COOKIE_KEY);
+  } else if (cookies[TOKEN_COOKIE_KEY]) {
+    // Auth completed in backend flow
+    const token = cookies[TOKEN_COOKIE_KEY];
+    const payload = getAuthPayload(token);
+
+    if (payload.exp * 1000 > Date.now()) {
+      return {
+        success: true,
+        platform: payload.platform,
+        token,
+        payload,
+      };
+    }
+  }
+
+  return null;
+};
 
 type CookieAuthResult<AuthData> =
   | { success: false; platform: string; code: number; reason: string }
@@ -65,7 +117,6 @@ class AuthClient<
   private _platform: undefined | string;
   private _authURL: URL;
 
-  private _cookieAuthResult: CookieAuthResult<AuthData> | null | undefined;
   private _authed: null | {
     token: string;
     payload: AuthTokenPayload<AuthData>;
@@ -75,11 +126,10 @@ class AuthClient<
   private _initiatingPlatforms: Set<string>;
   private _initiatedPlatforms: Set<string>;
 
-  private _initPromise: null | Promise<void>;
-  private _authPromise: null | Promise<{
-    token: string;
-    context: AuthContext<User, Channel, AuthData>;
-  }>;
+  private _authPromise: null | Promise<AuthResult<User, Channel, AuthData>>;
+  private _initialAuthPromise: null | Promise<
+    AuthResult<User, Channel, AuthData>
+  >;
 
   private _minAuthBeginTime: number;
 
@@ -90,16 +140,17 @@ class AuthClient<
     return this._platform;
   }
 
-  get isInitiating(): boolean {
-    return !!this._initPromise;
+  get isAuthorized(): boolean {
+    return !!this._authed;
   }
 
-  get isAuthed(): boolean {
-    return !!this._authed;
+  get isAuthorizing(): boolean {
+    return !!this._authPromise;
   }
 
   constructor(
     {
+      platform,
       authorizers,
       serverURL,
       refreshLeadTime = 300, // 5 min
@@ -120,7 +171,6 @@ class AuthClient<
 
     this._initiatingPlatforms = new Set();
     this._initiatedPlatforms = new Set();
-    this._initPromise = null;
     this._minAuthBeginTime = -1;
 
     this._platform = undefined;
@@ -128,96 +178,8 @@ class AuthClient<
 
     this._refreshTimeoutId = null;
     this._expireTimeoutId = null;
-  }
 
-  isInitiated(platform: string): boolean {
-    return this._initiatedPlatforms.has(platform);
-  }
-
-  /**
-   * Initiate the nessesary libs or works for the following auth flow. You might
-   * want to call it as earlier as possible before your app start rendering, you
-   * can then call auth() to sign in after your app is ready.
-   * The platform to log user in is decided with the order below:
-   *   bootstrap() param -> "platform" querystring param -> backend flow setup
-   * If you want to change the platform, call bootstrap() again with new
-   * platform then call auth() again.
-   */
-  bootstrap(platformInput?: string): AuthClient<User, Channel, AuthData> {
-    const cookies = parseCookie(document.cookie);
-    let cookieAuthResult: null | CookieAuthResult<AuthData> = null;
-
-    if (cookies[ERROR_COOKIE_KEY]) {
-      // Error happen in backend flow
-      const decodedToken = decodeJWT(cookies[ERROR_COOKIE_KEY], { json: true });
-
-      if (decodedToken !== null) {
-        const {
-          platform,
-          error: { code, reason },
-          scope: { domain, path },
-        } = decodedToken as ErrorTokenPayload;
-
-        deleteCookie(ERROR_COOKIE_KEY, domain, path);
-        cookieAuthResult = {
-          success: false,
-          platform,
-          code,
-          reason,
-        };
-      } else {
-        deleteCookie(ERROR_COOKIE_KEY);
-      }
-    } else if (cookies[TOKEN_COOKIE_KEY]) {
-      // Auth completed in backend flow
-      const token = cookies[TOKEN_COOKIE_KEY];
-      const payload = getAuthPayload(token);
-
-      if (payload.exp * 1000 > Date.now()) {
-        cookieAuthResult = {
-          success: true,
-          platform: payload.platform,
-          token,
-          payload,
-        };
-      }
-    }
-
-    const platformToBootstrap =
-      platformInput ||
-      new URLSearchParams(window.location.search).get('platform') ||
-      cookieAuthResult?.platform;
-
-    const [err, provider] = this._getProvider(platformToBootstrap);
-    if (err) {
-      this.emit('error', err, this._authed?.context || null);
-      return this;
-    }
-
-    if (this._platform && this._platform !== platformToBootstrap) {
-      this.signOut();
-    }
-
-    this._platform = platformToBootstrap;
-    this._cookieAuthResult =
-      cookieAuthResult?.platform === platformToBootstrap
-        ? cookieAuthResult
-        : null;
-
-    // Execute init work of platform, promise would be awaited within auth()
-    const initPromise = this._initPlatform(provider, this._cookieAuthResult)
-      .catch((initErr) => {
-        this.emit('error', initErr, this._authed?.context || null);
-      })
-      .finally(() => {
-        // if init success and no other init() call make the platform changed
-        if (this._initPromise === initPromise) {
-          this._initPromise = null;
-        }
-      });
-
-    this._initPromise = initPromise;
-    return this;
+    this._initialAuthPromise = this.auth(platform);
   }
 
   /**
@@ -227,21 +189,37 @@ class AuthClient<
    * controller, so any auth() call after the first one do not trigger the auth
    * flow but just return the current status.
    */
-  async auth(): Promise<{
-    token: string;
-    context: AuthContext<User, Channel, AuthData>;
-  }> {
-    if (this._authPromise) {
-      return this._authPromise;
+  auth(platform?: string): Promise<AuthResult<User, Channel, AuthData>> {
+    // the first auth() call should return the initial auth result
+    if (this._initialAuthPromise) {
+      const initialAuthPromise = this._initialAuthPromise;
+      this._initialAuthPromise = null;
+
+      if (!platform || platform === this._platform) {
+        return initialAuthPromise;
+      }
     }
 
-    if (this._authed) {
-      const { token, context } = this._authed;
-      return { token, context };
+    if (!platform || platform === this._platform) {
+      // return the result of current auth flow if it is authorizing
+      if (this._authPromise) {
+        return this._authPromise;
+      }
+
+      // return current auth status if it is already authorized
+      if (this._authed) {
+        const { token, context } = this._authed;
+        return Promise.resolve({ token, context });
+      }
     }
 
-    this._authPromise = this._auth().finally(() => {
+    // bigin a new auth flow
+    this._authPromise = this._auth(platform).finally(() => {
       this._authPromise = null;
+    });
+
+    this._authPromise.catch((err) => {
+      this._emitError(err, this._authed?.context || null);
     });
 
     return this._authPromise;
@@ -261,18 +239,41 @@ class AuthClient<
     this._minAuthBeginTime = Date.now();
   }
 
-  private async _initPlatform(
-    authorizer: ClientAuthorizer<User, Channel, AuthData, any>,
-    cookieAuthResult: null | CookieAuthResult<AuthData>
-  ): Promise<void> {
-    // not initiate for the same platform again
+  private async _auth(
+    platformInput: undefined | string
+  ): Promise<AuthResult<User, Channel, AuthData>> {
+    const beginTime = Date.now();
+
+    let cookieAuthResult = getCookieAuthResult<AuthData>();
+    // auth according to the following order
+    const authPlatform =
+      platformInput ||
+      this._platform ||
+      new URLSearchParams(window.location.search).get('platform') ||
+      cookieAuthResult?.platform;
+
+    const [err, authorizer] = this._getAuthorizer(authPlatform);
+    if (err) {
+      throw err;
+    }
+
+    if (this._platform && this._platform !== authPlatform) {
+      this.signOut();
+    }
+
+    this._platform = authPlatform;
+    if (cookieAuthResult?.platform !== authPlatform) {
+      cookieAuthResult = null;
+    }
+
+    // init authorizer if needed
     if (
       !this._initiatedPlatforms.has(authorizer.platform) &&
       !this._initiatingPlatforms.has(authorizer.platform)
     ) {
       const platformAuthEntry = this._getAuthEntry(authorizer.platform);
-
       this._initiatingPlatforms.add(authorizer.platform);
+
       try {
         if (cookieAuthResult) {
           if (cookieAuthResult.success) {
@@ -293,36 +294,8 @@ class AuthClient<
       }
 
       this._initiatedPlatforms.add(authorizer.platform);
-      // set as initiated if platform is not changed by another call
-      if (this._platform === authorizer.platform) {
-        this.emit('initiate');
-      }
-    }
-  }
-
-  private async _auth(): Promise<{
-    token: string;
-    context: AuthContext<User, Channel, AuthData>;
-  }> {
-    const beginTime = Date.now();
-    let err: undefined | null | Error;
-
-    while (this._initPromise) {
-      // Wait for initiation for the first time
-      await this._initPromise; // eslint-disable-line no-await-in-loop
     }
 
-    if (!this._platform) {
-      // Initiation failed or not init() at all
-      throw new AuthError(400, 'controller not boostrapped');
-    }
-
-    const [providerErr, provider] = this._getProvider(this._platform);
-    if (providerErr) {
-      throw providerErr;
-    }
-
-    const cookieAuthResult = this._cookieAuthResult;
     let token: string;
     let payload: AuthTokenPayload<AuthData>;
 
@@ -331,16 +304,20 @@ class AuthClient<
       (cookieAuthResult.success &&
         cookieAuthResult.payload.exp * 1000 < Date.now())
     ) {
-      [err, token] = await this._signToken(provider);
-      if (err) {
-        throw err;
+      // start front-end flow
+      const [signErr, signedToken] = await this._signToken(authorizer);
+      if (signErr) {
+        throw signErr;
       }
 
-      payload = getAuthPayload(token);
+      payload = getAuthPayload(signedToken);
+      token = signedToken;
     } else if (!cookieAuthResult.success) {
+      // error from back-end
       const { code, reason } = cookieAuthResult;
       throw new AuthError(code, reason);
     } else {
+      // use the success result from back-end
       ({ token, payload } = cookieAuthResult);
     }
 
@@ -350,7 +327,7 @@ class AuthClient<
       throw new AuthError(403, 'signed out during authenticating');
     }
 
-    const refinement = await provider.refineAuth(payload.data);
+    const refinement = await authorizer.refineAuth(payload.data);
     if (!refinement) {
       throw new AuthError(400, 'invalid auth info');
     }
@@ -358,7 +335,7 @@ class AuthClient<
     const { iat, exp, data } = payload;
     const { channel, user } = refinement;
     const context = {
-      platform: provider.platform,
+      platform: authorizer.platform,
       loginAt: new Date(iat * 1000),
       expireAt: new Date(exp * 1000),
       channel,
@@ -427,9 +404,7 @@ class AuthClient<
   ): Promise<void> {
     const beginTime = Date.now();
 
-    let err: null | Error;
-    let provider: ClientAuthorizer<User, Channel, AuthData, any>;
-    [err, provider] = this._getProvider(this._platform); // eslint-disable-line prefer-const
+    const [err, authorizer] = this._getAuthorizer(this._platform);
     if (err) {
       throw err;
     }
@@ -437,20 +412,21 @@ class AuthClient<
     let newToken: string;
     if (refreshLimit && Date.now() < refreshLimit * 1000) {
       // refresh if token is refreshable
-      let body: AuthAPIResponseBody;
-      [err, body] = await this._callAuthPrivateAPI('_refresh', { token });
-
-      if (err) {
-        throw err;
+      const [refreshErr, body] = await this._callAuthPrivateAPI('_refresh', {
+        token,
+      });
+      if (refreshErr) {
+        throw refreshErr;
       }
 
       newToken = body.token;
-    } else if (provider.shouldResign) {
+    } else if (authorizer.shouldResign) {
       // otherwise resign
-      [err, newToken] = await this._signToken(provider);
-      if (err) {
-        throw err;
+      const [signErr, signedToken] = await this._signToken(authorizer);
+      if (signErr) {
+        throw signErr;
       }
+      newToken = signedToken;
     } else {
       return;
     }
@@ -466,7 +442,7 @@ class AuthClient<
     }
 
     const payload = getAuthPayload(newToken);
-    const refinement = await provider.refineAuth(payload.data);
+    const refinement = await authorizer.refineAuth(payload.data);
     if (!refinement) {
       throw new AuthError(400, 'invalid auth info');
     }
@@ -474,7 +450,7 @@ class AuthClient<
     const { iat, exp, data } = payload;
     const { channel, user } = refinement;
     const context = {
-      platform: provider.platform,
+      platform: authorizer.platform,
       loginAt: new Date(iat * 1000),
       expireAt: new Date(exp * 1000),
       channel,
@@ -493,7 +469,7 @@ class AuthClient<
     this._refreshTimeoutId = null;
 
     this._refreshAuth(token, payload).catch((err) => {
-      this.emit('error', err, this._authed?.context || null);
+      this._emitError(err, this._authed?.context || null);
     });
   };
 
@@ -507,12 +483,13 @@ class AuthClient<
     }
   };
 
-  private _getProvider(
+  private _getAuthorizer(
     platform: undefined | string
-  ): [Error | null, ClientAuthorizer<User, Channel, AuthData, any>] {
+  ): [null | Error, ClientAuthorizer<User, Channel, AuthData, any>] {
     if (!platform) {
       return [new AuthError(400, 'no platform specified'), null as any];
     }
+
     const authorizer = this.authorizers.find((p) => p.platform === platform);
     if (!authorizer) {
       return [
@@ -520,6 +497,7 @@ class AuthClient<
         null as any,
       ];
     }
+
     return [null, authorizer];
   }
 
@@ -561,6 +539,18 @@ class AuthClient<
     if (this._expireTimeoutId) {
       clearTimeout(this._expireTimeoutId);
       this._expireTimeoutId = null;
+    }
+  }
+
+  private _emitError(
+    err: Error,
+    context: null | AuthContext<User, Channel, AuthData>
+  ) {
+    try {
+      this.emit('error', err, context);
+    } catch {
+      // do not throw if no error handler, since the error can also be received
+      // by #auth() call
     }
   }
 }

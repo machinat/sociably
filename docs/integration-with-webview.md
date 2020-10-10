@@ -162,13 +162,19 @@ const webSocketClient = new WebSocketClient({
   url: '/websocket',
   login: useAuthClient(authClient),
 });
-
-authClient.bootstrap();
 ```
 
-First we initiate an `AuthClient` with the authorizers of supported chat platforms. Then bind it the `login` option of websocket client with the `useAuth` adapter.
+First we initiate an `AuthClient` with the authorizers of supported chat platforms. Then bind it the `login` option of websocket client with the `useAuthClient` adapter.
 
-The final step is to call `authClient.bootstrap(platform)`, it initiate necessary works to register user on the specified platform. If the platform argument is omitted, `platform` param in querystring is used.
+By default the `AuthClient` would use the `platform` parameter of querystring to decide which platform the user should login with. For example, to make the user login in Messenger platform, direct the user to `https://your.app/page?platform=messenger`. Or you can specify the `platform` options of the `AuthClient` like:
+
+```js
+const authClient = new AuthClient({
+  platform: 'telegram',
+  serverURL: '/auth',
+  authorizers: [...],
+});
+```
 
 ### Get Auth Information
 

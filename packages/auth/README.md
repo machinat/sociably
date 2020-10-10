@@ -16,16 +16,14 @@ In the back-end:
 
 ```js
 import Machinat from '@machinat/core';
+import { factory } from '@machinat/core/service';
 import HTTP from '@machinat/http';
 import Auth from '@machinat/auth';
-
 // add the platforms and the authorizer you need
 import Messenger from '@machinat/messenger';
 import { MessengerServerAuthorizer } from '@machinat/messenger/auth';
-// serve the web app
-import Next from '@machinat/messenger/next';
 
-const app = Machinat.createApp({
+Machinat.createApp({
   platforms: [
     Messenger.initModule({
       entryPath: '/webhook',
@@ -38,23 +36,35 @@ const app = Machinat.createApp({
       entryPath: '/auth',
       secret: 'xxx-xxx-xxx-xxx',
     }),
-
-    Next.initModule({
-      entryPath: '/webview',
-      ...
-    }),
   ],
   bindings: [
     {
       porvide: Auth.AUTHORIZERS_I,
       withProvider: MessengerServerAuthorizer,
     },
-  ]
-});
+    {
+      provide: HTTP.REQUEST_ROUTINGS_I,
+      withProvider: factory({
+        lifetime: 'transient',
+        deps: [Auth.Controller]
+      })(
+        authController => ({
+          path: '/myAPI',
+          handler: async (req, res) => {
+            const verifyResult = await authController.verifyAuth(req);
 
-app.start().then(() => {
-  console.log('App with authorized webvieww is started...');
-});
+            if (verifyResult.success) {
+              res.end(JSON.string({ hello: verifyResult.auth.user.uid }));
+            } else {
+              res.writeHead(verifyResult.code);
+              res.end(JSON.string({ error: verifyResult.reason }));
+            }
+          }
+        })
+      }),
+    }
+  ]
+}).start();
 ```
 
 In the front-end:
@@ -63,24 +73,22 @@ In the front-end:
 import AuthClient from '@machinat/auth/client';
 import MessengerClientAuthorizer from '@machinat/messenger/auth/client';
 
-function main () {
+(async function main () {
   const authClient = new AuthClient({
+    platform: 'messenger',
     serverURL: '/auth',
     authorizers: [new MessengerClientAuthorizer({ ... })],
   });
 
-  // bootstrap ASAP to reduce waiting time
-  authClient.bootstrap('messenger');
-
-  // start your App
-  ReactDom.render(...);
-
   const { token, context } = await authClient.auth();
-  console.log(token);
-  console.log(context);
-}
 
-main();
+  const response = await fetch({
+    url: '/myAPI',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const result = await response.json();
+  console.log(result);
+})();
 ```
 
 ### API
