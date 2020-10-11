@@ -43,7 +43,7 @@ import Socket, {
 type IntervalID = ReturnType<typeof setInterval>;
 
 type ConnectionInfo<Auth> = {
-  channel: ConnectionChannel;
+  connection: ConnectionChannel;
   user: null | MachinatUser;
   auth: Auth;
   expireAt: null | Date;
@@ -197,15 +197,16 @@ export class WebSocketReceiver<
     kind: undefined | string,
     type: string,
     payload: any,
-    { channel, user, auth }: ConnectionInfo<any>
+    { connection, user, auth }: ConnectionInfo<any>
   ) {
     await this._popEvent({
       platform: WEBSOCKET,
       bot: this._bot,
-      event: createEvent(kind, type, payload, channel, user),
+      event: createEvent(kind, type, payload, connection, user),
       metadata: {
         source: WEBSOCKET,
         request: socket.request,
+        connection,
         auth,
       },
     });
@@ -235,7 +236,7 @@ export class WebSocketReceiver<
         socketState.connections.set(connId, {
           user,
           auth: authInfo,
-          channel: new ConnectionChannel(this._serverId, connId),
+          connection: new ConnectionChannel(this._serverId, connId),
           expireAt: expireAt || null,
         });
 
@@ -301,8 +302,8 @@ export class WebSocketReceiver<
         reason: 'connection is not signed in',
       });
     } else {
-      const { channel, user } = connInfo;
-      this._transmitter.addLocalConnection(channel, socket, user);
+      const { connection, user } = connInfo;
+      this._transmitter.addLocalConnection(connection, socket, user);
 
       await this._issueEvent(
         socket,
@@ -345,7 +346,7 @@ export class WebSocketReceiver<
 
     if (connInfo !== undefined) {
       socketState.connections.delete(connId);
-      this._transmitter.removeLocalConnection(connInfo.channel);
+      this._transmitter.removeLocalConnection(connInfo.connection);
 
       await this._issueEvent(
         socket,

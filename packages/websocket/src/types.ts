@@ -105,6 +105,7 @@ export type WebSocketDispatchFrame = DispatchFrame<
 export type WebSocketMetadata<AuthInfo> = {
   source: 'web_socket';
   request: UpgradeRequestInfo;
+  connection: ConnectionChannel;
   auth: AuthInfo;
 };
 

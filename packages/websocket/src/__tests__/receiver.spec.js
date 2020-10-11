@@ -127,25 +127,26 @@ it('handle sockets and connections lifecycle', async () => {
     seq: 0,
   });
 
-  const expectedMetadata = {
-    source: 'web_socket',
-    request: expectedRequest,
-    auth: { rookie: true },
-  };
-
   expect(popEventMock).not.toHaveBeenCalled();
 
   const { connId } = socket.connect.mock.calls[0].args[0];
   socket.emit('connect', { connId }, 2, socket);
   await nextTick();
 
-  const channel = new ConnectionChannel('#server', connId);
+  const connection = new ConnectionChannel('#server', connId);
   expect(transmitter.addLocalConnection.mock).toHaveBeenCalledTimes(1);
   expect(transmitter.addLocalConnection.mock).toHaveBeenCalledWith(
-    channel,
+    connection,
     socket,
     { john: 'doe' }
   );
+
+  const expectedMetadata = {
+    source: 'web_socket',
+    request: expectedRequest,
+    connection,
+    auth: { rookie: true },
+  };
 
   expect(popEventMock).toHaveBeenCalledTimes(1);
   expect(popEventMock).toHaveBeenCalledWith({
@@ -154,7 +155,7 @@ it('handle sockets and connections lifecycle', async () => {
     event: {
       kind: 'connection',
       type: 'connect',
-      channel,
+      channel: connection,
       user: { john: 'doe' },
     },
     metadata: expectedMetadata,
@@ -178,7 +179,7 @@ it('handle sockets and connections lifecycle', async () => {
       kind: 'french',
       type: 'greeting',
       payload: 'bonjour',
-      channel,
+      channel: connection,
       user: { john: 'doe' },
     },
     metadata: expectedMetadata,
@@ -204,7 +205,7 @@ it('handle sockets and connections lifecycle', async () => {
       kind: 'default',
       type: 'foo',
       payload: 123,
-      channel,
+      channel: connection,
       user: { john: 'doe' },
     },
     metadata: expectedMetadata,
@@ -216,7 +217,7 @@ it('handle sockets and connections lifecycle', async () => {
       kind: 'default',
       type: 'bar',
       payload: 456,
-      channel,
+      channel: connection,
       user: { john: 'doe' },
     },
     metadata: expectedMetadata,
@@ -233,7 +234,7 @@ it('handle sockets and connections lifecycle', async () => {
       kind: 'connection',
       type: 'disconnect',
       payload: { reason: 'bye' },
-      channel,
+      channel: connection,
       user: { john: 'doe' },
     },
     metadata: expectedMetadata,
@@ -266,6 +267,8 @@ test('default verifyUpgrade and verifyLogin', async () => {
   socket.emit('connect', { connId }, 2, socket);
   await nextTick();
 
+  const connection = new ConnectionChannel('#server', connId);
+
   expect(popEventMock).toHaveBeenCalledTimes(1);
   // accept auth with null user and null auth data
   expect(popEventMock).toHaveBeenCalledWith({
@@ -274,12 +277,13 @@ test('default verifyUpgrade and verifyLogin', async () => {
     event: {
       kind: 'connection',
       type: 'connect',
-      channel: new ConnectionChannel('#server', connId),
+      channel: connection,
       user: null,
     },
     metadata: {
       source: 'web_socket',
       request: expectedRequest,
+      connection,
       auth: null,
     },
   });
@@ -379,7 +383,12 @@ test('multi sockets and connections', async () => {
       channel: noUserConn,
       user: null,
     },
-    metadata: { source: 'web_socket', request: expectedRequest, auth: null },
+    metadata: {
+      source: 'web_socket',
+      request: expectedRequest,
+      connection: noUserConn,
+      auth: null,
+    },
   });
   expect(popEventMock).toHaveBeenNthCalledWith(2, {
     platform: 'web_socket',
@@ -390,7 +399,12 @@ test('multi sockets and connections', async () => {
       channel: johnConn,
       user: { john: 'doe' },
     },
-    metadata: { source: 'web_socket', request: expectedRequest, auth: 'foo' },
+    metadata: {
+      source: 'web_socket',
+      request: expectedRequest,
+      connection: johnConn,
+      auth: 'foo',
+    },
   });
   expect(popEventMock).toHaveBeenNthCalledWith(3, {
     platform: 'web_socket',
@@ -403,6 +417,7 @@ test('multi sockets and connections', async () => {
     },
     metadata: {
       source: 'web_socket',
+      connection: jojoConn,
       request: expectedRequest,
       auth: 'kokoko',
     },
@@ -456,6 +471,7 @@ test('multi sockets and connections', async () => {
     metadata: {
       source: 'web_socket',
       request: expectedRequest,
+      connection: noUserConn,
       auth: null,
     },
   });
@@ -472,6 +488,7 @@ test('multi sockets and connections', async () => {
     metadata: {
       source: 'web_socket',
       request: expectedRequest,
+      connection: johnConn,
       auth: 'foo',
     },
   });
@@ -488,6 +505,7 @@ test('multi sockets and connections', async () => {
     metadata: {
       source: 'web_socket',
       request: expectedRequest,
+      connection: johnConn,
       auth: 'foo',
     },
   });
@@ -504,6 +522,7 @@ test('multi sockets and connections', async () => {
     metadata: {
       source: 'web_socket',
       request: expectedRequest,
+      connection: jojoConn,
       auth: 'kokoko',
     },
   });
@@ -520,6 +539,7 @@ test('multi sockets and connections', async () => {
     metadata: {
       source: 'web_socket',
       request: expectedRequest,
+      connection: jojoConn,
       auth: 'kokoko',
     },
   });
@@ -555,7 +575,12 @@ test('multi sockets and connections', async () => {
       channel: noUserConn,
       user: null,
     },
-    metadata: { source: 'web_socket', request: expectedRequest, auth: null },
+    metadata: {
+      source: 'web_socket',
+      request: expectedRequest,
+      connection: noUserConn,
+      auth: null,
+    },
   });
   expect(popEventMock).toHaveBeenNthCalledWith(10, {
     platform: 'web_socket',
@@ -567,7 +592,12 @@ test('multi sockets and connections', async () => {
       channel: johnConn,
       user: { john: 'doe' },
     },
-    metadata: { source: 'web_socket', request: expectedRequest, auth: 'foo' },
+    metadata: {
+      source: 'web_socket',
+      request: expectedRequest,
+      connection: johnConn,
+      auth: 'foo',
+    },
   });
   expect(popEventMock).toHaveBeenNthCalledWith(11, {
     platform: 'web_socket',
@@ -582,6 +612,7 @@ test('multi sockets and connections', async () => {
     metadata: {
       source: 'web_socket',
       request: expectedRequest,
+      connection: jojoConn,
       auth: 'kokoko',
     },
   });
