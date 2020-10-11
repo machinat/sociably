@@ -10,7 +10,7 @@ test('from id', () => {
   );
 
   expect(channel.identifier).toBe('_PSID_');
-  expect(channel.threadType).toBe('USER_TO_PAGE');
+  expect(channel.type).toBe('USER_TO_PAGE');
   expect(channel.targetType).toBe('psid');
   expect(channel.target).toEqual({ id: '_PSID_' });
 });
@@ -24,7 +24,7 @@ test('from user_ref', () => {
   );
 
   expect(channel.identifier).toBe('_USER_REF_');
-  expect(channel.threadType).toBe('USER_TO_PAGE');
+  expect(channel.type).toBe('USER_TO_PAGE');
   expect(channel.targetType).toBe('user_ref');
   expect(channel.target).toEqual({ user_ref: '_USER_REF_' });
 });
@@ -41,7 +41,7 @@ test('from phone_number', () => {
   );
 
   expect(channel.identifier).toBe('nRn5C+EX4/vdk02aEWYs2zV5sHM=');
-  expect(channel.threadType).toBe('USER_TO_PAGE');
+  expect(channel.type).toBe('USER_TO_PAGE');
   expect(channel.targetType).toBe('phone_number');
   expect(channel.target).toEqual({
     phone_number: '+88888888888',
@@ -58,7 +58,7 @@ test('from post_id', () => {
   );
 
   expect(channel.identifier).toBe('_POST_ID_');
-  expect(channel.threadType).toBe('USER_TO_PAGE');
+  expect(channel.type).toBe('USER_TO_PAGE');
   expect(channel.targetType).toBe('post_id');
   expect(channel.target).toEqual({ post_id: '_POST_ID_' });
 });
@@ -74,7 +74,7 @@ test('from comment_id', () => {
   );
 
   expect(channel.identifier).toBe('_COMMENT_ID_');
-  expect(channel.threadType).toBe('USER_TO_PAGE');
+  expect(channel.type).toBe('USER_TO_PAGE');
   expect(channel.targetType).toBe('comment_id');
   expect(channel.target).toEqual({ comment_id: '_COMMENT_ID_' });
 });

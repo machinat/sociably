@@ -30,7 +30,7 @@ export const chatJobsMaker = (options?: MessengerSendOptions) => (
 ): MessengerJob[] => {
   const { target, uid } = channel;
   if (!target) {
-    throw new Error(`unable to send to ${channel.threadType} channel`);
+    throw new Error(`unable to send to ${channel.type} channel`);
   }
 
   const jobs: MessengerJob[] = new Array(segments.length);

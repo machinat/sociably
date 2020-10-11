@@ -6,7 +6,7 @@ import type { MessengerTarget, MessengerThreadType } from './types';
 
 class MessengerChat implements MachinatChannel {
   pageId: string;
-  threadType: MessengerThreadType;
+  type: MessengerThreadType;
   private _target: MessengerTarget;
 
   platform = MESSENGER;
@@ -18,17 +18,17 @@ class MessengerChat implements MachinatChannel {
   constructor(
     pageId: number | string,
     target: MessengerTarget,
-    threadType: MessengerThreadType = 'USER_TO_PAGE'
+    type: MessengerThreadType = 'USER_TO_PAGE'
   ) {
     this.pageId = String(pageId);
-    this.threadType = threadType;
+    this.type = type;
     this._target = target;
   }
 
   get targetType(): string {
     const { _target: target } = this;
 
-    return this.threadType !== 'USER_TO_PAGE' || 'id' in target
+    return this.type !== 'USER_TO_PAGE' || 'id' in target
       ? 'psid'
       : 'user_ref' in target
       ? 'user_ref'
@@ -61,7 +61,7 @@ class MessengerChat implements MachinatChannel {
   }
 
   get target(): null | MessengerTarget {
-    return this.threadType === 'USER_TO_PAGE' ? this._target : null;
+    return this.type === 'USER_TO_PAGE' ? this._target : null;
   }
 }
 
