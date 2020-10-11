@@ -44,7 +44,7 @@ const build = <Value, Input, ReturnValue, Meta>(
 
       return [
         result.content,
-        // @ts-ignore allow symbol type, follow microsoft/TypeScript/issues/38367
+        // @ts-expect-error allow symbol type, follow microsoft/TypeScript/issues/38367
         <Machinat.Thunk effect={() => processor.save(runtime)} />,
       ];
     }

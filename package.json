@@ -4,7 +4,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap && yarn run build",
     "build": "make",
-    "lint": "eslint --ext .js --ext .ts ./packages/*/src",
+    "lint": "eslint --ext .js,.ts,.tsx ./packages/*/src",
     "prettier": "prettier --write packages/**/*.js flow-typed/*.js",
     "test": "jest"
   },
