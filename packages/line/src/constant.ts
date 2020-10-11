@@ -4,7 +4,7 @@ export const CHANNEL_REQUEST_GETTER = Symbol(
 export const BULK_REQUEST_GETTER = Symbol('bulk_request_getter.line.machinat');
 
 /** @internal */
-export const LINE = 'line';
+export const LINE = 'line' as const;
 
 /** @internal */
 export const PATH_REPLY = 'v2/bot/message/reply';

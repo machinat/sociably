@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import type {
   PlatformMounter,
-  EventContext,
   EventMiddleware,
   DispatchMiddleware,
   MachinatNode,
@@ -142,11 +141,12 @@ export type TelegramJob = {
   uploadingFiles: null | UploadingFile[];
 };
 
-export type TelegramEventContext = EventContext<
-  TelegramEvent,
-  WebhookMetadata,
-  TelegramBot
->;
+export type TelegramEventContext = {
+  platform: 'telegram';
+  event: TelegramEvent;
+  metadata: WebhookMetadata;
+  bot: TelegramBot;
+};
 
 export type TelegramEventMiddleware = EventMiddleware<
   TelegramEventContext,

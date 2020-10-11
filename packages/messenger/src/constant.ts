@@ -7,7 +7,7 @@ export const ATTACHMENT_ASSET_TAG = Symbol.for(
 export const API_PATH = Symbol.for('api_path.messenger.machinat');
 
 /** @internal */
-export const MESSENGER = 'messenger';
+export const MESSENGER = 'messenger' as const;
 
 /** @internal */
 export const MESSENGER_MESSAGING_TYPE_RESPONSE = 'RESPONSE';

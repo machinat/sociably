@@ -1,6 +1,5 @@
 import type {
   NativeComponent,
-  EventContext,
   EventMiddleware,
   DispatchMiddleware,
   PlatformMounter,
@@ -44,11 +43,12 @@ export type LineRawUserProfile = {
   statusMessage?: string;
 };
 
-export type LineEventContext = EventContext<
-  LineEvent,
-  WebhookMetadata,
-  LineBot
->;
+export type LineEventContext = {
+  platform: 'line';
+  event: LineEvent;
+  metadata: WebhookMetadata;
+  bot: LineBot;
+};
 
 export type LineWebhookRequestBody = {
   destination: string;

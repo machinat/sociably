@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import type {
   NativeComponent,
-  EventContext,
   EventMiddleware,
   DispatchMiddleware,
   PlatformMounter,
@@ -143,11 +142,12 @@ export type MessengerRawUserProfile = {
   gender?: string;
 };
 
-export type MessengerEventContext = EventContext<
-  MessengerEvent,
-  WebhookMetadata,
-  MessengerBot
->;
+export type MessengerEventContext = {
+  platform: 'messenger';
+  event: MessengerEvent;
+  metadata: WebhookMetadata;
+  bot: MessengerBot;
+};
 
 export type MessengerEventMiddleware = EventMiddleware<
   MessengerEventContext,

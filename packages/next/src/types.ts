@@ -1,9 +1,5 @@
 import type { IncomingHttpHeaders, OutgoingHttpHeaders } from 'http';
-import type {
-  EventContext,
-  EventMiddleware,
-  PlatformMounter,
-} from '@machinat/core/types';
+import type { EventMiddleware, PlatformMounter } from '@machinat/core/types';
 import type { ServiceContainer } from '@machinat/core/service/types';
 import type createNextServer from 'next';
 
@@ -53,7 +49,12 @@ export type NextEvent = {
   user: null;
 };
 
-export type NextEventContext = EventContext<NextEvent, NextMetadata, null>;
+export type NextEventContext = {
+  platform: 'next';
+  event: NextEvent;
+  metadata: NextMetadata;
+  bot: null;
+};
 
 export type NextEventMiddleware = EventMiddleware<
   NextEventContext,
