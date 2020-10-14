@@ -67,10 +67,7 @@ export default class MachinatApp<
 
     const { modules, platforms, bindings } = this.config;
 
-    const moduleProvisions: ServiceProvision<unknown>[] = [
-      BaseBot,
-      BaseProfiler,
-    ];
+    const moduleProvisions: ServiceProvision<unknown>[] = [];
     const startHooks: ServiceContainer<Promise<void>>[] = [];
 
     // bootstrap normal modules add bindings
@@ -111,7 +108,13 @@ export default class MachinatApp<
       }
     }
 
-    this._serviceSpace = new ServiceSpace(moduleProvisions, bindings || []);
+    const moduleOnlySpace = new ServiceSpace(null, [
+      BaseBot,
+      BaseProfiler,
+      ...moduleProvisions,
+    ]);
+
+    this._serviceSpace = new ServiceSpace(moduleOnlySpace, bindings || []);
     const bootstrapScope = this._serviceSpace.bootstrap(platformMountingUtils);
 
     await Promise.all(

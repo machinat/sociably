@@ -51,10 +51,10 @@ export default class ProvisionMap<T> {
   _multiMapping: Map<Interfaceable<unknown>, T[]>;
   _branchedMapping: Map<Interfaceable<unknown>, Map<string, T>>;
 
-  constructor() {
-    this._singularMapping = new Map();
-    this._multiMapping = new Map();
-    this._branchedMapping = new Map();
+  constructor(base?: ProvisionMap<T>) {
+    this._singularMapping = base ? new Map(base._singularMapping) : new Map();
+    this._multiMapping = base ? new Map(base._multiMapping) : new Map();
+    this._branchedMapping = base ? new Map(base._branchedMapping) : new Map();
   }
 
   getSingular(

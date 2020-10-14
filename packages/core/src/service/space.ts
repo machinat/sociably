@@ -103,19 +103,15 @@ export default class ServiceSpace {
   _singletonCache: null | ServiceCache;
 
   constructor(
-    moduleBindings: ServiceProvision<unknown>[],
-    registeredBindings: ServiceProvision<unknown>[]
+    base: null | ServiceSpace,
+    bindings: ServiceProvision<unknown>[]
   ) {
-    // resolve bindings from modules/registraions separately, the bindings
-    // cannot be conflicted within each
-    const moduleProvisionMapping = resolveBindings(moduleBindings);
-    const registeredProvisionMapping = resolveBindings(registeredBindings);
+    const baseMapping = base
+      ? new ProvisionMap(base._provisionMapping)
+      : new ProvisionMap<ServiceBinding<unknown>>();
+    const bindingsMapping = resolveBindings(bindings);
 
-    // merge the mapping and indices, bindings from registrations would replace
-    // the one from modules if provided on both
-    const provisionMapping = moduleProvisionMapping.merge(
-      registeredProvisionMapping
-    );
+    const provisionMapping = baseMapping.merge(bindingsMapping);
 
     this.maker = new ServiceMaker(provisionMapping);
     this._provisionMapping = provisionMapping;

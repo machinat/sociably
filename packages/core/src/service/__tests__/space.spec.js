@@ -73,13 +73,12 @@ beforeEach(() => {
 });
 
 it('provide services bound in bindings', () => {
-  const space = new ServiceSpace(
-    [
-      { provide: Bar, withProvider: BarImpl },
-      { provide: BAZ, withProvider: bazFactory },
-    ],
-    [Foo, { provide: HELLO, withValue: staticGreeter }]
-  );
+  const space = new ServiceSpace(null, [
+    Foo,
+    { provide: HELLO, withValue: staticGreeter },
+    { provide: Bar, withProvider: BarImpl },
+    { provide: BAZ, withProvider: bazFactory },
+  ]);
   space.bootstrap();
 
   expect(Foo.mock).toHaveBeenCalledTimes(1);
@@ -114,7 +113,7 @@ it('provide services bound in bindings', () => {
   );
 });
 
-test('registered bindings prioritize to bindings from module', () => {
+test('new bindings prioritize to bindings from base space', () => {
   const MyFoo = provider({
     deps: [Bar, BAZ],
     lifetime: 'singleton',
@@ -141,19 +140,17 @@ test('registered bindings prioritize to bindings from module', () => {
   );
   const fakeBaz = moxy({ baz: () => 'NO_BAZ' });
 
-  const space = new ServiceSpace(
-    [
-      { provide: HELLO, withValue: staticGreeter },
-      Foo,
-      { provide: Bar, withProvider: BarImpl },
-      { provide: BAZ, withProvider: bazFactory },
-    ],
-    [
-      { provide: Foo, withProvider: MyFoo },
-      { provide: Bar, withProvider: AnotherBar },
-      { provide: BAZ, withValue: fakeBaz },
-    ]
-  );
+  const baseSpace = new ServiceSpace(null, [
+    { provide: HELLO, withValue: staticGreeter },
+    Foo,
+    { provide: Bar, withProvider: BarImpl },
+    { provide: BAZ, withProvider: bazFactory },
+  ]);
+  const space = new ServiceSpace(baseSpace, [
+    { provide: Foo, withProvider: MyFoo },
+    { provide: Bar, withProvider: AnotherBar },
+    { provide: BAZ, withValue: fakeBaz },
+  ]);
   space.bootstrap();
 
   const scope = space.createScope('test');
@@ -182,13 +179,12 @@ it('throw if bindings conflicted', () => {
   const someBar = { bar: () => '🍻' };
   expect(
     () =>
-      new ServiceSpace(
-        [
-          { provide: Bar, withProvider: BarImpl },
-          { provide: Bar, withValue: someBar },
-        ],
-        [Foo, { provide: BAZ, withValue: bazFactory }]
-      )
+      new ServiceSpace(null, [
+        Foo,
+        { provide: BAZ, withValue: bazFactory },
+        { provide: Bar, withProvider: BarImpl },
+        { provide: Bar, withValue: someBar },
+      ])
   ).toThrowErrorMatchingInlineSnapshot(
     `"BarAbstract is already bound to BarImpl"`
   );
@@ -196,7 +192,7 @@ it('throw if bindings conflicted', () => {
   expect(
     () =>
       new ServiceSpace(
-        [Foo, { provide: BAZ, withValue: bazFactory }],
+        new ServiceSpace(null, [Foo, { provide: BAZ, withValue: bazFactory }]),
         [
           { provide: Bar, withProvider: BarImpl },
           { provide: Bar, withValue: someBar },
@@ -209,31 +205,36 @@ it('throw if bindings conflicted', () => {
 
 it('throw if provider dependencies is not bound', () => {
   expect(() =>
-    new ServiceSpace([], [BarImpl]).bootstrap()
+    new ServiceSpace(null, [BarImpl]).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(`"Foo is not bound"`);
   expect(() =>
     new ServiceSpace(
-      [{ provide: HELLO, withValue: staticGreeter }, Foo],
+      new ServiceSpace(null, [
+        { provide: HELLO, withValue: staticGreeter },
+        Foo,
+      ]),
       [{ provide: BAZ, withProvider: bazFactory }]
     ).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(`"BarAbstract is not bound"`);
 });
 
 it('throw if invalid binding received', () => {
-  expect(() => new ServiceSpace([Bar], [])).toThrowErrorMatchingInlineSnapshot(
-    `"invalid provider BarAbstract"`
-  );
   expect(
-    () => new ServiceSpace([{ provide: class Bae {}, withValue: 'bae~' }], [])
+    () => new ServiceSpace(null, [Bar])
+  ).toThrowErrorMatchingInlineSnapshot(`"invalid provider BarAbstract"`);
+  expect(
+    () => new ServiceSpace(null, [{ provide: class Bae {}, withValue: 'bae~' }])
   ).toThrowErrorMatchingInlineSnapshot(`"invalid interface Bae"`);
   expect(
-    () => new ServiceSpace([{ provide: Bar, withTea: 'Oooooolong' }], [])
+    () => new ServiceSpace(null, [{ provide: Bar, withTea: 'Oooooolong' }])
   ).toThrowErrorMatchingInlineSnapshot(
     `"either withProvider or withValue must be provided within binding"`
   );
   expect(
     () =>
-      new ServiceSpace([{ provide: Bar, withProvider: { star: 'bucks' } }], [])
+      new ServiceSpace(null, [
+        { provide: Bar, withProvider: { star: 'bucks' } },
+      ])
   ).toThrowErrorMatchingInlineSnapshot(`"invalid provider [object Object]"`);
 });
 
@@ -245,10 +246,9 @@ it('throw circular dependent provider found when bootstrap', () => {
   })(class SelfDependentFoo {});
 
   expect(() =>
-    new ServiceSpace(
-      [],
-      [{ provide: Foo, withProvider: SelfDependentFoo }]
-    ).bootstrap()
+    new ServiceSpace(null, [
+      { provide: Foo, withProvider: SelfDependentFoo },
+    ]).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
     `"SelfDependentFoo is circular dependent"`
   );
@@ -259,10 +259,10 @@ it('throw circular dependent provider found when bootstrap', () => {
     lifetime: 'scoped',
   })(class CircularDependentFoo {});
   expect(() =>
-    new ServiceSpace(
-      [{ provide: Foo, withProvider: CircularDependentFoo }],
-      [{ provide: Bar, withProvider: BarImpl }]
-    ).bootstrap()
+    new ServiceSpace(null, [
+      { provide: Foo, withProvider: CircularDependentFoo },
+      { provide: Bar, withProvider: BarImpl },
+    ]).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
     `"CircularDependentFoo is circular dependent"`
   );
@@ -279,36 +279,29 @@ it('provide branched interface with a map of platform and service', () => {
   const fooBird = { foo: () => 'FOO_TWEET' };
   const fooWhale = { foo: () => 'FOO_SONAR' };
 
-  const space = new ServiceSpace(
-    [
-      { provide: branchedMammal, platform: 'cat', withProvider: fooCatFactory },
-      { provide: branchedMammal, platform: 'bird', withValue: fooBird },
-    ],
-    [{ provide: branchedMammal, platform: 'whale', withValue: fooWhale }]
-  );
+  const space = new ServiceSpace(null, [
+    { provide: branchedMammal, platform: 'cat', withProvider: fooCatFactory },
+    { provide: branchedMammal, platform: 'bird', withValue: fooBird },
+    { provide: branchedMammal, platform: 'whale', withValue: fooWhale },
+  ]);
   space.bootstrap();
 
   const scope = space.createScope();
 
-  const [mammalsMap] = scope.useServices([branchedMammal]);
-  expect(mammalsMap).toEqual(
-    new Map(
-      Object.entries({
-        cat: fooCat,
-        bird: fooBird,
-        whale: fooWhale,
-      })
-    )
+  const expectedMap = new Map(
+    Object.entries({
+      cat: fooCat,
+      bird: fooBird,
+      whale: fooWhale,
+    })
   );
 
-  const mammalContainer = container({ deps: [branchedMammal] })((mammals) =>
-    [...mammals.entries()]
-      .map(([platform, mammal]) => `${platform} ${mammal.foo()}`)
-      .join(', ')
+  expect(scope.useServices([branchedMammal])).toEqual([expectedMap]);
+
+  const mammalContainer = container({ deps: [branchedMammal] })(
+    (mammals) => mammals
   );
-  expect(scope.injectContainer(mammalContainer)).toBe(
-    'cat FOO_MEOW, bird FOO_TWEET, whale FOO_SONAR'
-  );
+  expect(scope.injectContainer(mammalContainer)).toEqual(expectedMap);
 });
 
 it('throw if bindings conflicted on specified platform', () => {
@@ -321,39 +314,20 @@ it('throw if bindings conflicted on specified platform', () => {
   const whiteCatFactory = factory({ lifetime: 'transient' })(() => whiteCat);
   const blackCat = { foo: () => 'FOO_MEOW' };
   expect(() =>
-    new ServiceSpace(
-      [
-        {
-          provide: branchedMammal,
-          platform: 'cat',
-          withProvider: whiteCatFactory,
-        },
-        { provide: branchedMammal, platform: 'cat', withValue: blackCat },
-      ],
-      [Foo]
-    ).bootstrap()
-  ).toThrowErrorMatchingInlineSnapshot(
-    `"FooMammal is already bound to () => whiteCat on 'cat' platform"`
-  );
-
-  expect(() =>
-    new ServiceSpace(
-      [Foo],
-      [
-        {
-          provide: branchedMammal,
-          platform: 'cat',
-          withProvider: whiteCatFactory,
-        },
-        { provide: branchedMammal, platform: 'cat', withValue: blackCat },
-      ]
-    ).bootstrap()
+    new ServiceSpace(null, [
+      {
+        provide: branchedMammal,
+        platform: 'cat',
+        withProvider: whiteCatFactory,
+      },
+      { provide: branchedMammal, platform: 'cat', withValue: blackCat },
+    ]).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
     `"FooMammal is already bound to () => whiteCat on 'cat' platform"`
   );
 });
 
-it('registered bindings overrides the base one on platform branch', () => {
+it('registered branched bindings overrides the base one on platform', () => {
   const branchedMammal = makeInterface({
     name: 'FooMammal',
     branched: true,
@@ -362,7 +336,9 @@ it('registered bindings overrides the base one on platform branch', () => {
   const whiteCat = { foo: () => 'FOO_MEOW' };
   const blackCat = { foo: () => 'FOO_MEOW' };
   const space = new ServiceSpace(
-    [{ provide: branchedMammal, platform: 'cat', withValue: whiteCat }],
+    new ServiceSpace(null, [
+      { provide: branchedMammal, platform: 'cat', withValue: whiteCat },
+    ]),
     [{ provide: branchedMammal, platform: 'cat', withValue: blackCat }]
   );
   space.bootstrap();
@@ -374,13 +350,11 @@ it('registered bindings overrides the base one on platform branch', () => {
 });
 
 it('throw if unbound service usage required', () => {
-  const space = new ServiceSpace(
-    [
-      { provide: HELLO, withValue: staticGreeter },
-      { provide: Bar, withProvider: BarImpl },
-    ],
-    [Foo]
-  );
+  const space = new ServiceSpace(null, [
+    Foo,
+    { provide: HELLO, withValue: staticGreeter },
+    { provide: Bar, withProvider: BarImpl },
+  ]);
   space.bootstrap();
 
   const fooContainer = container({ deps: [Foo, Bar, BAZ] })(() => 'BOOM');
@@ -396,10 +370,11 @@ it('throw if unbound service usage required', () => {
 });
 
 test('optional dependency', () => {
-  const space = new ServiceSpace(
-    [{ provide: HELLO, withValue: staticGreeter }, Foo],
-    [{ provide: Bar, withProvider: BarImpl }]
-  );
+  const space = new ServiceSpace(null, [
+    { provide: HELLO, withValue: staticGreeter },
+    Foo,
+    { provide: Bar, withProvider: BarImpl },
+  ]);
   space.bootstrap();
 
   const optionalDepsContainer = container({
@@ -430,14 +405,13 @@ it('use the same instance of the same provider on different interface', () => {
   const MusicalBar = makeInterface({ name: 'MusicalBar' });
   const JazzBar = makeInterface({ name: 'JazzBar' });
 
-  const space = new ServiceSpace(
-    [{ provide: HELLO, withValue: staticGreeter }, Foo],
-    [
-      { provide: Bar, withProvider: BarImpl },
-      { provide: JazzBar, withProvider: BarImpl },
-      { provide: MusicalBar, withProvider: BarImpl },
-    ]
-  );
+  const space = new ServiceSpace(null, [
+    { provide: HELLO, withValue: staticGreeter },
+    Foo,
+    { provide: Bar, withProvider: BarImpl },
+    { provide: JazzBar, withProvider: BarImpl },
+    { provide: MusicalBar, withProvider: BarImpl },
+  ]);
   space.bootstrap();
 
   const scope = space.createScope('test');
@@ -455,13 +429,12 @@ it('use the same instance of the same provider on different interface', () => {
 });
 
 test('lifecycle of services of different lifetime', () => {
-  const space = new ServiceSpace(
-    [Foo, { provide: Bar, withProvider: BarImpl }],
-    [
-      { provide: BAZ, withProvider: bazFactory },
-      { provide: HELLO, withValue: staticGreeter },
-    ]
-  );
+  const space = new ServiceSpace(null, [
+    Foo,
+    { provide: Bar, withProvider: BarImpl },
+    { provide: BAZ, withProvider: bazFactory },
+    { provide: HELLO, withValue: staticGreeter },
+  ]);
   space.bootstrap();
 
   expect(Foo.mock).toHaveBeenCalledTimes(1);
@@ -523,22 +496,20 @@ test('provide multi interface as an array of bound value', () => {
   const tacoFactory = factory({ lifetime: 'scoped' })(moxy(() => '🌮'));
   const ramenFactory = factory({ lifetime: 'transient' })(moxy(() => '🍜'));
 
-  const space = new ServiceSpace(
-    [
-      meatFactory,
-      { provide: Bar, withProvider: bistroFactory },
-      { provide: MULTI_FOOD, withProvider: burgerFactory },
-      { provide: MULTI_FOOD, withProvider: pizzaFactory },
-      { provide: MULTI_FOOD, withProvider: tacoFactory },
-      { provide: MULTI_FOOD, withValue: '🍝' },
-    ],
-    [
-      { provide: MULTI_FOOD, withProvider: pizzaFactory },
-      { provide: MULTI_FOOD, withProvider: hotdogFactory },
-      { provide: MULTI_FOOD, withProvider: ramenFactory },
-      { provide: MULTI_FOOD, withValue: '🥙' },
-    ]
-  );
+  const baseSpace = new ServiceSpace(null, [
+    meatFactory,
+    { provide: Bar, withProvider: bistroFactory },
+    { provide: MULTI_FOOD, withProvider: burgerFactory },
+    { provide: MULTI_FOOD, withProvider: pizzaFactory },
+    { provide: MULTI_FOOD, withProvider: tacoFactory },
+    { provide: MULTI_FOOD, withValue: '🍝' },
+  ]);
+  const space = new ServiceSpace(baseSpace, [
+    { provide: MULTI_FOOD, withProvider: pizzaFactory },
+    { provide: MULTI_FOOD, withProvider: hotdogFactory },
+    { provide: MULTI_FOOD, withProvider: ramenFactory },
+    { provide: MULTI_FOOD, withValue: '🥙' },
+  ]);
   space.bootstrap();
 
   expect(meatFactory.mock).toHaveBeenCalledTimes(1);
@@ -582,10 +553,11 @@ test('provide multi interface as an empty array if no value bound', () => {
     moxy(() => ({}))
   );
 
-  const space = new ServiceSpace(
-    [{ provide: HELLO, withValue: staticGreeter }, Foo],
-    [needFooFactory]
-  );
+  const space = new ServiceSpace(null, [
+    { provide: HELLO, withValue: staticGreeter },
+    Foo,
+    needFooFactory,
+  ]);
   space.bootstrap();
 
   expect(needFooFactory.mock).toHaveBeenCalledTimes(1);
@@ -596,13 +568,12 @@ test('provide multi interface as an empty array if no value bound', () => {
 });
 
 test('inject time provision', () => {
-  const space = new ServiceSpace(
-    [Foo, { provide: HELLO, withValue: staticGreeter }],
-    [
-      { provide: Bar, withProvider: BarImpl },
-      { provide: BAZ, withProvider: bazFactory },
-    ]
-  );
+  const space = new ServiceSpace(null, [
+    Foo,
+    { provide: HELLO, withValue: staticGreeter },
+    { provide: Bar, withProvider: BarImpl },
+    { provide: BAZ, withProvider: bazFactory },
+  ]);
   space.bootstrap();
 
   const myFoo = { my: 'foo' };
@@ -646,14 +617,13 @@ test('boostrap time provision', () => {
     lifetime: 'singleton',
   })(moxy(class BooConsumer {}));
 
-  const space = new ServiceSpace(
-    [Foo, { provide: HELLO, withValue: staticGreeter }],
-    [
-      { provide: Bar, withProvider: BarImpl },
-      { provide: BAZ, withProvider: bazFactory },
-      BooConsumer,
-    ]
-  );
+  const space = new ServiceSpace(null, [
+    Foo,
+    { provide: HELLO, withValue: staticGreeter },
+    { provide: Bar, withProvider: BarImpl },
+    { provide: BAZ, withProvider: bazFactory },
+    BooConsumer,
+  ]);
   space.bootstrap(new Map([[BOOTSTRAP_TIME_INTERFACE, 'boooo~']]));
 
   expect(BooConsumer.mock).toHaveBeenCalledTimes(1);
@@ -670,7 +640,7 @@ test('bootstrap time scope', () => {
     lifetime: 'singleton',
   })(moxy());
 
-  const space = new ServiceSpace([NeedServiceScope], []);
+  const space = new ServiceSpace(null, [NeedServiceScope]);
   const scope = space.bootstrap();
 
   expect(scope).toBeInstanceOf(ServiceScope);
@@ -681,10 +651,10 @@ test('bootstrap time scope', () => {
 test('require underlying ServiceScope', () => {
   const scopeConsumer = moxy(container({ deps: [ServiceScope] })(() => ({})));
 
-  const space = new ServiceSpace(
-    [{ provide: HELLO, withValue: staticGreeter }],
-    [Foo]
-  );
+  const space = new ServiceSpace(null, [
+    { provide: HELLO, withValue: staticGreeter },
+    Foo,
+  ]);
   space.bootstrap();
 
   const scope = space.createScope('test');
