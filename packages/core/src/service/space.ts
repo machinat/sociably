@@ -1,3 +1,4 @@
+/** @internal */ /** */
 import ServiceMaker, { ENUM_PHASE_BOOTSTRAP } from './maker';
 import ProvisionMap from './provisionMap';
 import ServiceScope from './scope';
@@ -8,28 +9,32 @@ import type {
   ServiceCache,
   ServiceProvider,
   Interfaceable,
+  BranchedProviderBinding,
+  BranchedValueBinding,
 } from './types';
 
-/** @internal */
 const objectHasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
-/** @internal */
-const getNameOrToString = (obj: any) => obj?.name || String(obj);
+const printProvider = (obj) => obj?.$$name || obj?.name || String(obj);
 
-/** @internal */
+const isBranched = <T>(
+  target: ServiceBinding<T>
+): target is BranchedProviderBinding<T> | BranchedValueBinding<T> =>
+  !!target.provide.$$branched;
+
 const resolveBindings = (
-  bindings: ServiceProvision<any>[]
-): ProvisionMap<ServiceBinding<any>> => {
-  const provisionMapping = new ProvisionMap<ServiceBinding<any>>();
+  bindings: ServiceProvision<unknown>[]
+): ProvisionMap<ServiceBinding<unknown>> => {
+  const provisionMapping = new ProvisionMap<ServiceBinding<unknown>>();
 
   for (const bindingInput of bindings) {
-    let binding: ServiceBinding<any>;
+    let binding: ServiceBinding<unknown>;
 
     if ('provide' in bindingInput) {
       if (!isInterfaceable(bindingInput.provide)) {
         throw new TypeError(
-          `invalid interface ${getNameOrToString(bindingInput.provide)}`
+          `invalid interface ${printProvider(bindingInput.provide)}`
         );
       }
 
@@ -42,7 +47,7 @@ const resolveBindings = (
       ) {
         throw new TypeError(
           'withProvider' in bindingInput
-            ? `invalid provider ${getNameOrToString(bindingInput.withProvider)}`
+            ? `invalid provider ${printProvider(bindingInput.withProvider)}`
             : `either withProvider or withValue must be provided within binding`
         );
       }
@@ -50,9 +55,7 @@ const resolveBindings = (
       binding = bindingInput;
     } else {
       if (!isServiceProvider(bindingInput)) {
-        throw new TypeError(
-          `invalid provider ${getNameOrToString(bindingInput)}`
-        );
+        throw new TypeError(`invalid provider ${printProvider(bindingInput)}`);
       }
 
       binding = {
@@ -61,27 +64,33 @@ const resolveBindings = (
       };
     }
 
-    const { provide: target, platforms } = binding;
-    const replacedBindings = provisionMapping.set(
-      target,
-      platforms || null,
-      binding
-    );
+    if (isBranched(binding)) {
+      const { provide: target, platform } = binding;
+      const replaced = provisionMapping.setBranched(target, binding, platform);
 
-    if (replacedBindings) {
-      const [{ platforms: existedPlatforms }] = replacedBindings;
-      const conflictedPlatform =
-        platforms &&
-        existedPlatforms &&
-        existedPlatforms.find((p) => platforms.includes(p));
-
-      throw new Error(
-        `${target.$$name} is already bound on ${
-          conflictedPlatform
-            ? `"${conflictedPlatform}" platform`
-            : 'default branch'
-        }`
-      );
+      if (replaced) {
+        throw new Error(
+          `${target.$$name} is already bound to ${printProvider(
+            'withProvider' in replaced
+              ? replaced.withProvider
+              : replaced.withValue
+          )} on '${platform}' platform`
+        );
+      }
+    } else if (binding.provide.$$multi) {
+      provisionMapping.setMulti(binding.provide, binding);
+    } else {
+      const { provide: target } = binding;
+      const replaced = provisionMapping.setSingular(target, binding);
+      if (replaced) {
+        throw new Error(
+          `${target.$$name} is already bound to ${printProvider(
+            'withProvider' in replaced
+              ? replaced.withProvider
+              : replaced.withValue
+          )}`
+        );
+      }
     }
   }
 
@@ -90,12 +99,12 @@ const resolveBindings = (
 
 export default class ServiceSpace {
   maker: ServiceMaker;
-  _provisionMapping: ProvisionMap<ServiceBinding<any>>;
-  _singletonCache: null | ServiceCache<any>;
+  _provisionMapping: ProvisionMap<ServiceBinding<unknown>>;
+  _singletonCache: null | ServiceCache;
 
   constructor(
-    moduleBindings: ServiceProvision<any>[],
-    registeredBindings: ServiceProvision<any>[]
+    moduleBindings: ServiceProvision<unknown>[],
+    registeredBindings: ServiceProvision<unknown>[]
   ) {
     // resolve bindings from modules/registraions separately, the bindings
     // cannot be conflicted within each
@@ -114,13 +123,12 @@ export default class ServiceSpace {
   }
 
   bootstrap(
-    provisions: Map<Interfaceable<any>, any> = new Map()
+    provisions: Map<Interfaceable<unknown>, unknown> = new Map()
   ): ServiceScope {
     const singletonCache = new Map();
     const scopedCache = new Map();
 
     const bootstrapScope = new ServiceScope(
-      undefined,
       this.maker,
       singletonCache,
       scopedCache
@@ -129,24 +137,19 @@ export default class ServiceSpace {
     const bootstrapProvisions = new Map(provisions);
     bootstrapProvisions.set(ServiceScope, bootstrapScope);
 
-    for (const [, platform, provided] of this._provisionMapping.iterAll()) {
-      const bindings = Array.isArray(provided) ? provided : [provided];
+    for (const [, binding] of this._provisionMapping) {
+      if ('withProvider' in binding) {
+        const { withProvider: provider } = binding;
+        this._verifyDependencies(provider, bootstrapProvisions, []);
 
-      for (const binding of bindings) {
-        if ('withProvider' in binding) {
-          const { withProvider: provider } = binding;
-          this._verifyDependencies(provider, platform, bootstrapProvisions, []);
-
-          if (provider.$$lifetime === 'singleton') {
-            this.maker.makeProvider(
-              provider,
-              ENUM_PHASE_BOOTSTRAP,
-              platform,
-              singletonCache,
-              scopedCache,
-              bootstrapProvisions
-            );
-          }
+        if (provider.$$lifetime === 'singleton') {
+          this.maker.makeProvider(
+            provider,
+            ENUM_PHASE_BOOTSTRAP,
+            singletonCache,
+            scopedCache,
+            bootstrapProvisions
+          );
         }
       }
     }
@@ -155,41 +158,50 @@ export default class ServiceSpace {
     return bootstrapScope;
   }
 
-  createScope(platform: void | string): ServiceScope {
+  createScope(): ServiceScope {
     const singletonCache = this._singletonCache;
     if (!singletonCache) {
       throw new Error('service space has not bootstraped');
     }
 
-    const scopeInjector = new ServiceScope(
-      platform,
-      this.maker,
-      singletonCache
-    );
-
+    const scopeInjector = new ServiceScope(this.maker, singletonCache);
     return scopeInjector;
   }
 
   private _verifyDependencies(
-    provider: ServiceProvider<any>,
-    platform: void | string,
-    bootstrapProvisions: null | Map<Interfaceable<any>, any>,
-    refLock: ServiceProvider<any>[]
+    provider: ServiceProvider<unknown>,
+    bootstrapProvisions: null | Map<Interfaceable<unknown>, unknown>,
+    refLock: ServiceProvider<unknown>[]
   ) {
     const subRefLock = [...refLock, provider];
 
     for (const { require: target, optional } of provider.$$deps) {
-      const isProvidedOnBootstrap =
-        !!bootstrapProvisions && bootstrapProvisions.has(target);
+      let bindings: null | ServiceBinding<unknown>[];
 
-      const provided = this._provisionMapping.get(target, platform);
-      if (!provided && !optional && !isProvidedOnBootstrap) {
-        throw new TypeError(`${target.$$name} is not bound`);
+      if (target.$$branched) {
+        const branches = this._provisionMapping.getBranched(target);
+
+        bindings = [];
+        for (const [, binding] of branches) {
+          bindings.push(binding);
+        }
+      } else if (target.$$multi) {
+        bindings = this._provisionMapping.getMulti(target);
+      } else {
+        const binding = this._provisionMapping.getSingular(target);
+
+        const isProvidedOnBootstrap =
+          provider.$$lifetime === 'singleton' &&
+          !!bootstrapProvisions?.has(target);
+
+        if (!binding && !optional && !isProvidedOnBootstrap) {
+          throw new TypeError(`${target.$$name} is not bound`);
+        }
+
+        bindings = binding ? [binding] : null;
       }
 
-      if (provided) {
-        const bindings = Array.isArray(provided) ? provided : [provided];
-
+      if (bindings) {
         for (const binding of bindings) {
           if ('withProvider' in binding) {
             const { withProvider: argProvider } = binding;
@@ -200,7 +212,6 @@ export default class ServiceSpace {
 
             this._verifyDependencies(
               argProvider,
-              platform,
               bootstrapProvisions,
               subRefLock
             );

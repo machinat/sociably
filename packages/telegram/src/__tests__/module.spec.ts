@@ -13,6 +13,7 @@ it('export interfaces', () => {
   expect(Telegram.Profiler).toBe(TelegramProfiler);
   expect(Telegram.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "TelegramPlatformConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -38,6 +39,7 @@ describe('initModule(configs)', () => {
     expect(module.name).toBe('telegram');
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
+        "$$branched": false,
         "$$multi": false,
         "$$name": "TelegramPlatformMounterI",
         "$$typeof": Symbol(interface.service.machinat),
@@ -120,18 +122,19 @@ describe('initModule(configs)', () => {
     ).toThrowErrorMatchingInlineSnapshot(`"TelegramReceiver is not bound"`);
   });
 
-  test('provide base interfaces', async () => {
+  test('provide base interface branches', async () => {
     const app = Machinat.createApp({
       platforms: [Telegram.initModule({ botToken: '12345:_BOT_TOKEN_' })],
     });
     await app.start();
 
-    const [bot, profiler] = app.useServices([Base.BotI, Base.ProfilerI], {
-      platform: 'telegram',
-    });
+    const [bots, profilers]: any = app.useServices([
+      Base.Bot.PLATFORMS_I,
+      Base.Profiler.PLATFORMS_I,
+    ]);
 
-    expect(bot).toBeInstanceOf(TelegramBot);
-    expect(profiler).toBeInstanceOf(TelegramProfiler);
+    expect(bots.get('telegram')).toBeInstanceOf(TelegramBot);
+    expect(profilers.get('telegram')).toBeInstanceOf(TelegramProfiler);
   });
 
   test('default entryPath to "/"', async () => {

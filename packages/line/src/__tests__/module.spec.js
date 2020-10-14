@@ -13,6 +13,7 @@ it('export interfaces', () => {
   expect(Line.Profiler).toBe(LineProfiler);
   expect(Line.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "LinePlatformConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -36,6 +37,7 @@ describe('initModule(configs)', () => {
     expect(module.name).toBe('line');
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
+        "$$branched": false,
         "$$multi": false,
         "$$name": "LinePlatformMounterI",
         "$$typeof": Symbol(interface.service.machinat),
@@ -129,12 +131,13 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, profiler] = app.useServices([Base.BotI, Base.ProfilerI], {
-      platform: 'line',
-    });
+    const [bots, profilers] = app.useServices([
+      Base.Bot.PLATFORMS_I,
+      Base.Profiler.PLATFORMS_I,
+    ]);
 
-    expect(bot).toBeInstanceOf(LineBot);
-    expect(profiler).toBeInstanceOf(LineProfiler);
+    expect(bots.get('line')).toBeInstanceOf(LineBot);
+    expect(profilers.get('line')).toBeInstanceOf(LineProfiler);
   });
 
   test('default entryPath to "/"', async () => {

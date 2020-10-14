@@ -12,6 +12,7 @@ it('export interfaces', () => {
   expect(Dialogflow.IntentRecognizer).toBe(Recognizer);
   expect(Dialogflow.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "DialogflowModuleConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -20,6 +21,7 @@ it('export interfaces', () => {
 
   expect(Dialogflow.SESSION_CLIENT_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "DialogflowSessionClientI",
       "$$typeof": Symbol(interface.service.machinat),

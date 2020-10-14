@@ -8,6 +8,7 @@ it('export interfaces', () => {
   expect(Auth.Controller).toBe(AuthController);
   expect(Auth.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "AuthModuleConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -15,6 +16,7 @@ it('export interfaces', () => {
   `);
   expect(Auth.AUTHORIZERS_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": true,
       "$$name": "AuthAuthorizersListI",
       "$$typeof": Symbol(interface.service.machinat),

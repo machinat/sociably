@@ -1,6 +1,9 @@
 import { provider } from '@machinat/core/service';
-import Base from '@machinat/core/base';
-import { MachinatUserProfile } from '@machinat/core/base/ProfilerI';
+import { BaseStateControllerI } from '@machinat/core/base';
+import {
+  MachinatUserProfile,
+  MachinatProfiler,
+} from '@machinat/core/base/Profiler';
 import { BotP } from './bot';
 import type LineUser from './user';
 import type { LineRawUserProfile } from './types';
@@ -57,14 +60,14 @@ type ProfilerOptions = {
 /**
  * @category Provider
  */
-export class LineProfiler implements Base.ProfilerI {
+export class LineProfiler implements MachinatProfiler {
   bot: BotP;
-  stateController: null | Base.StateControllerI;
+  stateController: null | BaseStateControllerI;
   profileCacheTime: number;
 
   constructor(
     bot: BotP,
-    stateController: null | Base.StateControllerI,
+    stateController: null | BaseStateControllerI,
     { profileCacheTime }: ProfilerOptions = {}
   ) {
     this.bot = bot;
@@ -105,7 +108,7 @@ export class LineProfiler implements Base.ProfilerI {
 
 export const ProfilerP = provider<LineProfiler>({
   lifetime: 'scoped',
-  deps: [BotP, { require: Base.StateControllerI, optional: true }],
+  deps: [BotP, { require: BaseStateControllerI, optional: true }],
 })(LineProfiler);
 
 export type ProfilerP = LineProfiler;

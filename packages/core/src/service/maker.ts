@@ -1,5 +1,5 @@
 /** @internal */ /** */
-import ProvisionMap from './provisionMap';
+import type ProvisionMap from './provisionMap';
 import type {
   Interfaceable,
   ServiceProvider,
@@ -24,34 +24,31 @@ type PhaseEnum =
  * should not be modified within the making tree.
  */
 type MakeContext = {
-  platform: void | string;
   phase: PhaseEnum;
-  singletonCache: ServiceCache<any>;
-  scopedCache: ServiceCache<any>;
-  transientCache: ServiceCache<any>;
-  runtimeProvisions: null | Map<Interfaceable<any>, any>;
+  singletonCache: ServiceCache;
+  scopedCache: ServiceCache;
+  transientCache: ServiceCache;
+  runtimeProvisions: null | Map<Interfaceable<unknown>, unknown>;
 };
 
 /**
  * ServiceMaker makes services according to the services mapping resolved.
  */
 export default class ServiceMaker {
-  provisionMapping: ProvisionMap<ServiceBinding<any>>;
+  provisionMapping: ProvisionMap<ServiceBinding<unknown>>;
 
-  constructor(provisionMapping: ProvisionMap<ServiceBinding<any>>) {
+  constructor(provisionMapping: ProvisionMap<ServiceBinding<unknown>>) {
     this.provisionMapping = provisionMapping;
   }
 
   makeRequirements(
-    requirements: ServiceRequirement<any>[],
+    requirements: ServiceRequirement<unknown>[],
     phase: PhaseEnum,
-    platform: void | string,
-    singletonCache: ServiceCache<any>,
-    scopedCache: ServiceCache<any>,
-    runtimeProvisions: null | Map<Interfaceable<any>, any>
-  ): any[] {
+    singletonCache: ServiceCache,
+    scopedCache: ServiceCache,
+    runtimeProvisions: null | Map<Interfaceable<unknown>, unknown>
+  ): unknown[] {
     const services = this._makeRequirements(requirements, {
-      platform,
       phase,
       singletonCache,
       scopedCache,
@@ -63,15 +60,13 @@ export default class ServiceMaker {
   }
 
   makeProvider(
-    provider: ServiceProvider<any>,
+    provider: ServiceProvider<unknown>,
     phase: PhaseEnum,
-    platform: void | string,
-    singletonCache: ServiceCache<any>,
-    scopedCache: ServiceCache<any>,
-    runtimeProvisions: null | Map<Interfaceable<any>, any>
-  ): ServiceProvider<any> {
+    singletonCache: ServiceCache,
+    scopedCache: ServiceCache,
+    runtimeProvisions: null | Map<Interfaceable<unknown>, unknown>
+  ): unknown {
     const instance = this._makeProvider(provider, {
-      platform,
       phase,
       singletonCache,
       scopedCache,
@@ -90,7 +85,10 @@ export default class ServiceMaker {
     return this._makeProvider(binding.withProvider, context);
   }
 
-  private _makeProvider(provider: ServiceProvider<any>, context: MakeContext) {
+  private _makeProvider(
+    provider: ServiceProvider<unknown>,
+    context: MakeContext
+  ) {
     const { $$lifetime: lifetime } = provider;
     const { singletonCache, scopedCache, transientCache, phase } = context;
 
@@ -124,33 +122,37 @@ export default class ServiceMaker {
   }
 
   private _makeRequirements(
-    deps: ServiceRequirement<any>[],
+    deps: ServiceRequirement<unknown>[],
     context: MakeContext
   ) {
-    const { platform, runtimeProvisions } = context;
-    const args: (any | any[])[] = [];
+    const { runtimeProvisions } = context;
+    const args: (unknown | unknown[] | Map<string, unknown>)[] = [];
 
     for (const { require: target, optional } of deps) {
       if (runtimeProvisions && runtimeProvisions.has(target)) {
         // service provided at runtime
         const runtimeProvided = runtimeProvisions.get(target);
         args.push(runtimeProvided);
+      } else if (target.$$multi) {
+        const resolvedList = this.provisionMapping.getMulti(target);
+        args.push(
+          resolvedList.map((binding) => this._makeBinding(binding, context))
+        );
+      } else if (target.$$branched) {
+        const bindingsBranches = this.provisionMapping.getBranched(target);
+        const providingMapping = new Map();
+
+        for (const [platform, binding] of bindingsBranches) {
+          providingMapping.set(platform, this._makeBinding(binding, context));
+        }
+
+        args.push(providingMapping);
       } else {
-        const resolved = this.provisionMapping.get(target, platform);
+        const resolved = this.provisionMapping.getSingular(target);
         if (!resolved && !optional) {
           throw new TypeError(`${target.$$name} is not bound`);
         }
-
-        if (!resolved) {
-          // dep is optional and not bound
-          args.push(null);
-        } else if (Array.isArray(resolved)) {
-          args.push(
-            resolved.map((binding) => this._makeBinding(binding, context))
-          );
-        } else {
-          args.push(this._makeBinding(resolved, context));
-        }
+        args.push(resolved ? this._makeBinding(resolved, context) : null);
       }
     }
 

@@ -36,6 +36,7 @@ it('export interfaces', () => {
 
   expect(HTTP.REQUEST_ROUTINGS_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": true,
       "$$name": "HTTPRequestRoutingsListI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -43,6 +44,7 @@ it('export interfaces', () => {
   `);
   expect(HTTP.UPGRADE_ROUTINGS_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": true,
       "$$name": "HTTPUpgradeRoutingsListI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -50,6 +52,7 @@ it('export interfaces', () => {
   `);
   expect(HTTP.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "HTTPModuleConfigsI",
       "$$typeof": Symbol(interface.service.machinat),

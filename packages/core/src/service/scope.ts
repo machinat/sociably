@@ -16,29 +16,27 @@ import type {
 export default class ServiceScope {
   static $$typeof: typeof MACHINAT_SERVICE_INTERFACE = MACHINAT_SERVICE_INTERFACE;
   static $$name = 'ServiceScope';
-  static $$multi = false;
+  static $$multi = false as const;
+  static $$branched = false as const;
 
-  platform: void | string;
   maker: ServiceMaker;
-  singletonCache: ServiceCache<any>;
-  scopeCache: ServiceCache<any>;
+  singletonCache: ServiceCache;
+  scopeCache: ServiceCache;
 
   constructor(
-    platform: void | string,
     maker: ServiceMaker,
-    singletonCache: ServiceCache<any>,
-    scopedCache?: ServiceCache<any>
+    singletonCache: ServiceCache,
+    scopedCache?: ServiceCache
   ) {
-    this.platform = platform;
     this.maker = maker;
     this.singletonCache = singletonCache;
     this.scopeCache = scopedCache || new Map();
   }
 
   useServices(
-    targets: ServiceDependency<any>[],
-    runtimeProvisions?: Map<Interfaceable<any>, any>
-  ): any[] {
+    targets: ServiceDependency<unknown>[],
+    runtimeProvisions?: Map<Interfaceable<unknown>, unknown>
+  ): unknown[] {
     const requirements = targets.map(polishServiceRequirement);
 
     const provisions = runtimeProvisions
@@ -49,7 +47,6 @@ export default class ServiceScope {
     const services = this.maker.makeRequirements(
       requirements,
       ENUM_PHASE_INJECTION,
-      this.platform,
       this.singletonCache,
       this.scopeCache,
       provisions
@@ -71,14 +68,5 @@ export default class ServiceScope {
 
     const args = this.useServices(container.$$deps, provisions);
     return container(...args);
-  }
-
-  duplicate(platform: void | string): ServiceScope {
-    return new ServiceScope(
-      platform,
-      this.maker,
-      this.singletonCache,
-      new Map(this.scopeCache)
-    );
   }
 }

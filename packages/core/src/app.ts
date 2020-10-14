@@ -6,6 +6,7 @@ import type {
   ServiceScope,
   ServiceProvision,
 } from './service/types';
+import { BaseBot, BaseProfiler } from './base';
 import type {
   AppConfig,
   EventContext,
@@ -66,7 +67,10 @@ export default class MachinatApp<
 
     const { modules, platforms, bindings } = this.config;
 
-    const moduleProvisions: ServiceProvision<any>[] = [];
+    const moduleProvisions: ServiceProvision<unknown>[] = [
+      BaseBot,
+      BaseProfiler,
+    ];
     const startHooks: ServiceContainer<Promise<void>>[] = [];
 
     // bootstrap normal modules add bindings
@@ -85,7 +89,6 @@ export default class MachinatApp<
     // add bindings and bridge bindings of platform module
     if (platforms) {
       for (const {
-        name,
         provisions,
         mounterInterface,
         eventMiddlewares,
@@ -97,7 +100,6 @@ export default class MachinatApp<
         platformMountingUtils.set(
           mounterInterface,
           this._createPlatformMounter(
-            name,
             eventMiddlewares || [],
             dispatchMiddlewares || []
           )
@@ -119,13 +121,10 @@ export default class MachinatApp<
     this._status = ENUM_STARTED;
   }
 
-  useServices(
-    targets: ServiceDependency<any>[],
-    options?: { platform?: void | string }
-  ): any[] {
+  useServices(targets: ServiceDependency<unknown>[]): unknown[] {
     invariant(this.isStarted, 'app is not started');
 
-    const scope = this._serviceSpace.createScope(options?.platform);
+    const scope = this._serviceSpace.createScope();
     return scope.useServices(targets);
   }
 
@@ -192,7 +191,6 @@ export default class MachinatApp<
   }
 
   private _createPlatformMounter(
-    platform: string,
     eventMiddlewares: (
       | EventMiddleware<Context, any>
       | ServiceContainer<EventMiddleware<Context, any>>
@@ -203,21 +201,14 @@ export default class MachinatApp<
     )[]
   ): PlatformMounter<Context, any, any, any, any> {
     return {
-      initScope: () => this._serviceSpace.createScope(platform),
-      popError: this._createPopErrorFn(platform),
-      popEventWrapper: this._createPopEventWrapper(
-        platform,
-        eventMiddlewares || []
-      ),
-      dispatchWrapper: this._createDispatchWrapper(
-        platform,
-        dispatchMiddlewares || []
-      ),
+      initScope: () => this._serviceSpace.createScope(),
+      popError: this._createPopErrorFn(),
+      popEventWrapper: this._createPopEventWrapper(eventMiddlewares || []),
+      dispatchWrapper: this._createDispatchWrapper(dispatchMiddlewares || []),
     };
   }
 
   private _createPopEventWrapper(
-    platform: string,
     middlewares: (
       | EventMiddleware<Context, any>
       | ServiceContainer<EventMiddleware<Context, any>>
@@ -226,7 +217,7 @@ export default class MachinatApp<
     return (makeResponse) => {
       const handlePopping = async (ctx: Context, scope?: ServiceScope) => {
         const response = await makeResponse(ctx);
-        this._emitEvent(ctx, scope || this._serviceSpace.createScope(platform));
+        this._emitEvent(ctx, scope || this._serviceSpace.createScope());
         return response;
       };
 
@@ -254,7 +245,7 @@ export default class MachinatApp<
       };
 
       return async (ctx: Context, scopeInput?: ServiceScope) => {
-        const scope = scopeInput || this._serviceSpace.createScope(platform);
+        const scope = scopeInput || this._serviceSpace.createScope();
         try {
           const response = await execute(0, scope)(ctx);
           return response;
@@ -267,7 +258,6 @@ export default class MachinatApp<
   }
 
   private _createDispatchWrapper<Frame>(
-    platform: string,
     middlewares: (
       | DispatchMiddleware<any, any, any>
       | ServiceContainer<DispatchMiddleware<any, any, any>>
@@ -293,12 +283,12 @@ export default class MachinatApp<
       };
 
       return (frame: Frame, scope?: ServiceScope) =>
-        execute(0, scope || this._serviceSpace.createScope(platform))(frame);
+        execute(0, scope || this._serviceSpace.createScope())(frame);
     };
   }
 
-  private _createPopErrorFn(platform: string) {
+  private _createPopErrorFn() {
     return (err: Error, scope?: ServiceScope) =>
-      this._emitError(err, scope || this._serviceSpace.createScope(platform));
+      this._emitError(err, scope || this._serviceSpace.createScope());
   }
 }

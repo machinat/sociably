@@ -1,5 +1,6 @@
 import { factory as moxyFactory } from '@moxyjs/moxy';
 import { container, provider, factory, makeInterface } from '../service';
+import { BaseBot, BaseProfiler } from '../base';
 import ServiceScope from '../service/scope';
 import App from '../app';
 
@@ -891,28 +892,13 @@ describe('#useServices(requirements)', () => {
     ).toThrowErrorMatchingInlineSnapshot(`"NoneService is not bound"`);
   });
 
-  it('get services bound on specified platform', async () => {
-    const app = new App({
-      modules: [TestModule, AnotherModule],
-      platforms: [FooPlatform, BarPlatform],
-      bindings: [
-        MyService,
-        { provide: MyService, withValue: 'MyFoo', platforms: ['foo'] },
-        { provide: MyService, withValue: 'MyBar', platforms: ['bar'] },
-      ],
-    });
-
+  it('provide BaseBot and BaseProfiler by default', async () => {
+    const app = new App({});
     await app.start();
 
-    expect(app.useServices([MyService])).toEqual([expect.any(MyService)]);
-    expect(app.useServices([MyService], { platform: 'foo' })).toEqual([
-      'MyFoo',
-    ]);
-    expect(app.useServices([MyService], { platform: 'bar' })).toEqual([
-      'MyBar',
-    ]);
-    expect(app.useServices([MyService], { platform: 'baz' })).toEqual([
-      expect.any(MyService),
-    ]);
+    const [bot, profiler] = app.useServices([BaseBot, BaseProfiler]);
+
+    expect(bot).toBeInstanceOf(BaseBot);
+    expect(profiler).toBeInstanceOf(BaseProfiler);
   });
 });

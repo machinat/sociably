@@ -103,11 +103,11 @@ export type FragmentElement = MachinatElement<
 >;
 
 export type ProviderElement = MachinatElement<
-  { provide: Interfaceable<any>; value: any; children: MachinatNode },
+  { provide: Interfaceable<unknown>; value: unknown; children: MachinatNode },
   typeof MACHINAT_PROVIDER_TYPE
 >;
 
-export type PauseUntilFn = () => Promise<any>;
+export type PauseUntilFn = () => Promise<unknown>;
 
 export type PauseElement = MachinatElement<
   { until?: PauseUntilFn },
@@ -211,7 +211,7 @@ export type DispatchMiddleware<
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
 export type ServiceModule = {
-  provisions: (ServiceProvider<any> | ServiceProvision<any>)[];
+  provisions: (ServiceProvider<unknown> | ServiceProvision<unknown>)[];
   startHook?: null | ServiceContainer<Promise<void>>;
 };
 
@@ -226,7 +226,7 @@ export type PlatformModule<
   mounterInterface: ServiceInterface<
     PlatformMounter<Context, EventResp, Job, Frame, Result>
   >;
-  provisions: (ServiceProvider<any> | ServiceProvision<any>)[];
+  provisions: (ServiceProvider<unknown> | ServiceProvision<unknown>)[];
   startHook?: ServiceContainer<Promise<void>>;
   eventMiddlewares?: (
     | EventMiddleware<Context, EventResp>
@@ -243,7 +243,7 @@ export type AppConfig<
 > = {
   platforms?: Platform[];
   modules?: ServiceModule[];
-  bindings?: (ServiceProvider<any> | ServiceProvision<any>)[];
+  bindings?: (ServiceProvider<unknown> | ServiceProvision<unknown>)[];
 };
 
 export type GetAppContext<

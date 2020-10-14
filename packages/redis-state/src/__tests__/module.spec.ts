@@ -16,6 +16,7 @@ test('export interfaces', () => {
   expect(RedisState.Controller).toBe(RedisStateController);
   expect(RedisState.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "RedisStateModuleConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -23,6 +24,7 @@ test('export interfaces', () => {
   `);
   expect(RedisState.CLIENT_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "RedisClientI",
       "$$typeof": Symbol(interface.service.machinat),

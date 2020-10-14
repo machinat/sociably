@@ -1,7 +1,7 @@
 import type { PlatformModule } from '@machinat/core/types';
 import type { ServiceProvision } from '@machinat/core/service/types';
 import { container, factory } from '@machinat/core/service';
-import { BaseBotI, BaseProfilerI } from '@machinat/core/base';
+import { BaseBot, BaseProfiler } from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import { HTTPRequestRouting } from '@machinat/http/types';
 
@@ -47,13 +47,17 @@ const Line = {
   > => {
     const provisions: ServiceProvision<any>[] = [
       BotP,
-      { provide: BaseBotI, withProvider: BotP, platforms: [LINE] },
+      {
+        provide: BaseBot.PLATFORMS_I,
+        withProvider: BotP,
+        platform: LINE,
+      },
 
       ProfilerP,
       {
-        provide: BaseProfilerI,
+        provide: BaseProfiler.PLATFORMS_I,
         withProvider: ProfilerP,
-        platforms: [LINE],
+        platform: LINE,
       },
 
       { provide: PLATFORM_CONFIGS_I, withValue: configs },

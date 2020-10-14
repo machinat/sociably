@@ -190,7 +190,7 @@ it('throw if bindings conflicted', () => {
         [Foo, { provide: BAZ, withValue: bazFactory }]
       )
   ).toThrowErrorMatchingInlineSnapshot(
-    `"BarAbstract is already bound on default branch"`
+    `"BarAbstract is already bound to BarImpl"`
   );
 
   expect(
@@ -203,18 +203,18 @@ it('throw if bindings conflicted', () => {
         ]
       )
   ).toThrowErrorMatchingInlineSnapshot(
-    `"BarAbstract is already bound on default branch"`
+    `"BarAbstract is already bound to BarImpl"`
   );
 });
 
-it('throw if provider dependencies not bound when bootstrap', () => {
+it('throw if provider dependencies is not bound', () => {
   expect(() =>
     new ServiceSpace([], [BarImpl]).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(`"Foo is not bound"`);
   expect(() =>
     new ServiceSpace(
       [{ provide: HELLO, withValue: staticGreeter }, Foo],
-      [{ provide: BAZ, platforms: ['A', 'B'], withProvider: bazFactory }]
+      [{ provide: BAZ, withProvider: bazFactory }]
     ).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(`"BarAbstract is not bound"`);
 });
@@ -268,106 +268,109 @@ it('throw circular dependent provider found when bootstrap', () => {
   );
 });
 
-it('provide service bound on specified platform within corresponded scope', () => {
-  const space = new ServiceSpace(
-    [{ provide: HELLO, withValue: staticGreeter }],
-    [
-      Foo,
-      { provide: Bar, withProvider: BarImpl },
-      { provide: BAZ, platforms: ['A', 'B'], withProvider: bazFactory },
-    ]
-  );
-  space.bootstrap();
+it('provide branched interface with a map of platform and service', () => {
+  const branchedMammal = makeInterface({
+    name: 'FooMammal',
+    branched: true,
+  });
 
-  const bazContainer = container({ deps: [BAZ] })((baz) => baz.baz());
-
-  const scopeA = space.createScope('A');
-  expect(scopeA.injectContainer(bazContainer)).toBe('Baz');
-  let [baz] = scopeA.useServices([BAZ]);
-  expect(baz).toBeInstanceOf(Baz);
-
-  const scopeB = space.createScope('B');
-  expect(scopeA.injectContainer(bazContainer)).toBe('Baz');
-  [baz] = scopeB.useServices([BAZ]);
-  expect(baz).toBeInstanceOf(Baz);
-
-  const scopeC = space.createScope('C');
-  expect(() =>
-    scopeC.injectContainer(bazContainer)
-  ).toThrowErrorMatchingInlineSnapshot(`"Baz is not bound"`);
-  expect(() => scopeC.useServices([BAZ])).toThrowErrorMatchingInlineSnapshot(
-    `"Baz is not bound"`
-  );
-});
-
-it('provide service bound on specified platform prior to default one', () => {
   const fooCat = { foo: () => 'FOO_MEOW' };
+  const fooCatFactory = factory({ lifetime: 'transient' })(() => fooCat);
   const fooBird = { foo: () => 'FOO_TWEET' };
   const fooWhale = { foo: () => 'FOO_SONAR' };
 
   const space = new ServiceSpace(
-    [{ provide: Bar, withProvider: BarImpl }],
     [
-      { provide: Foo, withValue: fooCat },
-      { provide: Foo, platforms: ['sky', 'on_the_tree'], withValue: fooBird },
-      { provide: Foo, platforms: ['under_water'], withValue: fooWhale },
-    ]
+      { provide: branchedMammal, platform: 'cat', withProvider: fooCatFactory },
+      { provide: branchedMammal, platform: 'bird', withValue: fooBird },
+    ],
+    [{ provide: branchedMammal, platform: 'whale', withValue: fooWhale }]
   );
   space.bootstrap();
 
-  const fooContainer = container({ deps: [Foo] })((foo) => foo.foo());
+  const scope = space.createScope();
 
-  let scope = space.createScope();
-  expect(scope.injectContainer(fooContainer)).toBe('FOO_MEOW');
-  let [foo] = scope.useServices([Foo]);
-  expect(foo).toBe(fooCat);
+  const [mammalsMap] = scope.useServices([branchedMammal]);
+  expect(mammalsMap).toEqual(
+    new Map(
+      Object.entries({
+        cat: fooCat,
+        bird: fooBird,
+        whale: fooWhale,
+      })
+    )
+  );
 
-  scope = space.createScope('sky');
-  expect(scope.injectContainer(fooContainer)).toBe('FOO_TWEET');
-  [foo] = scope.useServices([Foo]);
-  expect(foo).toBe(fooBird);
-
-  scope = space.createScope('on_the_tree');
-  expect(scope.injectContainer(fooContainer)).toBe('FOO_TWEET');
-  [foo] = scope.useServices([Foo]);
-  expect(foo).toBe(fooBird);
-
-  scope = space.createScope('under_water');
-  expect(scope.injectContainer(fooContainer)).toBe('FOO_SONAR');
-  [foo] = scope.useServices([Foo]);
-  expect(foo).toBe(fooWhale);
-
-  scope = space.createScope('over_the_rainbow');
-  expect(scope.injectContainer(fooContainer)).toBe('FOO_MEOW');
-  [foo] = scope.useServices([Foo]);
-  expect(foo).toBe(fooCat);
+  const mammalContainer = container({ deps: [branchedMammal] })((mammals) =>
+    [...mammals.entries()]
+      .map(([platform, mammal]) => `${platform} ${mammal.foo()}`)
+      .join(', ')
+  );
+  expect(scope.injectContainer(mammalContainer)).toBe(
+    'cat FOO_MEOW, bird FOO_TWEET, whale FOO_SONAR'
+  );
 });
 
-it('throw if bindings conflicted on specified platform when bootstrap', () => {
-  const someBar = { bar: () => 'zzz' };
+it('throw if bindings conflicted on specified platform', () => {
+  const branchedMammal = makeInterface({
+    name: 'FooMammal',
+    branched: true,
+  });
+
+  const whiteCat = { foo: () => 'FOO_MEOW' };
+  const whiteCatFactory = factory({ lifetime: 'transient' })(() => whiteCat);
+  const blackCat = { foo: () => 'FOO_MEOW' };
   expect(() =>
     new ServiceSpace(
       [
-        { provide: Bar, platforms: ['a', 'b'], withProvider: BarImpl },
-        { provide: Bar, platforms: ['b', 'c'], withValue: someBar },
+        {
+          provide: branchedMammal,
+          platform: 'cat',
+          withProvider: whiteCatFactory,
+        },
+        { provide: branchedMammal, platform: 'cat', withValue: blackCat },
       ],
       [Foo]
     ).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
-    `"BarAbstract is already bound on \\"b\\" platform"`
+    `"FooMammal is already bound to () => whiteCat on 'cat' platform"`
   );
 
   expect(() =>
     new ServiceSpace(
       [Foo],
       [
-        { provide: Bar, platforms: ['a', 'b'], withValue: someBar },
-        { provide: Bar, platforms: ['b', 'c'], withProvider: BarImpl },
+        {
+          provide: branchedMammal,
+          platform: 'cat',
+          withProvider: whiteCatFactory,
+        },
+        { provide: branchedMammal, platform: 'cat', withValue: blackCat },
       ]
     ).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
-    `"BarAbstract is already bound on \\"b\\" platform"`
+    `"FooMammal is already bound to () => whiteCat on 'cat' platform"`
   );
+});
+
+it('registered bindings overrides the base one on platform branch', () => {
+  const branchedMammal = makeInterface({
+    name: 'FooMammal',
+    branched: true,
+  });
+
+  const whiteCat = { foo: () => 'FOO_MEOW' };
+  const blackCat = { foo: () => 'FOO_MEOW' };
+  const space = new ServiceSpace(
+    [{ provide: branchedMammal, platform: 'cat', withValue: whiteCat }],
+    [{ provide: branchedMammal, platform: 'cat', withValue: blackCat }]
+  );
+  space.bootstrap();
+
+  const scope = space.createScope();
+  expect(scope.useServices([branchedMammal])).toEqual([
+    new Map([['cat', blackCat]]),
+  ]);
 });
 
 it('throw if unbound service usage required', () => {

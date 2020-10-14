@@ -13,6 +13,7 @@ it('export interfaces', () => {
   expect(Messenger.Profiler).toBe(MessengerProfiler);
   expect(Messenger.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "MessengerPlatformConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -37,6 +38,7 @@ describe('initModule(configs)', () => {
     expect(module.name).toBe('messenger');
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
+        "$$branched": false,
         "$$multi": false,
         "$$name": "MessengerPlatformMounterI",
         "$$typeof": Symbol(interface.service.machinat),
@@ -138,12 +140,15 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, profiler] = app.useServices([Base.BotI, Base.ProfilerI], {
-      platform: 'messenger',
-    });
+    const [bot, bots, profilers] = app.useServices([
+      MessengerBot,
+      Base.Bot.PLATFORMS_I,
+      Base.Profiler.PLATFORMS_I,
+    ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
-    expect(profiler).toBeInstanceOf(MessengerProfiler);
+    expect(bots.get('messenger')).toBe(bot);
+    expect(profilers.get('messenger')).toBeInstanceOf(MessengerProfiler);
 
     bot.stop();
   });

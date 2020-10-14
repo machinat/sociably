@@ -1,7 +1,7 @@
 import WS from 'ws';
 import uniqid from 'uniqid';
 import { container, factory } from '@machinat/core/service';
-import Base from '@machinat/core/base';
+import { BaseBot } from '@machinat/core/base';
 import type { PlatformModule } from '@machinat/core/types';
 import HTTP from '@machinat/http';
 import type { HTTPUpgradeRouting } from '@machinat/http/types';
@@ -91,9 +91,9 @@ const WebSocket = {
 
         BotP,
         {
-          provide: Base.BotI,
+          provide: BaseBot.PLATFORMS_I,
           withProvider: BotP,
-          platforms: [WEBSOCKET],
+          platform: WEBSOCKET,
         },
 
         TransmitterP,

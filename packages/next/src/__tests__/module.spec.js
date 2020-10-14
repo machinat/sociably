@@ -16,6 +16,7 @@ it('exports interfaces', () => {
   expect(Next.Receiver).toBe(NextReceiver);
   expect(Next.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "NextModuleConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -23,6 +24,7 @@ it('exports interfaces', () => {
   `);
   expect(Next.SERVER_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "NextServerI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -45,6 +47,7 @@ describe('initModule()', () => {
           [Function],
         ],
         "mounterInterface": Object {
+          "$$branched": false,
           "$$multi": false,
           "$$name": "NextPlatformMounterI",
           "$$typeof": Symbol(interface.service.machinat),
@@ -54,6 +57,7 @@ describe('initModule()', () => {
           [Function],
           Object {
             "provide": Object {
+              "$$branched": false,
               "$$multi": false,
               "$$name": "NextModuleConfigsI",
               "$$typeof": Symbol(interface.service.machinat),
@@ -71,6 +75,7 @@ describe('initModule()', () => {
           },
           Object {
             "provide": Object {
+              "$$branched": false,
               "$$multi": false,
               "$$name": "NextServerI",
               "$$typeof": Symbol(interface.service.machinat),
@@ -79,6 +84,7 @@ describe('initModule()', () => {
           },
           Object {
             "provide": Object {
+              "$$branched": false,
               "$$multi": true,
               "$$name": "HTTPRequestRoutingsListI",
               "$$typeof": Symbol(interface.service.machinat),

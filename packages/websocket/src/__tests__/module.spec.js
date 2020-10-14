@@ -12,6 +12,7 @@ it('export interfaces', () => {
   expect(WebSocket.Transmitter).toBe(WebSocketTransmitter);
   expect(WebSocket.LOGIN_VERIFIER_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "WebSocketLoginVerifierI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -19,6 +20,7 @@ it('export interfaces', () => {
   `);
   expect(WebSocket.UPGRADE_VERIFIER_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "WebSocketUpgradeVerifierI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -26,6 +28,7 @@ it('export interfaces', () => {
   `);
   expect(WebSocket.SERVER_ID_I).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "WebSocketServerIdI",
       "$$typeof": Symbol(interface.service.machinat),
@@ -46,6 +49,7 @@ describe('initModule()', () => {
     expect(module.name).toBe('web_socket');
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
+        "$$branched": false,
         "$$multi": false,
         "$$name": "WebSocketPlatformMounterI",
         "$$typeof": Symbol(interface.service.machinat),

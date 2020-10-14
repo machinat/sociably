@@ -9,6 +9,9 @@ import type {
   ServiceContainer,
   ServiceProvider,
   ServiceInterface,
+  BranchedServiceInterface,
+  MultiServiceInterface,
+  SingularServiceInterface,
   Interfaceable,
   ServiceRequirement,
 } from './types';
@@ -69,9 +72,12 @@ export const provider = <_T>({
   deps = [],
   factory,
   lifetime,
-}: ProvideOptions<_T>) => <T extends _T = _T>(
-  klazz: Constructor<T>
-): ServiceProvider<T> & Constructor<T> => {
+}: ProvideOptions<_T>) => <
+  T extends _T = _T,
+  K extends Constructor<T> = Constructor<T>
+>(
+  klazz: K
+): ServiceProvider<T> & K => {
   validateLifetime(lifetime);
   const requirements = deps.map(polishServiceRequirement);
 
@@ -112,7 +118,7 @@ export const factory = <_T>({ name, deps = [], lifetime }: FactoryOptions) => <
   });
 };
 
-type AnstractInterfaceOptions = {
+type AbstractInterfaceOptions = {
   name?: string;
 };
 
@@ -125,11 +131,11 @@ type AbstractConstructor<T> = Function & {
  * abstract annotate an abstract class as a servcie interface.
  * @category Service Registry
  */
-export const abstractInterface = <_T>(options?: AnstractInterfaceOptions) => <
+export const abstractInterface = <_T>(options?: AbstractInterfaceOptions) => <
   T = _T
 >(
   klazz: AbstractConstructor<T>
-): ServiceInterface<T> & Constructor<T> => {
+): SingularServiceInterface<T> & Constructor<T> => {
   return Object.defineProperties(klazz, {
     $$typeof: { value: MACHINAT_SERVICE_INTERFACE },
     $$name: { value: options?.name || klazz.name },
@@ -137,8 +143,9 @@ export const abstractInterface = <_T>(options?: AnstractInterfaceOptions) => <
   });
 };
 
-type makeInterfaceOptions = {
+type MakeInterfaceOptions = {
   multi?: boolean;
+  branched?: boolean;
   name: string;
 };
 
@@ -146,11 +153,33 @@ type makeInterfaceOptions = {
  * makeInterface make a non class service interface
  * @category Service Registry
  */
-export const makeInterface = <T>({
+export function makeInterface<T>(options: {
+  name: string;
+  branched: true;
+}): BranchedServiceInterface<T>;
+export function makeInterface<T>(options: {
+  name: string;
+  multi: true;
+}): MultiServiceInterface<T>;
+export function makeInterface<T>(options: {
+  name: string;
+  multi?: false;
+  branched?: false;
+}): SingularServiceInterface<T>;
+export function makeInterface<T>({
   multi = false,
+  branched = false,
   name,
-}: makeInterfaceOptions): ServiceInterface<T> => ({
-  $$name: name,
-  $$multi: multi,
-  $$typeof: MACHINAT_SERVICE_INTERFACE,
-});
+}: MakeInterfaceOptions): ServiceInterface<T> {
+  invariant(
+    !(multi && branched),
+    'cannot be mulit and branched at the same time'
+  );
+
+  return {
+    $$name: name,
+    $$multi: multi as any,
+    $$branched: branched,
+    $$typeof: MACHINAT_SERVICE_INTERFACE,
+  };
+}

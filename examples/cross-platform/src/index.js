@@ -40,7 +40,7 @@ const app = Machinat.createApp({
 
 app.onEvent(
   container({
-    deps: [Base.ProfilerI],
+    deps: [Base.Profiler],
   })((profiler) => async ({ platform, bot, event }) => {
     if (
       (platform === 'line' && event.type === 'follow') ||

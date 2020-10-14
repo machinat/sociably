@@ -1,6 +1,9 @@
 import { provider } from '@machinat/core/service';
-import { BaseProfilerI, BaseStateControllerI } from '@machinat/core/base';
-import type { MachinatUserProfile } from '@machinat/core/base/ProfilerI';
+import { BaseStateControllerI } from '@machinat/core/base';
+import type {
+  MachinatUserProfile,
+  MachinatProfiler,
+} from '@machinat/core/base/Profiler';
 import type TelegramUser from './user';
 import type { TelegramChat, TelegramChatTarget } from './channel';
 import { TELEGRAM } from './constant';
@@ -46,7 +49,7 @@ export class TelegramUserProfile implements MachinatUserProfile {
 /**
  * @category Provider
  */
-export class TelegramProfiler implements BaseProfilerI {
+export class TelegramProfiler implements MachinatProfiler {
   bot: BotP;
 
   static async photoDataURI(photoResponse: PhotoResponse): Promise<string> {
