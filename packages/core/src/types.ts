@@ -19,6 +19,8 @@ import type {
   MACHINAT_RAW_TYPE,
 } from './symbol';
 
+export type { default as MachinatApp } from './app';
+
 export type MachinatRenderable =
   | MachinatText
   | GeneralElement
