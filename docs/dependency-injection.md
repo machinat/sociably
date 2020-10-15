@@ -277,52 +277,39 @@ A service scope is an abstract period of time to 1) handle a received event or 2
 
 For the provider has `'scoped'` lifetime, it will only be created one time lazily in a service scope. The instance will then being cached and used by later requisition.
 
-### Register by Platform
+### Use base services
 
-A service binding can be registered only on specific platforms only like:
-
-```js
-import Base from '@machinat/core/base'
-
-Machinat.crrateApp({
-  bindings: [
-    {
-      provide: Base.BotI,
-      withProvider: FooBot,
-      platforms: ['foo']
-    },
-  ],
-});
-```
-
-In the case above, `FooBot` will only be provided while receiving a `'foo'` platform event or dispatching to `'foo'` platform.
-
-This allow us to serve an interface with different implementations by platforms. Fetching profile is a good example:
+It is very common to have implementations by different platforms or situations. Machinat provide some `Base` interfaces of common services, so you can access them without worrying which implementation it is being used like this:
 
 ```js
 import Base from '@machinat/core/base';
 
 app.onEvent(
   container({
-    deps: [
-      { require: Base.ProfilerI, optional: true },
-    ],
-  })(profiler => context => {
-    const { bot, event } = context;
+    deps: [Base.Profiler, Base.StateControllerI],
+  })(
+    (profiler, stateController) => async context => {
+      const { bot, event: { channel, user } } = context;
 
-    if (profiler) {
-      const profile = await profiler.getUserProfile(event.user);
-      await bot.render(event.channel, `Hello ${profile.name}!`);
-    } else {
-      await bot.render(event.channel, `Hello!`);
+      const profile = await profiler.getUserProfile(user);
+      await bot.render(channel, `Hello ${profile.name}!`);
+
+      await stateController
+        .channelState(channel)
+        .update('hello_count', (count = 0) => count + 1);
     }
-  });
+  )
 );
 ```
 
-The `Base` module provide a set of common interfaces for modules to register their implementation. In the example above, `Base.ProfilerI` is used to fetch the user profile if it is provided by the current platform.
+In the example above, `Base.Profiler` can be used to fetch profile of users from different platforms, the implementations is registered along with the platform modules. And the `Base.StateControllerI` is the interface to access the channel/user state, no matter which storage you registered (more about state will be discuss [later](/docs/using-state.md)).
 
-This lets you use a cross-platform utility  without requiring implementations of every platforms.
+For now the following `Base` interfaces are supported:
+
+- [`Bot`](): render content to channel across platforms
+- [`Profiler`](): fetch profile of users across platforms.
+- [`StateControllerI`](): save and load state from storages.
+- [`IntentRecognizerI`](): recognize intent with external providers.
 
 ## Next
 
