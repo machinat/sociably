@@ -4,7 +4,6 @@ import { EventEmitter } from 'events';
 import invariant from 'invariant';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
 import { decode as decodeJWT } from 'jsonwebtoken';
-import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import { TOKEN_COOKIE_KEY, ERROR_COOKIE_KEY } from '../constant';
 import type {
   AuthContext,
@@ -20,24 +19,36 @@ import type {
 import AuthError from './error';
 
 type AuthClientOptions<
-  User extends MachinatUser,
-  Channel extends null | MachinatChannel,
-  AuthData
+  Authorizer extends ClientAuthorizer<any, any, any, any>
 > = {
   platform?: string;
   serverURL: string;
-  authorizers: ClientAuthorizer<User, Channel, AuthData, any>[];
+  authorizers: Authorizer[];
   refreshLeadTime?: number;
 };
 
-type AuthResult<
-  User extends MachinatUser,
-  Channel extends null | MachinatChannel,
-  AuthData
-> = {
+type AuthResult<Authorizer extends ClientAuthorizer<any, any, any, any>> = {
   token: string;
-  context: AuthContext<User, Channel, AuthData>;
+  context: Authorizer extends ClientAuthorizer<
+    infer User,
+    infer Channel,
+    infer AuthData,
+    any
+  >
+    ? AuthContext<User, Channel, AuthData>
+    : never;
 };
+
+type CookieAuthResult<AuthData> =
+  | { success: false; platform: string; code: number; reason: string }
+  | {
+      success: true;
+      platform: string;
+      token: string;
+      payload: AuthTokenPayload<AuthData>;
+    };
+
+type TimeoutID = ReturnType<typeof setTimeout>;
 
 /** @internal */
 const deleteCookie = (name: string, domain?: string, path?: string) => {
@@ -94,23 +105,10 @@ const getCookieAuthResult = <AuthData>(): null | CookieAuthResult<AuthData> => {
   return null;
 };
 
-type CookieAuthResult<AuthData> =
-  | { success: false; platform: string; code: number; reason: string }
-  | {
-      success: true;
-      platform: string;
-      token: string;
-      payload: AuthTokenPayload<AuthData>;
-    };
-
-type TimeoutID = ReturnType<typeof setTimeout>;
-
 class AuthClient<
-  User extends MachinatUser,
-  Channel extends null | MachinatChannel,
-  AuthData
+  Authorizer extends ClientAuthorizer<any, any, any, any>
 > extends EventEmitter {
-  authorizers: ClientAuthorizer<User, Channel, AuthData, any>[];
+  authorizers: Authorizer[];
   serverURL: string;
   refreshLeadTime: number;
 
@@ -119,17 +117,15 @@ class AuthClient<
 
   private _authed: null | {
     token: string;
-    payload: AuthTokenPayload<AuthData>;
-    context: AuthContext<User, Channel, AuthData>;
+    payload: AuthTokenPayload<any>;
+    context: AuthContext<any, any, any>;
   };
 
   private _initiatingPlatforms: Set<string>;
   private _initiatedPlatforms: Set<string>;
 
-  private _authPromise: null | Promise<AuthResult<User, Channel, AuthData>>;
-  private _initialAuthPromise: null | Promise<
-    AuthResult<User, Channel, AuthData>
-  >;
+  private _authPromise: null | Promise<AuthResult<Authorizer>>;
+  private _initialAuthPromise: null | Promise<AuthResult<Authorizer>>;
 
   private _minAuthBeginTime: number;
 
@@ -154,7 +150,7 @@ class AuthClient<
       authorizers,
       serverURL,
       refreshLeadTime = 300, // 5 min
-    }: AuthClientOptions<User, Channel, AuthData> = {} as any
+    }: AuthClientOptions<Authorizer> = {} as any
   ) {
     super();
 
@@ -189,7 +185,7 @@ class AuthClient<
    * controller, so any auth() call after the first one do not trigger the auth
    * flow but just return the current status.
    */
-  auth(platform?: string): Promise<AuthResult<User, Channel, AuthData>> {
+  auth(platform?: string): Promise<AuthResult<Authorizer>> {
     // the first auth() call should return the initial auth result
     if (this._initialAuthPromise) {
       const initialAuthPromise = this._initialAuthPromise;
@@ -209,7 +205,7 @@ class AuthClient<
       // return current auth status if it is already authorized
       if (this._authed) {
         const { token, context } = this._authed;
-        return Promise.resolve({ token, context });
+        return Promise.resolve({ token, context: context as any });
       }
     }
 
@@ -241,10 +237,10 @@ class AuthClient<
 
   private async _auth(
     platformInput: undefined | string
-  ): Promise<AuthResult<User, Channel, AuthData>> {
+  ): Promise<AuthResult<Authorizer>> {
     const beginTime = Date.now();
 
-    let cookieAuthResult = getCookieAuthResult<AuthData>();
+    let cookieAuthResult = getCookieAuthResult();
     // auth according to the following order
     const authPlatform =
       platformInput ||
@@ -297,7 +293,7 @@ class AuthClient<
     }
 
     let token: string;
-    let payload: AuthTokenPayload<AuthData>;
+    let payload: AuthTokenPayload<any>;
 
     if (
       !cookieAuthResult ||
@@ -347,11 +343,11 @@ class AuthClient<
     this._minAuthBeginTime = beginTime;
     this._setAuth(token, payload, context);
 
-    return { token, context };
+    return { token, context: context as any };
   }
 
   private async _signToken(
-    provider: ClientAuthorizer<User, Channel, AuthData, any>
+    provider: ClientAuthorizer<any, any, any, any>
   ): Promise<[Error | null, string]> {
     const { platform } = provider;
     const result = await provider.fetchCredential(this._getAuthEntry(platform));
@@ -375,8 +371,8 @@ class AuthClient<
 
   private _setAuth(
     token: string,
-    payload: AuthTokenPayload<AuthData>,
-    context: AuthContext<User, Channel, AuthData>
+    payload: AuthTokenPayload<any>,
+    context: AuthContext<any, any, any>
   ) {
     this._authed = { token, payload, context };
     this._clearTimeouts();
@@ -400,7 +396,7 @@ class AuthClient<
 
   private async _refreshAuth(
     token: string,
-    { refreshLimit }: AuthTokenPayload<AuthData>
+    { refreshLimit }: AuthTokenPayload<any>
   ): Promise<void> {
     const beginTime = Date.now();
 
@@ -464,7 +460,7 @@ class AuthClient<
 
   private _refreshAuthCallback = (
     token: string,
-    payload: AuthTokenPayload<AuthData>
+    payload: AuthTokenPayload<any>
   ) => {
     this._refreshTimeoutId = null;
 
@@ -485,7 +481,7 @@ class AuthClient<
 
   private _getAuthorizer(
     platform: undefined | string
-  ): [null | Error, ClientAuthorizer<User, Channel, AuthData, any>] {
+  ): [null | Error, Authorizer] {
     if (!platform) {
       return [new AuthError(400, 'no platform specified'), null as any];
     }
@@ -542,10 +538,7 @@ class AuthClient<
     }
   }
 
-  private _emitError(
-    err: Error,
-    context: null | AuthContext<User, Channel, AuthData>
-  ) {
+  private _emitError(err: Error, context: null | AuthContext<any, any, any>) {
     try {
       this.emit('error', err, context);
     } catch {
