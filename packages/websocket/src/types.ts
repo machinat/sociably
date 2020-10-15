@@ -176,7 +176,7 @@ export type WebSocketPlatformConfigs<
 > = {
   entryPath?: string;
   verifyUpgrade?: VerifyUpgradeFn;
-  verifyLogin: LoginVerifier;
+  verifyLogin?: LoginVerifier;
   heartbeatInterval?: number;
   eventMiddlewares?: MaybeContainerOf<
     LoginVerifier extends VerifyLoginFn<infer User, infer AuthInfo, any>
