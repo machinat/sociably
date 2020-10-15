@@ -48,7 +48,7 @@ export type Interfaceable<T> = ServiceInterface<T> | ServiceProvider<T>;
 
 export type ServiceRequirement<T> = {
   require: Interfaceable<T>;
-  optional: boolean;
+  optional?: boolean;
 };
 
 export type ServiceDependency<T> = ServiceRequirement<T> | Interfaceable<T>;
@@ -100,3 +100,15 @@ export type ServiceBinding<T> = ProviderBinding<T> | ValueBinding<T>;
 export type ServiceProvision<T> = ServiceBinding<T> | ServiceProvider<T>;
 
 export type ServiceCache = Map<ServiceProvider<unknown>, unknown>;
+
+export type ResolveDependencies<
+  Deps extends ReadonlyArray<ServiceDependency<any>>
+> = {
+  [Idx in keyof Deps]: Deps[Idx] extends Interfaceable<infer T>
+    ? T
+    : Deps[Idx] extends { require: Interfaceable<infer T>; optional?: false }
+    ? T
+    : Deps[Idx] extends { require: Interfaceable<infer T>; optional: true }
+    ? null | T
+    : never;
+};

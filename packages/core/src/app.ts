@@ -5,6 +5,7 @@ import type {
   ServiceContainer,
   ServiceScope,
   ServiceProvision,
+  ResolveDependencies,
 } from './service/types';
 import { BaseBot, BaseProfiler } from './base';
 import type {
@@ -124,11 +125,13 @@ export default class MachinatApp<
     this._status = ENUM_STARTED;
   }
 
-  useServices(targets: ServiceDependency<unknown>[]): unknown[] {
+  useServices<Deps extends ReadonlyArray<ServiceDependency<any>>>(
+    dependencies: Deps
+  ): ResolveDependencies<Deps> {
     invariant(this.isStarted, 'app is not started');
 
     const scope = this._serviceSpace.createScope();
-    return scope.useServices(targets);
+    return scope.useServices(dependencies);
   }
 
   onEvent(listener: EventListenable<Context>): MachinatApp<Platform, Context> {

@@ -7,6 +7,7 @@ import type {
   ServiceContainer,
   Interfaceable,
   ServiceDependency,
+  ResolveDependencies,
 } from './types';
 
 /**
@@ -33,11 +34,11 @@ export default class ServiceScope {
     this.scopeCache = scopedCache || new Map();
   }
 
-  useServices(
-    targets: ServiceDependency<unknown>[],
+  useServices<Deps extends ReadonlyArray<ServiceDependency<any>>>(
+    dependencies: Deps,
     runtimeProvisions?: Map<Interfaceable<unknown>, unknown>
-  ): unknown[] {
-    const requirements = targets.map(polishServiceRequirement);
+  ): ResolveDependencies<Deps> {
+    const requirements = dependencies.map(polishServiceRequirement);
 
     const provisions = runtimeProvisions
       ? new Map(runtimeProvisions)
@@ -52,7 +53,7 @@ export default class ServiceScope {
       provisions
     );
 
-    return services;
+    return services as any;
   }
 
   injectContainer<T>(
