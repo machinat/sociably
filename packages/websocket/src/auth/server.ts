@@ -1,15 +1,24 @@
 import { MachinatUser } from '@machinat/core/types';
 import Auth from '@machinat/auth';
-import type { AuthContext } from '@machinat/auth/types';
+import type {
+  AuthContext,
+  ServerAuthorizer,
+  GetAuthContextOf,
+} from '@machinat/auth/types';
 import { factory } from '@machinat/core/service';
 import type { VerifyLoginFn } from '../types';
 
 /**
  * @category Provider
  */
-const useAuthController = (
-  controller: Auth.Controller<any, any, any>
-) => async (request, credential: string) => {
+const useAuthController = <
+  Authorizer extends ServerAuthorizer<any, any, any, any>
+>(
+  controller: Auth.Controller<Authorizer>
+): VerifyLoginFn<MachinatUser, GetAuthContextOf<Authorizer>, string> => async (
+  request,
+  credential: string
+) => {
   const result = await controller.verifyAuth(request, credential);
 
   if (!result.success) {

@@ -1,7 +1,6 @@
 import { parse as parseURL } from 'url';
 import { relative as getRelativePath, join as joinPath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import { provider } from '@machinat/core/service';
 import { HTTPRequestInfo, RoutingInfo } from '@machinat/http/types';
 import invariant from 'invariant';
@@ -22,7 +21,7 @@ import type {
   AuthAPIResponseBody,
   AuthAPIErrorBody,
   AuthModuleConfigs,
-  AuthContext,
+  GetAuthContextOf,
   WithHeaders,
 } from './types';
 
@@ -65,29 +64,25 @@ const respondAPIError = (res: ServerResponse, code: number, reason: string) => {
 };
 
 type AuthVerifyResult<
-  User extends MachinatUser,
-  Channel extends null | MachinatChannel,
-  AuthData
+  Authorizer extends ServerAuthorizer<any, any, any, any>
 > =
-  | { success: true; token: string; auth: AuthContext<User, Channel, AuthData> }
+  | { success: true; token: string; auth: GetAuthContextOf<Authorizer> }
   | { success: false; token: void | string; code: number; reason: string };
 
 /**
  * @category Provider
  */
 export class AuthController<
-  User extends MachinatUser,
-  Channel extends null | MachinatChannel,
-  AuthData
+  Authorizer extends ServerAuthorizer<any, any, any, any>
 > {
-  authorizers: ServerAuthorizer<User, Channel, AuthData, any>[];
+  authorizers: Authorizer[];
   secret: string;
   entryPath: string;
 
   private _cookieController: CookieController;
 
   constructor(
-    authorizers: ServerAuthorizer<User, Channel, AuthData, any>[],
+    authorizers: Authorizer[],
     {
       secret,
       entryPath = '/',
@@ -201,7 +196,7 @@ export class AuthController<
   async verifyAuth(
     req: HTTPRequestInfo,
     tokenProvided?: string
-  ): Promise<AuthVerifyResult<User, Channel, AuthData>> {
+  ): Promise<AuthVerifyResult<Authorizer>> {
     let token = tokenProvided;
     if (!token) {
       const { authorization } = req.headers;
@@ -280,7 +275,7 @@ export class AuthController<
         data,
         loginAt: new Date(iat * 1000),
         expireAt: new Date(exp * 1000),
-      },
+      } as any,
     };
   }
 
@@ -470,9 +465,7 @@ export class AuthController<
     }
   }
 
-  private _getAuthorizerOf(
-    platform: string
-  ): null | ServerAuthorizer<User, Channel, AuthData, any> {
+  private _getAuthorizerOf(platform: string): null | Authorizer {
     for (const authorizer of this.authorizers) {
       if (platform === authorizer.platform) {
         return authorizer;
@@ -482,13 +475,11 @@ export class AuthController<
   }
 }
 
-export const ControllerP = provider<AuthController<any, any, any>>({
+export const ControllerP = provider<AuthController<any>>({
   lifetime: 'singleton',
   deps: [AUTHORIZERS_I, MODULE_CONFIGS_I],
 })(AuthController);
 
 export type ControllerP<
-  User extends MachinatUser,
-  Channel extends null | MachinatChannel,
-  AuthData
-> = AuthController<User, Channel, AuthData>;
+  Authorizer extends ServerAuthorizer<any, any, any, any>
+> = AuthController<Authorizer>;

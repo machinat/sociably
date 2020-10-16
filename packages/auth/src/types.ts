@@ -197,3 +197,14 @@ export type AuthModuleConfigs = {
 export type WithHeaders = {
   headers: IncomingHttpHeaders;
 };
+
+export type GetAuthContextOf<
+  Authorizer extends ServerAuthorizer<any, any, any, any>
+> = Authorizer extends ServerAuthorizer<
+  infer User,
+  infer Channel,
+  infer AuthData,
+  any
+>
+  ? AuthContext<User, Channel, AuthData>
+  : never;
