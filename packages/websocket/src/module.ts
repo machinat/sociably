@@ -67,14 +67,14 @@ const WebSocket = {
   CONFIGS_I: PLATFORM_CONFIGS_I,
 
   initModule: <
-    Value extends EventValue<any, any, any> = EventValue<string, string, any>,
-    LoginVerifier extends void | VerifyLoginFn<any, any, any> = void
+    Value extends EventValue<any, any, any>,
+    LoginVerifier extends VerifyLoginFn<any, any, any>
   >(
     configs: WebSocketPlatformConfigs<Value, LoginVerifier> = {} as any
   ): PlatformModule<
     LoginVerifier extends VerifyLoginFn<infer User, infer AuthInfo, any>
       ? WebSocketEventContext<Value, User, AuthInfo>
-      : WebSocketEventContext<Value, null, null>,
+      : never,
     null,
     WebSocketJob,
     WebSocketDispatchFrame,
