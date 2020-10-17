@@ -1,6 +1,6 @@
 import { provider } from '@machinat/core/service';
 import { BaseStateControllerI } from '@machinat/core/base';
-import {
+import type {
   MachinatUserProfile,
   MachinatProfiler,
 } from '@machinat/core/base/Profiler';
