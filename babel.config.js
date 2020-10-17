@@ -8,14 +8,17 @@ module.exports = {
     }],
     ['@babel/preset-env', {
         targets: {
-          node: '8',
+          node: 10,
         },
     }],
     '@machinat/babel-preset',
   ],
+  plugins: [
+    ['@babel/plugin-proposal-class-properties', { loose: true }],
+  ],
   env: {
     production: {
-      "ignore": [
+      ignore: [
         "**/__tests__",
         "**/__mocks__",
       ],
