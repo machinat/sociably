@@ -84,7 +84,7 @@ it('provide services bound in bindings', () => {
   expect(Foo.mock).toHaveBeenCalledTimes(1);
   expect(BarImpl.mock).not.toHaveBeenCalled();
 
-  const scope = space.createScope('test');
+  const scope = space.createScope();
   expect(scope).toBeInstanceOf(ServiceScope);
 
   expect(scope.injectContainer(myContainer)).toBe('HI Foo BarImpl Baz');
@@ -153,7 +153,7 @@ test('new bindings prioritize to bindings from base space', () => {
   ]);
   space.bootstrap();
 
-  const scope = space.createScope('test');
+  const scope = space.createScope();
   expect(scope.injectContainer(myContainer)).toBe('HI MyFoo AnotherBar NO_BAZ');
 
   const [foo, bar, baz] = scope.useServices([Foo, Bar, BAZ]);
@@ -359,7 +359,7 @@ it('throw if unbound service usage required', () => {
 
   const fooContainer = container({ deps: [Foo, Bar, BAZ] })(() => 'BOOM');
 
-  const scope = space.createScope('test');
+  const scope = space.createScope();
   expect(() =>
     scope.injectContainer(fooContainer)
   ).toThrowErrorMatchingInlineSnapshot(`"Baz is not bound"`);
@@ -388,7 +388,7 @@ test('optional dependency', () => {
       `${foo.foo()} ${bar ? bar.bar() : 'x'} ${baz ? baz.baz() : 'x'}`
   );
 
-  const scope = space.createScope('test');
+  const scope = space.createScope();
   expect(scope.injectContainer(optionalDepsContainer)).toBe('Foo BarImpl x');
 
   const [foo, bar, baz] = scope.useServices([
@@ -414,7 +414,7 @@ it('use the same instance of the same provider on different interface', () => {
   ]);
   space.bootstrap();
 
-  const scope = space.createScope('test');
+  const scope = space.createScope();
   const [bar, jazzBar, musicalBar] = scope.useServices([
     Bar,
     JazzBar,
@@ -444,7 +444,7 @@ test('lifecycle of services of different lifetime', () => {
   const bootstrapedFoo = Foo.mock.calls[0].instance;
   const services = [HELLO, Foo, Bar, BAZ];
 
-  const scope1 = space.createScope('test');
+  const scope1 = space.createScope();
   const [greeter1, foo1, bar1, baz1] = scope1.useServices(services);
   expect(greeter1).toBe(staticGreeter);
   expect(foo1).toBeInstanceOf(Foo);
@@ -458,7 +458,7 @@ test('lifecycle of services of different lifetime', () => {
   expect(bar2).toBe(bar1);
   expect(baz2).not.toBe(baz1);
 
-  const scope2 = space.createScope('test');
+  const scope2 = space.createScope();
   const [greeter3, foo3, bar3, baz3] = scope2.useServices(services);
 
   expect(greeter3).toBe(staticGreeter);
@@ -535,7 +535,7 @@ test('provide multi interface as an array of bound value', () => {
   expect(pizzaFactory.mock).toHaveBeenCalledTimes(1);
   expect(ramenFactory.mock).toHaveBeenCalledTimes(1);
 
-  const scope = space.createScope('test');
+  const scope = space.createScope();
   expect(scope.useServices([MULTI_FOOD])).toEqual([
     ['🍔', '🍕', '🌮', '🍝', '🍕', '🌭', '🍜', '🥙'],
   ]);
@@ -563,7 +563,7 @@ test('provide multi interface as an empty array if no value bound', () => {
   expect(needFooFactory.mock).toHaveBeenCalledTimes(1);
   expect(needFooFactory.mock).toHaveBeenCalledWith([]);
 
-  const scope = space.createScope('test');
+  const scope = space.createScope();
   expect(scope.useServices([MULTI_FOO])).toEqual([[]]);
 });
 
@@ -587,7 +587,7 @@ test('inject time provision', () => {
     [HELLO, myGreeter],
   ]);
 
-  const scope = space.createScope('test');
+  const scope = space.createScope();
   const [greeter, foo, bar, baz] = scope.useServices(
     [HELLO, Foo, Bar, BAZ],
     injectTimeProvisions
@@ -630,38 +630,37 @@ test('boostrap time provision', () => {
   expect(BooConsumer.mock).toHaveBeenCalledWith('boooo~');
 
   expect(() =>
-    space.createScope('test').useServices([BOOTSTRAP_TIME_INTERFACE])
+    space.createScope().useServices([BOOTSTRAP_TIME_INTERFACE])
   ).toThrowErrorMatchingInlineSnapshot(`"BOO is not bound"`);
 });
 
-test('bootstrap time scope', () => {
-  const NeedServiceScope = provider({
+test('require underlying ServiceScope', () => {
+  const singletonService = provider({
     deps: [ServiceScope],
     lifetime: 'singleton',
   })(moxy());
+  const scopedService = provider({
+    deps: [ServiceScope],
+    lifetime: 'scoped',
+  })(moxy());
 
-  const space = new ServiceSpace(null, [NeedServiceScope]);
+  const space = new ServiceSpace(null, [singletonService, scopedService]);
   const scope = space.bootstrap();
 
   expect(scope).toBeInstanceOf(ServiceScope);
-  expect(NeedServiceScope.mock).toHaveBeenCalledTimes(1);
-  expect(NeedServiceScope.mock.calls[0].args[0]).toBe(scope);
-});
+  expect(singletonService.mock).toHaveBeenCalledTimes(1);
+  expect(singletonService.mock.calls[0].args[0]).toBe(scope);
 
-test('require underlying ServiceScope', () => {
-  const scopeConsumer = moxy(container({ deps: [ServiceScope] })(() => ({})));
+  const consumerContainer = moxy(
+    container({ deps: [ServiceScope, scopedService] })(() => ({}))
+  );
 
-  const space = new ServiceSpace(null, [
-    { provide: HELLO, withValue: staticGreeter },
-    Foo,
-  ]);
-  space.bootstrap();
+  scope.injectContainer(consumerContainer);
 
-  const scope = space.createScope('test');
-  scope.injectContainer(scopeConsumer);
-
-  expect(scopeConsumer.mock).toHaveBeenCalledTimes(1);
-  expect(scopeConsumer.mock).toHaveBeenCalledWith(scope);
+  expect(consumerContainer.mock).toHaveBeenCalledTimes(1);
+  expect(consumerContainer.mock.calls[0].args[0]).toBe(scope);
+  expect(scopedService.mock).toHaveBeenCalledTimes(1);
+  expect(scopedService.mock.calls[0].args[0]).toBe(scope);
 
   const [requiredScope] = scope.useServices([ServiceScope]);
   expect(requiredScope).toBe(scope);

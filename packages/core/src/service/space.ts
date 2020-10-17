@@ -172,7 +172,7 @@ export default class ServiceSpace {
     const subRefLock = [...refLock, provider];
 
     for (const { require: target, optional } of provider.$$deps) {
-      let bindings: null | ServiceBinding<unknown>[];
+      let bindings: null | ServiceBinding<unknown>[] = null;
 
       if (target.$$branched) {
         const branches = this._provisionMapping.getBranched(target);
@@ -183,7 +183,7 @@ export default class ServiceSpace {
         }
       } else if (target.$$multi) {
         bindings = this._provisionMapping.getMulti(target);
-      } else {
+      } else if (target !== ServiceScope) {
         const binding = this._provisionMapping.getSingular(target);
 
         const isProvidedOnBootstrap =
