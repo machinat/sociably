@@ -5,7 +5,7 @@ export interface MachinatUserProfile {
   readonly platform: string;
   readonly id: string | number;
   readonly name: string;
-  readonly pictureURL: void | string;
+  readonly pictureURL: undefined | string;
 }
 
 export interface MachinatProfiler {

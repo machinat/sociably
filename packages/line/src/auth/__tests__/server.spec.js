@@ -64,6 +64,7 @@ describe('#verifyCredential(credential)', () => {
   const credential = {
     accessToken: '_ACCESS_TOKEN_',
     data: {
+      userToBot: true,
       os: 'ios',
       language: 'zh-TW',
       contextType: 'utou',
@@ -83,7 +84,7 @@ describe('#verifyCredential(credential)', () => {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
-    const verifyScope = verifyAPI.reply(200, {
+    let verifyScope = verifyAPI.reply(200, {
       scope: 'profile',
       client_id: '_LOGIN_CHAN_2_',
       expires_in: 2591659,
@@ -93,6 +94,9 @@ describe('#verifyCredential(credential)', () => {
       success: true,
       refreshable: false,
       data: {
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: true,
         os: 'ios',
         language: 'zh-TW',
         contextType: 'utou',
@@ -102,44 +106,44 @@ describe('#verifyCredential(credential)', () => {
     });
 
     expect(verifyScope.isDone()).toBe(true);
-  });
 
-  test('verify with channelId in auth data', async () => {
-    const authorizer = new LineServerAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      liffChannelIds: ['_LOGIN_CHAN_'],
-    });
-
-    verifyAPI.reply(200, {
+    verifyScope = verifyAPI.reply(200, {
       scope: 'profile',
-      client_id: '_LOGIN_CHAN_',
+      client_id: '_LOGIN_CHAN_1_',
       expires_in: 2591659,
     });
 
     await expect(
       authorizer.verifyCredential({
-        accessToken: credential.accessToken,
+        accessToken: '_ACCESS_TOKEN_',
         data: {
-          ...credential.data,
-          botChannel: '_BOT_CHANNEL_ID_',
+          userToBot: false,
+          os: 'ios',
+          language: 'zh-TW',
+          contextType: 'group',
+          groupId: '_GROUP_ID_',
+          userId: '_USER_ID_',
         },
       })
     ).resolves.toEqual({
       success: true,
       refreshable: false,
       data: {
-        botChannel: '_BOT_CHANNEL_ID_',
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: false,
         os: 'ios',
         language: 'zh-TW',
-        contextType: 'utou',
-        utouId: '_UTOU_ID_',
+        contextType: 'group',
+        groupId: '_GROUP_ID_',
         userId: '_USER_ID_',
       },
     });
+
+    expect(verifyScope.isDone()).toBe(true);
   });
 
-  it('return unaccepted if accessToken is absent', async () => {
+  it('return fail if accessToken is absent', async () => {
     const authorizer = new LineServerAuthorizer({
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',
@@ -155,7 +159,7 @@ describe('#verifyCredential(credential)', () => {
           `);
   });
 
-  it('return unaccepted if token verify api respond error', async () => {
+  it('return fail if token verify api respond error', async () => {
     const authorizer = new LineServerAuthorizer({
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',
@@ -179,7 +183,7 @@ describe('#verifyCredential(credential)', () => {
     expect(verifyScope.isDone()).toBe(true);
   });
 
-  it('return unaccepted if client_id from token not in options.liffChannelIds', async () => {
+  it('return fail if client_id from token not in options.liffChannelIds', async () => {
     const authorizer = new LineServerAuthorizer({
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',
@@ -202,30 +206,6 @@ describe('#verifyCredential(credential)', () => {
           `);
 
     expect(verifyScope.isDone()).toBe(true);
-  });
-
-  it('return unaccepted if botChannel in credential not matched', async () => {
-    const authorizer = new LineServerAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
-    });
-
-    await expect(
-      authorizer.verifyCredential({
-        accessToken: credential.accessToken,
-        data: {
-          ...credential,
-          botChannel: '_ANOTHER_BOT_ID_',
-        },
-      })
-    ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 400,
-              "reason": "channelId not match",
-              "success": false,
-            }
-          `);
   });
 
   it('throw if profile api respond error', async () => {
@@ -254,7 +234,7 @@ describe('#verifyCredential(credential)', () => {
 });
 
 describe('#verifyRefreshment()', () => {
-  it('return unaccepted anyway', async () => {
+  it('return fail anyway', async () => {
     const authorizer = new LineServerAuthorizer({
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',
@@ -273,15 +253,18 @@ describe('#verifyRefreshment()', () => {
 });
 
 describe('#refineAuth(data)', () => {
-  it('return channel and user according to auth data', async () => {
-    const authorizer = new LineServerAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
-    });
+  const authorizer = new LineServerAuthorizer({
+    providerId: '_PROVIDER_ID_',
+    channelId: '_BOT_CHANNEL_ID_',
+    liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
+  });
 
+  it('resolve utou chat', async () => {
     await expect(
       authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: false,
         os: 'ios',
         language: 'zh-TW',
         contextType: 'utou',
@@ -292,10 +275,51 @@ describe('#refineAuth(data)', () => {
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
       channel: new LineChat('_BOT_CHANNEL_ID_', 'utou', '_UTOU_ID_'),
     });
+  });
 
+  it('resolve group chat', async () => {
     await expect(
       authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: false,
         os: 'ios',
+        language: 'zh-TW',
+        contextType: 'group',
+        groupId: '_GROUP_ID_',
+        userId: '_USER_ID_',
+      })
+    ).resolves.toEqual({
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      channel: new LineChat('_BOT_CHANNEL_ID_', 'group', '_GROUP_ID_'),
+    });
+  });
+
+  it('resolve room chat', async () => {
+    await expect(
+      authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: false,
+        os: 'ios',
+        language: 'zh-TW',
+        contextType: 'room',
+        roomId: '_ROOM_ID_',
+        userId: '_USER_ID_',
+      })
+    ).resolves.toEqual({
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      channel: new LineChat('_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_'),
+    });
+  });
+
+  it('resolve channel as null if contextType is external or none', async () => {
+    await expect(
+      authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: false,
+        os: 'web',
         language: 'zh-TW',
         contextType: 'external',
         userId: '_USER_ID_',
@@ -304,17 +328,29 @@ describe('#refineAuth(data)', () => {
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
       channel: null,
     });
-  });
-
-  it('return utob channel if botChannel exist in data', async () => {
-    const authorizer = new LineServerAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
-    });
 
     await expect(
       authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: false,
+        os: 'ios',
+        language: 'zh-TW',
+        contextType: 'none',
+        userId: '_USER_ID_',
+      })
+    ).resolves.toEqual({
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      channel: null,
+    });
+  });
+
+  it('return utob channel if userToBot is true in data', async () => {
+    await expect(
+      authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: true,
         os: 'ios',
         language: 'zh-TW',
         botChannel: '_BOT_CHANNEL_ID_',
@@ -326,22 +362,49 @@ describe('#refineAuth(data)', () => {
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
       channel: new LineChat('_BOT_CHANNEL_ID_', 'utob', '_USER_ID_'),
     });
-  });
-
-  it('return null if botChannel in data not match', async () => {
-    const authorizer = new LineServerAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
-    });
 
     await expect(
       authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: true,
+        os: 'web',
+        language: 'zh-TW',
+        botChannel: '_BOT_CHANNEL_ID_',
+        contextType: 'external',
+        userId: '_USER_ID_',
+      })
+    ).resolves.toEqual({
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      channel: new LineChat('_BOT_CHANNEL_ID_', 'utob', '_USER_ID_'),
+    });
+  });
+
+  it('return null if channelId or providerId in data does not match', async () => {
+    await expect(
+      authorizer.refineAuth({
+        providerId: '_INVALID_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: true,
         os: 'ios',
         language: 'zh-TW',
         botChannel: '_SOME_OTHER_BOT_CHANNEL_ID_',
         contextType: 'utou',
         utouId: '_UTOU_ID_',
+        userId: '_USER_ID_',
+      })
+    ).resolves.toBe(null);
+
+    await expect(
+      authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_INVALID_CHANNEL_ID_',
+        userToBot: false,
+        os: 'ios',
+        language: 'zh-TW',
+        botChannel: '_SOME_OTHER_BOT_CHANNEL_ID_',
+        contextType: 'group',
+        groupId: '_GROUP_ID_',
         userId: '_USER_ID_',
       })
     ).resolves.toBe(null);

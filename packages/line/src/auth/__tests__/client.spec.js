@@ -64,58 +64,25 @@ beforeEach(() => {
 describe('#constructor()', () => {
   it('contain proper property', () => {
     const authorizer = new ClientAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
     });
 
     expect(authorizer.platform).toBe('line');
     expect(authorizer.shouldResign).toBe(true);
     expect(authorizer.liffId).toBe('_LIFF_ID_');
-    expect(authorizer.providerId).toBe('_PROVIDER_ID_');
     expect(authorizer.shouldLoadSDK).toBe(true);
   });
 
-  it('throw if providerId id is empty', () => {
-    expect(
-      () =>
-        new ClientAuthorizer({
-          botChannelId: '_BOT_CHANNEL_ID_',
-          liffId: '_LIFF_ID_',
-        })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.providerId must not be empty"`
-    );
-  });
-
-  it('throw if botChannelId id is empty', () => {
-    expect(
-      () =>
-        new ClientAuthorizer({
-          providerId: '_PROVIDER_ID_',
-          liffId: '_LIFF_ID_',
-        })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.botChannelId must not be empty"`
-    );
-  });
-
   it('throw if liff id is empty', () => {
-    expect(
-      () =>
-        new ClientAuthorizer({
-          providerId: '_PROVIDER_ID_',
-          botChannelId: '_BOT_CHANNEL_ID_',
-        })
-    ).toThrowErrorMatchingInlineSnapshot(`"options.liffId must not be empty"`);
+    expect(() => new ClientAuthorizer({})).toThrowErrorMatchingInlineSnapshot(
+      `"options.liffId must not be empty"`
+    );
   });
 });
 
 describe('#init()', () => {
   it('add liff sdk and call init() after loaded', async () => {
     const authorizer = new ClientAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
     });
 
@@ -137,8 +104,6 @@ describe('#init()', () => {
 
   it('skip adding sdk if options.shouldLoadSDK set to false', async () => {
     const authorizer = new ClientAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
@@ -153,8 +118,6 @@ describe('#init()', () => {
     global.liff.isLoggedIn.mock.fakeReturnValue(false);
 
     const authorizer = new ClientAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
@@ -171,8 +134,6 @@ describe('#init()', () => {
 describe('#fetchCredential()', () => {
   it('resolve credential containt liff infos and access token', async () => {
     const authorizer = new ClientAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
@@ -182,6 +143,7 @@ describe('#fetchCredential()', () => {
       credential: {
         accessToken: '_ACCESS_TOKEN_',
         data: {
+          userToBot: false,
           os: 'ios',
           language: 'zh-TW',
           contextType: 'utou',
@@ -194,13 +156,11 @@ describe('#fetchCredential()', () => {
     expect(global.liff.login.mock).not.toHaveBeenCalled();
   });
 
-  it('set onBotChannel options.onBotChannel is true', async () => {
+  it('set data.userToBot to true options.userToBot is true', async () => {
     const authorizer = new ClientAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
-      onBotChannel: true,
+      userToBot: true,
     });
 
     await expect(authorizer.fetchCredential()).resolves.toEqual({
@@ -208,7 +168,7 @@ describe('#fetchCredential()', () => {
       credential: {
         accessToken: '_ACCESS_TOKEN_',
         data: {
-          botChannel: '_BOT_CHANNEL_ID_',
+          userToBot: true,
           os: 'ios',
           language: 'zh-TW',
           contextType: 'utou',
@@ -221,14 +181,12 @@ describe('#fetchCredential()', () => {
     expect(global.liff.login.mock).not.toHaveBeenCalled();
   });
 
-  it('set onBotChannel if "onBotChannel" in query param is truthy', async () => {
+  it('set data.userToBot to true if "userToBot" in query param is truthy', async () => {
     global.window.location.mock
       .getter('search')
-      .fakeReturnValue('?onBotChannel=true');
+      .fakeReturnValue('?userToBot=true');
 
     const authorizer = new ClientAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
@@ -238,7 +196,7 @@ describe('#fetchCredential()', () => {
       credential: {
         accessToken: '_ACCESS_TOKEN_',
         data: {
-          botChannel: '_BOT_CHANNEL_ID_',
+          userToBot: true,
           os: 'ios',
           language: 'zh-TW',
           contextType: 'utou',
@@ -253,16 +211,17 @@ describe('#fetchCredential()', () => {
 });
 
 describe('#refineAuth(data)', () => {
-  it('return channel and user according to auth data', async () => {
-    const authorizer = new ClientAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
+  const authorizer = new ClientAuthorizer({
+    liffId: '_LIFF_ID_',
+    shouldLoadSDK: false,
+  });
 
+  it('resolve utou chat', async () => {
     await expect(
       authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: false,
         os: 'ios',
         language: 'zh-TW',
         contextType: 'utou',
@@ -273,10 +232,51 @@ describe('#refineAuth(data)', () => {
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
       channel: new LineChat('_BOT_CHANNEL_ID_', 'utou', '_UTOU_ID_'),
     });
+  });
 
+  it('resolve group chat', async () => {
     await expect(
       authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: false,
         os: 'ios',
+        language: 'zh-TW',
+        contextType: 'group',
+        groupId: '_GROUP_ID_',
+        userId: '_USER_ID_',
+      })
+    ).resolves.toEqual({
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      channel: new LineChat('_BOT_CHANNEL_ID_', 'group', '_GROUP_ID_'),
+    });
+  });
+
+  it('resolve room chat', async () => {
+    await expect(
+      authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: false,
+        os: 'ios',
+        language: 'zh-TW',
+        contextType: 'room',
+        roomId: '_ROOM_ID_',
+        userId: '_USER_ID_',
+      })
+    ).resolves.toEqual({
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      channel: new LineChat('_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_'),
+    });
+  });
+
+  it('resolve channel as null if contextType is external or none', async () => {
+    await expect(
+      authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: false,
+        os: 'web',
         language: 'zh-TW',
         contextType: 'external',
         userId: '_USER_ID_',
@@ -285,18 +285,29 @@ describe('#refineAuth(data)', () => {
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
       channel: null,
     });
-  });
-
-  it('return utob channel if botChannelId exist in data', async () => {
-    const authorizer = new ClientAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
 
     await expect(
       authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: false,
+        os: 'ios',
+        language: 'zh-TW',
+        contextType: 'none',
+        userId: '_USER_ID_',
+      })
+    ).resolves.toEqual({
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      channel: null,
+    });
+  });
+
+  it('return utob channel if userToBot is true in data', async () => {
+    await expect(
+      authorizer.refineAuth({
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: true,
         os: 'ios',
         language: 'zh-TW',
         botChannel: '_BOT_CHANNEL_ID_',
@@ -308,25 +319,21 @@ describe('#refineAuth(data)', () => {
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
       channel: new LineChat('_BOT_CHANNEL_ID_', 'utob', '_USER_ID_'),
     });
-  });
-
-  it('return null if data.onBotChannel not match', async () => {
-    const authorizer = new ClientAuthorizer({
-      providerId: '_PROVIDER_ID_',
-      botChannelId: '_BOT_CHANNEL_ID_',
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
 
     await expect(
       authorizer.refineAuth({
-        os: 'ios',
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        userToBot: true,
+        os: 'web',
         language: 'zh-TW',
-        botChannel: '_SOME_OTHER_BOT_CHANNEL_ID_',
-        contextType: 'utou',
-        utouId: '_UTOU_ID_',
+        botChannel: '_BOT_CHANNEL_ID_',
+        contextType: 'external',
         userId: '_USER_ID_',
       })
-    ).resolves.toBe(null);
+    ).resolves.toEqual({
+      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+      channel: new LineChat('_BOT_CHANNEL_ID_', 'utob', '_USER_ID_'),
+    });
   });
 });

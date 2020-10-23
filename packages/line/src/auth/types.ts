@@ -17,9 +17,11 @@ export type LIFFContext = {
 };
 
 export type LIFFAuthData = {
+  providerId: string;
+  channelId: string;
+  userToBot: boolean;
   os: 'ios' | 'android' | 'web';
   language: string;
-  botChannel: void | string;
   contextType: 'utou' | 'group' | 'room' | 'external' | 'none';
   userId: string;
   utouId?: string;
@@ -29,7 +31,7 @@ export type LIFFAuthData = {
 
 export type LIFFCredential = {
   accessToken: string;
-  data: LIFFAuthData;
+  data: Omit<LIFFAuthData, 'providerId' | 'channelId'>;
 };
 
 export type LineVerifyAuthResult =

@@ -73,15 +73,6 @@ export class LineServerAuthorizer
       };
     }
 
-    const { botChannel } = data;
-    if (botChannel && botChannel !== this.channelId) {
-      return {
-        success: false as const,
-        code: 400,
-        reason: 'channelId not match',
-      };
-    }
-
     const verifyRes = await fetch(
       `https://api.line.me/oauth2/v2.1/verify?access_token=${accessToken}`
     );
@@ -106,7 +97,11 @@ export class LineServerAuthorizer
     return {
       success: true as const,
       refreshable: false as const,
-      data,
+      data: {
+        ...data,
+        channelId: this.channelId,
+        providerId: this.providerId,
+      },
     };
   }
 
@@ -119,9 +114,14 @@ export class LineServerAuthorizer
     };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async refineAuth(data: LIFFAuthData): Promise<null | AuthorizerRefinement> {
-    const { providerId } = this;
-    return refinementFromLIFFAuthData(providerId, this.channelId, data);
+    const { providerId, channelId } = data;
+    if (providerId !== this.providerId || channelId !== this.channelId) {
+      return null;
+    }
+
+    return refinementFromLIFFAuthData(data);
   }
 }
 

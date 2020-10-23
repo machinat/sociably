@@ -18,49 +18,38 @@ import { refinementFromLIFFAuthData } from './utils';
 declare let liff: any;
 
 type ClientAuthorizerOptions = {
-  providerId: string;
-  botChannelId: string;
   liffId: string;
   shouldLoadSDK?: boolean;
-  onBotChannel?: boolean;
+  userToBot?: boolean;
 };
 
-const BOT_CHANNEL_LABEL_QUERY_KEY = 'onBotChannel';
+const BOT_CHANNEL_LABEL_QUERY_KEY = 'userToBot';
 
 class LineClientAuthorizer
   implements
     ClientAuthorizer<LineUser, null | LineChat, LIFFAuthData, LIFFCredential> {
   liffId: string;
-  providerId: string;
-  botChannelId: string;
 
   shouldLoadSDK: boolean;
-  isOnBotChannel: boolean;
+  isOnUserToBotChat: boolean;
 
   platform = LINE;
   shouldResign = true;
 
   constructor(
     {
-      providerId,
-      botChannelId,
       liffId,
       shouldLoadSDK = true,
-      onBotChannel,
+      userToBot,
     }: ClientAuthorizerOptions = {} as any
   ) {
-    invariant(providerId, 'options.providerId must not be empty');
-    invariant(botChannelId, 'options.botChannelId must not be empty');
     invariant(liffId, 'options.liffId must not be empty');
 
     this.liffId = liffId;
-    this.providerId = providerId;
-    this.botChannelId = botChannelId;
     this.shouldLoadSDK = shouldLoadSDK;
-
-    this.isOnBotChannel =
-      typeof onBotChannel === 'boolean'
-        ? onBotChannel
+    this.isOnUserToBotChat =
+      typeof userToBot === 'boolean'
+        ? userToBot
         : new URLSearchParams(window.location.search).get(
             BOT_CHANNEL_LABEL_QUERY_KEY
           ) === 'true';
@@ -105,12 +94,9 @@ class LineClientAuthorizer
       credential: {
         accessToken: liff.getAccessToken(),
         data: {
+          userToBot: this.isOnUserToBotChat,
           os: liff.getOS(),
           language: liff.getLanguage(),
-          botChannel:
-            contextType === 'utou' && this.isOnBotChannel
-              ? this.botChannelId
-              : undefined,
           contextType,
           userId,
           utouId,
@@ -121,8 +107,9 @@ class LineClientAuthorizer
     };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async refineAuth(data: LIFFAuthData): Promise<null | AuthorizerRefinement> {
-    return refinementFromLIFFAuthData(this.providerId, this.botChannelId, data);
+    return refinementFromLIFFAuthData(data);
   }
 }
 
