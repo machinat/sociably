@@ -113,22 +113,6 @@ describe('#init()', () => {
     expect(global.document.getElementById('LIFF')).toBe(null);
     expect(global.liff.init.mock).toHaveBeenCalledTimes(1);
   });
-
-  it('call liff.login() if isLoggedIn() is false', async () => {
-    global.liff.isLoggedIn.mock.fakeReturnValue(false);
-
-    const authorizer = new ClientAuthorizer({
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
-
-    expect(global.liff.login.mock).not.toHaveBeenCalled();
-
-    await authorizer.init();
-
-    expect(global.liff.isLoggedIn.mock).toHaveBeenCalledTimes(1);
-    expect(global.liff.login.mock).toHaveBeenCalledTimes(1);
-  });
 });
 
 describe('#fetchCredential()', () => {
@@ -207,6 +191,33 @@ describe('#fetchCredential()', () => {
     });
 
     expect(global.liff.login.mock).not.toHaveBeenCalled();
+  });
+
+  it('call liff.login() if liff.isLoggedIn() is false', async () => {
+    jest.useFakeTimers();
+
+    global.liff.isLoggedIn.mock.fakeReturnValue(false);
+
+    const authorizer = new ClientAuthorizer({
+      liffId: '_LIFF_ID_',
+      shouldLoadSDK: false,
+    });
+
+    expect(global.liff.login.mock).not.toHaveBeenCalled();
+
+    await authorizer.init();
+
+    const promise = authorizer.fetchCredential();
+    jest.runAllTimers();
+
+    expect(global.liff.isLoggedIn.mock).toHaveBeenCalledTimes(1);
+    expect(global.liff.login.mock).toHaveBeenCalledTimes(1);
+
+    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"liff.login() redirect timeout"`
+    );
+
+    jest.useRealTimers();
   });
 });
 

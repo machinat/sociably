@@ -74,13 +74,18 @@ class LineClientAuthorizer
     }
 
     await liff.init({ liffId });
-
-    if (!liff.isLoggedIn()) {
-      liff.login();
-    }
   }
 
   async fetchCredential(): Promise<AuthorizerCredentialResult> {
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('liff.login() redirect timeout'));
+        }, 10000);
+      });
+    }
+
     const {
       type: contextType,
       userId,
