@@ -324,7 +324,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_state" => Object {
-            "directives": "HttpOnly; Max-Age=60; Path=/auth; SameSite=None; Secure",
+            "directives": "HttpOnly; Max-Age=60; Path=/auth; SameSite=Lax; Secure",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInN0YXRlIjp7ImZvbyI6InN0YXRlIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDAwMDYwfQ.1KZrxH4_vdbYJPe8tT_qwEK1dGsaiMAi0ZPJ-S6MEpU",
           },
         }
@@ -347,14 +347,14 @@ describe('#delegateAuthRequest(req, res)', () => {
           dataCookieAge: 99,
           cookieDomain: 'machinat.io',
           cookiePath: '/api',
-          sameSite: 'Lax',
+          sameSite: 'None',
           secure: false,
         })
       );
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_state" => Object {
-            "directives": "HttpOnly; Max-Age=99; Path=/api/auth; SameSite=Lax",
+            "directives": "HttpOnly; Max-Age=99; Path=/api/auth; SameSite=None",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInN0YXRlIjp7ImZvbyI6InN0YXRlIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDAwMDk5fQ.pSU15ehXOSHEy2gcyNLDz_XiYqm_477JgWsr082koQc",
           },
         }
@@ -401,11 +401,11 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_signature" => Object {
-            "directives": "HttpOnly; Path=/; SameSite=None; Secure",
+            "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
             "value": "KxoRsruKQqsJXgl1JZDkvVAWQoUCiahrvVjYirphkoA",
           },
           "machinat_auth_token" => Object {
-            "directives": "Max-Age=180; Path=/; SameSite=None; Secure",
+            "directives": "Max-Age=180; Path=/; SameSite=Lax; Secure",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoTGltaXQiOjE1NzAwODY0MDAsInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDAxODAwfQ",
           },
           "machinat_auth_state" => Object {
@@ -441,7 +441,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         refreshPeriod: 99999,
         cookieDomain: 'machinat.io',
         cookiePath: '/api',
-        sameSite: 'Lax',
+        sameSite: 'None',
         secure: false,
       });
 
@@ -449,11 +449,11 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_signature" => Object {
-            "directives": "Domain=machinat.io; HttpOnly; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; HttpOnly; Path=/api; SameSite=None",
             "value": "TPe85Bf7ME2A9MJhTIx62cvRJ1k_tMyByTZ8fBVLTeo",
           },
           "machinat_auth_token" => Object {
-            "directives": "Domain=machinat.io; Max-Age=999; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; Max-Age=999; Path=/api; SameSite=None",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoTGltaXQiOjE1NzAwOTk5OTksInNjb3BlIjp7ImRvbWFpbiI6Im1hY2hpbmF0LmlvIiwicGF0aCI6Ii9hcGkifSwiaWF0IjoxNTcwMDAwMDAwLCJleHAiOjE1NzAwMDk5OTl9",
           },
           "machinat_auth_state" => Object {
@@ -581,7 +581,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_error" => Object {
-            "directives": "Max-Age=60; Path=/; SameSite=None; Secure",
+            "directives": "Max-Age=60; Path=/; SameSite=Lax; Secure",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMH0.dCs_-sNRQZoWk1dOHoRcGKCs6LEgGCwky_lWqODov3A",
           },
           "machinat_auth_state" => Object {
@@ -619,14 +619,14 @@ describe('#delegateAuthRequest(req, res)', () => {
           dataCookieAge: 99,
           cookieDomain: 'machinat.io',
           cookiePath: '/api',
-          sameSite: 'Lax',
+          sameSite: 'None',
           secure: false,
         })
       );
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_error" => Object {
-            "directives": "Domain=machinat.io; Max-Age=99; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; Max-Age=99; Path=/api; SameSite=None",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7ImRvbWFpbiI6Im1hY2hpbmF0LmlvIiwicGF0aCI6Ii9hcGkifSwiaWF0IjoxNTcwMDAwMDAwfQ.fUDnYLpCFTR8nlsxMPoqdRzApkQRZ1lw86uEJTB_6Z8",
           },
           "machinat_auth_state" => Object {
@@ -873,7 +873,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_signature" => Object {
-            "directives": "HttpOnly; Path=/; SameSite=None; Secure",
+            "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
             "value": "KxoRsruKQqsJXgl1JZDkvVAWQoUCiahrvVjYirphkoA",
           },
           "machinat_auth_state" => Object {
@@ -922,7 +922,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         refreshPeriod: 99999,
         cookieDomain: 'machinat.io',
         cookiePath: '/api',
-        sameSite: 'Lax',
+        sameSite: 'Strict',
         secure: false,
       });
 
@@ -937,7 +937,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_signature" => Object {
-            "directives": "Domain=machinat.io; HttpOnly; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; HttpOnly; Path=/api; SameSite=Strict",
             "value": "TPe85Bf7ME2A9MJhTIx62cvRJ1k_tMyByTZ8fBVLTeo",
           },
           "machinat_auth_state" => Object {
@@ -1176,7 +1176,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_signature" => Object {
-            "directives": "HttpOnly; Path=/; SameSite=None; Secure",
+            "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
             "value": "IMlv6j2xHcRG_OHPgCCcMO9uT58JVNGoxwumCk2W4ZQ",
           },
           "machinat_auth_state" => Object {
@@ -1225,7 +1225,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         refreshPeriod: 99999,
         cookieDomain: 'machinat.io',
         cookiePath: '/api',
-        sameSite: 'Lax',
+        sameSite: 'Strict',
         secure: false,
       });
 
@@ -1238,7 +1238,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_signature" => Object {
-            "directives": "Domain=machinat.io; HttpOnly; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; HttpOnly; Path=/api; SameSite=Strict",
             "value": "TPe85Bf7ME2A9MJhTIx62cvRJ1k_tMyByTZ8fBVLTeo",
           },
           "machinat_auth_state" => Object {

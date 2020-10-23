@@ -92,7 +92,7 @@ export class AuthController<
       refreshPeriod = 86400, // 1 day
       cookieDomain,
       cookiePath = '/',
-      sameSite = 'none',
+      sameSite = 'lax',
       secure = true,
     }: AuthModuleConfigs = {} as any
   ) {
