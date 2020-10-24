@@ -99,6 +99,7 @@ export class CookieController {
       domain: cookieDomain,
       path: cookiePath,
       expires: new Date(0),
+      sameSite: 'lax',
     };
   }
 

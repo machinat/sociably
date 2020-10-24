@@ -409,11 +409,11 @@ describe('#delegateAuthRequest(req, res)', () => {
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoTGltaXQiOjE1NzAwODY0MDAsInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDAxODAwfQ",
           },
           "machinat_auth_state" => Object {
-            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/",
+            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_error" => Object {
-            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/",
+            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
             "value": "",
           },
         }
@@ -457,11 +457,11 @@ describe('#delegateAuthRequest(req, res)', () => {
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoTGltaXQiOjE1NzAwOTk5OTksInNjb3BlIjp7ImRvbWFpbiI6Im1hY2hpbmF0LmlvIiwicGF0aCI6Ii9hcGkifSwiaWF0IjoxNTcwMDAwMDAwLCJleHAiOjE1NzAwMDk5OTl9",
           },
           "machinat_auth_state" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_error" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
             "value": "",
           },
         }
@@ -585,15 +585,15 @@ describe('#delegateAuthRequest(req, res)', () => {
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMH0.dCs_-sNRQZoWk1dOHoRcGKCs6LEgGCwky_lWqODov3A",
           },
           "machinat_auth_state" => Object {
-            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/",
+            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_signature" => Object {
-            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/",
+            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_token" => Object {
-            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/",
+            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
             "value": "",
           },
         }
@@ -630,15 +630,15 @@ describe('#delegateAuthRequest(req, res)', () => {
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7ImRvbWFpbiI6Im1hY2hpbmF0LmlvIiwicGF0aCI6Ii9hcGkifSwiaWF0IjoxNTcwMDAwMDAwfQ.fUDnYLpCFTR8nlsxMPoqdRzApkQRZ1lw86uEJTB_6Z8",
           },
           "machinat_auth_state" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_signature" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_token" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
             "value": "",
           },
         }
@@ -877,11 +877,11 @@ describe('#delegateAuthRequest(req, res)', () => {
             "value": "KxoRsruKQqsJXgl1JZDkvVAWQoUCiahrvVjYirphkoA",
           },
           "machinat_auth_state" => Object {
-            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/",
+            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_error" => Object {
-            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/",
+            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
             "value": "",
           },
         }
@@ -941,11 +941,11 @@ describe('#delegateAuthRequest(req, res)', () => {
             "value": "TPe85Bf7ME2A9MJhTIx62cvRJ1k_tMyByTZ8fBVLTeo",
           },
           "machinat_auth_state" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_error" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
             "value": "",
           },
         }
@@ -1180,11 +1180,11 @@ describe('#delegateAuthRequest(req, res)', () => {
             "value": "IMlv6j2xHcRG_OHPgCCcMO9uT58JVNGoxwumCk2W4ZQ",
           },
           "machinat_auth_state" => Object {
-            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/",
+            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_error" => Object {
-            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/",
+            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
             "value": "",
           },
         }
@@ -1242,11 +1242,11 @@ describe('#delegateAuthRequest(req, res)', () => {
             "value": "TPe85Bf7ME2A9MJhTIx62cvRJ1k_tMyByTZ8fBVLTeo",
           },
           "machinat_auth_state" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_error" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
             "value": "",
           },
         }
