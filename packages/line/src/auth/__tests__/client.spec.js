@@ -113,6 +113,31 @@ describe('#init()', () => {
     expect(global.document.getElementById('LIFF')).toBe(null);
     expect(global.liff.init.mock).toHaveBeenCalledTimes(1);
   });
+
+  it('wait for redirect while in LIFF primary redirecting', async () => {
+    jest.useFakeTimers();
+
+    global.window.location.mock
+      .getter('search')
+      .fakeReturnValue('?liff.state=__DATA_FROM_LIFF__');
+
+    const authorizer = new ClientAuthorizer({
+      liffId: '_LIFF_ID_',
+      shouldLoadSDK: false,
+    });
+
+    const promise = authorizer.init();
+    setImmediate(jest.runAllTimers);
+
+    await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"redirect timeout"`
+    );
+
+    expect(global.document.getElementById('LIFF')).toBe(null);
+    expect(global.liff.init.mock).toHaveBeenCalledTimes(1);
+
+    jest.useRealTimers();
+  });
 });
 
 describe('#fetchCredential()', () => {
@@ -208,13 +233,13 @@ describe('#fetchCredential()', () => {
     await authorizer.init();
 
     const promise = authorizer.fetchCredential();
-    jest.runAllTimers();
+    setImmediate(jest.runAllTimers);
 
     expect(global.liff.isLoggedIn.mock).toHaveBeenCalledTimes(1);
     expect(global.liff.login.mock).toHaveBeenCalledTimes(1);
 
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"liff.login() redirect timeout"`
+      `"redirect timeout"`
     );
 
     jest.useRealTimers();

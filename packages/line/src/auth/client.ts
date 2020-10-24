@@ -25,13 +25,20 @@ type ClientAuthorizerOptions = {
 
 const BOT_CHANNEL_LABEL_QUERY_KEY = 'userToBot';
 
+const waitingForRedirecting = (): Promise<never> =>
+  new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error('redirect timeout'));
+    }, 10000);
+  });
+
 class LineClientAuthorizer
   implements
     ClientAuthorizer<LineUser, null | LineChat, LIFFAuthData, LIFFCredential> {
   liffId: string;
-
   shouldLoadSDK: boolean;
   isOnUserToBotChat: boolean;
+  _searchParams: URLSearchParams;
 
   platform = LINE;
   shouldResign = true;
@@ -47,12 +54,12 @@ class LineClientAuthorizer
 
     this.liffId = liffId;
     this.shouldLoadSDK = shouldLoadSDK;
+
+    this._searchParams = new URLSearchParams(window.location.search);
     this.isOnUserToBotChat =
       typeof userToBot === 'boolean'
         ? userToBot
-        : new URLSearchParams(window.location.search).get(
-            BOT_CHANNEL_LABEL_QUERY_KEY
-          ) === 'true';
+        : this._searchParams.get(BOT_CHANNEL_LABEL_QUERY_KEY) === 'true';
   }
 
   async init(): Promise<void> {
@@ -74,16 +81,17 @@ class LineClientAuthorizer
     }
 
     await liff.init({ liffId });
+
+    if (typeof this._searchParams.get('liff.state') === 'string') {
+      // wait for secondary redirecting during primary redirecting from LIFF
+      await waitingForRedirecting();
+    }
   }
 
   async fetchCredential(): Promise<AuthorizerCredentialResult> {
     if (!liff.isLoggedIn()) {
       liff.login();
-      return new Promise((_, reject) => {
-        setTimeout(() => {
-          reject(new Error('liff.login() redirect timeout'));
-        }, 10000);
-      });
+      return waitingForRedirecting();
     }
 
     const {
