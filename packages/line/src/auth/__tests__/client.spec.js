@@ -20,7 +20,7 @@ const liffContext = {
 };
 
 global.window = moxy(
-  { location: url.parse('/') },
+  { location: url.parse('https://machinat.io/foo?bar=baz') },
   { includeProperties: ['location'] }
 );
 
@@ -237,6 +237,9 @@ describe('#fetchCredential()', () => {
 
     expect(global.liff.isLoggedIn.mock).toHaveBeenCalledTimes(1);
     expect(global.liff.login.mock).toHaveBeenCalledTimes(1);
+    expect(global.liff.login.mock).toHaveBeenCalledWith({
+      redirectUri: 'https://machinat.io/foo?bar=baz',
+    });
 
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
       `"redirect timeout"`

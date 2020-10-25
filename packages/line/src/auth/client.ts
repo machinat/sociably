@@ -90,7 +90,7 @@ class LineClientAuthorizer
 
   async fetchCredential(): Promise<AuthorizerCredentialResult> {
     if (!liff.isLoggedIn()) {
-      liff.login();
+      liff.login({ redirectUri: window.location.href });
       return waitingForRedirecting();
     }
 
