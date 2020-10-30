@@ -72,22 +72,21 @@ export class TelegramServerAuthorizer
 
   async signAuthCode(
     user: TelegramUser,
-    chat: null | TelegramChat | TelegramChatInstance
+    chat?: null | TelegramChat | TelegramChatInstance
   ): Promise<string> {
-    const channelData =
-      chat === null
-        ? null
-        : chat.type === 'chat_instance'
-        ? {
-            type: 'chat_instance' as const,
-            id: chat.id,
-          }
-        : {
-            type: chat.type,
-            id: chat.id,
-            title: chat.title,
-            username: chat.username,
-          };
+    const channelData = !chat
+      ? null
+      : chat.type === 'chat_instance'
+      ? {
+          type: 'chat_instance' as const,
+          id: chat.id,
+        }
+      : {
+          type: chat.type,
+          id: chat.id,
+          title: chat.title,
+          username: chat.username,
+        };
 
     const { id: userId, firstName, lastName, username, languageCode } = user;
 
