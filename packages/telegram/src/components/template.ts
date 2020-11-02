@@ -17,7 +17,7 @@ type TextProps = MessageProps & {
   /** Texual content of the message to be sent, 1-4096 characters after entities parsing */
   children: MachinatNode;
   /** Mode for parsing entities in the message text. See formatting options for more details. */
-  parseMode: TelegramParseMode;
+  parseMode?: TelegramParseMode;
   /** Disables link previews for links in this message */
   disableWebPagePreview?: boolean;
 };

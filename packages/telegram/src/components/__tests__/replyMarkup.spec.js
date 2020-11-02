@@ -9,8 +9,8 @@ import {
   CallbackGameButton,
   PayButton,
   InlineKeyboard,
-  KeyboardButton,
-  KeyboardRow,
+  ReplyButton,
+  ReplyKeyboardRow,
   ReplyKeyboard,
   RemoveReplyKeyboard,
   ForceReply,
@@ -34,8 +34,8 @@ test.each([
   CallbackGameButton,
   PayButton,
   InlineKeyboard,
-  KeyboardButton,
-  KeyboardRow,
+  ReplyButton,
+  ReplyKeyboardRow,
   ReplyKeyboard,
   RemoveReplyKeyboard,
   ForceReply,
@@ -327,49 +327,49 @@ describe('ReplyKeyboard', () => {
     await expect(
       render(
         <ReplyKeyboard>
-          <KeyboardRow>
-            <KeyboardButton text="Button1" />
-            <KeyboardButton text="Button2" requestContact />
-            <KeyboardButton text="Button3" requestLocation />
-          </KeyboardRow>
-          <KeyboardRow>
-            <KeyboardButton text="Button4" requestPoll />
-            <KeyboardButton text="Button5" requestPoll="quiz" />
-            <KeyboardButton text="Button6" requestPoll="regular" />
-          </KeyboardRow>
+          <ReplyKeyboardRow>
+            <ReplyButton text="Button1" />
+            <ReplyButton text="Button2" requestContact />
+            <ReplyButton text="Button3" requestLocation />
+          </ReplyKeyboardRow>
+          <ReplyKeyboardRow>
+            <ReplyButton text="Button4" requestPoll />
+            <ReplyButton text="Button5" requestPoll="quiz" />
+            <ReplyButton text="Button6" requestPoll="regular" />
+          </ReplyKeyboardRow>
         </ReplyKeyboard>
       )
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
                 "node": <ReplyKeyboard>
-                  <KeyboardRow>
-                    <KeyboardButton
+                  <ReplyKeyboardRow>
+                    <ReplyButton
                       text="Button1"
                     />
-                    <KeyboardButton
+                    <ReplyButton
                       requestContact={true}
                       text="Button2"
                     />
-                    <KeyboardButton
+                    <ReplyButton
                       requestLocation={true}
                       text="Button3"
                     />
-                  </KeyboardRow>
-                  <KeyboardRow>
-                    <KeyboardButton
+                  </ReplyKeyboardRow>
+                  <ReplyKeyboardRow>
+                    <ReplyButton
                       requestPoll={true}
                       text="Button4"
                     />
-                    <KeyboardButton
+                    <ReplyButton
                       requestPoll="quiz"
                       text="Button5"
                     />
-                    <KeyboardButton
+                    <ReplyButton
                       requestPoll="regular"
                       text="Button6"
                     />
-                  </KeyboardRow>
+                  </ReplyKeyboardRow>
                 </ReplyKeyboard>,
                 "path": "$#container",
                 "type": "part",
@@ -433,10 +433,10 @@ describe('ReplyKeyboard', () => {
     await expect(
       render(
         <ReplyKeyboard resizeKeyboard oneTimeKeyboard selective>
-          <KeyboardRow>
-            <KeyboardButton text="Button1" />
-            <KeyboardButton text="Button2" />
-          </KeyboardRow>
+          <ReplyKeyboardRow>
+            <ReplyButton text="Button1" />
+            <ReplyButton text="Button2" />
+          </ReplyKeyboardRow>
         </ReplyKeyboard>
       )
     ).resolves.toMatchInlineSnapshot(`
@@ -447,14 +447,14 @@ describe('ReplyKeyboard', () => {
                   resizeKeyboard={true}
                   selective={true}
                 >
-                  <KeyboardRow>
-                    <KeyboardButton
+                  <ReplyKeyboardRow>
+                    <ReplyButton
                       text="Button1"
                     />
-                    <KeyboardButton
+                    <ReplyButton
                       text="Button2"
                     />
-                  </KeyboardRow>
+                  </ReplyKeyboardRow>
                 </ReplyKeyboard>,
                 "path": "$#container",
                 "type": "part",

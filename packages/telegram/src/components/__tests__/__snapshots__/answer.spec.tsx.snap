@@ -1,0 +1,1022 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AnswerInlineQuery match snapshot 1`] = `
+Array [
+  Object {
+    "node": <AnswerInlineQuery
+      queryId="12345"
+    >
+      <InlineQueryResultAudio
+        caption="*bar*"
+        duration={123}
+        id="1"
+        parseMode="MarkdownV2"
+        performer="Doe"
+        title="foo"
+        url="http://foo.bar/audio"
+      />
+      <InlineQueryResultArticle
+        description="bar"
+        hideURL={true}
+        id="2"
+        thumbHeight={456}
+        thumbURL="http://foo.bar/article_thumb"
+        thumbWidth={123}
+        title="foo"
+        url="http://foo.bar/article"
+      />
+      <InlineQueryResultContact
+        firstName="John"
+        id="3"
+        lastName="Doe"
+        phoneNumber="0123456789"
+        thumbHeight={456}
+        thumbURL="http://foo.bar/contact_thumb"
+        thumbWidth={123}
+        vcard="foo"
+      />
+      <InlineQueryResultDocument
+        caption="*bar*"
+        id="4"
+        mimeType="application/pdf"
+        parseMode="MarkdownV2"
+        thumbHeight={456}
+        thumbURL="http://foo.bar/document_thumb"
+        thumbWidth={123}
+        title="foo"
+        url="http://foo.bar/document"
+      />
+      <InlineQueryResultGame
+        gameShortName="foo"
+        id="5"
+      />
+      <InlineQueryResultGif
+        caption="*bar*"
+        duration={789}
+        height={456}
+        id="6"
+        parseMode="MarkdownV2"
+        thumbMimeType="image/gif"
+        thumbURL="http://foo.bar/gif_thumb"
+        title="foo"
+        url="http://foo.bar/gif"
+        width={123}
+      />
+      <InlineQueryResultLocation
+        id="7"
+        latitude={123.45}
+        livePeriod={999}
+        longitude={67.89}
+        thumbHeight={456}
+        thumbURL="http://foo.bar/location_thumb"
+        thumbWidth={123}
+        title="foo"
+      />
+      <InlineQueryResultMpeg4Gif
+        caption="*bar*"
+        duration={789}
+        height={456}
+        id="8"
+        parseMode="MarkdownV2"
+        thumbMimeType="image/gif"
+        thumbURL="http://foo.bar/mpeg4_thumb"
+        title="foo"
+        url="http://foo.bar/mpeg4"
+        width={123}
+      />
+      <InlineQueryResultPhoto
+        description="bar"
+        height={123}
+        id="9"
+        thumbURL="http://foo.bar/photo_thumb"
+        title="foo"
+        url="http://foo.bar/photo"
+        width={456}
+      />
+      <InlineQueryResultSticker
+        fileId="12345"
+        id="10"
+      />
+      <InlineQueryResultVenue
+        address="somewhere"
+        foursquareId="bar"
+        foursquareType="baz"
+        id="11"
+        latitude={123.45}
+        longitude={67.89}
+        thumbHeight={456}
+        thumbURL="http://foo.bar/venue_thumb"
+        thumbWidth={123}
+        title="foo"
+      />
+      <InlineQueryResultVideo
+        caption="baz"
+        description="bar"
+        height={456}
+        id="12"
+        mimeType="video/mp4"
+        parseMode="None"
+        thumbURL="http://foo.bar/video_thumb"
+        title="foo"
+        url="http://foo.bar/video"
+        width={123}
+      />
+      <InlineQueryResultVoice
+        caption="bar"
+        duration={999}
+        id="13"
+        title="foo"
+        url="http://foo.bar/voice"
+      />
+    </AnswerInlineQuery>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "answerInlineQuery",
+      "parameters": Object {
+        "cache_time": undefined,
+        "inline_query_id": "12345",
+        "is_personal": undefined,
+        "next_offset": undefined,
+        "results": Array [
+          Object {
+            "audio_duration": 123,
+            "audio_file_id": undefined,
+            "audio_url": "http://foo.bar/audio",
+            "caption": "*bar*",
+            "id": "1",
+            "input_message_content": undefined,
+            "parse_mode": "MarkdownV2",
+            "performer": "Doe",
+            "reply_markup": undefined,
+            "title": "foo",
+            "type": "audio",
+          },
+          Object {
+            "description": "bar",
+            "hide_url": true,
+            "id": "2",
+            "input_message_content": undefined,
+            "reply_markup": undefined,
+            "thumb_height": 456,
+            "thumb_url": "http://foo.bar/article_thumb",
+            "thumb_width": 123,
+            "title": "foo",
+            "type": "article",
+            "url": "http://foo.bar/article",
+          },
+          Object {
+            "first_name": "John",
+            "id": "3",
+            "input_message_content": undefined,
+            "last_name": "Doe",
+            "phone_number": "0123456789",
+            "reply_markup": undefined,
+            "thumb_height": 456,
+            "thumb_url": "http://foo.bar/contact_thumb",
+            "thumb_width": 123,
+            "type": "contact",
+            "vcard": "foo",
+          },
+          Object {
+            "caption": "*bar*",
+            "description": undefined,
+            "document_file_id": undefined,
+            "document_url": "http://foo.bar/document",
+            "id": "4",
+            "input_message_content": undefined,
+            "mimeType": "application/pdf",
+            "parse_mode": "MarkdownV2",
+            "reply_markup": undefined,
+            "thumb_height": 456,
+            "thumb_url": "http://foo.bar/document_thumb",
+            "thumb_width": 123,
+            "title": "foo",
+            "type": "document",
+          },
+          Object {
+            "game_short_name": "foo",
+            "id": "5",
+            "reply_markup": undefined,
+            "type": "contact",
+          },
+          Object {
+            "caption": "*bar*",
+            "gif_duration": 789,
+            "gif_file_id": undefined,
+            "gif_height": 456,
+            "gif_url": "http://foo.bar/gif",
+            "gif_width": 123,
+            "id": "6",
+            "input_message_content": undefined,
+            "parse_mode": "MarkdownV2",
+            "reply_markup": undefined,
+            "thumb_mime_type": "image/gif",
+            "thumb_url": "http://foo.bar/gif_thumb",
+            "title": "foo",
+            "type": "gif",
+          },
+          Object {
+            "id": "7",
+            "input_message_content": undefined,
+            "latitude": 123.45,
+            "live_period": 999,
+            "longitude": 67.89,
+            "reply_markup": undefined,
+            "thumb_height": 456,
+            "thumb_url": "http://foo.bar/location_thumb",
+            "thumb_width": 123,
+            "title": "foo",
+            "type": "location",
+          },
+          Object {
+            "caption": "*bar*",
+            "id": "8",
+            "input_message_content": undefined,
+            "mpeg4_duration": 789,
+            "mpeg4_file_id": undefined,
+            "mpeg4_height": 456,
+            "mpeg4_url": "http://foo.bar/mpeg4",
+            "mpeg4_width": 123,
+            "parse_mode": "MarkdownV2",
+            "reply_markup": undefined,
+            "thumb_mime_type": "image/gif",
+            "thumb_url": "http://foo.bar/mpeg4_thumb",
+            "title": "foo",
+            "type": "mpeg4_gif",
+          },
+          Object {
+            "caption": undefined,
+            "description": "bar",
+            "id": "9",
+            "input_message_content": undefined,
+            "parse_mode": "HTML",
+            "photo_file_id": undefined,
+            "photo_height": 123,
+            "photo_url": "http://foo.bar/photo",
+            "photo_width": 456,
+            "reply_markup": undefined,
+            "thumb_url": "http://foo.bar/photo_thumb",
+            "title": "foo",
+            "type": "photo",
+          },
+          Object {
+            "id": "10",
+            "input_message_content": undefined,
+            "reply_markup": undefined,
+            "sticker_file_id": "12345",
+            "type": "sticker",
+          },
+          Object {
+            "address": "somewhere",
+            "foursquare_id": "bar",
+            "foursquare_type": "baz",
+            "id": "11",
+            "input_message_content": undefined,
+            "latitude": 123.45,
+            "longitude": 67.89,
+            "reply_markup": undefined,
+            "thumb_height": 456,
+            "thumb_url": "http://foo.bar/venue_thumb",
+            "thumb_width": 123,
+            "title": "foo",
+            "type": "venue",
+          },
+          Object {
+            "caption": "baz",
+            "description": "bar",
+            "id": "12",
+            "input_message_content": undefined,
+            "mime_type": "video/mp4",
+            "parse_mode": undefined,
+            "reply_markup": undefined,
+            "thumb_url": "http://foo.bar/video_thumb",
+            "title": "foo",
+            "type": "video",
+            "video_duration": undefined,
+            "video_file_id": undefined,
+            "video_height": 456,
+            "video_url": "http://foo.bar/video",
+            "video_width": 123,
+          },
+          Object {
+            "caption": "bar",
+            "id": "13",
+            "input_message_content": undefined,
+            "parse_mode": "HTML",
+            "reply_markup": undefined,
+            "title": "foo",
+            "type": "voice",
+            "voice_duration": 999,
+            "voice_file_id": undefined,
+            "voice_url": "http://foo.bar/voice",
+          },
+        ],
+        "switch_pm_parameter": undefined,
+        "switch_pm_text": undefined,
+      },
+      "toDirectInstance": true,
+    },
+  },
+]
+`;
+
+exports[`AnswerInlineQuery match snapshot 2`] = `
+Array [
+  Object {
+    "node": <AnswerInlineQuery
+      cacheTime={999}
+      isPersonal={true}
+      nextOffset="14"
+      queryId="12345"
+    >
+      <InlineQueryResultAudio
+        fileId="1234"
+        id="1"
+        inputMessageContent={
+          <Text>
+            foo
+          </Text>
+        }
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+      />
+      <InlineQueryResultArticle
+        id="2"
+        inputMessageContent={
+          <Location
+            latitude={123.45}
+            livePeriod={999}
+            longitude={67.89}
+          />
+        }
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+        title="baz"
+      />
+      <InlineQueryResultContact
+        firstName="John"
+        id="3"
+        inputMessageContent={
+          <Text
+            parseMode="MarkdownV2"
+          >
+            *foo*
+          </Text>
+        }
+        phoneNumber="1234567890"
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+      />
+      <InlineQueryResultDocument
+        fileId="12345"
+        id="4"
+        inputMessageContent={
+          <Contact
+            firstName="John"
+            lastName="Doe"
+            phoneNumber="12345678"
+            vcard="foo"
+          />
+        }
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+        title="foo"
+      />
+      <InlineQueryResultGame
+        gameShortName="foo"
+        id="5"
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+      />
+      <InlineQueryResultGif
+        id="6"
+        inputMessageContent={
+          <Venue
+            address="somewhere"
+            foursquareId="123"
+            foursquareType="xxx"
+            latitude={123.45}
+            longitude={67.89}
+            title="bar"
+          />
+        }
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+        thumbURL="http://foo.bar/gif_thumb"
+        url="http://foo.bar/gif"
+      />
+      <InlineQueryResultLocation
+        id="7"
+        inputMessageContent="foo"
+        latitude={123.45}
+        longitude={67.89}
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+        title="foo"
+      />
+      <InlineQueryResultMpeg4Gif
+        id="8"
+        inputMessageContent="foo"
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+        thumbURL="http://foo.bar/mpeg4_thumb"
+        url="http://foo.bar/mpeg4"
+      />
+      <InlineQueryResultPhoto
+        fileId="12345"
+        id="9"
+        inputMessageContent="foo"
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+      />
+      <InlineQueryResultSticker
+        fileId="12345"
+        id="10"
+        inputMessageContent="foo"
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+      />
+      <InlineQueryResultVenue
+        address="somewhere"
+        id="11"
+        inputMessageContent="foo"
+        latitude={123.45}
+        longitude={67.89}
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+        title="foo"
+      />
+      <InlineQueryResultVideo
+        fileId="12345"
+        id="12"
+        inputMessageContent="foo"
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+      />
+      <InlineQueryResultVoice
+        fileId="12345"
+        id="13"
+        inputMessageContent="foo"
+        replyMarkup={
+          <InlineKeyboard>
+            <URLButton
+              text="foo"
+              url="http://foo.bar/article"
+            />
+          </InlineKeyboard>
+        }
+      />
+    </AnswerInlineQuery>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "answerInlineQuery",
+      "parameters": Object {
+        "cache_time": 999,
+        "inline_query_id": "12345",
+        "is_personal": true,
+        "next_offset": "14",
+        "results": Array [
+          Object {
+            "audio_duration": undefined,
+            "audio_file_id": "1234",
+            "audio_url": undefined,
+            "caption": undefined,
+            "id": "1",
+            "input_message_content": Object {
+              "disable_web_page_preview": undefined,
+              "message_text": "foo",
+              "parse_mode": "HTML",
+            },
+            "parse_mode": "HTML",
+            "performer": undefined,
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "title": undefined,
+            "type": "audio",
+          },
+          Object {
+            "description": undefined,
+            "hide_url": undefined,
+            "id": "2",
+            "input_message_content": Object {
+              "latitude": 123.45,
+              "live_period": 999,
+              "longitude": 67.89,
+            },
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "thumb_height": undefined,
+            "thumb_url": undefined,
+            "thumb_width": undefined,
+            "title": "baz",
+            "type": "article",
+            "url": undefined,
+          },
+          Object {
+            "first_name": "John",
+            "id": "3",
+            "input_message_content": Object {
+              "disable_web_page_preview": undefined,
+              "message_text": "*foo*",
+              "parse_mode": "MarkdownV2",
+            },
+            "last_name": undefined,
+            "phone_number": "1234567890",
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "thumb_height": undefined,
+            "thumb_url": undefined,
+            "thumb_width": undefined,
+            "type": "contact",
+            "vcard": undefined,
+          },
+          Object {
+            "caption": undefined,
+            "description": undefined,
+            "document_file_id": "12345",
+            "document_url": undefined,
+            "id": "4",
+            "input_message_content": Object {
+              "first_name": "John",
+              "last_name": "Doe",
+              "phone_number": "12345678",
+              "vcard": "foo",
+            },
+            "mimeType": undefined,
+            "parse_mode": "HTML",
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "thumb_height": undefined,
+            "thumb_url": undefined,
+            "thumb_width": undefined,
+            "title": "foo",
+            "type": "document",
+          },
+          Object {
+            "game_short_name": "foo",
+            "id": "5",
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "type": "contact",
+          },
+          Object {
+            "caption": undefined,
+            "gif_duration": undefined,
+            "gif_file_id": undefined,
+            "gif_height": undefined,
+            "gif_url": "http://foo.bar/gif",
+            "gif_width": undefined,
+            "id": "6",
+            "input_message_content": Object {
+              "address": "somewhere",
+              "foursquare_id": "123",
+              "foursquare_type": "xxx",
+              "latitude": 123.45,
+              "longitude": 67.89,
+              "title": "bar",
+            },
+            "parse_mode": "HTML",
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "thumb_mime_type": undefined,
+            "thumb_url": "http://foo.bar/gif_thumb",
+            "title": undefined,
+            "type": "gif",
+          },
+          Object {
+            "id": "7",
+            "input_message_content": Object {
+              "message_text": "foo",
+            },
+            "latitude": 123.45,
+            "live_period": undefined,
+            "longitude": 67.89,
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "thumb_height": undefined,
+            "thumb_url": undefined,
+            "thumb_width": undefined,
+            "title": "foo",
+            "type": "location",
+          },
+          Object {
+            "caption": undefined,
+            "id": "8",
+            "input_message_content": Object {
+              "message_text": "foo",
+            },
+            "mpeg4_duration": undefined,
+            "mpeg4_file_id": undefined,
+            "mpeg4_height": undefined,
+            "mpeg4_url": "http://foo.bar/mpeg4",
+            "mpeg4_width": undefined,
+            "parse_mode": "HTML",
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "thumb_mime_type": undefined,
+            "thumb_url": "http://foo.bar/mpeg4_thumb",
+            "title": undefined,
+            "type": "mpeg4_gif",
+          },
+          Object {
+            "caption": undefined,
+            "description": undefined,
+            "id": "9",
+            "input_message_content": Object {
+              "message_text": "foo",
+            },
+            "parse_mode": "HTML",
+            "photo_file_id": "12345",
+            "photo_height": undefined,
+            "photo_url": undefined,
+            "photo_width": undefined,
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "thumb_url": undefined,
+            "title": undefined,
+            "type": "photo",
+          },
+          Object {
+            "id": "10",
+            "input_message_content": Object {
+              "message_text": "foo",
+            },
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "sticker_file_id": "12345",
+            "type": "sticker",
+          },
+          Object {
+            "address": "somewhere",
+            "foursquare_id": undefined,
+            "foursquare_type": undefined,
+            "id": "11",
+            "input_message_content": Object {
+              "message_text": "foo",
+            },
+            "latitude": 123.45,
+            "longitude": 67.89,
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "thumb_height": undefined,
+            "thumb_url": undefined,
+            "thumb_width": undefined,
+            "title": "foo",
+            "type": "venue",
+          },
+          Object {
+            "caption": undefined,
+            "description": undefined,
+            "id": "12",
+            "input_message_content": Object {
+              "message_text": "foo",
+            },
+            "mime_type": undefined,
+            "parse_mode": "HTML",
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "thumb_url": undefined,
+            "title": undefined,
+            "type": "video",
+            "video_duration": undefined,
+            "video_file_id": "12345",
+            "video_height": undefined,
+            "video_url": undefined,
+            "video_width": undefined,
+          },
+          Object {
+            "caption": undefined,
+            "id": "13",
+            "input_message_content": Object {
+              "message_text": "foo",
+            },
+            "parse_mode": "HTML",
+            "reply_markup": Object {
+              "inline_keyboard": Array [
+                Object {
+                  "text": "foo",
+                  "url": "http://foo.bar/article",
+                },
+              ],
+            },
+            "title": undefined,
+            "type": "voice",
+            "voice_duration": undefined,
+            "voice_file_id": "12345",
+            "voice_url": undefined,
+          },
+        ],
+        "switch_pm_parameter": undefined,
+        "switch_pm_text": undefined,
+      },
+      "toDirectInstance": true,
+    },
+  },
+]
+`;
+
+exports[`AnswerPreCheckoutQuery match snapshot 1`] = `
+Array [
+  Object {
+    "node": <AnswerPreCheckoutQuery
+      ok={true}
+      queryId="12345"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "answerPreCheckoutQuery",
+      "parameters": Object {
+        "error_message": undefined,
+        "ok": true,
+        "pre_checkout_query_id": "12345",
+      },
+      "toDirectInstance": true,
+    },
+  },
+]
+`;
+
+exports[`AnswerPreCheckoutQuery match snapshot 2`] = `
+Array [
+  Object {
+    "node": <AnswerPreCheckoutQuery
+      errorMessage="NOOO"
+      ok={false}
+      queryId="12345"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "answerPreCheckoutQuery",
+      "parameters": Object {
+        "error_message": "NOOO",
+        "ok": false,
+        "pre_checkout_query_id": "12345",
+      },
+      "toDirectInstance": true,
+    },
+  },
+]
+`;
+
+exports[`AnswerShippingQuery match snapshot 1`] = `
+Array [
+  Object {
+    "node": <AnswerShippingQuery
+      ok={true}
+      queryId="12345"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "answerShippingQuery",
+      "parameters": Object {
+        "error_message": undefined,
+        "ok": true,
+        "shipping_options": undefined,
+        "shipping_query_id": "12345",
+      },
+      "toDirectInstance": true,
+    },
+  },
+]
+`;
+
+exports[`AnswerShippingQuery match snapshot 2`] = `
+Array [
+  Object {
+    "node": <AnswerShippingQuery
+      ok={true}
+      queryId="12345"
+      shippingOptions={
+        Array [
+          Object {
+            "id": "1",
+            "prices": Array [
+              Object {
+                "amount": 123,
+                "label": "food",
+              },
+            ],
+            "title": "cat",
+          },
+          Object {
+            "id": "2",
+            "prices": Array [
+              Object {
+                "amount": 456,
+                "label": "food",
+              },
+            ],
+            "title": "dog",
+          },
+        ]
+      }
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "answerShippingQuery",
+      "parameters": Object {
+        "error_message": undefined,
+        "ok": true,
+        "shipping_options": Array [
+          Object {
+            "id": "1",
+            "prices": Array [
+              Object {
+                "amount": 123,
+                "label": "food",
+              },
+            ],
+            "title": "cat",
+          },
+          Object {
+            "id": "2",
+            "prices": Array [
+              Object {
+                "amount": 456,
+                "label": "food",
+              },
+            ],
+            "title": "dog",
+          },
+        ],
+        "shipping_query_id": "12345",
+      },
+      "toDirectInstance": true,
+    },
+  },
+]
+`;
+
+exports[`AnswerShippingQuery match snapshot 3`] = `
+Array [
+  Object {
+    "node": <AnswerShippingQuery
+      errorMessage="NOOO"
+      ok={false}
+      queryId="12345"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "method": "answerShippingQuery",
+      "parameters": Object {
+        "error_message": "NOOO",
+        "ok": false,
+        "shipping_options": undefined,
+        "shipping_query_id": "12345",
+      },
+      "toDirectInstance": true,
+    },
+  },
+]
+`;

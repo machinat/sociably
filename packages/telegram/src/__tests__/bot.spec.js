@@ -197,7 +197,7 @@ describe('#render(channel, message, options)', () => {
   });
 });
 
-describe('#renderUpdatingInlineMessages(message)', () => {
+describe('#renderInstance(message)', () => {
   const bot = new TelegramBot(
     { botToken: '12345:_BOT_TOKEN_' },
     initScope,
@@ -215,7 +215,7 @@ describe('#renderUpdatingInlineMessages(message)', () => {
   it('resolves null if message is empty', async () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
-      await expect(bot.renderUpdatingInlineMessages(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
+      await expect(bot.renderInstance(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
     }
   });
 
@@ -227,7 +227,7 @@ describe('#renderUpdatingInlineMessages(message)', () => {
       .post('/bot12345:_BOT_TOKEN_/editMessageMedia', bodySpy)
       .reply(200, { ok: true, result: { id: 2 } });
 
-    const response = await bot.renderUpdatingInlineMessages(
+    const response = await bot.renderInstance(
       <>
         <EditText inlineMessageId={1}>
           foo <b>bar</b>

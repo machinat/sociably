@@ -11,7 +11,7 @@ import type {
 } from '@machinat/core/types';
 import { provider, createEmptyScope } from '@machinat/core/service';
 
-import { createChatJob, createUpdatingInlineMessageJobs } from './job';
+import { createChatJob, createDirectInstanceJobs } from './job';
 import generalElementDelegate from './components/general';
 import TelegramWorker from './worker';
 import { TelegramChat, TelegramChatTarget } from './channel';
@@ -108,10 +108,17 @@ export class TelegramBot
     return this.engine.render(channel, message, createChatJob);
   }
 
-  renderUpdatingInlineMessages(
+  /**
+   * Render specific instance directly without target chat, only allow
+   * {@link AnswerCallbackQuery}, {@link AnswerInlineQuery},
+   * {@link AnswerShippingQuery}, {@link AnswerPreCheckoutQuery} and editing
+   * inline mode messages (using {@link EditText}, {@link EditCaption} and
+   * {@link EditMedia} with inlineMessageId prop).
+   */
+  renderInstance(
     message: MachinatNode
   ): Promise<null | TelegramDispatchResponse> {
-    return this.engine.render(null, message, createUpdatingInlineMessageJobs);
+    return this.engine.render(null, message, createDirectInstanceJobs);
   }
 
   async fetchFile(

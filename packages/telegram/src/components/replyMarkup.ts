@@ -248,7 +248,7 @@ export const InlineKeyboard: TelegramComponent<
 /**
  * @category Props
  */
-type KeyboardButtonProps = {
+type ReplyButtonProps = {
   /**	Text of the button. If none of the optional fields are used, it will be sent as a message when the button is pressed */
   text: string;
   /** If True, the user's phone number will be sent as a contact when the button is pressed. Available in private chats only */
@@ -259,10 +259,10 @@ type KeyboardButtonProps = {
   requestPoll?: boolean | 'regular' | 'quiz';
 };
 /** @ignore */
-const __KeyboardButton: FunctionOf<TelegramComponent<
-  KeyboardButtonProps,
+const __ReplyButton: FunctionOf<TelegramComponent<
+  ReplyButtonProps,
   PartSegment<any>
->> = function KeyboardButton(node, path) {
+>> = function ReplyButton(node, path) {
   const { text, requestContact, requestLocation, requestPoll } = node.props;
 
   return [
@@ -279,26 +279,26 @@ const __KeyboardButton: FunctionOf<TelegramComponent<
 /**
  * Button of the {@link ReplyKeyboard}.
  * @category Component
- * @props {@link KeyboardButtonProps}
+ * @props {@link ReplyButtonProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#keyboardbutton).
  */
-export const KeyboardButton: TelegramComponent<
-  KeyboardButtonProps,
+export const ReplyButton: TelegramComponent<
+  ReplyButtonProps,
   PartSegment<any>
-> = annotateTelegramComponent(__KeyboardButton);
+> = annotateTelegramComponent(__ReplyButton);
 
 /**
  * @category Props
  */
-type KeyboardRowProps = {
-  /**	{@link KeyboardButton} elements contained by the row. */
+type ReplyKeyboardRowProps = {
+  /**	{@link ReplyButton} elements contained by the row. */
   children: MachinatNode;
 };
 /** @ignore */
-const __KeyboardRow: FunctionOf<TelegramComponent<
-  KeyboardRowProps,
+const __ReplyKeyboardRow: FunctionOf<TelegramComponent<
+  ReplyKeyboardRowProps,
   PartSegment<any>
->> = async function KeyboardRow(node, path, render) {
+>> = async function ReplyKeyboardRow(node, path, render) {
   const { children } = node.props;
   const buttonsSegments = await render(children, '.children');
 
@@ -315,21 +315,21 @@ const __KeyboardRow: FunctionOf<TelegramComponent<
   ];
 };
 /**
- * Represent a row of {@link KeyboardButton} in the {@link ReplyKeyboard}.
+ * Represent a row of {@link ReplyButton} in the {@link ReplyKeyboard}.
  * @category Component
- * @props {@link KeyboardRowProps}
+ * @props {@link ReplyKeyboardRowProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#replykeyboardmarkup).
  */
-export const KeyboardRow: TelegramComponent<
-  KeyboardRowProps,
+export const ReplyKeyboardRow: TelegramComponent<
+  ReplyKeyboardRowProps,
   PartSegment<any>
-> = annotateTelegramComponent(__KeyboardRow);
+> = annotateTelegramComponent(__ReplyKeyboardRow);
 
 /**
  * @category Props
  */
 type ReplyKeyboardProps = {
-  /**	{@link KeyboardRow} elements. Each represente an Array of {@link KeyboardButton}. */
+  /**	{@link ReplyKeyboardRow} elements. Each represente an Array of {@link ReplyButton}. */
   children: MachinatNode;
   /** Requests clients to resize the keyboard vertically for optimal fit (e.g., make the keyboard smaller if there are just two rows of buttons). Defaults to false, in which case the custom keyboard is always of the same height as the app's standard keyboard. */
   resizeKeyboard?: boolean;

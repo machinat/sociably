@@ -84,7 +84,7 @@ Object {
 }
 `;
 
-exports[`#renderUpdatingInlineMessages(message) call edit api 1`] = `
+exports[`#renderInstance(message) call edit api 1`] = `
 Object {
   "jobs": Array [
     Object {

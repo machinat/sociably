@@ -15,7 +15,7 @@ import {
  */
 type AnswerCallbackQueryProps = {
   /** Unique identifier for the query to be answered */
-  id: string;
+  queryId: string;
   /** Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters */
   text?: string;
   /** If true, an alert will be shown by the client instead of a notification at the top of the chat screen. Defaults to false. */
@@ -36,13 +36,14 @@ export const AnswerCallbackQuery: TelegramComponent<
   AnswerCallbackQueryProps,
   UnitSegment<TelegramSegmentValue>
 > = annotateTelegramComponent(function AnswerCallbackQuery(node, path) {
-  const { id, text, url, showAlert, cacheTime } = node.props;
+  const { queryId, text, url, showAlert, cacheTime } = node.props;
 
   return [
-    unitSegment(node, path, {
+    unitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerCallbackQuery',
+      toDirectInstance: true,
       parameters: {
-        callback_query_id: id,
+        callback_query_id: queryId,
         text,
         url,
         show_alert: showAlert,
@@ -65,6 +66,12 @@ const renderInputMessageContent = async (node, render) => {
   const segments = await render(node, '.inputMessageContent');
   if (!segments) {
     return undefined;
+  }
+
+  if (segments[0].type === 'text') {
+    return {
+      message_text: segments[0].value,
+    };
   }
 
   const { method, parameters } = segments[0].value;
@@ -118,11 +125,11 @@ type InlineQueryResultArticleProps = InlineQueryResultProps & {
   /** URL of the result */
   url?: string;
   /** Pass True, if you don't want the URL to be shown in the message */
-  hideUrl?: boolean;
+  hideURL?: boolean;
   /** Short description of the result */
   description?: string;
-  /** Url of the thumbnail for the result */
-  thumbUrl?: string;
+  /** URL of the thumbnail for the result */
+  thumbURL?: string;
   /** Thumbnail width */
   thumbWidth?: number;
   /** Thumbnail height */
@@ -149,9 +156,9 @@ export const InlineQueryResultArticle: TelegramComponent<
     inputMessageContent,
     title,
     url,
-    hideUrl,
+    hideURL,
     description,
-    thumbUrl,
+    thumbURL,
     thumbWidth,
     thumbHeight,
   } = node.props;
@@ -166,12 +173,13 @@ export const InlineQueryResultArticle: TelegramComponent<
 
   return [
     partSegment(node, path, {
+      type: 'article',
       id,
       title,
       url,
-      hide_url: hideUrl,
+      hide_url: hideURL,
       description,
-      thumb_url: thumbUrl,
+      thumb_url: thumbURL,
       thumb_width: thumbWidth,
       thumb_height: thumbHeight,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
@@ -190,7 +198,7 @@ type InlineQueryResultPhotoProps = InlineQueryResultProps &
         /** A valid URL of the photo. Photo must be in jpeg format. Photo size must not exceed 5MB */
         url: string;
         /** URL of the thumbnail for the photo */
-        thumbUrl: string;
+        thumbURL: string;
         /** Width of the photo */
         width?: number;
         /** Height of the photo */
@@ -234,7 +242,7 @@ export const InlineQueryResultPhoto: TelegramComponent<
     width,
     height,
     description,
-    thumbUrl,
+    thumbURL,
     caption,
     parseMode = 'HTML',
     replyMarkup,
@@ -262,8 +270,8 @@ export const InlineQueryResultPhoto: TelegramComponent<
       title,
       description,
       caption: captionSegments?.[0].value,
-      parse_mode: parseMode,
-      thumb_url: thumbUrl,
+      parse_mode: parseMode === 'None' ? undefined : parseMode,
+      thumb_url: thumbURL,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
       input_message_content: inputMessageContentObject,
     }),
@@ -280,7 +288,7 @@ type InlineQueryResultGifProps = InlineQueryResultProps &
         /** A valid URL of the GIF file. File size must not exceed 1MB */
         url: string;
         /** URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result */
-        thumbUrl: string;
+        thumbURL: string;
         /** MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or “video/mp4”. Defaults to “image/jpeg” */
         thumbMimeType?: 'image/jpeg' | 'image/gif' | 'video/mp4';
         /** Width of the GIF */
@@ -325,7 +333,7 @@ export const InlineQueryResultGif: TelegramComponent<
     width,
     height,
     duration,
-    thumbUrl,
+    thumbURL,
     thumbMimeType,
     title,
     caption,
@@ -355,8 +363,8 @@ export const InlineQueryResultGif: TelegramComponent<
       gif_duration: duration,
       title,
       caption: captionSegments?.[0].value,
-      parse_mode: parseMode,
-      thumb_url: thumbUrl,
+      parse_mode: parseMode === 'None' ? undefined : parseMode,
+      thumb_url: thumbURL,
       thumb_mime_type: thumbMimeType,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
       input_message_content: inputMessageContentObject,
@@ -374,7 +382,7 @@ type InlineQueryResultMpeg4GifProps = InlineQueryResultProps &
         /** A valid URL of the MP4 file. File size must not exceed 1MB */
         url: string;
         /** URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result */
-        thumbUrl: string;
+        thumbURL: string;
         /** MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or “video/mp4”. Defaults to “image/jpeg” */
         thumbMimeType?: 'image/jpeg' | 'image/gif' | 'video/mp4';
         /** Width of the video */
@@ -419,7 +427,7 @@ export const InlineQueryResultMpeg4Gif: TelegramComponent<
     width,
     height,
     duration,
-    thumbUrl,
+    thumbURL,
     thumbMimeType,
     title,
     caption,
@@ -449,8 +457,8 @@ export const InlineQueryResultMpeg4Gif: TelegramComponent<
       mpeg4_duration: duration,
       title,
       caption: captionSegments?.[0].value,
-      parse_mode: parseMode,
-      thumb_url: thumbUrl,
+      parse_mode: parseMode === 'None' ? undefined : parseMode,
+      thumb_url: thumbURL,
       thumb_mime_type: thumbMimeType,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
       input_message_content: inputMessageContentObject,
@@ -470,7 +478,7 @@ type InlineQueryResultVideoProps = InlineQueryResultProps &
         /** Mime type of the content of video url, “text/html” or “video/mp4” */
         mimeType: 'text/html' | 'video/mp4';
         /** URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result */
-        thumbUrl: string;
+        thumbURL: string;
         /** Width of the video */
         width?: number;
         /** Height of the video */
@@ -519,7 +527,7 @@ export const InlineQueryResultVideo: TelegramComponent<
     width,
     height,
     duration,
-    thumbUrl,
+    thumbURL,
     replyMarkup,
     inputMessageContent,
   } = node.props as UnionToIntersection<InlineQueryResultVideoProps>;
@@ -547,8 +555,8 @@ export const InlineQueryResultVideo: TelegramComponent<
       title,
       description,
       caption: captionSegments?.[0].value,
-      parse_mode: parseMode,
-      thumb_url: thumbUrl,
+      parse_mode: parseMode === 'None' ? undefined : parseMode,
+      thumb_url: thumbURL,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
       input_message_content: inputMessageContentObject,
     }),
@@ -629,7 +637,7 @@ export const InlineQueryResultAudio: TelegramComponent<
       title,
       performer,
       caption: captionSegments?.[0].value,
-      parse_mode: parseMode,
+      parse_mode: parseMode === 'None' ? undefined : parseMode,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
       input_message_content: inputMessageContentObject,
     }),
@@ -706,7 +714,7 @@ export const InlineQueryResultVoice: TelegramComponent<
       voice_duration: duration,
       title,
       caption: captionSegments?.[0].value,
-      parse_mode: parseMode,
+      parse_mode: parseMode === 'None' ? undefined : parseMode,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
       input_message_content: inputMessageContentObject,
     }),
@@ -725,11 +733,11 @@ type InlineQueryResultDocumentProps = InlineQueryResultProps &
         /** Mime type of the content of the file, either “application/pdf” or “application/zip” */
         mimeType: 'application/pdf' | 'application/zip';
         /** URL of the thumbnail for the file */
-        thumbUrl?: string;
+        thumbURL?: string;
         /** Thumbnail width */
-        thumbWidth?: string;
+        thumbWidth?: number;
         /** Thumbnail height */
-        thumbHeight?: string;
+        thumbHeight?: number;
       } // from cached file
     | {
         /** The file id of document stored on the Telegram servers */
@@ -767,7 +775,7 @@ export const InlineQueryResultDocument: TelegramComponent<
     mimeType,
     thumbWidth,
     thumbHeight,
-    thumbUrl,
+    thumbURL,
     title,
     description,
     caption,
@@ -796,8 +804,8 @@ export const InlineQueryResultDocument: TelegramComponent<
       title,
       description,
       caption: captionSegments?.[0].value,
-      parse_mode: parseMode,
-      thumb_url: thumbUrl,
+      parse_mode: parseMode === 'None' ? undefined : parseMode,
+      thumb_url: thumbURL,
       thumb_width: thumbWidth,
       thumb_height: thumbHeight,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
@@ -862,11 +870,11 @@ type InlineQueryResultLocationProps = InlineQueryResultProps & {
   /** Period in seconds for which the location can be updated, should be between 60 and 86400. */
   livePeriod?: number;
   /** URL of the thumbnail for the loaction */
-  thumbUrl?: string;
+  thumbURL?: string;
   /** Thumbnail width */
-  thumbWidth?: string;
+  thumbWidth?: number;
   /** Thumbnail height */
-  thumbHeight?: string;
+  thumbHeight?: number;
 };
 
 /**
@@ -891,7 +899,7 @@ export const InlineQueryResultLocation: TelegramComponent<
     longitude,
     livePeriod,
     title,
-    thumbUrl,
+    thumbURL,
     thumbWidth,
     thumbHeight,
   } = node.props;
@@ -912,7 +920,7 @@ export const InlineQueryResultLocation: TelegramComponent<
       longitude,
       live_period: livePeriod,
       title,
-      thumb_url: thumbUrl,
+      thumb_url: thumbURL,
       thumb_width: thumbWidth,
       thumb_height: thumbHeight,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
@@ -938,11 +946,11 @@ type InlineQueryResultVenueProps = InlineQueryResultProps & {
   /** Foursquare type of the venue, if known. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.) */
   foursquareType?: string;
   /** URL of the thumbnail for the venue */
-  thumbUrl?: string;
+  thumbURL?: string;
   /** Thumbnail width */
-  thumbWidth?: string;
+  thumbWidth?: number;
   /** Thumbnail height */
-  thumbHeight?: string;
+  thumbHeight?: number;
 };
 
 /**
@@ -969,7 +977,7 @@ export const InlineQueryResultVenue: TelegramComponent<
     foursquareId,
     foursquareType,
     title,
-    thumbUrl,
+    thumbURL,
     thumbWidth,
     thumbHeight,
   } = node.props;
@@ -992,7 +1000,7 @@ export const InlineQueryResultVenue: TelegramComponent<
       foursquare_id: foursquareId,
       foursquare_type: foursquareType,
       title,
-      thumb_url: thumbUrl,
+      thumb_url: thumbURL,
       thumb_width: thumbWidth,
       thumb_height: thumbHeight,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
@@ -1014,11 +1022,11 @@ type InlineQueryResultContactProps = InlineQueryResultProps & {
   /** Additional data about the contact in the form of a vCard, 0-2048 bytes */
   vcard?: string;
   /** URL of the thumbnail for the contact */
-  thumbUrl?: string;
+  thumbURL?: string;
   /** Thumbnail width */
-  thumbWidth?: string;
+  thumbWidth?: number;
   /** Thumbnail height */
-  thumbHeight?: string;
+  thumbHeight?: number;
 };
 
 /**
@@ -1041,7 +1049,7 @@ export const InlineQueryResultContact: TelegramComponent<
     firstName,
     lastName,
     vcard,
-    thumbUrl,
+    thumbURL,
     thumbWidth,
     thumbHeight,
     replyMarkup,
@@ -1064,7 +1072,7 @@ export const InlineQueryResultContact: TelegramComponent<
       first_name: firstName,
       last_name: lastName,
       vcard,
-      thumb_url: thumbUrl,
+      thumb_url: thumbURL,
       thumb_width: thumbWidth,
       thumb_height: thumbHeight,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
@@ -1128,10 +1136,10 @@ export type InlineQueryResult =
  * @category Props
  */
 type AnswerInlineQueryProps = {
-  /** {@link InlineQueryResult} elements as the results to be displayed */
-  children: MachinatNode;
   /** Unique identifier for the answered query */
-  id: string;
+  queryId: string;
+  /** {@link InlineQueryResult} elements as the results to be displayed */
+  children?: MachinatNode;
   /** The maximum amount of time in seconds that the result of the inline query may be cached on the server. Defaults to 300. */
   cacheTime?: number;
   /** Pass True, if results may be cached on the server side only for the user that sent the query. By default, results may be returned to any user who sends the same query */
@@ -1139,9 +1147,9 @@ type AnswerInlineQueryProps = {
   /** Pass the offset that a client should send in the next query with the same text to receive more results. Pass an empty string if there are no more results or if you don't support pagination. Offset length can't exceed 64 bytes. */
   nextOffset?: string;
   /** If passed, clients will display a button with specified text that switches the user to a private chat with the bot and sends the bot a start message with the parameter switch_pm_parameter */
-  switchPmText?: string;
+  switchPMText?: string;
   /** Deep-linking parameter for the /start message sent to the bot when user presses the switch button. 1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed. */
-  switchPmParameter?: string;
+  switchPMParameter?: string;
 };
 
 /**
@@ -1160,27 +1168,123 @@ export const AnswerInlineQuery: TelegramComponent<
 ) {
   const {
     children,
-    id,
+    queryId,
     cacheTime,
     isPersonal,
     nextOffset,
-    switchPmText,
-    switchPmParameter,
+    switchPMText,
+    switchPMParameter,
   } = node.props;
 
   const resultSegments = await render(children, '.children');
 
   return [
-    unitSegment(node, path, {
+    unitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerInlineQuery',
+      toDirectInstance: true,
       parameters: {
-        inline_query_id: id,
+        inline_query_id: queryId,
         results: resultSegments?.map(({ value }) => value) || [],
         cache_time: cacheTime,
         is_personal: isPersonal,
         next_offset: nextOffset,
-        switch_pm_text: switchPmText,
-        switch_pm_parameter: switchPmParameter,
+        switch_pm_text: switchPMText,
+        switch_pm_parameter: switchPMParameter,
+      },
+    }),
+  ];
+});
+
+/** This object represents a portion of the price for goods or services. */
+type LabeledPrice = {
+  /** Portion label */
+  label: string;
+  /** Price of the product in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). */
+  amount: number;
+};
+
+/** This object represents one shipping option. */
+type ShippingOption = {
+  /** Shipping option identifier */
+  id: string;
+  /** Option title */
+  title?: string;
+  /** List of price portions */
+  prices: LabeledPrice[];
+};
+
+/**
+ * @category Props
+ */
+type AnswerShippingQueryProps = {
+  /** Unique identifier for the query to be answered */
+  queryId: string;
+  /** Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible) */
+  ok: boolean;
+  /** Required if ok is True. A JSON-serialized array of available shipping options. */
+  shippingOptions?: ShippingOption[];
+  /** Required if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user. */
+  errorMessage?: string;
+};
+
+/**
+ * Send answers to an inline query
+ * @category Component
+ * @props {@link AnswerInlineQueryProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#answerInlineQuery).
+ */
+export const AnswerShippingQuery: TelegramComponent<
+  AnswerShippingQueryProps,
+  UnitSegment<TelegramSegmentValue>
+> = annotateTelegramComponent(function AnswerShippingQuery(node, path) {
+  const { queryId, ok, shippingOptions, errorMessage } = node.props;
+
+  return [
+    unitSegment<TelegramSegmentValue>(node, path, {
+      method: 'answerShippingQuery',
+      toDirectInstance: true,
+      parameters: {
+        shipping_query_id: queryId,
+        ok,
+        shipping_options: shippingOptions,
+        error_message: errorMessage,
+      },
+    }),
+  ];
+});
+
+/**
+ * @category Props
+ */
+type AnswerPreCheckoutQueryProps = {
+  /** Unique identifier for the query to be answered */
+  queryId: string;
+  /** Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible) */
+  ok: boolean;
+  /** Required if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user. */
+  errorMessage?: string;
+};
+
+/**
+ * Send answers to an inline query
+ * @category Component
+ * @props {@link AnswerInlineQueryProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#answerInlineQuery).
+ */
+export const AnswerPreCheckoutQuery: TelegramComponent<
+  AnswerPreCheckoutQueryProps,
+  UnitSegment<TelegramSegmentValue>
+> = annotateTelegramComponent(function AnswerPreCheckoutQuery(node, path) {
+  const { queryId, ok, errorMessage } = node.props;
+
+  return [
+    unitSegment<TelegramSegmentValue>(node, path, {
+      method: 'answerPreCheckoutQuery',
+      toDirectInstance: true,
+      parameters: {
+        pre_checkout_query_id: queryId,
+        ok,
+        error_message: errorMessage,
       },
     }),
   ];

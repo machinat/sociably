@@ -61,6 +61,7 @@ const __EditText: FunctionOf<TelegramComponent<
   return [
     unitSegment(node, path, {
       method: 'editMessageText',
+      toDirectInstance: !!inlineMessageId,
       parameters: {
         text: textSegments[0].value,
         message_id: messageId,
@@ -125,6 +126,7 @@ const __EditCaption: FunctionOf<TelegramComponent<
   return [
     unitSegment(node, path, {
       method: 'editMessageCaption',
+      toDirectInstance: !!inlineMessageId,
       parameters: {
         caption: textSegments[0].value,
         message_id: messageId,
@@ -242,6 +244,7 @@ const __EditMedia: FunctionOf<TelegramComponent<
   return [
     unitSegment(node, path, {
       method: 'editMessageMedia',
+      toDirectInstance: !!inlineMessageId,
       parameters: {
         media: mediaInput,
         message_id: messageId,

@@ -2,10 +2,10 @@
 import formatNode from '@machinat/core/utils/formatNode';
 import type { DispatchableSegment } from '@machinat/core/engine/types';
 import type { TelegramSegmentValue, TelegramJob } from './types';
-import type { TelegramChat } from './channel';
+import type { TelegramChat, TelegramChatTarget } from './channel';
 
 export const createChatJob = (
-  chat: TelegramChat,
+  chat: TelegramChat | TelegramChatTarget,
   segments: DispatchableSegment<TelegramSegmentValue>[]
 ): TelegramJob[] => {
   const jobs: TelegramJob[] = [];
@@ -23,14 +23,20 @@ export const createChatJob = (
         uploadingFiles: null,
       });
     } else {
-      const { method, parameters, uploadingFiles } = segment.value;
+      const {
+        method,
+        toDirectInstance,
+        parameters,
+        uploadingFiles,
+      } = segment.value;
+
       jobs.push({
         method,
         parameters: {
           ...parameters,
-          chat_id: chat.id,
+          chat_id: toDirectInstance ? undefined : chat.id,
         },
-        executionKey: chat.uid,
+        executionKey: chat?.uid,
         uploadingFiles: uploadingFiles || null,
       });
     }
@@ -39,7 +45,7 @@ export const createChatJob = (
   return jobs;
 };
 
-export const createUpdatingInlineMessageJobs = (
+export const createDirectInstanceJobs = (
   _: null,
   segments: DispatchableSegment<TelegramSegmentValue>[]
 ): TelegramJob[] => {
@@ -47,15 +53,22 @@ export const createUpdatingInlineMessageJobs = (
 
   segments.forEach((segment) => {
     if (segment.type === 'text') {
-      throw new TypeError(
-        'normal text not alowed when updating messages, use <EditText/>'
-      );
+      throw new TypeError('text is invalid to be rendered without target chat');
     } else {
-      const { method, parameters, uploadingFiles } = segment.value;
+      const {
+        method,
+        toDirectInstance,
+        parameters,
+        uploadingFiles,
+      } = segment.value;
 
-      if (!parameters.inline_message_id) {
+      if (!toDirectInstance) {
         throw new TypeError(
-          `no inlineMessageId provided on ${formatNode(segment.node)}`
+          method.slice(0, 4) === 'edit'
+            ? 'inlineMessageId is required to edit an inline message'
+            : `${formatNode(
+                segment.node
+              )} is invalid to be rendered without target chat`
         );
       }
 

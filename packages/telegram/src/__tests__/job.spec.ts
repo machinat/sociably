@@ -1,5 +1,5 @@
 import { TelegramChat } from '../channel';
-import { createChatJob, createUpdatingInlineMessageJobs } from '../job';
+import { createChatJob, createDirectInstanceJobs } from '../job';
 
 describe('createChatJob(channel, segments)', () => {
   const chat = new TelegramChat(12345, { id: 67890, type: 'private' });
@@ -92,16 +92,29 @@ describe('createChatJob(channel, segments)', () => {
   });
 });
 
-describe('createUpdatingInlineMessageJobs(segments)', () => {
+describe('createDirectInstanceJobs(segments)', () => {
   it('create jobs from segments', () => {
     expect(
-      createUpdatingInlineMessageJobs(null, [
+      createDirectInstanceJobs(null, [
+        {
+          type: 'unit',
+          node: {} as any,
+          path: '$',
+          value: {
+            method: 'answerCallbackQuery',
+            toDirectInstance: true,
+            parameters: {
+              callback_query_id: '123456',
+            },
+          },
+        },
         {
           type: 'unit',
           node: {} as any,
           path: '$',
           value: {
             method: 'editMessageText',
+            toDirectInstance: true,
             parameters: {
               text: 'foo',
               inline_message_id: 123,
@@ -114,6 +127,7 @@ describe('createUpdatingInlineMessageJobs(segments)', () => {
           path: '$',
           value: {
             method: 'editMessageMedia',
+            toDirectInstance: true,
             parameters: {
               inline_message_id: 123,
               media: {
@@ -134,6 +148,14 @@ describe('createUpdatingInlineMessageJobs(segments)', () => {
       ])
     ).toMatchInlineSnapshot(`
       Array [
+        Object {
+          "executionKey": undefined,
+          "method": "answerCallbackQuery",
+          "parameters": Object {
+            "callback_query_id": "123456",
+          },
+          "uploadingFiles": null,
+        },
         Object {
           "executionKey": undefined,
           "method": "editMessageText",
@@ -177,7 +199,7 @@ describe('createUpdatingInlineMessageJobs(segments)', () => {
 
   it('throw if text segment received', () => {
     expect(() =>
-      createUpdatingInlineMessageJobs(null, [
+      createDirectInstanceJobs(null, [
         {
           type: 'text',
           node: 'foo',
@@ -186,13 +208,13 @@ describe('createUpdatingInlineMessageJobs(segments)', () => {
         },
       ])
     ).toThrowErrorMatchingInlineSnapshot(
-      `"normal text not alowed when updating messages, use <EditText/>"`
+      `"text is invalid to be rendered without target chat"`
     );
   });
 
-  it('throw if inline_message_id missing in segment value', () => {
+  it('throw if inline_message_id missing when editing inline message', () => {
     expect(() =>
-      createUpdatingInlineMessageJobs(null, [
+      createDirectInstanceJobs(null, [
         {
           type: 'unit',
           node: '__ELEMENT__',
@@ -206,7 +228,27 @@ describe('createUpdatingInlineMessageJobs(segments)', () => {
         },
       ])
     ).toThrowErrorMatchingInlineSnapshot(
-      `"no inlineMessageId provided on \\"__ELEMENT__\\""`
+      `"inlineMessageId is required to edit an inline message"`
+    );
+  });
+
+  it('throw if the content is not to be rendered without target chat', () => {
+    expect(() =>
+      createDirectInstanceJobs(null, [
+        {
+          type: 'unit',
+          node: '__ELEMENT__',
+          path: '$',
+          value: {
+            method: 'sendMessage',
+            parameters: {
+              text: 'foo',
+            },
+          },
+        },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"\\"__ELEMENT__\\" is invalid to be rendered without target chat"`
     );
   });
 });

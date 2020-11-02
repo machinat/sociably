@@ -115,6 +115,7 @@ export type UploadingFile = {
 export type TelegramSegmentValue = {
   method: string;
   parameters: { [k: string]: any };
+  toDirectInstance?: boolean;
   uploadingFiles?: UploadingFile[];
 };
 
