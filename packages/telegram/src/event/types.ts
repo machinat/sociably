@@ -16,7 +16,8 @@ import type {
   Contact,
   Dice,
   Game,
-  Poll,
+  MessagePoll,
+  PollChange,
   PollDetail,
   Venue,
   Location,
@@ -36,19 +37,11 @@ import type {
   PollAnswer,
 } from './mixins';
 import type { TelegramRawEvent } from '../types';
-import { TelegramChat } from '../channel';
-import TelegramUser from '../user';
 
-interface EventObject<
-  Kind extends string,
-  Type extends string,
-  Channel extends null | TelegramChat = null | TelegramChat,
-  User extends null | TelegramUser = null | TelegramUser
-> {
+interface EventObject<Kind extends string, Type extends string> {
   kind: Kind;
   type: Type;
-  channel: Channel;
-  user: User;
+  botId: number;
   payload: TelegramRawEvent;
 }
 
@@ -273,7 +266,7 @@ export interface PollEvent
     EventBase,
     Message,
     MessageDetail,
-    Poll,
+    MessagePoll,
     PollDetail {}
 
 /**
@@ -436,12 +429,7 @@ export interface PinMessageEvent
  * @type `'successful_payment'`
  */
 export interface SuccessfulPaymentEvent
-  extends EventObject<
-      'postback',
-      'successful_payment',
-      TelegramChat,
-      TelegramUser
-    >,
+  extends EventObject<'postback', 'successful_payment'>,
     EventBase,
     Message,
     MessageDetail,
@@ -455,7 +443,7 @@ export interface SuccessfulPaymentEvent
  * @type `'inline_query'`
  */
 export interface InlineQueryEvent
-  extends EventObject<'postback', 'inline_query', null, TelegramUser>,
+  extends EventObject<'postback', 'inline_query'>,
     EventBase,
     InlineQuery {}
 
@@ -467,7 +455,7 @@ export interface InlineQueryEvent
  * @type `'choose_inline_result'`
  */
 export interface ChooseInlineResultEvent
-  extends EventObject<'postback', 'choose_inline_result', null, TelegramUser>,
+  extends EventObject<'postback', 'choose_inline_result'>,
     EventBase,
     ChosenInlineResult {}
 
@@ -479,12 +467,7 @@ export interface ChooseInlineResultEvent
  * @type `'callback_query'`
  */
 export interface CallbackQueryEvent
-  extends EventObject<
-      'postback',
-      'callback_query',
-      null | TelegramChat,
-      TelegramUser
-    >,
+  extends EventObject<'postback', 'callback_query'>,
     EventBase,
     CallbackQuery {}
 
@@ -496,7 +479,7 @@ export interface CallbackQueryEvent
  * @type `'shipping_query'`
  */
 export interface ShippingQueryEvent
-  extends EventObject<'postback', 'shipping_query', TelegramChat, TelegramUser>,
+  extends EventObject<'postback', 'shipping_query'>,
     EventBase,
     ShippingQuery {}
 
@@ -508,12 +491,7 @@ export interface ShippingQueryEvent
  * @type `'pre_checkout_query'`
  */
 export interface PreCheckoutQueryEvent
-  extends EventObject<
-      'postback',
-      'pre_checkout_query',
-      TelegramChat,
-      TelegramUser
-    >,
+  extends EventObject<'postback', 'pre_checkout_query'>,
     EventBase,
     PreCheckoutQuery {}
 
@@ -525,9 +503,9 @@ export interface PreCheckoutQueryEvent
  * @type `'poll_change'`
  */
 export interface PollChangeEvent
-  extends EventObject<'postback', 'poll_change', null, null>,
+  extends EventObject<'postback', 'poll_change'>,
     EventBase,
-    Poll,
+    PollChange,
     PollDetail {}
 
 /**
@@ -538,7 +516,7 @@ export interface PollChangeEvent
  * @type `'poll_answer_change'`
  */
 export interface PollAnswerChangeEvent
-  extends EventObject<'postback', 'poll_answer_change', null, TelegramUser>,
+  extends EventObject<'postback', 'poll_answer_change'>,
     EventBase,
     PollAnswer {}
 

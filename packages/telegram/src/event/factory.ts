@@ -38,32 +38,23 @@ import {
   CallbackQuery,
   ShippingQuery,
   PreCheckoutQuery,
-  Poll,
+  PollChange,
   PollAnswer,
 } from './mixins';
 import { TelegramRawEvent } from '../types';
-import { TelegramChat } from '../channel';
-import TelegramUser from '../user';
 import { TelegramEvent } from './types';
 
-const makeEvent = <
-  Proto extends object, // eslint-disable-line @typescript-eslint/ban-types
-  Channel extends null | TelegramChat,
-  User extends null | TelegramUser
->(
+const makeEvent = <Proto extends {}>(
+  botId: number,
   payload: TelegramRawEvent,
-  channel: Channel,
-  user: User,
   proto: Proto
 ): {
-  channel: Channel;
-  user: User;
+  botId: number;
   payload: TelegramRawEvent;
 } & Proto => {
   const event = Object.create(proto);
 
-  event.channel = channel;
-  event.user = user;
+  event.botId = botId;
   event.payload = payload;
 
   return event;
@@ -502,7 +493,7 @@ const PreCheckoutQueryPostbackProto = mixin(EventBase, PreCheckoutQuery, {
   type: 'pre_checkout_query' as const,
 });
 
-const PollChangePostbackProto = mixin(EventBase, Poll, PollDetail, {
+const PollChangePostbackProto = mixin(EventBase, PollChange, PollDetail, {
   kind: 'postback' as const,
   type: 'poll_change' as const,
 });
@@ -522,197 +513,155 @@ const eventFactory = (botId: number) => (
 ): TelegramEvent => {
   if (payload.message) {
     const { message } = payload;
-    const channel = new TelegramChat(botId, message.chat);
-
-    if (message.successful_payment) {
-      const user = new TelegramUser(message.from);
-      return makeEvent(payload, channel, user, SuccessfulPaymentPostbackProto);
-    }
-
-    const user = message.from ? new TelegramUser(message.from) : null;
 
     return message.text
-      ? makeEvent(payload, channel, user, TextMessageProto)
+      ? makeEvent(botId, payload, TextMessageProto)
       : message.animation
-      ? makeEvent(payload, channel, user, AnimationMessageProto)
+      ? makeEvent(botId, payload, AnimationMessageProto)
       : message.audio
-      ? makeEvent(payload, channel, user, AudioMessageProto)
+      ? makeEvent(botId, payload, AudioMessageProto)
       : message.document
-      ? makeEvent(payload, channel, user, DocumentMessageProto)
+      ? makeEvent(botId, payload, DocumentMessageProto)
       : message.photo
-      ? makeEvent(payload, channel, user, PhotoMessageProto)
+      ? makeEvent(botId, payload, PhotoMessageProto)
       : message.sticker
-      ? makeEvent(payload, channel, user, StickerMessageProto)
+      ? makeEvent(botId, payload, StickerMessageProto)
       : message.video
-      ? makeEvent(payload, channel, user, VideoMessageProto)
+      ? makeEvent(botId, payload, VideoMessageProto)
       : message.video_note
-      ? makeEvent(payload, channel, user, VideoNoteMessageProto)
+      ? makeEvent(botId, payload, VideoNoteMessageProto)
       : message.voice
-      ? makeEvent(payload, channel, user, VoiceMessageProto)
+      ? makeEvent(botId, payload, VoiceMessageProto)
       : message.contact
-      ? makeEvent(payload, channel, user, ContactMessageProto)
+      ? makeEvent(botId, payload, ContactMessageProto)
       : message.dice
-      ? makeEvent(payload, channel, user, DiceMessageProto)
+      ? makeEvent(botId, payload, DiceMessageProto)
       : message.game
-      ? makeEvent(payload, channel, user, GameMessageProto)
+      ? makeEvent(botId, payload, GameMessageProto)
       : message.poll
-      ? makeEvent(payload, channel, user, PollMessageProto)
+      ? makeEvent(botId, payload, PollMessageProto)
       : message.venue
-      ? makeEvent(payload, channel, user, VenueMessageProto)
+      ? makeEvent(botId, payload, VenueMessageProto)
       : message.location
-      ? makeEvent(payload, channel, user, LocationMessageProto)
+      ? makeEvent(botId, payload, LocationMessageProto)
       : message.new_chat_members
-      ? makeEvent(payload, channel, user, MemberJoinActionProto)
+      ? makeEvent(botId, payload, MemberJoinActionProto)
       : message.left_chat_member
-      ? makeEvent(payload, channel, user, MemberLeaveActionProto)
+      ? makeEvent(botId, payload, MemberLeaveActionProto)
       : message.new_chat_title
-      ? makeEvent(payload, channel, user, NewChatTitleActionProto)
+      ? makeEvent(botId, payload, NewChatTitleActionProto)
       : message.new_chat_photo
-      ? makeEvent(payload, channel, user, NewChatPhotoActionProto)
+      ? makeEvent(botId, payload, NewChatPhotoActionProto)
       : message.delete_chat_photo
-      ? makeEvent(payload, channel, user, DeleteChatPhotoActionProto)
+      ? makeEvent(botId, payload, DeleteChatPhotoActionProto)
       : message.group_chat_created
-      ? makeEvent(payload, channel, user, CreateGroupChatActionProto)
+      ? makeEvent(botId, payload, CreateGroupChatActionProto)
       : message.migrate_to_chat_id
-      ? makeEvent(payload, channel, user, MigrateToChatActionProto)
+      ? makeEvent(botId, payload, MigrateToChatActionProto)
       : message.migrate_from_chat_id
-      ? makeEvent(payload, channel, user, MigrateFromChatActionProto)
+      ? makeEvent(botId, payload, MigrateFromChatActionProto)
       : message.pinned_message
-      ? makeEvent(payload, channel, user, PinMessageActionProto)
-      : makeEvent(payload, channel, user, UnknownProto);
+      ? makeEvent(botId, payload, PinMessageActionProto)
+      : message.successful_payment
+      ? makeEvent(botId, payload, SuccessfulPaymentPostbackProto)
+      : makeEvent(botId, payload, UnknownProto);
   }
 
   if (payload.edited_message) {
     const { edited_message: message } = payload;
-    const channel = new TelegramChat(botId, message.chat);
-    const user = message.from ? new TelegramUser(message.from) : null;
 
     return message.text
-      ? makeEvent(payload, channel, user, TextEditedMessageProto)
+      ? makeEvent(botId, payload, TextEditedMessageProto)
       : message.animation
-      ? makeEvent(payload, channel, user, AnimationEditedMessageProto)
+      ? makeEvent(botId, payload, AnimationEditedMessageProto)
       : message.audio
-      ? makeEvent(payload, channel, user, AudioEditedMessageProto)
+      ? makeEvent(botId, payload, AudioEditedMessageProto)
       : message.document
-      ? makeEvent(payload, channel, user, DocumentEditedMessageProto)
+      ? makeEvent(botId, payload, DocumentEditedMessageProto)
       : message.photo
-      ? makeEvent(payload, channel, user, PhotoEditedMessageProto)
+      ? makeEvent(botId, payload, PhotoEditedMessageProto)
       : message.sticker
-      ? makeEvent(payload, channel, user, StickerEditedMessageProto)
+      ? makeEvent(botId, payload, StickerEditedMessageProto)
       : message.video
-      ? makeEvent(payload, channel, user, VideoEditedMessageProto)
+      ? makeEvent(botId, payload, VideoEditedMessageProto)
       : message.voice
-      ? makeEvent(payload, channel, user, VoiceEditedMessageProto)
+      ? makeEvent(botId, payload, VoiceEditedMessageProto)
       : message.game
-      ? makeEvent(payload, channel, user, GameEditedMessageProto)
-      : makeEvent(payload, channel, user, UnknownProto);
+      ? makeEvent(botId, payload, GameEditedMessageProto)
+      : makeEvent(botId, payload, UnknownProto);
   }
 
   if (payload.channel_post) {
     const { channel_post: message } = payload;
-    const channel = new TelegramChat(botId, message.chat);
 
     return message.text
-      ? makeEvent(payload, channel, null, TextChannelPostProto)
+      ? makeEvent(botId, payload, TextChannelPostProto)
       : message.animation
-      ? makeEvent(payload, channel, null, AnimationChannelPostProto)
+      ? makeEvent(botId, payload, AnimationChannelPostProto)
       : message.audio
-      ? makeEvent(payload, channel, null, AudioChannelPostProto)
+      ? makeEvent(botId, payload, AudioChannelPostProto)
       : message.document
-      ? makeEvent(payload, channel, null, DocumentChannelPostProto)
+      ? makeEvent(botId, payload, DocumentChannelPostProto)
       : message.photo
-      ? makeEvent(payload, channel, null, PhotoChannelPostProto)
+      ? makeEvent(botId, payload, PhotoChannelPostProto)
       : message.sticker
-      ? makeEvent(payload, channel, null, StickerChannelPostProto)
+      ? makeEvent(botId, payload, StickerChannelPostProto)
       : message.video
-      ? makeEvent(payload, channel, null, VideoChannelPostProto)
+      ? makeEvent(botId, payload, VideoChannelPostProto)
       : message.video_note
-      ? makeEvent(payload, channel, null, VideoNoteChannelPostProto)
+      ? makeEvent(botId, payload, VideoNoteChannelPostProto)
       : message.voice
-      ? makeEvent(payload, channel, null, VoiceChannelPostProto)
+      ? makeEvent(botId, payload, VoiceChannelPostProto)
       : message.contact
-      ? makeEvent(payload, channel, null, ContactChannelPostProto)
+      ? makeEvent(botId, payload, ContactChannelPostProto)
       : message.dice
-      ? makeEvent(payload, channel, null, DiceChannelPostProto)
+      ? makeEvent(botId, payload, DiceChannelPostProto)
       : message.poll
-      ? makeEvent(payload, channel, null, PollChannelPostProto)
+      ? makeEvent(botId, payload, PollChannelPostProto)
       : message.venue
-      ? makeEvent(payload, channel, null, VenueChannelPostProto)
+      ? makeEvent(botId, payload, VenueChannelPostProto)
       : message.location
-      ? makeEvent(payload, channel, null, LocationChannelPostProto)
-      : makeEvent(payload, channel, null, UnknownProto);
+      ? makeEvent(botId, payload, LocationChannelPostProto)
+      : makeEvent(botId, payload, UnknownProto);
   }
 
   if (payload.edited_channel_post) {
     const { edited_channel_post: message } = payload;
-    const channel = new TelegramChat(botId, message.chat);
 
     return message.text
-      ? makeEvent(payload, channel, null, TextEditedChannelPostProto)
+      ? makeEvent(botId, payload, TextEditedChannelPostProto)
       : message.animation
-      ? makeEvent(payload, channel, null, AnimationEditedChannelPostProto)
+      ? makeEvent(botId, payload, AnimationEditedChannelPostProto)
       : message.audio
-      ? makeEvent(payload, channel, null, AudioEditedChannelPostProto)
+      ? makeEvent(botId, payload, AudioEditedChannelPostProto)
       : message.document
-      ? makeEvent(payload, channel, null, DocumentEditedChannelPostProto)
+      ? makeEvent(botId, payload, DocumentEditedChannelPostProto)
       : message.photo
-      ? makeEvent(payload, channel, null, PhotoEditedChannelPostProto)
+      ? makeEvent(botId, payload, PhotoEditedChannelPostProto)
       : message.sticker
-      ? makeEvent(payload, channel, null, StickerEditedChannelPostProto)
+      ? makeEvent(botId, payload, StickerEditedChannelPostProto)
       : message.video
-      ? makeEvent(payload, channel, null, VideoEditedChannelPostProto)
+      ? makeEvent(botId, payload, VideoEditedChannelPostProto)
       : message.voice
-      ? makeEvent(payload, channel, null, VoiceEditedChannelPostProto)
-      : makeEvent(payload, channel, null, UnknownProto);
+      ? makeEvent(botId, payload, VoiceEditedChannelPostProto)
+      : makeEvent(botId, payload, UnknownProto);
   }
 
-  if (payload.shipping_query) {
-    const { from: fromUser } = payload.shipping_query;
-    const user = new TelegramUser(fromUser);
-    const channel = TelegramChat.fromUser(botId, user);
-
-    return makeEvent(payload, channel, user, ShippingQueryPostbackProto);
-  }
-
-  if (payload.pre_checkout_query) {
-    const { from: fromUser } = payload.pre_checkout_query;
-    const user = new TelegramUser(fromUser);
-    const channel = TelegramChat.fromUser(botId, user);
-
-    return makeEvent(payload, channel, user, PreCheckoutQueryPostbackProto);
-  }
-
-  if (payload.inline_query) {
-    const { from: fromUser } = payload.inline_query;
-    const user = new TelegramUser(fromUser);
-    return makeEvent(payload, null, user, InlineQueryPostbackProto);
-  }
-
-  if (payload.chosen_inline_result) {
-    const { from: fromUser } = payload.chosen_inline_result;
-    const user = new TelegramUser(fromUser);
-    return makeEvent(payload, null, user, ChooseInlineResultPostbackProto);
-  }
-
-  if (payload.callback_query) {
-    const { from: fromUser, message } = payload.callback_query;
-    const user = new TelegramUser(fromUser);
-    const channel = message ? new TelegramChat(botId, message.chat) : null;
-
-    return makeEvent(payload, channel, user, CallbackQueryPostbackProto);
-  }
-
-  if (payload.poll) {
-    return makeEvent(payload, null, null, PollChangePostbackProto);
-  }
-
-  if (payload.poll_answer) {
-    const { user: fromUser } = payload.poll_answer;
-    const user = new TelegramUser(fromUser);
-    return makeEvent(payload, null, user, PollAnswerChangePostbackProto);
-  }
-
-  return makeEvent(payload, null, null, UnknownProto);
+  return payload.shipping_query
+    ? makeEvent(botId, payload, ShippingQueryPostbackProto)
+    : payload.pre_checkout_query
+    ? makeEvent(botId, payload, PreCheckoutQueryPostbackProto)
+    : payload.inline_query
+    ? makeEvent(botId, payload, InlineQueryPostbackProto)
+    : payload.chosen_inline_result
+    ? makeEvent(botId, payload, ChooseInlineResultPostbackProto)
+    : payload.callback_query
+    ? makeEvent(botId, payload, CallbackQueryPostbackProto)
+    : payload.poll
+    ? makeEvent(botId, payload, PollChangePostbackProto)
+    : payload.poll_answer
+    ? makeEvent(botId, payload, PollAnswerChangePostbackProto)
+    : makeEvent(botId, payload, UnknownProto);
 };
 
 export default eventFactory;

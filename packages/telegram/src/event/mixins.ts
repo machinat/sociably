@@ -1,4 +1,6 @@
 import { TELEGRAM } from '../constant';
+import { TelegramChat, TelegramChatInstance } from '../channel';
+import TelegramUser from '../user';
 import type {
   RawChat,
   RawUser,
@@ -76,6 +78,8 @@ export const EditedChannelPost: Message = {
 };
 
 export interface MessageDetail {
+  channel: TelegramChat;
+  user: null | TelegramUser;
   /**	Unique message identifier inside this chat */
   messageId: number;
   /** Raw user object represent the sender, empty for messages sent to channels */
@@ -115,6 +119,13 @@ export interface MessageDetail {
 }
 
 export const MessageDetail: MessageDetail = {
+  get channel() {
+    return new TelegramChat(this.botId, this.message.chat);
+  },
+  get user() {
+    const fromUser = this.message.from;
+    return fromUser ? new TelegramUser(fromUser) : null;
+  },
   get messageId(): number {
     return this.message.message_id;
   },
@@ -540,10 +551,16 @@ export const Game: Game = {
   },
 };
 
-export interface Poll {
+export interface MessagePoll {
   /** Poll object. */
   poll: RawPoll;
 }
+
+export const MessagePoll: MessagePoll = {
+  get poll() {
+    return this.message.poll;
+  },
+};
 
 export interface PollDetail {
   /** Unique poll identifier */
@@ -613,12 +630,6 @@ export const PollDetail: PollDetail = {
   },
   get closeDate() {
     return this.message.poll.close_date;
-  },
-};
-
-export const MessagePoll: Poll = {
-  get poll() {
-    return this.message.poll;
   },
 };
 
@@ -803,6 +814,8 @@ export const SuccessfulPayment: SuccessfulPayment = {
 };
 
 export interface InlineQuery {
+  channel: null;
+  user: TelegramUser;
   /** Inline query object. */
   inlineQuery: RawInlineQuery;
   /**	Unique identifier for this query */
@@ -818,6 +831,10 @@ export interface InlineQuery {
 }
 
 export const InlineQuery: InlineQuery = {
+  channel: null,
+  get user() {
+    return this.payload.inline_query.from;
+  },
   get inlineQuery() {
     return this.payload.inline_query;
   },
@@ -839,6 +856,8 @@ export const InlineQuery: InlineQuery = {
 };
 
 export interface ChosenInlineResult {
+  channel: null;
+  user: TelegramUser;
   /** Inline result object. */
   chosenInlineResult: RawChosenInlineResult;
   /**	The unique identifier for the result that was chosen */
@@ -854,6 +873,10 @@ export interface ChosenInlineResult {
 }
 
 export const ChosenInlineResult: ChosenInlineResult = {
+  channel: null,
+  get user() {
+    return this.payload.chosen_inline_result.from;
+  },
   get chosenInlineResult() {
     return this.payload.chosen_inline_result;
   },
@@ -875,6 +898,8 @@ export const ChosenInlineResult: ChosenInlineResult = {
 };
 
 export interface CallbackQuery {
+  channel: null | TelegramChat;
+  user: TelegramUser;
   /** Callback query object. */
   callbackQuery: RawCallbackQuery;
   /** Unique identifier for this query */
@@ -887,6 +912,8 @@ export interface CallbackQuery {
   inlineMessageId?: string;
   /** Global identifier, uniquely corresponding to the chat to which the message with the callback button was sent. Useful for high scores in games. */
   chatInstance: string;
+  /** TelegramChatInstance object represent the channel of unique chatInstance id */
+  chatInstanceChannel: TelegramChatInstance;
   /** Data associated with the callback button. Be aware that a bad client can send arbitrary data in this field. */
   data?: string;
   /** Short name of a Game to be returned, serves as the unique identifier for the game */
@@ -894,6 +921,13 @@ export interface CallbackQuery {
 }
 
 export const CallbackQuery: CallbackQuery = {
+  get channel() {
+    const { message } = this.payload.callback_query;
+    return message ? new TelegramChat(this.botId, message.chat) : null;
+  },
+  get user() {
+    return this.payload.callback_query.from;
+  },
   get callbackQuery() {
     return this.payload.callback_query;
   },
@@ -912,6 +946,12 @@ export const CallbackQuery: CallbackQuery = {
   get chatInstance() {
     return this.payload.callback_query.chat_instance;
   },
+  get chatInstanceChannel() {
+    return new TelegramChatInstance(
+      this.botId,
+      this.payload.callback_query.chat_instance
+    );
+  },
   get data() {
     return this.payload.callback_query.data;
   },
@@ -921,6 +961,8 @@ export const CallbackQuery: CallbackQuery = {
 };
 
 export interface ShippingQuery {
+  channel: TelegramChat;
+  user: TelegramUser;
   /** Shipping query object. */
   shippingQuery: RawShippingQuery;
   /** Unique query identifier */
@@ -934,6 +976,12 @@ export interface ShippingQuery {
 }
 
 export const ShippingQuery: ShippingQuery = {
+  get channel() {
+    return TelegramChat.fromUser(this.botId, this.user);
+  },
+  get user() {
+    return new TelegramUser(this.payload.shipping_query.from);
+  },
   get shippingQuery() {
     return this.payload.shipping_query;
   },
@@ -952,6 +1000,8 @@ export const ShippingQuery: ShippingQuery = {
 };
 
 export interface PreCheckoutQuery {
+  channel: TelegramChat;
+  user: TelegramUser;
   /** Pre-checkout query object. */
   preCheckoutQuery: RawPreCheckoutQuery;
   /** Unique query identifier */
@@ -971,6 +1021,12 @@ export interface PreCheckoutQuery {
 }
 
 export const PreCheckoutQuery: PreCheckoutQuery = {
+  get channel() {
+    return TelegramChat.fromUser(this.botId, this.user);
+  },
+  get user() {
+    return new TelegramUser(this.payload.pre_checkout_query.from);
+  },
   get preCheckoutQuery() {
     return this.payload.pre_checkout_query;
   },
@@ -997,13 +1053,24 @@ export const PreCheckoutQuery: PreCheckoutQuery = {
   },
 };
 
-export const Poll: Poll = {
+export interface PollChange {
+  channel: null;
+  user: null;
+  /** Poll object. */
+  poll: RawPoll;
+}
+
+export const PollChange: PollChange = {
+  user: null,
+  channel: null,
   get poll() {
     return this.payload.poll;
   },
 };
 
 export interface PollAnswer {
+  channel: null;
+  user: TelegramUser;
   /** Poll answer object. */
   pollAnswer: RawPollAnswer;
   /** Unique poll identifier */
@@ -1015,6 +1082,10 @@ export interface PollAnswer {
 }
 
 export const PollAnswer: PollAnswer = {
+  channel: null,
+  get user() {
+    return new TelegramUser(this.payload.poll_answer.from);
+  },
   get pollAnswer() {
     return this.payload.poll_answer;
   },
