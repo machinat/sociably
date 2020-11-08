@@ -27,7 +27,7 @@ const Script = {
 };
 
 declare namespace Script {
-  export type Proccessor<Input, ReturnValue> = ProcessorP<Input, ReturnValue>;
+  export type Processor<Input, ReturnValue> = ProcessorP<Input, ReturnValue>;
 }
 
 export default Script;
