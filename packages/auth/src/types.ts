@@ -206,5 +206,12 @@ export type GetAuthContextOf<
   infer AuthData,
   any
 >
-  ? AuthContext<User, Channel, AuthData>
+  ? {
+      platform: Authorizer['platform'];
+      user: User;
+      channel: Channel;
+      loginAt: Date;
+      expireAt: Date;
+      data: AuthData;
+    }
   : never;
