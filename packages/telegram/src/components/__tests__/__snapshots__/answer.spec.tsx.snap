@@ -565,10 +565,12 @@ Array [
             "performer": undefined,
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "title": undefined,
@@ -585,10 +587,12 @@ Array [
             },
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "thumb_height": undefined,
@@ -610,10 +614,12 @@ Array [
             "phone_number": "1234567890",
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "thumb_height": undefined,
@@ -638,10 +644,12 @@ Array [
             "parse_mode": "HTML",
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "thumb_height": undefined,
@@ -655,10 +663,12 @@ Array [
             "id": "5",
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "type": "contact",
@@ -682,10 +692,12 @@ Array [
             "parse_mode": "HTML",
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "thumb_mime_type": undefined,
@@ -703,10 +715,12 @@ Array [
             "longitude": 67.89,
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "thumb_height": undefined,
@@ -729,10 +743,12 @@ Array [
             "parse_mode": "HTML",
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "thumb_mime_type": undefined,
@@ -754,10 +770,12 @@ Array [
             "photo_width": undefined,
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "thumb_url": undefined,
@@ -771,10 +789,12 @@ Array [
             },
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "sticker_file_id": "12345",
@@ -792,10 +812,12 @@ Array [
             "longitude": 67.89,
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "thumb_height": undefined,
@@ -815,10 +837,12 @@ Array [
             "parse_mode": "HTML",
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "thumb_url": undefined,
@@ -839,10 +863,12 @@ Array [
             "parse_mode": "HTML",
             "reply_markup": Object {
               "inline_keyboard": Array [
-                Object {
-                  "text": "foo",
-                  "url": "http://foo.bar/article",
-                },
+                Array [
+                  Object {
+                    "text": "foo",
+                    "url": "http://foo.bar/article",
+                  },
+                ],
               ],
             },
             "title": undefined,

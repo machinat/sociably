@@ -92,10 +92,12 @@ test('Location match snapshot', async () => {
                   "longitude": 54.321,
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__DONE__",
-                        "text": "I got here",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__DONE__",
+                          "text": "I got here",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -174,10 +176,12 @@ test('EditLiveLocation match snapshot', async () => {
                   "message_id": undefined,
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__DONE__",
-                        "text": "I got here",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__DONE__",
+                          "text": "I got here",
+                        },
+                      ],
                     ],
                   },
                 },
@@ -242,10 +246,12 @@ test('StopLiveLocation match snapshot', async () => {
                   "message_id": undefined,
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__BYE__",
-                        "text": "Bye",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__BYE__",
+                          "text": "Bye",
+                        },
+                      ],
                     ],
                   },
                 },
@@ -345,10 +351,12 @@ test('Venue match snapshot', async () => {
                   "longitude": 67.89,
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__YAMMY__",
-                        "text": "That's it!",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__YAMMY__",
+                          "text": "That's it!",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,

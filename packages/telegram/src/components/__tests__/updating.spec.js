@@ -141,10 +141,12 @@ test('EditText match snapshot', async () => {
                   "parse_mode": "MarkdownV2",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__BAR__",
-                        "text": "Bar",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__BAR__",
+                          "text": "Bar",
+                        },
+                      ],
                     ],
                   },
                   "text": "*foo*",
@@ -262,10 +264,12 @@ test('EditCaption match snapshot', async () => {
                   "parse_mode": "MarkdownV2",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__BAR__",
-                        "text": "Bar",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__BAR__",
+                          "text": "Bar",
+                        },
+                      ],
                     ],
                   },
                 },
@@ -582,10 +586,12 @@ test('EditMedia match snapshot', async () => {
                   "message_id": undefined,
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__BAR__",
-                        "text": "Bar",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__BAR__",
+                          "text": "Bar",
+                        },
+                      ],
                     ],
                   },
                 },
@@ -659,10 +665,12 @@ test('StopPoll match snapshot', async () => {
                   "message_id": 123,
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__TOO_LATE__",
-                        "text": "Noooo",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__TOO_LATE__",
+                          "text": "Noooo",
+                        },
+                      ],
                     ],
                   },
                 },

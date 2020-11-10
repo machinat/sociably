@@ -10,7 +10,7 @@ import {
   PayButton,
   InlineKeyboard,
   ReplyButton,
-  ReplyKeyboardRow,
+  KeyboardRow,
   ReplyKeyboard,
   RemoveReplyKeyboard,
   ForceReply,
@@ -35,7 +35,7 @@ test.each([
   PayButton,
   InlineKeyboard,
   ReplyButton,
-  ReplyKeyboardRow,
+  KeyboardRow,
   ReplyKeyboard,
   RemoveReplyKeyboard,
   ForceReply,
@@ -278,8 +278,11 @@ describe('InlineKeyboard', () => {
       render(
         <InlineKeyboard>
           <URLButton text="Go" url="http://machinat.com" />
-          <CallbackButton text="Hello" data="World!" />
-          <SwitchInlineQueryButton text="Try" />
+
+          <KeyboardRow>
+            <CallbackButton text="Hello" data="World!" />
+            <SwitchInlineQueryButton text="Try" />
+          </KeyboardRow>
         </InlineKeyboard>
       )
     ).resolves.toMatchInlineSnapshot(`
@@ -290,30 +293,36 @@ describe('InlineKeyboard', () => {
                     text="Go"
                     url="http://machinat.com"
                   />
-                  <CallbackButton
-                    data="World!"
-                    text="Hello"
-                  />
-                  <SwitchInlineQueryButton
-                    text="Try"
-                  />
+                  <KeyboardRow>
+                    <CallbackButton
+                      data="World!"
+                      text="Hello"
+                    />
+                    <SwitchInlineQueryButton
+                      text="Try"
+                    />
+                  </KeyboardRow>
                 </InlineKeyboard>,
                 "path": "$#container",
                 "type": "part",
                 "value": Object {
                   "inline_keyboard": Array [
-                    Object {
-                      "text": "Go",
-                      "url": "http://machinat.com",
-                    },
-                    Object {
-                      "callback_data": "World!",
-                      "text": "Hello",
-                    },
-                    Object {
-                      "switch_inline_query": "",
-                      "text": "Try",
-                    },
+                    Array [
+                      Object {
+                        "text": "Go",
+                        "url": "http://machinat.com",
+                      },
+                    ],
+                    Array [
+                      Object {
+                        "callback_data": "World!",
+                        "text": "Hello",
+                      },
+                      Object {
+                        "switch_inline_query": "",
+                        "text": "Try",
+                      },
+                    ],
                   ],
                 },
               },
@@ -327,26 +336,29 @@ describe('ReplyKeyboard', () => {
     await expect(
       render(
         <ReplyKeyboard>
-          <ReplyKeyboardRow>
-            <ReplyButton text="Button1" />
+          <ReplyButton text="Button1" />
+
+          <KeyboardRow>
             <ReplyButton text="Button2" requestContact />
             <ReplyButton text="Button3" requestLocation />
-          </ReplyKeyboardRow>
-          <ReplyKeyboardRow>
+          </KeyboardRow>
+
+          <KeyboardRow>
             <ReplyButton text="Button4" requestPoll />
             <ReplyButton text="Button5" requestPoll="quiz" />
-            <ReplyButton text="Button6" requestPoll="regular" />
-          </ReplyKeyboardRow>
+          </KeyboardRow>
+
+          <ReplyButton text="Button6" requestPoll="regular" />
         </ReplyKeyboard>
       )
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
                 "node": <ReplyKeyboard>
-                  <ReplyKeyboardRow>
-                    <ReplyButton
-                      text="Button1"
-                    />
+                  <ReplyButton
+                    text="Button1"
+                  />
+                  <KeyboardRow>
                     <ReplyButton
                       requestContact={true}
                       text="Button2"
@@ -355,8 +367,8 @@ describe('ReplyKeyboard', () => {
                       requestLocation={true}
                       text="Button3"
                     />
-                  </ReplyKeyboardRow>
-                  <ReplyKeyboardRow>
+                  </KeyboardRow>
+                  <KeyboardRow>
                     <ReplyButton
                       requestPoll={true}
                       text="Button4"
@@ -365,11 +377,11 @@ describe('ReplyKeyboard', () => {
                       requestPoll="quiz"
                       text="Button5"
                     />
-                    <ReplyButton
-                      requestPoll="regular"
-                      text="Button6"
-                    />
-                  </ReplyKeyboardRow>
+                  </KeyboardRow>
+                  <ReplyButton
+                    requestPoll="regular"
+                    text="Button6"
+                  />
                 </ReplyKeyboard>,
                 "path": "$#container",
                 "type": "part",
@@ -382,6 +394,8 @@ describe('ReplyKeyboard', () => {
                         "request_poll": undefined,
                         "text": "Button1",
                       },
+                    ],
+                    Array [
                       Object {
                         "request_contact": true,
                         "request_location": undefined,
@@ -412,6 +426,8 @@ describe('ReplyKeyboard', () => {
                         },
                         "text": "Button5",
                       },
+                    ],
+                    Array [
                       Object {
                         "request_contact": undefined,
                         "request_location": undefined,
@@ -433,10 +449,10 @@ describe('ReplyKeyboard', () => {
     await expect(
       render(
         <ReplyKeyboard resizeKeyboard oneTimeKeyboard selective>
-          <ReplyKeyboardRow>
+          <KeyboardRow>
             <ReplyButton text="Button1" />
             <ReplyButton text="Button2" />
-          </ReplyKeyboardRow>
+          </KeyboardRow>
         </ReplyKeyboard>
       )
     ).resolves.toMatchInlineSnapshot(`
@@ -447,14 +463,14 @@ describe('ReplyKeyboard', () => {
                   resizeKeyboard={true}
                   selective={true}
                 >
-                  <ReplyKeyboardRow>
+                  <KeyboardRow>
                     <ReplyButton
                       text="Button1"
                     />
                     <ReplyButton
                       text="Button2"
                     />
-                  </ReplyKeyboardRow>
+                  </KeyboardRow>
                 </ReplyKeyboard>,
                 "path": "$#container",
                 "type": "part",

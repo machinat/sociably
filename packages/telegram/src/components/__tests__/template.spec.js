@@ -126,10 +126,12 @@ test('Text match snapshot', async () => {
                   "parse_mode": "MarkdownV2",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__HELLO__",
-                        "text": "Hello",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__HELLO__",
+                          "text": "Hello",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -214,10 +216,12 @@ test('Contact match snapshot', async () => {
                   "phone_number": "+123456789",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__HELLO__",
-                        "text": "Hello",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__HELLO__",
+                          "text": "Hello",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -417,10 +421,12 @@ test('Poll match snapshot', async () => {
                   "question": "Pizza or HotDog?",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__WOOF__",
-                        "text": "Woof",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__WOOF__",
+                          "text": "Woof",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -489,10 +495,12 @@ test('Dice match snapshot', async () => {
                   "emoji": "🎯",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__AGAIN__",
-                        "text": "Again",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__AGAIN__",
+                          "text": "Again",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -694,10 +702,12 @@ test('Invoice match snapshot', async () => {
                   "provider_token": "xxx",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__BARGAIN__",
-                        "text": "Cheaper?",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__BARGAIN__",
+                          "text": "Cheaper?",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -772,10 +782,12 @@ test('Game match snapshot', async () => {
                   "game_short_name": "Saw",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__ESCAPE__",
-                        "text": "Next time?",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__ESCAPE__",
+                          "text": "Next time?",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,

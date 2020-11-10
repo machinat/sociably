@@ -212,8 +212,50 @@ export type InlineButton =
 /**
  * @category Props
  */
+type KeyboardRowProps = {
+  /**	Button elements contained by the row. */
+  children: MachinatNode;
+};
+/** @ignore */
+const __KeyboardRow: FunctionOf<TelegramComponent<
+  KeyboardRowProps,
+  PartSegment<any>
+>> = async function KeyboardRow(node, path, render) {
+  const { children } = node.props;
+  const buttonsSegments = await render(children, '.children');
+
+  if (!buttonsSegments) {
+    return null;
+  }
+
+  return [
+    partSegment(
+      node,
+      path,
+      buttonsSegments.map(({ value }) => value)
+    ),
+  ];
+};
+/**
+ * Represent a row of buttons within {@link InlineKeyboard} or {@link ReplyKeyboard}.
+ * @category Component
+ * @props {@link KeyboardRowProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#replykeyboardmarkup).
+ */
+export const KeyboardRow: TelegramComponent<
+  KeyboardRowProps,
+  PartSegment<any>
+> = annotateTelegramComponent(__KeyboardRow);
+
+/**
+ * @category Props
+ */
 type InlineKeyboardProps = {
-  /** {@link InlineButton} elements within the keyboard. */
+  /**
+   * {@link InlineButton} elements within the keyboard. By default a button take
+   * a row, wrap the buttons with {@link KeyboardRow} to display multiple
+   * buttons in a row.
+   */
   children: MachinatNode;
 };
 /** @ignore */
@@ -230,7 +272,9 @@ const __InlineKeyboard: FunctionOf<TelegramComponent<
 
   return [
     partSegment(node, path, {
-      inline_keyboard: buttonsSegments.map((segment) => segment.value),
+      inline_keyboard: buttonsSegments.map(({ value }) =>
+        Array.isArray(value) ? value : [value]
+      ),
     }),
   ];
 };
@@ -290,46 +334,12 @@ export const ReplyButton: TelegramComponent<
 /**
  * @category Props
  */
-type ReplyKeyboardRowProps = {
-  /**	{@link ReplyButton} elements contained by the row. */
-  children: MachinatNode;
-};
-/** @ignore */
-const __ReplyKeyboardRow: FunctionOf<TelegramComponent<
-  ReplyKeyboardRowProps,
-  PartSegment<any>
->> = async function ReplyKeyboardRow(node, path, render) {
-  const { children } = node.props;
-  const buttonsSegments = await render(children, '.children');
-
-  if (!buttonsSegments) {
-    return null;
-  }
-
-  return [
-    partSegment(
-      node,
-      path,
-      buttonsSegments.map((segment) => segment.value)
-    ),
-  ];
-};
-/**
- * Represent a row of {@link ReplyButton} in the {@link ReplyKeyboard}.
- * @category Component
- * @props {@link ReplyKeyboardRowProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#replykeyboardmarkup).
- */
-export const ReplyKeyboardRow: TelegramComponent<
-  ReplyKeyboardRowProps,
-  PartSegment<any>
-> = annotateTelegramComponent(__ReplyKeyboardRow);
-
-/**
- * @category Props
- */
 type ReplyKeyboardProps = {
-  /**	{@link ReplyKeyboardRow} elements. Each represente an Array of {@link ReplyButton}. */
+  /**
+   * {@link ReplyButton} elements within the keyboard. By default a button take
+   * a row, wrap the buttons with {@link KeyboardRow} to display multiple
+   * buttons in a row.
+   */
   children: MachinatNode;
   /** Requests clients to resize the keyboard vertically for optimal fit (e.g., make the keyboard smaller if there are just two rows of buttons). Defaults to false, in which case the custom keyboard is always of the same height as the app's standard keyboard. */
   resizeKeyboard?: boolean;
@@ -352,7 +362,9 @@ const __ReplyKeyboard: FunctionOf<TelegramComponent<
 
   return [
     partSegment(node, path, {
-      keyboard: rowsSegments.map((segment) => segment.value),
+      keyboard: rowsSegments.map(({ value }) =>
+        Array.isArray(value) ? value : [value]
+      ),
       resize_keyboard: resizeKeyboard,
       one_time_keyboard: oneTimeKeyboard,
       selective,

@@ -157,10 +157,12 @@ test('Photo match snapshot', async () => {
                   "photo": undefined,
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__LIKE__",
-                        "text": "Like",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__LIKE__",
+                          "text": "Like",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -319,10 +321,12 @@ test('Animation match snapshot', async () => {
                   "parse_mode": "MarkdownV2",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__LIKE__",
-                        "text": "Like",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__LIKE__",
+                          "text": "Like",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -490,10 +494,12 @@ test('Audio match snapshot', async () => {
                   "performer": "John Doe",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__LIKE__",
-                        "text": "Like",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__LIKE__",
+                          "text": "Like",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -647,10 +653,12 @@ test('Document match snapshot', async () => {
                   "parse_mode": "MarkdownV2",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__LIKE__",
-                        "text": "Like",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__LIKE__",
+                          "text": "Like",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -820,10 +828,12 @@ test('Video match snapshot', async () => {
                   "parse_mode": "MarkdownV2",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__LIKE__",
-                        "text": "Like",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__LIKE__",
+                          "text": "Like",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -975,10 +985,12 @@ test('Voice match snapshot', async () => {
                   "parse_mode": "MarkdownV2",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__LIKE__",
-                        "text": "Like",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__LIKE__",
+                          "text": "Like",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -1133,10 +1145,12 @@ test('VideoNote match snapshot', async () => {
                   "parse_mode": "MarkdownV2",
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__LIKE__",
-                        "text": "Like",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__LIKE__",
+                          "text": "Like",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
@@ -1435,10 +1449,12 @@ test('Sticker match snapshot', async () => {
                   "disable_notification": true,
                   "reply_markup": Object {
                     "inline_keyboard": Array [
-                      Object {
-                        "callback_data": "__LIKE__",
-                        "text": "Like",
-                      },
+                      Array [
+                        Object {
+                          "callback_data": "__LIKE__",
+                          "text": "Like",
+                        },
+                      ],
                     ],
                   },
                   "reply_to_message_id": 123,
