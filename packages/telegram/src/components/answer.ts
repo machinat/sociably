@@ -2,13 +2,18 @@ import { MachinatNode } from '@machinat/core/types';
 import { unitSegment, partSegment } from '@machinat/core/renderer';
 import type { UnitSegment, PartSegment } from '@machinat/core/renderer/types';
 import formatNode from '@machinat/core/utils/formatNode';
-import { UnionToIntersection } from 'utility-types'; // eslint-disable-line import/no-extraneous-dependencies
 import { annotateTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
   TelegramComponent,
   TelegramParseMode,
 } from '../types';
+
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I
+) => void
+  ? I
+  : never;
 
 /**
  * @category Props
