@@ -16,9 +16,8 @@ import type {
   PlatformModule,
   MachinatElement,
   NativeComponent,
-  FunctionalComponent,
+  ContainerComponent,
 } from './types';
-import { ServiceContainer } from './service/types';
 
 /**
  * @category Root
@@ -43,9 +42,7 @@ export default Machinat;
 declare global {
   namespace JSX {
     type Element = MachinatElement<any, any>;
-    type ElementClass =
-      | NativeComponent<any, any>
-      | ServiceContainer<FunctionalComponent<any>>;
+    type ElementClass = NativeComponent<any, any> | ContainerComponent<any>;
 
     interface ElementAttributesProperty {
       $$typeof: {};
@@ -59,7 +56,7 @@ declare global {
       any
     >
       ? T
-      : C extends ServiceContainer<FunctionalComponent<infer U>>
+      : C extends ContainerComponent<infer U>
       ? U
       : P;
 
