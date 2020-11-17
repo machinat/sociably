@@ -37,7 +37,6 @@ describe('executing content command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['hello world'],
       stack: null,
@@ -65,7 +64,6 @@ describe('executing content command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['hello', 'world'],
       stack: null,
@@ -110,7 +108,6 @@ describe('executing content command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['hello', 'it is an', 'async', 'world'],
       stack: null,
@@ -147,7 +144,6 @@ describe('executing content command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['hello', 'a contained', 'world'],
       stack: null,
@@ -184,7 +180,6 @@ describe('executing set_vars command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar', t: 0 } }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['hi#1', 'hi#2'],
       stack: null,
@@ -212,7 +207,6 @@ describe('executing set_vars command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar', t: 0 } }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['hi#1', 'hi#2'],
       stack: null,
@@ -239,7 +233,6 @@ describe('executing set_vars command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar', t: 0 } }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['hi#1', 'hi#2'],
       stack: null,
@@ -287,7 +280,6 @@ describe('executing prompt command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: false,
-      filterPassed: true,
       returnValue: undefined,
       content: ['foo'],
       stack: [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
@@ -307,7 +299,6 @@ describe('executing prompt command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['yes'],
       stack: null,
@@ -341,7 +332,6 @@ describe('executing prompt command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['no'],
       stack: null,
@@ -374,7 +364,6 @@ describe('executing prompt command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['maybe'],
       stack: null,
@@ -394,52 +383,6 @@ describe('executing prompt command', () => {
       vars: { foo: 'bar', answer: 'maybe' },
     });
   });
-
-  it('escape if filter function exist and return false', async () => {
-    promptCommand.mock.getter('filter').fakeReturnValue(() => false);
-
-    await expect(
-      execute(
-        scope,
-        channel,
-        [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
-        true,
-        { answer: 'ok' }
-      )
-    ).resolves.toEqual({
-      finished: false,
-      filterPassed: false,
-      returnValue: undefined,
-      content: [],
-      stack: [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
-    });
-
-    expect(promptCommand.setter.mock).not.toHaveBeenCalled();
-    expect(script.commands[2].render.mock).not.toHaveBeenCalled();
-  });
-
-  it('continue if filter function exist and return true', async () => {
-    promptCommand.mock.getter('fiilter').fakeReturnValue(() => true);
-
-    await expect(
-      execute(
-        scope,
-        channel,
-        [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
-        true,
-        { answer: 'ok' }
-      )
-    ).resolves.toEqual({
-      finished: true,
-      filterPassed: true,
-      returnValue: undefined,
-      content: ['ok'],
-      stack: null,
-    });
-
-    expect(promptCommand.setter.mock).toHaveBeenCalled();
-    expect(script.commands[2].render.mock).toHaveBeenCalled();
-  });
 });
 
 describe('executing call command', () => {
@@ -458,7 +401,6 @@ describe('executing call command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['at skyfall', 'aww~awwww~awwwwwwwwww~'],
       stack: null,
@@ -508,7 +450,6 @@ describe('executing call command', () => {
         execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
       ).resolves.toEqual({
         finished: true,
-        filterPassed: true,
         returnValue: undefined,
         content: ['hello the other side', 'yaaaaaay'],
         stack: null,
@@ -549,7 +490,6 @@ describe('executing call command', () => {
         execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
       ).resolves.toEqual({
         finished: true,
-        filterPassed: true,
         returnValue: undefined,
         content: ['hello the other side', 'yaaaaaay'],
         stack: null,
@@ -589,7 +529,6 @@ describe('executing call command', () => {
         execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
       ).resolves.toEqual({
         finished: true,
-        filterPassed: true,
         returnValue: undefined,
         content: ['hello the other side', 'yaaaaaay'],
         stack: null,
@@ -641,7 +580,6 @@ describe('executing call command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: false,
-      filterPassed: true,
       returnValue: undefined,
       content: ["i can't go back"],
       stack: [
@@ -684,7 +622,6 @@ describe('executing call command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['starting in my heart'],
       stack: null,
@@ -711,7 +648,6 @@ describe('executing jump command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['foo', 'baz'],
       stack: null,
@@ -729,7 +665,6 @@ describe('executing jump command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['foo'],
       stack: null,
@@ -762,7 +697,6 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['foo', 'baz'],
       stack: null,
@@ -774,7 +708,6 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['foo', 'bar', 'baz'],
       stack: null,
@@ -788,7 +721,6 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['foo', 'baz'],
       stack: null,
@@ -799,7 +731,6 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['foo', 'bar', 'baz'],
       stack: null,
@@ -815,7 +746,6 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['foo', 'baz'],
       stack: null,
@@ -826,7 +756,6 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['foo', 'bar', 'baz'],
       stack: null,
@@ -840,7 +769,6 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['foo', 'bar', 'baz'],
       stack: null,
@@ -852,7 +780,6 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {} }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['foo', 'baz'],
       stack: null,
@@ -872,7 +799,6 @@ describe('executing return command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: undefined,
       content: ['hello'],
       stack: null,
@@ -900,7 +826,6 @@ describe('executing return command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: 'bar',
       content: ['hello'],
       stack: null,
@@ -920,7 +845,6 @@ describe('executing return command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: 'bar',
       content: ['hello'],
       stack: null,
@@ -942,7 +866,6 @@ describe('executing return command', () => {
       execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: 'bar',
       content: ['hello'],
       stack: null,
@@ -1030,7 +953,6 @@ describe('run whole script', () => {
       )
     ).resolves.toEqual({
       finished: false,
-      filterPassed: true,
       returnValue: undefined,
       stack: [
         {
@@ -1078,7 +1000,6 @@ describe('run whole script', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: { foo: 'bar' },
       stack: null,
       content: ['bye'],
@@ -1110,7 +1031,6 @@ describe('run whole script', () => {
 
       expect(result).toEqual({
         finished: false,
-        filterPassed: true,
         returnValue: undefined,
         stack: [
           {
@@ -1129,7 +1049,6 @@ describe('run whole script', () => {
       execute(scope, channel, stack, true, { desc: 'fascinating' })
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: { foo: 'bar', t: 3, desc: 'fascinating' },
       stack: null,
       content: ['fascinating', 'world'],
@@ -1160,7 +1079,6 @@ describe('run whole script', () => {
       )
     ).resolves.toEqual({
       finished: false,
-      filterPassed: true,
       returnValue: undefined,
       stack: [
         {
@@ -1223,7 +1141,6 @@ describe('run whole script', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      filterPassed: true,
       returnValue: { foo: 'baz', hello: 'subscript' },
       stack: null,
       content: ['world'],

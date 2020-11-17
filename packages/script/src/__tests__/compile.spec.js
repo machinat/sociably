@@ -171,7 +171,6 @@ it('compile other segments type', () => {
       {
         type: 'prompt',
         key: 'ask_something',
-        filter: () => true,
         setter: () => ({ name: 'Jojo' }),
       },
       { type: 'content', render: () => `hi Jojo, order ur meal` },
@@ -196,7 +195,6 @@ it('compile other segments type', () => {
     {
       type: 'prompt',
       setter: expect.any(Function),
-      filter: expect.any(Function),
       key: 'ask_something',
     },
     { type: 'content', render: expect.any(Function) },

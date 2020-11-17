@@ -279,23 +279,19 @@ Then add the following code in your event handler:
 
 ```js
 import { container } from '@machinat/core/service';
-import Script, { Run } from '@machinat/script';
+import Script from '@machinat/script';
 
 app.onEvent(
   container({
     deps: [Script.Processor] }
   )(processor => async context => {
-    const { event, bot } = context;
+    const { bot, event: { channel } } = context;
 
-    // check if any script is running
-    const runtime = await processor.continue(event.channel);
+    const runtime = await processor.continue(channel, context);
     if (runtime) {
-      // execute from the prompt point
-      return bot.render(
-        event.channel,
-        <Run runtime={runtime} input={context} />
-      );
+      return bot.render(channel, runtime.output());
     }
+
     // default logic while not prompting...
   })
 );
@@ -304,12 +300,11 @@ app.onEvent(
 The code above intercept the event if any script is now running on the current channel. If no script is running, you can respond any message or start a script with:
 
 ```js
-bot.render(channel, <MyScript.Start channel={channel} />);
+const runtime = await processor.start(channel, MyScript);
+bot.render(channel, runtime.output());
 ```
 
-Once a script is triggered by `<MyScript.Start />`, all events would be delegated to the `Processor` until the it is finished.
-
-Overall, the events is handled under a flow like this:
+Once a script is started, events would be delegated to the `Processor` until it is finished. Overall, the events is handled under a flow like this:
 
 ![Script Saga Flow](assets/script-saga-flow.png)
 

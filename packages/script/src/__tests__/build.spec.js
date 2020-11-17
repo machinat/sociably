@@ -78,7 +78,6 @@ test('built script object', () => {
 
   expect(MyScript.name).toBe('MyScript');
   expect(MyScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
-  expect(MyScript.Start).toBeInstanceOf(Function);
 
   expect(MyScript.commands).toMatchSnapshot();
   expect(MyScript.entriesIndex).toMatchInlineSnapshot(`
@@ -97,7 +96,6 @@ test('built script object', () => {
 
   expect(ChildScript.name).toBe('ChildScript');
   expect(ChildScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
-  expect(ChildScript.Start).toBeInstanceOf(Function);
 
   expect(ChildScript.commands).toMatchSnapshot();
   expect(ChildScript.entriesIndex).toMatchInlineSnapshot(`
@@ -106,65 +104,4 @@ test('built script object', () => {
     }
     `);
   expect(ChildScript.meta).toEqual({ foo: 'baz' });
-});
-
-test('Start component', async () => {
-  const HelloScript = build(
-    'FooScript',
-    <>
-      {() => '...'}
-      <LABEL key="HELLO" />
-      {() => 'hello'}
-      <PROMPT key="WORLD" />
-      {() => 'world'}
-    </>
-  );
-
-  const runtime = moxy({
-    run: async () => ({
-      finished: false,
-      content: ['hello'],
-      currentScript: HelloScript,
-      stopAt: 'WORLD',
-    }),
-  });
-  const processor = moxy({
-    init: async () => runtime,
-    save: async () => true,
-  });
-
-  const channel = { uid: '_FOO_CHANNEL_' };
-  const renderPromise = HelloScript.Start(processor)({
-    channel,
-    vars: { foo: 'bar' },
-    goto: 'HELLO',
-  });
-
-  await expect(renderPromise).resolves.toMatchInlineSnapshot(`
-          Array [
-            Array [
-              "hello",
-            ],
-            <Machinat.Thunk
-              effect={[Function]}
-            />,
-          ]
-        `);
-
-  expect(processor.init.mock).toHaveBeenCalledTimes(1);
-  expect(processor.init.mock).toHaveBeenCalledWith(channel, HelloScript, {
-    vars: { foo: 'bar' },
-    goto: 'HELLO',
-  });
-
-  expect(runtime.run.mock).toHaveBeenCalledTimes(1);
-  expect(runtime.run.mock).toHaveBeenCalledWith(/* empty */);
-
-  expect(processor.save.mock).not.toHaveBeenCalled();
-
-  const [, thunk] = await renderPromise;
-  await thunk.props.effect();
-
-  expect(processor.save.mock).toHaveBeenCalledTimes(1);
-  expect(processor.save.mock).toHaveBeenCalledWith(runtime);
 });

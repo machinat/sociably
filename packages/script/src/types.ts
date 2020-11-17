@@ -1,7 +1,6 @@
 import type Machinat from '@machinat/core';
 import type { ServiceContainer } from '@machinat/core/service/types';
 import type {
-  FunctionalComponent,
   MachinatNode,
   MachinatEmpty,
   MachinatElement,
@@ -10,19 +9,12 @@ import type {
 import type { MACHINAT_SCRIPT_TYPE } from './constant';
 import type * as KEYWORDS from './keyword';
 
-type InitScriptProps<Vars> = {
-  channel: MachinatChannel;
-  vars?: Vars;
-  goto?: string;
-};
-
 export type MachinatScript<Vars, Input, RetrunValue, Meta> = {
   $$typeof: typeof MACHINAT_SCRIPT_TYPE;
   name: string;
   commands: ScriptCommand<Vars, Input, RetrunValue>[];
   entriesIndex: Map<string, number>;
   meta: Meta;
-  Start: ServiceContainer<FunctionalComponent<InitScriptProps<Vars>>>;
 };
 
 type ScriptCircumstances<Vars> = {
@@ -136,17 +128,12 @@ export type PromptFilterPredecateFn<Vars, Input> = (
   input: Input
 ) => boolean | Promise<boolean>;
 
-export type PromptFilterPredecator<Vars, Input> =
-  | PromptFilterPredecateFn<Vars, Input>
-  | ServiceContainer<PromptFilterPredecateFn<Vars, Input>>;
-
 /**
  * @category Keyword Props
  */
 export type PromptProps<Vars, Input> = {
   key: string;
   set?: PromptSetter<Vars, Input>;
-  filter?: PromptFilterPredecator<Vars, Input>;
 };
 
 /**
@@ -302,7 +289,6 @@ export type PromptSegment<Vars, Input> = {
   type: 'prompt';
   key: string;
   setter: PromptSetter<Vars, Input> | null | undefined;
-  filter?: PromptFilterPredecator<Vars, Input>;
 };
 
 /** @internal */
@@ -318,7 +304,7 @@ export type CallSegment<CallerVars, CalleeVars, RetrunValue> = {
   key: string;
   withVars: CallWithVarsGetter<CallerVars, CalleeVars> | null | undefined;
   setter: CallReturnSetter<CallerVars, RetrunValue> | null | undefined;
-  goto: void | string;
+  goto: undefined | string;
 };
 
 /** @internal */
@@ -347,7 +333,6 @@ export type PromptCommand<Vars, Input> = {
   type: 'prompt';
   key: string;
   setter: PromptSetter<Vars, Input> | null | undefined;
-  filter?: PromptFilterPredecator<Vars, Input>;
 };
 
 export type CallCommand<CallerVars, CalleeVars, RetrunValue> = {
@@ -356,7 +341,7 @@ export type CallCommand<CallerVars, CalleeVars, RetrunValue> = {
   script: MachinatScript<CalleeVars, any, RetrunValue, any>;
   withVars: CallWithVarsGetter<CallerVars, CalleeVars> | null | undefined;
   setter: CallReturnSetter<CallerVars, RetrunValue> | null | undefined;
-  goto: void | string;
+  goto: undefined | string;
 };
 
 export type SetVarsCommand<Vars> = {
@@ -393,7 +378,7 @@ export type ScriptCommand<Vars, Input, RetrunValue> =
 export type CallStatus<Vars, Input, RetrunValue> = {
   script: MachinatScript<Vars, Input, RetrunValue, any>;
   vars: Vars;
-  stopAt: void | string;
+  stopAt: undefined | string;
 };
 
 export type SerializedCallStatus<Vars> = {

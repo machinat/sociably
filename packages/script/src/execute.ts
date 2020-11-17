@@ -15,7 +15,6 @@ import type {
   RenderContentFn,
   ConditionMatchFn,
   VarsSetFn,
-  PromptFilterPredecateFn,
   PromptSetFn,
   CallWithVarsFn,
   CallReturnSetFn,
@@ -35,15 +34,13 @@ const getCursorIndexAssertedly = (
 type FinishedExecuteResult<ReturnValue> = {
   finished: true;
   returnValue: ReturnValue;
-  filterPassed: boolean;
   stack: null;
   content: MachinatNode[];
 };
 
 type UnfinishedExecuteResult<Vars, ReturnValue> = {
   finished: false;
-  returnValue: void;
-  filterPassed: boolean;
+  returnValue: undefined;
   stack: CallStatus<Vars, any, ReturnValue>[];
   content: MachinatNode[];
 };
@@ -56,7 +53,7 @@ type ExecuteContext<Vars> = {
   channel: MachinatChannel;
   scope: ServiceScope;
   finished: boolean;
-  stopAt: void | string;
+  stopAt: undefined | string;
   cursor: number;
   content: MachinatNode[];
   vars: Vars;
@@ -217,7 +214,6 @@ async function executeScript<Vars, Input, ReturnValue>(
         returnValue: returnValue as ReturnValue,
         content: context.content,
         stack: null,
-        filterPassed: true,
       };
     } else {
       throw new TypeError(
@@ -237,7 +233,6 @@ async function executeScript<Vars, Input, ReturnValue>(
         stack: descendantCallStack
           ? [stackStatus, ...descendantCallStack]
           : [stackStatus],
-        filterPassed: true,
       };
     }
   }
@@ -247,7 +242,6 @@ async function executeScript<Vars, Input, ReturnValue>(
     returnValue: undefined as any,
     content: context.content,
     stack: null,
-    filterPassed: true,
   };
 }
 
@@ -260,7 +254,7 @@ async function execute<Vars, Input, ReturnValue>(
 ): Promise<ExecuteResult<Vars, ReturnValue>> {
   const callingDepth = beginningStack.length;
   const content: MachinatNode[] = [];
-  let currentReturnValue: void | ReturnValue;
+  let currentReturnValue: undefined | ReturnValue;
 
   for (let d = callingDepth - 1; d >= 0; d -= 1) {
     const { script, vars: beginningVars, stopAt } = beginningStack[d];
@@ -282,29 +276,12 @@ async function execute<Vars, Input, ReturnValue>(
           } might have been changed`
         );
 
-        const { setter, filter } = awaitingPrompt;
+        const { setter } = awaitingPrompt;
         const circumstances = {
           platform: channel.platform,
           channel,
           vars: beginningVars,
         };
-
-        if (filter) {
-          // eslint-disable-next-line no-await-in-loop
-          const filterPassed = await maybeInjectContainer<
-            PromptFilterPredecateFn<any, any>
-          >(scope, filter)(circumstances, input);
-
-          if (!filterPassed) {
-            return {
-              finished: false,
-              returnValue: undefined,
-              filterPassed: false,
-              stack: beginningStack,
-              content: [],
-            };
-          }
-        }
 
         vars = setter // eslint-disable-next-line no-await-in-loop
           ? await maybeInjectContainer<PromptSetFn<any, any>>(scope, setter)(
@@ -351,7 +328,6 @@ async function execute<Vars, Input, ReturnValue>(
       return {
         finished: false,
         returnValue: undefined,
-        filterPassed: true,
         stack: [...beginningStack.slice(0, d), ...result.stack],
         content,
       };
@@ -363,7 +339,6 @@ async function execute<Vars, Input, ReturnValue>(
   return {
     finished: true,
     returnValue: currentReturnValue as ReturnValue,
-    filterPassed: true,
     stack: null,
     content,
   };

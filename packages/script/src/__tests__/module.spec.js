@@ -1,4 +1,4 @@
-import Script from '..';
+import Script from '../module';
 import { ScriptProcessor } from '../processor';
 
 it('exports interfaces', () => {
