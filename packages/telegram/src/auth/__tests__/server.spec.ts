@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import { TelegramServerAuthorizer } from '../server';
-import { TelegramChat, TelegramChatInstance } from '../../channel';
+import { TelegramChat } from '../../channel';
 import TelegramUser from '../../user';
 
 const createReq = ({ url }) =>
@@ -181,149 +181,6 @@ describe('#delegateAuthRequest()', () => {
     });
   });
 
-  describe('codeGrant flow', () => {
-    const routingInfo = {
-      originalPath: '/auth/telegram/codeGrant',
-      matchedPath: '/auth/telegram',
-      trailingPath: 'codeGrant',
-    };
-
-    it('authorize with a backend signed code', async () => {
-      const user = new TelegramUser({
-        id: 12345,
-        is_bot: false,
-        first_name: 'Jojo',
-        last_name: 'Doe',
-        username: 'jojodoe',
-        language_code: 'ja',
-      });
-
-      const channel = new TelegramChatInstance(12345, '_CHAT_INSTANCE_ID_');
-      const code = await authorizer.signAuthCode(user, channel);
-
-      const req = createReq({
-        url: `/auth/telegram/codeGrant?code=${code}`,
-      });
-      const res = createRes();
-      await authorizer.delegateAuthRequest(req, res, cookieIssuer, routingInfo);
-
-      expect(res.finished).toBe(true);
-      expect(res.code).toBe(302);
-      expect(res.headers).toEqual({ Location: '/webview/index.html' });
-
-      expect(cookieIssuer.issueError.mock).not.toHaveBeenCalled();
-      expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledTimes(1);
-      expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledWith({
-        botId: 12345,
-        channel: {
-          type: 'chat_instance',
-          id: '_CHAT_INSTANCE_ID_',
-        },
-        userId: 12345,
-        firstName: 'Jojo',
-        lastName: 'Doe',
-        username: 'jojodoe',
-        languageCode: 'ja',
-      });
-    });
-
-    it('redirect to redirectURL param if specified', async () => {
-      const user = new TelegramUser({
-        id: 12345,
-        is_bot: false,
-        first_name: 'Jojo',
-        last_name: 'Doe',
-        username: 'jojodoe',
-        language_code: 'ja',
-      });
-
-      const channel = new TelegramChatInstance(12345, '_CHAT_INSTANCE_ID_');
-      const code = await authorizer.signAuthCode(user, channel);
-
-      const req = createReq({
-        url: `/auth/telegram/codeGrant?code=${code}&redirectURL=${encodeURIComponent(
-          '/webview/hello_world.html'
-        )}`,
-      });
-      const res = createRes();
-      await authorizer.delegateAuthRequest(req, res, cookieIssuer, routingInfo);
-
-      expect(res.finished).toBe(true);
-      expect(res.code).toBe(302);
-      expect(res.headers).toEqual({ Location: '/webview/hello_world.html' });
-
-      expect(cookieIssuer.issueError.mock).not.toHaveBeenCalled();
-      expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledTimes(1);
-    });
-
-    it('issue error when code param is missing', async () => {
-      const req = createReq({ url: `/auth/telegram/codeGrant` });
-      const res = createRes();
-      await authorizer.delegateAuthRequest(req, res, cookieIssuer, routingInfo);
-
-      expect(res.finished).toBe(true);
-      expect(res.code).toBe(302);
-      expect(res.headers).toEqual({ Location: '/webview/index.html' });
-
-      expect(cookieIssuer.issueAuth.mock).not.toHaveBeenCalled();
-      expect(cookieIssuer.issueError.mock).toHaveBeenCalledTimes(1);
-      expect(cookieIssuer.issueError.mock.calls[0].args[0]).toBe(400);
-      expect(
-        cookieIssuer.issueError.mock.calls[0].args[1]
-      ).toMatchInlineSnapshot(`"invalid code received"`);
-    });
-
-    it('issue error when invalid code recieved', async () => {
-      const req = createReq({
-        url: `/auth/telegram/codeGrant?code=__INVALID_CODE__`,
-      });
-      const res = createRes();
-      await authorizer.delegateAuthRequest(req, res, cookieIssuer, routingInfo);
-
-      expect(res.finished).toBe(true);
-      expect(res.code).toBe(302);
-      expect(res.headers).toEqual({ Location: '/webview/index.html' });
-
-      expect(cookieIssuer.issueAuth.mock).not.toHaveBeenCalled();
-      expect(cookieIssuer.issueError.mock).toHaveBeenCalledTimes(1);
-      expect(cookieIssuer.issueError.mock.calls[0].args[0]).toBe(401);
-      expect(
-        cookieIssuer.issueError.mock.calls[0].args[1]
-      ).toMatchInlineSnapshot(`"jwt malformed"`);
-    });
-
-    it('issue code expired (20 second)', async () => {
-      const user = new TelegramUser({
-        id: 12345,
-        is_bot: false,
-        first_name: 'Jojo',
-        last_name: 'Doe',
-        username: 'jojodoe',
-        language_code: 'ja',
-      });
-
-      const channel = new TelegramChatInstance(12345, '_CHAT_INSTANCE_ID_');
-      const code = await authorizer.signAuthCode(user, channel);
-
-      (Date.now as any).mock.fakeReturnValue(now() + 21000);
-
-      const req = createReq({ url: `/auth/telegram/codeGrant?code=${code}` });
-      const res = createRes();
-      await authorizer.delegateAuthRequest(req, res, cookieIssuer, routingInfo);
-
-      expect(res.finished).toBe(true);
-      expect(res.code).toBe(302);
-      expect(res.headers).toEqual({ Location: '/webview/index.html' });
-
-      expect(cookieIssuer.issueAuth.mock).not.toHaveBeenCalled();
-      expect(cookieIssuer.issueError.mock).toHaveBeenCalledTimes(1);
-      expect(cookieIssuer.issueError.mock.calls[0].args[0]).toBe(401);
-      expect(
-        cookieIssuer.issueError.mock.calls[0].args[1]
-      ).toMatchInlineSnapshot(`"jwt expired"`);
-    });
-  });
-
   test('respond 404 if unknown subpath is not login or codeGrant', async () => {
     const req1 = createReq({ url: `/auth/telegram/unknown` });
     const res1 = createRes();
@@ -366,8 +223,8 @@ test('#verifyRefreshment() simply return ok', async () => {
   const authData = {
     botId: 12345,
     channel: {
-      type: 'chat_instance' as const,
-      id: '_CHAT_INSTANCE_ID_',
+      type: 'private' as const,
+      id: 67890,
     },
     userId: 12345,
     firstName: 'Jojo',
@@ -407,8 +264,8 @@ test('#refineAuth() ok', async () => {
     authorizer.refineAuth({
       ...authData,
       channel: {
-        type: 'chat_instance' as const,
-        id: '_CHAT_INSTANCE_ID_',
+        type: 'group',
+        id: 67890,
       },
     })
   ).resolves.toEqual({
@@ -420,13 +277,13 @@ test('#refineAuth() ok', async () => {
       username: 'jojodoe',
       language_code: 'ja',
     }),
-    channel: new TelegramChatInstance(12345, '_CHAT_INSTANCE_ID_'),
+    channel: new TelegramChat(12345, { type: 'group', id: 67890 }),
   });
   await expect(
     authorizer.refineAuth({
       ...authData,
       channel: {
-        type: 'group' as const,
+        type: 'group',
         id: 67890,
       },
     })

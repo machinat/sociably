@@ -1,5 +1,5 @@
 import TelegramClientAuthorizer from '../client';
-import { TelegramChat, TelegramChatInstance } from '../../channel';
+import { TelegramChat } from '../../channel';
 import TelegramUser from '../../user';
 
 const authorizer = new TelegramClientAuthorizer();
@@ -43,8 +43,8 @@ test('#refineAuth() ok', async () => {
     authorizer.refineAuth({
       ...authData,
       channel: {
-        type: 'chat_instance' as const,
-        id: '_CHAT_INSTANCE_ID_',
+        type: 'group',
+        id: 67890,
       },
     })
   ).resolves.toEqual({
@@ -56,7 +56,7 @@ test('#refineAuth() ok', async () => {
       username: 'jojodoe',
       language_code: 'ja',
     }),
-    channel: new TelegramChatInstance(12345, '_CHAT_INSTANCE_ID_'),
+    channel: new TelegramChat(12345, { type: 'group', id: 67890 }),
   });
   await expect(
     authorizer.refineAuth({

@@ -2,8 +2,6 @@ import { parse as parseURL } from 'url';
 import { createHmac } from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import invariant from 'invariant';
-import jsonwebtoken from 'jsonwebtoken';
-import thenifiedly from 'thenifiedly';
 import { provider } from '@machinat/core/service';
 import type {
   ServerAuthorizer,
@@ -14,7 +12,7 @@ import type { RoutingInfo } from '@machinat/http/types';
 
 import { PLATFORM_CONFIGS_I } from '../interface';
 import { TELEGRAM } from '../constant';
-import { TelegramChat, TelegramChatInstance } from '../channel';
+import { TelegramChat } from '../channel';
 import TelegramUser from '../user';
 import type { TelegramPlatformConfigs } from '../types';
 import type { TelegramAuthData, TelegramAuthRefinement } from './types';
@@ -24,8 +22,6 @@ type TelegramServerAuthorizerOpts = {
   botToken: string;
   redirectURL: string;
 };
-
-type AuthCodePayload = { data: TelegramAuthData };
 
 const LOGIN_PARAMETERS = [
   'auth_date',
@@ -49,7 +45,7 @@ export class TelegramServerAuthorizer
   implements
     ServerAuthorizer<
       TelegramUser,
-      null | TelegramChat | TelegramChatInstance,
+      null | TelegramChat,
       TelegramAuthData,
       void
     > {
@@ -70,83 +66,9 @@ export class TelegramServerAuthorizer
     this.redirectURL = redirectURL;
   }
 
-  async signAuthCode(
-    user: TelegramUser,
-    chat?: null | TelegramChat | TelegramChatInstance
-  ): Promise<string> {
-    const channelData = !chat
-      ? null
-      : chat.type === 'chat_instance'
-      ? {
-          type: 'chat_instance' as const,
-          id: chat.id,
-        }
-      : {
-          type: chat.type,
-          id: chat.id,
-          title: chat.title,
-          username: chat.username,
-        };
-
-    const { id: userId, firstName, lastName, username, languageCode } = user;
-
-    const authData: TelegramAuthData = {
-      botId: this.botId,
-      channel: channelData,
-      userId,
-      firstName,
-      lastName,
-      username,
-      languageCode,
-    };
-
-    const token = await thenifiedly.call(
-      jsonwebtoken.sign,
-      { data: authData },
-      this.botToken,
-      { expiresIn: 20 }
-    );
-
-    return token;
-  }
-
   private _redirect(res: ServerResponse, redirectURL: undefined | string) {
     res.writeHead(302, { Location: redirectURL || this.redirectURL });
     res.end();
-  }
-
-  private async _authorizeCodeGrant(
-    req: IncomingMessage,
-    res: ServerResponse,
-    authIssuer: CookieAccessor
-  ) {
-    const { query } = parseURL(req.url as string, true);
-    const { code, redirectURL } = query;
-
-    if (typeof redirectURL !== 'string' && typeof redirectURL !== 'undefined') {
-      authIssuer.issueError(400, 'invalid redirect url');
-      this._redirect(res, undefined);
-      return;
-    }
-
-    if (typeof code !== 'string') {
-      authIssuer.issueError(400, 'invalid code received');
-      this._redirect(res, redirectURL);
-      return;
-    }
-
-    try {
-      const { data }: AuthCodePayload = await thenifiedly.call(
-        jsonwebtoken.verify,
-        code,
-        this.botToken
-      );
-      authIssuer.issueAuth(data);
-    } catch (err) {
-      authIssuer.issueError(401, err.message);
-    } finally {
-      this._redirect(res, redirectURL);
-    }
   }
 
   private _authorizeLogin(
@@ -208,9 +130,7 @@ export class TelegramServerAuthorizer
     authIssuer: CookieAccessor,
     routingInfo: RoutingInfo
   ): Promise<void> {
-    if (routingInfo.trailingPath === 'codeGrant') {
-      await this._authorizeCodeGrant(req, res, authIssuer);
-    } else if (routingInfo.trailingPath === 'login') {
+    if (routingInfo.trailingPath === 'login') {
       this._authorizeLogin(req, res, authIssuer);
     } else {
       res.writeHead(404);

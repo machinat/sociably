@@ -35,7 +35,6 @@
   "dependencies": {
     "form-data": "^3.0.0",
     "invariant": "^2.2.4",
-    "jsonwebtoken": "^8.5.1",
     "node-fetch": "^2.6.0",
     "thenifiedly": "^0.2.1"
   },

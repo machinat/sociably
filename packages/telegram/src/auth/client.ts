@@ -3,7 +3,7 @@ import {
   AuthorizerCredentialResult,
 } from '@machinat/auth/types';
 import { TELEGRAM } from '../constant';
-import type { TelegramChat, TelegramChatInstance } from '../channel';
+import type { TelegramChat } from '../channel';
 import type TelegramUser from '../user';
 import { refineTelegramAuthData } from './utils';
 import { TelegramAuthData, TelegramAuthRefinement } from './types';
@@ -13,7 +13,7 @@ export default class TelegramClientAuthorizer
   implements
     ClientAuthorizer<
       TelegramUser,
-      null | TelegramChat | TelegramChatInstance,
+      null | TelegramChat,
       TelegramAuthData,
       void
     > {
