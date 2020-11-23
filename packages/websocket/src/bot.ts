@@ -205,7 +205,7 @@ export const BotP = provider<WebSocketBot>({
   deps: [TransmitterP, { require: PLATFORM_MOUNTER_I, optional: true }],
   factory: (
     transmitter: TransmitterP,
-    mounter: null | WebSocketPlatformMounter<any, any, any>
+    mounter: null | WebSocketPlatformMounter<any, any>
   ) =>
     new WebSocketBot(transmitter, mounter?.initScope, mounter?.dispatchWrapper),
 })(WebSocketBot);

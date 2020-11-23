@@ -41,7 +41,7 @@ export const SERVER_ID_I = makeInterface<string>({
  * @category Interface
  */
 export const PLATFORM_MOUNTER_I = makeInterface<
-  WebSocketPlatformMounter<any, any, any>
+  WebSocketPlatformMounter<any, any>
 >({
   name: 'WebSocketPlatformMounterI',
 });

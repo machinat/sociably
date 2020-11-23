@@ -101,7 +101,7 @@ export class WebSocketReceiver<
 
   private _socketStates: Map<Socket, SocketState<any>>;
 
-  private _popEvent: PopEventFn<WebSocketEventContext<Value, any, any>, null>;
+  private _popEvent: PopEventFn<WebSocketEventContext<any, any>, null>;
 
   private _popError: PopErrorFn;
 
@@ -112,10 +112,7 @@ export class WebSocketReceiver<
     bot: BotP,
     wsServer: WSServer,
     transmitter: TransmitterP,
-    popEventWrapper: PopEventWrapper<
-      WebSocketEventContext<Value, any, any>,
-      null
-    >,
+    popEventWrapper: PopEventWrapper<WebSocketEventContext<any, any>, null>,
     popError: PopErrorFn,
     {
       heartbeatInterval = 60000,
@@ -390,7 +387,7 @@ export const ReceiverP = provider<WebSocketReceiver<any, any>>({
     transmitter: TransmitterP,
     verifyLogin: null | VerifyLoginFn<any, any, any>,
     verifyUpgrade: null | VerifyUpgradeFn,
-    { popEventWrapper, popError }: WebSocketPlatformMounter<any, any, any>,
+    { popEventWrapper, popError }: WebSocketPlatformMounter<any, any>,
     configs: WebSocketPlatformConfigs<any, any>
   ) =>
     new WebSocketReceiver(

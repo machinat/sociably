@@ -73,7 +73,7 @@ const WebSocket = {
     configs: WebSocketPlatformConfigs<Value, LoginVerifier> = {} as any
   ): PlatformModule<
     LoginVerifier extends VerifyLoginFn<infer User, infer AuthInfo, any>
-      ? WebSocketEventContext<Value, User, AuthInfo>
+      ? WebSocketEventContext<User, AuthInfo>
       : never,
     null,
     WebSocketJob,

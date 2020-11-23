@@ -391,7 +391,7 @@ export const TransmitterP = provider<WebSocketTransmitter>({
   factory: (
     serverId: string,
     broker: BrokerI,
-    { initScope, popError }: WebSocketPlatformMounter<any, any, any>
+    { initScope, popError }: WebSocketPlatformMounter<any, any>
   ) =>
     new WebSocketTransmitter(serverId, broker, (err) =>
       popError(err, initScope())
