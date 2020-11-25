@@ -4,11 +4,11 @@ import type {
   MachinatUserProfile,
   MachinatProfiler,
 } from '@machinat/core/base/Profiler';
-import type TelegramUser from './user';
+import TelegramUser from './user';
 import type { TelegramChat, TelegramChatTarget } from './channel';
 import { TELEGRAM } from './constant';
 import { BotP } from './bot';
-import { RawPhotoSize } from './types';
+import { RawPhotoSize, RawUser } from './types';
 
 type PhotoResponse = {
   content: NodeJS.ReadableStream;
@@ -18,14 +18,22 @@ type PhotoResponse = {
   height: number;
 };
 
+type CachedUserProfile = {
+  user: RawUser;
+  pictureURL: undefined | string;
+};
+
+const PROFILE_KEY = '$$telegram:user:profile';
+
 export class TelegramUserProfile implements MachinatUserProfile {
   user: TelegramUser;
+  pictureURL: undefined | string;
 
   platform = TELEGRAM;
-  pictureURL = undefined;
 
-  constructor(user: TelegramUser) {
+  constructor(user: TelegramUser, pictureURL?: string) {
     this.user = user;
+    this.pictureURL = pictureURL;
   }
 
   get id(): number {
@@ -51,38 +59,83 @@ export class TelegramUserProfile implements MachinatUserProfile {
  */
 export class TelegramProfiler implements MachinatProfiler {
   bot: BotP;
+  stateController: null | BaseStateControllerI;
 
-  static async photoDataURI(photoResponse: PhotoResponse): Promise<string> {
-    const { content, contentType } = photoResponse;
-
-    const data: Buffer = await new Promise((resolve, reject) => {
-      const chunks: Buffer[] = [];
-
-      content.on('data', (chunk) => {
-        chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
-      });
-      content.on('end', () => {
-        resolve(Buffer.concat(chunks));
-      });
-      content.on('error', reject);
-    });
-
-    return `data:${contentType};base64,${data.toString('base64')}`;
-  }
-
-  constructor(bot: BotP) {
+  constructor(bot: BotP, stateController: null | BaseStateControllerI) {
     this.bot = bot;
+    this.stateController = stateController;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  async getUserProfile(user: TelegramUser): Promise<TelegramUserProfile> {
-    return new TelegramUserProfile(user);
+  /** return TelegramUserProfile object with the cached pictureURL */
+  async getUserProfile(
+    user: TelegramUser,
+    options?: { noAvatar?: boolean }
+  ): Promise<TelegramUserProfile> {
+    if (!this.stateController || options?.noAvatar) {
+      return new TelegramUserProfile(user);
+    }
+
+    const cachedProfile = await this.stateController
+      .userState(user)
+      .get<CachedUserProfile>(PROFILE_KEY);
+
+    return new TelegramUserProfile(user, cachedProfile?.pictureURL);
   }
 
+  /** cache user data and optional pictureURL for later use */
+  async cacheUserProfile(
+    user: TelegramUser,
+    options?: { pictureURL?: string }
+  ): Promise<TelegramUserProfile> {
+    if (!this.stateController) {
+      throw new Error('should provide StateControllerI to cache profile');
+    }
+
+    const pictureURL = options?.pictureURL;
+    const { id, isBot, firstName, lastName, username, languageCode } = user;
+    const rawUser = {
+      id,
+      is_bot: isBot,
+      first_name: firstName,
+      last_name: lastName,
+      username,
+      language_code: languageCode,
+    };
+
+    await this.stateController
+      .userState(user)
+      .update<CachedUserProfile>(PROFILE_KEY, (lastCache) => ({
+        user: rawUser,
+        pictureURL: pictureURL || lastCache?.pictureURL,
+      }));
+
+    return new TelegramUserProfile(user, pictureURL);
+  }
+
+  /** get the cached user profile by user id */
+  async getCachedUserProfile(id: number): Promise<null | TelegramUserProfile> {
+    if (!this.stateController) {
+      throw new Error('should provide StateControllerI to cache profile');
+    }
+
+    const phonyUser = new TelegramUser({ id, is_bot: false, first_name: '' });
+    const cachedProfile = await this.stateController
+      .userState(phonyUser)
+      .get<CachedUserProfile>(PROFILE_KEY);
+
+    if (!cachedProfile) {
+      return null;
+    }
+
+    const { user: rawUser, pictureURL } = cachedProfile;
+    return new TelegramUserProfile(new TelegramUser(rawUser), pictureURL);
+  }
+
+  /** fetch the photo file of a user */
   async fetchUserPhoto(
     user: TelegramUser,
     options?: {
-      /** If set, the minimum size above the value is chosen. Otherwise the largest one */
+      /** If set, the minimum size above the value is chosen. Otherwise the smallest one */
       minWidth?: number;
     }
   ): Promise<null | PhotoResponse> {
@@ -96,19 +149,12 @@ export class TelegramProfiler implements MachinatProfiler {
       return null;
     }
 
+    const minWidth = options?.minWidth || 0;
     const sizes: RawPhotoSize[] = photos[0];
-    let selectedSize: RawPhotoSize;
+    const photoSize =
+      sizes.find(({ width }) => width > minWidth) || sizes[sizes.length - 1];
 
-    if (options?.minWidth) {
-      const { minWidth } = options;
-      const photoSize = sizes.find(({ width }) => width > minWidth);
-
-      selectedSize = photoSize || sizes[sizes.length - 1];
-    } else {
-      selectedSize = sizes[sizes.length - 1];
-    }
-
-    const fileResponse = await this.bot.fetchFile(selectedSize.file_id);
+    const fileResponse = await this.bot.fetchFile(photoSize.file_id);
     if (!fileResponse) {
       return null;
     }
@@ -118,8 +164,8 @@ export class TelegramProfiler implements MachinatProfiler {
       content,
       contentType,
       contentLength,
-      width: selectedSize.width,
-      height: selectedSize.height,
+      width: photoSize.width,
+      height: photoSize.height,
     };
   }
 
@@ -146,7 +192,6 @@ export class TelegramProfiler implements MachinatProfiler {
     }
 
     const width = options?.size === 'small' ? 160 : 640;
-
     const { content, contentType, contentLength } = fileResponse;
     return {
       content,
