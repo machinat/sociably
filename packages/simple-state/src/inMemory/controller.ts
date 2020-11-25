@@ -82,7 +82,7 @@ export class InMemoryStateController implements BaseStateController {
   }
 
   userState(user: MachinatUser): InMemoryStateAccessor {
-    const data = this._channelStates.get(user.uid);
+    const data = this._userStates.get(user.uid);
     if (data) {
       return new InMemoryStateAccessor(data);
     }
@@ -94,7 +94,7 @@ export class InMemoryStateController implements BaseStateController {
   }
 
   globalState(name: string): InMemoryStateAccessor {
-    const data = this._channelStates.get(name);
+    const data = this._globalStates.get(name);
     if (data) {
       return new InMemoryStateAccessor(data);
     }
