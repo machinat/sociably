@@ -234,7 +234,7 @@ it('respond 200 and pop events received', async () => {
 
     expect(event.platform).toBe('line');
     expect(event.channel).toEqual(
-      new LineChat('_BOT_CHANNEL_ID_', 'utob', 'U4af4980629')
+      new LineChat('_BOT_CHANNEL_ID_', 'user', 'U4af4980629')
     );
     expect(event.user).toEqual(new LineUser('_PROVIDER_ID_', 'U4af4980629'));
 
@@ -292,7 +292,7 @@ it('work if request validation passed', async () => {
   const { event } = popEventMock.calls[0].args[0];
 
   expect(event.channel).toEqual(
-    new LineChat('_BOT_CHANNEL_ID_', 'utob', 'xxx')
+    new LineChat('_BOT_CHANNEL_ID_', 'user', 'xxx')
   );
   expect(event.user).toEqual(new LineUser('_PROVIDER_ID_', 'xxx'));
 

@@ -43,8 +43,16 @@ Object {
     },
   ],
   "results": Array [
-    Object {},
-    Object {},
+    Object {
+      "body": Object {},
+      "code": 200,
+      "headers": Object {},
+    },
+    Object {
+      "body": Object {},
+      "code": 200,
+      "headers": Object {},
+    },
   ],
   "tasks": Array [
     Object {
@@ -137,8 +145,16 @@ Object {
     },
   ],
   "results": Array [
-    Object {},
-    Object {},
+    Object {
+      "body": Object {},
+      "code": 200,
+      "headers": Object {},
+    },
+    Object {
+      "body": Object {},
+      "code": 200,
+      "headers": Object {},
+    },
   ],
   "tasks": Array [
     Object {
@@ -242,8 +258,16 @@ Object {
     },
   ],
   "results": Array [
-    Object {},
-    Object {},
+    Object {
+      "body": Object {},
+      "code": 200,
+      "headers": Object {},
+    },
+    Object {
+      "body": Object {},
+      "code": 200,
+      "headers": Object {},
+    },
   ],
   "tasks": Array [
     Object {

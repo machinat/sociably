@@ -122,15 +122,12 @@ export class MessengerAssetsManager {
       throw new Error(`persona [ ${name} ] already exist`);
     }
 
-    const response = await this.bot.dispatchAPICall(
-      'POST',
-      PATH_PERSONAS,
-      body
-    );
-    const { id } = response.results[0].body;
+    const {
+      body: { id: personaId },
+    } = await this.bot.dispatchAPICall('POST', PATH_PERSONAS, body);
 
-    await this.saveAssetId(PERSONA, name, id);
-    return id;
+    await this.saveAssetId(PERSONA, name, personaId);
+    return personaId;
   }
 
   async deletePersona(name: string): Promise<string> {

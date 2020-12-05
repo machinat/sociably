@@ -1,7 +1,7 @@
 import type { PlatformModule } from '@machinat/core/types';
 import type { ServiceProvision } from '@machinat/core/service/types';
 import { container, factory } from '@machinat/core/service';
-import { BaseBot, BaseProfiler } from '@machinat/core/base';
+import { BaseBot, BaseProfiler, BaseMarshaler } from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
 
@@ -9,7 +9,17 @@ import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { TELEGRAM } from './constant';
 import { BotP } from './bot';
 import { ReceiverP } from './receiver';
-import { ProfilerP } from './profiler';
+import {
+  ProfilerP,
+  TelegramUserProfile,
+  TelegramChatProfile,
+} from './profiler';
+import {
+  TelegramChat,
+  TelegramChatInstance,
+  TelegramChatTarget,
+} from './channel';
+import TelegramUser from './user';
 import type {
   TelegramPlatformConfigs,
   TelegramEventContext,
@@ -61,6 +71,12 @@ const Telegram = {
       },
 
       { provide: PLATFORM_CONFIGS_I, withValue: configs },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: TelegramChat },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: TelegramChatInstance },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: TelegramChatTarget },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: TelegramUser },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: TelegramUserProfile },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: TelegramChatProfile },
     ];
 
     if (configs.noServer !== true) {

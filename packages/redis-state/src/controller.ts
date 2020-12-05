@@ -2,6 +2,7 @@ import { RedisClient } from 'redis';
 import thenifiedly from 'thenifiedly';
 import { provider } from '@machinat/core/service';
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
+import { BaseMarshaler } from '@machinat/core/base';
 import type {
   BaseStateController,
   StateAccessor,
@@ -11,9 +12,11 @@ import { CLIENT_I } from './interface';
 export class RedisStateAccessor implements StateAccessor {
   private _stateKey: string;
   private _client: RedisClient;
+  private _marshaler: BaseMarshaler;
 
-  constructor(client: RedisClient, key: string) {
+  constructor(client: RedisClient, marshaler: BaseMarshaler, key: string) {
     this._client = client;
+    this._marshaler = marshaler;
     this._stateKey = key;
   }
 
@@ -25,65 +28,64 @@ export class RedisStateAccessor implements StateAccessor {
       key
     );
 
-    return result ? JSON.parse(result) : undefined;
+    return result ? this._parseValue(result) : undefined;
   }
 
   async set<T>(key: string, state: T): Promise<boolean> {
-    const result = await thenifiedly.callMethod(
+    const newFieldCount = await thenifiedly.callMethod(
       'hset',
       this._client,
       this._stateKey,
       key,
-      JSON.stringify(state)
+      this._stringifyValue(state)
     );
 
-    return !!result;
+    return !newFieldCount;
   }
 
   async update<T>(
     key: string,
     updator: (value: undefined | T) => undefined | T
   ): Promise<boolean> {
-    const existedData = await thenifiedly.callMethod(
+    const currentData = await thenifiedly.callMethod(
       'hget',
       this._client,
       this._stateKey,
       key
     );
 
-    const newValue = updator(existedData ? JSON.parse(existedData) : undefined);
+    const newValue = updator(
+      currentData ? this._parseValue(currentData) : undefined
+    );
 
     if (newValue) {
-      const result = await thenifiedly.callMethod(
+      const newFieldCount = await thenifiedly.callMethod(
         'hset',
         this._client,
         this._stateKey,
         key,
-        JSON.stringify(newValue)
+        this._stringifyValue(newValue)
       );
-
-      return !!result;
+      return !newFieldCount;
     }
 
-    const result = await thenifiedly.callMethod(
+    const deletedFieldCount = await thenifiedly.callMethod(
       'hdel',
       this._client,
       this._stateKey,
       key
     );
-
-    return !!result;
+    return !!deletedFieldCount;
   }
 
   async delete(key: string): Promise<boolean> {
-    const result = await thenifiedly.callMethod(
+    const fieldCount = await thenifiedly.callMethod(
       'hdel',
       this._client,
       this._stateKey,
       key
     );
-
-    return !!result;
+    return !!fieldCount;
   }
 
   async getAll(): Promise<Map<string, any>> {
@@ -99,7 +101,7 @@ export class RedisStateAccessor implements StateAccessor {
     return new Map<string, any>(
       Object.entries<string>(result).map(([key, value]) => [
         key,
-        JSON.parse(value),
+        this._parseValue(value),
       ])
     );
   }
@@ -108,34 +110,61 @@ export class RedisStateAccessor implements StateAccessor {
     await thenifiedly.callMethod('del', this._client, this._stateKey);
     return undefined;
   }
+
+  private _stringifyValue(value: unknown) {
+    return JSON.stringify(this._marshaler.marshal(value));
+  }
+
+  private _parseValue(content: string) {
+    return this._marshaler.unmarshal(JSON.parse(content));
+  }
 }
+
+const identity = (x) => x;
 
 /**
  * @category Provider
  */
 export class RedisStateController implements BaseStateController {
   private _client: RedisClient;
+  private _marshaler: BaseMarshaler;
 
-  constructor(client: RedisClient) {
+  constructor(client: RedisClient, marshaler?: null | BaseMarshaler) {
     this._client = client;
+    this._marshaler = marshaler || {
+      marshal: identity,
+      unmarshal: identity,
+    };
   }
 
   channelState(channel: MachinatChannel): RedisStateAccessor {
-    return new RedisStateAccessor(this._client, `channel:${channel.uid}`);
+    return new RedisStateAccessor(
+      this._client,
+      this._marshaler,
+      `channel:${channel.uid}`
+    );
   }
 
   userState(user: MachinatUser): RedisStateAccessor {
-    return new RedisStateAccessor(this._client, `user:${user.uid}`);
+    return new RedisStateAccessor(
+      this._client,
+      this._marshaler,
+      `user:${user.uid}`
+    );
   }
 
   globalState(name: string): RedisStateAccessor {
-    return new RedisStateAccessor(this._client, `global:${name}`);
+    return new RedisStateAccessor(
+      this._client,
+      this._marshaler,
+      `global:${name}`
+    );
   }
 }
 
 export const ControllerP = provider<RedisStateController>({
   lifetime: 'singleton',
-  deps: [CLIENT_I],
+  deps: [CLIENT_I, { require: BaseMarshaler, optional: true }],
 })(RedisStateController);
 
 export type ControllerP = RedisStateController;

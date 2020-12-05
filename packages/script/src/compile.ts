@@ -1,5 +1,5 @@
 /** @internal */ /** */
-/* eslint no-use-before-define: ["error", { "variables": false }] */
+/* eslint @typescript-eslint/no-use-before-define: ["error", { "variables": false }] */
 import invariant from 'invariant';
 import { counter } from './utils';
 import type {

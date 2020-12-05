@@ -1,19 +1,46 @@
 import crypto from 'crypto';
 import type { MachinatChannel } from '@machinat/core/types';
+import type { Marshallable } from '@machinat/core/base/Marshaler';
 import { MESSENGER } from './constant';
 import MessengerUser from './user';
 import type { MessengerTarget, MessengerThreadType } from './types';
 
-class MessengerChat implements MachinatChannel {
+enum ThreadTypeValue {
+  UserToPage,
+  UserToUser,
+  Group,
+}
+
+type MessengerChatValue = {
+  pageId: string;
+  type: ThreadTypeValue;
+  target: MessengerTarget;
+};
+
+class MessengerChat
+  implements MachinatChannel, Marshallable<MessengerChatValue> {
+  static fromUser(user: MessengerUser): MessengerChat {
+    return new MessengerChat(user.pageId, { id: user.psid });
+  }
+
+  static fromJSONValue(value: MessengerChatValue): MessengerChat {
+    const { pageId, target, type } = value;
+    return new MessengerChat(
+      pageId,
+      target,
+      type === ThreadTypeValue.Group
+        ? 'GROUP'
+        : type === ThreadTypeValue.UserToUser
+        ? 'USER_TO_USER'
+        : 'USER_TO_PAGE'
+    );
+  }
+
   pageId: string;
   type: MessengerThreadType;
   private _target: MessengerTarget;
 
   platform = MESSENGER;
-
-  static fromUser(user: MessengerUser): MessengerChat {
-    return new MessengerChat(user.pageId, { id: user.psid });
-  }
 
   constructor(
     pageId: number | string,
@@ -62,6 +89,24 @@ class MessengerChat implements MachinatChannel {
 
   get target(): null | MessengerTarget {
     return this.type === 'USER_TO_PAGE' ? this._target : null;
+  }
+
+  toJSONValue(): MessengerChatValue {
+    const { pageId, _target: target, type } = this;
+    return {
+      pageId,
+      target,
+      type:
+        type === 'GROUP'
+          ? ThreadTypeValue.Group
+          : type === 'USER_TO_USER'
+          ? ThreadTypeValue.UserToUser
+          : ThreadTypeValue.UserToPage,
+    };
+  }
+
+  typeName(): string {
+    return this.constructor.name;
   }
 }
 

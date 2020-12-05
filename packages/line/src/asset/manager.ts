@@ -104,7 +104,7 @@ export class LineAssetsManager {
     }
 
     const {
-      results: [{ richMenuId }],
+      body: { richMenuId },
     } = await this._bot.dispatchAPICall('POST', PATH_RICHMENU, body);
 
     await this.saveAssetId(RICH_MENU, name, richMenuId);

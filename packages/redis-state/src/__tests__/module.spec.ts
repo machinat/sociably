@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import redis from 'redis';
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import RedisState from '../module';
@@ -49,12 +49,12 @@ test('provisions', async () => {
   ]);
 
   expect(controller).toBeInstanceOf(RedisStateController);
-  expect(client).toBe(redis.createClient.mock.calls[0].result);
+  expect(client).toBe((redis as any).createClient.mock.calls[0].result);
   expect(configs).toEqual({
     clientOptions: { host: 'my.redis.com', port: 23456 },
   });
 
-  expect(redis.createClient.mock).toHaveBeenCalledWith({
+  expect((redis as any).createClient.mock).toHaveBeenCalledWith({
     host: 'my.redis.com',
     port: 23456,
   });
@@ -86,7 +86,7 @@ test('startHook wait for client connected', async () => {
   const client = moxy(new EventEmitter());
   client.connected = false;
 
-  redis.createClient.mock.fakeReturnValue(client);
+  (redis as any).createClient.mock.fakeReturnValue(client);
   const startPromise = app.start();
 
   expect(client.once.mock).toHaveBeenCalledTimes(2);
@@ -111,7 +111,7 @@ test('startHook throw if error happen when connect', async () => {
   const client = moxy(new EventEmitter());
   client.connected = false;
 
-  redis.createClient.mock.fakeReturnValue(client);
+  (redis as any).createClient.mock.fakeReturnValue(client);
   const startPromise = app.start();
   expect(app.isStarted).toBe(false);
 

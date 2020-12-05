@@ -124,12 +124,14 @@ export class MessengerBot
     return this.engine.render(null, node, makeAttachmentJobs);
   }
 
-  dispatchAPICall(
+  async dispatchAPICall(
     method: 'GET' | 'POST' | 'DELETE',
     relativeURL: string,
     body?: null | any
-  ): Promise<DispatchResponse<MessengerJob, MessengerResult>> {
-    return this.engine.dispatchJobs(null, [
+  ): Promise<MessengerResult> {
+    const {
+      results: [result],
+    } = await this.engine.dispatchJobs(null, [
       {
         request: {
           method,
@@ -138,6 +140,7 @@ export class MessengerBot
         },
       },
     ]);
+    return result;
   }
 }
 

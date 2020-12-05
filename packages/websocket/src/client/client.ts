@@ -6,7 +6,7 @@ import type {
   DispatchBody,
   RejectBody,
 } from '../socket';
-import { ConnectionChannel } from '../channel';
+import { WebSocketConnection } from '../channel';
 import createEvent from '../event';
 import SocketError from '../error';
 import type {
@@ -46,7 +46,7 @@ class WebScoketClient<
 
   private _connId: void | string;
   private _user: null | MachinatUser;
-  private _channel: null | ConnectionChannel;
+  private _channel: null | WebSocketConnection;
   private _isDisconnecting: boolean;
 
   private _eventListeners: ClientEventListener<
@@ -87,7 +87,7 @@ class WebScoketClient<
     return this._user;
   }
 
-  get channel(): null | ConnectionChannel {
+  get channel(): null | WebSocketConnection {
     return this._channel;
   }
 
@@ -186,7 +186,7 @@ class WebScoketClient<
       kind,
       type,
       payload,
-      this._channel as ConnectionChannel,
+      this._channel as WebSocketConnection,
       this._user
     );
 
@@ -215,7 +215,7 @@ class WebScoketClient<
     }
 
     this._connId = connId;
-    this._channel = new ConnectionChannel('*', connId);
+    this._channel = new WebSocketConnection('*', connId);
 
     this._emitEvent('connection', 'connect', undefined);
 

@@ -341,7 +341,7 @@ describe('#refineAuth(data)', () => {
     });
   });
 
-  it('return utob channel if userToBot is true in data', async () => {
+  it('return user channel if userToBot is true in data', async () => {
     await expect(
       authorizer.refineAuth({
         providerId: '_PROVIDER_ID_',
@@ -356,7 +356,7 @@ describe('#refineAuth(data)', () => {
       })
     ).resolves.toEqual({
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-      channel: new LineChat('_BOT_CHANNEL_ID_', 'utob', '_USER_ID_'),
+      channel: new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_'),
     });
 
     await expect(
@@ -372,7 +372,7 @@ describe('#refineAuth(data)', () => {
       })
     ).resolves.toEqual({
       user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-      channel: new LineChat('_BOT_CHANNEL_ID_', 'utob', '_USER_ID_'),
+      channel: new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_'),
     });
   });
 });

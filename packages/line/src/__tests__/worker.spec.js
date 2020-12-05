@@ -26,12 +26,12 @@ it('makes calls to api', async () => {
   const client = new LineWorker(accessToken, 10);
 
   const apiAssertions = [
-    lineAPI.post('/foo/1', { id: 1 }).delay(100).reply(200, '{}'),
-    lineAPI.post('/bar/1', { id: 2 }).delay(100).reply(200, '{}'),
-    lineAPI.post('/baz/1', { id: 3 }).delay(100).reply(200, '{}'),
-    lineAPI.post('/foo/2', { id: 4 }).delay(100).reply(200, '{}'),
-    lineAPI.post('/bar/2', { id: 5 }).delay(100).reply(200, '{}'),
-    lineAPI.post('/baz/2', { id: 6 }).delay(100).reply(200, '{}'),
+    lineAPI.post('/foo/1', { id: 1 }).delay(100).reply(200, { id: 1 }),
+    lineAPI.post('/bar/1', { id: 2 }).delay(100).reply(200, { id: 2 }),
+    lineAPI.post('/baz/1', { id: 3 }).delay(100).reply(200, { id: 3 }),
+    lineAPI.post('/foo/2', { id: 4 }).delay(100).reply(200, { id: 4 }),
+    lineAPI.post('/bar/2', { id: 5 }).delay(100).reply(200, { id: 5 }),
+    lineAPI.post('/baz/2', { id: 6 }).delay(100).reply(200, { id: 6 }),
   ];
 
   client.start(queue);
@@ -55,7 +55,15 @@ it('makes calls to api', async () => {
   await expect(promise).resolves.toEqual({
     success: true,
     errors: null,
-    batch: jobs.map((job) => ({ success: true, job, result: {} })),
+    batch: jobs.map((job, i) => ({
+      success: true,
+      job,
+      result: {
+        code: 200,
+        headers: { 'content-type': 'application/json' },
+        body: { id: i + 1 },
+      },
+    })),
   });
 });
 

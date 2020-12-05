@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`from comment_id 2`] = `
+Object {
+  "pageId": "_PAGE_ID_",
+  "target": Object {
+    "comment_id": "_COMMENT_ID_",
+  },
+  "type": 0,
+}
+`;
+
+exports[`from id 2`] = `
+Object {
+  "pageId": "_PAGE_ID_",
+  "target": Object {
+    "id": "_PSID_",
+  },
+  "type": 0,
+}
+`;
+
+exports[`from phone_number 2`] = `
+Object {
+  "pageId": "_PAGE_ID_",
+  "target": Object {
+    "name": Object {
+      "first_name": "jojo",
+      "last_name": "doe",
+    },
+    "phone_number": "+88888888888",
+  },
+  "type": 0,
+}
+`;
+
+exports[`from post_id 2`] = `
+Object {
+  "pageId": "_PAGE_ID_",
+  "target": Object {
+    "post_id": "_POST_ID_",
+  },
+  "type": 0,
+}
+`;
+
+exports[`from user_ref 2`] = `
+Object {
+  "pageId": "_PAGE_ID_",
+  "target": Object {
+    "user_ref": "_USER_REF_",
+  },
+  "type": 0,
+}
+`;
+
+exports[`group chat 2`] = `
+Object {
+  "pageId": "_PAGE_ID_",
+  "target": Object {
+    "id": "_PSID_",
+  },
+  "type": 2,
+}
+`;
+
+exports[`user to user chat 2`] = `
+Object {
+  "pageId": "_PAGE_ID_",
+  "target": Object {
+    "id": "_PSID_",
+  },
+  "type": 1,
+}
+`;

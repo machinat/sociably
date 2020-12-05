@@ -17,10 +17,13 @@ import type {
 import { WEBSOCKET } from './constant';
 import { PLATFORM_MOUNTER_I } from './interface';
 import { TransmitterP } from './transmitter';
-import { TopicChannel, ConnectionChannel, UserChannel } from './channel';
+import {
+  WebSocketTopicChannel,
+  WebSocketUserChannel,
+  WebSocketConnection,
+} from './channel';
 import WebSocketWorker from './worker';
 import type {
-  WebSocketChannel,
   EventInput,
   WebSocketJob,
   WebSocketResult,
@@ -36,7 +39,7 @@ type WebSocketDispatchResponse = DispatchResponse<
 
 /** @internal */
 const createJobs = (
-  channel: WebSocketChannel,
+  channel: WebSocketTopicChannel | WebSocketUserChannel | WebSocketConnection,
   segments: DispatchableSegment<EventInput>[]
 ): WebSocketJob[] => {
   return [
@@ -61,10 +64,15 @@ const createJobs = (
  * @category Provider
  */
 export class WebSocketBot
-  implements MachinatBot<WebSocketChannel, WebSocketJob, WebSocketResult> {
+  implements
+    MachinatBot<
+      WebSocketTopicChannel | WebSocketUserChannel | WebSocketConnection,
+      WebSocketJob,
+      WebSocketResult
+    > {
   private _transmitter: TransmitterP;
   engine: Engine<
-    WebSocketChannel,
+    WebSocketTopicChannel | WebSocketUserChannel | WebSocketConnection,
     EventInput,
     WebSocketComponent,
     WebSocketJob,
@@ -117,14 +125,14 @@ export class WebSocketBot
   }
 
   render(
-    channel: WebSocketChannel,
+    channel: WebSocketConnection,
     message: MachinatNode
   ): Promise<null | WebSocketDispatchResponse> {
     return this.engine.render(channel, message, createJobs);
   }
 
   send(
-    channel: WebSocketChannel,
+    channel: WebSocketConnection,
     ...events: EventInput[]
   ): Promise<WebSocketDispatchResponse> {
     return this.engine.dispatchJobs(channel, [
@@ -141,14 +149,18 @@ export class WebSocketBot
     user: MachinatUser,
     message: MachinatNode
   ): Promise<null | WebSocketDispatchResponse> {
-    return this.engine.render(new UserChannel(user), message, createJobs);
+    return this.engine.render(
+      new WebSocketUserChannel(user.uid),
+      message,
+      createJobs
+    );
   }
 
   sendUser(
     user: MachinatUser,
     ...events: EventInput[]
   ): Promise<WebSocketDispatchResponse> {
-    const channel = new UserChannel(user);
+    const channel = new WebSocketUserChannel(user.uid);
     return this.engine.dispatchJobs(channel, [
       {
         target: channel,
@@ -163,14 +175,18 @@ export class WebSocketBot
     topic: string,
     message: MachinatNode
   ): Promise<null | WebSocketDispatchResponse> {
-    return this.engine.render(new TopicChannel(topic), message, createJobs);
+    return this.engine.render(
+      new WebSocketTopicChannel(topic),
+      message,
+      createJobs
+    );
   }
 
   sendTopic(
     topic: string,
     ...events: EventInput[]
   ): Promise<WebSocketDispatchResponse> {
-    const channel = new TopicChannel(topic);
+    const channel = new WebSocketTopicChannel(topic);
     return this.engine.dispatchJobs(channel, [
       {
         target: channel,
@@ -181,19 +197,22 @@ export class WebSocketBot
     ]);
   }
 
-  disconnect(connection: ConnectionChannel, reason?: string): Promise<boolean> {
+  disconnect(
+    connection: WebSocketConnection,
+    reason?: string
+  ): Promise<boolean> {
     return this._transmitter.disconnect(connection, reason);
   }
 
   subscribeTopic(
-    connection: ConnectionChannel,
+    connection: WebSocketConnection,
     topic: string
   ): Promise<boolean> {
     return this._transmitter.subscribeTopic(connection, topic);
   }
 
   unsubscribeTopic(
-    connection: ConnectionChannel,
+    connection: WebSocketConnection,
     topic: string
   ): Promise<boolean> {
     return this._transmitter.unsubscribeTopic(connection, topic);

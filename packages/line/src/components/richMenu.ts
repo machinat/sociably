@@ -17,9 +17,9 @@ const __LinkRichMenu = function LinkRichMenu(node, path) {
     unitSegment(node, path, {
       id: node.props.id,
       [CHANNEL_REQUEST_GETTER](channel) {
-        if (channel.type !== 'utob') {
+        if (channel.type !== 'user') {
           throw new TypeError(
-            '<LinkRichMenu /> can only be delivered in a utob chatting channel'
+            '<LinkRichMenu /> can only be sent to an user chat'
           );
         }
 
@@ -56,9 +56,9 @@ export const LinkRichMenu: LineComponent<LinkRichMenuProps> = annotateLineCompon
 /** @ignore */
 const UNLINK_RICHMENU_VALUE = {
   [CHANNEL_REQUEST_GETTER](channel) {
-    if (channel.type !== 'utob') {
+    if (channel.type !== 'user') {
       throw new TypeError(
-        '<UnlinkRichMenu /> can only be delivered in a utob chatting channel'
+        '<UnlinkRichMenu /> can only be sent to an user chat'
       );
     }
 

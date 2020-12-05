@@ -6,6 +6,7 @@ import {
 } from 'fs';
 import { provider } from '@machinat/core/service';
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
+import { BaseMarshaler } from '@machinat/core/base';
 import type {
   BaseStateController,
   StateAccessor,
@@ -30,26 +31,29 @@ const objectHasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
 export class FileStateAccessor implements StateAccessor {
+  private _marshaler: BaseMarshaler;
   private _getData: () => Promise<Record<string, any>>;
   private _updateData: (data: null | Record<string, any>) => void;
 
   constructor(
+    marshaler: BaseMarshaler,
     getData: () => Promise<Record<string, any>>,
     updateData: (data: null | Record<string, any>) => void
   ) {
+    this._marshaler = marshaler;
     this._getData = getData;
     this._updateData = updateData;
   }
 
   async get<T>(key: string): Promise<undefined | T> {
     const data = await this._getData();
-    return data[key];
+    return this._marshaler.unmarshal(data[key]);
   }
 
   async set<T>(key: string, value: T): Promise<boolean> {
     const data = await this._getData();
     const isExisted = objectHasOwnProperty(data, key);
-    data[key] = value;
+    data[key] = this._marshaler.marshal(value);
 
     this._updateData(data);
     return isExisted;
@@ -60,16 +64,21 @@ export class FileStateAccessor implements StateAccessor {
     updator: (value: undefined | T) => undefined | T
   ): Promise<boolean> {
     const data = await this._getData();
-    const exitedValue = data[key];
-    data[key] = updator(exitedValue);
+    const currentValue = this._marshaler.unmarshal(data[key]);
+    data[key] = this._marshaler.marshal(updator(currentValue));
 
     this._updateData(data);
-    return exitedValue;
+    return !!currentValue;
   }
 
   async getAll(): Promise<Map<string, any>> {
     const data = await this._getData();
-    return new Map(Object.entries(data));
+    return new Map(
+      Object.entries(data).map(([key, value]) => [
+        key,
+        this._marshaler.unmarshal(value),
+      ])
+    );
   }
 
   async delete(key: string): Promise<boolean> {
@@ -103,11 +112,13 @@ type StorageData = {
   globalStates: StorageObj;
 };
 
+const identity = (x) => x;
 /**
  * @category Provider
  */
 export class FileStateController implements BaseStateController {
   path: string;
+  marshaler: BaseMarshaler;
   serializer: SerializerI;
 
   private _storage: StorageData;
@@ -118,9 +129,14 @@ export class FileStateController implements BaseStateController {
   private _writingJob: Promise<void>;
   private _isWriting: boolean;
 
-  constructor(options: FileRepositoryConfigs, serializer: SerializerI = JSON) {
+  constructor(
+    options: FileRepositoryConfigs,
+    marshaler?: null | BaseMarshaler,
+    serializer?: null | SerializerI
+  ) {
     this.path = options.path;
-    this.serializer = serializer;
+    this.marshaler = marshaler || { marshal: identity, unmarshal: identity };
+    this.serializer = serializer || JSON;
 
     this._readingJob = this._open();
     this._writingJob = Promise.resolve();
@@ -128,6 +144,7 @@ export class FileStateController implements BaseStateController {
 
   channelState(channel: MachinatChannel): FileStateAccessor {
     return new FileStateAccessor(
+      this.marshaler,
       this._getDataCallback('channelStates', channel.uid),
       this._updateDataCallback('channelStates', channel.uid)
     );
@@ -135,6 +152,7 @@ export class FileStateController implements BaseStateController {
 
   userState(user: MachinatUser): FileStateAccessor {
     return new FileStateAccessor(
+      this.marshaler,
       this._getDataCallback('userStates', user.uid),
       this._updateDataCallback('userStates', user.uid)
     );
@@ -142,6 +160,7 @@ export class FileStateController implements BaseStateController {
 
   globalState(name: string): FileStateAccessor {
     return new FileStateAccessor(
+      this.marshaler,
       this._getDataCallback('globalStates', name),
       this._updateDataCallback('globalStates', name)
     );
@@ -209,7 +228,11 @@ export class FileStateController implements BaseStateController {
 
 export const ControllerP = provider<FileStateController>({
   lifetime: 'singleton',
-  deps: [MODULE_CONFIGS_I, SerializerI],
+  deps: [
+    MODULE_CONFIGS_I,
+    { require: BaseMarshaler, optional: true },
+    { require: SerializerI, optional: true },
+  ],
 })(FileStateController);
 
 export type ControllerP = FileStateController;

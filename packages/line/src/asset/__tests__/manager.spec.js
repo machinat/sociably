@@ -183,8 +183,9 @@ test('discard asset id', async () => {
 test('#createRichMenu()', async () => {
   const manager = new LineAssetsManager(stateManager, bot);
   bot.dispatchAPICall.mock.fake(() => ({
-    jobs: [{ ...{} }],
-    results: [{ richMenuId: '_RICH_MENU_ID_' }],
+    code: 200,
+    headers: {},
+    body: { richMenuId: '_RICH_MENU_ID_' },
   }));
 
   const richMenuBody = {
@@ -222,8 +223,9 @@ test('#createRichMenu()', async () => {
 test('#deleteRichMenu()', async () => {
   const manager = new LineAssetsManager(stateManager, bot);
   bot.dispatchAPICall.mock.fake(() => ({
-    jobs: [{ ...{} }],
-    results: [{}],
+    code: 200,
+    headers: {},
+    body: {},
   }));
 
   await expect(

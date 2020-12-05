@@ -1,6 +1,12 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
+import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
+import {
+  WebSocketConnection,
+  WebSocketUserChannel,
+  WebSocketTopicChannel,
+} from '../channel';
 import { WebSocketTransmitter } from '../transmitter';
 import { WebSocketReceiver } from '../receiver';
 import { WebSocketBot } from '../bot';
@@ -124,6 +130,27 @@ describe('initModule()', () => {
         handler: expect.any(Function),
       },
     ]);
+  });
+
+  test('provide base interface branches', async () => {
+    const app = Machinat.createApp({
+      platforms: [WebSocket.initModule({})],
+    });
+    await app.start();
+
+    const [bots, marshalTypes]: any = app.useServices([
+      Base.Bot.PLATFORMS_I,
+      Base.Marshaler.TYPINGS_I,
+    ]);
+
+    expect(bots.get('web_socket')).toBeInstanceOf(WebSocketBot);
+    expect(marshalTypes).toEqual(
+      expect.arrayContaining([
+        WebSocketConnection,
+        WebSocketUserChannel,
+        WebSocketTopicChannel,
+      ])
+    );
   });
 
   test('startHook() calls bot.start()', async () => {

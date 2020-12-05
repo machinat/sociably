@@ -1,7 +1,10 @@
 import { Readable } from 'stream';
 import moxy from '@moxyjs/moxy';
-import { InMemoryState } from '@machinat/simple-state';
-import { TelegramProfiler } from '../profiler';
+import {
+  TelegramProfiler,
+  TelegramUserProfile,
+  TelegramChatProfile,
+} from '../profiler';
 import { TelegramChat, TelegramChatTarget } from '../channel';
 import TelegramUser from '../user';
 
@@ -23,11 +26,11 @@ beforeEach(() => {
 });
 
 describe('#getUserProfile(user)', () => {
-  it('return profile when no state controller is provided', async () => {
-    const profiler = new TelegramProfiler(bot, null);
+  it('get profile with data attached on user', async () => {
+    const profiler = new TelegramProfiler(bot);
 
     const profile = await profiler.getUserProfile(
-      new TelegramUser({
+      new TelegramUser(12345, {
         id: 12345,
         is_bot: false,
         first_name: 'Jane',
@@ -43,21 +46,19 @@ describe('#getUserProfile(user)', () => {
     expect(profile.pictureURL).toBe(undefined);
   });
 
-  it('return profile with cached pictureURL', async () => {
-    const stateContoller = new InMemoryState.Controller();
-    const profiler = new TelegramProfiler(bot, stateContoller);
+  it('get profile with pictureURL', async () => {
+    const profiler = new TelegramProfiler(bot);
 
-    const user = new TelegramUser({
+    const user = new TelegramUser(12345, {
       id: 12345,
       is_bot: false,
       first_name: 'John',
     });
 
-    await profiler.cacheUserProfile(user, {
+    const profile = await profiler.getUserProfile(user, {
       pictureURL: 'http://john.doe/avatar',
     });
 
-    const profile = await profiler.getUserProfile(user);
     expect(profile.platform).toBe('telegram');
     expect(profile.id).toBe(12345);
     expect(profile.name).toBe('John');
@@ -66,158 +67,289 @@ describe('#getUserProfile(user)', () => {
     expect(profile.pictureURL).toBe('http://john.doe/avatar');
   });
 
-  it('ignore cached pictureURL if noAvatar option set to true', async () => {
-    const stateContoller = new InMemoryState.Controller();
-    const profiler = new TelegramProfiler(bot, stateContoller);
+  it('get profile from getChatMember API if no data attached with user', async () => {
+    bot.dispatchAPICall.mock.fake(() => ({
+      ok: true,
+      result: {
+        status: 'creator',
+        user: { id: 12345, is_bot: false, first_name: 'Jojo' },
+      },
+    }));
 
-    const user = new TelegramUser({
-      id: 12345,
-      is_bot: false,
-      first_name: 'John',
-    });
+    const profiler = new TelegramProfiler(bot);
+    const profile = await profiler.getUserProfile(new TelegramUser(12345));
 
-    await profiler.cacheUserProfile(user, {
-      pictureURL: 'http://john.doe/avatar',
-    });
-
-    const profile = await profiler.getUserProfile(user, { noAvatar: true });
-    expect(profile.pictureURL).toBe(undefined);
-  });
-
-  it('return profile without pictureURL if not being cached', async () => {
-    const stateContoller = new InMemoryState.Controller();
-    const profiler = new TelegramProfiler(bot, stateContoller);
-
-    const profile = await profiler.getUserProfile(
-      new TelegramUser({
-        id: 12345,
-        is_bot: false,
-        first_name: 'Jojo',
-      })
-    );
     expect(profile.platform).toBe('telegram');
     expect(profile.id).toBe(12345);
     expect(profile.name).toBe('Jojo');
     expect(profile.firstName).toBe('Jojo');
     expect(profile.lastName).toBe(undefined);
     expect(profile.pictureURL).toBe(undefined);
-  });
-});
 
-describe('#getCachedUserProfile(user)', () => {
-  it('throw if state controller is not provided', async () => {
-    const profiler = new TelegramProfiler(bot, null);
-
-    await expect(
-      profiler.getCachedUserProfile(12345)
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"should provide StateControllerI to cache profile"`
-    );
+    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
+    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChatMember', {
+      chat_id: 12345,
+      user_id: 12345,
+    });
   });
 
-  it('return profile with cached pictureURL', async () => {
-    const stateContoller = new InMemoryState.Controller();
-    const profiler = new TelegramProfiler(bot, stateContoller);
+  test('specify chat to call getChatMember', async () => {
+    bot.dispatchAPICall.mock.fake(() => ({
+      ok: true,
+      result: {
+        status: 'creator',
+        user: { id: 12345, is_bot: false, first_name: 'Jojo' },
+      },
+    }));
 
-    const user = new TelegramUser({
-      id: 12345,
-      is_bot: false,
-      first_name: 'John',
+    const profiler = new TelegramProfiler(bot);
+    const profile = await profiler.getUserProfile(new TelegramUser(12345), {
+      inChat: new TelegramChat(54321, { type: 'group', id: 67890 }),
     });
 
-    await profiler.cacheUserProfile(user, {
-      pictureURL: 'http://john.doe/avatar',
-    });
-
-    const profile: any = await profiler.getCachedUserProfile(12345);
     expect(profile.platform).toBe('telegram');
     expect(profile.id).toBe(12345);
-    expect(profile.name).toBe('John');
-    expect(profile.firstName).toBe('John');
+    expect(profile.name).toBe('Jojo');
+    expect(profile.firstName).toBe('Jojo');
     expect(profile.lastName).toBe(undefined);
-    expect(profile.pictureURL).toBe('http://john.doe/avatar');
+    expect(profile.pictureURL).toBe(undefined);
+
+    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
+    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChatMember', {
+      user_id: 12345,
+      chat_id: 67890,
+    });
   });
 
-  it('return null if not being cached', async () => {
-    const stateContoller = new InMemoryState.Controller();
-    const profiler = new TelegramProfiler(bot, stateContoller);
+  test('force to get data from API even available on user', async () => {
+    bot.dispatchAPICall.mock.fake(() => ({
+      ok: true,
+      result: {
+        status: 'creator',
+        user: {
+          id: 12345,
+          is_bot: false,
+          first_name: 'Jojo',
+          username: 'jojodoe',
+          last_name: 'Doe',
+        },
+      },
+    }));
 
-    await expect(profiler.getCachedUserProfile(12345)).resolves.toBe(null);
+    const profiler = new TelegramProfiler(bot);
+    const profile = await profiler.getUserProfile(
+      new TelegramUser(12345, { id: 12345, is_bot: false, first_name: 'Jojo' }),
+      { fromAPI: true }
+    );
+
+    expect(profile.platform).toBe('telegram');
+    expect(profile.id).toBe(12345);
+    expect(profile.name).toBe('Jojo Doe');
+    expect(profile.firstName).toBe('Jojo');
+    expect(profile.lastName).toBe('Doe');
+    expect(profile.username).toBe('jojodoe');
+    expect(profile.pictureURL).toBe(undefined);
+
+    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
+    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChatMember', {
+      chat_id: 12345,
+      user_id: 12345,
+    });
+  });
+
+  test('profile object is marshallable', async () => {
+    const profiler = new TelegramProfiler(bot);
+    const profile = await profiler.getUserProfile(
+      new TelegramUser(12345, {
+        id: 12345,
+        is_bot: false,
+        first_name: 'Jane',
+        last_name: 'Doe',
+        username: 'janedoe',
+      }),
+      { pictureURL: 'http://jane.doe/avatar' }
+    );
+
+    expect(profile.typeName()).toBe('TelegramUserProfile');
+    expect(profile.toJSONValue()).toMatchInlineSnapshot(`
+      Object {
+        "data": Object {
+          "first_name": "Jane",
+          "id": 12345,
+          "is_bot": false,
+          "last_name": "Doe",
+          "username": "janedoe",
+        },
+        "pictureURL": "http://jane.doe/avatar",
+      }
+    `);
+    expect(
+      TelegramUserProfile.fromJSONValue(profile.toJSONValue())
+    ).toStrictEqual(profile);
   });
 });
 
-describe('#cacheUserProfile(user)', () => {
-  it('throw if state controller is not provided', async () => {
-    const profiler = new TelegramProfiler(bot, null);
-    const user = new TelegramUser({
-      id: 12345,
-      is_bot: false,
-      first_name: 'John',
-    });
-    await expect(
-      profiler.cacheUserProfile(user)
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"should provide StateControllerI to cache profile"`
+describe('#getChatProfile(user)', () => {
+  it('get profile with data attached on chat', async () => {
+    const profiler = new TelegramProfiler(bot);
+
+    const profile = await profiler.getChatProfile(
+      new TelegramChat(12345, {
+        id: 12345,
+        type: 'private',
+        first_name: 'Jane',
+        last_name: 'Doe',
+        username: 'janedoe',
+      })
     );
-  });
-
-  it('cache user profile data', async () => {
-    const stateContoller = new InMemoryState.Controller();
-    const profiler = new TelegramProfiler(bot, stateContoller);
-    const user = new TelegramUser({
-      id: 12345,
-      is_bot: false,
-      first_name: 'Jane',
-      last_name: 'Doe',
-      username: 'janedoe',
-    });
-
-    let profile = await profiler.cacheUserProfile(user);
     expect(profile.platform).toBe('telegram');
     expect(profile.id).toBe(12345);
     expect(profile.name).toBe('Jane Doe');
+    expect(profile.type).toBe('private');
     expect(profile.firstName).toBe('Jane');
     expect(profile.lastName).toBe('Doe');
+    expect(profile.title).toBe(undefined);
+    expect(profile.pictureURL).toBe(undefined);
+  });
+
+  it('get profile with pictureURL', async () => {
+    const profiler = new TelegramProfiler(bot);
+
+    const chat = new TelegramChat(12345, {
+      id: 12345,
+      type: 'group',
+      title: 'J Family',
+    });
+
+    const profile = await profiler.getChatProfile(chat, {
+      pictureURL: 'http://j.doe/avatar',
+    });
+
+    expect(profile.platform).toBe('telegram');
+    expect(profile.id).toBe(12345);
+    expect(profile.type).toBe('group');
+    expect(profile.name).toBe('J Family');
+    expect(profile.title).toBe('J Family');
+    expect(profile.firstName).toBe(undefined);
+    expect(profile.lastName).toBe(undefined);
+    expect(profile.pictureURL).toBe('http://j.doe/avatar');
+  });
+
+  it('get profile from getChat API if no data attached with chat', async () => {
+    bot.dispatchAPICall.mock.fake(() => ({
+      ok: true,
+      result: { id: 67890, type: 'private', first_name: 'Jojo' },
+    }));
+
+    const profiler = new TelegramProfiler(bot);
+    const profile = await profiler.getChatProfile(
+      new TelegramChat(12345, { type: 'private', id: 67890 })
+    );
+
+    expect(profile.platform).toBe('telegram');
+    expect(profile.id).toBe(67890);
+    expect(profile.name).toBe('Jojo');
+    expect(profile.firstName).toBe('Jojo');
+    expect(profile.lastName).toBe(undefined);
+    expect(profile.title).toBe(undefined);
     expect(profile.pictureURL).toBe(undefined);
 
-    await expect(stateContoller.userState(user).getAll()).resolves
-      .toMatchInlineSnapshot(`
-            Map {
-              "$$telegram:user:profile" => Object {
-                "pictureURL": undefined,
-                "user": Object {
-                  "first_name": "Jane",
-                  "id": 12345,
-                  "is_bot": false,
-                  "language_code": undefined,
-                  "last_name": "Doe",
-                  "username": "janedoe",
-                },
-              },
-            }
-          `);
-
-    profile = await profiler.cacheUserProfile(user, {
-      pictureURL: 'http://jane.doe/avatar',
+    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
+    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChat', {
+      chat_id: 67890,
     });
-    expect(profile.pictureURL).toBe('http://jane.doe/avatar');
 
-    await expect(stateContoller.userState(user).getAll()).resolves
-      .toMatchInlineSnapshot(`
-            Map {
-              "$$telegram:user:profile" => Object {
-                "pictureURL": "http://jane.doe/avatar",
-                "user": Object {
-                  "first_name": "Jane",
-                  "id": 12345,
-                  "is_bot": false,
-                  "language_code": undefined,
-                  "last_name": "Doe",
-                  "username": "janedoe",
-                },
-              },
-            }
-          `);
+    await expect(profiler.getChatProfile(67890)).resolves.toStrictEqual(
+      profile
+    );
+    await expect(
+      profiler.getChatProfile(new TelegramChatTarget(12345, 67890))
+    ).resolves.toStrictEqual(profile);
+
+    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(3);
+
+    bot.dispatchAPICall.mock.fake(() => ({
+      ok: true,
+      result: { id: 99999, type: 'channel', title: 'FOO' },
+    }));
+
+    const profile2 = await profiler.getChatProfile('@foo_channel', {
+      pictureURL: 'http://foo.bar/baz.jpg',
+    });
+    expect(profile2.platform).toBe('telegram');
+    expect(profile2.id).toBe(99999);
+    expect(profile2.name).toBe('FOO');
+    expect(profile2.title).toBe('FOO');
+    expect(profile2.firstName).toBe(undefined);
+    expect(profile2.lastName).toBe(undefined);
+    expect(profile2.pictureURL).toBe('http://foo.bar/baz.jpg');
+  });
+
+  test('force to get data from API even available on user', async () => {
+    bot.dispatchAPICall.mock.fake(() => ({
+      ok: true,
+      result: {
+        id: 67890,
+        is_bot: false,
+        first_name: 'Jojo',
+        username: 'jojodoe',
+        last_name: 'Doe',
+      },
+    }));
+
+    const profiler = new TelegramProfiler(bot);
+    const profile = await profiler.getChatProfile(
+      new TelegramChat(12345, {
+        id: 67890,
+        type: 'private',
+        first_name: 'Jojo',
+      }),
+      { fromAPI: true }
+    );
+
+    expect(profile.platform).toBe('telegram');
+    expect(profile.id).toBe(67890);
+    expect(profile.name).toBe('Jojo Doe');
+    expect(profile.firstName).toBe('Jojo');
+    expect(profile.lastName).toBe('Doe');
+    expect(profile.username).toBe('jojodoe');
+    expect(profile.pictureURL).toBe(undefined);
+
+    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
+    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChat', {
+      chat_id: 67890,
+    });
+  });
+
+  test('profile object is marshallable', async () => {
+    const profiler = new TelegramProfiler(bot);
+    const profile = await profiler.getChatProfile(
+      new TelegramChat(12345, {
+        id: 12345,
+        type: 'private',
+        first_name: 'Jane',
+        last_name: 'Doe',
+        username: 'janedoe',
+      }),
+      { pictureURL: 'http://jane.doe/avatar' }
+    );
+
+    expect(profile.typeName()).toBe('TelegramChatProfile');
+    expect(profile.toJSONValue()).toMatchInlineSnapshot(`
+      Object {
+        "data": Object {
+          "first_name": "Jane",
+          "id": 12345,
+          "last_name": "Doe",
+          "type": "private",
+          "username": "janedoe",
+        },
+        "pictureURL": "http://jane.doe/avatar",
+      }
+    `);
+    expect(
+      TelegramChatProfile.fromJSONValue(profile.toJSONValue())
+    ).toStrictEqual(profile);
   });
 });
 
@@ -256,8 +388,8 @@ describe('#fetchUserPhoto(user)', () => {
 
   it('fetch the smallest file of the forst photo by default', async () => {
     bot.dispatchAPICall.mock.fake(async () => getUserProfilePhotosResult);
-    const profiler = new TelegramProfiler(bot, null);
-    const user = new TelegramUser({
+    const profiler = new TelegramProfiler(bot);
+    const user = new TelegramUser(12345, {
       id: 12345,
       is_bot: false,
       first_name: 'John',
@@ -288,8 +420,8 @@ describe('#fetchUserPhoto(user)', () => {
 
   it('fetch with minWidth option', async () => {
     bot.dispatchAPICall.mock.fake(async () => getUserProfilePhotosResult);
-    const profiler = new TelegramProfiler(bot, null);
-    const user = new TelegramUser({
+    const profiler = new TelegramProfiler(bot);
+    const user = new TelegramUser(12345, {
       id: 12345,
       is_bot: false,
       first_name: 'John',
@@ -331,8 +463,8 @@ describe('#fetchUserPhoto(user)', () => {
   });
 
   it('return null if user has no profile photo', async () => {
-    const profiler = new TelegramProfiler(bot, null);
-    const user = new TelegramUser({
+    const profiler = new TelegramProfiler(bot);
+    const user = new TelegramUser(12345, {
       id: 12345,
       is_bot: false,
       first_name: 'John',
@@ -366,7 +498,7 @@ describe('#fetchChatPhoto(user)', () => {
   it('fetch the file and return the stream and info', async () => {
     bot.dispatchAPICall.mock.fake(async () => getChatResult);
 
-    const profiler = new TelegramProfiler(bot, null);
+    const profiler = new TelegramProfiler(bot);
 
     const {
       content,
@@ -394,7 +526,7 @@ describe('#fetchChatPhoto(user)', () => {
   test('fetch small size', async () => {
     bot.dispatchAPICall.mock.fake(async () => getChatResult);
 
-    const profiler = new TelegramProfiler(bot, null);
+    const profiler = new TelegramProfiler(bot);
 
     await expect(
       profiler.fetchChatPhoto(12345, { size: 'small' })
@@ -416,7 +548,7 @@ describe('#fetchChatPhoto(user)', () => {
 
   it('fetch with chat object', async () => {
     bot.dispatchAPICall.mock.fake(async () => getChatResult);
-    const profiler = new TelegramProfiler(bot, null);
+    const profiler = new TelegramProfiler(bot);
     const expectedResponse = {
       content: expect.any(Readable),
       contentType: 'image/jpeg',
@@ -446,7 +578,7 @@ describe('#fetchChatPhoto(user)', () => {
   });
 
   it('return null if chat has no photo', async () => {
-    const profiler = new TelegramProfiler(bot, null);
+    const profiler = new TelegramProfiler(bot);
 
     bot.dispatchAPICall.mock.fakeReturnValue({
       ok: true,

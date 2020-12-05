@@ -1,7 +1,19 @@
 import type { MachinatUser } from '@machinat/core/types';
+import type { Marshallable } from '@machinat/core/base/Marshaler';
 import { MESSENGER } from './constant';
 
-export default class MessengerUser implements MachinatUser {
+type MessengerUserValue = {
+  pageId: string;
+  psid: string;
+};
+
+export default class MessengerUser
+  implements MachinatUser, Marshallable<MessengerUserValue> {
+  static fromJSONValue(value: MessengerUserValue): MessengerUser {
+    const { pageId, psid } = value;
+    return new MessengerUser(pageId, psid);
+  }
+
   platform = MESSENGER;
   pageId: string;
   psid: string;
@@ -17,5 +29,14 @@ export default class MessengerUser implements MachinatUser {
 
   get uid(): string {
     return `messenger.${this.pageId}.${this.psid}`;
+  }
+
+  toJSONValue(): MessengerUserValue {
+    const { pageId, psid } = this;
+    return { pageId, psid };
+  }
+
+  typeName(): string {
+    return this.constructor.name;
   }
 }

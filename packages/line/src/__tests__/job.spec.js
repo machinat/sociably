@@ -40,7 +40,7 @@ beforeEach(() => {
 
 describe('chatJobsMaker()', () => {
   it('make push jobs', () => {
-    const channel = new LineChat('_CHANNEL_ID_', 'utob', 'john');
+    const channel = new LineChat('_CHANNEL_ID_', 'user', 'john');
 
     const jobs = chatJobsMaker()(channel, segments);
 
@@ -128,7 +128,7 @@ describe('chatJobsMaker()', () => {
   });
 
   test('make reply job', () => {
-    const channel = new LineChat('_CHANNEL_ID_', 'utob', 'john');
+    const channel = new LineChat('_CHANNEL_ID_', 'user', 'john');
 
     const jobs = chatJobsMaker('__REPLY_TOKEN__')(
       channel,
@@ -167,7 +167,7 @@ describe('chatJobsMaker()', () => {
   });
 
   it('throw if multiple messaging job made when reply', () => {
-    const channel = new LineChat('_CHANNEL_ID_', 'utob', 'john');
+    const channel = new LineChat('_CHANNEL_ID_', 'user', 'john');
 
     expect(() =>
       chatJobsMaker('__REPLY_TOKEN__')(channel, segments)

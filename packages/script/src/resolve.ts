@@ -1,5 +1,5 @@
 /** @internal */ /** */
-/* eslint no-use-before-define: ["error", { "variables": false }] */
+/* eslint @typescript-eslint/no-use-before-define: ["error", { "variables": false }] */
 import invariant from 'invariant';
 import reduce from '@machinat/core/iterator/reduce';
 import formatNode from '@machinat/core/utils/formatNode';

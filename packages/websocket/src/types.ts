@@ -10,11 +10,13 @@ import type { MaybeContainerOf } from '@machinat/core/service/types';
 import type { UnitSegment } from '@machinat/core/renderer/types';
 import type { HTTPRequestInfo } from '@machinat/http/types';
 import type { WebSocketBot } from './bot';
-import type { TopicChannel, UserChannel, ConnectionChannel } from './channel';
+import type {
+  WebSocketTopicChannel,
+  WebSocketUserChannel,
+  WebSocketConnection,
+} from './channel';
 
 export type UpgradeRequestInfo = Omit<HTTPRequestInfo, 'body'>;
-
-export type WebSocketChannel = TopicChannel | UserChannel | ConnectionChannel;
 
 export type EventValue<Kind extends string, Type extends string, Payload> = {
   kind: Kind;
@@ -27,7 +29,7 @@ export type ConnectEventValue = EventValue<'connection', 'connect', null>;
 export type DisconnectEventValue = EventValue<
   'connection',
   'disconnect',
-  ConnectionChannel
+  WebSocketConnection
 >;
 
 export type WebSocketEvent<
@@ -39,7 +41,7 @@ export type WebSocketEvent<
       kind: Kind;
       type: Type;
       payload: Payload;
-      channel: ConnectionChannel;
+      channel: WebSocketConnection;
       user: User;
     }
   : never;
@@ -71,16 +73,16 @@ export type DispatchTarget = ConnectionTarget | TopicTarget | UserTarget;
 export type WebSocketJob = {
   target: DispatchTarget;
   events: EventInput[];
-  whitelist: null | ConnectionChannel[];
-  blacklist: null | ConnectionChannel[];
+  whitelist: null | WebSocketConnection[];
+  blacklist: null | WebSocketConnection[];
 };
 
 export type WebSocketResult = {
-  connections: null | ConnectionChannel[];
+  connections: null | WebSocketConnection[];
 };
 
 export type WebSocketDispatchFrame = DispatchFrame<
-  WebSocketChannel,
+  WebSocketTopicChannel | WebSocketUserChannel | WebSocketConnection,
   WebSocketJob,
   WebSocketBot
 >;
@@ -88,7 +90,7 @@ export type WebSocketDispatchFrame = DispatchFrame<
 export type WebSocketMetadata<AuthInfo> = {
   source: 'web_socket';
   request: UpgradeRequestInfo;
-  connection: ConnectionChannel;
+  connection: WebSocketConnection;
   auth: AuthInfo;
 };
 

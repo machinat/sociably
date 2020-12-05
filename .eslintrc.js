@@ -4,12 +4,9 @@ module.exports = {
     jest: true,
   },
   globals: {
-    __DEV__: false
+    __DEV__: false,
   },
-  plugins: [
-    'prettier',
-    '@typescript-eslint',
-  ],
+  plugins: ['prettier', '@typescript-eslint'],
   extends: [
     'airbnb-base',
     'plugin:@typescript-eslint/recommended',
@@ -17,61 +14,88 @@ module.exports = {
     'plugin:prettier/recommended',
     'prettier/react',
     'prettier/standard',
-    "prettier/@typescript-eslint",
+    'prettier/@typescript-eslint',
     'plugin:import/typescript',
   ],
   rules: {
-    strict: 0,
-    'no-bitwise': 0,
-    'no-nested-ternary': 0,
-    'no-underscore-dangle': 0,
-    'no-cond-assign': 0,
-    'no-unused-expressions': 0,
-    'no-param-reassign': ['error', {
-      props: true,
-      ignorePropertyModificationsFor: ['res'],
-    }],
-    'no-restricted-syntax': ['error',
-      'ForInStatement', 'LabeledStatement', 'WithStatement'
-    ],
-    'lines-between-class-members': ['error',
-      'always', { exceptAfterSingleLine: true }
-    ],
-    'max-classes-per-file': 0,
-    'import/extensions': 0,
-    'import/no-unresolved': ['error', {
-      ignore: ['@machinat/.*']
-    }],
-    'import/no-extraneous-dependencies': ['error', {
-      optionalDependencies: true
-    }],
-    'import/no-cycle': 0,
-    'react/jsx-key': 0,
-    'react/display-name': 0,
-    'react/prop-types': 0,
-    'react/no-unescaped-entities': ['error', {
-      forbid: ['<', '>', '{', '}']
-    }],
-    '@typescript-eslint/no-unused-vars': 0,
-    '@typescript-eslint/no-empty-function': 0,
-    '@typescript-eslint/no-namespace': ['error', {
-      'allowDeclarations': true,
-    }],
-    '@typescript-eslint/ban-types': ['error', {
-      types: {
-        '{}': false,
+    strict: 'off',
+    'no-bitwise': 'off',
+    'no-shadow': 'off',
+    'no-nested-ternary': 'off',
+    'no-underscore-dangle': 'off',
+    'no-cond-assign': 'off',
+    'no-unused-expressions': 'off',
+    'no-use-before-define': 'off',
+    'no-param-reassign': [
+      'error',
+      {
+        props: true,
+        ignorePropertyModificationsFor: ['res'],
       },
-    }]
+    ],
+    'no-restricted-syntax': [
+      'error',
+      'ForInStatement',
+      'LabeledStatement',
+      'WithStatement',
+    ],
+    'lines-between-class-members': [
+      'error',
+      'always',
+      { exceptAfterSingleLine: true },
+    ],
+    'max-classes-per-file': 'off',
+    'import/extensions': 'off',
+    'import/no-unresolved': [
+      'error',
+      {
+        ignore: ['@machinat/.*'],
+      },
+    ],
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        optionalDependencies: true,
+      },
+    ],
+    'import/no-cycle': 'off',
+    'react/jsx-key': 'off',
+    'react/display-name': 'off',
+    'react/prop-types': 'off',
+    'react/no-unescaped-entities': [
+      'error',
+      {
+        forbid: ['<', '>', '{', '}'],
+      },
+    ],
+    '@typescript-eslint/no-unused-vars': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
+    '@typescript-eslint/no-use-before-define': ['error'],
+    '@typescript-eslint/no-namespace': [
+      'error',
+      {
+        allowDeclarations: true,
+      },
+    ],
+    '@typescript-eslint/ban-types': [
+      'error',
+      {
+        types: {
+          '{}': false,
+        },
+      },
+    ],
   },
   overrides: [
     {
       files: '**/__{tests,fixtures,mocks}__/*',
       rules: {
-        'import/no-extraneous-dependencies': 0
-      }
-    }
+        'import/no-extraneous-dependencies': 'off',
+      },
+    },
   ],
-  settings:{
+  settings: {
     react: {
       pragma: 'Machinat',
     },

@@ -15,7 +15,6 @@ const FileState = {
       { provide: Base.StateControllerI, withProvider: ControllerP },
 
       { provide: MODULE_CONFIGS_I, withValue: configs },
-      { provide: StateSerializerI, withValue: JSON },
     ],
   }),
 };

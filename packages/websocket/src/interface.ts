@@ -1,6 +1,6 @@
 import type { Server as WebScoketServer } from 'ws';
 import { abstractInterface, makeInterface } from '@machinat/core/service';
-import { ConnectionChannel } from './channel';
+import { WebSocketConnection } from './channel';
 import type {
   WebSocketJob,
   VerifyLoginFn,
@@ -57,21 +57,21 @@ export abstract class WebSocketClusterBroker {
   abstract start(): Promise<void>;
   abstract stop(): Promise<void>;
   abstract dispatchRemote(
-    _job: WebSocketJob
-  ): Promise<null | ConnectionChannel[]>;
+    job: WebSocketJob
+  ): Promise<null | WebSocketConnection[]>;
 
   abstract subscribeTopicRemote(
-    _connection: ConnectionChannel,
-    _topic: string
+    conn: WebSocketConnection,
+    topic: string
   ): Promise<boolean>;
 
   abstract unsubscribeTopicRemote(
-    _connection: ConnectionChannel,
-    _topic: string
+    conn: WebSocketConnection,
+    topic: string
   ): Promise<boolean>;
 
-  abstract disconnectRemote(_connection: ConnectionChannel): Promise<boolean>;
-  abstract onRemoteEvent(_handler: (job: WebSocketJob) => void): void;
+  abstract disconnectRemote(conn: WebSocketConnection): Promise<boolean>;
+  abstract onRemoteEvent(handler: (job: WebSocketJob) => void): void;
 }
 
 /**

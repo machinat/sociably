@@ -12,7 +12,7 @@ export const refineTelegramAuthData = ({
   username,
   languageCode,
 }: TelegramAuthData): TelegramAuthRefinement => ({
-  user: new TelegramUser({
+  user: new TelegramUser(userId, {
     id: userId,
     is_bot: false,
     first_name: firstName,

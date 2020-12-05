@@ -103,7 +103,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
       source instanceof LineChat
         ? source
         : typeof source === 'string'
-        ? new LineChat(this.botChannelId, 'utob', source)
+        ? new LineChat(this.botChannelId, 'user', source)
         : LineChat.fromMessagingSource(this.botChannelId, source);
 
     return this.engine.render(
@@ -120,14 +120,16 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
     return this.engine.render(null, message, multicastJobsMaker(targets));
   }
 
-  dispatchAPICall(
+  async dispatchAPICall(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     path: string,
     body: null | Record<string, unknown>
-  ): Promise<LineDispatchResponse> {
-    return this.engine.dispatchJobs(null, [
+  ): Promise<LineAPIResult> {
+    const response = await this.engine.dispatchJobs(null, [
       { method, path, body, executionKey: undefined },
     ]);
+
+    return response.results[0];
   }
 }
 

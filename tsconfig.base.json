@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["es2018"],
+    "lib": ["es2019"],
     "module": "commonjs",
     "target": "es2017",
     "strictNullChecks": true,

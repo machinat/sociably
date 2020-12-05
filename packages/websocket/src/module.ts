@@ -1,7 +1,7 @@
 import WS from 'ws';
 import uniqid from 'uniqid';
 import { container, factory } from '@machinat/core/service';
-import { BaseBot } from '@machinat/core/base';
+import { BaseBot, BaseMarshaler } from '@machinat/core/base';
 import type { PlatformModule } from '@machinat/core/types';
 import HTTP from '@machinat/http';
 import type { HTTPUpgradeRouting } from '@machinat/http/types';
@@ -20,6 +20,11 @@ import { BotP } from './bot';
 import { TransmitterP } from './transmitter';
 import { ReceiverP } from './receiver';
 import LocalOnlyBroker from './broker/localOnlyBroker';
+import {
+  WebSocketConnection,
+  WebSocketUserChannel,
+  WebSocketTopicChannel,
+} from './channel';
 import type {
   EventValue,
   VerifyLoginFn,
@@ -105,6 +110,10 @@ const WebSocket = {
           provide: HTTP.UPGRADE_ROUTINGS_I,
           withProvider: upgradeRoutingFactory,
         },
+
+        { provide: BaseMarshaler.TYPINGS_I, withValue: WebSocketConnection },
+        { provide: BaseMarshaler.TYPINGS_I, withValue: WebSocketUserChannel },
+        { provide: BaseMarshaler.TYPINGS_I, withValue: WebSocketTopicChannel },
       ],
 
       startHook: container<Promise<void>>({

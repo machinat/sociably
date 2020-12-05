@@ -1,12 +1,13 @@
 /* eslint-disable import/prefer-default-export */
 import { STATUS_CODES } from 'http';
+import { LineAPIResult } from './types';
 
 export class LineAPIError extends Error {
   info: any;
   code: number;
   status: string;
 
-  constructor(code: number, body: any) {
+  constructor({ code, body }: LineAPIResult) {
     super(
       body.message
         ? body.message +

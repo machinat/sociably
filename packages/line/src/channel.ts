@@ -1,19 +1,26 @@
 import type { MachinatChannel } from '@machinat/core/types';
+import type { Marshallable } from '@machinat/core/base/Marshaler';
 import { LINE } from './constant';
 import type LineUser from './user';
 import type { LineSource } from './types';
 
-type LineChatType = 'room' | 'group' | 'utou' | 'utob';
+type LineChatType = 'room' | 'group' | 'user';
 
-class LineChat implements MachinatChannel {
+type LineChatValue = {
+  channelId: string;
+  type: LineChatType;
+  id: string;
+};
+
+class LineChat implements MachinatChannel, Marshallable<LineChatValue> {
   static fromUser(channelId: string, user: LineUser): LineChat {
-    return new LineChat(channelId, 'utob', user.id);
+    return new LineChat(channelId, 'user', user.id);
   }
 
   static fromMessagingSource(channelId: string, source: LineSource): LineChat {
     switch (source.type) {
       case 'user':
-        return new LineChat(channelId, 'utob', source.userId);
+        return new LineChat(channelId, 'user', source.userId);
       case 'room':
         return new LineChat(channelId, 'room', source.roomId);
       case 'group':
@@ -23,6 +30,10 @@ class LineChat implements MachinatChannel {
           `unknown source "${(source as any).type || String(source)}"`
         );
     }
+  }
+
+  static fromJSONValue({ channelId, type, id }: LineChatValue): LineChat {
+    return new LineChat(channelId, type, id);
   }
 
   platform = LINE;
@@ -38,6 +49,15 @@ class LineChat implements MachinatChannel {
 
   get uid(): string {
     return `line.${this.channelId}.${this.id}`;
+  }
+
+  toJSONValue(): LineChatValue {
+    const { type, channelId, id } = this;
+    return { type, channelId, id };
+  }
+
+  typeName(): string {
+    return this.constructor.name;
   }
 }
 

@@ -13,7 +13,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -26,7 +30,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -39,7 +47,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -52,7 +64,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -65,7 +81,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -78,7 +98,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -91,7 +115,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -104,7 +132,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -117,7 +149,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
   ],
@@ -139,7 +175,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -152,7 +192,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -165,7 +209,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -178,7 +226,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -191,7 +243,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -204,7 +260,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -217,7 +277,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -230,7 +294,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
     Object {
@@ -243,7 +311,11 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {},
+      },
       "success": true,
     },
   ],
@@ -265,7 +337,13 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {
+          "content-type": "application/json",
+        },
+      },
       "success": true,
     },
     undefined,
@@ -291,7 +369,13 @@ Object {
         "method": "POST",
         "path": "v2/bot/message/push",
       },
-      "result": Object {},
+      "result": Object {
+        "body": Object {},
+        "code": 200,
+        "headers": Object {
+          "content-type": "application/json",
+        },
+      },
       "success": true,
     },
     undefined,

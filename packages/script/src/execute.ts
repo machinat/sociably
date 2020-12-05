@@ -134,7 +134,8 @@ const executeCallCommand = async <Vars>(
       )({ platform: channel.platform, channel, vars })
     : {};
 
-  const result = await executeScript(scope, channel, script, index, calleeVars); // eslint-disable-line no-use-before-define
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  const result = await executeScript(scope, channel, script, index, calleeVars);
   const concatedContent = [...content, ...result.content];
 
   if (!result.finished) {

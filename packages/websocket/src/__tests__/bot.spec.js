@@ -4,7 +4,11 @@ import Engine from '@machinat/core/engine';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
 import Worker from '../worker';
-import { ConnectionChannel, UserChannel, TopicChannel } from '../channel';
+import {
+  WebSocketConnection,
+  WebSocketUserChannel,
+  WebSocketTopicChannel,
+} from '../channel';
 import { Event } from '../component';
 import { WebSocketBot } from '../bot';
 
@@ -114,7 +118,7 @@ describe('#render(channel, events)', () => {
     const bot = new WebSocketBot(transmitter, initScope, dispatchWrapper);
     await bot.start();
 
-    const channel = new ConnectionChannel('#server', `#conn`);
+    const channel = new WebSocketConnection('#server', `#conn`);
     transmitter.dispatch.mock.fakeReturnValue([channel]);
 
     const expectedJob = {
@@ -140,11 +144,11 @@ describe('#render(channel, events)', () => {
 
     const connections = new Array(3)
       .fill(0)
-      .map((_, i) => new ConnectionChannel('#server', `#conn${i}`));
+      .map((_, i) => new WebSocketConnection('#server', `#conn${i}`));
 
     transmitter.dispatch.mock.fake(async () => connections);
 
-    const channel = new UserChannel({ platform: 'test', uid: 'jojo.doe' });
+    const channel = new WebSocketUserChannel('jojo.doe');
 
     const expectedJob = {
       target: channel,
@@ -169,11 +173,11 @@ describe('#render(channel, events)', () => {
 
     const connections = new Array(3)
       .fill(0)
-      .map((_, i) => new ConnectionChannel('#server', `#conn${i}`));
+      .map((_, i) => new WebSocketConnection('#server', `#conn${i}`));
 
     transmitter.dispatch.mock.fake(async () => connections);
 
-    const channel = new TopicChannel('foo');
+    const channel = new WebSocketTopicChannel('foo');
 
     const expectedJob = {
       target: channel,
@@ -212,7 +216,7 @@ test('#send()', async () => {
   const bot = new WebSocketBot(transmitter, initScope, dispatchWrapper);
   await bot.start();
 
-  const connection = new ConnectionChannel('#server', `#conn`);
+  const connection = new WebSocketConnection('#server', `#conn`);
   transmitter.dispatch.mock.fake(async () => [connection]);
 
   const events = [
@@ -243,7 +247,7 @@ test('#sendUser()', async () => {
 
   const connections = new Array(3)
     .fill(0)
-    .map((_, i) => new ConnectionChannel('#server', `#conn${i}`));
+    .map((_, i) => new WebSocketConnection('#server', `#conn${i}`));
   transmitter.dispatch.mock.fake(async () => connections);
 
   const user = { platform: 'test', uid: 'jojo.doe' };
@@ -253,7 +257,7 @@ test('#sendUser()', async () => {
   ];
 
   const expectedJob = {
-    target: new UserChannel(user),
+    target: new WebSocketUserChannel(user.uid),
     events,
     whitelist: null,
     blacklist: null,
@@ -275,7 +279,7 @@ test('#sendTopic()', async () => {
 
   const connections = new Array(3)
     .fill(0)
-    .map((_, i) => new ConnectionChannel('#server', `#conn${i}`));
+    .map((_, i) => new WebSocketConnection('#server', `#conn${i}`));
   transmitter.dispatch.mock.fake(async () => connections);
 
   const topic = 'hello_world';
@@ -285,7 +289,7 @@ test('#sendTopic()', async () => {
   ];
 
   const expectedJob = {
-    target: new TopicChannel(topic),
+    target: new WebSocketTopicChannel(topic),
     events,
     whitelist: null,
     blacklist: null,
@@ -303,7 +307,7 @@ test('#sendTopic()', async () => {
 
 test('#disconnect(channel, socketId, reason)', async () => {
   const bot = new WebSocketBot(transmitter, initScope, dispatchWrapper);
-  const connection = new ConnectionChannel('#server', '#conn');
+  const connection = new WebSocketConnection('#server', '#conn');
 
   transmitter.disconnect.mock.fake(async () => false);
 
@@ -318,11 +322,11 @@ test('#disconnect(channel, socketId, reason)', async () => {
 
 test('#subscribeTopic(channel, socketId, reason)', async () => {
   const bot = new WebSocketBot(transmitter, initScope, dispatchWrapper);
-  const connection = new ConnectionChannel('#server', '#conn');
+  const connection = new WebSocketConnection('#server', '#conn');
 
   transmitter.subscribeTopic.mock.fake(async () => false);
 
-  const topic = new TopicChannel('foo', 'bar');
+  const topic = new WebSocketTopicChannel('foo', 'bar');
   await expect(bot.subscribeTopic(connection, topic)).resolves.toBe(false);
 
   transmitter.subscribeTopic.mock.fake(async () => true);
@@ -337,11 +341,11 @@ test('#subscribeTopic(channel, socketId, reason)', async () => {
 
 test('#unsubscribeTopic(channel, socketId, reason)', async () => {
   const bot = new WebSocketBot(transmitter, initScope, dispatchWrapper);
-  const connection = new ConnectionChannel('#server', '#conn');
+  const connection = new WebSocketConnection('#server', '#conn');
 
   transmitter.unsubscribeTopic.mock.fake(async () => false);
 
-  const topic = new TopicChannel('foo', 'bar');
+  const topic = new WebSocketTopicChannel('foo', 'bar');
   await expect(bot.unsubscribeTopic(connection, topic)).resolves.toBe(false);
 
   transmitter.unsubscribeTopic.mock.fake(async () => true);

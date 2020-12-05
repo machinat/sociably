@@ -1,15 +1,21 @@
 import { provider } from '@machinat/core/service';
-import { BaseStateControllerI } from '@machinat/core/base';
 import type {
-  MachinatUserProfile,
-  MachinatProfiler,
+  MachinatProfile,
+  UserProfiler,
 } from '@machinat/core/base/Profiler';
+import type { Marshallable } from '@machinat/core/base/Marshaler';
 import { BotP } from './bot';
+import type LineChat from './channel';
 import type LineUser from './user';
 import type { LineRawUserProfile } from './types';
 import { LINE } from './constant';
 
-export class LineUserProfile implements MachinatUserProfile {
+export class LineUserProfile
+  implements MachinatProfile, Marshallable<LineRawUserProfile> {
+  static fromJSONValue(data: LineRawUserProfile): LineUserProfile {
+    return new LineUserProfile(data);
+  }
+
   data: LineRawUserProfile;
   platform = LINE;
 
@@ -25,6 +31,10 @@ export class LineUserProfile implements MachinatUserProfile {
     return this.data.displayName;
   }
 
+  get displayName(): string {
+    return this.data.displayName;
+  }
+
   get pictureURL(): undefined | string {
     return this.data.pictureUrl;
   }
@@ -33,82 +43,91 @@ export class LineUserProfile implements MachinatUserProfile {
     return this.data.statusMessage;
   }
 
-  toJSON(): any {
-    const { data, id, name, pictureURL } = this;
-    return {
-      platform: LINE,
-      data,
-      id,
-      name,
-      pictureURL,
-    };
+  toJSONValue(): LineRawUserProfile {
+    return this.data;
+  }
+
+  typeName(): string {
+    return this.constructor.name;
   }
 }
 
-/** @ignore */
-const PROFILE_KEY = '$$line:user:profile';
-
-type ProfileCache = {
-  data: LineRawUserProfile;
-  fetchAt: number;
+type LineGroupSummary = {
+  groupId: string;
+  groupName: string;
+  pictureUrl: string;
 };
 
-type ProfilerOptions = {
-  profileCacheTime?: number;
-};
+export class LineGroupProfile
+  implements MachinatProfile, Marshallable<LineGroupSummary> {
+  static fromJSONValue(data: LineGroupSummary): LineGroupProfile {
+    return new LineGroupProfile(data);
+  }
+
+  data: LineGroupSummary;
+  platform = LINE;
+
+  get id(): string {
+    return this.data.groupId;
+  }
+
+  get name(): string {
+    return this.data.groupName;
+  }
+
+  get pictureURL(): undefined | string {
+    return this.data.pictureUrl;
+  }
+
+  constructor(data: LineGroupSummary) {
+    this.data = data;
+  }
+
+  toJSONValue(): LineGroupSummary {
+    return this.data;
+  }
+
+  typeName(): string {
+    return this.constructor.name;
+  }
+}
 
 /**
  * @category Provider
  */
-export class LineProfiler implements MachinatProfiler {
+export class LineProfiler implements UserProfiler<LineUser> {
   bot: BotP;
-  stateController: null | BaseStateControllerI;
-  profileCacheTime: number;
 
-  constructor(
-    bot: BotP,
-    stateController: null | BaseStateControllerI,
-    { profileCacheTime }: ProfilerOptions = {}
-  ) {
+  constructor(bot: BotP) {
     this.bot = bot;
-    this.stateController = stateController;
-    this.profileCacheTime = profileCacheTime || 86400000;
   }
 
   async getUserProfile(user: LineUser): Promise<LineUserProfile> {
-    if (this.stateController) {
-      const cached = await this.stateController
-        .userState(user)
-        .get<ProfileCache>(PROFILE_KEY);
-
-      if (cached && cached.fetchAt > Date.now() - this.profileCacheTime) {
-        return new LineUserProfile(cached.data);
-      }
-    }
-
-    const response = await this.bot.dispatchAPICall(
+    const { body: profileData } = await this.bot.dispatchAPICall(
       'GET',
       `v2/bot/profile/${user.id}`,
       null
     );
-    const rawProfile: LineRawUserProfile = response.results[0];
 
-    if (this.stateController) {
-      await this.stateController
-        .userState(user)
-        .set<ProfileCache>(PROFILE_KEY, {
-          data: rawProfile,
-          fetchAt: Date.now(),
-        });
-    }
+    return new LineUserProfile(profileData);
+  }
 
-    return new LineUserProfile(rawProfile);
+  async getGroupProfile(
+    chat: LineChat & { type: 'group' }
+  ): Promise<LineGroupProfile> {
+    const { body: groupSummary } = await this.bot.dispatchAPICall(
+      'GET',
+      `v2/bot/group/${chat.id}/summary`,
+      null
+    );
+
+    return new LineGroupProfile(groupSummary);
   }
 }
 
 export const ProfilerP = provider<LineProfiler>({
   lifetime: 'scoped',
-  deps: [BotP, { require: BaseStateControllerI, optional: true }],
+  deps: [BotP],
 })(LineProfiler);
 
 export type ProfilerP = LineProfiler;

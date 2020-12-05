@@ -4,8 +4,10 @@ import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import Line from '../module';
 import { LineReceiver } from '../receiver';
-import { LineProfiler } from '../profiler';
+import { LineProfiler, LineUserProfile, LineGroupProfile } from '../profiler';
 import { LineBot } from '../bot';
+import LineUser from '../user';
+import LineChat from '../channel';
 
 it('export interfaces', () => {
   expect(Line.Receiver).toBe(LineReceiver);
@@ -131,13 +133,22 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bots, profilers] = app.useServices([
+    const [bots, profilers, marshalTypes] = app.useServices([
       Base.Bot.PLATFORMS_I,
       Base.Profiler.PLATFORMS_I,
+      Base.Marshaler.TYPINGS_I,
     ]);
 
     expect(bots.get('line')).toBeInstanceOf(LineBot);
     expect(profilers.get('line')).toBeInstanceOf(LineProfiler);
+    expect(marshalTypes).toEqual(
+      expect.arrayContaining([
+        LineChat,
+        LineUser,
+        LineUserProfile,
+        LineGroupProfile,
+      ])
+    );
   });
 
   test('default entryPath to "/"', async () => {

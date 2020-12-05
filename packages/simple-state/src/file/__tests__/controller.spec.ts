@@ -359,9 +359,9 @@ test('reflect content changes on storage file', async () => {
     tmpPath,
     `{
        "channelStates": {
-        "foo": {
-          "key1": "foooo",
-          "key2": "baz"
+         "foo": {
+           "key1": "foooo",
+           "key2": "baz"
          }
        }
      }`
@@ -377,7 +377,70 @@ test('reflect content changes on storage file', async () => {
   );
 });
 
-test('custom serielizer', async () => {
+test('custom marshaler', async () => {
+  const marshaler = moxy({
+    marshal: (obj) => ({ hello: 'world', value: obj }),
+    unmarshal: ({ value }) => value,
+  });
+
+  const tmpPath = tmpNameSync();
+  fs.writeFileSync(
+    tmpPath,
+    `{
+       "channelStates": {
+         "foo": {
+           "key1": {
+             "hello": "world",
+             "value": 123
+           }
+         }
+       }
+     }`
+  );
+
+  const controller = new FileStateController({ path: tmpPath }, marshaler);
+
+  const fooState = controller.channelState(fooChannel);
+
+  await expect(fooState.get('key1')).resolves.toBe(123);
+  expect(marshaler.unmarshal.mock).toHaveBeenCalledWith({
+    hello: 'world',
+    value: 123,
+  });
+
+  await fooState.set('key2', 456);
+  await delay(20);
+  expect(marshaler.marshal.mock).toHaveBeenCalledWith(456);
+
+  await fooState.update('key1', (v: any) => v + 666);
+  await delay(20);
+  expect(marshaler.marshal.mock).toHaveBeenCalledWith(789);
+
+  await expect(fooState.getAll()).resolves.toEqual(
+    new Map([
+      ['key1', 789],
+      ['key2', 456],
+    ])
+  );
+  expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
+    Object {
+      "channelStates": Object {
+        "foo": Object {
+          "key1": Object {
+            "hello": "world",
+            "value": 789,
+          },
+          "key2": Object {
+            "hello": "world",
+            "value": 456,
+          },
+        },
+      },
+    }
+  `);
+});
+
+test('custom serializer', async () => {
   const serializer = moxy({
     stringify() {
       return '_UPDATED_MAGICALLY_ENCODED_DATA_';
@@ -396,7 +459,11 @@ test('custom serielizer', async () => {
   const tmpPath = tmpNameSync();
   fs.writeFileSync(tmpPath, '_MAGICALLY_ENCODED_DATA_');
 
-  const controller = new FileStateController({ path: tmpPath }, serializer);
+  const controller = new FileStateController(
+    { path: tmpPath },
+    undefined,
+    serializer
+  );
 
   const fooChannelState = controller.channelState(fooChannel);
   await expect(fooChannelState.get('from')).resolves.toBe('MAGIC');

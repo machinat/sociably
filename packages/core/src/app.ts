@@ -7,7 +7,7 @@ import type {
   ServiceProvision,
   ResolveDependencies,
 } from './service/types';
-import { BaseBot, BaseProfiler } from './base';
+import { BaseBot, BaseProfiler, BaseMarshaler } from './base';
 import type {
   AppConfig,
   EventContext,
@@ -112,6 +112,7 @@ export default class MachinatApp<
     const moduleOnlySpace = new ServiceSpace(null, [
       BaseBot,
       BaseProfiler,
+      BaseMarshaler,
       ...moduleProvisions,
     ]);
 

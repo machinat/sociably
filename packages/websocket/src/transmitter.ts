@@ -3,10 +3,10 @@ import { MachinatUser } from '@machinat/core/types';
 import { BrokerI, SERVER_ID_I, PLATFORM_MOUNTER_I } from './interface';
 import { EventInput, WebSocketJob, WebSocketPlatformMounter } from './types';
 import Socket from './socket';
-import { ConnectionChannel, TopicChannel } from './channel';
+import { WebSocketConnection, WebSocketTopicChannel } from './channel';
 
 type ConnectionState = {
-  channel: ConnectionChannel;
+  channel: WebSocketConnection;
   user: null | MachinatUser;
   socket: Socket;
   attachedTopics: Set<string>;
@@ -14,8 +14,8 @@ type ConnectionState = {
 
 /** @internal */
 const findConnection = (
-  { serverId, connectionId }: ConnectionChannel,
-  list: ConnectionChannel[]
+  { serverId, connectionId }: WebSocketConnection,
+  list: WebSocketConnection[]
 ) =>
   list.find((c) => c.serverId === serverId && c.connectionId === connectionId);
 
@@ -56,7 +56,7 @@ export class WebSocketTransmitter {
   }
 
   addLocalConnection(
-    channel: ConnectionChannel,
+    channel: WebSocketConnection,
     socket: Socket,
     user: null | MachinatUser
   ): boolean {
@@ -84,7 +84,7 @@ export class WebSocketTransmitter {
     return true;
   }
 
-  removeLocalConnection({ id: connId }: ConnectionChannel): boolean {
+  removeLocalConnection({ id: connId }: WebSocketConnection): boolean {
     const connectionState = this._connectionStates.get(connId);
     if (connectionState === undefined) {
       return false;
@@ -102,8 +102,8 @@ export class WebSocketTransmitter {
   }
 
   async subscribeTopic(
-    conn: ConnectionChannel,
-    topic: string | TopicChannel
+    conn: WebSocketConnection,
+    topic: string | WebSocketTopicChannel
   ): Promise<boolean> {
     const topicName = typeof topic === 'string' ? topic : topic.name;
 
@@ -129,8 +129,8 @@ export class WebSocketTransmitter {
   }
 
   async unsubscribeTopic(
-    conn: ConnectionChannel,
-    topic: string | TopicChannel
+    conn: WebSocketConnection,
+    topic: string | WebSocketTopicChannel
   ): Promise<boolean> {
     const topicName = typeof topic === 'string' ? topic : topic.name;
 
@@ -156,7 +156,7 @@ export class WebSocketTransmitter {
     return true;
   }
 
-  async dispatch(job: WebSocketJob): Promise<null | ConnectionChannel[]> {
+  async dispatch(job: WebSocketJob): Promise<null | WebSocketConnection[]> {
     const { target, events, whitelist, blacklist } = job;
 
     if (target.type === 'connection') {
@@ -175,7 +175,7 @@ export class WebSocketTransmitter {
 
     const remotePromise = this._broker.dispatchRemote(job);
 
-    let localPromise: Promise<ConnectionChannel[] | null> | null;
+    let localPromise: Promise<WebSocketConnection[] | null> | null;
     if (target.type === 'user') {
       const connections = this._getLocalConnectionsOfUser(target.userUId);
 
@@ -204,7 +204,10 @@ export class WebSocketTransmitter {
       : [...localResults, ...remoteResults];
   }
 
-  async disconnect(conn: ConnectionChannel, reason?: string): Promise<boolean> {
+  async disconnect(
+    conn: WebSocketConnection,
+    reason?: string
+  ): Promise<boolean> {
     const { serverId, connectionId } = conn;
     if (serverId !== this.serverId) {
       return this._broker.disconnectRemote(conn);
@@ -260,11 +263,11 @@ export class WebSocketTransmitter {
   private async _sendLocalConnections(
     connections: ConnectionState[],
     events: EventInput[],
-    whitelist: null | ConnectionChannel[],
-    blacklist: null | ConnectionChannel[]
-  ): Promise<null | ConnectionChannel[]> {
+    whitelist: null | WebSocketConnection[],
+    blacklist: null | WebSocketConnection[]
+  ): Promise<null | WebSocketConnection[]> {
     const promises: Promise<number | null>[] = [];
-    const sentChannels: ConnectionChannel[] = [];
+    const sentChannels: WebSocketConnection[] = [];
 
     for (const { channel, socket } of connections) {
       if (

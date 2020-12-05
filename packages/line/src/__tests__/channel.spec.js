@@ -1,44 +1,67 @@
 import LineUser from '../user';
 import LineChat from '../channel';
 
-test('utob channel', () => {
-  const channel = new LineChat('_CHANNEL_ID_', 'utob', '_USER_ID_');
+test('user chat', () => {
+  const chat = new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_');
 
-  expect(channel.channelId).toBe('_CHANNEL_ID_');
-  expect(channel.type).toBe('utob');
-  expect(channel.id).toBe('_USER_ID_');
+  expect(chat.channelId).toBe('_CHANNEL_ID_');
+  expect(chat.type).toBe('user');
+  expect(chat.id).toBe('_USER_ID_');
 
-  expect(channel.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._USER_ID_"`);
+  expect(chat.platform).toBe('line');
+  expect(chat.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._USER_ID_"`);
+
+  expect(chat.typeName()).toBe('LineChat');
+  expect(chat.toJSONValue()).toMatchInlineSnapshot(`
+    Object {
+      "channelId": "_CHANNEL_ID_",
+      "id": "_USER_ID_",
+      "type": "user",
+    }
+  `);
+  expect(LineChat.fromJSONValue(chat.toJSONValue())).toStrictEqual(chat);
 });
 
-test('utou channel', () => {
-  const channel = new LineChat('_CHANNEL_ID_', 'utou', '_UTOU_ID_');
+test('room chat', () => {
+  const chat = new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_');
 
-  expect(channel.channelId).toBe('_CHANNEL_ID_');
-  expect(channel.type).toBe('utou');
-  expect(channel.id).toBe('_UTOU_ID_');
+  expect(chat.channelId).toBe('_CHANNEL_ID_');
+  expect(chat.type).toBe('room');
+  expect(chat.id).toBe('_ROOM_ID_');
 
-  expect(channel.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._UTOU_ID_"`);
+  expect(chat.platform).toBe('line');
+  expect(chat.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._ROOM_ID_"`);
+
+  expect(chat.typeName()).toBe('LineChat');
+  expect(chat.toJSONValue()).toMatchInlineSnapshot(`
+    Object {
+      "channelId": "_CHANNEL_ID_",
+      "id": "_ROOM_ID_",
+      "type": "room",
+    }
+  `);
+  expect(LineChat.fromJSONValue(chat.toJSONValue())).toStrictEqual(chat);
 });
 
-test('room channel', () => {
-  const channel = new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_');
+test('group chat', () => {
+  const chat = new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_');
 
-  expect(channel.channelId).toBe('_CHANNEL_ID_');
-  expect(channel.type).toBe('room');
-  expect(channel.id).toBe('_ROOM_ID_');
+  expect(chat.channelId).toBe('_CHANNEL_ID_');
+  expect(chat.type).toBe('group');
+  expect(chat.id).toBe('_GROUP_ID_');
 
-  expect(channel.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._ROOM_ID_"`);
-});
+  expect(chat.platform).toBe('line');
+  expect(chat.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._GROUP_ID_"`);
 
-test('group channel', () => {
-  const channel = new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_');
-
-  expect(channel.channelId).toBe('_CHANNEL_ID_');
-  expect(channel.type).toBe('group');
-  expect(channel.id).toBe('_GROUP_ID_');
-
-  expect(channel.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._GROUP_ID_"`);
+  expect(chat.typeName()).toBe('LineChat');
+  expect(chat.toJSONValue()).toMatchInlineSnapshot(`
+    Object {
+      "channelId": "_CHANNEL_ID_",
+      "id": "_GROUP_ID_",
+      "type": "group",
+    }
+  `);
+  expect(LineChat.fromJSONValue(chat.toJSONValue())).toStrictEqual(chat);
 });
 
 describe('LineChat.fromMessagingSource(channelId, source)', () => {
@@ -48,7 +71,7 @@ describe('LineChat.fromMessagingSource(channelId, source)', () => {
         type: 'user',
         userId: 'john_doe',
       })
-    ).toEqual(new LineChat('_CHANNEL_ID_', 'utob', 'john_doe'));
+    ).toEqual(new LineChat('_CHANNEL_ID_', 'user', 'john_doe'));
   });
 
   test('room source', () => {
@@ -78,5 +101,5 @@ test('LineChat.fromUser(channelId, user)', () => {
       '_CHANNEL_ID_',
       new LineUser('_PORVIDER_ID_', '_USER_ID_')
     )
-  ).toEqual(new LineChat('_CHANNEL_ID_', 'utob', '_USER_ID_'));
+  ).toEqual(new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'));
 });

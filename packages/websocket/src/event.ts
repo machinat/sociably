@@ -2,7 +2,7 @@
 import { MachinatUser } from '@machinat/core/types';
 import { WEBSOCKET } from './constant';
 import type { WebSocketEvent, EventValue } from './types';
-import { ConnectionChannel } from './channel';
+import { WebSocketConnection } from './channel';
 
 const WebEventProto = {
   platform: WEBSOCKET,
@@ -15,7 +15,7 @@ const createEvent = <
   kind: undefined | string,
   type: string,
   payload: any,
-  channel: ConnectionChannel,
+  channel: WebSocketConnection,
   user: User
 ): WebSocketEvent<Value, User> => {
   const event: WebSocketEvent<Value, User> = Object.create(WebEventProto);

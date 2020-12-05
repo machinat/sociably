@@ -3,8 +3,18 @@ import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import Telegram from '../module';
+import {
+  TelegramChat,
+  TelegramChatInstance,
+  TelegramChatTarget,
+} from '../channel';
+import TelegramUser from '../user';
 import { TelegramReceiver } from '../receiver';
-import { TelegramProfiler } from '../profiler';
+import {
+  TelegramProfiler,
+  TelegramUserProfile,
+  TelegramChatProfile,
+} from '../profiler';
 import { TelegramBot } from '../bot';
 
 it('export interfaces', () => {
@@ -128,13 +138,24 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bots, profilers]: any = app.useServices([
+    const [bots, profilers, marshalTypes]: any = app.useServices([
       Base.Bot.PLATFORMS_I,
       Base.Profiler.PLATFORMS_I,
+      Base.Marshaler.TYPINGS_I,
     ]);
 
     expect(bots.get('telegram')).toBeInstanceOf(TelegramBot);
     expect(profilers.get('telegram')).toBeInstanceOf(TelegramProfiler);
+    expect(marshalTypes).toEqual(
+      expect.arrayContaining([
+        TelegramUser,
+        TelegramChat,
+        TelegramChatInstance,
+        TelegramChatTarget,
+        TelegramUserProfile,
+        TelegramChatProfile,
+      ])
+    );
   });
 
   test('default entryPath to "/"', async () => {

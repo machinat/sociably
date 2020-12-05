@@ -57,7 +57,7 @@ test('channel api call getter throw if type of channel is user', async () => {
 
   expect(() =>
     value[CHANNEL_REQUEST_GETTER](
-      new LineChat('_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
+      new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_')
     )
   ).toThrowErrorMatchingInlineSnapshot(
     `"<Leave /> should cannot be used within an user channel"`
@@ -69,7 +69,7 @@ test('bulk api call getter throw', async () => {
 
   expect(() =>
     value[BULK_REQUEST_GETTER](
-      new LineChat('_BOT_CHANNEL_ID_', 'utob', '_USER_ID_')
+      new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_')
     )
   ).toThrowErrorMatchingInlineSnapshot(`"cannot <Leave/> using multicast api"`);
 });

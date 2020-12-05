@@ -201,7 +201,11 @@ export type LineJob = {
   executionKey: undefined | string;
 };
 
-export type LineAPIResult = any;
+export type LineAPIResult = {
+  code: number;
+  headers: Record<string, string>;
+  body: any;
+};
 
 export type LineDispatchResponse = DispatchResponse<LineJob, LineAPIResult>;
 
@@ -222,7 +226,6 @@ export type LinePlatformConfigs = {
   shouldValidateRequest?: boolean;
   accessToken: string;
   connectionCapicity?: number;
-  profileCacheTime?: number;
   liffChannelIds?: string[];
   noServer?: boolean;
   eventMiddlewares?: (

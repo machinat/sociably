@@ -1,21 +1,27 @@
 import { provider } from '@machinat/core/service';
-import { BaseStateControllerI } from '@machinat/core/base';
 import type {
-  MachinatUserProfile,
-  MachinatProfiler,
+  MachinatProfile,
+  UserProfiler,
 } from '@machinat/core/base/Profiler';
+import type { Marshallable } from '@machinat/core/base/Marshaler';
 
 import { BotP } from './bot';
 import type MessengerUser from './user';
 import type { MessengerRawUserProfile } from './types';
+import { PLATFORM_CONFIGS_I } from './interface';
 import { MESSENGER } from './constant';
 
-export class MessengerUserProfile implements MachinatUserProfile {
+export class MessengerUserProfile
+  implements MachinatProfile, Marshallable<MessengerRawUserProfile> {
+  static fromJSONValue(data: MessengerRawUserProfile): MessengerUserProfile {
+    return new MessengerUserProfile(data);
+  }
+
   data: MessengerRawUserProfile;
   platform = MESSENGER;
 
-  constructor(rawProfile: MessengerRawUserProfile) {
-    this.data = rawProfile;
+  constructor(data: MessengerRawUserProfile) {
+    this.data = data;
   }
 
   get id(): string {
@@ -49,10 +55,15 @@ export class MessengerUserProfile implements MachinatUserProfile {
   get gender(): undefined | string {
     return this.data.gender;
   }
-}
 
-/** @ignore */
-const PROFILE_KEY = '$$messenger:user:profile';
+  toJSONValue(): MessengerRawUserProfile {
+    return this.data;
+  }
+
+  typeName(): string {
+    return this.constructor.name;
+  }
+}
 
 /** @ignore */
 const DEFAULT_PROFILE_FIELDS = [
@@ -63,13 +74,7 @@ const DEFAULT_PROFILE_FIELDS = [
   'profile_pic',
 ];
 
-type ProfileCache = {
-  data: MessengerRawUserProfile;
-  fetchAt: number;
-};
-
 type ProfilerOptions = {
-  profileCacheTime?: number;
   optionalProfileFields?: ('locale' | 'timezone' | 'gender')[];
 };
 
@@ -77,51 +82,23 @@ type ProfilerOptions = {
  * MessengerProfiler fetch user profile from Messenger platform.
  * @category Provider
  */
-export class MessengerProfiler implements MachinatProfiler {
+export class MessengerProfiler implements UserProfiler<MessengerUser> {
   bot: BotP;
-  stateController: null | BaseStateControllerI;
-  profileCacheTime: number;
-  _fieldsParam: string;
+  optionalUserFields: string;
 
-  constructor(
-    bot: BotP,
-    stateController: null | BaseStateControllerI,
-    { profileCacheTime, optionalProfileFields = [] }: ProfilerOptions = {}
-  ) {
+  constructor(bot: BotP, { optionalProfileFields = [] }: ProfilerOptions = {}) {
     this.bot = bot;
-    this.stateController = stateController;
-    this.profileCacheTime = profileCacheTime || 86400000;
-    this._fieldsParam = [
+    this.optionalUserFields = [
       ...optionalProfileFields,
       ...DEFAULT_PROFILE_FIELDS,
     ].join(',');
   }
 
   async getUserProfile(user: MessengerUser): Promise<MessengerUserProfile> {
-    if (this.stateController) {
-      const cached = await this.stateController
-        .userState(user)
-        .get<ProfileCache>(PROFILE_KEY);
-
-      if (cached && cached.fetchAt > Date.now() - this.profileCacheTime) {
-        return new MessengerUserProfile(cached.data);
-      }
-    }
-
-    const response = await this.bot.dispatchAPICall(
+    const { body: rawProfile } = await this.bot.dispatchAPICall(
       'GET',
-      `${user.id}?fields=${this._fieldsParam}`
+      `${user.id}?fields=${this.optionalUserFields}`
     );
-    const rawProfile: MessengerRawUserProfile = response.results[0].body;
-
-    if (this.stateController) {
-      await this.stateController
-        .userState(user)
-        .set<ProfileCache>(PROFILE_KEY, {
-          data: rawProfile,
-          fetchAt: Date.now(),
-        });
-    }
 
     return new MessengerUserProfile(rawProfile);
   }
@@ -129,7 +106,7 @@ export class MessengerProfiler implements MachinatProfiler {
 
 export const ProfilerP = provider<MessengerProfiler>({
   lifetime: 'scoped',
-  deps: [BotP, { require: BaseStateControllerI, optional: true }],
+  deps: [BotP, PLATFORM_CONFIGS_I],
 })(MessengerProfiler);
 
 export type ProfilerP = MessengerProfiler;

@@ -14,7 +14,7 @@ import type { UpgradeHandler } from '@machinat/http/types';
 
 import { TransmitterP } from './transmitter';
 import { BotP } from './bot';
-import { ConnectionChannel } from './channel';
+import { WebSocketConnection } from './channel';
 import createEvent from './event';
 import {
   WS_SERVER_I,
@@ -43,7 +43,7 @@ import Socket, {
 type IntervalID = ReturnType<typeof setInterval>;
 
 type ConnectionInfo<Auth> = {
-  connection: ConnectionChannel;
+  connection: WebSocketConnection;
   user: null | MachinatUser;
   auth: Auth;
   expireAt: null | Date;
@@ -233,7 +233,7 @@ export class WebSocketReceiver<
         socketState.connections.set(connId, {
           user,
           auth: authInfo,
-          connection: new ConnectionChannel(this._serverId, connId),
+          connection: new WebSocketConnection(this._serverId, connId),
           expireAt: expireAt || null,
         });
 

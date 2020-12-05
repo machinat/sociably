@@ -1,7 +1,7 @@
 import type { PlatformModule } from '@machinat/core/types';
 import type { ServiceProvision } from '@machinat/core/service/types';
 import { container, factory } from '@machinat/core/service';
-import { BaseBot, BaseProfiler } from '@machinat/core/base';
+import { BaseBot, BaseProfiler, BaseMarshaler } from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
 
@@ -9,7 +9,9 @@ import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { MESSENGER } from './constant';
 import { BotP } from './bot';
 import { ReceiverP } from './receiver';
-import { ProfilerP } from './profiler';
+import { ProfilerP, MessengerUserProfile } from './profiler';
+import MessengerChat from './channel';
+import MessengerUser from './user';
 import type {
   MessengerPlatformConfigs,
   MessengerEventContext,
@@ -61,6 +63,9 @@ const Messenger = {
       },
 
       { provide: PLATFORM_CONFIGS_I, withValue: configs },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: MessengerChat },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: MessengerUser },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: MessengerUserProfile },
     ];
 
     if (configs.noServer !== true) {

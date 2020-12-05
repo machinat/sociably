@@ -3,7 +3,9 @@ import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import Messenger from '../module';
-import { MessengerProfiler } from '../profiler';
+import MessengerChat from '../channel';
+import MessengerUser from '../user';
+import { MessengerUserProfile, MessengerProfiler } from '../profiler';
 import { MessengerReceiver } from '../receiver';
 import { MessengerBot } from '../bot';
 
@@ -140,15 +142,23 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, bots, profilers] = app.useServices([
+    const [bot, bots, profilers, marshalTypes] = app.useServices([
       MessengerBot,
       Base.Bot.PLATFORMS_I,
       Base.Profiler.PLATFORMS_I,
+      Base.Marshaler.TYPINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
     expect(bots.get('messenger')).toBe(bot);
     expect(profilers.get('messenger')).toBeInstanceOf(MessengerProfiler);
+    expect(marshalTypes).toEqual(
+      expect.arrayContaining([
+        MessengerChat,
+        MessengerUser,
+        MessengerUserProfile,
+      ])
+    );
 
     bot.stop();
   });

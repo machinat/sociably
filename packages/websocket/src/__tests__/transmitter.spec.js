@@ -3,7 +3,11 @@ import WS from 'ws';
 import { WebSocketTransmitter } from '../transmitter';
 import Socket from '../socket';
 import LocalOnlyBroker from '../broker/localOnlyBroker';
-import { ConnectionChannel, TopicChannel, UserChannel } from '../channel';
+import {
+  WebSocketConnection,
+  WebSocketTopicChannel,
+  WebSocketUserChannel,
+} from '../channel';
 
 const request = {
   method: 'GET',
@@ -28,8 +32,8 @@ beforeEach(() => {
 
 test('addLocalConnection() and removeLocalConnection()', () => {
   const transmitter = new WebSocketTransmitter(serverId, broker, errorHandler);
-  const fooConn = new ConnectionChannel('#server', '#foo');
-  const barConn = new ConnectionChannel('#server', '#bar');
+  const fooConn = new WebSocketConnection('#server', '#foo');
+  const barConn = new WebSocketConnection('#server', '#bar');
 
   expect(transmitter.addLocalConnection(fooConn, socket, john)).toBe(true);
   expect(transmitter.addLocalConnection(barConn, socket, jane)).toBe(true);
@@ -51,7 +55,7 @@ describe('subscribeTopic() and unsubscribeTopic()', () => {
       broker,
       errorHandler
     );
-    const conn = new ConnectionChannel(serverId, '#conn');
+    const conn = new WebSocketConnection(serverId, '#conn');
 
     transmitter.addLocalConnection(conn, socket, john);
 
@@ -74,7 +78,7 @@ describe('subscribeTopic() and unsubscribeTopic()', () => {
       broker,
       errorHandler
     );
-    const remoteConn = new ConnectionChannel('#remote', '#conn');
+    const remoteConn = new WebSocketConnection('#remote', '#conn');
 
     broker.subscribeTopicRemote.mock.fake(async () => true);
     await expect(transmitter.subscribeTopic(remoteConn, 'foo')).resolves.toBe(
@@ -109,7 +113,7 @@ describe('disconnect()', () => {
       broker,
       errorHandler
     );
-    const conn = new ConnectionChannel(serverId, '#conn');
+    const conn = new WebSocketConnection(serverId, '#conn');
 
     socket.disconnect.mock.fake(async () => 0);
     transmitter.addLocalConnection(conn, socket, jane);
@@ -144,8 +148,8 @@ describe('disconnect()', () => {
 });
 
 describe('dispatch()', () => {
-  const conn1 = new ConnectionChannel(serverId, 'conn#1');
-  const conn2 = new ConnectionChannel(serverId, 'conn#2');
+  const conn1 = new WebSocketConnection(serverId, 'conn#1');
+  const conn2 = new WebSocketConnection(serverId, 'conn#2');
 
   it('dispatch events to local connection target', async () => {
     const transmitter = new WebSocketTransmitter(
@@ -194,7 +198,7 @@ describe('dispatch()', () => {
       broker,
       errorHandler
     );
-    const remoteConn = new ConnectionChannel('#remote', '#conn_remote');
+    const remoteConn = new WebSocketConnection('#remote', '#conn_remote');
 
     const events = [
       { type: 'greet', payload: 'hello' },
@@ -229,15 +233,15 @@ describe('dispatch()', () => {
     );
     socket.dispatch.mock.fake(async () => 0);
 
-    const remoteConn1 = new ConnectionChannel('#remote', '#conn1');
-    const remoteConn2 = new ConnectionChannel('#remote', '#conn2');
+    const remoteConn1 = new WebSocketConnection('#remote', '#conn1');
+    const remoteConn2 = new WebSocketConnection('#remote', '#conn2');
 
     transmitter.addLocalConnection(conn1, socket, john);
     transmitter.addLocalConnection(conn2, socket, jane);
 
-    const fooChannel = new TopicChannel('foo');
-    const barChannel = new TopicChannel('bar');
-    const bazChannel = new TopicChannel('baz');
+    const fooChannel = new WebSocketTopicChannel('foo');
+    const barChannel = new WebSocketTopicChannel('bar');
+    const bazChannel = new WebSocketTopicChannel('baz');
 
     transmitter.subscribeTopic(conn1, fooChannel);
     transmitter.subscribeTopic(conn2, fooChannel);
@@ -303,14 +307,14 @@ describe('dispatch()', () => {
     );
     socket.dispatch.mock.fake(async () => 0);
 
-    const remoteConn = new ConnectionChannel('#remote', '#conn');
+    const remoteConn = new WebSocketConnection('#remote', '#conn');
 
     transmitter.addLocalConnection(conn1, socket, john);
     transmitter.addLocalConnection(conn2, socket, jane);
 
-    const johnChannel = new UserChannel(john);
-    const janeChannel = new UserChannel(jane);
-    const jojoChannel = new UserChannel({ name: 'jojo', uid: 'jojo_doe' });
+    const johnChannel = new WebSocketUserChannel(john.uid);
+    const janeChannel = new WebSocketUserChannel(jane.uid);
+    const jojoChannel = new WebSocketUserChannel('jojo_doe');
 
     const events = [{ type: 'greet', payload: 'good morning' }];
 
@@ -367,13 +371,13 @@ describe('dispatch()', () => {
       errorHandler
     );
     socket.dispatch.mock.fake(async () => 0);
-    const conn3 = new ConnectionChannel(serverId, 'conn#3');
+    const conn3 = new WebSocketConnection(serverId, 'conn#3');
 
     transmitter.addLocalConnection(conn1, socket, jane);
     transmitter.addLocalConnection(conn2, socket, john);
     transmitter.addLocalConnection(conn3, socket, john);
 
-    const fooChannel = new TopicChannel('foo');
+    const fooChannel = new WebSocketTopicChannel('foo');
 
     transmitter.subscribeTopic(conn1, fooChannel);
     transmitter.subscribeTopic(conn2, fooChannel);
@@ -435,13 +439,13 @@ describe('dispatch()', () => {
       errorHandler
     );
     socket.dispatch.mock.fake(async () => 0);
-    const conn3 = new ConnectionChannel(serverId, 'conn#3');
+    const conn3 = new WebSocketConnection(serverId, 'conn#3');
 
     transmitter.addLocalConnection(conn1, socket, john);
     transmitter.addLocalConnection(conn2, socket, john);
     transmitter.addLocalConnection(conn3, socket, john);
 
-    const johnChannel = new UserChannel(john);
+    const johnChannel = new WebSocketUserChannel(john.uid);
     const events = [{ type: 'greet', payload: 'hi' }];
 
     await expect(
@@ -504,7 +508,7 @@ describe('dispatch()', () => {
     socket.dispatch.mock.fake(() => Promise.resolve(0));
     socket.dispatch.mock.fakeOnce(() => Promise.reject(new Error('Wasted!')));
 
-    const fooChannel = new TopicChannel('foo');
+    const fooChannel = new WebSocketTopicChannel('foo');
     transmitter.subscribeTopic(conn1, fooChannel);
     transmitter.subscribeTopic(conn2, fooChannel);
 
@@ -531,13 +535,13 @@ describe('dispatch()', () => {
 
 test('handle remote dispatch', () => {
   const transmitter = new WebSocketTransmitter(serverId, broker, errorHandler);
-  const conn1 = new ConnectionChannel(serverId, '#conn1');
-  const conn2 = new ConnectionChannel(serverId, '#conn2');
+  const conn1 = new WebSocketConnection(serverId, '#conn1');
+  const conn2 = new WebSocketConnection(serverId, '#conn2');
 
   transmitter.addLocalConnection(conn1, socket, john);
   transmitter.addLocalConnection(conn2, socket, john);
 
-  const fooChannel = new TopicChannel('foo');
+  const fooChannel = new WebSocketTopicChannel('foo');
   transmitter.subscribeTopic(conn1, fooChannel);
 
   expect(broker.onRemoteEvent.mock).toHaveBeenCalledTimes(1);

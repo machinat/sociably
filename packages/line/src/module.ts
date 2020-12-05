@@ -1,7 +1,7 @@
 import type { PlatformModule } from '@machinat/core/types';
 import type { ServiceProvision } from '@machinat/core/service/types';
 import { container, factory } from '@machinat/core/service';
-import { BaseBot, BaseProfiler } from '@machinat/core/base';
+import { BaseBot, BaseProfiler, BaseMarshaler } from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import { HTTPRequestRouting } from '@machinat/http/types';
 
@@ -9,7 +9,9 @@ import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { LINE } from './constant';
 import { ReceiverP } from './receiver';
 import { BotP } from './bot';
-import { ProfilerP } from './profiler';
+import { ProfilerP, LineUserProfile, LineGroupProfile } from './profiler';
+import LineChat from './channel';
+import LineUser from './user';
 import type {
   LinePlatformConfigs,
   LineEventContext,
@@ -61,6 +63,10 @@ const Line = {
       },
 
       { provide: PLATFORM_CONFIGS_I, withValue: configs },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: LineChat },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: LineUser },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: LineUserProfile },
+      { provide: BaseMarshaler.TYPINGS_I, withValue: LineGroupProfile },
     ];
 
     if (configs.noServer !== true) {

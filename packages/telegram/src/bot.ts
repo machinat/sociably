@@ -125,8 +125,8 @@ export class TelegramBot
     fileId: string
   ): Promise<null | {
     content: NodeJS.ReadableStream;
-    contentType: string;
-    contentLength: number;
+    contentType?: string;
+    contentLength?: number;
   }> {
     const {
       result: { file_path: filePath },
@@ -147,10 +147,11 @@ export class TelegramBot
       });
     }
 
+    const contentLength = fetchResponse.headers.get('content-length');
     return {
       content: fetchResponse.body,
-      contentType: fetchResponse.headers.get('content-type'),
-      contentLength: Number(fetchResponse.headers.get('content-length')),
+      contentType: fetchResponse.headers.get('content-type') || undefined,
+      contentLength: contentLength ? Number(contentLength) : undefined,
     };
   }
 

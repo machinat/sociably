@@ -48,22 +48,29 @@ export default class LineWorker
       headers: this._headers,
     });
 
-    let result: LineAPIResult;
+    let resBody;
     // catch parsing error, body can be empty string in some api
     try {
-      result = await response.json();
+      resBody = await response.json();
     } catch (e) {
       // catch some line api respond empty string
       if (e.message.indexOf('Unexpected end of JSON input') === -1) {
         throw e;
       }
+      resBody = {};
     }
+
+    const result = {
+      code: response.status,
+      headers: Object.fromEntries(response.headers),
+      body: resBody,
+    };
 
     if (!response.ok) {
-      throw new LineAPIError(response.status, result);
+      throw new LineAPIError(result);
     }
 
-    return result || {};
+    return result;
   }
 
   get started(): boolean {

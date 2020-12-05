@@ -219,14 +219,9 @@ test('#renderAttachment()', async () => {
 test('#createPersona()', async () => {
   const manager = new MessengerAssetsManager(stateManager, bot);
   bot.dispatchAPICall.mock.fake(() => ({
-    jobs: [{ ...{} }],
-    results: [
-      {
-        code: 201,
-        headers: {},
-        body: { id: '_PERSONA_ID_' },
-      },
-    ],
+    code: 201,
+    headers: {},
+    body: { id: '_PERSONA_ID_' },
   }));
 
   await expect(

@@ -176,6 +176,7 @@ export type MessengerPlatformConfigs = {
   consumeInterval?: number;
   entryPath?: string;
   noServer?: boolean;
+  optionalProfileFields?: ('locale' | 'timezone' | 'gender')[];
   eventMiddlewares?: (
     | MessengerEventMiddleware
     | ServiceContainer<MessengerEventMiddleware>

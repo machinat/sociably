@@ -1,4 +1,4 @@
-/* eslint-disable no-use-before-define */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import type { InnerRenderFn, IntermediateSegment } from './renderer/types';
 import type {
   Interfaceable,

@@ -7,7 +7,6 @@ import { LIFFAuthData, AuthorizerRefinement } from './types';
 export const refinementFromLIFFAuthData = ({
   contextType,
   userId,
-  utouId,
   groupId,
   roomId,
   channelId,
@@ -21,8 +20,6 @@ export const refinementFromLIFFAuthData = ({
       : contextType === 'room'
       ? new LineChat(channelId, 'room', roomId as string)
       : userToBot
-      ? new LineChat(channelId, 'utob', userId)
-      : contextType === 'utou'
-      ? new LineChat(channelId, 'utou', utouId as string)
+      ? new LineChat(channelId, 'user', userId)
       : null,
 });

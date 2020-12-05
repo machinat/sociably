@@ -38,7 +38,7 @@ describe('<LinkRichMenu/>', () => {
 
     expect(
       value[CHANNEL_REQUEST_GETTER](
-        new LineChat('_CHANNEL_ID_', 'utob', '_USER_ID_')
+        new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_')
       )
     ).toEqual({
       method: 'POST',
@@ -57,7 +57,7 @@ describe('<LinkRichMenu/>', () => {
         new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_')
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<LinkRichMenu /> can only be delivered in a utob chatting channel"`
+      `"<LinkRichMenu /> can only be sent to an user chat"`
     );
 
     expect(() =>
@@ -65,7 +65,7 @@ describe('<LinkRichMenu/>', () => {
         new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_')
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<LinkRichMenu /> can only be delivered in a utob chatting channel"`
+      `"<LinkRichMenu /> can only be sent to an user chat"`
     );
   });
 
@@ -111,7 +111,7 @@ describe('<UnlinkRichMenu/>', () => {
 
     expect(
       value[CHANNEL_REQUEST_GETTER](
-        new LineChat('_CHANNEL_ID_', 'utob', '_USER_ID_')
+        new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_')
       )
     ).toEqual({
       method: 'DELETE',
@@ -128,7 +128,7 @@ describe('<UnlinkRichMenu/>', () => {
         new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_')
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<UnlinkRichMenu /> can only be delivered in a utob chatting channel"`
+      `"<UnlinkRichMenu /> can only be sent to an user chat"`
     );
 
     expect(() =>
@@ -136,7 +136,7 @@ describe('<UnlinkRichMenu/>', () => {
         new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_')
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<UnlinkRichMenu /> can only be delivered in a utob chatting channel"`
+      `"<UnlinkRichMenu /> can only be sent to an user chat"`
     );
   });
 

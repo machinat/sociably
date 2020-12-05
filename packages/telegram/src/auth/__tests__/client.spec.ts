@@ -29,7 +29,7 @@ test('#refineAuth() ok', async () => {
     languageCode: 'ja',
   };
   await expect(authorizer.refineAuth(authData)).resolves.toEqual({
-    user: new TelegramUser({
+    user: new TelegramUser(12345, {
       id: 12345,
       is_bot: false,
       first_name: 'Jojo',
@@ -48,7 +48,7 @@ test('#refineAuth() ok', async () => {
       },
     })
   ).resolves.toEqual({
-    user: new TelegramUser({
+    user: new TelegramUser(12345, {
       id: 12345,
       is_bot: false,
       first_name: 'Jojo',
@@ -67,7 +67,7 @@ test('#refineAuth() ok', async () => {
       },
     })
   ).resolves.toEqual({
-    user: new TelegramUser({
+    user: new TelegramUser(12345, {
       id: 12345,
       is_bot: false,
       first_name: 'Jojo',

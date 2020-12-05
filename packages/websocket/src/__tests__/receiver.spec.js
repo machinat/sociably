@@ -2,7 +2,7 @@ import WS from 'ws';
 import moxy, { Mock } from '@moxyjs/moxy';
 import Socket from '../socket';
 import { WebSocketReceiver } from '../receiver';
-import { ConnectionChannel } from '../channel';
+import { WebSocketConnection } from '../channel';
 
 jest.mock(
   '../socket',
@@ -133,7 +133,7 @@ it('handle sockets and connections lifecycle', async () => {
   socket.emit('connect', { connId }, 2, socket);
   await nextTick();
 
-  const connection = new ConnectionChannel('#server', connId);
+  const connection = new WebSocketConnection('#server', connId);
   expect(transmitter.addLocalConnection.mock).toHaveBeenCalledTimes(1);
   expect(transmitter.addLocalConnection.mock).toHaveBeenCalledWith(
     connection,
@@ -267,7 +267,7 @@ test('default verifyUpgrade and verifyLogin', async () => {
   socket.emit('connect', { connId }, 2, socket);
   await nextTick();
 
-  const connection = new ConnectionChannel('#server', connId);
+  const connection = new WebSocketConnection('#server', connId);
 
   expect(popEventMock).toHaveBeenCalledTimes(1);
   // accept auth with null user and null auth data
@@ -347,15 +347,15 @@ test('multi sockets and connections', async () => {
   expect(socket1.connect.mock).toHaveBeenCalledTimes(2);
   expect(socket2.connect.mock).toHaveBeenCalledTimes(1);
 
-  const noUserConn = new ConnectionChannel(
+  const noUserConn = new WebSocketConnection(
     '#server',
     socket1.connect.mock.calls[0].args[0].connId
   );
-  const johnConn = new ConnectionChannel(
+  const johnConn = new WebSocketConnection(
     '#server',
     socket1.connect.mock.calls[1].args[0].connId
   );
-  const jojoConn = new ConnectionChannel(
+  const jojoConn = new WebSocketConnection(
     '#server',
     socket2.connect.mock.calls[0].args[0].connId
   );

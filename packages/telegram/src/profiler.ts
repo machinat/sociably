@@ -1,137 +1,232 @@
 import { provider } from '@machinat/core/service';
-import { BaseStateControllerI } from '@machinat/core/base';
 import type {
-  MachinatUserProfile,
-  MachinatProfiler,
+  MachinatProfile,
+  UserProfiler,
 } from '@machinat/core/base/Profiler';
+import type { Marshallable } from '@machinat/core/base/Marshaler';
 import TelegramUser from './user';
-import type { TelegramChat, TelegramChatTarget } from './channel';
+import { TelegramChat, TelegramChatTarget } from './channel';
 import { TELEGRAM } from './constant';
 import { BotP } from './bot';
-import { RawPhotoSize, RawUser } from './types';
+import { RawPhotoSize, RawUser, RawChat, TelegramChatType } from './types';
 
 type PhotoResponse = {
   content: NodeJS.ReadableStream;
-  contentType: string;
-  contentLength: number;
+  contentType?: string;
+  contentLength?: number;
   width: number;
   height: number;
 };
 
-type CachedUserProfile = {
-  user: RawUser;
-  pictureURL: undefined | string;
+type TelegramUserProfileValue = {
+  data: RawUser;
+  pictureURL?: string;
 };
 
-const PROFILE_KEY = '$$telegram:user:profile';
+export class TelegramUserProfile
+  implements MachinatProfile, Marshallable<TelegramUserProfileValue> {
+  static fromJSONValue(value: TelegramUserProfileValue): TelegramUserProfile {
+    return new TelegramUserProfile(value.data, value.pictureURL);
+  }
 
-export class TelegramUserProfile implements MachinatUserProfile {
-  user: TelegramUser;
   pictureURL: undefined | string;
+  data: RawUser;
 
   platform = TELEGRAM;
 
-  constructor(user: TelegramUser, pictureURL?: string) {
-    this.user = user;
+  constructor(rawUser: RawUser, pictureURL?: string) {
     this.pictureURL = pictureURL;
+    this.data = rawUser;
   }
 
   get id(): number {
-    return this.user.id;
+    return this.data.id;
   }
 
   get name(): string {
-    const { firstName, lastName } = this.user;
+    const { first_name: firstName, last_name: lastName } = this.data;
     return lastName ? `${firstName} ${lastName}` : firstName;
   }
 
   get firstName(): undefined | string {
-    return this.user.firstName;
+    return this.data.first_name;
   }
 
   get lastName(): undefined | string {
-    return this.user.lastName;
+    return this.data.last_name;
+  }
+
+  get username(): undefined | string {
+    return this.data.username;
+  }
+
+  get isBot(): boolean {
+    return this.data.is_bot;
+  }
+
+  get languageCode(): undefined | string {
+    return this.data.language_code;
+  }
+
+  toJSONValue(): TelegramUserProfileValue {
+    const { data, pictureURL } = this;
+    return { data, pictureURL };
+  }
+
+  typeName(): string {
+    return this.constructor.name;
+  }
+}
+
+type TelegramChatProfileValue = {
+  data: RawChat;
+  pictureURL?: string;
+};
+
+export class TelegramChatProfile
+  implements MachinatProfile, Marshallable<TelegramChatProfileValue> {
+  static fromJSONValue(value: TelegramChatProfileValue): TelegramChatProfile {
+    return new TelegramChatProfile(value.data, value.pictureURL);
+  }
+
+  data: RawChat;
+  pictureURL: undefined | string;
+  platform = TELEGRAM;
+
+  constructor(data: RawChat, pictureURL?: string) {
+    this.data = data;
+    this.pictureURL = pictureURL;
+  }
+
+  get id(): number {
+    return this.data.id;
+  }
+
+  get type(): TelegramChatType {
+    return this.data.type;
+  }
+
+  get name(): string {
+    const { title, first_name: firstName, last_name: lastName } = this.data;
+    return (title ||
+      (lastName ? `${firstName} ${lastName}` : firstName)) as string;
+  }
+
+  get title(): undefined | string {
+    return this.data.title;
+  }
+
+  get firstName(): undefined | string {
+    return this.data.first_name;
+  }
+
+  get lastName(): undefined | string {
+    return this.data.last_name;
+  }
+
+  get username(): undefined | string {
+    return this.data.username;
+  }
+
+  toJSONValue(): TelegramChatProfileValue {
+    const { data, pictureURL } = this;
+    return { data, pictureURL };
+  }
+
+  typeName(): string {
+    return this.constructor.name;
   }
 }
 
 /**
  * @category Provider
  */
-export class TelegramProfiler implements MachinatProfiler {
+export class TelegramProfiler implements UserProfiler<TelegramUser> {
   bot: BotP;
-  stateController: null | BaseStateControllerI;
 
-  constructor(bot: BotP, stateController: null | BaseStateControllerI) {
+  constructor(bot: BotP) {
     this.bot = bot;
-    this.stateController = stateController;
   }
 
-  /** return TelegramUserProfile object with the cached pictureURL */
+  /**
+   * Get profile of the user. If user details are not attached with the user
+   * object (e.g. user retrieved from state), `getChatMember` API method is
+   * called to fetch user data.
+   */
   async getUserProfile(
     user: TelegramUser,
-    options?: { noAvatar?: boolean }
+    options: {
+      /**
+       * Group or channel chat for calling `getChatMember`, by default the
+       * direct private chat to the user is used.
+       */
+      inChat?: TelegramChat;
+      /**
+       * If provided, the url is attached with the profile object. This is
+       * useful to work with _fetchUserPhoto_ or logging in the webview.
+       */
+      pictureURL?: string;
+      /** Get user data from API by force. */
+      fromAPI?: boolean;
+    } = {}
   ): Promise<TelegramUserProfile> {
-    if (!this.stateController || options?.noAvatar) {
-      return new TelegramUserProfile(user);
+    const { inChat, pictureURL, fromAPI } = options;
+    let userData: RawUser;
+
+    if (user.data && !fromAPI) {
+      userData = user.data;
+    } else {
+      const { result } = await this.bot.dispatchAPICall('getChatMember', {
+        chat_id: inChat?.id || user.id,
+        user_id: user.id,
+      });
+      userData = result.user;
     }
 
-    const cachedProfile = await this.stateController
-      .userState(user)
-      .get<CachedUserProfile>(PROFILE_KEY);
-
-    return new TelegramUserProfile(user, cachedProfile?.pictureURL);
+    return new TelegramUserProfile(userData, pictureURL);
   }
 
-  /** cache user data and optional pictureURL for later use */
-  async cacheUserProfile(
-    user: TelegramUser,
-    options?: { pictureURL?: string }
-  ): Promise<TelegramUserProfile> {
-    if (!this.stateController) {
-      throw new Error('should provide StateControllerI to cache profile');
+  /**
+   * Get profile of the chat. If chat details are not attached with the chat
+   * object (e.g. chat retrieved from state), `getChat` API method is called to
+   * fetch chat data.
+   */
+  async getChatProfile(
+    chat: string | number | TelegramChat | TelegramChatTarget,
+    options: {
+      /**
+       * If provided, the url is attached with the profile object. This is
+       * useful to work with _fetchChatPhoto_.
+       */
+      pictureURL?: string;
+      /** Get chat data from API by force. */
+      fromAPI?: boolean;
+    } = {}
+  ): Promise<TelegramChatProfile> {
+    const { fromAPI, pictureURL } = options;
+    let chatId: number | string;
+
+    if (typeof chat === 'number' || typeof chat === 'string') {
+      chatId = chat;
+    } else if (chat instanceof TelegramChatTarget) {
+      chatId = chat.id;
+    } else {
+      const { id, data } = chat;
+
+      if (!fromAPI && (data.title || data.first_name)) {
+        return new TelegramChatProfile(data, pictureURL);
+      }
+      chatId = id;
     }
 
-    const pictureURL = options?.pictureURL;
-    const { id, isBot, firstName, lastName, username, languageCode } = user;
-    const rawUser = {
-      id,
-      is_bot: isBot,
-      first_name: firstName,
-      last_name: lastName,
-      username,
-      language_code: languageCode,
-    };
+    const { result } = await this.bot.dispatchAPICall('getChat', {
+      chat_id: chatId,
+    });
 
-    await this.stateController
-      .userState(user)
-      .update<CachedUserProfile>(PROFILE_KEY, (lastCache) => ({
-        user: rawUser,
-        pictureURL: pictureURL || lastCache?.pictureURL,
-      }));
-
-    return new TelegramUserProfile(user, pictureURL);
+    return new TelegramChatProfile(result, pictureURL);
   }
 
-  /** get the cached user profile by user id */
-  async getCachedUserProfile(id: number): Promise<null | TelegramUserProfile> {
-    if (!this.stateController) {
-      throw new Error('should provide StateControllerI to cache profile');
-    }
-
-    const phonyUser = new TelegramUser({ id, is_bot: false, first_name: '' });
-    const cachedProfile = await this.stateController
-      .userState(phonyUser)
-      .get<CachedUserProfile>(PROFILE_KEY);
-
-    if (!cachedProfile) {
-      return null;
-    }
-
-    const { user: rawUser, pictureURL } = cachedProfile;
-    return new TelegramUserProfile(new TelegramUser(rawUser), pictureURL);
-  }
-
-  /** fetch the photo file of a user */
+  /** Fetch the photo file of a user */
   async fetchUserPhoto(
     user: TelegramUser,
     options?: {
@@ -169,6 +264,7 @@ export class TelegramProfiler implements MachinatProfiler {
     };
   }
 
+  /** Fetch the photo file of a chat */
   async fetchChatPhoto(
     chat: number | string | TelegramChat | TelegramChatTarget,
     options?: { size?: 'big' | 'small' }
@@ -205,7 +301,7 @@ export class TelegramProfiler implements MachinatProfiler {
 
 export const ProfilerP = provider<TelegramProfiler>({
   lifetime: 'scoped',
-  deps: [BotP, { require: BaseStateControllerI, optional: true }],
+  deps: [BotP],
 })(TelegramProfiler);
 
 export type ProfilerP = TelegramProfiler;

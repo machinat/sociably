@@ -2,7 +2,7 @@ import url from 'url';
 import moxy from '@moxyjs/moxy';
 import WS from 'ws';
 import Socket from '../../socket';
-import { ConnectionChannel } from '../../channel';
+import { WebSocketConnection } from '../../channel';
 import Client from '../client';
 
 const location = url.parse('https://machinat.com/hello');
@@ -21,7 +21,7 @@ const login = moxy(async () => ({
   credential: { foo: 'bar' },
 }));
 
-const expectedChannel = new ConnectionChannel('*', '#conn');
+const expectedChannel = new WebSocketConnection('*', '#conn');
 const eventSpy = moxy();
 
 beforeEach(() => {
@@ -138,7 +138,7 @@ it('login with credential from options.login()', async () => {
     channel: expectedChannel,
   });
 
-  expect(client.channel).toEqual(new ConnectionChannel('*', '#conn'));
+  expect(client.channel).toEqual(new WebSocketConnection('*', '#conn'));
 });
 
 it('emit "error" if login rejected', async () => {
