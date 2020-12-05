@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
-import Engine from '@machinat/core/engine';
+import Engine, { DispatchError } from '@machinat/core/engine';
 import type {
   MachinatNode,
   MachinatBot,
@@ -125,11 +125,19 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
     path: string,
     body: null | Record<string, unknown>
   ): Promise<LineAPIResult> {
-    const response = await this.engine.dispatchJobs(null, [
-      { method, path, body, executionKey: undefined },
-    ]);
+    try {
+      const response = await this.engine.dispatchJobs(null, [
+        { method, path, body, executionKey: undefined },
+      ]);
 
-    return response.results[0];
+      return response.results[0];
+    } catch (err) {
+      if (err instanceof DispatchError) {
+        throw err.errors[0];
+      } else {
+        throw err;
+      }
+    }
   }
 }
 

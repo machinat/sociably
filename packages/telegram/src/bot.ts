@@ -2,7 +2,7 @@ import invariant from 'invariant';
 import fetch from 'node-fetch';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
-import Engine from '@machinat/core/engine';
+import Engine, { DispatchError } from '@machinat/core/engine';
 import type {
   MachinatNode,
   MachinatBot,
@@ -160,16 +160,24 @@ export class TelegramBot
     parameters: Record<string, any> = {},
     uploadingFiles?: UploadingFile[]
   ): Promise<TelegramAPIResult> {
-    const response = await this.engine.dispatchJobs(null, [
-      {
-        method,
-        parameters,
-        executionKey: undefined,
-        uploadingFiles: uploadingFiles || null,
-      },
-    ]);
+    try {
+      const response = await this.engine.dispatchJobs(null, [
+        {
+          method,
+          parameters,
+          executionKey: undefined,
+          uploadingFiles: uploadingFiles || null,
+        },
+      ]);
 
-    return response.results[0];
+      return response.results[0];
+    } catch (err) {
+      if (err instanceof DispatchError) {
+        throw err.errors[0];
+      } else {
+        throw err;
+      }
+    }
   }
 }
 

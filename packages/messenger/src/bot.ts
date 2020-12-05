@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import Engine from '@machinat/core/engine';
+import Engine, { DispatchError } from '@machinat/core/engine';
 import type { DispatchResponse } from '@machinat/core/engine/types';
 import Queue from '@machinat/core/queue';
 import Renderer from '@machinat/core/renderer';
@@ -129,18 +129,26 @@ export class MessengerBot
     relativeURL: string,
     body?: null | any
   ): Promise<MessengerResult> {
-    const {
-      results: [result],
-    } = await this.engine.dispatchJobs(null, [
-      {
-        request: {
-          method,
-          relative_url: relativeURL,
-          body,
+    try {
+      const {
+        results: [result],
+      } = await this.engine.dispatchJobs(null, [
+        {
+          request: {
+            method,
+            relative_url: relativeURL,
+            body,
+          },
         },
-      },
-    ]);
-    return result;
+      ]);
+      return result;
+    } catch (err) {
+      if (err instanceof DispatchError) {
+        throw err.errors[0];
+      } else {
+        throw err;
+      }
+    }
   }
 }
 
