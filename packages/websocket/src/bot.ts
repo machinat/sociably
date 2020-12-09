@@ -1,7 +1,7 @@
 import Engine from '@machinat/core/engine';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
-import { provider, createEmptyScope } from '@machinat/core/service';
+import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
 import type {
   MachinatNode,
   MachinatBot,
@@ -29,7 +29,6 @@ import type {
   WebSocketResult,
   WebSocketComponent,
   WebSocketDispatchFrame,
-  WebSocketPlatformMounter,
 } from './types';
 
 type WebSocketDispatchResponse = DispatchResponse<
@@ -219,13 +218,13 @@ export class WebSocketBot
   }
 }
 
-export const BotP = provider<WebSocketBot>({
+export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [TransmitterP, { require: PLATFORM_MOUNTER_I, optional: true }],
-  factory: (
-    transmitter: TransmitterP,
-    mounter: null | WebSocketPlatformMounter<any, any>
-  ) =>
+  deps: [
+    TransmitterP,
+    { require: PLATFORM_MOUNTER_I, optional: true },
+  ] as const,
+  factory: (transmitter, mounter) =>
     new WebSocketBot(transmitter, mounter?.initScope, mounter?.dispatchWrapper),
 })(WebSocketBot);
 

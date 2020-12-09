@@ -1,5 +1,5 @@
 import type { MachinatUser } from '../types';
-import { makeInterface, provider } from '../service';
+import { makeInterface, makeClassProvider } from '../service';
 
 export interface MachinatProfile {
   readonly platform: string;
@@ -38,9 +38,9 @@ export class BaseProfiler implements UserProfiler<MachinatUser> {
   }
 }
 
-export const ProfilerP = provider<BaseProfiler>({
+export const ProfilerP = makeClassProvider({
   lifetime: 'transient',
-  deps: [BaseProfiler.PLATFORMS_I],
+  deps: [BaseProfiler.PLATFORMS_I] as const,
 })(BaseProfiler);
 
 export type ProfilerP = UserProfiler<MachinatUser>;

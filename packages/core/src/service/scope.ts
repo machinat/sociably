@@ -34,7 +34,7 @@ export default class ServiceScope {
     this.scopeCache = scopedCache || new Map();
   }
 
-  useServices<Deps extends ReadonlyArray<ServiceDependency<any>>>(
+  useServices<Deps extends readonly ServiceDependency<any>[]>(
     dependencies: Deps,
     runtimeProvisions?: Map<Interfaceable<unknown>, unknown>
   ): ResolveDependencies<Deps> {
@@ -57,7 +57,7 @@ export default class ServiceScope {
   }
 
   injectContainer<T>(
-    container: ServiceContainer<T>,
+    container: ServiceContainer<T, unknown[]>,
     runtimeProvisions?: Map<Interfaceable<any>, any>
   ): T {
     invariant(isServiceContainer(container), 'invalid container');

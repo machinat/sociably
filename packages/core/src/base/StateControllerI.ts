@@ -1,5 +1,5 @@
 import type { MachinatChannel, MachinatUser } from '../types';
-import { abstractInterface } from '../service';
+import { makeInterface } from '../service';
 
 export interface StateAccessor {
   get<T>(key: string): Promise<undefined | T>;
@@ -16,16 +16,16 @@ export interface StateAccessor {
 /**
  * @category Base
  */
-export abstract class BaseStateController {
-  abstract channelState(channel: MachinatChannel): StateAccessor;
+export interface BaseStateController {
+  channelState(channel: MachinatChannel): StateAccessor;
 
-  abstract userState(user: MachinatUser): StateAccessor;
+  userState(user: MachinatUser): StateAccessor;
 
-  abstract globalState(name: string): StateAccessor;
+  globalState(name: string): StateAccessor;
 }
 
-export const StateControllerI = abstractInterface<BaseStateController>({
+export const StateControllerI = makeInterface<BaseStateController>({
   name: 'BaseStateControllerI',
-})(BaseStateController);
+});
 
 export type StateControllerI = BaseStateController;

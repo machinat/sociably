@@ -1,14 +1,13 @@
 import invariant from 'invariant';
 import fetch from 'node-fetch';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type { ServerAuthorizer } from '@machinat/auth/types';
 
 import { PLATFORM_CONFIGS_I } from '../interface';
 import { LINE } from '../constant';
 import type LineUser from '../user';
 import type LineChat from '../channel';
-import type { LinePlatformConfigs } from '../types';
 import type {
   LIFFAuthData,
   LIFFCredential,
@@ -125,11 +124,10 @@ export class LineServerAuthorizer
   }
 }
 
-export const ServerAuthorizerP = provider<LineServerAuthorizer>({
+export const ServerAuthorizerP = makeClassProvider({
   lifetime: 'transient',
-  deps: [PLATFORM_CONFIGS_I],
-
-  factory: ({ providerId, channelId, liffChannelIds }: LinePlatformConfigs) => {
+  deps: [PLATFORM_CONFIGS_I] as const,
+  factory: ({ providerId, channelId, liffChannelIds }) => {
     invariant(
       liffChannelIds,
       'provide configs.liffChannelIds to authorize with liff'

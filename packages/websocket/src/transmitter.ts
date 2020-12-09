@@ -1,7 +1,7 @@
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import { MachinatUser } from '@machinat/core/types';
 import { BrokerI, SERVER_ID_I, PLATFORM_MOUNTER_I } from './interface';
-import { EventInput, WebSocketJob, WebSocketPlatformMounter } from './types';
+import { EventInput, WebSocketJob } from './types';
 import Socket from './socket';
 import { WebSocketConnection, WebSocketTopicChannel } from './channel';
 
@@ -388,14 +388,10 @@ export class WebSocketTransmitter {
   }
 }
 
-export const TransmitterP = provider<WebSocketTransmitter>({
+export const TransmitterP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [SERVER_ID_I, BrokerI, PLATFORM_MOUNTER_I],
-  factory: (
-    serverId: string,
-    broker: BrokerI,
-    { initScope, popError }: WebSocketPlatformMounter<any, any>
-  ) =>
+  deps: [SERVER_ID_I, BrokerI, PLATFORM_MOUNTER_I] as const,
+  factory: (serverId, broker, { initScope, popError }) =>
     new WebSocketTransmitter(serverId, broker, (err) =>
       popError(err, initScope())
     ),

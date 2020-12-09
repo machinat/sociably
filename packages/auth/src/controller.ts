@@ -1,7 +1,7 @@
 import { parse as parseURL } from 'url';
 import { relative as getRelativePath, join as joinPath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import { HTTPRequestInfo, RoutingInfo } from '@machinat/http/types';
 import invariant from 'invariant';
 import {
@@ -73,7 +73,7 @@ type AuthVerifyResult<
  * @category Provider
  */
 export class AuthController<
-  Authorizer extends ServerAuthorizer<any, any, any, any>
+  Authorizer extends ServerAuthorizer<any, any, unknown, unknown>
 > {
   authorizers: Authorizer[];
   secret: string;
@@ -475,9 +475,9 @@ export class AuthController<
   }
 }
 
-export const ControllerP = provider<AuthController<any>>({
+export const ControllerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [AUTHORIZERS_I, MODULE_CONFIGS_I],
+  deps: [AUTHORIZERS_I, MODULE_CONFIGS_I] as const,
 })(AuthController);
 
 export type ControllerP<

@@ -29,7 +29,7 @@ import {
 export default class MachinatEngine<
   Channel extends MachinatChannel,
   SegmentValue,
-  Component extends NativeComponent<any, any>,
+  Component extends NativeComponent<unknown, any>,
   Job,
   Result,
   Bot extends MachinatBot<Channel, Job, Result>

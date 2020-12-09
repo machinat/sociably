@@ -38,7 +38,7 @@ export default class LineWorker
   async _request(
     method: string,
     path: string,
-    body: any | null
+    body: unknown | null
   ): Promise<LineAPIResult> {
     const requestURL = new url.URL(path, API_HOST);
 

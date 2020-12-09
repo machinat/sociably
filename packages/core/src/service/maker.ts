@@ -42,7 +42,7 @@ export default class ServiceMaker {
   }
 
   makeRequirements(
-    requirements: ServiceRequirement<unknown>[],
+    requirements: ServiceRequirement<Interfaceable<unknown>>[],
     phase: PhaseEnum,
     singletonCache: ServiceCache,
     scopedCache: ServiceCache,
@@ -60,7 +60,7 @@ export default class ServiceMaker {
   }
 
   makeProvider(
-    provider: ServiceProvider<unknown>,
+    provider: ServiceProvider<unknown, unknown[]>,
     phase: PhaseEnum,
     singletonCache: ServiceCache,
     scopedCache: ServiceCache,
@@ -77,7 +77,7 @@ export default class ServiceMaker {
     return instance;
   }
 
-  private _makeBinding(binding: ServiceBinding<any>, context: MakeContext) {
+  private _makeBinding(binding: ServiceBinding<unknown>, context: MakeContext) {
     if ('withValue' in binding) {
       return binding.withValue;
     }
@@ -86,7 +86,7 @@ export default class ServiceMaker {
   }
 
   private _makeProvider(
-    provider: ServiceProvider<unknown>,
+    provider: ServiceProvider<unknown, unknown[]>,
     context: MakeContext
   ) {
     const { $$lifetime: lifetime } = provider;
@@ -122,7 +122,7 @@ export default class ServiceMaker {
   }
 
   private _makeRequirements(
-    deps: ServiceRequirement<unknown>[],
+    deps: ServiceRequirement<Interfaceable<unknown>>[],
     context: MakeContext
   ) {
     const { runtimeProvisions } = context;

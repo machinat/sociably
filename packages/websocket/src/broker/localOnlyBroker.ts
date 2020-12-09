@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import { BrokerI } from '../interface';
 
 /**
@@ -33,6 +33,6 @@ class LocalOnlyBroker implements BrokerI {
   onRemoteEvent() {}
 }
 
-export default provider<LocalOnlyBroker>({
+export default makeClassProvider({
   lifetime: 'singleton',
 })(LocalOnlyBroker);

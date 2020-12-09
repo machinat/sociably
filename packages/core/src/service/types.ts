@@ -34,38 +34,80 @@ export type ServiceInterface<T> =
   | MultiServiceInterface<T>
   | BranchedServiceInterface<T>;
 
-export interface ServiceProvider<T> {
+export interface ServiceProvider<T, Args extends ReadonlyArray<unknown>> {
   $$name: string;
   $$typeof: typeof MACHINAT_SERVICE_PROVIDER;
   $$multi: false;
   $$branched: false;
   $$lifetime: ServiceLifetime;
-  $$deps: ServiceRequirement<T>[];
-  $$factory: (...args: any[]) => T;
+  $$deps: ServiceRequirement<Interfaceable<Args[number]>>[];
+  $$factory: (...args: Args) => T;
 }
 
-export type Interfaceable<T> = ServiceInterface<T> | ServiceProvider<T>;
+export type Interfaceable<T> =
+  | ServiceInterface<T>
+  | ServiceProvider<T, unknown[]>;
 
-export type ServiceRequirement<T> = {
-  require: Interfaceable<T>;
-  optional?: boolean;
+type OptionalServiceRequirement<I extends Interfaceable<any>> = {
+  require: I;
+  optional: true;
 };
 
-export type ServiceDependency<T> = ServiceRequirement<T> | Interfaceable<T>;
+type StrictServiceRequirement<I extends Interfaceable<any>> = {
+  require: I;
+  optional?: false;
+};
 
-export type ServiceContainer<T> = {
-  (...args: unknown[]): T;
+export type ServiceRequirement<T extends Interfaceable<any>> =
+  | OptionalServiceRequirement<T>
+  | StrictServiceRequirement<T>;
+
+export type ServiceDependency<I extends Interfaceable<any>> =
+  | I
+  | ServiceRequirement<I>;
+
+type ResolveInterfaceable<
+  I extends Interfaceable<any>
+> = I extends ServiceProvider<infer T, unknown[]>
+  ? T
+  : I extends SingularServiceInterface<infer T>
+  ? T
+  : I extends MultiServiceInterface<infer T>
+  ? T[]
+  : I extends BranchedServiceInterface<infer T>
+  ? Map<string, T>
+  : never;
+
+export type ResolveDependency<
+  Dep extends ServiceDependency<any>
+> = Dep extends Interfaceable<any>
+  ? ResolveInterfaceable<Dep>
+  : Dep extends StrictServiceRequirement<infer I>
+  ? ResolveInterfaceable<I>
+  : Dep extends OptionalServiceRequirement<infer I>
+  ? null | ResolveInterfaceable<I>
+  : never;
+
+export type ResolveDependencies<
+  Deps extends readonly ServiceDependency<any>[]
+> = {
+  [Idx in keyof Deps]: ResolveDependency<Deps[Idx]>;
+};
+
+export type ServiceContainer<T, Args extends ReadonlyArray<any>> = {
+  (...args: Args): T;
+  $$name: string;
   $$typeof: typeof MACHINAT_SERVICE_CONTAINER;
-  $$deps: ServiceRequirement<T>[];
+  $$deps: ServiceRequirement<Interfaceable<Args[number]>>[];
   // HACK: make ts compiler accept it as class component
-  new (): ServiceContainer<T>;
+  new (): ServiceContainer<T, Args>;
 };
 
-export type MaybeContainerOf<T> = T | ServiceContainer<T>;
+export type MaybeContainer<T> = ServiceContainer<T, unknown[]> | T;
 
 export type BranchedProviderBinding<T> = {
   provide: BranchedServiceInterface<T>;
-  withProvider: ServiceProvider<T>;
+  withProvider: ServiceProvider<T, unknown[]>;
   platform: string;
 };
 
@@ -74,8 +116,8 @@ export type ProviderBinding<T> =
       provide:
         | SingularServiceInterface<T>
         | MultiServiceInterface<T>
-        | ServiceProvider<T>;
-      withProvider: ServiceProvider<T>;
+        | ServiceProvider<T, unknown[]>;
+      withProvider: ServiceProvider<T, unknown[]>;
     }
   | BranchedProviderBinding<T>;
 
@@ -90,25 +132,15 @@ export type ValueBinding<T> =
       provide:
         | SingularServiceInterface<T>
         | MultiServiceInterface<T>
-        | ServiceProvider<T>;
+        | ServiceProvider<T, unknown[]>;
       withValue: T;
     }
   | BranchedValueBinding<T>;
 
 export type ServiceBinding<T> = ProviderBinding<T> | ValueBinding<T>;
 
-export type ServiceProvision<T> = ServiceBinding<T> | ServiceProvider<T>;
+export type ServiceProvision<T> =
+  | ServiceBinding<T>
+  | ServiceProvider<T, unknown[]>;
 
-export type ServiceCache = Map<ServiceProvider<unknown>, unknown>;
-
-export type ResolveDependencies<
-  Deps extends ReadonlyArray<ServiceDependency<any>>
-> = {
-  [Idx in keyof Deps]: Deps[Idx] extends Interfaceable<infer T>
-    ? T
-    : Deps[Idx] extends { require: Interfaceable<infer T>; optional?: false }
-    ? T
-    : Deps[Idx] extends { require: Interfaceable<infer T>; optional: true }
-    ? null | T
-    : never;
-};
+export type ServiceCache = Map<ServiceProvider<unknown, unknown[]>, unknown>;

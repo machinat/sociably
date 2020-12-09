@@ -1,5 +1,5 @@
 import type { ServiceModule } from '@machinat/core/types';
-import { factory } from '@machinat/core/service';
+import { makeFactoryProvider } from '@machinat/core/service';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
 
@@ -8,16 +8,18 @@ import { MODULE_CONFIGS_I, AUTHORIZERS_I } from './interface';
 import type { AuthModuleConfigs, ServerAuthorizer } from './types';
 
 /** @internal */
-const authRoutingFactory = factory<HTTPRequestRouting>({
+const authRoutingFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [ControllerP, MODULE_CONFIGS_I],
-})((controller: ControllerP<any>, configs: AuthModuleConfigs) => ({
-  name: 'auth',
-  path: configs.entryPath || '/',
-  handler: (req, res, routingInfo) => {
-    controller.delegateAuthRequest(req, res, routingInfo);
-  },
-}));
+  deps: [ControllerP, MODULE_CONFIGS_I] as const,
+})(
+  (controller, configs): HTTPRequestRouting => ({
+    name: 'auth',
+    path: configs.entryPath || '/',
+    handler: (req, res, routingInfo) => {
+      controller.delegateAuthRequest(req, res, routingInfo);
+    },
+  })
+);
 
 const Auth = {
   Controller: ControllerP,

@@ -1,5 +1,5 @@
 import type { MachinatChannel } from '../types';
-import { abstractInterface } from '../service';
+import { makeInterface } from '../service';
 
 export interface TextIntentDetectResult<Payload> {
   intentType?: string;
@@ -10,15 +10,15 @@ export interface TextIntentDetectResult<Payload> {
 /**
  * @category Base
  */
-export abstract class BaseIntentRecognizer<Payload> {
-  abstract detectText(
+export interface BaseIntentRecognizer<Payload> {
+  detectText(
     channel: MachinatChannel,
     text: string
   ): Promise<TextIntentDetectResult<Payload>>;
 }
 
-export const IntentRecognizerI = abstractInterface<BaseIntentRecognizer<any>>({
+export const IntentRecognizerI = makeInterface<BaseIntentRecognizer<unknown>>({
   name: 'BaseIntentRecognizerI',
-})(BaseIntentRecognizer);
+});
 
 export type IntentRecognizerI<Payload> = BaseIntentRecognizer<Payload>;

@@ -17,7 +17,7 @@ import type {
 } from '../types';
 import openSocket from './ws';
 
-type ClientOptions<Login extends ClientLoginFn<any, any>> = {
+type ClientOptions<Login extends ClientLoginFn<any, unknown>> = {
   url?: string;
   login?: Login;
 };
@@ -29,16 +29,20 @@ type PendingEvent = {
 };
 
 type ClientEventListener<
-  Value extends EventValue<any, any, any>,
+  Value extends EventValue<string, string, unknown>,
   User extends null | MachinatUser
 > = (event: WebSocketEvent<Value, User>) => void;
 
 class WebScoketClient<
-  Value extends EventValue<any, any, any> = EventValue<string, string, unknown>,
-  Login extends ClientLoginFn<any, any> = ClientLoginFn<null, null>
+  Value extends EventValue<string, string, unknown> = EventValue<
+    string,
+    string,
+    unknown
+  >,
+  Login extends ClientLoginFn<any, unknown> = ClientLoginFn<null, null>
 > {
   private _serverURL: string;
-  private _login: ClientLoginFn<any, any>;
+  private _login: ClientLoginFn<any, unknown>;
   private _socket: null | Socket;
 
   private _loginSeq: number;
@@ -51,7 +55,7 @@ class WebScoketClient<
 
   private _eventListeners: ClientEventListener<
     Value,
-    Login extends ClientLoginFn<infer User, any> ? User : never
+    Login extends ClientLoginFn<infer User, unknown> ? User : never
   >[];
 
   private _errorListeners: ((err: Error) => void)[];
@@ -124,7 +128,7 @@ class WebScoketClient<
   onEvent(
     listener: ClientEventListener<
       Value,
-      Login extends ClientLoginFn<infer User, any> ? User : never
+      Login extends ClientLoginFn<infer User, unknown> ? User : never
     >
   ): void {
     if (typeof listener !== 'function') {
@@ -136,7 +140,7 @@ class WebScoketClient<
   removeEventListener(
     listener: ClientEventListener<
       Value,
-      Login extends ClientLoginFn<infer User, any> ? User : never
+      Login extends ClientLoginFn<infer User, unknown> ? User : never
     >
   ): boolean {
     const idx = this._eventListeners.findIndex((fn) => fn === listener);
@@ -181,7 +185,7 @@ class WebScoketClient<
     this._loginSeq = await socket.login({ credential });
   }
 
-  private _emitEvent(kind: undefined | string, type: string, payload: any) {
+  private _emitEvent(kind: undefined | string, type: string, payload: unknown) {
     const event = createEvent(
       kind,
       type,

@@ -2,7 +2,7 @@ import invariant from 'invariant';
 import crypto from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import base64url from 'base64url';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import { ServerAuthorizer, AuthorizerVerifyResult } from '@machinat/auth/types';
 
 import { PLATFORM_CONFIGS_I } from '../interface';
@@ -118,9 +118,9 @@ export class MessengerServerAuthorizer
   }
 }
 
-export const ServerAuthorizerP = provider<MessengerServerAuthorizer>({
+export const ServerAuthorizerP = makeClassProvider({
   lifetime: 'transient',
-  deps: [PLATFORM_CONFIGS_I],
+  deps: [PLATFORM_CONFIGS_I] as const,
 })(MessengerServerAuthorizer);
 
 export type ServerAuthorizerP = MessengerServerAuthorizer;

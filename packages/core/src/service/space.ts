@@ -165,9 +165,9 @@ export default class ServiceSpace {
   }
 
   private _verifyDependencies(
-    provider: ServiceProvider<unknown>,
+    provider: ServiceProvider<unknown, unknown[]>,
     bootstrapProvisions: null | Map<Interfaceable<unknown>, unknown>,
-    refLock: ServiceProvider<unknown>[]
+    refLock: ServiceProvider<unknown, unknown[]>[]
   ) {
     const subRefLock = [...refLock, provider];
 

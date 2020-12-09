@@ -1,4 +1,4 @@
-import { container } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core/service';
 import type { TelegramDispatchMiddleware } from '../types';
 import { AssetsManagerP } from './manager';
 
@@ -73,8 +73,8 @@ const saveUplodedFile = (
   return response;
 };
 
-const saveUplodedFileC = container<TelegramDispatchMiddleware>({
-  deps: [AssetsManagerP],
+const saveUplodedFileC = makeContainer({
+  deps: [AssetsManagerP] as const,
 })(saveUplodedFile);
 
 export default saveUplodedFileC;

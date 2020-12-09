@@ -1,6 +1,6 @@
 import type { IncomingHttpHeaders, OutgoingHttpHeaders } from 'http';
 import type { EventMiddleware, PlatformMounter } from '@machinat/core/types';
-import type { ServiceContainer } from '@machinat/core/service/types';
+import type { MaybeContainer } from '@machinat/core/service/types';
 import type createNextServer from 'next';
 
 export type NextServer = ReturnType<typeof createNextServer>;
@@ -65,16 +65,13 @@ export type NextModuleConfigs = {
   entryPath?: string;
   shouldPrepare?: boolean;
   nextAppOptions?: NextServerOptions;
-  eventMiddlewares?: (
-    | NextEventMiddleware
-    | ServiceContainer<NextEventMiddleware>
-  )[];
+  eventMiddlewares?: MaybeContainer<NextEventMiddleware>[];
 };
 
 export type NextPlatformMounter = PlatformMounter<
   NextEventContext,
   NextResponse,
-  any,
-  any,
-  any
+  never,
+  never,
+  never
 >;

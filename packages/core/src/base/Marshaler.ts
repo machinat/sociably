@@ -1,5 +1,5 @@
 import { createEJSON } from '@machinat/ejson';
-import { makeInterface, provider } from '../service';
+import { makeInterface, makeClassProvider } from '../service';
 
 export interface Marshallable<V> {
   typeName(): string;
@@ -17,14 +17,16 @@ type MarshalTypings<V, T extends Marshallable<V>> = {
 };
 
 export class BaseMarshaler {
-  static TYPINGS_I = makeInterface<MarshalTypings<any, any>>({
+  static TYPINGS_I = makeInterface<
+    MarshalTypings<unknown, Marshallable<unknown>>
+  >({
     name: 'MarshalTypingsList',
     multi: true,
   });
 
   private _ejson: any;
 
-  constructor(typings: MarshalTypings<any, any>[]) {
+  constructor(typings: MarshalTypings<unknown, Marshallable<unknown>>[]) {
     this._ejson = createEJSON();
     typings.forEach(({ name, fromJSONValue }) => {
       this._ejson.addType(name, fromJSONValue);
@@ -40,9 +42,9 @@ export class BaseMarshaler {
   }
 }
 
-export const MarshalerP = provider({
+export const MarshalerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BaseMarshaler.TYPINGS_I],
+  deps: [BaseMarshaler.TYPINGS_I] as const,
 })(BaseMarshaler);
 
 export type MarshalerP = Marshaler;

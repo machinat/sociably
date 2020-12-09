@@ -58,7 +58,9 @@ export default class ProvisionMap<T> {
   }
 
   getSingular(
-    target: SingularServiceInterface<unknown> | ServiceProvider<unknown>
+    target:
+      | SingularServiceInterface<unknown>
+      | ServiceProvider<unknown, unknown[]>
   ): null | T {
     return this._singularMapping.get(target) || null;
   }
@@ -72,7 +74,9 @@ export default class ProvisionMap<T> {
   }
 
   setSingular(
-    target: SingularServiceInterface<unknown> | ServiceProvider<unknown>,
+    target:
+      | SingularServiceInterface<unknown>
+      | ServiceProvider<unknown, unknown[]>,
     value: T
   ): null | T {
     const registered = this._singularMapping.get(target);

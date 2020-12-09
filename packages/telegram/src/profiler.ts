@@ -1,4 +1,4 @@
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type {
   MachinatProfile,
   UserProfiler,
@@ -299,7 +299,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
   }
 }
 
-export const ProfilerP = provider<TelegramProfiler>({
+export const ProfilerP = makeClassProvider({
   lifetime: 'scoped',
   deps: [BotP],
 })(TelegramProfiler);

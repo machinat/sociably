@@ -7,6 +7,7 @@ import type {
   ServiceProvider,
   ServiceInterface,
   ServiceScope,
+  MaybeContainer,
 } from './service/types';
 import type { DispatchFrame, DispatchResponse } from './engine/types';
 import type {
@@ -74,7 +75,8 @@ export type FunctionalElement<
 > = MachinatElement<Props, Component>;
 
 export type ContainerComponent<Props> = ServiceContainer<
-  FunctionalComponent<Props>
+  FunctionalComponent<Props>,
+  unknown[]
 >;
 
 export type ContainerElement<
@@ -91,7 +93,7 @@ export type NativeComponent<Props, Segment extends IntermediateSegment<any>> = {
   $$typeof: typeof MACHINAT_NATIVE_TYPE;
   $$platform: string;
   // HACK: make ts compiler accept it as class component
-  new (): NativeComponent<any, any>;
+  new (): NativeComponent<Props, Segment>;
 };
 
 export type NativeElement<
@@ -116,7 +118,7 @@ export type PauseElement = MachinatElement<
   typeof MACHINAT_PAUSE_TYPE
 >;
 
-export type ThunkEffectFn = () => Promise<any>;
+export type ThunkEffectFn = () => Promise<unknown>;
 
 export type ThunkElement = MachinatElement<
   { effect: ThunkEffectFn },
@@ -124,7 +126,7 @@ export type ThunkElement = MachinatElement<
 >;
 
 export type RawElement = MachinatElement<
-  { value: any },
+  { value: unknown },
   typeof MACHINAT_RAW_TYPE
 >;
 
@@ -186,9 +188,9 @@ export interface MachinatBot<Channel extends MachinatChannel, Job, Result> {
 }
 
 export type EventContext<
-  Event extends MachinatEvent<any>,
-  Metadata extends MachinatMetadata<any>,
-  Bot extends null | MachinatBot<any, any, any>
+  Event extends MachinatEvent<unknown>,
+  Metadata extends MachinatMetadata<string>,
+  Bot extends null | MachinatBot<MachinatChannel, unknown, unknown>
 > = {
   platform: string;
   event: Event;
@@ -213,8 +215,11 @@ export type DispatchMiddleware<
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
 export type ServiceModule = {
-  provisions: (ServiceProvider<unknown> | ServiceProvision<unknown>)[];
-  startHook?: null | ServiceContainer<Promise<void>>;
+  provisions: (
+    | ServiceProvider<unknown, unknown[]>
+    | ServiceProvision<unknown>
+  )[];
+  startHook?: null | ServiceContainer<Promise<void>, unknown[]>;
 };
 
 export type PlatformModule<
@@ -228,29 +233,37 @@ export type PlatformModule<
   mounterInterface: ServiceInterface<
     PlatformMounter<Context, EventResp, Job, Frame, Result>
   >;
-  provisions: (ServiceProvider<unknown> | ServiceProvision<unknown>)[];
-  startHook?: ServiceContainer<Promise<void>>;
-  eventMiddlewares?: (
-    | EventMiddleware<Context, EventResp>
-    | ServiceContainer<EventMiddleware<Context, EventResp>>
+  provisions: (
+    | ServiceProvider<unknown, unknown[]>
+    | ServiceProvision<unknown>
   )[];
-  dispatchMiddlewares?: (
-    | DispatchMiddleware<Job, Frame, Result>
-    | ServiceContainer<DispatchMiddleware<Job, Frame, Result>>
-  )[];
+  startHook?: ServiceContainer<Promise<void>, unknown[]>;
+  eventMiddlewares?: MaybeContainer<EventMiddleware<Context, EventResp>>[];
+  dispatchMiddlewares?: MaybeContainer<
+    DispatchMiddleware<Job, Frame, Result>
+  >[];
 };
 
 export type AppConfig<
-  Platform extends PlatformModule<any, any, any, any, any>
+  Platform extends PlatformModule<any, unknown, unknown, any, unknown>
 > = {
   platforms?: Platform[];
   modules?: ServiceModule[];
-  bindings?: (ServiceProvider<unknown> | ServiceProvision<unknown>)[];
+  bindings?: (
+    | ServiceProvider<unknown, unknown[]>
+    | ServiceProvision<unknown>
+  )[];
 };
 
 export type GetAppContext<
-  Platform extends PlatformModule<any, any, any, any, any>
-> = Platform extends PlatformModule<infer Context, any, any, any, any>
+  Platform extends PlatformModule<any, unknown, unknown, any, unknown>
+> = Platform extends PlatformModule<
+  infer Context,
+  unknown,
+  unknown,
+  any,
+  unknown
+>
   ? Context
   : never;
 

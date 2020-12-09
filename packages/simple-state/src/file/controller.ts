@@ -4,7 +4,7 @@ import {
   watch,
   FSWatcher,
 } from 'fs';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import { BaseMarshaler } from '@machinat/core/base';
 import type {
@@ -226,13 +226,13 @@ export class FileStateController implements BaseStateController {
   }
 }
 
-export const ControllerP = provider<FileStateController>({
+export const ControllerP = makeClassProvider({
   lifetime: 'singleton',
   deps: [
     MODULE_CONFIGS_I,
     { require: BaseMarshaler, optional: true },
     { require: SerializerI, optional: true },
-  ],
+  ] as const,
 })(FileStateController);
 
 export type ControllerP = FileStateController;

@@ -4,18 +4,14 @@ import invariant from 'invariant';
 
 import WebhookReceiver from '@machinat/http/webhook';
 import type { WebhookHandler } from '@machinat/http/webhook/types';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type { PopEventWrapper } from '@machinat/core/types';
 
 import eventFactory from './event/factory';
 import { BotP } from './bot';
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { MESSENGER } from './constant';
-import type {
-  MessengerEventContext,
-  MessengerPlatformConfigs,
-  MessengerPlatformMounter,
-} from './types';
+import type { MessengerEventContext } from './types';
 
 type MessengerReceiverOptions = {
   appSecret?: string;
@@ -150,14 +146,11 @@ export class MessengerReceiver extends WebhookReceiver {
   }
 }
 
-export const ReceiverP = provider<MessengerReceiver>({
+export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I],
-  factory: (
-    configs: MessengerPlatformConfigs,
-    bot: BotP,
-    { popEventWrapper }: MessengerPlatformMounter
-  ) => new MessengerReceiver(configs, bot, popEventWrapper),
+  deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I] as const,
+  factory: (configs, bot, { popEventWrapper }) =>
+    new MessengerReceiver(configs, bot, popEventWrapper),
 })(MessengerReceiver);
 
 export type ReceiverP = MessengerReceiver;

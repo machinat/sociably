@@ -1,4 +1,4 @@
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import { BaseStateControllerI } from '@machinat/core/base';
 import { BotP } from '../bot';
 
@@ -79,9 +79,9 @@ export class TelegramAssetsManager {
   }
 }
 
-export const AssetsManagerP = provider<TelegramAssetsManager>({
+export const AssetsManagerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [BaseStateControllerI, BotP],
+  deps: [BaseStateControllerI, BotP] as const,
 })(TelegramAssetsManager);
 
 export type AssetsManagerP = TelegramAssetsManager;

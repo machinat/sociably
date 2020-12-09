@@ -9,7 +9,7 @@ import type {
   InitScopeFn,
   DispatchWrapper,
 } from '@machinat/core/types';
-import { provider, createEmptyScope } from '@machinat/core/service';
+import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
 
 import { createChatJob, createDirectInstanceJobs } from './job';
 import generalElementDelegate from './components/general';
@@ -19,13 +19,11 @@ import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { TELEGRAM } from './constant';
 import TelegramAPIError from './error';
 import type {
-  TelegramPlatformConfigs,
   TelegramSegmentValue,
   TelegramJob,
   TelegramAPIResult,
   TelegramDispatchFrame,
   TelegramDispatchResponse,
-  TelegramPlatformMounter,
   UploadingFile,
   TelegramComponent,
 } from './types';
@@ -181,13 +179,13 @@ export class TelegramBot
   }
 }
 
-export const BotP = provider<TelegramBot>({
+export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I, { require: PLATFORM_MOUNTER_I, optional: true }],
-  factory: (
-    { botToken, connectionCapicity }: TelegramPlatformConfigs,
-    mounter: null | TelegramPlatformMounter
-  ) => {
+  deps: [
+    PLATFORM_CONFIGS_I,
+    { require: PLATFORM_MOUNTER_I, optional: true },
+  ] as const,
+  factory: ({ botToken, connectionCapicity }, mounter) => {
     return new TelegramBot(
       { botToken, connectionCapicity },
       mounter?.initScope,

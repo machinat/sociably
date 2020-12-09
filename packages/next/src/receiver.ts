@@ -1,17 +1,11 @@
 import { parse as parseURL, UrlWithParsedQuery } from 'url';
 import { STATUS_CODES, IncomingMessage, ServerResponse } from 'http';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 
 import type { PopEventWrapper, PopErrorFn } from '@machinat/core/types';
 import type { RequestHandler } from '@machinat/http/types';
 import { SERVER_I, MODULE_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
-import type {
-  NextServer,
-  NextEventContext,
-  NextResponse,
-  NextModuleConfigs,
-  NextPlatformMounter,
-} from './types';
+import type { NextServer, NextEventContext, NextResponse } from './types';
 
 type NextReceiverOptions = {
   entryPath?: string;
@@ -187,18 +181,14 @@ export class NextReceiver {
   }
 }
 
-export const ReceiverP = provider<NextReceiver>({
+export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
   deps: [
     SERVER_I,
     MODULE_CONFIGS_I,
     { require: PLATFORM_MOUNTER_I, optional: true },
-  ],
-  factory: (
-    nextApp: NextServer,
-    configs: NextModuleConfigs,
-    mounter: null | NextPlatformMounter
-  ) =>
+  ] as const,
+  factory: (nextApp, configs, mounter) =>
     new NextReceiver(
       nextApp,
       configs,

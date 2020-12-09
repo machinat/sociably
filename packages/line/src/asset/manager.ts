@@ -1,4 +1,4 @@
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import Base from '@machinat/core/base';
 import { BotP } from '../bot';
 import { PATH_RICHMENU } from '../constant';
@@ -97,7 +97,7 @@ export class LineAssetsManager {
     return this.discardAssetId(RICH_MENU, name);
   }
 
-  async createRichMenu(name: string, body: any): Promise<string> {
+  async createRichMenu(name: string, body: unknown): Promise<string> {
     const existed = await this.getRichMenu(name);
     if (existed) {
       throw new Error(`rich menu [ ${name} ] already exist`);
@@ -124,9 +124,9 @@ export class LineAssetsManager {
   }
 }
 
-export const AssetsManagerP = provider<LineAssetsManager>({
+export const AssetsManagerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [Base.StateControllerI, BotP],
+  deps: [Base.StateControllerI, BotP] as const,
 })(LineAssetsManager);
 
 export type AssetsManagerP = LineAssetsManager;

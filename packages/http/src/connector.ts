@@ -4,7 +4,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { relative as getRelativePath } from 'path';
 import { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import {
   HTTPServer,
   MODULE_CONFIGS_I,
@@ -205,9 +205,9 @@ export class HTTPConnector {
   }
 }
 
-export const ConnectorP = provider<HTTPConnector>({
+export const ConnectorP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [MODULE_CONFIGS_I, REQUEST_ROUTINGS_I, UPGRADE_ROUTINGS_I],
+  deps: [MODULE_CONFIGS_I, REQUEST_ROUTINGS_I, UPGRADE_ROUTINGS_I] as const,
 })(HTTPConnector);
 
 export type ConnectorP = HTTPConnector;

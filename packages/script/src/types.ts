@@ -1,5 +1,5 @@
 import type Machinat from '@machinat/core';
-import type { ServiceContainer } from '@machinat/core/service/types';
+import type { MaybeContainer } from '@machinat/core/service/types';
 import type {
   MachinatNode,
   MachinatEmpty,
@@ -27,17 +27,13 @@ export type RenderContentFn<Vars> = (
   circumstances: ScriptCircumstances<Vars>
 ) => MachinatNode | Promise<MachinatNode>;
 
-export type RenderContentNode<Vars> =
-  | RenderContentFn<Vars>
-  | ServiceContainer<RenderContentFn<Vars>>;
+export type RenderContentNode<Vars> = MaybeContainer<RenderContentFn<Vars>>;
 
 export type ConditionMatchFn<Vars> = (
   circumstances: ScriptCircumstances<Vars>
 ) => boolean | Promise<boolean>;
 
-export type ConditionMatcher<Vars> =
-  | ConditionMatchFn<Vars>
-  | ServiceContainer<ConditionMatchFn<Vars>>;
+export type ConditionMatcher<Vars> = MaybeContainer<ConditionMatchFn<Vars>>;
 
 /**
  * @category Keyword Props
@@ -119,9 +115,9 @@ export type PromptSetFn<Vars, Input> = (
   input: Input
 ) => Vars | Promise<Vars>;
 
-export type PromptSetter<Vars, Input> =
-  | PromptSetFn<Vars, Input>
-  | ServiceContainer<PromptSetFn<Vars, Input>>;
+export type PromptSetter<Vars, Input> = MaybeContainer<
+  PromptSetFn<Vars, Input>
+>;
 
 export type PromptFilterPredecateFn<Vars, Input> = (
   circumstances: ScriptCircumstances<Vars>,
@@ -148,9 +144,7 @@ export type VarsSetFn<Vars> = (
   circumstances: ScriptCircumstances<Vars>
 ) => Vars | Promise<Vars>;
 
-export type VarsSetter<Vars> =
-  | VarsSetFn<Vars>
-  | ServiceContainer<VarsSetFn<Vars>>;
+export type VarsSetter<Vars> = MaybeContainer<VarsSetFn<Vars>>;
 
 /**
  * @category Keyword Props
@@ -181,24 +175,24 @@ export type CallWithVarsFn<CallerVars, CalleeVars> = (
   circumstances: ScriptCircumstances<CallerVars>
 ) => CalleeVars | Promise<CalleeVars>;
 
-export type CallWithVarsGetter<CallerVars, CalleeVars> =
-  | CallWithVarsFn<CallerVars, CalleeVars>
-  | ServiceContainer<CallWithVarsFn<CallerVars, CalleeVars>>;
+export type CallWithVarsGetter<CallerVars, CalleeVars> = MaybeContainer<
+  CallWithVarsFn<CallerVars, CalleeVars>
+>;
 
 export type CallReturnSetFn<CallerVars, RetrunValue> = (
   circumstances: ScriptCircumstances<CallerVars>,
   returnValue: RetrunValue
 ) => CallerVars | Promise<CallerVars>;
 
-export type CallReturnSetter<CallerVars, RetrunValue> =
-  | CallReturnSetFn<CallerVars, RetrunValue>
-  | ServiceContainer<CallReturnSetFn<CallerVars, RetrunValue>>;
+export type CallReturnSetter<CallerVars, RetrunValue> = MaybeContainer<
+  CallReturnSetFn<CallerVars, RetrunValue>
+>;
 
 /**
  * @category Keyword Props
  */
 export type CallProps<CallerVars, CalleeVars, RetrunValue> = {
-  script: MachinatScript<CallerVars, any, RetrunValue, any>;
+  script: MachinatScript<CallerVars, unknown, RetrunValue, unknown>;
   key: string;
   withVars?: CallWithVarsGetter<CallerVars, CalleeVars>;
   set?: CallReturnSetter<CallerVars, RetrunValue>;
@@ -214,12 +208,10 @@ export type CallElement<CallerVars, CalleeVars, RetrunValue> = MachinatElement<
 >;
 
 export type ReturnValueFn<Value> = (
-  circumstances: ScriptCircumstances<any>
+  circumstances: ScriptCircumstances<unknown>
 ) => Value | Promise<Value>;
 
-export type ReturnValueGetter<Value> =
-  | ReturnValueFn<Value>
-  | ServiceContainer<ReturnValueFn<Value>>;
+export type ReturnValueGetter<Value> = MaybeContainer<ReturnValueFn<Value>>;
 
 /**
  * @category Keyword Props
@@ -242,7 +234,7 @@ export type ScriptElement<Vars, Input, RetrunValue> =
   | PromptElement<Vars, Input>
   | VarsElement<Vars>
   | LabelElement
-  | CallElement<Vars, any, any>
+  | CallElement<Vars, unknown, unknown>
   | ReturnElement<RetrunValue>;
 
 export type ScriptNode<Vars, Input, RetrunValue> =
@@ -266,16 +258,16 @@ export type ConditionsSegment<Vars> = {
   type: 'conditions';
   branches: {
     condition: ConditionMatcher<Vars>;
-    body: ScriptSegment<Vars, any, any>[];
+    body: ScriptSegment<Vars, unknown, unknown>[];
   }[];
-  fallbackBody: null | ScriptSegment<Vars, any, any>[];
+  fallbackBody: null | ScriptSegment<Vars, unknown, unknown>[];
 };
 
 /** @internal */
 export type WhileSegment<Vars> = {
   type: 'while';
   condition: ConditionMatcher<Vars>;
-  body: ScriptSegment<Vars, any, any>[];
+  body: ScriptSegment<Vars, unknown, unknown>[];
 };
 
 /** @internal */
@@ -300,7 +292,7 @@ export type LabelSegment = {
 /** @internal */
 export type CallSegment<CallerVars, CalleeVars, RetrunValue> = {
   type: 'call';
-  script: MachinatScript<CalleeVars, any, RetrunValue, any>;
+  script: MachinatScript<CalleeVars, unknown, RetrunValue, unknown>;
   key: string;
   withVars: CallWithVarsGetter<CallerVars, CalleeVars> | null | undefined;
   setter: CallReturnSetter<CallerVars, RetrunValue> | null | undefined;
@@ -320,7 +312,7 @@ export type ScriptSegment<Vars, Input, RetrunValue> =
   | WhileSegment<Vars>
   | PromptSegment<Vars, Input>
   | SetVarsSegment<Vars>
-  | CallSegment<Vars, any, any>
+  | CallSegment<Vars, unknown, unknown>
   | LabelSegment
   | ReturnSegment<RetrunValue>;
 
@@ -338,7 +330,7 @@ export type PromptCommand<Vars, Input> = {
 export type CallCommand<CallerVars, CalleeVars, RetrunValue> = {
   type: 'call';
   key: string;
-  script: MachinatScript<CalleeVars, any, RetrunValue, any>;
+  script: MachinatScript<CalleeVars, unknown, RetrunValue, unknown>;
   withVars: CallWithVarsGetter<CallerVars, CalleeVars> | null | undefined;
   setter: CallReturnSetter<CallerVars, RetrunValue> | null | undefined;
   goto: undefined | string;
@@ -371,12 +363,12 @@ export type ScriptCommand<Vars, Input, RetrunValue> =
   | JumpCommand
   | JumpCondCommand<Vars>
   | PromptCommand<Vars, Input>
-  | CallCommand<Vars, any, any>
+  | CallCommand<Vars, unknown, unknown>
   | SetVarsCommand<Vars>
   | ReturnCommand<RetrunValue>;
 
 export type CallStatus<Vars, Input, RetrunValue> = {
-  script: MachinatScript<Vars, Input, RetrunValue, any>;
+  script: MachinatScript<Vars, Input, RetrunValue, unknown>;
   vars: Vars;
   stopAt: undefined | string;
 };
@@ -390,5 +382,5 @@ export type SerializedCallStatus<Vars> = {
 export type ScriptProcessState = {
   version: 'V0';
   timestamp: number;
-  callStack: SerializedCallStatus<any>[];
+  callStack: SerializedCallStatus<unknown>[];
 };

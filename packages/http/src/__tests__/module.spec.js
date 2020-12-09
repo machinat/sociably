@@ -24,10 +24,9 @@ beforeEach(() => {
 it('export interfaces', () => {
   expect(HTTP.Connector).toBe(HTTPConnector);
 
-  expect(typeof HTTP.ServerI).toBe('function');
-  const { $$name, $$multi, $$typeof } = HTTP.ServerI;
-  expect({ $$name, $$multi, $$typeof }).toMatchInlineSnapshot(`
+  expect(HTTP.ServerI).toMatchInlineSnapshot(`
     Object {
+      "$$branched": false,
       "$$multi": false,
       "$$name": "HTTPServerI",
       "$$typeof": Symbol(interface.service.machinat),

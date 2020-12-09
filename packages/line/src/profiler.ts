@@ -1,4 +1,4 @@
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type {
   MachinatProfile,
   UserProfiler,
@@ -125,9 +125,9 @@ export class LineProfiler implements UserProfiler<LineUser> {
   }
 }
 
-export const ProfilerP = provider<LineProfiler>({
+export const ProfilerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [BotP],
+  deps: [BotP] as const,
 })(LineProfiler);
 
 export type ProfilerP = LineProfiler;

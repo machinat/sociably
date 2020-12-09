@@ -5,10 +5,9 @@ import {
   MACHINAT_SERVICE_INTERFACE,
 } from '../../symbol';
 import {
-  container,
-  provider,
-  factory,
-  abstractInterface,
+  makeContainer,
+  makeClassProvider,
+  makeFactoryProvider,
   makeInterface,
 } from '../annotate';
 
@@ -25,11 +24,11 @@ const BazServiceI = {
   /* ... */
 };
 
-describe('container({ deps })(fn)', () => {
+describe('makeContainer({ deps })(fn)', () => {
   it('annotate deps of container', () => {
     const containerFn = () => {};
 
-    const myContainer = container({
+    const myContainer = makeContainer({
       name: 'myContainer',
       deps: [
         FooServiceI,
@@ -50,7 +49,7 @@ describe('container({ deps })(fn)', () => {
 
   test('default $$name and $$deps', () => {
     const containerFn = () => {};
-    const myContainer = container()(containerFn);
+    const myContainer = makeContainer({})(containerFn);
 
     expect(myContainer).toBe(containerFn);
     expect(myContainer.$$typeof).toBe(MACHINAT_SERVICE_CONTAINER);
@@ -62,19 +61,19 @@ describe('container({ deps })(fn)', () => {
     class NonService {}
 
     expect(() => {
-      container({ deps: [NonService] })((_whatever) => 'boom');
+      makeContainer({ deps: [NonService] })((_whatever) => 'boom');
     }).toThrowErrorMatchingInlineSnapshot(
       `"NonService is not a valid interface"`
     );
   });
 });
 
-describe('provider({ deps, factory, lifetime })(klass)', () => {
+describe('makeClassProvider({ deps, factory, lifetime })(klass)', () => {
   it('annotate metadatas', () => {
-    class ServiceKlazz {}
-    const klazzFactory = (foo, bar, baz) => new ServiceKlazz(foo, bar, baz);
+    const ServiceKlazz = class ServiceKlazz {};
+    const klazzFactory = () => new ServiceKlazz();
 
-    const MyProvider = provider({
+    const MyProvider = makeClassProvider({
       name: 'MyProvider',
       factory: klazzFactory,
       deps: [
@@ -101,7 +100,9 @@ describe('provider({ deps, factory, lifetime })(klass)', () => {
   test('default $$factory, $$name and $$deps', () => {
     const ServiceKlazz = moxy(class ServiceKlazz {}, { mockMethod: false });
 
-    const MyProvider = provider({ lifetime: 'singleton' })(ServiceKlazz);
+    const MyProvider = makeClassProvider({ lifetime: 'singleton' })(
+      ServiceKlazz
+    );
 
     expect(MyProvider.$$name).toBe('ServiceKlazz');
     expect(MyProvider.$$lifetime).toBe('singleton');
@@ -118,7 +119,7 @@ describe('provider({ deps, factory, lifetime })(klass)', () => {
     class NonService {}
 
     expect(() => {
-      provider({
+      makeClassProvider({
         deps: [NonService],
         factory: (_whatever) => 'boom',
         lifetime: 'singleton',
@@ -129,23 +130,29 @@ describe('provider({ deps, factory, lifetime })(klass)', () => {
   });
 
   it('throw if invalid lifetime received', () => {
-    expect(() => provider({ lifetime: 'singleton' })(class K {})).not.toThrow();
-    expect(() => provider({ lifetime: 'scoped' })(class K {})).not.toThrow();
-    expect(() => provider({ lifetime: 'transient' })(class K {})).not.toThrow();
+    expect(() =>
+      makeClassProvider({ lifetime: 'singleton' })(class K {})
+    ).not.toThrow();
+    expect(() =>
+      makeClassProvider({ lifetime: 'scoped' })(class K {})
+    ).not.toThrow();
+    expect(() =>
+      makeClassProvider({ lifetime: 'transient' })(class K {})
+    ).not.toThrow();
 
     expect(() => {
-      provider({ lifetime: 'elf' })(class K {});
+      makeClassProvider({ lifetime: 'elf' } as never)(class K {});
     }).toThrowErrorMatchingInlineSnapshot(
       `"elf is not valid service lifetime"`
     );
   });
 });
 
-describe('factory({ deps, lifetime })(factory)', () => {
+describe('makeFactoryProvider({ deps, lifetime })(factory)', () => {
   it('annotate metadatas', () => {
     const factoryFn = (foo, bar, baz) => ({ foo, bar, baz });
 
-    const providerFactory = factory({
+    const providerFactory = makeFactoryProvider({
       name: 'myFactory',
       deps: [
         FooServiceI,
@@ -170,7 +177,9 @@ describe('factory({ deps, lifetime })(factory)', () => {
   test('default $$name and $$deps', () => {
     const factoryFn = (foo, bar, baz) => ({ foo, bar, baz });
 
-    const providerFactory = factory({ lifetime: 'scoped' })(factoryFn);
+    const providerFactory = makeFactoryProvider({ lifetime: 'scoped' })(
+      factoryFn
+    );
 
     expect(providerFactory.$$name).toBe('factoryFn');
     expect(providerFactory.$$deps).toEqual([]);
@@ -180,42 +189,31 @@ describe('factory({ deps, lifetime })(factory)', () => {
     class NonService {}
 
     expect(() => {
-      provider({ deps: [NonService], lifetime: 'scoped' })((foo) => ({ foo }));
+      makeFactoryProvider({
+        deps: [NonService],
+        lifetime: 'scoped',
+      })((foo) => ({ foo }));
     }).toThrowErrorMatchingInlineSnapshot(
       `"NonService is not a valid interface"`
     );
   });
 
   it('throw if invalid lifetime received', () => {
-    expect(() => factory({ lifetime: 'singleton' })(() => 'foo')).not.toThrow();
-    expect(() => factory({ lifetime: 'scoped' })(() => 'foo')).not.toThrow();
-    expect(() => factory({ lifetime: 'transient' })(() => 'foo')).not.toThrow();
+    expect(() =>
+      makeFactoryProvider({ lifetime: 'singleton' })(() => 'foo')
+    ).not.toThrow();
+    expect(() =>
+      makeFactoryProvider({ lifetime: 'scoped' })(() => 'foo')
+    ).not.toThrow();
+    expect(() =>
+      makeFactoryProvider({ lifetime: 'transient' })(() => 'foo')
+    ).not.toThrow();
 
     expect(() => {
-      factory({ lifetime: 'halfling' })(() => 'foo');
+      makeFactoryProvider({ lifetime: 'halfling' } as never)(() => 'foo');
     }).toThrowErrorMatchingInlineSnapshot(
       `"halfling is not valid service lifetime"`
     );
-  });
-});
-
-describe('abstractInterface(options)(klass)', () => {
-  it('annotate $$typeof as class', () => {
-    class AbstractKlazz {}
-    const AbstractInterface = abstractInterface({
-      name: 'AbstractInterface',
-    })(AbstractKlazz);
-
-    expect(AbstractInterface).toBe(AbstractKlazz);
-    expect(AbstractInterface.$$typeof).toBe(MACHINAT_SERVICE_INTERFACE);
-    expect(AbstractInterface.$$name).toBe('AbstractInterface');
-  });
-
-  test('default $$name', () => {
-    class AbstractKlazz {}
-    const AbstractInterface = abstractInterface()(AbstractKlazz);
-
-    expect(AbstractInterface.$$name).toBe('AbstractKlazz');
   });
 });
 

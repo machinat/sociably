@@ -1,5 +1,5 @@
 import type { Server as WebScoketServer } from 'ws';
-import { abstractInterface, makeInterface } from '@machinat/core/service';
+import { makeInterface } from '@machinat/core/service';
 import { WebSocketConnection } from './channel';
 import type {
   WebSocketJob,
@@ -26,7 +26,9 @@ export const UPGRADE_VERIFIER_I = makeInterface<VerifyUpgradeFn>({
 /**
  * @category Interface
  */
-export const LOGIN_VERIFIER_I = makeInterface<VerifyLoginFn<any, any, any>>({
+export const LOGIN_VERIFIER_I = makeInterface<
+  VerifyLoginFn<any, unknown, unknown>
+>({
   name: 'WebSocketLoginVerifierI',
 });
 
@@ -41,7 +43,7 @@ export const SERVER_ID_I = makeInterface<string>({
  * @category Interface
  */
 export const PLATFORM_MOUNTER_I = makeInterface<
-  WebSocketPlatformMounter<any, any>
+  WebSocketPlatformMounter<any, unknown>
 >({
   name: 'WebSocketPlatformMounterI',
 });
@@ -49,36 +51,34 @@ export const PLATFORM_MOUNTER_I = makeInterface<
 /**
  * @category Interface
  */
-export const PLATFORM_CONFIGS_I = makeInterface<
-  WebSocketPlatformConfigs<any, any>
->({ name: 'WebSocketPlatformConfigsI' });
+export const PLATFORM_CONFIGS_I = makeInterface<WebSocketPlatformConfigs<any>>({
+  name: 'WebSocketPlatformConfigsI',
+});
 
-export abstract class WebSocketClusterBroker {
-  abstract start(): Promise<void>;
-  abstract stop(): Promise<void>;
-  abstract dispatchRemote(
-    job: WebSocketJob
-  ): Promise<null | WebSocketConnection[]>;
+export interface WebSocketClusterBroker {
+  start(): Promise<void>;
+  stop(): Promise<void>;
+  dispatchRemote(job: WebSocketJob): Promise<null | WebSocketConnection[]>;
 
-  abstract subscribeTopicRemote(
+  subscribeTopicRemote(
     conn: WebSocketConnection,
     topic: string
   ): Promise<boolean>;
 
-  abstract unsubscribeTopicRemote(
+  unsubscribeTopicRemote(
     conn: WebSocketConnection,
     topic: string
   ): Promise<boolean>;
 
-  abstract disconnectRemote(conn: WebSocketConnection): Promise<boolean>;
-  abstract onRemoteEvent(handler: (job: WebSocketJob) => void): void;
+  disconnectRemote(conn: WebSocketConnection): Promise<boolean>;
+  onRemoteEvent(handler: (job: WebSocketJob) => void): void;
 }
 
 /**
  * @category Interface
  */
-export const BrokerI = abstractInterface<WebSocketClusterBroker>({
+export const BrokerI = makeInterface<WebSocketClusterBroker>({
   name: 'WebSocketClusterBrokerI',
-})(WebSocketClusterBroker);
+});
 
 export type BrokerI = WebSocketClusterBroker;

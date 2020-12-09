@@ -6,7 +6,7 @@ import type {
   DispatchMiddleware,
 } from '@machinat/core/types';
 import type { DispatchFrame } from '@machinat/core/engine/types';
-import type { MaybeContainerOf } from '@machinat/core/service/types';
+import type { MaybeContainer } from '@machinat/core/service/types';
 import type { UnitSegment } from '@machinat/core/renderer/types';
 import type { HTTPRequestInfo } from '@machinat/http/types';
 import type { WebSocketBot } from './bot';
@@ -158,19 +158,18 @@ export type WebSocketDispatchMiddleware = DispatchMiddleware<
 >;
 
 export type WebSocketPlatformConfigs<
-  Value extends EventValue<any, any, any>,
   LoginVerifier extends void | VerifyLoginFn<any, any, any> = void
 > = {
   entryPath?: string;
   verifyUpgrade?: VerifyUpgradeFn;
   verifyLogin?: LoginVerifier;
   heartbeatInterval?: number;
-  eventMiddlewares?: MaybeContainerOf<
-    LoginVerifier extends VerifyLoginFn<infer User, infer AuthInfo, any>
+  eventMiddlewares?: MaybeContainer<
+    LoginVerifier extends VerifyLoginFn<infer User, infer AuthInfo, unknown>
       ? WebSocketEventMiddleware<User, AuthInfo>
       : WebSocketEventMiddleware<null, null>
   >[];
-  dispatchMiddlewares?: MaybeContainerOf<WebSocketDispatchMiddleware>[];
+  dispatchMiddlewares?: MaybeContainer<WebSocketDispatchMiddleware>[];
 };
 
 export type WebSocketPlatformMounter<

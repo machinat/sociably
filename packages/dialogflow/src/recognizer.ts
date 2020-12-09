@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type {
   TextIntentDetectResult,
   BaseIntentRecognizer,
@@ -93,9 +93,9 @@ export class DialogflowIntentRecognizer
   }
 }
 
-export const IntentRecognizerP = provider<DialogflowIntentRecognizer>({
+export const IntentRecognizerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [SESSION_CLIENT_I, MODULE_CONFIGS_I],
+  deps: [SESSION_CLIENT_I, MODULE_CONFIGS_I] as const,
 })(DialogflowIntentRecognizer);
 
 export type IntentRecognizerP = DialogflowIntentRecognizer;

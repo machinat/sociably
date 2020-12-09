@@ -6,7 +6,9 @@ import type {
   ServiceScope,
   ServiceProvision,
   ResolveDependencies,
+  MaybeContainer,
 } from './service/types';
+import type { DispatchFrame } from './engine/types';
 import { BaseBot, BaseProfiler, BaseMarshaler } from './base';
 import type {
   AppConfig,
@@ -20,13 +22,9 @@ import type {
   PlatformModule,
 } from './types';
 
-type EventListenable<Context> =
-  | ((ctx: Context) => void)
-  | ServiceContainer<(ctx: Context) => void>;
+type EventListenable<Context> = MaybeContainer<(ctx: Context) => void>;
 
-type ErrorListenable =
-  | ((err: Error) => void)
-  | ServiceContainer<(err: Error) => void>;
+type ErrorListenable = MaybeContainer<(err: Error) => void>;
 
 /** @ignore */
 const ENUM_UNSTARTED = 0;
@@ -36,7 +34,7 @@ const ENUM_STARTING = 1;
 const ENUM_STARTED = 2;
 
 export default class MachinatApp<
-  Platform extends PlatformModule<any, any, any, any, any>,
+  Platform extends PlatformModule<any, unknown, unknown, any, unknown>,
   Context extends EventContext<any, any, any> = GetAppContext<Platform>
 > {
   config: AppConfig<Platform>;
@@ -69,7 +67,7 @@ export default class MachinatApp<
     const { modules, platforms, bindings } = this.config;
 
     const moduleProvisions: ServiceProvision<unknown>[] = [];
-    const startHooks: ServiceContainer<Promise<void>>[] = [];
+    const startHooks: ServiceContainer<Promise<void>, unknown[]>[] = [];
 
     // bootstrap normal modules add bindings
     if (modules) {
@@ -126,7 +124,7 @@ export default class MachinatApp<
     this._status = ENUM_STARTED;
   }
 
-  useServices<Deps extends ReadonlyArray<ServiceDependency<any>>>(
+  useServices<Deps extends readonly ServiceDependency<any>[]>(
     dependencies: Deps
   ): ResolveDependencies<Deps> {
     invariant(this.isStarted, 'app is not started');
@@ -198,14 +196,8 @@ export default class MachinatApp<
   }
 
   private _createPlatformMounter(
-    eventMiddlewares: (
-      | EventMiddleware<Context, any>
-      | ServiceContainer<EventMiddleware<Context, any>>
-    )[],
-    dispatchMiddlewares: (
-      | DispatchMiddleware<any, any, any>
-      | ServiceContainer<DispatchMiddleware<any, any, any>>
-    )[]
+    eventMiddlewares: MaybeContainer<EventMiddleware<Context, any>>[],
+    dispatchMiddlewares: MaybeContainer<DispatchMiddleware<any, any, any>>[]
   ): PlatformMounter<Context, any, any, any, any> {
     return {
       initScope: () => this._serviceSpace.createScope(),
@@ -216,10 +208,7 @@ export default class MachinatApp<
   }
 
   private _createPopEventWrapper(
-    middlewares: (
-      | EventMiddleware<Context, any>
-      | ServiceContainer<EventMiddleware<Context, any>>
-    )[]
+    middlewares: MaybeContainer<EventMiddleware<Context, any>>[]
   ): PopEventWrapper<Context, any> {
     return (makeResponse) => {
       const handlePopping = async (ctx: Context, scope?: ServiceScope) => {
@@ -264,20 +253,15 @@ export default class MachinatApp<
     };
   }
 
-  private _createDispatchWrapper<Frame>(
-    middlewares: (
-      | DispatchMiddleware<any, any, any>
-      | ServiceContainer<DispatchMiddleware<any, any, any>>
-    )[]
-  ): DispatchWrapper<any, any, any> {
+  private _createDispatchWrapper(
+    middlewares: MaybeContainer<DispatchMiddleware<unknown, any, unknown>>[]
+  ): DispatchWrapper<unknown, any, unknown> {
     return (dispatch) => {
       if (middlewares.length === 0) {
         return dispatch;
       }
 
-      const execute = (idx: number, scope: ServiceScope) => async (
-        frame: Frame
-      ) => {
+      const execute = (idx: number, scope: ServiceScope) => async (frame) => {
         let middleware = middlewares[idx];
         if (isServiceContainer(middleware)) {
           middleware = scope.injectContainer(middleware);
@@ -289,7 +273,7 @@ export default class MachinatApp<
         );
       };
 
-      return (frame: Frame, scope?: ServiceScope) =>
+      return (frame: DispatchFrame<any, unknown, any>, scope?: ServiceScope) =>
         execute(0, scope || this._serviceSpace.createScope())(frame);
     };
   }

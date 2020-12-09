@@ -48,7 +48,7 @@ type RenderResult<Value> =
 type RenderTraverseContext<Value> = {
   renderings: RenderResult<Value>[];
   scope: ServiceScope;
-  servicesProvided: Map<Interfaceable<any>, any>;
+  servicesProvided: Map<Interfaceable<unknown>, unknown>;
 };
 
 type GeneralComponentDelegate<Value> = (
@@ -59,7 +59,7 @@ type GeneralComponentDelegate<Value> = (
 
 export default class MachinatRenderer<
   Value,
-  Component extends NativeComponent<any, any>
+  Component extends NativeComponent<unknown, any>
 > {
   platform: string;
   generalComponentDelegator: GeneralComponentDelegate<Value>;
@@ -110,13 +110,15 @@ export default class MachinatRenderer<
     return segments.length === 0 ? null : segments;
   }
 
-  private _checkNativeComponentPlatform(Component: NativeComponent<any, any>) {
+  private _checkNativeComponentPlatform(
+    Component: NativeComponent<unknown, any>
+  ) {
     return Component.$$platform === this.platform;
   }
 
   private async _renderImpl(
     scope: ServiceScope,
-    servicesProvided: Map<Interfaceable<any>, any>,
+    servicesProvided: Map<Interfaceable<unknown>, unknown>,
     location: string,
     node: MachinatNode,
     path?: string
@@ -227,7 +229,7 @@ export default class MachinatRenderer<
           {
             type: 'raw',
             node: rawEle,
-            value: rawEle.props.value,
+            value: rawEle.props.value as Value,
             path,
           },
         ])

@@ -13,5 +13,5 @@ export type WebhookHandler = (
   headers?: {
     [key: string]: string;
   };
-  body?: string | any;
+  body?: string | unknown;
 }>;

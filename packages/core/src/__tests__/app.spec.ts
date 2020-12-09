@@ -1,5 +1,10 @@
 import { factory as moxyFactory } from '@moxyjs/moxy';
-import { container, provider, factory, makeInterface } from '../service';
+import {
+  makeContainer,
+  makeClassProvider,
+  makeFactoryProvider,
+  makeInterface,
+} from '../service';
 import { BaseBot, BaseProfiler } from '../base';
 import ServiceScope from '../service/scope';
 import App from '../app';
@@ -10,18 +15,18 @@ const moxy = moxyFactory({
 });
 
 const TestService = moxy(
-  provider({
+  makeClassProvider({
     lifetime: 'transient',
   })(class TestService {})
 );
 
 const TestModule = moxy({
   provisions: [TestService],
-  startHook: container({ deps: [TestService] })(async () => {}),
+  startHook: makeContainer({ deps: [TestService] })(async () => {}),
 });
 
 const AnotherService = moxy(
-  provider({
+  makeClassProvider({
     deps: [TestService],
     lifetime: 'scoped',
   })(class AnotherService {})
@@ -29,19 +34,21 @@ const AnotherService = moxy(
 
 const AnotherModule = moxy({
   provisions: [AnotherService],
-  startHook: container({ deps: [TestService, AnotherService] })(async () => {}),
+  startHook: makeContainer({
+    deps: [TestService, AnotherService],
+  })(async () => {}),
 });
 
 const FooService = moxy(
-  provider({
+  makeClassProvider({
     deps: [TestService, AnotherService],
     lifetime: 'singleton',
   })(class FooService {})
 );
 
-const TEST_PLATFORM_MOUNTER = makeInterface('TestMounter');
+const TEST_PLATFORM_MOUNTER = makeInterface({ name: 'TestMounter' });
 const consumeTestMounter = moxy();
-const testMountingFactory = factory({
+const testMountingFactory = makeFactoryProvider({
   deps: [TEST_PLATFORM_MOUNTER],
   lifetime: 'singleton',
 })(consumeTestMounter);
@@ -50,7 +57,7 @@ const FooPlatform = moxy({
   name: 'foo',
   provisions: [FooService, testMountingFactory],
   mounterInterface: TEST_PLATFORM_MOUNTER,
-  startHook: container({
+  startHook: makeContainer({
     deps: [TestService, AnotherService, FooService],
   })(async () => {}),
   eventMiddlewares: [
@@ -66,15 +73,15 @@ const FooPlatform = moxy({
 });
 
 const BarService = moxy(
-  provider({
+  makeClassProvider({
     deps: [TestService, AnotherService],
     lifetime: 'scoped',
   })(class BarService {})
 );
 
-const ANOTHER_PLATFORM_MOUNTER = makeInterface('AnotherMounter');
+const ANOTHER_PLATFORM_MOUNTER = makeInterface({ name: 'AnotherMounter' });
 const consumeAnotherMounter = moxy();
-const anotherMountingFactory = factory({
+const anotherMountingFactory = makeFactoryProvider({
   deps: [ANOTHER_PLATFORM_MOUNTER],
   lifetime: 'singleton',
 })(consumeAnotherMounter);
@@ -83,20 +90,20 @@ const BarPlatform = moxy({
   name: 'bar',
   mounterInterface: ANOTHER_PLATFORM_MOUNTER,
   provisions: [BarService, anotherMountingFactory],
-  startHook: container({
+  startHook: makeContainer({
     deps: [TestService, AnotherService, BarService],
   })(async () => {}),
 });
 
 const MyService = moxy(
-  provider({
+  makeClassProvider({
     deps: [TestService, AnotherService, FooService, BarService],
     lifetime: 'scoped',
   })(class MyService {})
 );
 
 const YourService = moxy(
-  provider({
+  makeClassProvider({
     deps: [TestService, AnotherService, FooService, BarService, MyService],
     lifetime: 'transient',
   })(class YourService {})
@@ -458,7 +465,7 @@ describe('poping event from platform module', () => {
   test('DI within event listener', async () => {
     const containedListener = moxy();
     const eventListenerContainer = moxy(
-      container({
+      makeContainer({
         deps: [
           FooService,
           BarService,
@@ -500,7 +507,7 @@ describe('poping event from platform module', () => {
   test('DI within event middleware', async () => {
     const containedMiddleware = moxy((ctx, next) => next(ctx));
     const middlewareContainer = moxy(
-      container({
+      makeContainer({
         deps: [
           FooService,
           BarService,
@@ -585,7 +592,7 @@ describe('poping error from platform module', () => {
   test('DI within error listener', async () => {
     const containedListener = moxy();
     const errorListnerContainer = moxy(
-      container({
+      makeContainer({
         deps: [
           FooService,
           BarService,
@@ -802,7 +809,7 @@ describe('dispatch through middlewares', () => {
   test('DI within dispatch middleware', async () => {
     const containedMiddleware = moxy((ctx, next) => next(ctx));
     const middlewareContainer = moxy(
-      container({
+      makeContainer({
         deps: [
           FooService,
           BarService,
@@ -862,10 +869,10 @@ describe('#useServices(requirements)', () => {
 
     await app.start();
 
-    const NoneService = provider({
+    const NoneService = makeClassProvider({
       lifetime: 'singleton',
       factory: () => 'NO',
-    })(function NoneService() {});
+    })(class NoneService {});
 
     expect(
       app.useServices([

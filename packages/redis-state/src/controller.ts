@@ -1,6 +1,6 @@
 import { RedisClient } from 'redis';
 import thenifiedly from 'thenifiedly';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import { BaseMarshaler } from '@machinat/core/base';
 import type {
@@ -162,9 +162,9 @@ export class RedisStateController implements BaseStateController {
   }
 }
 
-export const ControllerP = provider<RedisStateController>({
+export const ControllerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [CLIENT_I, { require: BaseMarshaler, optional: true }],
+  deps: [CLIENT_I, { require: BaseMarshaler, optional: true }] as const,
 })(RedisStateController);
 
 export type ControllerP = RedisStateController;

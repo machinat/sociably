@@ -3,7 +3,7 @@ import type {
   BaseStateController,
   StateAccessor,
 } from '@machinat/core/base/StateControllerI';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 
 export class InMemoryStateAccessor implements StateAccessor {
   _stateData: Map<string, any>;
@@ -106,7 +106,7 @@ export class InMemoryStateController implements BaseStateController {
   }
 }
 
-export const ControllerP = provider<InMemoryStateController>({
+export const ControllerP = makeClassProvider({
   lifetime: 'singleton',
 })(InMemoryStateController);
 

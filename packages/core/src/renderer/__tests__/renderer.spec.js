@@ -1,7 +1,7 @@
 import moxy, { Mock } from '@moxyjs/moxy';
 import Machinat from '../..';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
-import { container, makeInterface } from '../../service';
+import { makeContainer, makeInterface } from '../../service';
 
 import Renderer from '../renderer';
 
@@ -481,7 +481,7 @@ describe('#render()', () => {
 
     const componentMock = new Mock();
     const Container = moxy(
-      container({ deps: [FooService, BarService, BazService] })(
+      makeContainer({ deps: [FooService, BarService, BazService] })(
         function Container(foo, bar, baz) {
           return componentMock.proxify(({ n }) => (
             <Machinat.Raw
@@ -664,7 +664,7 @@ describe('#render()', () => {
   });
 
   it('reject when container component fail', async () => {
-    const ContainerFailWhenInject = container({ deps: [] })(() => {
+    const ContainerFailWhenInject = makeContainer({ deps: [] })(() => {
       throw new Error('無駄無駄無駄');
     });
 
@@ -674,9 +674,11 @@ describe('#render()', () => {
       renderer.render(<ContainerFailWhenInject />, scope)
     ).rejects.toThrow(new Error('無駄無駄無駄'));
 
-    const ContainerFailAtComponent = container({ deps: [] })(() => async () => {
-      throw new Error('オラオラオラ');
-    });
+    const ContainerFailAtComponent = makeContainer({ deps: [] })(
+      () => async () => {
+        throw new Error('オラオラオラ');
+      }
+    );
 
     await expect(
       renderer.render(<ContainerFailAtComponent />, scope)

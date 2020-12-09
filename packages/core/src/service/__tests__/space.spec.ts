@@ -1,22 +1,19 @@
 /* eslint-disable class-methods-use-this */
-import { factory as moxyFactory } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import ServiceSpace from '../space';
 import ServiceScope from '../scope';
 import {
-  container,
-  factory,
-  provider,
+  makeContainer,
+  makeFactoryProvider,
+  makeClassProvider,
   makeInterface,
-  abstractInterface,
 } from '../annotate';
 
-const moxy = moxyFactory({ mockMethod: false });
-
-const HELLO = makeInterface({ name: 'Hello' });
+const HELLO = makeInterface<{ hello(): string }>({ name: 'Hello' });
 const staticGreeter = moxy({ hello: () => 'HI' });
 
-const Foo = provider({ deps: [HELLO], lifetime: 'singleton' })(
-  moxy(
+const Foo = moxy(
+  makeClassProvider({ deps: [HELLO], lifetime: 'singleton' })(
     class Foo {
       foo() {
         return 'Foo';
@@ -25,19 +22,10 @@ const Foo = provider({ deps: [HELLO], lifetime: 'singleton' })(
   )
 );
 
-const Bar = abstractInterface()(
-  class BarAbstract {
-    bar() {
-      throw new Error('too abstract');
-    }
-  }
-);
+const Bar = makeInterface<{ bar(): string }>({ name: 'BAR' });
 
-const BarImpl = provider({
-  deps: [Foo],
-  lifetime: 'scoped',
-})(
-  moxy(
+const BarImpl = moxy(
+  makeClassProvider({ deps: [Foo], lifetime: 'scoped' })(
     class BarImpl {
       bar() {
         return 'BarImpl';
@@ -46,20 +34,20 @@ const BarImpl = provider({
   )
 );
 
-const BAZ = makeInterface({ name: 'Baz' });
+const BAZ = makeInterface<{ baz(): string }>({ name: 'Baz' });
 const Baz = class Baz {
   baz() {
     return 'Baz';
   }
 };
-const bazFactory = factory({ deps: [Foo, Bar], lifetime: 'transient' })(
-  moxy(() => new Baz())
+const bazFactory = moxy(
+  makeFactoryProvider({ deps: [Foo, Bar], lifetime: 'transient' })(
+    () => new Baz()
+  )
 );
 
-const myContainer = container({
-  deps: [HELLO, Foo, Bar, BAZ],
-})(
-  moxy(
+const myContainer = moxy(
+  makeContainer({ deps: [HELLO, Foo, Bar, BAZ] as const })(
     (greeter, foo, bar, baz) =>
       `${greeter.hello()} ${foo.foo()} ${bar.bar()} ${baz.baz()}`
   )
@@ -81,8 +69,8 @@ it('provide services bound in bindings', () => {
   ]);
   space.bootstrap();
 
-  expect(Foo.mock).toHaveBeenCalledTimes(1);
-  expect(BarImpl.mock).not.toHaveBeenCalled();
+  expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.$$factory.mock).not.toHaveBeenCalled();
 
   const scope = space.createScope();
   expect(scope).toBeInstanceOf(ServiceScope);
@@ -95,14 +83,14 @@ it('provide services bound in bindings', () => {
   expect(bar).toBeInstanceOf(BarImpl);
   expect(baz).toBeInstanceOf(Baz);
 
-  expect(Foo.mock).toHaveBeenCalledTimes(1);
-  expect(Foo.mock).toHaveBeenCalledWith(greeter);
+  expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(Foo.$$factory.mock).toHaveBeenCalledWith(greeter);
 
-  expect(BarImpl.mock).toHaveBeenCalledTimes(1);
-  expect(BarImpl.mock).toHaveBeenCalledWith(foo);
+  expect(BarImpl.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.$$factory.mock).toHaveBeenCalledWith(foo);
 
-  expect(bazFactory.mock).toHaveBeenCalledTimes(2);
-  expect(bazFactory.mock).toHaveBeenCalledWith(foo, bar);
+  expect(bazFactory.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(bazFactory.$$factory.mock).toHaveBeenCalledWith(foo, bar);
 
   expect(myContainer.mock).toHaveBeenCalledTimes(1);
   expect(myContainer.mock).toHaveBeenCalledWith(
@@ -114,11 +102,8 @@ it('provide services bound in bindings', () => {
 });
 
 test('new bindings prioritize to bindings from base space', () => {
-  const MyFoo = provider({
-    deps: [Bar, BAZ],
-    lifetime: 'singleton',
-  })(
-    moxy(
+  const MyFoo = moxy(
+    makeClassProvider({ deps: [Bar, BAZ], lifetime: 'singleton' })(
       class MyFoo {
         foo() {
           return 'MyFoo';
@@ -126,11 +111,8 @@ test('new bindings prioritize to bindings from base space', () => {
       }
     )
   );
-  const AnotherBar = provider({
-    deps: [BAZ],
-    lifetime: 'singleton',
-  })(
-    moxy(
+  const AnotherBar = moxy(
+    makeClassProvider({ deps: [BAZ], lifetime: 'singleton' })(
       class AnotherBar {
         bar() {
           return 'AnotherBar';
@@ -161,15 +143,15 @@ test('new bindings prioritize to bindings from base space', () => {
   expect(bar).toBeInstanceOf(AnotherBar);
   expect(baz).toBe(fakeBaz);
 
-  expect(MyFoo.mock).toHaveBeenCalledTimes(1);
-  expect(MyFoo.mock).toHaveBeenCalledWith(bar, baz);
-  expect(Foo.mock).not.toHaveBeenCalled();
+  expect(MyFoo.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(MyFoo.$$factory.mock).toHaveBeenCalledWith(bar, baz);
+  expect(Foo.$$factory.mock).not.toHaveBeenCalled();
 
-  expect(AnotherBar.mock).toHaveBeenCalledTimes(1);
-  expect(AnotherBar.mock).toHaveBeenCalledWith(baz);
-  expect(BarImpl.mock).not.toHaveBeenCalled();
+  expect(AnotherBar.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(AnotherBar.$$factory.mock).toHaveBeenCalledWith(baz);
+  expect(BarImpl.$$factory.mock).not.toHaveBeenCalled();
 
-  expect(bazFactory.mock).not.toHaveBeenCalled();
+  expect(bazFactory.$$factory.mock).not.toHaveBeenCalled();
 
   expect(myContainer.mock).toHaveBeenCalledTimes(1);
   expect(myContainer.mock).toHaveBeenCalledWith(staticGreeter, foo, bar, baz);
@@ -185,9 +167,7 @@ it('throw if bindings conflicted', () => {
         { provide: Bar, withProvider: BarImpl },
         { provide: Bar, withValue: someBar },
       ])
-  ).toThrowErrorMatchingInlineSnapshot(
-    `"BarAbstract is already bound to BarImpl"`
-  );
+  ).toThrowErrorMatchingInlineSnapshot(`"BAR is already bound to BarImpl"`);
 
   expect(
     () =>
@@ -198,9 +178,7 @@ it('throw if bindings conflicted', () => {
           { provide: Bar, withValue: someBar },
         ]
       )
-  ).toThrowErrorMatchingInlineSnapshot(
-    `"BarAbstract is already bound to BarImpl"`
-  );
+  ).toThrowErrorMatchingInlineSnapshot(`"BAR is already bound to BarImpl"`);
 });
 
 it('throw if provider dependencies is not bound', () => {
@@ -215,33 +193,36 @@ it('throw if provider dependencies is not bound', () => {
       ]),
       [{ provide: BAZ, withProvider: bazFactory }]
     ).bootstrap()
-  ).toThrowErrorMatchingInlineSnapshot(`"BarAbstract is not bound"`);
+  ).toThrowErrorMatchingInlineSnapshot(`"BAR is not bound"`);
 });
 
 it('throw if invalid binding received', () => {
   expect(
-    () => new ServiceSpace(null, [Bar])
-  ).toThrowErrorMatchingInlineSnapshot(`"invalid provider BarAbstract"`);
+    () => new ServiceSpace(null, [Bar] as never)
+  ).toThrowErrorMatchingInlineSnapshot(`"invalid provider BAR"`);
   expect(
-    () => new ServiceSpace(null, [{ provide: class Bae {}, withValue: 'bae~' }])
+    () =>
+      new ServiceSpace(null, [
+        { provide: class Bae {}, withValue: 'bae~' } as never,
+      ])
   ).toThrowErrorMatchingInlineSnapshot(`"invalid interface Bae"`);
   expect(
-    () => new ServiceSpace(null, [{ provide: Bar, withTea: 'Oooooolong' }])
+    () =>
+      new ServiceSpace(null, [{ provide: Bar, withTea: 'Oooooolong' } as never])
   ).toThrowErrorMatchingInlineSnapshot(
     `"either withProvider or withValue must be provided within binding"`
   );
   expect(
     () =>
       new ServiceSpace(null, [
-        { provide: Bar, withProvider: { star: 'bucks' } },
+        { provide: Bar, withProvider: { star: 'bucks' } as never },
       ])
   ).toThrowErrorMatchingInlineSnapshot(`"invalid provider [object Object]"`);
 });
 
 it('throw circular dependent provider found when bootstrap', () => {
-  const SelfDependentFoo = provider({
+  const SelfDependentFoo = makeClassProvider({
     deps: [Foo],
-    facotry: () => {},
     lifetime: 'scoped',
   })(class SelfDependentFoo {});
 
@@ -253,9 +234,8 @@ it('throw circular dependent provider found when bootstrap', () => {
     `"SelfDependentFoo is circular dependent"`
   );
 
-  const CircularDependentFoo = provider({
+  const CircularDependentFoo = makeClassProvider({
     deps: [Bar],
-    facotry: () => {},
     lifetime: 'scoped',
   })(class CircularDependentFoo {});
   expect(() =>
@@ -275,7 +255,9 @@ it('provide branched interface with a map of platform and service', () => {
   });
 
   const fooCat = { foo: () => 'FOO_MEOW' };
-  const fooCatFactory = factory({ lifetime: 'transient' })(() => fooCat);
+  const fooCatFactory = makeFactoryProvider({ lifetime: 'transient' })(
+    () => fooCat
+  );
   const fooBird = { foo: () => 'FOO_TWEET' };
   const fooWhale = { foo: () => 'FOO_SONAR' };
 
@@ -298,7 +280,7 @@ it('provide branched interface with a map of platform and service', () => {
 
   expect(scope.useServices([branchedMammal])).toEqual([expectedMap]);
 
-  const mammalContainer = container({ deps: [branchedMammal] })(
+  const mammalContainer = makeContainer({ deps: [branchedMammal] })(
     (mammals) => mammals
   );
   expect(scope.injectContainer(mammalContainer)).toEqual(expectedMap);
@@ -311,7 +293,9 @@ it('throw if bindings conflicted on specified platform', () => {
   });
 
   const whiteCat = { foo: () => 'FOO_MEOW' };
-  const whiteCatFactory = factory({ lifetime: 'transient' })(() => whiteCat);
+  const whiteCatFactory = makeFactoryProvider({ lifetime: 'transient' })(
+    () => whiteCat
+  );
   const blackCat = { foo: () => 'FOO_MEOW' };
   expect(() =>
     new ServiceSpace(null, [
@@ -357,7 +341,7 @@ it('throw if unbound service usage required', () => {
   ]);
   space.bootstrap();
 
-  const fooContainer = container({ deps: [Foo, Bar, BAZ] })(() => 'BOOM');
+  const fooContainer = makeContainer({ deps: [Foo, Bar, BAZ] })(() => 'BOOM');
 
   const scope = space.createScope();
   expect(() =>
@@ -377,7 +361,7 @@ test('optional dependency', () => {
   ]);
   space.bootstrap();
 
-  const optionalDepsContainer = container({
+  const optionalDepsContainer = makeContainer({
     deps: [
       Foo,
       { require: Bar, optional: true },
@@ -425,7 +409,7 @@ it('use the same instance of the same provider on different interface', () => {
   expect(jazzBar).toBe(bar);
   expect(musicalBar).toBe(bar);
 
-  expect(BarImpl.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.$$factory.mock).toHaveBeenCalledTimes(1);
 });
 
 test('lifecycle of services of different lifetime', () => {
@@ -437,11 +421,11 @@ test('lifecycle of services of different lifetime', () => {
   ]);
   space.bootstrap();
 
-  expect(Foo.mock).toHaveBeenCalledTimes(1);
-  expect(BarImpl.mock).not.toHaveBeenCalled();
-  expect(bazFactory.mock).not.toHaveBeenCalled();
+  expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.$$factory.mock).not.toHaveBeenCalled();
+  expect(bazFactory.$$factory.mock).not.toHaveBeenCalled();
 
-  const bootstrapedFoo = Foo.mock.calls[0].instance;
+  const bootstrapedFoo = Foo.$$factory.mock.calls[0].result;
   const services = [HELLO, Foo, Bar, BAZ];
 
   const scope1 = space.createScope();
@@ -468,33 +452,48 @@ test('lifecycle of services of different lifetime', () => {
   expect(baz3).not.toBe(baz1);
   expect(baz3).not.toBe(baz2);
 
-  expect(Foo.mock).toHaveBeenCalledTimes(1);
-  expect(BarImpl.mock).toHaveBeenCalledTimes(2);
-  expect(bazFactory.mock).toHaveBeenCalledTimes(3);
+  expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(bazFactory.$$factory.mock).toHaveBeenCalledTimes(3);
 });
 
 test('provide multi interface as an array of bound value', () => {
   const MULTI_FOOD = makeInterface({ name: 'MultiFood', multi: true });
-  const bistroFactory = factory({ lifetime: 'singleton', deps: [MULTI_FOOD] })(
-    moxy((dishes) => ({
+  const bistroFactory = moxy(
+    makeFactoryProvider({
+      lifetime: 'singleton',
+      deps: [MULTI_FOOD],
+    })((dishes) => ({
       serve: () => dishes,
     }))
   );
 
-  const meatFactory = factory({ lifetime: 'scoped' })(moxy(() => '🥩'));
+  const meatFactory = moxy(
+    makeFactoryProvider({ lifetime: 'scoped' })(() => '🥩')
+  );
 
-  const burgerFactory = factory({
-    lifetime: 'singleton',
-    deps: [meatFactory],
-  })(moxy(() => '🍔'));
-  const hotdogFactory = factory({
-    lifetime: 'scoped',
-    deps: [meatFactory],
-  })(moxy(() => '🌭'));
+  const burgerFactory = moxy(
+    makeFactoryProvider({
+      lifetime: 'singleton',
+      deps: [meatFactory],
+    })(() => '🍔')
+  );
+  const hotdogFactory = moxy(
+    makeFactoryProvider({
+      lifetime: 'scoped',
+      deps: [meatFactory],
+    })(() => '🌭')
+  );
 
-  const pizzaFactory = factory({ lifetime: 'singleton' })(moxy(() => '🍕'));
-  const tacoFactory = factory({ lifetime: 'scoped' })(moxy(() => '🌮'));
-  const ramenFactory = factory({ lifetime: 'transient' })(moxy(() => '🍜'));
+  const pizzaFactory = moxy(
+    makeFactoryProvider({ lifetime: 'singleton' })(() => '🍕')
+  );
+  const tacoFactory = moxy(
+    makeFactoryProvider({ lifetime: 'scoped' })(() => '🌮')
+  );
+  const ramenFactory = moxy(
+    makeFactoryProvider({ lifetime: 'transient' })(() => '🍜')
+  );
 
   const baseSpace = new ServiceSpace(null, [
     meatFactory,
@@ -512,9 +511,9 @@ test('provide multi interface as an array of bound value', () => {
   ]);
   space.bootstrap();
 
-  expect(meatFactory.mock).toHaveBeenCalledTimes(1);
-  expect(bistroFactory.mock).toHaveBeenCalledTimes(1);
-  expect(bistroFactory.mock).toHaveBeenLastCalledWith([
+  expect(meatFactory.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(bistroFactory.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(bistroFactory.$$factory.mock).toHaveBeenLastCalledWith([
     '🍔',
     '🍕',
     '🌮',
@@ -525,32 +524,35 @@ test('provide multi interface as an array of bound value', () => {
     '🥙',
   ]);
 
-  expect(burgerFactory.mock).toHaveBeenCalledTimes(1);
-  expect(burgerFactory.mock).toHaveBeenCalledWith('🥩');
+  expect(burgerFactory.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(burgerFactory.$$factory.mock).toHaveBeenCalledWith('🥩');
 
-  expect(hotdogFactory.mock).toHaveBeenCalledTimes(1);
-  expect(hotdogFactory.mock).toHaveBeenCalledWith('🥩');
+  expect(hotdogFactory.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(hotdogFactory.$$factory.mock).toHaveBeenCalledWith('🥩');
 
-  expect(tacoFactory.mock).toHaveBeenCalledTimes(1);
-  expect(pizzaFactory.mock).toHaveBeenCalledTimes(1);
-  expect(ramenFactory.mock).toHaveBeenCalledTimes(1);
+  expect(tacoFactory.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(pizzaFactory.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(ramenFactory.$$factory.mock).toHaveBeenCalledTimes(1);
 
   const scope = space.createScope();
   expect(scope.useServices([MULTI_FOOD])).toEqual([
     ['🍔', '🍕', '🌮', '🍝', '🍕', '🌭', '🍜', '🥙'],
   ]);
 
-  expect(burgerFactory.mock).toHaveBeenCalledTimes(1);
-  expect(pizzaFactory.mock).toHaveBeenCalledTimes(1);
-  expect(hotdogFactory.mock).toHaveBeenCalledTimes(2);
-  expect(tacoFactory.mock).toHaveBeenCalledTimes(2);
-  expect(ramenFactory.mock).toHaveBeenCalledTimes(2);
+  expect(burgerFactory.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(pizzaFactory.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(hotdogFactory.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(tacoFactory.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(ramenFactory.$$factory.mock).toHaveBeenCalledTimes(2);
 });
 
 test('provide multi interface as an empty array if no value bound', () => {
   const MULTI_FOO = makeInterface({ name: 'MultiFoo', multi: true });
-  const needFooFactory = factory({ lifetime: 'singleton', deps: [MULTI_FOO] })(
-    moxy(() => ({}))
+  const needFooFactory = moxy(
+    makeFactoryProvider({
+      lifetime: 'singleton',
+      deps: [MULTI_FOO],
+    })(() => ({}))
   );
 
   const space = new ServiceSpace(null, [
@@ -560,8 +562,8 @@ test('provide multi interface as an empty array if no value bound', () => {
   ]);
   space.bootstrap();
 
-  expect(needFooFactory.mock).toHaveBeenCalledTimes(1);
-  expect(needFooFactory.mock).toHaveBeenCalledWith([]);
+  expect(needFooFactory.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(needFooFactory.$$factory.mock).toHaveBeenCalledWith([]);
 
   const scope = space.createScope();
   expect(scope.useServices([MULTI_FOO])).toEqual([[]]);
@@ -580,7 +582,7 @@ test('inject time provision', () => {
   const myBar = { my: 'bar' };
   const myBaz = { my: 'baz' };
   const myGreeter = { hello: 'WORLD' };
-  const injectTimeProvisions = new Map([
+  const injectTimeProvisions = new Map<any, any>([
     [Foo, myFoo],
     [Bar, myBar],
     [BAZ, myBaz],
@@ -600,19 +602,19 @@ test('inject time provision', () => {
 
   expect(
     scope.injectContainer(
-      container({ deps: [HELLO, Foo, Bar, BAZ] })((...args) => args),
+      makeContainer({ deps: [HELLO, Foo, Bar, BAZ] })((...args) => args),
       injectTimeProvisions
     )
   ).toEqual([greeter, foo, bar, baz]);
 
-  expect(Foo.mock).toHaveBeenCalledTimes(1);
-  expect(BarImpl.mock).not.toHaveBeenCalled();
-  expect(bazFactory.mock).not.toHaveBeenCalled();
+  expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.$$factory.mock).not.toHaveBeenCalled();
+  expect(bazFactory.$$factory.mock).not.toHaveBeenCalled();
 });
 
 test('boostrap time provision', () => {
   const BOOTSTRAP_TIME_INTERFACE = makeInterface({ name: 'BOO' });
-  const BooConsumer = provider({
+  const BooConsumer = makeClassProvider({
     deps: [BOOTSTRAP_TIME_INTERFACE],
     lifetime: 'singleton',
   })(moxy(class BooConsumer {}));
@@ -635,11 +637,11 @@ test('boostrap time provision', () => {
 });
 
 test('require underlying ServiceScope', () => {
-  const singletonService = provider({
+  const singletonService = makeClassProvider({
     deps: [ServiceScope],
     lifetime: 'singleton',
   })(moxy());
-  const scopedService = provider({
+  const scopedService = makeClassProvider({
     deps: [ServiceScope],
     lifetime: 'scoped',
   })(moxy());
@@ -652,7 +654,7 @@ test('require underlying ServiceScope', () => {
   expect(singletonService.mock.calls[0].args[0]).toBe(scope);
 
   const consumerContainer = moxy(
-    container({ deps: [ServiceScope, scopedService] })(() => ({}))
+    makeContainer({ deps: [ServiceScope, scopedService] })(() => ({}))
   );
 
   scope.injectContainer(consumerContainer);

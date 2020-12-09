@@ -1,4 +1,4 @@
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type {
   MachinatProfile,
   UserProfiler,
@@ -104,9 +104,9 @@ export class MessengerProfiler implements UserProfiler<MessengerUser> {
   }
 }
 
-export const ProfilerP = provider<MessengerProfiler>({
+export const ProfilerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [BotP, PLATFORM_CONFIGS_I],
+  deps: [BotP, PLATFORM_CONFIGS_I] as const,
 })(MessengerProfiler);
 
 export type ProfilerP = MessengerProfiler;

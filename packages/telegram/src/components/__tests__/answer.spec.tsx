@@ -63,7 +63,7 @@ test.each([
 
 test('AnswerCallbackQuery match snapshot', async () => {
   await expect(
-    renderer.render(<AnswerCallbackQuery queryId="12345" />, null as any)
+    renderer.render(<AnswerCallbackQuery queryId="12345" />, null as never)
   ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
@@ -89,7 +89,7 @@ test('AnswerCallbackQuery match snapshot', async () => {
   await expect(
     renderer.render(
       <AnswerCallbackQuery queryId="12345" text="foo" showAlert />,
-      null as any
+      null as never
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
@@ -122,7 +122,7 @@ test('AnswerCallbackQuery match snapshot', async () => {
         url="http://foo.bar/baz"
         cacheTime={999}
       />,
-      null as any
+      null as never
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
@@ -271,7 +271,7 @@ test('AnswerInlineQuery match snapshot', async () => {
           caption="bar"
         />
       </AnswerInlineQuery>,
-      null as any
+      null as never
     )
   ).resolves.toMatchSnapshot();
 
@@ -394,7 +394,7 @@ test('AnswerInlineQuery match snapshot', async () => {
           replyMarkup={inlineKeyboard}
         />
       </AnswerInlineQuery>,
-      null as any
+      null as never
     )
   ).resolves.toMatchSnapshot();
 
@@ -405,7 +405,7 @@ test('AnswerInlineQuery match snapshot', async () => {
         switchPMText="foo"
         switchPMParameter="bar"
       />,
-      null as any
+      null as never
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
@@ -437,7 +437,7 @@ test('AnswerInlineQuery match snapshot', async () => {
 
 test('AnswerShippingQuery match snapshot', async () => {
   await expect(
-    renderer.render(<AnswerShippingQuery queryId="12345" ok />, null as any)
+    renderer.render(<AnswerShippingQuery queryId="12345" ok />, null as never)
   ).resolves.toMatchSnapshot();
   await expect(
     renderer.render(
@@ -449,26 +449,29 @@ test('AnswerShippingQuery match snapshot', async () => {
           { id: '2', title: 'dog', prices: [{ label: 'food', amount: 456 }] },
         ]}
       />,
-      null as any
+      null as never
     )
   ).resolves.toMatchSnapshot();
   await expect(
     renderer.render(
       <AnswerShippingQuery queryId="12345" ok={false} errorMessage="NOOO" />,
-      null as any
+      null as never
     )
   ).resolves.toMatchSnapshot();
 });
 
 test('AnswerPreCheckoutQuery match snapshot', async () => {
   await expect(
-    renderer.render(<AnswerPreCheckoutQuery queryId="12345" ok />, null as any)
+    renderer.render(
+      <AnswerPreCheckoutQuery queryId="12345" ok />,
+      null as never
+    )
   ).resolves.toMatchSnapshot();
 
   await expect(
     renderer.render(
       <AnswerPreCheckoutQuery queryId="12345" ok={false} errorMessage="NOOO" />,
-      null as any
+      null as never
     )
   ).resolves.toMatchSnapshot();
 });

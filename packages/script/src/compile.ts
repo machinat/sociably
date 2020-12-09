@@ -40,26 +40,26 @@ type TagIntermediate = {
 };
 
 type CompileIntermediate =
-  | ContentCommand<any>
-  | PromptCommand<any, any>
-  | SetVarsCommand<any>
-  | CallCommand<any, any, any>
-  | ReturnCommand<any>
+  | ContentCommand<unknown>
+  | PromptCommand<unknown, unknown>
+  | SetVarsCommand<unknown>
+  | CallCommand<unknown, unknown, unknown>
+  | ReturnCommand<unknown>
   | GotoIntermediate
-  | GotoCondIntermediate<any>
+  | GotoCondIntermediate<unknown>
   | TagIntermediate;
 
-type CompileResult<Vars, Input, RetrunValue> = {
-  commands: ScriptCommand<Vars, Input, RetrunValue>[];
+type CompileResult<Vars, Input, Retrun> = {
+  commands: ScriptCommand<Vars, Input, Retrun>[];
   entriesIndex: Map<string, number>;
 };
 
 const compileContentSegment = (
-  segment: ContentSegment<any>
+  segment: ContentSegment<unknown>
 ): CompileIntermediate[] => [{ type: 'content', render: segment.render }];
 
 const compileConditionsSegment = (
-  { branches, fallbackBody }: ConditionsSegment<any>,
+  { branches, fallbackBody }: ConditionsSegment<unknown>,
   uniqCounter: () => number
 ): CompileIntermediate[] => {
   const n: number = uniqCounter();
@@ -109,7 +109,7 @@ const compileConditionsSegment = (
 };
 
 const compileWhileSegment = (
-  { condition, body }: WhileSegment<any>,
+  { condition, body }: WhileSegment<unknown>,
   uniqCounter: () => number
 ): CompileIntermediate[] => {
   const n: number = uniqCounter();
@@ -146,7 +146,7 @@ const compileWhileSegment = (
 const compilePromptSegment = ({
   setter,
   key,
-}: PromptSegment<any, any>): CompileIntermediate[] => {
+}: PromptSegment<unknown, unknown>): CompileIntermediate[] => {
   return [
     { type: 'tag', key, isEntryPoint: true },
     { type: 'prompt', setter, key },
@@ -159,7 +159,7 @@ const compileCallSegment = ({
   setter,
   key,
   goto,
-}: CallSegment<any, any, any>): CompileIntermediate[] => {
+}: CallSegment<unknown, unknown, unknown>): CompileIntermediate[] => {
   return [
     { type: 'tag', key, isEntryPoint: true },
     { type: 'call', script, withVars, setter, goto, key },
@@ -167,7 +167,7 @@ const compileCallSegment = ({
 };
 
 const compileSetVarsSegment = (
-  segment: SetVarsSegment<any>
+  segment: SetVarsSegment<unknown>
 ): CompileIntermediate[] => {
   const { setter } = segment;
   return [{ type: 'set_vars', setter }];
@@ -179,18 +179,18 @@ const compileLabelSegment = ({ key }: LabelSegment): CompileIntermediate[] => {
 
 const compileReturnSegment = ({
   valueGetter,
-}: ReturnSegment<any>): CompileIntermediate[] => {
+}: ReturnSegment<unknown>): CompileIntermediate[] => {
   return [{ type: 'return', valueGetter }];
 };
 
-const compileSegments = (
-  segments: ScriptSegment<any, any, any>[],
+const compileSegments = <Vars, Input, Retrun>(
+  segments: ScriptSegment<Vars, Input, Retrun>[],
   uniqCounter: () => number
 ): CompileIntermediate[] => {
   const commands: CompileIntermediate[] = [];
 
   for (const segment of segments) {
-    const commandsFromSegment: CompileIntermediate[] | null | undefined =
+    const commandsFromSegment: CompileIntermediate[] | null =
       segment.type === 'content'
         ? compileContentSegment(segment)
         : segment.type === 'conditions'
@@ -219,10 +219,10 @@ const compileSegments = (
   return commands;
 };
 
-const compile = <Vars, Input, RetrunValue>(
-  segments: ScriptSegment<Vars, Input, RetrunValue>[],
+const compile = <Vars, Input, Return>(
+  segments: ScriptSegment<Vars, Input, Return>[],
   meta: { scriptName: string }
-): CompileResult<Vars, Input, RetrunValue> => {
+): CompileResult<Vars, Input, Return> => {
   const intermediates = compileSegments(segments, counter());
 
   const keyIndex = new Map();
@@ -250,7 +250,7 @@ const compile = <Vars, Input, RetrunValue>(
   }
 
   // translate "goto tag" to "jump index"
-  const commands: ScriptCommand<Vars, Input, RetrunValue>[] = [];
+  const commands: ScriptCommand<unknown, unknown, unknown>[] = [];
 
   for (const [idx, command] of mediateCommands.entries()) {
     if (command.type === 'goto') {
@@ -277,7 +277,10 @@ const compile = <Vars, Input, RetrunValue>(
     }
   }
 
-  return { commands, entriesIndex };
+  return {
+    commands: commands as ScriptCommand<Vars, Input, Return>[],
+    entriesIndex,
+  };
 };
 
 export default compile;

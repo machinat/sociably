@@ -1,5 +1,5 @@
 import { createServer } from 'http';
-import { container, factory } from '@machinat/core/service';
+import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import { ServiceModule } from '@machinat/core/types';
 import {
   HTTPServerI,
@@ -11,7 +11,7 @@ import { ConnectorP } from './connector';
 import { HTTPModuleConfigs } from './types';
 
 /** @internal */
-const nodeServerFactory = factory({
+const nodeServerFactory = makeFactoryProvider({
   lifetime: 'singleton',
 })(() => createServer());
 
@@ -28,15 +28,9 @@ const HTTP = {
       { provide: MODULE_CONFIGS_I, withValue: configsInput },
       { provide: HTTPServerI, withProvider: nodeServerFactory },
     ],
-    startHook: container<Promise<void>>({
-      deps: [ConnectorP, HTTPServerI, MODULE_CONFIGS_I],
-    })(
-      (
-        connector: ConnectorP,
-        server: HTTPServerI,
-        configs: HTTPModuleConfigs
-      ) => connector.connect(server, configs)
-    ),
+    startHook: makeContainer({
+      deps: [ConnectorP, HTTPServerI, MODULE_CONFIGS_I] as const,
+    })((connector, server, configs) => connector.connect(server, configs)),
   }),
 };
 

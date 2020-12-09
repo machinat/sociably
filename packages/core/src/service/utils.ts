@@ -12,25 +12,26 @@ import type {
   ServiceRequirement,
   ServiceContainer,
   ServiceProvider,
+  MaybeContainer,
 } from './types';
 
 export const isServiceContainer = <T>(
-  target: T | ServiceContainer<T>
-): target is ServiceContainer<T> =>
+  target: MaybeContainer<T>
+): target is ServiceContainer<T, unknown[]> =>
   typeof target === 'function' &&
   '$$typeof' in target &&
   target.$$typeof === MACHINAT_SERVICE_CONTAINER;
 
 export const isServiceProvider = (
   target: any
-): target is ServiceProvider<any> =>
+): target is ServiceProvider<unknown, unknown[]> =>
   (typeof target === 'function' ||
     (typeof target === 'object' && target !== null)) &&
   target.$$typeof === MACHINAT_SERVICE_PROVIDER;
 
 export const maybeInjectContainer = <T>(
   scope: ServiceScope,
-  maybeContainer: T | ServiceContainer<T>
+  maybeContainer: MaybeContainer<T>
 ): T =>
   isServiceContainer(maybeContainer)
     ? scope.injectContainer(maybeContainer)
@@ -47,8 +48,8 @@ export const createEmptyScope = (platform?: string): ServiceScope =>
 
 /** @internal */
 export const polishServiceRequirement = <T>(
-  dep: Interfaceable<T> | ServiceRequirement<T>
-): ServiceRequirement<T> => {
+  dep: Interfaceable<T> | ServiceRequirement<Interfaceable<T>>
+): ServiceRequirement<Interfaceable<T>> => {
   if (isInterfaceable(dep)) {
     return { require: dep, optional: false };
   }

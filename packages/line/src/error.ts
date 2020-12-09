@@ -8,16 +8,23 @@ export class LineAPIError extends Error {
   status: string;
 
   constructor({ code, body }: LineAPIResult) {
+    const {
+      message,
+      details,
+      error,
+      error_description: errorDescription,
+    } = body;
+
     super(
-      body.message
-        ? body.message +
-            (body.details
-              ? `: ${body.details
+      message
+        ? message +
+            (details
+              ? `: ${details
                   .map((d, i) => `${i + 1}) ${d.message}, at ${d.property}.`)
                   .join(' ')}`
               : '')
-        : body.error
-        ? `${body.error}: ${body.error_description}`
+        : error
+        ? `${error}: ${errorDescription}`
         : JSON.stringify(body)
     );
 

@@ -6,7 +6,7 @@ import type {
   PlatformMounter,
 } from '@machinat/core/types';
 import type { DispatchFrame } from '@machinat/core/engine/types';
-import type { ServiceContainer } from '@machinat/core/service/types';
+import type { MaybeContainer } from '@machinat/core/service/types';
 import type { IntermediateSegment } from '@machinat/core/renderer/types';
 import type { WebhookMetadata } from '@machinat/http/webhook/types';
 import type { MessengerBot } from './bot';
@@ -177,14 +177,8 @@ export type MessengerPlatformConfigs = {
   entryPath?: string;
   noServer?: boolean;
   optionalProfileFields?: ('locale' | 'timezone' | 'gender')[];
-  eventMiddlewares?: (
-    | MessengerEventMiddleware
-    | ServiceContainer<MessengerEventMiddleware>
-  )[];
-  dispatchMiddlewares?: (
-    | MessengerDispatchMiddleware
-    | ServiceContainer<MessengerDispatchMiddleware>
-  )[];
+  eventMiddlewares?: MaybeContainer<MessengerEventMiddleware>[];
+  dispatchMiddlewares?: MaybeContainer<MessengerDispatchMiddleware>[];
 };
 
 export type MessengerSendOptions = {

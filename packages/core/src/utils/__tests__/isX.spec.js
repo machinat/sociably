@@ -1,6 +1,6 @@
 import Machinat from '../..';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
-import { container } from '../../service';
+import { makeContainer } from '../../service';
 import {
   isEmpty,
   isElement,
@@ -21,7 +21,7 @@ Native.$$typeof = MACHINAT_NATIVE_TYPE;
 Native.$$platform = test;
 
 const MyComponent = () => <foo />;
-const MyContainer = container({ deps: [] })(() => () => <bar />);
+const MyContainer = makeContainer({ deps: [] })(() => () => <bar />);
 
 describe('isEmpty', () => {
   it('return true if empty node passed', () => {

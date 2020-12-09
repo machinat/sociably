@@ -124,7 +124,7 @@ export const MessageDetail: MessageDetail = {
   },
   get user() {
     const fromUser = this.message.from;
-    return fromUser ? new TelegramUser(fromUser) : null;
+    return fromUser ? new TelegramUser(fromUser.id, fromUser) : null;
   },
   get messageId(): number {
     return this.message.message_id;

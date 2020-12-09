@@ -1,6 +1,6 @@
 import WS from 'ws';
 import uniqid from 'uniqid';
-import { container, factory } from '@machinat/core/service';
+import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import { BaseBot, BaseMarshaler } from '@machinat/core/base';
 import type { PlatformModule } from '@machinat/core/types';
 import HTTP from '@machinat/http';
@@ -26,7 +26,6 @@ import {
   WebSocketTopicChannel,
 } from './channel';
 import type {
-  EventValue,
   VerifyLoginFn,
   WebSocketEventContext,
   WebSocketJob,
@@ -36,24 +35,21 @@ import type {
 } from './types';
 
 /** @internal */
-const createWSServer = factory<WS.Server>({ lifetime: 'singleton' })(
-  () => new WS.Server({ noServer: true })
-);
+const createWSServer = makeFactoryProvider({
+  lifetime: 'singleton',
+})(() => new WS.Server({ noServer: true }));
 
 /** @internal */
-const createUniqServerId = factory<() => string>({
+const createUniqServerId = makeFactoryProvider({
   lifetime: 'transient',
 })(() => uniqid());
 
 /** @internal */
-const upgradeRoutingFactory = factory<HTTPUpgradeRouting>({
+const upgradeRoutingFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [PLATFORM_CONFIGS_I, ReceiverP],
+  deps: [PLATFORM_CONFIGS_I, ReceiverP] as const,
 })(
-  (
-    configs: WebSocketPlatformConfigs<any, any>,
-    receiver: ReceiverP<any, any>
-  ) => ({
+  (configs, receiver): HTTPUpgradeRouting => ({
     name: WEBSOCKET,
     path: configs.entryPath || '/',
     handler: receiver.handleUpgradeCallback(),
@@ -71,11 +67,8 @@ const WebSocket = {
   SERVER_ID_I,
   CONFIGS_I: PLATFORM_CONFIGS_I,
 
-  initModule: <
-    Value extends EventValue<any, any, any>,
-    LoginVerifier extends VerifyLoginFn<any, any, any>
-  >(
-    configs: WebSocketPlatformConfigs<Value, LoginVerifier> = {} as any
+  initModule: <LoginVerifier extends VerifyLoginFn<any, any, any>>(
+    configs: WebSocketPlatformConfigs<LoginVerifier> = {} as any
   ): PlatformModule<
     LoginVerifier extends VerifyLoginFn<infer User, infer AuthInfo, any>
       ? WebSocketEventContext<User, AuthInfo>
@@ -116,9 +109,9 @@ const WebSocket = {
         { provide: BaseMarshaler.TYPINGS_I, withValue: WebSocketTopicChannel },
       ],
 
-      startHook: container<Promise<void>>({
+      startHook: makeContainer({
         deps: [BotP],
-      })(async (bot: BotP) => {
+      })(async (bot) => {
         await bot.start();
       }),
     };
@@ -128,17 +121,12 @@ const WebSocket = {
 declare namespace WebSocket {
   export type Bot = BotP;
   export type Receiver<
-    Value extends EventValue<any, any, any> = EventValue<
-      string,
-      string,
-      unknown
-    >,
     LoginVerifier extends VerifyLoginFn<any, any, any> = VerifyLoginFn<
       null,
       null,
       unknown
     >
-  > = ReceiverP<Value, LoginVerifier>;
+  > = ReceiverP<LoginVerifier>;
   export type Transmitter = TransmitterP;
   export type ClusterBrokerI = BrokerI;
 }

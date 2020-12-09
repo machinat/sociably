@@ -9,12 +9,12 @@ const WebEventProto = {
 };
 
 const createEvent = <
-  Value extends EventValue<any, any, any>,
+  Value extends EventValue<string, string, unknown>,
   User extends null | MachinatUser
 >(
   kind: undefined | string,
   type: string,
-  payload: any,
+  payload: unknown,
   channel: WebSocketConnection,
   user: User
 ): WebSocketEvent<Value, User> => {

@@ -12,15 +12,10 @@ import type {
   BranchedServiceInterface,
   MultiServiceInterface,
   SingularServiceInterface,
-  Interfaceable,
-  ServiceRequirement,
+  ServiceDependency,
+  ResolveDependencies,
 } from './types';
 import { polishServiceRequirement } from './utils';
-
-type InjectOptions = {
-  name?: string;
-  deps?: (ServiceRequirement<any> | Interfaceable<any>)[];
-};
 
 /** @internal */
 const validateLifetime = (lifetime: string) => {
@@ -32,15 +27,25 @@ const validateLifetime = (lifetime: string) => {
   );
 };
 
+type ServiceFactory<T, Deps extends readonly ServiceDependency<any>[]> = (
+  ...args: ResolveDependencies<Deps>
+) => T;
+
+type ContainerOptions<Deps extends readonly ServiceDependency<any>[]> = {
+  name?: string;
+  deps?: Deps;
+};
+
 /**
- * container marks a function as a container and annotate the dependencies.
+ * makeContainer marks a function as a container and annotate the dependencies.
  * @category Service Registry
  */
-export const container = <_T>({ name, deps = [] }: InjectOptions = {}) => <
-  T = _T
->(
-  fn: (...args: any[]) => T
-): ServiceContainer<T> => {
+export const makeContainer = <Deps extends readonly ServiceDependency<any>[]>({
+  name,
+  deps = [] as any,
+}: ContainerOptions<Deps>) => <T>(
+  fn: ServiceFactory<T, Deps>
+): ServiceContainer<T, ResolveDependencies<Deps>> => {
   const requirements = deps.map(polishServiceRequirement);
 
   return Object.defineProperties(fn, {
@@ -50,96 +55,79 @@ export const container = <_T>({ name, deps = [] }: InjectOptions = {}) => <
   });
 };
 
-type ProvideOptions<T> = {
+type ClassProviderOptions<T, Deps extends readonly ServiceDependency<any>[]> = {
   name?: string;
-  deps?: (ServiceRequirement<any> | Interfaceable<any>)[];
-  factory?: (...args: any[]) => T;
+  deps?: Deps;
+  factory?: ServiceFactory<T, Deps>;
   lifetime: ServiceLifetime;
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-type Constructor<T> = Function & {
+type Constructor<T> = {
   new (...args: any[]): T;
 };
 
 /**
- * provider annotate a class as a provider serving for the instance type and
- * also an interface can be implemented.
+ * makeClassProvider annotate a class as a provider serving for the instance
+ * type, and also an interface can be implemented.
  * @category Service Registry
  */
-export const provider = <_T>({
+export const makeClassProvider = <
+  _T,
+  Deps extends readonly ServiceDependency<any>[]
+>({
   name,
-  deps = [],
+  deps = [] as any,
   factory,
   lifetime,
-}: ProvideOptions<_T>) => <
-  T extends _T = _T,
-  K extends Constructor<T> = Constructor<T>
->(
-  klazz: K
-): ServiceProvider<T> & K => {
+}: ClassProviderOptions<_T, Deps>) => <T, Klazz extends Constructor<T>>(
+  klazz: Klazz & Constructor<T>
+): ServiceProvider<T, ResolveDependencies<Deps>> & Klazz => {
   validateLifetime(lifetime);
   const requirements = deps.map(polishServiceRequirement);
 
   return Object.defineProperties(klazz, {
-    $$name: { value: name || klazz.name },
-    $$typeof: { value: MACHINAT_SERVICE_PROVIDER },
-    $$deps: { value: requirements },
-    $$factory: { value: factory || ((...args) => new klazz(...args)) }, // eslint-disable-line new-cap
-    $$lifetime: { value: lifetime },
-    $$multi: { value: false },
+    $$name: { value: name || klazz.name, configurable: true },
+    $$typeof: { value: MACHINAT_SERVICE_PROVIDER, configurable: true },
+    $$deps: { value: requirements, configurable: true },
+    $$factory: {
+      value: factory || ((...args) => new klazz(...args)), // eslint-disable-line new-cap
+      configurable: true,
+    },
+    $$lifetime: { value: lifetime, configurable: true },
+    $$multi: { value: false, configurable: true },
   });
 };
 
-type FactoryOptions = {
+type FactoryProviderOptions<Deps extends readonly ServiceDependency<any>[]> = {
   name?: string;
-  deps?: (ServiceRequirement<any> | Interfaceable<any>)[];
+  deps?: Deps;
   lifetime: ServiceLifetime;
 };
 
 /**
- * factory annotate a factory function as a provider.
+ * makeFactoryProvider annotate a factory function as a provider serving for the
+ * instance type, and also an interface can be implemented.
  * @category Service Registry
  */
-export const factory = <_T>({ name, deps = [], lifetime }: FactoryOptions) => <
-  T = _T
->(
-  factoryFn: (...args: any[]) => T
-): ServiceProvider<T> => {
+export const makeFactoryProvider = <
+  Deps extends readonly ServiceDependency<any>[]
+>({
+  name,
+  deps = [] as any,
+  lifetime,
+}: FactoryProviderOptions<Deps>) => <T>(
+  factory: ServiceFactory<T, Deps>
+): ServiceProvider<T, ResolveDependencies<Deps>> & ServiceFactory<T, Deps> => {
   validateLifetime(lifetime);
   const requirements = deps.map(polishServiceRequirement);
 
-  return Object.defineProperties(factoryFn, {
-    $$name: { value: name || factoryFn.name },
-    $$typeof: { value: MACHINAT_SERVICE_PROVIDER },
-    $$deps: { value: requirements },
-    $$factory: { value: factoryFn },
-    $$lifetime: { value: lifetime },
-  });
-};
-
-type AbstractInterfaceOptions = {
-  name?: string;
-};
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-type AbstractConstructor<T> = Function & {
-  prototype: T;
-};
-
-/**
- * abstract annotate an abstract class as a servcie interface.
- * @category Service Registry
- */
-export const abstractInterface = <_T>(options?: AbstractInterfaceOptions) => <
-  T = _T
->(
-  klazz: AbstractConstructor<T>
-): SingularServiceInterface<T> & Constructor<T> => {
-  return Object.defineProperties(klazz, {
-    $$typeof: { value: MACHINAT_SERVICE_INTERFACE },
-    $$name: { value: options?.name || klazz.name },
-    $$multi: { value: false },
+  return Object.defineProperties(factory, {
+    $$name: { value: name || factory.name, configurable: true },
+    $$typeof: { value: MACHINAT_SERVICE_PROVIDER, configurable: true },
+    $$deps: { value: requirements, configurable: true },
+    $$factory: { value: factory, configurable: true },
+    $$lifetime: { value: lifetime, configurable: true },
+    $$multi: { value: false, configurable: true },
   });
 };
 
@@ -178,7 +166,7 @@ export function makeInterface<T>({
 
   return {
     $$name: name,
-    $$multi: multi as any,
+    $$multi: multi as never,
     $$branched: branched,
     $$typeof: MACHINAT_SERVICE_INTERFACE,
   };

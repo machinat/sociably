@@ -3,7 +3,7 @@ import type { Socket as NetSocket } from 'net';
 import type { Server as WSServer } from 'ws';
 import uniqid from 'uniqid';
 import thenifiedly from 'thenifiedly';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type {
   MachinatUser,
   PopEventWrapper,
@@ -25,13 +25,10 @@ import {
 } from './interface';
 import { WEBSOCKET } from './constant';
 import type {
-  EventValue,
   VerifyLoginFn,
   UpgradeRequestInfo,
   WebSocketEventContext,
   VerifyUpgradeFn,
-  WebSocketPlatformMounter,
-  WebSocketPlatformConfigs,
 } from './types';
 import Socket, {
   DispatchBody,
@@ -55,7 +52,7 @@ type SocketState<Auth> = {
 };
 
 type WebSocketReceiverOptions<
-  LoginVerifier extends VerifyLoginFn<any, any, any>
+  LoginVerifier extends VerifyLoginFn<any, unknown, unknown>
 > = {
   verifyLogin?: LoginVerifier;
   verifyUpgrade?: VerifyUpgradeFn;
@@ -88,8 +85,7 @@ const getWSFromServer = thenifiedly.factory(
  * @category Provider
  */
 export class WebSocketReceiver<
-  Value extends EventValue<any, any, any>,
-  LoginVerifier extends VerifyLoginFn<any, any, any>
+  LoginVerifier extends VerifyLoginFn<any, unknown, unknown>
 > {
   private _serverId: string;
   private _bot: BotP;
@@ -97,9 +93,9 @@ export class WebSocketReceiver<
   private _transmitter: TransmitterP;
 
   private _verifyUpgrade: VerifyUpgradeFn;
-  private _verifyLogin: VerifyLoginFn<any, any, any>;
+  private _verifyLogin: VerifyLoginFn<any, unknown, unknown>;
 
-  private _socketStates: Map<Socket, SocketState<any>>;
+  private _socketStates: Map<Socket, SocketState<unknown>>;
 
   private _popEvent: PopEventFn<WebSocketEventContext<any, any>, null>;
 
@@ -178,7 +174,7 @@ export class WebSocketReceiver<
     return this.handleUpgrade.bind(this);
   }
 
-  private _getSocketStatesAssertedly(socket: Socket): SocketState<any> {
+  private _getSocketStatesAssertedly(socket: Socket): SocketState<unknown> {
     const socketState = this._socketStates.get(socket);
     if (socketState === undefined) {
       const reason = 'unknown socket';
@@ -193,8 +189,8 @@ export class WebSocketReceiver<
     socket: Socket,
     kind: undefined | string,
     type: string,
-    payload: any,
-    { connection, user, auth }: ConnectionInfo<any>
+    payload: unknown,
+    { connection, user, auth }: ConnectionInfo<unknown>
   ) {
     await this._popEvent({
       platform: WEBSOCKET,
@@ -370,7 +366,7 @@ export class WebSocketReceiver<
   }
 }
 
-export const ReceiverP = provider<WebSocketReceiver<any, any>>({
+export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
   deps: [
     BotP,
@@ -380,15 +376,15 @@ export const ReceiverP = provider<WebSocketReceiver<any, any>>({
     { require: UPGRADE_VERIFIER_I, optional: true },
     PLATFORM_MOUNTER_I,
     PLATFORM_CONFIGS_I,
-  ],
+  ] as const,
   factory: (
-    bot: BotP,
-    wsServer: WSServer,
-    transmitter: TransmitterP,
-    verifyLogin: null | VerifyLoginFn<any, any, any>,
-    verifyUpgrade: null | VerifyUpgradeFn,
-    { popEventWrapper, popError }: WebSocketPlatformMounter<any, any>,
-    configs: WebSocketPlatformConfigs<any, any>
+    bot,
+    wsServer,
+    transmitter,
+    verifyLogin,
+    verifyUpgrade,
+    { popEventWrapper, popError },
+    configs
   ) =>
     new WebSocketReceiver(
       bot,
@@ -405,10 +401,9 @@ export const ReceiverP = provider<WebSocketReceiver<any, any>>({
 })(WebSocketReceiver);
 
 export type ReceiverP<
-  Value extends EventValue<any, any, any> = EventValue<string, string, unknown>,
   LoginVerifier extends VerifyLoginFn<any, any, any> = VerifyLoginFn<
     null,
     null,
     unknown
   >
-> = WebSocketReceiver<Value, LoginVerifier>;
+> = WebSocketReceiver<LoginVerifier>;

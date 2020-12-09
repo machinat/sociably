@@ -1,4 +1,4 @@
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type { MachinatNode } from '@machinat/core/types';
 import { BaseStateControllerI } from '@machinat/core/base';
 import formatNode from '@machinat/core/utils/formatNode';
@@ -141,9 +141,9 @@ export class MessengerAssetsManager {
   }
 }
 
-export const AssetsManagerP = provider<MessengerAssetsManager>({
+export const AssetsManagerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [BaseStateControllerI, BotP],
+  deps: [BaseStateControllerI, BotP] as const,
 })(MessengerAssetsManager);
 
 export type AssetsManagerP = MessengerAssetsManager;

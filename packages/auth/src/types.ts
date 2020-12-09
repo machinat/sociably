@@ -199,12 +199,12 @@ export type WithHeaders = {
 };
 
 export type GetAuthContextOf<
-  Authorizer extends ServerAuthorizer<any, any, any, any>
+  Authorizer extends ServerAuthorizer<any, any, unknown, unknown>
 > = Authorizer extends ServerAuthorizer<
   infer User,
   infer Channel,
   infer AuthData,
-  any
+  unknown
 >
   ? {
       platform: Authorizer['platform'];

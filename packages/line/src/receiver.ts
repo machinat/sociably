@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import invariant from 'invariant';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type { PopEventWrapper } from '@machinat/core/types';
 import WebhookReceiver from '@machinat/http/webhook';
 import type { WebhookHandler } from '@machinat/http/webhook/types';
@@ -9,12 +9,7 @@ import eventFactory from './event/factory';
 import { BotP } from './bot';
 import { LINE } from './constant';
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
-import type {
-  LineWebhookRequestBody,
-  LineEventContext,
-  LinePlatformConfigs,
-  LinePlatformMounter,
-} from './types';
+import type { LineWebhookRequestBody, LineEventContext } from './types';
 
 type LineReceiverOptions = {
   providerId: string;
@@ -122,14 +117,11 @@ export class LineReceiver extends WebhookReceiver {
   }
 }
 
-export const ReceiverP = provider<LineReceiver>({
+export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I],
-  factory: (
-    configs: LinePlatformConfigs,
-    bot: BotP,
-    { popEventWrapper }: LinePlatformMounter
-  ) => new LineReceiver(configs, bot, popEventWrapper),
+  deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I] as const,
+  factory: (configs, bot, { popEventWrapper }) =>
+    new LineReceiver(configs, bot, popEventWrapper),
 })(LineReceiver);
 
 export type ReceiverP = LineReceiver;

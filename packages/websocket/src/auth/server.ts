@@ -1,11 +1,7 @@
 import { MachinatUser } from '@machinat/core/types';
 import Auth from '@machinat/auth';
-import type {
-  AuthContext,
-  ServerAuthorizer,
-  GetAuthContextOf,
-} from '@machinat/auth/types';
-import { factory } from '@machinat/core/service';
+import type { ServerAuthorizer, GetAuthContextOf } from '@machinat/auth/types';
+import { makeFactoryProvider } from '@machinat/core/service';
 import type { VerifyLoginFn } from '../types';
 
 /**
@@ -35,11 +31,9 @@ const useAuthController = <
   };
 };
 
-const useAuthControllerP = factory<
-  VerifyLoginFn<MachinatUser, AuthContext<any, any, any>, string>
->({
+const useAuthControllerP = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [Auth.Controller],
+  deps: [Auth.Controller] as const,
 })(useAuthController);
 
 export default useAuthControllerP;

@@ -8,7 +8,7 @@ import type {
   DispatchFrame,
   DispatchResponse,
 } from '@machinat/core/engine/types';
-import type { ServiceContainer } from '@machinat/core/service/types';
+import type { MaybeContainer } from '@machinat/core/service/types';
 import type { IntermediateSegment } from '@machinat/core/renderer/types';
 import type { WebhookMetadata } from '@machinat/http/webhook/types';
 import { LineBot } from './bot';
@@ -196,7 +196,7 @@ export type LineMessageRequestBody =
 
 export type LineJob = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  body: null | LineMessageRequestBody | Record<string, unknown>;
+  body: null | LineMessageRequestBody | unknown;
   path: string;
   executionKey: undefined | string;
 };
@@ -228,14 +228,8 @@ export type LinePlatformConfigs = {
   connectionCapicity?: number;
   liffChannelIds?: string[];
   noServer?: boolean;
-  eventMiddlewares?: (
-    | LineEventMiddleware
-    | ServiceContainer<LineEventMiddleware>
-  )[];
-  dispatchMiddlewares?: (
-    | LineDispatchMiddleware
-    | ServiceContainer<LineDispatchMiddleware>
-  )[];
+  eventMiddlewares?: MaybeContainer<LineEventMiddleware>[];
+  dispatchMiddlewares?: MaybeContainer<LineDispatchMiddleware>[];
 };
 
 export type LinePlatformMounter = PlatformMounter<

@@ -65,7 +65,7 @@ beforeEach(() => {
 
 it('throw if options.botId is empty', () => {
   expect(
-    () => new TelegramReceiver({} as any, bot, popEventWrapper)
+    () => new TelegramReceiver({} as never, bot, popEventWrapper)
   ).toThrowErrorMatchingInlineSnapshot(`"options.botId should not be empty"`);
 });
 
@@ -81,7 +81,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
     const req = createReq({ method });
     const res = createRes();
 
-    await receiver.handleRequest(req as any, res);
+    await receiver.handleRequest(req as never, res);
 
     expect(res.statusCode).toBe(405);
     expect(res.finished).toBe(true);
@@ -94,7 +94,7 @@ it('responds 400 if body is empty', async () => {
   const req = createReq({ method: 'POST' });
   const res = createRes();
 
-  await receiver.handleRequest(req as any, res);
+  await receiver.handleRequest(req as never, res);
 
   expect(res.statusCode).toBe(400);
   expect(res.finished).toBe(true);
@@ -106,7 +106,7 @@ it('responds 400 if body is not in valid json format', async () => {
   const req = createReq({ method: 'POST', body: "I'm Jason" });
   const res = createRes();
 
-  await receiver.handleRequest(req as any, res);
+  await receiver.handleRequest(req as never, res);
 
   expect(res.statusCode).toBe(400);
   expect(res.finished).toBe(true);
@@ -120,7 +120,7 @@ it('respond 200 and pop events received', async () => {
   const req = createReq({ method: 'POST', body: bodyStr });
   const res = createRes();
 
-  await receiver.handleRequest(req as any, res);
+  await receiver.handleRequest(req as never, res);
 
   expect(res.statusCode).toBe(200);
   expect(res.finished).toBe(true);
@@ -144,9 +144,11 @@ it('respond 200 and pop events received', async () => {
   expect(context.event.kind).toBe('message');
   expect(context.event.type).toBe('text');
   expect(context.event.channel).toEqual(
-    new TelegramChat(12345, updateBody.message.chat as any)
+    new TelegramChat(12345, updateBody.message.chat as never)
   );
-  expect(context.event.user).toEqual(new TelegramUser(updateBody.message.from));
+  expect(context.event.user).toEqual(
+    new TelegramUser(12345, updateBody.message.from)
+  );
   expect(context.event.payload).toEqual(updateBody);
 });
 
@@ -163,7 +165,7 @@ it('verify request path is options.secretPath, respond 401 if fail', async () =>
     body: JSON.stringify(updateBody),
   });
   const res1 = createRes();
-  await receiver.handleRequest(req1 as any, res1);
+  await receiver.handleRequest(req1 as never, res1);
 
   expect(res1.statusCode).toBe(200);
   expect(res1.finished).toBe(true);
@@ -175,7 +177,7 @@ it('verify request path is options.secretPath, respond 401 if fail', async () =>
     body: JSON.stringify(updateBody),
   });
   const res2 = createRes();
-  await receiver.handleRequest(req2 as any, res2);
+  await receiver.handleRequest(req2 as never, res2);
 
   expect(res2.statusCode).toBe(401);
   expect(res2.finished).toBe(true);
@@ -186,7 +188,7 @@ it('verify request path is options.secretPath, respond 401 if fail', async () =>
     body: JSON.stringify(updateBody),
   });
   const res3 = createRes();
-  await receiver.handleRequest(req3 as any, res3);
+  await receiver.handleRequest(req3 as never, res3);
 
   expect(res3.statusCode).toBe(401);
   expect(res3.finished).toBe(true);
@@ -211,7 +213,7 @@ it('verify secretPath with entryPath', async () => {
     body: JSON.stringify(updateBody),
   });
   const res1 = createRes();
-  await receiver.handleRequest(req1 as any, res1);
+  await receiver.handleRequest(req1 as never, res1);
 
   expect(res1.statusCode).toBe(200);
   expect(res1.finished).toBe(true);
@@ -223,7 +225,7 @@ it('verify secretPath with entryPath', async () => {
     body: JSON.stringify(updateBody),
   });
   const res2 = createRes();
-  await receiver.handleRequest(req2 as any, res2);
+  await receiver.handleRequest(req2 as never, res2);
 
   expect(res2.statusCode).toBe(401);
   expect(res2.finished).toBe(true);
@@ -235,7 +237,7 @@ it('verify secretPath with entryPath', async () => {
     body: JSON.stringify(updateBody),
   });
   const res3 = createRes();
-  await receiver.handleRequest(req3 as any, res3);
+  await receiver.handleRequest(req3 as never, res3);
 
   expect(res3.statusCode).toBe(401);
   expect(res3.finished).toBe(true);
@@ -255,7 +257,7 @@ it('verify secretPath when RoutingInfo given', async () => {
     body: JSON.stringify(updateBody),
   });
   const res1 = createRes();
-  await receiver.handleRequest(req1 as any, res1, {
+  await receiver.handleRequest(req1 as never, res1, {
     originalPath: '/webhook/telegram/__SECRET_PATH__',
     matchedPath: '/webhook/telegram',
     trailingPath: '__SECRET_PATH__',
@@ -271,7 +273,7 @@ it('verify secretPath when RoutingInfo given', async () => {
     body: JSON.stringify(updateBody),
   });
   const res2 = createRes();
-  await receiver.handleRequest(req2 as any, res2, {
+  await receiver.handleRequest(req2 as never, res2, {
     originalPath: '/webhook/telegram/__WRONG_PATH__',
     matchedPath: '/webhook/telegram',
     trailingPath: '__WRONG_PATH__',

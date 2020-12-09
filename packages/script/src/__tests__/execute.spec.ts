@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import { container } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core/service';
 import execute from '../execute';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
@@ -12,7 +12,7 @@ const scope = moxy({
 
 const channel = { platform: 'test', uid: '_MY_CHANNEL_' };
 
-const mockScript = (commands, entriesIndex, name) =>
+const mockScript = (commands, entriesIndex?, name?) =>
   moxy(
     {
       name: name || 'MockScript',
@@ -32,7 +32,13 @@ describe('executing content command', () => {
       execute(
         scope,
         channel,
-        [{ script: mockScript([contentCommand]), vars: { foo: 'bar' } }],
+        [
+          {
+            script: mockScript([contentCommand]),
+            vars: { foo: 'bar' },
+            stopAt: undefined,
+          },
+        ],
         false
       )
     ).resolves.toEqual({
@@ -58,6 +64,7 @@ describe('executing content command', () => {
           {
             script: mockScript([contentCommand1, contentCommand2]),
             vars: { foo: 'baz' },
+            stopAt: undefined,
           },
         ],
         false
@@ -103,7 +110,13 @@ describe('executing content command', () => {
       execute(
         scope,
         channel,
-        [{ script: mockScript(commands), vars: { foo: 'bar' } }],
+        [
+          {
+            script: mockScript(commands),
+            vars: { foo: 'bar' },
+            stopAt: undefined,
+          },
+        ],
         false
       )
     ).resolves.toEqual({
@@ -124,7 +137,7 @@ describe('executing content command', () => {
 
   test('with async render container', async () => {
     const render = moxy(async () => 'a contained');
-    const renderContainer = moxy(container({ deps: [] })(() => render));
+    const renderContainer = moxy(makeContainer({ deps: [] })(() => render));
 
     await expect(
       execute(
@@ -138,6 +151,7 @@ describe('executing content command', () => {
               { type: 'content', render: () => 'world' },
             ]),
             vars: { foo: 'bar' },
+            stopAt: undefined,
           },
         ],
         false
@@ -177,7 +191,12 @@ describe('executing set_vars command', () => {
 
   test('with sync setter function', async () => {
     await expect(
-      execute(scope, channel, [{ script, vars: { foo: 'bar', t: 0 } }], false)
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar', t: 0 }, stopAt: undefined }],
+        false
+      )
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -204,7 +223,12 @@ describe('executing set_vars command', () => {
     }));
 
     await expect(
-      execute(scope, channel, [{ script, vars: { foo: 'bar', t: 0 } }], false)
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar', t: 0 }, stopAt: undefined }],
+        false
+      )
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -226,11 +250,16 @@ describe('executing set_vars command', () => {
 
   test('with async setter container', async () => {
     const setter = moxy(async ({ vars }) => ({ ...vars, t: vars.t + 1 }));
-    const setterContainer = moxy(container({ deps: [] })(() => setter));
+    const setterContainer = moxy(makeContainer({ deps: [] })(() => setter));
     setVarsCmd.mock.getter('setter').fake(() => setterContainer);
 
     await expect(
-      execute(scope, channel, [{ script, vars: { foo: 'bar', t: 0 } }], false)
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar', t: 0 }, stopAt: undefined }],
+        false
+      )
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -277,7 +306,12 @@ describe('executing prompt command', () => {
 
   test('return unfinished if prompt command met', async () => {
     await expect(
-      execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+        false
+      )
     ).resolves.toEqual({
       finished: false,
       returnValue: undefined,
@@ -351,7 +385,7 @@ describe('executing prompt command', () => {
 
   test('continue with async container setter', async () => {
     const setter = moxy(async ({ vars }, { answer }) => ({ ...vars, answer }));
-    const setterContainer = moxy(container({ deps: [] })(() => setter));
+    const setterContainer = moxy(makeContainer({ deps: [] })(() => setter));
     promptCommand.mock.getter('setter').fake(() => setterContainer);
 
     await expect(
@@ -398,7 +432,12 @@ describe('executing call command', () => {
     ]);
 
     await expect(
-      execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+        false
+      )
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -447,7 +486,12 @@ describe('executing call command', () => {
 
     test('with sync vars function', async () => {
       await expect(
-        execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
+        execute(
+          scope,
+          channel,
+          [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+          false
+        )
       ).resolves.toEqual({
         finished: true,
         returnValue: undefined,
@@ -487,7 +531,12 @@ describe('executing call command', () => {
       }));
 
       await expect(
-        execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
+        execute(
+          scope,
+          channel,
+          [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+          false
+        )
       ).resolves.toEqual({
         finished: true,
         returnValue: undefined,
@@ -515,18 +564,25 @@ describe('executing call command', () => {
 
     test('with container vars functions', async () => {
       const withVarsFn = moxy(async () => ({ hello: 'from top container' }));
-      const withVarsContainer = moxy(container({ deps: [] })(() => withVarsFn));
+      const withVarsContainer = moxy(
+        makeContainer({ deps: [] })(() => withVarsFn)
+      );
       const setterFn = moxy(async ({ vars }, returnValue) => ({
         ...vars,
         ...returnValue,
       }));
-      const setterContainer = moxy(container({ deps: [] })(() => setterFn));
+      const setterContainer = moxy(makeContainer({ deps: [] })(() => setterFn));
 
       callCommand.mock.getter('setter').fake(() => setterContainer);
       callCommand.mock.getter('withVars').fake(() => withVarsContainer);
 
       await expect(
-        execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
+        execute(
+          scope,
+          channel,
+          [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+          false
+        )
       ).resolves.toEqual({
         finished: true,
         returnValue: undefined,
@@ -577,7 +633,12 @@ describe('executing call command', () => {
     ]);
 
     await expect(
-      execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+        false
+      )
     ).resolves.toEqual({
       finished: false,
       returnValue: undefined,
@@ -616,6 +677,7 @@ describe('executing call command', () => {
               { type: 'call', script: subScript, goto: 'where' },
             ]),
             vars: { foo: 'bar' },
+            stopAt: undefined,
           },
         ],
         false
@@ -645,7 +707,7 @@ describe('executing jump command', () => {
       { type: 'content', render: () => 'baz' },
     ]);
     await expect(
-      execute(scope, channel, [{ script, vars: {} }], false)
+      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -662,7 +724,7 @@ describe('executing jump command', () => {
       { type: 'content', render: () => 'bar' },
     ]);
     await expect(
-      execute(scope, channel, [{ script, vars: {} }], false)
+      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -694,7 +756,7 @@ describe('executing jump_condition command', () => {
 
   test('with sync condition function', async () => {
     await expect(
-      execute(scope, channel, [{ script, vars: {} }], false)
+      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -705,7 +767,7 @@ describe('executing jump_condition command', () => {
 
     jumpCondCommand.condition.mock.fakeReturnValue(false);
     await expect(
-      execute(scope, channel, [{ script, vars: {} }], false)
+      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -718,7 +780,7 @@ describe('executing jump_condition command', () => {
   test('with async condition function', async () => {
     jumpCondCommand.condition.mock.fake(async () => true);
     await expect(
-      execute(scope, channel, [{ script, vars: {} }], false)
+      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -728,7 +790,7 @@ describe('executing jump_condition command', () => {
 
     jumpCondCommand.condition.mock.fake(async () => false);
     await expect(
-      execute(scope, channel, [{ script, vars: {} }], false)
+      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -739,11 +801,13 @@ describe('executing jump_condition command', () => {
 
   test('with async condition container', async () => {
     const conditionFn = moxy(async () => true);
-    const conditionContainer = moxy(container({ deps: [] })(() => conditionFn));
+    const conditionContainer = moxy(
+      makeContainer({ deps: [] })(() => conditionFn)
+    );
 
     jumpCondCommand.mock.getter('condition').fake(() => conditionContainer);
     await expect(
-      execute(scope, channel, [{ script, vars: {} }], false)
+      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -753,7 +817,7 @@ describe('executing jump_condition command', () => {
 
     conditionFn.mock.fake(async () => false);
     await expect(
-      execute(scope, channel, [{ script, vars: {} }], false)
+      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -766,7 +830,7 @@ describe('executing jump_condition command', () => {
     jumpCondCommand.mock.getter('isNot').fakeReturnValue(true);
 
     await expect(
-      execute(scope, channel, [{ script, vars: {} }], false)
+      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -777,7 +841,7 @@ describe('executing jump_condition command', () => {
 
     script.commands[1].condition.mock.fakeReturnValue(false);
     await expect(
-      execute(scope, channel, [{ script, vars: {} }], false)
+      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -796,7 +860,12 @@ describe('executing return command', () => {
       { type: 'content', render: () => 'world' },
     ]);
     await expect(
-      execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+        false
+      )
     ).resolves.toEqual({
       finished: true,
       returnValue: undefined,
@@ -823,7 +892,12 @@ describe('executing return command', () => {
 
   test('return with sync value getter function', async () => {
     await expect(
-      execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+        false
+      )
     ).resolves.toEqual({
       finished: true,
       returnValue: 'bar',
@@ -842,7 +916,12 @@ describe('executing return command', () => {
   test('return with sync value getter function', async () => {
     returnCommand.valueGetter.mock.fake(async ({ vars }) => vars.foo);
     await expect(
-      execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+        false
+      )
     ).resolves.toEqual({
       finished: true,
       returnValue: 'bar',
@@ -859,11 +938,16 @@ describe('executing return command', () => {
 
   test('return with sync value getter container', async () => {
     const valueFn = moxy(async ({ vars }) => vars.foo);
-    const valueContainer = moxy(container({ deps: [] })(() => valueFn));
+    const valueContainer = moxy(makeContainer({ deps: [] })(() => valueFn));
     returnCommand.mock.getter('valueGetter').fake(() => valueContainer);
 
     await expect(
-      execute(scope, channel, [{ script, vars: { foo: 'bar' } }], false)
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+        false
+      )
     ).resolves.toEqual({
       finished: true,
       returnValue: 'bar',
@@ -948,7 +1032,7 @@ describe('run whole script', () => {
       execute(
         scope,
         channel,
-        [{ script: MockScript, vars: { foo: 'bar' } }],
+        [{ script: MockScript, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
     ).resolves.toEqual({
@@ -995,7 +1079,7 @@ describe('run whole script', () => {
       execute(
         scope,
         channel,
-        [{ script: MockScript, vars: { foo: 'bar' } }],
+        [{ script: MockScript, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
     ).resolves.toEqual({
@@ -1021,7 +1105,7 @@ describe('run whole script', () => {
   });
 
   test('continue from prompt within the loops', async () => {
-    let stack = [
+    let stack: any = [
       { script: MockScript, vars: { foo: 'bar' }, stopAt: 'PROMPT' },
     ];
 
@@ -1191,7 +1275,7 @@ it('throw if stopped point key not found', async () => {
     'MyScript'
   );
   await expect(() =>
-    execute(scope, channel, [{ script, vars: {}, stopAt: 'UNKNOWN' }], {})
+    execute(scope, channel, [{ script, vars: {}, stopAt: 'UNKNOWN' }], true, {})
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"key \\"UNKNOWN\\" not found in MyScript"`
   );
@@ -1210,7 +1294,7 @@ it('throw if stopped point is not <Prompt/>', async () => {
     'MyScript'
   );
   await expect(() =>
-    execute(scope, channel, [{ script, vars: {}, stopAt: 'ask' }], {
+    execute(scope, channel, [{ script, vars: {}, stopAt: 'ask' }], true, {
       event: { text: 'yes' },
     })
   ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -1249,6 +1333,7 @@ it('throw if returned point is not <Call/>', async () => {
         { script, vars: {}, stopAt: 'greet' },
         { script: subScript, vars: {}, stopAt: 'prompt#0' },
       ],
+      true,
       { event: { text: 'fine' } }
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(

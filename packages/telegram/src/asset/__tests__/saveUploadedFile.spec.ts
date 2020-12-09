@@ -114,7 +114,7 @@ it('ignore noraml messages and media message without fileAssetTag', async () => 
     ],
   };
 
-  const next: any = async () => response;
+  const next = moxy(async () => response);
 
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
   expect(manager.saveFile.mock).not.toHaveBeenCalled();

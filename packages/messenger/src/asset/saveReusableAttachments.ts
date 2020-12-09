@@ -1,4 +1,4 @@
-import { container } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core/service';
 import type { MessengerDispatchMiddleware } from '../types';
 import { AssetsManagerP } from './manager';
 
@@ -30,8 +30,8 @@ const collectReusableAttachments = (
   return response;
 };
 
-const collectReusableAttachmentsC = container<MessengerDispatchMiddleware>({
-  deps: [AssetsManagerP],
+const collectReusableAttachmentsC = makeContainer({
+  deps: [AssetsManagerP] as const,
 })(collectReusableAttachments);
 
 export default collectReusableAttachmentsC;

@@ -4,19 +4,14 @@ import invariant from 'invariant';
 
 import WebhookReceiver from '@machinat/http/webhook';
 import type { WebhookHandler } from '@machinat/http/webhook/types';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type { PopEventWrapper } from '@machinat/core/types';
 
 import eventFactory from './event/factory';
 import { BotP } from './bot';
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { TELEGRAM } from './constant';
-import type {
-  TelegramEventContext,
-  TelegramPlatformConfigs,
-  TelegramPlatformMounter,
-  TelegramRawEvent,
-} from './types';
+import type { TelegramEventContext, TelegramRawEvent } from './types';
 
 type TelegramReceiverOptions = {
   botId: number;
@@ -89,14 +84,10 @@ export class TelegramReceiver extends WebhookReceiver {
   }
 }
 
-export const ReceiverP = provider<TelegramReceiver>({
+export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I],
-  factory: (
-    { botToken, secretPath, entryPath }: TelegramPlatformConfigs,
-    bot: BotP,
-    { popEventWrapper }: TelegramPlatformMounter
-  ) => {
+  deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I] as const,
+  factory: ({ botToken, secretPath, entryPath }, bot, { popEventWrapper }) => {
     const botId = Number(botToken.split(':', 1)[0]);
     return new TelegramReceiver(
       { botId, secretPath, entryPath },

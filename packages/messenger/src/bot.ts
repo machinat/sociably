@@ -3,7 +3,7 @@ import Engine, { DispatchError } from '@machinat/core/engine';
 import type { DispatchResponse } from '@machinat/core/engine/types';
 import Queue from '@machinat/core/queue';
 import Renderer from '@machinat/core/renderer';
-import { provider, createEmptyScope } from '@machinat/core/service';
+import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
 
 import type {
   MachinatNode,
@@ -28,8 +28,6 @@ import type {
   MessengerSegmentValue,
   MessengerDispatchFrame,
   MessengerSendOptions,
-  MessengerPlatformConfigs,
-  MessengerPlatformMounter,
 } from './types';
 
 type MessengerBotOptions = {
@@ -50,7 +48,7 @@ export class MessengerBot
   engine: Engine<
     MessengerChannel,
     MessengerSegmentValue,
-    MessengerComponent<any>,
+    MessengerComponent<unknown>,
     MessengerJob,
     MessengerResult,
     MessengerBot
@@ -152,13 +150,14 @@ export class MessengerBot
   }
 }
 
-export const BotP = provider<MessengerBot>({
+export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I, { require: PLATFORM_MOUNTER_I, optional: true }],
-  factory: (
-    configs: MessengerPlatformConfigs,
-    mounter: null | MessengerPlatformMounter
-  ) => new MessengerBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
+  deps: [
+    PLATFORM_CONFIGS_I,
+    { require: PLATFORM_MOUNTER_I, optional: true },
+  ] as const,
+  factory: (configs, mounter) =>
+    new MessengerBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
 })(MessengerBot);
 
 export type BotP = MessengerBot;

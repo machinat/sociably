@@ -8,7 +8,7 @@ import type {
   InitScopeFn,
   DispatchWrapper,
 } from '@machinat/core/types';
-import { provider, createEmptyScope } from '@machinat/core/service';
+import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
 
 import { chatJobsMaker, multicastJobsMaker } from './job';
 import generalElementDelegate from './components/general';
@@ -19,14 +19,12 @@ import { LINE } from './constant';
 
 import type {
   LineSource,
-  LinePlatformConfigs,
   LineSegmentValue,
   LineComponent,
   LineJob,
   LineAPIResult,
   LineDispatchFrame,
   LineDispatchResponse,
-  LinePlatformMounter,
 } from './types';
 
 type LineBotOptions = {
@@ -44,7 +42,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
   engine: Engine<
     LineChat,
     LineSegmentValue,
-    LineComponent<any>,
+    LineComponent<unknown>,
     LineJob,
     LineAPIResult,
     LineBot
@@ -70,7 +68,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
 
     const queue = new Queue<LineJob, LineAPIResult>();
     const worker = new LineWorker(accessToken, connectionCapicity);
-    const renderer = new Renderer<LineSegmentValue, LineComponent<any>>(
+    const renderer = new Renderer<LineSegmentValue, LineComponent<unknown>>(
       LINE,
       generalElementDelegate
     );
@@ -123,7 +121,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
   async dispatchAPICall(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     path: string,
-    body: null | Record<string, unknown>
+    body: null | unknown
   ): Promise<LineAPIResult> {
     try {
       const response = await this.engine.dispatchJobs(null, [
@@ -141,13 +139,14 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
   }
 }
 
-export const BotP = provider<LineBot>({
+export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I, { require: PLATFORM_MOUNTER_I, optional: true }],
-  factory: (
-    configs: LinePlatformConfigs,
-    mounter: null | LinePlatformMounter
-  ) => new LineBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
+  deps: [
+    PLATFORM_CONFIGS_I,
+    { require: PLATFORM_MOUNTER_I, optional: true },
+  ] as const,
+  factory: (configs, mounter) =>
+    new LineBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
 })(LineBot);
 
 export type BotP = LineBot;

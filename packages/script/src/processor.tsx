@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
-import { ServiceScope, provider } from '@machinat/core/service';
+import { ServiceScope, makeClassProvider } from '@machinat/core/service';
 import type {
   MachinatChannel,
   MachinatNode,
@@ -259,9 +259,9 @@ export class ScriptProcessor<Input, ReturnValue> {
   }
 }
 
-export const ProcessorP = provider<ScriptProcessor<any, any>>({
+export const ProcessorP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [Base.StateControllerI, ServiceScope, SCRIPT_LIBS_I],
+  deps: [Base.StateControllerI, ServiceScope, SCRIPT_LIBS_I] as const,
 })(ScriptProcessor);
 
 export type ProcessorP<Input, ReturnValue> = ScriptProcessor<

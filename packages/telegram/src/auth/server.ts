@@ -2,7 +2,7 @@ import { parse as parseURL } from 'url';
 import { createHmac } from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import invariant from 'invariant';
-import { provider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type {
   ServerAuthorizer,
   CookieAccessor,
@@ -166,9 +166,9 @@ export class TelegramServerAuthorizer
   }
 }
 
-export const ServerAuthorizerP = provider<TelegramServerAuthorizer>({
+export const ServerAuthorizerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I],
+  deps: [PLATFORM_CONFIGS_I] as const,
   factory: ({ botToken, authRedirectURL }: TelegramPlatformConfigs) => {
     invariant(
       authRedirectURL,

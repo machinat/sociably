@@ -1,6 +1,6 @@
 import type { PlatformModule } from '@machinat/core/types';
 import type { ServiceProvision } from '@machinat/core/service/types';
-import { container, factory } from '@machinat/core/service';
+import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import { BaseBot, BaseProfiler, BaseMarshaler } from '@machinat/core/base';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
@@ -29,16 +29,16 @@ import type {
 } from './types';
 
 /** @interanl */
-const requestRoutingFactory = factory<HTTPRequestRouting>({
+const requestRoutingFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [PLATFORM_CONFIGS_I, ReceiverP],
-})((configs: TelegramPlatformConfigs, receiver: ReceiverP) => {
-  return {
+  deps: [PLATFORM_CONFIGS_I, ReceiverP] as const,
+})(
+  (configs, receiver): HTTPRequestRouting => ({
     name: TELEGRAM,
     path: configs.entryPath || '/',
     handler: receiver.handleRequestCallback(),
-  };
-});
+  })
+);
 
 const Telegram = {
   Bot: BotP,
@@ -93,7 +93,7 @@ const Telegram = {
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions,
 
-      startHook: container<Promise<void>>({
+      startHook: makeContainer({
         deps: [BotP],
       })(async (bot: BotP) => bot.start()),
     };
