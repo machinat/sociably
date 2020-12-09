@@ -1,14 +1,14 @@
 import moxy from '@moxyjs/moxy';
-import { makeContainer } from '@machinat/core/service';
+import { makeContainer, ServiceScope } from '@machinat/core/service';
 import execute from '../execute';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
-const scope = moxy({
+const scope: ServiceScope = moxy({
   injectContainer(containerFn) {
     return containerFn('FOO_SERVICE');
   },
-});
+} as any);
 
 const channel = { platform: 'test', uid: '_MY_CHANNEL_' };
 
@@ -18,7 +18,7 @@ const mockScript = (commands, entriesIndex?, name?) =>
       name: name || 'MockScript',
       commands,
       entriesIndex: entriesIndex || new Map(),
-    },
+    } as any,
     { includeProperties: ['*'], excludeProperties: ['entriesIndex'] }
   );
 
@@ -102,7 +102,7 @@ describe('executing content command', () => {
         },
         { type: 'content', render: async () => 'async' },
         { type: 'content', render: () => 'world' },
-      ],
+      ] as any,
       { includeProperties: ['*'] }
     );
 

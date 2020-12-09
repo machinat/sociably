@@ -1,5 +1,6 @@
 import { Readable } from 'stream';
-import moxy, { Mock } from '@moxyjs/moxy';
+import { ServerResponse } from 'http';
+import moxy, { Mock, Moxy } from '@moxyjs/moxy';
 
 import { TelegramReceiver } from '../receiver';
 import { TelegramChat } from '../channel';
@@ -20,12 +21,13 @@ const createReq = ({ method, url = '/', body = '', headers = {} }) => {
   return Object.assign(req, { method, url, body, headers });
 };
 
-const createRes = () =>
+const createRes = (): Moxy<ServerResponse> =>
   moxy({
     finished: false,
     statusCode: 200,
     writeHead(code) {
       this.statusCode = code;
+      return this;
     },
     end(...args) {
       this.finished = true;
@@ -33,7 +35,7 @@ const createRes = () =>
         if (typeof args[i] === 'function') args[i]();
       }
     },
-  });
+  } as any);
 
 const updateBody = {
   update_id: 9999,

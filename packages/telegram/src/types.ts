@@ -109,7 +109,7 @@ export type UploadingFile = {
   fieldName: string;
   fileData: string | Buffer | NodeJS.ReadableStream;
   fileInfo?: UploadingFileInfo;
-  fileAssetTag: undefined | string;
+  fileAssetTag?: string;
 };
 
 export type TelegramSegmentValue = {

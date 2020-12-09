@@ -366,7 +366,7 @@ test('optional dependency', () => {
       Foo,
       { require: Bar, optional: true },
       { require: BAZ, optional: true },
-    ],
+    ] as const,
   })(
     (foo, bar, baz) =>
       `${foo.foo()} ${bar ? bar.bar() : 'x'} ${baz ? baz.baz() : 'x'}`
@@ -637,21 +637,26 @@ test('boostrap time provision', () => {
 });
 
 test('require underlying ServiceScope', () => {
-  const singletonService = makeClassProvider({
-    deps: [ServiceScope],
-    lifetime: 'singleton',
-  })(moxy());
-  const scopedService = makeClassProvider({
-    deps: [ServiceScope],
-    lifetime: 'scoped',
-  })(moxy());
+  const singletonService = moxy(
+    makeClassProvider({
+      deps: [ServiceScope],
+      lifetime: 'singleton',
+    })(class A {})
+  );
+
+  const scopedService = moxy(
+    makeClassProvider({
+      deps: [ServiceScope],
+      lifetime: 'scoped',
+    })(class B {})
+  );
 
   const space = new ServiceSpace(null, [singletonService, scopedService]);
   const scope = space.bootstrap();
 
   expect(scope).toBeInstanceOf(ServiceScope);
-  expect(singletonService.mock).toHaveBeenCalledTimes(1);
-  expect(singletonService.mock.calls[0].args[0]).toBe(scope);
+  expect(singletonService.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(singletonService.$$factory.mock.calls[0].args[0]).toBe(scope);
 
   const consumerContainer = moxy(
     makeContainer({ deps: [ServiceScope, scopedService] })(() => ({}))
@@ -661,8 +666,8 @@ test('require underlying ServiceScope', () => {
 
   expect(consumerContainer.mock).toHaveBeenCalledTimes(1);
   expect(consumerContainer.mock.calls[0].args[0]).toBe(scope);
-  expect(scopedService.mock).toHaveBeenCalledTimes(1);
-  expect(scopedService.mock.calls[0].args[0]).toBe(scope);
+  expect(scopedService.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(scopedService.$$factory.mock.calls[0].args[0]).toBe(scope);
 
   const [requiredScope] = scope.useServices([ServiceScope]);
   expect(requiredScope).toBe(scope);

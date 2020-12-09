@@ -1,4 +1,5 @@
-import moxy from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
+import type { AssetsManagerP } from '../manager';
 import saveUploadedFile from '../saveUploadedFile';
 
 const sendMessageJob = {
@@ -7,6 +8,7 @@ const sendMessageJob = {
     chai_id: 12345,
     text: 'foo',
   },
+  uploadingFiles: [],
 };
 
 const sendMessageResult = {
@@ -65,9 +67,9 @@ const makeMediaResult = (mediaType: string) => ({
   },
 });
 
-const manager = moxy({
+const manager: Moxy<AssetsManagerP> = moxy({
   async saveFile() {},
-});
+} as any);
 
 const mediaMethodPairs = [
   ['animation', 'sendAnimation'],
@@ -114,7 +116,7 @@ it('ignore noraml messages and media message without fileAssetTag', async () => 
     ],
   };
 
-  const next = moxy(async () => response);
+  const next = moxy(async () => response as any);
 
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
   expect(manager.saveFile.mock).not.toHaveBeenCalled();

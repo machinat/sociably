@@ -70,7 +70,7 @@ const FooPlatform = moxy({
     (frame, next) => next(frame),
     (frame, next) => next(frame),
   ],
-});
+} as any);
 
 const BarService = moxy(
   makeClassProvider({

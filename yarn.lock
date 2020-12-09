@@ -2688,10 +2688,10 @@
   dependencies:
     highlight.js "^9.15.6"
 
-"@moxyjs/moxy@0.1.0-beta.0":
-  version "0.1.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@moxyjs/moxy/-/moxy-0.1.0-beta.0.tgz#4db59206187cc874018a18766bf8a79e51620a0f"
-  integrity sha512-zLDEYzSdOHYY/+KGly4V2a5pqsSo+KQaujoqkqD59tyzCPAxATe0TNZK0yB4fpe9iUhANzCvXbyLgKxR77wEyg==
+"@moxyjs/moxy@0.1.0-beta.3":
+  version "0.1.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@moxyjs/moxy/-/moxy-0.1.0-beta.3.tgz#2a181cda40c93b0d6b715f85924576c49a699005"
+  integrity sha512-bssNvMBsVfYhtP5jD4YsrBzt6FHVfuC8bIXsIPgBZ9mGCuMApPejYHEhZUYxKQfX47O5FGwaHI+93iU3EetY5Q==
   dependencies:
     fast-deep-equal "^2.0.1"
     micromatch "^4.0.2"
