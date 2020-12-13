@@ -4,11 +4,9 @@ import { MarshalerP } from './Marshaler';
 import { StateControllerI, BaseStateController } from './StateControllerI';
 import { IntentRecognizerI, BaseIntentRecognizer } from './IntentRecognizerI';
 
-export { BotP as BaseBot } from './Bot';
-export { ProfilerP as BaseProfiler } from './Profiler';
-export { MarshalerP as BaseMarshaler } from './Marshaler';
-export { StateControllerI as BaseStateControllerI } from './StateControllerI';
-export { IntentRecognizerI as BaseIntentRecognizerI } from './IntentRecognizerI';
+export { BaseBot } from './Bot';
+export { BaseProfiler } from './Profiler';
+export { BaseMarshaler } from './Marshaler';
 
 const Base = {
   Bot: BotP,

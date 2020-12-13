@@ -1,5 +1,5 @@
 import { makeClassProvider } from '@machinat/core/service';
-import { BaseStateControllerI } from '@machinat/core/base';
+import Base from '@machinat/core/base';
 import { BotP } from '../bot';
 
 /** @ignore */
@@ -13,9 +13,9 @@ const FILE = 'file';
 export class TelegramAssetsManager {
   bot: BotP;
   botId: number;
-  _stateController: BaseStateControllerI;
+  _stateController: Base.StateControllerI;
 
-  constructor(stateManager: BaseStateControllerI, bot: BotP) {
+  constructor(stateManager: Base.StateControllerI, bot: BotP) {
     this._stateController = stateManager;
     this.bot = bot;
     this.botId = bot.botId;
@@ -81,7 +81,7 @@ export class TelegramAssetsManager {
 
 export const AssetsManagerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [BaseStateControllerI, BotP] as const,
+  deps: [Base.StateControllerI, BotP] as const,
 })(TelegramAssetsManager);
 
 export type AssetsManagerP = TelegramAssetsManager;

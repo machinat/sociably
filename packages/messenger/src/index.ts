@@ -3,9 +3,9 @@ export { default } from './module';
 export { default as MessengerChat } from './channel';
 export { default as MessengerUser } from './user';
 
-export { BotP as MessengerBot } from './bot';
-export { ReceiverP as MessengerReceiver } from './receiver';
-export { ProfilerP as MessengerProfiler } from './profiler';
+export { MessengerBot } from './bot';
+export { MessengerReceiver } from './receiver';
+export { MessengerProfiler } from './profiler';
 
 export { PLATFORM_CONFIGS_I as MESSENGER_CONFIGS_I } from './interface';
 

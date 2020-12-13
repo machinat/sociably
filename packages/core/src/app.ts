@@ -9,7 +9,7 @@ import type {
   MaybeContainer,
 } from './service/types';
 import type { DispatchFrame } from './engine/types';
-import { BaseBot, BaseProfiler, BaseMarshaler } from './base';
+import Base from './base';
 import type {
   AppConfig,
   EventContext,
@@ -108,9 +108,9 @@ export default class MachinatApp<
     }
 
     const moduleOnlySpace = new ServiceSpace(null, [
-      BaseBot,
-      BaseProfiler,
-      BaseMarshaler,
+      Base.Bot,
+      Base.Profiler,
+      Base.Marshaler,
       ...moduleProvisions,
     ]);
 

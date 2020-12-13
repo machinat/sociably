@@ -1,3 +1,5 @@
+// eslint-disable-next-line spaced-comment
+/// <reference lib="DOM" />
 import type { MachinatUser } from '@machinat/core/types';
 import type {
   default as Socket, // eslint-disable-line import/no-named-default

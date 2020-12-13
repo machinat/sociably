@@ -6,7 +6,7 @@ import {
 } from 'fs';
 import { makeClassProvider } from '@machinat/core/service';
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
-import { BaseMarshaler } from '@machinat/core/base';
+import Base from '@machinat/core/base';
 import type {
   BaseStateController,
   StateAccessor,
@@ -31,12 +31,12 @@ const objectHasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
 export class FileStateAccessor implements StateAccessor {
-  private _marshaler: BaseMarshaler;
+  private _marshaler: Base.Marshaler;
   private _getData: () => Promise<Record<string, any>>;
   private _updateData: (data: null | Record<string, any>) => void;
 
   constructor(
-    marshaler: BaseMarshaler,
+    marshaler: Base.Marshaler,
     getData: () => Promise<Record<string, any>>,
     updateData: (data: null | Record<string, any>) => void
   ) {
@@ -118,7 +118,7 @@ const identity = (x) => x;
  */
 export class FileStateController implements BaseStateController {
   path: string;
-  marshaler: BaseMarshaler;
+  marshaler: Base.Marshaler;
   serializer: SerializerI;
 
   private _storage: StorageData;
@@ -131,7 +131,7 @@ export class FileStateController implements BaseStateController {
 
   constructor(
     options: FileRepositoryConfigs,
-    marshaler?: null | BaseMarshaler,
+    marshaler?: null | Base.Marshaler,
     serializer?: null | SerializerI
   ) {
     this.path = options.path;
@@ -230,7 +230,7 @@ export const ControllerP = makeClassProvider({
   lifetime: 'singleton',
   deps: [
     MODULE_CONFIGS_I,
-    { require: BaseMarshaler, optional: true },
+    { require: Base.Marshaler, optional: true },
     { require: SerializerI, optional: true },
   ] as const,
 })(FileStateController);

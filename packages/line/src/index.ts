@@ -1,10 +1,8 @@
 export { default } from './module';
 
-export { BotP as LineBot } from './bot';
-export { ReceiverP as LineReceiver } from './receiver';
-export { ProfilerP as LineUserProfile } from './profiler';
-export { PLATFORM_CONFIGS_I as LINE_CONFIGS_I } from './interface';
-
+export { LineBot } from './bot';
+export { LineReceiver } from './receiver';
+export { LineUserProfile } from './profiler';
 export { default as LineChat } from './channel';
 export { default as LineUser } from './user';
 

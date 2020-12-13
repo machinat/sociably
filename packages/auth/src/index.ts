@@ -1,5 +1,5 @@
 export { default } from './module';
-export { ControllerP as AuthController } from './controller';
+export { AuthController } from './controller';
 export { default as AuthClient } from './client';
 
 export {

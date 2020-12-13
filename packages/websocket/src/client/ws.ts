@@ -1,3 +1,5 @@
+// eslint-disable-next-line spaced-comment
+/// <reference lib="DOM" />
 /** @internal */ /** */
 import { EventEmitter } from 'events';
 import Socket from '../socket';
