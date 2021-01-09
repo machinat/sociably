@@ -43,21 +43,14 @@ const makeParamsCheckingString = (query) =>
  */
 export class TelegramServerAuthorizer
   implements
-    ServerAuthorizer<
-      TelegramUser,
-      null | TelegramChat,
-      TelegramAuthData,
-      void
-    > {
+    ServerAuthorizer<TelegramUser, TelegramChat, TelegramAuthData, void> {
   botToken: string;
   botId: number;
   redirectURL: string;
 
   platform = TELEGRAM;
 
-  constructor(
-    { botToken, redirectURL }: TelegramServerAuthorizerOpts = {} as any
-  ) {
+  constructor({ botToken, redirectURL }: TelegramServerAuthorizerOpts) {
     invariant(botToken, 'options.botToken should not be empty');
     invariant(redirectURL, 'options.redirectURL should not be empty');
 
@@ -109,13 +102,20 @@ export class TelegramServerAuthorizer
       return;
     }
 
+    const userId = Number(query.id);
+    const username = query.username as string | undefined;
+
     const authData: TelegramAuthData = {
       botId: this.botId,
-      channel: null,
-      userId: Number(query.id),
+      channel: {
+        type: 'private',
+        id: userId,
+        username,
+      },
+      userId,
+      username,
       firstName: query.first_name as string,
       lastName: query.last_name as string | undefined,
-      username: query.username as string | undefined,
       photoURL: query.photo_url as string | undefined,
     };
 

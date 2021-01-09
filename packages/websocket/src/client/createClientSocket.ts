@@ -80,7 +80,7 @@ const WS =
 
 const MACHINAT_WEBSOCKET_PROTOCOL_V0 = 'machinat-websocket-v0';
 
-const openSocket = (url: string): Promise<Socket> => {
+const createClientSocket = (url: string): Promise<Socket> => {
   const ws = new WS(url, MACHINAT_WEBSOCKET_PROTOCOL_V0);
   const socket = new Socket('', ws, null as any);
 
@@ -101,4 +101,4 @@ const openSocket = (url: string): Promise<Socket> => {
   });
 };
 
-export default openSocket;
+export default createClientSocket;

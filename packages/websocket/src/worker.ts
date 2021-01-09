@@ -2,15 +2,15 @@ import type { MachinatWorker } from '@machinat/core/engine/types';
 import MachinatQueue from '@machinat/core/queue';
 import type { JobResponse } from '@machinat/core/queue/types';
 
+import type { WebSocketServer } from './server';
 import type { WebSocketJob, WebSocketResult } from './types';
-import { WebSocketTransmitter } from './transmitter';
 
 class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
   _started: boolean;
-  transmitter: WebSocketTransmitter;
+  server: WebSocketServer<any, unknown>;
 
-  constructor(transmitter: WebSocketTransmitter) {
-    this.transmitter = transmitter;
+  constructor(server: WebSocketServer<any, unknown>) {
+    this.server = server;
     this._started = false;
   }
 
@@ -47,17 +47,17 @@ class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
   async _executeJobs(
     jobs: WebSocketJob[]
   ): Promise<JobResponse<WebSocketJob, WebSocketResult>[]> {
-    const promises = jobs.map((job) => this.transmitter.dispatch(job));
+    const promises = jobs.map((job) => this.server.dispatch(job));
     const socketsMetrix = await Promise.all(promises);
 
-    const response = socketsMetrix.map((connections, i) => ({
+    const responses = socketsMetrix.map((connections, i) => ({
       success: true as const,
       error: undefined,
       job: jobs[i],
       result: { connections },
     }));
 
-    return response;
+    return responses;
   }
 }
 

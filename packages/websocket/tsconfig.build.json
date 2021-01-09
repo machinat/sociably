@@ -7,13 +7,11 @@
     "outDir": "./lib",
     "baseUrl": ".",
     "paths": {
-      "@machinat/auth/*": ["../auth/lib/*"],
       "@machinat/core/*": ["../core/lib/*"],
       "@machinat/http/*": ["../http/lib/*"]
     }
   },
   "references": [
-    { "path": "../auth/tsconfig.build.json" },
     { "path": "../core/tsconfig.build.json" },
     { "path": "../http/tsconfig.build.json" }
   ]

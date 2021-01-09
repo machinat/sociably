@@ -36,7 +36,7 @@ export class DialogflowIntentRecognizer
 
   constructor(
     client: SessionClient,
-    { projectId, defaultLanguageCode }: RecognizerOptions = {} as any
+    { projectId, defaultLanguageCode }: RecognizerOptions
   ) {
     invariant(projectId, 'options.projectId should not be empty');
     invariant(

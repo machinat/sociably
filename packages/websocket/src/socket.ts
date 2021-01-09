@@ -26,18 +26,18 @@ export const SOCKET_CLOSED = 3;
  * sequence: number, the message sequence on the socket it transmitted on
  * body: object, body object correponded to the frame type
  */
-const FRAME_DISPATCH = 'dispatch';
+const FRAME_EVENTS = 'events';
 const FRAME_REJECT = 'reject';
 const FRAME_LOGIN = 'login';
 const FRAME_CONNECT = 'connect';
 const FRAME_DISCONNECT = 'disconnect';
 
 /**
- * Dispatch frame carries events delivered on a specified connection
+ * Event frame carries events delivered on a specified connection
  */
-export type DispatchBody = {
+export type EventsBody = {
   connId: string;
-  events: EventInput[];
+  values: EventInput[];
 };
 
 /**
@@ -85,7 +85,7 @@ export type DisconnectBody = {
  *  | Client  |             | Server  |
  *  +---------+             +---------+
  *       |                        |
- *       | LOGIN                |
+ *       | LOGIN                  |
  *       |----------------------->|
  *       |                        |
  *       |                        | verify auth
@@ -201,6 +201,18 @@ class Socket extends EventEmitter {
     this._ws = wss;
   }
 
+  getConnectedIds(): string[] {
+    const ids: string[] = [];
+
+    for (const [id, status] of this._connectStates) {
+      if (status === STATE_CONNECTED_OK) {
+        ids.push(id);
+      }
+    }
+
+    return ids;
+  }
+
   readyState(): number {
     return this._ws.readyState;
   }
@@ -228,7 +240,7 @@ class Socket extends EventEmitter {
     );
   }
 
-  async dispatch(body: DispatchBody): Promise<number> {
+  async dispatch(body: EventsBody): Promise<number> {
     const { connId } = body;
 
     const state = this._connectStates.get(connId);
@@ -236,7 +248,7 @@ class Socket extends EventEmitter {
       throw new SocketError(`connection [${connId}] is not connected`);
     }
 
-    const seq = await this._send(FRAME_DISPATCH, body);
+    const seq = await this._send(FRAME_EVENTS, body);
     return seq;
   }
 
@@ -336,8 +348,8 @@ class Socket extends EventEmitter {
     this.emit('error', err, this);
   }
 
-  _emitDispatch(body: DispatchBody, seq: number): void {
-    this.emit('dispatch', body, seq, this);
+  _emitEvent(body: EventsBody, seq: number): void {
+    this.emit('events', body, seq, this);
   }
 
   _emitReject(body: RejectBody, seq: number): void {
@@ -388,8 +400,8 @@ class Socket extends EventEmitter {
 
     this._seq = seq + 1;
 
-    if (frameType === FRAME_DISPATCH) {
-      await this._handleDispatch(body, seq);
+    if (frameType === FRAME_EVENTS) {
+      await this._handleEvents(body, seq);
     } else if (frameType === FRAME_REJECT) {
       this._emitReject(body, seq);
     } else if (frameType === FRAME_LOGIN) {
@@ -403,17 +415,18 @@ class Socket extends EventEmitter {
     }
   }
 
-  async _handleDispatch(body: DispatchBody, seq: number): Promise<void> {
+  async _handleEvents(body: EventsBody, seq: number): Promise<void> {
     const { connId } = body;
 
     const state = this._connectStates.get(connId);
     if (
-      state === STATE_CONNECTED_OK || // accept msg when DISCONNECT sent but not yet echoed back
+      state === STATE_CONNECTED_OK ||
+      // accept when DISCONNECT sent but not yet echoed back
       (state !== undefined &&
         !(state & MASK_CONNECTING) &&
         !(state & FLAG_DISCONNECT_RECEIVED))
     ) {
-      this._emitDispatch(body, seq);
+      this._emitEvent(body, seq);
     } else {
       await this.reject({ seq, reason: 'channel not connected' });
     }

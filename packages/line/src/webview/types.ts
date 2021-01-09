@@ -19,7 +19,6 @@ export type LIFFContext = {
 export type LIFFAuthData = {
   providerId: string;
   channelId: string;
-  userToBot: boolean;
   os: 'ios' | 'android' | 'web';
   language: string;
   contextType: 'utou' | 'group' | 'room' | 'external' | 'none';
@@ -40,7 +39,7 @@ export type LineVerifyAuthResult =
 
 export type AuthorizerRefinement = {
   user: LineUser;
-  channel: null | LineChat;
+  channel: LineChat;
 };
 
 export type AuthorizerCredentialResult = {

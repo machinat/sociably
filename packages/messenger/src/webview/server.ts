@@ -43,7 +43,7 @@ export class MessengerServerAuthorizer
   appSecret: string;
   platform = MESSENGER;
 
-  constructor(options: MessengerServerAuthorizerOptions = {} as any) {
+  constructor(options: MessengerServerAuthorizerOptions) {
     invariant(options.appSecret, 'options.appSecret must not be empty');
 
     this.appSecret = options.appSecret;

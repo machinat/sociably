@@ -42,9 +42,7 @@ class MessengerClientAuthorizer
   platform = MESSENGER;
   shouldResign = true;
 
-  constructor(
-    { appId, isExtensionReady = false }: MessengerClientAuthOpts = {} as any
-  ) {
+  constructor({ appId, isExtensionReady = false }: MessengerClientAuthOpts) {
     invariant(appId, 'options.appId is required to retrieve chat context');
 
     this.appId = appId;

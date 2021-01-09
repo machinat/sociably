@@ -99,7 +99,7 @@ const resolveBindings = (
 
 export default class ServiceSpace {
   maker: ServiceMaker;
-  _provisionMapping: ProvisionMap<ServiceBinding<unknown>>;
+  provisionsMapping: ProvisionMap<ServiceBinding<unknown>>;
   _singletonCache: null | ServiceCache;
 
   constructor(
@@ -107,14 +107,14 @@ export default class ServiceSpace {
     bindings: ServiceProvision<unknown>[]
   ) {
     const baseMapping = base
-      ? new ProvisionMap(base._provisionMapping)
+      ? new ProvisionMap(base.provisionsMapping)
       : new ProvisionMap<ServiceBinding<unknown>>();
     const bindingsMapping = resolveBindings(bindings);
 
     const provisionMapping = baseMapping.merge(bindingsMapping);
 
     this.maker = new ServiceMaker(provisionMapping);
-    this._provisionMapping = provisionMapping;
+    this.provisionsMapping = provisionMapping;
     this._singletonCache = null;
   }
 
@@ -133,7 +133,7 @@ export default class ServiceSpace {
     const bootstrapProvisions = new Map(provisions);
     bootstrapProvisions.set(ServiceScope, bootstrapScope);
 
-    for (const [, binding] of this._provisionMapping) {
+    for (const [, binding] of this.provisionsMapping) {
       if ('withProvider' in binding) {
         const { withProvider: provider } = binding;
         this._verifyDependencies(provider, bootstrapProvisions, []);
@@ -175,16 +175,16 @@ export default class ServiceSpace {
       let bindings: null | ServiceBinding<unknown>[] = null;
 
       if (target.$$branched) {
-        const branches = this._provisionMapping.getBranched(target);
+        const branches = this.provisionsMapping.getBranched(target);
 
         bindings = [];
         for (const [, binding] of branches) {
           bindings.push(binding);
         }
       } else if (target.$$multi) {
-        bindings = this._provisionMapping.getMulti(target);
+        bindings = this.provisionsMapping.getMulti(target);
       } else if (target !== ServiceScope) {
-        const binding = this._provisionMapping.getSingular(target);
+        const binding = this.provisionsMapping.getSingular(target);
 
         const isProvidedOnBootstrap =
           provider.$$lifetime === 'singleton' &&

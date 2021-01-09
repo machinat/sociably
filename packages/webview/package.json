@@ -1,17 +1,20 @@
 {
-  "name": "@machinat/next",
+  "name": "@machinat/webview",
   "version": "0.3.0-beta.3",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
     "url": "https://github.com/machinat/machinat.git",
-    "directory": "packages/next"
+    "directory": "packages/websocket"
   },
   "homepage": "https://github.com/machinat/machinat#readme",
   "bugs": "https://github.com/machinat/machinat/issues",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
+    "./client": "./lib/client/index.js",
+    "./auth": "./lib/auth/index.js",
+    "./auth/client": "./lib/auth/client.js",
     "./types": "./lib/types.js"
   },
   "files": [
@@ -22,15 +25,17 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {
-    "invariant": "^2.2.4",
-    "next": "^9.0.0"
-  },
   "peerDependencies": {
     "@machinat/core": "^0.3.0-beta.0",
     "@machinat/http": "^0.3.0-beta.0"
   },
-  "devDependencies": {
-    "next": "^9.3.6"
+  "optionalDependencies": {
+    "bufferutil": "^4.0.1",
+    "utf-8-validate": "^5.0.2"
+  },
+  "dependencies": {
+    "@machinat/auth": "^0.3.0-beta.2",
+    "@machinat/next": "^0.3.0-beta.3",
+    "@machinat/websocket": "^0.3.0-beta.3"
   }
 }

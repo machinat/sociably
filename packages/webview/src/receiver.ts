@@ -3,39 +3,51 @@ import type { Socket as NetSocket } from 'net';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
   MachinatUser,
+  MachinatChannel,
   PopEventWrapper,
   PopEventFn,
   PopErrorFn,
 } from '@machinat/core/types';
+import { AuthContext, ServerAuthorizer } from '@machinat/auth/types';
 import type { HTTPRequestInfo, UpgradeHandler } from '@machinat/http/types';
-
-import { WebSocketConnection } from './channel';
-import { BotP } from './bot';
-import { ServerP } from './server';
-import createEvent from './utils/createEvent';
-import { WEBSOCKET } from './constant';
-import { PLATFORM_MOUNTER_I } from './interface';
-import type {
-  WebSocketEventContext,
+import {
+  EventInput,
   ConnectEventValue,
   DisconnectEventValue,
-  EventInput,
-} from './types';
+} from '@machinat/websocket/types';
+
+import { WEBVIEW } from './constant';
+import { SocketServerP, PLATFORM_MOUNTER_I } from './interface';
+import { BotP } from './bot';
+import { WebviewConnection } from './channel';
+import { createEvent } from './utils';
+import type { WebviewEventContext } from './types';
 
 /**
  * @category Provider
  */
-export class WebSocketReceiver<User extends null | MachinatUser, Auth> {
-  private _bot: BotP;
-  private _server: ServerP<User, Auth>;
+export class WebviewReceiver<
+  User extends MachinatUser,
+  Channel extends MachinatChannel,
+  AuthData
+> {
+  private _bot: BotP<ServerAuthorizer<User, Channel, AuthData, string>>;
+  private _server: SocketServerP<User, Channel, AuthData>;
 
-  private _popEvent: PopEventFn<WebSocketEventContext<any, any>, null>;
+  private _popEvent: PopEventFn<
+    WebviewEventContext<ServerAuthorizer<User, Channel, AuthData, string>>,
+    null
+  >;
+
   private _popError: PopErrorFn;
 
   constructor(
-    bot: BotP,
-    server: ServerP<User, Auth>,
-    popEventWrapper: PopEventWrapper<WebSocketEventContext<any, any>, null>,
+    bot: BotP<ServerAuthorizer<User, Channel, AuthData, string>>,
+    server: SocketServerP<User, Channel, AuthData>,
+    popEventWrapper: PopEventWrapper<
+      WebviewEventContext<ServerAuthorizer<User, Channel, AuthData, string>>,
+      null
+    >,
     popError: PopErrorFn
   ) {
     this._bot = bot;
@@ -58,14 +70,13 @@ export class WebSocketReceiver<User extends null | MachinatUser, Auth> {
         type: 'connect',
         payload: null,
       };
-
       this._issueEvent(value, connId, user, socket.request, auth).catch(
         this._popError
       );
     });
 
-    this._server.on('disconnect', ({ reason }, ctx) => {
-      const { connId, user, socket, auth } = ctx;
+    this._server.on('disconnect', ({ reason }, connData) => {
+      const { connId, user, socket, auth } = connData;
       const value: DisconnectEventValue = {
         kind: 'connection',
         type: 'disconnect',
@@ -95,15 +106,15 @@ export class WebSocketReceiver<User extends null | MachinatUser, Auth> {
     connId: string,
     user: User,
     request: HTTPRequestInfo,
-    auth: Auth
+    auth: AuthContext<User, Channel, AuthData>
   ) {
-    const channel = new WebSocketConnection(this._server.id, connId);
+    const channel = new WebviewConnection(this._server.id, connId);
     await this._popEvent({
-      platform: WEBSOCKET,
+      platform: WEBVIEW,
       bot: this._bot,
       event: createEvent(value, channel, user),
       metadata: {
-        source: WEBSOCKET,
+        source: 'websocket',
         request,
         connection: channel,
         auth,
@@ -114,12 +125,13 @@ export class WebSocketReceiver<User extends null | MachinatUser, Auth> {
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, ServerP, PLATFORM_MOUNTER_I] as const,
+  deps: [BotP, SocketServerP, PLATFORM_MOUNTER_I] as const,
   factory: (bot, server, { popEventWrapper, popError }) =>
-    new WebSocketReceiver(bot, server, popEventWrapper, popError),
-})(WebSocketReceiver);
+    new WebviewReceiver(bot, server, popEventWrapper, popError),
+})(WebviewReceiver);
 
 export type ReceiverP<
-  User extends null | MachinatUser,
-  Auth
-> = WebSocketReceiver<User, Auth>;
+  User extends MachinatUser,
+  Channel extends MachinatChannel,
+  AuthData
+> = WebviewReceiver<User, Channel, AuthData>;

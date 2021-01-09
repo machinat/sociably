@@ -18,22 +18,22 @@ import type {
 } from '../types';
 import AuthError from './error';
 
-type AuthClientOptions<
-  Authorizer extends ClientAuthorizer<any, any, any, any>
-> = {
+type AnyClientAuthorizer = ClientAuthorizer<any, any, unknown, unknown>;
+
+type AuthClientOptions<Authorizer extends AnyClientAuthorizer> = {
   platform?: string;
   serverURL: string;
   authorizers: Authorizer[];
   refreshLeadTime?: number;
 };
 
-type AuthResult<Authorizer extends ClientAuthorizer<any, any, any, any>> = {
+type AuthResult<Authorizer extends AnyClientAuthorizer> = {
   token: string;
   context: Authorizer extends ClientAuthorizer<
     infer User,
     infer Channel,
     infer AuthData,
-    any
+    unknown
   >
     ? AuthContext<User, Channel, AuthData>
     : never;
@@ -105,9 +105,7 @@ const getCookieAuthResult = <AuthData>(): null | CookieAuthResult<AuthData> => {
   return null;
 };
 
-class AuthClient<
-  Authorizer extends ClientAuthorizer<any, any, any, any>
-> extends EventEmitter {
+class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   authorizers: Authorizer[];
   serverURL: string;
   refreshLeadTime: number;
@@ -117,8 +115,8 @@ class AuthClient<
 
   private _authed: null | {
     token: string;
-    payload: AuthTokenPayload<any>;
-    context: AuthContext<any, any, any>;
+    payload: AuthTokenPayload<unknown>;
+    context: AuthContext<any, any, unknown>;
   };
 
   private _initiatingPlatforms: Set<string>;
@@ -144,14 +142,12 @@ class AuthClient<
     return !!this._authPromise;
   }
 
-  constructor(
-    {
-      platform,
-      authorizers,
-      serverURL,
-      refreshLeadTime = 300, // 5 min
-    }: AuthClientOptions<Authorizer> = {} as any
-  ) {
+  constructor({
+    platform,
+    authorizers,
+    serverURL,
+    refreshLeadTime = 300, // 5 min
+  }: AuthClientOptions<Authorizer>) {
     super();
 
     invariant(serverURL, 'options.serverURL must not be empty');
@@ -347,7 +343,7 @@ class AuthClient<
   }
 
   private async _signToken(
-    provider: ClientAuthorizer<any, any, any, any>
+    provider: AnyClientAuthorizer
   ): Promise<[Error | null, string]> {
     const { platform } = provider;
     const result = await provider.fetchCredential(this._getAuthEntry(platform));
@@ -371,8 +367,8 @@ class AuthClient<
 
   private _setAuth(
     token: string,
-    payload: AuthTokenPayload<any>,
-    context: AuthContext<any, any, any>
+    payload: AuthTokenPayload<unknown>,
+    context: AuthContext<any, any, unknown>
   ) {
     this._authed = { token, payload, context };
     this._clearTimeouts();
@@ -396,7 +392,7 @@ class AuthClient<
 
   private async _refreshAuth(
     token: string,
-    { refreshLimit }: AuthTokenPayload<any>
+    { refreshLimit }: AuthTokenPayload<unknown>
   ): Promise<void> {
     const beginTime = Date.now();
 
@@ -508,7 +504,7 @@ class AuthClient<
 
   private async _callAuthPrivateAPI(
     api: string,
-    body: SignRequestBody<any> | RefreshRequestBody | VerifyRequestBody
+    body: SignRequestBody<unknown> | RefreshRequestBody | VerifyRequestBody
   ): Promise<[Error | null, AuthAPIResponseBody]> {
     const res = await fetch(this._getAuthEntry(api), {
       method: 'POST',
@@ -538,7 +534,10 @@ class AuthClient<
     }
   }
 
-  private _emitError(err: Error, context: null | AuthContext<any, any, any>) {
+  private _emitError(
+    err: Error,
+    context: null | AuthContext<any, any, unknown>
+  ) {
     try {
       this.emit('error', err, context);
     } catch {

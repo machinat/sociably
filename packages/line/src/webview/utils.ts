@@ -11,7 +11,6 @@ export const refinementFromLIFFAuthData = ({
   roomId,
   channelId,
   providerId,
-  userToBot,
 }: LIFFAuthData): null | AuthorizerRefinement => ({
   user: new LineUser(providerId, userId),
   channel:
@@ -19,7 +18,5 @@ export const refinementFromLIFFAuthData = ({
       ? new LineChat(channelId, 'group', groupId as string)
       : contextType === 'room'
       ? new LineChat(channelId, 'room', roomId as string)
-      : userToBot
-      ? new LineChat(channelId, 'user', userId)
-      : null,
+      : new LineChat(channelId, 'user', userId),
 });

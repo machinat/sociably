@@ -5,7 +5,7 @@ import { TelegramChatType } from '../types';
 
 export type TelegramAuthData = {
   botId: number;
-  channel: null | {
+  channel: {
     type: TelegramChatType;
     id: number;
     title?: string;
@@ -21,5 +21,5 @@ export type TelegramAuthData = {
 
 export type TelegramAuthRefinement = AuthorizerRefinement<
   TelegramUser,
-  null | TelegramChat
+  TelegramChat
 >;

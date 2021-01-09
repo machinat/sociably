@@ -10,23 +10,25 @@ import type {
   DispatchWrapper,
 } from '@machinat/core/types';
 import type { DispatchResponse } from '@machinat/core/engine/types';
-
-import { WEBSOCKET } from './constant';
-import { PLATFORM_MOUNTER_I } from './interface';
-import { ServerP } from './server';
-import {
-  WebSocketTopicChannel,
-  WebSocketUserChannel,
-  WebSocketConnection,
-} from './channel';
-import createJobs from './utils/createJobs';
-import WebSocketWorker from './worker';
+import type { ServerAuthorizer } from '@machinat/auth/types';
+import { WebSocketWorker } from '@machinat/websocket';
+import createJobs from '@machinat/websocket/utils/createJobs';
 import type {
   EventInput,
   WebSocketJob,
   WebSocketResult,
-  WebSocketComponent,
-  WebSocketDispatchFrame,
+} from '@machinat/websocket/types';
+import { WEBVIEW } from './constant';
+import { SocketServerP, PLATFORM_MOUNTER_I } from './interface';
+import {
+  WebviewTopicChannel,
+  WebviewUserChannel,
+  WebviewConnection,
+} from './channel';
+import type {
+  WebviewDispatchFrame,
+  WebviewComponent,
+  AnyServerAuthorizer,
 } from './types';
 
 type WebSocketDispatchResponse = DispatchResponse<
@@ -34,32 +36,44 @@ type WebSocketDispatchResponse = DispatchResponse<
   WebSocketResult
 >;
 
+type ServerWithAuth<
+  Authorizer extends AnyServerAuthorizer
+> = Authorizer extends ServerAuthorizer<
+  infer User,
+  infer Channel,
+  infer Auth,
+  unknown
+>
+  ? SocketServerP<User, Channel, Auth>
+  : never;
+
 /**
  * @category Provider
  */
-export class WebSocketBot
+export class WebviewBot<Authorizer extends AnyServerAuthorizer>
   implements
     MachinatBot<
-      WebSocketTopicChannel | WebSocketUserChannel | WebSocketConnection,
+      WebviewTopicChannel | WebviewUserChannel | WebviewConnection,
       WebSocketJob,
       WebSocketResult
     > {
-  private _server: ServerP<any, unknown>;
+  private _server: ServerWithAuth<Authorizer>;
+
   engine: Engine<
-    WebSocketTopicChannel | WebSocketUserChannel | WebSocketConnection,
+    WebviewTopicChannel | WebviewUserChannel | WebviewConnection,
     EventInput,
-    WebSocketComponent,
+    WebviewComponent,
     WebSocketJob,
     WebSocketResult,
-    WebSocketBot
+    WebviewBot<Authorizer>
   >;
 
   constructor(
-    server: ServerP<any, unknown>,
-    initScope: InitScopeFn = () => createEmptyScope(WEBSOCKET),
+    server: ServerWithAuth<Authorizer>,
+    initScope: InitScopeFn = () => createEmptyScope(WEBVIEW),
     dispatchWrapper: DispatchWrapper<
       WebSocketJob,
-      WebSocketDispatchFrame,
+      WebviewDispatchFrame<Authorizer>,
       WebSocketResult
     > = (dispatch) => dispatch
   ) {
@@ -68,17 +82,14 @@ export class WebSocketBot
     const queue = new Queue<WebSocketJob, WebSocketResult>();
     const worker = new WebSocketWorker(server);
 
-    const renderer = new Renderer<EventInput, WebSocketComponent>(
-      WEBSOCKET,
-      () => {
-        throw new TypeError(
-          'general component not supported at websocket platform'
-        );
-      }
-    );
+    const renderer = new Renderer<EventInput, WebviewComponent>(WEBVIEW, () => {
+      throw new TypeError(
+        'general component not supported at websocket platform'
+      );
+    });
 
     this.engine = new Engine(
-      WEBSOCKET,
+      WEBVIEW,
       this,
       renderer,
       queue,
@@ -99,14 +110,14 @@ export class WebSocketBot
   }
 
   render(
-    channel: WebSocketConnection | WebSocketUserChannel | WebSocketTopicChannel,
+    channel: WebviewConnection | WebviewUserChannel | WebviewTopicChannel,
     message: MachinatNode
   ): Promise<null | WebSocketDispatchResponse> {
     return this.engine.render(channel, message, createJobs);
   }
 
   async send(
-    channel: WebSocketConnection,
+    channel: WebviewConnection,
     event: EventInput
   ): Promise<WebSocketResult> {
     const response = await this.engine.dispatchJobs(channel, [
@@ -120,7 +131,7 @@ export class WebSocketBot
     user: MachinatUser,
     event: EventInput
   ): Promise<WebSocketResult> {
-    const channel = new WebSocketUserChannel(user.uid);
+    const channel = new WebviewUserChannel(user.uid);
     const response = await this.engine.dispatchJobs(channel, [
       { target: channel, events: [event] },
     ]);
@@ -129,7 +140,7 @@ export class WebSocketBot
   }
 
   async sendTopic(topic: string, event: EventInput): Promise<WebSocketResult> {
-    const channel = new WebSocketTopicChannel(topic);
+    const channel = new WebviewTopicChannel(topic);
     const response = await this.engine.dispatchJobs(channel, [
       { target: channel, events: [event] },
     ]);
@@ -137,22 +148,19 @@ export class WebSocketBot
     return response.results[0];
   }
 
-  disconnect(
-    connection: WebSocketConnection,
-    reason?: string
-  ): Promise<boolean> {
+  disconnect(connection: WebviewConnection, reason?: string): Promise<boolean> {
     return this._server.disconnect(connection, reason);
   }
 
   subscribeTopic(
-    connection: WebSocketConnection,
+    connection: WebviewConnection,
     topic: string
   ): Promise<boolean> {
     return this._server.subscribeTopic(connection, topic);
   }
 
   unsubscribeTopic(
-    connection: WebSocketConnection,
+    connection: WebviewConnection,
     topic: string
   ): Promise<boolean> {
     return this._server.unsubscribeTopic(connection, topic);
@@ -161,9 +169,14 @@ export class WebSocketBot
 
 export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ServerP, { require: PLATFORM_MOUNTER_I, optional: true }] as const,
+  deps: [
+    SocketServerP,
+    { require: PLATFORM_MOUNTER_I, optional: true },
+  ] as const,
   factory: (server, mounter) =>
-    new WebSocketBot(server, mounter?.initScope, mounter?.dispatchWrapper),
-})(WebSocketBot);
+    new WebviewBot(server, mounter?.initScope, mounter?.dispatchWrapper),
+})(WebviewBot);
 
-export type BotP = WebSocketBot;
+export type BotP<Authorizer extends AnyServerAuthorizer> = WebviewBot<
+  Authorizer
+>;

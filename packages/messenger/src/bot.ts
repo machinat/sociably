@@ -60,7 +60,7 @@ export class MessengerBot
       accessToken,
       appSecret,
       consumeInterval = 500,
-    }: MessengerBotOptions = {} as any,
+    }: MessengerBotOptions,
     initScope: InitScopeFn = () => createEmptyScope(MESSENGER),
     dispatchWrapper: DispatchWrapper<
       MessengerJob,

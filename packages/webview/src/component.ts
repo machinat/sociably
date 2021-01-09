@@ -2,8 +2,8 @@
 import { annotateNativeComponent, unitSegment } from '@machinat/core/renderer';
 import type { UnitSegment } from '@machinat/core/renderer/types';
 import type { NativeComponent } from '@machinat/core/types';
-import { WEBSOCKET } from './constant';
-import type { EventInput } from './types';
+import type { EventInput } from '@machinat/websocket/types';
+import { WEBVIEW } from './constant';
 
 type EventProps = {
   kind?: string;
@@ -29,4 +29,4 @@ const __Event = function Event(node, path) {
 export const Event: NativeComponent<
   EventProps,
   UnitSegment<EventInput>
-> = annotateNativeComponent(WEBSOCKET)(__Event);
+> = annotateNativeComponent(WEBVIEW)(__Event);

@@ -31,7 +31,7 @@ Now you can receive events from the client in the webviews as other platforms do
 
 ```js
 app.onEvent(async ({ platform, event, bot }) => {
-  if (platform === 'web_socket') {
+  if (platform === 'websocket') {
     if (event.type === 'greeting') {
       return bot.send(event.channel, {
         type: 'greeting',
@@ -187,7 +187,7 @@ app.onEvent(container({
 })(messengerBot => async context => {
   const { platform, metadata, event } = context;
 
-  if (platform === 'web_socket' && event.type === 'greeting') {
+  if (platform === 'websocket' && event.type === 'greeting') {
     const {
       platform: sourcePlatform,
       channel: sourceChannel,

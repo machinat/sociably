@@ -55,7 +55,7 @@ export class TelegramBot
   >;
 
   constructor(
-    { botToken, connectionCapicity = 100 }: TelegramBotOptions = {} as any,
+    { botToken, connectionCapicity = 100 }: TelegramBotOptions,
     initScope: InitScopeFn = () => createEmptyScope(TELEGRAM),
     dispatchWrapper: DispatchWrapper<
       TelegramJob,

@@ -27,20 +27,18 @@ type LineServerAuthorizerOpts = {
  */
 export class LineServerAuthorizer
   implements
-    ServerAuthorizer<LineUser, null | LineChat, LIFFAuthData, LIFFCredential> {
+    ServerAuthorizer<LineUser, LineChat, LIFFAuthData, LIFFCredential> {
   providerId: string;
   channelId: string;
   liffChannelIds: string[];
 
   platform = LINE;
 
-  constructor(
-    {
-      providerId,
-      channelId,
-      liffChannelIds,
-    }: LineServerAuthorizerOpts = {} as any
-  ) {
+  constructor({
+    providerId,
+    channelId,
+    liffChannelIds,
+  }: LineServerAuthorizerOpts) {
     invariant(
       liffChannelIds && liffChannelIds.length,
       'options.liffChannelIds should not be empty'

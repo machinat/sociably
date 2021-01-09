@@ -42,7 +42,7 @@ export type ErrorTokenPayload = TokenBase & ErrorPayload;
 
 export type AuthContext<
   User extends MachinatUser,
-  Channel extends null | MachinatChannel,
+  Channel extends MachinatChannel,
   AuthData
 > = {
   platform: string;
@@ -55,7 +55,7 @@ export type AuthContext<
 
 export type AuthorizerRefinement<
   User extends MachinatUser,
-  Channel extends null | MachinatChannel
+  Channel extends MachinatChannel
 > = {
   user: User;
   channel: Channel;
@@ -73,7 +73,7 @@ export type AuthorizerVerifyResult<AuthData> =
 
 export interface ServerAuthorizer<
   User extends MachinatUser,
-  Channel extends null | MachinatChannel,
+  Channel extends MachinatChannel,
   AuthData,
   Credential
 > {
@@ -123,7 +123,7 @@ export type AuthorizerCredentialResult<Credential> =
 
 export interface ClientAuthorizer<
   User extends MachinatUser,
-  Channel extends null | MachinatChannel,
+  Channel extends MachinatChannel,
   AuthData,
   Credential
 > {

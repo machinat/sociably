@@ -13,8 +13,9 @@
   "exports": {
     ".": "./lib/index.js",
     "./client": "./lib/client/index.js",
-    "./auth": "./lib/auth/index.js",
-    "./auth/client": "./lib/auth/client.js",
+    "./client/": "./lib/client/",
+    "./utils/": "./lib/utils/",
+    "./brokers/": "./lib/brokers/",
     "./types": "./lib/types.js"
   },
   "files": [
@@ -32,6 +33,7 @@
   "dependencies": {
     "invariant": "^2.2.4",
     "thenifiedly": "^0.2.1",
+    "typed-emitter": "^1.3.1",
     "uniqid": "^5.2.0",
     "ws": "^7.2.5"
   },
@@ -40,7 +42,6 @@
     "@machinat/http": "^0.3.0-beta.0"
   },
   "optionalDependencies": {
-    "@machinat/auth": "^0.3.0-beta.2",
     "bufferutil": "^4.0.1",
     "utf-8-validate": "^5.0.2"
   },

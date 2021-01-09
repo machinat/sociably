@@ -49,11 +49,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
   >;
 
   constructor(
-    {
-      accessToken,
-      channelId,
-      connectionCapicity = 100,
-    }: LineBotOptions = {} as any,
+    { accessToken, channelId, connectionCapicity = 100 }: LineBotOptions,
     initScope: InitScopeFn = () => createEmptyScope(LINE),
     dispatchWrapper: DispatchWrapper<
       LineJob,

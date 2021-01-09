@@ -9,7 +9,7 @@ import type { NextServer, NextEventContext, NextResponse } from './types';
 
 type NextReceiverOptions = {
   entryPath?: string;
-  shouldPrepare?: boolean;
+  noPrepare?: boolean;
 };
 
 /**
@@ -32,7 +32,7 @@ export class NextReceiver {
 
   constructor(
     nextApp: NextServer,
-    { shouldPrepare = true, entryPath }: NextReceiverOptions,
+    { noPrepare, entryPath }: NextReceiverOptions,
     popEventWrapper:
       | PopEventWrapper<NextEventContext, NextResponse>
       | null
@@ -42,7 +42,7 @@ export class NextReceiver {
     this._next = nextApp;
     this._defaultNextHandler = nextApp.getRequestHandler();
     this._pathPrefix = entryPath ? entryPath.replace(/\/$/, '') : '';
-    this._shouldPrepare = shouldPrepare;
+    this._shouldPrepare = !noPrepare;
     this._prepared = false;
 
     const finalHandler = () => Promise.resolve({ accepted: true as const });

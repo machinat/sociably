@@ -20,12 +20,10 @@ export const refineTelegramAuthData = ({
     username,
     language_code: languageCode,
   }),
-  channel:
-    channel &&
-    new TelegramChat(botId, {
-      id: channel.id,
-      type: channel.type,
-      title: channel.title,
-      username: channel.username,
-    }),
+  channel: new TelegramChat(botId, {
+    id: channel.id,
+    type: channel.type,
+    title: channel.title,
+    username: channel.username,
+  }),
 });

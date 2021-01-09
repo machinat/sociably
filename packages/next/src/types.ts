@@ -63,8 +63,8 @@ export type NextEventMiddleware = EventMiddleware<
 
 export type NextModuleConfigs = {
   entryPath?: string;
-  shouldPrepare?: boolean;
-  nextAppOptions?: NextServerOptions;
+  noPrepare?: boolean;
+  serverOptions?: NextServerOptions;
   eventMiddlewares?: MaybeContainer<NextEventMiddleware>[];
 };
 

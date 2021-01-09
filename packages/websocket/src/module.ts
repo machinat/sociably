@@ -1,14 +1,12 @@
-import WS from 'ws';
-import uniqid from 'uniqid';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import { BaseBot, BaseMarshaler } from '@machinat/core/base';
-import type { PlatformModule } from '@machinat/core/types';
+import type { PlatformModule, MachinatUser } from '@machinat/core/types';
 import HTTP from '@machinat/http';
 import type { HTTPUpgradeRouting } from '@machinat/http/types';
 
 import { WEBSOCKET } from './constant';
 import {
-  BrokerI,
+  BrokerI as WebSocketBrokerI,
   WS_SERVER_I,
   UPGRADE_VERIFIER_I,
   LOGIN_VERIFIER_I,
@@ -17,16 +15,16 @@ import {
   PLATFORM_CONFIGS_I,
 } from './interface';
 import { BotP } from './bot';
-import { TransmitterP } from './transmitter';
+import { ServerP } from './server';
 import { ReceiverP } from './receiver';
-import LocalOnlyBroker from './broker/localOnlyBroker';
+import LocalOnlyBroker from './brokers/LocalOnlyBroker';
 import {
   WebSocketConnection,
   WebSocketUserChannel,
   WebSocketTopicChannel,
 } from './channel';
+import createWsServer from './utils/createWsServer';
 import type {
-  VerifyLoginFn,
   WebSocketEventContext,
   WebSocketJob,
   WebSocketDispatchFrame,
@@ -35,14 +33,9 @@ import type {
 } from './types';
 
 /** @internal */
-const createWSServer = makeFactoryProvider({
-  lifetime: 'singleton',
-})(() => new WS.Server({ noServer: true }));
-
-/** @internal */
-const createUniqServerId = makeFactoryProvider({
-  lifetime: 'transient',
-})(() => uniqid());
+const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
+  createWsServer
+);
 
 /** @internal */
 const upgradeRoutingFactory = makeFactoryProvider({
@@ -59,20 +52,18 @@ const upgradeRoutingFactory = makeFactoryProvider({
 const WebSocket = {
   Bot: BotP,
   Receiver: ReceiverP,
-  Transmitter: TransmitterP,
-  ClusterBrokerI: BrokerI,
-  SERVER_I: WS_SERVER_I,
+  Server: ServerP,
+  BrokerI: WebSocketBrokerI,
+  WS_SERVER_I,
   UPGRADE_VERIFIER_I,
   LOGIN_VERIFIER_I,
   SERVER_ID_I,
   CONFIGS_I: PLATFORM_CONFIGS_I,
 
-  initModule: <LoginVerifier extends VerifyLoginFn<any, any, any>>(
-    configs: WebSocketPlatformConfigs<LoginVerifier> = {} as any
+  initModule: <User extends null | MachinatUser, Auth, Credential>(
+    configs: WebSocketPlatformConfigs<User, Auth, Credential>
   ): PlatformModule<
-    LoginVerifier extends VerifyLoginFn<infer User, infer AuthInfo, any>
-      ? WebSocketEventContext<User, AuthInfo>
-      : never,
+    WebSocketEventContext<User, Auth>,
     null,
     WebSocketJob,
     WebSocketDispatchFrame,
@@ -81,11 +72,11 @@ const WebSocket = {
     return {
       name: WEBSOCKET,
       mounterInterface: PLATFORM_MOUNTER_I,
-      eventMiddlewares: configs.eventMiddlewares as any,
+      eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions: [
         { provide: PLATFORM_CONFIGS_I, withValue: configs },
-        { provide: WS_SERVER_I, withProvider: createWSServer },
+        { provide: WS_SERVER_I, withProvider: wsServerFactory },
 
         BotP,
         {
@@ -94,9 +85,8 @@ const WebSocket = {
           platform: WEBSOCKET,
         },
 
-        TransmitterP,
-        { provide: SERVER_ID_I, withProvider: createUniqServerId },
-        { provide: BrokerI, withProvider: LocalOnlyBroker },
+        ServerP,
+        { provide: WebSocketBrokerI, withProvider: LocalOnlyBroker },
 
         ReceiverP,
         {
@@ -110,7 +100,7 @@ const WebSocket = {
       ],
 
       startHook: makeContainer({
-        deps: [BotP],
+        deps: [BotP] as const,
       })(async (bot) => {
         await bot.start();
       }),
@@ -120,15 +110,15 @@ const WebSocket = {
 
 declare namespace WebSocket {
   export type Bot = BotP;
-  export type Receiver<
-    LoginVerifier extends VerifyLoginFn<any, any, any> = VerifyLoginFn<
-      null,
-      null,
-      unknown
-    >
-  > = ReceiverP<LoginVerifier>;
-  export type Transmitter = TransmitterP;
-  export type ClusterBrokerI = BrokerI;
+  export type Receiver<User extends null | MachinatUser, Auth> = ReceiverP<
+    User,
+    Auth
+  >;
+  export type Server<User extends null | MachinatUser, Auth> = ServerP<
+    User,
+    Auth
+  >;
+  export type BrokerI = WebSocketBrokerI;
 }
 
 export default WebSocket;

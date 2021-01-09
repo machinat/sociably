@@ -94,7 +94,7 @@ export class AuthController<
       cookiePath = '/',
       sameSite = 'lax',
       secure = true,
-    }: AuthModuleConfigs = {} as any
+    }: AuthModuleConfigs
   ) {
     invariant(secret, 'options.secret must not be empty');
     invariant(

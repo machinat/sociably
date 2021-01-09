@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/__tests__/*", "**/__mocks__/*"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "baseUrl": ".",
+    "paths": {
+      "@machinat/auth/*": ["../auth/lib/*"],
+      "@machinat/core/*": ["../core/lib/*"],
+      "@machinat/http/*": ["../http/lib/*"],
+      "@machinat/next/*": ["../next/lib/*"],
+      "@machinat/websocket/*": ["../websocket/lib/*"]
+    }
+  },
+  "references": [
+    { "path": "../auth/tsconfig.build.json" },
+    { "path": "../core/tsconfig.build.json" },
+    { "path": "../http/tsconfig.build.json" },
+    { "path": "../next/tsconfig.build.json" },
+    { "path": "../websocket/tsconfig.build.json" }
+  ]
+}

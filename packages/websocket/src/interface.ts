@@ -1,19 +1,19 @@
 import type { Server as WebScoketServer } from 'ws';
 import { makeInterface } from '@machinat/core/service';
-import { WebSocketConnection } from './channel';
 import type {
   WebSocketJob,
   VerifyLoginFn,
   VerifyUpgradeFn,
   WebSocketPlatformMounter,
   WebSocketPlatformConfigs,
+  ConnIdentifier,
 } from './types';
 
 /**
  * @category Interface
  */
 export const WS_SERVER_I = makeInterface<WebScoketServer>({
-  name: 'WebSocketServerI',
+  name: 'WebSocketWSServerI',
 });
 
 /**
@@ -51,26 +51,21 @@ export const PLATFORM_MOUNTER_I = makeInterface<
 /**
  * @category Interface
  */
-export const PLATFORM_CONFIGS_I = makeInterface<WebSocketPlatformConfigs<any>>({
+export const PLATFORM_CONFIGS_I = makeInterface<
+  WebSocketPlatformConfigs<any, unknown, unknown>
+>({
   name: 'WebSocketPlatformConfigsI',
 });
 
 export interface WebSocketClusterBroker {
   start(): Promise<void>;
   stop(): Promise<void>;
-  dispatchRemote(job: WebSocketJob): Promise<null | WebSocketConnection[]>;
+  dispatchRemote(job: WebSocketJob): Promise<null | ConnIdentifier[]>;
 
-  subscribeTopicRemote(
-    conn: WebSocketConnection,
-    topic: string
-  ): Promise<boolean>;
+  subscribeTopicRemote(conn: ConnIdentifier, topic: string): Promise<boolean>;
+  unsubscribeTopicRemote(conn: ConnIdentifier, topic: string): Promise<boolean>;
 
-  unsubscribeTopicRemote(
-    conn: WebSocketConnection,
-    topic: string
-  ): Promise<boolean>;
-
-  disconnectRemote(conn: WebSocketConnection): Promise<boolean>;
+  disconnectRemote(conn: ConnIdentifier): Promise<boolean>;
   onRemoteEvent(handler: (job: WebSocketJob) => void): void;
 }
 

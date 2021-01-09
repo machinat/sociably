@@ -11,7 +11,11 @@
       "@machinat/core": ["./packages/core/src/index.js"],
       "@machinat/core/*": ["./packages/core/src/*"],
       "@machinat/http": ["./packages/http/src/index.js"],
-      "@machinat/http/*": ["./packages/http/src/*"]
+      "@machinat/http/*": ["./packages/http/src/*"],
+      "@machinat/next": ["./packages/next/src/index.js"],
+      "@machinat/next/*": ["./packages/next/src/*"],
+      "@machinat/websocket": ["./packages/websocket/src/index.js"],
+      "@machinat/websocket/*": ["./packages/websocket/src/*"]
     }
   }
 }

@@ -14,9 +14,6 @@ import type {
 } from './types';
 import { refinementFromLIFFAuthData } from './utils';
 
-/** @ignore */
-declare let liff: any;
-
 type ClientAuthorizerOptions = {
   liffId: string;
   shouldLoadSDK?: boolean;
@@ -34,7 +31,8 @@ const waitingForRedirecting = (): Promise<never> =>
 
 class LineClientAuthorizer
   implements
-    ClientAuthorizer<LineUser, null | LineChat, LIFFAuthData, LIFFCredential> {
+    ClientAuthorizer<LineUser, LineChat, LIFFAuthData, LIFFCredential> {
+  liff: any;
   liffId: string;
   shouldLoadSDK: boolean;
   isOnUserToBotChat: boolean;
@@ -43,13 +41,11 @@ class LineClientAuthorizer
   platform = LINE;
   shouldResign = true;
 
-  constructor(
-    {
-      liffId,
-      shouldLoadSDK = true,
-      userToBot,
-    }: ClientAuthorizerOptions = {} as any
-  ) {
+  constructor({
+    liffId,
+    shouldLoadSDK = true,
+    userToBot,
+  }: ClientAuthorizerOptions) {
     invariant(liffId, 'options.liffId must not be empty');
 
     this.liffId = liffId;
@@ -80,7 +76,8 @@ class LineClientAuthorizer
       await loadingSDK;
     }
 
-    await liff.init({ liffId });
+    this.liff = (window as any).liff;
+    await this.liff.init({ liffId });
 
     if (typeof this._searchParams.get('liff.state') === 'string') {
       // wait for secondary redirecting during primary redirecting from LIFF
@@ -89,6 +86,7 @@ class LineClientAuthorizer
   }
 
   async fetchCredential(): Promise<AuthorizerCredentialResult> {
+    const { liff } = this;
     if (!liff.isLoggedIn()) {
       liff.login({ redirectUri: window.location.href });
       return waitingForRedirecting();
@@ -107,7 +105,6 @@ class LineClientAuthorizer
       credential: {
         accessToken: liff.getAccessToken(),
         data: {
-          userToBot: this.isOnUserToBotChat,
           os: liff.getOS(),
           language: liff.getLanguage(),
           contextType,

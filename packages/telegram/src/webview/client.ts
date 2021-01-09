@@ -11,12 +11,7 @@ import { TelegramAuthData, TelegramAuthRefinement } from './types';
 /* eslint-disable class-methods-use-this */
 export default class TelegramClientAuthorizer
   implements
-    ClientAuthorizer<
-      TelegramUser,
-      null | TelegramChat,
-      TelegramAuthData,
-      void
-    > {
+    ClientAuthorizer<TelegramUser, TelegramChat, TelegramAuthData, void> {
   platform = TELEGRAM;
   shouldResign = false;
 

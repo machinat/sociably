@@ -1,11 +1,10 @@
-import createNextApp from 'next';
 import { makeFactoryProvider, makeContainer } from '@machinat/core/service';
 import HTTP from '@machinat/http';
 import type { HTTPRequestRouting } from '@machinat/http/types';
 import type { PlatformModule, ServiceModule } from '@machinat/core/types';
-
 import { ReceiverP } from './receiver';
 import { MODULE_CONFIGS_I, PLATFORM_MOUNTER_I, SERVER_I } from './interface';
+import createNextServer from './utils/createNextServer';
 import type {
   NextModuleConfigs,
   NextEventContext,
@@ -16,7 +15,7 @@ import type {
 const nextServerFactory = makeFactoryProvider({
   lifetime: 'singleton',
   deps: [MODULE_CONFIGS_I] as const,
-})((configs) => createNextApp(configs.nextAppOptions || {}));
+})(createNextServer);
 
 /** @internal */
 const routingFactory = makeFactoryProvider({
@@ -38,7 +37,7 @@ const Next = {
   initModule: (
     configs: NextModuleConfigs = {}
   ): ServiceModule &
-    PlatformModule<NextEventContext, NextResponse, any, any, any> => ({
+    PlatformModule<NextEventContext, NextResponse, never, never, never> => ({
     name: 'next',
     mounterInterface: PLATFORM_MOUNTER_I,
     eventMiddlewares: configs.eventMiddlewares,
@@ -52,7 +51,7 @@ const Next = {
 
     startHook: makeContainer({
       deps: [ReceiverP],
-    })((receiver: ReceiverP) => receiver.prepare()),
+    })((receiver) => receiver.prepare()),
   }),
 };
 
