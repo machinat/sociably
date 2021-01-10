@@ -5,13 +5,13 @@ import {
 import { TELEGRAM } from '../constant';
 import type { TelegramChat } from '../channel';
 import type TelegramUser from '../user';
-import { refineTelegramAuthData } from './utils';
-import { TelegramAuthData, TelegramAuthRefinement } from './types';
+import { refineAuthContext } from './utils';
+import { TelegramAuthContext, TelegramAuthRefinement } from './types';
 
 /* eslint-disable class-methods-use-this */
 export default class TelegramClientAuthorizer
   implements
-    ClientAuthorizer<TelegramUser, TelegramChat, TelegramAuthData, void> {
+    ClientAuthorizer<TelegramUser, TelegramChat, TelegramAuthContext, void> {
   platform = TELEGRAM;
   shouldResign = false;
 
@@ -29,8 +29,8 @@ export default class TelegramClientAuthorizer
 
   // eslint-disable-next-line class-methods-use-this
   async refineAuth(
-    data: TelegramAuthData
+    data: TelegramAuthContext
   ): Promise<null | TelegramAuthRefinement> {
-    return refineTelegramAuthData(data);
+    return refineAuthContext(data);
   }
 }

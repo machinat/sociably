@@ -13,7 +13,7 @@ import thenifiedly from 'thenifiedly';
 import { SIGNATURE_COOKIE_KEY } from './constant';
 import { AUTHORIZERS_I, MODULE_CONFIGS_I } from './interface';
 import type {
-  ServerAuthorizer,
+  AnyServerAuthorizer,
   AuthTokenPayload,
   SignRequestBody,
   RefreshRequestBody,
@@ -35,7 +35,7 @@ const getSignature = (req: WithHeaders) => {
 };
 
 /** @internal */
-const parseBody = async (req: IncomingMessage): Promise<null | any> => {
+const parseBody = async (req: IncomingMessage): Promise<any> => {
   try {
     const rawBody = await getRawBody(req, { encoding: true });
     const body = JSON.parse(rawBody);
@@ -63,18 +63,14 @@ const respondAPIError = (res: ServerResponse, code: number, reason: string) => {
   res.end(JSON.stringify(body));
 };
 
-type AuthVerifyResult<
-  Authorizer extends ServerAuthorizer<any, any, any, any>
-> =
+type AuthVerifyResult<Authorizer extends AnyServerAuthorizer> =
   | { success: true; token: string; auth: GetAuthContextOf<Authorizer> }
   | { success: false; token: void | string; code: number; reason: string };
 
 /**
  * @category Provider
  */
-export class AuthController<
-  Authorizer extends ServerAuthorizer<any, any, unknown, unknown>
-> {
+export class AuthController<Authorizer extends AnyServerAuthorizer> {
   authorizers: Authorizer[];
   secret: string;
   entryPath: string;
@@ -242,7 +238,7 @@ export class AuthController<
       };
     }
 
-    const { platform, data, exp, iat } = verifyResult.payload;
+    const { platform, context, exp, iat } = verifyResult.payload;
 
     const authorizer = this._getAuthorizerOf(platform);
     if (!authorizer) {
@@ -254,7 +250,7 @@ export class AuthController<
       };
     }
 
-    const result = await authorizer.refineAuth(data);
+    const result = await authorizer.refineAuth(context);
     if (!result) {
       return {
         success: false,
@@ -272,7 +268,7 @@ export class AuthController<
         platform,
         channel,
         user,
-        data,
+        context,
         loginAt: new Date(iat * 1000),
         expireAt: new Date(exp * 1000),
       } as any,
@@ -306,11 +302,11 @@ export class AuthController<
         return;
       }
 
-      const { data, refreshable } = verifyResult;
+      const { context, refreshable } = verifyResult;
       const token = await this._cookieController.issueAuth(
         res,
         platform,
-        data,
+        context,
         {
           refreshable,
           signatureOnly: true,
@@ -357,13 +353,13 @@ export class AuthController<
         return;
       }
 
-      const { refreshLimit, platform, data } = tokenResult.payload;
-      if (!refreshLimit) {
+      const { refreshTill, platform, context } = tokenResult.payload;
+      if (!refreshTill) {
         respondAPIError(res, 400, 'token not refreshable');
         return;
       }
 
-      if (refreshLimit * 1000 >= Date.now()) {
+      if (refreshTill * 1000 >= Date.now()) {
         // refresh signature and issue new token
         const authorizer = this._getAuthorizerOf(platform);
         if (!authorizer) {
@@ -371,7 +367,7 @@ export class AuthController<
           return;
         }
 
-        const refreshResult = await authorizer.verifyRefreshment(data);
+        const refreshResult = await authorizer.verifyRefreshment(context);
         if (!refreshResult.success) {
           const { code, reason } = refreshResult;
           respondAPIError(res, code, reason);
@@ -381,8 +377,8 @@ export class AuthController<
         const newToken = await this._cookieController.issueAuth(
           res,
           platform,
-          refreshResult.data,
-          { refreshLimit, refreshable: true, signatureOnly: true }
+          refreshResult.context,
+          { refreshTill, refreshable: true, signatureOnly: true }
         );
         respondAPIOk(res, platform, newToken);
       } else {
@@ -481,5 +477,5 @@ export const ControllerP = makeClassProvider({
 })(AuthController);
 
 export type ControllerP<
-  Authorizer extends ServerAuthorizer<any, any, any, any>
+  Authorizer extends AnyServerAuthorizer
 > = AuthController<Authorizer>;

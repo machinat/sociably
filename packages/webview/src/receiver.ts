@@ -8,7 +8,7 @@ import type {
   PopEventFn,
   PopErrorFn,
 } from '@machinat/core/types';
-import { AuthContext, ServerAuthorizer } from '@machinat/auth/types';
+import { AuthData, ServerAuthorizer } from '@machinat/auth/types';
 import type { HttpRequestInfo, UpgradeHandler } from '@machinat/http/types';
 import {
   EventInput,
@@ -29,23 +29,23 @@ import type { WebviewEventContext } from './types';
 export class WebviewReceiver<
   User extends MachinatUser,
   Channel extends MachinatChannel,
-  AuthData
+  Context
 > {
-  private _bot: BotP<ServerAuthorizer<User, Channel, AuthData, string>>;
-  private _server: SocketServerP<User, Channel, AuthData>;
+  private _bot: BotP<ServerAuthorizer<User, Channel, Context, string>>;
+  private _server: SocketServerP<User, Channel, Context>;
 
   private _popEvent: PopEventFn<
-    WebviewEventContext<ServerAuthorizer<User, Channel, AuthData, string>>,
+    WebviewEventContext<ServerAuthorizer<User, Channel, Context, string>>,
     null
   >;
 
   private _popError: PopErrorFn;
 
   constructor(
-    bot: BotP<ServerAuthorizer<User, Channel, AuthData, string>>,
-    server: SocketServerP<User, Channel, AuthData>,
+    bot: BotP<ServerAuthorizer<User, Channel, Context, string>>,
+    server: SocketServerP<User, Channel, Context>,
     popEventWrapper: PopEventWrapper<
-      WebviewEventContext<ServerAuthorizer<User, Channel, AuthData, string>>,
+      WebviewEventContext<ServerAuthorizer<User, Channel, Context, string>>,
       null
     >,
     popError: PopErrorFn
@@ -106,7 +106,7 @@ export class WebviewReceiver<
     connId: string,
     user: User,
     request: HttpRequestInfo,
-    auth: AuthContext<User, Channel, AuthData>
+    auth: AuthData<User, Channel, Context>
   ) {
     const channel = new WebviewConnection(this._server.id, connId);
     await this._popEvent({
@@ -133,5 +133,5 @@ export const ReceiverP = makeClassProvider({
 export type ReceiverP<
   User extends MachinatUser,
   Channel extends MachinatChannel,
-  AuthData
-> = WebviewReceiver<User, Channel, AuthData>;
+  Context
+> = WebviewReceiver<User, Channel, Context>;

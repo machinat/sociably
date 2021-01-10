@@ -14,14 +14,14 @@ type TokenBase = {
   exp: number;
 };
 
-export type AuthPayload<AuthData> = {
+export type AuthPayload<Context> = {
   platform: string;
-  data: AuthData;
-  refreshLimit?: number;
+  context: Context;
+  refreshTill?: number;
   scope: { domain?: string; path: string };
 };
 
-export type AuthTokenPayload<AuthData> = TokenBase & AuthPayload<AuthData>;
+export type AuthTokenPayload<Context> = TokenBase & AuthPayload<Context>;
 
 export type StatePayload<StateData> = {
   platform: string;
@@ -40,17 +40,17 @@ export type ErrorPayload = {
 
 export type ErrorTokenPayload = TokenBase & ErrorPayload;
 
-export type AuthContext<
+export type AuthData<
   User extends MachinatUser,
   Channel extends MachinatChannel,
-  AuthData
+  Context
 > = {
   platform: string;
   user: User;
   channel: Channel;
   loginAt: Date;
   expireAt: Date;
-  data: AuthData;
+  context: Context;
 };
 
 export type AuthorizerRefinement<
@@ -67,14 +67,14 @@ type ErrorResult = {
   reason: string;
 };
 
-export type AuthorizerVerifyResult<AuthData> =
-  | { success: true; data: AuthData; refreshable: boolean }
+export type AuthorizerVerifyResult<Context> =
+  | { success: true; context: Context; refreshable: boolean }
   | ErrorResult;
 
 export interface ServerAuthorizer<
   User extends MachinatUser,
   Channel extends MachinatChannel,
-  AuthData,
+  Context,
   Credential
 > {
   platform: string;
@@ -99,23 +99,23 @@ export interface ServerAuthorizer<
    */
   verifyCredential(
     credential: Credential
-  ): Promise<AuthorizerVerifyResult<AuthData>>;
+  ): Promise<AuthorizerVerifyResult<Context>>;
 
   /**
    * verifyRefreshment is called when refresh requests from client side are
    * received, controller would refresh token and signature if it resolve
    * success.
    */
-  verifyRefreshment(data: AuthData): Promise<AuthorizerVerifyResult<AuthData>>;
+  verifyRefreshment(ctx: Context): Promise<AuthorizerVerifyResult<Context>>;
 
   /**
    * refineAuthr efine the auth data to auth context members which fit the
    * machinat interfaces, the context would then be passed to the appliction.
    */
-  refineAuth(
-    data: AuthData
-  ): Promise<null | AuthorizerRefinement<User, Channel>>;
+  refineAuth(ctx: Context): Promise<null | AuthorizerRefinement<User, Channel>>;
 }
+
+export type AnyServerAuthorizer = ServerAuthorizer<any, any, unknown, unknown>;
 
 export type AuthorizerCredentialResult<Credential> =
   | { success: true; credential: Credential }
@@ -124,7 +124,7 @@ export type AuthorizerCredentialResult<Credential> =
 export interface ClientAuthorizer<
   User extends MachinatUser,
   Channel extends MachinatChannel,
-  AuthData,
+  Context,
   Credential
 > {
   platform: string;
@@ -137,7 +137,7 @@ export interface ClientAuthorizer<
    */
   init(
     authEntry: string,
-    authFromServer: null | AuthData,
+    authFromServer: null | Context,
     errorFromServer: null | ErrorMessage
   ): Promise<void>;
 
@@ -154,9 +154,7 @@ export interface ClientAuthorizer<
    * Refine the auth data into auth context members fit the machinat interfaces,
    * the context would then be passed to the appliction.
    */
-  refineAuth(
-    data: AuthData
-  ): Promise<null | AuthorizerRefinement<User, Channel>>;
+  refineAuth(ctx: Context): Promise<null | AuthorizerRefinement<User, Channel>>;
 }
 
 export type SignRequestBody<Credential> = {
@@ -199,11 +197,11 @@ export type WithHeaders = {
 };
 
 export type GetAuthContextOf<
-  Authorizer extends ServerAuthorizer<any, any, unknown, unknown>
+  Authorizer extends AnyServerAuthorizer
 > = Authorizer extends ServerAuthorizer<
   infer User,
   infer Channel,
-  infer AuthData,
+  infer Context,
   unknown
 >
   ? {
@@ -212,6 +210,6 @@ export type GetAuthContextOf<
       channel: Channel;
       loginAt: Date;
       expireAt: Date;
-      data: AuthData;
+      context: Context;
     }
   : never;

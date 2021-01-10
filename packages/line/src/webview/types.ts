@@ -1,7 +1,7 @@
 import type LineUser from '../user';
 import type LineChat from '../channel';
 
-export type LIFFContext = {
+export type LiffContext = {
   type: 'utou' | 'group' | 'room' | 'external' | 'none';
   viewType: 'compact' | 'tall' | 'full';
   userId: string;
@@ -16,7 +16,7 @@ export type LIFFContext = {
   };
 };
 
-export type LIFFAuthData = {
+export type LineAuthContext = {
   providerId: string;
   channelId: string;
   os: 'ios' | 'android' | 'web';
@@ -28,13 +28,13 @@ export type LIFFAuthData = {
   roomId?: string;
 };
 
-export type LIFFCredential = {
+export type LineAuthCredential = {
   accessToken: string;
-  data: Omit<LIFFAuthData, 'providerId' | 'channelId'>;
+  context: Omit<LineAuthContext, 'providerId' | 'channelId'>;
 };
 
 export type LineVerifyAuthResult =
-  | { success: true; data: LIFFAuthData; refreshable: false }
+  | { success: true; context: LineAuthContext; refreshable: false }
   | { success: false; code: number; reason: string };
 
 export type AuthorizerRefinement = {
@@ -44,5 +44,5 @@ export type AuthorizerRefinement = {
 
 export type AuthorizerCredentialResult = {
   success: true;
-  credential: LIFFCredential;
+  credential: LineAuthCredential;
 };

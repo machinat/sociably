@@ -10,7 +10,7 @@ import type { UnitSegment } from '@machinat/core/renderer/types';
 import type { DispatchFrame } from '@machinat/core/engine/types';
 import type { MaybeContainer } from '@machinat/core/service/types';
 import type {
-  AuthContext,
+  AuthData,
   ServerAuthorizer,
   ClientAuthorizer,
 } from '@machinat/auth/types';
@@ -51,11 +51,13 @@ export type WebviewEvent<
 export type WebviewMetadata<
   User extends MachinatUser,
   Channel extends MachinatChannel,
-  AuthData
+  AuthContext
 > = Omit<
-  WebSocketMetadata<AuthContext<User, Channel, AuthData>>,
+  WebSocketMetadata<AuthData<User, Channel, AuthContext>>,
   'connection'
-> & { connection: WebviewConnection };
+> & {
+  connection: WebviewConnection;
+};
 
 export type WebviewEventContext<
   Authorizer extends AnyServerAuthorizer,
@@ -67,13 +69,13 @@ export type WebviewEventContext<
 > = Authorizer extends ServerAuthorizer<
   infer User,
   infer Channel,
-  infer AuthData,
+  infer Context,
   unknown
 >
   ? {
       platform: 'webview';
       event: WebviewEvent<Value, User>;
-      metadata: WebviewMetadata<User, Channel, AuthData>;
+      metadata: WebviewMetadata<User, Channel, Context>;
       bot: BotP<Authorizer>;
     }
   : never;

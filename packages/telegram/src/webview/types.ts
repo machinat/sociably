@@ -3,7 +3,7 @@ import type { TelegramChat } from '../channel';
 import type TelegramUser from '../user';
 import { TelegramChatType } from '../types';
 
-export type TelegramAuthData = {
+export type TelegramAuthContext = {
   botId: number;
   channel: {
     type: TelegramChatType;

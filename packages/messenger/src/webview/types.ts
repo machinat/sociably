@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import type MessengerChannel from '../channel';
+import type MessengerChat from '../channel';
 import type MessengerUser from '../user';
 import type { MessengerThreadType } from '../types';
 
@@ -29,5 +29,5 @@ export type AuthorizerCredentialResult =
 
 export type AuthorizerRefinement = {
   user: MessengerUser;
-  channel: MessengerChannel;
+  channel: MessengerChat;
 };

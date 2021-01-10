@@ -179,14 +179,14 @@ declare namespace Webview {
   export type Receiver<
     User extends MachinatUser,
     Channel extends MachinatChannel,
-    AuthData
-  > = ReceiverP<User, Channel, AuthData>;
+    Context
+  > = ReceiverP<User, Channel, Context>;
 
   export type SocketServer<
     User extends MachinatUser,
     Channel extends MachinatChannel,
-    AuthData
-  > = ServerP<User, Channel, AuthData>;
+    Context
+  > = ServerP<User, Channel, Context>;
 
   export type SocketBrokerI = BrokerI;
 }

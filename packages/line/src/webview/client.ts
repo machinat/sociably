@@ -6,13 +6,13 @@ import { LINE } from '../constant';
 import type LineUser from '../user';
 import type LineChat from '../channel';
 import type {
-  LIFFAuthData,
-  LIFFCredential,
-  LIFFContext,
+  LineAuthContext,
+  LineAuthCredential,
+  LiffContext,
   AuthorizerRefinement,
   AuthorizerCredentialResult,
 } from './types';
-import { refinementFromLIFFAuthData } from './utils';
+import { refineAuthContext } from './utils';
 
 type ClientAuthorizerOptions = {
   liffId: string;
@@ -31,7 +31,7 @@ const waitingForRedirecting = (): Promise<never> =>
 
 class LineClientAuthorizer
   implements
-    ClientAuthorizer<LineUser, LineChat, LIFFAuthData, LIFFCredential> {
+    ClientAuthorizer<LineUser, LineChat, LineAuthContext, LineAuthCredential> {
   liff: any;
   liffId: string;
   shouldLoadSDK: boolean;
@@ -98,13 +98,13 @@ class LineClientAuthorizer
       utouId,
       groupId,
       roomId,
-    }: LIFFContext = liff.getContext();
+    }: LiffContext = liff.getContext();
 
     return {
       success: true,
       credential: {
         accessToken: liff.getAccessToken(),
-        data: {
+        context: {
           os: liff.getOS(),
           language: liff.getLanguage(),
           contextType,
@@ -118,8 +118,8 @@ class LineClientAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async refineAuth(data: LIFFAuthData): Promise<null | AuthorizerRefinement> {
-    return refinementFromLIFFAuthData(data);
+  async refineAuth(ctx: LineAuthContext): Promise<null | AuthorizerRefinement> {
+    return refineAuthContext(ctx);
   }
 }
 

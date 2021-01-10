@@ -12,7 +12,7 @@ import type {
   AuthorizerCredentialResult,
   AuthorizerRefinement,
 } from './types';
-import { refinementFromExtensionPayload } from './utils';
+import { refineExtensionPayload } from './utils';
 
 type MessengerClientAuthOpts = {
   appId: string;
@@ -107,7 +107,7 @@ class MessengerClientAuthorizer
   async refineAuth(
     payload: ExtensionPayload
   ): Promise<null | AuthorizerRefinement> {
-    return refinementFromExtensionPayload(payload);
+    return refineExtensionPayload(payload);
   }
 }
 

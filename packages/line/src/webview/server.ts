@@ -9,12 +9,12 @@ import { LINE } from '../constant';
 import type LineUser from '../user';
 import type LineChat from '../channel';
 import type {
-  LIFFAuthData,
-  LIFFCredential,
+  LineAuthContext,
+  LineAuthCredential,
   LineVerifyAuthResult,
   AuthorizerRefinement,
 } from './types';
-import { refinementFromLIFFAuthData } from './utils';
+import { refineAuthContext } from './utils';
 
 type LineServerAuthorizerOpts = {
   providerId: string;
@@ -27,7 +27,7 @@ type LineServerAuthorizerOpts = {
  */
 export class LineServerAuthorizer
   implements
-    ServerAuthorizer<LineUser, LineChat, LIFFAuthData, LIFFCredential> {
+    ServerAuthorizer<LineUser, LineChat, LineAuthContext, LineAuthCredential> {
   providerId: string;
   channelId: string;
   liffChannelIds: string[];
@@ -58,9 +58,9 @@ export class LineServerAuthorizer
   }
 
   async verifyCredential(
-    credential: LIFFCredential
+    credential: LineAuthCredential
   ): Promise<LineVerifyAuthResult> {
-    const { accessToken, data } = credential;
+    const { accessToken, context } = credential;
     // eslint-disable-next-line prefer-destructuring
     if (!accessToken) {
       return {
@@ -94,8 +94,8 @@ export class LineServerAuthorizer
     return {
       success: true as const,
       refreshable: false as const,
-      data: {
-        ...data,
+      context: {
+        ...context,
         channelId: this.channelId,
         providerId: this.providerId,
       },
@@ -112,13 +112,13 @@ export class LineServerAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async refineAuth(data: LIFFAuthData): Promise<null | AuthorizerRefinement> {
-    const { providerId, channelId } = data;
+  async refineAuth(ctx: LineAuthContext): Promise<null | AuthorizerRefinement> {
+    const { providerId, channelId } = ctx;
     if (providerId !== this.providerId || channelId !== this.channelId) {
       return null;
     }
 
-    return refinementFromLIFFAuthData(data);
+    return refineAuthContext(ctx);
   }
 }
 

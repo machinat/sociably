@@ -5,7 +5,7 @@ import type { HttpRequestRouting } from '@machinat/http/types';
 
 import { ControllerP } from './controller';
 import { MODULE_CONFIGS_I, AUTHORIZERS_I } from './interface';
-import type { AuthModuleConfigs, ServerAuthorizer } from './types';
+import type { AuthModuleConfigs, AnyServerAuthorizer } from './types';
 
 /** @internal */
 const authRoutingFactory = makeFactoryProvider({
@@ -36,9 +36,9 @@ const Auth = {
 };
 
 declare namespace Auth {
-  export type Controller<
-    Authorizer extends ServerAuthorizer<any, any, any, any>
-  > = ControllerP<Authorizer>;
+  export type Controller<Authorizer extends AnyServerAuthorizer> = ControllerP<
+    Authorizer
+  >;
 }
 
 export default Auth;

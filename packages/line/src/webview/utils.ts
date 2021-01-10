@@ -2,16 +2,16 @@
 /* eslint-disable import/prefer-default-export  */
 import LineUser from '../user';
 import LineChat from '../channel';
-import { LIFFAuthData, AuthorizerRefinement } from './types';
+import { LineAuthContext, AuthorizerRefinement } from './types';
 
-export const refinementFromLIFFAuthData = ({
+export const refineAuthContext = ({
   contextType,
   userId,
   groupId,
   roomId,
   channelId,
   providerId,
-}: LIFFAuthData): null | AuthorizerRefinement => ({
+}: LineAuthContext): null | AuthorizerRefinement => ({
   user: new LineUser(providerId, userId),
   channel:
     contextType === 'group'

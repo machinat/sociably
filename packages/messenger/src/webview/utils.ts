@@ -4,7 +4,7 @@ import MessengerChat from '../channel';
 import MessengerUser from '../user';
 import type { ExtensionPayload, AuthorizerRefinement } from './types';
 
-export const refinementFromExtensionPayload = (
+export const refineExtensionPayload = (
   payload: ExtensionPayload
 ): null | AuthorizerRefinement => {
   if (!payload || !payload.page_id || !payload.psid || !payload.tid) {

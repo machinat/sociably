@@ -15,8 +15,8 @@ import { TELEGRAM } from '../constant';
 import { TelegramChat } from '../channel';
 import TelegramUser from '../user';
 import type { TelegramPlatformConfigs } from '../types';
-import type { TelegramAuthData, TelegramAuthRefinement } from './types';
-import { refineTelegramAuthData } from './utils';
+import type { TelegramAuthContext, TelegramAuthRefinement } from './types';
+import { refineAuthContext } from './utils';
 
 type TelegramServerAuthorizerOpts = {
   botToken: string;
@@ -43,7 +43,7 @@ const makeParamsCheckingString = (query) =>
  */
 export class TelegramServerAuthorizer
   implements
-    ServerAuthorizer<TelegramUser, TelegramChat, TelegramAuthData, void> {
+    ServerAuthorizer<TelegramUser, TelegramChat, TelegramAuthContext, void> {
   botToken: string;
   botId: number;
   redirectUrl: string;
@@ -105,7 +105,7 @@ export class TelegramServerAuthorizer
     const userId = Number(query.id);
     const username = query.username as string | undefined;
 
-    const authData: TelegramAuthData = {
+    const authData: TelegramAuthContext = {
       botId: this.botId,
       channel: {
         type: 'private',
@@ -139,7 +139,9 @@ export class TelegramServerAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async verifyCredential(): Promise<AuthorizerVerifyResult<TelegramAuthData>> {
+  async verifyCredential(): Promise<
+    AuthorizerVerifyResult<TelegramAuthContext>
+  > {
     return {
       success: false as const,
       code: 403,
@@ -149,20 +151,20 @@ export class TelegramServerAuthorizer
 
   // eslint-disable-next-line class-methods-use-this
   async verifyRefreshment(
-    data: TelegramAuthData
-  ): Promise<AuthorizerVerifyResult<TelegramAuthData>> {
+    context: TelegramAuthContext
+  ): Promise<AuthorizerVerifyResult<TelegramAuthContext>> {
     return {
       success: true as const,
-      data,
+      context,
       refreshable: true,
     };
   }
 
   // eslint-disable-next-line class-methods-use-this
   async refineAuth(
-    data: TelegramAuthData
+    context: TelegramAuthContext
   ): Promise<null | TelegramAuthRefinement> {
-    return refineTelegramAuthData(data);
+    return refineAuthContext(context);
   }
 }
 

@@ -34,7 +34,7 @@ type OperatorOptions = {
 };
 
 type IssueAuthOptions = {
-  refreshLimit?: number;
+  refreshTill?: number;
   refreshable?: boolean;
   signatureOnly?: boolean;
 };
@@ -145,10 +145,10 @@ export class CookieController {
     return encodedState;
   }
 
-  async getAuth<AuthData>(
+  async getAuth<Context>(
     req: IncomingMessage,
     platformAsserted: string
-  ): Promise<null | AuthData> {
+  ): Promise<null | Context> {
     const cookies = getCookies(req);
     if (!cookies) {
       return null;
@@ -161,24 +161,27 @@ export class CookieController {
     }
 
     try {
-      const { platform, data }: AuthTokenPayload<any> = await thenifiedly.call(
+      const {
+        platform,
+        context,
+      }: AuthTokenPayload<Context> = await thenifiedly.call(
         verifyJWT,
         `${contentVal}.${sigVal}`,
         this.options.secret
       );
 
-      return platform === platformAsserted ? data : null;
+      return platform === platformAsserted ? context : null;
     } catch (e) {
       return null;
     }
   }
 
-  async issueAuth<AuthData>(
+  async issueAuth<Context>(
     res: ServerResponse,
     platform: string,
-    data: AuthData,
+    context: Context,
     {
-      refreshLimit,
+      refreshTill,
       refreshable = true,
       signatureOnly = false,
     }: IssueAuthOptions = {}
@@ -190,16 +193,16 @@ export class CookieController {
       signJWT,
       {
         platform,
-        data,
-        refreshLimit: !refreshable
+        context,
+        refreshTill: !refreshable
           ? undefined
-          : !refreshLimit
+          : !refreshTill
           ? now + refreshPeriod
-          : refreshLimit > now + tokenAge
-          ? refreshLimit
+          : refreshTill > now + tokenAge
+          ? refreshTill
           : undefined,
         scope: this._cookieScope,
-      } as AuthPayload<AuthData>,
+      } as AuthPayload<Context>,
       secret,
       { expiresIn: tokenAge }
     );
@@ -308,15 +311,15 @@ export class CookieAccessor {
     );
   }
 
-  getAuth<AuthData>(): Promise<null | AuthData> {
-    return this._controller.getAuth<AuthData>(this._req, this._platform);
+  getAuth<Context>(): Promise<null | Context> {
+    return this._controller.getAuth<Context>(this._req, this._platform);
   }
 
-  issueAuth<AuthData>(
-    auth: AuthData,
+  issueAuth<Context>(
+    auth: Context,
     options?: IssueAuthOptions
   ): Promise<string> {
-    return this._controller.issueAuth<AuthData>(
+    return this._controller.issueAuth<Context>(
       this._res,
       this._platform,
       auth,

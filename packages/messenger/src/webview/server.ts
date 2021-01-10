@@ -9,7 +9,7 @@ import { PLATFORM_CONFIGS_I } from '../interface';
 import { MESSENGER } from '../constant';
 import type MessengerChat from '../channel';
 import type MessengerUser from '../user';
-import { refinementFromExtensionPayload } from './utils';
+import { refineExtensionPayload } from './utils';
 import type {
   ExtensionPayload,
   ExtensionCredential,
@@ -92,12 +92,12 @@ export class MessengerServerAuthorizer
       };
     }
 
-    const data = JSON.parse(decodeBase64URL(dataEncoded));
+    const context = JSON.parse(decodeBase64URL(dataEncoded));
 
     return {
       success: true,
       refreshable: false,
-      data,
+      context,
     };
   }
 
@@ -114,7 +114,7 @@ export class MessengerServerAuthorizer
   async refineAuth(
     payload: ExtensionPayload
   ): Promise<null | AuthorizerRefinement> {
-    return refinementFromExtensionPayload(payload);
+    return refineExtensionPayload(payload);
   }
 }
 

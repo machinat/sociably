@@ -1,9 +1,9 @@
 import TelegramUser from '../user';
 import { TelegramChat } from '../channel';
-import { TelegramAuthData, TelegramAuthRefinement } from './types';
+import { TelegramAuthContext, TelegramAuthRefinement } from './types';
 
 // eslint-disable-next-line import/prefer-default-export
-export const refineTelegramAuthData = ({
+export const refineAuthContext = ({
   channel,
   botId,
   userId,
@@ -11,7 +11,7 @@ export const refineTelegramAuthData = ({
   lastName,
   username,
   languageCode,
-}: TelegramAuthData): TelegramAuthRefinement => ({
+}: TelegramAuthContext): TelegramAuthRefinement => ({
   user: new TelegramUser(userId, {
     id: userId,
     is_bot: false,

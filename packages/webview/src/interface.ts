@@ -2,7 +2,7 @@ import type WS from 'ws';
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import { makeInterface, makeClassProvider } from '@machinat/core/service';
 import { AuthController } from '@machinat/auth';
-import type { AuthContext } from '@machinat/auth/types';
+import type { AuthData } from '@machinat/auth/types';
 import { NextReceiver } from '@machinat/next';
 import type { NextServer } from '@machinat/next/types';
 import WebSocket, { WebSocketServer } from '@machinat/websocket';
@@ -87,8 +87,8 @@ export type SocketBrokerI = WebSocket.BrokerI;
 export class WebviewSocketServer<
   User extends MachinatUser,
   Channel extends MachinatChannel,
-  AuthData
-> extends WebSocketServer<User, AuthContext<User, Channel, AuthData>> {}
+  Context
+> extends WebSocketServer<User, AuthData<User, Channel, Context>> {}
 
 export const SocketServerP = makeClassProvider({
   lifetime: 'singleton',
@@ -119,8 +119,8 @@ export const SocketServerP = makeClassProvider({
 export type SocketServerP<
   User extends MachinatUser,
   Channel extends MachinatChannel,
-  AuthData
-> = WebviewSocketServer<User, Channel, AuthData>;
+  Context
+> = WebviewSocketServer<User, Channel, Context>;
 
 export const PLATFORM_MOUNTER_I = makeInterface<WebviewPlatformMounter<any>>({
   name: 'WebviewPlatformMounterI',
