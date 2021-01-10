@@ -173,9 +173,9 @@ it('trim the entryPath from the url passed to next handler', async () => {
     expect.any(Object)
   );
 
-  const parsedURLPassed = nextDefaultHandler.mock.calls[0].args[2];
-  expect(parsedURLPassed.path).toBe('/world');
-  expect(parsedURLPassed.pathname).toBe('/world');
+  const parsedUrlPassed = nextDefaultHandler.mock.calls[0].args[2];
+  expect(parsedUrlPassed.path).toBe('/world');
+  expect(parsedUrlPassed.pathname).toBe('/world');
 });
 
 it('call next.renderError() with status 404 if entryPath not match', async () => {
@@ -406,9 +406,9 @@ it('pass "_next" internal api calls directly to next request handler', async () 
     res,
     expect.any(Object)
   );
-  const parsedURL = nextDefaultHandler.mock.calls[0].args[2];
-  expect(parsedURL.path).toBe('/_next/xxx');
-  expect(parsedURL.pathname).toBe('/_next/xxx');
+  const parsedUrl = nextDefaultHandler.mock.calls[0].args[2];
+  expect(parsedUrl.path).toBe('/_next/xxx');
+  expect(parsedUrl.pathname).toBe('/_next/xxx');
 });
 
 test('entryPath does not affect page params from middlewares', async () => {

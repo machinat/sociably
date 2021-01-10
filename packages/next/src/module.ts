@@ -1,6 +1,6 @@
 import { makeFactoryProvider, makeContainer } from '@machinat/core/service';
-import HTTP from '@machinat/http';
-import type { HTTPRequestRouting } from '@machinat/http/types';
+import Http from '@machinat/http';
+import type { HttpRequestRouting } from '@machinat/http/types';
 import type { PlatformModule, ServiceModule } from '@machinat/core/types';
 import { ReceiverP } from './receiver';
 import { MODULE_CONFIGS_I, PLATFORM_MOUNTER_I, SERVER_I } from './interface';
@@ -22,7 +22,7 @@ const routingFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [ReceiverP, MODULE_CONFIGS_I] as const,
 })(
-  (receiver, configs): HTTPRequestRouting => ({
+  (receiver, configs): HttpRequestRouting => ({
     name: 'next',
     path: configs.entryPath || '/',
     handler: receiver.handleRequestCallback(),
@@ -46,7 +46,7 @@ const Next = {
       ReceiverP,
       { provide: MODULE_CONFIGS_I, withValue: configs },
       { provide: SERVER_I, withProvider: nextServerFactory },
-      { provide: HTTP.REQUEST_ROUTINGS_I, withProvider: routingFactory },
+      { provide: Http.REQUEST_ROUTINGS_I, withProvider: routingFactory },
     ],
 
     startHook: makeContainer({

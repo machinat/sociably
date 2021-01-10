@@ -1,4 +1,4 @@
-import { parse as parseURL } from 'url';
+import { parse as parseUrl } from 'url';
 import { join as joinPath } from 'path';
 import invariant from 'invariant';
 
@@ -47,7 +47,7 @@ const handleWebhook = (
           return { code: 401 };
         }
       } else {
-        const { pathname } = parseURL(url);
+        const { pathname } = parseUrl(url);
         if (pathname !== joinPath(entryPath, secretPath)) {
           return { code: 401 };
         }

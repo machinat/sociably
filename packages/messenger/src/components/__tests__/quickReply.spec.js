@@ -48,14 +48,14 @@ test('QuickReply match snpshot', async () => {
       <QuickReply
         title="a piece of cake"
         payload="🍰"
-        imageURL="http://cake.it"
+        imageUrl="http://cake.it"
       />
     )
   ).resolves.toMatchInlineSnapshot(`
     Array [
       Object {
         "node": <QuickReply
-          imageURL="http://cake.it"
+          imageUrl="http://cake.it"
           payload="🍰"
           title="a piece of cake"
         />,

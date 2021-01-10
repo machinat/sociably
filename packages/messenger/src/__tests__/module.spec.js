@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
-import HTTP from '@machinat/http';
+import Http from '@machinat/http';
 import Messenger from '../module';
 import MessengerChat from '../channel';
 import MessengerUser from '../user';
@@ -78,7 +78,7 @@ describe('initModule(configs)', () => {
       Messenger.Receiver,
       Messenger.Profiler,
       Messenger.CONFIGS_I,
-      HTTP.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
@@ -113,7 +113,7 @@ describe('initModule(configs)', () => {
       Messenger.Bot,
       Messenger.Profiler,
       Messenger.CONFIGS_I,
-      HTTP.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
@@ -176,7 +176,7 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [routings] = app.useServices([HTTP.REQUEST_ROUTINGS_I]);
+    const [routings] = app.useServices([Http.REQUEST_ROUTINGS_I]);
     expect(routings).toEqual([
       { name: 'messenger', path: '/', handler: expect.any(Function) },
     ]);

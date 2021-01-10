@@ -17,7 +17,7 @@ In the back-end:
 ```js
 import Machinat from '@machinat/core';
 import { factory } from '@machinat/core/service';
-import HTTP from '@machinat/http';
+import Http from '@machinat/http';
 import Auth from '@machinat/auth';
 // add the platforms and the authorizer you need
 import Messenger from '@machinat/messenger';
@@ -30,7 +30,7 @@ Machinat.createApp({
     }),
   ],
   modules: [
-    HTTP.initModule({ ... }),
+    Http.initModule({ ... }),
 
     Auth.initModule({
       entryPath: '/auth',
@@ -43,7 +43,7 @@ Machinat.createApp({
       withProvider: MessengerServerAuthorizer,
     },
     {
-      provide: HTTP.REQUEST_ROUTINGS_I,
+      provide: Http.REQUEST_ROUTINGS_I,
       withProvider: factory({
         lifetime: 'transient',
         deps: [Auth.Controller]
@@ -76,7 +76,7 @@ import MessengerClientAuthorizer from '@machinat/messenger/auth/client';
 (async function main () {
   const authClient = new AuthClient({
     platform: 'messenger',
-    serverURL: '/auth',
+    serverUrl: '/auth',
     authorizers: [new MessengerClientAuthorizer({ ... })],
   });
 

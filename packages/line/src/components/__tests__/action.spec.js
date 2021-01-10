@@ -3,7 +3,7 @@ import { isNativeType } from '@machinat/core/utils/isX';
 import {
   PostbackAction,
   MessageAction,
-  URIAction,
+  UriAction,
   DateTimePickerAction,
   CameraAction,
   CameraRollAction,
@@ -15,7 +15,7 @@ test.each(
   [
     PostbackAction,
     MessageAction,
-    URIAction,
+    UriAction,
     DateTimePickerAction,
     CameraAction,
     CameraAction,
@@ -75,13 +75,13 @@ test('<MessageAction/>', async () => {
         `);
 });
 
-test('<URIAction/>', async () => {
+test('<UriAction/>', async () => {
   await expect(
-    renderInner(<URIAction uri="http://machinat.com" label="Try it!" />)
+    renderInner(<UriAction uri="http://machinat.com" label="Try it!" />)
   ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
-              "node": <URIAction
+              "node": <UriAction
                 label="Try it!"
                 uri="http://machinat.com"
               />,

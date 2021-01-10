@@ -14,7 +14,7 @@ type GenericItemProps = {
   /** The title to display in the template. 80 character limit. */
   title: string;
   /** The URL of the image to display in the template. */
-  imageURL?: string;
+  imageUrl?: string;
   /** The subtitle to display in the template. 80 character limit. */
   subtitle?: string;
   /**
@@ -23,7 +23,7 @@ type GenericItemProps = {
    */
   buttons?: MachinatNode;
   /**
-   * One {@link URLButton} element to act as the default action executed when
+   * One {@link UrlButton} element to act as the default action executed when
    * the template is tapped.
    */
   defaultAction?: MachinatNode;
@@ -34,7 +34,7 @@ const __GenericItem = async function GenericItem(node, path, render) {
   const {
     buttons,
     title,
-    imageURL,
+    imageUrl,
     subtitle,
     defaultAction: defaultActionProp,
   } = node.props;
@@ -49,14 +49,14 @@ const __GenericItem = async function GenericItem(node, path, render) {
 
   let defaultAction;
   if (defaultActionSegments !== null) {
-    const { title: _, ...restOfURLButton } = defaultActionSegments[0].value;
-    defaultAction = restOfURLButton;
+    const { title: _, ...restOfUrlButton } = defaultActionSegments[0].value;
+    defaultAction = restOfUrlButton;
   }
 
   return [
     partSegment(node, path, {
       title,
-      image_url: imageURL,
+      image_url: imageUrl,
       subtitle,
       default_action: defaultAction,
       buttons: buttonValues,
@@ -271,12 +271,12 @@ type ReceiptItemProps = {
   /** The currency of the item price. */
   currency?: string;
   /** The URL of an image to be displayed with the item. */
-  imageURL?: string;
+  imageUrl?: string;
 };
 
 /** @ignore */
 const __ReceiptItem = async function ReceiptItem(node, path) {
-  const { title, subtitle, quantity, price, currency, imageURL } = node.props;
+  const { title, subtitle, quantity, price, currency, imageUrl } = node.props;
   return [
     partSegment(node, path, {
       title,
@@ -284,7 +284,7 @@ const __ReceiptItem = async function ReceiptItem(node, path) {
       quantity,
       price,
       currency,
-      image_url: imageURL,
+      image_url: imageUrl,
     }),
   ];
 };
@@ -328,7 +328,7 @@ type ReceiptTemplateProps = {
    * can be a custom string, such as, "Visa 1234".
    */
   paymentMethod: string;
-  orderURL?: string;
+  orderUrl?: string;
   /** Timestamp of the order in seconds. */
   timestamp?: string;
   /** The shipping address of the order. */
@@ -361,7 +361,7 @@ const __ReceiptTemplate = async function ReceiptTemplate(node, path, render) {
     orderNumber,
     currency,
     paymentMethod,
-    orderURL,
+    orderUrl,
     timestamp,
     address,
     summary,
@@ -384,7 +384,7 @@ const __ReceiptTemplate = async function ReceiptTemplate(node, path, render) {
             order_number: orderNumber,
             currency,
             payment_method: paymentMethod,
-            order_url: orderURL,
+            order_url: orderUrl,
             timestamp:
               timestamp instanceof Date
                 ? `${Math.floor(timestamp.getTime() / 1000)}`

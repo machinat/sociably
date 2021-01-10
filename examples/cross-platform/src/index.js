@@ -1,7 +1,7 @@
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
 import { container } from '@machinat/core/service';
-import HTTP from '@machinat/http';
+import Http from '@machinat/http';
 import Messenger from '@machinat/messenger';
 import Line from '@machinat/line';
 import dotenv from 'dotenv';
@@ -16,7 +16,7 @@ const ENV = process.env;
 
 const app = Machinat.createApp({
   modules: [
-    HTTP.initModule({
+    Http.initModule({
       port: ENV.PORT || 8080,
     }),
   ],

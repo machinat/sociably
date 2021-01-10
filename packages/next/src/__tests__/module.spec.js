@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import HTTP from '@machinat/http';
+import Http from '@machinat/http';
 import createNextApp from 'next';
 import { NextReceiver } from '../receiver';
 import Next from '../module';
@@ -113,7 +113,7 @@ describe('initModule()', () => {
       Next.Receiver,
       Next.SERVER_I,
       Next.CONFIGS_I,
-      HTTP.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTINGS_I,
     ]);
 
     expect(receiver).toBeInstanceOf(NextReceiver);
@@ -161,7 +161,7 @@ describe('initModule()', () => {
     });
     await app.start();
 
-    const [routings] = app.useServices([HTTP.REQUEST_ROUTINGS_I]);
+    const [routings] = app.useServices([Http.REQUEST_ROUTINGS_I]);
     expect(routings).toEqual([
       { name: 'next', path: '/', handler: expect.any(Function) },
     ]);

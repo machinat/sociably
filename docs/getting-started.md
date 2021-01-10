@@ -4,7 +4,7 @@ A simplest cross-platform Machinat app may look like this:
 
 ```js
 import Machinat from '@machinat/core';
-import HTTP from '@machinat/http';
+import Http from '@machinat/http';
 import Messenger from '@machinat/messenger';
 import Line from '@machinat/line';
 
@@ -12,7 +12,7 @@ const ENV = process.env;
 
 Machinat.createApp({
   modules: [
-    HTTP.initModule({ port: 8080 }),
+    Http.initModule({ port: 8080 }),
   ],
   platforms: [
     Messenger.initModule({
@@ -120,10 +120,10 @@ Add the following settings of the `compilerOptions` in `tsconfig.json`:
 
 ## Listening to HTTP
 
-The `@machinat/http` module provide underlying utilities for platforms need receiving HTTP request. `HTTP.initModule()` takes an options object parameter the same as [`http.Server#listen()`](https://nodejs.org/dist/latest/docs/api/net.html#net_server_listen_options_callback)like:
+The `@machinat/http` module provide underlying utilities for platforms need receiving HTTP request. `Http.initModule()` takes an options object parameter the same as [`http.Server#listen()`](https://nodejs.org/dist/latest/docs/api/net.html#net_server_listen_options_callback)like:
 
 ```js
-HTTP.initModule({
+Http.initModule({
   host: '::',
   port: 8080,
   ipv6Only: true,

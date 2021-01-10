@@ -1,4 +1,4 @@
-import { parse as parseURL, UrlWithParsedQuery } from 'url';
+import { parse as parseUrl, UrlWithParsedQuery } from 'url';
 import { STATUS_CODES, IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
 
@@ -20,7 +20,7 @@ export class NextReceiver {
   private _defaultNextHandler: (
     req: IncomingMessage,
     res: ServerResponse,
-    parsedURL: UrlWithParsedQuery
+    parsedUrl: UrlWithParsedQuery
   ) => void;
 
   private _pathPrefix: string;
@@ -79,10 +79,10 @@ export class NextReceiver {
       return;
     }
 
-    const parsedURL = parseURL(req.url as string, true);
+    const parsedUrl = parseUrl(req.url as string, true);
     const pathPrefix = this._pathPrefix;
 
-    const { pathname } = parsedURL;
+    const { pathname } = parsedUrl;
     const trimedPath = !pathname
       ? undefined
       : pathPrefix === ''
@@ -98,15 +98,15 @@ export class NextReceiver {
         req,
         res,
         pathname as string,
-        parsedURL.query
+        parsedUrl.query
       );
       return;
     }
 
-    const parsedURLWithPathPrefixTrimed = {
-      ...parsedURL,
+    const parsedUrlWithPathPrefixTrimed = {
+      ...parsedUrl,
       pathname: trimedPath,
-      path: (parsedURL.path as string).slice(pathPrefix.length) || '/',
+      path: (parsedUrl.path as string).slice(pathPrefix.length) || '/',
     };
 
     if (trimedPath.slice(1, 6) === '_next') {
@@ -117,7 +117,7 @@ export class NextReceiver {
         req.url = trimedPath;
       }
 
-      this._defaultNextHandler(req, res, parsedURLWithPathPrefixTrimed);
+      this._defaultNextHandler(req, res, parsedUrlWithPathPrefixTrimed);
       return;
     }
 
@@ -155,11 +155,11 @@ export class NextReceiver {
             req,
             res,
             page || trimedPath,
-            query || parsedURL.query,
-            parsedURLWithPathPrefixTrimed
+            query || parsedUrl.query,
+            parsedUrlWithPathPrefixTrimed
           );
         } else {
-          this._defaultNextHandler(req, res, parsedURLWithPathPrefixTrimed);
+          this._defaultNextHandler(req, res, parsedUrlWithPathPrefixTrimed);
         }
       } else {
         const { code, reason, headers } = response;
@@ -169,14 +169,14 @@ export class NextReceiver {
           req,
           res,
           trimedPath,
-          parsedURL.query
+          parsedUrl.query
         );
       }
     } catch (err) {
       this._popError(err);
 
       res.statusCode = 500;
-      await this._next.renderError(err, req, res, trimedPath, parsedURL.query);
+      await this._next.renderError(err, req, res, trimedPath, parsedUrl.query);
     }
   }
 }

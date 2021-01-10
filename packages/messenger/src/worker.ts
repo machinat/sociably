@@ -21,7 +21,7 @@ const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
 const appendField = (body: string, key: string, value: string) =>
   `${body.length === 0 ? body : `${body}&`}${key}=${encodeURIComponent(value)}`;
 
-const encodeURIBody = (fields: { [key: string]: any }): string => {
+const encodeUriBody = (fields: { [key: string]: any }): string => {
   let body = '';
 
   for (const key of Object.keys(fields)) {
@@ -45,13 +45,13 @@ const formatRequest = (request: BatchAPIRequest) =>
         ...request,
         // NOTE: workaround because batch api do not support DELETE with body
         relative_url: request.body
-          ? `${request.relative_url}?${encodeURIBody(request.body)}`
+          ? `${request.relative_url}?${encodeUriBody(request.body)}`
           : request.relative_url,
         body: undefined,
       }
     : {
         ...request,
-        body: request.body && encodeURIBody(request.body),
+        body: request.body && encodeUriBody(request.body),
       };
 
 const makeRequestName = (channelId: string, count: number) =>

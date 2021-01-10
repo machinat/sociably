@@ -65,7 +65,7 @@ bot.render(
       <Messenger.GenericItem
         title="Hello"
         subtitile="world"
-        imageURL="http://..."
+        imageUrl="http://..."
       />
     </Messenger.GenericTemplate>
   </>

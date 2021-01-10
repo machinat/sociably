@@ -16,7 +16,7 @@ type ButtonTemplateProps = {
   /** Image URL (Max character limit: 1,000) */
   thumbnailImageUrl?: string;
   /** Alias of `thumbnailImageUrl`. */
-  imageURL?: string;
+  imageUrl?: string;
   /**
    * Aspect ratio of the image, rectangle: 1.51:1, square: 1:1. Default to
    * `'rectangle'`.
@@ -57,7 +57,7 @@ const __ButtonTemplate = async function ButtonTemplate(node, path, render) {
     defaultAction,
     altText,
     thumbnailImageUrl,
-    imageURL,
+    imageUrl,
     imageAspectRatio,
     imageSize,
     imageBackgroundColor,
@@ -77,7 +77,7 @@ const __ButtonTemplate = async function ButtonTemplate(node, path, render) {
       altText,
       template: {
         type: 'buttons',
-        thumbnailImageUrl: thumbnailImageUrl || imageURL,
+        thumbnailImageUrl: thumbnailImageUrl || imageUrl,
         imageAspectRatio,
         imageSize,
         imageBackgroundColor,
@@ -161,7 +161,7 @@ type CarouselItemProps = {
   /** Image URL (Max character limit: 1,000) */
   thumbnailImageUrl?: string;
   /** Alias of `thumbnailImageUrl`. */
-  imageURL?: string;
+  imageUrl?: string;
   /**
    * Background color of the image. Specify a RGB color value. The default
    * value is #FFFFFF (white).
@@ -177,7 +177,7 @@ const __CarouselItem = async function CarouselItem(node, path, render) {
   const {
     actions,
     defaultAction,
-    imageURL,
+    imageUrl,
     thumbnailImageUrl,
     imageBackgroundColor,
     title,
@@ -192,7 +192,7 @@ const __CarouselItem = async function CarouselItem(node, path, render) {
 
   return [
     partSegment(node, path, {
-      thumbnailImageUrl: thumbnailImageUrl || imageURL,
+      thumbnailImageUrl: thumbnailImageUrl || imageUrl,
       imageBackgroundColor,
       title,
       text,

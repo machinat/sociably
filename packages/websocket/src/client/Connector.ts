@@ -37,7 +37,7 @@ type ClientEvents<User extends null | MachinatUser> = {
 class WebScoketConnector<User extends null | MachinatUser> extends Emitter<
   ClientEvents<User>
 > {
-  private _serverURL: string;
+  private _serverUrl: string;
   private _login: ClientLoginFn<User, unknown>;
   private _socket: null | Socket;
 
@@ -55,7 +55,7 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<
     this._queuedEvents = [];
 
     const { protocol, host } = window.location;
-    this._serverURL = new URL(
+    this._serverUrl = new URL(
       url || '',
       `${protocol === 'https:' ? 'wss' : 'ws'}://${host}`
     ).href;
@@ -72,7 +72,7 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<
     const { user, credential } = await this._login();
     this._user = user;
 
-    const socket = await createClientSocket(this._serverURL);
+    const socket = await createClientSocket(this._serverUrl);
     this._socket = socket;
 
     socket.on('connect', this._handleConnect.bind(this));

@@ -19,18 +19,18 @@ type TextQuickReplyProps = {
    * Image should be a minimum of 24px x 24px. Larger images will be
    * automatically cropped and resized. Required if title is an empty string.
    */
-  imageURL?: string;
+  imageUrl?: string;
 };
 
 /** @ignore */
 const __QuickReply = function QuickReply(node, path) {
-  const { title, payload, imageURL } = node.props;
+  const { title, payload, imageUrl } = node.props;
   return [
     partSegment(node, path, {
       content_type: 'text',
       title,
       payload,
-      image_url: imageURL,
+      image_url: imageUrl,
     }),
   ];
 };

@@ -20,7 +20,7 @@ import {
   InlineQueryResultVideo,
   InlineQueryResultVoice,
 } from '../answer';
-import { InlineKeyboard, URLButton } from '../replyMarkup';
+import { InlineKeyboard, UrlButton } from '../replyMarkup';
 import { Text, Contact } from '../template';
 import { Location, Venue } from '../location';
 
@@ -166,10 +166,10 @@ test('AnswerInlineQuery match snapshot', async () => {
         <InlineQueryResultArticle
           id="2"
           url="http://foo.bar/article"
-          hideURL
+          hideUrl
           title="foo"
           description="bar"
-          thumbURL="http://foo.bar/article_thumb"
+          thumbUrl="http://foo.bar/article_thumb"
           thumbWidth={123}
           thumbHeight={456}
         />
@@ -179,7 +179,7 @@ test('AnswerInlineQuery match snapshot', async () => {
           lastName="Doe"
           phoneNumber="0123456789"
           vcard="foo"
-          thumbURL="http://foo.bar/contact_thumb"
+          thumbUrl="http://foo.bar/contact_thumb"
           thumbWidth={123}
           thumbHeight={456}
         />
@@ -188,7 +188,7 @@ test('AnswerInlineQuery match snapshot', async () => {
           url="http://foo.bar/document"
           mimeType="application/pdf"
           title="foo"
-          thumbURL="http://foo.bar/document_thumb"
+          thumbUrl="http://foo.bar/document_thumb"
           thumbWidth={123}
           thumbHeight={456}
           caption="*bar*"
@@ -198,7 +198,7 @@ test('AnswerInlineQuery match snapshot', async () => {
         <InlineQueryResultGif
           id="6"
           url="http://foo.bar/gif"
-          thumbURL="http://foo.bar/gif_thumb"
+          thumbUrl="http://foo.bar/gif_thumb"
           thumbMimeType="image/gif"
           width={123}
           height={456}
@@ -213,14 +213,14 @@ test('AnswerInlineQuery match snapshot', async () => {
           longitude={67.89}
           title="foo"
           livePeriod={999}
-          thumbURL="http://foo.bar/location_thumb"
+          thumbUrl="http://foo.bar/location_thumb"
           thumbWidth={123}
           thumbHeight={456}
         />
         <InlineQueryResultMpeg4Gif
           id="8"
           url="http://foo.bar/mpeg4"
-          thumbURL="http://foo.bar/mpeg4_thumb"
+          thumbUrl="http://foo.bar/mpeg4_thumb"
           thumbMimeType="image/gif"
           width={123}
           height={456}
@@ -232,7 +232,7 @@ test('AnswerInlineQuery match snapshot', async () => {
         <InlineQueryResultPhoto
           id="9"
           url="http://foo.bar/photo"
-          thumbURL="http://foo.bar/photo_thumb"
+          thumbUrl="http://foo.bar/photo_thumb"
           height={123}
           width={456}
           title="foo"
@@ -247,7 +247,7 @@ test('AnswerInlineQuery match snapshot', async () => {
           address="somewhere"
           foursquareId="bar"
           foursquareType="baz"
-          thumbURL="http://foo.bar/venue_thumb"
+          thumbUrl="http://foo.bar/venue_thumb"
           thumbWidth={123}
           thumbHeight={456}
         />
@@ -257,7 +257,7 @@ test('AnswerInlineQuery match snapshot', async () => {
           mimeType="video/mp4"
           width={123}
           height={456}
-          thumbURL="http://foo.bar/video_thumb"
+          thumbUrl="http://foo.bar/video_thumb"
           title="foo"
           description="bar"
           caption="baz"
@@ -277,7 +277,7 @@ test('AnswerInlineQuery match snapshot', async () => {
 
   const inlineKeyboard = (
     <InlineKeyboard>
-      <URLButton text="foo" url="http://foo.bar/article" />
+      <UrlButton text="foo" url="http://foo.bar/article" />
     </InlineKeyboard>
   );
 
@@ -332,7 +332,7 @@ test('AnswerInlineQuery match snapshot', async () => {
         <InlineQueryResultGif
           id="6"
           url="http://foo.bar/gif"
-          thumbURL="http://foo.bar/gif_thumb"
+          thumbUrl="http://foo.bar/gif_thumb"
           inputMessageContent={
             <Venue
               latitude={123.45}
@@ -356,7 +356,7 @@ test('AnswerInlineQuery match snapshot', async () => {
         <InlineQueryResultMpeg4Gif
           id="8"
           url="http://foo.bar/mpeg4"
-          thumbURL="http://foo.bar/mpeg4_thumb"
+          thumbUrl="http://foo.bar/mpeg4_thumb"
           inputMessageContent="foo"
           replyMarkup={inlineKeyboard}
         />

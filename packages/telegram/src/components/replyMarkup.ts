@@ -7,7 +7,7 @@ import type { TelegramComponent } from '../types';
 /**
  * @category Props
  */
-type URLButtonProps = {
+type UrlButtonProps = {
   /** Label text on the button. */
   text: string;
   /** HTTP or tg:// url to be opened. */
@@ -23,10 +23,10 @@ type URLButtonProps = {
 };
 
 /** @ignore */
-const __URLButton: FunctionOf<TelegramComponent<
-  URLButtonProps,
+const __UrlButton: FunctionOf<TelegramComponent<
+  UrlButtonProps,
   PartSegment<any>
->> = function URLButton(node, path) {
+>> = function UrlButton(node, path) {
   const {
     text,
     url,
@@ -59,13 +59,13 @@ const __URLButton: FunctionOf<TelegramComponent<
  * set, the authorization data will be provided within querystrings. The `login`
  * mode is an easier replacement for the Telegram Login Widget.
  * @category Component
- * @props {@link URLButtonProps}
+ * @props {@link UrlButtonProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinekeyboardbutton).
  */
-export const URLButton: TelegramComponent<
-  URLButtonProps,
+export const UrlButton: TelegramComponent<
+  UrlButtonProps,
   PartSegment<any>
-> = annotateTelegramComponent(__URLButton);
+> = annotateTelegramComponent(__UrlButton);
 
 /**
  * @category Props
@@ -203,7 +203,7 @@ export const PayButton: TelegramComponent<
 > = annotateTelegramComponent(__PayButton);
 
 export type InlineButton =
-  | typeof URLButton
+  | typeof UrlButton
   | typeof CallbackButton
   | typeof CallbackGameButton
   | typeof SwitchInlineQueryButton

@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
-import HTTP from '@machinat/http';
+import Http from '@machinat/http';
 import Line from '../module';
 import { LineReceiver } from '../receiver';
 import { LineProfiler, LineUserProfile, LineGroupProfile } from '../profiler';
@@ -77,7 +77,7 @@ describe('initModule(configs)', () => {
       Line.Receiver,
       Line.CONFIGS_I,
       Line.Profiler,
-      HTTP.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(LineBot);
@@ -106,7 +106,7 @@ describe('initModule(configs)', () => {
       Line.Bot,
       Line.CONFIGS_I,
       Line.Profiler,
-      HTTP.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(LineBot);
@@ -164,7 +164,7 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [routings] = app.useServices([HTTP.REQUEST_ROUTINGS_I]);
+    const [routings] = app.useServices([Http.REQUEST_ROUTINGS_I]);
     expect(routings).toEqual([
       { name: 'line', path: '/', handler: expect.any(Function) },
     ]);

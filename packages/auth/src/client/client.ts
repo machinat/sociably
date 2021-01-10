@@ -22,7 +22,7 @@ type AnyClientAuthorizer = ClientAuthorizer<any, any, unknown, unknown>;
 
 type AuthClientOptions<Authorizer extends AnyClientAuthorizer> = {
   platform?: string;
-  serverURL: string;
+  serverUrl: string;
   authorizers: Authorizer[];
   refreshLeadTime?: number;
 };
@@ -107,11 +107,11 @@ const getCookieAuthResult = <AuthData>(): null | CookieAuthResult<AuthData> => {
 
 class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   authorizers: Authorizer[];
-  serverURL: string;
+  serverUrl: string;
   refreshLeadTime: number;
 
   private _platform: undefined | string;
-  private _authURL: URL;
+  private _authUrl: URL;
 
   private _authed: null | {
     token: string;
@@ -145,21 +145,21 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   constructor({
     platform,
     authorizers,
-    serverURL,
+    serverUrl,
     refreshLeadTime = 300, // 5 min
   }: AuthClientOptions<Authorizer>) {
     super();
 
-    invariant(serverURL, 'options.serverURL must not be empty');
+    invariant(serverUrl, 'options.serverUrl must not be empty');
     invariant(
       authorizers && authorizers.length > 0,
       'options.authorizers must not be empty'
     );
 
     this.authorizers = authorizers;
-    this.serverURL = serverURL;
+    this.serverUrl = serverUrl;
     this.refreshLeadTime = refreshLeadTime;
-    this._authURL = new URL(serverURL, window.location.href);
+    this._authUrl = new URL(serverUrl, window.location.href);
 
     this._initiatingPlatforms = new Set();
     this._initiatedPlatforms = new Set();
@@ -494,12 +494,12 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   }
 
   private _getAuthEntry(route: string) {
-    const rootURL = this._authURL;
-    const componentURL = new URL(
-      rootURL.pathname.replace(/\/?$/, `/${route}`),
-      rootURL
+    const rootUrl = this._authUrl;
+    const componentUrl = new URL(
+      rootUrl.pathname.replace(/\/?$/, `/${route}`),
+      rootUrl
     );
-    return componentURL.href;
+    return componentUrl.href;
   }
 
   private async _callAuthPrivateAPI(

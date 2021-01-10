@@ -1,4 +1,4 @@
-import { parse as parseURL } from 'url';
+import { parse as parseUrl } from 'url';
 import { createHmac } from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import invariant from 'invariant';
@@ -20,7 +20,7 @@ import { refineTelegramAuthData } from './utils';
 
 type TelegramServerAuthorizerOpts = {
   botToken: string;
-  redirectURL: string;
+  redirectUrl: string;
 };
 
 const LOGIN_PARAMETERS = [
@@ -46,21 +46,21 @@ export class TelegramServerAuthorizer
     ServerAuthorizer<TelegramUser, TelegramChat, TelegramAuthData, void> {
   botToken: string;
   botId: number;
-  redirectURL: string;
+  redirectUrl: string;
 
   platform = TELEGRAM;
 
-  constructor({ botToken, redirectURL }: TelegramServerAuthorizerOpts) {
+  constructor({ botToken, redirectUrl }: TelegramServerAuthorizerOpts) {
     invariant(botToken, 'options.botToken should not be empty');
-    invariant(redirectURL, 'options.redirectURL should not be empty');
+    invariant(redirectUrl, 'options.redirectUrl should not be empty');
 
     this.botToken = botToken;
     this.botId = Number(botToken.split(':', 1)[0]);
-    this.redirectURL = redirectURL;
+    this.redirectUrl = redirectUrl;
   }
 
-  private _redirect(res: ServerResponse, redirectURL: undefined | string) {
-    res.writeHead(302, { Location: redirectURL || this.redirectURL });
+  private _redirect(res: ServerResponse, redirectUrl: undefined | string) {
+    res.writeHead(302, { Location: redirectUrl || this.redirectUrl });
     res.end();
   }
 
@@ -69,10 +69,10 @@ export class TelegramServerAuthorizer
     res: ServerResponse,
     authIssuer: CookieAccessor
   ) {
-    const { query } = parseURL(req.url as string, true);
-    const { hash, redirectURL } = query;
+    const { query } = parseUrl(req.url as string, true);
+    const { hash, redirectUrl } = query;
 
-    if (typeof redirectURL !== 'string' && typeof redirectURL !== 'undefined') {
+    if (typeof redirectUrl !== 'string' && typeof redirectUrl !== 'undefined') {
       authIssuer.issueError(400, 'invalid redirect url');
       this._redirect(res, undefined);
       return;
@@ -80,7 +80,7 @@ export class TelegramServerAuthorizer
 
     if (typeof hash !== 'string') {
       authIssuer.issueError(400, 'invalid login parameters');
-      this._redirect(res, redirectURL);
+      this._redirect(res, redirectUrl);
       return;
     }
 
@@ -92,13 +92,13 @@ export class TelegramServerAuthorizer
 
     if (hashedParams !== hash) {
       authIssuer.issueError(401, 'invalid login signature');
-      this._redirect(res, redirectURL);
+      this._redirect(res, redirectUrl);
       return;
     }
 
     if (Number(query.auth_date as string) < Date.now() / 1000 - 20) {
       authIssuer.issueError(401, 'login expired');
-      this._redirect(res, redirectURL);
+      this._redirect(res, redirectUrl);
       return;
     }
 
@@ -116,11 +116,11 @@ export class TelegramServerAuthorizer
       username,
       firstName: query.first_name as string,
       lastName: query.last_name as string | undefined,
-      photoURL: query.photo_url as string | undefined,
+      photoUrl: query.photo_url as string | undefined,
     };
 
     authIssuer.issueAuth(authData);
-    this._redirect(res, redirectURL);
+    this._redirect(res, redirectUrl);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -169,15 +169,15 @@ export class TelegramServerAuthorizer
 export const ServerAuthorizerP = makeClassProvider({
   lifetime: 'singleton',
   deps: [PLATFORM_CONFIGS_I] as const,
-  factory: ({ botToken, authRedirectURL }: TelegramPlatformConfigs) => {
+  factory: ({ botToken, authRedirectUrl }: TelegramPlatformConfigs) => {
     invariant(
-      authRedirectURL,
-      'must provide configs.authRedirectURL to authorize with Telegram'
+      authRedirectUrl,
+      'must provide configs.authRedirectUrl to authorize with Telegram'
     );
 
     return new TelegramServerAuthorizer({
       botToken,
-      redirectURL: authRedirectURL,
+      redirectUrl: authRedirectUrl,
     });
   },
 })(TelegramServerAuthorizer);

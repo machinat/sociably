@@ -11,7 +11,7 @@ Machinat.createApp({
     Line.initModule({ ... }),
   ],
   modules: [
-    HTTP.initModule({ ... }),
+    Http.initModule({ ... }),
   ],
   bindings: [
     MyService,

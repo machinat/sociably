@@ -17,7 +17,7 @@ export type RequestHandler = (
   routingInfo: RoutingInfo
 ) => void;
 
-export type HTTPRequestRouting = {
+export type HttpRequestRouting = {
   name?: string;
   path: string;
   handler: RequestHandler;
@@ -30,7 +30,7 @@ export type UpgradeHandler = (
   routingInfo: RoutingInfo
 ) => void;
 
-export type HTTPUpgradeRouting = {
+export type HttpUpgradeRouting = {
   name?: string;
   path: string;
   handler: UpgradeHandler;
@@ -47,11 +47,11 @@ export type ServerListenOptions = {
   ipv6Only?: boolean;
 };
 
-export type HTTPRequestInfo = {
+export type HttpRequestInfo = {
   method: string;
   url: string;
   headers: IncomingHttpHeaders;
   body?: string;
 };
 
-export type HTTPModuleConfigs = ServerListenOptions;
+export type HttpModuleConfigs = ServerListenOptions;

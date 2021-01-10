@@ -3,7 +3,7 @@ import Renderer from '@machinat/core/renderer';
 import { isNativeType } from '@machinat/core/utils/isX';
 
 import {
-  URLButton,
+  UrlButton,
   CallbackButton,
   SwitchInlineQueryButton,
   CallbackGameButton,
@@ -28,7 +28,7 @@ const render = async (node) => {
 };
 
 test.each([
-  URLButton,
+  UrlButton,
   CallbackButton,
   SwitchInlineQueryButton,
   CallbackGameButton,
@@ -45,13 +45,13 @@ test.each([
   expect(Component.$$platform).toBe('telegram');
 });
 
-describe('URLButton', () => {
+describe('UrlButton', () => {
   test('non login mode match snapshot', async () => {
-    await expect(render(<URLButton text="Go" url="http://machinat.com" />))
+    await expect(render(<UrlButton text="Go" url="http://machinat.com" />))
       .resolves.toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <URLButton
+                "node": <UrlButton
                   text="Go"
                   url="http://machinat.com"
                 />,
@@ -68,11 +68,11 @@ describe('URLButton', () => {
 
   test('login mode match snapshot', async () => {
     await expect(
-      render(<URLButton login text="Go and Log in" url="http://machinat.com" />)
+      render(<UrlButton login text="Go and Log in" url="http://machinat.com" />)
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <URLButton
+                "node": <UrlButton
                   login={true}
                   text="Go and Log in"
                   url="http://machinat.com"
@@ -94,7 +94,7 @@ describe('URLButton', () => {
 
     await expect(
       render(
-        <URLButton
+        <UrlButton
           login
           text="Go and Log in"
           url="http://machinat.com"
@@ -106,7 +106,7 @@ describe('URLButton', () => {
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <URLButton
+                "node": <UrlButton
                   botUserName="R2"
                   forwardText="Forwarded Login"
                   login={true}
@@ -277,7 +277,7 @@ describe('InlineKeyboard', () => {
     await expect(
       render(
         <InlineKeyboard>
-          <URLButton text="Go" url="http://machinat.com" />
+          <UrlButton text="Go" url="http://machinat.com" />
 
           <KeyboardRow>
             <CallbackButton text="Hello" data="World!" />
@@ -289,7 +289,7 @@ describe('InlineKeyboard', () => {
             Array [
               Object {
                 "node": <InlineKeyboard>
-                  <URLButton
+                  <UrlButton
                     text="Go"
                     url="http://machinat.com"
                   />

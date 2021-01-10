@@ -166,7 +166,7 @@ it('attach quickReply to last message object', async () => {
           />,
           <QuickReply
             action={<MessageAction label="💑" text="Somebody I can kiss" />}
-            imageURL="https://somthing.just.like/this"
+            imageUrl="https://somthing.just.like/this"
           />,
         ]}
       >

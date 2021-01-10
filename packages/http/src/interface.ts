@@ -3,15 +3,15 @@ import type { Socket } from 'net';
 import { makeInterface } from '@machinat/core/service';
 import type {
   ServerListenOptions,
-  HTTPModuleConfigs,
-  HTTPRequestRouting,
-  HTTPUpgradeRouting,
+  HttpModuleConfigs,
+  HttpRequestRouting,
+  HttpUpgradeRouting,
 } from './types';
 
 /**
  * @category Interface
  */
-export interface HTTPServer {
+export interface HttpServer {
   listen(options: ServerListenOptions, cb: () => void): void;
 
   addListener(
@@ -25,23 +25,23 @@ export interface HTTPServer {
   ): void;
 }
 
-export const HTTPServerI = makeInterface<HTTPServer>({
+export const HttpServerI = makeInterface<HttpServer>({
   name: 'HTTPServerI',
 });
 
-export type HTTPServerI = HTTPServer;
+export type HttpServerI = HttpServer;
 
 /**
  * @category Interface
  */
-export const MODULE_CONFIGS_I = makeInterface<HTTPModuleConfigs>({
+export const MODULE_CONFIGS_I = makeInterface<HttpModuleConfigs>({
   name: 'HTTPModuleConfigsI',
 });
 
 /**
  * @category Interface
  */
-export const REQUEST_ROUTINGS_I = makeInterface<HTTPRequestRouting>({
+export const REQUEST_ROUTINGS_I = makeInterface<HttpRequestRouting>({
   name: 'HTTPRequestRoutingsListI',
   multi: true,
 });
@@ -49,7 +49,7 @@ export const REQUEST_ROUTINGS_I = makeInterface<HTTPRequestRouting>({
 /**
  * @category Interface
  */
-export const UPGRADE_ROUTINGS_I = makeInterface<HTTPUpgradeRouting>({
+export const UPGRADE_ROUTINGS_I = makeInterface<HttpUpgradeRouting>({
   name: 'HTTPUpgradeRoutingsListI',
   multi: true,
 });

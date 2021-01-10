@@ -1,8 +1,8 @@
-import type { HTTPRequestInfo, RoutingInfo } from '../types';
+import type { HttpRequestInfo, RoutingInfo } from '../types';
 
 export interface WebhookMetadata {
   source: 'webhook';
-  request: HTTPRequestInfo;
+  request: HttpRequestInfo;
 }
 
 export type WebhookHandler = (

@@ -67,7 +67,7 @@ A simplest Machinat app looks like:
 
 ```js
 import Machinat from '@machinat/core';
-import HTTP from '@machinat/http';
+import Http from '@machinat/http';
 import Messenger from '@machinat/messenger';
 
 function Hello({ name }) {
@@ -82,7 +82,7 @@ function Hello({ name }) {
 
 Machinat.createApp({
   modules: [
-    HTTP.initModule({ port: 8080 }),
+    Http.initModule({ port: 8080 }),
   ],
   platforms: [
     Messenger.initModule({ ... }),

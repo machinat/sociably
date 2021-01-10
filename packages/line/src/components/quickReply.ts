@@ -11,15 +11,13 @@ import { LineComponent } from '../types';
 type QuickReplyProps = {
   /** URL of the icon that is displayed at the beginning of the button. */
   imageUrl?: string;
-  /** Alias of `imageUrl`. */
-  imageURL?: string;
   /** An {@link Action} element to be performed when the button is touched. */
   action: MachinatNode;
 };
 
 /** @internal */
 const __QuickReply = async function QuickReply(node, path, render) {
-  const { imageUrl, imageURL, action } = node.props;
+  const { imageUrl, action } = node.props;
 
   const actionSegments = await render(action, '.action');
   const actionValue = actionSegments?.[0].value;
@@ -27,7 +25,7 @@ const __QuickReply = async function QuickReply(node, path, render) {
   return [
     partSegment(node, path, {
       type: 'action',
-      imageUrl: imageUrl || imageURL,
+      imageUrl: imageUrl || imageUrl,
       action: actionValue,
     }),
   ];

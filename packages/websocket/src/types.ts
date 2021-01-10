@@ -8,7 +8,7 @@ import type {
 import type { DispatchFrame } from '@machinat/core/engine/types';
 import type { MaybeContainer } from '@machinat/core/service/types';
 import type { UnitSegment } from '@machinat/core/renderer/types';
-import type { HTTPRequestInfo } from '@machinat/http/types';
+import type { HttpRequestInfo } from '@machinat/http/types';
 import type { WebSocketBot } from './bot';
 import type {
   WebSocketTopicChannel,
@@ -16,14 +16,14 @@ import type {
   WebSocketConnection,
 } from './channel';
 
-export type { HTTPRequestInfo } from '@machinat/http/types';
+export type { HttpRequestInfo } from '@machinat/http/types';
 
 export type ConnIdentifier = {
   serverId: string;
   id: string;
 };
 
-export type UpgradeRequestInfo = Omit<HTTPRequestInfo, 'body'>;
+export type UpgradeRequestInfo = Omit<HttpRequestInfo, 'body'>;
 
 export type EventValue<Kind extends string, Type extends string, Payload> = {
   kind: Kind;

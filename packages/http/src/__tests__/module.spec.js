@@ -1,8 +1,8 @@
 import { createServer } from 'http';
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import { HTTPConnector } from '../connector';
-import HTTP from '../module';
+import { HttpConnector } from '../connector';
+import Http from '../module';
 
 jest.mock('http', () =>
   jest.requireActual('@moxyjs/moxy').default({ createServer() {} })
@@ -22,9 +22,9 @@ beforeEach(() => {
 });
 
 it('export interfaces', () => {
-  expect(HTTP.Connector).toBe(HTTPConnector);
+  expect(Http.Connector).toBe(HttpConnector);
 
-  expect(HTTP.ServerI).toMatchInlineSnapshot(`
+  expect(Http.ServerI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
@@ -33,7 +33,7 @@ it('export interfaces', () => {
     }
   `);
 
-  expect(HTTP.REQUEST_ROUTINGS_I).toMatchInlineSnapshot(`
+  expect(Http.REQUEST_ROUTINGS_I).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": true,
@@ -41,7 +41,7 @@ it('export interfaces', () => {
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(HTTP.UPGRADE_ROUTINGS_I).toMatchInlineSnapshot(`
+  expect(Http.UPGRADE_ROUTINGS_I).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": true,
@@ -49,7 +49,7 @@ it('export interfaces', () => {
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(HTTP.CONFIGS_I).toMatchInlineSnapshot(`
+  expect(Http.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
@@ -65,11 +65,11 @@ it('provide configs', async () => {
     port: 8888,
   };
   const app = Machinat.createApp({
-    modules: [HTTP.initModule(configs)],
+    modules: [Http.initModule(configs)],
   });
   await app.start();
 
-  expect(app.useServices([HTTP.CONFIGS_I])).toEqual([configs]);
+  expect(app.useServices([Http.CONFIGS_I])).toEqual([configs]);
 });
 
 it('provide http server by default', async () => {
@@ -77,12 +77,12 @@ it('provide http server by default', async () => {
 
   const app = Machinat.createApp({
     modules: [
-      HTTP.initModule({
+      Http.initModule({
         host: 'localhost',
         port: 8888,
       }),
     ],
-    bindings: [{ provide: HTTP.Connector, withValue: connector }],
+    bindings: [{ provide: Http.Connector, withValue: connector }],
   });
 
   await app.start();
@@ -104,12 +104,12 @@ test('change http server', async () => {
 
   const app = Machinat.createApp({
     modules: [
-      HTTP.initModule({
+      Http.initModule({
         host: 'localhost',
         port: 8888,
       }),
     ],
-    bindings: [{ provide: HTTP.ServerI, withValue: myServer }],
+    bindings: [{ provide: Http.ServerI, withValue: myServer }],
   });
 
   await app.start();

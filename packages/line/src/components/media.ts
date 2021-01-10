@@ -20,7 +20,7 @@ type VideoProps = {
    * Alias of `previewImageUrl`. Either one of `url` and `previewImageUrl` must
    * be specified.
    */
-  previewURL?: string;
+  previewUrl?: string;
   /**
    * ID used to identify the video when Video viewing complete event occurs. If
    * you send a video message with trackingId added, the video viewing complete
@@ -34,7 +34,7 @@ const __Video = function Video(node, path) {
   const {
     url,
     originalContentUrl,
-    previewURL,
+    previewUrl,
     previewImageUrl,
     trackingId,
   } = node.props;
@@ -43,7 +43,7 @@ const __Video = function Video(node, path) {
     unitSegment(node, path, {
       type: 'video' as const,
       originalContentUrl: originalContentUrl || url,
-      previewImageUrl: previewImageUrl || previewURL,
+      previewImageUrl: previewImageUrl || previewUrl,
       trackingId,
     }),
   ];

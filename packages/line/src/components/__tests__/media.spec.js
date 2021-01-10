@@ -19,7 +19,7 @@ it.each([Audio, Video].map((C) => [C.name, C]))(
 it.each(
   [
     <Audio url="https://..." duration={6666} />,
-    <Video url="https://..." previewURL="https://..." />,
+    <Video url="https://..." previewUrl="https://..." />,
   ].map((e) => [e.type.name, e])
 )('%s render match snapshot', async (_, mediaElement) => {
   const promise = renderer.render(mediaElement);

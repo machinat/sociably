@@ -124,7 +124,7 @@ export class MessengerBot
 
   async dispatchAPICall(
     method: 'GET' | 'POST' | 'DELETE',
-    relativeURL: string,
+    relativeUrl: string,
     body?: null | any
   ): Promise<MessengerResult> {
     try {
@@ -134,7 +134,7 @@ export class MessengerBot
         {
           request: {
             method,
-            relative_url: relativeURL,
+            relative_url: relativeUrl,
             body,
           },
         },

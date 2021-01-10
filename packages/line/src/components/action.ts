@@ -84,7 +84,7 @@ export const MessageAction: LineComponent<
 /**
  * @category Props
  */
-type URIActionProps = {
+type UriActionProps = {
   /** Label for the action */
   label: string;
   /**
@@ -95,7 +95,7 @@ type URIActionProps = {
 };
 
 /** @internal */
-const __URIAction = function URIAction(node, path) {
+const __UriAction = function UriAction(node, path) {
   const { label, uri } = node.props;
   return [
     partSegment(node, path, {
@@ -109,13 +109,13 @@ const __URIAction = function URIAction(node, path) {
  * When a control associated with this action is tapped, the URI specified in
  * the `uri` property is opened.
  * @category Component
- * @props {@link URIActionProps}
+ * @props {@link UriActionProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#uri-action).
  */
-export const URIAction: LineComponent<
-  URIActionProps,
+export const UriAction: LineComponent<
+  UriActionProps,
   PartSegment<any>
-> = annotateLineComponent(__URIAction);
+> = annotateLineComponent(__UriAction);
 
 /** @internal */
 const pad2 = (n) => (n < 10 ? `0${n}` : n);
@@ -285,7 +285,7 @@ export const LocationAction: LineComponent<
 export type Action =
   | typeof PostbackAction
   | typeof MessageAction
-  | typeof URIAction
+  | typeof UriAction
   | typeof DateTimePickerAction
   | typeof CameraAction
   | typeof CameraRollAction

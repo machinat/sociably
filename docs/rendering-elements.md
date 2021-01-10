@@ -107,7 +107,7 @@ Non-textual element types:
 The general element types provide a set of unified APIs to make the cross-platform UI. But you might want to use more features that only available on particular platform. Use the **native component** from each platform package as the element type like this:
 
 ```js
-import { MediaTemplate, URLButton } from '@machinat/messenger/components'
+import { MediaTemplate, UrlButton } from '@machinat/messenger/components'
 
 bot.render(
   channel,
@@ -115,7 +115,7 @@ bot.render(
     type="video"
     url="http://..."
     buttons={
-      <URLButton title="Go" url="http://..."/>
+      <UrlButton title="Go" url="http://..."/>
     }
   />
 );

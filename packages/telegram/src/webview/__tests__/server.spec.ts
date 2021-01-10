@@ -30,7 +30,7 @@ const cookieIssuer: any = moxy({
 
 const authorizer = new TelegramServerAuthorizer({
   botToken: '12345:_BOT_TOKEN_',
-  redirectURL: '/webview/index.html',
+  redirectUrl: '/webview/index.html',
 });
 
 beforeEach(() => {
@@ -90,13 +90,13 @@ describe('#delegateAuthRequest()', () => {
         firstName: 'John',
         lastName: 'Doe',
         username: 'johndoe',
-        photoURL: 'https://...',
+        photoUrl: 'https://...',
       });
     });
 
-    it('redirect to redirectURL param if specified', async () => {
+    it('redirect to redirectUrl param if specified', async () => {
       const search = new URLSearchParams({
-        redirectURL: '/webview/hello_world.html',
+        redirectUrl: '/webview/hello_world.html',
         id: '12345',
         auth_date: '1601136776',
         first_name: 'John',

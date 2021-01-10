@@ -35,7 +35,7 @@ describe('#getUserProfile(user)', () => {
     expect(profile.platform).toBe('line');
     expect(profile.name).toBe('LINE taro');
     expect(profile.id).toBe('__USER_ID__');
-    expect(profile.pictureURL).toBe('https://obs.line-apps.com/...');
+    expect(profile.pictureUrl).toBe('https://obs.line-apps.com/...');
     expect(profile.statusMessage).toBe('Hello, LINE!');
     expect(profile.data).toEqual(rawProfileData);
 
@@ -99,7 +99,7 @@ describe('#getGroupProfile(user)', () => {
     expect(profile.platform).toBe('line');
     expect(profile.name).toBe('Group name');
     expect(profile.id).toBe('_GROUP_ID_');
-    expect(profile.pictureURL).toBe(
+    expect(profile.pictureUrl).toBe(
       'https://profile.line-scdn.net/abcdefghijklmn'
     );
     expect(profile.data).toEqual(groupSummary);

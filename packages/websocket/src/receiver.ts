@@ -7,7 +7,7 @@ import type {
   PopEventFn,
   PopErrorFn,
 } from '@machinat/core/types';
-import type { HTTPRequestInfo, UpgradeHandler } from '@machinat/http/types';
+import type { HttpRequestInfo, UpgradeHandler } from '@machinat/http/types';
 
 import { WebSocketConnection } from './channel';
 import { BotP } from './bot';
@@ -94,7 +94,7 @@ export class WebSocketReceiver<User extends null | MachinatUser, Auth> {
     value: EventInput,
     connId: string,
     user: User,
-    request: HTTPRequestInfo,
+    request: HttpRequestInfo,
     auth: Auth
   ) {
     const channel = new WebSocketConnection(this._server.id, connId);

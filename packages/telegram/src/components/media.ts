@@ -17,7 +17,7 @@ type FileIdProps = {
   fileId: string;
 };
 
-type FileURLProps = {
+type FileUrlProps = {
   /** HTTP URL for the file to be sent. */
   url: string;
 };
@@ -35,11 +35,11 @@ type FileDataProps = {
   fileAssetTag?: string;
 };
 
-type WithFileProps = FileIdProps | FileURLProps | FileDataProps;
+type WithFileProps = FileIdProps | FileUrlProps | FileDataProps;
 
 type FlattenFileProps<T> = Omit<T, keyof WithFileProps> &
   Partial<FileIdProps> &
-  Partial<FileURLProps> &
+  Partial<FileUrlProps> &
   Partial<FileDataProps>;
 
 type WithCaptionProps = {

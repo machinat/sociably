@@ -1,4 +1,4 @@
-import { parse as parseURL } from 'url';
+import { parse as parseUrl } from 'url';
 import crypto from 'crypto';
 import invariant from 'invariant';
 
@@ -42,7 +42,7 @@ const handleWebhook = (
         return { code: 403 };
       }
 
-      const { query } = parseURL(url, true);
+      const { query } = parseUrl(url, true);
       if (
         query['hub.mode'] !== 'subscribe' ||
         query['hub.verify_token'] !== verifyToken

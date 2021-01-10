@@ -8,7 +8,7 @@ import type {
 import type {
   EventInput,
   VerifyLoginFn,
-  HTTPRequestInfo,
+  HttpRequestInfo,
   ClientLoginFn,
 } from '@machinat/websocket/types';
 import { WEBVIEW } from './constant';
@@ -39,7 +39,7 @@ export const useAuthController = <
 >(
   controller: Auth.Controller<Authorizer>
 ): VerifyLoginFn<MachinatUser, GetAuthContextOf<Authorizer>, string> => async (
-  request: HTTPRequestInfo,
+  request: HttpRequestInfo,
   credential: string
 ) => {
   const result = await controller.verifyAuth(request, credential);

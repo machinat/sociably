@@ -35,7 +35,7 @@ export class LineUserProfile
     return this.data.displayName;
   }
 
-  get pictureURL(): undefined | string {
+  get pictureUrl(): undefined | string {
     return this.data.pictureUrl;
   }
 
@@ -75,7 +75,7 @@ export class LineGroupProfile
     return this.data.groupName;
   }
 
-  get pictureURL(): undefined | string {
+  get pictureUrl(): undefined | string {
     return this.data.pictureUrl;
   }
 

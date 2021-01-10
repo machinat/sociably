@@ -21,17 +21,17 @@ type ImageProps = {
    * Alias of `previewImageUrl`. Either one of `url` and `previewImageUrl`
    * must be specified.
    */
-  previewURL?: string;
+  previewUrl?: string;
 };
 
 /** @internal */
 const __Image = function Image(node, path) {
-  const { url, originalContentUrl, previewURL, previewImageUrl } = node.props;
+  const { url, originalContentUrl, previewUrl, previewImageUrl } = node.props;
   return [
     unitSegment(node, path, {
       type: 'image' as const,
       originalContentUrl: originalContentUrl || url,
-      previewImageUrl: previewImageUrl || previewURL,
+      previewImageUrl: previewImageUrl || previewUrl,
     }),
   ];
 };
@@ -85,8 +85,8 @@ export const Sticker: LineComponent<StickerProps> = annotateLineComponent(
  */
 type ImageMapAreaProps = {
   /**
-   * An URIAction or MessageAction element to be triggered when the area is
-   * touched.
+   * An {@link UriAction} or {@link MessageAction} element to be triggered when
+   * the area is touched.
    */
   action: MachinatNode;
   /**
@@ -169,7 +169,7 @@ type ImageMapVideoAreaProps = {
    * Alias of `previewImageUrl`. Either one of `url` and `previewImageUrl` must
    * be specified.
    */
-  previewURL?: string;
+  previewUrl?: string;
   /**
    * Horizontal position of the video area relative to the left edge of the
    * imagemap area. Value must be 0 or higher.
@@ -184,7 +184,7 @@ type ImageMapVideoAreaProps = {
   width: number;
   /** Height of the video area */
   height: number;
-  /** An URIAction element to be displayed after the video is finished. */
+  /** An {@link UriAction} element to be displayed after the video is finished. */
   action?: MachinatNode;
 };
 
@@ -197,7 +197,7 @@ const __ImageMapVideoArea = async function ImageMapVideoArea(
   const {
     url,
     originalContentUrl,
-    previewURL,
+    previewUrl,
     previewImageUrl,
     x,
     y,
@@ -212,7 +212,7 @@ const __ImageMapVideoArea = async function ImageMapVideoArea(
   return [
     partSegment(node, path, {
       originalContentUrl: originalContentUrl || url,
-      previewImageUrl: previewImageUrl || previewURL,
+      previewImageUrl: previewImageUrl || previewUrl,
       area: {
         x,
         y,
@@ -246,8 +246,6 @@ type ImageMapProps = {
   children: MachinatNode;
   /** Base URL of the image */
   baseUrl?: string;
-  /** Alias of `baseUrl`. Either one of `url` and `baseUrl` must be specified. */
-  url?: string;
   /** Alternative text. */
   altText: string;
   /**
@@ -261,7 +259,7 @@ type ImageMapProps = {
 
 /** @internal */
 const __ImageMap = async function ImageMap(node, path, render) {
-  const { baseURL, baseUrl, altText, height, children, video } = node.props;
+  const { baseUrl, altText, height, children, video } = node.props;
 
   const videoSegments = await render(video, '.video');
   const videoValue = videoSegments?.[0].value;
@@ -272,7 +270,7 @@ const __ImageMap = async function ImageMap(node, path, render) {
   return [
     unitSegment(node, path, {
       type: 'imagemap' as const,
-      baseUrl: baseUrl || baseURL,
+      baseUrl,
       altText,
       baseSize: {
         width: 1040 as const,

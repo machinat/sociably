@@ -3,7 +3,7 @@ import Renderer from '@machinat/core/renderer';
 import { isNativeType } from '@machinat/core/utils/isX';
 
 import {
-  URLButton,
+  UrlButton,
   PostbackButton,
   CallButton,
   LoginButton,
@@ -23,7 +23,7 @@ const render = async (node) => {
 };
 
 test.each([
-  URLButton,
+  UrlButton,
   PostbackButton,
   CallButton,
   LoginButton,
@@ -35,14 +35,14 @@ test.each([
   expect(Button.$$platform).toBe('messenger');
 });
 
-describe('URLButton', () => {
+describe('UrlButton', () => {
   it('match snapshot', async () => {
     await expect(
-      render(<URLButton title="my button" url="http://machinat.com" />)
+      render(<UrlButton title="my button" url="http://machinat.com" />)
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <URLButton
+                "node": <UrlButton
                   title="my button"
                   url="http://machinat.com"
                 />,
@@ -63,20 +63,20 @@ describe('URLButton', () => {
 
     await expect(
       render(
-        <URLButton
+        <UrlButton
           title="my button"
           url="http://machinat.com"
           webviewHeightRatio="compact"
           messengerExtensions
-          fallbackURL="http://..."
+          fallbackUrl="http://..."
           hideWebviewShare
         />
       )
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <URLButton
-                  fallbackURL="http://..."
+                "node": <UrlButton
+                  fallbackUrl="http://..."
                   hideWebviewShare={true}
                   messengerExtensions={true}
                   title="my button"

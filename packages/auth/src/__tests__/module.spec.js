@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import HTTP from '@machinat/http';
+import Http from '@machinat/http';
 import Auth from '../module';
 import { AuthController } from '../controller';
 
@@ -35,7 +35,7 @@ describe('initModule()', () => {
     const [controller, configs, routings] = app.useServices([
       Auth.Controller,
       Auth.CONFIGS_I,
-      HTTP.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTINGS_I,
     ]);
 
     expect(controller).toBeInstanceOf(AuthController);
@@ -90,7 +90,7 @@ describe('initModule()', () => {
     });
     await app.start();
 
-    const [[{ handler }]] = app.useServices([HTTP.REQUEST_ROUTINGS_I]);
+    const [[{ handler }]] = app.useServices([Http.REQUEST_ROUTINGS_I]);
 
     const req = moxy();
     const res = moxy();

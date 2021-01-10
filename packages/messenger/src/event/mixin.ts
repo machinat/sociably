@@ -599,7 +599,7 @@ export interface Referral {
   /**
    * The URI of the site where the message was sent in the Facebook chat plugin.
    */
-  readonly refererURI: undefined | string;
+  readonly refererUri: undefined | string;
   /**
    * A flag indicating whether the user is a guest user from Facebook Chat
    * Plugin.
@@ -625,7 +625,7 @@ export const Referral: Referral = {
     return this.payload.referral.ad_id;
   },
 
-  get refererURI() {
+  get refererUri() {
     return this.payload.referral.referer_uri;
   },
 

@@ -1,7 +1,7 @@
 import type { ServiceModule } from '@machinat/core/types';
 import { makeFactoryProvider } from '@machinat/core/service';
-import HTTP from '@machinat/http';
-import type { HTTPRequestRouting } from '@machinat/http/types';
+import Http from '@machinat/http';
+import type { HttpRequestRouting } from '@machinat/http/types';
 
 import { ControllerP } from './controller';
 import { MODULE_CONFIGS_I, AUTHORIZERS_I } from './interface';
@@ -12,7 +12,7 @@ const authRoutingFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [ControllerP, MODULE_CONFIGS_I] as const,
 })(
-  (controller, configs): HTTPRequestRouting => ({
+  (controller, configs): HttpRequestRouting => ({
     name: 'auth',
     path: configs.entryPath || '/',
     handler: (req, res, routingInfo) => {
@@ -30,7 +30,7 @@ const Auth = {
     provisions: [
       ControllerP,
       { provide: MODULE_CONFIGS_I, withValue: configs },
-      { provide: HTTP.REQUEST_ROUTINGS_I, withProvider: authRoutingFactory },
+      { provide: Http.REQUEST_ROUTINGS_I, withProvider: authRoutingFactory },
     ],
   }),
 };

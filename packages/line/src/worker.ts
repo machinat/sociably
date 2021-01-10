@@ -40,9 +40,9 @@ export default class LineWorker
     path: string,
     body: unknown | null
   ): Promise<LineAPIResult> {
-    const requestURL = new url.URL(path, API_HOST);
+    const requestUrl = new url.URL(path, API_HOST);
 
-    const response = await fetch(requestURL.href, {
+    const response = await fetch(requestUrl.href, {
       method,
       body: body ? JSON.stringify(body) : undefined,
       headers: this._headers,

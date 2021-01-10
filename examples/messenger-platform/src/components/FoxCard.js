@@ -3,7 +3,7 @@ import {
   GenericTemplate,
   GenericItem,
   PostbackButton,
-  URLButton,
+  UrlButton,
 } from '@machinat/messenger/components';
 import { GIMME_FOX_KEY } from '../constant';
 
@@ -15,10 +15,10 @@ const FoxCard = () => {
     <GenericTemplate imageAspectRatio="square">
       <GenericItem
         title="🦊 from randomfox.ca"
-        imageURL={url}
+        imageUrl={url}
         buttons={<PostbackButton title="More" payload={GIMME_FOX_KEY} />}
         defaultAction={
-          <URLButton url={`https://randomfox.ca?i=${foxNumber}`} />
+          <UrlButton url={`https://randomfox.ca?i=${foxNumber}`} />
         }
       />
     </GenericTemplate>

@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
-import HTTP from '@machinat/http';
+import Http from '@machinat/http';
 import {
   WebSocketConnection,
   WebSocketUserChannel,
@@ -96,7 +96,7 @@ describe('initModule()', () => {
       WebSocket.Transmitter,
       WebSocket.CONFIGS_I,
       WebSocket.SERVER_ID_I,
-      HTTP.UPGRADE_ROUTINGS_I,
+      Http.UPGRADE_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(WebSocketBot);
@@ -122,7 +122,7 @@ describe('initModule()', () => {
     const app = Machinat.createApp({ platforms: [WebSocket.initModule()] });
     await app.start();
 
-    const [upgradeRoutings] = app.useServices([HTTP.UPGRADE_ROUTINGS_I]);
+    const [upgradeRoutings] = app.useServices([Http.UPGRADE_ROUTINGS_I]);
     expect(upgradeRoutings).toEqual([
       {
         name: 'web_socket',

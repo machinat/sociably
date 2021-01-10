@@ -18,7 +18,7 @@ import Flex, {
   FlexCarouselContainer,
   FlexMessage,
 } from '../flex';
-import { URIAction } from '../action';
+import { UriAction } from '../action';
 
 const renderer = new Renderer('line', () => null);
 
@@ -83,7 +83,7 @@ it.each([
             size="full"
             aspectRatio="20:13"
             aspectMode="cover"
-            action={<URIAction uri="http://linecorp.com/" />}
+            action={<UriAction uri="http://linecorp.com/" />}
           />
         </FlexHero>
 
@@ -129,7 +129,7 @@ it.each([
           <FlexBox layout="horizontal">
             <FlexButton
               label="More"
-              action={<URIAction uri="http://linecorp.com/" />}
+              action={<UriAction uri="http://linecorp.com/" />}
             />
           </FlexBox>
         </FlexFooter>
@@ -146,7 +146,7 @@ it.each([
             size="full"
             aspectRatio="20:13"
             aspectMode="cover"
-            action={<URIAction uri="http://linecorp.com/" />}
+            action={<UriAction uri="http://linecorp.com/" />}
           />
         </FlexHero>
         <FlexBody>
@@ -199,12 +199,12 @@ it.each([
             <FlexButton
               style="link"
               height="sm"
-              action={<URIAction label="CALL" uri="https://linecorp.com" />}
+              action={<UriAction label="CALL" uri="https://linecorp.com" />}
             />
             <FlexButton
               style="link"
               height="sm"
-              action={<URIAction label="WEBSITE" uri="https://linecorp.com" />}
+              action={<UriAction label="WEBSITE" uri="https://linecorp.com" />}
             />
             <FlexSpacer />
           </FlexBox>
@@ -273,12 +273,12 @@ it.each([
                   style="primary"
                   color={gotStock ? undefined : '#aaaaaa'}
                   action={
-                    <URIAction label="Add to Cart" uri="https://linecorp.com" />
+                    <UriAction label="Add to Cart" uri="https://linecorp.com" />
                   }
                 />
                 <FlexButton
                   action={
-                    <URIAction
+                    <UriAction
                       label="Add to wishlist"
                       uri="https://linecorp.com"
                     />
@@ -296,7 +296,7 @@ it.each([
                 flex={1}
                 gravity="center"
                 action={
-                  <URIAction label="See more" uri="https://linecorp.com" />
+                  <UriAction label="See more" uri="https://linecorp.com" />
                 }
               />
             </FlexBox>

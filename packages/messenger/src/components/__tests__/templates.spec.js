@@ -11,7 +11,7 @@ import {
   ReceiptTemplate,
   ReceiptItem,
 } from '../template';
-import { URLButton, PostbackButton, CallButton } from '../button';
+import { UrlButton, PostbackButton, CallButton } from '../button';
 
 const generalComponentDelegator = moxy(() => null);
 const renderer = new Renderer('messenger', generalComponentDelegator);
@@ -35,16 +35,16 @@ describe('GenericTemplate', () => {
   const items = [
     <GenericItem
       title="foo"
-      imageURL="http://foo.bar/image"
-      buttons={[<URLButton title="check" url="http://xxx.yy.z" />]}
+      imageUrl="http://foo.bar/image"
+      buttons={[<UrlButton title="check" url="http://xxx.yy.z" />]}
     />,
     <GenericItem
       title="foo"
       subtitle="bar"
-      imageURL="http://foo.bar/image"
-      defaultAction={<URLButton title="TITLE!" url="http://foo.bar/" />}
+      imageUrl="http://foo.bar/image"
+      defaultAction={<UrlButton title="TITLE!" url="http://foo.bar/" />}
       buttons={[
-        <URLButton title="check" url="http://xxx.yy.z" />,
+        <UrlButton title="check" url="http://xxx.yy.z" />,
         <PostbackButton title="more" payload="_MORE_" />,
         <CallButton title="call us" number="+12345678" />,
       ]}
@@ -72,7 +72,7 @@ describe('ButtonTemplate', () => {
     ]);
 
     const buttons = [
-      <URLButton title="check" url="http://xxx.yy.z" />,
+      <UrlButton title="check" url="http://xxx.yy.z" />,
       <PostbackButton title="more" payload="_MORE_" />,
       <CallButton title="call us" number="+12345678" />,
     ];
@@ -158,7 +158,7 @@ describe('ButtonTemplate', () => {
 describe('MediaTemplate', () => {
   it('match snapshot', async () => {
     const buttons = [
-      <URLButton title="check" url="http://xxx.yy.z" />,
+      <UrlButton title="check" url="http://xxx.yy.z" />,
       <PostbackButton title="more" payload="_MORE_" />,
       <CallButton title="call us" number="+12345678" />,
     ];
@@ -189,7 +189,7 @@ describe('ReceiptTemplate', () => {
             orderNumber="12345"
             currency="USD"
             paymentMethod="Visa 2345"
-            orderURL="http://what.a.shop"
+            orderUrl="http://what.a.shop"
             summary={{ total_cost: 56.14 }}
           />
 
@@ -198,7 +198,7 @@ describe('ReceiptTemplate', () => {
             orderNumber="12345"
             currency="USD"
             paymentMethod="Visa 2345"
-            orderURL="http://what.a.shop"
+            orderUrl="http://what.a.shop"
             summary={{ total_cost: 56.14 }}
           >
             <ReceiptItem title="Buzz Lightyear" price={9.99} />
@@ -213,7 +213,7 @@ describe('ReceiptTemplate', () => {
             orderNumber="12345"
             currency="USD"
             paymentMethod="Visa 2345"
-            orderURL="http://what.a.shop"
+            orderUrl="http://what.a.shop"
             timestamp="1428444852"
             address={{
               street_1: '1 Hacker Way',
@@ -240,7 +240,7 @@ describe('ReceiptTemplate', () => {
               quantity={999}
               price={99.99}
               currency="USD"
-              imageURL="http://i.robot/avatar"
+              imageUrl="http://i.robot/avatar"
             />
           </ReceiptTemplate>
         </>

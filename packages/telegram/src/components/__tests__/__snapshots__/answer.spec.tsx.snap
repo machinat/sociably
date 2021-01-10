@@ -17,10 +17,10 @@ Array [
       />
       <InlineQueryResultArticle
         description="bar"
-        hideURL={true}
+        hideUrl={true}
         id="2"
         thumbHeight={456}
-        thumbURL="http://foo.bar/article_thumb"
+        thumbUrl="http://foo.bar/article_thumb"
         thumbWidth={123}
         title="foo"
         url="http://foo.bar/article"
@@ -31,7 +31,7 @@ Array [
         lastName="Doe"
         phoneNumber="0123456789"
         thumbHeight={456}
-        thumbURL="http://foo.bar/contact_thumb"
+        thumbUrl="http://foo.bar/contact_thumb"
         thumbWidth={123}
         vcard="foo"
       />
@@ -41,7 +41,7 @@ Array [
         mimeType="application/pdf"
         parseMode="MarkdownV2"
         thumbHeight={456}
-        thumbURL="http://foo.bar/document_thumb"
+        thumbUrl="http://foo.bar/document_thumb"
         thumbWidth={123}
         title="foo"
         url="http://foo.bar/document"
@@ -57,7 +57,7 @@ Array [
         id="6"
         parseMode="MarkdownV2"
         thumbMimeType="image/gif"
-        thumbURL="http://foo.bar/gif_thumb"
+        thumbUrl="http://foo.bar/gif_thumb"
         title="foo"
         url="http://foo.bar/gif"
         width={123}
@@ -68,7 +68,7 @@ Array [
         livePeriod={999}
         longitude={67.89}
         thumbHeight={456}
-        thumbURL="http://foo.bar/location_thumb"
+        thumbUrl="http://foo.bar/location_thumb"
         thumbWidth={123}
         title="foo"
       />
@@ -79,7 +79,7 @@ Array [
         id="8"
         parseMode="MarkdownV2"
         thumbMimeType="image/gif"
-        thumbURL="http://foo.bar/mpeg4_thumb"
+        thumbUrl="http://foo.bar/mpeg4_thumb"
         title="foo"
         url="http://foo.bar/mpeg4"
         width={123}
@@ -88,7 +88,7 @@ Array [
         description="bar"
         height={123}
         id="9"
-        thumbURL="http://foo.bar/photo_thumb"
+        thumbUrl="http://foo.bar/photo_thumb"
         title="foo"
         url="http://foo.bar/photo"
         width={456}
@@ -105,7 +105,7 @@ Array [
         latitude={123.45}
         longitude={67.89}
         thumbHeight={456}
-        thumbURL="http://foo.bar/venue_thumb"
+        thumbUrl="http://foo.bar/venue_thumb"
         thumbWidth={123}
         title="foo"
       />
@@ -116,7 +116,7 @@ Array [
         id="12"
         mimeType="video/mp4"
         parseMode="None"
-        thumbURL="http://foo.bar/video_thumb"
+        thumbUrl="http://foo.bar/video_thumb"
         title="foo"
         url="http://foo.bar/video"
         width={123}
@@ -439,7 +439,7 @@ Array [
             />
           </InlineKeyboard>
         }
-        thumbURL="http://foo.bar/gif_thumb"
+        thumbUrl="http://foo.bar/gif_thumb"
         url="http://foo.bar/gif"
       />
       <InlineQueryResultLocation
@@ -468,7 +468,7 @@ Array [
             />
           </InlineKeyboard>
         }
-        thumbURL="http://foo.bar/mpeg4_thumb"
+        thumbUrl="http://foo.bar/mpeg4_thumb"
         url="http://foo.bar/mpeg4"
       />
       <InlineQueryResultPhoto

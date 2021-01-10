@@ -20,22 +20,22 @@ type PhotoResponse = {
 
 type TelegramUserProfileValue = {
   data: RawUser;
-  pictureURL?: string;
+  pictureUrl?: string;
 };
 
 export class TelegramUserProfile
   implements MachinatProfile, Marshallable<TelegramUserProfileValue> {
   static fromJSONValue(value: TelegramUserProfileValue): TelegramUserProfile {
-    return new TelegramUserProfile(value.data, value.pictureURL);
+    return new TelegramUserProfile(value.data, value.pictureUrl);
   }
 
-  pictureURL: undefined | string;
+  pictureUrl: undefined | string;
   data: RawUser;
 
   platform = TELEGRAM;
 
-  constructor(rawUser: RawUser, pictureURL?: string) {
-    this.pictureURL = pictureURL;
+  constructor(rawUser: RawUser, pictureUrl?: string) {
+    this.pictureUrl = pictureUrl;
     this.data = rawUser;
   }
 
@@ -69,8 +69,8 @@ export class TelegramUserProfile
   }
 
   toJSONValue(): TelegramUserProfileValue {
-    const { data, pictureURL } = this;
-    return { data, pictureURL };
+    const { data, pictureUrl } = this;
+    return { data, pictureUrl };
   }
 
   typeName(): string {
@@ -80,22 +80,22 @@ export class TelegramUserProfile
 
 type TelegramChatProfileValue = {
   data: RawChat;
-  pictureURL?: string;
+  pictureUrl?: string;
 };
 
 export class TelegramChatProfile
   implements MachinatProfile, Marshallable<TelegramChatProfileValue> {
   static fromJSONValue(value: TelegramChatProfileValue): TelegramChatProfile {
-    return new TelegramChatProfile(value.data, value.pictureURL);
+    return new TelegramChatProfile(value.data, value.pictureUrl);
   }
 
   data: RawChat;
-  pictureURL: undefined | string;
+  pictureUrl: undefined | string;
   platform = TELEGRAM;
 
-  constructor(data: RawChat, pictureURL?: string) {
+  constructor(data: RawChat, pictureUrl?: string) {
     this.data = data;
-    this.pictureURL = pictureURL;
+    this.pictureUrl = pictureUrl;
   }
 
   get id(): number {
@@ -129,8 +129,8 @@ export class TelegramChatProfile
   }
 
   toJSONValue(): TelegramChatProfileValue {
-    const { data, pictureURL } = this;
-    return { data, pictureURL };
+    const { data, pictureUrl } = this;
+    return { data, pictureUrl };
   }
 
   typeName(): string {
@@ -165,12 +165,12 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
        * If provided, the url is attached with the profile object. This is
        * useful to work with _fetchUserPhoto_ or logging in the webview.
        */
-      pictureURL?: string;
+      pictureUrl?: string;
       /** Get user data from API by force. */
       fromAPI?: boolean;
     } = {}
   ): Promise<TelegramUserProfile> {
-    const { inChat, pictureURL, fromAPI } = options;
+    const { inChat, pictureUrl, fromAPI } = options;
     let userData: RawUser;
 
     if (user.data && !fromAPI) {
@@ -183,7 +183,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
       userData = result.user;
     }
 
-    return new TelegramUserProfile(userData, pictureURL);
+    return new TelegramUserProfile(userData, pictureUrl);
   }
 
   /**
@@ -198,12 +198,12 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
        * If provided, the url is attached with the profile object. This is
        * useful to work with _fetchChatPhoto_.
        */
-      pictureURL?: string;
+      pictureUrl?: string;
       /** Get chat data from API by force. */
       fromAPI?: boolean;
     } = {}
   ): Promise<TelegramChatProfile> {
-    const { fromAPI, pictureURL } = options;
+    const { fromAPI, pictureUrl } = options;
     let chatId: number | string;
 
     if (typeof chat === 'number' || typeof chat === 'string') {
@@ -214,7 +214,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
       const { id, data } = chat;
 
       if (!fromAPI && (data.title || data.first_name)) {
-        return new TelegramChatProfile(data, pictureURL);
+        return new TelegramChatProfile(data, pictureUrl);
       }
       chatId = id;
     }
@@ -223,7 +223,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
       chat_id: chatId,
     });
 
-    return new TelegramChatProfile(result, pictureURL);
+    return new TelegramChatProfile(result, pictureUrl);
   }
 
   /** Fetch the photo file of a user */

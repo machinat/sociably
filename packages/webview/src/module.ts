@@ -6,10 +6,10 @@ import type {
   MachinatUser,
   MachinatChannel,
 } from '@machinat/core/types';
-import HTTP from '@machinat/http';
+import Http from '@machinat/http';
 import type {
-  HTTPRequestRouting,
-  HTTPUpgradeRouting,
+  HttpRequestRouting,
+  HttpUpgradeRouting,
 } from '@machinat/http/types';
 import createNextServer from '@machinat/next/utils/createNextServer';
 import LocalOnlyBroker from '@machinat/websocket/brokers/LocalOnlyBroker';
@@ -58,7 +58,7 @@ const webSocketRoutingFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [PLATFORM_CONFIGS_I, ReceiverP] as const,
 })(
-  (configs, receiver): HTTPUpgradeRouting => ({
+  (configs, receiver): HttpUpgradeRouting => ({
     name: WEBVIEW,
     path: configs.webSocketPath || '/websocket',
     handler: receiver.handleUpgradeCallback(),
@@ -70,7 +70,7 @@ const authRoutingFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [AuthControllerP, PLATFORM_CONFIGS_I] as const,
 })(
-  (controller, configs): HTTPRequestRouting => ({
+  (controller, configs): HttpRequestRouting => ({
     name: 'auth',
     path: configs.authPath || '/auth',
     handler: (req, res, routingInfo) => {
@@ -84,7 +84,7 @@ const nextRoutingFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [NextReceiverP, PLATFORM_CONFIGS_I] as const,
 })(
-  (receiver, configs): HTTPRequestRouting => ({
+  (receiver, configs): HttpRequestRouting => ({
     name: 'next',
     path: configs.nextPath || '/webview',
     handler: receiver.handleRequestCallback(),
@@ -131,7 +131,7 @@ const Webview = {
 
       ReceiverP,
       {
-        provide: HTTP.UPGRADE_ROUTINGS_I,
+        provide: Http.UPGRADE_ROUTINGS_I,
         withProvider: webSocketRoutingFactory,
       },
 
@@ -141,7 +141,7 @@ const Webview = {
 
       AuthControllerP,
       {
-        provide: HTTP.UPGRADE_ROUTINGS_I,
+        provide: Http.UPGRADE_ROUTINGS_I,
         withProvider: authRoutingFactory,
       },
     ];
@@ -151,7 +151,7 @@ const Webview = {
         NextReceiverP,
         { provide: NEXT_SERVER_I, withProvider: nextServerFactory },
         {
-          provide: HTTP.UPGRADE_ROUTINGS_I,
+          provide: Http.UPGRADE_ROUTINGS_I,
           withProvider: nextRoutingFactory,
         }
       );

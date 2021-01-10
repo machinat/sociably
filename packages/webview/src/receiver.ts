@@ -9,7 +9,7 @@ import type {
   PopErrorFn,
 } from '@machinat/core/types';
 import { AuthContext, ServerAuthorizer } from '@machinat/auth/types';
-import type { HTTPRequestInfo, UpgradeHandler } from '@machinat/http/types';
+import type { HttpRequestInfo, UpgradeHandler } from '@machinat/http/types';
 import {
   EventInput,
   ConnectEventValue,
@@ -105,7 +105,7 @@ export class WebviewReceiver<
     value: EventInput,
     connId: string,
     user: User,
-    request: HTTPRequestInfo,
+    request: HttpRequestInfo,
     auth: AuthContext<User, Channel, AuthData>
   ) {
     const channel = new WebviewConnection(this._server.id, connId);

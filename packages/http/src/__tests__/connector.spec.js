@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import moxy from '@moxyjs/moxy';
-import { HTTPConnector } from '../connector';
+import { HttpConnector } from '../connector';
 
 class FakeServer extends EventEmitter {
   // eslint-disable-next-line
@@ -28,7 +28,7 @@ const createRes = () =>
 
 describe('handling requests', () => {
   test('connect with root routing', () => {
-    const connector = new HTTPConnector();
+    const connector = new HttpConnector();
 
     const handler = moxy();
     connector.addRequestRouting({ path: '/', handler });
@@ -72,7 +72,7 @@ describe('handling requests', () => {
   });
 
   test('connect with multiple routings', () => {
-    const connector = new HTTPConnector();
+    const connector = new HttpConnector();
 
     const fooHandler = moxy();
     const barHandler = moxy();
@@ -134,7 +134,7 @@ describe('handling requests', () => {
   });
 
   test('connect with deeper routing path', () => {
-    const connector = new HTTPConnector();
+    const connector = new HttpConnector();
 
     const handler = moxy();
     connector.addRequestRouting({ path: '/foo/bar', handler });
@@ -170,7 +170,7 @@ describe('handling requests', () => {
   });
 
   test('connect with no routing registered', () => {
-    const connector = new HTTPConnector();
+    const connector = new HttpConnector();
 
     const server = moxy(new FakeServer());
     connector.connect(server, { port: 8888 });
@@ -187,7 +187,7 @@ describe('handling requests', () => {
 
   it('throw if routings conflict', () => {
     expect(() =>
-      new HTTPConnector().addRequestRouting(
+      new HttpConnector().addRequestRouting(
         { name: 'root', path: '/', handler: moxy() },
         { name: 'foo', path: '/foo', handler: moxy() }
       )
@@ -195,7 +195,7 @@ describe('handling requests', () => {
       `"foo routing \\"/foo\\" is conflicted with root routing \\"/\\""`
     );
     expect(() =>
-      new HTTPConnector().addRequestRouting(
+      new HttpConnector().addRequestRouting(
         { name: 'bar', path: '/bar', handler: moxy() },
         { path: '/bar/baz', handler: moxy() }
       )
@@ -218,7 +218,7 @@ describe('handling upgrade', () => {
   });
 
   test('connect with root routing', () => {
-    const connector = new HTTPConnector();
+    const connector = new HttpConnector();
 
     const handler = moxy();
     connector.addUpgradeRouting({ path: '/', handler });
@@ -265,7 +265,7 @@ describe('handling upgrade', () => {
   });
 
   test('connect with multiple routings', () => {
-    const connector = new HTTPConnector();
+    const connector = new HttpConnector();
 
     const fooHandler = moxy();
     const barHandler = moxy();
@@ -330,7 +330,7 @@ describe('handling upgrade', () => {
   });
 
   test('connect with deeper routing path', () => {
-    const connector = new HTTPConnector();
+    const connector = new HttpConnector();
 
     const handler = moxy();
     connector.addUpgradeRouting({ path: '/foo/bar', handler });
@@ -364,7 +364,7 @@ describe('handling upgrade', () => {
 
   it('throw if routings conflict', () => {
     expect(() =>
-      new HTTPConnector().addUpgradeRouting(
+      new HttpConnector().addUpgradeRouting(
         { name: 'root', path: '/', handler: moxy() },
         { name: 'foo', path: '/foo', handler: moxy() }
       )
@@ -372,7 +372,7 @@ describe('handling upgrade', () => {
       `"foo routing \\"/foo\\" is conflicted with root routing \\"/\\""`
     );
     expect(() =>
-      new HTTPConnector().addUpgradeRouting(
+      new HttpConnector().addUpgradeRouting(
         { name: 'bar', path: '/bar', handler: moxy() },
         { path: '/bar/baz', handler: moxy() }
       )

@@ -1,8 +1,8 @@
-import { parse as parseURL } from 'url';
+import { parse as parseUrl } from 'url';
 import { relative as getRelativePath, join as joinPath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
-import { HTTPRequestInfo, RoutingInfo } from '@machinat/http/types';
+import { HttpRequestInfo, RoutingInfo } from '@machinat/http/types';
 import invariant from 'invariant';
 import {
   verify as verifyJWT,
@@ -130,7 +130,7 @@ export class AuthController<
     res: ServerResponse,
     routingInfo?: RoutingInfo
   ): Promise<void> {
-    const { pathname } = parseURL(req.url as string);
+    const { pathname } = parseUrl(req.url as string);
     const subpath =
       routingInfo?.trailingPath ||
       getRelativePath(this.entryPath, pathname || '/');
@@ -194,7 +194,7 @@ export class AuthController<
   }
 
   async verifyAuth(
-    req: HTTPRequestInfo,
+    req: HttpRequestInfo,
     tokenProvided?: string
   ): Promise<AuthVerifyResult<Authorizer>> {
     let token = tokenProvided;

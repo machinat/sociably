@@ -3,7 +3,7 @@ import Renderer from '@machinat/core/renderer';
 import { isNativeType } from '@machinat/core/utils/isX';
 
 import { QuickReply } from '../quickReply';
-import { URIAction } from '../action';
+import { UriAction } from '../action';
 
 it('is valid native component', () => {
   expect(typeof QuickReply).toBe('function');
@@ -17,8 +17,8 @@ it('renders match snapshot', async () => {
   const renderer = new Renderer('line', async (_, __, render) => {
     rendered = await render(
       <QuickReply
-        imageURL="https://..."
-        action={<URIAction uri="https://..." label="foo" />}
+        imageUrl="https://..."
+        action={<UriAction uri="https://..." label="foo" />}
       />
     );
     return null;
@@ -31,12 +31,12 @@ it('renders match snapshot', async () => {
       Object {
         "node": <QuickReply
           action={
-            <URIAction
+            <UriAction
               label="foo"
               uri="https://..."
             />
           }
-          imageURL="https://..."
+          imageUrl="https://..."
         />,
         "path": "$#container",
         "type": "part",

@@ -145,7 +145,7 @@ import MessengerAuthorizer from '@machinat/messenger/auth/client'
 import LineAuthorizer from '@machinat/messenger/auth/client'
 
 const authClient = new AuthClient({
-  serverURL: '/auth',
+  serverUrl: '/auth',
   authorizers: [
     new MessengerAuthorizer({
       appId: fbAppId,
@@ -171,7 +171,7 @@ By default the `AuthClient` would use the `platform` parameter of querystring to
 ```js
 const authClient = new AuthClient({
   platform: 'telegram',
-  serverURL: '/auth',
+  serverUrl: '/auth',
   authorizers: [...],
 });
 ```

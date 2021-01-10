@@ -1,4 +1,4 @@
-import { parse as parseURL } from 'url';
+import { parse as parseUrl } from 'url';
 import { STATUS_CODES } from 'http';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { relative as getRelativePath } from 'path';
@@ -6,16 +6,16 @@ import { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
 import { makeClassProvider } from '@machinat/core/service';
 import {
-  HTTPServer,
+  HttpServer,
   MODULE_CONFIGS_I,
   REQUEST_ROUTINGS_I,
   UPGRADE_ROUTINGS_I,
 } from './interface';
 import type {
   ServerListenOptions,
-  HTTPModuleConfigs,
-  HTTPRequestRouting,
-  HTTPUpgradeRouting,
+  HttpModuleConfigs,
+  HttpRequestRouting,
+  HttpUpgradeRouting,
 } from './types';
 
 /** @internal */
@@ -67,20 +67,20 @@ const respondUpgrade = (socket: Socket, code: number) => {
 /**
  * @category Provider
  */
-export class HTTPConnector {
-  private _requestRoutings: HTTPRequestRouting[];
-  private _upgradeRoutings: HTTPUpgradeRouting[];
+export class HttpConnector {
+  private _requestRoutings: HttpRequestRouting[];
+  private _upgradeRoutings: HttpUpgradeRouting[];
 
   constructor(
-    configs: HTTPModuleConfigs,
-    requestRoutings?: null | HTTPRequestRouting[],
-    upgradeRoutings?: null | HTTPUpgradeRouting[]
+    configs: HttpModuleConfigs,
+    requestRoutings?: null | HttpRequestRouting[],
+    upgradeRoutings?: null | HttpUpgradeRouting[]
   ) {
     this._requestRoutings = requestRoutings ? [...requestRoutings] : [];
     this._upgradeRoutings = upgradeRoutings ? [...upgradeRoutings] : [];
   }
 
-  addRequestRouting(...routings: HTTPRequestRouting[]): this {
+  addRequestRouting(...routings: HttpRequestRouting[]): this {
     for (const routing of routings) {
       verifyRoutesConfliction(this._requestRoutings, routing);
 
@@ -90,7 +90,7 @@ export class HTTPConnector {
     return this;
   }
 
-  addUpgradeRouting(...routings: HTTPUpgradeRouting[]): this {
+  addUpgradeRouting(...routings: HttpUpgradeRouting[]): this {
     for (const routing of routings) {
       verifyRoutesConfliction(this._upgradeRoutings, routing);
 
@@ -101,7 +101,7 @@ export class HTTPConnector {
   }
 
   async connect(
-    server: HTTPServer,
+    server: HttpServer,
     options?: ServerListenOptions
   ): Promise<void> {
     server.addListener('request', this.makeRequestCallback());
@@ -124,7 +124,7 @@ export class HTTPConnector {
       const [{ path, handler }] = requestRoutings;
       if (path === '/') {
         return (req: IncomingMessage, res: ServerResponse) => {
-          const pathname = parseURL(req.url as string).pathname || '/';
+          const pathname = parseUrl(req.url as string).pathname || '/';
           handler(req, res, {
             originalPath: pathname,
             matchedPath: '/',
@@ -135,7 +135,7 @@ export class HTTPConnector {
     }
 
     return (req: IncomingMessage, res: ServerResponse) => {
-      const { pathname } = parseURL(req.url as string);
+      const { pathname } = parseUrl(req.url as string);
       if (!pathname) {
         endRes(res, 400);
         return;
@@ -172,7 +172,7 @@ export class HTTPConnector {
       const [{ path, handler }] = upgradeRoutings;
       if (path === '/') {
         return (req: IncomingMessage, socket: Socket, head: Buffer) => {
-          const pathname = parseURL(req.url as string).pathname || '/';
+          const pathname = parseUrl(req.url as string).pathname || '/';
           handler(req, socket, head, {
             originalPath: pathname,
             matchedPath: '/',
@@ -183,7 +183,7 @@ export class HTTPConnector {
     }
 
     return (req: IncomingMessage, socket: Socket, head: Buffer) => {
-      const { pathname } = parseURL(req.url as string);
+      const { pathname } = parseUrl(req.url as string);
       if (!pathname) {
         respondUpgrade(socket, 403);
         return;
@@ -208,6 +208,6 @@ export class HTTPConnector {
 export const ConnectorP = makeClassProvider({
   lifetime: 'singleton',
   deps: [MODULE_CONFIGS_I, REQUEST_ROUTINGS_I, UPGRADE_ROUTINGS_I] as const,
-})(HTTPConnector);
+})(HttpConnector);
 
-export type ConnectorP = HTTPConnector;
+export type ConnectorP = HttpConnector;

@@ -9,7 +9,7 @@ import {
   ImageCarouselItem,
   ImageCarouselTemplate,
 } from '../template';
-import { URIAction } from '../action';
+import { UriAction } from '../action';
 
 const renderer = new Renderer('line', () => null);
 
@@ -41,16 +41,16 @@ test.each(
   [
     <ButtonTemplate
       altText="xxx"
-      imageURL="https://..."
+      imageUrl="https://..."
       imageAspectRatio="square"
       imageSize="contain"
       imageBackgroundColor="#aaaaaa"
       title="HELLO"
       text="world"
-      defaultAction={<URIAction uri="https://..." label="???" />}
+      defaultAction={<UriAction uri="https://..." label="???" />}
       actions={[
-        <URIAction uri="https://..." label="foo" />,
-        <URIAction uri="https://..." label="bar" />,
+        <UriAction uri="https://..." label="foo" />,
+        <UriAction uri="https://..." label="bar" />,
       ]}
     />,
 
@@ -58,8 +58,8 @@ test.each(
       altText="xxx"
       text="Take a pill"
       actions={[
-        <URIAction uri="https://matrix.io/login" label="Blue pill" />,
-        <URIAction uri="https://matrix.io/leave" label="Red pill" />,
+        <UriAction uri="https://matrix.io/login" label="Blue pill" />,
+        <UriAction uri="https://matrix.io/leave" label="Red pill" />,
       ]}
     />,
 
@@ -71,18 +71,18 @@ test.each(
       <CarouselItem
         text="Burger"
         actions={[
-          <URIAction uri="https://..." label="with fries" />,
-          <URIAction uri="https://..." label="with salad" />,
+          <UriAction uri="https://..." label="with fries" />,
+          <UriAction uri="https://..." label="with salad" />,
         ]}
       />
       <CarouselItem
-        imageURL="https://..."
+        imageUrl="https://..."
         imageBackgroundColor="#bbbbbb"
         title="Spaghetti"
         text="tamato sause"
         actions={[
-          <URIAction uri="https://..." label="with soup" />,
-          <URIAction uri="https://..." label="with salad" />,
+          <UriAction uri="https://..." label="with soup" />,
+          <UriAction uri="https://..." label="with salad" />,
         ]}
       />
     </CarouselTemplate>,
@@ -90,11 +90,11 @@ test.each(
     <ImageCarouselTemplate altText="xxx">
       <ImageCarouselItem
         url="https://..."
-        action={<URIAction uri="https://..." label="foo" />}
+        action={<UriAction uri="https://..." label="foo" />}
       />
       <ImageCarouselItem
         url="https://..."
-        action={<URIAction uri="https://..." label="bar" />}
+        action={<UriAction uri="https://..." label="bar" />}
       />
     </ImageCarouselTemplate>,
   ].map((ele) => [ele.type.name, ele])

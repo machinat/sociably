@@ -15,7 +15,7 @@ export type TelegramAuthData = {
   firstName: string;
   lastName?: string;
   username?: string;
-  photoURL?: string;
+  photoUrl?: string;
   languageCode?: string;
 };
 

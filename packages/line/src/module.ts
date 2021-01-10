@@ -2,8 +2,8 @@ import type { PlatformModule } from '@machinat/core/types';
 import type { ServiceProvision } from '@machinat/core/service/types';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import { BaseBot, BaseProfiler, BaseMarshaler } from '@machinat/core/base';
-import HTTP from '@machinat/http';
-import { HTTPRequestRouting } from '@machinat/http/types';
+import Http from '@machinat/http';
+import { HttpRequestRouting } from '@machinat/http/types';
 
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { LINE } from './constant';
@@ -25,7 +25,7 @@ const requestRoutingFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [PLATFORM_CONFIGS_I, ReceiverP] as const,
 })(
-  (configs, receiver): HTTPRequestRouting => ({
+  (configs, receiver): HttpRequestRouting => ({
     name: LINE,
     path: configs.entryPath || '/',
     handler: receiver.handleRequestCallback(),
@@ -71,7 +71,7 @@ const Line = {
 
     if (configs.noServer !== true) {
       provisions.push(ReceiverP, {
-        provide: HTTP.REQUEST_ROUTINGS_I,
+        provide: Http.REQUEST_ROUTINGS_I,
         withProvider: requestRoutingFactory,
       });
     }

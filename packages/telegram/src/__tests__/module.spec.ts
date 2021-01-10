@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
-import HTTP from '@machinat/http';
+import Http from '@machinat/http';
 import Telegram from '../module';
 import {
   TelegramChat,
@@ -40,7 +40,7 @@ describe('initModule(configs)', () => {
       botToken: '12345:_BOT_TOKEN_',
       entryPath: '/webhook/telegram',
       secretPath: '_SECRET_',
-      authRedirectURL: '/webview/index.html',
+      authRedirectUrl: '/webview/index.html',
       connectionCapicity: 999,
       eventMiddlewares,
       dispatchMiddlewares,
@@ -66,7 +66,7 @@ describe('initModule(configs)', () => {
       botToken: '12345:_BOT_TOKEN_',
       entryPath: '/webhook/telegram',
       secretPath: '_SECRET_',
-      authRedirectURL: '/webview/index.html',
+      authRedirectUrl: '/webview/index.html',
       connectionCapicity: 999,
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
@@ -87,7 +87,7 @@ describe('initModule(configs)', () => {
       Telegram.Receiver,
       Telegram.CONFIGS_I,
       Telegram.Profiler,
-      HTTP.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(TelegramBot);
@@ -118,7 +118,7 @@ describe('initModule(configs)', () => {
       Telegram.Bot,
       Telegram.CONFIGS_I,
       Telegram.Profiler,
-      HTTP.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTINGS_I,
     ]);
 
     expect(bot).toBeInstanceOf(TelegramBot);
@@ -168,7 +168,7 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [routings] = app.useServices([HTTP.REQUEST_ROUTINGS_I]);
+    const [routings] = app.useServices([Http.REQUEST_ROUTINGS_I]);
     expect(routings).toEqual([
       { name: 'telegram', path: '/', handler: expect.any(Function) },
     ]);

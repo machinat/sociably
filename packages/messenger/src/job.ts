@@ -39,14 +39,14 @@ export const chatJobsMaker = (options?: MessengerSendOptions) => (
     const { value } = segments[i];
 
     let body: any;
-    let relativeURL: undefined | string;
+    let relativeUrl: undefined | string;
     let attachmentAssetTag: undefined | string;
     let attachmentFileData: undefined | any;
     let attachmentFileInfo: undefined | any;
 
     if (typeof value === 'object') {
       body = filterSymbolKeys(value);
-      relativeURL = value[API_PATH];
+      relativeUrl = value[API_PATH];
       attachmentAssetTag = value[ATTACHMENT_ASSET_TAG];
       attachmentFileData = value[ATTACHMENT_DATA];
       attachmentFileInfo = value[ATTACHMENT_INFO];
@@ -81,7 +81,7 @@ export const chatJobsMaker = (options?: MessengerSendOptions) => (
     jobs[i] = {
       request: {
         method: POST,
-        relative_url: relativeURL || PATH_MESSAGES,
+        relative_url: relativeUrl || PATH_MESSAGES,
         body,
       },
       channelUId: uid,

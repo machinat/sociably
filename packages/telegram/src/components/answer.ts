@@ -130,11 +130,11 @@ type InlineQueryResultArticleProps = InlineQueryResultProps & {
   /** URL of the result */
   url?: string;
   /** Pass True, if you don't want the URL to be shown in the message */
-  hideURL?: boolean;
+  hideUrl?: boolean;
   /** Short description of the result */
   description?: string;
   /** URL of the thumbnail for the result */
-  thumbURL?: string;
+  thumbUrl?: string;
   /** Thumbnail width */
   thumbWidth?: number;
   /** Thumbnail height */
@@ -161,9 +161,9 @@ export const InlineQueryResultArticle: TelegramComponent<
     inputMessageContent,
     title,
     url,
-    hideURL,
+    hideUrl,
     description,
-    thumbURL,
+    thumbUrl,
     thumbWidth,
     thumbHeight,
   } = node.props;
@@ -182,9 +182,9 @@ export const InlineQueryResultArticle: TelegramComponent<
       id,
       title,
       url,
-      hide_url: hideURL,
+      hide_url: hideUrl,
       description,
-      thumb_url: thumbURL,
+      thumb_url: thumbUrl,
       thumb_width: thumbWidth,
       thumb_height: thumbHeight,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
@@ -203,7 +203,7 @@ type InlineQueryResultPhotoProps = InlineQueryResultProps &
         /** A valid URL of the photo. Photo must be in jpeg format. Photo size must not exceed 5MB */
         url: string;
         /** URL of the thumbnail for the photo */
-        thumbURL: string;
+        thumbUrl: string;
         /** Width of the photo */
         width?: number;
         /** Height of the photo */
@@ -247,7 +247,7 @@ export const InlineQueryResultPhoto: TelegramComponent<
     width,
     height,
     description,
-    thumbURL,
+    thumbUrl,
     caption,
     parseMode = 'HTML',
     replyMarkup,
@@ -276,7 +276,7 @@ export const InlineQueryResultPhoto: TelegramComponent<
       description,
       caption: captionSegments?.[0].value,
       parse_mode: parseMode === 'None' ? undefined : parseMode,
-      thumb_url: thumbURL,
+      thumb_url: thumbUrl,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
       input_message_content: inputMessageContentObject,
     }),
@@ -293,7 +293,7 @@ type InlineQueryResultGifProps = InlineQueryResultProps &
         /** A valid URL of the GIF file. File size must not exceed 1MB */
         url: string;
         /** URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result */
-        thumbURL: string;
+        thumbUrl: string;
         /** MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or “video/mp4”. Defaults to “image/jpeg” */
         thumbMimeType?: 'image/jpeg' | 'image/gif' | 'video/mp4';
         /** Width of the GIF */
@@ -338,7 +338,7 @@ export const InlineQueryResultGif: TelegramComponent<
     width,
     height,
     duration,
-    thumbURL,
+    thumbUrl,
     thumbMimeType,
     title,
     caption,
@@ -369,7 +369,7 @@ export const InlineQueryResultGif: TelegramComponent<
       title,
       caption: captionSegments?.[0].value,
       parse_mode: parseMode === 'None' ? undefined : parseMode,
-      thumb_url: thumbURL,
+      thumb_url: thumbUrl,
       thumb_mime_type: thumbMimeType,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
       input_message_content: inputMessageContentObject,
@@ -387,7 +387,7 @@ type InlineQueryResultMpeg4GifProps = InlineQueryResultProps &
         /** A valid URL of the MP4 file. File size must not exceed 1MB */
         url: string;
         /** URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result */
-        thumbURL: string;
+        thumbUrl: string;
         /** MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or “video/mp4”. Defaults to “image/jpeg” */
         thumbMimeType?: 'image/jpeg' | 'image/gif' | 'video/mp4';
         /** Width of the video */
@@ -432,7 +432,7 @@ export const InlineQueryResultMpeg4Gif: TelegramComponent<
     width,
     height,
     duration,
-    thumbURL,
+    thumbUrl,
     thumbMimeType,
     title,
     caption,
@@ -463,7 +463,7 @@ export const InlineQueryResultMpeg4Gif: TelegramComponent<
       title,
       caption: captionSegments?.[0].value,
       parse_mode: parseMode === 'None' ? undefined : parseMode,
-      thumb_url: thumbURL,
+      thumb_url: thumbUrl,
       thumb_mime_type: thumbMimeType,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
       input_message_content: inputMessageContentObject,
@@ -483,7 +483,7 @@ type InlineQueryResultVideoProps = InlineQueryResultProps &
         /** Mime type of the content of video url, “text/html” or “video/mp4” */
         mimeType: 'text/html' | 'video/mp4';
         /** URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result */
-        thumbURL: string;
+        thumbUrl: string;
         /** Width of the video */
         width?: number;
         /** Height of the video */
@@ -532,7 +532,7 @@ export const InlineQueryResultVideo: TelegramComponent<
     width,
     height,
     duration,
-    thumbURL,
+    thumbUrl,
     replyMarkup,
     inputMessageContent,
   } = node.props as UnionToIntersection<InlineQueryResultVideoProps>;
@@ -561,7 +561,7 @@ export const InlineQueryResultVideo: TelegramComponent<
       description,
       caption: captionSegments?.[0].value,
       parse_mode: parseMode === 'None' ? undefined : parseMode,
-      thumb_url: thumbURL,
+      thumb_url: thumbUrl,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
       input_message_content: inputMessageContentObject,
     }),
@@ -738,7 +738,7 @@ type InlineQueryResultDocumentProps = InlineQueryResultProps &
         /** Mime type of the content of the file, either “application/pdf” or “application/zip” */
         mimeType: 'application/pdf' | 'application/zip';
         /** URL of the thumbnail for the file */
-        thumbURL?: string;
+        thumbUrl?: string;
         /** Thumbnail width */
         thumbWidth?: number;
         /** Thumbnail height */
@@ -780,7 +780,7 @@ export const InlineQueryResultDocument: TelegramComponent<
     mimeType,
     thumbWidth,
     thumbHeight,
-    thumbURL,
+    thumbUrl,
     title,
     description,
     caption,
@@ -810,7 +810,7 @@ export const InlineQueryResultDocument: TelegramComponent<
       description,
       caption: captionSegments?.[0].value,
       parse_mode: parseMode === 'None' ? undefined : parseMode,
-      thumb_url: thumbURL,
+      thumb_url: thumbUrl,
       thumb_width: thumbWidth,
       thumb_height: thumbHeight,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
@@ -875,7 +875,7 @@ type InlineQueryResultLocationProps = InlineQueryResultProps & {
   /** Period in seconds for which the location can be updated, should be between 60 and 86400. */
   livePeriod?: number;
   /** URL of the thumbnail for the loaction */
-  thumbURL?: string;
+  thumbUrl?: string;
   /** Thumbnail width */
   thumbWidth?: number;
   /** Thumbnail height */
@@ -904,7 +904,7 @@ export const InlineQueryResultLocation: TelegramComponent<
     longitude,
     livePeriod,
     title,
-    thumbURL,
+    thumbUrl,
     thumbWidth,
     thumbHeight,
   } = node.props;
@@ -925,7 +925,7 @@ export const InlineQueryResultLocation: TelegramComponent<
       longitude,
       live_period: livePeriod,
       title,
-      thumb_url: thumbURL,
+      thumb_url: thumbUrl,
       thumb_width: thumbWidth,
       thumb_height: thumbHeight,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
@@ -951,7 +951,7 @@ type InlineQueryResultVenueProps = InlineQueryResultProps & {
   /** Foursquare type of the venue, if known. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.) */
   foursquareType?: string;
   /** URL of the thumbnail for the venue */
-  thumbURL?: string;
+  thumbUrl?: string;
   /** Thumbnail width */
   thumbWidth?: number;
   /** Thumbnail height */
@@ -982,7 +982,7 @@ export const InlineQueryResultVenue: TelegramComponent<
     foursquareId,
     foursquareType,
     title,
-    thumbURL,
+    thumbUrl,
     thumbWidth,
     thumbHeight,
   } = node.props;
@@ -1005,7 +1005,7 @@ export const InlineQueryResultVenue: TelegramComponent<
       foursquare_id: foursquareId,
       foursquare_type: foursquareType,
       title,
-      thumb_url: thumbURL,
+      thumb_url: thumbUrl,
       thumb_width: thumbWidth,
       thumb_height: thumbHeight,
       reply_markup: inlineKeyboardSegemnts?.[0].value,
@@ -1027,7 +1027,7 @@ type InlineQueryResultContactProps = InlineQueryResultProps & {
   /** Additional data about the contact in the form of a vCard, 0-2048 bytes */
   vcard?: string;
   /** URL of the thumbnail for the contact */
-  thumbURL?: string;
+  thumbUrl?: string;
   /** Thumbnail width */
   thumbWidth?: number;
   /** Thumbnail height */
@@ -1054,7 +1054,7 @@ export const InlineQueryResultContact: TelegramComponent<
     firstName,
     lastName,
     vcard,
-    thumbURL,
+    thumbUrl,
     thumbWidth,
     thumbHeight,
     replyMarkup,
@@ -1077,7 +1077,7 @@ export const InlineQueryResultContact: TelegramComponent<
       first_name: firstName,
       last_name: lastName,
       vcard,
-      thumb_url: thumbURL,
+      thumb_url: thumbUrl,
       thumb_width: thumbWidth,
       thumb_height: thumbHeight,
       reply_markup: inlineKeyboardSegemnts?.[0].value,

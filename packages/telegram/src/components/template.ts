@@ -285,7 +285,7 @@ type InvoiceProps = MessageProps & {
   /** A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider. */
   providerData?: string | object; // eslint-disable-line @typescript-eslint/ban-types
   /** URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for. */
-  photoURL?: string;
+  photoUrl?: string;
   /** Photo size */
   photoSize?: number;
   /** Photo width */
@@ -322,7 +322,7 @@ const __Invoice: FunctionOf<TelegramComponent<
     currency,
     prices,
     providerData,
-    photoURL,
+    photoUrl,
     photoSize,
     photoWidth,
     photoHeight,
@@ -351,7 +351,7 @@ const __Invoice: FunctionOf<TelegramComponent<
         currency,
         prices,
         provider_data: providerData,
-        photo_url: photoURL,
+        photo_url: photoUrl,
         photo_size: photoSize,
         photo_width: photoWidth,
         photo_height: photoHeight,

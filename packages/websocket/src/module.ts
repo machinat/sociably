@@ -1,8 +1,8 @@
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import { BaseBot, BaseMarshaler } from '@machinat/core/base';
 import type { PlatformModule, MachinatUser } from '@machinat/core/types';
-import HTTP from '@machinat/http';
-import type { HTTPUpgradeRouting } from '@machinat/http/types';
+import Http from '@machinat/http';
+import type { HttpUpgradeRouting } from '@machinat/http/types';
 
 import { WEBSOCKET } from './constant';
 import {
@@ -42,7 +42,7 @@ const upgradeRoutingFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [PLATFORM_CONFIGS_I, ReceiverP] as const,
 })(
-  (configs, receiver): HTTPUpgradeRouting => ({
+  (configs, receiver): HttpUpgradeRouting => ({
     name: WEBSOCKET,
     path: configs.entryPath || '/',
     handler: receiver.handleUpgradeCallback(),
@@ -90,7 +90,7 @@ const WebSocket = {
 
         ReceiverP,
         {
-          provide: HTTP.UPGRADE_ROUTINGS_I,
+          provide: Http.UPGRADE_ROUTINGS_I,
           withProvider: upgradeRoutingFactory,
         },
 

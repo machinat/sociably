@@ -199,7 +199,7 @@ export type TelegramPlatformConfigs = {
   botToken: string;
   entryPath?: string;
   secretPath?: string;
-  authRedirectURL?: string;
+  authRedirectUrl?: string;
   connectionCapicity?: number;
   noServer?: boolean;
   eventMiddlewares?: TelegramEventMiddleware[];

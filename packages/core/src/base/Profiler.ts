@@ -4,7 +4,7 @@ import { makeInterface, makeClassProvider } from '../service';
 export interface MachinatProfile {
   readonly platform: string;
   readonly name: string;
-  readonly pictureURL: undefined | string;
+  readonly pictureUrl: undefined | string;
 }
 
 export interface UserProfiler<User extends MachinatUser> {

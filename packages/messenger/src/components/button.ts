@@ -6,7 +6,7 @@ import type { MessengerComponent } from '../types';
 /**
  * @category Props
  */
-type URLButtonProps = {
+type UrlButtonProps = {
   /** Button title. 20 character limit. */
   title: string;
   /**
@@ -19,7 +19,7 @@ type URLButtonProps = {
    * is not defined, the url will be used as the fallback. It may only be
    * specified if messenger_extensions is true.
    */
-  fallbackURL?: string;
+  fallbackUrl?: string;
   /** Must be true if using Messenger Extensions. */
   messengerExtensions?: boolean;
   /** Height of the Webview. */
@@ -34,11 +34,11 @@ type URLButtonProps = {
 };
 
 /** @ignore */
-const __URLButton = function URLButton(node, path) {
+const __UrlButton = function UrlButton(node, path) {
   const {
     title,
     url,
-    fallbackURL,
+    fallbackUrl,
     messengerExtensions,
     webviewHeightRatio,
     webviewShareButton,
@@ -52,7 +52,7 @@ const __URLButton = function URLButton(node, path) {
       url,
       webview_height_ratio: webviewHeightRatio,
       messenger_extensions: messengerExtensions,
-      fallback_url: fallbackURL,
+      fallback_url: fallbackUrl,
       webview_share_button:
         webviewShareButton || hideWebviewShare ? 'hide' : undefined,
     }),
@@ -62,14 +62,14 @@ const __URLButton = function URLButton(node, path) {
  * The URL Button opens a webpage in the Messenger webview. This button can be
  * used with the Button and Generic Templates.
  * @category Component
- * @props {@link URLButtonProps}
+ * @props {@link UrlButtonProps}
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/reference/buttons/url)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#url).
  */
-export const URLButton: MessengerComponent<
-  URLButtonProps,
+export const UrlButton: MessengerComponent<
+  UrlButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(__URLButton);
+> = annotateMessengerComponent(__UrlButton);
 
 /**
  * @category Props

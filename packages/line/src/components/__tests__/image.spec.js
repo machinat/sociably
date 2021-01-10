@@ -9,7 +9,7 @@ import {
   ImageMapVideoArea,
   ImageMapArea,
 } from '../image';
-import { URIAction, MessageAction } from '../action';
+import { UriAction, MessageAction } from '../action';
 
 const renderer = new Renderer('line', () => null);
 
@@ -25,9 +25,9 @@ it.each(
 
 it.each(
   [
-    <Image url="https://..." previewURL="https://..." />,
+    <Image url="https://..." previewUrl="https://..." />,
     <Sticker packageId={1} stickerId={2} />,
-    <ImageMap baseURL="https://..." altText="..." height={999}>
+    <ImageMap baseUrl="https://..." altText="..." height={999}>
       <ImageMapArea
         label="foo"
         text="bar"
@@ -42,17 +42,17 @@ it.each(
         y={654}
         width={456}
         height={789}
-        action={<URIAction label="foo" uri="https://..." />}
+        action={<UriAction label="foo" uri="https://..." />}
       />
     </ImageMap>,
     <ImageMap
-      baseURL="https://..."
+      baseUrl="https://..."
       altText="..."
       height={999}
       video={
         <ImageMapVideoArea
           url="https://..."
-          previewURL="https://..."
+          previewUrl="https://..."
           x={123}
           y={456}
           width={654}
@@ -71,18 +71,18 @@ it.each(
       />
     </ImageMap>,
     <ImageMap
-      baseURL="https://..."
+      baseUrl="https://..."
       altText="..."
       height={999}
       video={
         <ImageMapVideoArea
           url="https://..."
-          previewURL="https://..."
+          previewUrl="https://..."
           x={123}
           y={456}
           width={654}
           height={321}
-          action={<URIAction label="foo" uri="https://..." />}
+          action={<UriAction label="foo" uri="https://..." />}
         />
       }
     >
@@ -91,7 +91,7 @@ it.each(
         y={654}
         width={456}
         height={789}
-        action={<URIAction label="foo" uri="https://..." />}
+        action={<UriAction label="foo" uri="https://..." />}
       />
     </ImageMap>,
   ].map((e) => [e.type.name, e])

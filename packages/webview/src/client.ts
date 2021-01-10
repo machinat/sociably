@@ -61,7 +61,7 @@ class WebviewClient<
     this._authClient = new AuthClient({
       platform,
       authorizers,
-      serverURL: authUrl || '/auth',
+      serverUrl: authUrl || '/auth',
     });
 
     this._connector = new WebSocketConnector(

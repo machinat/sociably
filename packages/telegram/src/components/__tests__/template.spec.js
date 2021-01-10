@@ -605,7 +605,7 @@ test('Invoice match snapshot', async () => {
           { label: '🌭', amount: 10 },
         ]}
         providerData="foo"
-        photoURL="http://..."
+        photoUrl="http://..."
         photoSize={333}
         photoWidth={480}
         photoHeight={640}
@@ -640,7 +640,7 @@ test('Invoice match snapshot', async () => {
                 payload="Please!"
                 photoHeight={640}
                 photoSize={333}
-                photoURL="http://..."
+                photoUrl="http://..."
                 photoWidth={480}
                 prices={
                   Array [
