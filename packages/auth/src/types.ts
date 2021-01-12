@@ -14,21 +14,21 @@ type TokenBase = {
   exp: number;
 };
 
-export type AuthPayload<Context> = {
+export type AuthPayload<Data> = {
   platform: string;
-  context: Context;
+  data: Data;
   refreshTill?: number;
   scope: { domain?: string; path: string };
 };
 
-export type AuthTokenPayload<Context> = TokenBase & AuthPayload<Context>;
+export type AuthTokenPayload<Data> = TokenBase & AuthPayload<Data>;
 
-export type StatePayload<StateData> = {
+export type StatePayload<State> = {
   platform: string;
-  state: StateData;
+  state: State;
 };
 
-export type StateTokenPayload<StateData> = TokenBase & StatePayload<StateData>;
+export type StateTokenPayload<State> = TokenBase & StatePayload<State>;
 
 export type ErrorMessage = { code: number; reason: string };
 
@@ -40,26 +40,26 @@ export type ErrorPayload = {
 
 export type ErrorTokenPayload = TokenBase & ErrorPayload;
 
-export type AuthData<
+export type AuthContextBase = {
+  loginAt: Date;
+  expireAt: Date;
+};
+
+export type AuthContext<
   User extends MachinatUser,
-  Channel extends MachinatChannel,
-  Context
+  Channel extends MachinatChannel
 > = {
   platform: string;
   user: User;
   channel: Channel;
-  loginAt: Date;
-  expireAt: Date;
-  context: Context;
-};
+} & AuthContextBase;
 
-export type AuthorizerRefinement<
-  User extends MachinatUser,
-  Channel extends MachinatChannel
-> = {
-  user: User;
-  channel: Channel;
-};
+export type AnyAuthContext = AuthContext<MachinatUser, MachinatChannel>;
+
+export type ContextSupplement<Context extends AnyAuthContext> = Omit<
+  Context,
+  'platform' | 'loginAt' | 'expireAt'
+>;
 
 type ErrorResult = {
   success: false;
@@ -67,15 +67,14 @@ type ErrorResult = {
   reason: string;
 };
 
-export type AuthorizerVerifyResult<Context> =
-  | { success: true; context: Context; refreshable: boolean }
+export type AuthorizerVerifyResult<Data> =
+  | { success: true; data: Data }
   | ErrorResult;
 
 export interface ServerAuthorizer<
-  User extends MachinatUser,
-  Channel extends MachinatChannel,
-  Context,
-  Credential
+  Credential,
+  Data,
+  Context extends AnyAuthContext
 > {
   platform: string;
 
@@ -93,42 +92,43 @@ export interface ServerAuthorizer<
   ): Promise<void>;
 
   /**
-   * verifyCredential called when sign requests from client side are received,
-   * controller would sign in the user by issuing a token to client and signing
-   * a signature wihtin cookie if it resolve success.
+   * Called when sign requests from client side are received, controller would
+   * sign in the user by issuing a token to client and signing a signature
+   * wihtin cookie if it resolve success.
    */
   verifyCredential(
     credential: Credential
-  ): Promise<AuthorizerVerifyResult<Context>>;
+  ): Promise<AuthorizerVerifyResult<Data>>;
 
   /**
-   * verifyRefreshment is called when refresh requests from client side are
-   * received, controller would refresh token and signature if it resolve
-   * success.
+   * Called when refresh requests from client side are received, controller
+   * would refresh token and signature if it resolve success.
    */
-  verifyRefreshment(ctx: Context): Promise<AuthorizerVerifyResult<Context>>;
+  verifyRefreshment(data: Data): Promise<AuthorizerVerifyResult<Data>>;
 
   /**
-   * refineAuthr efine the auth data to auth context members which fit the
+   * Supplement the auth data to auth context members which fit the
    * machinat interfaces, the context would then be passed to the appliction.
    */
-  refineAuth(ctx: Context): Promise<null | AuthorizerRefinement<User, Channel>>;
+  supplementContext(data: Data): Promise<null | ContextSupplement<Context>>;
 }
 
-export type AnyServerAuthorizer = ServerAuthorizer<any, any, unknown, unknown>;
+export type AnyServerAuthorizer = ServerAuthorizer<
+  unknown,
+  unknown,
+  AnyAuthContext
+>;
 
 export type AuthorizerCredentialResult<Credential> =
   | { success: true; credential: Credential }
   | ErrorResult;
 
 export interface ClientAuthorizer<
-  User extends MachinatUser,
-  Channel extends MachinatChannel,
-  Context,
-  Credential
+  Credential,
+  Data,
+  Context extends AnyAuthContext
 > {
   platform: string;
-  shouldResign: boolean;
 
   /**
    * Initiate necessary libary like IdP SDK to start authentication works, this
@@ -137,7 +137,7 @@ export interface ClientAuthorizer<
    */
   init(
     authEntry: string,
-    authFromServer: null | Context,
+    dataFromServer: null | Data,
     errorFromServer: null | ErrorMessage
   ): Promise<void>;
 
@@ -151,11 +151,17 @@ export interface ClientAuthorizer<
   ): Promise<AuthorizerCredentialResult<Credential>>;
 
   /**
-   * Refine the auth data into auth context members fit the machinat interfaces,
-   * the context would then be passed to the appliction.
+   * Supplement the auth data into auth context members fit the machinat
+   * interfaces, the context would then be passed to the appliction.
    */
-  refineAuth(ctx: Context): Promise<null | AuthorizerRefinement<User, Channel>>;
+  supplementContext(data: Data): Promise<null | ContextSupplement<Context>>;
 }
+
+export type AnyClientAuthorizer = ClientAuthorizer<
+  unknown,
+  unknown,
+  AnyAuthContext
+>;
 
 export type SignRequestBody<Credential> = {
   platform: string;
@@ -183,7 +189,6 @@ export type AuthModuleConfigs = {
   secret: string;
   entryPath?: string;
   tokenAge?: number;
-  authCookieAge?: number;
   dataCookieAge?: number;
   refreshPeriod?: number;
   cookieDomain?: string;
@@ -196,20 +201,18 @@ export type WithHeaders = {
   headers: IncomingHttpHeaders;
 };
 
-export type GetAuthContextOf<
-  Authorizer extends AnyServerAuthorizer
-> = Authorizer extends ServerAuthorizer<
-  infer User,
-  infer Channel,
-  infer Context,
-  unknown
->
-  ? {
-      platform: Authorizer['platform'];
-      user: User;
-      channel: Channel;
-      loginAt: Date;
-      expireAt: Date;
-      context: Context;
-    }
+export type ContextOfAuthorizer<
+  Authorizer extends AnyServerAuthorizer | AnyClientAuthorizer
+> = Authorizer extends ServerAuthorizer<unknown, unknown, infer Context>
+  ? Context
+  : Authorizer extends ClientAuthorizer<unknown, unknown, infer Context>
+  ? Context
   : never;
+
+type UserOfContext<
+  Context extends AnyAuthContext
+> = Context extends AuthContext<infer User, any> ? User : never;
+
+export type UserOfAuthorizer<
+  Authorizer extends AnyServerAuthorizer | AnyClientAuthorizer
+> = UserOfContext<ContextOfAuthorizer<Authorizer>>;

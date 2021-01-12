@@ -1,18 +1,16 @@
 // eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import invariant from 'invariant';
-import type { ClientAuthorizer } from '@machinat/auth/types';
+import type { ClientAuthorizer, ContextSupplement } from '@machinat/auth/types';
 import { MESSENGER } from '../constant';
-import type MessengerChat from '../channel';
-import type MessengerUser from '../user';
 import type {
-  ExtensionPayload,
-  ExtensionCredential,
+  MessengerAuthCredential,
+  MessengerAuthData,
+  MessengerAuthContext,
   ExtensionContext,
   AuthorizerCredentialResult,
-  AuthorizerRefinement,
 } from './types';
-import { refineExtensionPayload } from './utils';
+import { supplementContext } from './utils';
 
 type MessengerClientAuthOpts = {
   appId: string;
@@ -31,16 +29,14 @@ const INIT_TIMEOUT = 20000;
 class MessengerClientAuthorizer
   implements
     ClientAuthorizer<
-      MessengerUser,
-      MessengerChat,
-      ExtensionPayload,
-      ExtensionCredential
+      MessengerAuthCredential,
+      MessengerAuthData,
+      MessengerAuthContext
     > {
   appId: string;
   isExtensionReady: boolean;
 
   platform = MESSENGER;
-  shouldResign = true;
 
   constructor({ appId, isExtensionReady = false }: MessengerClientAuthOpts) {
     invariant(appId, 'options.appId is required to retrieve chat context');
@@ -92,7 +88,10 @@ class MessengerClientAuthorizer
 
       return {
         success: true,
-        credential: { signedRequest: context.signed_request },
+        credential: {
+          signedRequest: context.signed_request,
+          client: window.name === 'messenger_ref' ? 'messenger' : 'facebook',
+        },
       };
     } catch (err) {
       return {
@@ -104,10 +103,10 @@ class MessengerClientAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async refineAuth(
-    payload: ExtensionPayload
-  ): Promise<null | AuthorizerRefinement> {
-    return refineExtensionPayload(payload);
+  async supplementContext(
+    data: MessengerAuthData
+  ): Promise<null | ContextSupplement<MessengerAuthContext>> {
+    return supplementContext(data);
   }
 }
 

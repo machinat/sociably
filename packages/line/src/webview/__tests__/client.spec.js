@@ -68,7 +68,6 @@ describe('#constructor()', () => {
     });
 
     expect(authorizer.platform).toBe('line');
-    expect(authorizer.shouldResign).toBe(true);
     expect(authorizer.liffId).toBe('_LIFF_ID_');
     expect(authorizer.shouldLoadSDK).toBe(true);
   });

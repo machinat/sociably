@@ -7,21 +7,21 @@ import type {
   ServerAuthorizer,
   CookieAccessor,
   AuthorizerVerifyResult,
+  ContextSupplement,
 } from '@machinat/auth/types';
-import type { RoutingInfo } from '@machinat/http/types';
 
 import { PLATFORM_CONFIGS_I } from '../interface';
 import { TELEGRAM } from '../constant';
-import { TelegramChat } from '../channel';
-import TelegramUser from '../user';
 import type { TelegramPlatformConfigs } from '../types';
-import type { TelegramAuthContext, TelegramAuthRefinement } from './types';
-import { refineAuthContext } from './utils';
+import { BotP } from '../bot';
+import { supplementContext } from './utils';
+import type { TelegramAuthContext, TelegramAuthData } from './types';
 
 type TelegramServerAuthorizerOpts = {
-  botToken: string;
   redirectUrl: string;
 };
+
+const CHAT_QUERY_PARAM = 'telegramChat';
 
 const LOGIN_PARAMETERS = [
   'auth_date',
@@ -42,20 +42,16 @@ const makeParamsCheckingString = (query) =>
  * @category Provider
  */
 export class TelegramServerAuthorizer
-  implements
-    ServerAuthorizer<TelegramUser, TelegramChat, TelegramAuthContext, void> {
-  botToken: string;
-  botId: number;
+  implements ServerAuthorizer<never, TelegramAuthData, TelegramAuthContext> {
+  bot: BotP;
   redirectUrl: string;
 
   platform = TELEGRAM;
 
-  constructor({ botToken, redirectUrl }: TelegramServerAuthorizerOpts) {
-    invariant(botToken, 'options.botToken should not be empty');
+  constructor(bot: BotP, { redirectUrl }: TelegramServerAuthorizerOpts) {
     invariant(redirectUrl, 'options.redirectUrl should not be empty');
 
-    this.botToken = botToken;
-    this.botId = Number(botToken.split(':', 1)[0]);
+    this.bot = bot;
     this.redirectUrl = redirectUrl;
   }
 
@@ -64,13 +60,13 @@ export class TelegramServerAuthorizer
     res.end();
   }
 
-  private _authorizeLogin(
+  async delegateAuthRequest(
     req: IncomingMessage,
     res: ServerResponse,
     authIssuer: CookieAccessor
-  ) {
+  ): Promise<void> {
     const { query } = parseUrl(req.url as string, true);
-    const { hash, redirectUrl } = query;
+    const { hash, redirectUrl, [CHAT_QUERY_PARAM]: chatIdQuery } = query;
 
     if (typeof redirectUrl !== 'string' && typeof redirectUrl !== 'undefined') {
       authIssuer.issueError(400, 'invalid redirect url');
@@ -86,7 +82,7 @@ export class TelegramServerAuthorizer
 
     const paramsCheckingString = makeParamsCheckingString(query);
 
-    const hashedParams = createHmac('sha256', this.botToken)
+    const hashedParams = createHmac('sha256', this.bot.token)
       .update(paramsCheckingString)
       .digest('hex');
 
@@ -104,14 +100,55 @@ export class TelegramServerAuthorizer
 
     const userId = Number(query.id);
     const username = query.username as string | undefined;
+    let chatData;
 
-    const authData: TelegramAuthContext = {
-      botId: this.botId,
-      channel: {
-        type: 'private',
-        id: userId,
-        username,
-      },
+    if (chatIdQuery) {
+      const chatId =
+        typeof chatIdQuery === 'string' && chatIdQuery[0] === '@'
+          ? chatIdQuery
+          : Number(chatIdQuery);
+
+      if (Number.isNaN(chatId)) {
+        authIssuer.issueError(400, 'invalid chat id');
+        this._redirect(res, undefined);
+        return;
+      }
+
+      const { result: memberResult } = await this.bot.dispatchAPICall(
+        'getChatMember',
+        {
+          chat_id: chatId,
+          user_id: userId,
+        }
+      );
+
+      if (
+        memberResult.status === 'left' ||
+        memberResult.status === 'kicked' ||
+        (memberResult.status === 'restricted' &&
+          memberResult.is_member === false)
+      ) {
+        authIssuer.issueError(401, 'user is unauthorized to chat');
+        this._redirect(res, undefined);
+        return;
+      }
+
+      const { result: chatResult } = await this.bot.dispatchAPICall('getChat', {
+        chat_id: chatId,
+      });
+
+      chatData = {
+        type: chatResult.type,
+        id: chatResult.id,
+        title: chatResult.title,
+        username: chatResult.username,
+        description: chatResult.description,
+      };
+    }
+
+    const authData: TelegramAuthData = {
+      botId: this.bot.id,
+      chat: chatData,
       userId,
       username,
       firstName: query.first_name as string,
@@ -124,26 +161,9 @@ export class TelegramServerAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async delegateAuthRequest(
-    req: IncomingMessage,
-    res: ServerResponse,
-    authIssuer: CookieAccessor,
-    routingInfo: RoutingInfo
-  ): Promise<void> {
-    if (routingInfo.trailingPath === 'login') {
-      this._authorizeLogin(req, res, authIssuer);
-    } else {
-      res.writeHead(404);
-      res.end();
-    }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  async verifyCredential(): Promise<
-    AuthorizerVerifyResult<TelegramAuthContext>
-  > {
+  async verifyCredential(): Promise<AuthorizerVerifyResult<never>> {
     return {
-      success: false as const,
+      success: false,
       code: 403,
       reason: 'should initiate st server side only',
     };
@@ -151,34 +171,32 @@ export class TelegramServerAuthorizer
 
   // eslint-disable-next-line class-methods-use-this
   async verifyRefreshment(
-    context: TelegramAuthContext
-  ): Promise<AuthorizerVerifyResult<TelegramAuthContext>> {
+    data: TelegramAuthData
+  ): Promise<AuthorizerVerifyResult<TelegramAuthData>> {
     return {
-      success: true as const,
-      context,
-      refreshable: true,
+      success: true,
+      data,
     };
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async refineAuth(
-    context: TelegramAuthContext
-  ): Promise<null | TelegramAuthRefinement> {
-    return refineAuthContext(context);
+  async supplementContext(
+    data: TelegramAuthData
+  ): Promise<null | ContextSupplement<TelegramAuthContext>> {
+    return supplementContext(data);
   }
 }
 
 export const ServerAuthorizerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I] as const,
-  factory: ({ botToken, authRedirectUrl }: TelegramPlatformConfigs) => {
+  deps: [BotP, PLATFORM_CONFIGS_I] as const,
+  factory: (bot, { authRedirectUrl }: TelegramPlatformConfigs) => {
     invariant(
       authRedirectUrl,
       'must provide configs.authRedirectUrl to authorize with Telegram'
     );
 
-    return new TelegramServerAuthorizer({
-      botToken,
+    return new TelegramServerAuthorizer(bot, {
       redirectUrl: authRedirectUrl,
     });
   },

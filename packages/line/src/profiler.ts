@@ -35,6 +35,10 @@ export class LineUserProfile
     return this.data.displayName;
   }
 
+  get language(): undefined | string {
+    return this.data.language;
+  }
+
   get pictureUrl(): undefined | string {
     return this.data.pictureUrl;
   }
@@ -92,6 +96,10 @@ export class LineGroupProfile
   }
 }
 
+type GetUserProfileOptions = {
+  inChat?: LineChat;
+};
+
 /**
  * @category Provider
  */
@@ -102,11 +110,25 @@ export class LineProfiler implements UserProfiler<LineUser> {
     this.bot = bot;
   }
 
-  async getUserProfile(user: LineUser): Promise<LineUserProfile> {
+  async getUserProfile(
+    user: LineUser,
+    { inChat }: GetUserProfileOptions = {}
+  ): Promise<LineUserProfile> {
+    let requestApi: string;
+    if (inChat) {
+      requestApi =
+        inChat.type === 'group'
+          ? `v2/bot/group/${inChat.id}/member/${user.id}`
+          : inChat.type === 'room'
+          ? `v2/bot/room/${inChat.id}/member/${user.id}`
+          : `v2/bot/profile/${user.id}`;
+    } else {
+      requestApi = `v2/bot/profile/${user.id}`;
+    }
+
     const { body: profileData } = await this.bot.dispatchAPICall(
       'GET',
-      `v2/bot/profile/${user.id}`,
-      null
+      requestApi
     );
 
     return new LineUserProfile(profileData);
@@ -115,10 +137,13 @@ export class LineProfiler implements UserProfiler<LineUser> {
   async getGroupProfile(
     chat: LineChat & { type: 'group' }
   ): Promise<LineGroupProfile> {
+    if (chat.type !== 'group') {
+      throw new Error(`expect a group chat, got ${chat.type}`);
+    }
+
     const { body: groupSummary } = await this.bot.dispatchAPICall(
       'GET',
-      `v2/bot/group/${chat.id}/summary`,
-      null
+      `v2/bot/group/${chat.id}/summary`
     );
 
     return new LineGroupProfile(groupSummary);

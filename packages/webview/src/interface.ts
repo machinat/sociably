@@ -1,18 +1,17 @@
 import type WS from 'ws';
-import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import { makeInterface, makeClassProvider } from '@machinat/core/service';
 import { AuthController } from '@machinat/auth';
-import type { AuthData } from '@machinat/auth/types';
+import type {
+  AnyServerAuthorizer,
+  UserOfAuthorizer,
+  ContextOfAuthorizer,
+} from '@machinat/auth/types';
 import { NextReceiver } from '@machinat/next';
 import type { NextServer } from '@machinat/next/types';
 import WebSocket, { WebSocketServer } from '@machinat/websocket';
 import { useAuthController } from './utils';
 import { DEFAULT_AUTH_ROUTE, DEFAULT_NEXT_ROUTE } from './constant';
-import type {
-  WebviewPlatformConfigs,
-  WebviewPlatformMounter,
-  AnyServerAuthorizer,
-} from './types';
+import type { WebviewPlatformConfigs, WebviewPlatformMounter } from './types';
 
 export const PLATFORM_CONFIGS_I = makeInterface<WebviewPlatformConfigs<never>>({
   name: 'WebviewPlatformConfigsI',
@@ -85,10 +84,11 @@ export const SocketBrokerI = makeInterface<WebSocket.BrokerI>({
 export type SocketBrokerI = WebSocket.BrokerI;
 
 export class WebviewSocketServer<
-  User extends MachinatUser,
-  Channel extends MachinatChannel,
-  Context
-> extends WebSocketServer<User, AuthData<User, Channel, Context>> {}
+  Authorizer extends AnyServerAuthorizer
+> extends WebSocketServer<
+  UserOfAuthorizer<Authorizer>,
+  ContextOfAuthorizer<Authorizer>
+> {}
 
 export const SocketServerP = makeClassProvider({
   lifetime: 'singleton',
@@ -117,10 +117,8 @@ export const SocketServerP = makeClassProvider({
 })(WebviewSocketServer);
 
 export type SocketServerP<
-  User extends MachinatUser,
-  Channel extends MachinatChannel,
-  Context
-> = WebviewSocketServer<User, Channel, Context>;
+  Authorizer extends AnyServerAuthorizer
+> = WebviewSocketServer<Authorizer>;
 
 export const PLATFORM_MOUNTER_I = makeInterface<WebviewPlatformMounter<any>>({
   name: 'WebviewPlatformMounterI',

@@ -1,9 +1,10 @@
 import { MachinatUser } from '@machinat/core/types';
 import Auth, { AuthClient } from '@machinat/auth';
 import type {
-  ServerAuthorizer,
-  GetAuthContextOf,
-  ClientAuthorizer,
+  AnyServerAuthorizer,
+  AnyClientAuthorizer,
+  ContextOfAuthorizer,
+  UserOfAuthorizer,
 } from '@machinat/auth/types';
 import type {
   EventInput,
@@ -34,14 +35,13 @@ export const createEvent = <User extends null | MachinatUser>(
   return event;
 };
 
-export const useAuthController = <
-  Authorizer extends ServerAuthorizer<any, any, unknown, unknown>
->(
+export const useAuthController = <Authorizer extends AnyServerAuthorizer>(
   controller: Auth.Controller<Authorizer>
-): VerifyLoginFn<MachinatUser, GetAuthContextOf<Authorizer>, string> => async (
-  request: HttpRequestInfo,
-  credential: string
-) => {
+): VerifyLoginFn<
+  MachinatUser,
+  ContextOfAuthorizer<Authorizer>,
+  string
+> => async (request: HttpRequestInfo, credential: string) => {
   const result = await controller.verifyAuth(request, credential);
 
   if (!result.success) {
@@ -49,21 +49,21 @@ export const useAuthController = <
     return { success: false as const, code, reason };
   }
 
-  const { auth } = result;
+  const { context } = result;
   return {
     success: true as const,
-    authInfo: auth,
-    user: auth.user,
-    expireAt: auth.expireAt,
+    authContext: context,
+    user: context.user,
+    expireAt: context.expireAt,
   };
 };
 
-export const useAuthClient = <
-  User extends MachinatUser,
-  Authorizer extends ClientAuthorizer<User, any, unknown, unknown>
->(
+export const useAuthClient = <Authorizer extends AnyClientAuthorizer>(
   controller: AuthClient<Authorizer>
-): ClientLoginFn<User, string> => async () => {
+): ClientLoginFn<UserOfAuthorizer<Authorizer>, string> => async () => {
   const { token, context } = await controller.auth();
-  return { user: context.user, credential: token };
+  return {
+    user: context.user as UserOfAuthorizer<Authorizer>,
+    credential: token,
+  };
 };

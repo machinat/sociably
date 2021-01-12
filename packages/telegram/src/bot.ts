@@ -29,7 +29,7 @@ import type {
 } from './types';
 
 type TelegramBotOptions = {
-  botToken: string;
+  token: string;
   connectionCapicity?: number;
 };
 
@@ -43,8 +43,8 @@ export class TelegramBot
       TelegramJob,
       TelegramAPIResult
     > {
-  botToken: string;
-  botId: number;
+  token: string;
+  id: number;
   engine: Engine<
     TelegramChat | TelegramChatTarget,
     TelegramSegmentValue,
@@ -55,7 +55,7 @@ export class TelegramBot
   >;
 
   constructor(
-    { botToken, connectionCapicity = 100 }: TelegramBotOptions,
+    { token, connectionCapicity = 100 }: TelegramBotOptions,
     initScope: InitScopeFn = () => createEmptyScope(TELEGRAM),
     dispatchWrapper: DispatchWrapper<
       TelegramJob,
@@ -63,13 +63,13 @@ export class TelegramBot
       TelegramAPIResult
     > = (dispatch) => dispatch
   ) {
-    invariant(botToken, 'options.botToken should not be empty');
+    invariant(token, 'options.token should not be empty');
 
-    this.botToken = botToken;
-    this.botId = Number(botToken.split(':', 1)[0]);
+    this.token = token;
+    this.id = Number(token.split(':', 1)[0]);
 
     const queue = new Queue<TelegramJob, TelegramAPIResult>();
-    const worker = new TelegramWorker(botToken, connectionCapicity);
+    const worker = new TelegramWorker(token, connectionCapicity);
     const renderer = new Renderer<TelegramSegmentValue, TelegramComponent<any>>(
       TELEGRAM,
       generalElementDelegate
@@ -101,7 +101,7 @@ export class TelegramBot
     const channel =
       target instanceof TelegramChat || target instanceof TelegramChatTarget
         ? target
-        : new TelegramChatTarget(this.botId, target);
+        : new TelegramChatTarget(this.id, target);
 
     return this.engine.render(channel, message, createChatJob);
   }
@@ -134,7 +134,7 @@ export class TelegramBot
     }
 
     const fetchResponse = await fetch(
-      `https://api.telegram.org/file/bot${this.botToken}/${filePath}`
+      `https://api.telegram.org/file/bot${this.token}/${filePath}`
     );
 
     if (!fetchResponse.ok) {
@@ -186,8 +186,10 @@ export const BotP = makeClassProvider({
     { require: PLATFORM_MOUNTER_I, optional: true },
   ] as const,
   factory: ({ botToken, connectionCapicity }, mounter) => {
+    invariant(botToken, 'configs.botToken should not be empty');
+
     return new TelegramBot(
-      { botToken, connectionCapicity },
+      { token: botToken, connectionCapicity },
       mounter?.initScope,
       mounter?.dispatchWrapper
     );

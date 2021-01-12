@@ -38,7 +38,7 @@ type LineBotOptions = {
  */
 export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
   providerId: string;
-  botChannelId: string;
+  channelId: string;
   engine: Engine<
     LineChat,
     LineSegmentValue,
@@ -60,7 +60,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
     invariant(accessToken, 'configs.accessToken should not be empty');
     invariant(channelId, 'configs.channelId should not be empty');
 
-    this.botChannelId = channelId;
+    this.channelId = channelId;
 
     const queue = new Queue<LineJob, LineAPIResult>();
     const worker = new LineWorker(accessToken, connectionCapicity);
@@ -97,8 +97,8 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
       source instanceof LineChat
         ? source
         : typeof source === 'string'
-        ? new LineChat(this.botChannelId, 'user', source)
-        : LineChat.fromMessagingSource(this.botChannelId, source);
+        ? new LineChat(this.channelId, 'user', source)
+        : LineChat.fromMessagingSource(this.channelId, source);
 
     return this.engine.render(
       channel,
@@ -117,7 +117,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
   async dispatchAPICall(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     path: string,
-    body: null | unknown
+    body?: unknown
   ): Promise<LineAPIResult> {
     try {
       const response = await this.engine.dispatchJobs(null, [
@@ -128,9 +128,8 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
     } catch (err) {
       if (err instanceof DispatchError) {
         throw err.errors[0];
-      } else {
-        throw err;
       }
+      throw err;
     }
   }
 }

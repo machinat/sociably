@@ -19,11 +19,7 @@ type ClientOptions<User extends null | MachinatUser> = {
 
 class WebScoketClient<
   User extends null | MachinatUser = null,
-  Value extends EventValue<string, string, unknown> = EventValue<
-    string,
-    string,
-    unknown
-  >
+  Value extends EventValue = EventValue
 > extends Emitter<[WebSocketEvent<Value, User>]> {
   private _connector: Connector<User>;
 

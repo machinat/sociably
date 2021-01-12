@@ -1,7 +1,11 @@
 // eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import AuthClient from '@machinat/auth/client';
-import { ClientAuthorizer } from '@machinat/auth/types';
+import {
+  AnyClientAuthorizer,
+  UserOfAuthorizer,
+  ContextOfAuthorizer,
+} from '@machinat/auth/types';
 import type {
   EventInput,
   EventValue,
@@ -13,14 +17,6 @@ import Emitter from '@machinat/websocket/client/Emitter';
 import { WebviewConnection } from './channel';
 import { createEvent } from './utils';
 import { WebviewEvent } from './types';
-
-type AnyClientAuthorizer = ClientAuthorizer<any, any, unknown, unknown>;
-
-type UserOf<
-  Authorizer extends AnyClientAuthorizer
-> = Authorizer extends ClientAuthorizer<infer User, any, unknown, unknown>
-  ? User
-  : never;
 
 type ClientOptions<Authorizer extends AnyClientAuthorizer> = {
   /** URL string to connect WebSocket backend. Default to `"/websocket"` */
@@ -35,17 +31,34 @@ type ClientOptions<Authorizer extends AnyClientAuthorizer> = {
 
 class WebviewClient<
   Authorizer extends AnyClientAuthorizer,
-  Value extends EventValue<string, string, unknown> = EventValue<
-    string,
-    string,
-    unknown
-  >
-> extends Emitter<[WebviewEvent<Value, UserOf<Authorizer>>]> {
-  private _connector: WebSocketConnector<UserOf<Authorizer>>;
+  Value extends EventValue = EventValue
+> extends Emitter<
+  [
+    WebviewEvent<Value, UserOfAuthorizer<Authorizer>>,
+    ContextOfAuthorizer<Authorizer>
+  ]
+> {
   private _authClient: AuthClient<Authorizer>;
+  private _connector: WebSocketConnector<UserOfAuthorizer<Authorizer>>;
 
-  private _user: null | UserOf<Authorizer>;
+  private _user: null | UserOfAuthorizer<Authorizer>;
   private _channel: null | WebviewConnection;
+
+  get isConnected(): boolean {
+    return this._connector.isConnected();
+  }
+
+  get user(): null | UserOfAuthorizer<Authorizer> {
+    return this._user;
+  }
+
+  get channel(): null | WebviewConnection {
+    return this._channel;
+  }
+
+  get authContext(): null | ContextOfAuthorizer<Authorizer> {
+    return this._authClient.getAuthContext();
+  }
 
   constructor({
     webSocketUrl,
@@ -78,7 +91,10 @@ class WebviewClient<
         type: 'connect',
         payload: null,
       };
-      this._emitEvent(createEvent(connectEvent, this._channel, user));
+      this._emitEvent(
+        createEvent(connectEvent, this._channel, user),
+        this.authContext as ContextOfAuthorizer<Authorizer>
+      );
     });
 
     this._connector.on('events', (values) => {
@@ -87,8 +103,9 @@ class WebviewClient<
           createEvent(
             value,
             this._channel as WebviewConnection,
-            this._user as UserOf<Authorizer>
-          )
+            this._user as UserOfAuthorizer<Authorizer>
+          ),
+          this.authContext as ContextOfAuthorizer<Authorizer>
         );
       }
     });
@@ -102,30 +119,20 @@ class WebviewClient<
         type: 'disconnect',
         payload: { reason },
       };
+
       this._emitEvent(
         createEvent(
           disconnectValue,
           channel as WebviewConnection,
-          this._user as UserOf<Authorizer>
-        )
+          this._user as UserOfAuthorizer<Authorizer>
+        ),
+        this.authContext as ContextOfAuthorizer<Authorizer>
       );
     });
 
     this._connector.on('error', this._emitError.bind(this));
 
     this._connector.start().catch(this._emitError.bind(this));
-  }
-
-  get isConnected(): boolean {
-    return this._connector.isConnected();
-  }
-
-  get user(): null | UserOf<Authorizer> {
-    return this._user;
-  }
-
-  get channel(): null | WebviewConnection {
-    return this._channel;
   }
 
   async send(...events: EventInput[]): Promise<void> {
@@ -137,11 +144,14 @@ class WebviewClient<
   }
 
   private async _getLoginAuth(): Promise<{
-    user: UserOf<Authorizer>;
+    user: UserOfAuthorizer<Authorizer>;
     credential: string;
   }> {
     const { token, context } = await this._authClient.auth();
-    return { user: context.user, credential: token };
+    return {
+      user: context.user as UserOfAuthorizer<Authorizer>,
+      credential: token,
+    };
   }
 }
 

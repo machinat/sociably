@@ -25,7 +25,11 @@ export type ConnIdentifier = {
 
 export type UpgradeRequestInfo = Omit<HttpRequestInfo, 'body'>;
 
-export type EventValue<Kind extends string, Type extends string, Payload> = {
+export type EventValue<
+  Kind extends string = string,
+  Type extends string = string,
+  Payload = unknown
+> = {
   kind: Kind;
   type: Type;
   payload: Payload;
@@ -40,7 +44,7 @@ export type DisconnectEventValue = EventValue<
 >;
 
 export type WebSocketEvent<
-  Value extends EventValue<string, string, unknown>,
+  Value extends EventValue,
   User extends null | MachinatUser
 > = {
   platform: 'websokcet';
@@ -90,11 +94,11 @@ export type WebSocketDispatchFrame = DispatchFrame<
   WebSocketBot
 >;
 
-export type WebSocketMetadata<AuthInfo> = {
+export type WebSocketMetadata<AuthContext> = {
   source: 'websocket';
   request: UpgradeRequestInfo;
   connection: WebSocketConnection;
-  auth: AuthInfo;
+  auth: AuthContext;
 };
 
 export type WebSocketComponent = NativeComponent<
@@ -104,22 +108,22 @@ export type WebSocketComponent = NativeComponent<
 
 export type WebSocketEventContext<
   User extends null | MachinatUser,
-  AuthInfo,
-  Value extends EventValue<string, string, unknown> =
+  AuthContext,
+  Value extends EventValue =
     | ConnectEventValue
     | DisconnectEventValue
-    | EventValue<string, string, unknown>
+    | EventValue
 > = {
   platform: 'websocket';
   event: WebSocketEvent<Value, User>;
-  metadata: WebSocketMetadata<AuthInfo>;
+  metadata: WebSocketMetadata<AuthContext>;
   bot: WebSocketBot;
 };
 
-type SuccessVerifyLoginResult<User extends null | MachinatUser, AuthInfo> = {
+type SuccessVerifyLoginResult<User extends null | MachinatUser, AuthContext> = {
   success: true;
   user: User;
-  authInfo: AuthInfo;
+  authContext: AuthContext;
   expireAt?: Date;
 };
 
@@ -131,13 +135,13 @@ type FailedVerifyLoginResult = {
 
 export type VerifyLoginFn<
   User extends null | MachinatUser,
-  AuthInfo,
+  AuthContext,
   Credential
 > = (
   request: UpgradeRequestInfo,
   credential: Credential
 ) => Promise<
-  SuccessVerifyLoginResult<User, AuthInfo> | FailedVerifyLoginResult
+  SuccessVerifyLoginResult<User, AuthContext> | FailedVerifyLoginResult
 >;
 
 export type VerifyUpgradeFn = (

@@ -1,22 +1,37 @@
 /** @internal */ /** */
 /* eslint-disable import/prefer-default-export  */
+import { ContextSupplement } from '@machinat/auth/types';
 import LineUser from '../user';
 import LineChat from '../channel';
-import { LineAuthContext, AuthorizerRefinement } from './types';
+import { LineUserProfile } from '../profiler';
+import { LineAuthContext, LineAuthData } from './types';
 
-export const refineAuthContext = ({
-  contextType,
+export const supplementContext = ({
   userId,
   groupId,
   roomId,
   channelId,
   providerId,
-}: LineAuthContext): null | AuthorizerRefinement => ({
+  language,
+  os,
+  name,
+  picture,
+}: LineAuthData): null | ContextSupplement<LineAuthContext> => ({
   user: new LineUser(providerId, userId),
-  channel:
-    contextType === 'group'
-      ? new LineChat(channelId, 'group', groupId as string)
-      : contextType === 'room'
-      ? new LineChat(channelId, 'room', roomId as string)
-      : new LineChat(channelId, 'user', userId),
+  channel: groupId
+    ? new LineChat(channelId, 'group', groupId)
+    : roomId
+    ? new LineChat(channelId, 'room', roomId)
+    : new LineChat(channelId, 'user', userId),
+  channelId,
+  providerId,
+  language,
+  os,
+  profile: name
+    ? new LineUserProfile({
+        userId,
+        displayName: name,
+        pictureUrl: picture,
+      })
+    : null,
 });

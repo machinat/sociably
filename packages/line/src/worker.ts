@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import type { MachinatWorker } from '@machinat/core/engine/types';
 import Queue from '@machinat/core/queue';
 import type { LineJob, LineAPIResult } from './types';
-import { LineAPIError } from './error';
+import LineAPIError from './error';
 
 /** @ignore */
 const API_HOST = 'https://api.line.me';

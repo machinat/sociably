@@ -1,3 +1,5 @@
+import { AuthContextBase } from '@machinat/auth/types';
+import type { LineUserProfile } from '../profiler';
 import type LineUser from '../user';
 import type LineChat from '../channel';
 
@@ -16,25 +18,40 @@ export type LiffContext = {
   };
 };
 
-export type LineAuthContext = {
+export type LineAuthData = {
   providerId: string;
   channelId: string;
   os: 'ios' | 'android' | 'web';
   language: string;
-  contextType: 'utou' | 'group' | 'room' | 'external' | 'none';
   userId: string;
-  utouId?: string;
-  groupId?: string;
-  roomId?: string;
+  groupId: undefined | string;
+  roomId: undefined | string;
+  name: undefined | string;
+  picture: undefined | string;
 };
+
+export type LineAuthContext = {
+  platform: 'line';
+  providerId: string;
+  channelId: string;
+  channel: LineChat;
+  user: LineUser;
+  profile: null | LineUserProfile;
+  os: 'ios' | 'android' | 'web';
+  language: string;
+} & AuthContextBase;
 
 export type LineAuthCredential = {
   accessToken: string;
-  context: Omit<LineAuthContext, 'providerId' | 'channelId'>;
+  os: 'ios' | 'android' | 'web';
+  language: string;
+  userId: string;
+  groupId: undefined | string;
+  roomId: undefined | string;
 };
 
 export type LineVerifyAuthResult =
-  | { success: true; context: LineAuthContext; refreshable: false }
+  | { success: true; data: LineAuthData }
   | { success: false; code: number; reason: string };
 
 export type AuthorizerRefinement = {

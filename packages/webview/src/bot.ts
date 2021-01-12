@@ -10,7 +10,7 @@ import type {
   DispatchWrapper,
 } from '@machinat/core/types';
 import type { DispatchResponse } from '@machinat/core/engine/types';
-import type { ServerAuthorizer } from '@machinat/auth/types';
+import type { AnyServerAuthorizer } from '@machinat/auth/types';
 import { WebSocketWorker } from '@machinat/websocket';
 import createJobs from '@machinat/websocket/utils/createJobs';
 import type {
@@ -25,27 +25,12 @@ import {
   WebviewUserChannel,
   WebviewConnection,
 } from './channel';
-import type {
-  WebviewDispatchFrame,
-  WebviewComponent,
-  AnyServerAuthorizer,
-} from './types';
+import type { WebviewDispatchFrame, WebviewComponent } from './types';
 
 type WebSocketDispatchResponse = DispatchResponse<
   WebSocketJob,
   WebSocketResult
 >;
-
-type ServerWithAuth<
-  Authorizer extends AnyServerAuthorizer
-> = Authorizer extends ServerAuthorizer<
-  infer User,
-  infer Channel,
-  infer Auth,
-  unknown
->
-  ? SocketServerP<User, Channel, Auth>
-  : never;
 
 /**
  * @category Provider
@@ -57,7 +42,7 @@ export class WebviewBot<Authorizer extends AnyServerAuthorizer>
       WebSocketJob,
       WebSocketResult
     > {
-  private _server: ServerWithAuth<Authorizer>;
+  private _server: SocketServerP<Authorizer>;
 
   engine: Engine<
     WebviewTopicChannel | WebviewUserChannel | WebviewConnection,
@@ -69,7 +54,7 @@ export class WebviewBot<Authorizer extends AnyServerAuthorizer>
   >;
 
   constructor(
-    server: ServerWithAuth<Authorizer>,
+    server: SocketServerP<Authorizer>,
     initScope: InitScopeFn = () => createEmptyScope(WEBVIEW),
     dispatchWrapper: DispatchWrapper<
       WebSocketJob,

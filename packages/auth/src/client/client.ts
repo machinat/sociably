@@ -6,8 +6,9 @@ import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
 import { decode as decodeJWT } from 'jsonwebtoken';
 import { TOKEN_COOKIE_KEY, ERROR_COOKIE_KEY } from '../constant';
 import type {
-  AuthData,
-  ClientAuthorizer,
+  AnyClientAuthorizer,
+  AnyAuthContext,
+  ContextOfAuthorizer,
   AuthTokenPayload,
   ErrorTokenPayload,
   SignRequestBody,
@@ -18,8 +19,6 @@ import type {
 } from '../types';
 import AuthError from './error';
 
-type AnyClientAuthorizer = ClientAuthorizer<any, any, unknown, unknown>;
-
 type AuthClientOptions<Authorizer extends AnyClientAuthorizer> = {
   platform?: string;
   serverUrl: string;
@@ -29,23 +28,16 @@ type AuthClientOptions<Authorizer extends AnyClientAuthorizer> = {
 
 type AuthResult<Authorizer extends AnyClientAuthorizer> = {
   token: string;
-  context: Authorizer extends ClientAuthorizer<
-    infer User,
-    infer Channel,
-    infer Context,
-    unknown
-  >
-    ? AuthData<User, Channel, Context>
-    : never;
+  context: ContextOfAuthorizer<Authorizer>;
 };
 
-type CookieAuthResult<Context> =
+type CookieAuthResult<Data> =
   | { success: false; platform: string; code: number; reason: string }
   | {
       success: true;
       platform: string;
       token: string;
-      payload: AuthTokenPayload<Context>;
+      payload: AuthTokenPayload<Data>;
     };
 
 type TimeoutID = ReturnType<typeof setTimeout>;
@@ -116,7 +108,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   private _authed: null | {
     token: string;
     payload: AuthTokenPayload<unknown>;
-    context: AuthData<any, any, unknown>;
+    context: AnyAuthContext;
   };
 
   private _initiatingPlatforms: Set<string>;
@@ -140,6 +132,16 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
 
   get isAuthorizing(): boolean {
     return !!this._authPromise;
+  }
+
+  getToken(): undefined | string {
+    return this._authed?.token;
+  }
+
+  getAuthContext(): null | ContextOfAuthorizer<Authorizer> {
+    return this._authed
+      ? (this._authed.context as ContextOfAuthorizer<Authorizer>)
+      : null;
   }
 
   constructor({
@@ -201,7 +203,10 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
       // return current auth status if it is already authorized
       if (this._authed) {
         const { token, context } = this._authed;
-        return Promise.resolve({ token, context: context as any });
+        return Promise.resolve({
+          token,
+          context: context as ContextOfAuthorizer<Authorizer>,
+        });
       }
     }
 
@@ -271,7 +276,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
           if (cookieAuthResult.success) {
             await authorizer.init(
               platformAuthEntry,
-              cookieAuthResult.payload.context,
+              cookieAuthResult.payload.data,
               null
             );
           } else {
@@ -319,27 +324,27 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
       throw new AuthError(403, 'signed out during authenticating');
     }
 
-    const refinement = await authorizer.refineAuth(payload.context);
-    if (!refinement) {
+    const supplement = await authorizer.supplementContext(payload.data);
+    if (!supplement) {
       throw new AuthError(400, 'invalid auth info');
     }
 
-    const { iat, exp, context } = payload;
-    const { channel, user } = refinement;
-    const authData = {
+    const { iat, exp } = payload;
+    const context = {
+      ...supplement,
       platform: authorizer.platform,
       loginAt: new Date(iat * 1000),
       expireAt: new Date(exp * 1000),
-      channel,
-      user,
-      context,
     };
 
     // Block any other auth() call begun before this time from updating auth
     this._minAuthBeginTime = beginTime;
-    this._setAuth(token, payload, authData);
+    this._setAuth(token, payload, context);
 
-    return { token, context: authData as any };
+    return {
+      token,
+      context: context as ContextOfAuthorizer<Authorizer>,
+    };
   }
 
   private async _signToken(
@@ -368,7 +373,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   private _setAuth(
     token: string,
     payload: AuthTokenPayload<unknown>,
-    context: AuthData<any, any, unknown>
+    context: AnyAuthContext
   ) {
     this._authed = { token, payload, context };
     this._clearTimeouts();
@@ -412,15 +417,12 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
       }
 
       newToken = body.token;
-    } else if (authorizer.shouldResign) {
-      // otherwise resign
+    } else {
       const [signErr, signedToken] = await this._signToken(authorizer);
       if (signErr) {
         throw signErr;
       }
       newToken = signedToken;
-    } else {
-      return;
     }
 
     if (
@@ -434,24 +436,22 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
     }
 
     const payload = getAuthPayload(newToken);
-    const refinement = await authorizer.refineAuth(payload.context);
-    if (!refinement) {
+    const { iat, exp, data } = payload;
+
+    const supplement = await authorizer.supplementContext(data);
+    if (!supplement) {
       throw new AuthError(400, 'invalid auth info');
     }
 
-    const { iat, exp, context } = payload;
-    const { channel, user } = refinement;
-    const authData = {
+    const context = {
+      ...supplement,
       platform: authorizer.platform,
       loginAt: new Date(iat * 1000),
       expireAt: new Date(exp * 1000),
-      channel,
-      user,
-      context,
     };
 
-    this._setAuth(newToken, payload, authData);
-    this.emit('refresh', authData);
+    this._setAuth(newToken, payload, context);
+    this.emit('refresh', context);
   }
 
   private _refreshAuthCallback = (
@@ -534,7 +534,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
     }
   }
 
-  private _emitError(err: Error, context: null | AuthData<any, any, unknown>) {
+  private _emitError(err: Error, context: null | AnyAuthContext) {
     try {
       this.emit('error', err, context);
     } catch {

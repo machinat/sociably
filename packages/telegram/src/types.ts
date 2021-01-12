@@ -69,6 +69,7 @@ export type RawChat = {
   username?: string;
   first_name?: string;
   last_name?: string;
+  description?: string;
 };
 
 export type TelegramRawEvent = {

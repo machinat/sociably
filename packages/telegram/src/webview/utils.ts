@@ -1,29 +1,32 @@
+import { ContextSupplement } from '@machinat/auth/types';
 import TelegramUser from '../user';
 import { TelegramChat } from '../channel';
-import { TelegramAuthContext, TelegramAuthRefinement } from './types';
+import { TelegramAuthContext, TelegramAuthData } from './types';
 
 // eslint-disable-next-line import/prefer-default-export
-export const refineAuthContext = ({
-  channel,
+export const supplementContext = ({
+  chat,
   botId,
   userId,
   firstName,
   lastName,
   username,
-  languageCode,
-}: TelegramAuthContext): TelegramAuthRefinement => ({
-  user: new TelegramUser(userId, {
+  photoUrl,
+}: TelegramAuthData): ContextSupplement<TelegramAuthContext> => {
+  const user = new TelegramUser(userId, {
     id: userId,
     is_bot: false,
     first_name: firstName,
     last_name: lastName,
     username,
-    language_code: languageCode,
-  }),
-  channel: new TelegramChat(botId, {
-    id: channel.id,
-    type: channel.type,
-    title: channel.title,
-    username: channel.username,
-  }),
-});
+  });
+
+  return {
+    user,
+    channel: chat
+      ? new TelegramChat(botId, chat)
+      : TelegramChat.fromUser(botId, user),
+    botId,
+    photoUrl,
+  };
+};

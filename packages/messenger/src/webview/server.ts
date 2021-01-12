@@ -3,28 +3,39 @@ import crypto from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import base64url from 'base64url';
 import { makeClassProvider } from '@machinat/core/service';
-import { ServerAuthorizer, AuthorizerVerifyResult } from '@machinat/auth/types';
+import {
+  ServerAuthorizer,
+  AuthorizerVerifyResult,
+  ContextSupplement,
+} from '@machinat/auth/types';
 
 import { PLATFORM_CONFIGS_I } from '../interface';
 import { MESSENGER } from '../constant';
-import type MessengerChat from '../channel';
-import type MessengerUser from '../user';
-import { refineExtensionPayload } from './utils';
+import { supplementContext } from './utils';
 import type {
-  ExtensionPayload,
-  ExtensionCredential,
-  AuthorizerRefinement,
+  MessengerAuthCredential,
+  SignedReuestPayload,
+  MessengerAuthContext,
+  MessengerAuthData,
 } from './types';
 
 const {
   /** @ignore */
-  decode: decodeBase64URL,
+  decode: decodeBase64Url,
   /** @ignore */
-  toBuffer: decodeBase64URLToBuffer,
+  toBuffer: decodeBase64UrlToBuffer,
 } = base64url;
 
 type MessengerServerAuthorizerOptions = {
+  /**
+   * App secret for verifying auth data.
+   */
   appSecret: string;
+  /**
+   * Time limit in seconds for authorization, verify the `issued_at` field from
+   * `signed_request`.
+   */
+  issueTimeLimit?: number;
 };
 
 /**
@@ -35,18 +46,22 @@ type MessengerServerAuthorizerOptions = {
 export class MessengerServerAuthorizer
   implements
     ServerAuthorizer<
-      MessengerUser,
-      MessengerChat,
-      ExtensionPayload,
-      ExtensionCredential
+      MessengerAuthCredential,
+      MessengerAuthData,
+      MessengerAuthContext
     > {
-  appSecret: string;
   platform = MESSENGER;
+  appSecret: string;
+  issueTimeLimit: number;
 
-  constructor(options: MessengerServerAuthorizerOptions) {
-    invariant(options.appSecret, 'options.appSecret must not be empty');
+  constructor({
+    appSecret,
+    issueTimeLimit = 300, // 5 min;
+  }: MessengerServerAuthorizerOptions) {
+    invariant(appSecret, 'options.appSecret must not be empty');
 
-    this.appSecret = options.appSecret;
+    this.appSecret = appSecret;
+    this.issueTimeLimit = issueTimeLimit;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -59,8 +74,8 @@ export class MessengerServerAuthorizer
   }
 
   async verifyCredential(
-    credential: ExtensionCredential
-  ): Promise<AuthorizerVerifyResult<ExtensionPayload>> {
+    credential: MessengerAuthCredential
+  ): Promise<AuthorizerVerifyResult<MessengerAuthData>> {
     if (!credential || !credential.signedRequest) {
       return {
         success: false,
@@ -69,8 +84,10 @@ export class MessengerServerAuthorizer
       };
     }
 
-    const [sigEncoded, dataEncoded] = credential.signedRequest.split('.', 2);
-    const sig: Buffer = decodeBase64URLToBuffer(sigEncoded);
+    const { signedRequest, client } = credential;
+    const [sigEncoded, dataEncoded] = signedRequest.split('.', 2);
+
+    const sig: Buffer = decodeBase64UrlToBuffer(sigEncoded);
     if (!sigEncoded || !dataEncoded) {
       return {
         success: false,
@@ -92,29 +109,45 @@ export class MessengerServerAuthorizer
       };
     }
 
-    const context = JSON.parse(decodeBase64URL(dataEncoded));
+    const payload: SignedReuestPayload = JSON.parse(
+      decodeBase64Url(dataEncoded)
+    );
+
+    if (payload.issued_at + this.issueTimeLimit < Date.now() / 1000) {
+      return {
+        success: false,
+        code: 401,
+        reason: 'login timeout',
+      };
+    }
 
     return {
       success: true,
-      refreshable: false,
-      context,
+      data: {
+        userId: payload.psid,
+        chatType: payload.thread_type,
+        chatId: payload.tid,
+        pageId: payload.page_id,
+        client,
+      },
     };
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async verifyRefreshment(): Promise<AuthorizerVerifyResult<ExtensionPayload>> {
+  async verifyRefreshment(
+    data: MessengerAuthData
+  ): Promise<AuthorizerVerifyResult<MessengerAuthData>> {
     return {
-      success: false,
-      code: 403,
-      reason: 'should resign only',
+      success: true,
+      data,
     };
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async refineAuth(
-    payload: ExtensionPayload
-  ): Promise<null | AuthorizerRefinement> {
-    return refineExtensionPayload(payload);
+  async supplementContext(
+    data: MessengerAuthData
+  ): Promise<null | ContextSupplement<MessengerAuthContext>> {
+    return supplementContext(data);
   }
 }
 

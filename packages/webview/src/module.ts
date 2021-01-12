@@ -1,11 +1,9 @@
+import { BaseBot, BaseMarshaler } from '@machinat/core/base';
+import type { PlatformModule } from '@machinat/core/types';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import { ServiceProvision } from '@machinat/core/service/types';
-import { BaseBot, BaseMarshaler } from '@machinat/core/base';
-import type {
-  PlatformModule,
-  MachinatUser,
-  MachinatChannel,
-} from '@machinat/core/types';
+
+import { AnyServerAuthorizer } from '@machinat/auth/types';
 import Http from '@machinat/http';
 import type {
   HttpRequestRouting,
@@ -40,7 +38,6 @@ import type {
   WebviewEventContext,
   WebviewDispatchFrame,
   WebviewPlatformConfigs,
-  AnyServerAuthorizer,
 } from './types';
 
 /** @internal */
@@ -176,17 +173,13 @@ const Webview = {
 declare namespace Webview {
   export type Bot<Authorizer extends AnyServerAuthorizer> = BotP<Authorizer>;
 
-  export type Receiver<
-    User extends MachinatUser,
-    Channel extends MachinatChannel,
-    Context
-  > = ReceiverP<User, Channel, Context>;
+  export type Receiver<Authorizer extends AnyServerAuthorizer> = ReceiverP<
+    Authorizer
+  >;
 
-  export type SocketServer<
-    User extends MachinatUser,
-    Channel extends MachinatChannel,
-    Context
-  > = ServerP<User, Channel, Context>;
+  export type SocketServer<Authorizer extends AnyServerAuthorizer> = ServerP<
+    Authorizer
+  >;
 
   export type SocketBrokerI = BrokerI;
 }

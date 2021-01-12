@@ -412,14 +412,14 @@ export class WebSocketServer<
       );
 
       if (authResult.success) {
-        const { authInfo, user, expireAt } = authResult;
+        const { authContext, user, expireAt } = authResult;
 
         this._connectionStates.set(connId, {
           connId,
           isConnected: false,
           socket,
           user,
-          auth: authInfo,
+          auth: authContext,
           expireAt: expireAt || null,
           topics: new Set(),
         });
@@ -548,7 +548,7 @@ export const ServerP = makeClassProvider({
       broker,
       verifyUpgrade || (() => true),
       verifyLogin ||
-        (async () => ({ success: true, user: null, authInfo: null })),
+        (async () => ({ success: true, user: null, authContext: null })),
       heartbeatInterval
     ),
 })(WebSocketServer);

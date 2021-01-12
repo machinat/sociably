@@ -18,7 +18,7 @@ export class LineAssetsManager {
   private _bot: BotP;
 
   constructor(stateMaanger: Base.StateControllerI, bot: BotP) {
-    this.botChannelId = bot.botChannelId;
+    this.botChannelId = bot.channelId;
     this._stateController = stateMaanger;
     this._bot = bot;
   }

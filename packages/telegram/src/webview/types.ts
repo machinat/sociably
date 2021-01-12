@@ -1,25 +1,22 @@
-import type { AuthorizerRefinement } from '@machinat/auth/types';
+import type { AuthContextBase } from '@machinat/auth/types';
 import type { TelegramChat } from '../channel';
 import type TelegramUser from '../user';
-import { TelegramChatType } from '../types';
+import { RawChat } from '../types';
 
-export type TelegramAuthContext = {
+export type TelegramAuthData = {
   botId: number;
-  channel: {
-    type: TelegramChatType;
-    id: number;
-    title?: string;
-    username?: string;
-  };
+  chat: undefined | RawChat;
   userId: number;
   firstName: string;
-  lastName?: string;
-  username?: string;
-  photoUrl?: string;
-  languageCode?: string;
+  lastName: undefined | string;
+  username: undefined | string;
+  photoUrl: undefined | string;
 };
 
-export type TelegramAuthRefinement = AuthorizerRefinement<
-  TelegramUser,
-  TelegramChat
->;
+export type TelegramAuthContext = {
+  platform: 'telegram';
+  channel: TelegramChat;
+  user: TelegramUser;
+  botId: number;
+  photoUrl: undefined | string;
+} & AuthContextBase;

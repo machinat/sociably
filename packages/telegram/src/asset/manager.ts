@@ -18,7 +18,7 @@ export class TelegramAssetsManager {
   constructor(stateManager: Base.StateControllerI, bot: BotP) {
     this._stateController = stateManager;
     this.bot = bot;
-    this.botId = bot.botId;
+    this.botId = bot.id;
   }
 
   private _makeResourceToken(resource: string): string {

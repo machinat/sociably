@@ -21,7 +21,7 @@ import type {
   AuthAPIResponseBody,
   AuthAPIErrorBody,
   AuthModuleConfigs,
-  GetAuthContextOf,
+  ContextOfAuthorizer,
   WithHeaders,
 } from './types';
 
@@ -64,7 +64,7 @@ const respondAPIError = (res: ServerResponse, code: number, reason: string) => {
 };
 
 type AuthVerifyResult<Authorizer extends AnyServerAuthorizer> =
-  | { success: true; token: string; auth: GetAuthContextOf<Authorizer> }
+  | { success: true; token: string; context: ContextOfAuthorizer<Authorizer> }
   | { success: false; token: void | string; code: number; reason: string };
 
 /**
@@ -82,8 +82,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     {
       secret,
       entryPath = '/',
-      authCookieAge = 180, // 3 min
-      dataCookieAge = 60, // 1 min
+      dataCookieAge = 180, // 3 min
       tokenAge = 1800, // 30 min
       refreshPeriod = 86400, // 1 day
       cookieDomain,
@@ -110,7 +109,6 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     this._cookieController = new CookieController({
       entryPath,
       secret,
-      authCookieAge,
       dataCookieAge,
       tokenAge,
       refreshPeriod,
@@ -238,7 +236,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       };
     }
 
-    const { platform, context, exp, iat } = verifyResult.payload;
+    const { platform, data, exp, iat } = verifyResult.payload;
 
     const authorizer = this._getAuthorizerOf(platform);
     if (!authorizer) {
@@ -250,8 +248,8 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       };
     }
 
-    const result = await authorizer.refineAuth(context);
-    if (!result) {
+    const supplement = await authorizer.supplementContext(data);
+    if (!supplement) {
       return {
         success: false,
         token,
@@ -260,18 +258,17 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       };
     }
 
-    const { channel, user } = result;
+    const authData = {
+      ...supplement,
+      platform,
+      loginAt: new Date(iat * 1000),
+      expireAt: new Date(exp * 1000),
+    };
+
     return {
       success: true,
       token,
-      auth: {
-        platform,
-        channel,
-        user,
-        context,
-        loginAt: new Date(iat * 1000),
-        expireAt: new Date(exp * 1000),
-      } as any,
+      context: authData as ContextOfAuthorizer<Authorizer>,
     };
   }
 
@@ -283,7 +280,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
         return;
       }
 
-      const { platform, credential } = body as SignRequestBody<any>;
+      const { platform, credential } = body as SignRequestBody<unknown>;
       if (!platform || !credential) {
         respondAPIError(res, 400, 'invalid sign params');
         return;
@@ -302,15 +299,11 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
         return;
       }
 
-      const { context, refreshable } = verifyResult;
       const token = await this._cookieController.issueAuth(
         res,
         platform,
-        context,
-        {
-          refreshable,
-          signatureOnly: true,
-        }
+        verifyResult.data,
+        { signatureOnly: true }
       );
 
       respondAPIOk(res, platform, token);
@@ -353,7 +346,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
         return;
       }
 
-      const { refreshTill, platform, context } = tokenResult.payload;
+      const { refreshTill, platform, data } = tokenResult.payload;
       if (!refreshTill) {
         respondAPIError(res, 400, 'token not refreshable');
         return;
@@ -367,7 +360,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
           return;
         }
 
-        const refreshResult = await authorizer.verifyRefreshment(context);
+        const refreshResult = await authorizer.verifyRefreshment(data);
         if (!refreshResult.success) {
           const { code, reason } = refreshResult;
           respondAPIError(res, code, reason);
@@ -377,8 +370,8 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
         const newToken = await this._cookieController.issueAuth(
           res,
           platform,
-          refreshResult.context,
-          { refreshTill, refreshable: true, signatureOnly: true }
+          refreshResult.data,
+          { refreshTill, signatureOnly: true }
         );
         respondAPIOk(res, platform, newToken);
       } else {
@@ -439,11 +432,11 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     signature: string,
     jwtVerifyOptions?: JWTVerifyOptions
   ): Promise<
-    | { success: true; payload: AuthTokenPayload<any> }
+    | { success: true; payload: AuthTokenPayload<unknown> }
     | { success: false; code: number; reason: string }
   > {
     try {
-      const payload: AuthTokenPayload<any> = await thenifiedly.call(
+      const payload: AuthTokenPayload<unknown> = await thenifiedly.call(
         verifyJWT,
         `${token}.${signature}`,
         this.secret,

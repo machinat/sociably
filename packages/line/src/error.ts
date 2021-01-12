@@ -1,8 +1,7 @@
-/* eslint-disable import/prefer-default-export */
 import { STATUS_CODES } from 'http';
 import { LineAPIResult } from './types';
 
-export class LineAPIError extends Error {
+class LineAPIError extends Error {
   info: any;
   code: number;
   status: string;
@@ -38,3 +37,5 @@ export class LineAPIError extends Error {
     this.info = body;
   }
 }
+
+export default LineAPIError;

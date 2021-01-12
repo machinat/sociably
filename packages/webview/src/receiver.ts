@@ -2,16 +2,19 @@ import { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
-  MachinatUser,
-  MachinatChannel,
   PopEventWrapper,
   PopEventFn,
   PopErrorFn,
 } from '@machinat/core/types';
-import { AuthData, ServerAuthorizer } from '@machinat/auth/types';
+import {
+  AnyServerAuthorizer,
+  UserOfAuthorizer,
+  ContextOfAuthorizer,
+} from '@machinat/auth/types';
 import type { HttpRequestInfo, UpgradeHandler } from '@machinat/http/types';
 import {
   EventInput,
+  EventValue,
   ConnectEventValue,
   DisconnectEventValue,
 } from '@machinat/websocket/types';
@@ -27,27 +30,19 @@ import type { WebviewEventContext } from './types';
  * @category Provider
  */
 export class WebviewReceiver<
-  User extends MachinatUser,
-  Channel extends MachinatChannel,
-  Context
+  Authorizer extends AnyServerAuthorizer,
+  Value extends EventValue = EventValue
 > {
-  private _bot: BotP<ServerAuthorizer<User, Channel, Context, string>>;
-  private _server: SocketServerP<User, Channel, Context>;
+  private _bot: BotP<Authorizer>;
+  private _server: SocketServerP<Authorizer>;
 
-  private _popEvent: PopEventFn<
-    WebviewEventContext<ServerAuthorizer<User, Channel, Context, string>>,
-    null
-  >;
-
+  private _popEvent: PopEventFn<WebviewEventContext<Authorizer, Value>, null>;
   private _popError: PopErrorFn;
 
   constructor(
-    bot: BotP<ServerAuthorizer<User, Channel, Context, string>>,
-    server: SocketServerP<User, Channel, Context>,
-    popEventWrapper: PopEventWrapper<
-      WebviewEventContext<ServerAuthorizer<User, Channel, Context, string>>,
-      null
-    >,
+    bot: BotP<Authorizer>,
+    server: SocketServerP<Authorizer>,
+    popEventWrapper: PopEventWrapper<WebviewEventContext<Authorizer>, null>,
     popError: PopErrorFn
   ) {
     this._bot = bot;
@@ -104,9 +99,9 @@ export class WebviewReceiver<
   private async _issueEvent(
     value: EventInput,
     connId: string,
-    user: User,
+    user: UserOfAuthorizer<Authorizer>,
     request: HttpRequestInfo,
-    auth: AuthData<User, Channel, Context>
+    authContext: ContextOfAuthorizer<Authorizer>
   ) {
     const channel = new WebviewConnection(this._server.id, connId);
     await this._popEvent({
@@ -117,7 +112,7 @@ export class WebviewReceiver<
         source: 'websocket',
         request,
         connection: channel,
-        auth,
+        auth: authContext,
       },
     });
   }
@@ -131,7 +126,6 @@ export const ReceiverP = makeClassProvider({
 })(WebviewReceiver);
 
 export type ReceiverP<
-  User extends MachinatUser,
-  Channel extends MachinatChannel,
-  Context
-> = WebviewReceiver<User, Channel, Context>;
+  Authorizer extends AnyServerAuthorizer,
+  Value extends EventValue = EventValue
+> = WebviewReceiver<Authorizer, Value>;

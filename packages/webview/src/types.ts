@@ -1,6 +1,5 @@
 import type {
   MachinatUser,
-  MachinatChannel,
   PlatformMounter,
   EventMiddleware,
   DispatchMiddleware,
@@ -10,9 +9,11 @@ import type { UnitSegment } from '@machinat/core/renderer/types';
 import type { DispatchFrame } from '@machinat/core/engine/types';
 import type { MaybeContainer } from '@machinat/core/service/types';
 import type {
-  AuthData,
-  ServerAuthorizer,
-  ClientAuthorizer,
+  AnyServerAuthorizer,
+  AnyClientAuthorizer,
+  AnyAuthContext,
+  ContextOfAuthorizer,
+  UserOfAuthorizer,
 } from '@machinat/auth/types';
 import type { NextServerOptions } from '@machinat/next/types';
 import type {
@@ -29,15 +30,13 @@ import type {
   WebviewUserChannel,
 } from './channel';
 
-export type AnyServerAuthorizer = ServerAuthorizer<any, any, unknown, unknown>;
-
 export type WebviewComponent = NativeComponent<
   unknown,
   UnitSegment<EventInput>
 >;
 
 export type WebviewEvent<
-  Value extends EventValue<string, string, unknown>,
+  Value extends EventValue,
   User extends null | MachinatUser
 > = {
   platform: 'webview';
@@ -48,12 +47,8 @@ export type WebviewEvent<
   user: User;
 };
 
-export type WebviewMetadata<
-  User extends MachinatUser,
-  Channel extends MachinatChannel,
-  AuthContext
-> = Omit<
-  WebSocketMetadata<AuthData<User, Channel, AuthContext>>,
+export type WebviewMetadata<Context extends AnyAuthContext> = Omit<
+  WebSocketMetadata<Context>,
   'connection'
 > & {
   connection: WebviewConnection;
@@ -61,50 +56,29 @@ export type WebviewMetadata<
 
 export type WebviewEventContext<
   Authorizer extends AnyServerAuthorizer,
-  Value extends EventValue<string, string, unknown> = EventValue<
-    string,
-    string,
-    unknown
-  >
-> = Authorizer extends ServerAuthorizer<
-  infer User,
-  infer Channel,
-  infer Context,
-  unknown
->
-  ? {
-      platform: 'webview';
-      event: WebviewEvent<Value, User>;
-      metadata: WebviewMetadata<User, Channel, Context>;
-      bot: BotP<Authorizer>;
-    }
-  : never;
+  Value extends EventValue = EventValue
+> = {
+  platform: 'webview';
+  event: WebviewEvent<Value, UserOfAuthorizer<Authorizer>>;
+  metadata: WebviewMetadata<ContextOfAuthorizer<Authorizer>>;
+  bot: BotP<Authorizer>;
+};
 
 export type WebviewClientEvent<
-  Authorizer extends ClientAuthorizer<any, any, unknown, unknown>,
-  Value extends EventValue<string, string, unknown> = EventValue<
-    string,
-    string,
-    unknown
-  >
-> = Authorizer extends ServerAuthorizer<infer User, any, unknown, unknown>
-  ? {
-      platform: 'webview';
-      kind: Value['kind'];
-      type: Value['type'];
-      payload: Value['payload'];
-      channel: WebviewConnection;
-      user: User;
-    }
-  : never;
+  Authorizer extends AnyClientAuthorizer,
+  Value extends EventValue = EventValue
+> = {
+  platform: 'webview';
+  kind: Value['kind'];
+  type: Value['type'];
+  payload: Value['payload'];
+  channel: WebviewConnection;
+  user: UserOfAuthorizer<Authorizer>;
+};
 
 export type WebviewEventMiddleware<
   Authorizer extends AnyServerAuthorizer,
-  Value extends EventValue<string, string, unknown> = EventValue<
-    string,
-    string,
-    unknown
-  >
+  Value extends EventValue = EventValue
 > = EventMiddleware<WebviewEventContext<Authorizer, Value>, null>;
 
 export type WebviewDispatchFrame<
@@ -153,7 +127,7 @@ export type WebviewPlatformConfigs<Authorizer extends AnyServerAuthorizer> = {
   origin: string;
   heartbeatInterval?: number;
   eventMiddlewares?: MaybeContainer<
-    WebviewEventMiddleware<Authorizer, EventValue<string, string, unknown>>
+    WebviewEventMiddleware<Authorizer, EventValue>
   >[];
   dispatchMiddlewares?: MaybeContainer<WebviewDispatchMiddleware<Authorizer>>[];
 };
@@ -161,7 +135,7 @@ export type WebviewPlatformConfigs<Authorizer extends AnyServerAuthorizer> = {
 export type WebviewPlatformMounter<
   Authorizer extends AnyServerAuthorizer
 > = PlatformMounter<
-  WebviewEventContext<Authorizer, EventValue<string, string, unknown>>,
+  WebviewEventContext<Authorizer, EventValue>,
   null,
   WebSocketJob,
   WebviewDispatchFrame<Authorizer>,

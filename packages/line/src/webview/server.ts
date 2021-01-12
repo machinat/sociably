@@ -1,24 +1,21 @@
 import invariant from 'invariant';
-import fetch from 'node-fetch';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
-import type { ServerAuthorizer } from '@machinat/auth/types';
+import type { ServerAuthorizer, ContextSupplement } from '@machinat/auth/types';
 
 import { PLATFORM_CONFIGS_I } from '../interface';
+import { BotP } from '../bot';
 import { LINE } from '../constant';
-import type LineUser from '../user';
-import type LineChat from '../channel';
+import { supplementContext } from './utils';
+import LineAPIError from '../error';
 import type {
-  LineAuthContext,
   LineAuthCredential,
+  LineAuthData,
+  LineAuthContext,
   LineVerifyAuthResult,
-  AuthorizerRefinement,
 } from './types';
-import { refineAuthContext } from './utils';
 
 type LineServerAuthorizerOpts = {
-  providerId: string;
-  channelId: string;
   liffChannelIds: string[];
 };
 
@@ -27,24 +24,17 @@ type LineServerAuthorizerOpts = {
  */
 export class LineServerAuthorizer
   implements
-    ServerAuthorizer<LineUser, LineChat, LineAuthContext, LineAuthCredential> {
-  providerId: string;
-  channelId: string;
+    ServerAuthorizer<LineAuthCredential, LineAuthData, LineAuthContext> {
+  bot: BotP;
   liffChannelIds: string[];
-
   platform = LINE;
 
-  constructor({
-    providerId,
-    channelId,
-    liffChannelIds,
-  }: LineServerAuthorizerOpts) {
+  constructor(bot: BotP, { liffChannelIds }: LineServerAuthorizerOpts) {
     invariant(
       liffChannelIds && liffChannelIds.length,
       'options.liffChannelIds should not be empty'
     );
-    this.providerId = providerId;
-    this.channelId = channelId;
+    this.bot = bot;
     this.liffChannelIds = liffChannelIds;
   }
 
@@ -60,80 +50,112 @@ export class LineServerAuthorizer
   async verifyCredential(
     credential: LineAuthCredential
   ): Promise<LineVerifyAuthResult> {
-    const { accessToken, context } = credential;
-    // eslint-disable-next-line prefer-destructuring
+    const { accessToken, userId, groupId, roomId, os, language } = credential;
+
     if (!accessToken) {
       return {
-        success: false as const,
+        success: false,
         code: 400,
         reason: 'Empty accessToken received',
       };
     }
 
-    const verifyRes = await fetch(
-      `https://api.line.me/oauth2/v2.1/verify?access_token=${accessToken}`
-    );
-    const verifyBody = await verifyRes.json();
-
-    if (!verifyRes.ok) {
-      return {
-        success: false as const,
-        code: verifyRes.status,
-        reason: verifyBody.error_description,
-      };
+    let verifyBody;
+    try {
+      ({ body: verifyBody } = await this.bot.dispatchAPICall(
+        'GET',
+        `oauth2/v2.1/verify?access_token=${accessToken}`
+      ));
+    } catch (err) {
+      if (err instanceof LineAPIError) {
+        return {
+          success: false,
+          code: err.code,
+          reason: err.message,
+        };
+      }
+      throw err;
     }
 
     if (!this.liffChannelIds.includes(verifyBody.client_id)) {
       return {
-        success: false as const,
+        success: false,
         code: 400,
         reason: 'unknown client_id of the access token',
       };
     }
 
+    let profileData;
+    if (groupId || roomId) {
+      try {
+        ({ body: profileData } = await this.bot.dispatchAPICall(
+          'GET',
+          groupId
+            ? `v2/bot/group/${groupId}/member/${userId}`
+            : `v2/bot/room/${roomId}/member/${userId}`
+        ));
+      } catch (err) {
+        if (err instanceof LineAPIError) {
+          return {
+            success: false,
+            code: err.code,
+            reason: err.message,
+          };
+        }
+        throw err;
+      }
+    }
+
     return {
-      success: true as const,
-      refreshable: false as const,
-      context: {
-        ...context,
-        channelId: this.channelId,
-        providerId: this.providerId,
+      success: true,
+      data: {
+        channelId: this.bot.channelId,
+        providerId: this.bot.providerId,
+        userId,
+        groupId,
+        roomId,
+        os,
+        language,
+        name: profileData?.displayName,
+        picture: profileData?.pictureUrl,
       },
     };
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async verifyRefreshment(): Promise<LineVerifyAuthResult> {
+  async verifyRefreshment(data: LineAuthData): Promise<LineVerifyAuthResult> {
     return {
-      success: false as const,
-      code: 403,
-      reason: 'should resign only',
+      success: true,
+      data,
     };
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async refineAuth(ctx: LineAuthContext): Promise<null | AuthorizerRefinement> {
-    const { providerId, channelId } = ctx;
-    if (providerId !== this.providerId || channelId !== this.channelId) {
+  async supplementContext(
+    data: LineAuthData
+  ): Promise<null | ContextSupplement<LineAuthContext>> {
+    const { providerId, channelId } = data;
+    if (
+      providerId !== this.bot.providerId ||
+      channelId !== this.bot.channelId
+    ) {
       return null;
     }
 
-    return refineAuthContext(ctx);
+    return supplementContext(data);
   }
 }
 
 export const ServerAuthorizerP = makeClassProvider({
   lifetime: 'transient',
-  deps: [PLATFORM_CONFIGS_I] as const,
-  factory: ({ providerId, channelId, liffChannelIds }) => {
+  deps: [BotP, PLATFORM_CONFIGS_I] as const,
+  factory: (bot, { liffChannelIds }) => {
     invariant(
       liffChannelIds,
       'provide configs.liffChannelIds to authorize with liff'
     );
 
-    return new LineServerAuthorizer({
-      providerId,
-      channelId,
+    return new LineServerAuthorizer(bot, {
       liffChannelIds,
     });
   },

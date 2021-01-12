@@ -23,7 +23,6 @@ import {
 type OperatorOptions = {
   entryPath: string;
   secret: string;
-  authCookieAge: number;
   dataCookieAge: number;
   tokenAge: number;
   refreshPeriod: number;
@@ -55,7 +54,6 @@ export class CookieController {
 
     const {
       entryPath,
-      authCookieAge,
       dataCookieAge,
       cookieDomain,
       cookiePath,
@@ -74,7 +72,7 @@ export class CookieController {
 
     this._tokenCookieOpts = {
       ...baseCookieOpts,
-      maxAge: authCookieAge,
+      maxAge: dataCookieAge,
     };
 
     this._errorCookieOpts = {
@@ -103,10 +101,10 @@ export class CookieController {
     };
   }
 
-  async getState<StateData>(
+  async getState<State>(
     req: IncomingMessage,
     platformAsserted: string
-  ): Promise<null | StateData> {
+  ): Promise<null | State> {
     let encodedState: string;
     const cookies = getCookies(req);
     if (!cookies || !(encodedState = cookies[STATE_COOKIE_KEY])) {
@@ -117,7 +115,7 @@ export class CookieController {
       const {
         platform,
         state,
-      }: StateTokenPayload<any> = await thenifiedly.call(
+      }: StateTokenPayload<State> = await thenifiedly.call(
         verifyJWT,
         encodedState,
         this.options.secret
@@ -129,14 +127,14 @@ export class CookieController {
     }
   }
 
-  async issueState<StateData>(
+  async issueState<State>(
     res: ServerResponse,
     platform: string,
-    state: StateData
+    state: State
   ): Promise<string> {
     const encodedState = await thenifiedly.call(
       signJWT,
-      { platform, state } as StatePayload<StateData>,
+      { platform, state } as StatePayload<State>,
       this.options.secret,
       { expiresIn: this.options.dataCookieAge }
     );
@@ -145,10 +143,10 @@ export class CookieController {
     return encodedState;
   }
 
-  async getAuth<Context>(
+  async getAuth<Data>(
     req: IncomingMessage,
     platformAsserted: string
-  ): Promise<null | Context> {
+  ): Promise<null | Data> {
     const cookies = getCookies(req);
     if (!cookies) {
       return null;
@@ -161,54 +159,45 @@ export class CookieController {
     }
 
     try {
-      const {
-        platform,
-        context,
-      }: AuthTokenPayload<Context> = await thenifiedly.call(
+      const { platform, data }: AuthTokenPayload<Data> = await thenifiedly.call(
         verifyJWT,
         `${contentVal}.${sigVal}`,
         this.options.secret
       );
 
-      return platform === platformAsserted ? context : null;
+      return platform === platformAsserted ? data : null;
     } catch (e) {
       return null;
     }
   }
 
-  async issueAuth<Context>(
+  async issueAuth<Data>(
     res: ServerResponse,
     platform: string,
-    context: Context,
-    {
-      refreshTill,
-      refreshable = true,
-      signatureOnly = false,
-    }: IssueAuthOptions = {}
+    data: Data,
+    { refreshTill, signatureOnly = false }: IssueAuthOptions = {}
   ): Promise<string> {
     const { secret, tokenAge, refreshPeriod } = this.options;
 
     const now = Math.floor(Date.now() / 1000);
-    const token = await thenifiedly.call(
-      signJWT,
-      {
-        platform,
-        context,
-        refreshTill: !refreshable
-          ? undefined
-          : !refreshTill
-          ? now + refreshPeriod
-          : refreshTill > now + tokenAge
-          ? refreshTill
-          : undefined,
-        scope: this._cookieScope,
-      } as AuthPayload<Context>,
-      secret,
-      { expiresIn: tokenAge }
-    );
 
-    const [header, payload, signature] = token.split('.');
-    const tokenContent = `${header}.${payload}`;
+    const payload: AuthPayload<Data> = {
+      platform,
+      data,
+      refreshTill: !refreshTill
+        ? now + refreshPeriod
+        : refreshTill > now + tokenAge
+        ? refreshTill
+        : undefined,
+      scope: this._cookieScope,
+    };
+
+    const token = await thenifiedly.call(signJWT, payload, secret, {
+      expiresIn: tokenAge,
+    });
+
+    const [header, body, signature] = token.split('.');
+    const tokenContent = `${header}.${body}`;
 
     setCookie(res, SIGNATURE_COOKIE_KEY, signature, this._signatureCookieOpts);
     if (!signatureOnly) {
@@ -299,16 +288,12 @@ export class CookieAccessor {
     this._controller = operator;
   }
 
-  getState<StateData>(): Promise<null | StateData> {
-    return this._controller.getState<StateData>(this._req, this._platform);
+  getState<State>(): Promise<null | State> {
+    return this._controller.getState<State>(this._req, this._platform);
   }
 
-  issueState<StateData>(state: StateData): Promise<string> {
-    return this._controller.issueState<StateData>(
-      this._res,
-      this._platform,
-      state
-    );
+  issueState<State>(state: State): Promise<string> {
+    return this._controller.issueState<State>(this._res, this._platform, state);
   }
 
   getAuth<Context>(): Promise<null | Context> {

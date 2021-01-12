@@ -1,18 +1,16 @@
 // eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import invariant from 'invariant';
-import type { ClientAuthorizer } from '@machinat/auth/types';
+import type { ClientAuthorizer, ContextSupplement } from '@machinat/auth/types';
 import { LINE } from '../constant';
-import type LineUser from '../user';
-import type LineChat from '../channel';
+import { supplementContext } from './utils';
 import type {
-  LineAuthContext,
   LineAuthCredential,
+  LineAuthData,
+  LineAuthContext,
   LiffContext,
-  AuthorizerRefinement,
   AuthorizerCredentialResult,
 } from './types';
-import { refineAuthContext } from './utils';
 
 type ClientAuthorizerOptions = {
   liffId: string;
@@ -31,7 +29,7 @@ const waitingForRedirecting = (): Promise<never> =>
 
 class LineClientAuthorizer
   implements
-    ClientAuthorizer<LineUser, LineChat, LineAuthContext, LineAuthCredential> {
+    ClientAuthorizer<LineAuthCredential, LineAuthData, LineAuthContext> {
   liff: any;
   liffId: string;
   shouldLoadSDK: boolean;
@@ -39,7 +37,6 @@ class LineClientAuthorizer
   _searchParams: URLSearchParams;
 
   platform = LINE;
-  shouldResign = true;
 
   constructor({
     liffId,
@@ -92,34 +89,25 @@ class LineClientAuthorizer
       return waitingForRedirecting();
     }
 
-    const {
-      type: contextType,
-      userId,
-      utouId,
-      groupId,
-      roomId,
-    }: LiffContext = liff.getContext();
-
+    const { userId, groupId, roomId }: LiffContext = liff.getContext();
     return {
       success: true,
       credential: {
         accessToken: liff.getAccessToken(),
-        context: {
-          os: liff.getOS(),
-          language: liff.getLanguage(),
-          contextType,
-          userId,
-          utouId,
-          groupId,
-          roomId,
-        },
+        os: liff.getOS(),
+        language: liff.getLanguage(),
+        userId,
+        groupId,
+        roomId,
       },
     };
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async refineAuth(ctx: LineAuthContext): Promise<null | AuthorizerRefinement> {
-    return refineAuthContext(ctx);
+  async supplementContext(
+    data: LineAuthData
+  ): Promise<null | ContextSupplement<LineAuthContext>> {
+    return supplementContext(data);
   }
 }
 
