@@ -60,8 +60,8 @@ const WebSocket = {
   SERVER_ID_I,
   CONFIGS_I: PLATFORM_CONFIGS_I,
 
-  initModule: <User extends null | MachinatUser, Auth, Credential>(
-    configs: WebSocketPlatformConfigs<User, Auth, Credential>
+  initModule: <User extends null | MachinatUser, Auth>(
+    configs: WebSocketPlatformConfigs<User, Auth>
   ): PlatformModule<
     WebSocketEventContext<User, Auth>,
     null,

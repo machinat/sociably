@@ -7,7 +7,8 @@ import { PLATFORM_CONFIGS_I } from '../interface';
 import { BotP } from '../bot';
 import { LINE } from '../constant';
 import { supplementContext } from './utils';
-import LineAPIError from '../error';
+import LineApiError from '../error';
+import type { LineRawUserProfile } from '../types';
 import type {
   LineAuthCredential,
   LineAuthData,
@@ -17,6 +18,14 @@ import type {
 
 type LineServerAuthorizerOpts = {
   liffChannelIds: string[];
+};
+
+type VerifyTokenResult = {
+  /* eslint-disable camelcase */
+  scope: string;
+  client_id: string;
+  expires_in: number;
+  /* eslint-enable camelcase */
 };
 
 /**
@@ -60,14 +69,14 @@ export class LineServerAuthorizer
       };
     }
 
-    let verifyBody;
+    let verifyBody: VerifyTokenResult;
     try {
-      ({ body: verifyBody } = await this.bot.dispatchAPICall(
+      verifyBody = await this.bot.makeApiCall(
         'GET',
         `oauth2/v2.1/verify?access_token=${accessToken}`
-      ));
+      );
     } catch (err) {
-      if (err instanceof LineAPIError) {
+      if (err instanceof LineApiError) {
         return {
           success: false,
           code: err.code,
@@ -85,17 +94,18 @@ export class LineServerAuthorizer
       };
     }
 
-    let profileData;
+    let profileData: undefined | LineRawUserProfile;
+
     if (groupId || roomId) {
       try {
-        ({ body: profileData } = await this.bot.dispatchAPICall(
+        profileData = await this.bot.makeApiCall<LineRawUserProfile>(
           'GET',
           groupId
             ? `v2/bot/group/${groupId}/member/${userId}`
             : `v2/bot/room/${roomId}/member/${userId}`
-        ));
+        );
       } catch (err) {
-        if (err instanceof LineAPIError) {
+        if (err instanceof LineApiError) {
           return {
             success: false,
             code: err.code,

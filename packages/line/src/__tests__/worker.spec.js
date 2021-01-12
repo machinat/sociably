@@ -9,10 +9,10 @@ const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 const accessToken = '__LINE_CHANNEL_TOKEN__';
 
-let lineAPI;
+let lineApi;
 let queue;
 beforeEach(() => {
-  lineAPI = nock('https://api.line.me', {
+  lineApi = nock('https://api.line.me', {
     reqheaders: {
       'content-type': 'application/json',
       authorization: 'Bearer __LINE_CHANNEL_TOKEN__',
@@ -26,12 +26,12 @@ it('makes calls to api', async () => {
   const client = new LineWorker(accessToken, 10);
 
   const apiAssertions = [
-    lineAPI.post('/foo/1', { id: 1 }).delay(100).reply(200, { id: 1 }),
-    lineAPI.post('/bar/1', { id: 2 }).delay(100).reply(200, { id: 2 }),
-    lineAPI.post('/baz/1', { id: 3 }).delay(100).reply(200, { id: 3 }),
-    lineAPI.post('/foo/2', { id: 4 }).delay(100).reply(200, { id: 4 }),
-    lineAPI.post('/bar/2', { id: 5 }).delay(100).reply(200, { id: 5 }),
-    lineAPI.post('/baz/2', { id: 6 }).delay(100).reply(200, { id: 6 }),
+    lineApi.post('/foo/1', { id: 1 }).delay(100).reply(200, { id: 1 }),
+    lineApi.post('/bar/1', { id: 2 }).delay(100).reply(200, { id: 2 }),
+    lineApi.post('/baz/1', { id: 3 }).delay(100).reply(200, { id: 3 }),
+    lineApi.post('/foo/2', { id: 4 }).delay(100).reply(200, { id: 4 }),
+    lineApi.post('/bar/2', { id: 5 }).delay(100).reply(200, { id: 5 }),
+    lineApi.post('/baz/2', { id: 6 }).delay(100).reply(200, { id: 6 }),
   ];
 
   client.start(queue);
@@ -70,8 +70,8 @@ it('makes calls to api', async () => {
 it('throw if connection error happen', async () => {
   const client = new LineWorker(accessToken, 10);
 
-  const scope1 = lineAPI.post('/v2/bot/message/push').reply(200, {});
-  const scope2 = lineAPI
+  const scope1 = lineApi.post('/v2/bot/message/push').reply(200, {});
+  const scope2 = lineApi
     .post('/v2/bot/message/push')
     .replyWithError('something wrong like connection error');
 
@@ -107,8 +107,8 @@ it('throw if connection error happen', async () => {
 it('throw if api error happen', async () => {
   const client = new LineWorker(accessToken, 10);
 
-  const scope1 = lineAPI.post('/v2/bot/message/push').reply(200, {});
-  const scope2 = lineAPI.post('/v2/bot/message/push').reply(400, {
+  const scope1 = lineApi.post('/v2/bot/message/push').reply(200, {});
+  const scope2 = lineApi.post('/v2/bot/message/push').reply(400, {
     message: 'The request body has 2 error(s)',
     details: [
       {
@@ -155,7 +155,7 @@ it('sequently excute jobs within the same identical channel', async () => {
   const client = new LineWorker(accessToken, 10);
 
   const bodySpy = moxy(() => true);
-  const msgScope = lineAPI
+  const msgScope = lineApi
     .post(/^\/v2\/bot\/message/, bodySpy)
     .delay(100)
     .times(9)
@@ -249,7 +249,7 @@ it('open requests up to maxConnections', async () => {
   const client = new LineWorker(accessToken, 2);
 
   const bodySpy = moxy(() => true);
-  const msgScope = lineAPI
+  const msgScope = lineApi
     .post(/^\/v2\/bot\/message/, bodySpy)
     .delay(100)
     .times(9)

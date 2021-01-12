@@ -13,7 +13,7 @@ describe('#getUserProfile(user)', () => {
   };
 
   const bot = moxy({
-    dispatchAPICall: async () => ({
+    makeApiCall: async () => ({
       code: 200,
       headers: {},
       body: rawProfileData,
@@ -39,8 +39,8 @@ describe('#getUserProfile(user)', () => {
     expect(profile.statusMessage).toBe('Hello, LINE!');
     expect(profile.data).toEqual(rawProfileData);
 
-    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
-    expect(bot.dispatchAPICall.mock.calls[0].args).toMatchInlineSnapshot(`
+    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall.mock.calls[0].args).toMatchInlineSnapshot(`
           Array [
             "GET",
             "v2/bot/profile/_USER_ID_",
@@ -77,7 +77,7 @@ describe('#getGroupProfile(user)', () => {
   };
 
   const bot = moxy({
-    dispatchAPICall: async () => ({
+    makeApiCall: async () => ({
       code: 200,
       headers: {},
       body: groupSummary,
@@ -104,8 +104,8 @@ describe('#getGroupProfile(user)', () => {
     );
     expect(profile.data).toEqual(groupSummary);
 
-    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
-    expect(bot.dispatchAPICall.mock.calls[0].args).toMatchInlineSnapshot(`
+    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall.mock.calls[0].args).toMatchInlineSnapshot(`
           Array [
             "GET",
             "v2/bot/group/_GROUP_ID_/summary",

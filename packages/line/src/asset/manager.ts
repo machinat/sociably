@@ -103,9 +103,11 @@ export class LineAssetsManager {
       throw new Error(`rich menu [ ${name} ] already exist`);
     }
 
-    const {
-      body: { richMenuId },
-    } = await this._bot.dispatchAPICall('POST', PATH_RICHMENU, body);
+    const { richMenuId }: { richMenuId: string } = await this._bot.makeApiCall(
+      'POST',
+      PATH_RICHMENU,
+      body
+    );
 
     await this.saveAssetId(RICH_MENU, name, richMenuId);
     return richMenuId;
@@ -117,7 +119,7 @@ export class LineAssetsManager {
       throw new Error(`rich menu [ ${name} ] not exist`);
     }
 
-    await this._bot.dispatchAPICall('DELETE', `${PATH_RICHMENU}/${id}`, null);
+    await this._bot.makeApiCall('DELETE', `${PATH_RICHMENU}/${id}`, null);
 
     await this.discardAssetId(RICH_MENU, name);
     return id;

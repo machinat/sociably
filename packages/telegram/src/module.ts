@@ -25,7 +25,7 @@ import type {
   TelegramEventContext,
   TelegramJob,
   TelegramDispatchFrame,
-  TelegramAPIResult,
+  TelegramResult,
 } from './types';
 
 /** @interanl */
@@ -53,7 +53,7 @@ const Telegram = {
     null,
     TelegramJob,
     TelegramDispatchFrame,
-    TelegramAPIResult
+    TelegramResult
   > => {
     const provisions: ServiceProvision<any>[] = [
       BotP,

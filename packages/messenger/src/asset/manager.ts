@@ -95,7 +95,7 @@ export class MessengerAssetsManager {
       throw new Error(`message ${formatNode(node)} render to empty`);
     }
 
-    const { attachment_id: id } = response.results[0].body;
+    const id = response.results[0].body.attachment_id as string;
     await this.saveAssetId(ATTACHMENT, name, id);
     return id;
   }
@@ -122,9 +122,11 @@ export class MessengerAssetsManager {
       throw new Error(`persona [ ${name} ] already exist`);
     }
 
-    const {
-      body: { id: personaId },
-    } = await this.bot.dispatchAPICall('POST', PATH_PERSONAS, body);
+    const { id: personaId } = await this.bot.makeApiCall<{ id: string }>(
+      'POST',
+      PATH_PERSONAS,
+      body
+    );
 
     await this.saveAssetId(PERSONA, name, personaId);
     return personaId;
@@ -136,7 +138,7 @@ export class MessengerAssetsManager {
       throw new Error(`persona [ ${name} ] not exist`);
     }
 
-    await this.bot.dispatchAPICall('DELETE', id);
+    await this.bot.makeApiCall('DELETE', id);
     return id;
   }
 }

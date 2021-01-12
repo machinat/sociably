@@ -51,14 +51,14 @@ const scope = moxy();
 const initScope = moxy(() => scope);
 const dispatchWrapper = moxy((x) => x);
 
-let lineAPI;
+let lineApi;
 beforeEach(() => {
   Engine.mock.reset();
   Renderer.mock.reset();
   LineWorker.mock.reset();
 
   nock.cleanAll();
-  lineAPI = nock('https://api.line.me', {
+  lineApi = nock('https://api.line.me', {
     reqheaders: {
       'content-type': 'application/json',
       authorization: 'Bearer _ACCESS_TOKEN_',
@@ -151,7 +151,7 @@ describe('#render(token, node, options)', () => {
 
     bot.start();
 
-    const apiCall1 = lineAPI
+    const apiCall1 = lineApi
       .post('/v2/bot/message/push', {
         to: 'john_doe',
         messages: [
@@ -171,7 +171,7 @@ describe('#render(token, node, options)', () => {
         ],
       })
       .reply(200, '{}');
-    const apiCall2 = lineAPI
+    const apiCall2 = lineApi
       .post('/v2/bot/user/john_doe/richmenu/newbie', '')
       .reply(200, '{}');
 
@@ -190,7 +190,7 @@ describe('#render(token, node, options)', () => {
     );
     bot.start();
 
-    const apiCall1 = lineAPI
+    const apiCall1 = lineApi
       .post('/v2/bot/message/reply', {
         replyToken: '__REPLY_TOKEN__',
         messages: [
@@ -211,7 +211,7 @@ describe('#render(token, node, options)', () => {
       })
       .reply(200, '{}');
 
-    const apiCall2 = lineAPI
+    const apiCall2 = lineApi
       .post('/v2/bot/user/john_doe/richmenu/newbie', '')
       .reply(200, '{}');
 
@@ -285,7 +285,7 @@ describe('#renderMulticast(targets, node)', () => {
     );
     bot.start();
 
-    const apiCall1 = lineAPI
+    const apiCall1 = lineApi
       .post('/v2/bot/message/multicast', {
         to: ['john', 'wick', 'dog'],
         messages: [
@@ -306,7 +306,7 @@ describe('#renderMulticast(targets, node)', () => {
       })
       .reply(200, '{}');
 
-    const apiCall2 = lineAPI
+    const apiCall2 = lineApi
       .post('/v2/bot/richmenu/bulk/link', {
         userIds: ['john', 'wick', 'dog'],
         richMenuId: 'newbie',

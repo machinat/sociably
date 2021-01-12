@@ -2,16 +2,16 @@ import fetch from 'node-fetch';
 import FormData from 'form-data';
 import type { MachinatWorker } from '@machinat/core/engine/types';
 import Queue from '@machinat/core/queue';
-import type { TelegramJob, TelegramAPIResult, UploadingFile } from './types';
-import TelegramAPIError from './error';
+import type { TelegramJob, TelegramResult, UploadingFile } from './types';
+import TelegramApiError from './error';
 
 /** @ignore */
 const API_HOST = 'https://api.telegram.org';
 
-type TelegramJobQueue = Queue<TelegramJob, TelegramAPIResult>;
+type TelegramJobQueue = Queue<TelegramJob, TelegramResult>;
 
 export default class TelegramWorker
-  implements MachinatWorker<TelegramJob, TelegramAPIResult> {
+  implements MachinatWorker<TelegramJob, TelegramResult> {
   private _started: boolean;
   private _lockedKeys: Set<string>;
 
@@ -32,7 +32,7 @@ export default class TelegramWorker
     method: string,
     bodyObject: { [k: string]: any },
     uploadingFiles: null | UploadingFile[]
-  ): Promise<TelegramAPIResult> {
+  ): Promise<TelegramResult> {
     let body;
     let headers;
     if (uploadingFiles) {
@@ -60,7 +60,7 @@ export default class TelegramWorker
     const result = await response.json();
 
     if (!result.ok) {
-      throw new TelegramAPIError(result);
+      throw new TelegramApiError(result);
     }
 
     return result;
@@ -94,7 +94,7 @@ export default class TelegramWorker
 
   private _consumeCallback = this._consume.bind(this);
 
-  private _consume(queue: Queue<TelegramJob, TelegramAPIResult>) {
+  private _consume(queue: Queue<TelegramJob, TelegramResult>) {
     const { _lockedKeys: lockedIds, maxConnections } = this;
 
     for (let i = 0; i < queue.length; ) {
@@ -118,7 +118,7 @@ export default class TelegramWorker
   }
 
   private async _consumeJobAt(
-    queue: Queue<TelegramJob, TelegramAPIResult>,
+    queue: Queue<TelegramJob, TelegramResult>,
     idx: number,
     executionKey: void | string
   ) {

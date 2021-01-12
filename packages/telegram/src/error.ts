@@ -1,16 +1,16 @@
-import type { FailAPIResult } from './types';
+import type { FailApiResult } from './types';
 
-export default class TelegramAPIError extends Error {
-  body: FailAPIResult;
+export default class TelegramApiError extends Error {
+  body: FailApiResult;
 
-  constructor(body: FailAPIResult) {
+  constructor(body: FailApiResult) {
     super(`(#${body.error_code}) ${body.description || ''}`);
 
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, TelegramAPIError);
+      Error.captureStackTrace(this, TelegramApiError);
     }
 
-    this.name = `TelegramAPIError`;
+    this.name = `TelegramApiError`;
     this.body = body;
   }
 }

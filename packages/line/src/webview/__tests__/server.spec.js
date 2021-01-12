@@ -73,7 +73,7 @@ describe('#verifyCredential(credential)', () => {
     },
   };
 
-  const verifyAPI = nock('https://api.line.me')
+  const verifyApi = nock('https://api.line.me')
     .get('/oauth2/v2.1/verify')
     .query({ access_token: credential.accessToken });
 
@@ -84,7 +84,7 @@ describe('#verifyCredential(credential)', () => {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
-    let verifyScope = verifyAPI.reply(200, {
+    let verifyScope = verifyApi.reply(200, {
       scope: 'profile',
       client_id: '_LOGIN_CHAN_2_',
       expires_in: 2591659,
@@ -107,7 +107,7 @@ describe('#verifyCredential(credential)', () => {
 
     expect(verifyScope.isDone()).toBe(true);
 
-    verifyScope = verifyAPI.reply(200, {
+    verifyScope = verifyApi.reply(200, {
       scope: 'profile',
       client_id: '_LOGIN_CHAN_1_',
       expires_in: 2591659,
@@ -166,7 +166,7 @@ describe('#verifyCredential(credential)', () => {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
-    const verifyScope = verifyAPI.reply(400, {
+    const verifyScope = verifyApi.reply(400, {
       error: 'invalid_request',
       error_description: 'The access token expired',
     });
@@ -190,7 +190,7 @@ describe('#verifyCredential(credential)', () => {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
-    const verifyScope = verifyAPI.reply(200, {
+    const verifyScope = verifyApi.reply(200, {
       scope: 'profile',
       client_id: '_SOME_OTHER_UNKNOWN_CHANNEL_',
       expires_in: 2591659,
@@ -215,7 +215,7 @@ describe('#verifyCredential(credential)', () => {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
-    const verifyScope = verifyAPI.reply(400, {
+    const verifyScope = verifyApi.reply(400, {
       error: 'invalid_request',
       error_description: 'access token expired',
     });

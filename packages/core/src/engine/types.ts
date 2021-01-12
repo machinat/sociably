@@ -22,13 +22,13 @@ export type MachinatTask<Job> = DispatchTask<Job> | PauseTask | ThunkTask;
 export type DispatchFrame<
   Channel extends MachinatChannel,
   Job,
-  Bot extends MachinatBot<Channel, any, any>
+  Bot extends MachinatBot<Channel, Job, unknown>
 > = {
   platform: string;
   channel: null | Channel;
   tasks: MachinatTask<Job>[];
   bot: Bot;
-  node: MachinatNode;
+  node: null | MachinatNode;
 };
 
 export type DispatchResponse<Job, Result> = {

@@ -169,8 +169,7 @@ export type WebSocketDispatchMiddleware = DispatchMiddleware<
 
 export type WebSocketPlatformConfigs<
   User extends null | MachinatUser = null,
-  Auth = null,
-  Credential = null
+  Auth = null
 > = {
   entryPath?: string;
   heartbeatInterval?: number;

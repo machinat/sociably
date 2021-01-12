@@ -2,16 +2,15 @@ import url from 'url';
 import fetch from 'node-fetch';
 import type { MachinatWorker } from '@machinat/core/engine/types';
 import Queue from '@machinat/core/queue';
-import type { LineJob, LineAPIResult } from './types';
-import LineAPIError from './error';
+import type { LineJob, LineResult } from './types';
+import LineApiError from './error';
 
 /** @ignore */
 const API_HOST = 'https://api.line.me';
 
-type LineJobQueue = Queue<LineJob, LineAPIResult>;
+type LineJobQueue = Queue<LineJob, LineResult>;
 
-export default class LineWorker
-  implements MachinatWorker<LineJob, LineAPIResult> {
+export default class LineWorker implements MachinatWorker<LineJob, LineResult> {
   private _headers: {
     'Content-Type': 'application/json';
     Authorization: string;
@@ -39,7 +38,7 @@ export default class LineWorker
     method: string,
     path: string,
     body: unknown | null
-  ): Promise<LineAPIResult> {
+  ): Promise<LineResult> {
     const requestUrl = new url.URL(path, API_HOST);
 
     const response = await fetch(requestUrl.href, {
@@ -67,7 +66,7 @@ export default class LineWorker
     };
 
     if (!response.ok) {
-      throw new LineAPIError(result);
+      throw new LineApiError(result);
     }
 
     return result;
@@ -101,7 +100,7 @@ export default class LineWorker
 
   private _consumeCallback = this._consume.bind(this);
 
-  private _consume(queue: Queue<LineJob, LineAPIResult>) {
+  private _consume(queue: Queue<LineJob, LineResult>) {
     const { _lockedKeys: lockedIds, maxConnections } = this;
 
     for (let i = 0; i < queue.length; ) {
@@ -125,7 +124,7 @@ export default class LineWorker
   }
 
   private async _consumeJobAt(
-    queue: Queue<LineJob, LineAPIResult>,
+    queue: Queue<LineJob, LineResult>,
     idx: number,
     executionKey: void | string
   ) {

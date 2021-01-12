@@ -17,7 +17,7 @@ import type {
   LineEventContext,
   LineJob,
   LineDispatchFrame,
-  LineAPIResult,
+  LineResult,
 } from './types';
 
 /** @internal */
@@ -45,7 +45,7 @@ const Line = {
     null,
     LineJob,
     LineDispatchFrame,
-    LineAPIResult
+    LineResult
   > => {
     const provisions: ServiceProvision<unknown>[] = [
       BotP,

@@ -29,8 +29,8 @@ export type MachinatRenderable =
   | ProviderElement
   | RawElement
   | ThunkElement
-  | FunctionalElement<any, any>
-  | ContainerElement<any, any>;
+  | FunctionalElement<unknown, any>
+  | ContainerElement<unknown, any>;
 
 export type MachinatNode =
   | MachinatEmpty
@@ -40,9 +40,9 @@ export type MachinatNode =
 
 export type MachinatElementType =
   | string
-  | FunctionalComponent<any>
-  | ContainerComponent<any>
-  | NativeComponent<any, any>
+  | FunctionalComponent<unknown>
+  | ContainerComponent<unknown>
+  | NativeComponent<unknown, any>
   | typeof MACHINAT_FRAGMENT_TYPE
   | typeof MACHINAT_PAUSE_TYPE
   | typeof MACHINAT_PROVIDER_TYPE
@@ -84,7 +84,10 @@ export type ContainerElement<
   Component extends ContainerComponent<Props>
 > = MachinatElement<Props, Component>;
 
-export type NativeComponent<Props, Segment extends IntermediateSegment<any>> = {
+export type NativeComponent<
+  Props,
+  Segment extends IntermediateSegment<unknown>
+> = {
   (
     element: NativeElement<Props, NativeComponent<Props, Segment>>,
     path: string,
@@ -170,12 +173,12 @@ export interface LocationMessageMixin {
 
 export interface PostbackMixin {
   readonly kind: 'postback';
-  readonly type: any;
+  readonly type: string;
   readonly data: string;
 }
 
-export interface MachinatMetadata<Source extends string> {
-  readonly source: Source;
+export interface MachinatMetadata {
+  source: string;
 }
 
 export interface MachinatBot<Channel extends MachinatChannel, Job, Result> {
@@ -189,8 +192,8 @@ export interface MachinatBot<Channel extends MachinatChannel, Job, Result> {
 
 export type EventContext<
   Event extends MachinatEvent<unknown>,
-  Metadata extends MachinatMetadata<string>,
-  Bot extends null | MachinatBot<MachinatChannel, unknown, unknown>
+  Metadata extends MachinatMetadata,
+  Bot extends null | MachinatBot<any, unknown, unknown>
 > = {
   platform: string;
   event: Event;
@@ -198,13 +201,15 @@ export type EventContext<
   bot: Bot;
 };
 
+export type AnyEventContext = EventContext<any, any, any>;
+
 export type Middleware<Input, Output> = (
   input: Input,
   next: (input: Input) => Promise<Output>
 ) => Promise<Output>;
 
 export type EventMiddleware<
-  Context extends EventContext<any, any, any>,
+  Context extends AnyEventContext,
   Response
 > = Middleware<Context, Response>;
 
@@ -223,7 +228,7 @@ export type ServiceModule = {
 };
 
 export type PlatformModule<
-  Context extends EventContext<any, any, any>,
+  Context extends AnyEventContext,
   EventResp,
   Job,
   Frame extends DispatchFrame<any, Job, any>,
@@ -244,9 +249,15 @@ export type PlatformModule<
   >[];
 };
 
-export type AppConfig<
-  Platform extends PlatformModule<any, unknown, unknown, any, unknown>
-> = {
+export type AnyPlatformModule = PlatformModule<
+  any,
+  unknown,
+  unknown,
+  any,
+  unknown
+>;
+
+export type AppConfig<Platform extends AnyPlatformModule> = {
   platforms?: Platform[];
   modules?: ServiceModule[];
   bindings?: (
@@ -255,8 +266,8 @@ export type AppConfig<
   )[];
 };
 
-export type GetAppContext<
-  Platform extends PlatformModule<any, unknown, unknown, any, unknown>
+export type EventContextOfPlatform<
+  Platform extends AnyPlatformModule
 > = Platform extends PlatformModule<
   infer Context,
   unknown,
@@ -269,15 +280,12 @@ export type GetAppContext<
 
 export type InitScopeFn = () => ServiceScope;
 
-export type PopEventFn<
-  Context extends EventContext<any, any, any>,
-  Response
-> = (context: Context, scope?: ServiceScope) => Promise<Response>;
+export type PopEventFn<Context extends AnyEventContext, Response> = (
+  context: Context,
+  scope?: ServiceScope
+) => Promise<Response>;
 
-export type PopEventWrapper<
-  Context extends EventContext<any, any, any>,
-  Response
-> = (
+export type PopEventWrapper<Context extends AnyEventContext, Response> = (
   finalHandler: (ctx: Context) => Promise<Response>
 ) => PopEventFn<Context, Response>;
 
@@ -301,7 +309,7 @@ export type DispatchWrapper<
 ) => DispatchFn<Job, Frame, Result>;
 
 export type PlatformMounter<
-  Context extends EventContext<any, any, any>,
+  Context extends AnyEventContext,
   EventResponse,
   Job,
   Frame extends DispatchFrame<any, Job, any>,

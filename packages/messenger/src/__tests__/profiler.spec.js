@@ -12,7 +12,7 @@ const rawProfileData = {
 };
 
 const bot = moxy({
-  dispatchAPICall: async () => ({
+  makeApiCall: async () => ({
     code: 200,
     header: {},
     body: rawProfileData,
@@ -41,8 +41,8 @@ test('fetch profile from api', async () => {
   expect(profile.gender).toBe(undefined);
   expect(profile.data).toEqual(rawProfileData);
 
-  expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
-  expect(bot.dispatchAPICall.mock.calls[0].args).toMatchInlineSnapshot(`
+  expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+  expect(bot.makeApiCall.mock.calls[0].args).toMatchInlineSnapshot(`
     Array [
       "GET",
       "_USER_ID_?fields=id,name,first_name,last_name,profile_pic",
@@ -76,7 +76,7 @@ it('query additional optionalProfileFields if given', async () => {
     timezone: -7,
     gender: 'male',
   };
-  bot.dispatchAPICall.mock.fake(async () => ({
+  bot.makeApiCall.mock.fake(async () => ({
     code: 200,
     headers: {},
     body: profileWithMoreFields,
@@ -92,8 +92,8 @@ it('query additional optionalProfileFields if given', async () => {
   expect(profile.gender).toBe('male');
   expect(profile.data).toEqual(profileWithMoreFields);
 
-  expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
-  expect(bot.dispatchAPICall.mock.calls[0].args).toMatchInlineSnapshot(`
+  expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+  expect(bot.makeApiCall.mock.calls[0].args).toMatchInlineSnapshot(`
     Array [
       "GET",
       "_USER_ID_?fields=locale,timezone,gender,id,name,first_name,last_name,profile_pic",

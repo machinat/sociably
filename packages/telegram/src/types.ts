@@ -161,13 +161,15 @@ export type TelegramDispatchFrame = DispatchFrame<
   TelegramBot
 >;
 
-export type TelegramAPIResult = {
+export type BotApiResult = Record<string, any>;
+
+export type TelegramResult = {
   ok: true;
   description?: string;
-  result: any;
+  result: BotApiResult;
 };
 
-export type FailAPIResult = {
+export type FailApiResult = {
   ok: false;
   description?: string;
   error_code: number;
@@ -179,13 +181,13 @@ export type FailAPIResult = {
 
 export type TelegramDispatchResponse = DispatchResponse<
   TelegramJob,
-  TelegramAPIResult
+  TelegramResult
 >;
 
 export type TelegramDispatchMiddleware = DispatchMiddleware<
   TelegramJob,
   TelegramDispatchFrame,
-  TelegramAPIResult
+  TelegramResult
 >;
 
 export type TelegramPlatformMounter = PlatformMounter<
@@ -193,7 +195,7 @@ export type TelegramPlatformMounter = PlatformMounter<
   null,
   TelegramJob,
   TelegramDispatchFrame,
-  TelegramAPIResult
+  TelegramResult
 >;
 
 export type TelegramPlatformConfigs = {

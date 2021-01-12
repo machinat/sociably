@@ -46,11 +46,11 @@ const message = (
   </Expression>
 );
 
-let telegramAPI;
+let telegramApi;
 const bodySpy = moxy(() => true);
 
 beforeEach(() => {
-  telegramAPI = nock('https://api.telegram.org');
+  telegramApi = nock('https://api.telegram.org');
   bodySpy.mock.clear();
   Engine.mock.clear();
   Renderer.mock.clear();
@@ -158,10 +158,10 @@ describe('#render(channel, message, options)', () => {
   });
 
   it('send rendered messages to telegram api', async () => {
-    const apiCall1 = telegramAPI
+    const apiCall1 = telegramApi
       .post('/bot12345:_BOT_TOKEN_/sendMessage', bodySpy)
       .reply(200, { ok: true, result: { id: 1 } });
-    const apiCall2 = telegramAPI
+    const apiCall2 = telegramApi
       .post('/bot12345:_BOT_TOKEN_/sendPhoto', bodySpy)
       .reply(200, { ok: true, result: { id: 2 } });
 
@@ -220,10 +220,10 @@ describe('#renderInstance(message)', () => {
   });
 
   it('call edit api', async () => {
-    const apiCall1 = telegramAPI
+    const apiCall1 = telegramApi
       .post('/bot12345:_BOT_TOKEN_/editMessageText', bodySpy)
       .reply(200, { ok: true, result: { id: 1 } });
-    const apiCall2 = telegramAPI
+    const apiCall2 = telegramApi
       .post('/bot12345:_BOT_TOKEN_/editMessageMedia', bodySpy)
       .reply(200, { ok: true, result: { id: 2 } });
 
@@ -267,7 +267,7 @@ describe('#renderInstance(message)', () => {
   });
 });
 
-test('#dispatchAPICall()', async () => {
+test('#makeApiCall()', async () => {
   const bot = new TelegramBot(
     { botToken: '12345:_BOT_TOKEN_' },
     initScope,
@@ -275,14 +275,14 @@ test('#dispatchAPICall()', async () => {
   );
   bot.start();
 
-  const fooCall = telegramAPI
+  const fooCall = telegramApi
     .post('/bot12345:_BOT_TOKEN_/foo', bodySpy)
     .reply(200, {
       ok: true,
       result: { foo: 'bar' },
     });
 
-  await expect(bot.dispatchAPICall('foo', { bar: 'baz' })).resolves.toEqual({
+  await expect(bot.makeApiCall('foo', { bar: 'baz' })).resolves.toEqual({
     ok: true,
     result: { foo: 'bar' },
   });
@@ -303,7 +303,7 @@ test('#fetchFile()', async () => {
 
   const fileId = '_FILE_ID_';
 
-  const getFileCall = telegramAPI
+  const getFileCall = telegramApi
     .post('/bot12345:_BOT_TOKEN_/getFile', bodySpy)
     .reply(200, {
       ok: true,
@@ -314,7 +314,7 @@ test('#fetchFile()', async () => {
       },
     });
 
-  const downloadFileCall = telegramAPI
+  const downloadFileCall = telegramApi
     .get('/file/bot12345:_BOT_TOKEN_/_FILE_PATH_', bodySpy)
     .reply(200, '__BINARY_DATA__', {
       'Content-Type': 'image/png',

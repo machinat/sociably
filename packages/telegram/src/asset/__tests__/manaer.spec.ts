@@ -18,7 +18,7 @@ const stateManager = moxy({
 
 const bot = moxy({
   botId: 123456,
-  dispatchAPICall() {},
+  makeApiCall() {},
 });
 
 beforeEach(() => {

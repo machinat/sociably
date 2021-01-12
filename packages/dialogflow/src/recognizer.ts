@@ -7,7 +7,7 @@ import type {
 import type { MachinatChannel } from '@machinat/core/types';
 import { SESSION_CLIENT_I, MODULE_CONFIGS_I } from './interface';
 import { SessionClient, DetactIntentPayload } from './types';
-import DialogflowAPIError from './error';
+import DialogflowApiError from './error';
 
 type RecognizerOptions = {
   projectId: string;
@@ -82,7 +82,7 @@ export class DialogflowIntentRecognizer
     });
 
     if (!queryResult) {
-      throw new DialogflowAPIError(responseId, webhookStatus);
+      throw new DialogflowApiError(responseId, webhookStatus);
     }
 
     return {

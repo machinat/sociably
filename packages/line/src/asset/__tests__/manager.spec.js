@@ -18,7 +18,7 @@ const stateManager = moxy({
 
 const bot = moxy({
   botChannelId: '_LINE_CHANNEL_ID_',
-  dispatchAPICall() {},
+  makeApiCall() {},
 });
 
 beforeEach(() => {
@@ -182,7 +182,7 @@ test('discard asset id', async () => {
 
 test('#createRichMenu()', async () => {
   const manager = new LineAssetsManager(stateManager, bot);
-  bot.dispatchAPICall.mock.fake(() => ({
+  bot.makeApiCall.mock.fake(() => ({
     code: 200,
     headers: {},
     body: { richMenuId: '_RICH_MENU_ID_' },
@@ -205,8 +205,8 @@ test('#createRichMenu()', async () => {
     manager.createRichMenu('my_rich_menu', richMenuBody)
   ).resolves.toBe('_RICH_MENU_ID_');
 
-  expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(1);
-  expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith(
+  expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+  expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
     'POST',
     'v2/bot/richmenu',
     richMenuBody
@@ -222,7 +222,7 @@ test('#createRichMenu()', async () => {
 
 test('#deleteRichMenu()', async () => {
   const manager = new LineAssetsManager(stateManager, bot);
-  bot.dispatchAPICall.mock.fake(() => ({
+  bot.makeApiCall.mock.fake(() => ({
     code: 200,
     headers: {},
     body: {},
@@ -239,8 +239,8 @@ test('#deleteRichMenu()', async () => {
     '_RICH_MENU_ID_'
   );
 
-  expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(1);
-  expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith(
+  expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+  expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
     'DELETE',
     'v2/bot/richmenu/_RICH_MENU_ID_',
     null

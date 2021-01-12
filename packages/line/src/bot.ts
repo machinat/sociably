@@ -22,9 +22,10 @@ import type {
   LineSegmentValue,
   LineComponent,
   LineJob,
-  LineAPIResult,
+  LineResult,
   LineDispatchFrame,
   LineDispatchResponse,
+  MessagingApiResult,
 } from './types';
 
 type LineBotOptions = {
@@ -36,7 +37,7 @@ type LineBotOptions = {
 /**
  * @category Provider
  */
-export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
+export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
   providerId: string;
   channelId: string;
   engine: Engine<
@@ -44,25 +45,23 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
     LineSegmentValue,
     LineComponent<unknown>,
     LineJob,
-    LineAPIResult,
+    LineResult,
     LineBot
   >;
 
   constructor(
     { accessToken, channelId, maxConnections = 100 }: LineBotOptions,
     initScope: InitScopeFn = () => createEmptyScope(LINE),
-    dispatchWrapper: DispatchWrapper<
-      LineJob,
-      LineDispatchFrame,
-      LineAPIResult
-    > = (dispatch) => dispatch
+    dispatchWrapper: DispatchWrapper<LineJob, LineDispatchFrame, LineResult> = (
+      dispatch
+    ) => dispatch
   ) {
     invariant(accessToken, 'configs.accessToken should not be empty');
     invariant(channelId, 'configs.channelId should not be empty');
 
     this.channelId = channelId;
 
-    const queue = new Queue<LineJob, LineAPIResult>();
+    const queue = new Queue<LineJob, LineResult>();
     const worker = new LineWorker(accessToken, maxConnections);
     const renderer = new Renderer<LineSegmentValue, LineComponent<unknown>>(
       LINE,
@@ -114,17 +113,17 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
     return this.engine.render(null, message, multicastJobsMaker(targets));
   }
 
-  async dispatchAPICall(
+  async makeApiCall<ResBody extends MessagingApiResult>(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     path: string,
     body?: unknown
-  ): Promise<LineAPIResult> {
+  ): Promise<ResBody> {
     try {
       const response = await this.engine.dispatchJobs(null, [
         { method, path, body, executionKey: undefined },
       ]);
 
-      return response.results[0];
+      return response.results[0].body as ResBody;
     } catch (err) {
       if (err instanceof DispatchError) {
         throw err.errors[0];

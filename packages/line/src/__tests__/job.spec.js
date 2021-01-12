@@ -8,7 +8,7 @@ const Foo = () => {};
 const Bar = () => {};
 const Baz = () => {};
 
-const dynamicAPICaller = moxy({
+const apiCallGettable = moxy({
   [CHANNEL_REQUEST_GETTER]: () => ({
     method: 'POST',
     path: 'some/channel/api',
@@ -29,13 +29,13 @@ const segments = [
   { node: <Foo />, value: { id: 4 } },
   { node: <Foo />, value: { id: 5 } },
   { node: <Foo />, value: { id: 6 } },
-  { node: <Bar />, value: { id: 7, ...dynamicAPICaller } },
+  { node: <Bar />, value: { id: 7, ...apiCallGettable } },
   { node: <Foo />, value: { id: 8 } },
-  { node: <Baz />, value: { id: 9, ...dynamicAPICaller } },
+  { node: <Baz />, value: { id: 9, ...apiCallGettable } },
 ];
 
 beforeEach(() => {
-  dynamicAPICaller.mock.clear();
+  apiCallGettable.mock.clear();
 });
 
 describe('chatJobsMaker()', () => {
@@ -119,10 +119,10 @@ describe('chatJobsMaker()', () => {
       ]
     `);
 
-    expect(dynamicAPICaller[CHANNEL_REQUEST_GETTER].mock).toHaveBeenCalledTimes(
+    expect(apiCallGettable[CHANNEL_REQUEST_GETTER].mock).toHaveBeenCalledTimes(
       2
     );
-    expect(dynamicAPICaller[CHANNEL_REQUEST_GETTER].mock).toHaveBeenCalledWith(
+    expect(apiCallGettable[CHANNEL_REQUEST_GETTER].mock).toHaveBeenCalledWith(
       channel
     );
   });
@@ -268,8 +268,8 @@ describe('multicastJobsMaker()', () => {
       ]
     `);
 
-    expect(dynamicAPICaller[BULK_REQUEST_GETTER].mock).toHaveBeenCalledTimes(2);
-    expect(dynamicAPICaller[BULK_REQUEST_GETTER].mock).toHaveBeenCalledWith([
+    expect(apiCallGettable[BULK_REQUEST_GETTER].mock).toHaveBeenCalledTimes(2);
+    expect(apiCallGettable[BULK_REQUEST_GETTER].mock).toHaveBeenCalledWith([
       'foo',
       'bar',
       'baz',

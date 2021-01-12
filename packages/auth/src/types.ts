@@ -176,12 +176,12 @@ export type VerifyRequestBody = {
   token: string;
 };
 
-export type AuthAPIResponseBody = {
+export type AuthApiResponseBody = {
   platform: string;
   token: string;
 };
 
-export type AuthAPIErrorBody = {
+export type AuthApiErrorBody = {
   error: ErrorMessage;
 };
 

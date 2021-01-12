@@ -167,20 +167,20 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
        */
       pictureUrl?: string;
       /** Get user data from API by force. */
-      fromAPI?: boolean;
+      fromApi?: boolean;
     } = {}
   ): Promise<TelegramUserProfile> {
-    const { inChat, pictureUrl, fromAPI } = options;
+    const { inChat, pictureUrl, fromApi } = options;
     let userData: RawUser;
 
-    if (user.data && !fromAPI) {
+    if (user.data && !fromApi) {
       userData = user.data;
     } else {
-      const { result } = await this.bot.dispatchAPICall('getChatMember', {
+      const chatMember = await this.bot.makeApiCall('getChatMember', {
         chat_id: inChat?.id || user.id,
         user_id: user.id,
       });
-      userData = result.user;
+      userData = chatMember.user;
     }
 
     return new TelegramUserProfile(userData, pictureUrl);
@@ -200,10 +200,10 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
        */
       pictureUrl?: string;
       /** Get chat data from API by force. */
-      fromAPI?: boolean;
+      fromApi?: boolean;
     } = {}
   ): Promise<TelegramChatProfile> {
-    const { fromAPI, pictureUrl } = options;
+    const { fromApi, pictureUrl } = options;
     let chatId: number | string;
 
     if (typeof chat === 'number' || typeof chat === 'string') {
@@ -213,17 +213,17 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
     } else {
       const { id, data } = chat;
 
-      if (!fromAPI && (data.title || data.first_name)) {
+      if (!fromApi && (data.title || data.first_name)) {
         return new TelegramChatProfile(data, pictureUrl);
       }
       chatId = id;
     }
 
-    const { result } = await this.bot.dispatchAPICall('getChat', {
+    const chatData: RawChat = await this.bot.makeApiCall('getChat', {
       chat_id: chatId,
     });
 
-    return new TelegramChatProfile(result, pictureUrl);
+    return new TelegramChatProfile(chatData, pictureUrl);
   }
 
   /** Fetch the photo file of a user */
@@ -234,9 +234,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
       minWidth?: number;
     }
   ): Promise<null | PhotoResponse> {
-    const {
-      result: { photos },
-    } = await this.bot.dispatchAPICall('getUserProfilePhotos', {
+    const { photos } = await this.bot.makeApiCall('getUserProfilePhotos', {
       user_id: user.id,
     });
 
@@ -269,9 +267,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
     chat: number | string | TelegramChat | TelegramChatTarget,
     options?: { size?: 'big' | 'small' }
   ): Promise<null | PhotoResponse> {
-    const {
-      result: { photo },
-    } = await this.bot.dispatchAPICall('getChat', {
+    const { photo } = await this.bot.makeApiCall('getChat', {
       chat_id:
         typeof chat === 'string' || typeof chat === 'number' ? chat : chat.id,
     });

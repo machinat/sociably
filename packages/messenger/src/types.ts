@@ -89,7 +89,7 @@ export type MessengerComponent<
   > = IntermediateSegment<MessengerSegmentValue>
 > = NativeComponent<Props, Segment>;
 
-export type BatchAPIRequest = {
+export type BatchApiRequest = {
   method: string;
   relative_url: string;
   body: null | any;
@@ -100,7 +100,7 @@ export type BatchAPIRequest = {
 };
 
 export type MessengerJob = {
-  request: BatchAPIRequest;
+  request: BatchApiRequest;
   pageId?: string;
   channelUId?: string;
   attachmentAssetTag?: string;
@@ -113,13 +113,15 @@ export type MessengerJob = {
   };
 };
 
+export type FbGraphApiResult = Record<string, any>;
+
 export type MessengerResult = {
   code: number;
   headers: Record<string, string>;
-  body: any;
+  body: FbGraphApiResult;
 };
 
-export type GraphAPIErrorInfo = {
+export type GraphApiErrorInfo = {
   message: string;
   type: string;
   code: number;
@@ -127,11 +129,11 @@ export type GraphAPIErrorInfo = {
   fbtrace_id: string;
 };
 
-export type GraphAPIErrorBody = {
-  error: GraphAPIErrorInfo;
+export type GraphApiErrorBody = {
+  error: GraphApiErrorInfo;
 };
 
-export type MessengerRawUserProfile = {
+export type RawUserProfile = {
   id: string;
   name: string;
   first_name: string;

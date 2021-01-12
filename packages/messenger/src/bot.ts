@@ -28,6 +28,7 @@ import type {
   MessengerSegmentValue,
   MessengerDispatchFrame,
   MessengerSendOptions,
+  FbGraphApiResult,
 } from './types';
 
 type MessengerBotOptions = {
@@ -122,15 +123,13 @@ export class MessengerBot
     return this.engine.render(null, node, makeAttachmentJobs);
   }
 
-  async dispatchAPICall(
+  async makeApiCall<ResBody extends FbGraphApiResult>(
     method: 'GET' | 'POST' | 'DELETE',
     relativeUrl: string,
     body?: null | any
-  ): Promise<MessengerResult> {
+  ): Promise<ResBody> {
     try {
-      const {
-        results: [result],
-      } = await this.engine.dispatchJobs(null, [
+      const { results } = await this.engine.dispatchJobs(null, [
         {
           request: {
             method,
@@ -139,13 +138,13 @@ export class MessengerBot
           },
         },
       ]);
-      return result;
+
+      return results[0].body as ResBody;
     } catch (err) {
       if (err instanceof DispatchError) {
         throw err.errors[0];
-      } else {
-        throw err;
       }
+      throw err;
     }
   }
 }

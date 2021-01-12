@@ -22,7 +22,7 @@ const bot = moxy({
   renderAttachment() {
     return { jobs: [{}], results: [{}] };
   },
-  dispatchAPICall() {},
+  makeApiCall() {},
 });
 
 beforeEach(() => {
@@ -218,7 +218,7 @@ test('#renderAttachment()', async () => {
 
 test('#createPersona()', async () => {
   const manager = new MessengerAssetsManager(stateManager, bot);
-  bot.dispatchAPICall.mock.fake(() => ({
+  bot.makeApiCall.mock.fake(() => ({
     code: 201,
     headers: {},
     body: { id: '_PERSONA_ID_' },
@@ -231,8 +231,8 @@ test('#createPersona()', async () => {
     })
   ).resolves.toBe('_PERSONA_ID_');
 
-  expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(1);
-  expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('POST', 'me/personas', {
+  expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+  expect(bot.makeApiCall.mock).toHaveBeenCalledWith('POST', 'me/personas', {
     name: 'Baby Yoda',
     profile_picture_url: '_URL_',
   });
@@ -250,7 +250,7 @@ test('#createPersona()', async () => {
 
 test('#deletePersona()', async () => {
   const manager = new MessengerAssetsManager(stateManager, bot);
-  bot.dispatchAPICall.mock.fake(() => ({
+  bot.makeApiCall.mock.fake(() => ({
     jobs: [{ ...{} }],
     results: [
       {
@@ -272,9 +272,6 @@ test('#deletePersona()', async () => {
     '_PERSONA_ID_'
   );
 
-  expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(1);
-  expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith(
-    'DELETE',
-    '_PERSONA_ID_'
-  );
+  expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+  expect(bot.makeApiCall.mock).toHaveBeenCalledWith('DELETE', '_PERSONA_ID_');
 });

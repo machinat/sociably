@@ -12,14 +12,14 @@ import type { DispatchFrame } from './engine/types';
 import Base from './base';
 import type {
   AppConfig,
-  EventContext,
-  GetAppContext,
+  AnyEventContext,
+  EventContextOfPlatform,
   EventMiddleware,
   DispatchMiddleware,
   PopEventWrapper,
   DispatchWrapper,
   PlatformMounter,
-  PlatformModule,
+  AnyPlatformModule,
 } from './types';
 
 type EventListenable<Context> = MaybeContainer<(ctx: Context) => void>;
@@ -34,8 +34,8 @@ const ENUM_STARTING = 1;
 const ENUM_STARTED = 2;
 
 export default class MachinatApp<
-  Platform extends PlatformModule<any, unknown, unknown, any, unknown>,
-  Context extends EventContext<any, any, any> = GetAppContext<Platform>
+  Platform extends AnyPlatformModule,
+  Context extends AnyEventContext = EventContextOfPlatform<Platform>
 > {
   config: AppConfig<Platform>;
   private _status: number;

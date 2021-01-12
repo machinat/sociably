@@ -21,7 +21,7 @@ const app = Machinat.createApp({
 app.start().then(async () => {
   const [bot] = app.useServices([Messenger.Bot]);
 
-  await bot.dispatchAPICall('POST', 'me/messenger_profile', {
+  await bot.makeApiCall('POST', 'me/messenger_profile', {
     get_started: {
       payload: GET_STARTED_KEY,
     },

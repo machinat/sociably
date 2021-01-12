@@ -9,10 +9,10 @@ const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 const botToken = '__BOT_TOKEN__';
 
-let telegramAPI: nock.Scope;
+let telegramApi: nock.Scope;
 let queue: Queue<any, any>;
 beforeEach(() => {
-  telegramAPI = nock(`https://api.telegram.org`, {
+  telegramApi = nock(`https://api.telegram.org`, {
     reqheaders: { 'content-type': 'application/json' },
   });
   queue = new Queue();
@@ -22,27 +22,27 @@ it('makes calls to api', async () => {
   const client = new TelegramWorker(botToken, 10);
 
   const apiAssertions = [
-    telegramAPI
+    telegramApi
       .post(`/bot${botToken}/foo`, { n: 1 })
       .delay(100)
       .reply(200, { ok: true, result: { n: 1 } }),
-    telegramAPI
+    telegramApi
       .post(`/bot${botToken}/bar`, { n: 2 })
       .delay(100)
       .reply(200, { ok: true, result: { n: 2 } }),
-    telegramAPI
+    telegramApi
       .post(`/bot${botToken}/baz`, { n: 3 })
       .delay(100)
       .reply(200, { ok: true, result: { n: 3 } }),
-    telegramAPI
+    telegramApi
       .post(`/bot${botToken}/foo`, { n: 4 })
       .delay(100)
       .reply(200, { ok: true, result: { n: 4 } }),
-    telegramAPI
+    telegramApi
       .post(`/bot${botToken}/bar`, { n: 5 })
       .delay(100)
       .reply(200, { ok: true, result: { n: 5 } }),
-    telegramAPI
+    telegramApi
       .post(`/bot${botToken}/baz`, { n: 6 })
       .delay(100)
       .reply(200, { ok: true, result: { n: 6 } }),
@@ -81,7 +81,7 @@ it('sequently excute jobs within the same identical chat', async () => {
   const client = new TelegramWorker(botToken, 10);
 
   const bodySpy = moxy(() => true);
-  const msgScope = telegramAPI
+  const msgScope = telegramApi
     .post(new RegExp(`^/bot${botToken}/send(Photo|Message)$`), bodySpy)
     .delay(100)
     .times(9)
@@ -139,7 +139,7 @@ it('open requests up to maxConnections', async () => {
   const client = new TelegramWorker(botToken, 2);
 
   const bodySpy = moxy(() => true);
-  const msgScope = telegramAPI
+  const msgScope = telegramApi
     .post(new RegExp(`^/bot${botToken}/send(Photo|Message)$`), bodySpy)
     .delay(100)
     .times(9)
@@ -202,10 +202,10 @@ it('open requests up to maxConnections', async () => {
 it('throw if connection error happen', async () => {
   const client = new TelegramWorker(botToken, 10);
 
-  const scope1 = telegramAPI
+  const scope1 = telegramApi
     .post(`/bot${botToken}/sendMessage`)
     .reply(200, { ok: true, result: { n: 1 } });
-  const scope2 = telegramAPI
+  const scope2 = telegramApi
     .post(`/bot${botToken}/sendPhoto`)
     .replyWithError('something wrong like connection error');
 
@@ -241,10 +241,10 @@ it('throw if connection error happen', async () => {
 it('throw if api error happen', async () => {
   const client = new TelegramWorker(botToken, 10);
 
-  const scope1 = telegramAPI
+  const scope1 = telegramApi
     .post(`/bot${botToken}/sendMessage`)
     .reply(200, { ok: true, result: { n: 1 } });
-  const scope2 = telegramAPI.post(`/bot${botToken}/sendPhoto`).reply(400, {
+  const scope2 = telegramApi.post(`/bot${botToken}/sendPhoto`).reply(400, {
     ok: false,
     description: 'error from api',
     error_code: 400,

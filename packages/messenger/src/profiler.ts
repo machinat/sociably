@@ -7,20 +7,20 @@ import type { Marshallable } from '@machinat/core/base/Marshaler';
 
 import { BotP } from './bot';
 import type MessengerUser from './user';
-import type { MessengerRawUserProfile } from './types';
+import type { RawUserProfile } from './types';
 import { PLATFORM_CONFIGS_I } from './interface';
 import { MESSENGER } from './constant';
 
 export class MessengerUserProfile
-  implements MachinatProfile, Marshallable<MessengerRawUserProfile> {
-  static fromJSONValue(data: MessengerRawUserProfile): MessengerUserProfile {
+  implements MachinatProfile, Marshallable<RawUserProfile> {
+  static fromJSONValue(data: RawUserProfile): MessengerUserProfile {
     return new MessengerUserProfile(data);
   }
 
-  data: MessengerRawUserProfile;
+  data: RawUserProfile;
   platform = MESSENGER;
 
-  constructor(data: MessengerRawUserProfile) {
+  constructor(data: RawUserProfile) {
     this.data = data;
   }
 
@@ -56,7 +56,7 @@ export class MessengerUserProfile
     return this.data.gender;
   }
 
-  toJSONValue(): MessengerRawUserProfile {
+  toJSONValue(): RawUserProfile {
     return this.data;
   }
 
@@ -95,7 +95,7 @@ export class MessengerProfiler implements UserProfiler<MessengerUser> {
   }
 
   async getUserProfile(user: MessengerUser): Promise<MessengerUserProfile> {
-    const { body: rawProfile } = await this.bot.dispatchAPICall(
+    const rawProfile: RawUserProfile = await this.bot.makeApiCall(
       'GET',
       `${user.id}?fields=${this.optionalUserFields}`
     );

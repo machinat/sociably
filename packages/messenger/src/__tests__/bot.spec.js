@@ -37,11 +37,11 @@ const message = (
   </Expression>
 );
 
-let graphAPI;
+let graphApi;
 const bodySpy = moxy(() => true);
 
 beforeEach(() => {
-  graphAPI = nock('https://graph.facebook.com').post('/v7.0/', bodySpy);
+  graphApi = nock('https://graph.facebook.com').post('/v7.0/', bodySpy);
   bodySpy.mock.clear();
   Engine.mock.clear();
   Renderer.mock.clear();
@@ -161,7 +161,7 @@ describe('#render(channel, message, options)', () => {
 
   let apiStatus;
   beforeEach(() => {
-    apiStatus = graphAPI.reply(
+    apiStatus = graphApi.reply(
       200,
       JSON.stringify(
         new Array(2).fill(0).map(() => ({
@@ -259,7 +259,7 @@ describe('#renderAttachment(message)', () => {
   });
 
   it('works', async () => {
-    const apiStatus = graphAPI.reply(
+    const apiStatus = graphApi.reply(
       200,
       JSON.stringify([
         { code: 200, body: JSON.stringify({ attachment_id: 401759795 }) },

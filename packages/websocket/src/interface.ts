@@ -52,7 +52,7 @@ export const PLATFORM_MOUNTER_I = makeInterface<
  * @category Interface
  */
 export const PLATFORM_CONFIGS_I = makeInterface<
-  WebSocketPlatformConfigs<any, unknown, unknown>
+  WebSocketPlatformConfigs<any, unknown>
 >({
   name: 'WebSocketPlatformConfigsI',
 });

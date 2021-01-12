@@ -18,8 +18,8 @@ import type {
   SignRequestBody,
   RefreshRequestBody,
   VerifyRequestBody,
-  AuthAPIResponseBody,
-  AuthAPIErrorBody,
+  AuthApiResponseBody,
+  AuthApiErrorBody,
   AuthModuleConfigs,
   ContextOfAuthorizer,
   WithHeaders,
@@ -50,16 +50,16 @@ const parseBody = async (req: IncomingMessage): Promise<any> => {
 const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
 
 /** @internal */
-const respondAPIOk = (res: ServerResponse, platform: string, token: string) => {
+const respondApiOk = (res: ServerResponse, platform: string, token: string) => {
   res.writeHead(200, CONTENT_TYPE_JSON);
-  const body: AuthAPIResponseBody = { platform, token };
+  const body: AuthApiResponseBody = { platform, token };
   res.end(JSON.stringify(body));
 };
 
 /** @internal */
-const respondAPIError = (res: ServerResponse, code: number, reason: string) => {
+const respondApiError = (res: ServerResponse, code: number, reason: string) => {
   res.writeHead(code, CONTENT_TYPE_JSON);
-  const body: AuthAPIErrorBody = { error: { code, reason } };
+  const body: AuthApiErrorBody = { error: { code, reason } };
   res.end(JSON.stringify(body));
 };
 
@@ -130,14 +130,14 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       getRelativePath(this.entryPath, pathname || '/');
 
     if (subpath === '' || subpath.slice(0, 2) === '..') {
-      respondAPIError(res, 403, 'path forbidden');
+      respondApiError(res, 403, 'path forbidden');
       return;
     }
 
     // inner auth api for client controller
     if (subpath[0] === '_') {
       if (req.method !== 'POST') {
-        respondAPIError(res, 405, 'method not allowed');
+        respondApiError(res, 405, 'method not allowed');
         return;
       }
 
@@ -148,7 +148,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       } else if (subpath === '_verify') {
         await this._handleVerifyRequest(req, res);
       } else {
-        respondAPIError(res, 404, `invalid auth api route "${subpath}"`);
+        respondApiError(res, 404, `invalid auth api route "${subpath}"`);
       }
       return;
     }
@@ -157,7 +157,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
     const authorizer = this._getAuthorizerOf(platform);
     if (!authorizer) {
-      respondAPIError(res, 404, `platform "${platform}" not found`);
+      respondApiError(res, 404, `platform "${platform}" not found`);
       return;
     }
 
@@ -177,13 +177,13 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       );
     } catch (err) {
       if (!res.writableEnded) {
-        respondAPIError(res, err.code || 500, err.message);
+        respondApiError(res, err.code || 500, err.message);
       }
       return;
     }
 
     if (!res.writableEnded) {
-      respondAPIError(res, 501, 'connection not closed by authorizer');
+      respondApiError(res, 501, 'connection not closed by authorizer');
     }
   }
 
@@ -276,26 +276,26 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     try {
       const body = await parseBody(req);
       if (!body) {
-        respondAPIError(res, 400, 'invalid body format');
+        respondApiError(res, 400, 'invalid body format');
         return;
       }
 
       const { platform, credential } = body as SignRequestBody<unknown>;
       if (!platform || !credential) {
-        respondAPIError(res, 400, 'invalid sign params');
+        respondApiError(res, 400, 'invalid sign params');
         return;
       }
 
       const authorizer = this._getAuthorizerOf(platform);
       if (!authorizer) {
-        respondAPIError(res, 404, `unknown platform "${platform}"`);
+        respondApiError(res, 404, `unknown platform "${platform}"`);
         return;
       }
 
       const verifyResult = await authorizer.verifyCredential(credential);
       if (!verifyResult.success) {
         const { code, reason } = verifyResult;
-        respondAPIError(res, code, reason);
+        respondApiError(res, code, reason);
         return;
       }
 
@@ -306,9 +306,9 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
         { signatureOnly: true }
       );
 
-      respondAPIOk(res, platform, token);
+      respondApiOk(res, platform, token);
     } catch (err) {
-      respondAPIError(res, 500, err.message);
+      respondApiError(res, 500, err.message);
     }
   }
 
@@ -319,7 +319,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     // get signature from cookie
     const signature = getSignature(req);
     if (!signature) {
-      respondAPIError(res, 401, 'no signature found');
+      respondApiError(res, 401, 'no signature found');
       return;
     }
 
@@ -327,13 +327,13 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       // verify token in body ignoring expiration
       const body = await parseBody(req);
       if (!body) {
-        respondAPIError(res, 400, 'invalid body format');
+        respondApiError(res, 400, 'invalid body format');
         return;
       }
 
       const { token } = body as RefreshRequestBody;
       if (!token) {
-        respondAPIError(res, 400, 'empty token received');
+        respondApiError(res, 400, 'empty token received');
         return;
       }
 
@@ -342,13 +342,13 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       });
       if (!tokenResult.success) {
         const { code, reason } = tokenResult;
-        respondAPIError(res, code, reason);
+        respondApiError(res, code, reason);
         return;
       }
 
       const { refreshTill, platform, data } = tokenResult.payload;
       if (!refreshTill) {
-        respondAPIError(res, 400, 'token not refreshable');
+        respondApiError(res, 400, 'token not refreshable');
         return;
       }
 
@@ -356,14 +356,14 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
         // refresh signature and issue new token
         const authorizer = this._getAuthorizerOf(platform);
         if (!authorizer) {
-          respondAPIError(res, 404, `unknown platform "${platform}"`);
+          respondApiError(res, 404, `unknown platform "${platform}"`);
           return;
         }
 
         const refreshResult = await authorizer.verifyRefreshment(data);
         if (!refreshResult.success) {
           const { code, reason } = refreshResult;
-          respondAPIError(res, code, reason);
+          respondApiError(res, code, reason);
           return;
         }
 
@@ -373,12 +373,12 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
           refreshResult.data,
           { refreshTill, signatureOnly: true }
         );
-        respondAPIOk(res, platform, newToken);
+        respondApiOk(res, platform, newToken);
       } else {
-        respondAPIError(res, 401, 'refreshment period expired');
+        respondApiError(res, 401, 'refreshment period expired');
       }
     } catch (err) {
-      respondAPIError(res, 500, err.message);
+      respondApiError(res, 500, err.message);
     }
   }
 
@@ -389,7 +389,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     // get signature from cookie
     const signature = getSignature(req);
     if (!signature) {
-      respondAPIError(res, 401, 'no signature found');
+      respondApiError(res, 401, 'no signature found');
       return;
     }
 
@@ -397,33 +397,33 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       // verify token in body
       const body = await parseBody(req);
       if (!body) {
-        respondAPIError(res, 400, 'invalid body format');
+        respondApiError(res, 400, 'invalid body format');
         return;
       }
 
       const { token } = body as VerifyRequestBody;
       if (!token) {
-        respondAPIError(res, 400, 'empty token received');
+        respondApiError(res, 400, 'empty token received');
         return;
       }
 
       const verifyResult = await this._verifyToken(token, signature);
       if (!verifyResult.success) {
         const { code, reason } = verifyResult;
-        respondAPIError(res, code, reason);
+        respondApiError(res, code, reason);
         return;
       }
 
       const { platform } = verifyResult.payload;
       const authorizer = this._getAuthorizerOf(platform);
       if (!authorizer) {
-        respondAPIError(res, 404, `unknown platform "${platform}"`);
+        respondApiError(res, 404, `unknown platform "${platform}"`);
         return;
       }
 
-      respondAPIOk(res, platform, token);
+      respondApiOk(res, platform, token);
     } catch (err) {
-      respondAPIError(res, 500, err.message);
+      respondApiError(res, 500, err.message);
     }
   }
 

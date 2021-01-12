@@ -126,7 +126,7 @@ export class LineProfiler implements UserProfiler<LineUser> {
       requestApi = `v2/bot/profile/${user.id}`;
     }
 
-    const { body: profileData } = await this.bot.dispatchAPICall(
+    const profileData: LineRawUserProfile = await this.bot.makeApiCall(
       'GET',
       requestApi
     );
@@ -141,7 +141,7 @@ export class LineProfiler implements UserProfiler<LineUser> {
       throw new Error(`expect a group chat, got ${chat.type}`);
     }
 
-    const { body: groupSummary } = await this.bot.dispatchAPICall(
+    const groupSummary: LineGroupSummary = await this.bot.makeApiCall(
       'GET',
       `v2/bot/group/${chat.id}/summary`
     );

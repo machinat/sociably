@@ -17,11 +17,12 @@ import TelegramWorker from './worker';
 import { TelegramChat, TelegramChatTarget } from './channel';
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { TELEGRAM } from './constant';
-import TelegramAPIError from './error';
+import TelegramApiError from './error';
 import type {
   TelegramSegmentValue,
   TelegramJob,
-  TelegramAPIResult,
+  TelegramResult,
+  BotApiResult,
   TelegramDispatchFrame,
   TelegramDispatchResponse,
   UploadingFile,
@@ -41,16 +42,16 @@ export class TelegramBot
     MachinatBot<
       TelegramChat | TelegramChatTarget,
       TelegramJob,
-      TelegramAPIResult
+      TelegramResult
     > {
   token: string;
   id: number;
   engine: Engine<
     TelegramChat | TelegramChatTarget,
     TelegramSegmentValue,
-    TelegramComponent<any>,
+    TelegramComponent<unknown>,
     TelegramJob,
-    TelegramAPIResult,
+    TelegramResult,
     TelegramBot
   >;
 
@@ -60,7 +61,7 @@ export class TelegramBot
     dispatchWrapper: DispatchWrapper<
       TelegramJob,
       TelegramDispatchFrame,
-      TelegramAPIResult
+      TelegramResult
     > = (dispatch) => dispatch
   ) {
     invariant(token, 'options.token should not be empty');
@@ -68,12 +69,12 @@ export class TelegramBot
     this.token = token;
     this.id = Number(token.split(':', 1)[0]);
 
-    const queue = new Queue<TelegramJob, TelegramAPIResult>();
+    const queue = new Queue<TelegramJob, TelegramResult>();
     const worker = new TelegramWorker(token, maxConnections);
-    const renderer = new Renderer<TelegramSegmentValue, TelegramComponent<any>>(
-      TELEGRAM,
-      generalElementDelegate
-    );
+    const renderer = new Renderer<
+      TelegramSegmentValue,
+      TelegramComponent<unknown>
+    >(TELEGRAM, generalElementDelegate);
 
     this.engine = new Engine(
       TELEGRAM,
@@ -128,7 +129,7 @@ export class TelegramBot
   }> {
     const {
       result: { file_path: filePath },
-    } = await this.dispatchAPICall('getFile', { file_id: fileId });
+    } = await this.makeApiCall('getFile', { file_id: fileId });
     if (!filePath) {
       return null;
     }
@@ -138,7 +139,7 @@ export class TelegramBot
     );
 
     if (!fetchResponse.ok) {
-      throw new TelegramAPIError({
+      throw new TelegramApiError({
         ok: false,
         description: fetchResponse.statusText,
         error_code: fetchResponse.status,
@@ -153,11 +154,11 @@ export class TelegramBot
     };
   }
 
-  async dispatchAPICall(
+  async makeApiCall<Result extends BotApiResult>(
     method: string,
-    parameters: Record<string, any> = {},
+    parameters: Record<string, unknown> = {},
     uploadingFiles?: UploadingFile[]
-  ): Promise<TelegramAPIResult> {
+  ): Promise<Result> {
     try {
       const response = await this.engine.dispatchJobs(null, [
         {
@@ -168,13 +169,12 @@ export class TelegramBot
         },
       ]);
 
-      return response.results[0];
+      return response.results[0].result as Result;
     } catch (err) {
       if (err instanceof DispatchError) {
         throw err.errors[0];
-      } else {
-        throw err;
       }
+      throw err;
     }
   }
 }

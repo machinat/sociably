@@ -8,9 +8,10 @@ import MachinatQueue from '@machinat/core/queue';
 import type { JobResponse } from '@machinat/core/queue/types';
 
 import GraphAPIError from './error';
-import type { MessengerJob, MessengerResult, BatchAPIRequest } from './types';
+import type { MessengerJob, MessengerResult, BatchApiRequest } from './types';
 
-type MessengerJobResponse = JobResponse<MessengerJob, MessengerResult>;
+type MessengerSendingResponse = JobResponse<MessengerJob, MessengerResult>;
+
 type MessengerQueue = MachinatQueue<MessengerJob, MessengerResult>;
 
 const ENTRY = 'https://graph.facebook.com/v7.0/';
@@ -39,7 +40,7 @@ const encodeUriBody = (fields: { [key: string]: any }): string => {
   return body;
 };
 
-const formatRequest = (request: BatchAPIRequest) =>
+const formatRequest = (request: BatchApiRequest) =>
   request.method === 'DELETE'
     ? {
         ...request,
@@ -244,7 +245,7 @@ export default class MessengerWorker
       throw new GraphAPIError(apiBody);
     }
 
-    const jobResponses: MessengerJobResponse[] = new Array(apiBody.length);
+    const jobResponses: MessengerSendingResponse[] = new Array(apiBody.length);
 
     for (let i = 0; i < jobResponses.length; i += 1) {
       const result = apiBody[i];

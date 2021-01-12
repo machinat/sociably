@@ -14,8 +14,8 @@ import type {
   SignRequestBody,
   RefreshRequestBody,
   VerifyRequestBody,
-  AuthAPIResponseBody,
-  AuthAPIErrorBody,
+  AuthApiResponseBody,
+  AuthApiErrorBody,
 } from '../types';
 import AuthError from './error';
 
@@ -358,7 +358,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
       return [new AuthError(code, reason), ''];
     }
 
-    const [err, body] = await this._callAuthPrivateAPI('_sign', {
+    const [err, body] = await this._callAuthPrivateApi('_sign', {
       platform,
       credential: result.credential,
     });
@@ -409,7 +409,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
     let newToken: string;
     if (refreshTill && Date.now() < refreshTill * 1000) {
       // refresh if token is refreshable
-      const [refreshErr, body] = await this._callAuthPrivateAPI('_refresh', {
+      const [refreshErr, body] = await this._callAuthPrivateApi('_refresh', {
         token,
       });
       if (refreshErr) {
@@ -502,10 +502,10 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
     return componentUrl.href;
   }
 
-  private async _callAuthPrivateAPI(
+  private async _callAuthPrivateApi(
     api: string,
     body: SignRequestBody<unknown> | RefreshRequestBody | VerifyRequestBody
-  ): Promise<[Error | null, AuthAPIResponseBody]> {
+  ): Promise<[Error | null, AuthApiResponseBody]> {
     const res = await fetch(this._getAuthEntry(api), {
       method: 'POST',
       body: JSON.stringify(body),
@@ -514,7 +514,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
     if (!res.ok) {
       const {
         error: { code, reason },
-      }: AuthAPIErrorBody = await res.json();
+      }: AuthApiErrorBody = await res.json();
       return [new AuthError(code, reason), null as never];
     }
 

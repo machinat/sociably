@@ -9,7 +9,7 @@ import { TelegramChat, TelegramChatTarget } from '../channel';
 import TelegramUser from '../user';
 
 const bot = moxy({
-  async dispatchAPICall() {
+  async makeApiCall() {
     throw new Error();
   },
   async fetchFile() {
@@ -68,7 +68,7 @@ describe('#getUserProfile(user)', () => {
   });
 
   it('get profile from getChatMember API if no data attached with user', async () => {
-    bot.dispatchAPICall.mock.fake(() => ({
+    bot.makeApiCall.mock.fake(() => ({
       ok: true,
       result: {
         status: 'creator',
@@ -86,15 +86,15 @@ describe('#getUserProfile(user)', () => {
     expect(profile.lastName).toBe(undefined);
     expect(profile.pictureUrl).toBe(undefined);
 
-    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChatMember', {
+    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChatMember', {
       chat_id: 12345,
       user_id: 12345,
     });
   });
 
   test('specify chat to call getChatMember', async () => {
-    bot.dispatchAPICall.mock.fake(() => ({
+    bot.makeApiCall.mock.fake(() => ({
       ok: true,
       result: {
         status: 'creator',
@@ -114,15 +114,15 @@ describe('#getUserProfile(user)', () => {
     expect(profile.lastName).toBe(undefined);
     expect(profile.pictureUrl).toBe(undefined);
 
-    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChatMember', {
+    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChatMember', {
       user_id: 12345,
       chat_id: 67890,
     });
   });
 
   test('force to get data from API even available on user', async () => {
-    bot.dispatchAPICall.mock.fake(() => ({
+    bot.makeApiCall.mock.fake(() => ({
       ok: true,
       result: {
         status: 'creator',
@@ -139,7 +139,7 @@ describe('#getUserProfile(user)', () => {
     const profiler = new TelegramProfiler(bot);
     const profile = await profiler.getUserProfile(
       new TelegramUser(12345, { id: 12345, is_bot: false, first_name: 'Jojo' }),
-      { fromAPI: true }
+      { fromApi: true }
     );
 
     expect(profile.platform).toBe('telegram');
@@ -150,8 +150,8 @@ describe('#getUserProfile(user)', () => {
     expect(profile.username).toBe('jojodoe');
     expect(profile.pictureUrl).toBe(undefined);
 
-    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChatMember', {
+    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChatMember', {
       chat_id: 12345,
       user_id: 12345,
     });
@@ -236,7 +236,7 @@ describe('#getChatProfile(user)', () => {
   });
 
   it('get profile from getChat API if no data attached with chat', async () => {
-    bot.dispatchAPICall.mock.fake(() => ({
+    bot.makeApiCall.mock.fake(() => ({
       ok: true,
       result: { id: 67890, type: 'private', first_name: 'Jojo' },
     }));
@@ -254,8 +254,8 @@ describe('#getChatProfile(user)', () => {
     expect(profile.title).toBe(undefined);
     expect(profile.pictureUrl).toBe(undefined);
 
-    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChat', {
+    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
       chat_id: 67890,
     });
 
@@ -266,9 +266,9 @@ describe('#getChatProfile(user)', () => {
       profiler.getChatProfile(new TelegramChatTarget(12345, 67890))
     ).resolves.toStrictEqual(profile);
 
-    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(3);
+    expect(bot.makeApiCall.mock).toHaveReturnedTimes(3);
 
-    bot.dispatchAPICall.mock.fake(() => ({
+    bot.makeApiCall.mock.fake(() => ({
       ok: true,
       result: { id: 99999, type: 'channel', title: 'FOO' },
     }));
@@ -286,7 +286,7 @@ describe('#getChatProfile(user)', () => {
   });
 
   test('force to get data from API even available on user', async () => {
-    bot.dispatchAPICall.mock.fake(() => ({
+    bot.makeApiCall.mock.fake(() => ({
       ok: true,
       result: {
         id: 67890,
@@ -304,7 +304,7 @@ describe('#getChatProfile(user)', () => {
         type: 'private',
         first_name: 'Jojo',
       }),
-      { fromAPI: true }
+      { fromApi: true }
     );
 
     expect(profile.platform).toBe('telegram');
@@ -315,8 +315,8 @@ describe('#getChatProfile(user)', () => {
     expect(profile.username).toBe('jojodoe');
     expect(profile.pictureUrl).toBe(undefined);
 
-    expect(bot.dispatchAPICall.mock).toHaveReturnedTimes(1);
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChat', {
+    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
       chat_id: 67890,
     });
   });
@@ -387,7 +387,7 @@ describe('#fetchUserPhoto(user)', () => {
   };
 
   it('fetch the smallest file of the forst photo by default', async () => {
-    bot.dispatchAPICall.mock.fake(async () => getUserProfilePhotosResult);
+    bot.makeApiCall.mock.fake(async () => getUserProfilePhotosResult);
     const profiler = new TelegramProfiler(bot);
     const user = new TelegramUser(12345, {
       id: 12345,
@@ -403,10 +403,10 @@ describe('#fetchUserPhoto(user)', () => {
       height,
     }: any = await profiler.fetchUserPhoto(user);
 
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(1);
-    expect(
-      bot.dispatchAPICall.mock
-    ).toHaveBeenCalledWith('getUserProfilePhotos', { user_id: 12345 });
+    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getUserProfilePhotos', {
+      user_id: 12345,
+    });
     expect(bot.fetchFile.mock).toHaveBeenCalledTimes(1);
     expect(bot.fetchFile.mock).toHaveBeenCalledWith('_FILE_S_');
 
@@ -419,7 +419,7 @@ describe('#fetchUserPhoto(user)', () => {
   });
 
   it('fetch with minWidth option', async () => {
-    bot.dispatchAPICall.mock.fake(async () => getUserProfilePhotosResult);
+    bot.makeApiCall.mock.fake(async () => getUserProfilePhotosResult);
     const profiler = new TelegramProfiler(bot);
     const user = new TelegramUser(12345, {
       id: 12345,
@@ -455,7 +455,7 @@ describe('#fetchUserPhoto(user)', () => {
       height: 600,
     });
 
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(3);
+    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(3);
     expect(bot.fetchFile.mock).toHaveBeenCalledTimes(3);
     expect(bot.fetchFile.mock).toHaveBeenNthCalledWith(1, '_FILE_S_');
     expect(bot.fetchFile.mock).toHaveBeenNthCalledWith(2, '_FILE_M_');
@@ -470,7 +470,7 @@ describe('#fetchUserPhoto(user)', () => {
       first_name: 'John',
     });
 
-    bot.dispatchAPICall.mock.fakeReturnValue({
+    bot.makeApiCall.mock.fakeReturnValue({
       ok: true,
       result: { total_count: 0, photos: [] },
     });
@@ -496,7 +496,7 @@ describe('#fetchChatPhoto(user)', () => {
   };
 
   it('fetch the file and return the stream and info', async () => {
-    bot.dispatchAPICall.mock.fake(async () => getChatResult);
+    bot.makeApiCall.mock.fake(async () => getChatResult);
 
     const profiler = new TelegramProfiler(bot);
 
@@ -508,8 +508,8 @@ describe('#fetchChatPhoto(user)', () => {
       height,
     }: any = await profiler.fetchChatPhoto(12345);
 
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(1);
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChat', {
+    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
       chat_id: 12345,
     });
     expect(bot.fetchFile.mock).toHaveBeenCalledTimes(1);
@@ -524,7 +524,7 @@ describe('#fetchChatPhoto(user)', () => {
   });
 
   test('fetch small size', async () => {
-    bot.dispatchAPICall.mock.fake(async () => getChatResult);
+    bot.makeApiCall.mock.fake(async () => getChatResult);
 
     const profiler = new TelegramProfiler(bot);
 
@@ -538,8 +538,8 @@ describe('#fetchChatPhoto(user)', () => {
       height: 160,
     });
 
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(1);
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChat', {
+    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
       chat_id: 12345,
     });
     expect(bot.fetchFile.mock).toHaveBeenCalledTimes(1);
@@ -547,7 +547,7 @@ describe('#fetchChatPhoto(user)', () => {
   });
 
   it('fetch with chat object', async () => {
-    bot.dispatchAPICall.mock.fake(async () => getChatResult);
+    bot.makeApiCall.mock.fake(async () => getChatResult);
     const profiler = new TelegramProfiler(bot);
     const expectedResponse = {
       content: expect.any(Readable),
@@ -567,11 +567,11 @@ describe('#fetchChatPhoto(user)', () => {
       profiler.fetchChatPhoto(new TelegramChatTarget(12345, '@foo_channel'))
     ).resolves.toEqual(expectedResponse);
 
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledTimes(2);
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChat', {
+    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(2);
+    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
       chat_id: 67890,
     });
-    expect(bot.dispatchAPICall.mock).toHaveBeenCalledWith('getChat', {
+    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
       chat_id: '@foo_channel',
     });
     expect(bot.fetchFile.mock).toHaveBeenCalledTimes(2);
@@ -580,7 +580,7 @@ describe('#fetchChatPhoto(user)', () => {
   it('return null if chat has no photo', async () => {
     const profiler = new TelegramProfiler(bot);
 
-    bot.dispatchAPICall.mock.fakeReturnValue({
+    bot.makeApiCall.mock.fakeReturnValue({
       ok: true,
       result: { id: 12345, type: 'group', title: 'FOO' },
     });

@@ -137,7 +137,7 @@ export type FlexSegmentValue = {
   contents: any;
 } & QuickRepliable;
 
-export type DynamicAPICallGettable = {
+export type ApiCallGettable = {
   [BULK_REQUEST_GETTER]: (
     ids: string[]
   ) => {
@@ -165,7 +165,7 @@ export type LineMessageSegmentValue =
   | TemplateSegmentValue
   | FlexSegmentValue;
 
-export type LineSegmentValue = LineMessageSegmentValue | DynamicAPICallGettable;
+export type LineSegmentValue = LineMessageSegmentValue | ApiCallGettable;
 
 export type LineComponent<
   Props,
@@ -201,13 +201,25 @@ export type LineJob = {
   executionKey: undefined | string;
 };
 
-export type LineAPIResult = {
-  code: number;
-  headers: Record<string, string>;
-  body: any;
+export type MessagingApiResult = Record<string, any>;
+
+export type FailMessagingApiResult = {
+  message: string;
+  details: { message?: string; property?: string }[];
 };
 
-export type LineDispatchResponse = DispatchResponse<LineJob, LineAPIResult>;
+export type FailOAuthApiResult = {
+  error: string;
+  error_description?: string; // eslint-disable-line camelcase
+};
+
+export type LineResult = {
+  code: number;
+  headers: Record<string, string>;
+  body: MessagingApiResult;
+};
+
+export type LineDispatchResponse = DispatchResponse<LineJob, LineResult>;
 
 export type LineDispatchFrame = DispatchFrame<LineChannel, LineJob, LineBot>;
 
@@ -215,7 +227,7 @@ export type LineEventMiddleware = EventMiddleware<LineEventContext, null>;
 export type LineDispatchMiddleware = DispatchMiddleware<
   LineJob,
   LineDispatchFrame,
-  LineAPIResult
+  LineResult
 >;
 
 export type LinePlatformConfigs = {
@@ -237,5 +249,5 @@ export type LinePlatformMounter = PlatformMounter<
   null,
   LineJob,
   LineDispatchFrame,
-  LineAPIResult
+  LineResult
 >;

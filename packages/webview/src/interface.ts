@@ -120,6 +120,8 @@ export type SocketServerP<
   Authorizer extends AnyServerAuthorizer
 > = WebviewSocketServer<Authorizer>;
 
-export const PLATFORM_MOUNTER_I = makeInterface<WebviewPlatformMounter<any>>({
+export const PLATFORM_MOUNTER_I = makeInterface<
+  WebviewPlatformMounter<AnyServerAuthorizer>
+>({
   name: 'WebviewPlatformMounterI',
 });

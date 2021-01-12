@@ -12,7 +12,7 @@ import type {
 
 import { PLATFORM_CONFIGS_I } from '../interface';
 import { TELEGRAM } from '../constant';
-import type { TelegramPlatformConfigs } from '../types';
+import type { TelegramPlatformConfigs, RawChat } from '../types';
 import { BotP } from '../bot';
 import { supplementContext } from './utils';
 import type { TelegramAuthContext, TelegramAuthData } from './types';
@@ -100,7 +100,8 @@ export class TelegramServerAuthorizer
 
     const userId = Number(query.id);
     const username = query.username as string | undefined;
-    let chatData;
+
+    let chatData: undefined | RawChat;
 
     if (chatIdQuery) {
       const chatId =
@@ -114,26 +115,22 @@ export class TelegramServerAuthorizer
         return;
       }
 
-      const { result: memberResult } = await this.bot.dispatchAPICall(
-        'getChatMember',
-        {
-          chat_id: chatId,
-          user_id: userId,
-        }
-      );
+      const chatMember = await this.bot.makeApiCall('getChatMember', {
+        chat_id: chatId,
+        user_id: userId,
+      });
 
       if (
-        memberResult.status === 'left' ||
-        memberResult.status === 'kicked' ||
-        (memberResult.status === 'restricted' &&
-          memberResult.is_member === false)
+        chatMember.status === 'left' ||
+        chatMember.status === 'kicked' ||
+        (chatMember.status === 'restricted' && chatMember.is_member === false)
       ) {
         authIssuer.issueError(401, 'user is unauthorized to chat');
         this._redirect(res, undefined);
         return;
       }
 
-      const { result: chatResult } = await this.bot.dispatchAPICall('getChat', {
+      const chatResult: RawChat = await this.bot.makeApiCall('getChat', {
         chat_id: chatId,
       });
 
