@@ -245,7 +245,7 @@ it('sequently excute jobs within the same identical channel', async () => {
   await expect(executePromise).resolves.toMatchSnapshot();
 });
 
-it('open requests up to connectionCapicity', async () => {
+it('open requests up to maxConnections', async () => {
   const client = new LineWorker(accessToken, 2);
 
   const bodySpy = moxy(() => true);

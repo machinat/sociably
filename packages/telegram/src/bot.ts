@@ -30,7 +30,7 @@ import type {
 
 type TelegramBotOptions = {
   token: string;
-  connectionCapicity?: number;
+  maxConnections?: number;
 };
 
 /**
@@ -55,7 +55,7 @@ export class TelegramBot
   >;
 
   constructor(
-    { token, connectionCapicity = 100 }: TelegramBotOptions,
+    { token, maxConnections = 100 }: TelegramBotOptions,
     initScope: InitScopeFn = () => createEmptyScope(TELEGRAM),
     dispatchWrapper: DispatchWrapper<
       TelegramJob,
@@ -69,7 +69,7 @@ export class TelegramBot
     this.id = Number(token.split(':', 1)[0]);
 
     const queue = new Queue<TelegramJob, TelegramAPIResult>();
-    const worker = new TelegramWorker(token, connectionCapicity);
+    const worker = new TelegramWorker(token, maxConnections);
     const renderer = new Renderer<TelegramSegmentValue, TelegramComponent<any>>(
       TELEGRAM,
       generalElementDelegate
@@ -185,11 +185,11 @@ export const BotP = makeClassProvider({
     PLATFORM_CONFIGS_I,
     { require: PLATFORM_MOUNTER_I, optional: true },
   ] as const,
-  factory: ({ botToken, connectionCapicity }, mounter) => {
+  factory: ({ botToken, maxConnections }, mounter) => {
     invariant(botToken, 'configs.botToken should not be empty');
 
     return new TelegramBot(
-      { token: botToken, connectionCapicity },
+      { token: botToken, maxConnections },
       mounter?.initScope,
       mounter?.dispatchWrapper
     );

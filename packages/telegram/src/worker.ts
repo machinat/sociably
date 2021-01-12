@@ -15,13 +15,13 @@ export default class TelegramWorker
   private _started: boolean;
   private _lockedKeys: Set<string>;
 
-  connectionSize: number;
-  connectionCapicity: number;
+  connectionCount: number;
+  maxConnections: number;
   apiEntry: string;
 
-  constructor(botToken: string, connectionCapicity: number) {
-    this.connectionSize = 0;
-    this.connectionCapicity = connectionCapicity;
+  constructor(botToken: string, maxConnections: number) {
+    this.connectionCount = 0;
+    this.maxConnections = maxConnections;
     this.apiEntry = `${API_HOST}/bot${botToken}`;
 
     this._lockedKeys = new Set();
@@ -95,10 +95,10 @@ export default class TelegramWorker
   private _consumeCallback = this._consume.bind(this);
 
   private _consume(queue: Queue<TelegramJob, TelegramAPIResult>) {
-    const { _lockedKeys: lockedIds, connectionCapicity } = this;
+    const { _lockedKeys: lockedIds, maxConnections } = this;
 
     for (let i = 0; i < queue.length; ) {
-      if (this.connectionSize >= connectionCapicity) {
+      if (this.connectionCount >= maxConnections) {
         break;
       }
 
@@ -108,7 +108,7 @@ export default class TelegramWorker
       } else {
         this._consumeJobAt(queue, i, executionKey);
 
-        this.connectionSize += 1;
+        this.connectionCount += 1;
 
         if (executionKey !== undefined) {
           lockedIds.add(executionKey);
@@ -127,7 +127,7 @@ export default class TelegramWorker
     } catch (e) {
       // NOTE: leave the error to the request side
     } finally {
-      this.connectionSize -= 1;
+      this.connectionCount -= 1;
 
       if (executionKey !== undefined) {
         this._lockedKeys.delete(executionKey);

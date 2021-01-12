@@ -99,7 +99,7 @@ describe('#constructor(options)', () => {
         accessToken: '_ACCESS_TOKEN_',
 
         channelId: '_BOT_CHANNEL_ID_',
-        connectionCapicity: 999,
+        maxConnections: 999,
       },
       initScope,
       dispatchWrapper
@@ -124,7 +124,7 @@ describe('#constructor(options)', () => {
     );
   });
 
-  test('default connectionCapicity', () => {
+  test('default maxConnections', () => {
     const _bot = new LineBot(
       { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
       initScope,

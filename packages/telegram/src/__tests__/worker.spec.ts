@@ -135,7 +135,7 @@ it('sequently excute jobs within the same identical chat', async () => {
   );
 });
 
-it('open requests up to connectionCapicity', async () => {
+it('open requests up to maxConnections', async () => {
   const client = new TelegramWorker(botToken, 2);
 
   const bodySpy = moxy(() => true);

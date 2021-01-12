@@ -41,7 +41,7 @@ describe('initModule(configs)', () => {
       entryPath: '/webhook/telegram',
       secretPath: '_SECRET_',
       authRedirectUrl: '/webview/index.html',
-      connectionCapicity: 999,
+      maxConnections: 999,
       eventMiddlewares,
       dispatchMiddlewares,
     });
@@ -67,7 +67,7 @@ describe('initModule(configs)', () => {
       entryPath: '/webhook/telegram',
       secretPath: '_SECRET_',
       authRedirectUrl: '/webview/index.html',
-      connectionCapicity: 999,
+      maxConnections: 999,
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 

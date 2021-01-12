@@ -75,7 +75,7 @@ describe('#constructor(options)', () => {
 
   it('assemble core modules', () => {
     const bot = new TelegramBot(
-      { botToken: '12345:_BOT_TOKEN_', connectionCapicity: 999 },
+      { botToken: '12345:_BOT_TOKEN_', maxConnections: 999 },
       initScope,
       dispatchWrapper
     );
@@ -103,9 +103,9 @@ describe('#constructor(options)', () => {
     expect(Worker.mock).toHaveBeenCalledWith('12345:_BOT_TOKEN_', 999);
   });
 
-  test('default connectionCapicity', () => {
+  test('default maxConnections', () => {
     const _bot = new TelegramBot(
-      { botToken: '12345:_BOT_TOKEN_', connectionCapicity: 999 },
+      { botToken: '12345:_BOT_TOKEN_', maxConnections: 999 },
       initScope,
       dispatchWrapper
     );

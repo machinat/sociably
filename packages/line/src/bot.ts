@@ -30,7 +30,7 @@ import type {
 type LineBotOptions = {
   accessToken: string;
   channelId: string;
-  connectionCapicity?: number;
+  maxConnections?: number;
 };
 
 /**
@@ -49,7 +49,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
   >;
 
   constructor(
-    { accessToken, channelId, connectionCapicity = 100 }: LineBotOptions,
+    { accessToken, channelId, maxConnections = 100 }: LineBotOptions,
     initScope: InitScopeFn = () => createEmptyScope(LINE),
     dispatchWrapper: DispatchWrapper<
       LineJob,
@@ -63,7 +63,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineAPIResult> {
     this.channelId = channelId;
 
     const queue = new Queue<LineJob, LineAPIResult>();
-    const worker = new LineWorker(accessToken, connectionCapicity);
+    const worker = new LineWorker(accessToken, maxConnections);
     const renderer = new Renderer<LineSegmentValue, LineComponent<unknown>>(
       LINE,
       generalElementDelegate

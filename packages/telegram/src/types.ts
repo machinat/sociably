@@ -201,7 +201,7 @@ export type TelegramPlatformConfigs = {
   entryPath?: string;
   secretPath?: string;
   authRedirectUrl?: string;
-  connectionCapicity?: number;
+  maxConnections?: number;
   noServer?: boolean;
   eventMiddlewares?: TelegramEventMiddleware[];
   dispatchMiddlewares?: TelegramDispatchMiddleware[];

@@ -19,18 +19,18 @@ export default class LineWorker
 
   private _started: boolean;
 
-  connectionSize: number;
-  connectionCapicity: number;
+  connectionCount: number;
+  maxConnections: number;
   private _lockedKeys: Set<string>;
 
-  constructor(accessToken: string, connectionCapicity: number) {
+  constructor(accessToken: string, maxConnections: number) {
     this._headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
     };
 
-    this.connectionSize = 0;
-    this.connectionCapicity = connectionCapicity;
+    this.connectionCount = 0;
+    this.maxConnections = maxConnections;
     this._lockedKeys = new Set();
     this._started = false;
   }
@@ -102,10 +102,10 @@ export default class LineWorker
   private _consumeCallback = this._consume.bind(this);
 
   private _consume(queue: Queue<LineJob, LineAPIResult>) {
-    const { _lockedKeys: lockedIds, connectionCapicity } = this;
+    const { _lockedKeys: lockedIds, maxConnections } = this;
 
     for (let i = 0; i < queue.length; ) {
-      if (this.connectionSize >= connectionCapicity) {
+      if (this.connectionCount >= maxConnections) {
         break;
       }
 
@@ -115,7 +115,7 @@ export default class LineWorker
       } else {
         this._consumeJobAt(queue, i, executionKey);
 
-        this.connectionSize += 1;
+        this.connectionCount += 1;
 
         if (executionKey !== undefined) {
           lockedIds.add(executionKey);
@@ -134,7 +134,7 @@ export default class LineWorker
     } catch (e) {
       // NOTE: leave the error to the request side
     } finally {
-      this.connectionSize -= 1;
+      this.connectionCount -= 1;
 
       if (executionKey !== undefined) {
         this._lockedKeys.delete(executionKey);

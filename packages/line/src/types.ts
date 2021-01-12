@@ -225,7 +225,7 @@ export type LinePlatformConfigs = {
   channelSecret?: string;
   shouldValidateRequest?: boolean;
   accessToken: string;
-  connectionCapicity?: number;
+  maxConnections?: number;
   liffChannelIds?: string[];
   noServer?: boolean;
   eventMiddlewares?: MaybeContainer<LineEventMiddleware>[];
