@@ -1,8 +1,9 @@
 import url from 'url';
-import moxy from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import fetch from 'node-fetch';
 import jsonwebtoken from 'jsonwebtoken';
+import type { AnyClientAuthorizer } from '../../types';
 import AuthClient from '../client';
 
 const resolveAfterLoops = (resolve, n) => {
@@ -18,32 +19,34 @@ const delayLoops = (n = 1) =>
 nock.disableNetConnect();
 const serverEntry = nock('https://machinat.io');
 
-global.location = moxy(url.parse('https://machinat.io/app?platform=foo'));
-global.document = moxy({ cookie: '' });
-global.fetch = fetch;
-
-global.window = { location: global.location, document: global.location, fetch };
+const location = moxy<Location>(
+  url.parse('https://machinat.io/app?platform=foo') as never
+);
+const document = moxy<Document>({ cookie: '' } as never);
 
 const makeToken = (payload) =>
   jsonwebtoken.sign(payload, '__SECRET__').split('.').slice(0, 2).join('.');
 
 const setBackendAuthed = (payload) => {
   const token = makeToken(payload);
-  global.document.mock
+  document.mock
     .getter('cookie')
     .fakeReturnValue(`machinat_auth_token=${token}`);
 };
 
 const setBackendErrored = (payload) => {
   const errorEncoded = jsonwebtoken.sign(payload, '__SECRET__');
-  global.document.mock
+  document.mock
     .getter('cookie')
     .fakeReturnValue(`machinat_auth_error=${errorEncoded}`);
 };
 
-const fooAuthorizer = moxy({
+const fooUser = { platform: 'foo', uid: 'john_doe' };
+const fooChannel = { platform: 'foo', uid: 'foo.channel' };
+const fooData = 'foo.data';
+
+const fooAuthorizer = moxy<AnyClientAuthorizer>({
   platform: 'foo',
-  shouldResign: true,
   async init() {
     return undefined;
   },
@@ -53,14 +56,17 @@ const fooAuthorizer = moxy({
       credential: { foo: 'credential' },
     };
   },
-  async refineAuth() {
-    return { user: { id: 'foo' }, channel: { id: 'foo' } };
+  async supplementContext() {
+    return {
+      user: fooUser,
+      channel: fooChannel,
+      foo: fooData,
+    };
   },
 });
 
-const barAuthorizer = moxy({
+const barAuthorizer = moxy<AnyClientAuthorizer>({
   platform: 'bar',
-  shouldResign: false,
   async init() {
     return undefined;
   },
@@ -71,35 +77,54 @@ const barAuthorizer = moxy({
       reason: "I'm drunk",
     };
   },
-  async refineAuth() {
-    return { user: { id: 'bar' }, channel: { id: 'bar' } };
+  async supplementContext() {
+    return {
+      user: { platform: 'bar', uid: 'jojo_doe' },
+      channel: { platform: 'bar', uid: 'bar.channel' },
+      bar: 'bar.data',
+    };
   },
 });
 
 const authorizers = [fooAuthorizer, barAuthorizer];
 const serverUrl = '/auth';
 
-const _DateNow = Date.now;
-const FAKE_NOW = 1570000000000;
-const SEC_NOW = FAKE_NOW / 1000;
-Date.now = moxy(() => FAKE_NOW);
-
-beforeEach(() => {
-  Date.now.mock.reset();
-  fooAuthorizer.mock.reset();
-  barAuthorizer.mock.reset();
-  global.location.mock.reset();
-  global.document.mock.reset();
-});
-
 jest.useFakeTimers();
 
-afterEach(() => {
-  jest.clearAllTimers();
+const _Date = Date;
+const FAKE_NOW = 1570000000000;
+const SEC_NOW = FAKE_NOW / 1000;
+
+beforeAll(() => {
+  global.document = document;
+  global.fetch = fetch as never;
+  global.window = {
+    location,
+    document,
+    fetch,
+  } as never;
+
+  global.Date = moxy(_Date, { mockNewInstance: false });
+  Date.now = moxy(() => FAKE_NOW);
 });
 
 afterAll(() => {
-  Date.now = _DateNow;
+  global.Date = _Date;
+  global.document = undefined as never;
+  global.fetch = undefined as never;
+  global.window = undefined as never;
+});
+
+beforeEach(() => {
+  (Date as Moxy<DateConstructor>).now.mock.reset();
+  fooAuthorizer.mock.reset();
+  barAuthorizer.mock.reset();
+  location.mock.reset();
+  document.mock.reset();
+});
+
+afterEach(() => {
+  jest.clearAllTimers();
 });
 
 describe('#constructor(options)', () => {
@@ -125,7 +150,8 @@ describe('#constructor(options)', () => {
 
   it('throw if provider is empty', () => {
     expect(
-      () => new AuthClient({ serverUrl: '/auth' })
+      () =>
+        new AuthClient({ authorizers: undefined as never, serverUrl: '/auth' })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.authorizers must not be empty"`
     );
@@ -138,7 +164,7 @@ describe('#constructor(options)', () => {
 
   it('throw if serverUrl is empty', () => {
     expect(
-      () => new AuthClient({ authorizers })
+      () => new AuthClient({ authorizers, serverUrl: undefined as never })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.serverUrl must not be empty"`
     );
@@ -159,10 +185,10 @@ describe('bootstraping', () => {
       null
     );
 
-    // await delayLoops();
-    // expect(controller.platform).toBe('foo');
-    // expect(controller.isInitiating).toBe(false);
-    // expect(controller.isInitiated('foo')).toBe(true);
+    await delayLoops();
+    expect(controller.platform).toBe('foo');
+    expect(controller.isAuthorizing).toBe(false);
+    expect(controller.isAuthorized).toBe(false);
   });
 
   test.each`
@@ -179,7 +205,7 @@ describe('bootstraping', () => {
   `(
     'platform choosing priority',
     async ({ param, query, cookieAuthed, cookieErrored, expectedPlatform }) => {
-      global.location.mock
+      location.mock
         .getter('search')
         .fake(() => (query ? `?platform=${query}` : ''));
 
@@ -243,9 +269,9 @@ describe('bootstraping', () => {
 
     const controller = new AuthClient({ authorizers, serverUrl });
 
-    expect(global.document.mock.setter('cookie')).toHaveBeenCalledTimes(1);
+    expect(document.mock.setter('cookie')).toHaveBeenCalledTimes(1);
     expect(
-      global.document.mock.setter('cookie').calls[0].args[0]
+      document.mock.setter('cookie').calls[0].args[0]
     ).toMatchInlineSnapshot(
       `"machinat_auth_error=; Domain=machinat.io; Path=/entry; Expires=Thu, 01 Jan 1970 00:00:00 GMT"`
     );
@@ -271,7 +297,7 @@ describe('bootstraping', () => {
   });
 
   test('no platform specified or paltform unknown', async () => {
-    global.location.mock.getter('search').fakeReturnValue('');
+    location.mock.getter('search').fakeReturnValue('');
 
     const controller = new AuthClient({ authorizers, serverUrl });
     const errorSpy = moxy();
@@ -397,14 +423,14 @@ describe('signing auth', () => {
     scope: { path: '/' },
     iat: SEC_NOW - 10,
     exp: SEC_NOW + 1000,
-    refreshLimit: SEC_NOW + 10000,
+    refreshTill: SEC_NOW + 10000,
   };
 
   const expectedContext = {
     platform: 'foo',
-    user: { id: 'foo' },
-    channel: { id: 'foo' },
-    data: { foo: 'data' },
+    user: fooUser,
+    channel: fooChannel,
+    foo: fooData,
     loginAt: new Date(authPayload.iat * 1000),
     expireAt: new Date(authPayload.exp * 1000),
   };
@@ -430,8 +456,10 @@ describe('signing auth', () => {
     expect(controller.isAuthorized).toBe(true);
     expect(controller.isAuthorizing).toBe(false);
 
-    expect(fooAuthorizer.refineAuth.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.refineAuth.mock).toHaveBeenCalledWith({ foo: 'data' });
+    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledWith({
+      foo: 'data',
+    });
   });
 
   it('throw if auth rejected on server side', async () => {
@@ -482,8 +510,10 @@ describe('signing auth', () => {
     expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledWith(
       'https://machinat.io/auth/foo'
     );
-    expect(fooAuthorizer.refineAuth.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.refineAuth.mock).toHaveBeenCalledWith({ foo: 'data' });
+    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledWith({
+      foo: 'data',
+    });
   });
 
   it('return the the current auth status if it is already authed or authenticating', async () => {
@@ -513,7 +543,7 @@ describe('signing auth', () => {
     expect(signingCall.isDone()).toBe(true);
     expect(controller.isAuthorized).toBe(true);
     expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.refineAuth.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledTimes(1);
   });
 
   it('sign again if token in cookie expired', async () => {
@@ -567,10 +597,10 @@ describe('signing auth', () => {
     expect(signingCall.isDone()).toBe(true);
     expect(controller.isAuthorized).toBe(false);
     expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.refineAuth.mock).not.toHaveBeenCalled();
+    expect(fooAuthorizer.supplementContext.mock).not.toHaveBeenCalled();
   });
 
-  it('throw if provider.refineAuth() resolve null', async () => {
+  it('throw if provider.supplementContext() resolve null', async () => {
     const signingCall = serverEntry
       .post('/auth/_sign', {
         platform: 'foo',
@@ -581,7 +611,7 @@ describe('signing auth', () => {
         token,
       });
 
-    fooAuthorizer.refineAuth.mock.fake(() => null);
+    fooAuthorizer.supplementContext.mock.fake(() => null);
 
     const controller = new AuthClient({
       platform: 'foo',
@@ -596,8 +626,10 @@ describe('signing auth', () => {
     expect(signingCall.isDone()).toBe(true);
     expect(controller.isAuthorized).toBe(false);
     expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.refineAuth.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.refineAuth.mock).toHaveBeenCalledWith({ foo: 'data' });
+    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledWith({
+      foo: 'data',
+    });
   });
 
   it('throw if signOut() during authenticating', async () => {
@@ -614,9 +646,9 @@ describe('signing auth', () => {
     const controller = new AuthClient({ authorizers, serverUrl });
 
     const promise = controller.auth();
-    Date.now.mock.fake(() => FAKE_NOW + 50);
+    (Date as Moxy<DateConstructor>).now.mock.fake(() => FAKE_NOW + 50);
     controller.signOut();
-    Date.now.mock.fake(() => FAKE_NOW + 100);
+    (Date as Moxy<DateConstructor>).now.mock.fake(() => FAKE_NOW + 100);
 
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
       `"signed out during authenticating"`
@@ -643,7 +675,7 @@ describe('auth refreshment and expiry', () => {
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
-      refreshLimit: SEC_NOW + 99999,
+      refreshTill: SEC_NOW + 99999,
     });
 
     const controller = new AuthClient({
@@ -663,7 +695,7 @@ describe('auth refreshment and expiry', () => {
         scope: { path: '/' },
         iat: SEC_NOW + 990 * i,
         exp: SEC_NOW + 1990 * i,
-        refreshLimit: SEC_NOW + 99999,
+        refreshTill: SEC_NOW + 99999,
       };
       const newToken = makeToken(newPayload);
 
@@ -683,9 +715,9 @@ describe('auth refreshment and expiry', () => {
         token: newToken,
         context: {
           platform: 'foo',
-          user: { id: 'foo' },
-          channel: { id: 'foo' },
-          data: { foo: 'data' },
+          user: fooUser,
+          channel: fooChannel,
+          foo: fooData,
           loginAt: new Date(newPayload.iat * 1000),
           expireAt: new Date(newPayload.exp * 1000),
         },
@@ -704,7 +736,7 @@ describe('auth refreshment and expiry', () => {
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
-      refreshLimit: SEC_NOW + 99999,
+      refreshTill: SEC_NOW + 99999,
     });
 
     const controller = new AuthClient({
@@ -800,9 +832,9 @@ describe('auth refreshment and expiry', () => {
         token: newToken,
         context: {
           platform: 'foo',
-          user: { id: 'foo' },
-          channel: { id: 'foo' },
-          data: { foo: 'data' },
+          user: fooUser,
+          channel: fooChannel,
+          foo: fooData,
           loginAt: new Date(newPayload.iat * 1000),
           expireAt: new Date(newPayload.exp * 1000),
         },
@@ -921,43 +953,6 @@ describe('auth refreshment and expiry', () => {
     expect(refreshSpy.mock).not.toHaveBeenCalled();
   });
 
-  it('expire if not refreshable when provider.shouldResign is false', async () => {
-    fooAuthorizer.mock.getter('shouldResign').fakeReturnValue(false);
-
-    setBackendAuthed({
-      platform: 'foo',
-      data: { foo: 'data' },
-      scope: { path: '/' },
-      iat: SEC_NOW - 1,
-      exp: SEC_NOW + 999,
-    });
-
-    const controller = new AuthClient({
-      authorizers,
-      serverUrl,
-      refreshLeadTime: 10,
-    });
-    controller.on('expire', expireSpy);
-    controller.on('refresh', refreshSpy);
-    controller.on('error', errorSpy);
-
-    await controller.auth();
-    expect(controller.isAuthorized).toBe(true);
-
-    jest.advanceTimersToNextTimer(1);
-    await delayLoops(5);
-    expect(refreshSpy.mock).not.toHaveBeenCalled();
-    expect(expireSpy.mock).not.toHaveBeenCalled();
-
-    jest.advanceTimersToNextTimer(1);
-    await delayLoops();
-
-    expect(fooAuthorizer.fetchCredential.mock).not.toHaveBeenCalled();
-    expect(errorSpy.mock).not.toHaveBeenCalled();
-    expect(expireSpy.mock).toHaveBeenCalledTimes(1);
-    expect(controller.isAuthorized).toBe(false);
-  });
-
   it('not update auth if signOut() during refreshment', async () => {
     setBackendAuthed({
       platform: 'foo',
@@ -965,7 +960,7 @@ describe('auth refreshment and expiry', () => {
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
-      refreshLimit: SEC_NOW + 99999,
+      refreshTill: SEC_NOW + 99999,
     });
 
     const controller = new AuthClient({
@@ -990,13 +985,13 @@ describe('auth refreshment and expiry', () => {
           scope: { path: '/' },
           iat: SEC_NOW + 990,
           exp: SEC_NOW + 1999,
-          refreshLimit: SEC_NOW + 99999,
+          refreshTill: SEC_NOW + 99999,
         }),
       });
 
-    Date.now.mock.fake(() => SEC_NOW + 980);
+    (Date as Moxy<DateConstructor>).now.mock.fake(() => SEC_NOW + 980);
     jest.advanceTimersToNextTimer(1);
-    Date.now.mock.fake(() => SEC_NOW + 985);
+    (Date as Moxy<DateConstructor>).now.mock.fake(() => SEC_NOW + 985);
     controller.signOut();
     await delayLoops();
 
@@ -1021,7 +1016,7 @@ test('#signOut()', async () => {
     scope: { path: '/' },
     iat: SEC_NOW - 1,
     exp: SEC_NOW + 999,
-    refreshLimit: SEC_NOW + 99999,
+    refreshTill: SEC_NOW + 99999,
   });
 
   const controller = new AuthClient({ authorizers, serverUrl });

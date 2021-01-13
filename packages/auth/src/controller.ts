@@ -77,9 +77,14 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
   private _cookieController: CookieController;
 
-  constructor(
-    authorizers: Authorizer[],
-    {
+  constructor(authorizers: Authorizer[], options: AuthModuleConfigs) {
+    invariant(
+      authorizers && authorizers.length > 0,
+      'authorizers must not be empty'
+    );
+    invariant(options && options.secret, 'options.secret must not be empty');
+
+    const {
       secret,
       entryPath = '/',
       dataCookieAge = 180, // 3 min
@@ -89,13 +94,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       cookiePath = '/',
       sameSite = 'lax',
       secure = true,
-    }: AuthModuleConfigs
-  ) {
-    invariant(secret, 'options.secret must not be empty');
-    invariant(
-      authorizers && authorizers.length > 0,
-      'options.authorizers must not be empty'
-    );
+    } = options;
 
     invariant(
       isSubpath(cookiePath, entryPath),

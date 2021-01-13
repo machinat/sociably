@@ -427,9 +427,9 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
 
     if (
       this._authed
-        ? // if auth updated during refreshment
+        ? // auth updated during refreshment
           this._authed.token !== token
-        : // if signed out during refreshment
+        : // signed out during refreshment
           beginTime < this._minAuthBeginTime
     ) {
       return;

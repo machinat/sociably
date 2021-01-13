@@ -2,10 +2,10 @@ import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Http from '@machinat/http';
 import Auth from '../module';
-import { AuthController } from '../controller';
+import { ControllerP } from '../controller';
 
 it('export interfaces', () => {
-  expect(Auth.Controller).toBe(AuthController);
+  expect(Auth.Controller).toBe(ControllerP);
   expect(Auth.CONFIGS_I).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
@@ -38,7 +38,7 @@ describe('initModule()', () => {
       Http.REQUEST_ROUTINGS_I,
     ]);
 
-    expect(controller).toBeInstanceOf(AuthController);
+    expect(controller).toBeInstanceOf(ControllerP);
     expect(configs).toEqual({ secret: '_SECRET_', entryPath: '/auth' });
     expect(routings).toMatchInlineSnapshot(`
       Array [
@@ -54,7 +54,7 @@ describe('initModule()', () => {
   test('provide authorizers to controller', async () => {
     const fooAuthorizer = moxy();
     const barAuthorizer = moxy();
-    const ControllerSpy = moxy(AuthController);
+    const ControllerSpy = moxy(ControllerP);
     const app = Machinat.createApp({
       modules: [Auth.initModule({ secret: '_SECRET_', entryPath: '/auth' })],
       bindings: [
