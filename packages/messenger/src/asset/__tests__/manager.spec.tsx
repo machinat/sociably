@@ -1,5 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
+import type Base from '@machinat/core/base';
+import type { MessengerBot } from '../../bot';
 import { MessengerAssetsManager } from '../manager';
 
 const state = moxy({
@@ -11,35 +13,35 @@ const state = moxy({
   clear: () => {},
 });
 
-const stateManager = moxy({
+const stateController = moxy<Base.StateControllerI>({
   globalState() {
     return state;
   },
-});
+} as never);
 
-const bot = moxy({
+const bot = moxy<MessengerBot>({
   pageId: '_PAGE_ID_',
   renderAttachment() {
     return { jobs: [{}], results: [{}] };
   },
   makeApiCall() {},
-});
+} as never);
 
 beforeEach(() => {
-  stateManager.mock.reset();
+  stateController.mock.reset();
   state.mock.reset();
   bot.mock.reset();
 });
 
 test('get asset id', async () => {
-  const manager = new MessengerAssetsManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateController, bot);
 
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe(undefined);
   await expect(manager.getAttachment('my_attachment')).resolves.toBe(undefined);
   await expect(manager.getPersona('my_persona')).resolves.toBe(undefined);
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets._PAGE_ID_.foo",
@@ -64,19 +66,19 @@ test('get asset id', async () => {
   state.get.mock.fakeReturnValue('_PERSONA_ID_');
   await expect(manager.getPersona('my_persona')).resolves.toBe('_PERSONA_ID_');
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(6);
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(6);
   expect(state.get.mock).toHaveBeenCalledTimes(6);
 });
 
 test('set asset id', async () => {
-  const manager = new MessengerAssetsManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateController, bot);
 
   await manager.saveAssetId('foo', 'bar', 'baz');
   await manager.saveAttachment('my_attachment', '_ATTACHMENT_ID_');
   await manager.savePersona('my_persona', '_PERSONA_ID_');
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets._PAGE_ID_.foo",
@@ -117,14 +119,14 @@ test('set asset id', async () => {
 });
 
 test('get all assets', async () => {
-  const manager = new MessengerAssetsManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateController, bot);
 
   await expect(manager.getAllAssets('foo')).resolves.toBe(null);
   await expect(manager.getAllAttachments()).resolves.toBe(null);
   await expect(manager.getAllPersonas()).resolves.toBe(null);
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets._PAGE_ID_.foo",
@@ -147,14 +149,14 @@ test('get all assets', async () => {
 });
 
 test('remove asset id', async () => {
-  const manager = new MessengerAssetsManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateController, bot);
 
   await manager.discardAssetId('foo', 'bar');
   await manager.discardAttachment('my_attachment');
   await manager.discardPersona('my_persona');
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "messenger.assets._PAGE_ID_.foo",
@@ -187,7 +189,7 @@ test('remove asset id', async () => {
 });
 
 test('#renderAttachment()', async () => {
-  const manager = new MessengerAssetsManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateController, bot);
   bot.renderAttachment.mock.fake(async () => ({
     jobs: [{ ...{} }],
     results: [
@@ -217,11 +219,9 @@ test('#renderAttachment()', async () => {
 });
 
 test('#createPersona()', async () => {
-  const manager = new MessengerAssetsManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateController, bot);
   bot.makeApiCall.mock.fake(() => ({
-    code: 201,
-    headers: {},
-    body: { id: '_PERSONA_ID_' },
+    id: '_PERSONA_ID_',
   }));
 
   await expect(
@@ -249,16 +249,9 @@ test('#createPersona()', async () => {
 });
 
 test('#deletePersona()', async () => {
-  const manager = new MessengerAssetsManager(stateManager, bot);
+  const manager = new MessengerAssetsManager(stateController, bot);
   bot.makeApiCall.mock.fake(() => ({
-    jobs: [{ ...{} }],
-    results: [
-      {
-        code: 200,
-        headers: {},
-        body: { id: '_PERSONA_ID_' },
-      },
-    ],
+    id: '_PERSONA_ID_',
   }));
 
   await expect(

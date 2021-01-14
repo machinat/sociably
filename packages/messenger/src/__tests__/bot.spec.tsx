@@ -1,12 +1,19 @@
-import moxy from '@moxyjs/moxy';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import moxy, { Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import Machinat from '@machinat/core';
-import Renderer from '@machinat/core/renderer';
-import Queue from '@machinat/core/queue';
-import Engine from '@machinat/core/engine';
-import Worker from '../worker';
+import _Renderer from '@machinat/core/renderer';
+import _Queue from '@machinat/core/queue';
+import _Engine from '@machinat/core/engine';
+import _Worker from '../worker';
 import { MessengerBot } from '../bot';
+import GraphApiError from '../error';
 import { Image, Expression, QuickReply } from '../components';
+
+const Renderer = _Renderer as Moxy<typeof _Renderer>;
+const Queue = _Queue as Moxy<typeof _Queue>;
+const Engine = _Engine as Moxy<typeof _Engine>;
+const Worker = _Worker as Moxy<typeof _Worker>;
 
 nock.disableNetConnect();
 
@@ -30,8 +37,12 @@ const scope = moxy();
 const initScope = moxy(() => scope);
 const dispatchWrapper = moxy((x) => x);
 
+const pageId = '_PAGE_ID_';
+const accessToken = '_ACCESS_TOKEN_';
+const appSecret = '_APP_SECRET_';
+
 const message = (
-  <Expression quickReplies={<QuickReply title="Hi!" />}>
+  <Expression quickReplies={<QuickReply title="Hi!" payload="👋" />}>
     Hello <b>World!</b>
     <Image url="https://machinat.com/greeting.png" />
   </Expression>
@@ -57,7 +68,7 @@ describe('#constructor(options)', () => {
     expect(
       () =>
         new MessengerBot(
-          { pageId: '_PAGE_ID_', appSecret: '_SECRET_' },
+          { pageId, appSecret } as never,
           initScope,
           dispatchWrapper
         )
@@ -70,7 +81,7 @@ describe('#constructor(options)', () => {
     expect(
       () =>
         new MessengerBot(
-          { accessToken: '_ACCESS_TOKEN_', appSecret: '_SECRET_' },
+          { accessToken, appSecret } as never,
           initScope,
           dispatchWrapper
         )
@@ -81,7 +92,7 @@ describe('#constructor(options)', () => {
 
   it('assemble core modules', () => {
     const bot = new MessengerBot(
-      { pageId: '_PAGE_ID_', accessToken: '_ACCESS_TOKEN_' },
+      { pageId, accessToken },
       initScope,
       dispatchWrapper
     );
@@ -110,15 +121,12 @@ describe('#constructor(options)', () => {
   });
 
   it('pass consumeInterval and appSecret specified to worker', () => {
-    const _bot = new MessengerBot(
-      {
-        pageId: '_PAGE_ID_',
-        accessToken: '_ACCESS_TOKEN_',
-        appSecret: '_APP_SECRET_',
-        consumeInterval: 0,
-      },
-      initScope,
-      dispatchWrapper
+    expect(
+      new MessengerBot(
+        { pageId, accessToken, appSecret, consumeInterval: 0 },
+        initScope,
+        dispatchWrapper
+      )
     );
 
     expect(Worker.mock).toHaveBeenCalledTimes(1);
@@ -132,44 +140,34 @@ describe('#constructor(options)', () => {
 
 test('#start() and #stop() start/stop engine', () => {
   const bot = new MessengerBot(
-    {
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_APP_SECRET_',
-    },
+    { pageId, accessToken, appSecret },
     initScope,
     dispatchWrapper
   );
 
+  type MockEngine = Moxy<MessengerBot['engine']>;
+
   bot.start();
-  expect(bot.engine.start.mock).toHaveBeenCalledTimes(1);
+  expect((bot.engine as MockEngine).start.mock).toHaveBeenCalledTimes(1);
 
   bot.stop();
-  expect(bot.engine.stop.mock).toHaveBeenCalledTimes(1);
+  expect((bot.engine as MockEngine).stop.mock).toHaveBeenCalledTimes(1);
 });
 
 describe('#render(channel, message, options)', () => {
   const bot = new MessengerBot(
-    {
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-    },
+    { pageId, accessToken, appSecret },
     initScope,
     dispatchWrapper
   );
 
   let apiStatus;
   beforeEach(() => {
-    apiStatus = graphApi.reply(
-      200,
-      JSON.stringify(
-        new Array(2).fill(0).map(() => ({
-          code: 200,
-          body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
-        }))
-      )
-    );
+    const messageResult = {
+      code: 200,
+      body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
+    };
+    apiStatus = graphApi.reply(200, [messageResult, messageResult]);
     bot.start();
   });
 
@@ -186,11 +184,11 @@ describe('#render(channel, message, options)', () => {
     }
   });
 
-  it('works', async () => {
+  it('send messages to me/messages api', async () => {
     const response = await bot.render('john', message);
     expect(response).toMatchSnapshot();
 
-    for (const result of response.results) {
+    for (const result of response!.results) {
       expect(result).toEqual({
         code: 200,
         body: { message_id: 'xxx', recipient_id: 'xxx' },
@@ -200,22 +198,27 @@ describe('#render(channel, message, options)', () => {
     expect(bodySpy.mock).toHaveBeenCalledTimes(1);
     const body = bodySpy.mock.calls[0].args[0];
 
+    for (const request of JSON.parse(body.batch)) {
+      expect(request.method).toBe('POST');
+      expect(request.relative_url).toBe('me/messages');
+    }
+
     expect(body).toMatchSnapshot({ batch: expect.any(String) });
     expect(JSON.parse(body.batch)).toMatchSnapshot();
 
     expect(apiStatus.isDone()).toBe(true);
   });
 
-  it('works with options', async () => {
+  test('render options', async () => {
     const response = await bot.render('john', message, {
-      messagingType: 'TAG',
+      messagingType: 'MESSAGE_TAG',
       tag: 'TRANSPORTATION_UPDATE',
       notificationType: 'SILENT_PUSH',
       personaId: 'billy17',
     });
     expect(response).toMatchSnapshot();
 
-    for (const result of response.results) {
+    for (const result of response!.results) {
       expect(result).toEqual({
         code: 200,
         body: { message_id: 'xxx', recipient_id: 'xxx' },
@@ -234,11 +237,7 @@ describe('#render(channel, message, options)', () => {
 
 describe('#renderAttachment(message)', () => {
   const bot = new MessengerBot(
-    {
-      pageId: '_PAGE_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      appSecret: '_SECRET_',
-    },
+    { pageId, accessToken, appSecret },
     initScope,
     dispatchWrapper
   );
@@ -258,19 +257,16 @@ describe('#renderAttachment(message)', () => {
     }
   });
 
-  it('works', async () => {
-    const apiStatus = graphApi.reply(
-      200,
-      JSON.stringify([
-        { code: 200, body: JSON.stringify({ attachment_id: 401759795 }) },
-      ])
-    );
+  it('call message_attachments api', async () => {
+    const apiStatus = graphApi.reply(200, [
+      { code: 200, body: JSON.stringify({ attachment_id: 401759795 }) },
+    ]);
 
     const response = await bot.renderAttachment(
-      <Image sharable url="https://machinat.com/trollface.png" />
+      <Image url="https://machinat.com/trollface.png" />
     );
     expect(response).toMatchSnapshot();
-    expect(response.results).toEqual([
+    expect(response!.results).toEqual([
       {
         code: 200,
         body: { attachment_id: 401759795 },
@@ -293,5 +289,53 @@ describe('#renderAttachment(message)', () => {
     `);
 
     expect(apiStatus.isDone()).toBe(true);
+  });
+});
+
+describe('#makeApiCall()', () => {
+  it('call facebook graph api', async () => {
+    const bot = new MessengerBot({ accessToken, pageId });
+    bot.start();
+
+    const apiCall = graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
+
+    await expect(
+      bot.makeApiCall('POST', 'foo', { bar: 'baz' })
+    ).resolves.toEqual({
+      foo: 'bar',
+    });
+
+    expect(apiCall.isDone()).toBe(true);
+  });
+
+  it('throw LineApiError if api call fail', async () => {
+    const bot = new MessengerBot({ accessToken, pageId });
+    bot.start();
+
+    const apiCall = graphApi.reply(200, [
+      {
+        code: 400,
+        body: JSON.stringify({
+          error: {
+            message: 'bad',
+            type: 'devil',
+            code: 444,
+            error_subcode: 666,
+            fbtrace_id: 'xxxx',
+          },
+        }),
+      },
+    ]);
+
+    try {
+      await bot.makeApiCall('POST', 'foo', { bar: 'baz' });
+      expect('should not be here').toBeFalsy();
+    } catch (err) {
+      expect(err).toBeInstanceOf(GraphApiError);
+      expect(err.code).toBe(444);
+      expect(err.message).toBe('bad');
+    }
+
+    expect(apiCall.isDone()).toBe(true);
   });
 });

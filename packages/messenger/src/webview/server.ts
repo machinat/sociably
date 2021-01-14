@@ -27,13 +27,13 @@ const {
 } = base64url;
 
 type MessengerServerAuthorizerOptions = {
-  /**
-   * App secret for verifying auth data.
-   */
+  /** Page id which the app is running on. */
+  pageId: number;
+  /** App secret for verifying auth data. */
   appSecret: string;
   /**
-   * Time limit in seconds for authorization, verify the `issued_at` field from
-   * `signed_request`.
+   * Time limit in seconds for authorization, used to verify the `issued_at`
+   * field from `signed_request`. Default to 5 minute.
    */
   issueTimeLimit?: number;
 };
@@ -51,15 +51,21 @@ export class MessengerServerAuthorizer
       MessengerAuthContext
     > {
   platform = MESSENGER;
+  pageId: number;
   appSecret: string;
   issueTimeLimit: number;
 
-  constructor({
-    appSecret,
-    issueTimeLimit = 300, // 5 min;
-  }: MessengerServerAuthorizerOptions) {
-    invariant(appSecret, 'options.appSecret must not be empty');
+  constructor(options: MessengerServerAuthorizerOptions) {
+    invariant(options?.appSecret, 'options.appSecret must not be empty');
+    invariant(options.pageId, 'options.pageId must not be empty');
 
+    const {
+      pageId,
+      appSecret,
+      issueTimeLimit = 300, // 5 min;
+    } = options;
+
+    this.pageId = pageId;
     this.appSecret = appSecret;
     this.issueTimeLimit = issueTimeLimit;
   }
@@ -92,7 +98,7 @@ export class MessengerServerAuthorizer
       return {
         success: false,
         code: 400,
-        reason: 'invalid signed request',
+        reason: 'invalid signed request token',
       };
     }
 
@@ -117,7 +123,7 @@ export class MessengerServerAuthorizer
       return {
         success: false,
         code: 401,
-        reason: 'login timeout',
+        reason: 'signed request token timeout',
       };
     }
 
@@ -137,6 +143,14 @@ export class MessengerServerAuthorizer
   async verifyRefreshment(
     data: MessengerAuthData
   ): Promise<AuthorizerVerifyResult<MessengerAuthData>> {
+    if (data.pageId !== this.pageId) {
+      return {
+        success: false,
+        code: 404,
+        reason: 'page not match',
+      };
+    }
+
     return {
       success: true,
       data,

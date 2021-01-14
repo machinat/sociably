@@ -6,7 +6,7 @@ Array [
     "node": <ButtonTemplate
       buttons={
         Array [
-          <URLButton
+          <UrlButton
             title="check"
             url="http://xxx.yy.z"
           />,
@@ -63,7 +63,7 @@ Array [
     "node": <ButtonTemplate
       buttons={
         Array [
-          <URLButton
+          <UrlButton
             title="check"
             url="http://xxx.yy.z"
           />,
@@ -135,19 +135,19 @@ Array [
       <GenericItem
         buttons={
           Array [
-            <URLButton
+            <UrlButton
               title="check"
               url="http://xxx.yy.z"
             />,
           ]
         }
-        imageURL="http://foo.bar/image"
+        imageUrl="http://foo.bar/image"
         title="foo"
       />
       <GenericItem
         buttons={
           Array [
-            <URLButton
+            <UrlButton
               title="check"
               url="http://xxx.yy.z"
             />,
@@ -162,12 +162,12 @@ Array [
           ]
         }
         defaultAction={
-          <URLButton
+          <UrlButton
             title="TITLE!"
             url="http://foo.bar/"
           />
         }
-        imageURL="http://foo.bar/image"
+        imageUrl="http://foo.bar/image"
         subtitle="bar"
         title="foo"
       />
@@ -248,19 +248,19 @@ Array [
       <GenericItem
         buttons={
           Array [
-            <URLButton
+            <UrlButton
               title="check"
               url="http://xxx.yy.z"
             />,
           ]
         }
-        imageURL="http://foo.bar/image"
+        imageUrl="http://foo.bar/image"
         title="foo"
       />
       <GenericItem
         buttons={
           Array [
-            <URLButton
+            <UrlButton
               title="check"
               url="http://xxx.yy.z"
             />,
@@ -275,12 +275,12 @@ Array [
           ]
         }
         defaultAction={
-          <URLButton
+          <UrlButton
             title="TITLE!"
             url="http://foo.bar/"
           />
         }
-        imageURL="http://foo.bar/image"
+        imageUrl="http://foo.bar/image"
         subtitle="bar"
         title="foo"
       />
@@ -362,7 +362,7 @@ Array [
     "node": <MediaTemplate
       buttons={
         Array [
-          <URLButton
+          <UrlButton
             title="check"
             url="http://xxx.yy.z"
           />,
@@ -426,7 +426,7 @@ Array [
       attachmentId="__ID__"
       buttons={
         Array [
-          <URLButton
+          <UrlButton
             title="check"
             url="http://xxx.yy.z"
           />,
@@ -494,7 +494,7 @@ Array [
     "node": <ReceiptTemplate
       currency="USD"
       orderNumber="12345"
-      orderURL="http://what.a.shop"
+      orderUrl="http://what.a.shop"
       paymentMethod="Visa 2345"
       recipientName="John Doe"
       summary={
@@ -534,7 +534,7 @@ Array [
     "node": <ReceiptTemplate
       currency="USD"
       orderNumber="12345"
-      orderURL="http://what.a.shop"
+      orderUrl="http://what.a.shop"
       paymentMethod="Visa 2345"
       recipientName="John Doe"
       summary={
@@ -635,7 +635,7 @@ Array [
       currency="USD"
       merchantName="AI"
       orderNumber="12345"
-      orderURL="http://what.a.shop"
+      orderUrl="http://what.a.shop"
       paymentMethod="Visa 2345"
       recipientName="John Doe"
       sharable={true}
@@ -651,7 +651,7 @@ Array [
     >
       <ReceiptItem
         currency="USD"
-        imageURL="http://i.robot/avatar"
+        imageUrl="http://i.robot/avatar"
         price={99.99}
         quantity={999}
         subtitle="It's real!"

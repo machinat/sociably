@@ -24,7 +24,7 @@ declare const window: Window & { extAsyncInit(): void };
 declare const MessengerExtensions: any;
 
 /** @ignore */
-const INIT_TIMEOUT = 20000;
+const INIT_TIMEOUT = 20000; // 20s;
 
 class MessengerClientAuthorizer
   implements
@@ -38,8 +38,12 @@ class MessengerClientAuthorizer
 
   platform = MESSENGER;
 
-  constructor({ appId, isExtensionReady = false }: MessengerClientAuthOpts) {
-    invariant(appId, 'options.appId is required to retrieve chat context');
+  constructor(options: MessengerClientAuthOpts) {
+    invariant(
+      options?.appId,
+      'options.appId is required to retrieve chat context'
+    );
+    const { appId, isExtensionReady = false } = options;
 
     this.appId = appId;
     this.isExtensionReady = isExtensionReady;
