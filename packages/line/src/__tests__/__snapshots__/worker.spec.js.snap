@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`open requests up to connectionCapicity 1`] = `
+exports[`open requests up to maxConnections 1`] = `
 Object {
   "batch": Array [
     Object {

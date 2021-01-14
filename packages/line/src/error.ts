@@ -21,13 +21,13 @@ class LineApiError extends Error {
 
       super(
         `${messagingResult.message}: ${messagingResult.details
-          .map((d, i) => `${i + 1}) ${d.message}, at ${d.property}.`)
+          ?.map((d, i) => `${i + 1}) ${d.message}, at ${d.property}.`)
           .join(' ')}`
       );
       this.info = messagingResult;
     } else {
       super(JSON.stringify(body));
-      this.info = body as any;
+      this.info = body as never;
     }
 
     if (Error.captureStackTrace) {
@@ -36,7 +36,7 @@ class LineApiError extends Error {
 
     this.code = code;
     this.status = STATUS_CODES[code] as string;
-    this.name = `LineApiError (${this.status})`;
+    this.name = `LineAPIError (${this.status})`;
   }
 }
 

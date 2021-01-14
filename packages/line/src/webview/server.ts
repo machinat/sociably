@@ -86,11 +86,11 @@ export class LineServerAuthorizer
       throw err;
     }
 
-    if (!this.liffChannelIds.includes(verifyBody.client_id)) {
+    if (!this._checkClientId(verifyBody.client_id)) {
       return {
         success: false,
         code: 400,
-        reason: 'unknown client_id of the access token',
+        reason: 'token is from unknown client',
       };
     }
 
@@ -121,6 +121,7 @@ export class LineServerAuthorizer
       data: {
         channelId: this.bot.channelId,
         providerId: this.bot.providerId,
+        clientId: verifyBody.client_id,
         userId,
         groupId,
         roomId,
@@ -132,27 +133,41 @@ export class LineServerAuthorizer
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async verifyRefreshment(data: LineAuthData): Promise<LineVerifyAuthResult> {
+    const { providerId, channelId, clientId } = data;
+    if (providerId !== this.bot.providerId) {
+      return { success: false, code: 400, reason: 'invalid providerId' };
+    }
+    if (channelId !== this.bot.channelId) {
+      return { success: false, code: 400, reason: 'invalid channelId' };
+    }
+    if (!this._checkClientId(clientId)) {
+      return { success: false, code: 400, reason: 'invalid clientId' };
+    }
+
     return {
       success: true,
       data,
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async supplementContext(
     data: LineAuthData
   ): Promise<null | ContextSupplement<LineAuthContext>> {
-    const { providerId, channelId } = data;
+    const { providerId, channelId, clientId } = data;
     if (
       providerId !== this.bot.providerId ||
-      channelId !== this.bot.channelId
+      channelId !== this.bot.channelId ||
+      !this._checkClientId(clientId)
     ) {
       return null;
     }
 
     return supplementContext(data);
+  }
+
+  private _checkClientId(clientId: string) {
+    return this.liffChannelIds.includes(clientId);
   }
 }
 

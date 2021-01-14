@@ -1,4 +1,6 @@
 import moxy from '@moxyjs/moxy';
+import type Base from '@machinat/core/base';
+import type { LineBot } from '../../bot';
 import { LineAssetsManager } from '../manager';
 
 const state = moxy({
@@ -10,32 +12,32 @@ const state = moxy({
   clear: () => {},
 });
 
-const stateManager = moxy({
+const stateController = moxy<Base.StateControllerI>({
   globalState() {
     return state;
   },
-});
+} as never);
 
-const bot = moxy({
-  botChannelId: '_LINE_CHANNEL_ID_',
-  makeApiCall() {},
-});
+const bot = moxy<LineBot>({
+  channelId: '_LINE_CHANNEL_ID_',
+  makeApiCall: () => ({}),
+} as never);
 
 beforeEach(() => {
-  stateManager.mock.reset();
+  stateController.mock.reset();
   state.mock.reset();
   bot.mock.reset();
 });
 
 test('get asset id', async () => {
-  const manager = new LineAssetsManager(stateManager, bot);
+  const manager = new LineAssetsManager(stateController, bot);
 
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe(undefined);
   await expect(manager.getLIFFApp('my_liff_app')).resolves.toBe(undefined);
   await expect(manager.getRichMenu('my_rich_menu')).resolves.toBe(undefined);
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "line.assets._LINE_CHANNEL_ID_.foo",
@@ -60,19 +62,19 @@ test('get asset id', async () => {
     '_RICH_MENU_ID_'
   );
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(6);
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(6);
   expect(state.get.mock).toHaveBeenCalledTimes(6);
 });
 
 test('set asset id', async () => {
-  const manager = new LineAssetsManager(stateManager, bot);
+  const manager = new LineAssetsManager(stateController, bot);
 
   await manager.saveAssetId('foo', 'bar', 'baz');
   await manager.saveLIFFApp('my_liff_app', '_LIFF_APP_ID_');
   await manager.saveRichMenu('my_rich_menu', '_RICH_MENU_ID_');
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "line.assets._LINE_CHANNEL_ID_.foo",
@@ -110,14 +112,14 @@ test('set asset id', async () => {
 });
 
 test('get all assets', async () => {
-  const manager = new LineAssetsManager(stateManager, bot);
+  const manager = new LineAssetsManager(stateController, bot);
 
   await expect(manager.getAllAssets('foo')).resolves.toBe(null);
   await expect(manager.getAllLIFFApps()).resolves.toBe(null);
   await expect(manager.getAllRichMenus()).resolves.toBe(null);
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "line.assets._LINE_CHANNEL_ID_.foo",
@@ -138,19 +140,19 @@ test('get all assets', async () => {
   await expect(manager.getAllLIFFApps()).resolves.toEqual(resources);
   await expect(manager.getAllRichMenus()).resolves.toEqual(resources);
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(6);
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(6);
   expect(state.getAll.mock).toHaveBeenCalledTimes(6);
 });
 
 test('discard asset id', async () => {
-  const manager = new LineAssetsManager(stateManager, bot);
+  const manager = new LineAssetsManager(stateController, bot);
 
   await manager.discardAssetId('foo', 'bar');
   await manager.discardLIFFApp('my_liff_app');
   await manager.discardRichMenu('my_rich_menu');
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(3);
-  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "line.assets._LINE_CHANNEL_ID_.foo",
@@ -181,11 +183,9 @@ test('discard asset id', async () => {
 });
 
 test('#createRichMenu()', async () => {
-  const manager = new LineAssetsManager(stateManager, bot);
-  bot.makeApiCall.mock.fake(() => ({
-    code: 200,
-    headers: {},
-    body: { richMenuId: '_RICH_MENU_ID_' },
+  const manager = new LineAssetsManager(stateController, bot);
+  bot.makeApiCall.mock.fake(async () => ({
+    richMenuId: '_RICH_MENU_ID_',
   }));
 
   const richMenuBody = {
@@ -221,12 +221,8 @@ test('#createRichMenu()', async () => {
 });
 
 test('#deleteRichMenu()', async () => {
-  const manager = new LineAssetsManager(stateManager, bot);
-  bot.makeApiCall.mock.fake(() => ({
-    code: 200,
-    headers: {},
-    body: {},
-  }));
+  const manager = new LineAssetsManager(stateController, bot);
+  bot.makeApiCall.mock.fake(async () => ({}));
 
   await expect(
     manager.deleteRichMenu('my_rich_menu')

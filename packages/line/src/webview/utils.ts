@@ -10,6 +10,7 @@ export const supplementContext = ({
   userId,
   groupId,
   roomId,
+  clientId,
   channelId,
   providerId,
   language,
@@ -23,6 +24,7 @@ export const supplementContext = ({
     : roomId
     ? new LineChat(channelId, 'room', roomId)
     : new LineChat(channelId, 'user', userId),
+  clientId,
   channelId,
   providerId,
   language,

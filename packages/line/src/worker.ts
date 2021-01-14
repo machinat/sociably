@@ -1,7 +1,7 @@
 import url from 'url';
 import fetch from 'node-fetch';
 import type { MachinatWorker } from '@machinat/core/engine/types';
-import Queue from '@machinat/core/queue';
+import type Queue from '@machinat/core/queue';
 import type { LineJob, LineResult } from './types';
 import LineApiError from './error';
 
@@ -10,24 +10,16 @@ const API_HOST = 'https://api.line.me';
 
 type LineJobQueue = Queue<LineJob, LineResult>;
 
-export default class LineWorker implements MachinatWorker<LineJob, LineResult> {
-  private _headers: {
-    'Content-Type': 'application/json';
-    Authorization: string;
-  };
-
-  private _started: boolean;
-
+class LineWorker implements MachinatWorker<LineJob, LineResult> {
+  accessToken: string;
   connectionCount: number;
   maxConnections: number;
+
+  private _started: boolean;
   private _lockedKeys: Set<string>;
 
   constructor(accessToken: string, maxConnections: number) {
-    this._headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    };
-
+    this.accessToken = accessToken;
     this.connectionCount = 0;
     this.maxConnections = maxConnections;
     this._lockedKeys = new Set();
@@ -44,7 +36,10 @@ export default class LineWorker implements MachinatWorker<LineJob, LineResult> {
     const response = await fetch(requestUrl.href, {
       method,
       body: body ? JSON.stringify(body) : undefined,
-      headers: this._headers,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.accessToken}`,
+      },
     });
 
     let resBody;
@@ -154,3 +149,5 @@ export default class LineWorker implements MachinatWorker<LineJob, LineResult> {
     return [{ success: true, result, job, error: undefined }];
   }
 }
+
+export default LineWorker;

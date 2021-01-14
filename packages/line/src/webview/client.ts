@@ -34,7 +34,7 @@ class LineClientAuthorizer
   liffId: string;
   shouldLoadSDK: boolean;
   isOnUserToBotChat: boolean;
-  _searchParams: URLSearchParams;
+  private _searchParams: URLSearchParams;
 
   platform = LINE;
 

@@ -1,12 +1,12 @@
-/* eslint-disable global-require */
 import nock from 'nock';
-import moxy from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import Engine from '@machinat/core/engine';
-import Renderer from '@machinat/core/renderer';
+import _Engine from '@machinat/core/engine';
+import _Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
 import { LineBot } from '../bot';
 import LineWorker from '../worker';
+import LineApiError from '../error';
 import {
   Expression,
   Image,
@@ -14,6 +14,9 @@ import {
   MessageAction,
   LinkRichMenu,
 } from '../components';
+
+const Renderer = _Renderer as Moxy<typeof _Renderer>;
+const Engine = _Engine as Moxy<typeof _Engine>;
 
 jest.mock('@machinat/core/engine', () =>
   jest
@@ -25,12 +28,6 @@ jest.mock('@machinat/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
     .default(jest.requireActual('@machinat/core/renderer'))
-);
-
-jest.mock('../worker', () =>
-  jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../worker'), {
-    mockNewInstance: false,
-  })
 );
 
 nock.disableNetConnect();
@@ -55,7 +52,6 @@ let lineApi;
 beforeEach(() => {
   Engine.mock.reset();
   Renderer.mock.reset();
-  LineWorker.mock.reset();
 
   nock.cleanAll();
   lineApi = nock('https://api.line.me', {
@@ -70,24 +66,34 @@ describe('#constructor(options)', () => {
   it('throw if configs.channelId is empty', () => {
     expect(
       () =>
-        new LineBot(
-          { accessToken: '_ACCESS_TOKEN_' },
-          initScope,
-          dispatchWrapper
-        )
+        new LineBot({
+          providerId: '_PROVIDER_ID_',
+          accessToken: '_ACCESS_TOKEN_',
+        } as never)
     ).toThrowErrorMatchingInlineSnapshot(
       `"configs.channelId should not be empty"`
+    );
+  });
+
+  it('throw if configs.providerId is empty', () => {
+    expect(
+      () =>
+        new LineBot({
+          channelId: '_CHANNEL_ID_',
+          accessToken: '_ACCESS_TOKEN_',
+        } as never)
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"configs.providerId should not be empty"`
     );
   });
 
   it('throws if accessToken not given', () => {
     expect(
       () =>
-        new LineBot(
-          { channelId: '_BOT_CHANNEL_ID_' },
-          initScope,
-          dispatchWrapper
-        )
+        new LineBot({
+          providerId: '_PROVIDER_ID_',
+          channelId: '_CHANNEL_ID_',
+        } as never)
     ).toThrowErrorMatchingInlineSnapshot(
       `"configs.accessToken should not be empty"`
     );
@@ -97,8 +103,8 @@ describe('#constructor(options)', () => {
     const bot = new LineBot(
       {
         accessToken: '_ACCESS_TOKEN_',
-
-        channelId: '_BOT_CHANNEL_ID_',
+        providerId: '_PROVIDER_ID_',
+        channelId: '_CHANNEL_ID_',
         maxConnections: 999,
       },
       initScope,
@@ -107,9 +113,6 @@ describe('#constructor(options)', () => {
 
     expect(Renderer.mock).toHaveBeenCalledTimes(1);
     expect(Renderer.mock).toHaveBeenCalledWith('line', expect.any(Function));
-
-    expect(LineWorker.mock).toHaveBeenCalledTimes(1);
-    expect(LineWorker.mock).toHaveBeenCalledWith('_ACCESS_TOKEN_', 999);
 
     expect(bot.engine).toBeInstanceOf(Engine);
     expect(Engine.mock).toHaveBeenCalledTimes(1);
@@ -122,32 +125,20 @@ describe('#constructor(options)', () => {
       initScope,
       dispatchWrapper
     );
-  });
 
-  test('default maxConnections', () => {
-    const _bot = new LineBot(
-      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
-      initScope,
-      dispatchWrapper
-    );
-
-    expect(LineWorker.mock).toHaveBeenCalledTimes(1);
-    expect(LineWorker.mock.calls[0].args).toMatchInlineSnapshot(`
-      Array [
-        "_ACCESS_TOKEN_",
-        100,
-      ]
-    `);
+    const worker = Engine.mock.calls[0].args[4];
+    expect(worker.accessToken).toBe('_ACCESS_TOKEN_');
+    expect(worker.maxConnections).toBe(999);
   });
 });
 
 describe('#render(token, node, options)', () => {
   it('make api calls', async () => {
-    const bot = new LineBot(
-      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
-      initScope,
-      dispatchWrapper
-    );
+    const bot = new LineBot({
+      accessToken: '_ACCESS_TOKEN_',
+      providerId: '_PROVIDER_ID_',
+      channelId: '_CHANNEL_ID_',
+    });
 
     bot.start();
 
@@ -183,11 +174,11 @@ describe('#render(token, node, options)', () => {
   });
 
   it('works with replyToken', async () => {
-    const bot = new LineBot(
-      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
-      initScope,
-      dispatchWrapper
-    );
+    const bot = new LineBot({
+      accessToken: '_ACCESS_TOKEN_',
+      providerId: '_PROVIDER_ID_',
+      channelId: '_CHANNEL_ID_',
+    });
     bot.start();
 
     const apiCall1 = lineApi
@@ -225,11 +216,11 @@ describe('#render(token, node, options)', () => {
   });
 
   it('return null if message is empty', async () => {
-    const bot = new LineBot(
-      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
-      initScope,
-      dispatchWrapper
-    );
+    const bot = new LineBot({
+      accessToken: '_ACCESS_TOKEN_',
+      providerId: '_PROVIDER_ID_',
+      channelId: '_CHANNEL_ID_',
+    });
 
     for (const empty of [null, undefined, [], <></>, true, false]) {
       // eslint-disable-next-line no-await-in-loop
@@ -238,11 +229,11 @@ describe('#render(token, node, options)', () => {
   });
 
   it('throw if messages length more than 5 when using replyToken', async () => {
-    const bot = new LineBot(
-      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
-      initScope,
-      dispatchWrapper
-    );
+    const bot = new LineBot({
+      accessToken: '_ACCESS_TOKEN_',
+      providerId: '_PROVIDER_ID_',
+      channelId: '_CHANNEL_ID_',
+    });
     bot.start();
 
     await expect(
@@ -263,11 +254,11 @@ describe('#render(token, node, options)', () => {
 
 describe('#renderMulticast(targets, node)', () => {
   it('return null if message is empty', async () => {
-    const bot = new LineBot(
-      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
-      initScope,
-      dispatchWrapper
-    );
+    const bot = new LineBot({
+      accessToken: '_ACCESS_TOKEN_',
+      providerId: '_PROVIDER_ID_',
+      channelId: '_CHANNEL_ID_',
+    });
 
     for (const empty of [null, undefined, [], <></>, true, false]) {
       // eslint-disable-next-line no-await-in-loop
@@ -278,11 +269,11 @@ describe('#renderMulticast(targets, node)', () => {
   });
 
   it('make api call to message/mulitcast', async () => {
-    const bot = new LineBot(
-      { accessToken: '_ACCESS_TOKEN_', channelId: '_BOT_CHANNEL_ID_' },
-      initScope,
-      dispatchWrapper
-    );
+    const bot = new LineBot({
+      accessToken: '_ACCESS_TOKEN_',
+      providerId: '_PROVIDER_ID_',
+      channelId: '_CHANNEL_ID_',
+    });
     bot.start();
 
     const apiCall1 = lineApi
@@ -321,5 +312,52 @@ describe('#renderMulticast(targets, node)', () => {
     expect(response).toMatchSnapshot();
     expect(apiCall1.isDone()).toBe(true);
     expect(apiCall2.isDone()).toBe(true);
+  });
+});
+
+describe('#makeApiCall()', () => {
+  it('call line REST api', async () => {
+    const bot = new LineBot({
+      accessToken: '_ACCESS_TOKEN_',
+      providerId: '_PROVIDER_ID_',
+      channelId: '_CHANNEL_ID_',
+    });
+    bot.start();
+
+    const apiCall = lineApi
+      .post('/v2/bot/foo', { bar: 'baz' })
+      .reply(200, '{"foo":"bar.baz"}');
+
+    await expect(
+      bot.makeApiCall('POST', 'v2/bot/foo', { bar: 'baz' })
+    ).resolves.toEqual({
+      foo: 'bar.baz',
+    });
+
+    expect(apiCall.isDone()).toBe(true);
+  });
+
+  it('throw LineApiError if api call fail', async () => {
+    const bot = new LineBot({
+      accessToken: '_ACCESS_TOKEN_',
+      providerId: '_PROVIDER_ID_',
+      channelId: '_CHANNEL_ID_',
+    });
+    bot.start();
+
+    const apiCall = lineApi
+      .post('/v2/bot/foo', { bar: 'baz' })
+      .reply(400, { message: 'bad' });
+
+    try {
+      await bot.makeApiCall('POST', 'v2/bot/foo', { bar: 'baz' });
+      expect('should not be here').toBeFalsy();
+    } catch (err) {
+      expect(err).toBeInstanceOf(LineApiError);
+      expect(err.code).toBe(400);
+      expect(err.info).toEqual({ message: 'bad' });
+    }
+
+    expect(apiCall.isDone()).toBe(true);
   });
 });

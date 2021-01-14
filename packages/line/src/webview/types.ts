@@ -21,6 +21,7 @@ export type LiffContext = {
 export type LineAuthData = {
   providerId: string;
   channelId: string;
+  clientId: string;
   os: 'ios' | 'android' | 'web';
   language: string;
   userId: string;
@@ -34,6 +35,7 @@ export type LineAuthContext = {
   platform: 'line';
   providerId: string;
   channelId: string;
+  clientId: string;
   channel: LineChat;
   user: LineUser;
   profile: null | LineUserProfile;

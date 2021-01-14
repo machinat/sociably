@@ -16,7 +16,6 @@ import LineWorker from './worker';
 import LineChat from './channel';
 import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
 import { LINE } from './constant';
-
 import type {
   LineSource,
   LineSegmentValue,
@@ -29,8 +28,9 @@ import type {
 } from './types';
 
 type LineBotOptions = {
-  accessToken: string;
+  providerId: string;
   channelId: string;
+  accessToken: string;
   maxConnections?: number;
 };
 
@@ -40,6 +40,7 @@ type LineBotOptions = {
 export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
   providerId: string;
   channelId: string;
+  maxConnections: number;
   engine: Engine<
     LineChat,
     LineSegmentValue,
@@ -50,16 +51,24 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
   >;
 
   constructor(
-    { accessToken, channelId, maxConnections = 100 }: LineBotOptions,
+    {
+      providerId,
+      channelId,
+      accessToken,
+      maxConnections = 100,
+    }: LineBotOptions,
     initScope: InitScopeFn = () => createEmptyScope(LINE),
     dispatchWrapper: DispatchWrapper<LineJob, LineDispatchFrame, LineResult> = (
       dispatch
     ) => dispatch
   ) {
     invariant(accessToken, 'configs.accessToken should not be empty');
+    invariant(providerId, 'configs.providerId should not be empty');
     invariant(channelId, 'configs.channelId should not be empty');
 
+    this.providerId = providerId;
     this.channelId = channelId;
+    this.maxConnections = maxConnections;
 
     const queue = new Queue<LineJob, LineResult>();
     const worker = new LineWorker(accessToken, maxConnections);
