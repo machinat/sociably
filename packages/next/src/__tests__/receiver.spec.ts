@@ -1,17 +1,18 @@
 import moxy, { Mock } from '@moxyjs/moxy';
-import { ServerResponse } from 'http';
+import type createNextApp from 'next';
+import { IncomingMessage, ServerResponse } from 'http';
 import { NextReceiver } from '../receiver';
 
 const nextDefaultHandler = moxy();
 
-const nextApp = moxy({
+const nextApp = moxy<ReturnType<typeof createNextApp>>({
   getRequestHandler: () => nextDefaultHandler,
   prepare: async () => {},
   render: async () => {},
   renderError: async () => {},
   setAssetPrefix() {},
   renderOpts: { assetPrefix: '' },
-});
+} as never);
 
 const nextTick = () => new Promise((resolve) => process.nextTick(resolve));
 
@@ -21,18 +22,18 @@ const popEventWrapper = moxy((finalHandler) =>
 );
 const popError = moxy();
 
-const req = moxy({
+const req = moxy<IncomingMessage>({
   method: 'GET',
   url: 'http://machinat.com/hello?foo=bar',
   headers: { 'x-y-z': 'abc' },
-});
+} as never);
 let res;
 
 beforeEach(() => {
   nextDefaultHandler.mock.clear();
   nextApp.mock.reset();
   req.mock.reset();
-  res = moxy(new ServerResponse({ method: 'GET' }));
+  res = moxy(new ServerResponse(req));
 
   popEventMock.reset();
   popEventWrapper.mock.reset();
@@ -42,7 +43,7 @@ beforeEach(() => {
 it('respond 503 if request received before prepared', async () => {
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: true },
+    { noPrepare: false },
     popEventWrapper,
     popError
   );
@@ -60,7 +61,7 @@ it('respond 503 if request received before prepared', async () => {
 test('#prepare() call next.prepare() if shouldPrepare is true', async () => {
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: true },
+    { noPrepare: false },
     popEventWrapper,
     popError
   );
@@ -74,7 +75,7 @@ test('#prepare() call next.prepare() if shouldPrepare is true', async () => {
 test('prepare() not call next.prepare() if shouldPrepare is false', async () => {
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: false },
+    { noPrepare: true },
     popEventWrapper,
     popError
   );
@@ -86,7 +87,7 @@ test('prepare() not call next.prepare() if shouldPrepare is false', async () => 
 it('call next request handler if middlewares resolve accepted', async () => {
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: false },
+    { noPrepare: true },
     popEventWrapper,
     popError
   );
@@ -150,7 +151,7 @@ it('call next request handler if middlewares resolve accepted', async () => {
 it('trim the entryPath from the url passed to next handler', async () => {
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: false, entryPath: '/hello' },
+    { noPrepare: true, entryPath: '/hello' },
     popEventWrapper,
     popError
   );
@@ -181,7 +182,7 @@ it('trim the entryPath from the url passed to next handler', async () => {
 it('call next.renderError() with status 404 if entryPath not match', async () => {
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: false, entryPath: '/hello' },
+    { noPrepare: true, entryPath: '/hello' },
     popEventWrapper,
     popError
   );
@@ -218,7 +219,7 @@ it('set customized headers return by middlewares on res', async () => {
 
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: false },
+    { noPrepare: true },
     popEventWrapper,
     popError
   );
@@ -237,7 +238,7 @@ it('set customized headers return by middlewares on res', async () => {
 it('call next.render() if there is cutomized page or query return by middlewares', async () => {
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: false },
+    { noPrepare: true },
     popEventWrapper,
     popError
   );
@@ -315,7 +316,7 @@ it('call next.render() if there is cutomized page or query return by middlewares
 it('call next.renderError() if middlewares resolve unaccepted', async () => {
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: false },
+    { noPrepare: true },
     popEventWrapper,
     popError
   );
@@ -353,7 +354,7 @@ it('call next.renderError() if middlewares resolve unaccepted', async () => {
 it('call next.renderError() with customized headers resolved by middleware', async () => {
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: false },
+    { noPrepare: true },
     popEventWrapper,
     popError
   );
@@ -385,7 +386,7 @@ it('call next.renderError() with customized headers resolved by middleware', asy
 it('pass "_next" internal api calls directly to next request handler', async () => {
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: false, entryPath: '/hello' },
+    { noPrepare: true, entryPath: '/hello' },
     popEventWrapper,
     popError
   );
@@ -414,7 +415,7 @@ it('pass "_next" internal api calls directly to next request handler', async () 
 test('entryPath does not affect page params from middlewares', async () => {
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: false, entryPath: '/hello' },
+    { noPrepare: true, entryPath: '/hello' },
     popEventWrapper,
     popError
   );
@@ -442,7 +443,7 @@ test('entryPath does not affect page params from middlewares', async () => {
 it('call next.renderError() if middlewares reject', async () => {
   const receiver = new NextReceiver(
     nextApp,
-    { shouldPrepare: false },
+    { noPrepare: true },
     popEventWrapper,
     popError
   );

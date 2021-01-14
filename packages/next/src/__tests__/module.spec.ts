@@ -1,9 +1,11 @@
-import moxy from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Http from '@machinat/http';
-import createNextApp from 'next';
+import _createNextApp from 'next';
 import { NextReceiver } from '../receiver';
 import Next from '../module';
+
+const createNextApp = _createNextApp as Moxy<typeof _createNextApp>;
 
 jest.mock('next', () =>
   jest.requireActual('@moxyjs/moxy').default(() => ({
@@ -37,8 +39,8 @@ describe('initModule()', () => {
     expect(
       Next.initModule({
         entryPath: '/webview',
-        shouldPrepare: true,
-        nextAppOptions: { dev: true },
+        noPrepare: false,
+        serverOptions: { dev: true },
         eventMiddlewares: [(ctx, next) => next(ctx)],
       })
     ).toMatchInlineSnapshot(`
@@ -67,10 +69,10 @@ describe('initModule()', () => {
               "eventMiddlewares": Array [
                 [Function],
               ],
-              "nextAppOptions": Object {
+              "noPrepare": false,
+              "serverOptions": Object {
                 "dev": true,
               },
-              "shouldPrepare": true,
             },
           },
           Object {
@@ -102,8 +104,8 @@ describe('initModule()', () => {
       platforms: [
         Next.initModule({
           entryPath: '/webview',
-          shouldPrepare: true,
-          nextAppOptions: { dev: true },
+          noPrepare: false,
+          serverOptions: { dev: true },
         }),
       ],
     });
@@ -119,8 +121,8 @@ describe('initModule()', () => {
     expect(receiver).toBeInstanceOf(NextReceiver);
     expect(configs).toEqual({
       entryPath: '/webview',
-      shouldPrepare: true,
-      nextAppOptions: { dev: true },
+      noPrepare: false,
+      serverOptions: { dev: true },
     });
 
     expect(createNextApp.mock).toHaveBeenCalledTimes(1);
@@ -141,13 +143,14 @@ describe('initModule()', () => {
   test('startHook() call receiver.prepare()', async () => {
     const { startHook } = Next.initModule({
       entryPath: '/webview',
-      shouldPrepare: true,
-      nextAppOptions: { dev: true },
+      noPrepare: false,
+      serverOptions: { dev: true },
     });
 
     const receiver = moxy({ prepare: async () => {} });
 
-    await expect(startHook(receiver)).resolves.toBe(undefined);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    await expect(startHook!(receiver)).resolves.toBe(undefined);
 
     expect(receiver.prepare.mock).toHaveBeenCalledTimes(1);
     expect(receiver.prepare.mock).toHaveBeenCalledWith();
@@ -156,7 +159,7 @@ describe('initModule()', () => {
   test('default entryPath to "/"', async () => {
     const app = Machinat.createApp({
       modules: [
-        Next.initModule({ shouldPrepare: true, nextAppOptions: { dev: true } }),
+        Next.initModule({ noPrepare: false, serverOptions: { dev: true } }),
       ],
     });
     await app.start();
