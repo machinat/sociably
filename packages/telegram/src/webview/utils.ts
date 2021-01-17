@@ -7,19 +7,10 @@ import { TelegramAuthContext, TelegramAuthData } from './types';
 export const supplementContext = ({
   chat,
   botId,
-  userId,
-  firstName,
-  lastName,
-  username,
+  user: userData,
   photoUrl,
 }: TelegramAuthData): ContextSupplement<TelegramAuthContext> => {
-  const user = new TelegramUser(userId, {
-    id: userId,
-    is_bot: false,
-    first_name: firstName,
-    last_name: lastName,
-    username,
-  });
+  const user = new TelegramUser(userData.id, { ...userData, is_bot: false });
 
   return {
     user,

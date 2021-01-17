@@ -1,4 +1,6 @@
 import moxy from '@moxyjs/moxy';
+import type Base from '@machinat/core/base';
+import type { TelegramBot } from '../../bot';
 import { TelegramAssetsManager } from '../manager';
 
 const state = moxy({
@@ -10,30 +12,30 @@ const state = moxy({
   clear: () => {},
 });
 
-const stateManager = moxy({
+const stateController = moxy<Base.StateControllerI>({
   globalState() {
     return state;
   },
-});
+} as never);
 
-const bot = moxy({
-  botId: 123456,
+const bot = moxy<TelegramBot>({
+  id: 123456,
   makeApiCall() {},
-});
+} as never);
 
 beforeEach(() => {
-  stateManager.mock.reset();
+  stateController.mock.reset();
   state.mock.reset();
   bot.mock.reset();
 });
 
 test('get asset id', async () => {
-  const manager = new TelegramAssetsManager(stateManager, bot);
+  const manager = new TelegramAssetsManager(stateController, bot);
 
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe(undefined);
   await expect(manager.getFileId('my_file')).resolves.toBe(undefined);
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(2);
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(2);
   expect(state.get.mock).toHaveBeenCalledTimes(2);
 
   state.get.mock.fakeReturnValue('_FOO_BAR_ID_');
@@ -42,8 +44,8 @@ test('get asset id', async () => {
   state.get.mock.fakeReturnValue('_FILE_ID_');
   await expect(manager.getFileId('my_file')).resolves.toBe('_FILE_ID_');
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(4);
-  expect(stateManager.globalState.mock.calls.map((c) => c.args[0]))
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(4);
+  expect(stateController.globalState.mock.calls.map((c) => c.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "telegram.assets.123456.foo",
@@ -61,13 +63,13 @@ test('get asset id', async () => {
 });
 
 test('set asset id', async () => {
-  const manager = new TelegramAssetsManager(stateManager, bot);
+  const manager = new TelegramAssetsManager(stateController, bot);
 
   await manager.saveAssetId('foo', 'bar', 'baz');
   await manager.saveFile('my_file', '_FILE_ID_');
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(2);
-  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(2);
+  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "telegram.assets.123456.foo",
@@ -92,12 +94,12 @@ test('set asset id', async () => {
 });
 
 test('get all assets', async () => {
-  const manager = new TelegramAssetsManager(stateManager, bot);
+  const manager = new TelegramAssetsManager(stateController, bot);
 
   await expect(manager.getAllAssets('foo')).resolves.toBe(null);
   await expect(manager.getAllFiles()).resolves.toBe(null);
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(2);
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(2);
   expect(state.getAll.mock).toHaveBeenCalledTimes(2);
 
   const resources = new Map([
@@ -109,8 +111,8 @@ test('get all assets', async () => {
   await expect(manager.getAllAssets('foo')).resolves.toEqual(resources);
   await expect(manager.getAllFiles()).resolves.toEqual(resources);
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(4);
-  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(4);
+  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "telegram.assets.123456.foo",
@@ -124,12 +126,12 @@ test('get all assets', async () => {
 });
 
 test('remove asset id', async () => {
-  const manager = new TelegramAssetsManager(stateManager, bot);
+  const manager = new TelegramAssetsManager(stateController, bot);
 
   await manager.discardAssetId('foo', 'bar');
   await manager.discardFile('my_file');
 
-  expect(stateManager.globalState.mock).toHaveBeenCalledTimes(2);
+  expect(stateController.globalState.mock).toHaveBeenCalledTimes(2);
   expect(state.delete.mock).toHaveBeenCalledTimes(2);
 
   state.delete.mock.fakeReturnValue(false);
@@ -141,7 +143,7 @@ test('remove asset id', async () => {
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"file [ my_file ] not exist"`);
 
   expect(state.delete.mock).toHaveBeenCalledTimes(4);
-  expect(stateManager.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
       "telegram.assets.123456.foo",

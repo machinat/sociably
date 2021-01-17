@@ -340,7 +340,7 @@ Array [
         }
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />
@@ -358,7 +358,7 @@ Array [
         }
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />
@@ -379,7 +379,7 @@ Array [
         phoneNumber="1234567890"
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />
@@ -399,7 +399,7 @@ Array [
         }
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />
@@ -412,7 +412,7 @@ Array [
         id="5"
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />
@@ -433,7 +433,7 @@ Array [
         }
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />
@@ -449,7 +449,7 @@ Array [
         longitude={67.89}
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />
@@ -462,7 +462,7 @@ Array [
         inputMessageContent="foo"
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />
@@ -477,7 +477,7 @@ Array [
         inputMessageContent="foo"
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />
@@ -490,7 +490,7 @@ Array [
         inputMessageContent="foo"
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />
@@ -505,7 +505,7 @@ Array [
         longitude={67.89}
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />
@@ -519,7 +519,7 @@ Array [
         inputMessageContent="foo"
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />
@@ -532,7 +532,7 @@ Array [
         inputMessageContent="foo"
         replyMarkup={
           <InlineKeyboard>
-            <URLButton
+            <UrlButton
               text="foo"
               url="http://foo.bar/article"
             />

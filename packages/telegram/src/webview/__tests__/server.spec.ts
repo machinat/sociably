@@ -1,19 +1,24 @@
+import type { IncomingMessage } from 'http';
 import moxy from '@moxyjs/moxy';
+import { CookieAccessor } from '@machinat/auth/types';
+import type { TelegramBot } from '../../bot';
 import { TelegramServerAuthorizer } from '../server';
 import { TelegramChat } from '../../channel';
 import TelegramUser from '../../user';
+import TelegramApiError from '../../error';
 
 const createReq = ({ url }) =>
-  moxy({
+  moxy<IncomingMessage>({
     method: 'GET',
     headers: {},
     url,
-  });
+  } as never);
 
 const createRes = () =>
   moxy({
     code: 200,
     finished: false,
+    headers: undefined,
     writeHead(code, headers) {
       this.code = code;
       this.headers = headers;
@@ -23,28 +28,34 @@ const createRes = () =>
     },
   });
 
-const cookieIssuer: any = moxy({
+const cookieIssuer = moxy<CookieAccessor>({
   async issueAuth() {},
   async issueError() {},
-});
+} as never);
 
-const authorizer = new TelegramServerAuthorizer({
-  botToken: '12345:_BOT_TOKEN_',
+const bot = moxy<TelegramBot>({
+  id: 12345,
+  token: '12345:_BOT_TOKEN_',
+  makeApiCall() {
+    throw new Error();
+  },
+} as never);
+
+const authorizer = new TelegramServerAuthorizer(bot, {
   redirectUrl: '/webview/index.html',
 });
 
 beforeEach(() => {
+  bot.mock.reset();
   cookieIssuer.mock.reset();
 });
 
-const now = moxy(() => 1601136786000);
+const MockDate = moxy(Date);
+MockDate.now.mock.fake(() => 1601136786000);
 const _Date = Date;
 
 beforeAll(() => {
-  global.Date = moxy(function Date() {
-    return new _Date(now());
-  });
-  Date.now = now;
+  global.Date = MockDate;
 });
 
 afterAll(() => {
@@ -52,160 +63,203 @@ afterAll(() => {
 });
 
 describe('#delegateAuthRequest()', () => {
-  describe('login flow', () => {
-    const routingInfo = {
-      originalPath: '/auth/telegram/login',
-      matchedPath: '/auth/telegram',
-      trailingPath: 'login',
-    };
+  const telegramLoginSearch = {
+    id: '12345',
+    auth_date: '1601136776',
+    first_name: 'John',
+    last_name: 'Doe',
+    username: 'johndoe',
+    photo_url: 'https://...',
+    hash: 'b9dd29dc85707201fafad92122120a759492f14f0b997f96e5ef7734009c881b',
+  };
 
-    it('authorize request throught login_url button', async () => {
-      const search = new URLSearchParams({
-        id: '12345',
-        auth_date: '1601136776',
-        first_name: 'John',
-        last_name: 'Doe',
-        username: 'johndoe',
-        photo_url: 'https://...',
-        hash:
-          'b9dd29dc85707201fafad92122120a759492f14f0b997f96e5ef7734009c881b',
-      });
+  it('authorize request redirected from telegram', async () => {
+    const search = new URLSearchParams(telegramLoginSearch);
 
-      const req = createReq({
-        url: `/auth/telegram/login?${search}`,
-      });
-      const res = createRes();
-      await authorizer.delegateAuthRequest(req, res, cookieIssuer, routingInfo);
-
-      expect(res.finished).toBe(true);
-      expect(res.code).toBe(302);
-      expect(res.headers).toEqual({ Location: '/webview/index.html' });
-
-      expect(cookieIssuer.issueError.mock).not.toHaveBeenCalled();
-      expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledTimes(1);
-      expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledWith({
-        botId: 12345,
-        channel: null,
-        userId: 12345,
-        firstName: 'John',
-        lastName: 'Doe',
-        username: 'johndoe',
-        photoUrl: 'https://...',
-      });
+    const req = createReq({
+      url: `/auth/telegram/login?${search}`,
     });
+    const res = createRes();
+    await authorizer.delegateAuthRequest(req, res as never, cookieIssuer);
 
-    it('redirect to redirectUrl param if specified', async () => {
-      const search = new URLSearchParams({
-        redirectUrl: '/webview/hello_world.html',
-        id: '12345',
-        auth_date: '1601136776',
+    expect(res.finished).toBe(true);
+    expect(res.code).toBe(302);
+    expect(res.headers).toEqual({ Location: '/webview/index.html' });
+
+    expect(cookieIssuer.issueError.mock).not.toHaveBeenCalled();
+    expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledTimes(1);
+    expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledWith({
+      botId: 12345,
+      chat: undefined,
+      user: {
+        id: 12345,
         first_name: 'John',
         last_name: 'Doe',
         username: 'johndoe',
-        photo_url: 'https://...',
-        hash:
-          'b9dd29dc85707201fafad92122120a759492f14f0b997f96e5ef7734009c881b',
-      });
-
-      const req = createReq({
-        url: `/auth/telegram/login?${search}`,
-      });
-      const res = createRes();
-      await authorizer.delegateAuthRequest(req, res, cookieIssuer, routingInfo);
-
-      expect(res.finished).toBe(true);
-      expect(res.code).toBe(302);
-      expect(res.headers).toEqual({ Location: '/webview/hello_world.html' });
-
-      expect(cookieIssuer.issueError.mock).not.toHaveBeenCalled();
-      expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledTimes(1);
-    });
-
-    it('issue error if auth_date expired (20 second)', async () => {
-      const search = new URLSearchParams({
-        id: '12345',
-        auth_date: '1601136765',
-        first_name: 'John',
-        last_name: 'Doe',
-        username: 'johndoe',
-        photo_url: 'https://...',
-        hash:
-          'dcf3f7fddbcb157af36167546c645620b9a78ff24e32d35a8de96c6617935c6a',
-      });
-
-      const req = createReq({
-        url: `/auth/telegram/login?${search}`,
-      });
-      const res = createRes();
-      await authorizer.delegateAuthRequest(req, res, cookieIssuer, routingInfo);
-
-      expect(res.finished).toBe(true);
-      expect(res.code).toBe(302);
-      expect(res.headers).toEqual({ Location: '/webview/index.html' });
-
-      expect(cookieIssuer.issueAuth.mock).not.toHaveBeenCalled();
-      expect(cookieIssuer.issueError.mock).toHaveBeenCalledTimes(1);
-      expect(cookieIssuer.issueError.mock.calls[0].args[0]).toBe(401);
-      expect(
-        cookieIssuer.issueError.mock.calls[0].args[1]
-      ).toMatchInlineSnapshot(`"login expired"`);
-    });
-
-    it('issue error if hash invalid', async () => {
-      const search = new URLSearchParams({
-        id: '12345',
-        auth_date: '1601136776',
-        first_name: 'John',
-        last_name: 'Doe',
-        username: 'johndoe',
-        photo_url: 'https://...',
-        hash: 'fffffffffffffffffffffffffffffffffffffffff',
-      });
-
-      const req = createReq({
-        url: `/auth/telegram/login?${search}`,
-      });
-      const res = createRes();
-      await authorizer.delegateAuthRequest(req, res, cookieIssuer, routingInfo);
-
-      expect(res.finished).toBe(true);
-      expect(res.code).toBe(302);
-      expect(res.headers).toEqual({ Location: '/webview/index.html' });
-
-      expect(cookieIssuer.issueAuth.mock).not.toHaveBeenCalled();
-      expect(cookieIssuer.issueError.mock).toHaveBeenCalledTimes(1);
-      expect(cookieIssuer.issueError.mock.calls[0].args[0]).toBe(401);
-      expect(
-        cookieIssuer.issueError.mock.calls[0].args[1]
-      ).toMatchInlineSnapshot(`"invalid login signature"`);
+      },
+      photoUrl: 'https://...',
     });
   });
 
-  test('respond 404 if unknown subpath is not login or codeGrant', async () => {
-    const req1 = createReq({ url: `/auth/telegram/unknown` });
-    const res1 = createRes();
-    await authorizer.delegateAuthRequest(req1, res1, cookieIssuer, {
-      originalPath: '/auth/telegram/codeGrant',
-      matchedPath: '/auth/telegram',
-      trailingPath: 'unknown',
+  it('verify user is a chat member if telegramChat query param given', async () => {
+    const search = new URLSearchParams({
+      ...telegramLoginSearch,
+      telegramChat: '23456',
     });
 
-    expect(res1.finished).toBe(true);
-    expect(res1.code).toBe(404);
+    const req = createReq({
+      url: `/auth/telegram/login?${search}`,
+    });
+    const res = createRes();
 
-    const req2 = createReq({ url: `/auth/telegram/unknown` });
-    const res2 = createRes();
-    await authorizer.delegateAuthRequest(req2, res2, cookieIssuer, {
-      originalPath: '/auth/telegram/codeGrant',
-      matchedPath: '/auth/telegram',
-      trailingPath: '',
+    // getChatMember
+    bot.makeApiCall.mock.fakeOnce(async () => ({
+      user: {
+        id: 12345,
+        first_name: 'John',
+        last_name: 'Doe',
+        username: 'johndoe',
+        language_code: 'en-US',
+      },
+      status: 'member',
+    }));
+
+    // getChat
+    bot.makeApiCall.mock.fakeOnce(async () => ({
+      id: 23456,
+      type: 'group',
+      title: 'Does',
+    }));
+
+    await authorizer.delegateAuthRequest(req, res as never, cookieIssuer);
+
+    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(2);
+    expect(bot.makeApiCall.mock).toHaveBeenNthCalledWith(1, 'getChatMember', {
+      user_id: 12345,
+      chat_id: 23456,
+    });
+    expect(bot.makeApiCall.mock).toHaveBeenNthCalledWith(2, 'getChat', {
+      chat_id: 23456,
     });
 
-    expect(res2.finished).toBe(true);
-    expect(res2.code).toBe(404);
+    expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledTimes(1);
+    expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledWith({
+      botId: 12345,
+      chat: {
+        type: 'group',
+        id: 23456,
+        title: 'Does',
+      },
+      user: {
+        id: 12345,
+        first_name: 'John',
+        last_name: 'Doe',
+        username: 'johndoe',
+        language_code: 'en-US',
+      },
+      photoUrl: 'https://...',
+    });
+  });
+
+  it('fail if user is not a member of telegramChat', async () => {
+    const search = new URLSearchParams({
+      ...telegramLoginSearch,
+      telegramChat: '23456',
+    });
+
+    const req = createReq({
+      url: `/auth/telegram/login?${search}`,
+    });
+    const res = createRes();
+
+    bot.makeApiCall.mock.fake(async () => {
+      throw new TelegramApiError({
+        ok: false,
+        error_code: 400,
+        description: 'Bad Request: user not found',
+      });
+    });
+
+    await authorizer.delegateAuthRequest(req, res as never, cookieIssuer);
+
+    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+
+    expect(cookieIssuer.issueError.mock).toHaveBeenCalledTimes(1);
+    expect(cookieIssuer.issueError.mock.calls[0].args).toMatchInlineSnapshot(`
+      Array [
+        400,
+        "Bad Request: user not found",
+      ]
+    `);
+  });
+
+  it('redirect to redirectUrl param if specified', async () => {
+    const search = new URLSearchParams({
+      ...telegramLoginSearch,
+      redirectUrl: '/webview/hello_world.html',
+    });
+
+    const req = createReq({
+      url: `/auth/telegram/login?${search}`,
+    });
+    const res = createRes();
+    await authorizer.delegateAuthRequest(req, res as never, cookieIssuer);
+
+    expect(res.finished).toBe(true);
+    expect(res.code).toBe(302);
+    expect(res.headers).toEqual({ Location: '/webview/hello_world.html' });
+
+    expect(cookieIssuer.issueError.mock).not.toHaveBeenCalled();
+    expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledTimes(1);
+  });
+
+  it('issue error if auth_date expired (20 second)', async () => {
+    const search = new URLSearchParams({
+      ...telegramLoginSearch,
+      auth_date: '1601136765',
+      hash: 'dcf3f7fddbcb157af36167546c645620b9a78ff24e32d35a8de96c6617935c6a',
+    });
+
+    const req = createReq({
+      url: `/auth/telegram/login?${search}`,
+    });
+    const res = createRes();
+    await authorizer.delegateAuthRequest(req, res as never, cookieIssuer);
+
+    expect(res.finished).toBe(true);
+    expect(res.code).toBe(302);
+    expect(res.headers).toEqual({ Location: '/webview/index.html' });
 
     expect(cookieIssuer.issueAuth.mock).not.toHaveBeenCalled();
-    expect(cookieIssuer.issueError.mock).not.toHaveBeenCalled();
+    expect(cookieIssuer.issueError.mock).toHaveBeenCalledTimes(1);
+    expect(cookieIssuer.issueError.mock.calls[0].args[0]).toBe(401);
+    expect(cookieIssuer.issueError.mock.calls[0].args[1]).toMatchInlineSnapshot(
+      `"login expired"`
+    );
+  });
+
+  it('issue error if hash invalid', async () => {
+    const search = new URLSearchParams({
+      ...telegramLoginSearch,
+      hash: '_INVALID_HASH_',
+    });
+
+    const req = createReq({
+      url: `/auth/telegram?${search}`,
+    });
+    const res = createRes();
+    await authorizer.delegateAuthRequest(req, res as never, cookieIssuer);
+
+    expect(res.finished).toBe(true);
+    expect(res.code).toBe(302);
+    expect(res.headers).toEqual({ Location: '/webview/index.html' });
+
+    expect(cookieIssuer.issueAuth.mock).not.toHaveBeenCalled();
+    expect(cookieIssuer.issueError.mock).toHaveBeenCalledTimes(1);
+    expect(cookieIssuer.issueError.mock.calls[0].args[0]).toBe(401);
+    expect(cookieIssuer.issueError.mock.calls[0].args[1]).toMatchInlineSnapshot(
+      `"invalid login signature"`
+    );
   });
 });
 
@@ -219,83 +273,94 @@ test('#verifyCredential() simply return not ok', async () => {
         `);
 });
 
-test('#verifyRefreshment() simply return ok', async () => {
-  const authData = {
-    botId: 12345,
-    channel: {
-      type: 'private' as const,
-      id: 67890,
-    },
-    userId: 12345,
-    firstName: 'Jojo',
-    lastName: 'Doe',
-    username: 'jojodoe',
-    languageCode: 'ja',
-  };
-  await expect(authorizer.verifyRefreshment(authData)).resolves.toEqual({
-    success: true,
-    refreshable: true,
-    data: authData,
+describe('#verifyRefreshment()', () => {
+  test('return success and original data', async () => {
+    const authData = {
+      botId: 12345,
+      chat: {
+        type: 'private' as const,
+        id: 67890,
+      },
+      user: {
+        id: 67890,
+        first_name: 'Jojo',
+        last_name: 'Doe',
+        username: 'jojodoe',
+      },
+      photoUrl: undefined,
+    };
+    await expect(authorizer.verifyRefreshment(authData)).resolves.toEqual({
+      success: true,
+      data: authData,
+    });
+  });
+
+  it('return fail if botId not match', async () => {
+    await expect(
+      authorizer.verifyRefreshment({
+        botId: 55555,
+        chat: undefined,
+        user: {
+          id: 67890,
+          first_name: 'Jojo',
+          last_name: 'Doe',
+          username: 'jojodoe',
+        },
+        photoUrl: undefined,
+      })
+    ).resolves.toMatchInlineSnapshot(`
+            Object {
+              "code": 400,
+              "reason": "bot not match",
+              "success": false,
+            }
+          `);
   });
 });
 
-test('#refineAuth() ok', async () => {
+test('#supplementContext()', async () => {
   const authData = {
     botId: 12345,
-    channel: null,
-    userId: 12345,
-    firstName: 'Jojo',
-    lastName: 'Doe',
-    username: 'jojodoe',
-    languageCode: 'ja',
+    user: {
+      id: 67890,
+      first_name: 'Jojo',
+      last_name: 'Doe',
+      username: 'jojodoe',
+    },
+    photoUrl: 'http://crazy.dm/stand.png',
+    chat: undefined,
   };
-  await expect(authorizer.refineAuth(authData)).resolves.toEqual({
-    user: new TelegramUser(12345, {
-      id: 12345,
-      is_bot: false,
+
+  const expectedUser = new TelegramUser(67890, {
+    id: 67890,
+    is_bot: false,
+    first_name: 'Jojo',
+    last_name: 'Doe',
+    username: 'jojodoe',
+  });
+
+  await expect(authorizer.supplementContext(authData)).resolves.toEqual({
+    botId: 12345,
+    user: expectedUser,
+    channel: new TelegramChat(12345, {
+      type: 'private',
+      id: 67890,
       first_name: 'Jojo',
       last_name: 'Doe',
       username: 'jojodoe',
-      language_code: 'ja',
     }),
-    channel: null,
+    photoUrl: 'http://crazy.dm/stand.png',
   });
+
   await expect(
-    authorizer.refineAuth({
+    authorizer.supplementContext({
       ...authData,
-      channel: {
-        type: 'group',
-        id: 67890,
-      },
+      chat: { type: 'group', id: 98765 },
     })
   ).resolves.toEqual({
-    user: new TelegramUser(12345, {
-      id: 12345,
-      is_bot: false,
-      first_name: 'Jojo',
-      last_name: 'Doe',
-      username: 'jojodoe',
-      language_code: 'ja',
-    }),
-    channel: new TelegramChat(12345, { type: 'group', id: 67890 }),
-  });
-  await expect(
-    authorizer.refineAuth({
-      ...authData,
-      channel: {
-        type: 'group',
-        id: 67890,
-      },
-    })
-  ).resolves.toEqual({
-    user: new TelegramUser(12345, {
-      id: 12345,
-      is_bot: false,
-      first_name: 'Jojo',
-      last_name: 'Doe',
-      username: 'jojodoe',
-      language_code: 'ja',
-    }),
-    channel: new TelegramChat(12345, { type: 'group', id: 67890 }),
+    botId: 12345,
+    user: expectedUser,
+    channel: new TelegramChat(12345, { type: 'group', id: 98765 }),
+    photoUrl: 'http://crazy.dm/stand.png',
   });
 });

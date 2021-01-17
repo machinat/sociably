@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Readable } from 'stream';
-import moxy from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import Machinat from '@machinat/core';
-import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
-import Engine from '@machinat/core/engine';
-import Worker from '../worker';
+import _Engine from '@machinat/core/engine';
+import _Renderer from '@machinat/core/renderer';
+import _Worker from '../worker';
+import TelegramApiError from '../error';
 import { TelegramBot } from '../bot';
 import {
   Photo,
@@ -14,6 +16,10 @@ import {
   EditText,
   EditMedia,
 } from '../components';
+
+const Engine = _Engine as Moxy<typeof _Engine>;
+const Renderer = _Renderer as Moxy<typeof _Renderer>;
+const Worker = _Worker as Moxy<typeof _Worker>;
 
 nock.disableNetConnect();
 
@@ -39,6 +45,8 @@ const scope = moxy();
 const initScope = moxy(() => scope);
 const dispatchWrapper = moxy((x) => x);
 
+const token = '12345:_BOT_TOKEN_';
+
 const message = (
   <Expression replyMarkup={<ForceReply />}>
     Hello <b>World!</b>
@@ -63,19 +71,17 @@ afterEach(() => {
 
 describe('#constructor(options)', () => {
   it('throw if botToken not given', () => {
-    expect(() => new TelegramBot()).toThrowErrorMatchingInlineSnapshot(
-      `"options.botToken should not be empty"`
-    );
     expect(
-      () => new TelegramBot({}, initScope, dispatchWrapper)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.botToken should not be empty"`
-    );
+      () => new TelegramBot(undefined as never)
+    ).toThrowErrorMatchingInlineSnapshot(`"options.token should not be empty"`);
+    expect(
+      () => new TelegramBot({} as never, initScope, dispatchWrapper)
+    ).toThrowErrorMatchingInlineSnapshot(`"options.token should not be empty"`);
   });
 
   it('assemble core modules', () => {
     const bot = new TelegramBot(
-      { botToken: '12345:_BOT_TOKEN_', maxConnections: 999 },
+      { token, maxConnections: 999 },
       initScope,
       dispatchWrapper
     );
@@ -104,10 +110,12 @@ describe('#constructor(options)', () => {
   });
 
   test('default maxConnections', () => {
-    const _bot = new TelegramBot(
-      { botToken: '12345:_BOT_TOKEN_', maxConnections: 999 },
-      initScope,
-      dispatchWrapper
+    expect(
+      new TelegramBot(
+        { token, maxConnections: 999 },
+        initScope,
+        dispatchWrapper
+      )
     );
 
     expect(Worker.mock).toHaveBeenCalledTimes(1);
@@ -121,25 +129,19 @@ describe('#constructor(options)', () => {
 });
 
 test('#start() and #stop() start/stop engine', () => {
-  const bot = new TelegramBot(
-    { botToken: '12345:_BOT_TOKEN_' },
-    initScope,
-    dispatchWrapper
-  );
+  const bot = new TelegramBot({ token }, initScope, dispatchWrapper);
+
+  type MockEngine = Moxy<TelegramBot['engine']>;
 
   bot.start();
-  expect(bot.engine.start.mock).toHaveBeenCalledTimes(1);
+  expect((bot.engine as MockEngine).start.mock).toHaveBeenCalledTimes(1);
 
   bot.stop();
-  expect(bot.engine.stop.mock).toHaveBeenCalledTimes(1);
+  expect((bot.engine as MockEngine).stop.mock).toHaveBeenCalledTimes(1);
 });
 
 describe('#render(channel, message, options)', () => {
-  const bot = new TelegramBot(
-    { botToken: '12345:_BOT_TOKEN_' },
-    initScope,
-    dispatchWrapper
-  );
+  const bot = new TelegramBot({ token }, initScope, dispatchWrapper);
 
   beforeAll(() => {
     bot.start();
@@ -168,7 +170,7 @@ describe('#render(channel, message, options)', () => {
     const response = await bot.render(123456, message);
     expect(response).toMatchSnapshot();
 
-    expect(response.results).toEqual([
+    expect(response!.results).toEqual([
       { ok: true, result: { id: 1 } },
       { ok: true, result: { id: 2 } },
     ]);
@@ -198,11 +200,7 @@ describe('#render(channel, message, options)', () => {
 });
 
 describe('#renderInstance(message)', () => {
-  const bot = new TelegramBot(
-    { botToken: '12345:_BOT_TOKEN_' },
-    initScope,
-    dispatchWrapper
-  );
+  const bot = new TelegramBot({ token }, initScope, dispatchWrapper);
 
   beforeAll(() => {
     bot.start();
@@ -222,38 +220,38 @@ describe('#renderInstance(message)', () => {
   it('call edit api', async () => {
     const apiCall1 = telegramApi
       .post('/bot12345:_BOT_TOKEN_/editMessageText', bodySpy)
-      .reply(200, { ok: true, result: { id: 1 } });
+      .reply(200, { ok: true, result: { id: '1' } });
     const apiCall2 = telegramApi
       .post('/bot12345:_BOT_TOKEN_/editMessageMedia', bodySpy)
-      .reply(200, { ok: true, result: { id: 2 } });
+      .reply(200, { ok: true, result: { id: '2' } });
 
     const response = await bot.renderInstance(
       <>
-        <EditText inlineMessageId={1}>
+        <EditText inlineMessageId="1">
           foo <b>bar</b>
         </EditText>
-        <EditMedia inlineMessageId={2}>
+        <EditMedia inlineMessageId="2">
           <Photo url="https://machinat.com/trollface.png" />
         </EditMedia>
       </>
     );
-    expect(response).toMatchSnapshot();
-    expect(response.results).toEqual([
-      { ok: true, result: { id: 1 } },
-      { ok: true, result: { id: 2 } },
+    expect(response!).toMatchSnapshot();
+    expect(response!.results).toEqual([
+      { ok: true, result: { id: '1' } },
+      { ok: true, result: { id: '2' } },
     ]);
 
     expect(bodySpy.mock).toHaveBeenCalledTimes(2);
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
-        "inline_message_id": 1,
+        "inline_message_id": "1",
         "parse_mode": "HTML",
         "text": "foo <b>bar</b>",
       }
     `);
     expect(bodySpy.mock.calls[1].args[0]).toMatchInlineSnapshot(`
       Object {
-        "inline_message_id": 2,
+        "inline_message_id": "2",
         "media": Object {
           "media": "https://machinat.com/trollface.png",
           "parse_mode": "HTML",
@@ -267,38 +265,59 @@ describe('#renderInstance(message)', () => {
   });
 });
 
-test('#makeApiCall()', async () => {
-  const bot = new TelegramBot(
-    { botToken: '12345:_BOT_TOKEN_' },
-    initScope,
-    dispatchWrapper
-  );
-  bot.start();
+describe('#makeApiCall()', () => {
+  test('call telegram bot api', async () => {
+    const bot = new TelegramBot({ token }, initScope, dispatchWrapper);
+    bot.start();
 
-  const fooCall = telegramApi
-    .post('/bot12345:_BOT_TOKEN_/foo', bodySpy)
-    .reply(200, {
-      ok: true,
-      result: { foo: 'bar' },
+    const fooCall = telegramApi
+      .post('/bot12345:_BOT_TOKEN_/foo', bodySpy)
+      .reply(200, {
+        ok: true,
+        result: { foo: 'bar' },
+      });
+
+    await expect(bot.makeApiCall('foo', { bar: 'baz' })).resolves.toEqual({
+      foo: 'bar',
     });
 
-  await expect(bot.makeApiCall('foo', { bar: 'baz' })).resolves.toEqual({
-    ok: true,
-    result: { foo: 'bar' },
+    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    expect(bodySpy.mock).toHaveBeenCalledWith({ bar: 'baz' });
+
+    expect(fooCall.isDone()).toBe(true);
   });
 
-  expect(bodySpy.mock).toHaveBeenCalledTimes(1);
-  expect(bodySpy.mock).toHaveBeenCalledWith({ bar: 'baz' });
+  it('throw TelegramAPIError when fail', async () => {
+    const bot = new TelegramBot({ token }, initScope, dispatchWrapper);
+    bot.start();
 
-  expect(fooCall.isDone()).toBe(true);
+    const failBody = {
+      ok: false,
+      error: 'bad',
+      error_description: 'really bad',
+    };
+
+    const fooCall = telegramApi
+      .post('/bot12345:_BOT_TOKEN_/foo', bodySpy)
+      .reply(200, failBody);
+
+    try {
+      await bot.makeApiCall('foo', { bar: 'baz' });
+      expect('should not get here').toBeFalsy();
+    } catch (error) {
+      expect(error).toBeInstanceOf(TelegramApiError);
+      expect(error.body).toEqual(failBody);
+    }
+
+    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    expect(bodySpy.mock).toHaveBeenCalledWith({ bar: 'baz' });
+
+    expect(fooCall.isDone()).toBe(true);
+  });
 });
 
 test('#fetchFile()', async () => {
-  const bot = new TelegramBot(
-    { botToken: '12345:_BOT_TOKEN_' },
-    initScope,
-    dispatchWrapper
-  );
+  const bot = new TelegramBot({ token }, initScope, dispatchWrapper);
   bot.start();
 
   const fileId = '_FILE_ID_';
@@ -326,12 +345,12 @@ test('#fetchFile()', async () => {
   expect(bodySpy.mock).toHaveBeenCalledTimes(2);
   expect(bodySpy.mock).toHaveBeenNthCalledWith(1, { file_id: fileId });
 
-  expect(response.content).toBeInstanceOf(Readable);
-  expect(response.contentType).toBe('image/png');
-  expect(response.contentLength).toBe(777);
+  expect(response!.content).toBeInstanceOf(Readable);
+  expect(response!.contentType).toBe('image/png');
+  expect(response!.contentLength).toBe(777);
 
   await new Promise(setImmediate);
-  expect(response.content.read().toString()).toBe('__BINARY_DATA__');
+  expect(response!.content.read().toString()).toBe('__BINARY_DATA__');
 
   expect(getFileCall.isDone()).toBe(true);
   expect(downloadFileCall.isDone()).toBe(true);

@@ -92,7 +92,7 @@ Object {
       "method": "editMessageText",
       "parameters": Object {
         "disable_web_page_preview": undefined,
-        "inline_message_id": 1,
+        "inline_message_id": "1",
         "message_id": undefined,
         "parse_mode": "HTML",
         "reply_markup": undefined,
@@ -104,7 +104,7 @@ Object {
       "executionKey": undefined,
       "method": "editMessageMedia",
       "parameters": Object {
-        "inline_message_id": 2,
+        "inline_message_id": "2",
         "media": Object {
           "caption": undefined,
           "media": "https://machinat.com/trollface.png",
@@ -121,13 +121,13 @@ Object {
     Object {
       "ok": true,
       "result": Object {
-        "id": 1,
+        "id": "1",
       },
     },
     Object {
       "ok": true,
       "result": Object {
-        "id": 2,
+        "id": "2",
       },
     },
   ],
@@ -139,7 +139,7 @@ Object {
           "method": "editMessageText",
           "parameters": Object {
             "disable_web_page_preview": undefined,
-            "inline_message_id": 1,
+            "inline_message_id": "1",
             "message_id": undefined,
             "parse_mode": "HTML",
             "reply_markup": undefined,
@@ -151,7 +151,7 @@ Object {
           "executionKey": undefined,
           "method": "editMessageMedia",
           "parameters": Object {
-            "inline_message_id": 2,
+            "inline_message_id": "2",
             "media": Object {
               "caption": undefined,
               "media": "https://machinat.com/trollface.png",

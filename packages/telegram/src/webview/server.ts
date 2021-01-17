@@ -1,4 +1,5 @@
 import { parse as parseUrl } from 'url';
+import type { ParsedUrlQuery } from 'querystring';
 import { createHmac } from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import invariant from 'invariant';
@@ -12,8 +13,9 @@ import type {
 
 import { PLATFORM_CONFIGS_I } from '../interface';
 import { TELEGRAM } from '../constant';
-import type { TelegramPlatformConfigs, RawChat } from '../types';
 import { BotP } from '../bot';
+import type TelegramApiError from '../error';
+import type { TelegramPlatformConfigs, RawChat, RawUser } from '../types';
 import { supplementContext } from './utils';
 import type { TelegramAuthContext, TelegramAuthData } from './types';
 
@@ -32,12 +34,6 @@ const LOGIN_PARAMETERS = [
   'username',
 ];
 
-const makeParamsCheckingString = (query) =>
-  LOGIN_PARAMETERS.reduce(
-    (str, key) => (query[key] ? `${str}\n${key}=${query[key]}` : str),
-    ''
-  ).slice(1);
-
 /**
  * @category Provider
  */
@@ -48,16 +44,11 @@ export class TelegramServerAuthorizer
 
   platform = TELEGRAM;
 
-  constructor(bot: BotP, { redirectUrl }: TelegramServerAuthorizerOpts) {
-    invariant(redirectUrl, 'options.redirectUrl should not be empty');
+  constructor(bot: BotP, options: TelegramServerAuthorizerOpts) {
+    invariant(options?.redirectUrl, 'options.redirectUrl should not be empty');
 
     this.bot = bot;
-    this.redirectUrl = redirectUrl;
-  }
-
-  private _redirect(res: ServerResponse, redirectUrl: undefined | string) {
-    res.writeHead(302, { Location: redirectUrl || this.redirectUrl });
-    res.end();
+    this.redirectUrl = options.redirectUrl;
   }
 
   async delegateAuthRequest(
@@ -66,7 +57,7 @@ export class TelegramServerAuthorizer
     authIssuer: CookieAccessor
   ): Promise<void> {
     const { query } = parseUrl(req.url as string, true);
-    const { hash, redirectUrl, [CHAT_QUERY_PARAM]: chatIdQuery } = query;
+    const { redirectUrl, [CHAT_QUERY_PARAM]: chatIdQuery } = query;
 
     if (typeof redirectUrl !== 'string' && typeof redirectUrl !== 'undefined') {
       authIssuer.issueError(400, 'invalid redirect url');
@@ -74,35 +65,22 @@ export class TelegramServerAuthorizer
       return;
     }
 
-    if (typeof hash !== 'string') {
-      authIssuer.issueError(400, 'invalid login parameters');
+    const loginErr = this._verifyTelegramLogin(query);
+    if (loginErr) {
+      authIssuer.issueError(loginErr.code, loginErr.message);
       this._redirect(res, redirectUrl);
       return;
     }
 
-    const paramsCheckingString = makeParamsCheckingString(query);
-
-    const hashedParams = createHmac('sha256', this.bot.token)
-      .update(paramsCheckingString)
-      .digest('hex');
-
-    if (hashedParams !== hash) {
-      authIssuer.issueError(401, 'invalid login signature');
-      this._redirect(res, redirectUrl);
-      return;
-    }
-
-    if (Number(query.auth_date as string) < Date.now() / 1000 - 20) {
-      authIssuer.issueError(401, 'login expired');
-      this._redirect(res, redirectUrl);
-      return;
-    }
-
-    const userId = Number(query.id);
-    const username = query.username as string | undefined;
+    const userData: Omit<RawUser, 'is_bot'> = {
+      id: Number(query.id),
+      username: query.username as string | undefined,
+      first_name: query.first_name as string,
+      last_name: query.last_name as string | undefined,
+      language_code: undefined,
+    };
 
     let chatData: undefined | RawChat;
-
     if (chatIdQuery) {
       const chatId =
         typeof chatIdQuery === 'string' && chatIdQuery[0] === '@'
@@ -111,29 +89,22 @@ export class TelegramServerAuthorizer
 
       if (Number.isNaN(chatId)) {
         authIssuer.issueError(400, 'invalid chat id');
-        this._redirect(res, undefined);
+        this._redirect(res, redirectUrl);
         return;
       }
 
-      const chatMember = await this.bot.makeApiCall('getChatMember', {
-        chat_id: chatId,
-        user_id: userId,
-      });
+      const [err, chatResult, userResult] = await this._checkChatMember(
+        chatId,
+        userData.id
+      );
 
-      if (
-        chatMember.status === 'left' ||
-        chatMember.status === 'kicked' ||
-        (chatMember.status === 'restricted' && chatMember.is_member === false)
-      ) {
-        authIssuer.issueError(401, 'user is unauthorized to chat');
-        this._redirect(res, undefined);
+      if (err) {
+        authIssuer.issueError(err.code, err.message);
+        this._redirect(res, redirectUrl);
         return;
       }
 
-      const chatResult: RawChat = await this.bot.makeApiCall('getChat', {
-        chat_id: chatId,
-      });
-
+      userData.language_code = userResult.language_code;
       chatData = {
         type: chatResult.type,
         id: chatResult.id,
@@ -143,17 +114,12 @@ export class TelegramServerAuthorizer
       };
     }
 
-    const authData: TelegramAuthData = {
+    authIssuer.issueAuth({
       botId: this.bot.id,
       chat: chatData,
-      userId,
-      username,
-      firstName: query.first_name as string,
-      lastName: query.last_name as string | undefined,
+      user: userData,
       photoUrl: query.photo_url as string | undefined,
-    };
-
-    authIssuer.issueAuth(authData);
+    });
     this._redirect(res, redirectUrl);
   }
 
@@ -166,10 +132,17 @@ export class TelegramServerAuthorizer
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async verifyRefreshment(
     data: TelegramAuthData
   ): Promise<AuthorizerVerifyResult<TelegramAuthData>> {
+    if (data.botId !== this.bot.id) {
+      return {
+        success: false,
+        code: 400,
+        reason: 'bot not match',
+      };
+    }
+
     return {
       success: true,
       data,
@@ -181,6 +154,69 @@ export class TelegramServerAuthorizer
     data: TelegramAuthData
   ): Promise<null | ContextSupplement<TelegramAuthContext>> {
     return supplementContext(data);
+  }
+
+  private _redirect(res: ServerResponse, redirectUrl?: string) {
+    res.writeHead(302, { Location: redirectUrl || this.redirectUrl });
+    res.end();
+  }
+
+  private _verifyTelegramLogin(
+    query: ParsedUrlQuery
+  ): null | { code: number; message: string } {
+    const { hash } = query;
+    if (typeof hash !== 'string') {
+      return { code: 400, message: 'invalid login parameters' };
+    }
+
+    const paramsCheckingString = LOGIN_PARAMETERS.reduce(
+      (str, key) => (query[key] ? `${str}\n${key}=${query[key]}` : str),
+      ''
+    ).slice(1);
+
+    const hashedParams = createHmac('sha256', this.bot.token)
+      .update(paramsCheckingString)
+      .digest('hex');
+
+    if (hashedParams !== hash) {
+      return { code: 401, message: 'invalid login signature' };
+    }
+
+    if (Number(query.auth_date as string) < Date.now() / 1000 - 20) {
+      return { code: 401, message: 'login expired' };
+    }
+
+    return null;
+  }
+
+  private async _checkChatMember(
+    chatId: number | string,
+    userId: number
+  ): Promise<[null | { code: number; message: string }, RawChat, RawUser]> {
+    try {
+      const chatMember = await this.bot.makeApiCall('getChatMember', {
+        chat_id: chatId,
+        user_id: userId,
+      });
+
+      if (
+        chatMember.status === 'left' ||
+        chatMember.status === 'kicked' ||
+        (chatMember.status === 'restricted' && chatMember.is_member === false)
+      ) {
+        const err = { code: 401, message: 'user is unauthorized to chat' };
+        return [err, null as never, null as never];
+      }
+
+      const chatResult: RawChat = await this.bot.makeApiCall('getChat', {
+        chat_id: chatId,
+      });
+
+      return [null, chatResult, chatMember.user];
+    } catch (err) {
+      const { code, description }: TelegramApiError = err;
+      return [{ code, message: description }, null as never, null as never];
+    }
   }
 }
 

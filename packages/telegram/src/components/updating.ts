@@ -25,7 +25,7 @@ type EditTextProps = EditMessageProps & {
   /** Texual content for the new text of the message, 1-4096 characters after entities parsing */
   children: MachinatNode;
   /** Mode for parsing entities in the message text. See formatting options for more details. */
-  parseMode: TelegramParseMode;
+  parseMode?: TelegramParseMode;
   /** Disables link previews for links in this message */
   disableWebPagePreview?: boolean;
 };

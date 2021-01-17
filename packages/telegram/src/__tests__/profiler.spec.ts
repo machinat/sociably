@@ -1,5 +1,6 @@
 import { Readable } from 'stream';
 import moxy from '@moxyjs/moxy';
+import type { TelegramBot } from '../bot';
 import {
   TelegramProfiler,
   TelegramUserProfile,
@@ -8,7 +9,7 @@ import {
 import { TelegramChat, TelegramChatTarget } from '../channel';
 import TelegramUser from '../user';
 
-const bot = moxy({
+const bot = moxy<TelegramBot>({
   async makeApiCall() {
     throw new Error();
   },
@@ -19,7 +20,7 @@ const bot = moxy({
       contentLength: 6666,
     };
   },
-});
+} as never);
 
 beforeEach(() => {
   bot.mock.reset();
@@ -69,11 +70,8 @@ describe('#getUserProfile(user)', () => {
 
   it('get profile from getChatMember API if no data attached with user', async () => {
     bot.makeApiCall.mock.fake(() => ({
-      ok: true,
-      result: {
-        status: 'creator',
-        user: { id: 12345, is_bot: false, first_name: 'Jojo' },
-      },
+      status: 'creator',
+      user: { id: 12345, is_bot: false, first_name: 'Jojo' },
     }));
 
     const profiler = new TelegramProfiler(bot);
@@ -95,11 +93,8 @@ describe('#getUserProfile(user)', () => {
 
   test('specify chat to call getChatMember', async () => {
     bot.makeApiCall.mock.fake(() => ({
-      ok: true,
-      result: {
-        status: 'creator',
-        user: { id: 12345, is_bot: false, first_name: 'Jojo' },
-      },
+      status: 'creator',
+      user: { id: 12345, is_bot: false, first_name: 'Jojo' },
     }));
 
     const profiler = new TelegramProfiler(bot);
@@ -123,16 +118,13 @@ describe('#getUserProfile(user)', () => {
 
   test('force to get data from API even available on user', async () => {
     bot.makeApiCall.mock.fake(() => ({
-      ok: true,
-      result: {
-        status: 'creator',
-        user: {
-          id: 12345,
-          is_bot: false,
-          first_name: 'Jojo',
-          username: 'jojodoe',
-          last_name: 'Doe',
-        },
+      status: 'creator',
+      user: {
+        id: 12345,
+        is_bot: false,
+        first_name: 'Jojo',
+        username: 'jojodoe',
+        last_name: 'Doe',
       },
     }));
 
@@ -237,8 +229,9 @@ describe('#getChatProfile(user)', () => {
 
   it('get profile from getChat API if no data attached with chat', async () => {
     bot.makeApiCall.mock.fake(() => ({
-      ok: true,
-      result: { id: 67890, type: 'private', first_name: 'Jojo' },
+      id: 67890,
+      type: 'private',
+      first_name: 'Jojo',
     }));
 
     const profiler = new TelegramProfiler(bot);
@@ -269,8 +262,9 @@ describe('#getChatProfile(user)', () => {
     expect(bot.makeApiCall.mock).toHaveReturnedTimes(3);
 
     bot.makeApiCall.mock.fake(() => ({
-      ok: true,
-      result: { id: 99999, type: 'channel', title: 'FOO' },
+      id: 99999,
+      type: 'channel',
+      title: 'FOO',
     }));
 
     const profile2 = await profiler.getChatProfile('@foo_channel', {
@@ -287,14 +281,11 @@ describe('#getChatProfile(user)', () => {
 
   test('force to get data from API even available on user', async () => {
     bot.makeApiCall.mock.fake(() => ({
-      ok: true,
-      result: {
-        id: 67890,
-        is_bot: false,
-        first_name: 'Jojo',
-        username: 'jojodoe',
-        last_name: 'Doe',
-      },
+      id: 67890,
+      is_bot: false,
+      first_name: 'Jojo',
+      username: 'jojodoe',
+      last_name: 'Doe',
     }));
 
     const profiler = new TelegramProfiler(bot);
@@ -355,35 +346,32 @@ describe('#getChatProfile(user)', () => {
 
 describe('#fetchUserPhoto(user)', () => {
   const getUserProfilePhotosResult = {
-    ok: true,
-    result: {
-      total_count: 1,
-      photos: [
-        [
-          {
-            file_id: '_FILE_S_',
-            file_unique_id: '_UNIQUE_ID_S_',
-            file_size: 200000,
-            width: 200,
-            height: 200,
-          },
-          {
-            file_id: '_FILE_M_',
-            file_unique_id: '_UNIQUE_ID_M_',
-            file_size: 400000,
-            width: 400,
-            height: 400,
-          },
-          {
-            file_id: '_FILE_L_',
-            file_unique_id: '_UNIQUE_ID_L_',
-            file_size: 600000,
-            width: 600,
-            height: 600,
-          },
-        ],
+    total_count: 1,
+    photos: [
+      [
+        {
+          file_id: '_FILE_S_',
+          file_unique_id: '_UNIQUE_ID_S_',
+          file_size: 200000,
+          width: 200,
+          height: 200,
+        },
+        {
+          file_id: '_FILE_M_',
+          file_unique_id: '_UNIQUE_ID_M_',
+          file_size: 400000,
+          width: 400,
+          height: 400,
+        },
+        {
+          file_id: '_FILE_L_',
+          file_unique_id: '_UNIQUE_ID_L_',
+          file_size: 600000,
+          width: 600,
+          height: 600,
+        },
       ],
-    },
+    ],
   };
 
   it('fetch the smallest file of the forst photo by default', async () => {
@@ -471,8 +459,8 @@ describe('#fetchUserPhoto(user)', () => {
     });
 
     bot.makeApiCall.mock.fakeReturnValue({
-      ok: true,
-      result: { total_count: 0, photos: [] },
+      total_count: 0,
+      photos: [],
     });
 
     await expect(profiler.fetchUserPhoto(user)).resolves.toBe(null);
@@ -481,17 +469,14 @@ describe('#fetchUserPhoto(user)', () => {
 
 describe('#fetchChatPhoto(user)', () => {
   const getChatResult = {
-    ok: true,
-    result: {
-      id: 12345,
-      type: 'group',
-      title: 'FOO',
-      photo: {
-        small_file_id: '_SMALL_FILE_ID_',
-        small_file_unique_id: '_SMALL_UNIQUE_FILE_ID_',
-        big_file_id: '_BIG_FILE_ID_',
-        big_file_unique_id: '_BIG_UNIQUE_FILE_ID_',
-      },
+    id: 12345,
+    type: 'group',
+    title: 'FOO',
+    photo: {
+      small_file_id: '_SMALL_FILE_ID_',
+      small_file_unique_id: '_SMALL_UNIQUE_FILE_ID_',
+      big_file_id: '_BIG_FILE_ID_',
+      big_file_unique_id: '_BIG_UNIQUE_FILE_ID_',
     },
   };
 

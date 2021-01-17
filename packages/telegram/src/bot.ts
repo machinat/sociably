@@ -56,7 +56,7 @@ export class TelegramBot
   >;
 
   constructor(
-    { token, maxConnections = 100 }: TelegramBotOptions,
+    options: TelegramBotOptions,
     initScope: InitScopeFn = () => createEmptyScope(TELEGRAM),
     dispatchWrapper: DispatchWrapper<
       TelegramJob,
@@ -64,7 +64,9 @@ export class TelegramBot
       TelegramResult
     > = (dispatch) => dispatch
   ) {
-    invariant(token, 'options.token should not be empty');
+    invariant(options?.token, 'options.token should not be empty');
+
+    const { token, maxConnections = 100 } = options;
 
     this.token = token;
     this.id = Number(token.split(':', 1)[0]);
@@ -127,9 +129,10 @@ export class TelegramBot
     contentType?: string;
     contentLength?: number;
   }> {
-    const {
-      result: { file_path: filePath },
-    } = await this.makeApiCall('getFile', { file_id: fileId });
+    const { file_path: filePath } = await this.makeApiCall('getFile', {
+      file_id: fileId,
+    });
+
     if (!filePath) {
       return null;
     }

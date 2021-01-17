@@ -18,63 +18,49 @@ test('#fetchCredential() return not ok', async () => {
         `);
 });
 
-test('#refineAuth() ok', async () => {
+test('#supplementContext()', async () => {
   const authData = {
     botId: 12345,
     channel: null,
-    userId: 12345,
-    firstName: 'Jojo',
-    lastName: 'Doe',
-    username: 'jojodoe',
-    languageCode: 'ja',
+    user: {
+      id: 12345,
+      first_name: 'Jojo',
+      last_name: 'Doe',
+      username: 'jojodoe',
+    },
+    photoUrl: 'http://crazy.dm/stand.png',
+    chat: undefined,
   };
-  await expect(authorizer.refineAuth(authData)).resolves.toEqual({
-    user: new TelegramUser(12345, {
+
+  const expectedUser = new TelegramUser(12345, {
+    id: 12345,
+    is_bot: false,
+    first_name: 'Jojo',
+    last_name: 'Doe',
+    username: 'jojodoe',
+  });
+
+  await expect(authorizer.supplementContext(authData)).resolves.toEqual({
+    botId: 12345,
+    user: expectedUser,
+    channel: new TelegramChat(12345, {
+      type: 'private',
       id: 12345,
-      is_bot: false,
       first_name: 'Jojo',
       last_name: 'Doe',
       username: 'jojodoe',
-      language_code: 'ja',
     }),
-    channel: null,
+    photoUrl: 'http://crazy.dm/stand.png',
   });
   await expect(
-    authorizer.refineAuth({
+    authorizer.supplementContext({
       ...authData,
-      channel: {
-        type: 'group',
-        id: 67890,
-      },
+      chat: { type: 'group', id: 67890 },
     })
   ).resolves.toEqual({
-    user: new TelegramUser(12345, {
-      id: 12345,
-      is_bot: false,
-      first_name: 'Jojo',
-      last_name: 'Doe',
-      username: 'jojodoe',
-      language_code: 'ja',
-    }),
+    botId: 12345,
+    user: expectedUser,
     channel: new TelegramChat(12345, { type: 'group', id: 67890 }),
-  });
-  await expect(
-    authorizer.refineAuth({
-      ...authData,
-      channel: {
-        type: 'group' as const,
-        id: 67890,
-      },
-    })
-  ).resolves.toEqual({
-    user: new TelegramUser(12345, {
-      id: 12345,
-      is_bot: false,
-      first_name: 'Jojo',
-      last_name: 'Doe',
-      username: 'jojodoe',
-      language_code: 'ja',
-    }),
-    channel: new TelegramChat(12345, { type: 'group', id: 67890 }),
+    photoUrl: 'http://crazy.dm/stand.png',
   });
 });

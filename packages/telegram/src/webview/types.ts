@@ -1,15 +1,12 @@
 import type { AuthContextBase } from '@machinat/auth/types';
 import type { TelegramChat } from '../channel';
 import type TelegramUser from '../user';
-import { RawChat } from '../types';
+import { RawChat, RawUser } from '../types';
 
 export type TelegramAuthData = {
   botId: number;
   chat: undefined | RawChat;
-  userId: number;
-  firstName: string;
-  lastName: undefined | string;
-  username: undefined | string;
+  user: Omit<RawUser, 'is_bot'>;
   photoUrl: undefined | string;
 };
 
