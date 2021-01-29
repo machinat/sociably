@@ -1,7 +1,7 @@
 /** @internal */ /** */
 import { EventEmitter } from 'events';
 import thenifiedly from 'thenifiedly';
-import type WSSocket from 'ws';
+import type WsSocket from 'ws';
 import SocketError from './error';
 import type { UpgradeRequestInfo, EventInput } from './types';
 
@@ -143,17 +143,17 @@ const MASK_DISCONNECTING = FLAG_DISCONNECT_SENT | FLAG_DISCONNECT_RECEIVED;
 
 const HANDSHAKE_TIMEOUT = 20 * 1000;
 
-function handleWSMessage(this: WSSocket & WithSocket, data: any) {
+function handleWsMessage(this: WsSocket & WithSocket, data: any) {
   const { socket } = this;
   socket._handlePacket(data).catch(socket._emitError.bind(socket));
 }
 
-function handleWSOpen(this: WSSocket & WithSocket) {
+function handleWsOpen(this: WsSocket & WithSocket) {
   this.socket._emitOpen();
 }
 
-function handleWSClose(
-  this: WSSocket & WithSocket,
+function handleWsClose(
+  this: WsSocket & WithSocket,
   code: number,
   reason: string
 ) {
@@ -161,7 +161,7 @@ function handleWSClose(
   socket._emitClose(code, reason);
 }
 
-function handleWSError(this: WSSocket & WithSocket, err: Error) {
+function handleWsError(this: WsSocket & WithSocket, err: Error) {
   this.socket._emitError(err);
 }
 
@@ -172,32 +172,32 @@ function handleWSError(this: WSSocket & WithSocket, err: Error) {
 class Socket extends EventEmitter {
   id: string;
   isClient: boolean;
-  request: UpgradeRequestInfo;
+  request: null | UpgradeRequestInfo;
 
-  private _ws: WSSocket & WithSocket;
+  private _ws: WsSocket & WithSocket;
   private _seq: number;
 
   private _connectStates: Map<string, number>;
   private _handshakeTimeouts: Map<string, TimeoutID>;
 
-  constructor(id: string, wsSocket: WSSocket, request: UpgradeRequestInfo) {
+  constructor(id: string, wsSocket: WsSocket, request?: UpgradeRequestInfo) {
     super();
 
     this.id = id;
-    this.request = request;
+    this.request = request || null;
     this.isClient = !request;
     this._seq = 0;
 
     this._connectStates = new Map();
     this._handshakeTimeouts = new Map();
 
-    const wss = wsSocket as WSSocket & WithSocket;
+    const wss = wsSocket as WsSocket & WithSocket;
     wss.socket = this;
 
-    wss.on('message', handleWSMessage);
-    wss.on('open', handleWSOpen);
-    wss.on('close', handleWSClose);
-    wss.on('error', handleWSError);
+    wss.on('message', handleWsMessage);
+    wss.on('open', handleWsOpen);
+    wss.on('close', handleWsClose);
+    wss.on('error', handleWsError);
     this._ws = wss;
   }
 
@@ -329,7 +329,7 @@ class Socket extends EventEmitter {
     this._ws.close(code, reason);
   }
 
-  async _send(frame: string, body: any): Promise<number> {
+  async _send(frame: string, body: unknown): Promise<number> {
     const { readyState } = this._ws;
     if (readyState !== SOCKET_OPEN) {
       throw new SocketError('socket is not ready');
@@ -456,7 +456,7 @@ class Socket extends EventEmitter {
 
         this._accomplishConnect(body, seq);
       } else {
-        // disallow initiating connect handshake from client
+        // reject initiating connect handshake from client
         await this.disconnect({
           connId,
           seq,

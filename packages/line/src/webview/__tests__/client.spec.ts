@@ -4,6 +4,7 @@ import moxy, { Moxy } from '@moxyjs/moxy';
 import ClientAuthorizer from '../client';
 import LineChat from '../../channel';
 import LineUser from '../../user';
+import { LiffContextOs } from '../../constant';
 import { LineUserProfile } from '../../profiler';
 
 const liffContext = {
@@ -261,132 +262,144 @@ describe('#fetchCredential()', () => {
   });
 });
 
-describe('#supplementContext(data)', () => {
-  it('resolve utou chat', async () => {
+describe('#checkAuthContext(data)', () => {
+  it('resolve utou chat', () => {
     const authorizer = new ClientAuthorizer({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
 
-    await expect(
-      authorizer.supplementContext({
+    expect(
+      authorizer.checkAuthContext({
+        provider: '_PROVIDER_ID_',
+        channel: '_BOT_CHANNEL_ID_',
+        client: '_CLIENT_ID_',
+        os: LiffContextOs.Web,
+        lang: 'en-US',
+        user: '_USER_ID_',
+        group: undefined,
+        room: undefined,
+        name: undefined,
+        pic: undefined,
+      })
+    ).toEqual({
+      success: true,
+      contextSupplment: {
         providerId: '_PROVIDER_ID_',
         channelId: '_BOT_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
+        user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+        channel: new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_'),
+        profile: null,
         os: 'web',
         language: 'en-US',
-        userId: '_USER_ID_',
-        groupId: undefined,
-        roomId: undefined,
-        name: undefined,
-        picture: undefined,
-      })
-    ).resolves.toEqual({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      clientId: '_CLIENT_ID_',
-      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-      channel: new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_'),
-      profile: null,
-      os: 'web',
-      language: 'en-US',
+      },
     });
   });
 
-  it('resolve group chat', async () => {
+  it('resolve group chat', () => {
     const authorizer = new ClientAuthorizer({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
 
-    await expect(
-      authorizer.supplementContext({
+    expect(
+      authorizer.checkAuthContext({
+        provider: '_PROVIDER_ID_',
+        channel: '_BOT_CHANNEL_ID_',
+        client: '_CLIENT_ID_',
+        os: LiffContextOs.Ios,
+        lang: 'zh-TW',
+        group: '_GROUP_ID_',
+        user: '_USER_ID_',
+        room: undefined,
+        name: undefined,
+        pic: undefined,
+      })
+    ).toEqual({
+      success: true,
+      contextSupplment: {
         providerId: '_PROVIDER_ID_',
         channelId: '_BOT_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
+        user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+        channel: new LineChat('_BOT_CHANNEL_ID_', 'group', '_GROUP_ID_'),
+        profile: null,
         os: 'ios',
         language: 'zh-TW',
-        groupId: '_GROUP_ID_',
-        userId: '_USER_ID_',
-        roomId: undefined,
-        name: undefined,
-        picture: undefined,
-      })
-    ).resolves.toEqual({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      clientId: '_CLIENT_ID_',
-      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-      channel: new LineChat('_BOT_CHANNEL_ID_', 'group', '_GROUP_ID_'),
-      profile: null,
-      os: 'ios',
-      language: 'zh-TW',
+      },
     });
   });
 
-  it('resolve room chat', async () => {
+  it('resolve room chat', () => {
     const authorizer = new ClientAuthorizer({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
 
-    await expect(
-      authorizer.supplementContext({
+    expect(
+      authorizer.checkAuthContext({
+        provider: '_PROVIDER_ID_',
+        channel: '_BOT_CHANNEL_ID_',
+        client: '_CLIENT_ID_',
+        os: LiffContextOs.Android,
+        lang: 'jp',
+        room: '_ROOM_ID_',
+        user: '_USER_ID_',
+        group: undefined,
+        name: undefined,
+        pic: undefined,
+      })
+    ).toEqual({
+      success: true,
+      contextSupplment: {
         providerId: '_PROVIDER_ID_',
         channelId: '_BOT_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
+        user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+        channel: new LineChat('_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_'),
+        profile: null,
         os: 'android',
         language: 'jp',
-        roomId: '_ROOM_ID_',
-        userId: '_USER_ID_',
-        groupId: undefined,
-        name: undefined,
-        picture: undefined,
-      })
-    ).resolves.toEqual({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      clientId: '_CLIENT_ID_',
-      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-      channel: new LineChat('_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_'),
-      profile: null,
-      os: 'android',
-      language: 'jp',
+      },
     });
   });
 
-  it('resolve profile if profile data proivded', async () => {
+  it('resolve profile if profile data proivded', () => {
     const authorizer = new ClientAuthorizer({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
 
-    await expect(
-      authorizer.supplementContext({
+    expect(
+      authorizer.checkAuthContext({
+        provider: '_PROVIDER_ID_',
+        channel: '_BOT_CHANNEL_ID_',
+        client: '_CLIENT_ID_',
+        os: LiffContextOs.Ios,
+        lang: 'zh-TW',
+        user: '_USER_ID_',
+        group: '_GROUP_ID_',
+        room: undefined,
+        name: 'Jojo Doe',
+        pic: 'http://advanture.com/Egypt.jpg',
+      })
+    ).toEqual({
+      success: true,
+      contextSupplment: {
         providerId: '_PROVIDER_ID_',
         channelId: '_BOT_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
+        user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+        channel: new LineChat('_BOT_CHANNEL_ID_', 'group', '_GROUP_ID_'),
+        profile: new LineUserProfile({
+          userId: '_USER_ID_',
+          displayName: 'Jojo Doe',
+          pictureUrl: 'http://advanture.com/Egypt.jpg',
+        }),
         os: 'ios',
         language: 'zh-TW',
-        userId: '_USER_ID_',
-        groupId: '_GROUP_ID_',
-        roomId: undefined,
-        name: 'Jojo Doe',
-        picture: 'http://advanture.com/Egypt.jpg',
-      })
-    ).resolves.toEqual({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      clientId: '_CLIENT_ID_',
-      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-      channel: new LineChat('_BOT_CHANNEL_ID_', 'group', '_GROUP_ID_'),
-      profile: new LineUserProfile({
-        userId: '_USER_ID_',
-        displayName: 'Jojo Doe',
-        pictureUrl: 'http://advanture.com/Egypt.jpg',
-      }),
-      os: 'ios',
-      language: 'zh-TW',
+      },
     });
   });
 });

@@ -38,6 +38,8 @@ export type MessengerRawEvent = any;
 // TODO: detailed message type
 export type RawMessage = any;
 
+export type MessengerThreadType = 'USER_TO_PAGE' | 'USER_TO_USER' | 'GROUP';
+
 type MessagingType = 'RESPONSE' | 'UPDATE' | 'MESSAGE_TAG';
 type NotificationType = 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH';
 type MessageTags =
@@ -189,8 +191,6 @@ export type MessengerSendOptions = {
   notificationType?: NotificationType;
   personaId?: string;
 };
-
-export type MessengerThreadType = 'USER_TO_PAGE' | 'USER_TO_USER' | 'GROUP';
 
 export type MessengerPlatformMounter = PlatformMounter<
   MessengerEventContext,

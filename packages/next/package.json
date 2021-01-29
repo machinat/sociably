@@ -23,14 +23,14 @@
     "access": "public"
   },
   "dependencies": {
-    "invariant": "^2.2.4",
-    "next": "^9.0.0"
+    "invariant": "^2.2.4"
   },
   "peerDependencies": {
     "@machinat/core": "^0.3.0-beta.0",
-    "@machinat/http": "^0.3.0-beta.0"
+    "@machinat/http": "^0.3.0-beta.0",
+    "next": "^10.0.5"
   },
   "devDependencies": {
-    "next": "^9.3.6"
+    "next": "^10.0.5"
   }
 }

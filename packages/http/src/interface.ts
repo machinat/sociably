@@ -4,8 +4,10 @@ import { makeInterface } from '@machinat/core/service';
 import type {
   ServerListenOptions,
   HttpModuleConfigs,
-  HttpRequestRouting,
-  HttpUpgradeRouting,
+  RequestRoute,
+  DefaultRequestRoute,
+  UpgradeRoute,
+  DefaultUpgradeRoute,
 } from './types';
 
 /**
@@ -41,15 +43,19 @@ export const MODULE_CONFIGS_I = makeInterface<HttpModuleConfigs>({
 /**
  * @category Interface
  */
-export const REQUEST_ROUTINGS_I = makeInterface<HttpRequestRouting>({
-  name: 'HTTPRequestRoutingsListI',
+export const REQUEST_ROUTES_I = makeInterface<
+  RequestRoute | DefaultRequestRoute
+>({
+  name: 'HTTPRequestRoutesListI',
   multi: true,
 });
 
 /**
  * @category Interface
  */
-export const UPGRADE_ROUTINGS_I = makeInterface<HttpUpgradeRouting>({
-  name: 'HTTPUpgradeRoutingsListI',
+export const UPGRADE_ROUTES_I = makeInterface<
+  UpgradeRoute | DefaultUpgradeRoute
+>({
+  name: 'HTTPUpgradeRoutesListI',
   multi: true,
 });

@@ -78,7 +78,7 @@ describe('initModule(configs)', () => {
       Messenger.Receiver,
       Messenger.Profiler,
       Messenger.CONFIGS_I,
-      Http.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTES_I,
     ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
@@ -113,7 +113,7 @@ describe('initModule(configs)', () => {
       Messenger.Bot,
       Messenger.Profiler,
       Messenger.CONFIGS_I,
-      Http.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTES_I,
     ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
@@ -143,7 +143,7 @@ describe('initModule(configs)', () => {
     await app.start();
 
     const [bot, bots, profilers, marshalTypes] = app.useServices([
-      MessengerBot,
+      Messenger.Bot,
       Base.Bot.PLATFORMS_I,
       Base.Profiler.PLATFORMS_I,
       Base.Marshaler.TYPINGS_I,
@@ -176,21 +176,22 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [routings] = app.useServices([Http.REQUEST_ROUTINGS_I]);
+    const [routings] = app.useServices([Http.REQUEST_ROUTES_I]);
     expect(routings).toEqual([
       { name: 'messenger', path: '/', handler: expect.any(Function) },
     ]);
 
-    app.useServices([MessengerBot])[0].stop();
+    app.useServices([Messenger.Bot])[0].stop();
   });
 
   test('#startHook() start bot', async () => {
     const bot = moxy({ start: async () => {} });
     const module = Messenger.initModule({
-      /* ... */
+      pageId: '_PAGE_ID_',
+      accessToken: '_ACCESS_TOKEN_',
     });
 
-    await expect(module.startHook(bot)).resolves.toBe(undefined);
+    await expect((module.startHook as any)(bot)).resolves.toBe(undefined);
     expect(bot.start.mock).toHaveBeenCalledTimes(1);
   });
 });

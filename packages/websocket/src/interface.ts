@@ -60,7 +60,7 @@ export const PLATFORM_CONFIGS_I = makeInterface<
 export interface WebSocketClusterBroker {
   start(): Promise<void>;
   stop(): Promise<void>;
-  dispatchRemote(job: WebSocketJob): Promise<null | ConnIdentifier[]>;
+  dispatchRemote(job: WebSocketJob): Promise<ConnIdentifier[]>;
 
   subscribeTopicRemote(conn: ConnIdentifier, topic: string): Promise<boolean>;
   unsubscribeTopicRemote(conn: ConnIdentifier, topic: string): Promise<boolean>;

@@ -1,7 +1,8 @@
 class AuthError extends Error {
   code: number;
+  platform: undefined | string;
 
-  constructor(code: number, message: string) {
+  constructor(platform: undefined | string, code: number, message: string) {
     super(message);
 
     if (Error.captureStackTrace) {
@@ -9,6 +10,7 @@ class AuthError extends Error {
     }
 
     this.code = code;
+    this.platform = platform;
   }
 }
 

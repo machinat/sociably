@@ -14,9 +14,10 @@ import type {
 } from '@machinat/websocket/types';
 import WebSocketConnector from '@machinat/websocket/client/Connector';
 import Emitter from '@machinat/websocket/client/Emitter';
-import { WebviewConnection } from './channel';
-import { createEvent } from './utils';
-import { WebviewEvent } from './types';
+import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant';
+import { WebviewConnection } from '../channel';
+import { createEvent } from '../utils';
+import { WebviewEvent } from '../types';
 
 type ClientOptions<Authorizer extends AnyClientAuthorizer> = {
   /** URL string to connect WebSocket backend. Default to `"/websocket"` */
@@ -24,7 +25,7 @@ type ClientOptions<Authorizer extends AnyClientAuthorizer> = {
   /** Secify the platform to ligin. Default to the `platform` querystring param */
   platform?: string;
   /** URL string to connect auth backend. Default to `"/auth"` */
-  authUrl?: string;
+  authApiUrl?: string;
   /** Authorizer of available platforms. */
   authorizers: Authorizer[];
 };
@@ -64,7 +65,7 @@ class WebviewClient<
     webSocketUrl,
     platform,
     authorizers,
-    authUrl,
+    authApiUrl,
   }: ClientOptions<Authorizer>) {
     super();
 
@@ -74,11 +75,15 @@ class WebviewClient<
     this._authClient = new AuthClient({
       platform,
       authorizers,
-      serverUrl: authUrl || '/auth',
+      apiUrl: authApiUrl || DEFAULT_AUTH_PATH,
     });
 
+    const { host, pathname } = window.location;
     this._connector = new WebSocketConnector(
-      webSocketUrl || '/websocket',
+      new URL(
+        webSocketUrl || DEFAULT_WEBSOCKET_PATH,
+        `wss://${host}${pathname}`
+      ).href,
       this._getLoginAuth.bind(this)
     );
 
@@ -135,8 +140,8 @@ class WebviewClient<
     this._connector.start().catch(this._emitError.bind(this));
   }
 
-  async send(...events: EventInput[]): Promise<void> {
-    await this._connector.send(...events);
+  async send(content: EventInput | EventInput[]): Promise<void> {
+    await this._connector.send(Array.isArray(content) ? content : [content]);
   }
 
   disconnect(reason: string): void {

@@ -7,13 +7,6 @@ import Next from '../module';
 
 const createNextApp = _createNextApp as Moxy<typeof _createNextApp>;
 
-jest.mock('next', () =>
-  jest.requireActual('@moxyjs/moxy').default(() => ({
-    prepare: async () => {},
-    getRequestHandler: () => {},
-  }))
-);
-
 it('exports interfaces', () => {
   expect(Next.Receiver).toBe(NextReceiver);
   expect(Next.CONFIGS_I).toMatchInlineSnapshot(`
@@ -88,7 +81,7 @@ describe('initModule()', () => {
             "provide": Object {
               "$$branched": false,
               "$$multi": true,
-              "$$name": "HTTPRequestRoutingsListI",
+              "$$name": "HTTPRequestRoutesListI",
               "$$typeof": Symbol(interface.service.machinat),
             },
             "withProvider": [Function],
@@ -115,7 +108,7 @@ describe('initModule()', () => {
       Next.Receiver,
       Next.SERVER_I,
       Next.CONFIGS_I,
-      Http.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTES_I,
     ]);
 
     expect(receiver).toBeInstanceOf(NextReceiver);
@@ -164,7 +157,7 @@ describe('initModule()', () => {
     });
     await app.start();
 
-    const [routings] = app.useServices([Http.REQUEST_ROUTINGS_I]);
+    const [routings] = app.useServices([Http.REQUEST_ROUTES_I]);
     expect(routings).toEqual([
       { name: 'next', path: '/', handler: expect.any(Function) },
     ]);

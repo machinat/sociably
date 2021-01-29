@@ -7,7 +7,7 @@ import {
   WebSocketUserChannel,
   WebSocketTopicChannel,
 } from '../channel';
-import { WebSocketTransmitter } from '../transmitter';
+import { WebSocketServer } from '../server';
 import { WebSocketReceiver } from '../receiver';
 import { WebSocketBot } from '../bot';
 import WebSocket from '../module';
@@ -15,7 +15,7 @@ import WebSocket from '../module';
 it('export interfaces', () => {
   expect(WebSocket.Bot).toBe(WebSocketBot);
   expect(WebSocket.Receiver).toBe(WebSocketReceiver);
-  expect(WebSocket.Transmitter).toBe(WebSocketTransmitter);
+  expect(WebSocket.Server).toBe(WebSocketServer);
   expect(WebSocket.LOGIN_VERIFIER_I).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
@@ -40,6 +40,14 @@ it('export interfaces', () => {
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
+  expect(WebSocket.WS_SERVER_I).toMatchInlineSnapshot(`
+    Object {
+      "$$branched": false,
+      "$$multi": false,
+      "$$name": "WebSocketWSServerI",
+      "$$typeof": Symbol(interface.service.machinat),
+    }
+  `);
 });
 
 describe('initModule()', () => {
@@ -52,7 +60,7 @@ describe('initModule()', () => {
       dispatchMiddlewares,
     });
 
-    expect(module.name).toBe('web_socket');
+    expect(module.name).toBe('websocket');
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
         "$$branched": false,
@@ -68,50 +76,34 @@ describe('initModule()', () => {
   });
 
   test('provisions', async () => {
-    const verifyLogin = moxy();
-    const verifyUpgrade = moxy();
-
     const app = Machinat.createApp({
       platforms: [
         WebSocket.initModule({
           entryPath: '/my_web_socket_server',
           heartbeatInterval: 999,
-          verifyLogin,
-          verifyUpgrade,
         }),
       ],
     });
     await app.start();
 
-    const [
-      bot,
-      receiver,
-      transmitter,
-      configs,
-      serverId,
-      upgradeRoutings,
-    ] = app.useServices([
+    const [bot, receiver, server, configs, upgradeRoutings] = app.useServices([
       WebSocket.Bot,
       WebSocket.Receiver,
-      WebSocket.Transmitter,
+      WebSocket.Server,
       WebSocket.CONFIGS_I,
-      WebSocket.SERVER_ID_I,
-      Http.UPGRADE_ROUTINGS_I,
+      Http.UPGRADE_ROUTES_I,
     ]);
 
     expect(bot).toBeInstanceOf(WebSocketBot);
     expect(receiver).toBeInstanceOf(WebSocketReceiver);
-    expect(transmitter).toBeInstanceOf(WebSocketTransmitter);
+    expect(server).toBeInstanceOf(WebSocketServer);
     expect(configs).toEqual({
       entryPath: '/my_web_socket_server',
       heartbeatInterval: 999,
-      verifyLogin,
-      verifyUpgrade,
     });
-    expect(typeof serverId).toBe('string');
     expect(upgradeRoutings).toEqual([
       {
-        name: 'web_socket',
+        name: 'websocket',
         path: '/my_web_socket_server',
         handler: expect.any(Function),
       },
@@ -122,10 +114,10 @@ describe('initModule()', () => {
     const app = Machinat.createApp({ platforms: [WebSocket.initModule()] });
     await app.start();
 
-    const [upgradeRoutings] = app.useServices([Http.UPGRADE_ROUTINGS_I]);
+    const [upgradeRoutings] = app.useServices([Http.UPGRADE_ROUTES_I]);
     expect(upgradeRoutings).toEqual([
       {
-        name: 'web_socket',
+        name: 'websocket',
         path: '/',
         handler: expect.any(Function),
       },
@@ -143,7 +135,7 @@ describe('initModule()', () => {
       Base.Marshaler.TYPINGS_I,
     ]);
 
-    expect(bots.get('web_socket')).toBeInstanceOf(WebSocketBot);
+    expect(bots.get('websocket')).toBeInstanceOf(WebSocketBot);
     expect(marshalTypes).toEqual(
       expect.arrayContaining([
         WebSocketConnection,

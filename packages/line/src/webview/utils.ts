@@ -4,20 +4,21 @@ import { ContextSupplement } from '@machinat/auth/types';
 import LineUser from '../user';
 import LineChat from '../channel';
 import { LineUserProfile } from '../profiler';
+import { LiffContextOs } from '../constant';
 import { LineAuthContext, LineAuthData } from './types';
 
 export const supplementContext = ({
-  userId,
-  groupId,
-  roomId,
-  clientId,
-  channelId,
-  providerId,
-  language,
+  user: userId,
+  group: groupId,
+  room: roomId,
+  client: clientId,
+  channel: channelId,
+  provider: providerId,
+  lang: language,
   os,
-  name,
-  picture,
-}: LineAuthData): null | ContextSupplement<LineAuthContext> => ({
+  name: displayName,
+  pic: pictureUrl,
+}: LineAuthData): ContextSupplement<LineAuthContext> => ({
   user: new LineUser(providerId, userId),
   channel: groupId
     ? new LineChat(channelId, 'group', groupId)
@@ -28,12 +29,17 @@ export const supplementContext = ({
   channelId,
   providerId,
   language,
-  os,
-  profile: name
+  os:
+    os === LiffContextOs.Ios
+      ? 'ios'
+      : os === LiffContextOs.Android
+      ? 'android'
+      : 'web',
+  profile: displayName
     ? new LineUserProfile({
         userId,
-        displayName: name,
-        pictureUrl: picture,
+        displayName,
+        pictureUrl,
       })
     : null,
 });

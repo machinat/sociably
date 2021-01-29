@@ -4,10 +4,10 @@ import type TelegramUser from '../user';
 import { RawChat, RawUser } from '../types';
 
 export type TelegramAuthData = {
-  botId: number;
+  bot: number;
   chat: undefined | RawChat;
   user: Omit<RawUser, 'is_bot'>;
-  photoUrl: undefined | string;
+  photo: undefined | string;
 };
 
 export type TelegramAuthContext = {

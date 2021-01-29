@@ -87,7 +87,7 @@ describe('initModule(configs)', () => {
       Telegram.Receiver,
       Telegram.CONFIGS_I,
       Telegram.Profiler,
-      Http.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTES_I,
     ]);
 
     expect(bot).toBeInstanceOf(TelegramBot);
@@ -118,7 +118,7 @@ describe('initModule(configs)', () => {
       Telegram.Bot,
       Telegram.CONFIGS_I,
       Telegram.Profiler,
-      Http.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTES_I,
     ]);
 
     expect(bot).toBeInstanceOf(TelegramBot);
@@ -168,7 +168,7 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [routings] = app.useServices([Http.REQUEST_ROUTINGS_I]);
+    const [routings] = app.useServices([Http.REQUEST_ROUTES_I]);
     expect(routings).toEqual([
       { name: 'telegram', path: '/', handler: expect.any(Function) },
     ]);

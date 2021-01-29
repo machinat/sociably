@@ -5,13 +5,15 @@ import { makeClassProvider } from '@machinat/core/service';
 import { HttpRequestInfo, RoutingInfo } from '@machinat/http/types';
 import invariant from 'invariant';
 import {
-  verify as verifyJWT,
+  verify as verifyJwt,
+  decode as decodeJwt,
   VerifyOptions as JWTVerifyOptions,
 } from 'jsonwebtoken';
 import getRawBody from 'raw-body';
 import thenifiedly from 'thenifiedly';
 import { SIGNATURE_COOKIE_KEY } from './constant';
 import { AUTHORIZERS_I, MODULE_CONFIGS_I } from './interface';
+import AuthError from './error';
 import type {
   AnyServerAuthorizer,
   AuthTokenPayload,
@@ -25,10 +27,11 @@ import type {
   WithHeaders,
 } from './types';
 
-import { getCookies, isSubpath } from './utils';
-import { CookieAccessor, CookieController } from './cookie';
+import { getCookies, isSubpath, isSubdomain } from './utils';
+import CookieController from './cookie';
 
 /** @internal */
+
 const getSignature = (req: WithHeaders) => {
   const cookies = getCookies(req);
   return cookies ? cookies[SIGNATURE_COOKIE_KEY] : undefined;
@@ -57,9 +60,14 @@ const respondApiOk = (res: ServerResponse, platform: string, token: string) => {
 };
 
 /** @internal */
-const respondApiError = (res: ServerResponse, code: number, reason: string) => {
+const respondApiError = (
+  res: ServerResponse,
+  platform: undefined | string,
+  code: number,
+  reason: string
+) => {
   res.writeHead(code, CONTENT_TYPE_JSON);
-  const body: AuthApiErrorBody = { error: { code, reason } };
+  const body: AuthApiErrorBody = { platform, error: { code, reason } };
   res.end(JSON.stringify(body));
 };
 
@@ -83,12 +91,15 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       'authorizers must not be empty'
     );
     invariant(options && options.secret, 'options.secret must not be empty');
+    invariant(options.redirectUrl, 'options.redirectUrl must not be empty');
 
     const {
       secret,
       entryPath = '/',
+      redirectUrl,
+      authCookieAge = 600, // 10 min
       dataCookieAge = 180, // 3 min
-      tokenAge = 1800, // 30 min
+      tokenAge = 3600, // 1 hr
       refreshPeriod = 86400, // 1 day
       cookieDomain,
       cookiePath = '/',
@@ -101,13 +112,29 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       'options.entryPath should be a subpath of options.cookiePath'
     );
 
+    const { pathname: redirectPathname, hostname: redirectDomain } = parseUrl(
+      redirectUrl
+    );
+    invariant(
+      redirectPathname &&
+        isSubpath(cookiePath, redirectPathname) &&
+        (!cookieDomain ||
+          !redirectDomain ||
+          isSubdomain(cookieDomain, redirectDomain)),
+      `options.redirectUrl should be under cookie scope "${
+        cookieDomain ? `//${cookieDomain}` : ''
+      }${cookiePath}"`
+    );
+
     this.secret = secret;
     this.authorizers = authorizers;
     this.entryPath = entryPath;
 
     this._cookieController = new CookieController({
       entryPath,
+      redirectUrl,
       secret,
+      authCookieAge,
       dataCookieAge,
       tokenAge,
       refreshPeriod,
@@ -129,14 +156,14 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       getRelativePath(this.entryPath, pathname || '/');
 
     if (subpath === '' || subpath.slice(0, 2) === '..') {
-      respondApiError(res, 403, 'path forbidden');
+      respondApiError(res, undefined, 403, 'path forbidden');
       return;
     }
 
     // inner auth api for client controller
     if (subpath[0] === '_') {
       if (req.method !== 'POST') {
-        respondApiError(res, 405, 'method not allowed');
+        respondApiError(res, undefined, 405, 'method not allowed');
         return;
       }
 
@@ -147,7 +174,12 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       } else if (subpath === '_verify') {
         await this._handleVerifyRequest(req, res);
       } else {
-        respondApiError(res, 404, `invalid auth api route "${subpath}"`);
+        respondApiError(
+          res,
+          undefined,
+          404,
+          `invalid auth api route "${subpath}"`
+        );
       }
       return;
     }
@@ -156,7 +188,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
     const authorizer = this._getAuthorizerOf(platform);
     if (!authorizer) {
-      respondApiError(res, 404, `platform "${platform}" not found`);
+      respondApiError(res, undefined, 404, `platform "${platform}" not found`);
       return;
     }
 
@@ -164,11 +196,11 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       await authorizer.delegateAuthRequest(
         req,
         res,
-        new CookieAccessor(req, res, platform, this._cookieController),
+        this._cookieController.createResponseHelper(req, res, platform),
         {
           originalPath: pathname || '/',
           matchedPath: joinPath(
-            routingInfo ? routingInfo.matchedPath : this.entryPath,
+            routingInfo?.matchedPath || this.entryPath,
             platform
           ),
           trailingPath: getRelativePath(platform, subpath),
@@ -176,13 +208,18 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       );
     } catch (err) {
       if (!res.writableEnded) {
-        respondApiError(res, err.code || 500, err.message);
+        respondApiError(res, platform, err.code || 500, err.message);
       }
       return;
     }
 
     if (!res.writableEnded) {
-      respondApiError(res, 501, 'connection not closed by authorizer');
+      respondApiError(
+        res,
+        platform,
+        501,
+        'connection not closed by authorizer'
+      );
     }
   }
 
@@ -224,18 +261,18 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       };
     }
 
-    const verifyResult = await this._verifyToken(token, signature);
-    if (!verifyResult.success) {
-      const { code, reason } = verifyResult;
+    const [err, payload] = await this._verifyToken(token, signature);
+    if (err) {
+      const { code, message } = err;
       return {
         success: false,
         token,
         code,
-        reason,
+        reason: message,
       };
     }
 
-    const { platform, data, exp, iat } = verifyResult.payload;
+    const { platform, data, exp, iat } = payload;
 
     const authorizer = this._getAuthorizerOf(platform);
     if (!authorizer) {
@@ -247,8 +284,8 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       };
     }
 
-    const supplement = await authorizer.supplementContext(data);
-    if (!supplement) {
+    const ctxResult = authorizer.checkAuthContext(data);
+    if (!ctxResult.success) {
       return {
         success: false,
         token,
@@ -258,7 +295,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     }
 
     const authData = {
-      ...supplement,
+      ...ctxResult.contextSupplment,
       platform,
       loginAt: new Date(iat * 1000),
       expireAt: new Date(exp * 1000),
@@ -275,26 +312,26 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     try {
       const body = await parseBody(req);
       if (!body) {
-        respondApiError(res, 400, 'invalid body format');
+        respondApiError(res, undefined, 400, 'invalid body format');
         return;
       }
 
       const { platform, credential } = body as SignRequestBody<unknown>;
       if (!platform || !credential) {
-        respondApiError(res, 400, 'invalid sign params');
+        respondApiError(res, platform, 400, 'invalid sign params');
         return;
       }
 
       const authorizer = this._getAuthorizerOf(platform);
       if (!authorizer) {
-        respondApiError(res, 404, `unknown platform "${platform}"`);
+        respondApiError(res, platform, 404, `unknown platform "${platform}"`);
         return;
       }
 
       const verifyResult = await authorizer.verifyCredential(credential);
       if (!verifyResult.success) {
         const { code, reason } = verifyResult;
-        respondApiError(res, code, reason);
+        respondApiError(res, platform, code, reason);
         return;
       }
 
@@ -307,7 +344,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
       respondApiOk(res, platform, token);
     } catch (err) {
-      respondApiError(res, 500, err.message);
+      respondApiError(res, undefined, 500, err.message);
     }
   }
 
@@ -318,7 +355,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     // get signature from cookie
     const signature = getSignature(req);
     if (!signature) {
-      respondApiError(res, 401, 'no signature found');
+      respondApiError(res, undefined, 401, 'no signature found');
       return;
     }
 
@@ -326,28 +363,28 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       // verify token in body ignoring expiration
       const body = await parseBody(req);
       if (!body) {
-        respondApiError(res, 400, 'invalid body format');
+        respondApiError(res, undefined, 400, 'invalid body format');
         return;
       }
 
       const { token } = body as RefreshRequestBody;
       if (!token) {
-        respondApiError(res, 400, 'empty token received');
+        respondApiError(res, undefined, 400, 'empty token received');
         return;
       }
 
-      const tokenResult = await this._verifyToken(token, signature, {
+      const [err, payload] = await this._verifyToken(token, signature, {
         ignoreExpiration: true,
       });
-      if (!tokenResult.success) {
-        const { code, reason } = tokenResult;
-        respondApiError(res, code, reason);
+      if (err) {
+        const { platform, code, message } = err;
+        respondApiError(res, platform, code, message);
         return;
       }
 
-      const { refreshTill, platform, data } = tokenResult.payload;
+      const { refreshTill, platform, data } = payload;
       if (!refreshTill) {
-        respondApiError(res, 400, 'token not refreshable');
+        respondApiError(res, platform, 400, 'token not refreshable');
         return;
       }
 
@@ -355,14 +392,14 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
         // refresh signature and issue new token
         const authorizer = this._getAuthorizerOf(platform);
         if (!authorizer) {
-          respondApiError(res, 404, `unknown platform "${platform}"`);
+          respondApiError(res, platform, 404, `unknown platform "${platform}"`);
           return;
         }
 
         const refreshResult = await authorizer.verifyRefreshment(data);
         if (!refreshResult.success) {
           const { code, reason } = refreshResult;
-          respondApiError(res, code, reason);
+          respondApiError(res, platform, code, reason);
           return;
         }
 
@@ -374,10 +411,10 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
         );
         respondApiOk(res, platform, newToken);
       } else {
-        respondApiError(res, 401, 'refreshment period expired');
+        respondApiError(res, platform, 401, 'refreshment period expired');
       }
     } catch (err) {
-      respondApiError(res, 500, err.message);
+      respondApiError(res, undefined, 500, err.message);
     }
   }
 
@@ -388,7 +425,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     // get signature from cookie
     const signature = getSignature(req);
     if (!signature) {
-      respondApiError(res, 401, 'no signature found');
+      respondApiError(res, undefined, 401, 'no signature found');
       return;
     }
 
@@ -396,33 +433,33 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       // verify token in body
       const body = await parseBody(req);
       if (!body) {
-        respondApiError(res, 400, 'invalid body format');
+        respondApiError(res, undefined, 400, 'invalid body format');
         return;
       }
 
       const { token } = body as VerifyRequestBody;
       if (!token) {
-        respondApiError(res, 400, 'empty token received');
+        respondApiError(res, undefined, 400, 'empty token received');
         return;
       }
 
-      const verifyResult = await this._verifyToken(token, signature);
-      if (!verifyResult.success) {
-        const { code, reason } = verifyResult;
-        respondApiError(res, code, reason);
+      const [err, payload] = await this._verifyToken(token, signature);
+      if (err) {
+        const { platform, code, message } = err;
+        respondApiError(res, platform, code, message);
         return;
       }
 
-      const { platform } = verifyResult.payload;
+      const { platform } = payload;
       const authorizer = this._getAuthorizerOf(platform);
       if (!authorizer) {
-        respondApiError(res, 404, `unknown platform "${platform}"`);
+        respondApiError(res, platform, 404, `unknown platform "${platform}"`);
         return;
       }
 
       respondApiOk(res, platform, token);
     } catch (err) {
-      respondApiError(res, 500, err.message);
+      respondApiError(res, undefined, 500, err.message);
     }
   }
 
@@ -430,26 +467,31 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     token: string,
     signature: string,
     jwtVerifyOptions?: JWTVerifyOptions
-  ): Promise<
-    | { success: true; payload: AuthTokenPayload<unknown> }
-    | { success: false; code: number; reason: string }
-  > {
+  ): Promise<[null | AuthError, AuthTokenPayload<unknown>]> {
     try {
       const payload: AuthTokenPayload<unknown> = await thenifiedly.call(
-        verifyJWT,
+        verifyJwt,
         `${token}.${signature}`,
         this.secret,
         jwtVerifyOptions
       );
 
-      return { success: true, payload };
+      return [null, payload];
     } catch (err) {
       const code =
         err.name === 'TokenExpiredError' || err.name === 'NotBeforeError'
           ? 401
           : 400;
 
-      return { success: false, code, reason: err.message };
+      const payload = decodeJwt(`${token}.`);
+      return [
+        new AuthError(
+          typeof payload === 'string' ? undefined : payload?.platform,
+          code,
+          err.message
+        ),
+        null as never,
+      ];
     }
   }
 

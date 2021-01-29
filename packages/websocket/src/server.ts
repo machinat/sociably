@@ -4,6 +4,7 @@ import { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
 import type { Server as WSServer } from 'ws';
 import uniqid from 'uniqid';
+import { HttpRequestInfo } from '@machinat/http/types';
 import { makeClassProvider } from '@machinat/core/service';
 import type { MachinatUser } from '@machinat/core/types';
 
@@ -32,14 +33,19 @@ import type {
   ConnIdentifier,
 } from './types';
 
-type ConnectionData<User extends null | MachinatUser, Auth> = {
+type ConnectionInfo<User extends null | MachinatUser, Auth> = {
   connId: string;
-  isConnected: boolean;
   user: User;
+  request: HttpRequestInfo;
+  authContext: Auth;
+  expireAt: null | Date;
+};
+
+type ConnectionState<User extends null | MachinatUser, Auth> = {
+  isConnected: boolean;
   socket: Socket;
   topics: Set<string>;
-  auth: Auth;
-  expireAt: null | Date;
+  info: ConnectionInfo<User, Auth>;
 };
 
 type IntervalID = ReturnType<typeof setInterval>;
@@ -52,11 +58,11 @@ type SocketState = {
 const Emitter = EventEmitter as { new <T>(): TypedEmitter<T> };
 
 type ServerEvents<User extends null | MachinatUser, Auth> = {
-  connect: (ctx: ConnectionData<User, Auth>) => void;
-  events: (events: EventInput[], ctx: ConnectionData<User, Auth>) => void;
+  connect: (info: ConnectionInfo<User, Auth>) => void;
+  events: (events: EventInput[], info: ConnectionInfo<User, Auth>) => void;
   disconnect: (
     reason: { reason?: string },
-    ctx: ConnectionData<User, Auth>
+    info: ConnectionInfo<User, Auth>
   ) => void;
   error: (err: Error) => void;
 };
@@ -79,7 +85,7 @@ export class WebSocketServer<
   private _verifyUpgrade: VerifyUpgradeFn;
 
   private _socketStates: Map<string, SocketState>;
-  private _connectionStates: Map<string, ConnectionData<User, Auth>>;
+  private _connectionStates: Map<string, ConnectionState<User, Auth>>;
 
   private _topicMapping: Map<string, Set<string>>;
   private _userMapping: Map<string, Set<string>>;
@@ -90,7 +96,7 @@ export class WebSocketServer<
     broker: BrokerI,
     verifyUpgrade: VerifyUpgradeFn,
     verifyLogin: VerifyLoginFn<User, Auth, unknown>,
-    heartbeatInterval?: number
+    { heartbeatInterval }: { heartbeatInterval?: number } = {}
   ) {
     super();
 
@@ -100,6 +106,9 @@ export class WebSocketServer<
 
     this._socketStates = new Map();
     this._connectionStates = new Map();
+
+    this._topicMapping = new Map();
+    this._userMapping = new Map();
 
     this._verifyLogin = verifyLogin;
     this._verifyUpgrade = verifyUpgrade;
@@ -200,34 +209,37 @@ export class WebSocketServer<
     return true;
   }
 
-  async dispatch(job: WebSocketJob): Promise<null | ConnIdentifier[]> {
-    const { target, events } = job;
+  async dispatch(job: WebSocketJob): Promise<ConnIdentifier[]> {
+    const { target, values } = job;
 
     if (target.type === 'connection') {
-      const { serverId, connectionId } = target;
+      const { serverId, id: connId } = target;
+
       if (serverId !== this.id) {
         return this._broker.dispatchRemote(job);
       }
 
-      const connection = this._connectionStates.get(connectionId);
+      const connection = this._connectionStates.get(connId);
       if (!connection) {
-        return null;
+        return [];
       }
 
-      return this._sendLocal([connection], events);
+      return this._sendLocal([connection], values);
     }
 
     const remotePromise = this._broker.dispatchRemote(job);
+    let localPromise: Promise<ConnIdentifier[]> | [];
 
-    let localPromise: Promise<ConnIdentifier[] | null> | null;
     if (target.type === 'user') {
-      const connections = this._getLocalConnsOfUser(target.userUId);
+      const connections = this._getLocalConnsOfUser(target.userUid);
 
-      localPromise = connections ? this._sendLocal(connections, events) : null;
+      localPromise = connections
+        ? this._sendLocal(connections, values)
+        : Promise.resolve([]);
     } else if (target.type === 'topic') {
       const connections = this._getLocalConnsOfTopic(target.name);
 
-      localPromise = connections ? this._sendLocal(connections, events) : null;
+      localPromise = connections ? this._sendLocal(connections, values) : [];
     } else {
       throw new TypeError(`unknown target received ${JSON.stringify(target)}`);
     }
@@ -237,11 +249,7 @@ export class WebSocketServer<
       remotePromise,
     ]);
 
-    return localResults === null
-      ? remoteResults
-      : remoteResults === null
-      ? localResults
-      : [...localResults, ...remoteResults];
+    return [...localResults, ...remoteResults];
   }
 
   async disconnect(conn: ConnIdentifier, reason?: string): Promise<boolean> {
@@ -254,7 +262,11 @@ export class WebSocketServer<
       return false;
     }
 
-    const { socket, user, topics } = connectionState;
+    const {
+      info: { user },
+      socket,
+      topics,
+    } = connectionState;
 
     this._deleteTopicMapping(conn.id, topics);
     if (user) {
@@ -297,13 +309,16 @@ export class WebSocketServer<
   }
 
   private async _sendLocal(
-    connections: ConnectionData<User, Auth>[],
+    connStates: ConnectionState<User, Auth>[],
     values: EventInput[]
-  ): Promise<null | ConnIdentifier[]> {
+  ): Promise<ConnIdentifier[]> {
     const promises: Promise<number | null>[] = [];
     const sentChannels: ConnIdentifier[] = [];
 
-    for (const { connId, socket } of connections) {
+    for (const {
+      socket,
+      info: { connId },
+    } of connStates) {
       promises.push(
         socket.dispatch({ connId, values }).catch((err) => {
           this._handleError(err);
@@ -317,7 +332,7 @@ export class WebSocketServer<
     const results = await Promise.all(promises);
     const finishedConns = sentChannels.filter((_, i) => results[i] !== null);
 
-    return finishedConns.length > 0 ? finishedConns : null;
+    return finishedConns;
   }
 
   private _getLocalConnsOfUser(uid: string) {
@@ -326,71 +341,75 @@ export class WebSocketServer<
       return null;
     }
 
-    const connections: ConnectionData<User, Auth>[] = [];
+    const connStates: ConnectionState<User, Auth>[] = [];
     for (const connId of connsOfUser) {
-      const connection = this._connectionStates.get(connId);
+      const state = this._connectionStates.get(connId);
 
-      if (connection) {
-        connections.push(connection);
+      if (state) {
+        connStates.push(state);
       } else {
         connsOfUser.delete(connId);
+
         if (connsOfUser.size === 0) {
           this._userMapping.delete(uid);
         }
       }
     }
 
-    return connections.length === 0 ? null : connections;
+    return connStates.length === 0 ? null : connStates;
   }
 
   private _getLocalConnsOfTopic(topic: string) {
-    const connsOfTopic = this._topicMapping.get(topic);
-    if (!connsOfTopic) {
+    const subsrcibingConns = this._topicMapping.get(topic);
+    if (!subsrcibingConns) {
       return null;
     }
 
-    const connections: ConnectionData<User, Auth>[] = [];
-    for (const connId of connsOfTopic) {
+    const connStates: ConnectionState<User, Auth>[] = [];
+    for (const connId of subsrcibingConns) {
       const connection = this._connectionStates.get(connId);
 
       if (connection) {
-        connections.push(connection);
+        connStates.push(connection);
       } else {
-        connsOfTopic.delete(connId);
-        if (connsOfTopic.size === 0) {
+        subsrcibingConns.delete(connId);
+
+        if (subsrcibingConns.size === 0) {
           this._topicMapping.delete(topic);
         }
       }
     }
 
-    return connections.length === 0 ? null : connections;
+    return connStates.length === 0 ? null : connStates;
   }
 
   private _handleRemoteEventCallback = this._handleRemoteEvent.bind(this);
-  private _handleRemoteEvent({ target, events }: WebSocketJob) {
+  private _handleRemoteEvent({ target, values }: WebSocketJob) {
     if (target.type === 'connection') {
       if (target.serverId === this.id) {
-        const connection = this._connectionStates.get(target.connectionId);
-        if (!connection) {
+        const connState = this._connectionStates.get(target.id);
+        if (!connState) {
           return;
         }
 
-        this._sendLocal([connection], events).catch(this._handleErrorCallback);
+        this._sendLocal([connState], values).catch(this._handleErrorCallback);
       }
     } else if (target.type === 'topic') {
-      const connsOfTopic = this._getLocalConnsOfTopic(target.name);
-      if (!connsOfTopic) {
+      const subsrcibingConns = this._getLocalConnsOfTopic(target.name);
+      if (!subsrcibingConns) {
         return;
       }
 
-      this._sendLocal(connsOfTopic, events).catch(this._handleErrorCallback);
+      this._sendLocal(subsrcibingConns, values).catch(
+        this._handleErrorCallback
+      );
     } else if (target.type === 'user') {
-      const connsOfUser = this._getLocalConnsOfUser(target.userUId);
+      const connsOfUser = this._getLocalConnsOfUser(target.userUid);
       if (!connsOfUser) {
         return;
       }
 
-      this._sendLocal(connsOfUser, events).catch(this._handleErrorCallback);
+      this._sendLocal(connsOfUser, values).catch(this._handleErrorCallback);
     } else {
       throw new Error(
         `unknown target received ${(target as any).type || String(target)}`
@@ -406,22 +425,23 @@ export class WebSocketServer<
     const connId: string = uniqid();
 
     try {
-      const authResult = await this._verifyLogin(
-        socket.request,
-        body.credential
-      );
+      const request = socket.request as HttpRequestInfo;
+      const authResult = await this._verifyLogin(request, body.credential);
 
       if (authResult.success) {
         const { authContext, user, expireAt } = authResult;
 
         this._connectionStates.set(connId, {
-          connId,
-          isConnected: false,
           socket,
-          user,
-          auth: authContext,
-          expireAt: expireAt || null,
+          isConnected: false,
           topics: new Set(),
+          info: {
+            connId,
+            user,
+            request,
+            authContext,
+            expireAt: expireAt || null,
+          },
         });
 
         await socket.connect({ connId, seq });
@@ -450,7 +470,7 @@ export class WebSocketServer<
     } else {
       connState.isConnected = true;
 
-      const { user } = connState;
+      const { user } = connState.info;
       if (user) {
         const connsOfUser = this._userMapping.get(user.uid);
         if (connsOfUser) {
@@ -460,7 +480,7 @@ export class WebSocketServer<
         }
       }
 
-      this.emit('connect', connState);
+      this.emit('connect', connState.info);
     }
   }
 
@@ -484,7 +504,7 @@ export class WebSocketServer<
         reason: 'connection is not logged in',
       });
     } else {
-      this.emit('events', values, connState);
+      this.emit('events', values, connState.info);
     }
   }
 
@@ -493,15 +513,15 @@ export class WebSocketServer<
     const connState = this._connectionStates.get(connId);
 
     if (connState !== undefined) {
-      const { topics, user } = connState;
+      const { topics, info } = connState;
       this._deleteTopicMapping(connId, topics);
 
-      if (user) {
-        this._deleteUserMapping(connId, user as MachinatUser);
+      if (info.user) {
+        this._deleteUserMapping(connId, info.user as MachinatUser);
       }
 
       this._connectionStates.delete(connId);
-      this.emit('disconnect', { reason }, connState);
+      this.emit('disconnect', { reason }, info);
     }
   }
 
@@ -549,7 +569,7 @@ export const ServerP = makeClassProvider({
       verifyUpgrade || (() => true),
       verifyLogin ||
         (async () => ({ success: true, user: null, authContext: null })),
-      heartbeatInterval
+      { heartbeatInterval }
     ),
 })(WebSocketServer);
 

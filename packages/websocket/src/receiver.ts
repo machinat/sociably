@@ -1,5 +1,3 @@
-import { IncomingMessage } from 'http';
-import type { Socket as NetSocket } from 'net';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
   MachinatUser,
@@ -7,7 +5,7 @@ import type {
   PopEventFn,
   PopErrorFn,
 } from '@machinat/core/types';
-import type { HttpRequestInfo, UpgradeHandler } from '@machinat/http/types';
+import type { HttpRequestInfo } from '@machinat/http/types';
 
 import { WebSocketConnection } from './channel';
 import { BotP } from './bot';
@@ -44,50 +42,45 @@ export class WebSocketReceiver<User extends null | MachinatUser, Auth> {
     this._popEvent = popEventWrapper(() => Promise.resolve(null));
     this._popError = popError;
 
-    this._server.on('events', (values, { connId, user, socket, auth }) => {
-      values.forEach((value) => {
-        this._issueEvent(value, connId, user, socket.request, auth).catch(
-          this._popError
-        );
-      });
-    });
+    this._server.on(
+      'events',
+      (values, { connId, user, request, authContext }) => {
+        values.forEach((value) => {
+          this._issueEvent(value, connId, user, request, authContext).catch(
+            this._popError
+          );
+        });
+      }
+    );
 
-    this._server.on('connect', ({ connId, user, socket, auth }) => {
+    this._server.on('connect', ({ connId, user, request, authContext }) => {
       const value: ConnectEventValue = {
         kind: 'connection',
         type: 'connect',
         payload: null,
       };
 
-      this._issueEvent(value, connId, user, socket.request, auth).catch(
+      this._issueEvent(value, connId, user, request, authContext).catch(
         this._popError
       );
     });
 
     this._server.on('disconnect', ({ reason }, ctx) => {
-      const { connId, user, socket, auth } = ctx;
+      const { connId, user, request, authContext } = ctx;
       const value: DisconnectEventValue = {
         kind: 'connection',
         type: 'disconnect',
         payload: { reason },
       };
 
-      this._issueEvent(value, connId, user, socket.request, auth).catch(
+      this._issueEvent(value, connId, user, request, authContext).catch(
         this._popError
       );
     });
-  }
 
-  async handleUpgrade(
-    req: IncomingMessage,
-    ns: NetSocket,
-    head: Buffer
-  ): Promise<void> {
-    this._server.handleUpgrade(req, ns, head);
-  }
-
-  handleUpgradeCallback(): UpgradeHandler {
-    return this.handleUpgrade.bind(this);
+    this._server.on('error', (err: Error) => {
+      this._popError(err);
+    });
   }
 
   private async _issueEvent(

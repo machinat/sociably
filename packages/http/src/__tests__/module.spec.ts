@@ -1,8 +1,10 @@
-import { createServer } from 'http';
-import moxy from '@moxyjs/moxy';
+import { createServer as _createServer } from 'http';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import { HttpConnector } from '../connector';
 import Http from '../module';
+
+const createServer = _createServer as Moxy<typeof _createServer>;
 
 jest.mock('http', () =>
   jest.requireActual('@moxyjs/moxy').default({ createServer() {} })
@@ -33,19 +35,19 @@ it('export interfaces', () => {
     }
   `);
 
-  expect(Http.REQUEST_ROUTINGS_I).toMatchInlineSnapshot(`
+  expect(Http.REQUEST_ROUTES_I).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": true,
-      "$$name": "HTTPRequestRoutingsListI",
+      "$$name": "HTTPRequestRoutesListI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(Http.UPGRADE_ROUTINGS_I).toMatchInlineSnapshot(`
+  expect(Http.UPGRADE_ROUTES_I).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": true,
-      "$$name": "HTTPUpgradeRoutingsListI",
+      "$$name": "HTTPUpgradeRoutesListI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -61,8 +63,10 @@ it('export interfaces', () => {
 
 it('provide configs', async () => {
   const configs = {
-    host: 'localhost',
-    port: 8888,
+    listenOptions: {
+      host: 'localhost',
+      port: 8888,
+    },
   };
   const app = Machinat.createApp({
     modules: [Http.initModule(configs)],
@@ -78,8 +82,10 @@ it('provide http server by default', async () => {
   const app = Machinat.createApp({
     modules: [
       Http.initModule({
-        host: 'localhost',
-        port: 8888,
+        listenOptions: {
+          host: 'localhost',
+          port: 8888,
+        },
       }),
     ],
     bindings: [{ provide: Http.Connector, withValue: connector }],
@@ -105,8 +111,10 @@ test('change http server', async () => {
   const app = Machinat.createApp({
     modules: [
       Http.initModule({
-        host: 'localhost',
-        port: 8888,
+        listenOptions: {
+          host: 'localhost',
+          port: 8888,
+        },
       }),
     ],
     bindings: [{ provide: Http.ServerI, withValue: myServer }],

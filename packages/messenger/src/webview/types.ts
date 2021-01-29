@@ -2,6 +2,7 @@
 import type { AuthContextBase } from '@machinat/auth/types';
 import type MessengerChat from '../channel';
 import type MessengerUser from '../user';
+import type { MessengerChatType } from '../constant';
 import type { MessengerThreadType } from '../types';
 
 export type MessengerAuthCredential = {
@@ -26,10 +27,9 @@ export type SignedReuestPayload = {
 };
 
 export type MessengerAuthData = {
-  userId: string;
-  chatType: MessengerThreadType;
-  chatId: string;
-  pageId: number;
+  user: string;
+  chat: { type: MessengerChatType; id: string };
+  page: number;
   client: 'messenger' | 'facebook';
 };
 

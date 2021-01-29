@@ -7,12 +7,13 @@ import type { MessengerAuthContext, MessengerAuthData } from './types';
 
 export const supplementContext = (
   data: MessengerAuthData
-): null | ContextSupplement<MessengerAuthContext> => {
-  if (!data || !data.pageId || !data.userId || !data.chatId) {
-    return null;
-  }
-
-  const { userId, pageId, chatType, chatId, client } = data;
+): ContextSupplement<MessengerAuthContext> => {
+  const {
+    user: userId,
+    page: pageId,
+    chat: { type: chatType, id: chatId },
+    client,
+  } = data;
   return {
     user: new MessengerUser(pageId, userId),
     channel: new MessengerChat(pageId, { id: chatId }, chatType),

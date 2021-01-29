@@ -3,7 +3,7 @@
 import { EventEmitter } from 'events';
 import invariant from 'invariant';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
-import { decode as decodeJWT } from 'jsonwebtoken';
+import { decode as decodeJwt } from 'jsonwebtoken';
 import { TOKEN_COOKIE_KEY, ERROR_COOKIE_KEY } from '../constant';
 import type {
   AnyClientAuthorizer,
@@ -17,11 +17,11 @@ import type {
   AuthApiResponseBody,
   AuthApiErrorBody,
 } from '../types';
-import AuthError from './error';
+import AuthError from '../error';
 
 type AuthClientOptions<Authorizer extends AnyClientAuthorizer> = {
   platform?: string;
-  serverUrl: string;
+  apiUrl: string;
   authorizers: Authorizer[];
   refreshLeadTime?: number;
 };
@@ -30,15 +30,6 @@ type AuthResult<Authorizer extends AnyClientAuthorizer> = {
   token: string;
   context: ContextOfAuthorizer<Authorizer>;
 };
-
-type CookieAuthResult<Data> =
-  | { success: false; platform: string; code: number; reason: string }
-  | {
-      success: true;
-      platform: string;
-      token: string;
-      payload: AuthTokenPayload<Data>;
-    };
 
 type TimeoutID = ReturnType<typeof setTimeout>;
 
@@ -53,15 +44,18 @@ const deleteCookie = (name: string, domain?: string, path?: string) => {
 
 /** @internal */
 const getAuthPayload = (token: string) =>
-  decodeJWT(`${token}.`) as AuthTokenPayload<any>;
+  decodeJwt(`${token}.`) as AuthTokenPayload<any>;
 
 /** @internal */
-const getCookieAuthResult = <Context>(): null | CookieAuthResult<Context> => {
+const getCookieAuthResult = (): [
+  null | AuthError,
+  null | { payload: AuthTokenPayload<unknown>; token: string }
+] => {
   const cookies = parseCookie(document.cookie);
 
   if (cookies[ERROR_COOKIE_KEY]) {
     // Error happen in backend flow
-    const decodedToken = decodeJWT(cookies[ERROR_COOKIE_KEY], { json: true });
+    const decodedToken = decodeJwt(cookies[ERROR_COOKIE_KEY], { json: true });
 
     if (decodedToken !== null) {
       const {
@@ -71,12 +65,8 @@ const getCookieAuthResult = <Context>(): null | CookieAuthResult<Context> => {
       } = decodedToken as ErrorTokenPayload;
 
       deleteCookie(ERROR_COOKIE_KEY, domain, path);
-      return {
-        success: false,
-        platform,
-        code,
-        reason,
-      };
+
+      return [new AuthError(platform, code, reason), null as never];
     }
     deleteCookie(ERROR_COOKIE_KEY);
   } else if (cookies[TOKEN_COOKIE_KEY]) {
@@ -85,21 +75,14 @@ const getCookieAuthResult = <Context>(): null | CookieAuthResult<Context> => {
     const payload = getAuthPayload(token);
 
     if (payload.exp * 1000 > Date.now()) {
-      return {
-        success: true,
-        platform: payload.platform,
-        token,
-        payload,
-      };
+      return [null, { token, payload }];
     }
   }
-
-  return null;
+  return [null, null];
 };
 
 class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   authorizers: Authorizer[];
-  serverUrl: string;
   refreshLeadTime: number;
 
   private _platform: undefined | string;
@@ -147,21 +130,20 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   constructor({
     platform,
     authorizers,
-    serverUrl,
+    apiUrl,
     refreshLeadTime = 300, // 5 min
   }: AuthClientOptions<Authorizer>) {
     super();
 
-    invariant(serverUrl, 'options.serverUrl must not be empty');
+    invariant(apiUrl, 'options.apiUrl must not be empty');
     invariant(
       authorizers && authorizers.length > 0,
       'options.authorizers must not be empty'
     );
 
     this.authorizers = authorizers;
-    this.serverUrl = serverUrl;
     this.refreshLeadTime = refreshLeadTime;
-    this._authUrl = new URL(serverUrl, window.location.href);
+    this._authUrl = new URL(apiUrl, window.location.href);
 
     this._initiatingPlatforms = new Set();
     this._initiatedPlatforms = new Set();
@@ -241,26 +223,28 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   ): Promise<AuthResult<Authorizer>> {
     const beginTime = Date.now();
 
-    let cookieAuthResult = getCookieAuthResult();
+    let [cookieErr, cookieAuth] = getCookieAuthResult();
     // auth according to the following order
-    const authPlatform =
+    const platform =
       platformInput ||
       this._platform ||
       new URLSearchParams(window.location.search).get('platform') ||
-      cookieAuthResult?.platform;
+      cookieAuth?.payload.platform ||
+      cookieErr?.platform;
 
-    const [err, authorizer] = this._getAuthorizer(authPlatform);
+    const [err, authorizer] = this._getAuthorizer(platform);
     if (err) {
       throw err;
     }
 
-    if (this._platform && this._platform !== authPlatform) {
+    if (this._platform && this._platform !== platform) {
       this.signOut();
     }
 
-    this._platform = authPlatform;
-    if (cookieAuthResult?.platform !== authPlatform) {
-      cookieAuthResult = null;
+    this._platform = platform;
+    if (platform !== (cookieErr?.platform || cookieAuth?.payload.platform)) {
+      cookieErr = null;
+      cookieAuth = null;
     }
 
     // init authorizer if needed
@@ -272,35 +256,24 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
       this._initiatingPlatforms.add(authorizer.platform);
 
       try {
-        if (cookieAuthResult) {
-          if (cookieAuthResult.success) {
-            await authorizer.init(
-              platformAuthEntry,
-              cookieAuthResult.payload.data,
-              null
-            );
-          } else {
-            const { code, reason } = cookieAuthResult;
-            await authorizer.init(platformAuthEntry, null, { code, reason });
-          }
-        } else {
-          await authorizer.init(platformAuthEntry, null, null);
-        }
+        await authorizer.init(
+          platformAuthEntry,
+          cookieErr,
+          cookieAuth?.payload.data || null
+        );
       } finally {
         this._initiatingPlatforms.delete(authorizer.platform);
       }
-
       this._initiatedPlatforms.add(authorizer.platform);
     }
 
     let token: string;
     let payload: AuthTokenPayload<unknown>;
 
-    if (
-      !cookieAuthResult ||
-      (cookieAuthResult.success &&
-        cookieAuthResult.payload.exp * 1000 < Date.now())
-    ) {
+    if (cookieErr) {
+      // error from back-end
+      throw cookieErr;
+    } else if (!cookieAuth || cookieAuth.payload.exp * 1000 < Date.now()) {
       // start front-end flow
       const [signErr, signedToken] = await this._signToken(authorizer);
       if (signErr) {
@@ -309,33 +282,21 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
 
       payload = getAuthPayload(signedToken);
       token = signedToken;
-    } else if (!cookieAuthResult.success) {
-      // error from back-end
-      const { code, reason } = cookieAuthResult;
-      throw new AuthError(code, reason);
     } else {
       // use the success result from back-end
-      ({ token, payload } = cookieAuthResult);
+      ({ token, payload } = cookieAuth);
     }
 
     // Update auth only when no signOut() call or another succeeded auth() call
     // have happened during the operation time
     if (beginTime < this._minAuthBeginTime) {
-      throw new AuthError(403, 'signed out during authenticating');
+      throw new AuthError(undefined, 403, 'signed out during authenticating');
     }
 
-    const supplement = await authorizer.supplementContext(payload.data);
-    if (!supplement) {
-      throw new AuthError(400, 'invalid auth info');
+    const [ctxErr, context] = this._getAuthContext(payload);
+    if (ctxErr) {
+      throw ctxErr;
     }
-
-    const { iat, exp } = payload;
-    const context = {
-      ...supplement,
-      platform: authorizer.platform,
-      loginAt: new Date(iat * 1000),
-      expireAt: new Date(exp * 1000),
-    };
 
     // Block any other auth() call begun before this time from updating auth
     this._minAuthBeginTime = beginTime;
@@ -355,7 +316,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
 
     if (!result.success) {
       const { code, reason } = result;
-      return [new AuthError(code, reason), ''];
+      return [new AuthError(platform, code, reason), ''];
     }
 
     const [err, body] = await this._callAuthPrivateApi('_sign', {
@@ -436,19 +397,10 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
     }
 
     const payload = getAuthPayload(newToken);
-    const { iat, exp, data } = payload;
-
-    const supplement = await authorizer.supplementContext(data);
-    if (!supplement) {
-      throw new AuthError(400, 'invalid auth info');
+    const [ctxErr, context] = this._getAuthContext(payload);
+    if (ctxErr) {
+      throw ctxErr;
     }
-
-    const context = {
-      ...supplement,
-      platform: authorizer.platform,
-      loginAt: new Date(iat * 1000),
-      expireAt: new Date(exp * 1000),
-    };
 
     this._setAuth(newToken, payload, context);
     this.emit('refresh', context);
@@ -477,15 +429,18 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
 
   private _getAuthorizer(
     platform: undefined | string
-  ): [null | Error, Authorizer] {
+  ): [null | AuthError, Authorizer] {
     if (!platform) {
-      return [new AuthError(400, 'no platform specified'), null as never];
+      return [
+        new AuthError(undefined, 400, 'no platform specified'),
+        null as never,
+      ];
     }
 
     const authorizer = this.authorizers.find((p) => p.platform === platform);
     if (!authorizer) {
       return [
-        new AuthError(400, `unknown platform "${platform}"`),
+        new AuthError(undefined, 400, `unknown platform "${platform}"`),
         null as never,
       ];
     }
@@ -505,7 +460,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   private async _callAuthPrivateApi(
     api: string,
     body: SignRequestBody<unknown> | RefreshRequestBody | VerifyRequestBody
-  ): Promise<[Error | null, AuthApiResponseBody]> {
+  ): Promise<[null | AuthError, AuthApiResponseBody]> {
     const res = await fetch(this._getAuthEntry(api), {
       method: 'POST',
       body: JSON.stringify(body),
@@ -513,13 +468,39 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
 
     if (!res.ok) {
       const {
+        platform,
         error: { code, reason },
       }: AuthApiErrorBody = await res.json();
-      return [new AuthError(code, reason), null as never];
+      return [new AuthError(platform, code, reason), null as never];
     }
 
     const result = await res.json();
     return [null, result];
+  }
+
+  private _getAuthContext(
+    payload: AuthTokenPayload<unknown>
+  ): [null | AuthError, AnyAuthContext] {
+    const { platform, data, iat, exp } = payload;
+    const [err, authorizer] = this._getAuthorizer(platform);
+    if (err) {
+      return [err, null as never];
+    }
+
+    const contextResult = authorizer.checkAuthContext(data);
+    if (!contextResult.success) {
+      return [new AuthError(platform, 400, 'invalid auth info'), null as never];
+    }
+
+    return [
+      null,
+      {
+        ...contextResult.contextSupplment,
+        platform: authorizer.platform,
+        loginAt: new Date(iat * 1000),
+        expireAt: new Date(exp * 1000),
+      },
+    ];
   }
 
   private _clearTimeouts() {

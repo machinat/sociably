@@ -5,9 +5,7 @@ import type {
 } from 'http';
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import type { RoutingInfo } from '@machinat/http/types';
-import type { CookieAccessor } from './cookie';
-
-export type { CookieAccessor } from './cookie';
+import type AuthError from './error';
 
 type TokenBase = {
   iat: number;
@@ -67,9 +65,43 @@ type ErrorResult = {
   reason: string;
 };
 
-export type AuthorizerVerifyResult<Data> =
-  | { success: true; data: Data }
+export type VerifyResult<Data> = { success: true; data: Data } | ErrorResult;
+
+export type ContextResult<Context extends AnyAuthContext> =
+  | { success: true; contextSupplment: ContextSupplement<Context> }
   | ErrorResult;
+
+export type IssueAuthOptions = {
+  refreshTill?: number;
+  signatureOnly?: boolean;
+};
+
+export interface ResponseHelper {
+  /** Get content of state cookie from request, return null if absent. */
+  getState<State>(): Promise<null | State>;
+  /** Issue state cookie to response, return the signed JWT string. */
+  issueState<State>(state: State): Promise<string>;
+
+  /** Get content of auth cookie from request, return null if absent. */
+  getAuth<Context>(): Promise<null | Context>;
+  /** Issue state cookie to response, return the signed token. */
+  issueAuth<Context>(
+    auth: Context,
+    options?: IssueAuthOptions
+  ): Promise<string>;
+
+  /** Get content of error cookie from request, return null if absent. */
+  getError(): Promise<null | ErrorMessage>;
+  /** Issue error cookie to response, return the signed JWT string. */
+  issueError(code: number, message: string): Promise<string>;
+
+  /**
+   * Redirect resonse with 302 status. If a relative or empty URL is given, the
+   * redirectUrl option of {@link AuthContoller} is taken as the base for
+   * resolving the final target.
+   */
+  redirect(url?: string): string;
+}
 
 export interface ServerAuthorizer<
   Credential,
@@ -87,7 +119,7 @@ export interface ServerAuthorizer<
   delegateAuthRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    cookieAccessor: CookieAccessor,
+    cookieAccessor: ResponseHelper,
     routingInfo: RoutingInfo
   ): Promise<void>;
 
@@ -96,21 +128,19 @@ export interface ServerAuthorizer<
    * sign in the user by issuing a token to client and signing a signature
    * wihtin cookie if it resolve success.
    */
-  verifyCredential(
-    credential: Credential
-  ): Promise<AuthorizerVerifyResult<Data>>;
+  verifyCredential(credential: Credential): Promise<VerifyResult<Data>>;
 
   /**
    * Called when refresh requests from client side are received, controller
    * would refresh token and signature if it resolve success.
    */
-  verifyRefreshment(data: Data): Promise<AuthorizerVerifyResult<Data>>;
+  verifyRefreshment(data: Data): Promise<VerifyResult<Data>>;
 
   /**
-   * Supplement the auth data to auth context members which fit the
-   * machinat interfaces, the context would then be passed to the appliction.
+   * Called before the authorization finish, you can make some simple non-async
+   * final checks. Return the auth context supplement if success.
    */
-  supplementContext(data: Data): Promise<null | ContextSupplement<Context>>;
+  checkAuthContext(data: Data): ContextResult<Context>;
 }
 
 export type AnyServerAuthorizer = ServerAuthorizer<
@@ -137,8 +167,8 @@ export interface ClientAuthorizer<
    */
   init(
     authEntry: string,
-    dataFromServer: null | Data,
-    errorFromServer: null | ErrorMessage
+    errorFromServer: null | AuthError,
+    dataFromServer: null | Data
   ): Promise<void>;
 
   /**
@@ -147,14 +177,14 @@ export interface ClientAuthorizer<
    * redirecting user-agent, just set the location and pend resolving.
    */
   fetchCredential(
-    serverEntry: string
+    entry: string
   ): Promise<AuthorizerCredentialResult<Credential>>;
 
   /**
-   * Supplement the auth data into auth context members fit the machinat
-   * interfaces, the context would then be passed to the appliction.
+   * Called before the authorization finish, you can make some simple non-async
+   * final checks. Return the auth context supplement if success.
    */
-  supplementContext(data: Data): Promise<null | ContextSupplement<Context>>;
+  checkAuthContext(data: Data): ContextResult<Context>;
 }
 
 export type AnyClientAuthorizer = ClientAuthorizer<
@@ -182,13 +212,16 @@ export type AuthApiResponseBody = {
 };
 
 export type AuthApiErrorBody = {
+  platform: undefined | string;
   error: ErrorMessage;
 };
 
 export type AuthModuleConfigs = {
   secret: string;
+  redirectUrl: string;
   entryPath?: string;
   tokenAge?: number;
+  authCookieAge?: number;
   dataCookieAge?: number;
   refreshPeriod?: number;
   cookieDomain?: string;

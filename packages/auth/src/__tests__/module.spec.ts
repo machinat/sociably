@@ -4,6 +4,10 @@ import Http from '@machinat/http';
 import Auth from '../module';
 import { ControllerP } from '../controller';
 
+const secret = '_SECRET_';
+const redirectUrl = '/webview';
+const entryPath = '/auth';
+
 it('export interfaces', () => {
   expect(Auth.Controller).toBe(ControllerP);
   expect(Auth.CONFIGS_I).toMatchInlineSnapshot(`
@@ -27,7 +31,7 @@ it('export interfaces', () => {
 describe('initModule()', () => {
   test('provisions', async () => {
     const app = Machinat.createApp({
-      modules: [Auth.initModule({ secret: '_SECRET_', entryPath: '/auth' })],
+      modules: [Auth.initModule({ secret, entryPath, redirectUrl })],
       bindings: [{ provide: Auth.AUTHORIZERS_I, withValue: moxy() }],
     });
     await app.start();
@@ -35,11 +39,11 @@ describe('initModule()', () => {
     const [controller, configs, routings] = app.useServices([
       Auth.Controller,
       Auth.CONFIGS_I,
-      Http.REQUEST_ROUTINGS_I,
+      Http.REQUEST_ROUTES_I,
     ]);
 
     expect(controller).toBeInstanceOf(ControllerP);
-    expect(configs).toEqual({ secret: '_SECRET_', entryPath: '/auth' });
+    expect(configs).toEqual({ secret, entryPath, redirectUrl });
     expect(routings).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -56,7 +60,7 @@ describe('initModule()', () => {
     const barAuthorizer = moxy();
     const ControllerSpy = moxy(ControllerP);
     const app = Machinat.createApp({
-      modules: [Auth.initModule({ secret: '_SECRET_', entryPath: '/auth' })],
+      modules: [Auth.initModule({ secret, entryPath, redirectUrl })],
       bindings: [
         { provide: Auth.AUTHORIZERS_I, withValue: fooAuthorizer },
         { provide: Auth.AUTHORIZERS_I, withValue: barAuthorizer },
@@ -73,14 +77,14 @@ describe('initModule()', () => {
       ControllerSpy.$$factory.mock
     ).toHaveBeenCalledWith(
       expect.arrayContaining([fooAuthorizer, barAuthorizer]),
-      { secret: '_SECRET_', entryPath: '/auth' }
+      { secret, entryPath, redirectUrl }
     );
   });
 
   test('provide request handler calls to ServerController#delegateAuthRequest()', async () => {
     const fakeController = moxy({ delegateAuthRequest: async () => {} });
     const app = Machinat.createApp({
-      modules: [Auth.initModule({ secret: '_SECRET_', entryPath: '/auth' })],
+      modules: [Auth.initModule({ secret, redirectUrl, entryPath })],
       bindings: [
         {
           provide: Auth.Controller,
@@ -90,11 +94,11 @@ describe('initModule()', () => {
     });
     await app.start();
 
-    const [[{ handler }]] = app.useServices([Http.REQUEST_ROUTINGS_I]);
+    const [[{ handler }]] = app.useServices([Http.REQUEST_ROUTES_I]);
 
     const req = moxy();
     const res = moxy();
-    await handler(req, res, {
+    handler(req, res, {
       originalPath: '/auth/foo',
       matchedPath: '/auth',
       trailingPath: 'foo',

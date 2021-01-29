@@ -17,13 +17,14 @@ import type {
   EventInput,
   WebSocketJob,
   WebSocketResult,
+  ConnIdentifier,
 } from '@machinat/websocket/types';
 import { WEBVIEW } from './constant';
 import { SocketServerP, PLATFORM_MOUNTER_I } from './interface';
 import {
+  WebviewConnection,
   WebviewTopicChannel,
   WebviewUserChannel,
-  WebviewConnection,
 } from './channel';
 import type { WebviewDispatchFrame, WebviewComponent } from './types';
 
@@ -31,6 +32,14 @@ type WebSocketDispatchResponse = DispatchResponse<
   WebSocketJob,
   WebSocketResult
 >;
+
+type SendResult = {
+  connections: WebviewConnection[];
+};
+
+/** @internal */
+const toConnection = ({ serverId, id }: ConnIdentifier): WebviewConnection =>
+  new WebviewConnection(serverId, id);
 
 /**
  * @category Provider
@@ -103,34 +112,43 @@ export class WebviewBot<Authorizer extends AnyServerAuthorizer>
 
   async send(
     channel: WebviewConnection,
-    event: EventInput
-  ): Promise<WebSocketResult> {
+    content: EventInput | EventInput[]
+  ): Promise<SendResult> {
     const response = await this.engine.dispatchJobs(channel, [
-      { target: channel, events: [event] },
+      { target: channel, values: Array.isArray(content) ? content : [content] },
     ]);
 
-    return response.results[0];
+    return {
+      connections: response.results[0].connections.map(toConnection),
+    };
   }
 
   async sendUser(
     user: MachinatUser,
-    event: EventInput
-  ): Promise<WebSocketResult> {
+    content: EventInput | EventInput[]
+  ): Promise<SendResult> {
     const channel = new WebviewUserChannel(user.uid);
     const response = await this.engine.dispatchJobs(channel, [
-      { target: channel, events: [event] },
+      { target: channel, values: Array.isArray(content) ? content : [content] },
     ]);
 
-    return response.results[0];
+    return {
+      connections: response.results[0].connections.map(toConnection),
+    };
   }
 
-  async sendTopic(topic: string, event: EventInput): Promise<WebSocketResult> {
+  async sendTopic(
+    topic: string,
+    content: EventInput | EventInput[]
+  ): Promise<SendResult> {
     const channel = new WebviewTopicChannel(topic);
     const response = await this.engine.dispatchJobs(channel, [
-      { target: channel, events: [event] },
+      { target: channel, values: Array.isArray(content) ? content : [content] },
     ]);
 
-    return response.results[0];
+    return {
+      connections: response.results[0].connections.map(toConnection),
+    };
   }
 
   disconnect(connection: WebviewConnection, reason?: string): Promise<boolean> {

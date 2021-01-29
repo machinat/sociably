@@ -4,21 +4,21 @@ import { ServiceModule } from '@machinat/core/types';
 import {
   HttpServerI,
   MODULE_CONFIGS_I,
-  REQUEST_ROUTINGS_I,
-  UPGRADE_ROUTINGS_I,
+  REQUEST_ROUTES_I,
+  UPGRADE_ROUTES_I,
 } from './interface';
 import { ConnectorP } from './connector';
 import { HttpModuleConfigs } from './types';
 
 /** @internal */
-const nodeServerFactory = makeFactoryProvider({
+const httpServerFactory = makeFactoryProvider({
   lifetime: 'singleton',
 })(() => createServer());
 
 const Http = {
   CONFIGS_I: MODULE_CONFIGS_I,
-  REQUEST_ROUTINGS_I,
-  UPGRADE_ROUTINGS_I,
+  REQUEST_ROUTES_I,
+  UPGRADE_ROUTES_I,
   ServerI: HttpServerI,
   Connector: ConnectorP,
 
@@ -26,11 +26,13 @@ const Http = {
     provisions: [
       ConnectorP,
       { provide: MODULE_CONFIGS_I, withValue: configsInput },
-      { provide: HttpServerI, withProvider: nodeServerFactory },
+      { provide: HttpServerI, withProvider: httpServerFactory },
     ],
     startHook: makeContainer({
       deps: [ConnectorP, HttpServerI, MODULE_CONFIGS_I] as const,
-    })((connector, server, configs) => connector.connect(server, configs)),
+    })((connector, server, { listenOptions }) =>
+      connector.connect(server, listenOptions)
+    ),
   }),
 };
 

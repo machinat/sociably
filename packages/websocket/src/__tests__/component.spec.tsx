@@ -5,7 +5,7 @@ import { Event } from '../component';
 const render = (element) => element.type(element, '$', () => null);
 
 it('is valid Component', () => {
-  expect(Event.$$platform).toBe('web_socket');
+  expect(Event.$$platform).toBe('websocket');
   expect(typeof Event).toBe('function');
 });
 

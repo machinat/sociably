@@ -5,17 +5,17 @@ import { TelegramAuthContext, TelegramAuthData } from './types';
 
 // eslint-disable-next-line import/prefer-default-export
 export const supplementContext = ({
-  chat,
-  botId,
+  chat: chatData,
+  bot: botId,
   user: userData,
-  photoUrl,
+  photo: photoUrl,
 }: TelegramAuthData): ContextSupplement<TelegramAuthContext> => {
   const user = new TelegramUser(userData.id, { ...userData, is_bot: false });
 
   return {
     user,
-    channel: chat
-      ? new TelegramChat(botId, chat)
+    channel: chatData
+      ? new TelegramChat(botId, chatData)
       : TelegramChat.fromUser(botId, user),
     botId,
     photoUrl,

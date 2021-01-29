@@ -64,7 +64,7 @@ export type EventInput = {
 export interface ConnectionTarget {
   type: 'connection';
   serverId: string;
-  connectionId: string;
+  id: string;
 }
 
 export interface TopicTarget {
@@ -74,18 +74,18 @@ export interface TopicTarget {
 
 export interface UserTarget {
   type: 'user';
-  userUId: string;
+  userUid: string;
 }
 
 export type DispatchTarget = ConnectionTarget | TopicTarget | UserTarget;
 
 export type WebSocketJob = {
   target: DispatchTarget;
-  events: EventInput[];
+  values: EventInput[];
 };
 
 export type WebSocketResult = {
-  connections: null | ConnIdentifier[];
+  connections: ConnIdentifier[];
 };
 
 export type WebSocketDispatchFrame = DispatchFrame<

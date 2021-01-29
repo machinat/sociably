@@ -5,12 +5,12 @@ import base64url from 'base64url';
 import { makeClassProvider } from '@machinat/core/service';
 import {
   ServerAuthorizer,
-  AuthorizerVerifyResult,
-  ContextSupplement,
+  VerifyResult,
+  ContextResult,
 } from '@machinat/auth/types';
 
 import { PLATFORM_CONFIGS_I } from '../interface';
-import { MESSENGER } from '../constant';
+import { MESSENGER, MessengerChatType } from '../constant';
 import { supplementContext } from './utils';
 import type {
   MessengerAuthCredential,
@@ -26,7 +26,7 @@ const {
   toBuffer: decodeBase64UrlToBuffer,
 } = base64url;
 
-type MessengerServerAuthorizerOptions = {
+type ServerAuthorizerOptions = {
   /** Page id which the app is running on. */
   pageId: number;
   /** App secret for verifying auth data. */
@@ -55,7 +55,7 @@ export class MessengerServerAuthorizer
   appSecret: string;
   issueTimeLimit: number;
 
-  constructor(options: MessengerServerAuthorizerOptions) {
+  constructor(options: ServerAuthorizerOptions) {
     invariant(options?.appSecret, 'options.appSecret must not be empty');
     invariant(options.pageId, 'options.pageId must not be empty');
 
@@ -81,7 +81,7 @@ export class MessengerServerAuthorizer
 
   async verifyCredential(
     credential: MessengerAuthCredential
-  ): Promise<AuthorizerVerifyResult<MessengerAuthData>> {
+  ): Promise<VerifyResult<MessengerAuthData>> {
     if (!credential || !credential.signedRequest) {
       return {
         success: false,
@@ -127,41 +127,43 @@ export class MessengerServerAuthorizer
       };
     }
 
+    const { psid, tid, thread_type: threadType, page_id: pageId } = payload;
     return {
       success: true,
       data: {
-        userId: payload.psid,
-        chatType: payload.thread_type,
-        chatId: payload.tid,
-        pageId: payload.page_id,
+        user: psid,
+        chat: {
+          type:
+            threadType === 'USER_TO_USER'
+              ? MessengerChatType.UserToUser
+              : threadType === 'GROUP'
+              ? MessengerChatType.Group
+              : MessengerChatType.UserToPage,
+          id: tid,
+        },
+        page: pageId,
         client,
       },
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async verifyRefreshment(
     data: MessengerAuthData
-  ): Promise<AuthorizerVerifyResult<MessengerAuthData>> {
-    if (data.pageId !== this.pageId) {
-      return {
-        success: false,
-        code: 404,
-        reason: 'page not match',
-      };
+  ): Promise<VerifyResult<MessengerAuthData>> {
+    if (data.page !== this.pageId) {
+      return { success: false, code: 400, reason: 'page not match' };
     }
 
-    return {
-      success: true,
-      data,
-    };
+    return { success: true, data };
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  async supplementContext(
+  checkAuthContext(
     data: MessengerAuthData
-  ): Promise<null | ContextSupplement<MessengerAuthContext>> {
-    return supplementContext(data);
+  ): ContextResult<MessengerAuthContext> {
+    if (data.page !== this.pageId) {
+      return { success: false, code: 400, reason: 'page not match' };
+    }
+    return { success: true, contextSupplment: supplementContext(data) };
   }
 }
 

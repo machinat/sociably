@@ -1,8 +1,12 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import { resolve as resolveUrl } from 'url';
 import type { CookieSerializeOptions } from 'cookie';
-import { sign as signJWT, verify as verifyJWT } from 'jsonwebtoken';
+import { sign as signJwt, verify as verifyJWT } from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';
+import { getCookies, setCookie } from './utils';
 import type {
+  ResponseHelper,
+  IssueAuthOptions,
   AuthPayload,
   StatePayload,
   ErrorPayload,
@@ -11,7 +15,6 @@ import type {
   ErrorTokenPayload,
   ErrorMessage,
 } from './types';
-import { getCookies, setCookie } from './utils';
 
 import {
   STATE_COOKIE_KEY,
@@ -20,9 +23,11 @@ import {
   ERROR_COOKIE_KEY,
 } from './constant';
 
-type OperatorOptions = {
+type ControllerOptions = {
   entryPath: string;
+  redirectUrl: string;
   secret: string;
+  authCookieAge: number;
   dataCookieAge: number;
   tokenAge: number;
   refreshPeriod: number;
@@ -32,14 +37,8 @@ type OperatorOptions = {
   secure: boolean;
 };
 
-type IssueAuthOptions = {
-  refreshTill?: number;
-  refreshable?: boolean;
-  signatureOnly?: boolean;
-};
-
-export class CookieController {
-  options: OperatorOptions;
+class CookieController {
+  options: ControllerOptions;
 
   private _cookieScope: { domain?: string; path: string };
 
@@ -49,11 +48,12 @@ export class CookieController {
   private _stateCookieOpts: CookieSerializeOptions;
   private _deleteCookieOpts: CookieSerializeOptions;
 
-  constructor(options: OperatorOptions) {
+  constructor(options: ControllerOptions) {
     this.options = options;
 
     const {
       entryPath,
+      authCookieAge,
       dataCookieAge,
       cookieDomain,
       cookiePath,
@@ -72,7 +72,7 @@ export class CookieController {
 
     this._tokenCookieOpts = {
       ...baseCookieOpts,
-      maxAge: dataCookieAge,
+      maxAge: authCookieAge,
     };
 
     this._errorCookieOpts = {
@@ -133,7 +133,7 @@ export class CookieController {
     state: State
   ): Promise<string> {
     const encodedState = await thenifiedly.call(
-      signJWT,
+      signJwt,
       { platform, state } as StatePayload<State>,
       this.options.secret,
       { expiresIn: this.options.dataCookieAge }
@@ -192,7 +192,7 @@ export class CookieController {
       scope: this._cookieScope,
     };
 
-    const token = await thenifiedly.call(signJWT, payload, secret, {
+    const token = await thenifiedly.call(signJwt, payload, secret, {
       expiresIn: tokenAge,
     });
 
@@ -240,7 +240,7 @@ export class CookieController {
     reason: string
   ): Promise<string> {
     const errEncoded = await thenifiedly.call(
-      signJWT,
+      signJwt,
       {
         platform,
         error: { code, reason },
@@ -268,60 +268,39 @@ export class CookieController {
   deleteCookie(res: ServerResponse, key: string): void {
     setCookie(res, key, '', this._deleteCookieOpts);
   }
-}
 
-export class CookieAccessor {
-  _req: IncomingMessage;
-  _res: ServerResponse;
-  _platform: string;
-  _controller: CookieController;
+  redirect(res: ServerResponse, url?: string): string {
+    const redirectTarget = resolveUrl(this.options.redirectUrl, url || '');
 
-  constructor(
+    res.writeHead(302, {
+      Location: redirectTarget,
+    });
+    res.end();
+
+    return redirectTarget;
+  }
+
+  createResponseHelper(
     req: IncomingMessage,
     res: ServerResponse,
-    platform: string,
-    operator: CookieController
-  ) {
-    this._req = req;
-    this._res = res;
-    this._platform = platform;
-    this._controller = operator;
-  }
+    platform: string
+  ): ResponseHelper {
+    return {
+      getState: <State>() => this.getState<State>(req, platform),
+      issueState: <State>(state: State) =>
+        this.issueState(res, platform, state),
 
-  getState<State>(): Promise<null | State> {
-    return this._controller.getState<State>(this._req, this._platform);
-  }
+      getAuth: () => this.getAuth(req, platform),
+      issueAuth: <Data>(data: Data, options: IssueAuthOptions) =>
+        this.issueAuth(res, platform, data, options),
 
-  issueState<State>(state: State): Promise<string> {
-    return this._controller.issueState<State>(this._res, this._platform, state);
-  }
+      getError: () => this.getError(req, platform),
+      issueError: (code: number, message: string) =>
+        this.issueError(res, platform, code, message),
 
-  getAuth<Context>(): Promise<null | Context> {
-    return this._controller.getAuth<Context>(this._req, this._platform);
-  }
-
-  issueAuth<Context>(
-    auth: Context,
-    options?: IssueAuthOptions
-  ): Promise<string> {
-    return this._controller.issueAuth<Context>(
-      this._res,
-      this._platform,
-      auth,
-      options
-    );
-  }
-
-  getError(): Promise<null | ErrorMessage> {
-    return this._controller.getError(this._req, this._platform);
-  }
-
-  issueError(code: number, message: string): Promise<string> {
-    return this._controller.issueError(
-      this._res,
-      this._platform,
-      code,
-      message
-    );
+      redirect: (url?: string) => this.redirect(res, url),
+    };
   }
 }
+
+export default CookieController;

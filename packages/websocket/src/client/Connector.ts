@@ -1,7 +1,7 @@
 // eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import { EventEmitter } from 'events';
-import TypedEmitter from 'typed-emitter';
+import type TypedEmitter from 'typed-emitter';
 import type { MachinatUser } from '@machinat/core/types';
 import type {
   default as Socket, // eslint-disable-line import/no-named-default
@@ -48,18 +48,13 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<
   private _user: User;
   private _isDisconnecting: boolean;
 
-  constructor(url: undefined | string, login: ClientLoginFn<User, unknown>) {
+  constructor(serverUrl: string, login: ClientLoginFn<User, unknown>) {
     super();
 
     this._login = login;
+    this._serverUrl = serverUrl;
+
     this._queuedEvents = [];
-
-    const { protocol, host } = window.location;
-    this._serverUrl = new URL(
-      url || '',
-      `${protocol === 'https:' ? 'wss' : 'ws'}://${host}`
-    ).href;
-
     this._connId = undefined;
     this._isDisconnecting = false;
   }
@@ -84,7 +79,7 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<
     this._loginSeq = await socket.login({ credential });
   }
 
-  async send(...events: EventInput[]): Promise<void> {
+  async send(events: EventInput[]): Promise<void> {
     if (!this._socket || !this._connId) {
       await new Promise((resolve, reject) => {
         this._queuedEvents.push({

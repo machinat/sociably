@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`work 1`] = `
+Object {
+  "batch": Array [
+    Object {
+      "error": undefined,
+      "job": Object {
+        "target": Object {
+          "id": "#conn",
+          "serverId": "#server",
+          "type": "connection",
+        },
+        "values": Array [
+          Object {
+            "payload": "1",
+            "type": "foo",
+          },
+        ],
+      },
+      "result": Object {
+        "connections": Array [
+          "A",
+          "B",
+          "C",
+          "D",
+        ],
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "target": Object {
+          "name": "somthing",
+          "type": "topic",
+        },
+        "values": Array [
+          Object {
+            "payload": "2",
+            "type": "foo",
+          },
+          Object {
+            "kind": "baz",
+            "payload": "3",
+            "type": "bar",
+          },
+        ],
+      },
+      "result": Object {
+        "connections": Array [
+          "A",
+          "B",
+          "C",
+          "D",
+        ],
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "target": Object {
+          "type": "user",
+          "userUid": "jojo_doe",
+        },
+        "values": Array [
+          Object {
+            "payload": "4",
+            "type": "foo",
+          },
+        ],
+      },
+      "result": Object {
+        "connections": Array [
+          "A",
+        ],
+      },
+      "success": true,
+    },
+  ],
+  "errors": null,
+  "success": true,
+}
+`;

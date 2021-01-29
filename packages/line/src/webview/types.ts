@@ -2,6 +2,7 @@ import { AuthContextBase } from '@machinat/auth/types';
 import type { LineUserProfile } from '../profiler';
 import type LineUser from '../user';
 import type LineChat from '../channel';
+import { LiffContextOs } from '../constant';
 
 export type LiffContext = {
   type: 'utou' | 'group' | 'room' | 'external' | 'none';
@@ -18,17 +19,26 @@ export type LiffContext = {
   };
 };
 
-export type LineAuthData = {
-  providerId: string;
-  channelId: string;
-  clientId: string;
+export type LineAuthCredential = {
+  accessToken: string;
   os: 'ios' | 'android' | 'web';
   language: string;
   userId: string;
   groupId: undefined | string;
   roomId: undefined | string;
+};
+
+export type LineAuthData = {
+  provider: string;
+  channel: string;
+  client: string;
+  os: LiffContextOs;
+  lang: string;
+  user: string;
+  group: undefined | string;
+  room: undefined | string;
   name: undefined | string;
-  picture: undefined | string;
+  pic: undefined | string;
 };
 
 export type LineAuthContext = {
@@ -42,15 +52,6 @@ export type LineAuthContext = {
   os: 'ios' | 'android' | 'web';
   language: string;
 } & AuthContextBase;
-
-export type LineAuthCredential = {
-  accessToken: string;
-  os: 'ios' | 'android' | 'web';
-  language: string;
-  userId: string;
-  groupId: undefined | string;
-  roomId: undefined | string;
-};
 
 export type LineVerifyAuthResult =
   | { success: true; data: LineAuthData }

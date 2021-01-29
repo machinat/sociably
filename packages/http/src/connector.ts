@@ -1,103 +1,103 @@
 import { parse as parseUrl } from 'url';
-import { STATUS_CODES } from 'http';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { relative as getRelativePath } from 'path';
 import { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
 import { makeClassProvider } from '@machinat/core/service';
+import { HttpServer, REQUEST_ROUTES_I, UPGRADE_ROUTES_I } from './interface';
 import {
-  HttpServer,
-  MODULE_CONFIGS_I,
-  REQUEST_ROUTINGS_I,
-  UPGRADE_ROUTINGS_I,
-} from './interface';
+  endRes,
+  respondUpgrade,
+  getTrailingPath,
+  checkRoutesConfliction,
+  formatRoute,
+} from './utils';
 import type {
   ServerListenOptions,
-  HttpModuleConfigs,
-  HttpRequestRouting,
-  HttpUpgradeRouting,
+  RequestRoute,
+  DefaultRequestRoute,
+  UpgradeRoute,
+  DefaultUpgradeRoute,
 } from './types';
 
-/** @internal */
-const getTrailingPath = (parent: string, child: string): string | undefined => {
-  const relativePath = getRelativePath(parent, child);
-  return relativePath === '' || relativePath.slice(0, 2) !== '..'
-    ? relativePath
-    : undefined;
-};
-
-/** @internal */
-const verifyRoutesConfliction = (
-  existedRoutings: ReadonlyArray<{ name?: string; path: string }>,
-  routing: { name?: string; path: string }
-) => {
-  for (const { name, path } of existedRoutings) {
-    if (
-      getTrailingPath(path, routing.path) ||
-      getTrailingPath(routing.path, path)
-    ) {
-      throw new Error(
-        `${routing.name || 'unknown'} routing "${
-          routing.path
-        }" is conflicted with ${name || 'unknown'} routing "${path}"`
-      );
-    }
-  }
-};
-
-/** @internal */
-const endRes = (res: ServerResponse, code: number) => {
-  res.statusCode = code;
-  res.end(STATUS_CODES[code]);
-};
-
-/** @internal */
-const respondUpgrade = (socket: Socket, code: number) => {
-  const codeName = STATUS_CODES[code] as string;
-  socket.write(
-    `HTTP/1.1 ${code} ${codeName}\r\n` +
-      'Connection: close\r\n' +
-      'Content-Type: text/html\r\n' +
-      `Content-Length: ${Buffer.byteLength(codeName)}\r\n` +
-      `\r\n${codeName}`
-  );
-  socket.destroy();
+type ConnectorOptions = {
+  requestRoutes?: (RequestRoute | DefaultRequestRoute)[];
+  upgradeRoutes?: (UpgradeRoute | DefaultUpgradeRoute)[];
 };
 
 /**
  * @category Provider
  */
 export class HttpConnector {
-  private _requestRoutings: HttpRequestRouting[];
-  private _upgradeRoutings: HttpUpgradeRouting[];
+  private _requestRoutes: RequestRoute[];
+  private _defaultRequestRoute: null | DefaultRequestRoute;
+  private _upgradeRoutes: UpgradeRoute[];
+  private _defaultUpgradeRoute: null | DefaultUpgradeRoute;
 
-  constructor(
-    configs: HttpModuleConfigs,
-    requestRoutings?: null | HttpRequestRouting[],
-    upgradeRoutings?: null | HttpUpgradeRouting[]
-  ) {
-    this._requestRoutings = requestRoutings ? [...requestRoutings] : [];
-    this._upgradeRoutings = upgradeRoutings ? [...upgradeRoutings] : [];
-  }
+  constructor({ requestRoutes, upgradeRoutes }: ConnectorOptions) {
+    this._requestRoutes = [];
+    this._upgradeRoutes = [];
+    this._defaultRequestRoute = null;
+    this._defaultUpgradeRoute = null;
 
-  addRequestRouting(...routings: HttpRequestRouting[]): this {
-    for (const routing of routings) {
-      verifyRoutesConfliction(this._requestRoutings, routing);
+    if (requestRoutes) {
+      for (const route of requestRoutes) {
+        if (route.default) {
+          if (this._defaultRequestRoute) {
+            throw new Error(
+              `multiple default request routes received: ${
+                this._defaultRequestRoute.name || 'unknown'
+              }, ${route.name || 'unknown'}`
+            );
+          }
 
-      this._requestRoutings.push(routing);
+          this._defaultRequestRoute = route;
+        } else {
+          const [ok, conflictedRoute] = checkRoutesConfliction(
+            this._requestRoutes,
+            route
+          );
+
+          if (!ok) {
+            throw new Error(
+              `request route ${formatRoute(
+                route
+              )} is conflicted with route ${formatRoute(conflictedRoute)}`
+            );
+          }
+
+          this._requestRoutes.push(route);
+        }
+      }
     }
 
-    return this;
-  }
+    if (upgradeRoutes) {
+      for (const route of upgradeRoutes) {
+        if (route.default) {
+          if (this._defaultUpgradeRoute) {
+            throw new Error(
+              `multiple default upgrade routes received: "${this._defaultUpgradeRoute.name}", "${route.name}"`
+            );
+          }
 
-  addUpgradeRouting(...routings: HttpUpgradeRouting[]): this {
-    for (const routing of routings) {
-      verifyRoutesConfliction(this._upgradeRoutings, routing);
+          this._defaultUpgradeRoute = route;
+        } else {
+          const [ok, conflictedRoute] = checkRoutesConfliction(
+            this._upgradeRoutes,
+            route
+          );
 
-      this._upgradeRoutings.push(routing);
+          if (!ok) {
+            throw new Error(
+              `upgrade route ${formatRoute(
+                route
+              )} is conflicted with route ${formatRoute(conflictedRoute)}`
+            );
+          }
+
+          this._upgradeRoutes.push(route);
+        }
+      }
     }
-
-    return this;
   }
 
   async connect(
@@ -105,7 +105,7 @@ export class HttpConnector {
     options?: ServerListenOptions
   ): Promise<void> {
     server.addListener('request', this.makeRequestCallback());
-    if (this._upgradeRoutings.length > 0) {
+    if (this._upgradeRoutes.length > 0) {
       server.addListener('upgrade', this.makeUpgradeCallback());
     }
 
@@ -113,15 +113,15 @@ export class HttpConnector {
   }
 
   makeRequestCallback(): (req: IncomingMessage, res: ServerResponse) => void {
-    const requestRoutings = [...this._requestRoutings];
-    if (requestRoutings.length === 0) {
+    const requestRoutes = [...this._requestRoutes];
+    if (requestRoutes.length === 0) {
       return (_, res) => {
         endRes(res, 403);
       };
     }
 
-    if (requestRoutings.length === 1) {
-      const [{ path, handler }] = requestRoutings;
+    if (requestRoutes.length === 1) {
+      const [{ path, handler }] = requestRoutes;
       if (path === '/') {
         return (req: IncomingMessage, res: ServerResponse) => {
           const pathname = parseUrl(req.url as string).pathname || '/';
@@ -141,8 +141,9 @@ export class HttpConnector {
         return;
       }
 
-      for (const { path: routePath, handler } of requestRoutings) {
+      for (const { path: routePath, handler } of requestRoutes) {
         const trailingPath = getTrailingPath(routePath, pathname);
+
         if (trailingPath !== undefined) {
           handler(req, res, {
             originalPath: pathname,
@@ -152,7 +153,17 @@ export class HttpConnector {
           return;
         }
       }
-      endRes(res, 404);
+
+      if (!this._defaultRequestRoute) {
+        endRes(res, 404);
+        return;
+      }
+
+      this._defaultRequestRoute.handler(req, res, {
+        originalPath: pathname,
+        matchedPath: undefined,
+        trailingPath: undefined,
+      });
     };
   }
 
@@ -161,15 +172,15 @@ export class HttpConnector {
     socket: Socket,
     head: Buffer
   ) => void {
-    const upgradeRoutings = [...this._upgradeRoutings];
-    if (upgradeRoutings.length === 0) {
+    const upgradeRoutes = [...this._upgradeRoutes];
+    if (upgradeRoutes.length === 0) {
       return (_, socket) => {
         respondUpgrade(socket, 403);
       };
     }
 
-    if (upgradeRoutings.length === 1) {
-      const [{ path, handler }] = upgradeRoutings;
+    if (upgradeRoutes.length === 1) {
+      const [{ path, handler }] = upgradeRoutes;
       if (path === '/') {
         return (req: IncomingMessage, socket: Socket, head: Buffer) => {
           const pathname = parseUrl(req.url as string).pathname || '/';
@@ -189,7 +200,7 @@ export class HttpConnector {
         return;
       }
 
-      for (const { path: routePath, handler } of upgradeRoutings) {
+      for (const { path: routePath, handler } of upgradeRoutes) {
         const trailingPath = getTrailingPath(routePath, pathname);
         if (trailingPath !== undefined) {
           handler(req, socket, head, {
@@ -200,14 +211,26 @@ export class HttpConnector {
           return;
         }
       }
-      respondUpgrade(socket, 404);
+
+      if (!this._defaultUpgradeRoute) {
+        respondUpgrade(socket, 404);
+        return;
+      }
+
+      this._defaultUpgradeRoute.handler(req, socket, head, {
+        originalPath: pathname,
+        matchedPath: undefined,
+        trailingPath: undefined,
+      });
     };
   }
 }
 
 export const ConnectorP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [MODULE_CONFIGS_I, REQUEST_ROUTINGS_I, UPGRADE_ROUTINGS_I] as const,
+  deps: [REQUEST_ROUTES_I, UPGRADE_ROUTES_I] as const,
+  factory: (requestRoutes, upgradeRoutes) =>
+    new HttpConnector({ requestRoutes, upgradeRoutes }),
 })(HttpConnector);
 
 export type ConnectorP = HttpConnector;

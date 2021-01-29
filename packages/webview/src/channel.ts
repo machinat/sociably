@@ -9,37 +9,33 @@ import { WEBVIEW } from './constant';
 
 type ConnectionValue = {
   serverId: string;
-  connectionId: string;
+  id: string;
 };
 
 export class WebviewConnection
   implements MachinatChannel, ConnectionTarget, Marshallable<ConnectionValue> {
-  static fromJSONValue(value: ConnectionValue): WebviewConnection {
-    return new WebviewConnection(value.serverId, value.connectionId);
+  static fromJSONValue({ id, serverId }: ConnectionValue): WebviewConnection {
+    return new WebviewConnection(serverId, id);
   }
 
   platform = WEBVIEW;
   type = 'connection' as const;
 
   serverId: string;
-  connectionId: string;
+  id: string;
 
-  constructor(serverId: string, connectionId: string) {
+  constructor(serverId: string, id: string) {
     this.serverId = serverId;
-    this.connectionId = connectionId;
-  }
-
-  get id(): string {
-    return this.connectionId;
+    this.id = id;
   }
 
   get uid(): string {
-    return `${WEBVIEW}.conn.${this.serverId}.${this.connectionId}`;
+    return `${WEBVIEW}.conn.${this.serverId}.${this.id}`;
   }
 
   toJSONValue(): ConnectionValue {
-    const { serverId, connectionId } = this;
-    return { serverId, connectionId };
+    const { serverId, id } = this;
+    return { serverId, id };
   }
 
   typeName(): string {
@@ -48,30 +44,30 @@ export class WebviewConnection
 }
 
 type UserChannelValue = {
-  userUId: string;
+  userUid: string;
 };
 
 export class WebviewUserChannel
   implements MachinatChannel, UserTarget, Marshallable<UserChannelValue> {
-  static fromJSONValue({ userUId }: UserChannelValue): WebviewUserChannel {
-    return new WebviewUserChannel(userUId);
+  static fromJSONValue({ userUid }: UserChannelValue): WebviewUserChannel {
+    return new WebviewUserChannel(userUid);
   }
 
   platform = WEBVIEW;
   type = 'user' as const;
 
-  userUId: string;
+  userUid: string;
 
-  constructor(userUId: string) {
-    this.userUId = userUId;
+  constructor(userUid: string) {
+    this.userUid = userUid;
   }
 
   get uid(): string {
-    return `${WEBVIEW}.user.${this.userUId}`;
+    return `${WEBVIEW}.user.${this.userUid}`;
   }
 
   toJSONValue(): UserChannelValue {
-    return { userUId: this.userUId };
+    return { userUid: this.userUid };
   }
 
   typeName(): string {

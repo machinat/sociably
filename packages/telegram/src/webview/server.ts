@@ -6,9 +6,9 @@ import invariant from 'invariant';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
   ServerAuthorizer,
-  CookieAccessor,
-  AuthorizerVerifyResult,
-  ContextSupplement,
+  ResponseHelper,
+  VerifyResult,
+  ContextResult,
 } from '@machinat/auth/types';
 
 import { PLATFORM_CONFIGS_I } from '../interface';
@@ -19,8 +19,8 @@ import type { TelegramPlatformConfigs, RawChat, RawUser } from '../types';
 import { supplementContext } from './utils';
 import type { TelegramAuthContext, TelegramAuthData } from './types';
 
-type TelegramServerAuthorizerOpts = {
-  redirectUrl: string;
+type ServerAuthorizerOptions = {
+  redirectUrl?: string;
 };
 
 const CHAT_QUERY_PARAM = 'telegramChat';
@@ -40,45 +40,34 @@ const LOGIN_PARAMETERS = [
 export class TelegramServerAuthorizer
   implements ServerAuthorizer<never, TelegramAuthData, TelegramAuthContext> {
   bot: BotP;
-  redirectUrl: string;
-
+  redirectUrl: undefined | string;
   platform = TELEGRAM;
 
-  constructor(bot: BotP, options: TelegramServerAuthorizerOpts) {
-    invariant(options?.redirectUrl, 'options.redirectUrl should not be empty');
-
+  constructor(bot: BotP, options?: ServerAuthorizerOptions) {
     this.bot = bot;
-    this.redirectUrl = options.redirectUrl;
+    this.redirectUrl = options?.redirectUrl;
   }
 
   async delegateAuthRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    authIssuer: CookieAccessor
+    resHelper: ResponseHelper
   ): Promise<void> {
     const { query } = parseUrl(req.url as string, true);
     const { redirectUrl, [CHAT_QUERY_PARAM]: chatIdQuery } = query;
 
     if (typeof redirectUrl !== 'string' && typeof redirectUrl !== 'undefined') {
-      authIssuer.issueError(400, 'invalid redirect url');
-      this._redirect(res, undefined);
+      resHelper.issueError(400, 'invalid redirect url');
+      resHelper.redirect(this.redirectUrl);
       return;
     }
 
-    const loginErr = this._verifyTelegramLogin(query);
+    const [loginErr, userData] = this._verifyLoginQuery(query);
     if (loginErr) {
-      authIssuer.issueError(loginErr.code, loginErr.message);
-      this._redirect(res, redirectUrl);
+      resHelper.issueError(loginErr.code, loginErr.message);
+      resHelper.redirect(redirectUrl || this.redirectUrl);
       return;
     }
-
-    const userData: Omit<RawUser, 'is_bot'> = {
-      id: Number(query.id),
-      username: query.username as string | undefined,
-      first_name: query.first_name as string,
-      last_name: query.last_name as string | undefined,
-      language_code: undefined,
-    };
 
     let chatData: undefined | RawChat;
     if (chatIdQuery) {
@@ -88,8 +77,8 @@ export class TelegramServerAuthorizer
           : Number(chatIdQuery);
 
       if (Number.isNaN(chatId)) {
-        authIssuer.issueError(400, 'invalid chat id');
-        this._redirect(res, redirectUrl);
+        resHelper.issueError(400, 'invalid chat id');
+        resHelper.redirect(redirectUrl || this.redirectUrl);
         return;
       }
 
@@ -99,8 +88,8 @@ export class TelegramServerAuthorizer
       );
 
       if (err) {
-        authIssuer.issueError(err.code, err.message);
-        this._redirect(res, redirectUrl);
+        resHelper.issueError(err.code, err.message);
+        resHelper.redirect(redirectUrl || this.redirectUrl);
         return;
       }
 
@@ -114,17 +103,17 @@ export class TelegramServerAuthorizer
       };
     }
 
-    authIssuer.issueAuth({
+    resHelper.issueAuth({
       botId: this.bot.id,
       chat: chatData,
       user: userData,
       photoUrl: query.photo_url as string | undefined,
     });
-    this._redirect(res, redirectUrl);
+    resHelper.redirect(redirectUrl || this.redirectUrl);
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async verifyCredential(): Promise<AuthorizerVerifyResult<never>> {
+  async verifyCredential(): Promise<VerifyResult<never>> {
     return {
       success: false,
       code: 403,
@@ -134,13 +123,9 @@ export class TelegramServerAuthorizer
 
   async verifyRefreshment(
     data: TelegramAuthData
-  ): Promise<AuthorizerVerifyResult<TelegramAuthData>> {
-    if (data.botId !== this.bot.id) {
-      return {
-        success: false,
-        code: 400,
-        reason: 'bot not match',
-      };
+  ): Promise<VerifyResult<TelegramAuthData>> {
+    if (data.bot !== this.bot.id) {
+      return { success: false, code: 400, reason: 'bot not match' };
     }
 
     return {
@@ -150,23 +135,24 @@ export class TelegramServerAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async supplementContext(
-    data: TelegramAuthData
-  ): Promise<null | ContextSupplement<TelegramAuthContext>> {
-    return supplementContext(data);
+  checkAuthContext(data: TelegramAuthData): ContextResult<TelegramAuthContext> {
+    if (data.bot !== this.bot.id) {
+      return { success: false, code: 400, reason: 'bot not match' };
+    }
+
+    return {
+      success: true,
+      contextSupplment: supplementContext(data),
+    };
   }
 
-  private _redirect(res: ServerResponse, redirectUrl?: string) {
-    res.writeHead(302, { Location: redirectUrl || this.redirectUrl });
-    res.end();
-  }
-
-  private _verifyTelegramLogin(
+  private _verifyLoginQuery(
     query: ParsedUrlQuery
-  ): null | { code: number; message: string } {
+  ): [null | { code: number; message: string }, Omit<RawUser, 'is_bot'>] {
     const { hash } = query;
     if (typeof hash !== 'string') {
-      return { code: 400, message: 'invalid login parameters' };
+      const err = { code: 400, message: 'invalid login parameters' };
+      return [err, null as never];
     }
 
     const paramsCheckingString = LOGIN_PARAMETERS.reduce(
@@ -179,14 +165,25 @@ export class TelegramServerAuthorizer
       .digest('hex');
 
     if (hashedParams !== hash) {
-      return { code: 401, message: 'invalid login signature' };
+      const err = { code: 401, message: 'invalid login signature' };
+      return [err, null as never];
     }
 
     if (Number(query.auth_date as string) < Date.now() / 1000 - 20) {
-      return { code: 401, message: 'login expired' };
+      const err = { code: 401, message: 'login expired' };
+      return [err, null as never];
     }
 
-    return null;
+    return [
+      null,
+      {
+        id: Number(query.id),
+        username: query.username as string | undefined,
+        first_name: query.first_name as string,
+        last_name: query.last_name as string | undefined,
+        language_code: undefined,
+      },
+    ];
   }
 
   private async _checkChatMember(

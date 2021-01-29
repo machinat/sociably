@@ -1,15 +1,15 @@
 import invariant from 'invariant';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
-import type { ServerAuthorizer, ContextSupplement } from '@machinat/auth/types';
+import type { ServerAuthorizer, ContextResult } from '@machinat/auth/types';
 
 import { PLATFORM_CONFIGS_I } from '../interface';
 import { BotP } from '../bot';
-import { LINE } from '../constant';
+import { LINE, LiffContextOs } from '../constant';
 import { supplementContext } from './utils';
 import LineApiError from '../error';
 import type { LineRawUserProfile } from '../types';
-import type {
+import {
   LineAuthCredential,
   LineAuthData,
   LineAuthContext,
@@ -119,55 +119,59 @@ export class LineServerAuthorizer
     return {
       success: true,
       data: {
-        channelId: this.bot.channelId,
-        providerId: this.bot.providerId,
-        clientId: verifyBody.client_id,
-        userId,
-        groupId,
-        roomId,
-        os,
-        language,
+        channel: this.bot.channelId,
+        provider: this.bot.providerId,
+        client: verifyBody.client_id,
+        user: userId,
+        group: groupId,
+        room: roomId,
+        os:
+          os === 'ios'
+            ? LiffContextOs.Ios
+            : os === 'android'
+            ? LiffContextOs.Android
+            : LiffContextOs.Web,
+        lang: language,
         name: profileData?.displayName,
-        picture: profileData?.pictureUrl,
+        pic: profileData?.pictureUrl,
       },
     };
   }
 
   async verifyRefreshment(data: LineAuthData): Promise<LineVerifyAuthResult> {
-    const { providerId, channelId, clientId } = data;
-    if (providerId !== this.bot.providerId) {
-      return { success: false, code: 400, reason: 'invalid providerId' };
-    }
-    if (channelId !== this.bot.channelId) {
-      return { success: false, code: 400, reason: 'invalid channelId' };
-    }
-    if (!this._checkClientId(clientId)) {
-      return { success: false, code: 400, reason: 'invalid clientId' };
+    const [ok, code, reason] = this._checkAuthData(data);
+    if (!ok) {
+      return { success: false, code, reason };
     }
 
-    return {
-      success: true,
-      data,
-    };
+    return { success: true, data };
   }
 
-  async supplementContext(
-    data: LineAuthData
-  ): Promise<null | ContextSupplement<LineAuthContext>> {
-    const { providerId, channelId, clientId } = data;
-    if (
-      providerId !== this.bot.providerId ||
-      channelId !== this.bot.channelId ||
-      !this._checkClientId(clientId)
-    ) {
-      return null;
+  checkAuthContext(data: LineAuthData): ContextResult<LineAuthContext> {
+    const [ok, code, reason] = this._checkAuthData(data);
+    if (!ok) {
+      return { success: false, code, reason };
     }
 
-    return supplementContext(data);
+    return { success: true, contextSupplment: supplementContext(data) };
   }
 
   private _checkClientId(clientId: string) {
     return this.liffChannelIds.includes(clientId);
+  }
+
+  private _checkAuthData(data: LineAuthData): [boolean, number, string] {
+    const { provider, channel, client } = data;
+    if (provider !== this.bot.providerId) {
+      return [false, 400, 'provider not match'];
+    }
+    if (channel !== this.bot.channelId) {
+      return [false, 400, 'channel not match'];
+    }
+    if (!this._checkClientId(client)) {
+      return [false, 400, 'client not match'];
+    }
+    return [true, 0, ''];
   }
 }
 

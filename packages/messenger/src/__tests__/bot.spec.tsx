@@ -3,7 +3,7 @@ import moxy, { Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import Machinat from '@machinat/core';
 import _Renderer from '@machinat/core/renderer';
-import _Queue from '@machinat/core/queue';
+import Queue from '@machinat/core/queue';
 import _Engine from '@machinat/core/engine';
 import _Worker from '../worker';
 import { MessengerBot } from '../bot';
@@ -11,7 +11,6 @@ import GraphApiError from '../error';
 import { Image, Expression, QuickReply } from '../components';
 
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
-const Queue = _Queue as Moxy<typeof _Queue>;
 const Engine = _Engine as Moxy<typeof _Engine>;
 const Worker = _Worker as Moxy<typeof _Worker>;
 

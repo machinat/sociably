@@ -18,18 +18,17 @@ test('#fetchCredential() return not ok', async () => {
         `);
 });
 
-test('#supplementContext()', async () => {
+test('#checkAuthContext()', () => {
   const authData = {
-    botId: 12345,
-    channel: null,
+    bot: 12345,
+    chat: undefined,
     user: {
       id: 12345,
       first_name: 'Jojo',
       last_name: 'Doe',
       username: 'jojodoe',
     },
-    photoUrl: 'http://crazy.dm/stand.png',
-    chat: undefined,
+    photo: 'http://crazy.dm/stand.png',
   };
 
   const expectedUser = new TelegramUser(12345, {
@@ -40,27 +39,33 @@ test('#supplementContext()', async () => {
     username: 'jojodoe',
   });
 
-  await expect(authorizer.supplementContext(authData)).resolves.toEqual({
-    botId: 12345,
-    user: expectedUser,
-    channel: new TelegramChat(12345, {
-      type: 'private',
-      id: 12345,
-      first_name: 'Jojo',
-      last_name: 'Doe',
-      username: 'jojodoe',
-    }),
-    photoUrl: 'http://crazy.dm/stand.png',
+  expect(authorizer.checkAuthContext(authData)).toEqual({
+    success: true,
+    contextSupplment: {
+      botId: 12345,
+      user: expectedUser,
+      channel: new TelegramChat(12345, {
+        type: 'private',
+        id: 12345,
+        first_name: 'Jojo',
+        last_name: 'Doe',
+        username: 'jojodoe',
+      }),
+      photoUrl: 'http://crazy.dm/stand.png',
+    },
   });
-  await expect(
-    authorizer.supplementContext({
+  expect(
+    authorizer.checkAuthContext({
       ...authData,
       chat: { type: 'group', id: 67890 },
     })
-  ).resolves.toEqual({
-    botId: 12345,
-    user: expectedUser,
-    channel: new TelegramChat(12345, { type: 'group', id: 67890 }),
-    photoUrl: 'http://crazy.dm/stand.png',
+  ).toEqual({
+    success: true,
+    contextSupplment: {
+      botId: 12345,
+      user: expectedUser,
+      channel: new TelegramChat(12345, { type: 'group', id: 67890 }),
+      photoUrl: 'http://crazy.dm/stand.png',
+    },
   });
 });

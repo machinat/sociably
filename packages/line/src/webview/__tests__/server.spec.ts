@@ -6,6 +6,7 @@ import LineUser from '../../user';
 import { LineUserProfile } from '../../profiler';
 import LineApiError from '../../error';
 import { LineServerAuthorizer as ServerAuthorizer } from '../server';
+import { LiffContextOs } from '../../constant';
 
 const request = ({
   url: '/foo/auth/line',
@@ -92,12 +93,12 @@ describe('#verifyCredential(credential)', () => {
     await expect(authorizer.verifyCredential(credential)).resolves.toEqual({
       success: true,
       data: {
-        providerId: '_PROVIDER_ID_',
-        channelId: '_CHANNEL_ID_',
-        clientId: '_LOGIN_CHAN_2_',
-        os: 'ios',
-        language: 'zh-TW',
-        userId: '_USER_ID_',
+        provider: '_PROVIDER_ID_',
+        channel: '_CHANNEL_ID_',
+        client: '_LOGIN_CHAN_2_',
+        os: LiffContextOs.Ios,
+        lang: 'zh-TW',
+        user: '_USER_ID_',
       },
     });
 
@@ -129,15 +130,15 @@ describe('#verifyCredential(credential)', () => {
     ).resolves.toEqual({
       success: true,
       data: {
-        providerId: '_PROVIDER_ID_',
-        channelId: '_CHANNEL_ID_',
-        clientId: '_LOGIN_CHAN_2_',
-        os: 'ios',
-        language: 'zh-TW',
-        userId: '_USER_ID_',
-        groupId: '_GROUP_ID_',
+        provider: '_PROVIDER_ID_',
+        channel: '_CHANNEL_ID_',
+        client: '_LOGIN_CHAN_2_',
+        os: LiffContextOs.Ios,
+        lang: 'zh-TW',
+        user: '_USER_ID_',
+        group: '_GROUP_ID_',
         name: 'Jojo Deo',
-        picture: 'http://adventure.com/iran.jpg',
+        pic: 'http://adventure.com/iran.jpg',
       },
     });
 
@@ -176,15 +177,15 @@ describe('#verifyCredential(credential)', () => {
     ).resolves.toEqual({
       success: true,
       data: {
-        providerId: '_PROVIDER_ID_',
-        channelId: '_CHANNEL_ID_',
-        clientId: '_LOGIN_CHAN_2_',
-        os: 'ios',
-        language: 'zh-TW',
-        userId: '_USER_ID_',
-        roomId: '_ROOM_ID_',
+        provider: '_PROVIDER_ID_',
+        channel: '_CHANNEL_ID_',
+        client: '_LOGIN_CHAN_2_',
+        os: LiffContextOs.Ios,
+        lang: 'zh-TW',
+        user: '_USER_ID_',
+        room: '_ROOM_ID_',
         name: 'Jojo Deo',
-        picture: 'http://adventure.com/india.jpg',
+        pic: 'http://adventure.com/india.jpg',
       },
     });
 
@@ -278,16 +279,16 @@ describe('#verifyCredential(credential)', () => {
 
 describe('#verifyRefreshment()', () => {
   const authData = {
-    providerId: '_PROVIDER_ID_',
-    channelId: '_CHANNEL_ID_',
-    clientId: '_CLIENT_ID_',
-    os: 'ios' as const,
-    language: 'zh-TW',
-    userId: '_USER_ID_',
-    groupId: undefined,
-    roomId: undefined,
+    provider: '_PROVIDER_ID_',
+    channel: '_CHANNEL_ID_',
+    client: '_CLIENT_ID_',
+    os: LiffContextOs.Ios,
+    lang: 'zh-TW',
+    user: '_USER_ID_',
+    group: undefined,
+    room: undefined,
     name: undefined,
-    picture: undefined,
+    pic: undefined,
   };
 
   it('return success and original data', async () => {
@@ -309,12 +310,12 @@ describe('#verifyRefreshment()', () => {
     await expect(
       authorizer.verifyRefreshment({
         ...authData,
-        providerId: '_WORNG_PROVIDER_',
+        provider: '_WORNG_PROVIDER_',
       })
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "code": 400,
-              "reason": "invalid providerId",
+              "reason": "provider not match",
               "success": false,
             }
           `);
@@ -328,12 +329,12 @@ describe('#verifyRefreshment()', () => {
     await expect(
       authorizer.verifyRefreshment({
         ...authData,
-        channelId: '_WORNG_CHANNEL_',
+        channel: '_WORNG_CHANNEL_',
       })
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "code": 400,
-              "reason": "invalid channelId",
+              "reason": "channel not match",
               "success": false,
             }
           `);
@@ -347,151 +348,181 @@ describe('#verifyRefreshment()', () => {
     await expect(
       authorizer.verifyRefreshment({
         ...authData,
-        clientId: '_WORNG_CLIENT_',
+        client: '_WORNG_CLIENT_',
       })
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "code": 400,
-              "reason": "invalid clientId",
+              "reason": "client not match",
               "success": false,
             }
           `);
   });
 });
 
-describe('#supplementContext(data)', () => {
+describe('#checkAuthContext(data)', () => {
   const authData = {
-    providerId: '_PROVIDER_ID_',
-    channelId: '_CHANNEL_ID_',
-    clientId: '_CLIENT_ID_',
-    os: 'web' as const,
-    language: 'en-US',
-    userId: '_USER_ID_',
-    groupId: undefined,
-    roomId: undefined,
+    provider: '_PROVIDER_ID_',
+    channel: '_CHANNEL_ID_',
+    client: '_CLIENT_ID_',
+    os: LiffContextOs.Web,
+    lang: 'en-US',
+    user: '_USER_ID_',
+    group: undefined,
+    room: undefined,
     name: undefined,
-    picture: undefined,
+    pic: undefined,
   };
 
-  it('resolve utou chat', async () => {
+  it('resolve private chat', () => {
     const authorizer = new ServerAuthorizer(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
-    await expect(authorizer.supplementContext(authData)).resolves.toEqual({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_CHANNEL_ID_',
-      clientId: '_CLIENT_ID_',
-      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-      channel: new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'),
-      profile: null,
-      os: 'web',
-      language: 'en-US',
+    expect(authorizer.checkAuthContext(authData)).toEqual({
+      success: true,
+      contextSupplment: {
+        providerId: '_PROVIDER_ID_',
+        channelId: '_CHANNEL_ID_',
+        clientId: '_CLIENT_ID_',
+        user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+        channel: new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'),
+        profile: null,
+        os: 'web',
+        language: 'en-US',
+      },
     });
   });
 
-  it('resolve group chat', async () => {
+  it('resolve group chat', () => {
     const authorizer = new ServerAuthorizer(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
-    await expect(
-      authorizer.supplementContext({
+    expect(
+      authorizer.checkAuthContext({
         ...authData,
+        os: LiffContextOs.Ios,
+        lang: 'zh-TW',
+        group: '_GROUP_ID_',
+      })
+    ).toEqual({
+      success: true,
+      contextSupplment: {
+        providerId: '_PROVIDER_ID_',
+        channelId: '_CHANNEL_ID_',
+        clientId: '_CLIENT_ID_',
+        user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+        channel: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
+        profile: null,
         os: 'ios',
         language: 'zh-TW',
-        groupId: '_GROUP_ID_',
-      })
-    ).resolves.toEqual({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_CHANNEL_ID_',
-      clientId: '_CLIENT_ID_',
-      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-      channel: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
-      profile: null,
-      os: 'ios',
-      language: 'zh-TW',
+      },
     });
   });
 
-  it('resolve room chat', async () => {
+  it('resolve room chat', () => {
     const authorizer = new ServerAuthorizer(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
-    await expect(
-      authorizer.supplementContext({
+    expect(
+      authorizer.checkAuthContext({
         ...authData,
+        os: LiffContextOs.Android,
+        lang: 'jp',
+        room: '_ROOM_ID_',
+      })
+    ).toEqual({
+      success: true,
+      contextSupplment: {
+        providerId: '_PROVIDER_ID_',
+        channelId: '_CHANNEL_ID_',
+        clientId: '_CLIENT_ID_',
+        user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+        channel: new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'),
+        profile: null,
         os: 'android',
         language: 'jp',
-        roomId: '_ROOM_ID_',
-      })
-    ).resolves.toEqual({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_CHANNEL_ID_',
-      clientId: '_CLIENT_ID_',
-      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-      channel: new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'),
-      profile: null,
-      os: 'android',
-      language: 'jp',
+      },
     });
   });
 
-  it('resolve profile if profile data proivded', async () => {
+  it('resolve profile if profile data proivded', () => {
     const authorizer = new ServerAuthorizer(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
-    await expect(
-      authorizer.supplementContext({
+    expect(
+      authorizer.checkAuthContext({
         ...authData,
-        os: 'ios',
-        userId: '_USER_ID_',
-        groupId: '_GROUP_ID_',
+        os: LiffContextOs.Ios,
+        user: '_USER_ID_',
+        group: '_GROUP_ID_',
         name: 'Jojo Doe',
-        picture: 'http://advanture.com/Egypt.jpg',
+        pic: 'http://advanture.com/Egypt.jpg',
       })
-    ).resolves.toEqual({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_CHANNEL_ID_',
-      clientId: '_CLIENT_ID_',
-      user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-      channel: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
-      profile: new LineUserProfile({
-        userId: '_USER_ID_',
-        displayName: 'Jojo Doe',
-        pictureUrl: 'http://advanture.com/Egypt.jpg',
-      }),
-      os: 'ios',
-      language: 'en-US',
+    ).toEqual({
+      success: true,
+      contextSupplment: {
+        providerId: '_PROVIDER_ID_',
+        channelId: '_CHANNEL_ID_',
+        clientId: '_CLIENT_ID_',
+        user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+        channel: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
+        profile: new LineUserProfile({
+          userId: '_USER_ID_',
+          displayName: 'Jojo Doe',
+          pictureUrl: 'http://advanture.com/Egypt.jpg',
+        }),
+        os: 'ios',
+        language: 'en-US',
+      },
     });
   });
 
-  it('return null id providerId, channelId or clientId not matched', async () => {
+  it('fail if id providerId, channelId or clientId not matched', () => {
     const authorizer = new ServerAuthorizer(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
-    await expect(
-      authorizer.supplementContext({
+    expect(
+      authorizer.checkAuthContext({
         ...authData,
-        providerId: '_WRONG_PROVIDER_',
+        provider: '_WRONG_PROVIDER_',
       })
-    ).resolves.toBe(null);
+    ).toMatchInlineSnapshot(`
+      Object {
+        "code": 400,
+        "reason": "provider not match",
+        "success": false,
+      }
+    `);
 
-    await expect(
-      authorizer.supplementContext({
+    expect(
+      authorizer.checkAuthContext({
         ...authData,
-        channelId: '_WRONG_CHANNEL_',
+        channel: '_WRONG_CHANNEL_',
       })
-    ).resolves.toBe(null);
+    ).toMatchInlineSnapshot(`
+      Object {
+        "code": 400,
+        "reason": "channel not match",
+        "success": false,
+      }
+    `);
 
-    await expect(
-      authorizer.supplementContext({
+    expect(
+      authorizer.checkAuthContext({
         ...authData,
-        clientId: '_WRONG_CLIENT_',
+        client: '_WRONG_CLIENT_',
       })
-    ).resolves.toBe(null);
+    ).toMatchInlineSnapshot(`
+      Object {
+        "code": 400,
+        "reason": "client not match",
+        "success": false,
+      }
+    `);
   });
 });

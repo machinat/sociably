@@ -3,6 +3,7 @@ import moxy, { Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import fetch from 'node-fetch';
 import jsonwebtoken from 'jsonwebtoken';
+import AuthError from '../../error';
 import type { AnyClientAuthorizer } from '../../types';
 import AuthClient from '../client';
 
@@ -56,11 +57,14 @@ const fooAuthorizer = moxy<AnyClientAuthorizer>({
       credential: { foo: 'credential' },
     };
   },
-  async supplementContext() {
+  checkAuthContext() {
     return {
-      user: fooUser,
-      channel: fooChannel,
-      foo: fooData,
+      success: true,
+      contextSupplment: {
+        user: fooUser,
+        channel: fooChannel,
+        foo: fooData,
+      },
     };
   },
 });
@@ -77,17 +81,20 @@ const barAuthorizer = moxy<AnyClientAuthorizer>({
       reason: "I'm drunk",
     };
   },
-  async supplementContext() {
+  checkAuthContext() {
     return {
-      user: { platform: 'bar', uid: 'jojo_doe' },
-      channel: { platform: 'bar', uid: 'bar.channel' },
-      bar: 'bar.data',
+      success: true,
+      contextSupplment: {
+        user: { platform: 'bar', uid: 'jojo_doe' },
+        channel: { platform: 'bar', uid: 'bar.channel' },
+        bar: 'bar.data',
+      },
     };
   },
 });
 
 const authorizers = [fooAuthorizer, barAuthorizer];
-const serverUrl = '/auth';
+const apiUrl = '/auth';
 
 jest.useFakeTimers();
 
@@ -129,16 +136,15 @@ afterEach(() => {
 
 describe('#constructor(options)', () => {
   test('basic props', () => {
-    let controller = new AuthClient({ authorizers, serverUrl });
+    let controller = new AuthClient({ authorizers, apiUrl });
     expect(controller.authorizers).toEqual(authorizers);
-    expect(controller.serverUrl).toBe('/auth');
     expect(controller.refreshLeadTime).toBe(300);
     expect(controller.platform).toBe('foo');
     expect(controller.isAuthorizing).toBe(true);
 
     controller = new AuthClient({
       authorizers,
-      serverUrl,
+      apiUrl,
       platform: 'bar',
       refreshLeadTime: 999,
     });
@@ -150,13 +156,12 @@ describe('#constructor(options)', () => {
 
   it('throw if provider is empty', () => {
     expect(
-      () =>
-        new AuthClient({ authorizers: undefined as never, serverUrl: '/auth' })
+      () => new AuthClient({ authorizers: undefined as never, apiUrl: '/auth' })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.authorizers must not be empty"`
     );
     expect(
-      () => new AuthClient({ authorizers: [], serverUrl: '/auth' })
+      () => new AuthClient({ authorizers: [], apiUrl: '/auth' })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.authorizers must not be empty"`
     );
@@ -164,16 +169,14 @@ describe('#constructor(options)', () => {
 
   it('throw if serverUrl is empty', () => {
     expect(
-      () => new AuthClient({ authorizers, serverUrl: undefined as never })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.serverUrl must not be empty"`
-    );
+      () => new AuthClient({ authorizers, apiUrl: undefined as never })
+    ).toThrowErrorMatchingInlineSnapshot(`"options.apiUrl must not be empty"`);
   });
 });
 
 describe('bootstraping', () => {
   it('call provider.init() of the corresonded platform', async () => {
-    const controller = new AuthClient({ authorizers, serverUrl });
+    const controller = new AuthClient({ authorizers, apiUrl });
 
     expect(controller.platform).toBe('foo');
     expect(controller.isAuthorizing).toBe(true);
@@ -229,7 +232,7 @@ describe('bootstraping', () => {
       const controller = new AuthClient({
         platform: param,
         authorizers,
-        serverUrl: '/auth',
+        apiUrl: '/auth',
       });
 
       expect(controller.platform).toBe(expectedPlatform);
@@ -240,15 +243,19 @@ describe('bootstraping', () => {
         expect(fooAuthorizer.init.mock).toHaveBeenCalledTimes(1);
         expect(fooAuthorizer.init.mock).toHaveBeenCalledWith(
           'https://machinat.io/auth/foo',
-          cookieAuthed === 'foo' ? { foo: '__DATA__' } : null,
-          cookieErrored === 'foo' ? { code: 418, reason: "I'm a teapot" } : null
+          cookieErrored === 'foo'
+            ? new AuthError('foo', 418, "I'm a teapot")
+            : null,
+          cookieAuthed === 'foo' ? { foo: '__DATA__' } : null
         );
       } else if (expectedPlatform === 'bar') {
         expect(barAuthorizer.init.mock).toHaveBeenCalledTimes(1);
         expect(barAuthorizer.init.mock).toHaveBeenCalledWith(
           'https://machinat.io/auth/bar',
-          cookieAuthed === 'bar' ? { bar: '__DATA__' } : null,
-          cookieErrored === 'bar' ? { code: 418, reason: "I'm a teapot" } : null
+          cookieErrored === 'bar'
+            ? new AuthError('bar', 418, "I'm a teapot")
+            : null,
+          cookieAuthed === 'bar' ? { bar: '__DATA__' } : null
         );
       }
 
@@ -267,7 +274,7 @@ describe('bootstraping', () => {
       scope: { domain: 'machinat.io', path: '/entry' },
     });
 
-    const controller = new AuthClient({ authorizers, serverUrl });
+    const controller = new AuthClient({ authorizers, apiUrl });
 
     expect(document.mock.setter('cookie')).toHaveBeenCalledTimes(1);
     expect(
@@ -283,7 +290,7 @@ describe('bootstraping', () => {
     const controller = new AuthClient({
       platform: 'baz',
       authorizers,
-      serverUrl,
+      apiUrl,
     });
     const errorSpy = moxy();
     controller.on('error', errorSpy);
@@ -299,7 +306,7 @@ describe('bootstraping', () => {
   test('no platform specified or paltform unknown', async () => {
     location.mock.getter('search').fakeReturnValue('');
 
-    const controller = new AuthClient({ authorizers, serverUrl });
+    const controller = new AuthClient({ authorizers, apiUrl });
     const errorSpy = moxy();
     controller.on('error', errorSpy);
 
@@ -340,7 +347,7 @@ describe('bootstraping', () => {
     const controller = new AuthClient({
       platform: 'foo',
       authorizers,
-      serverUrl,
+      apiUrl,
     });
     expect(controller.isAuthorizing).toBe(true);
 
@@ -357,7 +364,7 @@ describe('bootstraping', () => {
     const controller = new AuthClient({
       platform: 'foo',
       authorizers,
-      serverUrl,
+      apiUrl,
     });
     expect(controller.isAuthorizing).toBe(true);
     expect(controller.platform).toBe('foo');
@@ -400,7 +407,7 @@ describe('bootstraping', () => {
     const controller = new AuthClient({
       platform: 'foo',
       authorizers,
-      serverUrl,
+      apiUrl,
     });
     expect(controller.isAuthorizing).toBe(true);
 
@@ -443,7 +450,7 @@ describe('signing auth', () => {
     const controller = new AuthClient({
       platform: 'foo',
       authorizers,
-      serverUrl,
+      apiUrl,
     });
     expect(controller.isAuthorizing).toBe(true);
     expect(controller.isAuthorized).toBe(false);
@@ -456,8 +463,8 @@ describe('signing auth', () => {
     expect(controller.isAuthorized).toBe(true);
     expect(controller.isAuthorizing).toBe(false);
 
-    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledWith({
+    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
@@ -472,7 +479,7 @@ describe('signing auth', () => {
     const controller = new AuthClient({
       platform: 'foo',
       authorizers,
-      serverUrl,
+      apiUrl,
     });
     expect(controller.isAuthorizing).toBe(true);
     expect(controller.isAuthorized).toBe(false);
@@ -496,7 +503,7 @@ describe('signing auth', () => {
     const controller = new AuthClient({
       platform: 'foo',
       authorizers,
-      serverUrl,
+      apiUrl,
     });
 
     await expect(controller.auth()).resolves.toEqual({
@@ -510,8 +517,8 @@ describe('signing auth', () => {
     expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledWith(
       'https://machinat.io/auth/foo'
     );
-    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledWith({
+    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
@@ -527,7 +534,7 @@ describe('signing auth', () => {
     const controller = new AuthClient({
       platform: 'foo',
       authorizers,
-      serverUrl,
+      apiUrl,
     });
 
     const expectedResult = { token, context: expectedContext };
@@ -543,7 +550,7 @@ describe('signing auth', () => {
     expect(signingCall.isDone()).toBe(true);
     expect(controller.isAuthorized).toBe(true);
     expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledTimes(1);
   });
 
   it('sign again if token in cookie expired', async () => {
@@ -565,7 +572,7 @@ describe('signing auth', () => {
     const controller = new AuthClient({
       platform: 'foo',
       authorizers,
-      serverUrl,
+      apiUrl,
     });
 
     await expect(controller.auth()).resolves.toEqual({
@@ -587,7 +594,7 @@ describe('signing auth', () => {
     const controller = new AuthClient({
       platform: 'foo',
       authorizers,
-      serverUrl,
+      apiUrl,
     });
 
     await expect(controller.auth()).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -597,10 +604,10 @@ describe('signing auth', () => {
     expect(signingCall.isDone()).toBe(true);
     expect(controller.isAuthorized).toBe(false);
     expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.supplementContext.mock).not.toHaveBeenCalled();
+    expect(fooAuthorizer.checkAuthContext.mock).not.toHaveBeenCalled();
   });
 
-  it('throw if provider.supplementContext() resolve null', async () => {
+  it('throw if provider.checkAuthContext() fail', async () => {
     const signingCall = serverEntry
       .post('/auth/_sign', {
         platform: 'foo',
@@ -611,12 +618,16 @@ describe('signing auth', () => {
         token,
       });
 
-    fooAuthorizer.supplementContext.mock.fake(() => null);
+    fooAuthorizer.checkAuthContext.mock.fake(() => ({
+      success: false,
+      code: 400,
+      reason: 'bad data',
+    }));
 
     const controller = new AuthClient({
       platform: 'foo',
       authorizers,
-      serverUrl,
+      apiUrl,
     });
 
     await expect(controller.auth()).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -626,8 +637,8 @@ describe('signing auth', () => {
     expect(signingCall.isDone()).toBe(true);
     expect(controller.isAuthorized).toBe(false);
     expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledWith({
+    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
@@ -643,7 +654,7 @@ describe('signing auth', () => {
         token,
       });
 
-    const controller = new AuthClient({ authorizers, serverUrl });
+    const controller = new AuthClient({ authorizers, apiUrl });
 
     const promise = controller.auth();
     (Date as Moxy<DateConstructor>).now.mock.fake(() => FAKE_NOW + 50);
@@ -680,7 +691,7 @@ describe('auth refreshment and expiry', () => {
 
     const controller = new AuthClient({
       authorizers,
-      serverUrl,
+      apiUrl,
       refreshLeadTime: 10,
     });
     controller.on('expire', expireSpy);
@@ -741,7 +752,7 @@ describe('auth refreshment and expiry', () => {
 
     const controller = new AuthClient({
       authorizers,
-      serverUrl,
+      apiUrl,
       refreshLeadTime: 10,
     });
     controller.on('expire', expireSpy);
@@ -792,7 +803,7 @@ describe('auth refreshment and expiry', () => {
 
     const controller = new AuthClient({
       authorizers,
-      serverUrl,
+      apiUrl,
       refreshLeadTime: 10,
     });
     controller.on('expire', expireSpy);
@@ -856,7 +867,7 @@ describe('auth refreshment and expiry', () => {
 
     const controller = new AuthClient({
       authorizers,
-      serverUrl,
+      apiUrl,
       refreshLeadTime: 10,
     });
     controller.on('expire', expireSpy);
@@ -909,7 +920,7 @@ describe('auth refreshment and expiry', () => {
 
     const controller = new AuthClient({
       authorizers,
-      serverUrl,
+      apiUrl,
       refreshLeadTime: 10,
     });
     controller.on('expire', expireSpy);
@@ -965,7 +976,7 @@ describe('auth refreshment and expiry', () => {
 
     const controller = new AuthClient({
       authorizers,
-      serverUrl,
+      apiUrl,
       refreshLeadTime: 10,
     });
     controller.on('expire', expireSpy);
@@ -1019,7 +1030,7 @@ test('#signOut()', async () => {
     refreshTill: SEC_NOW + 99999,
   });
 
-  const controller = new AuthClient({ authorizers, serverUrl });
+  const controller = new AuthClient({ authorizers, apiUrl });
   const expireSpy = moxy();
   const errorSpy = moxy();
   controller.on('expire', expireSpy);

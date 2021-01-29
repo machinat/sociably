@@ -1,7 +1,7 @@
 // eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import invariant from 'invariant';
-import type { ClientAuthorizer, ContextSupplement } from '@machinat/auth/types';
+import type { ClientAuthorizer, ContextResult } from '@machinat/auth/types';
 import { LINE } from '../constant';
 import { supplementContext } from './utils';
 import type {
@@ -15,10 +15,7 @@ import type {
 type ClientAuthorizerOptions = {
   liffId: string;
   shouldLoadSDK?: boolean;
-  userToBot?: boolean;
 };
-
-const BOT_CHANNEL_LABEL_QUERY_KEY = 'userToBot';
 
 const waitingForRedirecting = (): Promise<never> =>
   new Promise((_, reject) => {
@@ -33,26 +30,17 @@ class LineClientAuthorizer
   liff: any;
   liffId: string;
   shouldLoadSDK: boolean;
-  isOnUserToBotChat: boolean;
   private _searchParams: URLSearchParams;
 
   platform = LINE;
 
-  constructor({
-    liffId,
-    shouldLoadSDK = true,
-    userToBot,
-  }: ClientAuthorizerOptions) {
-    invariant(liffId, 'options.liffId must not be empty');
+  constructor(options: ClientAuthorizerOptions) {
+    invariant(options?.liffId, 'options.liffId must not be empty');
+    const { liffId, shouldLoadSDK = true } = options;
 
     this.liffId = liffId;
     this.shouldLoadSDK = shouldLoadSDK;
-
     this._searchParams = new URLSearchParams(window.location.search);
-    this.isOnUserToBotChat =
-      typeof userToBot === 'boolean'
-        ? userToBot
-        : this._searchParams.get(BOT_CHANNEL_LABEL_QUERY_KEY) === 'true';
   }
 
   async init(): Promise<void> {
@@ -104,10 +92,11 @@ class LineClientAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async supplementContext(
-    data: LineAuthData
-  ): Promise<null | ContextSupplement<LineAuthContext>> {
-    return supplementContext(data);
+  checkAuthContext(data: LineAuthData): ContextResult<LineAuthContext> {
+    return {
+      success: true,
+      contextSupplment: supplementContext(data),
+    };
   }
 }
 

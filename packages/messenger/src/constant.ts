@@ -32,3 +32,9 @@ export const PATH_MESSENGER_PROFILE = 'me/messenger_profile';
 
 /** @internal */
 export const PATH_PERSONAS = 'me/personas';
+
+export enum MessengerChatType {
+  UserToPage,
+  UserToUser,
+  Group,
+}

@@ -3,7 +3,6 @@ import jsonwebtoken from 'jsonwebtoken';
 import { Readable } from 'stream';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import { AuthController } from '../controller';
-import { CookieAccessor } from '../cookie';
 import { AnyServerAuthorizer } from '../types';
 
 const getCookies = (res) => {
@@ -63,11 +62,14 @@ const fooAuthorizer: Moxy<AnyServerAuthorizer> = moxy({
   async verifyRefreshment() {
     return { success: true, data: { foo: 'data' } };
   },
-  async supplementContext() {
+  checkAuthContext() {
     return {
-      user: { platform: 'foo', uid: 'john_doe' },
-      channel: { platform: 'foo', uid: 'foo.channel' },
-      foo: 'foo.data',
+      success: true,
+      contextSupplment: {
+        user: { platform: 'foo', uid: 'john_doe' },
+        channel: { platform: 'foo', uid: 'foo.channel' },
+        foo: 'foo.data',
+      },
     };
   },
 });
@@ -81,17 +83,21 @@ const barAuhtorizer: Moxy<AnyServerAuthorizer> = moxy({
   async verifyRefreshment() {
     return { success: false, code: 400, reason: 'bar' };
   },
-  async supplementContext() {
+  checkAuthContext() {
     return {
-      user: { platform: 'bar', uid: 'jojo_doe' },
-      channel: { platform: 'bar', uid: 'bar.channel' },
-      bar: 'bar.data',
+      success: true,
+      contextSupplment: {
+        user: { platform: 'bar', uid: 'jojo_doe' },
+        channel: { platform: 'bar', uid: 'bar.channel' },
+        bar: 'bar.data',
+      },
     };
   },
 });
 
 const authorizers = [fooAuthorizer, barAuhtorizer];
 const secret = '__SECRET__';
+const redirectUrl = '/webview';
 
 beforeEach(() => {
   fooAuthorizer.mock.reset();
@@ -109,39 +115,81 @@ afterAll(() => {
 
 describe('#constructor()', () => {
   it('initiate ok', () => {
-    const controller = new AuthController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret, redirectUrl });
     expect(controller.authorizers).toBe(authorizers);
     expect(controller.secret).toBe(secret);
   });
 
   it('throw if options.authorizers is empty', () => {
     expect(
-      () => new AuthController([], { secret })
+      () => new AuthController([], { secret, redirectUrl })
     ).toThrowErrorMatchingInlineSnapshot(`"authorizers must not be empty"`);
     expect(
-      () => new AuthController(null as any, { secret })
+      () => new AuthController(null as any, { secret, redirectUrl })
     ).toThrowErrorMatchingInlineSnapshot(`"authorizers must not be empty"`);
   });
 
   it('throw if options.secret is empty', () => {
     expect(
-      () => new AuthController(authorizers, undefined as any)
+      () => new AuthController(authorizers, { redirectUrl } as any)
     ).toThrowErrorMatchingInlineSnapshot(`"options.secret must not be empty"`);
     expect(
-      () => new AuthController(authorizers, { secret: '' })
+      () => new AuthController(authorizers, { secret: '', redirectUrl })
     ).toThrowErrorMatchingInlineSnapshot(`"options.secret must not be empty"`);
   });
 
-  it('check entryPath is a subpath of cookiePath if both given', () => {
+  it('throw if options.redirectUrl is empty', () => {
+    expect(
+      () => new AuthController(authorizers, { secret } as any)
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"options.redirectUrl must not be empty"`
+    );
+    expect(
+      () => new AuthController(authorizers, { redirectUrl: '', secret })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"options.redirectUrl must not be empty"`
+    );
+  });
+
+  it("throw if entryPath isn't a subpath of cookiePath when both given", () => {
     expect(
       () =>
         new AuthController(authorizers, {
           secret,
+          redirectUrl: '/app/webview',
           entryPath: '/auth',
-          cookiePath: '/api',
+          cookiePath: '/app',
         })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.entryPath should be a subpath of options.cookiePath"`
+    );
+  });
+
+  it("throw if redirectUrl isn't under subpath of cookiePath", () => {
+    expect(
+      () =>
+        new AuthController(authorizers, {
+          secret,
+          redirectUrl: '/webview',
+          entryPath: '/app/auth',
+          cookiePath: '/app',
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"options.redirectUrl should be under cookie scope \\"/app\\""`
+    );
+  });
+
+  it("throw if redirectUrl isn't under subdomain of cookieDomain", () => {
+    expect(
+      () =>
+        new AuthController(authorizers, {
+          secret,
+          redirectUrl: 'view.pachinat.io',
+          entryPath: '/auth',
+          cookieDomain: 'api.machinat.io',
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"options.redirectUrl should be under cookie scope \\"//api.machinat.io/\\""`
     );
   });
 });
@@ -156,6 +204,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 403 if being called outside fo entryPath scope', async () => {
       const controller = new AuthController(authorizers, {
         secret,
+        redirectUrl,
         entryPath: '/auth',
       });
 
@@ -188,7 +237,10 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 403 if being called on entryPath directly', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       const req = prepareReq('GET', 'https://auth.machinat.com', {}, '');
 
       await controller.delegateAuthRequest(req, res);
@@ -206,7 +258,10 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('delegate to provider correponded to the platform in the route', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       res.mock.getter('finished').fakeReturnValue(true);
 
       let req = prepareReq('GET', 'https://auth.machinat.com/foo', {}, '');
@@ -216,7 +271,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(fooAuthorizer.delegateAuthRequest.mock).toHaveBeenCalledWith(
         req,
         res,
-        expect.any(CookieAccessor),
+        expect.any(Object),
         { originalPath: '/foo', matchedPath: '/foo', trailingPath: '' }
       );
 
@@ -227,7 +282,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(barAuhtorizer.delegateAuthRequest.mock).toHaveBeenCalledWith(
         req,
         res,
-        expect.any(CookieAccessor),
+        expect.any(Object),
         { originalPath: '/bar/baz', matchedPath: '/bar', trailingPath: 'baz' }
       );
 
@@ -235,7 +290,10 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 501 if res not closed by provider', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       const req = prepareReq('GET', 'https://auth.machinat.com/foo', {}, '');
 
       await controller.delegateAuthRequest(req, res);
@@ -250,12 +308,16 @@ describe('#delegateAuthRequest(req, res)', () => {
             "code": 501,
             "reason": "connection not closed by authorizer",
           },
+          "platform": "foo",
         }
       `);
     });
 
     it('respond 404 if no matched provider', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       const req = prepareReq('GET', 'https://auth.machinat.com/baz', {}, '');
 
       await controller.delegateAuthRequest(req, res);
@@ -278,7 +340,10 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 404 if unknown private api called', async () => {
       const req = prepareReq('POST', 'https://machinat.com/_unknown', {}, '');
 
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(req, res);
 
       expect(fooAuthorizer.mock).not.toHaveBeenCalled();
@@ -297,7 +362,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
   });
 
-  describe('passing CookieAccessor to provider', () => {
+  describe('cookie accessor helper', () => {
     function getDelegateArgs(controller) {
       const req = moxy(new IncomingMessage({} as never));
       const res = moxy(new ServerResponse({} as never));
@@ -309,7 +374,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       return fooAuthorizer.delegateAuthRequest.mock.calls.slice(-1)[0].args;
     }
 
-    test('set state cookie', async () => {
+    test('.issueState(data)', async () => {
       async function testIssueState(controller) {
         const [, res, cookieAccessor] = getDelegateArgs(controller);
 
@@ -323,6 +388,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const controller = new AuthController(authorizers, {
         secret,
+        redirectUrl,
         entryPath: '/auth',
       });
 
@@ -349,10 +415,11 @@ describe('#delegateAuthRequest(req, res)', () => {
       [cookies, payload] = await testIssueState(
         new AuthController(authorizers, {
           secret,
-          entryPath: '/api/auth',
+          redirectUrl: '/app/pages',
+          entryPath: '/app/auth',
           dataCookieAge: 99,
           cookieDomain: 'machinat.io',
-          cookiePath: '/api',
+          cookiePath: '/app',
           sameSite: 'none',
           secure: false,
         })
@@ -360,7 +427,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_state" => Object {
-            "directives": "HttpOnly; Max-Age=99; Path=/api/auth; SameSite=None",
+            "directives": "HttpOnly; Max-Age=99; Path=/app/auth; SameSite=None",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInN0YXRlIjp7ImZvbyI6InN0YXRlIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDAwMDk5fQ.pSU15ehXOSHEy2gcyNLDz_XiYqm_477JgWsr082koQc",
           },
         }
@@ -377,10 +444,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       `);
     });
 
-    test('set auth cookie', async () => {
-      async function testIssueAuth(
-        ...[controller, issueOpts]: Parameters<CookieAccessor['issueAuth']>
-      ) {
+    test('.issueAuth(data, options)', async () => {
+      async function testIssueAuth(controller, issueOpts?) {
         const [, res, cookieAccessor] = getDelegateArgs(controller);
         const token = await cookieAccessor.issueAuth(
           { foo: 'data' },
@@ -404,17 +469,20 @@ describe('#delegateAuthRequest(req, res)', () => {
         return [cookies, payload];
       }
 
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       let [cookies, payload] = await testIssueAuth(controller);
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_signature" => Object {
             "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
-            "value": "Ribu0b3gs8XWVUGhCl7ML5R59N3C4WBTz6GVocXtGcw",
+            "value": "8kIrJgTaziNMXKlHLGKRPXNzTLpC3moIQV9vBKmLOQM",
           },
           "machinat_auth_token" => Object {
-            "directives": "Max-Age=180; Path=/; SameSite=Lax; Secure",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDA4NjQwMCwic2NvcGUiOnsicGF0aCI6Ii8ifSwiaWF0IjoxNTcwMDAwMDAwLCJleHAiOjE1NzAwMDE4MDB9",
+            "directives": "Max-Age=600; Path=/; SameSite=Lax; Secure",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDA4NjQwMCwic2NvcGUiOnsicGF0aCI6Ii8ifSwiaWF0IjoxNTcwMDAwMDAwLCJleHAiOjE1NzAwMDM2MDB9",
           },
           "machinat_auth_state" => Object {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
@@ -431,7 +499,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "data": Object {
             "foo": "data",
           },
-          "exp": 1570001800,
+          "exp": 1570003600,
           "iat": 1570000000,
           "platform": "foo",
           "refreshTill": 1570086400,
@@ -443,11 +511,13 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const customizedController = new AuthController(authorizers, {
         secret,
-        entryPath: '/api/auth',
+        redirectUrl: '/app/pages',
+        entryPath: '/app/auth',
+        authCookieAge: 999,
         tokenAge: 9999,
         refreshPeriod: 99999,
         cookieDomain: 'machinat.io',
-        cookiePath: '/api',
+        cookiePath: '/app',
         sameSite: 'none',
         secure: false,
       });
@@ -456,19 +526,19 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_signature" => Object {
-            "directives": "Domain=machinat.io; HttpOnly; Path=/api; SameSite=None",
-            "value": "qrEfXnV85AWUk-mXEJBiTEomYp6Mylej3uU7O8KSWF0",
+            "directives": "Domain=machinat.io; HttpOnly; Path=/app; SameSite=None",
+            "value": "-cVGfumsXdwJOZZbeVttI4zdxEH8f7ojfH6W0wKZ6qo",
           },
           "machinat_auth_token" => Object {
-            "directives": "Domain=machinat.io; Max-Age=180; Path=/api; SameSite=None",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDA5OTk5OSwic2NvcGUiOnsiZG9tYWluIjoibWFjaGluYXQuaW8iLCJwYXRoIjoiL2FwaSJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwOTk5OX0",
+            "directives": "Domain=machinat.io; Max-Age=999; Path=/app; SameSite=None",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDA5OTk5OSwic2NvcGUiOnsiZG9tYWluIjoibWFjaGluYXQuaW8iLCJwYXRoIjoiL2FwcCJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwOTk5OX0",
           },
           "machinat_auth_state" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_error" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
             "value": "",
           },
         }
@@ -484,7 +554,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "refreshTill": 1570099999,
           "scope": Object {
             "domain": "machinat.io",
-            "path": "/api",
+            "path": "/app",
           },
         }
       `);
@@ -504,7 +574,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "refreshTill": 1570012345,
           "scope": Object {
             "domain": "machinat.io",
-            "path": "/api",
+            "path": "/app",
           },
         }
       `);
@@ -523,7 +593,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "refreshTill": 1570012345,
           "scope": Object {
             "domain": "machinat.io",
-            "path": "/api",
+            "path": "/app",
           },
         }
       `);
@@ -542,7 +612,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "platform": "foo",
           "scope": Object {
             "domain": "machinat.io",
-            "path": "/api",
+            "path": "/app",
           },
         }
       `);
@@ -561,13 +631,13 @@ describe('#delegateAuthRequest(req, res)', () => {
           "refreshTill": 1570099999,
           "scope": Object {
             "domain": "machinat.io",
-            "path": "/api",
+            "path": "/app",
           },
         }
       `);
     });
 
-    it('set error cookie', async () => {
+    it('.issueError(code, reason)', async () => {
       async function testIssueError(controller) {
         const [, res, cookieAccessor] = getDelegateArgs(controller);
 
@@ -581,8 +651,10 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const controller = new AuthController(authorizers, {
         secret,
+        redirectUrl,
         entryPath: '/auth',
       });
+
       let [cookies, payload] = await testIssueError(controller);
       expect(cookies).toMatchInlineSnapshot(`
         Map {
@@ -621,10 +693,11 @@ describe('#delegateAuthRequest(req, res)', () => {
       [cookies, payload] = await testIssueError(
         new AuthController(authorizers, {
           secret,
-          entryPath: '/api/auth',
+          redirectUrl: '/app/pages',
+          entryPath: '/app/auth',
           dataCookieAge: 99,
           cookieDomain: 'machinat.io',
-          cookiePath: '/api',
+          cookiePath: '/app',
           sameSite: 'none',
           secure: false,
         })
@@ -632,19 +705,19 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_error" => Object {
-            "directives": "Domain=machinat.io; Max-Age=99; Path=/api; SameSite=None",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7ImRvbWFpbiI6Im1hY2hpbmF0LmlvIiwicGF0aCI6Ii9hcGkifSwiaWF0IjoxNTcwMDAwMDAwfQ.fUDnYLpCFTR8nlsxMPoqdRzApkQRZ1lw86uEJTB_6Z8",
+            "directives": "Domain=machinat.io; Max-Age=99; Path=/app; SameSite=None",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7ImRvbWFpbiI6Im1hY2hpbmF0LmlvIiwicGF0aCI6Ii9hcHAifSwiaWF0IjoxNTcwMDAwMDAwfQ.Tmq9hADHYlUr4mvOg-V9MZrfW_o6TRqgRMDDn_zZkXI",
           },
           "machinat_auth_state" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_signature" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_token" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
             "value": "",
           },
         }
@@ -659,15 +732,15 @@ describe('#delegateAuthRequest(req, res)', () => {
           "platform": "foo",
           "scope": Object {
             "domain": "machinat.io",
-            "path": "/api",
+            "path": "/app",
           },
         }
       `);
     });
 
-    it('get state from cookies', async () => {
+    it('/getState()', async () => {
       const [req, , cookieAccessor] = getDelegateArgs(
-        new AuthController(authorizers, { secret })
+        new AuthController(authorizers, { secret, redirectUrl })
       );
       const platform = 'foo';
       const state = { foo: 'state' };
@@ -716,7 +789,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       await expect(cookieAccessor.getState()).resolves.toBe(null);
     });
 
-    it('get auth from cookies', async () => {
+    it('.getAuth()', async () => {
       function createTokenAndSig(payload) {
         const [headerEncoded, payloadEncoded, signature] = jsonwebtoken
           .sign(payload, '__SECRET__')
@@ -726,7 +799,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       }
 
       const [req, , cookieAccessor] = getDelegateArgs(
-        new AuthController(authorizers, { secret })
+        new AuthController(authorizers, { secret, redirectUrl })
       );
       const platform = 'foo';
       const data = { foo: 'data' };
@@ -802,9 +875,9 @@ describe('#delegateAuthRequest(req, res)', () => {
       await expect(cookieAccessor.getAuth()).resolves.toBe(null);
     });
 
-    it('get error from cookies', async () => {
+    it('.getError()', async () => {
       const [req, , cookieAccessor] = getDelegateArgs(
-        new AuthController(authorizers, { secret })
+        new AuthController(authorizers, { secret, redirectUrl })
       );
       const platform = 'foo';
       const error = { code: 418, reason: "I'm a teapot" };
@@ -842,6 +915,40 @@ describe('#delegateAuthRequest(req, res)', () => {
       }));
       await expect(cookieAccessor.getError()).resolves.toBe(null);
     });
+
+    test('.redirect(url)', () => {
+      const [, res, cookieAccessor] = getDelegateArgs(
+        new AuthController(authorizers, { secret, redirectUrl: '/hello/world' })
+      );
+
+      cookieAccessor.redirect();
+      expect(res.end.mock).toHaveBeenCalledTimes(1);
+      expect(res.writeHead.mock).toHaveBeenCalledTimes(1);
+      expect(res.writeHead.mock).toHaveBeenCalledWith(302, expect.any(Object));
+      expect(res.writeHead.mock.calls[0].args[1]).toMatchInlineSnapshot(`
+        Object {
+          "Location": "/hello/world",
+        }
+      `);
+
+      cookieAccessor.redirect('foo?bar=baz');
+      expect(res.end.mock).toHaveBeenCalledTimes(2);
+      expect(res.writeHead.mock).toHaveBeenCalledTimes(2);
+      expect(res.writeHead.mock.calls[1].args[1]).toMatchInlineSnapshot(`
+        Object {
+          "Location": "/hello/foo?bar=baz",
+        }
+      `);
+
+      cookieAccessor.redirect('http://machiant.io/foo?bar=baz');
+      expect(res.end.mock).toHaveBeenCalledTimes(3);
+      expect(res.writeHead.mock).toHaveBeenCalledTimes(3);
+      expect(res.writeHead.mock.calls[2].args[1]).toMatchInlineSnapshot(`
+        Object {
+          "Location": "http://machiant.io/foo?bar=baz",
+        }
+      `);
+    });
   });
 
   describe('_sign api', () => {
@@ -858,7 +965,10 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('sign cookie and respond token if provider verfication passed', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(req, res);
 
       expect(fooAuthorizer.verifyCredential.mock).toHaveBeenCalledTimes(1);
@@ -880,7 +990,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Map {
           "machinat_auth_signature" => Object {
             "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
-            "value": "Ribu0b3gs8XWVUGhCl7ML5R59N3C4WBTz6GVocXtGcw",
+            "value": "8kIrJgTaziNMXKlHLGKRPXNzTLpC3moIQV9vBKmLOQM",
           },
           "machinat_auth_state" => Object {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
@@ -903,7 +1013,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "data": Object {
             "foo": "data",
           },
-          "exp": 1570001800,
+          "exp": 1570003600,
           "iat": 1570000000,
           "platform": "foo",
           "refreshTill": 1570086400,
@@ -917,16 +1027,18 @@ describe('#delegateAuthRequest(req, res)', () => {
     test('sign with more detailed controller options', async () => {
       req.mock
         .getter('url')
-        .fakeReturnValue('https://machinat.io/api/auth/_sign');
+        .fakeReturnValue('https://machinat.io/app/auth/_sign');
 
       const controller = new AuthController(authorizers, {
         secret,
-        entryPath: '/api/auth',
+        redirectUrl: '/app/pages',
+        entryPath: '/app/auth',
+        authCookieAge: 999,
         dataCookieAge: 99,
         tokenAge: 9999,
         refreshPeriod: 99999,
         cookieDomain: 'machinat.io',
-        cookiePath: '/api',
+        cookiePath: '/app',
         sameSite: 'strict',
         secure: false,
       });
@@ -942,15 +1054,15 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_signature" => Object {
-            "directives": "Domain=machinat.io; HttpOnly; Path=/api; SameSite=Strict",
-            "value": "qrEfXnV85AWUk-mXEJBiTEomYp6Mylej3uU7O8KSWF0",
+            "directives": "Domain=machinat.io; HttpOnly; Path=/app; SameSite=Strict",
+            "value": "-cVGfumsXdwJOZZbeVttI4zdxEH8f7ojfH6W0wKZ6qo",
           },
           "machinat_auth_state" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_error" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
             "value": "",
           },
         }
@@ -973,7 +1085,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "refreshTill": 1570099999,
           "scope": Object {
             "domain": "machinat.io",
-            "path": "/api",
+            "path": "/app",
           },
         }
       `);
@@ -987,7 +1099,10 @@ describe('#delegateAuthRequest(req, res)', () => {
         { platform: 'baz', credential: { baz: 'data' } }
       );
 
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(req, res);
 
       expect(fooAuthorizer.verifyCredential.mock).not.toHaveBeenCalled();
@@ -1001,6 +1116,7 @@ describe('#delegateAuthRequest(req, res)', () => {
             "code": 404,
             "reason": "unknown platform \\"baz\\"",
           },
+          "platform": "baz",
         }
       `);
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
@@ -1013,7 +1129,10 @@ describe('#delegateAuthRequest(req, res)', () => {
         reason: "I'm a teapot",
       }));
 
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(418);
@@ -1026,13 +1145,17 @@ describe('#delegateAuthRequest(req, res)', () => {
             "code": 418,
             "reason": "I'm a teapot",
           },
+          "platform": "foo",
         }
       `);
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
     });
 
     it('respond 400 if invalid body received', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       const url = 'http://auth.machinat.com/_sign';
 
       await controller.delegateAuthRequest(
@@ -1083,7 +1206,10 @@ describe('#delegateAuthRequest(req, res)', () => {
         throw new Error('Broken inside');
       });
 
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(500);
@@ -1098,7 +1224,10 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 405 if non POST request called on prvate api', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(
         prepareReq('GET', 'https://auth.machinat.com/_sign', {}, ''),
         res
@@ -1118,6 +1247,7 @@ describe('#delegateAuthRequest(req, res)', () => {
   describe('_refresh api', () => {
     let req;
     let res;
+
     beforeEach(() => {
       const [token, signature] = prepareToken({
         platform: 'foo',
@@ -1137,7 +1267,10 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('refresh token if provider.verifyRefreshment() passed', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(200);
@@ -1153,7 +1286,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Map {
           "machinat_auth_signature" => Object {
             "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
-            "value": "8WRAmG1Jy7jA-JDg_vDK6KJDGVtkUd4ENPlIkPxfsJU",
+            "value": "JAoD-2IbrB6uVQ2wMBN--WuqBT2WzefriMxb71wkoDI",
           },
           "machinat_auth_state" => Object {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
@@ -1176,7 +1309,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "data": Object {
             "foo": "data",
           },
-          "exp": 1570001800,
+          "exp": 1570003600,
           "iat": 1570000000,
           "platform": "foo",
           "refreshTill": 1570099999,
@@ -1190,16 +1323,18 @@ describe('#delegateAuthRequest(req, res)', () => {
     test('refresh with more detailed controller options', async () => {
       req.mock
         .getter('url')
-        .fake(() => 'https://machinat.io/api/auth/_refresh');
+        .fake(() => 'https://machinat.io/app/auth/_refresh');
 
       const controller = new AuthController(authorizers, {
         secret,
-        entryPath: '/api/auth',
+        redirectUrl: '/app/pages',
+        entryPath: '/app/auth',
+        authCookieAge: 999,
         dataCookieAge: 99,
         tokenAge: 9999,
         refreshPeriod: 99999,
         cookieDomain: 'machinat.io',
-        cookiePath: '/api',
+        cookiePath: '/app',
         sameSite: 'strict',
         secure: false,
       });
@@ -1213,15 +1348,15 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_signature" => Object {
-            "directives": "Domain=machinat.io; HttpOnly; Path=/api; SameSite=Strict",
-            "value": "qrEfXnV85AWUk-mXEJBiTEomYp6Mylej3uU7O8KSWF0",
+            "directives": "Domain=machinat.io; HttpOnly; Path=/app; SameSite=Strict",
+            "value": "-cVGfumsXdwJOZZbeVttI4zdxEH8f7ojfH6W0wKZ6qo",
           },
           "machinat_auth_state" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
             "value": "",
           },
           "machinat_auth_error" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/api; SameSite=Lax",
+            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
             "value": "",
           },
         }
@@ -1243,7 +1378,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "refreshTill": 1570099999,
           "scope": Object {
             "domain": "machinat.io",
-            "path": "/api",
+            "path": "/app",
           },
         }
       `);
@@ -1265,7 +1400,10 @@ describe('#delegateAuthRequest(req, res)', () => {
         { token }
       );
 
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(404);
@@ -1277,6 +1415,7 @@ describe('#delegateAuthRequest(req, res)', () => {
             "code": 404,
             "reason": "unknown platform \\"baz\\"",
           },
+          "platform": "baz",
         }
       `);
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
@@ -1289,7 +1428,10 @@ describe('#delegateAuthRequest(req, res)', () => {
         reason: "I'm a teapot",
       }));
 
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(418);
@@ -1301,6 +1443,7 @@ describe('#delegateAuthRequest(req, res)', () => {
             "code": 418,
             "reason": "I'm a teapot",
           },
+          "platform": "foo",
         }
       `);
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
@@ -1309,7 +1452,10 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 401 if signature not found or invalid', async () => {
       req.mock.getter('headers').fakeReturnValue({});
 
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(401);
@@ -1336,13 +1482,17 @@ describe('#delegateAuthRequest(req, res)', () => {
             "code": 400,
             "reason": "invalid signature",
           },
+          "platform": "foo",
         }
       `);
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
     });
 
     it('respond 401 if refreshPeriod outdated', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
 
       const [token, signature] = prepareToken({
         platform: 'foo',
@@ -1370,13 +1520,17 @@ describe('#delegateAuthRequest(req, res)', () => {
             "code": 401,
             "reason": "refreshment period expired",
           },
+          "platform": "foo",
         }
       `);
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
     });
 
     it('respond 400 if no refreshTill existed in payload', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
 
       const [token, signature] = prepareToken({
         platform: 'foo',
@@ -1403,13 +1557,17 @@ describe('#delegateAuthRequest(req, res)', () => {
             "code": 400,
             "reason": "token not refreshable",
           },
+          "platform": "foo",
         }
       `);
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
     });
 
     it('respond 400 if invalid body received', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       const url = 'http://auth.machinat.com/_refresh';
       const header = { cookie: `machinat_auth_signature=SOMETHING_WHATEVER` };
 
@@ -1460,7 +1618,10 @@ describe('#delegateAuthRequest(req, res)', () => {
       fooAuthorizer.verifyRefreshment.mock.fake(() => {
         throw new Error('Broken inside');
       });
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(500);
@@ -1475,7 +1636,10 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 405 if non POST request called on prvate api', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(
         prepareReq('get', 'https://auth.machinat.com/_refresh', {}, ''),
         res
@@ -1507,7 +1671,10 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 200 if token and signature valid', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
 
       const req = prepareReq(
         'POST',
@@ -1527,7 +1694,10 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 401 if token expired', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
 
       [token, signature] = prepareToken({
         platform: 'foo',
@@ -1554,6 +1724,7 @@ describe('#delegateAuthRequest(req, res)', () => {
             "code": 401,
             "reason": "jwt expired",
           },
+          "platform": "foo",
         }
       `);
 
@@ -1561,7 +1732,10 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 404 platform not found', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
 
       [token, signature] = prepareToken({
         platform: 'baz',
@@ -1588,13 +1762,17 @@ describe('#delegateAuthRequest(req, res)', () => {
             "code": 404,
             "reason": "unknown platform \\"baz\\"",
           },
+          "platform": "baz",
         }
       `);
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
     });
 
     it('respond 401 if signature not found or invalid', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       let res;
 
       await controller.delegateAuthRequest(
@@ -1629,13 +1807,17 @@ describe('#delegateAuthRequest(req, res)', () => {
             "code": 400,
             "reason": "invalid signature",
           },
+          "platform": "foo",
         }
       `);
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
     });
 
     it('respond 400 if invalid body received', async () => {
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       const url = 'http://auth.machinat.com/_verify';
       const header = { cookie: `machinat_auth_signature=SOMETHING_WHATEVER` };
       let res;
@@ -1685,7 +1867,10 @@ describe('#delegateAuthRequest(req, res)', () => {
 
     it('respond 405 if non POST request called on prvate api', async () => {
       const res = moxy(new ServerResponse({} as never));
-      const controller = new AuthController(authorizers, { secret });
+      const controller = new AuthController(authorizers, {
+        secret,
+        redirectUrl,
+      });
       await controller.delegateAuthRequest(
         prepareReq('GET', 'https://auth.machinat.com/_verify', {}, ''),
         res
@@ -1714,7 +1899,7 @@ describe('#verifyAuth(req)', () => {
   });
 
   it('resolve auth context if authorization verified', async () => {
-    const controller = new AuthController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret, redirectUrl });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1748,14 +1933,14 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledWith({
+    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
 
   it('work with token passed as 2nd param', async () => {
-    const controller = new AuthController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret, redirectUrl });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1787,14 +1972,14 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledWith({
+    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
 
   it('throw 401 if signature invalid', async () => {
-    const controller = new AuthController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret, redirectUrl });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1816,11 +2001,11 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthorizer.supplementContext.mock).not.toHaveBeenCalled();
+    expect(fooAuthorizer.checkAuthContext.mock).not.toHaveBeenCalled();
   });
 
   it('throw 401 if no signature in cookies', async () => {
-    const controller = new AuthController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret, redirectUrl });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1839,11 +2024,11 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthorizer.supplementContext.mock).not.toHaveBeenCalled();
+    expect(fooAuthorizer.checkAuthContext.mock).not.toHaveBeenCalled();
   });
 
   it('throw 401 if no token provided', async () => {
-    const controller = new AuthController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret, redirectUrl });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1862,11 +2047,11 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthorizer.supplementContext.mock).not.toHaveBeenCalled();
+    expect(fooAuthorizer.checkAuthContext.mock).not.toHaveBeenCalled();
   });
 
   it('throw 400 if no invalid authorization format received', async () => {
-    const controller = new AuthController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret, redirectUrl });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1888,7 +2073,7 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthorizer.supplementContext.mock).not.toHaveBeenCalled();
+    expect(fooAuthorizer.checkAuthContext.mock).not.toHaveBeenCalled();
   });
 
   it('throw 404 if platform not found', async () => {
@@ -1901,7 +2086,7 @@ describe('#verifyAuth(req)', () => {
       scope: { path: '/' },
     });
 
-    const controller = new AuthController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret, redirectUrl });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1923,15 +2108,15 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthorizer.supplementContext.mock).not.toHaveBeenCalled();
+    expect(fooAuthorizer.checkAuthContext.mock).not.toHaveBeenCalled();
   });
 
-  it('throw 400 if provider.supplementContext() resolve empty', async () => {
-    fooAuthorizer.supplementContext.mock.fake(async () => {
+  it('throw 400 if provider.checkAuthContext() resolve empty', async () => {
+    fooAuthorizer.checkAuthContext.mock.fake(async () => {
       return null;
     });
 
-    const controller = new AuthController(authorizers, { secret });
+    const controller = new AuthController(authorizers, { secret, redirectUrl });
     await expect(
       controller.verifyAuth(
         prepareReq(
@@ -1953,6 +2138,6 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthorizer.supplementContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledTimes(1);
   });
 });

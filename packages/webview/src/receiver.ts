@@ -1,5 +1,3 @@
-import { IncomingMessage } from 'http';
-import type { Socket as NetSocket } from 'net';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
   PopEventWrapper,
@@ -11,7 +9,7 @@ import {
   UserOfAuthorizer,
   ContextOfAuthorizer,
 } from '@machinat/auth/types';
-import type { HttpRequestInfo, UpgradeHandler } from '@machinat/http/types';
+import type { HttpRequestInfo } from '@machinat/http/types';
 import {
   EventInput,
   EventValue,
@@ -51,52 +49,41 @@ export class WebviewReceiver<
     this._popEvent = popEventWrapper(() => Promise.resolve(null));
     this._popError = popError;
 
-    this._server.on('events', (values, { connId, user, socket, auth }) => {
-      values.forEach((value) => {
-        this._issueEvent(value, connId, user, socket.request, auth).catch(
-          this._popError
-        );
-      });
-    });
+    this._server.on(
+      'events',
+      (values, { connId, user, request, authContext }) => {
+        values.forEach((value) => {
+          this._issueEvent(value, connId, user, request, authContext);
+        });
+      }
+    );
 
-    this._server.on('connect', ({ connId, user, socket, auth }) => {
+    this._server.on('connect', ({ connId, user, request, authContext }) => {
       const value: ConnectEventValue = {
         kind: 'connection',
         type: 'connect',
         payload: null,
       };
-      this._issueEvent(value, connId, user, socket.request, auth).catch(
-        this._popError
-      );
+      this._issueEvent(value, connId, user, request, authContext);
     });
 
     this._server.on('disconnect', ({ reason }, connData) => {
-      const { connId, user, socket, auth } = connData;
+      const { connId, user, request, authContext } = connData;
       const value: DisconnectEventValue = {
         kind: 'connection',
         type: 'disconnect',
         payload: { reason },
       };
 
-      this._issueEvent(value, connId, user, socket.request, auth).catch(
-        this._popError
-      );
+      this._issueEvent(value, connId, user, request, authContext);
+    });
+
+    this._server.on('error', (err: Error) => {
+      this._popError(err);
     });
   }
 
-  async handleUpgrade(
-    req: IncomingMessage,
-    ns: NetSocket,
-    head: Buffer
-  ): Promise<void> {
-    this._server.handleUpgrade(req, ns, head);
-  }
-
-  handleUpgradeCallback(): UpgradeHandler {
-    return this.handleUpgrade.bind(this);
-  }
-
-  private async _issueEvent(
+  private _issueEvent(
     value: EventInput,
     connId: string,
     user: UserOfAuthorizer<Authorizer>,
@@ -104,7 +91,7 @@ export class WebviewReceiver<
     authContext: ContextOfAuthorizer<Authorizer>
   ) {
     const channel = new WebviewConnection(this._server.id, connId);
-    await this._popEvent({
+    this._popEvent({
       platform: WEBVIEW,
       bot: this._bot,
       event: createEvent(value, channel, user),
@@ -114,7 +101,7 @@ export class WebviewReceiver<
         connection: channel,
         auth: authContext,
       },
-    });
+    }).catch(this._popError);
   }
 }
 

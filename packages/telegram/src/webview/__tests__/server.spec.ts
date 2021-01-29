@@ -1,6 +1,6 @@
 import type { IncomingMessage } from 'http';
 import moxy from '@moxyjs/moxy';
-import { CookieAccessor } from '@machinat/auth/types';
+import { ResponseHelper } from '@machinat/auth/types';
 import type { TelegramBot } from '../../bot';
 import { TelegramServerAuthorizer } from '../server';
 import { TelegramChat } from '../../channel';
@@ -14,23 +14,14 @@ const createReq = ({ url }) =>
     url,
   } as never);
 
-const createRes = () =>
-  moxy({
-    code: 200,
-    finished: false,
-    headers: undefined,
-    writeHead(code, headers) {
-      this.code = code;
-      this.headers = headers;
-    },
-    end() {
-      this.finished = true;
-    },
-  });
+const res = {};
 
-const cookieIssuer = moxy<CookieAccessor>({
+const resHelper = moxy<ResponseHelper>({
   async issueAuth() {},
   async issueError() {},
+  redirect() {
+    return '';
+  },
 } as never);
 
 const bot = moxy<TelegramBot>({
@@ -47,7 +38,7 @@ const authorizer = new TelegramServerAuthorizer(bot, {
 
 beforeEach(() => {
   bot.mock.reset();
-  cookieIssuer.mock.reset();
+  resHelper.mock.reset();
 });
 
 const MockDate = moxy(Date);
@@ -76,19 +67,14 @@ describe('#delegateAuthRequest()', () => {
   it('authorize request redirected from telegram', async () => {
     const search = new URLSearchParams(telegramLoginSearch);
 
-    const req = createReq({
-      url: `/auth/telegram/login?${search}`,
-    });
-    const res = createRes();
-    await authorizer.delegateAuthRequest(req, res as never, cookieIssuer);
+    const req = createReq({ url: `/auth/telegram/login?${search}` });
+    await authorizer.delegateAuthRequest(req, res as never, resHelper);
 
-    expect(res.finished).toBe(true);
-    expect(res.code).toBe(302);
-    expect(res.headers).toEqual({ Location: '/webview/index.html' });
+    expect(resHelper.redirect.mock).toHaveBeenCalledWith('/webview/index.html');
 
-    expect(cookieIssuer.issueError.mock).not.toHaveBeenCalled();
-    expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledTimes(1);
-    expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledWith({
+    expect(resHelper.issueError.mock).not.toHaveBeenCalled();
+    expect(resHelper.issueAuth.mock).toHaveBeenCalledTimes(1);
+    expect(resHelper.issueAuth.mock).toHaveBeenCalledWith({
       botId: 12345,
       chat: undefined,
       user: {
@@ -107,10 +93,7 @@ describe('#delegateAuthRequest()', () => {
       telegramChat: '23456',
     });
 
-    const req = createReq({
-      url: `/auth/telegram/login?${search}`,
-    });
-    const res = createRes();
+    const req = createReq({ url: `/auth/telegram/login?${search}` });
 
     // getChatMember
     bot.makeApiCall.mock.fakeOnce(async () => ({
@@ -131,7 +114,7 @@ describe('#delegateAuthRequest()', () => {
       title: 'Does',
     }));
 
-    await authorizer.delegateAuthRequest(req, res as never, cookieIssuer);
+    await authorizer.delegateAuthRequest(req, res as never, resHelper);
 
     expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(2);
     expect(bot.makeApiCall.mock).toHaveBeenNthCalledWith(1, 'getChatMember', {
@@ -142,8 +125,8 @@ describe('#delegateAuthRequest()', () => {
       chat_id: 23456,
     });
 
-    expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledTimes(1);
-    expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledWith({
+    expect(resHelper.issueAuth.mock).toHaveBeenCalledTimes(1);
+    expect(resHelper.issueAuth.mock).toHaveBeenCalledWith({
       botId: 12345,
       chat: {
         type: 'group',
@@ -167,10 +150,7 @@ describe('#delegateAuthRequest()', () => {
       telegramChat: '23456',
     });
 
-    const req = createReq({
-      url: `/auth/telegram/login?${search}`,
-    });
-    const res = createRes();
+    const req = createReq({ url: `/auth/telegram/login?${search}` });
 
     bot.makeApiCall.mock.fake(async () => {
       throw new TelegramApiError({
@@ -180,12 +160,12 @@ describe('#delegateAuthRequest()', () => {
       });
     });
 
-    await authorizer.delegateAuthRequest(req, res as never, cookieIssuer);
+    await authorizer.delegateAuthRequest(req, res as never, resHelper);
 
     expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
 
-    expect(cookieIssuer.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(cookieIssuer.issueError.mock.calls[0].args).toMatchInlineSnapshot(`
+    expect(resHelper.issueError.mock).toHaveBeenCalledTimes(1);
+    expect(resHelper.issueError.mock.calls[0].args).toMatchInlineSnapshot(`
       Array [
         400,
         "Bad Request: user not found",
@@ -199,18 +179,15 @@ describe('#delegateAuthRequest()', () => {
       redirectUrl: '/webview/hello_world.html',
     });
 
-    const req = createReq({
-      url: `/auth/telegram/login?${search}`,
-    });
-    const res = createRes();
-    await authorizer.delegateAuthRequest(req, res as never, cookieIssuer);
+    const req = createReq({ url: `/auth/telegram/login?${search}` });
+    await authorizer.delegateAuthRequest(req, res as never, resHelper);
 
-    expect(res.finished).toBe(true);
-    expect(res.code).toBe(302);
-    expect(res.headers).toEqual({ Location: '/webview/hello_world.html' });
+    expect(resHelper.redirect.mock).toHaveBeenCalledWith(
+      '/webview/hello_world.html'
+    );
 
-    expect(cookieIssuer.issueError.mock).not.toHaveBeenCalled();
-    expect(cookieIssuer.issueAuth.mock).toHaveBeenCalledTimes(1);
+    expect(resHelper.issueError.mock).not.toHaveBeenCalled();
+    expect(resHelper.issueAuth.mock).toHaveBeenCalledTimes(1);
   });
 
   it('issue error if auth_date expired (20 second)', async () => {
@@ -220,20 +197,15 @@ describe('#delegateAuthRequest()', () => {
       hash: 'dcf3f7fddbcb157af36167546c645620b9a78ff24e32d35a8de96c6617935c6a',
     });
 
-    const req = createReq({
-      url: `/auth/telegram/login?${search}`,
-    });
-    const res = createRes();
-    await authorizer.delegateAuthRequest(req, res as never, cookieIssuer);
+    const req = createReq({ url: `/auth/telegram/login?${search}` });
+    await authorizer.delegateAuthRequest(req, res as never, resHelper);
 
-    expect(res.finished).toBe(true);
-    expect(res.code).toBe(302);
-    expect(res.headers).toEqual({ Location: '/webview/index.html' });
+    expect(resHelper.redirect.mock).toHaveBeenCalledWith('/webview/index.html');
 
-    expect(cookieIssuer.issueAuth.mock).not.toHaveBeenCalled();
-    expect(cookieIssuer.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(cookieIssuer.issueError.mock.calls[0].args[0]).toBe(401);
-    expect(cookieIssuer.issueError.mock.calls[0].args[1]).toMatchInlineSnapshot(
+    expect(resHelper.issueAuth.mock).not.toHaveBeenCalled();
+    expect(resHelper.issueError.mock).toHaveBeenCalledTimes(1);
+    expect(resHelper.issueError.mock.calls[0].args[0]).toBe(401);
+    expect(resHelper.issueError.mock.calls[0].args[1]).toMatchInlineSnapshot(
       `"login expired"`
     );
   });
@@ -247,17 +219,14 @@ describe('#delegateAuthRequest()', () => {
     const req = createReq({
       url: `/auth/telegram?${search}`,
     });
-    const res = createRes();
-    await authorizer.delegateAuthRequest(req, res as never, cookieIssuer);
+    await authorizer.delegateAuthRequest(req, res as never, resHelper);
 
-    expect(res.finished).toBe(true);
-    expect(res.code).toBe(302);
-    expect(res.headers).toEqual({ Location: '/webview/index.html' });
+    expect(resHelper.redirect.mock).toHaveBeenCalledWith('/webview/index.html');
 
-    expect(cookieIssuer.issueAuth.mock).not.toHaveBeenCalled();
-    expect(cookieIssuer.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(cookieIssuer.issueError.mock.calls[0].args[0]).toBe(401);
-    expect(cookieIssuer.issueError.mock.calls[0].args[1]).toMatchInlineSnapshot(
+    expect(resHelper.issueAuth.mock).not.toHaveBeenCalled();
+    expect(resHelper.issueError.mock).toHaveBeenCalledTimes(1);
+    expect(resHelper.issueError.mock.calls[0].args[0]).toBe(401);
+    expect(resHelper.issueError.mock.calls[0].args[1]).toMatchInlineSnapshot(
       `"invalid login signature"`
     );
   });
@@ -276,7 +245,7 @@ test('#verifyCredential() simply return not ok', async () => {
 describe('#verifyRefreshment()', () => {
   test('return success and original data', async () => {
     const authData = {
-      botId: 12345,
+      bot: 12345,
       chat: {
         type: 'private' as const,
         id: 67890,
@@ -287,7 +256,7 @@ describe('#verifyRefreshment()', () => {
         last_name: 'Doe',
         username: 'jojodoe',
       },
-      photoUrl: undefined,
+      photo: undefined,
     };
     await expect(authorizer.verifyRefreshment(authData)).resolves.toEqual({
       success: true,
@@ -298,7 +267,7 @@ describe('#verifyRefreshment()', () => {
   it('return fail if botId not match', async () => {
     await expect(
       authorizer.verifyRefreshment({
-        botId: 55555,
+        bot: 55555,
         chat: undefined,
         user: {
           id: 67890,
@@ -306,7 +275,7 @@ describe('#verifyRefreshment()', () => {
           last_name: 'Doe',
           username: 'jojodoe',
         },
-        photoUrl: undefined,
+        photo: undefined,
       })
     ).resolves.toMatchInlineSnapshot(`
             Object {
@@ -318,16 +287,16 @@ describe('#verifyRefreshment()', () => {
   });
 });
 
-test('#supplementContext()', async () => {
+test('#supplementContext()', () => {
   const authData = {
-    botId: 12345,
+    bot: 12345,
     user: {
       id: 67890,
       first_name: 'Jojo',
       last_name: 'Doe',
       username: 'jojodoe',
     },
-    photoUrl: 'http://crazy.dm/stand.png',
+    photo: 'http://crazy.dm/stand.png',
     chat: undefined,
   };
 
@@ -339,28 +308,34 @@ test('#supplementContext()', async () => {
     username: 'jojodoe',
   });
 
-  await expect(authorizer.supplementContext(authData)).resolves.toEqual({
-    botId: 12345,
-    user: expectedUser,
-    channel: new TelegramChat(12345, {
-      type: 'private',
-      id: 67890,
-      first_name: 'Jojo',
-      last_name: 'Doe',
-      username: 'jojodoe',
-    }),
-    photoUrl: 'http://crazy.dm/stand.png',
+  expect(authorizer.checkAuthContext(authData)).toEqual({
+    success: true,
+    contextSupplment: {
+      botId: 12345,
+      user: expectedUser,
+      channel: new TelegramChat(12345, {
+        type: 'private',
+        id: 67890,
+        first_name: 'Jojo',
+        last_name: 'Doe',
+        username: 'jojodoe',
+      }),
+      photoUrl: 'http://crazy.dm/stand.png',
+    },
   });
 
-  await expect(
-    authorizer.supplementContext({
+  expect(
+    authorizer.checkAuthContext({
       ...authData,
       chat: { type: 'group', id: 98765 },
     })
-  ).resolves.toEqual({
-    botId: 12345,
-    user: expectedUser,
-    channel: new TelegramChat(12345, { type: 'group', id: 98765 }),
-    photoUrl: 'http://crazy.dm/stand.png',
+  ).toEqual({
+    success: true,
+    contextSupplment: {
+      botId: 12345,
+      user: expectedUser,
+      channel: new TelegramChat(12345, { type: 'group', id: 98765 }),
+      photoUrl: 'http://crazy.dm/stand.png',
+    },
   });
 });

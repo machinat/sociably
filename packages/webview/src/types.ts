@@ -98,11 +98,27 @@ export type WebviewDispatchMiddleware<
 >;
 
 export type WebviewPlatformConfigs<Authorizer extends AnyServerAuthorizer> = {
-  /** Route path to the auth backend. Default to `"/auth"` */
-  authPath?: string;
+  /** Host of the webview. */
+  webviewHost: string;
+  /** Route path to the next server. Default to `"/webview"` */
+  webviewPath?: string;
+  /** Set to `true` for not running NextJS server. */
+  noNextServer?: boolean;
+  /** Set to `true` for not running #prepare() of NextJS server. */
+  noPrepareNext?: boolean;
+  /** Options for nextjs server. */
+  nextServerOptions?: NextServerOptions;
+
+  /** Route path to the web socket server. Default to `"/websocket"` */
+  webSocketPath?: string;
+  heartbeatInterval?: number;
+
   /** Secret to sign token for auth. */
-  secret: string;
+  authSecret: string;
+  /** Route path to the auth backend. Default to `"/auth"` */
+  authApiPath?: string;
   /** Valid time for auth token in seconds */
+  authRedirectUrl?: string;
   tokenAge?: number;
   authCookieAge?: number;
   dataCookieAge?: number;
@@ -112,20 +128,6 @@ export type WebviewPlatformConfigs<Authorizer extends AnyServerAuthorizer> = {
   sameSite?: 'strict' | 'lax' | 'none';
   secure?: boolean;
 
-  /** Route path to the next server. Default to `"/webview"` */
-  nextPath?: string;
-  /** Set to `true` for not running NextJS server. */
-  noHostNext?: boolean;
-  /** Set to `true` for not running #prepare() of NextJS server. */
-  noPrepareNext?: boolean;
-  /** Options for nextjs server. */
-  nextServerOptions?: NextServerOptions;
-
-  /** Route path to the web socket server. Default to `"/websocket"` */
-  webSocketPath?: string;
-  /** Origin url of the webview host. */
-  origin: string;
-  heartbeatInterval?: number;
   eventMiddlewares?: MaybeContainer<
     WebviewEventMiddleware<Authorizer, EventValue>
   >[];

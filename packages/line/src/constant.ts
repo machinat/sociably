@@ -17,3 +17,9 @@ export const PATH_MULTICAST = 'v2/bot/message/multicast';
 
 /** @internal */
 export const PATH_RICHMENU = 'v2/bot/richmenu';
+
+export enum LiffContextOs {
+  Ios,
+  Android,
+  Web,
+}

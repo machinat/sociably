@@ -26,14 +26,15 @@ class WebScoketClient<
   private _user: null | User;
   private _channel: null | WebSocketConnection;
 
-  constructor({ url, login }: ClientOptions<User>) {
+  constructor({ url, login }: ClientOptions<User> = {}) {
     super();
 
     this._user = null;
     this._channel = null;
 
+    const { host, pathname } = window.location;
     this._connector = new Connector(
-      url,
+      new URL(url || '/', `wss://${host}${pathname}`).href,
       login ||
         (() => Promise.resolve({ user: null as never, credential: null }))
     );
@@ -97,8 +98,8 @@ class WebScoketClient<
     return this._channel;
   }
 
-  async send(...events: EventInput[]): Promise<void> {
-    await this._connector.send(...events);
+  async send(content: EventInput | EventInput[]): Promise<void> {
+    await this._connector.send(Array.isArray(content) ? content : [content]);
   }
 
   disconnect(reason: string): void {

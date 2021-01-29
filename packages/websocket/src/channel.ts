@@ -5,37 +5,33 @@ import type { ConnectionTarget, UserTarget, TopicTarget } from './types';
 
 type ConnectionValue = {
   serverId: string;
-  connectionId: string;
+  id: string;
 };
 
 export class WebSocketConnection
   implements MachinatChannel, ConnectionTarget, Marshallable<ConnectionValue> {
-  static fromJSONValue(value: ConnectionValue): WebSocketConnection {
-    return new WebSocketConnection(value.serverId, value.connectionId);
+  static fromJSONValue({ id, serverId }: ConnectionValue): WebSocketConnection {
+    return new WebSocketConnection(serverId, id);
   }
 
   platform = WEBSOCKET;
   type = 'connection' as const;
 
   serverId: string;
-  connectionId: string;
+  id: string;
 
-  constructor(serverId: string, connectionId: string) {
+  constructor(serverId: string, id: string) {
     this.serverId = serverId;
-    this.connectionId = connectionId;
-  }
-
-  get id(): string {
-    return this.connectionId;
+    this.id = id;
   }
 
   get uid(): string {
-    return `${WEBSOCKET}.conn.${this.serverId}.${this.connectionId}`;
+    return `${WEBSOCKET}.conn.${this.serverId}.${this.id}`;
   }
 
   toJSONValue(): ConnectionValue {
-    const { serverId, connectionId } = this;
-    return { serverId, connectionId };
+    const { serverId, id } = this;
+    return { serverId, id };
   }
 
   typeName(): string {
@@ -44,30 +40,30 @@ export class WebSocketConnection
 }
 
 type UserChannelValue = {
-  userUId: string;
+  userUid: string;
 };
 
 export class WebSocketUserChannel
   implements MachinatChannel, UserTarget, Marshallable<UserChannelValue> {
-  static fromJSONValue({ userUId }: UserChannelValue): WebSocketUserChannel {
-    return new WebSocketUserChannel(userUId);
+  static fromJSONValue({ userUid }: UserChannelValue): WebSocketUserChannel {
+    return new WebSocketUserChannel(userUid);
   }
 
   platform = WEBSOCKET;
   type = 'user' as const;
 
-  userUId: string;
+  userUid: string;
 
-  constructor(userUId: string) {
-    this.userUId = userUId;
+  constructor(userUid: string) {
+    this.userUid = userUid;
   }
 
   get uid(): string {
-    return `${WEBSOCKET}.user.${this.userUId}`;
+    return `${WEBSOCKET}.user.${this.userUid}`;
   }
 
   toJSONValue(): UserChannelValue {
-    return { userUId: this.userUId };
+    return { userUid: this.userUid };
   }
 
   typeName(): string {

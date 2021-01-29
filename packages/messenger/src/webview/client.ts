@@ -1,7 +1,7 @@
 // eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import invariant from 'invariant';
-import type { ClientAuthorizer, ContextSupplement } from '@machinat/auth/types';
+import type { ClientAuthorizer, ContextResult } from '@machinat/auth/types';
 import { MESSENGER } from '../constant';
 import type {
   MessengerAuthCredential,
@@ -107,10 +107,13 @@ class MessengerClientAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async supplementContext(
+  checkAuthContext(
     data: MessengerAuthData
-  ): Promise<null | ContextSupplement<MessengerAuthContext>> {
-    return supplementContext(data);
+  ): ContextResult<MessengerAuthContext> {
+    return {
+      success: true,
+      contextSupplment: supplementContext(data),
+    };
   }
 }
 

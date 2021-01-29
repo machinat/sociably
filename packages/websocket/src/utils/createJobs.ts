@@ -13,7 +13,7 @@ const createJobs = (
   return [
     {
       target: channel,
-      events: segments.map((seg) =>
+      values: segments.map((seg) =>
         seg.type === 'text'
           ? {
               kind: 'message',

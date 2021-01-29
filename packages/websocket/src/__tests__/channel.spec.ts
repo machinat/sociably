@@ -7,17 +7,16 @@ import {
 test('WebSocketConnection(serverId, connId)', () => {
   const channel = new WebSocketConnection('#server', '#conn');
 
-  expect(channel.platform).toBe('web_socket');
+  expect(channel.platform).toBe('websocket');
   expect(channel.type).toBe('connection');
   expect(channel.serverId).toBe('#server');
-  expect(channel.connectionId).toBe('#conn');
   expect(channel.id).toBe('#conn');
-  expect(channel.uid).toMatchInlineSnapshot(`"web_socket.conn.#server.#conn"`);
+  expect(channel.uid).toMatchInlineSnapshot(`"websocket.conn.#server.#conn"`);
 
   expect(channel.typeName()).toBe('WebSocketConnection');
   expect(channel.toJSONValue()).toMatchInlineSnapshot(`
     Object {
-      "connectionId": "#conn",
+      "id": "#conn",
       "serverId": "#server",
     }
   `);
@@ -28,10 +27,10 @@ test('WebSocketConnection(serverId, connId)', () => {
 
 test('WebSocketTopicChannel(name, id)', () => {
   const channel = new WebSocketTopicChannel('foo');
-  expect(channel.platform).toBe('web_socket');
+  expect(channel.platform).toBe('websocket');
   expect(channel.type).toBe('topic');
   expect(channel.name).toBe('foo');
-  expect(channel.uid).toMatchInlineSnapshot(`"web_socket.topic.foo"`);
+  expect(channel.uid).toMatchInlineSnapshot(`"websocket.topic.foo"`);
 
   expect(channel.typeName()).toBe('WebSocketTopicChannel');
   expect(channel.toJSONValue()).toMatchInlineSnapshot(`
@@ -47,15 +46,15 @@ test('WebSocketTopicChannel(name, id)', () => {
 test('WebSocketUserChannel(user)', () => {
   const channel = new WebSocketUserChannel('jojo_doe');
 
-  expect(channel.platform).toBe('web_socket');
+  expect(channel.platform).toBe('websocket');
   expect(channel.type).toBe('user');
-  expect(channel.userUId).toBe('jojo_doe');
-  expect(channel.uid).toMatchInlineSnapshot(`"web_socket.user.jojo_doe"`);
+  expect(channel.userUid).toBe('jojo_doe');
+  expect(channel.uid).toMatchInlineSnapshot(`"websocket.user.jojo_doe"`);
 
   expect(channel.typeName()).toBe('WebSocketUserChannel');
   expect(channel.toJSONValue()).toMatchInlineSnapshot(`
     Object {
-      "userUId": "jojo_doe",
+      "userUid": "jojo_doe",
     }
   `);
   expect(

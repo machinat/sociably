@@ -1,42 +1,44 @@
+import type Ws from 'ws';
 import moxy from '@moxyjs/moxy';
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import Socket from '../socket';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 const connId = 'conn#id';
 
-const _ws = new EventEmitter();
+const _ws = new EventEmitter() as Ws;
 _ws.readyState = 1;
 
-const clientWS = moxy(_ws);
-const serverWS = moxy(_ws);
+const clientWs = moxy(_ws);
+const serverWs = moxy(_ws);
 
 let clientTimeoutId;
 let serverTimeoutId;
 let closeTimeoutId;
 
 const _close = moxy((code, reason) => {
-  clientWS.mock.getter('readyState').fakeReturnValue(2);
-  serverWS.mock.getter('readyState').fakeReturnValue(2);
+  clientWs.mock.getter('readyState').fakeReturnValue(2);
+  serverWs.mock.getter('readyState').fakeReturnValue(2);
+
   closeTimeoutId = setTimeout(() => {
-    clientWS.mock.getter('readyState').fakeReturnValue(3);
-    serverWS.mock.getter('readyState').fakeReturnValue(3);
-    clientWS.emit('close', code, reason);
-    serverWS.emit('close', code, reason);
+    clientWs.mock.getter('readyState').fakeReturnValue(3);
+    serverWs.mock.getter('readyState').fakeReturnValue(3);
+    clientWs.emit('close', code, reason);
+    serverWs.emit('close', code, reason);
   }, 10);
 });
 
-clientWS.close = _close;
-clientWS.send = moxy((msg, cb) => {
+clientWs.close = _close;
+clientWs.send = moxy((msg, cb) => {
   cb();
-  clientTimeoutId = setTimeout(() => serverWS.emit('message', msg), 10);
+  clientTimeoutId = setTimeout(() => serverWs.emit('message', msg), 10);
 });
 
-serverWS.close = _close;
-serverWS.send = moxy((msg, cb) => {
+serverWs.close = _close;
+serverWs.send = moxy((msg, cb) => {
   cb();
-  serverTimeoutId = setTimeout(() => clientWS.emit('message', msg), 10);
+  serverTimeoutId = setTimeout(() => clientWs.emit('message', msg), 10);
 });
 
 const request = {
@@ -45,57 +47,47 @@ const request = {
   headers: { foo: 'bar' },
 };
 
-let clientSocket;
-let serverSocket;
+let clientSocket: Socket;
+let serverSocket: Socket;
 
 beforeEach(() => {
   clearTimeout(clientTimeoutId);
   clearTimeout(serverTimeoutId);
   clearTimeout(closeTimeoutId);
 
-  clientWS.mock.reset();
-  clientWS.removeAllListeners();
-  clientWS.send.mock.reset();
-  clientWS.close.mock.reset();
+  clientWs.mock.reset();
+  clientWs.removeAllListeners();
+  clientWs.send.mock.reset();
+  clientWs.close.mock.reset();
 
-  serverWS.mock.reset();
-  serverWS.removeAllListeners();
-  serverWS.send.mock.reset();
-  serverWS.close.mock.reset();
+  serverWs.mock.reset();
+  serverWs.removeAllListeners();
+  serverWs.send.mock.reset();
+  serverWs.close.mock.reset();
 
-  clientSocket = new Socket('_id_', clientWS);
-  serverSocket = new Socket('_id_', serverWS, request);
+  clientSocket = new Socket('_id_', clientWs);
+  serverSocket = new Socket('_id_', serverWs, request);
 });
 
 afterEach(() => {
-  clientWS.emit('close');
-  serverWS.emit('close');
+  clientWs.emit('close');
+  serverWs.emit('close');
 });
 
-it('init basic props at client side (with reqest)', () => {
+it('construct with request info', () => {
   expect(serverSocket.id).toBe('_id_');
   expect(serverSocket.request).toBe(request);
   expect(serverSocket.isClient).toBe(false);
 });
 
-it('init basic props at client side (without reqest)', () => {
+it('construct without request info', () => {
   expect(clientSocket.id).toBe('_id_');
-  expect(clientSocket.request).toBe(undefined);
+  expect(clientSocket.request).toBe(null);
   expect(clientSocket.isClient).toBe(true);
 });
 
-it('add ws listeners', () => {
-  const ws = moxy(new EventEmitter());
-  const socket = new Socket('_id_', ws); // eslint-disable-line no-unused-vars
-
-  expect(ws.on.mock).toHaveBeenCalledWith('open', expect.any(Function));
-  expect(ws.on.mock).toHaveBeenCalledWith('close', expect.any(Function));
-  expect(ws.on.mock).toHaveBeenCalledWith('message', expect.any(Function));
-  expect(ws.on.mock).toHaveBeenCalledWith('error', expect.any(Function));
-});
-
 it('propagate "open" event', () => {
-  const ws = new EventEmitter();
+  const ws = new EventEmitter() as Ws;
   const socket = new Socket('_id_', ws);
 
   const openSpy = moxy();
@@ -107,7 +99,7 @@ it('propagate "open" event', () => {
 });
 
 it('propagate "error" event', () => {
-  const ws = new EventEmitter();
+  const ws = new EventEmitter() as Ws;
   const socket = new Socket('_id_', ws);
 
   const errorSpy = moxy();
@@ -137,14 +129,14 @@ describe('login', () => {
     );
 
     const seq = singInSpy.mock.calls[0].args[1];
-    expect(clientWS.send.mock).toHaveBeenCalledWith(
+    expect(clientWs.send.mock).toHaveBeenCalledWith(
       JSON.stringify(['login', seq, { credential: '***' }]),
       expect.any(Function)
     );
   });
 
   it('throws if the socket is not ready', async () => {
-    clientWS.mock.getter('readyState').fakeReturnValue(0);
+    clientWs.mock.getter('readyState').fakeReturnValue(0);
     await expect(
       clientSocket.login({ credential: '***' })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"socket is not ready"`);
@@ -159,13 +151,13 @@ describe('login', () => {
   });
 
   test('client reject if register frame received', async () => {
-    clientWS.emit('message', JSON.stringify(['login', 1, { type: 'test' }]));
+    clientWs.emit('message', JSON.stringify(['login', 1, { type: 'test' }]));
 
     await delay(50);
 
-    expect(clientWS.send.mock).toHaveBeenCalledTimes(1);
+    expect(clientWs.send.mock).toHaveBeenCalledTimes(1);
 
-    const [frame, , body] = JSON.parse(clientWS.send.mock.calls[0].args[0]);
+    const [frame, , body] = JSON.parse(clientWs.send.mock.calls[0].args[0]);
     expect(frame).toBe('reject');
     expect(body).toMatchInlineSnapshot(`
       Object {
@@ -177,8 +169,6 @@ describe('login', () => {
 });
 
 describe('connecting handshake', () => {
-  const user = { john: 'doe' };
-
   const clientConnectSpy = moxy();
   const clientFailSpy = moxy();
   const serverConnectSpy = moxy();
@@ -196,7 +186,7 @@ describe('connecting handshake', () => {
   });
 
   test('handshake starting from server finished ok', async () => {
-    const seq = await serverSocket.connect({ connId, user });
+    const seq = await serverSocket.connect({ connId, seq: 1 });
     expect(serverSocket.isConnecting(connId)).toBe(true);
     expect(serverSocket.isConnected(connId)).toBe(false);
 
@@ -216,19 +206,19 @@ describe('connecting handshake', () => {
 
     expect(clientConnectSpy.mock).toHaveBeenCalledTimes(1);
     expect(clientConnectSpy.mock).toHaveBeenCalledWith(
-      { connId, user },
+      { connId, seq: 1 },
       expect.any(Number),
       clientSocket
     );
 
-    expect(serverWS.send.mock).toHaveBeenCalledTimes(1);
-    const serverPacket = JSON.parse(serverWS.send.mock.calls[0].args[0]);
+    expect(serverWs.send.mock).toHaveBeenCalledTimes(1);
+    const serverPacket = JSON.parse(serverWs.send.mock.calls[0].args[0]);
     expect(serverPacket[0]).toBe('connect');
     expect(typeof serverPacket[1]).toBe('number');
-    expect(serverPacket[2]).toEqual({ connId, user });
+    expect(serverPacket[2]).toEqual({ connId, seq: 1 });
 
-    expect(clientWS.send.mock).toHaveBeenCalledTimes(1);
-    const clientPacket = JSON.parse(clientWS.send.mock.calls[0].args[0]);
+    expect(clientWs.send.mock).toHaveBeenCalledTimes(1);
+    const clientPacket = JSON.parse(clientWs.send.mock.calls[0].args[0]);
     expect(clientPacket[0]).toBe('connect');
     expect(typeof clientPacket[1]).toBe('number');
     expect(clientPacket[2]).toEqual({ seq, connId });
@@ -238,7 +228,7 @@ describe('connecting handshake', () => {
   });
 
   test('server respond disconnect if connect initiated by client', async () => {
-    const seq = await clientSocket.connect({ connId, user });
+    const seq = await clientSocket.connect({ connId, seq: 1 });
     await delay(50);
 
     expect(clientSocket.isConnected(connId)).toBe(false);
@@ -265,7 +255,7 @@ describe('connecting handshake', () => {
     const clientDisconnectSpy = moxy();
     clientSocket.on('disconnect', clientDisconnectSpy);
 
-    const connectReq = await serverSocket.connect({ connId, user });
+    const connectReq = await serverSocket.connect({ connId, seq: 1 });
     const disconnectReq = await serverSocket.disconnect({
       connId,
       reason: 'sorry! wrong number',
@@ -292,7 +282,7 @@ describe('connecting handshake', () => {
     expect(clientFailSpy.mock).not.toHaveBeenCalled();
     expect(clientConnectSpy.mock).toHaveBeenCalledTimes(1);
     expect(clientConnectSpy.mock).toHaveBeenCalledWith(
-      { connId, user },
+      { connId, seq: 1 },
       connectReq,
       clientSocket
     );
@@ -306,17 +296,17 @@ describe('connecting handshake', () => {
   });
 
   it('throw if the socket is not ready', async () => {
-    serverWS.mock.getter('readyState').fakeReturnValue(0);
+    serverWs.mock.getter('readyState').fakeReturnValue(0);
     await expect(
-      serverSocket.connect({ connId, user })
+      serverSocket.connect({ connId, seq: 1 })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"socket is not ready"`);
   });
 
   it('throw if already connected', async () => {
-    serverSocket.connect({ connId });
+    serverSocket.connect({ connId, seq: 1 });
     await delay(50);
     await expect(
-      serverSocket.connect({ connId, user })
+      serverSocket.connect({ connId, seq: 1 })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"connection [conn#id] is already connected"`
     );
@@ -335,7 +325,7 @@ describe('disconnect handshake', () => {
   });
 
   it('finish handshake when initiated by server', async () => {
-    serverSocket.connect({ connId });
+    serverSocket.connect({ connId, seq: 1 });
     await delay(50);
 
     expect(serverSocket.isConnected(connId)).toBe(true);
@@ -359,7 +349,7 @@ describe('disconnect handshake', () => {
   });
 
   it('finish handshake when initiated by client', async () => {
-    serverSocket.connect({ connId });
+    serverSocket.connect({ connId, seq: 1 });
     await delay(50);
 
     expect(serverSocket.isConnected(connId)).toBe(true);
@@ -391,7 +381,7 @@ describe('disconnect handshake', () => {
   });
 
   it('do nothing if disconnect handshake alreay initiated', async () => {
-    serverSocket.connect({ connId });
+    serverSocket.connect({ connId, seq: 1 });
     await delay(50);
 
     expect(serverSocket.isConnected(connId)).toBe(true);
@@ -419,9 +409,9 @@ describe('disconnect handshake', () => {
 });
 
 describe('dispatch events', () => {
-  const dispatchBody = {
+  const eventsBody = {
     connId,
-    events: [
+    values: [
       { type: 'foo', kind: 'bar', payload: 'baz' },
       { type: 'foo', kind: 'bar', payload: 'baz' },
     ],
@@ -432,86 +422,86 @@ describe('dispatch events', () => {
   beforeEach(() => {
     serverDispatchSpy.mock.clear();
     clientDispatchSpy.mock.clear();
-    serverSocket.on('dispatch', serverDispatchSpy);
-    clientSocket.on('dispatch', clientDispatchSpy);
+    serverSocket.on('events', serverDispatchSpy);
+    clientSocket.on('events', clientDispatchSpy);
   });
 
   test('send events from client to server', async () => {
-    serverSocket.connect({ connId });
+    serverSocket.connect({ connId, seq: 1 });
     await delay(50);
 
-    const seq = await clientSocket.dispatch(dispatchBody);
+    const seq = await clientSocket.dispatch(eventsBody);
     await delay(50);
 
     expect(serverDispatchSpy.mock).toHaveBeenCalledTimes(1);
     expect(serverDispatchSpy.mock).toHaveBeenCalledWith(
-      dispatchBody,
+      eventsBody,
       seq,
       serverSocket
     );
 
     expect(clientDispatchSpy.mock).not.toHaveBeenCalled();
 
-    expect(clientWS.send.mock).toHaveBeenCalledTimes(2); // connect & event
-    const packet = JSON.parse(clientWS.send.mock.calls[1].args[0]);
+    expect(clientWs.send.mock).toHaveBeenCalledTimes(2); // connect & event
+    const packet = JSON.parse(clientWs.send.mock.calls[1].args[0]);
 
-    expect(packet[0]).toBe('dispatch');
+    expect(packet[0]).toBe('events');
     expect(typeof packet[1]).toBe('number');
-    expect(packet[2]).toEqual(dispatchBody);
+    expect(packet[2]).toEqual(eventsBody);
   });
 
   test('send event from server to client', async () => {
-    serverSocket.connect({ connId });
+    serverSocket.connect({ connId, seq: 1 });
     await delay(50);
 
-    const seq = await serverSocket.dispatch(dispatchBody);
+    const seq = await serverSocket.dispatch(eventsBody);
     await delay(50);
 
     expect(clientDispatchSpy.mock).toHaveBeenCalledTimes(1);
     expect(clientDispatchSpy.mock).toHaveBeenCalledWith(
-      dispatchBody,
+      eventsBody,
       seq,
       clientSocket
     );
 
     expect(serverDispatchSpy.mock).not.toHaveBeenCalled();
 
-    expect(serverWS.send.mock).toHaveBeenCalledTimes(2); // connect & event
-    const packet = JSON.parse(serverWS.send.mock.calls[1].args[0]);
+    expect(serverWs.send.mock).toHaveBeenCalledTimes(2); // connect & event
+    const packet = JSON.parse(serverWs.send.mock.calls[1].args[0]);
 
-    expect(packet[0]).toBe('dispatch');
+    expect(packet[0]).toBe('events');
     expect(typeof packet[1]).toBe('number');
-    expect(packet[2]).toEqual(dispatchBody);
+    expect(packet[2]).toEqual(eventsBody);
   });
 
   it('throw if not connected', async () => {
     expect(serverSocket.isConnected(connId)).toBe(false);
     await expect(
-      serverSocket.dispatch(dispatchBody)
+      serverSocket.dispatch(eventsBody)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"connection [conn#id] is not connected"`
     );
   });
 
   it('throw when connecting', async () => {
-    await serverSocket.connect({ connId });
+    await serverSocket.connect({ connId, seq: 1 });
     expect(serverSocket.isConnecting(connId)).toBe(true);
 
     await expect(
-      serverSocket.dispatch(dispatchBody)
+      serverSocket.dispatch(eventsBody)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"connection [conn#id] is not connected"`
     );
   });
 
   it('throw when connecting', async () => {
-    serverSocket.connect({ connId });
+    serverSocket.connect({ connId, seq: 1 });
     await delay(50);
     await serverSocket.disconnect({ connId });
     expect(serverSocket.isDisconnecting(connId)).toBe(true);
 
     await expect(
-      serverSocket.dispatch(dispatchBody)
+      serverSocket.dispatch(eventsBody)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"connection [conn#id] is not connected"`
     );
@@ -531,24 +521,24 @@ describe('reject', () => {
   });
 
   test('propagate "reject" event', async () => {
-    serverSocket.connect({ connId });
+    serverSocket.connect({ connId, seq: 1 });
     await delay(50);
 
-    const seq1 = await serverSocket.reject({ seq: 1, reason: 'foo' });
-    const seq2 = await clientSocket.reject({ seq: 2, reason: 'bar' });
+    const seq1 = await serverSocket.reject({ seq: 2, reason: 'foo' });
+    const seq2 = await clientSocket.reject({ seq: 3, reason: 'bar' });
 
     await delay(50);
 
     expect(clientRejectSpy.mock).toHaveBeenCalledTimes(1);
     expect(clientRejectSpy.mock).toHaveBeenCalledWith(
-      { seq: 1, reason: 'foo' },
+      { seq: 2, reason: 'foo' },
       seq1,
       clientSocket
     );
 
     expect(serverRejectSpy.mock).toHaveBeenCalledTimes(1);
     expect(serverRejectSpy.mock).toHaveBeenCalledWith(
-      { seq: 2, reason: 'bar' },
+      { seq: 3, reason: 'bar' },
       seq2,
       serverSocket
     );
@@ -592,8 +582,8 @@ describe('closing', () => {
     serverSocket.on('disconnect', serverDisconnectSpy);
     clientSocket.on('disconnect', clientDisconnectSpy);
 
-    serverSocket.connect({ connId: 'conn#1' });
-    serverSocket.connect({ connId: 'conn#2' });
+    serverSocket.connect({ connId: 'conn#1', seq: 2 });
+    serverSocket.connect({ connId: 'conn#2', seq: 3 });
     await delay(50);
 
     expect(clientSocket.close(888, 'Bye!')).toBe(undefined);

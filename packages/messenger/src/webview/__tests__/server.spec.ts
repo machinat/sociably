@@ -3,6 +3,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { MessengerServerAuthorizer } from '../server';
 import MessengerChannel from '../../channel';
 import MessengerUser from '../../user';
+import { MessengerChatType } from '../../constant';
 
 const request: IncomingMessage = {
   url: '/foo',
@@ -83,10 +84,12 @@ describe('#verifyCredential(credential)', () => {
     ).resolves.toStrictEqual({
       success: true,
       data: {
-        pageId: 682498171943165,
-        userId: '1254459154682919',
-        chatType: 'USER_TO_PAGE',
-        chatId: '1254459154682919',
+        page: 682498171943165,
+        user: '1254459154682919',
+        chat: {
+          id: '1254459154682919',
+          type: MessengerChatType.UserToPage,
+        },
         client: 'messenger',
       },
     });
@@ -135,12 +138,12 @@ describe('#verifyCredential(credential)', () => {
         client: 'messenger',
       })
     ).resolves.toMatchInlineSnapshot(`
-        Object {
-          "code": 401,
-          "reason": "invalid signature",
-          "success": false,
-        }
-    `);
+                    Object {
+                      "code": 401,
+                      "reason": "invalid signature",
+                      "success": false,
+                    }
+              `);
   });
 
   it('fail is signed request token is outdated', async () => {
@@ -158,12 +161,12 @@ describe('#verifyCredential(credential)', () => {
         client: 'messenger',
       })
     ).resolves.toMatchInlineSnapshot(`
-      Object {
-        "code": 401,
-        "reason": "signed request token timeout",
-        "success": false,
-      }
-    `);
+                  Object {
+                    "code": 401,
+                    "reason": "signed request token timeout",
+                    "success": false,
+                  }
+              `);
   });
 });
 
@@ -171,10 +174,12 @@ describe('#verifyRefreshment()', () => {
   it('return success and original data', async () => {
     const authorizer = new MessengerServerAuthorizer({ pageId, appSecret });
     const authData = {
-      pageId,
-      userId: '1254459154682919',
-      chatType: 'USER_TO_PAGE' as const,
-      chatId: '1254459154682919',
+      page: pageId,
+      user: '1254459154682919',
+      chat: {
+        type: MessengerChatType.UserToPage,
+        id: '1254459154682919',
+      },
       client: 'facebook' as const,
     };
 
@@ -189,49 +194,69 @@ describe('#verifyRefreshment()', () => {
 
     await expect(
       authorizer.verifyRefreshment({
-        pageId: 666666666,
-        userId: '1254459154682919',
-        chatType: 'USER_TO_PAGE',
-        chatId: '1254459154682919',
+        page: 666666666,
+        user: '1254459154682919',
+        chat: {
+          type: MessengerChatType.UserToPage,
+          id: '1254459154682919',
+        },
         client: 'facebook',
       })
     ).resolves.toMatchInlineSnapshot(`
+            Object {
+              "code": 400,
+              "reason": "page not match",
+              "success": false,
+            }
+          `);
+  });
+});
+
+describe('#checkAuthContext(data)', () => {
+  it('resolve auth context form extension context', () => {
+    const authorizer = new MessengerServerAuthorizer({ pageId, appSecret });
+    expect(
+      authorizer.checkAuthContext({
+        page: pageId,
+        user: '1254459154682919',
+        chat: {
+          type: MessengerChatType.UserToPage,
+          id: '1254459154682919',
+        },
+        client: 'messenger',
+      })
+    ).toEqual({
+      success: true,
+      contextSupplment: {
+        pageId,
+        user: new MessengerUser(pageId, '1254459154682919'),
+        channel: new MessengerChannel(pageId, {
+          id: '1254459154682919',
+        }),
+        clientType: 'messenger',
+      },
+    });
+  });
+
+  it('fail if pageId not match', () => {
+    const authorizer = new MessengerServerAuthorizer({ pageId, appSecret });
+
+    expect(
+      authorizer.checkAuthContext({
+        page: 666666666666,
+        user: '1254459154682919',
+        chat: {
+          type: MessengerChatType.UserToPage,
+          id: '1254459154682919',
+        },
+        client: 'messenger',
+      })
+    ).toMatchInlineSnapshot(`
       Object {
-        "code": 404,
+        "code": 400,
         "reason": "page not match",
         "success": false,
       }
     `);
-  });
-});
-
-describe('#supplementContext(data)', () => {
-  it('resolve auth context form extension context', async () => {
-    const authorizer = new MessengerServerAuthorizer({ pageId, appSecret });
-    await expect(
-      authorizer.supplementContext({
-        pageId: 682498171943165,
-        userId: '1254459154682919',
-        chatType: 'USER_TO_PAGE',
-        chatId: '1254459154682919',
-        client: 'messenger',
-      })
-    ).resolves.toEqual({
-      user: new MessengerUser(682498171943165, '1254459154682919'),
-      channel: new MessengerChannel(682498171943165, {
-        id: '1254459154682919',
-      }),
-      pageId: 682498171943165,
-      clientType: 'messenger',
-    });
-  });
-
-  it('resolve null if extension context invalid', async () => {
-    const authorizer = new MessengerServerAuthorizer({ pageId, appSecret });
-
-    await expect(authorizer.supplementContext(null as never)).resolves.toBe(
-      null
-    );
-    await expect(authorizer.supplementContext({} as never)).resolves.toBe(null);
   });
 });

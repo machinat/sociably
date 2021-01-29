@@ -15,7 +15,7 @@ class LocalOnlyBroker implements BrokerI {
   }
 
   dispatchRemote() {
-    return Promise.resolve(null);
+    return Promise.resolve([]);
   }
 
   subscribeTopicRemote() {

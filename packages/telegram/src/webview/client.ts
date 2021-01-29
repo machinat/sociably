@@ -1,7 +1,7 @@
 import {
   ClientAuthorizer,
   AuthorizerCredentialResult,
-  ContextSupplement,
+  ContextResult,
 } from '@machinat/auth/types';
 import { TELEGRAM } from '../constant';
 import { supplementContext } from './utils';
@@ -25,9 +25,10 @@ export default class TelegramClientAuthorizer
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async supplementContext(
-    data: TelegramAuthData
-  ): Promise<null | ContextSupplement<TelegramAuthContext>> {
-    return supplementContext(data);
+  checkAuthContext(data: TelegramAuthData): ContextResult<TelegramAuthContext> {
+    return {
+      success: true,
+      contextSupplment: supplementContext(data),
+    };
   }
 }

@@ -3,6 +3,7 @@ import { JSDOM } from 'jsdom';
 import MessengerClientAuthorizer from '../client';
 import MessengerChannel from '../../channel';
 import MessengerUser from '../../user';
+import { MessengerChatType } from '../../constant';
 
 const nextTick = () => new Promise(process.nextTick);
 
@@ -187,40 +188,33 @@ describe('#fetchCredential()', () => {
   });
 });
 
-describe('#supplementContext(data)', () => {
-  it('resolve auth context form extension context', async () => {
+describe('#checkAuthContext(data)', () => {
+  it('resolve auth context form extension context', () => {
     const authorizer = new MessengerClientAuthorizer({
       appId: 'APP_ID',
       isExtensionReady: true,
     });
 
-    await expect(
-      authorizer.supplementContext({
-        pageId: 682498171943165,
-        userId: '1254459154682919',
-        chatType: 'USER_TO_PAGE',
-        chatId: '1254459154682919',
+    expect(
+      authorizer.checkAuthContext({
+        page: 682498171943165,
+        user: '1254459154682919',
+        chat: {
+          id: '1254459154682919',
+          type: MessengerChatType.UserToPage,
+        },
         client: 'messenger',
       })
-    ).resolves.toEqual({
-      user: new MessengerUser(682498171943165, '1254459154682919'),
-      channel: new MessengerChannel(682498171943165, {
-        id: '1254459154682919',
-      }),
-      pageId: 682498171943165,
-      clientType: 'messenger',
+    ).toEqual({
+      success: true,
+      contextSupplment: {
+        user: new MessengerUser(682498171943165, '1254459154682919'),
+        channel: new MessengerChannel(682498171943165, {
+          id: '1254459154682919',
+        }),
+        pageId: 682498171943165,
+        clientType: 'messenger',
+      },
     });
-  });
-
-  it('resolve null if extension context invalid', async () => {
-    const authorizer = new MessengerClientAuthorizer({
-      appId: 'APP_ID',
-      isExtensionReady: true,
-    });
-
-    await expect(authorizer.supplementContext(null as never)).resolves.toBe(
-      null
-    );
-    await expect(authorizer.supplementContext({} as never)).resolves.toBe(null);
   });
 });

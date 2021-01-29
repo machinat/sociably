@@ -1,4 +1,4 @@
-import type WS from 'ws';
+import type Ws from 'ws';
 import { makeInterface, makeClassProvider } from '@machinat/core/service';
 import { AuthController } from '@machinat/auth';
 import type {
@@ -9,8 +9,8 @@ import type {
 import { NextReceiver } from '@machinat/next';
 import type { NextServer } from '@machinat/next/types';
 import WebSocket, { WebSocketServer } from '@machinat/websocket';
-import { useAuthController } from './utils';
-import { DEFAULT_AUTH_ROUTE, DEFAULT_NEXT_ROUTE } from './constant';
+import { useAuthController, verifyOrigin } from './utils';
+import { DEFAULT_AUTH_PATH } from './constant';
 import type { WebviewPlatformConfigs, WebviewPlatformMounter } from './types';
 
 export const PLATFORM_CONFIGS_I = makeInterface<WebviewPlatformConfigs<never>>({
@@ -31,11 +31,29 @@ export class WebviewAuthController<
 export const AuthControllerP = makeClassProvider({
   lifetime: 'singleton',
   deps: [AUTHORIZERS_I, PLATFORM_CONFIGS_I] as const,
-  factory: (authorizers, { authPath, ...otherOptions }) =>
-    new WebviewAuthController(authorizers, {
+  factory: (
+    authorizers,
+    {
+      authSecret,
+      authApiPath,
+      authRedirectUrl,
+      webviewHost,
+      webviewPath,
+      ...otherOptions
+    }
+  ) => {
+    if (authorizers.length === 0) {
+      throw new Error('Webview.AuthorizersList is empty');
+    }
+
+    return new WebviewAuthController(authorizers, {
       ...otherOptions,
-      entryPath: authPath || DEFAULT_AUTH_ROUTE,
-    }),
+      secret: authSecret,
+      entryPath: authApiPath || DEFAULT_AUTH_PATH,
+      redirectUrl:
+        authRedirectUrl || `https://${webviewHost}/${webviewPath || ''}`,
+    });
+  },
 })(WebviewAuthController);
 
 export type AuthControllerP<
@@ -53,11 +71,11 @@ export class WebviewNextReceiver extends NextReceiver {}
 export const NextReceiverP = makeClassProvider({
   lifetime: 'singleton',
   deps: [NEXT_SERVER_I, PLATFORM_CONFIGS_I] as const,
-  factory: (server, { noPrepareNext, nextPath }) =>
+  factory: (server, { noPrepareNext, webviewPath }) =>
     new WebviewNextReceiver(
       server,
       {
-        entryPath: nextPath || DEFAULT_NEXT_ROUTE,
+        entryPath: webviewPath,
         noPrepare: noPrepareNext,
       },
       null,
@@ -73,7 +91,7 @@ export const SOCKET_SERVER_ID_I = makeInterface<string>({
   name: 'WebviewSocketServerIdI',
 });
 
-export const WS_SERVER_I = makeInterface<WS.Server>({
+export const WS_SERVER_I = makeInterface<Ws.Server>({
   name: 'WebviewWSServerI',
 });
 
@@ -93,7 +111,7 @@ export class WebviewSocketServer<
 export const SocketServerP = makeClassProvider({
   lifetime: 'singleton',
   deps: [
-    SOCKET_SERVER_ID_I,
+    { require: SOCKET_SERVER_ID_I, optional: true },
     WS_SERVER_I,
     SocketBrokerI,
     AuthControllerP,
@@ -104,15 +122,16 @@ export const SocketServerP = makeClassProvider({
     wsServer,
     broker,
     authController,
-    { origin, heartbeatInterval }
+    { webviewHost, heartbeatInterval }
   ) =>
     new WebviewSocketServer(
-      serverId,
+      serverId || undefined,
       wsServer,
       broker,
-      ({ headers }) => headers.origin === origin,
+      ({ headers }) =>
+        !!headers.origin && verifyOrigin(headers.origin, webviewHost),
       useAuthController(authController),
-      heartbeatInterval
+      { heartbeatInterval }
     ),
 })(WebviewSocketServer);
 

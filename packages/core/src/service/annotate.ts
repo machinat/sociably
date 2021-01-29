@@ -27,7 +27,7 @@ const validateLifetime = (lifetime: string) => {
   );
 };
 
-type ServiceFactory<T, Deps extends readonly ServiceDependency<any>[]> = (
+type ServiceFactoryFn<T, Deps extends readonly ServiceDependency<any>[]> = (
   ...args: ResolveDependencies<Deps>
 ) => T;
 
@@ -44,7 +44,7 @@ export const makeContainer = <Deps extends readonly ServiceDependency<any>[]>({
   name,
   deps = [] as any,
 }: ContainerOptions<Deps>) => <T>(
-  fn: ServiceFactory<T, Deps>
+  fn: ServiceFactoryFn<T, Deps>
 ): ServiceContainer<T, ResolveDependencies<Deps>> => {
   const requirements = deps.map(polishServiceRequirement);
 
@@ -58,7 +58,7 @@ export const makeContainer = <Deps extends readonly ServiceDependency<any>[]>({
 type ClassProviderOptions<T, Deps extends readonly ServiceDependency<any>[]> = {
   name?: string;
   deps?: Deps;
-  factory?: ServiceFactory<T, Deps>;
+  factory?: ServiceFactoryFn<T, Deps>;
   lifetime: ServiceLifetime;
 };
 
@@ -116,8 +116,9 @@ export const makeFactoryProvider = <
   deps = [] as any,
   lifetime,
 }: FactoryProviderOptions<Deps>) => <T>(
-  factory: ServiceFactory<T, Deps>
-): ServiceProvider<T, ResolveDependencies<Deps>> & ServiceFactory<T, Deps> => {
+  factory: ServiceFactoryFn<T, Deps>
+): ServiceProvider<T, ResolveDependencies<Deps>> &
+  ServiceFactoryFn<T, Deps> => {
   validateLifetime(lifetime);
   const requirements = deps.map(polishServiceRequirement);
 

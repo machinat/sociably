@@ -15,9 +15,9 @@ import { WEBSOCKET } from './constant';
 import { PLATFORM_MOUNTER_I } from './interface';
 import { ServerP } from './server';
 import {
+  WebSocketConnection,
   WebSocketTopicChannel,
   WebSocketUserChannel,
-  WebSocketConnection,
 } from './channel';
 import createJobs from './utils/createJobs';
 import WebSocketWorker from './worker';
@@ -27,12 +27,20 @@ import type {
   WebSocketResult,
   WebSocketComponent,
   WebSocketDispatchFrame,
+  ConnIdentifier,
 } from './types';
 
 type WebSocketDispatchResponse = DispatchResponse<
   WebSocketJob,
   WebSocketResult
 >;
+
+type SendResult = {
+  connections: WebSocketConnection[];
+};
+
+const toConnection = ({ serverId, id }: ConnIdentifier) =>
+  new WebSocketConnection(serverId, id);
 
 /**
  * @category Provider
@@ -107,34 +115,52 @@ export class WebSocketBot
 
   async send(
     channel: WebSocketConnection,
-    event: EventInput
-  ): Promise<WebSocketResult> {
-    const response = await this.engine.dispatchJobs(channel, [
-      { target: channel, events: [event] },
+    content: EventInput | EventInput[]
+  ): Promise<SendResult> {
+    const {
+      results: [{ connections }],
+    } = await this.engine.dispatchJobs(channel, [
+      {
+        target: channel,
+        values: Array.isArray(content) ? content : [content],
+      },
     ]);
 
-    return response.results[0];
+    return { connections: connections.map(toConnection) };
   }
 
   async sendUser(
     user: MachinatUser,
-    event: EventInput
-  ): Promise<WebSocketResult> {
+    content: EventInput | EventInput[]
+  ): Promise<SendResult> {
     const channel = new WebSocketUserChannel(user.uid);
-    const response = await this.engine.dispatchJobs(channel, [
-      { target: channel, events: [event] },
+    const {
+      results: [{ connections }],
+    } = await this.engine.dispatchJobs(channel, [
+      {
+        target: channel,
+        values: Array.isArray(content) ? content : [content],
+      },
     ]);
 
-    return response.results[0];
+    return { connections: connections.map(toConnection) };
   }
 
-  async sendTopic(topic: string, event: EventInput): Promise<WebSocketResult> {
+  async sendTopic(
+    topic: string,
+    content: EventInput | EventInput[]
+  ): Promise<SendResult> {
     const channel = new WebSocketTopicChannel(topic);
-    const response = await this.engine.dispatchJobs(channel, [
-      { target: channel, events: [event] },
+    const {
+      results: [{ connections }],
+    } = await this.engine.dispatchJobs(channel, [
+      {
+        target: channel,
+        values: Array.isArray(content) ? content : [content],
+      },
     ]);
 
-    return response.results[0];
+    return { connections: connections.map(toConnection) };
   }
 
   disconnect(

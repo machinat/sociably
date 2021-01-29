@@ -3,12 +3,12 @@ import type {
   ServerResponse,
   IncomingHttpHeaders,
 } from 'http';
-import type { Socket } from 'net';
+import type { Socket, ListenOptions } from 'net';
 
 export type RoutingInfo = {
   originalPath: string;
-  matchedPath: string;
-  trailingPath: string;
+  matchedPath?: string;
+  trailingPath?: string;
 };
 
 export type RequestHandler = (
@@ -17,10 +17,17 @@ export type RequestHandler = (
   routingInfo: RoutingInfo
 ) => void;
 
-export type HttpRequestRouting = {
-  name?: string;
+export type RequestRoute = {
   path: string;
   handler: RequestHandler;
+  name?: string;
+  default?: false;
+};
+
+export type DefaultRequestRoute = {
+  default: true;
+  handler: RequestHandler;
+  name?: string;
 };
 
 export type UpgradeHandler = (
@@ -30,22 +37,20 @@ export type UpgradeHandler = (
   routingInfo: RoutingInfo
 ) => void;
 
-export type HttpUpgradeRouting = {
-  name?: string;
+export type UpgradeRoute = {
   path: string;
   handler: UpgradeHandler;
+  name?: string;
+  default?: false;
 };
 
-export type ServerListenOptions = {
-  port?: number;
-  host?: string;
-  path?: string;
-  backlog?: number;
-  exclusive?: boolean;
-  readableAll?: boolean;
-  writableAll?: boolean;
-  ipv6Only?: boolean;
+export type DefaultUpgradeRoute = {
+  default: true;
+  handler: UpgradeHandler;
+  name?: string;
 };
+
+export type ServerListenOptions = ListenOptions;
 
 export type HttpRequestInfo = {
   method: string;
@@ -54,4 +59,6 @@ export type HttpRequestInfo = {
   body?: string;
 };
 
-export type HttpModuleConfigs = ServerListenOptions;
+export type HttpModuleConfigs = {
+  listenOptions?: ServerListenOptions;
+};
