@@ -18,7 +18,7 @@ export default class ServiceScope {
   static $$typeof: typeof MACHINAT_SERVICE_INTERFACE = MACHINAT_SERVICE_INTERFACE;
   static $$name = 'ServiceScope';
   static $$multi = false as const;
-  static $$branched = false as const;
+  static $$polymorphic = false as const;
 
   maker: ServiceMaker;
   singletonCache: ServiceCache;

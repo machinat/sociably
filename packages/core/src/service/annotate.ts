@@ -9,7 +9,7 @@ import type {
   ServiceContainer,
   ServiceProvider,
   ServiceInterface,
-  BranchedServiceInterface,
+  PolymorphicServiceInterface,
   MultiServiceInterface,
   SingularServiceInterface,
   ServiceDependency,
@@ -134,7 +134,7 @@ export const makeFactoryProvider = <
 
 type MakeInterfaceOptions = {
   multi?: boolean;
-  branched?: boolean;
+  polymorphic?: boolean;
   name: string;
 };
 
@@ -144,8 +144,8 @@ type MakeInterfaceOptions = {
  */
 export function makeInterface<T>(options: {
   name: string;
-  branched: true;
-}): BranchedServiceInterface<T>;
+  polymorphic: true;
+}): PolymorphicServiceInterface<T>;
 export function makeInterface<T>(options: {
   name: string;
   multi: true;
@@ -153,22 +153,22 @@ export function makeInterface<T>(options: {
 export function makeInterface<T>(options: {
   name: string;
   multi?: false;
-  branched?: false;
+  polymorphic?: false;
 }): SingularServiceInterface<T>;
 export function makeInterface<T>({
   multi = false,
-  branched = false,
+  polymorphic = false,
   name,
 }: MakeInterfaceOptions): ServiceInterface<T> {
   invariant(
-    !(multi && branched),
-    'cannot be mulit and branched at the same time'
+    !(multi && polymorphic),
+    'cannot be mulit and polymorphic at the same time'
   );
 
   return {
     $$name: name,
     $$multi: multi as never,
-    $$branched: branched,
+    $$polymorphic: polymorphic,
     $$typeof: MACHINAT_SERVICE_INTERFACE,
   };
 }

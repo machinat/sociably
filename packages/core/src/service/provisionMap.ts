@@ -3,7 +3,7 @@ import type {
   Interfaceable,
   SingularServiceInterface,
   MultiServiceInterface,
-  BranchedServiceInterface,
+  PolymorphicServiceInterface,
   ServiceProvider,
 } from './types';
 
@@ -30,18 +30,18 @@ const mergeMulti = <T>(
   }
 };
 
-const mergeBranched = <T>(
+const mergePolymorphic = <T>(
   base: Map<Interfaceable<unknown>, Map<string, T>>,
   mergee: Map<Interfaceable<unknown>, Map<string, T>>
 ) => {
-  for (const [target, branches] of mergee) {
+  for (const [target, platforms] of mergee) {
     const baseBranches = base.get(target);
     if (baseBranches) {
-      for (const [platform, value] of branches) {
+      for (const [platform, value] of platforms) {
         baseBranches.set(platform, value);
       }
     } else {
-      base.set(target, branches);
+      base.set(target, platforms);
     }
   }
 };
@@ -49,12 +49,14 @@ const mergeBranched = <T>(
 export default class ProvisionMap<T> {
   _singularMapping: Map<Interfaceable<unknown>, T>;
   _multiMapping: Map<Interfaceable<unknown>, T[]>;
-  _branchedMapping: Map<Interfaceable<unknown>, Map<string, T>>;
+  _polymorphicMapping: Map<Interfaceable<unknown>, Map<string, T>>;
 
   constructor(base?: ProvisionMap<T>) {
     this._singularMapping = base ? new Map(base._singularMapping) : new Map();
     this._multiMapping = base ? new Map(base._multiMapping) : new Map();
-    this._branchedMapping = base ? new Map(base._branchedMapping) : new Map();
+    this._polymorphicMapping = base
+      ? new Map(base._polymorphicMapping)
+      : new Map();
   }
 
   getSingular(
@@ -69,8 +71,8 @@ export default class ProvisionMap<T> {
     return this._multiMapping.get(target) || [];
   }
 
-  getBranched(target: BranchedServiceInterface<unknown>): Map<string, T> {
-    return this._branchedMapping.get(target) || new Map();
+  getPolymorphic(target: PolymorphicServiceInterface<unknown>): Map<string, T> {
+    return this._polymorphicMapping.get(target) || new Map();
   }
 
   setSingular(
@@ -96,14 +98,14 @@ export default class ProvisionMap<T> {
     return registered;
   }
 
-  setBranched(
-    target: BranchedServiceInterface<unknown>,
+  setPolymorphic(
+    target: PolymorphicServiceInterface<unknown>,
     value: T,
     platform: string
   ): null | T {
-    const registered = this._branchedMapping.get(target);
+    const registered = this._polymorphicMapping.get(target);
     if (!registered) {
-      this._branchedMapping.set(target, new Map([[platform, value]]));
+      this._polymorphicMapping.set(target, new Map([[platform, value]]));
       return null;
     }
 
@@ -116,7 +118,7 @@ export default class ProvisionMap<T> {
   merge(mergee: ProvisionMap<T>): ProvisionMap<T> {
     mergeSingular(this._singularMapping, mergee._singularMapping);
     mergeMulti(this._multiMapping, mergee._multiMapping);
-    mergeBranched(this._branchedMapping, mergee._branchedMapping);
+    mergePolymorphic(this._polymorphicMapping, mergee._polymorphicMapping);
     return this;
   }
 
@@ -135,8 +137,8 @@ export default class ProvisionMap<T> {
       }
     }
 
-    for (const [target, branches] of this._branchedMapping) {
-      for (const [platform, value] of branches) {
+    for (const [target, platforms] of this._polymorphicMapping) {
+      for (const [platform, value] of platforms) {
         yield [target, value, platform];
       }
     }

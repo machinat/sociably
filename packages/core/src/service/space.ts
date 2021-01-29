@@ -9,8 +9,8 @@ import type {
   ServiceCache,
   ServiceProvider,
   Interfaceable,
-  BranchedProviderBinding,
-  BranchedValueBinding,
+  PolymorphicProviderBinding,
+  PolymorphicValueBinding,
 } from './types';
 
 const objectHasOwnProperty = (obj, prop) =>
@@ -18,10 +18,10 @@ const objectHasOwnProperty = (obj, prop) =>
 
 const printProvider = (obj) => obj?.$$name || obj?.name || String(obj);
 
-const isBranched = <T>(
+const isPolymorphic = <T>(
   target: ServiceBinding<T>
-): target is BranchedProviderBinding<T> | BranchedValueBinding<T> =>
-  !!target.provide.$$branched;
+): target is PolymorphicProviderBinding<T> | PolymorphicValueBinding<T> =>
+  !!target.provide.$$polymorphic;
 
 const resolveBindings = (
   bindings: ServiceProvision<unknown>[]
@@ -64,9 +64,13 @@ const resolveBindings = (
       };
     }
 
-    if (isBranched(binding)) {
+    if (isPolymorphic(binding)) {
       const { provide: target, platform } = binding;
-      const replaced = provisionMapping.setBranched(target, binding, platform);
+      const replaced = provisionMapping.setPolymorphic(
+        target,
+        binding,
+        platform
+      );
 
       if (replaced) {
         throw new Error(
@@ -174,8 +178,8 @@ export default class ServiceSpace {
     for (const { require: target, optional } of provider.$$deps) {
       let bindings: null | ServiceBinding<unknown>[] = null;
 
-      if (target.$$branched) {
-        const branches = this.provisionsMapping.getBranched(target);
+      if (target.$$polymorphic) {
+        const branches = this.provisionsMapping.getPolymorphic(target);
 
         bindings = [];
         for (const [, binding] of branches) {

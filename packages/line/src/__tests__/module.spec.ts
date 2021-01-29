@@ -15,9 +15,9 @@ it('export interfaces', () => {
   expect(Line.Profiler).toBe(LineProfiler);
   expect(Line.ConfigsI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "LineConfigsI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -39,9 +39,9 @@ describe('initModule(configs)', () => {
     expect(module.name).toBe('line');
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
-        "$$branched": false,
         "$$multi": false,
         "$$name": "LinePlatformMounterI",
+        "$$polymorphic": false,
         "$$typeof": Symbol(interface.service.machinat),
       }
     `);

@@ -18,41 +18,41 @@ it('export interfaces', () => {
   expect(WebSocket.Server).toBe(WebSocketServer);
   expect(WebSocket.ConfigsI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "WebSocketConfigsI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(WebSocket.LoginVerifierI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "WebSocketLoginVerifierI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(WebSocket.UpgradeVerifierI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "WebSocketUpgradeVerifierI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(WebSocket.ServerIdI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "WebSocketServerIdI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(WebSocket.WsServerI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "WebSocketWsServerI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -71,9 +71,9 @@ describe('initModule()', () => {
     expect(module.name).toBe('websocket');
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
-        "$$branched": false,
         "$$multi": false,
         "$$name": "WebSocketPlatformMounterI",
+        "$$polymorphic": false,
         "$$typeof": Symbol(interface.service.machinat),
       }
     `);
@@ -132,7 +132,7 @@ describe('initModule()', () => {
     ]);
   });
 
-  test('provide base interface branches', async () => {
+  test('provide base interface', async () => {
     const app = Machinat.createApp({
       platforms: [WebSocket.initModule({})],
     });

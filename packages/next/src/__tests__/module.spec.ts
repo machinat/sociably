@@ -11,17 +11,17 @@ it('exports interfaces', () => {
   expect(Next.Receiver).toBe(NextReceiver);
   expect(Next.ConfigsI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "NextConfigsI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(Next.ServerI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "NextServerI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -42,9 +42,9 @@ describe('initModule()', () => {
           [Function],
         ],
         "mounterInterface": Object {
-          "$$branched": false,
           "$$multi": false,
           "$$name": "NextPlatformMounterI",
+          "$$polymorphic": false,
           "$$typeof": Symbol(interface.service.machinat),
         },
         "name": "next",
@@ -52,9 +52,9 @@ describe('initModule()', () => {
           [Function],
           Object {
             "provide": Object {
-              "$$branched": false,
               "$$multi": false,
               "$$name": "NextConfigsI",
+              "$$polymorphic": false,
               "$$typeof": Symbol(interface.service.machinat),
             },
             "withValue": Object {
@@ -70,18 +70,18 @@ describe('initModule()', () => {
           },
           Object {
             "provide": Object {
-              "$$branched": false,
               "$$multi": false,
               "$$name": "NextServerI",
+              "$$polymorphic": false,
               "$$typeof": Symbol(interface.service.machinat),
             },
             "withProvider": [Function],
           },
           Object {
             "provide": Object {
-              "$$branched": false,
               "$$multi": true,
               "$$name": "HttpRequestRouteList",
+              "$$polymorphic": false,
               "$$typeof": Symbol(interface.service.machinat),
             },
             "withProvider": [Function],

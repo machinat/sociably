@@ -1,10 +1,13 @@
 import moxy from '@moxyjs/moxy';
+import { MachinatBot, MachinatChannel } from '../../types';
 import { BaseBot } from '../Bot';
 
-const fooBot = moxy({ render: async () => 'FOO' });
-const barBot = moxy({ render: async () => 'BAR' });
+type UnknownBot = MachinatBot<MachinatChannel, unknown, unknown>;
 
-it('proxy #render() call to the bot branch corredponded to the channel', async () => {
+const fooBot = moxy<UnknownBot>({ render: async () => 'FOO' } as never);
+const barBot = moxy<UnknownBot>({ render: async () => 'BAR' } as never);
+
+it('proxy #render() call to the bot corresponded to the channel platform', async () => {
   const bot = new BaseBot(
     new Map([
       ['foo', fooBot],

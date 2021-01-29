@@ -17,17 +17,17 @@ export interface UserProfiler<User extends MachinatUser> {
 export class BaseProfiler implements UserProfiler<MachinatUser> {
   static PlatformMap = makeInterface<UserProfiler<any>>({
     name: 'ProfilerPlatformMap',
-    branched: true,
+    polymorphic: true,
   });
 
-  private _branches: Map<string, BaseProfiler>;
+  private _platformMapping: Map<string, BaseProfiler>;
 
-  constructor(branches: Map<string, BaseProfiler>) {
-    this._branches = branches;
+  constructor(platformMapping: Map<string, BaseProfiler>) {
+    this._platformMapping = platformMapping;
   }
 
   async getUserProfile(user: MachinatUser): Promise<MachinatProfile> {
-    const profiler = this._branches.get(user.platform);
+    const profiler = this._platformMapping.get(user.platform);
     if (!profiler) {
       throw new TypeError(
         `user of platform '${user.platform}' is not supported`

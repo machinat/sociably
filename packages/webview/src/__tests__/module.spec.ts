@@ -21,9 +21,9 @@ const createNextServer = _createNextServer as Moxy<typeof _createNextServer>;
 it('export interfaces', () => {
   expect(Webview.ConfigsI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "WebviewConfigsI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -33,25 +33,25 @@ it('export interfaces', () => {
   expect(Object.getPrototypeOf(Webview.SocketServer)).toBe(WebSocket.Server);
   expect(Webview.SocketBrokerI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "WebviewSocketBrokerI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(Webview.SocketServerIdI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "WebviewSocketServerIdI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(Webview.WsServerI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "WebviewWsServerI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -59,9 +59,9 @@ it('export interfaces', () => {
   expect(Object.getPrototypeOf(Webview.AuthController)).toBe(Auth.Controller);
   expect(Webview.AuthorizerList).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": true,
       "$$name": "WebviewAuthorizersListI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -83,13 +83,13 @@ test('module object', () => {
 
   expect(module.name).toBe('webview');
   expect(module.mounterInterface).toMatchInlineSnapshot(`
-      Object {
-        "$$branched": false,
-        "$$multi": false,
-        "$$name": "WebviewPlatformMounterI",
-        "$$typeof": Symbol(interface.service.machinat),
-      }
-    `);
+    Object {
+      "$$multi": false,
+      "$$name": "WebviewPlatformMounterI",
+      "$$polymorphic": false,
+      "$$typeof": Symbol(interface.service.machinat),
+    }
+  `);
   expect(module.provisions).toBeInstanceOf(Array);
   expect(typeof module.startHook).toBe('function');
   expect(module.eventMiddlewares).toEqual(eventMiddlewares);

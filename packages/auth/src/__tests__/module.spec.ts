@@ -12,17 +12,17 @@ it('export interfaces', () => {
   expect(Auth.Controller).toBe(ControllerP);
   expect(Auth.ConfigsI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "AuthConfigsI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(Auth.AuthorizerList).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": true,
       "$$name": "AuthAuthorizerList",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);

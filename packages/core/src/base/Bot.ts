@@ -6,7 +6,7 @@ const BotPlatformMap = makeInterface<
   MachinatBot<MachinatChannel, unknown, unknown>
 >({
   name: 'BotPlatformMap',
-  branched: true,
+  polymorphic: true,
 });
 
 /**
@@ -14,22 +14,22 @@ const BotPlatformMap = makeInterface<
  */
 export class BaseBot implements MachinatBot<MachinatChannel, unknown, unknown> {
   static PlatformMap = BotPlatformMap;
-  private _branches: Map<
+  private _platformMapping: Map<
     string,
     MachinatBot<MachinatChannel, unknown, unknown>
   >;
 
   constructor(
-    branches: Map<string, MachinatBot<MachinatChannel, unknown, unknown>>
+    platformMapping: Map<string, MachinatBot<MachinatChannel, unknown, unknown>>
   ) {
-    this._branches = branches;
+    this._platformMapping = platformMapping;
   }
 
   async render(
     channel: MachinatChannel,
     node: MachinatNode
   ): Promise<null | DispatchResponse<unknown, unknown>> {
-    const bot = this._branches.get(channel.platform);
+    const bot = this._platformMapping.get(channel.platform);
     if (!bot) {
       throw new TypeError(
         `channel of platform '${channel.platform}' is not supported`

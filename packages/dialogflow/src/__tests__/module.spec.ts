@@ -12,18 +12,18 @@ it('export interfaces', () => {
   expect(Dialogflow.IntentRecognizer).toBe(Recognizer);
   expect(Dialogflow.ConfigsI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "DialogflowConfigsI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 
   expect(Dialogflow.SessionClientI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "DialogflowSessionClientI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);

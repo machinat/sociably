@@ -28,34 +28,34 @@ it('export interfaces', () => {
 
   expect(Http.ServerI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "HttpServerI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 
   expect(Http.RequestRouteList).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": true,
       "$$name": "HttpRequestRouteList",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(Http.UpgradeRouteList).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": true,
       "$$name": "HttpUpgradeRouteList",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
   expect(Http.ConfigsI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "HttpConfigsI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);

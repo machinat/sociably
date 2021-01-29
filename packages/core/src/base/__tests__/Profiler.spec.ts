@@ -4,12 +4,12 @@ import { BaseProfiler } from '../Profiler';
 const fooProfiler = moxy({ getUserProfile: async () => 'FOO' });
 const barProfiler = moxy({ getUserProfile: async () => 'BAR' });
 
-it('proxy #getUserProfile() call to the profiler branch corredponded to the user', async () => {
+it('proxy #getUserProfile() call to the profiler corresponded to the user platform', async () => {
   const profiler = new BaseProfiler(
     new Map([
       ['foo', fooProfiler],
       ['bar', barProfiler],
-    ])
+    ]) as never
   );
 
   await expect(

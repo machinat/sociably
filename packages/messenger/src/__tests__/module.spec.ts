@@ -15,9 +15,9 @@ it('export interfaces', () => {
   expect(Messenger.Profiler).toBe(MessengerProfiler);
   expect(Messenger.ConfigsI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "MessengerConfigsI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -40,9 +40,9 @@ describe('initModule(configs)', () => {
     expect(module.name).toBe('messenger');
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
-        "$$branched": false,
         "$$multi": false,
         "$$name": "MessengerPlatformMounterI",
+        "$$polymorphic": false,
         "$$typeof": Symbol(interface.service.machinat),
       }
     `);

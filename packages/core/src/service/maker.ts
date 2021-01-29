@@ -138,8 +138,8 @@ export default class ServiceMaker {
         args.push(
           resolvedList.map((binding) => this._makeBinding(binding, context))
         );
-      } else if (target.$$branched) {
-        const bindingsBranches = this.provisionMapping.getBranched(target);
+      } else if (target.$$polymorphic) {
+        const bindingsBranches = this.provisionMapping.getPolymorphic(target);
         const providingMapping = new Map();
 
         for (const [platform, binding] of bindingsBranches) {

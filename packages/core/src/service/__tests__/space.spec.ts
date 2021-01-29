@@ -248,10 +248,10 @@ it('throw circular dependent provider found when bootstrap', () => {
   );
 });
 
-it('provide branched interface with a map of platform and service', () => {
-  const branchedMammal = makeInterface({
+it('provide polymorphic interface with a map of platform and service', () => {
+  const polymorphicMammal = makeInterface({
     name: 'FooMammal',
-    branched: true,
+    polymorphic: true,
   });
 
   const fooCat = { foo: () => 'FOO_MEOW' };
@@ -262,9 +262,13 @@ it('provide branched interface with a map of platform and service', () => {
   const fooWhale = { foo: () => 'FOO_SONAR' };
 
   const space = new ServiceSpace(null, [
-    { provide: branchedMammal, platform: 'cat', withProvider: fooCatFactory },
-    { provide: branchedMammal, platform: 'bird', withValue: fooBird },
-    { provide: branchedMammal, platform: 'whale', withValue: fooWhale },
+    {
+      provide: polymorphicMammal,
+      platform: 'cat',
+      withProvider: fooCatFactory,
+    },
+    { provide: polymorphicMammal, platform: 'bird', withValue: fooBird },
+    { provide: polymorphicMammal, platform: 'whale', withValue: fooWhale },
   ]);
   space.bootstrap();
 
@@ -278,18 +282,18 @@ it('provide branched interface with a map of platform and service', () => {
     })
   );
 
-  expect(scope.useServices([branchedMammal])).toEqual([expectedMap]);
+  expect(scope.useServices([polymorphicMammal])).toEqual([expectedMap]);
 
-  const mammalContainer = makeContainer({ deps: [branchedMammal] })(
+  const mammalContainer = makeContainer({ deps: [polymorphicMammal] })(
     (mammals) => mammals
   );
   expect(scope.injectContainer(mammalContainer)).toEqual(expectedMap);
 });
 
 it('throw if bindings conflicted on specified platform', () => {
-  const branchedMammal = makeInterface({
+  const polymorphicMammal = makeInterface({
     name: 'FooMammal',
-    branched: true,
+    polymorphic: true,
   });
 
   const whiteCat = { foo: () => 'FOO_MEOW' };
@@ -300,35 +304,35 @@ it('throw if bindings conflicted on specified platform', () => {
   expect(() =>
     new ServiceSpace(null, [
       {
-        provide: branchedMammal,
+        provide: polymorphicMammal,
         platform: 'cat',
         withProvider: whiteCatFactory,
       },
-      { provide: branchedMammal, platform: 'cat', withValue: blackCat },
+      { provide: polymorphicMammal, platform: 'cat', withValue: blackCat },
     ]).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
     `"FooMammal is already bound to () => whiteCat on 'cat' platform"`
   );
 });
 
-it('registered branched bindings overrides the base one on platform', () => {
-  const branchedMammal = makeInterface({
+it('registered polymorphic bindings overrides the base one on platform', () => {
+  const polymorphicMammal = makeInterface({
     name: 'FooMammal',
-    branched: true,
+    polymorphic: true,
   });
 
   const whiteCat = { foo: () => 'FOO_MEOW' };
   const blackCat = { foo: () => 'FOO_MEOW' };
   const space = new ServiceSpace(
     new ServiceSpace(null, [
-      { provide: branchedMammal, platform: 'cat', withValue: whiteCat },
+      { provide: polymorphicMammal, platform: 'cat', withValue: whiteCat },
     ]),
-    [{ provide: branchedMammal, platform: 'cat', withValue: blackCat }]
+    [{ provide: polymorphicMammal, platform: 'cat', withValue: blackCat }]
   );
   space.bootstrap();
 
   const scope = space.createScope();
-  expect(scope.useServices([branchedMammal])).toEqual([
+  expect(scope.useServices([polymorphicMammal])).toEqual([
     new Map([['cat', blackCat]]),
   ]);
 });

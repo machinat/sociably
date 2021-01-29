@@ -10,9 +10,9 @@ test('export interfaces', () => {
   expect(FileState.Controller).toBe(FileStateController);
   expect(FileState.ConfigsI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "FileStateConfigsI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);

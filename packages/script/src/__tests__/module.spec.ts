@@ -5,9 +5,9 @@ it('exports interfaces', () => {
   expect(Script.Processor).toBe(ScriptProcessor);
   expect(Script.LibraryList).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": true,
       "$$name": "ScriptLibraryList",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);

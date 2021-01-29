@@ -23,9 +23,9 @@ it('export interfaces', () => {
   expect(Telegram.Profiler).toBe(TelegramProfiler);
   expect(Telegram.ConfigsI).toMatchInlineSnapshot(`
     Object {
-      "$$branched": false,
       "$$multi": false,
       "$$name": "TelegramConfigsI",
+      "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -49,9 +49,9 @@ describe('initModule(configs)', () => {
     expect(module.name).toBe('telegram');
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
-        "$$branched": false,
         "$$multi": false,
         "$$name": "TelegramPlatformMounterI",
+        "$$polymorphic": false,
         "$$typeof": Symbol(interface.service.machinat),
       }
     `);
@@ -132,7 +132,7 @@ describe('initModule(configs)', () => {
     ).toThrowErrorMatchingInlineSnapshot(`"TelegramReceiver is not bound"`);
   });
 
-  test('provide base interface branches', async () => {
+  test('provide base interface', async () => {
     const app = Machinat.createApp({
       platforms: [Telegram.initModule({ botToken: '12345:_BOT_TOKEN_' })],
     });
