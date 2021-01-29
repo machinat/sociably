@@ -11,11 +11,11 @@ import type {
   ContextResult,
 } from '@machinat/auth/types';
 
-import { PLATFORM_CONFIGS_I } from '../interface';
+import { ConfigsI } from '../interface';
 import { TELEGRAM } from '../constant';
 import { BotP } from '../bot';
 import type TelegramApiError from '../error';
-import type { TelegramPlatformConfigs, RawChat, RawUser } from '../types';
+import type { TelegramConfigs, RawChat, RawUser } from '../types';
 import { supplementContext } from './utils';
 import type { TelegramAuthContext, TelegramAuthData } from './types';
 
@@ -219,8 +219,8 @@ export class TelegramServerAuthorizer
 
 export const ServerAuthorizerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, PLATFORM_CONFIGS_I] as const,
-  factory: (bot, { authRedirectUrl }: TelegramPlatformConfigs) => {
+  deps: [BotP, ConfigsI] as const,
+  factory: (bot, { authRedirectUrl }: TelegramConfigs) => {
     invariant(
       authRedirectUrl,
       'must provide configs.authRedirectUrl to authorize with Telegram'

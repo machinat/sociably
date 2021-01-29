@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import type TypedEmitter from 'typed-emitter';
 import { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
-import type { Server as WSServer } from 'ws';
+import type { Server as WsServer } from 'ws';
 import uniqid from 'uniqid';
 import { HttpRequestInfo } from '@machinat/http/types';
 import { makeClassProvider } from '@machinat/core/service';
@@ -10,11 +10,11 @@ import type { MachinatUser } from '@machinat/core/types';
 
 import {
   BrokerI,
-  SERVER_ID_I,
-  WS_SERVER_I,
-  LOGIN_VERIFIER_I,
-  UPGRADE_VERIFIER_I,
-  PLATFORM_CONFIGS_I,
+  ServerIdI,
+  WsServerI,
+  LoginVerifierI,
+  UpgradeVerifierI,
+  ConfigsI,
 } from './interface';
 import Socket, {
   EventsBody,
@@ -78,7 +78,7 @@ export class WebSocketServer<
   // @ts-expect-error: implement heart beat
   private _heartbeatIntervalId: IntervalID;
 
-  private _wsServer: WSServer;
+  private _wsServer: WsServer;
   private _broker: BrokerI;
 
   private _verifyLogin: VerifyLoginFn<User, Auth, unknown>;
@@ -92,7 +92,7 @@ export class WebSocketServer<
 
   constructor(
     id: string | undefined,
-    wsServer: WSServer,
+    wsServer: WsServer,
     broker: BrokerI,
     verifyUpgrade: VerifyUpgradeFn,
     verifyLogin: VerifyLoginFn<User, Auth, unknown>,
@@ -547,12 +547,12 @@ export class WebSocketServer<
 export const ServerP = makeClassProvider({
   lifetime: 'singleton',
   deps: [
-    { require: SERVER_ID_I, optional: true },
-    WS_SERVER_I,
+    { require: ServerIdI, optional: true },
+    WsServerI,
     BrokerI,
-    { require: UPGRADE_VERIFIER_I, optional: true },
-    { require: LOGIN_VERIFIER_I, optional: true },
-    PLATFORM_CONFIGS_I,
+    { require: UpgradeVerifierI, optional: true },
+    { require: LoginVerifierI, optional: true },
+    ConfigsI,
   ] as const,
   factory: (
     serverId,

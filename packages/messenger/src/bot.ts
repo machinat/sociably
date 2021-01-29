@@ -16,7 +16,7 @@ import MessengerWorker from './worker';
 import generalComponentDelegator from './components/general';
 
 import { MESSENGER } from './constant';
-import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
+import { ConfigsI, PlatformMounterI } from './interface';
 import MessengerChannel from './channel';
 import { chatJobsMaker, makeAttachmentJobs } from './job';
 
@@ -151,10 +151,7 @@ export class MessengerBot
 
 export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [
-    PLATFORM_CONFIGS_I,
-    { require: PLATFORM_MOUNTER_I, optional: true },
-  ] as const,
+  deps: [ConfigsI, { require: PlatformMounterI, optional: true }] as const,
   factory: (configs, mounter) =>
     new MessengerBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
 })(MessengerBot);

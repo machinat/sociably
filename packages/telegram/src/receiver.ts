@@ -9,7 +9,7 @@ import type { PopEventWrapper } from '@machinat/core/types';
 
 import eventFactory from './event/factory';
 import { BotP } from './bot';
-import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
+import { ConfigsI, PlatformMounterI } from './interface';
 import { TELEGRAM } from './constant';
 import type { TelegramEventContext, TelegramRawEvent } from './types';
 
@@ -86,7 +86,7 @@ export class TelegramReceiver extends WebhookReceiver {
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I] as const,
+  deps: [ConfigsI, BotP, PlatformMounterI] as const,
   factory: ({ botToken, secretPath, entryPath }, bot, { popEventWrapper }) => {
     const botId = Number(botToken.split(':', 1)[0]);
     return new TelegramReceiver(

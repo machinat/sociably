@@ -4,32 +4,39 @@ import Base from '@machinat/core/base';
 import type { ServiceModule } from '@machinat/core/types';
 
 import { IntentRecognizerP } from './recognizer';
-import { SESSION_CLIENT_I, MODULE_CONFIGS_I } from './interface';
-import type { ModuleConfigs } from './types';
+import {
+  ConfigsI as DialogflowConfigsI,
+  SessionClientI as DialogflowSessionClientI,
+} from './interface';
 
 /** @internal */
 const dialogflowClientFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [MODULE_CONFIGS_I] as const,
+  deps: [DialogflowConfigsI] as const,
 })((configs) => new SessionsClient(configs.gcpAuthConfig));
 
 const Dialogflow = {
   IntentRecognizer: IntentRecognizerP,
-  SESSION_CLIENT_I,
-  CONFIGS_I: MODULE_CONFIGS_I,
+  SessionClientI: DialogflowSessionClientI,
+  ConfigsI: DialogflowConfigsI,
 
-  initModule: (configs: ModuleConfigs): ServiceModule => ({
+  initModule: (configs: DialogflowConfigsI): ServiceModule => ({
     provisions: [
       IntentRecognizerP,
       { provide: Base.IntentRecognizerI, withProvider: IntentRecognizerP },
-      { provide: SESSION_CLIENT_I, withProvider: dialogflowClientFactory },
-      { provide: MODULE_CONFIGS_I, withValue: configs },
+      {
+        provide: DialogflowSessionClientI,
+        withProvider: dialogflowClientFactory,
+      },
+      { provide: DialogflowConfigsI, withValue: configs },
     ],
   }),
 };
 
 declare namespace Dialogflow {
   export type IntentRecognizer = IntentRecognizerP;
+  export type ConfigsI = DialogflowConfigsI;
+  export type SessionClientI = DialogflowSessionClientI;
 }
 
 export default Dialogflow;

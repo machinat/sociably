@@ -1,7 +1,7 @@
 import type { v2, protos } from '@google-cloud/dialogflow';
 import type { ClientOptions } from 'google-gax';
 
-export type ModuleConfigs = {
+export type DialogflowConfigs = {
   projectId: string;
   defaultLanguageCode: string;
   gcpAuthConfig?: ClientOptions;

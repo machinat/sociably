@@ -13,11 +13,11 @@ it('export interfaces', () => {
   expect(Line.Receiver).toBe(LineReceiver);
   expect(Line.Bot).toBe(LineBot);
   expect(Line.Profiler).toBe(LineProfiler);
-  expect(Line.CONFIGS_I).toMatchInlineSnapshot(`
+  expect(Line.ConfigsI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
-      "$$name": "LinePlatformConfigsI",
+      "$$name": "LineConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -75,9 +75,9 @@ describe('initModule(configs)', () => {
     ] = app.useServices([
       Line.Bot,
       Line.Receiver,
-      Line.CONFIGS_I,
+      Line.ConfigsI,
       Line.Profiler,
-      Http.REQUEST_ROUTES_I,
+      Http.RequestRouteList,
     ]);
 
     expect(bot).toBeInstanceOf(LineBot);
@@ -104,9 +104,9 @@ describe('initModule(configs)', () => {
 
     const [bot, configsProvided, profiler, routings] = app.useServices([
       Line.Bot,
-      Line.CONFIGS_I,
+      Line.ConfigsI,
       Line.Profiler,
-      Http.REQUEST_ROUTES_I,
+      Http.RequestRouteList,
     ]);
 
     expect(bot).toBeInstanceOf(LineBot);
@@ -134,9 +134,9 @@ describe('initModule(configs)', () => {
     await app.start();
 
     const [bots, profilers, marshalTypes] = app.useServices([
-      Base.Bot.PLATFORMS_I,
-      Base.Profiler.PLATFORMS_I,
-      Base.Marshaler.TYPINGS_I,
+      Base.Bot.PlatformMap,
+      Base.Profiler.PlatformMap,
+      Base.Marshaler.TypeI,
     ]);
 
     expect(bots.get('line')).toBeInstanceOf(LineBot);
@@ -164,7 +164,7 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [routings] = app.useServices([Http.REQUEST_ROUTES_I]);
+    const [routings] = app.useServices([Http.RequestRouteList]);
     expect(routings).toEqual([
       { name: 'line', path: '/', handler: expect.any(Function) },
     ]);

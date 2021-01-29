@@ -1,5 +1,5 @@
 import type { ClientOpts } from 'redis';
 
-export type RedisStateModuleConfigs = {
+export type RedisStateConfigs = {
   clientOptions: ClientOpts;
 };

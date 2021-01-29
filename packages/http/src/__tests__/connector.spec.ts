@@ -1,15 +1,16 @@
+import { Server } from 'http';
 import { EventEmitter } from 'events';
 import moxy from '@moxyjs/moxy';
 import { HttpConnector } from '../connector';
 
-class FakeServer extends EventEmitter {
+const FakeServer = class FakeServer extends EventEmitter {
   // eslint-disable-next-line
   listen(...args) {
     for (let i = args.length - 1; i >= 0; i -= 1) {
       if (typeof args[i] === 'function') args[i]();
     }
   }
-}
+} as typeof Server;
 
 const createRes = () =>
   moxy({

@@ -15,7 +15,7 @@ import { createChatJob, createDirectInstanceJobs } from './job';
 import generalElementDelegate from './components/general';
 import TelegramWorker from './worker';
 import { TelegramChat, TelegramChatTarget } from './channel';
-import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
+import { ConfigsI, PlatformMounterI } from './interface';
 import { TELEGRAM } from './constant';
 import TelegramApiError from './error';
 import type {
@@ -184,10 +184,7 @@ export class TelegramBot
 
 export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [
-    PLATFORM_CONFIGS_I,
-    { require: PLATFORM_MOUNTER_I, optional: true },
-  ] as const,
+  deps: [ConfigsI, { require: PlatformMounterI, optional: true }] as const,
   factory: ({ botToken, maxConnections }, mounter) => {
     invariant(botToken, 'configs.botToken should not be empty');
 

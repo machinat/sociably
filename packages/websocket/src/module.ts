@@ -6,13 +6,13 @@ import type { UpgradeRoute } from '@machinat/http/types';
 
 import { WEBSOCKET } from './constant';
 import {
+  ServerIdI,
+  PlatformMounterI,
   BrokerI as WebSocketBrokerI,
-  WS_SERVER_I,
-  UPGRADE_VERIFIER_I,
-  LOGIN_VERIFIER_I,
-  SERVER_ID_I,
-  PLATFORM_MOUNTER_I,
-  PLATFORM_CONFIGS_I,
+  WsServerI as WebSocketWsServerI,
+  UpgradeVerifierI as WebSocketUpgradeVerifierI,
+  LoginVerifierI as WebSocketLoginVerifierI,
+  ConfigsI as WebSocketConfigsI,
 } from './interface';
 import { BotP } from './bot';
 import { ServerP } from './server';
@@ -29,7 +29,7 @@ import type {
   WebSocketJob,
   WebSocketDispatchFrame,
   WebSocketResult,
-  WebSocketPlatformConfigs,
+  WebSocketConfigs,
 } from './types';
 
 /** @internal */
@@ -38,9 +38,9 @@ const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
 );
 
 /** @internal */
-const upgradeRoutingFactory = makeFactoryProvider({
+const upgradeRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [PLATFORM_CONFIGS_I, ServerP] as const,
+  deps: [WebSocketConfigsI, ServerP] as const,
 })(
   (configs, server): UpgradeRoute => ({
     name: WEBSOCKET,
@@ -54,14 +54,14 @@ const WebSocket = {
   Receiver: ReceiverP,
   Server: ServerP,
   BrokerI: WebSocketBrokerI,
-  WS_SERVER_I,
-  UPGRADE_VERIFIER_I,
-  LOGIN_VERIFIER_I,
-  SERVER_ID_I,
-  CONFIGS_I: PLATFORM_CONFIGS_I,
+  WsServerI: WebSocketWsServerI,
+  UpgradeVerifierI: WebSocketUpgradeVerifierI,
+  LoginVerifierI: WebSocketLoginVerifierI,
+  ConfigsI: WebSocketConfigsI,
+  ServerIdI,
 
   initModule: <User extends null | MachinatUser, Auth>(
-    configs: WebSocketPlatformConfigs<User, Auth> = {}
+    configs: WebSocketConfigs<User, Auth> = {}
   ): PlatformModule<
     WebSocketEventContext<User, Auth>,
     null,
@@ -71,16 +71,16 @@ const WebSocket = {
   > => {
     return {
       name: WEBSOCKET,
-      mounterInterface: PLATFORM_MOUNTER_I,
+      mounterInterface: PlatformMounterI,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions: [
-        { provide: PLATFORM_CONFIGS_I, withValue: configs },
-        { provide: WS_SERVER_I, withProvider: wsServerFactory },
+        { provide: WebSocketConfigsI, withValue: configs },
+        { provide: WebSocketWsServerI, withProvider: wsServerFactory },
 
         BotP,
         {
-          provide: BaseBot.PLATFORMS_I,
+          provide: BaseBot.PlatformMap,
           withProvider: BotP,
           platform: WEBSOCKET,
         },
@@ -90,13 +90,13 @@ const WebSocket = {
 
         ReceiverP,
         {
-          provide: Http.UPGRADE_ROUTES_I,
-          withProvider: upgradeRoutingFactory,
+          provide: Http.UpgradeRouteList,
+          withProvider: upgradeRouteFactory,
         },
 
-        { provide: BaseMarshaler.TYPINGS_I, withValue: WebSocketConnection },
-        { provide: BaseMarshaler.TYPINGS_I, withValue: WebSocketUserChannel },
-        { provide: BaseMarshaler.TYPINGS_I, withValue: WebSocketTopicChannel },
+        { provide: BaseMarshaler.TypeI, withValue: WebSocketConnection },
+        { provide: BaseMarshaler.TypeI, withValue: WebSocketUserChannel },
+        { provide: BaseMarshaler.TypeI, withValue: WebSocketTopicChannel },
       ],
 
       startHook: makeContainer({
@@ -119,6 +119,11 @@ declare namespace WebSocket {
     Auth
   >;
   export type BrokerI = WebSocketBrokerI;
+  export type WsServerI = WebSocketWsServerI;
+  export type UpgradeVerifierI = WebSocketUpgradeVerifierI;
+  export type LoginVerifierI = WebSocketLoginVerifierI;
+  export type ServerIdI = string;
+  export type ConfigsI = WebSocketConfigsI;
 }
 
 export default WebSocket;

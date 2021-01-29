@@ -7,8 +7,6 @@ export { MessengerBot } from './bot';
 export { MessengerReceiver } from './receiver';
 export { MessengerProfiler } from './profiler';
 
-export { PLATFORM_CONFIGS_I as MESSENGER_CONFIGS_I } from './interface';
-
 export {
   ATTACHMENT_DATA,
   ATTACHMENT_INFO,

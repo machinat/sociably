@@ -59,6 +59,6 @@ export type HttpRequestInfo = {
   body?: string;
 };
 
-export type HttpModuleConfigs = {
+export type HttpConfigs = {
   listenOptions?: ServerListenOptions;
 };

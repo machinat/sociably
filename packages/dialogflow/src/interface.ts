@@ -1,16 +1,20 @@
 import { makeInterface } from '@machinat/core/service';
-import type { ModuleConfigs, SessionClient } from './types';
+import type { DialogflowConfigs, SessionClient } from './types';
 
 /**
  * @category Interface
  */
-export const MODULE_CONFIGS_I = makeInterface<ModuleConfigs>({
-  name: 'DialogflowModuleConfigsI',
+export const ConfigsI = makeInterface<DialogflowConfigs>({
+  name: 'DialogflowConfigsI',
 });
 
+export type ConfigsI = DialogflowConfigs;
+
 /**
  * @category Interface
  */
-export const SESSION_CLIENT_I = makeInterface<SessionClient>({
+export const SessionClientI = makeInterface<SessionClient>({
   name: 'DialogflowSessionClientI',
 });
+
+export type SessionClientI = SessionClient;

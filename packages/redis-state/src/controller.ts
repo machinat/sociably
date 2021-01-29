@@ -7,7 +7,7 @@ import type {
   BaseStateController,
   StateAccessor,
 } from '@machinat/core/base/StateControllerI';
-import { CLIENT_I } from './interface';
+import { ClientI } from './interface';
 
 export class RedisStateAccessor implements StateAccessor {
   private _stateKey: string;
@@ -164,7 +164,7 @@ export class RedisStateController implements BaseStateController {
 
 export const ControllerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [CLIENT_I, { require: Base.Marshaler, optional: true }] as const,
+  deps: [ClientI, { require: Base.Marshaler, optional: true }] as const,
 })(RedisStateController);
 
 export type ControllerP = RedisStateController;

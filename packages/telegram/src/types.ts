@@ -198,7 +198,7 @@ export type TelegramPlatformMounter = PlatformMounter<
   TelegramResult
 >;
 
-export type TelegramPlatformConfigs = {
+export type TelegramConfigs = {
   botToken: string;
   entryPath?: string;
   secretPath?: string;

@@ -8,7 +8,7 @@ import type { Marshallable } from '@machinat/core/base/Marshaler';
 import { BotP } from './bot';
 import type MessengerUser from './user';
 import type { RawUserProfile } from './types';
-import { PLATFORM_CONFIGS_I } from './interface';
+import { ConfigsI } from './interface';
 import { MESSENGER } from './constant';
 
 export class MessengerUserProfile
@@ -106,7 +106,7 @@ export class MessengerProfiler implements UserProfiler<MessengerUser> {
 
 export const ProfilerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [BotP, PLATFORM_CONFIGS_I] as const,
+  deps: [BotP, ConfigsI] as const,
 })(MessengerProfiler);
 
 export type ProfilerP = MessengerProfiler;

@@ -18,7 +18,7 @@ import {
 } from '@machinat/websocket/types';
 
 import { WEBVIEW } from './constant';
-import { SocketServerP, PLATFORM_MOUNTER_I } from './interface';
+import { SocketServerP, PlatformMounterI } from './interface';
 import { BotP } from './bot';
 import { WebviewConnection } from './channel';
 import { createEvent } from './utils';
@@ -107,7 +107,7 @@ export class WebviewReceiver<
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, SocketServerP, PLATFORM_MOUNTER_I] as const,
+  deps: [BotP, SocketServerP, PlatformMounterI] as const,
   factory: (bot, server, { popEventWrapper, popError }) =>
     new WebviewReceiver(bot, server, popEventWrapper, popError),
 })(WebviewReceiver);

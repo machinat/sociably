@@ -4,7 +4,7 @@ import { maybeInjectContainer } from '@machinat/core/service';
 import type { MachinatNode, MachinatChannel } from '@machinat/core/types';
 import type { ServiceScope } from '@machinat/core/service/types';
 import type {
-  MachinatScript,
+  ScriptLibrary,
   CallStatus,
   ContentCommand,
   SetVarsCommand,
@@ -22,7 +22,7 @@ import type {
 } from './types';
 
 const getCursorIndexAssertedly = (
-  script: MachinatScript<unknown, unknown, unknown, unknown>,
+  script: ScriptLibrary<unknown, unknown, unknown, unknown>,
   key: string
 ): number => {
   const index = script.entriesIndex.get(key);
@@ -166,7 +166,7 @@ const executeCallCommand = async <Vars>(
 async function executeScript<Vars, Input, Return>(
   scope: ServiceScope,
   channel: MachinatChannel,
-  script: MachinatScript<Vars, Input, Return, unknown>,
+  script: ScriptLibrary<Vars, Input, Return, unknown>,
   begin: number,
   initialVars: Vars
 ): Promise<ExecuteResult<Input, Return>> {

@@ -4,13 +4,16 @@ import Http from '@machinat/http';
 import type { RequestRoute } from '@machinat/http/types';
 
 import { ControllerP } from './controller';
-import { MODULE_CONFIGS_I, AUTHORIZERS_I } from './interface';
-import type { AuthModuleConfigs, AnyServerAuthorizer } from './types';
+import {
+  ConfigsI as AuthConfigsI,
+  AuthorizerList as AuthAuthorizerList,
+} from './interface';
+import type { AuthConfigs, AnyServerAuthorizer } from './types';
 
 /** @internal */
-const authRoutingFactory = makeFactoryProvider({
+const authRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [ControllerP, MODULE_CONFIGS_I] as const,
+  deps: [ControllerP, AuthConfigsI] as const,
 })(
   (controller, configs): RequestRoute => ({
     name: 'auth',
@@ -23,14 +26,14 @@ const authRoutingFactory = makeFactoryProvider({
 
 const Auth = {
   Controller: ControllerP,
-  CONFIGS_I: MODULE_CONFIGS_I,
-  AUTHORIZERS_I,
+  ConfigsI: AuthConfigsI,
+  AuthorizerList: AuthAuthorizerList,
 
-  initModule: (configs: AuthModuleConfigs): ServiceModule => ({
+  initModule: (configs: AuthConfigs): ServiceModule => ({
     provisions: [
       ControllerP,
-      { provide: MODULE_CONFIGS_I, withValue: configs },
-      { provide: Http.REQUEST_ROUTES_I, withProvider: authRoutingFactory },
+      { provide: AuthConfigsI, withValue: configs },
+      { provide: Http.RequestRouteList, withProvider: authRouteFactory },
     ],
   }),
 };
@@ -39,6 +42,8 @@ declare namespace Auth {
   export type Controller<Authorizer extends AnyServerAuthorizer> = ControllerP<
     Authorizer
   >;
+  export type ConfigsI = AuthConfigsI;
+  export type AuthorizerList = AuthAuthorizerList;
 }
 
 export default Auth;

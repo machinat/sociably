@@ -13,11 +13,11 @@ it('export interfaces', () => {
   expect(Messenger.Receiver).toBe(MessengerReceiver);
   expect(Messenger.Bot).toBe(MessengerBot);
   expect(Messenger.Profiler).toBe(MessengerProfiler);
-  expect(Messenger.CONFIGS_I).toMatchInlineSnapshot(`
+  expect(Messenger.ConfigsI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
-      "$$name": "MessengerPlatformConfigsI",
+      "$$name": "MessengerConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -77,8 +77,8 @@ describe('initModule(configs)', () => {
       Messenger.Bot,
       Messenger.Receiver,
       Messenger.Profiler,
-      Messenger.CONFIGS_I,
-      Http.REQUEST_ROUTES_I,
+      Messenger.ConfigsI,
+      Http.RequestRouteList,
     ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
@@ -112,8 +112,8 @@ describe('initModule(configs)', () => {
     const [bot, profiler, configsProvided, routings] = app.useServices([
       Messenger.Bot,
       Messenger.Profiler,
-      Messenger.CONFIGS_I,
-      Http.REQUEST_ROUTES_I,
+      Messenger.ConfigsI,
+      Http.RequestRouteList,
     ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
@@ -144,9 +144,9 @@ describe('initModule(configs)', () => {
 
     const [bot, bots, profilers, marshalTypes] = app.useServices([
       Messenger.Bot,
-      Base.Bot.PLATFORMS_I,
-      Base.Profiler.PLATFORMS_I,
-      Base.Marshaler.TYPINGS_I,
+      Base.Bot.PlatformMap,
+      Base.Profiler.PlatformMap,
+      Base.Marshaler.TypeI,
     ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
@@ -176,7 +176,7 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [routings] = app.useServices([Http.REQUEST_ROUTES_I]);
+    const [routings] = app.useServices([Http.RequestRouteList]);
     expect(routings).toEqual([
       { name: 'messenger', path: '/', handler: expect.any(Function) },
     ]);

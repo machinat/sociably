@@ -170,7 +170,7 @@ export type MessengerDispatchMiddleware = DispatchMiddleware<
   MessengerResult
 >;
 
-export type MessengerPlatformConfigs = {
+export type MessengerConfigs = {
   pageId: string;
   accessToken: string;
   appSecret?: string;

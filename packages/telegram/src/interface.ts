@@ -1,16 +1,18 @@
 import { makeInterface } from '@machinat/core/service';
-import type { TelegramPlatformMounter, TelegramPlatformConfigs } from './types';
+import type { TelegramPlatformMounter, TelegramConfigs } from './types';
 
 /**
  * @category Interface
  */
-export const PLATFORM_CONFIGS_I = makeInterface<TelegramPlatformConfigs>({
-  name: 'TelegramPlatformConfigsI',
+export const ConfigsI = makeInterface<TelegramConfigs>({
+  name: 'TelegramConfigsI',
 });
 
+export type ConfigsI = TelegramConfigs;
+
 /**
  * @category Interface
  */
-export const PLATFORM_MOUNTER_I = makeInterface<TelegramPlatformMounter>({
+export const PlatformMounterI = makeInterface<TelegramPlatformMounter>({
   name: 'TelegramPlatformMounterI',
 });

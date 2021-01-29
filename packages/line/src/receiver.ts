@@ -8,7 +8,7 @@ import type { WebhookHandler } from '@machinat/http/webhook/types';
 import eventFactory from './event/factory';
 import { BotP } from './bot';
 import { LINE } from './constant';
-import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
+import { ConfigsI, PlatformMounterI } from './interface';
 import type { LineWebhookRequestBody, LineEventContext } from './types';
 
 type LineReceiverOptions = {
@@ -119,7 +119,7 @@ export class LineReceiver extends WebhookReceiver {
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I, BotP, PLATFORM_MOUNTER_I] as const,
+  deps: [ConfigsI, BotP, PlatformMounterI] as const,
   factory: (configs, bot, { popEventWrapper }) =>
     new LineReceiver(configs, bot, popEventWrapper),
 })(LineReceiver);

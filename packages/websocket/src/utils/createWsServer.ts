@@ -1,5 +1,5 @@
-import WS from 'ws';
+import Ws from 'ws';
 
-const createWsServer = (): WS.Server => new WS.Server({ noServer: true });
+const createWsServer = (): Ws.Server => new Ws.Server({ noServer: true });
 
 export default createWsServer;

@@ -12,7 +12,7 @@ import {
 import getRawBody from 'raw-body';
 import thenifiedly from 'thenifiedly';
 import { SIGNATURE_COOKIE_KEY } from './constant';
-import { AUTHORIZERS_I, MODULE_CONFIGS_I } from './interface';
+import { AuthorizerList, ConfigsI } from './interface';
 import AuthError from './error';
 import type {
   AnyServerAuthorizer,
@@ -22,7 +22,7 @@ import type {
   VerifyRequestBody,
   AuthApiResponseBody,
   AuthApiErrorBody,
-  AuthModuleConfigs,
+  AuthConfigs,
   ContextOfAuthorizer,
   WithHeaders,
 } from './types';
@@ -85,7 +85,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
   private _cookieController: CookieController;
 
-  constructor(authorizers: Authorizer[], options: AuthModuleConfigs) {
+  constructor(authorizers: Authorizer[], options: AuthConfigs) {
     invariant(
       authorizers && authorizers.length > 0,
       'authorizers must not be empty'
@@ -507,7 +507,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
 export const ControllerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [AUTHORIZERS_I, MODULE_CONFIGS_I] as const,
+  deps: [AuthorizerList, ConfigsI] as const,
 })(AuthController);
 
 export type ControllerP<

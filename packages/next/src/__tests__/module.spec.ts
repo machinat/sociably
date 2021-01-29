@@ -9,15 +9,15 @@ const createNextApp = _createNextApp as Moxy<typeof _createNextApp>;
 
 it('exports interfaces', () => {
   expect(Next.Receiver).toBe(NextReceiver);
-  expect(Next.CONFIGS_I).toMatchInlineSnapshot(`
+  expect(Next.ConfigsI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
-      "$$name": "NextModuleConfigsI",
+      "$$name": "NextConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(Next.SERVER_I).toMatchInlineSnapshot(`
+  expect(Next.ServerI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
@@ -54,7 +54,7 @@ describe('initModule()', () => {
             "provide": Object {
               "$$branched": false,
               "$$multi": false,
-              "$$name": "NextModuleConfigsI",
+              "$$name": "NextConfigsI",
               "$$typeof": Symbol(interface.service.machinat),
             },
             "withValue": Object {
@@ -81,7 +81,7 @@ describe('initModule()', () => {
             "provide": Object {
               "$$branched": false,
               "$$multi": true,
-              "$$name": "HTTPRequestRoutesListI",
+              "$$name": "HttpRequestRouteList",
               "$$typeof": Symbol(interface.service.machinat),
             },
             "withProvider": [Function],
@@ -106,9 +106,9 @@ describe('initModule()', () => {
 
     const [receiver, nextApp, configs, routings] = app.useServices([
       Next.Receiver,
-      Next.SERVER_I,
-      Next.CONFIGS_I,
-      Http.REQUEST_ROUTES_I,
+      Next.ServerI,
+      Next.ConfigsI,
+      Http.RequestRouteList,
     ]);
 
     expect(receiver).toBeInstanceOf(NextReceiver);
@@ -157,7 +157,7 @@ describe('initModule()', () => {
     });
     await app.start();
 
-    const [routings] = app.useServices([Http.REQUEST_ROUTES_I]);
+    const [routings] = app.useServices([Http.RequestRouteList]);
     expect(routings).toEqual([
       { name: 'next', path: '/', handler: expect.any(Function) },
     ]);

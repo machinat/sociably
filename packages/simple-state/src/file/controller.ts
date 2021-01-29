@@ -11,7 +11,7 @@ import type {
   BaseStateController,
   StateAccessor,
 } from '@machinat/core/base/StateControllerI';
-import { MODULE_CONFIGS_I, SerializerI } from './interface';
+import { ConfigsI, SerializerI } from './interface';
 import type { FileRepositoryConfigs } from './types';
 
 type FileHandle = fsPromises.FileHandle;
@@ -229,7 +229,7 @@ export class FileStateController implements BaseStateController {
 export const ControllerP = makeClassProvider({
   lifetime: 'singleton',
   deps: [
-    MODULE_CONFIGS_I,
+    ConfigsI,
     { require: Base.Marshaler, optional: true },
     { require: SerializerI, optional: true },
   ] as const,

@@ -2,13 +2,12 @@ import { createServer } from 'http';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import { ServiceModule } from '@machinat/core/types';
 import {
-  HttpServerI,
-  MODULE_CONFIGS_I,
-  REQUEST_ROUTES_I,
-  UPGRADE_ROUTES_I,
+  ServerI as HttpServerI,
+  ConfigsI as HttpConfigsI,
+  RequestRouteList as HttpRequestRouteList,
+  UpgradeRouteList as HttpUpgradeRouteList,
 } from './interface';
 import { ConnectorP } from './connector';
-import { HttpModuleConfigs } from './types';
 
 /** @internal */
 const httpServerFactory = makeFactoryProvider({
@@ -16,20 +15,20 @@ const httpServerFactory = makeFactoryProvider({
 })(() => createServer());
 
 const Http = {
-  CONFIGS_I: MODULE_CONFIGS_I,
-  REQUEST_ROUTES_I,
-  UPGRADE_ROUTES_I,
+  ConfigsI: HttpConfigsI,
   ServerI: HttpServerI,
   Connector: ConnectorP,
+  RequestRouteList: HttpRequestRouteList,
+  UpgradeRouteList: HttpUpgradeRouteList,
 
-  initModule: (configsInput: HttpModuleConfigs): ServiceModule => ({
+  initModule: (configsInput: HttpConfigsI): ServiceModule => ({
     provisions: [
       ConnectorP,
-      { provide: MODULE_CONFIGS_I, withValue: configsInput },
+      { provide: HttpConfigsI, withValue: configsInput },
       { provide: HttpServerI, withProvider: httpServerFactory },
     ],
     startHook: makeContainer({
-      deps: [ConnectorP, HttpServerI, MODULE_CONFIGS_I] as const,
+      deps: [ConnectorP, HttpServerI, HttpConfigsI] as const,
     })((connector, server, { listenOptions }) =>
       connector.connect(server, listenOptions)
     ),
@@ -39,6 +38,9 @@ const Http = {
 declare namespace Http {
   export type Connector = ConnectorP;
   export type ServerI = HttpServerI;
+  export type ConfigsI = HttpConfigsI;
+  export type RequestRouteList = HttpRequestRouteList;
+  export type UpgradeRouteList = HttpUpgradeRouteList;
 }
 
 export default Http;

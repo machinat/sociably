@@ -97,7 +97,7 @@ export type WebviewDispatchMiddleware<
   WebSocketResult
 >;
 
-export type WebviewPlatformConfigs<Authorizer extends AnyServerAuthorizer> = {
+export type WebviewConfigs<Authorizer extends AnyServerAuthorizer> = {
   /** Host of the webview. */
   webviewHost: string;
   /** Route path to the next server. Default to `"/webview"` */

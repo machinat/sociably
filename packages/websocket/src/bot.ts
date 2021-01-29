@@ -12,7 +12,7 @@ import type {
 import type { DispatchResponse } from '@machinat/core/engine/types';
 
 import { WEBSOCKET } from './constant';
-import { PLATFORM_MOUNTER_I } from './interface';
+import { PlatformMounterI } from './interface';
 import { ServerP } from './server';
 import {
   WebSocketConnection,
@@ -187,7 +187,7 @@ export class WebSocketBot
 
 export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ServerP, { require: PLATFORM_MOUNTER_I, optional: true }] as const,
+  deps: [ServerP, { require: PlatformMounterI, optional: true }] as const,
   factory: (server, mounter) =>
     new WebSocketBot(server, mounter?.initScope, mounter?.dispatchWrapper),
 })(WebSocketBot);

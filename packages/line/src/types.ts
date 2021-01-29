@@ -230,7 +230,7 @@ export type LineDispatchMiddleware = DispatchMiddleware<
   LineResult
 >;
 
-export type LinePlatformConfigs = {
+export type LineConfigs = {
   entryPath?: string;
   providerId: string;
   channelId: string;

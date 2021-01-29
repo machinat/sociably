@@ -10,16 +10,16 @@ jest.mock('@google-cloud/dialogflow', () =>
 
 it('export interfaces', () => {
   expect(Dialogflow.IntentRecognizer).toBe(Recognizer);
-  expect(Dialogflow.CONFIGS_I).toMatchInlineSnapshot(`
+  expect(Dialogflow.ConfigsI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
-      "$$name": "DialogflowModuleConfigsI",
+      "$$name": "DialogflowConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 
-  expect(Dialogflow.SESSION_CLIENT_I).toMatchInlineSnapshot(`
+  expect(Dialogflow.SessionClientI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
@@ -46,8 +46,8 @@ describe('initModule()', () => {
 
     const [recognizer, client, configsProvided] = app.useServices([
       Dialogflow.IntentRecognizer,
-      Dialogflow.SESSION_CLIENT_I,
-      Dialogflow.CONFIGS_I,
+      Dialogflow.SessionClientI,
+      Dialogflow.ConfigsI,
     ]);
 
     expect(SessionsClient.mock).toHaveBeenCalledTimes(1);

@@ -21,11 +21,11 @@ it('export interfaces', () => {
   expect(Telegram.Receiver).toBe(TelegramReceiver);
   expect(Telegram.Bot).toBe(TelegramBot);
   expect(Telegram.Profiler).toBe(TelegramProfiler);
-  expect(Telegram.CONFIGS_I).toMatchInlineSnapshot(`
+  expect(Telegram.ConfigsI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
-      "$$name": "TelegramPlatformConfigsI",
+      "$$name": "TelegramConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -85,9 +85,9 @@ describe('initModule(configs)', () => {
     ] = app.useServices([
       Telegram.Bot,
       Telegram.Receiver,
-      Telegram.CONFIGS_I,
+      Telegram.ConfigsI,
       Telegram.Profiler,
-      Http.REQUEST_ROUTES_I,
+      Http.RequestRouteList,
     ]);
 
     expect(bot).toBeInstanceOf(TelegramBot);
@@ -116,9 +116,9 @@ describe('initModule(configs)', () => {
 
     const [bot, configsProvided, profiler, routings] = app.useServices([
       Telegram.Bot,
-      Telegram.CONFIGS_I,
+      Telegram.ConfigsI,
       Telegram.Profiler,
-      Http.REQUEST_ROUTES_I,
+      Http.RequestRouteList,
     ]);
 
     expect(bot).toBeInstanceOf(TelegramBot);
@@ -139,9 +139,9 @@ describe('initModule(configs)', () => {
     await app.start();
 
     const [bots, profilers, marshalTypes]: any = app.useServices([
-      Base.Bot.PLATFORMS_I,
-      Base.Profiler.PLATFORMS_I,
-      Base.Marshaler.TYPINGS_I,
+      Base.Bot.PlatformMap,
+      Base.Profiler.PlatformMap,
+      Base.Marshaler.TypeI,
     ]);
 
     expect(bots.get('telegram')).toBeInstanceOf(TelegramBot);
@@ -168,7 +168,7 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [routings] = app.useServices([Http.REQUEST_ROUTES_I]);
+    const [routings] = app.useServices([Http.RequestRouteList]);
     expect(routings).toEqual([
       { name: 'telegram', path: '/', handler: expect.any(Function) },
     ]);

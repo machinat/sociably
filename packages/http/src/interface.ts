@@ -1,61 +1,48 @@
-import type { IncomingMessage, ServerResponse } from 'http';
-import type { Socket } from 'net';
+import type { Server } from 'http';
 import { makeInterface } from '@machinat/core/service';
 import type {
-  ServerListenOptions,
-  HttpModuleConfigs,
+  HttpConfigs,
   RequestRoute,
   DefaultRequestRoute,
   UpgradeRoute,
   DefaultUpgradeRoute,
 } from './types';
 
-/**
- * @category Interface
- */
-export interface HttpServer {
-  listen(options: ServerListenOptions, cb: () => void): void;
-
-  addListener(
-    name: 'request',
-    cb: (req: IncomingMessage, res: ServerResponse) => void
-  ): void;
-
-  addListener(
-    name: 'upgrade',
-    cb: (req: IncomingMessage, socket: Socket, head: Buffer) => void
-  ): void;
-}
-
-export const HttpServerI = makeInterface<HttpServer>({
-  name: 'HTTPServerI',
+export const ServerI = makeInterface<Server>({
+  name: 'HttpServerI',
 });
 
-export type HttpServerI = HttpServer;
+export type ServerI = Server;
 
 /**
  * @category Interface
  */
-export const MODULE_CONFIGS_I = makeInterface<HttpModuleConfigs>({
-  name: 'HTTPModuleConfigsI',
+export const ConfigsI = makeInterface<HttpConfigs>({
+  name: 'HttpConfigsI',
 });
 
+export type ConfigsI = HttpConfigs;
+
 /**
  * @category Interface
  */
-export const REQUEST_ROUTES_I = makeInterface<
+export const RequestRouteList = makeInterface<
   RequestRoute | DefaultRequestRoute
 >({
-  name: 'HTTPRequestRoutesListI',
+  name: 'HttpRequestRouteList',
   multi: true,
 });
+
+export type RequestRouteList = (RequestRoute | DefaultRequestRoute)[];
 
 /**
  * @category Interface
  */
-export const UPGRADE_ROUTES_I = makeInterface<
+export const UpgradeRouteList = makeInterface<
   UpgradeRoute | DefaultUpgradeRoute
 >({
-  name: 'HTTPUpgradeRoutesListI',
+  name: 'HttpUpgradeRouteList',
   multi: true,
 });
+
+export type UpgradeRouteList = (UpgradeRoute | DefaultUpgradeRoute)[];

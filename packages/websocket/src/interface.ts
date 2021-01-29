@@ -1,48 +1,51 @@
-import type { Server as WebScoketServer } from 'ws';
 import { makeInterface } from '@machinat/core/service';
 import type {
-  WebSocketJob,
-  VerifyLoginFn,
+  WsServer,
+  AnyVerifyLoginFn,
   VerifyUpgradeFn,
   WebSocketPlatformMounter,
-  WebSocketPlatformConfigs,
-  ConnIdentifier,
+  WebSocketConfigs,
+  WebSocketClusterBroker,
 } from './types';
 
 /**
  * @category Interface
  */
-export const WS_SERVER_I = makeInterface<WebScoketServer>({
-  name: 'WebSocketWSServerI',
+export const WsServerI = makeInterface<WsServer>({
+  name: 'WebSocketWsServerI',
 });
+
+export type WsServerI = WsServer;
 
 /**
  * @category Interface
  */
-export const UPGRADE_VERIFIER_I = makeInterface<VerifyUpgradeFn>({
+export const UpgradeVerifierI = makeInterface<VerifyUpgradeFn>({
   name: 'WebSocketUpgradeVerifierI',
 });
 
-/**
- * @category Interface
- */
-export const LOGIN_VERIFIER_I = makeInterface<
-  VerifyLoginFn<any, unknown, unknown>
->({
-  name: 'WebSocketLoginVerifierI',
-});
+export type UpgradeVerifierI = VerifyUpgradeFn;
 
 /**
  * @category Interface
  */
-export const SERVER_ID_I = makeInterface<string>({
+export const LoginVerifierI = makeInterface<AnyVerifyLoginFn>({
+  name: 'WebSocketLoginVerifierI',
+});
+
+export type LoginVerifierI = AnyVerifyLoginFn;
+
+/**
+ * @category Interface
+ */
+export const ServerIdI = makeInterface<string>({
   name: 'WebSocketServerIdI',
 });
 
 /**
  * @category Interface
  */
-export const PLATFORM_MOUNTER_I = makeInterface<
+export const PlatformMounterI = makeInterface<
   WebSocketPlatformMounter<any, unknown>
 >({
   name: 'WebSocketPlatformMounterI',
@@ -51,23 +54,11 @@ export const PLATFORM_MOUNTER_I = makeInterface<
 /**
  * @category Interface
  */
-export const PLATFORM_CONFIGS_I = makeInterface<
-  WebSocketPlatformConfigs<any, unknown>
->({
-  name: 'WebSocketPlatformConfigsI',
+export const ConfigsI = makeInterface<WebSocketConfigs<any, unknown>>({
+  name: 'WebSocketConfigsI',
 });
 
-export interface WebSocketClusterBroker {
-  start(): Promise<void>;
-  stop(): Promise<void>;
-  dispatchRemote(job: WebSocketJob): Promise<ConnIdentifier[]>;
-
-  subscribeTopicRemote(conn: ConnIdentifier, topic: string): Promise<boolean>;
-  unsubscribeTopicRemote(conn: ConnIdentifier, topic: string): Promise<boolean>;
-
-  disconnectRemote(conn: ConnIdentifier): Promise<boolean>;
-  onRemoteEvent(handler: (job: WebSocketJob) => void): void;
-}
+export type ConfigsI = WebSocketConfigs<any, unknown>;
 
 /**
  * @category Interface

@@ -14,7 +14,7 @@ import { chatJobsMaker, multicastJobsMaker } from './job';
 import generalElementDelegate from './components/general';
 import LineWorker from './worker';
 import LineChat from './channel';
-import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
+import { ConfigsI, PlatformMounterI } from './interface';
 import { LINE } from './constant';
 import type {
   LineSource,
@@ -144,10 +144,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
 
 export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [
-    PLATFORM_CONFIGS_I,
-    { require: PLATFORM_MOUNTER_I, optional: true },
-  ] as const,
+  deps: [ConfigsI, { require: PlatformMounterI, optional: true }] as const,
   factory: (configs, mounter) =>
     new LineBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
 })(LineBot);

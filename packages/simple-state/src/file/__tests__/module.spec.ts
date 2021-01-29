@@ -8,7 +8,7 @@ const storageFilePath = tmpNameSync();
 
 test('export interfaces', () => {
   expect(FileState.Controller).toBe(FileStateController);
-  expect(FileState.CONFIGS_I).toMatchInlineSnapshot(`
+  expect(FileState.ConfigsI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
@@ -35,7 +35,7 @@ test('provisions', async () => {
 
   const [controller, configs] = app.useServices([
     FileStateController,
-    FileState.CONFIGS_I,
+    FileState.ConfigsI,
   ]);
 
   expect(controller).toBeInstanceOf(FileStateController);

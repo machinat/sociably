@@ -19,11 +19,11 @@ import Webview from '../module';
 const createNextServer = _createNextServer as Moxy<typeof _createNextServer>;
 
 it('export interfaces', () => {
-  expect(Webview.CONFIGS_I).toMatchInlineSnapshot(`
+  expect(Webview.ConfigsI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
-      "$$name": "WebviewPlatformConfigsI",
+      "$$name": "WebviewConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -39,7 +39,7 @@ it('export interfaces', () => {
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(Webview.SOCKET_SERVER_ID_I).toMatchInlineSnapshot(`
+  expect(Webview.SocketServerIdI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
@@ -47,17 +47,17 @@ it('export interfaces', () => {
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(Webview.WS_SERVER_I).toMatchInlineSnapshot(`
+  expect(Webview.WsServerI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
-      "$$name": "WebviewWSServerI",
+      "$$name": "WebviewWsServerI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 
   expect(Object.getPrototypeOf(Webview.AuthController)).toBe(Auth.Controller);
-  expect(Webview.AUTHORIZERS_I).toMatchInlineSnapshot(`
+  expect(Webview.AuthorizerList).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": true,
@@ -108,7 +108,7 @@ test('service provisions', async () => {
   const app = Machinat.createApp({
     platforms: [Webview.initModule(configsInput)],
     bindings: [
-      { provide: Webview.AUTHORIZERS_I, withProvider: NoneServerAuthorizer },
+      { provide: Webview.AuthorizerList, withProvider: NoneServerAuthorizer },
     ],
   });
   await app.start();
@@ -124,15 +124,15 @@ test('service provisions', async () => {
     nextServer,
     upgradeRoutes,
   ] = app.useServices([
-    Webview.CONFIGS_I,
+    Webview.ConfigsI,
     Webview.Bot,
     Webview.Receiver,
     Webview.SocketServer,
     Webview.AuthController,
-    Webview.AUTHORIZERS_I,
+    Webview.AuthorizerList,
     Webview.NextReceiver,
-    Webview.NEXT_SERVER_I,
-    Http.UPGRADE_ROUTES_I,
+    Webview.NextServerI,
+    Http.UpgradeRouteList,
   ]);
 
   expect(configs).toEqual(configsInput);
@@ -177,12 +177,12 @@ test('default routing paths', async () => {
       }),
     ],
     bindings: [
-      { provide: Webview.AUTHORIZERS_I, withProvider: NoneServerAuthorizer },
+      { provide: Webview.AuthorizerList, withProvider: NoneServerAuthorizer },
     ],
   });
   await app.start();
 
-  const [upgradeRoutings] = app.useServices([Http.UPGRADE_ROUTES_I]);
+  const [upgradeRoutings] = app.useServices([Http.UpgradeRouteList]);
   expect(upgradeRoutings).toEqual([
     {
       name: 'websocket',
@@ -211,14 +211,14 @@ test('provide base interfaces', async () => {
       }),
     ],
     bindings: [
-      { provide: Webview.AUTHORIZERS_I, withProvider: NoneServerAuthorizer },
+      { provide: Webview.AuthorizerList, withProvider: NoneServerAuthorizer },
     ],
   });
   await app.start();
 
   const [bots, marshalTypes] = app.useServices([
-    Base.Bot.PLATFORMS_I,
-    Base.Marshaler.TYPINGS_I,
+    Base.Bot.PlatformMap,
+    Base.Marshaler.TypeI,
   ]);
 
   expect(bots.get('webview')).toBeInstanceOf(WebviewBot);
@@ -243,7 +243,7 @@ test('startHook', async () => {
     ],
     bindings: [
       { provide: Webview.Bot, withValue: fakeBot },
-      { provide: Webview.AUTHORIZERS_I, withProvider: NoneServerAuthorizer },
+      { provide: Webview.AuthorizerList, withProvider: NoneServerAuthorizer },
     ],
   });
   await app.start();

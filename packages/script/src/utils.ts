@@ -2,7 +2,11 @@
 import invariant from 'invariant';
 import { MACHINAT_SCRIPT_TYPE } from './constant';
 import * as KEYWORDS from './keyword';
-import type { MachinatScript, CallStatus, SerializedCallStatus } from './types';
+import type {
+  AnyScriptLibrary,
+  CallStatus,
+  SerializedCallStatus,
+} from './types';
 
 type K = typeof KEYWORDS;
 type KeywordsSymbol = K[keyof K];
@@ -11,9 +15,7 @@ const keyworsSymbols: unknown[] = Object.values(KEYWORDS);
 export const isKeyword = (type: unknown): type is KeywordsSymbol =>
   keyworsSymbols.includes(type);
 
-export const isScript = (
-  type: any
-): type is MachinatScript<any, any, any, any> =>
+export const isScript = (type: any): type is AnyScriptLibrary =>
   typeof type === 'object' &&
   type !== null &&
   type.$$typeof === MACHINAT_SCRIPT_TYPE;

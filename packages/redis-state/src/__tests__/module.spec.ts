@@ -1,5 +1,5 @@
-import moxy from '@moxyjs/moxy';
-import redis from 'redis';
+import moxy, { Moxy } from '@moxyjs/moxy';
+import redis, { RedisClient } from 'redis';
 import { EventEmitter } from 'events';
 import Machinat from '@machinat/core';
 import Base from '@machinat/core/base';
@@ -14,15 +14,15 @@ jest.mock('redis', () =>
 
 test('export interfaces', () => {
   expect(RedisState.Controller).toBe(RedisStateController);
-  expect(RedisState.CONFIGS_I).toMatchInlineSnapshot(`
+  expect(RedisState.ConfigsI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
-      "$$name": "RedisStateModuleConfigsI",
+      "$$name": "RedisStateConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(RedisState.CLIENT_I).toMatchInlineSnapshot(`
+  expect(RedisState.ClientI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
@@ -44,8 +44,8 @@ test('provisions', async () => {
 
   const [controller, client, configs] = app.useServices([
     RedisStateController,
-    RedisState.CLIENT_I,
-    RedisState.CONFIGS_I,
+    RedisState.ClientI,
+    RedisState.ConfigsI,
   ]);
 
   expect(controller).toBeInstanceOf(RedisStateController);
@@ -83,10 +83,10 @@ test('startHook wait for client connected', async () => {
     ],
   });
 
-  const client = moxy(new EventEmitter());
+  const client = moxy<RedisClient>(new EventEmitter() as never);
   client.connected = false;
 
-  (redis as any).createClient.mock.fakeReturnValue(client);
+  (redis as Moxy<typeof redis>).createClient.mock.fakeReturnValue(client);
   const startPromise = app.start();
 
   expect(client.once.mock).toHaveBeenCalledTimes(2);
@@ -108,10 +108,10 @@ test('startHook throw if error happen when connect', async () => {
     ],
   });
 
-  const client = moxy(new EventEmitter());
+  const client = moxy<RedisClient>(new EventEmitter() as never);
   client.connected = false;
 
-  (redis as any).createClient.mock.fakeReturnValue(client);
+  (redis as Moxy<typeof redis>).createClient.mock.fakeReturnValue(client);
   const startPromise = app.start();
   expect(app.isStarted).toBe(false);
 

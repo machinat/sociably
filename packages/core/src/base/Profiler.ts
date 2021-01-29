@@ -15,8 +15,8 @@ export interface UserProfiler<User extends MachinatUser> {
  * @category Base
  */
 export class BaseProfiler implements UserProfiler<MachinatUser> {
-  static PLATFORMS_I = makeInterface<UserProfiler<any>>({
-    name: 'ProfilerPlatformBranches',
+  static PlatformMap = makeInterface<UserProfiler<any>>({
+    name: 'ProfilerPlatformMap',
     branched: true,
   });
 
@@ -40,7 +40,7 @@ export class BaseProfiler implements UserProfiler<MachinatUser> {
 
 export const ProfilerP = makeClassProvider({
   lifetime: 'transient',
-  deps: [BaseProfiler.PLATFORMS_I] as const,
+  deps: [BaseProfiler.PlatformMap] as const,
 })(BaseProfiler);
 
 export type ProfilerP = UserProfiler<MachinatUser>;

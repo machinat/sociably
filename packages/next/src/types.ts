@@ -61,7 +61,7 @@ export type NextEventMiddleware = EventMiddleware<
   NextResponse
 >;
 
-export type NextModuleConfigs = {
+export type NextConfigs = {
   entryPath?: string;
   noPrepare?: boolean;
   serverOptions?: NextServerOptions;

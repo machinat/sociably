@@ -5,7 +5,7 @@ import { EventEmitter } from 'events';
 import Socket from '../socket';
 import SocketError from '../error';
 
-const WS =
+const Ws =
   typeof WebSocket === 'undefined'
     ? require('ws')
     : class EmittableWebSocket extends EventEmitter {
@@ -81,7 +81,7 @@ const WS =
 const MACHINAT_WEBSOCKET_PROTOCOL_V0 = 'machinat-websocket-v0';
 
 const createClientSocket = (url: string): Promise<Socket> => {
-  const ws = new WS(url, MACHINAT_WEBSOCKET_PROTOCOL_V0);
+  const ws = new Ws(url, MACHINAT_WEBSOCKET_PROTOCOL_V0);
   const socket = new Socket('', ws, null as any);
 
   return new Promise((resolve, reject) => {

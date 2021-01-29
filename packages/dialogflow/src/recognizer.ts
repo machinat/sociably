@@ -5,7 +5,7 @@ import type {
   BaseIntentRecognizer,
 } from '@machinat/core/base/IntentRecognizerI';
 import type { MachinatChannel } from '@machinat/core/types';
-import { SESSION_CLIENT_I, MODULE_CONFIGS_I } from './interface';
+import { SessionClientI, ConfigsI } from './interface';
 import { SessionClient, DetactIntentPayload } from './types';
 import DialogflowApiError from './error';
 
@@ -95,7 +95,7 @@ export class DialogflowIntentRecognizer
 
 export const IntentRecognizerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [SESSION_CLIENT_I, MODULE_CONFIGS_I] as const,
+  deps: [SessionClientI, ConfigsI] as const,
 })(DialogflowIntentRecognizer);
 
 export type IntentRecognizerP = DialogflowIntentRecognizer;

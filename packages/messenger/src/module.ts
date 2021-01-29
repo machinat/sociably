@@ -5,7 +5,7 @@ import { BaseBot, BaseProfiler, BaseMarshaler } from '@machinat/core/base';
 import Http from '@machinat/http';
 import type { RequestRoute } from '@machinat/http/types';
 
-import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
+import { ConfigsI as MessengerConfigsI, PlatformMounterI } from './interface';
 import { MESSENGER } from './constant';
 import { BotP } from './bot';
 import { ReceiverP } from './receiver';
@@ -13,7 +13,7 @@ import { ProfilerP, MessengerUserProfile } from './profiler';
 import MessengerChat from './channel';
 import MessengerUser from './user';
 import type {
-  MessengerPlatformConfigs,
+  MessengerConfigs,
   MessengerEventContext,
   MessengerJob,
   MessengerDispatchFrame,
@@ -21,9 +21,9 @@ import type {
 } from './types';
 
 /** @interanl */
-const requestRoutingFactory = makeFactoryProvider({
+const webhookRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [PLATFORM_CONFIGS_I, ReceiverP] as const,
+  deps: [MessengerConfigsI, ReceiverP] as const,
 })(
   (configs, receiver): RequestRoute => ({
     name: MESSENGER,
@@ -36,10 +36,10 @@ const Messenger = {
   Bot: BotP,
   Receiver: ReceiverP,
   Profiler: ProfilerP,
-  CONFIGS_I: PLATFORM_CONFIGS_I,
+  ConfigsI: MessengerConfigsI,
 
   initModule: (
-    configs: MessengerPlatformConfigs
+    configs: MessengerConfigs
   ): PlatformModule<
     MessengerEventContext,
     null,
@@ -50,34 +50,34 @@ const Messenger = {
     const provisions: ServiceProvision<any>[] = [
       BotP,
       {
-        provide: BaseBot.PLATFORMS_I,
+        provide: BaseBot.PlatformMap,
         withProvider: BotP,
         platform: MESSENGER,
       },
 
       ProfilerP,
       {
-        provide: BaseProfiler.PLATFORMS_I,
+        provide: BaseProfiler.PlatformMap,
         withProvider: ProfilerP,
         platform: MESSENGER,
       },
 
-      { provide: PLATFORM_CONFIGS_I, withValue: configs },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: MessengerChat },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: MessengerUser },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: MessengerUserProfile },
+      { provide: MessengerConfigsI, withValue: configs },
+      { provide: BaseMarshaler.TypeI, withValue: MessengerChat },
+      { provide: BaseMarshaler.TypeI, withValue: MessengerUser },
+      { provide: BaseMarshaler.TypeI, withValue: MessengerUserProfile },
     ];
 
     if (configs.noServer !== true) {
       provisions.push(ReceiverP, {
-        provide: Http.REQUEST_ROUTES_I,
-        withProvider: requestRoutingFactory,
+        provide: Http.RequestRouteList,
+        withProvider: webhookRouteFactory,
       });
     }
 
     return {
       name: MESSENGER,
-      mounterInterface: PLATFORM_MOUNTER_I,
+      mounterInterface: PlatformMounterI,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions,
@@ -93,6 +93,7 @@ declare namespace Messenger {
   export type Bot = BotP;
   export type Receiver = ReceiverP;
   export type Profiler = ProfilerP;
+  export type ConfigsI = MessengerConfigsI;
 }
 
 export default Messenger;

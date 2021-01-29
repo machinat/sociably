@@ -9,13 +9,20 @@ import type {
 import type { MACHINAT_SCRIPT_TYPE } from './constant';
 import type * as KEYWORDS from './keyword';
 
-export type MachinatScript<Vars, Input, RetrunValue, Meta> = {
+export type ScriptLibrary<Vars, Input, RetrunValue, Meta> = {
   $$typeof: typeof MACHINAT_SCRIPT_TYPE;
   name: string;
   commands: ScriptCommand<Vars, Input, RetrunValue>[];
   entriesIndex: Map<string, number>;
   meta: Meta;
 };
+
+export type AnyScriptLibrary = ScriptLibrary<
+  unknown,
+  unknown,
+  unknown,
+  unknown
+>;
 
 type ScriptCircumstances<Vars> = {
   platform: string;
@@ -192,7 +199,7 @@ export type CallReturnSetter<CallerVars, RetrunValue> = MaybeContainer<
  * @category Keyword Props
  */
 export type CallProps<CallerVars, CalleeVars, RetrunValue> = {
-  script: MachinatScript<CallerVars, unknown, RetrunValue, unknown>;
+  script: ScriptLibrary<CallerVars, unknown, RetrunValue, unknown>;
   key: string;
   withVars?: CallWithVarsGetter<CallerVars, CalleeVars>;
   set?: CallReturnSetter<CallerVars, RetrunValue>;
@@ -292,7 +299,7 @@ export type LabelSegment = {
 /** @internal */
 export type CallSegment<CallerVars, CalleeVars, RetrunValue> = {
   type: 'call';
-  script: MachinatScript<CalleeVars, unknown, RetrunValue, unknown>;
+  script: ScriptLibrary<CalleeVars, unknown, RetrunValue, unknown>;
   key: string;
   withVars: CallWithVarsGetter<CallerVars, CalleeVars> | null | undefined;
   setter: CallReturnSetter<CallerVars, RetrunValue> | null | undefined;
@@ -330,7 +337,7 @@ export type PromptCommand<Vars, Input> = {
 export type CallCommand<CallerVars, CalleeVars, RetrunValue> = {
   type: 'call';
   key: string;
-  script: MachinatScript<CalleeVars, unknown, RetrunValue, unknown>;
+  script: ScriptLibrary<CalleeVars, unknown, RetrunValue, unknown>;
   withVars: CallWithVarsGetter<CallerVars, CalleeVars> | null | undefined;
   setter: CallReturnSetter<CallerVars, RetrunValue> | null | undefined;
   goto: undefined | string;
@@ -368,7 +375,7 @@ export type ScriptCommand<Vars, Input, RetrunValue> =
   | ReturnCommand<RetrunValue>;
 
 export type CallStatus<Vars, Input, RetrunValue> = {
-  script: MachinatScript<Vars, Input, RetrunValue, unknown>;
+  script: ScriptLibrary<Vars, Input, RetrunValue, unknown>;
   vars: Vars;
   stopAt: undefined | string;
 };

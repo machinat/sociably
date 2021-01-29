@@ -4,9 +4,11 @@ import type { FileRepositoryConfigs } from './types';
 /**
  * @category Interface
  */
-export const MODULE_CONFIGS_I = makeInterface<FileRepositoryConfigs>({
+export const ConfigsI = makeInterface<FileRepositoryConfigs>({
   name: 'FileStateConfigsI',
 });
+
+export type ConfigsI = FileRepositoryConfigs;
 
 export interface FileStateSerializer {
   parse(str: string): any;

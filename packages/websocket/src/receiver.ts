@@ -12,7 +12,7 @@ import { BotP } from './bot';
 import { ServerP } from './server';
 import createEvent from './utils/createEvent';
 import { WEBSOCKET } from './constant';
-import { PLATFORM_MOUNTER_I } from './interface';
+import { PlatformMounterI } from './interface';
 import type {
   WebSocketEventContext,
   ConnectEventValue,
@@ -107,7 +107,7 @@ export class WebSocketReceiver<User extends null | MachinatUser, Auth> {
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, ServerP, PLATFORM_MOUNTER_I] as const,
+  deps: [BotP, ServerP, PlatformMounterI] as const,
   factory: (bot, server, { popEventWrapper, popError }) =>
     new WebSocketReceiver(bot, server, popEventWrapper, popError),
 })(WebSocketReceiver);

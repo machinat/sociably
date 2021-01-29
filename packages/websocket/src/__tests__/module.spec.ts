@@ -16,7 +16,15 @@ it('export interfaces', () => {
   expect(WebSocket.Bot).toBe(WebSocketBot);
   expect(WebSocket.Receiver).toBe(WebSocketReceiver);
   expect(WebSocket.Server).toBe(WebSocketServer);
-  expect(WebSocket.LOGIN_VERIFIER_I).toMatchInlineSnapshot(`
+  expect(WebSocket.ConfigsI).toMatchInlineSnapshot(`
+    Object {
+      "$$branched": false,
+      "$$multi": false,
+      "$$name": "WebSocketConfigsI",
+      "$$typeof": Symbol(interface.service.machinat),
+    }
+  `);
+  expect(WebSocket.LoginVerifierI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
@@ -24,7 +32,7 @@ it('export interfaces', () => {
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(WebSocket.UPGRADE_VERIFIER_I).toMatchInlineSnapshot(`
+  expect(WebSocket.UpgradeVerifierI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
@@ -32,7 +40,7 @@ it('export interfaces', () => {
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(WebSocket.SERVER_ID_I).toMatchInlineSnapshot(`
+  expect(WebSocket.ServerIdI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
@@ -40,11 +48,11 @@ it('export interfaces', () => {
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(WebSocket.WS_SERVER_I).toMatchInlineSnapshot(`
+  expect(WebSocket.WsServerI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
-      "$$name": "WebSocketWSServerI",
+      "$$name": "WebSocketWsServerI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -90,8 +98,8 @@ describe('initModule()', () => {
       WebSocket.Bot,
       WebSocket.Receiver,
       WebSocket.Server,
-      WebSocket.CONFIGS_I,
-      Http.UPGRADE_ROUTES_I,
+      WebSocket.ConfigsI,
+      Http.UpgradeRouteList,
     ]);
 
     expect(bot).toBeInstanceOf(WebSocketBot);
@@ -114,7 +122,7 @@ describe('initModule()', () => {
     const app = Machinat.createApp({ platforms: [WebSocket.initModule()] });
     await app.start();
 
-    const [upgradeRoutings] = app.useServices([Http.UPGRADE_ROUTES_I]);
+    const [upgradeRoutings] = app.useServices([Http.UpgradeRouteList]);
     expect(upgradeRoutings).toEqual([
       {
         name: 'websocket',
@@ -130,9 +138,9 @@ describe('initModule()', () => {
     });
     await app.start();
 
-    const [bots, marshalTypes]: any = app.useServices([
-      Base.Bot.PLATFORMS_I,
-      Base.Marshaler.TYPINGS_I,
+    const [bots, marshalTypes] = app.useServices([
+      Base.Bot.PlatformMap,
+      Base.Marshaler.TypeI,
     ]);
 
     expect(bots.get('websocket')).toBeInstanceOf(WebSocketBot);

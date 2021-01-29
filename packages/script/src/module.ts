@@ -1,33 +1,30 @@
 import type { ServiceModule } from '@machinat/core/types';
-import type { ServiceProvision } from '@machinat/core/service/types';
-
 import { ProcessorP } from './processor';
-import { SCRIPT_LIBS_I } from './constant';
-import type { MachinatScript } from './types';
+import { LibraryList as ScriptLibraryList } from './interface';
+import type { AnyScriptLibrary } from './types';
 
-type ScriptModuleConfigs = {
-  libs?: MachinatScript<any, any, any, any>[];
+type ScriptConfigs = {
+  libs?: AnyScriptLibrary[];
 };
 
 const Script = {
   Processor: ProcessorP,
-  LIBS_I: SCRIPT_LIBS_I,
+  LibraryList: ScriptLibraryList,
 
-  initModule: ({ libs }: ScriptModuleConfigs = {}): ServiceModule => {
-    const provisions: ServiceProvision<any>[] = [ProcessorP];
+  initModule: ({ libs }: ScriptConfigs = {}): ServiceModule => {
+    const libraries =
+      libs?.map((lib) => ({
+        provide: ScriptLibraryList,
+        withValue: lib,
+      })) || [];
 
-    if (libs) {
-      provisions.push(
-        ...libs.map((lib) => ({ provide: SCRIPT_LIBS_I, withValue: lib }))
-      );
-    }
-
-    return { provisions };
+    return { provisions: [ProcessorP, ...libraries] };
   },
 };
 
 declare namespace Script {
   export type Processor<Input, ReturnValue> = ProcessorP<Input, ReturnValue>;
+  export type LibraryList = ScriptLibraryList;
 }
 
 export default Script;

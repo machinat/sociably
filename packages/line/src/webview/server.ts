@@ -3,7 +3,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
 import type { ServerAuthorizer, ContextResult } from '@machinat/auth/types';
 
-import { PLATFORM_CONFIGS_I } from '../interface';
+import { ConfigsI } from '../interface';
 import { BotP } from '../bot';
 import { LINE, LiffContextOs } from '../constant';
 import { supplementContext } from './utils';
@@ -177,7 +177,7 @@ export class LineServerAuthorizer
 
 export const ServerAuthorizerP = makeClassProvider({
   lifetime: 'transient',
-  deps: [BotP, PLATFORM_CONFIGS_I] as const,
+  deps: [BotP, ConfigsI] as const,
   factory: (bot, { liffChannelIds }) => {
     invariant(
       liffChannelIds,

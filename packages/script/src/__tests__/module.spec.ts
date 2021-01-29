@@ -3,11 +3,11 @@ import { ScriptProcessor } from '../processor';
 
 it('exports interfaces', () => {
   expect(Script.Processor).toBe(ScriptProcessor);
-  expect(Script.LIBS_I).toMatchInlineSnapshot(`
+  expect(Script.LibraryList).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": true,
-      "$$name": "ScriptLibsList",
+      "$$name": "ScriptLibraryList",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -16,14 +16,14 @@ it('exports interfaces', () => {
 test('initModule()', () => {
   expect(Script.initModule()).toEqual({ provisions: [ScriptProcessor] });
 
-  const MyScript = { name: 'Mine' /* , ... */ };
-  const YourScript = { name: 'MineMine' /* , ... */ };
+  const MyScript = { name: 'Mine' /* , ... */ } as never;
+  const YourScript = { name: 'MineMine' /* , ... */ } as never;
 
   expect(Script.initModule({ libs: [MyScript, YourScript] })).toEqual({
     provisions: expect.arrayContaining([
       ScriptProcessor,
-      { provide: Script.LIBS_I, withValue: MyScript },
-      { provide: Script.LIBS_I, withValue: YourScript },
+      { provide: Script.LibraryList, withValue: MyScript },
+      { provide: Script.LibraryList, withValue: YourScript },
     ]),
   });
 });

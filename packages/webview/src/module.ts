@@ -16,16 +16,16 @@ import type { WebSocketJob, WebSocketResult } from '@machinat/websocket/types';
 
 import { WEBVIEW, DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from './constant';
 import {
+  SocketServerP,
   AuthControllerP,
-  AUTHORIZERS_I,
   NextReceiverP,
-  NEXT_SERVER_I,
-  SocketBrokerI as BrokerI,
-  SocketServerP as ServerP,
-  WS_SERVER_I,
-  SOCKET_SERVER_ID_I,
-  PLATFORM_MOUNTER_I,
-  PLATFORM_CONFIGS_I,
+  PlatformMounterI,
+  SocketServerIdI,
+  ConfigsI as WebviewConfigsI,
+  SocketBrokerI as WebviewSocketBrokerI,
+  WsServerI as WebviewWsServerI,
+  AuthorizerList as WebviewAuthorizerList,
+  NextServerI as WebviewNextServerI,
 } from './interface';
 import { BotP } from './bot';
 import { ReceiverP } from './receiver';
@@ -38,14 +38,14 @@ import { NoneUser, NoneChannel } from './noneAuthorizer';
 import type {
   WebviewEventContext,
   WebviewDispatchFrame,
-  WebviewPlatformConfigs,
+  WebviewConfigs,
 } from './types';
 
 /** @internal */
 
 const nextServerFactory = makeFactoryProvider({
   lifetime: 'singleton',
-  deps: [PLATFORM_CONFIGS_I],
+  deps: [WebviewConfigsI],
 })(({ nextServerOptions }) => createNextServer(nextServerOptions || {}));
 
 /** @internal */
@@ -54,9 +54,9 @@ const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
 );
 
 /** @internal */
-const webSocketRoutingFactory = makeFactoryProvider({
+const webSocketRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [ServerP, PLATFORM_CONFIGS_I] as const,
+  deps: [SocketServerP, WebviewConfigsI] as const,
 })(
   (server, { webSocketPath }): UpgradeRoute => ({
     name: 'websocket',
@@ -66,9 +66,9 @@ const webSocketRoutingFactory = makeFactoryProvider({
 );
 
 /** @internal */
-const authRoutingFactory = makeFactoryProvider({
+const authRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [AuthControllerP, PLATFORM_CONFIGS_I] as const,
+  deps: [AuthControllerP, WebviewConfigsI] as const,
 })(
   (controller, { authApiPath }): RequestRoute => ({
     name: 'auth',
@@ -80,9 +80,9 @@ const authRoutingFactory = makeFactoryProvider({
 );
 
 /** @internal */
-const nextRoutingFactory = makeFactoryProvider({
+const nextRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [NextReceiverP, PLATFORM_CONFIGS_I] as const,
+  deps: [NextReceiverP, WebviewConfigsI] as const,
 })((receiver, { webviewPath }): RequestRoute | DefaultRequestRoute => {
   const handler = receiver.handleRequestCallback();
   return webviewPath
@@ -91,23 +91,23 @@ const nextRoutingFactory = makeFactoryProvider({
 });
 
 const Webview = {
-  CONFIGS_I: PLATFORM_CONFIGS_I,
+  ConfigsI: WebviewConfigsI,
 
   Bot: BotP,
   Receiver: ReceiverP,
-  SocketServer: ServerP,
-  SocketBrokerI: BrokerI,
-  WS_SERVER_I,
-  SOCKET_SERVER_ID_I,
+  SocketServer: SocketServerP,
+  SocketBrokerI: WebviewSocketBrokerI,
+  WsServerI: WebviewWsServerI,
+  SocketServerIdI,
 
   AuthController: AuthControllerP,
-  AUTHORIZERS_I,
+  AuthorizerList: WebviewAuthorizerList,
 
   NextReceiver: NextReceiverP,
-  NEXT_SERVER_I,
+  NextServerI: WebviewNextServerI,
 
   initModule: <Authorizer extends AnyServerAuthorizer>(
-    configs: WebviewPlatformConfigs<Authorizer>
+    configs: WebviewConfigs<Authorizer>
   ): PlatformModule<
     WebviewEventContext<Authorizer>,
     null,
@@ -116,49 +116,49 @@ const Webview = {
     WebSocketResult
   > => {
     const provisions: ServiceProvision<unknown>[] = [
-      { provide: PLATFORM_CONFIGS_I, withValue: configs },
+      { provide: WebviewConfigsI, withValue: configs },
 
       BotP,
       {
-        provide: BaseBot.PLATFORMS_I,
+        provide: BaseBot.PlatformMap,
         withProvider: BotP,
         platform: WEBVIEW,
       },
 
-      ServerP,
-      { provide: WS_SERVER_I, withProvider: wsServerFactory },
-      { provide: BrokerI, withProvider: LocalOnlyBroker },
+      SocketServerP,
+      { provide: WebviewWsServerI, withProvider: wsServerFactory },
+      { provide: WebviewSocketBrokerI, withProvider: LocalOnlyBroker },
 
       ReceiverP,
       {
-        provide: Http.UPGRADE_ROUTES_I,
-        withProvider: webSocketRoutingFactory,
+        provide: Http.UpgradeRouteList,
+        withProvider: webSocketRouteFactory,
       },
 
-      { provide: BaseMarshaler.TYPINGS_I, withValue: WebviewConnection },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: WebviewUserChannel },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: WebviewTopicChannel },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: NoneUser },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: NoneChannel },
+      { provide: BaseMarshaler.TypeI, withValue: WebviewConnection },
+      { provide: BaseMarshaler.TypeI, withValue: WebviewUserChannel },
+      { provide: BaseMarshaler.TypeI, withValue: WebviewTopicChannel },
+      { provide: BaseMarshaler.TypeI, withValue: NoneUser },
+      { provide: BaseMarshaler.TypeI, withValue: NoneChannel },
 
       AuthControllerP,
-      { provide: Http.UPGRADE_ROUTES_I, withProvider: authRoutingFactory },
+      { provide: Http.UpgradeRouteList, withProvider: authRouteFactory },
     ];
 
     if (!configs.noNextServer) {
       provisions.push(
         NextReceiverP,
-        { provide: NEXT_SERVER_I, withProvider: nextServerFactory },
+        { provide: WebviewNextServerI, withProvider: nextServerFactory },
         {
-          provide: Http.UPGRADE_ROUTES_I,
-          withProvider: nextRoutingFactory,
+          provide: Http.UpgradeRouteList,
+          withProvider: nextRouteFactory,
         }
       );
     }
 
     return {
       name: WEBVIEW,
-      mounterInterface: PLATFORM_MOUNTER_I,
+      mounterInterface: PlatformMounterI,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions,
@@ -174,16 +174,26 @@ const Webview = {
 
 declare namespace Webview {
   export type Bot<Authorizer extends AnyServerAuthorizer> = BotP<Authorizer>;
-
   export type Receiver<Authorizer extends AnyServerAuthorizer> = ReceiverP<
     Authorizer
   >;
 
-  export type SocketServer<Authorizer extends AnyServerAuthorizer> = ServerP<
-    Authorizer
-  >;
+  export type SocketServer<
+    Authorizer extends AnyServerAuthorizer
+  > = SocketServerP<Authorizer>;
 
-  export type SocketBrokerI = BrokerI;
+  export type ConfigsI = WebviewConfigsI;
+  export type SocketBrokerI = WebviewSocketBrokerI;
+  export type WsServerI = WebviewWsServerI;
+  export type SocketServerIdI = string;
+
+  export type AuthController<
+    Authorizer extends AnyServerAuthorizer
+  > = AuthControllerP<Authorizer>;
+  export type AuthorizerList = WebviewAuthorizerList;
+
+  export type NextServerI = WebviewNextServerI;
+  export type NextReceiver = NextReceiverP;
 }
 
 export default Webview;

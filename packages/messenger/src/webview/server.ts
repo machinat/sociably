@@ -9,7 +9,7 @@ import {
   ContextResult,
 } from '@machinat/auth/types';
 
-import { PLATFORM_CONFIGS_I } from '../interface';
+import { ConfigsI } from '../interface';
 import { MESSENGER, MessengerChatType } from '../constant';
 import { supplementContext } from './utils';
 import type {
@@ -169,7 +169,7 @@ export class MessengerServerAuthorizer
 
 export const ServerAuthorizerP = makeClassProvider({
   lifetime: 'transient',
-  deps: [PLATFORM_CONFIGS_I] as const,
+  deps: [ConfigsI] as const,
 })(MessengerServerAuthorizer);
 
 export type ServerAuthorizerP = MessengerServerAuthorizer;

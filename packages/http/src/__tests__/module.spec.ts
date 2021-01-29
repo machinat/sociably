@@ -30,32 +30,32 @@ it('export interfaces', () => {
     Object {
       "$$branched": false,
       "$$multi": false,
-      "$$name": "HTTPServerI",
+      "$$name": "HttpServerI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 
-  expect(Http.REQUEST_ROUTES_I).toMatchInlineSnapshot(`
+  expect(Http.RequestRouteList).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": true,
-      "$$name": "HTTPRequestRoutesListI",
+      "$$name": "HttpRequestRouteList",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(Http.UPGRADE_ROUTES_I).toMatchInlineSnapshot(`
+  expect(Http.UpgradeRouteList).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": true,
-      "$$name": "HTTPUpgradeRoutesListI",
+      "$$name": "HttpUpgradeRouteList",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(Http.CONFIGS_I).toMatchInlineSnapshot(`
+  expect(Http.ConfigsI).toMatchInlineSnapshot(`
     Object {
       "$$branched": false,
       "$$multi": false,
-      "$$name": "HTTPModuleConfigsI",
+      "$$name": "HttpConfigsI",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -73,7 +73,7 @@ it('provide configs', async () => {
   });
   await app.start();
 
-  expect(app.useServices([Http.CONFIGS_I])).toEqual([configs]);
+  expect(app.useServices([Http.ConfigsI])).toEqual([configs]);
 });
 
 it('provide http server by default', async () => {

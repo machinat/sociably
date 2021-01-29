@@ -216,7 +216,7 @@ export type AuthApiErrorBody = {
   error: ErrorMessage;
 };
 
-export type AuthModuleConfigs = {
+export type AuthConfigs = {
   secret: string;
   redirectUrl: string;
   entryPath?: string;

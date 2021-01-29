@@ -3,7 +3,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
 import { makeClassProvider } from '@machinat/core/service';
-import { HttpServer, REQUEST_ROUTES_I, UPGRADE_ROUTES_I } from './interface';
+import { ServerI, RequestRouteList, UpgradeRouteList } from './interface';
 import {
   endRes,
   respondUpgrade,
@@ -100,10 +100,7 @@ export class HttpConnector {
     }
   }
 
-  async connect(
-    server: HttpServer,
-    options?: ServerListenOptions
-  ): Promise<void> {
+  async connect(server: ServerI, options?: ServerListenOptions): Promise<void> {
     server.addListener('request', this.makeRequestCallback());
     if (this._upgradeRoutes.length > 0) {
       server.addListener('upgrade', this.makeUpgradeCallback());
@@ -228,7 +225,7 @@ export class HttpConnector {
 
 export const ConnectorP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [REQUEST_ROUTES_I, UPGRADE_ROUTES_I] as const,
+  deps: [RequestRouteList, UpgradeRouteList] as const,
   factory: (requestRoutes, upgradeRoutes) =>
     new HttpConnector({ requestRoutes, upgradeRoutes }),
 })(HttpConnector);

@@ -5,7 +5,7 @@ import { BaseBot, BaseProfiler, BaseMarshaler } from '@machinat/core/base';
 import Http from '@machinat/http';
 import type { RequestRoute } from '@machinat/http/types';
 
-import { PLATFORM_CONFIGS_I, PLATFORM_MOUNTER_I } from './interface';
+import { ConfigsI as TelegramConfigsI, PlatformMounterI } from './interface';
 import { TELEGRAM } from './constant';
 import { BotP } from './bot';
 import { ReceiverP } from './receiver';
@@ -21,7 +21,6 @@ import {
 } from './channel';
 import TelegramUser from './user';
 import type {
-  TelegramPlatformConfigs,
   TelegramEventContext,
   TelegramJob,
   TelegramDispatchFrame,
@@ -29,9 +28,9 @@ import type {
 } from './types';
 
 /** @interanl */
-const requestRoutingFactory = makeFactoryProvider({
+const webhookRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [PLATFORM_CONFIGS_I, ReceiverP] as const,
+  deps: [TelegramConfigsI, ReceiverP] as const,
 })(
   (configs, receiver): RequestRoute => ({
     name: TELEGRAM,
@@ -44,10 +43,10 @@ const Telegram = {
   Bot: BotP,
   Receiver: ReceiverP,
   Profiler: ProfilerP,
-  CONFIGS_I: PLATFORM_CONFIGS_I,
+  ConfigsI: TelegramConfigsI,
 
   initModule: (
-    configs: TelegramPlatformConfigs
+    configs: TelegramConfigsI
   ): PlatformModule<
     TelegramEventContext,
     null,
@@ -55,40 +54,41 @@ const Telegram = {
     TelegramDispatchFrame,
     TelegramResult
   > => {
-    const provisions: ServiceProvision<any>[] = [
+    const provisions: ServiceProvision<unknown>[] = [
+      { provide: TelegramConfigsI, withValue: configs },
       BotP,
       {
-        provide: BaseBot.PLATFORMS_I,
+        provide: BaseBot.PlatformMap,
         withProvider: BotP,
         platform: TELEGRAM,
       },
 
       ProfilerP,
       {
-        provide: BaseProfiler.PLATFORMS_I,
+        provide: BaseProfiler.PlatformMap,
         withProvider: ProfilerP,
         platform: TELEGRAM,
       },
 
-      { provide: PLATFORM_CONFIGS_I, withValue: configs },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: TelegramChat },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: TelegramChatInstance },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: TelegramChatTarget },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: TelegramUser },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: TelegramUserProfile },
-      { provide: BaseMarshaler.TYPINGS_I, withValue: TelegramChatProfile },
+      { provide: BaseMarshaler.TypeI, withValue: TelegramChat },
+      { provide: BaseMarshaler.TypeI, withValue: TelegramChatInstance },
+      { provide: BaseMarshaler.TypeI, withValue: TelegramChatTarget },
+
+      { provide: BaseMarshaler.TypeI, withValue: TelegramUser },
+      { provide: BaseMarshaler.TypeI, withValue: TelegramUserProfile },
+      { provide: BaseMarshaler.TypeI, withValue: TelegramChatProfile },
     ];
 
     if (configs.noServer !== true) {
       provisions.push(ReceiverP, {
-        provide: Http.REQUEST_ROUTES_I,
-        withProvider: requestRoutingFactory,
+        provide: Http.RequestRouteList,
+        withProvider: webhookRouteFactory,
       });
     }
 
     return {
       name: TELEGRAM,
-      mounterInterface: PLATFORM_MOUNTER_I,
+      mounterInterface: PlatformMounterI,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions,

@@ -16,6 +16,7 @@ import type {
   WebSocketConnection,
 } from './channel';
 
+export type { Server as WsServer } from 'ws';
 export type { HttpRequestInfo } from '@machinat/http/types';
 
 export type ConnIdentifier = {
@@ -144,6 +145,8 @@ export type VerifyLoginFn<
   SuccessVerifyLoginResult<User, AuthContext> | FailedVerifyLoginResult
 >;
 
+export type AnyVerifyLoginFn = VerifyLoginFn<any, unknown, unknown>;
+
 export type VerifyUpgradeFn = (
   request: UpgradeRequestInfo
 ) => boolean | Promise<boolean>;
@@ -167,7 +170,7 @@ export type WebSocketDispatchMiddleware = DispatchMiddleware<
   WebSocketResult
 >;
 
-export type WebSocketPlatformConfigs<
+export type WebSocketConfigs<
   User extends null | MachinatUser = null,
   Auth = null
 > = {
@@ -187,3 +190,15 @@ export type WebSocketPlatformMounter<
   WebSocketDispatchFrame,
   WebSocketResult
 >;
+
+export interface WebSocketClusterBroker {
+  start(): Promise<void>;
+  stop(): Promise<void>;
+  dispatchRemote(job: WebSocketJob): Promise<ConnIdentifier[]>;
+
+  subscribeTopicRemote(conn: ConnIdentifier, topic: string): Promise<boolean>;
+  unsubscribeTopicRemote(conn: ConnIdentifier, topic: string): Promise<boolean>;
+
+  disconnectRemote(conn: ConnIdentifier): Promise<boolean>;
+  onRemoteEvent(handler: (job: WebSocketJob) => void): void;
+}

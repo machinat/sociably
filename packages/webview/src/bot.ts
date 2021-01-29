@@ -20,7 +20,7 @@ import type {
   ConnIdentifier,
 } from '@machinat/websocket/types';
 import { WEBVIEW } from './constant';
-import { SocketServerP, PLATFORM_MOUNTER_I } from './interface';
+import { SocketServerP, PlatformMounterI } from './interface';
 import {
   WebviewConnection,
   WebviewTopicChannel,
@@ -172,10 +172,7 @@ export class WebviewBot<Authorizer extends AnyServerAuthorizer>
 
 export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [
-    SocketServerP,
-    { require: PLATFORM_MOUNTER_I, optional: true },
-  ] as const,
+  deps: [SocketServerP, { require: PlatformMounterI, optional: true }] as const,
   factory: (server, mounter) =>
     new WebviewBot(server, mounter?.initScope, mounter?.dispatchWrapper),
 })(WebviewBot);
