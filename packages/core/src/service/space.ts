@@ -13,10 +13,10 @@ import type {
   PolymorphicValueBinding,
 } from './types';
 
-const objectHasOwnProperty = (obj, prop) =>
+const hasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
-const printProvider = (obj) => obj?.$$name || obj?.name || String(obj);
+const printInterface = (obj) => obj?.$$name || obj?.name || String(obj);
 
 const isPolymorphic = <T>(
   target: ServiceBinding<T>
@@ -24,44 +24,44 @@ const isPolymorphic = <T>(
   !!target.provide.$$polymorphic;
 
 const resolveBindings = (
-  bindings: ServiceProvision<unknown>[]
+  provisions: ServiceProvision<unknown>[]
 ): ProvisionMap<ServiceBinding<unknown>> => {
   const provisionMapping = new ProvisionMap<ServiceBinding<unknown>>();
 
-  for (const bindingInput of bindings) {
+  for (const provision of provisions) {
     let binding: ServiceBinding<unknown>;
 
-    if ('provide' in bindingInput) {
-      if (!isInterfaceable(bindingInput.provide)) {
+    if (isServiceProvider(provision)) {
+      binding = {
+        provide: provision,
+        withProvider: provision,
+      };
+    } else {
+      if (!isInterfaceable(provision.provide)) {
         throw new TypeError(
-          `invalid interface ${printProvider(bindingInput.provide)}`
+          isInterfaceable(provision)
+            ? `${printInterface(
+                provision
+              )} is an interface and cannot be provided directly`
+            : `invalid service interface ${printInterface(provision.provide)}`
         );
       }
 
       if (
         !(
-          objectHasOwnProperty(bindingInput, 'withValue') ||
-          ('withProvider' in bindingInput &&
-            isServiceProvider(bindingInput.withProvider))
+          hasOwnProperty(provision, 'withValue') ||
+          ('withProvider' in provision &&
+            isServiceProvider(provision.withProvider))
         )
       ) {
         throw new TypeError(
-          'withProvider' in bindingInput
-            ? `invalid provider ${printProvider(bindingInput.withProvider)}`
+          'withProvider' in provision
+            ? `invalid provider ${printInterface(provision.withProvider)}`
             : `either withProvider or withValue must be provided within binding`
         );
       }
 
-      binding = bindingInput;
-    } else {
-      if (!isServiceProvider(bindingInput)) {
-        throw new TypeError(`invalid provider ${printProvider(bindingInput)}`);
-      }
-
-      binding = {
-        provide: bindingInput,
-        withProvider: bindingInput,
-      };
+      binding = provision;
     }
 
     if (isPolymorphic(binding)) {
@@ -74,7 +74,7 @@ const resolveBindings = (
 
       if (replaced) {
         throw new Error(
-          `${target.$$name} is already bound to ${printProvider(
+          `${target.$$name} is already bound to ${printInterface(
             'withProvider' in replaced
               ? replaced.withProvider
               : replaced.withValue
@@ -88,7 +88,7 @@ const resolveBindings = (
       const replaced = provisionMapping.setSingular(target, binding);
       if (replaced) {
         throw new Error(
-          `${target.$$name} is already bound to ${printProvider(
+          `${target.$$name} is already bound to ${printInterface(
             'withProvider' in replaced
               ? replaced.withProvider
               : replaced.withValue
@@ -108,22 +108,20 @@ export default class ServiceSpace {
 
   constructor(
     base: null | ServiceSpace,
-    bindings: ServiceProvision<unknown>[]
+    provisions: ServiceProvision<unknown>[]
   ) {
     const baseMapping = base
       ? new ProvisionMap(base.provisionsMapping)
       : new ProvisionMap<ServiceBinding<unknown>>();
-    const bindingsMapping = resolveBindings(bindings);
+    const provisionMapping = resolveBindings(provisions);
 
-    const provisionMapping = baseMapping.merge(bindingsMapping);
-
-    this.maker = new ServiceMaker(provisionMapping);
-    this.provisionsMapping = provisionMapping;
     this._singletonCache = null;
+    this.provisionsMapping = baseMapping.merge(provisionMapping);
+    this.maker = new ServiceMaker(this.provisionsMapping);
   }
 
   bootstrap(
-    provisions: Map<Interfaceable<unknown>, unknown> = new Map()
+    bootstrapTimeProvisions: Map<Interfaceable<unknown>, unknown> = new Map()
   ): ServiceScope {
     const singletonCache = new Map();
     const scopedCache = new Map();
@@ -134,13 +132,13 @@ export default class ServiceSpace {
       scopedCache
     );
 
-    const bootstrapProvisions = new Map(provisions);
-    bootstrapProvisions.set(ServiceScope, bootstrapScope);
+    const provisionMap = new Map(bootstrapTimeProvisions);
+    provisionMap.set(ServiceScope, bootstrapScope);
 
     for (const [, binding] of this.provisionsMapping) {
       if ('withProvider' in binding) {
         const { withProvider: provider } = binding;
-        this._verifyDependencies(provider, bootstrapProvisions, []);
+        this._verifyDependencies(provider, provisionMap, []);
 
         if (provider.$$lifetime === 'singleton') {
           this.maker.makeProvider(
@@ -148,7 +146,7 @@ export default class ServiceSpace {
             ENUM_PHASE_BOOTSTRAP,
             singletonCache,
             scopedCache,
-            bootstrapProvisions
+            provisionMap
           );
         }
       }

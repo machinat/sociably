@@ -64,12 +64,11 @@ export default class MachinatApp<
     );
     this._status = ENUM_STARTING;
 
-    const { modules, platforms, bindings } = this.config;
+    const { modules, platforms, services } = this.config;
 
     const moduleProvisions: ServiceProvision<unknown>[] = [];
     const startHooks: ServiceContainer<Promise<void>, unknown[]>[] = [];
 
-    // bootstrap normal modules add bindings
     if (modules) {
       for (const { provisions, startHook } of modules) {
         moduleProvisions.push(...provisions);
@@ -80,9 +79,8 @@ export default class MachinatApp<
       }
     }
 
-    const platformMountingUtils = new Map();
+    const platformMounters = new Map();
 
-    // add bindings and bridge bindings of platform module
     if (platforms) {
       for (const {
         provisions,
@@ -93,7 +91,7 @@ export default class MachinatApp<
       } of platforms) {
         moduleProvisions.push(...provisions);
 
-        platformMountingUtils.set(
+        platformMounters.set(
           mounterInterface,
           this._createPlatformMounter(
             eventMiddlewares || [],
@@ -114,8 +112,8 @@ export default class MachinatApp<
       ...moduleProvisions,
     ]);
 
-    this._serviceSpace = new ServiceSpace(moduleOnlySpace, bindings || []);
-    const bootstrapScope = this._serviceSpace.bootstrap(platformMountingUtils);
+    this._serviceSpace = new ServiceSpace(moduleOnlySpace, services || []);
+    const bootstrapScope = this._serviceSpace.bootstrap(platformMounters);
 
     await Promise.all(
       startHooks.map((hook) => bootstrapScope.injectContainer(hook))

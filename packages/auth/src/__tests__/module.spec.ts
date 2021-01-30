@@ -32,7 +32,7 @@ describe('initModule()', () => {
   test('provisions', async () => {
     const app = Machinat.createApp({
       modules: [Auth.initModule({ secret, entryPath, redirectUrl })],
-      bindings: [{ provide: Auth.AuthorizerList, withValue: moxy() }],
+      services: [{ provide: Auth.AuthorizerList, withValue: moxy() }],
     });
     await app.start();
 
@@ -61,7 +61,7 @@ describe('initModule()', () => {
     const ControllerSpy = moxy(ControllerP);
     const app = Machinat.createApp({
       modules: [Auth.initModule({ secret, entryPath, redirectUrl })],
-      bindings: [
+      services: [
         { provide: Auth.AuthorizerList, withValue: fooAuthorizer },
         { provide: Auth.AuthorizerList, withValue: barAuthorizer },
         {
@@ -85,7 +85,7 @@ describe('initModule()', () => {
     const fakeController = moxy({ delegateAuthRequest: async () => {} });
     const app = Machinat.createApp({
       modules: [Auth.initModule({ secret, redirectUrl, entryPath })],
-      bindings: [
+      services: [
         {
           provide: Auth.Controller,
           withValue: fakeController,

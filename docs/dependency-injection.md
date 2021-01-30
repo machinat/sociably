@@ -13,7 +13,7 @@ Machinat.createApp({
   modules: [
     Http.initModule({ ... }),
   ],
-  bindings: [
+  services: [
     MyService,
   ],
 }).start();
@@ -126,9 +126,9 @@ container({
 })
 ```
 
-### Register Bindings
+### Register Services
 
-Other than services from modules and platforms, you can register service individually with the `bindings` option:
+Other than services from modules and platforms, you can register service individually with the `services` option:
 
 ```js
 import MessengerAssetsManager from '@machinat/messenger/asset';
@@ -137,7 +137,7 @@ import FooService from './foo';
 Machinat.createApp({
   platforms: [...],
   modules: [...],
-  bindings: [
+  services: [
     MessengerAssetsManager,
     FooService,
   ],
@@ -196,7 +196,7 @@ Now you are able to register your service and use it:
 
 ```js
 const app = Machinat.createApp({
-  bindings: [BeerService, BarService],
+  services: [BeerService, BarService],
 });
 
 const [bar] = app.useServices([BarService]);
@@ -209,11 +209,11 @@ Registering the provider class directly is actually a sugar to have a binding to
 
 ```js
 Machinat.createApp({
-  bindings: [MyService],
+  services: [MyService],
 });
 // is equivalent to
 Machinat.crrateApp({
-  bindings: [
+  services: [
     { provide: MyService, withProvider: MyService },
   ],
 });
@@ -223,7 +223,7 @@ For test or refactor purpose, you can bind another provider on it to change the 
 
 ```js
 const app = Machinat.crrateApp({
-  bindings: [
+  services: [
     { provide: MyService, withProvider: AnotherService },
   ],
 });
@@ -240,7 +240,7 @@ import { makeInterface } from '@machinat/core/service';
 const MY_SERVICE_I = makeInterface({ name: 'MyService' })
 
 Machinat.crrateApp({
-  bindings: [
+  services: [
     { provide: MY_SERVICE_I, withProvider: MyService },
   ],
 });
@@ -256,7 +256,7 @@ A value can be directly bound to an interface instead of a provider. This is esp
 const BOT_NAME_I = makeInterface({ name: 'BotName' })
 
 Machinat.crrateApp({
-  bindings: [
+  services: [
     { provide: BOT_NAME_I, withValue: 'David' },
   ],
 });

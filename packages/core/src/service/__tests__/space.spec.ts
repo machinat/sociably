@@ -101,7 +101,7 @@ it('provide services bound in bindings', () => {
   );
 });
 
-test('new bindings prioritize to bindings from base space', () => {
+test('new bindings are prioritized to the bindings from base space', () => {
   const MyFoo = moxy(
     makeClassProvider({ deps: [Bar, BAZ], lifetime: 'singleton' })(
       class MyFoo {
@@ -199,13 +199,15 @@ it('throw if provider dependencies is not bound', () => {
 it('throw if invalid binding received', () => {
   expect(
     () => new ServiceSpace(null, [Bar] as never)
-  ).toThrowErrorMatchingInlineSnapshot(`"invalid provider BAR"`);
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"BAR is an interface and cannot be provided directly"`
+  );
   expect(
     () =>
       new ServiceSpace(null, [
         { provide: class Bae {}, withValue: 'bae~' } as never,
       ])
-  ).toThrowErrorMatchingInlineSnapshot(`"invalid interface Bae"`);
+  ).toThrowErrorMatchingInlineSnapshot(`"invalid service interface Bae"`);
   expect(
     () =>
       new ServiceSpace(null, [{ provide: Bar, withTea: 'Oooooolong' } as never])

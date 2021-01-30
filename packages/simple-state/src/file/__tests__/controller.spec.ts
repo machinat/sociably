@@ -160,7 +160,7 @@ describe('#set()', () => {
       bar: false,
     });
 
-    await delay(20);
+    await delay(40);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       Object {
         "channelStates": Object {

@@ -37,7 +37,7 @@ Machinat.createApp({
       secret: 'xxx-xxx-xxx-xxx',
     }),
   ],
-  bindings: [
+  services: [
     {
       porvide: Auth.AUTHORIZERS_I,
       withProvider: MessengerServerAuthorizer,

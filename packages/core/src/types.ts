@@ -260,10 +260,7 @@ export type AnyPlatformModule = PlatformModule<
 export type AppConfig<Platform extends AnyPlatformModule> = {
   platforms?: Platform[];
   modules?: ServiceModule[];
-  bindings?: (
-    | ServiceProvider<unknown, unknown[]>
-    | ServiceProvision<unknown>
-  )[];
+  services?: ServiceProvision<unknown>[];
 };
 
 export type EventContextOfPlatform<

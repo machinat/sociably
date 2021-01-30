@@ -30,16 +30,12 @@ export {
  *   2. provider class as interfaceable
  *   3. abstract class as interfaceable
  *
- * binding:
- *   The binding binds an interfaceable to a provider or an existed value, all
+ * service:
+ *   A service binds an interface to a provider or an existed value, all
  *   bindings must be configured before the app start. When a container claims
  *   with the interfaceable, the corresponded service bound to the interfaceable
  *   would be injected into the container.
  *
- * partially binding:
- *   A service can be bound only under specified platforms, and will be provided
- *   only under the scope of platforms bound. The provision for platform would
- *   be provided prioritized to the default one if both provided.
  *
  * service lifetime:
  *   1. "singeleton" services would be created after iniatiation, and would

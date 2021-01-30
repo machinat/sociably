@@ -88,7 +88,7 @@ it('provide http server by default', async () => {
         },
       }),
     ],
-    bindings: [{ provide: Http.Connector, withValue: connector }],
+    services: [{ provide: Http.Connector, withValue: connector }],
   });
 
   await app.start();
@@ -117,7 +117,7 @@ test('change http server', async () => {
         },
       }),
     ],
-    bindings: [{ provide: Http.ServerI, withValue: myServer }],
+    services: [{ provide: Http.ServerI, withValue: myServer }],
   });
 
   await app.start();

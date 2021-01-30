@@ -129,7 +129,7 @@ it('start modules', async () => {
   const app = new App({
     modules: [TestModule, AnotherModule],
     platforms: [FooPlatform, BarPlatform],
-    bindings: [MyService, YourService],
+    services: [MyService, YourService],
   });
 
   await app.start();
@@ -184,7 +184,7 @@ it('provide mounter utilities by PlatformModule.mounterInterface', async () => {
   const app = new App({
     modules: [TestModule, AnotherModule],
     platforms: [FooPlatform, BarPlatform],
-    bindings: [MyService, YourService],
+    services: [MyService, YourService],
   });
 
   await app.start();
@@ -209,7 +209,7 @@ test('mounter.initScope() provide services to platform module', async () => {
   const app = new App({
     modules: [TestModule, AnotherModule],
     platforms: [FooPlatform, BarPlatform],
-    bindings: [MyService, YourService],
+    services: [MyService, YourService],
   });
 
   await app.start();
@@ -260,7 +260,7 @@ describe('poping event from platform module', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -293,7 +293,7 @@ describe('poping event from platform module', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -336,7 +336,7 @@ describe('poping event from platform module', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -365,7 +365,7 @@ describe('poping event from platform module', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -401,7 +401,7 @@ describe('poping event from platform module', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -432,7 +432,7 @@ describe('poping event from platform module', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -480,7 +480,7 @@ describe('poping event from platform module', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     })
       .onEvent(eventListenerContainer)
       .onError(errorListener);
@@ -526,7 +526,7 @@ describe('poping event from platform module', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -572,7 +572,7 @@ describe('poping error from platform module', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListener);
@@ -607,7 +607,7 @@ describe('poping error from platform module', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     })
       .onEvent(eventListener)
       .onError(errorListnerContainer);
@@ -658,7 +658,7 @@ describe('dispatch through middlewares', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     });
     await app.start();
 
@@ -684,7 +684,7 @@ describe('dispatch through middlewares', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     });
     await app.start();
 
@@ -723,7 +723,7 @@ describe('dispatch through middlewares', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     });
     await app.start();
 
@@ -747,7 +747,7 @@ describe('dispatch through middlewares', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     });
     await app.start();
 
@@ -775,7 +775,7 @@ describe('dispatch through middlewares', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     });
     await app.start();
 
@@ -828,7 +828,7 @@ describe('dispatch through middlewares', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     });
     await app.start();
 
@@ -864,7 +864,7 @@ describe('#useServices(requirements)', () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
-      bindings: [MyService, YourService],
+      services: [MyService, YourService],
     });
 
     await app.start();

@@ -107,7 +107,7 @@ test('service provisions', async () => {
 
   const app = Machinat.createApp({
     platforms: [Webview.initModule(configsInput)],
-    bindings: [
+    services: [
       { provide: Webview.AuthorizerList, withProvider: NoneServerAuthorizer },
     ],
   });
@@ -176,7 +176,7 @@ test('default routing paths', async () => {
         authSecret: '_SECRET_',
       }),
     ],
-    bindings: [
+    services: [
       { provide: Webview.AuthorizerList, withProvider: NoneServerAuthorizer },
     ],
   });
@@ -210,7 +210,7 @@ test('provide base interfaces', async () => {
         authSecret: '_SECRET_',
       }),
     ],
-    bindings: [
+    services: [
       { provide: Webview.AuthorizerList, withProvider: NoneServerAuthorizer },
     ],
   });
@@ -241,7 +241,7 @@ test('startHook', async () => {
         authSecret: '_SECRET_',
       }),
     ],
-    bindings: [
+    services: [
       { provide: Webview.Bot, withValue: fakeBot },
       { provide: Webview.AuthorizerList, withProvider: NoneServerAuthorizer },
     ],

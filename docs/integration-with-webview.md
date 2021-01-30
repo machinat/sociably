@@ -125,7 +125,7 @@ const app = Machinat.createApp({
       secret: '__SECRET_STRING__',
     }),
   ],
-  bindings: [
+  services: [
     { provide: Auth.AUTHORIZERS_I, withProvider: MessengerAuthorizer },
     { provide: Auth.AUTHORIZERS_I, withProvider: LineAuthorizer },
     { provide: WebSocket.LOGIN_VERIFIER_I, withProvider: useAuthController },
