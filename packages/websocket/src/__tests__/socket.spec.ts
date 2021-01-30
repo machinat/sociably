@@ -65,8 +65,8 @@ beforeEach(() => {
   serverWs.send.mock.reset();
   serverWs.close.mock.reset();
 
-  clientSocket = new Socket('_id_', clientWs);
-  serverSocket = new Socket('_id_', serverWs, request);
+  clientSocket = new Socket(clientWs);
+  serverSocket = new Socket(serverWs, request);
 });
 
 afterEach(() => {
@@ -75,20 +75,18 @@ afterEach(() => {
 });
 
 it('construct with request info', () => {
-  expect(serverSocket.id).toBe('_id_');
   expect(serverSocket.request).toBe(request);
   expect(serverSocket.isClient).toBe(false);
 });
 
 it('construct without request info', () => {
-  expect(clientSocket.id).toBe('_id_');
   expect(clientSocket.request).toBe(null);
   expect(clientSocket.isClient).toBe(true);
 });
 
 it('propagate "open" event', () => {
   const ws = new EventEmitter() as Ws;
-  const socket = new Socket('_id_', ws);
+  const socket = new Socket(ws);
 
   const openSpy = moxy();
   socket.on('open', openSpy);
@@ -100,7 +98,7 @@ it('propagate "open" event', () => {
 
 it('propagate "error" event', () => {
   const ws = new EventEmitter() as Ws;
-  const socket = new Socket('_id_', ws);
+  const socket = new Socket(ws);
 
   const errorSpy = moxy();
   socket.on('error', errorSpy);

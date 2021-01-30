@@ -170,7 +170,6 @@ function handleWsError(this: WsSocket & WithSocket, err: Error) {
  * communicating operation and notification
  */
 class Socket extends EventEmitter {
-  id: string;
   isClient: boolean;
   request: null | UpgradeRequestInfo;
 
@@ -180,10 +179,9 @@ class Socket extends EventEmitter {
   private _connectStates: Map<string, number>;
   private _handshakeTimeouts: Map<string, TimeoutID>;
 
-  constructor(id: string, wsSocket: WsSocket, request?: UpgradeRequestInfo) {
+  constructor(wsSocket: WsSocket, request?: UpgradeRequestInfo) {
     super();
 
-    this.id = id;
     this.request = request || null;
     this.isClient = !request;
     this._seq = 0;

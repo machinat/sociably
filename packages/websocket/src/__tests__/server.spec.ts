@@ -129,7 +129,7 @@ it('handle sockets and connections lifecycle', async () => {
     .toHaveBeenCalledWith(req, netSocket, head, expect.any(Function));
 
   expect(Socket.mock).toHaveBeenCalledTimes(1);
-  expect(Socket.mock).toHaveBeenCalledWith(expect.any(String), ws, {
+  expect(Socket.mock).toHaveBeenCalledWith(ws, {
     method: 'GET',
     url: '/hello',
     headers: { foo: 'bar' },
@@ -399,20 +399,6 @@ test('multi sockets and connections', async () => {
   socket1.emit('close', 666, 'bye', socket1);
   socket2.emit('close', 666, 'bye', socket2);
   await nextTick();
-});
-
-it('generate uniq socket id', async () => {
-  const ids = new Set();
-
-  for (let i = 0; i < 500; i += 1) {
-    const [socket] = await openConnection(testServer); // eslint-disable-line no-await-in-loop
-
-    expect(typeof socket.id).toBe('string');
-    expect(ids.has(socket.id)).toBe(false);
-    ids.add(socket.id);
-
-    ws.removeAllListeners();
-  }
 });
 
 it('generate uniq connection id', async () => {

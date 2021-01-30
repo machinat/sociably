@@ -48,11 +48,7 @@ test('start()', async () => {
   );
 
   expect(Socket.mock).toHaveBeenCalledTimes(1);
-  expect(Socket.mock).toHaveBeenCalledWith(
-    expect.any(String),
-    Ws.mock.calls[0].instance,
-    null
-  );
+  expect(Socket.mock).toHaveBeenCalledWith(Ws.mock.calls[0].instance);
 });
 
 it('login with credential from login fn', async () => {

@@ -51,7 +51,6 @@ type ConnectionState<User extends null | MachinatUser, Auth> = {
 type IntervalID = ReturnType<typeof setInterval>;
 
 type SocketState = {
-  socket: Socket;
   lostHeartbeat: number;
 };
 
@@ -84,7 +83,7 @@ export class WebSocketServer<
   private _verifyLogin: VerifyLoginFn<User, Auth, unknown>;
   private _verifyUpgrade: VerifyUpgradeFn;
 
-  private _socketStates: Map<string, SocketState>;
+  private _socketStates: Map<Socket, SocketState>;
   private _connectionStates: Map<string, ConnectionState<User, Auth>>;
 
   private _topicMapping: Map<string, Set<string>>;
@@ -148,9 +147,9 @@ export class WebSocketServer<
     }
 
     const ws = await createWsSocket(this._wsServer, req, ns, head);
-    const socket = new Socket(uniqid(), ws, requestInfo);
+    const socket = new Socket(ws, requestInfo);
 
-    this._socketStates.set(socket.id, { socket, lostHeartbeat: 0 });
+    this._socketStates.set(socket, { lostHeartbeat: 0 });
 
     socket.on('events', this._handleEventsCallback);
     socket.on('login', this._handleLoginCallback);
@@ -422,7 +421,7 @@ export class WebSocketServer<
   };
 
   private async _handleLogin(body: LoginBody, seq: number, socket: Socket) {
-    const connId: string = uniqid();
+    const connId: string = uniqid.time();
 
     try {
       const request = socket.request as HttpRequestInfo;
@@ -528,7 +527,7 @@ export class WebSocketServer<
   private _handleCloseCallback = this._handleClose.bind(this);
   private _handleClose(code: number, reason: string, socket: Socket) {
     socket.removeAllListeners();
-    this._socketStates.delete(socket.id);
+    this._socketStates.delete(socket);
   }
 
   private _handleErrorCallback = this._handleError.bind(this);
@@ -537,7 +536,7 @@ export class WebSocketServer<
   }
 
   private _heartbeat() {
-    for (const [_, { socket }] of this._socketStates) {
+    for (const socket of this._socketStates.keys()) {
       // TODO: remove unresponding sockets
       socket.ping();
     }

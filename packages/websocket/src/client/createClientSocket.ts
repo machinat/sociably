@@ -82,7 +82,7 @@ const MACHINAT_WEBSOCKET_PROTOCOL_V0 = 'machinat-websocket-v0';
 
 const createClientSocket = (url: string): Promise<Socket> => {
   const ws = new Ws(url, MACHINAT_WEBSOCKET_PROTOCOL_V0);
-  const socket = new Socket('', ws, null as any);
+  const socket = new Socket(ws);
 
   return new Promise((resolve, reject) => {
     let errorListener;
