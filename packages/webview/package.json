@@ -19,8 +19,12 @@
   },
   "files": [
     "lib/*",
-    "README.md"
+    "README.md",
+    "polyfill-exports.js"
   ],
+  "scripts": {
+    "postinstall": "./polyfill-exports.js"
+  },
   "license": "MIT",
   "publishConfig": {
     "access": "public"

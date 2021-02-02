@@ -69,6 +69,6 @@ export const useAuthClient = <Authorizer extends AnyClientAuthorizer>(
 };
 
 export const verifyOrigin = (origin: string, expectedHost: string): boolean => {
-  const [protocol, host] = origin.split('://', 2);
-  return protocol === 'https' && host === expectedHost;
+  const [protocol, host] = origin.split('//', 2);
+  return protocol === 'https:' && host === expectedHost;
 };

@@ -97,7 +97,10 @@ export type WebviewDispatchMiddleware<
   WebSocketResult
 >;
 
-export type WebviewConfigs<Authorizer extends AnyServerAuthorizer> = {
+export type WebviewConfigs<
+  Authorizer extends AnyServerAuthorizer,
+  Value extends EventValue = EventValue
+> = {
   /** Host of the webview. */
   webviewHost: string;
   /** Route path to the next server. Default to `"/webview"` */
@@ -129,7 +132,7 @@ export type WebviewConfigs<Authorizer extends AnyServerAuthorizer> = {
   secure?: boolean;
 
   eventMiddlewares?: MaybeContainer<
-    WebviewEventMiddleware<Authorizer, EventValue>
+    WebviewEventMiddleware<Authorizer, Value>
   >[];
   dispatchMiddlewares?: MaybeContainer<WebviewDispatchMiddleware<Authorizer>>[];
 };

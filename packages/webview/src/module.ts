@@ -12,7 +12,11 @@ import type {
 } from '@machinat/http/types';
 import LocalOnlyBroker from '@machinat/websocket/brokers/LocalOnlyBroker';
 import createWsServer from '@machinat/websocket/utils/createWsServer';
-import type { WebSocketJob, WebSocketResult } from '@machinat/websocket/types';
+import type {
+  WebSocketJob,
+  WebSocketResult,
+  EventValue,
+} from '@machinat/websocket/types';
 
 import { WEBVIEW, DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from './constant';
 import {
@@ -106,10 +110,13 @@ const Webview = {
   NextReceiver: NextReceiverP,
   NextServerI: WebviewNextServerI,
 
-  initModule: <Authorizer extends AnyServerAuthorizer>(
-    configs: WebviewConfigs<Authorizer>
+  initModule: <
+    Authorizer extends AnyServerAuthorizer,
+    Value extends EventValue = EventValue
+  >(
+    configs: WebviewConfigs<Authorizer, Value>
   ): PlatformModule<
-    WebviewEventContext<Authorizer>,
+    WebviewEventContext<Authorizer, Value>,
     null,
     WebSocketJob,
     WebviewDispatchFrame<Authorizer>,

@@ -13,6 +13,8 @@ type MessengerChatValue = {
 
 class MessengerChat
   implements MachinatChannel, Marshallable<MessengerChatValue> {
+  static Type = MessengerChatType;
+
   static fromUser(user: MessengerUser): MessengerChat {
     return new MessengerChat(user.pageId, { id: user.psid });
   }

@@ -4,7 +4,6 @@ import type {
   Interfaceable,
   ServiceProvision,
   ServiceContainer,
-  ServiceProvider,
   ServiceInterface,
   ServiceScope,
   MaybeContainer,
@@ -220,10 +219,7 @@ export type DispatchMiddleware<
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
 export type ServiceModule = {
-  provisions: (
-    | ServiceProvider<unknown, unknown[]>
-    | ServiceProvision<unknown>
-  )[];
+  provisions: ServiceProvision<unknown>[];
   startHook?: null | ServiceContainer<Promise<void>, unknown[]>;
 };
 
@@ -238,10 +234,7 @@ export type PlatformModule<
   mounterInterface: ServiceInterface<
     PlatformMounter<Context, EventResp, Job, Frame, Result>
   >;
-  provisions: (
-    | ServiceProvider<unknown, unknown[]>
-    | ServiceProvision<unknown>
-  )[];
+  provisions: ServiceProvision<unknown>[];
   startHook?: ServiceContainer<Promise<void>, unknown[]>;
   eventMiddlewares?: MaybeContainer<EventMiddleware<Context, EventResp>>[];
   dispatchMiddlewares?: MaybeContainer<
