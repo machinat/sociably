@@ -1,6 +1,6 @@
 import type { IncomingMessage } from 'http';
 import moxy from '@moxyjs/moxy';
-import { ResponseHelper } from '@machinat/auth/types';
+import type { ResponseHelper } from '@machinat/auth/types';
 import type { TelegramBot } from '../../bot';
 import { TelegramServerAuthorizer } from '../server';
 import { TelegramChat } from '../../channel';
@@ -32,9 +32,7 @@ const bot = moxy<TelegramBot>({
   },
 } as never);
 
-const authorizer = new TelegramServerAuthorizer(bot, {
-  redirectUrl: '/webview/index.html',
-});
+const authorizer = new TelegramServerAuthorizer(bot);
 
 beforeEach(() => {
   bot.mock.reset();
@@ -64,13 +62,16 @@ describe('#delegateAuthRequest()', () => {
     hash: 'b9dd29dc85707201fafad92122120a759492f14f0b997f96e5ef7734009c881b',
   };
 
-  it('authorize request redirected from telegram', async () => {
+  it('receive login request and redirct user to webview', async () => {
     const search = new URLSearchParams(telegramLoginSearch);
 
     const req = createReq({ url: `/auth/telegram/login?${search}` });
     await authorizer.delegateAuthRequest(req, res as never, resHelper);
 
-    expect(resHelper.redirect.mock).toHaveBeenCalledWith('/webview/index.html');
+    expect(resHelper.redirect.mock).toHaveBeenCalledTimes(1);
+    expect(resHelper.redirect.mock).toHaveBeenCalledWith(undefined, {
+      assertInternal: true,
+    });
 
     expect(resHelper.issueError.mock).not.toHaveBeenCalled();
     expect(resHelper.issueAuth.mock).toHaveBeenCalledTimes(1);
@@ -173,7 +174,7 @@ describe('#delegateAuthRequest()', () => {
     `);
   });
 
-  it('redirect to redirectUrl param if specified', async () => {
+  it('redirect to `redirectUrl` query param if specified', async () => {
     const search = new URLSearchParams({
       ...telegramLoginSearch,
       redirectUrl: '/webview/hello_world.html',
@@ -183,7 +184,10 @@ describe('#delegateAuthRequest()', () => {
     await authorizer.delegateAuthRequest(req, res as never, resHelper);
 
     expect(resHelper.redirect.mock).toHaveBeenCalledWith(
-      '/webview/hello_world.html'
+      '/webview/hello_world.html',
+      {
+        assertInternal: true,
+      }
     );
 
     expect(resHelper.issueError.mock).not.toHaveBeenCalled();
@@ -200,7 +204,9 @@ describe('#delegateAuthRequest()', () => {
     const req = createReq({ url: `/auth/telegram/login?${search}` });
     await authorizer.delegateAuthRequest(req, res as never, resHelper);
 
-    expect(resHelper.redirect.mock).toHaveBeenCalledWith('/webview/index.html');
+    expect(resHelper.redirect.mock).toHaveBeenCalledWith(undefined, {
+      assertInternal: true,
+    });
 
     expect(resHelper.issueAuth.mock).not.toHaveBeenCalled();
     expect(resHelper.issueError.mock).toHaveBeenCalledTimes(1);
@@ -221,7 +227,9 @@ describe('#delegateAuthRequest()', () => {
     });
     await authorizer.delegateAuthRequest(req, res as never, resHelper);
 
-    expect(resHelper.redirect.mock).toHaveBeenCalledWith('/webview/index.html');
+    expect(resHelper.redirect.mock).toHaveBeenCalledWith(undefined, {
+      assertInternal: true,
+    });
 
     expect(resHelper.issueAuth.mock).not.toHaveBeenCalled();
     expect(resHelper.issueError.mock).toHaveBeenCalledTimes(1);

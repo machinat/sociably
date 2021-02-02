@@ -35,6 +35,7 @@ import type {
   ShippingQuery,
   PreCheckoutQuery,
   PollAnswer,
+  Unknown,
 } from './mixins';
 import type { TelegramRawEvent } from '../types';
 
@@ -529,7 +530,8 @@ export interface PollAnswerChangeEvent
  */
 export interface UnknownEvent
   extends EventObject<'unknown', 'unknown'>,
-    EventBase {}
+    EventBase,
+    Unknown {}
 
 export type TelegramEvent =
   | TextEvent

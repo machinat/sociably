@@ -40,7 +40,6 @@ describe('initModule(configs)', () => {
       botToken: '12345:_BOT_TOKEN_',
       entryPath: '/webhook/telegram',
       secretPath: '_SECRET_',
-      authRedirectUrl: '/webview/index.html',
       maxConnections: 999,
       eventMiddlewares,
       dispatchMiddlewares,

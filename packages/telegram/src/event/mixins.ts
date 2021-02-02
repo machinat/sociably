@@ -1099,3 +1099,13 @@ export const PollAnswer: PollAnswer = {
     return this.payload.poll_answer.option_ids;
   },
 };
+
+export interface Unknown {
+  user: null;
+  channel: null;
+}
+
+export const Unknown = {
+  user: null,
+  channel: null,
+};

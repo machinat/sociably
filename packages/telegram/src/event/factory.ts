@@ -40,6 +40,7 @@ import {
   PreCheckoutQuery,
   PollChange,
   PollAnswer,
+  Unknown,
 } from './mixins';
 import { TelegramRawEvent } from '../types';
 import { TelegramEvent } from './types';
@@ -503,7 +504,7 @@ const PollAnswerChangePostbackProto = mixin(EventBase, PollAnswer, {
   type: 'poll_answer_change' as const,
 });
 
-const UnknownProto = mixin(EventBase, {
+const UnknownProto = mixin(EventBase, Unknown, {
   kind: 'unknown' as const,
   type: 'unknown' as const,
 });
