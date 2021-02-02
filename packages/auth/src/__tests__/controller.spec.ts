@@ -184,12 +184,31 @@ describe('#constructor()', () => {
       () =>
         new AuthController(authorizers, {
           secret,
-          redirectUrl: 'view.pachinat.io',
+          redirectUrl: 'view.machinat.io',
           entryPath: '/auth',
           cookieDomain: 'api.machinat.io',
         })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.redirectUrl should be under cookie scope \\"//api.machinat.io/\\""`
+    );
+  });
+
+  it('throw if protocol of redirectUrl is http when secure', () => {
+    (() =>
+      new AuthController(authorizers, {
+        secure: false,
+        secret,
+        redirectUrl: 'http://machinat.io',
+      }))();
+
+    expect(
+      () =>
+        new AuthController(authorizers, {
+          secret,
+          redirectUrl: 'http://machinat.io',
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"protocol of options.redirectUrl can only be https when options.secure set to true"`
     );
   });
 });
@@ -369,6 +388,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       req.mock.getter('url').fake(() => `${controller.entryPath}/foo`);
       res.mock.getter('finished').fake(() => true);
+      res.end.mock.fake(() => {});
 
       controller.delegateAuthRequest(req, res);
       return fooAuthorizer.delegateAuthRequest.mock.calls.slice(-1)[0].args;
@@ -376,9 +396,9 @@ describe('#delegateAuthRequest(req, res)', () => {
 
     test('.issueState(data)', async () => {
       async function testIssueState(controller) {
-        const [, res, cookieAccessor] = getDelegateArgs(controller);
+        const [, res, resHelper] = getDelegateArgs(controller);
 
-        const stateEncoded = await cookieAccessor.issueState({ foo: 'state' });
+        const stateEncoded = await resHelper.issueState({ foo: 'state' });
         const cookies = getCookies(res);
 
         expect(cookies.get('machinat_auth_state').value).toBe(stateEncoded);
@@ -446,11 +466,8 @@ describe('#delegateAuthRequest(req, res)', () => {
 
     test('.issueAuth(data, options)', async () => {
       async function testIssueAuth(controller, issueOpts?) {
-        const [, res, cookieAccessor] = getDelegateArgs(controller);
-        const token = await cookieAccessor.issueAuth(
-          { foo: 'data' },
-          issueOpts
-        );
+        const [, res, resHelper] = getDelegateArgs(controller);
+        const token = await resHelper.issueAuth({ foo: 'data' }, issueOpts);
 
         const cookies = getCookies(res);
         expect(cookies.get('machinat_auth_state').value).toBe('');
@@ -639,9 +656,9 @@ describe('#delegateAuthRequest(req, res)', () => {
 
     it('.issueError(code, reason)', async () => {
       async function testIssueError(controller) {
-        const [, res, cookieAccessor] = getDelegateArgs(controller);
+        const [, res, resHelper] = getDelegateArgs(controller);
 
-        const errEncoded = await cookieAccessor.issueError(418, "I'm a teapot");
+        const errEncoded = await resHelper.issueError(418, "I'm a teapot");
         const cookies = getCookies(res);
 
         expect(cookies.get('machinat_auth_error').value).toBe(errEncoded);
@@ -739,7 +756,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('/getState()', async () => {
-      const [req, , cookieAccessor] = getDelegateArgs(
+      const [req, , resHelper] = getDelegateArgs(
         new AuthController(authorizers, { secret, redirectUrl })
       );
       const platform = 'foo';
@@ -749,7 +766,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       req.mock.getter('headers').fake(() => ({
         cookie: `no_state=existed`,
       }));
-      await expect(cookieAccessor.getState()).resolves.toBe(null);
+      await expect(resHelper.getState()).resolves.toBe(null);
 
       const stateEnceded = jsonwebtoken.sign(
         { platform, state, scope, iat: SEC_NOW - 10, exp: SEC_NOW + 10 },
@@ -760,7 +777,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       req.mock.getter('headers').fake(() => ({
         cookie: `machinat_auth_state=${stateEnceded}`,
       }));
-      await expect(cookieAccessor.getState()).resolves.toEqual({
+      await expect(resHelper.getState()).resolves.toEqual({
         foo: 'state',
       });
 
@@ -768,7 +785,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       req.mock.getter('headers').fake(() => ({
         cookie: `machinat_auth_state=${stateEnceded}_WITH_WRONG_SIG`,
       }));
-      await expect(cookieAccessor.getState()).resolves.toBe(null);
+      await expect(resHelper.getState()).resolves.toBe(null);
 
       // different platform
       req.mock.getter('headers').fake(() => ({
@@ -777,7 +794,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           '__SECRET__'
         )}`,
       }));
-      await expect(cookieAccessor.getState()).resolves.toBe(null);
+      await expect(resHelper.getState()).resolves.toBe(null);
 
       // outdated
       req.mock.getter('headers').fake(() => ({
@@ -786,7 +803,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           '__SECRET__'
         )}`,
       }));
-      await expect(cookieAccessor.getState()).resolves.toBe(null);
+      await expect(resHelper.getState()).resolves.toBe(null);
     });
 
     it('.getAuth()', async () => {
@@ -798,7 +815,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         return [`${headerEncoded}.${payloadEncoded}`, signature];
       }
 
-      const [req, , cookieAccessor] = getDelegateArgs(
+      const [req, , resHelper] = getDelegateArgs(
         new AuthController(authorizers, { secret, redirectUrl })
       );
       const platform = 'foo';
@@ -808,7 +825,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       req.mock.getter('headers').fake(() => ({
         cookie: `no_auth=existed`,
       }));
-      await expect(cookieAccessor.getAuth()).resolves.toBe(null);
+      await expect(resHelper.getAuth()).resolves.toBe(null);
 
       let [token, sig] = createTokenAndSig({
         platform,
@@ -822,31 +839,31 @@ describe('#delegateAuthRequest(req, res)', () => {
       req.mock.getter('headers').fake(() => ({
         cookie: `machinat_auth_token=${token}`,
       }));
-      await expect(cookieAccessor.getAuth()).resolves.toBe(null);
+      await expect(resHelper.getAuth()).resolves.toBe(null);
 
       // no token
       req.mock.getter('headers').fake(() => ({
         cookie: `machinat_auth_signature=${sig}`,
       }));
-      await expect(cookieAccessor.getAuth()).resolves.toBe(null);
+      await expect(resHelper.getAuth()).resolves.toBe(null);
 
       // ok
       req.mock.getter('headers').fake(() => ({
         cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
       }));
-      await expect(cookieAccessor.getAuth()).resolves.toEqual({ foo: 'data' });
+      await expect(resHelper.getAuth()).resolves.toEqual({ foo: 'data' });
 
       // ok
       req.mock.getter('headers').fake(() => ({
         cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
       }));
-      await expect(cookieAccessor.getAuth()).resolves.toEqual({ foo: 'data' });
+      await expect(resHelper.getAuth()).resolves.toEqual({ foo: 'data' });
 
       // wrong signature
       req.mock.getter('headers').fake(() => ({
         cookie: `machinat_auth_token=${token};machinat_auth_signature=WRONG_SIG;`,
       }));
-      await expect(cookieAccessor.getAuth()).resolves.toBe(null);
+      await expect(resHelper.getAuth()).resolves.toBe(null);
 
       // different platform
       [token, sig] = createTokenAndSig({
@@ -859,7 +876,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       req.mock.getter('headers').fake(() => ({
         cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
       }));
-      await expect(cookieAccessor.getAuth()).resolves.toBe(null);
+      await expect(resHelper.getAuth()).resolves.toBe(null);
 
       // expired
       [token, sig] = createTokenAndSig({
@@ -872,11 +889,11 @@ describe('#delegateAuthRequest(req, res)', () => {
       req.mock.getter('headers').fake(() => ({
         cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
       }));
-      await expect(cookieAccessor.getAuth()).resolves.toBe(null);
+      await expect(resHelper.getAuth()).resolves.toBe(null);
     });
 
-    it('.getError()', async () => {
-      const [req, , cookieAccessor] = getDelegateArgs(
+    test('.getError()', async () => {
+      const [req, , resHelper] = getDelegateArgs(
         new AuthController(authorizers, { secret, redirectUrl })
       );
       const platform = 'foo';
@@ -887,7 +904,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       req.mock.getter('headers').fake(() => ({
         cookie: `no_error=existed`,
       }));
-      await expect(cookieAccessor.getError()).resolves.toBe(null);
+      await expect(resHelper.getError()).resolves.toBe(null);
 
       const errEncoded = jsonwebtoken.sign(
         { platform, error, scope, iat: SEC_NOW - 10 },
@@ -898,13 +915,13 @@ describe('#delegateAuthRequest(req, res)', () => {
       req.mock.getter('headers').fake(() => ({
         cookie: `machinat_auth_error=${errEncoded}`,
       }));
-      await expect(cookieAccessor.getError()).resolves.toEqual(error);
+      await expect(resHelper.getError()).resolves.toEqual(error);
 
       // woring signature
       req.mock.getter('headers').fake(() => ({
         cookie: `machinat_auth_error=${`${errEncoded}_WITH_WRONG_SIG`}`,
       }));
-      await expect(cookieAccessor.getError()).resolves.toBe(null);
+      await expect(resHelper.getError()).resolves.toBe(null);
 
       // different platform
       req.mock.getter('headers').fake(() => ({
@@ -913,41 +930,75 @@ describe('#delegateAuthRequest(req, res)', () => {
           '__SECRET__'
         )}`,
       }));
-      await expect(cookieAccessor.getError()).resolves.toBe(null);
+      await expect(resHelper.getError()).resolves.toBe(null);
     });
 
-    test('.redirect(url)', () => {
-      const [, res, cookieAccessor] = getDelegateArgs(
+    test('.redirect(url, options)', () => {
+      const [, res, resHelper] = getDelegateArgs(
         new AuthController(authorizers, { secret, redirectUrl: '/hello/world' })
       );
 
-      cookieAccessor.redirect();
+      expect(resHelper.redirect()).toBe(true);
       expect(res.end.mock).toHaveBeenCalledTimes(1);
       expect(res.writeHead.mock).toHaveBeenCalledTimes(1);
-      expect(res.writeHead.mock).toHaveBeenCalledWith(302, expect.any(Object));
-      expect(res.writeHead.mock.calls[0].args[1]).toMatchInlineSnapshot(`
-        Object {
-          "Location": "/hello/world",
-        }
-      `);
+      expect(res.writeHead.mock).toHaveBeenCalledWith(302, {
+        Location: '/hello/world',
+      });
 
-      cookieAccessor.redirect('foo?bar=baz');
+      expect(resHelper.redirect('foo?bar=baz')).toBe(true);
       expect(res.end.mock).toHaveBeenCalledTimes(2);
       expect(res.writeHead.mock).toHaveBeenCalledTimes(2);
-      expect(res.writeHead.mock.calls[1].args[1]).toMatchInlineSnapshot(`
-        Object {
-          "Location": "/hello/foo?bar=baz",
-        }
-      `);
+      expect(res.writeHead.mock).toHaveBeenCalledWith(302, {
+        Location: '/hello/foo?bar=baz',
+      });
 
-      cookieAccessor.redirect('http://machiant.io/foo?bar=baz');
+      expect(resHelper.redirect('http://machiant.io/foo?bar=baz')).toBe(true);
       expect(res.end.mock).toHaveBeenCalledTimes(3);
       expect(res.writeHead.mock).toHaveBeenCalledTimes(3);
-      expect(res.writeHead.mock.calls[2].args[1]).toMatchInlineSnapshot(`
-        Object {
-          "Location": "http://machiant.io/foo?bar=baz",
-        }
-      `);
+      expect(res.writeHead.mock).toHaveBeenCalledWith(302, {
+        Location: 'http://machiant.io/foo?bar=baz',
+      });
+    });
+
+    test('.redirect(url, options) with assertInternal set to true', () => {
+      const [, res, resHelper] = getDelegateArgs(
+        new AuthController(authorizers, {
+          secret,
+          redirectUrl: 'https://machinat.com/webview',
+        })
+      );
+
+      expect(resHelper.redirect('/webview', { assertInternal: true })).toBe(
+        true
+      );
+      expect(res.end.mock).toHaveBeenCalledTimes(1);
+      expect(res.writeHead.mock).toHaveBeenCalledTimes(1);
+      expect(res.writeHead.mock).toHaveBeenCalledWith(302, {
+        Location: 'https://machinat.com/webview',
+      });
+
+      expect(resHelper.redirect('/foo', { assertInternal: true })).toBe(false);
+      expect(res.end.mock).toHaveBeenCalledTimes(2);
+      expect(res.writeHead.mock).toHaveBeenCalledTimes(2);
+      expect(res.writeHead.mock).toHaveBeenNthCalledWith(2, 400);
+
+      expect(
+        resHelper.redirect('https://machinat.io/webview', {
+          assertInternal: true,
+        })
+      ).toBe(false);
+      expect(res.end.mock).toHaveBeenCalledTimes(3);
+      expect(res.writeHead.mock).toHaveBeenCalledTimes(3);
+      expect(res.writeHead.mock).toHaveBeenNthCalledWith(3, 400);
+
+      expect(
+        resHelper.redirect('http://machinat.com/webview', {
+          assertInternal: true,
+        })
+      ).toBe(false);
+      expect(res.end.mock).toHaveBeenCalledTimes(4);
+      expect(res.writeHead.mock).toHaveBeenCalledTimes(4);
+      expect(res.writeHead.mock).toHaveBeenNthCalledWith(4, 400);
     });
   });
 

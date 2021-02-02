@@ -76,6 +76,10 @@ export type IssueAuthOptions = {
   signatureOnly?: boolean;
 };
 
+export type RedirectOptions = {
+  assertInternal?: boolean;
+};
+
 export interface ResponseHelper {
   /** Get content of state cookie from request, return null if absent. */
   getState<State>(): Promise<null | State>;
@@ -100,7 +104,7 @@ export interface ResponseHelper {
    * redirectUrl option of {@link AuthContoller} is taken as the base for
    * resolving the final target.
    */
-  redirect(url?: string): string;
+  redirect(url?: string, options?: RedirectOptions): boolean;
 }
 
 export interface ServerAuthorizer<
@@ -119,7 +123,7 @@ export interface ServerAuthorizer<
   delegateAuthRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    cookieAccessor: ResponseHelper,
+    responseHelper: ResponseHelper,
     routingInfo: RoutingInfo
   ): Promise<void>;
 

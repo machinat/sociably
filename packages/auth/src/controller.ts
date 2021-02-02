@@ -28,7 +28,7 @@ import type {
 } from './types';
 
 import { getCookies, isSubpath, isSubdomain } from './utils';
-import CookieController from './cookie';
+import CookieOperator from './cookie';
 
 /** @internal */
 
@@ -82,8 +82,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
   authorizers: Authorizer[];
   secret: string;
   entryPath: string;
-
-  private _cookieController: CookieController;
+  cookieOperator: CookieOperator;
 
   constructor(authorizers: Authorizer[], options: AuthConfigs) {
     invariant(
@@ -112,8 +111,15 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       'options.entryPath should be a subpath of options.cookiePath'
     );
 
-    const { pathname: redirectPathname, hostname: redirectDomain } = parseUrl(
-      redirectUrl
+    const {
+      protocol,
+      pathname: redirectPathname,
+      hostname: redirectDomain,
+    } = parseUrl(redirectUrl);
+
+    invariant(
+      !secure || !protocol || protocol === 'https:',
+      'protocol of options.redirectUrl can only be https when options.secure set to true'
     );
     invariant(
       redirectPathname &&
@@ -130,7 +136,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     this.authorizers = authorizers;
     this.entryPath = entryPath;
 
-    this._cookieController = new CookieController({
+    this.cookieOperator = new CookieOperator({
       entryPath,
       redirectUrl,
       secret,
@@ -196,13 +202,14 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       await authorizer.delegateAuthRequest(
         req,
         res,
-        this._cookieController.createResponseHelper(req, res, platform),
+        this.cookieOperator.createResponseHelper(req, res, platform),
         {
           originalPath: pathname || '/',
           matchedPath: joinPath(
             routingInfo?.matchedPath || this.entryPath,
             platform
           ),
+
           trailingPath: getRelativePath(platform, subpath),
         }
       );
@@ -335,7 +342,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
         return;
       }
 
-      const token = await this._cookieController.issueAuth(
+      const token = await this.cookieOperator.issueAuth(
         res,
         platform,
         verifyResult.data,
@@ -403,7 +410,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
           return;
         }
 
-        const newToken = await this._cookieController.issueAuth(
+        const newToken = await this.cookieOperator.issueAuth(
           res,
           platform,
           refreshResult.data,

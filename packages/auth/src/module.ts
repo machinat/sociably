@@ -29,13 +29,15 @@ const Auth = {
   ConfigsI: AuthConfigsI,
   AuthorizerList: AuthAuthorizerList,
 
-  initModule: (configs: AuthConfigs): ServiceModule => ({
-    provisions: [
-      ControllerP,
-      { provide: AuthConfigsI, withValue: configs },
-      { provide: Http.RequestRouteList, withProvider: authRouteFactory },
-    ],
-  }),
+  initModule: (configs: AuthConfigs): ServiceModule => {
+    return {
+      provisions: [
+        ControllerP,
+        { provide: AuthConfigsI, withValue: configs },
+        { provide: Http.RequestRouteList, withProvider: authRouteFactory },
+      ],
+    };
+  },
 };
 
 declare namespace Auth {

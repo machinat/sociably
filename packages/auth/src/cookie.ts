@@ -1,12 +1,13 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import { resolve as resolveUrl } from 'url';
+import { resolve as resolveUrl, parse as parseUrl } from 'url';
 import type { CookieSerializeOptions } from 'cookie';
 import { sign as signJwt, verify as verifyJWT } from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';
-import { getCookies, setCookie } from './utils';
+import { getCookies, setCookie, isSubpath } from './utils';
 import type {
   ResponseHelper,
   IssueAuthOptions,
+  RedirectOptions,
   AuthPayload,
   StatePayload,
   ErrorPayload,
@@ -23,7 +24,7 @@ import {
   ERROR_COOKIE_KEY,
 } from './constant';
 
-type ControllerOptions = {
+type OperatorOptions = {
   entryPath: string;
   redirectUrl: string;
   secret: string;
@@ -37,8 +38,8 @@ type ControllerOptions = {
   secure: boolean;
 };
 
-class CookieController {
-  options: ControllerOptions;
+class CookieOperator {
+  options: OperatorOptions;
 
   private _cookieScope: { domain?: string; path: string };
 
@@ -48,9 +49,7 @@ class CookieController {
   private _stateCookieOpts: CookieSerializeOptions;
   private _deleteCookieOpts: CookieSerializeOptions;
 
-  constructor(options: ControllerOptions) {
-    this.options = options;
-
+  constructor(options: OperatorOptions) {
     const {
       entryPath,
       authCookieAge,
@@ -61,6 +60,7 @@ class CookieController {
       secure,
     } = options;
 
+    this.options = options;
     this._cookieScope = { domain: cookieDomain, path: cookiePath };
 
     const baseCookieOpts = {
@@ -269,15 +269,34 @@ class CookieController {
     setCookie(res, key, '', this._deleteCookieOpts);
   }
 
-  redirect(res: ServerResponse, url?: string): string {
+  redirect(
+    res: ServerResponse,
+    url?: string,
+    { assertInternal }: RedirectOptions = {}
+  ): boolean {
     const redirectTarget = resolveUrl(this.options.redirectUrl, url || '');
+
+    if (assertInternal) {
+      const parsedBaseUrl = parseUrl(this.options.redirectUrl);
+      const { protocol, host, pathname } = parseUrl(redirectTarget);
+
+      if (
+        (this.options.secure && protocol && protocol !== 'https:') ||
+        host !== parsedBaseUrl.host ||
+        !isSubpath(parsedBaseUrl.pathname, pathname)
+      ) {
+        res.writeHead(400);
+        res.end('invalid redirect url');
+        return false;
+      }
+    }
 
     res.writeHead(302, {
       Location: redirectTarget,
     });
     res.end();
 
-    return redirectTarget;
+    return true;
   }
 
   createResponseHelper(
@@ -298,9 +317,10 @@ class CookieController {
       issueError: (code: number, message: string) =>
         this.issueError(res, platform, code, message),
 
-      redirect: (url?: string) => this.redirect(res, url),
+      redirect: (url?: string, options?: RedirectOptions) =>
+        this.redirect(res, url, options),
     };
   }
 }
 
-export default CookieController;
+export default CookieOperator;

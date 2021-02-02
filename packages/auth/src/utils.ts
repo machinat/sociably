@@ -49,7 +49,11 @@ export const isSubdomain = (domain: string, subdomain: string): boolean =>
   (subdomain.length === domain.length ||
     subdomain[subdomain.length - domain.length - 1] === '.');
 
-export const isSubpath = (path: string, subpath: string): boolean =>
+export const isSubpath = (
+  path: null | string,
+  subpath: null | string
+): boolean =>
+  !!(path && subpath) &&
   subpath.slice(0, path.length) === path &&
   (subpath.length === path.length ||
     path[path.length - 1] === '/' ||
