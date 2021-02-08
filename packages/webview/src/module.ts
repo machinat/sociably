@@ -1,5 +1,6 @@
 import createNextServer from 'next';
-import { BaseBot, BaseMarshaler } from '@machinat/core/base';
+import BaseBot from '@machinat/core/base/Bot';
+import BaseMarshaler from '@machinat/core/base/Marshaler';
 import type { PlatformModule } from '@machinat/core/types';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import { ServiceProvision } from '@machinat/core/service/types';
@@ -94,6 +95,9 @@ const nextRouteFactory = makeFactoryProvider({
     : { name: 'next', handler, default: true };
 });
 
+/**
+ * @category Root
+ */
 const Webview = {
   ConfigsI: WebviewConfigsI,
 
@@ -142,11 +146,11 @@ const Webview = {
         withProvider: webSocketRouteFactory,
       },
 
-      { provide: BaseMarshaler.TypeI, withValue: WebviewConnection },
-      { provide: BaseMarshaler.TypeI, withValue: WebviewUserChannel },
-      { provide: BaseMarshaler.TypeI, withValue: WebviewTopicChannel },
-      { provide: BaseMarshaler.TypeI, withValue: NoneUser },
-      { provide: BaseMarshaler.TypeI, withValue: NoneChannel },
+      { provide: BaseMarshaler.TypeList, withValue: WebviewConnection },
+      { provide: BaseMarshaler.TypeList, withValue: WebviewUserChannel },
+      { provide: BaseMarshaler.TypeList, withValue: WebviewTopicChannel },
+      { provide: BaseMarshaler.TypeList, withValue: NoneUser },
+      { provide: BaseMarshaler.TypeList, withValue: NoneChannel },
 
       AuthControllerP,
       { provide: Http.UpgradeRouteList, withProvider: authRouteFactory },
@@ -179,6 +183,9 @@ const Webview = {
   },
 };
 
+/**
+ * @category Root
+ */
 declare namespace Webview {
   export type Bot<Authorizer extends AnyServerAuthorizer> = BotP<Authorizer>;
   export type Receiver<Authorizer extends AnyServerAuthorizer> = ReceiverP<

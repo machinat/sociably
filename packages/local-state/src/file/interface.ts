@@ -1,5 +1,5 @@
 import { makeInterface } from '@machinat/core/service';
-import type { FileRepositoryConfigs } from './types';
+import type { FileRepositoryConfigs, FileStateSerializer } from './types';
 
 /**
  * @category Interface
@@ -9,11 +9,6 @@ export const ConfigsI = makeInterface<FileRepositoryConfigs>({
 });
 
 export type ConfigsI = FileRepositoryConfigs;
-
-export interface FileStateSerializer {
-  parse(str: string): any;
-  stringify(obj: any): string;
-}
 
 /**
  * @category Interface

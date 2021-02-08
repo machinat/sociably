@@ -1,5 +1,5 @@
 {
-  "name": "@machinat/simple-state",
+  "name": "@machinat/local-state",
   "version": "0.4.0-beta.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -13,8 +13,8 @@
   "exports": {
     ".": "./lib/index.js",
     "./file": "./lib/file/index.js",
-    "./inMemory": "./lib/inMemory/index.js",
-    "./types": "./lib/types.js"
+    "./file/types": "./lib/file/types.js",
+    "./inMemory": "./lib/inMemory/index.js"
   },
   "files": [
     "lib/*",

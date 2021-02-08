@@ -1,5 +1,6 @@
 import type Ws from 'ws';
 import { makeInterface, makeClassProvider } from '@machinat/core/service';
+import { ServiceProvider } from '@machinat/core/service/types';
 import { AuthController } from '@machinat/auth';
 import type {
   AnyServerAuthorizer,
@@ -32,7 +33,10 @@ export class WebviewAuthController<
   Authorizer extends AnyServerAuthorizer
 > extends AuthController<Authorizer> {}
 
-export const AuthControllerP = makeClassProvider({
+export const AuthControllerP: ServiceProvider<
+  AuthController<AnyServerAuthorizer>,
+  [AuthorizerList, ConfigsI]
+> = makeClassProvider({
   lifetime: 'singleton',
   deps: [AuthorizerList, ConfigsI] as const,
   factory: (
@@ -74,7 +78,10 @@ export type NextServerI = NextServer;
 
 export class WebviewNextReceiver extends NextReceiver {}
 
-export const NextReceiverP = makeClassProvider({
+export const NextReceiverP: ServiceProvider<
+  NextReceiver,
+  [NextServerI, ConfigsI]
+> = makeClassProvider({
   lifetime: 'singleton',
   deps: [NextServerI, ConfigsI] as const,
   factory: (server, { noPrepareNext, webviewPath }) =>
@@ -116,7 +123,19 @@ export class WebviewSocketServer<
   ContextOfAuthorizer<Authorizer>
 > {}
 
-export const SocketServerP = makeClassProvider({
+export const SocketServerP: ServiceProvider<
+  WebSocketServer<
+    UserOfAuthorizer<AnyServerAuthorizer>,
+    ContextOfAuthorizer<AnyServerAuthorizer>
+  >,
+  [
+    null | string,
+    WsServerI,
+    SocketBrokerI,
+    AuthController<AnyServerAuthorizer>,
+    ConfigsI
+  ]
+> = makeClassProvider({
   lifetime: 'singleton',
   deps: [
     { require: SocketServerIdI, optional: true },

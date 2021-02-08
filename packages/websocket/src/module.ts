@@ -1,5 +1,6 @@
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
-import { BaseBot, BaseMarshaler } from '@machinat/core/base';
+import BaseBot from '@machinat/core/base/Bot';
+import BaseMarshaler from '@machinat/core/base/Marshaler';
 import type { PlatformModule, MachinatUser } from '@machinat/core/types';
 import Http from '@machinat/http';
 import type { UpgradeRoute } from '@machinat/http/types';
@@ -17,7 +18,7 @@ import {
 import { BotP } from './bot';
 import { ServerP } from './server';
 import { ReceiverP } from './receiver';
-import LocalOnlyBroker from './brokers/LocalOnlyBroker';
+import LocalOnlyBrokerP from './brokers/LocalOnlyBroker';
 import {
   WebSocketConnection,
   WebSocketUserChannel,
@@ -49,6 +50,9 @@ const upgradeRouteFactory = makeFactoryProvider({
   })
 );
 
+/**
+ * @category Root
+ */
 const WebSocket = {
   Bot: BotP,
   Receiver: ReceiverP,
@@ -86,7 +90,7 @@ const WebSocket = {
         },
 
         ServerP,
-        { provide: WebSocketBrokerI, withProvider: LocalOnlyBroker },
+        { provide: WebSocketBrokerI, withProvider: LocalOnlyBrokerP },
 
         ReceiverP,
         {
@@ -94,9 +98,9 @@ const WebSocket = {
           withProvider: upgradeRouteFactory,
         },
 
-        { provide: BaseMarshaler.TypeI, withValue: WebSocketConnection },
-        { provide: BaseMarshaler.TypeI, withValue: WebSocketUserChannel },
-        { provide: BaseMarshaler.TypeI, withValue: WebSocketTopicChannel },
+        { provide: BaseMarshaler.TypeList, withValue: WebSocketConnection },
+        { provide: BaseMarshaler.TypeList, withValue: WebSocketUserChannel },
+        { provide: BaseMarshaler.TypeList, withValue: WebSocketTopicChannel },
       ],
 
       startHook: makeContainer({
@@ -108,6 +112,9 @@ const WebSocket = {
   },
 };
 
+/**
+ * @category Root
+ */
 declare namespace WebSocket {
   export type Bot = BotP;
   export type Receiver<User extends null | MachinatUser, Auth> = ReceiverP<

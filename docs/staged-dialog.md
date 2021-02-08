@@ -11,7 +11,7 @@ Here is a simple Machinat script for making order:
 ```js
 import Machinat from '@machinat/core';
 import { container } from '@machinat/core/service';
-import Base from '@machinat/core/base';
+import IntentRecognizerI from '@machinat/core/base/IntentRecognizerI';
 import { build } from '@machinat/script';
 import {
   WHILE,
@@ -59,7 +59,7 @@ const Order = build(
       key="ask-side-dish"
       set={
         container({
-          deps: [Base.IntentRecognizer],
+          deps: [IntentRecognizerI],
         })(recognizer =>
           async ({ vars, channel }, { event }) => {
             const { intentType } = await recognizer.detectText(

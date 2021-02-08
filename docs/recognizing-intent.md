@@ -29,11 +29,11 @@ Machinat.createApp({
 
 ```js
 import { container } from '@machinat/core/service';
-import Base from '@machinat/core/base';
+import IntentRecognizerI from '@machinat/core/base/IntentRecognizerI';
 
 app.onEvent(
   container({
-    deps: [Base.IntentRecognizer],
+    deps: [IntentRecognizerI],
   })(
     recognizer => async ({ bot, event }) => {
       if (event.kind === 'message' && event.type === 'text') {

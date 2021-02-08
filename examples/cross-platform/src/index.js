@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import Base from '@machinat/core/base';
+import Profiler from '@machinat/core/base/Profiler';
 import { container } from '@machinat/core/service';
 import Http from '@machinat/http';
 import Messenger from '@machinat/messenger';
@@ -40,7 +40,7 @@ const app = Machinat.createApp({
 
 app.onEvent(
   container({
-    deps: [Base.Profiler],
+    deps: [Profiler],
   })((profiler) => async ({ platform, bot, event }) => {
     if (
       (platform === 'line' && event.type === 'follow') ||

@@ -11,14 +11,16 @@ export interface UserProfiler<User extends MachinatUser> {
   getUserProfile(user: User): Promise<MachinatProfile>;
 }
 
+const ProfilerPlatformMap = makeInterface<UserProfiler<MachinatUser>>({
+  name: 'ProfilerPlatformMap',
+  polymorphic: true,
+});
+
 /**
  * @category Base
  */
 export class BaseProfiler implements UserProfiler<MachinatUser> {
-  static PlatformMap = makeInterface<UserProfiler<any>>({
-    name: 'ProfilerPlatformMap',
-    polymorphic: true,
-  });
+  static PlatformMap = ProfilerPlatformMap;
 
   private _platformMapping: Map<string, BaseProfiler>;
 
@@ -38,9 +40,14 @@ export class BaseProfiler implements UserProfiler<MachinatUser> {
   }
 }
 
-export const ProfilerP = makeClassProvider({
+const ProfilerP = makeClassProvider<
+  UserProfiler<MachinatUser>,
+  [typeof ProfilerPlatformMap]
+>({
   lifetime: 'transient',
-  deps: [BaseProfiler.PlatformMap] as const,
+  deps: [ProfilerPlatformMap],
 })(BaseProfiler);
 
-export type ProfilerP = UserProfiler<MachinatUser>;
+type ProfilerP = UserProfiler<MachinatUser>;
+
+export default ProfilerP;

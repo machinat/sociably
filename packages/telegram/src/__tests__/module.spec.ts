@@ -1,6 +1,8 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import Base from '@machinat/core/base';
+import BaseBot from '@machinat/core/base/Bot';
+import BaseProfiler from '@machinat/core/base/Profiler';
+import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import Telegram from '../module';
 import {
@@ -138,9 +140,9 @@ describe('initModule(configs)', () => {
     await app.start();
 
     const [bots, profilers, marshalTypes]: any = app.useServices([
-      Base.Bot.PlatformMap,
-      Base.Profiler.PlatformMap,
-      Base.Marshaler.TypeI,
+      BaseBot.PlatformMap,
+      BaseProfiler.PlatformMap,
+      BaseMarshaler.TypeList,
     ]);
 
     expect(bots.get('telegram')).toBeInstanceOf(TelegramBot);

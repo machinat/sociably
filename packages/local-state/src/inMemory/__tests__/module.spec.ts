@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import Base from '@machinat/core/base';
+import StateControllerI from '@machinat/core/base/StateControllerI';
 import InMemoryState from '../module';
 import { ControllerP as InMemoryStateController } from '../controller';
 
@@ -16,6 +16,6 @@ test('provide base state controller', async () => {
   const app = Machinat.createApp({ modules: [InMemoryState.initModule()] });
   await app.start();
 
-  const [controller] = app.useServices([Base.StateControllerI]);
+  const [controller] = app.useServices([StateControllerI]);
   expect(controller).toBeInstanceOf(InMemoryStateController);
 });

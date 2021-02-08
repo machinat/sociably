@@ -211,7 +211,7 @@ export class TelegramServerAuthorizer
   }
 }
 
-export const ServerAuthorizerP = makeClassProvider({
+const ServerAuthorizerP = makeClassProvider({
   lifetime: 'singleton',
   deps: [BotP, ConfigsI] as const,
   factory: (bot) => {
@@ -219,4 +219,6 @@ export const ServerAuthorizerP = makeClassProvider({
   },
 })(TelegramServerAuthorizer);
 
-export type ServerAuthorizerP = TelegramServerAuthorizer;
+type ServerAuthorizerP = TelegramServerAuthorizer;
+
+export default ServerAuthorizerP;

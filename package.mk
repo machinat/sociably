@@ -27,7 +27,10 @@ lib:
 	mkdir lib
 
 tsconfig.tsbuildinfo: $(source_files) lib
-	$(tsc) -b --listEmittedFiles $(CURDIR)/tsconfig.build.json
+	$(tsc) \
+	  --build \
+	  --listEmittedFiles \
+	  $(CURDIR)/tsconfig.build.json
 
 polyfill-exports.js: $(CURDIR)/package.json
 	$(polyfill_exports) $(CURDIR) --ts-declaration

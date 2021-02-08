@@ -1,38 +1,43 @@
 /* eslint-disable class-methods-use-this */
 import { makeClassProvider } from '@machinat/core/service';
 import { BrokerI } from '../interface';
+import type { ConnIdentifier } from '../types';
 
 /**
  * @category Provider
  */
-class LocalOnlyBroker implements BrokerI {
-  start() {
+export class LocalOnlyBroker implements BrokerI {
+  start(): Promise<void> {
     return Promise.resolve();
   }
 
-  stop() {
+  stop(): Promise<void> {
     return Promise.resolve();
   }
 
-  dispatchRemote() {
+  dispatchRemote(): Promise<ConnIdentifier[]> {
     return Promise.resolve([]);
   }
 
-  subscribeTopicRemote() {
+  subscribeTopicRemote(): Promise<boolean> {
     return Promise.resolve(false);
   }
 
-  unsubscribeTopicRemote() {
+  unsubscribeTopicRemote(): Promise<boolean> {
     return Promise.resolve(false);
   }
 
-  disconnectRemote() {
+  disconnectRemote(): Promise<boolean> {
     return Promise.resolve(false);
   }
 
-  onRemoteEvent() {}
+  onRemoteEvent(): void {}
 }
 
-export default makeClassProvider({
+const LocalOnlyBrokerP = makeClassProvider({
   lifetime: 'singleton',
 })(LocalOnlyBroker);
+
+type LocalOnlyBrokerP = LocalOnlyBroker;
+
+export default LocalOnlyBrokerP;

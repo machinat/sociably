@@ -1,7 +1,8 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
 import _createNextServer from 'next';
 import Machinat from '@machinat/core';
-import Base from '@machinat/core/base';
+import BaseBot from '@machinat/core/base/Bot';
+import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Auth from '@machinat/auth';
 import Http from '@machinat/http';
 import Next from '@machinat/next';
@@ -13,7 +14,7 @@ import {
   WebviewUserChannel,
   WebviewTopicChannel,
 } from '../channel';
-import { NoneServerAuthorizer } from '../noneAuthorizer';
+import NoneAuthorizer from '../noneAuthorizer';
 import Webview from '../module';
 
 const createNextServer = _createNextServer as Moxy<typeof _createNextServer>;
@@ -108,7 +109,7 @@ test('service provisions', async () => {
   const app = Machinat.createApp({
     platforms: [Webview.initModule(configsInput)],
     services: [
-      { provide: Webview.AuthorizerList, withProvider: NoneServerAuthorizer },
+      { provide: Webview.AuthorizerList, withProvider: NoneAuthorizer },
     ],
   });
   await app.start();
@@ -141,7 +142,7 @@ test('service provisions', async () => {
   expect(server).toBeInstanceOf(WebSocket.Server);
 
   expect(authController).toBeInstanceOf(Auth.Controller);
-  expect(authorizers).toEqual([expect.any(NoneServerAuthorizer)]);
+  expect(authorizers).toEqual([expect.any(NoneAuthorizer)]);
 
   expect(nextReceiver).toBeInstanceOf(Next.Receiver);
   expect(createNextServer.mock).toHaveBeenCalledTimes(1);
@@ -177,7 +178,7 @@ test('default routing paths', async () => {
       }),
     ],
     services: [
-      { provide: Webview.AuthorizerList, withProvider: NoneServerAuthorizer },
+      { provide: Webview.AuthorizerList, withProvider: NoneAuthorizer },
     ],
   });
   await app.start();
@@ -211,14 +212,14 @@ test('provide base interfaces', async () => {
       }),
     ],
     services: [
-      { provide: Webview.AuthorizerList, withProvider: NoneServerAuthorizer },
+      { provide: Webview.AuthorizerList, withProvider: NoneAuthorizer },
     ],
   });
   await app.start();
 
   const [bots, marshalTypes] = app.useServices([
-    Base.Bot.PlatformMap,
-    Base.Marshaler.TypeI,
+    BaseBot.PlatformMap,
+    BaseMarshaler.TypeList,
   ]);
 
   expect(bots.get('webview')).toBeInstanceOf(WebviewBot);
@@ -243,7 +244,7 @@ test('startHook', async () => {
     ],
     services: [
       { provide: Webview.Bot, withValue: fakeBot },
-      { provide: Webview.AuthorizerList, withProvider: NoneServerAuthorizer },
+      { provide: Webview.AuthorizerList, withProvider: NoneAuthorizer },
     ],
   });
   await app.start();

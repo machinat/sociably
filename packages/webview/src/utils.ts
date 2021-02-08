@@ -1,5 +1,6 @@
 import { MachinatUser } from '@machinat/core/types';
-import Auth, { AuthClient } from '@machinat/auth';
+import Auth from '@machinat/auth';
+import AuthClient from '@machinat/auth/client';
 import type {
   AnyServerAuthorizer,
   AnyClientAuthorizer,

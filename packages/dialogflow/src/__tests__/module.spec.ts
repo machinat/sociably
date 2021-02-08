@@ -1,8 +1,11 @@
+import { Moxy } from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import Base from '@machinat/core/base';
-import { SessionsClient } from '@google-cloud/dialogflow';
+import IntentRecognizerI from '@machinat/core/base/IntentRecognizerI';
+import { SessionsClient as _SessionsClient } from '@google-cloud/dialogflow';
 import Dialogflow from '../module';
 import { DialogflowIntentRecognizer as Recognizer } from '../recognizer';
+
+const SessionsClient = _SessionsClient as Moxy<typeof _SessionsClient>;
 
 jest.mock('@google-cloud/dialogflow', () =>
   jest.requireActual('@moxyjs/moxy').default({ SessionsClient: class {} })
@@ -63,7 +66,7 @@ describe('initModule()', () => {
     });
     await app.start();
 
-    const [recognizer] = app.useServices([Base.IntentRecognizerI]);
+    const [recognizer] = app.useServices([IntentRecognizerI]);
     expect(recognizer).toBeInstanceOf(Recognizer);
   });
 });

@@ -1,6 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import Base from '@machinat/core/base';
+import BaseBot from '@machinat/core/base/Bot';
+import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import {
   WebSocketConnection,
@@ -139,8 +140,8 @@ describe('initModule()', () => {
     await app.start();
 
     const [bots, marshalTypes] = app.useServices([
-      Base.Bot.PlatformMap,
-      Base.Marshaler.TypeI,
+      BaseBot.PlatformMap,
+      BaseMarshaler.TypeList,
     ]);
 
     expect(bots.get('websocket')).toBeInstanceOf(WebSocketBot);

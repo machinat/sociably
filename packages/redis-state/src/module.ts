@@ -1,7 +1,7 @@
 import redis from 'redis';
 import { makeFactoryProvider, makeContainer } from '@machinat/core/service';
 import type { ServiceModule } from '@machinat/core/types';
-import Base from '@machinat/core/base';
+import StateControllerI from '@machinat/core/base/StateControllerI';
 
 import { ControllerP } from './controller';
 import {
@@ -15,6 +15,9 @@ const createRedisClient = makeFactoryProvider({
   deps: [StateConfigsI] as const,
 })(({ clientOptions }) => redis.createClient(clientOptions));
 
+/**
+ * @category Root
+ */
 const RedisState = {
   Controller: ControllerP,
   ClientI: RedisClientI,
@@ -23,7 +26,7 @@ const RedisState = {
   initModule: (configs: StateConfigsI): ServiceModule => ({
     provisions: [
       ControllerP,
-      { provide: Base.StateControllerI, withProvider: ControllerP },
+      { provide: StateControllerI, withProvider: ControllerP },
 
       { provide: RedisClientI, withProvider: createRedisClient },
       { provide: StateConfigsI, withValue: configs },
@@ -42,6 +45,9 @@ const RedisState = {
   }),
 };
 
+/**
+ * @category Root
+ */
 declare namespace RedisState {
   export type Controller = ControllerP;
   export type ConfigsI = StateConfigsI;

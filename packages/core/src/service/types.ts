@@ -48,26 +48,26 @@ export type Interfaceable<T> =
   | ServiceInterface<T>
   | ServiceProvider<T, unknown[]>;
 
-type OptionalServiceRequirement<I extends Interfaceable<any>> = {
+type OptionalServiceRequirement<I extends Interfaceable<unknown>> = {
   require: I;
   optional: true;
 };
 
-type StrictServiceRequirement<I extends Interfaceable<any>> = {
+type StrictServiceRequirement<I extends Interfaceable<unknown>> = {
   require: I;
   optional?: false;
 };
 
-export type ServiceRequirement<T extends Interfaceable<any>> =
+export type ServiceRequirement<T extends Interfaceable<unknown>> =
   | OptionalServiceRequirement<T>
   | StrictServiceRequirement<T>;
 
-export type ServiceDependency<I extends Interfaceable<any>> =
+export type ServiceDependency<I extends Interfaceable<unknown>> =
   | I
   | ServiceRequirement<I>;
 
 type ResolveInterfaceable<
-  I extends Interfaceable<any>
+  I extends Interfaceable<unknown>
 > = I extends ServiceProvider<infer T, unknown[]>
   ? T
   : I extends SingularServiceInterface<infer T>
@@ -80,7 +80,7 @@ type ResolveInterfaceable<
 
 export type ResolveDependency<
   Dep extends ServiceDependency<any>
-> = Dep extends Interfaceable<any>
+> = Dep extends Interfaceable<unknown>
   ? ResolveInterfaceable<Dep>
   : Dep extends StrictServiceRequirement<infer I>
   ? ResolveInterfaceable<I>
@@ -89,12 +89,12 @@ export type ResolveDependency<
   : never;
 
 export type ResolveDependencies<
-  Deps extends readonly ServiceDependency<any>[]
+  Deps extends readonly ServiceDependency<Interfaceable<unknown>>[]
 > = {
   [Idx in keyof Deps]: ResolveDependency<Deps[Idx]>;
 };
 
-export type ServiceContainer<T, Args extends ReadonlyArray<any>> = {
+export type ServiceContainer<T, Args extends ReadonlyArray<unknown>> = {
   (...args: Args): T;
   $$name: string;
   $$typeof: typeof MACHINAT_SERVICE_CONTAINER;

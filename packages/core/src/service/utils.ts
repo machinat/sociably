@@ -55,9 +55,7 @@ export const polishServiceRequirement = <T>(
   }
 
   invariant(
-    'require' in dep &&
-      (dep.require.$$typeof === MACHINAT_SERVICE_INTERFACE ||
-        dep.require.$$typeof === MACHINAT_SERVICE_PROVIDER),
+    isInterfaceable(dep?.require),
     `${(dep as any).name || String(dep)} is not a valid interface`
   );
 

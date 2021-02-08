@@ -1,6 +1,6 @@
 import { makeContainer } from '@machinat/core/service';
 import type { MessengerDispatchMiddleware } from '../types';
-import { AssetsManagerP } from './manager';
+import AssetsManagerP from './manager';
 
 /**
  * collectReusableAttachments collect attachmentId of reusable from response

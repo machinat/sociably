@@ -14,6 +14,9 @@ const httpServerFactory = makeFactoryProvider({
   lifetime: 'singleton',
 })(() => createServer());
 
+/**
+ * @category Root
+ */
 const Http = {
   ConfigsI: HttpConfigsI,
   ServerI: HttpServerI,
@@ -35,6 +38,9 @@ const Http = {
   }),
 };
 
+/**
+ * @category Root
+ */
 declare namespace Http {
   export type Connector = ConnectorP;
   export type ServerI = HttpServerI;

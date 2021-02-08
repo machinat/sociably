@@ -167,9 +167,11 @@ export class MessengerServerAuthorizer
   }
 }
 
-export const ServerAuthorizerP = makeClassProvider({
+const ServerAuthorizerP = makeClassProvider({
   lifetime: 'transient',
   deps: [ConfigsI] as const,
 })(MessengerServerAuthorizer);
 
-export type ServerAuthorizerP = MessengerServerAuthorizer;
+type ServerAuthorizerP = MessengerServerAuthorizer;
+
+export default ServerAuthorizerP;

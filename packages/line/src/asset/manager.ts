@@ -1,5 +1,5 @@
 import { makeClassProvider } from '@machinat/core/service';
-import Base from '@machinat/core/base';
+import StateControllerI from '@machinat/core/base/StateControllerI';
 import { BotP } from '../bot';
 import { PATH_RICHMENU } from '../constant';
 
@@ -14,10 +14,10 @@ const RICH_MENU = 'rich_menu';
  */
 export class LineAssetsManager {
   botChannelId: string;
-  private _stateController: Base.StateControllerI;
+  private _stateController: StateControllerI;
   private _bot: BotP;
 
-  constructor(stateMaanger: Base.StateControllerI, bot: BotP) {
+  constructor(stateMaanger: StateControllerI, bot: BotP) {
     this.botChannelId = bot.channelId;
     this._stateController = stateMaanger;
     this._bot = bot;
@@ -126,9 +126,11 @@ export class LineAssetsManager {
   }
 }
 
-export const AssetsManagerP = makeClassProvider({
+const AssetsManagerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [Base.StateControllerI, BotP] as const,
+  deps: [StateControllerI, BotP] as const,
 })(LineAssetsManager);
 
-export type AssetsManagerP = LineAssetsManager;
+type AssetsManagerP = LineAssetsManager;
+
+export default AssetsManagerP;

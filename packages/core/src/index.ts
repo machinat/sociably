@@ -1,7 +1,3 @@
-/**
- * This is the doc comment for file1.ts
- * @packageDocumentation
- */
 import {
   MACHINAT_FRAGMENT_TYPE,
   MACHINAT_PAUSE_TYPE,

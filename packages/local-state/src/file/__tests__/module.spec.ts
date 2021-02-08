@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import Base from '@machinat/core/base';
+import StateControllerI from '@machinat/core/base/StateControllerI';
 import { tmpNameSync } from 'tmp';
 import FileState from '../module';
 import { ControllerP as FileStateController } from '../controller';
@@ -48,6 +48,6 @@ test('provide base state controller', async () => {
   });
   await app.start();
 
-  const [controller] = app.useServices([Base.StateControllerI]);
+  const [controller] = app.useServices([StateControllerI]);
   expect(controller).toBeInstanceOf(FileStateController);
 });

@@ -5,7 +5,9 @@ import {
   makeFactoryProvider,
   makeInterface,
 } from '../service';
-import { BaseBot, BaseProfiler } from '../base';
+import BaseBot from '../base/Bot';
+import BaseProfiler from '../base/Profiler';
+import BaseMarshaler from '../base/Marshaler';
 import ServiceScope from '../service/scope';
 import App from '../app';
 
@@ -871,7 +873,6 @@ describe('#useServices(requirements)', () => {
 
     const NoneService = makeClassProvider({
       lifetime: 'singleton',
-      factory: () => 'NO',
     })(class NoneService {});
 
     expect(
@@ -899,13 +900,18 @@ describe('#useServices(requirements)', () => {
     ).toThrowErrorMatchingInlineSnapshot(`"NoneService is not bound"`);
   });
 
-  it('provide BaseBot and BaseProfiler by default', async () => {
+  it('provide base providers', async () => {
     const app = new App({});
     await app.start();
 
-    const [bot, profiler] = app.useServices([BaseBot, BaseProfiler]);
+    const [bot, profiler, marshaler] = app.useServices([
+      BaseBot,
+      BaseProfiler,
+      BaseMarshaler,
+    ]);
 
     expect(bot).toBeInstanceOf(BaseBot);
     expect(profiler).toBeInstanceOf(BaseProfiler);
+    expect(marshaler).toBeInstanceOf(BaseMarshaler);
   });
 });

@@ -17,8 +17,10 @@ export interface BaseIntentRecognizer<Payload> {
   ): Promise<TextIntentDetectResult<Payload>>;
 }
 
-export const IntentRecognizerI = makeInterface<BaseIntentRecognizer<unknown>>({
+const IntentRecognizerI = makeInterface<BaseIntentRecognizer<unknown>>({
   name: 'BaseIntentRecognizerI',
 });
 
-export type IntentRecognizerI<Payload> = BaseIntentRecognizer<Payload>;
+type IntentRecognizerI<Payload> = BaseIntentRecognizer<Payload>;
+
+export default IntentRecognizerI;

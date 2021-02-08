@@ -2,7 +2,7 @@ import moxy, { Moxy } from '@moxyjs/moxy';
 import redis, { RedisClient } from 'redis';
 import { EventEmitter } from 'events';
 import Machinat from '@machinat/core';
-import Base from '@machinat/core/base';
+import StateControllerI from '@machinat/core/base/StateControllerI';
 import RedisState from '../module';
 import { ControllerP as RedisStateController } from '../controller';
 
@@ -70,7 +70,7 @@ test('provide base state controller', async () => {
   });
   await app.start();
 
-  const [controller] = app.useServices([Base.StateControllerI]);
+  const [controller] = app.useServices([StateControllerI]);
   expect(controller).toBeInstanceOf(RedisStateController);
 });
 

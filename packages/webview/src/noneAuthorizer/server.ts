@@ -9,7 +9,7 @@ import type {
 import { NoneUser, NoneChannel } from './instance';
 import { NoneAuthData, NoneAuthContext } from './types';
 
-class NoneServerAuthorizer
+export class NoneServerAuthorizer
   implements ServerAuthorizer<NoneAuthData, NoneAuthData, NoneAuthContext> {
   platform = 'none';
 
@@ -53,9 +53,9 @@ class NoneServerAuthorizer
   }
 }
 
-export const ServerAuthorizerP = makeClassProvider({ lifetime: 'transient' })(
+const ServerAuthorizerP = makeClassProvider({ lifetime: 'transient' })(
   NoneServerAuthorizer
 );
-export type ServerAuthorizerP = NoneServerAuthorizer;
+type ServerAuthorizerP = NoneServerAuthorizer;
 
-export default NoneServerAuthorizer;
+export default ServerAuthorizerP;

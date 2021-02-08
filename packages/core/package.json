@@ -21,7 +21,6 @@
     "./renderer/types": "./lib/renderer/types.js",
     "./service": "./lib/service/index.js",
     "./service/types": "./lib/service/types.js",
-    "./base": "./lib/base/index.js",
     "./base/": "./lib/base/",
     "./iterator/": "./lib/iterator/",
     "./utils/": "./lib/utils/",

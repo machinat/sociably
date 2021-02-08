@@ -12,8 +12,7 @@ import type {
   ConnectEventValue,
   DisconnectEventValue,
 } from '@machinat/websocket/types';
-import WebSocketConnector from '@machinat/websocket/client/Connector';
-import Emitter from '@machinat/websocket/client/Emitter';
+import { Connector, Emitter } from '@machinat/websocket/client';
 import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant';
 import { WebviewConnection } from '../channel';
 import { createEvent } from '../utils';
@@ -40,7 +39,7 @@ class WebviewClient<
   ]
 > {
   private _authClient: AuthClient<Authorizer>;
-  private _connector: WebSocketConnector<UserOfAuthorizer<Authorizer>>;
+  private _connector: Connector<UserOfAuthorizer<Authorizer>>;
 
   private _user: null | UserOfAuthorizer<Authorizer>;
   private _channel: null | WebviewConnection;
@@ -79,7 +78,7 @@ class WebviewClient<
     });
 
     const { host, pathname } = window.location;
-    this._connector = new WebSocketConnector(
+    this._connector = new Connector(
       new URL(
         webSocketUrl || DEFAULT_WEBSOCKET_PATH,
         `wss://${host}${pathname}`

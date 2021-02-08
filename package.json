@@ -21,7 +21,6 @@
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-typescript": "^7.10.4",
     "@machinat/babel-preset": "^0.1.0-beta",
-    "@machinat/typedoc-plugin-monorepo": "^0.3.2-1",
     "@moxyjs/moxy": "0.1.0-beta.3",
     "@types/invariant": "^2.2.33",
     "@types/jest": "^26.0.14",
@@ -42,7 +41,7 @@
     "nock": "^12.0.0",
     "polyfill-exports": "^0.3.0-beta.6",
     "prettier": "^2.0.5",
-    "typedoc": "^0.18.0",
+    "typedoc": "^0.20.20",
     "typescript": "^4.0.2",
     "yarn": "^1.22.10"
   },

@@ -1,7 +1,9 @@
 import type { PlatformModule } from '@machinat/core/types';
 import type { ServiceProvision } from '@machinat/core/service/types';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
-import { BaseBot, BaseProfiler, BaseMarshaler } from '@machinat/core/base';
+import BaseBot from '@machinat/core/base/Bot';
+import BaseProfiler from '@machinat/core/base/Profiler';
+import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import { RequestRoute } from '@machinat/http/types';
 
@@ -31,6 +33,9 @@ const webhookRouteFactory = makeFactoryProvider({
   })
 );
 
+/**
+ * @category Root
+ */
 const Line = {
   Bot: BotP,
   Receiver: ReceiverP,
@@ -62,10 +67,10 @@ const Line = {
       },
 
       { provide: LineConfigsI, withValue: configs },
-      { provide: BaseMarshaler.TypeI, withValue: LineChat },
-      { provide: BaseMarshaler.TypeI, withValue: LineUser },
-      { provide: BaseMarshaler.TypeI, withValue: LineUserProfile },
-      { provide: BaseMarshaler.TypeI, withValue: LineGroupProfile },
+      { provide: BaseMarshaler.TypeList, withValue: LineChat },
+      { provide: BaseMarshaler.TypeList, withValue: LineUser },
+      { provide: BaseMarshaler.TypeList, withValue: LineUserProfile },
+      { provide: BaseMarshaler.TypeList, withValue: LineGroupProfile },
     ];
 
     if (configs.noServer !== true) {
@@ -89,6 +94,9 @@ const Line = {
   },
 };
 
+/**
+ * @category Root
+ */
 declare namespace Line {
   export type Bot = BotP;
   export type Receiver = ReceiverP;

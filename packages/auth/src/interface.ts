@@ -2,7 +2,7 @@ import { makeInterface } from '@machinat/core/service';
 import type { AnyServerAuthorizer, AuthConfigs } from './types';
 
 /** @category Interface */
-export const AuthorizerList = makeInterface<AnyServerAuthorizer[]>({
+export const AuthorizerList = makeInterface<AnyServerAuthorizer>({
   name: 'AuthAuthorizerList',
   multi: true,
 });

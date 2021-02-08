@@ -282,11 +282,12 @@ For the provider has `'scoped'` lifetime, it will only be created one time lazil
 It is very common to have implementations by different platforms or situations. Machinat provide some `Base` interfaces of common services, so you can access them without worrying which implementation it is being used like this:
 
 ```js
-import Base from '@machinat/core/base';
+import Profiler from '@machinat/core/base/Profiler';
+import StateControllerI from '@machinat/core/base/StateControllerI';
 
 app.onEvent(
   container({
-    deps: [Base.Profiler, Base.StateControllerI],
+    deps: [Profiler, StateControllerI],
   })(
     (profiler, stateController) => async context => {
       const { bot, event: { channel, user } } = context;

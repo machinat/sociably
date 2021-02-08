@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { MarshalerP } from '../Marshaler';
+import { BaseMarshaler } from '../Marshaler';
 
 class Foo {
   static fromJSONValue(value) {
@@ -40,7 +40,7 @@ class Bar {
 }
 
 it('marshal/unmarshal custom types', () => {
-  const marshaler = new MarshalerP([Foo, Bar]);
+  const marshaler = new BaseMarshaler([Foo, Bar]);
 
   const valueWithClasses = {
     foo: new Foo(1),

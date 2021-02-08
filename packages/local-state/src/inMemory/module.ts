@@ -1,18 +1,24 @@
 import type { ServiceModule } from '@machinat/core/types';
-import Base from '@machinat/core/base';
+import StateControllerI from '@machinat/core/base/StateControllerI';
 import { ControllerP } from './controller';
 
+/**
+ * @category Root
+ */
 const InMemoryState = {
   Controller: ControllerP,
 
   initModule: (): ServiceModule => ({
     provisions: [
       ControllerP,
-      { provide: Base.StateControllerI, withProvider: ControllerP },
+      { provide: StateControllerI, withProvider: ControllerP },
     ],
   }),
 };
 
+/**
+ * @category Root
+ */
 declare namespace InMemoryState {
   export type Controller = ControllerP;
 }

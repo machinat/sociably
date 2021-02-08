@@ -1,7 +1,9 @@
 import type { PlatformModule } from '@machinat/core/types';
 import type { ServiceProvision } from '@machinat/core/service/types';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
-import { BaseBot, BaseProfiler, BaseMarshaler } from '@machinat/core/base';
+import BaseBot from '@machinat/core/base/Bot';
+import BaseProfiler from '@machinat/core/base/Profiler';
+import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import type { RequestRoute } from '@machinat/http/types';
 
@@ -32,6 +34,9 @@ const webhookRouteFactory = makeFactoryProvider({
   })
 );
 
+/**
+ * @category Root
+ */
 const Messenger = {
   Bot: BotP,
   Receiver: ReceiverP,
@@ -63,9 +68,9 @@ const Messenger = {
       },
 
       { provide: MessengerConfigsI, withValue: configs },
-      { provide: BaseMarshaler.TypeI, withValue: MessengerChat },
-      { provide: BaseMarshaler.TypeI, withValue: MessengerUser },
-      { provide: BaseMarshaler.TypeI, withValue: MessengerUserProfile },
+      { provide: BaseMarshaler.TypeList, withValue: MessengerChat },
+      { provide: BaseMarshaler.TypeList, withValue: MessengerUser },
+      { provide: BaseMarshaler.TypeList, withValue: MessengerUserProfile },
     ];
 
     if (configs.noServer !== true) {
@@ -89,6 +94,9 @@ const Messenger = {
   },
 };
 
+/**
+ * @category Root
+ */
 declare namespace Messenger {
   export type Bot = BotP;
   export type Receiver = ReceiverP;

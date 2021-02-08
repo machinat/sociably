@@ -1,6 +1,6 @@
 import { makeContainer } from '@machinat/core/service';
 import type { TelegramDispatchMiddleware } from '../types';
-import { AssetsManagerP } from './manager';
+import AssetsManagerP from './manager';
 
 const SINGLE_MEDIA_MESSAGE_METHODS_PATTERN = /^send(Audio|Document|Animation|Video|VideoNote|Voice|Sticker)$/;
 

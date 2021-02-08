@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 import Machinat from '@machinat/core';
-import Base from '@machinat/core/base';
+import StateControllerI from '@machinat/core/base/StateControllerI';
 import { ServiceScope, makeClassProvider } from '@machinat/core/service';
 import type {
   MachinatChannel,
@@ -24,7 +24,7 @@ export class ScriptRuntime<Input, ReturnValue> {
   callStack: null | CallStatus<unknown, Input, ReturnValue>[];
   saveTimestamp: undefined | number;
 
-  private _stateContoller: Base.StateControllerI;
+  private _stateContoller: StateControllerI;
   private _serviceScope: ServiceScope;
 
   private _requireSaving: boolean;
@@ -32,7 +32,7 @@ export class ScriptRuntime<Input, ReturnValue> {
   private _returnValue: undefined | ReturnValue;
 
   constructor(
-    stateContoller: Base.StateControllerI,
+    stateContoller: StateControllerI,
     scope: ServiceScope,
     channel: MachinatChannel,
     stack: CallStatus<unknown, Input, ReturnValue>[],
@@ -159,7 +159,7 @@ type InitRuntimeOptions<Vars> = {
 };
 
 export class ScriptProcessor<Input, ReturnValue> {
-  private _stateContoller: Base.StateControllerI;
+  private _stateContoller: StateControllerI;
   private _serviceScope: ServiceScope;
   private _libs: Map<
     string,
@@ -167,7 +167,7 @@ export class ScriptProcessor<Input, ReturnValue> {
   >;
 
   constructor(
-    stateController: Base.StateControllerI,
+    stateController: StateControllerI,
     scope: ServiceScope,
     scripts: ScriptLibrary<unknown, Input, ReturnValue, unknown>[]
   ) {
@@ -265,7 +265,7 @@ export class ScriptProcessor<Input, ReturnValue> {
 
 export const ProcessorP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [Base.StateControllerI, ServiceScope, LibraryList] as const,
+  deps: [StateControllerI, ServiceScope, LibraryList] as const,
 })(ScriptProcessor);
 
 export type ProcessorP<Input, ReturnValue> = ScriptProcessor<

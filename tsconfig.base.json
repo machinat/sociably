@@ -11,6 +11,19 @@
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "noUnusedLocals": true,
-    "types": ["node"]
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@machinat/auth": ["./packages/auth/src/index.js"],
+      "@machinat/auth/*": ["./packages/auth/src/*"],
+      "@machinat/core": ["./packages/core/src/index.js"],
+      "@machinat/core/*": ["./packages/core/src/*"],
+      "@machinat/http": ["./packages/http/src/index.js"],
+      "@machinat/http/*": ["./packages/http/src/*"],
+      "@machinat/next": ["./packages/next/src/index.js"],
+      "@machinat/next/*": ["./packages/next/src/*"],
+      "@machinat/websocket": ["./packages/websocket/src/index.js"],
+      "@machinat/websocket/*": ["./packages/websocket/src/*"]
+    }
   }
 }

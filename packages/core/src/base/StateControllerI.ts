@@ -24,8 +24,10 @@ export interface BaseStateController {
   globalState(name: string): StateAccessor;
 }
 
-export const StateControllerI = makeInterface<BaseStateController>({
+const StateControllerI = makeInterface<BaseStateController>({
   name: 'BaseStateControllerI',
 });
 
-export type StateControllerI = BaseStateController;
+type StateControllerI = BaseStateController;
+
+export default StateControllerI;

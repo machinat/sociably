@@ -29,6 +29,9 @@ const routingFactory = makeFactoryProvider({
   })
 );
 
+/**
+ * @category Root
+ */
 const Next = {
   Receiver: ReceiverP,
   ConfigsI: NextConfigsI,
@@ -55,6 +58,9 @@ const Next = {
   }),
 };
 
+/**
+ * @category Root
+ */
 declare namespace Next {
   export type Receiver = ReceiverP;
   export type ConfigsI = NextConfigsI;

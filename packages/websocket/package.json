@@ -12,10 +12,9 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
+    "./component": "./lib/component.js",
     "./client": "./lib/client/index.js",
-    "./client/": "./lib/client/",
     "./utils/": "./lib/utils/",
-    "./brokers/": "./lib/brokers/",
     "./types": "./lib/types.js"
   },
   "files": [

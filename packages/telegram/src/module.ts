@@ -1,7 +1,9 @@
 import type { PlatformModule } from '@machinat/core/types';
 import type { ServiceProvision } from '@machinat/core/service/types';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
-import { BaseBot, BaseProfiler, BaseMarshaler } from '@machinat/core/base';
+import BaseBot from '@machinat/core/base/Bot';
+import BaseProfiler from '@machinat/core/base/Profiler';
+import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import type { RequestRoute } from '@machinat/http/types';
 
@@ -39,6 +41,9 @@ const webhookRouteFactory = makeFactoryProvider({
   })
 );
 
+/**
+ * @category Root
+ */
 const Telegram = {
   Bot: BotP,
   Receiver: ReceiverP,
@@ -70,13 +75,13 @@ const Telegram = {
         platform: TELEGRAM,
       },
 
-      { provide: BaseMarshaler.TypeI, withValue: TelegramChat },
-      { provide: BaseMarshaler.TypeI, withValue: TelegramChatInstance },
-      { provide: BaseMarshaler.TypeI, withValue: TelegramChatTarget },
+      { provide: BaseMarshaler.TypeList, withValue: TelegramChat },
+      { provide: BaseMarshaler.TypeList, withValue: TelegramChatInstance },
+      { provide: BaseMarshaler.TypeList, withValue: TelegramChatTarget },
 
-      { provide: BaseMarshaler.TypeI, withValue: TelegramUser },
-      { provide: BaseMarshaler.TypeI, withValue: TelegramUserProfile },
-      { provide: BaseMarshaler.TypeI, withValue: TelegramChatProfile },
+      { provide: BaseMarshaler.TypeList, withValue: TelegramUser },
+      { provide: BaseMarshaler.TypeList, withValue: TelegramUserProfile },
+      { provide: BaseMarshaler.TypeList, withValue: TelegramChatProfile },
     ];
 
     if (configs.noServer !== true) {
@@ -100,6 +105,9 @@ const Telegram = {
   },
 };
 
+/**
+ * @category Root
+ */
 declare namespace Telegram {
   export type Bot = BotP;
   export type Receiver = ReceiverP;

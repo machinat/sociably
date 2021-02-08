@@ -59,6 +59,7 @@ module.exports = {
       },
     ],
     'import/no-cycle': 'off',
+    'import/no-named-as-default': 'off',
     'react/jsx-key': 'off',
     'react/display-name': 'off',
     'react/prop-types': 'off',

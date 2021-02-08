@@ -76,12 +76,16 @@ export const makeClassProvider = <
   Deps extends readonly ServiceDependency<any>[]
 >({
   name,
-  deps = [] as any,
+  deps = [] as never,
   factory,
   lifetime,
-}: ClassProviderOptions<_T, Deps>) => <T, Klazz extends Constructor<T>>(
+}: ClassProviderOptions<_T, Deps>) => <
+  T extends _T,
+  Klazz extends Constructor<T>
+>(
   klazz: Klazz & Constructor<T>
-): ServiceProvider<T, ResolveDependencies<Deps>> & Klazz => {
+): ServiceProvider<_T extends {} ? _T : T, ResolveDependencies<Deps>> &
+  Klazz => {
   validateLifetime(lifetime);
   const requirements = deps.map(polishServiceRequirement);
 
@@ -110,14 +114,15 @@ type FactoryProviderOptions<Deps extends readonly ServiceDependency<any>[]> = {
  * @category Service Registry
  */
 export const makeFactoryProvider = <
+  _T,
   Deps extends readonly ServiceDependency<any>[]
 >({
   name,
-  deps = [] as any,
+  deps = [] as never,
   lifetime,
-}: FactoryProviderOptions<Deps>) => <T>(
+}: FactoryProviderOptions<Deps>) => <T extends _T>(
   factory: ServiceFactoryFn<T, Deps>
-): ServiceProvider<T, ResolveDependencies<Deps>> &
+): ServiceProvider<_T extends {} ? _T : T, ResolveDependencies<Deps>> &
   ServiceFactoryFn<T, Deps> => {
   validateLifetime(lifetime);
   const requirements = deps.map(polishServiceRequirement);

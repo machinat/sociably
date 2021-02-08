@@ -7,6 +7,9 @@ type ScriptConfigs = {
   libs?: AnyScriptLibrary[];
 };
 
+/**
+ * @category Root
+ */
 const Script = {
   Processor: ProcessorP,
   LibraryList: ScriptLibraryList,
@@ -22,6 +25,9 @@ const Script = {
   },
 };
 
+/**
+ * @category Root
+ */
 declare namespace Script {
   export type Processor<Input, ReturnValue> = ProcessorP<Input, ReturnValue>;
   export type LibraryList = ScriptLibraryList;

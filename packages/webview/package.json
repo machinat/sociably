@@ -5,16 +5,16 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/machinat/machinat.git",
-    "directory": "packages/websocket"
+    "directory": "packages/webview"
   },
   "homepage": "https://github.com/machinat/machinat#readme",
   "bugs": "https://github.com/machinat/machinat/issues",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
+    "./component": "./lib/component.js",
     "./client": "./lib/client/index.js",
-    "./auth": "./lib/auth/index.js",
-    "./auth/client": "./lib/auth/client.js",
+    "./noneAuthorizer": "./lib/noneAuthorizer/index.js",
     "./types": "./lib/types.js"
   },
   "files": [

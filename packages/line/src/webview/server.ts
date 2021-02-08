@@ -175,7 +175,7 @@ export class LineServerAuthorizer
   }
 }
 
-export const ServerAuthorizerP = makeClassProvider({
+const ServerAuthorizerP = makeClassProvider({
   lifetime: 'transient',
   deps: [BotP, ConfigsI] as const,
   factory: (bot, { liffChannelIds }) => {
@@ -190,4 +190,6 @@ export const ServerAuthorizerP = makeClassProvider({
   },
 })(LineServerAuthorizer);
 
-export type ServerAuthorizerP = LineServerAuthorizer;
+type ServerAuthorizerP = LineServerAuthorizer;
+
+export default ServerAuthorizerP;

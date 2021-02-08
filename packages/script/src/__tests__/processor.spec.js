@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import { InMemoryStateController } from '@machinat/simple-state/inMemory';
+import { InMemoryStateController } from '@machinat/local-state/inMemory';
 import { ScriptProcessor } from '../processor';
 import build from '../build';
 import {

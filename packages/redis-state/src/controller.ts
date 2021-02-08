@@ -2,7 +2,7 @@ import { RedisClient } from 'redis';
 import thenifiedly from 'thenifiedly';
 import { makeClassProvider } from '@machinat/core/service';
 import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
-import Base from '@machinat/core/base';
+import BaseMarshaler from '@machinat/core/base/Marshaler';
 import type {
   BaseStateController,
   StateAccessor,
@@ -12,9 +12,9 @@ import { ClientI } from './interface';
 export class RedisStateAccessor implements StateAccessor {
   private _stateKey: string;
   private _client: RedisClient;
-  private _marshaler: Base.Marshaler;
+  private _marshaler: BaseMarshaler;
 
-  constructor(client: RedisClient, marshaler: Base.Marshaler, key: string) {
+  constructor(client: RedisClient, marshaler: BaseMarshaler, key: string) {
     this._client = client;
     this._marshaler = marshaler;
     this._stateKey = key;
@@ -127,9 +127,9 @@ const identity = (x) => x;
  */
 export class RedisStateController implements BaseStateController {
   private _client: RedisClient;
-  private _marshaler: Base.Marshaler;
+  private _marshaler: BaseMarshaler;
 
-  constructor(client: RedisClient, marshaler?: null | Base.Marshaler) {
+  constructor(client: RedisClient, marshaler?: null | BaseMarshaler) {
     this._client = client;
     this._marshaler = marshaler || {
       marshal: identity,
@@ -164,7 +164,7 @@ export class RedisStateController implements BaseStateController {
 
 export const ControllerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ClientI, { require: Base.Marshaler, optional: true }] as const,
+  deps: [ClientI, { require: BaseMarshaler, optional: true }] as const,
 })(RedisStateController);
 
 export type ControllerP = RedisStateController;

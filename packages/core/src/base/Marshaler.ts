@@ -17,7 +17,9 @@ type MarshalTypings<V, T extends Marshallable<V>> = {
 };
 
 export class BaseMarshaler {
-  static TypeI = makeInterface<MarshalTypings<unknown, Marshallable<unknown>>>({
+  static TypeList = makeInterface<
+    MarshalTypings<unknown, Marshallable<unknown>>
+  >({
     name: 'MarshalTypeList',
     multi: true,
   });
@@ -40,9 +42,14 @@ export class BaseMarshaler {
   }
 }
 
-export const MarshalerP = makeClassProvider({
+const MarshalerP = makeClassProvider<
+  Marshaler,
+  [typeof BaseMarshaler.TypeList]
+>({
   lifetime: 'singleton',
-  deps: [BaseMarshaler.TypeI] as const,
+  deps: [BaseMarshaler.TypeList],
 })(BaseMarshaler);
 
-export type MarshalerP = Marshaler;
+type MarshalerP = Marshaler;
+
+export default MarshalerP;
