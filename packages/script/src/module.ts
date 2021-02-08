@@ -10,11 +10,14 @@ type ScriptConfigs = {
 /**
  * @category Root
  */
-const Script = {
-  Processor: ProcessorP,
-  LibraryList: LibraryListI,
+namespace Script {
+  export const Processor = ProcessorP;
+  export type Processor<Input, ReturnValue> = ProcessorP<Input, ReturnValue>;
 
-  initModule: ({ libs }: ScriptConfigs = {}): ServiceModule => {
+  export const LibraryList = LibraryListI;
+  export type LibraryList = LibraryListI;
+
+  export const initModule = ({ libs }: ScriptConfigs = {}): ServiceModule => {
     const libraries =
       libs?.map((lib) => ({
         provide: LibraryListI,
@@ -22,15 +25,7 @@ const Script = {
       })) || [];
 
     return { provisions: [ProcessorP, ...libraries] };
-  },
-};
-
-/**
- * @category Root
- */
-declare namespace Script {
-  export type Processor<Input, ReturnValue> = ProcessorP<Input, ReturnValue>;
-  export type LibraryList = LibraryListI;
+  };
 }
 
 export default Script;

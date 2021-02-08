@@ -6,28 +6,24 @@ import { ConfigsI, SerializerI } from './interface';
 /**
  * @category Root
  */
-const FileState = {
-  Controller: ControllerP,
-  Serializer: SerializerI,
-  Configs: ConfigsI,
+namespace FileState {
+  export const Controller = ControllerP;
+  export type Controller = ControllerP;
 
-  initModule: (configs: ConfigsI): ServiceModule => ({
+  export const Serializer = SerializerI;
+  export type Serializer = SerializerI;
+
+  export const Configs = ConfigsI;
+  export type Configs = ConfigsI;
+
+  export const initModule = (configs: ConfigsI): ServiceModule => ({
     provisions: [
       ControllerP,
       { provide: StateControllerI, withProvider: ControllerP },
 
       { provide: ConfigsI, withValue: configs },
     ],
-  }),
-};
-
-/**
- * @category Root
- */
-declare namespace FileState {
-  export type Controller = ControllerP;
-  export type Serializer = SerializerI;
-  export type Configs = ConfigsI;
+  });
 }
 
 export default FileState;

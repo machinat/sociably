@@ -4,12 +4,11 @@ module.exports = {
       isTSX: true,
       allExtensions: true,
       jsxPragma: 'Machinat',
+      allowNamespaces: true,
       onlyRemoveTypeImports: true,
     }],
     ['@babel/preset-env', {
-        targets: {
-          node: 10,
-        },
+        targets: { node: 10 },
     }],
     '@machinat/babel-preset',
   ],

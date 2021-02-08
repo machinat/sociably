@@ -15,12 +15,17 @@ const dialogflowClientFactory = makeFactoryProvider({
 /**
  * @category Root
  */
-const Dialogflow = {
-  IntentRecognizer: IntentRecognizerP,
-  SessionClient: SessionClientI,
-  Configs: ConfigsI,
+namespace Dialogflow {
+  export const IntentRecognizer = IntentRecognizerP;
+  export type IntentRecognizer = IntentRecognizerP;
 
-  initModule: (configs: ConfigsI): ServiceModule => ({
+  export const SessionClient = SessionClientI;
+  export type SessionClient = SessionClientI;
+
+  export const Configs = ConfigsI;
+  export type Configs = ConfigsI;
+
+  export const initModule = (configs: ConfigsI): ServiceModule => ({
     provisions: [
       IntentRecognizerP,
       { provide: IntentRecognizerI, withProvider: IntentRecognizerP },
@@ -30,16 +35,7 @@ const Dialogflow = {
       },
       { provide: ConfigsI, withValue: configs },
     ],
-  }),
-};
-
-/**
- * @category Root
- */
-declare namespace Dialogflow {
-  export type IntentRecognizer = IntentRecognizerP;
-  export type Configs = ConfigsI;
-  export type SessionClient = SessionClientI;
+  });
 }
 
 export default Dialogflow;

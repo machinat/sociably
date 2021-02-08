@@ -28,10 +28,7 @@ module.exports = {
     'no-use-before-define': 'off',
     'no-param-reassign': [
       'error',
-      {
-        props: true,
-        ignorePropertyModificationsFor: ['res'],
-      },
+      { props: true, ignorePropertyModificationsFor: ['res'] },
     ],
     'no-restricted-syntax': [
       'error',
@@ -46,59 +43,31 @@ module.exports = {
     ],
     'max-classes-per-file': 'off',
     'import/extensions': 'off',
-    'import/no-unresolved': [
-      'error',
-      {
-        ignore: ['@machinat/.*'],
-      },
-    ],
+    'import/no-unresolved': ['error', { ignore: ['@machinat/.*'] }],
     'import/no-extraneous-dependencies': [
       'error',
-      {
-        optionalDependencies: true,
-      },
+      { optionalDependencies: true },
     ],
     'import/no-cycle': 'off',
     'import/no-named-as-default': 'off',
     'react/jsx-key': 'off',
     'react/display-name': 'off',
     'react/prop-types': 'off',
-    'react/no-unescaped-entities': [
-      'error',
-      {
-        forbid: ['<', '>', '{', '}'],
-      },
-    ],
+    'react/no-unescaped-entities': ['error', { forbid: ['<', '>', '{', '}'] }],
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-shadow': ['error'],
     '@typescript-eslint/no-use-before-define': ['error'],
-    '@typescript-eslint/no-namespace': [
-      'error',
-      {
-        allowDeclarations: true,
-      },
-    ],
-    '@typescript-eslint/ban-types': [
-      'error',
-      {
-        types: {
-          '{}': false,
-        },
-      },
-    ],
+    '@typescript-eslint/no-namespace': 'off',
+    '@typescript-eslint/ban-types': ['error', { types: { '{}': false } }],
   },
   overrides: [
     {
       files: '**/__{tests,fixtures,mocks}__/*',
-      rules: {
-        'import/no-extraneous-dependencies': 'off',
-      },
+      rules: { 'import/no-extraneous-dependencies': 'off' },
     },
   ],
   settings: {
-    react: {
-      pragma: 'Machinat',
-    },
+    react: { pragma: 'Machinat' },
   },
 };

@@ -28,12 +28,17 @@ const routingFactory = makeFactoryProvider({
 /**
  * @category Root
  */
-const Next = {
-  Receiver: ReceiverP,
-  Configs: ConfigsI,
-  Server: ServerI,
+namespace Next {
+  export const Receiver = ReceiverP;
+  export type Receiver = ReceiverP;
 
-  initModule: (
+  export const Server = ServerI;
+  export type Server = ServerI;
+
+  export const Configs = ConfigsI;
+  export type Configs = ConfigsI;
+
+  export const initModule = (
     configs: ConfigsI = {}
   ): ServiceModule &
     PlatformModule<NextEventContext, NextResponse, never, never, never> => ({
@@ -51,16 +56,7 @@ const Next = {
     startHook: makeContainer({
       deps: [ReceiverP],
     })((receiver) => receiver.prepare()),
-  }),
-};
-
-/**
- * @category Root
- */
-declare namespace Next {
-  export type Receiver = ReceiverP;
-  export type Configs = ConfigsI;
-  export type Server = ServerI;
+  });
 }
 
 export default Next;

@@ -44,13 +44,20 @@ const webhookRouteFactory = makeFactoryProvider({
 /**
  * @category Root
  */
-const Telegram = {
-  Bot: BotP,
-  Receiver: ReceiverP,
-  Profiler: ProfilerP,
-  Configs: ConfigsI,
+namespace Telegram {
+  export const Bot = BotP;
+  export type Bot = BotP;
 
-  initModule: (
+  export const Receiver = ReceiverP;
+  export type Receiver = ReceiverP;
+
+  export const Profiler = ProfilerP;
+  export type Profiler = ProfilerP;
+
+  export const Configs = ConfigsI;
+  export type Configs = ConfigsI;
+
+  export const initModule = (
     configs: ConfigsI
   ): PlatformModule<
     TelegramEventContext,
@@ -102,16 +109,7 @@ const Telegram = {
         deps: [BotP],
       })(async (bot: BotP) => bot.start()),
     };
-  },
-};
-
-/**
- * @category Root
- */
-declare namespace Telegram {
-  export type Bot = BotP;
-  export type Receiver = ReceiverP;
-  export type Profiler = ProfilerP;
+  };
 }
 
 export default Telegram;

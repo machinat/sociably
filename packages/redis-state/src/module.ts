@@ -15,12 +15,17 @@ const createRedisClient = makeFactoryProvider({
 /**
  * @category Root
  */
-const RedisState = {
-  Controller: ControllerP,
-  Client: ClientI,
-  Configs: ConfigsI,
+namespace RedisState {
+  export const Controller = ControllerP;
+  export type Controller = ControllerP;
 
-  initModule: (configs: ConfigsI): ServiceModule => ({
+  export const Client = ClientI;
+  export type Client = ClientI;
+
+  export const Configs = ConfigsI;
+  export type Configs = ConfigsI;
+
+  export const initModule = (configs: ConfigsI): ServiceModule => ({
     provisions: [
       ControllerP,
       { provide: StateControllerI, withProvider: ControllerP },
@@ -37,16 +42,7 @@ const RedisState = {
         });
       }
     }),
-  }),
-};
-
-/**
- * @category Root
- */
-declare namespace RedisState {
-  export type Controller = ControllerP;
-  export type Configs = ConfigsI;
-  export type Client = ClientI;
+  });
 }
 
 export default RedisState;

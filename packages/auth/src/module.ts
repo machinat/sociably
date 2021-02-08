@@ -24,12 +24,19 @@ const authRouteFactory = makeFactoryProvider({
 /**
  * @category Root
  */
-const Auth = {
-  Controller: ControllerP,
-  Configs: ConfigsI,
-  AuthorizerList: AuthorizerListI,
+namespace Auth {
+  export const Controller = ControllerP;
+  export type Controller<Authorizer extends AnyServerAuthorizer> = ControllerP<
+    Authorizer
+  >;
 
-  initModule: (configs: AuthConfigs): ServiceModule => {
+  export const Configs = ConfigsI;
+  export type Configs = AuthConfigs;
+
+  export const AuthorizerList = AuthorizerListI;
+  export type AuthorizerList = AuthorizerListI;
+
+  export const initModule = (configs: AuthConfigs): ServiceModule => {
     return {
       provisions: [
         ControllerP,
@@ -37,18 +44,7 @@ const Auth = {
         { provide: Http.RequestRouteList, withProvider: authRouteFactory },
       ],
     };
-  },
-};
-
-/**
- * @category Root
- */
-declare namespace Auth {
-  export type Controller<Authorizer extends AnyServerAuthorizer> = ControllerP<
-    Authorizer
-  >;
-  export type Configs = AuthConfigs;
-  export type AuthorizerList = AuthorizerListI;
+  };
 }
 
 export default Auth;

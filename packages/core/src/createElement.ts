@@ -5,7 +5,7 @@ import type {
   MachinatElement,
 } from './types';
 
-const createElement = (
+const createMachinatElement = (
   type: MachinatElementType,
   config: any,
   ...children: Array<MachinatNode>
@@ -26,4 +26,4 @@ const createElement = (
   };
 };
 
-export default createElement;
+export default createMachinatElement;

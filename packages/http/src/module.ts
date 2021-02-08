@@ -17,14 +17,23 @@ const httpServerFactory = makeFactoryProvider({
 /**
  * @category Root
  */
-const Http = {
-  Configs: ConfigsI,
-  Server: ServerI,
-  Connector: ConnectorP,
-  RequestRouteList: RequestRouteListI,
-  UpgradeRouteList: UpgradeRouteListI,
+namespace Http {
+  export const Configs = ConfigsI;
+  export type Configs = ConfigsI;
 
-  initModule: (configsInput: ConfigsI): ServiceModule => ({
+  export const Server = ServerI;
+  export type Server = ServerI;
+
+  export const Connector = ConnectorP;
+  export type Connector = ConnectorP;
+
+  export const RequestRouteList = RequestRouteListI;
+  export type RequestRouteList = RequestRouteListI;
+
+  export const UpgradeRouteList = UpgradeRouteListI;
+  export type UpgradeRouteList = UpgradeRouteListI;
+
+  export const initModule = (configsInput: ConfigsI): ServiceModule => ({
     provisions: [
       ConnectorP,
       { provide: ConfigsI, withValue: configsInput },
@@ -35,18 +44,7 @@ const Http = {
     })((connector, server, { listenOptions }) =>
       connector.connect(server, listenOptions)
     ),
-  }),
-};
-
-/**
- * @category Root
- */
-declare namespace Http {
-  export type Connector = ConnectorP;
-  export type Server = ServerI;
-  export type Configs = ConfigsI;
-  export type RequestRouteList = RequestRouteListI;
-  export type UpgradeRouteList = UpgradeRouteListI;
+  });
 }
 
 export default Http;

@@ -5,7 +5,7 @@ import {
   MACHINAT_THUNK_TYPE,
   MACHINAT_RAW_TYPE,
 } from './symbol';
-import createElement from './createElement';
+import createMachinatElement from './createElement';
 import App from './app';
 import BaseBot from './base/Bot';
 import BaseProfiler from './base/Profiler';
@@ -21,25 +21,25 @@ import type {
 /**
  * @category Root
  */
-const Machinat = {
-  createElement,
-  createApp<Platform extends AnyPlatformModule>(
+namespace Machinat {
+  export const createElement = createMachinatElement;
+  export const createApp = <Platform extends AnyPlatformModule>(
     config: AppConfig<Platform>
-  ): App<Platform> {
+  ): App<Platform> => {
     const app = new App(config);
     return app;
-  },
+  };
 
-  Fragment: MACHINAT_FRAGMENT_TYPE,
-  Pause: MACHINAT_PAUSE_TYPE,
-  Provider: MACHINAT_PROVIDER_TYPE,
-  Thunk: MACHINAT_THUNK_TYPE,
-  Raw: MACHINAT_RAW_TYPE,
+  export const Fragment = MACHINAT_FRAGMENT_TYPE;
+  export const Pause = MACHINAT_PAUSE_TYPE;
+  export const Provider = MACHINAT_PROVIDER_TYPE;
+  export const Thunk = MACHINAT_THUNK_TYPE;
+  export const Raw = MACHINAT_RAW_TYPE;
 
-  Bot: BaseBot,
-  Profiler: BaseProfiler,
-  Marshaler: BaseMarshaler,
-};
+  export const Bot = BaseBot;
+  export const Profiler = BaseProfiler;
+  export const Marshaler = BaseMarshaler;
+}
 
 export default Machinat;
 

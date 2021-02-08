@@ -98,23 +98,46 @@ const nextRouteFactory = makeFactoryProvider({
 /**
  * @category Root
  */
-const Webview = {
-  Configs: ConfigsI,
+namespace Webview {
+  export const Configs = ConfigsI;
+  export type Configs = ConfigsI;
 
-  Bot: BotP,
-  Receiver: ReceiverP,
-  SocketServer: SocketServerP,
-  SocketBroker: SocketBrokerI,
-  WsServer: WsServerI,
-  SocketServerId: SocketServerIdI,
+  export const Bot = BotP;
+  export type Bot<Authorizer extends AnyServerAuthorizer> = BotP<Authorizer>;
 
-  AuthController: AuthControllerP,
-  AuthorizerList: AuthorizerListI,
+  export const SocketServer = SocketServerP;
+  export type SocketServer<
+    Authorizer extends AnyServerAuthorizer
+  > = SocketServerP<Authorizer>;
 
-  NextReceiver: NextReceiverP,
-  NextServer: NextServerI,
+  export const Receiver = ReceiverP;
+  export type Receiver<Authorizer extends AnyServerAuthorizer> = ReceiverP<
+    Authorizer
+  >;
+  export const SocketBroker = SocketBrokerI;
+  export type SocketBroker = SocketBrokerI;
 
-  initModule: <
+  export const SocketServerId = SocketServerIdI;
+  export type SocketServerId = string;
+
+  export const WsServer = WsServerI;
+  export type WsServer = WsServerI;
+
+  export const AuthController = AuthControllerP;
+  export type AuthController<
+    Authorizer extends AnyServerAuthorizer
+  > = AuthControllerP<Authorizer>;
+
+  export const AuthorizerList = AuthorizerListI;
+  export type AuthorizerList = AuthorizerListI;
+
+  export const NextServer = NextServerI;
+  export type NextServer = NextServerI;
+
+  export const NextReceiver = NextReceiverP;
+  export type NextReceiver = NextReceiverP;
+
+  export const initModule = <
     Authorizer extends AnyServerAuthorizer,
     Value extends EventValue = EventValue
   >(
@@ -180,34 +203,7 @@ const Webview = {
         await Promise.all([bot.start(), nextReceiver.prepare()]);
       }),
     };
-  },
-};
-
-/**
- * @category Root
- */
-declare namespace Webview {
-  export type Bot<Authorizer extends AnyServerAuthorizer> = BotP<Authorizer>;
-  export type Receiver<Authorizer extends AnyServerAuthorizer> = ReceiverP<
-    Authorizer
-  >;
-
-  export type SocketServer<
-    Authorizer extends AnyServerAuthorizer
-  > = SocketServerP<Authorizer>;
-
-  export type Configs = ConfigsI;
-  export type SocketBroker = SocketBrokerI;
-  export type WsServer = WsServerI;
-  export type SocketServerIdI = string;
-
-  export type AuthController<
-    Authorizer extends AnyServerAuthorizer
-  > = AuthControllerP<Authorizer>;
-  export type AuthorizerList = AuthorizerListI;
-
-  export type NextServer = NextServerI;
-  export type NextReceiver = NextReceiverP;
+  };
 }
 
 export default Webview;

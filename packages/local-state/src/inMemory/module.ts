@@ -5,22 +5,16 @@ import { ControllerP } from './controller';
 /**
  * @category Root
  */
-const InMemoryState = {
-  Controller: ControllerP,
+namespace InMemoryState {
+  export const Controller = ControllerP;
+  export type Controller = ControllerP;
 
-  initModule: (): ServiceModule => ({
+  export const initModule = (): ServiceModule => ({
     provisions: [
       ControllerP,
       { provide: StateControllerI, withProvider: ControllerP },
     ],
-  }),
-};
-
-/**
- * @category Root
- */
-declare namespace InMemoryState {
-  export type Controller = ControllerP;
+  });
 }
 
 export default InMemoryState;

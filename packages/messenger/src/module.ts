@@ -37,13 +37,20 @@ const webhookRouteFactory = makeFactoryProvider({
 /**
  * @category Root
  */
-const Messenger = {
-  Bot: BotP,
-  Receiver: ReceiverP,
-  Profiler: ProfilerP,
-  Configs: ConfigsI,
+namespace Messenger {
+  export const Bot = BotP;
+  export type Bot = BotP;
 
-  initModule: (
+  export const Receiver = ReceiverP;
+  export type Receiver = ReceiverP;
+
+  export const Profiler = ProfilerP;
+  export type Profiler = ProfilerP;
+
+  export const Configs = ConfigsI;
+  export type Configs = ConfigsI;
+
+  export const initModule = (
     configs: MessengerConfigs
   ): PlatformModule<
     MessengerEventContext,
@@ -91,17 +98,7 @@ const Messenger = {
         deps: [BotP] as const,
       })(async (bot: BotP) => bot.start()),
     };
-  },
-};
-
-/**
- * @category Root
- */
-declare namespace Messenger {
-  export type Bot = BotP;
-  export type Receiver = ReceiverP;
-  export type Profiler = ProfilerP;
-  export type Configs = ConfigsI;
+  };
 }
 
 export default Messenger;

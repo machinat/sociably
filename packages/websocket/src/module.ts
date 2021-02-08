@@ -53,18 +53,41 @@ const upgradeRouteFactory = makeFactoryProvider({
 /**
  * @category Root
  */
-const WebSocket = {
-  Bot: BotP,
-  Receiver: ReceiverP,
-  Server: ServerP,
-  Broker: BrokerI,
-  WsServer: WsServerI,
-  UpgradeVerifier: UpgradeVerifierI,
-  LoginVerifier: LoginVerifierI,
-  Configs: ConfigsI,
-  ServerId: ServerIdI,
+namespace WebSocket {
+  export const Bot = BotP;
+  export type Bot = BotP;
 
-  initModule: <User extends null | MachinatUser, Auth>(
+  export const Receiver = ReceiverP;
+  export type Receiver<User extends null | MachinatUser, Auth> = ReceiverP<
+    User,
+    Auth
+  >;
+
+  export const Server = ServerP;
+  export type Server<User extends null | MachinatUser, Auth> = ServerP<
+    User,
+    Auth
+  >;
+
+  export const Broker = BrokerI;
+  export type Broker = BrokerI;
+
+  export const WsServer = WsServerI;
+  export type WsServer = WsServerI;
+
+  export const UpgradeVerifier = UpgradeVerifierI;
+  export type UpgradeVerifier = UpgradeVerifierI;
+
+  export const Configs = ConfigsI;
+  export type Configs = ConfigsI;
+
+  export const LoginVerifier = LoginVerifierI;
+  export type LoginVerifier = LoginVerifierI;
+
+  export const ServerId = ServerIdI;
+  export type ServerId = string;
+
+  export const initModule = <User extends null | MachinatUser, Auth>(
     configs: WebSocketConfigs<User, Auth> = {}
   ): PlatformModule<
     WebSocketEventContext<User, Auth>,
@@ -109,28 +132,7 @@ const WebSocket = {
         await bot.start();
       }),
     };
-  },
-};
-
-/**
- * @category Root
- */
-declare namespace WebSocket {
-  export type Bot = BotP;
-  export type Receiver<User extends null | MachinatUser, Auth> = ReceiverP<
-    User,
-    Auth
-  >;
-  export type Server<User extends null | MachinatUser, Auth> = ServerP<
-    User,
-    Auth
-  >;
-  export type Broker = BrokerI;
-  export type WsServer = WsServerI;
-  export type UpgradeVerifier = UpgradeVerifierI;
-  export type LoginVerifier = LoginVerifierI;
-  export type ServerId = string;
-  export type Configs = ConfigsI;
+  };
 }
 
 export default WebSocket;
