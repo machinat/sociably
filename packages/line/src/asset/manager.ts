@@ -1,5 +1,5 @@
 import { makeClassProvider } from '@machinat/core/service';
-import StateControllerI from '@machinat/core/base/StateControllerI';
+import StateControllerI from '@machinat/core/base/StateController';
 import { BotP } from '../bot';
 import { PATH_RICHMENU } from '../constant';
 

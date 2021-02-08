@@ -1,6 +1,6 @@
 import { Moxy } from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import IntentRecognizerI from '@machinat/core/base/IntentRecognizerI';
+import IntentRecognizerI from '@machinat/core/base/IntentRecognizer';
 import { SessionsClient as _SessionsClient } from '@google-cloud/dialogflow';
 import Dialogflow from '../module';
 import { DialogflowIntentRecognizer as Recognizer } from '../recognizer';
@@ -13,19 +13,19 @@ jest.mock('@google-cloud/dialogflow', () =>
 
 it('export interfaces', () => {
   expect(Dialogflow.IntentRecognizer).toBe(Recognizer);
-  expect(Dialogflow.ConfigsI).toMatchInlineSnapshot(`
+  expect(Dialogflow.Configs).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "DialogflowConfigsI",
+      "$$name": "DialogflowConfigs",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 
-  expect(Dialogflow.SessionClientI).toMatchInlineSnapshot(`
+  expect(Dialogflow.SessionClient).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "DialogflowSessionClientI",
+      "$$name": "DialogflowSessionClient",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -49,8 +49,8 @@ describe('initModule()', () => {
 
     const [recognizer, client, configsProvided] = app.useServices([
       Dialogflow.IntentRecognizer,
-      Dialogflow.SessionClientI,
-      Dialogflow.ConfigsI,
+      Dialogflow.SessionClient,
+      Dialogflow.Configs,
     ]);
 
     expect(SessionsClient.mock).toHaveBeenCalledTimes(1);

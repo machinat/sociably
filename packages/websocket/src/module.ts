@@ -9,11 +9,11 @@ import { WEBSOCKET } from './constant';
 import {
   ServerIdI,
   PlatformMounterI,
-  BrokerI as WebSocketBrokerI,
-  WsServerI as WebSocketWsServerI,
-  UpgradeVerifierI as WebSocketUpgradeVerifierI,
-  LoginVerifierI as WebSocketLoginVerifierI,
-  ConfigsI as WebSocketConfigsI,
+  BrokerI,
+  WsServerI,
+  UpgradeVerifierI,
+  LoginVerifierI,
+  ConfigsI,
 } from './interface';
 import { BotP } from './bot';
 import { ServerP } from './server';
@@ -41,7 +41,7 @@ const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
 /** @internal */
 const upgradeRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [WebSocketConfigsI, ServerP] as const,
+  deps: [ConfigsI, ServerP] as const,
 })(
   (configs, server): UpgradeRoute => ({
     name: WEBSOCKET,
@@ -57,12 +57,12 @@ const WebSocket = {
   Bot: BotP,
   Receiver: ReceiverP,
   Server: ServerP,
-  BrokerI: WebSocketBrokerI,
-  WsServerI: WebSocketWsServerI,
-  UpgradeVerifierI: WebSocketUpgradeVerifierI,
-  LoginVerifierI: WebSocketLoginVerifierI,
-  ConfigsI: WebSocketConfigsI,
-  ServerIdI,
+  Broker: BrokerI,
+  WsServer: WsServerI,
+  UpgradeVerifier: UpgradeVerifierI,
+  LoginVerifier: LoginVerifierI,
+  Configs: ConfigsI,
+  ServerId: ServerIdI,
 
   initModule: <User extends null | MachinatUser, Auth>(
     configs: WebSocketConfigs<User, Auth> = {}
@@ -79,8 +79,8 @@ const WebSocket = {
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions: [
-        { provide: WebSocketConfigsI, withValue: configs },
-        { provide: WebSocketWsServerI, withProvider: wsServerFactory },
+        { provide: ConfigsI, withValue: configs },
+        { provide: WsServerI, withProvider: wsServerFactory },
 
         BotP,
         {
@@ -90,7 +90,7 @@ const WebSocket = {
         },
 
         ServerP,
-        { provide: WebSocketBrokerI, withProvider: LocalOnlyBrokerP },
+        { provide: BrokerI, withProvider: LocalOnlyBrokerP },
 
         ReceiverP,
         {
@@ -125,12 +125,12 @@ declare namespace WebSocket {
     User,
     Auth
   >;
-  export type BrokerI = WebSocketBrokerI;
-  export type WsServerI = WebSocketWsServerI;
-  export type UpgradeVerifierI = WebSocketUpgradeVerifierI;
-  export type LoginVerifierI = WebSocketLoginVerifierI;
-  export type ServerIdI = string;
-  export type ConfigsI = WebSocketConfigsI;
+  export type Broker = BrokerI;
+  export type WsServer = WsServerI;
+  export type UpgradeVerifier = UpgradeVerifierI;
+  export type LoginVerifier = LoginVerifierI;
+  export type ServerId = string;
+  export type Configs = ConfigsI;
 }
 
 export default WebSocket;

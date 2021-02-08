@@ -5,7 +5,7 @@ import type { DialogflowConfigs, SessionClient } from './types';
  * @category Interface
  */
 export const ConfigsI = makeInterface<DialogflowConfigs>({
-  name: 'DialogflowConfigsI',
+  name: 'DialogflowConfigs',
 });
 
 export type ConfigsI = DialogflowConfigs;
@@ -14,7 +14,7 @@ export type ConfigsI = DialogflowConfigs;
  * @category Interface
  */
 export const SessionClientI = makeInterface<SessionClient>({
-  name: 'DialogflowSessionClientI',
+  name: 'DialogflowSessionClient',
 });
 
 export type SessionClientI = SessionClient;

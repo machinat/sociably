@@ -6,7 +6,7 @@ import BaseMarshaler from '@machinat/core/base/Marshaler';
 import type {
   BaseStateController,
   StateAccessor,
-} from '@machinat/core/base/StateControllerI';
+} from '@machinat/core/base/StateController';
 import { ClientI } from './interface';
 
 export class RedisStateAccessor implements StateAccessor {

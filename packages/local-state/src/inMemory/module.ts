@@ -1,5 +1,5 @@
 import type { ServiceModule } from '@machinat/core/types';
-import StateControllerI from '@machinat/core/base/StateControllerI';
+import StateControllerI from '@machinat/core/base/StateController';
 import { ControllerP } from './controller';
 
 /**

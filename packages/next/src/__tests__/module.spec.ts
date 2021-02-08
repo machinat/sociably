@@ -9,18 +9,18 @@ const createNextApp = _createNextApp as Moxy<typeof _createNextApp>;
 
 it('exports interfaces', () => {
   expect(Next.Receiver).toBe(NextReceiver);
-  expect(Next.ConfigsI).toMatchInlineSnapshot(`
+  expect(Next.Configs).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "NextConfigsI",
+      "$$name": "NextConfigs",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(Next.ServerI).toMatchInlineSnapshot(`
+  expect(Next.Server).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "NextServerI",
+      "$$name": "NextServer",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -43,7 +43,7 @@ describe('initModule()', () => {
         ],
         "mounterInterface": Object {
           "$$multi": false,
-          "$$name": "NextPlatformMounterI",
+          "$$name": "NextPlatformMounter",
           "$$polymorphic": false,
           "$$typeof": Symbol(interface.service.machinat),
         },
@@ -53,7 +53,7 @@ describe('initModule()', () => {
           Object {
             "provide": Object {
               "$$multi": false,
-              "$$name": "NextConfigsI",
+              "$$name": "NextConfigs",
               "$$polymorphic": false,
               "$$typeof": Symbol(interface.service.machinat),
             },
@@ -71,7 +71,7 @@ describe('initModule()', () => {
           Object {
             "provide": Object {
               "$$multi": false,
-              "$$name": "NextServerI",
+              "$$name": "NextServer",
               "$$polymorphic": false,
               "$$typeof": Symbol(interface.service.machinat),
             },
@@ -106,8 +106,8 @@ describe('initModule()', () => {
 
     const [receiver, nextApp, configs, routings] = app.useServices([
       Next.Receiver,
-      Next.ServerI,
-      Next.ConfigsI,
+      Next.Server,
+      Next.Configs,
       Http.RequestRouteList,
     ]);
 

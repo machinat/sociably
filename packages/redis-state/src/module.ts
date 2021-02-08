@@ -1,18 +1,15 @@
 import redis from 'redis';
 import { makeFactoryProvider, makeContainer } from '@machinat/core/service';
 import type { ServiceModule } from '@machinat/core/types';
-import StateControllerI from '@machinat/core/base/StateControllerI';
+import StateControllerI from '@machinat/core/base/StateController';
 
 import { ControllerP } from './controller';
-import {
-  ConfigsI as StateConfigsI,
-  ClientI as RedisClientI,
-} from './interface';
+import { ConfigsI, ClientI } from './interface';
 
 /** @internal */
 const createRedisClient = makeFactoryProvider({
   lifetime: 'singleton',
-  deps: [StateConfigsI] as const,
+  deps: [ConfigsI] as const,
 })(({ clientOptions }) => redis.createClient(clientOptions));
 
 /**
@@ -20,28 +17,26 @@ const createRedisClient = makeFactoryProvider({
  */
 const RedisState = {
   Controller: ControllerP,
-  ClientI: RedisClientI,
-  ConfigsI: StateConfigsI,
+  Client: ClientI,
+  Configs: ConfigsI,
 
-  initModule: (configs: StateConfigsI): ServiceModule => ({
+  initModule: (configs: ConfigsI): ServiceModule => ({
     provisions: [
       ControllerP,
       { provide: StateControllerI, withProvider: ControllerP },
 
-      { provide: RedisClientI, withProvider: createRedisClient },
-      { provide: StateConfigsI, withValue: configs },
+      { provide: ClientI, withProvider: createRedisClient },
+      { provide: ConfigsI, withValue: configs },
     ],
 
-    startHook: makeContainer({ deps: [RedisClientI] })(
-      async (client: RedisClientI) => {
-        if (!client.connected) {
-          await new Promise((resolve, reject) => {
-            client.once('ready', resolve);
-            client.once('error', reject);
-          });
-        }
+    startHook: makeContainer({ deps: [ClientI] })(async (client: ClientI) => {
+      if (!client.connected) {
+        await new Promise((resolve, reject) => {
+          client.once('ready', resolve);
+          client.once('error', reject);
+        });
       }
-    ),
+    }),
   }),
 };
 
@@ -50,8 +45,8 @@ const RedisState = {
  */
 declare namespace RedisState {
   export type Controller = ControllerP;
-  export type ConfigsI = StateConfigsI;
-  export type ClientI = RedisClientI;
+  export type Configs = ConfigsI;
+  export type Client = ClientI;
 }
 
 export default RedisState;

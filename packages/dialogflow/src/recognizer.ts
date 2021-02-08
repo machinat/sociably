@@ -3,7 +3,7 @@ import { makeClassProvider } from '@machinat/core/service';
 import type {
   TextIntentDetectResult,
   BaseIntentRecognizer,
-} from '@machinat/core/base/IntentRecognizerI';
+} from '@machinat/core/base/IntentRecognizer';
 import type { MachinatChannel } from '@machinat/core/types';
 import { SessionClientI, ConfigsI } from './interface';
 import { SessionClient, DetactIntentPayload } from './types';

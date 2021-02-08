@@ -12,7 +12,7 @@ import {
 import getRawBody from 'raw-body';
 import thenifiedly from 'thenifiedly';
 import { SIGNATURE_COOKIE_KEY } from './constant';
-import { AuthorizerList, ConfigsI } from './interface';
+import { AuthorizerListI, ConfigsI } from './interface';
 import AuthError from './error';
 import type {
   AnyServerAuthorizer,
@@ -514,7 +514,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
 export const ControllerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [AuthorizerList, ConfigsI] as const,
+  deps: [AuthorizerListI, ConfigsI] as const,
 })(AuthController);
 
 export type ControllerP<

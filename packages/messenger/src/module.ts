@@ -7,7 +7,7 @@ import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import type { RequestRoute } from '@machinat/http/types';
 
-import { ConfigsI as MessengerConfigsI, PlatformMounterI } from './interface';
+import { ConfigsI, PlatformMounterI } from './interface';
 import { MESSENGER } from './constant';
 import { BotP } from './bot';
 import { ReceiverP } from './receiver';
@@ -25,7 +25,7 @@ import type {
 /** @interanl */
 const webhookRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [MessengerConfigsI, ReceiverP] as const,
+  deps: [ConfigsI, ReceiverP] as const,
 })(
   (configs, receiver): RequestRoute => ({
     name: MESSENGER,
@@ -41,7 +41,7 @@ const Messenger = {
   Bot: BotP,
   Receiver: ReceiverP,
   Profiler: ProfilerP,
-  ConfigsI: MessengerConfigsI,
+  Configs: ConfigsI,
 
   initModule: (
     configs: MessengerConfigs
@@ -67,7 +67,7 @@ const Messenger = {
         platform: MESSENGER,
       },
 
-      { provide: MessengerConfigsI, withValue: configs },
+      { provide: ConfigsI, withValue: configs },
       { provide: BaseMarshaler.TypeList, withValue: MessengerChat },
       { provide: BaseMarshaler.TypeList, withValue: MessengerUser },
       { provide: BaseMarshaler.TypeList, withValue: MessengerUserProfile },
@@ -101,7 +101,7 @@ declare namespace Messenger {
   export type Bot = BotP;
   export type Receiver = ReceiverP;
   export type Profiler = ProfilerP;
-  export type ConfigsI = MessengerConfigsI;
+  export type Configs = ConfigsI;
 }
 
 export default Messenger;

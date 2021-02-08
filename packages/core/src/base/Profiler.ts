@@ -22,9 +22,9 @@ const ProfilerPlatformMap = makeInterface<UserProfiler<MachinatUser>>({
 export class BaseProfiler implements UserProfiler<MachinatUser> {
   static PlatformMap = ProfilerPlatformMap;
 
-  private _platformMapping: Map<string, BaseProfiler>;
+  private _platformMapping: Map<string, UserProfiler<MachinatUser>>;
 
-  constructor(platformMapping: Map<string, BaseProfiler>) {
+  constructor(platformMapping: Map<string, UserProfiler<MachinatUser>>) {
     this._platformMapping = platformMapping;
   }
 

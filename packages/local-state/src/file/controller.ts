@@ -9,7 +9,7 @@ import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import {
   BaseStateController,
   StateAccessor,
-} from '@machinat/core/base/StateControllerI';
+} from '@machinat/core/base/StateController';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
 import { ConfigsI, SerializerI } from './interface';
 import type { FileRepositoryConfigs } from './types';

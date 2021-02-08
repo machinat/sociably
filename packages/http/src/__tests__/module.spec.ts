@@ -26,10 +26,10 @@ beforeEach(() => {
 it('export interfaces', () => {
   expect(Http.Connector).toBe(HttpConnector);
 
-  expect(Http.ServerI).toMatchInlineSnapshot(`
+  expect(Http.Server).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "HttpServerI",
+      "$$name": "HttpServer",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -51,10 +51,10 @@ it('export interfaces', () => {
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(Http.ConfigsI).toMatchInlineSnapshot(`
+  expect(Http.Configs).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "HttpConfigsI",
+      "$$name": "HttpConfigs",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -73,7 +73,7 @@ it('provide configs', async () => {
   });
   await app.start();
 
-  expect(app.useServices([Http.ConfigsI])).toEqual([configs]);
+  expect(app.useServices([Http.Configs])).toEqual([configs]);
 });
 
 it('provide http server by default', async () => {
@@ -117,7 +117,7 @@ test('change http server', async () => {
         },
       }),
     ],
-    services: [{ provide: Http.ServerI, withValue: myServer }],
+    services: [{ provide: Http.Server, withValue: myServer }],
   });
 
   await app.start();

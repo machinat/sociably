@@ -5,9 +5,9 @@ import type { AnyScriptLibrary } from './types';
 /**
  * @category Interface
  */
-export const LibraryList = makeInterface<AnyScriptLibrary>({
+export const LibraryListI = makeInterface<AnyScriptLibrary>({
   name: 'ScriptLibraryList',
   multi: true,
 });
 
-export type LibraryList = AnyScriptLibrary;
+export type LibraryListI = AnyScriptLibrary;

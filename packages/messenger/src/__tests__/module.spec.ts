@@ -15,10 +15,10 @@ it('export interfaces', () => {
   expect(Messenger.Receiver).toBe(MessengerReceiver);
   expect(Messenger.Bot).toBe(MessengerBot);
   expect(Messenger.Profiler).toBe(MessengerProfiler);
-  expect(Messenger.ConfigsI).toMatchInlineSnapshot(`
+  expect(Messenger.Configs).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "MessengerConfigsI",
+      "$$name": "MessengerConfigs",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -43,7 +43,7 @@ describe('initModule(configs)', () => {
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
         "$$multi": false,
-        "$$name": "MessengerPlatformMounterI",
+        "$$name": "MessengerPlatformMounter",
         "$$polymorphic": false,
         "$$typeof": Symbol(interface.service.machinat),
       }
@@ -79,7 +79,7 @@ describe('initModule(configs)', () => {
       Messenger.Bot,
       Messenger.Receiver,
       Messenger.Profiler,
-      Messenger.ConfigsI,
+      Messenger.Configs,
       Http.RequestRouteList,
     ]);
 
@@ -114,7 +114,7 @@ describe('initModule(configs)', () => {
     const [bot, profiler, configsProvided, routings] = app.useServices([
       Messenger.Bot,
       Messenger.Profiler,
-      Messenger.ConfigsI,
+      Messenger.Configs,
       Http.RequestRouteList,
     ]);
 

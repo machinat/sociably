@@ -5,7 +5,7 @@ import type { TelegramPlatformMounter, TelegramConfigs } from './types';
  * @category Interface
  */
 export const ConfigsI = makeInterface<TelegramConfigs>({
-  name: 'TelegramConfigsI',
+  name: 'TelegramConfigs',
 });
 
 export type ConfigsI = TelegramConfigs;
@@ -14,5 +14,5 @@ export type ConfigsI = TelegramConfigs;
  * @category Interface
  */
 export const PlatformMounterI = makeInterface<TelegramPlatformMounter>({
-  name: 'TelegramPlatformMounterI',
+  name: 'TelegramPlatformMounter',
 });

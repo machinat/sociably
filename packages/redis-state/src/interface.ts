@@ -6,7 +6,7 @@ import type { RedisStateConfigs } from './types';
  * @category Interface
  */
 export const ConfigsI = makeInterface<RedisStateConfigs>({
-  name: 'RedisStateConfigsI',
+  name: 'RedisStateConfigs',
 });
 
 export type ConfigsI = RedisStateConfigs;
@@ -15,7 +15,7 @@ export type ConfigsI = RedisStateConfigs;
  * @category Interface
  */
 export const ClientI = makeInterface<RedisClient>({
-  name: 'RedisClientI',
+  name: 'RedisClient',
 });
 
 export type ClientI = RedisClient;

@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 import Machinat from '@machinat/core';
-import StateControllerI from '@machinat/core/base/StateControllerI';
+import StateControllerI from '@machinat/core/base/StateController';
 import { ServiceScope, makeClassProvider } from '@machinat/core/service';
 import type {
   MachinatChannel,
@@ -9,7 +9,7 @@ import type {
 } from '@machinat/core/types';
 import execute from './execute';
 import { SCRIPT_STATE_KEY } from './constant';
-import { LibraryList } from './interface';
+import { LibraryListI } from './interface';
 import { serializeScriptStatus } from './utils';
 import type { ScriptLibrary, CallStatus, ScriptProcessState } from './types';
 
@@ -265,7 +265,7 @@ export class ScriptProcessor<Input, ReturnValue> {
 
 export const ProcessorP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [StateControllerI, ServiceScope, LibraryList] as const,
+  deps: [StateControllerI, ServiceScope, LibraryListI] as const,
 })(ScriptProcessor);
 
 export type ProcessorP<Input, ReturnValue> = ScriptProcessor<

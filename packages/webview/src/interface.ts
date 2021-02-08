@@ -15,19 +15,19 @@ import { DEFAULT_AUTH_PATH } from './constant';
 import type { WebviewConfigs, WebviewPlatformMounter } from './types';
 
 export const ConfigsI = makeInterface<WebviewConfigs<AnyServerAuthorizer>>({
-  name: 'WebviewConfigsI',
+  name: 'WebviewConfigs',
 });
 
 export type ConfigsI = WebviewConfigs<AnyServerAuthorizer>;
 
 // auth interfaces
 
-export const AuthorizerList = makeInterface<AnyServerAuthorizer>({
-  name: 'WebviewAuthorizersListI',
+export const AuthorizerListI = makeInterface<AnyServerAuthorizer>({
+  name: 'WebviewAuthorizersList',
   multi: true,
 });
 
-export type AuthorizerList = AnyServerAuthorizer[];
+export type AuthorizerListI = AnyServerAuthorizer[];
 
 export class WebviewAuthController<
   Authorizer extends AnyServerAuthorizer
@@ -35,10 +35,10 @@ export class WebviewAuthController<
 
 export const AuthControllerP: ServiceProvider<
   AuthController<AnyServerAuthorizer>,
-  [AuthorizerList, ConfigsI]
+  [AuthorizerListI, ConfigsI]
 > = makeClassProvider({
   lifetime: 'singleton',
-  deps: [AuthorizerList, ConfigsI] as const,
+  deps: [AuthorizerListI, ConfigsI] as const,
   factory: (
     authorizers,
     {
@@ -71,7 +71,7 @@ export type AuthControllerP<
 // nextjs interfaces
 
 export const NextServerI = makeInterface<NextServer>({
-  name: 'WebviewNextServerI',
+  name: 'WebviewNextServer',
 });
 
 export type NextServerI = NextServer;
@@ -101,20 +101,20 @@ export type NextReceiverP = WebviewNextReceiver;
 // websocket interfaces
 
 export const SocketServerIdI = makeInterface<string>({
-  name: 'WebviewSocketServerIdI',
+  name: 'WebviewSocketServerId',
 });
 
 export const WsServerI = makeInterface<Ws.Server>({
-  name: 'WebviewWsServerI',
+  name: 'WebviewWsServer',
 });
 
 export type WsServerI = Ws.Server;
 
-export const SocketBrokerI = makeInterface<WebSocket.BrokerI>({
-  name: 'WebviewSocketBrokerI',
+export const SocketBrokerI = makeInterface<WebSocket.Broker>({
+  name: 'WebviewSocketBroker',
 });
 
-export type SocketBrokerI = WebSocket.BrokerI;
+export type SocketBrokerI = WebSocket.Broker;
 
 export class WebviewSocketServer<
   Authorizer extends AnyServerAuthorizer
@@ -169,5 +169,5 @@ export type SocketServerP<
 export const PlatformMounterI = makeInterface<
   WebviewPlatformMounter<AnyServerAuthorizer>
 >({
-  name: 'WebviewPlatformMounterI',
+  name: 'WebviewPlatformMounter',
 });

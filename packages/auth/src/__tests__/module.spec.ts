@@ -10,10 +10,10 @@ const entryPath = '/auth';
 
 it('export interfaces', () => {
   expect(Auth.Controller).toBe(ControllerP);
-  expect(Auth.ConfigsI).toMatchInlineSnapshot(`
+  expect(Auth.Configs).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "AuthConfigsI",
+      "$$name": "AuthConfigs",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -38,7 +38,7 @@ describe('initModule()', () => {
 
     const [controller, configs, routings] = app.useServices([
       Auth.Controller,
-      Auth.ConfigsI,
+      Auth.Configs,
       Http.RequestRouteList,
     ]);
 

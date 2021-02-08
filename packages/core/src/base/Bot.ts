@@ -2,7 +2,7 @@ import type { MachinatBot, MachinatChannel, MachinatNode } from '../types';
 import type { DispatchResponse } from '../engine/types';
 import { makeInterface, makeClassProvider } from '../service';
 
-const BotPlatformMap = makeInterface<
+const BotPlatformMapI = makeInterface<
   MachinatBot<MachinatChannel, unknown, unknown>
 >({
   name: 'BotPlatformMap',
@@ -13,7 +13,7 @@ const BotPlatformMap = makeInterface<
  * @category Base
  */
 export class BaseBot implements MachinatBot<MachinatChannel, unknown, unknown> {
-  static PlatformMap = BotPlatformMap;
+  static PlatformMap = BotPlatformMapI;
   private _platformMapping: Map<
     string,
     MachinatBot<MachinatChannel, unknown, unknown>
@@ -45,10 +45,10 @@ export class BaseBot implements MachinatBot<MachinatChannel, unknown, unknown> {
 
 const BotP = makeClassProvider<
   MachinatBot<MachinatChannel, unknown, unknown>,
-  [typeof BotPlatformMap]
+  [typeof BotPlatformMapI]
 >({
   lifetime: 'transient',
-  deps: [BotPlatformMap],
+  deps: [BotPlatformMapI],
 })(BaseBot);
 
 type BotP = BaseBot;

@@ -39,11 +39,11 @@ Machinat.createApp({
   ],
   services: [
     {
-      porvide: Auth.AUTHORIZERS_I,
+      porvide: Auth.AuthorizerList,
       withProvider: MessengerServerAuthorizer,
     },
     {
-      provide: Http.REQUEST_ROUTINGS_I,
+      provide: Http.RequestRouteList,
       withProvider: factory({
         lifetime: 'transient',
         deps: [Auth.Controller]

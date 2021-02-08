@@ -1,6 +1,6 @@
 import type { ServiceModule } from '@machinat/core/types';
 import { ProcessorP } from './processor';
-import { LibraryList as ScriptLibraryList } from './interface';
+import { LibraryListI } from './interface';
 import type { AnyScriptLibrary } from './types';
 
 type ScriptConfigs = {
@@ -12,12 +12,12 @@ type ScriptConfigs = {
  */
 const Script = {
   Processor: ProcessorP,
-  LibraryList: ScriptLibraryList,
+  LibraryList: LibraryListI,
 
   initModule: ({ libs }: ScriptConfigs = {}): ServiceModule => {
     const libraries =
       libs?.map((lib) => ({
-        provide: ScriptLibraryList,
+        provide: LibraryListI,
         withValue: lib,
       })) || [];
 
@@ -30,7 +30,7 @@ const Script = {
  */
 declare namespace Script {
   export type Processor<Input, ReturnValue> = ProcessorP<Input, ReturnValue>;
-  export type LibraryList = ScriptLibraryList;
+  export type LibraryList = LibraryListI;
 }
 
 export default Script;

@@ -20,10 +20,10 @@ import Webview from '../module';
 const createNextServer = _createNextServer as Moxy<typeof _createNextServer>;
 
 it('export interfaces', () => {
-  expect(Webview.ConfigsI).toMatchInlineSnapshot(`
+  expect(Webview.Configs).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebviewConfigsI",
+      "$$name": "WebviewConfigs",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -32,26 +32,26 @@ it('export interfaces', () => {
   expect(Webview.Bot).toBe(WebviewBot);
   expect(Webview.Receiver).toBe(WebviewReceiver);
   expect(Object.getPrototypeOf(Webview.SocketServer)).toBe(WebSocket.Server);
-  expect(Webview.SocketBrokerI).toMatchInlineSnapshot(`
+  expect(Webview.SocketBroker).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebviewSocketBrokerI",
+      "$$name": "WebviewSocketBroker",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(Webview.SocketServerIdI).toMatchInlineSnapshot(`
+  expect(Webview.SocketServerId).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebviewSocketServerIdI",
+      "$$name": "WebviewSocketServerId",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(Webview.WsServerI).toMatchInlineSnapshot(`
+  expect(Webview.WsServer).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebviewWsServerI",
+      "$$name": "WebviewWsServer",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -61,7 +61,7 @@ it('export interfaces', () => {
   expect(Webview.AuthorizerList).toMatchInlineSnapshot(`
     Object {
       "$$multi": true,
-      "$$name": "WebviewAuthorizersListI",
+      "$$name": "WebviewAuthorizersList",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -86,7 +86,7 @@ test('module object', () => {
   expect(module.mounterInterface).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebviewPlatformMounterI",
+      "$$name": "WebviewPlatformMounter",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -125,14 +125,14 @@ test('service provisions', async () => {
     nextServer,
     upgradeRoutes,
   ] = app.useServices([
-    Webview.ConfigsI,
+    Webview.Configs,
     Webview.Bot,
     Webview.Receiver,
     Webview.SocketServer,
     Webview.AuthController,
     Webview.AuthorizerList,
     Webview.NextReceiver,
-    Webview.NextServerI,
+    Webview.NextServer,
     Http.UpgradeRouteList,
   ]);
 

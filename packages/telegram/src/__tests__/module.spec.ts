@@ -23,10 +23,10 @@ it('export interfaces', () => {
   expect(Telegram.Receiver).toBe(TelegramReceiver);
   expect(Telegram.Bot).toBe(TelegramBot);
   expect(Telegram.Profiler).toBe(TelegramProfiler);
-  expect(Telegram.ConfigsI).toMatchInlineSnapshot(`
+  expect(Telegram.Configs).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "TelegramConfigsI",
+      "$$name": "TelegramConfigs",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -51,7 +51,7 @@ describe('initModule(configs)', () => {
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
         "$$multi": false,
-        "$$name": "TelegramPlatformMounterI",
+        "$$name": "TelegramPlatformMounter",
         "$$polymorphic": false,
         "$$typeof": Symbol(interface.service.machinat),
       }
@@ -86,7 +86,7 @@ describe('initModule(configs)', () => {
     ] = app.useServices([
       Telegram.Bot,
       Telegram.Receiver,
-      Telegram.ConfigsI,
+      Telegram.Configs,
       Telegram.Profiler,
       Http.RequestRouteList,
     ]);
@@ -117,7 +117,7 @@ describe('initModule(configs)', () => {
 
     const [bot, configsProvided, profiler, routings] = app.useServices([
       Telegram.Bot,
-      Telegram.ConfigsI,
+      Telegram.Configs,
       Telegram.Profiler,
       Http.RequestRouteList,
     ]);

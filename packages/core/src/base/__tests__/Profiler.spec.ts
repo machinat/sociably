@@ -1,8 +1,20 @@
 import moxy from '@moxyjs/moxy';
 import { BaseProfiler } from '../Profiler';
 
-const fooProfiler = moxy({ getUserProfile: async () => 'FOO' });
-const barProfiler = moxy({ getUserProfile: async () => 'BAR' });
+const fooProfiler = moxy({
+  getUserProfile: async () => ({
+    platform: 'test',
+    name: 'FOO',
+    pictureUrl: 'http://foo...',
+  }),
+});
+const barProfiler = moxy({
+  getUserProfile: async () => ({
+    platform: 'test',
+    name: 'BAR',
+    pictureUrl: 'http://bar...',
+  }),
+});
 
 it('proxy #getUserProfile() call to the profiler corresponded to the user platform', async () => {
   const profiler = new BaseProfiler(
@@ -14,10 +26,18 @@ it('proxy #getUserProfile() call to the profiler corresponded to the user platfo
 
   await expect(
     profiler.getUserProfile({ platform: 'foo', uid: 'foo1' })
-  ).resolves.toBe('FOO');
+  ).resolves.toEqual({
+    platform: 'test',
+    name: 'FOO',
+    pictureUrl: 'http://foo...',
+  });
   await expect(
     profiler.getUserProfile({ platform: 'bar', uid: 'bar1' })
-  ).resolves.toBe('BAR');
+  ).resolves.toEqual({
+    platform: 'test',
+    name: 'BAR',
+    pictureUrl: 'http://bar...',
+  });
 
   expect(fooProfiler.getUserProfile.mock).toHaveBeenCalledTimes(1);
   expect(fooProfiler.getUserProfile.mock).toHaveBeenCalledWith({
@@ -33,7 +53,11 @@ it('proxy #getUserProfile() call to the profiler corresponded to the user platfo
 
   await expect(
     profiler.getUserProfile({ platform: 'foo', uid: 'foo2' })
-  ).resolves.toBe('FOO');
+  ).resolves.toEqual({
+    platform: 'test',
+    name: 'FOO',
+    pictureUrl: 'http://foo...',
+  });
 
   expect(fooProfiler.getUserProfile.mock).toHaveBeenCalledTimes(2);
   expect(fooProfiler.getUserProfile.mock).toHaveBeenCalledWith({

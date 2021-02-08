@@ -1,25 +1,22 @@
 import type { ServiceModule } from '@machinat/core/types';
-import StateControllerI from '@machinat/core/base/StateControllerI';
+import StateControllerI from '@machinat/core/base/StateController';
 import { ControllerP } from './controller';
-import {
-  ConfigsI as StateConfigsI,
-  SerializerI as StateSerializerI,
-} from './interface';
+import { ConfigsI, SerializerI } from './interface';
 
 /**
  * @category Root
  */
 const FileState = {
   Controller: ControllerP,
-  SerializerI: StateSerializerI,
-  ConfigsI: StateConfigsI,
+  Serializer: SerializerI,
+  Configs: ConfigsI,
 
-  initModule: (configs: StateConfigsI): ServiceModule => ({
+  initModule: (configs: ConfigsI): ServiceModule => ({
     provisions: [
       ControllerP,
       { provide: StateControllerI, withProvider: ControllerP },
 
-      { provide: StateConfigsI, withValue: configs },
+      { provide: ConfigsI, withValue: configs },
     ],
   }),
 };
@@ -29,8 +26,8 @@ const FileState = {
  */
 declare namespace FileState {
   export type Controller = ControllerP;
-  export type SerializerI = StateSerializerI;
-  export type ConfigsI = StateConfigsI;
+  export type Serializer = SerializerI;
+  export type Configs = ConfigsI;
 }
 
 export default FileState;

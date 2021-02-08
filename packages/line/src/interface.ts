@@ -5,7 +5,7 @@ import type { LineConfigs, LinePlatformMounter } from './types';
  * @category Interface
  */
 export const ConfigsI = makeInterface<LineConfigs>({
-  name: 'LineConfigsI',
+  name: 'LineConfigs',
 });
 
 export type ConfigsI = LineConfigs;
@@ -14,5 +14,5 @@ export type ConfigsI = LineConfigs;
  * @category Interface
  */
 export const PlatformMounterI = makeInterface<LinePlatformMounter>({
-  name: 'LinePlatformMounterI',
+  name: 'LinePlatformMounter',
 });

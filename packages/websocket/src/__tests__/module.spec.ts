@@ -17,42 +17,42 @@ it('export interfaces', () => {
   expect(WebSocket.Bot).toBe(WebSocketBot);
   expect(WebSocket.Receiver).toBe(WebSocketReceiver);
   expect(WebSocket.Server).toBe(WebSocketServer);
-  expect(WebSocket.ConfigsI).toMatchInlineSnapshot(`
+  expect(WebSocket.Configs).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebSocketConfigsI",
+      "$$name": "WebSocketConfigs",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(WebSocket.LoginVerifierI).toMatchInlineSnapshot(`
+  expect(WebSocket.LoginVerifier).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebSocketLoginVerifierI",
+      "$$name": "WebSocketLoginVerifier",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(WebSocket.UpgradeVerifierI).toMatchInlineSnapshot(`
+  expect(WebSocket.UpgradeVerifier).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebSocketUpgradeVerifierI",
+      "$$name": "WebSocketUpgradeVerifier",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(WebSocket.ServerIdI).toMatchInlineSnapshot(`
+  expect(WebSocket.ServerId).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebSocketServerIdI",
+      "$$name": "WebSocketServerId",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(WebSocket.WsServerI).toMatchInlineSnapshot(`
+  expect(WebSocket.WsServer).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebSocketWsServerI",
+      "$$name": "WebSocketWsServer",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -73,7 +73,7 @@ describe('initModule()', () => {
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
         "$$multi": false,
-        "$$name": "WebSocketPlatformMounterI",
+        "$$name": "WebSocketPlatformMounter",
         "$$polymorphic": false,
         "$$typeof": Symbol(interface.service.machinat),
       }
@@ -99,7 +99,7 @@ describe('initModule()', () => {
       WebSocket.Bot,
       WebSocket.Receiver,
       WebSocket.Server,
-      WebSocket.ConfigsI,
+      WebSocket.Configs,
       Http.UpgradeRouteList,
     ]);
 

@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import type Base from '@machinat/core/base';
+import type StateControllerI from '@machinat/core/base/StateController';
 import type { LineBot } from '../../bot';
 import { LineAssetsManager } from '../manager';
 
@@ -12,7 +12,7 @@ const state = moxy({
   clear: () => {},
 });
 
-const stateController = moxy<Base.StateControllerI>({
+const stateController = moxy<StateControllerI>({
   globalState() {
     return state;
   },

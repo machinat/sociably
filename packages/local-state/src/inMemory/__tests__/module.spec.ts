@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import StateControllerI from '@machinat/core/base/StateControllerI';
+import StateControllerI from '@machinat/core/base/StateController';
 import InMemoryState from '../module';
 import { ControllerP as InMemoryStateController } from '../controller';
 

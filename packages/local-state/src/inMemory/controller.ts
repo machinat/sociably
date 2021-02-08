@@ -2,7 +2,7 @@ import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import type {
   BaseStateController,
   StateAccessor,
-} from '@machinat/core/base/StateControllerI';
+} from '@machinat/core/base/StateController';
 import { makeClassProvider } from '@machinat/core/service';
 
 export class InMemoryStateAccessor implements StateAccessor {

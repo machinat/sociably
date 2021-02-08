@@ -2,7 +2,7 @@ import moxy, { Moxy } from '@moxyjs/moxy';
 import redis, { RedisClient } from 'redis';
 import { EventEmitter } from 'events';
 import Machinat from '@machinat/core';
-import StateControllerI from '@machinat/core/base/StateControllerI';
+import StateControllerI from '@machinat/core/base/StateController';
 import RedisState from '../module';
 import { ControllerP as RedisStateController } from '../controller';
 
@@ -14,18 +14,18 @@ jest.mock('redis', () =>
 
 test('export interfaces', () => {
   expect(RedisState.Controller).toBe(RedisStateController);
-  expect(RedisState.ConfigsI).toMatchInlineSnapshot(`
+  expect(RedisState.Configs).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "RedisStateConfigsI",
+      "$$name": "RedisStateConfigs",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(RedisState.ClientI).toMatchInlineSnapshot(`
+  expect(RedisState.Client).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "RedisClientI",
+      "$$name": "RedisClient",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -44,8 +44,8 @@ test('provisions', async () => {
 
   const [controller, client, configs] = app.useServices([
     RedisStateController,
-    RedisState.ClientI,
-    RedisState.ConfigsI,
+    RedisState.Client,
+    RedisState.Configs,
   ]);
 
   expect(controller).toBeInstanceOf(RedisStateController);

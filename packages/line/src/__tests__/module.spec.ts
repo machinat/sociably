@@ -15,10 +15,10 @@ it('export interfaces', () => {
   expect(Line.Receiver).toBe(LineReceiver);
   expect(Line.Bot).toBe(LineBot);
   expect(Line.Profiler).toBe(LineProfiler);
-  expect(Line.ConfigsI).toMatchInlineSnapshot(`
+  expect(Line.Configs).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "LineConfigsI",
+      "$$name": "LineConfigs",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -42,7 +42,7 @@ describe('initModule(configs)', () => {
     expect(module.mounterInterface).toMatchInlineSnapshot(`
       Object {
         "$$multi": false,
-        "$$name": "LinePlatformMounterI",
+        "$$name": "LinePlatformMounter",
         "$$polymorphic": false,
         "$$typeof": Symbol(interface.service.machinat),
       }
@@ -77,7 +77,7 @@ describe('initModule(configs)', () => {
     ] = app.useServices([
       Line.Bot,
       Line.Receiver,
-      Line.ConfigsI,
+      Line.Configs,
       Line.Profiler,
       Http.RequestRouteList,
     ]);
@@ -106,7 +106,7 @@ describe('initModule(configs)', () => {
 
     const [bot, configsProvided, profiler, routings] = app.useServices([
       Line.Bot,
-      Line.ConfigsI,
+      Line.Configs,
       Line.Profiler,
       Http.RequestRouteList,
     ]);

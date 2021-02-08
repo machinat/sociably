@@ -7,7 +7,7 @@ import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import { RequestRoute } from '@machinat/http/types';
 
-import { ConfigsI as LineConfigsI, PlatformMounterI } from './interface';
+import { ConfigsI, PlatformMounterI } from './interface';
 import { LINE } from './constant';
 import { ReceiverP } from './receiver';
 import { BotP } from './bot';
@@ -24,7 +24,7 @@ import type {
 /** @internal */
 const webhookRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [LineConfigsI, ReceiverP] as const,
+  deps: [ConfigsI, ReceiverP] as const,
 })(
   (configs, receiver): RequestRoute => ({
     name: LINE,
@@ -40,10 +40,10 @@ const Line = {
   Bot: BotP,
   Receiver: ReceiverP,
   Profiler: ProfilerP,
-  ConfigsI: LineConfigsI,
+  Configs: ConfigsI,
 
   initModule: (
-    configs: LineConfigsI
+    configs: ConfigsI
   ): PlatformModule<
     LineEventContext,
     null,
@@ -66,7 +66,7 @@ const Line = {
         platform: LINE,
       },
 
-      { provide: LineConfigsI, withValue: configs },
+      { provide: ConfigsI, withValue: configs },
       { provide: BaseMarshaler.TypeList, withValue: LineChat },
       { provide: BaseMarshaler.TypeList, withValue: LineUser },
       { provide: BaseMarshaler.TypeList, withValue: LineUserProfile },
@@ -101,7 +101,7 @@ declare namespace Line {
   export type Bot = BotP;
   export type Receiver = ReceiverP;
   export type Profiler = ProfilerP;
-  export type ConfigsI = LineConfigsI;
+  export type Configs = ConfigsI;
 }
 
 export default Line;

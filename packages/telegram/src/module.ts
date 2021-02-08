@@ -7,7 +7,7 @@ import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import type { RequestRoute } from '@machinat/http/types';
 
-import { ConfigsI as TelegramConfigsI, PlatformMounterI } from './interface';
+import { ConfigsI, PlatformMounterI } from './interface';
 import { TELEGRAM } from './constant';
 import { BotP } from './bot';
 import { ReceiverP } from './receiver';
@@ -32,7 +32,7 @@ import type {
 /** @interanl */
 const webhookRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [TelegramConfigsI, ReceiverP] as const,
+  deps: [ConfigsI, ReceiverP] as const,
 })(
   (configs, receiver): RequestRoute => ({
     name: TELEGRAM,
@@ -48,10 +48,10 @@ const Telegram = {
   Bot: BotP,
   Receiver: ReceiverP,
   Profiler: ProfilerP,
-  ConfigsI: TelegramConfigsI,
+  Configs: ConfigsI,
 
   initModule: (
-    configs: TelegramConfigsI
+    configs: ConfigsI
   ): PlatformModule<
     TelegramEventContext,
     null,
@@ -60,7 +60,7 @@ const Telegram = {
     TelegramResult
   > => {
     const provisions: ServiceProvision<unknown>[] = [
-      { provide: TelegramConfigsI, withValue: configs },
+      { provide: ConfigsI, withValue: configs },
       BotP,
       {
         provide: BaseBot.PlatformMap,

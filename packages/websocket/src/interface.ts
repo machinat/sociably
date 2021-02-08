@@ -1,3 +1,4 @@
+import type { MachinatUser } from '@machinat/core/types';
 import { makeInterface } from '@machinat/core/service';
 import type {
   WsServer,
@@ -12,7 +13,7 @@ import type {
  * @category Interface
  */
 export const WsServerI = makeInterface<WsServer>({
-  name: 'WebSocketWsServerI',
+  name: 'WebSocketWsServer',
 });
 
 export type WsServerI = WsServer;
@@ -21,7 +22,7 @@ export type WsServerI = WsServer;
  * @category Interface
  */
 export const UpgradeVerifierI = makeInterface<VerifyUpgradeFn>({
-  name: 'WebSocketUpgradeVerifierI',
+  name: 'WebSocketUpgradeVerifier',
 });
 
 export type UpgradeVerifierI = VerifyUpgradeFn;
@@ -30,7 +31,7 @@ export type UpgradeVerifierI = VerifyUpgradeFn;
  * @category Interface
  */
 export const LoginVerifierI = makeInterface<AnyVerifyLoginFn>({
-  name: 'WebSocketLoginVerifierI',
+  name: 'WebSocketLoginVerifier',
 });
 
 export type LoginVerifierI = AnyVerifyLoginFn;
@@ -39,32 +40,32 @@ export type LoginVerifierI = AnyVerifyLoginFn;
  * @category Interface
  */
 export const ServerIdI = makeInterface<string>({
-  name: 'WebSocketServerIdI',
+  name: 'WebSocketServerId',
 });
 
 /**
  * @category Interface
  */
 export const PlatformMounterI = makeInterface<
-  WebSocketPlatformMounter<any, unknown>
+  WebSocketPlatformMounter<MachinatUser, unknown>
 >({
-  name: 'WebSocketPlatformMounterI',
+  name: 'WebSocketPlatformMounter',
 });
 
 /**
  * @category Interface
  */
-export const ConfigsI = makeInterface<WebSocketConfigs<any, unknown>>({
-  name: 'WebSocketConfigsI',
+export const ConfigsI = makeInterface<WebSocketConfigs<MachinatUser, unknown>>({
+  name: 'WebSocketConfigs',
 });
 
-export type ConfigsI = WebSocketConfigs<any, unknown>;
+export type ConfigsI = WebSocketConfigs<MachinatUser, unknown>;
 
 /**
  * @category Interface
  */
 export const BrokerI = makeInterface<WebSocketClusterBroker>({
-  name: 'WebSocketClusterBrokerI',
+  name: 'WebSocketClusterBroker',
 });
 
 export type BrokerI = WebSocketClusterBroker;

@@ -5,14 +5,14 @@ import type { NextConfigs, NextPlatformMounter, NextServer } from './types';
  * @category Interface
  */
 export const PlatformMounterI = makeInterface<NextPlatformMounter>({
-  name: 'NextPlatformMounterI',
+  name: 'NextPlatformMounter',
 });
 
 /**
  * @category Interface
  */
 export const ConfigsI = makeInterface<NextConfigs>({
-  name: 'NextConfigsI',
+  name: 'NextConfigs',
 });
 
 export type ConfigsI = NextConfigs;
@@ -21,7 +21,7 @@ export type ConfigsI = NextConfigs;
  * @category Interface
  */
 export const ServerI = makeInterface<NextServer>({
-  name: 'NextServerI',
+  name: 'NextServer',
 });
 
 export type ServerI = NextServer;

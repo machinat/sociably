@@ -9,7 +9,7 @@ import type {
 } from './types';
 
 export const ServerI = makeInterface<Server>({
-  name: 'HttpServerI',
+  name: 'HttpServer',
 });
 
 export type ServerI = Server;
@@ -18,7 +18,7 @@ export type ServerI = Server;
  * @category Interface
  */
 export const ConfigsI = makeInterface<HttpConfigs>({
-  name: 'HttpConfigsI',
+  name: 'HttpConfigs',
 });
 
 export type ConfigsI = HttpConfigs;
@@ -26,23 +26,23 @@ export type ConfigsI = HttpConfigs;
 /**
  * @category Interface
  */
-export const RequestRouteList = makeInterface<
+export const RequestRouteListI = makeInterface<
   RequestRoute | DefaultRequestRoute
 >({
   name: 'HttpRequestRouteList',
   multi: true,
 });
 
-export type RequestRouteList = (RequestRoute | DefaultRequestRoute)[];
+export type RequestRouteListI = (RequestRoute | DefaultRequestRoute)[];
 
 /**
  * @category Interface
  */
-export const UpgradeRouteList = makeInterface<
+export const UpgradeRouteListI = makeInterface<
   UpgradeRoute | DefaultUpgradeRoute
 >({
   name: 'HttpUpgradeRouteList',
   multi: true,
 });
 
-export type UpgradeRouteList = (UpgradeRoute | DefaultUpgradeRoute)[];
+export type UpgradeRouteListI = (UpgradeRoute | DefaultUpgradeRoute)[];

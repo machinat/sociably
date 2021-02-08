@@ -18,7 +18,7 @@ export interface BaseIntentRecognizer<Payload> {
 }
 
 const IntentRecognizerI = makeInterface<BaseIntentRecognizer<unknown>>({
-  name: 'BaseIntentRecognizerI',
+  name: 'BaseIntentRecognizer',
 });
 
 type IntentRecognizerI<Payload> = BaseIntentRecognizer<Payload>;

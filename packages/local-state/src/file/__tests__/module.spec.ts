@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import StateControllerI from '@machinat/core/base/StateControllerI';
+import StateControllerI from '@machinat/core/base/StateController';
 import { tmpNameSync } from 'tmp';
 import FileState from '../module';
 import { ControllerP as FileStateController } from '../controller';
@@ -8,20 +8,20 @@ const storageFilePath = tmpNameSync();
 
 test('export interfaces', () => {
   expect(FileState.Controller).toBe(FileStateController);
-  expect(FileState.ConfigsI).toMatchInlineSnapshot(`
+  expect(FileState.Configs).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "FileStateConfigsI",
+      "$$name": "FileStateConfigs",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
 
-  const { $$multi, $$name, $$typeof } = FileState.SerializerI;
+  const { $$multi, $$name, $$typeof } = FileState.Serializer;
   expect({ $$multi, $$name, $$typeof }).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "FileStateSerializerI",
+      "$$name": "FileStateSerializer",
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
@@ -35,7 +35,7 @@ test('provisions', async () => {
 
   const [controller, configs] = app.useServices([
     FileStateController,
-    FileState.ConfigsI,
+    FileState.Configs,
   ]);
 
   expect(controller).toBeInstanceOf(FileStateController);

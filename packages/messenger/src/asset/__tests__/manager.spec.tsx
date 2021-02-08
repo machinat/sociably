@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import type Base from '@machinat/core/base';
+import type StateControllerI from '@machinat/core/base/StateController';
 import type { MessengerBot } from '../../bot';
 import { MessengerAssetsManager } from '../manager';
 
@@ -13,7 +13,7 @@ const state = moxy({
   clear: () => {},
 });
 
-const stateController = moxy<Base.StateControllerI>({
+const stateController = moxy<StateControllerI>({
   globalState() {
     return state;
   },

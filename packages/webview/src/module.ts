@@ -26,11 +26,11 @@ import {
   NextReceiverP,
   PlatformMounterI,
   SocketServerIdI,
-  ConfigsI as WebviewConfigsI,
-  SocketBrokerI as WebviewSocketBrokerI,
-  WsServerI as WebviewWsServerI,
-  AuthorizerList as WebviewAuthorizerList,
-  NextServerI as WebviewNextServerI,
+  ConfigsI,
+  SocketBrokerI,
+  WsServerI,
+  AuthorizerListI,
+  NextServerI,
 } from './interface';
 import { BotP } from './bot';
 import { ReceiverP } from './receiver';
@@ -50,7 +50,7 @@ import type {
 
 const nextServerFactory = makeFactoryProvider({
   lifetime: 'singleton',
-  deps: [WebviewConfigsI],
+  deps: [ConfigsI],
 })(({ nextServerOptions }) => createNextServer(nextServerOptions || {}));
 
 /** @internal */
@@ -61,7 +61,7 @@ const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
 /** @internal */
 const webSocketRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [SocketServerP, WebviewConfigsI] as const,
+  deps: [SocketServerP, ConfigsI] as const,
 })(
   (server, { webSocketPath }): UpgradeRoute => ({
     name: 'websocket',
@@ -73,7 +73,7 @@ const webSocketRouteFactory = makeFactoryProvider({
 /** @internal */
 const authRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [AuthControllerP, WebviewConfigsI] as const,
+  deps: [AuthControllerP, ConfigsI] as const,
 })(
   (controller, { authApiPath }): RequestRoute => ({
     name: 'auth',
@@ -87,7 +87,7 @@ const authRouteFactory = makeFactoryProvider({
 /** @internal */
 const nextRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [NextReceiverP, WebviewConfigsI] as const,
+  deps: [NextReceiverP, ConfigsI] as const,
 })((receiver, { webviewPath }): RequestRoute | DefaultRequestRoute => {
   const handler = receiver.handleRequestCallback();
   return webviewPath
@@ -99,20 +99,20 @@ const nextRouteFactory = makeFactoryProvider({
  * @category Root
  */
 const Webview = {
-  ConfigsI: WebviewConfigsI,
+  Configs: ConfigsI,
 
   Bot: BotP,
   Receiver: ReceiverP,
   SocketServer: SocketServerP,
-  SocketBrokerI: WebviewSocketBrokerI,
-  WsServerI: WebviewWsServerI,
-  SocketServerIdI,
+  SocketBroker: SocketBrokerI,
+  WsServer: WsServerI,
+  SocketServerId: SocketServerIdI,
 
   AuthController: AuthControllerP,
-  AuthorizerList: WebviewAuthorizerList,
+  AuthorizerList: AuthorizerListI,
 
   NextReceiver: NextReceiverP,
-  NextServerI: WebviewNextServerI,
+  NextServer: NextServerI,
 
   initModule: <
     Authorizer extends AnyServerAuthorizer,
@@ -127,7 +127,7 @@ const Webview = {
     WebSocketResult
   > => {
     const provisions: ServiceProvision<unknown>[] = [
-      { provide: WebviewConfigsI, withValue: configs },
+      { provide: ConfigsI, withValue: configs },
 
       BotP,
       {
@@ -137,8 +137,8 @@ const Webview = {
       },
 
       SocketServerP,
-      { provide: WebviewWsServerI, withProvider: wsServerFactory },
-      { provide: WebviewSocketBrokerI, withProvider: LocalOnlyBroker },
+      { provide: WsServerI, withProvider: wsServerFactory },
+      { provide: SocketBrokerI, withProvider: LocalOnlyBroker },
 
       ReceiverP,
       {
@@ -159,7 +159,7 @@ const Webview = {
     if (!configs.noNextServer) {
       provisions.push(
         NextReceiverP,
-        { provide: WebviewNextServerI, withProvider: nextServerFactory },
+        { provide: NextServerI, withProvider: nextServerFactory },
         {
           provide: Http.UpgradeRouteList,
           withProvider: nextRouteFactory,
@@ -196,17 +196,17 @@ declare namespace Webview {
     Authorizer extends AnyServerAuthorizer
   > = SocketServerP<Authorizer>;
 
-  export type ConfigsI = WebviewConfigsI;
-  export type SocketBrokerI = WebviewSocketBrokerI;
-  export type WsServerI = WebviewWsServerI;
+  export type Configs = ConfigsI;
+  export type SocketBroker = SocketBrokerI;
+  export type WsServer = WsServerI;
   export type SocketServerIdI = string;
 
   export type AuthController<
     Authorizer extends AnyServerAuthorizer
   > = AuthControllerP<Authorizer>;
-  export type AuthorizerList = WebviewAuthorizerList;
+  export type AuthorizerList = AuthorizerListI;
 
-  export type NextServerI = WebviewNextServerI;
+  export type NextServer = NextServerI;
   export type NextReceiver = NextReceiverP;
 }
 

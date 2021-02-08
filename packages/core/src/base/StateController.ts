@@ -25,7 +25,7 @@ export interface BaseStateController {
 }
 
 const StateControllerI = makeInterface<BaseStateController>({
-  name: 'BaseStateControllerI',
+  name: 'BaseStateController',
 });
 
 type StateControllerI = BaseStateController;

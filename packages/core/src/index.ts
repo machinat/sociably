@@ -7,38 +7,48 @@ import {
 } from './symbol';
 import createElement from './createElement';
 import App from './app';
+import BaseBot from './base/Bot';
+import BaseProfiler from './base/Profiler';
+import BaseMarshaler from './base/Marshaler';
 import type {
   AppConfig,
-  PlatformModule,
   MachinatElement,
   NativeComponent,
   ContainerComponent,
+  AnyPlatformModule,
 } from './types';
 
 /**
  * @category Root
  */
 const Machinat = {
-  Fragment: MACHINAT_FRAGMENT_TYPE,
-  Pause: MACHINAT_PAUSE_TYPE,
-  Provider: MACHINAT_PROVIDER_TYPE,
-  Thunk: MACHINAT_THUNK_TYPE,
-  Raw: MACHINAT_RAW_TYPE,
   createElement,
-  createApp<Platform extends PlatformModule<any, any, any, any, any>>(
+  createApp<Platform extends AnyPlatformModule>(
     config: AppConfig<Platform>
   ): App<Platform> {
     const app = new App(config);
     return app;
   },
+
+  Fragment: MACHINAT_FRAGMENT_TYPE,
+  Pause: MACHINAT_PAUSE_TYPE,
+  Provider: MACHINAT_PROVIDER_TYPE,
+  Thunk: MACHINAT_THUNK_TYPE,
+  Raw: MACHINAT_RAW_TYPE,
+
+  Bot: BaseBot,
+  Profiler: BaseProfiler,
+  Marshaler: BaseMarshaler,
 };
 
 export default Machinat;
 
 declare global {
   namespace JSX {
-    type Element = MachinatElement<any, any>;
-    type ElementClass = NativeComponent<any, any> | ContainerComponent<any>;
+    type Element = MachinatElement<unknown, unknown>;
+    type ElementClass =
+      | NativeComponent<unknown, any>
+      | ContainerComponent<unknown>;
 
     interface ElementAttributesProperty {
       $$typeof: {};

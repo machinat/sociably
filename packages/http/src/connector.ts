@@ -3,7 +3,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
 import { makeClassProvider } from '@machinat/core/service';
-import { ServerI, RequestRouteList, UpgradeRouteList } from './interface';
+import { ServerI, RequestRouteListI, UpgradeRouteListI } from './interface';
 import {
   endRes,
   respondUpgrade,
@@ -225,7 +225,7 @@ export class HttpConnector {
 
 export const ConnectorP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [RequestRouteList, UpgradeRouteList] as const,
+  deps: [RequestRouteListI, UpgradeRouteListI] as const,
   factory: (requestRoutes, upgradeRoutes) =>
     new HttpConnector({ requestRoutes, upgradeRoutes }),
 })(HttpConnector);

@@ -5,7 +5,7 @@ import type { MessengerPlatformMounter, MessengerConfigs } from './types';
  * @category Interface
  */
 export const ConfigsI = makeInterface<MessengerConfigs>({
-  name: 'MessengerConfigsI',
+  name: 'MessengerConfigs',
 });
 
 export type ConfigsI = MessengerConfigs;
@@ -14,5 +14,5 @@ export type ConfigsI = MessengerConfigs;
  * @category Interface
  */
 export const PlatformMounterI = makeInterface<MessengerPlatformMounter>({
-  name: 'MessengerPlatformMounterI',
+  name: 'MessengerPlatformMounter',
 });
