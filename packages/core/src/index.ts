@@ -45,10 +45,8 @@ export default Machinat;
 
 declare global {
   namespace JSX {
-    type Element = MachinatElement<unknown, unknown>;
-    type ElementClass =
-      | NativeComponent<unknown, any>
-      | ContainerComponent<unknown>;
+    type Element = MachinatElement<any, any>;
+    type ElementClass = NativeComponent<any, any> | ContainerComponent<any>;
 
     interface ElementAttributesProperty {
       $$typeof: {};
