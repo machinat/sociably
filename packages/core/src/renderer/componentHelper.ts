@@ -20,8 +20,14 @@ export const annotateNativeComponent = (platform: string) => <
   componentFn: FunctionOf<Component>
 ): Component =>
   Object.defineProperties(componentFn, {
-    $$typeof: { value: MACHINAT_NATIVE_TYPE },
-    $$platform: { value: platform },
+    $$typeof: {
+      value: MACHINAT_NATIVE_TYPE,
+      configurable: true,
+    },
+    $$platform: {
+      value: platform,
+      configurable: true,
+    },
   });
 
 export const breakSegment = (

@@ -5,12 +5,6 @@ import type { NativeComponent } from '@machinat/core/types';
 import { WEBSOCKET } from './constant';
 import type { EventInput } from './types';
 
-type EventProps = {
-  kind?: string;
-  type: string;
-  payload?: any;
-};
-
 /** @internal */
 const __Event = function Event(node, path) {
   const { type, kind, payload } = node.props;
@@ -27,6 +21,6 @@ const __Event = function Event(node, path) {
  * @category Component
  */
 export const Event: NativeComponent<
-  EventProps,
+  EventInput,
   UnitSegment<EventInput>
 > = annotateNativeComponent(WEBSOCKET)(__Event);

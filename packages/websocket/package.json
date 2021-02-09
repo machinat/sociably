@@ -12,7 +12,6 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "./component": "./lib/component.js",
     "./client": "./lib/client/index.js",
     "./broker/": "./lib/broker/",
     "./utils/": "./lib/utils/",
