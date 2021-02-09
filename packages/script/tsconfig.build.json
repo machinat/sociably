@@ -3,7 +3,11 @@
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "baseUrl": ".",
+    "paths": {
+      "@machinat/core/*": ["../core/lib/*"]
+    }
   },
   "references": [
     { "path": "../core/tsconfig.build.json" }

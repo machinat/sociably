@@ -3,7 +3,13 @@
   "include": ["src/**/*.ts"],
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "baseUrl": ".",
+    "paths": {
+      "@machinat/auth/*": ["../auth/lib/*"],
+      "@machinat/core/*": ["../core/lib/*"],
+      "@machinat/http/*": ["../http/lib/*"]
+    }
   },
   "references": [
     { "path": "../auth/tsconfig.build.json" },

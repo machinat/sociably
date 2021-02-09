@@ -4,7 +4,12 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./lib",
-    "lib": ["DOM", "es2015"]
+    "lib": ["DOM", "es2015"],
+    "baseUrl": ".",
+    "paths": {
+      "@machinat/core/*": ["../core/lib/*"],
+      "@machinat/http/*": ["../http/lib/*"]
+    }
   },
   "references": [
     { "path": "../core/tsconfig.build.json" },
