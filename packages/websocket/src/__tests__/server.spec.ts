@@ -4,7 +4,7 @@ import moxy, { Moxy } from '@moxyjs/moxy';
 import Ws from 'ws';
 import { WebSocketServer } from '../server';
 import _Socket from '../socket';
-import { LocalOnlyBroker } from '../brokers/LocalOnlyBroker';
+import { LocalOnlyBroker } from '../broker/LocalOnlyBroker';
 
 jest.mock('../socket', () =>
   jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../socket'))

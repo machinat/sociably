@@ -11,7 +11,7 @@ import type {
   DefaultRequestRoute,
   UpgradeRoute,
 } from '@machinat/http/types';
-import LocalOnlyBroker from '@machinat/websocket/brokers/LocalOnlyBroker';
+import LocalOnlyBroker from '@machinat/websocket/broker/LocalOnlyBroker';
 import createWsServer from '@machinat/websocket/utils/createWsServer';
 import type {
   WebSocketJob,

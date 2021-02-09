@@ -18,7 +18,7 @@ import {
 import { BotP } from './bot';
 import { ServerP } from './server';
 import { ReceiverP } from './receiver';
-import LocalOnlyBrokerP from './brokers/LocalOnlyBroker';
+import LocalOnlyBrokerP from './broker/LocalOnlyBroker';
 import {
   WebSocketConnection,
   WebSocketUserChannel,
