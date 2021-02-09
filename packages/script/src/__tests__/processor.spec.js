@@ -277,7 +277,7 @@ describe('#start(channel, Script)', () => {
     await expect(
       processor.start(channel, MyScript)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"there is already script processing on the channel, exit the current runtime before init new one"`
+      `"script [MyScript] is already running on channel [#channel], exit the current runtime before start new one"`
     );
   });
 });

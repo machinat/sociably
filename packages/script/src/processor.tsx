@@ -189,8 +189,10 @@ export class ScriptProcessor<Input, ReturnValue> {
   async start<Vars>(
     channel: MachinatChannel,
     script: ScriptLibrary<Vars, Input, ReturnValue, unknown>,
-    { vars = {} as Vars, goto }: InitRuntimeOptions<Vars> = {}
+    options: InitRuntimeOptions<Vars> = {}
   ): Promise<ScriptRuntime<Input, ReturnValue>> {
+    const { vars = {} as Vars, goto } = options;
+
     if (this._libs.get(script.name) !== script) {
       throw new Error(`script ${script.name} is not registered as libs`);
     }
@@ -200,8 +202,9 @@ export class ScriptProcessor<Input, ReturnValue> {
       .get<ScriptProcessState>(SCRIPT_STATE_KEY);
 
     if (state) {
+      const scriptName = state.callStack[0].name;
       throw new Error(
-        'there is already script processing on the channel, exit the current runtime before init new one'
+        `script [${scriptName}] is already running on channel [${channel.uid}], exit the current runtime before start new one`
       );
     }
 
@@ -263,12 +266,11 @@ export class ScriptProcessor<Input, ReturnValue> {
   }
 }
 
-export const ProcessorP = makeClassProvider({
+const ProcessorP = makeClassProvider({
   lifetime: 'scoped',
   deps: [StateControllerI, ServiceScope, LibraryListI] as const,
 })(ScriptProcessor);
 
-export type ProcessorP<Input, ReturnValue> = ScriptProcessor<
-  Input,
-  ReturnValue
->;
+type ProcessorP<Input, ReturnValue> = ScriptProcessor<Input, ReturnValue>;
+
+export default ProcessorP;
