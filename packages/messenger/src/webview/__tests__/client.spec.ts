@@ -43,11 +43,18 @@ beforeEach(() => {
 });
 
 describe('#constructor(options)', () => {
-  it('contain proper property', () => {
+  test('properties', () => {
     const authorizer = new MessengerClientAuthorizer({ appId: 'MY_APP' });
     expect(authorizer.platform).toBe('messenger');
     expect(authorizer.appId).toBe('MY_APP');
     expect(authorizer.isExtensionReady).toBe(false);
+    expect(authorizer.marshalTypes.map((t) => t.name)).toMatchInlineSnapshot(`
+      Array [
+        "MessengerChat",
+        "MessengerUser",
+        "MessengerUserProfile",
+      ]
+    `);
 
     expect(
       new MessengerClientAuthorizer({ appId: 'MY_APP', isExtensionReady: true })

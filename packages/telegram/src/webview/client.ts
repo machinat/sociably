@@ -1,16 +1,32 @@
 import {
-  ClientAuthorizer,
   AuthorizerCredentialResult,
   ContextResult,
 } from '@machinat/auth/types';
+import type { WebviewClientAuthorizer } from '@machinat/webview/types';
 import { TELEGRAM } from '../constant';
+import {
+  TelegramChat,
+  TelegramChatInstance,
+  TelegramChatTarget,
+} from '../channel';
+import TelegramUser from '../user';
+import { TelegramUserProfile, TelegramChatProfile } from '../profiler';
 import { supplementContext } from './utils';
 import { TelegramAuthContext, TelegramAuthData } from './types';
 
 /* eslint-disable class-methods-use-this */
 export default class TelegramClientAuthorizer
-  implements ClientAuthorizer<void, TelegramAuthData, TelegramAuthContext> {
+  implements
+    WebviewClientAuthorizer<void, TelegramAuthData, TelegramAuthContext> {
   platform = TELEGRAM;
+  marshalTypes = [
+    TelegramChat,
+    TelegramChatInstance,
+    TelegramChatTarget,
+    TelegramUser,
+    TelegramUserProfile,
+    TelegramChatProfile,
+  ];
 
   async init(): Promise<void> {
     // do nothing

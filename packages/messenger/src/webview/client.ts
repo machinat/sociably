@@ -1,8 +1,12 @@
 // eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import invariant from 'invariant';
-import type { ClientAuthorizer, ContextResult } from '@machinat/auth/types';
+import type { ContextResult } from '@machinat/auth/types';
+import { WebviewClientAuthorizer } from '@machinat/webview/types';
 import { MESSENGER } from '../constant';
+import MessengerChat from '../channel';
+import { MessengerUserProfile } from '../profiler';
+import MessengerUser from '../user';
 import type {
   MessengerAuthCredential,
   MessengerAuthData,
@@ -28,7 +32,7 @@ const INIT_TIMEOUT = 20000; // 20s;
 
 class MessengerClientAuthorizer
   implements
-    ClientAuthorizer<
+    WebviewClientAuthorizer<
       MessengerAuthCredential,
       MessengerAuthData,
       MessengerAuthContext
@@ -37,6 +41,7 @@ class MessengerClientAuthorizer
   isExtensionReady: boolean;
 
   platform = MESSENGER;
+  marshalTypes = [MessengerChat, MessengerUser, MessengerUserProfile];
 
   constructor(options: MessengerClientAuthOpts) {
     invariant(

@@ -43,5 +43,8 @@
   "peerDependencies": {
     "@machinat/core": "^0.3.0-beta.0",
     "@machinat/http": "^0.3.0-beta.0"
+  },
+  "optionalDependencies": {
+    "@machinat/webview": "^0.3.0-beta.0"
   }
 }

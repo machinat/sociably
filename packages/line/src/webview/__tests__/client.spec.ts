@@ -78,7 +78,7 @@ beforeEach(() => {
 });
 
 describe('#constructor()', () => {
-  it('contain proper property', () => {
+  test('properties', () => {
     const authorizer = new ClientAuthorizer({
       liffId: '_LIFF_ID_',
     });
@@ -86,6 +86,14 @@ describe('#constructor()', () => {
     expect(authorizer.platform).toBe('line');
     expect(authorizer.liffId).toBe('_LIFF_ID_');
     expect(authorizer.shouldLoadSDK).toBe(true);
+    expect(authorizer.marshalTypes.map((t) => t.name)).toMatchInlineSnapshot(`
+      Array [
+        "LineChat",
+        "LineUser",
+        "LineUserProfile",
+        "LineGroupProfile",
+      ]
+    `);
   });
 
   it('throw if liffId is empty', () => {

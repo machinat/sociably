@@ -23,7 +23,9 @@
       "@machinat/next": ["./packages/next/src/index.js"],
       "@machinat/next/*": ["./packages/next/src/*"],
       "@machinat/websocket": ["./packages/websocket/src/index.js"],
-      "@machinat/websocket/*": ["./packages/websocket/src/*"]
+      "@machinat/websocket/*": ["./packages/websocket/src/*"],
+      "@machinat/webview": ["./packages/webview/src/index.js"],
+      "@machinat/webview/*": ["./packages/webview/src/*"]
     }
   }
 }

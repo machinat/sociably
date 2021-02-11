@@ -4,6 +4,19 @@ import TelegramUser from '../../user';
 
 const authorizer = new TelegramClientAuthorizer();
 
+test('#constructor() properties', () => {
+  expect(authorizer.marshalTypes.map((t) => t.name)).toMatchInlineSnapshot(`
+    Array [
+      "TelegramChat",
+      "TelegramChatInstance",
+      "TelegramChatTarget",
+      "TelegramUser",
+      "TelegramUserProfile",
+      "TelegramChatProfile",
+    ]
+  `);
+});
+
 test('#init() do nothing', async () => {
   await expect(authorizer.init()).resolves.toBe(undefined);
 });

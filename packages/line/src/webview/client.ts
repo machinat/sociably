@@ -1,8 +1,12 @@
 // eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import invariant from 'invariant';
-import type { ClientAuthorizer, ContextResult } from '@machinat/auth/types';
+import type { ContextResult } from '@machinat/auth/types';
+import type { WebviewClientAuthorizer } from '@machinat/webview/types';
 import { LINE } from '../constant';
+import LineChat from '../channel';
+import LineUser from '../user';
+import { LineUserProfile, LineGroupProfile } from '../profiler';
 import { supplementContext } from './utils';
 import type {
   LineAuthCredential,
@@ -26,13 +30,14 @@ const waitingForRedirecting = (): Promise<never> =>
 
 class LineClientAuthorizer
   implements
-    ClientAuthorizer<LineAuthCredential, LineAuthData, LineAuthContext> {
+    WebviewClientAuthorizer<LineAuthCredential, LineAuthData, LineAuthContext> {
   liff: any;
   liffId: string;
   shouldLoadSDK: boolean;
   private _searchParams: URLSearchParams;
 
   platform = LINE;
+  marshalTypes = [LineChat, LineUser, LineUserProfile, LineGroupProfile];
 
   constructor(options: ClientAuthorizerOptions) {
     invariant(options?.liffId, 'options.liffId must not be empty');
