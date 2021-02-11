@@ -5,14 +5,14 @@ const fooProfiler = moxy({
   getUserProfile: async () => ({
     platform: 'test',
     name: 'FOO',
-    pictureUrl: 'http://foo...',
+    avatar: 'http://foo...',
   }),
 });
 const barProfiler = moxy({
   getUserProfile: async () => ({
     platform: 'test',
     name: 'BAR',
-    pictureUrl: 'http://bar...',
+    avatar: 'http://bar...',
   }),
 });
 
@@ -29,14 +29,14 @@ it('proxy #getUserProfile() call to the profiler corresponded to the user platfo
   ).resolves.toEqual({
     platform: 'test',
     name: 'FOO',
-    pictureUrl: 'http://foo...',
+    avatar: 'http://foo...',
   });
   await expect(
     profiler.getUserProfile({ platform: 'bar', uid: 'bar1' })
   ).resolves.toEqual({
     platform: 'test',
     name: 'BAR',
-    pictureUrl: 'http://bar...',
+    avatar: 'http://bar...',
   });
 
   expect(fooProfiler.getUserProfile.mock).toHaveBeenCalledTimes(1);
@@ -56,7 +56,7 @@ it('proxy #getUserProfile() call to the profiler corresponded to the user platfo
   ).resolves.toEqual({
     platform: 'test',
     name: 'FOO',
-    pictureUrl: 'http://foo...',
+    avatar: 'http://foo...',
   });
 
   expect(fooProfiler.getUserProfile.mock).toHaveBeenCalledTimes(2);

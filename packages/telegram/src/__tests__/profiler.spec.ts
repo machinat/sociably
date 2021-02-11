@@ -44,10 +44,10 @@ describe('#getUserProfile(user)', () => {
     expect(profile.name).toBe('Jane Doe');
     expect(profile.firstName).toBe('Jane');
     expect(profile.lastName).toBe('Doe');
-    expect(profile.pictureUrl).toBe(undefined);
+    expect(profile.avatar).toBe(undefined);
   });
 
-  it('get profile with pictureUrl', async () => {
+  it('get profile with avatar', async () => {
     const profiler = new TelegramProfiler(bot);
 
     const user = new TelegramUser(12345, {
@@ -57,7 +57,7 @@ describe('#getUserProfile(user)', () => {
     });
 
     const profile = await profiler.getUserProfile(user, {
-      pictureUrl: 'http://john.doe/avatar',
+      avatar: 'http://john.doe/avatar',
     });
 
     expect(profile.platform).toBe('telegram');
@@ -65,7 +65,7 @@ describe('#getUserProfile(user)', () => {
     expect(profile.name).toBe('John');
     expect(profile.firstName).toBe('John');
     expect(profile.lastName).toBe(undefined);
-    expect(profile.pictureUrl).toBe('http://john.doe/avatar');
+    expect(profile.avatar).toBe('http://john.doe/avatar');
   });
 
   it('get profile from getChatMember API if no data attached with user', async () => {
@@ -82,7 +82,7 @@ describe('#getUserProfile(user)', () => {
     expect(profile.name).toBe('Jojo');
     expect(profile.firstName).toBe('Jojo');
     expect(profile.lastName).toBe(undefined);
-    expect(profile.pictureUrl).toBe(undefined);
+    expect(profile.avatar).toBe(undefined);
 
     expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
     expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChatMember', {
@@ -107,7 +107,7 @@ describe('#getUserProfile(user)', () => {
     expect(profile.name).toBe('Jojo');
     expect(profile.firstName).toBe('Jojo');
     expect(profile.lastName).toBe(undefined);
-    expect(profile.pictureUrl).toBe(undefined);
+    expect(profile.avatar).toBe(undefined);
 
     expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
     expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChatMember', {
@@ -140,7 +140,7 @@ describe('#getUserProfile(user)', () => {
     expect(profile.firstName).toBe('Jojo');
     expect(profile.lastName).toBe('Doe');
     expect(profile.username).toBe('jojodoe');
-    expect(profile.pictureUrl).toBe(undefined);
+    expect(profile.avatar).toBe(undefined);
 
     expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
     expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChatMember', {
@@ -159,12 +159,13 @@ describe('#getUserProfile(user)', () => {
         last_name: 'Doe',
         username: 'janedoe',
       }),
-      { pictureUrl: 'http://jane.doe/avatar' }
+      { avatar: 'http://jane.doe/avatar' }
     );
 
     expect(profile.typeName()).toBe('TelegramUserProfile');
     expect(profile.toJSONValue()).toMatchInlineSnapshot(`
       Object {
+        "avatar": "http://jane.doe/avatar",
         "data": Object {
           "first_name": "Jane",
           "id": 12345,
@@ -172,7 +173,6 @@ describe('#getUserProfile(user)', () => {
           "last_name": "Doe",
           "username": "janedoe",
         },
-        "pictureUrl": "http://jane.doe/avatar",
       }
     `);
     expect(
@@ -201,10 +201,10 @@ describe('#getChatProfile(user)', () => {
     expect(profile.firstName).toBe('Jane');
     expect(profile.lastName).toBe('Doe');
     expect(profile.title).toBe(undefined);
-    expect(profile.pictureUrl).toBe(undefined);
+    expect(profile.avatar).toBe(undefined);
   });
 
-  it('get profile with pictureUrl', async () => {
+  it('get profile with avatar', async () => {
     const profiler = new TelegramProfiler(bot);
 
     const chat = new TelegramChat(12345, {
@@ -214,7 +214,7 @@ describe('#getChatProfile(user)', () => {
     });
 
     const profile = await profiler.getChatProfile(chat, {
-      pictureUrl: 'http://j.doe/avatar',
+      avatar: 'http://j.doe/avatar',
     });
 
     expect(profile.platform).toBe('telegram');
@@ -224,7 +224,7 @@ describe('#getChatProfile(user)', () => {
     expect(profile.title).toBe('J Family');
     expect(profile.firstName).toBe(undefined);
     expect(profile.lastName).toBe(undefined);
-    expect(profile.pictureUrl).toBe('http://j.doe/avatar');
+    expect(profile.avatar).toBe('http://j.doe/avatar');
   });
 
   it('get profile from getChat API if no data attached with chat', async () => {
@@ -245,7 +245,7 @@ describe('#getChatProfile(user)', () => {
     expect(profile.firstName).toBe('Jojo');
     expect(profile.lastName).toBe(undefined);
     expect(profile.title).toBe(undefined);
-    expect(profile.pictureUrl).toBe(undefined);
+    expect(profile.avatar).toBe(undefined);
 
     expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
     expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
@@ -268,7 +268,7 @@ describe('#getChatProfile(user)', () => {
     }));
 
     const profile2 = await profiler.getChatProfile('@foo_channel', {
-      pictureUrl: 'http://foo.bar/baz.jpg',
+      avatar: 'http://foo.bar/baz.jpg',
     });
     expect(profile2.platform).toBe('telegram');
     expect(profile2.id).toBe(99999);
@@ -276,7 +276,7 @@ describe('#getChatProfile(user)', () => {
     expect(profile2.title).toBe('FOO');
     expect(profile2.firstName).toBe(undefined);
     expect(profile2.lastName).toBe(undefined);
-    expect(profile2.pictureUrl).toBe('http://foo.bar/baz.jpg');
+    expect(profile2.avatar).toBe('http://foo.bar/baz.jpg');
   });
 
   test('force to get data from API even available on user', async () => {
@@ -304,7 +304,7 @@ describe('#getChatProfile(user)', () => {
     expect(profile.firstName).toBe('Jojo');
     expect(profile.lastName).toBe('Doe');
     expect(profile.username).toBe('jojodoe');
-    expect(profile.pictureUrl).toBe(undefined);
+    expect(profile.avatar).toBe(undefined);
 
     expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
     expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
@@ -322,12 +322,13 @@ describe('#getChatProfile(user)', () => {
         last_name: 'Doe',
         username: 'janedoe',
       }),
-      { pictureUrl: 'http://jane.doe/avatar' }
+      { avatar: 'http://jane.doe/avatar' }
     );
 
     expect(profile.typeName()).toBe('TelegramChatProfile');
     expect(profile.toJSONValue()).toMatchInlineSnapshot(`
       Object {
+        "avatar": "http://jane.doe/avatar",
         "data": Object {
           "first_name": "Jane",
           "id": 12345,
@@ -335,7 +336,6 @@ describe('#getChatProfile(user)', () => {
           "type": "private",
           "username": "janedoe",
         },
-        "pictureUrl": "http://jane.doe/avatar",
       }
     `);
     expect(

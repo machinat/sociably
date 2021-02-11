@@ -4,23 +4,21 @@ import { makeInterface, makeClassProvider } from '../service';
 export interface MachinatProfile {
   readonly platform: string;
   readonly name: string;
-  readonly pictureUrl: undefined | string;
+  readonly avatar: undefined | string;
 }
 
 export interface UserProfiler<User extends MachinatUser> {
   getUserProfile(user: User): Promise<MachinatProfile>;
 }
 
-const ProfilerPlatformMap = makeInterface<UserProfiler<MachinatUser>>({
-  name: 'ProfilerPlatformMap',
-  polymorphic: true,
-});
-
 /**
  * @category Base
  */
 export class BaseProfiler implements UserProfiler<MachinatUser> {
-  static PlatformMap = ProfilerPlatformMap;
+  static PlatformMap = makeInterface<UserProfiler<MachinatUser>>({
+    name: 'ProfilerPlatformMap',
+    polymorphic: true,
+  });
 
   private _platformMapping: Map<string, UserProfiler<MachinatUser>>;
 
@@ -42,10 +40,10 @@ export class BaseProfiler implements UserProfiler<MachinatUser> {
 
 const ProfilerP = makeClassProvider<
   UserProfiler<MachinatUser>,
-  [typeof ProfilerPlatformMap]
+  [typeof BaseProfiler.PlatformMap]
 >({
   lifetime: 'transient',
-  deps: [ProfilerPlatformMap],
+  deps: [BaseProfiler.PlatformMap],
 })(BaseProfiler);
 
 type ProfilerP = UserProfiler<MachinatUser>;

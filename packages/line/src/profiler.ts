@@ -31,7 +31,7 @@ export class LineUserProfile
     return this.data.displayName;
   }
 
-  get displayName(): string {
+  get avatar(): string {
     return this.data.displayName;
   }
 
@@ -71,6 +71,10 @@ export class LineGroupProfile
   data: LineGroupSummary;
   platform = LINE;
 
+  constructor(data: LineGroupSummary) {
+    this.data = data;
+  }
+
   get id(): string {
     return this.data.groupId;
   }
@@ -79,12 +83,8 @@ export class LineGroupProfile
     return this.data.groupName;
   }
 
-  get pictureUrl(): undefined | string {
+  get avatar(): undefined | string {
     return this.data.pictureUrl;
-  }
-
-  constructor(data: LineGroupSummary) {
-    this.data = data;
   }
 
   toJSONValue(): LineGroupSummary {

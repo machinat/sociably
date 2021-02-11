@@ -40,7 +40,7 @@ export class MessengerUserProfile
     return this.data.last_name;
   }
 
-  get pictureUrl(): string {
+  get avatar(): string {
     return this.data.profile_pic;
   }
 
