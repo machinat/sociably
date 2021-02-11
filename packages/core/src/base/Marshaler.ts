@@ -11,24 +11,24 @@ export interface Marshaler {
   unmarshal(value: any): any;
 }
 
-type MarshalTypings<V, T extends Marshallable<V>> = {
+export type MarshalType<V, T extends Marshallable<V>> = {
   name: string;
   fromJSONValue: (value: V) => T;
 };
 
+export type AnyMarshalType = MarshalType<unknown, Marshallable<unknown>>;
+
 export class BaseMarshaler {
-  static TypeList = makeInterface<
-    MarshalTypings<unknown, Marshallable<unknown>>
-  >({
+  static TypeList = makeInterface<AnyMarshalType>({
     name: 'MarshalTypeList',
     multi: true,
   });
 
   private _ejson: any;
 
-  constructor(typings: MarshalTypings<unknown, Marshallable<unknown>>[]) {
+  constructor(types: AnyMarshalType[]) {
     this._ejson = createEJSON();
-    typings.forEach(({ name, fromJSONValue }) => {
+    types.forEach(({ name, fromJSONValue }) => {
       this._ejson.addType(name, fromJSONValue);
     });
   }

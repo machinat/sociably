@@ -1,10 +1,18 @@
 import { parse as parseUrl } from 'url';
 import moxy, { Moxy } from '@moxyjs/moxy';
+import { BaseMarshaler as _BaseMarshaler } from '@machinat/core/base/Marshaler';
 import _Connector from '../Connector';
 import { WebSocketConnection } from '../../channel';
 import Client from '../client';
 
 const Connector = _Connector as Moxy<typeof _Connector>;
+const BaseMarshaler = _BaseMarshaler as Moxy<typeof _BaseMarshaler>;
+
+jest.mock('@machinat/core/base/Marshaler', () =>
+  jest
+    .requireActual('@moxyjs/moxy')
+    .default(jest.requireActual('@machinat/core/base/Marshaler'))
+);
 
 jest.mock('../Connector', () => {
   const _moxy = jest.requireActual('@moxyjs/moxy').default;
@@ -36,6 +44,7 @@ const eventSpy = moxy();
 
 beforeEach(() => {
   Connector.mock.reset();
+  BaseMarshaler.mock.reset();
   location.mock.reset();
   login.mock.clear();
   eventSpy.mock.clear();
@@ -50,7 +59,11 @@ it('start connector', async () => {
   expect(client.channel).toBe(null);
 
   expect(Connector.mock).toHaveBeenCalledTimes(1);
-  expect(Connector.mock).toHaveBeenCalledWith('wss://machinat.com/', login);
+  expect(Connector.mock).toHaveBeenCalledWith(
+    'wss://machinat.com/',
+    login,
+    expect.any(BaseMarshaler)
+  );
 
   const connector = Connector.mock.calls[0].instance;
   expect(connector.start.mock).toHaveBeenCalledTimes(1);
@@ -78,7 +91,8 @@ test('specify url', async () => {
   expect(Connector.mock).toHaveBeenCalledTimes(1);
   expect(Connector.mock).toHaveBeenCalledWith(
     'ws://machinat.io/websocket',
-    login
+    login,
+    expect.any(BaseMarshaler)
   );
 
   (() => new Client({ url: '/foo/websocket/server', login }))();
@@ -86,7 +100,8 @@ test('specify url', async () => {
   expect(Connector.mock).toHaveBeenCalledTimes(2);
   expect(Connector.mock).toHaveBeenCalledWith(
     'wss://machinat.com/foo/websocket/server',
-    login
+    login,
+    expect.any(BaseMarshaler)
   );
 });
 
@@ -98,6 +113,33 @@ test('default login function', async () => {
     user: null,
     credential: null,
   });
+});
+
+it('use options.marshalTypes to initiate marshaler', () => {
+  const FooType = {
+    name: 'Foo',
+    fromJSONValue: () => ({
+      foo: true,
+      typeName: () => 'Foo',
+      toJSONValue: () => 'FOO',
+    }),
+  };
+  const BarType = {
+    name: 'Bar',
+    fromJSONValue: () => ({
+      bar: true,
+      typeName: () => 'Bar',
+      toJSONValue: () => 'BAR',
+    }),
+  };
+  (() => new Client({ marshalTypes: [FooType, BarType] }))();
+
+  expect(BaseMarshaler.mock).toHaveBeenCalledTimes(1);
+  expect(BaseMarshaler.mock).toHaveBeenCalledWith([FooType, BarType]);
+
+  expect(Connector.mock.calls[0].args[2]).toBe(
+    BaseMarshaler.mock.calls[0].instance
+  );
 });
 
 it('emit "event" when dispatched events received', async () => {

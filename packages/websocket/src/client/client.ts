@@ -1,4 +1,5 @@
 import type { MachinatUser } from '@machinat/core/types';
+import { AnyMarshalType, BaseMarshaler } from '@machinat/core/base/Marshaler';
 import { WebSocketConnection } from '../channel';
 import createEvent from '../utils/createEvent';
 import Connector from './Connector';
@@ -15,6 +16,7 @@ import type {
 type ClientOptions<User extends null | MachinatUser> = {
   url?: string;
   login?: ClientLoginFn<User, unknown>;
+  marshalTypes?: AnyMarshalType[];
 };
 
 class WebScoketClient<
@@ -26,7 +28,7 @@ class WebScoketClient<
   private _user: null | User;
   private _channel: null | WebSocketConnection;
 
-  constructor({ url, login }: ClientOptions<User> = {}) {
+  constructor({ url, login, marshalTypes }: ClientOptions<User> = {}) {
     super();
 
     this._user = null;
@@ -36,7 +38,8 @@ class WebScoketClient<
     this._connector = new Connector(
       new URL(url || '/', `wss://${host}${pathname}`).href,
       login ||
-        (() => Promise.resolve({ user: null as never, credential: null }))
+        (() => Promise.resolve({ user: null as never, credential: null })),
+      new BaseMarshaler(marshalTypes || [])
     );
 
     this._connector.on('connect', ({ connId, user }) => {

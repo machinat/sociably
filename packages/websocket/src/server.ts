@@ -4,6 +4,7 @@ import { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
 import type { Server as WsServer } from 'ws';
 import uniqid from 'uniqid';
+import Marshaler from '@machinat/core/base/Marshaler';
 import { HttpRequestInfo } from '@machinat/http/types';
 import { makeClassProvider } from '@machinat/core/service';
 import type { MachinatUser } from '@machinat/core/types';
@@ -31,7 +32,10 @@ import type {
   WebSocketJob,
   EventInput,
   ConnIdentifier,
+  DispatchTarget,
 } from './types';
+
+const DEFAULT_HEARTBEAT_INTERVAL = 1200000; // 20min
 
 type ConnectionInfo<User extends null | MachinatUser, Auth> = {
   connId: string;
@@ -66,6 +70,16 @@ type ServerEvents<User extends null | MachinatUser, Auth> = {
   error: (err: Error) => void;
 };
 
+type ServerOptions<User extends null | MachinatUser, Auth> = {
+  id: string | undefined;
+  wsServer: WsServer;
+  broker: BrokerI;
+  marshaler: Marshaler;
+  verifyUpgrade: VerifyUpgradeFn;
+  verifyLogin: VerifyLoginFn<User, Auth, unknown>;
+  heartbeatInterval?: number;
+};
+
 /**
  * @category Provider
  */
@@ -74,6 +88,7 @@ export class WebSocketServer<
   Auth
 > extends Emitter<ServerEvents<User, Auth>> {
   id: string;
+  marshaler: Marshaler;
   // @ts-expect-error: implement heart beat
   private _heartbeatIntervalId: IntervalID;
 
@@ -89,17 +104,19 @@ export class WebSocketServer<
   private _topicMapping: Map<string, Set<string>>;
   private _userMapping: Map<string, Set<string>>;
 
-  constructor(
-    id: string | undefined,
-    wsServer: WsServer,
-    broker: BrokerI,
-    verifyUpgrade: VerifyUpgradeFn,
-    verifyLogin: VerifyLoginFn<User, Auth, unknown>,
-    { heartbeatInterval }: { heartbeatInterval?: number } = {}
-  ) {
+  constructor({
+    id,
+    wsServer,
+    broker,
+    verifyUpgrade,
+    verifyLogin,
+    heartbeatInterval,
+    marshaler,
+  }: ServerOptions<User, Auth>) {
     super();
 
     this.id = id || uniqid();
+    this.marshaler = marshaler;
     this._wsServer = wsServer;
     this._broker = broker;
 
@@ -114,11 +131,10 @@ export class WebSocketServer<
 
     this._heartbeatIntervalId = setInterval(
       this._heartbeat.bind(this),
-      heartbeatInterval
-      // @ts-expect-error migrate building from babel to tsc
+      heartbeatInterval || DEFAULT_HEARTBEAT_INTERVAL
     ).unref();
 
-    broker.onRemoteEvent(this._handleRemoteEventCallback);
+    broker.onRemoteEvent(this._handleRemoteEvent.bind(this));
   }
 
   async start(): Promise<void> {
@@ -215,7 +231,7 @@ export class WebSocketServer<
       const { serverId, id: connId } = target;
 
       if (serverId !== this.id) {
-        return this._broker.dispatchRemote(job);
+        return this._dispatchRemote(target, values);
       }
 
       const connection = this._connectionStates.get(connId);
@@ -223,22 +239,24 @@ export class WebSocketServer<
         return [];
       }
 
-      return this._sendLocal([connection], values);
+      return this._dispatchLocal([connection], values);
     }
 
-    const remotePromise = this._broker.dispatchRemote(job);
+    const remotePromise = this._dispatchRemote(target, values);
     let localPromise: Promise<ConnIdentifier[]> | [];
 
     if (target.type === 'user') {
       const connections = this._getLocalConnsOfUser(target.userUid);
 
       localPromise = connections
-        ? this._sendLocal(connections, values)
+        ? this._dispatchLocal(connections, values)
         : Promise.resolve([]);
     } else if (target.type === 'topic') {
       const connections = this._getLocalConnsOfTopic(target.name);
 
-      localPromise = connections ? this._sendLocal(connections, values) : [];
+      localPromise = connections
+        ? this._dispatchLocal(connections, values)
+        : [];
     } else {
       throw new TypeError(`unknown target received ${JSON.stringify(target)}`);
     }
@@ -307,7 +325,18 @@ export class WebSocketServer<
     return false;
   }
 
-  private async _sendLocal(
+  private async _dispatchRemote(target: DispatchTarget, values: EventInput[]) {
+    return this._broker.dispatchRemote({
+      target,
+      values: values.map(({ kind, type, payload }) => ({
+        kind,
+        type,
+        payload: this.marshaler.marshal(payload),
+      })),
+    });
+  }
+
+  private async _dispatchLocal(
     connStates: ConnectionState<User, Auth>[],
     values: EventInput[]
   ): Promise<ConnIdentifier[]> {
@@ -319,10 +348,19 @@ export class WebSocketServer<
       info: { connId },
     } of connStates) {
       promises.push(
-        socket.dispatch({ connId, values }).catch((err) => {
-          this._handleError(err);
-          return null;
-        })
+        socket
+          .dispatch({
+            connId,
+            values: values.map(({ kind, type, payload }) => ({
+              kind,
+              type,
+              payload: this.marshaler.marshal(payload),
+            })),
+          })
+          .catch((err) => {
+            this._handleError(err);
+            return null;
+          })
       );
 
       sentChannels.push({ serverId: this.id, id: connId });
@@ -382,7 +420,6 @@ export class WebSocketServer<
     return connStates.length === 0 ? null : connStates;
   }
 
-  private _handleRemoteEventCallback = this._handleRemoteEvent.bind(this);
   private _handleRemoteEvent({ target, values }: WebSocketJob) {
     if (target.type === 'connection') {
       if (target.serverId === this.id) {
@@ -391,7 +428,9 @@ export class WebSocketServer<
           return;
         }
 
-        this._sendLocal([connState], values).catch(this._handleErrorCallback);
+        this._dispatchLocal([connState], values).catch(
+          this._handleErrorCallback
+        );
       }
     } else if (target.type === 'topic') {
       const subsrcibingConns = this._getLocalConnsOfTopic(target.name);
@@ -399,7 +438,7 @@ export class WebSocketServer<
         return;
       }
 
-      this._sendLocal(subsrcibingConns, values).catch(
+      this._dispatchLocal(subsrcibingConns, values).catch(
         this._handleErrorCallback
       );
     } else if (target.type === 'user') {
@@ -408,7 +447,7 @@ export class WebSocketServer<
         return;
       }
 
-      this._sendLocal(connsOfUser, values).catch(this._handleErrorCallback);
+      this._dispatchLocal(connsOfUser, values).catch(this._handleErrorCallback);
     } else {
       throw new Error(
         `unknown target received ${(target as any).type || String(target)}`
@@ -503,7 +542,15 @@ export class WebSocketServer<
         reason: 'connection is not logged in',
       });
     } else {
-      this.emit('events', values, connState.info);
+      this.emit(
+        'events',
+        values.map(({ kind, type, payload }) => ({
+          kind,
+          type,
+          payload: this.marshaler.unmarshal(payload),
+        })),
+        connState.info
+      );
     }
   }
 
@@ -551,6 +598,7 @@ export const ServerP = makeClassProvider({
     BrokerI,
     { require: UpgradeVerifierI, optional: true },
     { require: LoginVerifierI, optional: true },
+    Marshaler,
     ConfigsI,
   ] as const,
   factory: (
@@ -559,17 +607,20 @@ export const ServerP = makeClassProvider({
     broker,
     verifyUpgrade,
     verifyLogin,
+    marshaler,
     { heartbeatInterval }
   ) =>
-    new WebSocketServer(
-      serverId || undefined,
+    new WebSocketServer({
+      id: serverId || undefined,
       wsServer,
       broker,
-      verifyUpgrade || (() => true),
-      verifyLogin ||
+      marshaler,
+      verifyUpgrade: verifyUpgrade || (() => true),
+      verifyLogin:
+        verifyLogin ||
         (async () => ({ success: true, user: null, authContext: null })),
-      { heartbeatInterval }
-    ),
+      heartbeatInterval,
+    }),
 })(WebSocketServer);
 
 export type ServerP<User extends null | MachinatUser, Auth> = WebSocketServer<

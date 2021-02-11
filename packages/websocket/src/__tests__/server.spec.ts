@@ -59,14 +59,20 @@ const errorSpy = moxy();
 const serverId = '_SERVER_ID_';
 let testServer: WebSocketServer<null, null>;
 
+const marshaler = moxy({
+  marshal: (x) => x,
+  unmarshal: (x) => x,
+});
+
 beforeEach(async () => {
-  testServer = new WebSocketServer(
-    serverId,
+  testServer = new WebSocketServer({
+    id: serverId,
     wsServer,
     broker,
     verifyUpgrade,
-    verifyLogin
-  );
+    verifyLogin,
+    marshaler,
+  });
   testServer.on('connect', connectSpy);
   testServer.on('disconnect', disconnectSpy);
   testServer.on('events', eventsSpy);
@@ -74,6 +80,7 @@ beforeEach(async () => {
 
   Socket.mock.clear();
   broker.mock.reset();
+  marshaler.mock.reset();
 
   wsServer.mock.clear();
   ws.removeAllListeners();
@@ -174,17 +181,15 @@ it('handle sockets and connections lifecycle', async () => {
   expect(connectSpy.mock).toHaveBeenCalledTimes(1);
   expect(connectSpy.mock).toHaveBeenCalledWith(expectedConnInfo);
 
-  let eventValues: any = [
-    { type: 'greeting', kind: 'french', payload: 'bonjour' },
-  ];
+  let eventValues = [{ type: 'greeting', kind: 'french', payload: 'bonjour' }];
   socket.emit('events', { connId, values: eventValues }, 4, socket);
 
   expect(eventsSpy.mock).toHaveBeenCalledTimes(1);
   expect(eventsSpy.mock).toHaveBeenCalledWith(eventValues, expectedConnInfo);
 
   eventValues = [
-    { type: 'foo', payload: 'hello' },
-    { type: 'bar', payload: 'world' },
+    { kind: 'any', type: 'foo', payload: 'hello' },
+    { kind: 'any', type: 'bar', payload: 'world' },
   ];
   socket.emit('events', { connId, values: eventValues }, 5, socket);
 
@@ -401,6 +406,44 @@ test('multi sockets and connections', async () => {
   await nextTick();
 });
 
+test('unmarshal payload', async () => {
+  const [socket, conn] = await openConnection(testServer);
+
+  marshaler.unmarshal.mock.fake((x) => ({ ...x, unmarshaled: true }));
+
+  socket.emit(
+    'events',
+    {
+      connId: conn.id,
+      values: [
+        { type: 'any', payload: { foo: 'bar' } },
+        { type: 'any', payload: { foo: 'baz' } },
+      ],
+    },
+    4,
+    socket
+  );
+
+  expect(eventsSpy.mock).toHaveBeenCalledTimes(1);
+  expect(eventsSpy.mock).toHaveBeenCalledWith(
+    [
+      { type: 'any', payload: { foo: 'bar', unmarshaled: true } },
+      { type: 'any', payload: { foo: 'baz', unmarshaled: true } },
+    ],
+    {
+      connId: expect.any(String),
+      user: null,
+      request: expectedReqInfo,
+      authContext: null,
+      expireAt: null,
+    }
+  );
+
+  expect(marshaler.unmarshal.mock).toHaveBeenCalledTimes(2);
+  expect(marshaler.unmarshal.mock).toHaveBeenNthCalledWith(1, { foo: 'bar' });
+  expect(marshaler.unmarshal.mock).toHaveBeenNthCalledWith(2, { foo: 'baz' });
+});
+
 it('generate uniq connection id', async () => {
   const ids = new Set();
 
@@ -503,14 +546,15 @@ it('emit socket error', async () => {
 test('ping socket per heartbeatInterval', async () => {
   jest.useFakeTimers();
 
-  const serverWithOptions = new WebSocketServer(
-    serverId,
+  const serverWithOptions = new WebSocketServer({
+    id: serverId,
     wsServer,
     broker,
+    marshaler,
     verifyUpgrade,
     verifyLogin,
-    { heartbeatInterval: 100 }
-  );
+    heartbeatInterval: 100,
+  });
 
   await serverWithOptions.handleUpgrade(req, netSocket, head);
   await serverWithOptions.handleUpgrade(req, netSocket, head);
@@ -596,7 +640,7 @@ describe('disconnect()', () => {
     await expect(testServer.disconnect(conn, 'bye')).resolves.toBe(false);
   });
 
-  it('delegate to borker if connection is on remote', async () => {
+  it('delegate to broker if connection is on remote', async () => {
     const remoteConn = {
       serverId: '#remote',
       id: '#conn_remote',
@@ -684,6 +728,59 @@ describe('dispatch()', () => {
       target: remoteTarget,
       values: eventValues,
     });
+  });
+
+  test('marshal payload', async () => {
+    const [socket, conn] = await openConnection(testServer);
+
+    socket.dispatch.mock.fake(async () => 5);
+    marshaler.marshal.mock.fake((x) => ({ ...x, marshaled: true }));
+
+    await testServer.dispatch({
+      target: conn,
+      values: [
+        { type: 'any', payload: { foo: 'bar' } },
+        { type: 'any', payload: { foo: 'baz' } },
+      ],
+    });
+
+    expect(socket.dispatch.mock).toHaveBeenCalledTimes(1);
+    expect(socket.dispatch.mock).toHaveBeenCalledWith({
+      connId: conn.id,
+      values: [
+        { type: 'any', payload: { foo: 'bar', marshaled: true } },
+        { type: 'any', payload: { foo: 'baz', marshaled: true } },
+      ],
+    });
+
+    expect(marshaler.marshal.mock).toHaveBeenCalledTimes(2);
+    expect(marshaler.marshal.mock).toHaveBeenNthCalledWith(1, { foo: 'bar' });
+    expect(marshaler.marshal.mock).toHaveBeenNthCalledWith(2, { foo: 'baz' });
+
+    const remoteTarget = {
+      type: 'connection' as const,
+      serverId: '_REMOTE_SERVER_',
+      id: '_CONN_ID_',
+    };
+
+    await testServer.dispatch({
+      target: remoteTarget,
+      values: [{ type: 'any', payload: { bar: 'baz' } }],
+    });
+
+    expect(broker.dispatchRemote.mock).toHaveBeenCalledTimes(1);
+    expect(broker.dispatchRemote.mock).toHaveBeenCalledWith({
+      target: remoteTarget,
+      values: [
+        {
+          type: 'any',
+          payload: { bar: 'baz', marshaled: true },
+        },
+      ],
+    });
+
+    expect(marshaler.marshal.mock).toHaveBeenCalledTimes(3);
+    expect(marshaler.marshal.mock).toHaveBeenNthCalledWith(3, { bar: 'baz' });
   });
 
   it('broadcast to topic', async () => {
@@ -878,13 +975,14 @@ describe('dispatch()', () => {
 });
 
 test('handle remote dispatch', async () => {
-  const server = new WebSocketServer(
-    serverId,
+  const server = new WebSocketServer({
+    id: serverId,
     wsServer,
     broker,
     verifyUpgrade,
-    verifyLogin
-  );
+    verifyLogin,
+    marshaler,
+  });
 
   verifyLogin.mock.fake(() => ({
     success: true,

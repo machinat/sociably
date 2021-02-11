@@ -1,6 +1,7 @@
 import type Ws from 'ws';
 import { makeInterface, makeClassProvider } from '@machinat/core/service';
 import { ServiceProvider } from '@machinat/core/service/types';
+import Marshaler from '@machinat/core/base/Marshaler';
 import { AuthController } from '@machinat/auth';
 import type {
   AnyServerAuthorizer,
@@ -133,6 +134,7 @@ export const SocketServerP: ServiceProvider<
     WsServerI,
     SocketBrokerI,
     AuthController<AnyServerAuthorizer>,
+    Marshaler,
     ConfigsI
   ]
 > = makeClassProvider({
@@ -142,6 +144,7 @@ export const SocketServerP: ServiceProvider<
     WsServerI,
     SocketBrokerI,
     AuthControllerP,
+    Marshaler,
     ConfigsI,
   ] as const,
   factory: (
@@ -149,17 +152,19 @@ export const SocketServerP: ServiceProvider<
     wsServer,
     broker,
     authController,
+    marshaler,
     { webviewHost, heartbeatInterval }
   ) =>
-    new WebviewSocketServer(
-      serverId || undefined,
+    new WebviewSocketServer({
+      id: serverId || undefined,
       wsServer,
       broker,
-      ({ headers }) =>
+      marshaler,
+      verifyUpgrade: ({ headers }) =>
         !!headers.origin && verifyOrigin(headers.origin, webviewHost),
-      useAuthController(authController),
-      { heartbeatInterval }
-    ),
+      verifyLogin: useAuthController(authController),
+      heartbeatInterval,
+    }),
 })(WebviewSocketServer);
 
 export type SocketServerP<

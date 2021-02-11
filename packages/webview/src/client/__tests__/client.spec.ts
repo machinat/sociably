@@ -1,12 +1,15 @@
 import { parse as parseUrl } from 'url';
 import moxy, { Moxy } from '@moxyjs/moxy';
+import { BaseMarshaler as _BaseMarshaler } from '@machinat/core/base/Marshaler';
 import _Connector from '@machinat/websocket/client/Connector';
 import _AuthClient from '@machinat/auth/client';
 import { WebviewConnection } from '../../channel';
+import { AnyClientAuthorizer } from '../../types';
 import Client from '../client';
 
 const Connector = _Connector as Moxy<typeof _Connector>;
 const AuthClient = _AuthClient as Moxy<typeof _AuthClient>;
+const BaseMarshaler = _BaseMarshaler as Moxy<typeof _BaseMarshaler>;
 
 jest.mock('@machinat/websocket/client/Connector', () => {
   const _moxy = jest.requireActual('@moxyjs/moxy').default;
@@ -40,11 +43,21 @@ jest.mock('@machinat/auth/client', () => {
   };
 });
 
+jest.mock('@machinat/core/base/Marshaler', () =>
+  jest
+    .requireActual('@moxyjs/moxy')
+    .default(jest.requireActual('@machinat/core/base/Marshaler'))
+);
+
 const location = moxy(parseUrl('https://machinat.com/hello'));
 global.window = { location } as never;
 
-const testAuthorizer = moxy({ platform: 'test' /* ... */ } as never);
-const anotherAuthorizer = moxy({ platform: 'another' /* ... */ } as never);
+const testAuthorizer = moxy<AnyClientAuthorizer>({
+  platform: 'test' /* ... */,
+} as never);
+const anotherAuthorizer = moxy<AnyClientAuthorizer>({
+  platform: 'another' /* ... */,
+} as never);
 
 const user = { platform: 'test', uid: 'jane_doe' };
 const authContext = {
@@ -59,6 +72,7 @@ const eventSpy = moxy();
 beforeEach(() => {
   Connector.mock.reset();
   AuthClient.mock.reset();
+  BaseMarshaler.mock.reset();
   location.mock.reset();
   eventSpy.mock.clear();
 });
@@ -79,7 +93,8 @@ it('start connector and auth client', async () => {
   expect(Connector.mock).toHaveBeenCalledTimes(1);
   expect(Connector.mock).toHaveBeenCalledWith(
     'wss://machinat.com/my_websocket',
-    expect.any(Function)
+    expect.any(Function),
+    expect.any(BaseMarshaler)
   );
 
   const connector = Connector.mock.calls[0].instance;
@@ -124,7 +139,8 @@ test('websocket url', async () => {
   expect(Connector.mock).toHaveBeenCalledTimes(1);
   expect(Connector.mock).toHaveBeenCalledWith(
     'ws://machinat.io/foo_socket',
-    expect.any(Function)
+    expect.any(Function),
+    expect.any(BaseMarshaler)
   );
 
   (() => new Client({ authorizers: [testAuthorizer] }))();
@@ -132,7 +148,41 @@ test('websocket url', async () => {
   expect(Connector.mock).toHaveBeenCalledTimes(2);
   expect(Connector.mock).toHaveBeenCalledWith(
     'wss://machinat.com/websocket',
-    expect.any(Function)
+    expect.any(Function),
+    expect.any(BaseMarshaler)
+  );
+});
+
+it('use marshalTypes of authorizers', () => {
+  const FooType = {
+    name: 'Foo',
+    fromJSONValue: () => ({
+      foo: true,
+      typeName: () => 'Foo',
+      toJSONValue: () => 'FOO',
+    }),
+  };
+  const BarType = {
+    name: 'Bar',
+    fromJSONValue: () => ({
+      bar: true,
+      typeName: () => 'Bar',
+      toJSONValue: () => 'BAR',
+    }),
+  };
+  testAuthorizer.mock.getter('marshalTypes').fake(() => [FooType]);
+  anotherAuthorizer.mock.getter('marshalTypes').fake(() => [BarType]);
+
+  (() =>
+    new Client({
+      authorizers: [testAuthorizer, anotherAuthorizer],
+    }))();
+
+  expect(BaseMarshaler.mock).toHaveBeenCalledTimes(1);
+  expect(BaseMarshaler.mock).toHaveBeenCalledWith([FooType, BarType]);
+
+  expect(Connector.mock.calls[0].args[2]).toBe(
+    BaseMarshaler.mock.calls[0].instance
   );
 });
 

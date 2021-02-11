@@ -5,12 +5,13 @@ import type {
   DispatchMiddleware,
   NativeComponent,
 } from '@machinat/core/types';
+import { AnyMarshalType } from '@machinat/core/base/Marshaler';
 import type { UnitSegment } from '@machinat/core/renderer/types';
 import type { DispatchFrame } from '@machinat/core/engine/types';
 import type { MaybeContainer } from '@machinat/core/service/types';
 import type {
   AnyServerAuthorizer,
-  AnyClientAuthorizer,
+  ClientAuthorizer,
   AnyAuthContext,
   ContextOfAuthorizer,
   UserOfAuthorizer,
@@ -50,9 +51,21 @@ export type WebviewEvent<
 export type WebviewMetadata<Context extends AnyAuthContext> = Omit<
   WebSocketMetadata<Context>,
   'connection'
-> & {
-  connection: WebviewConnection;
-};
+> & { connection: WebviewConnection };
+
+export interface WebviewClientAuthorizer<
+  Credential,
+  Data,
+  Context extends AnyAuthContext
+> extends ClientAuthorizer<Credential, Data, Context> {
+  marshalTypes: null | AnyMarshalType[];
+}
+
+export type AnyClientAuthorizer = WebviewClientAuthorizer<
+  unknown,
+  unknown,
+  AnyAuthContext
+>;
 
 export type WebviewEventContext<
   Authorizer extends AnyServerAuthorizer,

@@ -23,6 +23,11 @@ const login = moxy(async () => ({
   credential: { foo: 'bar' },
 }));
 
+const marshaler = moxy({
+  marshal: (x) => x,
+  unmarshal: (x) => x,
+});
+
 const connectSpy = moxy();
 const eventsSpy = moxy();
 const disconnectSpy = moxy();
@@ -30,14 +35,37 @@ const disconnectSpy = moxy();
 beforeEach(() => {
   Socket.mock.reset();
   Ws.mock.clear();
+  marshaler.mock.reset();
   login.mock.clear();
   connectSpy.mock.clear();
   eventsSpy.mock.clear();
   disconnectSpy.mock.clear();
 });
 
+const connId = '#conn';
+
+const openConnection = async () => {
+  const connector = new Connector('wss://machinat.io', login, marshaler);
+  connector.start();
+  await nextTick();
+
+  const socket = Socket.mock.calls[0].instance;
+  socket.login.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
+  socket.dispatch.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
+  socket.emit('open', socket);
+  await nextTick();
+  socket.emit('connect', { connId, seq: 1 }, 2, socket);
+  await nextTick();
+
+  return [connector, socket];
+};
+
 test('start()', async () => {
-  const connector = new Connector('wss://machinat.io/websocket', login);
+  const connector = new Connector(
+    'wss://machinat.io/websocket',
+    login,
+    marshaler
+  );
   connector.start();
   await nextTick();
 
@@ -52,7 +80,7 @@ test('start()', async () => {
 });
 
 it('login with credential from login fn', async () => {
-  const connector = new Connector('wss://machinat.io', login);
+  const connector = new Connector('wss://machinat.io', login, marshaler);
   connector.on('connect', connectSpy);
   connector.start();
   await nextTick();
@@ -70,15 +98,15 @@ it('login with credential from login fn', async () => {
     credential: { foo: 'bar' },
   });
 
-  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
+  socket.emit('connect', { connId, seq: 1 }, 2, socket);
   await nextTick();
 
   expect(connectSpy.mock).toHaveBeenCalledTimes(1);
-  expect(connectSpy.mock).toHaveBeenCalledWith({ connId: '#conn', user });
+  expect(connectSpy.mock).toHaveBeenCalledWith({ connId, user });
 });
 
 it('emit "error" if login rejected', async () => {
-  const connector = new Connector('wss://machinat.io', login);
+  const connector = new Connector('wss://machinat.io', login, marshaler);
   const errorSpy = moxy();
   connector.on('error', errorSpy);
 
@@ -100,15 +128,8 @@ it('emit "error" if login rejected', async () => {
   );
 });
 
-it('emit "event" when dispatched events received', async () => {
-  const connector = new Connector('wss://machinat.io', login);
-  connector.start();
-  await nextTick();
-
-  const socket = Socket.mock.calls[0].instance;
-  socket.emit('open', socket);
-  await nextTick();
-  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
+it('pop events from server', async () => {
+  const [connector, socket] = await openConnection();
 
   const eventValues = [
     { type: 'start', payload: 'Welcome to Hyrule' },
@@ -120,34 +141,49 @@ it('emit "event" when dispatched events received', async () => {
   ];
 
   connector.on('events', eventsSpy);
+  socket.emit('events', { connId, values: eventValues }, 3, socket);
+
+  expect(eventsSpy.mock).toHaveBeenCalledTimes(1);
+  expect(eventsSpy.mock).toHaveBeenCalledWith(eventValues, {
+    connId,
+    user,
+  });
+});
+
+it('unmarshal payload', async () => {
+  const [connector, socket] = await openConnection();
+  marshaler.unmarshal.mock.fake((x) => ({ ...x, unmarshaled: true }));
+
+  connector.on('events', eventsSpy);
   socket.emit(
     'events',
     {
-      connId: '#conn',
-      values: eventValues,
+      connId,
+      values: [
+        { type: 'any', payload: { foo: 'bar' } },
+        { type: 'any', payload: { foo: 'baz' } },
+      ],
     },
     3,
     socket
   );
 
   expect(eventsSpy.mock).toHaveBeenCalledTimes(1);
-  expect(eventsSpy.mock).toHaveBeenCalledWith(eventValues, {
-    connId: '#conn',
-    user,
-  });
+  expect(eventsSpy.mock).toHaveBeenCalledWith(
+    [
+      { type: 'any', payload: { foo: 'bar', unmarshaled: true } },
+      { type: 'any', payload: { foo: 'baz', unmarshaled: true } },
+    ],
+    { connId, user }
+  );
+
+  expect(marshaler.unmarshal.mock).toHaveBeenCalledTimes(2);
+  expect(marshaler.unmarshal.mock).toHaveBeenCalledWith({ foo: 'bar' });
+  expect(marshaler.unmarshal.mock).toHaveBeenCalledWith({ foo: 'baz' });
 });
 
-it('send events when already connected', async () => {
-  const connector = new Connector('wss://machinat.io', login);
-  connector.start();
-  await nextTick();
-
-  const socket = Socket.mock.calls[0].instance;
-  socket.dispatch.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
-
-  socket.emit('open', socket);
-  await nextTick();
-  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
+it('send events after connected', async () => {
+  const [connector, socket] = await openConnection();
 
   await expect(
     connector.send([
@@ -158,7 +194,7 @@ it('send events when already connected', async () => {
 
   expect(socket.dispatch.mock).toHaveBeenCalledTimes(1);
   expect(socket.dispatch.mock).toHaveBeenCalledWith({
-    connId: '#conn',
+    connId,
     values: [
       { type: 'foo', payload: 1 },
       { type: 'bar', kind: 'beer', payload: 2 },
@@ -170,13 +206,13 @@ it('send events when already connected', async () => {
   );
   expect(socket.dispatch.mock).toHaveBeenCalledTimes(2);
   expect(socket.dispatch.mock).toHaveBeenCalledWith({
-    connId: '#conn',
+    connId,
     values: [{ type: 'baz', payload: 3 }],
   });
 });
 
-it('queue events when not ready and fire them after connected', async () => {
-  const connector = new Connector('wss://machinat.io', login);
+it('queue events and dispatch them after connected', async () => {
+  const connector = new Connector('wss://machinat.io', login, marshaler);
   connector.start();
   await nextTick();
 
@@ -199,15 +235,15 @@ it('queue events when not ready and fire them after connected', async () => {
   socket.emit('open', socket);
   await nextTick();
 
-  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
+  socket.emit('connect', { connId, seq: 1 }, 2, socket);
 
   expect(socket.dispatch.mock).toHaveBeenCalledTimes(2);
   expect(socket.dispatch.mock).toHaveBeenCalledWith({
-    connId: '#conn',
+    connId,
     values: [{ type: 'greeting', payload: 'hi' }],
   });
   expect(socket.dispatch.mock).toHaveBeenCalledWith({
-    connId: '#conn',
+    connId,
     values: [{ type: 'greeting', payload: 'how are you' }],
   });
 
@@ -216,39 +252,46 @@ it('queue events when not ready and fire them after connected', async () => {
   expect(done.mock).toHaveBeenCalledTimes(2);
 });
 
+it('marshal payload', async () => {
+  const [connector, socket] = await openConnection();
+  marshaler.marshal.mock.fake((x) => ({ ...x, marshaled: true }));
+
+  await connector.send([
+    { type: 'any', payload: { foo: 'bar' } },
+    { type: 'any', payload: { foo: 'baz' } },
+  ]);
+
+  expect(socket.dispatch.mock).toHaveBeenCalledTimes(1);
+  expect(socket.dispatch.mock).toHaveBeenCalledWith({
+    connId,
+    values: [
+      { type: 'any', payload: { foo: 'bar', marshaled: true } },
+      { type: 'any', payload: { foo: 'baz', marshaled: true } },
+    ],
+  });
+
+  expect(marshaler.marshal.mock).toHaveBeenCalledTimes(2);
+  expect(marshaler.marshal.mock).toHaveBeenCalledWith({ foo: 'bar' });
+  expect(marshaler.marshal.mock).toHaveBeenCalledWith({ foo: 'baz' });
+});
+
 test('disconnect by server', async () => {
-  const connector = new Connector('wss://machinat.io', login);
-  connector.start();
-  await nextTick();
-
-  const socket = Socket.mock.calls[0].instance;
-  socket.emit('open', socket);
-  await nextTick();
-  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
-
+  const [connector, socket] = await openConnection();
   connector.on('disconnect', disconnectSpy);
 
   expect(connector.isConnected()).toBe(true);
-  socket.emit('disconnect', { connId: '#conn', reason: 'See ya!' }, 3, socket);
+  socket.emit('disconnect', { connId, reason: 'See ya!' }, 3, socket);
 
   expect(connector.isConnected()).toBe(false);
   expect(disconnectSpy.mock).toHaveBeenCalledWith(
     { reason: 'See ya!' },
-    { connId: '#conn', user }
+    { connId, user }
   );
 });
 
 test('#disconnect()', async () => {
-  const connector = new Connector('wss://machinat.io', login);
-  connector.start();
-  await nextTick();
-
-  const socket = Socket.mock.calls[0].instance;
+  const [connector, socket] = await openConnection();
   socket.disconnect.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
-  socket.emit('open', socket);
-  await nextTick();
-  socket.emit('connect', { connId: '#conn', seq: 1 }, 2, socket);
-
   connector.on('disconnect', disconnectSpy);
 
   expect(connector.isConnected()).toBe(true);
@@ -256,16 +299,16 @@ test('#disconnect()', async () => {
 
   expect(socket.disconnect.mock).toHaveBeenCalledTimes(1);
   expect(socket.disconnect.mock).toHaveBeenCalledWith({
-    connId: '#conn',
+    connId,
     reason: 'Bye!',
   });
 
   expect(connector.isConnected()).toBe(false);
 
-  socket.emit('disconnect', { connId: '#conn', reason: 'Bye!' }, 4, socket);
+  socket.emit('disconnect', { connId, reason: 'Bye!' }, 4, socket);
 
   expect(disconnectSpy.mock).toHaveBeenCalledWith(
     { reason: 'Bye!' },
-    { connId: '#conn', user }
+    { connId, user }
   );
 });

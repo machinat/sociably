@@ -3,6 +3,7 @@
 import { EventEmitter } from 'events';
 import type TypedEmitter from 'typed-emitter';
 import type { MachinatUser } from '@machinat/core/types';
+import type { Marshaler } from '@machinat/core/base/Marshaler';
 import type {
   default as Socket, // eslint-disable-line import/no-named-default
   ConnectBody,
@@ -40,6 +41,7 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<
   private _serverUrl: string;
   private _login: ClientLoginFn<User, unknown>;
   private _socket: null | Socket;
+  private _marshaler: Marshaler;
 
   private _loginSeq: number;
   private _queuedEvents: PendingEvent[];
@@ -48,11 +50,16 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<
   private _user: User;
   private _isDisconnecting: boolean;
 
-  constructor(serverUrl: string, login: ClientLoginFn<User, unknown>) {
+  constructor(
+    serverUrl: string,
+    login: ClientLoginFn<User, unknown>,
+    marshaler: Marshaler
+  ) {
     super();
 
     this._login = login;
     this._serverUrl = serverUrl;
+    this._marshaler = marshaler;
 
     this._queuedEvents = [];
     this._connId = undefined;
@@ -80,18 +87,24 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<
   }
 
   async send(events: EventInput[]): Promise<void> {
+    const marshaledEvents = events.map(({ kind, type, payload }) => ({
+      kind,
+      type,
+      payload: this._marshaler.marshal(payload),
+    }));
+
     if (!this._socket || !this._connId) {
       await new Promise((resolve, reject) => {
         this._queuedEvents.push({
           resolve,
           reject,
-          inputs: events,
+          inputs: marshaledEvents,
         });
       });
     } else {
       await this._socket.dispatch({
         connId: this._connId,
-        values: events,
+        values: marshaledEvents,
       });
     }
   }
@@ -139,7 +152,15 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<
 
   private _handleEvents({ connId, values }: EventsBody) {
     if (this._connId === connId) {
-      this.emit('events', values, { connId, user: this._user });
+      this.emit(
+        'events',
+        values.map(({ kind, type, payload }) => ({
+          kind,
+          type,
+          payload: this._marshaler.unmarshal(payload),
+        })),
+        { connId, user: this._user }
+      );
     }
   }
 

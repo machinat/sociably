@@ -1,11 +1,8 @@
 // eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
+import { AnyMarshalType, BaseMarshaler } from '@machinat/core/base/Marshaler';
 import AuthClient from '@machinat/auth/client';
-import {
-  AnyClientAuthorizer,
-  UserOfAuthorizer,
-  ContextOfAuthorizer,
-} from '@machinat/auth/types';
+import { UserOfAuthorizer, ContextOfAuthorizer } from '@machinat/auth/types';
 import type {
   EventInput,
   EventValue,
@@ -16,7 +13,7 @@ import { Connector, Emitter } from '@machinat/websocket/client';
 import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant';
 import { WebviewConnection } from '../channel';
 import { createEvent } from '../utils';
-import { WebviewEvent } from '../types';
+import { WebviewEvent, AnyClientAuthorizer } from '../types';
 
 type ClientOptions<Authorizer extends AnyClientAuthorizer> = {
   /** URL string to connect WebSocket backend. Default to `"/websocket"` */
@@ -77,13 +74,21 @@ class WebviewClient<
       apiUrl: authApiUrl || DEFAULT_AUTH_PATH,
     });
 
+    const marshalTypes = authorizers.reduce((types, authorizer) => {
+      if (authorizer.marshalTypes) {
+        types.push(...authorizer.marshalTypes);
+      }
+      return types;
+    }, [] as AnyMarshalType[]);
+
     const { host, pathname } = window.location;
     this._connector = new Connector(
       new URL(
         webSocketUrl || DEFAULT_WEBSOCKET_PATH,
         `wss://${host}${pathname}`
       ).href,
-      this._getLoginAuth.bind(this)
+      this._getLoginAuth.bind(this),
+      new BaseMarshaler(marshalTypes)
     );
 
     this._connector.on('connect', ({ connId, user }) => {
