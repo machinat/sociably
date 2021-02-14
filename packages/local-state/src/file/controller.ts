@@ -12,7 +12,7 @@ import {
 } from '@machinat/core/base/StateController';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
 import { ConfigsI, SerializerI } from './interface';
-import type { FileRepositoryConfigs } from './types';
+import type { FileStateConfigs } from './types';
 
 type FileHandle = fsPromises.FileHandle;
 
@@ -130,7 +130,7 @@ export class FileStateController implements BaseStateController {
   private _isWriting: boolean;
 
   constructor(
-    options: FileRepositoryConfigs,
+    options: FileStateConfigs,
     marshaler?: null | BaseMarshaler,
     serializer?: null | SerializerI
   ) {
@@ -142,19 +142,21 @@ export class FileStateController implements BaseStateController {
     this._writingJob = Promise.resolve();
   }
 
-  channelState(channel: MachinatChannel): FileStateAccessor {
+  channelState(channel: string | MachinatChannel): FileStateAccessor {
+    const channelUid = typeof channel === 'string' ? channel : channel.uid;
     return new FileStateAccessor(
       this.marshaler,
-      this._getDataCallback('channelStates', channel.uid),
-      this._updateDataCallback('channelStates', channel.uid)
+      this._getDataCallback('channelStates', channelUid),
+      this._updateDataCallback('channelStates', channelUid)
     );
   }
 
-  userState(user: MachinatUser): FileStateAccessor {
+  userState(user: string | MachinatUser): FileStateAccessor {
+    const userUid = typeof user === 'string' ? user : user.uid;
     return new FileStateAccessor(
       this.marshaler,
-      this._getDataCallback('userStates', user.uid),
-      this._updateDataCallback('userStates', user.uid)
+      this._getDataCallback('userStates', userUid),
+      this._updateDataCallback('userStates', userUid)
     );
   }
 

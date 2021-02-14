@@ -69,26 +69,30 @@ export class InMemoryStateController implements BaseStateController {
     this._globalStates = new Map();
   }
 
-  channelState(channel: MachinatChannel): InMemoryStateAccessor {
-    const data = this._channelStates.get(channel.uid);
+  channelState(channel: string | MachinatChannel): InMemoryStateAccessor {
+    const channelUid = typeof channel === 'string' ? channel : channel.uid;
+
+    const data = this._channelStates.get(channelUid);
     if (data) {
       return new InMemoryStateAccessor(data);
     }
 
     const newStateData = new Map();
-    this._channelStates.set(channel.uid, newStateData);
+    this._channelStates.set(channelUid, newStateData);
 
     return new InMemoryStateAccessor(newStateData);
   }
 
-  userState(user: MachinatUser): InMemoryStateAccessor {
-    const data = this._userStates.get(user.uid);
+  userState(user: string | MachinatUser): InMemoryStateAccessor {
+    const userUid = typeof user === 'string' ? user : user.uid;
+
+    const data = this._userStates.get(userUid);
     if (data) {
       return new InMemoryStateAccessor(data);
     }
 
     const newStateData = new Map();
-    this._userStates.set(user.uid, newStateData);
+    this._userStates.set(userUid, newStateData);
 
     return new InMemoryStateAccessor(newStateData);
   }

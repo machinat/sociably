@@ -17,10 +17,25 @@ export interface StateAccessor {
  * @category Base
  */
 export interface BaseStateController {
-  channelState(channel: MachinatChannel): StateAccessor;
+  /**
+   * Return the {@link StateAccessor} of a channel
+   */
+  channelState(
+    /** The channel object or uid of the channel */
+    channel: string | MachinatChannel
+  ): StateAccessor;
 
-  userState(user: MachinatUser): StateAccessor;
+  /**
+   * Return the {@link StateAccessor} of a user
+   */
+  userState(
+    /** The user object or uid of the user */
+    user: string | MachinatUser
+  ): StateAccessor;
 
+  /**
+   * Return the {@link StateAccessor} of a global name
+   */
   globalState(name: string): StateAccessor;
 }
 

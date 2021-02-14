@@ -3,10 +3,9 @@ import { InMemoryStateController } from '../controller';
 test('channel state', async () => {
   const controller = new InMemoryStateController();
 
-  const fooChannel = { platform: 'x', uid: 'foo' };
+  const fooChannel = { platform: 'test', uid: 'foo' };
   const fooState = controller.channelState(fooChannel);
-  const barChannel = { platform: 'x', uid: 'bar' };
-  const barState = controller.channelState(barChannel);
+  const barState = controller.channelState('bar');
 
   await expect(fooState.get('key1')).resolves.toBe(undefined);
 
@@ -64,10 +63,9 @@ test('channel state', async () => {
 test('user state', async () => {
   const controller = new InMemoryStateController();
 
-  const fooUser = { platform: 'x', uid: 'foo' };
+  const fooUser = { platform: 'test', uid: 'foo' };
   const fooState = controller.userState(fooUser);
-  const barUser = { platform: 'x', uid: 'bar' };
-  const barState = controller.userState(barUser);
+  const barState = controller.userState('bar');
 
   await expect(fooState.get('key1')).resolves.toBe(undefined);
 

@@ -1,4 +1,4 @@
-export type FileRepositoryConfigs = {
+export type FileStateConfigs = {
   path: string;
 };
 

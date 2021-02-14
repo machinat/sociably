@@ -27,8 +27,8 @@ const initialContent = `
   }
 }`;
 
-const fooChannel = { platform: 'x', uid: 'foo' };
-const barUser = { platform: 'x', uid: 'bar' };
+const fooChannel = { platform: 'test', uid: 'foo' };
+const barUser = { platform: 'test', uid: 'bar' };
 
 describe('FileStateAccessor#get()', () => {
   test('get value from storage file', async () => {
@@ -57,7 +57,7 @@ describe('FileStateAccessor#get()', () => {
     const tmpPath = tmpNameSync();
     const controller = new FileStateController({ path: tmpPath });
     await expect(
-      controller.channelState({ platform: 'xxx', uid: 'foo' }).get('key')
+      controller.channelState({ platform: 'test', uid: 'foo' }).get('key')
     ).resolves.toBe(undefined);
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
@@ -108,7 +108,7 @@ describe('#getAll()', () => {
                   `);
 
     await expect(
-      controller.channelState({ platform: 'x', uid: 'unknown' }).getAll()
+      controller.channelState({ platform: 'test', uid: 'unknown' }).getAll()
     ).resolves.toEqual(new Map());
   });
 

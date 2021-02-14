@@ -137,28 +137,28 @@ export class RedisStateController implements BaseStateController {
     };
   }
 
-  channelState(channel: MachinatChannel): RedisStateAccessor {
+  channelState(channel: string | MachinatChannel): RedisStateAccessor {
+    const channelUid = typeof channel === 'string' ? channel : channel.uid;
+
     return new RedisStateAccessor(
       this._client,
       this._marshaler,
-      `channel:${channel.uid}`
+      `$C:${channelUid}`
     );
   }
 
-  userState(user: MachinatUser): RedisStateAccessor {
+  userState(user: string | MachinatUser): RedisStateAccessor {
+    const userUid = typeof user === 'string' ? user : user.uid;
+
     return new RedisStateAccessor(
       this._client,
       this._marshaler,
-      `user:${user.uid}`
+      `$U:${userUid}`
     );
   }
 
   globalState(name: string): RedisStateAccessor {
-    return new RedisStateAccessor(
-      this._client,
-      this._marshaler,
-      `global:${name}`
-    );
+    return new RedisStateAccessor(this._client, this._marshaler, `$G:${name}`);
   }
 }
 

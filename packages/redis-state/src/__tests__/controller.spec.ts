@@ -1,4 +1,5 @@
 /* eslint-disable prefer-destructuring, no-await-in-loop */
+import type { RedisClient } from 'redis';
 import moxy from '@moxyjs/moxy';
 import { RedisStateController } from '../controller';
 
@@ -6,13 +7,13 @@ const resolveCallback = (result) => (...args) => {
   args[args.length - 1](null, result);
 };
 
-const client = moxy({
+const client = moxy<RedisClient>({
   hget: resolveCallback(null),
   hset: resolveCallback(1),
   hdel: resolveCallback(1),
   del: resolveCallback(1),
   hgetall: resolveCallback(null),
-});
+} as never);
 
 const marshaler = moxy({
   marshal: (x) => x,
@@ -28,22 +29,41 @@ const controller = new RedisStateController(client, marshaler);
 
 describe.each([
   [
-    'channel',
+    'channel state',
+    '$C',
     controller.channelState({ platform: 'test', uid: 'foo' }),
     controller.channelState({ platform: 'test', uid: 'bar' }),
   ],
   [
-    'user',
+    'channel state using uid',
+    '$C',
+    controller.channelState('foo'),
+    controller.channelState('bar'),
+  ],
+  [
+    'user state',
+    '$U',
     controller.userState({ platform: 'test', uid: 'foo' }),
     controller.userState({ platform: 'test', uid: 'bar' }),
   ],
-  ['global', controller.globalState('foo'), controller.globalState('bar')],
-])('%s state', (type, fooState, barState) => {
+  [
+    'user state using uid',
+    '$U',
+    controller.userState('foo'),
+    controller.userState('bar'),
+  ],
+  [
+    'global state',
+    '$G',
+    controller.globalState('foo'),
+    controller.globalState('bar'),
+  ],
+])('%s', (_, prefix, fooState, barState) => {
   test('#get()', async () => {
     await expect(fooState.get('key1')).resolves.toBe(undefined);
     expect(client.hget.mock).toHaveBeenCalledTimes(1);
     expect(client.hget.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       'key1',
       expect.any(Function)
     );
@@ -52,7 +72,7 @@ describe.each([
     await expect(fooState.get('key2')).resolves.toBe('foo');
     expect(client.hget.mock).toHaveBeenCalledTimes(2);
     expect(client.hget.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       'key2',
       expect.any(Function)
     );
@@ -63,7 +83,7 @@ describe.each([
     });
     expect(client.hget.mock).toHaveBeenCalledTimes(3);
     expect(client.hget.mock).toHaveBeenCalledWith(
-      `${type}:bar`,
+      `${prefix}:bar`,
       'key3',
       expect.any(Function)
     );
@@ -73,7 +93,7 @@ describe.each([
     await expect(fooState.set('key1', 'foo')).resolves.toBe(false);
     expect(client.hset.mock).toHaveBeenCalledTimes(1);
     expect(client.hset.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       'key1',
       '"foo"',
       expect.any(Function)
@@ -84,7 +104,7 @@ describe.each([
     await expect(fooState.set('key2', { bar: 'baz' })).resolves.toBe(true);
     expect(client.hset.mock).toHaveBeenCalledTimes(2);
     expect(client.hset.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       'key2',
       '{"bar":"baz"}',
       expect.any(Function)
@@ -93,7 +113,7 @@ describe.each([
     await expect(barState.set('key3', [1, 2, 3])).resolves.toBe(true);
     expect(client.hset.mock).toHaveBeenCalledTimes(3);
     expect(client.hset.mock).toHaveBeenCalledWith(
-      `${type}:bar`,
+      `${prefix}:bar`,
       'key3',
       '[1,2,3]',
       expect.any(Function)
@@ -107,7 +127,7 @@ describe.each([
     expect(client.hget.mock).toHaveBeenCalledTimes(1);
     expect(client.hset.mock).toHaveBeenCalledTimes(1);
     expect(client.hset.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       'key1',
       '"foo"',
       expect.any(Function)
@@ -124,7 +144,7 @@ describe.each([
     expect(client.hget.mock).toHaveBeenCalledTimes(2);
     expect(client.hset.mock).toHaveBeenCalledTimes(2);
     expect(client.hset.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       'key2',
       '{"bar":"baz"}',
       expect.any(Function)
@@ -141,7 +161,7 @@ describe.each([
     expect(client.hset.mock).toHaveBeenCalledTimes(2);
     expect(client.hdel.mock).toHaveBeenCalledTimes(1);
     expect(client.hdel.mock).toHaveBeenCalledWith(
-      `${type}:bar`,
+      `${prefix}:bar`,
       'key3',
       expect.any(Function)
     );
@@ -151,7 +171,7 @@ describe.each([
     await expect(fooState.delete('key1')).resolves.toBe(true);
     expect(client.hdel.mock).toHaveBeenCalledTimes(1);
     expect(client.hdel.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       'key1',
       expect.any(Function)
     );
@@ -159,7 +179,7 @@ describe.each([
     await expect(barState.delete('key1')).resolves.toBe(true);
     expect(client.hdel.mock).toHaveBeenCalledTimes(2);
     expect(client.hdel.mock).toHaveBeenCalledWith(
-      `${type}:bar`,
+      `${prefix}:bar`,
       'key1',
       expect.any(Function)
     );
@@ -169,7 +189,7 @@ describe.each([
     await expect(fooState.delete('key2')).resolves.toBe(false);
     expect(client.hdel.mock).toHaveBeenCalledTimes(3);
     expect(client.hdel.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       'key2',
       expect.any(Function)
     );
@@ -179,7 +199,7 @@ describe.each([
     await expect(fooState.clear()).resolves.toBe(undefined);
     expect(client.del.mock).toHaveBeenCalledTimes(1);
     expect(client.del.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       expect.any(Function)
     );
 
@@ -188,7 +208,7 @@ describe.each([
     await expect(barState.clear()).resolves.toBe(undefined);
     expect(client.del.mock).toHaveBeenCalledTimes(2);
     expect(client.del.mock).toHaveBeenCalledWith(
-      `${type}:bar`,
+      `${prefix}:bar`,
       expect.any(Function)
     );
   });
@@ -197,7 +217,7 @@ describe.each([
     await expect(fooState.getAll()).resolves.toEqual(new Map());
     expect(client.hgetall.mock).toHaveBeenCalledTimes(1);
     expect(client.hgetall.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       expect.any(Function)
     );
 
@@ -212,7 +232,7 @@ describe.each([
     );
     expect(client.hgetall.mock).toHaveBeenCalledTimes(2);
     expect(client.hgetall.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       expect.any(Function)
     );
 
@@ -220,7 +240,7 @@ describe.each([
     await expect(barState.getAll()).resolves.toEqual(new Map([['key1', 123]]));
     expect(client.hgetall.mock).toHaveBeenCalledTimes(3);
     expect(client.hgetall.mock).toHaveBeenCalledWith(
-      `${type}:bar`,
+      `${prefix}:bar`,
       expect.any(Function)
     );
   });
@@ -236,7 +256,7 @@ describe.each([
     await expect(fooState.set('key1', 'foo')).resolves.toBe(false);
     expect(marshaler.marshal.mock).toHaveBeenCalledWith('foo');
     expect(client.hset.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       'key1',
       '{"value":"foo"}',
       expect.any(Function)
@@ -245,7 +265,7 @@ describe.each([
     const updator = moxy(() => 'bar');
     await expect(fooState.update('key1', updator)).resolves.toBe(false);
     expect(client.hset.mock).toHaveBeenCalledWith(
-      `${type}:foo`,
+      `${prefix}:foo`,
       'key1',
       '{"value":"bar"}',
       expect.any(Function)
