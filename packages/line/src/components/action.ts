@@ -1,5 +1,5 @@
 import { partSegment } from '@machinat/core/renderer';
-import { PartSegment } from '@machinat/core/renderer/types';
+import { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateLineComponent } from '../utils';
 import type { LineComponent } from '../types';
 
@@ -8,7 +8,7 @@ import type { LineComponent } from '../types';
  */
 type PostbackActionProps = {
   /** Label for the action */
-  label: string;
+  label?: string;
   /**
    * String returned via webhook in the `postback.data` property of the postback
    * event. Max character limit: 300.
@@ -20,19 +20,20 @@ type PostbackActionProps = {
    * types. Max character limit: 300.
    */
   displayText?: string;
-  /** Alias of `displayText` */
-  text?: string;
 };
 
 /** @internal */
-const __PostbackAction = function PostbackAction(node, path) {
-  const { label, data, text, displayText } = node.props;
+const __PostbackAction: FunctionOf<LineComponent<
+  PostbackActionProps,
+  PartSegment<any>
+>> = function PostbackAction(node, path) {
+  const { label, data, displayText } = node.props;
   return [
     partSegment(node, path, {
       type: 'postback',
       data,
       label,
-      displayText: displayText || text,
+      displayText,
     }),
   ];
 };
@@ -53,13 +54,16 @@ export const PostbackAction: LineComponent<
  */
 type MessageActionProps = {
   /** Label for the action */
-  label: string;
+  label?: string;
   /** Text sent when the action is performed. Max character limit: 300 */
   text?: string;
 };
 
 /** @internal */
-const __MessageAction = function MessageAction(node, path) {
+const __MessageAction: FunctionOf<LineComponent<
+  MessageActionProps,
+  PartSegment<any>
+>> = function MessageAction(node, path) {
   const { label, text } = node.props;
   return [
     partSegment(node, path, {
@@ -86,7 +90,7 @@ export const MessageAction: LineComponent<
  */
 type UriActionProps = {
   /** Label for the action */
-  label: string;
+  label?: string;
   /**
    * URI opened when the action is performed (Max character limit: 1000). The
    * available schemes are http, https, line, and tel.
@@ -95,7 +99,10 @@ type UriActionProps = {
 };
 
 /** @internal */
-const __UriAction = function UriAction(node, path) {
+const __UriAction: FunctionOf<LineComponent<
+  UriActionProps,
+  PartSegment<any>
+>> = function UriAction(node, path) {
   const { label, uri } = node.props;
   return [
     partSegment(node, path, {
@@ -142,14 +149,14 @@ const dateToStringByMode = (mode, d) =>
  */
 type DateTimePickerActionProps = {
   /** Label for the action  */
-  label: string;
+  label?: string;
   /**
    * String returned via webhook in the postback.data property of the postback
    * event. Max character limit: 300.
    */
   data: string;
   /** Action mode */
-  mode: 'datetime' | 'date' | 'time';
+  mode?: 'datetime' | 'date' | 'time';
   /** Initial value of date or time */
   initial?: string | Date;
   /**
@@ -165,7 +172,10 @@ type DateTimePickerActionProps = {
 };
 
 /** @internal */
-const __DateTimePickerAction = function DateTimePickerAction(node, path) {
+const __DateTimePickerAction: FunctionOf<LineComponent<
+  DateTimePickerActionProps,
+  PartSegment<any>
+>> = function DateTimePickerAction(node, path) {
   const { label, data, mode = 'datetime', initial, min, max } = node.props;
 
   return [
@@ -199,11 +209,14 @@ export const DateTimePickerAction: LineComponent<
  */
 type CameraActionProps = {
   /** Label for the action. Max character limit: 20 */
-  label: string;
+  label?: string;
 };
 
 /** @internal */
-const __CameraAction = function CameraAction(node, path) {
+const __CameraAction: FunctionOf<LineComponent<
+  CameraActionProps,
+  PartSegment<any>
+>> = function CameraAction(node, path) {
   return [
     partSegment(node, path, {
       type: 'camera',
@@ -228,11 +241,14 @@ export const CameraAction: LineComponent<
  */
 type CameraRollActionProps = {
   /** Label for the action. Max character limit: 20 */
-  label: string;
+  label?: string;
 };
 
 /** @internal */
-const __CameraRollAction = function CameraRollAction(node, path) {
+const __CameraRollAction: FunctionOf<LineComponent<
+  CameraRollActionProps,
+  PartSegment<any>
+>> = function CameraRollAction(node, path) {
   return [
     partSegment(node, path, {
       type: 'cameraRoll',
@@ -258,11 +274,14 @@ export const CameraRollAction: LineComponent<
  */
 type LocationActionProps = {
   /** Label for the action. Max character limit: 20 */
-  label: string;
+  label?: string;
 };
 
 /** @internal */
-const __LocationAction = function LocationAction(node, path) {
+const __LocationAction: FunctionOf<LineComponent<
+  LocationActionProps,
+  PartSegment<any>
+>> = function LocationAction(node, path) {
   return [
     partSegment(node, path, {
       type: 'location',

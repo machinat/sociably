@@ -11,26 +11,24 @@ import {
 } from '../image';
 import { UriAction, MessageAction } from '../action';
 
-const renderer = new Renderer('line', () => null);
+const renderer = new Renderer('line', async () => null);
 
 it.each(
   [Image, Sticker, ImageMap, ImageMapVideoArea, ImageMapArea].map((C) => [
     C.name,
     C,
   ])
-)('%s is a valid component', (_, Img) => {
+)('%s is a valid component', (_, Img: any) => {
   expect(isNativeType(<Img />)).toBe(true);
   expect(Img.$$platform).toBe('line');
 });
 
 it.each(
   [
-    <Image url="https://..." previewUrl="https://..." />,
-    <Sticker packageId={1} stickerId={2} />,
+    <Image originalContentUrl="https://..." previewImageUrl="https://..." />,
+    <Sticker packageId="1" stickerId="2" />,
     <ImageMap baseUrl="https://..." altText="..." height={999}>
       <ImageMapArea
-        label="foo"
-        text="bar"
         x={123}
         y={456}
         width={654}
@@ -51,8 +49,8 @@ it.each(
       height={999}
       video={
         <ImageMapVideoArea
-          url="https://..."
-          previewUrl="https://..."
+          originalContentUrl="https://..."
+          previewImageUrl="https://..."
           x={123}
           y={456}
           width={654}
@@ -61,8 +59,6 @@ it.each(
       }
     >
       <ImageMapArea
-        label="foo"
-        text="bar"
         x={123}
         y={456}
         width={654}
@@ -76,8 +72,8 @@ it.each(
       height={999}
       video={
         <ImageMapVideoArea
-          url="https://..."
-          previewUrl="https://..."
+          originalContentUrl="https://..."
+          previewImageUrl="https://..."
           x={123}
           y={456}
           width={654}
@@ -96,7 +92,7 @@ it.each(
     </ImageMap>,
   ].map((e) => [e.type.name, e])
 )('%s match snapshot', async (_, element) => {
-  const promise = renderer.render(element);
+  const promise = renderer.render(element, null as never);
   await expect(promise).resolves.toEqual([
     {
       type: 'unit',
@@ -106,6 +102,6 @@ it.each(
     },
   ]);
 
-  const [{ value }] = await promise;
+  const [{ value }] = (await promise)!;
   expect(value).toMatchSnapshot();
 });

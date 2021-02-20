@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { MachinatNode } from '@machinat/core/types';
 import { partSegment } from '@machinat/core/renderer';
-import { PartSegment } from '@machinat/core/renderer/types';
+import { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
@@ -12,14 +12,17 @@ type QuickReplyProps = {
   /** URL of the icon that is displayed at the beginning of the button. */
   imageUrl?: string;
   /** An {@link Action} element to be performed when the button is touched. */
-  action: MachinatNode;
+  children: MachinatNode;
 };
 
 /** @internal */
-const __QuickReply = async function QuickReply(node, path, render) {
-  const { imageUrl, action } = node.props;
+const __QuickReply: FunctionOf<LineComponent<
+  QuickReplyProps,
+  PartSegment<any>
+>> = async function QuickReply(node, path, render) {
+  const { imageUrl, children } = node.props;
 
-  const actionSegments = await render(action, '.action');
+  const actionSegments = await render(children, '.children');
   const actionValue = actionSegments?.[0].value;
 
   return [

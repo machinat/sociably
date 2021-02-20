@@ -22,7 +22,7 @@ test.each(
     CameraRollAction,
     LocationAction,
   ].map((C) => [C.name, C])
-)('%s is valid native Component', (_, Action) => {
+)('%s is valid native Component', (_, Action: any) => {
   expect(typeof Action).toBe('function');
   expect(isNativeType(<Action />)).toBe(true);
   expect(Action.$$platform).toBe('line');
@@ -31,15 +31,19 @@ test.each(
 test('<PostbackAction/>', async () => {
   await expect(
     renderInner(
-      <PostbackAction data="__POSTBACK_FOO__" label="Hello!" text="WORLD!" />
+      <PostbackAction
+        data="__POSTBACK_FOO__"
+        label="Hello!"
+        displayText="WORLD!"
+      />
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <PostbackAction
                 data="__POSTBACK_FOO__"
+                displayText="WORLD!"
                 label="Hello!"
-                text="WORLD!"
               />,
               "path": "$#container",
               "type": "part",

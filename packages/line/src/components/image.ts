@@ -1,6 +1,6 @@
 import { MachinatNode } from '@machinat/core/types';
 import { unitSegment, partSegment } from '@machinat/core/renderer';
-import { PartSegment } from '@machinat/core/renderer/types';
+import { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
@@ -9,29 +9,22 @@ import { LineComponent } from '../types';
  */
 type ImageProps = {
   /** Image URL (Max character limit: 1000) */
-  originalContentUrl?: string;
-  /**
-   * Alias of `originalContentUrl`. Either one of `url` and `originalContentUrl`
-   * must be specified.
-   */
-  url?: string;
+  originalContentUrl: string;
   /** Preview image URL (Max character limit: 1000) */
-  previewImageUrl?: string;
-  /**
-   * Alias of `previewImageUrl`. Either one of `url` and `previewImageUrl`
-   * must be specified.
-   */
-  previewUrl?: string;
+  previewImageUrl: string;
 };
 
 /** @internal */
-const __Image = function Image(node, path) {
-  const { url, originalContentUrl, previewUrl, previewImageUrl } = node.props;
+const __Image: FunctionOf<LineComponent<ImageProps>> = function Image(
+  node,
+  path
+) {
+  const { originalContentUrl, previewImageUrl } = node.props;
   return [
     unitSegment(node, path, {
       type: 'image' as const,
-      originalContentUrl: originalContentUrl || url,
-      previewImageUrl: previewImageUrl || previewUrl,
+      originalContentUrl,
+      previewImageUrl,
     }),
   ];
 };
@@ -60,7 +53,10 @@ type StickerProps = {
 };
 
 /** @internal */
-const __Sticker = function Sticker(node, path) {
+const __Sticker: FunctionOf<LineComponent<StickerProps>> = function Sticker(
+  node,
+  path
+) {
   const { stickerId, packageId } = node.props;
   return [
     unitSegment(node, path, {
@@ -106,7 +102,10 @@ type ImageMapAreaProps = {
 };
 
 /** @internal */
-const __ImageMapArea = async function ImageMapArea(node, path, render) {
+const __ImageMapArea: FunctionOf<LineComponent<
+  ImageMapAreaProps,
+  PartSegment<any>
+>> = async function ImageMapArea(node, path, render) {
   const { action, x, y, width, height } = node.props;
   const actionSegments = await render(action, '.action');
   const actionValue = actionSegments?.[0].value;
@@ -157,19 +156,9 @@ export const ImageMapArea: LineComponent<
  */
 type ImageMapVideoAreaProps = {
   /** URL of the video file (Max character limit: 1000) */
-  originalContentUrl?: string;
-  /**
-   * Alias of `originalContentUrl`. Either one of `url` and `originalContentUrl`
-   * must be specified.
-   */
-  url?: string;
+  originalContentUrl: string;
   /** URL of the preview image (Max character limit: 1000) */
-  previewImageUrl?: string;
-  /**
-   * Alias of `previewImageUrl`. Either one of `url` and `previewImageUrl` must
-   * be specified.
-   */
-  previewUrl?: string;
+  previewImageUrl: string;
   /**
    * Horizontal position of the video area relative to the left edge of the
    * imagemap area. Value must be 0 or higher.
@@ -189,15 +178,12 @@ type ImageMapVideoAreaProps = {
 };
 
 /** @internal */
-const __ImageMapVideoArea = async function ImageMapVideoArea(
-  node,
-  path,
-  render
-) {
+const __ImageMapVideoArea: FunctionOf<LineComponent<
+  ImageMapVideoAreaProps,
+  PartSegment<any>
+>> = async function ImageMapVideoArea(node, path, render) {
   const {
-    url,
     originalContentUrl,
-    previewUrl,
     previewImageUrl,
     x,
     y,
@@ -211,8 +197,8 @@ const __ImageMapVideoArea = async function ImageMapVideoArea(
 
   return [
     partSegment(node, path, {
-      originalContentUrl: originalContentUrl || url,
-      previewImageUrl: previewImageUrl || previewUrl,
+      originalContentUrl,
+      previewImageUrl,
       area: {
         x,
         y,
@@ -258,7 +244,9 @@ type ImageMapProps = {
 };
 
 /** @internal */
-const __ImageMap = async function ImageMap(node, path, render) {
+const __ImageMap: FunctionOf<LineComponent<
+  ImageMapProps
+>> = async function ImageMap(node, path, render) {
   const { baseUrl, altText, height, children, video } = node.props;
 
   const videoSegments = await render(video, '.video');
@@ -276,7 +264,7 @@ const __ImageMap = async function ImageMap(node, path, render) {
         width: 1040 as const,
         height,
       },
-      actions: actionValues,
+      actions: actionValues || [],
       video: videoValue,
     }),
   ];

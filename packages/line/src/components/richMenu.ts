@@ -1,4 +1,5 @@
 import { unitSegment } from '@machinat/core/renderer';
+import { FunctionOf } from '@machinat/core/renderer/types';
 import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../constant';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
@@ -12,7 +13,9 @@ type LinkRichMenuProps = {
 };
 
 /** @internal */
-const __LinkRichMenu = function LinkRichMenu(node, path) {
+const __LinkRichMenu: FunctionOf<LineComponent<
+  LinkRichMenuProps
+>> = function LinkRichMenu(node, path) {
   return [
     unitSegment(node, path, {
       id: node.props.id,
@@ -78,7 +81,10 @@ const UNLINK_RICHMENU_VALUE = {
 };
 
 /** @internal */
-const __UnlinkRichMenu = function UnlinkRichMenu(node, path) {
+const __UnlinkRichMenu: FunctionOf<LineComponent<{}>> = function UnlinkRichMenu(
+  node,
+  path
+) {
   return [unitSegment(node, path, UNLINK_RICHMENU_VALUE)];
 };
 

@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { unitSegment } from '@machinat/core/renderer';
-import { UnitSegment } from '@machinat/core/renderer/types';
+import { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateLineComponent } from '../utils';
 import { LineComponent, LineMessageSegmentValue } from '../types';
 
@@ -10,12 +10,15 @@ import { LineComponent, LineMessageSegmentValue } from '../types';
 type LocationProps = {
   title: string;
   address: string;
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
 };
 
 /** @internal */
-const __Location = function Location(node, path) {
+const __Location: FunctionOf<LineComponent<
+  LocationProps,
+  UnitSegment<LineMessageSegmentValue>
+>> = function Location(node, path) {
   const { title, address, latitude, longitude } = node.props;
 
   return [

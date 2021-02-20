@@ -8,7 +8,12 @@ import { MessageAction } from '../action';
 import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../../constant';
 
 const generalComponentDelegator = moxy(async (node, path) => [
-  { type: 'unit', value: { type: 'text', text: node.type }, node, path },
+  {
+    type: 'unit' as const,
+    value: { type: 'text', text: node.type },
+    node,
+    path,
+  },
 ]);
 
 const renderer = new Renderer('line', generalComponentDelegator);
@@ -20,7 +25,7 @@ beforeEach(() => {
 it('is valid native component', () => {
   expect(typeof Expression).toBe('function');
 
-  expect(isNativeType(<Expression />)).toBe(true);
+  expect(isNativeType(<Expression>foo</Expression>)).toBe(true);
   expect(Expression.$$platform).toBe('line');
 });
 
@@ -31,7 +36,8 @@ it('return segments of what children rendered', async () => {
         <foo />
         <bar />
         <baz />
-      </Expression>
+      </Expression>,
+      null as never
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
@@ -79,7 +85,8 @@ it('hoist children rendered text into text message object', async () => {
         bar
         <br />
         baz
-      </Expression>
+      </Expression>,
+      null as never
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
@@ -157,21 +164,23 @@ it('attach quickReply to last message object', async () => {
   await expect(
     renderer.render(
       <Expression
-        quickReplies={[
-          <QuickReply
-            action={<MessageAction label="👮‍" text="Some superhero" />}
-          />,
-          <QuickReply
-            action={<MessageAction label="🧚‍" text="Some fairytale bliss" />}
-          />,
-          <QuickReply
-            action={<MessageAction label="💑" text="Somebody I can kiss" />}
-            imageUrl="https://somthing.just.like/this"
-          />,
-        ]}
+        quickReplies={
+          <>
+            <QuickReply>
+              <MessageAction label="👮‍" text="Some superhero" />
+            </QuickReply>
+            <QuickReply>
+              <MessageAction label="🧚‍" text="Some fairytale bliss" />
+            </QuickReply>
+            <QuickReply imageUrl="https://somthing.just.like/this">
+              <MessageAction label="💑" text="Somebody I can kiss" />
+            </QuickReply>
+          </>
+        }
       >
         <content />
-      </Expression>
+      </Expression>,
+      null as never
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
@@ -250,8 +259,15 @@ it('return null if children is empty', async () => {
   await expect(
     renderer.render(
       <Expression
-        quickReplies={[<QuickReply action={<MessageAction text="nope" />} />]}
-      />
+        quickReplies={[
+          <QuickReply>
+            <MessageAction text="nope" />
+          </QuickReply>,
+        ]}
+      >
+        {undefined}
+      </Expression>,
+      null as never
     )
   ).resolves.toBe(null);
 });

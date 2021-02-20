@@ -1,5 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { MachinatNode } from '@machinat/core/types';
+import { FunctionOf } from '@machinat/core/renderer/types';
 import { annotateLineComponent, isMessageValue } from '../utils';
 import { LineComponent } from '../types';
 
@@ -9,12 +10,14 @@ import { LineComponent } from '../types';
 type ExpressionProps = {
   /** Content nodes. */
   children: MachinatNode;
-  /** Quick reply elements to be appended after content. */
-  quickReplies: MachinatNode;
+  /** {@link QuickReply} elements to be appended after content. */
+  quickReplies?: MachinatNode;
 };
 
 /** @internal */
-const __Expression = async function Expression(
+const __Expression: FunctionOf<LineComponent<
+  ExpressionProps
+>> = async function Expression(
   { props: { children, quickReplies } },
   path,
   render

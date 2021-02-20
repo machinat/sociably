@@ -114,17 +114,13 @@ export class LineProfiler implements UserProfiler<LineUser> {
     user: LineUser,
     { inChat }: GetUserProfileOptions = {}
   ): Promise<LineUserProfile> {
-    let requestApi: string;
-    if (inChat) {
-      requestApi =
-        inChat.type === 'group'
-          ? `v2/bot/group/${inChat.id}/member/${user.id}`
-          : inChat.type === 'room'
-          ? `v2/bot/room/${inChat.id}/member/${user.id}`
-          : `v2/bot/profile/${user.id}`;
-    } else {
-      requestApi = `v2/bot/profile/${user.id}`;
-    }
+    const requestApi = !inChat
+      ? `v2/bot/profile/${user.id}`
+      : inChat.type === 'group'
+      ? `v2/bot/group/${inChat.id}/member/${user.id}`
+      : inChat.type === 'room'
+      ? `v2/bot/room/${inChat.id}/member/${user.id}`
+      : `v2/bot/profile/${user.id}`;
 
     const profileData: LineRawUserProfile = await this.bot.makeApiCall(
       'GET',
@@ -134,9 +130,10 @@ export class LineProfiler implements UserProfiler<LineUser> {
     return new LineUserProfile(profileData);
   }
 
-  async getGroupProfile(
-    chat: LineChat & { type: 'group' }
-  ): Promise<LineGroupProfile> {
+  /**
+   * Get profile object of a group chat. Throws if a user/room chat is received.
+   */
+  async getGroupProfile(chat: LineChat): Promise<LineGroupProfile> {
     if (chat.type !== 'group') {
       throw new Error(`expect a group chat, got ${chat.type}`);
     }

@@ -11,11 +11,11 @@ import {
 } from '../template';
 import { UriAction } from '../action';
 
-const renderer = new Renderer('line', () => null);
+const renderer = new Renderer('line', async () => null);
 
 test.each([CarouselItem, ImageCarouselItem].map((C) => [C.name, C]))(
   '%s is valid native component',
-  (_, Item) => {
+  (_, Item: any) => {
     expect(typeof Item).toBe('function');
 
     expect(isNativeType(<Item />)).toBe(true);
@@ -30,7 +30,7 @@ test.each(
     CarouselTemplate,
     ImageCarouselTemplate,
   ].map((C) => [C.name, C])
-)('%s is valid native unit component', (_, Template) => {
+)('%s is valid native unit component', (_, Template: any) => {
   expect(typeof Template).toBe('function');
 
   expect(isNativeType(<Template />)).toBe(true);
@@ -41,7 +41,7 @@ test.each(
   [
     <ButtonTemplate
       altText="xxx"
-      imageUrl="https://..."
+      thumbnailImageUrl="https://..."
       imageAspectRatio="square"
       imageSize="contain"
       imageBackgroundColor="#aaaaaa"
@@ -76,7 +76,7 @@ test.each(
         ]}
       />
       <CarouselItem
-        imageUrl="https://..."
+        thumbnailImageUrl="https://..."
         imageBackgroundColor="#bbbbbb"
         title="Spaghetti"
         text="tamato sause"
@@ -89,17 +89,17 @@ test.each(
 
     <ImageCarouselTemplate altText="xxx">
       <ImageCarouselItem
-        url="https://..."
+        imageUrl="https://..."
         action={<UriAction uri="https://..." label="foo" />}
       />
       <ImageCarouselItem
-        url="https://..."
+        imageUrl="https://..."
         action={<UriAction uri="https://..." label="bar" />}
       />
     </ImageCarouselTemplate>,
   ].map((ele) => [ele.type.name, ele])
 )('%s rendered match snapshot', async (_, templateElement) => {
-  const promise = renderer.render(templateElement);
+  const promise = renderer.render(templateElement, null as never);
   await expect(promise).resolves.toEqual([
     {
       type: 'unit',
@@ -109,6 +109,6 @@ test.each(
     },
   ]);
 
-  const [{ value }] = await promise;
+  const [{ value }] = (await promise)!;
   expect(value).toMatchSnapshot();
 });

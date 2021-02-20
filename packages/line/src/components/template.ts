@@ -1,6 +1,6 @@
 import { MachinatNode } from '@machinat/core/types';
 import { unitSegment, partSegment } from '@machinat/core/renderer';
-import { PartSegment } from '@machinat/core/renderer/types';
+import { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
@@ -15,8 +15,6 @@ type ButtonTemplateProps = {
   altText: string;
   /** Image URL (Max character limit: 1,000) */
   thumbnailImageUrl?: string;
-  /** Alias of `thumbnailImageUrl`. */
-  imageUrl?: string;
   /**
    * Aspect ratio of the image, rectangle: 1.51:1, square: 1:1. Default to
    * `'rectangle'`.
@@ -51,13 +49,14 @@ type ButtonTemplateProps = {
 };
 
 /** @internal */
-const __ButtonTemplate = async function ButtonTemplate(node, path, render) {
+const __ButtonTemplate: FunctionOf<LineComponent<
+  ButtonTemplateProps
+>> = async function ButtonTemplate(node, path, render) {
   const {
     actions,
     defaultAction,
     altText,
     thumbnailImageUrl,
-    imageUrl,
     imageAspectRatio,
     imageSize,
     imageBackgroundColor,
@@ -77,7 +76,7 @@ const __ButtonTemplate = async function ButtonTemplate(node, path, render) {
       altText,
       template: {
         type: 'buttons',
-        thumbnailImageUrl: thumbnailImageUrl || imageUrl,
+        thumbnailImageUrl,
         imageAspectRatio,
         imageSize,
         imageBackgroundColor,
@@ -117,7 +116,9 @@ type ConfirmTemplateProps = {
 };
 
 /** @internal */
-const __ConfirmTemplate = async function ConfirmTemplate(node, path, render) {
+const __ConfirmTemplate: FunctionOf<LineComponent<
+  ConfirmTemplateProps
+>> = async function ConfirmTemplate(node, path, render) {
   const { actions, altText, text } = node.props;
   const actionSegments = await render(actions, '.actions');
   const actionsValues = actionSegments?.map((segment) => segment.value);
@@ -160,8 +161,6 @@ type CarouselItemProps = {
   defaultAction?: MachinatNode;
   /** Image URL (Max character limit: 1,000) */
   thumbnailImageUrl?: string;
-  /** Alias of `thumbnailImageUrl`. */
-  imageUrl?: string;
   /**
    * Background color of the image. Specify a RGB color value. The default
    * value is #FFFFFF (white).
@@ -173,11 +172,13 @@ type CarouselItemProps = {
 };
 
 /** @internal */
-const __CarouselItem = async function CarouselItem(node, path, render) {
+const __CarouselItem: FunctionOf<LineComponent<
+  CarouselItemProps,
+  PartSegment<any>
+>> = async function CarouselItem(node, path, render) {
   const {
     actions,
     defaultAction,
-    imageUrl,
     thumbnailImageUrl,
     imageBackgroundColor,
     title,
@@ -192,7 +193,7 @@ const __CarouselItem = async function CarouselItem(node, path, render) {
 
   return [
     partSegment(node, path, {
-      thumbnailImageUrl: thumbnailImageUrl || imageUrl,
+      thumbnailImageUrl,
       imageBackgroundColor,
       title,
       text,
@@ -243,7 +244,9 @@ type CarouselTemplateProps = {
 };
 
 /** @internal */
-const __CarouselTemplate = async function CarouselTemplate(node, path, render) {
+const __CarouselTemplate: FunctionOf<LineComponent<
+  CarouselTemplateProps
+>> = async function CarouselTemplate(node, path, render) {
   const { children, altText, imageAspectRatio, imageSize } = node.props;
   const columnSegments = await render(children, '.children');
   const cloumnValues = columnSegments?.map((segment) => segment.value);
@@ -277,26 +280,23 @@ export const CarouselTemplate: LineComponent<CarouselTemplateProps> = annotateLi
  */
 type ImageCarouselItemProps = {
   /** Image URL (Max character limit: 1,000) */
-  imageUrl?: string;
-  /** Alias of `imageUrl`. Either one of `url` and `imageUrl` must be specified. */
-  url?: string;
+  imageUrl: string;
   /** One {@link Action} element to be triggered the when image is tapped. */
   action?: MachinatNode;
 };
 
 /** @internal */
-const __ImageCarouselItem = async function ImageCarouselItem(
-  node,
-  path,
-  render
-) {
-  const { url, imageUrl, action } = node.props;
+const __ImageCarouselItem: FunctionOf<LineComponent<
+  ImageCarouselItemProps,
+  PartSegment<any>
+>> = async function ImageCarouselItem(node, path, render) {
+  const { imageUrl, action } = node.props;
   const actionSegments = await render(action, '.action');
   const actionValue = actionSegments?.[0].value;
 
   return [
     partSegment(node, path, {
-      imageUrl: imageUrl || url,
+      imageUrl,
       action: actionValue,
     }),
   ];
@@ -328,11 +328,9 @@ type ImageCarouselTemplateProps = {
 };
 
 /** @internal */
-const __ImageCarouselTemplate = async function ImageCarouselTemplate(
-  node,
-  path,
-  render
-) {
+const __ImageCarouselTemplate: FunctionOf<LineComponent<
+  ImageCarouselTemplateProps
+>> = async function ImageCarouselTemplate(node, path, render) {
   const { children, altText } = node.props;
   const columnSegments = await render(children, '.children');
   const columnValues = columnSegments?.map((segment) => segment.value);

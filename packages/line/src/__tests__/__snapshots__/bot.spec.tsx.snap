@@ -11,8 +11,8 @@ Object {
             "type": "text",
           },
           Object {
-            "originalContentUrl": "https://machinat.com/greeting.png",
-            "previewImageUrl": undefined,
+            "originalContentUrl": "https://...",
+            "previewImageUrl": "https://...",
             "quickReply": Object {
               "items": Array [
                 Object {
@@ -65,8 +65,8 @@ Object {
                 "type": "text",
               },
               Object {
-                "originalContentUrl": "https://machinat.com/greeting.png",
-                "previewImageUrl": undefined,
+                "originalContentUrl": "https://...",
+                "previewImageUrl": "https://...",
                 "quickReply": Object {
                   "items": Array [
                     Object {
@@ -113,8 +113,8 @@ Object {
             "type": "text",
           },
           Object {
-            "originalContentUrl": "https://machinat.com/greeting.png",
-            "previewImageUrl": undefined,
+            "originalContentUrl": "https://...",
+            "previewImageUrl": "https://...",
             "quickReply": Object {
               "items": Array [
                 Object {
@@ -167,8 +167,8 @@ Object {
                 "type": "text",
               },
               Object {
-                "originalContentUrl": "https://machinat.com/greeting.png",
-                "previewImageUrl": undefined,
+                "originalContentUrl": "https://...",
+                "previewImageUrl": "https://...",
                 "quickReply": Object {
                   "items": Array [
                     Object {
@@ -215,8 +215,8 @@ Object {
             "type": "text",
           },
           Object {
-            "originalContentUrl": "https://machinat.com/greeting.png",
-            "previewImageUrl": undefined,
+            "originalContentUrl": "https://...",
+            "previewImageUrl": "https://...",
             "quickReply": Object {
               "items": Array [
                 Object {
@@ -280,8 +280,8 @@ Object {
                 "type": "text",
               },
               Object {
-                "originalContentUrl": "https://machinat.com/greeting.png",
-                "previewImageUrl": undefined,
+                "originalContentUrl": "https://...",
+                "previewImageUrl": "https://...",
                 "quickReply": Object {
                   "items": Array [
                     Object {

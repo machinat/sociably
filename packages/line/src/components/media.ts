@@ -1,5 +1,5 @@
 import { unitSegment } from '@machinat/core/renderer';
-import { UnitSegment } from '@machinat/core/renderer/types';
+import { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateLineComponent } from '../utils';
 import { LineComponent, LineMessageSegmentValue } from '../types';
 
@@ -8,19 +8,9 @@ import { LineComponent, LineMessageSegmentValue } from '../types';
  */
 type VideoProps = {
   /** URL of video file (Max character limit: 1000) */
-  originalContentUrl?: string;
-  /**
-   * Alias of `originalContentUrl`. Either one of `url` and `originalContentUrl`
-   * must be specified.
-   */
-  url?: string;
+  originalContentUrl: string;
   /** URL of preview image (Max character limit: 1000) */
-  previewImageUrl?: string;
-  /**
-   * Alias of `previewImageUrl`. Either one of `url` and `previewImageUrl` must
-   * be specified.
-   */
-  previewUrl?: string;
+  previewImageUrl: string;
   /**
    * ID used to identify the video when Video viewing complete event occurs. If
    * you send a video message with trackingId added, the video viewing complete
@@ -30,20 +20,17 @@ type VideoProps = {
 };
 
 /** @internal */
-const __Video = function Video(node, path) {
-  const {
-    url,
-    originalContentUrl,
-    previewUrl,
-    previewImageUrl,
-    trackingId,
-  } = node.props;
+const __Video: FunctionOf<LineComponent<
+  VideoProps,
+  UnitSegment<LineMessageSegmentValue>
+>> = function Video(node, path) {
+  const { originalContentUrl, previewImageUrl, trackingId } = node.props;
 
   return [
     unitSegment(node, path, {
       type: 'video' as const,
-      originalContentUrl: originalContentUrl || url,
-      previewImageUrl: previewImageUrl || previewUrl,
+      originalContentUrl,
+      previewImageUrl,
       trackingId,
     }),
   ];
@@ -64,23 +51,21 @@ export const Video: LineComponent<
  */
 type AudioProps = {
   /** URL of audio file (Max character limit: 1000) */
-  originalContentUrl?: string;
-  /**
-   * Alias of `originalContentUrl`. Either one of `url` and `originalContentUrl`
-   * must be specified.
-   */
-  url?: string;
+  originalContentUrl: string;
   /** Length of audio file (milliseconds) */
-  duration?: number;
+  duration: number;
 };
 
 /** @internal */
-const __Audio = function Audio(node, path) {
-  const { url, originalContentUrl, duration } = node.props;
+const __Audio: FunctionOf<LineComponent<
+  AudioProps,
+  UnitSegment<LineMessageSegmentValue>
+>> = function Audio(node, path) {
+  const { originalContentUrl, duration } = node.props;
   return [
     unitSegment(node, path, {
       type: 'audio' as const,
-      originalContentUrl: originalContentUrl || url,
+      originalContentUrl,
       duration,
     }),
   ];

@@ -35,11 +35,13 @@ nock.disableNetConnect();
 const message = (
   <Expression
     quickReplies={
-      <QuickReply action={<MessageAction text="Hi!" label="HI" />} />
+      <QuickReply>
+        <MessageAction text="Hi!" label="HI" />
+      </QuickReply>
     }
   >
     Hello <b>LINE</b>
-    <Image url="https://machinat.com/greeting.png" />
+    <Image originalContentUrl="https://..." previewImageUrl="https://..." />
     <LinkRichMenu id="newbie" />
   </Expression>
 );
@@ -149,7 +151,8 @@ describe('#render(token, node, options)', () => {
           { text: 'Hello LINE', type: 'text' },
           {
             type: 'image',
-            originalContentUrl: 'https://machinat.com/greeting.png',
+            originalContentUrl: 'https://...',
+            previewImageUrl: 'https://...',
             quickReply: {
               items: [
                 {
@@ -188,7 +191,8 @@ describe('#render(token, node, options)', () => {
           { text: 'Hello LINE', type: 'text' },
           {
             type: 'image',
-            originalContentUrl: 'https://machinat.com/greeting.png',
+            originalContentUrl: 'https://...',
+            previewImageUrl: 'https://...',
             quickReply: {
               items: [
                 {
@@ -283,7 +287,8 @@ describe('#renderMulticast(targets, node)', () => {
           { text: 'Hello LINE', type: 'text' },
           {
             type: 'image',
-            originalContentUrl: 'https://machinat.com/greeting.png',
+            originalContentUrl: 'https://...',
+            previewImageUrl: 'https://...',
             quickReply: {
               items: [
                 {

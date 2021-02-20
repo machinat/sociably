@@ -122,8 +122,8 @@ Object {
 
 exports[`Sticker match snapshot 1`] = `
 Object {
-  "packageId": 1,
-  "stickerId": 2,
+  "packageId": "1",
+  "stickerId": "2",
   "type": "sticker",
 }
 `;

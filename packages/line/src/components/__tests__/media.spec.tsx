@@ -4,11 +4,11 @@ import Renderer from '@machinat/core/renderer';
 
 import { Audio, Video } from '../media';
 
-const renderer = new Renderer('line', () => null);
+const renderer = new Renderer('line', async () => null);
 
 it.each([Audio, Video].map((C) => [C.name, C]))(
   '%s is valid native unit component',
-  (_, Media) => {
+  (_, Media: any) => {
     expect(typeof Media).toBe('function');
 
     expect(isNativeType(<Media />)).toBe(true);
@@ -18,11 +18,11 @@ it.each([Audio, Video].map((C) => [C.name, C]))(
 
 it.each(
   [
-    <Audio url="https://..." duration={6666} />,
-    <Video url="https://..." previewUrl="https://..." />,
+    <Audio originalContentUrl="https://..." duration={6666} />,
+    <Video originalContentUrl="https://..." previewImageUrl="https://..." />,
   ].map((e) => [e.type.name, e])
 )('%s render match snapshot', async (_, mediaElement) => {
-  const promise = renderer.render(mediaElement);
+  const promise = renderer.render(mediaElement, null as never);
   await expect(promise).resolves.toEqual([
     {
       type: 'unit',
@@ -32,6 +32,6 @@ it.each(
     },
   ]);
 
-  const [{ value }] = await promise;
+  const [{ value }] = (await promise)!;
   expect(value).toMatchSnapshot();
 });

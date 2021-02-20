@@ -1,7 +1,11 @@
 import invariant from 'invariant';
 import type { MachinatNode } from '@machinat/core/types';
 import { unitSegment, partSegment } from '@machinat/core/renderer';
-import { UnitSegment, PartSegment } from '@machinat/core/renderer/types';
+import {
+  UnitSegment,
+  PartSegment,
+  FunctionOf,
+} from '@machinat/core/renderer/types';
 import formatNode from '@machinat/core/utils/formatNode';
 import { annotateLineComponent } from '../utils';
 import type { LineComponent, FlexSegmentValue } from '../types';
@@ -59,7 +63,10 @@ type FlexButtonProps = {
 };
 
 /** @internal */
-const __FlexButton = async function FlexButton(node, path, render) {
+const __FlexButton: FunctionOf<LineComponent<
+  FlexButtonProps,
+  PartSegment<any>
+>> = async function FlexButton(node, path, render) {
   const {
     action,
     flex,
@@ -121,7 +128,10 @@ type FlexFillerProps = {
 };
 
 /** @internal */
-const __FlexFiller = function FlexFiller(node, path) {
+const __FlexFiller: FunctionOf<LineComponent<
+  FlexFillerProps,
+  PartSegment<any>
+>> = function FlexFiller(node, path) {
   return [
     partSegment(node, path, {
       type: 'filler',
@@ -176,7 +186,10 @@ type FlexIconProps = {
 };
 
 /** @internal */
-const __FlexIcon = function FlexIcon(node, path) {
+const __FlexIcon: FunctionOf<LineComponent<
+  FlexIconProps,
+  PartSegment<any>
+>> = function FlexIcon(node, path) {
   const {
     url,
     margin,
@@ -266,7 +279,10 @@ type FlexImageProps = {
 };
 
 /** @internal */
-const __FlexImage = async function FlexImage(node, path, render) {
+const __FlexImage: FunctionOf<LineComponent<
+  FlexImageProps,
+  PartSegment<any>
+>> = async function FlexImage(node, path, render) {
   const {
     url,
     flex,
@@ -334,7 +350,10 @@ type FlextSeparatorProps = {
 };
 
 /** @internal */
-const __FlexSeparator = function FlexSeparator(node, path) {
+const __FlexSeparator: FunctionOf<LineComponent<
+  FlextSeparatorProps,
+  PartSegment<any>
+>> = function FlexSeparator(node, path) {
   const { margin, color } = node.props;
   return [
     partSegment(node, path, {
@@ -364,7 +383,10 @@ type FlexSpacerProps = {
 };
 
 /** @internal */
-const __FlexSpacer = function FlexSpacer(node, path) {
+const __FlexSpacer: FunctionOf<LineComponent<
+  FlexSpacerProps,
+  PartSegment<any>
+>> = function FlexSpacer(node, path) {
   return [
     partSegment(node, path, {
       type: 'spacer',
@@ -441,7 +463,10 @@ type FlexTextProps = {
 };
 
 /** @internal */
-const __FlexText = async function FlexText(node, path, render) {
+const __FlexText: FunctionOf<LineComponent<
+  FlexTextProps,
+  PartSegment<any>
+>> = async function FlexText(node, path, render) {
   const {
     children,
     flex,
@@ -468,7 +493,9 @@ const __FlexText = async function FlexText(node, path, render) {
   let text = '';
   let contents;
 
-  if (textSegments.length === 1 && textSegments[0].type === 'text') {
+  if (!textSegments) {
+    text = '';
+  } else if (textSegments.length === 1 && textSegments[0].type === 'text') {
     text = textSegments?.[0].value || '';
   } else {
     contents = textSegments.reduce((spans, { type, value, node: spanNode }) => {
@@ -485,7 +512,7 @@ const __FlexText = async function FlexText(node, path, render) {
         );
       }
       return spans;
-    }, []);
+    }, [] as any[]);
   }
 
   const actionSegments = await render(action, '.action');
@@ -546,7 +573,10 @@ type FlexSpanProps = {
 };
 
 /** @internal */
-const __FlexSpan = async function FlexBox(node, path, render) {
+const __FlexSpan: FunctionOf<LineComponent<
+  FlexSpanProps,
+  PartSegment<any>
+>> = async function FlexBox(node, path, render) {
   const { children, size, weight, color, style, decoration } = node.props;
 
   const textSegments = await render(children, '.children');
@@ -665,7 +695,10 @@ type FlexBoxProps = {
 };
 
 /** @internal */
-const __FlexBox = async function FlexBox(node, path, render) {
+const __FlexBox: FunctionOf<LineComponent<
+  FlexBoxProps,
+  PartSegment<any>
+>> = async function FlexBox(node, path, render) {
   const {
     children,
     layout,
@@ -736,14 +769,16 @@ export const FlexBox: LineComponent<
   PartSegment<any>
 > = annotateLineComponent(__FlexBox);
 
+type BlockStyle = {
+  backgroundColor?: string;
+  separator?: boolean;
+  separatorColor?: string;
+};
+
 type BubbleBlock = {
   name: string;
   content: MachinatNode;
-  style?: {
-    backgroundColor?: string;
-    separator?: boolean;
-    separatorColor?: string;
-  };
+  style?: BlockStyle;
 };
 
 /**
@@ -861,11 +896,10 @@ type FlexBubbleContainerProps = {
 };
 
 /** @internal */
-const __FlexBubbleContainer = async function FlexBubbleContainer(
-  node,
-  path,
-  render
-) {
+const __FlexBubbleContainer: FunctionOf<LineComponent<
+  FlexBubbleContainerProps,
+  PartSegment<any>
+>> = async function FlexBubbleContainer(node, path, render) {
   const { children, direction, rightToLeft, action } = node.props;
   const actionSegments = await render(action, '.action');
   const sectionSegments = await render(children, '.children');
@@ -888,7 +922,7 @@ const __FlexBubbleContainer = async function FlexBubbleContainer(
       type: 'bubble',
       direction: direction || rightToLeft ? 'rtl' : 'ltr',
       action: actionSegments?.[0].value,
-      styles: undefined,
+      styles: undefined as undefined | Record<string, BlockStyle>,
     }
   );
 
@@ -916,11 +950,10 @@ type FlexCarouselContainerProps = {
 };
 
 /** @internal */
-const __FlexCarouselContainer = async function FlexCarouselContainer(
-  node,
-  path,
-  render
-) {
+const __FlexCarouselContainer: FunctionOf<LineComponent<
+  FlexCarouselContainerProps,
+  PartSegment<any>
+>> = async function FlexCarouselContainer(node, path, render) {
   const contentSegments = await render(node.props.children, '.children');
   const bubbleContainers = contentSegments?.map((segment) => segment.value);
 
@@ -954,7 +987,10 @@ type FlexMessageProps = {
 };
 
 /** @internal */
-const __FlexMessage = async function FlexMessage(node, path, render) {
+const __FlexMessage: FunctionOf<LineComponent<
+  FlexMessageProps,
+  UnitSegment<FlexSegmentValue>
+>> = async function FlexMessage(node, path, render) {
   const { children, altText } = node.props;
   const contentSegments = await render(children, '.children');
   const contentValue = contentSegments?.[0].value;
