@@ -31,16 +31,16 @@ export class LineUserProfile
     return this.data.displayName;
   }
 
-  get avatar(): string {
-    return this.data.displayName;
-  }
-
-  get language(): undefined | string {
-    return this.data.language;
+  get avatar(): undefined | string {
+    return this.data.pictureUrl;
   }
 
   get pictureUrl(): undefined | string {
     return this.data.pictureUrl;
+  }
+
+  get language(): undefined | string {
+    return this.data.language;
   }
 
   get statusMessage(): undefined | string {
