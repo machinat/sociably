@@ -255,7 +255,7 @@ describe('handling requests', () => {
     server.emit('request', moxy({ url: '/' }), res);
 
     expect(res.end.mock).toHaveBeenCalledTimes(1);
-    expect(res.statusCode).toBe(403);
+    expect(res.statusCode).toBe(404);
   });
 
   it('throw if registered routes conflict', () => {

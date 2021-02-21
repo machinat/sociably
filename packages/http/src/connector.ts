@@ -111,25 +111,6 @@ export class HttpConnector {
 
   makeRequestCallback(): (req: IncomingMessage, res: ServerResponse) => void {
     const requestRoutes = [...this._requestRoutes];
-    if (requestRoutes.length === 0) {
-      return (_, res) => {
-        endRes(res, 403);
-      };
-    }
-
-    if (requestRoutes.length === 1) {
-      const [{ path, handler }] = requestRoutes;
-      if (path === '/') {
-        return (req: IncomingMessage, res: ServerResponse) => {
-          const pathname = parseUrl(req.url as string).pathname || '/';
-          handler(req, res, {
-            originalPath: pathname,
-            matchedPath: '/',
-            trailingPath: pathname.replace(/^\//, ''),
-          });
-        };
-      }
-    }
 
     return (req: IncomingMessage, res: ServerResponse) => {
       const { pathname } = parseUrl(req.url as string);
@@ -170,25 +151,6 @@ export class HttpConnector {
     head: Buffer
   ) => void {
     const upgradeRoutes = [...this._upgradeRoutes];
-    if (upgradeRoutes.length === 0) {
-      return (_, socket) => {
-        respondUpgrade(socket, 403);
-      };
-    }
-
-    if (upgradeRoutes.length === 1) {
-      const [{ path, handler }] = upgradeRoutes;
-      if (path === '/') {
-        return (req: IncomingMessage, socket: Socket, head: Buffer) => {
-          const pathname = parseUrl(req.url as string).pathname || '/';
-          handler(req, socket, head, {
-            originalPath: pathname,
-            matchedPath: '/',
-            trailingPath: pathname.replace(/^\//, ''),
-          });
-        };
-      }
-    }
 
     return (req: IncomingMessage, socket: Socket, head: Buffer) => {
       const { pathname } = parseUrl(req.url as string);
