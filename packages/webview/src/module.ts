@@ -176,7 +176,7 @@ namespace Webview {
       { provide: BaseMarshaler.TypeList, withValue: NoneChannel },
 
       AuthControllerP,
-      { provide: Http.UpgradeRouteList, withProvider: authRouteFactory },
+      { provide: Http.RequestRouteList, withProvider: authRouteFactory },
     ];
 
     if (!configs.noNextServer) {
@@ -184,7 +184,7 @@ namespace Webview {
         NextReceiverP,
         { provide: NextServerI, withProvider: nextServerFactory },
         {
-          provide: Http.UpgradeRouteList,
+          provide: Http.RequestRouteList,
           withProvider: nextRouteFactory,
         }
       );

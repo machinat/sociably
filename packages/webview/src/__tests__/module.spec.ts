@@ -123,6 +123,7 @@ test('service provisions', async () => {
     authorizers,
     nextReceiver,
     nextServer,
+    requestRoutes,
     upgradeRoutes,
   ] = app.useServices([
     Webview.Configs,
@@ -133,6 +134,7 @@ test('service provisions', async () => {
     Webview.AuthorizerList,
     Webview.NextReceiver,
     Webview.NextServer,
+    Http.RequestRouteList,
     Http.UpgradeRouteList,
   ]);
 
@@ -148,13 +150,8 @@ test('service provisions', async () => {
   expect(createNextServer.mock).toHaveBeenCalledTimes(1);
   expect(nextServer).toBe(createNextServer.mock.calls[0].result);
 
-  expect(upgradeRoutes).toEqual(
+  expect(requestRoutes).toEqual(
     expect.arrayContaining([
-      {
-        name: 'websocket',
-        path: '/mySocket',
-        handler: expect.any(Function),
-      },
       {
         name: 'auth',
         path: '/myAuth',
@@ -163,6 +160,15 @@ test('service provisions', async () => {
       {
         name: 'next',
         path: '/myView',
+        handler: expect.any(Function),
+      },
+    ])
+  );
+  expect(upgradeRoutes).toEqual(
+    expect.arrayContaining([
+      {
+        name: 'websocket',
+        path: '/mySocket',
         handler: expect.any(Function),
       },
     ])
@@ -183,13 +189,11 @@ test('default routing paths', async () => {
   });
   await app.start();
 
-  const [upgradeRoutings] = app.useServices([Http.UpgradeRouteList]);
-  expect(upgradeRoutings).toEqual([
-    {
-      name: 'websocket',
-      path: '/websocket',
-      handler: expect.any(Function),
-    },
+  const [requestRoutes, upgradeRoutes] = app.useServices([
+    Http.RequestRouteList,
+    Http.UpgradeRouteList,
+  ]);
+  expect(requestRoutes).toEqual([
     {
       name: 'auth',
       path: '/auth',
@@ -198,6 +202,13 @@ test('default routing paths', async () => {
     {
       name: 'next',
       default: true,
+      handler: expect.any(Function),
+    },
+  ]);
+  expect(upgradeRoutes).toEqual([
+    {
+      name: 'websocket',
+      path: '/websocket',
       handler: expect.any(Function),
     },
   ]);
