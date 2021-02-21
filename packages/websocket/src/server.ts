@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import type TypedEmitter from 'typed-emitter';
-import { IncomingMessage } from 'http';
+import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
 import type { Server as WsServer } from 'ws';
 import uniqid from 'uniqid';

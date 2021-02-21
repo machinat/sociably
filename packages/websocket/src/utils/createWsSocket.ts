@@ -1,5 +1,5 @@
-import Ws from 'ws';
-import { IncomingMessage } from 'http';
+import type Ws from 'ws';
+import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
 import thenifiedly from 'thenifiedly';
 

@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
   ServerAuthorizer,

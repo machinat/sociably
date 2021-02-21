@@ -2,7 +2,7 @@
 import { STATUS_CODES } from 'http';
 import type { ServerResponse } from 'http';
 import { relative as getRelativePath } from 'path';
-import { Socket } from 'net';
+import type { Socket } from 'net';
 
 export const getTrailingPath = (
   parent: string,

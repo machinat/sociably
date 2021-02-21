@@ -1,6 +1,6 @@
 import { parse as parseUrl } from 'url';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { Socket } from 'net';
+import type { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
 import { makeClassProvider } from '@machinat/core/service';
 import { ServerI, RequestRouteListI, UpgradeRouteListI } from './interface';
