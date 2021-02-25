@@ -1,21 +1,24 @@
+import { MachinatElement } from '@machinat/core/types';
 import { MACHINAT_SCRIPT_TYPE } from './constant';
-import resolveScript from './resolve';
+import parseScript from './parse';
 import compile from './compile';
-import type { ScriptLibrary, ScriptNode } from './types';
+import type { ScriptLibrary } from './types';
 
 type ScriptBuildOtions<Meta> = {
   meta: Meta;
 };
 
-const build = <Value, Input, Return, Meta>(
+const build = <Vars, Input, Return, Meta>(
   scriptName: string,
-  src: ScriptNode<Value, Input, Return>,
+  src: MachinatElement<unknown, unknown>,
   options?: ScriptBuildOtions<Meta>
-): ScriptLibrary<Value, Input, Return, Meta> => {
-  const segments = resolveScript(src);
-  const { entriesIndex, commands } = compile(segments, { scriptName });
+): ScriptLibrary<Vars, Input, Return, Meta> => {
+  const segments = parseScript<Vars, Input, Return>(src);
+  const { entriesIndex, commands } = compile<Vars, Input, Return>(segments, {
+    scriptName,
+  });
 
-  const script: ScriptLibrary<Value, Input, Return, Meta> = {
+  const script: ScriptLibrary<Vars, Input, Return, Meta> = {
     $$typeof: MACHINAT_SCRIPT_TYPE,
     name: scriptName,
     entriesIndex,

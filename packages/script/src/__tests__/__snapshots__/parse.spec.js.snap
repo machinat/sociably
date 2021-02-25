@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`resolve <IF/> resolve nested <IF/> 1`] = `
+exports[`parse <IF/> parse nested <IF/> 1`] = `
 Array [
   Object {
     "branches": Array [
@@ -105,7 +105,7 @@ Array [
 ]
 `;
 
-exports[`resolve whole script 1`] = `
+exports[`parse whole script 1`] = `
 Array [
   Object {
     "key": "start",

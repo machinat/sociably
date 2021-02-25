@@ -66,7 +66,7 @@ type RenderCircumstances = {
 export type FunctionalComponent<Props> = (
   props: Props,
   circumstances: RenderCircumstances
-) => MachinatNode | Promise<MachinatNode>;
+) => MachinatElement<unknown, unknown>;
 
 export type FunctionalElement<
   Props,
@@ -94,7 +94,7 @@ export type NativeComponent<
   ): null | Segment[] | Promise<null | Segment[]>;
   $$typeof: typeof MACHINAT_NATIVE_TYPE;
   $$platform: string;
-  // HACK: make ts compiler accept it as class component
+  // HACK: make ts accept it as class component
   new (): NativeComponent<Props, Segment>;
 };
 

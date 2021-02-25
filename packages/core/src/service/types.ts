@@ -103,9 +103,7 @@ export type ServiceContainer<T, Args extends ReadonlyArray<unknown>> = {
   new (): ServiceContainer<T, Args>;
 };
 
-export type MaybeContainer<T, Deps extends unknown[] = unknown[]> =
-  | ServiceContainer<T, Deps>
-  | T;
+export type MaybeContainer<T> = ServiceContainer<T, unknown[]> | T;
 
 export type PolymorphicProviderBinding<T> = {
   provide: PolymorphicServiceInterface<T>;

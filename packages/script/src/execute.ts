@@ -16,7 +16,6 @@ import type {
   ConditionMatchFn,
   VarsSetFn,
   PromptSetFn,
-  CallWithVarsFn,
   CallReturnSetFn,
   ReturnValueFn,
 } from './types';
@@ -123,12 +122,12 @@ const executePromptCommand = async <Vars>(
 const executeCallCommand = async <Vars>(
   { script, key, withVars, setter, goto }: CallCommand<Vars, unknown, unknown>,
   context: ExecuteContext<Vars>
-): Promise<ExecuteContext<unknown>> => {
+): Promise<ExecuteContext<Vars>> => {
   const { vars, content, scope, channel, cursor } = context;
   const index = goto ? getCursorIndexAssertedly(script, goto) : 0;
 
   const calleeVars = withVars
-    ? await maybeInjectContainer<CallWithVarsFn<Vars, unknown>>(
+    ? await maybeInjectContainer(
         scope,
         withVars
       )({ platform: channel.platform, channel, vars })
@@ -143,7 +142,7 @@ const executeCallCommand = async <Vars>(
       ...context,
       content: concatedContent,
       stopAt: key,
-      descendantCallStack: result.stack,
+      descendantCallStack: result.stack as CallStatus<Vars, unknown, unknown>[],
     };
   }
 
@@ -172,7 +171,7 @@ async function executeScript<Vars, Input, Return>(
 ): Promise<ExecuteResult<Input, Return>> {
   const { commands } = script;
 
-  let context: ExecuteContext<unknown> = {
+  let context: ExecuteContext<Vars> = {
     finished: false,
     stopAt: undefined,
     cursor: begin,
@@ -204,7 +203,7 @@ async function executeScript<Vars, Input, Return>(
 
       let returnValue: undefined | Return;
       if (valueGetter) {
-        returnValue = await maybeInjectContainer<ReturnValueFn<Return>>(
+        returnValue = await maybeInjectContainer<ReturnValueFn<Vars, Return>>(
           scope,
           valueGetter
         )({ platform: channel.platform, vars: context.vars, channel });

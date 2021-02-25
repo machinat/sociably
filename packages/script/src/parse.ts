@@ -1,15 +1,28 @@
 /** @internal */ /** */
 /* eslint @typescript-eslint/no-use-before-define: ["error", { "variables": false }] */
 import invariant from 'invariant';
+import { MachinatElement } from '@machinat/core/types';
 import reduce from '@machinat/core/iterator/reduce';
 import formatNode from '@machinat/core/utils/formatNode';
 import { isElement } from '@machinat/core/utils/isX';
-import * as KEYWORDS from './keyword';
 import { isKeyword, isScript } from './utils';
+import {
+  IF,
+  THEN,
+  ELSE_IF,
+  ELSE,
+  WHILE,
+  PROMPT,
+  VARS,
+  LABEL,
+  CALL,
+  RETURN,
+} from './keyword';
 import type {
   ScriptNode,
   ConditionMatcher,
   IfProps,
+  ElseIfProps,
   WhileProps,
   VarsProps,
   LabelProps,
@@ -21,18 +34,18 @@ import type {
   ThenElement,
   ElseElement,
   ElseIfElement,
-  ScriptSegment,
-  ConditionsSegment,
-  WhileSegment,
-  SetVarsSegment,
-  PromptSegment,
-  LabelSegment,
-  CallSegment,
-  ReturnSegment,
+  ScriptIntermediate,
+  ConditionsIntermediate,
+  WhileIntermediate,
+  SetVarsCommand,
+  PromptCommand,
+  LabelIntermediate,
+  CallCommand,
+  ReturnCommand,
 } from './types';
 
 const ifChildrenReducer = (
-  segment: ConditionsSegment<unknown>,
+  segment: ConditionsIntermediate<unknown>,
   node:
     | ThenElement<unknown, unknown, unknown>
     | ElseElement<unknown, unknown, unknown>
@@ -42,17 +55,15 @@ const ifChildrenReducer = (
 ) => {
   invariant(
     isElement(node) &&
-      (node.type === KEYWORDS.THEN ||
-        node.type === KEYWORDS.ELSE ||
-        node.type === KEYWORDS.ELSE_IF),
-    `only <[THEN, ELSE_IF, ELSE]/> accepted within children of <IF/>, got: ${formatNode(
+      (node.type === THEN || node.type === ELSE || node.type === ELSE_IF),
+    `only THEN, ELSE_IF, ELSE elements are afccepted within children of <IF/>, got: ${formatNode(
       node
     )}`
   );
 
   const { branches, fallbackBody } = segment;
 
-  if (node.type === KEYWORDS.THEN) {
+  if (node.type === THEN) {
     invariant(
       branches.length === 0,
       '<THEN /> should be the first block wihtin <IF />'
@@ -60,24 +71,26 @@ const ifChildrenReducer = (
 
     branches.push({
       condition,
-      body: resolveSegments(node.props.children, `${path}.children`),
+      body: parseIntermediates(node.props.children, `${path}.children`),
     });
-  } else if (node.type === KEYWORDS.ELSE_IF) {
+  } else if (node.type === ELSE_IF) {
+    const props = node.props as ElseIfProps<unknown, unknown, unknown>;
+
     invariant(
       branches.length > 0 && !fallbackBody,
       '<ELSE_IF /> should be placed between <THEN /> and <ELSE /> blocks'
     );
 
     invariant(
-      typeof node.props.condition === 'function',
+      typeof props.condition === 'function',
       'prop "condition" of <ELSE_IF/> should be a function'
     );
 
     segment.branches.push({
-      condition: node.props.condition,
-      body: resolveSegments(node.props.children, `${path}.children`),
+      condition: props.condition,
+      body: parseIntermediates(node.props.children, `${path}.children`),
     });
-  } else if (node.type === KEYWORDS.ELSE) {
+  } else if (node.type === ELSE) {
     invariant(
       branches.length > 0 && !fallbackBody,
       fallbackBody
@@ -86,7 +99,7 @@ const ifChildrenReducer = (
     );
 
     // eslint-disable-next-line no-param-reassign
-    segment.fallbackBody = resolveSegments(
+    segment.fallbackBody = parseIntermediates(
       node.props.children,
       `${path}.children`
     );
@@ -98,14 +111,14 @@ const ifChildrenReducer = (
 const resolveIf = (
   { condition, children }: IfProps<unknown, unknown, unknown>,
   path: string
-): ConditionsSegment<unknown> => {
+): ConditionsIntermediate<unknown> => {
   invariant(
     typeof condition === 'function',
     'prop "condition" of <IF/> should be a function'
   );
 
   return reduce<
-    ConditionsSegment<unknown>,
+    ConditionsIntermediate<unknown>,
     { condition: ConditionMatcher<unknown> }
   >(
     children,
@@ -123,7 +136,7 @@ const resolveIf = (
 const resolveWhile = (
   { condition, children }: WhileProps<unknown, unknown, unknown>,
   path: string
-): WhileSegment<unknown> => {
+): WhileIntermediate<unknown> => {
   invariant(
     typeof condition === 'function',
     'prop "condition" of <WHILE/> should be a function'
@@ -132,13 +145,13 @@ const resolveWhile = (
   return {
     type: 'while',
     condition,
-    body: resolveSegments(children, `${path}.children`),
+    body: parseIntermediates(children, `${path}.children`),
   };
 };
 
 const resolveVars = ({
   set: setter,
-}: VarsProps<unknown>): SetVarsSegment<unknown> => {
+}: VarsProps<unknown>): SetVarsCommand<unknown> => {
   invariant(
     typeof setter === 'function',
     'prop "set" of <VARS/> should be a function'
@@ -150,7 +163,7 @@ const resolveVars = ({
   };
 };
 
-const resolveLabel = ({ key }: LabelProps): LabelSegment => {
+const resolveLabel = ({ key }: LabelProps): LabelIntermediate => {
   invariant(key, 'prop "key" of <LABEL/> should not be empty');
 
   return {
@@ -162,7 +175,7 @@ const resolveLabel = ({ key }: LabelProps): LabelSegment => {
 const resolvePrompt = ({
   set: setter,
   key,
-}: PromptProps<unknown, unknown>): PromptSegment<unknown, unknown> => {
+}: PromptProps<unknown, unknown>): PromptCommand<unknown, unknown> => {
   invariant(key, 'prop "key" of <PROMPT/> should not be empty');
   return {
     type: 'prompt',
@@ -177,7 +190,7 @@ const resolveCall = ({
   set: setter,
   key,
   goto,
-}: CallProps<unknown, unknown, unknown>): CallSegment<
+}: CallProps<unknown, unknown, unknown>): CallCommand<
   unknown,
   unknown,
   unknown
@@ -204,33 +217,39 @@ const resolveCall = ({
 
 const resolveReturn = ({
   value,
-}: ReturnProps<unknown>): ReturnSegment<unknown> => {
+}: ReturnProps<unknown, unknown>): ReturnCommand<unknown, unknown> => {
   return { type: 'return', valueGetter: value };
 };
 
 const segmentsReducer = (
-  segments: ScriptSegment<unknown, unknown, unknown>[],
+  segments: ScriptIntermediate<unknown, unknown, unknown>[],
   node: ScriptElement<unknown, unknown, unknown> | RenderContentNode<unknown>,
   path: string
 ) => {
   if (isElement(node)) {
     invariant(isKeyword(node.type), `unexpected element: ${formatNode(node)}`);
 
-    let segment: ScriptSegment<unknown, unknown, unknown>;
-    if (node.type === KEYWORDS.IF) {
-      segment = resolveIf(node.props, path);
-    } else if (node.type === KEYWORDS.WHILE) {
-      segment = resolveWhile(node.props, path);
-    } else if (node.type === KEYWORDS.VARS) {
-      segment = resolveVars(node.props);
-    } else if (node.type === KEYWORDS.PROMPT) {
-      segment = resolvePrompt(node.props);
-    } else if (node.type === KEYWORDS.LABEL) {
-      segment = resolveLabel(node.props);
-    } else if (node.type === KEYWORDS.CALL) {
-      segment = resolveCall(node.props);
-    } else if (node.type === KEYWORDS.RETURN) {
-      segment = resolveReturn(node.props);
+    let segment: ScriptIntermediate<unknown, unknown, unknown>;
+    if (node.type === IF) {
+      segment = resolveIf(
+        node.props as IfProps<unknown, unknown, unknown>,
+        path
+      );
+    } else if (node.type === WHILE) {
+      segment = resolveWhile(
+        node.props as WhileProps<unknown, unknown, unknown>,
+        path
+      );
+    } else if (node.type === VARS) {
+      segment = resolveVars(node.props as VarsProps<unknown>);
+    } else if (node.type === PROMPT) {
+      segment = resolvePrompt(node.props as PromptProps<unknown, unknown>);
+    } else if (node.type === LABEL) {
+      segment = resolveLabel(node.props as LabelProps);
+    } else if (node.type === CALL) {
+      segment = resolveCall(node.props as CallProps<unknown, unknown, unknown>);
+    } else if (node.type === RETURN) {
+      segment = resolveReturn(node.props as ReturnProps<unknown, unknown>);
     } else {
       invariant(false, `unexpected keyword: ${formatNode(node)}`);
     }
@@ -251,11 +270,11 @@ const segmentsReducer = (
   return segments;
 };
 
-const resolveSegments = <Vars, Input, Return>(
+const parseIntermediates = <Vars, Input, Return>(
   node: ScriptNode<Vars, Input, Return>,
   path: string
-): ScriptSegment<Vars, Input, Return>[] => {
-  return reduce<ScriptSegment<Vars, Input, Return>[], void>(
+): ScriptIntermediate<Vars, Input, Return>[] => {
+  return reduce<ScriptIntermediate<Vars, Input, Return>[], void>(
     node as any,
     segmentsReducer as any,
     [],
@@ -264,10 +283,13 @@ const resolveSegments = <Vars, Input, Return>(
   );
 };
 
-const resolve = <Vars, Input, Return>(
-  node: ScriptNode<Vars, Input, Return>
-): ScriptSegment<Vars, Input, Return>[] => {
-  return resolveSegments<Vars, Input, Return>(node, '$');
+const parse = <Vars, Input, Return>(
+  node: MachinatElement<unknown, unknown>
+): ScriptIntermediate<Vars, Input, Return>[] => {
+  return parseIntermediates<Vars, Input, Return>(
+    node as ScriptNode<Vars, Input, Return>,
+    '$'
+  );
 };
 
-export default resolve;
+export default parse;
