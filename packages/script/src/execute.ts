@@ -277,7 +277,7 @@ async function execute<Vars, Input, Return>(
         );
 
         const { setter } = awaitingPrompt;
-        const circumstances = {
+        const circs = {
           platform: channel.platform,
           channel,
           vars: beginningVars,
@@ -287,7 +287,7 @@ async function execute<Vars, Input, Return>(
           ? await maybeInjectContainer<PromptSetFn<Vars, unknown>>(
               scope,
               setter
-            )(circumstances, input)
+            )(circs, input)
           : vars;
 
         index += 1;

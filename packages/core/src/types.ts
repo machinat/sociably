@@ -59,13 +59,13 @@ export type MachinatEmpty = null | undefined | boolean;
 
 export type GeneralElement = MachinatElement<{ [key: string]: any }, string>;
 
-type RenderCircumstances = {
+type RenderCircs = {
   platform: string;
 };
 
 export type FunctionalComponent<Props> = (
   props: Props,
-  circumstances: RenderCircumstances
+  circs: RenderCircs
 ) => MachinatElement<unknown, unknown>;
 
 export type FunctionalElement<

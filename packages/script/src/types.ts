@@ -35,20 +35,20 @@ export type AnyScriptLibrary = ScriptLibrary<
   unknown
 >;
 
-export type ScriptCircumstances<Vars> = {
+export type ScriptCircs<Vars> = {
   platform: string;
   channel: MachinatChannel;
   vars: Vars;
 };
 
 export type RenderContentFn<Vars> = (
-  circumstances: ScriptCircumstances<Vars>
+  circs: ScriptCircs<Vars>
 ) => MachinatNode | Promise<MachinatNode>;
 
 export type RenderContentNode<Vars> = MaybeContainer<RenderContentFn<Vars>>;
 
 export type ConditionMatchFn<Vars> = (
-  circumstances: ScriptCircumstances<Vars>
+  circs: ScriptCircs<Vars>
 ) => boolean | Promise<boolean>;
 
 export type ConditionMatcher<Vars> = MaybeContainer<ConditionMatchFn<Vars>>;
@@ -132,7 +132,7 @@ export type WhileElement<Vars, Input, Return> = MachinatElement<
 >;
 
 export type PromptSetFn<Vars, Input> = (
-  circumstances: ScriptCircumstances<Vars>,
+  circs: ScriptCircs<Vars>,
   input: Input
 ) => Vars | Promise<Vars>;
 
@@ -141,7 +141,7 @@ export type PromptSetter<Vars, Input> = MaybeContainer<
 >;
 
 export type PromptFilterPredecateFn<Vars, Input> = (
-  circumstances: ScriptCircumstances<Vars>,
+  circs: ScriptCircs<Vars>,
   input: Input
 ) => boolean | Promise<boolean>;
 
@@ -162,7 +162,7 @@ export type PromptElement<Vars, Input> = MachinatElement<
 >;
 
 export type VarsSetFn<Vars> = (
-  circumstances: ScriptCircumstances<Vars>
+  circs: ScriptCircs<Vars>
 ) => Vars | Promise<Vars>;
 
 export type VarsSetter<Vars> = MaybeContainer<VarsSetFn<Vars>>;
@@ -190,7 +190,7 @@ export type LabelProps = { key: string };
 export type LabelElement = MachinatElement<LabelProps, typeof LABEL>;
 
 export type CallWithVarsFn<CallerVars, CalleeVars> = (
-  circumstances: ScriptCircumstances<CallerVars>
+  circs: ScriptCircs<CallerVars>
 ) => CalleeVars | Promise<CalleeVars>;
 
 export type CallVarsGetter<CallerVars, CalleeVars> = MaybeContainer<
@@ -198,7 +198,7 @@ export type CallVarsGetter<CallerVars, CalleeVars> = MaybeContainer<
 >;
 
 export type CallReturnSetFn<CallerVars, Return> = (
-  circumstances: ScriptCircumstances<CallerVars>,
+  circs: ScriptCircs<CallerVars>,
   returnValue: Return
 ) => CallerVars | Promise<CallerVars>;
 
@@ -226,7 +226,7 @@ export type CallElement<CallerVars, CalleeVars, Return> = MachinatElement<
 >;
 
 export type ReturnValueFn<Vars, Return> = (
-  circumstances: ScriptCircumstances<Vars>
+  circs: ScriptCircs<Vars>
 ) => Return | Promise<Return>;
 
 export type ReturnValueGetter<Vars, Return> = MaybeContainer<
