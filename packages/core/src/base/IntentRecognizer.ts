@@ -1,8 +1,8 @@
 import type { MachinatChannel } from '../types';
 import { makeInterface } from '../service';
 
-export interface TextIntentDetectResult<Payload> {
-  intentType?: string;
+export interface DetectIntentResult<Payload> {
+  type?: string;
   confidence: number;
   payload: Payload;
 }
@@ -14,7 +14,7 @@ export interface BaseIntentRecognizer<Payload> {
   detectText(
     channel: MachinatChannel,
     text: string
-  ): Promise<TextIntentDetectResult<Payload>>;
+  ): Promise<DetectIntentResult<Payload>>;
 }
 
 const IntentRecognizerI = makeInterface<BaseIntentRecognizer<unknown>>({

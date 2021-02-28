@@ -1,4 +1,5 @@
 import moxy from '@moxyjs/moxy';
+import type { SessionClient } from '../types';
 import { DialogflowIntentRecognizer as Recognizer } from '../recognizer';
 
 const detectTextResponse = {
@@ -20,10 +21,10 @@ const detectTextResponse = {
 };
 
 const sessionPath = 'projects/foo/agent/sessions/bar';
-const client = moxy({
+const client = moxy<SessionClient>({
   projectAgentSessionPath: () => sessionPath,
   detectIntent: () => [detectTextResponse],
-});
+} as never);
 
 beforeEach(() => {
   client.mock.reset();
@@ -31,7 +32,7 @@ beforeEach(() => {
 
 test('throw if porjectId is empty', () => {
   expect(
-    () => new Recognizer(client, { defaultLanguageCode: 'en-US' })
+    () => new Recognizer(client, { defaultLanguageCode: 'en-US' } as never)
   ).toThrowErrorMatchingInlineSnapshot(
     `"options.projectId should not be empty"`
   );
@@ -39,7 +40,7 @@ test('throw if porjectId is empty', () => {
 
 test('throw if defaultLanguageCode is empty', () => {
   expect(
-    () => new Recognizer(client, { projectId: '_PROJECT_ID_' })
+    () => new Recognizer(client, { projectId: '_PROJECT_ID_' } as never)
   ).toThrowErrorMatchingInlineSnapshot(
     `"options.defaultLanguageCode should not be empty"`
   );
@@ -51,10 +52,10 @@ describe('#detectText()', () => {
       projectId: '_PROJECT_ID_',
       defaultLanguageCode: 'en-US',
     });
-    const channel = { uid: 'chat.with.somoeone' };
+    const channel = { platform: 'test', uid: 'chat.with.somoeone' };
 
     await expect(recognizer.detectText(channel, 'hello bot')).resolves.toEqual({
-      intentType: 'Default Welcome Intent',
+      type: 'Default Welcome Intent',
       confidence: 0.46481857,
       payload: detectTextResponse.queryResult,
     });
@@ -77,7 +78,7 @@ describe('#detectText()', () => {
       projectId: '_PROJECT_ID_',
       defaultLanguageCode: 'en-US',
     });
-    const channel = { uid: 'foo.chat' };
+    const channel = { platform: 'test', uid: 'foo.chat' };
 
     await expect(
       recognizer.detectText(channel, 'hello bot', {
@@ -88,7 +89,7 @@ describe('#detectText()', () => {
         contexts: ['bar', 'baz'],
       })
     ).resolves.toEqual({
-      intentType: 'Default Welcome Intent',
+      type: 'Default Welcome Intent',
       confidence: 0.46481857,
       payload: detectTextResponse.queryResult,
     });

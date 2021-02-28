@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
-  TextIntentDetectResult,
+  DetectIntentResult,
   BaseIntentRecognizer,
 } from '@machinat/core/base/IntentRecognizer';
 import type { MachinatChannel } from '@machinat/core/types';
@@ -53,7 +53,7 @@ export class DialogflowIntentRecognizer
     channel: MachinatChannel,
     text: string,
     options?: DetectIntentOptions
-  ): Promise<TextIntentDetectResult<DetactIntentPayload>> {
+  ): Promise<DetectIntentResult<DetactIntentPayload>> {
     const sessionPath = this._client.projectAgentSessionPath(
       this.projectId,
       channel.uid
@@ -86,7 +86,7 @@ export class DialogflowIntentRecognizer
     }
 
     return {
-      intentType: queryResult.intent?.displayName || undefined,
+      type: queryResult.intent?.displayName || undefined,
       confidence: queryResult.intentDetectionConfidence || 0,
       payload: queryResult,
     };
