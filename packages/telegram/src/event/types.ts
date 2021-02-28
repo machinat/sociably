@@ -53,7 +53,7 @@ interface EventObject<Kind extends string, Type extends string> {
  * @kind `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
  * @type `'text'`
  */
-export interface TextEvent
+export interface TelegramTextEvent
   extends EventObject<
       'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
       'text'
@@ -70,7 +70,7 @@ export interface TextEvent
  * @kind `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
  * @type `'animation'`
  */
-export interface AnimationEvent
+export interface TelegramAnimationEvent
   extends EventObject<
       'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
       'animation'
@@ -89,7 +89,7 @@ export interface AnimationEvent
  * @kind `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
  * @type `'audio'`
  */
-export interface AudioEvent
+export interface TelegramAudioEvent
   extends EventObject<
       'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
       'audio'
@@ -108,7 +108,7 @@ export interface AudioEvent
  * @kind `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
  * @type `'document'`
  */
-export interface DocumentEvent
+export interface TelegramDocumentEvent
   extends EventObject<
       'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
       'document'
@@ -127,7 +127,7 @@ export interface DocumentEvent
  * @kind `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
  * @type `'photo'`
  */
-export interface PhotoEvent
+export interface TelegramPhotoEvent
   extends EventObject<
       'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
       'photo'
@@ -146,7 +146,7 @@ export interface PhotoEvent
  * @kind `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
  * @type `'sticker'`
  */
-export interface StickerEvent
+export interface TelegramStickerEvent
   extends EventObject<
       'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
       'sticker'
@@ -164,7 +164,7 @@ export interface StickerEvent
  * @kind `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
  * @type `'video'`
  */
-export interface VideoEvent
+export interface TelegramVideoEvent
   extends EventObject<
       'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
       'video'
@@ -183,7 +183,7 @@ export interface VideoEvent
  * @kind `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
  * @type `'video_note'`
  */
-export interface VideoNoteEvent
+export interface TelegramVideoNoteEvent
   extends EventObject<
       'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
       'video_note'
@@ -201,7 +201,7 @@ export interface VideoNoteEvent
  * @kind `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
  * @type `'voice'`
  */
-export interface VoiceEvent
+export interface TelegramVoiceEvent
   extends EventObject<
       'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
       'voice'
@@ -220,7 +220,7 @@ export interface VoiceEvent
  * @kind `'message' | 'channel_post'`
  * @type `'contact'`
  */
-export interface ContactEvent
+export interface TelegramContactEvent
   extends EventObject<'message' | 'channel_post', 'contact'>,
     EventBase,
     Message,
@@ -234,7 +234,7 @@ export interface ContactEvent
  * @kind `'message' | 'channel_post'`
  * @type `'dice'`
  */
-export interface DiceEvent
+export interface TelegramDiceEvent
   extends EventObject<'message' | 'channel_post', 'dice'>,
     EventBase,
     Message,
@@ -248,7 +248,7 @@ export interface DiceEvent
  * @kind `'message' | 'edit_message'`
  * @type `'game'`
  */
-export interface GameEvent
+export interface TelegramGameEvent
   extends EventObject<'message' | 'edit_message', 'game'>,
     EventBase,
     Message,
@@ -262,7 +262,7 @@ export interface GameEvent
  * @kind `'message' | 'channel_post'`
  * @type `'poll'`
  */
-export interface PollEvent
+export interface TelegramPollEvent
   extends EventObject<'message' | 'channel_post', 'poll'>,
     EventBase,
     Message,
@@ -277,7 +277,7 @@ export interface PollEvent
  * @kind `'message' | 'channel_post'`
  * @type `'venue'`
  */
-export interface VenueEvent
+export interface TelegramVenueEvent
   extends EventObject<'message' | 'channel_post', 'venue'>,
     EventBase,
     Message,
@@ -291,7 +291,7 @@ export interface VenueEvent
  * @kind `'message' | 'channel_post'`
  * @type `'location'`
  */
-export interface LocationEvent
+export interface TelegramLocationEvent
   extends EventObject<'message' | 'channel_post', 'location'>,
     EventBase,
     Message,
@@ -305,7 +305,7 @@ export interface LocationEvent
  * @kind `'action'`
  * @type `'member_join'`
  */
-export interface MemberJoinEvent
+export interface TelegramMemberJoinEvent
   extends EventObject<'action', 'member_join'>,
     EventBase,
     Message,
@@ -319,7 +319,7 @@ export interface MemberJoinEvent
  * @kind `'action'`
  * @type `'member_leave'`
  */
-export interface MemberLeaveEvent
+export interface TelegramMemberLeaveEvent
   extends EventObject<'action', 'member_leave'>,
     EventBase,
     Message,
@@ -333,7 +333,7 @@ export interface MemberLeaveEvent
  * @kind `'action'`
  * @type `'new_chat_title'`
  */
-export interface NewChatTitleEvent
+export interface TelegramNewChatTitleEvent
   extends EventObject<'action', 'new_chat_title'>,
     EventBase,
     Message,
@@ -347,7 +347,7 @@ export interface NewChatTitleEvent
  * @kind `'action'`
  * @type `'new_chat_photo'`
  */
-export interface NewChatPhotoEvent
+export interface TelegramNewChatPhotoEvent
   extends EventObject<'action', 'new_chat_photo'>,
     EventBase,
     Message,
@@ -361,7 +361,7 @@ export interface NewChatPhotoEvent
  * @kind `'action'`
  * @type `'delete_chat_photo'`
  */
-export interface DeleteChatPhotoEvent
+export interface TelegramDeleteChatPhotoEvent
   extends EventObject<'action', 'delete_chat_photo'>,
     EventBase,
     Message,
@@ -374,7 +374,7 @@ export interface DeleteChatPhotoEvent
  * @kind `'action'`
  * @type `'create_group_chat'`
  */
-export interface CreatGroupChatEvent
+export interface TelegramCreatGroupChatEvent
   extends EventObject<'action', 'create_group_chat'>,
     EventBase,
     Message,
@@ -387,7 +387,7 @@ export interface CreatGroupChatEvent
  * @kind `'action'`
  * @type `'migrate_to_chat'`
  */
-export interface MigrateToChatEvent
+export interface TelegramMigrateToChatEvent
   extends EventObject<'action', 'migrate_to_chat'>,
     EventBase,
     Message,
@@ -401,7 +401,7 @@ export interface MigrateToChatEvent
  * @kind `'action'`
  * @type `'migrate_from_chat'`
  */
-export interface MigrateFromChatEvent
+export interface TelegramMigrateFromChatEvent
   extends EventObject<'action', 'migrate_from_chat'>,
     EventBase,
     Message,
@@ -415,7 +415,7 @@ export interface MigrateFromChatEvent
  * @kind `'action'`
  * @type `'pin_message'`
  */
-export interface PinMessageEvent
+export interface TelegramPinMessageEvent
   extends EventObject<'action', 'pin_message'>,
     EventBase,
     Message,
@@ -429,7 +429,7 @@ export interface PinMessageEvent
  * @kind `'postback'`
  * @type `'successful_payment'`
  */
-export interface SuccessfulPaymentEvent
+export interface TelegramSuccessfulPaymentEvent
   extends EventObject<'postback', 'successful_payment'>,
     EventBase,
     Message,
@@ -443,7 +443,7 @@ export interface SuccessfulPaymentEvent
  * @kind `'postback'`
  * @type `'inline_query'`
  */
-export interface InlineQueryEvent
+export interface TelegramInlineQueryEvent
   extends EventObject<'postback', 'inline_query'>,
     EventBase,
     InlineQuery {}
@@ -455,7 +455,7 @@ export interface InlineQueryEvent
  * @kind `'postback'`
  * @type `'choose_inline_result'`
  */
-export interface ChooseInlineResultEvent
+export interface TelegramChooseInlineResultEvent
   extends EventObject<'postback', 'choose_inline_result'>,
     EventBase,
     ChosenInlineResult {}
@@ -467,7 +467,7 @@ export interface ChooseInlineResultEvent
  * @kind `'postback'`
  * @type `'callback_query'`
  */
-export interface CallbackQueryEvent
+export interface TelegramCallbackQueryEvent
   extends EventObject<'postback', 'callback_query'>,
     EventBase,
     CallbackQuery {}
@@ -479,7 +479,7 @@ export interface CallbackQueryEvent
  * @kind `'postback'`
  * @type `'shipping_query'`
  */
-export interface ShippingQueryEvent
+export interface TelegramShippingQueryEvent
   extends EventObject<'postback', 'shipping_query'>,
     EventBase,
     ShippingQuery {}
@@ -491,7 +491,7 @@ export interface ShippingQueryEvent
  * @kind `'postback'`
  * @type `'pre_checkout_query'`
  */
-export interface PreCheckoutQueryEvent
+export interface TelegramPreCheckoutQueryEvent
   extends EventObject<'postback', 'pre_checkout_query'>,
     EventBase,
     PreCheckoutQuery {}
@@ -503,7 +503,7 @@ export interface PreCheckoutQueryEvent
  * @kind `'postback'`
  * @type `'poll_change'`
  */
-export interface PollChangeEvent
+export interface TelegramPollChangeEvent
   extends EventObject<'postback', 'poll_change'>,
     EventBase,
     PollChange,
@@ -516,7 +516,7 @@ export interface PollChangeEvent
  * @kind `'postback'`
  * @type `'poll_answer_change'`
  */
-export interface PollAnswerChangeEvent
+export interface TelegramPollAnswerChangeEvent
   extends EventObject<'postback', 'poll_answer_change'>,
     EventBase,
     PollAnswer {}
@@ -528,42 +528,42 @@ export interface PollAnswerChangeEvent
  * @kind `'unknown'`
  * @type `'unknown'`
  */
-export interface UnknownEvent
+export interface TelegramUnknownEvent
   extends EventObject<'unknown', 'unknown'>,
     EventBase,
     Unknown {}
 
 export type TelegramEvent =
-  | TextEvent
-  | AnimationEvent
-  | AudioEvent
-  | DocumentEvent
-  | PhotoEvent
-  | StickerEvent
-  | VideoEvent
-  | VideoNoteEvent
-  | VoiceEvent
-  | ContactEvent
-  | DiceEvent
-  | GameEvent
-  | PollEvent
-  | VenueEvent
-  | LocationEvent
-  | MemberJoinEvent
-  | MemberLeaveEvent
-  | NewChatTitleEvent
-  | NewChatPhotoEvent
-  | DeleteChatPhotoEvent
-  | CreatGroupChatEvent
-  | MigrateToChatEvent
-  | MigrateFromChatEvent
-  | PinMessageEvent
-  | SuccessfulPaymentEvent
-  | InlineQueryEvent
-  | ChooseInlineResultEvent
-  | CallbackQueryEvent
-  | ShippingQueryEvent
-  | PreCheckoutQueryEvent
-  | PollChangeEvent
-  | PollAnswerChangeEvent
-  | UnknownEvent;
+  | TelegramTextEvent
+  | TelegramAnimationEvent
+  | TelegramAudioEvent
+  | TelegramDocumentEvent
+  | TelegramPhotoEvent
+  | TelegramStickerEvent
+  | TelegramVideoEvent
+  | TelegramVideoNoteEvent
+  | TelegramVoiceEvent
+  | TelegramContactEvent
+  | TelegramDiceEvent
+  | TelegramGameEvent
+  | TelegramPollEvent
+  | TelegramVenueEvent
+  | TelegramLocationEvent
+  | TelegramMemberJoinEvent
+  | TelegramMemberLeaveEvent
+  | TelegramNewChatTitleEvent
+  | TelegramNewChatPhotoEvent
+  | TelegramDeleteChatPhotoEvent
+  | TelegramCreatGroupChatEvent
+  | TelegramMigrateToChatEvent
+  | TelegramMigrateFromChatEvent
+  | TelegramPinMessageEvent
+  | TelegramSuccessfulPaymentEvent
+  | TelegramInlineQueryEvent
+  | TelegramChooseInlineResultEvent
+  | TelegramCallbackQueryEvent
+  | TelegramShippingQueryEvent
+  | TelegramPreCheckoutQueryEvent
+  | TelegramPollChangeEvent
+  | TelegramPollAnswerChangeEvent
+  | TelegramUnknownEvent;
