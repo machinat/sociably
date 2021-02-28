@@ -16,6 +16,8 @@ import type LineChannel from './channel';
 import type { LineEvent, LineRawEvent } from './event/types';
 import type { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from './constant';
 
+export type { LineEvent } from './event/types';
+
 export type UserSource = {
   type: 'user';
   userId: string;

@@ -16,6 +16,8 @@ import type { TelegramEvent } from './event/types';
 import type { TelegramChat } from './channel';
 import type { TelegramBot } from './bot';
 
+export type { TelegramEvent } from './event/types';
+
 // TODO: detailed raw types
 export type RawMessage = any;
 export type RawInlineQuery = any;
