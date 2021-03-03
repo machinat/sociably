@@ -1,16 +1,17 @@
 /** @internal */ /** */
 /* eslint @typescript-eslint/no-use-before-define: ["error", { "variables": false }] */
 import invariant from 'invariant';
-import { counter } from './utils';
+import { createCounter } from './utils';
 import type {
   ConditionMatcher,
-  ScriptIntermediate,
-  ConditionsIntermediate,
-  WhileIntermediate,
-  LabelIntermediate,
+  ScriptSegment,
+  ConditionsSegment,
+  WhileSegment,
+  LabelSegment,
   ContentCommand,
   PromptCommand,
-  SetVarsCommand,
+  VarsCommand,
+  EffectCommand,
   CallCommand,
   ReturnCommand,
   ScriptCommand,
@@ -37,7 +38,8 @@ type TagIntermediate = {
 type CompileIntermediate =
   | ContentCommand<unknown>
   | PromptCommand<unknown, unknown>
-  | SetVarsCommand<unknown>
+  | VarsCommand<unknown>
+  | EffectCommand<unknown>
   | CallCommand<unknown, unknown, unknown>
   | ReturnCommand<unknown, unknown>
   | GotoIntermediate
@@ -50,11 +52,11 @@ type CompileResult<Vars, Input, Retrun> = {
 };
 
 const compileContentCommand = (
-  intermediate: ContentCommand<unknown>
-): CompileIntermediate[] => [{ type: 'content', render: intermediate.render }];
+  command: ContentCommand<unknown>
+): CompileIntermediate[] => [command];
 
-const compileConditionsIntermediate = (
-  { branches, fallbackBody }: ConditionsIntermediate<unknown>,
+const compileConditionsSegment = (
+  { branches, fallbackBody }: ConditionsSegment<unknown>,
   uniqCounter: () => number
 ): CompileIntermediate[] => {
   const n: number = uniqCounter();
@@ -89,22 +91,22 @@ const compileConditionsIntermediate = (
 
     bodiesSections.push(
       bodyBeginTag,
-      ...compileIntermediates(body, uniqCounter),
+      ...compileSegments(body, uniqCounter),
       jumpToEnd
     );
   }
 
   const commands: CompileIntermediate[] = [...conditionsSection];
   if (fallbackBody) {
-    commands.push(...compileIntermediates(fallbackBody, uniqCounter));
+    commands.push(...compileSegments(fallbackBody, uniqCounter));
   }
 
   commands.push(jumpToEnd, ...bodiesSections, endTag);
   return commands;
 };
 
-const compileWhileIntermediate = (
-  { condition, body }: WhileIntermediate<unknown>,
+const compileWhileSegment = (
+  { condition, body }: WhileSegment<unknown>,
   uniqCounter: () => number
 ): CompileIntermediate[] => {
   const n: number = uniqCounter();
@@ -129,7 +131,7 @@ const compileWhileIntermediate = (
       isNot: true,
       to: endTag.key,
     },
-    ...compileIntermediates(body, uniqCounter),
+    ...compileSegments(body, uniqCounter),
     {
       type: 'goto',
       to: startTag.key,
@@ -139,85 +141,92 @@ const compileWhileIntermediate = (
 };
 
 const compilePromptCommand = ({
-  setter,
+  setVars,
   key,
 }: PromptCommand<unknown, unknown>): CompileIntermediate[] => {
   return [
     { type: 'tag', key, isEntryPoint: true },
-    { type: 'prompt', setter, key },
+    { type: 'prompt', setVars, key },
   ];
 };
 
 const compileCallCommand = ({
   script,
   withVars,
-  setter,
+  setVars,
   key,
   goto,
 }: CallCommand<unknown, unknown, unknown>): CompileIntermediate[] => {
   return [
     { type: 'tag', key, isEntryPoint: true },
-    { type: 'call', script, withVars, setter, goto, key },
+    { type: 'call', script, withVars, setVars, goto, key },
   ];
 };
 
-const compileSetVarsCommand = (
-  intermediate: SetVarsCommand<unknown>
-): CompileIntermediate[] => {
-  const { setter } = intermediate;
-  return [{ type: 'set_vars', setter }];
-};
+const compileVarsCommand = (
+  command: VarsCommand<unknown>
+): CompileIntermediate[] => [command];
 
-const compileLabelIntermediate = ({
-  key,
-}: LabelIntermediate): CompileIntermediate[] => {
+const compileEffectCommand = (
+  command: EffectCommand<unknown>
+): CompileIntermediate[] => [command];
+
+const compileLabelSegment = ({ key }: LabelSegment): CompileIntermediate[] => {
   return [{ type: 'tag', key, isEntryPoint: true }];
 };
 
 const compileReturnCommand = ({
-  valueGetter,
+  getValue,
 }: ReturnCommand<unknown, unknown>): CompileIntermediate[] => {
-  return [{ type: 'return', valueGetter }];
+  return [{ type: 'return', getValue }];
 };
 
-const compileIntermediates = <Vars, Input, Retrun>(
-  intermediates: ScriptIntermediate<Vars, Input, Retrun>[],
+const compileSegment = <Vars, Input, Retrun>(
+  segment: ScriptSegment<Vars, Input, Retrun>,
   uniqCounter: () => number
 ): CompileIntermediate[] => {
-  const commands: CompileIntermediate[] = [];
-
-  for (const intermediate of intermediates) {
-    const commandsFromSegment: CompileIntermediate[] | null =
-      intermediate.type === 'content'
-        ? compileContentCommand(intermediate)
-        : intermediate.type === 'conditions'
-        ? compileConditionsIntermediate(intermediate, uniqCounter)
-        : intermediate.type === 'while'
-        ? compileWhileIntermediate(intermediate, uniqCounter)
-        : intermediate.type === 'prompt'
-        ? compilePromptCommand(intermediate)
-        : intermediate.type === 'call'
-        ? compileCallCommand(intermediate)
-        : intermediate.type === 'set_vars'
-        ? compileSetVarsCommand(intermediate)
-        : intermediate.type === 'label'
-        ? compileLabelIntermediate(intermediate)
-        : intermediate.type === 'return'
-        ? compileReturnCommand(intermediate)
-        : null;
-
-    if (!commandsFromSegment) {
-      throw TypeError(`unexpected intermediate type: ${intermediate.type}`);
-    }
-
-    commands.push(...commandsFromSegment);
+  switch (segment.type) {
+    case 'content':
+      return compileContentCommand(segment);
+    case 'conditions':
+      return compileConditionsSegment(segment, uniqCounter);
+    case 'while':
+      return compileWhileSegment(segment, uniqCounter);
+    case 'prompt':
+      return compilePromptCommand(segment);
+    case 'call':
+      return compileCallCommand(segment);
+    case 'vars':
+      return compileVarsCommand(segment);
+    case 'effect':
+      return compileEffectCommand(segment);
+    case 'label':
+      return compileLabelSegment(segment);
+    case 'return':
+      return compileReturnCommand(segment);
+    default:
+      throw new TypeError(
+        `unknown segment type: ${
+          (segment as ScriptSegment<Vars, Input, Retrun>).type
+        }`
+      );
   }
-
-  return commands;
 };
 
+const compileSegments = <Vars, Input, Retrun>(
+  segments: ScriptSegment<Vars, Input, Retrun>[],
+  counter: () => number
+) =>
+  segments.reduce(
+    (compilingArray, segment) => [
+      ...compilingArray,
+      ...compileSegment(segment, counter),
+    ],
+    []
+  );
+
 const compile = <Vars, Input, Return>(
-  intermediates: ScriptIntermediate<Vars, Input, Return>[],
+  segments: ScriptSegment<Vars, Input, Return>[],
   meta: { scriptName: string }
 ): CompileResult<Vars, Input, Return> => {
   const keyIndex = new Map();
@@ -225,8 +234,9 @@ const compile = <Vars, Input, Return>(
 
   // remove tags and store their indexes
   const mediateCommands: Exclude<CompileIntermediate, TagIntermediate>[] = [];
+  const compiledIntermediates = compileSegments(segments, createCounter());
 
-  for (const intermediate of compileIntermediates(intermediates, counter())) {
+  for (const intermediate of compiledIntermediates) {
     if (intermediate.type === 'tag') {
       const { isEntryPoint, key } = intermediate;
 

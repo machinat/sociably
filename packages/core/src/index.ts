@@ -30,11 +30,11 @@ namespace Machinat {
     return app;
   };
 
-  export const Fragment = MACHINAT_FRAGMENT_TYPE;
-  export const Pause = MACHINAT_PAUSE_TYPE;
-  export const Provider = MACHINAT_PROVIDER_TYPE;
-  export const Thunk = MACHINAT_THUNK_TYPE;
-  export const Raw = MACHINAT_RAW_TYPE;
+  export const Fragment: typeof MACHINAT_FRAGMENT_TYPE = MACHINAT_FRAGMENT_TYPE;
+  export const Pause: typeof MACHINAT_PAUSE_TYPE = MACHINAT_PAUSE_TYPE;
+  export const Provider: typeof MACHINAT_PROVIDER_TYPE = MACHINAT_PROVIDER_TYPE;
+  export const Thunk: typeof MACHINAT_THUNK_TYPE = MACHINAT_THUNK_TYPE;
+  export const Raw: typeof MACHINAT_RAW_TYPE = MACHINAT_RAW_TYPE;
 
   export const Bot = BaseBot;
   export const Profiler = BaseProfiler;

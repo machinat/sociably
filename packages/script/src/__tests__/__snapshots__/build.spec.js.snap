@@ -3,7 +3,7 @@
 exports[`built script object 1`] = `
 Array [
   Object {
-    "render": [Function],
+    "getContent": [Function],
     "type": "content",
   },
   Object {
@@ -19,7 +19,7 @@ Array [
     "type": "jump_cond",
   },
   Object {
-    "render": [Function],
+    "getContent": [Function],
     "type": "content",
   },
   Object {
@@ -29,12 +29,12 @@ Array [
       "$$typeof": Symbol(lib.script.machinat),
       "commands": Array [
         Object {
-          "render": [Function],
+          "getContent": [Function],
           "type": "content",
         },
         Object {
           "key": "childPrompt",
-          "setter": [Function],
+          "setVars": [Function],
           "type": "prompt",
         },
       ],
@@ -46,7 +46,7 @@ Array [
       },
       "name": "ChildScript",
     },
-    "setter": undefined,
+    "setVars": undefined,
     "type": "call",
     "withVars": [Function],
   },
@@ -61,12 +61,12 @@ Array [
     "type": "jump_cond",
   },
   Object {
-    "render": [Function],
+    "getContent": [Function],
     "type": "content",
   },
   Object {
     "key": "ask_1",
-    "setter": [Function],
+    "setVars": [Function],
     "type": "prompt",
   },
   Object {
@@ -78,28 +78,28 @@ Array [
     "type": "jump",
   },
   Object {
-    "render": [Function],
+    "getContent": [Function],
     "type": "content",
   },
   Object {
     "key": "ask_2",
-    "setter": [Function],
+    "setVars": [Function],
     "type": "prompt",
   },
   Object {
+    "getValue": [Function],
     "type": "return",
-    "valueGetter": [Function],
   },
   Object {
     "offset": 1,
     "type": "jump",
   },
   Object {
-    "setter": [Function],
-    "type": "set_vars",
+    "setVars": [Function],
+    "type": "vars",
   },
   Object {
-    "render": [Function],
+    "getContent": [Function],
     "type": "content",
   },
 ]
@@ -108,12 +108,12 @@ Array [
 exports[`built script object 3`] = `
 Array [
   Object {
-    "render": [Function],
+    "getContent": [Function],
     "type": "content",
   },
   Object {
     "key": "childPrompt",
-    "setter": [Function],
+    "setVars": [Function],
     "type": "prompt",
   },
 ]

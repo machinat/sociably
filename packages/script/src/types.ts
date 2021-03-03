@@ -1,11 +1,13 @@
 import type Machinat from '@machinat/core';
-import type { MaybeContainer } from '@machinat/core/service/types';
 import type {
+  ThunkEffectFn,
   MachinatNode,
   MachinatEmpty,
   MachinatElement,
   MachinatChannel,
 } from '@machinat/core/types';
+import type { MaybeContainer } from '@machinat/core/service/types';
+
 import { MACHINAT_SCRIPT_TYPE } from './constant';
 import type {
   IF,
@@ -17,6 +19,7 @@ import type {
   VARS,
   LABEL,
   CALL,
+  EFFECT,
   RETURN,
 } from './keyword';
 
@@ -41,11 +44,11 @@ export type ScriptCircs<Vars> = {
   vars: Vars;
 };
 
-export type RenderContentFn<Vars> = (
+export type ContentFn<Vars> = (
   circs: ScriptCircs<Vars>
 ) => MachinatNode | Promise<MachinatNode>;
 
-export type RenderContentNode<Vars> = MaybeContainer<RenderContentFn<Vars>>;
+export type ContentNode<Vars> = MaybeContainer<ContentFn<Vars>>;
 
 export type ConditionMatchFn<Vars> = (
   circs: ScriptCircs<Vars>
@@ -225,6 +228,27 @@ export type CallElement<CallerVars, CalleeVars, Return> = MachinatElement<
   typeof CALL
 >;
 
+export type DoEffectFn<Vars> = (
+  circs: ScriptCircs<Vars>
+) => ThunkEffectFn | Promise<ThunkEffectFn>;
+
+export type EffectDoer<Vars> = MaybeContainer<DoEffectFn<Vars>>;
+
+/**
+ * @category Keyword Props
+ */
+export type EffectProps<Vars> = {
+  do: EffectDoer<Vars>;
+};
+
+/**
+ * @category Keyword Element
+ */
+export type EffectElement<Vars> = MachinatElement<
+  EffectProps<Vars>,
+  typeof EFFECT
+>;
+
 export type ReturnValueFn<Vars, Return> = (
   circs: ScriptCircs<Vars>
 ) => Return | Promise<Return>;
@@ -259,7 +283,7 @@ export type ScriptElement<Vars, Input, Return> =
 
 export type ScriptNode<Vars, Input, Return> =
   | MachinatEmpty
-  | RenderContentNode<Vars>
+  | ContentNode<Vars>
   | ScriptElement<Vars, Input, Return>
   | ScriptNode<Vars, Input, Return>[]
   | MachinatElement<
@@ -268,37 +292,37 @@ export type ScriptNode<Vars, Input, Return> =
     >;
 
 /** @internal */
-export type ConditionsIntermediate<Vars> = {
+export type ConditionsSegment<Vars> = {
   type: 'conditions';
   branches: {
     condition: ConditionMatcher<Vars>;
-    body: ScriptIntermediate<Vars, unknown, unknown>[];
+    body: ScriptSegment<Vars, unknown, unknown>[];
   }[];
-  fallbackBody: null | ScriptIntermediate<Vars, unknown, unknown>[];
+  fallbackBody: null | ScriptSegment<Vars, unknown, unknown>[];
 };
 
 /** @internal */
-export type WhileIntermediate<Vars> = {
+export type WhileSegment<Vars> = {
   type: 'while';
   condition: ConditionMatcher<Vars>;
-  body: ScriptIntermediate<Vars, unknown, unknown>[];
+  body: ScriptSegment<Vars, unknown, unknown>[];
 };
 
 /** @internal */
-export type LabelIntermediate = {
+export type LabelSegment = {
   type: 'label';
   key: string;
 };
 
 export type ContentCommand<Vars> = {
   type: 'content';
-  render: RenderContentNode<Vars>;
+  getContent: ContentNode<Vars>;
 };
 
 export type PromptCommand<Vars, Input> = {
   type: 'prompt';
   key: string;
-  setter: PromptSetter<Vars, Input> | null | undefined;
+  setVars: PromptSetter<Vars, Input> | null | undefined;
 };
 
 export type CallCommand<CallerVars, CalleeVars, Return> = {
@@ -306,13 +330,13 @@ export type CallCommand<CallerVars, CalleeVars, Return> = {
   key: string;
   script: ScriptLibrary<CalleeVars, unknown, Return, unknown>;
   withVars: CallVarsGetter<CallerVars, CalleeVars> | null | undefined;
-  setter: CallReturnSetter<CallerVars, Return> | null | undefined;
+  setVars: CallReturnSetter<CallerVars, Return> | null | undefined;
   goto: undefined | string;
 };
 
-export type SetVarsCommand<Vars> = {
-  type: 'set_vars';
-  setter: VarsSetter<Vars>;
+export type VarsCommand<Vars> = {
+  type: 'vars';
+  setVars: VarsSetter<Vars>;
 };
 
 export type JumpCommand = {
@@ -327,20 +351,26 @@ export type JumpCondCommand<Vars> = {
   isNot: boolean;
 };
 
+export type EffectCommand<Vars> = {
+  type: 'effect';
+  doEffect: EffectDoer<Vars>;
+};
+
 export type ReturnCommand<Vars, Return> = {
   type: 'return';
-  valueGetter: ReturnValueGetter<Vars, Return> | null | undefined;
+  getValue: ReturnValueGetter<Vars, Return> | null | undefined;
 };
 
 /** @internal */
-export type ScriptIntermediate<Vars, Input, Return> =
+export type ScriptSegment<Vars, Input, Return> =
   | ContentCommand<Vars>
-  | ConditionsIntermediate<Vars>
-  | WhileIntermediate<Vars>
+  | ConditionsSegment<Vars>
+  | WhileSegment<Vars>
   | PromptCommand<Vars, Input>
-  | SetVarsCommand<Vars>
+  | VarsCommand<Vars>
   | CallCommand<Vars, unknown, unknown>
-  | LabelIntermediate
+  | EffectCommand<Vars>
+  | LabelSegment
   | ReturnCommand<Vars, Return>;
 
 export type ScriptCommand<Vars, Input, Return> =
@@ -349,7 +379,8 @@ export type ScriptCommand<Vars, Input, Return> =
   | JumpCondCommand<Vars>
   | PromptCommand<Vars, Input>
   | CallCommand<Vars, unknown, unknown>
-  | SetVarsCommand<Vars>
+  | VarsCommand<Vars>
+  | EffectCommand<Vars>
   | ReturnCommand<Vars, Return>;
 
 export type CallStatus<Vars, Input, Return> = {

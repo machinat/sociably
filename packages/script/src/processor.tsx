@@ -16,7 +16,7 @@ import type { ScriptLibrary, CallStatus, ScriptProcessState } from './types';
 type RuntimeResult<ReturnValue> = {
   finished: boolean;
   returnValue: undefined | ReturnValue;
-  content: MachinatNode;
+  contents: MachinatNode;
 };
 
 export class ScriptRuntime<Input, ReturnValue> {
@@ -69,11 +69,11 @@ export class ScriptRuntime<Input, ReturnValue> {
       return {
         finished: true,
         returnValue: undefined,
-        content: null,
+        contents: null,
       };
     }
 
-    const { finished, returnValue, stack, content } = await execute(
+    const { finished, returnValue, stack, contents } = await execute(
       this._serviceScope,
       this.channel,
       this.callStack,
@@ -83,13 +83,13 @@ export class ScriptRuntime<Input, ReturnValue> {
 
     this.callStack = stack;
     this._returnValue = returnValue;
-    this._queuedMessages.push(content);
+    this._queuedMessages.push(contents);
     this._requireSaving = true;
 
     return {
       finished,
       returnValue,
-      content,
+      contents,
     };
   }
 

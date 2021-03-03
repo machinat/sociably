@@ -1,19 +1,10 @@
-/** @internal */ /** */
 import invariant from 'invariant';
 import { MACHINAT_SCRIPT_TYPE } from './constant';
-import * as KEYWORDS from './keyword';
 import type {
   AnyScriptLibrary,
   CallStatus,
   SerializedCallStatus,
 } from './types';
-
-type K = typeof KEYWORDS;
-type KeywordsSymbol = K[keyof K];
-
-const keyworsSymbols: unknown[] = Object.values(KEYWORDS);
-export const isKeyword = (type: unknown): type is KeywordsSymbol =>
-  keyworsSymbols.includes(type);
 
 export const isScript = (type: any): type is AnyScriptLibrary =>
   typeof type === 'object' &&
@@ -37,7 +28,7 @@ export const serializeScriptStatus = <Vars, Input, ReturnValue>({
   };
 };
 
-export const counter = (begin = 0): (() => number) => {
+export const createCounter = (begin = 0): (() => number) => {
   let n = begin;
   return () => {
     n += 1;

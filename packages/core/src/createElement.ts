@@ -9,7 +9,7 @@ const createMachinatElement = (
   type: MachinatElementType,
   config: any,
   ...children: Array<MachinatNode>
-): MachinatElement<any, any> => {
+): MachinatElement<unknown, unknown> => {
   const childrenLen = children.length;
 
   const props = config || {};

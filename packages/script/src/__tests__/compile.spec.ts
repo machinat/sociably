@@ -1,8 +1,9 @@
+import moxy from '@moxyjs/moxy';
 import compile from '../compile';
 
 describe('compile conditions segment', () => {
   test('with multi conditions', () => {
-    const { commands, entriesIndex } = compile(
+    const { commands, entriesIndex }: any = compile(
       [
         {
           type: 'conditions',
@@ -10,15 +11,15 @@ describe('compile conditions segment', () => {
             {
               condition: () => false,
               body: [
-                { type: 'content', render: () => 'foo' },
-                { type: 'prompt', key: 'ask1' },
+                { type: 'content', getContent: () => 'foo' },
+                { type: 'prompt', key: 'ask1', setVars: undefined },
               ],
             },
             {
               condition: () => true,
               body: [
-                { type: 'content', render: () => 'bar' },
-                { type: 'prompt', key: 'ask2' },
+                { type: 'content', getContent: () => 'bar' },
+                { type: 'prompt', key: 'ask2', setVars: undefined },
               ],
             },
           ],
@@ -41,17 +42,17 @@ describe('compile conditions segment', () => {
         isNot: false,
       },
       { type: 'jump', offset: 7 },
-      { type: 'content', render: expect.any(Function) },
+      { type: 'content', getContent: expect.any(Function) },
       { type: 'prompt', key: 'ask1' },
       { type: 'jump', offset: 4 },
-      { type: 'content', render: expect.any(Function) },
+      { type: 'content', getContent: expect.any(Function) },
       { type: 'prompt', key: 'ask2' },
       { type: 'jump', offset: 1 },
     ]);
     expect(commands[0].condition({})).toBe(false);
     expect(commands[1].condition({})).toBe(true);
-    expect(commands[3].render({})).toBe('foo');
-    expect(commands[6].render({})).toBe('bar');
+    expect(commands[3].getContent({})).toBe('foo');
+    expect(commands[6].getContent({})).toBe('bar');
 
     expect(entriesIndex).toEqual(
       new Map([
@@ -62,7 +63,7 @@ describe('compile conditions segment', () => {
   });
 
   test('with multi conditions and fallback', () => {
-    const { commands, entriesIndex } = compile(
+    const { commands, entriesIndex }: any = compile(
       [
         {
           type: 'conditions',
@@ -70,21 +71,21 @@ describe('compile conditions segment', () => {
             {
               condition: () => false,
               body: [
-                { type: 'content', render: () => 'foo' },
-                { type: 'prompt', key: 'ask1' },
+                { type: 'content', getContent: () => 'foo' },
+                { type: 'prompt', key: 'ask1', setVars: undefined },
               ],
             },
             {
               condition: () => true,
               body: [
-                { type: 'content', render: () => 'bar' },
-                { type: 'prompt', key: 'ask2' },
+                { type: 'content', getContent: () => 'bar' },
+                { type: 'prompt', key: 'ask2', setVars: undefined },
               ],
             },
           ],
           fallbackBody: [
-            { type: 'content', render: () => 'baz' },
-            { type: 'prompt', key: 'ask3' },
+            { type: 'content', getContent: () => 'baz' },
+            { type: 'prompt', key: 'ask3', setVars: undefined },
           ],
         },
       ],
@@ -103,21 +104,21 @@ describe('compile conditions segment', () => {
         offset: 7,
         isNot: false,
       },
-      { type: 'content', render: expect.any(Function) },
+      { type: 'content', getContent: expect.any(Function) },
       { type: 'prompt', key: 'ask3' },
       { type: 'jump', offset: 7 },
-      { type: 'content', render: expect.any(Function) },
+      { type: 'content', getContent: expect.any(Function) },
       { type: 'prompt', key: 'ask1' },
       { type: 'jump', offset: 4 },
-      { type: 'content', render: expect.any(Function) },
+      { type: 'content', getContent: expect.any(Function) },
       { type: 'prompt', key: 'ask2' },
       { type: 'jump', offset: 1 },
     ]);
     expect(commands[0].condition({})).toBe(false);
     expect(commands[1].condition({})).toBe(true);
-    expect(commands[2].render({})).toBe('baz');
-    expect(commands[5].render({})).toBe('foo');
-    expect(commands[8].render({})).toBe('bar');
+    expect(commands[2].getContent({})).toBe('baz');
+    expect(commands[5].getContent({})).toBe('foo');
+    expect(commands[8].getContent({})).toBe('bar');
 
     expect(entriesIndex).toEqual(
       new Map([
@@ -130,14 +131,17 @@ describe('compile conditions segment', () => {
 });
 
 it('compile while segment', () => {
-  const { commands, entriesIndex } = compile(
+  const { commands, entriesIndex }: any = compile(
     [
       {
         type: 'while',
         condition: () => true,
         body: [
-          { type: 'content', render: ({ target }) => `hello ${target}` },
-          { type: 'prompt', key: 'ask' },
+          {
+            type: 'content',
+            getContent: ({ vars: { target } }) => `hello ${target}`,
+          },
+          { type: 'prompt', key: 'ask', setVars: undefined },
         ],
       },
     ],
@@ -150,65 +154,70 @@ it('compile while segment', () => {
       condition: expect.any(Function),
       isNot: true,
     },
-    { type: 'content', render: expect.any(Function) },
+    { type: 'content', getContent: expect.any(Function) },
     { type: 'prompt', key: 'ask' },
     { type: 'jump', offset: -3 },
   ]);
   expect(entriesIndex).toEqual(new Map([['ask', 2]]));
 
   expect(commands[0].condition({})).toBe(true);
-  expect(commands[1].render({ target: 'world' })).toBe('hello world');
+  expect(commands[1].getContent({ vars: { target: 'world' } })).toBe(
+    'hello world'
+  );
 });
 
 it('compile other segments type', () => {
-  const OrderScript = { fake: 'script' };
+  const OrderScript = { fake: 'script' } as never;
+  const sideEffect = moxy();
 
-  const { commands, entriesIndex } = compile(
+  const { commands, entriesIndex }: any = compile<unknown, unknown, unknown>(
     [
-      { type: 'content', render: () => 'hello' },
+      { type: 'content', getContent: () => 'hello' },
       { type: 'label', key: 'begin' },
-      { type: 'content', render: () => 'who r u' },
+      { type: 'content', getContent: () => 'who r u' },
       {
         type: 'prompt',
         key: 'ask_something',
-        setter: () => ({ name: 'Jojo' }),
+        setVars: () => ({ name: 'Jojo' }),
       },
-      { type: 'content', render: () => `hi Jojo, order ur meal` },
+      { type: 'content', getContent: () => `hi Jojo, order ur meal` },
       {
         type: 'call',
         key: 'order_something',
         script: OrderScript,
         withVars: () => ({ foo: 'bar' }),
-        setter: () => ({ drink: 'coffee' }),
+        setVars: () => ({ drink: 'coffee' }),
         goto: 'ordering',
       },
-      { type: 'set_vars', setter: () => ({ ordered: true }) },
+      { type: 'vars', setVars: () => ({ ordered: true }) },
       { type: 'label', key: 'end' },
-      { type: 'content', render: () => 'enjoy ur meal' },
-      { type: 'return', valueGetter: () => 'foo' },
+      { type: 'content', getContent: () => 'enjoy ur meal' },
+      { type: 'effect', doEffect: () => sideEffect('done') },
+      { type: 'return', getValue: () => 'foo' },
     ],
     { scriptName: 'MyScript' }
   );
   expect(commands).toEqual([
-    { type: 'content', render: expect.any(Function) },
-    { type: 'content', render: expect.any(Function) },
+    { type: 'content', getContent: expect.any(Function) },
+    { type: 'content', getContent: expect.any(Function) },
     {
       type: 'prompt',
-      setter: expect.any(Function),
+      setVars: expect.any(Function),
       key: 'ask_something',
     },
-    { type: 'content', render: expect.any(Function) },
+    { type: 'content', getContent: expect.any(Function) },
     {
       type: 'call',
       script: OrderScript,
       withVars: expect.any(Function),
-      setter: expect.any(Function),
+      setVars: expect.any(Function),
       key: 'order_something',
       goto: 'ordering',
     },
-    { type: 'set_vars', setter: expect.any(Function) },
-    { type: 'content', render: expect.any(Function) },
-    { type: 'return', valueGetter: expect.any(Function) },
+    { type: 'vars', setVars: expect.any(Function) },
+    { type: 'content', getContent: expect.any(Function) },
+    { type: 'effect', doEffect: expect.any(Function) },
+    { type: 'return', getValue: expect.any(Function) },
   ]);
   expect(entriesIndex).toEqual(
     new Map([
@@ -218,23 +227,26 @@ it('compile other segments type', () => {
       ['end', 6],
     ])
   );
-  expect(commands[0].render({})).toBe('hello');
-  expect(commands[1].render({})).toBe('who r u');
-  expect(commands[2].setter({})).toEqual({ name: 'Jojo' });
-  expect(commands[3].render({})).toBe('hi Jojo, order ur meal');
+  expect(commands[0].getContent({})).toBe('hello');
+  expect(commands[1].getContent({})).toBe('who r u');
+  expect(commands[2].setVars({})).toEqual({ name: 'Jojo' });
+  expect(commands[3].getContent({})).toBe('hi Jojo, order ur meal');
   expect(commands[4].withVars({})).toEqual({ foo: 'bar' });
-  expect(commands[5].setter({})).toEqual({ ordered: true });
-  expect(commands[6].render({})).toBe('enjoy ur meal');
+  expect(commands[5].setVars({})).toEqual({ ordered: true });
+  expect(commands[6].getContent({})).toBe('enjoy ur meal');
+  expect(commands[7].doEffect({})).toBe(undefined);
+  expect(sideEffect.mock).toHaveReturnedTimes(1);
+  expect(commands[8].getValue({})).toBe('foo');
 });
 
 it('throw if conditions key duplicated', () => {
   expect(() =>
     compile(
       [
-        { type: 'content', render: () => 'Who R U?' },
-        { type: 'prompt', key: 'who' },
-        { type: 'content', render: () => 'Who R U exactly!?' },
-        { type: 'prompt', key: 'who' },
+        { type: 'content', getContent: () => 'Who R U?' },
+        { type: 'prompt', key: 'who', setVars: undefined },
+        { type: 'content', getContent: () => 'Who R U exactly!?' },
+        { type: 'prompt', key: 'who', setVars: undefined },
       ],
       { scriptName: 'MyScript' }
     )

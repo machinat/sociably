@@ -10,6 +10,7 @@ import {
   VARS,
   LABEL,
   CALL,
+  EFFECT,
   RETURN,
 } from '../keyword';
 import parse from '../parse';
@@ -18,7 +19,7 @@ const AnotherScript = {
   $$typeof: MACHINAT_SCRIPT_TYPE,
   name: 'AnotherScript',
   commands: [
-    { type: 'content', render: () => '...' },
+    { type: 'content', getContent: () => '...' },
     { type: 'prompt', key: 'ask' },
   ],
   entriesIndex: new Map([
@@ -27,7 +28,7 @@ const AnotherScript = {
   ]),
 };
 
-it('parse content rendering fn', () => {
+it('parse content fn', () => {
   const segments = parse(
     <>
       {() => 'foo'}
@@ -36,13 +37,13 @@ it('parse content rendering fn', () => {
     </>
   );
   expect(segments).toEqual([
-    { type: 'content', render: expect.any(Function) },
-    { type: 'content', render: expect.any(Function) },
-    { type: 'content', render: expect.any(Function) },
+    { type: 'content', getContent: expect.any(Function) },
+    { type: 'content', getContent: expect.any(Function) },
+    { type: 'content', getContent: expect.any(Function) },
   ]);
-  expect(segments[0].render({})).toBe('foo');
-  expect(segments[1].render({})).toBe('bar');
-  expect(segments[2].render({})).toBe('baz');
+  expect(segments[0].getContent({})).toBe('foo');
+  expect(segments[1].getContent({})).toBe('bar');
+  expect(segments[2].getContent({})).toBe('baz');
 });
 
 describe('parse <IF/>', () => {
@@ -58,14 +59,14 @@ describe('parse <IF/>', () => {
         branches: [
           {
             condition: expect.any(Function),
-            body: [{ type: 'content', render: expect.any(Function) }],
+            body: [{ type: 'content', getContent: expect.any(Function) }],
           },
         ],
         fallbackBody: null,
       },
     ]);
     expect(segments[0].branches[0].condition()).toBe(true);
-    expect(segments[0].branches[0].body[0].render()).toBe('foo');
+    expect(segments[0].branches[0].body[0].getContent()).toBe('foo');
   });
 
   it('parse with else', () => {
@@ -81,13 +82,13 @@ describe('parse <IF/>', () => {
         branches: [
           {
             condition: expect.any(Function),
-            body: [{ type: 'content', render: expect.any(Function) }],
+            body: [{ type: 'content', getContent: expect.any(Function) }],
           },
         ],
-        fallbackBody: [{ type: 'content', render: expect.any(Function) }],
+        fallbackBody: [{ type: 'content', getContent: expect.any(Function) }],
       },
     ]);
-    expect(segments[0].fallbackBody[0].render()).toBe('bar');
+    expect(segments[0].fallbackBody[0].getContent()).toBe('bar');
   });
 
   it('parse with else if conditions', () => {
@@ -104,18 +105,18 @@ describe('parse <IF/>', () => {
         type: 'conditions',
         branches: new Array(3).fill({
           condition: expect.any(Function),
-          body: [{ type: 'content', render: expect.any(Function) }],
+          body: [{ type: 'content', getContent: expect.any(Function) }],
         }),
-        fallbackBody: [{ type: 'content', render: expect.any(Function) }],
+        fallbackBody: [{ type: 'content', getContent: expect.any(Function) }],
       },
     ]);
     expect(segments[0].branches[0].condition()).toBe(true);
-    expect(segments[0].branches[0].body[0].render()).toBe('foo');
+    expect(segments[0].branches[0].body[0].getContent()).toBe('foo');
     expect(segments[0].branches[1].condition()).toBe(false);
-    expect(segments[0].branches[1].body[0].render()).toBe('bar');
+    expect(segments[0].branches[1].body[0].getContent()).toBe('bar');
     expect(segments[0].branches[2].condition()).toBe(true);
-    expect(segments[0].branches[2].body[0].render()).toBe('baz');
-    expect(segments[0].fallbackBody[0].render()).toBe('boom boom pow');
+    expect(segments[0].branches[2].body[0].getContent()).toBe('baz');
+    expect(segments[0].fallbackBody[0].getContent()).toBe('boom boom pow');
   });
 
   it('parse nested <IF/>', () => {
@@ -262,11 +263,11 @@ describe('parse <WHILE/>', () => {
       {
         type: 'while',
         condition: expect.any(Function),
-        body: [{ type: 'content', render: expect.any(Function) }],
+        body: [{ type: 'content', getContent: expect.any(Function) }],
       },
     ]);
     expect(segments[0].condition({})).toBe(true);
-    expect(segments[0].body[0].render({})).toBe('Gee');
+    expect(segments[0].body[0].getContent({})).toBe('Gee');
   });
 
   it('parse nested <WHILE/>', () => {
@@ -283,14 +284,14 @@ describe('parse <WHILE/>', () => {
           {
             type: 'while',
             condition: expect.any(Function),
-            body: [{ type: 'content', render: expect.any(Function) }],
+            body: [{ type: 'content', getContent: expect.any(Function) }],
           },
         ],
       },
     ]);
     expect(segments[0].condition({})).toBe(true);
     expect(segments[0].body[0].condition({})).toBe(false);
-    expect(segments[0].body[0].body[0].render({})).toBe('Goo');
+    expect(segments[0].body[0].body[0].getContent({})).toBe('Goo');
   });
 
   it('throw if condition prop is not a function', () => {
@@ -315,9 +316,9 @@ describe('parse <VARS/>', () => {
         </>
       )
     ).toEqual([
-      { type: 'set_vars', setter: helloSetter },
-      { type: 'content', render: expect.any(Function) },
-      { type: 'set_vars', setter: greetedSetter },
+      { type: 'vars', setVars: helloSetter },
+      { type: 'content', getContent: expect.any(Function) },
+      { type: 'vars', setVars: greetedSetter },
     ]);
   });
 
@@ -347,15 +348,15 @@ describe('parse <PROMPT/>', () => {
         </>
       )
     ).toEqual([
-      { type: 'content', render: expect.any(Function) },
-      { type: 'prompt', key: 'where', setter: answerSetter },
-      { type: 'content', render: expect.any(Function) },
-      { type: 'prompt', key: 'what', setter: answerSetter },
-      { type: 'content', render: expect.any(Function) },
+      { type: 'content', getContent: expect.any(Function) },
+      { type: 'prompt', key: 'where', setVars: answerSetter },
+      { type: 'content', getContent: expect.any(Function) },
+      { type: 'prompt', key: 'what', setVars: answerSetter },
+      { type: 'content', getContent: expect.any(Function) },
       {
         type: 'prompt',
         key: 'how',
-        setter: answerSetter,
+        setVars: answerSetter,
       },
     ]);
   });
@@ -383,7 +384,7 @@ describe('parse <LABEL/>', () => {
       )
     ).toEqual([
       { type: 'label', key: 'foo' },
-      { type: 'content', render: expect.any(Function) },
+      { type: 'content', getContent: expect.any(Function) },
     ]);
 
     expect(
@@ -397,9 +398,9 @@ describe('parse <LABEL/>', () => {
       )
     ).toEqual([
       { type: 'label', key: 'bar' },
-      { type: 'content', render: expect.any(Function) },
+      { type: 'content', getContent: expect.any(Function) },
       { type: 'label', key: 'baz' },
-      { type: 'content', render: expect.any(Function) },
+      { type: 'content', getContent: expect.any(Function) },
     ]);
   });
 
@@ -430,7 +431,7 @@ describe('parse <CALL/>', () => {
         </>
       )
     ).toEqual([
-      { type: 'content', render: expect.any(Function) },
+      { type: 'content', getContent: expect.any(Function) },
       {
         type: 'call',
         script: AnotherScript,
@@ -451,12 +452,12 @@ describe('parse <CALL/>', () => {
         </>
       )
     ).toEqual([
-      { type: 'content', render: expect.any(Function) },
+      { type: 'content', getContent: expect.any(Function) },
       {
         type: 'call',
         script: AnotherScript,
         withVars: getCallVars,
-        setter: setFromReturn,
+        setVars: setFromReturn,
         goto: 'foo',
         key: 'waiting',
       },
@@ -504,13 +505,21 @@ test('parse <RETURN/>', () => {
       </>
     )
   ).toEqual([
-    { type: 'content', render: expect.any(Function) },
+    { type: 'content', getContent: expect.any(Function) },
     { type: 'return' },
-    { type: 'content', render: expect.any(Function) },
+    { type: 'content', getContent: expect.any(Function) },
   ]);
 
-  expect(parse(<RETURN value={({ vars }) => vars.foo} />)).toEqual([
-    { type: 'return', valueGetter: expect.any(Function) },
+  const getValue = ({ vars }) => vars.foo;
+  expect(parse(<RETURN value={getValue} />)).toEqual([
+    { type: 'return', getValue },
+  ]);
+});
+
+test('parse <EFFECT />', () => {
+  const doEffect = ({ vars }) => console.log(vars);
+  expect(parse(<EFFECT do={doEffect} />)).toEqual([
+    { type: 'effect', doEffect },
   ]);
 });
 
@@ -596,6 +605,8 @@ test('parse whole script', () => {
 
         <LABEL key="end" />
         <PROMPT key="ask_4" set={() => ({ end: true })} />
+
+        <EFFECT do={() => console.log('done')} />
         {() => 'ad minim veniam'}
       </>
     )
@@ -608,15 +619,15 @@ it('throw if invalid syntax node received', () => {
   );
 
   expect(() => parse(<world />)).toThrowErrorMatchingInlineSnapshot(
-    `"unexpected element: <world />"`
+    `"unknown keyword: <world />"`
   );
 
   const Foo = () => {};
   expect(() => parse(<Foo />)).toThrowErrorMatchingInlineSnapshot(
-    `"unexpected element: <Foo />"`
+    `"unknown keyword: <Foo />"`
   );
 
   expect(() => parse(<THEN />)).toThrowErrorMatchingInlineSnapshot(
-    `"unexpected keyword: <THEN />"`
+    `"unknown keyword: <THEN />"`
   );
 });

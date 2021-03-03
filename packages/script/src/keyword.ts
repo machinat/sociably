@@ -7,6 +7,7 @@ import type {
   VarsProps,
   LabelProps,
   CallProps,
+  EffectProps,
   ReturnProps,
 } from './types';
 
@@ -67,6 +68,11 @@ export const LABEL = (props: LabelProps): null => null;
 export const CALL = <Vars, Input = null, Return = void>(
   props: CallProps<Vars, Input, Return>
 ): null => null;
+
+/**
+ * @category Keyword
+ */
+export const EFFECT = <Vars>(props: EffectProps<Vars>): null => null;
 
 /**
  * @category Keyword

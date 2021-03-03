@@ -461,7 +461,7 @@ describe('#getRuntime(channel)', () => {
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
       returnValue: undefined,
-      content: ['consectetur ', 'adipiscing '],
+      contents: ['consectetur ', 'adipiscing '],
     });
 
     expect(runtime.isFinished).toBe(false);
@@ -476,7 +476,7 @@ describe('#getRuntime(channel)', () => {
     await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
       finished: false,
       returnValue: undefined,
-      content: ['elit, ', 'sed '],
+      contents: ['elit, ', 'sed '],
     });
 
     expect(promptSetter.mock).toHaveBeenCalledTimes(2);
@@ -490,7 +490,7 @@ describe('#getRuntime(channel)', () => {
       await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
         finished: false,
         returnValue: undefined,
-        content: ['do '],
+        contents: ['do '],
       });
 
       expect(promptSetter.mock).toHaveBeenCalledTimes(3 + i);
@@ -503,7 +503,7 @@ describe('#getRuntime(channel)', () => {
     await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
       finished: true,
       returnValue: { foo: 'bar', done: true },
-      content: ['do ', 'eiusmod '],
+      contents: ['do ', 'eiusmod '],
     });
   });
 

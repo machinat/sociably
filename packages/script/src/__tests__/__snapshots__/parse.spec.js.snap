@@ -7,7 +7,7 @@ Array [
       Object {
         "body": Array [
           Object {
-            "render": [Function],
+            "getContent": [Function],
             "type": "content",
           },
           Object {
@@ -15,7 +15,7 @@ Array [
               Object {
                 "body": Array [
                   Object {
-                    "render": [Function],
+                    "getContent": [Function],
                     "type": "content",
                   },
                 ],
@@ -26,7 +26,7 @@ Array [
             "type": "conditions",
           },
           Object {
-            "render": [Function],
+            "getContent": [Function],
             "type": "content",
           },
         ],
@@ -35,7 +35,7 @@ Array [
       Object {
         "body": Array [
           Object {
-            "render": [Function],
+            "getContent": [Function],
             "type": "content",
           },
           Object {
@@ -43,7 +43,7 @@ Array [
               Object {
                 "body": Array [
                   Object {
-                    "render": [Function],
+                    "getContent": [Function],
                     "type": "content",
                   },
                 ],
@@ -52,7 +52,7 @@ Array [
               Object {
                 "body": Array [
                   Object {
-                    "render": [Function],
+                    "getContent": [Function],
                     "type": "content",
                   },
                 ],
@@ -63,7 +63,7 @@ Array [
             "type": "conditions",
           },
           Object {
-            "render": [Function],
+            "getContent": [Function],
             "type": "content",
           },
         ],
@@ -72,7 +72,7 @@ Array [
     ],
     "fallbackBody": Array [
       Object {
-        "render": [Function],
+        "getContent": [Function],
         "type": "content",
       },
       Object {
@@ -80,7 +80,7 @@ Array [
           Object {
             "body": Array [
               Object {
-                "render": [Function],
+                "getContent": [Function],
                 "type": "content",
               },
             ],
@@ -89,14 +89,14 @@ Array [
         ],
         "fallbackBody": Array [
           Object {
-            "render": [Function],
+            "getContent": [Function],
             "type": "content",
           },
         ],
         "type": "conditions",
       },
       Object {
-        "render": [Function],
+        "getContent": [Function],
         "type": "content",
       },
     ],
@@ -112,7 +112,7 @@ Array [
     "type": "label",
   },
   Object {
-    "render": [Function],
+    "getContent": [Function],
     "type": "content",
   },
   Object {
@@ -126,12 +126,12 @@ Array [
           Object {
             "body": Array [
               Object {
-                "render": [Function],
+                "getContent": [Function],
                 "type": "content",
               },
               Object {
                 "key": "ask_1",
-                "setter": [Function],
+                "setVars": [Function],
                 "type": "prompt",
               },
             ],
@@ -144,7 +144,7 @@ Array [
       Object {
         "body": Array [
           Object {
-            "render": [Function],
+            "getContent": [Function],
             "type": "content",
           },
           Object {
@@ -152,12 +152,12 @@ Array [
               Object {
                 "body": Array [
                   Object {
-                    "render": [Function],
+                    "getContent": [Function],
                     "type": "content",
                   },
                   Object {
                     "key": "ask_2",
-                    "setter": [Function],
+                    "setVars": [Function],
                     "type": "prompt",
                   },
                 ],
@@ -166,7 +166,7 @@ Array [
             ],
             "fallbackBody": Array [
               Object {
-                "render": [Function],
+                "getContent": [Function],
                 "type": "content",
               },
             ],
@@ -178,7 +178,7 @@ Array [
     ],
     "fallbackBody": Array [
       Object {
-        "render": [Function],
+        "getContent": [Function],
         "type": "content",
       },
       Object {
@@ -188,7 +188,7 @@ Array [
           "$$typeof": Symbol(lib.script.machinat),
           "commands": Array [
             Object {
-              "render": [Function],
+              "getContent": [Function],
               "type": "content",
             },
             Object {
@@ -202,7 +202,7 @@ Array [
           },
           "name": "AnotherScript",
         },
-        "setter": [Function],
+        "setVars": [Function],
         "type": "call",
         "withVars": [Function],
       },
@@ -210,33 +210,33 @@ Array [
     "type": "conditions",
   },
   Object {
-    "setter": [Function],
-    "type": "set_vars",
+    "setVars": [Function],
+    "type": "vars",
   },
   Object {
     "key": "2nd",
     "type": "label",
   },
   Object {
-    "render": [Function],
+    "getContent": [Function],
     "type": "content",
   },
   Object {
-    "setter": [Function],
-    "type": "set_vars",
+    "setVars": [Function],
+    "type": "vars",
   },
   Object {
     "key": "3rd",
     "type": "label",
   },
   Object {
-    "render": [Function],
+    "getContent": [Function],
     "type": "content",
   },
   Object {
     "body": Array [
       Object {
-        "render": [Function],
+        "getContent": [Function],
         "type": "content",
       },
       Object {
@@ -248,12 +248,12 @@ Array [
                 "type": "label",
               },
               Object {
-                "render": [Function],
+                "getContent": [Function],
                 "type": "content",
               },
               Object {
                 "key": "ask_3",
-                "setter": [Function],
+                "setVars": [Function],
                 "type": "prompt",
               },
             ],
@@ -262,8 +262,8 @@ Array [
         ],
         "fallbackBody": Array [
           Object {
+            "getValue": [Function],
             "type": "return",
-            "valueGetter": [Function],
           },
         ],
         "type": "conditions",
@@ -273,7 +273,7 @@ Array [
     "type": "while",
   },
   Object {
-    "render": [Function],
+    "getContent": [Function],
     "type": "content",
   },
   Object {
@@ -283,7 +283,7 @@ Array [
       "$$typeof": Symbol(lib.script.machinat),
       "commands": Array [
         Object {
-          "render": [Function],
+          "getContent": [Function],
           "type": "content",
         },
         Object {
@@ -297,7 +297,7 @@ Array [
       },
       "name": "AnotherScript",
     },
-    "setter": undefined,
+    "setVars": undefined,
     "type": "call",
     "withVars": [Function],
   },
@@ -307,11 +307,15 @@ Array [
   },
   Object {
     "key": "ask_4",
-    "setter": [Function],
+    "setVars": [Function],
     "type": "prompt",
   },
   Object {
-    "render": [Function],
+    "doEffect": [Function],
+    "type": "effect",
+  },
+  Object {
+    "getContent": [Function],
     "type": "content",
   },
 ]
