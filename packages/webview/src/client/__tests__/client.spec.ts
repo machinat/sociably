@@ -50,7 +50,7 @@ jest.mock('@machinat/core/base/Marshaler', () =>
 );
 
 const location = moxy(parseUrl('https://machinat.com/hello'));
-global.window = { location } as never;
+(global as any).window = { location };
 
 const testAuthorizer = moxy<AnyClientAuthorizer>({
   platform: 'test' /* ... */,

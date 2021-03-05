@@ -53,13 +53,8 @@ const window = moxy(
 );
 
 beforeAll(() => {
-  global.window = window as never;
-  global.document = document as never;
-});
-
-afterAll(() => {
-  global.window = undefined as never;
-  global.document = undefined as never;
+  (global as any).window = window;
+  (global as any).document = document;
 });
 
 beforeEach(() => {

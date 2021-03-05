@@ -8,7 +8,7 @@ const Socket = _Socket as Moxy<typeof _Socket>;
 const Ws = _Ws as Moxy<typeof _Ws>;
 
 const location = url.parse('https://machinat.com/hello');
-global.window = { location } as never;
+(global as any).window = { location };
 
 jest.mock('../../socket', () =>
   jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../../socket'))

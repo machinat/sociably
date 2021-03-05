@@ -21,8 +21,8 @@ const window = moxy({
 });
 
 beforeAll(() => {
-  global.window = window as never;
-  global.document = document;
+  (global as any).window = window;
+  (global as any).document = document;
   (global as any).MessengerExtensions = MessengerExtensions;
 });
 
