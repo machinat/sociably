@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ButtonTemplate rendered match snapshot 1`] = `
+exports[`ButtonTemplate render match snapshot 1`] = `
 Object {
   "altText": "xxx",
   "template": Object {
@@ -33,7 +33,7 @@ Object {
 }
 `;
 
-exports[`CarouselTemplate rendered match snapshot 1`] = `
+exports[`CarouselTemplate render match snapshot 1`] = `
 Object {
   "altText": "xxx",
   "template": Object {
@@ -72,9 +72,9 @@ Object {
         ],
         "defaultAction": undefined,
         "imageBackgroundColor": "#bbbbbb",
-        "text": "tamato sause",
+        "text": "Naporitan",
         "thumbnailImageUrl": "https://...",
-        "title": "Spaghetti",
+        "title": "Pasta",
       },
     ],
     "imageAspectRatio": "square",
@@ -85,7 +85,7 @@ Object {
 }
 `;
 
-exports[`ConfirmTemplate rendered match snapshot 1`] = `
+exports[`ConfirmTemplate render match snapshot 1`] = `
 Object {
   "altText": "xxx",
   "template": Object {
@@ -108,7 +108,7 @@ Object {
 }
 `;
 
-exports[`ImageCarouselTemplate rendered match snapshot 1`] = `
+exports[`ImageCarouselTemplate render match snapshot 1`] = `
 Object {
   "altText": "xxx",
   "template": Object {

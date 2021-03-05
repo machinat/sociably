@@ -10,9 +10,11 @@ import { LineComponent } from '../types';
 type ButtonTemplateProps = {
   /**
    * Alternative text. Displayed on devices that do not support template
-   * messages. Max character limit: 400
+   * messages. Max character limit: 400.
+   * If a function is given, the return value would be used. The rendered
+   * template object is passed as the first argument.
    */
-  altText: string;
+  altText: string | ((template: Record<string, unknown>) => string);
   /** Image URL (Max character limit: 1,000) */
   thumbnailImageUrl?: string;
   /**
@@ -34,8 +36,8 @@ type ButtonTemplateProps = {
    */
   imageBackgroundColor?: string;
   title?: string;
-  /** Message text. */
-  text: string;
+  /** Texual nodes of message text. */
+  children: MachinatNode;
   /**
    * {@link Action} elements displayed as the buttons at the template. Max 4
    * buttons.
@@ -61,30 +63,36 @@ const __ButtonTemplate: FunctionOf<LineComponent<
     imageSize,
     imageBackgroundColor,
     title,
-    text,
+    children,
   } = node.props;
 
-  const defaultActionSegments = await render(defaultAction, '.defaultAction');
-  const defaultActionValue = defaultActionSegments?.[0].value;
+  const [
+    defaultActionSegments,
+    actionSegments,
+    textSegments,
+  ] = await Promise.all([
+    render(defaultAction, '.defaultAction'),
+    render(actions, '.actions'),
+    render(children, '.children'),
+  ]);
 
-  const actionSegments = await render(actions, '.actions');
-  const actionValues = actionSegments?.map((seg) => seg.value);
+  const template = {
+    type: 'buttons',
+    thumbnailImageUrl,
+    imageAspectRatio,
+    imageSize,
+    imageBackgroundColor,
+    title,
+    text: textSegments?.[0].value,
+    defaultAction: defaultActionSegments?.[0].value,
+    actions: actionSegments?.map((seg) => seg.value),
+  };
 
   return [
     unitSegment(node, path, {
       type: 'template' as const,
-      altText,
-      template: {
-        type: 'buttons',
-        thumbnailImageUrl,
-        imageAspectRatio,
-        imageSize,
-        imageBackgroundColor,
-        title,
-        text,
-        defaultAction: defaultActionValue,
-        actions: actionValues,
-      },
+      altText: typeof altText === 'function' ? altText(template) : altText,
+      template,
     }),
   ];
 };
@@ -105,33 +113,39 @@ type ConfirmTemplateProps = {
   /**
    * Alternative text. Displayed on devices that do not support template
    * messages. Max character limit: 400
+   * If a function is given, the return value would be used. The rendered
+   * template object is passed as the first argument.
    */
-  altText: string;
+  altText: string | ((template: Record<string, unknown>) => string);
   /**
    * Exactly 2 {@link Action} elements displayed as the buttons at the template.
    */
   actions: MachinatNode;
-  /** Message text. */
-  text: string;
+  /** Texual nodes of message text. */
+  children: string;
 };
 
 /** @internal */
 const __ConfirmTemplate: FunctionOf<LineComponent<
   ConfirmTemplateProps
 >> = async function ConfirmTemplate(node, path, render) {
-  const { actions, altText, text } = node.props;
-  const actionSegments = await render(actions, '.actions');
-  const actionsValues = actionSegments?.map((segment) => segment.value);
+  const { actions, altText, children } = node.props;
+  const [actionSegments, textSegments] = await Promise.all([
+    render(actions, '.actions'),
+    render(children, '.children'),
+  ]);
+
+  const template = {
+    type: 'confirm',
+    text: textSegments?.[0].value,
+    actions: actionSegments?.map((segment) => segment.value),
+  };
 
   return [
     unitSegment(node, path, {
       type: 'template' as const,
-      altText,
-      template: {
-        type: 'confirm',
-        text,
-        actions: actionsValues,
-      },
+      altText: typeof altText === 'function' ? altText(template) : altText,
+      template,
     }),
   ];
 };
@@ -167,8 +181,8 @@ type CarouselItemProps = {
    */
   imageBackgroundColor?: string;
   title?: string;
-  /** Message text. */
-  text?: string;
+  /** Texual nodes of message text. */
+  children: string;
 };
 
 /** @internal */
@@ -182,23 +196,27 @@ const __CarouselItem: FunctionOf<LineComponent<
     thumbnailImageUrl,
     imageBackgroundColor,
     title,
-    text,
+    children,
   } = node.props;
 
-  const defaultActionSegments = await render(defaultAction, '.defaultAction');
-  const defaultActionValue = defaultActionSegments?.[0].value;
-
-  const actionSegments = await render(actions, '.actions');
-  const actionValues = actionSegments?.map((segment) => segment.value);
+  const [
+    defaultActionSegments,
+    actionSegments,
+    textSegments,
+  ] = await Promise.all([
+    render(defaultAction, '.defaultAction'),
+    render(actions, '.actions'),
+    render(children, '.children'),
+  ]);
 
   return [
     partSegment(node, path, {
       thumbnailImageUrl,
       imageBackgroundColor,
       title,
-      text,
-      defaultAction: defaultActionValue,
-      actions: actionValues,
+      text: textSegments?.[0].value,
+      defaultAction: defaultActionSegments?.[0].value,
+      actions: actionSegments?.map((segment) => segment.value),
     }),
   ];
 };
@@ -225,8 +243,10 @@ type CarouselTemplateProps = {
   /**
    * Alternative text. Displayed on devices that do not support template
    * messages. Max character limit: 400
+   * If a function is given, the return value would be used. The rendered
+   * template object is passed as the first argument.
    */
-  altText: string;
+  altText: string | ((template: Record<string, unknown>) => string);
   /**
    * Aspect ratio of the image, rectangle: 1.51:1, square: 1:1. Default to
    * `'rectangle'`.
@@ -249,18 +269,19 @@ const __CarouselTemplate: FunctionOf<LineComponent<
 >> = async function CarouselTemplate(node, path, render) {
   const { children, altText, imageAspectRatio, imageSize } = node.props;
   const columnSegments = await render(children, '.children');
-  const cloumnValues = columnSegments?.map((segment) => segment.value);
+
+  const template = {
+    type: 'carousel',
+    imageAspectRatio,
+    imageSize,
+    columns: columnSegments?.map((segment) => segment.value),
+  };
 
   return [
     unitSegment(node, path, {
       type: 'template' as const,
-      altText,
-      template: {
-        type: 'carousel',
-        imageAspectRatio,
-        imageSize,
-        columns: cloumnValues,
-      },
+      altText: typeof altText === 'function' ? altText(template) : altText,
+      template,
     }),
   ];
 };
@@ -323,8 +344,10 @@ type ImageCarouselTemplateProps = {
   /**
    * Alternative text. Displayed on devices that do not support template
    * messages. Max character limit: 400
+   * If a function is given, the return value would be used. The rendered
+   * template object is passed as the first argument.
    */
-  altText: string;
+  altText: string | ((template: Record<string, unknown>) => string);
 };
 
 /** @internal */
@@ -333,16 +356,17 @@ const __ImageCarouselTemplate: FunctionOf<LineComponent<
 >> = async function ImageCarouselTemplate(node, path, render) {
   const { children, altText } = node.props;
   const columnSegments = await render(children, '.children');
-  const columnValues = columnSegments?.map((segment) => segment.value);
+
+  const template = {
+    type: 'image_carousel',
+    columns: columnSegments?.map((segment) => segment.value),
+  };
 
   return [
     unitSegment(node, path, {
       type: 'template' as const,
-      altText,
-      template: {
-        type: 'image_carousel',
-        columns: columnValues,
-      },
+      altText: typeof altText === 'function' ? altText(template) : altText,
+      template,
     }),
   ];
 };
