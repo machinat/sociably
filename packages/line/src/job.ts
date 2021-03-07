@@ -1,6 +1,6 @@
 /** @internal */ /** */
 import type { DispatchableSegment } from '@machinat/core/engine/types';
-import LineChannel from './channel';
+import LineChat from './channel';
 import type {
   LineSegmentValue,
   LineMessageSegmentValue,
@@ -16,7 +16,7 @@ import {
 import { isMessageValue } from './utils';
 
 const createMessageJob = (
-  channel: LineChannel,
+  channel: LineChat,
   messages: LineMessageSegmentValue[],
   replyToken: void | string
 ): LineJob => ({
@@ -32,7 +32,7 @@ export const chatJobsMaker = (replyToken: void | string) => {
   let messagingJobsCount = 0;
 
   return (
-    channel: LineChannel,
+    channel: LineChat,
     segments: DispatchableSegment<LineSegmentValue>[]
   ): LineJob[] => {
     const jobs: LineJob[] = [];

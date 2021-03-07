@@ -12,11 +12,13 @@ import type { MaybeContainer } from '@machinat/core/service/types';
 import type { IntermediateSegment } from '@machinat/core/renderer/types';
 import type { WebhookMetadata } from '@machinat/http/webhook/types';
 import { LineBot } from './bot';
-import type LineChannel from './channel';
+import type LineChat from './channel';
 import type { LineEvent, LineRawEvent } from './event/types';
 import type { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from './constant';
 
 export type { LineEvent } from './event/types';
+export type { default as LineChat } from './channel';
+export type { default as LineUser } from './channel';
 
 export type UserSource = {
   type: 'user';
@@ -148,7 +150,7 @@ export type ApiCallGettable = {
     body: any;
   };
   [CHANNEL_REQUEST_GETTER]: (
-    channel: LineChannel
+    channel: LineChat
   ) => {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';
     path: string;
@@ -223,7 +225,7 @@ export type LineResult = {
 
 export type LineDispatchResponse = DispatchResponse<LineJob, LineResult>;
 
-export type LineDispatchFrame = DispatchFrame<LineChannel, LineJob, LineBot>;
+export type LineDispatchFrame = DispatchFrame<LineChat, LineJob, LineBot>;
 
 export type LineEventMiddleware = EventMiddleware<LineEventContext, null>;
 export type LineDispatchMiddleware = DispatchMiddleware<

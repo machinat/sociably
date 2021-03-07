@@ -15,6 +15,8 @@ import type { MessengerEvent } from './event/types';
 import type { API_PATH } from './constant';
 
 export { MessengerEvent } from './event/types';
+export { default as MessengerChat } from './channel';
+export { default as MessengerUser } from './user';
 
 export type PSIDTarget = { id: string };
 export type UserRefTarget = { user_ref: string };
