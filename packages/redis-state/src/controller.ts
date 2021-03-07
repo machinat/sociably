@@ -88,7 +88,7 @@ export class RedisStateAccessor implements StateAccessor {
     return !!fieldCount;
   }
 
-  async getAll(): Promise<Map<string, any>> {
+  async getAll<T>(): Promise<Map<string, T>> {
     const result = await thenifiedly.callMethod(
       'hgetall',
       this._client,
@@ -98,7 +98,7 @@ export class RedisStateAccessor implements StateAccessor {
       return new Map();
     }
 
-    return new Map<string, any>(
+    return new Map(
       Object.entries<string>(result).map(([key, value]) => [
         key,
         this._parseValue(value),

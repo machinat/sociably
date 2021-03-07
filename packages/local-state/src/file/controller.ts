@@ -71,7 +71,7 @@ export class FileStateAccessor implements StateAccessor {
     return !!currentValue;
   }
 
-  async getAll(): Promise<Map<string, any>> {
+  async getAll<T>(): Promise<Map<string, T>> {
     const data = await this._getData();
     return new Map(
       Object.entries(data).map(([key, value]) => [

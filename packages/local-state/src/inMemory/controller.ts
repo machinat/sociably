@@ -44,7 +44,7 @@ export class InMemoryStateAccessor implements StateAccessor {
     return this._stateData.delete(key);
   }
 
-  async getAll(): Promise<Map<string, any>> {
+  async getAll<T>(): Promise<Map<string, T>> {
     return this._stateData;
   }
 
@@ -59,9 +59,9 @@ export class InMemoryStateAccessor implements StateAccessor {
  * @category Provider
  */
 export class InMemoryStateController implements BaseStateController {
-  private _channelStates: Map<string, Map<string, any>>;
-  private _userStates: Map<string, Map<string, any>>;
-  private _globalStates: Map<string, Map<string, any>>;
+  private _channelStates: Map<string, Map<string, unknown>>;
+  private _userStates: Map<string, Map<string, unknown>>;
+  private _globalStates: Map<string, Map<string, unknown>>;
 
   constructor() {
     this._channelStates = new Map();
