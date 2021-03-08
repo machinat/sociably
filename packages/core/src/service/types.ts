@@ -3,6 +3,7 @@ import {
   MACHINAT_SERVICE_PROVIDER,
   MACHINAT_SERVICE_INTERFACE,
 } from '../symbol';
+import ServiceScope from './scope';
 
 export { default as ServiceScope } from './scope';
 
@@ -64,7 +65,8 @@ export type ServiceRequirement<T extends Interfaceable<unknown>> =
 
 export type ServiceDependency<I extends Interfaceable<unknown>> =
   | I
-  | ServiceRequirement<I>;
+  | ServiceRequirement<I>
+  | typeof ServiceScope;
 
 type ResolveInterfaceable<
   I extends Interfaceable<unknown>
@@ -80,7 +82,9 @@ type ResolveInterfaceable<
 
 export type ResolveDependency<
   Dep extends ServiceDependency<any>
-> = Dep extends Interfaceable<unknown>
+> = Dep extends typeof ServiceScope
+  ? ServiceScope
+  : Dep extends Interfaceable<unknown>
   ? ResolveInterfaceable<Dep>
   : Dep extends StrictServiceRequirement<infer I>
   ? ResolveInterfaceable<I>

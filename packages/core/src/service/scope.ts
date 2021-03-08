@@ -58,7 +58,7 @@ export default class ServiceScope {
 
   injectContainer<T>(
     container: ServiceContainer<T, unknown[]>,
-    runtimeProvisions?: Map<Interfaceable<any>, any>
+    runtimeProvisions?: Map<Interfaceable<unknown>, unknown>
   ): T {
     invariant(isServiceContainer(container), 'invalid container');
 
