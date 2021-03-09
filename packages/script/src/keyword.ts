@@ -65,8 +65,8 @@ export const LABEL = (props: LabelProps): null => null;
 /**
  * @category Keyword
  */
-export const CALL = <Vars, Input = null, Return = void>(
-  props: CallProps<Vars, Input, Return>
+export const CALL = <CallerVars, CalleeVars, Return = void>(
+  props: CallProps<CallerVars, CalleeVars, Return>
 ): null => null;
 
 /**

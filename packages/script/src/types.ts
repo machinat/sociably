@@ -213,7 +213,7 @@ export type CallReturnSetter<CallerVars, Return> = MaybeContainer<
  * @category Keyword Props
  */
 export type CallProps<CallerVars, CalleeVars, Return> = {
-  script: ScriptLibrary<CallerVars, unknown, Return, unknown>;
+  script: ScriptLibrary<CalleeVars, unknown, Return, unknown>;
   key: string;
   withVars?: CallVarsGetter<CallerVars, CalleeVars>;
   set?: CallReturnSetter<CallerVars, Return>;
