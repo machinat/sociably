@@ -66,7 +66,7 @@ type RenderCircs = {
 export type FunctionalComponent<Props> = (
   props: Props,
   circs: RenderCircs
-) => MachinatElement<unknown, unknown>;
+) => MachinatNode | Promise<MachinatNode>;
 
 export type FunctionalElement<
   Props,
