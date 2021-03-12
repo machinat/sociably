@@ -1,0 +1,43 @@
+{
+  "name": "@machinat/x-machinat",
+  "version": "0.3.0-beta.0",
+  "description": "Reactive programming library for Machinat.js",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./operators": "./lib/operators/index.js",
+    "./operators/": "./lib/operators/",
+    "./types": "./lib/types.js"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "lint": "eslint --ext .ts ./src",
+    "test": "jest",
+    "polyfillExports": "polyfill-exports --ts-declaration",
+    "prepublishOnly": "npm run build && npm run polyfillExports",
+    "postinstall": "node ./polyfill-exports.js"
+  },
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/machinat/machinat.git",
+    "directory": "packages/machinat"
+  },
+  "homepage": "https://github.com/machinat/machinat#readme",
+  "bugs": "https://github.com/machinat/machinat/issues",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@machinat/core": "^0.4.0-beta.0"
+  },
+  "files": [
+    "lib/*",
+    "README.md",
+    "polyfill-exports.js"
+  ],
+  "dependencies": {
+    "rxjs": "^6.5.5"
+  }
+}

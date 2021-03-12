@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src/**/*.ts"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "baseUrl": ".",
+    "paths": {
+      "@machinat/core/*": ["../core/lib/*"]
+    }
+  },
+  "references": [
+    { "path": "../core/tsconfig.build.json" }
+  ]
+}
