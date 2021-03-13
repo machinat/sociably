@@ -13,11 +13,11 @@ export default class Subject<T> {
     this._errorSubject = new RxSubject();
   }
 
-  next(frame: StreamFrame<T>) {
+  next(frame: StreamFrame<T>): void {
     this._eventSubject.next(frame);
   }
 
-  error(frame: StreamFrame<Error>) {
+  error(frame: StreamFrame<Error>): void {
     if (this._errorSubject.observers.length === 0) {
       throw frame.value;
     }
@@ -30,16 +30,16 @@ export default class Subject<T> {
   pipe<A,B,C,D>(fn1: OperatorFunction<A,B>,fn2: OperatorFunction<B,C>,fn3: OperatorFunction<C,D>): Subject<D>;
   pipe<A,B,C,D,E>(fn1: OperatorFunction<A,B>,fn2: OperatorFunction<B,C>,fn3: OperatorFunction<C,D>,fn4: OperatorFunction<D,E>): Subject<E>;
   pipe<A,B,C,D,E,F>(fn1: OperatorFunction<A,B>,fn2: OperatorFunction<B,C>,fn3: OperatorFunction<C,D>,fn4: OperatorFunction<D,E>,fn5: OperatorFunction<E,F>): Subject<F>;
-  pipe(...fns: OperatorFunction<any, any>[]): Subject<any>;
+  pipe(...fns: OperatorFunction<unknown, unknown>[]): Subject<unknown>;
   /* eslint-enable prettier/prettier */
   pipe(...fns: OperatorFunction<unknown, unknown>[]): Subject<unknown> {
     return pipe(...fns)(this);
   }
 
   _subscribe(
-    nextListener: (frame: StreamFrame<T>) => any,
-    errorListener: (frame: StreamFrame<Error>) => any
-  ) {
+    nextListener: (frame: StreamFrame<T>) => void,
+    errorListener: (frame: StreamFrame<Error>) => void
+  ): void {
     if (nextListener) {
       this._eventSubject.subscribe(nextListener);
     }
@@ -50,23 +50,25 @@ export default class Subject<T> {
   }
 
   subscribe(
-    nextListener?: null | MaybeContainer<(value: T) => void>,
-    errorListener?: null | MaybeContainer<(err: Error) => void>
-  ) {
-    if (nextListener) {
-      const injectNextListener = injectMaybe(nextListener);
+    nextListener: MaybeContainer<(value: T) => void>,
+    errorListener?: MaybeContainer<(err: Error) => void>
+  ): void {
+    const injectNextListener = injectMaybe(nextListener);
 
-      this._eventSubject.subscribe((frame) =>
-        injectNextListener(frame)(frame.value)
-      );
-    }
+    this._eventSubject.subscribe((frame) =>
+      injectNextListener(frame)(frame.value)
+    );
 
     if (errorListener) {
-      const injectErrorListener = injectMaybe(errorListener);
-
-      this._errorSubject.subscribe((frame) =>
-        injectErrorListener(frame)(frame.value)
-      );
+      this.catch(errorListener);
     }
+  }
+
+  catch(errorListener: MaybeContainer<(err: Error) => void>): void {
+    const injectErrorListener = injectMaybe(errorListener);
+
+    this._errorSubject.subscribe((frame) =>
+      injectErrorListener(frame)(frame.value)
+    );
   }
 }
