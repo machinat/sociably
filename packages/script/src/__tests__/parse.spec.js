@@ -22,7 +22,7 @@ const AnotherScript = {
     { type: 'content', getContent: () => '...' },
     { type: 'prompt', key: 'ask' },
   ],
-  entriesIndex: new Map([
+  stopPointIndex: new Map([
     ['foo', 3],
     ['bar', 8],
   ]),

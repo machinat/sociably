@@ -3,7 +3,7 @@ import compile from '../compile';
 
 describe('compile conditions segment', () => {
   test('with multi conditions', () => {
-    const { commands, entriesIndex }: any = compile(
+    const { commands, stopPointIndex }: any = compile(
       [
         {
           type: 'conditions',
@@ -54,7 +54,7 @@ describe('compile conditions segment', () => {
     expect(commands[3].getContent({})).toBe('foo');
     expect(commands[6].getContent({})).toBe('bar');
 
-    expect(entriesIndex).toEqual(
+    expect(stopPointIndex).toEqual(
       new Map([
         ['ask1', 4],
         ['ask2', 7],
@@ -63,7 +63,7 @@ describe('compile conditions segment', () => {
   });
 
   test('with multi conditions and fallback', () => {
-    const { commands, entriesIndex }: any = compile(
+    const { commands, stopPointIndex }: any = compile(
       [
         {
           type: 'conditions',
@@ -120,7 +120,7 @@ describe('compile conditions segment', () => {
     expect(commands[5].getContent({})).toBe('foo');
     expect(commands[8].getContent({})).toBe('bar');
 
-    expect(entriesIndex).toEqual(
+    expect(stopPointIndex).toEqual(
       new Map([
         ['ask1', 6],
         ['ask2', 9],
@@ -131,7 +131,7 @@ describe('compile conditions segment', () => {
 });
 
 it('compile while segment', () => {
-  const { commands, entriesIndex }: any = compile(
+  const { commands, stopPointIndex }: any = compile(
     [
       {
         type: 'while',
@@ -158,7 +158,7 @@ it('compile while segment', () => {
     { type: 'prompt', key: 'ask' },
     { type: 'jump', offset: -3 },
   ]);
-  expect(entriesIndex).toEqual(new Map([['ask', 2]]));
+  expect(stopPointIndex).toEqual(new Map([['ask', 2]]));
 
   expect(commands[0].condition({})).toBe(true);
   expect(commands[1].getContent({ vars: { target: 'world' } })).toBe(
@@ -170,7 +170,7 @@ it('compile other segments type', () => {
   const OrderScript = { fake: 'script' } as never;
   const sideEffect = moxy();
 
-  const { commands, entriesIndex }: any = compile<unknown, unknown, unknown>(
+  const { commands, stopPointIndex }: any = compile<unknown, unknown, unknown>(
     [
       { type: 'content', getContent: () => 'hello' },
       { type: 'label', key: 'begin' },
@@ -219,7 +219,7 @@ it('compile other segments type', () => {
     { type: 'effect', doEffect: expect.any(Function) },
     { type: 'return', getValue: expect.any(Function) },
   ]);
-  expect(entriesIndex).toEqual(
+  expect(stopPointIndex).toEqual(
     new Map([
       ['begin', 1],
       ['ask_something', 2],

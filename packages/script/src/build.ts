@@ -4,26 +4,32 @@ import parseScript from './parse';
 import compile from './compile';
 import type { ScriptLibrary } from './types';
 
-type ScriptBuildOtions<Meta> = {
-  meta: Meta;
+type ScriptBuildOtions<Vars, Meta> = {
+  name: string;
+  initiateVars: (vars: Partial<Vars>) => Vars;
+  meta?: Meta;
 };
 
 const build = <Vars, Input, Return, Meta>(
-  scriptName: string,
-  src: MachinatElement<unknown, unknown>,
-  options?: ScriptBuildOtions<Meta>
+  options: ScriptBuildOtions<Vars, Meta>,
+  src: MachinatElement<unknown, unknown>
 ): ScriptLibrary<Vars, Input, Return, Meta> => {
+  const scriptName = options.name;
+  const { meta } = options;
+  const { initiateVars } = options;
+
   const segments = parseScript<Vars, Input, Return>(src);
-  const { entriesIndex, commands } = compile<Vars, Input, Return>(segments, {
+  const { stopPointIndex, commands } = compile<Vars, Input, Return>(segments, {
     scriptName,
   });
 
   const script: ScriptLibrary<Vars, Input, Return, Meta> = {
     $$typeof: MACHINAT_SCRIPT_TYPE,
     name: scriptName,
-    entriesIndex,
+    initiateVars,
+    stopPointIndex,
     commands,
-    meta: options?.meta as Meta,
+    meta: meta as Meta,
   };
 
   return script;

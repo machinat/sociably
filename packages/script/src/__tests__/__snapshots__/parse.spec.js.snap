@@ -196,11 +196,11 @@ Array [
               "type": "prompt",
             },
           ],
-          "entriesIndex": Map {
+          "name": "AnotherScript",
+          "stopPointIndex": Map {
             "foo" => 3,
             "bar" => 8,
           },
-          "name": "AnotherScript",
         },
         "setVars": [Function],
         "type": "call",
@@ -291,11 +291,11 @@ Array [
           "type": "prompt",
         },
       ],
-      "entriesIndex": Map {
+      "name": "AnotherScript",
+      "stopPointIndex": Map {
         "foo" => 3,
         "bar" => 8,
       },
-      "name": "AnotherScript",
     },
     "setVars": undefined,
     "type": "call",

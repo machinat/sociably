@@ -27,7 +27,8 @@ export type ScriptLibrary<Vars, Input, Return, Meta> = {
   $$typeof: typeof MACHINAT_SCRIPT_TYPE;
   name: string;
   commands: ScriptCommand<Vars, Input, Return>[];
-  entriesIndex: Map<string, number>;
+  initiateVars: (input: Partial<Vars>) => Vars;
+  stopPointIndex: Map<string, number>;
   meta: Meta;
 };
 
@@ -194,7 +195,7 @@ export type LabelElement = MachinatElement<LabelProps, typeof LABEL>;
 
 export type CallWithVarsFn<CallerVars, CalleeVars> = (
   circs: ScriptCircs<CallerVars>
-) => CalleeVars | Promise<CalleeVars>;
+) => Partial<CalleeVars> | Promise<Partial<CalleeVars>>;
 
 export type CallVarsGetter<CallerVars, CalleeVars> = MaybeContainer<
   CallWithVarsFn<CallerVars, CalleeVars>

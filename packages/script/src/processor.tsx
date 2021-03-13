@@ -56,8 +56,8 @@ export class ScriptRuntime<Input, ReturnValue> {
     return this._returnValue;
   }
 
-  get isPrompting(): boolean {
-    return !!(this.callStack && (this.saveTimestamp || this._requireSaving));
+  get isBeginning(): boolean {
+    return !(this.callStack && (this.saveTimestamp || this._requireSaving));
   }
 
   get requireSaving(): boolean {
@@ -77,7 +77,7 @@ export class ScriptRuntime<Input, ReturnValue> {
       this._serviceScope,
       this.channel,
       this.callStack,
-      this.isPrompting,
+      this.isBeginning,
       input
     );
 
@@ -154,7 +154,7 @@ export class ScriptRuntime<Input, ReturnValue> {
 }
 
 type InitRuntimeOptions<Vars> = {
-  vars?: Vars;
+  vars?: Partial<Vars>;
   goto?: string;
 };
 

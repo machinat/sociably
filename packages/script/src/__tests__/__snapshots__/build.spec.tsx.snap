@@ -38,13 +38,14 @@ Array [
           "type": "prompt",
         },
       ],
-      "entriesIndex": Map {
-        "childPrompt" => 1,
-      },
+      "initiateVars": [Function],
       "meta": Object {
         "foo": "baz",
       },
       "name": "ChildScript",
+      "stopPointIndex": Map {
+        "childPrompt" => 1,
+      },
     },
     "setVars": undefined,
     "type": "call",

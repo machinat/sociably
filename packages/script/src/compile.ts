@@ -48,7 +48,7 @@ type CompileIntermediate =
 
 type CompileResult<Vars, Input, Retrun> = {
   commands: ScriptCommand<Vars, Input, Retrun>[];
-  entriesIndex: Map<string, number>;
+  stopPointIndex: Map<string, number>;
 };
 
 const compileContentCommand = (
@@ -230,7 +230,7 @@ const compile = <Vars, Input, Return>(
   meta: { scriptName: string }
 ): CompileResult<Vars, Input, Return> => {
   const keyIndex = new Map();
-  const entriesIndex = new Map();
+  const stopPointIndex = new Map();
 
   // remove tags and store their indexes
   const mediateCommands: Exclude<CompileIntermediate, TagIntermediate>[] = [];
@@ -247,7 +247,7 @@ const compile = <Vars, Input, Return>(
 
       keyIndex.set(key, mediateCommands.length);
       if (isEntryPoint) {
-        entriesIndex.set(key, mediateCommands.length);
+        stopPointIndex.set(key, mediateCommands.length);
       }
     } else {
       mediateCommands.push(intermediate);
@@ -284,7 +284,7 @@ const compile = <Vars, Input, Return>(
 
   return {
     commands: commands as ScriptCommand<Vars, Input, Return>[],
-    entriesIndex,
+    stopPointIndex,
   };
 };
 

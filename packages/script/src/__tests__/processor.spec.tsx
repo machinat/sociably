@@ -1,5 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
+import { ServiceScope } from '@machinat/core/service';
 import { InMemoryStateController } from '@machinat/local-state/inMemory';
 import { ScriptProcessor } from '../processor';
 import build from '../build';
@@ -15,16 +16,16 @@ import {
   RETURN,
 } from '../keyword';
 
-const scope = moxy({
+const scope = moxy<ServiceScope>({
   injectContainer(container) {
     return container('FOO_SERVICE');
   },
-});
+} as never);
 
 const promptSetter = moxy(({ vars }) => vars);
 
 const AnotherScript = build(
-  'AnotherScript',
+  { name: 'AnotherScript', initiateVars: (input) => input },
   <>
     {() => 'adipiscing '}
     <PROMPT key="ask_4" set={promptSetter} />
@@ -33,7 +34,7 @@ const AnotherScript = build(
 );
 
 const MyScript = build(
-  'MyScript',
+  { name: 'MyScript', initiateVars: (input) => input },
   <>
     {() => 'Lorem '}
 
@@ -106,7 +107,7 @@ describe('#start(channel, Script)', () => {
     expect(promptSetter.mock).not.toHaveBeenCalled();
     expect(runtime.channel).toEqual(channel);
     expect(runtime.isFinished).toBe(false);
-    expect(runtime.isPrompting).toBe(true);
+    expect(runtime.isBeginning).toBe(false);
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
 
@@ -161,7 +162,7 @@ describe('#start(channel, Script)', () => {
     });
 
     expect(runtime.isFinished).toBe(false);
-    expect(runtime.isPrompting).toBe(true);
+    expect(runtime.isBeginning).toBe(false);
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
 
@@ -211,7 +212,7 @@ describe('#start(channel, Script)', () => {
 
     expect(runtime.channel).toEqual(channel);
     expect(runtime.isFinished).toBe(false);
-    expect(runtime.isPrompting).toBe(true);
+    expect(runtime.isBeginning).toBe(false);
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
 
@@ -295,10 +296,10 @@ describe('#continue(channel, input)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = await processor.continue(channel, { hello: 'world' });
+    const runtime = (await processor.continue(channel, { hello: 'world' }))!;
 
     expect(runtime.channel).toEqual(channel);
-    expect(runtime.isPrompting).toBe(true);
+    expect(runtime.isBeginning).toBe(false);
     expect(runtime.isFinished).toBe(false);
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
@@ -362,10 +363,10 @@ describe('#continue(channel, input)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = await processor.continue(channel, { hello: 'world' });
+    const runtime = (await processor.continue(channel, { hello: 'world' }))!;
 
     expect(runtime.channel).toEqual(channel);
-    expect(runtime.isPrompting).toBe(true);
+    expect(runtime.isBeginning).toBe(false);
     expect(runtime.isFinished).toBe(false);
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
@@ -451,10 +452,10 @@ describe('#getRuntime(channel)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = await processor.getRuntime(channel);
+    const runtime = (await processor.getRuntime(channel))!;
 
     expect(runtime.channel).toEqual(channel);
-    expect(runtime.isPrompting).toBe(true);
+    expect(runtime.isBeginning).toBe(false);
     expect(runtime.isFinished).toBe(false);
     expect(runtime.requireSaving).toBe(false);
 
@@ -465,7 +466,7 @@ describe('#getRuntime(channel)', () => {
     });
 
     expect(runtime.isFinished).toBe(false);
-    expect(runtime.isPrompting).toBe(true);
+    expect(runtime.isBeginning).toBe(false);
     expect(runtime.requireSaving).toBe(true);
     expect(promptSetter.mock).toHaveBeenCalledTimes(1);
     expect(promptSetter.mock).toHaveBeenCalledWith(
@@ -543,7 +544,7 @@ describe('Runtime#exit(channel)', () => {
     });
 
     const processor = new ScriptProcessor(stateController, scope, [MyScript]);
-    const runtime = await processor.getRuntime(channel);
+    const runtime = (await processor.getRuntime(channel))!;
 
     await expect(runtime.exit()).resolves.toBe(true);
 
@@ -600,7 +601,7 @@ describe('Runtime#save(runtime)', () => {
       version: 'V0',
     });
 
-    const runtime = await processor.getRuntime(channel);
+    const runtime = (await processor.getRuntime(channel))!;
     await runtime.run({ hello: 'world' });
     await expect(runtime.save()).resolves.toBe(true);
 
@@ -675,7 +676,7 @@ describe('Runtime#save(runtime)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = await processor.getRuntime(channel);
+    const runtime = (await processor.getRuntime(channel))!;
 
     stateController.channelState(channel).delete('$$machinat:script');
     await runtime.run();
@@ -699,7 +700,7 @@ describe('Runtime#save(runtime)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = await processor.getRuntime(channel);
+    const runtime = (await processor.getRuntime(channel))!;
 
     stateController.channelState(channel).set('$$machinat:script', {
       version: 'V0',

@@ -15,46 +15,43 @@ import {
   RETURN,
 } from '../keyword';
 
+const initiateVars = moxy(() => ({}));
+
 test('built script object', () => {
   const ChildScript = build(
-    'ChildScript',
+    {
+      name: 'ChildScript',
+      meta: { foo: 'baz' },
+      initiateVars,
+    },
     <>
       {() => <dolore />}
-      <PROMPT
-        filter={(_, ctx) => ctx.x}
-        set={(_, ctx) => ({ x: ctx.x })}
-        key="childPrompt"
-      />
-    </>,
-    { meta: { foo: 'baz' } }
+      <PROMPT set={(_, ctx) => ({ x: ctx.x })} key="childPrompt" />
+    </>
   );
 
   const MyScript = build(
-    'MyScript',
+    {
+      name: 'MyScript',
+      meta: { foo: 'bar' },
+      initiateVars,
+    },
     <>
       <LABEL key="start" />
       {() => <b>Lorem</b>}
 
-      <IF condition={() => false} key="if">
+      <IF condition={() => false}>
         <THEN>
           <WHILE condition={() => true}>
             <LABEL key="first" />
             {() => <i>ipsum</i>}
-            <PROMPT
-              key="ask_1"
-              filter={(_, ctx) => ctx.a}
-              set={(_, ctx) => ({ a: ctx.a })}
-            />
+            <PROMPT key="ask_1" set={(_, ctx) => ({ a: ctx.a })} />
           </WHILE>
         </THEN>
         <ELSE_IF condition={() => true}>
           <LABEL key="second" />
           {() => <dolor />}
-          <PROMPT
-            key="ask_2"
-            filter={(_, ctx) => ctx.b}
-            set={(_, ctx) => ({ b: ctx.b })}
-          />
+          <PROMPT key="ask_2" set={(_, ctx) => ({ b: ctx.b })} />
           <RETURN value={() => 'fooo'} />
         </ELSE_IF>
         <ELSE>
@@ -72,15 +69,15 @@ test('built script object', () => {
       <LABEL key="end" />
       <VARS set={(_) => ({ foo: 'bar' })} />
       {() => 'ad minim veniam'}
-    </>,
-    { meta: { foo: 'bar' } }
+    </>
   );
 
   expect(MyScript.name).toBe('MyScript');
   expect(MyScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
 
   expect(MyScript.commands).toMatchSnapshot();
-  expect(MyScript.entriesIndex).toMatchInlineSnapshot(`
+  expect(MyScript.initiateVars).toBe(initiateVars);
+  expect(MyScript.stopPointIndex).toMatchInlineSnapshot(`
     Map {
       "start" => 0,
       "third" => 3,
@@ -98,7 +95,8 @@ test('built script object', () => {
   expect(ChildScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
 
   expect(ChildScript.commands).toMatchSnapshot();
-  expect(ChildScript.entriesIndex).toMatchInlineSnapshot(`
+  expect(ChildScript.initiateVars).toBe(initiateVars);
+  expect(ChildScript.stopPointIndex).toMatchInlineSnapshot(`
     Map {
       "childPrompt" => 1,
     }

@@ -28,7 +28,7 @@ const getCursorIndexAssertedly = (
   script: ScriptLibrary<unknown, unknown, unknown, unknown>,
   key: string
 ): number => {
-  const index = script.entriesIndex.get(key);
+  const index = script.stopPointIndex.get(key);
 
   invariant(index !== undefined, `key "${key}" not found in ${script.name}`);
   return index;
@@ -138,7 +138,13 @@ const executeCallCommand = async <Vars>(
     : {};
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  const result = await executeScript(scope, channel, script, index, calleeVars);
+  const result = await executeScript(
+    scope,
+    channel,
+    script,
+    index,
+    script.initiateVars(calleeVars)
+  );
   const concatedContent = [...contents, ...result.contents];
 
   if (!result.finished) {
@@ -224,7 +230,7 @@ const executeScript = async <Vars, Input, Return>(
   channel: MachinatChannel,
   script: ScriptLibrary<Vars, Input, Return, unknown>,
   begin: number,
-  initialVars: Vars
+  beginVars: Vars
 ): Promise<ExecuteResult<Input, Return>> => {
   const { commands } = script;
 
@@ -233,7 +239,7 @@ const executeScript = async <Vars, Input, Return>(
     stopAt: undefined,
     cursor: begin,
     contents: [],
-    vars: initialVars,
+    vars: beginVars,
     descendantCallStack: null,
     scope,
     channel,
@@ -291,7 +297,7 @@ const execute = async <Vars, Input, Return>(
   scope: ServiceScope,
   channel: MachinatChannel,
   beginningStack: CallStatus<Vars, Input, Return>[],
-  isPrompting: boolean,
+  isBeginning: boolean,
   input?: Input
 ): Promise<ExecuteResult<Input, Return>> => {
   const callingDepth = beginningStack.length;
@@ -305,7 +311,9 @@ const execute = async <Vars, Input, Return>(
     let vars = beginningVars;
 
     if (d === callingDepth - 1) {
-      if (isPrompting) {
+      if (isBeginning) {
+        vars = script.initiateVars(vars);
+      } else {
         // handle begin from prompt point
         const awaitingPrompt = script.commands[index];
 

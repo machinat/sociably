@@ -22,6 +22,7 @@
       "@machinat/http/*": ["./packages/http/src/*"],
       "@machinat/next": ["./packages/next/src/index.js"],
       "@machinat/next/*": ["./packages/next/src/*"],
+      "@machinat/local-state/*": ["./packages/local-state/src/*"],
       "@machinat/websocket": ["./packages/websocket/src/index.js"],
       "@machinat/websocket/*": ["./packages/websocket/src/*"],
       "@machinat/webview": ["./packages/webview/src/index.js"],
