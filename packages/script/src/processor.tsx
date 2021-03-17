@@ -11,7 +11,14 @@ import execute from './execute';
 import { SCRIPT_STATE_KEY } from './constant';
 import { LibraryListI } from './interface';
 import { serializeScriptStatus } from './utils';
-import type { ScriptLibrary, CallStatus, ScriptProcessState } from './types';
+import type {
+  AnyScriptLibrary,
+  CallStatus,
+  ScriptProcessState,
+  ParamsOfScript,
+  InputOfScript,
+  ReturnOfScript,
+} from './types';
 
 type RuntimeResult<ReturnValue> = {
   finished: boolean;
@@ -19,9 +26,9 @@ type RuntimeResult<ReturnValue> = {
   contents: MachinatNode;
 };
 
-export class ScriptRuntime<Input, ReturnValue> {
+export class ScriptRuntime<Script extends AnyScriptLibrary> {
   channel: MachinatChannel;
-  callStack: null | CallStatus<unknown, Input, ReturnValue>[];
+  callStack: null | CallStatus<Script>[];
   saveTimestamp: undefined | number;
 
   private _stateContoller: StateControllerI;
@@ -29,13 +36,13 @@ export class ScriptRuntime<Input, ReturnValue> {
 
   private _requireSaving: boolean;
   private _queuedMessages: MachinatNode[];
-  private _returnValue: undefined | ReturnValue;
+  private _returnValue: undefined | ReturnOfScript<Script>;
 
   constructor(
     stateContoller: StateControllerI,
     scope: ServiceScope,
     channel: MachinatChannel,
-    stack: CallStatus<unknown, Input, ReturnValue>[],
+    stack: CallStatus<Script>[],
     promptTimestamp?: number
   ) {
     this.channel = channel;
@@ -52,7 +59,7 @@ export class ScriptRuntime<Input, ReturnValue> {
     return !this.callStack;
   }
 
-  get returnValue(): undefined | ReturnValue {
+  get returnValue(): undefined | ReturnOfScript<Script> {
     return this._returnValue;
   }
 
@@ -64,7 +71,9 @@ export class ScriptRuntime<Input, ReturnValue> {
     return this._requireSaving;
   }
 
-  async run(input?: Input): Promise<RuntimeResult<ReturnValue>> {
+  async run(
+    input?: InputOfScript<Script>
+  ): Promise<RuntimeResult<ReturnOfScript<Script>>> {
     if (!this.callStack) {
       return {
         finished: true,
@@ -108,7 +117,7 @@ export class ScriptRuntime<Input, ReturnValue> {
   }
 
   async _save(
-    callStack: null | CallStatus<unknown, Input, ReturnValue>[],
+    callStack: null | CallStatus<Script>[],
     saveTimestamp: undefined | number
   ): Promise<boolean> {
     if (!callStack && !saveTimestamp) {
@@ -153,23 +162,20 @@ export class ScriptRuntime<Input, ReturnValue> {
   }
 }
 
-type InitRuntimeOptions<Vars> = {
-  vars?: Partial<Vars>;
+type StartRuntimeOptions<Params> = {
+  params?: Params;
   goto?: string;
 };
 
-export class ScriptProcessor<Input, ReturnValue> {
+export class ScriptProcessor<Script extends AnyScriptLibrary> {
   private _stateContoller: StateControllerI;
   private _serviceScope: ServiceScope;
-  private _libs: Map<
-    string,
-    ScriptLibrary<unknown, Input, ReturnValue, unknown>
-  >;
+  private _libs: Map<string, Script>;
 
   constructor(
     stateController: StateControllerI,
     scope: ServiceScope,
-    scripts: ScriptLibrary<unknown, Input, ReturnValue, unknown>[]
+    scripts: Script[]
   ) {
     this._stateContoller = stateController;
     this._serviceScope = scope;
@@ -186,12 +192,12 @@ export class ScriptProcessor<Input, ReturnValue> {
     this._libs = libs;
   }
 
-  async start<Vars>(
+  async start<StartingScript extends Script>(
     channel: MachinatChannel,
-    script: ScriptLibrary<Vars, Input, ReturnValue, unknown>,
-    options: InitRuntimeOptions<Vars> = {}
-  ): Promise<ScriptRuntime<Input, ReturnValue>> {
-    const { vars = {} as Vars, goto } = options;
+    script: StartingScript,
+    options: StartRuntimeOptions<ParamsOfScript<StartingScript>> = {} as any
+  ): Promise<ScriptRuntime<Script>> {
+    const { params = {} as ParamsOfScript<Script>, goto } = options;
 
     if (this._libs.get(script.name) !== script) {
       throw new Error(`script ${script.name} is not registered as libs`);
@@ -212,7 +218,13 @@ export class ScriptProcessor<Input, ReturnValue> {
       this._stateContoller,
       this._serviceScope,
       channel,
-      [{ script, vars, stopAt: goto }]
+      [
+        {
+          script,
+          vars: script.initVars(params),
+          stopAt: goto,
+        } as CallStatus<StartingScript>,
+      ]
     );
 
     await runtime.run();
@@ -221,7 +233,7 @@ export class ScriptProcessor<Input, ReturnValue> {
 
   async getRuntime(
     channel: MachinatChannel
-  ): Promise<null | ScriptRuntime<Input, ReturnValue>> {
+  ): Promise<null | ScriptRuntime<Script>> {
     const state = await this._stateContoller
       .channelState(channel)
       .get<ScriptProcessState>(SCRIPT_STATE_KEY);
@@ -230,7 +242,7 @@ export class ScriptProcessor<Input, ReturnValue> {
       return null;
     }
 
-    const statusStack: CallStatus<unknown, Input, ReturnValue>[] = [];
+    const statusStack: CallStatus<Script>[] = [];
 
     for (const { name, vars, stopAt } of state.callStack) {
       const script = this._libs.get(name);
@@ -240,7 +252,7 @@ export class ScriptProcessor<Input, ReturnValue> {
         );
       }
 
-      statusStack.push({ script, vars, stopAt });
+      statusStack.push({ script, vars, stopAt } as CallStatus<Script>);
     }
 
     return new ScriptRuntime(
@@ -254,8 +266,8 @@ export class ScriptProcessor<Input, ReturnValue> {
 
   async continue(
     channel: MachinatChannel,
-    input: Input
-  ): Promise<null | ScriptRuntime<Input, ReturnValue>> {
+    input: InputOfScript<Script>
+  ): Promise<null | ScriptRuntime<Script>> {
     const runtime = await this.getRuntime(channel);
     if (!runtime) {
       return null;
@@ -271,6 +283,6 @@ const ProcessorP = makeClassProvider({
   deps: [StateControllerI, ServiceScope, LibraryListI] as const,
 })(ScriptProcessor);
 
-type ProcessorP<Input, ReturnValue> = ScriptProcessor<Input, ReturnValue>;
+type ProcessorP<Script extends AnyScriptLibrary> = ScriptProcessor<Script>;
 
 export default ProcessorP;

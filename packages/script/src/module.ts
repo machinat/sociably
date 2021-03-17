@@ -12,7 +12,7 @@ type ScriptConfigs = {
  */
 namespace Script {
   export const Processor = ProcessorP;
-  export type Processor<Input, ReturnValue> = ProcessorP<Input, ReturnValue>;
+  export type Processor<Script extends AnyScriptLibrary> = ProcessorP<Script>;
 
   export const LibraryList = LibraryListI;
   export type LibraryList = LibraryListI;

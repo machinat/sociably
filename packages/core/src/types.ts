@@ -120,7 +120,7 @@ export type PauseElement = MachinatElement<
   typeof MACHINAT_PAUSE_TYPE
 >;
 
-export type ThunkEffectFn = () => Promise<unknown>;
+export type ThunkEffectFn = () => unknown | Promise<unknown>;
 
 export type ThunkElement = MachinatElement<
   { effect: ThunkEffectFn },

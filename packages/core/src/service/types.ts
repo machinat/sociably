@@ -42,7 +42,7 @@ export interface ServiceProvider<T, Args extends ReadonlyArray<unknown>> {
   $$polymorphic: false;
   $$lifetime: ServiceLifetime;
   $$deps: ServiceRequirement<Interfaceable<Args[number]>>[];
-  $$factory: (...args: Args) => T;
+  $$factory(...args: Args): T;
 }
 
 export type Interfaceable<T> =
@@ -99,10 +99,10 @@ export type ResolveDependencies<
 };
 
 export type ServiceContainer<T, Args extends ReadonlyArray<unknown>> = {
-  (...args: Args): T;
   $$name: string;
   $$typeof: typeof MACHINAT_SERVICE_CONTAINER;
   $$deps: ServiceRequirement<Interfaceable<Args[number]>>[];
+  $$factory(...args: Args): T;
   // HACK: make ts compiler accept it as class component
   new (): ServiceContainer<T, Args>;
 };

@@ -58,8 +58,8 @@ test('execute each asyncronized mapper one by one', async () => {
     expect(nextListener.mock).toHaveBeenNthCalledWith(i + 1, `${'ABC'[i]}!!!`);
   }
 
-  expect(nextContainer.mock).toHaveBeenCalledTimes(3);
-  expect(nextContainer.mock).toHaveBeenCalledWith('foo');
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(3);
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('foo');
   expect(errorListener.mock).not.toHaveBeenCalled();
 });
 
@@ -85,9 +85,9 @@ test('map frames with different keys parallelly', async () => {
   jest.advanceTimersByTime(100);
   await nextTick();
 
-  expect(nextContainer.mock).toHaveBeenCalledTimes(2);
-  expect(nextContainer.mock).toHaveBeenNthCalledWith(1, 'foo');
-  expect(nextContainer.mock).toHaveBeenNthCalledWith(2, 'bar');
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(nextContainer.$$factory.mock).toHaveBeenNthCalledWith(1, 'foo');
+  expect(nextContainer.$$factory.mock).toHaveBeenNthCalledWith(2, 'bar');
   expect(nextListener.mock).toHaveBeenCalledTimes(2);
   expect(nextListener.mock).toHaveBeenNthCalledWith(1, 'A!!!');
   expect(nextListener.mock).toHaveBeenNthCalledWith(2, 'B!!!');
@@ -95,9 +95,9 @@ test('map frames with different keys parallelly', async () => {
   jest.advanceTimersByTime(100);
   await nextTick();
 
-  expect(nextContainer.mock).toHaveBeenCalledTimes(4);
-  expect(nextContainer.mock).toHaveBeenNthCalledWith(3, 'foo');
-  expect(nextContainer.mock).toHaveBeenNthCalledWith(4, 'bar');
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(4);
+  expect(nextContainer.$$factory.mock).toHaveBeenNthCalledWith(3, 'foo');
+  expect(nextContainer.$$factory.mock).toHaveBeenNthCalledWith(4, 'bar');
   expect(nextListener.mock).toHaveBeenCalledTimes(4);
   expect(nextListener.mock).toHaveBeenNthCalledWith(3, 'C!!!');
   expect(nextListener.mock).toHaveBeenNthCalledWith(4, 'D!!!');
@@ -105,8 +105,8 @@ test('map frames with different keys parallelly', async () => {
   jest.advanceTimersByTime(100);
   await nextTick();
 
-  expect(nextContainer.mock).toHaveBeenCalledTimes(5);
-  expect(nextContainer.mock).toHaveBeenNthCalledWith(5, 'foo');
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(5);
+  expect(nextContainer.$$factory.mock).toHaveBeenNthCalledWith(5, 'foo');
   expect(nextListener.mock).toHaveBeenCalledTimes(5);
   expect(nextListener.mock).toHaveBeenNthCalledWith(5, 'E!!!');
 
@@ -148,8 +148,8 @@ it('emit error if thrown in mapper', async () => {
   expect(nextListener.mock).toHaveBeenCalledTimes(2);
   expect(nextListener.mock).toHaveBeenCalledWith('C!!!');
 
-  expect(errorContainer.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainer.mock).toHaveBeenCalledWith('foo');
+  expect(errorContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(errorContainer.$$factory.mock).toHaveBeenCalledWith('foo');
   expect(errorListener.mock).toHaveBeenCalledTimes(1);
 });
 
@@ -186,15 +186,15 @@ test('use service container as mapper', async () => {
 
   await nextTick();
   expect(nextListener.mock).toHaveBeenCalledTimes(3);
-  expect(mapper.mock).toHaveBeenCalledTimes(3);
+  expect(mapper.$$factory.mock).toHaveBeenCalledTimes(3);
 
   for (let i = 0; i < 3; i += 1) {
-    expect(mapper.mock).toHaveBeenNthCalledWith(i + 1, 'Foo');
+    expect(mapper.$$factory.mock).toHaveBeenNthCalledWith(i + 1, 'Foo');
     expect(mapFnMock).toHaveBeenNthCalledWith(i + 1, 'ABC'[i]);
     expect(nextListener.mock).toHaveBeenNthCalledWith(i + 1, `Foo${'ABC'[i]}`);
   }
 
-  expect(nextContainer.mock).toHaveBeenCalledTimes(3);
-  expect(nextContainer.mock).toHaveBeenCalledWith('Foo');
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(3);
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('Foo');
   expect(errorListener.mock).not.toHaveBeenCalled();
 });

@@ -1,38 +1,41 @@
-import { MachinatElement } from '@machinat/core/types';
+import { MachinatElement, AnyEventContext } from '@machinat/core/types';
 import { MACHINAT_SCRIPT_TYPE } from './constant';
 import parseScript from './parse';
 import compile from './compile';
 import type { ScriptLibrary } from './types';
 
-type ScriptBuildOtions<Vars, Meta> = {
+type ScriptBuildOtions<Args, Vars, Meta> = {
   name: string;
-  initiateVars: (vars: Partial<Vars>) => Vars;
+  initVars: (args: Args) => Vars;
   meta?: Meta;
 };
 
-const build = <Vars, Input, Return, Meta>(
-  options: ScriptBuildOtions<Vars, Meta>,
+const build = <
+  Params extends {},
+  Vars extends {},
+  Input = AnyEventContext,
+  Return = void,
+  Meta = null
+>(
+  options: ScriptBuildOtions<Params, Vars, Meta>,
   src: MachinatElement<unknown, unknown>
-): ScriptLibrary<Vars, Input, Return, Meta> => {
+): ScriptLibrary<Params, Vars, Input, Return, Meta> => {
   const scriptName = options.name;
-  const { meta } = options;
-  const { initiateVars } = options;
+  const { meta, initVars } = options;
 
   const segments = parseScript<Vars, Input, Return>(src);
   const { stopPointIndex, commands } = compile<Vars, Input, Return>(segments, {
     scriptName,
   });
 
-  const script: ScriptLibrary<Vars, Input, Return, Meta> = {
+  return {
     $$typeof: MACHINAT_SCRIPT_TYPE,
     name: scriptName,
-    initiateVars,
+    initVars,
     stopPointIndex,
     commands,
-    meta: meta as Meta,
+    meta: (meta || null) as Meta,
   };
-
-  return script;
 };
 
 export default build;

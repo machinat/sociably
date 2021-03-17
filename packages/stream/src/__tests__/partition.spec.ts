@@ -36,7 +36,7 @@ beforeEach(() => {
 });
 
 it('split source stream into two by the predicate result', async () => {
-  const source = new Subject();
+  const source = new Subject<string>();
 
   const [a$, b$] = partition(source, (val) => val[0] === 'a');
   a$.subscribe(eventContainerA);
@@ -49,11 +49,11 @@ it('split source stream into two by the predicate result', async () => {
   });
   await nextTick();
 
-  expect(eventContainerA.mock).toHaveBeenCalledTimes(1);
-  expect(eventContainerA.mock).toHaveBeenCalledWith('foo.channel');
+  expect(eventContainerA.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(eventContainerA.$$factory.mock).toHaveBeenCalledWith('foo.channel');
   expect(eventListenerA.mock).toHaveBeenCalledTimes(1);
   expect(eventListenerA.mock).toHaveBeenCalledWith('apple');
-  expect(eventContainerB.mock).not.toHaveBeenCalled();
+  expect(eventContainerB.$$factory.mock).not.toHaveBeenCalled();
   expect(eventListenerB.mock).not.toHaveBeenCalled();
 
   source.next({
@@ -63,8 +63,8 @@ it('split source stream into two by the predicate result', async () => {
   });
   await nextTick();
 
-  expect(eventContainerB.mock).toHaveBeenCalledTimes(1);
-  expect(eventContainerB.mock).toHaveBeenCalledWith('foo.channel');
+  expect(eventContainerB.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(eventContainerB.$$factory.mock).toHaveBeenCalledWith('foo.channel');
   expect(eventListenerB.mock).toHaveBeenCalledTimes(1);
   expect(eventListenerB.mock).toHaveBeenCalledWith('beer');
 
@@ -75,8 +75,8 @@ it('split source stream into two by the predicate result', async () => {
   });
   await nextTick();
 
-  expect(eventContainerA.mock).toHaveBeenCalledTimes(2);
-  expect(eventContainerA.mock).toHaveBeenCalledWith('bar.channel');
+  expect(eventContainerA.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(eventContainerA.$$factory.mock).toHaveBeenCalledWith('bar.channel');
   expect(eventListenerA.mock).toHaveBeenCalledTimes(2);
   expect(eventListenerA.mock).toHaveBeenCalledWith('amazon');
 
@@ -87,8 +87,8 @@ it('split source stream into two by the predicate result', async () => {
   });
   await nextTick();
 
-  expect(eventContainerB.mock).toHaveBeenCalledTimes(2);
-  expect(eventContainerB.mock).toHaveBeenCalledWith('bar.channel');
+  expect(eventContainerB.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(eventContainerB.$$factory.mock).toHaveBeenCalledWith('bar.channel');
   expect(eventListenerB.mock).toHaveBeenCalledTimes(2);
   expect(eventListenerB.mock).toHaveBeenCalledWith('bacon');
 });
@@ -99,18 +99,18 @@ it('pass error thrown in preidcator to both destinations', () => {
   const [a$, b$] = partition(source, () => {
     throw new Error('awwww');
   });
-  a$.subscribe(null, errorContainerA);
-  b$.subscribe(null, errorContainerB);
+  a$.catch(errorContainerA);
+  b$.catch(errorContainerB);
 
   source.next({ value: 'foo', key: 'foo.channel', scope: createEmptyScope() });
 
-  expect(errorContainerA.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainerA.mock).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainerA.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(errorContainerA.$$factory.mock).toHaveBeenCalledWith('foo.channel');
   expect(errorListenerA.mock).toHaveBeenCalledTimes(1);
   expect(errorListenerA.mock).toHaveBeenCalledWith(new Error('awwww'));
 
-  expect(errorContainerB.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainerB.mock).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainerB.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(errorContainerB.$$factory.mock).toHaveBeenCalledWith('foo.channel');
   expect(errorListenerB.mock).toHaveBeenCalledTimes(1);
   expect(errorListenerB.mock).toHaveBeenCalledWith(new Error('awwww'));
 });
@@ -119,8 +119,8 @@ it('transmit error from source to both destinations', () => {
   const source = new Subject();
 
   const [a$, b$] = partition(source, (val) => !!val);
-  a$.subscribe(null, errorContainerA);
-  b$.subscribe(null, errorContainerB);
+  a$.catch(errorContainerA);
+  b$.catch(errorContainerB);
 
   source.error({
     value: new Error('boo'),
@@ -128,13 +128,13 @@ it('transmit error from source to both destinations', () => {
     scope: createEmptyScope(),
   });
 
-  expect(errorContainerA.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainerA.mock).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainerA.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(errorContainerA.$$factory.mock).toHaveBeenCalledWith('foo.channel');
   expect(errorListenerA.mock).toHaveBeenCalledTimes(1);
   expect(errorListenerA.mock).toHaveBeenCalledWith(new Error('boo'));
 
-  expect(errorContainerB.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainerB.mock).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainerB.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(errorContainerB.$$factory.mock).toHaveBeenCalledWith('foo.channel');
   expect(errorListenerB.mock).toHaveBeenCalledTimes(1);
   expect(errorListenerB.mock).toHaveBeenCalledWith(new Error('boo'));
 });

@@ -142,8 +142,7 @@ describe('initModule()', () => {
 
     const receiver = moxy({ prepare: async () => {} });
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await expect(startHook!(receiver)).resolves.toBe(undefined);
+    await expect(startHook!.$$factory(receiver)).resolves.toBe(undefined);
 
     expect(receiver.prepare.mock).toHaveBeenCalledTimes(1);
     expect(receiver.prepare.mock).toHaveBeenCalledWith();

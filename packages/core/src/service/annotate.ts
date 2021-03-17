@@ -45,13 +45,15 @@ export const makeContainer = <Deps extends readonly ServiceDependency<any>[]>({
   deps = [] as any,
 }: ContainerOptions<Deps>) => <T>(
   fn: ServiceFactoryFn<T, Deps>
-): ServiceContainer<T, ResolveDependencies<Deps>> => {
+): ServiceContainer<T, ResolveDependencies<Deps>> &
+  ServiceFactoryFn<T, Deps> => {
   const requirements = deps.map(polishServiceRequirement);
 
   return Object.defineProperties(fn, {
-    $$typeof: { value: MACHINAT_SERVICE_CONTAINER },
-    $$name: { value: name || fn.name },
-    $$deps: { value: requirements },
+    $$typeof: { value: MACHINAT_SERVICE_CONTAINER, configurable: true },
+    $$name: { value: name || fn.name, configurable: true },
+    $$deps: { value: requirements, configurable: true },
+    $$factory: { value: fn, configurable: true },
   });
 };
 

@@ -24,74 +24,80 @@ const scope = moxy<ServiceScope>({
 
 const promptSetter = moxy(({ vars }) => vars);
 
-const AnotherScript = build(
-  { name: 'AnotherScript', initiateVars: (input) => input },
-  <>
-    {() => 'adipiscing '}
-    <PROMPT key="ask_4" set={promptSetter} />
-    {() => 'elit, '}
-  </>
+const AnotherScript = moxy(
+  build<{}, {}, {}>(
+    { name: 'AnotherScript', initVars: (input) => input },
+    <>
+      {() => 'adipiscing '}
+      <PROMPT key="ask_4" set={promptSetter} />
+      {() => 'elit, '}
+    </>
+  )
 );
 
-const MyScript = build(
-  { name: 'MyScript', initiateVars: (input) => input },
-  <>
-    {() => 'Lorem '}
+const MyScript = moxy(
+  build<{}, {}, {}>(
+    { name: 'MyScript', initVars: (input) => input },
+    <>
+      {() => 'Lorem '}
 
-    <LABEL key="#1" />
+      <LABEL key="#1" />
 
-    {() => 'ipsum '}
+      {() => 'ipsum '}
 
-    <IF condition={({ vars: { foo } }) => !foo}>
-      <THEN>
-        <LABEL key="#2" />
+      <IF condition={({ vars: { foo } }) => !foo}>
+        <THEN>
+          <LABEL key="#2" />
 
-        {() => 'dolor '}
+          {() => 'dolor '}
 
-        <PROMPT key="ask_1" set={promptSetter} />
+          <PROMPT key="ask_1" set={promptSetter} />
 
-        {() => 'sit '}
-      </THEN>
+          {() => 'sit '}
+        </THEN>
 
-      <ELSE>
-        <LABEL key="#3" />
-        {() => 'est '}
+        <ELSE>
+          <LABEL key="#3" />
+          {() => 'est '}
 
-        <PROMPT key="ask_2" set={promptSetter} />
+          <PROMPT key="ask_2" set={promptSetter} />
 
-        {() => 'laborum. '}
-        <RETURN value={({ vars: { foo } }) => ({ foo })} />
-      </ELSE>
-    </IF>
+          {() => 'laborum. '}
+          <RETURN value={({ vars: { foo } }) => ({ foo })} />
+        </ELSE>
+      </IF>
 
-    {() => 'amet, '}
+      {() => 'amet, '}
 
-    <PROMPT key="ask_3" set={promptSetter} />
+      <PROMPT key="ask_3" set={promptSetter} />
 
-    <LABEL key="#4" />
-    {() => 'consectetur '}
+      <LABEL key="#4" />
+      {() => 'consectetur '}
 
-    <CALL key="call_1" script={AnotherScript} />
+      <CALL key="call_1" script={AnotherScript} />
 
-    {() => 'sed '}
+      {() => 'sed '}
 
-    <VARS set={({ vars }) => ({ ...vars, i: 0 })} />
+      <VARS set={({ vars }) => ({ ...vars, i: 0 })} />
 
-    <WHILE condition={({ vars: { i } }) => i < 5}>
-      <VARS set={({ vars }) => ({ ...vars, i: vars.i + 1 })} />
+      <WHILE condition={({ vars: { i } }) => i < 5}>
+        <VARS set={({ vars }) => ({ ...vars, i: vars.i + 1 })} />
 
-      <PROMPT key="ask_5" set={promptSetter} />
-      {() => 'do '}
-    </WHILE>
+        <PROMPT key="ask_5" set={promptSetter} />
+        {() => 'do '}
+      </WHILE>
 
-    {() => 'eiusmod '}
-    <RETURN value={({ vars: { foo } }) => ({ foo, done: true })} />
-  </>
+      {() => 'eiusmod '}
+      <RETURN value={({ vars: { foo } }) => ({ foo, done: true })} />
+    </>
+  )
 );
 
 const channel = { platform: 'test', uid: '#channel' };
 
 beforeEach(() => {
+  MyScript.mock.clear();
+  AnotherScript.mock.clear();
   promptSetter.mock.reset();
 });
 
@@ -115,6 +121,9 @@ describe('#start(channel, Script)', () => {
       { script: MyScript, stopAt: 'ask_1', vars: {} },
     ]);
 
+    expect(MyScript.initVars.mock).toHaveBeenCalledTimes(1);
+    expect(MyScript.initVars.mock).toHaveBeenCalledWith({});
+
     const [messages, thunk] = runtime.output();
     expect(messages).toMatchInlineSnapshot(`
       Array [
@@ -132,7 +141,7 @@ describe('#start(channel, Script)', () => {
     await expect(
       stateController.channelState(channel).get('$$machinat:script')
     ).resolves.toMatchInlineSnapshot(
-      { timestamp: expect.any(Number) },
+      { timestamp: expect.any(Number) } as any,
       `
             Object {
               "callStack": Array [
@@ -170,6 +179,9 @@ describe('#start(channel, Script)', () => {
       { script: MyScript, stopAt: 'ask_2', vars: {} },
     ]);
 
+    expect(MyScript.initVars.mock).toHaveBeenCalledTimes(1);
+    expect(MyScript.initVars.mock).toHaveBeenCalledWith({});
+
     const [messages, thunk] = runtime.output();
     expect(messages).toMatchInlineSnapshot(`
       Array [
@@ -183,7 +195,7 @@ describe('#start(channel, Script)', () => {
     await expect(
       stateController.channelState(channel).get('$$machinat:script')
     ).resolves.toMatchInlineSnapshot(
-      { timestamp: expect.any(Number) },
+      { timestamp: expect.any(Number) } as any,
       `
             Object {
               "callStack": Array [
@@ -200,14 +212,14 @@ describe('#start(channel, Script)', () => {
     );
   });
 
-  test('init script with initial vars specified', async () => {
+  test('init script with params specified', async () => {
     const stateController = new InMemoryStateController();
     const processor = new ScriptProcessor(stateController, scope, [
       MyScript,
       AnotherScript,
     ]);
     const runtime = await processor.start(channel, MyScript, {
-      vars: { foo: 'bar' },
+      params: { foo: 'bar' },
     });
 
     expect(runtime.channel).toEqual(channel);
@@ -219,6 +231,9 @@ describe('#start(channel, Script)', () => {
     expect(runtime.callStack).toEqual([
       { script: MyScript, stopAt: 'ask_2', vars: { foo: 'bar' } },
     ]);
+
+    expect(MyScript.initVars.mock).toHaveBeenCalledTimes(1);
+    expect(MyScript.initVars.mock).toHaveBeenCalledWith({ foo: 'bar' });
 
     const [messages, thunk] = runtime.output();
     expect(messages).toMatchInlineSnapshot(`
@@ -235,7 +250,7 @@ describe('#start(channel, Script)', () => {
     await expect(
       stateController.channelState(channel).get('$$machinat:script')
     ).resolves.toMatchInlineSnapshot(
-      { timestamp: expect.any(Number) },
+      { timestamp: expect.any(Number) } as any,
       `
             Object {
               "callStack": Array [
@@ -298,6 +313,9 @@ describe('#continue(channel, input)', () => {
     ]);
     const runtime = (await processor.continue(channel, { hello: 'world' }))!;
 
+    expect(MyScript.initVars.mock).not.toHaveBeenCalled();
+    expect(AnotherScript.initVars.mock).toHaveBeenCalledTimes(1);
+
     expect(runtime.channel).toEqual(channel);
     expect(runtime.isBeginning).toBe(false);
     expect(runtime.isFinished).toBe(false);
@@ -318,7 +336,7 @@ describe('#continue(channel, input)', () => {
     await expect(
       stateController.channelState(channel).get('$$machinat:script')
     ).resolves.toMatchInlineSnapshot(
-      { timestamp: expect.any(Number) },
+      { timestamp: expect.any(Number) } as any,
       `
             Object {
               "callStack": Array [
@@ -365,6 +383,9 @@ describe('#continue(channel, input)', () => {
     ]);
     const runtime = (await processor.continue(channel, { hello: 'world' }))!;
 
+    expect(MyScript.initVars.mock).not.toHaveBeenCalled();
+    expect(AnotherScript.initVars.mock).not.toHaveBeenCalled();
+
     expect(runtime.channel).toEqual(channel);
     expect(runtime.isBeginning).toBe(false);
     expect(runtime.isFinished).toBe(false);
@@ -385,7 +406,7 @@ describe('#continue(channel, input)', () => {
     await expect(
       stateController.channelState(channel).get('$$machinat:script')
     ).resolves.toMatchInlineSnapshot(
-      { timestamp: expect.any(Number) },
+      { timestamp: expect.any(Number) } as any,
       `
             Object {
               "callStack": Array [
@@ -575,7 +596,7 @@ describe('Runtime#save(runtime)', () => {
     ]);
 
     const runtime = await processor.start(channel, MyScript, {
-      vars: { foo: 'bar' },
+      params: { foo: 'bar' },
     });
     await expect(runtime.save()).resolves.toBe(true);
 

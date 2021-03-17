@@ -193,9 +193,12 @@ Array [
             },
             Object {
               "key": "ask",
+              "setVars": [Function],
               "type": "prompt",
             },
           ],
+          "initVars": [Function],
+          "meta": null,
           "name": "AnotherScript",
           "stopPointIndex": Map {
             "foo" => 3,
@@ -204,7 +207,7 @@ Array [
         },
         "setVars": [Function],
         "type": "call",
-        "withVars": [Function],
+        "withParams": [Function],
       },
     ],
     "type": "conditions",
@@ -288,9 +291,12 @@ Array [
         },
         Object {
           "key": "ask",
+          "setVars": [Function],
           "type": "prompt",
         },
       ],
+      "initVars": [Function],
+      "meta": null,
       "name": "AnotherScript",
       "stopPointIndex": Map {
         "foo" => 3,
@@ -299,7 +305,7 @@ Array [
     },
     "setVars": undefined,
     "type": "call",
-    "withVars": [Function],
+    "withParams": [Function],
   },
   Object {
     "key": "end",

@@ -54,8 +54,8 @@ describe('#subscribe()', () => {
       value: 'foo',
       key: 'foo.channel',
     });
-    expect(nextContainer.mock).toHaveBeenCalledTimes(1);
-    expect(nextContainer.mock).toHaveBeenCalledWith('foo.channel');
+    expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+    expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('foo.channel');
     expect(nextListener.mock).toHaveBeenCalledTimes(1);
     expect(nextListener.mock).toHaveBeenCalledWith('foo');
 
@@ -64,8 +64,8 @@ describe('#subscribe()', () => {
       value: new Error('boo'),
       key: undefined,
     });
-    expect(errorContainer.mock).toHaveBeenCalledTimes(1);
-    expect(errorContainer.mock).toHaveBeenCalledWith(undefined);
+    expect(errorContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+    expect(errorContainer.$$factory.mock).toHaveBeenCalledWith(undefined);
     expect(errorListener.mock).toHaveBeenCalledTimes(1);
     expect(errorListener.mock).toHaveBeenCalledWith(new Error('boo'));
 
@@ -74,8 +74,8 @@ describe('#subscribe()', () => {
       value: 'bar',
       key: 'bar.channel',
     });
-    expect(nextContainer.mock).toHaveBeenCalledTimes(2);
-    expect(nextContainer.mock).toHaveBeenCalledWith('bar.channel');
+    expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(2);
+    expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('bar.channel');
     expect(nextListener.mock).toHaveBeenCalledTimes(2);
     expect(nextListener.mock).toHaveBeenCalledWith('bar');
   });
@@ -148,8 +148,8 @@ describe('#catch()', () => {
       value: new Error('boo'),
       key: undefined,
     });
-    expect(errorContainer.mock).toHaveBeenCalledTimes(1);
-    expect(errorContainer.mock).toHaveBeenCalledWith(undefined);
+    expect(errorContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+    expect(errorContainer.$$factory.mock).toHaveBeenCalledWith(undefined);
     expect(errorListener.mock).toHaveBeenCalledTimes(1);
     expect(errorListener.mock).toHaveBeenCalledWith(new Error('boo'));
   });

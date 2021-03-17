@@ -139,7 +139,7 @@ it('compile while segment', () => {
         body: [
           {
             type: 'content',
-            getContent: ({ vars: { target } }) => `hello ${target}`,
+            getContent: ({ vars: { target } }: any) => `hello ${target}`,
           },
           { type: 'prompt', key: 'ask', setVars: undefined },
         ],
@@ -185,7 +185,7 @@ it('compile other segments type', () => {
         type: 'call',
         key: 'order_something',
         script: OrderScript,
-        withVars: () => ({ foo: 'bar' }),
+        withParams: () => ({ foo: 'bar' }),
         setVars: () => ({ drink: 'coffee' }),
         goto: 'ordering',
       },
@@ -209,7 +209,7 @@ it('compile other segments type', () => {
     {
       type: 'call',
       script: OrderScript,
-      withVars: expect.any(Function),
+      withParams: expect.any(Function),
       setVars: expect.any(Function),
       key: 'order_something',
       goto: 'ordering',
@@ -231,7 +231,7 @@ it('compile other segments type', () => {
   expect(commands[1].getContent({})).toBe('who r u');
   expect(commands[2].setVars({})).toEqual({ name: 'Jojo' });
   expect(commands[3].getContent({})).toBe('hi Jojo, order ur meal');
-  expect(commands[4].withVars({})).toEqual({ foo: 'bar' });
+  expect(commands[4].withParams({})).toEqual({ foo: 'bar' });
   expect(commands[5].setVars({})).toEqual({ ordered: true });
   expect(commands[6].getContent({})).toBe('enjoy ur meal');
   expect(commands[7].doEffect({})).toBe(undefined);

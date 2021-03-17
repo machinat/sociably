@@ -23,16 +23,17 @@ import type {
   RETURN,
 } from './keyword';
 
-export type ScriptLibrary<Vars, Input, Return, Meta> = {
+export type ScriptLibrary<Params, Vars, Input, Return, Meta> = {
   $$typeof: typeof MACHINAT_SCRIPT_TYPE;
   name: string;
   commands: ScriptCommand<Vars, Input, Return>[];
-  initiateVars: (input: Partial<Vars>) => Vars;
+  initVars: (params: Params) => Vars;
   stopPointIndex: Map<string, number>;
   meta: Meta;
 };
 
 export type AnyScriptLibrary = ScriptLibrary<
+  unknown,
   unknown,
   unknown,
   unknown,
@@ -193,41 +194,52 @@ export type LabelProps = { key: string };
  */
 export type LabelElement = MachinatElement<LabelProps, typeof LABEL>;
 
-export type CallWithVarsFn<CallerVars, CalleeVars> = (
-  circs: ScriptCircs<CallerVars>
-) => Partial<CalleeVars> | Promise<Partial<CalleeVars>>;
+export type CallParamsFn<Vars, Params> = (
+  circs: ScriptCircs<Vars>
+) => Partial<Params> | Promise<Partial<Params>>;
 
-export type CallVarsGetter<CallerVars, CalleeVars> = MaybeContainer<
-  CallWithVarsFn<CallerVars, CalleeVars>
+export type CallParamsGetter<Vars, Params> = MaybeContainer<
+  CallParamsFn<Vars, Params>
 >;
 
-export type CallReturnSetFn<CallerVars, Return> = (
-  circs: ScriptCircs<CallerVars>,
+export type CallReturnSetFn<Vars, Return> = (
+  circs: ScriptCircs<Vars>,
   returnValue: Return
-) => CallerVars | Promise<CallerVars>;
+) => Vars | Promise<Vars>;
 
-export type CallReturnSetter<CallerVars, Return> = MaybeContainer<
-  CallReturnSetFn<CallerVars, Return>
+export type CallReturnSetter<Vars, Return> = MaybeContainer<
+  CallReturnSetFn<Vars, Return>
 >;
 
 /**
  * @category Keyword Props
  */
-export type CallProps<CallerVars, CalleeVars, Return> = {
-  script: ScriptLibrary<CalleeVars, unknown, Return, unknown>;
-  key: string;
-  withVars?: CallVarsGetter<CallerVars, CalleeVars>;
-  set?: CallReturnSetter<CallerVars, Return>;
-  goto?: string;
-};
+export type CallProps<
+  Vars,
+  Script extends AnyScriptLibrary
+> = Script extends ScriptLibrary<
+  infer Params,
+  unknown,
+  unknown,
+  infer Return,
+  unknown
+>
+  ? {
+      script: Script;
+      key: string;
+      params?: CallParamsGetter<Vars, Params>;
+      set?: CallReturnSetter<Vars, Return>;
+      goto?: string;
+    }
+  : never;
 
 /**
  * @category Keyword Element
  */
-export type CallElement<CallerVars, CalleeVars, Return> = MachinatElement<
-  CallProps<CallerVars, CalleeVars, Return>,
-  typeof CALL
->;
+export type CallElement<
+  Vars,
+  Script extends AnyScriptLibrary
+> = MachinatElement<CallProps<Vars, Script>, typeof CALL>;
 
 export type DoEffectFn<Vars> = (
   circs: ScriptCircs<Vars>
@@ -279,7 +291,7 @@ export type ScriptElement<Vars, Input, Return> =
   | PromptElement<Vars, Input>
   | VarsElement<Vars>
   | LabelElement
-  | CallElement<Vars, unknown, unknown>
+  | CallElement<Vars, AnyScriptLibrary>
   | ReturnElement<Vars, Return>;
 
 export type ScriptNode<Vars, Input, Return> =
@@ -326,12 +338,12 @@ export type PromptCommand<Vars, Input> = {
   setVars: PromptSetter<Vars, Input> | null | undefined;
 };
 
-export type CallCommand<CallerVars, CalleeVars, Return> = {
+export type CallCommand<Vars, Params, Return> = {
   type: 'call';
   key: string;
-  script: ScriptLibrary<CalleeVars, unknown, Return, unknown>;
-  withVars: CallVarsGetter<CallerVars, CalleeVars> | null | undefined;
-  setVars: CallReturnSetter<CallerVars, Return> | null | undefined;
+  script: ScriptLibrary<Params, unknown, unknown, Return, unknown>;
+  withParams: CallParamsGetter<Vars, Params> | null | undefined;
+  setVars: CallReturnSetter<Vars, Return> | null | undefined;
   goto: undefined | string;
 };
 
@@ -384,11 +396,15 @@ export type ScriptCommand<Vars, Input, Return> =
   | EffectCommand<Vars>
   | ReturnCommand<Vars, Return>;
 
-export type CallStatus<Vars, Input, Return> = {
-  script: ScriptLibrary<Vars, Input, Return, unknown>;
-  vars: Vars;
-  stopAt: undefined | string;
-};
+export type CallStatus<
+  Script extends AnyScriptLibrary
+> = Script extends ScriptLibrary<unknown, infer Vars, unknown, unknown, unknown>
+  ? {
+      script: Script;
+      vars: Vars;
+      stopAt: undefined | string;
+    }
+  : never;
 
 export type SerializedCallStatus<Vars> = {
   name: string;
@@ -401,3 +417,45 @@ export type ScriptProcessState = {
   timestamp: number;
   callStack: SerializedCallStatus<unknown>[];
 };
+
+export type ParamsOfScript<
+  Script extends AnyScriptLibrary
+> = Script extends ScriptLibrary<
+  infer Params,
+  unknown,
+  unknown,
+  unknown,
+  unknown
+>
+  ? Params
+  : never;
+
+export type VarsOfScript<
+  Script extends AnyScriptLibrary
+> = Script extends ScriptLibrary<unknown, infer Vars, unknown, unknown, unknown>
+  ? Vars
+  : never;
+
+export type InputOfScript<
+  Script extends AnyScriptLibrary
+> = Script extends ScriptLibrary<
+  unknown,
+  unknown,
+  infer Input,
+  unknown,
+  unknown
+>
+  ? Input
+  : never;
+
+export type ReturnOfScript<
+  Script extends AnyScriptLibrary
+> = Script extends ScriptLibrary<
+  unknown,
+  unknown,
+  unknown,
+  infer Return,
+  unknown
+>
+  ? Return
+  : never;

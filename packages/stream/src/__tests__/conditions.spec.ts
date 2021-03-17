@@ -7,7 +7,7 @@ import { STREAMING_KEY_I } from '../interface';
 const nextTick = () => new Promise(process.nextTick);
 
 it('split source stream and transmit by the first condtion the value match', async () => {
-  const source = new Subject();
+  const source = new Subject<string>();
 
   const eventListenerFoo = moxy();
   const eventContainerFoo = moxy(
@@ -38,8 +38,8 @@ it('split source stream and transmit by the first condtion the value match', asy
   });
   await nextTick();
 
-  expect(eventContainerFoo.mock).toHaveBeenCalledTimes(1);
-  expect(eventContainerFoo.mock).toHaveBeenCalledWith('foo.channel');
+  expect(eventContainerFoo.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(eventContainerFoo.$$factory.mock).toHaveBeenCalledWith('foo.channel');
   expect(eventListenerFoo.mock).toHaveBeenCalledTimes(1);
   expect(eventListenerFoo.mock).toHaveBeenCalledWith('foo');
 
@@ -50,8 +50,8 @@ it('split source stream and transmit by the first condtion the value match', asy
   });
   await nextTick();
 
-  expect(eventContainerBar.mock).toHaveBeenCalledTimes(1);
-  expect(eventContainerBar.mock).toHaveBeenCalledWith('bar.channel');
+  expect(eventContainerBar.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(eventContainerBar.$$factory.mock).toHaveBeenCalledWith('bar.channel');
   expect(eventListenerBar.mock).toHaveBeenCalledTimes(1);
   expect(eventListenerBar.mock).toHaveBeenCalledWith('bar');
 
@@ -62,21 +62,21 @@ it('split source stream and transmit by the first condtion the value match', asy
   });
   await nextTick();
 
-  expect(eventContainerBaz.mock).toHaveBeenCalledTimes(1);
-  expect(eventContainerBaz.mock).toHaveBeenCalledWith('baz.channel');
+  expect(eventContainerBaz.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(eventContainerBaz.$$factory.mock).toHaveBeenCalledWith('baz.channel');
   expect(eventListenerBaz.mock).toHaveBeenCalledTimes(1);
   expect(eventListenerBaz.mock).toHaveBeenCalledWith('baz');
 
   source.next({
-    value: 'nobody likes me',
     key: 'poor.boy',
+    value: 'nobody likes me',
     scope: createEmptyScope(),
   });
   await nextTick();
 
-  expect(eventContainerFoo.mock).toHaveBeenCalledTimes(1);
-  expect(eventContainerBar.mock).toHaveBeenCalledTimes(1);
-  expect(eventContainerBaz.mock).toHaveBeenCalledTimes(1);
+  expect(eventContainerFoo.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(eventContainerBar.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(eventContainerBaz.$$factory.mock).toHaveBeenCalledTimes(1);
   expect(eventListenerFoo.mock).toHaveBeenCalledTimes(1);
   expect(eventListenerBar.mock).toHaveBeenCalledTimes(1);
   expect(eventListenerBaz.mock).toHaveBeenCalledTimes(1);
@@ -105,7 +105,7 @@ beforeEach(() => {
 });
 
 it('transmit error thrown in condition predocator to the corresponded destination only', async () => {
-  const source = new Subject();
+  const source = new Subject<string>();
 
   const [a$, b$, c$] = conditions(source, [
     (val) => val[0] === 'a',
@@ -114,9 +114,9 @@ it('transmit error thrown in condition predocator to the corresponded destinatio
     },
     (val) => val[0] === 'c',
   ]);
-  a$.subscribe(null, errorContainerA);
-  b$.subscribe(null, errorContainerB);
-  c$.subscribe(null, errorContainerC);
+  a$.catch(errorContainerA);
+  b$.catch(errorContainerB);
+  c$.catch(errorContainerC);
 
   source.next({
     value: 'bar',
@@ -125,29 +125,29 @@ it('transmit error thrown in condition predocator to the corresponded destinatio
   });
   await nextTick();
 
-  expect(errorContainerA.mock).not.toHaveBeenCalled();
+  expect(errorContainerA.$$factory.mock).not.toHaveBeenCalled();
   expect(errorListenerA.mock).not.toHaveBeenCalled();
 
-  expect(errorContainerB.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainerB.mock).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainerB.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(errorContainerB.$$factory.mock).toHaveBeenCalledWith('foo.channel');
   expect(errorListenerB.mock).toHaveBeenCalledTimes(1);
   expect(errorListenerB.mock).toHaveBeenCalledWith(new Error('boo'));
 
-  expect(errorContainerC.mock).not.toHaveBeenCalled();
+  expect(errorContainerC.$$factory.mock).not.toHaveBeenCalled();
   expect(errorListenerC.mock).not.toHaveBeenCalled();
 });
 
 it('transmit error from source to all branches', () => {
-  const source = new Subject();
+  const source = new Subject<string>();
 
   const [a$, b$, c$] = conditions(source, [
     (val) => val[0] === 'a',
     (val) => val[0] === 'b',
     (val) => val[0] === 'c',
   ]);
-  a$.subscribe(null, errorContainerA);
-  b$.subscribe(null, errorContainerB);
-  c$.subscribe(null, errorContainerC);
+  a$.catch(errorContainerA);
+  b$.catch(errorContainerB);
+  c$.catch(errorContainerC);
 
   source.error({
     value: new Error('boo'),
@@ -155,18 +155,18 @@ it('transmit error from source to all branches', () => {
     scope: createEmptyScope(),
   });
 
-  expect(errorContainerA.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainerA.mock).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainerA.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(errorContainerA.$$factory.mock).toHaveBeenCalledWith('foo.channel');
   expect(errorListenerA.mock).toHaveBeenCalledTimes(1);
   expect(errorListenerA.mock).toHaveBeenCalledWith(new Error('boo'));
 
-  expect(errorContainerB.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainerB.mock).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainerB.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(errorContainerB.$$factory.mock).toHaveBeenCalledWith('foo.channel');
   expect(errorListenerB.mock).toHaveBeenCalledTimes(1);
   expect(errorListenerB.mock).toHaveBeenCalledWith(new Error('boo'));
 
-  expect(errorContainerC.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainerC.mock).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainerC.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(errorContainerC.$$factory.mock).toHaveBeenCalledWith('foo.channel');
   expect(errorListenerC.mock).toHaveBeenCalledTimes(1);
   expect(errorListenerC.mock).toHaveBeenCalledWith(new Error('boo'));
 });

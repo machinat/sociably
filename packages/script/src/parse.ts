@@ -45,6 +45,7 @@ import type {
   CallCommand,
   EffectCommand,
   ReturnCommand,
+  AnyScriptLibrary,
 } from './types';
 
 const ifChildrenReducer = (
@@ -186,11 +187,11 @@ const resolvePrompt = ({
 
 const resolveCall = ({
   script,
-  withVars,
+  params: withParams,
   set: setVars,
   key,
   goto,
-}: CallProps<unknown, unknown, unknown>): CallCommand<
+}: CallProps<unknown, AnyScriptLibrary>): CallCommand<
   unknown,
   unknown,
   unknown
@@ -208,7 +209,7 @@ const resolveCall = ({
   return {
     type: 'call',
     script,
-    withVars,
+    withParams,
     setVars,
     goto,
     key,
@@ -249,7 +250,7 @@ const resolveElement = (
     case LABEL:
       return resolveLabel(node.props as LabelProps);
     case CALL:
-      return resolveCall(node.props as CallProps<unknown, unknown, unknown>);
+      return resolveCall(node.props as CallProps<unknown, AnyScriptLibrary>);
     case EFFECT:
       return resolveEffect(node.props as EffectProps<unknown>);
     case RETURN:

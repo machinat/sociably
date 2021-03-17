@@ -7,8 +7,8 @@ type PredicateFn<T> = (value: T) => boolean | Promise<boolean>;
 const conditions = <T>(
   source: Subject<T>,
   predicators: MaybeContainer<PredicateFn<T>>[]
-) => {
-  const destinations = predicators.map(() => new Subject());
+): Subject<T>[] => {
+  const destinations = predicators.map(() => new Subject<T>());
 
   const injectablePredicators = predicators.map((predicateFnOrContainer) =>
     injectMaybe(predicateFnOrContainer)

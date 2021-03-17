@@ -5,6 +5,7 @@ import type { MachinatNode, MachinatChannel } from '@machinat/core/types';
 import type { ServiceScope } from '@machinat/core/service/types';
 import type {
   ScriptLibrary,
+  AnyScriptLibrary,
   CallStatus,
   ContentCommand,
   VarsCommand,
@@ -21,11 +22,13 @@ import type {
   PromptSetFn,
   CallReturnSetFn,
   DoEffectFn,
-  ReturnValueFn,
+  VarsOfScript,
+  InputOfScript,
+  ReturnOfScript,
 } from './types';
 
 const getCursorIndexAssertedly = (
-  script: ScriptLibrary<unknown, unknown, unknown, unknown>,
+  script: ScriptLibrary<unknown, unknown, unknown, unknown, unknown>,
   key: string
 ): number => {
   const index = script.stopPointIndex.get(key);
@@ -41,16 +44,16 @@ type FinishedExecuteResult<Return> = {
   contents: MachinatNode[];
 };
 
-type UnfinishedExecuteResult<Input, Return> = {
+type UnfinishedExecuteResult<Script extends AnyScriptLibrary> = {
   finished: false;
   returnValue: undefined;
-  stack: CallStatus<unknown, Input, Return>[];
+  stack: CallStatus<Script>[];
   contents: MachinatNode[];
 };
 
-type ExecuteResult<Input, Return> =
-  | FinishedExecuteResult<Return>
-  | UnfinishedExecuteResult<Input, Return>;
+type ExecuteResult<Script extends AnyScriptLibrary> =
+  | FinishedExecuteResult<ReturnOfScript<Script>>
+  | UnfinishedExecuteResult<Script>;
 
 type ExecuteContext<Vars> = {
   channel: MachinatChannel;
@@ -60,7 +63,7 @@ type ExecuteContext<Vars> = {
   cursor: number;
   contents: MachinatNode[];
   vars: Vars;
-  descendantCallStack: null | CallStatus<Vars, any, any>[];
+  descendantCallStack: null | CallStatus<AnyScriptLibrary>[];
 };
 
 const executeContentCommand = async <Vars>(
@@ -124,16 +127,22 @@ const executePromptCommand = async <Vars>(
 };
 
 const executeCallCommand = async <Vars>(
-  { script, key, withVars, setVars, goto }: CallCommand<Vars, unknown, unknown>,
+  {
+    script,
+    key,
+    withParams,
+    setVars,
+    goto,
+  }: CallCommand<Vars, unknown, unknown>,
   context: ExecuteContext<Vars>
 ): Promise<ExecuteContext<Vars>> => {
   const { vars, contents, scope, channel, cursor } = context;
   const index = goto ? getCursorIndexAssertedly(script, goto) : 0;
 
-  const calleeVars = withVars
+  const params = withParams
     ? await maybeInjectContainer(
         scope,
-        withVars
+        withParams
       )({ platform: channel.platform, channel, vars })
     : {};
 
@@ -143,7 +152,7 @@ const executeCallCommand = async <Vars>(
     channel,
     script,
     index,
-    script.initiateVars(calleeVars)
+    script.initVars(params)
   );
   const concatedContent = [...contents, ...result.contents];
 
@@ -152,7 +161,7 @@ const executeCallCommand = async <Vars>(
       ...context,
       contents: concatedContent,
       stopAt: key,
-      descendantCallStack: result.stack as CallStatus<Vars, unknown, unknown>[],
+      descendantCallStack: result.stack,
     };
   }
 
@@ -225,16 +234,16 @@ const executeCommand = async <Vars, Input, Return>(
   }
 };
 
-const executeScript = async <Vars, Input, Return>(
+const executeScript = async <Script extends AnyScriptLibrary>(
   scope: ServiceScope,
   channel: MachinatChannel,
-  script: ScriptLibrary<Vars, Input, Return, unknown>,
+  script: Script,
   begin: number,
-  beginVars: Vars
-): Promise<ExecuteResult<Input, Return>> => {
+  beginVars: VarsOfScript<Script>
+): Promise<ExecuteResult<Script>> => {
   const { commands } = script;
 
-  let context: ExecuteContext<Vars> = {
+  let context: ExecuteContext<VarsOfScript<Script>> = {
     finished: false,
     stopAt: undefined,
     cursor: begin,
@@ -250,25 +259,32 @@ const executeScript = async <Vars, Input, Return>(
 
     if (command.type === 'return') {
       const { getValue } = command;
-      let returnValue: undefined | Return;
+      let returnValue: undefined | ReturnOfScript<Script>;
 
       if (getValue) {
         // eslint-disable-next-line no-await-in-loop
-        returnValue = await maybeInjectContainer<ReturnValueFn<Vars, Return>>(
+        returnValue = (await maybeInjectContainer(
           scope,
           getValue
-        )({ platform: channel.platform, vars: context.vars, channel });
+        )({
+          platform: channel.platform,
+          vars: context.vars,
+          channel,
+        })) as ReturnOfScript<Script>;
       }
 
       return {
         finished: true,
-        returnValue: returnValue as Return,
+        returnValue: returnValue as ReturnOfScript<Script>,
         contents: context.contents,
         stack: null,
       };
     }
 
-    context = await executeCommand(command, context); // eslint-disable-line no-await-in-loop
+    // eslint-disable-next-line no-await-in-loop
+    context = (await executeCommand(command, context)) as ExecuteContext<
+      VarsOfScript<Script>
+    >;
 
     if (context.stopAt) {
       const { stopAt, contents, vars, descendantCallStack } = context;
@@ -278,9 +294,9 @@ const executeScript = async <Vars, Input, Return>(
         finished: false,
         returnValue: undefined,
         contents,
-        stack: descendantCallStack
+        stack: (descendantCallStack
           ? [stackStatus, ...descendantCallStack]
-          : [stackStatus],
+          : [stackStatus]) as CallStatus<Script>[],
       };
     }
   }
@@ -293,16 +309,16 @@ const executeScript = async <Vars, Input, Return>(
   };
 };
 
-const execute = async <Vars, Input, Return>(
+const execute = async <Script extends AnyScriptLibrary>(
   scope: ServiceScope,
   channel: MachinatChannel,
-  beginningStack: CallStatus<Vars, Input, Return>[],
+  beginningStack: CallStatus<Script>[],
   isBeginning: boolean,
-  input?: Input
-): Promise<ExecuteResult<Input, Return>> => {
+  input?: InputOfScript<Script>
+): Promise<ExecuteResult<Script>> => {
   const callingDepth = beginningStack.length;
   const contents: MachinatNode[] = [];
-  let currentReturnValue: undefined | Return;
+  let currentReturnValue: undefined | ReturnOfScript<Script>;
 
   for (let d = callingDepth - 1; d >= 0; d -= 1) {
     const { script, vars: beginningVars, stopAt } = beginningStack[d];
@@ -311,10 +327,8 @@ const execute = async <Vars, Input, Return>(
     let vars = beginningVars;
 
     if (d === callingDepth - 1) {
-      if (isBeginning) {
-        vars = script.initiateVars(vars);
-      } else {
-        // handle begin from prompt point
+      if (!isBeginning) {
+        // begin from stop point
         const awaitingPrompt = script.commands[index];
 
         invariant(
@@ -334,7 +348,7 @@ const execute = async <Vars, Input, Return>(
         };
 
         vars = setVars // eslint-disable-next-line no-await-in-loop
-          ? await maybeInjectContainer<PromptSetFn<Vars, unknown>>(
+          ? await maybeInjectContainer<PromptSetFn<unknown, unknown>>(
               scope,
               setVars
             )(circs, input)
@@ -358,12 +372,11 @@ const execute = async <Vars, Input, Return>(
       const { setVars } = awaitingCall;
       if (setVars) {
         // eslint-disable-next-line no-await-in-loop
-        vars = await maybeInjectContainer<CallReturnSetFn<Vars, Return>>(
-          scope,
-          setVars
-        )(
+        vars = await maybeInjectContainer<
+          CallReturnSetFn<unknown, ReturnOfScript<Script>>
+        >(scope, setVars)(
           { platform: channel.platform, vars, channel },
-          currentReturnValue as Return
+          currentReturnValue as ReturnOfScript<Script>
         );
       }
 
@@ -371,7 +384,13 @@ const execute = async <Vars, Input, Return>(
     }
 
     // eslint-disable-next-line no-await-in-loop
-    const result = await executeScript(scope, channel, script, index, vars);
+    const result = await executeScript<Script>(
+      scope,
+      channel,
+      script as Script,
+      index,
+      vars as VarsOfScript<Script>
+    );
     contents.push(...result.contents);
 
     if (!result.finished) {
@@ -388,7 +407,7 @@ const execute = async <Vars, Input, Return>(
 
   return {
     finished: true,
-    returnValue: currentReturnValue as Return,
+    returnValue: currentReturnValue as ReturnOfScript<Script>,
     stack: null,
     contents,
   };

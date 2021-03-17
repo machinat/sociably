@@ -9,53 +9,54 @@ import type {
   CallProps,
   EffectProps,
   ReturnProps,
+  AnyScriptLibrary,
 } from './types';
 
 /**
  * @category Keyword
  */
-export const IF = <Vars, Input = null, Return = void>(
+export const IF = <Vars = any, Input = any, Return = any>(
   props: IfProps<Vars, Input, Return>
 ): null => null;
 /**
  * @category Keyword
  */
-export const THEN = <Vars, Input = null, Return = void>(
+export const THEN = <Vars = any, Input = any, Return = any>(
   props: BlockProps<Vars, Input, Return>
 ): null => null;
 
 /**
  * @category Keyword
  */
-export const ELSE_IF = <Vars, Input = null, Return = void>(
+export const ELSE_IF = <Vars = any, Input = any, Return = any>(
   props: ElseIfProps<Vars, Input, Return>
 ): null => null;
 
 /**
  * @category Keyword
  */
-export const ELSE = <Vars, Input = null, Return = void>(
+export const ELSE = <Vars = any, Input = any, Return = any>(
   props: BlockProps<Vars, Input, Return>
 ): null => null;
 
 /**
  * @category Keyword
  */
-export const WHILE = <Vars, Input = null, Return = void>(
+export const WHILE = <Vars = any, Input = any, Return = any>(
   props: WhileProps<Vars, Input, Return>
 ): null => null;
 
 /**
  * @category Keyword
  */
-export const PROMPT = <Vars, Input = null>(
+export const PROMPT = <Vars = any, Input = any>(
   props: PromptProps<Vars, Input>
 ): null => null;
 
 /**
  * @category Keyword
  */
-export const VARS = <Vars>(props: VarsProps<Vars>): null => null;
+export const VARS = <Vars = any>(props: VarsProps<Vars>): null => null;
 
 /**
  * @category Keyword
@@ -65,26 +66,18 @@ export const LABEL = (props: LabelProps): null => null;
 /**
  * @category Keyword
  */
-export const CALL = <CallerVars, CalleeVars, Return = void>(
-  props: CallProps<CallerVars, CalleeVars, Return>
+export const CALL = <Vars = any, Script extends AnyScriptLibrary = any>(
+  props: CallProps<Vars, Script>
 ): null => null;
 
 /**
  * @category Keyword
  */
-export const EFFECT = <Vars>(props: EffectProps<Vars>): null => null;
+export const EFFECT = <Vars = any>(props: EffectProps<Vars>): null => null;
 
 /**
  * @category Keyword
  */
-export const RETURN = <Vars, Return = void>(
+export const RETURN = <Vars = any, Return = any>(
   props: ReturnProps<Vars, Return>
 ): null => null;
-
-// TODO: more keywords
-// const SWITCH = Symbol('switch.keyword.script.machinat');
-// const CASE = Symbol('case.keyword.script.machinat');
-// const DEFAULT = Symbol('defaut.keyword.script.machinat');
-//
-// const BREAK = Symbol('break.keyword.script.machinat');
-// const CONTINUE = Symbol('continue.keyword.script.machinat');

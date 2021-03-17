@@ -22,10 +22,10 @@ const TestService = moxy(
   })(class TestService {})
 );
 
-const TestModule = moxy({
+const TestModule = {
   provisions: [TestService],
-  startHook: makeContainer({ deps: [TestService] })(async () => {}),
-});
+  startHook: moxy(makeContainer({ deps: [TestService] })(async () => {})),
+};
 
 const AnotherService = moxy(
   makeClassProvider({
@@ -34,12 +34,14 @@ const AnotherService = moxy(
   })(class AnotherService {})
 );
 
-const AnotherModule = moxy({
+const AnotherModule = {
   provisions: [AnotherService],
-  startHook: makeContainer({
-    deps: [TestService, AnotherService],
-  })(async () => {}),
-});
+  startHook: moxy(
+    makeContainer({
+      deps: [TestService, AnotherService],
+    })(async () => {})
+  ),
+};
 
 const FooService = moxy(
   makeClassProvider({
@@ -88,14 +90,16 @@ const anotherMountingFactory = makeFactoryProvider({
   lifetime: 'singleton',
 })(consumeAnotherMounter);
 
-const BarPlatform = moxy({
+const BarPlatform = {
   name: 'bar',
   mounterInterface: ANOTHER_PLATFORM_MOUNTER,
   provisions: [BarService, anotherMountingFactory],
-  startHook: makeContainer({
-    deps: [TestService, AnotherService, BarService],
-  })(async () => {}),
-});
+  startHook: moxy(
+    makeContainer({
+      deps: [TestService, AnotherService, BarService],
+    })(async () => {})
+  ),
+};
 
 const MyService = moxy(
   makeClassProvider({
@@ -113,13 +117,13 @@ const YourService = moxy(
 
 beforeEach(() => {
   TestService.mock.reset();
-  TestModule.mock.reset();
+  TestModule.startHook.mock.reset();
   AnotherService.mock.reset();
-  AnotherModule.mock.reset();
+  AnotherModule.startHook.mock.reset();
   FooService.mock.reset();
   FooPlatform.mock.reset();
   BarService.mock.reset();
-  BarPlatform.mock.reset();
+  BarPlatform.startHook.mock.reset();
   MyService.mock.reset();
   YourService.mock.reset();
 
@@ -139,8 +143,8 @@ it('start modules', async () => {
   // trasient service created when boostrap and each time module startHook injected
   expect(TestService.$$factory.mock).toHaveBeenCalledTimes(5);
   expect(TestService.$$factory.mock).toHaveBeenCalledWith(/* empty */);
-  expect(TestModule.startHook.mock).toHaveBeenCalledTimes(1);
-  expect(TestModule.startHook.mock).toHaveBeenCalledWith(
+  expect(TestModule.startHook.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(TestModule.startHook.$$factory.mock).toHaveBeenCalledWith(
     expect.any(TestService)
   );
 
@@ -148,8 +152,8 @@ it('start modules', async () => {
   expect(AnotherService.$$factory.mock).toHaveBeenCalledWith(
     expect.any(TestService)
   );
-  expect(AnotherModule.startHook.mock).toHaveBeenCalledTimes(1);
-  expect(AnotherModule.startHook.mock).toHaveBeenCalledWith(
+  expect(AnotherModule.startHook.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(AnotherModule.startHook.$$factory.mock).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService)
   );
@@ -159,8 +163,8 @@ it('start modules', async () => {
     expect.any(TestService),
     expect.any(AnotherService)
   );
-  expect(FooPlatform.startHook.mock).toHaveBeenCalledTimes(1);
-  expect(FooPlatform.startHook.mock).toHaveBeenCalledWith(
+  expect(FooPlatform.startHook.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(FooPlatform.startHook.$$factory.mock).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
     expect.any(FooService)
@@ -171,8 +175,8 @@ it('start modules', async () => {
     expect.any(TestService),
     expect.any(AnotherService)
   );
-  expect(BarPlatform.startHook.mock).toHaveBeenCalledTimes(1);
-  expect(BarPlatform.startHook.mock).toHaveBeenCalledWith(
+  expect(BarPlatform.startHook.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(BarPlatform.startHook.$$factory.mock).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
     expect.any(BarService)
@@ -492,8 +496,8 @@ describe('poping event from platform module', () => {
 
     await popEventWrapper(finalHandler)(eventContext);
 
-    expect(eventListenerContainer.mock).toHaveBeenCalledTimes(1);
-    expect(eventListenerContainer.mock).toHaveBeenCalledWith(
+    expect(eventListenerContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+    expect(eventListenerContainer.$$factory.mock).toHaveBeenCalledWith(
       expect.any(FooService),
       expect.any(BarService),
       expect.any(TestService),
@@ -543,8 +547,8 @@ describe('poping event from platform module', () => {
 
     expect(eventListener.mock).toHaveBeenCalledTimes(1);
 
-    expect(middlewareContainer.mock).toHaveBeenCalledTimes(1);
-    expect(middlewareContainer.mock).toHaveBeenCalledWith(
+    expect(middlewareContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+    expect(middlewareContainer.$$factory.mock).toHaveBeenCalledWith(
       expect.any(FooService),
       expect.any(BarService),
       expect.any(TestService),
@@ -619,8 +623,8 @@ describe('poping error from platform module', () => {
     const { popError } = consumeTestMounter.mock.calls[0].args[0];
     popError(new Error('hello container'));
 
-    expect(errorListnerContainer.mock).toHaveBeenCalledTimes(1);
-    expect(errorListnerContainer.mock).toHaveBeenCalledWith(
+    expect(errorListnerContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+    expect(errorListnerContainer.$$factory.mock).toHaveBeenCalledWith(
       expect.any(FooService),
       expect.any(BarService),
       expect.any(TestService),
@@ -840,8 +844,8 @@ describe('dispatch through middlewares', () => {
       dispatchResponse
     );
 
-    expect(middlewareContainer.mock).toHaveBeenCalledTimes(1);
-    expect(middlewareContainer.mock).toHaveBeenCalledWith(
+    expect(middlewareContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+    expect(middlewareContainer.$$factory.mock).toHaveBeenCalledWith(
       expect.any(FooService),
       expect.any(BarService),
       expect.any(TestService),

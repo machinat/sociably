@@ -67,8 +67,8 @@ test('execute each asyncronized filterFn one by one', async () => {
   expect(nextListener.mock).toHaveBeenNthCalledWith(1, 1);
   expect(nextListener.mock).toHaveBeenNthCalledWith(2, 3);
 
-  expect(nextContainer.mock).toHaveBeenCalledTimes(2);
-  expect(nextContainer.mock).toHaveBeenCalledWith('foo');
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('foo');
   expect(errorListener.mock).not.toHaveBeenCalled();
 });
 
@@ -96,9 +96,9 @@ test('filter frames with different keys parallelly', async () => {
   jest.advanceTimersByTime(100);
   await nextTick();
 
-  expect(nextContainer.mock).toHaveBeenCalledTimes(2);
-  expect(nextContainer.mock).toHaveBeenNthCalledWith(1, 'foo');
-  expect(nextContainer.mock).toHaveBeenNthCalledWith(2, 'bar');
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(nextContainer.$$factory.mock).toHaveBeenNthCalledWith(1, 'foo');
+  expect(nextContainer.$$factory.mock).toHaveBeenNthCalledWith(2, 'bar');
   expect(nextListener.mock).toHaveBeenCalledTimes(2);
   expect(nextListener.mock).toHaveBeenNthCalledWith(1, 1);
   expect(nextListener.mock).toHaveBeenNthCalledWith(2, 3);
@@ -117,8 +117,8 @@ test('filter frames with different keys parallelly', async () => {
 
   expect(filterFn.mock).toHaveBeenCalledWith(5);
 
-  expect(nextContainer.mock).toHaveBeenCalledTimes(3);
-  expect(nextContainer.mock).toHaveBeenNthCalledWith(3, 'foo');
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(3);
+  expect(nextContainer.$$factory.mock).toHaveBeenNthCalledWith(3, 'foo');
   expect(nextListener.mock).toHaveBeenCalledTimes(3);
   expect(nextListener.mock).toHaveBeenNthCalledWith(3, 5);
 
@@ -160,8 +160,8 @@ it('emit error if thrown in filterFn', async () => {
   expect(nextListener.mock).toHaveBeenCalledWith(3);
 
   expect(filterFn.mock).toHaveBeenCalledTimes(3);
-  expect(errorContainer.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainer.mock).toHaveBeenCalledWith('foo');
+  expect(errorContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(errorContainer.$$factory.mock).toHaveBeenCalledWith('foo');
   expect(errorListener.mock).toHaveBeenCalledTimes(1);
 });
 
@@ -199,13 +199,13 @@ test('use service container as filterer', async () => {
   jest.advanceTimersByTime(100);
 
   await nextTick();
-  expect(nextContainer.mock).toHaveBeenCalledTimes(2);
-  expect(nextContainer.mock).toHaveBeenCalledWith('foo');
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('foo');
   expect(nextListener.mock).toHaveBeenCalledTimes(2);
   expect(nextListener.mock).toHaveBeenCalledWith(3);
 
-  expect(filterContainer.mock).toHaveBeenCalledTimes(3);
-  expect(filterContainer.mock).toHaveBeenCalledWith('foo');
+  expect(filterContainer.$$factory.mock).toHaveBeenCalledTimes(3);
+  expect(filterContainer.$$factory.mock).toHaveBeenCalledWith('foo');
 
   expect(filterFn.mock).toHaveBeenNthCalledWith(1, 1);
   expect(filterFn.mock).toHaveBeenNthCalledWith(2, 2);

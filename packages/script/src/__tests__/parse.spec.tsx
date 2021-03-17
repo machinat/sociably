@@ -14,22 +14,25 @@ import {
   RETURN,
 } from '../keyword';
 import parse from '../parse';
+import type { AnyScriptLibrary } from '../types';
 
-const AnotherScript = {
+const AnotherScript: AnyScriptLibrary = {
   $$typeof: MACHINAT_SCRIPT_TYPE,
   name: 'AnotherScript',
+  initVars: () => ({}),
   commands: [
     { type: 'content', getContent: () => '...' },
-    { type: 'prompt', key: 'ask' },
+    { type: 'prompt', key: 'ask', setVars: () => ({}) },
   ],
   stopPointIndex: new Map([
     ['foo', 3],
     ['bar', 8],
   ]),
+  meta: null,
 };
 
 it('parse content fn', () => {
-  const segments = parse(
+  const segments: any = parse(
     <>
       {() => 'foo'}
       {() => 'bar'}
@@ -48,7 +51,7 @@ it('parse content fn', () => {
 
 describe('parse <IF/>', () => {
   it('parse ok', () => {
-    const segments = parse(
+    const segments: any = parse(
       <IF condition={() => true}>
         <THEN>{() => 'foo'}</THEN>
       </IF>
@@ -70,7 +73,7 @@ describe('parse <IF/>', () => {
   });
 
   it('parse with else', () => {
-    const segments = parse(
+    const segments: any = parse(
       <IF condition={() => true}>
         <THEN>{() => 'foo'}</THEN>
         <ELSE>{() => 'bar'}</ELSE>
@@ -92,7 +95,7 @@ describe('parse <IF/>', () => {
   });
 
   it('parse with else if conditions', () => {
-    const segments = parse(
+    const segments: any = parse(
       <IF condition={() => true}>
         <THEN>{() => 'foo'}</THEN>
         <ELSE_IF condition={() => false}>{() => 'bar'}</ELSE_IF>
@@ -152,27 +155,29 @@ describe('parse <IF/>', () => {
   });
 
   it('parse ok if no children blocks', () => {
-    expect(parse(<IF condition={() => true}></IF>)).toEqual([
+    expect(parse(<IF condition={() => true}>{null as never}</IF>)).toEqual([
       { type: 'conditions', branches: [], fallbackBody: null },
     ]);
   });
 
   it('throw if condition is not a function', () => {
-    expect(() => parse(<IF></IF>)).toThrowErrorMatchingInlineSnapshot(
+    expect(() =>
+      parse(<IF condition={null as never}>{[]}</IF>)
+    ).toThrowErrorMatchingInlineSnapshot(
       `"prop \\"condition\\" of <IF/> should be a function"`
     );
   });
 
   it('throw if non THEN, ELSE_IF, ELSE block node contained', () => {
     expect(() =>
-      parse(<IF condition={() => true}>hello</IF>)
+      parse(<IF condition={() => true}>{'hello' as never}</IF>)
     ).toThrowErrorMatchingInlineSnapshot(
       `"only THEN, ELSE_IF, ELSE elements are afccepted within children of <IF/>, got: \\"hello\\""`
     );
     expect(() =>
       parse(
         <IF condition={() => true}>
-          <PROMPT />
+          <PROMPT key="should-not-be-here" />
         </IF>
       )
     ).toThrowErrorMatchingInlineSnapshot(
@@ -247,7 +252,7 @@ describe('parse <IF/>', () => {
       parse(
         <IF condition={() => true}>
           <THEN>{() => 'foo'}</THEN>
-          <ELSE_IF>{() => 'bar'}</ELSE_IF>
+          <ELSE_IF condition={null as never}>{() => 'bar'}</ELSE_IF>
         </IF>
       )
     ).toThrowErrorMatchingInlineSnapshot(
@@ -258,7 +263,9 @@ describe('parse <IF/>', () => {
 
 describe('parse <WHILE/>', () => {
   it('parse ok', () => {
-    const segments = parse(<WHILE condition={() => true}>{() => 'Gee'}</WHILE>);
+    const segments: any = parse(
+      <WHILE condition={() => true}>{() => 'Gee'}</WHILE>
+    );
     expect(segments).toEqual([
       {
         type: 'while',
@@ -271,7 +278,7 @@ describe('parse <WHILE/>', () => {
   });
 
   it('parse nested <WHILE/>', () => {
-    const segments = parse(
+    const segments: any = parse(
       <WHILE condition={() => true}>
         <WHILE condition={() => false}>{() => 'Goo'}</WHILE>
       </WHILE>
@@ -296,7 +303,7 @@ describe('parse <WHILE/>', () => {
 
   it('throw if condition prop is not a function', () => {
     expect(() =>
-      parse(<WHILE condition="true">{() => 'foo'}</WHILE>)
+      parse(<WHILE condition={'true' as never}>{() => 'foo'}</WHILE>)
     ).toThrowErrorMatchingInlineSnapshot(
       `"prop \\"condition\\" of <WHILE/> should be a function"`
     );
@@ -323,10 +330,14 @@ describe('parse <VARS/>', () => {
   });
 
   it('throw if set is empty', () => {
-    expect(() => parse(<VARS />)).toThrowErrorMatchingInlineSnapshot(
+    expect(() =>
+      parse(<VARS set={undefined as never} />)
+    ).toThrowErrorMatchingInlineSnapshot(
       `"prop \\"set\\" of <VARS/> should be a function"`
     );
-    expect(() => parse(<VARS set={null} />)).toThrowErrorMatchingInlineSnapshot(
+    expect(() =>
+      parse(<VARS set={null as never} />)
+    ).toThrowErrorMatchingInlineSnapshot(
       `"prop \\"set\\" of <VARS/> should be a function"`
     );
   });
@@ -363,7 +374,7 @@ describe('parse <PROMPT/>', () => {
 
   it('throw if key is empty', () => {
     expect(() =>
-      parse(<PROMPT set={() => ({ answer: 'text' })} />)
+      parse(<PROMPT key={undefined as never} />)
     ).toThrowErrorMatchingInlineSnapshot(
       `"prop \\"key\\" of <PROMPT/> should not be empty"`
     );
@@ -405,14 +416,16 @@ describe('parse <LABEL/>', () => {
   });
 
   it('throw if key is empyt', () => {
-    expect(() => parse(<LABEL />)).toThrowErrorMatchingInlineSnapshot(
+    expect(() =>
+      parse(<LABEL key={undefined as never} />)
+    ).toThrowErrorMatchingInlineSnapshot(
       `"prop \\"key\\" of <LABEL/> should not be empty"`
     );
     expect(() => parse(<LABEL key="" />)).toThrowErrorMatchingInlineSnapshot(
       `"prop \\"key\\" of <LABEL/> should not be empty"`
     );
     expect(() =>
-      parse(<LABEL key={null} />)
+      parse(<LABEL key={null as never} />)
     ).toThrowErrorMatchingInlineSnapshot(
       `"prop \\"key\\" of <LABEL/> should not be empty"`
     );
@@ -444,7 +457,7 @@ describe('parse <CALL/>', () => {
           {() => 'hello'}
           <CALL
             script={AnotherScript}
-            withVars={getCallVars}
+            params={getCallVars}
             set={setFromReturn}
             goto="foo"
             key="waiting"
@@ -456,7 +469,7 @@ describe('parse <CALL/>', () => {
       {
         type: 'call',
         script: AnotherScript,
-        withVars: getCallVars,
+        withParams: getCallVars,
         setVars: setFromReturn,
         goto: 'foo',
         key: 'waiting',
@@ -466,7 +479,12 @@ describe('parse <CALL/>', () => {
 
   it('throw if non-script received', () => {
     expect(() =>
-      parse(<CALL key="call_another_script" script={{ something: 'wrong' }} />)
+      parse(
+        <CALL
+          script={{ something: 'wrong' } as any}
+          key="call_another_script"
+        />
+      )
     ).toThrowErrorMatchingInlineSnapshot(
       `"invalid \\"script\\" prop received on <CALL/>"`
     );
@@ -474,7 +492,7 @@ describe('parse <CALL/>', () => {
 
   it('throw if key is empty', () => {
     expect(() =>
-      parse(<CALL script={AnotherScript} />)
+      parse(<CALL key={undefined as never} script={AnotherScript} />)
     ).toThrowErrorMatchingInlineSnapshot(
       `"prop \\"key\\" of <CALL/> should not be empty"`
     );
@@ -517,7 +535,7 @@ test('parse <RETURN/>', () => {
 });
 
 test('parse <EFFECT />', () => {
-  const doEffect = ({ vars }) => console.log(vars);
+  const doEffect = ({ vars }) => () => console.log(vars);
   expect(parse(<EFFECT do={doEffect} />)).toEqual([
     { type: 'effect', doEffect },
   ]);
@@ -562,7 +580,7 @@ test('parse whole script', () => {
             <CALL
               key="call_1"
               script={AnotherScript}
-              withVars={() => ({ x: 'xxxx' })}
+              params={() => ({ x: 'xxxx' })}
               set={() => ({ from: 'another script' })}
               goto="bar"
             />
@@ -599,14 +617,14 @@ test('parse whole script', () => {
         <CALL
           key="call_2"
           script={AnotherScript}
-          withVars={() => ({ foo: 'baz' })}
+          params={() => ({ foo: 'baz' })}
           goto="foo"
         />
 
         <LABEL key="end" />
         <PROMPT key="ask_4" set={() => ({ end: true })} />
 
-        <EFFECT do={() => console.log('done')} />
+        <EFFECT do={() => () => console.log('done')} />
         {() => 'ad minim veniam'}
       </>
     )
@@ -614,7 +632,7 @@ test('parse whole script', () => {
 });
 
 it('throw if invalid syntax node received', () => {
-  expect(() => parse('hello')).toThrowErrorMatchingInlineSnapshot(
+  expect(() => parse('hello' as never)).toThrowErrorMatchingInlineSnapshot(
     `"invalid script node: \\"hello\\""`
   );
 
@@ -622,12 +640,12 @@ it('throw if invalid syntax node received', () => {
     `"unknown keyword: <world />"`
   );
 
-  const Foo = () => {};
+  const Foo = () => <></>;
   expect(() => parse(<Foo />)).toThrowErrorMatchingInlineSnapshot(
     `"unknown keyword: <Foo />"`
   );
 
-  expect(() => parse(<THEN />)).toThrowErrorMatchingInlineSnapshot(
+  expect(() => parse(<THEN>{[]}</THEN>)).toThrowErrorMatchingInlineSnapshot(
     `"unknown keyword: <THEN />"`
   );
 });

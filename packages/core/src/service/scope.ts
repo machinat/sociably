@@ -68,6 +68,6 @@ export default class ServiceScope {
     provisions.set(ServiceScope, this);
 
     const args = this.useServices(container.$$deps, provisions);
-    return container(...args);
+    return container.$$factory(...args);
   }
 }

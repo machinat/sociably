@@ -18,7 +18,7 @@ it('merge events form two subjects', () => {
   sourceA.next({ scope: createEmptyScope(), value: 'FOO', key: 'foo.channel' });
   expect(eventListener.mock).toHaveBeenCalledTimes(1);
   expect(eventListener.mock).toHaveBeenNthCalledWith(1, 'FOO');
-  expect(eventContainer.mock).toHaveBeenCalledWith('foo.channel');
+  expect(eventContainer.$$factory.mock).toHaveBeenCalledWith('foo.channel');
 
   sourceB.next({ scope: createEmptyScope(), value: 'FOO', key: 'foo.channel' });
   expect(eventListener.mock).toHaveBeenCalledTimes(2);
@@ -27,12 +27,12 @@ it('merge events form two subjects', () => {
   sourceB.next({ scope: createEmptyScope(), value: 'BAR', key: 'bar.channel' });
   expect(eventListener.mock).toHaveBeenCalledTimes(3);
   expect(eventListener.mock).toHaveBeenNthCalledWith(3, 'BAR');
-  expect(eventContainer.mock).toHaveBeenCalledWith('bar.channel');
+  expect(eventContainer.$$factory.mock).toHaveBeenCalledWith('bar.channel');
 
   sourceA.next({ scope: createEmptyScope(), value: 'BAZ', key: 'baz.channel' });
   expect(eventListener.mock).toHaveBeenCalledTimes(4);
   expect(eventListener.mock).toHaveBeenNthCalledWith(4, 'BAZ');
-  expect(eventContainer.mock).toHaveBeenCalledWith('baz.channel');
+  expect(eventContainer.$$factory.mock).toHaveBeenCalledWith('baz.channel');
 });
 
 it('merge errors form two subjects', () => {
@@ -44,7 +44,7 @@ it('merge errors form two subjects', () => {
   );
 
   const destination = merge(sourceA, sourceB);
-  destination.subscribe(null, errorContainer);
+  destination.catch(errorContainer);
 
   sourceA.error({
     scope: createEmptyScope(),
@@ -53,7 +53,7 @@ it('merge errors form two subjects', () => {
   });
   expect(errorListener.mock).toHaveBeenCalledTimes(1);
   expect(errorListener.mock).toHaveBeenNthCalledWith(1, new Error('boo'));
-  expect(errorContainer.mock).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainer.$$factory.mock).toHaveBeenCalledWith('foo.channel');
 
   sourceB.error({
     scope: createEmptyScope(),
@@ -62,5 +62,5 @@ it('merge errors form two subjects', () => {
   });
   expect(errorListener.mock).toHaveBeenCalledTimes(2);
   expect(errorListener.mock).toHaveBeenNthCalledWith(2, new Error('beer'));
-  expect(errorContainer.mock).toHaveBeenCalledWith('bar.channel');
+  expect(errorContainer.$$factory.mock).toHaveBeenCalledWith('bar.channel');
 });

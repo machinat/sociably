@@ -4,6 +4,7 @@ import type {
   AnyScriptLibrary,
   CallStatus,
   SerializedCallStatus,
+  VarsOfScript,
 } from './types';
 
 export const isScript = (type: any): type is AnyScriptLibrary =>
@@ -11,11 +12,11 @@ export const isScript = (type: any): type is AnyScriptLibrary =>
   type !== null &&
   type.$$typeof === MACHINAT_SCRIPT_TYPE;
 
-export const serializeScriptStatus = <Vars, Input, ReturnValue>({
+export const serializeScriptStatus = <Script extends AnyScriptLibrary>({
   script,
   stopAt,
   vars,
-}: CallStatus<Vars, Input, ReturnValue>): SerializedCallStatus<Vars> => {
+}: CallStatus<Script>): SerializedCallStatus<VarsOfScript<Script>> => {
   invariant(
     stopAt,
     'call status is not stopped at any break point when serialize'
@@ -24,7 +25,7 @@ export const serializeScriptStatus = <Vars, Input, ReturnValue>({
   return {
     name: script.name,
     stopAt,
-    vars,
+    vars: vars as VarsOfScript<Script>,
   };
 };
 

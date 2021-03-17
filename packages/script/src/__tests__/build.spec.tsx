@@ -15,14 +15,14 @@ import {
   RETURN,
 } from '../keyword';
 
-const initiateVars = moxy(() => ({}));
+const initVars = moxy(() => ({}));
 
 test('built script object', () => {
   const ChildScript = build(
     {
       name: 'ChildScript',
       meta: { foo: 'baz' },
-      initiateVars,
+      initVars,
     },
     <>
       {() => <dolore />}
@@ -34,7 +34,7 @@ test('built script object', () => {
     {
       name: 'MyScript',
       meta: { foo: 'bar' },
-      initiateVars,
+      initVars,
     },
     <>
       <LABEL key="start" />
@@ -59,7 +59,7 @@ test('built script object', () => {
           {() => 'sit amet,'}
           <CALL
             script={ChildScript}
-            withVars={() => ({ foo: 'bar' })}
+            params={() => ({ foo: 'bar' })}
             goto="childPrompt"
             key="call_1"
           />
@@ -76,7 +76,7 @@ test('built script object', () => {
   expect(MyScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
 
   expect(MyScript.commands).toMatchSnapshot();
-  expect(MyScript.initiateVars).toBe(initiateVars);
+  expect(MyScript.initVars).toBe(initVars);
   expect(MyScript.stopPointIndex).toMatchInlineSnapshot(`
     Map {
       "start" => 0,
@@ -95,7 +95,7 @@ test('built script object', () => {
   expect(ChildScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
 
   expect(ChildScript.commands).toMatchSnapshot();
-  expect(ChildScript.initiateVars).toBe(initiateVars);
+  expect(ChildScript.initVars).toBe(initVars);
   expect(ChildScript.stopPointIndex).toMatchInlineSnapshot(`
     Map {
       "childPrompt" => 1,

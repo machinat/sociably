@@ -40,7 +40,7 @@ const Baz = class Baz {
     return 'Baz';
   }
 };
-const bazFactory = moxy(
+const bazProvider = moxy(
   makeFactoryProvider({ deps: [Foo, Bar], lifetime: 'transient' })(
     () => new Baz()
   )
@@ -56,7 +56,7 @@ const myContainer = moxy(
 beforeEach(() => {
   Foo.mock.reset();
   BarImpl.mock.reset();
-  bazFactory.mock.reset();
+  bazProvider.mock.reset();
   myContainer.mock.reset();
 });
 
@@ -65,7 +65,7 @@ it('provide services bound in bindings', () => {
     Foo,
     { provide: HELLO, withValue: staticGreeter },
     { provide: Bar, withProvider: BarImpl },
-    { provide: BAZ, withProvider: bazFactory },
+    { provide: BAZ, withProvider: bazProvider },
   ]);
   space.bootstrap();
 
@@ -89,11 +89,11 @@ it('provide services bound in bindings', () => {
   expect(BarImpl.$$factory.mock).toHaveBeenCalledTimes(1);
   expect(BarImpl.$$factory.mock).toHaveBeenCalledWith(foo);
 
-  expect(bazFactory.$$factory.mock).toHaveBeenCalledTimes(2);
-  expect(bazFactory.$$factory.mock).toHaveBeenCalledWith(foo, bar);
+  expect(bazProvider.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(bazProvider.$$factory.mock).toHaveBeenCalledWith(foo, bar);
 
-  expect(myContainer.mock).toHaveBeenCalledTimes(1);
-  expect(myContainer.mock).toHaveBeenCalledWith(
+  expect(myContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(myContainer.$$factory.mock).toHaveBeenCalledWith(
     greeter,
     foo,
     bar,
@@ -126,7 +126,7 @@ test('new bindings are prioritized to the bindings from base space', () => {
     { provide: HELLO, withValue: staticGreeter },
     Foo,
     { provide: Bar, withProvider: BarImpl },
-    { provide: BAZ, withProvider: bazFactory },
+    { provide: BAZ, withProvider: bazProvider },
   ]);
   const space = new ServiceSpace(baseSpace, [
     { provide: Foo, withProvider: MyFoo },
@@ -151,10 +151,15 @@ test('new bindings are prioritized to the bindings from base space', () => {
   expect(AnotherBar.$$factory.mock).toHaveBeenCalledWith(baz);
   expect(BarImpl.$$factory.mock).not.toHaveBeenCalled();
 
-  expect(bazFactory.$$factory.mock).not.toHaveBeenCalled();
+  expect(bazProvider.$$factory.mock).not.toHaveBeenCalled();
 
-  expect(myContainer.mock).toHaveBeenCalledTimes(1);
-  expect(myContainer.mock).toHaveBeenCalledWith(staticGreeter, foo, bar, baz);
+  expect(myContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(myContainer.$$factory.mock).toHaveBeenCalledWith(
+    staticGreeter,
+    foo,
+    bar,
+    baz
+  );
 });
 
 it('throw if bindings conflicted', () => {
@@ -163,7 +168,7 @@ it('throw if bindings conflicted', () => {
     () =>
       new ServiceSpace(null, [
         Foo,
-        { provide: BAZ, withValue: bazFactory },
+        { provide: BAZ, withValue: bazProvider },
         { provide: Bar, withProvider: BarImpl },
         { provide: Bar, withValue: someBar },
       ])
@@ -172,7 +177,7 @@ it('throw if bindings conflicted', () => {
   expect(
     () =>
       new ServiceSpace(
-        new ServiceSpace(null, [Foo, { provide: BAZ, withValue: bazFactory }]),
+        new ServiceSpace(null, [Foo, { provide: BAZ, withValue: bazProvider }]),
         [
           { provide: Bar, withProvider: BarImpl },
           { provide: Bar, withValue: someBar },
@@ -191,7 +196,7 @@ it('throw if provider dependencies is not bound', () => {
         { provide: HELLO, withValue: staticGreeter },
         Foo,
       ]),
-      [{ provide: BAZ, withProvider: bazFactory }]
+      [{ provide: BAZ, withProvider: bazProvider }]
     ).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(`"BAR is not bound"`);
 });
@@ -422,14 +427,14 @@ test('lifecycle of services of different lifetime', () => {
   const space = new ServiceSpace(null, [
     Foo,
     { provide: Bar, withProvider: BarImpl },
-    { provide: BAZ, withProvider: bazFactory },
+    { provide: BAZ, withProvider: bazProvider },
     { provide: HELLO, withValue: staticGreeter },
   ]);
   space.bootstrap();
 
   expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
   expect(BarImpl.$$factory.mock).not.toHaveBeenCalled();
-  expect(bazFactory.$$factory.mock).not.toHaveBeenCalled();
+  expect(bazProvider.$$factory.mock).not.toHaveBeenCalled();
 
   const bootstrapedFoo = Foo.$$factory.mock.calls[0].result;
   const services = [HELLO, Foo, Bar, BAZ];
@@ -460,7 +465,7 @@ test('lifecycle of services of different lifetime', () => {
 
   expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
   expect(BarImpl.$$factory.mock).toHaveBeenCalledTimes(2);
-  expect(bazFactory.$$factory.mock).toHaveBeenCalledTimes(3);
+  expect(bazProvider.$$factory.mock).toHaveBeenCalledTimes(3);
 });
 
 test('provide multi interface as an array of bound value', () => {
@@ -580,7 +585,7 @@ test('inject time provision', () => {
     Foo,
     { provide: HELLO, withValue: staticGreeter },
     { provide: Bar, withProvider: BarImpl },
-    { provide: BAZ, withProvider: bazFactory },
+    { provide: BAZ, withProvider: bazProvider },
   ]);
   space.bootstrap();
 
@@ -615,7 +620,7 @@ test('inject time provision', () => {
 
   expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
   expect(BarImpl.$$factory.mock).not.toHaveBeenCalled();
-  expect(bazFactory.$$factory.mock).not.toHaveBeenCalled();
+  expect(bazProvider.$$factory.mock).not.toHaveBeenCalled();
 });
 
 test('boostrap time provision', () => {
@@ -629,7 +634,7 @@ test('boostrap time provision', () => {
     Foo,
     { provide: HELLO, withValue: staticGreeter },
     { provide: Bar, withProvider: BarImpl },
-    { provide: BAZ, withProvider: bazFactory },
+    { provide: BAZ, withProvider: bazProvider },
     BooConsumer,
   ]);
   space.bootstrap(new Map([[BOOTSTRAP_TIME_INTERFACE, 'boooo~']]));
@@ -670,8 +675,8 @@ test('require underlying ServiceScope', () => {
 
   scope.injectContainer(consumerContainer);
 
-  expect(consumerContainer.mock).toHaveBeenCalledTimes(1);
-  expect(consumerContainer.mock.calls[0].args[0]).toBe(scope);
+  expect(consumerContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(consumerContainer.$$factory.mock.calls[0].args[0]).toBe(scope);
   expect(scopedService.$$factory.mock).toHaveBeenCalledTimes(1);
   expect(scopedService.$$factory.mock.calls[0].args[0]).toBe(scope);
 

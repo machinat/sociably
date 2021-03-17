@@ -152,14 +152,14 @@ const compilePromptCommand = ({
 
 const compileCallCommand = ({
   script,
-  withVars,
+  withParams,
   setVars,
   key,
   goto,
 }: CallCommand<unknown, unknown, unknown>): CompileIntermediate[] => {
   return [
     { type: 'tag', key, isEntryPoint: true },
-    { type: 'call', script, withVars, setVars, goto, key },
+    { type: 'call', script, withParams, setVars, goto, key },
   ];
 };
 
