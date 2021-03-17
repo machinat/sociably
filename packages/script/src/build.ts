@@ -11,7 +11,7 @@ type ScriptBuildOtions<Args, Vars, Meta> = {
 };
 
 const build = <
-  Params extends {},
+  Params,
   Vars extends {},
   Input = AnyEventContext,
   Return = void,

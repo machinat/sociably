@@ -1,3 +1,4 @@
+import Machinat from '@machinat/core';
 import type {
   IfProps,
   BlockProps,
@@ -12,12 +13,25 @@ import type {
   AnyScriptLibrary,
 } from './types';
 
+// HACK: enable typing of a Fragment block
+/**
+ * @category Keyword
+ */
+export const $ = (Machinat.Fragment as unknown) as <
+  Vars = any,
+  Input = any,
+  Return = any
+>(
+  props: BlockProps<Vars, Input, Return>
+) => null;
+
 /**
  * @category Keyword
  */
 export const IF = <Vars = any, Input = any, Return = any>(
   props: IfProps<Vars, Input, Return>
 ): null => null;
+
 /**
  * @category Keyword
  */
