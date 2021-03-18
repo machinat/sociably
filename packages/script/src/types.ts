@@ -196,7 +196,7 @@ export type LabelElement = MachinatElement<LabelProps, typeof LABEL>;
 
 export type CallParamsFn<Vars, Params> = (
   circs: ScriptCircs<Vars>
-) => Partial<Params> | Promise<Partial<Params>>;
+) => Params | Promise<Params>;
 
 export type CallParamsGetter<Vars, Params> = MaybeContainer<
   CallParamsFn<Vars, Params>
