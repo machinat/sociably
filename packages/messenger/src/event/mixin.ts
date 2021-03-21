@@ -158,8 +158,8 @@ export const NLP: NLP = {
  * @category Event Mixin
  */
 export interface Location {
-  readonly latitude: string;
-  readonly longitude: string;
+  readonly latitude: number;
+  readonly longitude: number;
 }
 
 /** @internal */

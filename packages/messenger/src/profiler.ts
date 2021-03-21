@@ -48,7 +48,7 @@ export class MessengerUserProfile
     return this.data.locale;
   }
 
-  get timezone(): undefined | string {
+  get timezone(): undefined | number {
     return this.data.timezone;
   }
 
@@ -84,11 +84,11 @@ type ProfilerOptions = {
  */
 export class MessengerProfiler implements UserProfiler<MessengerUser> {
   bot: BotP;
-  optionalUserFields: string;
+  profileFields: string;
 
   constructor(bot: BotP, { optionalProfileFields = [] }: ProfilerOptions = {}) {
     this.bot = bot;
-    this.optionalUserFields = [
+    this.profileFields = [
       ...optionalProfileFields,
       ...DEFAULT_PROFILE_FIELDS,
     ].join(',');
@@ -97,7 +97,7 @@ export class MessengerProfiler implements UserProfiler<MessengerUser> {
   async getUserProfile(user: MessengerUser): Promise<MessengerUserProfile> {
     const rawProfile: RawUserProfile = await this.bot.makeApiCall(
       'GET',
-      `${user.id}?fields=${this.optionalUserFields}`
+      `${user.id}?fields=${this.profileFields}`
     );
 
     return new MessengerUserProfile(rawProfile);

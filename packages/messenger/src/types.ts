@@ -144,7 +144,7 @@ export type RawUserProfile = {
   last_name: string;
   profile_pic: string;
   locale?: string;
-  timezone?: string;
+  timezone?: number;
   gender?: string;
 };
 
