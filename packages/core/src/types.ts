@@ -103,34 +103,38 @@ export type NativeElement<
   Component extends NativeComponent<Props, any>
 > = MachinatElement<Props, Component>;
 
+export type FragmentProps = { children: MachinatNode };
 export type FragmentElement = MachinatElement<
-  { children: MachinatNode },
+  FragmentProps,
   typeof MACHINAT_FRAGMENT_TYPE
 >;
 
+export type ProviderProps = {
+  provide: Interfaceable<unknown>;
+  value: unknown;
+  children: MachinatNode;
+};
 export type ProviderElement = MachinatElement<
-  { provide: Interfaceable<unknown>; value: unknown; children: MachinatNode },
+  ProviderProps,
   typeof MACHINAT_PROVIDER_TYPE
 >;
 
-export type PauseUntilFn = () => Promise<unknown>;
-
+export type PauseUntilFn = () => Promise<void>;
+export type PauseProps = { until?: PauseUntilFn };
 export type PauseElement = MachinatElement<
-  { until?: PauseUntilFn },
+  PauseProps,
   typeof MACHINAT_PAUSE_TYPE
 >;
 
 export type ThunkEffectFn = () => unknown | Promise<unknown>;
-
+export type ThunkProps = { effect: ThunkEffectFn };
 export type ThunkElement = MachinatElement<
-  { effect: ThunkEffectFn },
+  ThunkProps,
   typeof MACHINAT_THUNK_TYPE
 >;
 
-export type RawElement = MachinatElement<
-  { value: unknown },
-  typeof MACHINAT_RAW_TYPE
->;
+export type RawProps = { value: unknown };
+export type RawElement = MachinatElement<RawProps, typeof MACHINAT_RAW_TYPE>;
 
 export interface MachinatChannel {
   readonly platform: string;

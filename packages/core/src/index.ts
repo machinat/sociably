@@ -16,6 +16,11 @@ import type {
   NativeComponent,
   ContainerComponent,
   AnyPlatformModule,
+  FragmentProps,
+  PauseProps,
+  ProviderProps,
+  ThunkProps,
+  RawProps,
 } from './types';
 
 /**
@@ -30,11 +35,25 @@ namespace Machinat {
     return app;
   };
 
-  export const Fragment: typeof MACHINAT_FRAGMENT_TYPE = MACHINAT_FRAGMENT_TYPE;
-  export const Pause: typeof MACHINAT_PAUSE_TYPE = MACHINAT_PAUSE_TYPE;
-  export const Provider: typeof MACHINAT_PROVIDER_TYPE = MACHINAT_PROVIDER_TYPE;
-  export const Thunk: typeof MACHINAT_THUNK_TYPE = MACHINAT_THUNK_TYPE;
-  export const Raw: typeof MACHINAT_RAW_TYPE = MACHINAT_RAW_TYPE;
+  export const Fragment = (MACHINAT_FRAGMENT_TYPE as unknown) as (
+    props: FragmentProps
+  ) => null;
+
+  export const Pause = (MACHINAT_PAUSE_TYPE as unknown) as (
+    props: PauseProps
+  ) => null;
+
+  export const Provider = (MACHINAT_PROVIDER_TYPE as unknown) as (
+    props: ProviderProps
+  ) => null;
+
+  export const Thunk = (MACHINAT_THUNK_TYPE as unknown) as (
+    props: ThunkProps
+  ) => null;
+
+  export const Raw = (MACHINAT_RAW_TYPE as unknown) as (
+    props: RawProps
+  ) => null;
 
   export const Bot = BaseBot;
   export const Profiler = BaseProfiler;

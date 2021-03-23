@@ -106,7 +106,6 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
     const { callStack, saveTimestamp } = this;
     return [
       [...this._queuedMessages],
-      // @ts-expect-error: allow symbol type, follow microsoft/TypeScript/issues/38367
       <Machinat.Thunk effect={() => this._save(callStack, saveTimestamp)} />,
     ];
   }
