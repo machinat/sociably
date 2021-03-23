@@ -100,7 +100,7 @@ export const CallbackButton: TelegramComponent<
 /**
  * @category Props
  */
-type SwitchInlineQueryButtonProps = {
+type SwitchQueryButtonProps = {
   /** Label text on the button. */
   text: string;
   /** The inline query to be inserted in the input field after the bot's username. Default to empty string. */
@@ -110,10 +110,10 @@ type SwitchInlineQueryButtonProps = {
 };
 
 /** @ignore */
-const __SwitchInlineQueryButton: FunctionOf<TelegramComponent<
-  SwitchInlineQueryButtonProps,
+const __SwitchQueryButton: FunctionOf<TelegramComponent<
+  SwitchQueryButtonProps,
   PartSegment<any>
->> = function SwitchInlineQueryButton(node, path) {
+>> = function SwitchQueryButton(node, path) {
   const { text, query, currentChat } = node.props;
 
   return [
@@ -131,27 +131,27 @@ const __SwitchInlineQueryButton: FunctionOf<TelegramComponent<
  * that chat and insert the bot's username and the specified inline query in the
  * input field.
  * @category Component
- * @props {@link SwitchInlineQueryButtonProps}
+ * @props {@link SwitchQueryButtonProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinekeyboardbutton).
  */
-export const SwitchInlineQueryButton: TelegramComponent<
-  SwitchInlineQueryButtonProps,
+export const SwitchQueryButton: TelegramComponent<
+  SwitchQueryButtonProps,
   PartSegment<any>
-> = annotateTelegramComponent(__SwitchInlineQueryButton);
+> = annotateTelegramComponent(__SwitchQueryButton);
 
 /**
  * @category Props
  */
-type CallbackGameButtonProps = {
+type GameButtonProps = {
   /** Label text on the button. */
   text: string;
 };
 
 /** @ignore */
-const __CallbackGameButton: FunctionOf<TelegramComponent<
-  CallbackGameButtonProps,
+const __GameButton: FunctionOf<TelegramComponent<
+  GameButtonProps,
   PartSegment<any>
->> = function CallbackGameButton(node, path) {
+>> = function GameButton(node, path) {
   const { text } = node.props;
   return [
     partSegment(node, path, {
@@ -163,13 +163,13 @@ const __CallbackGameButton: FunctionOf<TelegramComponent<
 /**
  * Description of the game that will be launched when the user presses the button. This type of button must always be the **first button** in the first row.
  * @category Component
- * @props {@link CallbackGameButtonProps}
+ * @props {@link GameButtonProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinekeyboardbutton).
  */
-export const CallbackGameButton: TelegramComponent<
-  CallbackGameButtonProps,
+export const GameButton: TelegramComponent<
+  GameButtonProps,
   PartSegment<any>
-> = annotateTelegramComponent(__CallbackGameButton);
+> = annotateTelegramComponent(__GameButton);
 
 /**
  * @category Props
@@ -205,8 +205,8 @@ export const PayButton: TelegramComponent<
 export type InlineButton =
   | typeof UrlButton
   | typeof CallbackButton
-  | typeof CallbackGameButton
-  | typeof SwitchInlineQueryButton
+  | typeof GameButton
+  | typeof SwitchQueryButton
   | typeof PayButton;
 
 /**
@@ -253,7 +253,7 @@ export const KeyboardRow: TelegramComponent<
 type InlineKeyboardProps = {
   /**
    * {@link InlineButton} elements within the keyboard. By default a button take
-   * a row, wrap the buttons with {@link KeyboardRow} to display multiple
+   * a row, wrap the buttons within {@link KeyboardRow} to display multiple
    * buttons in a row.
    */
   children: MachinatNode;
@@ -292,44 +292,114 @@ export const InlineKeyboard: TelegramComponent<
 /**
  * @category Props
  */
-type ReplyButtonProps = {
-  /**	Text of the button. If none of the optional fields are used, it will be sent as a message when the button is pressed */
+type TextReplyProps = {
+  /**	Text of the button */
   text: string;
-  /** If True, the user's phone number will be sent as a contact when the button is pressed. Available in private chats only */
-  requestContact?: boolean;
-  /** If True, the user's current location will be sent when the button is pressed. Available in private chats only */
-  requestLocation?: boolean;
-  /** If specified, the user will be asked to create a poll and send it to the bot when the button is pressed. Available in private chats only */
-  requestPoll?: boolean | 'regular' | 'quiz';
 };
 /** @ignore */
-const __ReplyButton: FunctionOf<TelegramComponent<
-  ReplyButtonProps,
+const __TextReply: FunctionOf<TelegramComponent<
+  TextReplyProps,
   PartSegment<any>
->> = function ReplyButton(node, path) {
-  const { text, requestContact, requestLocation, requestPoll } = node.props;
-
-  return [
-    partSegment(node, path, {
-      text,
-      request_contact: requestContact,
-      request_location: requestLocation,
-      request_poll: requestPoll
-        ? { type: typeof requestPoll === 'string' ? requestPoll : undefined }
-        : undefined,
-    }),
-  ];
+>> = function TextReply(node, path) {
+  const { text } = node.props;
+  return [partSegment(node, path, { text })];
 };
 /**
- * Button of the {@link ReplyKeyboard}.
+ * Text of button will be sent as a message by the user when the button is pressed
  * @category Component
- * @props {@link ReplyButtonProps}
+ * @props {@link TextReplyProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#keyboardbutton).
  */
-export const ReplyButton: TelegramComponent<
-  ReplyButtonProps,
+export const TextReply: TelegramComponent<
+  TextReplyProps,
   PartSegment<any>
-> = annotateTelegramComponent(__ReplyButton);
+> = annotateTelegramComponent(__TextReply);
+
+/**
+ * @category Props
+ */
+type ContactReplyProps = {
+  /**	Text of the button. */
+  text: string;
+};
+/** @ignore */
+const __ContactReply: FunctionOf<TelegramComponent<
+  ContactReplyProps,
+  PartSegment<any>
+>> = function ContactReply(node, path) {
+  const { text } = node.props;
+  return [partSegment(node, path, { text, request_contact: true })];
+};
+/**
+ * The user's phone number will be sent as a contact when the button is pressed. Available in private chats only
+ * @category Component
+ * @props {@link ContactReplyProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#keyboardbutton).
+ */
+export const ContactReply: TelegramComponent<
+  ContactReplyProps,
+  PartSegment<any>
+> = annotateTelegramComponent(__ContactReply);
+
+/**
+ * @category Props
+ */
+type LocationReplyProps = {
+  /**	Text of the button. */
+  text: string;
+};
+/** @ignore */
+const __LocationReply: FunctionOf<TelegramComponent<
+  LocationReplyProps,
+  PartSegment<any>
+>> = function LocationReply(node, path) {
+  const { text } = node.props;
+  return [partSegment(node, path, { text, request_location: true })];
+};
+/**
+ * The user's current location will be sent when the button is pressed. Available in private chats only
+ * @category Component
+ * @props {@link LocationReplyProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#keyboardbutton).
+ */
+export const LocationReply: TelegramComponent<
+  LocationReplyProps,
+  PartSegment<any>
+> = annotateTelegramComponent(__LocationReply);
+
+/**
+ * @category Props
+ */
+type PollReplyProps = {
+  /**	Text of the button */
+  text: string;
+  /** If quiz is passed, the user will be allowed to create only polls in the quiz mode. If regular is passed, only regular polls will be allowed. Otherwise, the user will be allowed to create a poll of any type. */
+  type?: 'regular' | 'quiz';
+};
+/** @ignore */
+const __PollReply: FunctionOf<TelegramComponent<
+  PollReplyProps,
+  PartSegment<any>
+>> = function PollReply(node, path) {
+  const { text, type } = node.props;
+  return [partSegment(node, path, { text, request_poll: { type } })];
+};
+/**
+ * The user will be asked to create a poll and send it to the bot when the button is pressed. Available in private chats only
+ * @category Component
+ * @props {@link PollReplyProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#keyboardbutton).
+ */
+export const PollReply: TelegramComponent<
+  PollReplyProps,
+  PartSegment<any>
+> = annotateTelegramComponent(__PollReply);
+
+export type ReplyButton =
+  | typeof TextReply
+  | typeof LocationReply
+  | typeof ContactReply
+  | typeof PollReply;
 
 /**
  * @category Props

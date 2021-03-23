@@ -5,11 +5,14 @@ import { isNativeType } from '@machinat/core/utils/isX';
 import {
   UrlButton,
   CallbackButton,
-  SwitchInlineQueryButton,
-  CallbackGameButton,
+  SwitchQueryButton,
+  GameButton,
   PayButton,
   InlineKeyboard,
-  ReplyButton,
+  TextReply,
+  ContactReply,
+  LocationReply,
+  PollReply,
   KeyboardRow,
   ReplyKeyboard,
   RemoveReplyKeyboard,
@@ -19,27 +22,30 @@ import {
 const render = async (node) => {
   let rendered;
   const renderer = new Renderer('telegram', async (_, __, renderInner) => {
-    rendered = await renderInner(node);
+    rendered = await renderInner(node, null as never);
     return null;
   });
 
-  await renderer.render(<container />);
+  await renderer.render(<container />, null as never);
   return rendered;
 };
 
 test.each([
   UrlButton,
   CallbackButton,
-  SwitchInlineQueryButton,
-  CallbackGameButton,
+  SwitchQueryButton,
+  GameButton,
   PayButton,
   InlineKeyboard,
-  ReplyButton,
+  TextReply,
+  ContactReply,
+  LocationReply,
+  PollReply,
   KeyboardRow,
   ReplyKeyboard,
   RemoveReplyKeyboard,
   ForceReply,
-])('is valid Component', (Component) => {
+])('is valid Component', (Component: any) => {
   expect(typeof Component).toBe('function');
   expect(isNativeType(<Component />)).toBe(true);
   expect(Component.$$platform).toBe('telegram');
@@ -153,13 +159,13 @@ describe('CallbackButton', () => {
   });
 });
 
-describe('SwitchInlineQueryButton', () => {
+describe('SwitchQueryButton', () => {
   test('match snapshot', async () => {
-    await expect(render(<SwitchInlineQueryButton text="Try" />)).resolves
+    await expect(render(<SwitchQueryButton text="Try" />)).resolves
       .toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <SwitchInlineQueryButton
+                "node": <SwitchQueryButton
                   text="Try"
                 />,
                 "path": "$#container",
@@ -171,11 +177,11 @@ describe('SwitchInlineQueryButton', () => {
               },
             ]
           `);
-    await expect(render(<SwitchInlineQueryButton text="Try" query="foo" />))
-      .resolves.toMatchInlineSnapshot(`
+    await expect(render(<SwitchQueryButton text="Try" query="foo" />)).resolves
+      .toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <SwitchInlineQueryButton
+                "node": <SwitchQueryButton
                   query="foo"
                   text="Try"
                 />,
@@ -191,11 +197,11 @@ describe('SwitchInlineQueryButton', () => {
   });
 
   test('current chat mode match snapshot', async () => {
-    await expect(render(<SwitchInlineQueryButton currentChat text="Try" />))
-      .resolves.toMatchInlineSnapshot(`
+    await expect(render(<SwitchQueryButton currentChat text="Try" />)).resolves
+      .toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <SwitchInlineQueryButton
+                "node": <SwitchQueryButton
                   currentChat={true}
                   text="Try"
                 />,
@@ -209,11 +215,11 @@ describe('SwitchInlineQueryButton', () => {
             ]
           `);
     await expect(
-      render(<SwitchInlineQueryButton currentChat text="Try" query="foo" />)
+      render(<SwitchQueryButton currentChat text="Try" query="foo" />)
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <SwitchInlineQueryButton
+                "node": <SwitchQueryButton
                   currentChat={true}
                   query="foo"
                   text="Try"
@@ -230,13 +236,13 @@ describe('SwitchInlineQueryButton', () => {
   });
 });
 
-describe('CallbackGameButton', () => {
+describe('GameButton', () => {
   test('match snapshot', async () => {
-    await expect(render(<CallbackGameButton text="Play" />)).resolves
+    await expect(render(<GameButton text="Play" />)).resolves
       .toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <CallbackGameButton
+                "node": <GameButton
                   text="Play"
                 />,
                 "path": "$#container",
@@ -281,7 +287,7 @@ describe('InlineKeyboard', () => {
 
           <KeyboardRow>
             <CallbackButton text="Hello" data="World!" />
-            <SwitchInlineQueryButton text="Try" />
+            <SwitchQueryButton text="Try" />
           </KeyboardRow>
         </InlineKeyboard>
       )
@@ -298,7 +304,7 @@ describe('InlineKeyboard', () => {
                       data="World!"
                       text="Hello"
                     />
-                    <SwitchInlineQueryButton
+                    <SwitchQueryButton
                       text="Try"
                     />
                   </KeyboardRow>
@@ -336,51 +342,48 @@ describe('ReplyKeyboard', () => {
     await expect(
       render(
         <ReplyKeyboard>
-          <ReplyButton text="Button1" />
+          <TextReply text="Button1" />
 
           <KeyboardRow>
-            <ReplyButton text="Button2" requestContact />
-            <ReplyButton text="Button3" requestLocation />
+            <ContactReply text="Button2" />
+            <LocationReply text="Button3" />
           </KeyboardRow>
 
           <KeyboardRow>
-            <ReplyButton text="Button4" requestPoll />
-            <ReplyButton text="Button5" requestPoll="quiz" />
+            <PollReply text="Button4" />
+            <PollReply text="Button5" type="quiz" />
           </KeyboardRow>
 
-          <ReplyButton text="Button6" requestPoll="regular" />
+          <PollReply text="Button6" type="regular" />
         </ReplyKeyboard>
       )
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
                 "node": <ReplyKeyboard>
-                  <ReplyButton
+                  <TextReply
                     text="Button1"
                   />
                   <KeyboardRow>
-                    <ReplyButton
-                      requestContact={true}
+                    <ContactReply
                       text="Button2"
                     />
-                    <ReplyButton
-                      requestLocation={true}
+                    <LocationReply
                       text="Button3"
                     />
                   </KeyboardRow>
                   <KeyboardRow>
-                    <ReplyButton
-                      requestPoll={true}
+                    <PollReply
                       text="Button4"
                     />
-                    <ReplyButton
-                      requestPoll="quiz"
+                    <PollReply
                       text="Button5"
+                      type="quiz"
                     />
                   </KeyboardRow>
-                  <ReplyButton
-                    requestPoll="regular"
+                  <PollReply
                     text="Button6"
+                    type="regular"
                   />
                 </ReplyKeyboard>,
                 "path": "$#container",
@@ -389,38 +392,27 @@ describe('ReplyKeyboard', () => {
                   "keyboard": Array [
                     Array [
                       Object {
-                        "request_contact": undefined,
-                        "request_location": undefined,
-                        "request_poll": undefined,
                         "text": "Button1",
                       },
                     ],
                     Array [
                       Object {
                         "request_contact": true,
-                        "request_location": undefined,
-                        "request_poll": undefined,
                         "text": "Button2",
                       },
                       Object {
-                        "request_contact": undefined,
                         "request_location": true,
-                        "request_poll": undefined,
                         "text": "Button3",
                       },
                     ],
                     Array [
                       Object {
-                        "request_contact": undefined,
-                        "request_location": undefined,
                         "request_poll": Object {
                           "type": undefined,
                         },
                         "text": "Button4",
                       },
                       Object {
-                        "request_contact": undefined,
-                        "request_location": undefined,
                         "request_poll": Object {
                           "type": "quiz",
                         },
@@ -429,8 +421,6 @@ describe('ReplyKeyboard', () => {
                     ],
                     Array [
                       Object {
-                        "request_contact": undefined,
-                        "request_location": undefined,
                         "request_poll": Object {
                           "type": "regular",
                         },
@@ -450,8 +440,8 @@ describe('ReplyKeyboard', () => {
       render(
         <ReplyKeyboard resizeKeyboard oneTimeKeyboard selective>
           <KeyboardRow>
-            <ReplyButton text="Button1" />
-            <ReplyButton text="Button2" />
+            <TextReply text="Button1" />
+            <TextReply text="Button2" />
           </KeyboardRow>
         </ReplyKeyboard>
       )
@@ -464,10 +454,10 @@ describe('ReplyKeyboard', () => {
                   selective={true}
                 >
                   <KeyboardRow>
-                    <ReplyButton
+                    <TextReply
                       text="Button1"
                     />
-                    <ReplyButton
+                    <TextReply
                       text="Button2"
                     />
                   </KeyboardRow>
@@ -478,15 +468,9 @@ describe('ReplyKeyboard', () => {
                   "keyboard": Array [
                     Array [
                       Object {
-                        "request_contact": undefined,
-                        "request_location": undefined,
-                        "request_poll": undefined,
                         "text": "Button1",
                       },
                       Object {
-                        "request_contact": undefined,
-                        "request_location": undefined,
-                        "request_poll": undefined,
                         "text": "Button2",
                       },
                     ],
