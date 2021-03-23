@@ -1,6 +1,6 @@
 {
   "name": "@machinat/stream",
-  "version": "0.4.0-beta.0",
+  "version": "0.4.0-beta.1",
   "description": "Reactive programming library for Machinat.js",
   "main": "./lib/index.js",
   "exports": {
