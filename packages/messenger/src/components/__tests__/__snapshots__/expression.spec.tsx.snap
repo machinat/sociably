@@ -13,7 +13,7 @@ Array [
       "messaging_type": "MESSAGE_TAG",
       "notification_type": "SILENT_PUSH",
       "persona_id": "_PERSONA_ID_",
-      "tag": "PAYMENT_UPDATE",
+      "tag": "CONFIRMED_EVENT_UPDATE",
     },
   },
   Object {
@@ -27,7 +27,7 @@ Array [
           Object {
             "content_type": "text",
             "image_url": undefined,
-            "payload": undefined,
+            "payload": "bar",
             "title": "foo",
           },
           Object {
@@ -42,7 +42,7 @@ Array [
       "messaging_type": "MESSAGE_TAG",
       "notification_type": "SILENT_PUSH",
       "persona_id": "_PERSONA_ID_",
-      "tag": "PAYMENT_UPDATE",
+      "tag": "CONFIRMED_EVENT_UPDATE",
     },
   },
 ]
@@ -245,7 +245,7 @@ Array [
           Object {
             "content_type": "text",
             "image_url": undefined,
-            "payload": undefined,
+            "payload": "bar",
             "title": "foo",
           },
           Object {
@@ -279,7 +279,7 @@ Array [
       "messaging_type": "MESSAGE_TAG",
       "notification_type": undefined,
       "persona_id": undefined,
-      "tag": "COMMUNITY_ALERT",
+      "tag": "ACCOUNT_UPDATE",
     },
   },
   Object {
@@ -295,7 +295,7 @@ Array [
       "messaging_type": "MESSAGE_TAG",
       "notification_type": undefined,
       "persona_id": undefined,
-      "tag": "COMMUNITY_ALERT",
+      "tag": "ACCOUNT_UPDATE",
     },
   },
 ]

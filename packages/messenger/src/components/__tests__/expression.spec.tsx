@@ -3,23 +3,27 @@ import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
 import { isNativeType } from '@machinat/core/utils/isX';
 import { API_PATH } from '../../constant';
-import { QuickReply, EmailQuickReply, PhoneQuickReply } from '../quickReply';
+import { TextReply, EmailReply, PhoneReply } from '../quickReply';
 import { Expression } from '../expression';
 import { TypingOn, TypingOff, MarkSeen } from '../senderAction';
+import type { MessageValue } from '../../types';
 
-const generalComponentDelegator = moxy((node, path) => [
-  node.type === 'br'
-    ? { type: 'break', value: null, node, path }
-    : { type: 'text', value: node.type, node, path },
-]);
+const renderGeneralElement = moxy((node, path) =>
+  Promise.resolve([
+    node.type === 'br'
+      ? { type: 'break' as const, value: null, node, path }
+      : { type: 'text' as const, value: node.type, node, path },
+  ])
+);
 
-const renderer = new Renderer('messenger', generalComponentDelegator);
+const renderer = new Renderer('messenger', renderGeneralElement);
+const render = (node) => renderer.render(node, null as never);
 
 const quickReplies = (
   <>
-    <QuickReply title="foo" />
-    <PhoneQuickReply />
-    <EmailQuickReply />
+    <TextReply title="foo" payload="bar" />
+    <PhoneReply />
+    <EmailReply />
   </>
 );
 
@@ -32,12 +36,12 @@ const children = (
 );
 
 beforeEach(() => {
-  generalComponentDelegator.mock.reset();
+  renderGeneralElement.mock.reset();
 });
 
 it('is valid component', () => {
   expect(typeof Expression).toBe('function');
-  expect(isNativeType(<Expression />)).toBe(true);
+  expect(isNativeType(<Expression>foo</Expression>)).toBe(true);
   expect(Expression.$$platform).toBe('messenger');
 });
 
@@ -48,7 +52,7 @@ it.each([
   ],
   [
     'Expression with type and tag',
-    <Expression messagingType="MESSAGE_TAG" tag="COMMUNITY_ALERT">
+    <Expression messagingType="MESSAGE_TAG" tag="ACCOUNT_UPDATE">
       {children}
     </Expression>,
   ],
@@ -72,7 +76,7 @@ it.each([
     'Expression with all props',
     <Expression
       messagingType="MESSAGE_TAG"
-      tag="PAYMENT_UPDATE"
+      tag="CONFIRMED_EVENT_UPDATE"
       notificationType="SILENT_PUSH"
       metadata="_MY_METADATA_"
       quickReplies={quickReplies}
@@ -93,18 +97,20 @@ it.each([
     </Expression>,
   ],
 ])('%s match snapshot', async (_, element) => {
-  await expect(renderer.render(element)).resolves.toMatchSnapshot();
+  await expect(
+    renderer.render(element, null as never)
+  ).resolves.toMatchSnapshot();
 });
 
 it('returns null if empty children received', async () => {
-  await expect(renderer.render(<Expression />)).resolves.toBe(null);
-  await expect(renderer.render(<Expression>{null}</Expression>)).resolves.toBe(
+  await expect(render(<Expression>{undefined}</Expression>)).resolves.toBe(
     null
   );
+  await expect(render(<Expression>{null}</Expression>)).resolves.toBe(null);
 });
 
 it('hoist text value into message object', async () => {
-  const segments = await renderer.render(
+  const segments = await render(
     <Expression>
       foo
       <br />
@@ -165,10 +171,10 @@ it('hoist text value into message object', async () => {
 });
 
 it('add attributes to message value', async () => {
-  const segments = await renderer.render(
+  const segments = await render(
     <Expression
       messagingType="MESSAGE_TAG"
-      tag="PAYMENT_UPDATE"
+      tag="HUMAN_AGENT"
       notificationType="SILENT_PUSH"
       personaId="_PERSONA_ID_"
     >
@@ -178,10 +184,10 @@ it('add attributes to message value', async () => {
     </Expression>
   );
 
-  segments.forEach((segment) => {
+  segments!.forEach((segment) => {
     expect(segment.value).toEqual({
       messaging_type: 'MESSAGE_TAG',
-      tag: 'PAYMENT_UPDATE',
+      tag: 'HUMAN_AGENT',
       notification_type: 'SILENT_PUSH',
       persona_id: '_PERSONA_ID_',
       message: {
@@ -192,10 +198,10 @@ it('add attributes to message value', async () => {
 });
 
 it('add persona_id to typeing_on/typeing_off sender action', async () => {
-  const segments = await renderer.render(
+  const segments = (await render(
     <Expression
       messagingType="MESSAGE_TAG"
-      tag="PAYMENT_UPDATE"
+      tag="ACCOUNT_UPDATE"
       notificationType="SILENT_PUSH"
       personaId="_PERSONA_ID_"
     >
@@ -204,7 +210,7 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
       <TypingOff />
       <MarkSeen />
     </Expression>
-  );
+  ))!;
 
   expect(segments[1].value).toEqual({
     sender_action: 'typing_on',
@@ -218,14 +224,14 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
 });
 
 it('adds metadata to last message action', async () => {
-  const segments = await renderer.render(
+  const segments = (await render(
     <Expression metadata="_META_">
       <foo />
       <br />
       bar
       <TypingOn />
     </Expression>
-  );
+  ))!;
 
   expect(segments[0].value).toEqual({ message: { text: 'foo' } });
   expect(segments[1].value).toEqual({
@@ -235,20 +241,22 @@ it('adds metadata to last message action', async () => {
 });
 
 it('adds quickReplies to last message action', async () => {
-  const segments = await renderer.render(
+  const segments = (await render(
     <Expression
-      quickReplies={[
-        <QuickReply title="foo" />,
-        <PhoneQuickReply />,
-        <EmailQuickReply />,
-      ]}
+      quickReplies={
+        <>
+          <TextReply title="foo" payload="bar" />
+          <PhoneReply />
+          <EmailReply />
+        </>
+      }
     >
       <foo />
       <br />
       bar
       <TypingOn />
     </Expression>
-  );
+  ))!;
 
   expect(segments[0].value).toEqual({ message: { text: 'foo' } });
   expect(segments[1].value).toEqual({
@@ -258,12 +266,13 @@ it('adds quickReplies to last message action', async () => {
     },
   });
   expect(segments[2].value).toEqual({ sender_action: 'typing_on' });
-  expect(segments[1].value.message.quick_replies).toMatchInlineSnapshot(`
+  expect((segments[1].value as MessageValue).message.quick_replies)
+    .toMatchInlineSnapshot(`
     Array [
       Object {
         "content_type": "text",
         "image_url": undefined,
-        "payload": undefined,
+        "payload": "bar",
         "title": "foo",
       },
       Object {
@@ -277,7 +286,7 @@ it('adds quickReplies to last message action', async () => {
 });
 
 it('do nothing to non-messgae value', async () => {
-  generalComponentDelegator.mock.wrap((renderText) => (node, path) =>
+  renderGeneralElement.mock.wrap((renderText) => (node, path) =>
     node.type === 'nonMessage'
       ? [
           {
@@ -293,18 +302,18 @@ it('do nothing to non-messgae value', async () => {
       : renderText(node, path)
   );
 
-  const segments = await renderer.render(
+  const segments = (await render(
     <Expression
       messagingType="MESSAGE_TAG"
-      tag="PAYMENT_UPDATE"
+      tag="CONFIRMED_EVENT_UPDATE"
       notificationType="SILENT_PUSH"
       personaId="_PERSONA_ID_"
-      quickReplies={[<QuickReply title="foo" />]}
+      quickReplies={<TextReply title="foo" payload="bar" />}
     >
       <foo />
       <nonMessage />
     </Expression>
-  );
+  ))!;
 
   expect(segments[1].value).toEqual({
     something: 'else',
@@ -318,7 +327,7 @@ it('do nothing to non-messgae value', async () => {
           Object {
             "content_type": "text",
             "image_url": undefined,
-            "payload": undefined,
+            "payload": "bar",
             "title": "foo",
           },
         ],
@@ -327,7 +336,7 @@ it('do nothing to non-messgae value', async () => {
       "messaging_type": "MESSAGE_TAG",
       "notification_type": "SILENT_PUSH",
       "persona_id": "_PERSONA_ID_",
-      "tag": "PAYMENT_UPDATE",
+      "tag": "CONFIRMED_EVENT_UPDATE",
     }
   `);
 });

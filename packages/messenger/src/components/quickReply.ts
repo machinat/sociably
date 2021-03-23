@@ -6,7 +6,7 @@ import { MessengerComponent } from '../types';
 /**
  * @category Props
  */
-type TextQuickReplyProps = {
+type TextReplyProps = {
   /** The text to display on the quick reply button. 20 character limit. */
   title: string;
   /**
@@ -23,7 +23,7 @@ type TextQuickReplyProps = {
 };
 
 /** @ignore */
-const __QuickReply = function QuickReply(node, path) {
+const __TextReply = function TextReply(node, path) {
   const { title, payload, imageUrl } = node.props;
   return [
     partSegment(node, path, {
@@ -38,20 +38,20 @@ const __QuickReply = function QuickReply(node, path) {
  * Add an text quick reply button with postback payload after an
  * {@link Expression}.
  * @category Component
- * @props {@link TextQuickReplyProps}
+ * @props {@link TextReplyProps}
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/quick-replies).
  */
-export const QuickReply: MessengerComponent<
-  TextQuickReplyProps,
+export const TextReply: MessengerComponent<
+  TextReplyProps,
   PartSegment<any>
-> = annotateMessengerComponent(__QuickReply);
+> = annotateMessengerComponent(__TextReply);
 
 /** @ignore */
 const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
 
 /** @ignore */
-const __PhoneQuickReply = function PhoneQuickReply(node, path) {
+const __PhoneReply = function PhoneReply(node, path) {
   return [partSegment(node, path, PHONE_QUICK_REPLY_VALUES)];
 };
 /**
@@ -61,16 +61,16 @@ const __PhoneQuickReply = function PhoneQuickReply(node, path) {
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/quick-replies).
  */
-export const PhoneQuickReply: MessengerComponent<
+export const PhoneReply: MessengerComponent<
   {},
   PartSegment<any>
-> = annotateMessengerComponent(__PhoneQuickReply);
+> = annotateMessengerComponent(__PhoneReply);
 
 /** @ignore */
 const EMAIL_QUICK_REPLY_VALUES = { content_type: 'user_email' };
 
 /** @ignore */
-const __EmailQuickReply = function EmailQuickReply(node, path) {
+const __EmailReply = function EmailReply(node, path) {
   return [partSegment(node, path, EMAIL_QUICK_REPLY_VALUES)];
 };
 /**
@@ -80,7 +80,7 @@ const __EmailQuickReply = function EmailQuickReply(node, path) {
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/quick-replies).
  */
-export const EmailQuickReply: MessengerComponent<
+export const EmailReply: MessengerComponent<
   {},
   PartSegment<any>
-> = annotateMessengerComponent(__EmailQuickReply);
+> = annotateMessengerComponent(__EmailReply);

@@ -1,34 +1,34 @@
 import Machinat from '@machinat/core';
 import { isNativeType } from '@machinat/core/utils/isX';
 import Renderer from '@machinat/core/renderer';
-import { QuickReply, PhoneQuickReply, EmailQuickReply } from '../quickReply';
+import { TextReply, PhoneReply, EmailReply } from '../quickReply';
 
 const render = async (node) => {
   let rendered;
   const renderer = new Renderer('messenger', (_, __, renderInner) => {
-    rendered = renderInner(node);
-    return null;
+    rendered = renderInner(node, null as never);
+    return Promise.resolve(null);
   });
 
-  await renderer.render(<container />);
+  await renderer.render(<container />, null as never);
   return rendered;
 };
 
-it.each([QuickReply, PhoneQuickReply, EmailQuickReply])(
+it.each([TextReply, PhoneReply, EmailReply])(
   '%p is valid Component',
-  (Reply) => {
+  (Reply: any) => {
     expect(typeof Reply).toBe('function');
     expect(isNativeType(<Reply />)).toBe(true);
     expect(Reply.$$platform).toBe('messenger');
   }
 );
 
-test('QuickReply match snpshot', async () => {
-  expect(render(<QuickReply title="i want a pie" payload="🥧" />)).resolves
+test('TextReply match snpshot', async () => {
+  expect(render(<TextReply title="i want a pie" payload="🥧" />)).resolves
     .toMatchInlineSnapshot(`
     Array [
       Object {
-        "node": <QuickReply
+        "node": <TextReply
           payload="🥧"
           title="i want a pie"
         />,
@@ -45,7 +45,7 @@ test('QuickReply match snpshot', async () => {
   `);
   expect(
     render(
-      <QuickReply
+      <TextReply
         title="a piece of cake"
         payload="🍰"
         imageUrl="http://cake.it"
@@ -54,7 +54,7 @@ test('QuickReply match snpshot', async () => {
   ).resolves.toMatchInlineSnapshot(`
     Array [
       Object {
-        "node": <QuickReply
+        "node": <TextReply
           imageUrl="http://cake.it"
           payload="🍰"
           title="a piece of cake"
@@ -72,11 +72,11 @@ test('QuickReply match snpshot', async () => {
   `);
 });
 
-test('PhoneQuickReply match snpshot', async () => {
-  expect(render(<PhoneQuickReply />)).resolves.toMatchInlineSnapshot(`
+test('PhoneReply match snpshot', async () => {
+  expect(render(<PhoneReply />)).resolves.toMatchInlineSnapshot(`
     Array [
       Object {
-        "node": <PhoneQuickReply />,
+        "node": <PhoneReply />,
         "path": "$#container",
         "type": "part",
         "value": Object {
@@ -87,11 +87,11 @@ test('PhoneQuickReply match snpshot', async () => {
   `);
 });
 
-test('EmailQuickReply match snpshot', async () => {
-  expect(render(<EmailQuickReply />)).resolves.toMatchInlineSnapshot(`
+test('EmailReply match snpshot', async () => {
+  expect(render(<EmailReply />)).resolves.toMatchInlineSnapshot(`
     Array [
       Object {
-        "node": <EmailQuickReply />,
+        "node": <EmailReply />,
         "path": "$#container",
         "type": "part",
         "value": Object {

@@ -8,7 +8,7 @@ import _Engine from '@machinat/core/engine';
 import _Worker from '../worker';
 import { MessengerBot } from '../bot';
 import GraphApiError from '../error';
-import { Image, Expression, QuickReply } from '../components';
+import { Image, Expression, TextReply } from '../components';
 
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Engine = _Engine as Moxy<typeof _Engine>;
@@ -41,7 +41,7 @@ const accessToken = '_ACCESS_TOKEN_';
 const appSecret = '_APP_SECRET_';
 
 const message = (
-  <Expression quickReplies={<QuickReply title="Hi!" payload="👋" />}>
+  <Expression quickReplies={<TextReply title="Hi!" payload="👋" />}>
     Hello <b>World!</b>
     <Image url="https://machinat.com/greeting.png" />
   </Expression>
