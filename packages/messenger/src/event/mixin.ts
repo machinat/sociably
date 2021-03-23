@@ -113,7 +113,7 @@ export const Media: Media = {
  */
 export interface Sticker {
   /** Persistent id of the sticker if a sticker is sent. */
-  readonly stickerId: undefined | string;
+  readonly stickerId: undefined | number;
 }
 
 /** @internal */
