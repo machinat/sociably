@@ -2,7 +2,7 @@ import type { MachinatElement } from '@machinat/core/types';
 import {
   isElement,
   isFragmentType,
-  isProviderType,
+  isInjectionType,
   isRawType,
   isThunkType,
   isPauseType,
@@ -12,8 +12,8 @@ const machinatElementSerializer = {
   print(element: MachinatElement<any, any>, serialize, indent) {
     const type = isFragmentType(element)
       ? 'Machinat.Fragment'
-      : isProviderType(element)
-      ? 'Machinat.Provider'
+      : isInjectionType(element)
+      ? 'Machinat.Injection'
       : isRawType(element)
       ? 'Machinat.Raw'
       : isThunkType(element)

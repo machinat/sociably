@@ -4,7 +4,7 @@ export const MACHINAT_FRAGMENT_TYPE = Symbol('fragment.element.machinat');
 
 export const MACHINAT_PAUSE_TYPE = Symbol('pause.element.machinat');
 
-export const MACHINAT_PROVIDER_TYPE = Symbol('provider.element.machinat');
+export const MACHINAT_INJECTION_TYPE = Symbol('injection.element.machinat');
 
 export const MACHINAT_THUNK_TYPE = Symbol('thunk.element.machinat');
 

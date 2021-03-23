@@ -14,7 +14,7 @@ import type {
   MACHINAT_NATIVE_TYPE,
   MACHINAT_FRAGMENT_TYPE,
   MACHINAT_PAUSE_TYPE,
-  MACHINAT_PROVIDER_TYPE,
+  MACHINAT_INJECTION_TYPE,
   MACHINAT_THUNK_TYPE,
   MACHINAT_RAW_TYPE,
 } from './symbol';
@@ -25,7 +25,7 @@ export type MachinatRenderable =
   | MachinatText
   | GeneralElement
   | PauseElement
-  | ProviderElement
+  | InjectionElement
   | RawElement
   | ThunkElement
   | FunctionalElement<unknown, any>
@@ -44,7 +44,7 @@ export type MachinatElementType =
   | NativeComponent<unknown, any>
   | typeof MACHINAT_FRAGMENT_TYPE
   | typeof MACHINAT_PAUSE_TYPE
-  | typeof MACHINAT_PROVIDER_TYPE
+  | typeof MACHINAT_INJECTION_TYPE
   | typeof MACHINAT_THUNK_TYPE
   | typeof MACHINAT_RAW_TYPE;
 
@@ -109,14 +109,14 @@ export type FragmentElement = MachinatElement<
   typeof MACHINAT_FRAGMENT_TYPE
 >;
 
-export type ProviderProps = {
+export type InjectionProps = {
   provide: Interfaceable<unknown>;
   value: unknown;
   children: MachinatNode;
 };
-export type ProviderElement = MachinatElement<
-  ProviderProps,
-  typeof MACHINAT_PROVIDER_TYPE
+export type InjectionElement = MachinatElement<
+  InjectionProps,
+  typeof MACHINAT_INJECTION_TYPE
 >;
 
 export type PauseUntilFn = () => Promise<void>;

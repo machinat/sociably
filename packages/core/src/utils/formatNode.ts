@@ -1,7 +1,7 @@
 import {
   MACHINAT_PAUSE_TYPE,
   MACHINAT_FRAGMENT_TYPE,
-  MACHINAT_PROVIDER_TYPE,
+  MACHINAT_INJECTION_TYPE,
   MACHINAT_THUNK_TYPE,
   MACHINAT_RAW_TYPE,
 } from '../symbol';
@@ -33,8 +33,8 @@ const formatNode = (element: any, withProps = false): string =>
       ? `<Pause ${withProps ? formatProps(element.props) : ''}/>`
       : element.type === MACHINAT_FRAGMENT_TYPE
       ? `<Fragment ${withProps ? formatProps(element.props) : ''}/>`
-      : element.type === MACHINAT_PROVIDER_TYPE
-      ? `<Provider ${withProps ? formatProps(element.props) : ''}/>`
+      : element.type === MACHINAT_INJECTION_TYPE
+      ? `<Injection ${withProps ? formatProps(element.props) : ''}/>`
       : element.type === MACHINAT_THUNK_TYPE
       ? `<Thunk ${withProps ? formatProps(element.props) : ''}/>`
       : element.type === MACHINAT_RAW_TYPE

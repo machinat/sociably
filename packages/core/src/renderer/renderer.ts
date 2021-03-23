@@ -10,7 +10,7 @@ import {
   isPauseType,
   isThunkType,
   isRawType,
-  isProviderType,
+  isInjectionType,
   isContainerType,
 } from '../utils/isX';
 import type { Interfaceable, ServiceScope } from '../service/types';
@@ -262,7 +262,7 @@ export default class MachinatRenderer<
           },
         ])
       );
-    } else if (isProviderType(node)) {
+    } else if (isInjectionType(node)) {
       // traverse down the children of provider element with the service added
 
       const {

@@ -474,7 +474,7 @@ describe('#render()', () => {
     );
   });
 
-  it('render container component and provide values from Machinat.Provider at render time', async () => {
+  it('render container component and provide values from Machinat.Injection at render time', async () => {
     const FooService = makeInterface('Foo');
     const BarService = makeInterface('Bar');
     const BazService = makeInterface('Baz');
@@ -510,10 +510,10 @@ describe('#render()', () => {
     Native.$$platform = 'test';
 
     const Wrapper = ({ children }) => (
-      <Machinat.Provider provide={BarService} value={1}>
+      <Machinat.Injection provide={BarService} value={1}>
         <Container n={3} />
         {children}
-      </Machinat.Provider>
+      </Machinat.Injection>
     );
 
     await expect(
@@ -521,33 +521,33 @@ describe('#render()', () => {
         <>
           <Container n={1} />
 
-          <Machinat.Provider provide={FooService} value={1}>
+          <Machinat.Injection provide={FooService} value={1}>
             <Container n={2} />
 
             <Wrapper>
-              <Machinat.Provider provide={BazService} value={1}>
+              <Machinat.Injection provide={BazService} value={1}>
                 <Container n={4} />
 
                 <Native>
                   <Container n={5} />
                 </Native>
 
-                <Machinat.Provider provide={FooService} value={2}>
+                <Machinat.Injection provide={FooService} value={2}>
                   <Container n={6} />
 
-                  <Machinat.Provider provide={BarService} value={2}>
-                    <Machinat.Provider provide={BazService} value={2}>
+                  <Machinat.Injection provide={BarService} value={2}>
+                    <Machinat.Injection provide={BazService} value={2}>
                       <Container n={7} />
-                    </Machinat.Provider>
+                    </Machinat.Injection>
 
                     <Container n={8} />
-                  </Machinat.Provider>
-                </Machinat.Provider>
-              </Machinat.Provider>
+                  </Machinat.Injection>
+                </Machinat.Injection>
+              </Machinat.Injection>
             </Wrapper>
 
             <Container n={9} />
-          </Machinat.Provider>
+          </Machinat.Injection>
 
           <Container n={10} />
         </>,
