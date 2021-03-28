@@ -33,7 +33,7 @@ jest.mock('../Connector', () => {
 });
 
 const location = moxy(parseUrl('https://machinat.com/hello'));
-global.window = { location } as never;
+(global as any).window = { location } as never;
 
 const user = { platform: 'test', uid: 'john_doe' };
 const login = moxy(async () => ({

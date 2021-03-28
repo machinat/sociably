@@ -89,8 +89,13 @@ export type WebSocketResult = {
   connections: ConnIdentifier[];
 };
 
+export type WebSocketDispatchChannel =
+  | WebSocketConnection
+  | WebSocketUserChannel
+  | WebSocketTopicChannel;
+
 export type WebSocketDispatchFrame = DispatchFrame<
-  WebSocketTopicChannel | WebSocketUserChannel | WebSocketConnection,
+  WebSocketDispatchChannel,
   WebSocketJob,
   WebSocketBot
 >;

@@ -26,7 +26,11 @@ import {
   WebviewTopicChannel,
   WebviewUserChannel,
 } from './channel';
-import type { WebviewDispatchFrame, WebviewComponent } from './types';
+import type {
+  WebviewDispatchFrame,
+  WebviewComponent,
+  WebviewDispatchChannel,
+} from './types';
 
 type WebSocketDispatchResponse = DispatchResponse<
   WebSocketJob,
@@ -46,15 +50,11 @@ const toConnection = ({ serverId, id }: ConnIdentifier): WebviewConnection =>
  */
 export class WebviewBot<Authorizer extends AnyServerAuthorizer>
   implements
-    MachinatBot<
-      WebviewTopicChannel | WebviewUserChannel | WebviewConnection,
-      WebSocketJob,
-      WebSocketResult
-    > {
+    MachinatBot<WebviewDispatchChannel, WebSocketJob, WebSocketResult> {
   private _server: SocketServerP<Authorizer>;
 
   engine: Engine<
-    WebviewTopicChannel | WebviewUserChannel | WebviewConnection,
+    WebviewDispatchChannel,
     EventInput,
     WebviewComponent,
     WebSocketJob,
@@ -104,10 +104,14 @@ export class WebviewBot<Authorizer extends AnyServerAuthorizer>
   }
 
   render(
-    channel: WebviewConnection | WebviewUserChannel | WebviewTopicChannel,
+    channel: WebviewDispatchChannel,
     message: MachinatNode
   ): Promise<null | WebSocketDispatchResponse> {
-    return this.engine.render(channel, message, createJobs);
+    return this.engine.render<WebviewDispatchChannel>(
+      channel,
+      message,
+      createJobs
+    );
   }
 
   async send(

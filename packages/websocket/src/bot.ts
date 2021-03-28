@@ -28,6 +28,7 @@ import type {
   WebSocketComponent,
   WebSocketDispatchFrame,
   ConnIdentifier,
+  WebSocketDispatchChannel,
 } from './types';
 
 type WebSocketDispatchResponse = DispatchResponse<
@@ -47,14 +48,10 @@ const toConnection = ({ serverId, id }: ConnIdentifier) =>
  */
 export class WebSocketBot
   implements
-    MachinatBot<
-      WebSocketTopicChannel | WebSocketUserChannel | WebSocketConnection,
-      WebSocketJob,
-      WebSocketResult
-    > {
+    MachinatBot<WebSocketDispatchChannel, WebSocketJob, WebSocketResult> {
   private _server: ServerP<any, unknown>;
   engine: Engine<
-    WebSocketTopicChannel | WebSocketUserChannel | WebSocketConnection,
+    WebSocketDispatchChannel,
     EventInput,
     WebSocketComponent,
     WebSocketJob,
@@ -107,10 +104,14 @@ export class WebSocketBot
   }
 
   render(
-    channel: WebSocketConnection | WebSocketUserChannel | WebSocketTopicChannel,
+    channel: WebSocketDispatchChannel,
     message: MachinatNode
   ): Promise<null | WebSocketDispatchResponse> {
-    return this.engine.render(channel, message, createJobs);
+    return this.engine.render<WebSocketDispatchChannel>(
+      channel,
+      message,
+      createJobs
+    );
   }
 
   async send(

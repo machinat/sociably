@@ -94,13 +94,14 @@ export type WebviewEventMiddleware<
   Value extends EventValue = EventValue
 > = EventMiddleware<WebviewEventContext<Authorizer, Value>, null>;
 
+export type WebviewDispatchChannel =
+  | WebviewTopicChannel
+  | WebviewUserChannel
+  | WebviewConnection;
+
 export type WebviewDispatchFrame<
   Authorizer extends AnyServerAuthorizer
-> = DispatchFrame<
-  WebviewTopicChannel | WebviewUserChannel | WebviewConnection,
-  WebSocketJob,
-  BotP<Authorizer>
->;
+> = DispatchFrame<WebviewDispatchChannel, WebSocketJob, BotP<Authorizer>>;
 
 export type WebviewDispatchMiddleware<
   Authorizer extends AnyServerAuthorizer

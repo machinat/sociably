@@ -1,13 +1,8 @@
 import type { DispatchableSegment } from '@machinat/core/engine/types';
-import {
-  WebSocketTopicChannel,
-  WebSocketUserChannel,
-  WebSocketConnection,
-} from '../channel';
-import { EventInput, WebSocketJob } from '../types';
+import { DispatchTarget, EventInput, WebSocketJob } from '../types';
 
 const createJobs = (
-  channel: WebSocketTopicChannel | WebSocketUserChannel | WebSocketConnection,
+  channel: DispatchTarget,
   segments: DispatchableSegment<EventInput>[]
 ): WebSocketJob[] => {
   return [
