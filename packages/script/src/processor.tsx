@@ -2,11 +2,7 @@ import invariant from 'invariant';
 import Machinat from '@machinat/core';
 import StateControllerI from '@machinat/core/base/StateController';
 import { ServiceScope, makeClassProvider } from '@machinat/core/service';
-import type {
-  MachinatChannel,
-  MachinatNode,
-  ThunkElement,
-} from '@machinat/core/types';
+import type { MachinatChannel, MachinatNode } from '@machinat/core/types';
 import execute from './execute';
 import { SCRIPT_STATE_KEY } from './constant';
 import { LibraryListI } from './interface';
@@ -102,12 +98,14 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
     };
   }
 
-  output(): [MachinatNode, ThunkElement] {
+  output(): MachinatNode {
     const { callStack, saveTimestamp } = this;
-    return [
-      [...this._queuedMessages],
-      <Machinat.Thunk effect={() => this._save(callStack, saveTimestamp)} />,
-    ];
+    return (
+      <>
+        {this._queuedMessages}
+        <Machinat.Thunk effect={() => this._save(callStack, saveTimestamp)} />
+      </>
+    );
   }
 
   save(): Promise<boolean> {

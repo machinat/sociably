@@ -1,6 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import { ServiceScope } from '@machinat/core/service';
+import traverseMessage from '@machinat/core/iterator/traverse';
 import { InMemoryStateController } from '@machinat/local-state/inMemory';
 import { ScriptProcessor } from '../processor';
 import build from '../build';
@@ -124,16 +125,24 @@ describe('#start(channel, Script)', () => {
     expect(MyScript.initVars.mock).toHaveBeenCalledTimes(1);
     expect(MyScript.initVars.mock).toHaveBeenCalledWith({});
 
-    const [messages, thunk] = runtime.output();
-    expect(messages).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          "Lorem ",
-          "ipsum ",
-          "dolor ",
-        ],
-      ]
+    const message = runtime.output();
+    expect(message).toMatchInlineSnapshot(`
+      <Machinat.Fragment>
+        Lorem 
+        ipsum 
+        dolor 
+        <Machinat.Thunk
+          effect={[Function]}
+        />
+      </Machinat.Fragment>
     `);
+
+    let thunk;
+    traverseMessage(message, '$', {}, (node) => {
+      if (typeof node === 'object' && node.type === Machinat.Thunk) {
+        thunk = node;
+      }
+    });
 
     await thunk.props.effect();
 
@@ -182,14 +191,22 @@ describe('#start(channel, Script)', () => {
     expect(MyScript.initVars.mock).toHaveBeenCalledTimes(1);
     expect(MyScript.initVars.mock).toHaveBeenCalledWith({});
 
-    const [messages, thunk] = runtime.output();
-    expect(messages).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          "est ",
-        ],
-      ]
+    const message = runtime.output();
+    expect(message).toMatchInlineSnapshot(`
+      <Machinat.Fragment>
+        est 
+        <Machinat.Thunk
+          effect={[Function]}
+        />
+      </Machinat.Fragment>
     `);
+
+    let thunk;
+    traverseMessage(message, '$', {}, (node) => {
+      if (typeof node === 'object' && node.type === Machinat.Thunk) {
+        thunk = node;
+      }
+    });
 
     await thunk.props.effect();
     await expect(
@@ -235,16 +252,24 @@ describe('#start(channel, Script)', () => {
     expect(MyScript.initVars.mock).toHaveBeenCalledTimes(1);
     expect(MyScript.initVars.mock).toHaveBeenCalledWith({ foo: 'bar' });
 
-    const [messages, thunk] = runtime.output();
-    expect(messages).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          "Lorem ",
-          "ipsum ",
-          "est ",
-        ],
-      ]
+    const message = runtime.output();
+    expect(message).toMatchInlineSnapshot(`
+      <Machinat.Fragment>
+        Lorem 
+        ipsum 
+        est 
+        <Machinat.Thunk
+          effect={[Function]}
+        />
+      </Machinat.Fragment>
     `);
+
+    let thunk;
+    traverseMessage(message, '$', {}, (node) => {
+      if (typeof node === 'object' && node.type === Machinat.Thunk) {
+        thunk = node;
+      }
+    });
 
     await thunk.props.effect();
     await expect(
@@ -322,15 +347,23 @@ describe('#continue(channel, input)', () => {
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
 
-    const [messages, thunk] = runtime.output();
-    expect(messages).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          "consectetur ",
-          "adipiscing ",
-        ],
-      ]
+    const message = runtime.output();
+    expect(message).toMatchInlineSnapshot(`
+      <Machinat.Fragment>
+        consectetur 
+        adipiscing 
+        <Machinat.Thunk
+          effect={[Function]}
+        />
+      </Machinat.Fragment>
     `);
+
+    let thunk;
+    traverseMessage(message, '$', {}, (node) => {
+      if (typeof node === 'object' && node.type === Machinat.Thunk) {
+        thunk = node;
+      }
+    });
 
     await thunk.props.effect();
     await expect(
@@ -392,15 +425,23 @@ describe('#continue(channel, input)', () => {
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
 
-    const [messages, thunk] = runtime.output();
-    expect(messages).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          "elit, ",
-          "sed ",
-        ],
-      ]
+    const message = runtime.output();
+    expect(message).toMatchInlineSnapshot(`
+      <Machinat.Fragment>
+        elit, 
+        sed 
+        <Machinat.Thunk
+          effect={[Function]}
+        />
+      </Machinat.Fragment>
     `);
+
+    let thunk;
+    traverseMessage(message, '$', {}, (node) => {
+      if (typeof node === 'object' && node.type === Machinat.Thunk) {
+        thunk = node;
+      }
+    });
 
     await thunk.props.effect();
     await expect(
