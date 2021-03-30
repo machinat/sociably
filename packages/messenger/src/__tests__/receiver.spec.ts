@@ -1,28 +1,37 @@
+import type { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
 import moxy, { Mock } from '@moxyjs/moxy';
 import Channel from '../channel';
 import MessengerUser from '../user';
 import { MessengerReceiver } from '../receiver';
+import type { MessengerBot } from '../bot';
 
-const bot = moxy();
+const bot = moxy<MessengerBot>({
+  render: () => ({ jobs: [], results: [], tasks: [] }),
+} as never);
 
 const popEventMock = new Mock();
 const popEventWrapper = moxy((finalHandler) =>
   popEventMock.proxify((ctx) => finalHandler(ctx))
 );
 
-const createReq = ({ method, url = '/', body = '', headers = {} }) => {
+const createReq = ({
+  method,
+  url = '/',
+  body = '',
+  headers = {},
+}): IncomingMessage => {
   const req = new Readable({
     read() {
       if (body) req.push(body);
       req.push(null);
     },
   });
-  return Object.assign(req, { method, url, body, headers });
+  return Object.assign(req, { method, url, body, headers }) as never;
 };
 
 const createRes = () =>
-  moxy({
+  moxy<ServerResponse>({
     finished: false,
     statusCode: 200,
     writeHead(code) {
@@ -34,7 +43,7 @@ const createRes = () =>
         if (typeof args[i] === 'function') args[i]();
       }
     },
-  });
+  } as never);
 
 beforeEach(() => {
   popEventMock.clear();
@@ -44,7 +53,7 @@ beforeEach(() => {
 it('throw if appSecret not given', () => {
   expect(
     () =>
-      new MessengerReceiver({ shouldHandleVerify: false }, bot, popEventWrapper)
+      new MessengerReceiver({ bot, popEventWrapper, shouldHandleVerify: false })
   ).toThrowErrorMatchingInlineSnapshot(
     `"appSecret should not be empty if shouldValidateRequest set to true"`
   );
@@ -53,11 +62,11 @@ it('throw if appSecret not given', () => {
 it('throw if verifyToken not given', () => {
   expect(
     () =>
-      new MessengerReceiver(
-        { shouldValidateRequest: false },
+      new MessengerReceiver({
         bot,
-        popEventWrapper
-      )
+        popEventWrapper,
+        shouldValidateRequest: false,
+      })
   ).toThrowErrorMatchingInlineSnapshot(
     `"verifyToken should not be empty if shouldHandleVerify set to true"`
   );
@@ -65,11 +74,12 @@ it('throw if verifyToken not given', () => {
 
 describe('handling GET', () => {
   it('respond 403 if shouldHandleVerify set to false', async () => {
-    const receiver = new MessengerReceiver(
-      { shouldHandleVerify: false, appSecret: '_APP_SECRET_' },
+    const receiver = new MessengerReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      shouldHandleVerify: false,
+      appSecret: '_APP_SECRET_',
+    });
 
     const req = createReq({ method: 'GET' });
     const res = createRes();
@@ -82,14 +92,15 @@ describe('handling GET', () => {
     expect(popEventMock).not.toHaveBeenCalled();
   });
 
-  it.each([undefined, '', 'xxx', 'not subscribe'])(
+  it.each(['', 'xxx', 'non_subscribe'])(
     'respond 400 if hub.mode param is not "subscribe"',
     async (mode) => {
-      const receiver = new MessengerReceiver(
-        { verifyToken: '_MY_TOKEN_', shouldValidateRequest: false },
+      const receiver = new MessengerReceiver({
         bot,
-        popEventWrapper
-      );
+        popEventWrapper,
+        verifyToken: '_MY_TOKEN_',
+        shouldValidateRequest: false,
+      });
 
       const req = createReq({
         method: 'GET',
@@ -107,11 +118,12 @@ describe('handling GET', () => {
   );
 
   it('respond 400 if hub.verify_token param not matched', async () => {
-    const receiver = new MessengerReceiver(
-      { verifyToken: '_MY_TOKEN_', shouldValidateRequest: false },
+    const receiver = new MessengerReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      verifyToken: '_MY_TOKEN_',
+      shouldValidateRequest: false,
+    });
 
     const req = createReq({
       method: 'GET',
@@ -128,11 +140,12 @@ describe('handling GET', () => {
   });
 
   it('respond 200 and hub.challenge within body', async () => {
-    const receiver = new MessengerReceiver(
-      { verifyToken: '_MY_TOKEN_', shouldValidateRequest: false },
+    const receiver = new MessengerReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      verifyToken: '_MY_TOKEN_',
+      shouldValidateRequest: false,
+    });
 
     const req = createReq({
       method: 'GET',
@@ -153,11 +166,12 @@ describe('handling GET', () => {
 
 describe('handling POST', () => {
   it('respond 400 if body is empty', async () => {
-    const receiver = new MessengerReceiver(
-      { shouldHandleVerify: false, shouldValidateRequest: false },
+    const receiver = new MessengerReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      shouldHandleVerify: false,
+      shouldValidateRequest: false,
+    });
 
     const req = createReq({ method: 'POST' });
     const res = createRes();
@@ -171,11 +185,12 @@ describe('handling POST', () => {
   });
 
   it('respond 400 if body is not in valid JSON format', async () => {
-    const receiver = new MessengerReceiver(
-      { shouldHandleVerify: false, shouldValidateRequest: false },
+    const receiver = new MessengerReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      shouldHandleVerify: false,
+      shouldValidateRequest: false,
+    });
 
     const req = createReq({ method: 'POST', body: 'I am Jason' });
     const res = createRes();
@@ -189,11 +204,12 @@ describe('handling POST', () => {
   });
 
   it('respond 404 if "object" field is not "page"', async () => {
-    const receiver = new MessengerReceiver(
-      { shouldHandleVerify: false, shouldValidateRequest: false },
+    const receiver = new MessengerReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      shouldHandleVerify: false,
+      shouldValidateRequest: false,
+    });
 
     const req = createReq({ method: 'POST', body: '{"object":"Pegg"}' });
     const res = createRes();
@@ -207,11 +223,12 @@ describe('handling POST', () => {
   });
 
   it('respond 200 and popEvents', async () => {
-    const receiver = new MessengerReceiver(
-      { shouldHandleVerify: false, shouldValidateRequest: false },
+    const receiver = new MessengerReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      shouldHandleVerify: false,
+      shouldValidateRequest: false,
+    });
 
     const body = {
       object: 'page',
@@ -288,11 +305,12 @@ describe('handling POST', () => {
   });
 
   it('create channel from optin.user_ref if sender not included', async () => {
-    const receiver = new MessengerReceiver(
-      { shouldHandleVerify: false, shouldValidateRequest: false },
+    const receiver = new MessengerReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      shouldHandleVerify: false,
+      shouldValidateRequest: false,
+    });
 
     const body = {
       object: 'page',
@@ -356,13 +374,45 @@ describe('handling POST', () => {
     }
   });
 
-  it('works if signature validation passed', async () => {
-    const appSecret = '_MY_SECRET_';
-    const receiver = new MessengerReceiver(
-      { appSecret, shouldHandleVerify: false },
+  test('reply(message) sugar', async () => {
+    const receiver = new MessengerReceiver({
       bot,
-      popEventWrapper
+      popEventWrapper,
+      shouldHandleVerify: false,
+      shouldValidateRequest: false,
+    });
+
+    await receiver.handleRequest(
+      createReq({
+        method: 'POST',
+        body:
+          '{"object":"page","entry":[{"id":"_PAGE_ID_","time":1458692752478,"messaging":[{"sender":{"id":"_PSID_"},"recipient":{"id":"_PAGE_ID_"},"message":{"mid":"xxx","text":"foo"}}]}]}',
+      }),
+      createRes()
     );
+
+    expect(popEventMock).toHaveBeenCalledTimes(1);
+    const { reply, event } = popEventMock.calls[0].args[0];
+    await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
+            Object {
+              "jobs": Array [],
+              "results": Array [],
+              "tasks": Array [],
+            }
+          `);
+
+    expect(bot.render.mock).toHaveBeenCalledTimes(1);
+    expect(bot.render.mock).toHaveBeenCalledWith(event.channel, 'hello world');
+  });
+
+  test('passing signature validation', async () => {
+    const appSecret = '_MY_SECRET_';
+    const receiver = new MessengerReceiver({
+      bot,
+      popEventWrapper,
+      appSecret,
+      shouldHandleVerify: false,
+    });
 
     const body =
       '{"object":"page","entry":[{"id":"_PAGE_ID_","time":1458692752478,"messaging":[{"sender":{"id":"_PSID_"},"recipient":{"id":"_PAGE_ID_"},"message":{"mid":"xxx","text":"foo"}}]}]}';
@@ -392,11 +442,12 @@ describe('handling POST', () => {
 
   it('respond 401 if signature is invalid', async () => {
     const appSecret = '_MY_SECRET_';
-    const receiver = new MessengerReceiver(
-      { appSecret, shouldHandleVerify: false },
+    const receiver = new MessengerReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      appSecret,
+      shouldHandleVerify: false,
+    });
 
     const body = '{"some":"body"}';
     const hmac = '_WRONG_SIGNATURE_';
@@ -415,11 +466,12 @@ describe('handling POST', () => {
   });
 
   it('respond 400 if body is empty', async () => {
-    const receiver = new MessengerReceiver(
-      { shouldHandleVerify: false, shouldValidateRequest: false },
+    const receiver = new MessengerReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      shouldHandleVerify: false,
+      shouldValidateRequest: false,
+    });
     const req = createReq({ method: 'POST' });
     const res = createRes();
 

@@ -1,24 +1,32 @@
 import { Readable } from 'stream';
-import { ServerResponse } from 'http';
+import { IncomingMessage, ServerResponse } from 'http';
 import moxy, { Mock, Moxy } from '@moxyjs/moxy';
 
 import { TelegramReceiver } from '../receiver';
 import { TelegramChat } from '../channel';
 import TelegramUser from '../user';
+import type { TelegramBot } from '../bot';
 
-const bot = moxy();
+const bot = moxy<TelegramBot>({
+  render: async () => ({ tasks: [], results: [], jobs: [] }),
+} as never);
 
 const popEventMock = new Mock();
 const popEventWrapper = moxy((popEvent) => popEventMock.proxify(popEvent));
 
-const createReq = ({ method, url = '/', body = '', headers = {} }) => {
+const createReq = ({
+  method,
+  url = '/',
+  body = '',
+  headers = {},
+}): IncomingMessage => {
   const req = new Readable({
     read() {
       if (body) req.push(body);
       req.push(null);
     },
   });
-  return Object.assign(req, { method, url, body, headers });
+  return Object.assign(req, { method, url, body, headers }) as never;
 };
 
 const createRes = (): Moxy<ServerResponse> =>
@@ -67,18 +75,18 @@ beforeEach(() => {
 
 it('throw if options.botId is empty', () => {
   expect(
-    () => new TelegramReceiver({} as never, bot, popEventWrapper)
+    () => new TelegramReceiver({ bot, popEventWrapper } as never)
   ).toThrowErrorMatchingInlineSnapshot(`"options.botId should not be empty"`);
 });
 
 it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   'responds 405 if req.method is %s',
   async (method) => {
-    const receiver = new TelegramReceiver(
-      { botId: 12345 },
+    const receiver = new TelegramReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      botId: 12345,
+    });
 
     const req = createReq({ method });
     const res = createRes();
@@ -91,38 +99,38 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 );
 
 it('responds 400 if body is empty', async () => {
-  const receiver = new TelegramReceiver({ botId: 12345 }, bot, popEventWrapper);
+  const receiver = new TelegramReceiver({ bot, popEventWrapper, botId: 12345 });
 
   const req = createReq({ method: 'POST' });
   const res = createRes();
 
-  await receiver.handleRequest(req as never, res);
+  await receiver.handleRequest(req, res);
 
   expect(res.statusCode).toBe(400);
   expect(res.finished).toBe(true);
 });
 
 it('responds 400 if body is not in valid json format', async () => {
-  const receiver = new TelegramReceiver({ botId: 12345 }, bot, popEventWrapper);
+  const receiver = new TelegramReceiver({ bot, popEventWrapper, botId: 12345 });
 
   const req = createReq({ method: 'POST', body: "I'm Jason" });
   const res = createRes();
 
-  await receiver.handleRequest(req as never, res);
+  await receiver.handleRequest(req, res);
 
   expect(res.statusCode).toBe(400);
   expect(res.finished).toBe(true);
 });
 
 it('respond 200 and pop events received', async () => {
-  const receiver = new TelegramReceiver({ botId: 12345 }, bot, popEventWrapper);
+  const receiver = new TelegramReceiver({ bot, popEventWrapper, botId: 12345 });
 
   const bodyStr = JSON.stringify(updateBody);
 
   const req = createReq({ method: 'POST', body: bodyStr });
   const res = createRes();
 
-  await receiver.handleRequest(req as never, res);
+  await receiver.handleRequest(req, res);
 
   expect(res.statusCode).toBe(200);
   expect(res.finished).toBe(true);
@@ -154,12 +162,35 @@ it('respond 200 and pop events received', async () => {
   expect(context.event.payload).toEqual(updateBody);
 });
 
-it('verify request path is options.secretPath, respond 401 if fail', async () => {
-  const receiver = new TelegramReceiver(
-    { botId: 12345, secretPath: '__SECRET_PATH__' },
-    bot,
-    popEventWrapper
+test('reply(message) sugar', async () => {
+  const receiver = new TelegramReceiver({ bot, popEventWrapper, botId: 12345 });
+
+  await receiver.handleRequest(
+    createReq({ method: 'POST', body: JSON.stringify(updateBody) }),
+    createRes()
   );
+
+  expect(popEventMock).toHaveBeenCalledTimes(1);
+  const { reply, event } = popEventMock.calls[0].args[0];
+  await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
+          Object {
+            "jobs": Array [],
+            "results": Array [],
+            "tasks": Array [],
+          }
+        `);
+
+  expect(bot.render.mock).toHaveBeenCalledTimes(1);
+  expect(bot.render.mock).toHaveBeenCalledWith(event.channel, 'hello world');
+});
+
+it('verify request path matching options.secretPath', async () => {
+  const receiver = new TelegramReceiver({
+    bot,
+    popEventWrapper,
+    botId: 12345,
+    secretPath: '__SECRET_PATH__',
+  });
 
   const req1 = createReq({
     method: 'POST',
@@ -167,7 +198,7 @@ it('verify request path is options.secretPath, respond 401 if fail', async () =>
     body: JSON.stringify(updateBody),
   });
   const res1 = createRes();
-  await receiver.handleRequest(req1 as never, res1);
+  await receiver.handleRequest(req1, res1);
 
   expect(res1.statusCode).toBe(200);
   expect(res1.finished).toBe(true);
@@ -179,7 +210,7 @@ it('verify request path is options.secretPath, respond 401 if fail', async () =>
     body: JSON.stringify(updateBody),
   });
   const res2 = createRes();
-  await receiver.handleRequest(req2 as never, res2);
+  await receiver.handleRequest(req2, res2);
 
   expect(res2.statusCode).toBe(401);
   expect(res2.finished).toBe(true);
@@ -190,7 +221,7 @@ it('verify request path is options.secretPath, respond 401 if fail', async () =>
     body: JSON.stringify(updateBody),
   });
   const res3 = createRes();
-  await receiver.handleRequest(req3 as never, res3);
+  await receiver.handleRequest(req3, res3);
 
   expect(res3.statusCode).toBe(401);
   expect(res3.finished).toBe(true);
@@ -198,16 +229,14 @@ it('verify request path is options.secretPath, respond 401 if fail', async () =>
   expect(popEventMock).toHaveBeenCalledTimes(1);
 });
 
-it('verify secretPath with entryPath', async () => {
-  const receiver = new TelegramReceiver(
-    {
-      botId: 12345,
-      secretPath: '__SECRET_PATH__',
-      entryPath: '/telegram',
-    },
+test('verify secretPath with entryPath provided', async () => {
+  const receiver = new TelegramReceiver({
     bot,
-    popEventWrapper
-  );
+    popEventWrapper,
+    botId: 12345,
+    secretPath: '__SECRET_PATH__',
+    entryPath: '/telegram',
+  });
 
   const req1 = createReq({
     method: 'POST',
@@ -215,7 +244,7 @@ it('verify secretPath with entryPath', async () => {
     body: JSON.stringify(updateBody),
   });
   const res1 = createRes();
-  await receiver.handleRequest(req1 as never, res1);
+  await receiver.handleRequest(req1, res1);
 
   expect(res1.statusCode).toBe(200);
   expect(res1.finished).toBe(true);
@@ -227,7 +256,7 @@ it('verify secretPath with entryPath', async () => {
     body: JSON.stringify(updateBody),
   });
   const res2 = createRes();
-  await receiver.handleRequest(req2 as never, res2);
+  await receiver.handleRequest(req2, res2);
 
   expect(res2.statusCode).toBe(401);
   expect(res2.finished).toBe(true);
@@ -239,19 +268,20 @@ it('verify secretPath with entryPath', async () => {
     body: JSON.stringify(updateBody),
   });
   const res3 = createRes();
-  await receiver.handleRequest(req3 as never, res3);
+  await receiver.handleRequest(req3, res3);
 
   expect(res3.statusCode).toBe(401);
   expect(res3.finished).toBe(true);
   expect(popEventMock).toHaveBeenCalledTimes(1);
 });
 
-it('verify secretPath when RoutingInfo given', async () => {
-  const receiver = new TelegramReceiver(
-    { botId: 12345, secretPath: '__SECRET_PATH__' },
+it('verify secretPath if routing info is received', async () => {
+  const receiver = new TelegramReceiver({
     bot,
-    popEventWrapper
-  );
+    popEventWrapper,
+    botId: 12345,
+    secretPath: '__SECRET_PATH__',
+  });
 
   const req1 = createReq({
     method: 'POST',
@@ -259,7 +289,7 @@ it('verify secretPath when RoutingInfo given', async () => {
     body: JSON.stringify(updateBody),
   });
   const res1 = createRes();
-  await receiver.handleRequest(req1 as never, res1, {
+  await receiver.handleRequest(req1, res1, {
     originalPath: '/webhook/telegram/__SECRET_PATH__',
     matchedPath: '/webhook/telegram',
     trailingPath: '__SECRET_PATH__',
@@ -275,7 +305,7 @@ it('verify secretPath when RoutingInfo given', async () => {
     body: JSON.stringify(updateBody),
   });
   const res2 = createRes();
-  await receiver.handleRequest(req2 as never, res2, {
+  await receiver.handleRequest(req2, res2, {
     originalPath: '/webhook/telegram/__WRONG_PATH__',
     matchedPath: '/webhook/telegram',
     trailingPath: '__WRONG_PATH__',

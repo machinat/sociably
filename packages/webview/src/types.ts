@@ -1,6 +1,7 @@
 import type {
   MachinatUser,
-  PlatformMounter,
+  MachinatNode,
+  PlatformUtilities,
   EventMiddleware,
   DispatchMiddleware,
   NativeComponent,
@@ -23,6 +24,7 @@ import type {
   WebSocketMetadata,
   WebSocketJob,
   WebSocketResult,
+  WebSocketDispatchResponse,
 } from '@machinat/websocket/types';
 import type { BotP } from './bot';
 import type {
@@ -75,6 +77,7 @@ export type WebviewEventContext<
   event: WebviewEvent<Value, UserOfAuthorizer<Authorizer>>;
   metadata: WebviewMetadata<ContextOfAuthorizer<Authorizer>>;
   bot: BotP<Authorizer>;
+  reply(message: MachinatNode): Promise<null | WebSocketDispatchResponse>;
 };
 
 export type WebviewClientEvent<
@@ -99,15 +102,14 @@ export type WebviewDispatchChannel =
   | WebviewUserChannel
   | WebviewConnection;
 
-export type WebviewDispatchFrame<
-  Authorizer extends AnyServerAuthorizer
-> = DispatchFrame<WebviewDispatchChannel, WebSocketJob, BotP<Authorizer>>;
+export type WebviewDispatchFrame = DispatchFrame<
+  WebviewDispatchChannel,
+  WebSocketJob
+>;
 
-export type WebviewDispatchMiddleware<
-  Authorizer extends AnyServerAuthorizer
-> = DispatchMiddleware<
+export type WebviewDispatchMiddleware = DispatchMiddleware<
   WebSocketJob,
-  WebviewDispatchFrame<Authorizer>,
+  WebviewDispatchFrame,
   WebSocketResult
 >;
 
@@ -148,15 +150,15 @@ export type WebviewConfigs<
   eventMiddlewares?: MaybeContainer<
     WebviewEventMiddleware<Authorizer, Value>
   >[];
-  dispatchMiddlewares?: MaybeContainer<WebviewDispatchMiddleware<Authorizer>>[];
+  dispatchMiddlewares?: MaybeContainer<WebviewDispatchMiddleware>[];
 };
 
-export type WebviewPlatformMounter<
+export type WebviewPlatformUtilities<
   Authorizer extends AnyServerAuthorizer
-> = PlatformMounter<
+> = PlatformUtilities<
   WebviewEventContext<Authorizer, EventValue>,
   null,
   WebSocketJob,
-  WebviewDispatchFrame<Authorizer>,
+  WebviewDispatchFrame,
   WebSocketResult
 >;

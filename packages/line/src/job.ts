@@ -28,8 +28,8 @@ const createMessageJob = (
     : { to: channel.id, messages },
 });
 
-export const chatJobsMaker = (replyToken: void | string) => {
-  let messagingJobsCount = 0;
+export const createChatJobs = (replyToken: void | string) => {
+  let totalJobsCount = 0;
 
   return (
     channel: LineChat,
@@ -50,16 +50,28 @@ export const chatJobsMaker = (replyToken: void | string) => {
 
         // flush messages buffer if accumlated to 5 or at the end of loop
         if (messagesBuffer.length === 5 || i === segments.length - 1) {
-          jobs.push(createMessageJob(channel, messagesBuffer, replyToken));
+          jobs.push(
+            createMessageJob(
+              channel,
+              messagesBuffer,
+              totalJobsCount === 0 ? replyToken : undefined
+            )
+          );
           messagesBuffer = [];
-          messagingJobsCount += 1;
+          totalJobsCount += 1;
         }
       } else {
         // push buffered messages first
         if (messagesBuffer.length > 0) {
-          jobs.push(createMessageJob(channel, messagesBuffer, replyToken));
+          jobs.push(
+            createMessageJob(
+              channel,
+              messagesBuffer,
+              totalJobsCount === 0 ? replyToken : undefined
+            )
+          );
           messagesBuffer = [];
-          messagingJobsCount += 1;
+          totalJobsCount += 1;
         }
 
         // get dynamic api request
@@ -73,19 +85,13 @@ export const chatJobsMaker = (replyToken: void | string) => {
       }
     }
 
-    if (replyToken && messagingJobsCount > 1) {
-      throw new RangeError(
-        'more then 1 messaging request rendered while using replyToken'
-      );
-    }
-
     return jobs;
   };
 };
 
 const MULITCAST_EXECUTION_KEY = '$$_multicast_$$';
 
-export const multicastJobsMaker = (targets: string[]) => (
+export const createMulticastJobs = (targets: string[]) => (
   _: null,
   segments: DispatchableSegment<LineSegmentValue>[]
 ) => {

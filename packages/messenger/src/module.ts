@@ -1,4 +1,4 @@
-import type { PlatformModule } from '@machinat/core/types';
+import type { MachinatPlatform } from '@machinat/core/types';
 import type { ServiceProvision } from '@machinat/core/service/types';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import BaseBot from '@machinat/core/base/Bot';
@@ -7,7 +7,7 @@ import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import type { RequestRoute } from '@machinat/http/types';
 
-import { ConfigsI, PlatformMounterI } from './interface';
+import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { MESSENGER } from './constant';
 import { BotP } from './bot';
 import { ReceiverP } from './receiver';
@@ -52,7 +52,7 @@ namespace Messenger {
 
   export const initModule = (
     configs: MessengerConfigs
-  ): PlatformModule<
+  ): MachinatPlatform<
     MessengerEventContext,
     null,
     MessengerJob,
@@ -89,7 +89,7 @@ namespace Messenger {
 
     return {
       name: MESSENGER,
-      mounterInterface: PlatformMounterI,
+      utilitiesInterface: PlatformUtilitiesI,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions,

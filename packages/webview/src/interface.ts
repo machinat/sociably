@@ -13,7 +13,7 @@ import type { NextServer } from '@machinat/next/types';
 import WebSocket, { WebSocketServer } from '@machinat/websocket';
 import { useAuthController, verifyOrigin } from './utils';
 import { DEFAULT_AUTH_PATH } from './constant';
-import type { WebviewConfigs, WebviewPlatformMounter } from './types';
+import type { WebviewConfigs, WebviewPlatformUtilities } from './types';
 
 export const ConfigsI = makeInterface<WebviewConfigs<AnyServerAuthorizer>>({
   name: 'WebviewConfigs',
@@ -86,15 +86,10 @@ export const NextReceiverP: ServiceProvider<
   lifetime: 'singleton',
   deps: [NextServerI, ConfigsI] as const,
   factory: (server, { noPrepareNext, webviewPath }) =>
-    new WebviewNextReceiver(
-      server,
-      {
-        entryPath: webviewPath,
-        noPrepare: noPrepareNext,
-      },
-      null,
-      null
-    ),
+    new WebviewNextReceiver(server, {
+      entryPath: webviewPath,
+      noPrepare: noPrepareNext,
+    }),
 })(WebviewNextReceiver);
 
 export type NextReceiverP = WebviewNextReceiver;
@@ -171,8 +166,8 @@ export type SocketServerP<
   Authorizer extends AnyServerAuthorizer
 > = WebviewSocketServer<Authorizer>;
 
-export const PlatformMounterI = makeInterface<
-  WebviewPlatformMounter<AnyServerAuthorizer>
+export const PlatformUtilitiesI = makeInterface<
+  WebviewPlatformUtilities<AnyServerAuthorizer>
 >({
-  name: 'WebviewPlatformMounter',
+  name: 'WebviewPlatformUtilities',
 });

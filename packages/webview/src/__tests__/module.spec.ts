@@ -83,10 +83,10 @@ test('module object', () => {
   });
 
   expect(module.name).toBe('webview');
-  expect(module.mounterInterface).toMatchInlineSnapshot(`
+  expect(module.utilitiesInterface).toMatchInlineSnapshot(`
     Object {
       "$$multi": false,
-      "$$name": "WebviewPlatformMounter",
+      "$$name": "WebviewPlatformUtilities",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }

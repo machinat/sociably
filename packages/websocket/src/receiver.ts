@@ -1,10 +1,11 @@
-import { makeClassProvider } from '@machinat/core/service';
 import type {
   MachinatUser,
   PopEventWrapper,
   PopEventFn,
   PopErrorFn,
 } from '@machinat/core/types';
+import { makeClassProvider } from '@machinat/core/service';
+import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import type { HttpRequestInfo } from '@machinat/http/types';
 
 import { WebSocketConnection } from './channel';
@@ -12,7 +13,7 @@ import { BotP } from './bot';
 import { ServerP } from './server';
 import createEvent from './utils/createEvent';
 import { WEBSOCKET } from './constant';
-import { PlatformMounterI } from './interface';
+import { PlatformUtilitiesI } from './interface';
 import type {
   WebSocketEventContext,
   ConnectEventValue,
@@ -101,14 +102,15 @@ export class WebSocketReceiver<User extends null | MachinatUser, Auth> {
         connection: channel,
         auth,
       },
+      reply: (message) => this._bot.render(channel, message),
     });
   }
 }
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, ServerP, PlatformMounterI] as const,
-  factory: (bot, server, { popEventWrapper, popError }) =>
+  deps: [BotP, ServerP, ModuleUtilitiesI, PlatformUtilitiesI] as const,
+  factory: (bot, server, { popError }, { popEventWrapper }) =>
     new WebSocketReceiver(bot, server, popEventWrapper, popError),
 })(WebSocketReceiver);
 

@@ -3,8 +3,11 @@ import moxy, { Mock } from '@moxyjs/moxy';
 import type { WebSocketServer } from '../server';
 import { WebSocketReceiver } from '../receiver';
 import { WebSocketConnection } from '../channel';
+import type { WebSocketBot } from '../bot';
 
-const bot = moxy();
+const bot = moxy<WebSocketBot>({
+  render: async () => ({ jobs: [], results: [], tasks: [] }),
+} as never);
 
 const server = moxy<WebSocketServer<any, unknown>>(new EventEmitter() as never);
 server.id = '_SERVER_ID_';
@@ -66,6 +69,7 @@ it('pop events', () => {
       channel: connection,
     },
     metadata: expectedMetadata,
+    reply: expect.any(Function),
   });
 
   server.emit(
@@ -86,6 +90,7 @@ it('pop events', () => {
       channel: connection,
     },
     metadata: expectedMetadata,
+    reply: expect.any(Function),
   });
   expect(popEventMock).toHaveBeenNthCalledWith(3, {
     platform: 'websocket',
@@ -98,6 +103,7 @@ it('pop events', () => {
       channel: connection,
     },
     metadata: expectedMetadata,
+    reply: expect.any(Function),
   });
 
   server.emit('disconnect', { reason: 'bye' }, connectionInfo);
@@ -113,9 +119,35 @@ it('pop events', () => {
       channel: connection,
     },
     metadata: expectedMetadata,
+    reply: expect.any(Function),
   });
 
   expect(popError.mock).not.toHaveBeenCalled();
+});
+
+test('reply(message) sugar', async () => {
+  (() => new WebSocketReceiver(bot, server, popEventWrapper, popError))();
+
+  server.emit('connect', {
+    connId: '_CONN_ID_',
+    user,
+    request,
+    authContext: { foo: 'bar' },
+    expireAt: null,
+  });
+
+  expect(popEventMock).toHaveBeenCalledTimes(1);
+  const { reply, event } = popEventMock.calls[0].args[0];
+  await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
+          Object {
+            "jobs": Array [],
+            "results": Array [],
+            "tasks": Array [],
+          }
+        `);
+
+  expect(bot.render.mock).toHaveBeenCalledTimes(1);
+  expect(bot.render.mock).toHaveBeenCalledWith(event.channel, 'hello world');
 });
 
 it('pop error', () => {

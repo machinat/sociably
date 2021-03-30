@@ -1,4 +1,9 @@
-import moxy, { Mock } from '@moxyjs/moxy';
+import {
+  createEmptyScope,
+  makeContainer,
+  ServiceScope,
+} from '@machinat/core/service';
+import moxy from '@moxyjs/moxy';
 import type createNextApp from 'next';
 import { IncomingMessage, ServerResponse } from 'http';
 import { NextReceiver } from '../receiver';
@@ -16,10 +21,8 @@ const nextApp = moxy<ReturnType<typeof createNextApp>>({
 
 const nextTick = () => new Promise((resolve) => process.nextTick(resolve));
 
-const popEventMock = new Mock();
-const popEventWrapper = moxy((finalHandler) =>
-  popEventMock.proxify(finalHandler)
-);
+const requestHandler = moxy(() => ({ ok: true as const }));
+const initScope = moxy(createEmptyScope);
 const popError = moxy();
 
 const req = moxy<IncomingMessage>({
@@ -35,18 +38,16 @@ beforeEach(() => {
   req.mock.reset();
   res = moxy(new ServerResponse(req));
 
-  popEventMock.reset();
-  popEventWrapper.mock.reset();
+  requestHandler.mock.reset();
+  initScope.mock.reset();
   popError.mock.reset();
 });
 
 it('respond 503 if request received before prepared', async () => {
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: false },
-    popEventWrapper,
-    popError
-  );
+  const receiver = new NextReceiver(nextApp, {
+    noPrepare: false,
+    handleRequest: requestHandler,
+  });
 
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
@@ -55,16 +56,11 @@ it('respond 503 if request received before prepared', async () => {
   expect(res.end.mock).toHaveBeenCalledTimes(1);
 
   expect(nextApp.renderError.mock).not.toHaveBeenCalled();
-  expect(popEventMock).not.toHaveBeenCalled();
+  expect(requestHandler.mock).not.toHaveBeenCalled();
 });
 
-test('#prepare() call next.prepare() if shouldPrepare is true', async () => {
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: false },
-    popEventWrapper,
-    popError
-  );
+test('#prepare() call next.prepare()', async () => {
+  const receiver = new NextReceiver(nextApp, { noPrepare: false });
   expect(nextApp.prepare.mock).not.toHaveBeenCalled();
 
   await receiver.prepare();
@@ -72,50 +68,19 @@ test('#prepare() call next.prepare() if shouldPrepare is true', async () => {
   expect(nextApp.prepare.mock).toHaveBeenCalledTimes(1);
 });
 
-test('prepare() not call next.prepare() if shouldPrepare is false', async () => {
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: true },
-    popEventWrapper,
-    popError
-  );
+test('#prepare() not call next.prepare() if shouldPrepare is false', async () => {
+  const receiver = new NextReceiver(nextApp, { noPrepare: true });
   await receiver.prepare();
 
   expect(nextApp.prepare.mock).not.toHaveBeenCalled();
 });
 
-it('call next request handler if middlewares resolve accepted', async () => {
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: true },
-    popEventWrapper,
-    popError
-  );
+test('default handleRequest behavior', async () => {
+  const receiver = new NextReceiver(nextApp, { noPrepare: true, popError });
   await receiver.prepare();
 
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
-
-  const expectedRequestObj = {
-    method: 'GET',
-    url: 'http://machinat.com/hello?foo=bar',
-    headers: { 'x-y-z': 'abc' },
-  };
-
-  expect(popEventMock).toHaveBeenCalledTimes(1);
-  expect(popEventMock.calls[0].args[0]).toEqual({
-    platform: 'next',
-    bot: null,
-    event: {
-      platform: 'next',
-      kind: 'request',
-      type: 'request',
-      payload: { request: expectedRequestObj },
-      channel: null,
-      user: null,
-    },
-    metadata: { source: 'next', request: expectedRequestObj },
-  });
 
   expect(res.statusCode).toBe(200);
 
@@ -148,21 +113,18 @@ it('call next request handler if middlewares resolve accepted', async () => {
   `);
 });
 
-it('trim the entryPath from the url passed to next handler', async () => {
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: true, entryPath: '/hello' },
-    popEventWrapper,
-    popError
-  );
+it('trim url path with entryPath', async () => {
+  const receiver = new NextReceiver(nextApp, {
+    noPrepare: true,
+    entryPath: '/hello',
+    popError,
+    handleRequest: requestHandler,
+  });
   await receiver.prepare();
 
   req.mock.getter('url').fakeReturnValue('http://machinat.com/hello/world');
   receiver.handleRequest(req, res);
   await nextTick();
-
-  expect(popEventMock).toHaveBeenCalledTimes(1);
-  expect(popEventMock.calls[0].args[0]).toMatchSnapshot();
 
   expect(nextApp.renderError.mock).not.toHaveBeenCalled();
   expect(nextApp.render.mock).not.toHaveBeenCalled();
@@ -179,13 +141,13 @@ it('trim the entryPath from the url passed to next handler', async () => {
   expect(parsedUrlPassed.pathname).toBe('/world');
 });
 
-it('call next.renderError() with status 404 if entryPath not match', async () => {
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: true, entryPath: '/hello' },
-    popEventWrapper,
-    popError
-  );
+it('respond 404 if entryPath not match', async () => {
+  const receiver = new NextReceiver(nextApp, {
+    noPrepare: true,
+    entryPath: '/hello',
+    popError,
+    handleRequest: requestHandler,
+  });
   await receiver.prepare();
 
   req.mock.getter('url').fakeReturnValue('http://machinat.com/foo/world');
@@ -193,7 +155,7 @@ it('call next.renderError() with status 404 if entryPath not match', async () =>
   receiver.handleRequest(req, res);
   await nextTick();
 
-  expect(popEventMock).not.toHaveBeenCalled();
+  expect(requestHandler.mock).not.toHaveBeenCalled();
   expect(nextApp.render.mock).not.toHaveBeenCalled();
   expect(nextDefaultHandler.mock).not.toHaveBeenCalled();
 
@@ -211,41 +173,39 @@ it('call next.renderError() with status 404 if entryPath not match', async () =>
   expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(404);
 });
 
-it('set customized headers return by middlewares on res', async () => {
-  popEventMock.fake(async () => ({
-    accepted: true,
+test('customized headers returned by handleRequest', async () => {
+  requestHandler.mock.fake(async () => ({
+    ok: true,
     headers: { 'x-foo': 'foo', 'x-bar': 'bar' },
   }));
 
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: true },
-    popEventWrapper,
-    popError
-  );
+  const receiver = new NextReceiver(nextApp, {
+    noPrepare: true,
+    popError,
+    handleRequest: requestHandler,
+  });
   await receiver.prepare();
 
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
 
-  expect(popEventMock).toHaveBeenCalledTimes(1);
-  expect(popEventMock.calls[0].args[0]).toMatchSnapshot();
+  expect(requestHandler.mock).toHaveBeenCalledTimes(1);
+  expect(requestHandler.mock.calls[0].args[0]).toMatchSnapshot();
 
   expect(res.statusCode).toBe(200);
   expect(res.getHeaders()).toEqual({ 'x-foo': 'foo', 'x-bar': 'bar' });
 });
 
-it('call next.render() if there is cutomized page or query return by middlewares', async () => {
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: true },
-    popEventWrapper,
-    popError
-  );
+it('call next.render() with page/query returned by handleRequest', async () => {
+  const receiver = new NextReceiver(nextApp, {
+    noPrepare: true,
+    popError,
+    handleRequest: requestHandler,
+  });
   await receiver.prepare();
 
-  popEventMock.fake(async () => ({
-    accepted: true,
+  requestHandler.mock.fake(async () => ({
+    ok: true,
     page: '/hello/world',
     query: { foo: 'bar' },
     headers: { 'x-y-z': 'a_b_c' },
@@ -254,8 +214,8 @@ it('call next.render() if there is cutomized page or query return by middlewares
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
 
-  expect(popEventMock).toHaveReturnedTimes(1);
-  expect(popEventMock.calls[0].args[0]).toMatchSnapshot();
+  expect(requestHandler.mock).toHaveReturnedTimes(1);
+  expect(requestHandler.mock.calls[0].args[0]).toMatchSnapshot();
 
   expect(nextDefaultHandler.mock).not.toHaveBeenCalled();
   expect(nextApp.renderError.mock).not.toHaveBeenCalled();
@@ -294,36 +254,66 @@ it('call next.render() if there is cutomized page or query return by middlewares
     headers: { 'x-y-z': 'abc' },
   };
 
-  expect(popEventMock).toHaveBeenCalledTimes(1);
-  expect(popEventMock.calls[0].args[0]).toEqual({
-    platform: 'next',
-    bot: null,
-    event: {
-      platform: 'next',
-      kind: 'request',
-      type: 'request',
-      payload: { request: expectedRequestObj },
-      channel: null,
-      user: null,
-    },
-    metadata: { source: 'next', request: expectedRequestObj },
-  });
+  expect(requestHandler.mock).toHaveBeenCalledTimes(1);
+  expect(requestHandler.mock).toHaveBeenCalledWith(expectedRequestObj);
 
   expect(res.statusCode).toBe(200);
   expect(res.getHeaders()).toEqual({ 'x-y-z': 'a_b_c' });
 });
 
-it('call next.renderError() if middlewares resolve unaccepted', async () => {
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: true },
-    popEventWrapper,
-    popError
-  );
+test('use service container for handleRequest', async () => {
+  const handleRequestFn = moxy(() => ({ ok: true as const, page: '/foo' }));
+  const useRequestHandler = moxy(() => handleRequestFn);
+
+  const receiver = new NextReceiver(nextApp, {
+    noPrepare: true,
+    popError,
+    initScope,
+    handleRequest: makeContainer({ deps: [ServiceScope] })(useRequestHandler),
+  });
   await receiver.prepare();
 
-  popEventMock.fake(async () => ({
-    accepted: false,
+  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  await nextTick();
+
+  expect(initScope.mock).toHaveBeenCalledTimes(1);
+  expect(useRequestHandler.mock).toHaveReturnedTimes(1);
+  expect(useRequestHandler.mock).toHaveBeenCalledWith(
+    initScope.mock.calls[0].result
+  );
+
+  expect(nextDefaultHandler.mock).not.toHaveBeenCalled();
+  expect(nextApp.renderError.mock).not.toHaveBeenCalled();
+
+  expect(nextApp.render.mock).toHaveBeenCalledTimes(1);
+  expect(nextApp.render.mock).toHaveBeenCalledWith(
+    req,
+    res,
+    '/foo',
+    { foo: 'bar' },
+    expect.any(Object)
+  );
+
+  expect(handleRequestFn.mock).toHaveBeenCalledTimes(1);
+  expect(handleRequestFn.mock).toHaveBeenCalledWith({
+    method: 'GET',
+    url: 'http://machinat.com/hello?foo=bar',
+    headers: { 'x-y-z': 'abc' },
+  });
+
+  expect(res.statusCode).toBe(200);
+});
+
+it('call next.renderError() handleRequest return not ok', async () => {
+  const receiver = new NextReceiver(nextApp, {
+    noPrepare: true,
+    popError,
+    handleRequest: requestHandler,
+  });
+  await receiver.prepare();
+
+  requestHandler.mock.fake(async () => ({
+    ok: false,
     code: 418,
     reason: "I'm a teapot",
   }));
@@ -331,8 +321,8 @@ it('call next.renderError() if middlewares resolve unaccepted', async () => {
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
 
-  expect(popEventMock).toHaveBeenCalledTimes(1);
-  expect(popEventMock.calls[0].args[0]).toMatchSnapshot();
+  expect(requestHandler.mock).toHaveBeenCalledTimes(1);
+  expect(requestHandler.mock.calls[0].args[0]).toMatchSnapshot();
 
   expect(nextApp.render.mock).not.toHaveBeenCalled();
   expect(nextDefaultHandler.mock).not.toHaveBeenCalled();
@@ -347,21 +337,19 @@ it('call next.renderError() if middlewares resolve unaccepted', async () => {
   );
 
   expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(418);
-
   expect(popError.mock).not.toHaveBeenCalled();
 });
 
-it('call next.renderError() with customized headers resolved by middleware', async () => {
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: true },
-    popEventWrapper,
-    popError
-  );
+it('call next.renderError() with customized headers return by handleRequest', async () => {
+  const receiver = new NextReceiver(nextApp, {
+    noPrepare: true,
+    popError,
+    handleRequest: requestHandler,
+  });
   await receiver.prepare();
 
-  popEventMock.fake(async () => ({
-    accepted: false,
+  requestHandler.mock.fake(async () => ({
+    ok: false,
     code: 418,
     reason: "I'm a teapot",
     headers: { 'x-x-x': 't-e-a-p-o-t' },
@@ -383,13 +371,13 @@ it('call next.renderError() with customized headers resolved by middleware', asy
   });
 });
 
-it('pass "_next" internal api calls directly to next request handler', async () => {
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: true, entryPath: '/hello' },
-    popEventWrapper,
-    popError
-  );
+it('pass "_next" api calls to next directly', async () => {
+  const receiver = new NextReceiver(nextApp, {
+    noPrepare: true,
+    entryPath: '/hello',
+    popError,
+    handleRequest: requestHandler,
+  });
   await receiver.prepare();
 
   req.mock.getter('url').fakeReturnValue('http://machinat.com/hello/_next/xxx');
@@ -397,7 +385,7 @@ it('pass "_next" internal api calls directly to next request handler', async () 
   receiver.handleRequest(req, res);
   await nextTick();
 
-  expect(popEventMock).not.toHaveBeenCalled();
+  expect(requestHandler.mock).not.toHaveBeenCalled();
   expect(nextApp.render.mock).not.toHaveBeenCalled();
   expect(nextApp.renderError.mock).not.toHaveBeenCalled();
 
@@ -413,16 +401,16 @@ it('pass "_next" internal api calls directly to next request handler', async () 
 });
 
 test('entryPath does not affect page params from middlewares', async () => {
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: true, entryPath: '/hello' },
-    popEventWrapper,
-    popError
-  );
+  const receiver = new NextReceiver(nextApp, {
+    noPrepare: true,
+    entryPath: '/hello',
+    popError,
+    handleRequest: requestHandler,
+  });
   await receiver.prepare();
 
-  popEventMock.fake(async () => ({
-    accepted: true,
+  requestHandler.mock.fake(async () => ({
+    ok: true,
     page: '/hello/world',
     query: { foo: 'bar' },
   }));
@@ -441,22 +429,21 @@ test('entryPath does not affect page params from middlewares', async () => {
 });
 
 it('call next.renderError() if middlewares reject', async () => {
-  const receiver = new NextReceiver(
-    nextApp,
-    { noPrepare: true },
-    popEventWrapper,
-    popError
-  );
+  const receiver = new NextReceiver(nextApp, {
+    noPrepare: true,
+    popError,
+    handleRequest: requestHandler,
+  });
   await receiver.prepare();
 
-  popEventMock.fake(async () => {
+  requestHandler.mock.fake(async () => {
     throw new Error("I'm a teapot");
   });
 
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
 
-  expect(popEventMock).toHaveBeenCalledTimes(1);
+  expect(requestHandler.mock).toHaveBeenCalledTimes(1);
 
   expect(nextApp.render.mock).not.toHaveBeenCalled();
   expect(nextDefaultHandler.mock).not.toHaveBeenCalled();

@@ -43,7 +43,7 @@ export const isInterfaceable = (target: any): target is Interfaceable<any> =>
   (target.$$typeof === MACHINAT_SERVICE_INTERFACE ||
     target.$$typeof === MACHINAT_SERVICE_PROVIDER);
 
-export const createEmptyScope = (platform?: string): ServiceScope =>
+export const createEmptyScope = (): ServiceScope =>
   new ServiceScope(new ServiceMaker(new ProvisionMap()), new Map());
 
 /** @internal */

@@ -4,7 +4,7 @@ import type {
   WsServer,
   AnyVerifyLoginFn,
   VerifyUpgradeFn,
-  WebSocketPlatformMounter,
+  WebSocketPlatformUtilities,
   WebSocketConfigs,
   WebSocketClusterBroker,
 } from './types';
@@ -46,10 +46,10 @@ export const ServerIdI = makeInterface<string>({
 /**
  * @category Interface
  */
-export const PlatformMounterI = makeInterface<
-  WebSocketPlatformMounter<MachinatUser, unknown>
+export const PlatformUtilitiesI = makeInterface<
+  WebSocketPlatformUtilities<MachinatUser, unknown>
 >({
-  name: 'WebSocketPlatformMounter',
+  name: 'WebSocketPlatformUtilities',
 });
 
 /**

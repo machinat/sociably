@@ -9,22 +9,26 @@ import type { PopEventWrapper } from '@machinat/core/types';
 
 import eventFactory from './event/factory';
 import { BotP } from './bot';
-import { ConfigsI, PlatformMounterI } from './interface';
+import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { TELEGRAM } from './constant';
 import type { TelegramEventContext, TelegramRawEvent } from './types';
 
 type TelegramReceiverOptions = {
+  bot: BotP;
+  popEventWrapper: PopEventWrapper<TelegramEventContext, null>;
   botId: number;
   entryPath?: string;
   secretPath?: string;
 };
 
 /** @internal */
-const handleWebhook = (
-  { botId, secretPath, entryPath = '/' }: TelegramReceiverOptions,
-  bot: BotP,
-  popEventWrapper: PopEventWrapper<TelegramEventContext, null>
-): WebhookHandler => {
+const handleWebhook = ({
+  bot,
+  popEventWrapper,
+  botId,
+  secretPath,
+  entryPath = '/',
+}: TelegramReceiverOptions): WebhookHandler => {
   const popEvent = popEventWrapper(async () => null);
   const createEvent = eventFactory(botId);
 
@@ -63,7 +67,16 @@ const handleWebhook = (
 
     const event = createEvent(body);
 
-    await popEvent({ platform: TELEGRAM, bot, event, metadata });
+    await popEvent({
+      platform: TELEGRAM,
+      bot,
+      event,
+      metadata,
+      reply: (message) =>
+        event.channel
+          ? bot.render(event.channel, message)
+          : Promise.resolve(null),
+    });
     return { code: 200 };
   };
 };
@@ -73,27 +86,24 @@ const handleWebhook = (
  * @category Provider
  */
 export class TelegramReceiver extends WebhookReceiver {
-  constructor(
-    options: TelegramReceiverOptions,
-    bot: BotP,
-    popEventWrapper: PopEventWrapper<TelegramEventContext, null>
-  ) {
+  constructor(options: TelegramReceiverOptions) {
     invariant(options?.botId, 'options.botId should not be empty');
-
-    super(handleWebhook(options, bot, popEventWrapper));
+    super(handleWebhook(options));
   }
 }
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, PlatformMounterI] as const,
+  deps: [ConfigsI, BotP, PlatformUtilitiesI] as const,
   factory: ({ botToken, secretPath, entryPath }, bot, { popEventWrapper }) => {
     const botId = Number(botToken.split(':', 1)[0]);
-    return new TelegramReceiver(
-      { botId, secretPath, entryPath },
+    return new TelegramReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      botId,
+      secretPath,
+      entryPath,
+    });
   },
 })(TelegramReceiver);
 

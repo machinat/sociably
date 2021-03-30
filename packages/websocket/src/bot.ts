@@ -1,6 +1,7 @@
 import Engine from '@machinat/core/engine';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
+import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
 import type {
   MachinatNode,
@@ -9,10 +10,9 @@ import type {
   InitScopeFn,
   DispatchWrapper,
 } from '@machinat/core/types';
-import type { DispatchResponse } from '@machinat/core/engine/types';
 
 import { WEBSOCKET } from './constant';
-import { PlatformMounterI } from './interface';
+import { PlatformUtilitiesI } from './interface';
 import { ServerP } from './server';
 import {
   WebSocketConnection,
@@ -29,12 +29,8 @@ import type {
   WebSocketDispatchFrame,
   ConnIdentifier,
   WebSocketDispatchChannel,
+  WebSocketDispatchResponse,
 } from './types';
-
-type WebSocketDispatchResponse = DispatchResponse<
-  WebSocketJob,
-  WebSocketResult
->;
 
 type SendResult = {
   connections: WebSocketConnection[];
@@ -61,7 +57,7 @@ export class WebSocketBot
 
   constructor(
     server: ServerP<any, unknown>,
-    initScope: InitScopeFn = () => createEmptyScope(WEBSOCKET),
+    initScope: InitScopeFn = () => createEmptyScope(),
     dispatchWrapper: DispatchWrapper<
       WebSocketJob,
       WebSocketDispatchFrame,
@@ -84,7 +80,6 @@ export class WebSocketBot
 
     this.engine = new Engine(
       WEBSOCKET,
-      this,
       renderer,
       queue,
       worker,
@@ -188,9 +183,17 @@ export class WebSocketBot
 
 export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ServerP, { require: PlatformMounterI, optional: true }] as const,
-  factory: (server, mounter) =>
-    new WebSocketBot(server, mounter?.initScope, mounter?.dispatchWrapper),
+  deps: [
+    ServerP,
+    { require: ModuleUtilitiesI, optional: true },
+    { require: PlatformUtilitiesI, optional: true },
+  ] as const,
+  factory: (server, moduleUtils, platformUtils) =>
+    new WebSocketBot(
+      server,
+      moduleUtils?.initScope,
+      platformUtils?.dispatchWrapper
+    ),
 })(WebSocketBot);
 
 export type BotP = WebSocketBot;

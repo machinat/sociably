@@ -1,5 +1,5 @@
 import { makeInterface } from '@machinat/core/service';
-import type { MessengerPlatformMounter, MessengerConfigs } from './types';
+import type { MessengerPlatformUtilities, MessengerConfigs } from './types';
 
 /**
  * @category Interface
@@ -13,6 +13,6 @@ export type ConfigsI = MessengerConfigs;
 /**
  * @category Interface
  */
-export const PlatformMounterI = makeInterface<MessengerPlatformMounter>({
-  name: 'MessengerPlatformMounter',
+export const PlatformUtilitiesI = makeInterface<MessengerPlatformUtilities>({
+  name: 'MessengerPlatformUtilities',
 });

@@ -5,16 +5,19 @@ import {
   makeFactoryProvider,
   makeInterface,
 } from '../service';
-import BaseBot from '../base/Bot';
-import BaseProfiler from '../base/Profiler';
-import BaseMarshaler from '../base/Marshaler';
+import BaseBotP from '../base/Bot';
+import BaseProfilerP from '../base/Profiler';
+import BaseMarshalerP from '../base/Marshaler';
+import ModuleUtilitiesI from '../base/ModuleUtilities';
 import ServiceScope from '../service/scope';
 import App from '../app';
 
 const moxy = moxyFactory({
   includeProperties: ['*'],
-  excludeProperties: ['$$deps', 'provisions', 'mounterInterface'],
+  excludeProperties: ['$$deps', 'provisions', 'utilitiesInterface'],
 });
+
+const useModuleUtils = moxy(() => ({}));
 
 const TestService = moxy(
   makeClassProvider({
@@ -23,7 +26,13 @@ const TestService = moxy(
 );
 
 const TestModule = {
-  provisions: [TestService],
+  provisions: [
+    TestService,
+    makeFactoryProvider({
+      lifetime: 'singleton',
+      deps: [ModuleUtilitiesI],
+    })(useModuleUtils),
+  ],
   startHook: moxy(makeContainer({ deps: [TestService] })(async () => {})),
 };
 
@@ -50,17 +59,19 @@ const FooService = moxy(
   })(class FooService {})
 );
 
-const TEST_PLATFORM_MOUNTER = makeInterface({ name: 'TestMounter' });
-const consumeTestMounter = moxy();
-const testMountingFactory = makeFactoryProvider({
-  deps: [TEST_PLATFORM_MOUNTER],
-  lifetime: 'singleton',
-})(consumeTestMounter);
+const TestPlatformUtilsI = makeInterface({ name: 'TestPlatformUtils' });
+const useTestPlatformUtils = moxy(() => ({}));
 
 const FooPlatform = moxy({
   name: 'foo',
-  provisions: [FooService, testMountingFactory],
-  mounterInterface: TEST_PLATFORM_MOUNTER,
+  provisions: [
+    FooService,
+    makeFactoryProvider({
+      lifetime: 'singleton',
+      deps: [TestPlatformUtilsI, ModuleUtilitiesI],
+    })(useTestPlatformUtils),
+  ],
+  utilitiesInterface: TestPlatformUtilsI,
   startHook: makeContainer({
     deps: [TestService, AnotherService, FooService],
   })(async () => {}),
@@ -83,17 +94,19 @@ const BarService = moxy(
   })(class BarService {})
 );
 
-const ANOTHER_PLATFORM_MOUNTER = makeInterface({ name: 'AnotherMounter' });
-const consumeAnotherMounter = moxy();
-const anotherMountingFactory = makeFactoryProvider({
-  deps: [ANOTHER_PLATFORM_MOUNTER],
-  lifetime: 'singleton',
-})(consumeAnotherMounter);
+const AnotherPlatformUtilsI = makeInterface({ name: 'AnotherPlatformUtils' });
+const useAnotherPlatformUtils = moxy(() => ({}));
 
 const BarPlatform = {
   name: 'bar',
-  mounterInterface: ANOTHER_PLATFORM_MOUNTER,
-  provisions: [BarService, anotherMountingFactory],
+  utilitiesInterface: AnotherPlatformUtilsI,
+  provisions: [
+    BarService,
+    makeFactoryProvider({
+      deps: [AnotherPlatformUtilsI],
+      lifetime: 'singleton',
+    })(useAnotherPlatformUtils),
+  ],
   startHook: moxy(
     makeContainer({
       deps: [TestService, AnotherService, BarService],
@@ -127,8 +140,9 @@ beforeEach(() => {
   MyService.mock.reset();
   YourService.mock.reset();
 
-  consumeTestMounter.mock.reset();
-  consumeAnotherMounter.mock.reset();
+  useModuleUtils.mock.reset();
+  useTestPlatformUtils.mock.reset();
+  useAnotherPlatformUtils.mock.reset();
 });
 
 it('start modules', async () => {
@@ -186,7 +200,7 @@ it('start modules', async () => {
   expect(YourService.$$factory.mock).not.toHaveBeenCalled();
 });
 
-it('provide mounter utilities by PlatformModule.mounterInterface', async () => {
+it('provide platform utilities bound to utilitiesInterface', async () => {
   const app = new App({
     modules: [TestModule, AnotherModule],
     platforms: [FooPlatform, BarPlatform],
@@ -195,55 +209,132 @@ it('provide mounter utilities by PlatformModule.mounterInterface', async () => {
 
   await app.start();
 
-  expect(consumeTestMounter.mock).toHaveBeenCalledTimes(1);
-  expect(consumeTestMounter.mock).toHaveBeenCalledWith({
-    initScope: expect.any(Function),
-    popError: expect.any(Function),
-    popEventWrapper: expect.any(Function),
-    dispatchWrapper: expect.any(Function),
-  });
-  expect(consumeAnotherMounter.mock).toHaveBeenCalledTimes(1);
-  expect(consumeAnotherMounter.mock).toHaveBeenCalledWith({
-    initScope: expect.any(Function),
-    popError: expect.any(Function),
+  expect(useTestPlatformUtils.mock).toHaveBeenCalledTimes(1);
+  expect(useTestPlatformUtils.mock).toHaveBeenCalledWith(
+    {
+      popEventWrapper: expect.any(Function),
+      dispatchWrapper: expect.any(Function),
+    },
+    {
+      initScope: expect.any(Function),
+      popError: expect.any(Function),
+    }
+  );
+  expect(useAnotherPlatformUtils.mock).toHaveBeenCalledTimes(1);
+  expect(useAnotherPlatformUtils.mock).toHaveBeenCalledWith({
     popEventWrapper: expect.any(Function),
     dispatchWrapper: expect.any(Function),
   });
 });
 
-test('mounter.initScope() provide services to platform module', async () => {
-  const app = new App({
-    modules: [TestModule, AnotherModule],
-    platforms: [FooPlatform, BarPlatform],
-    services: [MyService, YourService],
+describe('module utilities', () => {
+  const eventListener = moxy();
+  const errorListener = moxy();
+
+  beforeEach(() => {
+    eventListener.mock.clear();
+    errorListener.mock.clear();
   });
 
-  await app.start();
+  test('initScope', async () => {
+    const app = new App({
+      modules: [TestModule, AnotherModule],
+      platforms: [FooPlatform, BarPlatform],
+      services: [MyService, YourService],
+    });
 
-  const { initScope } = consumeTestMounter.mock.calls[0].args[0];
-  const scope = initScope();
-  expect(scope).toBeInstanceOf(ServiceScope);
+    await app.start();
 
-  expect(
-    scope.useServices([
-      TestService,
-      AnotherService,
-      FooService,
-      BarService,
-      MyService,
-      YourService,
-    ])
-  ).toEqual([
-    expect.any(TestService),
-    expect.any(AnotherService),
-    expect.any(FooService),
-    expect.any(BarService),
-    expect.any(MyService),
-    expect.any(YourService),
-  ]);
+    const { initScope } = useModuleUtils.mock.calls[0].args[0];
+    const scope = initScope();
+    expect(scope).toBeInstanceOf(ServiceScope);
+
+    expect(
+      scope.useServices([
+        TestService,
+        AnotherService,
+        FooService,
+        BarService,
+        MyService,
+        YourService,
+      ])
+    ).toEqual([
+      expect.any(TestService),
+      expect.any(AnotherService),
+      expect.any(FooService),
+      expect.any(BarService),
+      expect.any(MyService),
+      expect.any(YourService),
+    ]);
+  });
+
+  test('popError', async () => {
+    const app = new App({
+      modules: [TestModule, AnotherModule],
+      platforms: [FooPlatform, BarPlatform],
+      services: [MyService, YourService],
+    })
+      .onEvent(eventListener)
+      .onError(errorListener);
+
+    await app.start();
+
+    const { popError } = useModuleUtils.mock.calls[0].args[0];
+    expect(popError(new Error("Don't call again!"))).toBe(undefined);
+
+    expect(eventListener.mock).not.toHaveBeenCalled();
+    expect(errorListener.mock).toHaveBeenCalledTimes(1);
+    expect(errorListener.mock).toHaveBeenCalledWith(
+      new Error("Don't call again!")
+    );
+  });
+
+  test('listen error using DI container', async () => {
+    const containedListener = moxy();
+    const errorListnerContainer = moxy(
+      makeContainer({
+        deps: [
+          FooService,
+          BarService,
+          TestService,
+          AnotherService,
+          MyService,
+          YourService,
+        ],
+      })(() => containedListener)
+    );
+
+    const app = new App({
+      modules: [TestModule, AnotherModule],
+      platforms: [FooPlatform, BarPlatform],
+      services: [MyService, YourService],
+    })
+      .onEvent(eventListener)
+      .onError(errorListnerContainer);
+
+    await app.start();
+
+    const { popError } = useModuleUtils.mock.calls[0].args[0];
+    popError(new Error('hello container'));
+
+    expect(errorListnerContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+    expect(errorListnerContainer.$$factory.mock).toHaveBeenCalledWith(
+      expect.any(FooService),
+      expect.any(BarService),
+      expect.any(TestService),
+      expect.any(AnotherService),
+      expect.any(MyService),
+      expect.any(YourService)
+    );
+
+    expect(containedListener.mock).toHaveBeenCalledTimes(1);
+    expect(containedListener.mock).toHaveBeenCalledWith(
+      new Error('hello container')
+    );
+  });
 });
 
-describe('poping event from platform module', () => {
+describe('popEventWrapper', () => {
   const eventContext = {
     platform: 'test',
     channel: { phone: 'call' },
@@ -262,7 +353,7 @@ describe('poping event from platform module', () => {
     errorListener.mock.clear();
   });
 
-  test('emit event', async () => {
+  test('pop event through middlewares', async () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
@@ -273,7 +364,7 @@ describe('poping event from platform module', () => {
 
     await app.start();
 
-    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(popEventWrapper(finalHandler)(eventContext)).resolves.toEqual({
       only: 49.99,
@@ -295,7 +386,7 @@ describe('poping event from platform module', () => {
     }
   });
 
-  test('middlewares can modify context and reponse', async () => {
+  test('modify context and reponse within middleware', async () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
@@ -319,7 +410,7 @@ describe('poping event from platform module', () => {
       long: 2,
     }));
 
-    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(popEventWrapper(finalHandler)(eventContext)).resolves.toEqual({
       only: 49.99,
@@ -338,7 +429,7 @@ describe('poping event from platform module', () => {
     expect(errorListener.mock).not.toHaveBeenCalled();
   });
 
-  test('middleware can bypass the finalHandler', async () => {
+  test('bypass the finalHandler within middleware', async () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
@@ -353,7 +444,7 @@ describe('poping event from platform module', () => {
       hello: 'and bye!',
     }));
 
-    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(popEventWrapper(finalHandler)(eventContext)).resolves.toEqual({
       hello: 'and bye!',
@@ -367,7 +458,7 @@ describe('poping event from platform module', () => {
     expect(errorListener.mock).not.toHaveBeenCalled();
   });
 
-  test('throw and popError if error thrown in middlewares', async () => {
+  test('error thrown within middleware', async () => {
     const app = new App({
       modules: [TestModule, AnotherModule],
       platforms: [FooPlatform, BarPlatform],
@@ -382,7 +473,7 @@ describe('poping event from platform module', () => {
       throw new Error("I'll call police!");
     });
 
-    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(popEventWrapper(finalHandler)(eventContext)).rejects.toThrow(
       "I'll call police!"
@@ -399,7 +490,7 @@ describe('poping event from platform module', () => {
     );
   });
 
-  test('throw and popError if error thrown in finalHandler', async () => {
+  test('error thrown within finalHandler', async () => {
     finalHandler.mock.fake(async () => {
       throw new Error('DO~DOO~DOOOO~DO~');
     });
@@ -414,7 +505,7 @@ describe('poping event from platform module', () => {
 
     await app.start();
 
-    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(popEventWrapper(finalHandler)(eventContext)).rejects.toThrow(
       'DO~DOO~DOOOO~DO~'
@@ -430,7 +521,7 @@ describe('poping event from platform module', () => {
     );
   });
 
-  test('middleware can catch error', async () => {
+  test('catch error within middleware', async () => {
     finalHandler.mock.fake(async () => {
       throw new Error('DO~DOO~DOOOO~DO~');
     });
@@ -454,7 +545,7 @@ describe('poping event from platform module', () => {
       }
     });
 
-    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(popEventWrapper(finalHandler)(eventContext)).resolves.toEqual({
       hello: 'DO~DOO~DOOOO~DO~',
@@ -468,7 +559,7 @@ describe('poping event from platform module', () => {
     expect(errorListener.mock).not.toHaveBeenCalled();
   });
 
-  test('DI within event listener', async () => {
+  test('use service container for event listener', async () => {
     const containedListener = moxy();
     const eventListenerContainer = moxy(
       makeContainer({
@@ -492,7 +583,7 @@ describe('poping event from platform module', () => {
       .onError(errorListener);
 
     await app.start();
-    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await popEventWrapper(finalHandler)(eventContext);
 
@@ -510,7 +601,7 @@ describe('poping event from platform module', () => {
     expect(containedListener.mock).toHaveBeenCalledWith(eventContext);
   });
 
-  test('DI within event middleware', async () => {
+  test('use service container for middleware', async () => {
     const containedMiddleware = moxy((ctx, next) => next(ctx));
     const middlewareContainer = moxy(
       makeContainer({
@@ -539,7 +630,7 @@ describe('poping event from platform module', () => {
 
     await app.start();
 
-    const { popEventWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { popEventWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(popEventWrapper(finalHandler)(eventContext)).resolves.toEqual({
       only: 49.99,
@@ -565,82 +656,7 @@ describe('poping event from platform module', () => {
   });
 });
 
-describe('poping error from platform module', () => {
-  const eventListener = moxy();
-  const errorListener = moxy();
-
-  beforeEach(() => {
-    eventListener.mock.clear();
-    errorListener.mock.clear();
-  });
-
-  test('pop error from platform', async () => {
-    const app = new App({
-      modules: [TestModule, AnotherModule],
-      platforms: [FooPlatform, BarPlatform],
-      services: [MyService, YourService],
-    })
-      .onEvent(eventListener)
-      .onError(errorListener);
-
-    await app.start();
-
-    const { popError } = consumeTestMounter.mock.calls[0].args[0];
-    expect(popError(new Error("Don't call again!"))).toBe(undefined);
-
-    expect(eventListener.mock).not.toHaveBeenCalled();
-    expect(errorListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledWith(
-      new Error("Don't call again!")
-    );
-  });
-
-  test('DI within error listener', async () => {
-    const containedListener = moxy();
-    const errorListnerContainer = moxy(
-      makeContainer({
-        deps: [
-          FooService,
-          BarService,
-          TestService,
-          AnotherService,
-          MyService,
-          YourService,
-        ],
-      })(() => containedListener)
-    );
-
-    const app = new App({
-      modules: [TestModule, AnotherModule],
-      platforms: [FooPlatform, BarPlatform],
-      services: [MyService, YourService],
-    })
-      .onEvent(eventListener)
-      .onError(errorListnerContainer);
-
-    await app.start();
-
-    const { popError } = consumeTestMounter.mock.calls[0].args[0];
-    popError(new Error('hello container'));
-
-    expect(errorListnerContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-    expect(errorListnerContainer.$$factory.mock).toHaveBeenCalledWith(
-      expect.any(FooService),
-      expect.any(BarService),
-      expect.any(TestService),
-      expect.any(AnotherService),
-      expect.any(MyService),
-      expect.any(YourService)
-    );
-
-    expect(containedListener.mock).toHaveBeenCalledTimes(1);
-    expect(containedListener.mock).toHaveBeenCalledWith(
-      new Error('hello container')
-    );
-  });
-});
-
-describe('dispatch through middlewares', () => {
+describe('dispatchWrapper', () => {
   const dispatchFrame = {
     platform: 'test',
     channel: { a: 'new hope' },
@@ -668,7 +684,7 @@ describe('dispatch through middlewares', () => {
     });
     await app.start();
 
-    const { dispatchWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { dispatchWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual(
       dispatchResponse
@@ -707,7 +723,7 @@ describe('dispatch through middlewares', () => {
       long: 2,
     }));
 
-    const { dispatchWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { dispatchWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual({
       ...dispatchResponse,
@@ -737,7 +753,7 @@ describe('dispatch through middlewares', () => {
       captured: 'by empire',
     }));
 
-    const { dispatchWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { dispatchWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual({
       captured: 'by empire',
@@ -761,7 +777,7 @@ describe('dispatch through middlewares', () => {
       throw new Error('Obi-Wan vanished');
     });
 
-    const { dispatchWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { dispatchWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(dispatchWrapper(dispatcher)(dispatchFrame)).rejects.toThrow(
       'Obi-Wan vanished'
@@ -800,7 +816,7 @@ describe('dispatch through middlewares', () => {
       }
     });
 
-    const { dispatchWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { dispatchWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual(
       newResponse
@@ -838,7 +854,7 @@ describe('dispatch through middlewares', () => {
     });
     await app.start();
 
-    const { dispatchWrapper } = consumeTestMounter.mock.calls[0].args[0];
+    const { dispatchWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual(
       dispatchResponse
@@ -909,13 +925,13 @@ describe('#useServices(requirements)', () => {
     await app.start();
 
     const [bot, profiler, marshaler] = app.useServices([
-      BaseBot,
-      BaseProfiler,
-      BaseMarshaler,
+      BaseBotP,
+      BaseProfilerP,
+      BaseMarshalerP,
     ]);
 
-    expect(bot).toBeInstanceOf(BaseBot);
-    expect(profiler).toBeInstanceOf(BaseProfiler);
-    expect(marshaler).toBeInstanceOf(BaseMarshaler);
+    expect(bot).toBeInstanceOf(BaseBotP);
+    expect(profiler).toBeInstanceOf(BaseProfilerP);
+    expect(marshaler).toBeInstanceOf(BaseMarshalerP);
   });
 });

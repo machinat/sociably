@@ -1,5 +1,5 @@
 import { makeInterface } from '@machinat/core/service';
-import type { LineConfigs, LinePlatformMounter } from './types';
+import type { LineConfigs, LinePlatformUtilities } from './types';
 
 /**
  * @category Interface
@@ -13,6 +13,6 @@ export type ConfigsI = LineConfigs;
 /**
  * @category Interface
  */
-export const PlatformMounterI = makeInterface<LinePlatformMounter>({
-  name: 'LinePlatformMounter',
+export const PlatformUtilitiesI = makeInterface<LinePlatformUtilities>({
+  name: 'LinePlatformUtilities',
 });

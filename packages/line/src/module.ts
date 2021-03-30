@@ -1,4 +1,4 @@
-import type { PlatformModule } from '@machinat/core/types';
+import type { MachinatPlatform } from '@machinat/core/types';
 import type { ServiceProvision } from '@machinat/core/service/types';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import BaseBot from '@machinat/core/base/Bot';
@@ -7,7 +7,7 @@ import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import { RequestRoute } from '@machinat/http/types';
 
-import { ConfigsI, PlatformMounterI } from './interface';
+import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { LINE } from './constant';
 import { ReceiverP } from './receiver';
 import { BotP } from './bot';
@@ -51,7 +51,7 @@ namespace Line {
 
   export const initModule = (
     configs: ConfigsI
-  ): PlatformModule<
+  ): MachinatPlatform<
     LineEventContext,
     null,
     LineJob,
@@ -89,7 +89,7 @@ namespace Line {
 
     return {
       name: LINE,
-      mounterInterface: PlatformMounterI,
+      utilitiesInterface: PlatformUtilitiesI,
       provisions,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,

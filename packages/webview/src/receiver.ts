@@ -1,9 +1,10 @@
-import { makeClassProvider } from '@machinat/core/service';
 import type {
   PopEventWrapper,
   PopEventFn,
   PopErrorFn,
 } from '@machinat/core/types';
+import { makeClassProvider } from '@machinat/core/service';
+import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import {
   AnyServerAuthorizer,
   UserOfAuthorizer,
@@ -18,7 +19,7 @@ import {
 } from '@machinat/websocket/types';
 
 import { WEBVIEW } from './constant';
-import { SocketServerP, PlatformMounterI } from './interface';
+import { SocketServerP, PlatformUtilitiesI } from './interface';
 import { BotP } from './bot';
 import { WebviewConnection } from './channel';
 import { createEvent } from './utils';
@@ -101,14 +102,15 @@ export class WebviewReceiver<
         connection: channel,
         auth: authContext,
       },
+      reply: (message) => this._bot.render(channel, message),
     }).catch(this._popError);
   }
 }
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, SocketServerP, PlatformMounterI] as const,
-  factory: (bot, server, { popEventWrapper, popError }) =>
+  deps: [BotP, SocketServerP, ModuleUtilitiesI, PlatformUtilitiesI] as const,
+  factory: (bot, server, { popError }, { popEventWrapper }) =>
     new WebviewReceiver(bot, server, popEventWrapper, popError),
 })(WebviewReceiver);
 

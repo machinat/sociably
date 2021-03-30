@@ -2,7 +2,8 @@ import type {
   NativeComponent,
   EventMiddleware,
   DispatchMiddleware,
-  PlatformMounter,
+  PlatformUtilities,
+  MachinatNode,
 } from '@machinat/core/types';
 import type {
   DispatchFrame,
@@ -52,6 +53,7 @@ export type LineEventContext = {
   event: LineEvent;
   metadata: WebhookMetadata;
   bot: LineBot;
+  reply(message: MachinatNode): Promise<null | LineDispatchResponse>;
 };
 
 export type LineWebhookRequestBody = {
@@ -225,7 +227,7 @@ export type LineResult = {
 
 export type LineDispatchResponse = DispatchResponse<LineJob, LineResult>;
 
-export type LineDispatchFrame = DispatchFrame<LineChat, LineJob, LineBot>;
+export type LineDispatchFrame = DispatchFrame<LineChat, LineJob>;
 
 export type LineEventMiddleware = EventMiddleware<LineEventContext, null>;
 export type LineDispatchMiddleware = DispatchMiddleware<
@@ -248,7 +250,7 @@ export type LineConfigs = {
   dispatchMiddlewares?: MaybeContainer<LineDispatchMiddleware>[];
 };
 
-export type LinePlatformMounter = PlatformMounter<
+export type LinePlatformUtilities = PlatformUtilities<
   LineEventContext,
   null,
   LineJob,

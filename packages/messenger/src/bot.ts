@@ -1,10 +1,9 @@
 import invariant from 'invariant';
 import Engine, { DispatchError } from '@machinat/core/engine';
-import type { DispatchResponse } from '@machinat/core/engine/types';
 import Queue from '@machinat/core/queue';
 import Renderer from '@machinat/core/renderer';
+import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
-
 import type {
   MachinatNode,
   MachinatBot,
@@ -14,12 +13,10 @@ import type {
 
 import MessengerWorker from './worker';
 import generalComponentDelegator from './components/general';
-
 import { MESSENGER } from './constant';
-import { ConfigsI, PlatformMounterI } from './interface';
+import { ConfigsI, PlatformUtilitiesI } from './interface';
 import MessengerChannel from './channel';
-import { chatJobsMaker, makeAttachmentJobs } from './job';
-
+import { createChatJobs, createAttachmentJobs } from './job';
 import type {
   MessengerTarget,
   MessengerComponent,
@@ -27,11 +24,18 @@ import type {
   MessengerResult,
   MessengerSegmentValue,
   MessengerDispatchFrame,
+  MessengerDispatchResponse,
   MessengerSendOptions,
   FbGraphApiResult,
 } from './types';
 
 type MessengerBotOptions = {
+  initScope?: InitScopeFn;
+  dispatchWrapper?: DispatchWrapper<
+    MessengerJob,
+    MessengerDispatchFrame,
+    MessengerResult
+  >;
   pageId: string;
   accessToken: string;
   appSecret?: string;
@@ -55,20 +59,14 @@ export class MessengerBot
     MessengerBot
   >;
 
-  constructor(
-    {
-      pageId,
-      accessToken,
-      appSecret,
-      consumeInterval = 500,
-    }: MessengerBotOptions,
-    initScope: InitScopeFn = () => createEmptyScope(MESSENGER),
-    dispatchWrapper: DispatchWrapper<
-      MessengerJob,
-      MessengerDispatchFrame,
-      MessengerResult
-    > = (dispatch) => dispatch
-  ) {
+  constructor({
+    pageId,
+    accessToken,
+    appSecret,
+    consumeInterval = 500,
+    initScope = () => createEmptyScope(),
+    dispatchWrapper = (dispatch) => dispatch,
+  }: MessengerBotOptions) {
     invariant(pageId, 'options.pageId should not be empty');
     this.pageId = pageId;
 
@@ -84,7 +82,6 @@ export class MessengerBot
 
     this.engine = new Engine(
       MESSENGER,
-      this,
       renderer,
       queue,
       worker,
@@ -105,7 +102,7 @@ export class MessengerBot
     target: string | MessengerTarget | MessengerChannel,
     messages: MachinatNode,
     options?: MessengerSendOptions
-  ): Promise<null | DispatchResponse<MessengerJob, MessengerResult>> {
+  ): Promise<null | MessengerDispatchResponse> {
     const channel =
       target instanceof MessengerChannel
         ? target
@@ -114,19 +111,19 @@ export class MessengerBot
             typeof target === 'string' ? { id: target } : target
           );
 
-    return this.engine.render(channel, messages, chatJobsMaker(options));
+    return this.engine.render(channel, messages, createChatJobs(options));
   }
 
   async renderAttachment(
     node: MachinatNode
-  ): Promise<null | DispatchResponse<MessengerJob, MessengerResult>> {
-    return this.engine.render(null, node, makeAttachmentJobs);
+  ): Promise<null | MessengerDispatchResponse> {
+    return this.engine.render(null, node, createAttachmentJobs);
   }
 
   async makeApiCall<ResBody extends FbGraphApiResult>(
     method: 'GET' | 'POST' | 'DELETE',
     relativeUrl: string,
-    body?: null | any
+    body?: null | unknown
   ): Promise<ResBody> {
     try {
       const { results } = await this.engine.dispatchJobs(null, [
@@ -151,9 +148,24 @@ export class MessengerBot
 
 export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ConfigsI, { require: PlatformMounterI, optional: true }] as const,
-  factory: (configs, mounter) =>
-    new MessengerBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
+  deps: [
+    ConfigsI,
+    { require: ModuleUtilitiesI, optional: true },
+    { require: PlatformUtilitiesI, optional: true },
+  ] as const,
+  factory: (
+    { pageId, accessToken, appSecret, consumeInterval },
+    moduleUitils,
+    platformUtils
+  ) =>
+    new MessengerBot({
+      pageId,
+      accessToken,
+      appSecret,
+      consumeInterval,
+      initScope: moduleUitils?.initScope,
+      dispatchWrapper: platformUtils?.dispatchWrapper,
+    }),
 })(MessengerBot);
 
 export type BotP = MessengerBot;

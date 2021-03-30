@@ -1,15 +1,23 @@
 import { parse as parseUrl, UrlWithParsedQuery } from 'url';
 import { STATUS_CODES, IncomingMessage, ServerResponse } from 'http';
-import { makeClassProvider } from '@machinat/core/service';
-
-import type { PopEventWrapper, PopErrorFn } from '@machinat/core/types';
+import {
+  maybeInjectContainer,
+  makeClassProvider,
+  createEmptyScope,
+  ServiceScope,
+} from '@machinat/core/service';
+import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
+import type { PopErrorFn } from '@machinat/core/types';
 import type { RequestHandler } from '@machinat/http/types';
-import { ServerI, ConfigsI, PlatformMounterI } from './interface';
-import type { NextServer, NextEventContext, NextResponse } from './types';
+import { ServerI, ConfigsI } from './interface';
+import type { NextServer, NextRequestHandler } from './types';
 
 type NextReceiverOptions = {
   entryPath?: string;
   noPrepare?: boolean;
+  handleRequest?: NextRequestHandler;
+  initScope?: () => ServiceScope;
+  popError?: PopErrorFn | null;
 };
 
 /**
@@ -27,17 +35,19 @@ export class NextReceiver {
   private _shouldPrepare: boolean;
   private _prepared: boolean;
 
-  private _popEvent: (ctx: NextEventContext) => Promise<NextResponse>;
+  private _requestHandler: NextRequestHandler;
+  private _initScope: () => ServiceScope;
   private _popError: (err: Error) => void;
 
   constructor(
     nextApp: NextServer,
-    { noPrepare, entryPath }: NextReceiverOptions,
-    popEventWrapper:
-      | PopEventWrapper<NextEventContext, NextResponse>
-      | null
-      | undefined,
-    popError?: PopErrorFn | null
+    {
+      noPrepare,
+      entryPath,
+      handleRequest,
+      initScope,
+      popError,
+    }: NextReceiverOptions
   ) {
     this._next = nextApp;
     this._defaultNextHandler = nextApp.getRequestHandler();
@@ -45,11 +55,8 @@ export class NextReceiver {
     this._shouldPrepare = !noPrepare;
     this._prepared = false;
 
-    const finalHandler = () => Promise.resolve({ accepted: true as const });
-
-    this._popEvent = popEventWrapper
-      ? popEventWrapper(finalHandler)
-      : finalHandler;
+    this._requestHandler = handleRequest || (() => ({ ok: true }));
+    this._initScope = initScope || createEmptyScope;
     this._popError =
       popError ||
       (() => {
@@ -128,21 +135,12 @@ export class NextReceiver {
         headers: req.headers,
       };
 
-      const response = await this._popEvent({
-        platform: 'next',
-        event: {
-          platform: 'next',
-          kind: 'request',
-          type: 'request',
-          payload: { request },
-          channel: null,
-          user: null,
-        },
-        metadata: { source: 'next', request },
-        bot: null,
-      });
+      const response = await maybeInjectContainer(
+        this._initScope(),
+        this._requestHandler
+      )(request);
 
-      if (response.accepted) {
+      if (response.ok) {
         const { page, query, headers } = response;
         if (headers) {
           for (const [key, value] of Object.entries(headers)) {
@@ -186,15 +184,16 @@ export const ReceiverP = makeClassProvider({
   deps: [
     ServerI,
     ConfigsI,
-    { require: PlatformMounterI, optional: true },
+    { require: ModuleUtilitiesI, optional: true },
   ] as const,
-  factory: (nextApp, configs, mounter) =>
-    new NextReceiver(
-      nextApp,
-      configs,
-      mounter?.popEventWrapper,
-      mounter?.popError
-    ),
+  factory: (nextApp, { entryPath, noPrepare, handleRequest }, moduleUtils) =>
+    new NextReceiver(nextApp, {
+      entryPath,
+      noPrepare,
+      handleRequest,
+      initScope: moduleUtils?.initScope,
+      popError: moduleUtils?.popError,
+    }),
 })(NextReceiver);
 
 export type ReceiverP = NextReceiver;

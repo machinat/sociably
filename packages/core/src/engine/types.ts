@@ -2,7 +2,6 @@ import type { TextSegment, UnitSegment, RawSegment } from '../renderer/types';
 import type {
   MachinatNode,
   MachinatChannel,
-  MachinatBot,
   PauseUntilFn,
   ThunkEffectFn,
 } from '../types';
@@ -19,15 +18,10 @@ type ThunkTask = { type: 'thunk'; payload: ThunkEffectFn };
 
 export type MachinatTask<Job> = DispatchTask<Job> | PauseTask | ThunkTask;
 
-export type DispatchFrame<
-  Channel extends MachinatChannel,
-  Job,
-  Bot extends MachinatBot<Channel, Job, unknown>
-> = {
+export type DispatchFrame<Channel extends MachinatChannel, Job> = {
   platform: string;
   channel: null | Channel;
   tasks: MachinatTask<Job>[];
-  bot: Bot;
   node: null | MachinatNode;
 };
 

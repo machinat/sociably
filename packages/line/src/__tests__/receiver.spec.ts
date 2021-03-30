@@ -1,26 +1,40 @@
+import { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
 import moxy, { Mock } from '@moxyjs/moxy';
 
 import { LineReceiver } from '../receiver';
 import LineChat from '../channel';
 import LineUser from '../user';
+import type { LineBot } from '../bot';
 
-const bot = moxy();
+const bot = moxy<LineBot>({
+  render: async () => ({ jobs: [], tasks: [], results: [] }),
+} as never);
 
 const popEventMock = new Mock();
 const popEventWrapper = moxy((popEvent) => popEventMock.proxify(popEvent));
 
-const createReq = ({ method, url = '/', body = '', headers = {} }) => {
+const createReq = ({
+  method,
+  url = '/',
+  body = '',
+  headers = {},
+}): IncomingMessage => {
   const req = new Readable({
     read() {
       if (body) req.push(body);
       req.push(null);
     },
   });
-  return Object.assign(req, { method, url, body, headers });
+  return Object.assign(req, {
+    method,
+    url,
+    body,
+    headers,
+  }) as never;
 };
 
-const createRes = () =>
+const createRes = (): ServerResponse =>
   moxy({
     finished: false,
     statusCode: 200,
@@ -33,7 +47,7 @@ const createRes = () =>
         if (typeof args[i] === 'function') args[i]();
       }
     },
-  });
+  } as never);
 
 beforeEach(() => {
   popEventMock.reset();
@@ -43,11 +57,11 @@ beforeEach(() => {
 it('throw if configs.providerId is empty', () => {
   expect(
     () =>
-      new LineReceiver(
-        { channelId: '_BOT_CHANNEL_ID_', shouldValidateRequest: false },
+      new LineReceiver({
         bot,
-        popEventWrapper
-      )
+        popEventWrapper,
+        channelId: '_BOT_CHANNEL_ID_',
+      } as never)
   ).toThrowErrorMatchingInlineSnapshot(
     `"configs.providerId should not be empty"`
   );
@@ -56,11 +70,11 @@ it('throw if configs.providerId is empty', () => {
 it('throw if configs.channelId is empty', () => {
   expect(
     () =>
-      new LineReceiver(
-        { providerId: '_PROVIDER_ID_', shouldValidateRequest: false },
+      new LineReceiver({
         bot,
-        popEventWrapper
-      )
+        popEventWrapper,
+        providerId: '_PROVIDER_ID_',
+      } as never)
   ).toThrowErrorMatchingInlineSnapshot(
     `"configs.channelId should not be empty"`
   );
@@ -69,15 +83,13 @@ it('throw if configs.channelId is empty', () => {
 it('throws if shouldValidateRequest but channelSecret not given', () => {
   expect(
     () =>
-      new LineReceiver(
-        {
-          providerId: '_PROVIDER_ID_',
-          channelId: '_BOT_CHANNEL_ID_',
-          shouldValidateRequest: true,
-        },
+      new LineReceiver({
         bot,
-        popEventWrapper
-      )
+        popEventWrapper,
+        providerId: '_PROVIDER_ID_',
+        channelId: '_BOT_CHANNEL_ID_',
+        shouldValidateRequest: true,
+      })
   ).toThrowErrorMatchingInlineSnapshot(
     `"should provide configs.channelSecret when shouldValidateRequest set to true"`
   );
@@ -86,15 +98,13 @@ it('throws if shouldValidateRequest but channelSecret not given', () => {
 it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   'responds 405 if req.method is %s',
   async (method) => {
-    const receiver = new LineReceiver(
-      {
-        providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
-        shouldValidateRequest: false,
-      },
+    const receiver = new LineReceiver({
       bot,
-      popEventWrapper
-    );
+      popEventWrapper,
+      providerId: '_PROVIDER_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
+      shouldValidateRequest: false,
+    });
 
     const req = createReq({ method });
     const res = createRes();
@@ -107,15 +117,13 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 );
 
 it('responds 400 if body is empty', async () => {
-  const receiver = new LineReceiver(
-    {
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      shouldValidateRequest: false,
-    },
+  const receiver = new LineReceiver({
     bot,
-    popEventWrapper
-  );
+    popEventWrapper,
+    providerId: '_PROVIDER_ID_',
+    channelId: '_BOT_CHANNEL_ID_',
+    shouldValidateRequest: false,
+  });
 
   const req = createReq({ method: 'POST' });
   const res = createRes();
@@ -127,15 +135,13 @@ it('responds 400 if body is empty', async () => {
 });
 
 it('responds 400 if body is not not valid json format', async () => {
-  const receiver = new LineReceiver(
-    {
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      shouldValidateRequest: false,
-    },
+  const receiver = new LineReceiver({
     bot,
-    popEventWrapper
-  );
+    popEventWrapper,
+    providerId: '_PROVIDER_ID_',
+    channelId: '_BOT_CHANNEL_ID_',
+    shouldValidateRequest: false,
+  });
 
   const req = createReq({ method: 'POST', body: "I'm Jason" });
   const res = createRes();
@@ -147,15 +153,13 @@ it('responds 400 if body is not not valid json format', async () => {
 });
 
 it('responds 400 if body is in invalid format', async () => {
-  const receiver = new LineReceiver(
-    {
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      shouldValidateRequest: false,
-    },
+  const receiver = new LineReceiver({
     bot,
-    popEventWrapper
-  );
+    popEventWrapper,
+    providerId: '_PROVIDER_ID_',
+    channelId: '_BOT_CHANNEL_ID_',
+    shouldValidateRequest: false,
+  });
 
   const req = createReq({
     method: 'POST',
@@ -170,15 +174,13 @@ it('responds 400 if body is in invalid format', async () => {
 });
 
 it('respond 200 and pop events received', async () => {
-  const receiver = new LineReceiver(
-    {
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      shouldValidateRequest: false,
-    },
+  const receiver = new LineReceiver({
     bot,
-    popEventWrapper
-  );
+    popEventWrapper,
+    providerId: '_PROVIDER_ID_',
+    channelId: '_BOT_CHANNEL_ID_',
+    shouldValidateRequest: false,
+  });
 
   const body = {
     destination: 'xxxxxxxxxx',
@@ -260,17 +262,49 @@ it('respond 200 and pop events received', async () => {
   expect(event2.payload).toEqual(body.events[1]);
 });
 
-it('work if request validation passed', async () => {
-  const receiver = new LineReceiver(
-    {
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      shouldValidateRequest: true,
-      channelSecret: '__LINE_CHANNEL_SECRET__',
-    },
+test('reply(message) sugar', async () => {
+  const receiver = new LineReceiver({
     bot,
-    popEventWrapper
+    popEventWrapper,
+    providerId: '_PROVIDER_ID_',
+    channelId: '_BOT_CHANNEL_ID_',
+    shouldValidateRequest: false,
+  });
+
+  await receiver.handleRequest(
+    createReq({
+      method: 'POST',
+      body:
+        '{"destination":"xxx","events":[{"replyToken":"__REPLY_TOKEN__","type":"message","timestamp":1462629479859,"source":{"type":"user","userId":"xxx"},"message":{"id":"325708","type":"text","text":"Hello, world"}}]}',
+    }),
+    createRes()
   );
+
+  expect(popEventMock).toHaveBeenCalledTimes(1);
+  const { reply, event } = popEventMock.calls[0].args[0];
+  await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
+          Object {
+            "jobs": Array [],
+            "results": Array [],
+            "tasks": Array [],
+          }
+        `);
+
+  expect(bot.render.mock).toHaveBeenCalledTimes(1);
+  expect(bot.render.mock).toHaveBeenCalledWith(event.channel, 'hello world', {
+    replyToken: event.replyToken,
+  });
+});
+
+it('validate request', async () => {
+  const receiver = new LineReceiver({
+    bot,
+    popEventWrapper,
+    providerId: '_PROVIDER_ID_',
+    channelId: '_BOT_CHANNEL_ID_',
+    shouldValidateRequest: true,
+    channelSecret: '__LINE_CHANNEL_SECRET__',
+  });
 
   const body =
     '{"destination":"xxx","events":[{"replyToken":"xxx","type":"message","timestamp":1462629479859,"source":{"type":"user","userId":"xxx"},"message":{"id":"325708","type":"text","text":"Hello, world"}}]}';
@@ -308,16 +342,14 @@ it('work if request validation passed', async () => {
 });
 
 it('responds 401 if request validation failed', async () => {
-  const receiver = new LineReceiver(
-    {
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      shouldValidateRequest: true,
-      channelSecret: '__LINE_CHANNEL_SECRET__',
-    },
+  const receiver = new LineReceiver({
     bot,
-    popEventWrapper
-  );
+    popEventWrapper,
+    providerId: '_PROVIDER_ID_',
+    channelId: '_BOT_CHANNEL_ID_',
+    shouldValidateRequest: true,
+    channelSecret: '__LINE_CHANNEL_SECRET__',
+  });
 
   const body =
     '{"destination":"xxx","events":[{"replyToken":"xxx","type":"message","timestamp":1462629479859,"source":{"type":"user","userId":"xxx"},"message":{"id":"325708","type":"text","text":"Hello, world"}}]}';

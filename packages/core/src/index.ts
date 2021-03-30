@@ -15,7 +15,7 @@ import type {
   MachinatElement,
   NativeComponent,
   ContainerComponent,
-  AnyPlatformModule,
+  AnyMachinatPlatform,
   FragmentProps,
   PauseProps,
   InjectionProps,
@@ -28,7 +28,7 @@ import type {
  */
 namespace Machinat {
   export const createElement = createMachinatElement;
-  export const createApp = <Platform extends AnyPlatformModule>(
+  export const createApp = <Platform extends AnyMachinatPlatform>(
     config: AppConfig<Platform>
   ): App<Platform> => {
     const app = new App(config);

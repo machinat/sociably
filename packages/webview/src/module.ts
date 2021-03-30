@@ -1,7 +1,7 @@
 import createNextServer from 'next';
 import BaseBot from '@machinat/core/base/Bot';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
-import type { PlatformModule } from '@machinat/core/types';
+import type { MachinatPlatform } from '@machinat/core/types';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import { ServiceProvision } from '@machinat/core/service/types';
 import { AnyServerAuthorizer } from '@machinat/auth/types';
@@ -24,7 +24,7 @@ import {
   SocketServerP,
   AuthControllerP,
   NextReceiverP,
-  PlatformMounterI,
+  PlatformUtilitiesI,
   SocketServerIdI,
   ConfigsI,
   SocketBrokerI,
@@ -142,11 +142,11 @@ namespace Webview {
     Value extends EventValue = EventValue
   >(
     configs: WebviewConfigs<Authorizer, Value>
-  ): PlatformModule<
+  ): MachinatPlatform<
     WebviewEventContext<Authorizer, Value>,
     null,
     WebSocketJob,
-    WebviewDispatchFrame<Authorizer>,
+    WebviewDispatchFrame,
     WebSocketResult
   > => {
     const provisions: ServiceProvision<unknown>[] = [
@@ -192,7 +192,7 @@ namespace Webview {
 
     return {
       name: WEBVIEW,
-      mounterInterface: PlatformMounterI,
+      utilitiesInterface: PlatformUtilitiesI,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions,

@@ -102,16 +102,14 @@ describe('#constructor(options)', () => {
   });
 
   it('assemble engine', () => {
-    const bot = new LineBot(
-      {
-        accessToken: '_ACCESS_TOKEN_',
-        providerId: '_PROVIDER_ID_',
-        channelId: '_CHANNEL_ID_',
-        maxConnections: 999,
-      },
+    const bot = new LineBot({
+      accessToken: '_ACCESS_TOKEN_',
+      providerId: '_PROVIDER_ID_',
+      channelId: '_CHANNEL_ID_',
+      maxConnections: 999,
       initScope,
-      dispatchWrapper
-    );
+      dispatchWrapper,
+    });
 
     expect(Renderer.mock).toHaveBeenCalledTimes(1);
     expect(Renderer.mock).toHaveBeenCalledWith('line', expect.any(Function));
@@ -120,7 +118,6 @@ describe('#constructor(options)', () => {
     expect(Engine.mock).toHaveBeenCalledTimes(1);
     expect(Engine.mock).toHaveBeenCalledWith(
       'line',
-      bot,
       expect.any(Renderer),
       expect.any(Queue),
       expect.any(LineWorker),
@@ -128,7 +125,7 @@ describe('#constructor(options)', () => {
       dispatchWrapper
     );
 
-    const worker = Engine.mock.calls[0].args[4];
+    const worker = Engine.mock.calls[0].args[3];
     expect(worker.accessToken).toBe('_ACCESS_TOKEN_');
     expect(worker.maxConnections).toBe(999);
   });
@@ -230,29 +227,6 @@ describe('#render(token, node, options)', () => {
       // eslint-disable-next-line no-await-in-loop
       await expect(bot.render('john_doe', empty)).resolves.toBe(null);
     }
-  });
-
-  it('throw if messages length more than 5 when using replyToken', async () => {
-    const bot = new LineBot({
-      accessToken: '_ACCESS_TOKEN_',
-      providerId: '_PROVIDER_ID_',
-      channelId: '_CHANNEL_ID_',
-    });
-    bot.start();
-
-    await expect(
-      bot.render(
-        'john_doe',
-        <p>
-          1<br />2<br />3<br />4<br />5<br />6
-        </p>,
-        {
-          replyToken: '__REPLY_TOKEN__',
-        }
-      )
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"more then 1 messaging request rendered while using replyToken"`
-    );
   });
 });
 

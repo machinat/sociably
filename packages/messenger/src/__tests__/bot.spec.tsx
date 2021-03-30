@@ -65,12 +65,7 @@ afterEach(() => {
 describe('#constructor(options)', () => {
   it('throw if accessToken not given', () => {
     expect(
-      () =>
-        new MessengerBot(
-          { pageId, appSecret } as never,
-          initScope,
-          dispatchWrapper
-        )
+      () => new MessengerBot({ pageId, appSecret } as never)
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.accessToken should not be empty"`
     );
@@ -78,23 +73,19 @@ describe('#constructor(options)', () => {
 
   it('throw if pageId not given', () => {
     expect(
-      () =>
-        new MessengerBot(
-          { accessToken, appSecret } as never,
-          initScope,
-          dispatchWrapper
-        )
+      () => new MessengerBot({ accessToken, appSecret } as never)
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.pageId should not be empty"`
     );
   });
 
   it('assemble core modules', () => {
-    const bot = new MessengerBot(
-      { pageId, accessToken },
+    const bot = new MessengerBot({
       initScope,
-      dispatchWrapper
-    );
+      dispatchWrapper,
+      pageId,
+      accessToken,
+    });
 
     expect(bot.engine).toBeInstanceOf(Engine);
 
@@ -107,7 +98,6 @@ describe('#constructor(options)', () => {
     expect(Engine.mock).toHaveBeenCalledTimes(1);
     expect(Engine.mock).toHaveBeenCalledWith(
       'messenger',
-      bot,
       expect.any(Renderer),
       expect.any(Queue),
       expect.any(Worker),
@@ -121,11 +111,14 @@ describe('#constructor(options)', () => {
 
   it('pass consumeInterval and appSecret specified to worker', () => {
     expect(
-      new MessengerBot(
-        { pageId, accessToken, appSecret, consumeInterval: 0 },
+      new MessengerBot({
         initScope,
-        dispatchWrapper
-      )
+        dispatchWrapper,
+        pageId,
+        accessToken,
+        appSecret,
+        consumeInterval: 0,
+      })
     );
 
     expect(Worker.mock).toHaveBeenCalledTimes(1);
@@ -138,11 +131,13 @@ describe('#constructor(options)', () => {
 });
 
 test('#start() and #stop() start/stop engine', () => {
-  const bot = new MessengerBot(
-    { pageId, accessToken, appSecret },
+  const bot = new MessengerBot({
     initScope,
-    dispatchWrapper
-  );
+    dispatchWrapper,
+    pageId,
+    accessToken,
+    appSecret,
+  });
 
   type MockEngine = Moxy<MessengerBot['engine']>;
 
@@ -154,11 +149,13 @@ test('#start() and #stop() start/stop engine', () => {
 });
 
 describe('#render(channel, message, options)', () => {
-  const bot = new MessengerBot(
-    { pageId, accessToken, appSecret },
+  const bot = new MessengerBot({
     initScope,
-    dispatchWrapper
-  );
+    dispatchWrapper,
+    pageId,
+    accessToken,
+    appSecret,
+  });
 
   let apiStatus;
   beforeEach(() => {
@@ -235,11 +232,13 @@ describe('#render(channel, message, options)', () => {
 });
 
 describe('#renderAttachment(message)', () => {
-  const bot = new MessengerBot(
-    { pageId, accessToken, appSecret },
+  const bot = new MessengerBot({
     initScope,
-    dispatchWrapper
-  );
+    dispatchWrapper,
+    pageId,
+    accessToken,
+    appSecret,
+  });
 
   beforeEach(() => {
     bot.start();

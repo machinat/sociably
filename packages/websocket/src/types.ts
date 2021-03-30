@@ -1,11 +1,15 @@
 import type {
   NativeComponent,
+  MachinatNode,
   MachinatUser,
-  PlatformMounter,
+  PlatformUtilities,
   EventMiddleware,
   DispatchMiddleware,
 } from '@machinat/core/types';
-import type { DispatchFrame } from '@machinat/core/engine/types';
+import type {
+  DispatchFrame,
+  DispatchResponse,
+} from '@machinat/core/engine/types';
 import type { MaybeContainer } from '@machinat/core/service/types';
 import type { UnitSegment } from '@machinat/core/renderer/types';
 import type { HttpRequestInfo } from '@machinat/http/types';
@@ -96,8 +100,7 @@ export type WebSocketDispatchChannel =
 
 export type WebSocketDispatchFrame = DispatchFrame<
   WebSocketDispatchChannel,
-  WebSocketJob,
-  WebSocketBot
+  WebSocketJob
 >;
 
 export type WebSocketMetadata<AuthContext> = {
@@ -112,18 +115,21 @@ export type WebSocketComponent = NativeComponent<
   UnitSegment<EventInput>
 >;
 
+export type WebSocketDispatchResponse = DispatchResponse<
+  WebSocketJob,
+  WebSocketResult
+>;
+
 export type WebSocketEventContext<
   User extends null | MachinatUser,
   AuthContext,
-  Value extends EventValue =
-    | ConnectEventValue
-    | DisconnectEventValue
-    | EventValue
+  Value extends EventValue = EventValue
 > = {
   platform: 'websocket';
   event: WebSocketEvent<Value, User>;
   metadata: WebSocketMetadata<AuthContext>;
   bot: WebSocketBot;
+  reply(message: MachinatNode): Promise<null | WebSocketDispatchResponse>;
 };
 
 type SuccessVerifyLoginResult<User extends null | MachinatUser, AuthContext> = {
@@ -185,10 +191,10 @@ export type WebSocketConfigs<
   dispatchMiddlewares?: MaybeContainer<WebSocketDispatchMiddleware>[];
 };
 
-export type WebSocketPlatformMounter<
+export type WebSocketPlatformUtilities<
   User extends null | MachinatUser,
   Auth
-> = PlatformMounter<
+> = PlatformUtilities<
   WebSocketEventContext<User, Auth>,
   null,
   WebSocketJob,

@@ -1,14 +1,14 @@
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import BaseBot from '@machinat/core/base/Bot';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
-import type { PlatformModule, MachinatUser } from '@machinat/core/types';
+import type { MachinatPlatform, MachinatUser } from '@machinat/core/types';
 import Http from '@machinat/http';
 import type { UpgradeRoute } from '@machinat/http/types';
 
 import { WEBSOCKET } from './constant';
 import {
   ServerIdI,
-  PlatformMounterI,
+  PlatformUtilitiesI,
   BrokerI,
   WsServerI,
   UpgradeVerifierI,
@@ -89,7 +89,7 @@ namespace WebSocket {
 
   export const initModule = <User extends null | MachinatUser, Auth>(
     configs: WebSocketConfigs<User, Auth> = {}
-  ): PlatformModule<
+  ): MachinatPlatform<
     WebSocketEventContext<User, Auth>,
     null,
     WebSocketJob,
@@ -98,7 +98,7 @@ namespace WebSocket {
   > => {
     return {
       name: WEBSOCKET,
-      mounterInterface: PlatformMounterI,
+      utilitiesInterface: PlatformUtilitiesI,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions: [

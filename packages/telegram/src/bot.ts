@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
 import Engine, { DispatchError } from '@machinat/core/engine';
+import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import type {
   MachinatNode,
   MachinatBot,
@@ -15,7 +16,7 @@ import { createChatJob, createDirectInstanceJobs } from './job';
 import generalElementDelegate from './components/general';
 import TelegramWorker from './worker';
 import { TelegramChat, TelegramChatTarget } from './channel';
-import { ConfigsI, PlatformMounterI } from './interface';
+import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { TELEGRAM } from './constant';
 import TelegramApiError from './error';
 import type {
@@ -32,6 +33,12 @@ import type {
 type TelegramBotOptions = {
   token: string;
   maxConnections?: number;
+  initScope?: InitScopeFn;
+  dispatchWrapper?: DispatchWrapper<
+    TelegramJob,
+    TelegramDispatchFrame,
+    TelegramResult
+  >;
 };
 
 /**
@@ -55,18 +62,13 @@ export class TelegramBot
     TelegramBot
   >;
 
-  constructor(
-    options: TelegramBotOptions,
-    initScope: InitScopeFn = () => createEmptyScope(TELEGRAM),
-    dispatchWrapper: DispatchWrapper<
-      TelegramJob,
-      TelegramDispatchFrame,
-      TelegramResult
-    > = (dispatch) => dispatch
-  ) {
-    invariant(options?.token, 'options.token should not be empty');
-
-    const { token, maxConnections = 100 } = options;
+  constructor({
+    token,
+    maxConnections = 100,
+    initScope = () => createEmptyScope(),
+    dispatchWrapper = (dispatch) => dispatch,
+  }: TelegramBotOptions) {
+    invariant(token, 'options.token should not be empty');
 
     this.token = token;
     this.id = Number(token.split(':', 1)[0]);
@@ -80,7 +82,6 @@ export class TelegramBot
 
     this.engine = new Engine(
       TELEGRAM,
-      this,
       renderer,
       queue,
       worker,
@@ -184,15 +185,20 @@ export class TelegramBot
 
 export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ConfigsI, { require: PlatformMounterI, optional: true }] as const,
-  factory: ({ botToken, maxConnections }, mounter) => {
+  deps: [
+    ConfigsI,
+    { require: ModuleUtilitiesI, optional: true },
+    { require: PlatformUtilitiesI, optional: true },
+  ] as const,
+  factory: ({ botToken, maxConnections }, moduleUtils, platformUtils) => {
     invariant(botToken, 'configs.botToken should not be empty');
 
-    return new TelegramBot(
-      { token: botToken, maxConnections },
-      mounter?.initScope,
-      mounter?.dispatchWrapper
-    );
+    return new TelegramBot({
+      token: botToken,
+      maxConnections,
+      initScope: moduleUtils?.initScope,
+      dispatchWrapper: platformUtils?.dispatchWrapper,
+    });
   },
 })(TelegramBot);
 

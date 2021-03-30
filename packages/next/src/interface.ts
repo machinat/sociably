@@ -1,12 +1,5 @@
 import { makeInterface } from '@machinat/core/service';
-import type { NextConfigs, NextPlatformMounter, NextServer } from './types';
-
-/**
- * @category Interface
- */
-export const PlatformMounterI = makeInterface<NextPlatformMounter>({
-  name: 'NextPlatformMounter',
-});
+import type { NextConfigs, NextServer } from './types';
 
 /**
  * @category Interface

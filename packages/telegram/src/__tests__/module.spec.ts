@@ -48,10 +48,10 @@ describe('initModule(configs)', () => {
     });
 
     expect(module.name).toBe('telegram');
-    expect(module.mounterInterface).toMatchInlineSnapshot(`
+    expect(module.utilitiesInterface).toMatchInlineSnapshot(`
       Object {
         "$$multi": false,
-        "$$name": "TelegramPlatformMounter",
+        "$$name": "TelegramPlatformUtilities",
         "$$polymorphic": false,
         "$$typeof": Symbol(interface.service.machinat),
       }

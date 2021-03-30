@@ -114,6 +114,7 @@ export type InjectionProps = {
   value: unknown;
   children: MachinatNode;
 };
+
 export type InjectionElement = MachinatElement<
   InjectionProps,
   typeof MACHINAT_INJECTION_TYPE
@@ -196,12 +197,13 @@ export interface MachinatBot<Channel extends MachinatChannel, Job, Result> {
 export type EventContext<
   Event extends MachinatEvent<unknown>,
   Metadata extends MachinatMetadata,
-  Bot extends null | MachinatBot<any, unknown, unknown>
+  Bot extends MachinatBot<MachinatChannel, unknown, unknown>
 > = {
   platform: string;
   event: Event;
   metadata: Metadata;
   bot: Bot;
+  reply(message: MachinatNode): ReturnType<Bot['render']>;
 };
 
 export type AnyEventContext = EventContext<any, any, any>;
@@ -218,7 +220,7 @@ export type EventMiddleware<
 
 export type DispatchMiddleware<
   Job,
-  Frame extends DispatchFrame<any, Job, any>,
+  Frame extends DispatchFrame<MachinatChannel, Job>,
   Result
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
@@ -227,16 +229,16 @@ export type ServiceModule = {
   startHook?: null | ServiceContainer<Promise<void>, unknown[]>;
 };
 
-export type PlatformModule<
+export type MachinatPlatform<
   Context extends AnyEventContext,
   EventResp,
   Job,
-  Frame extends DispatchFrame<any, Job, any>,
+  Frame extends DispatchFrame<MachinatChannel, Job>,
   Result
 > = {
   name: string;
-  mounterInterface: ServiceInterface<
-    PlatformMounter<Context, EventResp, Job, Frame, Result>
+  utilitiesInterface: ServiceInterface<
+    PlatformUtilities<Context, EventResp, Job, Frame, Result>
   >;
   provisions: ServiceProvision<unknown>[];
   startHook?: ServiceContainer<Promise<void>, unknown[]>;
@@ -246,7 +248,7 @@ export type PlatformModule<
   >[];
 };
 
-export type AnyPlatformModule = PlatformModule<
+export type AnyMachinatPlatform = MachinatPlatform<
   any,
   unknown,
   unknown,
@@ -254,15 +256,15 @@ export type AnyPlatformModule = PlatformModule<
   unknown
 >;
 
-export type AppConfig<Platform extends AnyPlatformModule> = {
+export type AppConfig<Platform extends AnyMachinatPlatform> = {
   platforms?: Platform[];
   modules?: ServiceModule[];
   services?: ServiceProvision<unknown>[];
 };
 
 export type EventContextOfPlatform<
-  Platform extends AnyPlatformModule
-> = Platform extends PlatformModule<
+  Platform extends AnyMachinatPlatform
+> = Platform extends MachinatPlatform<
   infer Context,
   unknown,
   unknown,
@@ -287,7 +289,7 @@ export type PopErrorFn = (err: Error, scope?: ServiceScope) => void;
 
 export type DispatchFn<
   Job,
-  Frame extends DispatchFrame<any, Job, any>,
+  Frame extends DispatchFrame<MachinatChannel, Job>,
   Result
 > = (
   frame: Frame,
@@ -296,21 +298,24 @@ export type DispatchFn<
 
 export type DispatchWrapper<
   Job,
-  Frame extends DispatchFrame<any, Job, any>,
+  Frame extends DispatchFrame<MachinatChannel, Job>,
   Result
 > = (
   dispatch: (frame: Frame) => Promise<DispatchResponse<Job, Result>>
 ) => DispatchFn<Job, Frame, Result>;
 
-export type PlatformMounter<
+export type ModuleUtilities = {
+  initScope: InitScopeFn;
+  popError: PopErrorFn;
+};
+
+export type PlatformUtilities<
   Context extends AnyEventContext,
   EventResponse,
   Job,
-  Frame extends DispatchFrame<any, Job, any>,
+  Frame extends DispatchFrame<MachinatChannel, Job>,
   Result
 > = {
-  initScope: InitScopeFn;
-  popError: PopErrorFn;
   popEventWrapper: PopEventWrapper<Context, EventResponse>;
   dispatchWrapper: DispatchWrapper<Job, Frame, Result>;
 };

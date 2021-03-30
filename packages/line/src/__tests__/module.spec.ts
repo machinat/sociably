@@ -39,10 +39,10 @@ describe('initModule(configs)', () => {
     });
 
     expect(module.name).toBe('line');
-    expect(module.mounterInterface).toMatchInlineSnapshot(`
+    expect(module.utilitiesInterface).toMatchInlineSnapshot(`
       Object {
         "$$multi": false,
-        "$$name": "LinePlatformMounter",
+        "$$name": "LinePlatformUtilities",
         "$$polymorphic": false,
         "$$typeof": Symbol(interface.service.machinat),
       }

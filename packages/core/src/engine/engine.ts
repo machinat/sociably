@@ -35,33 +35,25 @@ export default class MachinatEngine<
   Bot extends MachinatBot<Channel, Job, Result>
 > {
   platform: string;
-  bot: Bot;
-
   renderer: MachinatRenderer<SegmentValue, Component>;
   queue: MachinatQueue<Job, Result>;
   worker: MachinatWorker<Job, Result>;
 
   private _initScope: InitScopeFn;
   private _dispatcher: (
-    frame: DispatchFrame<Channel, Job, Bot>,
+    frame: DispatchFrame<Channel, Job>,
     scope: ServiceScope
   ) => Promise<DispatchResponse<Job, Result>>;
 
   constructor(
     platform: string,
-    bot: Bot,
     renderer: MachinatRenderer<SegmentValue, Component>,
     queue: MachinatQueue<Job, Result>,
     worker: MachinatWorker<Job, Result>,
     initScope: InitScopeFn,
-    dispatchWrapper: DispatchWrapper<
-      Job,
-      DispatchFrame<Channel, Job, Bot>,
-      Result
-    >
+    dispatchWrapper: DispatchWrapper<Job, DispatchFrame<Channel, Job>, Result>
   ) {
     this.platform = platform;
-    this.bot = bot;
     this.renderer = renderer;
     this.worker = worker;
     this.queue = queue;
@@ -145,9 +137,8 @@ export default class MachinatEngine<
       tasks.push({ type: 'thunk', payload: thunkFn });
     }
 
-    const frame: DispatchFrame<Channel, Job, Bot> = {
+    const frame: DispatchFrame<Channel, Job> = {
       platform: this.platform,
-      bot: this.bot,
       channel: target,
       tasks,
       node,
@@ -166,9 +157,8 @@ export default class MachinatEngine<
     channel: null | Channel,
     jobs: Job[]
   ): Promise<DispatchResponse<Job, Result>> {
-    const frame: DispatchFrame<Channel, Job, Bot> = {
+    const frame: DispatchFrame<Channel, Job> = {
       platform: this.platform,
-      bot: this.bot,
       channel,
       tasks: [{ type: 'dispatch', payload: jobs }],
       node: null,
@@ -178,7 +168,7 @@ export default class MachinatEngine<
   }
 
   async _execute(
-    frame: DispatchFrame<Channel, Job, Bot>
+    frame: DispatchFrame<Channel, Job>
   ): Promise<DispatchResponse<Job, Result>> {
     const { tasks } = frame;
     const results: Result[] = [];

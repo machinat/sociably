@@ -10,7 +10,7 @@ test('from id', () => {
   expect(chat.uid).toMatchInlineSnapshot(`"messenger._PAGE_ID_.psid._PSID_"`);
 
   expect(chat.identifier).toBe('_PSID_');
-  expect(chat.type).toBe(MessengerChatType.UserToPage);
+  expect(chat.threadType).toBe('USER_TO_PAGE');
   expect(chat.targetType).toBe('psid');
   expect(chat.target).toEqual({ id: '_PSID_' });
 
@@ -28,7 +28,7 @@ test('group chat', () => {
   expect(chat.uid).toMatchInlineSnapshot(`"messenger._PAGE_ID_.psid._PSID_"`);
 
   expect(chat.identifier).toBe('_PSID_');
-  expect(chat.type).toBe(MessengerChatType.Group);
+  expect(chat.threadType).toBe('GROUP');
   expect(chat.targetType).toBe('psid');
   expect(chat.target).toEqual(null);
 
@@ -46,7 +46,7 @@ test('user to user chat', () => {
   expect(chat.uid).toMatchInlineSnapshot(`"messenger._PAGE_ID_.psid._PSID_"`);
 
   expect(chat.identifier).toBe('_PSID_');
-  expect(chat.type).toBe(MessengerChatType.UserToUser);
+  expect(chat.threadType).toBe('USER_TO_USER');
   expect(chat.targetType).toBe('psid');
   expect(chat.target).toEqual(null);
 
@@ -64,7 +64,7 @@ test('from user_ref', () => {
   );
 
   expect(chat.identifier).toBe('_USER_REF_');
-  expect(chat.type).toBe(MessengerChatType.UserToPage);
+  expect(chat.threadType).toBe('USER_TO_PAGE');
   expect(chat.targetType).toBe('user_ref');
   expect(chat.target).toEqual({ user_ref: '_USER_REF_' });
 
@@ -85,7 +85,7 @@ test('from phone_number', () => {
   );
 
   expect(chat.identifier).toBe('nRn5C+EX4/vdk02aEWYs2zV5sHM=');
-  expect(chat.type).toBe(MessengerChatType.UserToPage);
+  expect(chat.threadType).toBe('USER_TO_PAGE');
   expect(chat.targetType).toBe('phone_number');
   expect(chat.target).toEqual({
     phone_number: '+88888888888',
@@ -106,7 +106,7 @@ test('from post_id', () => {
   );
 
   expect(chat.identifier).toBe('_POST_ID_');
-  expect(chat.type).toBe(MessengerChatType.UserToPage);
+  expect(chat.threadType).toBe('USER_TO_PAGE');
   expect(chat.targetType).toBe('post_id');
   expect(chat.target).toEqual({ post_id: '_POST_ID_' });
 
@@ -126,7 +126,7 @@ test('from comment_id', () => {
   );
 
   expect(chat.identifier).toBe('_COMMENT_ID_');
-  expect(chat.type).toBe(MessengerChatType.UserToPage);
+  expect(chat.threadType).toBe('USER_TO_PAGE');
   expect(chat.targetType).toBe('comment_id');
   expect(chat.target).toEqual({ comment_id: '_COMMENT_ID_' });
 

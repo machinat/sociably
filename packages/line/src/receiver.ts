@@ -8,7 +8,7 @@ import type { WebhookHandler } from '@machinat/http/webhook/types';
 import eventFactory from './event/factory';
 import { BotP } from './bot';
 import { LINE } from './constant';
-import { ConfigsI, PlatformMounterI } from './interface';
+import { ConfigsI, PlatformUtilitiesI } from './interface';
 import type { LineWebhookRequestBody, LineEventContext } from './types';
 
 type LineReceiverOptions = {
@@ -16,19 +16,19 @@ type LineReceiverOptions = {
   channelId: string;
   shouldValidateRequest?: boolean;
   channelSecret?: string;
+  bot: BotP;
+  popEventWrapper: PopEventWrapper<LineEventContext, null>;
 };
 
 /** @internal */
-const handleWebhook = (
-  {
-    providerId,
-    channelId,
-    shouldValidateRequest,
-    channelSecret,
-  }: LineReceiverOptions,
-  bot: BotP,
-  popEventWrapper: PopEventWrapper<LineEventContext, null>
-): WebhookHandler => {
+const handleWebhook = ({
+  bot,
+  popEventWrapper,
+  providerId,
+  channelId,
+  shouldValidateRequest,
+  channelSecret,
+}: LineReceiverOptions): WebhookHandler => {
   const popEvent = popEventWrapper(() => Promise.resolve(null));
 
   return async (metadata) => {
@@ -77,6 +77,10 @@ const handleWebhook = (
           bot,
           event,
           metadata,
+          reply: (message) =>
+            bot.render(event.channel, message, {
+              replyToken: 'replyToken' in event ? event.replyToken : undefined,
+            }),
         })
       );
     }
@@ -90,38 +94,49 @@ const handleWebhook = (
  * @category Provider
  */
 export class LineReceiver extends WebhookReceiver {
-  constructor(
-    {
-      shouldValidateRequest = true,
-      channelId,
-      providerId,
-      channelSecret,
-    }: LineReceiverOptions,
-    bot: BotP,
-    popEventWrapper: PopEventWrapper<LineEventContext, null>
-  ) {
+  constructor({
+    bot,
+    popEventWrapper,
+    providerId,
+    channelId,
+    shouldValidateRequest = true,
+    channelSecret,
+  }: LineReceiverOptions) {
     invariant(providerId, 'configs.providerId should not be empty');
     invariant(channelId, 'configs.channelId should not be empty');
     invariant(
       !shouldValidateRequest || channelSecret,
       'should provide configs.channelSecret when shouldValidateRequest set to true'
     );
-
     super(
-      handleWebhook(
-        { shouldValidateRequest, providerId, channelId, channelSecret },
+      handleWebhook({
         bot,
-        popEventWrapper
-      )
+        popEventWrapper,
+        providerId,
+        channelId,
+        shouldValidateRequest,
+        channelSecret,
+      })
     );
   }
 }
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, PlatformMounterI] as const,
-  factory: (configs, bot, { popEventWrapper }) =>
-    new LineReceiver(configs, bot, popEventWrapper),
+  deps: [ConfigsI, BotP, PlatformUtilitiesI] as const,
+  factory: (
+    { providerId, channelId, shouldValidateRequest, channelSecret },
+    bot,
+    { popEventWrapper }
+  ) =>
+    new LineReceiver({
+      bot,
+      popEventWrapper,
+      providerId,
+      channelId,
+      shouldValidateRequest,
+      channelSecret,
+    }),
 })(LineReceiver);
 
 export type ReceiverP = LineReceiver;

@@ -9,6 +9,7 @@ import type {
   InitScopeFn,
   DispatchWrapper,
 } from '@machinat/core/types';
+import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import type { DispatchResponse } from '@machinat/core/engine/types';
 import type { AnyServerAuthorizer } from '@machinat/auth/types';
 import { WebSocketWorker } from '@machinat/websocket';
@@ -20,7 +21,7 @@ import type {
   ConnIdentifier,
 } from '@machinat/websocket/types';
 import { WEBVIEW } from './constant';
-import { SocketServerP, PlatformMounterI } from './interface';
+import { SocketServerP, PlatformUtilitiesI } from './interface';
 import {
   WebviewConnection,
   WebviewTopicChannel,
@@ -64,10 +65,10 @@ export class WebviewBot<Authorizer extends AnyServerAuthorizer>
 
   constructor(
     server: SocketServerP<Authorizer>,
-    initScope: InitScopeFn = () => createEmptyScope(WEBVIEW),
+    initScope: InitScopeFn = () => createEmptyScope(),
     dispatchWrapper: DispatchWrapper<
       WebSocketJob,
-      WebviewDispatchFrame<Authorizer>,
+      WebviewDispatchFrame,
       WebSocketResult
     > = (dispatch) => dispatch
   ) {
@@ -84,7 +85,6 @@ export class WebviewBot<Authorizer extends AnyServerAuthorizer>
 
     this.engine = new Engine(
       WEBVIEW,
-      this,
       renderer,
       queue,
       worker,
@@ -176,9 +176,17 @@ export class WebviewBot<Authorizer extends AnyServerAuthorizer>
 
 export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [SocketServerP, { require: PlatformMounterI, optional: true }] as const,
-  factory: (server, mounter) =>
-    new WebviewBot(server, mounter?.initScope, mounter?.dispatchWrapper),
+  deps: [
+    SocketServerP,
+    { require: ModuleUtilitiesI, optional: true },
+    { require: PlatformUtilitiesI, optional: true },
+  ] as const,
+  factory: (server, moduleUitils, platformUtils) =>
+    new WebviewBot(
+      server,
+      moduleUitils?.initScope,
+      platformUtils?.dispatchWrapper
+    ),
 })(WebviewBot);
 
 export type BotP<Authorizer extends AnyServerAuthorizer> = WebviewBot<

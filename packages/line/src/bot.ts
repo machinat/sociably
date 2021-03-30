@@ -2,6 +2,7 @@ import invariant from 'invariant';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
 import Engine, { DispatchError } from '@machinat/core/engine';
+import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import type {
   MachinatNode,
   MachinatBot,
@@ -10,11 +11,11 @@ import type {
 } from '@machinat/core/types';
 import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
 
-import { chatJobsMaker, multicastJobsMaker } from './job';
+import { createChatJobs, createMulticastJobs } from './job';
 import generalElementDelegate from './components/general';
 import LineWorker from './worker';
 import LineChat from './channel';
-import { ConfigsI, PlatformMounterI } from './interface';
+import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { LINE } from './constant';
 import type {
   LineSource,
@@ -32,6 +33,8 @@ type LineBotOptions = {
   channelId: string;
   accessToken: string;
   maxConnections?: number;
+  initScope?: InitScopeFn;
+  dispatchWrapper?: DispatchWrapper<LineJob, LineDispatchFrame, LineResult>;
 };
 
 /**
@@ -50,18 +53,14 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
     LineBot
   >;
 
-  constructor(
-    {
-      providerId,
-      channelId,
-      accessToken,
-      maxConnections = 100,
-    }: LineBotOptions,
-    initScope: InitScopeFn = () => createEmptyScope(LINE),
-    dispatchWrapper: DispatchWrapper<LineJob, LineDispatchFrame, LineResult> = (
-      dispatch
-    ) => dispatch
-  ) {
+  constructor({
+    providerId,
+    channelId,
+    accessToken,
+    maxConnections = 100,
+    initScope = () => createEmptyScope(),
+    dispatchWrapper = (dispatch) => dispatch,
+  }: LineBotOptions) {
     invariant(accessToken, 'configs.accessToken should not be empty');
     invariant(providerId, 'configs.providerId should not be empty');
     invariant(channelId, 'configs.channelId should not be empty');
@@ -79,7 +78,6 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
 
     this.engine = new Engine(
       LINE,
-      this,
       renderer,
       queue,
       worker,
@@ -111,7 +109,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
     return this.engine.render(
       channel,
       message,
-      chatJobsMaker(options && options.replyToken)
+      createChatJobs(options && options.replyToken)
     );
   }
 
@@ -119,7 +117,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
     targets: string[],
     message: MachinatNode
   ): Promise<null | LineDispatchResponse> {
-    return this.engine.render(null, message, multicastJobsMaker(targets));
+    return this.engine.render(null, message, createMulticastJobs(targets));
   }
 
   async makeApiCall<ResBody extends MessagingApiResult>(
@@ -144,9 +142,24 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
 
 export const BotP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ConfigsI, { require: PlatformMounterI, optional: true }] as const,
-  factory: (configs, mounter) =>
-    new LineBot(configs, mounter?.initScope, mounter?.dispatchWrapper),
+  deps: [
+    ConfigsI,
+    { require: ModuleUtilitiesI, optional: true },
+    { require: PlatformUtilitiesI, optional: true },
+  ] as const,
+  factory: (
+    { providerId, channelId, accessToken, maxConnections },
+    moduleUtils,
+    platformUtils
+  ) =>
+    new LineBot({
+      providerId,
+      channelId,
+      accessToken,
+      maxConnections,
+      initScope: moduleUtils?.initScope,
+      dispatchWrapper: platformUtils?.dispatchWrapper,
+    }),
 })(LineBot);
 
 export type BotP = LineBot;

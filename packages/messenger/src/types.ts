@@ -3,16 +3,20 @@ import type {
   NativeComponent,
   EventMiddleware,
   DispatchMiddleware,
-  PlatformMounter,
+  PlatformUtilities,
+  MachinatNode,
 } from '@machinat/core/types';
-import type { DispatchFrame } from '@machinat/core/engine/types';
+import type {
+  DispatchFrame,
+  DispatchResponse,
+} from '@machinat/core/engine/types';
 import type { MaybeContainer } from '@machinat/core/service/types';
 import type { IntermediateSegment } from '@machinat/core/renderer/types';
 import type { WebhookMetadata } from '@machinat/http/webhook/types';
 import type { MessengerBot } from './bot';
 import type MessengerChannel from './channel';
 import type { MessengerEvent } from './event/types';
-import type { API_PATH } from './constant';
+import type { API_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from './constant';
 
 export { MessengerEvent } from './event/types';
 export { default as MessengerChat } from './channel';
@@ -55,8 +59,9 @@ export type MessageValue = {
   messaging_type?: MessagingType;
   notification_type?: NotificationType;
   tag?: MessageTags;
-
   persona_id?: string;
+  [ATTACHMENT_DATA]?: string | Buffer | ReadableStream;
+  [ATTACHMENT_INFO]?: Record<string, string | number>;
 };
 
 export type SenderActionValue = {
@@ -148,11 +153,17 @@ export type RawUserProfile = {
   gender?: string;
 };
 
+export type MessengerDispatchResponse = DispatchResponse<
+  MessengerJob,
+  MessengerResult
+>;
+
 export type MessengerEventContext = {
   platform: 'messenger';
   event: MessengerEvent;
   metadata: WebhookMetadata;
   bot: MessengerBot;
+  reply(message: MachinatNode): Promise<null | MessengerDispatchResponse>;
 };
 
 export type MessengerEventMiddleware = EventMiddleware<
@@ -162,8 +173,7 @@ export type MessengerEventMiddleware = EventMiddleware<
 
 export type MessengerDispatchFrame = DispatchFrame<
   MessengerChannel,
-  MessengerJob,
-  MessengerBot
+  MessengerJob
 >;
 
 export type MessengerDispatchMiddleware = DispatchMiddleware<
@@ -194,7 +204,7 @@ export type MessengerSendOptions = {
   personaId?: string;
 };
 
-export type MessengerPlatformMounter = PlatformMounter<
+export type MessengerPlatformUtilities = PlatformUtilities<
   MessengerEventContext,
   null,
   MessengerJob,

@@ -9,28 +9,27 @@ import type { PopEventWrapper } from '@machinat/core/types';
 
 import eventFactory from './event/factory';
 import { BotP } from './bot';
-import { ConfigsI, PlatformMounterI } from './interface';
+import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { MESSENGER } from './constant';
 import type { MessengerEventContext } from './types';
 
 type MessengerReceiverOptions = {
+  bot: BotP;
+  popEventWrapper: PopEventWrapper<MessengerEventContext, null>;
   appSecret?: string;
   shouldValidateRequest?: boolean;
   shouldHandleVerify?: boolean;
   verifyToken?: string;
 };
 
-/** @internal */
-const handleWebhook = (
-  {
-    shouldHandleVerify,
-    verifyToken,
-    shouldValidateRequest,
-    appSecret,
-  }: MessengerReceiverOptions,
-  bot: BotP,
-  popEventWrapper: PopEventWrapper<MessengerEventContext, null>
-): WebhookHandler => {
+const handleWebhook = ({
+  shouldHandleVerify,
+  verifyToken,
+  shouldValidateRequest,
+  appSecret,
+  bot,
+  popEventWrapper,
+}: MessengerReceiverOptions): WebhookHandler => {
   const popEvent = popEventWrapper(() => Promise.resolve(null));
 
   return async (metadata) => {
@@ -96,7 +95,16 @@ const handleWebhook = (
         const event = eventFactory(pageId, isStandby, rawEvent);
 
         issuingEvents.push(
-          popEvent({ platform: MESSENGER, bot, event, metadata })
+          popEvent({
+            platform: MESSENGER,
+            bot,
+            event,
+            metadata,
+            reply: async (message) =>
+              event.channel
+                ? bot.render(event.channel, message)
+                : Promise.resolve(null),
+          })
         );
       }
     }
@@ -111,16 +119,14 @@ const handleWebhook = (
  * @category Provider
  */
 export class MessengerReceiver extends WebhookReceiver {
-  constructor(
-    {
-      shouldHandleVerify = true,
-      verifyToken,
-      shouldValidateRequest = true,
-      appSecret,
-    }: MessengerReceiverOptions,
-    bot: BotP,
-    popEventWrapper: PopEventWrapper<MessengerEventContext, null>
-  ) {
+  constructor({
+    bot,
+    popEventWrapper,
+    shouldHandleVerify = true,
+    verifyToken,
+    shouldValidateRequest = true,
+    appSecret,
+  }: MessengerReceiverOptions) {
     invariant(
       !shouldValidateRequest || appSecret,
       'appSecret should not be empty if shouldValidateRequest set to true'
@@ -132,25 +138,34 @@ export class MessengerReceiver extends WebhookReceiver {
     );
 
     super(
-      handleWebhook(
-        {
-          shouldHandleVerify,
-          verifyToken,
-          shouldValidateRequest,
-          appSecret,
-        },
+      handleWebhook({
         bot,
-        popEventWrapper
-      )
+        popEventWrapper,
+        shouldHandleVerify,
+        verifyToken,
+        shouldValidateRequest,
+        appSecret,
+      })
     );
   }
 }
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, PlatformMounterI] as const,
-  factory: (configs, bot, { popEventWrapper }) =>
-    new MessengerReceiver(configs, bot, popEventWrapper),
+  deps: [ConfigsI, BotP, PlatformUtilitiesI] as const,
+  factory: (
+    { shouldHandleVerify, verifyToken, shouldValidateRequest, appSecret },
+    bot,
+    { popEventWrapper }
+  ) =>
+    new MessengerReceiver({
+      bot,
+      popEventWrapper,
+      shouldHandleVerify,
+      verifyToken,
+      shouldValidateRequest,
+      appSecret,
+    }),
 })(MessengerReceiver);
 
 export type ReceiverP = MessengerReceiver;

@@ -3,11 +3,11 @@ import moxy, { Mock } from '@moxyjs/moxy';
 import Machinat from '../..';
 
 import Engine from '../engine';
+import type Render from '../../renderer';
+import type Queue from '../../queue';
 import DispatchError from '../error';
 
-const bot = { name: 'r2d2', send: moxy() };
-
-const queue = moxy({
+const queue = moxy<Queue<unknown, unknown>>({
   executeJobs(jobs) {
     return Promise.resolve({
       success: true,
@@ -18,14 +18,14 @@ const queue = moxy({
       })),
     });
   },
-});
+} as never);
 
 const worker = moxy({
   start: () => true,
   stop: () => true,
 });
 
-const renderer = moxy({ render: () => null });
+const renderer = moxy<Render<unknown, any>>({ render: () => null } as never);
 
 const scope = moxy();
 const initScope = moxy(() => scope);
@@ -48,7 +48,6 @@ beforeEach(() => {
 test('#constructor(...) ok', () => {
   const engine = new Engine(
     'test',
-    bot,
     renderer,
     queue,
     worker,
@@ -57,7 +56,6 @@ test('#constructor(...) ok', () => {
   );
 
   expect(engine.platform).toBe('test');
-  expect(engine.bot).toBe(bot);
   expect(engine.renderer).toBe(renderer);
   expect(engine.queue).toBe(queue);
   expect(engine.worker).toBe(worker);
@@ -66,7 +64,6 @@ test('#constructor(...) ok', () => {
 test('#start() and #stop()', () => {
   const engine = new Engine(
     'test',
-    bot,
     renderer,
     queue,
     worker,
@@ -113,7 +110,6 @@ describe('#render(channel, node, createJobs)', () => {
 
   const engine = new Engine(
     'test',
-    bot,
     renderer,
     queue,
     worker,
@@ -165,7 +161,6 @@ describe('#render(channel, node, createJobs)', () => {
     expect(wrappedDispatchMock).toHaveBeenCalledWith(
       {
         platform: 'test',
-        bot,
         channel,
         node: message,
         tasks: expectedTasks,
@@ -237,7 +232,6 @@ describe('#render(channel, node, createJobs)', () => {
     expect(wrappedDispatchMock).toHaveBeenCalledWith(
       {
         platform: 'test',
-        bot,
         channel,
         node: message,
         tasks: expectedTasks,
@@ -338,7 +332,6 @@ describe('#render(channel, node, createJobs)', () => {
     expect(wrappedDispatchMock).toHaveBeenCalledWith(
       {
         platform: 'test',
-        bot,
         channel,
         node: message,
         tasks: expectedTasks,
@@ -541,7 +534,6 @@ describe('#render(channel, node, createJobs)', () => {
     await expect(
       new Engine(
         'test',
-        bot,
         renderer,
         queue,
         worker,
@@ -563,7 +555,6 @@ describe('#render(channel, node, createJobs)', () => {
     expect(wrappedDispatchMock).toHaveBeenCalledWith(
       {
         platform: 'test',
-        bot,
         channel,
         node: message,
         tasks: originalTasks,
@@ -593,7 +584,6 @@ describe('#render(channel, node, createJobs)', () => {
     await expect(
       new Engine(
         'test',
-        bot,
         renderer,
         queue,
         worker,
@@ -615,7 +605,6 @@ describe('#render(channel, node, createJobs)', () => {
     expect(wrappedDispatchMock).toHaveBeenCalledWith(
       {
         platform: 'test',
-        bot,
         channel,
         node: message,
         tasks: expectedTasks,
@@ -648,7 +637,6 @@ describe('#render(channel, node, createJobs)', () => {
     expect(wrappedDispatchMock).toHaveBeenCalledWith(
       {
         platform: 'test',
-        bot,
         channel,
         node: message,
         tasks: [
@@ -683,7 +671,6 @@ describe('#render(channel, node, createJobs)', () => {
 describe('#dispatchJobs(channel, tasks, node)', () => {
   const engine = new Engine(
     'test',
-    bot,
     renderer,
     queue,
     worker,
@@ -691,7 +678,7 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
     dispatchWrapper
   );
 
-  const channel = { foo: 'channel' };
+  const channel = { platform: 'test', uid: 'foo.channel' };
   const jobs = [{ id: 1 }, { id: 2 }, { id: 3 }];
 
   it('dispatch jobs', async () => {
@@ -712,7 +699,6 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
     expect(wrappedDispatchMock).toHaveBeenCalledWith(
       {
         platform: 'test',
-        bot,
         channel,
         node: null,
         tasks: expectedTasks,
@@ -777,7 +763,6 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
     await expect(
       new Engine(
         'test',
-        bot,
         renderer,
         queue,
         worker,
@@ -796,7 +781,6 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
     expect(wrappedDispatchMock).toHaveBeenCalledWith(
       {
         platform: 'test',
-        bot,
         channel,
         node: null,
         tasks: [{ type: 'dispatch', payload: [{ id: 'foo' }] }],
@@ -823,7 +807,6 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
     await expect(
       new Engine(
         'test',
-        bot,
         renderer,
         queue,
         worker,
@@ -843,7 +826,6 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
     expect(wrappedDispatchMock).toHaveBeenCalledWith(
       {
         platform: 'test',
-        bot,
         channel,
         node: null,
         tasks: [{ type: 'dispatch', payload: jobs }],
@@ -866,7 +848,6 @@ describe('#dispatchJobs(channel, tasks, node)', () => {
     expect(wrappedDispatchMock).toHaveBeenCalledWith(
       {
         platform: 'test',
-        bot,
         channel,
         node: null,
         tasks: [{ type: 'dispatch', payload: jobs }],

@@ -34,20 +34,10 @@ describe('initModule()', () => {
         entryPath: '/webview',
         noPrepare: false,
         serverOptions: { dev: true },
-        eventMiddlewares: [(ctx, next) => next(ctx)],
+        handleRequest: () => ({ ok: true }),
       })
     ).toMatchInlineSnapshot(`
       Object {
-        "eventMiddlewares": Array [
-          [Function],
-        ],
-        "mounterInterface": Object {
-          "$$multi": false,
-          "$$name": "NextPlatformMounter",
-          "$$polymorphic": false,
-          "$$typeof": Symbol(interface.service.machinat),
-        },
-        "name": "next",
         "provisions": Array [
           [Function],
           Object {
@@ -59,9 +49,7 @@ describe('initModule()', () => {
             },
             "withValue": Object {
               "entryPath": "/webview",
-              "eventMiddlewares": Array [
-                [Function],
-              ],
+              "handleRequest": [Function],
               "noPrepare": false,
               "serverOptions": Object {
                 "dev": true,
@@ -94,7 +82,7 @@ describe('initModule()', () => {
 
   test('provisions', async () => {
     const app = Machinat.createApp({
-      platforms: [
+      modules: [
         Next.initModule({
           entryPath: '/webview',
           noPrepare: false,

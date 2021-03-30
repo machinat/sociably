@@ -74,7 +74,6 @@ describe('#constructor(options)', () => {
     expect(Engine.mock).toHaveBeenCalledTimes(1);
     expect(Engine.mock).toHaveBeenCalledWith(
       'websocket',
-      bot,
       expect.any(Renderer),
       expect.any(Queue),
       expect.any(Worker),

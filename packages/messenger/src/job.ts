@@ -24,13 +24,13 @@ import {
 
 const POST = 'POST';
 
-export const chatJobsMaker = (options?: MessengerSendOptions) => (
+export const createChatJobs = (options?: MessengerSendOptions) => (
   channel: MessengerChat,
   segments: DispatchableSegment<MessengerSegmentValue>[]
 ): MessengerJob[] => {
   const { target, uid } = channel;
   if (!target) {
-    throw new Error(`unable to send to ${channel.type} channel`);
+    throw new Error(`unable to send to ${channel.threadType} channel`);
   }
 
   const jobs: MessengerJob[] = new Array(segments.length);
@@ -94,7 +94,7 @@ export const chatJobsMaker = (options?: MessengerSendOptions) => (
   return jobs;
 };
 
-export const makeAttachmentJobs = (
+export const createAttachmentJobs = (
   target: null,
   segments: DispatchableSegment<MessengerSegmentValue>[]
 ): MessengerJob[] => {

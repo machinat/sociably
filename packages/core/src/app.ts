@@ -7,11 +7,13 @@ import type {
   ServiceProvision,
   ResolveDependencies,
   MaybeContainer,
+  Interfaceable,
 } from './service/types';
 import type { DispatchFrame } from './engine/types';
-import BaseBot from './base/Bot';
-import BaseProfiler from './base/Profiler';
-import BaseMarshaler from './base/Marshaler';
+import BaseBotP from './base/Bot';
+import BaseProfilerP from './base/Profiler';
+import BaseMarshalerP from './base/Marshaler';
+import ModuleUtilitiesI from './base/ModuleUtilities';
 import type {
   AppConfig,
   AnyEventContext,
@@ -20,13 +22,22 @@ import type {
   DispatchMiddleware,
   PopEventWrapper,
   DispatchWrapper,
-  PlatformMounter,
-  AnyPlatformModule,
+  ModuleUtilities,
+  PlatformUtilities,
+  AnyMachinatPlatform,
 } from './types';
 
 type EventListenable<Context> = MaybeContainer<(ctx: Context) => void>;
 
 type ErrorListenable = MaybeContainer<(err: Error) => void>;
+
+type AnyPlatformUtilities = PlatformUtilities<
+  any,
+  unknown,
+  unknown,
+  any,
+  unknown
+>;
 
 /** @ignore */
 const ENUM_UNSTARTED = 0;
@@ -36,7 +47,7 @@ const ENUM_STARTING = 1;
 const ENUM_STARTED = 2;
 
 export default class MachinatApp<
-  Platform extends AnyPlatformModule,
+  Platform extends AnyMachinatPlatform,
   Context extends AnyEventContext = EventContextOfPlatform<Platform>
 > {
   config: AppConfig<Platform>;
@@ -81,21 +92,32 @@ export default class MachinatApp<
       }
     }
 
-    const platformMounters = new Map();
+    const bootstrapProvisions = new Map<
+      Interfaceable<unknown>,
+      ModuleUtilities | AnyPlatformUtilities
+    >([
+      [
+        ModuleUtilitiesI,
+        {
+          initScope: () => this._serviceSpace.createScope(),
+          popError: this._createPopErrorFn(),
+        },
+      ],
+    ]);
 
     if (platforms) {
       for (const {
         provisions,
-        mounterInterface,
+        utilitiesInterface,
         eventMiddlewares,
         dispatchMiddlewares,
         startHook,
       } of platforms) {
         moduleProvisions.push(...provisions);
 
-        platformMounters.set(
-          mounterInterface,
-          this._createPlatformMounter(
+        bootstrapProvisions.set(
+          utilitiesInterface,
+          this._createPlatformUtilities(
             eventMiddlewares || [],
             dispatchMiddlewares || []
           )
@@ -108,14 +130,14 @@ export default class MachinatApp<
     }
 
     const moduleOnlySpace = new ServiceSpace(null, [
-      BaseBot,
-      BaseProfiler,
-      BaseMarshaler,
+      BaseBotP,
+      BaseProfilerP,
+      BaseMarshalerP,
       ...moduleProvisions,
     ]);
 
     this._serviceSpace = new ServiceSpace(moduleOnlySpace, services || []);
-    const bootstrapScope = this._serviceSpace.bootstrap(platformMounters);
+    const bootstrapScope = this._serviceSpace.bootstrap(bootstrapProvisions);
 
     await Promise.all(
       startHooks.map((hook) => bootstrapScope.injectContainer(hook))
@@ -195,13 +217,13 @@ export default class MachinatApp<
     }
   }
 
-  private _createPlatformMounter(
-    eventMiddlewares: MaybeContainer<EventMiddleware<Context, any>>[],
-    dispatchMiddlewares: MaybeContainer<DispatchMiddleware<any, any, any>>[]
-  ): PlatformMounter<Context, any, any, any, any> {
+  private _createPlatformUtilities(
+    eventMiddlewares: MaybeContainer<EventMiddleware<Context, unknown>>[],
+    dispatchMiddlewares: MaybeContainer<
+      DispatchMiddleware<unknown, any, unknown>
+    >[]
+  ): AnyPlatformUtilities {
     return {
-      initScope: () => this._serviceSpace.createScope(),
-      popError: this._createPopErrorFn(),
       popEventWrapper: this._createPopEventWrapper(eventMiddlewares || []),
       dispatchWrapper: this._createDispatchWrapper(dispatchMiddlewares || []),
     };
@@ -273,7 +295,7 @@ export default class MachinatApp<
         );
       };
 
-      return (frame: DispatchFrame<any, unknown, any>, scope?: ServiceScope) =>
+      return (frame: DispatchFrame<any, unknown>, scope?: ServiceScope) =>
         execute(0, scope || this._serviceSpace.createScope())(frame);
     };
   }

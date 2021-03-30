@@ -40,10 +40,10 @@ describe('initModule(configs)', () => {
     });
 
     expect(module.name).toBe('messenger');
-    expect(module.mounterInterface).toMatchInlineSnapshot(`
+    expect(module.utilitiesInterface).toMatchInlineSnapshot(`
       Object {
         "$$multi": false,
-        "$$name": "MessengerPlatformMounter",
+        "$$name": "MessengerPlatformUtilities",
         "$$polymorphic": false,
         "$$typeof": Symbol(interface.service.machinat),
       }

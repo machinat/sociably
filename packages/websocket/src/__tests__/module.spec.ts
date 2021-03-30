@@ -70,10 +70,10 @@ describe('initModule()', () => {
     });
 
     expect(module.name).toBe('websocket');
-    expect(module.mounterInterface).toMatchInlineSnapshot(`
+    expect(module.utilitiesInterface).toMatchInlineSnapshot(`
       Object {
         "$$multi": false,
-        "$$name": "WebSocketPlatformMounter",
+        "$$name": "WebSocketPlatformUtilities",
         "$$polymorphic": false,
         "$$typeof": Symbol(interface.service.machinat),
       }

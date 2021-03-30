@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import type {
-  PlatformMounter,
+  PlatformUtilities,
   EventMiddleware,
   DispatchMiddleware,
   MachinatNode,
@@ -152,6 +152,7 @@ export type TelegramEventContext = {
   event: TelegramEvent;
   metadata: WebhookMetadata;
   bot: TelegramBot;
+  reply(node: MachinatNode): Promise<null | TelegramDispatchResponse>;
 };
 
 export type TelegramEventMiddleware = EventMiddleware<
@@ -159,11 +160,7 @@ export type TelegramEventMiddleware = EventMiddleware<
   null
 >;
 
-export type TelegramDispatchFrame = DispatchFrame<
-  TelegramChat,
-  TelegramJob,
-  TelegramBot
->;
+export type TelegramDispatchFrame = DispatchFrame<TelegramChat, TelegramJob>;
 
 export type BotApiResult = Record<string, any>;
 
@@ -194,7 +191,7 @@ export type TelegramDispatchMiddleware = DispatchMiddleware<
   TelegramResult
 >;
 
-export type TelegramPlatformMounter = PlatformMounter<
+export type TelegramPlatformUtilities = PlatformUtilities<
   TelegramEventContext,
   null,
   TelegramJob,

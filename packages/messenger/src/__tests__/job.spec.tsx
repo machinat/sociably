@@ -1,19 +1,36 @@
 import Machinat from '@machinat/core';
-import { chatJobsMaker, makeAttachmentJobs } from '../job';
+import { UnitSegment, TextSegment } from '@machinat/core/renderer/types';
+import { createChatJobs, createAttachmentJobs } from '../job';
 import MessengerChannel from '../channel';
 import { API_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from '../constant';
+import { MessengerSegmentValue } from '../types';
 
-const Foo = () => {};
+const Foo = () => null;
 
-const Bar = () => {};
+const Bar = () => null;
 
-describe('chatJobsMaker(options)(channel, segments)', () => {
-  const segments = [
-    { node: <Foo />, value: { sender_action: 'typing_on' } },
-    { node: <Foo />, value: { message: { id: 1 } } },
-    { node: <Bar />, value: { id: 2, [API_PATH]: 'bar/baz' } },
-    { node: 'id:3', value: 'id:3' },
-    { node: 4, value: '4' },
+describe('createChatJobs(options)(channel, segments)', () => {
+  const segments: (UnitSegment<MessengerSegmentValue> | TextSegment)[] = [
+    {
+      type: 'unit' as const,
+      path: '?',
+      node: <Foo />,
+      value: { sender_action: 'typing_on' },
+    },
+    {
+      type: 'unit' as const,
+      path: '?',
+      node: <Foo />,
+      value: { message: { id: 1 } },
+    },
+    {
+      type: 'unit' as const,
+      path: '?',
+      node: <Bar />,
+      value: { id: 2, [API_PATH]: 'bar/baz' } as never,
+    },
+    { type: 'text' as const, path: '?', node: 'id:3', value: 'id:3' },
+    { type: 'text' as const, path: '?', node: 4, value: '4' },
   ];
 
   const expectedBodyFields = [
@@ -27,7 +44,7 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
   it('create jobs to be sent', () => {
     const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
 
-    const jobs = chatJobsMaker()(channel, segments);
+    const jobs = createChatJobs()(channel, segments);
 
     jobs.forEach((job, i) => {
       expect(job).toEqual({
@@ -47,7 +64,7 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
   it('add coresponding options to body on messages', () => {
     const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
 
-    const jobs = chatJobsMaker({
+    const jobs = createChatJobs({
       messagingType: 'MESSAGE_TAG',
       tag: 'PAYMENT_UPDATE',
       notificationType: 'SILENT_PUSH',
@@ -83,11 +100,31 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
   it('set persona_id message and typing_on/typeing_off action', () => {
     const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
 
-    const jobs = chatJobsMaker({ personaId: 'droid' })(channel, [
-      { node: <Foo />, value: { message: { text: 'hello' } } },
-      { node: <Foo />, value: { sender_action: 'typing_on' } },
-      { node: <Foo />, value: { sender_action: 'typing_off' } },
-      { node: <Foo />, value: { sender_action: 'mark_seen' } },
+    const jobs = createChatJobs({ personaId: 'droid' })(channel, [
+      {
+        type: 'unit',
+        path: '?',
+        node: <Foo />,
+        value: { message: { text: 'hello' } },
+      },
+      {
+        type: 'unit',
+        path: '?',
+        node: <Foo />,
+        value: { sender_action: 'typing_on' },
+      },
+      {
+        type: 'unit',
+        path: '?',
+        node: <Foo />,
+        value: { sender_action: 'typing_off' },
+      },
+      {
+        type: 'unit',
+        path: '?',
+        node: <Foo />,
+        value: { sender_action: 'mark_seen' },
+      },
     ]);
 
     jobs.forEach((job, i) => {
@@ -98,21 +135,25 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
   it('respect options originally set in job value', () => {
     const channel = new MessengerChannel('_PAGE_ID_', { id: 'Luke' });
 
-    const jobs = chatJobsMaker({
+    const jobs = createChatJobs({
       messagingType: 'UPDATE',
       tag: undefined,
       notificationType: 'SILENT_PUSH',
       personaId: 'astromech-droid',
     })(channel, [
       {
+        type: 'unit',
+        path: '?',
         node: <Foo />,
         value: {
           message: { text: 'bibiboo' },
           messaging_type: 'MESSAGE_TAG',
-          tag: 'SHIPPING_UPDATE',
+          tag: 'POST_PURCHASE_UPDATE',
         },
       },
       {
+        type: 'unit',
+        path: '?',
         node: <Foo />,
         value: {
           message: { text: 'Oh! I apologize.' },
@@ -128,7 +169,7 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
       recipient: { id: 'Luke' },
       message: { text: 'bibiboo' },
       messaging_type: 'MESSAGE_TAG',
-      tag: 'SHIPPING_UPDATE',
+      tag: 'POST_PURCHASE_UPDATE',
       notification_type: 'SILENT_PUSH',
       persona_id: 'astromech-droid',
     });
@@ -145,13 +186,15 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
   it('respect the empty tag if messaging_type has already been set', () => {
     const channel = new MessengerChannel('_PAGE_ID_', { id: 'Luke' });
 
-    const jobs = chatJobsMaker({
+    const jobs = createChatJobs({
       messagingType: 'MESSAGE_TAG',
       tag: 'FEATURE_FUNCTIONALITY_UPDATE',
       notificationType: 'SILENT_PUSH',
       personaId: 'astromech-droid',
     })(channel, [
       {
+        type: 'unit',
+        path: '?',
         node: <Foo />,
         value: {
           message: { text: 'bibibooboobibooboo' },
@@ -179,17 +222,24 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
       knownLength: 66666,
     };
 
-    const jobs = chatJobsMaker()(channel, [
+    const jobs = createChatJobs()(channel, [
       {
+        type: 'unit',
+        path: '?',
         node: <Foo />,
-        value: { a: 'gift', [ATTACHMENT_DATA]: '_DEADLY_VIRUS_' },
+        value: {
+          message: { attachment: { type: 'image' } },
+          [ATTACHMENT_DATA]: '_FOO_',
+        },
       },
       {
+        type: 'unit',
+        path: '?',
         node: <Bar />,
         value: {
-          a: 'redemption',
+          message: { attachment: { type: 'file' } },
           [API_PATH]: 'bar/baz',
-          [ATTACHMENT_DATA]: '_MERCY_CURE_',
+          [ATTACHMENT_DATA]: '_BAR_',
           [ATTACHMENT_INFO]: fileInfo,
         },
       },
@@ -198,9 +248,7 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
     expect(jobs).toMatchSnapshot();
 
     jobs.forEach((job, i) => {
-      expect(job.attachmentFileData).toBe(
-        i === 0 ? '_DEADLY_VIRUS_' : '_MERCY_CURE_'
-      );
+      expect(job.attachmentFileData).toBe(i === 0 ? '_FOO_' : '_BAR_');
 
       expect(job.attachmentFileInfo).toEqual(i === 0 ? undefined : fileInfo);
     });
@@ -208,15 +256,23 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
 
   it('throw if non USER_TO_PAGE channel met', () => {
     expect(() =>
-      chatJobsMaker()(
-        new MessengerChannel('_PAGE_ID_', { id: 'xxx' }, 'GROUP'),
+      createChatJobs()(
+        new MessengerChannel(
+          '_PAGE_ID_',
+          { id: 'xxx' },
+          MessengerChannel.Type.Group
+        ),
         segments
       )
     ).toThrowErrorMatchingInlineSnapshot(`"unable to send to GROUP channel"`);
 
     expect(() =>
-      chatJobsMaker({})(
-        new MessengerChannel('_PAGE_ID_', { id: 'xxx' }, 'USER_TO_USER'),
+      createChatJobs({})(
+        new MessengerChannel(
+          '_PAGE_ID_',
+          { id: 'xxx' },
+          MessengerChannel.Type.UserToUser
+        ),
         segments
       )
     ).toThrowErrorMatchingInlineSnapshot(
@@ -225,12 +281,13 @@ describe('chatJobsMaker(options)(channel, segments)', () => {
   });
 });
 
-describe('makeAttachmentJobs()', () => {
+describe('createAttachmentJobs()', () => {
   it('work with attachment url', () => {
     expect(
-      makeAttachmentJobs(null, [
+      createAttachmentJobs(null, [
         {
-          type: 'unit',
+          type: 'unit' as const,
+          path: '?',
           node: <Foo />,
           value: {
             message: {
@@ -270,9 +327,10 @@ describe('makeAttachmentJobs()', () => {
     };
 
     expect(
-      makeAttachmentJobs(null, [
+      createAttachmentJobs(null, [
         {
           type: 'unit',
+          path: '?',
           node: <Foo />,
           value: {
             message: {
@@ -301,8 +359,9 @@ describe('makeAttachmentJobs()', () => {
   });
 
   it('throw if multiple messages passed', () => {
-    const cage = {
-      type: 'unit',
+    const segment = {
+      type: 'unit' as const,
+      path: '?',
       node: <Foo />,
       value: {
         message: {
@@ -316,15 +375,16 @@ describe('makeAttachmentJobs()', () => {
     };
 
     expect(() =>
-      makeAttachmentJobs(null, [cage, cage])
+      createAttachmentJobs(null, [segment, segment])
     ).toThrowErrorMatchingInlineSnapshot(`"more than 1 message received"`);
   });
 
   it('throw if non media message passed', () => {
     expect(() =>
-      makeAttachmentJobs(null, [
+      createAttachmentJobs(null, [
         {
-          type: 'unit',
+          type: 'unit' as const,
+          path: '?',
           node: <Foo />,
           value: {
             message: { text: "I'm an attachment!" },
@@ -336,9 +396,10 @@ describe('makeAttachmentJobs()', () => {
     );
 
     expect(() =>
-      makeAttachmentJobs(null, [
+      createAttachmentJobs(null, [
         {
           type: 'unit',
+          path: '?',
           node: <Bar />,
           value: {
             message: {

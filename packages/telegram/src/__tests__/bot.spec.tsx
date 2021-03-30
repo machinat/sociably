@@ -72,19 +72,17 @@ afterEach(() => {
 describe('#constructor(options)', () => {
   it('throw if botToken not given', () => {
     expect(
-      () => new TelegramBot(undefined as never)
-    ).toThrowErrorMatchingInlineSnapshot(`"options.token should not be empty"`);
-    expect(
-      () => new TelegramBot({} as never, initScope, dispatchWrapper)
+      () => new TelegramBot({ initScope, dispatchWrapper } as never)
     ).toThrowErrorMatchingInlineSnapshot(`"options.token should not be empty"`);
   });
 
   it('assemble core modules', () => {
-    const bot = new TelegramBot(
-      { token, maxConnections: 999 },
+    const bot = new TelegramBot({
       initScope,
-      dispatchWrapper
-    );
+      dispatchWrapper,
+      token,
+      maxConnections: 999,
+    });
 
     expect(bot.engine).toBeInstanceOf(Engine);
 
@@ -97,7 +95,6 @@ describe('#constructor(options)', () => {
     expect(Engine.mock).toHaveBeenCalledTimes(1);
     expect(Engine.mock).toHaveBeenCalledWith(
       'telegram',
-      bot,
       expect.any(Renderer),
       expect.any(Queue),
       expect.any(Worker),
@@ -111,11 +108,12 @@ describe('#constructor(options)', () => {
 
   test('default maxConnections', () => {
     expect(
-      new TelegramBot(
-        { token, maxConnections: 999 },
+      new TelegramBot({
         initScope,
-        dispatchWrapper
-      )
+        dispatchWrapper,
+        token,
+        maxConnections: 999,
+      })
     );
 
     expect(Worker.mock).toHaveBeenCalledTimes(1);
@@ -129,7 +127,7 @@ describe('#constructor(options)', () => {
 });
 
 test('#start() and #stop() start/stop engine', () => {
-  const bot = new TelegramBot({ token }, initScope, dispatchWrapper);
+  const bot = new TelegramBot({ initScope, dispatchWrapper, token });
 
   type MockEngine = Moxy<TelegramBot['engine']>;
 
@@ -141,7 +139,7 @@ test('#start() and #stop() start/stop engine', () => {
 });
 
 describe('#render(channel, message, options)', () => {
-  const bot = new TelegramBot({ token }, initScope, dispatchWrapper);
+  const bot = new TelegramBot({ initScope, dispatchWrapper, token });
 
   beforeAll(() => {
     bot.start();
@@ -200,7 +198,7 @@ describe('#render(channel, message, options)', () => {
 });
 
 describe('#renderInstance(message)', () => {
-  const bot = new TelegramBot({ token }, initScope, dispatchWrapper);
+  const bot = new TelegramBot({ initScope, dispatchWrapper, token });
 
   beforeAll(() => {
     bot.start();
@@ -267,7 +265,7 @@ describe('#renderInstance(message)', () => {
 
 describe('#makeApiCall()', () => {
   test('call telegram bot api', async () => {
-    const bot = new TelegramBot({ token }, initScope, dispatchWrapper);
+    const bot = new TelegramBot({ initScope, dispatchWrapper, token });
     bot.start();
 
     const fooCall = telegramApi
@@ -288,7 +286,7 @@ describe('#makeApiCall()', () => {
   });
 
   it('throw TelegramAPIError when fail', async () => {
-    const bot = new TelegramBot({ token }, initScope, dispatchWrapper);
+    const bot = new TelegramBot({ initScope, dispatchWrapper, token });
     bot.start();
 
     const failBody = {
@@ -317,7 +315,7 @@ describe('#makeApiCall()', () => {
 });
 
 test('#fetchFile()', async () => {
-  const bot = new TelegramBot({ token }, initScope, dispatchWrapper);
+  const bot = new TelegramBot({ initScope, dispatchWrapper, token });
   bot.start();
 
   const fileId = '_FILE_ID_';
