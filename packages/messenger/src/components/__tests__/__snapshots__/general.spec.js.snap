@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<p/> hoist plain text into text message object 1`] = `
+exports[`<p/> hoist textual children into text message object 1`] = `
 Array [
   Object {
     "node": <p>
@@ -15,110 +15,12 @@ Array [
     "type": "unit",
     "value": Object {
       "message": Object {
-        "text": "foo",
-      },
-    },
-  },
-  Object {
-    "node": <p>
-      foo
-      <br />
-      bar
-      <br />
-      <br />
-      baz
-    </p>,
-    "path": "$",
-    "type": "unit",
-    "value": Object {
-      "message": Object {
-        "text": "bar",
-      },
-    },
-  },
-  Object {
-    "node": <p>
-      foo
-      <br />
-      bar
-      <br />
-      <br />
-      baz
-    </p>,
-    "path": "$",
-    "type": "unit",
-    "value": Object {
-      "message": Object {
-        "text": "baz",
-      },
-    },
-  },
-]
-`;
+        "text": "foo
+bar
 
-exports[`elements match snapshot 1`] = `
-Array [
-  Object {
-    "node": <p>
-      abc
-    </p>,
-    "path": "$::0",
-    "type": "unit",
-    "value": Object {
-      "message": Object {
-        "text": "abc",
+baz",
       },
     },
-  },
-  Object {
-    "node": <b>
-      important
-    </b>,
-    "path": "$::2",
-    "type": "text",
-    "value": "*important*",
-  },
-  Object {
-    "node": <i>
-      italic
-    </i>,
-    "path": "$::4",
-    "type": "text",
-    "value": "_italic_",
-  },
-  Object {
-    "node": <s>
-      nooooo
-    </s>,
-    "path": "$::6",
-    "type": "text",
-    "value": "~nooooo~",
-  },
-  Object {
-    "node": <u>
-      underlined
-    </u>,
-    "path": "$::8",
-    "type": "text",
-    "value": "underlined",
-  },
-  Object {
-    "node": <code>
-      foo.bar()
-    </code>,
-    "path": "$::10",
-    "type": "text",
-    "value": "\`foo.bar()\`",
-  },
-  Object {
-    "node": <pre>
-      foo.bar('hello world')
-    </pre>,
-    "path": "$::12",
-    "type": "text",
-    "value": "\`\`\`
-foo.bar('hello world')
-\`\`\`",
   },
 ]
 `;
@@ -196,7 +98,7 @@ Array [
 ]
 `;
 
-exports[`nested elements match snapshot 1`] = `
+exports[`render nested elements match snapshot 1`] = `
 Array [
   Object {
     "node": <p>
@@ -236,137 +138,105 @@ Array [
     "type": "unit",
     "value": Object {
       "message": Object {
-        "text": "Mic test \`Hello, *Luke Skywalker!*\`",
-      },
-    },
-  },
-  Object {
-    "node": <p>
-      Mic test
-       
-      <code>
-        Hello, 
-        <b>
-          Luke Skywalker!
-        </b>
-      </code>
-      <br />
-      You know what?
-      <br />
-      <i>
-        <u>
-          I'm your
-        </u>
-         
-        <s>
-          FATHER
-        </s>
-         
-        <code>
-          droid
-        </code>
-        .
-      </i>
-      <br />
-      <br />
-      <pre>
-        May the force be with you!
-      </pre>
-       Test over
-    </p>,
-    "path": "$",
-    "type": "unit",
-    "value": Object {
-      "message": Object {
-        "text": "You know what?",
-      },
-    },
-  },
-  Object {
-    "node": <p>
-      Mic test
-       
-      <code>
-        Hello, 
-        <b>
-          Luke Skywalker!
-        </b>
-      </code>
-      <br />
-      You know what?
-      <br />
-      <i>
-        <u>
-          I'm your
-        </u>
-         
-        <s>
-          FATHER
-        </s>
-         
-        <code>
-          droid
-        </code>
-        .
-      </i>
-      <br />
-      <br />
-      <pre>
-        May the force be with you!
-      </pre>
-       Test over
-    </p>,
-    "path": "$",
-    "type": "unit",
-    "value": Object {
-      "message": Object {
-        "text": "_I'm your ~FATHER~ \`droid\`._",
-      },
-    },
-  },
-  Object {
-    "node": <p>
-      Mic test
-       
-      <code>
-        Hello, 
-        <b>
-          Luke Skywalker!
-        </b>
-      </code>
-      <br />
-      You know what?
-      <br />
-      <i>
-        <u>
-          I'm your
-        </u>
-         
-        <s>
-          FATHER
-        </s>
-         
-        <code>
-          droid
-        </code>
-        .
-      </i>
-      <br />
-      <br />
-      <pre>
-        May the force be with you!
-      </pre>
-       Test over
-    </p>,
-    "path": "$",
-    "type": "unit",
-    "value": Object {
-      "message": Object {
-        "text": "\`\`\`
+        "text": "Mic test \`Hello, *Luke Skywalker!*\`
+You know what?
+_I'm your ~FATHER~ \`droid\`._
+
+\`\`\`
 May the force be with you!
 \`\`\` Test over",
       },
     },
   },
+]
+`;
+
+exports[`render shallow element match snapshot 1`] = `
+Array [
+  Array [
+    Object {
+      "node": <p>
+        abc
+      </p>,
+      "path": "$",
+      "type": "unit",
+      "value": Object {
+        "message": Object {
+          "text": "abc",
+        },
+      },
+    },
+  ],
+  Array [
+    Object {
+      "node": <b>
+        important
+      </b>,
+      "path": "$",
+      "type": "text",
+      "value": "*important*",
+    },
+  ],
+  Array [
+    Object {
+      "node": <i>
+        italic
+      </i>,
+      "path": "$",
+      "type": "text",
+      "value": "_italic_",
+    },
+  ],
+  Array [
+    Object {
+      "node": <s>
+        nooooo
+      </s>,
+      "path": "$",
+      "type": "text",
+      "value": "~nooooo~",
+    },
+  ],
+  Array [
+    Object {
+      "node": <u>
+        underlined
+      </u>,
+      "path": "$",
+      "type": "text",
+      "value": "underlined",
+    },
+  ],
+  Array [
+    Object {
+      "node": <code>
+        foo.bar()
+      </code>,
+      "path": "$",
+      "type": "text",
+      "value": "\`foo.bar()\`",
+    },
+  ],
+  Array [
+    Object {
+      "node": <pre>
+        foo.bar('hello world')
+      </pre>,
+      "path": "$",
+      "type": "text",
+      "value": "\`\`\`
+foo.bar('hello world')
+\`\`\`",
+    },
+  ],
+  Array [
+    Object {
+      "node": <br />,
+      "path": "$",
+      "type": "text",
+      "value": "
+",
+    },
+  ],
 ]
 `;

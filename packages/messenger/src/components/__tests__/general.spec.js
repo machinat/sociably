@@ -4,26 +4,22 @@ import generalComponentDelegator from '../general';
 
 const renderer = new Renderer('messenger', generalComponentDelegator);
 
-test('elements match snapshot', async () => {
-  const segments = await renderer.render(
-    <>
-      <p>abc</p>
-      <br />
-      <b>important</b>
-      <br />
-      <i>italic</i>
-      <br />
-      <s>nooooo</s>
-      <br />
-      <u>underlined</u>
-      <br />
-      <code>foo.bar()</code>
-      <br />
-      <pre>foo.bar('hello world')</pre>
-    </>
+test('render shallow element match snapshot', async () => {
+  const results = await Promise.all(
+    [
+      <p>abc</p>,
+      <b>important</b>,
+      <i>italic</i>,
+      <s>nooooo</s>,
+      <u>underlined</u>,
+      <code>foo.bar()</code>,
+      <pre>foo.bar('hello world')</pre>,
+      <br />,
+    ].map((ele) => renderer.render(ele))
   );
-  expect(segments).toMatchSnapshot();
-  expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
+
+  expect(results).toMatchSnapshot();
+  expect(results.flat().map((seg) => seg.value)).toMatchInlineSnapshot(`
     Array [
       Object {
         "message": Object {
@@ -38,11 +34,13 @@ test('elements match snapshot', async () => {
       "\`\`\`
     foo.bar('hello world')
     \`\`\`",
+      "
+    ",
     ]
   `);
 });
 
-test('nested elements match snapshot', async () => {
+test('render nested elements match snapshot', async () => {
   const segments = await renderer.render(
     <p>
       Mic test{' '}
@@ -65,22 +63,11 @@ test('nested elements match snapshot', async () => {
     Array [
       Object {
         "message": Object {
-          "text": "Mic test \`Hello, *Luke Skywalker!*\`",
-        },
-      },
-      Object {
-        "message": Object {
-          "text": "You know what?",
-        },
-      },
-      Object {
-        "message": Object {
-          "text": "_I'm your ~FATHER~ \`droid\`._",
-        },
-      },
-      Object {
-        "message": Object {
-          "text": "\`\`\`
+          "text": "Mic test \`Hello, *Luke Skywalker!*\`
+    You know what?
+    _I'm your ~FATHER~ \`droid\`._
+
+    \`\`\`
     May the force be with you!
     \`\`\` Test over",
         },
@@ -89,7 +76,7 @@ test('nested elements match snapshot', async () => {
   `);
 });
 
-test('<p/> hoist plain text into text message object', async () => {
+test('<p/> hoist textual children into text message object', async () => {
   const segments = await renderer.render(
     <p>
       foo
@@ -106,45 +93,14 @@ test('<p/> hoist plain text into text message object', async () => {
     Array [
       Object {
         "message": Object {
-          "text": "foo",
-        },
-      },
-      Object {
-        "message": Object {
-          "text": "bar",
-        },
-      },
-      Object {
-        "message": Object {
-          "text": "baz",
+          "text": "foo
+    bar
+
+    baz",
         },
       },
     ]
   `);
-});
-
-it('texual element throw if <br/> in children', async () => {
-  const children = (
-    <>
-      foo
-      <br />
-      bar
-    </>
-  );
-
-  for (const element of [
-    <b>{children}</b>,
-    <i>{children}</i>,
-    <s>{children}</s>,
-    <u>{children}</u>,
-    <code>{children}</code>,
-    <pre>{children}</pre>,
-  ]) {
-    // eslint-disable-next-line no-await-in-loop
-    await expect(renderer.render(element)).rejects.toThrow(
-      'non-textual node <br /> received, only textual nodes allowed'
-    );
-  }
 });
 
 test('throw if non-texual value received', async () => {

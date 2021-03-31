@@ -6,15 +6,13 @@ import generalComponentDelegator from '../general';
 const renderer = new Renderer('line', generalComponentDelegator);
 
 describe('<p/>', () => {
-  it('hoist text to text message object', async () => {
+  it('hoist textual children to text message object', async () => {
     await expect(
       renderer.render(
         <p>
           foo
           <br />
           bar
-          <br />
-          baz
         </p>
       )
     ).resolves.toMatchInlineSnapshot(`
@@ -24,43 +22,12 @@ describe('<p/>', () => {
                   foo
                   <br />
                   bar
-                  <br />
-                  baz
                 </p>,
                 "path": "$",
                 "type": "unit",
                 "value": Object {
-                  "text": "foo",
-                  "type": "text",
-                },
-              },
-              Object {
-                "node": <p>
-                  foo
-                  <br />
-                  bar
-                  <br />
-                  baz
-                </p>,
-                "path": "$",
-                "type": "unit",
-                "value": Object {
-                  "text": "bar",
-                  "type": "text",
-                },
-              },
-              Object {
-                "node": <p>
-                  foo
-                  <br />
-                  bar
-                  <br />
-                  baz
-                </p>,
-                "path": "$",
-                "type": "unit",
-                "value": Object {
-                  "text": "baz",
+                  "text": "foo
+            bar",
                   "type": "text",
                 },
               },
@@ -72,7 +39,7 @@ describe('<p/>', () => {
     await expect(renderer.render(<p />)).resolves.toBe(null);
   });
 
-  it('throw if non-text received', async () => {
+  it('throw if non-text children received', async () => {
     expect(
       renderer.render(
         <p>
@@ -83,8 +50,38 @@ describe('<p/>', () => {
       `"non-textual node <img /> received, only textual node and <br/> allowed"`
     );
   });
+});
 
-  test('with textual nodes', async () => {
+describe('text components', () => {
+  test('render shallow elements', async () => {
+    const results = await Promise.all(
+      [
+        <b>important</b>,
+        <i>italic</i>,
+        <s>nooooo</s>,
+        <u>underlined</u>,
+        <code>foo.bar()</code>,
+        <pre>foo.bar('hello world')</pre>,
+        <br />,
+      ].map((ele) => renderer.render(ele))
+    );
+
+    expect(results).toMatchSnapshot();
+    expect(results.flat().map((seg) => seg.value)).toMatchInlineSnapshot(`
+      Array [
+        "important",
+        "italic",
+        "nooooo",
+        "underlined",
+        "foo.bar()",
+        "foo.bar('hello world')",
+        "
+      ",
+      ]
+    `);
+  });
+
+  test('render nested elements', async () => {
     const promise = renderer.render(
       <p>
         123{' '}
@@ -108,79 +105,14 @@ describe('<p/>', () => {
     expect(segments.map((r) => r.value)).toMatchInlineSnapshot(`
       Array [
         Object {
-          "text": "123 Hello, R2D2!",
-          "type": "text",
-        },
-        Object {
-          "text": "You know what?",
-          "type": "text",
-        },
-        Object {
-          "text": "I'm your FATHER creator.",
-          "type": "text",
-        },
-        Object {
-          "text": "May the force be with you! Bye!",
+          "text": "123 Hello, R2D2!
+      You know what?
+      I'm your FATHER creator.
+      May the force be with you! Bye!",
           "type": "text",
         },
       ]
     `);
-  });
-});
-
-describe('text components', () => {
-  test('shallow textual elements match snapshot', async () => {
-    const promise = renderer.render([
-      <b>important</b>,
-      <br />,
-      <i>italic</i>,
-      <br />,
-      <s>nooooo</s>,
-      <br />,
-      <u>underlined</u>,
-      <br />,
-      <code>foo.bar()</code>,
-      <br />,
-      <pre>foo.bar('hello world')</pre>,
-    ]);
-
-    await expect(promise).resolves.toMatchSnapshot();
-
-    const segments = await promise;
-
-    expect(segments.map((s) => s.value)).toMatchInlineSnapshot(`
-      Array [
-        "important",
-        "italic",
-        "nooooo",
-        "underlined",
-        "foo.bar()",
-        "foo.bar('hello world')",
-      ]
-    `);
-  });
-
-  it('throw if <br/> within children', async () => {
-    const children = (
-      <>
-        foo
-        <br />
-        bar
-      </>
-    );
-
-    for (const node of [
-      <b>{children}</b>,
-      <i>{children}</i>,
-      <s>{children}</s>,
-      <u>{children}</u>,
-      <code>{children}</code>,
-      <pre>{children}</pre>,
-    ]) {
-      await expect(renderer.render(node)).rejects.toThrow(
-        'non-textual node <br /> received, only textual nodes allowed'
-      );
-    }
   });
 
   it('throw if non-textual node within children', async () => {

@@ -1,11 +1,7 @@
 /** @internal */ /** */
 import invariant from 'invariant';
 import formatNode from '@machinat/core/utils/formatNode';
-import {
-  breakSegment,
-  textSegment,
-  unitSegment,
-} from '@machinat/core/renderer';
+import { textSegment, unitSegment } from '@machinat/core/renderer';
 import type { UnitSegment } from '@machinat/core/renderer/types';
 import type { MessageValue } from '../types';
 
@@ -24,7 +20,7 @@ const p = async (node, path, render) => {
         node,
         path,
       });
-    } else if (segment.type !== 'break') {
+    } else {
       throw new TypeError(
         `non-textual node ${formatNode(
           segment.node
@@ -36,7 +32,7 @@ const p = async (node, path, render) => {
   return segments;
 };
 
-const br = (node, path) => [breakSegment(node, path)];
+const br = (node, path) => [textSegment(node, path, '\n')];
 
 const transormText = (transformer) => async (node, path, render) => {
   const childrenSegments = await render(node.props.children);

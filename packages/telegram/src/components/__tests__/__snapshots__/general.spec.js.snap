@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<p/> hoist plain text into text message object 1`] = `
+exports[`<p/> hoist textual children into text message object 1`] = `
 Array [
   Object {
     "node": <p>
@@ -17,114 +17,12 @@ Array [
       "method": "sendMessage",
       "parameters": Object {
         "parse_mode": "HTML",
-        "text": "foo",
-      },
-    },
-  },
-  Object {
-    "node": <p>
-      foo
-      <br />
-      bar
-      <br />
-      <br />
-      baz
-    </p>,
-    "path": "$",
-    "type": "unit",
-    "value": Object {
-      "method": "sendMessage",
-      "parameters": Object {
-        "parse_mode": "HTML",
-        "text": "bar",
-      },
-    },
-  },
-  Object {
-    "node": <p>
-      foo
-      <br />
-      bar
-      <br />
-      <br />
-      baz
-    </p>,
-    "path": "$",
-    "type": "unit",
-    "value": Object {
-      "method": "sendMessage",
-      "parameters": Object {
-        "parse_mode": "HTML",
-        "text": "baz",
-      },
-    },
-  },
-]
-`;
+        "text": "foo
+bar
 
-exports[`elements match snapshot 1`] = `
-Array [
-  Object {
-    "node": <p>
-      abc
-    </p>,
-    "path": "$::0",
-    "type": "unit",
-    "value": Object {
-      "method": "sendMessage",
-      "parameters": Object {
-        "parse_mode": "HTML",
-        "text": "abc",
+baz",
       },
     },
-  },
-  Object {
-    "node": <b>
-      important
-    </b>,
-    "path": "$::2",
-    "type": "text",
-    "value": "<b>important</b>",
-  },
-  Object {
-    "node": <i>
-      italic
-    </i>,
-    "path": "$::4",
-    "type": "text",
-    "value": "<i>italic</i>",
-  },
-  Object {
-    "node": <s>
-      nooooo
-    </s>,
-    "path": "$::6",
-    "type": "text",
-    "value": "<s>nooooo</s>",
-  },
-  Object {
-    "node": <u>
-      underlined
-    </u>,
-    "path": "$::8",
-    "type": "text",
-    "value": "<u>underlined</u>",
-  },
-  Object {
-    "node": <code>
-      foo.bar()
-    </code>,
-    "path": "$::10",
-    "type": "text",
-    "value": "<code>foo.bar()</code>",
-  },
-  Object {
-    "node": <pre>
-      foo.bar('hello world')
-    </pre>,
-    "path": "$::12",
-    "type": "text",
-    "value": "<pre>foo.bar('hello world')</pre>",
   },
 ]
 `;
@@ -194,7 +92,7 @@ Array [
 ]
 `;
 
-exports[`nested elements match snapshot 1`] = `
+exports[`render nested elements match snapshot 1`] = `
 Array [
   Object {
     "node": <p>
@@ -236,141 +134,103 @@ Array [
       "method": "sendMessage",
       "parameters": Object {
         "parse_mode": "HTML",
-        "text": "Mic test <code>Hello, <b>Luke Skywalker!</b></code>",
+        "text": "Mic test <code>Hello, <b>Luke Skywalker!</b></code>
+You know what?
+<i><u>I'm your</u> <s>FATHER</s> <code>droid</code>.</i>
+
+<pre>May the force be with you!</pre> Test over",
       },
     },
   },
-  Object {
-    "node": <p>
-      Mic test
-       
-      <code>
-        Hello, 
-        <b>
-          Luke Skywalker!
-        </b>
-      </code>
-      <br />
-      You know what?
-      <br />
-      <i>
-        <u>
-          I'm your
-        </u>
-         
-        <s>
-          FATHER
-        </s>
-         
-        <code>
-          droid
-        </code>
-        .
-      </i>
-      <br />
-      <br />
-      <pre>
-        May the force be with you!
-      </pre>
-       Test over
-    </p>,
-    "path": "$",
-    "type": "unit",
-    "value": Object {
-      "method": "sendMessage",
-      "parameters": Object {
-        "parse_mode": "HTML",
-        "text": "You know what?",
+]
+`;
+
+exports[`render shallow elements match snapshot 1`] = `
+Array [
+  Array [
+    Object {
+      "node": <p>
+        abc
+      </p>,
+      "path": "$",
+      "type": "unit",
+      "value": Object {
+        "method": "sendMessage",
+        "parameters": Object {
+          "parse_mode": "HTML",
+          "text": "abc",
+        },
       },
     },
-  },
-  Object {
-    "node": <p>
-      Mic test
-       
-      <code>
-        Hello, 
-        <b>
-          Luke Skywalker!
-        </b>
-      </code>
-      <br />
-      You know what?
-      <br />
-      <i>
-        <u>
-          I'm your
-        </u>
-         
-        <s>
-          FATHER
-        </s>
-         
-        <code>
-          droid
-        </code>
-        .
-      </i>
-      <br />
-      <br />
-      <pre>
-        May the force be with you!
-      </pre>
-       Test over
-    </p>,
-    "path": "$",
-    "type": "unit",
-    "value": Object {
-      "method": "sendMessage",
-      "parameters": Object {
-        "parse_mode": "HTML",
-        "text": "<i><u>I'm your</u> <s>FATHER</s> <code>droid</code>.</i>",
-      },
+  ],
+  Array [
+    Object {
+      "node": <b>
+        important
+      </b>,
+      "path": "$",
+      "type": "text",
+      "value": "<b>important</b>",
     },
-  },
-  Object {
-    "node": <p>
-      Mic test
-       
-      <code>
-        Hello, 
-        <b>
-          Luke Skywalker!
-        </b>
-      </code>
-      <br />
-      You know what?
-      <br />
-      <i>
-        <u>
-          I'm your
-        </u>
-         
-        <s>
-          FATHER
-        </s>
-         
-        <code>
-          droid
-        </code>
-        .
-      </i>
-      <br />
-      <br />
-      <pre>
-        May the force be with you!
-      </pre>
-       Test over
-    </p>,
-    "path": "$",
-    "type": "unit",
-    "value": Object {
-      "method": "sendMessage",
-      "parameters": Object {
-        "parse_mode": "HTML",
-        "text": "<pre>May the force be with you!</pre> Test over",
-      },
+  ],
+  Array [
+    Object {
+      "node": <i>
+        italic
+      </i>,
+      "path": "$",
+      "type": "text",
+      "value": "<i>italic</i>",
     },
-  },
+  ],
+  Array [
+    Object {
+      "node": <s>
+        nooooo
+      </s>,
+      "path": "$",
+      "type": "text",
+      "value": "<s>nooooo</s>",
+    },
+  ],
+  Array [
+    Object {
+      "node": <u>
+        underlined
+      </u>,
+      "path": "$",
+      "type": "text",
+      "value": "<u>underlined</u>",
+    },
+  ],
+  Array [
+    Object {
+      "node": <code>
+        foo.bar()
+      </code>,
+      "path": "$",
+      "type": "text",
+      "value": "<code>foo.bar()</code>",
+    },
+  ],
+  Array [
+    Object {
+      "node": <pre>
+        foo.bar('hello world')
+      </pre>,
+      "path": "$",
+      "type": "text",
+      "value": "<pre>foo.bar('hello world')</pre>",
+    },
+  ],
+  Array [
+    Object {
+      "node": <br />,
+      "path": "$",
+      "type": "text",
+      "value": "
+",
+    },
+  ],
 ]
 `;
