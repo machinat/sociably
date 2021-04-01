@@ -181,15 +181,17 @@ it('handle sockets and connections lifecycle', async () => {
   expect(connectSpy.mock).toHaveBeenCalledTimes(1);
   expect(connectSpy.mock).toHaveBeenCalledWith(expectedConnInfo);
 
-  let eventValues = [{ type: 'greeting', kind: 'french', payload: 'bonjour' }];
+  let eventValues = [
+    { type: 'greeting', category: 'french', payload: 'bonjour' },
+  ];
   socket.emit('events', { connId, values: eventValues }, 4, socket);
 
   expect(eventsSpy.mock).toHaveBeenCalledTimes(1);
   expect(eventsSpy.mock).toHaveBeenCalledWith(eventValues, expectedConnInfo);
 
   eventValues = [
-    { kind: 'any', type: 'foo', payload: 'hello' },
-    { kind: 'any', type: 'bar', payload: 'world' },
+    { category: 'any', type: 'foo', payload: 'hello' },
+    { category: 'any', type: 'bar', payload: 'world' },
   ];
   socket.emit('events', { connId, values: eventValues }, 5, socket);
 
@@ -666,15 +668,15 @@ describe('dispatch()', () => {
     await expect(
       testServer.dispatch({
         target: conn1,
-        values: [{ type: 'foo', kind: 'bar', payload: 1 }],
+        values: [{ type: 'foo', category: 'bar', payload: 1 }],
       })
     ).resolves.toEqual([{ serverId, id: conn1.id }]);
     await expect(
       testServer.dispatch({
         target: conn2,
         values: [
-          { type: 'foo', kind: 'bar', payload: 2 },
-          { type: 'foo', kind: 'baz', payload: 3 },
+          { type: 'foo', category: 'bar', payload: 2 },
+          { type: 'foo', category: 'baz', payload: 3 },
         ],
       })
     ).resolves.toEqual([{ serverId, id: conn2.id }]);
@@ -682,13 +684,13 @@ describe('dispatch()', () => {
     expect(socket.dispatch.mock).toHaveBeenCalledTimes(2);
     expect(socket.dispatch.mock).toHaveBeenNthCalledWith(1, {
       connId: conn1.id,
-      values: [{ type: 'foo', kind: 'bar', payload: 1 }],
+      values: [{ type: 'foo', category: 'bar', payload: 1 }],
     });
     expect(socket.dispatch.mock).toHaveBeenNthCalledWith(2, {
       connId: conn2.id,
       values: [
-        { type: 'foo', kind: 'bar', payload: 2 },
-        { type: 'foo', kind: 'baz', payload: 3 },
+        { type: 'foo', category: 'bar', payload: 2 },
+        { type: 'foo', category: 'baz', payload: 3 },
       ],
     });
   });
@@ -696,7 +698,7 @@ describe('dispatch()', () => {
   it('dispatch events to remote connection target', async () => {
     const eventValues = [
       { type: 'greet', payload: 'hello' },
-      { type: 'message', kind: 'text', payload: 'world' },
+      { type: 'message', category: 'text', payload: 'world' },
     ];
 
     const remoteTarget = {

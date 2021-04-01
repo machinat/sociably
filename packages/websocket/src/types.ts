@@ -31,11 +31,11 @@ export type ConnIdentifier = {
 export type UpgradeRequestInfo = Omit<HttpRequestInfo, 'body'>;
 
 export type EventValue<
-  Kind extends string = string,
+  Category extends string = string,
   Type extends string = string,
   Payload = unknown
 > = {
-  kind: Kind;
+  category: Category;
   type: Type;
   payload: Payload;
 };
@@ -53,7 +53,7 @@ export type WebSocketEvent<
   User extends null | MachinatUser
 > = {
   platform: 'websokcet';
-  kind: Value['kind'];
+  category: Value['category'];
   type: Value['type'];
   payload: Value['payload'];
   channel: WebSocketConnection;
@@ -61,7 +61,7 @@ export type WebSocketEvent<
 };
 
 export type EventInput = {
-  kind?: string;
+  category?: string;
   type: string;
   payload?: unknown;
 };

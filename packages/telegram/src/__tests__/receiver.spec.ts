@@ -151,7 +151,7 @@ it('respond 200 and pop events received', async () => {
   });
 
   expect(context.event.platform).toBe('telegram');
-  expect(context.event.kind).toBe('message');
+  expect(context.event.category).toBe('message');
   expect(context.event.type).toBe('text');
   expect(context.event.channel).toEqual(
     new TelegramChat(12345, updateBody.message.chat as never)

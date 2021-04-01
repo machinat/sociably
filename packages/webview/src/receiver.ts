@@ -61,7 +61,7 @@ export class WebviewReceiver<
 
     this._server.on('connect', ({ connId, user, request, authContext }) => {
       const value: ConnectEventValue = {
-        kind: 'connection',
+        category: 'connection',
         type: 'connect',
         payload: null,
       };
@@ -71,7 +71,7 @@ export class WebviewReceiver<
     this._server.on('disconnect', ({ reason }, connData) => {
       const { connId, user, request, authContext } = connData;
       const value: DisconnectEventValue = {
-        kind: 'connection',
+        category: 'connection',
         type: 'disconnect',
         payload: { reason },
       };

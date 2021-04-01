@@ -37,8 +37,8 @@ export type LineRawEvent = {
   things: any;
 };
 
-interface EventObject<Kind extends string, Type extends string> {
-  kind: Kind;
+interface EventObject<Category extends string, Type extends string> {
+  category: Category;
   type: Type;
   payload: LineRawEvent;
   user: LineUser;

@@ -41,7 +41,7 @@ Object {
             "type": "foo",
           },
           Object {
-            "kind": "baz",
+            "category": "baz",
             "payload": "3",
             "type": "bar",
           },

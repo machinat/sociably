@@ -46,7 +46,7 @@ it('emit events from app.onEvent()', () => {
   const eventCtx1 = {
     platform: 'test',
     event: {
-      kind: 'bar',
+      category: 'bar',
       type: 'open',
       channel: { uid: 'foo.channel' },
       user: { uid: 'john_doe' },
@@ -61,7 +61,7 @@ it('emit events from app.onEvent()', () => {
   const eventCtx2 = {
     platform: 'test',
     event: {
-      kind: 'bar',
+      category: 'bar',
       type: 'close',
       channel: { uid: 'foo.channel' },
       user: { uid: 'john_doe' },
@@ -88,7 +88,7 @@ test('transmit scope and use channel.uid as the key', () => {
   const eventCtx1 = {
     platform: 'test',
     event: {
-      kind: 'bar',
+      category: 'bar',
       type: 'open',
       channel: { uid: 'foo.channel' },
       user: { uid: 'john_doe' },
@@ -106,7 +106,7 @@ test('transmit scope and use channel.uid as the key', () => {
   const eventCtx2 = {
     platform: 'test',
     event: {
-      kind: 'bar',
+      category: 'bar',
       type: 'close',
       channel: { uid: 'baz.channel' },
       user: { uid: 'john_doe' },

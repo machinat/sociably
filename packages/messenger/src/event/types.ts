@@ -30,12 +30,12 @@ import type MessengerUser from '../user';
 import type { MessengerRawEvent } from '../types';
 
 interface EventObject<
-  Kind extends string,
+  Category extends string,
   Type extends string,
   Channel extends null | MessengerChat = MessengerChat,
   User extends null | MessengerUser = MessengerUser
 > {
-  kind: Kind;
+  category: Category;
   type: Type;
   channel: Channel;
   user: User;

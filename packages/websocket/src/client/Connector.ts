@@ -87,8 +87,8 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<
   }
 
   async send(events: EventInput[]): Promise<void> {
-    const marshaledEvents = events.map(({ kind, type, payload }) => ({
-      kind,
+    const marshaledEvents = events.map(({ category, type, payload }) => ({
+      category,
       type,
       payload: this._marshaler.marshal(payload),
     }));
@@ -154,8 +154,8 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<
     if (this._connId === connId) {
       this.emit(
         'events',
-        values.map(({ kind, type, payload }) => ({
-          kind,
+        values.map(({ category, type, payload }) => ({
+          category,
           type,
           payload: this._marshaler.unmarshal(payload),
         })),

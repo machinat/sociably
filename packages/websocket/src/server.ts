@@ -328,8 +328,8 @@ export class WebSocketServer<
   private async _dispatchRemote(target: DispatchTarget, values: EventInput[]) {
     return this._broker.dispatchRemote({
       target,
-      values: values.map(({ kind, type, payload }) => ({
-        kind,
+      values: values.map(({ category, type, payload }) => ({
+        category,
         type,
         payload: this.marshaler.marshal(payload),
       })),
@@ -351,8 +351,8 @@ export class WebSocketServer<
         socket
           .dispatch({
             connId,
-            values: values.map(({ kind, type, payload }) => ({
-              kind,
+            values: values.map(({ category, type, payload }) => ({
+              category,
               type,
               payload: this.marshaler.marshal(payload),
             })),
@@ -544,8 +544,8 @@ export class WebSocketServer<
     } else {
       this.emit(
         'events',
-        values.map(({ kind, type, payload }) => ({
-          kind,
+        values.map(({ category, type, payload }) => ({
+          category,
           type,
           payload: this.marshaler.unmarshal(payload),
         })),

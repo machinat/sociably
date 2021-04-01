@@ -7,10 +7,10 @@ import type { EventInput } from './types';
 
 /** @internal */
 const __Event = function Event(node, path) {
-  const { type, kind, payload } = node.props;
+  const { type, category, payload } = node.props;
   return [
     unitSegment(node, path, {
-      kind,
+      category,
       type,
       payload,
     }),

@@ -26,8 +26,8 @@ export const createEvent = <User extends null | MachinatUser>(
 ): WebviewEvent<any, User> => {
   const event: WebviewEvent<any, User> = Object.create(WebEventProto);
 
-  const { kind, type, payload } = value;
-  event.kind = kind || 'default';
+  const { category, type, payload } = value;
+  event.category = category || 'default';
   event.type = type;
   event.payload = payload;
   event.channel = channel;

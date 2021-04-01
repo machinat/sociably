@@ -36,7 +36,7 @@ app.onEvent(
     deps: [IntentRecognizerI],
   })(
     recognizer => async ({ bot, event }) => {
-      if (event.kind === 'message' && event.type === 'text') {
+      if (event.category === 'message' && event.type === 'text') {
         const {
           intentType,
           confidence,

@@ -149,7 +149,7 @@ export interface MachinatUser {
 
 export interface MachinatEvent<Payload> {
   readonly platform: string;
-  readonly kind: string;
+  readonly category: string;
   readonly type: string;
   readonly payload: Payload;
   readonly channel: null | MachinatChannel;
@@ -157,26 +157,26 @@ export interface MachinatEvent<Payload> {
 }
 
 export interface TextMessageMixin {
-  readonly kind: 'message';
+  readonly category: 'message';
   readonly type: 'text';
   readonly text: string;
 }
 
 export interface MediaMessageMixin {
-  readonly kind: 'message';
+  readonly category: 'message';
   readonly type: 'image' | 'video' | 'audio' | 'file';
   readonly url?: string;
 }
 
 export interface LocationMessageMixin {
-  readonly kind: 'message';
+  readonly category: 'message';
   readonly type: 'location';
   readonly latitude: number;
   readonly longitude: number;
 }
 
 export interface PostbackMixin {
-  readonly kind: 'postback';
+  readonly category: 'postback';
   readonly type: string;
   readonly data: string;
 }

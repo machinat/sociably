@@ -47,7 +47,7 @@ class WebScoketClient<
       this._channel = new WebSocketConnection('*', connId);
 
       const connectEvent: ConnectEventValue = {
-        kind: 'connection',
+        category: 'connection',
         type: 'connect',
         payload: null,
       };
@@ -71,7 +71,7 @@ class WebScoketClient<
       this._channel = null;
 
       const disconnectValue: DisconnectEventValue = {
-        kind: 'connection',
+        category: 'connection',
         type: 'disconnect',
         payload: { reason },
       };

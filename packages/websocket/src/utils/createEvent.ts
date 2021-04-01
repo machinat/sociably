@@ -12,8 +12,8 @@ const createEvent = <User extends null | MachinatUser>(
 ): WebSocketEvent<any, User> => {
   const event: WebSocketEvent<any, User> = Object.create(WebEventProto);
 
-  const { kind, type, payload } = value;
-  event.kind = kind || 'default';
+  const { category, type, payload } = value;
+  event.category = category || 'default';
   event.type = type;
   event.payload = payload;
   event.channel = channel;

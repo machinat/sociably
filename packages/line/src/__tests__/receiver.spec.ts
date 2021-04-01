@@ -252,13 +252,13 @@ it('respond 200 and pop events received', async () => {
   }
 
   const event1 = popEventMock.calls[0].args[0].event;
-  expect(event1.kind).toBe('message');
+  expect(event1.category).toBe('message');
   expect(event1.type).toBe('text');
   expect(event1.payload).toEqual(body.events[0]);
 
   const event2 = popEventMock.calls[1].args[0].event;
   expect(event2.type).toBe('follow');
-  expect(event2.kind).toBe('action');
+  expect(event2.category).toBe('action');
   expect(event2.payload).toEqual(body.events[1]);
 });
 
@@ -330,7 +330,7 @@ it('validate request', async () => {
   );
   expect(event.user).toEqual(new LineUser('_PROVIDER_ID_', 'xxx'));
 
-  expect(event.kind).toBe('message');
+  expect(event.category).toBe('message');
   expect(event.type).toBe('text');
   expect(event.payload).toEqual({
     replyToken: 'xxx',

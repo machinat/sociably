@@ -41,7 +41,7 @@ it('work', async () => {
       target: { type: 'topic' as const, name: 'somthing' },
       values: [
         { type: 'foo', payload: '2' },
-        { type: 'bar', kind: 'baz', payload: '3' },
+        { type: 'bar', category: 'baz', payload: '3' },
       ],
     },
 

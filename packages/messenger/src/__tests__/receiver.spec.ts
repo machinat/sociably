@@ -294,12 +294,12 @@ describe('handling POST', () => {
     }
 
     const event1 = popEventMock.calls[0].args[0].event;
-    expect(event1.kind).toBe('message');
+    expect(event1.category).toBe('message');
     expect(event1.type).toBe('text');
     expect(event1.payload).toEqual(body.entry[0].messaging[0]);
 
     const event2 = popEventMock.calls[1].args[0].event;
-    expect(event2.kind).toBe('message');
+    expect(event2.category).toBe('message');
     expect(event2.type).toBe('image');
     expect(event2.payload).toEqual(body.entry[0].messaging[1]);
   });
@@ -435,7 +435,7 @@ describe('handling POST', () => {
     expect(event.channel).toEqual(new Channel('_PAGE_ID_', { id: '_PSID_' }));
 
     expect(event.platform).toBe('messenger');
-    expect(event.kind).toBe('message');
+    expect(event.category).toBe('message');
     expect(event.type).toBe('text');
     expect(event.text).toBe('foo');
   });

@@ -62,7 +62,7 @@ it('pop events', () => {
     platform: 'websocket',
     bot,
     event: {
-      kind: 'connection',
+      category: 'connection',
       type: 'connect',
       payload: null,
       user,
@@ -74,7 +74,7 @@ it('pop events', () => {
 
   server.emit(
     'events',
-    [{ kind: 'greet', type: 'hello', payload: 'world' }, { type: 'hug' }],
+    [{ category: 'greet', type: 'hello', payload: 'world' }, { type: 'hug' }],
     connectionInfo
   );
 
@@ -83,7 +83,7 @@ it('pop events', () => {
     platform: 'websocket',
     bot,
     event: {
-      kind: 'greet',
+      category: 'greet',
       type: 'hello',
       payload: 'world',
       user,
@@ -96,7 +96,7 @@ it('pop events', () => {
     platform: 'websocket',
     bot,
     event: {
-      kind: 'default',
+      category: 'default',
       type: 'hug',
       payload: undefined,
       user,
@@ -112,7 +112,7 @@ it('pop events', () => {
     platform: 'websocket',
     bot,
     event: {
-      kind: 'connection',
+      category: 'connection',
       type: 'disconnect',
       payload: { reason: 'bye' },
       user,

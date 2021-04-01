@@ -11,7 +11,7 @@ const createJobs = (
       values: segments.map((seg) =>
         seg.type === 'text'
           ? {
-              kind: 'message',
+              category: 'message',
               type: 'text',
               payload: seg.value,
             }

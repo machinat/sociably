@@ -99,7 +99,7 @@ class WebviewClient<
       this._channel = new WebviewConnection('*', connId);
 
       const connectEvent: ConnectEventValue = {
-        kind: 'connection',
+        category: 'connection',
         type: 'connect',
         payload: null,
       };
@@ -127,7 +127,7 @@ class WebviewClient<
       this._channel = null;
 
       const disconnectValue: DisconnectEventValue = {
-        kind: 'connection',
+        category: 'connection',
         type: 'disconnect',
         payload: { reason },
       };

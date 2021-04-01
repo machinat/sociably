@@ -56,7 +56,7 @@ export class WebSocketReceiver<User extends null | MachinatUser, Auth> {
 
     this._server.on('connect', ({ connId, user, request, authContext }) => {
       const value: ConnectEventValue = {
-        kind: 'connection',
+        category: 'connection',
         type: 'connect',
         payload: null,
       };
@@ -69,7 +69,7 @@ export class WebSocketReceiver<User extends null | MachinatUser, Auth> {
     this._server.on('disconnect', ({ reason }, ctx) => {
       const { connId, user, request, authContext } = ctx;
       const value: DisconnectEventValue = {
-        kind: 'connection',
+        category: 'connection',
         type: 'disconnect',
         payload: { reason },
       };

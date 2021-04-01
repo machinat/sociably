@@ -164,7 +164,7 @@ app.onEvent(async ({ event, bot }) => {
     return bot.render(event.channel, <Welcome />)
   }
 
-  if (event.kind === 'message') {
+  if (event.category === 'message') {
     if (event.type === 'text') {
       const intent = await recognizeIntent(event.text);
 

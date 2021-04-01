@@ -115,7 +115,7 @@ it('start connector and auth client', async () => {
 
   expect(eventSpy.mock).toHaveBeenCalledWith(
     {
-      kind: 'connection',
+      category: 'connection',
       type: 'connect',
       payload: null,
       user,
@@ -219,7 +219,7 @@ it('emit "event" when dispatched events received', async () => {
     [
       { type: 'start', payload: 'Welcome to Hyrule' },
       {
-        kind: 'reaction',
+        category: 'reaction',
         type: 'wasted',
         payload: 'Link is down! Legend over.',
       },
@@ -232,7 +232,7 @@ it('emit "event" when dispatched events received', async () => {
   expect(eventSpy.mock).toHaveBeenNthCalledWith(
     2,
     {
-      kind: 'default',
+      category: 'default',
       type: 'start',
       payload: 'Welcome to Hyrule',
       user,
@@ -243,7 +243,7 @@ it('emit "event" when dispatched events received', async () => {
   expect(eventSpy.mock).toHaveBeenNthCalledWith(
     3,
     {
-      kind: 'reaction',
+      category: 'reaction',
       type: 'wasted',
       payload: 'Link is down! Legend over.',
       user,
@@ -261,7 +261,7 @@ it('emit "event" when dispatched events received', async () => {
   expect(eventSpy.mock).toHaveBeenCalledTimes(4);
   expect(eventSpy.mock).toHaveBeenCalledWith(
     {
-      kind: 'default',
+      category: 'default',
       type: 'resurrect',
       payload: 'Hero never die!',
       user,
@@ -279,14 +279,14 @@ it('send events', async () => {
   await expect(
     client.send([
       { type: 'foo', payload: 1 },
-      { type: 'bar', kind: 'beer', payload: 2 },
+      { type: 'bar', category: 'beer', payload: 2 },
     ])
   ).resolves.toBe(undefined);
 
   expect(connector.send.mock).toHaveBeenCalledTimes(1);
   expect(connector.send.mock).toHaveBeenCalledWith([
     { type: 'foo', payload: 1 },
-    { type: 'bar', kind: 'beer', payload: 2 },
+    { type: 'bar', category: 'beer', payload: 2 },
   ]);
 
   await expect(client.send({ type: 'baz', payload: 3 })).resolves.toBe(
@@ -319,7 +319,7 @@ test('disconnected by server', async () => {
 
   expect(eventSpy.mock).toHaveBeenLastCalledWith(
     {
-      kind: 'connection',
+      category: 'connection',
       type: 'disconnect',
       payload: { reason: 'See ya!' },
       user,
@@ -353,7 +353,7 @@ test('#disconnect()', async () => {
   connector.emit('disconnect', { reason: 'Bye!' }, { connId: '#conn', user });
   expect(eventSpy.mock).toHaveBeenLastCalledWith(
     {
-      kind: 'connection',
+      category: 'connection',
       type: 'disconnect',
       payload: { reason: 'Bye!' },
       user,

@@ -43,7 +43,7 @@ export type WebviewEvent<
   User extends null | MachinatUser
 > = {
   platform: 'webview';
-  kind: Value['kind'];
+  category: Value['category'];
   type: Value['type'];
   payload: Value['payload'];
   channel: WebviewConnection;
@@ -85,7 +85,7 @@ export type WebviewClientEvent<
   Value extends EventValue = EventValue
 > = {
   platform: 'webview';
-  kind: Value['kind'];
+  category: Value['category'];
   type: Value['type'];
   payload: Value['payload'];
   channel: WebviewConnection;

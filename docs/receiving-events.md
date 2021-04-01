@@ -18,10 +18,10 @@ The event context is a **plain object** containing the following properties:
 
 - `platform`: `string`, the platform name.
 
-- `event`: `object`, represent the event has happened. Despite the basic properties listed here, some [standard mixins](#standard-event-mixins) are added on the specific kind/type of event.
+- `event`: `object`, represent the event has happened. Despite the basic properties listed here, some [standard mixins](#standard-event-mixins) are added on the specific category/type of event.
   - `platform`: `string`, platform where the event comes from.
 
-  - `kind`: `string`, rough classification of the events. Here are some common categories used by most platforms:
+  - `category`: `string`, rough classification of the events. Here are some common categories used by most platforms:
     - `'message'`: a text or media message is sent by the user.
     - `'postback'`: the user interact with an app defined UI (like a button) and post data back.
     - `'action'`: a non-message action is initiatively triggered by the user.
@@ -66,33 +66,33 @@ To help you to get information from the various of events, some helper getters a
 
 ```js
 bot.onEvent(({ event, bot }) => {
-  if (event.kind === 'message' && event.type === 'text') {
+  if (event.category === 'message' && event.type === 'text') {
     bot.render(event.channel, `${event.text} is good!`);
   }
 });
 ```
 
-Here we define some common event types and the standard mixins for them. The mixins listed here should be implement on specific kind/type by all platforms. You can use them without knowing the platform and the shape of event payload.
+Here we define some common event types and the standard mixins for them. The mixins listed here should be implement on specific category/type by all platforms. You can use them without knowing the platform and the shape of event payload.
 
 ###### Text Message Event
-- `kind`: `'message'`
+- `category`: `'message'`
 - `type`: `'text'`
 - `text`: `string`, the text message.
 
 
 ###### Media Message Event
-- `kind`: `'message'`
+- `category`: `'message'`
 - `type`: `'image' | 'video' | 'audio' | 'file'`
 - `url`: `void|string`, the url of the media if available.
 
 ###### Location Message Event
-- `kind`: `'message'`
+- `category`: `'message'`
 - `type`: `'location'`
 - `latitude`: `number`, latitude.
 - `longitude`: `number`, longitude.
 
 ###### Postback Event
-- `kind`: `'postback'`
+- `category`: `'postback'`
 - `type`: `any`
 - `data`: `void | string`, the postback data defined by your app if available.
 
@@ -110,7 +110,7 @@ Let's put them together:
 
 ```js
 app.onEvent(({ platform, event, bot }) => {
-  if (event.kind === 'message' && event.type === 'text') {
+  if (event.category === 'message' && event.type === 'text') {
     // reply for a text message
     bot.render(event.channel, `Hello ${event.text}!`);
   } else if (platform === 'messenger') {

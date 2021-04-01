@@ -109,15 +109,15 @@ describe('#render(channel, message)', () => {
       foo
       <Event type="foo" />
       <Event type="bar" payload="beer" />
-      <Event type="baz" kind="zaq" />
+      <Event type="baz" category="zaq" />
     </>
   );
 
   const expectedEventValues = [
-    { type: 'text', kind: 'message', payload: 'foo' },
+    { type: 'text', category: 'message', payload: 'foo' },
     { type: 'foo' },
     { type: 'bar', payload: 'beer' },
-    { type: 'baz', kind: 'zaq' },
+    { type: 'baz', category: 'zaq' },
   ];
 
   it('send to connection channel', async () => {
@@ -185,9 +185,9 @@ describe('#render(channel, message)', () => {
       target: channel,
       values: [
         { type: 'foo' },
-        { type: 'text', kind: 'message', payload: 'foo' },
+        { type: 'text', category: 'message', payload: 'foo' },
         { type: 'bar', payload: 'beer' },
-        { type: 'baz', kind: 'zaq' },
+        { type: 'baz', category: 'zaq' },
       ],
     };
 
@@ -198,7 +198,7 @@ describe('#render(channel, message)', () => {
           <Event type="foo" />
           foo
           <Event type="bar" payload="beer" />
-          <Event type="baz" kind="zaq" />
+          <Event type="baz" category="zaq" />
         </>
       )
     ).resolves.toEqual({
@@ -224,7 +224,7 @@ test('#send()', async () => {
   });
 
   const eventValues = [
-    { type: 'bar', kind: 'black', payload: '🍺' },
+    { type: 'bar', category: 'black', payload: '🍺' },
     { type: 'baz', payload: '🍻' },
   ];
 
@@ -260,7 +260,7 @@ test('#sendUser()', async () => {
   });
 
   const eventValues = [
-    { type: 'bar', kind: 'light', payload: '🍺' },
+    { type: 'bar', category: 'light', payload: '🍺' },
     { type: 'baz', payload: '🍻' },
   ];
 
@@ -296,7 +296,7 @@ test('#sendTopic()', async () => {
   });
 
   const eventValues = [
-    { type: 'bar', kind: 'light', payload: '🍺' },
+    { type: 'bar', category: 'light', payload: '🍺' },
     { type: 'baz', payload: '🍻' },
   ];
 
