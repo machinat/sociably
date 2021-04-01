@@ -1,6 +1,6 @@
 {
   "name": "@machinat/webview",
-  "version": "0.4.0-beta.3",
+  "version": "0.4.0-beta.4",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -40,7 +40,7 @@
   "dependencies": {
     "@machinat/auth": "^0.4.0-beta.1",
     "@machinat/next": "^0.4.0-beta.3",
-    "@machinat/websocket": "^0.4.0-beta.3",
+    "@machinat/websocket": "^0.4.0-beta.4",
     "nanoid": "^3.1.20"
   },
   "devDependencies": {
