@@ -35,6 +35,8 @@ import type {
   ShippingQuery,
   PreCheckoutQuery,
   PollAnswer,
+  ChatMember,
+  ChatMemberUpdated,
   Unknown,
 } from './mixins';
 import type { TelegramRawEvent } from '../types';
@@ -303,10 +305,10 @@ export interface TelegramLocationEvent
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @kind `'action'`
- * @type `'member_join'`
+ * @type `'new_chat_members'`
  */
-export interface TelegramMemberJoinEvent
-  extends EventObject<'action', 'member_join'>,
+export interface TelegramNewChatMembersEvent
+  extends EventObject<'action', 'new_chat_members'>,
     EventBase,
     Message,
     MessageDetail,
@@ -317,10 +319,10 @@ export interface TelegramMemberJoinEvent
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @kind `'action'`
- * @type `'member_leave'`
+ * @type `'left_chat_member'`
  */
-export interface TelegramMemberLeaveEvent
-  extends EventObject<'action', 'member_leave'>,
+export interface TelegramLeftChatMemberEvent
+  extends EventObject<'action', 'left_chat_member'>,
     EventBase,
     Message,
     MessageDetail,
@@ -522,6 +524,30 @@ export interface TelegramPollAnswerChangeEvent
     PollAnswer {}
 
 /**
+ * The bot's chat member status was updated in a chat. For private chats, this update is received only when the bot is blocked or unblocked by the user.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#update).
+ * @kind `'action'`
+ * @type `'bot_member_updated'`
+ */
+export interface TelegramBotMemberUpdatedEvent
+  extends EventObject<'action', 'bot_member_updated'>,
+    ChatMember,
+    ChatMemberUpdated {}
+
+/**
+ * A chat member's status was updated in a chat. The bot must be an administrator in the chat and must explicitly specify “chat_member” in the list of allowed_updates to receive these updates.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#update).
+ * @kind `'action'`
+ * @type `'chat_member_updated'`
+ */
+export interface TelegramChatMemberUpdatedEvent
+  extends EventObject<'action', 'chat_member_updated'>,
+    ChatMember,
+    ChatMemberUpdated {}
+
+/**
  * An unknown message met.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
@@ -549,8 +575,8 @@ export type TelegramEvent =
   | TelegramPollEvent
   | TelegramVenueEvent
   | TelegramLocationEvent
-  | TelegramMemberJoinEvent
-  | TelegramMemberLeaveEvent
+  | TelegramNewChatMembersEvent
+  | TelegramLeftChatMemberEvent
   | TelegramNewChatTitleEvent
   | TelegramNewChatPhotoEvent
   | TelegramDeleteChatPhotoEvent
@@ -566,4 +592,6 @@ export type TelegramEvent =
   | TelegramPreCheckoutQueryEvent
   | TelegramPollChangeEvent
   | TelegramPollAnswerChangeEvent
+  | TelegramBotMemberUpdatedEvent
+  | TelegramChatMemberUpdatedEvent
   | TelegramUnknownEvent;

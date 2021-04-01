@@ -34,6 +34,7 @@ import type {
   RawPreCheckoutQuery,
   RawOrderInfo,
   RawPollAnswer,
+  RawChatMember,
 } from '../types';
 
 export interface EventBase {
@@ -692,23 +693,26 @@ export const Location: Location = {
 
 export interface NewChatMembers {
   /** New members that were added to the group or supergroup and information about them (the bot itself may be one of these members) */
-  newChatMembers: RawUser[];
+  newChatMembers: TelegramUser[];
 }
 
 export const NewChatMembers: NewChatMembers = {
   get newChatMembers() {
-    return this.message.new_chat_members;
+    return this.message.new_chat_members.map(
+      (rawUser: RawUser) => new TelegramUser(rawUser.id, rawUser)
+    );
   },
 };
 
 export interface LeftChatMember {
   /** A member was removed from the group, information about them (this member may be the bot itself) */
-  leftChatMember: RawUser;
+  leftChatMember: TelegramUser;
 }
 
 export const LeftChatMember: LeftChatMember = {
   get leftChatMember() {
-    return this.message.left_chat_member;
+    const leftMember: RawUser = this.message.left_chat_member;
+    return new TelegramUser(leftMember.id, leftMember);
   },
 };
 
@@ -1097,6 +1101,64 @@ export const PollAnswer: PollAnswer = {
   },
   get optionIds() {
     return this.payload.poll_answer.option_ids;
+  },
+};
+
+export type ChatMember = {
+  chatMember: RawChatMember;
+};
+
+export const ChatMember: ChatMember = {
+  get chatMember() {
+    return this.payload.chat_member;
+  },
+};
+
+export const MyChatMember: ChatMember = {
+  get chatMember() {
+    return this.payload.my_chat_member;
+  },
+};
+
+type MemberStatus =
+  | 'creator'
+  | 'administrator'
+  | 'member'
+  | 'restricted'
+  | 'left'
+  | 'kicked';
+
+export type ChatMemberUpdated = {
+  channel: TelegramChat;
+  user: TelegramUser;
+  /** Date the change was done */
+  date: Date;
+  /** The updated chat member */
+  updatedUser: TelegramUser;
+  oldStatus: MemberStatus;
+  newStatus: MemberStatus;
+};
+
+export const ChatMemberUpdated: ChatMemberUpdated = {
+  get channel() {
+    return new TelegramChat(this.botId, this.chatMember.chat);
+  },
+  get user() {
+    const rawUser: RawUser = this.chatMember.from;
+    return new TelegramUser(rawUser.id, rawUser);
+  },
+  get date() {
+    return new Date(this.chatMember.date * 1000);
+  },
+  get updatedUser() {
+    const rawUser: RawUser = this.chatMember.new_chat_member.user;
+    return new TelegramUser(rawUser.id, rawUser);
+  },
+  get newStatus() {
+    return this.chatMember.new_chat_member.status;
+  },
+  get oldStatus() {
+    return this.chatMember.old_chat_member.status;
   },
 };
 

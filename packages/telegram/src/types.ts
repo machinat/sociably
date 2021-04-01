@@ -20,6 +20,29 @@ export type { TelegramEvent } from './event/types';
 export { TelegramChat } from './channel';
 export { default as TelegramUser } from './user';
 
+export type TelegramChatType = 'private' | 'group' | 'supergroup' | 'channel';
+
+export type TelegramParseMode = 'HTML' | 'MarkdownV2' | 'Markdown' | 'None';
+
+export type RawUser = {
+  id: number;
+  is_bot: boolean;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  language_code?: string;
+};
+
+export type RawChat = {
+  id: number;
+  type: TelegramChatType;
+  title?: string;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  description?: string;
+};
+
 // TODO: detailed raw types
 export type RawMessage = any;
 export type RawInlineQuery = any;
@@ -52,29 +75,8 @@ export type RawInlineKeyboardMarkup = any;
 export type RawSuccessfulPayment = any;
 export type RawShippingAddress = any;
 export type RawOrderInfo = any;
-
-export type TelegramChatType = 'private' | 'group' | 'supergroup' | 'channel';
-
-export type TelegramParseMode = 'HTML' | 'MarkdownV2' | 'Markdown' | 'None';
-
-export type RawUser = {
-  id: number;
-  is_bot: boolean;
-  first_name: string;
-  last_name?: string;
-  username?: string;
-  language_code?: string;
-};
-
-export type RawChat = {
-  id: number;
-  type: TelegramChatType;
-  title?: string;
-  username?: string;
-  first_name?: string;
-  last_name?: string;
-  description?: string;
-};
+export type RawChatMember = any;
+export type RawChatMemberUpdated = any;
 
 export type TelegramRawEvent = {
   /** The update's unique identifier. Update identifiers start from a certain positive number and increase sequentially. This ID becomes especially handy if you're using Webhooks, since it allows you to ignore repeated updates or to restore the correct update sequence, should they get out of order. If there are no new updates for at least a week, then identifier of the next update will be chosen randomly instead of sequentially. */
@@ -101,6 +103,8 @@ export type TelegramRawEvent = {
   poll?: RawPoll;
   /** A user changed their answer in a non-anonymous poll. Bots receive new votes only in polls that were sent by the bot itself. */
   poll_answer?: RawPollAnswer;
+  my_chat_member?: RawChatMemberUpdated;
+  chat_member?: RawChatMemberUpdated;
 };
 
 export type UploadingFileInfo = {

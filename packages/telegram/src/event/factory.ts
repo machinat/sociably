@@ -40,6 +40,9 @@ import {
   PreCheckoutQuery,
   PollChange,
   PollAnswer,
+  ChatMember,
+  MyChatMember,
+  ChatMemberUpdated,
   Unknown,
 } from './mixins';
 import { TelegramRawEvent } from '../types';
@@ -419,14 +422,14 @@ const LocationChannelPostProto = mixin(ChannelPostProto, Location, {
   type: 'location' as const,
 });
 
-const MemberJoinActionProto = mixin(MessageProto, NewChatMembers, {
+const NewChatMembersMessageProto = mixin(MessageProto, NewChatMembers, {
   kind: 'action' as const,
-  type: 'member_join' as const,
+  type: 'new_chat_members' as const,
 });
 
-const MemberLeaveActionProto = mixin(MessageProto, LeftChatMember, {
+const LeftChatMemberMessageProto = mixin(MessageProto, LeftChatMember, {
   kind: 'action' as const,
-  type: 'member_leave' as const,
+  type: 'left_chat_member' as const,
 });
 
 const NewChatTitleActionProto = mixin(MessageProto, NewChatTitle, {
@@ -504,6 +507,26 @@ const PollAnswerChangePostbackProto = mixin(EventBase, PollAnswer, {
   type: 'poll_answer_change' as const,
 });
 
+const BotMemberUpdatedActionProto = mixin(
+  EventBase,
+  MyChatMember,
+  ChatMemberUpdated,
+  {
+    kind: 'action' as const,
+    type: 'bot_member_updated' as const,
+  }
+);
+
+const ChatMemberUpdatedActionProto = mixin(
+  EventBase,
+  ChatMember,
+  ChatMemberUpdated,
+  {
+    kind: 'action' as const,
+    type: 'chat_member_updated' as const,
+  }
+);
+
 const UnknownProto = mixin(EventBase, Unknown, {
   kind: 'unknown' as const,
   type: 'unknown' as const,
@@ -546,9 +569,9 @@ const eventFactory = (botId: number) => (
       : message.location
       ? makeEvent(botId, payload, LocationMessageProto)
       : message.new_chat_members
-      ? makeEvent(botId, payload, MemberJoinActionProto)
+      ? makeEvent(botId, payload, NewChatMembersMessageProto)
       : message.left_chat_member
-      ? makeEvent(botId, payload, MemberLeaveActionProto)
+      ? makeEvent(botId, payload, LeftChatMemberMessageProto)
       : message.new_chat_title
       ? makeEvent(botId, payload, NewChatTitleActionProto)
       : message.new_chat_photo
@@ -662,6 +685,10 @@ const eventFactory = (botId: number) => (
     ? makeEvent(botId, payload, PollChangePostbackProto)
     : payload.poll_answer
     ? makeEvent(botId, payload, PollAnswerChangePostbackProto)
+    : payload.my_chat_member
+    ? makeEvent(botId, payload, BotMemberUpdatedActionProto)
+    : payload.chat_member
+    ? makeEvent(botId, payload, ChatMemberUpdatedActionProto)
     : makeEvent(botId, payload, UnknownProto);
 };
 
