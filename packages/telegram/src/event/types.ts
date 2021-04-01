@@ -532,6 +532,7 @@ export interface TelegramPollAnswerChangeEvent
  */
 export interface TelegramBotMemberUpdatedEvent
   extends EventObject<'action', 'bot_member_updated'>,
+    EventBase,
     ChatMember,
     ChatMemberUpdated {}
 
@@ -544,6 +545,7 @@ export interface TelegramBotMemberUpdatedEvent
  */
 export interface TelegramChatMemberUpdatedEvent
   extends EventObject<'action', 'chat_member_updated'>,
+    EventBase,
     ChatMember,
     ChatMemberUpdated {}
 
