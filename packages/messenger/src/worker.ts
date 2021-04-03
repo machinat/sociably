@@ -115,7 +115,7 @@ export default class MessengerWorker
     }
 
     if (this.consumeInterval === 0) {
-      queue.onJob(this._listenJobCallback);
+      queue.onJobs(this._listenJobCallback);
     }
 
     this._started = true;
@@ -135,7 +135,7 @@ export default class MessengerWorker
     }
 
     this._started = false;
-    queue.offJob(this._listenJobCallback);
+    queue.removeJobsListener(this._listenJobCallback);
     return true;
   }
 

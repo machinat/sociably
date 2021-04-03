@@ -75,7 +75,7 @@ export default class TelegramWorker
       return false;
     }
 
-    queue.onJob(this._consumeCallback);
+    queue.onJobs(this._consumeCallback);
     this._started = true;
 
     this._consume(queue);
@@ -88,7 +88,7 @@ export default class TelegramWorker
     }
 
     this._started = false;
-    queue.offJob(this._consumeCallback);
+    queue.removeJobsListener(this._consumeCallback);
     return true;
   }
 

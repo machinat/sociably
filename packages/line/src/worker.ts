@@ -76,7 +76,7 @@ class LineWorker implements MachinatWorker<LineJob, LineResult> {
       return false;
     }
 
-    queue.onJob(this._consumeCallback);
+    queue.onJobs(this._consumeCallback);
     this._started = true;
 
     this._consume(queue);
@@ -89,7 +89,7 @@ class LineWorker implements MachinatWorker<LineJob, LineResult> {
     }
 
     this._started = false;
-    queue.offJob(this._consumeCallback);
+    queue.removeJobsListener(this._consumeCallback);
     return true;
   }
 

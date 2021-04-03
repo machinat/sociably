@@ -51,13 +51,13 @@ it('is a constructor', () => {
   expect(() => new MachinatQueue()).not.toThrow();
 });
 
-describe('#onJob(cb)', () => {
+describe('#onJobs(cb)', () => {
   it('calls cb when jobs enqueued', () => {
     const cb1 = moxy();
     const cb2 = moxy();
 
-    queue.onJob(cb1);
-    queue.onJob(cb2);
+    queue.onJobs(cb1);
+    queue.onJobs(cb2);
 
     queue.executeJobs(jobs);
     queue.executeJobs(jobs);
@@ -72,25 +72,25 @@ describe('#onJob(cb)', () => {
   });
 });
 
-describe('#offJob(cb)', () => {
+describe('#removeJobsListener(cb)', () => {
   it('remove job listener cb', () => {
     const cb1 = moxy();
     const cb2 = moxy();
 
-    queue.onJob(cb1);
-    queue.onJob(cb2);
+    queue.onJobs(cb1);
+    queue.onJobs(cb2);
     queue.executeJobs(jobs);
 
     expect(cb1.mock).toHaveBeenCalledTimes(1);
     expect(cb2.mock).toHaveBeenCalledTimes(1);
 
-    queue.offJob(cb1);
+    queue.removeJobsListener(cb1);
     queue.executeJobs(jobs);
 
     expect(cb1.mock).toHaveBeenCalledTimes(1);
     expect(cb2.mock).toHaveBeenCalledTimes(2);
 
-    queue.offJob(cb2);
+    queue.removeJobsListener(cb2);
     queue.executeJobs(jobs);
 
     expect(cb1.mock).toHaveBeenCalledTimes(1);

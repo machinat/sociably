@@ -19,7 +19,7 @@ class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
       return false;
     }
 
-    queue.onJob(this._listenJobsCallback);
+    queue.onJobs(this._listenJobsCallback);
 
     this._started = true;
     return true;
@@ -30,7 +30,7 @@ class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
       return false;
     }
 
-    queue.offJob(this._listenJobsCallback);
+    queue.removeJobsListener(this._listenJobsCallback);
 
     this._started = false;
     return true;

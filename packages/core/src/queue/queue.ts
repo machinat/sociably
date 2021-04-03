@@ -106,11 +106,11 @@ export default class MachinatQueue<Job, Result> {
     this._failJobsReducerCallback = this._failJobsReducer.bind(this);
   }
 
-  onJob(listener: (queue: MachinatQueue<Job, Result>) => void): void {
+  onJobs(listener: (queue: MachinatQueue<Job, Result>) => void): void {
     this._jobListeners.push(listener);
   }
 
-  offJob(
+  removeJobsListener(
     listenerToRemove: (queue: MachinatQueue<Job, Result>) => void
   ): boolean {
     const listeners = this._jobListeners;
