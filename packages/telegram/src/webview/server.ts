@@ -1,6 +1,6 @@
 import { parse as parseUrl } from 'url';
 import type { ParsedUrlQuery } from 'querystring';
-import { createHmac } from 'crypto';
+import { createHmac, createHash } from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
@@ -36,10 +36,12 @@ const LOGIN_PARAMETERS = [
 export class TelegramServerAuthorizer
   implements ServerAuthorizer<never, TelegramAuthData, TelegramAuthContext> {
   bot: BotP;
+  private _secretKey: Buffer;
   platform = TELEGRAM;
 
   constructor(bot: BotP) {
     this.bot = bot;
+    this._secretKey = createHash('sha256').update(bot.token).digest();
   }
 
   async delegateAuthRequest(
@@ -154,7 +156,7 @@ export class TelegramServerAuthorizer
       ''
     ).slice(1);
 
-    const hashedParams = createHmac('sha256', this.bot.token)
+    const hashedParams = createHmac('sha256', this._secretKey)
       .update(paramsCheckingString)
       .digest('hex');
 

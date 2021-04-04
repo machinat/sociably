@@ -59,7 +59,7 @@ describe('#delegateAuthRequest()', () => {
     last_name: 'Doe',
     username: 'johndoe',
     photo_url: 'https://...',
-    hash: 'b9dd29dc85707201fafad92122120a759492f14f0b997f96e5ef7734009c881b',
+    hash: 'e0aeac2cb5f34b930e6d83d16eecc5df1483c61eedf4ad07f3f43e55d6dd195d',
   };
 
   it('receive login request and redirct user to webview', async () => {
@@ -198,7 +198,7 @@ describe('#delegateAuthRequest()', () => {
     const search = new URLSearchParams({
       ...telegramLoginSearch,
       auth_date: '1601136765',
-      hash: 'dcf3f7fddbcb157af36167546c645620b9a78ff24e32d35a8de96c6617935c6a',
+      hash: '6fe5c0198e70297fffec814bf443afef5d3f6587d722399816d808e61217e571',
     });
 
     const req = createReq({ url: `/auth/telegram/login?${search}` });
