@@ -1,6 +1,6 @@
 {
   "name": "@machinat/core",
-  "version": "0.4.0-beta.4",
+  "version": "0.4.0-beta.6",
   "description": "A declarative, progressive and cross-platform JavaScript framework for building conversational interfaces.",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
