@@ -51,14 +51,14 @@ export class TelegramServerAuthorizer
     const { [REDIRECT_QUERY]: redirectQuery, [CHAT_QUERY]: chatQuery } = query;
 
     if (Array.isArray(redirectQuery)) {
-      resHelper.issueError(400, 'multiple redirectUrl query received');
+      await resHelper.issueError(400, 'multiple redirectUrl query received');
       resHelper.redirect();
       return;
     }
 
     const [loginErr, userData] = this._verifyLoginQuery(query);
     if (loginErr) {
-      resHelper.issueError(loginErr.code, loginErr.message);
+      await resHelper.issueError(loginErr.code, loginErr.message);
       resHelper.redirect(redirectQuery, { assertInternal: true });
       return;
     }
@@ -71,7 +71,7 @@ export class TelegramServerAuthorizer
           : Number(chatQuery);
 
       if (Number.isNaN(chatId)) {
-        resHelper.issueError(400, 'invalid chat id');
+        await resHelper.issueError(400, 'invalid chat id');
         resHelper.redirect(redirectQuery, { assertInternal: true });
         return;
       }
@@ -82,7 +82,7 @@ export class TelegramServerAuthorizer
       );
 
       if (err) {
-        resHelper.issueError(err.code, err.message);
+        await resHelper.issueError(err.code, err.message);
         resHelper.redirect(redirectQuery, { assertInternal: true });
         return;
       }
