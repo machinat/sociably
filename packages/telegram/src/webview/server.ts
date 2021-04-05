@@ -99,7 +99,7 @@ export class TelegramServerAuthorizer
       };
     }
 
-    resHelper.issueAuth({
+    await resHelper.issueAuth({
       botId: this.bot.id,
       chat: chatData,
       user: userData,
