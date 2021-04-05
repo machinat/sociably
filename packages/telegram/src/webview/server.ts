@@ -99,11 +99,11 @@ export class TelegramServerAuthorizer
       };
     }
 
-    await resHelper.issueAuth({
-      botId: this.bot.id,
+    await resHelper.issueAuth<TelegramAuthData>({
+      bot: this.bot.id,
       chat: chatData,
       user: userData,
-      photoUrl: query.photo_url as string | undefined,
+      photo: query.photo_url as string | undefined,
     });
     resHelper.redirect(redirectQuery, { assertInternal: true });
   }

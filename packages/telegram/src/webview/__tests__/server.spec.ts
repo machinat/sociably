@@ -76,7 +76,7 @@ describe('#delegateAuthRequest()', () => {
     expect(resHelper.issueError.mock).not.toHaveBeenCalled();
     expect(resHelper.issueAuth.mock).toHaveBeenCalledTimes(1);
     expect(resHelper.issueAuth.mock).toHaveBeenCalledWith({
-      botId: 12345,
+      bot: 12345,
       chat: undefined,
       user: {
         id: 12345,
@@ -84,7 +84,7 @@ describe('#delegateAuthRequest()', () => {
         last_name: 'Doe',
         username: 'johndoe',
       },
-      photoUrl: 'https://...',
+      photo: 'https://...',
     });
   });
 
@@ -128,7 +128,7 @@ describe('#delegateAuthRequest()', () => {
 
     expect(resHelper.issueAuth.mock).toHaveBeenCalledTimes(1);
     expect(resHelper.issueAuth.mock).toHaveBeenCalledWith({
-      botId: 12345,
+      bot: 12345,
       chat: {
         type: 'group',
         id: 23456,
@@ -141,7 +141,7 @@ describe('#delegateAuthRequest()', () => {
         username: 'johndoe',
         language_code: 'en-US',
       },
-      photoUrl: 'https://...',
+      photo: 'https://...',
     });
   });
 

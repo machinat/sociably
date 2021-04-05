@@ -87,12 +87,9 @@ export interface ResponseHelper {
   issueState<State>(state: State): Promise<string>;
 
   /** Get content of auth cookie from request, return null if absent. */
-  getAuth<Context>(): Promise<null | Context>;
+  getAuth<Data>(): Promise<null | Data>;
   /** Issue state cookie to response, return the signed token. */
-  issueAuth<Context>(
-    auth: Context,
-    options?: IssueAuthOptions
-  ): Promise<string>;
+  issueAuth<Data>(authData: Data, options?: IssueAuthOptions): Promise<string>;
 
   /** Get content of error cookie from request, return null if absent. */
   getError(): Promise<null | ErrorMessage>;
