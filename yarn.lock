@@ -2508,17 +2508,6 @@
   dependencies:
     js-base64 "^3.6.0"
 
-"@machinat/webview@^0.3.0-beta.0":
-  version "0.4.0-beta.3"
-  dependencies:
-    "@machinat/auth" "^0.4.0-beta.1"
-    "@machinat/next" "^0.4.0-beta.3"
-    "@machinat/websocket" "^0.4.0-beta.3"
-    nanoid "^3.1.20"
-  optionalDependencies:
-    bufferutil "^4.0.1"
-    utf-8-validate "^5.0.2"
-
 "@moxyjs/moxy@0.1.0-beta.3":
   version "0.1.0-beta.3"
   resolved "https://registry.yarnpkg.com/@moxyjs/moxy/-/moxy-0.1.0-beta.3.tgz#2a181cda40c93b0d6b715f85924576c49a699005"
