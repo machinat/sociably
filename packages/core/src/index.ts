@@ -7,9 +7,9 @@ import {
 } from './symbol';
 import createMachinatElement from './createElement';
 import App from './app';
-import BaseBot from './base/Bot';
-import BaseProfiler from './base/Profiler';
-import BaseMarshaler from './base/Marshaler';
+import BaseBotP from './base/Bot';
+import BaseProfilerP from './base/Profiler';
+import MarshalerP from './base/Marshaler';
 import type {
   AppConfig,
   MachinatElement,
@@ -55,9 +55,9 @@ namespace Machinat {
     props: RawProps
   ) => null;
 
-  export const Bot = BaseBot;
-  export const Profiler = BaseProfiler;
-  export const Marshaler = BaseMarshaler;
+  export const BaseBot = BaseBotP;
+  export const BaseProfiler = BaseProfilerP;
+  export const Marshaler = MarshalerP;
 }
 
 export default Machinat;
