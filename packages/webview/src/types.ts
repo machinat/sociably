@@ -33,6 +33,12 @@ import type {
   WebviewUserChannel,
 } from './channel';
 
+export type {
+  EventValue,
+  ConnectEventValue,
+  DisconnectEventValue,
+} from '@machinat/websocket/types';
+
 export type WebviewComponent = NativeComponent<
   unknown,
   UnitSegment<EventInput>
