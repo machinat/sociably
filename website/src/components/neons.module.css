@@ -1,0 +1,20 @@
+.facebook {color: #0076FB}
+
+.telegram {color: #23A1DD}
+
+.twitter {color: #1DA1F2}
+
+.slack {
+  background-image: linear-gradient(to left, #36C5F0 25%, 25%, #2EB67D 50%, 50%, #ECB22E 75%, 75%, #E01E5A);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+}
+
+.line {color: #3AC93A}
+
+.whatsApp {color: #00E676}
+
+.email {color: red}

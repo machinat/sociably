@@ -1,3 +1,7 @@
+---
+title: Rendering Elements
+---
+
 # Rendering Elements
 
 In Machinat, **Bot** is an abstraction which in charge of dispatching actions to a [channel](receiving-events.md#the-channel). Depends on the platform it belongs to, it can send message to a chatroom, emit event to a webview or reply on voice assistant.

@@ -1,3 +1,7 @@
+---
+title: Components for CUI
+---
+
 # Components for CUI
 
 Components make your code DRY and help you to build a complex, intelligent and characteristic conversational app.

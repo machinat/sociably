@@ -1,3 +1,7 @@
+---
+title: Receive Events
+---
+
 # Receive Events
 
 After successfully start, the app should be able to receive events from registered platforms. Events of all the platforms can be listened with `app.onEvent()` method like this:

@@ -1,3 +1,7 @@
+---
+title: Dependency Injection
+---
+
 # Dependency Injection
 
 To support many platforms and provide all the features, there have to be tons of services and the complex dependencies relationship between them. Machinat has a built-in [Inversion of Control](https://en.wikipedia.org/wiki/Inversion_of_control) system to help providing all the services and their dependencies.
@@ -303,14 +307,14 @@ app.onEvent(
 );
 ```
 
-In the example above, `Base.Profiler` can be used to fetch profile of users from different platforms, the implementations is registered along with the platform modules. And the `Base.StateControllerI` is the interface to access the channel/user state, no matter which storage you registered (more about state will be discuss [later](/docs/using-state.md)).
+In the example above, `Base.Profiler` can be used to fetch profile of users from different platforms, the implementations is registered along with the platform modules. And the `Base.StateControllerI` is the interface to access the channel/user state, no matter which storage you registered (more about state will be discuss [later](using-states.md)).
 
 For now the following `Base` interfaces are supported:
 
-- [`Bot`](): render content to channel across platforms
-- [`Profiler`](): fetch profile of users across platforms.
-- [`StateControllerI`](): save and load state from storages.
-- [`IntentRecognizerI`](): recognize intent with external providers.
+- [`Bot`](/): render content to channel across platforms
+- [`Profiler`](/): fetch profile of users across platforms.
+- [`StateControllerI`](/): save and load state from storages.
+- [`IntentRecognizerI`](/): recognize intent with external providers.
 
 ## Next
 

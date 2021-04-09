@@ -1,3 +1,7 @@
+---
+title: Staged Dialog
+---
+
 ## Staged Dialog
 
 In a conversation, it is often you need to ask a question and wait for the answer. A dialog may contain a sequence of relating questions and answers. Let's call this kind of dialogs as _staged_.
@@ -306,7 +310,7 @@ bot.render(channel, runtime.output());
 
 Once a script is started, events would be delegated to the `Processor` until it is finished. Overall, the events is handled under a flow like this:
 
-![Script Saga Flow](assets/script-saga-flow.png)
+![Script Saga Flow](/img/script-saga-flow.png)
 
 ### The Saga Pattern
 

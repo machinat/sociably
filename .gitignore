@@ -3,7 +3,9 @@ lib
 bin
 *.tsbuildinfo
 polyfill-exports.js
-api
+website/static/api
+website/.docusaurus
+website/build
 
 # Logs
 logs

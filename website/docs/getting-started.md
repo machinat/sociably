@@ -1,3 +1,8 @@
+---
+title: Getting Started
+slug: /
+---
+
 # Getting Started
 
 A simplest cross-platform Machinat app may look like this:
@@ -68,10 +73,10 @@ yarn add @machinat/messenger @machinat/line # ...
 
 For now we support the platforms listed below, please check the readme of the package for the usage guide.
 
-- Messenger - [`@machinat/messenger`](../packages/messenger), receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
-- LINE - [`@machinat/line`](../packages/line), receive/send messages as a [LINE](https://line.me) official account.
-- Next.js - [`@machinat/next`](../packages/next), serve your web app with [Next.js](https://nextjs.org/).
-- WebSocket - [`@machinat/websocket`](../packages/websocket), connect to the web front-end with [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
+- Messenger - [`@machinat/messenger`](https://github.com/machinat/machinat/tree/master/packages/messenger), receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
+- LINE - [`@machinat/line`](https://github.com/machinat/machinat/tree/master/packages/line), receive/send messages as a [LINE](https://line.me) official account.
+- Next.js - [`@machinat/next`](https://github.com/machinat/machinat/tree/master/packages/next), serve your web app with [Next.js](https://nextjs.org/).
+- WebSocket - [`@machinat/websocket`](https://github.com/machinat/machinat/tree/master/packages/websocket), connect to the web front-end with [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
 
 ## Enabling JSX
 
@@ -83,7 +88,7 @@ import Machinat from '@machinat/core';
 const greeting = <p>Hello World!</p>;
 ```
 
-If you are not familiar with transpiling JavaScript, we recommend [Babel.js](https://babeljs.io/docs/en/) for beginners. Check [this example](../examples/cross-platform) about how to set up the project.
+If you are not familiar with transpiling JavaScript, we recommend [Babel.js](https://babeljs.io/docs/en/) for beginners. Check [this example](https://github.com/machinat/machinat/tree/master/examples/cross-platform) about how to set up the project.
 
 ### With Babel
 

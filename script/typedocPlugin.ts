@@ -14,7 +14,7 @@ const pkgs = fs
   .readdirSync('./packages')
   .filter((pkg) => pkg !== 'jest-snapshot-serializer');
 
-const packagesExports = new Map(
+const pkgsExports = new Map(
   pkgs.map((pkg) => {
     const { exports } = JSON.parse(
       fs.readFileSync(`./packages/${pkg}/package.json`, {
@@ -22,7 +22,7 @@ const packagesExports = new Map(
       })
     );
 
-    const exportsSources = new Map(
+    const exportsPaths = new Map(
       Object.entries(
         exports as Record<string, string>
       ).map(([exportPath, libPath]) => [
@@ -33,21 +33,13 @@ const packagesExports = new Map(
       ])
     );
 
-    return [pkg, exportsSources];
+    return [pkg, exportsPaths];
   })
 );
 
-/**
- * This plugin allows you to provide a mapping regexp between your source folder structure, and the module that should be
- * reported in typedoc. It will match the first capture group of your regex and use that as the module name.
- *
- * Based on https://github.com/christopherthielen/typedoc-plugin-external-module-name
- *
- *
- */
 class ModuleMappingPlugin extends ConverterComponent {
-  packagesEntries: Map<string, Map<string, DeclarationReflection>>;
-  packageRoots: Map<string, DeclarationReflection>;
+  pkgExportedReflections: Map<string, Map<string, DeclarationReflection>>;
+  pkgRootReflections: Map<string, DeclarationReflection>;
 
   initialize() {
     this.listenTo(this.owner, {
@@ -62,8 +54,8 @@ class ModuleMappingPlugin extends ConverterComponent {
    * Triggered when the converter begins converting a project.
    */
   private onBegin() {
-    this.packagesEntries = new Map();
-    this.packageRoots = new Map();
+    this.pkgExportedReflections = new Map();
+    this.pkgRootReflections = new Map();
   }
 
   private onDeclarationBegin(
@@ -76,20 +68,19 @@ class ModuleMappingPlugin extends ConverterComponent {
     const match = /packages\/([^/]*)\/src\/(.*)$/.exec(fileName);
 
     if (match) {
-      const [, packageName, sourcePath] = match;
+      const [, pkgName, sourcePath] = match;
 
-      let entries = this.packagesEntries.get(packageName);
-      if (!entries) {
-        entries = new Map();
-
-        this.packagesEntries.set(packageName, entries);
+      let reflections = this.pkgExportedReflections.get(pkgName);
+      if (!reflections) {
+        reflections = new Map();
+        this.pkgExportedReflections.set(pkgName, reflections);
       }
 
-      if (entries.has(sourcePath)) {
+      if (reflections.has(sourcePath)) {
         // export path is repeated
         context.project.removeReflection(reflection);
       } else {
-        entries.set(sourcePath, reflection);
+        reflections.set(sourcePath, reflection);
       }
     }
   }
@@ -102,37 +93,36 @@ class ModuleMappingPlugin extends ConverterComponent {
   private onResolveBegin(context: Context) {
     context.project.children = []; // eslint-disable-line no-param-reassign
 
-    for (const [packageName, exportSources] of packagesExports) {
+    for (const [pkgName, exportPaths] of pkgsExports) {
       // extract root exports
-      const rootExportPath = exportSources.get('.');
+      const rootPath = exportPaths.get('.');
 
-      if (rootExportPath) {
-        const entries = this.packagesEntries.get(packageName)!;
-        const reflection = entries.get(rootExportPath);
+      if (rootPath) {
+        const reflections = this.pkgExportedReflections.get(pkgName)!;
+        const rootReflection = reflections.get(rootPath);
 
-        if (reflection) {
-          reflection.name = packageName;
-          entries.delete(rootExportPath);
+        if (rootReflection) {
+          rootReflection.name = pkgName;
+          reflections.delete(rootPath);
 
-          context.project.children.push(reflection);
-          this.packageRoots.set(packageName, reflection);
+          context.project.children.push(rootReflection);
+          this.pkgRootReflections.set(pkgName, rootReflection);
         }
       }
     }
 
-    for (const [packageName, entries] of this.packagesEntries) {
-      const packageRoot = this.packageRoots.get(packageName)!;
+    for (const [pkgName, reflections] of this.pkgExportedReflections) {
+      const rootReflection = this.pkgRootReflections.get(pkgName)!;
+      if (!rootReflection.children) {
+        rootReflection.children = [];
+      }
 
-      // add remaining entries to the children of package
-      for (const [, reflection] of entries) {
-        const [pkgName, relativePath] = reflection.name.split('/src', 2);
+      // add remaining reflections to the children of package
+      for (const [, reflection] of reflections) {
+        const [, sourceName] = reflection.name.split('/src/', 2);
+        reflection.name = `${pkgName}/${sourceName}`;
 
-        if (!packageRoot.children) {
-          packageRoot.children = [];
-        }
-
-        reflection.name = pkgName + relativePath;
-        packageRoot.children.push(reflection as DeclarationReflection);
+        rootReflection.children.push(reflection as DeclarationReflection);
       }
     }
   }
@@ -143,18 +133,28 @@ class ModuleMappingPlugin extends ConverterComponent {
     )!;
     modulesGroup.title = '@machinat/';
 
-    for (const packageModule of this.packageRoots.values()) {
-      const submoduleGroup = packageModule.groups!.find(
-        (group) => group.kind === ReflectionKind.Module
-      )!;
-
-      const subCategory = new ReflectionCategory('Sub');
-      subCategory.children = [...submoduleGroup.children];
-
-      if (!submoduleGroup.categories) {
-        submoduleGroup.categories = [];
+    for (const [pkgName, packageModule] of this.pkgRootReflections) {
+      if (!packageModule.categories) {
+        packageModule.categories = [];
       }
-      submoduleGroup.categories.push(subCategory);
+
+      const subModuleCategory = new ReflectionCategory('Sub Module');
+      packageModule.categories.splice(1, 0, subModuleCategory);
+
+      const subModules = [
+        ...this.pkgExportedReflections.get(pkgName)!.values(),
+      ];
+      subModuleCategory.children.push(...subModules);
+
+      const otherCategory = packageModule.categories.find(
+        (category) => category.title === 'Other'
+      );
+      if (otherCategory) {
+        otherCategory.children = otherCategory.children.filter(
+          (reflection) =>
+            !subModules.includes(reflection as DeclarationReflection)
+        );
+      }
     }
   }
 }

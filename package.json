@@ -2,10 +2,9 @@
   "private": true,
   "exports": false,
   "scripts": {
-    "bootstrap": "lerna bootstrap && yarn run build",
+    "bootstrap": "lerna bootstrap",
     "build": "make",
     "lint": "eslint --ext .js,.ts,.tsx ./packages/*/src",
-    "prettier": "prettier --write packages/**/*.js flow-typed/*.js",
     "test": "jest"
   },
   "husky": {

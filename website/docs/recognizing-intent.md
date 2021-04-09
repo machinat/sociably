@@ -1,10 +1,14 @@
+---
+title: Intent Recognition
+---
+
 # Intent Recognition
 
 Intent recognition is one essential step to understand your user while building conversational UX. Machinat doesn't provide the utility by itself, but you can easily integrate with any suppliers in the market.
 
 ## Install
 
-For now we support `DialogFlow` only, check [the package](../packages/dialogflow) for the install details. There would be more intent recognition suppliers supported in the future.
+For now we support `DialogFlow` only, check [the package](https://github.com/machinat/machinat/tree/master/packages/dialogflow) for the install details. There would be more intent recognition suppliers supported in the future.
 
 Add the module into your app like:
 

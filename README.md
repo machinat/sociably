@@ -44,7 +44,7 @@ Machinat is a declarative, progressive and cross-platform JavaScript framework f
   - [Dependency Injection](docs/dependency-injection.md)
   - [Recognizing Intent](docs/recognizing-intent.md)
   - [Using States](docs/using-states.md)
-  - [Staged Dialog](docs/stage-dialog.mddocs/stage-dialog.md)
+  - [Staged Dialog](docs/staged-dialog.md)
   - [Integration with Webview](docs/integration-with-webview.md)
   - [Reactive Programming](docs/reactive-programming.md)
 

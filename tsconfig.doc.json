@@ -9,11 +9,11 @@
   ],
   "typedocOptions": {
     "name": "Machinat",
-    "out": "api",
-    "readme": "./README.md",
     "excludePrivate": true,
     "excludeInternal": true,
+    "categorizeByGroup": false,
     "categoryOrder": [
+      "Root",
       "Component",
       "Provider",
       "Interface",

@@ -1,10 +1,14 @@
+---
+title: Reactive Programming
+---
+
 # Reactive Programming
 
 While your app grows and ships more features, how to organize all the utilities would become a problem. Since the rendering mechanism handles only UI logic, an additional control flow library is required to handle business logic.
 
 Machinat is flexible enough to integrate with any flow model. But among all of them, [_Reactive Programming_](https://en.wikipedia.org/wiki/Reactive_programming) might fit the conversational UI/UX the best.
 
-Reactive programming is a declarative programming paradigm to handle asynchronous workflows in data streams. [@andrestaltz](https://twitter.com/andrestaltz) have a [great article](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754) introducing the concept of reactive programming using [_Rx_]((http://reactivex.io/)), you should check it if the idea is pretty fresh to you.
+Reactive programming is a declarative programming paradigm to handle asynchronous workflows in data streams. [@andrestaltz](https://twitter.com/andrestaltz) have a [great article](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754) introducing the concept of reactive programming using [_Rx_](https://reactivex.io/), you should check it if the idea is pretty fresh to you.
 
 ### Handling Events as Stream
 
@@ -12,16 +16,16 @@ A conversation can be treated as a stream, where expressions between people flow
 
 For example, continuous messages in a moment should be treated as one. In a callback style model, this require some additional works. But in reactive programming, this can be solved with a simple streaming operator like `Buffer`.
 
-![buffer operator](http://reactivex.io/documentation/operators/images/Buffer.png)
+![buffer operator](https://reactivex.io/documentation/operators/images/Buffer.png)
 
-> _Buffer Stream Operator -- image from [reactivex.io](http://reactivex.io/documentation/operators/buffer.html)_
+> _Buffer Stream Operator -- image from [reactivex.io](https://reactivex.io/documentation/operators/buffer.html)_
 
 
 ## X-Machinat
 
 `X-Machinat` is an extensional library to experiment reactive programming with conversational UI/UX. Consider an application flow for simple CRUD actions like:
 
-![Example App Control Flow](assets/example-app-control-flow.png)
+![Example App Control Flow](/img/example-app-control-flow.png)
 
 It can be described in a reactive programming way like this:
 
@@ -68,7 +72,7 @@ The package is still on experiment because there are still some challenges to ov
 
 #### Persistence
 
-Many of the stream operators are stateful like [`scan`](http://reactivex.io/documentation/operators/scan.html), these states must be stored in the persistent data service like database. The state should be recovered when a process is created due to scaling or recovery from error.
+Many of the stream operators are stateful like [`scan`](https://reactivex.io/documentation/operators/scan.html), these states must be stored in the persistent data service like database. The state should be recovered when a process is created due to scaling or recovery from error.
 
 ```js
 // the last seen time should be persistent

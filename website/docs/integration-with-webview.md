@@ -1,3 +1,7 @@
+---
+title: Integrate with Webview
+---
+
 # Integrate with Webview
 
 CUI brings us a new way to communicate with users, but it's not a replacement of GUI totally. GUI is still outperforming to control the operations need precision, instant interactions or multitasking in an app.
@@ -93,7 +97,7 @@ Callback pass to `client.onEvent()` would receive a similar context as server-si
 
 ### Serve the Web App
 
-You are free to choose any way to build and serve the web app. But if you are using React and Next.js for server rendering, you can use [`@machinat/next`](../packages/next) to serve a Next.js server along with your Machinat app.
+You are free to choose any way to build and serve the web app. But if you are using React and Next.js for server rendering, you can use [`@machinat/next`](https://github.com/machinat/machinat/tree/master/packages/next) to serve a Next.js server along with your Machinat app.
 
 ## Integrate Authorization
 

@@ -1,3 +1,7 @@
+---
+title: Introducing JSX
+---
+
 # Introducing JSX
 
 In Machinat, you can use the _JSX_ syntax API to build the _Conversational User Interface_ (CUI) more expressively.
@@ -30,7 +34,7 @@ JSX, which has proved to be an extraordinary tool to build GUI, could benefit us
 
 Consider the following dialogue in a chat room:
 
-![Example Message as view](assets/example-message-as-view.png)
+![Example Message as view](/img/example-message-as-view.png)
 
 As you see a dialogue is usually proceed by a collection of messages each time, let's call them an *expression*. In Machinat, an expression is the atomic unit for sending. You don't have to call many API to make the expression, the upper example can be made by:
 
