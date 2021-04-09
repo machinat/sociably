@@ -11,7 +11,7 @@ import type { MessageValue, MessengerComponent } from '../types';
 /**
  * @category Props
  */
-type MediaProps = {
+export type MediaProps = {
   /**
    * URL of the file to upload. Max file size is 25MB (after encoding). A
    * Timeout is set to 75 sec for videos and 10 secs for every other file type.
@@ -80,7 +80,7 @@ const mediaFactory = (
 /**
  * The log out button triggers the account unlinking flow.
  * @category Component
- * @props {@line MediaProps}
+ * @props {@link MediaProps}
  * @guides Check official send API [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api).
  */
@@ -89,7 +89,7 @@ export const Image = mediaFactory('Image', 'image');
 /**
  * The log out button triggers the account unlinking flow.
  * @category Component
- * @props {@line MediaProps}
+ * @props {@link MediaProps}
  * @guides Check official send API [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api).
  */
@@ -98,7 +98,7 @@ export const Video = mediaFactory('Video', 'video');
 /**
  * The log out button triggers the account unlinking flow.
  * @category Component
- * @props {@line MediaProps}
+ * @props {@link MediaProps}
  * @guides Check official send API [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api).
  */
@@ -107,7 +107,7 @@ export const Audio = mediaFactory('Audio', 'audio');
 /**
  * The log out button triggers the account unlinking flow.
  * @category Component
- * @props {@line MediaProps}
+ * @props {@link MediaProps}
  * @guides Check official send API [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api).
  */

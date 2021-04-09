@@ -8,7 +8,7 @@ import { LineComponent } from '../types';
 /**
  * @category Props
  */
-type QuickReplyProps = {
+export type QuickReplyProps = {
   /** URL of the icon that is displayed at the beginning of the button. */
   imageUrl?: string;
   /** An {@link Action} element to be performed when the button is touched. */

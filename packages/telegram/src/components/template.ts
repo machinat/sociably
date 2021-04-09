@@ -6,21 +6,21 @@ import { annotateTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
   TelegramComponent,
-  MessageProps,
   TelegramParseMode,
 } from '../types';
+import { MessageProps } from './types';
 
 /**
  * @category Props
  */
-type TextProps = MessageProps & {
+export interface TextProps extends MessageProps {
   /** Texual content of the message to be sent, 1-4096 characters after entities parsing */
   children: MachinatNode;
   /** Mode for parsing entities in the message text. See formatting options for more details. */
   parseMode?: TelegramParseMode;
   /** Disables link previews for links in this message */
   disableWebPagePreview?: boolean;
-};
+}
 
 /** @ignore */
 const __Text: FunctionOf<TelegramComponent<
@@ -78,7 +78,7 @@ export const Text: TelegramComponent<
 /**
  * @category Props
  */
-type ContactProps = MessageProps & {
+export interface ContactProps extends MessageProps {
   /** Contact's phone number */
   phoneNumber: string;
   /** Contact's first name */
@@ -87,7 +87,7 @@ type ContactProps = MessageProps & {
   lastName?: string;
   /** Additional data about the contact in the form of a vCard, 0-2048 bytes */
   vcard?: string;
-};
+}
 
 /** @ignore */
 const __Contact: FunctionOf<TelegramComponent<
@@ -134,7 +134,7 @@ export const Contact: TelegramComponent<
 /**
  * @category Props
  */
-type PollProps = MessageProps & {
+export interface PollProps extends MessageProps {
   /** Poll question, 1-255 characters */
   question: string;
   /** A JSON-serialized list of answer options, 2-10 strings 1-100 characters each */
@@ -157,7 +157,7 @@ type PollProps = MessageProps & {
   closeDate?: number | Date;
   /** Pass True, if the poll needs to be immediately closed. This can be useful for poll preview. */
   isClosed?: boolean;
-};
+}
 
 /** @ignore */
 const __Poll: FunctionOf<TelegramComponent<
@@ -223,10 +223,10 @@ export const Poll: TelegramComponent<
 /**
  * @category Props
  */
-type DiceProps = MessageProps & {
+export interface DiceProps extends MessageProps {
   /** Emoji on which the dice throw animation is based. Currently, must be one of “🎲”, “🎯”, or “🏀”. Dice can have values 1-6 for “🎲” and “🎯”, and values 1-5 for “🏀”. Defaults to “🎲” */
   emoji?: string;
-};
+}
 
 /** @ignore */
 const __Dice: FunctionOf<TelegramComponent<
@@ -267,7 +267,7 @@ export const Dice: TelegramComponent<
 /**
  * @category Props
  */
-type InvoiceProps = MessageProps & {
+export interface InvoiceProps extends MessageProps {
   /** Product name, 1-32 characters */
   title: string;
   /** Product description, 1-255 characters */
@@ -306,7 +306,7 @@ type InvoiceProps = MessageProps & {
   sendEmailToProvider?: boolean;
   /** Pass True, if the final price depends on the shipping method */
   isFlexible?: boolean;
-};
+}
 
 /** @ignore */
 const __Invoice: FunctionOf<TelegramComponent<
@@ -383,10 +383,10 @@ export const Invoice: TelegramComponent<
 /**
  * @category Props
  */
-type GameProps = MessageProps & {
+export interface GameProps extends MessageProps {
   /** Short name of the game, serves as the unique identifier for the game. Set up your games via Botfather. */
   gameShortName: string;
-};
+}
 
 /** @ignore */
 const __Game: FunctionOf<TelegramComponent<

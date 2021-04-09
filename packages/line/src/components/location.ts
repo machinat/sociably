@@ -7,7 +7,7 @@ import { LineComponent, LineMessageSegmentValue } from '../types';
 /**
  * @category Props
  */
-type LocationProps = {
+export type LocationProps = {
   title: string;
   address: string;
   latitude: number;

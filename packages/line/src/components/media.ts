@@ -6,7 +6,7 @@ import { LineComponent, LineMessageSegmentValue } from '../types';
 /**
  * @category Props
  */
-type VideoProps = {
+export type VideoProps = {
   /** URL of video file (Max character limit: 1000) */
   originalContentUrl: string;
   /** URL of preview image (Max character limit: 1000) */
@@ -49,7 +49,7 @@ export const Video: LineComponent<
 /**
  * @category Props
  */
-type AudioProps = {
+export type AudioProps = {
   /** URL of audio file (Max character limit: 1000) */
   originalContentUrl: string;
   /** Length of audio file (milliseconds) */

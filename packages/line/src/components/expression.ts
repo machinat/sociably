@@ -7,7 +7,7 @@ import { LineComponent } from '../types';
 /**
  * @category Props
  */
-type ExpressionProps = {
+export type ExpressionProps = {
   /** Content nodes. */
   children: MachinatNode;
   /** {@link QuickReply} elements to be appended after content. */

@@ -6,7 +6,7 @@ import type { MessengerComponent } from '../types';
 /**
  * @category Props
  */
-type UrlButtonProps = {
+export type UrlButtonProps = {
   /** Button title. 20 character limit. */
   title: string;
   /**
@@ -74,7 +74,7 @@ export const UrlButton: MessengerComponent<
 /**
  * @category Props
  */
-type PostbackButtonProps = {
+export type PostbackButtonProps = {
   /** Button title. 20 character limit. */
   title: string;
   /** This data will be sent back to your webhook. 1000 character limit. */
@@ -110,7 +110,7 @@ export const PostbackButton: MessengerComponent<
 /**
  * @category Props
  */
-type CallButtonProps = {
+export type CallButtonProps = {
   /** Button title, 20 character limit. */
   title: string;
   /**
@@ -147,7 +147,7 @@ export const CallButton: MessengerComponent<
 /**
  * @category Props
  */
-type LoginButtonProps = {
+export type LoginButtonProps = {
   /** Authentication callback URL. Must use HTTPS protocol. */
   url: string;
 };
@@ -193,7 +193,7 @@ export const LogoutButton: MessengerComponent<
 /**
  * @category Props
  */
-type GamePlayButtonProps = {
+export type GamePlayButtonProps = {
   /** Button title, 20 character limit. */
   title: string;
   /** This data will be sent to the game. */

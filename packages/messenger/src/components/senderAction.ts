@@ -19,7 +19,7 @@ const __MarkSeen = function MarkSeen(node, path) {
 /**
  * Display the confirmation icon.
  * @category Component
- * @props {@link LoginButtonProps}
+ * @props `{}`
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
@@ -35,7 +35,7 @@ const __TypingOn = function TypingOn(node, path) {
 /**
  * Display the typing bubble.
  * @category Component
- * @props {@link LoginButtonProps}
+ * @props `{}`
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
@@ -51,7 +51,7 @@ const __TypingOff = function TypingOff(node, path) {
 /**
  * Remove the typing bubble.
  * @category Component
- * @props {@link LoginButtonProps}
+ * @props `{}`
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */

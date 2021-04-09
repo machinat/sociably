@@ -10,16 +10,15 @@ import {
 /**
  * @category Props
  */
-type ForwardMessageProps = {
+export interface ForwardMessageProps {
   /** Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername) */
   fromChatId: number | string;
   /** Message identifier in the chat specified in fromChatId */
   messageId: number;
   /** Sends the message silently. Users will receive a notification with no sound. */
   disableNotification?: boolean;
-};
+}
 
-/** @ignore */
 const __ForwardMessage: FunctionOf<TelegramComponent<
   ForwardMessageProps,
   UnitSegment<TelegramSegmentValue>
@@ -51,7 +50,7 @@ export const ForwardMessage: TelegramComponent<
 /**
  * @category Props
  */
-type ChatActionProps = {
+export interface ChatActionProps {
   /** Type of action to broadcast depending on what the user is about to receive. */
   action:
     | 'typing'
@@ -64,9 +63,8 @@ type ChatActionProps = {
     | 'find_location'
     | 'record_video_note'
     | 'upload_video_note';
-};
+}
 
-/** @ignore */
 const __ChatAction: FunctionOf<TelegramComponent<
   ChatActionProps,
   UnitSegment<TelegramSegmentValue>
@@ -94,14 +92,13 @@ export const ChatAction: TelegramComponent<
 /**
  * @category Props
  */
-type KickChatMemberProps = {
+export interface KickChatMemberProps {
   /** Unique identifier of the target user */
   userId: number;
   /** Date when the user will be unbanned, unix time. If user is banned for more than 366 days or less than 30 seconds from the current time they are considered to be banned forever */
   untilDate?: number | Date;
-};
+}
 
-/** @ignore */
 const __KickChatMember: FunctionOf<TelegramComponent<
   KickChatMemberProps,
   UnitSegment<TelegramSegmentValue>
@@ -135,12 +132,11 @@ export const KickChatMember: TelegramComponent<
 /**
  * @category Props
  */
-type UnbanChatMemberProps = {
+export interface UnbanChatMemberProps {
   /** Unique identifier of the target user */
   userId: number;
-};
+}
 
-/** @ignore */
 const __UnbanChatMember: FunctionOf<TelegramComponent<
   UnbanChatMemberProps,
   UnitSegment<TelegramSegmentValue>
@@ -167,7 +163,10 @@ export const UnbanChatMember: TelegramComponent<
   UnitSegment<TelegramSegmentValue>
 > = annotateTelegramComponent(__UnbanChatMember);
 
-type ChatPromotionProps = {
+/**
+ * @category Props
+ */
+export interface ChatPromotionProps {
   /** True, if the user is allowed to send text messages, contacts, locations and venues */
   canSendMessages?: boolean;
   /** True, if the user is allowed to send audios, documents, photos, videos, video notes and voice notes, implies canSendMessages */
@@ -186,17 +185,16 @@ type ChatPromotionProps = {
   canPinMessages?: boolean;
   /** Date when restrictions will be lifted for the user, unix time. If user is restricted for more than 366 days or less than 30 seconds from the current time, they are considered to be restricted forever */
   untilDate?: number | Date;
-};
+}
 
 /**
  * @category Props
  */
-type RestrictChatMemberProps = ChatPromotionProps & {
+export interface RestrictChatMemberProps extends ChatPromotionProps {
   /** Unique identifier of the target user */
   userId: number;
-};
+}
 
-/** @ignore */
 const __RestrictChatMember: FunctionOf<TelegramComponent<
   RestrictChatMemberProps,
   UnitSegment<TelegramSegmentValue>
@@ -251,7 +249,7 @@ export const RestrictChatMember: TelegramComponent<
 /**
  * @category Props
  */
-type PromoteChatMemberProps = {
+export interface PromoteChatMemberProps {
   /** Unique identifier of the target user */
   userId: number;
   /** Pass True, if the administrator can change chat title, photo and other settings */
@@ -270,9 +268,8 @@ type PromoteChatMemberProps = {
   canPinMessages?: boolean;
   /** Pass True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by him) */
   canPromoteMembers?: boolean;
-};
+}
 
-/** @ignore */
 const __PromoteChatMember: FunctionOf<TelegramComponent<
   PromoteChatMemberProps,
   UnitSegment<TelegramSegmentValue>
@@ -320,14 +317,13 @@ export const PromoteChatMember: TelegramComponent<
 /**
  * @category Props
  */
-type SetChatAdministratorCustomTitleProps = {
+export interface SetChatAdministratorCustomTitleProps {
   /** Unique identifier of the target user */
   userId: number;
   /** New custom title for the administrator; 0-16 characters, emoji are not allowed */
   customTitle: string;
-};
+}
 
-/** @ignore */
 const __SetChatAdministratorCustomTitle: FunctionOf<TelegramComponent<
   SetChatAdministratorCustomTitleProps,
   UnitSegment<TelegramSegmentValue>
@@ -355,14 +351,8 @@ export const SetChatAdministratorCustomTitle: TelegramComponent<
   UnitSegment<TelegramSegmentValue>
 > = annotateTelegramComponent(__SetChatAdministratorCustomTitle);
 
-/**
- * @category Props
- */
-type SetChatPermissionsProps = ChatPromotionProps;
-
-/** @ignore */
 const __SetChatPermissions: FunctionOf<TelegramComponent<
-  SetChatPermissionsProps,
+  ChatPromotionProps,
   UnitSegment<TelegramSegmentValue>
 >> = function SetChatPermissions(node, path) {
   const {
@@ -397,25 +387,24 @@ const __SetChatPermissions: FunctionOf<TelegramComponent<
 /**
  * Set default chat permissions for all members. The bot must be an administrator in the group or a supergroup for this to work and must have the can_restrict_members admin rights.
  * @category Component
- * @props {@link SetChatPermissionsProps}
+ * @props {@link ChatPromotionProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#setchatpermissions).
  */
 export const SetChatPermissions: TelegramComponent<
-  SetChatPermissionsProps,
+  ChatPromotionProps,
   UnitSegment<TelegramSegmentValue>
 > = annotateTelegramComponent(__SetChatPermissions);
 
 /**
  * @category Props
  */
-type SetChatPhotoProps = {
+export interface SetChatPhotoProps {
   /** The file content data. */
   fileData: Buffer | NodeJS.ReadableStream;
   /** Metadata about the uploading `fileData` if needed (while using Buffer). */
   fileInfo?: UploadingFileInfo;
-};
+}
 
-/** @ignore */
 const __SetChatPhoto: FunctionOf<TelegramComponent<
   SetChatPhotoProps,
   UnitSegment<TelegramSegmentValue>
@@ -445,7 +434,6 @@ export const SetChatPhoto: TelegramComponent<
   UnitSegment<TelegramSegmentValue>
 > = annotateTelegramComponent(__SetChatPhoto);
 
-/** @ignore */
 const __DeleteChatPhoto: FunctionOf<TelegramComponent<
   {},
   UnitSegment<TelegramSegmentValue>
@@ -471,12 +459,11 @@ export const DeleteChatPhoto: TelegramComponent<
 /**
  * @category Props
  */
-type SetChatTitleProps = {
+export interface SetChatTitleProps {
   /** New chat title, 1-255 characters */
   title: string;
-};
+}
 
-/** @ignore */
 const __SetChatTitle: FunctionOf<TelegramComponent<
   SetChatTitleProps,
   UnitSegment<TelegramSegmentValue>
@@ -504,12 +491,11 @@ export const SetChatTitle: TelegramComponent<
 /**
  * @category Props
  */
-type SetChatDescriptionProps = {
+export interface SetChatDescriptionProps {
   /** New chat title, 1-255 characters */
   description: string;
-};
+}
 
-/** @ignore */
 const __SetChatDescription: FunctionOf<TelegramComponent<
   SetChatDescriptionProps,
   UnitSegment<TelegramSegmentValue>
@@ -537,14 +523,13 @@ export const SetChatDescription: TelegramComponent<
 /**
  * @category Props
  */
-type PinChatMessageProps = {
+export interface PinChatMessageProps {
   /** Identifier of a message to pin */
   messageId: number;
   /** Pass True, if it is not necessary to send a notification to all chat members about the new pinned message. Notifications are always disabled in channels. */
   disableNotification?: boolean;
-};
+}
 
-/** @ignore */
 const __PinChatMessage: FunctionOf<TelegramComponent<
   PinChatMessageProps,
   UnitSegment<TelegramSegmentValue>
@@ -572,7 +557,6 @@ export const PinChatMessage: TelegramComponent<
   UnitSegment<TelegramSegmentValue>
 > = annotateTelegramComponent(__PinChatMessage);
 
-/** @ignore */
 const __UnpinChatMessage: FunctionOf<TelegramComponent<
   {},
   UnitSegment<TelegramSegmentValue>
@@ -595,7 +579,6 @@ export const UnpinChatMessage: TelegramComponent<
   UnitSegment<TelegramSegmentValue>
 > = annotateTelegramComponent(__UnpinChatMessage);
 
-/** @ignore */
 const __LeaveChat: FunctionOf<TelegramComponent<
   {},
   UnitSegment<TelegramSegmentValue>
@@ -621,12 +604,11 @@ export const LeaveChat: TelegramComponent<
 /**
  * @category Props
  */
-type SetChatStickerSetProps = {
+export interface SetChatStickerSetProps {
   /** Name of the sticker set to be set as the group sticker set */
   stickerSetName: string;
-};
+}
 
-/** @ignore */
 const __SetChatStickerSet: FunctionOf<TelegramComponent<
   SetChatStickerSetProps,
   UnitSegment<TelegramSegmentValue>
@@ -651,7 +633,6 @@ export const SetChatStickerSet: TelegramComponent<
   UnitSegment<TelegramSegmentValue>
 > = annotateTelegramComponent(__SetChatStickerSet);
 
-/** @ignore */
 const __DeleteChatStickerSet: FunctionOf<TelegramComponent<
   {},
   UnitSegment<TelegramSegmentValue>

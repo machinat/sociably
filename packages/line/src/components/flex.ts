@@ -18,7 +18,7 @@ type FlexGravity = 'top' | 'bottom' | 'center';
 /**
  * @category Props
  */
-type FlexButtonProps = {
+export type FlexButtonProps = {
   /** An {@link Action} element performed when this button is tapped. */
   action?: MachinatNode;
   /**
@@ -120,7 +120,7 @@ export const FlexButton: LineComponent<
 /**
  * @category Props
  */
-type FlexFillerProps = {
+export type FlexFillerProps = {
   /**
    * The ratio of the width or height of this component within the parent box.
    */
@@ -154,7 +154,7 @@ export const FlexFiller: LineComponent<
 /**
  * @category Props
  */
-type FlexIconProps = {
+export type FlexIconProps = {
   /** Image URL */
   url: string;
   /**
@@ -230,7 +230,7 @@ export const FlexIcon: LineComponent<
 /**
  * @category Props
  */
-type FlexImageProps = {
+export type FlexImageProps = {
   /** Image URL */
   url: string;
   /**
@@ -339,7 +339,7 @@ export const FlexImage: LineComponent<
 /**
  * @category Props
  */
-type FlextSeparatorProps = {
+export type FlextSeparatorProps = {
   /**
    * Minimum space between this component and the previous component in the
    * parent element.
@@ -377,7 +377,7 @@ export const FlexSeparator: LineComponent<
 /**
  * @category Props
  */
-type FlexSpacerProps = {
+export type FlexSpacerProps = {
   /** Size of the space. */
   size?: FlexSize;
 };
@@ -408,7 +408,7 @@ export const FlexSpacer: LineComponent<
 /**
  * @category Props
  */
-type FlexTextProps = {
+export type FlexTextProps = {
   /** Texual nodes and {@link FlexSpan} elements as the content text. */
   children: MachinatNode;
   /**
@@ -557,7 +557,7 @@ export const FlexText: LineComponent<
 /**
  * @category Props
  */
-type FlexSpanProps = {
+export type FlexSpanProps = {
   /** Content textual nodes. */
   children: MachinatNode;
   /** Font size. */
@@ -609,7 +609,7 @@ export const FlexSpan: LineComponent<
 /**
  * @category Props
  */
-type FlexBoxProps = {
+export type FlexBoxProps = {
   /** Content nodes. */
   children: MachinatNode;
   /** The layout style of components in this box. */
@@ -784,7 +784,7 @@ type BubbleBlock = {
 /**
  * @category Props
  */
-type FlexBlockProps = {
+export type FlexBlockProps = {
   /** Exactly one content node of the block. */
   children: MachinatNode;
   /** Background color of the block. Use a hexadecimal color code. */
@@ -877,7 +877,7 @@ export const FlexFooter: LineComponent<
 /**
  * @category Props
  */
-type FlexBubbleContainerProps = {
+export type FlexBubbleContainerProps = {
   /**
    * Bubble block elements including {@link FlexHeader}, {@link FlexHero},
    * {@link FlexBody} and {@flex FlexFooter}. Each kind of bubble part should
@@ -944,7 +944,7 @@ export const FlexBubbleContainer: LineComponent<
 /**
  * @category Props
  */
-type FlexCarouselContainerProps = {
+export type FlexCarouselContainerProps = {
   /** {@link FlexBubbleContainer} elements in the carousel. Max: 10 bubbles */
   children: MachinatNode;
 };
@@ -979,7 +979,7 @@ export const FlexCarouselContainer: LineComponent<
 /**
  * @category Props
  */
-type FlexMessageProps = {
+export type FlexMessageProps = {
   /** {@link FlexBubbleContainer} or {@link FlexCarouselContainer} element. */
   children: MachinatNode;
   /** Alternative text. Max character limit: 400 */

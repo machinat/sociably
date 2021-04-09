@@ -15,14 +15,13 @@ import {
 /**
  * @category Props
  */
-type ExpressionProps = {
+export interface ExpressionProps {
   children: MachinatNode;
   disableNotification?: boolean;
   parseMode?: TelegramParseMode;
   replyMarkup?: MachinatNode;
-};
+}
 
-/** @internal */
 const __Expression: FunctionOf<TelegramComponent<
   ExpressionProps,
   IntermediateSegment<TelegramSegmentValue>
@@ -110,7 +109,9 @@ const __Expression: FunctionOf<TelegramComponent<
   return outputSegments;
 };
 /**
- *
+ * Control options including disableNotification, parseMode of a group of
+ * messages. Or add a replyMarkup at the last message in the Expression.
+ * @category Component
  * @props {@link ExpressionProps}
  */
 export const Expression: TelegramComponent<

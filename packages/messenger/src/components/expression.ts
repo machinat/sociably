@@ -12,7 +12,7 @@ import { annotateMessengerComponent, isMessageEntry } from '../utils';
 /**
  * @category Props
  */
-type ExpressionProps = {
+export type ExpressionProps = {
   /** Content nodes to be annotated. */
   children: MachinatNode;
   /**

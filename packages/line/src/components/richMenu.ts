@@ -7,7 +7,7 @@ import { LineComponent } from '../types';
 /**
  * @category Props
  */
-type LinkRichMenuProps = {
+export type LinkRichMenuProps = {
   /** ID of a rich menu. */
   id: string;
 };

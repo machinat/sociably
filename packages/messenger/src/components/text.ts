@@ -9,7 +9,7 @@ import type { MessengerComponent } from '../types';
 /**
  * @category Props
  */
-type LatexProps = {
+export type LatexProps = {
   /** Texual node to be wrapped in the LATEX block. */
   children: MachinatNode;
 };

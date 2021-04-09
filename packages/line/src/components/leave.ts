@@ -4,7 +4,6 @@ import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../constant';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
-/** @ignore */
 const LEAVE_REQUESTER = {
   [CHANNEL_REQUEST_GETTER]({ type, id }) {
     if (type !== 'group' && type !== 'room') {
@@ -24,7 +23,6 @@ const LEAVE_REQUESTER = {
   },
 };
 
-/** @internal */
 const __Leave = function Leave(node, path) {
   return [unitSegment(node, path, LEAVE_REQUESTER)];
 };

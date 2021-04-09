@@ -6,7 +6,7 @@ import type { LineComponent } from '../types';
 /**
  * @category Props
  */
-type PostbackActionProps = {
+export type PostbackActionProps = {
   /** Label for the action */
   label?: string;
   /**
@@ -52,7 +52,7 @@ export const PostbackAction: LineComponent<
 /**
  * @category Props
  */
-type MessageActionProps = {
+export type MessageActionProps = {
   /** Label for the action */
   label?: string;
   /** Text sent when the action is performed. Max character limit: 300 */
@@ -88,7 +88,7 @@ export const MessageAction: LineComponent<
 /**
  * @category Props
  */
-type UriActionProps = {
+export type UriActionProps = {
   /** Label for the action */
   label?: string;
   /**
@@ -147,7 +147,7 @@ const dateToStringByMode = (mode, d) =>
 /**
  * @category Props
  */
-type DateTimePickerActionProps = {
+export type DateTimePickerActionProps = {
   /** Label for the action  */
   label?: string;
   /**
@@ -207,7 +207,7 @@ export const DateTimePickerAction: LineComponent<
 /**
  * @category Props
  */
-type CameraActionProps = {
+export type CameraActionProps = {
   /** Label for the action. Max character limit: 20 */
   label?: string;
 };
@@ -239,7 +239,7 @@ export const CameraAction: LineComponent<
 /**
  * @category Props
  */
-type CameraRollActionProps = {
+export type CameraRollActionProps = {
   /** Label for the action. Max character limit: 20 */
   label?: string;
 };
@@ -272,7 +272,7 @@ export const CameraRollAction: LineComponent<
 /**
  * @category Props
  */
-type LocationActionProps = {
+export type LocationActionProps = {
   /** Label for the action. Max character limit: 20 */
   label?: string;
 };

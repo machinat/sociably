@@ -8,21 +8,15 @@ import {
   UploadingFile,
   UploadingFileInfo,
   TelegramComponent,
-  MessageProps,
   TelegramParseMode,
 } from '../types';
+import { MessageProps } from './types';
 
-type FileIdProps = {
+export interface FileProps {
   /** The file id already stored somewhere on the Telegram servers. */
   fileId: string;
-};
-
-type FileUrlProps = {
   /** HTTP URL for the file to be sent. */
   url: string;
-};
-
-type FileDataProps = {
   /** The file content data when uploading the file directly. */
   fileData: string | Buffer | NodeJS.ReadableStream;
   /** Metadata about the uploading `fileData` if needed (while using Buffer). */
@@ -33,33 +27,26 @@ type FileDataProps = {
    * {@link saveUplodedFile} middleware to make automatical saving happen.
    */
   fileAssetTag?: string;
-};
+}
 
-type WithFileProps = FileIdProps | FileUrlProps | FileDataProps;
-
-type FlattenFileProps<T> = Omit<T, keyof WithFileProps> &
-  Partial<FileIdProps> &
-  Partial<FileUrlProps> &
-  Partial<FileDataProps>;
-
-type WithCaptionProps = {
+export interface CaptionProps {
   /** File caption (may also be used when resending photos by file_id), 0-1024 characters after entities parsing */
   caption?: MachinatNode;
   /** Mode for parsing entities in the `caption`. Default to `'HTML'`.  */
   parseMode?: TelegramParseMode;
-};
+}
 
-type WithThumbnailProps = {
+export interface ThumbnailProps {
   /** Thumbnail file data. Can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. */
   thumbnailFileData?: Buffer | NodeJS.ReadableStream;
   /** Metadata about the uploading `thumbnailFileData` if needed (while using Buffer). */
   thumbnailFileInfo?: UploadingFileInfo;
-};
+}
 
 /**
  * @category Props
  */
-type PhotoProps = MessageProps & WithFileProps & WithCaptionProps;
+export interface PhotoProps extends MessageProps, FileProps, CaptionProps {}
 
 /** @ignore */
 const __Photo: FunctionOf<TelegramComponent<
@@ -77,7 +64,7 @@ const __Photo: FunctionOf<TelegramComponent<
     replyToMessageId,
     replyMarkup,
     fileAssetTag,
-  } = node.props as FlattenFileProps<PhotoProps>;
+  } = node.props;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -119,17 +106,18 @@ export const Photo: TelegramComponent<
 /**
  * @category Props
  */
-type AudioProps = MessageProps &
-  WithFileProps &
-  WithCaptionProps &
-  WithThumbnailProps & {
-    /** Duration of the audio in seconds */
-    duration?: number;
-    /** Performer */
-    performer?: string;
-    /** Track name */
-    title?: string;
-  };
+export interface AudioProps
+  extends MessageProps,
+    FileProps,
+    CaptionProps,
+    ThumbnailProps {
+  /** Duration of the audio in seconds */
+  duration?: number;
+  /** Performer */
+  performer?: string;
+  /** Track name */
+  title?: string;
+}
 /** @ignore */
 const __Audio: FunctionOf<TelegramComponent<
   AudioProps,
@@ -151,7 +139,7 @@ const __Audio: FunctionOf<TelegramComponent<
     thumbnailFileData,
     thumbnailFileInfo,
     fileAssetTag,
-  } = node.props as FlattenFileProps<AudioProps>;
+  } = node.props;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -207,10 +195,11 @@ export const Audio: TelegramComponent<
 /**
  * @category Props
  */
-type DocumentProps = MessageProps &
-  WithFileProps &
-  WithCaptionProps &
-  WithThumbnailProps;
+export interface DocumentProps
+  extends MessageProps,
+    FileProps,
+    CaptionProps,
+    ThumbnailProps {}
 
 /** @ignore */
 const __Document: FunctionOf<TelegramComponent<
@@ -230,7 +219,7 @@ const __Document: FunctionOf<TelegramComponent<
     thumbnailFileData,
     thumbnailFileInfo,
     fileAssetTag,
-  } = node.props as FlattenFileProps<DocumentProps>;
+  } = node.props;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -283,19 +272,20 @@ export const Document: TelegramComponent<
 /**
  * @category Props
  */
-type VideoProps = MessageProps &
-  WithFileProps &
-  WithCaptionProps &
-  WithThumbnailProps & {
-    /** Duration of sent video in seconds */
-    duration?: number;
-    /** Video width */
-    width?: number;
-    /** Video height */
-    height?: number;
-    /** Pass True, if the uploaded video is suitable for streaming */
-    supportsStreaming?: boolean;
-  };
+export interface VideoProps
+  extends MessageProps,
+    FileProps,
+    CaptionProps,
+    ThumbnailProps {
+  /** Duration of sent video in seconds */
+  duration?: number;
+  /** Video width */
+  width?: number;
+  /** Video height */
+  height?: number;
+  /** Pass True, if the uploaded video is suitable for streaming */
+  supportsStreaming?: boolean;
+}
 
 /** @ignore */
 const __Video: FunctionOf<TelegramComponent<
@@ -319,7 +309,7 @@ const __Video: FunctionOf<TelegramComponent<
     height,
     supportsStreaming,
     fileAssetTag,
-  } = node.props as FlattenFileProps<VideoProps>;
+  } = node.props;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -376,17 +366,18 @@ export const Video: TelegramComponent<
 /**
  * @category Props
  */
-type AnimationProps = MessageProps &
-  WithFileProps &
-  WithCaptionProps &
-  WithThumbnailProps & {
-    /** Duration of sent animation in seconds */
-    duration?: number;
-    /** Animation width */
-    width?: number;
-    /** Animation height */
-    height?: number;
-  };
+export interface AnimationProps
+  extends MessageProps,
+    FileProps,
+    CaptionProps,
+    ThumbnailProps {
+  /** Duration of sent animation in seconds */
+  duration?: number;
+  /** Animation width */
+  width?: number;
+  /** Animation height */
+  height?: number;
+}
 
 /** @ignore */
 const __Animation: FunctionOf<TelegramComponent<
@@ -409,7 +400,7 @@ const __Animation: FunctionOf<TelegramComponent<
     width,
     height,
     fileAssetTag,
-  } = node.props as FlattenFileProps<AnimationProps>;
+  } = node.props;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -465,12 +456,10 @@ export const Animation: TelegramComponent<
 /**
  * @category Props
  */
-type VoiceProps = MessageProps &
-  WithFileProps &
-  WithCaptionProps & {
-    /** Duration of sent voice in seconds */
-    duration?: number;
-  };
+export interface VoiceProps extends MessageProps, FileProps, CaptionProps {
+  /** Duration of sent voice in seconds */
+  duration?: number;
+}
 
 /** @ignore */
 const __Voice: FunctionOf<TelegramComponent<
@@ -489,7 +478,7 @@ const __Voice: FunctionOf<TelegramComponent<
     replyMarkup,
     duration,
     fileAssetTag,
-  } = node.props as FlattenFileProps<VoiceProps>;
+  } = node.props;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -532,15 +521,16 @@ export const Voice: TelegramComponent<
 /**
  * @category Props
  */
-type VideoNoteProps = MessageProps &
-  WithFileProps &
-  WithCaptionProps &
-  WithThumbnailProps & {
-    /** Duration of sent video note in seconds */
-    duration?: number;
-    /** Video width and height, i.e. diameter of the video message */
-    length?: number;
-  };
+export interface VideoNoteProps
+  extends MessageProps,
+    FileProps,
+    CaptionProps,
+    ThumbnailProps {
+  /** Duration of sent video note in seconds */
+  duration?: number;
+  /** Video width and height, i.e. diameter of the video message */
+  length?: number;
+}
 
 /** @ignore */
 const __VideoNote: FunctionOf<TelegramComponent<
@@ -562,7 +552,7 @@ const __VideoNote: FunctionOf<TelegramComponent<
     duration,
     length,
     fileAssetTag,
-  } = node.props as FlattenFileProps<VideoNoteProps>;
+  } = node.props;
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -614,7 +604,7 @@ export const VideoNote: TelegramComponent<
   UnitSegment<TelegramSegmentValue>
 > = annotateTelegramComponent(__VideoNote);
 
-export type MediaGroupProps = {
+export interface MediaGroupProps {
   /**
    * {@link Photo} and {@link Video} elements to be presented in the group.
    * Please note that {@link MessageProps} of the children are ignored.
@@ -624,7 +614,7 @@ export type MediaGroupProps = {
   disableNotification?: boolean;
   /** If the message is a reply, ID of the original message */
   replyToMessageId?: number;
-};
+}
 
 /** @ignore */
 const __MediaGroup: FunctionOf<TelegramComponent<
@@ -727,7 +717,7 @@ export const MediaGroup: TelegramComponent<
 /**
  * @category Props
  */
-type StickerProps = MessageProps & WithFileProps;
+export interface StickerProps extends MessageProps, FileProps {}
 
 /** @ignore */
 const __Sticker: FunctionOf<TelegramComponent<
@@ -743,7 +733,7 @@ const __Sticker: FunctionOf<TelegramComponent<
     replyToMessageId,
     replyMarkup,
     fileAssetTag,
-  } = node.props as FlattenFileProps<StickerProps>;
+  } = node.props;
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   const uploadingFiles: UploadingFile[] = [];

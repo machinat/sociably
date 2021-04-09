@@ -17,7 +17,7 @@ import type {
 /**
  * @category Props
  */
-type PassThreadControlProps = {
+export type PassThreadControlProps = {
   /**
    * The app ID to pass thread control to. Required if the Primary Receiver is
    * passing thread control. If the Secondary Receiver is passing thread

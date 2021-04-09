@@ -18,7 +18,7 @@ type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
 /**
  * @category Props
  */
-type AnswerCallbackQueryProps = {
+export interface AnswerCallbackQueryProps {
   /** Unique identifier for the query to be answered */
   queryId: string;
   /** Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters */
@@ -29,7 +29,7 @@ type AnswerCallbackQueryProps = {
   url?: string;
   /** The maximum amount of time in seconds that the result of the callback query may be cached client-side. Telegram apps will support caching starting in version 3.14. Defaults to 0. */
   cacheTime?: number;
-};
+}
 
 /**
  * Send answers to callback queries sent from inline keyboards. The answer will be displayed to the user as a notification at the top of the chat screen or as an alert.
@@ -58,14 +58,14 @@ export const AnswerCallbackQuery: TelegramComponent<
   ];
 });
 
-type InlineQueryResultProps = {
+export interface InlineQueryResultProps {
   /** Unique identifier for this result, 1-64 bytes */
   id: string;
   /** One {@link InlineKeyboardMarkup} element attached to the message */
   replyMarkup?: MachinatNode;
   /** One {@link Text}, {@link Location}, {@link Venue} or {@link Contact} element as the replacement of message content to be sent */
   inputMessageContent?: MachinatNode;
-};
+}
 
 const renderInputMessageContent = async (node, render) => {
   const segments = await render(node, '.inputMessageContent');
@@ -1086,14 +1086,14 @@ export const InlineQueryResultContact: TelegramComponent<
   ];
 });
 
-type InlineQueryResultGameProps = {
+export interface InlineQueryResultGameProps {
   /** Unique identifier for this result, 1-64 bytes */
   id: string;
   /** Short name of the game */
   gameShortName: string;
   /** One {@link InlineKeyboardMarkup} element attached to the message */
   replyMarkup?: MachinatNode;
-};
+}
 
 /**
  * Represents a Game.
@@ -1140,7 +1140,7 @@ export type InlineQueryResult =
 /**
  * @category Props
  */
-type AnswerInlineQueryProps = {
+export interface AnswerInlineQueryProps {
   /** Unique identifier for the answered query */
   queryId: string;
   /** {@link InlineQueryResult} elements as the results to be displayed */
@@ -1155,7 +1155,7 @@ type AnswerInlineQueryProps = {
   switchPMText?: string;
   /** Deep-linking parameter for the /start message sent to the bot when user presses the switch button. 1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed. */
   switchPMParameter?: string;
-};
+}
 
 /**
  * Send answers to an inline query
@@ -1221,7 +1221,7 @@ type ShippingOption = {
 /**
  * @category Props
  */
-type AnswerShippingQueryProps = {
+export interface AnswerShippingQueryProps {
   /** Unique identifier for the query to be answered */
   queryId: string;
   /** Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible) */
@@ -1230,7 +1230,7 @@ type AnswerShippingQueryProps = {
   shippingOptions?: ShippingOption[];
   /** Required if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user. */
   errorMessage?: string;
-};
+}
 
 /**
  * Send answers to an inline query
@@ -1261,14 +1261,14 @@ export const AnswerShippingQuery: TelegramComponent<
 /**
  * @category Props
  */
-type AnswerPreCheckoutQueryProps = {
+export interface AnswerPreCheckoutQueryProps {
   /** Unique identifier for the query to be answered */
   queryId: string;
   /** Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible) */
   ok: boolean;
   /** Required if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user. */
   errorMessage?: string;
-};
+}
 
 /**
  * Send answers to an inline query

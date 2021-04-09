@@ -10,7 +10,7 @@ import type { MessageValue, MessengerComponent } from '../types';
  * At least one property must be set in addition to title.
  * @category Props
  */
-type GenericItemProps = {
+export type GenericItemProps = {
   /** The title to display in the template. 80 character limit. */
   title: string;
   /** The URL of the image to display in the template. */
@@ -78,7 +78,7 @@ export const GenericItem: MessengerComponent<
 /**
  * @category Props
  */
-type GenericTemplateProps = {
+export type GenericTemplateProps = {
   /**
    * {@link GenericItem} elements under the template. Specifying multiple
    * elements will send a horizontally scrollable carousel of templates. A
@@ -133,7 +133,7 @@ export const GenericTemplate: MessengerComponent<
 /**
  * @category Props
  */
-type ButtonTemplateProps = {
+export type ButtonTemplateProps = {
   /**
    * Textual node with content up to 640 characters. Text will appear above the
    * buttons.
@@ -199,7 +199,7 @@ export const ButtonTemplate: MessengerComponent<
 /**
  * @category Props
  */
-type MediaTemplateProps = {
+export type MediaTemplateProps = {
   /** The type of media being sent */
   mediaType: 'image' | 'video';
   /** One optional button element to be appended to the template */
@@ -259,7 +259,7 @@ export const MediaTemplate: MessengerComponent<
 /**
  * @category Props
  */
-type ReceiptItemProps = {
+export type ReceiptItemProps = {
   /** The name to display for the item. */
   title: string;
   /** The subtitle for the item, usually a brief item description. */
@@ -303,7 +303,7 @@ export const ReceiptItem: MessengerComponent<
 /**
  * @category Props
  */
-type ReceiptTemplateProps = {
+export type ReceiptTemplateProps = {
   /**
    * Maximum of 100 {@line ReceiptItem} elements that describe items in the
    * order. Sort order of the elements is not guaranteed.

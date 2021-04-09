@@ -7,7 +7,7 @@ import { LineComponent } from '../types';
 /**
  * @category Props
  */
-type ButtonTemplateProps = {
+export type ButtonTemplateProps = {
   /**
    * Alternative text. Displayed on devices that do not support template
    * messages. Max character limit: 400.
@@ -24,11 +24,11 @@ type ButtonTemplateProps = {
   imageAspectRatio?: 'rectangle' | 'square';
   /**
    * Size of the image. Default to `'cover'`.
-   * - cover:   The image fills the entire image area. Parts of the image that
-   *            do not fit in the area are not displayed.
+   * - cover: The image fills the entire image area. Parts of the image that do
+   * not fit in the area are not displayed.
    * - contain: The entire image is displayed in the image area. A background is
-   *            displayed in the unused areas to the left and right of vertical
-   *            images and in the areas above and below horizontal images.
+   * displayed in the unused areas to the left and right of vertical images and
+   * in the areas above and below horizontal images.
    */
   imageSize?: 'contain' | 'cover';
   /**
@@ -109,7 +109,7 @@ export const ButtonTemplate: LineComponent<ButtonTemplateProps> = annotateLineCo
 /**
  * @category Props
  */
-type ConfirmTemplateProps = {
+export type ConfirmTemplateProps = {
   /**
    * Alternative text. Displayed on devices that do not support template
    * messages. Max character limit: 400
@@ -162,7 +162,7 @@ export const ConfirmTemplate: LineComponent<ConfirmTemplateProps> = annotateLine
 /**
  * @category Props
  */
-type CarouselItemProps = {
+export type CarouselItemProps = {
   /**
    * {@link Action} elements displayed as the buttons at the template. Max 3
    * buttons.
@@ -234,7 +234,7 @@ export const CarouselItem: LineComponent<
 /**
  * @category Props
  */
-type CarouselTemplateProps = {
+export type CarouselTemplateProps = {
   /**
    * {@link CarouselItem} elements displayed as bubble columns in the carousel.
    * Max 10 columns.
@@ -299,7 +299,7 @@ export const CarouselTemplate: LineComponent<CarouselTemplateProps> = annotateLi
 /**
  * @category Props
  */
-type ImageCarouselItemProps = {
+export type ImageCarouselItemProps = {
   /** Image URL (Max character limit: 1,000) */
   imageUrl: string;
   /** One {@link Action} element to be triggered the when image is tapped. */
@@ -336,7 +336,7 @@ export const ImageCarouselItem: LineComponent<
 /**
  * @category Props
  */
-type ImageCarouselTemplateProps = {
+export type ImageCarouselTemplateProps = {
   /** {@link ImageCarouselItem} elements displayed as image columns in the
    * carousel. Max 10 columns.
    */

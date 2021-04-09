@@ -6,7 +6,7 @@ import { MessengerComponent } from '../types';
 /**
  * @category Props
  */
-type TextReplyProps = {
+export type TextReplyProps = {
   /** The text to display on the quick reply button. 20 character limit. */
   title: string;
   /**

@@ -2,25 +2,21 @@ import { MachinatNode } from '@machinat/core/types';
 import { unitSegment } from '@machinat/core/renderer';
 import type { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateTelegramComponent } from '../utils';
-import {
-  TelegramSegmentValue,
-  TelegramComponent,
-  MessageProps,
-} from '../types';
+import { TelegramSegmentValue, TelegramComponent } from '../types';
+import { MessageProps } from './types';
 
 /**
  * @category Props
  */
-type LocationProps = MessageProps & {
+export interface LocationProps extends MessageProps {
   /** Latitude of the location */
   latitude: number;
   /** Longitude of the location */
   longitude: number;
   /** Period in seconds for which the location will be updated (see Live Locations, should be between 60 and 86400. */
   livePeriod?: number;
-};
+}
 
-/** @ignore */
 const __Location: FunctionOf<TelegramComponent<
   LocationProps,
   UnitSegment<TelegramSegmentValue>
@@ -63,7 +59,7 @@ export const Location: TelegramComponent<
 /**
  * @category Props
  */
-type EditLiveLocationProps = {
+export interface EditLiveLocationProps {
   /** Required if `inlineMessageId` is not specified. Identifier of the message to edit */
   messageId?: number;
   /** Required if `messageId` are not specified. Identifier of the inline message */
@@ -74,9 +70,8 @@ type EditLiveLocationProps = {
   longitude: number;
   /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
   replyMarkup?: MachinatNode;
-};
+}
 
-/** @ignore */
 const __EditLiveLocation: FunctionOf<TelegramComponent<
   EditLiveLocationProps,
   UnitSegment<TelegramSegmentValue>
@@ -117,16 +112,15 @@ export const EditLiveLocation: TelegramComponent<
 /**
  * @category Props
  */
-type StopLiveLocationProps = {
+export interface StopLiveLocationProps {
   /** Required if `inlineMessageId` is not specified. Identifier of the message to edit */
   messageId?: number;
   /** Required if `messageId` are not specified. Identifier of the inline message */
   inlineMessageId?: string;
   /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
   replyMarkup?: MachinatNode;
-};
+}
 
-/** @ignore */
 const __StopLiveLocation: FunctionOf<TelegramComponent<
   StopLiveLocationProps,
   UnitSegment<TelegramSegmentValue>
@@ -159,7 +153,7 @@ export const StopLiveLocation: TelegramComponent<
 /**
  * @category Props
  */
-type VenueProps = MessageProps & {
+export interface VenueProps extends MessageProps {
   /** Latitude of the location */
   latitude: number;
   /** Longitude of the location */
@@ -172,9 +166,8 @@ type VenueProps = MessageProps & {
   foursquareId?: string;
   /** Foursquare type of the venue, if known. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.) */
   foursquareType?: string;
-};
+}
 
-/** @ignore */
 const __Venue: FunctionOf<TelegramComponent<
   VenueProps,
   UnitSegment<TelegramSegmentValue>

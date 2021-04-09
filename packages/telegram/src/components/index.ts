@@ -6,3 +6,4 @@ export * from './media';
 export * from './replyMarkup';
 export * from './template';
 export * from './updating';
+export * from './types';

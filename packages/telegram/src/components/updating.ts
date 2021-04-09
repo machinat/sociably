@@ -9,26 +9,26 @@ import {
   TelegramParseMode,
 } from '../types';
 
-type EditMessageProps = {
+export interface EditMessageProps {
   /** Required if inlineMessageId is not specified. Identifier of the message to edit */
   messageId?: number;
   /** Required if messageId are not specified. Identifier of the inline message */
   inlineMessageId?: string;
   /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
   replyMarkup?: MachinatNode;
-};
+}
 
 /**
  * @category Props
  */
-type EditTextProps = EditMessageProps & {
+export interface EditTextProps extends EditMessageProps {
   /** Texual content for the new text of the message, 1-4096 characters after entities parsing */
   children: MachinatNode;
   /** Mode for parsing entities in the message text. See formatting options for more details. */
   parseMode?: TelegramParseMode;
   /** Disables link previews for links in this message */
   disableWebPagePreview?: boolean;
-};
+}
 
 /** @ignore */
 const __EditText: FunctionOf<TelegramComponent<
@@ -87,12 +87,12 @@ export const EditText: TelegramComponent<
 /**
  * @category Props
  */
-type EditCaptionProps = EditMessageProps & {
+export interface EditCaptionProps extends EditMessageProps {
   /** Texual content for the new caption of the message, 1-1024 characters after entities parsing */
   children: MachinatNode;
   /** Mode for parsing entities in the message text. See formatting options for more details. */
   parseMode: TelegramParseMode;
-};
+}
 
 /** @ignore */
 const __EditCaption: FunctionOf<TelegramComponent<
@@ -151,14 +151,14 @@ export const EditCaption: TelegramComponent<
 /**
  * @category Props
  */
-type EditMediaProps = EditMessageProps & {
+export interface EditMediaProps extends EditMessageProps {
   /**
    * An {@link Animation}, {@link Audio}, {@link Document}, {@link Photo} or
    * {@link Video} element as the new media of the message. Please note that the
    * {@link MessageProps} of the children are ignored.
    */
   children: MachinatNode;
-};
+}
 
 /** @ignore */
 const __EditMedia: FunctionOf<TelegramComponent<
@@ -269,12 +269,12 @@ export const EditMedia: TelegramComponent<
 /**
  * @category Props
  */
-type StopPollProps = {
+export interface StopPollProps {
   /**  	Identifier of the original message with the poll */
   messageId: number;
   /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
   replyMarkup?: MachinatNode;
-};
+}
 
 /** @ignore */
 const __StopPoll: FunctionOf<TelegramComponent<
@@ -308,10 +308,10 @@ export const StopPoll: TelegramComponent<
 /**
  * @category Props
  */
-type DeleteMessageProps = {
+export interface DeleteMessageProps {
   /**	Identifier of the original message with the poll */
   messageId: number;
-};
+}
 
 /** @ignore */
 const __DeleteMessage: FunctionOf<TelegramComponent<

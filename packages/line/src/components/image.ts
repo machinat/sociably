@@ -7,7 +7,7 @@ import { LineComponent } from '../types';
 /**
  * @category Props
  */
-type ImageProps = {
+export type ImageProps = {
   /** Image URL (Max character limit: 1000) */
   originalContentUrl: string;
   /** Preview image URL (Max character limit: 1000) */
@@ -39,7 +39,7 @@ export const Image: LineComponent<ImageProps> = annotateLineComponent(__Image);
 /**
  * @category Props
  */
-type StickerProps = {
+export type StickerProps = {
   /**
    * Package ID for a set of stickers. For information on package IDs, see the
    * [Sticker list](https://developers.line.biz/media/messaging-api/sticker_list.pdf).
@@ -79,7 +79,7 @@ export const Sticker: LineComponent<StickerProps> = annotateLineComponent(
 /**
  * @category Props
  */
-type ImageMapAreaProps = {
+export type ImageMapAreaProps = {
   /**
    * An {@link UriAction} or {@link MessageAction} element to be triggered when
    * the area is touched.
@@ -154,7 +154,7 @@ export const ImageMapArea: LineComponent<
 /**
  * @category Props
  */
-type ImageMapVideoAreaProps = {
+export type ImageMapVideoAreaProps = {
   /** URL of the video file (Max character limit: 1000) */
   originalContentUrl: string;
   /** URL of the preview image (Max character limit: 1000) */
@@ -227,7 +227,7 @@ export const ImageMapVideoArea: LineComponent<
 /**
  * @category Props
  */
-type ImageMapProps = {
+export type ImageMapProps = {
   /** ImageMapArea elements for the actions on touching. */
   children: MachinatNode;
   /** Base URL of the image */

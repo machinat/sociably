@@ -7,7 +7,7 @@ import { LineComponent } from '../types';
 /**
  * @category Props
  */
-type EmojiProps = {
+export type EmojiProps = {
   /**
    * Product ID for a set of LINE emoji. See Sendable
    * [LINE emoji list](https://d.line-scdn.net/r/devcenter/sendable_line_emoji_list.pdf).
