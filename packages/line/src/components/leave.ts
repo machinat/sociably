@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { unitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment } from '@machinat/core/renderer';
 import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../constant';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
@@ -24,7 +24,7 @@ const LEAVE_REQUESTER = {
 };
 
 const __Leave = function Leave(node, path) {
-  return [unitSegment(node, path, LEAVE_REQUESTER)];
+  return [makeUnitSegment(node, path, LEAVE_REQUESTER)];
 };
 
 /**

@@ -1,4 +1,4 @@
-import { unitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment } from '@machinat/core/renderer';
 import type { UnitSegment } from '@machinat/core/renderer/types';
 import { annotateMessengerComponent } from '../utils';
 import type { MessengerComponent, SenderActionValue } from '../types';
@@ -14,7 +14,7 @@ const TYPING_ON_VALUE = { sender_action: 'typing_on' as const };
 
 /** @ignore */
 const __MarkSeen = function MarkSeen(node, path) {
-  return [unitSegment(node, path, MARK_SEEN_VALUE)];
+  return [makeUnitSegment(node, path, MARK_SEEN_VALUE)];
 };
 /**
  * Display the confirmation icon.
@@ -30,7 +30,7 @@ export const MarkSeen: MessengerComponent<
 
 /** @ignore */
 const __TypingOn = function TypingOn(node, path) {
-  return [unitSegment(node, path, TYPING_ON_VALUE)];
+  return [makeUnitSegment(node, path, TYPING_ON_VALUE)];
 };
 /**
  * Display the typing bubble.
@@ -46,7 +46,7 @@ export const TypingOn: MessengerComponent<
 
 /** @ignore */
 const __TypingOff = function TypingOff(node, path) {
-  return [unitSegment(node, path, TYPING_OFF_VALUE)];
+  return [makeUnitSegment(node, path, TYPING_OFF_VALUE)];
 };
 /**
  * Remove the typing bubble.

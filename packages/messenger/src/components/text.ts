@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import type { MachinatNode } from '@machinat/core/types';
 import formatNode from '@machinat/core/utils/formatNode';
-import { textSegment } from '@machinat/core/renderer';
+import { makeTextSegment } from '@machinat/core/renderer';
 import type { TextSegment } from '@machinat/core/renderer/types';
 import { annotateMessengerComponent } from '../utils';
 import type { MessengerComponent } from '../types';
@@ -38,9 +38,9 @@ const __Latex = async function Latex(node, path, render) {
   }
 
   return [
-    textSegment(node, path, LATEX_BEGIN),
+    makeTextSegment(node, path, LATEX_BEGIN),
     segments[0],
-    textSegment(node, path, LATEX_END),
+    makeTextSegment(node, path, LATEX_END),
   ];
 };
 /**

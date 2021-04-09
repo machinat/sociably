@@ -1,6 +1,6 @@
 import type { MachinatNode } from '@machinat/core/types';
 import formatNode from '@machinat/core/utils/formatNode';
-import { unitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment } from '@machinat/core/renderer';
 import type { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateTelegramComponent } from '../utils';
 import {
@@ -51,7 +51,7 @@ const __Text: FunctionOf<TelegramComponent<
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendMessage',
       parameters: {
         text: textSegments[0].value,
@@ -106,7 +106,7 @@ const __Contact: FunctionOf<TelegramComponent<
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendContact',
       parameters: {
         phone_number: phoneNumber,
@@ -184,7 +184,7 @@ const __Poll: FunctionOf<TelegramComponent<
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   const explanationSegments = await render(explanation, '.explanation');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendPoll',
       parameters: {
         question,
@@ -242,7 +242,7 @@ const __Dice: FunctionOf<TelegramComponent<
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendDice',
       parameters: {
         emoji,
@@ -340,7 +340,7 @@ const __Invoice: FunctionOf<TelegramComponent<
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendInvoice',
       parameters: {
         title,
@@ -402,7 +402,7 @@ const __Game: FunctionOf<TelegramComponent<
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendGame',
       parameters: {
         game_short_name: gameShortName,

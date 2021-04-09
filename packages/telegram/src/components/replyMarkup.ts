@@ -1,5 +1,5 @@
 import { MachinatNode } from '@machinat/core/types';
-import { partSegment } from '@machinat/core/renderer';
+import { makePartSegment } from '@machinat/core/renderer';
 import type { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateTelegramComponent } from '../utils';
 import type { TelegramComponent } from '../types';
@@ -37,7 +37,7 @@ const __UrlButton: FunctionOf<TelegramComponent<
   } = node.props;
 
   return [
-    partSegment(
+    makePartSegment(
       node,
       path,
       login
@@ -84,7 +84,7 @@ const __CallbackButton: FunctionOf<TelegramComponent<
 >> = function CallbackButton(node, path) {
   const { text, data } = node.props;
 
-  return [partSegment(node, path, { text, callback_data: data })];
+  return [makePartSegment(node, path, { text, callback_data: data })];
 };
 /**
  * A {@link CallbackQueryEvent} will be triggered when button is pressed.
@@ -117,7 +117,7 @@ const __SwitchQueryButton: FunctionOf<TelegramComponent<
   const { text, query, currentChat } = node.props;
 
   return [
-    partSegment(
+    makePartSegment(
       node,
       path,
       currentChat
@@ -154,7 +154,7 @@ const __GameButton: FunctionOf<TelegramComponent<
 >> = function GameButton(node, path) {
   const { text } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       text,
       callback_game: {},
     }),
@@ -185,7 +185,7 @@ const __PayButton: FunctionOf<TelegramComponent<
 >> = function PayButton(node, path) {
   const { text } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       text,
       pay: true,
     }),
@@ -229,7 +229,7 @@ const __KeyboardRow: FunctionOf<TelegramComponent<
   }
 
   return [
-    partSegment(
+    makePartSegment(
       node,
       path,
       buttonsSegments.map(({ value }) => value)
@@ -271,7 +271,7 @@ const __InlineKeyboard: FunctionOf<TelegramComponent<
   }
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       inline_keyboard: buttonsSegments.map(({ value }) =>
         Array.isArray(value) ? value : [value]
       ),
@@ -302,7 +302,7 @@ const __TextReply: FunctionOf<TelegramComponent<
   PartSegment<any>
 >> = function TextReply(node, path) {
   const { text } = node.props;
-  return [partSegment(node, path, { text })];
+  return [makePartSegment(node, path, { text })];
 };
 /**
  * Text of button will be sent as a message by the user when the button is pressed
@@ -328,7 +328,7 @@ const __ContactReply: FunctionOf<TelegramComponent<
   PartSegment<any>
 >> = function ContactReply(node, path) {
   const { text } = node.props;
-  return [partSegment(node, path, { text, request_contact: true })];
+  return [makePartSegment(node, path, { text, request_contact: true })];
 };
 /**
  * The user's phone number will be sent as a contact when the button is pressed. Available in private chats only
@@ -354,7 +354,7 @@ const __LocationReply: FunctionOf<TelegramComponent<
   PartSegment<any>
 >> = function LocationReply(node, path) {
   const { text } = node.props;
-  return [partSegment(node, path, { text, request_location: true })];
+  return [makePartSegment(node, path, { text, request_location: true })];
 };
 /**
  * The user's current location will be sent when the button is pressed. Available in private chats only
@@ -382,7 +382,7 @@ const __PollReply: FunctionOf<TelegramComponent<
   PartSegment<any>
 >> = function PollReply(node, path) {
   const { text, type } = node.props;
-  return [partSegment(node, path, { text, request_poll: { type } })];
+  return [makePartSegment(node, path, { text, request_poll: { type } })];
 };
 /**
  * The user will be asked to create a poll and send it to the bot when the button is pressed. Available in private chats only
@@ -431,7 +431,7 @@ const __ReplyKeyboard: FunctionOf<TelegramComponent<
   }
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       keyboard: rowsSegments.map(({ value }) =>
         Array.isArray(value) ? value : [value]
       ),
@@ -465,7 +465,7 @@ const __RemoveReplyKeyboard: FunctionOf<TelegramComponent<
   PartSegment<any>
 >> = function RemoveReplyKeyboard(node, path) {
   const { selective } = node.props;
-  return [partSegment(node, path, { remove_keyboard: true, selective })];
+  return [makePartSegment(node, path, { remove_keyboard: true, selective })];
 };
 /**
  * Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; if you want to hide the keyboard from sight but keep it accessible, use `oneTimeBeyboard` in {@link ReplyKeyboard})
@@ -491,7 +491,7 @@ const __ForceReply: FunctionOf<TelegramComponent<
   PartSegment<any>
 >> = function ForceReply(node, path) {
   const { selective } = node.props;
-  return [partSegment(node, path, { force_reply: true, selective })];
+  return [makePartSegment(node, path, { force_reply: true, selective })];
 };
 /**
  * Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; if you want to hide the keyboard from sight but keep it accessible, use `oneTimeBeyboard` in {@link ReplyKeyboard})

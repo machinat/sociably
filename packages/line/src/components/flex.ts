@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 import type { MachinatNode } from '@machinat/core/types';
-import { unitSegment, partSegment } from '@machinat/core/renderer';
+import { makeUnitSegment, makePartSegment } from '@machinat/core/renderer';
 import {
   UnitSegment,
   PartSegment,
@@ -87,7 +87,7 @@ const __FlexButton: FunctionOf<LineComponent<
   const actionValue = actionSegments?.[0].value;
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'button',
       flex,
       margin,
@@ -133,7 +133,7 @@ const __FlexFiller: FunctionOf<LineComponent<
   PartSegment<any>
 >> = function FlexFiller(node, path) {
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'filler',
       flex: node.props.flex,
     }),
@@ -202,7 +202,7 @@ const __FlexIcon: FunctionOf<LineComponent<
     aspectRatio,
   } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'icon',
       url,
       margin,
@@ -305,7 +305,7 @@ const __FlexImage: FunctionOf<LineComponent<
   const actionValue = actionSegments?.[0].value;
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'image',
       url,
       flex,
@@ -356,7 +356,7 @@ const __FlexSeparator: FunctionOf<LineComponent<
 >> = function FlexSeparator(node, path) {
   const { margin, color } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'separator',
       margin,
       color,
@@ -388,7 +388,7 @@ const __FlexSpacer: FunctionOf<LineComponent<
   PartSegment<any>
 >> = function FlexSpacer(node, path) {
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'spacer',
       size: node.props.size,
     }),
@@ -519,7 +519,7 @@ const __FlexText: FunctionOf<LineComponent<
   const actionValues = actionSegments?.[0].value;
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'text',
       text,
       contents,
@@ -583,7 +583,7 @@ const __FlexSpan: FunctionOf<LineComponent<
   const text = textSegments?.[0].value || '';
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'span',
       text,
       size,
@@ -730,7 +730,7 @@ const __FlexBox: FunctionOf<LineComponent<
   const actionValue = actionSegments?.[0].value;
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'box',
       contents: contentValues,
       action: actionValue,
@@ -811,7 +811,7 @@ const createBlockComponent = (section, _childrenType) => {
       const contentSegments = await render(children, '.children');
       const contentValue = contentSegments?.[0].value;
       return [
-        partSegment(node, path, {
+        makePartSegment(node, path, {
           name: section,
           content: contentValue,
           style:
@@ -926,7 +926,7 @@ const __FlexBubbleContainer: FunctionOf<LineComponent<
     }
   );
 
-  return [partSegment(node, path, bubbleObject)];
+  return [makePartSegment(node, path, bubbleObject)];
 };
 /**
  * FlexBubbleContainer is a container that contains one message bubble. It can
@@ -958,7 +958,7 @@ const __FlexCarouselContainer: FunctionOf<LineComponent<
   const bubbleContainers = contentSegments?.map((segment) => segment.value);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'carousel',
       contents: bubbleContainers,
     }),
@@ -996,7 +996,7 @@ const __FlexMessage: FunctionOf<LineComponent<
   const contentValue = contentSegments?.[0].value;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       type: 'flex' as const,
       altText,
       contents: contentValue,

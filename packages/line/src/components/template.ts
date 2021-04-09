@@ -1,5 +1,5 @@
 import { MachinatNode } from '@machinat/core/types';
-import { unitSegment, partSegment } from '@machinat/core/renderer';
+import { makeUnitSegment, makePartSegment } from '@machinat/core/renderer';
 import { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
@@ -89,7 +89,7 @@ const __ButtonTemplate: FunctionOf<LineComponent<
   };
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       type: 'template' as const,
       altText: typeof altText === 'function' ? altText(template) : altText,
       template,
@@ -142,7 +142,7 @@ const __ConfirmTemplate: FunctionOf<LineComponent<
   };
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       type: 'template' as const,
       altText: typeof altText === 'function' ? altText(template) : altText,
       template,
@@ -210,7 +210,7 @@ const __CarouselItem: FunctionOf<LineComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       thumbnailImageUrl,
       imageBackgroundColor,
       title,
@@ -278,7 +278,7 @@ const __CarouselTemplate: FunctionOf<LineComponent<
   };
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       type: 'template' as const,
       altText: typeof altText === 'function' ? altText(template) : altText,
       template,
@@ -316,7 +316,7 @@ const __ImageCarouselItem: FunctionOf<LineComponent<
   const actionValue = actionSegments?.[0].value;
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       imageUrl,
       action: actionValue,
     }),
@@ -363,7 +363,7 @@ const __ImageCarouselTemplate: FunctionOf<LineComponent<
   };
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       type: 'template' as const,
       altText: typeof altText === 'function' ? altText(template) : altText,
       template,

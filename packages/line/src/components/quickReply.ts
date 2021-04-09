@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { MachinatNode } from '@machinat/core/types';
-import { partSegment } from '@machinat/core/renderer';
+import { makePartSegment } from '@machinat/core/renderer';
 import { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
@@ -26,7 +26,7 @@ const __QuickReply: FunctionOf<LineComponent<
   const actionValue = actionSegments?.[0].value;
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'action',
       imageUrl: imageUrl || imageUrl,
       action: actionValue,

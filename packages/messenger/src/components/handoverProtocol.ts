@@ -1,4 +1,4 @@
-import { unitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment } from '@machinat/core/renderer';
 import type { UnitSegment } from '@machinat/core/renderer/types';
 import { annotateMessengerComponent } from '../utils';
 import {
@@ -36,7 +36,7 @@ export type PassThreadControlProps = {
 const __PassThreadControl = function PassThreadControl(node, path) {
   const { targetAppId, metadata } = node.props;
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       target_app_id: targetAppId,
       metadata,
       [API_PATH]: PATH_PASS_THREAD_CONTROL,
@@ -59,7 +59,7 @@ export const PassThreadControl: MessengerComponent<
 /** @ignore */
 const __RequestThreadControl = function RequestThreadControl(node, path) {
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       metadata: node.props.metadata,
       [API_PATH]: PATH_REQUEST_THREAD_CONTROL,
     }),
@@ -82,7 +82,7 @@ export const RequestThreadControl: MessengerComponent<
 /** @ignore */
 const __TakeThreadContorl = function TakeThreadContorl(node, path) {
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       metadata: node.props.metadata,
       [API_PATH]: PATH_TAKE_THREAD_CONTROL,
     }),

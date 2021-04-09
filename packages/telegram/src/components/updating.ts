@@ -1,6 +1,6 @@
 import type { MachinatNode } from '@machinat/core/types';
 import formatNode from '@machinat/core/utils/formatNode';
-import { unitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment } from '@machinat/core/renderer';
 import type { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateTelegramComponent } from '../utils';
 import {
@@ -59,7 +59,7 @@ const __EditText: FunctionOf<TelegramComponent<
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'editMessageText',
       toDirectInstance: !!inlineMessageId,
       parameters: {
@@ -124,7 +124,7 @@ const __EditCaption: FunctionOf<TelegramComponent<
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'editMessageCaption',
       toDirectInstance: !!inlineMessageId,
       parameters: {
@@ -242,7 +242,7 @@ const __EditMedia: FunctionOf<TelegramComponent<
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'editMessageMedia',
       toDirectInstance: !!inlineMessageId,
       parameters: {
@@ -285,7 +285,7 @@ const __StopPoll: FunctionOf<TelegramComponent<
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'stopPoll',
       parameters: {
         message_id: messageId,
@@ -321,7 +321,7 @@ const __DeleteMessage: FunctionOf<TelegramComponent<
   const { messageId } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'deleteMessage',
       parameters: {
         message_id: messageId,

@@ -1,5 +1,5 @@
 import { MachinatNode } from '@machinat/core/types';
-import { unitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment } from '@machinat/core/renderer';
 import formatNode from '@machinat/core/utils/formatNode';
 import type { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateTelegramComponent } from '../utils';
@@ -69,7 +69,7 @@ const __Photo: FunctionOf<TelegramComponent<
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendPhoto',
       parameters: {
         photo: fileId || url || undefined,
@@ -164,7 +164,7 @@ const __Audio: FunctionOf<TelegramComponent<
   }
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendAudio',
       parameters: {
         audio: fileId || url || undefined,
@@ -244,7 +244,7 @@ const __Document: FunctionOf<TelegramComponent<
   }
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendDocument',
       parameters: {
         document: fileId || url || undefined,
@@ -334,7 +334,7 @@ const __Video: FunctionOf<TelegramComponent<
   }
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendVideo',
       parameters: {
         video: fileId || url || undefined,
@@ -425,7 +425,7 @@ const __Animation: FunctionOf<TelegramComponent<
   }
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendAnimation',
       parameters: {
         animation: fileId || url || undefined,
@@ -483,7 +483,7 @@ const __Voice: FunctionOf<TelegramComponent<
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendVoice',
       parameters: {
         voice: fileId || url || undefined,
@@ -577,7 +577,7 @@ const __VideoNote: FunctionOf<TelegramComponent<
   }
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendVideoNote',
       parameters: {
         video_note: fileId || url || undefined,
@@ -692,7 +692,7 @@ const __MediaGroup: FunctionOf<TelegramComponent<
   });
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendMediaGroup',
       parameters: {
         media: inputMedia,
@@ -748,7 +748,7 @@ const __Sticker: FunctionOf<TelegramComponent<
   }
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendSticker',
       parameters: {
         sticker: fileId || url || undefined,

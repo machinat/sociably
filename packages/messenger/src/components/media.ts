@@ -1,4 +1,4 @@
-import { unitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment } from '@machinat/core/renderer';
 import type { UnitSegment } from '@machinat/core/renderer/types';
 import { annotateMessengerComponent } from '../utils';
 import {
@@ -55,7 +55,7 @@ const mediaFactory = (
       } = node.props;
 
       return [
-        unitSegment(node, path, {
+        makeUnitSegment(node, path, {
           message: {
             attachment: {
               type,

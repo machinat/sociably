@@ -1,4 +1,4 @@
-import { unitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment } from '@machinat/core/renderer';
 import type { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateTelegramComponent } from '../utils';
 import {
@@ -26,7 +26,7 @@ const __ForwardMessage: FunctionOf<TelegramComponent<
   const { fromChatId, disableNotification, messageId } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'forwardMessage',
       parameters: {
         from_chat_id: fromChatId,
@@ -72,7 +72,7 @@ const __ChatAction: FunctionOf<TelegramComponent<
   const { action } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendChatAction',
       parameters: { action },
     }),
@@ -106,7 +106,7 @@ const __KickChatMember: FunctionOf<TelegramComponent<
   const { userId, untilDate } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'kickChatMember',
       parameters: {
         user_id: userId,
@@ -144,7 +144,7 @@ const __UnbanChatMember: FunctionOf<TelegramComponent<
   const { userId } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'unbanChatMember',
       parameters: {
         user_id: userId,
@@ -213,7 +213,7 @@ const __RestrictChatMember: FunctionOf<TelegramComponent<
   } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'restrictChatMember',
       parameters: {
         user_id: userId,
@@ -287,7 +287,7 @@ const __PromoteChatMember: FunctionOf<TelegramComponent<
   } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'promoteChatMember',
       parameters: {
         user_id: userId,
@@ -331,7 +331,7 @@ const __SetChatAdministratorCustomTitle: FunctionOf<TelegramComponent<
   const { userId, customTitle } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'setChatAdministratorCustomTitle',
       parameters: {
         user_id: userId,
@@ -367,7 +367,7 @@ const __SetChatPermissions: FunctionOf<TelegramComponent<
   } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'setChatPermissions',
       parameters: {
         permisions: {
@@ -412,7 +412,7 @@ const __SetChatPhoto: FunctionOf<TelegramComponent<
   const { fileData, fileInfo } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'setChatPhoto',
       parameters: {
         photo: undefined,
@@ -439,7 +439,7 @@ const __DeleteChatPhoto: FunctionOf<TelegramComponent<
   UnitSegment<TelegramSegmentValue>
 >> = function DeleteChatPhoto(node, path) {
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'deleteChatPhoto',
       parameters: {},
     }),
@@ -471,7 +471,7 @@ const __SetChatTitle: FunctionOf<TelegramComponent<
   const { title } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'setChatTitle',
       parameters: { title },
     }),
@@ -503,7 +503,7 @@ const __SetChatDescription: FunctionOf<TelegramComponent<
   const { description } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'setChatDescription',
       parameters: { description },
     }),
@@ -537,7 +537,7 @@ const __PinChatMessage: FunctionOf<TelegramComponent<
   const { messageId, disableNotification } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'pinChatMessage',
       parameters: {
         message_id: messageId,
@@ -562,7 +562,7 @@ const __UnpinChatMessage: FunctionOf<TelegramComponent<
   UnitSegment<TelegramSegmentValue>
 >> = function UnpinChatMessage(node, path) {
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'unpinChatMessage',
       parameters: {},
     }),
@@ -584,7 +584,7 @@ const __LeaveChat: FunctionOf<TelegramComponent<
   UnitSegment<TelegramSegmentValue>
 >> = function LeaveChat(node, path) {
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'leaveChat',
       parameters: {},
     }),
@@ -616,7 +616,7 @@ const __SetChatStickerSet: FunctionOf<TelegramComponent<
   const { stickerSetName } = node.props;
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'setChatStickerSet',
       parameters: { sticker_set_name: stickerSetName },
     }),
@@ -638,7 +638,7 @@ const __DeleteChatStickerSet: FunctionOf<TelegramComponent<
   UnitSegment<TelegramSegmentValue>
 >> = function DeleteChatStickerSet(node, path) {
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'deleteChatStickerSet',
       parameters: {},
     }),

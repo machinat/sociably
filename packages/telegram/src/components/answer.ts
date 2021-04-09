@@ -1,5 +1,5 @@
 import { MachinatNode } from '@machinat/core/types';
-import { unitSegment, partSegment } from '@machinat/core/renderer';
+import { makeUnitSegment, makePartSegment } from '@machinat/core/renderer';
 import type { UnitSegment, PartSegment } from '@machinat/core/renderer/types';
 import formatNode from '@machinat/core/utils/formatNode';
 import { annotateTelegramComponent } from '../utils';
@@ -44,7 +44,7 @@ export const AnswerCallbackQuery: TelegramComponent<
   const { queryId, text, url, showAlert, cacheTime } = node.props;
 
   return [
-    unitSegment<TelegramSegmentValue>(node, path, {
+    makeUnitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerCallbackQuery',
       toDirectInstance: true,
       parameters: {
@@ -177,7 +177,7 @@ export const InlineQueryResultArticle: TelegramComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'article',
       id,
       title,
@@ -265,7 +265,7 @@ export const InlineQueryResultPhoto: TelegramComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'photo',
       id,
       photo_file_id: fileId,
@@ -358,7 +358,7 @@ export const InlineQueryResultGif: TelegramComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'gif',
       id,
       gif_file_id: fileId,
@@ -452,7 +452,7 @@ export const InlineQueryResultMpeg4Gif: TelegramComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'mpeg4_gif',
       id,
       mpeg4_file_id: fileId,
@@ -548,7 +548,7 @@ export const InlineQueryResultVideo: TelegramComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'video',
       id,
       video_file_id: fileId,
@@ -633,7 +633,7 @@ export const InlineQueryResultAudio: TelegramComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'audio',
       id,
       audio_file_id: fileId,
@@ -711,7 +711,7 @@ export const InlineQueryResultVoice: TelegramComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'voice',
       id,
       voice_file_id: fileId,
@@ -800,7 +800,7 @@ export const InlineQueryResultDocument: TelegramComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'document',
       id,
       document_file_id: fileId,
@@ -852,7 +852,7 @@ export const InlineQueryResultSticker: TelegramComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'sticker',
       id,
       sticker_file_id: fileId,
@@ -918,7 +918,7 @@ export const InlineQueryResultLocation: TelegramComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'location',
       id,
       latitude,
@@ -996,7 +996,7 @@ export const InlineQueryResultVenue: TelegramComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'venue',
       id,
       latitude,
@@ -1070,7 +1070,7 @@ export const InlineQueryResultContact: TelegramComponent<
   ]);
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'contact',
       id,
       phone_number: phoneNumber,
@@ -1113,7 +1113,7 @@ export const InlineQueryResultGame: TelegramComponent<
   const inlineKeyboardSegemnts = await render(replyMarkup, '.replyMarkup');
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'contact',
       id,
       game_short_name: gameShortName,
@@ -1184,7 +1184,7 @@ export const AnswerInlineQuery: TelegramComponent<
   const resultSegments = await render(children, '.children');
 
   return [
-    unitSegment<TelegramSegmentValue>(node, path, {
+    makeUnitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerInlineQuery',
       toDirectInstance: true,
       parameters: {
@@ -1245,7 +1245,7 @@ export const AnswerShippingQuery: TelegramComponent<
   const { queryId, ok, shippingOptions, errorMessage } = node.props;
 
   return [
-    unitSegment<TelegramSegmentValue>(node, path, {
+    makeUnitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerShippingQuery',
       toDirectInstance: true,
       parameters: {
@@ -1283,7 +1283,7 @@ export const AnswerPreCheckoutQuery: TelegramComponent<
   const { queryId, ok, errorMessage } = node.props;
 
   return [
-    unitSegment<TelegramSegmentValue>(node, path, {
+    makeUnitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerPreCheckoutQuery',
       toDirectInstance: true,
       parameters: {

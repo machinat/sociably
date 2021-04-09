@@ -30,7 +30,7 @@ export const annotateNativeComponent = (platform: string) => <
     },
   });
 
-export const breakSegment = (
+export const makeBreakSegment = (
   node: GeneralElement | NativeElement<any, any>,
   path: string
 ): BreakSegment => ({
@@ -40,7 +40,7 @@ export const breakSegment = (
   path,
 });
 
-export const textSegment = (
+export const makeTextSegment = (
   node: GeneralElement | NativeElement<any, any>,
   path: string,
   text: string
@@ -51,7 +51,7 @@ export const textSegment = (
   path,
 });
 
-export const partSegment = <Value>(
+export const makePartSegment = <Value>(
   node: GeneralElement | NativeElement<any, any>,
   path: string,
   value: Value
@@ -62,7 +62,7 @@ export const partSegment = <Value>(
   path,
 });
 
-export const unitSegment = <Value>(
+export const makeUnitSegment = <Value>(
   node: GeneralElement | NativeElement<any, any>,
   path: string,
   value: Value
@@ -73,7 +73,7 @@ export const unitSegment = <Value>(
   path,
 });
 
-export const pauseSegment = (
+export const makePauseSegment = (
   node: GeneralElement | NativeElement<any, any>,
   path: string,
   value?: PauseUntilFn

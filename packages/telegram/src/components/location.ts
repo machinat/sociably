@@ -1,5 +1,5 @@
 import { MachinatNode } from '@machinat/core/types';
-import { unitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment } from '@machinat/core/renderer';
 import type { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateTelegramComponent } from '../utils';
 import { TelegramSegmentValue, TelegramComponent } from '../types';
@@ -32,7 +32,7 @@ const __Location: FunctionOf<TelegramComponent<
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendLocation',
       parameters: {
         latitude,
@@ -86,7 +86,7 @@ const __EditLiveLocation: FunctionOf<TelegramComponent<
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'editMessageLiveLocation',
       parameters: {
         latitude,
@@ -129,7 +129,7 @@ const __StopLiveLocation: FunctionOf<TelegramComponent<
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'stopMessageLiveLocation',
       parameters: {
         message_id: messageId,
@@ -186,7 +186,7 @@ const __Venue: FunctionOf<TelegramComponent<
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       method: 'sendVenue',
       parameters: {
         latitude,

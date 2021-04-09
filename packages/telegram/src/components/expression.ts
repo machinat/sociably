@@ -1,6 +1,5 @@
-/* eslint-disable import/prefer-default-export */
 import { MachinatNode } from '@machinat/core/types';
-import { unitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment } from '@machinat/core/renderer';
 import type {
   IntermediateSegment,
   FunctionOf,
@@ -54,7 +53,7 @@ const __Expression: FunctionOf<TelegramComponent<
       lastReplyMarkupableIdx = outputSegments.length;
 
       outputSegments.push(
-        unitSegment(node, path, {
+        makeUnitSegment(node, path, {
           method: 'sendMessage',
           parameters: {
             text: segment.value,

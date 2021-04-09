@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import type { MachinatNode } from '@machinat/core/types';
 import formatNode from '@machinat/core/utils/formatNode';
-import { unitSegment, partSegment } from '@machinat/core/renderer';
+import { makeUnitSegment, makePartSegment } from '@machinat/core/renderer';
 import type { UnitSegment, PartSegment } from '@machinat/core/renderer/types';
 import { annotateMessengerComponent } from '../utils';
 import type { MessageValue, MessengerComponent } from '../types';
@@ -54,7 +54,7 @@ const __GenericItem = async function GenericItem(node, path, render) {
   }
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       title,
       image_url: imageUrl,
       subtitle,
@@ -100,7 +100,7 @@ const __GenericTemplate = async function GenericTemplate(node, path, render) {
   const elementValues = elementsSegments?.map((segment) => segment.value);
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       message: {
         attachment: {
           type: 'template',
@@ -168,7 +168,7 @@ const __ButtonTemplate = async function ButtonTemplate(node, path, render) {
   const buttonValues = buttonSegments?.map((segment) => segment.value);
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       message: {
         attachment: {
           type: 'template',
@@ -222,7 +222,7 @@ const __MediaTemplate = async function MediaTemplate(node, path, render) {
   const buttonValues = buttonSegments?.map((segment) => segment.value);
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       message: {
         attachment: {
           type: 'template',
@@ -278,7 +278,7 @@ export type ReceiptItemProps = {
 const __ReceiptItem = async function ReceiptItem(node, path) {
   const { title, subtitle, quantity, price, currency, imageUrl } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       title,
       subtitle,
       quantity,
@@ -372,7 +372,7 @@ const __ReceiptTemplate = async function ReceiptTemplate(node, path, render) {
   const elementValues = elementSegments?.map((segment) => segment.value);
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       message: {
         attachment: {
           type: 'template',

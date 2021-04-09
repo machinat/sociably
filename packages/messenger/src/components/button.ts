@@ -1,4 +1,4 @@
-import { partSegment } from '@machinat/core/renderer';
+import { makePartSegment } from '@machinat/core/renderer';
 import type { PartSegment } from '@machinat/core/renderer/types';
 import { annotateMessengerComponent } from '../utils';
 import type { MessengerComponent } from '../types';
@@ -46,7 +46,7 @@ const __UrlButton = function UrlButton(node, path) {
   } = node.props;
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'web_url',
       title,
       url,
@@ -85,7 +85,7 @@ export type PostbackButtonProps = {
 const __PostbackButton = function PostbackButton(node, path) {
   const { title, payload } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'postback',
       title,
       payload,
@@ -124,7 +124,7 @@ export type CallButtonProps = {
 const __CallButton = function CallButton(node, path) {
   const { title, number } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'phone_number',
       title,
       number,
@@ -156,7 +156,7 @@ export type LoginButtonProps = {
 const __LoginButton = function LoginButton(node, path) {
   const { url } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'account_link',
       url,
     }),
@@ -176,7 +176,7 @@ export const LoginButton: MessengerComponent<
 
 /** @ignore */
 const __LogoutButton = function LogoutButton(node, path) {
-  return [partSegment(node, path, { type: 'account_unlink' })];
+  return [makePartSegment(node, path, { type: 'account_unlink' })];
 };
 /**
  * The log out button triggers the account unlinking flow.
@@ -208,7 +208,7 @@ export type GamePlayButtonProps = {
 const __GamePlayButton = function GamePlayButton(node, path) {
   const { title, payload, playerId, contextId } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'game_play',
       title,
       payload,

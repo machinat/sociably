@@ -1,4 +1,4 @@
-import { partSegment } from '@machinat/core/renderer';
+import { makePartSegment } from '@machinat/core/renderer';
 import type { PartSegment } from '@machinat/core/renderer/types';
 import { annotateMessengerComponent } from '../utils';
 import { MessengerComponent } from '../types';
@@ -26,7 +26,7 @@ export type TextReplyProps = {
 const __TextReply = function TextReply(node, path) {
   const { title, payload, imageUrl } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       content_type: 'text',
       title,
       payload,
@@ -52,7 +52,7 @@ const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
 
 /** @ignore */
 const __PhoneReply = function PhoneReply(node, path) {
-  return [partSegment(node, path, PHONE_QUICK_REPLY_VALUES)];
+  return [makePartSegment(node, path, PHONE_QUICK_REPLY_VALUES)];
 };
 /**
  * Add an phone quick reply button after an {@link Expression}
@@ -71,7 +71,7 @@ const EMAIL_QUICK_REPLY_VALUES = { content_type: 'user_email' };
 
 /** @ignore */
 const __EmailReply = function EmailReply(node, path) {
-  return [partSegment(node, path, EMAIL_QUICK_REPLY_VALUES)];
+  return [makePartSegment(node, path, EMAIL_QUICK_REPLY_VALUES)];
 };
 /**
  * Add an e-amil quick reply button after an {@link Expression}

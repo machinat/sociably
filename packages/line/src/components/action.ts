@@ -1,4 +1,4 @@
-import { partSegment } from '@machinat/core/renderer';
+import { makePartSegment } from '@machinat/core/renderer';
 import { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateLineComponent } from '../utils';
 import type { LineComponent } from '../types';
@@ -29,7 +29,7 @@ const __PostbackAction: FunctionOf<LineComponent<
 >> = function PostbackAction(node, path) {
   const { label, data, displayText } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'postback',
       data,
       label,
@@ -66,7 +66,7 @@ const __MessageAction: FunctionOf<LineComponent<
 >> = function MessageAction(node, path) {
   const { label, text } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'message',
       label,
       text,
@@ -105,7 +105,7 @@ const __UriAction: FunctionOf<LineComponent<
 >> = function UriAction(node, path) {
   const { label, uri } = node.props;
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'uri',
       label,
       uri,
@@ -179,7 +179,7 @@ const __DateTimePickerAction: FunctionOf<LineComponent<
   const { label, data, mode = 'datetime', initial, min, max } = node.props;
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'datetimepicker',
       label,
       data,
@@ -218,7 +218,7 @@ const __CameraAction: FunctionOf<LineComponent<
   PartSegment<any>
 >> = function CameraAction(node, path) {
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'camera',
       label: node.props.label,
     }),
@@ -250,7 +250,7 @@ const __CameraRollAction: FunctionOf<LineComponent<
   PartSegment<any>
 >> = function CameraRollAction(node, path) {
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'cameraRoll',
       label: node.props.label,
     }),
@@ -283,7 +283,7 @@ const __LocationAction: FunctionOf<LineComponent<
   PartSegment<any>
 >> = function LocationAction(node, path) {
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       type: 'location',
       label: node.props.label,
     }),

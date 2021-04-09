@@ -2,11 +2,11 @@ import Machinat from '@machinat/core';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
 import {
   annotateNativeComponent,
-  textSegment,
-  breakSegment,
-  partSegment,
-  unitSegment,
-  pauseSegment,
+  makeTextSegment,
+  makeBreakSegment,
+  makePartSegment,
+  makeUnitSegment,
+  makePauseSegment,
 } from '../componentHelper';
 
 describe('asNativeConponent(platform)(componentFn)', () => {
@@ -21,8 +21,8 @@ describe('asNativeConponent(platform)(componentFn)', () => {
   });
 });
 
-test('textSegment(node, path, text)', () => {
-  expect(textSegment(<hello />, '$::1', 'world')).toEqual({
+test('makeTextSegment(node, path, text)', () => {
+  expect(makeTextSegment(<hello />, '$::1', 'world')).toEqual({
     type: 'text',
     node: <hello />,
     value: 'world',
@@ -30,8 +30,8 @@ test('textSegment(node, path, text)', () => {
   });
 });
 
-test('breakSegment(node, path)', () => {
-  expect(breakSegment(<hello world />, '$::1')).toEqual({
+test('makeBreakSegment(node, path)', () => {
+  expect(makeBreakSegment(<hello world />, '$::1')).toEqual({
     type: 'break',
     node: <hello world />,
     value: null,
@@ -39,8 +39,8 @@ test('breakSegment(node, path)', () => {
   });
 });
 
-test('pauseSegment(node, path, until)', () => {
-  expect(pauseSegment(<hello />, '$::1')).toEqual({
+test('makePauseSegment(node, path, until)', () => {
+  expect(makePauseSegment(<hello />, '$::1')).toEqual({
     type: 'pause',
     node: <hello />,
     value: null,
@@ -48,7 +48,7 @@ test('pauseSegment(node, path, until)', () => {
   });
 
   const until = async () => 'the_end_of_the_world';
-  expect(pauseSegment(<hello />, '$::1', until)).toEqual({
+  expect(makePauseSegment(<hello />, '$::1', until)).toEqual({
     type: 'pause',
     node: <hello />,
     value: until,
@@ -56,8 +56,8 @@ test('pauseSegment(node, path, until)', () => {
   });
 });
 
-test('partSegment(node, path, value)', () => {
-  expect(partSegment(<hello />, '$::1', { world: 'peace' })).toEqual({
+test('makePartSegment(node, path, value)', () => {
+  expect(makePartSegment(<hello />, '$::1', { world: 'peace' })).toEqual({
     type: 'part',
     node: <hello />,
     value: { world: 'peace' },
@@ -65,8 +65,8 @@ test('partSegment(node, path, value)', () => {
   });
 });
 
-test('unitSegment(node, path, value)', () => {
-  expect(unitSegment(<hello />, '$::1', { world: 'champion' })).toEqual({
+test('makeUnitSegment(node, path, value)', () => {
+  expect(makeUnitSegment(<hello />, '$::1', { world: 'champion' })).toEqual({
     type: 'unit',
     node: <hello />,
     value: { world: 'champion' },

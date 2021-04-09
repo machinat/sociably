@@ -1,5 +1,4 @@
-/** @internal */ /** */
-import { unitSegment, textSegment } from '@machinat/core/renderer';
+import { makeUnitSegment, makeTextSegment } from '@machinat/core/renderer';
 import type { UnitSegment } from '@machinat/core/renderer/types';
 import formatNode from '@machinat/core/utils/formatNode';
 import type { LineSegmentValue } from '../types';
@@ -32,7 +31,7 @@ const p = async (node, path, render) => {
   return segments;
 };
 
-const br = (node, path) => [textSegment(node, path, '\n')];
+const br = (node, path) => [makeTextSegment(node, path, '\n')];
 
 const plainText = async (node, path, render) => {
   const contentSegments = await render(node.props.children, '.children');
@@ -50,11 +49,11 @@ const plainText = async (node, path, render) => {
     }
   }
 
-  return [textSegment(node, path, contentSegments[0].value)];
+  return [makeTextSegment(node, path, contentSegments[0].value)];
 };
 
 const media = (node, path) => [
-  unitSegment(node, path, {
+  makeUnitSegment(node, path, {
     type: 'text',
     text: node.props.src || '',
   }),

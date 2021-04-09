@@ -1,5 +1,5 @@
 import { MachinatNode } from '@machinat/core/types';
-import { unitSegment, partSegment } from '@machinat/core/renderer';
+import { makeUnitSegment, makePartSegment } from '@machinat/core/renderer';
 import { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
@@ -21,7 +21,7 @@ const __Image: FunctionOf<LineComponent<ImageProps>> = function Image(
 ) {
   const { originalContentUrl, previewImageUrl } = node.props;
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       type: 'image' as const,
       originalContentUrl,
       previewImageUrl,
@@ -59,7 +59,7 @@ const __Sticker: FunctionOf<LineComponent<StickerProps>> = function Sticker(
 ) {
   const { stickerId, packageId } = node.props;
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       type: 'sticker' as const,
       packageId,
       stickerId,
@@ -111,7 +111,7 @@ const __ImageMapArea: FunctionOf<LineComponent<
   const actionValue = actionSegments?.[0].value;
 
   return [
-    partSegment(
+    makePartSegment(
       node,
       path,
       actionValue.type === 'uri'
@@ -196,7 +196,7 @@ const __ImageMapVideoArea: FunctionOf<LineComponent<
   const actionValue = actionSegments?.[0].value;
 
   return [
-    partSegment(node, path, {
+    makePartSegment(node, path, {
       originalContentUrl,
       previewImageUrl,
       area: {
@@ -256,7 +256,7 @@ const __ImageMap: FunctionOf<LineComponent<
   const actionValues = actionSegments?.map((segment) => segment.value);
 
   return [
-    unitSegment(node, path, {
+    makeUnitSegment(node, path, {
       type: 'imagemap' as const,
       baseUrl,
       altText,

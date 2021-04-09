@@ -1,7 +1,7 @@
 /** @internal */ /** */
 import invariant from 'invariant';
 import formatNode from '@machinat/core/utils/formatNode';
-import { textSegment, unitSegment } from '@machinat/core/renderer';
+import { makeTextSegment, makeUnitSegment } from '@machinat/core/renderer';
 import type { UnitSegment } from '@machinat/core/renderer/types';
 import type { MessageValue } from '../types';
 
@@ -32,7 +32,7 @@ const p = async (node, path, render) => {
   return segments;
 };
 
-const br = (node, path) => [textSegment(node, path, '\n')];
+const br = (node, path) => [makeTextSegment(node, path, '\n')];
 
 const transormText = (transformer) => async (node, path, render) => {
   const childrenSegments = await render(node.props.children);
@@ -50,7 +50,7 @@ const transormText = (transformer) => async (node, path, render) => {
     }
   }
 
-  return [textSegment(node, path, transformer(childrenSegments[0].value))];
+  return [makeTextSegment(node, path, transformer(childrenSegments[0].value))];
 };
 
 const b = transormText((v) => `*${v}*`);
@@ -66,7 +66,7 @@ const code = transormText((v) => `\`${v}\``);
 const pre = transormText((v) => `\`\`\`\n${v}\n\`\`\``);
 
 const generalMediaFactory = (type) => (node, path) => [
-  unitSegment(node, path, {
+  makeUnitSegment(node, path, {
     message: {
       attachment: {
         type,
