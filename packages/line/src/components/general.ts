@@ -1,39 +1,34 @@
-import { makeUnitSegment, makeTextSegment } from '@machinat/core/renderer';
-import type { UnitSegment } from '@machinat/core/renderer/types';
+import {
+  makeUnitSegment,
+  makeTextSegment,
+  makeBreakSegment,
+} from '@machinat/core/renderer';
 import formatNode from '@machinat/core/utils/formatNode';
-import type { LineSegmentValue } from '../types';
 
 const p = async (node, path, render) => {
-  const contentRendered = await render(node.props.children, '.children');
-  if (contentRendered === null) {
+  const contentSegments = await render(node.props.children, '.children');
+  if (contentSegments === null) {
     return null;
   }
 
-  const segments: UnitSegment<LineSegmentValue>[] = [];
-
-  for (const segment of contentRendered) {
-    if (segment.type === 'text') {
-      segments.push({
-        type: 'unit',
-        value: { type: 'text', text: segment.value },
-        node,
-        path,
-      });
-    } else {
+  for (const segment of contentSegments) {
+    if (segment.type !== 'text') {
       throw new TypeError(
-        `non-textual node ${formatNode(
-          segment.node
-        )} received, only textual node and <br/> allowed`
+        `non-textual node ${formatNode(segment.node)} is placed in <p/>`
       );
     }
   }
 
-  return segments;
+  return [
+    makeBreakSegment(node, path),
+    makeTextSegment(node, path, contentSegments[0].value),
+    makeBreakSegment(node, path),
+  ];
 };
 
 const br = (node, path) => [makeTextSegment(node, path, '\n')];
 
-const plainText = async (node, path, render) => {
+const plainText = (tag) => async (node, path, render) => {
   const contentSegments = await render(node.props.children, '.children');
   if (!contentSegments) {
     return null;
@@ -42,9 +37,7 @@ const plainText = async (node, path, render) => {
   for (const segment of contentSegments) {
     if (segment.type !== 'text') {
       throw new TypeError(
-        `non-textual node ${formatNode(
-          segment.node
-        )} received, only textual nodes allowed`
+        `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`
       );
     }
   }
@@ -62,12 +55,12 @@ const media = (node, path) => [
 const generalComponents = {
   p,
   br,
-  b: plainText,
-  i: plainText,
-  s: plainText,
-  u: plainText,
-  code: plainText,
-  pre: plainText,
+  b: plainText('b'),
+  i: plainText('i'),
+  s: plainText('s'),
+  u: plainText('u'),
+  code: plainText('code'),
+  pre: plainText('pre'),
   img: media,
   video: media,
   audio: media,

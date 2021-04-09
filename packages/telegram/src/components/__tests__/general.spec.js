@@ -21,13 +21,7 @@ test('render shallow elements match snapshot', async () => {
   expect(results).toMatchSnapshot();
   expect(results.flat().map((seg) => seg.value)).toMatchInlineSnapshot(`
     Array [
-      Object {
-        "method": "sendMessage",
-        "parameters": Object {
-          "parse_mode": "HTML",
-          "text": "abc",
-        },
-      },
+      "abc",
       "<b>important</b>",
       "<i>italic</i>",
       "<s>nooooo</s>",
@@ -61,46 +55,30 @@ test('render nested elements match snapshot', async () => {
   expect(segments).toMatchSnapshot();
   expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
     Array [
-      Object {
-        "method": "sendMessage",
-        "parameters": Object {
-          "parse_mode": "HTML",
-          "text": "Mic test <code>Hello, <b>Luke Skywalker!</b></code>
+      "Mic test <code>Hello, <b>Luke Skywalker!</b></code>
     You know what?
     <i><u>I'm your</u> <s>FATHER</s> <code>droid</code>.</i>
 
     <pre>May the force be with you!</pre> Test over",
-        },
-      },
     ]
   `);
 });
 
-test('<p/> hoist textual children into text message object', async () => {
+test('<p/> renders into individual text segment', async () => {
   const segments = await renderer.render(
-    <p>
-      foo
-      <br />
+    <>
+      <p>foo</p>
       bar
-      <br />
-      <br />
-      baz
-    </p>
+      <p>baz</p>
+    </>
   );
 
   expect(segments).toMatchSnapshot();
   expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
     Array [
-      Object {
-        "method": "sendMessage",
-        "parameters": Object {
-          "parse_mode": "HTML",
-          "text": "foo
-    bar
-
-    baz",
-        },
-      },
+      "foo",
+      "bar",
+      "baz",
     ]
   `);
 });
@@ -117,22 +95,38 @@ test('throw if non-texual value received', async () => {
   await expect(
     renderer.render(<p>{children}</p>)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> received, only textual nodes and <br/> allowed"`
+    `"non-textual node <img /> is placed in <p/>"`
   );
-
-  for (const node of [
-    <b>{children}</b>,
-    <i>{children}</i>,
-    <s>{children}</s>,
-    <u>{children}</u>,
-    <code>{children}</code>,
-    <pre>{children}</pre>,
-  ]) {
-    // eslint-disable-next-line no-await-in-loop
-    await expect(renderer.render(node)).rejects.toThrow(
-      'non-textual node <img /> received, only textual nodes allowed'
-    );
-  }
+  await expect(
+    renderer.render(<b>{children}</b>)
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"non-textual node <img /> is placed in <b/>"`
+  );
+  await expect(
+    renderer.render(<i>{children}</i>)
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"non-textual node <img /> is placed in <i/>"`
+  );
+  await expect(
+    renderer.render(<s>{children}</s>)
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"non-textual node <img /> is placed in <s/>"`
+  );
+  await expect(
+    renderer.render(<u>{children}</u>)
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"non-textual node <img /> is placed in <u/>"`
+  );
+  await expect(
+    renderer.render(<code>{children}</code>)
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"non-textual node <img /> is placed in <code/>"`
+  );
+  await expect(
+    renderer.render(<pre>{children}</pre>)
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"non-textual node <img /> is placed in <pre/>"`
+  );
 });
 
 test('render null if content is empty', async () => {

@@ -1,5 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`<p/> <p/> renders into individual text segment 1`] = `
+Array [
+  Object {
+    "node": <p>
+      foo
+    </p>,
+    "path": "$::0",
+    "type": "text",
+    "value": "foo",
+  },
+  Object {
+    "node": "bar",
+    "path": "$::1",
+    "type": "text",
+    "value": "bar",
+  },
+  Object {
+    "node": <p>
+      baz
+    </p>,
+    "path": "$::2",
+    "type": "text",
+    "value": "baz",
+  },
+]
+`;
+
 exports[`text components render nested elements 1`] = `
 Array [
   Object {
@@ -36,14 +63,11 @@ Array [
        Bye!
     </p>,
     "path": "$",
-    "type": "unit",
-    "value": Object {
-      "text": "123 Hello, R2D2!
+    "type": "text",
+    "value": "123 Hello, R2D2!
 You know what?
 I'm your FATHER creator.
 May the force be with you! Bye!",
-      "type": "text",
-    },
   },
 ]
 `;

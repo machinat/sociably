@@ -1,9 +1,11 @@
 /** @internal */ /** */
 import invariant from 'invariant';
 import formatNode from '@machinat/core/utils/formatNode';
-import { makeTextSegment, makeUnitSegment } from '@machinat/core/renderer';
-import type { UnitSegment } from '@machinat/core/renderer/types';
-import type { TelegramSegmentValue } from '../types';
+import {
+  makeTextSegment,
+  makeUnitSegment,
+  makeBreakSegment,
+} from '@machinat/core/renderer';
 
 const p = async (node, path, render) => {
   const childrenSegments = await render(node.props.children);
@@ -11,37 +13,24 @@ const p = async (node, path, render) => {
     return null;
   }
 
-  const segments: UnitSegment<TelegramSegmentValue>[] = [];
-
   for (const segment of childrenSegments) {
-    if (segment.type === 'text') {
-      segments.push({
-        type: 'unit',
-        value: {
-          method: 'sendMessage',
-          parameters: {
-            text: segment.value,
-            parse_mode: 'HTML',
-          },
-        },
-        node,
-        path,
-      });
-    } else {
+    if (!segment || segment.type !== 'text') {
       throw new TypeError(
-        `non-textual node ${formatNode(
-          segment.node
-        )} received, only textual nodes and <br/> allowed`
+        `non-textual node ${formatNode(segment.node)} is placed in <p/>`
       );
     }
   }
 
-  return segments;
+  return [
+    makeBreakSegment(node, path),
+    makeTextSegment(node, path, childrenSegments[0].value),
+    makeBreakSegment(node, path),
+  ];
 };
 
 const br = (node, path) => [makeTextSegment(node, path, '\n')];
 
-const transormText = (transformer) => async (node, path, render) => {
+const transormText = (tag, transformer) => async (node, path, render) => {
   const childrenSegments = await render(node.props.children);
   if (!childrenSegments) {
     return null;
@@ -50,9 +39,7 @@ const transormText = (transformer) => async (node, path, render) => {
   for (const segment of childrenSegments) {
     if (segment.type !== 'text') {
       throw new TypeError(
-        `non-textual node ${formatNode(
-          segment.node
-        )} received, only textual nodes allowed`
+        `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`
       );
     }
   }
@@ -60,17 +47,17 @@ const transormText = (transformer) => async (node, path, render) => {
   return [makeTextSegment(node, path, transformer(childrenSegments[0].value))];
 };
 
-const b = transormText((v) => `<b>${v}</b>`);
+const b = transormText('b', (v) => `<b>${v}</b>`);
 
-const i = transormText((v) => `<i>${v}</i>`);
+const i = transormText('i', (v) => `<i>${v}</i>`);
 
-const s = transormText((v) => `<s>${v}</s>`);
+const s = transormText('s', (v) => `<s>${v}</s>`);
 
-const u = transormText((v) => `<u>${v}</u>`);
+const u = transormText('u', (v) => `<u>${v}</u>`);
 
-const code = transormText((v) => `<code>${v}</code>`);
+const code = transormText('code', (v) => `<code>${v}</code>`);
 
-const pre = transormText((v) => `<pre>${v}</pre>`);
+const pre = transormText('pre', (v) => `<pre>${v}</pre>`);
 
 const generalMediaFactory = (type, method) => (node, path) => [
   makeUnitSegment(node, path, {

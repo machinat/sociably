@@ -1,28 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<p/> hoist textual children into text message object 1`] = `
+exports[`<p/> renders into individual text segment 1`] = `
 Array [
   Object {
     "node": <p>
       foo
-      <br />
-      bar
-      <br />
-      <br />
+    </p>,
+    "path": "$::0",
+    "type": "text",
+    "value": "foo",
+  },
+  Object {
+    "node": "bar",
+    "path": "$::1",
+    "type": "text",
+    "value": "bar",
+  },
+  Object {
+    "node": <p>
       baz
     </p>,
-    "path": "$",
-    "type": "unit",
-    "value": Object {
-      "method": "sendMessage",
-      "parameters": Object {
-        "parse_mode": "HTML",
-        "text": "foo
-bar
-
-baz",
-      },
-    },
+    "path": "$::2",
+    "type": "text",
+    "value": "baz",
   },
 ]
 `;
@@ -129,18 +129,12 @@ Array [
        Test over
     </p>,
     "path": "$",
-    "type": "unit",
-    "value": Object {
-      "method": "sendMessage",
-      "parameters": Object {
-        "parse_mode": "HTML",
-        "text": "Mic test <code>Hello, <b>Luke Skywalker!</b></code>
+    "type": "text",
+    "value": "Mic test <code>Hello, <b>Luke Skywalker!</b></code>
 You know what?
 <i><u>I'm your</u> <s>FATHER</s> <code>droid</code>.</i>
 
 <pre>May the force be with you!</pre> Test over",
-      },
-    },
   },
 ]
 `;
@@ -153,14 +147,8 @@ Array [
         abc
       </p>,
       "path": "$",
-      "type": "unit",
-      "value": Object {
-        "method": "sendMessage",
-        "parameters": Object {
-          "parse_mode": "HTML",
-          "text": "abc",
-        },
-      },
+      "type": "text",
+      "value": "abc",
     },
   ],
   Array [

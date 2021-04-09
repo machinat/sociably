@@ -1,26 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<p/> hoist textual children into text message object 1`] = `
+exports[`<p/> renders into individual text segment 1`] = `
 Array [
   Object {
     "node": <p>
       foo
-      <br />
-      bar
-      <br />
-      <br />
+    </p>,
+    "path": "$::0",
+    "type": "text",
+    "value": "foo",
+  },
+  Object {
+    "node": "bar",
+    "path": "$::1",
+    "type": "text",
+    "value": "bar",
+  },
+  Object {
+    "node": <p>
       baz
     </p>,
-    "path": "$",
-    "type": "unit",
-    "value": Object {
-      "message": Object {
-        "text": "foo
-bar
-
-baz",
-      },
-    },
+    "path": "$::2",
+    "type": "text",
+    "value": "baz",
   },
 ]
 `;
@@ -135,18 +137,14 @@ Array [
        Test over
     </p>,
     "path": "$",
-    "type": "unit",
-    "value": Object {
-      "message": Object {
-        "text": "Mic test \`Hello, *Luke Skywalker!*\`
+    "type": "text",
+    "value": "Mic test \`Hello, *Luke Skywalker!*\`
 You know what?
 _I'm your ~FATHER~ \`droid\`._
 
 \`\`\`
 May the force be with you!
 \`\`\` Test over",
-      },
-    },
   },
 ]
 `;
@@ -159,12 +157,8 @@ Array [
         abc
       </p>,
       "path": "$",
-      "type": "unit",
-      "value": Object {
-        "message": Object {
-          "text": "abc",
-        },
-      },
+      "type": "text",
+      "value": "abc",
     },
   ],
   Array [
