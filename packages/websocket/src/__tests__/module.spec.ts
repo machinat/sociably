@@ -165,4 +165,18 @@ describe('initModule()', () => {
 
     expect(fakeBot.start.mock).toHaveBeenCalledTimes(1);
   });
+
+  test('stopHook() calls bot.stop()', async () => {
+    const fakeBot = moxy({ start: async () => {}, stop: async () => {} });
+
+    const app = Machinat.createApp({
+      platforms: [WebSocket.initModule()],
+      services: [{ provide: WebSocket.Bot, withValue: fakeBot }],
+    });
+    await app.start();
+    expect(fakeBot.stop.mock).not.toHaveBeenCalled();
+
+    await app.stop();
+    expect(fakeBot.stop.mock).toHaveBeenCalledTimes(1);
+  });
 });

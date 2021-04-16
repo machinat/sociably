@@ -101,87 +101,79 @@ export class HttpConnector {
   }
 
   async connect(server: ServerI, options?: ServerListenOptions): Promise<void> {
-    server.addListener('request', this.makeRequestCallback());
+    server.addListener('request', this._handleRequestCallback);
     if (this._upgradeRoutes.length > 0) {
-      server.addListener('upgrade', this.makeUpgradeCallback());
+      server.addListener('upgrade', this._handleUpgradeCallback);
     }
 
     await thenifiedly.callMethod('listen', server, options || {});
   }
 
-  makeRequestCallback(): (req: IncomingMessage, res: ServerResponse) => void {
-    const requestRoutes = [...this._requestRoutes];
+  private _handleRequestCallback = this.handleRequest.bind(this);
 
-    return (req: IncomingMessage, res: ServerResponse) => {
-      const { pathname } = parseUrl(req.url as string);
-      if (!pathname) {
-        endRes(res, 400);
+  handleRequest(req: IncomingMessage, res: ServerResponse): void {
+    const { pathname } = parseUrl(req.url as string);
+    if (!pathname) {
+      endRes(res, 400);
+      return;
+    }
+
+    for (const { path: routePath, handler } of this._requestRoutes) {
+      const trailingPath = getTrailingPath(routePath, pathname);
+
+      if (trailingPath !== undefined) {
+        handler(req, res, {
+          originalPath: pathname,
+          matchedPath: routePath,
+          trailingPath,
+        });
         return;
       }
+    }
 
-      for (const { path: routePath, handler } of requestRoutes) {
-        const trailingPath = getTrailingPath(routePath, pathname);
+    if (!this._defaultRequestRoute) {
+      endRes(res, 404);
+      return;
+    }
 
-        if (trailingPath !== undefined) {
-          handler(req, res, {
-            originalPath: pathname,
-            matchedPath: routePath,
-            trailingPath,
-          });
-          return;
-        }
-      }
-
-      if (!this._defaultRequestRoute) {
-        endRes(res, 404);
-        return;
-      }
-
-      this._defaultRequestRoute.handler(req, res, {
-        originalPath: pathname,
-        matchedPath: undefined,
-        trailingPath: undefined,
-      });
-    };
+    this._defaultRequestRoute.handler(req, res, {
+      originalPath: pathname,
+      matchedPath: undefined,
+      trailingPath: undefined,
+    });
   }
 
-  makeUpgradeCallback(): (
-    req: IncomingMessage,
-    socket: Socket,
-    head: Buffer
-  ) => void {
-    const upgradeRoutes = [...this._upgradeRoutes];
+  private _handleUpgradeCallback = this.handleUpgrade.bind(this);
 
-    return (req: IncomingMessage, socket: Socket, head: Buffer) => {
-      const { pathname } = parseUrl(req.url as string);
-      if (!pathname) {
-        respondUpgrade(socket, 403);
+  handleUpgrade(req: IncomingMessage, socket: Socket, head: Buffer): void {
+    const { pathname } = parseUrl(req.url as string);
+    if (!pathname) {
+      respondUpgrade(socket, 403);
+      return;
+    }
+
+    for (const { path: routePath, handler } of this._upgradeRoutes) {
+      const trailingPath = getTrailingPath(routePath, pathname);
+      if (trailingPath !== undefined) {
+        handler(req, socket, head, {
+          originalPath: pathname,
+          matchedPath: routePath,
+          trailingPath,
+        });
         return;
       }
+    }
 
-      for (const { path: routePath, handler } of upgradeRoutes) {
-        const trailingPath = getTrailingPath(routePath, pathname);
-        if (trailingPath !== undefined) {
-          handler(req, socket, head, {
-            originalPath: pathname,
-            matchedPath: routePath,
-            trailingPath,
-          });
-          return;
-        }
-      }
+    if (!this._defaultUpgradeRoute) {
+      respondUpgrade(socket, 404);
+      return;
+    }
 
-      if (!this._defaultUpgradeRoute) {
-        respondUpgrade(socket, 404);
-        return;
-      }
-
-      this._defaultUpgradeRoute.handler(req, socket, head, {
-        originalPath: pathname,
-        matchedPath: undefined,
-        trailingPath: undefined,
-      });
-    };
+    this._defaultUpgradeRoute.handler(req, socket, head, {
+      originalPath: pathname,
+      matchedPath: undefined,
+      trailingPath: undefined,
+    });
   }
 }
 

@@ -146,6 +146,18 @@ export default class MachinatApp<
     this._status = ENUM_STARTED;
   }
 
+  async stop(): Promise<void> {
+    const { platforms, modules } = this.config;
+    const stopHooks = [...(platforms || []), ...(modules || [])]
+      .map((m) => m.stopHook)
+      .filter(
+        (hook): hook is ServiceContainer<Promise<void>, unknown[]> => !!hook
+      );
+
+    const stopScope = this._serviceSpace.createScope();
+    await Promise.all(stopHooks.map((hook) => stopScope.injectContainer(hook)));
+  }
+
   useServices<Deps extends readonly ServiceDependency<any>[]>(
     dependencies: Deps
   ): ResolveDependencies<Deps> {

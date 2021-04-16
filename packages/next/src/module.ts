@@ -45,9 +45,9 @@ namespace Next {
       { provide: Http.RequestRouteList, withProvider: routingFactory },
     ],
 
-    startHook: makeContainer({
-      deps: [ReceiverP],
-    })((receiver) => receiver.prepare()),
+    startHook: makeContainer({ deps: [ReceiverP] })((receiver) =>
+      receiver.prepare()
+    ),
   });
 }
 

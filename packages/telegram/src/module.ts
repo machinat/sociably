@@ -105,9 +105,12 @@ namespace Telegram {
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions,
 
-      startHook: makeContainer({
-        deps: [BotP],
-      })(async (bot: BotP) => bot.start()),
+      startHook: makeContainer({ deps: [BotP] })(async (bot: BotP) =>
+        bot.start()
+      ),
+      stopHook: makeContainer({ deps: [BotP] })(async (bot: BotP) =>
+        bot.stop()
+      ),
     };
   };
 }

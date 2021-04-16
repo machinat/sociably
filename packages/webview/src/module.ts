@@ -197,11 +197,14 @@ namespace Webview {
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions,
 
-      startHook: makeContainer({
-        deps: [BotP, NextReceiverP] as const,
-      })(async (bot, nextReceiver) => {
-        await Promise.all([bot.start(), nextReceiver.prepare()]);
-      }),
+      startHook: makeContainer({ deps: [BotP, NextReceiverP] as const })(
+        async (bot, nextReceiver) => {
+          await Promise.all([bot.start(), nextReceiver.prepare()]);
+        }
+      ),
+      stopHook: makeContainer({ deps: [BotP] as const })(async (bot) =>
+        bot.stop()
+      ),
     };
   };
 }

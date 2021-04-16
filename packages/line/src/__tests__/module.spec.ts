@@ -184,4 +184,17 @@ describe('initModule(configs)', () => {
     await expect((module.startHook as any)(bot)).resolves.toBe(undefined);
     expect(bot.start.mock).toHaveBeenCalledTimes(1);
   });
+
+  test('#stopHook() stop bot', async () => {
+    const bot = moxy({ stop: async () => {} });
+    const module = Line.initModule({
+      providerId: '_PROVIDER_ID_',
+      channelId: '_BOT_CHANNEL_ID_',
+      accessToken: '_ACCESS_TOKEN_',
+      shouldValidateRequest: false,
+    });
+
+    await expect((module.stopHook as any)(bot)).resolves.toBe(undefined);
+    expect(bot.stop.mock).toHaveBeenCalledTimes(1);
+  });
 });

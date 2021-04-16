@@ -126,10 +126,11 @@ namespace WebSocket {
         { provide: BaseMarshaler.TypeList, withValue: WebSocketTopicChannel },
       ],
 
-      startHook: makeContainer({
-        deps: [BotP] as const,
-      })(async (bot) => {
+      startHook: makeContainer({ deps: [BotP] as const })(async (bot) => {
         await bot.start();
+      }),
+      stopHook: makeContainer({ deps: [BotP] as const })(async (bot) => {
+        await bot.stop();
       }),
     };
   };

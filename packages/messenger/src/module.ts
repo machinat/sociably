@@ -94,9 +94,12 @@ namespace Messenger {
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions,
 
-      startHook: makeContainer({
-        deps: [BotP] as const,
-      })(async (bot: BotP) => bot.start()),
+      startHook: makeContainer({ deps: [BotP] as const })(async (bot: BotP) =>
+        bot.start()
+      ),
+      stopHook: makeContainer({ deps: [BotP] as const })(async (bot: BotP) =>
+        bot.stop()
+      ),
     };
   };
 }

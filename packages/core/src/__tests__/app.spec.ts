@@ -1,4 +1,4 @@
-import { factory as moxyFactory } from '@moxyjs/moxy';
+import { factory as moxyFactory, Moxy } from '@moxyjs/moxy';
 import {
   makeContainer,
   makeClassProvider,
@@ -25,7 +25,7 @@ const TestService = moxy(
   })(class TestService {})
 );
 
-const TestModule = {
+const TestModule = moxy({
   provisions: [
     TestService,
     makeFactoryProvider({
@@ -33,8 +33,9 @@ const TestModule = {
       deps: [ModuleUtilitiesI],
     })(useModuleUtils),
   ],
-  startHook: moxy(makeContainer({ deps: [TestService] })(async () => {})),
-};
+  startHook: makeContainer({ deps: [TestService] })(async () => {}),
+  stopHook: makeContainer({ deps: [TestService] })(async () => {}),
+});
 
 const AnotherService = moxy(
   makeClassProvider({
@@ -43,14 +44,15 @@ const AnotherService = moxy(
   })(class AnotherService {})
 );
 
-const AnotherModule = {
+const AnotherModule = moxy({
   provisions: [AnotherService],
-  startHook: moxy(
-    makeContainer({
-      deps: [TestService, AnotherService],
-    })(async () => {})
-  ),
-};
+  startHook: makeContainer({
+    deps: [TestService, AnotherService],
+  })(async () => {}),
+  stopHook: makeContainer({
+    deps: [TestService, AnotherService],
+  })(async () => {}),
+});
 
 const FooService = moxy(
   makeClassProvider({
@@ -75,6 +77,9 @@ const FooPlatform = moxy({
   startHook: makeContainer({
     deps: [TestService, AnotherService, FooService],
   })(async () => {}),
+  stopHook: makeContainer({
+    deps: [TestService, AnotherService, FooService],
+  })(async () => {}),
   eventMiddlewares: [
     (ctx, next) => next(ctx),
     (ctx, next) => next(ctx),
@@ -97,7 +102,7 @@ const BarService = moxy(
 const AnotherPlatformUtilsI = makeInterface({ name: 'AnotherPlatformUtils' });
 const useAnotherPlatformUtils = moxy(() => ({}));
 
-const BarPlatform = {
+const BarPlatform = moxy({
   name: 'bar',
   utilitiesInterface: AnotherPlatformUtilsI,
   provisions: [
@@ -107,12 +112,13 @@ const BarPlatform = {
       lifetime: 'singleton',
     })(useAnotherPlatformUtils),
   ],
-  startHook: moxy(
-    makeContainer({
-      deps: [TestService, AnotherService, BarService],
-    })(async () => {})
-  ),
-};
+  startHook: makeContainer({
+    deps: [TestService, AnotherService, BarService],
+  })(async () => {}),
+  stopHook: makeContainer({
+    deps: [TestService, AnotherService, BarService],
+  })(async () => {}),
+});
 
 const MyService = moxy(
   makeClassProvider({
@@ -130,13 +136,13 @@ const YourService = moxy(
 
 beforeEach(() => {
   TestService.mock.reset();
-  TestModule.startHook.mock.reset();
+  TestModule.mock.reset();
   AnotherService.mock.reset();
-  AnotherModule.startHook.mock.reset();
+  AnotherModule.mock.reset();
   FooService.mock.reset();
   FooPlatform.mock.reset();
   BarService.mock.reset();
-  BarPlatform.startHook.mock.reset();
+  BarPlatform.mock.reset();
   MyService.mock.reset();
   YourService.mock.reset();
 
@@ -157,20 +163,23 @@ it('start modules', async () => {
   // trasient service created when boostrap and each time module startHook injected
   expect(TestService.$$factory.mock).toHaveBeenCalledTimes(5);
   expect(TestService.$$factory.mock).toHaveBeenCalledWith(/* empty */);
-  expect(TestModule.startHook.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(TestModule.startHook.$$factory.mock).toHaveBeenCalledWith(
-    expect.any(TestService)
-  );
+  expect(
+    (TestModule.startHook.$$factory as Moxy<() => unknown>).mock
+  ).toHaveBeenCalledTimes(1);
+  expect(
+    (TestModule.startHook.$$factory as Moxy<() => unknown>).mock
+  ).toHaveBeenCalledWith(expect.any(TestService));
 
   expect(AnotherService.$$factory.mock).toHaveBeenCalledTimes(1);
   expect(AnotherService.$$factory.mock).toHaveBeenCalledWith(
     expect.any(TestService)
   );
-  expect(AnotherModule.startHook.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(AnotherModule.startHook.$$factory.mock).toHaveBeenCalledWith(
-    expect.any(TestService),
-    expect.any(AnotherService)
-  );
+  expect(
+    (AnotherModule.startHook.$$factory as Moxy<() => unknown>).mock
+  ).toHaveBeenCalledTimes(1);
+  expect(
+    (AnotherModule.startHook.$$factory as Moxy<() => unknown>).mock
+  ).toHaveBeenCalledWith(expect.any(TestService), expect.any(AnotherService));
 
   expect(FooService.$$factory.mock).toHaveBeenCalledTimes(1);
   expect(FooService.$$factory.mock).toHaveBeenCalledWith(
@@ -189,8 +198,12 @@ it('start modules', async () => {
     expect.any(TestService),
     expect.any(AnotherService)
   );
-  expect(BarPlatform.startHook.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(BarPlatform.startHook.$$factory.mock).toHaveBeenCalledWith(
+  expect(
+    (BarPlatform.startHook.$$factory as Moxy<() => unknown>).mock
+  ).toHaveBeenCalledTimes(1);
+  expect(
+    (BarPlatform.startHook.$$factory as Moxy<() => unknown>).mock
+  ).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
     expect.any(BarService)
@@ -225,6 +238,61 @@ it('provide platform utilities bound to utilitiesInterface', async () => {
     popEventWrapper: expect.any(Function),
     dispatchWrapper: expect.any(Function),
   });
+});
+
+test('#stop() calls stopHook of platfroms & modules', async () => {
+  const app = new App({
+    modules: [TestModule, AnotherModule],
+    platforms: [FooPlatform, BarPlatform],
+    services: [MyService, YourService],
+  });
+
+  await app.start();
+
+  expect(
+    (TestModule.stopHook.$$factory as Moxy<() => unknown>).mock
+  ).not.toHaveBeenCalled();
+  expect(
+    (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock
+  ).not.toHaveBeenCalled();
+  expect(FooPlatform.stopHook.$$factory.mock).not.toHaveBeenCalled();
+  expect(
+    (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock
+  ).not.toHaveBeenCalled();
+
+  await app.stop();
+
+  expect(
+    (TestModule.stopHook.$$factory as Moxy<() => unknown>).mock
+  ).toHaveBeenCalledTimes(1);
+  expect(
+    (TestModule.stopHook.$$factory as Moxy<() => unknown>).mock
+  ).toHaveBeenCalledWith(expect.any(TestService));
+
+  expect(
+    (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock
+  ).toHaveBeenCalledTimes(1);
+  expect(
+    (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock
+  ).toHaveBeenCalledWith(expect.any(TestService), expect.any(AnotherService));
+
+  expect(FooPlatform.stopHook.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(FooPlatform.stopHook.$$factory.mock).toHaveBeenCalledWith(
+    expect.any(TestService),
+    expect.any(AnotherService),
+    expect.any(FooService)
+  );
+
+  expect(
+    (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock
+  ).toHaveBeenCalledTimes(1);
+  expect(
+    (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock
+  ).toHaveBeenCalledWith(
+    expect.any(TestService),
+    expect.any(AnotherService),
+    expect.any(BarService)
+  );
 });
 
 describe('module utilities', () => {

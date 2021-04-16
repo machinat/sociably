@@ -119,3 +119,22 @@ test('startHook throw if error happen when connect', async () => {
 
   await expect(startPromise).rejects.toThrow('connect fail');
 });
+
+test('stopHook quit client', async () => {
+  const app = Machinat.createApp({
+    modules: [
+      RedisState.initModule({
+        clientOptions: { host: 'my.redis.com', port: 23456 },
+      }),
+    ],
+  });
+
+  const client = moxy({ connected: true, quit: () => {} });
+  (redis as Moxy<typeof redis>).createClient.mock.fakeReturnValue(client);
+
+  await app.start();
+  expect(client.quit.mock).not.toHaveBeenCalled();
+
+  await app.stop();
+  expect(client.quit.mock).toHaveBeenCalledTimes(1);
+});

@@ -94,9 +94,12 @@ namespace Line {
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
 
-      startHook: makeContainer({
-        deps: [BotP] as const,
-      })((bot: BotP) => bot.start()),
+      startHook: makeContainer({ deps: [BotP] as const })((bot: BotP) =>
+        bot.start()
+      ),
+      stopHook: makeContainer({ deps: [BotP] as const })((bot: BotP) =>
+        bot.stop()
+      ),
     };
   };
 }

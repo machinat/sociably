@@ -227,6 +227,7 @@ export type DispatchMiddleware<
 export type ServiceModule = {
   provisions: ServiceProvision<unknown>[];
   startHook?: null | ServiceContainer<Promise<void>, unknown[]>;
+  stopHook?: null | ServiceContainer<Promise<void>, unknown[]>;
 };
 
 export type MachinatPlatform<
@@ -242,6 +243,7 @@ export type MachinatPlatform<
   >;
   provisions: ServiceProvision<unknown>[];
   startHook?: ServiceContainer<Promise<void>, unknown[]>;
+  stopHook?: null | ServiceContainer<Promise<void>, unknown[]>;
   eventMiddlewares?: MaybeContainer<EventMiddleware<Context, EventResp>>[];
   dispatchMiddlewares?: MaybeContainer<
     DispatchMiddleware<Job, Frame, Result>

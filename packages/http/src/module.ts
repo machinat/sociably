@@ -1,4 +1,5 @@
 import { createServer } from 'http';
+import thenifiedly from 'thenifiedly';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import { ServiceModule } from '@machinat/core/types';
 import {
@@ -43,6 +44,9 @@ namespace Http {
       deps: [ConnectorP, ServerI, ConfigsI] as const,
     })((connector, server, { listenOptions }) =>
       connector.connect(server, listenOptions)
+    ),
+    stopHook: makeContainer({ deps: [ServerI] as const })((server) =>
+      thenifiedly.callMethod('close', server)
     ),
   });
 }

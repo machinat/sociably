@@ -42,6 +42,9 @@ namespace RedisState {
         });
       }
     }),
+    stopHook: makeContainer({ deps: [ClientI] })(async (client: ClientI) => {
+      client.quit();
+    }),
   });
 }
 

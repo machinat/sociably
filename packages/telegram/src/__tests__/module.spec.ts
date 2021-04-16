@@ -185,4 +185,15 @@ describe('initModule(configs)', () => {
     await expect(startHook(bot)).resolves.toBe(undefined);
     expect(bot.start.mock).toHaveBeenCalledTimes(1);
   });
+
+  test('#stopHook() stop bot', async () => {
+    const bot = moxy({ stop: async () => {} });
+    const module = Telegram.initModule({
+      botToken: '12345:_BOT_TOKEN_',
+    });
+
+    const stopHook = module.stopHook as any;
+    await expect(stopHook(bot)).resolves.toBe(undefined);
+    expect(bot.stop.mock).toHaveBeenCalledTimes(1);
+  });
 });

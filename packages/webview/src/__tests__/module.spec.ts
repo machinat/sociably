@@ -265,3 +265,25 @@ test('startHook', async () => {
   const nextServer = createNextServer.mock.calls[0].result;
   expect(nextServer.prepare.mock).toHaveBeenCalledTimes(1);
 });
+
+test('stopHook', async () => {
+  const fakeBot = moxy({ start: async () => {}, stop: async () => {} });
+
+  const app = Machinat.createApp({
+    platforms: [
+      Webview.initModule({
+        webviewHost: 'machinat.io',
+        authSecret: '_SECRET_',
+      }),
+    ],
+    services: [
+      { provide: Webview.Bot, withValue: fakeBot },
+      { provide: Webview.AuthorizerList, withProvider: NoneAuthorizer },
+    ],
+  });
+  await app.start();
+  expect(fakeBot.stop.mock).not.toHaveBeenCalled();
+
+  await app.stop();
+  expect(fakeBot.stop.mock).toHaveBeenCalledTimes(1);
+});

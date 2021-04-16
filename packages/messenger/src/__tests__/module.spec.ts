@@ -196,4 +196,15 @@ describe('initModule(configs)', () => {
     await expect((module.startHook as any)(bot)).resolves.toBe(undefined);
     expect(bot.start.mock).toHaveBeenCalledTimes(1);
   });
+
+  test('#stopHook() stop bot', async () => {
+    const bot = moxy({ stop: async () => {} });
+    const module = Messenger.initModule({
+      pageId: '_PAGE_ID_',
+      accessToken: '_ACCESS_TOKEN_',
+    });
+
+    await expect((module.stopHook as any)(bot)).resolves.toBe(undefined);
+    expect(bot.stop.mock).toHaveBeenCalledTimes(1);
+  });
 });
