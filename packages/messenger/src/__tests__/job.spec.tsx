@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { UnitSegment, TextSegment } from '@machinat/core/renderer/types';
+import { UnitSegment, TextSegment } from '@machinat/core/renderer';
 import { createChatJobs, createAttachmentJobs } from '../job';
 import MessengerChannel from '../channel';
 import { API_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from '../constant';

@@ -1,15 +1,15 @@
-import Engine from '@machinat/core/engine';
-import Renderer from '@machinat/core/renderer';
-import Queue from '@machinat/core/queue';
-import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
 import type {
   MachinatNode,
   MachinatBot,
   MachinatUser,
   InitScopeFn,
   DispatchWrapper,
-} from '@machinat/core/types';
+} from '@machinat/core';
+import Engine from '@machinat/core/engine';
+import Renderer from '@machinat/core/renderer';
+import Queue from '@machinat/core/queue';
+import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
+import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
 
 import { WEBSOCKET } from './constant';
 import { PlatformUtilitiesI } from './interface';

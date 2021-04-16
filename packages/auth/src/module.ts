@@ -1,13 +1,12 @@
-import type { ServiceModule } from '@machinat/core/types';
+import type { ServiceModule } from '@machinat/core';
 import { makeFactoryProvider } from '@machinat/core/service';
 import Http from '@machinat/http';
-import type { RequestRoute } from '@machinat/http/types';
+import type { RequestRoute } from '@machinat/http';
 
 import { ControllerP } from './controller';
 import { ConfigsI, AuthorizerListI } from './interface';
 import type { AuthConfigs, AnyServerAuthorizer } from './types';
 
-/** @internal */
 const authRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [ControllerP, ConfigsI] as const,

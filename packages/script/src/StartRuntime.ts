@@ -1,4 +1,4 @@
-import type { MachinatChannel } from '@machinat/core/types';
+import type { MachinatChannel } from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
 import ProcessorP from './processor';
 import type { ScriptLibrary, ParamsOfScript } from './types';

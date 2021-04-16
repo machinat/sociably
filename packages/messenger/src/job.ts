@@ -1,9 +1,8 @@
-/** @internal */ /** */
 import invariant from 'invariant';
 import filterSymbolKeys from '@machinat/core/utils/filterSymbolKeys';
 import formatNode from '@machinat/core/utils/formatNode';
 
-import type { DispatchableSegment } from '@machinat/core/engine/types';
+import type { DispatchableSegment } from '@machinat/core/engine';
 import type {
   MessengerSegmentValue,
   MessengerJob,

@@ -1,4 +1,3 @@
-/** @internal */ /** */
 import { annotateNativeComponent } from '@machinat/core/renderer';
 import type {
   MessengerSegmentValue,

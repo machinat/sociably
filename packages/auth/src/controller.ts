@@ -2,7 +2,7 @@ import { parse as parseUrl } from 'url';
 import { relative as getRelativePath, join as joinPath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
-import { HttpRequestInfo, RoutingInfo } from '@machinat/http/types';
+import { HttpRequestInfo, RoutingInfo } from '@machinat/http';
 import invariant from 'invariant';
 import {
   verify as verifyJwt,
@@ -30,14 +30,11 @@ import type {
 import { getCookies, isSubpath, isSubdomain } from './utils';
 import CookieOperator from './cookie';
 
-/** @internal */
-
 const getSignature = (req: WithHeaders) => {
   const cookies = getCookies(req);
   return cookies ? cookies[SIGNATURE_COOKIE_KEY] : undefined;
 };
 
-/** @internal */
 const parseBody = async (req: IncomingMessage): Promise<any> => {
   try {
     const rawBody = await getRawBody(req, { encoding: true });
@@ -49,17 +46,14 @@ const parseBody = async (req: IncomingMessage): Promise<any> => {
   }
 };
 
-/** @ignore */
 const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
 
-/** @internal */
 const respondApiOk = (res: ServerResponse, platform: string, token: string) => {
   res.writeHead(200, CONTENT_TYPE_JSON);
   const body: AuthApiResponseBody = { platform, token };
   res.end(JSON.stringify(body));
 };
 
-/** @internal */
 const respondApiError = (
   res: ServerResponse,
   platform: undefined | string,

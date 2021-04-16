@@ -1,4 +1,3 @@
-/** @internal */ /** */
 import { EventEmitter } from 'events';
 import thenifiedly from 'thenifiedly';
 import type WsSocket from 'ws';

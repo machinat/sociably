@@ -1,4 +1,4 @@
-import type { ServiceModule } from '@machinat/core/types';
+import type { ServiceModule } from '@machinat/core';
 import ProcessorP from './processor';
 import { LibraryListI } from './interface';
 import type { AnyScriptLibrary } from './types';

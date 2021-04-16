@@ -5,7 +5,7 @@ import type {
   ClientAuthorizer,
   AuthorizerCredentialResult,
   ContextResult,
-} from '@machinat/auth/types';
+} from '@machinat/auth';
 import { NoneUser, NoneChannel } from './instance';
 import { NoneAuthData, NoneAuthContext } from './types';
 

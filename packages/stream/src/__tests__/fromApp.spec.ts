@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import { MachinatApp } from '@machinat/core/types';
+import { MachinatApp } from '@machinat/core';
 import {
   isServiceContainer,
   makeContainer,

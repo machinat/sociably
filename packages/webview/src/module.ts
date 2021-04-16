@@ -1,23 +1,26 @@
 import createNextServer from 'next';
+import type { MachinatPlatform } from '@machinat/core';
+import {
+  makeContainer,
+  makeFactoryProvider,
+  ServiceProvision,
+} from '@machinat/core/service';
 import BaseBot from '@machinat/core/base/Bot';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
-import type { MachinatPlatform } from '@machinat/core/types';
-import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
-import { ServiceProvision } from '@machinat/core/service/types';
-import { AnyServerAuthorizer } from '@machinat/auth/types';
+import { AnyServerAuthorizer } from '@machinat/auth';
 import Http from '@machinat/http';
 import type {
   RequestRoute,
   DefaultRequestRoute,
   UpgradeRoute,
-} from '@machinat/http/types';
+} from '@machinat/http';
 import LocalOnlyBroker from '@machinat/websocket/broker/LocalOnlyBroker';
 import createWsServer from '@machinat/websocket/utils/createWsServer';
 import type {
   WebSocketJob,
   WebSocketResult,
   EventValue,
-} from '@machinat/websocket/types';
+} from '@machinat/websocket';
 
 import { WEBVIEW, DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from './constant';
 import {
@@ -46,19 +49,15 @@ import type {
   WebviewConfigs,
 } from './types';
 
-/** @internal */
-
 const nextServerFactory = makeFactoryProvider({
   lifetime: 'singleton',
   deps: [ConfigsI],
 })(({ nextServerOptions }) => createNextServer(nextServerOptions || {}));
 
-/** @internal */
 const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
   createWsServer
 );
 
-/** @internal */
 const webSocketRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [SocketServerP, ConfigsI] as const,
@@ -70,7 +69,6 @@ const webSocketRouteFactory = makeFactoryProvider({
   })
 );
 
-/** @internal */
 const authRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [AuthControllerP, ConfigsI] as const,
@@ -84,7 +82,6 @@ const authRouteFactory = makeFactoryProvider({
   })
 );
 
-/** @internal */
 const nextRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [NextReceiverP, ConfigsI] as const,

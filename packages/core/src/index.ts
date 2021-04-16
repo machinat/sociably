@@ -23,6 +23,8 @@ import type {
   RawProps,
 } from './types';
 
+export * from './types';
+
 /**
  * @category Root
  */

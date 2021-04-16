@@ -1,5 +1,5 @@
+import { MachinatApp } from '@machinat/core';
 import { makeContainer, ServiceScope } from '@machinat/core/service';
-import { MachinatApp } from '@machinat/core/types';
 import Subject from './subject';
 import { EventContextOfApp } from './types';
 

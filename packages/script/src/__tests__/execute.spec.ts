@@ -1,5 +1,4 @@
-import Machinat from '@machinat/core';
-import { ThunkElement } from '@machinat/core/types';
+import Machinat, { ThunkElement } from '@machinat/core';
 import moxy from '@moxyjs/moxy';
 import { makeContainer, ServiceScope } from '@machinat/core/service';
 import execute from '../execute';

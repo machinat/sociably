@@ -1,4 +1,4 @@
-import type { MachinatUser } from '@machinat/core/types';
+import type { MachinatUser } from '@machinat/core';
 import { AnyMarshalType, BaseMarshaler } from '@machinat/core/base/Marshaler';
 import { WebSocketConnection } from '../channel';
 import createEvent from '../utils/createEvent';

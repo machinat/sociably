@@ -1,6 +1,7 @@
 import invariant from 'invariant';
-import ServiceSpace, { isServiceContainer } from './service';
-import type {
+import {
+  ServiceSpace,
+  isServiceContainer,
   ServiceDependency,
   ServiceContainer,
   ServiceScope,
@@ -8,7 +9,7 @@ import type {
   ResolveDependencies,
   MaybeContainer,
   Interfaceable,
-} from './service/types';
+} from './service';
 import type { DispatchFrame } from './engine/types';
 import BaseBotP from './base/Bot';
 import BaseProfilerP from './base/Profiler';
@@ -39,11 +40,8 @@ type AnyPlatformUtilities = PlatformUtilities<
   unknown
 >;
 
-/** @ignore */
 const ENUM_UNSTARTED = 0;
-/** @ignore */
 const ENUM_STARTING = 1;
-/** @ignore */
 const ENUM_STARTED = 2;
 
 export default class MachinatApp<

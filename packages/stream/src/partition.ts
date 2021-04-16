@@ -1,4 +1,4 @@
-import { MaybeContainer } from '@machinat/core/service/types';
+import { MaybeContainer } from '@machinat/core/service';
 import injectMaybe from './injectMaybe';
 import Subject from './subject';
 

@@ -1,4 +1,3 @@
-/** @internal */ /** */
 import type { ServerResponse } from 'http';
 import {
   parse as parseCookie,

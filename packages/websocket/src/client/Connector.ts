@@ -2,7 +2,7 @@
 /// <reference lib="DOM" />
 import { EventEmitter } from 'events';
 import type TypedEmitter from 'typed-emitter';
-import type { MachinatUser } from '@machinat/core/types';
+import type { MachinatUser } from '@machinat/core';
 import type { Marshaler } from '@machinat/core/base/Marshaler';
 import type {
   default as Socket, // eslint-disable-line import/no-named-default

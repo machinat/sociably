@@ -1,9 +1,9 @@
-import { MachinatNode } from '@machinat/core/types';
-import { makeUnitSegment } from '@machinat/core/renderer';
-import type {
+import { MachinatNode } from '@machinat/core';
+import {
+  makeUnitSegment,
   IntermediateSegment,
   FunctionOf,
-} from '@machinat/core/renderer/types';
+} from '@machinat/core/renderer';
 import { annotateTelegramComponent } from '../utils';
 import {
   TelegramComponent,

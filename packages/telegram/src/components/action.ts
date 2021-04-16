@@ -1,5 +1,8 @@
-import { makeUnitSegment } from '@machinat/core/renderer';
-import type { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
+import {
+  makeUnitSegment,
+  UnitSegment,
+  FunctionOf,
+} from '@machinat/core/renderer';
 import { annotateTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,

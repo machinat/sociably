@@ -8,7 +8,6 @@ type MapTraverseContext<Mapped, Payload> = {
   payload: Payload;
 };
 
-/** @internal */
 const mapCallback = <Mapped, Payload>(
   child: MachinatRenderable,
   path: string,

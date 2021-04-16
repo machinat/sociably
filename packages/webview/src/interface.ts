@@ -1,15 +1,18 @@
 import type Ws from 'ws';
-import { makeInterface, makeClassProvider } from '@machinat/core/service';
-import { ServiceProvider } from '@machinat/core/service/types';
+import {
+  makeInterface,
+  makeClassProvider,
+  ServiceProvider,
+} from '@machinat/core/service';
 import Marshaler from '@machinat/core/base/Marshaler';
 import { AuthController } from '@machinat/auth';
 import type {
   AnyServerAuthorizer,
   UserOfAuthorizer,
   ContextOfAuthorizer,
-} from '@machinat/auth/types';
+} from '@machinat/auth';
 import { NextReceiver } from '@machinat/next';
-import type { NextServer } from '@machinat/next/types';
+import type { NextServer } from '@machinat/next';
 import WebSocket, { WebSocketServer } from '@machinat/websocket';
 import { useAuthController, verifyOrigin } from './utils';
 import { DEFAULT_AUTH_PATH } from './constant';

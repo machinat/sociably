@@ -1,9 +1,9 @@
+import type { MachinatPlatform, MachinatUser } from '@machinat/core';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import BaseBot from '@machinat/core/base/Bot';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
-import type { MachinatPlatform, MachinatUser } from '@machinat/core/types';
 import Http from '@machinat/http';
-import type { UpgradeRoute } from '@machinat/http/types';
+import type { UpgradeRoute } from '@machinat/http';
 
 import { WEBSOCKET } from './constant';
 import {
@@ -33,12 +33,10 @@ import type {
   WebSocketConfigs,
 } from './types';
 
-/** @internal */
 const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
   createWsServer
 );
 
-/** @internal */
 const upgradeRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [ConfigsI, ServerP] as const,

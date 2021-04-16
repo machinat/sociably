@@ -17,7 +17,6 @@ export interface EventBase {
   [Symbol.toStringTag]: 'LineEvent';
 }
 
-/** @internal */
 export const EventBase: EventBase = {
   platform: 'line',
 
@@ -44,7 +43,6 @@ export interface Repliable {
   readonly replyToken: string;
 }
 
-/** @internal */
 export const Repliable: Repliable = {
   get replyToken() {
     return this.payload.replyToken;
@@ -59,7 +57,6 @@ export interface Message {
   readonly messageId: string;
 }
 
-/** @internal */
 export const Message: Message = {
   get messageId() {
     return this.payload.message.id;
@@ -85,7 +82,6 @@ export interface Text {
   readonly emojis: undefined | EmojiObject[];
 }
 
-/** @internal */
 export const Text: Text = {
   get text() {
     return this.payload.message.text;
@@ -119,7 +115,6 @@ export interface Media {
   readonly contentProvider: MediaContentProvider;
 }
 
-/** @internal */
 export const Media: Media = {
   get contentProvider() {
     return this.payload.message.contentProvider;
@@ -134,7 +129,6 @@ export interface Playable {
   readonly duration: number;
 }
 
-/** @internal */
 export const Playable: Playable = {
   get duration() {
     return this.payload.message.duration;
@@ -151,7 +145,6 @@ export interface File {
   readonly fileSize: number;
 }
 
-/** @internal */
 export const File: File = {
   get fileName() {
     return this.payload.message.fileName;
@@ -172,7 +165,6 @@ export interface Location {
   readonly longitude: number;
 }
 
-/** @internal */
 export const Location: Location = {
   get title() {
     return this.payload.message.title;
@@ -208,7 +200,6 @@ export interface Sticker {
     | 'PER_STICKER_TEXT';
 }
 
-/** @internal */
 export const Sticker: Sticker = {
   get packageId() {
     return this.payload.message.packageId;
@@ -223,7 +214,6 @@ export const Sticker: Sticker = {
   },
 };
 
-/** @internal */
 export const Unsend: Message = {
   get messageId() {
     return this.payload.unsend.messageId;
@@ -238,14 +228,12 @@ export interface Members {
   readonly members: UserSource[];
 }
 
-/** @internal */
 export const MemberJoined: Members = {
   get members() {
     return this.payload.joined.members;
   },
 };
 
-/** @internal */
 export const MemberLeft: Members = {
   get members() {
     return this.payload.left.members;
@@ -260,7 +248,6 @@ export interface Postback {
   readonly data: string;
 }
 
-/** @internal */
 export const Postback: Postback = {
   get data() {
     return this.payload.postback.data;
@@ -275,7 +262,6 @@ export interface DateParam {
   readonly date: string;
 }
 
-/** @internal */
 export const DateParam: DateParam = {
   get date() {
     return this.payload.postback.params.date;
@@ -290,7 +276,6 @@ export interface TimeParam {
   readonly time: string;
 }
 
-/** @internal */
 export const TimeParam: TimeParam = {
   get time() {
     return this.payload.postback.params.time;
@@ -308,7 +293,6 @@ export interface DatetimeParam {
   readonly datetime: string;
 }
 
-/** @internal */
 export const DatetimeParam: DatetimeParam = {
   get datetime() {
     return this.payload.postback.params.datetime;
@@ -330,7 +314,6 @@ export interface Beacon {
   readonly deviceMessage: string;
 }
 
-/** @internal */
 export const Beacon: Beacon = {
   get hwid() {
     return this.beacon.hwid;
@@ -355,7 +338,6 @@ export interface AccountLink {
   readonly nonce: string;
 }
 
-/** @internal */
 export const AccountLink: AccountLink = {
   get result() {
     return this.payload.link.result;
@@ -374,7 +356,6 @@ export interface DeviceLink {
   readonly deviceId: string;
 }
 
-/** @internal */
 export const DeviceLink: DeviceLink = {
   get deviceId() {
     return this.payload.things.deviceId;
@@ -405,7 +386,6 @@ export interface ThingsScenarioExecution {
   readonly errorReason?: string;
 }
 
-/** @internal */
 export const ThingsScenarioExecution: ThingsScenarioExecution = {
   get scenarioId() {
     return this.payload.things.result.scenarioId;

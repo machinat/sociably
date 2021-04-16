@@ -1,4 +1,4 @@
-import { MachinatNode } from '@machinat/core/types';
+import { MachinatNode } from '@machinat/core';
 
 export type MessageProps = {
   /** Sends the message silently. Users will receive a notification with no sound. */

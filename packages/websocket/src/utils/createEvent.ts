@@ -1,4 +1,4 @@
-import { MachinatUser } from '@machinat/core/types';
+import { MachinatUser } from '@machinat/core';
 import { WebSocketConnection } from '../channel';
 import { WEBSOCKET } from '../constant';
 import { EventInput, WebSocketEvent } from '../types';

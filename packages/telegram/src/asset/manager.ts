@@ -2,7 +2,6 @@ import { makeClassProvider } from '@machinat/core/service';
 import StateControllerI from '@machinat/core/base/StateController';
 import { BotP } from '../bot';
 
-/** @ignore */
 const FILE = 'file';
 
 /**

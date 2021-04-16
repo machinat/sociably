@@ -65,7 +65,6 @@ export class MessengerUserProfile
   }
 }
 
-/** @ignore */
 const DEFAULT_PROFILE_FIELDS = [
   'id',
   'name',

@@ -3,8 +3,8 @@ import type {
   ServerResponse,
   IncomingHttpHeaders,
 } from 'http';
-import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
-import type { RoutingInfo } from '@machinat/http/types';
+import type { MachinatUser, MachinatChannel } from '@machinat/core';
+import type { RoutingInfo } from '@machinat/http';
 import type AuthError from './error';
 
 type TokenBase = {

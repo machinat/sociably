@@ -1,4 +1,4 @@
-import { MachinatUser } from '@machinat/core/types';
+import { MachinatUser } from '@machinat/core';
 import Auth from '@machinat/auth';
 import AuthClient from '@machinat/auth/client';
 import type {
@@ -6,13 +6,13 @@ import type {
   AnyClientAuthorizer,
   ContextOfAuthorizer,
   UserOfAuthorizer,
-} from '@machinat/auth/types';
+} from '@machinat/auth';
 import type {
   EventInput,
   VerifyLoginFn,
   HttpRequestInfo,
   ClientLoginFn,
-} from '@machinat/websocket/types';
+} from '@machinat/websocket';
 import { WEBVIEW } from './constant';
 import { WebviewConnection } from './channel';
 import type { WebviewEvent } from './types';

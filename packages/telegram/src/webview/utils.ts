@@ -1,4 +1,4 @@
-import { ContextSupplement } from '@machinat/auth/types';
+import type { ContextSupplement } from '@machinat/auth';
 import TelegramUser from '../user';
 import { TelegramChat } from '../channel';
 import { TelegramAuthContext, TelegramAuthData } from './types';

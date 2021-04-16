@@ -8,9 +8,8 @@ import type {
   MachinatBot,
 } from '../types';
 import type MachinatRenderer from '../renderer';
-import type MachinatQueue from '../queue';
-import type { JobBatchResponse } from '../queue/types';
-import type { ServiceScope } from '../service/types';
+import MachinatQueue, { JobBatchResponse } from '../queue';
+import type { ServiceScope } from '../service';
 
 import DispatchError from './error';
 import {

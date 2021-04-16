@@ -1,11 +1,12 @@
 import invariant from 'invariant';
-import type { MachinatNode } from '@machinat/core/types';
-import { makeUnitSegment, makePartSegment } from '@machinat/core/renderer';
+import type { MachinatNode } from '@machinat/core';
 import {
+  makeUnitSegment,
+  makePartSegment,
   UnitSegment,
   PartSegment,
   FunctionOf,
-} from '@machinat/core/renderer/types';
+} from '@machinat/core/renderer';
 import formatNode from '@machinat/core/utils/formatNode';
 import { annotateLineComponent } from '../utils';
 import type { LineComponent, FlexSegmentValue } from '../types';
@@ -62,7 +63,6 @@ export type FlexButtonProps = {
   gravity?: FlexGravity;
 };
 
-/** @internal */
 const __FlexButton: FunctionOf<LineComponent<
   FlexButtonProps,
   PartSegment<any>
@@ -127,7 +127,6 @@ export type FlexFillerProps = {
   flex?: number;
 };
 
-/** @internal */
 const __FlexFiller: FunctionOf<LineComponent<
   FlexFillerProps,
   PartSegment<any>
@@ -185,7 +184,6 @@ export type FlexIconProps = {
   aspectRatio?: string;
 };
 
-/** @internal */
 const __FlexIcon: FunctionOf<LineComponent<
   FlexIconProps,
   PartSegment<any>
@@ -278,7 +276,6 @@ export type FlexImageProps = {
   action?: MachinatNode;
 };
 
-/** @internal */
 const __FlexImage: FunctionOf<LineComponent<
   FlexImageProps,
   PartSegment<any>
@@ -349,7 +346,6 @@ export type FlextSeparatorProps = {
   color?: string;
 };
 
-/** @internal */
 const __FlexSeparator: FunctionOf<LineComponent<
   FlextSeparatorProps,
   PartSegment<any>
@@ -382,7 +378,6 @@ export type FlexSpacerProps = {
   size?: FlexSize;
 };
 
-/** @internal */
 const __FlexSpacer: FunctionOf<LineComponent<
   FlexSpacerProps,
   PartSegment<any>
@@ -462,7 +457,6 @@ export type FlexTextProps = {
   decoration?: 'none' | 'underline' | 'line-through';
 };
 
-/** @internal */
 const __FlexText: FunctionOf<LineComponent<
   FlexTextProps,
   PartSegment<any>
@@ -572,7 +566,6 @@ export type FlexSpanProps = {
   decoration?: 'none' | 'underline' | 'line-through';
 };
 
-/** @internal */
 const __FlexSpan: FunctionOf<LineComponent<
   FlexSpanProps,
   PartSegment<any>
@@ -694,7 +687,6 @@ export type FlexBoxProps = {
   height?: number | string;
 };
 
-/** @internal */
 const __FlexBox: FunctionOf<LineComponent<
   FlexBoxProps,
   PartSegment<any>
@@ -795,7 +787,6 @@ export type FlexBlockProps = {
   separatorColor?: string;
 };
 
-/** @internal */
 const createBlockComponent = (section, _childrenType) => {
   const tagName = `LineFlex${section[0].toUpperCase()}${section.slice(1)}`;
 
@@ -895,7 +886,6 @@ export type FlexBubbleContainerProps = {
   action?: MachinatNode;
 };
 
-/** @internal */
 const __FlexBubbleContainer: FunctionOf<LineComponent<
   FlexBubbleContainerProps,
   PartSegment<any>
@@ -949,7 +939,6 @@ export type FlexCarouselContainerProps = {
   children: MachinatNode;
 };
 
-/** @internal */
 const __FlexCarouselContainer: FunctionOf<LineComponent<
   FlexCarouselContainerProps,
   PartSegment<any>
@@ -986,7 +975,6 @@ export type FlexMessageProps = {
   altText: string;
 };
 
-/** @internal */
 const __FlexMessage: FunctionOf<LineComponent<
   FlexMessageProps,
   UnitSegment<FlexSegmentValue>

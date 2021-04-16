@@ -1,6 +1,6 @@
 import type { IncomingMessage } from 'http';
 import moxy from '@moxyjs/moxy';
-import type { ResponseHelper } from '@machinat/auth/types';
+import type { ResponseHelper } from '@machinat/auth';
 import type { TelegramBot } from '../../bot';
 import { TelegramServerAuthorizer } from '../server';
 import { TelegramChat } from '../../channel';

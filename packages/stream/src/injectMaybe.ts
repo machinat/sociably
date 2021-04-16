@@ -1,5 +1,4 @@
-import { isServiceContainer } from '@machinat/core/service';
-import { MaybeContainer } from '@machinat/core/service/types';
+import { isServiceContainer, MaybeContainer } from '@machinat/core/service';
 import { StreamFrame } from './types';
 import { STREAMING_KEY_I } from './interface';
 

@@ -4,7 +4,6 @@ import AssetsManagerP from './manager';
 
 const SINGLE_MEDIA_MESSAGE_METHODS_PATTERN = /^send(Audio|Document|Animation|Video|VideoNote|Voice|Sticker)$/;
 
-/** @internal */
 const getLargestFileIdOfPhotoMessage = (message) => {
   const photos = message.photo;
   return photos[photos.length - 1].file_id;

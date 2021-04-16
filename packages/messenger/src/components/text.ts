@@ -1,8 +1,7 @@
 /* eslint-disable import/prefer-default-export */
-import type { MachinatNode } from '@machinat/core/types';
+import type { MachinatNode } from '@machinat/core';
 import formatNode from '@machinat/core/utils/formatNode';
-import { makeTextSegment } from '@machinat/core/renderer';
-import type { TextSegment } from '@machinat/core/renderer/types';
+import { makeTextSegment, TextSegment } from '@machinat/core/renderer';
 import { annotateMessengerComponent } from '../utils';
 import type { MessengerComponent } from '../types';
 
@@ -14,13 +13,10 @@ export type LatexProps = {
   children: MachinatNode;
 };
 
-/** @ignore */
 const LATEX_BEGIN = '\\(';
 
-/** @ignore */
 const LATEX_END = '\\)';
 
-/** @ignore */
 const __Latex = async function Latex(node, path, render) {
   const segments = await render(node.props.children, '.children');
   if (segments === null) {

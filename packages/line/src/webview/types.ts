@@ -1,4 +1,4 @@
-import { AuthContextBase } from '@machinat/auth/types';
+import type { AuthContextBase } from '@machinat/auth';
 import type { LineUserProfile } from '../profiler';
 import type LineUser from '../user';
 import type LineChat from '../channel';

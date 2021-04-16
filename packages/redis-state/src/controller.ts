@@ -1,7 +1,7 @@
 import { RedisClient } from 'redis';
 import thenifiedly from 'thenifiedly';
+import type { MachinatUser, MachinatChannel } from '@machinat/core';
 import { makeClassProvider } from '@machinat/core/service';
-import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
 import type {
   BaseStateController,

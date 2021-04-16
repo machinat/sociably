@@ -1,7 +1,7 @@
 import { createServer } from 'http';
 import thenifiedly from 'thenifiedly';
+import { ServiceModule } from '@machinat/core';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
-import { ServiceModule } from '@machinat/core/types';
 import {
   ServerI,
   ConfigsI,
@@ -10,7 +10,6 @@ import {
 } from './interface';
 import { ConnectorP } from './connector';
 
-/** @internal */
 const httpServerFactory = makeFactoryProvider({
   lifetime: 'singleton',
 })(() => createServer());

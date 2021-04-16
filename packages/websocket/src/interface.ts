@@ -1,4 +1,4 @@
-import type { MachinatUser } from '@machinat/core/types';
+import type { MachinatUser } from '@machinat/core';
 import { makeInterface } from '@machinat/core/service';
 import type {
   WsServer,

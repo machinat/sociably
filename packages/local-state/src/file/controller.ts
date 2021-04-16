@@ -4,8 +4,8 @@ import {
   watch,
   FSWatcher,
 } from 'fs';
+import type { MachinatUser, MachinatChannel } from '@machinat/core';
 import { makeClassProvider } from '@machinat/core/service';
-import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
 import {
   BaseStateController,
   StateAccessor,
@@ -16,17 +16,9 @@ import type { FileStateConfigs } from './types';
 
 type FileHandle = fsPromises.FileHandle;
 
-const {
-  /** @ignore */
-  O_RDWR,
-  /** @ignore */
-  O_CREAT,
-} = fsConstants;
-
-/** @ignore */
+const { O_RDWR, O_CREAT } = fsConstants;
 const openFile = fsPromises.open;
 
-/** @internal */
 const objectHasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 

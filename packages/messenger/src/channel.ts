@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import type { MachinatChannel } from '@machinat/core/types';
+import type { MachinatChannel } from '@machinat/core';
 import type { Marshallable } from '@machinat/core/base/Marshaler';
 import { MESSENGER, MessengerChatType } from './constant';
 import MessengerUser from './user';

@@ -1,6 +1,9 @@
-import { MachinatNode } from '@machinat/core/types';
-import { makePartSegment } from '@machinat/core/renderer';
-import type { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
+import { MachinatNode } from '@machinat/core';
+import {
+  makePartSegment,
+  PartSegment,
+  FunctionOf,
+} from '@machinat/core/renderer';
 import { annotateTelegramComponent } from '../utils';
 import type { TelegramComponent } from '../types';
 
@@ -22,7 +25,6 @@ export interface UrlButtonProps {
   requestWriteAccess?: boolean;
 }
 
-/** @ignore */
 const __UrlButton: FunctionOf<TelegramComponent<
   UrlButtonProps,
   PartSegment<any>
@@ -77,7 +79,6 @@ export interface CallbackButtonProps {
   data: string;
 }
 
-/** @ignore */
 const __CallbackButton: FunctionOf<TelegramComponent<
   CallbackButtonProps,
   PartSegment<any>
@@ -109,7 +110,6 @@ export interface SwitchQueryButtonProps {
   currentChat?: boolean;
 }
 
-/** @ignore */
 const __SwitchQueryButton: FunctionOf<TelegramComponent<
   SwitchQueryButtonProps,
   PartSegment<any>
@@ -147,7 +147,6 @@ export interface GameButtonProps {
   text: string;
 }
 
-/** @ignore */
 const __GameButton: FunctionOf<TelegramComponent<
   GameButtonProps,
   PartSegment<any>
@@ -178,7 +177,7 @@ export interface PayButtonProps {
   /** Label text on the button. */
   text: string;
 }
-/** @ignore */
+
 const __PayButton: FunctionOf<TelegramComponent<
   PayButtonProps,
   PartSegment<any>
@@ -216,7 +215,7 @@ export interface KeyboardRowProps {
   /**	Button elements contained by the row. */
   children: MachinatNode;
 }
-/** @ignore */
+
 const __KeyboardRow: FunctionOf<TelegramComponent<
   KeyboardRowProps,
   PartSegment<any>
@@ -258,7 +257,7 @@ export interface InlineKeyboardProps {
    */
   children: MachinatNode;
 }
-/** @ignore */
+
 const __InlineKeyboard: FunctionOf<TelegramComponent<
   InlineKeyboardProps,
   PartSegment<any>
@@ -296,7 +295,7 @@ export interface TextReplyProps {
   /**	Text of the button */
   text: string;
 }
-/** @ignore */
+
 const __TextReply: FunctionOf<TelegramComponent<
   TextReplyProps,
   PartSegment<any>
@@ -322,7 +321,7 @@ export interface ContactReplyProps {
   /**	Text of the button. */
   text: string;
 }
-/** @ignore */
+
 const __ContactReply: FunctionOf<TelegramComponent<
   ContactReplyProps,
   PartSegment<any>
@@ -348,7 +347,7 @@ export interface LocationReplyProps {
   /**	Text of the button. */
   text: string;
 }
-/** @ignore */
+
 const __LocationReply: FunctionOf<TelegramComponent<
   LocationReplyProps,
   PartSegment<any>
@@ -376,7 +375,7 @@ export interface PollReplyProps {
   /** If quiz is passed, the user will be allowed to create only polls in the quiz mode. If regular is passed, only regular polls will be allowed. Otherwise, the user will be allowed to create a poll of any type. */
   type?: 'regular' | 'quiz';
 }
-/** @ignore */
+
 const __PollReply: FunctionOf<TelegramComponent<
   PollReplyProps,
   PartSegment<any>
@@ -418,7 +417,7 @@ export interface ReplyKeyboardProps {
   /** Use this parameter if you want to show the keyboard to specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message. */
   selective?: boolean;
 }
-/** @ignore */
+
 const __ReplyKeyboard: FunctionOf<TelegramComponent<
   ReplyKeyboardProps,
   PartSegment<any>
@@ -459,7 +458,7 @@ export interface RemoveReplyKeyboardProps {
   /**	Use this parameter if you want to remove the keyboard for specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message. */
   selective?: boolean;
 }
-/** @ignore */
+
 const __RemoveReplyKeyboard: FunctionOf<TelegramComponent<
   RemoveReplyKeyboardProps,
   PartSegment<any>
@@ -485,7 +484,7 @@ export interface ForceReplyProps {
   /**	Use this parameter if you want to remove the keyboard for specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message. */
   selective?: boolean;
 }
-/** @ignore */
+
 const __ForceReply: FunctionOf<TelegramComponent<
   ForceReplyProps,
   PartSegment<any>

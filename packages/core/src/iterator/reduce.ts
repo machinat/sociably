@@ -8,7 +8,6 @@ export type ReduceTraverseContext<Reduced, Payload> = {
   payload: Payload;
 };
 
-/** @internal */
 const reduceCallback = <Reduced, Payload>(
   child: MachinatRenderable,
   path: string,

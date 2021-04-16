@@ -3,11 +3,11 @@ import crypto from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import base64url from 'base64url';
 import { makeClassProvider } from '@machinat/core/service';
-import {
+import type {
   ServerAuthorizer,
   VerifyResult,
   ContextResult,
-} from '@machinat/auth/types';
+} from '@machinat/auth';
 
 import { ConfigsI } from '../interface';
 import { MESSENGER, MessengerChatType } from '../constant';
@@ -20,9 +20,7 @@ import type {
 } from './types';
 
 const {
-  /** @ignore */
   decode: decodeBase64Url,
-  /** @ignore */
   toBuffer: decodeBase64UrlToBuffer,
 } = base64url;
 

@@ -1,9 +1,8 @@
 import crypto from 'crypto';
 import invariant from 'invariant';
 import { makeClassProvider } from '@machinat/core/service';
-import type { PopEventWrapper } from '@machinat/core/types';
-import WebhookReceiver from '@machinat/http/webhook';
-import type { WebhookHandler } from '@machinat/http/webhook/types';
+import type { PopEventWrapper } from '@machinat/core';
+import { WebhookReceiver, WebhookHandler } from '@machinat/http/webhook';
 
 import eventFactory from './event/factory';
 import { BotP } from './bot';
@@ -20,7 +19,6 @@ type LineReceiverOptions = {
   popEventWrapper: PopEventWrapper<LineEventContext, null>;
 };
 
-/** @internal */
 const handleWebhook = ({
   bot,
   popEventWrapper,

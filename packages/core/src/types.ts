@@ -7,7 +7,7 @@ import type {
   ServiceInterface,
   ServiceScope,
   MaybeContainer,
-} from './service/types';
+} from './service';
 import type { DispatchFrame, DispatchResponse } from './engine/types';
 import type {
   MACHINAT_ELEMENT_TYPE,

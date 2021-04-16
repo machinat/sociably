@@ -1,10 +1,10 @@
 import invariant from 'invariant';
+import type { MachinatChannel } from '@machinat/core';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
   DetectIntentResult,
   BaseIntentRecognizer,
 } from '@machinat/core/base/IntentRecognizer';
-import type { MachinatChannel } from '@machinat/core/types';
 import { SessionClientI, ConfigsI } from './interface';
 import { SessionClient, DetactIntentPayload } from './types';
 import DialogflowApiError from './error';

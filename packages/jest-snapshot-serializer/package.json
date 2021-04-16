@@ -11,8 +11,7 @@
   "bugs": "https://github.com/machinat/machinat/issues",
   "main": "lib/index.js",
   "exports": {
-    ".": "./lib/index.js",
-    "./types": "./lib/types.js"
+    ".": "./lib/index.js"
   },
   "files": [
     "lib/*",

@@ -1,4 +1,3 @@
-/** @internal */ /** */
 import type ProvisionMap from './provisionMap';
 import type {
   Interfaceable,

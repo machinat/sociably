@@ -1,4 +1,4 @@
-import type { MachinatElement } from '@machinat/core/types';
+import type { MachinatElement } from '@machinat/core';
 import {
   isElement,
   isFragmentType,

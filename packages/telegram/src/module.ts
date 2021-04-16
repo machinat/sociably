@@ -1,11 +1,11 @@
-import type { MachinatPlatform } from '@machinat/core/types';
-import type { ServiceProvision } from '@machinat/core/service/types';
+import type { MachinatPlatform } from '@machinat/core';
+import type { ServiceProvision } from '@machinat/core/service';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import BaseBot from '@machinat/core/base/Bot';
 import BaseProfiler from '@machinat/core/base/Profiler';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
-import type { RequestRoute } from '@machinat/http/types';
+import type { RequestRoute } from '@machinat/http';
 
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { TELEGRAM } from './constant';

@@ -3,10 +3,7 @@ import StateControllerI from '@machinat/core/base/StateController';
 import { BotP } from '../bot';
 import { PATH_RICHMENU } from '../constant';
 
-/** @ignore */
 const LIFF = 'liff';
-
-/** @ignore */
 const RICH_MENU = 'rich_menu';
 
 /**

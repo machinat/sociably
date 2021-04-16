@@ -2,16 +2,13 @@
 /// <reference lib="DOM" />
 import { AnyMarshalType, BaseMarshaler } from '@machinat/core/base/Marshaler';
 import AuthClient from '@machinat/auth/client';
-import type {
-  UserOfAuthorizer,
-  ContextOfAuthorizer,
-} from '@machinat/auth/types';
+import type { UserOfAuthorizer, ContextOfAuthorizer } from '@machinat/auth';
 import type {
   EventInput,
   EventValue,
   ConnectEventValue,
   DisconnectEventValue,
-} from '@machinat/websocket/types';
+} from '@machinat/websocket';
 import { Connector, Emitter } from '@machinat/websocket/client';
 import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant';
 import { WebviewConnection } from '../channel';

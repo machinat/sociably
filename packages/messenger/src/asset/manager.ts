@@ -1,14 +1,11 @@
+import type { MachinatNode } from '@machinat/core';
 import { makeClassProvider } from '@machinat/core/service';
-import type { MachinatNode } from '@machinat/core/types';
 import StateControllerI from '@machinat/core/base/StateController';
 import formatNode from '@machinat/core/utils/formatNode';
 import { PATH_PERSONAS } from '../constant';
 import { BotP } from '../bot';
 
-/** @ignore */
 const ATTACHMENT = 'attachment';
-
-/** @ignore */
 const PERSONA = 'persona';
 
 /**

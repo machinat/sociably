@@ -1,12 +1,11 @@
 import redis from 'redis';
+import type { ServiceModule } from '@machinat/core';
 import { makeFactoryProvider, makeContainer } from '@machinat/core/service';
-import type { ServiceModule } from '@machinat/core/types';
 import StateControllerI from '@machinat/core/base/StateController';
 
 import { ControllerP } from './controller';
 import { ConfigsI, ClientI } from './interface';
 
-/** @internal */
 const createRedisClient = makeFactoryProvider({
   lifetime: 'singleton',
   deps: [ConfigsI] as const,

@@ -1,4 +1,4 @@
-import { MaybeContainer } from '@machinat/core/service/types';
+import { MaybeContainer } from '@machinat/core/service';
 import type { IncomingHttpHeaders, OutgoingHttpHeaders } from 'http';
 import type createNextServer from 'next';
 

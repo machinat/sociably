@@ -13,7 +13,7 @@ import {
   isInjectionType,
   isContainerType,
 } from '../utils/isX';
-import type { Interfaceable, ServiceScope } from '../service/types';
+import type { Interfaceable, ServiceScope } from '../service';
 import type {
   MachinatNode,
   MachinatRenderable,
@@ -35,9 +35,7 @@ import type {
   IntermediateSegment,
 } from './types';
 
-/** @ignore */
 const RENDER_SEPARATOR = '#';
-/** @ignore */
 const RENDER_ROOT = '$';
 
 type RenderResult<Value> =

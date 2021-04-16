@@ -1,22 +1,18 @@
-import type {
-  PopEventWrapper,
-  PopEventFn,
-  PopErrorFn,
-} from '@machinat/core/types';
+import type { PopEventWrapper, PopEventFn, PopErrorFn } from '@machinat/core';
 import { makeClassProvider } from '@machinat/core/service';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import {
   AnyServerAuthorizer,
   UserOfAuthorizer,
   ContextOfAuthorizer,
-} from '@machinat/auth/types';
-import type { HttpRequestInfo } from '@machinat/http/types';
+} from '@machinat/auth';
+import type { HttpRequestInfo } from '@machinat/http';
 import {
   EventInput,
   EventValue,
   ConnectEventValue,
   DisconnectEventValue,
-} from '@machinat/websocket/types';
+} from '@machinat/websocket';
 
 import { WEBVIEW } from './constant';
 import { SocketServerP, PlatformUtilitiesI } from './interface';

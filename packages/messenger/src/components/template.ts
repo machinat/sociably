@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
-import type { MachinatNode } from '@machinat/core/types';
+import type { MachinatNode } from '@machinat/core';
 import formatNode from '@machinat/core/utils/formatNode';
 import { makeUnitSegment, makePartSegment } from '@machinat/core/renderer';
-import type { UnitSegment, PartSegment } from '@machinat/core/renderer/types';
+import type { UnitSegment, PartSegment } from '@machinat/core/renderer';
 import { annotateMessengerComponent } from '../utils';
 import type { MessageValue, MessengerComponent } from '../types';
 
@@ -29,7 +29,6 @@ export type GenericItemProps = {
   defaultAction?: MachinatNode;
 };
 
-/** @ignore */
 const __GenericItem = async function GenericItem(node, path, render) {
   const {
     buttons,
@@ -93,7 +92,6 @@ export type GenericTemplateProps = {
   imageAspectRatio?: 'horizontal' | 'square';
 };
 
-/** @ignore */
 const __GenericTemplate = async function GenericTemplate(node, path, render) {
   const { children, sharable, imageAspectRatio } = node.props;
   const elementsSegments = await render(children, '.children');
@@ -144,7 +142,6 @@ export type ButtonTemplateProps = {
   sharable?: boolean;
 };
 
-/** @ignore */
 const __ButtonTemplate = async function ButtonTemplate(node, path, render) {
   const { children, buttons, sharable } = node.props;
   const textSegments = await render(children, '.children');
@@ -215,7 +212,6 @@ export type MediaTemplateProps = {
   sharable?: boolean;
 };
 
-/** @ignore */
 const __MediaTemplate = async function MediaTemplate(node, path, render) {
   const { buttons, mediaType, attachmentId, url, sharable } = node.props;
   const buttonSegments = await render(buttons, '.buttons');
@@ -274,7 +270,6 @@ export type ReceiptItemProps = {
   imageUrl?: string;
 };
 
-/** @ignore */
 const __ReceiptItem = async function ReceiptItem(node, path) {
   const { title, subtitle, quantity, price, currency, imageUrl } = node.props;
   return [
@@ -351,7 +346,6 @@ export type ReceiptTemplateProps = {
   }[];
 };
 
-/** @ignore */
 const __ReceiptTemplate = async function ReceiptTemplate(node, path, render) {
   const {
     children,

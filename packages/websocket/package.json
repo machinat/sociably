@@ -14,8 +14,7 @@
     ".": "./lib/index.js",
     "./client": "./lib/client/index.js",
     "./broker/": "./lib/broker/",
-    "./utils/": "./lib/utils/",
-    "./types": "./lib/types.js"
+    "./utils/": "./lib/utils/"
   },
   "files": [
     "lib/*",

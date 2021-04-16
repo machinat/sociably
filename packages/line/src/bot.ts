@@ -1,14 +1,14 @@
 import invariant from 'invariant';
-import Renderer from '@machinat/core/renderer';
-import Queue from '@machinat/core/queue';
-import Engine, { DispatchError } from '@machinat/core/engine';
-import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import type {
   MachinatNode,
   MachinatBot,
   InitScopeFn,
   DispatchWrapper,
-} from '@machinat/core/types';
+} from '@machinat/core';
+import Renderer from '@machinat/core/renderer';
+import Queue from '@machinat/core/queue';
+import Engine, { DispatchError } from '@machinat/core/engine';
+import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
 
 import { createChatJobs, createMulticastJobs } from './job';

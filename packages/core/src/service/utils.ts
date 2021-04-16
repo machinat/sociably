@@ -46,7 +46,6 @@ export const isInterfaceable = (target: any): target is Interfaceable<any> =>
 export const createEmptyScope = (): ServiceScope =>
   new ServiceScope(new ServiceMaker(new ProvisionMap()), new Map());
 
-/** @internal */
 export const polishServiceRequirement = <T>(
   dep: Interfaceable<T> | ServiceRequirement<Interfaceable<T>>
 ): ServiceRequirement<Interfaceable<T>> => {

@@ -1,5 +1,4 @@
-/** @internal */ /** */
-import type { DispatchableSegment } from '@machinat/core/engine/types';
+import type { DispatchableSegment } from '@machinat/core/engine';
 import LineChat from './channel';
 import type {
   LineSegmentValue,

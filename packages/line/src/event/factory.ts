@@ -1,4 +1,3 @@
-/** @internal */ /** */
 import mixin from '@machinat/core/utils/mixin';
 import LineUser from '../user';
 import LineChat from '../channel';

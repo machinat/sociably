@@ -4,22 +4,17 @@ import type {
   DispatchMiddleware,
   PlatformUtilities,
   MachinatNode,
-} from '@machinat/core/types';
-import type {
-  DispatchFrame,
-  DispatchResponse,
-} from '@machinat/core/engine/types';
-import type { MaybeContainer } from '@machinat/core/service/types';
-import type { IntermediateSegment } from '@machinat/core/renderer/types';
-import type { WebhookMetadata } from '@machinat/http/webhook/types';
+} from '@machinat/core';
+import type { DispatchFrame, DispatchResponse } from '@machinat/core/engine';
+import type { MaybeContainer } from '@machinat/core/service';
+import type { IntermediateSegment } from '@machinat/core/renderer';
+import type { WebhookMetadata } from '@machinat/http/webhook';
 import { LineBot } from './bot';
 import type LineChat from './channel';
 import type { LineEvent, LineRawEvent } from './event/types';
 import type { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from './constant';
 
 export type { LineEvent } from './event/types';
-export type { default as LineChat } from './channel';
-export type { default as LineUser } from './channel';
 
 export type UserSource = {
   type: 'user';

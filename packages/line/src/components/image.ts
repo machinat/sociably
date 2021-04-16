@@ -1,6 +1,10 @@
-import { MachinatNode } from '@machinat/core/types';
-import { makeUnitSegment, makePartSegment } from '@machinat/core/renderer';
-import { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
+import { MachinatNode } from '@machinat/core';
+import {
+  makeUnitSegment,
+  makePartSegment,
+  PartSegment,
+  FunctionOf,
+} from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
@@ -14,7 +18,6 @@ export type ImageProps = {
   previewImageUrl: string;
 };
 
-/** @internal */
 const __Image: FunctionOf<LineComponent<ImageProps>> = function Image(
   node,
   path
@@ -52,7 +55,6 @@ export type StickerProps = {
   packageId: string;
 };
 
-/** @internal */
 const __Sticker: FunctionOf<LineComponent<StickerProps>> = function Sticker(
   node,
   path
@@ -101,7 +103,6 @@ export type ImageMapAreaProps = {
   height: number;
 };
 
-/** @internal */
 const __ImageMapArea: FunctionOf<LineComponent<
   ImageMapAreaProps,
   PartSegment<any>
@@ -177,7 +178,6 @@ export type ImageMapVideoAreaProps = {
   action?: MachinatNode;
 };
 
-/** @internal */
 const __ImageMapVideoArea: FunctionOf<LineComponent<
   ImageMapVideoAreaProps,
   PartSegment<any>
@@ -243,7 +243,6 @@ export type ImageMapProps = {
   video?: MachinatNode;
 };
 
-/** @internal */
 const __ImageMap: FunctionOf<LineComponent<
   ImageMapProps
 >> = async function ImageMap(node, path, render) {

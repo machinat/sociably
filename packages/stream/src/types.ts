@@ -1,4 +1,4 @@
-import type { MachinatApp } from '@machinat/core/types';
+import type { MachinatApp } from '@machinat/core';
 import { ServiceScope } from '@machinat/core/service';
 import Subject from './subject';
 

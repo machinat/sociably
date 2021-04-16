@@ -1,1 +1,2 @@
-export { default as WebhookReceiver, default } from './receiver';
+export { default as WebhookReceiver } from './receiver';
+export * from './types';

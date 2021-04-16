@@ -1,5 +1,5 @@
 export * from './annotate';
-export { default } from './space';
+export { default as ServiceSpace } from './space';
 export { default as ServiceScope } from './scope';
 export {
   isServiceContainer,
@@ -8,6 +8,7 @@ export {
   createEmptyScope,
   maybeInjectContainer,
 } from './utils';
+export * from './types';
 
 /**
  * Machinat DI

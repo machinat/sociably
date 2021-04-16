@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
-import { MachinatNode } from '@machinat/core/types';
-import { FunctionOf } from '@machinat/core/renderer/types';
+import { MachinatNode } from '@machinat/core';
+import { FunctionOf } from '@machinat/core/renderer';
 import { annotateLineComponent, isMessageValue } from '../utils';
 import { LineComponent } from '../types';
 
@@ -14,7 +14,6 @@ export type ExpressionProps = {
   quickReplies?: MachinatNode;
 };
 
-/** @internal */
 const __Expression: FunctionOf<LineComponent<
   ExpressionProps
 >> = async function Expression(

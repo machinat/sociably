@@ -8,7 +8,7 @@ import type {
   ResponseHelper,
   VerifyResult,
   ContextResult,
-} from '@machinat/auth/types';
+} from '@machinat/auth';
 
 import { ConfigsI } from '../interface';
 import { TELEGRAM } from '../constant';

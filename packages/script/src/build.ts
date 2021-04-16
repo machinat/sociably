@@ -1,4 +1,4 @@
-import { MachinatElement, AnyEventContext } from '@machinat/core/types';
+import { MachinatElement, AnyEventContext } from '@machinat/core';
 import { MACHINAT_SCRIPT_TYPE } from './constant';
 import parseScript from './parse';
 import compile from './compile';

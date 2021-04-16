@@ -14,17 +14,12 @@
   "exports": {
     ".": "./lib/index.js",
     "./engine": "./lib/engine/index.js",
-    "./engine/types": "./lib/engine/types.js",
     "./queue": "./lib/queue/index.js",
-    "./queue/types": "./lib/queue/types.js",
     "./renderer": "./lib/renderer/index.js",
-    "./renderer/types": "./lib/renderer/types.js",
     "./service": "./lib/service/index.js",
-    "./service/types": "./lib/service/types.js",
     "./base/": "./lib/base/",
     "./iterator/": "./lib/iterator/",
-    "./utils/": "./lib/utils/",
-    "./types": "./lib/types.js"
+    "./utils/": "./lib/utils/"
   },
   "files": [
     "lib/*",

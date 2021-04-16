@@ -1,4 +1,3 @@
-/** @internal */ /** */
 import ServiceMaker, { ENUM_PHASE_BOOTSTRAP } from './maker';
 import ProvisionMap from './provisionMap';
 import ServiceScope from './scope';

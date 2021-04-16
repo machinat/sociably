@@ -1,4 +1,4 @@
-import type { MachinatChannel } from '@machinat/core/types';
+import type { MachinatChannel } from '@machinat/core';
 import type { Marshallable } from '@machinat/core/base/Marshaler';
 import { LINE } from './constant';
 import type LineUser from './user';

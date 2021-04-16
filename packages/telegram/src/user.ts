@@ -1,4 +1,4 @@
-import type { MachinatUser } from '@machinat/core/types';
+import type { MachinatUser } from '@machinat/core';
 import type { Marshallable } from '@machinat/core/base/Marshaler';
 import { TELEGRAM } from './constant';
 import type { RawUser } from './types';

@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
-import type { ServerAuthorizer, ContextResult } from '@machinat/auth/types';
+import type { ServerAuthorizer, ContextResult } from '@machinat/auth';
 
 import { ConfigsI } from '../interface';
 import { BotP } from '../bot';

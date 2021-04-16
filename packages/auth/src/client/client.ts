@@ -33,7 +33,6 @@ type AuthResult<Authorizer extends AnyClientAuthorizer> = {
 
 type TimeoutID = ReturnType<typeof setTimeout>;
 
-/** @internal */
 const deleteCookie = (name: string, domain?: string, path?: string) => {
   document.cookie = serializeCookie(name, '', {
     expires: new Date(0),
@@ -42,11 +41,9 @@ const deleteCookie = (name: string, domain?: string, path?: string) => {
   });
 };
 
-/** @internal */
 const getAuthPayload = (token: string) =>
   decodeJwt(`${token}.`) as AuthTokenPayload<any>;
 
-/** @internal */
 const getCookieAuthResult = (): [
   null | AuthError,
   null | { payload: AuthTokenPayload<unknown>; token: string }

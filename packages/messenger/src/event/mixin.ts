@@ -17,7 +17,6 @@ export interface EventBase {
   readonly [Symbol.toStringTag]: 'MessengerEvent';
 }
 
-/** @internal */
 export const EventBase: EventBase = {
   platform: MESSENGER,
   isStandby: false,
@@ -48,7 +47,6 @@ export interface Message {
   readonly referralProductId: undefined | string;
 }
 
-/** @internal */
 export const Message: Message = {
   get messageId() {
     return this.payload.message.mid;
@@ -71,7 +69,6 @@ export interface Text {
   readonly text: string;
 }
 
-/** @internal */
 export const Text: Text = {
   get text() {
     return this.payload.message.text;
@@ -86,7 +83,6 @@ export interface Fallback {
   readonly fallback: undefined | { title: string; url: string };
 }
 
-/** @internal */
 export const Fallback: Fallback = {
   get fallback() {
     return this.payload.message.attachments?.[0];
@@ -101,7 +97,6 @@ export interface Media {
   readonly url: string;
 }
 
-/** @internal */
 export const Media: Media = {
   get url() {
     return this.payload.message.attachments[0].payload.url;
@@ -116,7 +111,6 @@ export interface Sticker {
   readonly stickerId: undefined | number;
 }
 
-/** @internal */
 export const Sticker: Sticker = {
   get stickerId() {
     return this.payload.message.attachments[0].payload.sticker_id;
@@ -130,8 +124,6 @@ export interface QuickReply {
   /** Custom data provided by the app with the quick_reply. */
   readonly data: string;
 }
-
-/** @internal */
 
 export const QuickReply: QuickReply = {
   get data() {
@@ -147,7 +139,6 @@ export interface NLP {
   readonly nlp?: any;
 }
 
-/** @internal */
 export const NLP: NLP = {
   get nlp() {
     return this.payload.message.nlp;
@@ -162,7 +153,6 @@ export interface Location {
   readonly longitude: number;
 }
 
-/** @internal */
 export const Location: Location = {
   get latitude() {
     return this.payload.message.attachments[0].payload.lat;
@@ -205,7 +195,6 @@ export interface Reaction {
   readonly messageId: string;
 }
 
-/** @internal */
 export const Reaction: Reaction = {
   get reaction() {
     return this.payload.reaction;
@@ -235,7 +224,6 @@ export interface Template {
   readonly template: any;
 }
 
-/** @internal */
 export const Template: Template = {
   get template() {
     return this.payload.message.attachments[0].payload;
@@ -255,7 +243,6 @@ export interface TemplateProduct {
   }[];
 }
 
-/** @internal */
 export const TemplateProduct: TemplateProduct = {
   get productElements() {
     return this.payload.message.attachments[0].payload.product.elements;
@@ -277,7 +264,6 @@ export interface Delivery {
   readonly watermark: number;
 }
 
-/** @internal */
 export const Delivery: Delivery = {
   get delivery() {
     return this.payload.delivery;
@@ -302,7 +288,6 @@ export interface Read {
   readonly watermark: number;
 }
 
-/** @internal */
 export const Read: Read = {
   get read() {
     return this.payload.read;
@@ -327,7 +312,6 @@ export interface Echo {
   readonly metadata: undefined | string;
 }
 
-/** @internal */
 export const Echo: Echo = {
   isEcho: true,
   get appId() {
@@ -347,7 +331,6 @@ export interface Standby {
   readonly isStandby: boolean;
 }
 
-/** @internal */
 export const Standby: Standby = {
   isStandby: true,
 };
@@ -370,7 +353,6 @@ export interface AccountLinking {
   readonly authorizationCode: string;
 }
 
-/** @internal */
 export const AccountLinking: AccountLinking = {
   get accountLinking() {
     return this.payload.account_linking;
@@ -400,7 +382,6 @@ export interface GamePlay {
   };
 }
 
-/** @internal */
 export const GamePlay: GamePlay = {
   get gamePlay() {
     return this.payload.game_play;
@@ -419,7 +400,6 @@ export interface PassThreadControl {
   readonly metadata: string;
 }
 
-/** @internal */
 export const PassThreadControl: PassThreadControl = {
   get passThreadControl() {
     return this.payload.pass_thread_control;
@@ -449,7 +429,6 @@ export interface TakeThreadControl {
   readonly metadata: string;
 }
 
-/** @internal */
 export const TakeThreadControl: TakeThreadControl = {
   get takeThreadControl() {
     return this.payload.take_thread_control;
@@ -479,7 +458,6 @@ export interface RequestThreadControl {
   readonly metadata: string;
 }
 
-/** @internal */
 export const RequestThreadControl: RequestThreadControl = {
   get requestThreadControl() {
     return this.payload.request_thread_control;
@@ -502,7 +480,6 @@ export interface AppRoles {
   readonly appRoles: { [id: string]: string[] };
 }
 
-/** @internal */
 export const AppRoles: AppRoles = {
   get appRoles() {
     return this.payload.app_roles;
@@ -524,7 +501,6 @@ export interface Optin {
   readonly userRef: undefined | string;
 }
 
-/** @internal */
 export const Optin: Optin = {
   get optin() {
     return this.payload.optin;
@@ -553,7 +529,6 @@ export interface PolicyEnforcement {
   readonly reason: undefined | string;
 }
 
-/** @internal */
 export const PolicyEnforcement: PolicyEnforcement = {
   get policyEnforcement() {
     return this.payload['policy-enforcement'];
@@ -607,7 +582,6 @@ export interface Referral {
   readonly isGuestUser: boolean;
 }
 
-/** @internal */
 export const Referral: Referral = {
   get referral() {
     return this.payload.referral;
@@ -662,7 +636,6 @@ export interface Postback {
   readonly referralAdId: undefined | string;
 }
 
-/** @internal */
 export const Postback: Postback = {
   get postback() {
     return this.payload.postback;

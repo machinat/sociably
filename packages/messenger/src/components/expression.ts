@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
-import { MachinatNode, MachinatElement } from '@machinat/core/types';
-import type { UnitSegment } from '@machinat/core/renderer/types';
+import { MachinatNode, MachinatElement } from '@machinat/core';
+import type { UnitSegment } from '@machinat/core/renderer';
 import formatNode from '@machinat/core/utils/formatNode';
 import type {
   MessengerSegmentValue,
@@ -48,7 +48,6 @@ export type ExpressionProps = {
   personaId?: string;
 };
 
-/** @ignore */
 const __Expression = async function Expression(
   {
     props: {

@@ -1,18 +1,16 @@
 import createNextServer from 'next';
+import type { ServiceModule } from '@machinat/core';
 import { makeFactoryProvider, makeContainer } from '@machinat/core/service';
 import Http from '@machinat/http';
-import type { RequestRoute } from '@machinat/http/types';
-import type { ServiceModule } from '@machinat/core/types';
+import type { RequestRoute } from '@machinat/http';
 import { ReceiverP } from './receiver';
 import { ConfigsI, ServerI } from './interface';
 
-/** @internal */
 const nextServerFactory = makeFactoryProvider({
   lifetime: 'singleton',
   deps: [ConfigsI] as const,
 })(({ serverOptions }) => createNextServer(serverOptions || {}));
 
-/** @internal */
 const routingFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [ReceiverP, ConfigsI] as const,

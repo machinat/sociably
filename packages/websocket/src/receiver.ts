@@ -3,10 +3,10 @@ import type {
   PopEventWrapper,
   PopEventFn,
   PopErrorFn,
-} from '@machinat/core/types';
+} from '@machinat/core';
 import { makeClassProvider } from '@machinat/core/service';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import type { HttpRequestInfo } from '@machinat/http/types';
+import type { HttpRequestInfo } from '@machinat/http';
 
 import { WebSocketConnection } from './channel';
 import { BotP } from './bot';

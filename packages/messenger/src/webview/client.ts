@@ -1,8 +1,8 @@
 // eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import invariant from 'invariant';
-import type { ContextResult } from '@machinat/auth/types';
-import { WebviewClientAuthorizer } from '@machinat/webview/types';
+import type { ContextResult } from '@machinat/auth';
+import { WebviewClientAuthorizer } from '@machinat/webview';
 import { MESSENGER } from '../constant';
 import MessengerChat from '../channel';
 import { MessengerUserProfile } from '../profiler';
@@ -21,13 +21,10 @@ type MessengerClientAuthOpts = {
   isExtensionReady?: boolean;
 };
 
-/** @ignore */
 declare const window: Window & { extAsyncInit(): void };
 
-/** @ignore */
 declare const MessengerExtensions: any;
 
-/** @ignore */
 const INIT_TIMEOUT = 20000; // 20s;
 
 class MessengerClientAuthorizer

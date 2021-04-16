@@ -6,8 +6,7 @@
   "exports": {
     ".": "./lib/index.js",
     "./operators": "./lib/operators/index.js",
-    "./operators/": "./lib/operators/",
-    "./types": "./lib/types.js"
+    "./operators/": "./lib/operators/"
   },
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {

@@ -1,8 +1,7 @@
 import Machinat from '@machinat/core';
 import invariant from 'invariant';
-import { maybeInjectContainer } from '@machinat/core/service';
-import type { MachinatNode, MachinatChannel } from '@machinat/core/types';
-import type { ServiceScope } from '@machinat/core/service/types';
+import type { MachinatNode, MachinatChannel } from '@machinat/core';
+import { maybeInjectContainer, ServiceScope } from '@machinat/core/service';
 import type {
   ScriptLibrary,
   AnyScriptLibrary,

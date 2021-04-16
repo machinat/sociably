@@ -1,6 +1,11 @@
-import { MachinatNode } from '@machinat/core/types';
-import { makeUnitSegment, makePartSegment } from '@machinat/core/renderer';
-import { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
+import { MachinatNode } from '@machinat/core';
+import {
+  makeUnitSegment,
+  makePartSegment,
+  PartSegment,
+  FunctionOf,
+} from '@machinat/core/renderer';
+
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
@@ -50,7 +55,6 @@ export type ButtonTemplateProps = {
   defaultAction?: MachinatNode;
 };
 
-/** @internal */
 const __ButtonTemplate: FunctionOf<LineComponent<
   ButtonTemplateProps
 >> = async function ButtonTemplate(node, path, render) {
@@ -125,7 +129,6 @@ export type ConfirmTemplateProps = {
   children: string;
 };
 
-/** @internal */
 const __ConfirmTemplate: FunctionOf<LineComponent<
   ConfirmTemplateProps
 >> = async function ConfirmTemplate(node, path, render) {
@@ -185,7 +188,6 @@ export type CarouselItemProps = {
   children: string;
 };
 
-/** @internal */
 const __CarouselItem: FunctionOf<LineComponent<
   CarouselItemProps,
   PartSegment<any>
@@ -263,7 +265,6 @@ export type CarouselTemplateProps = {
   imageSize?: 'contain' | 'cover';
 };
 
-/** @internal */
 const __CarouselTemplate: FunctionOf<LineComponent<
   CarouselTemplateProps
 >> = async function CarouselTemplate(node, path, render) {
@@ -306,7 +307,6 @@ export type ImageCarouselItemProps = {
   action?: MachinatNode;
 };
 
-/** @internal */
 const __ImageCarouselItem: FunctionOf<LineComponent<
   ImageCarouselItemProps,
   PartSegment<any>
@@ -350,7 +350,6 @@ export type ImageCarouselTemplateProps = {
   altText: string | ((template: Record<string, unknown>) => string);
 };
 
-/** @internal */
 const __ImageCarouselTemplate: FunctionOf<LineComponent<
   ImageCarouselTemplateProps
 >> = async function ImageCarouselTemplate(node, path, render) {

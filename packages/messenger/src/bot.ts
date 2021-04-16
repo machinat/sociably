@@ -9,7 +9,7 @@ import type {
   MachinatBot,
   InitScopeFn,
   DispatchWrapper,
-} from '@machinat/core/types';
+} from '@machinat/core';
 
 import MessengerWorker from './worker';
 import generalComponentDelegator from './components/general';

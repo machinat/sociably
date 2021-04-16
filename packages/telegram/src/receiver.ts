@@ -2,10 +2,10 @@ import { parse as parseUrl } from 'url';
 import { join as joinPath } from 'path';
 import invariant from 'invariant';
 
-import WebhookReceiver from '@machinat/http/webhook';
-import type { WebhookHandler } from '@machinat/http/webhook/types';
+import type { PopEventWrapper } from '@machinat/core';
+import { WebhookReceiver } from '@machinat/http/webhook';
+import type { WebhookHandler } from '@machinat/http/webhook';
 import { makeClassProvider } from '@machinat/core/service';
-import type { PopEventWrapper } from '@machinat/core/types';
 
 import eventFactory from './event/factory';
 import { BotP } from './bot';
@@ -21,7 +21,6 @@ type TelegramReceiverOptions = {
   secretPath?: string;
 };
 
-/** @internal */
 const handleWebhook = ({
   bot,
   popEventWrapper,

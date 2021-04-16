@@ -1,11 +1,10 @@
 import url from 'url';
 import fetch from 'node-fetch';
-import type { MachinatWorker } from '@machinat/core/engine/types';
+import type { MachinatWorker } from '@machinat/core/engine';
 import type Queue from '@machinat/core/queue';
 import type { LineJob, LineResult } from './types';
 import LineApiError from './error';
 
-/** @ignore */
 const API_HOST = 'https://api.line.me';
 
 type LineJobQueue = Queue<LineJob, LineResult>;

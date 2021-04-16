@@ -2,7 +2,6 @@ import type { MachinatNode } from '../types';
 import { isElement, isFragmentType, isEmpty } from '../utils/isX';
 import type { TraverseNodeCallback } from './types';
 
-/** @ignore */
 const ITER_SEPARATOR = ':';
 
 const traverse = <Context>(

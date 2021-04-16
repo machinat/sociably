@@ -1,7 +1,10 @@
-import type { MachinatNode } from '@machinat/core/types';
+import type { MachinatNode } from '@machinat/core';
 import formatNode from '@machinat/core/utils/formatNode';
-import { makeUnitSegment } from '@machinat/core/renderer';
-import type { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
+import {
+  makeUnitSegment,
+  UnitSegment,
+  FunctionOf,
+} from '@machinat/core/renderer';
 import { annotateTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
@@ -22,7 +25,6 @@ export interface TextProps extends MessageProps {
   disableWebPagePreview?: boolean;
 }
 
-/** @ignore */
 const __Text: FunctionOf<TelegramComponent<
   TextProps,
   UnitSegment<TelegramSegmentValue>
@@ -89,7 +91,6 @@ export interface ContactProps extends MessageProps {
   vcard?: string;
 }
 
-/** @ignore */
 const __Contact: FunctionOf<TelegramComponent<
   ContactProps,
   UnitSegment<TelegramSegmentValue>
@@ -159,7 +160,6 @@ export interface PollProps extends MessageProps {
   isClosed?: boolean;
 }
 
-/** @ignore */
 const __Poll: FunctionOf<TelegramComponent<
   PollProps,
   UnitSegment<TelegramSegmentValue>
@@ -228,7 +228,6 @@ export interface DiceProps extends MessageProps {
   emoji?: string;
 }
 
-/** @ignore */
 const __Dice: FunctionOf<TelegramComponent<
   DiceProps,
   UnitSegment<TelegramSegmentValue>
@@ -308,7 +307,6 @@ export interface InvoiceProps extends MessageProps {
   isFlexible?: boolean;
 }
 
-/** @ignore */
 const __Invoice: FunctionOf<TelegramComponent<
   InvoiceProps,
   UnitSegment<TelegramSegmentValue>
@@ -388,7 +386,6 @@ export interface GameProps extends MessageProps {
   gameShortName: string;
 }
 
-/** @ignore */
 const __Game: FunctionOf<TelegramComponent<
   GameProps,
   UnitSegment<TelegramSegmentValue>

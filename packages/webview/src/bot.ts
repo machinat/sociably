@@ -1,17 +1,17 @@
-import Engine from '@machinat/core/engine';
-import Renderer from '@machinat/core/renderer';
-import Queue from '@machinat/core/queue';
-import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
 import type {
   MachinatNode,
   MachinatBot,
   MachinatUser,
   InitScopeFn,
   DispatchWrapper,
-} from '@machinat/core/types';
+} from '@machinat/core';
+import Engine from '@machinat/core/engine';
+import Renderer from '@machinat/core/renderer';
+import Queue from '@machinat/core/queue';
+import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import type { DispatchResponse } from '@machinat/core/engine/types';
-import type { AnyServerAuthorizer } from '@machinat/auth/types';
+import type { DispatchResponse } from '@machinat/core/engine';
+import type { AnyServerAuthorizer } from '@machinat/auth';
 import { WebSocketWorker } from '@machinat/websocket';
 import createJobs from '@machinat/websocket/utils/createJobs';
 import type {
@@ -19,7 +19,7 @@ import type {
   WebSocketJob,
   WebSocketResult,
   ConnIdentifier,
-} from '@machinat/websocket/types';
+} from '@machinat/websocket';
 import { WEBVIEW } from './constant';
 import { SocketServerP, PlatformUtilitiesI } from './interface';
 import {
@@ -42,7 +42,6 @@ type SendResult = {
   connections: WebviewConnection[];
 };
 
-/** @internal */
 const toConnection = ({ serverId, id }: ConnIdentifier): WebviewConnection =>
   new WebviewConnection(serverId, id);
 

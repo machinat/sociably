@@ -5,22 +5,17 @@ import type {
   DispatchMiddleware,
   PlatformUtilities,
   MachinatNode,
-} from '@machinat/core/types';
-import type {
-  DispatchFrame,
-  DispatchResponse,
-} from '@machinat/core/engine/types';
-import type { MaybeContainer } from '@machinat/core/service/types';
-import type { IntermediateSegment } from '@machinat/core/renderer/types';
-import type { WebhookMetadata } from '@machinat/http/webhook/types';
+} from '@machinat/core';
+import type { DispatchFrame, DispatchResponse } from '@machinat/core/engine';
+import type { MaybeContainer } from '@machinat/core/service';
+import type { IntermediateSegment } from '@machinat/core/renderer';
+import type { WebhookMetadata } from '@machinat/http/webhook';
 import type { MessengerBot } from './bot';
 import type MessengerChannel from './channel';
 import type { MessengerEvent } from './event/types';
 import type { API_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from './constant';
 
 export { MessengerEvent } from './event/types';
-export { default as MessengerChat } from './channel';
-export { default as MessengerUser } from './user';
 
 export type PSIDTarget = { id: string };
 export type UserRefTarget = { user_ref: string };

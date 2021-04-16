@@ -5,14 +5,11 @@ import type {
   PlatformUtilities,
   EventMiddleware,
   DispatchMiddleware,
-} from '@machinat/core/types';
-import type {
-  DispatchFrame,
-  DispatchResponse,
-} from '@machinat/core/engine/types';
-import type { MaybeContainer } from '@machinat/core/service/types';
-import type { UnitSegment } from '@machinat/core/renderer/types';
-import type { HttpRequestInfo } from '@machinat/http/types';
+} from '@machinat/core';
+import type { DispatchFrame, DispatchResponse } from '@machinat/core/engine';
+import type { MaybeContainer } from '@machinat/core/service';
+import type { UnitSegment } from '@machinat/core/renderer';
+import type { HttpRequestInfo } from '@machinat/http';
 import type { WebSocketBot } from './bot';
 import type {
   WebSocketTopicChannel,
@@ -21,7 +18,7 @@ import type {
 } from './channel';
 
 export type { Server as WsServer } from 'ws';
-export type { HttpRequestInfo } from '@machinat/http/types';
+export type { HttpRequestInfo } from '@machinat/http';
 
 export type ConnIdentifier = {
   serverId: string;

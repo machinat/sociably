@@ -1,5 +1,5 @@
 import { makePartSegment } from '@machinat/core/renderer';
-import type { PartSegment } from '@machinat/core/renderer/types';
+import type { PartSegment } from '@machinat/core/renderer';
 import { annotateMessengerComponent } from '../utils';
 import type { MessengerComponent } from '../types';
 
@@ -33,7 +33,6 @@ export type UrlButtonProps = {
   hideWebviewShare?: boolean;
 };
 
-/** @ignore */
 const __UrlButton = function UrlButton(node, path) {
   const {
     title,
@@ -81,7 +80,6 @@ export type PostbackButtonProps = {
   payload: string;
 };
 
-/** @ignore */
 const __PostbackButton = function PostbackButton(node, path) {
   const { title, payload } = node.props;
   return [
@@ -120,7 +118,6 @@ export type CallButtonProps = {
   number: string;
 };
 
-/** @ignore */
 const __CallButton = function CallButton(node, path) {
   const { title, number } = node.props;
   return [
@@ -152,7 +149,6 @@ export type LoginButtonProps = {
   url: string;
 };
 
-/** @ignore */
 const __LoginButton = function LoginButton(node, path) {
   const { url } = node.props;
   return [
@@ -174,7 +170,6 @@ export const LoginButton: MessengerComponent<
   PartSegment<any>
 > = annotateMessengerComponent(__LoginButton);
 
-/** @ignore */
 const __LogoutButton = function LogoutButton(node, path) {
   return [makePartSegment(node, path, { type: 'account_unlink' })];
 };
@@ -204,7 +199,6 @@ export type GamePlayButtonProps = {
   contextId?: string;
 };
 
-/** @ignore */
 const __GamePlayButton = function GamePlayButton(node, path) {
   const { title, payload, playerId, contextId } = node.props;
   return [

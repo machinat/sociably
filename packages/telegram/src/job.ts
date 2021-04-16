@@ -1,6 +1,5 @@
-/** @internal */ /** */
 import formatNode from '@machinat/core/utils/formatNode';
-import type { DispatchableSegment } from '@machinat/core/engine/types';
+import type { DispatchableSegment } from '@machinat/core/engine';
 import type { TelegramSegmentValue, TelegramJob } from './types';
 import type { TelegramChat, TelegramChatTarget } from './channel';
 

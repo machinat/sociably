@@ -1,12 +1,11 @@
 import { SessionsClient } from '@google-cloud/dialogflow';
+import type { ServiceModule } from '@machinat/core';
 import { makeFactoryProvider } from '@machinat/core/service';
 import IntentRecognizerI from '@machinat/core/base/IntentRecognizer';
-import type { ServiceModule } from '@machinat/core/types';
 
 import { IntentRecognizerP } from './recognizer';
 import { ConfigsI, SessionClientI } from './interface';
 
-/** @internal */
 const dialogflowClientFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [ConfigsI] as const,

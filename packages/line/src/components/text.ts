@@ -1,6 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { makePartSegment } from '@machinat/core/renderer';
-import { PartSegment } from '@machinat/core/renderer/types';
+import { makePartSegment, PartSegment } from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
@@ -20,7 +19,6 @@ export type EmojiProps = {
   emojiId: string;
 };
 
-/** @internal */
 const __Emoji = function Emoji(node, path) {
   const { productId, emojiId } = node.props;
   return [

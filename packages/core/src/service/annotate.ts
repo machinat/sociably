@@ -17,7 +17,6 @@ import type {
 } from './types';
 import { polishServiceRequirement } from './utils';
 
-/** @internal */
 const validateLifetime = (lifetime: string) => {
   invariant(
     lifetime === 'singleton' ||

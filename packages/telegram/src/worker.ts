@@ -1,11 +1,10 @@
 import fetch from 'node-fetch';
 import FormData from 'form-data';
-import type { MachinatWorker } from '@machinat/core/engine/types';
+import type { MachinatWorker } from '@machinat/core/engine';
 import Queue from '@machinat/core/queue';
 import type { TelegramJob, TelegramResult, UploadingFile } from './types';
 import TelegramApiError from './error';
 
-/** @ignore */
 const API_HOST = 'https://api.telegram.org';
 
 type TelegramJobQueue = Queue<TelegramJob, TelegramResult>;

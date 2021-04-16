@@ -5,8 +5,6 @@ import {
 } from '../symbol';
 import ServiceScope from './scope';
 
-export { default as ServiceScope } from './scope';
-
 export type ServiceLifetime = 'singleton' | 'scoped' | 'transient';
 
 export interface SingularServiceInterface<T> {

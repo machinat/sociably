@@ -1,5 +1,4 @@
-import { makePartSegment } from '@machinat/core/renderer';
-import type { PartSegment } from '@machinat/core/renderer/types';
+import { makePartSegment, PartSegment } from '@machinat/core/renderer';
 import { annotateMessengerComponent } from '../utils';
 import { MessengerComponent } from '../types';
 
@@ -22,7 +21,6 @@ export type TextReplyProps = {
   imageUrl?: string;
 };
 
-/** @ignore */
 const __TextReply = function TextReply(node, path) {
   const { title, payload, imageUrl } = node.props;
   return [
@@ -47,10 +45,8 @@ export const TextReply: MessengerComponent<
   PartSegment<any>
 > = annotateMessengerComponent(__TextReply);
 
-/** @ignore */
 const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
 
-/** @ignore */
 const __PhoneReply = function PhoneReply(node, path) {
   return [makePartSegment(node, path, PHONE_QUICK_REPLY_VALUES)];
 };
@@ -66,10 +62,8 @@ export const PhoneReply: MessengerComponent<
   PartSegment<any>
 > = annotateMessengerComponent(__PhoneReply);
 
-/** @ignore */
 const EMAIL_QUICK_REPLY_VALUES = { content_type: 'user_email' };
 
-/** @ignore */
 const __EmailReply = function EmailReply(node, path) {
   return [makePartSegment(node, path, EMAIL_QUICK_REPLY_VALUES)];
 };

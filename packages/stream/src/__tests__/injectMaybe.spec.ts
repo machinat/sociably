@@ -1,6 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import { makeContainer } from '@machinat/core/service';
-import { ServiceScope } from '@machinat/core/service/types';
+import { makeContainer, ServiceScope } from '@machinat/core/service';
 import { STREAMING_KEY_I } from '../interface';
 import injectMaybe from '../injectMaybe';
 

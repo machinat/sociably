@@ -1,6 +1,6 @@
-import type { MachinatWorker } from '@machinat/core/engine/types';
+import type { MachinatWorker } from '@machinat/core/engine';
 import MachinatQueue from '@machinat/core/queue';
-import type { JobResponse } from '@machinat/core/queue/types';
+import type { JobResponse } from '@machinat/core/queue';
 
 import type { WebSocketServer } from './server';
 import type { WebSocketJob, WebSocketResult } from './types';

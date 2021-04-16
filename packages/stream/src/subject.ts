@@ -1,5 +1,5 @@
 import { Subject as RxSubject } from 'rxjs';
-import { MaybeContainer } from '@machinat/core/service/types';
+import { MaybeContainer } from '@machinat/core/service';
 import { StreamFrame, OperatorFunction } from './types';
 import injectMaybe from './injectMaybe';
 import pipe from './pipe';

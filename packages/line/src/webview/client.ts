@@ -1,8 +1,8 @@
 // eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import invariant from 'invariant';
-import type { ContextResult } from '@machinat/auth/types';
-import type { WebviewClientAuthorizer } from '@machinat/webview/types';
+import type { ContextResult } from '@machinat/auth';
+import type { WebviewClientAuthorizer } from '@machinat/webview';
 import { LINE } from '../constant';
 import LineChat from '../channel';
 import LineUser from '../user';

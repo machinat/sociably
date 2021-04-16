@@ -1,4 +1,4 @@
-import type { MachinatUser, MachinatChannel } from '@machinat/core/types';
+import type { MachinatUser, MachinatChannel } from '@machinat/core';
 import type {
   BaseStateController,
   StateAccessor,

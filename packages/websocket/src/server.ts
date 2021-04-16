@@ -4,10 +4,10 @@ import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
 import type { Server as WsServer } from 'ws';
 import uniqid from 'uniqid';
-import Marshaler from '@machinat/core/base/Marshaler';
-import { HttpRequestInfo } from '@machinat/http/types';
+import type { MachinatUser } from '@machinat/core';
 import { makeClassProvider } from '@machinat/core/service';
-import type { MachinatUser } from '@machinat/core/types';
+import Marshaler from '@machinat/core/base/Marshaler';
+import { HttpRequestInfo } from '@machinat/http';
 
 import {
   BrokerI,

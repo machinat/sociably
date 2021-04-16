@@ -1,4 +1,4 @@
-import type { DispatchableSegment } from '@machinat/core/engine/types';
+import type { DispatchableSegment } from '@machinat/core/engine';
 import { DispatchTarget, EventInput, WebSocketJob } from '../types';
 
 const createJobs = (

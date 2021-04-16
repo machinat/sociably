@@ -1,6 +1,5 @@
-/** @internal */ /** */
 /* eslint-disable import/prefer-default-export */
-import { ContextSupplement } from '@machinat/auth/types';
+import type { ContextSupplement } from '@machinat/auth';
 import MessengerChat from '../channel';
 import MessengerUser from '../user';
 import type { MessengerAuthContext, MessengerAuthData } from './types';

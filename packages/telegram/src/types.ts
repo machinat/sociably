@@ -5,20 +5,15 @@ import type {
   DispatchMiddleware,
   MachinatNode,
   NativeComponent,
-} from '@machinat/core/types';
-import {
-  IntermediateSegment,
-  UnitSegment,
-} from '@machinat/core/renderer/types';
-import { DispatchFrame, DispatchResponse } from '@machinat/core/engine/types';
-import type { WebhookMetadata } from '@machinat/http/webhook/types';
+} from '@machinat/core';
+import { IntermediateSegment, UnitSegment } from '@machinat/core/renderer';
+import { DispatchFrame, DispatchResponse } from '@machinat/core/engine';
+import type { WebhookMetadata } from '@machinat/http/webhook';
 import type { TelegramEvent } from './event/types';
 import type { TelegramChat } from './channel';
 import type { TelegramBot } from './bot';
 
 export type { TelegramEvent } from './event/types';
-export { TelegramChat } from './channel';
-export { default as TelegramUser } from './user';
 
 export type TelegramChatType = 'private' | 'group' | 'supergroup' | 'channel';
 

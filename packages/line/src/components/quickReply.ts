@@ -1,7 +1,10 @@
 /* eslint-disable import/prefer-default-export */
-import { MachinatNode } from '@machinat/core/types';
-import { makePartSegment } from '@machinat/core/renderer';
-import { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
+import { MachinatNode } from '@machinat/core';
+import {
+  makePartSegment,
+  PartSegment,
+  FunctionOf,
+} from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
@@ -15,7 +18,6 @@ export type QuickReplyProps = {
   children: MachinatNode;
 };
 
-/** @internal */
 const __QuickReply: FunctionOf<LineComponent<
   QuickReplyProps,
   PartSegment<any>

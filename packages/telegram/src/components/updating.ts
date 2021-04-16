@@ -1,7 +1,10 @@
-import type { MachinatNode } from '@machinat/core/types';
+import type { MachinatNode } from '@machinat/core';
 import formatNode from '@machinat/core/utils/formatNode';
-import { makeUnitSegment } from '@machinat/core/renderer';
-import type { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
+import {
+  makeUnitSegment,
+  UnitSegment,
+  FunctionOf,
+} from '@machinat/core/renderer';
 import { annotateTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
@@ -30,7 +33,6 @@ export interface EditTextProps extends EditMessageProps {
   disableWebPagePreview?: boolean;
 }
 
-/** @ignore */
 const __EditText: FunctionOf<TelegramComponent<
   EditTextProps,
   UnitSegment<TelegramSegmentValue>
@@ -94,7 +96,6 @@ export interface EditCaptionProps extends EditMessageProps {
   parseMode: TelegramParseMode;
 }
 
-/** @ignore */
 const __EditCaption: FunctionOf<TelegramComponent<
   EditCaptionProps,
   UnitSegment<TelegramSegmentValue>
@@ -160,7 +161,6 @@ export interface EditMediaProps extends EditMessageProps {
   children: MachinatNode;
 }
 
-/** @ignore */
 const __EditMedia: FunctionOf<TelegramComponent<
   EditMediaProps,
   UnitSegment<TelegramSegmentValue>
@@ -276,7 +276,6 @@ export interface StopPollProps {
   replyMarkup?: MachinatNode;
 }
 
-/** @ignore */
 const __StopPoll: FunctionOf<TelegramComponent<
   StopPollProps,
   UnitSegment<TelegramSegmentValue>
@@ -313,7 +312,6 @@ export interface DeleteMessageProps {
   messageId: number;
 }
 
-/** @ignore */
 const __DeleteMessage: FunctionOf<TelegramComponent<
   DeleteMessageProps,
   UnitSegment<TelegramSegmentValue>

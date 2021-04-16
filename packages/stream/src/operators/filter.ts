@@ -1,4 +1,4 @@
-import { MaybeContainer } from '@machinat/core/service/types';
+import { MaybeContainer } from '@machinat/core/service';
 import { OperatorFunction } from '../types';
 import injectMaybe from '../injectMaybe';
 import doAsyncByKey from './doAsyncByKey';

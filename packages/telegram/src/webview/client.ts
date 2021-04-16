@@ -1,8 +1,5 @@
-import {
-  AuthorizerCredentialResult,
-  ContextResult,
-} from '@machinat/auth/types';
-import type { WebviewClientAuthorizer } from '@machinat/webview/types';
+import type { AuthorizerCredentialResult, ContextResult } from '@machinat/auth';
+import type { WebviewClientAuthorizer } from '@machinat/webview';
 import { TELEGRAM } from '../constant';
 import {
   TelegramChat,

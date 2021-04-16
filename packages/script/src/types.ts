@@ -1,12 +1,12 @@
-import type Machinat from '@machinat/core';
-import type {
+import Machinat, {
   ThunkEffectFn,
   MachinatNode,
   MachinatEmpty,
   MachinatElement,
   MachinatChannel,
-} from '@machinat/core/types';
-import type { MaybeContainer } from '@machinat/core/service/types';
+} from '@machinat/core';
+
+import type { MaybeContainer } from '@machinat/core/service';
 
 import { MACHINAT_SCRIPT_TYPE } from './constant';
 import type {
@@ -304,7 +304,6 @@ export type ScriptNode<Vars, Input, Return> =
       typeof Machinat.Fragment
     >;
 
-/** @internal */
 export type ConditionsSegment<Vars> = {
   type: 'conditions';
   branches: {
@@ -314,14 +313,12 @@ export type ConditionsSegment<Vars> = {
   fallbackBody: null | ScriptSegment<Vars, unknown, unknown>[];
 };
 
-/** @internal */
 export type WhileSegment<Vars> = {
   type: 'while';
   condition: ConditionMatcher<Vars>;
   body: ScriptSegment<Vars, unknown, unknown>[];
 };
 
-/** @internal */
 export type LabelSegment = {
   type: 'label';
   key: string;
@@ -374,7 +371,6 @@ export type ReturnCommand<Vars, Return> = {
   getValue: ReturnValueGetter<Vars, Return> | null | undefined;
 };
 
-/** @internal */
 export type ScriptSegment<Vars, Input, Return> =
   | ContentCommand<Vars>
   | ConditionsSegment<Vars>

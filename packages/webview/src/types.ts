@@ -5,19 +5,19 @@ import type {
   EventMiddleware,
   DispatchMiddleware,
   NativeComponent,
-} from '@machinat/core/types';
+} from '@machinat/core';
 import { AnyMarshalType } from '@machinat/core/base/Marshaler';
-import type { UnitSegment } from '@machinat/core/renderer/types';
-import type { DispatchFrame } from '@machinat/core/engine/types';
-import type { MaybeContainer } from '@machinat/core/service/types';
+import type { UnitSegment } from '@machinat/core/renderer';
+import type { DispatchFrame } from '@machinat/core/engine';
+import type { MaybeContainer } from '@machinat/core/service';
 import type {
   AnyServerAuthorizer,
   ClientAuthorizer,
   AnyAuthContext,
   ContextOfAuthorizer,
   UserOfAuthorizer,
-} from '@machinat/auth/types';
-import type { NextServerOptions } from '@machinat/next/types';
+} from '@machinat/auth';
+import type { NextServerOptions } from '@machinat/next';
 import type {
   EventInput,
   EventValue,
@@ -25,7 +25,7 @@ import type {
   WebSocketJob,
   WebSocketResult,
   WebSocketDispatchResponse,
-} from '@machinat/websocket/types';
+} from '@machinat/websocket';
 import type { BotP } from './bot';
 import type {
   WebviewConnection,
@@ -37,7 +37,7 @@ export type {
   EventValue,
   ConnectEventValue,
   DisconnectEventValue,
-} from '@machinat/websocket/types';
+} from '@machinat/websocket';
 
 export type WebviewComponent = NativeComponent<
   unknown,

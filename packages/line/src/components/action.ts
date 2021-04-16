@@ -1,5 +1,8 @@
-import { makePartSegment } from '@machinat/core/renderer';
-import { PartSegment, FunctionOf } from '@machinat/core/renderer/types';
+import {
+  makePartSegment,
+  PartSegment,
+  FunctionOf,
+} from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 import type { LineComponent } from '../types';
 
@@ -22,7 +25,6 @@ export type PostbackActionProps = {
   displayText?: string;
 };
 
-/** @internal */
 const __PostbackAction: FunctionOf<LineComponent<
   PostbackActionProps,
   PartSegment<any>
@@ -59,7 +61,6 @@ export type MessageActionProps = {
   text?: string;
 };
 
-/** @internal */
 const __MessageAction: FunctionOf<LineComponent<
   MessageActionProps,
   PartSegment<any>
@@ -98,7 +99,6 @@ export type UriActionProps = {
   uri: string;
 };
 
-/** @internal */
 const __UriAction: FunctionOf<LineComponent<
   UriActionProps,
   PartSegment<any>
@@ -124,17 +124,13 @@ export const UriAction: LineComponent<
   PartSegment<any>
 > = annotateLineComponent(__UriAction);
 
-/** @internal */
 const pad2 = (n) => (n < 10 ? `0${n}` : n);
 
-/** @internal */
 const fullDate = (d) =>
   `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 
-/** @internal */
 const fullHourMinute = (d) => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 
-/** @internal */
 const dateToStringByMode = (mode, d) =>
   !(d instanceof Date)
     ? d
@@ -171,7 +167,6 @@ export type DateTimePickerActionProps = {
   min?: string | Date;
 };
 
-/** @internal */
 const __DateTimePickerAction: FunctionOf<LineComponent<
   DateTimePickerActionProps,
   PartSegment<any>
@@ -212,7 +207,6 @@ export type CameraActionProps = {
   label?: string;
 };
 
-/** @internal */
 const __CameraAction: FunctionOf<LineComponent<
   CameraActionProps,
   PartSegment<any>
@@ -244,7 +238,6 @@ export type CameraRollActionProps = {
   label?: string;
 };
 
-/** @internal */
 const __CameraRollAction: FunctionOf<LineComponent<
   CameraRollActionProps,
   PartSegment<any>
@@ -277,7 +270,6 @@ export type LocationActionProps = {
   label?: string;
 };
 
-/** @internal */
 const __LocationAction: FunctionOf<LineComponent<
   LocationActionProps,
   PartSegment<any>

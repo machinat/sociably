@@ -1,4 +1,3 @@
-/** @internal */ /** */
 import type {
   Interfaceable,
   SingularServiceInterface,

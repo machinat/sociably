@@ -1,5 +1,8 @@
-import { makeUnitSegment } from '@machinat/core/renderer';
-import { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
+import {
+  makeUnitSegment,
+  UnitSegment,
+  FunctionOf,
+} from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 import { LineComponent, LineMessageSegmentValue } from '../types';
 
@@ -19,7 +22,6 @@ export type VideoProps = {
   trackingId?: string;
 };
 
-/** @internal */
 const __Video: FunctionOf<LineComponent<
   VideoProps,
   UnitSegment<LineMessageSegmentValue>
@@ -56,7 +58,6 @@ export type AudioProps = {
   duration: number;
 };
 
-/** @internal */
 const __Audio: FunctionOf<LineComponent<
   AudioProps,
   UnitSegment<LineMessageSegmentValue>

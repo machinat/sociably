@@ -5,3 +5,4 @@ export { default as partition } from './partition';
 export { default as conditions } from './conditions';
 export { default as pipe } from './pipe';
 export { STREAMING_KEY_I } from './interface';
+export * from './types';

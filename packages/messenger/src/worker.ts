@@ -1,11 +1,9 @@
-/** @internal */ /** */
 import crypto from 'crypto';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
 
-import type { MachinatWorker } from '@machinat/core/engine/types';
-import MachinatQueue from '@machinat/core/queue';
-import type { JobResponse } from '@machinat/core/queue/types';
+import type { MachinatWorker } from '@machinat/core/engine';
+import MachinatQueue, { JobResponse } from '@machinat/core/queue';
 
 import GraphAPIError from './error';
 import type { MessengerJob, MessengerResult, BatchApiRequest } from './types';

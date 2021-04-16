@@ -1,7 +1,10 @@
-import { MachinatNode } from '@machinat/core/types';
-import { makeUnitSegment } from '@machinat/core/renderer';
+import { MachinatNode } from '@machinat/core';
+import {
+  makeUnitSegment,
+  UnitSegment,
+  FunctionOf,
+} from '@machinat/core/renderer';
 import formatNode from '@machinat/core/utils/formatNode';
-import type { UnitSegment, FunctionOf } from '@machinat/core/renderer/types';
 import { annotateTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
@@ -48,7 +51,6 @@ export interface ThumbnailProps {
  */
 export interface PhotoProps extends MessageProps, FileProps, CaptionProps {}
 
-/** @ignore */
 const __Photo: FunctionOf<TelegramComponent<
   PhotoProps,
   UnitSegment<TelegramSegmentValue>
@@ -118,7 +120,6 @@ export interface AudioProps
   /** Track name */
   title?: string;
 }
-/** @ignore */
 const __Audio: FunctionOf<TelegramComponent<
   AudioProps,
   UnitSegment<TelegramSegmentValue>
@@ -201,7 +202,6 @@ export interface DocumentProps
     CaptionProps,
     ThumbnailProps {}
 
-/** @ignore */
 const __Document: FunctionOf<TelegramComponent<
   DocumentProps,
   UnitSegment<TelegramSegmentValue>
@@ -287,7 +287,6 @@ export interface VideoProps
   supportsStreaming?: boolean;
 }
 
-/** @ignore */
 const __Video: FunctionOf<TelegramComponent<
   VideoProps,
   UnitSegment<TelegramSegmentValue>
@@ -379,7 +378,6 @@ export interface AnimationProps
   height?: number;
 }
 
-/** @ignore */
 const __Animation: FunctionOf<TelegramComponent<
   AnimationProps,
   UnitSegment<TelegramSegmentValue>
@@ -461,7 +459,6 @@ export interface VoiceProps extends MessageProps, FileProps, CaptionProps {
   duration?: number;
 }
 
-/** @ignore */
 const __Voice: FunctionOf<TelegramComponent<
   VoiceProps,
   UnitSegment<TelegramSegmentValue>
@@ -532,7 +529,6 @@ export interface VideoNoteProps
   length?: number;
 }
 
-/** @ignore */
 const __VideoNote: FunctionOf<TelegramComponent<
   VideoNoteProps,
   UnitSegment<TelegramSegmentValue>
@@ -616,7 +612,6 @@ export interface MediaGroupProps {
   replyToMessageId?: number;
 }
 
-/** @ignore */
 const __MediaGroup: FunctionOf<TelegramComponent<
   MediaGroupProps,
   UnitSegment<TelegramSegmentValue>
@@ -719,7 +714,6 @@ export const MediaGroup: TelegramComponent<
  */
 export interface StickerProps extends MessageProps, FileProps {}
 
-/** @ignore */
 const __Sticker: FunctionOf<TelegramComponent<
   StickerProps,
   UnitSegment<TelegramSegmentValue>

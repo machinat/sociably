@@ -2,9 +2,9 @@
 import {
   annotateNativeComponent,
   makeUnitSegment,
+  UnitSegment,
 } from '@machinat/core/renderer';
-import type { UnitSegment } from '@machinat/core/renderer/types';
-import type { NativeComponent } from '@machinat/core/types';
+import type { NativeComponent } from '@machinat/core';
 import { WEBSOCKET } from './constant';
 import type { EventInput } from './types';
 

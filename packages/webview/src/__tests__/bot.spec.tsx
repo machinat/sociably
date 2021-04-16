@@ -3,7 +3,7 @@ import Machinat from '@machinat/core';
 import Queue from '@machinat/core/queue';
 import _Engine from '@machinat/core/engine';
 import _Renderer from '@machinat/core/renderer';
-import type { AnyServerAuthorizer } from '@machinat/auth/types';
+import type { AnyServerAuthorizer } from '@machinat/auth';
 import { WebSocketWorker } from '@machinat/websocket';
 import {
   WebviewConnection,

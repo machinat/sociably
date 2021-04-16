@@ -1,5 +1,5 @@
 import { makeUnitSegment } from '@machinat/core/renderer';
-import type { UnitSegment } from '@machinat/core/renderer/types';
+import type { UnitSegment } from '@machinat/core/renderer';
 import { annotateMessengerComponent } from '../utils';
 import {
   API_PATH,
@@ -32,7 +32,6 @@ export type PassThreadControlProps = {
   metadata: string;
 };
 
-/** @ignore */
 const __PassThreadControl = function PassThreadControl(node, path) {
   const { targetAppId, metadata } = node.props;
   return [
@@ -56,7 +55,6 @@ export const PassThreadControl: MessengerComponent<
   UnitSegment<PassThreadControlValue>
 > = annotateMessengerComponent(__PassThreadControl);
 
-/** @ignore */
 const __RequestThreadControl = function RequestThreadControl(node, path) {
   return [
     makeUnitSegment(node, path, {
@@ -79,7 +77,6 @@ export const RequestThreadControl: MessengerComponent<
   UnitSegment<RequestThreadControlValue>
 > = annotateMessengerComponent(__RequestThreadControl);
 
-/** @ignore */
 const __TakeThreadContorl = function TakeThreadContorl(node, path) {
   return [
     makeUnitSegment(node, path, {

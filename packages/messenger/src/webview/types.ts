@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import type { AuthContextBase } from '@machinat/auth/types';
+import type { AuthContextBase } from '@machinat/auth';
 import type MessengerChat from '../channel';
 import type MessengerUser from '../user';
 import type { MessengerChatType } from '../constant';
