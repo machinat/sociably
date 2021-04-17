@@ -1,8 +1,4 @@
-import {
-  makeUnitSegment,
-  UnitSegment,
-  FunctionOf,
-} from '@machinat/core/renderer';
+import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
 import { annotateTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
@@ -22,10 +18,16 @@ export interface ForwardMessageProps {
   disableNotification?: boolean;
 }
 
-const __ForwardMessage: FunctionOf<TelegramComponent<
+/**
+ * Forward messages of any kind
+ * @category Component
+ * @props {@link ForwardMessageProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#forwardmessage).
+ */
+export const ForwardMessage: TelegramComponent<
   ForwardMessageProps,
   UnitSegment<TelegramSegmentValue>
->> = function ForwardMessage(node, path) {
+> = annotateTelegramComponent(function ForwardMessage(node, path) {
   const { fromChatId, disableNotification, messageId } = node.props;
 
   return [
@@ -38,17 +40,7 @@ const __ForwardMessage: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Forward messages of any kind
- * @category Component
- * @props {@link ForwardMessageProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#forwardmessage).
- */
-export const ForwardMessage: TelegramComponent<
-  ForwardMessageProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__ForwardMessage);
+});
 
 /**
  * @category Props
@@ -68,19 +60,6 @@ export interface ChatActionProps {
     | 'upload_video_note';
 }
 
-const __ChatAction: FunctionOf<TelegramComponent<
-  ChatActionProps,
-  UnitSegment<TelegramSegmentValue>
->> = function ChatAction(node, path) {
-  const { action } = node.props;
-
-  return [
-    makeUnitSegment(node, path, {
-      method: 'sendChatAction',
-      parameters: { action },
-    }),
-  ];
-};
 /**
  * Inform user that something is happening on the bot's side. The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status).
  * @category Component
@@ -90,7 +69,16 @@ const __ChatAction: FunctionOf<TelegramComponent<
 export const ChatAction: TelegramComponent<
   ChatActionProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__ChatAction);
+> = annotateTelegramComponent(function ChatAction(node, path) {
+  const { action } = node.props;
+
+  return [
+    makeUnitSegment(node, path, {
+      method: 'sendChatAction',
+      parameters: { action },
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -102,10 +90,16 @@ export interface KickChatMemberProps {
   untilDate?: number | Date;
 }
 
-const __KickChatMember: FunctionOf<TelegramComponent<
+/**
+ * Kick a user from a group, a supergroup or a channel. In the case of supergroups and channels, the user will not be able to return to the group on their own using invite links, etc., unless unbanned first. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+ * @category Component
+ * @props {@link KickChatMemberProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#kickchatmember).
+ */
+export const KickChatMember: TelegramComponent<
   KickChatMemberProps,
   UnitSegment<TelegramSegmentValue>
->> = function KickChatMember(node, path) {
+> = annotateTelegramComponent(function KickChatMember(node, path) {
   const { userId, untilDate } = node.props;
 
   return [
@@ -120,17 +114,7 @@ const __KickChatMember: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Kick a user from a group, a supergroup or a channel. In the case of supergroups and channels, the user will not be able to return to the group on their own using invite links, etc., unless unbanned first. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
- * @category Component
- * @props {@link KickChatMemberProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#kickchatmember).
- */
-export const KickChatMember: TelegramComponent<
-  KickChatMemberProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__KickChatMember);
+});
 
 /**
  * @category Props
@@ -140,10 +124,16 @@ export interface UnbanChatMemberProps {
   userId: number;
 }
 
-const __UnbanChatMember: FunctionOf<TelegramComponent<
+/**
+ * Unban a previously kicked user in a supergroup or channel. The user will not return to the group or channel automatically, but will be able to join via link, etc. The bot must be an administrator for this to work.
+ * @category Component
+ * @props {@link UnbanChatMemberProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#unbanchatmember).
+ */
+export const UnbanChatMember: TelegramComponent<
   UnbanChatMemberProps,
   UnitSegment<TelegramSegmentValue>
->> = function UnbanChatMember(node, path) {
+> = annotateTelegramComponent(function UnbanChatMember(node, path) {
   const { userId } = node.props;
 
   return [
@@ -154,17 +144,7 @@ const __UnbanChatMember: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Unban a previously kicked user in a supergroup or channel. The user will not return to the group or channel automatically, but will be able to join via link, etc. The bot must be an administrator for this to work.
- * @category Component
- * @props {@link UnbanChatMemberProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#unbanchatmember).
- */
-export const UnbanChatMember: TelegramComponent<
-  UnbanChatMemberProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__UnbanChatMember);
+});
 
 /**
  * @category Props
@@ -198,10 +178,16 @@ export interface RestrictChatMemberProps extends ChatPromotionProps {
   userId: number;
 }
 
-const __RestrictChatMember: FunctionOf<TelegramComponent<
+/**
+ * Restrict a user in a supergroup. The bot must be an administrator in the supergroup for this to work and must have the appropriate admin rights. Pass True for all permissions to lift restrictions from a user.
+ * @category Component
+ * @props {@link RestrictChatMemberProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#restrictchatmember).
+ */
+export const RestrictChatMember: TelegramComponent<
   RestrictChatMemberProps,
   UnitSegment<TelegramSegmentValue>
->> = function RestrictChatMember(node, path) {
+> = annotateTelegramComponent(function RestrictChatMember(node, path) {
   const {
     userId,
     canSendMessages,
@@ -237,17 +223,7 @@ const __RestrictChatMember: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Restrict a user in a supergroup. The bot must be an administrator in the supergroup for this to work and must have the appropriate admin rights. Pass True for all permissions to lift restrictions from a user.
- * @category Component
- * @props {@link RestrictChatMemberProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#restrictchatmember).
- */
-export const RestrictChatMember: TelegramComponent<
-  RestrictChatMemberProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__RestrictChatMember);
+});
 
 /**
  * @category Props
@@ -273,10 +249,16 @@ export interface PromoteChatMemberProps {
   canPromoteMembers?: boolean;
 }
 
-const __PromoteChatMember: FunctionOf<TelegramComponent<
+/**
+ * Promote or demote a user in a supergroup or a channel. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Pass False for all boolean parameters to demote a user.
+ * @category Component
+ * @props {@link PromoteChatMemberProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#promotechatmember).
+ */
+export const PromoteChatMember: TelegramComponent<
   PromoteChatMemberProps,
   UnitSegment<TelegramSegmentValue>
->> = function PromoteChatMember(node, path) {
+> = annotateTelegramComponent(function PromoteChatMember(node, path) {
   const {
     userId,
     canPostMessages,
@@ -305,17 +287,7 @@ const __PromoteChatMember: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Promote or demote a user in a supergroup or a channel. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Pass False for all boolean parameters to demote a user.
- * @category Component
- * @props {@link PromoteChatMemberProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#promotechatmember).
- */
-export const PromoteChatMember: TelegramComponent<
-  PromoteChatMemberProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__PromoteChatMember);
+});
 
 /**
  * @category Props
@@ -327,10 +299,19 @@ export interface SetChatAdministratorCustomTitleProps {
   customTitle: string;
 }
 
-const __SetChatAdministratorCustomTitle: FunctionOf<TelegramComponent<
+/**
+ * Set a custom title for an administrator in a supergroup promoted by the bot.
+ * @category Component
+ * @props {@link SetChatAdministratorCustomTitleProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#setchatadministratorcustomtitle).
+ */
+export const SetChatAdministratorCustomTitle: TelegramComponent<
   SetChatAdministratorCustomTitleProps,
   UnitSegment<TelegramSegmentValue>
->> = function SetChatAdministratorCustomTitle(node, path) {
+> = annotateTelegramComponent(function SetChatAdministratorCustomTitle(
+  node,
+  path
+) {
   const { userId, customTitle } = node.props;
 
   return [
@@ -342,22 +323,18 @@ const __SetChatAdministratorCustomTitle: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Set a custom title for an administrator in a supergroup promoted by the bot.
- * @category Component
- * @props {@link SetChatAdministratorCustomTitleProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#setchatadministratorcustomtitle).
- */
-export const SetChatAdministratorCustomTitle: TelegramComponent<
-  SetChatAdministratorCustomTitleProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__SetChatAdministratorCustomTitle);
+});
 
-const __SetChatPermissions: FunctionOf<TelegramComponent<
+/**
+ * Set default chat permissions for all members. The bot must be an administrator in the group or a supergroup for this to work and must have the can_restrict_members admin rights.
+ * @category Component
+ * @props {@link ChatPromotionProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#setchatpermissions).
+ */
+export const SetChatPermissions: TelegramComponent<
   ChatPromotionProps,
   UnitSegment<TelegramSegmentValue>
->> = function SetChatPermissions(node, path) {
+> = annotateTelegramComponent(function SetChatPermissions(node, path) {
   const {
     canSendMessages,
     canSendMediaMessages,
@@ -386,17 +363,7 @@ const __SetChatPermissions: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Set default chat permissions for all members. The bot must be an administrator in the group or a supergroup for this to work and must have the can_restrict_members admin rights.
- * @category Component
- * @props {@link ChatPromotionProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#setchatpermissions).
- */
-export const SetChatPermissions: TelegramComponent<
-  ChatPromotionProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__SetChatPermissions);
+});
 
 /**
  * @category Props
@@ -408,10 +375,16 @@ export interface SetChatPhotoProps {
   fileInfo?: UploadingFileInfo;
 }
 
-const __SetChatPhoto: FunctionOf<TelegramComponent<
+/**
+ * Set a new profile photo for the chat. Photos can't be changed for private chats. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+ * @category Component
+ * @props {@link SetChatPhotoProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#setchatphoto).
+ */
+export const SetChatPhoto: TelegramComponent<
   SetChatPhotoProps,
   UnitSegment<TelegramSegmentValue>
->> = function SetChatPhoto(node, path) {
+> = annotateTelegramComponent(function SetChatPhoto(node, path) {
   const { fileData, fileInfo } = node.props;
 
   return [
@@ -425,29 +398,8 @@ const __SetChatPhoto: FunctionOf<TelegramComponent<
       ],
     }),
   ];
-};
-/**
- * Set a new profile photo for the chat. Photos can't be changed for private chats. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
- * @category Component
- * @props {@link SetChatPhotoProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#setchatphoto).
- */
-export const SetChatPhoto: TelegramComponent<
-  SetChatPhotoProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__SetChatPhoto);
+});
 
-const __DeleteChatPhoto: FunctionOf<TelegramComponent<
-  {},
-  UnitSegment<TelegramSegmentValue>
->> = function DeleteChatPhoto(node, path) {
-  return [
-    makeUnitSegment(node, path, {
-      method: 'deleteChatPhoto',
-      parameters: {},
-    }),
-  ];
-};
 /**
  * Delete a chat photo. Photos can't be changed for private chats. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
  * @category Component
@@ -457,7 +409,14 @@ const __DeleteChatPhoto: FunctionOf<TelegramComponent<
 export const DeleteChatPhoto: TelegramComponent<
   {},
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__DeleteChatPhoto);
+> = annotateTelegramComponent(function DeleteChatPhoto(node, path) {
+  return [
+    makeUnitSegment(node, path, {
+      method: 'deleteChatPhoto',
+      parameters: {},
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -467,19 +426,6 @@ export interface SetChatTitleProps {
   title: string;
 }
 
-const __SetChatTitle: FunctionOf<TelegramComponent<
-  SetChatTitleProps,
-  UnitSegment<TelegramSegmentValue>
->> = function SetChatTitle(node, path) {
-  const { title } = node.props;
-
-  return [
-    makeUnitSegment(node, path, {
-      method: 'setChatTitle',
-      parameters: { title },
-    }),
-  ];
-};
 /**
  *  Change the title of a chat. Titles can't be changed for private chats. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
  * @category Component
@@ -489,7 +435,16 @@ const __SetChatTitle: FunctionOf<TelegramComponent<
 export const SetChatTitle: TelegramComponent<
   SetChatTitleProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__SetChatTitle);
+> = annotateTelegramComponent(function SetChatTitle(node, path) {
+  const { title } = node.props;
+
+  return [
+    makeUnitSegment(node, path, {
+      method: 'setChatTitle',
+      parameters: { title },
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -499,19 +454,6 @@ export interface SetChatDescriptionProps {
   description: string;
 }
 
-const __SetChatDescription: FunctionOf<TelegramComponent<
-  SetChatDescriptionProps,
-  UnitSegment<TelegramSegmentValue>
->> = function SetChatDescription(node, path) {
-  const { description } = node.props;
-
-  return [
-    makeUnitSegment(node, path, {
-      method: 'setChatDescription',
-      parameters: { description },
-    }),
-  ];
-};
 /**
  * Change the description of a group, a supergroup or a channel. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
  * @category Component
@@ -521,7 +463,16 @@ const __SetChatDescription: FunctionOf<TelegramComponent<
 export const SetChatDescription: TelegramComponent<
   SetChatDescriptionProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__SetChatDescription);
+> = annotateTelegramComponent(function SetChatDescription(node, path) {
+  const { description } = node.props;
+
+  return [
+    makeUnitSegment(node, path, {
+      method: 'setChatDescription',
+      parameters: { description },
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -533,10 +484,16 @@ export interface PinChatMessageProps {
   disableNotification?: boolean;
 }
 
-const __PinChatMessage: FunctionOf<TelegramComponent<
+/**
+ * Pin a message in a group, a supergroup, or a channel. The bot must be an administrator in the chat for this to work and must have the 'can_pin_messages' admin right in the supergroup or 'can_edit_messages' admin right in the channel.
+ * @category Component
+ * @props {@link PinChatMessageProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#pinchatmessage).
+ */
+export const PinChatMessage: TelegramComponent<
   PinChatMessageProps,
   UnitSegment<TelegramSegmentValue>
->> = function PinChatMessage(node, path) {
+> = annotateTelegramComponent(function PinChatMessage(node, path) {
   const { messageId, disableNotification } = node.props;
 
   return [
@@ -548,29 +505,8 @@ const __PinChatMessage: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Pin a message in a group, a supergroup, or a channel. The bot must be an administrator in the chat for this to work and must have the 'can_pin_messages' admin right in the supergroup or 'can_edit_messages' admin right in the channel.
- * @category Component
- * @props {@link PinChatMessageProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#pinchatmessage).
- */
-export const PinChatMessage: TelegramComponent<
-  PinChatMessageProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__PinChatMessage);
+});
 
-const __UnpinChatMessage: FunctionOf<TelegramComponent<
-  {},
-  UnitSegment<TelegramSegmentValue>
->> = function UnpinChatMessage(node, path) {
-  return [
-    makeUnitSegment(node, path, {
-      method: 'unpinChatMessage',
-      parameters: {},
-    }),
-  ];
-};
 /**
  * Unpin a message in a group, a supergroup, or a channel. The bot must be an administrator in the chat for this to work and must have the 'can_pin_messages' admin right in the supergroup or 'can_edit_messages' admin right in the channel.
  * @category Component
@@ -580,19 +516,15 @@ const __UnpinChatMessage: FunctionOf<TelegramComponent<
 export const UnpinChatMessage: TelegramComponent<
   {},
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__UnpinChatMessage);
-
-const __LeaveChat: FunctionOf<TelegramComponent<
-  {},
-  UnitSegment<TelegramSegmentValue>
->> = function LeaveChat(node, path) {
+> = annotateTelegramComponent(function UnpinChatMessage(node, path) {
   return [
     makeUnitSegment(node, path, {
-      method: 'leaveChat',
+      method: 'unpinChatMessage',
       parameters: {},
     }),
   ];
-};
+});
+
 /**
  * Leave a group, supergroup or channel.
  * @category Component
@@ -602,7 +534,14 @@ const __LeaveChat: FunctionOf<TelegramComponent<
 export const LeaveChat: TelegramComponent<
   {},
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__LeaveChat);
+> = annotateTelegramComponent(function LeaveChat(node, path) {
+  return [
+    makeUnitSegment(node, path, {
+      method: 'leaveChat',
+      parameters: {},
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -612,19 +551,6 @@ export interface SetChatStickerSetProps {
   stickerSetName: string;
 }
 
-const __SetChatStickerSet: FunctionOf<TelegramComponent<
-  SetChatStickerSetProps,
-  UnitSegment<TelegramSegmentValue>
->> = function SetChatStickerSet(node, path) {
-  const { stickerSetName } = node.props;
-
-  return [
-    makeUnitSegment(node, path, {
-      method: 'setChatStickerSet',
-      parameters: { sticker_set_name: stickerSetName },
-    }),
-  ];
-};
 /**
  * Change the description of a group, a supergroup or a channel. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
  * @category Component
@@ -634,19 +560,17 @@ const __SetChatStickerSet: FunctionOf<TelegramComponent<
 export const SetChatStickerSet: TelegramComponent<
   SetChatStickerSetProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__SetChatStickerSet);
+> = annotateTelegramComponent(function SetChatStickerSet(node, path) {
+  const { stickerSetName } = node.props;
 
-const __DeleteChatStickerSet: FunctionOf<TelegramComponent<
-  {},
-  UnitSegment<TelegramSegmentValue>
->> = function DeleteChatStickerSet(node, path) {
   return [
     makeUnitSegment(node, path, {
-      method: 'deleteChatStickerSet',
-      parameters: {},
+      method: 'setChatStickerSet',
+      parameters: { sticker_set_name: stickerSetName },
     }),
   ];
-};
+});
+
 /**
  * Leave a group, supergroup or channel.
  * @category Component
@@ -656,4 +580,11 @@ const __DeleteChatStickerSet: FunctionOf<TelegramComponent<
 export const DeleteChatStickerSet: TelegramComponent<
   {},
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__DeleteChatStickerSet);
+> = annotateTelegramComponent(function DeleteChatStickerSet(node, path) {
+  return [
+    makeUnitSegment(node, path, {
+      method: 'deleteChatStickerSet',
+      parameters: {},
+    }),
+  ];
+});

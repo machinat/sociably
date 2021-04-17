@@ -8,9 +8,6 @@ const TYPING_OFF_VALUE = { sender_action: 'typing_off' as const };
 
 const TYPING_ON_VALUE = { sender_action: 'typing_on' as const };
 
-const __MarkSeen = function MarkSeen(node, path) {
-  return [makeUnitSegment(node, path, MARK_SEEN_VALUE)];
-};
 /**
  * Display the confirmation icon.
  * @category Component
@@ -21,11 +18,10 @@ const __MarkSeen = function MarkSeen(node, path) {
 export const MarkSeen: MessengerComponent<
   {},
   UnitSegment<SenderActionValue>
-> = annotateMessengerComponent(__MarkSeen);
+> = annotateMessengerComponent(function MarkSeen(node, path) {
+  return [makeUnitSegment(node, path, MARK_SEEN_VALUE)];
+});
 
-const __TypingOn = function TypingOn(node, path) {
-  return [makeUnitSegment(node, path, TYPING_ON_VALUE)];
-};
 /**
  * Display the typing bubble.
  * @category Component
@@ -36,11 +32,10 @@ const __TypingOn = function TypingOn(node, path) {
 export const TypingOn: MessengerComponent<
   {},
   UnitSegment<SenderActionValue>
-> = annotateMessengerComponent(__TypingOn);
+> = annotateMessengerComponent(function TypingOn(node, path) {
+  return [makeUnitSegment(node, path, TYPING_ON_VALUE)];
+});
 
-const __TypingOff = function TypingOff(node, path) {
-  return [makeUnitSegment(node, path, TYPING_OFF_VALUE)];
-};
 /**
  * Remove the typing bubble.
  * @category Component
@@ -51,4 +46,6 @@ const __TypingOff = function TypingOff(node, path) {
 export const TypingOff: MessengerComponent<
   {},
   UnitSegment<SenderActionValue>
-> = annotateMessengerComponent(__TypingOff);
+> = annotateMessengerComponent(function TypingOff(node, path) {
+  return [makeUnitSegment(node, path, TYPING_OFF_VALUE)];
+});

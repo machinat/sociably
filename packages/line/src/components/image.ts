@@ -3,7 +3,6 @@ import {
   makeUnitSegment,
   makePartSegment,
   PartSegment,
-  FunctionOf,
 } from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
@@ -18,26 +17,24 @@ export type ImageProps = {
   previewImageUrl: string;
 };
 
-const __Image: FunctionOf<LineComponent<ImageProps>> = function Image(
-  node,
-  path
-) {
-  const { originalContentUrl, previewImageUrl } = node.props;
-  return [
-    makeUnitSegment(node, path, {
-      type: 'image' as const,
-      originalContentUrl,
-      previewImageUrl,
-    }),
-  ];
-};
 /**
  * Image sends an image message.
  * @category Component
  * @props {@link ImageProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#image-message).
  */
-export const Image: LineComponent<ImageProps> = annotateLineComponent(__Image);
+export const Image: LineComponent<ImageProps> = annotateLineComponent(
+  function Image(node, path) {
+    const { originalContentUrl, previewImageUrl } = node.props;
+    return [
+      makeUnitSegment(node, path, {
+        type: 'image' as const,
+        originalContentUrl,
+        previewImageUrl,
+      }),
+    ];
+  }
+);
 
 /**
  * @category Props
@@ -55,19 +52,6 @@ export type StickerProps = {
   packageId: string;
 };
 
-const __Sticker: FunctionOf<LineComponent<StickerProps>> = function Sticker(
-  node,
-  path
-) {
-  const { stickerId, packageId } = node.props;
-  return [
-    makeUnitSegment(node, path, {
-      type: 'sticker' as const,
-      packageId,
-      stickerId,
-    }),
-  ];
-};
 /**
  * Sticker sends an sticker message.
  * @category Component
@@ -75,7 +59,16 @@ const __Sticker: FunctionOf<LineComponent<StickerProps>> = function Sticker(
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#sticker-message).
  */
 export const Sticker: LineComponent<StickerProps> = annotateLineComponent(
-  __Sticker
+  function Sticker(node, path) {
+    const { stickerId, packageId } = node.props;
+    return [
+      makeUnitSegment(node, path, {
+        type: 'sticker' as const,
+        packageId,
+        stickerId,
+      }),
+    ];
+  }
 );
 
 /**
@@ -103,10 +96,16 @@ export type ImageMapAreaProps = {
   height: number;
 };
 
-const __ImageMapArea: FunctionOf<LineComponent<
+/**
+ * ImageMapArea specifies the actions and tappable areas of an imagemap.
+ * @category Component
+ * @props {@link ImageMapAreaProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#imagemap-action-objects).
+ */
+export const ImageMapArea: LineComponent<
   ImageMapAreaProps,
   PartSegment<any>
->> = async function ImageMapArea(node, path, render) {
+> = annotateLineComponent(async function ImageMapArea(node, path, render) {
   const { action, x, y, width, height } = node.props;
   const actionSegments = await render(action, '.action');
   const actionValue = actionSegments?.[0].value;
@@ -140,17 +139,7 @@ const __ImageMapArea: FunctionOf<LineComponent<
           }
     ),
   ];
-};
-/**
- * ImageMapArea specifies the actions and tappable areas of an imagemap.
- * @category Component
- * @props {@link ImageMapAreaProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#imagemap-action-objects).
- */
-export const ImageMapArea: LineComponent<
-  ImageMapAreaProps,
-  PartSegment<any>
-> = annotateLineComponent(__ImageMapArea);
+});
 
 /**
  * @category Props
@@ -178,10 +167,17 @@ export type ImageMapVideoAreaProps = {
   action?: MachinatNode;
 };
 
-const __ImageMapVideoArea: FunctionOf<LineComponent<
+/**
+ * ImageMapVideoAreaProps play a video on the image and display a label with a
+ * hyperlink after the video is finished.
+ * @category Component
+ * @props {@link ImageMapVideoAreaProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#imagemap-message).
+ */
+export const ImageMapVideoArea: LineComponent<
   ImageMapVideoAreaProps,
   PartSegment<any>
->> = async function ImageMapVideoArea(node, path, render) {
+> = annotateLineComponent(async function ImageMapVideoArea(node, path, render) {
   const {
     originalContentUrl,
     previewImageUrl,
@@ -211,18 +207,7 @@ const __ImageMapVideoArea: FunctionOf<LineComponent<
       },
     }),
   ];
-};
-/**
- * ImageMapVideoAreaProps play a video on the image and display a label with a
- * hyperlink after the video is finished.
- * @category Component
- * @props {@link ImageMapVideoAreaProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#imagemap-message).
- */
-export const ImageMapVideoArea: LineComponent<
-  ImageMapVideoAreaProps,
-  PartSegment<any>
-> = annotateLineComponent(__ImageMapVideoArea);
+});
 
 /**
  * @category Props
@@ -243,31 +228,6 @@ export type ImageMapProps = {
   video?: MachinatNode;
 };
 
-const __ImageMap: FunctionOf<LineComponent<
-  ImageMapProps
->> = async function ImageMap(node, path, render) {
-  const { baseUrl, altText, height, children, video } = node.props;
-
-  const videoSegments = await render(video, '.video');
-  const videoValue = videoSegments?.[0].value;
-
-  const actionSegments = await render(children, '.children');
-  const actionValues = actionSegments?.map((segment) => segment.value);
-
-  return [
-    makeUnitSegment(node, path, {
-      type: 'imagemap' as const,
-      baseUrl,
-      altText,
-      baseSize: {
-        width: 1040 as const,
-        height,
-      },
-      actions: actionValues || [],
-      video: videoValue,
-    }),
-  ];
-};
 /**
  * Imagemap messages are messages configured with an image that has multiple
  * tappable areas. You can assign one tappable area for the entire image or
@@ -278,5 +238,27 @@ const __ImageMap: FunctionOf<LineComponent<
  */
 
 export const ImageMap: LineComponent<ImageMapProps> = annotateLineComponent(
-  __ImageMap
+  async function ImageMap(node, path, render) {
+    const { baseUrl, altText, height, children, video } = node.props;
+
+    const videoSegments = await render(video, '.video');
+    const videoValue = videoSegments?.[0].value;
+
+    const actionSegments = await render(children, '.children');
+    const actionValues = actionSegments?.map((segment) => segment.value);
+
+    return [
+      makeUnitSegment(node, path, {
+        type: 'imagemap' as const,
+        baseUrl,
+        altText,
+        baseSize: {
+          width: 1040 as const,
+          height,
+        },
+        actions: actionValues || [],
+        video: videoValue,
+      }),
+    ];
+  }
 );

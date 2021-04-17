@@ -1,11 +1,11 @@
-/* eslint-disable import/prefer-default-export */
-import { MachinatNode, MachinatElement } from '@machinat/core';
-import type { UnitSegment } from '@machinat/core/renderer';
+import { MachinatNode } from '@machinat/core';
+import type { UnitSegment, OutputSegment } from '@machinat/core/renderer';
 import formatNode from '@machinat/core/utils/formatNode';
 import type {
   MessengerSegmentValue,
   MessengerComponent,
   MessageValue,
+  SenderActionValue,
 } from '../types';
 import { annotateMessengerComponent, isMessageEntry } from '../utils';
 
@@ -48,7 +48,18 @@ export type ExpressionProps = {
   personaId?: string;
 };
 
-const __Expression = async function Expression(
+/**
+ * Annotate all the children content with the message settings attributes and
+ * append quick replies after the content.
+ * @category Component
+ * @props {@link ExpressionProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api).
+ */
+export const Expression: MessengerComponent<
+  ExpressionProps,
+  OutputSegment<MessengerSegmentValue>
+> = annotateMessengerComponent(async function Expression(
   {
     props: {
       children,
@@ -59,7 +70,7 @@ const __Expression = async function Expression(
       quickReplies,
       personaId,
     },
-  }: MachinatElement<ExpressionProps, any>,
+  },
   _path,
   render
 ) {
@@ -68,7 +79,7 @@ const __Expression = async function Expression(
     return null;
   }
 
-  const segments: UnitSegment<MessengerSegmentValue>[] = [];
+  const segments: OutputSegment<MessengerSegmentValue>[] = [];
   let lastMessageIdx = -1;
 
   for (const segment of childrenSegments) {
@@ -80,30 +91,30 @@ const __Expression = async function Expression(
       );
     }
 
-    const { type, value, node, path } = segment;
-
     // hoisting text to message object
-    if (type === 'text') {
+    if (segment.type === 'text') {
       lastMessageIdx = segments.length;
 
       segments.push({
         type: 'unit',
         value: {
-          message: { text: value },
+          message: { text: segment.value },
           messaging_type: messagingType,
           tag,
           notification_type: notificationType,
           persona_id: personaId,
         },
-        node,
-        path,
+        node: segment.node,
+        path: segment.path,
       });
-    } else if (isMessageEntry(value as MessengerSegmentValue)) {
+    } else if (isMessageEntry(segment.value)) {
+      const { value } = segment as UnitSegment<MessengerSegmentValue>;
+
       if ('message' in value) {
         lastMessageIdx = segments.length;
 
         segments.push({
-          ...segment,
+          ...(segment as UnitSegment<MessageValue>),
           value: {
             ...value,
             messaging_type: messagingType,
@@ -113,28 +124,30 @@ const __Expression = async function Expression(
           },
         });
       } else if (
-        value.sender_action === 'typing_on' ||
-        value.sender_action === 'typing_off'
+        'sender_action' in value &&
+        (value.sender_action === 'typing_on' ||
+          value.sender_action === 'typing_off')
       ) {
         segments.push({
-          ...segment,
+          ...(segment as UnitSegment<SenderActionValue>),
           value: { ...value, persona_id: personaId },
         });
       } else {
-        segments.push(segment);
+        segments.push(segment as UnitSegment<MessengerSegmentValue>);
       }
-    } else if (type !== 'break') {
+    } else if (segment.type !== 'break') {
       segments.push(segment);
     }
   }
 
   //  attach quick_replies and metadata to last message
   if (lastMessageIdx !== -1) {
-    const lastMessageSeg = segments[lastMessageIdx];
+    const lastMessageSeg = segments[lastMessageIdx] as UnitSegment<
+      MessengerSegmentValue
+    >;
 
     const quickReplySegments = await render(quickReplies, '.quickReplies');
-
-    const { value } = lastMessageSeg as UnitSegment<MessengerSegmentValue>;
+    const { value } = lastMessageSeg;
 
     segments.splice(lastMessageIdx, 1, {
       ...lastMessageSeg,
@@ -150,17 +163,4 @@ const __Expression = async function Expression(
   }
 
   return segments;
-};
-
-/**
- * Annotate all the children content with the message settings attributes and
- * append quick replies after the content.
- * @category Component
- * @props {@link ExpressionProps}
- * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api).
- */
-export const Expression: MessengerComponent<
-  ExpressionProps,
-  UnitSegment<MessengerSegmentValue>
-> = annotateMessengerComponent(__Expression);
+});

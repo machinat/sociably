@@ -3,7 +3,6 @@ import {
   makeUnitSegment,
   makePartSegment,
   PartSegment,
-  FunctionOf,
 } from '@machinat/core/renderer';
 
 import { annotateLineComponent } from '../utils';
@@ -55,51 +54,6 @@ export type ButtonTemplateProps = {
   defaultAction?: MachinatNode;
 };
 
-const __ButtonTemplate: FunctionOf<LineComponent<
-  ButtonTemplateProps
->> = async function ButtonTemplate(node, path, render) {
-  const {
-    actions,
-    defaultAction,
-    altText,
-    thumbnailImageUrl,
-    imageAspectRatio,
-    imageSize,
-    imageBackgroundColor,
-    title,
-    children,
-  } = node.props;
-
-  const [
-    defaultActionSegments,
-    actionSegments,
-    textSegments,
-  ] = await Promise.all([
-    render(defaultAction, '.defaultAction'),
-    render(actions, '.actions'),
-    render(children, '.children'),
-  ]);
-
-  const template = {
-    type: 'buttons',
-    thumbnailImageUrl,
-    imageAspectRatio,
-    imageSize,
-    imageBackgroundColor,
-    title,
-    text: textSegments?.[0].value,
-    defaultAction: defaultActionSegments?.[0].value,
-    actions: actionSegments?.map((seg) => seg.value),
-  };
-
-  return [
-    makeUnitSegment(node, path, {
-      type: 'template' as const,
-      altText: typeof altText === 'function' ? altText(template) : altText,
-      template,
-    }),
-  ];
-};
 /**
  * Template with an image, title, text, and multiple action buttons.
  * @category Component
@@ -107,7 +61,49 @@ const __ButtonTemplate: FunctionOf<LineComponent<
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#buttons).
  */
 export const ButtonTemplate: LineComponent<ButtonTemplateProps> = annotateLineComponent(
-  __ButtonTemplate
+  async function ButtonTemplate(node, path, render) {
+    const {
+      actions,
+      defaultAction,
+      altText,
+      thumbnailImageUrl,
+      imageAspectRatio,
+      imageSize,
+      imageBackgroundColor,
+      title,
+      children,
+    } = node.props;
+
+    const [
+      defaultActionSegments,
+      actionSegments,
+      textSegments,
+    ] = await Promise.all([
+      render(defaultAction, '.defaultAction'),
+      render(actions, '.actions'),
+      render(children, '.children'),
+    ]);
+
+    const template = {
+      type: 'buttons',
+      thumbnailImageUrl,
+      imageAspectRatio,
+      imageSize,
+      imageBackgroundColor,
+      title,
+      text: textSegments?.[0].value,
+      defaultAction: defaultActionSegments?.[0].value,
+      actions: actionSegments?.map((seg) => seg.value),
+    };
+
+    return [
+      makeUnitSegment(node, path, {
+        type: 'template' as const,
+        altText: typeof altText === 'function' ? altText(template) : altText,
+        template,
+      }),
+    ];
+  }
 );
 
 /**
@@ -129,29 +125,6 @@ export type ConfirmTemplateProps = {
   children: string;
 };
 
-const __ConfirmTemplate: FunctionOf<LineComponent<
-  ConfirmTemplateProps
->> = async function ConfirmTemplate(node, path, render) {
-  const { actions, altText, children } = node.props;
-  const [actionSegments, textSegments] = await Promise.all([
-    render(actions, '.actions'),
-    render(children, '.children'),
-  ]);
-
-  const template = {
-    type: 'confirm',
-    text: textSegments?.[0].value,
-    actions: actionSegments?.map((segment) => segment.value),
-  };
-
-  return [
-    makeUnitSegment(node, path, {
-      type: 'template' as const,
-      altText: typeof altText === 'function' ? altText(template) : altText,
-      template,
-    }),
-  ];
-};
 /**
  * Template with two action buttons.
  * @category Component
@@ -159,7 +132,27 @@ const __ConfirmTemplate: FunctionOf<LineComponent<
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#confirm).
  */
 export const ConfirmTemplate: LineComponent<ConfirmTemplateProps> = annotateLineComponent(
-  __ConfirmTemplate
+  async function ConfirmTemplate(node, path, render) {
+    const { actions, altText, children } = node.props;
+    const [actionSegments, textSegments] = await Promise.all([
+      render(actions, '.actions'),
+      render(children, '.children'),
+    ]);
+
+    const template = {
+      type: 'confirm',
+      text: textSegments?.[0].value,
+      actions: actionSegments?.map((segment) => segment.value),
+    };
+
+    return [
+      makeUnitSegment(node, path, {
+        type: 'template' as const,
+        altText: typeof altText === 'function' ? altText(template) : altText,
+        template,
+      }),
+    ];
+  }
 );
 
 /**
@@ -188,10 +181,16 @@ export type CarouselItemProps = {
   children: string;
 };
 
-const __CarouselItem: FunctionOf<LineComponent<
+/**
+ * Column items of {@link CarouselTemplate}.
+ * @category Component
+ * @props {@link CarouselItemProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#column-object-for-carousel).
+ */
+export const CarouselItem: LineComponent<
   CarouselItemProps,
   PartSegment<any>
->> = async function CarouselItem(node, path, render) {
+> = annotateLineComponent(async function CarouselItem(node, path, render) {
   const {
     actions,
     defaultAction,
@@ -221,17 +220,7 @@ const __CarouselItem: FunctionOf<LineComponent<
       actions: actionSegments?.map((segment) => segment.value),
     }),
   ];
-};
-/**
- * Column items of {@link CarouselTemplate}.
- * @category Component
- * @props {@link CarouselItemProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#column-object-for-carousel).
- */
-export const CarouselItem: LineComponent<
-  CarouselItemProps,
-  PartSegment<any>
-> = annotateLineComponent(__CarouselItem);
+});
 
 /**
  * @category Props
@@ -265,27 +254,6 @@ export type CarouselTemplateProps = {
   imageSize?: 'contain' | 'cover';
 };
 
-const __CarouselTemplate: FunctionOf<LineComponent<
-  CarouselTemplateProps
->> = async function CarouselTemplate(node, path, render) {
-  const { children, altText, imageAspectRatio, imageSize } = node.props;
-  const columnSegments = await render(children, '.children');
-
-  const template = {
-    type: 'carousel',
-    imageAspectRatio,
-    imageSize,
-    columns: columnSegments?.map((segment) => segment.value),
-  };
-
-  return [
-    makeUnitSegment(node, path, {
-      type: 'template' as const,
-      altText: typeof altText === 'function' ? altText(template) : altText,
-      template,
-    }),
-  ];
-};
 /**
  * Template with multiple columns which can be cycled like a carousel. The
  * columns are shown in order when scrolling horizontally.
@@ -294,7 +262,25 @@ const __CarouselTemplate: FunctionOf<LineComponent<
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#carousel).
  */
 export const CarouselTemplate: LineComponent<CarouselTemplateProps> = annotateLineComponent(
-  __CarouselTemplate
+  async function CarouselTemplate(node, path, render) {
+    const { children, altText, imageAspectRatio, imageSize } = node.props;
+    const columnSegments = await render(children, '.children');
+
+    const template = {
+      type: 'carousel',
+      imageAspectRatio,
+      imageSize,
+      columns: columnSegments?.map((segment) => segment.value),
+    };
+
+    return [
+      makeUnitSegment(node, path, {
+        type: 'template' as const,
+        altText: typeof altText === 'function' ? altText(template) : altText,
+        template,
+      }),
+    ];
+  }
 );
 
 /**
@@ -307,10 +293,16 @@ export type ImageCarouselItemProps = {
   action?: MachinatNode;
 };
 
-const __ImageCarouselItem: FunctionOf<LineComponent<
+/**
+ * Column items of {@link ImageCarouselTemplate}.
+ * @category Component
+ * @props {@link ImageCarouselItemProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#column-object-for-image-carousel).
+ */
+export const ImageCarouselItem: LineComponent<
   ImageCarouselItemProps,
   PartSegment<any>
->> = async function ImageCarouselItem(node, path, render) {
+> = annotateLineComponent(async function ImageCarouselItem(node, path, render) {
   const { imageUrl, action } = node.props;
   const actionSegments = await render(action, '.action');
   const actionValue = actionSegments?.[0].value;
@@ -321,17 +313,7 @@ const __ImageCarouselItem: FunctionOf<LineComponent<
       action: actionValue,
     }),
   ];
-};
-/**
- * Column items of {@link ImageCarouselTemplate}.
- * @category Component
- * @props {@link ImageCarouselItemProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#column-object-for-image-carousel).
- */
-export const ImageCarouselItem: LineComponent<
-  ImageCarouselItemProps,
-  PartSegment<any>
-> = annotateLineComponent(__ImageCarouselItem);
+});
 
 /**
  * @category Props
@@ -350,25 +332,6 @@ export type ImageCarouselTemplateProps = {
   altText: string | ((template: Record<string, unknown>) => string);
 };
 
-const __ImageCarouselTemplate: FunctionOf<LineComponent<
-  ImageCarouselTemplateProps
->> = async function ImageCarouselTemplate(node, path, render) {
-  const { children, altText } = node.props;
-  const columnSegments = await render(children, '.children');
-
-  const template = {
-    type: 'image_carousel',
-    columns: columnSegments?.map((segment) => segment.value),
-  };
-
-  return [
-    makeUnitSegment(node, path, {
-      type: 'template' as const,
-      altText: typeof altText === 'function' ? altText(template) : altText,
-      template,
-    }),
-  ];
-};
 /**
  * Template with multiple images which can be cycled like a carousel. The images
  * are shown in order when scrolling horizontally.
@@ -377,5 +340,21 @@ const __ImageCarouselTemplate: FunctionOf<LineComponent<
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#image-carousel).
  */
 export const ImageCarouselTemplate: LineComponent<ImageCarouselTemplateProps> = annotateLineComponent(
-  __ImageCarouselTemplate
+  async function ImageCarouselTemplate(node, path, render) {
+    const { children, altText } = node.props;
+    const columnSegments = await render(children, '.children');
+
+    const template = {
+      type: 'image_carousel',
+      columns: columnSegments?.map((segment) => segment.value),
+    };
+
+    return [
+      makeUnitSegment(node, path, {
+        type: 'template' as const,
+        altText: typeof altText === 'function' ? altText(template) : altText,
+        template,
+      }),
+    ];
+  }
 );

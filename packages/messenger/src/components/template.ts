@@ -29,7 +29,17 @@ export type GenericItemProps = {
   defaultAction?: MachinatNode;
 };
 
-const __GenericItem = async function GenericItem(node, path, render) {
+/**
+ * The item of the {@link GenericTemplate}.
+ * @category Component
+ * @props {@link GenericItemProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/generic).
+ */
+export const GenericItem: MessengerComponent<
+  GenericItemProps,
+  PartSegment<any>
+> = annotateMessengerComponent(async function GenericItem(node, path, render) {
   const {
     buttons,
     title,
@@ -61,18 +71,7 @@ const __GenericItem = async function GenericItem(node, path, render) {
       buttons: buttonValues,
     }),
   ];
-};
-/**
- * The item of the {@link GenericTemplate}.
- * @category Component
- * @props {@link GenericItemProps}
- * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic)
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/generic).
- */
-export const GenericItem: MessengerComponent<
-  GenericItemProps,
-  PartSegment<any>
-> = annotateMessengerComponent(__GenericItem);
+});
 
 /**
  * @category Props
@@ -92,7 +91,24 @@ export type GenericTemplateProps = {
   imageAspectRatio?: 'horizontal' | 'square';
 };
 
-const __GenericTemplate = async function GenericTemplate(node, path, render) {
+/**
+ * The generic template allows you to send a structured message that includes an
+ * image, text and buttons. A generic template with multiple templates described
+ * in the elements array will send a horizontally scrollable carousel of items,
+ * each composed of an image, text and buttons.
+ * @category Component
+ * @props {@link GenericTemplateProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/generic).
+ */
+export const GenericTemplate: MessengerComponent<
+  GenericTemplateProps,
+  UnitSegment<MessageValue>
+> = annotateMessengerComponent(async function GenericTemplate(
+  node,
+  path,
+  render
+) {
   const { children, sharable, imageAspectRatio } = node.props;
   const elementsSegments = await render(children, '.children');
   const elementValues = elementsSegments?.map((segment) => segment.value);
@@ -112,21 +128,7 @@ const __GenericTemplate = async function GenericTemplate(node, path, render) {
       },
     }),
   ];
-};
-/**
- * The generic template allows you to send a structured message that includes an
- * image, text and buttons. A generic template with multiple templates described
- * in the elements array will send a horizontally scrollable carousel of items,
- * each composed of an image, text and buttons.
- * @category Component
- * @props {@link GenericTemplateProps}
- * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic)
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/generic).
- */
-export const GenericTemplate: MessengerComponent<
-  GenericTemplateProps,
-  UnitSegment<MessageValue>
-> = annotateMessengerComponent(__GenericTemplate);
+});
 
 /**
  * @category Props

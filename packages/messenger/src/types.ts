@@ -64,13 +64,13 @@ export type SenderActionValue = {
 };
 
 export type PassThreadControlValue = {
-  target_app_id: string; // eslint-disable-line camelcase
-  metadata: string;
+  target_app_id: number; // eslint-disable-line camelcase
+  metadata?: string;
   [API_PATH]: any;
 };
 
 export type RequestThreadControlValue = {
-  metadata: string;
+  metadata?: string;
   [API_PATH]: any;
 };
 

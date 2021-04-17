@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import type { MachinatNode } from '@machinat/core';
 import formatNode from '@machinat/core/utils/formatNode';
 import { makeTextSegment, TextSegment } from '@machinat/core/renderer';
@@ -14,10 +13,19 @@ export type LatexProps = {
 };
 
 const LATEX_BEGIN = '\\(';
-
 const LATEX_END = '\\)';
 
-const __Latex = async function Latex(node, path, render) {
+/**
+ * The receipt template allows you to send an order confirmation as a structured
+ * message.
+ * @category Component
+ * @props {@link LatexProps}
+ * @guides Check [help page](https://www.facebook.com/help/147348452522644).
+ */
+export const Latex: MessengerComponent<
+  LatexProps,
+  TextSegment
+> = annotateMessengerComponent(async function Latex(node, path, render) {
   const segments = await render(node.props.children, '.children');
   if (segments === null) {
     return null;
@@ -35,18 +43,7 @@ const __Latex = async function Latex(node, path, render) {
 
   return [
     makeTextSegment(node, path, LATEX_BEGIN),
-    segments[0],
+    segments[0] as TextSegment,
     makeTextSegment(node, path, LATEX_END),
   ];
-};
-/**
- * The receipt template allows you to send an order confirmation as a structured
- * message.
- * @category Component
- * @props {@link LatexProps}
- * @guides Check [help page](https://www.facebook.com/help/147348452522644).
- */
-export const Latex: MessengerComponent<
-  LatexProps,
-  TextSegment
-> = annotateMessengerComponent(__Latex);
+});

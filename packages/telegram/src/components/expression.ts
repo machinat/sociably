@@ -1,9 +1,5 @@
 import { MachinatNode } from '@machinat/core';
-import {
-  makeUnitSegment,
-  IntermediateSegment,
-  FunctionOf,
-} from '@machinat/core/renderer';
+import { makeUnitSegment, IntermediateSegment } from '@machinat/core/renderer';
 import { annotateTelegramComponent } from '../utils';
 import {
   TelegramComponent,
@@ -21,10 +17,16 @@ export interface ExpressionProps {
   replyMarkup?: MachinatNode;
 }
 
-const __Expression: FunctionOf<TelegramComponent<
+/**
+ * Control options including disableNotification, parseMode of a group of
+ * messages. Or add a replyMarkup at the last message in the Expression.
+ * @category Component
+ * @props {@link ExpressionProps}
+ */
+export const Expression: TelegramComponent<
   ExpressionProps,
   IntermediateSegment<TelegramSegmentValue>
->> = async function Expression(node, path, render) {
+> = annotateTelegramComponent(async function Expression(node, path, render) {
   const {
     children,
     disableNotification,
@@ -106,14 +108,4 @@ const __Expression: FunctionOf<TelegramComponent<
   }
 
   return outputSegments;
-};
-/**
- * Control options including disableNotification, parseMode of a group of
- * messages. Or add a replyMarkup at the last message in the Expression.
- * @category Component
- * @props {@link ExpressionProps}
- */
-export const Expression: TelegramComponent<
-  ExpressionProps,
-  IntermediateSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Expression);
+});

@@ -54,7 +54,7 @@ export type ThunkSegment = {
   path: string;
 };
 
-export type OutputableSegment<Value> =
+export type OutputSegment<Value> =
   | TextSegment
   | UnitSegment<Value>
   | RawSegment<Value>
@@ -62,7 +62,7 @@ export type OutputableSegment<Value> =
   | ThunkSegment;
 
 export type IntermediateSegment<UnitValue, PartValue = any> =
-  | OutputableSegment<UnitValue>
+  | OutputSegment<UnitValue>
   | BreakSegment
   | PartSegment<PartValue>;
 
@@ -70,7 +70,3 @@ export type InnerRenderFn<Value> = (
   node: MachinatNode,
   path: string
 ) => Promise<null | IntermediateSegment<Value>[]>;
-
-export type FunctionOf<Fn extends (...args: unknown[]) => unknown> = (
-  ...args: Parameters<Fn>
-) => ReturnType<Fn>;

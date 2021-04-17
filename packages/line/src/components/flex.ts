@@ -5,7 +5,6 @@ import {
   makePartSegment,
   UnitSegment,
   PartSegment,
-  FunctionOf,
 } from '@machinat/core/renderer';
 import formatNode from '@machinat/core/utils/formatNode';
 import { annotateLineComponent } from '../utils';
@@ -63,10 +62,17 @@ export type FlexButtonProps = {
   gravity?: FlexGravity;
 };
 
-const __FlexButton: FunctionOf<LineComponent<
+/**
+ * FlexButton renders a button. When the user taps a button, a specified action
+ * is performed.
+ * @category Component
+ * @props {@link FlexButtonProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#button).
+ */
+export const FlexButton: LineComponent<
   FlexButtonProps,
   PartSegment<any>
->> = async function FlexButton(node, path, render) {
+> = annotateLineComponent(async function FlexButton(node, path, render) {
   const {
     action,
     flex,
@@ -104,18 +110,7 @@ const __FlexButton: FunctionOf<LineComponent<
       action: actionValue,
     }),
   ];
-};
-/**
- * FlexButton renders a button. When the user taps a button, a specified action
- * is performed.
- * @category Component
- * @props {@link FlexButtonProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#button).
- */
-export const FlexButton: LineComponent<
-  FlexButtonProps,
-  PartSegment<any>
-> = annotateLineComponent(__FlexButton);
+});
 
 /**
  * @category Props
@@ -127,17 +122,6 @@ export type FlexFillerProps = {
   flex?: number;
 };
 
-const __FlexFiller: FunctionOf<LineComponent<
-  FlexFillerProps,
-  PartSegment<any>
->> = function FlexFiller(node, path) {
-  return [
-    makePartSegment(node, path, {
-      type: 'filler',
-      flex: node.props.flex,
-    }),
-  ];
-};
 /**
  * FlexFiller is used to create a space. You can put a space between,
  * before, or after components by inserting a filler anywhere within a box.
@@ -148,7 +132,14 @@ const __FlexFiller: FunctionOf<LineComponent<
 export const FlexFiller: LineComponent<
   FlexFillerProps,
   PartSegment<any>
-> = annotateLineComponent(__FlexFiller);
+> = annotateLineComponent(function FlexFiller(node, path) {
+  return [
+    makePartSegment(node, path, {
+      type: 'filler',
+      flex: node.props.flex,
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -184,10 +175,16 @@ export type FlexIconProps = {
   aspectRatio?: string;
 };
 
-const __FlexIcon: FunctionOf<LineComponent<
+/**
+ * FlexIconProps renders an icon for decorating the adjacent text.
+ * @category Component
+ * @props {@link FlexIconProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#icon).
+ */
+export const FlexIcon: LineComponent<
   FlexIconProps,
   PartSegment<any>
->> = function FlexIcon(node, path) {
+> = annotateLineComponent(function FlexIcon(node, path) {
   const {
     url,
     margin,
@@ -213,17 +210,7 @@ const __FlexIcon: FunctionOf<LineComponent<
       aspectRatio,
     }),
   ];
-};
-/**
- * FlexIconProps renders an icon for decorating the adjacent text.
- * @category Component
- * @props {@link FlexIconProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#icon).
- */
-export const FlexIcon: LineComponent<
-  FlexIconProps,
-  PartSegment<any>
-> = annotateLineComponent(__FlexIcon);
+});
 
 /**
  * @category Props
@@ -276,10 +263,16 @@ export type FlexImageProps = {
   action?: MachinatNode;
 };
 
-const __FlexImage: FunctionOf<LineComponent<
+/**
+ * FlexImage renders an image.
+ * @category Component
+ * @props {@link FlexImageProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#f-image).
+ */
+export const FlexImage: LineComponent<
   FlexImageProps,
   PartSegment<any>
->> = async function FlexImage(node, path, render) {
+> = annotateLineComponent(async function FlexImage(node, path, render) {
   const {
     url,
     flex,
@@ -321,17 +314,7 @@ const __FlexImage: FunctionOf<LineComponent<
       action: actionValue,
     }),
   ];
-};
-/**
- * FlexImage renders an image.
- * @category Component
- * @props {@link FlexImageProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#f-image).
- */
-export const FlexImage: LineComponent<
-  FlexImageProps,
-  PartSegment<any>
-> = annotateLineComponent(__FlexImage);
+});
 
 /**
  * @category Props
@@ -346,19 +329,6 @@ export type FlextSeparatorProps = {
   color?: string;
 };
 
-const __FlexSeparator: FunctionOf<LineComponent<
-  FlextSeparatorProps,
-  PartSegment<any>
->> = function FlexSeparator(node, path) {
-  const { margin, color } = node.props;
-  return [
-    makePartSegment(node, path, {
-      type: 'separator',
-      margin,
-      color,
-    }),
-  ];
-};
 /**
  * FlexImage renders an image.
  * @category Component
@@ -368,7 +338,16 @@ const __FlexSeparator: FunctionOf<LineComponent<
 export const FlexSeparator: LineComponent<
   FlextSeparatorProps,
   PartSegment<any>
-> = annotateLineComponent(__FlexSeparator);
+> = annotateLineComponent(function FlexSeparator(node, path) {
+  const { margin, color } = node.props;
+  return [
+    makePartSegment(node, path, {
+      type: 'separator',
+      margin,
+      color,
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -378,17 +357,6 @@ export type FlexSpacerProps = {
   size?: FlexSize;
 };
 
-const __FlexSpacer: FunctionOf<LineComponent<
-  FlexSpacerProps,
-  PartSegment<any>
->> = function FlexSpacer(node, path) {
-  return [
-    makePartSegment(node, path, {
-      type: 'spacer',
-      size: node.props.size,
-    }),
-  ];
-};
 /**
  * Not recommended. Use box padding instead.
  * @category Component
@@ -398,7 +366,14 @@ const __FlexSpacer: FunctionOf<LineComponent<
 export const FlexSpacer: LineComponent<
   FlexSpacerProps,
   PartSegment<any>
-> = annotateLineComponent(__FlexSpacer);
+> = annotateLineComponent(function FlexSpacer(node, path) {
+  return [
+    makePartSegment(node, path, {
+      type: 'spacer',
+      size: node.props.size,
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -457,10 +432,16 @@ export type FlexTextProps = {
   decoration?: 'none' | 'underline' | 'line-through';
 };
 
-const __FlexText: FunctionOf<LineComponent<
+/**
+ * FlexText renders a text string in one row.
+ * @category Component
+ * @props {@link FlexTextProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#f-text).
+ */
+export const FlexText: LineComponent<
   FlexTextProps,
   PartSegment<any>
->> = async function FlexText(node, path, render) {
+> = annotateLineComponent(async function FlexText(node, path, render) {
   const {
     children,
     flex,
@@ -536,17 +517,7 @@ const __FlexText: FunctionOf<LineComponent<
       action: actionValues,
     }),
   ];
-};
-/**
- * FlexText renders a text string in one row.
- * @category Component
- * @props {@link FlexTextProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#f-text).
- */
-export const FlexText: LineComponent<
-  FlexTextProps,
-  PartSegment<any>
-> = annotateLineComponent(__FlexText);
+});
 
 /**
  * @category Props
@@ -566,10 +537,17 @@ export type FlexSpanProps = {
   decoration?: 'none' | 'underline' | 'line-through';
 };
 
-const __FlexSpan: FunctionOf<LineComponent<
+/**
+ * FlexSpan renders multiple text strings with different designs in one row.
+ * A FlexSpan element can only be placed under FlexText children.
+ * @category Component
+ * @props {@link FlexSpanProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#span).
+ */
+export const FlexSpan: LineComponent<
   FlexSpanProps,
   PartSegment<any>
->> = async function FlexBox(node, path, render) {
+> = annotateLineComponent(async function FlexBox(node, path, render) {
   const { children, size, weight, color, style, decoration } = node.props;
 
   const textSegments = await render(children, '.children');
@@ -586,18 +564,7 @@ const __FlexSpan: FunctionOf<LineComponent<
       decoration,
     }),
   ];
-};
-/**
- * FlexSpan renders multiple text strings with different designs in one row.
- * A FlexSpan element can only be placed under FlexText children.
- * @category Component
- * @props {@link FlexSpanProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#span).
- */
-export const FlexSpan: LineComponent<
-  FlexSpanProps,
-  PartSegment<any>
-> = annotateLineComponent(__FlexSpan);
+});
 
 /**
  * @category Props
@@ -687,10 +654,17 @@ export type FlexBoxProps = {
   height?: number | string;
 };
 
-const __FlexBox: FunctionOf<LineComponent<
+/**
+ * FlexBox is a component that defines the layout of child components. You can
+ * also include a box in a box.
+ * @category Component
+ * @props {@link FlexBoxProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#box).
+ */
+export const FlexBox: LineComponent<
   FlexBoxProps,
   PartSegment<any>
->> = async function FlexBox(node, path, render) {
+> = annotateLineComponent(async function FlexBox(node, path, render) {
   const {
     children,
     layout,
@@ -748,18 +722,7 @@ const __FlexBox: FunctionOf<LineComponent<
       height,
     }),
   ];
-};
-/**
- * FlexBox is a component that defines the layout of child components. You can
- * also include a box in a box.
- * @category Component
- * @props {@link FlexBoxProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#box).
- */
-export const FlexBox: LineComponent<
-  FlexBoxProps,
-  PartSegment<any>
-> = annotateLineComponent(__FlexBox);
+});
 
 type BlockStyle = {
   backgroundColor?: string;
@@ -886,10 +849,22 @@ export type FlexBubbleContainerProps = {
   action?: MachinatNode;
 };
 
-const __FlexBubbleContainer: FunctionOf<LineComponent<
+/**
+ * FlexBubbleContainer is a container that contains one message bubble. It can
+ * contain four blocks: header, hero, body, and footer. The maximum size of JSON
+ * data that defines a bubble is 10 KB.
+ * @category Component
+ * @props {@link FlexBubbleContainerProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#bubble).
+ */
+export const FlexBubbleContainer: LineComponent<
   FlexBubbleContainerProps,
   PartSegment<any>
->> = async function FlexBubbleContainer(node, path, render) {
+> = annotateLineComponent(async function FlexBubbleContainer(
+  node,
+  path,
+  render
+) {
   const { children, direction, rightToLeft, action } = node.props;
   const actionSegments = await render(action, '.action');
   const sectionSegments = await render(children, '.children');
@@ -917,19 +892,7 @@ const __FlexBubbleContainer: FunctionOf<LineComponent<
   );
 
   return [makePartSegment(node, path, bubbleObject)];
-};
-/**
- * FlexBubbleContainer is a container that contains one message bubble. It can
- * contain four blocks: header, hero, body, and footer. The maximum size of JSON
- * data that defines a bubble is 10 KB.
- * @category Component
- * @props {@link FlexBubbleContainerProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#bubble).
- */
-export const FlexBubbleContainer: LineComponent<
-  FlexBubbleContainerProps,
-  PartSegment<any>
-> = annotateLineComponent(__FlexBubbleContainer);
+});
 
 /**
  * @category Props
@@ -939,20 +902,6 @@ export type FlexCarouselContainerProps = {
   children: MachinatNode;
 };
 
-const __FlexCarouselContainer: FunctionOf<LineComponent<
-  FlexCarouselContainerProps,
-  PartSegment<any>
->> = async function FlexCarouselContainer(node, path, render) {
-  const contentSegments = await render(node.props.children, '.children');
-  const bubbleContainers = contentSegments?.map((segment) => segment.value);
-
-  return [
-    makePartSegment(node, path, {
-      type: 'carousel',
-      contents: bubbleContainers,
-    }),
-  ];
-};
 /**
  * A carousel is a container that contains multiple bubbles as child elements.
  * Users can scroll horizontally through the bubbles.
@@ -963,7 +912,21 @@ const __FlexCarouselContainer: FunctionOf<LineComponent<
 export const FlexCarouselContainer: LineComponent<
   FlexCarouselContainerProps,
   PartSegment<any>
-> = annotateLineComponent(__FlexCarouselContainer);
+> = annotateLineComponent(async function FlexCarouselContainer(
+  node,
+  path,
+  render
+) {
+  const contentSegments = await render(node.props.children, '.children');
+  const bubbleContainers = contentSegments?.map((segment) => segment.value);
+
+  return [
+    makePartSegment(node, path, {
+      type: 'carousel',
+      contents: bubbleContainers,
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -975,22 +938,6 @@ export type FlexMessageProps = {
   altText: string;
 };
 
-const __FlexMessage: FunctionOf<LineComponent<
-  FlexMessageProps,
-  UnitSegment<FlexSegmentValue>
->> = async function FlexMessage(node, path, render) {
-  const { children, altText } = node.props;
-  const contentSegments = await render(children, '.children');
-  const contentValue = contentSegments?.[0].value;
-
-  return [
-    makeUnitSegment(node, path, {
-      type: 'flex' as const,
-      altText,
-      contents: contentValue,
-    }),
-  ];
-};
 /**
  * Flex Messages are messages with a customizable layout. You can customize the
  * layout freely based on the specification for CSS Flexible Box (CSS Flexbox).
@@ -1002,7 +949,19 @@ const __FlexMessage: FunctionOf<LineComponent<
 export const FlexMessage: LineComponent<
   FlexMessageProps,
   UnitSegment<FlexSegmentValue>
-> = annotateLineComponent(__FlexMessage);
+> = annotateLineComponent(async function FlexMessage(node, path, render) {
+  const { children, altText } = node.props;
+  const contentSegments = await render(children, '.children');
+  const contentValue = contentSegments?.[0].value;
+
+  return [
+    makeUnitSegment(node, path, {
+      type: 'flex' as const,
+      altText,
+      contents: contentValue,
+    }),
+  ];
+});
 
 export default {
   Box: FlexBox,

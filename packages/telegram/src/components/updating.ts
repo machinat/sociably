@@ -1,10 +1,6 @@
 import type { MachinatNode } from '@machinat/core';
 import formatNode from '@machinat/core/utils/formatNode';
-import {
-  makeUnitSegment,
-  UnitSegment,
-  FunctionOf,
-} from '@machinat/core/renderer';
+import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
 import { annotateTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
@@ -33,10 +29,16 @@ export interface EditTextProps extends EditMessageProps {
   disableWebPagePreview?: boolean;
 }
 
-const __EditText: FunctionOf<TelegramComponent<
+/**
+ * Edit a text and game message
+ * @category Component
+ * @props {@link EditTextProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#editmessagetext).
+ */
+export const EditText: TelegramComponent<
   EditTextProps,
   UnitSegment<TelegramSegmentValue>
->> = async function EditText(node, path, render) {
+> = annotateTelegramComponent(async function EditText(node, path, render) {
   const {
     children,
     messageId,
@@ -74,17 +76,7 @@ const __EditText: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Edit a text and game message
- * @category Component
- * @props {@link EditTextProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#editmessagetext).
- */
-export const EditText: TelegramComponent<
-  EditTextProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__EditText);
+});
 
 /**
  * @category Props
@@ -96,10 +88,16 @@ export interface EditCaptionProps extends EditMessageProps {
   parseMode: TelegramParseMode;
 }
 
-const __EditCaption: FunctionOf<TelegramComponent<
+/**
+ * Edit captions of a media messages
+ * @category Component
+ * @props {@link EditCaptionProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#editmssagecaption).
+ */
+export const EditCaption: TelegramComponent<
   EditCaptionProps,
   UnitSegment<TelegramSegmentValue>
->> = async function EditCaption(node, path, render) {
+> = annotateTelegramComponent(async function EditCaption(node, path, render) {
   const {
     children,
     messageId,
@@ -137,17 +135,7 @@ const __EditCaption: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Edit captions of a media messages
- * @category Component
- * @props {@link EditCaptionProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#editmssagecaption).
- */
-export const EditCaption: TelegramComponent<
-  EditCaptionProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__EditCaption);
+});
 
 /**
  * @category Props
@@ -161,10 +149,16 @@ export interface EditMediaProps extends EditMessageProps {
   children: MachinatNode;
 }
 
-const __EditMedia: FunctionOf<TelegramComponent<
+/**
+ * Edit a animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL.
+ * @category Component
+ * @props {@link EditMediaProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#editmessagemedia).
+ */
+export const EditMedia: TelegramComponent<
   EditMediaProps,
   UnitSegment<TelegramSegmentValue>
->> = async function EditMedia(node, path, render) {
+> = annotateTelegramComponent(async function EditMedia(node, path, render) {
   const { children, messageId, inlineMessageId, replyMarkup } = node.props;
 
   const mediaSegments = await render(children, '.children');
@@ -254,17 +248,7 @@ const __EditMedia: FunctionOf<TelegramComponent<
       uploadingFiles,
     }),
   ];
-};
-/**
- * Edit a animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL.
- * @category Component
- * @props {@link EditMediaProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#editmessagemedia).
- */
-export const EditMedia: TelegramComponent<
-  EditMediaProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__EditMedia);
+});
 
 /**
  * @category Props
@@ -276,10 +260,16 @@ export interface StopPollProps {
   replyMarkup?: MachinatNode;
 }
 
-const __StopPoll: FunctionOf<TelegramComponent<
+/**
+ * Edit a text and game message
+ * @category Component
+ * @props {@link StopPollProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#stoppoll).
+ */
+export const StopPoll: TelegramComponent<
   StopPollProps,
   UnitSegment<TelegramSegmentValue>
->> = async function StopPoll(node, path, render) {
+> = annotateTelegramComponent(async function StopPoll(node, path, render) {
   const { messageId, replyMarkup } = node.props;
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -292,17 +282,7 @@ const __StopPoll: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Edit a text and game message
- * @category Component
- * @props {@link StopPollProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#stoppoll).
- */
-export const StopPoll: TelegramComponent<
-  StopPollProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__StopPoll);
+});
 
 /**
  * @category Props
@@ -312,10 +292,16 @@ export interface DeleteMessageProps {
   messageId: number;
 }
 
-const __DeleteMessage: FunctionOf<TelegramComponent<
+/**
+ * Edit a text and game message
+ * @category Component
+ * @props {@link DeleteMessageProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#deletemessage).
+ */
+export const DeleteMessage: TelegramComponent<
   DeleteMessageProps,
   UnitSegment<TelegramSegmentValue>
->> = function DeleteMessage(node, path) {
+> = annotateTelegramComponent(function DeleteMessage(node, path) {
   const { messageId } = node.props;
 
   return [
@@ -326,14 +312,4 @@ const __DeleteMessage: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Edit a text and game message
- * @category Component
- * @props {@link DeleteMessageProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#deletemessage).
- */
-export const DeleteMessage: TelegramComponent<
-  DeleteMessageProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__DeleteMessage);
+});

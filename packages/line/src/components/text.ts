@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import { makePartSegment, PartSegment } from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
@@ -19,17 +18,6 @@ export type EmojiProps = {
   emojiId: string;
 };
 
-const __Emoji = function Emoji(node, path) {
-  const { productId, emojiId } = node.props;
-  return [
-    makePartSegment(node, path, {
-      type: 'emoji_placeholder',
-      productId,
-      emojiId,
-    }),
-  ];
-};
-
 /**
  * Insert a LINE emoji within a {@link Expression} element.
  * @category Component
@@ -39,4 +27,13 @@ const __Emoji = function Emoji(node, path) {
 export const Emoji: LineComponent<
   EmojiProps,
   PartSegment<any>
-> = annotateLineComponent(__Emoji);
+> = annotateLineComponent(function Emoji(node, path) {
+  const { productId, emojiId } = node.props;
+  return [
+    makePartSegment(node, path, {
+      type: 'emoji_placeholder',
+      productId,
+      emojiId,
+    }),
+  ];
+});

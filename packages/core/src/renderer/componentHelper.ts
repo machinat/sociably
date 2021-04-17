@@ -11,11 +11,14 @@ import type {
   PartSegment,
   UnitSegment,
   PauseSegment,
-  FunctionOf,
 } from './types';
 
+type FunctionOf<Fn extends (...args: unknown[]) => unknown> = (
+  ...args: Parameters<Fn>
+) => ReturnType<Fn>;
+
 export const annotateNativeComponent = (platform: string) => <
-  Component extends NativeComponent<any, any>
+  Component extends NativeComponent<unknown, any>
 >(
   componentFn: FunctionOf<Component>
 ): Component =>
@@ -31,7 +34,7 @@ export const annotateNativeComponent = (platform: string) => <
   });
 
 export const makeBreakSegment = (
-  node: GeneralElement | NativeElement<any, any>,
+  node: GeneralElement | NativeElement<unknown, any>,
   path: string
 ): BreakSegment => ({
   type: 'break',
@@ -41,7 +44,7 @@ export const makeBreakSegment = (
 });
 
 export const makeTextSegment = (
-  node: GeneralElement | NativeElement<any, any>,
+  node: GeneralElement | NativeElement<unknown, any>,
   path: string,
   text: string
 ): TextSegment => ({
@@ -52,7 +55,7 @@ export const makeTextSegment = (
 });
 
 export const makePartSegment = <Value>(
-  node: GeneralElement | NativeElement<any, any>,
+  node: GeneralElement | NativeElement<unknown, any>,
   path: string,
   value: Value
 ): PartSegment<Value> => ({
@@ -63,7 +66,7 @@ export const makePartSegment = <Value>(
 });
 
 export const makeUnitSegment = <Value>(
-  node: GeneralElement | NativeElement<any, any>,
+  node: GeneralElement | NativeElement<unknown, any>,
   path: string,
   value: Value
 ): UnitSegment<Value> => ({
@@ -74,7 +77,7 @@ export const makeUnitSegment = <Value>(
 });
 
 export const makePauseSegment = (
-  node: GeneralElement | NativeElement<any, any>,
+  node: GeneralElement | NativeElement<unknown, any>,
   path: string,
   value?: PauseUntilFn
 ): PauseSegment => ({

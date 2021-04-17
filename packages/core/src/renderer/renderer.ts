@@ -31,7 +31,7 @@ import type {
 import type {
   InnerRenderFn,
   TextSegment,
-  OutputableSegment,
+  OutputSegment,
   IntermediateSegment,
 } from './types';
 
@@ -76,7 +76,7 @@ export default class MachinatRenderer<
   async render(
     node: MachinatNode,
     scope: ServiceScope
-  ): Promise<null | OutputableSegment<Value>[]> {
+  ): Promise<null | OutputSegment<Value>[]> {
     const intermediates = await this._renderImpl(
       scope,
       new Map(),
@@ -88,7 +88,7 @@ export default class MachinatRenderer<
       return null;
     }
 
-    const segments: OutputableSegment<Value>[] = [];
+    const segments: OutputSegment<Value>[] = [];
 
     for (let i = 0; i < intermediates.length; i += 1) {
       const segment = intermediates[i];

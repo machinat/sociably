@@ -1,9 +1,5 @@
 import { MachinatNode } from '@machinat/core';
-import {
-  makeUnitSegment,
-  UnitSegment,
-  FunctionOf,
-} from '@machinat/core/renderer';
+import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
 import formatNode from '@machinat/core/utils/formatNode';
 import { annotateTelegramComponent } from '../utils';
 import {
@@ -51,10 +47,16 @@ export interface ThumbnailProps {
  */
 export interface PhotoProps extends MessageProps, FileProps, CaptionProps {}
 
-const __Photo: FunctionOf<TelegramComponent<
+/**
+ * Send a photo by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * @category Component
+ * @props {@link PhotoProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendphoto).
+ */
+export const Photo: TelegramComponent<
   PhotoProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Photo(node, path, render) {
+> = annotateTelegramComponent(async function Photo(node, path, render) {
   const {
     fileId,
     url,
@@ -93,17 +95,7 @@ const __Photo: FunctionOf<TelegramComponent<
         : undefined,
     }),
   ];
-};
-/**
- * Send a photo by a `file_id` alreay uploaded, a external url or uploading a new file.
- * @category Component
- * @props {@link PhotoProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendphoto).
- */
-export const Photo: TelegramComponent<
-  PhotoProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Photo);
+});
 
 /**
  * @category Props
@@ -120,10 +112,17 @@ export interface AudioProps
   /** Track name */
   title?: string;
 }
-const __Audio: FunctionOf<TelegramComponent<
+
+/**
+ * Send a audio by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * @category Component
+ * @props {@link AudioProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendaudio).
+ */
+export const Audio: TelegramComponent<
   AudioProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Audio(node, path, render) {
+> = annotateTelegramComponent(async function Audio(node, path, render) {
   const {
     fileId,
     url,
@@ -181,17 +180,7 @@ const __Audio: FunctionOf<TelegramComponent<
       uploadingFiles,
     }),
   ];
-};
-/**
- * Send a audio by a `file_id` alreay uploaded, a external url or uploading a new file.
- * @category Component
- * @props {@link AudioProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendaudio).
- */
-export const Audio: TelegramComponent<
-  AudioProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Audio);
+});
 
 /**
  * @category Props
@@ -202,10 +191,16 @@ export interface DocumentProps
     CaptionProps,
     ThumbnailProps {}
 
-const __Document: FunctionOf<TelegramComponent<
+/**
+ * Send a document by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * @category Component
+ * @props {@link DocumentProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#senddocument).
+ */
+export const Document: TelegramComponent<
   DocumentProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Document(node, path, render) {
+> = annotateTelegramComponent(async function Document(node, path, render) {
   const {
     fileId,
     url,
@@ -257,17 +252,7 @@ const __Document: FunctionOf<TelegramComponent<
       uploadingFiles,
     }),
   ];
-};
-/**
- * Send a document by a `file_id` alreay uploaded, a external url or uploading a new file.
- * @category Component
- * @props {@link DocumentProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#senddocument).
- */
-export const Document: TelegramComponent<
-  DocumentProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Document);
+});
 
 /**
  * @category Props
@@ -287,10 +272,16 @@ export interface VideoProps
   supportsStreaming?: boolean;
 }
 
-const __Video: FunctionOf<TelegramComponent<
+/**
+ * Send a video by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * @category Component
+ * @props {@link VideoProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendvideo).
+ */
+export const Video: TelegramComponent<
   VideoProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Video(node, path, render) {
+> = annotateTelegramComponent(async function Video(node, path, render) {
   const {
     fileId,
     url,
@@ -350,17 +341,7 @@ const __Video: FunctionOf<TelegramComponent<
       uploadingFiles,
     }),
   ];
-};
-/**
- * Send a video by a `file_id` alreay uploaded, a external url or uploading a new file.
- * @category Component
- * @props {@link VideoProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendvideo).
- */
-export const Video: TelegramComponent<
-  VideoProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Video);
+});
 
 /**
  * @category Props
@@ -378,10 +359,16 @@ export interface AnimationProps
   height?: number;
 }
 
-const __Animation: FunctionOf<TelegramComponent<
+/**
+ * Send a animation by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * @category Component
+ * @props {@link AnimationProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendanimation).
+ */
+export const Animation: TelegramComponent<
   AnimationProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Animation(node, path, render) {
+> = annotateTelegramComponent(async function Animation(node, path, render) {
   const {
     fileId,
     url,
@@ -439,17 +426,7 @@ const __Animation: FunctionOf<TelegramComponent<
       uploadingFiles,
     }),
   ];
-};
-/**
- * Send a animation by a `file_id` alreay uploaded, a external url or uploading a new file.
- * @category Component
- * @props {@link AnimationProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendanimation).
- */
-export const Animation: TelegramComponent<
-  AnimationProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Animation);
+});
 
 /**
  * @category Props
@@ -459,10 +436,16 @@ export interface VoiceProps extends MessageProps, FileProps, CaptionProps {
   duration?: number;
 }
 
-const __Voice: FunctionOf<TelegramComponent<
+/**
+ * Send a voice by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * @category Component
+ * @props {@link VoiceProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendvoice).
+ */
+export const Voice: TelegramComponent<
   VoiceProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Voice(node, path, render) {
+> = annotateTelegramComponent(async function Voice(node, path, render) {
   const {
     fileId,
     url,
@@ -503,17 +486,7 @@ const __Voice: FunctionOf<TelegramComponent<
         : undefined,
     }),
   ];
-};
-/**
- * Send a voice by a `file_id` alreay uploaded, a external url or uploading a new file.
- * @category Component
- * @props {@link VoiceProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendvoice).
- */
-export const Voice: TelegramComponent<
-  VoiceProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Voice);
+});
 
 /**
  * @category Props
@@ -529,10 +502,16 @@ export interface VideoNoteProps
   length?: number;
 }
 
-const __VideoNote: FunctionOf<TelegramComponent<
+/**
+ * Send a video note by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * @category Component
+ * @props {@link VideoNoteProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendvideonote).
+ */
+export const VideoNote: TelegramComponent<
   VideoNoteProps,
   UnitSegment<TelegramSegmentValue>
->> = async function VideoNote(node, path, render) {
+> = annotateTelegramComponent(async function VideoNote(node, path, render) {
   const {
     fileId,
     url,
@@ -588,17 +567,7 @@ const __VideoNote: FunctionOf<TelegramComponent<
       uploadingFiles,
     }),
   ];
-};
-/**
- * Send a video note by a `file_id` alreay uploaded, a external url or uploading a new file.
- * @category Component
- * @props {@link VideoNoteProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendvideonote).
- */
-export const VideoNote: TelegramComponent<
-  VideoNoteProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__VideoNote);
+});
 
 export interface MediaGroupProps {
   /**
@@ -612,10 +581,16 @@ export interface MediaGroupProps {
   replyToMessageId?: number;
 }
 
-const __MediaGroup: FunctionOf<TelegramComponent<
+/**
+ * Send a video note by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * @category Component
+ * @props {@link MediaGroupProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendmediagroup).
+ */
+export const MediaGroup: TelegramComponent<
   MediaGroupProps,
   UnitSegment<TelegramSegmentValue>
->> = async function MediaGroup(node, path, render) {
+> = annotateTelegramComponent(async function MediaGroup(node, path, render) {
   const { children, disableNotification, replyToMessageId } = node.props;
 
   const mediaSegments = await render(children, '.children');
@@ -697,27 +672,23 @@ const __MediaGroup: FunctionOf<TelegramComponent<
       uploadingFiles: mediaFiles,
     }),
   ];
-};
-/**
- * Send a video note by a `file_id` alreay uploaded, a external url or uploading a new file.
- * @category Component
- * @props {@link MediaGroupProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendmediagroup).
- */
-export const MediaGroup: TelegramComponent<
-  MediaGroupProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__MediaGroup);
+});
 
 /**
  * @category Props
  */
 export interface StickerProps extends MessageProps, FileProps {}
 
-const __Sticker: FunctionOf<TelegramComponent<
+/**
+ * Send static .WEBP or animated .TGS stickers
+ * @category Component
+ * @props {@link StickerProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendsticker).
+ */
+export const Sticker: TelegramComponent<
   StickerProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Sticker(node, path, render) {
+> = annotateTelegramComponent(async function Sticker(node, path, render) {
   const {
     fileId,
     url,
@@ -753,14 +724,4 @@ const __Sticker: FunctionOf<TelegramComponent<
       uploadingFiles,
     }),
   ];
-};
-/**
- * Send static .WEBP or animated .TGS stickers
- * @category Component
- * @props {@link StickerProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendsticker).
- */
-export const Sticker: TelegramComponent<
-  StickerProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Sticker);
+});

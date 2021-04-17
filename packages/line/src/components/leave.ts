@@ -23,14 +23,15 @@ const LEAVE_REQUESTER = {
   },
 };
 
-const __Leave = function Leave(node, path) {
-  return [makeUnitSegment(node, path, LEAVE_REQUESTER)];
-};
-
 /**
  * Leave a room or group. It throw when being sent to an user or by multicast.
  * @category Component
  * @props `{}`
  * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/group-chats/).
  */
-export const Leave: LineComponent<{}> = annotateLineComponent(__Leave);
+export const Leave: LineComponent<{}> = annotateLineComponent(function Leave(
+  node,
+  path
+) {
+  return [makeUnitSegment(node, path, LEAVE_REQUESTER)];
+});

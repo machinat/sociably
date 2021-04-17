@@ -1,8 +1,4 @@
-import {
-  makePartSegment,
-  PartSegment,
-  FunctionOf,
-} from '@machinat/core/renderer';
+import { makePartSegment, PartSegment } from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 import type { LineComponent } from '../types';
 
@@ -25,20 +21,6 @@ export type PostbackActionProps = {
   displayText?: string;
 };
 
-const __PostbackAction: FunctionOf<LineComponent<
-  PostbackActionProps,
-  PartSegment<any>
->> = function PostbackAction(node, path) {
-  const { label, data, displayText } = node.props;
-  return [
-    makePartSegment(node, path, {
-      type: 'postback',
-      data,
-      label,
-      displayText,
-    }),
-  ];
-};
 /**
  * When a control associated with this action is tapped, a postback event is
  * returned via webhook with the specified string in the data property.
@@ -49,7 +31,17 @@ const __PostbackAction: FunctionOf<LineComponent<
 export const PostbackAction: LineComponent<
   PostbackActionProps,
   PartSegment<any>
-> = annotateLineComponent(__PostbackAction);
+> = annotateLineComponent(function PostbackAction(node, path) {
+  const { label, data, displayText } = node.props;
+  return [
+    makePartSegment(node, path, {
+      type: 'postback',
+      data,
+      label,
+      displayText,
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -61,19 +53,6 @@ export type MessageActionProps = {
   text?: string;
 };
 
-const __MessageAction: FunctionOf<LineComponent<
-  MessageActionProps,
-  PartSegment<any>
->> = function MessageAction(node, path) {
-  const { label, text } = node.props;
-  return [
-    makePartSegment(node, path, {
-      type: 'message',
-      label,
-      text,
-    }),
-  ];
-};
 /**
  * When a control associated with this action is tapped, the string in the
  * `text` property is sent as a message from the user.
@@ -84,7 +63,16 @@ const __MessageAction: FunctionOf<LineComponent<
 export const MessageAction: LineComponent<
   MessageActionProps,
   PartSegment<any>
-> = annotateLineComponent(__MessageAction);
+> = annotateLineComponent(function MessageAction(node, path) {
+  const { label, text } = node.props;
+  return [
+    makePartSegment(node, path, {
+      type: 'message',
+      label,
+      text,
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -99,19 +87,6 @@ export type UriActionProps = {
   uri: string;
 };
 
-const __UriAction: FunctionOf<LineComponent<
-  UriActionProps,
-  PartSegment<any>
->> = function UriAction(node, path) {
-  const { label, uri } = node.props;
-  return [
-    makePartSegment(node, path, {
-      type: 'uri',
-      label,
-      uri,
-    }),
-  ];
-};
 /**
  * When a control associated with this action is tapped, the URI specified in
  * the `uri` property is opened.
@@ -122,7 +97,16 @@ const __UriAction: FunctionOf<LineComponent<
 export const UriAction: LineComponent<
   UriActionProps,
   PartSegment<any>
-> = annotateLineComponent(__UriAction);
+> = annotateLineComponent(function UriAction(node, path) {
+  const { label, uri } = node.props;
+  return [
+    makePartSegment(node, path, {
+      type: 'uri',
+      label,
+      uri,
+    }),
+  ];
+});
 
 const pad2 = (n) => (n < 10 ? `0${n}` : n);
 
@@ -167,10 +151,19 @@ export type DateTimePickerActionProps = {
   min?: string | Date;
 };
 
-const __DateTimePickerAction: FunctionOf<LineComponent<
+/**
+ * When a control associated with this action is tapped, a postback event is
+ * returned via webhook with the date and time selected by the user from the
+ * date and time selection dialog. The datetime picker action does not support
+ * time zones.
+ * @category Component
+ * @props {@link DateTimePickerActionProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#datetime-picker-action).
+ */
+export const DateTimePickerAction: LineComponent<
   DateTimePickerActionProps,
   PartSegment<any>
->> = function DateTimePickerAction(node, path) {
+> = annotateLineComponent(function DateTimePickerAction(node, path) {
   const { label, data, mode = 'datetime', initial, min, max } = node.props;
 
   return [
@@ -184,20 +177,7 @@ const __DateTimePickerAction: FunctionOf<LineComponent<
       min: dateToStringByMode(mode, min),
     }),
   ];
-};
-/**
- * When a control associated with this action is tapped, a postback event is
- * returned via webhook with the date and time selected by the user from the
- * date and time selection dialog. The datetime picker action does not support
- * time zones.
- * @category Component
- * @props {@link DateTimePickerActionProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#datetime-picker-action).
- */
-export const DateTimePickerAction: LineComponent<
-  DateTimePickerActionProps,
-  PartSegment<any>
-> = annotateLineComponent(__DateTimePickerAction);
+});
 
 /**
  * @category Props
@@ -207,17 +187,6 @@ export type CameraActionProps = {
   label?: string;
 };
 
-const __CameraAction: FunctionOf<LineComponent<
-  CameraActionProps,
-  PartSegment<any>
->> = function CameraAction(node, path) {
-  return [
-    makePartSegment(node, path, {
-      type: 'camera',
-      label: node.props.label,
-    }),
-  ];
-};
 /**
  * This action can be configured only with quick reply buttons. When a button
  * associated with this action is tapped, the camera screen in LINE is opened.
@@ -228,7 +197,14 @@ const __CameraAction: FunctionOf<LineComponent<
 export const CameraAction: LineComponent<
   CameraActionProps,
   PartSegment<any>
-> = annotateLineComponent(__CameraAction);
+> = annotateLineComponent(function CameraAction(node, path) {
+  return [
+    makePartSegment(node, path, {
+      type: 'camera',
+      label: node.props.label,
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -238,17 +214,6 @@ export type CameraRollActionProps = {
   label?: string;
 };
 
-const __CameraRollAction: FunctionOf<LineComponent<
-  CameraRollActionProps,
-  PartSegment<any>
->> = function CameraRollAction(node, path) {
-  return [
-    makePartSegment(node, path, {
-      type: 'cameraRoll',
-      label: node.props.label,
-    }),
-  ];
-};
 /**
  * This action can be configured only with quick reply buttons. When a button
  * associated with this action is tapped, the camera roll screen in LINE is
@@ -260,7 +225,14 @@ const __CameraRollAction: FunctionOf<LineComponent<
 export const CameraRollAction: LineComponent<
   CameraRollActionProps,
   PartSegment<any>
-> = annotateLineComponent(__CameraRollAction);
+> = annotateLineComponent(function CameraRollAction(node, path) {
+  return [
+    makePartSegment(node, path, {
+      type: 'cameraRoll',
+      label: node.props.label,
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -270,17 +242,6 @@ export type LocationActionProps = {
   label?: string;
 };
 
-const __LocationAction: FunctionOf<LineComponent<
-  LocationActionProps,
-  PartSegment<any>
->> = function LocationAction(node, path) {
-  return [
-    makePartSegment(node, path, {
-      type: 'location',
-      label: node.props.label,
-    }),
-  ];
-};
 /**
  * This action can be configured only with quick reply buttons. When a button
  * associated with this action is tapped, the location screen in LINE is opened.
@@ -291,7 +252,14 @@ const __LocationAction: FunctionOf<LineComponent<
 export const LocationAction: LineComponent<
   LocationActionProps,
   PartSegment<any>
-> = annotateLineComponent(__LocationAction);
+> = annotateLineComponent(function LocationAction(node, path) {
+  return [
+    makePartSegment(node, path, {
+      type: 'location',
+      label: node.props.label,
+    }),
+  ];
+});
 
 export type Action =
   | typeof PostbackAction

@@ -1,10 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { MachinatNode } from '@machinat/core';
-import {
-  makePartSegment,
-  PartSegment,
-  FunctionOf,
-} from '@machinat/core/renderer';
+import { makePartSegment, PartSegment } from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
@@ -18,10 +14,18 @@ export type QuickReplyProps = {
   children: MachinatNode;
 };
 
-const __QuickReply: FunctionOf<LineComponent<
+/**
+ * QuickReply add a button at the bottom of screen after the {@link Expression}
+ * containing it is displayed.
+ * @category Component
+ * @props {@link QuickReplyProps}
+ * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/using-quick-reply/)
+ *   and [reference](https://developers.line.biz/en/reference/messaging-api/#quick-reply).
+ */
+export const QuickReply: LineComponent<
   QuickReplyProps,
   PartSegment<any>
->> = async function QuickReply(node, path, render) {
+> = annotateLineComponent(async function QuickReply(node, path, render) {
   const { imageUrl, children } = node.props;
 
   const actionSegments = await render(children, '.children');
@@ -34,17 +38,4 @@ const __QuickReply: FunctionOf<LineComponent<
       action: actionValue,
     }),
   ];
-};
-
-/**
- * QuickReply add a button at the bottom of screen after the {@link Expression}
- * containing it is displayed.
- * @category Component
- * @props {@link QuickReplyProps}
- * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/using-quick-reply/)
- *   and [reference](https://developers.line.biz/en/reference/messaging-api/#quick-reply).
- */
-export const QuickReply: LineComponent<
-  QuickReplyProps,
-  PartSegment<any>
-> = annotateLineComponent(__QuickReply);
+});

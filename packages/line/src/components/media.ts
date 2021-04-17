@@ -1,8 +1,4 @@
-import {
-  makeUnitSegment,
-  UnitSegment,
-  FunctionOf,
-} from '@machinat/core/renderer';
+import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
 import { annotateLineComponent } from '../utils';
 import { LineComponent, LineMessageSegmentValue } from '../types';
 
@@ -22,10 +18,16 @@ export type VideoProps = {
   trackingId?: string;
 };
 
-const __Video: FunctionOf<LineComponent<
+/**
+ * Video sends an video message.
+ * @category Component
+ * @props {@link VideoProps}
+ * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#video-message).
+ */
+export const Video: LineComponent<
   VideoProps,
   UnitSegment<LineMessageSegmentValue>
->> = function Video(node, path) {
+> = annotateLineComponent(function Video(node, path) {
   const { originalContentUrl, previewImageUrl, trackingId } = node.props;
 
   return [
@@ -36,17 +38,7 @@ const __Video: FunctionOf<LineComponent<
       trackingId,
     }),
   ];
-};
-/**
- * Video sends an video message.
- * @category Component
- * @props {@link VideoProps}
- * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#video-message).
- */
-export const Video: LineComponent<
-  VideoProps,
-  UnitSegment<LineMessageSegmentValue>
-> = annotateLineComponent(__Video);
+});
 
 /**
  * @category Props
@@ -58,19 +50,6 @@ export type AudioProps = {
   duration: number;
 };
 
-const __Audio: FunctionOf<LineComponent<
-  AudioProps,
-  UnitSegment<LineMessageSegmentValue>
->> = function Audio(node, path) {
-  const { originalContentUrl, duration } = node.props;
-  return [
-    makeUnitSegment(node, path, {
-      type: 'audio' as const,
-      originalContentUrl,
-      duration,
-    }),
-  ];
-};
 /**
  * Audio sends an audio message.
  * @category Component
@@ -80,4 +59,13 @@ const __Audio: FunctionOf<LineComponent<
 export const Audio: LineComponent<
   AudioProps,
   UnitSegment<LineMessageSegmentValue>
-> = annotateLineComponent(__Audio);
+> = annotateLineComponent(function Audio(node, path) {
+  const { originalContentUrl, duration } = node.props;
+  return [
+    makeUnitSegment(node, path, {
+      type: 'audio' as const,
+      originalContentUrl,
+      duration,
+    }),
+  ];
+});

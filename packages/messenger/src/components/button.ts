@@ -33,7 +33,18 @@ export type UrlButtonProps = {
   hideWebviewShare?: boolean;
 };
 
-const __UrlButton = function UrlButton(node, path) {
+/**
+ * The URL Button opens a webpage in the Messenger webview. This button can be
+ * used with the Button and Generic Templates.
+ * @category Component
+ * @props {@link UrlButtonProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/reference/buttons/url)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#url).
+ */
+export const UrlButton: MessengerComponent<
+  UrlButtonProps,
+  PartSegment<any>
+> = annotateMessengerComponent(function UrlButton(node, path) {
   const {
     title,
     url,
@@ -56,19 +67,7 @@ const __UrlButton = function UrlButton(node, path) {
         webviewShareButton || hideWebviewShare ? 'hide' : undefined,
     }),
   ];
-};
-/**
- * The URL Button opens a webpage in the Messenger webview. This button can be
- * used with the Button and Generic Templates.
- * @category Component
- * @props {@link UrlButtonProps}
- * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/reference/buttons/url)
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#url).
- */
-export const UrlButton: MessengerComponent<
-  UrlButtonProps,
-  PartSegment<any>
-> = annotateMessengerComponent(__UrlButton);
+});
 
 /**
  * @category Props
@@ -80,16 +79,6 @@ export type PostbackButtonProps = {
   payload: string;
 };
 
-const __PostbackButton = function PostbackButton(node, path) {
-  const { title, payload } = node.props;
-  return [
-    makePartSegment(node, path, {
-      type: 'postback',
-      title,
-      payload,
-    }),
-  ];
-};
 /**
  * When the postback button is tapped, the Messenger Platform sends an event to
  * your postback webhook. This is useful when you want to invoke an action in
@@ -103,7 +92,16 @@ const __PostbackButton = function PostbackButton(node, path) {
 export const PostbackButton: MessengerComponent<
   PostbackButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(__PostbackButton);
+> = annotateMessengerComponent(function PostbackButton(node, path) {
+  const { title, payload } = node.props;
+  return [
+    makePartSegment(node, path, {
+      type: 'postback',
+      title,
+      payload,
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -118,16 +116,6 @@ export type CallButtonProps = {
   number: string;
 };
 
-const __CallButton = function CallButton(node, path) {
-  const { title, number } = node.props;
-  return [
-    makePartSegment(node, path, {
-      type: 'phone_number',
-      title,
-      number,
-    }),
-  ];
-};
 /**
  * The Call Button can be used to initiate a phone call. This button can be used
  * with the Button and Generic Templates.
@@ -139,7 +127,16 @@ const __CallButton = function CallButton(node, path) {
 export const CallButton: MessengerComponent<
   CallButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(__CallButton);
+> = annotateMessengerComponent(function CallButton(node, path) {
+  const { title, number } = node.props;
+  return [
+    makePartSegment(node, path, {
+      type: 'phone_number',
+      title,
+      number,
+    }),
+  ];
+});
 
 /**
  * @category Props
@@ -149,15 +146,6 @@ export type LoginButtonProps = {
   url: string;
 };
 
-const __LoginButton = function LoginButton(node, path) {
-  const { url } = node.props;
-  return [
-    makePartSegment(node, path, {
-      type: 'account_link',
-      url,
-    }),
-  ];
-};
 /**
  * The log in button triggers the [account linking authentication flow](https://developers.facebook.com/docs/messenger-platform/account-linking/authentication).
  * @category Component
@@ -168,11 +156,16 @@ const __LoginButton = function LoginButton(node, path) {
 export const LoginButton: MessengerComponent<
   LoginButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(__LoginButton);
+> = annotateMessengerComponent(function LoginButton(node, path) {
+  const { url } = node.props;
+  return [
+    makePartSegment(node, path, {
+      type: 'account_link',
+      url,
+    }),
+  ];
+});
 
-const __LogoutButton = function LogoutButton(node, path) {
-  return [makePartSegment(node, path, { type: 'account_unlink' })];
-};
 /**
  * The log out button triggers the account unlinking flow.
  * @category Component
@@ -183,7 +176,9 @@ const __LogoutButton = function LogoutButton(node, path) {
 export const LogoutButton: MessengerComponent<
   {},
   PartSegment<any>
-> = annotateMessengerComponent(__LogoutButton);
+> = annotateMessengerComponent(function LogoutButton(node, path) {
+  return [makePartSegment(node, path, { type: 'account_unlink' })];
+});
 
 /**
  * @category Props
@@ -199,7 +194,18 @@ export type GamePlayButtonProps = {
   contextId?: string;
 };
 
-const __GamePlayButton = function GamePlayButton(node, path) {
+/**
+ * The game play button launches an Instant Game that is associated with the bot
+ * page.
+ * @category Component
+ * @props {@link GamePlayButtonProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#logout)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/logout).
+ */
+export const GamePlayButton: MessengerComponent<
+  GamePlayButtonProps,
+  PartSegment<any>
+> = annotateMessengerComponent(function GamePlayButton(node, path) {
   const { title, payload, playerId, contextId } = node.props;
   return [
     makePartSegment(node, path, {
@@ -215,16 +221,4 @@ const __GamePlayButton = function GamePlayButton(node, path) {
           : undefined,
     }),
   ];
-};
-/**
- * The game play button launches an Instant Game that is associated with the bot
- * page.
- * @category Component
- * @props {@link GamePlayButtonProps}
- * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#logout)
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/logout).
- */
-export const GamePlayButton: MessengerComponent<
-  GamePlayButtonProps,
-  PartSegment<any>
-> = annotateMessengerComponent(__GamePlayButton);
+});

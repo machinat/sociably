@@ -21,17 +21,6 @@ export type TextReplyProps = {
   imageUrl?: string;
 };
 
-const __TextReply = function TextReply(node, path) {
-  const { title, payload, imageUrl } = node.props;
-  return [
-    makePartSegment(node, path, {
-      content_type: 'text',
-      title,
-      payload,
-      image_url: imageUrl,
-    }),
-  ];
-};
 /**
  * Add an text quick reply button with postback payload after an
  * {@link Expression}.
@@ -43,13 +32,20 @@ const __TextReply = function TextReply(node, path) {
 export const TextReply: MessengerComponent<
   TextReplyProps,
   PartSegment<any>
-> = annotateMessengerComponent(__TextReply);
+> = annotateMessengerComponent(function TextReply(node, path) {
+  const { title, payload, imageUrl } = node.props;
+  return [
+    makePartSegment(node, path, {
+      content_type: 'text',
+      title,
+      payload,
+      image_url: imageUrl,
+    }),
+  ];
+});
 
 const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
 
-const __PhoneReply = function PhoneReply(node, path) {
-  return [makePartSegment(node, path, PHONE_QUICK_REPLY_VALUES)];
-};
 /**
  * Add an phone quick reply button after an {@link Expression}
  * @category Component
@@ -60,13 +56,12 @@ const __PhoneReply = function PhoneReply(node, path) {
 export const PhoneReply: MessengerComponent<
   {},
   PartSegment<any>
-> = annotateMessengerComponent(__PhoneReply);
+> = annotateMessengerComponent(function PhoneReply(node, path) {
+  return [makePartSegment(node, path, PHONE_QUICK_REPLY_VALUES)];
+});
 
 const EMAIL_QUICK_REPLY_VALUES = { content_type: 'user_email' };
 
-const __EmailReply = function EmailReply(node, path) {
-  return [makePartSegment(node, path, EMAIL_QUICK_REPLY_VALUES)];
-};
 /**
  * Add an e-amil quick reply button after an {@link Expression}
  * @category Component
@@ -77,4 +72,6 @@ const __EmailReply = function EmailReply(node, path) {
 export const EmailReply: MessengerComponent<
   {},
   PartSegment<any>
-> = annotateMessengerComponent(__EmailReply);
+> = annotateMessengerComponent(function EmailReply(node, path) {
+  return [makePartSegment(node, path, EMAIL_QUICK_REPLY_VALUES)];
+});

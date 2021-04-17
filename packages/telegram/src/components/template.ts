@@ -1,10 +1,6 @@
 import type { MachinatNode } from '@machinat/core';
 import formatNode from '@machinat/core/utils/formatNode';
-import {
-  makeUnitSegment,
-  UnitSegment,
-  FunctionOf,
-} from '@machinat/core/renderer';
+import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
 import { annotateTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
@@ -25,10 +21,16 @@ export interface TextProps extends MessageProps {
   disableWebPagePreview?: boolean;
 }
 
-const __Text: FunctionOf<TelegramComponent<
+/**
+ * Send a location point on the map.
+ * @category Component
+ * @props {@link TextProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendmessage).
+ */
+export const Text: TelegramComponent<
   TextProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Text(node, path, render) {
+> = annotateTelegramComponent(async function Text(node, path, render) {
   const {
     children,
     parseMode = 'HTML',
@@ -65,17 +67,7 @@ const __Text: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Send a location point on the map.
- * @category Component
- * @props {@link TextProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendmessage).
- */
-export const Text: TelegramComponent<
-  TextProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Text);
+});
 
 /**
  * @category Props
@@ -91,10 +83,16 @@ export interface ContactProps extends MessageProps {
   vcard?: string;
 }
 
-const __Contact: FunctionOf<TelegramComponent<
+/**
+ * Send a location point on the map.
+ * @category Component
+ * @props {@link ContactProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendcontact).
+ */
+export const Contact: TelegramComponent<
   ContactProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Contact(node, path, render) {
+> = annotateTelegramComponent(async function Contact(node, path, render) {
   const {
     phoneNumber,
     firstName,
@@ -120,17 +118,7 @@ const __Contact: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Send a location point on the map.
- * @category Component
- * @props {@link ContactProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendcontact).
- */
-export const Contact: TelegramComponent<
-  ContactProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Contact);
+});
 
 /**
  * @category Props
@@ -160,10 +148,16 @@ export interface PollProps extends MessageProps {
   isClosed?: boolean;
 }
 
-const __Poll: FunctionOf<TelegramComponent<
+/**
+ * Send a location point on the map.
+ * @category Component
+ * @props {@link PollProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendpoll).
+ */
+export const Poll: TelegramComponent<
   PollProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Poll(node, path, render) {
+> = annotateTelegramComponent(async function Poll(node, path, render) {
   const {
     question,
     options,
@@ -208,17 +202,7 @@ const __Poll: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Send a location point on the map.
- * @category Component
- * @props {@link PollProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendpoll).
- */
-export const Poll: TelegramComponent<
-  PollProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Poll);
+});
 
 /**
  * @category Props
@@ -228,10 +212,16 @@ export interface DiceProps extends MessageProps {
   emoji?: string;
 }
 
-const __Dice: FunctionOf<TelegramComponent<
+/**
+ * Send a location point on the map.
+ * @category Component
+ * @props {@link DiceProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#senddice).
+ */
+export const Dice: TelegramComponent<
   DiceProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Dice(node, path, render) {
+> = annotateTelegramComponent(async function Dice(node, path, render) {
   const {
     emoji,
     disableNotification,
@@ -251,17 +241,7 @@ const __Dice: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Send a location point on the map.
- * @category Component
- * @props {@link DiceProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#senddice).
- */
-export const Dice: TelegramComponent<
-  DiceProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Dice);
+});
 
 /**
  * @category Props
@@ -307,10 +287,16 @@ export interface InvoiceProps extends MessageProps {
   isFlexible?: boolean;
 }
 
-const __Invoice: FunctionOf<TelegramComponent<
+/**
+ * Send a location point on the map.
+ * @category Component
+ * @props {@link InvoiceProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendinvoice).
+ */
+export const Invoice: TelegramComponent<
   InvoiceProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Invoice(node, path, render) {
+> = annotateTelegramComponent(async function Invoice(node, path, render) {
   const {
     title,
     description,
@@ -366,17 +352,7 @@ const __Invoice: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Send a location point on the map.
- * @category Component
- * @props {@link InvoiceProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendinvoice).
- */
-export const Invoice: TelegramComponent<
-  InvoiceProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Invoice);
+});
 
 /**
  * @category Props
@@ -386,10 +362,16 @@ export interface GameProps extends MessageProps {
   gameShortName: string;
 }
 
-const __Game: FunctionOf<TelegramComponent<
+/**
+ * Send a location point on the map.
+ * @category Component
+ * @props {@link GameProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendgame).
+ */
+export const Game: TelegramComponent<
   GameProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Game(node, path, render) {
+> = annotateTelegramComponent(async function Game(node, path, render) {
   const {
     gameShortName,
     disableNotification,
@@ -409,14 +391,4 @@ const __Game: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Send a location point on the map.
- * @category Component
- * @props {@link GameProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendgame).
- */
-export const Game: TelegramComponent<
-  GameProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Game);
+});

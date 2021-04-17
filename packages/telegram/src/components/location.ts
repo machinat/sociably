@@ -1,9 +1,5 @@
 import { MachinatNode } from '@machinat/core';
-import {
-  makeUnitSegment,
-  UnitSegment,
-  FunctionOf,
-} from '@machinat/core/renderer';
+import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
 import { annotateTelegramComponent } from '../utils';
 import { TelegramSegmentValue, TelegramComponent } from '../types';
 import { MessageProps } from './types';
@@ -20,10 +16,16 @@ export interface LocationProps extends MessageProps {
   livePeriod?: number;
 }
 
-const __Location: FunctionOf<TelegramComponent<
+/**
+ * Send a location point on the map.
+ * @category Component
+ * @props {@link LocationProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendlocation).
+ */
+export const Location: TelegramComponent<
   LocationProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Location(node, path, render) {
+> = annotateTelegramComponent(async function Location(node, path, render) {
   const {
     latitude,
     longitude,
@@ -47,17 +49,7 @@ const __Location: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Send a location point on the map.
- * @category Component
- * @props {@link LocationProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendlocation).
- */
-export const Location: TelegramComponent<
-  LocationProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Location);
+});
 
 /**
  * @category Props
@@ -75,10 +67,20 @@ export interface EditLiveLocationProps {
   replyMarkup?: MachinatNode;
 }
 
-const __EditLiveLocation: FunctionOf<TelegramComponent<
+/**
+ * Edit a sent live location messages. A location can be edited until its `live_period` expires or editing is explicitly disabled by {@link StopLiveLocation}.
+ * @category Component
+ * @props {@link EditLiveLocationProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#editmessagelivelocation).
+ */
+export const EditLiveLocation: TelegramComponent<
   EditLiveLocationProps,
   UnitSegment<TelegramSegmentValue>
->> = async function EditLiveLocation(node, path, render) {
+> = annotateTelegramComponent(async function EditLiveLocation(
+  node,
+  path,
+  render
+) {
   const {
     latitude,
     longitude,
@@ -100,17 +102,7 @@ const __EditLiveLocation: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Edit a sent live location messages. A location can be edited until its `live_period` expires or editing is explicitly disabled by {@link StopLiveLocation}.
- * @category Component
- * @props {@link EditLiveLocationProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#editmessagelivelocation).
- */
-export const EditLiveLocation: TelegramComponent<
-  EditLiveLocationProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__EditLiveLocation);
+});
 
 /**
  * @category Props
@@ -124,10 +116,20 @@ export interface StopLiveLocationProps {
   replyMarkup?: MachinatNode;
 }
 
-const __StopLiveLocation: FunctionOf<TelegramComponent<
+/**
+ * Stop a sent live location messages. A location can be edited until its `live_period` expires or editing is explicitly disabled by {@link StopLiveLocation}.
+ * @category Component
+ * @props {@link StopLiveLocationProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#stopmessagelivelocation).
+ */
+export const StopLiveLocation: TelegramComponent<
   StopLiveLocationProps,
   UnitSegment<TelegramSegmentValue>
->> = async function StopLiveLocation(node, path, render) {
+> = annotateTelegramComponent(async function StopLiveLocation(
+  node,
+  path,
+  render
+) {
   const { messageId, inlineMessageId, replyMarkup } = node.props;
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
 
@@ -141,17 +143,7 @@ const __StopLiveLocation: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Stop a sent live location messages. A location can be edited until its `live_period` expires or editing is explicitly disabled by {@link StopLiveLocation}.
- * @category Component
- * @props {@link StopLiveLocationProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#stopmessagelivelocation).
- */
-export const StopLiveLocation: TelegramComponent<
-  StopLiveLocationProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__StopLiveLocation);
+});
 
 /**
  * @category Props
@@ -171,10 +163,16 @@ export interface VenueProps extends MessageProps {
   foursquareType?: string;
 }
 
-const __Venue: FunctionOf<TelegramComponent<
+/**
+ * Send a location point on the map.
+ * @category Component
+ * @props {@link VenueProps}
+ * @guides Check official [reference](https://core.telegram.org/bots/api#sendvenue).
+ */
+export const Venue: TelegramComponent<
   VenueProps,
   UnitSegment<TelegramSegmentValue>
->> = async function Venue(node, path, render) {
+> = annotateTelegramComponent(async function Venue(node, path, render) {
   const {
     latitude,
     longitude,
@@ -204,14 +202,4 @@ const __Venue: FunctionOf<TelegramComponent<
       },
     }),
   ];
-};
-/**
- * Send a location point on the map.
- * @category Component
- * @props {@link VenueProps}
- * @guides Check official [reference](https://core.telegram.org/bots/api#sendvenue).
- */
-export const Venue: TelegramComponent<
-  VenueProps,
-  UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(__Venue);
+});

@@ -29,19 +29,9 @@ export type PassThreadControlProps = {
    * Metadata passed to the receiving app in the pass_thread_control webhook
    * event.
    */
-  metadata: string;
+  metadata?: string;
 };
 
-const __PassThreadControl = function PassThreadControl(node, path) {
-  const { targetAppId, metadata } = node.props;
-  return [
-    makeUnitSegment(node, path, {
-      target_app_id: targetAppId,
-      metadata,
-      [API_PATH]: PATH_PASS_THREAD_CONTROL,
-    }),
-  ];
-};
 /**
  * Pass thread control from your app to another app. The app that will receive
  * thread ownership will receive a pass_thread_control webhook event.
@@ -53,16 +43,28 @@ const __PassThreadControl = function PassThreadControl(node, path) {
 export const PassThreadControl: MessengerComponent<
   PassThreadControlProps,
   UnitSegment<PassThreadControlValue>
-> = annotateMessengerComponent(__PassThreadControl);
-
-const __RequestThreadControl = function RequestThreadControl(node, path) {
+> = annotateMessengerComponent(function PassThreadControl(node, path) {
+  const { targetAppId, metadata } = node.props;
   return [
     makeUnitSegment(node, path, {
-      metadata: node.props.metadata,
-      [API_PATH]: PATH_REQUEST_THREAD_CONTROL,
+      target_app_id: targetAppId,
+      metadata,
+      [API_PATH]: PATH_PASS_THREAD_CONTROL,
     }),
   ];
+});
+
+/**
+ * @category Props
+ */
+export type RequestThreadControlProps = {
+  /**
+   * Metadata passed back to the primary app in the request_thread_control
+   * webhook event.
+   */
+  metadata?: string;
 };
+
 /**
  * Ask for control of a specific thread as a Secondary Receiver app. The Primary
  * Receiver app will receive a messaging_handovers webhook event with the
@@ -73,18 +75,28 @@ const __RequestThreadControl = function RequestThreadControl(node, path) {
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol/request-thread-control).
  */
 export const RequestThreadControl: MessengerComponent<
-  {},
+  RequestThreadControlProps,
   UnitSegment<RequestThreadControlValue>
-> = annotateMessengerComponent(__RequestThreadControl);
-
-const __TakeThreadContorl = function TakeThreadContorl(node, path) {
+> = annotateMessengerComponent(function RequestThreadControl(node, path) {
   return [
     makeUnitSegment(node, path, {
       metadata: node.props.metadata,
-      [API_PATH]: PATH_TAKE_THREAD_CONTROL,
+      [API_PATH]: PATH_REQUEST_THREAD_CONTROL,
     }),
   ];
+});
+
+/**
+ * @category Props
+ */
+export type TakeThreadContorlProps = {
+  /**
+   * Metadata passed back to the secondary app in the take_thread_control
+   * webhook event.
+   */
+  metadata?: string;
 };
+
 /**
  * Take control of a specific thread from a Secondary Receiver app as the
  * Primary Receiver app. The Secondary Receiver app will receive a
@@ -95,6 +107,13 @@ const __TakeThreadContorl = function TakeThreadContorl(node, path) {
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol/take-thread-control).
  */
 export const TakeThreadContorl: MessengerComponent<
-  {},
+  TakeThreadContorlProps,
   UnitSegment<TakeThreadControlValue>
-> = annotateMessengerComponent(__TakeThreadContorl);
+> = annotateMessengerComponent(function TakeThreadContorl(node, path) {
+  return [
+    makeUnitSegment(node, path, {
+      metadata: node.props.metadata,
+      [API_PATH]: PATH_TAKE_THREAD_CONTROL,
+    }),
+  ];
+});
