@@ -143,7 +143,7 @@ export class RedisStateController implements BaseStateController {
     return new RedisStateAccessor(
       this._client,
       this._marshaler,
-      `$C:${channelUid}`
+      `$channel:${channelUid}`
     );
   }
 
@@ -153,12 +153,16 @@ export class RedisStateController implements BaseStateController {
     return new RedisStateAccessor(
       this._client,
       this._marshaler,
-      `$U:${userUid}`
+      `$user:${userUid}`
     );
   }
 
   globalState(name: string): RedisStateAccessor {
-    return new RedisStateAccessor(this._client, this._marshaler, `$G:${name}`);
+    return new RedisStateAccessor(
+      this._client,
+      this._marshaler,
+      `$global:${name}`
+    );
   }
 }
 
