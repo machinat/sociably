@@ -51,7 +51,7 @@ export class TelegramAssetsManager {
       .getAll();
   }
 
-  async discardAssetId(resource: string, name: string): Promise<void> {
+  async unsaveAssetId(resource: string, name: string): Promise<void> {
     const isDeleted = await this._stateController
       .globalState(this._makeResourceToken(resource))
       .delete(name);
@@ -73,8 +73,8 @@ export class TelegramAssetsManager {
     return this.getAllAssets(FILE);
   }
 
-  discardFile(name: string): Promise<void> {
-    return this.discardAssetId(FILE, name);
+  unsaveFile(name: string): Promise<void> {
+    return this.unsaveAssetId(FILE, name);
   }
 }
 

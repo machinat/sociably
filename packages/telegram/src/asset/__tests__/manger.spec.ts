@@ -128,18 +128,18 @@ test('get all assets', async () => {
 test('remove asset id', async () => {
   const manager = new TelegramAssetsManager(stateController, bot);
 
-  await manager.discardAssetId('foo', 'bar');
-  await manager.discardFile('my_file');
+  await manager.unsaveAssetId('foo', 'bar');
+  await manager.unsaveFile('my_file');
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(2);
   expect(state.delete.mock).toHaveBeenCalledTimes(2);
 
   state.delete.mock.fakeReturnValue(false);
   await expect(
-    manager.discardAssetId('foo', 'bar')
+    manager.unsaveAssetId('foo', 'bar')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] not exist"`);
   await expect(
-    manager.discardFile('my_file')
+    manager.unsaveFile('my_file')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"file [ my_file ] not exist"`);
 
   expect(state.delete.mock).toHaveBeenCalledTimes(4);

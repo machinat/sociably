@@ -55,7 +55,7 @@ export class MessengerAssetsManager {
       .getAll();
   }
 
-  async discardAssetId(resource: string, name: string): Promise<void> {
+  async unsaveAssetId(resource: string, name: string): Promise<void> {
     const isDeleted = await this._stateController
       .globalState(this._makeResourceToken(resource))
       .delete(name);
@@ -77,8 +77,8 @@ export class MessengerAssetsManager {
     return this.getAllAssets(ATTACHMENT);
   }
 
-  discardAttachment(name: string): Promise<void> {
-    return this.discardAssetId(ATTACHMENT, name);
+  unsaveAttachment(name: string): Promise<void> {
+    return this.unsaveAssetId(ATTACHMENT, name);
   }
 
   async renderAttachment(name: string, node: MachinatNode): Promise<string> {
@@ -109,8 +109,8 @@ export class MessengerAssetsManager {
     return this.getAllAssets(PERSONA);
   }
 
-  discardPersona(name: string): Promise<void> {
-    return this.discardAssetId(PERSONA, name);
+  unsavePersona(name: string): Promise<void> {
+    return this.unsaveAssetId(PERSONA, name);
   }
 
   async createPersona(name: string, body: any): Promise<string> {

@@ -52,7 +52,7 @@ export class LineAssetsManager {
       .getAll();
   }
 
-  async discardAssetId(resource: string, name: string): Promise<void> {
+  async unsaveAssetId(resource: string, name: string): Promise<void> {
     const isDeleted = await this._stateController
       .globalState(this._makeResourceToken(resource))
       .delete(name);
@@ -62,20 +62,20 @@ export class LineAssetsManager {
     }
   }
 
-  getLIFFApp(name: string): Promise<void | string> {
+  getLiffApp(name: string): Promise<void | string> {
     return this.getAssetId(LIFF, name);
   }
 
-  saveLIFFApp(name: string, id: string): Promise<void> {
+  saveLiffApp(name: string, id: string): Promise<void> {
     return this.saveAssetId(LIFF, name, id);
   }
 
-  getAllLIFFApps(): Promise<null | Map<string, string>> {
+  getAllLiffApps(): Promise<null | Map<string, string>> {
     return this.getAllAssets(LIFF);
   }
 
-  discardLIFFApp(name: string): Promise<void> {
-    return this.discardAssetId(LIFF, name);
+  unsaveLiffApp(name: string): Promise<void> {
+    return this.unsaveAssetId(LIFF, name);
   }
 
   getRichMenu(name: string): Promise<undefined | string> {
@@ -90,8 +90,8 @@ export class LineAssetsManager {
     return this.getAllAssets(RICH_MENU);
   }
 
-  discardRichMenu(name: string): Promise<void> {
-    return this.discardAssetId(RICH_MENU, name);
+  unsaveRichMenu(name: string): Promise<void> {
+    return this.unsaveAssetId(RICH_MENU, name);
   }
 
   async createRichMenu(name: string, body: unknown): Promise<string> {
@@ -118,7 +118,7 @@ export class LineAssetsManager {
 
     await this._bot.makeApiCall('DELETE', `${PATH_RICHMENU}/${id}`, null);
 
-    await this.discardAssetId(RICH_MENU, name);
+    await this.unsaveAssetId(RICH_MENU, name);
     return id;
   }
 }

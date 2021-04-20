@@ -151,9 +151,9 @@ test('get all assets', async () => {
 test('remove asset id', async () => {
   const manager = new MessengerAssetsManager(stateController, bot);
 
-  await manager.discardAssetId('foo', 'bar');
-  await manager.discardAttachment('my_attachment');
-  await manager.discardPersona('my_persona');
+  await manager.unsaveAssetId('foo', 'bar');
+  await manager.unsaveAttachment('my_attachment');
+  await manager.unsavePersona('my_persona');
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
@@ -172,17 +172,17 @@ test('remove asset id', async () => {
 
   state.delete.mock.fake(async () => false);
   await expect(
-    manager.discardAssetId('foo', 'bar')
+    manager.unsaveAssetId('foo', 'bar')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] not exist"`);
 
   await expect(
-    manager.discardAttachment('my_attachment')
+    manager.unsaveAttachment('my_attachment')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"attachment [ my_attachment ] not exist"`
   );
 
   await expect(
-    manager.discardPersona('my_persona')
+    manager.unsavePersona('my_persona')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"persona [ my_persona ] not exist"`
   );

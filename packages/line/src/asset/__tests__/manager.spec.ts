@@ -33,7 +33,7 @@ test('get asset id', async () => {
   const manager = new LineAssetsManager(stateController, bot);
 
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe(undefined);
-  await expect(manager.getLIFFApp('my_liff_app')).resolves.toBe(undefined);
+  await expect(manager.getLiffApp('my_liff_app')).resolves.toBe(undefined);
   await expect(manager.getRichMenu('my_rich_menu')).resolves.toBe(undefined);
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
@@ -55,7 +55,7 @@ test('get asset id', async () => {
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe('baz');
 
   state.get.mock.fakeReturnValue('_LIFF_ID_');
-  await expect(manager.getLIFFApp('my_liff_app')).resolves.toBe('_LIFF_ID_');
+  await expect(manager.getLiffApp('my_liff_app')).resolves.toBe('_LIFF_ID_');
 
   state.get.mock.fakeReturnValue('_RICH_MENU_ID_');
   await expect(manager.getRichMenu('my_rich_menu')).resolves.toBe(
@@ -70,7 +70,7 @@ test('set asset id', async () => {
   const manager = new LineAssetsManager(stateController, bot);
 
   await manager.saveAssetId('foo', 'bar', 'baz');
-  await manager.saveLIFFApp('my_liff_app', '_LIFF_APP_ID_');
+  await manager.saveLiffApp('my_liff_app', '_LIFF_APP_ID_');
   await manager.saveRichMenu('my_rich_menu', '_RICH_MENU_ID_');
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
@@ -115,7 +115,7 @@ test('get all assets', async () => {
   const manager = new LineAssetsManager(stateController, bot);
 
   await expect(manager.getAllAssets('foo')).resolves.toBe(null);
-  await expect(manager.getAllLIFFApps()).resolves.toBe(null);
+  await expect(manager.getAllLiffApps()).resolves.toBe(null);
   await expect(manager.getAllRichMenus()).resolves.toBe(null);
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
@@ -137,19 +137,19 @@ test('get all assets', async () => {
   state.getAll.mock.fake(async () => resources);
 
   await expect(manager.getAllAssets('foo')).resolves.toEqual(resources);
-  await expect(manager.getAllLIFFApps()).resolves.toEqual(resources);
+  await expect(manager.getAllLiffApps()).resolves.toEqual(resources);
   await expect(manager.getAllRichMenus()).resolves.toEqual(resources);
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(6);
   expect(state.getAll.mock).toHaveBeenCalledTimes(6);
 });
 
-test('discard asset id', async () => {
+test('unsave asset id', async () => {
   const manager = new LineAssetsManager(stateController, bot);
 
-  await manager.discardAssetId('foo', 'bar');
-  await manager.discardLIFFApp('my_liff_app');
-  await manager.discardRichMenu('my_rich_menu');
+  await manager.unsaveAssetId('foo', 'bar');
+  await manager.unsaveLiffApp('my_liff_app');
+  await manager.unsaveRichMenu('my_rich_menu');
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
@@ -168,15 +168,15 @@ test('discard asset id', async () => {
 
   state.delete.mock.fakeReturnValue(false);
   await expect(
-    manager.discardAssetId('foo', 'bar')
+    manager.unsaveAssetId('foo', 'bar')
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] not exist"`);
   await expect(
-    manager.discardLIFFApp('my_liff_app')
+    manager.unsaveLiffApp('my_liff_app')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"liff [ my_liff_app ] not exist"`
   );
   await expect(
-    manager.discardRichMenu('my_rich_menu')
+    manager.unsaveRichMenu('my_rich_menu')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"rich_menu [ my_rich_menu ] not exist"`
   );
