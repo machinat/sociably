@@ -1,11 +1,11 @@
-import Subject from './subject';
-import { StreamFrame } from './types';
+import Stream from './stream';
+import { StreamingFrame } from './types';
 
-const merge = <T>(sourceA: Subject<T>, sourceB: Subject<T>): Subject<T> => {
-  const destination = new Subject<T>();
+const merge = <T>(sourceA: Stream<T>, sourceB: Stream<T>): Stream<T> => {
+  const destination = new Stream<T>();
 
-  const next = (frame: StreamFrame<T>) => destination.next(frame);
-  const error = (frame: StreamFrame<Error>) => destination.error(frame);
+  const next = (frame: StreamingFrame<T>) => destination.next(frame);
+  const error = (frame: StreamingFrame<Error>) => destination.error(frame);
 
   sourceA._subscribe(next, error);
   sourceB._subscribe(next, error);

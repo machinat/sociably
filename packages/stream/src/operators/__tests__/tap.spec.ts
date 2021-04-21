@@ -1,6 +1,6 @@
 import moxy, { Mock } from '@moxyjs/moxy';
 import { makeContainer, createEmptyScope } from '@machinat/core/service';
-import Subject from '../../subject';
+import Stream from '../../stream';
 import { STREAMING_KEY_I } from '../../interface';
 import tap from '../tap';
 
@@ -28,12 +28,12 @@ beforeEach(() => {
 test('execute each asyncronized side effect one by one', async () => {
   const tapper = moxy(() => delay(100));
 
-  const subject = new Subject();
-  subject.pipe(tap(tapper)).subscribe(nextContainer, errorContainer);
+  const stream = new Stream();
+  stream.pipe(tap(tapper)).subscribe(nextContainer, errorContainer);
 
-  subject.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
 
   expect(nextListener.mock).not.toHaveBeenCalled();
   jest.advanceTimersByTime(100);
@@ -61,14 +61,14 @@ test('execute each asyncronized side effect one by one', async () => {
 });
 
 test('execute side effect with different keys parallelly', async () => {
-  const subject = new Subject();
-  subject.pipe(tap(() => delay(100))).subscribe(nextContainer, errorContainer);
+  const stream = new Stream();
+  stream.pipe(tap(() => delay(100))).subscribe(nextContainer, errorContainer);
 
-  subject.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 'B', key: 'bar' });
-  subject.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 'D', key: 'bar' });
-  subject.next({ scope: createEmptyScope(), value: 'E', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'B', key: 'bar' });
+  stream.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'D', key: 'bar' });
+  stream.next({ scope: createEmptyScope(), value: 'E', key: 'foo' });
 
   expect(nextListener.mock).not.toHaveBeenCalled();
 
@@ -104,8 +104,8 @@ test('execute side effect with different keys parallelly', async () => {
 });
 
 it('emit error if thrown in tap function', async () => {
-  const subject = new Subject();
-  subject
+  const stream = new Stream();
+  stream
     .pipe(
       tap(async (value) => {
         await delay(100);
@@ -116,9 +116,9 @@ it('emit error if thrown in tap function', async () => {
     )
     .subscribe(nextContainer, errorContainer);
 
-  subject.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
 
   expect(nextListener.mock).not.toHaveBeenCalled();
 
@@ -150,12 +150,12 @@ test('use service container side effect', async () => {
     })(() => tapFnMock.proxify(async () => delay(100)))
   );
 
-  const subject = new Subject();
-  subject.pipe(tap(tapper)).subscribe(nextContainer, errorContainer);
+  const stream = new Stream();
+  stream.pipe(tap(tapper)).subscribe(nextContainer, errorContainer);
 
-  subject.next({ scope: createEmptyScope(), value: 'A', key: 'Foo' });
-  subject.next({ scope: createEmptyScope(), value: 'B', key: 'Foo' });
-  subject.next({ scope: createEmptyScope(), value: 'C', key: 'Foo' });
+  stream.next({ scope: createEmptyScope(), value: 'A', key: 'Foo' });
+  stream.next({ scope: createEmptyScope(), value: 'B', key: 'Foo' });
+  stream.next({ scope: createEmptyScope(), value: 'C', key: 'Foo' });
 
   expect(nextListener.mock).not.toHaveBeenCalled();
   jest.advanceTimersByTime(100);

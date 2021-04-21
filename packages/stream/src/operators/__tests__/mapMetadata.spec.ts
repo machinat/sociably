@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import { makeContainer, createEmptyScope } from '@machinat/core/service';
-import Subject from '../../subject';
+import Stream from '../../stream';
 import { STREAMING_KEY_I } from '../../interface';
 import mapMetadata from '../mapMetadata';
 
@@ -27,10 +27,10 @@ test('map with new value, key and scope', async () => {
     key: 'bar.channel',
     scope: newScope,
   }));
-  const subject = new Subject();
-  subject.pipe(mapMetadata(mapper)).subscribe(nextContainer);
+  const stream = new Stream();
+  stream.pipe(mapMetadata(mapper)).subscribe(nextContainer);
 
-  subject.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
+  stream.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
   await nextTick();
 
   expect(mapper.mock).toHaveBeenCalledTimes(1);
@@ -55,10 +55,10 @@ test('with async mapper function', async () => {
     key: 'bar.channel',
     scope: newScope,
   }));
-  const subject = new Subject();
-  subject.pipe(mapMetadata(mapper)).subscribe(nextContainer);
+  const stream = new Stream();
+  stream.pipe(mapMetadata(mapper)).subscribe(nextContainer);
 
-  subject.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
+  stream.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
   await nextTick();
 
   expect(mapper.mock).toHaveBeenCalledTimes(1);
@@ -87,12 +87,12 @@ test('with async mapper container', async () => {
     makeContainer({ deps: [STREAMING_KEY_I] })(() => mapFn)
   );
 
-  const subject = new Subject();
-  subject
+  const stream = new Stream();
+  stream
     .pipe(mapMetadata(mapContainer))
     .subscribe(nextContainer, console.error);
 
-  subject.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
+  stream.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
   await nextTick();
 
   expect(mapContainer.$$factory.mock).toHaveBeenCalledTimes(1);
@@ -119,8 +119,8 @@ it('transmit error down', () => {
     makeContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
   );
 
-  const subject = new Subject();
-  subject
+  const stream = new Stream();
+  stream
     .pipe(
       mapMetadata(() => ({
         value: 'bar',
@@ -130,7 +130,7 @@ it('transmit error down', () => {
     )
     .catch(errorContainer);
 
-  subject.error({
+  stream.error({
     value: new Error('boo'),
     scope: createEmptyScope(),
     key: 'foo.channel',

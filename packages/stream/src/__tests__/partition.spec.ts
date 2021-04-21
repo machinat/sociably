@@ -1,6 +1,6 @@
 import { makeContainer, createEmptyScope } from '@machinat/core/service';
 import moxy from '@moxyjs/moxy';
-import Subject from '../subject';
+import Stream from '../stream';
 import partition from '../partition';
 import { STREAMING_KEY_I } from '../interface';
 
@@ -36,7 +36,7 @@ beforeEach(() => {
 });
 
 it('split source stream into two by the predicate result', async () => {
-  const source = new Subject<string>();
+  const source = new Stream<string>();
 
   const [a$, b$] = partition(source, (val) => val[0] === 'a');
   a$.subscribe(eventContainerA);
@@ -94,7 +94,7 @@ it('split source stream into two by the predicate result', async () => {
 });
 
 it('pass error thrown in preidcator to both destinations', () => {
-  const source = new Subject();
+  const source = new Stream();
 
   const [a$, b$] = partition(source, () => {
     throw new Error('awwww');
@@ -116,7 +116,7 @@ it('pass error thrown in preidcator to both destinations', () => {
 });
 
 it('transmit error from source to both destinations', () => {
-  const source = new Subject();
+  const source = new Stream();
 
   const [a$, b$] = partition(source, (val) => !!val);
   a$.catch(errorContainerA);

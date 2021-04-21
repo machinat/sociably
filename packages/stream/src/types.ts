@@ -1,14 +1,14 @@
 import type { MachinatApp } from '@machinat/core';
 import { ServiceScope } from '@machinat/core/service';
-import Subject from './subject';
+import Stream from './stream';
 
-export type StreamFrame<T> = {
+export type StreamingFrame<T> = {
   key: undefined | string;
   scope: ServiceScope;
   value: T;
 };
 
-export type OperatorFunction<T, R> = (input: Subject<T>) => Subject<R>;
+export type OperatorFunction<T, R> = (input: Stream<T>) => Stream<R>;
 
 export type EventContextOfApp<
   App extends MachinatApp<any, any>

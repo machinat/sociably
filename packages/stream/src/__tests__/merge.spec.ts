@@ -1,12 +1,12 @@
 import { makeContainer, createEmptyScope } from '@machinat/core/service';
 import moxy from '@moxyjs/moxy';
-import Subject from '../subject';
+import Stream from '../stream';
 import merge from '../merge';
 import { STREAMING_KEY_I } from '../interface';
 
-it('merge events form two subjects', () => {
-  const sourceA = new Subject();
-  const sourceB = new Subject();
+it('merge events form two streams', () => {
+  const sourceA = new Stream();
+  const sourceB = new Stream();
   const eventListener = moxy();
   const eventContainer = moxy(
     makeContainer({ deps: [STREAMING_KEY_I] })(() => eventListener)
@@ -35,9 +35,9 @@ it('merge events form two subjects', () => {
   expect(eventContainer.$$factory.mock).toHaveBeenCalledWith('baz.channel');
 });
 
-it('merge errors form two subjects', () => {
-  const sourceA = new Subject();
-  const sourceB = new Subject();
+it('merge errors form two streams', () => {
+  const sourceA = new Stream();
+  const sourceB = new Stream();
   const errorListener = moxy();
   const errorContainer = moxy(
     makeContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)

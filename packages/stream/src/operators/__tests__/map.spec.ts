@@ -1,6 +1,6 @@
 import moxy, { Mock } from '@moxyjs/moxy';
 import { makeContainer, createEmptyScope } from '@machinat/core/service';
-import Subject from '../../subject';
+import Stream from '../../stream';
 import { STREAMING_KEY_I } from '../../interface';
 import map from '../map';
 
@@ -31,12 +31,12 @@ test('execute each asyncronized mapper one by one', async () => {
     return `${value}!!!`;
   });
 
-  const subject = new Subject();
-  subject.pipe(map(mapper)).subscribe(nextContainer, errorContainer);
+  const stream = new Stream();
+  stream.pipe(map(mapper)).subscribe(nextContainer, errorContainer);
 
-  subject.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
 
   expect(nextListener.mock).not.toHaveBeenCalled();
   jest.advanceTimersByTime(100);
@@ -64,8 +64,8 @@ test('execute each asyncronized mapper one by one', async () => {
 });
 
 test('map frames with different keys parallelly', async () => {
-  const subject = new Subject();
-  subject
+  const stream = new Stream();
+  stream
     .pipe(
       map(async (value) => {
         await delay(100);
@@ -74,11 +74,11 @@ test('map frames with different keys parallelly', async () => {
     )
     .subscribe(nextContainer, errorContainer);
 
-  subject.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 'B', key: 'bar' });
-  subject.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 'D', key: 'bar' });
-  subject.next({ scope: createEmptyScope(), value: 'E', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'B', key: 'bar' });
+  stream.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'D', key: 'bar' });
+  stream.next({ scope: createEmptyScope(), value: 'E', key: 'foo' });
 
   expect(nextListener.mock).not.toHaveBeenCalled();
 
@@ -114,8 +114,8 @@ test('map frames with different keys parallelly', async () => {
 });
 
 it('emit error if thrown in mapper', async () => {
-  const subject = new Subject();
-  subject
+  const stream = new Stream();
+  stream
     .pipe(
       map(async (value) => {
         await delay(100);
@@ -127,9 +127,9 @@ it('emit error if thrown in mapper', async () => {
     )
     .subscribe(nextContainer, errorContainer);
 
-  subject.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
 
   expect(nextListener.mock).not.toHaveBeenCalled();
 
@@ -166,12 +166,12 @@ test('use service container as mapper', async () => {
     )
   );
 
-  const subject = new Subject();
-  subject.pipe(map(mapper)).subscribe(nextContainer, errorContainer);
+  const stream = new Stream();
+  stream.pipe(map(mapper)).subscribe(nextContainer, errorContainer);
 
-  subject.next({ scope: createEmptyScope(), value: 'A', key: 'Foo' });
-  subject.next({ scope: createEmptyScope(), value: 'B', key: 'Foo' });
-  subject.next({ scope: createEmptyScope(), value: 'C', key: 'Foo' });
+  stream.next({ scope: createEmptyScope(), value: 'A', key: 'Foo' });
+  stream.next({ scope: createEmptyScope(), value: 'B', key: 'Foo' });
+  stream.next({ scope: createEmptyScope(), value: 'C', key: 'Foo' });
 
   expect(nextListener.mock).not.toHaveBeenCalled();
   jest.advanceTimersByTime(100);

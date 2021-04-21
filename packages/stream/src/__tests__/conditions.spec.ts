@@ -1,13 +1,13 @@
 import { makeContainer, createEmptyScope } from '@machinat/core/service';
 import moxy from '@moxyjs/moxy';
-import Subject from '../subject';
+import Stream from '../stream';
 import conditions from '../conditions';
 import { STREAMING_KEY_I } from '../interface';
 
 const nextTick = () => new Promise(process.nextTick);
 
 it('split source stream and transmit by the first condtion the value match', async () => {
-  const source = new Subject<string>();
+  const source = new Stream<string>();
 
   const eventListenerFoo = moxy();
   const eventContainerFoo = moxy(
@@ -105,7 +105,7 @@ beforeEach(() => {
 });
 
 it('transmit error thrown in condition predocator to the corresponded destination only', async () => {
-  const source = new Subject<string>();
+  const source = new Stream<string>();
 
   const [a$, b$, c$] = conditions(source, [
     (val) => val[0] === 'a',
@@ -138,7 +138,7 @@ it('transmit error thrown in condition predocator to the corresponded destinatio
 });
 
 it('transmit error from source to all branches', () => {
-  const source = new Subject<string>();
+  const source = new Stream<string>();
 
   const [a$, b$, c$] = conditions(source, [
     (val) => val[0] === 'a',

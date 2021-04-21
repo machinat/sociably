@@ -1,8 +1,9 @@
-import Subject from '../subject';
+import { ServiceScope } from '@machinat/core/service';
+import Stream from '../stream';
 import { OperatorFunction } from '../types';
 
 type DebouncingCache<T> = {
-  scope: any;
+  scope: ServiceScope;
   buffer: T[];
   timeoutId: NodeJS.Timeout;
 };
@@ -10,8 +11,8 @@ type DebouncingCache<T> = {
 const bufferDebounceTime = <T>(t: number): OperatorFunction<T, T[]> => {
   const debouncingCaches = new Map<string, DebouncingCache<T>>();
 
-  return (source: Subject<T>) => {
-    const destination = new Subject<T[]>();
+  return (source: Stream<T>) => {
+    const destination = new Stream<T[]>();
 
     const emitBufferedResult = (key) => {
       const cache = debouncingCaches.get(key);

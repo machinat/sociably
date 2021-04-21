@@ -1,23 +1,23 @@
 import { Subject as RxSubject } from 'rxjs';
 import { MaybeContainer } from '@machinat/core/service';
-import { StreamFrame, OperatorFunction } from './types';
+import { StreamingFrame, OperatorFunction } from './types';
 import injectMaybe from './injectMaybe';
 import pipe from './pipe';
 
-export default class Subject<T> {
-  _eventSubject: RxSubject<StreamFrame<T>>;
-  _errorSubject: RxSubject<StreamFrame<Error>>;
+export default class Stream<T> {
+  _eventSubject: RxSubject<StreamingFrame<T>>;
+  _errorSubject: RxSubject<StreamingFrame<Error>>;
 
   constructor() {
     this._eventSubject = new RxSubject();
     this._errorSubject = new RxSubject();
   }
 
-  next(frame: StreamFrame<T>): void {
+  next(frame: StreamingFrame<T>): void {
     this._eventSubject.next(frame);
   }
 
-  error(frame: StreamFrame<Error>): void {
+  error(frame: StreamingFrame<Error>): void {
     if (this._errorSubject.observers.length === 0) {
       throw frame.value;
     }
@@ -25,20 +25,20 @@ export default class Subject<T> {
   }
 
   /* eslint-disable prettier/prettier */
-  pipe<A,B>(fn1: OperatorFunction<A,B>): Subject<B>;
-  pipe<A,B,C>(fn1: OperatorFunction<A,B>,fn2: OperatorFunction<B,C>): Subject<C>;
-  pipe<A,B,C,D>(fn1: OperatorFunction<A,B>,fn2: OperatorFunction<B,C>,fn3: OperatorFunction<C,D>): Subject<D>;
-  pipe<A,B,C,D,E>(fn1: OperatorFunction<A,B>,fn2: OperatorFunction<B,C>,fn3: OperatorFunction<C,D>,fn4: OperatorFunction<D,E>): Subject<E>;
-  pipe<A,B,C,D,E,F>(fn1: OperatorFunction<A,B>,fn2: OperatorFunction<B,C>,fn3: OperatorFunction<C,D>,fn4: OperatorFunction<D,E>,fn5: OperatorFunction<E,F>): Subject<F>;
-  pipe(...fns: OperatorFunction<unknown, unknown>[]): Subject<unknown>;
+  pipe<A,B>(fn1: OperatorFunction<A,B>): Stream<B>;
+  pipe<A,B,C>(fn1: OperatorFunction<A,B>,fn2: OperatorFunction<B,C>): Stream<C>;
+  pipe<A,B,C,D>(fn1: OperatorFunction<A,B>,fn2: OperatorFunction<B,C>,fn3: OperatorFunction<C,D>): Stream<D>;
+  pipe<A,B,C,D,E>(fn1: OperatorFunction<A,B>,fn2: OperatorFunction<B,C>,fn3: OperatorFunction<C,D>,fn4: OperatorFunction<D,E>): Stream<E>;
+  pipe<A,B,C,D,E,F>(fn1: OperatorFunction<A,B>,fn2: OperatorFunction<B,C>,fn3: OperatorFunction<C,D>,fn4: OperatorFunction<D,E>,fn5: OperatorFunction<E,F>): Stream<F>;
+  pipe(...fns: OperatorFunction<unknown, unknown>[]): Stream<unknown>;
   /* eslint-enable prettier/prettier */
-  pipe(...fns: OperatorFunction<unknown, unknown>[]): Subject<unknown> {
+  pipe(...fns: OperatorFunction<unknown, unknown>[]): Stream<unknown> {
     return pipe(...fns)(this);
   }
 
   _subscribe(
-    nextListener: (frame: StreamFrame<T>) => void,
-    errorListener: (frame: StreamFrame<Error>) => void
+    nextListener: (frame: StreamingFrame<T>) => void,
+    errorListener: (frame: StreamingFrame<Error>) => void
   ): void {
     if (nextListener) {
       this._eventSubject.subscribe(nextListener);

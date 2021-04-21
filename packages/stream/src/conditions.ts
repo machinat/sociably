@@ -1,14 +1,14 @@
 import { MaybeContainer } from '@machinat/core/service';
 import injectMaybe from './injectMaybe';
-import Subject from './subject';
+import Stream from './stream';
 
 type PredicateFn<T> = (value: T) => boolean | Promise<boolean>;
 
 const conditions = <T>(
-  source: Subject<T>,
+  source: Stream<T>,
   predicators: MaybeContainer<PredicateFn<T>>[]
-): Subject<T>[] => {
-  const destinations = predicators.map(() => new Subject<T>());
+): Stream<T>[] => {
+  const destinations = predicators.map(() => new Stream<T>());
 
   const injectablePredicators = predicators.map((predicateFnOrContainer) =>
     injectMaybe(predicateFnOrContainer)

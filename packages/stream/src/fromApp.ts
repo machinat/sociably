@@ -1,12 +1,12 @@
 import { MachinatApp } from '@machinat/core';
 import { makeContainer, ServiceScope } from '@machinat/core/service';
-import Subject from './subject';
+import Stream from './stream';
 import { EventContextOfApp } from './types';
 
 const fromApp = <App extends MachinatApp<any>>(
   app: App
-): Subject<EventContextOfApp<App>> => {
-  const subject = new Subject<EventContextOfApp<App>>();
+): Stream<EventContextOfApp<App>> => {
+  const subject = new Stream<EventContextOfApp<App>>();
 
   app.onEvent(
     makeContainer({ deps: [ServiceScope] })(

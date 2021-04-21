@@ -1,15 +1,15 @@
 import { MaybeContainer } from '@machinat/core/service';
 import injectMaybe from './injectMaybe';
-import Subject from './subject';
+import Stream from './stream';
 
 type RredicateFn<T> = (value: T) => boolean | Promise<boolean>;
 
 const partition = <T>(
-  source: Subject<T>,
+  source: Stream<T>,
   predicator: MaybeContainer<RredicateFn<T>>
-) => {
-  const trueDestination = new Subject<T>();
-  const falseDestination = new Subject<T>();
+): [Stream<T>, Stream<T>] => {
+  const trueDestination = new Stream<T>();
+  const falseDestination = new Stream<T>();
 
   const injectPredicate = injectMaybe(predicator);
 

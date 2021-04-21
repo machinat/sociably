@@ -1,14 +1,14 @@
-import Subject from '../subject';
-import { StreamFrame, OperatorFunction } from '../types';
+import Stream from '../stream';
+import { StreamingFrame, OperatorFunction } from '../types';
 
 const doAsyncByKey = <T, R>(
-  effect: (frame: StreamFrame<T>, observer: Subject<R>) => Promise<void>
+  effect: (frame: StreamingFrame<T>, observer: Stream<R>) => Promise<void>
 ): OperatorFunction<T, R> => {
-  return (input: Subject<T>) => {
-    const buffersByChannel = new Map<string, StreamFrame<T>[]>();
-    const destination = new Subject<R>();
+  return (input: Stream<T>) => {
+    const buffersByChannel = new Map<string, StreamingFrame<T>[]>();
+    const destination = new Stream<R>();
 
-    const execute = async (frame: StreamFrame<T>) => {
+    const execute = async (frame: StreamingFrame<T>) => {
       const { scope, key } = frame;
 
       try {
@@ -29,7 +29,7 @@ const doAsyncByKey = <T, R>(
     };
 
     input._subscribe(
-      (frame: StreamFrame<T>) => {
+      (frame: StreamingFrame<T>) => {
         const { key } = frame;
         if (!key) {
           execute(frame);
@@ -45,7 +45,7 @@ const doAsyncByKey = <T, R>(
         }
       },
 
-      (errFrame: StreamFrame<Error>) => {
+      (errFrame: StreamingFrame<Error>) => {
         destination.error(errFrame);
       }
     );

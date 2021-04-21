@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import { makeContainer, createEmptyScope } from '@machinat/core/service';
 import { STREAMING_KEY_I } from '../../interface';
-import Subject from '../../subject';
+import Stream from '../../stream';
 import filter from '../filter';
 
 jest.useFakeTimers();
@@ -31,13 +31,13 @@ test('execute each asyncronized filterFn one by one', async () => {
     return value % 2 === 1;
   });
 
-  const subject = new Subject();
-  subject.pipe(filter(filterFn)).subscribe(nextContainer, errorContainer);
+  const stream = new Stream();
+  stream.pipe(filter(filterFn)).subscribe(nextContainer, errorContainer);
 
-  subject.next({ scope: createEmptyScope(), value: 1, key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 3, key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 4, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 1, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 3, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 4, key: 'foo' });
 
   expect(nextListener.mock).not.toHaveBeenCalled();
   expect(filterFn.mock).toHaveBeenCalledTimes(1);
@@ -78,14 +78,14 @@ test('filter frames with different keys parallelly', async () => {
     return value % 2 === 1;
   });
 
-  const subject = new Subject();
-  subject.pipe(filter(filterFn)).subscribe(nextContainer, errorContainer);
+  const stream = new Stream();
+  stream.pipe(filter(filterFn)).subscribe(nextContainer, errorContainer);
 
-  subject.next({ scope: createEmptyScope(), value: 1, key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 3, key: 'bar' });
-  subject.next({ scope: createEmptyScope(), value: 4, key: 'bar' });
-  subject.next({ scope: createEmptyScope(), value: 5, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 1, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 3, key: 'bar' });
+  stream.next({ scope: createEmptyScope(), value: 4, key: 'bar' });
+  stream.next({ scope: createEmptyScope(), value: 5, key: 'foo' });
 
   expect(nextListener.mock).not.toHaveBeenCalled();
 
@@ -134,12 +134,12 @@ it('emit error if thrown in filterFn', async () => {
     return value % 2 === 1;
   });
 
-  const subject = new Subject();
-  subject.pipe(filter(filterFn)).subscribe(nextContainer, errorContainer);
+  const stream = new Stream();
+  stream.pipe(filter(filterFn)).subscribe(nextContainer, errorContainer);
 
-  subject.next({ scope: createEmptyScope(), value: 1, key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 3, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 1, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 3, key: 'foo' });
 
   expect(nextListener.mock).not.toHaveBeenCalled();
 
@@ -174,14 +174,12 @@ test('use service container as filterer', async () => {
     makeContainer({ deps: [STREAMING_KEY_I] })(() => filterFn)
   );
 
-  const subject = new Subject();
-  subject
-    .pipe(filter(filterContainer))
-    .subscribe(nextContainer, errorContainer);
+  const stream = new Stream();
+  stream.pipe(filter(filterContainer)).subscribe(nextContainer, errorContainer);
 
-  subject.next({ scope: createEmptyScope(), value: 1, key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
-  subject.next({ scope: createEmptyScope(), value: 3, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 1, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
+  stream.next({ scope: createEmptyScope(), value: 3, key: 'foo' });
 
   expect(nextListener.mock).not.toHaveBeenCalled();
   expect(filterFn.mock).toHaveBeenCalledTimes(1);

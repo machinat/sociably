@@ -64,7 +64,7 @@ it('return a thunk if target is normal function', () => {
   expect(multiParamFn.mock).toHaveBeenCalledWith('bar', 'beer', 'bacon');
 });
 
-it('provide StreamFrame key when inject', () => {
+it('provide StreamingFrame key when inject', () => {
   const myContainer = moxy(makeContainer({})(() => () => 'baz'));
 
   expect(injectMaybe(myContainer)(frame)('bar')).toBe('baz');

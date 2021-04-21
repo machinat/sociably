@@ -1,4 +1,4 @@
-export { default as Subject } from './subject';
+export { default as Stream } from './stream';
 export { default as fromApp } from './fromApp';
 export { default as merge } from './merge';
 export { default as partition } from './partition';
