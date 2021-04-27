@@ -4,7 +4,21 @@ import type createNextServer from 'next';
 
 export type NextServer = ReturnType<typeof createNextServer>;
 
-export type NextServerOptions = Parameters<typeof createNextServer>[0];
+export type NextServerOptions = {
+  /**
+   * Where the Next project is located - @default '.'
+   */
+  dir?: string;
+  /**
+   * Hide error messages containing server information - @default false
+   */
+  quiet?: boolean;
+  /**
+   * Object what you would use in next.config.js - @default {}
+   */
+  conf?: null | { [key: string]: any };
+  dev?: boolean;
+};
 
 export type RequestInfo = {
   method: string;

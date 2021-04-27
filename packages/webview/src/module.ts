@@ -52,7 +52,9 @@ import type {
 const nextServerFactory = makeFactoryProvider({
   lifetime: 'singleton',
   deps: [ConfigsI],
-})(({ nextServerOptions }) => createNextServer(nextServerOptions || {}));
+})(({ nextServerOptions }) =>
+  createNextServer((nextServerOptions || {}) as {})
+);
 
 const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
   createWsServer

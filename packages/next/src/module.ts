@@ -9,7 +9,7 @@ import { ConfigsI, ServerI } from './interface';
 const nextServerFactory = makeFactoryProvider({
   lifetime: 'singleton',
   deps: [ConfigsI] as const,
-})(({ serverOptions }) => createNextServer(serverOptions || {}));
+})(({ serverOptions }) => createNextServer((serverOptions || {}) as {}));
 
 const routingFactory = makeFactoryProvider({
   lifetime: 'transient',
