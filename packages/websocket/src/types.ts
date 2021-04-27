@@ -30,7 +30,7 @@ export type UpgradeRequestInfo = Omit<HttpRequestInfo, 'body'>;
 export type EventValue<
   Category extends string = string,
   Type extends string = string,
-  Payload = unknown
+  Payload = any
 > = {
   category: Category;
   type: Type;
