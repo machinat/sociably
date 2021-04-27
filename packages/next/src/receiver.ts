@@ -117,7 +117,7 @@ export class NextReceiver {
     };
 
     if (trimedPath.slice(1, 6) === '_next') {
-      if (this._next.renderOpts.dev && pathPrefix !== '') {
+      if (this._next.options.dev && pathPrefix !== '') {
         // HACK: to make react hot loader server recognize the request in
         //       dev environment
         // eslint-disable-next-line no-param-reassign

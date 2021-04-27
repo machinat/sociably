@@ -72,7 +72,7 @@ export type AuthControllerP<
   Authorizer extends AnyServerAuthorizer
 > = WebviewAuthController<Authorizer>;
 
-// nextjs interfaces
+// next interfaces
 
 export const NextServerI = makeInterface<NextServer>({
   name: 'WebviewNextServer',

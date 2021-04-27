@@ -16,7 +16,7 @@ const nextApp = moxy<ReturnType<typeof createNextApp>>({
   render: async () => {},
   renderError: async () => {},
   setAssetPrefix() {},
-  renderOpts: { assetPrefix: '' },
+  options: { assetPrefix: '' },
 } as never);
 
 const nextTick = () => new Promise((resolve) => process.nextTick(resolve));
