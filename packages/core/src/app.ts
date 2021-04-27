@@ -49,8 +49,8 @@ export default class MachinatApp<
   Context extends AnyEventContext = EventContextOfPlatform<Platform>
 > {
   config: AppConfig<Platform>;
+  serviceSpace: ServiceSpace;
   private _status: number;
-  private _serviceSpace: ServiceSpace;
   private _eventListeners: EventListenable<Context>[];
   private _errorListeners: ErrorListenable[];
 
@@ -97,7 +97,7 @@ export default class MachinatApp<
       [
         ModuleUtilitiesI,
         {
-          initScope: () => this._serviceSpace.createScope(),
+          initScope: () => this.serviceSpace.createScope(),
           popError: this._createPopErrorFn(),
         },
       ],
@@ -134,8 +134,8 @@ export default class MachinatApp<
       ...moduleProvisions,
     ]);
 
-    this._serviceSpace = new ServiceSpace(moduleOnlySpace, services || []);
-    const bootstrapScope = this._serviceSpace.bootstrap(bootstrapProvisions);
+    this.serviceSpace = new ServiceSpace(moduleOnlySpace, services || []);
+    const bootstrapScope = this.serviceSpace.bootstrap(bootstrapProvisions);
 
     await Promise.all(
       startHooks.map((hook) => bootstrapScope.injectContainer(hook))
@@ -152,7 +152,7 @@ export default class MachinatApp<
         (hook): hook is ServiceContainer<Promise<void>, unknown[]> => !!hook
       );
 
-    const stopScope = this._serviceSpace.createScope();
+    const stopScope = this.serviceSpace.createScope();
     await Promise.all(stopHooks.map((hook) => stopScope.injectContainer(hook)));
   }
 
@@ -161,7 +161,7 @@ export default class MachinatApp<
   ): ResolveDependencies<Deps> {
     invariant(this.isStarted, 'app is not started');
 
-    const scope = this._serviceSpace.createScope();
+    const scope = this.serviceSpace.createScope();
     return scope.useServices(dependencies);
   }
 
@@ -245,7 +245,7 @@ export default class MachinatApp<
     return (makeResponse) => {
       const handlePopping = async (ctx: Context, scope?: ServiceScope) => {
         const response = await makeResponse(ctx);
-        this._emitEvent(ctx, scope || this._serviceSpace.createScope());
+        this._emitEvent(ctx, scope || this.serviceSpace.createScope());
         return response;
       };
 
@@ -273,7 +273,7 @@ export default class MachinatApp<
       };
 
       return async (ctx: Context, scopeInput?: ServiceScope) => {
-        const scope = scopeInput || this._serviceSpace.createScope();
+        const scope = scopeInput || this.serviceSpace.createScope();
         try {
           const response = await execute(0, scope)(ctx);
           return response;
@@ -306,12 +306,12 @@ export default class MachinatApp<
       };
 
       return (frame: DispatchFrame<any, unknown>, scope?: ServiceScope) =>
-        execute(0, scope || this._serviceSpace.createScope())(frame);
+        execute(0, scope || this.serviceSpace.createScope())(frame);
     };
   }
 
   private _createPopErrorFn() {
     return (err: Error, scope?: ServiceScope) =>
-      this._emitError(err, scope || this._serviceSpace.createScope());
+      this._emitError(err, scope || this.serviceSpace.createScope());
   }
 }
