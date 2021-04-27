@@ -1,5 +1,5 @@
 import type { MachinatUser } from '@machinat/core';
-import type { Marshallable } from '@machinat/core/base/Marshaler';
+import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
 import { MESSENGER } from './constant';
 
 type MessengerUserValue = {
@@ -8,7 +8,7 @@ type MessengerUserValue = {
 };
 
 export default class MessengerUser
-  implements MachinatUser, Marshallable<MessengerUserValue> {
+  implements MachinatUser, CustomMarshallable<MessengerUserValue> {
   static fromJSONValue(value: MessengerUserValue): MessengerUser {
     const { pageId, psid } = value;
     return new MessengerUser(pageId, psid);

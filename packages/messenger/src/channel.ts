@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import type { MachinatChannel } from '@machinat/core';
-import type { Marshallable } from '@machinat/core/base/Marshaler';
+import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
 import { MESSENGER, MessengerChatType } from './constant';
 import MessengerUser from './user';
 import type { MessengerTarget, MessengerThreadType } from './types';
@@ -12,7 +12,7 @@ type MessengerChatValue = {
 };
 
 class MessengerChat
-  implements MachinatChannel, Marshallable<MessengerChatValue> {
+  implements MachinatChannel, CustomMarshallable<MessengerChatValue> {
   static Type = MessengerChatType;
 
   static fromUser(user: MessengerUser): MessengerChat {

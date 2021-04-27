@@ -1,5 +1,5 @@
 import type { MachinatUser } from '@machinat/core';
-import type { Marshallable } from '@machinat/core/base/Marshaler';
+import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
 import { TELEGRAM } from './constant';
 import type { RawUser } from './types';
 
@@ -7,7 +7,8 @@ type TelegramUserValue = {
   id: number;
 };
 
-class TelegramUser implements MachinatUser, Marshallable<TelegramUserValue> {
+class TelegramUser
+  implements MachinatUser, CustomMarshallable<TelegramUserValue> {
   static fromJSONValue({ id }: TelegramUserValue): TelegramUser {
     return new TelegramUser(id);
   }

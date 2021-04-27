@@ -1,5 +1,5 @@
 import type { MachinatUser } from '@machinat/core';
-import type { Marshallable } from '@machinat/core/base/Marshaler';
+import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
 import { LINE } from './constant';
 
 type LineUserValue = {
@@ -8,7 +8,7 @@ type LineUserValue = {
 };
 
 export default class LineUser
-  implements MachinatUser, Marshallable<LineUserValue> {
+  implements MachinatUser, CustomMarshallable<LineUserValue> {
   platform = LINE;
   providerId: string;
   id: string;

@@ -1,5 +1,5 @@
 import type { MachinatChannel } from '@machinat/core';
-import type { Marshallable } from '@machinat/core/base/Marshaler';
+import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
 import type {
   ConnectionTarget,
   UserTarget,
@@ -13,7 +13,10 @@ type ConnectionValue = {
 };
 
 export class WebviewConnection
-  implements MachinatChannel, ConnectionTarget, Marshallable<ConnectionValue> {
+  implements
+    MachinatChannel,
+    ConnectionTarget,
+    CustomMarshallable<ConnectionValue> {
   static fromJSONValue({ id, serverId }: ConnectionValue): WebviewConnection {
     return new WebviewConnection(serverId, id);
   }
@@ -48,7 +51,7 @@ type UserChannelValue = {
 };
 
 export class WebviewUserChannel
-  implements MachinatChannel, UserTarget, Marshallable<UserChannelValue> {
+  implements MachinatChannel, UserTarget, CustomMarshallable<UserChannelValue> {
   static fromJSONValue({ userUid }: UserChannelValue): WebviewUserChannel {
     return new WebviewUserChannel(userUid);
   }
@@ -80,7 +83,7 @@ type TopicValue = {
 };
 
 export class WebviewTopicChannel
-  implements MachinatChannel, TopicTarget, Marshallable<TopicValue> {
+  implements MachinatChannel, TopicTarget, CustomMarshallable<TopicValue> {
   static fromJSONValue({ name }: TopicValue): WebviewTopicChannel {
     return new WebviewTopicChannel(name);
   }

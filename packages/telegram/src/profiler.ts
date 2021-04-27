@@ -3,7 +3,7 @@ import type {
   MachinatProfile,
   UserProfiler,
 } from '@machinat/core/base/Profiler';
-import type { Marshallable } from '@machinat/core/base/Marshaler';
+import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
 import TelegramUser from './user';
 import { TelegramChat, TelegramChatTarget } from './channel';
 import { TELEGRAM } from './constant';
@@ -24,7 +24,7 @@ type TelegramUserProfileValue = {
 };
 
 export class TelegramUserProfile
-  implements MachinatProfile, Marshallable<TelegramUserProfileValue> {
+  implements MachinatProfile, CustomMarshallable<TelegramUserProfileValue> {
   static fromJSONValue(value: TelegramUserProfileValue): TelegramUserProfile {
     return new TelegramUserProfile(value.data, value.avatar);
   }
@@ -84,7 +84,7 @@ type TelegramChatProfileValue = {
 };
 
 export class TelegramChatProfile
-  implements MachinatProfile, Marshallable<TelegramChatProfileValue> {
+  implements MachinatProfile, CustomMarshallable<TelegramChatProfileValue> {
   static fromJSONValue(value: TelegramChatProfileValue): TelegramChatProfile {
     return new TelegramChatProfile(value.data, value.avatar);
   }

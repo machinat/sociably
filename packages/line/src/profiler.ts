@@ -3,7 +3,7 @@ import type {
   MachinatProfile,
   UserProfiler,
 } from '@machinat/core/base/Profiler';
-import type { Marshallable } from '@machinat/core/base/Marshaler';
+import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
 import { BotP } from './bot';
 import type LineChat from './channel';
 import type LineUser from './user';
@@ -11,7 +11,7 @@ import type { LineRawUserProfile } from './types';
 import { LINE } from './constant';
 
 export class LineUserProfile
-  implements MachinatProfile, Marshallable<LineRawUserProfile> {
+  implements MachinatProfile, CustomMarshallable<LineRawUserProfile> {
   static fromJSONValue(data: LineRawUserProfile): LineUserProfile {
     return new LineUserProfile(data);
   }
@@ -63,7 +63,7 @@ type LineGroupSummary = {
 };
 
 export class LineGroupProfile
-  implements MachinatProfile, Marshallable<LineGroupSummary> {
+  implements MachinatProfile, CustomMarshallable<LineGroupSummary> {
   static fromJSONValue(data: LineGroupSummary): LineGroupProfile {
     return new LineGroupProfile(data);
   }

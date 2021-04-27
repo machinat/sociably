@@ -1,5 +1,5 @@
 import type { MachinatChannel } from '@machinat/core';
-import type { Marshallable } from '@machinat/core/base/Marshaler';
+import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
 import { LINE } from './constant';
 import type LineUser from './user';
 import type { LineSource } from './types';
@@ -12,7 +12,7 @@ type LineChatValue = {
   id: string;
 };
 
-class LineChat implements MachinatChannel, Marshallable<LineChatValue> {
+class LineChat implements MachinatChannel, CustomMarshallable<LineChatValue> {
   static fromUser(channelId: string, user: LineUser): LineChat {
     return new LineChat(channelId, 'user', user.id);
   }

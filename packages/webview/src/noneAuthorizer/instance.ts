@@ -1,4 +1,4 @@
-import type { Marshallable } from '@machinat/core/base/Marshaler';
+import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
 
 class NoneInstance {
   id: string;
@@ -19,7 +19,7 @@ class NoneInstance {
 
 /* eslint-disable class-methods-use-this */
 export class NoneUser extends NoneInstance
-  implements Marshallable<{ id: string }> {
+  implements CustomMarshallable<{ id: string }> {
   static fromJSONValue({ id }: { id: string }): NoneUser {
     return new NoneUser(id);
   }
@@ -30,7 +30,7 @@ export class NoneUser extends NoneInstance
 }
 
 export class NoneChannel extends NoneInstance
-  implements Marshallable<{ id: string }> {
+  implements CustomMarshallable<{ id: string }> {
   static fromJSONValue({ id }: { id: string }): NoneChannel {
     return new NoneChannel(id);
   }

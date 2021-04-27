@@ -1,5 +1,5 @@
 import type { MachinatChannel } from '@machinat/core';
-import type { Marshallable } from '@machinat/core/base/Marshaler';
+import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
 import { TELEGRAM } from './constant';
 import type { TelegramChatType, RawChat } from './types';
 import TelegramUser from './user';
@@ -11,7 +11,7 @@ type TelegramChatValue = {
 };
 
 export class TelegramChat
-  implements MachinatChannel, Marshallable<TelegramChatValue> {
+  implements MachinatChannel, CustomMarshallable<TelegramChatValue> {
   static fromJSONValue(value: TelegramChatValue): TelegramChat {
     const { botId, type, id } = value;
     return new TelegramChat(botId, { id, type });
@@ -67,7 +67,7 @@ type TelegramChatInstanceValue = {
 };
 
 export class TelegramChatInstance
-  implements MachinatChannel, Marshallable<TelegramChatInstanceValue> {
+  implements MachinatChannel, CustomMarshallable<TelegramChatInstanceValue> {
   static fromJSONValue(value: TelegramChatInstanceValue): TelegramChatInstance {
     return new TelegramChatInstance(value.botId, value.id);
   }
@@ -103,7 +103,7 @@ type TelegramChatTargetValue = {
 };
 
 export class TelegramChatTarget
-  implements MachinatChannel, Marshallable<TelegramChatTargetValue> {
+  implements MachinatChannel, CustomMarshallable<TelegramChatTargetValue> {
   static fromJSONValue(value: TelegramChatTargetValue): TelegramChatTarget {
     return new TelegramChatTarget(value.botId, value.id);
   }

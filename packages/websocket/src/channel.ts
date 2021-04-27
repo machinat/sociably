@@ -1,5 +1,5 @@
 import type { MachinatChannel } from '@machinat/core';
-import type { Marshallable } from '@machinat/core/base/Marshaler';
+import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
 import { WEBSOCKET } from './constant';
 import type { ConnectionTarget, UserTarget, TopicTarget } from './types';
 
@@ -9,7 +9,10 @@ type ConnectionValue = {
 };
 
 export class WebSocketConnection
-  implements MachinatChannel, ConnectionTarget, Marshallable<ConnectionValue> {
+  implements
+    MachinatChannel,
+    ConnectionTarget,
+    CustomMarshallable<ConnectionValue> {
   static fromJSONValue({ id, serverId }: ConnectionValue): WebSocketConnection {
     return new WebSocketConnection(serverId, id);
   }
@@ -44,7 +47,7 @@ type UserChannelValue = {
 };
 
 export class WebSocketUserChannel
-  implements MachinatChannel, UserTarget, Marshallable<UserChannelValue> {
+  implements MachinatChannel, UserTarget, CustomMarshallable<UserChannelValue> {
   static fromJSONValue({ userUid }: UserChannelValue): WebSocketUserChannel {
     return new WebSocketUserChannel(userUid);
   }
@@ -76,7 +79,7 @@ type TopicValue = {
 };
 
 export class WebSocketTopicChannel
-  implements MachinatChannel, TopicTarget, Marshallable<TopicValue> {
+  implements MachinatChannel, TopicTarget, CustomMarshallable<TopicValue> {
   static fromJSONValue({ name }: TopicValue): WebSocketTopicChannel {
     return new WebSocketTopicChannel(name);
   }
