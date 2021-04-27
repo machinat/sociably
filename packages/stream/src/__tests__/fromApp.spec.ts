@@ -126,7 +126,7 @@ it('emit error from app.onError()', () => {
   const event$ = fromApp(app);
   const errorListener = moxy();
 
-  event$.subscribe(null, errorListener);
+  event$.catch(errorListener);
 
   expect(app.onError.mock).toHaveBeenCalledTimes(1);
   expect(app.onError.mock).toHaveBeenCalledWith(expect.any(Function));
@@ -157,7 +157,7 @@ test('transmit scope and empty key', () => {
     makeContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
   );
 
-  event$.subscribe(null, errorContainer);
+  event$.catch(errorContainer);
 
   const handlerEventContainer = app.onError.mock.calls[0].args[0];
 
