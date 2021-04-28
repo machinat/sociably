@@ -1,5 +1,5 @@
 import { TELEGRAM } from '../constant';
-import { TelegramChat, TelegramChatInstance } from '../channel';
+import { TelegramChat } from '../channel';
 import TelegramUser from '../user';
 import type {
   RawChat,
@@ -915,9 +915,7 @@ export interface CallbackQuery {
   /** Identifier of the message sent via the bot in inline mode, that originated the query. */
   inlineMessageId?: string;
   /** Global identifier, uniquely corresponding to the chat to which the message with the callback button was sent. Useful for high scores in games. */
-  chatInstance: string;
-  /** TelegramChatInstance object represent the channel of unique chatInstance id */
-  chatInstanceChannel: TelegramChatInstance;
+  chatInstanceId: string;
   /** Data associated with the callback button. Be aware that a bad client can send arbitrary data in this field. */
   data?: string;
   /** Short name of a Game to be returned, serves as the unique identifier for the game */
@@ -947,14 +945,8 @@ export const CallbackQuery: CallbackQuery = {
   get inlineMessageId() {
     return this.payload.callback_query.inline_message_id;
   },
-  get chatInstance() {
+  get chatInstanceId() {
     return this.payload.callback_query.chat_instance;
-  },
-  get chatInstanceChannel() {
-    return new TelegramChatInstance(
-      this.botId,
-      this.payload.callback_query.chat_instance
-    );
   },
   get data() {
     return this.payload.callback_query.data;

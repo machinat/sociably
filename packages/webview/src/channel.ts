@@ -1,5 +1,5 @@
 import type { MachinatChannel } from '@machinat/core';
-import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
+import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import type {
   ConnectionTarget,
   UserTarget,
@@ -16,7 +16,9 @@ export class WebviewConnection
   implements
     MachinatChannel,
     ConnectionTarget,
-    CustomMarshallable<ConnectionValue> {
+    MarshallableInstance<ConnectionValue> {
+  static typeName = 'WebviewConnection';
+
   static fromJSONValue({ id, serverId }: ConnectionValue): WebviewConnection {
     return new WebviewConnection(serverId, id);
   }
@@ -41,8 +43,9 @@ export class WebviewConnection
     return { serverId, id };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return WebviewConnection.typeName;
   }
 }
 
@@ -51,7 +54,12 @@ type UserChannelValue = {
 };
 
 export class WebviewUserChannel
-  implements MachinatChannel, UserTarget, CustomMarshallable<UserChannelValue> {
+  implements
+    MachinatChannel,
+    UserTarget,
+    MarshallableInstance<UserChannelValue> {
+  static typeName = 'WebviewUserChannel';
+
   static fromJSONValue({ userUid }: UserChannelValue): WebviewUserChannel {
     return new WebviewUserChannel(userUid);
   }
@@ -73,8 +81,9 @@ export class WebviewUserChannel
     return { userUid: this.userUid };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return WebviewUserChannel.typeName;
   }
 }
 
@@ -83,7 +92,9 @@ type TopicValue = {
 };
 
 export class WebviewTopicChannel
-  implements MachinatChannel, TopicTarget, CustomMarshallable<TopicValue> {
+  implements MachinatChannel, TopicTarget, MarshallableInstance<TopicValue> {
+  static typeName = 'WebviewTopicChannel';
+
   static fromJSONValue({ name }: TopicValue): WebviewTopicChannel {
     return new WebviewTopicChannel(name);
   }
@@ -104,7 +115,8 @@ export class WebviewTopicChannel
     return { name: this.name };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return WebviewTopicChannel.typeName;
   }
 }

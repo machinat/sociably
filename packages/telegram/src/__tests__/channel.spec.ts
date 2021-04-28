@@ -1,9 +1,5 @@
 import TelegramUser from '../user';
-import {
-  TelegramChat,
-  TelegramChatInstance,
-  TelegramChatTarget,
-} from '../channel';
+import { TelegramChat, TelegramChatTarget } from '../channel';
 
 describe('TelegramChat', () => {
   test('private chat', () => {
@@ -98,29 +94,6 @@ describe('TelegramChat', () => {
       expect(chat.uid).toMatchInlineSnapshot(`"telegram.12345.67890"`);
     });
   });
-});
-
-test('TelegramChatInstance', () => {
-  const chatInstance = new TelegramChatInstance(12345, '_CHAT_INSTANCE_ID_');
-
-  expect(chatInstance.platform).toBe('telegram');
-  expect(chatInstance.botId).toBe(12345);
-  expect(chatInstance.id).toBe('_CHAT_INSTANCE_ID_');
-  expect(chatInstance.type).toBe('chat_instance');
-  expect(chatInstance.uid).toMatchInlineSnapshot(
-    `"telegram.12345._CHAT_INSTANCE_ID_"`
-  );
-
-  expect(chatInstance.typeName()).toBe('TelegramChatInstance');
-  expect(chatInstance.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
-      "botId": 12345,
-      "id": "_CHAT_INSTANCE_ID_",
-    }
-  `);
-  expect(
-    TelegramChatInstance.fromJSONValue(chatInstance.toJSONValue())
-  ).toStrictEqual(chatInstance);
 });
 
 test('TelegramChatTarget', () => {

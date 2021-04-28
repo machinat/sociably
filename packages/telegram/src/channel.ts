@@ -1,5 +1,5 @@
 import type { MachinatChannel } from '@machinat/core';
-import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
+import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { TELEGRAM } from './constant';
 import type { TelegramChatType, RawChat } from './types';
 import TelegramUser from './user';
@@ -11,7 +11,9 @@ type TelegramChatValue = {
 };
 
 export class TelegramChat
-  implements MachinatChannel, CustomMarshallable<TelegramChatValue> {
+  implements MachinatChannel, MarshallableInstance<TelegramChatValue> {
+  static typeName = 'TelegramChat';
+
   static fromJSONValue(value: TelegramChatValue): TelegramChat {
     const { botId, type, id } = value;
     return new TelegramChat(botId, { id, type });
@@ -56,44 +58,9 @@ export class TelegramChat
     return { botId, id, type };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
-  }
-}
-
-type TelegramChatInstanceValue = {
-  botId: number;
-  id: string;
-};
-
-export class TelegramChatInstance
-  implements MachinatChannel, CustomMarshallable<TelegramChatInstanceValue> {
-  static fromJSONValue(value: TelegramChatInstanceValue): TelegramChatInstance {
-    return new TelegramChatInstance(value.botId, value.id);
-  }
-
-  botId: number;
-  id: string;
-
-  platform = TELEGRAM;
-  type = 'chat_instance' as const;
-
-  constructor(botId: number, id: string) {
-    this.botId = botId;
-    this.id = id;
-  }
-
-  get uid(): string {
-    return `telegram.${this.botId}.${this.id}`;
-  }
-
-  toJSONValue(): TelegramChatInstanceValue {
-    const { botId, id } = this;
-    return { botId, id };
-  }
-
-  typeName(): string {
-    return this.constructor.name;
+    return TelegramChat.typeName;
   }
 }
 
@@ -103,7 +70,9 @@ type TelegramChatTargetValue = {
 };
 
 export class TelegramChatTarget
-  implements MachinatChannel, CustomMarshallable<TelegramChatTargetValue> {
+  implements MachinatChannel, MarshallableInstance<TelegramChatTargetValue> {
+  static typeName = 'TelegramChatTarget';
+
   static fromJSONValue(value: TelegramChatTargetValue): TelegramChatTarget {
     return new TelegramChatTarget(value.botId, value.id);
   }
@@ -128,7 +97,8 @@ export class TelegramChatTarget
     return { botId, id };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return TelegramChatTarget.typeName;
   }
 }

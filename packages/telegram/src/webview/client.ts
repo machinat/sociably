@@ -1,11 +1,7 @@
 import type { AuthorizerCredentialResult, ContextResult } from '@machinat/auth';
 import type { WebviewClientAuthorizer } from '@machinat/webview';
 import { TELEGRAM } from '../constant';
-import {
-  TelegramChat,
-  TelegramChatInstance,
-  TelegramChatTarget,
-} from '../channel';
+import { TelegramChat, TelegramChatTarget } from '../channel';
 import TelegramUser from '../user';
 import { TelegramUserProfile, TelegramChatProfile } from '../profiler';
 import { supplementContext } from './utils';
@@ -18,7 +14,6 @@ export default class TelegramClientAuthorizer
   platform = TELEGRAM;
   marshalTypes = [
     TelegramChat,
-    TelegramChatInstance,
     TelegramChatTarget,
     TelegramUser,
     TelegramUserProfile,

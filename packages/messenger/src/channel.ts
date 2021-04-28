@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import type { MachinatChannel } from '@machinat/core';
-import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
+import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { MESSENGER, MessengerChatType } from './constant';
 import MessengerUser from './user';
 import type { MessengerTarget, MessengerThreadType } from './types';
@@ -12,8 +12,8 @@ type MessengerChatValue = {
 };
 
 class MessengerChat
-  implements MachinatChannel, CustomMarshallable<MessengerChatValue> {
-  static Type = MessengerChatType;
+  implements MachinatChannel, MarshallableInstance<MessengerChatValue> {
+  static typeName = 'MessengerChat';
 
   static fromUser(user: MessengerUser): MessengerChat {
     return new MessengerChat(user.pageId, { id: user.psid });
@@ -25,7 +25,7 @@ class MessengerChat
   }
 
   pageId: string;
-  type: MessengerChatType;
+  private _type: MessengerChatType;
   private _target: MessengerTarget;
 
   platform = MESSENGER;
@@ -36,14 +36,14 @@ class MessengerChat
     type: MessengerChatType = MessengerChatType.UserToPage
   ) {
     this.pageId = String(pageId);
-    this.type = type;
+    this._type = type;
     this._target = target;
   }
 
   get targetType(): string {
     const { _target: target } = this;
 
-    return this.type !== MessengerChatType.UserToPage || 'id' in target
+    return this._type !== MessengerChatType.UserToPage || 'id' in target
       ? 'psid'
       : 'user_ref' in target
       ? 'user_ref'
@@ -76,24 +76,25 @@ class MessengerChat
   }
 
   get target(): null | MessengerTarget {
-    return this.type === MessengerChatType.UserToPage ? this._target : null;
+    return this._type === MessengerChatType.UserToPage ? this._target : null;
   }
 
   get threadType(): MessengerThreadType {
-    return this.type === MessengerChatType.Group
+    return this._type === MessengerChatType.Group
       ? 'GROUP'
-      : this.type === MessengerChatType.UserToUser
+      : this._type === MessengerChatType.UserToUser
       ? 'USER_TO_USER'
       : 'USER_TO_PAGE';
   }
 
   toJSONValue(): MessengerChatValue {
-    const { pageId, _target: target, type } = this;
+    const { pageId, _target: target, _type: type } = this;
     return { pageId, target, type };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return MessengerChat.typeName;
   }
 }
 

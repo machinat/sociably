@@ -1,5 +1,5 @@
 import type { MachinatChannel } from '@machinat/core';
-import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
+import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { WEBSOCKET } from './constant';
 import type { ConnectionTarget, UserTarget, TopicTarget } from './types';
 
@@ -12,7 +12,9 @@ export class WebSocketConnection
   implements
     MachinatChannel,
     ConnectionTarget,
-    CustomMarshallable<ConnectionValue> {
+    MarshallableInstance<ConnectionValue> {
+  static typeName = 'WebSocketConnection';
+
   static fromJSONValue({ id, serverId }: ConnectionValue): WebSocketConnection {
     return new WebSocketConnection(serverId, id);
   }
@@ -37,8 +39,9 @@ export class WebSocketConnection
     return { serverId, id };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return WebSocketConnection.typeName;
   }
 }
 
@@ -47,7 +50,12 @@ type UserChannelValue = {
 };
 
 export class WebSocketUserChannel
-  implements MachinatChannel, UserTarget, CustomMarshallable<UserChannelValue> {
+  implements
+    MachinatChannel,
+    UserTarget,
+    MarshallableInstance<UserChannelValue> {
+  static typeName = 'WebSocketUserChannel';
+
   static fromJSONValue({ userUid }: UserChannelValue): WebSocketUserChannel {
     return new WebSocketUserChannel(userUid);
   }
@@ -69,8 +77,9 @@ export class WebSocketUserChannel
     return { userUid: this.userUid };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return WebSocketUserChannel.typeName;
   }
 }
 
@@ -79,7 +88,9 @@ type TopicValue = {
 };
 
 export class WebSocketTopicChannel
-  implements MachinatChannel, TopicTarget, CustomMarshallable<TopicValue> {
+  implements MachinatChannel, TopicTarget, MarshallableInstance<TopicValue> {
+  static typeName = 'WebSocketTopicChannel';
+
   static fromJSONValue({ name }: TopicValue): WebSocketTopicChannel {
     return new WebSocketTopicChannel(name);
   }
@@ -100,7 +111,8 @@ export class WebSocketTopicChannel
     return { name: this.name };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return WebSocketTopicChannel.typeName;
   }
 }

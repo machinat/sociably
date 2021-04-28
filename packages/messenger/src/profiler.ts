@@ -3,7 +3,7 @@ import type {
   MachinatProfile,
   UserProfiler,
 } from '@machinat/core/base/Profiler';
-import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
+import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 
 import { BotP } from './bot';
 import type MessengerUser from './user';
@@ -12,7 +12,9 @@ import { ConfigsI } from './interface';
 import { MESSENGER } from './constant';
 
 export class MessengerUserProfile
-  implements MachinatProfile, CustomMarshallable<RawUserProfile> {
+  implements MachinatProfile, MarshallableInstance<RawUserProfile> {
+  static typeName = 'MessengerUserProfile';
+
   static fromJSONValue(data: RawUserProfile): MessengerUserProfile {
     return new MessengerUserProfile(data);
   }
@@ -60,8 +62,9 @@ export class MessengerUserProfile
     return this.data;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return MessengerUserProfile.typeName;
   }
 }
 

@@ -16,11 +16,7 @@ import {
   TelegramUserProfile,
   TelegramChatProfile,
 } from './profiler';
-import {
-  TelegramChat,
-  TelegramChatInstance,
-  TelegramChatTarget,
-} from './channel';
+import { TelegramChat, TelegramChatTarget } from './channel';
 import TelegramUser from './user';
 import type {
   TelegramEventContext,
@@ -83,7 +79,6 @@ namespace Telegram {
       },
 
       { provide: BaseMarshaler.TypeList, withValue: TelegramChat },
-      { provide: BaseMarshaler.TypeList, withValue: TelegramChatInstance },
       { provide: BaseMarshaler.TypeList, withValue: TelegramChatTarget },
 
       { provide: BaseMarshaler.TypeList, withValue: TelegramUser },

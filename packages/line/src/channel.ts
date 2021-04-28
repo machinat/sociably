@@ -1,5 +1,5 @@
 import type { MachinatChannel } from '@machinat/core';
-import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
+import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { LINE } from './constant';
 import type LineUser from './user';
 import type { LineSource } from './types';
@@ -12,7 +12,9 @@ type LineChatValue = {
   id: string;
 };
 
-class LineChat implements MachinatChannel, CustomMarshallable<LineChatValue> {
+class LineChat implements MachinatChannel, MarshallableInstance<LineChatValue> {
+  static typeName = 'LineChat';
+
   static fromUser(channelId: string, user: LineUser): LineChat {
     return new LineChat(channelId, 'user', user.id);
   }
@@ -56,8 +58,9 @@ class LineChat implements MachinatChannel, CustomMarshallable<LineChatValue> {
     return { type, channelId, id };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return LineChat.name;
   }
 }
 

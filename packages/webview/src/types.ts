@@ -6,7 +6,7 @@ import type {
   DispatchMiddleware,
   NativeComponent,
 } from '@machinat/core';
-import { AnyCustomMarshalType } from '@machinat/core/base/Marshaler';
+import { AnyMarshalType } from '@machinat/core/base/Marshaler';
 import type { UnitSegment } from '@machinat/core/renderer';
 import type { DispatchFrame } from '@machinat/core/engine';
 import type { MaybeContainer } from '@machinat/core/service';
@@ -66,7 +66,7 @@ export interface WebviewClientAuthorizer<
   Data,
   Context extends AnyAuthContext
 > extends ClientAuthorizer<Credential, Data, Context> {
-  marshalTypes: null | AnyCustomMarshalType[];
+  marshalTypes: null | AnyMarshalType[];
 }
 
 export type AnyClientAuthorizer = WebviewClientAuthorizer<

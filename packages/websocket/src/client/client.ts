@@ -1,8 +1,5 @@
 import type { MachinatUser } from '@machinat/core';
-import {
-  AnyCustomMarshalType,
-  BaseMarshaler,
-} from '@machinat/core/base/Marshaler';
+import { AnyMarshalType, BaseMarshaler } from '@machinat/core/base/Marshaler';
 import { WebSocketConnection } from '../channel';
 import createEvent from '../utils/createEvent';
 import Connector from './Connector';
@@ -19,7 +16,7 @@ import type {
 type ClientOptions<User extends null | MachinatUser> = {
   url?: string;
   login?: ClientLoginFn<User, unknown>;
-  marshalTypes?: AnyCustomMarshalType[];
+  marshalTypes?: AnyMarshalType[];
 };
 
 class WebScoketClient<

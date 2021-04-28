@@ -5,11 +5,7 @@ import BaseProfiler from '@machinat/core/base/Profiler';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import Telegram from '../module';
-import {
-  TelegramChat,
-  TelegramChatInstance,
-  TelegramChatTarget,
-} from '../channel';
+import { TelegramChat, TelegramChatTarget } from '../channel';
 import TelegramUser from '../user';
 import { TelegramReceiver } from '../receiver';
 import {
@@ -151,7 +147,6 @@ describe('initModule(configs)', () => {
       expect.arrayContaining([
         TelegramUser,
         TelegramChat,
-        TelegramChatInstance,
         TelegramChatTarget,
         TelegramUserProfile,
         TelegramChatProfile,

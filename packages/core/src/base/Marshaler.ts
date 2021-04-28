@@ -1,7 +1,7 @@
 import { createEJSON } from '@machinat/ejson';
 import { makeInterface, makeClassProvider } from '../service';
 
-export interface CustomMarshallable<V> {
+export interface MarshallableInstance<V> {
   typeName(): string;
   toJSONValue(): V;
 }
@@ -11,28 +11,25 @@ export interface Marshaler {
   unmarshal(value: any): any;
 }
 
-export type CustomMarshalType<V, T extends CustomMarshallable<V>> = {
-  name: string;
+export type MarshalType<V, T extends MarshallableInstance<V>> = {
+  typeName: string;
   fromJSONValue: (value: V) => T;
 };
 
-export type AnyCustomMarshalType = CustomMarshalType<
-  any,
-  CustomMarshallable<any>
->;
+export type AnyMarshalType = MarshalType<any, MarshallableInstance<any>>;
 
 export class BaseMarshaler {
-  static TypeList = makeInterface<AnyCustomMarshalType>({
-    name: 'CustomMarshalTypeList',
+  static TypeList = makeInterface<AnyMarshalType>({
+    name: 'MarshalTypeList',
     multi: true,
   });
 
   private _ejson: any;
 
-  constructor(types: AnyCustomMarshalType[]) {
+  constructor(types: AnyMarshalType[]) {
     this._ejson = createEJSON();
-    types.forEach(({ name, fromJSONValue }) => {
-      this._ejson.addType(name, fromJSONValue);
+    types.forEach(({ typeName, fromJSONValue }) => {
+      this._ejson.addType(typeName, fromJSONValue);
     });
   }
 

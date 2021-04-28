@@ -3,7 +3,7 @@ import type {
   MachinatProfile,
   UserProfiler,
 } from '@machinat/core/base/Profiler';
-import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
+import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { BotP } from './bot';
 import type LineChat from './channel';
 import type LineUser from './user';
@@ -11,7 +11,9 @@ import type { LineRawUserProfile } from './types';
 import { LINE } from './constant';
 
 export class LineUserProfile
-  implements MachinatProfile, CustomMarshallable<LineRawUserProfile> {
+  implements MachinatProfile, MarshallableInstance<LineRawUserProfile> {
+  static typeName = 'LineUserProfile';
+
   static fromJSONValue(data: LineRawUserProfile): LineUserProfile {
     return new LineUserProfile(data);
   }
@@ -51,8 +53,9 @@ export class LineUserProfile
     return this.data;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return LineUserProfile.typeName;
   }
 }
 
@@ -63,7 +66,9 @@ type LineGroupSummary = {
 };
 
 export class LineGroupProfile
-  implements MachinatProfile, CustomMarshallable<LineGroupSummary> {
+  implements MachinatProfile, MarshallableInstance<LineGroupSummary> {
+  static typeName = 'LineGroupProfile';
+
   static fromJSONValue(data: LineGroupSummary): LineGroupProfile {
     return new LineGroupProfile(data);
   }
@@ -91,8 +96,9 @@ export class LineGroupProfile
     return this.data;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return LineGroupProfile.typeName;
   }
 }
 

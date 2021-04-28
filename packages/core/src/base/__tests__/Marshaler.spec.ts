@@ -2,6 +2,7 @@
 import { BaseMarshaler } from '../Marshaler';
 
 class Foo {
+  static typeName = 'Foo';
   static fromJSONValue(value) {
     return new Foo(value.foo);
   }
@@ -21,6 +22,7 @@ class Foo {
 }
 
 class Bar {
+  static typeName = 'Bar';
   static fromJSONValue(value) {
     return new Bar(value.bar);
   }

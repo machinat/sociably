@@ -1,5 +1,5 @@
 import type { MachinatUser } from '@machinat/core';
-import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
+import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { MESSENGER } from './constant';
 
 type MessengerUserValue = {
@@ -8,7 +8,9 @@ type MessengerUserValue = {
 };
 
 export default class MessengerUser
-  implements MachinatUser, CustomMarshallable<MessengerUserValue> {
+  implements MachinatUser, MarshallableInstance<MessengerUserValue> {
+  static typeName = 'MessengerUser';
+
   static fromJSONValue(value: MessengerUserValue): MessengerUser {
     const { pageId, psid } = value;
     return new MessengerUser(pageId, psid);
@@ -36,7 +38,8 @@ export default class MessengerUser
     return { pageId, psid };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return MessengerUser.typeName;
   }
 }

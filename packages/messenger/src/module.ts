@@ -62,7 +62,7 @@ namespace Messenger {
     MessengerDispatchFrame,
     MessengerResult
   > => {
-    const provisions: ServiceProvision<any>[] = [
+    const provisions: ServiceProvision<unknown>[] = [
       BotP,
       {
         provide: BaseBot.PlatformMap,

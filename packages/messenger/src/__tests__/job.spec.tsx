@@ -2,7 +2,12 @@ import Machinat from '@machinat/core';
 import { UnitSegment, TextSegment } from '@machinat/core/renderer';
 import { createChatJobs, createAttachmentJobs } from '../job';
 import MessengerChannel from '../channel';
-import { API_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from '../constant';
+import {
+  API_PATH,
+  ATTACHMENT_DATA,
+  ATTACHMENT_INFO,
+  MessengerChatType,
+} from '../constant';
 import { MessengerSegmentValue } from '../types';
 
 const Foo = () => null;
@@ -260,7 +265,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
         new MessengerChannel(
           '_PAGE_ID_',
           { id: 'xxx' },
-          MessengerChannel.Type.Group
+          MessengerChatType.Group
         ),
         segments
       )
@@ -271,7 +276,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
         new MessengerChannel(
           '_PAGE_ID_',
           { id: 'xxx' },
-          MessengerChannel.Type.UserToUser
+          MessengerChatType.UserToUser
         ),
         segments
       )

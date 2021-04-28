@@ -117,7 +117,7 @@ test('default login function', async () => {
 
 it('use options.marshalTypes to initiate marshaler', () => {
   const FooType = {
-    name: 'Foo',
+    typeName: 'Foo',
     fromJSONValue: () => ({
       foo: true,
       typeName: () => 'Foo',
@@ -125,7 +125,7 @@ it('use options.marshalTypes to initiate marshaler', () => {
     }),
   };
   const BarType = {
-    name: 'Bar',
+    typeName: 'Bar',
     fromJSONValue: () => ({
       bar: true,
       typeName: () => 'Bar',

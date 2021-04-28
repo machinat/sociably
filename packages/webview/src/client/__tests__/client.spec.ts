@@ -155,7 +155,7 @@ test('websocket url', async () => {
 
 it('use marshalTypes of authorizers', () => {
   const FooType = {
-    name: 'Foo',
+    typeName: 'Foo',
     fromJSONValue: () => ({
       foo: true,
       typeName: () => 'Foo',
@@ -163,7 +163,7 @@ it('use marshalTypes of authorizers', () => {
     }),
   };
   const BarType = {
-    name: 'Bar',
+    typeName: 'Bar',
     fromJSONValue: () => ({
       bar: true,
       typeName: () => 'Bar',

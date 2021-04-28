@@ -1,4 +1,4 @@
-import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
+import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 
 class NoneInstance {
   id: string;
@@ -17,25 +17,30 @@ class NoneInstance {
   }
 }
 
-/* eslint-disable class-methods-use-this */
 export class NoneUser extends NoneInstance
-  implements CustomMarshallable<{ id: string }> {
+  implements MarshallableInstance<{ id: string }> {
+  static typeName = 'NoneUser';
+
   static fromJSONValue({ id }: { id: string }): NoneUser {
     return new NoneUser(id);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return 'NoneUser';
+    return NoneUser.typeName;
   }
 }
 
 export class NoneChannel extends NoneInstance
-  implements CustomMarshallable<{ id: string }> {
+  implements MarshallableInstance<{ id: string }> {
+  static typeName = 'NoneChannel';
+
   static fromJSONValue({ id }: { id: string }): NoneChannel {
     return new NoneChannel(id);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return 'NoneChannel';
+    return NoneChannel.typeName;
   }
 }

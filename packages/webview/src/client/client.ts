@@ -1,9 +1,6 @@
 // eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
-import {
-  AnyCustomMarshalType,
-  BaseMarshaler,
-} from '@machinat/core/base/Marshaler';
+import { AnyMarshalType, BaseMarshaler } from '@machinat/core/base/Marshaler';
 import AuthClient from '@machinat/auth/client';
 import type { UserOfAuthorizer, ContextOfAuthorizer } from '@machinat/auth';
 import type {
@@ -82,7 +79,7 @@ class WebviewClient<
         types.push(...authorizer.marshalTypes);
       }
       return types;
-    }, [] as AnyCustomMarshalType[]);
+    }, [] as AnyMarshalType[]);
 
     const { host, pathname } = window.location;
     this._connector = new Connector(

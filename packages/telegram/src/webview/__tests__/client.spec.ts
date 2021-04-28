@@ -8,7 +8,6 @@ test('#constructor() properties', () => {
   expect(authorizer.marshalTypes.map((t) => t.name)).toMatchInlineSnapshot(`
     Array [
       "TelegramChat",
-      "TelegramChatInstance",
       "TelegramChatTarget",
       "TelegramUser",
       "TelegramUserProfile",

@@ -1,5 +1,5 @@
 import type { MachinatUser } from '@machinat/core';
-import type { CustomMarshallable } from '@machinat/core/base/Marshaler';
+import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { TELEGRAM } from './constant';
 import type { RawUser } from './types';
 
@@ -8,7 +8,9 @@ type TelegramUserValue = {
 };
 
 class TelegramUser
-  implements MachinatUser, CustomMarshallable<TelegramUserValue> {
+  implements MachinatUser, MarshallableInstance<TelegramUserValue> {
+  static typeName = 'TelegramUser';
+
   static fromJSONValue({ id }: TelegramUserValue): TelegramUser {
     return new TelegramUser(id);
   }
@@ -32,8 +34,9 @@ class TelegramUser
     return { id: this.id };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return this.constructor.name;
+    return TelegramUser.typeName;
   }
 }
 
