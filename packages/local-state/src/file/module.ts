@@ -18,10 +18,17 @@ namespace FileState {
 
   export const initModule = (configs: ConfigsI): ServiceModule => ({
     provisions: [
+      { provide: ConfigsI, withValue: configs },
+      {
+        provide: SerializerI,
+        withValue: {
+          stringify: (obj: unknown) => JSON.stringify(obj, null, 2),
+          parse: JSON.parse,
+        },
+      },
+
       ControllerP,
       { provide: StateControllerI, withProvider: ControllerP },
-
-      { provide: ConfigsI, withValue: configs },
     ],
   });
 }

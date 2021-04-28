@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import StateControllerI from '@machinat/core/base/StateController';
+import BaseStateControllerI from '@machinat/core/base/StateController';
 import { tmpNameSync } from 'tmp';
 import FileState from '../module';
 import { ControllerP as FileStateController } from '../controller';
@@ -33,21 +33,29 @@ test('provisions', async () => {
   });
   await app.start();
 
-  const [controller, configs] = app.useServices([
+  const [
+    fileController,
+    baseController,
+    configs,
+    defaultSerializer,
+  ] = app.useServices([
     FileStateController,
+    BaseStateControllerI,
     FileState.Configs,
+    FileState.Serializer,
   ]);
 
-  expect(controller).toBeInstanceOf(FileStateController);
+  expect(fileController).toBeInstanceOf(FileStateController);
+  expect(baseController).toBe(fileController);
   expect(configs).toEqual({ path: storageFilePath });
-});
 
-test('provide base state controller', async () => {
-  const app = Machinat.createApp({
-    modules: [FileState.initModule({ path: storageFilePath })],
-  });
-  await app.start();
-
-  const [controller] = app.useServices([StateControllerI]);
-  expect(controller).toBeInstanceOf(FileStateController);
+  expect(defaultSerializer.parse(`{"foo":"bar"}`)).toEqual({ foo: 'bar' });
+  expect(defaultSerializer.stringify({ foo: { bar: 'baz' } }))
+    .toMatchInlineSnapshot(`
+    "{
+      \\"foo\\": {
+        \\"bar\\": \\"baz\\"
+      }
+    }"
+  `);
 });
