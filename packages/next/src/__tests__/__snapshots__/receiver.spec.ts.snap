@@ -6,6 +6,7 @@ Object {
     "x-y-z": "abc",
   },
   "method": "GET",
+  "route": "/hello",
   "url": "http://machinat.com/hello?foo=bar",
 }
 `;
@@ -16,16 +17,7 @@ Object {
     "x-y-z": "abc",
   },
   "method": "GET",
-  "url": "http://machinat.com/hello?foo=bar",
-}
-`;
-
-exports[`customized headers returned by handleRequest 1`] = `
-Object {
-  "headers": Object {
-    "x-y-z": "abc",
-  },
-  "method": "GET",
+  "route": "/hello",
   "url": "http://machinat.com/hello?foo=bar",
 }
 `;

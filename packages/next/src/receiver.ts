@@ -81,7 +81,7 @@ export class NextReceiver {
 
   private async _handleRequestImpl(req: IncomingMessage, res: ServerResponse) {
     if (!this._prepared) {
-      res.statusCode = 503; // eslint-disable-line no-param-reassign
+      res.writeHead(503);
       res.end(STATUS_CODES[503]);
       return;
     }
@@ -90,7 +90,7 @@ export class NextReceiver {
     const pathPrefix = this._pathPrefix;
 
     const { pathname } = parsedUrl;
-    const trimedPath = !pathname
+    const trimedRoute = !pathname
       ? undefined
       : pathPrefix === ''
       ? pathname
@@ -98,7 +98,7 @@ export class NextReceiver {
       ? pathname.slice(pathPrefix.length) || '/'
       : undefined;
 
-    if (!trimedPath) {
+    if (!trimedRoute) {
       res.statusCode = 404;
       await this._next.renderError(
         null,
@@ -110,21 +110,8 @@ export class NextReceiver {
       return;
     }
 
-    const parsedUrlWithPathPrefixTrimed = {
-      ...parsedUrl,
-      pathname: trimedPath,
-      path: (parsedUrl.path as string).slice(pathPrefix.length) || '/',
-    };
-
-    if (trimedPath.slice(1, 6) === '_next') {
-      if (this._next.options.dev && pathPrefix !== '') {
-        // HACK: to make react hot loader server recognize the request in
-        //       dev environment
-        // eslint-disable-next-line no-param-reassign
-        req.url = trimedPath;
-      }
-
-      this._defaultNextHandler(req, res, parsedUrlWithPathPrefixTrimed);
+    if (trimedRoute.slice(1, 6) === '_next') {
+      this._defaultNextHandler(req, res, parsedUrl);
       return;
     }
 
@@ -132,6 +119,7 @@ export class NextReceiver {
       const request = {
         method: req.method as string,
         url: req.url as string,
+        route: trimedRoute,
         headers: req.headers,
       };
 
@@ -152,12 +140,12 @@ export class NextReceiver {
           await this._next.render(
             req,
             res,
-            page || trimedPath,
+            page || trimedRoute,
             query || parsedUrl.query,
-            parsedUrlWithPathPrefixTrimed
+            parsedUrl
           );
         } else {
-          this._defaultNextHandler(req, res, parsedUrlWithPathPrefixTrimed);
+          this._defaultNextHandler(req, res, parsedUrl);
         }
       } else {
         const { code, reason, headers } = response;
@@ -166,7 +154,7 @@ export class NextReceiver {
           new Error(reason),
           req,
           res,
-          trimedPath,
+          trimedRoute,
           parsedUrl.query
         );
       }
@@ -174,7 +162,7 @@ export class NextReceiver {
       this._popError(err);
 
       res.statusCode = 500;
-      await this._next.renderError(err, req, res, trimedPath, parsedUrl.query);
+      await this._next.renderError(err, req, res, trimedRoute, parsedUrl.query);
     }
   }
 }

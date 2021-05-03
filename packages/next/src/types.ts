@@ -21,8 +21,13 @@ export type NextServerOptions = {
 };
 
 export type RequestInfo = {
+  /** method of the HTTP request */
   method: string;
+  /** URL of the HTTP request */
   url: string;
+  /** route path under next entry, the `entryPath` would be trimmed */
+  route: string;
+  /** headers of the HTTP request */
   headers: IncomingHttpHeaders;
 };
 
