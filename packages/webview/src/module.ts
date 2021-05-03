@@ -110,9 +110,9 @@ namespace Webview {
   > = SocketServerP<Authorizer>;
 
   export const Receiver = ReceiverP;
-  export type Receiver<Authorizer extends AnyServerAuthorizer> = ReceiverP<
-    Authorizer
-  >;
+  export type Receiver<
+    Authorizer extends AnyServerAuthorizer
+  > = ReceiverP<Authorizer>;
   export const SocketBroker = SocketBrokerI;
   export type SocketBroker = SocketBrokerI;
 

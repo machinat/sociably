@@ -45,9 +45,9 @@ const window = moxy(
   {
     document,
     liff,
-    location: (url.parse('https://machinat.io/foo?bar=baz') as unknown) as Moxy<
-      Location
-    >,
+    location: (url.parse(
+      'https://machinat.io/foo?bar=baz'
+    ) as unknown) as Moxy<Location>,
   },
   { includeProperties: ['*'] }
 );

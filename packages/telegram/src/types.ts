@@ -125,9 +125,7 @@ export type TelegramSegmentValue = {
 
 export type TelegramComponent<
   Props,
-  Segment extends IntermediateSegment<TelegramSegmentValue> = UnitSegment<
-    TelegramSegmentValue
-  >
+  Segment extends IntermediateSegment<TelegramSegmentValue> = UnitSegment<TelegramSegmentValue>
 > = NativeComponent<Props, Segment>;
 
 export type TelegramJob = {

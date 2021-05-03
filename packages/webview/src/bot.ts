@@ -188,6 +188,6 @@ export const BotP = makeClassProvider({
     ),
 })(WebviewBot);
 
-export type BotP<Authorizer extends AnyServerAuthorizer> = WebviewBot<
-  Authorizer
->;
+export type BotP<
+  Authorizer extends AnyServerAuthorizer
+> = WebviewBot<Authorizer>;

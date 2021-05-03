@@ -88,9 +88,7 @@ export type MessengerSegmentValue =
 
 export type MessengerComponent<
   Props,
-  Segment extends IntermediateSegment<
-    MessengerSegmentValue
-  > = IntermediateSegment<MessengerSegmentValue>
+  Segment extends IntermediateSegment<MessengerSegmentValue> = IntermediateSegment<MessengerSegmentValue>
 > = NativeComponent<Props, Segment>;
 
 export type BatchApiRequest = {

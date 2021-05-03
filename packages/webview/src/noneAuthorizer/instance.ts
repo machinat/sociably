@@ -17,7 +17,8 @@ class NoneInstance {
   }
 }
 
-export class NoneUser extends NoneInstance
+export class NoneUser
+  extends NoneInstance
   implements MarshallableInstance<{ id: string }> {
   static typeName = 'NoneUser';
 
@@ -31,7 +32,8 @@ export class NoneUser extends NoneInstance
   }
 }
 
-export class NoneChannel extends NoneInstance
+export class NoneChannel
+  extends NoneInstance
   implements MarshallableInstance<{ id: string }> {
   static typeName = 'NoneChannel';
 

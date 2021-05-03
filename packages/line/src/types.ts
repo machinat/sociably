@@ -170,9 +170,7 @@ export type LineSegmentValue = LineMessageSegmentValue | ApiCallGettable;
 
 export type LineComponent<
   Props,
-  Segment extends IntermediateSegment<LineSegmentValue> = IntermediateSegment<
-    LineSegmentValue
-  >
+  Segment extends IntermediateSegment<LineSegmentValue> = IntermediateSegment<LineSegmentValue>
 > = NativeComponent<Props, Segment>;
 
 type ReplyRequestBody = {

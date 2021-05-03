@@ -142,9 +142,9 @@ export const Expression: MessengerComponent<
 
   //  attach quick_replies and metadata to last message
   if (lastMessageIdx !== -1) {
-    const lastMessageSeg = segments[lastMessageIdx] as UnitSegment<
-      MessengerSegmentValue
-    >;
+    const lastMessageSeg = segments[
+      lastMessageIdx
+    ] as UnitSegment<MessengerSegmentValue>;
 
     const quickReplySegments = await render(quickReplies, '.quickReplies');
     const { value } = lastMessageSeg;
