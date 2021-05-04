@@ -47,13 +47,13 @@ describe('createChatJobs(options)(channel, segments)', () => {
   ];
 
   it('create jobs to be sent', () => {
-    const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
+    const channel = new MessengerChannel(1234567890, { id: 'john' });
 
     const jobs = createChatJobs()(channel, segments);
 
     jobs.forEach((job, i) => {
       expect(job).toEqual({
-        channelUId: 'messenger._PAGE_ID_.psid.john',
+        channelUid: 'messenger.1234567890.psid.john',
         request: {
           method: 'POST',
           relative_url: i === 2 ? 'bar/baz' : 'me/messages',
@@ -67,7 +67,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
   });
 
   it('add coresponding options to body on messages', () => {
-    const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
+    const channel = new MessengerChannel(1234567890, { id: 'john' });
 
     const jobs = createChatJobs({
       messagingType: 'MESSAGE_TAG',
@@ -103,7 +103,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
   });
 
   it('set persona_id message and typing_on/typeing_off action', () => {
-    const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
+    const channel = new MessengerChannel(1234567890, { id: 'john' });
 
     const jobs = createChatJobs({ personaId: 'droid' })(channel, [
       {
@@ -138,7 +138,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
   });
 
   it('respect options originally set in job value', () => {
-    const channel = new MessengerChannel('_PAGE_ID_', { id: 'Luke' });
+    const channel = new MessengerChannel(1234567890, { id: 'Luke' });
 
     const jobs = createChatJobs({
       messagingType: 'UPDATE',
@@ -189,7 +189,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
   });
 
   it('respect the empty tag if messaging_type has already been set', () => {
-    const channel = new MessengerChannel('_PAGE_ID_', { id: 'Luke' });
+    const channel = new MessengerChannel(1234567890, { id: 'Luke' });
 
     const jobs = createChatJobs({
       messagingType: 'MESSAGE_TAG',
@@ -220,7 +220,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
   });
 
   it('add attached file data and info if there are', () => {
-    const channel = new MessengerChannel('_PAGE_ID_', { id: 'john' });
+    const channel = new MessengerChannel(1234567890, { id: 'john' });
     const fileInfo = {
       filename: 'deathangel.jpg',
       contentType: 'image/jpeg',
@@ -263,7 +263,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
     expect(() =>
       createChatJobs()(
         new MessengerChannel(
-          '_PAGE_ID_',
+          1234567890,
           { id: 'xxx' },
           MessengerChatType.Group
         ),
@@ -274,7 +274,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
     expect(() =>
       createChatJobs({})(
         new MessengerChannel(
-          '_PAGE_ID_',
+          1234567890,
           { id: 'xxx' },
           MessengerChatType.UserToUser
         ),

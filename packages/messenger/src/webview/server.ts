@@ -63,7 +63,7 @@ export class MessengerServerAuthorizer
       issueTimeLimit = 300, // 5 min;
     } = options;
 
-    this.pageId = pageId;
+    this.pageId = Number(pageId);
     this.appSecret = appSecret;
     this.issueTimeLimit = issueTimeLimit;
   }
@@ -168,6 +168,13 @@ export class MessengerServerAuthorizer
 const ServerAuthorizerP = makeClassProvider({
   lifetime: 'transient',
   deps: [ConfigsI] as const,
+  factory: ({ pageId, appSecret }) => {
+    if (!appSecret) {
+      throw new Error('configs.appSecret must be set to authorize webview');
+    }
+
+    return new MessengerServerAuthorizer({ pageId, appSecret });
+  },
 })(MessengerServerAuthorizer);
 
 type ServerAuthorizerP = MessengerServerAuthorizer;

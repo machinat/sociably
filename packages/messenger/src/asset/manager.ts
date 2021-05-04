@@ -15,7 +15,7 @@ const PERSONA = 'persona';
  */
 export class MessengerAssetsManager {
   bot: BotP;
-  pageId: string;
+  pageId: number;
   _stateController: StateControllerI;
 
   constructor(stateManager: StateControllerI, bot: BotP) {

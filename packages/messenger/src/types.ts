@@ -104,7 +104,7 @@ export type BatchApiRequest = {
 export type MessengerJob = {
   request: BatchApiRequest;
   pageId?: string;
-  channelUId?: string;
+  channelUid?: string;
   attachmentAssetTag?: string;
   attachmentFileData?: string | Buffer | ReadableStream;
   attachmentFileInfo?: {
@@ -176,7 +176,7 @@ export type MessengerDispatchMiddleware = DispatchMiddleware<
 >;
 
 export type MessengerConfigs = {
-  pageId: string;
+  pageId: number;
   accessToken: string;
   appSecret?: string;
   shouldValidateRequest?: boolean;

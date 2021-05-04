@@ -264,7 +264,7 @@ const objectHasOwnProperty = Object.prototype.hasOwnProperty;
 const hasOwnProperty = (obj, prop) => objectHasOwnProperty.call(obj, prop);
 
 const createEvent = (
-  pageId: string,
+  pageId: number,
   isStandby: boolean,
   payload: MessengerRawEvent
 ): MessengerEvent => {

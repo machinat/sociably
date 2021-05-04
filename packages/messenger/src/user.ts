@@ -3,7 +3,7 @@ import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { MESSENGER } from './constant';
 
 type MessengerUserValue = {
-  pageId: string;
+  pageId: number;
   psid: string;
 };
 
@@ -17,11 +17,11 @@ export default class MessengerUser
   }
 
   platform = MESSENGER;
-  pageId: string;
+  pageId: number;
   psid: string;
 
-  constructor(pageId: string | number, psid: string) {
-    this.pageId = String(pageId);
+  constructor(pageId: number, psid: string) {
+    this.pageId = pageId;
     this.psid = psid;
   }
 

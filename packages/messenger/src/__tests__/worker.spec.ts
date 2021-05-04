@@ -240,8 +240,8 @@ it('upload files with form data if binary attached on job', async () => {
     )[1]
   );
 
-  expect(batch[0].attached_files).toBe(file0Field[1]);
-  expect(batch[1].attached_files).toBe(file1Field[1]);
+  expect(batch[0].attached_files).toBe(file0Field![1]);
+  expect(batch[1].attached_files).toBe(file1Field![1]);
 
   let lastName;
   batch.forEach((request, i) => {
@@ -384,49 +384,42 @@ it('waits consumeInterval for jobs to execute if set', async () => {
   worker.stop(queue);
 });
 
-it.each([undefined, 0])(
-  'execute immediatly if consumeInterval is %p',
-  async (consumeInterval) => {
-    const worker = new MessengerWorker(
-      '_graph_api_access_token_',
-      0,
-      consumeInterval
+it('execute immediatly if consumeInterval is 0', async () => {
+  const worker = new MessengerWorker('_graph_api_access_token_', 0);
+
+  const bodySpy = moxy(() => true);
+  const scope = graphApi
+    .post('/v7.0/', bodySpy)
+    .times(3)
+    .delay(50)
+    .reply(
+      200,
+      JSON.stringify(
+        new Array(3).fill({
+          code: 200,
+          body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
+        })
+      )
     );
 
-    const bodySpy = moxy(() => true);
-    const scope = graphApi
-      .post('/v7.0/', bodySpy)
-      .times(3)
-      .delay(50)
-      .reply(
-        200,
-        JSON.stringify(
-          new Array(3).fill({
-            code: 200,
-            body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
-          })
-        )
-      );
+  worker.start(queue);
 
-    worker.start(queue);
+  const promise1 = queue.executeJobs(jobs);
+  expect(bodySpy.mock).toHaveBeenCalledTimes(1);
 
-    const promise1 = queue.executeJobs(jobs);
-    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+  await delay(100);
+  const promise2 = queue.executeJobs(jobs);
+  expect(bodySpy.mock).toHaveBeenCalledTimes(2);
 
-    await delay(100);
-    const promise2 = queue.executeJobs(jobs);
-    expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+  await delay(100);
+  const promise3 = queue.executeJobs(jobs);
+  expect(bodySpy.mock).toHaveBeenCalledTimes(3);
 
-    await delay(100);
-    const promise3 = queue.executeJobs(jobs);
-    expect(bodySpy.mock).toHaveBeenCalledTimes(3);
-
-    expect(scope.isDone()).toBe(true);
-    await promise1;
-    await promise2;
-    await promise3;
-  }
-);
+  expect(scope.isDone()).toBe(true);
+  await promise1;
+  await promise2;
+  await promise3;
+});
 
 it('place params at query if DELETE job met', async () => {
   const accessToken = '_graph_api_access_token_';

@@ -6,7 +6,7 @@ import MessengerUser from './user';
 import type { MessengerTarget, MessengerThreadType } from './types';
 
 type MessengerChatValue = {
-  pageId: string;
+  pageId: number;
   type: MessengerChatType;
   target: MessengerTarget;
 };
@@ -24,18 +24,18 @@ class MessengerChat
     return new MessengerChat(pageId, target, type);
   }
 
-  pageId: string;
+  pageId: number;
   private _type: MessengerChatType;
   private _target: MessengerTarget;
 
   platform = MESSENGER;
 
   constructor(
-    pageId: number | string,
+    pageId: number,
     target: MessengerTarget,
     type: MessengerChatType = MessengerChatType.UserToPage
   ) {
-    this.pageId = String(pageId);
+    this.pageId = pageId;
     this._type = type;
     this._target = target;
   }

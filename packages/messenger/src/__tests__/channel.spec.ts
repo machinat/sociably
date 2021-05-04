@@ -3,11 +3,11 @@ import MessengerUser from '../user';
 import MessengerChat from '../channel';
 
 test('from id', () => {
-  const chat = new MessengerChat('_PAGE_ID_', { id: '_PSID_' });
+  const chat = new MessengerChat(1234567890, { id: '_PSID_' });
 
   expect(chat.platform).toBe('messenger');
   expect(chat.typeName()).toBe('MessengerChat');
-  expect(chat.uid).toMatchInlineSnapshot(`"messenger._PAGE_ID_.psid._PSID_"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"messenger.1234567890.psid._PSID_"`);
 
   expect(chat.identifier).toBe('_PSID_');
   expect(chat.threadType).toBe('USER_TO_PAGE');
@@ -20,12 +20,12 @@ test('from id', () => {
 
 test('group chat', () => {
   const chat = new MessengerChat(
-    '_PAGE_ID_',
+    1234567890,
     { id: '_PSID_' },
     MessengerChatType.Group
   );
 
-  expect(chat.uid).toMatchInlineSnapshot(`"messenger._PAGE_ID_.psid._PSID_"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"messenger.1234567890.psid._PSID_"`);
 
   expect(chat.identifier).toBe('_PSID_');
   expect(chat.threadType).toBe('GROUP');
@@ -38,12 +38,12 @@ test('group chat', () => {
 
 test('user to user chat', () => {
   const chat = new MessengerChat(
-    '_PAGE_ID_',
+    1234567890,
     { id: '_PSID_' },
     MessengerChatType.UserToUser
   );
 
-  expect(chat.uid).toMatchInlineSnapshot(`"messenger._PAGE_ID_.psid._PSID_"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"messenger.1234567890.psid._PSID_"`);
 
   expect(chat.identifier).toBe('_PSID_');
   expect(chat.threadType).toBe('USER_TO_USER');
@@ -55,12 +55,12 @@ test('user to user chat', () => {
 });
 
 test('from user_ref', () => {
-  const chat = new MessengerChat('_PAGE_ID_', { user_ref: '_USER_REF_' });
+  const chat = new MessengerChat(1234567890, { user_ref: '_USER_REF_' });
 
   expect(chat.platform).toBe('messenger');
   expect(chat.typeName()).toBe('MessengerChat');
   expect(chat.uid).toMatchInlineSnapshot(
-    `"messenger._PAGE_ID_.user_ref._USER_REF_"`
+    `"messenger.1234567890.user_ref._USER_REF_"`
   );
 
   expect(chat.identifier).toBe('_USER_REF_');
@@ -73,7 +73,7 @@ test('from user_ref', () => {
 });
 
 test('from phone_number', () => {
-  const chat = new MessengerChat('_PAGE_ID_', {
+  const chat = new MessengerChat(1234567890, {
     phone_number: '+88888888888',
     name: { first_name: 'jojo', last_name: 'doe' },
   });
@@ -81,7 +81,7 @@ test('from phone_number', () => {
   expect(chat.platform).toBe('messenger');
   expect(chat.typeName()).toBe('MessengerChat');
   expect(chat.uid).toMatchInlineSnapshot(
-    `"messenger._PAGE_ID_.phone_number.nRn5C+EX4/vdk02aEWYs2zV5sHM="`
+    `"messenger.1234567890.phone_number.nRn5C+EX4/vdk02aEWYs2zV5sHM="`
   );
 
   expect(chat.identifier).toBe('nRn5C+EX4/vdk02aEWYs2zV5sHM=');
@@ -97,12 +97,12 @@ test('from phone_number', () => {
 });
 
 test('from post_id', () => {
-  const chat = new MessengerChat('_PAGE_ID_', { post_id: '_POST_ID_' });
+  const chat = new MessengerChat(1234567890, { post_id: '_POST_ID_' });
 
   expect(chat.platform).toBe('messenger');
   expect(chat.typeName()).toBe('MessengerChat');
   expect(chat.uid).toMatchInlineSnapshot(
-    `"messenger._PAGE_ID_.post_id._POST_ID_"`
+    `"messenger.1234567890.post_id._POST_ID_"`
   );
 
   expect(chat.identifier).toBe('_POST_ID_');
@@ -115,14 +115,14 @@ test('from post_id', () => {
 });
 
 test('from comment_id', () => {
-  const chat = new MessengerChat('_PAGE_ID_', {
+  const chat = new MessengerChat(1234567890, {
     comment_id: '_COMMENT_ID_',
   });
 
   expect(chat.platform).toBe('messenger');
   expect(chat.typeName()).toBe('MessengerChat');
   expect(chat.uid).toMatchInlineSnapshot(
-    `"messenger._PAGE_ID_.comment_id._COMMENT_ID_"`
+    `"messenger.1234567890.comment_id._COMMENT_ID_"`
   );
 
   expect(chat.identifier).toBe('_COMMENT_ID_');
@@ -135,9 +135,9 @@ test('from comment_id', () => {
 });
 
 test('MessengerChat.fromUser()', () => {
-  const user = new MessengerUser('_PAGE_ID_', '_USER_ID_');
+  const user = new MessengerUser(1234567890, '_USER_ID_');
 
   expect(MessengerChat.fromUser(user)).toEqual(
-    new MessengerChat('_PAGE_ID_', { id: '_USER_ID_' })
+    new MessengerChat(1234567890, { id: '_USER_ID_' })
   );
 });

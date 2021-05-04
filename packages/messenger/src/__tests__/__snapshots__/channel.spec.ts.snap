@@ -2,7 +2,7 @@
 
 exports[`from comment_id 2`] = `
 Object {
-  "pageId": "_PAGE_ID_",
+  "pageId": 1234567890,
   "target": Object {
     "comment_id": "_COMMENT_ID_",
   },
@@ -12,7 +12,7 @@ Object {
 
 exports[`from id 2`] = `
 Object {
-  "pageId": "_PAGE_ID_",
+  "pageId": 1234567890,
   "target": Object {
     "id": "_PSID_",
   },
@@ -22,7 +22,7 @@ Object {
 
 exports[`from phone_number 2`] = `
 Object {
-  "pageId": "_PAGE_ID_",
+  "pageId": 1234567890,
   "target": Object {
     "name": Object {
       "first_name": "jojo",
@@ -36,7 +36,7 @@ Object {
 
 exports[`from post_id 2`] = `
 Object {
-  "pageId": "_PAGE_ID_",
+  "pageId": 1234567890,
   "target": Object {
     "post_id": "_POST_ID_",
   },
@@ -46,7 +46,7 @@ Object {
 
 exports[`from user_ref 2`] = `
 Object {
-  "pageId": "_PAGE_ID_",
+  "pageId": 1234567890,
   "target": Object {
     "user_ref": "_USER_REF_",
   },
@@ -56,7 +56,7 @@ Object {
 
 exports[`group chat 2`] = `
 Object {
-  "pageId": "_PAGE_ID_",
+  "pageId": 1234567890,
   "target": Object {
     "id": "_PSID_",
   },
@@ -66,7 +66,7 @@ Object {
 
 exports[`user to user chat 2`] = `
 Object {
-  "pageId": "_PAGE_ID_",
+  "pageId": 1234567890,
   "target": Object {
     "id": "_PSID_",
   },

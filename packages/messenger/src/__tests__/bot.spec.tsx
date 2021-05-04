@@ -36,7 +36,7 @@ const scope = moxy();
 const initScope = moxy(() => scope);
 const dispatchWrapper = moxy((x) => x);
 
-const pageId = '_PAGE_ID_';
+const pageId = 1234567890;
 const accessToken = '_ACCESS_TOKEN_';
 const appSecret = '_APP_SECRET_';
 

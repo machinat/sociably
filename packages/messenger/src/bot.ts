@@ -36,7 +36,7 @@ type MessengerBotOptions = {
     MessengerDispatchFrame,
     MessengerResult
   >;
-  pageId: string;
+  pageId: number;
   accessToken: string;
   appSecret?: string;
   consumeInterval?: number;
@@ -48,7 +48,7 @@ type MessengerBotOptions = {
  */
 export class MessengerBot
   implements MachinatBot<MessengerChannel, MessengerJob, MessengerResult> {
-  pageId: string;
+  pageId: number;
   worker: MessengerWorker;
   engine: Engine<
     MessengerChannel,

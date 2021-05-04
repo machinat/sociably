@@ -16,7 +16,7 @@ const bot = moxy<MessengerBot>({
   makeApiCall: async () => rawProfileData,
 } as never);
 
-const user = new MessengerUser('_PAGE_ID_', '_USER_ID_');
+const user = new MessengerUser(1234567890, '_USER_ID_');
 
 beforeEach(() => {
   bot.mock.reset();

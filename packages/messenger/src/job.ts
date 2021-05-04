@@ -83,7 +83,7 @@ export const createChatJobs = (options?: MessengerSendOptions) => (
         relative_url: relativeUrl || PATH_MESSAGES,
         body,
       },
-      channelUId: uid,
+      channelUid: uid,
       attachmentAssetTag,
       attachmentFileData,
       attachmentFileInfo,

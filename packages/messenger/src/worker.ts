@@ -90,7 +90,7 @@ export default class MessengerWorker
   constructor(
     accessToken: string,
     consumeInterval: number,
-    appSecret: void | string
+    appSecret?: string
   ) {
     this.token = accessToken;
     this.consumeInterval = consumeInterval;
@@ -182,23 +182,23 @@ export default class MessengerWorker
     for (let i = 0; i < jobs.length; i += 1) {
       const {
         request,
-        channelUId,
+        channelUid,
         attachmentFileData,
         attachmentFileInfo,
       } = jobs[i];
 
-      if (channelUId !== undefined) {
+      if (channelUid !== undefined) {
         // keep the order of requests per channel
-        let count = channelSendingRec.get(channelUId);
+        let count = channelSendingRec.get(channelUid);
         if (count !== undefined) {
-          request.depends_on = makeRequestName(channelUId, count);
+          request.depends_on = makeRequestName(channelUid, count);
           count += 1;
         } else {
           count = 1;
         }
 
-        channelSendingRec.set(channelUId, count);
-        request.name = makeRequestName(channelUId, count);
+        channelSendingRec.set(channelUid, count);
+        request.name = makeRequestName(channelUid, count);
       }
 
       request.omit_response_on_success = false;
