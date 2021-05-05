@@ -47,11 +47,8 @@ export type WebviewComponent = NativeComponent<
 export type WebviewEvent<
   Value extends EventValue,
   User extends null | MachinatUser
-> = {
+> = Value & {
   platform: 'webview';
-  category: Value['category'];
-  type: Value['type'];
-  payload: Value['payload'];
   channel: WebviewConnection;
   user: User;
 };
@@ -84,18 +81,6 @@ export type WebviewEventContext<
   metadata: WebviewMetadata<ContextOfAuthorizer<Authorizer>>;
   bot: BotP<Authorizer>;
   reply(message: MachinatNode): Promise<null | WebSocketDispatchResponse>;
-};
-
-export type WebviewClientEvent<
-  Authorizer extends AnyClientAuthorizer,
-  Value extends EventValue = EventValue
-> = {
-  platform: 'webview';
-  category: Value['category'];
-  type: Value['type'];
-  payload: Value['payload'];
-  channel: WebviewConnection;
-  user: UserOfAuthorizer<Authorizer>;
 };
 
 export type WebviewEventMiddleware<

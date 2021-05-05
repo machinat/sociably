@@ -48,11 +48,8 @@ export type DisconnectEventValue = EventValue<
 export type WebSocketEvent<
   Value extends EventValue,
   User extends null | MachinatUser
-> = {
+> = Value & {
   platform: 'websokcet';
-  category: Value['category'];
-  type: Value['type'];
-  payload: Value['payload'];
   channel: WebSocketConnection;
   user: User;
 };
