@@ -87,6 +87,7 @@ it('start connector and auth client', async () => {
   client.onEvent(eventSpy);
 
   expect(client.isConnected).toBe(false);
+  expect(client.isMockupMode).toBe(false);
   expect(client.user).toBe(null);
   expect(client.channel).toBe(null);
 
@@ -127,6 +128,30 @@ it('start connector and auth client', async () => {
   expect(client.isConnected).toBe(true);
   expect(client.user).toEqual(user);
   expect(client.channel).toEqual(new WebviewConnection('*', '#conn'));
+});
+
+test('mockupMode', async () => {
+  const client = new Client({
+    platform: 'test',
+    authApiUrl: '/my_auth',
+    authorizers: [testAuthorizer, anotherAuthorizer],
+    webSocketUrl: '/my_websocket',
+    mockupMode: true,
+  });
+  client.onEvent(eventSpy);
+
+  expect(client.isMockupMode).toBe(true);
+  expect(client.isConnected).toBe(false);
+  expect(client.user).toBe(null);
+  expect(client.channel).toBe(null);
+
+  const connector = Connector.mock.calls[0].instance;
+  expect(connector.start.mock).not.toHaveBeenCalled();
+
+  const authClient = AuthClient.mock.calls[0].instance;
+  expect(authClient.getAuthContext.mock).not.toHaveBeenCalled();
+
+  expect(eventSpy.mock).not.toHaveBeenCalled();
 });
 
 test('websocket url', async () => {

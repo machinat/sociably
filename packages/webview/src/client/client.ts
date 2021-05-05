@@ -24,6 +24,11 @@ type ClientOptions<Authorizer extends AnyClientAuthorizer> = {
   authApiUrl?: string;
   /** Authorizer of available platforms. */
   authorizers: Authorizer[];
+  /**
+   * When set to true, the underlying socket will not really connecct. It is
+   * useful for server rendering at server side.
+   */
+  mockupMode?: boolean;
 };
 
 class WebviewClient<
@@ -40,6 +45,8 @@ class WebviewClient<
 
   private _user: null | UserOfAuthorizer<Authorizer>;
   private _channel: null | WebviewConnection;
+
+  isMockupMode: boolean;
 
   get isConnected(): boolean {
     return this._connector.isConnected();
@@ -62,11 +69,13 @@ class WebviewClient<
     platform,
     authorizers,
     authApiUrl,
+    mockupMode = false,
   }: ClientOptions<Authorizer>) {
     super();
 
     this._user = null;
     this._channel = null;
+    this.isMockupMode = mockupMode;
 
     this._authClient = new AuthClient({
       platform,
@@ -140,8 +149,9 @@ class WebviewClient<
     });
 
     this._connector.on('error', this._emitError.bind(this));
-
-    this._connector.start().catch(this._emitError.bind(this));
+    if (!this.isMockupMode) {
+      this._connector.start().catch(this._emitError.bind(this));
+    }
   }
 
   async send(content: EventInput | EventInput[]): Promise<void> {
