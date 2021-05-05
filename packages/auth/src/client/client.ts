@@ -84,11 +84,10 @@ const getCookieAuthResult = (): [
 class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   authorizers: Authorizer[];
   refreshLeadTime: number;
+  serverUrl: string;
 
   private _platform: undefined | string;
-  private _authUrl: URL;
-
-  private _authed: null | {
+  private _authData: null | {
     token: string;
     payload: AuthTokenPayload<unknown>;
     context: AnyAuthContext;
@@ -108,7 +107,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   }
 
   get isAuthorized(): boolean {
-    return !!this._authed;
+    return !!this._authData;
   }
 
   get isAuthorizing(): boolean {
@@ -116,12 +115,12 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   }
 
   getToken(): undefined | string {
-    return this._authed?.token;
+    return this._authData?.token;
   }
 
   getAuthContext(): null | ContextOfAuthorizer<Authorizer> {
-    return this._authed
-      ? (this._authed.context as ContextOfAuthorizer<Authorizer>)
+    return this._authData
+      ? (this._authData.context as ContextOfAuthorizer<Authorizer>)
       : null;
   }
 
@@ -141,14 +140,14 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
 
     this.authorizers = authorizers;
     this.refreshLeadTime = refreshLeadTime;
-    this._authUrl = new URL(serverUrl, window.location.href);
+    this.serverUrl = serverUrl;
 
     this._initiatingPlatforms = new Set();
     this._initiatedPlatforms = new Set();
     this._minAuthBeginTime = -1;
 
     this._platform = undefined;
-    this._authed = null;
+    this._authData = null;
 
     this._refreshTimeoutId = null;
     this._expireTimeoutId = null;
@@ -169,8 +168,8 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
       }
 
       // return current auth status if it is already authorized
-      if (this._authed) {
-        const { token, context } = this._authed;
+      if (this._authData) {
+        const { token, context } = this._authData;
         return Promise.resolve({
           token,
           context: context as ContextOfAuthorizer<Authorizer>,
@@ -181,7 +180,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
     // bigin a new auth flow
     this._authPromise = this._auth(platform)
       .catch((err) => {
-        this._emitError(err, this._authed?.context || null);
+        this._emitError(err, this._authData?.context || null);
         throw err;
       })
       .finally(() => {
@@ -195,10 +194,10 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
    * Sign out user.
    */
   signOut(): void {
-    if (this._authed) {
-      const { scope } = this._authed.payload;
+    if (this._authData) {
+      const { scope } = this._authData.payload;
       deleteCookie(TOKEN_COOKIE_KEY, scope.domain, scope.path);
-      this._authed = null;
+      this._authData = null;
     }
     this._clearTimeouts();
     // Make sure auth operation executing now will not update auth
@@ -323,7 +322,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
     payload: AuthTokenPayload<unknown>,
     context: AnyAuthContext
   ) {
-    this._authed = { token, payload, context };
+    this._authData = { token, payload, context };
     this._clearTimeouts();
 
     const now = Date.now();
@@ -374,9 +373,9 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
     }
 
     if (
-      this._authed
+      this._authData
         ? // auth updated during refreshment
-          this._authed.token !== token
+          this._authData.token !== token
         : // signed out during refreshment
           beginTime < this._minAuthBeginTime
     ) {
@@ -400,17 +399,17 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
     this._refreshTimeoutId = null;
 
     this._refreshAuth(token, payload).catch((err) => {
-      this._emitError(err, this._authed?.context || null);
+      this._emitError(err, this._authData?.context || null);
     });
   };
 
   private _expireTokenCallback = (token: string) => {
     this._expireTimeoutId = null;
 
-    const authed = this._authed;
-    if (authed && authed.token === token) {
-      this._authed = null;
-      this.emit('expire', authed.context);
+    const data = this._authData;
+    if (data && data.token === token) {
+      this._authData = null;
+      this.emit('expire', data.context);
     }
   };
 
@@ -436,12 +435,12 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   }
 
   private _getAuthEntry(route: string) {
-    const rootUrl = this._authUrl;
-    const componentUrl = new URL(
+    const rootUrl = new URL(this.serverUrl, window.location.href);
+    const authorizerUrl = new URL(
       rootUrl.pathname.replace(/\/?$/, `/${route}`),
       rootUrl
     );
-    return componentUrl.href;
+    return authorizerUrl.href;
   }
 
   private async _callAuthPrivateApi(
