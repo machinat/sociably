@@ -136,12 +136,8 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
     refreshLeadTime = 300, // 5 min
   }: AuthClientOptions<Authorizer>) {
     super();
-
-    invariant(serverUrl, 'options.serverUrl must not be empty');
-    invariant(
-      authorizers && authorizers.length > 0,
-      'options.authorizers must not be empty'
-    );
+    invariant(serverUrl, 'options.serverUrl is required');
+    invariant(authorizers, 'options.authorizers is required');
 
     this.authorizers = authorizers;
     this.refreshLeadTime = refreshLeadTime;
@@ -511,7 +507,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
       this.emit('error', err, context);
     } catch {
       // do not throw if no error handler, since the error can also be received
-      // by #auth() call
+      // by #signIn() call
     }
   }
 }

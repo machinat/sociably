@@ -150,26 +150,17 @@ describe('bootstraping phase', () => {
     expect(client.isAuthorizing).toBe(false);
   });
 
-  it('throw if authorizers is empty', () => {
+  it('throw if authorizers is empty', async () => {
     expect(
       () =>
         new AuthClient({ authorizers: undefined as never, serverUrl: '/auth' })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.authorizers must not be empty"`
-    );
-    expect(
-      () => new AuthClient({ authorizers: [], serverUrl: '/auth' })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.authorizers must not be empty"`
-    );
+    ).toThrowErrorMatchingInlineSnapshot(`"options.authorizers is required"`);
   });
 
   it('throw if serverUrl is empty', () => {
     expect(
       () => new AuthClient({ authorizers, serverUrl: undefined as never })
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.serverUrl must not be empty"`
-    );
+    ).toThrowErrorMatchingInlineSnapshot(`"options.serverUrl is required"`);
   });
 
   test.each`
