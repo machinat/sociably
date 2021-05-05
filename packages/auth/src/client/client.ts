@@ -20,10 +20,13 @@ import type {
 import AuthError from '../error';
 
 type AuthClientOptions<Authorizer extends AnyClientAuthorizer> = {
-  platform?: string;
-  apiUrl: string;
+  serverUrl: string;
   authorizers: Authorizer[];
   refreshLeadTime?: number;
+};
+
+type SignInOptions = {
+  platform?: string;
 };
 
 type AuthResult<Authorizer extends AnyClientAuthorizer> = {
@@ -95,8 +98,6 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
   private _initiatedPlatforms: Set<string>;
 
   private _authPromise: null | Promise<AuthResult<Authorizer>>;
-  private _initialAuthPromise: null | Promise<AuthResult<Authorizer>>;
-
   private _minAuthBeginTime: number;
 
   private _refreshTimeoutId: null | TimeoutID;
@@ -124,15 +125,19 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
       : null;
   }
 
+  getAuthorizer(): null | Authorizer {
+    const [err, authorizer] = this._getAuthorizer(this.platform);
+    return err ? null : authorizer;
+  }
+
   constructor({
-    platform,
     authorizers,
-    apiUrl,
+    serverUrl,
     refreshLeadTime = 300, // 5 min
   }: AuthClientOptions<Authorizer>) {
     super();
 
-    invariant(apiUrl, 'options.apiUrl must not be empty');
+    invariant(serverUrl, 'options.serverUrl must not be empty');
     invariant(
       authorizers && authorizers.length > 0,
       'options.authorizers must not be empty'
@@ -140,7 +145,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
 
     this.authorizers = authorizers;
     this.refreshLeadTime = refreshLeadTime;
-    this._authUrl = new URL(apiUrl, window.location.href);
+    this._authUrl = new URL(serverUrl, window.location.href);
 
     this._initiatingPlatforms = new Set();
     this._initiatedPlatforms = new Set();
@@ -151,8 +156,6 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
 
     this._refreshTimeoutId = null;
     this._expireTimeoutId = null;
-
-    this._initialAuthPromise = this.auth(platform);
   }
 
   /**
@@ -162,17 +165,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
    * controller, so any auth() call after the first one do not trigger the auth
    * flow but just return the current status.
    */
-  auth(platform?: string): Promise<AuthResult<Authorizer>> {
-    // the first auth() call should return the initial auth result
-    if (this._initialAuthPromise) {
-      const initialAuthPromise = this._initialAuthPromise;
-      this._initialAuthPromise = null;
-
-      if (!platform || platform === this._platform) {
-        return initialAuthPromise;
-      }
-    }
-
+  signIn({ platform }: SignInOptions = {}): Promise<AuthResult<Authorizer>> {
     if (!platform || platform === this._platform) {
       // return the result of current auth flow if it is authorizing
       if (this._authPromise) {
@@ -190,13 +183,14 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
     }
 
     // bigin a new auth flow
-    this._authPromise = this._auth(platform).finally(() => {
-      this._authPromise = null;
-    });
-
-    this._authPromise.catch((err) => {
-      this._emitError(err, this._authed?.context || null);
-    });
+    this._authPromise = this._auth(platform)
+      .catch((err) => {
+        this._emitError(err, this._authed?.context || null);
+        throw err;
+      })
+      .finally(() => {
+        this._authPromise = null;
+      });
 
     return this._authPromise;
   }

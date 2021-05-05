@@ -73,11 +73,13 @@ it('start connector', async () => {
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(1);
   expect(eventSpy.mock).toHaveBeenCalledWith({
-    category: 'connection',
-    type: 'connect',
-    payload: null,
-    user,
-    channel: new WebSocketConnection('*', '#conn'),
+    event: {
+      category: 'connection',
+      type: 'connect',
+      payload: null,
+      user,
+      channel: new WebSocketConnection('*', '#conn'),
+    },
   });
 
   expect(client.isConnected).toBe(true);
@@ -165,18 +167,22 @@ it('emit "event" when dispatched events received', async () => {
   expect(eventSpy.mock).toHaveBeenCalledTimes(3);
   // 'connect' event is the first call
   expect(eventSpy.mock).toHaveBeenNthCalledWith(2, {
-    category: 'default',
-    type: 'start',
-    payload: 'Welcome to Hyrule',
-    user,
-    channel: new WebSocketConnection('*', '#conn'),
+    event: {
+      category: 'default',
+      type: 'start',
+      payload: 'Welcome to Hyrule',
+      user,
+      channel: new WebSocketConnection('*', '#conn'),
+    },
   });
   expect(eventSpy.mock).toHaveBeenNthCalledWith(3, {
-    category: 'reaction',
-    type: 'wasted',
-    payload: 'Link is down! Legend over.',
-    user,
-    channel: new WebSocketConnection('*', '#conn'),
+    event: {
+      category: 'reaction',
+      type: 'wasted',
+      payload: 'Link is down! Legend over.',
+      user,
+      channel: new WebSocketConnection('*', '#conn'),
+    },
   });
 
   connector.emit(
@@ -187,11 +193,13 @@ it('emit "event" when dispatched events received', async () => {
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(4);
   expect(eventSpy.mock).toHaveBeenCalledWith({
-    category: 'default',
-    type: 'resurrect',
-    payload: 'Hero never die!',
-    user,
-    channel: new WebSocketConnection('*', '#conn'),
+    event: {
+      category: 'default',
+      type: 'resurrect',
+      payload: 'Hero never die!',
+      user,
+      channel: new WebSocketConnection('*', '#conn'),
+    },
   });
 });
 
@@ -239,11 +247,13 @@ test('disconnected by server', async () => {
   );
 
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
-    category: 'connection',
-    type: 'disconnect',
-    payload: { reason: 'See ya!' },
-    user,
-    channel: new WebSocketConnection('*', '#conn'),
+    event: {
+      category: 'connection',
+      type: 'disconnect',
+      payload: { reason: 'See ya!' },
+      user,
+      channel: new WebSocketConnection('*', '#conn'),
+    },
   });
 
   expect(client.user).toEqual(user);
@@ -267,11 +277,13 @@ test('#disconnect()', async () => {
 
   connector.emit('disconnect', { reason: 'Bye!' }, { connId: '#conn', user });
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
-    category: 'connection',
-    type: 'disconnect',
-    payload: { reason: 'Bye!' },
-    user,
-    channel: new WebSocketConnection('*', '#conn'),
+    event: {
+      category: 'connection',
+      type: 'disconnect',
+      payload: { reason: 'Bye!' },
+      user,
+      channel: new WebSocketConnection('*', '#conn'),
+    },
   });
 
   expect(client.user).toEqual(user);

@@ -3,7 +3,7 @@ import { AnyMarshalType, BaseMarshaler } from '@machinat/core/base/Marshaler';
 import { WebSocketConnection } from '../channel';
 import createEvent from '../utils/createEvent';
 import Connector from './Connector';
-import Emitter from './Emitter';
+import ClientEmitter from './ClientEmitter';
 import type {
   ClientLoginFn,
   EventInput,
@@ -13,78 +13,48 @@ import type {
   DisconnectEventValue,
 } from '../types';
 
-type ClientOptions<User extends null | MachinatUser> = {
+type ClientOptions<User extends null | MachinatUser, Credential> = {
   url?: string;
-  login?: ClientLoginFn<User, unknown>;
+  login?: ClientLoginFn<User, Credential>;
   marshalTypes?: AnyMarshalType[];
+};
+
+type WebSocketClientContext<
+  User extends null | MachinatUser,
+  Value extends EventValue
+> = {
+  event: WebSocketEvent<Value, User>;
 };
 
 class WebScoketClient<
   User extends null | MachinatUser = null,
-  Value extends EventValue = EventValue
-> extends Emitter<[WebSocketEvent<Value, User>]> {
+  Value extends EventValue = EventValue,
+  Credential = null
+> extends ClientEmitter<WebSocketClientContext<User, Value>> {
   private _connector: Connector<User>;
 
   private _user: null | User;
   private _channel: null | WebSocketConnection;
 
-  constructor({ url, login, marshalTypes }: ClientOptions<User> = {}) {
+  constructor({
+    url,
+    login,
+    marshalTypes,
+  }: ClientOptions<User, Credential> = {}) {
     super();
 
     this._user = null;
     this._channel = null;
 
     const { host, pathname } = window.location;
-    this._connector = new Connector(
-      new URL(url || '/', `wss://${host}${pathname}`).href,
+    const sockerUrl = new URL(url || '/', `wss://${host}${pathname}`).href;
+
+    this._connector = this._initConnector(
+      sockerUrl,
       login ||
-        (() => Promise.resolve({ user: null as never, credential: null })),
-      new BaseMarshaler(marshalTypes || [])
+        (() => Promise.resolve({ user: null as any, credential: null as any })),
+      marshalTypes || []
     );
-
-    this._connector.on('connect', ({ connId, user }) => {
-      this._user = user;
-      this._channel = new WebSocketConnection('*', connId);
-
-      const connectEvent: ConnectEventValue = {
-        category: 'connection',
-        type: 'connect',
-        payload: null,
-      };
-      this._emitEvent(createEvent(connectEvent, this._channel, this._user));
-    });
-
-    this._connector.on('events', (values) => {
-      for (const value of values) {
-        this._emitEvent(
-          createEvent(
-            value,
-            this._channel as WebSocketConnection,
-            this._user as User
-          )
-        );
-      }
-    });
-
-    this._connector.on('disconnect', ({ reason }) => {
-      const channel = this._channel;
-      this._channel = null;
-
-      const disconnectValue: DisconnectEventValue = {
-        category: 'connection',
-        type: 'disconnect',
-        payload: { reason },
-      };
-      this._emitEvent(
-        createEvent(
-          disconnectValue,
-          channel as WebSocketConnection,
-          this._user as User
-        )
-      );
-    });
-
-    this._connector.on('error', this._emitError.bind(this));
 
     this._connector.start().catch(this._emitError.bind(this));
   }
@@ -107,6 +77,65 @@ class WebScoketClient<
 
   disconnect(reason: string): void {
     this._connector.disconnect(reason);
+  }
+
+  private _initConnector(
+    sockerUrl: string,
+    login: ClientLoginFn<User, Credential>,
+    marshalTypes: AnyMarshalType[]
+  ) {
+    return new Connector<User>(
+      sockerUrl,
+      login ||
+        (() => Promise.resolve({ user: null as never, credential: null })),
+      new BaseMarshaler(marshalTypes)
+    )
+
+      .on('connect', ({ connId, user }) => {
+        this._user = user;
+        this._channel = new WebSocketConnection('*', connId);
+
+        const connectEvent: ConnectEventValue = {
+          category: 'connection',
+          type: 'connect',
+          payload: null,
+        };
+        this._emitEvent({
+          event: createEvent(connectEvent, this._channel, this._user),
+        });
+      })
+
+      .on('events', (values) => {
+        for (const value of values) {
+          this._emitEvent({
+            event: createEvent(
+              value,
+              this._channel as WebSocketConnection,
+              this._user as User
+            ),
+          });
+        }
+      })
+
+      .on('disconnect', ({ reason }) => {
+        const channel = this._channel;
+        this._channel = null;
+
+        const disconnectValue: DisconnectEventValue = {
+          category: 'connection',
+          type: 'disconnect',
+          payload: { reason },
+        };
+        this._emitEvent({
+          event: createEvent(
+            disconnectValue,
+            channel as WebSocketConnection,
+            this._user as User
+          ),
+        });
+      })
+
+      .on('error', this._emitError.bind(this));
   }
 }
 

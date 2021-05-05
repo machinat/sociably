@@ -1,17 +1,11 @@
 import { MachinatUser } from '@machinat/core';
 import Auth from '@machinat/auth';
-import AuthClient from '@machinat/auth/client';
-import type {
-  AnyServerAuthorizer,
-  AnyClientAuthorizer,
-  ContextOfAuthorizer,
-  UserOfAuthorizer,
-} from '@machinat/auth';
+import type { AnyServerAuthorizer, ContextOfAuthorizer } from '@machinat/auth';
 import type {
   EventInput,
   VerifyLoginFn,
   HttpRequestInfo,
-  ClientLoginFn,
+  EventValue,
 } from '@machinat/websocket';
 import { WEBVIEW } from './constant';
 import { WebviewConnection } from './channel';
@@ -19,12 +13,15 @@ import type { WebviewEvent } from './types';
 
 const WebEventProto = { platform: WEBVIEW };
 
-export const createEvent = <User extends null | MachinatUser>(
+export const createEvent = <
+  User extends null | MachinatUser,
+  Value extends EventValue
+>(
   value: EventInput,
   channel: WebviewConnection,
   user: User
-): WebviewEvent<any, User> => {
-  const event: WebviewEvent<any, User> = Object.create(WebEventProto);
+): WebviewEvent<Value, User> => {
+  const event: WebviewEvent<Value, User> = Object.create(WebEventProto);
 
   const { category, type, payload } = value;
   event.category = category || 'default';
@@ -36,7 +33,7 @@ export const createEvent = <User extends null | MachinatUser>(
   return event;
 };
 
-export const useAuthController = <Authorizer extends AnyServerAuthorizer>(
+export const useAuthLogin = <Authorizer extends AnyServerAuthorizer>(
   controller: Auth.Controller<Authorizer>
 ): VerifyLoginFn<
   MachinatUser,
@@ -56,16 +53,6 @@ export const useAuthController = <Authorizer extends AnyServerAuthorizer>(
     authContext: context,
     user: context.user,
     expireAt: context.expireAt,
-  };
-};
-
-export const useAuthClient = <Authorizer extends AnyClientAuthorizer>(
-  controller: AuthClient<Authorizer>
-): ClientLoginFn<UserOfAuthorizer<Authorizer>, string> => async () => {
-  const { token, context } = await controller.auth();
-  return {
-    user: context.user as UserOfAuthorizer<Authorizer>,
-    credential: token,
   };
 };
 

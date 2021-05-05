@@ -9,7 +9,7 @@ import type {
   ConnectEventValue,
   DisconnectEventValue,
 } from '@machinat/websocket';
-import { Connector, Emitter } from '@machinat/websocket/client';
+import { Connector, ClientEmitter } from '@machinat/websocket/client';
 import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant';
 import { WebviewConnection } from '../channel';
 import { createEvent } from '../utils';
@@ -21,7 +21,7 @@ type ClientOptions<Authorizer extends AnyClientAuthorizer> = {
   /** Secify the platform to ligin. Default to the `platform` querystring param */
   platform?: string;
   /** URL string to connect auth backend. Default to `"/auth"` */
-  authApiUrl?: string;
+  authUrl?: string;
   /** Authorizer of available platforms. */
   authorizers: Authorizer[];
   /**
@@ -31,17 +31,35 @@ type ClientOptions<Authorizer extends AnyClientAuthorizer> = {
   mockupMode?: boolean;
 };
 
+export type ClientEventContext<
+  Authorizer extends AnyClientAuthorizer,
+  Value extends EventValue
+> = {
+  platform: string;
+  event: WebviewEvent<Value, UserOfAuthorizer<Authorizer>>;
+  authorizer: Authorizer;
+  auth: ContextOfAuthorizer<Authorizer>;
+};
+
+export type ClientEventContextOfAuthorizer<
+  Authorizer extends AnyClientAuthorizer,
+  Value extends EventValue
+> = Authorizer extends AnyClientAuthorizer
+  ? {
+      platform: Authorizer['platform'];
+      event: WebviewEvent<Value, UserOfAuthorizer<Authorizer>>;
+      authorizer: Authorizer;
+      auth: ContextOfAuthorizer<Authorizer>;
+    }
+  : never;
+
 class WebviewClient<
   Authorizer extends AnyClientAuthorizer,
   Value extends EventValue = EventValue
-> extends Emitter<
-  [
-    WebviewEvent<Value, UserOfAuthorizer<Authorizer>>,
-    ContextOfAuthorizer<Authorizer>
-  ]
-> {
+> extends ClientEmitter<ClientEventContextOfAuthorizer<Authorizer, Value>> {
   private _authClient: AuthClient<Authorizer>;
   private _connector: Connector<UserOfAuthorizer<Authorizer>>;
+  private _platformInput: string | undefined;
 
   private _user: null | UserOfAuthorizer<Authorizer>;
   private _channel: null | WebviewConnection;
@@ -64,11 +82,15 @@ class WebviewClient<
     return this._authClient.getAuthContext();
   }
 
+  get platform(): string | undefined {
+    return this._authClient.platform;
+  }
+
   constructor({
     webSocketUrl,
     platform,
     authorizers,
-    authApiUrl,
+    authUrl,
     mockupMode = false,
   }: ClientOptions<Authorizer>) {
     super();
@@ -76,11 +98,11 @@ class WebviewClient<
     this._user = null;
     this._channel = null;
     this.isMockupMode = mockupMode;
+    this._platformInput = platform;
 
     this._authClient = new AuthClient({
-      platform,
       authorizers,
-      apiUrl: authApiUrl || DEFAULT_AUTH_PATH,
+      serverUrl: authUrl || DEFAULT_AUTH_PATH,
     });
 
     const marshalTypes = authorizers.reduce((types, authorizer) => {
@@ -91,64 +113,12 @@ class WebviewClient<
     }, [] as AnyMarshalType[]);
 
     const { host, pathname } = window.location;
-    this._connector = new Connector(
-      new URL(
-        webSocketUrl || DEFAULT_WEBSOCKET_PATH,
-        `wss://${host}${pathname}`
-      ).href,
-      this._getLoginAuth.bind(this),
-      new BaseMarshaler(marshalTypes)
-    );
+    const socketServerUrl = new URL(
+      webSocketUrl || DEFAULT_WEBSOCKET_PATH,
+      `wss://${host}${pathname}`
+    ).href;
 
-    this._connector.on('connect', ({ connId, user }) => {
-      this._user = user;
-      this._channel = new WebviewConnection('*', connId);
-
-      const connectEvent: ConnectEventValue = {
-        category: 'connection',
-        type: 'connect',
-        payload: null,
-      };
-      this._emitEvent(
-        createEvent(connectEvent, this._channel, user),
-        this.authContext as ContextOfAuthorizer<Authorizer>
-      );
-    });
-
-    this._connector.on('events', (values) => {
-      for (const value of values) {
-        this._emitEvent(
-          createEvent(
-            value,
-            this._channel as WebviewConnection,
-            this._user as UserOfAuthorizer<Authorizer>
-          ),
-          this.authContext as ContextOfAuthorizer<Authorizer>
-        );
-      }
-    });
-
-    this._connector.on('disconnect', ({ reason }) => {
-      const channel = this._channel;
-      this._channel = null;
-
-      const disconnectValue: DisconnectEventValue = {
-        category: 'connection',
-        type: 'disconnect',
-        payload: { reason },
-      };
-
-      this._emitEvent(
-        createEvent(
-          disconnectValue,
-          channel as WebviewConnection,
-          this._user as UserOfAuthorizer<Authorizer>
-        ),
-        this.authContext as ContextOfAuthorizer<Authorizer>
-      );
-    });
-
-    this._connector.on('error', this._emitError.bind(this));
+    this._connector = this._initConnector(socketServerUrl, marshalTypes);
     if (!this.isMockupMode) {
       this._connector.start().catch(this._emitError.bind(this));
     }
@@ -166,11 +136,77 @@ class WebviewClient<
     user: UserOfAuthorizer<Authorizer>;
     credential: string;
   }> {
-    const { token, context } = await this._authClient.auth();
+    const { token, context } = await this._authClient.signIn({
+      platform: this._platformInput,
+    });
     return {
       user: context.user as UserOfAuthorizer<Authorizer>,
       credential: token,
     };
+  }
+
+  private _initConnector(
+    socketServerUrl: string,
+    marshalTypes: AnyMarshalType[]
+  ): Connector<UserOfAuthorizer<Authorizer>> {
+    return new Connector<UserOfAuthorizer<Authorizer>>(
+      socketServerUrl,
+      this._getLoginAuth.bind(this),
+      new BaseMarshaler(marshalTypes)
+    )
+      .on('connect', ({ connId, user }) => {
+        this._user = user;
+        this._channel = new WebviewConnection('*', connId);
+
+        const connectEvent: ConnectEventValue = {
+          category: 'connection',
+          type: 'connect',
+          payload: null,
+        };
+
+        this._emitEvent({
+          event: createEvent(connectEvent, this._channel, user),
+          auth: this.authContext as ContextOfAuthorizer<Authorizer>,
+          authorizer: this._authClient.getAuthorizer() as Authorizer,
+        } as ClientEventContextOfAuthorizer<Authorizer, Value>);
+      })
+
+      .on('events', (values) => {
+        for (const value of values) {
+          this._emitEvent({
+            event: createEvent(
+              value,
+              this._channel as WebviewConnection,
+              this._user as UserOfAuthorizer<Authorizer>
+            ),
+            auth: this.authContext as ContextOfAuthorizer<Authorizer>,
+            authorizer: this._authClient.getAuthorizer() as Authorizer,
+          } as ClientEventContextOfAuthorizer<Authorizer, Value>);
+        }
+      })
+
+      .on('disconnect', ({ reason }) => {
+        const channel = this._channel;
+        this._channel = null;
+
+        const disconnectValue: DisconnectEventValue = {
+          category: 'connection',
+          type: 'disconnect',
+          payload: { reason },
+        };
+
+        this._emitEvent({
+          event: createEvent(
+            disconnectValue,
+            channel as WebviewConnection,
+            this._user as UserOfAuthorizer<Authorizer>
+          ),
+          auth: this.authContext as ContextOfAuthorizer<Authorizer>,
+          authorizer: this._authClient.getAuthorizer() as Authorizer,
+        } as ClientEventContextOfAuthorizer<Authorizer, Value>);
+      })
+
+      .on('error', this._emitError.bind(this));
   }
 }
 

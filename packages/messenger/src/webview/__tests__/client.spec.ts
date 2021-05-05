@@ -47,7 +47,7 @@ describe('#constructor(options)', () => {
     const authorizer = new MessengerClientAuthorizer({ appId: 'MY_APP' });
     expect(authorizer.platform).toBe('messenger');
     expect(authorizer.appId).toBe('MY_APP');
-    expect(authorizer.isExtensionReady).toBe(false);
+    expect(authorizer.isSdkReady).toBe(false);
     expect(authorizer.marshalTypes.map((t) => t.name)).toMatchInlineSnapshot(`
       Array [
         "MessengerChat",
@@ -57,8 +57,8 @@ describe('#constructor(options)', () => {
     `);
 
     expect(
-      new MessengerClientAuthorizer({ appId: 'MY_APP', isExtensionReady: true })
-        .isExtensionReady
+      new MessengerClientAuthorizer({ appId: 'MY_APP', isSdkReady: true })
+        .isSdkReady
     ).toBe(true);
   });
 
@@ -93,15 +93,17 @@ describe('#init()', () => {
     (window.extAsyncInit as any)();
 
     await expect(promise).resolves.toBe(undefined);
+    expect(authorizer.extensionsSdk).toBe(MessengerExtensions);
   });
 
-  it('do nothing if options.isExtensionReady set to true', async () => {
+  it('do nothing if options.isSdkReady set to true', async () => {
     const authorizer = new MessengerClientAuthorizer({
       appId: '_APP_ID_',
-      isExtensionReady: true,
+      isSdkReady: true,
     });
 
     await expect(authorizer.init()).resolves.toBe(undefined);
+    expect(authorizer.extensionsSdk).toBe(MessengerExtensions);
 
     expect(document.getElementById('Messenger')).toBe(null);
     expect(window.extAsyncInit).toBe(undefined);
@@ -112,7 +114,7 @@ describe('#init()', () => {
 
     const authorizer = new MessengerClientAuthorizer({
       appId: 'APP_ID',
-      isExtensionReady: false,
+      isSdkReady: false,
     });
 
     const promise = authorizer.init();
@@ -138,8 +140,12 @@ describe('#fetchCredential()', () => {
   };
 
   it('resolve credential with signed request', async () => {
-    const authorizer = new MessengerClientAuthorizer({ appId: 'APP_ID' });
+    const authorizer = new MessengerClientAuthorizer({
+      appId: 'APP_ID',
+      isSdkReady: true,
+    });
     MessengerExtensions.getContext.mock.fake((_, cb) => cb(extensionContext));
+    await authorizer.init();
 
     await expect(authorizer.fetchCredential()).resolves.toEqual({
       success: true,
@@ -158,7 +164,11 @@ describe('#fetchCredential()', () => {
   });
 
   it('throw if getContext fail', async () => {
-    const authorizer = new MessengerClientAuthorizer({ appId: 'APP_ID' });
+    const authorizer = new MessengerClientAuthorizer({
+      appId: 'APP_ID',
+      isSdkReady: true,
+    });
+    await authorizer.init();
 
     MessengerExtensions.getContext.mock.fake((_, cb, fail) =>
       fail(new Error('somthing wrong!'))
@@ -172,8 +182,12 @@ describe('#fetchCredential()', () => {
   });
 
   it('set client according to window.name', async () => {
-    const authorizer = new MessengerClientAuthorizer({ appId: 'APP_ID' });
+    const authorizer = new MessengerClientAuthorizer({
+      appId: 'APP_ID',
+      isSdkReady: true,
+    });
     MessengerExtensions.getContext.mock.fake((_, cb) => cb(extensionContext));
+    await authorizer.init();
 
     window.mock.getter('name').fake(() => 'facebook_ref');
     await expect(authorizer.fetchCredential()).resolves.toEqual({
@@ -199,7 +213,7 @@ describe('#checkAuthContext(data)', () => {
   it('resolve auth context form extension context', () => {
     const authorizer = new MessengerClientAuthorizer({
       appId: 'APP_ID',
-      isExtensionReady: true,
+      isSdkReady: true,
     });
 
     expect(

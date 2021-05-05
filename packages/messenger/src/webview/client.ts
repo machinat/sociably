@@ -18,12 +18,13 @@ import { supplementContext } from './utils';
 
 type MessengerClientAuthOpts = {
   appId: string;
-  isExtensionReady?: boolean;
+  isSdkReady?: boolean;
 };
 
-declare const window: Window & { extAsyncInit(): void };
-
-declare const MessengerExtensions: any;
+declare const window: Window & {
+  extAsyncInit(): void;
+  MessengerExtensions: any;
+};
 
 const INIT_TIMEOUT = 20000; // 20s;
 
@@ -35,7 +36,8 @@ class MessengerClientAuthorizer
       MessengerAuthContext
     > {
   appId: string;
-  isExtensionReady: boolean;
+  isSdkReady: boolean;
+  extensionsSdk: any;
 
   platform = MESSENGER;
   marshalTypes = [MessengerChat, MessengerUser, MessengerUserProfile];
@@ -45,51 +47,51 @@ class MessengerClientAuthorizer
       options?.appId,
       'options.appId is required to retrieve chat context'
     );
-    const { appId, isExtensionReady = false } = options;
+    const { appId, isSdkReady = false } = options;
 
     this.appId = appId;
-    this.isExtensionReady = isExtensionReady;
+    this.isSdkReady = isSdkReady;
   }
 
   // eslint-disable-next-line class-methods-use-this
   async init(): Promise<void> {
-    if (this.isExtensionReady) {
-      return;
+    if (!this.isSdkReady) {
+      const initPromise = new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          reject(new Error('extension initiation timeout'));
+        }, INIT_TIMEOUT);
+
+        const existedInitCallback = window.extAsyncInit;
+        window.extAsyncInit = () => {
+          resolve();
+          clearTimeout(timeoutId);
+
+          if (typeof existedInitCallback === 'function') {
+            existedInitCallback();
+          }
+        };
+      });
+
+      // eslint-disable-next-line func-names
+      (function (d, s, id) {
+        if (d.getElementById(id)) return;
+        const fjs: any = d.getElementsByTagName(s)[0];
+        const js: any = d.createElement(s);
+        js.id = id;
+        js.src = '//connect.facebook.net/en_US/messenger.Extensions.js';
+        fjs.parentNode.insertBefore(js, fjs);
+      })(document, 'script', 'Messenger');
+
+      await initPromise;
     }
 
-    const initPromise = new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(() => {
-        reject(new Error('extension initiation timeout'));
-      }, INIT_TIMEOUT);
-
-      const previousExtInitCallback = window.extAsyncInit;
-      window.extAsyncInit = () => {
-        resolve();
-        clearTimeout(timeoutId);
-
-        if (typeof previousExtInitCallback === 'function') {
-          previousExtInitCallback();
-        }
-      };
-    });
-
-    // eslint-disable-next-line func-names
-    (function (d, s, id) {
-      if (d.getElementById(id)) return;
-      const fjs: any = d.getElementsByTagName(s)[0];
-      const js: any = d.createElement(s);
-      js.id = id;
-      js.src = '//connect.facebook.net/en_US/messenger.Extensions.js';
-      fjs.parentNode.insertBefore(js, fjs);
-    })(document, 'script', 'Messenger');
-
-    await initPromise;
+    this.extensionsSdk = window.MessengerExtensions;
   }
 
   async fetchCredential(): Promise<AuthorizerCredentialResult> {
     try {
       const context: ExtensionContext = await new Promise((resolve, reject) => {
-        MessengerExtensions.getContext(this.appId, resolve, reject);
+        this.extensionsSdk.getContext(this.appId, resolve, reject);
       });
 
       return {

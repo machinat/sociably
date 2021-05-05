@@ -34,7 +34,6 @@ class LineClientAuthorizer
   liff: any;
   liffId: string;
   shouldLoadSDK: boolean;
-  private _searchParams: URLSearchParams;
 
   platform = LINE;
   marshalTypes = [LineChat, LineUser, LineUserProfile, LineGroupProfile];
@@ -45,7 +44,6 @@ class LineClientAuthorizer
 
     this.liffId = liffId;
     this.shouldLoadSDK = shouldLoadSDK;
-    this._searchParams = new URLSearchParams(window.location.search);
   }
 
   async init(): Promise<void> {
@@ -69,7 +67,8 @@ class LineClientAuthorizer
     this.liff = (window as any).liff;
     await this.liff.init({ liffId });
 
-    if (typeof this._searchParams.get('liff.state') === 'string') {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (typeof searchParams.get('liff.state') === 'string') {
       // wait for secondary redirecting during primary redirecting from LIFF
       await waitingForRedirecting();
     }

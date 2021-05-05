@@ -33,11 +33,13 @@ jest.mock('@machinat/auth/client', () => {
   const _moxy = jest.requireActual('@moxyjs/moxy').default;
   return {
     __esModule: true,
-    default: _moxy(function FakeConnector() {
+    default: _moxy(function FakeAuthClient({ authorizers }) {
       return _moxy({
         bootstrap: async () => {},
-        auth: async () => ({ context: {}, token: '_TOKEN_' }),
+        signIn: async () => ({ context: {}, token: '_TOKEN_' }),
         getAuthContext: () => ({ platform: 'test' /* ... */ }),
+        getAuthorizer: () =>
+          authorizers.find(({ platform }) => platform === 'test'),
       });
     }),
   };
@@ -80,7 +82,7 @@ beforeEach(() => {
 it('start connector and auth client', async () => {
   const client = new Client({
     platform: 'test',
-    authApiUrl: '/my_auth',
+    authUrl: '/my_auth',
     authorizers: [testAuthorizer, anotherAuthorizer],
     webSocketUrl: '/my_websocket',
   });
@@ -103,27 +105,33 @@ it('start connector and auth client', async () => {
 
   expect(AuthClient.mock).toHaveBeenCalledTimes(1);
   expect(AuthClient.mock).toHaveBeenCalledWith({
-    platform: 'test',
-    apiUrl: '/my_auth',
+    serverUrl: '/my_auth',
     authorizers: [testAuthorizer, anotherAuthorizer],
   });
 
   const authClient = AuthClient.mock.calls[0].instance;
   authClient.getAuthContext.mock.fake(() => authContext);
 
+  const login = Connector.mock.calls[0].args[1];
+  await login();
+
+  expect(authClient.signIn.mock).toHaveBeenCalledTimes(1);
+  expect(authClient.signIn.mock).toHaveBeenCalledWith({ platform: 'test' });
+
   connector.emit('connect', { connId: '#conn', user });
   connector.isConnected.mock.fake(() => true);
 
-  expect(eventSpy.mock).toHaveBeenCalledWith(
-    {
+  expect(eventSpy.mock).toHaveBeenCalledWith({
+    event: {
       category: 'connection',
       type: 'connect',
       payload: null,
       user,
       channel: new WebviewConnection('*', '#conn'),
     },
-    authContext
-  );
+    auth: authContext,
+    authorizer: testAuthorizer,
+  });
 
   expect(client.isConnected).toBe(true);
   expect(client.user).toEqual(user);
@@ -133,7 +141,7 @@ it('start connector and auth client', async () => {
 test('mockupMode', async () => {
   const client = new Client({
     platform: 'test',
-    authApiUrl: '/my_auth',
+    authUrl: '/my_auth',
     authorizers: [testAuthorizer, anotherAuthorizer],
     webSocketUrl: '/my_websocket',
     mockupMode: true,
@@ -215,7 +223,7 @@ it('login with auth client', async () => {
   (() => new Client({ authorizers: [testAuthorizer] }))();
 
   const authClient = AuthClient.mock.calls[0].instance;
-  authClient.auth.mock.fake(async () => ({
+  authClient.signIn.mock.fake(async () => ({
     token: '_TOKEN_',
     context: authContext,
   }));
@@ -226,7 +234,8 @@ it('login with auth client', async () => {
     credential: '_TOKEN_',
   });
 
-  expect(authClient.auth.mock).toHaveBeenCalledTimes(1);
+  expect(authClient.signIn.mock).toHaveBeenCalledTimes(1);
+  expect(authClient.signIn.mock).toHaveBeenCalledWith({});
 });
 
 it('emit "event" when dispatched events received', async () => {
@@ -254,28 +263,28 @@ it('emit "event" when dispatched events received', async () => {
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(3);
   // 'connect' event is the first call
-  expect(eventSpy.mock).toHaveBeenNthCalledWith(
-    2,
-    {
+  expect(eventSpy.mock).toHaveBeenNthCalledWith(2, {
+    event: {
       category: 'default',
       type: 'start',
       payload: 'Welcome to Hyrule',
       user,
       channel: new WebviewConnection('*', '#conn'),
     },
-    authContext
-  );
-  expect(eventSpy.mock).toHaveBeenNthCalledWith(
-    3,
-    {
+    auth: authContext,
+    authorizer: testAuthorizer,
+  });
+  expect(eventSpy.mock).toHaveBeenNthCalledWith(3, {
+    event: {
       category: 'reaction',
       type: 'wasted',
       payload: 'Link is down! Legend over.',
       user,
       channel: new WebviewConnection('*', '#conn'),
     },
-    authContext
-  );
+    auth: authContext,
+    authorizer: testAuthorizer,
+  });
 
   connector.emit(
     'events',
@@ -284,16 +293,17 @@ it('emit "event" when dispatched events received', async () => {
   );
 
   expect(eventSpy.mock).toHaveBeenCalledTimes(4);
-  expect(eventSpy.mock).toHaveBeenCalledWith(
-    {
+  expect(eventSpy.mock).toHaveBeenCalledWith({
+    event: {
       category: 'default',
       type: 'resurrect',
       payload: 'Hero never die!',
       user,
       channel: new WebviewConnection('*', '#conn'),
     },
-    authContext
-  );
+    auth: authContext,
+    authorizer: testAuthorizer,
+  });
 });
 
 it('send events', async () => {
@@ -342,16 +352,17 @@ test('disconnected by server', async () => {
     { connId: '#conn', user }
   );
 
-  expect(eventSpy.mock).toHaveBeenLastCalledWith(
-    {
+  expect(eventSpy.mock).toHaveBeenLastCalledWith({
+    event: {
       category: 'connection',
       type: 'disconnect',
       payload: { reason: 'See ya!' },
       user,
       channel: new WebviewConnection('*', '#conn'),
     },
-    authContext
-  );
+    auth: authContext,
+    authorizer: testAuthorizer,
+  });
 
   expect(client.user).toEqual(user);
   expect(client.channel).toBe(null);
@@ -376,16 +387,17 @@ test('#disconnect()', async () => {
   expect(connector.disconnect.mock).toHaveBeenCalledWith('Bye!');
 
   connector.emit('disconnect', { reason: 'Bye!' }, { connId: '#conn', user });
-  expect(eventSpy.mock).toHaveBeenLastCalledWith(
-    {
+  expect(eventSpy.mock).toHaveBeenLastCalledWith({
+    event: {
       category: 'connection',
       type: 'disconnect',
       payload: { reason: 'Bye!' },
       user,
       channel: new WebviewConnection('*', '#conn'),
     },
-    authContext
-  );
+    auth: authContext,
+    authorizer: testAuthorizer,
+  });
 
   expect(client.user).toEqual(user);
   expect(client.channel).toBe(null);

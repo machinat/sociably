@@ -1,5 +1,5 @@
-class MachinatEmitter<EventListenerArgs extends any[]> {
-  private _eventListeners: ((...args: EventListenerArgs) => void)[];
+class ClientEmitter<T> {
+  private _eventListeners: ((ctx: T) => void)[];
   private _errorListeners: ((err: Error) => void)[];
 
   constructor() {
@@ -7,14 +7,14 @@ class MachinatEmitter<EventListenerArgs extends any[]> {
     this._errorListeners = [];
   }
 
-  onEvent(listener: (...args: EventListenerArgs) => void): void {
+  onEvent(listener: (ctx: T) => void): void {
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }
     this._eventListeners.push(listener);
   }
 
-  removeEventListener(listener: (...args: EventListenerArgs) => void): boolean {
+  removeEventListener(listener: (ctx: T) => void): boolean {
     const idx = this._eventListeners.findIndex((fn) => fn === listener);
     if (idx === -1) {
       return false;
@@ -41,9 +41,9 @@ class MachinatEmitter<EventListenerArgs extends any[]> {
     return true;
   }
 
-  protected _emitEvent(...args: EventListenerArgs): void {
+  protected _emitEvent(ctx: T): void {
     for (const listener of this._eventListeners) {
-      listener.call(this, ...args);
+      listener.call(this, ctx);
     }
   }
 
@@ -58,4 +58,4 @@ class MachinatEmitter<EventListenerArgs extends any[]> {
   }
 }
 
-export default MachinatEmitter;
+export default ClientEmitter;

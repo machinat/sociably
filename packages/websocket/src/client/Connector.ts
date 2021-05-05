@@ -23,21 +23,20 @@ type PendingEvent = {
 
 const Emitter = EventEmitter as { new <T>(): TypedEmitter<T> };
 
-type ClientContext<User extends null | MachinatUser> = {
+export type ConnectorContext<User extends null | MachinatUser> = {
   connId: string;
   user: User;
 };
 
-type ClientEvents<User extends null | MachinatUser> = {
-  connect: (ctx: ClientContext<User>) => void;
-  events: (events: EventInput[], ctx: ClientContext<User>) => void;
-  disconnect: (reason: { reason?: string }, ctx: ClientContext<User>) => void;
+class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
+  connect: (ctx: ConnectorContext<User>) => void;
+  events: (events: EventInput[], ctx: ConnectorContext<User>) => void;
+  disconnect: (
+    reason: { reason?: string },
+    ctx: ConnectorContext<User>
+  ) => void;
   error: (err: Error) => void;
-};
-
-class WebScoketConnector<User extends null | MachinatUser> extends Emitter<
-  ClientEvents<User>
-> {
+}> {
   private _serverUrl: string;
   private _login: ClientLoginFn<User, unknown>;
   private _socket: null | Socket;

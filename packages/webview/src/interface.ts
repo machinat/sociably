@@ -14,7 +14,7 @@ import type {
 import { NextReceiver } from '@machinat/next';
 import type { NextServer } from '@machinat/next';
 import WebSocket, { WebSocketServer } from '@machinat/websocket';
-import { useAuthController, verifyOrigin } from './utils';
+import { useAuthLogin, verifyOrigin } from './utils';
 import { DEFAULT_AUTH_PATH } from './constant';
 import type { WebviewConfigs, WebviewPlatformUtilities } from './types';
 
@@ -160,7 +160,7 @@ export const SocketServerP: ServiceProvider<
       marshaler,
       verifyUpgrade: ({ headers }) =>
         !!headers.origin && verifyOrigin(headers.origin, webviewHost),
-      verifyLogin: useAuthController(authController),
+      verifyLogin: useAuthLogin(authController),
       heartbeatInterval,
     }),
 })(WebviewSocketServer);
