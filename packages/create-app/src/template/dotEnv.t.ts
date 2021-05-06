@@ -3,6 +3,8 @@ import { nanoid } from 'nanoid';
 import { when, polishFileContent } from '../templateHelper';
 import type { CreateAppContext } from '../types';
 
+export const name = '.env';
+
 export default ({ platforms }: CreateAppContext) => {
   const localTunnelSubDomain = randomName({ number: true }).dashed;
   return polishFileContent(`

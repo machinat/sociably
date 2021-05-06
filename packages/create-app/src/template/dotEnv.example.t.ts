@@ -1,7 +1,10 @@
 import { when, polishFileContent } from '../templateHelper';
 import type { CreateAppContext } from '../types';
 
-export default ({ platforms }: CreateAppContext) => polishFileContent(`
+export const name = '.env.example';
+
+export default ({ platforms }: CreateAppContext) =>
+  polishFileContent(`
 # app running environment, "production", "staging", "development"... etc.
 NODE_ENV=development
 

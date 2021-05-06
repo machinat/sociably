@@ -1,6 +1,9 @@
 import { polishFileContent } from '../templateHelper';
 
-export default () => polishFileContent(`
+export const name = '.gitignore';
+
+export default () =>
+  polishFileContent(`
 # Build output
 lib
 dist

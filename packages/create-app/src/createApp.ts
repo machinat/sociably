@@ -57,13 +57,15 @@ const createMachinatApp = async ({
   // write file content
   await Promise.all(
     templateFiles.map(async (file) => {
-      const relativeFilePath = relativePath(
-        `${__dirname}/template`,
-        file
-      ).replace(/\.t\.[t|j]s$/, '');
-      const targetPath = joinPath(projectPath, relativeFilePath);
+      const targetPath = joinPath(
+        projectPath,
+        relativePath(joinPath(__dirname, 'template'), file).replace(
+          /\.t\.[t|j]s$/,
+          ''
+        )
+      );
 
-      const { default: buildContent, mode } = await import(file);
+      const { default: buildContent, mode, name } = await import(file);
       const content = buildContent(context);
 
       if (content) {
@@ -75,7 +77,7 @@ const createMachinatApp = async ({
         const ext = extname(targetPath);
         await thenifiedly.call(
           writeFile,
-          targetPath,
+          name ? joinPath(dirname(targetPath), name) : targetPath,
           ext === '.ts'
             ? formatCode(content, 'typescript')
             : ext === '.js'
