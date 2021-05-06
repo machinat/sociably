@@ -1,7 +1,10 @@
 import { polishFileContent } from '../../../templateHelper';
 
+export const mode = 0o775;
+
 export default () =>
   polishFileContent(`
+#!/usr/bin/env node
 import { config as configEnv } from 'dotenv';
 import localtunnel from 'localtunnel';
 import nodemon from 'nodemon';

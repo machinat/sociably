@@ -63,7 +63,7 @@ const createMachinatApp = async ({
       ).replace(/\.t\.[t|j]s$/, '');
       const targetPath = joinPath(projectPath, relativeFilePath);
 
-      const { default: buildContent } = await import(file);
+      const { default: buildContent, mode } = await import(file);
       const content = buildContent(context);
 
       if (content) {
@@ -82,7 +82,8 @@ const createMachinatApp = async ({
             ? formatCode(content, 'babel')
             : ext === '.json'
             ? formatCode(content, 'json-stringify')
-            : content
+            : content,
+          { mode }
         );
       }
     })

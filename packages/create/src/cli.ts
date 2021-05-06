@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { resolve as resolvePath } from 'path';
 import meow from 'meow';
 import createApp from './createApp';

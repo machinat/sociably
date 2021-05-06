@@ -1,8 +1,11 @@
 import { CreateAppContext } from '../../../types';
 import { when, polishFileContent } from '../../../templateHelper';
 
+export const mode = 0o775;
+
 export default ({ platforms }: CreateAppContext) =>
   polishFileContent(`
+#!/usr/bin/env node
 import { config as configEnv } from 'dotenv';
 import { resolve as resolvePath } from 'path';
 import Machinat from '@machinat/core';${when(platforms.includes('messenger'))`
