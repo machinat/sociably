@@ -112,13 +112,11 @@ class WebviewClient<
       return types;
     }, [] as AnyMarshalType[]);
 
-    const { host, pathname } = window.location;
-    const socketServerUrl = new URL(
+    this._connector = this._initConnector(
       webSocketUrl || DEFAULT_WEBSOCKET_PATH,
-      `wss://${host}${pathname}`
-    ).href;
+      marshalTypes
+    );
 
-    this._connector = this._initConnector(socketServerUrl, marshalTypes);
     if (!this.isMockupMode) {
       this._connector.start().catch(this._emitError.bind(this));
     }

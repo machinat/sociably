@@ -7,7 +7,7 @@ import Connector from '../Connector';
 const Socket = _Socket as Moxy<typeof _Socket>;
 const Ws = _Ws as Moxy<typeof _Ws>;
 
-const location = url.parse('https://machinat.com/hello');
+const location = url.parse('https://machinat.io/hello');
 (global as any).window = { location };
 
 jest.mock('../../socket', () =>
@@ -45,7 +45,7 @@ beforeEach(() => {
 const connId = '#conn';
 
 const openConnection = async () => {
-  const connector = new Connector('wss://machinat.io', login, marshaler);
+  const connector = new Connector('/websocket', login, marshaler);
   connector.start();
   await nextTick();
 
@@ -61,11 +61,7 @@ const openConnection = async () => {
 };
 
 test('start()', async () => {
-  const connector = new Connector(
-    'wss://machinat.io/websocket',
-    login,
-    marshaler
-  );
+  const connector = new Connector('/websocket', login, marshaler);
   connector.start();
   await nextTick();
 
@@ -79,8 +75,27 @@ test('start()', async () => {
   expect(Socket.mock).toHaveBeenCalledWith(Ws.mock.calls[0].instance);
 });
 
+test('use ws: protocol', async () => {
+  const connector = new Connector(
+    'ws://machinat.io/websocket',
+    login,
+    marshaler
+  );
+  connector.start();
+  await nextTick();
+
+  expect(Ws.mock).toHaveBeenCalledTimes(1);
+  expect(Ws.mock).toHaveBeenCalledWith(
+    'ws://machinat.io/websocket',
+    'machinat-websocket-v0'
+  );
+
+  expect(Socket.mock).toHaveBeenCalledTimes(1);
+  expect(Socket.mock).toHaveBeenCalledWith(Ws.mock.calls[0].instance);
+});
+
 it('login with credential from login fn', async () => {
-  const connector = new Connector('wss://machinat.io', login, marshaler);
+  const connector = new Connector('/websocket', login, marshaler);
   connector.on('connect', connectSpy);
   connector.start();
   await nextTick();
@@ -106,7 +121,7 @@ it('login with credential from login fn', async () => {
 });
 
 it('emit "error" if login rejected', async () => {
-  const connector = new Connector('wss://machinat.io', login, marshaler);
+  const connector = new Connector('/websocket', login, marshaler);
   const errorSpy = moxy();
   connector.on('error', errorSpy);
 

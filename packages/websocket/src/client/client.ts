@@ -46,11 +46,8 @@ class WebScoketClient<
     this._user = null;
     this._channel = null;
 
-    const { host, pathname } = window.location;
-    const sockerUrl = new URL(url || '/', `wss://${host}${pathname}`).href;
-
     this._connector = this._initConnector(
-      sockerUrl,
+      url || '/',
       login ||
         (() => Promise.resolve({ user: null as any, credential: null as any })),
       marshalTypes || []

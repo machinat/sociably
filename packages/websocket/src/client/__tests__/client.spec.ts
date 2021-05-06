@@ -60,7 +60,7 @@ it('start connector', async () => {
 
   expect(Connector.mock).toHaveBeenCalledTimes(1);
   expect(Connector.mock).toHaveBeenCalledWith(
-    'wss://machinat.com/',
+    '/',
     login,
     expect.any(BaseMarshaler)
   );
@@ -101,7 +101,7 @@ test('specify url', async () => {
 
   expect(Connector.mock).toHaveBeenCalledTimes(2);
   expect(Connector.mock).toHaveBeenCalledWith(
-    'wss://machinat.com/foo/websocket/server',
+    '/foo/websocket/server',
     login,
     expect.any(BaseMarshaler)
   );

@@ -73,7 +73,10 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
     const { user, credential } = await this._login();
     this._user = user;
 
-    const socket = await createClientSocket(this._serverUrl);
+    const { host, pathname } = window.location;
+    const socket = await createClientSocket(
+      new URL(this._serverUrl, `wss://${host}${pathname}`).href
+    );
     this._socket = socket;
 
     socket.on('connect', this._handleConnect.bind(this));

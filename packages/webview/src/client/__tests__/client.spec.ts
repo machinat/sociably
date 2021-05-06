@@ -95,7 +95,7 @@ it('start connector and auth client', async () => {
 
   expect(Connector.mock).toHaveBeenCalledTimes(1);
   expect(Connector.mock).toHaveBeenCalledWith(
-    'wss://machinat.com/my_websocket',
+    '/my_websocket',
     expect.any(Function),
     expect.any(BaseMarshaler)
   );
@@ -180,7 +180,7 @@ test('websocket url', async () => {
 
   expect(Connector.mock).toHaveBeenCalledTimes(2);
   expect(Connector.mock).toHaveBeenCalledWith(
-    'wss://machinat.com/websocket',
+    '/websocket',
     expect.any(Function),
     expect.any(BaseMarshaler)
   );
