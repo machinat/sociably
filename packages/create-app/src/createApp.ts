@@ -84,6 +84,8 @@ const createMachinatApp = async ({
             ? formatCode(content, 'babel')
             : ext === '.json'
             ? formatCode(content, 'json-stringify')
+            : ext === '.md'
+            ? formatCode(content, 'markdown')
             : content,
           { mode }
         );

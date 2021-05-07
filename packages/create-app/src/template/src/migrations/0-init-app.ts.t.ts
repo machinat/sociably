@@ -91,7 +91,13 @@ ${when(platforms.includes('messenger'))`
       'whitelisted_domains',
     ],
   });
-  
+
+  // remove the page to from webhook
+  await messengerBot.makeApiCall(
+    'DELETE',
+    \`\${MESSENGER_PAGE_ID}/subscribed_apps\`,
+    { access_token: \`\${MESSENGER_APP_ID}|\${MESSENGER_APP_SECRET}\` }
+  );
   
   // delete Messenger webhook subscription
   await messengerBot.makeApiCall(
@@ -101,13 +107,6 @@ ${when(platforms.includes('messenger'))`
       access_token: \`\${MESSENGER_APP_ID}|\${MESSENGER_APP_SECRET}\`,
       object: 'page',
     }
-  );
-
-  // remove the page to from webhook
-  await messengerBot.makeApiCall(
-    'DELETE',
-    \`\${MESSENGER_PAGE_ID}/subscribed_apps\`,
-    { access_token: \`\${MESSENGER_APP_ID}|\${MESSENGER_APP_SECRET}\` }
   );`}
 ${when(platforms.includes('telegram'))`
 

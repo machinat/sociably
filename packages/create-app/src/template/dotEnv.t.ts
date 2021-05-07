@@ -26,7 +26,6 @@ MESSENGER_VERIFY_TOKEN=${nanoid(16)}
 # Telegram
 
 TELEGRAM_BOT_TOKEN=
-TELEGRAM_BOT_NAME=
 TELEGRAM_SECRET_PATH=${nanoid(32)}
 `}${when(platforms.includes('line'))`
 # Line
