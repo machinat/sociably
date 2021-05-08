@@ -1,11 +1,10 @@
 import sortPackageJson from 'sort-package-json';
-import { when, polishFileContent } from '../templateHelper';
+import { when, polishFileContent } from '../utils';
 import { CreateAppContext } from '../types';
 
 export default ({ projectName, platforms }: CreateAppContext) => {
   const packageConfigs = {
     name: projectName,
-    verion: '0.0.1',
     private: true,
     scripts: {
       clean: 'rm -rf ./lib ./dist && rm tsconfig.tsbuildinfo',

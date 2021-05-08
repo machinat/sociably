@@ -1,4 +1,4 @@
-import { polishFileContent } from '../../templateHelper';
+import { polishFileContent } from '../../utils';
 
 export default () =>
   polishFileContent(`

@@ -32,3 +32,27 @@ export const polishFileContent = (inputString: string): null | string => {
 
   return content;
 };
+
+export const getEmptyEnvs = (dotenvContent: string): Map<string, string[]> => {
+  const lines = dotenvContent.split('\n');
+
+  const result = new Map();
+  let curPlatform = 'default';
+
+  for (const line of lines) {
+    if (line.match(/^[A-Z_]+=$/)) {
+      const requiredEnv = line.slice(0, -1);
+
+      const envs = result.get(curPlatform);
+      if (envs) {
+        envs.push(requiredEnv);
+      } else {
+        result.set(curPlatform, [requiredEnv]);
+      }
+    } else if (line.match(/^# .+$/)) {
+      curPlatform = line.slice(2);
+    }
+  }
+
+  return result;
+};

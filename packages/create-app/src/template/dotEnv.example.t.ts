@@ -1,4 +1,4 @@
-import { when, polishFileContent } from '../templateHelper';
+import { when, polishFileContent } from '../utils';
 import type { CreateAppContext } from '../types';
 
 export const name = '.env.example';

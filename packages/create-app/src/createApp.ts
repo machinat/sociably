@@ -8,6 +8,7 @@ import {
 import { writeFile, existsSync as fileExistsSync, mkdir } from 'fs';
 import { spawn as spawnChildProcess } from 'child_process';
 import glob from 'glob';
+import chalk from 'chalk';
 import thenifiedly from 'thenifiedly';
 import { format as prettierFormat, Options as PrettierOptions } from 'prettier';
 import type { CreateAppContext } from './types';
@@ -25,16 +26,23 @@ type CreateAppOptions = {
 const createMachinatApp = async ({
   platforms,
   projectPath,
-}: CreateAppOptions): Promise<void> => {
+}: CreateAppOptions): Promise<number> => {
+  console.log(
+    `Create a ${chalk.yellow('Machinat')} app in ${chalk.green(
+      projectPath
+    )}...\n`
+  );
   const projectName = basename(projectPath);
 
   // validate platforms
   for (const platform of platforms) {
     if (!supportedPlatforms.includes(platform)) {
       console.log(
-        `"${platform}" is not a supported platform, only  'messenger', 'telegram', 'line', and 'webview' are available for now`
+        `${chalk.redBright(
+          'Error:'
+        )} "${platform}" is not a supported platform, only  'messenger', 'telegram', 'line', and 'webview' are supported for now`
       );
-      process.exit(1);
+      return 1;
     }
   }
 
@@ -44,8 +52,12 @@ const createMachinatApp = async ({
   };
 
   if (fileExistsSync(projectPath)) {
-    console.log(`project directory ${projectPath} already exists`);
-    process.exit(1);
+    console.log(
+      `${chalk.redBright('Error:')} project directory ${chalk.green(
+        projectPath
+      )} already exists`
+    );
+    return 1;
   }
 
   const templateFiles: string[] = await thenifiedly.call(
@@ -93,19 +105,62 @@ const createMachinatApp = async ({
     })
   );
 
-  const npmInstall = spawnChildProcess('npm', ['install'], {
-    cwd: projectPath,
-  });
-  npmInstall.stdout.pipe(process.stdout);
-  npmInstall.stderr.pipe(process.stderr);
-
-  await thenifiedly.tillEvent('close', npmInstall);
-
-  const gitInit = spawnChildProcess(
-    'git init && git add . && git commit -m "Init project with Create Machinat App"',
-    { cwd: projectPath, shell: true }
+  console.log(
+    `Install ${chalk.yellow('Machinat')} framwork and other dependencies...\n`
   );
-  await thenifiedly.tillEvent('close', gitInit);
+
+  const npmInstallProcess = spawnChildProcess('npm', ['install'], {
+    cwd: projectPath,
+    stdio: 'inherit',
+  });
+
+  const installCode = await thenifiedly.tillEvent('close', npmInstallProcess);
+  if (installCode !== 0) {
+    return installCode;
+  }
+
+  console.log('\n');
+  console.log(`Initiate ${chalk.cyan('git')}...\n`);
+
+  const gitInitProcess = spawnChildProcess(
+    'git init && git add . && git commit -m "Init project with Create Machinat App"',
+    { cwd: projectPath, shell: true, stdio: 'inherit' }
+  );
+
+  const gitInitCode = await thenifiedly.tillEvent('close', gitInitProcess);
+  if (gitInitCode !== 0) {
+    return gitInitCode;
+  }
+
+  console.log(`
+${chalk.greenBright('Success!')} Created ${chalk.bold(
+    projectName
+  )} at ${chalk.green(projectPath)}
+Inside that directory, you can run several commands:
+
+  ${chalk.cyan('npm run dev')}
+    Start the server in development mode.
+
+  ${chalk.cyan('npm start')}
+    Starts the server in production mode.
+
+  ${chalk.cyan('npm run build')}
+    Build the server and webview codes for deployment.
+
+  ${chalk.cyan('npm run migrate')}
+    Execute the migration jobs. Add '-- --down' to revert.
+
+You have to fill chat platforms settings in ${chalk.green('.env')} file first.
+Check the \`${chalk.bold('Environments Setup')}\` guide in ${chalk.green(
+    'README.md'
+  )}.
+After that, you can begin by typing:
+
+  ${chalk.cyan('cd')} ${projectName}
+  ${chalk.cyan('npm run dev')}
+`);
+
+  return 0;
 };
 
 export default createMachinatApp;

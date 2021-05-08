@@ -1,4 +1,4 @@
-import { when, polishFileContent } from '../../../templateHelper';
+import { when, polishFileContent } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
 export default ({ platforms }: CreateAppContext) =>

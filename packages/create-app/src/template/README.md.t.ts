@@ -1,4 +1,4 @@
-import { when, polishFileContent } from '../templateHelper';
+import { when, polishFileContent } from '../utils';
 import { CreateAppContext } from '../types';
 
 export default ({ platforms, projectName }: CreateAppContext) =>
@@ -32,19 +32,18 @@ The command do 2 things:
 
 #### Configure Chat Platforms
 
-You need to manually setup the chat platforms to connect with. Check the
-\`.env.example\` file for the required data and references. Fill them in the
-\`.env\` file.
+You need to set up the chat platforms by filling the empty fields in \`.env\`
+file. Check the \`.env.example\` file for references.
 
 #### Start Dev Server
 
-Try starting the server up with \`npm run dev\` command. It should be
-successful if you fill all the required environments in previous step.
+Try starting the server up with \`npm run dev\` command. It should succeed if
+you fill all the required environments.
 
 #### Initiate the Bindings
 
-Keep the dev server runnning, and execute this command in a new command line
-tab:
+Keep the dev server runnning, and execute this command in a *new command line
+tab*:
 
 \`\`\`sh
 $ npm run migrate

@@ -40,4 +40,4 @@ if (!projectInput) {
 const projectPath = resolvePath(projectInput);
 const platforms = cli.flags.platform;
 
-createApp({ platforms, projectPath });
+createApp({ platforms, projectPath }).then((code) => process.exit(code));

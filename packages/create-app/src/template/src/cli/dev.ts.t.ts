@@ -1,4 +1,4 @@
-import { polishFileContent } from '../../../templateHelper';
+import { polishFileContent } from '../../../utils';
 
 export const mode = 0o775;
 
@@ -18,19 +18,21 @@ async function dev() {
     host: 'https://t.machinat.dev',
     subdomain: DEV_TUNNEL_SUBDOMAIN,
   });
-  
+
   process.on('SIGINT', () => {
     tunnel.close();
     process.exit();
   });
 
-  console.log(\`HTTP tunnel from \${tunnel.url} to localhost:\${PORT} is opened\`);
+  console.log(
+    \`[dev:tunnel] Tunnel from \${tunnel.url} to http://localhost:\${PORT} is opened\`
+  );
   tunnel.on('close', () => {
     console.log(
-      \`HTTP tunnel from \${tunnel.url} to localhost:\${PORT} is closed\`
+      \`[dev:tunnel] Tunnel from \${tunnel.url} to http://localhost:\${PORT} is closed\`
     );
   });
-  
+
   nodemon({
     exec: 'ts-node -r dotenv/config',
     script: './src/index.ts',
@@ -39,7 +41,13 @@ async function dev() {
     ignore: ['./src/webview'],
     verbose: true,
   });
-};
+  nodemon.on('start',  () => {
+    console.log(\`[dev:server] Dev server is running on \${PORT} port\`);
+  });
+  nodemon.on('restart', (changes: string[]) => {
+    console.log(\`[dev:server] Restarting server. File changed: \${changes.join(', ')}\`);
+  });
+}
 
 dev();
 `);

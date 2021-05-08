@@ -1,6 +1,6 @@
 import randomName from 'project-name-generator';
 import { nanoid } from 'nanoid';
-import { when, polishFileContent } from '../templateHelper';
+import { when, polishFileContent } from '../utils';
 import type { CreateAppContext } from '../types';
 
 export const name = '.env';

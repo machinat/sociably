@@ -1,5 +1,5 @@
 import { CreateAppContext } from '../../types';
-import { when, polishFileContent } from '../../templateHelper';
+import { when, polishFileContent } from '../../utils';
 
 export default ({ platforms }: CreateAppContext) =>
   polishFileContent(`${when(platforms.includes('messenger'))`
