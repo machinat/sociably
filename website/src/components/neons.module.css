@@ -1,4 +1,11 @@
-.facebook {color: #0076FB}
+.messenger {
+  background-image: linear-gradient(to right, #0584FE, #AC38EF, #FF6963);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+}
 
 .telegram {color: #23A1DD}
 

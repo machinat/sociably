@@ -17,7 +17,7 @@ const features = [
         Today businesses are doing marketing and customer services through many
         conversational platforms, from <i>Email</i>, <i>Instant Messaging</i> to
         <i>Social Medias</i> to <i>Voice Assistance</i>.
-        <br/>
+        <br />
         Develop a chat app with Machinat once, then you can ship services over
         all these channels and reach more users.
       </>
@@ -30,7 +30,7 @@ const features = [
         Conversational UI is easy to access, but not as functional as graphical
         UI. With Machinat, you can have both advantages by opening an embeded
         webview in the chatroom.
-        <br/>
+        <br />
         The Hybrid App can improve the expereience of complex actions and
         provide more enriched features.
       </>
@@ -43,7 +43,7 @@ const features = [
         Machinat use JSX API like React to contstruct chat UI in declarative
         views. The view is composed by flexible components, which allows you
         modify the expression while rendering.
-        <br/>
+        <br />
         This helps to build aligned and integrated experiences across diverse
         channels, and meanwhile make optimization for every platform.
       </>
@@ -55,10 +55,10 @@ const features = [
       <>
         Machinat app built on <i>Instant Messaging</i> and <i>Social Media</i>
         has native potential to go viral.
-        <br/>
-        Adding features to allow your app to be used in group chat or
-        community. Users would be glad to share proactively, and the app can be
-        marketed automatically by itself.
+        <br />
+        Adding features to allow your app to be used in group chat or community.
+        Users would be glad to share proactively, and the app can be marketed
+        automatically by itself.
       </>
     ),
   },
@@ -66,19 +66,19 @@ const features = [
     title: 'Open-Source, Pluginable and Extensible',
     description: (
       <>
-        Machinat framework is and will be open-source. No worry about
-        being bound to specific infrastructure provider.
-        <br/>
+        Machinat framework is and will be open-source. No worry about being
+        bound to specific infrastructure provider.
+        <br />
         It's also easy to develop plugins, UI components, or even your own
         event-based platforms.
-        <br/>
+        <br />
         Enjoy the ecosystem without any restriction!
       </>
     ),
   },
 ];
 
-function Feature({title, description}) {
+function Feature({ title, description }) {
   return (
     <section className={styles.featureContainer}>
       <div className="container">
@@ -87,8 +87,7 @@ function Feature({title, description}) {
             <h3 className={styles.featureTitle}>{title}</h3>
             <p className={styles.featureContent}>{description}</p>
           </div>
-          <div className={clsx('col col--5', styles.xxx)}>
-          </div>
+          <div className={clsx('col col--5', styles.xxx)}></div>
         </div>
       </div>
     </section>
@@ -97,13 +96,13 @@ function Feature({title, description}) {
 
 function Home() {
   const context = useDocusaurusContext();
-  const {siteConfig = {}} = context;
+  const { siteConfig = {} } = context;
 
   return (
-    <Layout
-      title={siteConfig.title}
-      description={siteConfig.tagline}>
-      <header className={clsx('hero hero--primary-lightest', styles.heroBanner)}>
+    <Layout title={siteConfig.title} description={siteConfig.tagline}>
+      <header
+        className={clsx('hero hero--primary-lightest', styles.heroBanner)}
+      >
         <ThemedImage
           className={styles.heroBannerBackground}
           sources={{
@@ -122,26 +121,30 @@ function Home() {
           />
 
           <div className={clsx('hero__subtitle', styles.heroSubtitle)}>
-            <div>Build Next-Gen Chat App</div>{' '}
-            <div>on ALL <NeonWords>Conversational Platforms</NeonWords></div>
+            <div>Build One In-Chat App</div>{' '}
+            <div>
+              for ALL <NeonWords>Conversational Platforms</NeonWords>
+            </div>
           </div>
 
           <div className={styles.buttonsContainer}>
             <Link
               className={clsx(
                 'button button--outline button--secondary button--lg',
-                styles.button,
+                styles.button
               )}
-              to={useBaseUrl('docs/')}>
+              to={useBaseUrl('docs/')}
+            >
               Get Started
             </Link>
             <div className={styles.buttonSpacer} />
             <Link
               className={clsx(
                 'button button--outline button--secondary button--lg',
-                styles.button,
+                styles.button
               )}
-              to="https://github.com/machinat/machinat">
+              to="https://github.com/machinat/machinat"
+            >
               GitHub
               <ThemedImage
                 className={styles.buttonGitHubImage}
@@ -156,9 +159,8 @@ function Home() {
       </header>
 
       <main>
-        {features && features.map((props, idx) => (
-          <Feature key={idx} {...props} />
-        ))}
+        {features &&
+          features.map((props, idx) => <Feature key={idx} {...props} />)}
       </main>
     </Layout>
   );
