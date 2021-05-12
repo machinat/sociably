@@ -72,10 +72,7 @@ TELEGRAM_SECRET_PATH= <random secret string>
 LINE_PROVIDER_ID= 1234567890
 
 # Channel id, available at: Channel Page > Basic settings > Channel ID
-LINE_BOT_CHANNEL_ID= 1234567890
-
-# Official account id, available at: Channel Page > Messaging API > Bot basic ID
-LINE_OFFICIAL_ACCOUNT_ID= @abc123
+LINE_CHANNEL_ID= 1234567890
 
 # Channel access token, available at: Channel Page > Messaging API > Channel access token 
 LINE_ACCESS_TOKEN= AaBbCcDdEe12345...

@@ -48,7 +48,7 @@ const WebAppHome = () => {
   }, []);
 
   const sayHello = (payload: string) => {
-    client.send({ type: 'hello', payload });
+    client.send({ category: 'greeting', type: 'hello', payload });
     setButtonTapped(true);
   };
   

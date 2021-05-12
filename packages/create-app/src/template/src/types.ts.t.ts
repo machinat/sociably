@@ -21,19 +21,30 @@ import type { LineEventContext } from '@machinat/line';${when(
 import type { LineServerAuthorizer } from '@machinat/line/webview';`}`}${when(
     platforms.includes('webview')
   )`
-import type { WebviewEventContext } from '@machinat/webview';`}
+import type {
+  WebviewEventContext,
+  ConnectionEventValue,
+} from '@machinat/webview';`}
 
 export type ChatEventContext =${when(platforms.includes('messenger'))`
   | MessengerEventContext`}${when(platforms.includes('telegram'))`
   | TelegramEventContext`}${when(platforms.includes('line'))`
   | LineEventContext`};
 ${when(platforms.includes('webview'))`
+
+export type HelloEventValue = {
+  category: 'greeting';
+  type: 'hello';
+  payload: string;
+}
+
 export type WebAppEventContext = WebviewEventContext<${when(
   platforms.includes('messenger')
 )`
     | MessengerServerAuthorizer`}${when(platforms.includes('telegram'))`
     | TelegramServerAuthorizer`}${when(platforms.includes('line'))`
-    | LineServerAuthorizer`}
+    | LineServerAuthorizer`},
+    HelloEventValue | ConnectionEventValue
   >;`}
 
 export type AppEventContext =

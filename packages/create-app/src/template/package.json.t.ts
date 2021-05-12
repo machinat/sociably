@@ -26,18 +26,6 @@ export default ({ projectName, platforms }: CreateAppContext) => {
       dev: 'ts-node ./src/cli/dev.ts',
     },
     dependencies: {
-      '@machinat/core': 'latest',
-      '@machinat/http': 'latest',
-      '@machinat/local-state': 'latest',
-      '@machinat/redis-state': 'latest',
-      '@machinat/stream': 'latest',
-      '@machinat/messenger': platforms.includes('messenger')
-        ? 'latest'
-        : undefined,
-      '@machinat/telegram': platforms.includes('telegram')
-        ? 'latest'
-        : undefined,
-      '@machinat/line': platforms.includes('line') ? 'latest' : undefined,
       commander: '^7.2.0',
       dotenv: '^8.2.0',
       'per-env': 'github:machinat/per-env',

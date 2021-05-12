@@ -45,7 +45,7 @@ const {
   TELEGRAM_SECRET_PATH,`}${when(platforms.includes('line'))`
   // line
   LINE_PROVIDER_ID,
-  LINE_BOT_CHANNEL_ID,
+  LINE_CHANNEL_ID,
   LINE_ACCESS_TOKEN,
   LINE_CHANNEL_SECRET,
   LINE_LIFF_ID,`}
@@ -93,7 +93,7 @@ const app = Machinat.createApp({
     Line.initModule({
       entryPath: '/webhook/line',
       providerId: LINE_PROVIDER_ID,
-      channelId: LINE_BOT_CHANNEL_ID,
+      channelId: LINE_CHANNEL_ID,
       accessToken: LINE_ACCESS_TOKEN,
       channelSecret: LINE_CHANNEL_SECRET,
       liffChannelIds: [LINE_LIFF_ID.split('-')[0]],
@@ -119,7 +119,7 @@ const app = Machinat.createApp({
     platforms.includes('line')
   )`
             lineProviderId: LINE_PROVIDER_ID,
-            lineBotChannelId: LINE_BOT_CHANNEL_ID,
+            lineBotChannelId: LINE_CHANNEL_ID,
             lineLiffId: LINE_LIFF_ID,`}
           },
         },

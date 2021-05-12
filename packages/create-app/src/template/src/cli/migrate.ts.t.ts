@@ -23,7 +23,7 @@ const {${when(platforms.includes('messenger'))`
   MESSENGER_ACCESS_TOKEN,`}${when(platforms.includes('telegram'))`
   TELEGRAM_BOT_TOKEN,`}${when(platforms.includes('line'))`
   LINE_PROVIDER_ID,
-  LINE_BOT_CHANNEL_ID,
+  LINE_CHANNEL_ID,
   LINE_ACCESS_TOKEN,`}
 } = process.env as Record<string, string>;
 
@@ -43,7 +43,7 @@ ${when(platforms.includes('telegram'))`
 ${when(platforms.includes('line'))`
     Line.initModule({
       providerId: LINE_PROVIDER_ID,
-      channelId: LINE_BOT_CHANNEL_ID,
+      channelId: LINE_CHANNEL_ID,
       accessToken: LINE_ACCESS_TOKEN,
       noServer: true,
     }),`}

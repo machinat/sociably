@@ -13,15 +13,40 @@ import thenifiedly from 'thenifiedly';
 import { format as prettierFormat, Options as PrettierOptions } from 'prettier';
 import type { CreateAppContext } from './types';
 
-const formatCode = (code: string, parser: PrettierOptions['parser']) =>
-  prettierFormat(code, { parser, singleQuote: true });
-
-const supportedPlatforms = ['messenger', 'telegram', 'line', 'webview'];
-
 type CreateAppOptions = {
   platforms: string[];
   projectPath: string;
 };
+
+const formatCode = (code: string, parser: PrettierOptions['parser']) =>
+  prettierFormat(code, { parser, singleQuote: true });
+
+const getMachinatDependencies = (platforms: string[]): string[] => {
+  const dependencies = [
+    '@machinat/core',
+    '@machinat/http',
+    '@machinat/local-state',
+    '@machinat/redis-state',
+    '@machinat/stream',
+  ];
+
+  if (platforms.includes('webview')) {
+    dependencies.push('@machinat/webview');
+  }
+  if (platforms.includes('messenger')) {
+    dependencies.push('@machinat/messenger');
+  }
+  if (platforms.includes('telegram')) {
+    dependencies.push('@machinat/telegram');
+  }
+  if (platforms.includes('line')) {
+    dependencies.push('@machinat/line');
+  }
+
+  return dependencies.map((depName) => `${depName}@latest`);
+};
+
+const supportedPlatforms = ['messenger', 'telegram', 'line', 'webview'];
 
 const createMachinatApp = async ({
   platforms,
@@ -106,13 +131,16 @@ const createMachinatApp = async ({
   );
 
   console.log(
-    `Install ${chalk.yellow('Machinat')} framwork and other dependencies...\n`
+    `Install ${chalk.yellow('Machinat')} framework and other dependencies...\n`
   );
 
-  const npmInstallProcess = spawnChildProcess('npm', ['install'], {
-    cwd: projectPath,
-    stdio: 'inherit',
-  });
+  const machinatDeps = getMachinatDependencies(platforms);
+
+  const npmInstallProcess = spawnChildProcess(
+    'npm',
+    ['install', ...machinatDeps],
+    { cwd: projectPath, stdio: 'inherit' }
+  );
 
   const installCode = await thenifiedly.tillEvent('close', npmInstallProcess);
   if (installCode !== 0) {
