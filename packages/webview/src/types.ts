@@ -37,6 +37,7 @@ export type {
   EventValue,
   ConnectEventValue,
   DisconnectEventValue,
+  ConnectionEventValue,
 } from '@machinat/websocket';
 
 export type WebviewComponent = NativeComponent<

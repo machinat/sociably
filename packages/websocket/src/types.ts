@@ -45,6 +45,8 @@ export type DisconnectEventValue = EventValue<
   { reason: string | undefined }
 >;
 
+export type ConnectionEventValue = ConnectEventValue | DisconnectEventValue;
+
 export type WebSocketEvent<
   Value extends EventValue,
   User extends null | MachinatUser
