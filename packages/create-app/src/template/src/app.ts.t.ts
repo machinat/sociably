@@ -25,7 +25,8 @@ import { FileState } from '@machinat/local-state';${when(
     platforms.includes('webview')
   )`
 import { ServerDomain, LineLiffId } from './interface';
-import nextConfigs from './webview/next.config.js'`}
+import nextConfigs from './webview/next.config.js';
+import { WebAppEventValue } from './types';`}
 
 const {
   // location
@@ -102,7 +103,8 @@ const app = Machinat.createApp({
     Webview.initModule<${when(platforms.includes('messenger'))`
       | MessengerAuthorizer`}${when(platforms.includes('telegram'))`
       | TelegramAuthorizer`}${when(platforms.includes('line'))`
-      | LineAuthorizer`}
+      | LineAuthorizer`},
+      WebAppEventValue
     >({
       webviewHost: DOMAIN,
       webviewPath: '/webview',

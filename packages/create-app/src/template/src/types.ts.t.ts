@@ -36,7 +36,9 @@ export type HelloEventValue = {
   category: 'greeting';
   type: 'hello';
   payload: string;
-}
+};
+
+export type WebAppEventValue = ConnectionEventValue | HelloEventValue;
 
 export type WebAppEventContext = WebviewEventContext<${when(
   platforms.includes('messenger')
@@ -44,7 +46,7 @@ export type WebAppEventContext = WebviewEventContext<${when(
     | MessengerServerAuthorizer`}${when(platforms.includes('telegram'))`
     | TelegramServerAuthorizer`}${when(platforms.includes('line'))`
     | LineServerAuthorizer`},
-    HelloEventValue | ConnectionEventValue
+    WebAppEventValue
   >;`}
 
 export type AppEventContext =
