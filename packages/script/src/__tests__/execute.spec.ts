@@ -984,7 +984,9 @@ describe('executing effect command', () => {
   const sideEffect = moxy();
   const effectCommand = moxy({
     type: 'effect',
-    doEffect: ({ vars }) => () => sideEffect(vars.foo),
+    doEffect: async ({ vars }) => {
+      sideEffect(vars.foo);
+    },
   });
 
   const script = mockScript([
@@ -998,7 +1000,7 @@ describe('executing effect command', () => {
     script.mock.reset();
   });
 
-  test('with sync doEffect function', async () => {
+  test('with runtime side effect', async () => {
     const result = await execute(
       scope,
       channel,
@@ -1009,12 +1011,7 @@ describe('executing effect command', () => {
     expect(result).toEqual({
       finished: true,
       returnValue: undefined,
-      contents: [
-        'hello',
-        Machinat.createElement(Machinat.Thunk, {
-          effect: expect.any(Function),
-        }),
-      ],
+      contents: ['hello'],
       stack: null,
     });
 
@@ -1025,12 +1022,10 @@ describe('executing effect command', () => {
       vars: { foo: 'bar' },
     });
 
-    expect(sideEffect.mock).not.toHaveBeenCalled();
-    (result.contents[1] as ThunkElement).props.effect();
     expect(sideEffect.mock).toHaveBeenCalledTimes(1);
   });
 
-  test('with async doEffect function', async () => {
+  test('with thunk effect', async () => {
     effectCommand.doEffect.mock.fake(async ({ vars }) => () =>
       sideEffect(vars.foo)
     );

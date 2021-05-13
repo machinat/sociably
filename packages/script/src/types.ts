@@ -243,7 +243,7 @@ export type CallElement<
 
 export type DoEffectFn<Vars> = (
   circs: ScriptCircs<Vars>
-) => ThunkEffectFn | Promise<ThunkEffectFn>;
+) => void | ThunkEffectFn | Promise<void | ThunkEffectFn>;
 
 export type EffectDoer<Vars> = MaybeContainer<DoEffectFn<Vars>>;
 

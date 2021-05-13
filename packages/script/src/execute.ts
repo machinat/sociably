@@ -194,10 +194,12 @@ const executeEffectCommand = async <Vars>(
   return {
     ...context,
     cursor: cursor + 1,
-    contents: [
-      ...contents,
-      Machinat.createElement(Machinat.Thunk, { effect: thunkEffect }),
-    ],
+    contents: thunkEffect
+      ? [
+          ...contents,
+          Machinat.createElement(Machinat.Thunk, { effect: thunkEffect }),
+        ]
+      : contents,
   };
 };
 
