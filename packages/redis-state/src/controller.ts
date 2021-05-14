@@ -46,7 +46,7 @@ export class RedisStateAccessor implements StateAccessor {
   async update<T>(
     key: string,
     updator: (value: undefined | T) => undefined | T
-  ): Promise<boolean> {
+  ): Promise<undefined | T> {
     const currentData = await thenifiedly.callMethod(
       'hget',
       this._client,
@@ -58,24 +58,19 @@ export class RedisStateAccessor implements StateAccessor {
       currentData ? this._parseValue(currentData) : undefined
     );
 
-    if (newValue) {
-      const newFieldCount = await thenifiedly.callMethod(
+    if (newValue !== undefined) {
+      await thenifiedly.callMethod(
         'hset',
         this._client,
         this._stateKey,
         key,
         this._stringifyValue(newValue)
       );
-      return !newFieldCount;
+    } else {
+      await thenifiedly.callMethod('hdel', this._client, this._stateKey, key);
     }
 
-    const deletedFieldCount = await thenifiedly.callMethod(
-      'hdel',
-      this._client,
-      this._stateKey,
-      key
-    );
-    return !!deletedFieldCount;
+    return newValue;
   }
 
   async delete(key: string): Promise<boolean> {

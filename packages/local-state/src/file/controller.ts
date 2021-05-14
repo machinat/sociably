@@ -54,13 +54,15 @@ export class FileStateAccessor implements StateAccessor {
   async update<T>(
     key: string,
     updator: (value: undefined | T) => undefined | T
-  ): Promise<boolean> {
+  ): Promise<undefined | T> {
     const data = await this._getData();
     const currentValue = this._marshaler.unmarshal(data[key]);
-    data[key] = this._marshaler.marshal(updator(currentValue));
+
+    const newValue = updator(currentValue);
+    data[key] = this._marshaler.marshal(newValue);
 
     this._updateData(data);
-    return !!currentValue;
+    return newValue;
   }
 
   async getAll<T>(): Promise<Map<string, T>> {

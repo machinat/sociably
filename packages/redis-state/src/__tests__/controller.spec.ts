@@ -122,7 +122,7 @@ describe.each([
 
   test('#update()', async () => {
     const updator = moxy(() => 'foo');
-    await expect(fooState.update('key1', updator)).resolves.toBe(false);
+    await expect(fooState.update('key1', updator)).resolves.toBe('foo');
 
     expect(client.hget.mock).toHaveBeenCalledTimes(1);
     expect(client.hset.mock).toHaveBeenCalledTimes(1);
@@ -140,7 +140,9 @@ describe.each([
     client.hget.mock.fake(resolveCallback('"foo"'));
     client.hset.mock.fake(resolveCallback(0));
 
-    await expect(fooState.update('key2', updator)).resolves.toBe(true);
+    await expect(fooState.update('key2', updator)).resolves.toEqual({
+      bar: 'baz',
+    });
     expect(client.hget.mock).toHaveBeenCalledTimes(2);
     expect(client.hset.mock).toHaveBeenCalledTimes(2);
     expect(client.hset.mock).toHaveBeenCalledWith(
@@ -156,7 +158,7 @@ describe.each([
     updator.mock.fakeReturnValue(undefined);
     client.hdel.mock.fake(resolveCallback(1));
 
-    await expect(barState.update('key3', updator)).resolves.toBe(true);
+    await expect(barState.update('key3', updator)).resolves.toBe(undefined);
     expect(client.hget.mock).toHaveBeenCalledTimes(3);
     expect(client.hset.mock).toHaveBeenCalledTimes(2);
     expect(client.hdel.mock).toHaveBeenCalledTimes(1);
@@ -263,7 +265,7 @@ describe.each([
     );
 
     const updator = moxy(() => 'bar');
-    await expect(fooState.update('key1', updator)).resolves.toBe(false);
+    await expect(fooState.update('key1', updator)).resolves.toBe('bar');
     expect(client.hset.mock).toHaveBeenCalledWith(
       `${prefix}:foo`,
       'key1',

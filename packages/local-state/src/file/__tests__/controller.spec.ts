@@ -412,7 +412,7 @@ test('custom marshaler', async () => {
   await delay(20);
   expect(marshaler.marshal.mock).toHaveBeenCalledWith(456);
 
-  await fooState.update('key1', (v: any) => v + 666);
+  await expect(fooState.update('key1', (v: any) => v + 666)).resolves.toBe(789);
   await delay(20);
   expect(marshaler.marshal.mock).toHaveBeenCalledWith(789);
 

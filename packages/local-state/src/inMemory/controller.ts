@@ -26,10 +26,8 @@ export class InMemoryStateAccessor implements StateAccessor {
   async update<T>(
     key: string,
     updator: (originalValue: undefined | T) => undefined | T
-  ): Promise<boolean> {
+  ): Promise<undefined | T> {
     const originalValue = this._stateData.get(key);
-
-    const isExisted = originalValue !== undefined;
     const nextValue = updator(originalValue);
 
     if (nextValue !== undefined) {
@@ -37,7 +35,8 @@ export class InMemoryStateAccessor implements StateAccessor {
     } else {
       this._stateData.delete(key);
     }
-    return isExisted;
+
+    return nextValue;
   }
 
   async delete(key: string): Promise<boolean> {
