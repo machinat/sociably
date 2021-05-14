@@ -18,7 +18,7 @@ export type ButtonTemplateProps = {
    * If a function is given, the return value would be used. The rendered
    * template object is passed as the first argument.
    */
-  altText: string | ((template: Record<string, unknown>) => string);
+  altText: string | ((template: Record<string, any>) => string);
   /** Image URL (Max character limit: 1,000) */
   thumbnailImageUrl?: string;
   /**
@@ -116,7 +116,7 @@ export type ConfirmTemplateProps = {
    * If a function is given, the return value would be used. The rendered
    * template object is passed as the first argument.
    */
-  altText: string | ((template: Record<string, unknown>) => string);
+  altText: string | ((template: Record<string, any>) => string);
   /**
    * Exactly 2 {@link Action} elements displayed as the buttons at the template.
    */
@@ -237,7 +237,7 @@ export type CarouselTemplateProps = {
    * If a function is given, the return value would be used. The rendered
    * template object is passed as the first argument.
    */
-  altText: string | ((template: Record<string, unknown>) => string);
+  altText: string | ((template: Record<string, any>) => string);
   /**
    * Aspect ratio of the image, rectangle: 1.51:1, square: 1:1. Default to
    * `'rectangle'`.
@@ -329,7 +329,7 @@ export type ImageCarouselTemplateProps = {
    * If a function is given, the return value would be used. The rendered
    * template object is passed as the first argument.
    */
-  altText: string | ((template: Record<string, unknown>) => string);
+  altText: string | ((template: Record<string, any>) => string);
 };
 
 /**
