@@ -11,7 +11,7 @@ import {
   ELSE,
   WHILE,
   PROMPT,
-  VARS,
+  EFFECT,
   LABEL,
   CALL,
   RETURN,
@@ -79,10 +79,10 @@ const MyScript = moxy(
 
       {() => 'sed '}
 
-      <VARS set={({ vars }) => ({ ...vars, i: 0 })} />
+      <EFFECT set={({ vars }) => ({ ...vars, i: 0 })} />
 
       <WHILE condition={({ vars: { i } }) => i < 5}>
-        <VARS set={({ vars }) => ({ ...vars, i: vars.i + 1 })} />
+        <EFFECT set={({ vars }) => ({ ...vars, i: vars.i + 1 })} />
 
         <PROMPT key="ask_5" set={promptSetter} />
         {() => 'do '}

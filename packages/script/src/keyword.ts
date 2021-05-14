@@ -5,7 +5,6 @@ import type {
   ElseIfProps,
   WhileProps,
   PromptProps,
-  VarsProps,
   LabelProps,
   CallProps,
   EffectProps,
@@ -70,11 +69,6 @@ export const PROMPT = <Vars = any, Input = any>(
 /**
  * @category Keyword
  */
-export const VARS = <Vars = any>(props: VarsProps<Vars>): null => null;
-
-/**
- * @category Keyword
- */
 export const LABEL = (props: LabelProps): null => null;
 
 /**
@@ -87,7 +81,9 @@ export const CALL = <Vars = any, Script extends AnyScriptLibrary = any>(
 /**
  * @category Keyword
  */
-export const EFFECT = <Vars = any>(props: EffectProps<Vars>): null => null;
+export const EFFECT = <Vars = any, Result = any>(
+  props: EffectProps<Vars, Result>
+): null => null;
 
 /**
  * @category Keyword

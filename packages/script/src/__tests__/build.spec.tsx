@@ -9,7 +9,7 @@ import {
   ELSE,
   WHILE,
   PROMPT,
-  VARS,
+  EFFECT,
   LABEL,
   CALL,
   RETURN,
@@ -67,7 +67,7 @@ test('built script object', () => {
       </IF>
 
       <LABEL key="end" />
-      <VARS set={(_) => ({ foo: 'bar' })} />
+      <EFFECT set={() => ({ foo: 'bar' })} />
       {() => 'ad minim veniam'}
     </>
   );

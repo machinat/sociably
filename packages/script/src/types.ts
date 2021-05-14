@@ -1,5 +1,4 @@
 import Machinat, {
-  ThunkEffectFn,
   MachinatNode,
   MachinatEmpty,
   MachinatElement,
@@ -16,7 +15,6 @@ import type {
   ELSE,
   WHILE,
   PROMPT,
-  VARS,
   LABEL,
   CALL,
   EFFECT,
@@ -166,24 +164,6 @@ export type PromptElement<Vars, Input> = MachinatElement<
   typeof PROMPT
 >;
 
-export type VarsSetFn<Vars> = (
-  circs: ScriptCircs<Vars>
-) => Vars | Promise<Vars>;
-
-export type VarsSetter<Vars> = MaybeContainer<VarsSetFn<Vars>>;
-
-/**
- * @category Keyword Props
- */
-export type VarsProps<Vars> = {
-  set: VarsSetter<Vars>;
-};
-
-/**
- * @category Keyword Element
- */
-export type VarsElement<Vars> = MachinatElement<VarsProps<Vars>, typeof VARS>;
-
 /**
  * @category Keyword Props
  */
@@ -241,24 +221,34 @@ export type CallElement<
   Script extends AnyScriptLibrary
 > = MachinatElement<CallProps<Vars, Script>, typeof CALL>;
 
-export type DoEffectFn<Vars> = (
+export type DoEffectFn<Vars, Result> = (
   circs: ScriptCircs<Vars>
-) => void | ThunkEffectFn | Promise<void | ThunkEffectFn>;
+) => Result | Promise<Result>;
 
-export type EffectDoer<Vars> = MaybeContainer<DoEffectFn<Vars>>;
+export type EffectDoer<Vars, Result> = MaybeContainer<DoEffectFn<Vars, Result>>;
+
+export type EffectSetFn<Vars, Result> = (
+  circs: ScriptCircs<Vars>,
+  doResult: Result
+) => Vars | Promise<Vars>;
+
+export type EffectSetter<Vars, Result> = MaybeContainer<
+  EffectSetFn<Vars, Result>
+>;
 
 /**
  * @category Keyword Props
  */
-export type EffectProps<Vars> = {
-  do: EffectDoer<Vars>;
+export type EffectProps<Vars, Result> = {
+  do?: EffectDoer<Vars, Result>;
+  set?: EffectSetter<Vars, Result>;
 };
 
 /**
  * @category Keyword Element
  */
-export type EffectElement<Vars> = MachinatElement<
-  EffectProps<Vars>,
+export type EffectElement<Vars, Result> = MachinatElement<
+  EffectProps<Vars, Result>,
   typeof EFFECT
 >;
 
@@ -289,7 +279,6 @@ export type ScriptElement<Vars, Input, Return> =
   | IfElement<Vars, Input, Return>
   | WhileElement<Vars, Input, Return>
   | PromptElement<Vars, Input>
-  | VarsElement<Vars>
   | LabelElement
   | CallElement<Vars, AnyScriptLibrary>
   | ReturnElement<Vars, Return>;
@@ -332,21 +321,16 @@ export type ContentCommand<Vars> = {
 export type PromptCommand<Vars, Input> = {
   type: 'prompt';
   key: string;
-  setVars: PromptSetter<Vars, Input> | null | undefined;
+  setVars?: PromptSetter<Vars, Input>;
 };
 
 export type CallCommand<Vars, Params, Return> = {
   type: 'call';
   key: string;
   script: ScriptLibrary<Params, unknown, unknown, Return, unknown>;
-  withParams: CallParamsGetter<Vars, Params> | null | undefined;
-  setVars: CallReturnSetter<Vars, Return> | null | undefined;
-  goto: undefined | string;
-};
-
-export type VarsCommand<Vars> = {
-  type: 'vars';
-  setVars: VarsSetter<Vars>;
+  withParams?: CallParamsGetter<Vars, Params>;
+  setVars?: CallReturnSetter<Vars, Return>;
+  goto?: string;
 };
 
 export type JumpCommand = {
@@ -361,14 +345,15 @@ export type JumpCondCommand<Vars> = {
   isNot: boolean;
 };
 
-export type EffectCommand<Vars> = {
+export type EffectCommand<Vars, Result> = {
   type: 'effect';
-  doEffect: EffectDoer<Vars>;
+  doEffect?: EffectDoer<Vars, Result>;
+  setVars?: EffectSetter<Vars, Result>;
 };
 
 export type ReturnCommand<Vars, Return> = {
   type: 'return';
-  getValue: ReturnValueGetter<Vars, Return> | null | undefined;
+  getValue?: ReturnValueGetter<Vars, Return>;
 };
 
 export type ScriptSegment<Vars, Input, Return> =
@@ -376,9 +361,8 @@ export type ScriptSegment<Vars, Input, Return> =
   | ConditionsSegment<Vars>
   | WhileSegment<Vars>
   | PromptCommand<Vars, Input>
-  | VarsCommand<Vars>
   | CallCommand<Vars, unknown, unknown>
-  | EffectCommand<Vars>
+  | EffectCommand<Vars, unknown>
   | LabelSegment
   | ReturnCommand<Vars, Return>;
 
@@ -388,8 +372,7 @@ export type ScriptCommand<Vars, Input, Return> =
   | JumpCondCommand<Vars>
   | PromptCommand<Vars, Input>
   | CallCommand<Vars, unknown, unknown>
-  | VarsCommand<Vars>
-  | EffectCommand<Vars>
+  | EffectCommand<Vars, unknown>
   | ReturnCommand<Vars, Return>;
 
 export type CallStatus<

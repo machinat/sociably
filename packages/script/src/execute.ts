@@ -1,4 +1,3 @@
-import Machinat from '@machinat/core';
 import invariant from 'invariant';
 import type { MachinatNode, MachinatChannel } from '@machinat/core';
 import { maybeInjectContainer, ServiceScope } from '@machinat/core/service';
@@ -7,7 +6,6 @@ import type {
   AnyScriptLibrary,
   CallStatus,
   ContentCommand,
-  VarsCommand,
   JumpCommand,
   JumpCondCommand,
   PromptCommand,
@@ -17,10 +15,8 @@ import type {
   ScriptCommand,
   ContentFn,
   ConditionMatchFn,
-  VarsSetFn,
   PromptSetFn,
   CallReturnSetFn,
-  DoEffectFn,
   VarsOfScript,
   InputOfScript,
   ReturnOfScript,
@@ -80,19 +76,6 @@ const executeContentCommand = async <Vars>(
     cursor: cursor + 1,
     contents: [...contents, newContent],
   };
-};
-
-const executeVarsCommand = async <Vars>(
-  { setVars }: VarsCommand<Vars>,
-  context: ExecuteContext<Vars>
-): Promise<ExecuteContext<Vars>> => {
-  const { cursor, vars, scope, channel } = context;
-  const updatedVars = await maybeInjectContainer<VarsSetFn<Vars>>(
-    scope,
-    setVars
-  )({ platform: channel.platform, channel, vars });
-
-  return { ...context, cursor: cursor + 1, vars: updatedVars };
 };
 
 const executeJumpCommand = <Vars>(
@@ -181,25 +164,31 @@ const executeCallCommand = async <Vars>(
 };
 
 const executeEffectCommand = async <Vars>(
-  { doEffect }: EffectCommand<Vars>,
+  { doEffect, setVars }: EffectCommand<Vars, unknown>,
   context: ExecuteContext<Vars>
 ): Promise<ExecuteContext<Vars>> => {
-  const { contents, cursor, scope, channel, vars } = context;
+  const { cursor, scope, channel, vars } = context;
 
-  const thunkEffect = await maybeInjectContainer<DoEffectFn<Vars>>(
-    scope,
-    doEffect
-  )({ platform: channel.platform, channel, vars });
+  let result: unknown;
+  if (doEffect) {
+    result = await maybeInjectContainer(
+      scope,
+      doEffect
+    )({ platform: channel.platform, channel, vars });
+  }
+
+  let newVars = vars;
+  if (setVars) {
+    newVars = await maybeInjectContainer(scope, setVars)(
+      { platform: channel.platform, channel, vars },
+      result
+    );
+  }
 
   return {
     ...context,
     cursor: cursor + 1,
-    contents: thunkEffect
-      ? [
-          ...contents,
-          Machinat.createElement(Machinat.Thunk, { effect: thunkEffect }),
-        ]
-      : contents,
+    vars: newVars,
   };
 };
 
@@ -213,8 +202,6 @@ const executeCommand = async <Vars, Input, Return>(
   switch (command.type) {
     case 'content':
       return executeContentCommand(command, context);
-    case 'vars':
-      return executeVarsCommand(command, context);
     case 'jump':
       return executeJumpCommand(command, context);
     case 'jump_cond':

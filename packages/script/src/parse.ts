@@ -12,7 +12,6 @@ import {
   ELSE,
   WHILE,
   PROMPT,
-  VARS,
   LABEL,
   CALL,
   EFFECT,
@@ -24,7 +23,6 @@ import type {
   IfProps,
   ElseIfProps,
   WhileProps,
-  VarsProps,
   LabelProps,
   PromptProps,
   CallProps,
@@ -38,7 +36,6 @@ import type {
   ScriptSegment,
   ConditionsSegment,
   WhileSegment,
-  VarsCommand,
   PromptCommand,
   LabelSegment,
   CallCommand,
@@ -149,20 +146,6 @@ const resolveWhile = (
   };
 };
 
-const resolveVars = ({
-  set: setVars,
-}: VarsProps<unknown>): VarsCommand<unknown> => {
-  invariant(
-    typeof setVars === 'function',
-    'prop "set" of <VARS/> should be a function'
-  );
-
-  return {
-    type: 'vars',
-    setVars,
-  };
-};
-
 const resolveLabel = ({ key }: LabelProps): LabelSegment => {
   invariant(key, 'prop "key" of <LABEL/> should not be empty');
 
@@ -217,10 +200,12 @@ const resolveCall = ({
 
 const resolveEffect = ({
   do: doEffect,
-}: EffectProps<unknown>): EffectCommand<unknown> => {
+  set: setVars,
+}: EffectProps<unknown, unknown>): EffectCommand<unknown, unknown> => {
   return {
     type: 'effect',
     doEffect,
+    setVars,
   };
 };
 
@@ -242,8 +227,6 @@ const resolveElement = (
         node.props as WhileProps<unknown, unknown, unknown>,
         path
       );
-    case VARS:
-      return resolveVars(node.props as VarsProps<unknown>);
     case PROMPT:
       return resolvePrompt(node.props as PromptProps<unknown, unknown>);
     case LABEL:
@@ -251,7 +234,7 @@ const resolveElement = (
     case CALL:
       return resolveCall(node.props as CallProps<unknown, AnyScriptLibrary>);
     case EFFECT:
-      return resolveEffect(node.props as EffectProps<unknown>);
+      return resolveEffect(node.props as EffectProps<unknown, unknown>);
     case RETURN:
       return resolveReturn(node.props as ReturnProps<unknown, unknown>);
     default:

@@ -9,7 +9,6 @@ import type {
   LabelSegment,
   ContentCommand,
   PromptCommand,
-  VarsCommand,
   EffectCommand,
   CallCommand,
   ReturnCommand,
@@ -37,8 +36,7 @@ type TagIntermediate = {
 type CompileIntermediate =
   | ContentCommand<unknown>
   | PromptCommand<unknown, unknown>
-  | VarsCommand<unknown>
-  | EffectCommand<unknown>
+  | EffectCommand<unknown, unknown>
   | CallCommand<unknown, unknown, unknown>
   | ReturnCommand<unknown, unknown>
   | GotoIntermediate
@@ -162,12 +160,8 @@ const compileCallCommand = ({
   ];
 };
 
-const compileVarsCommand = (
-  command: VarsCommand<unknown>
-): CompileIntermediate[] => [command];
-
 const compileEffectCommand = (
-  command: EffectCommand<unknown>
+  command: EffectCommand<unknown, unknown>
 ): CompileIntermediate[] => [command];
 
 const compileLabelSegment = ({ key }: LabelSegment): CompileIntermediate[] => {
@@ -195,8 +189,6 @@ const compileSegment = <Vars, Input, Retrun>(
       return compilePromptCommand(segment);
     case 'call':
       return compileCallCommand(segment);
-    case 'vars':
-      return compileVarsCommand(segment);
     case 'effect':
       return compileEffectCommand(segment);
     case 'label':

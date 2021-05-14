@@ -12,14 +12,14 @@ describe('compile conditions segment', () => {
               condition: () => false,
               body: [
                 { type: 'content', getContent: () => 'foo' },
-                { type: 'prompt', key: 'ask1', setVars: undefined },
+                { type: 'prompt', key: 'ask1' },
               ],
             },
             {
               condition: () => true,
               body: [
                 { type: 'content', getContent: () => 'bar' },
-                { type: 'prompt', key: 'ask2', setVars: undefined },
+                { type: 'prompt', key: 'ask2' },
               ],
             },
           ],
@@ -72,20 +72,20 @@ describe('compile conditions segment', () => {
               condition: () => false,
               body: [
                 { type: 'content', getContent: () => 'foo' },
-                { type: 'prompt', key: 'ask1', setVars: undefined },
+                { type: 'prompt', key: 'ask1' },
               ],
             },
             {
               condition: () => true,
               body: [
                 { type: 'content', getContent: () => 'bar' },
-                { type: 'prompt', key: 'ask2', setVars: undefined },
+                { type: 'prompt', key: 'ask2' },
               ],
             },
           ],
           fallbackBody: [
             { type: 'content', getContent: () => 'baz' },
-            { type: 'prompt', key: 'ask3', setVars: undefined },
+            { type: 'prompt', key: 'ask3' },
           ],
         },
       ],
@@ -141,7 +141,7 @@ it('compile while segment', () => {
             type: 'content',
             getContent: ({ vars: { target } }: any) => `hello ${target}`,
           },
-          { type: 'prompt', key: 'ask', setVars: undefined },
+          { type: 'prompt', key: 'ask' },
         ],
       },
     ],
@@ -189,7 +189,7 @@ it('compile other segments type', () => {
         setVars: () => ({ drink: 'coffee' }),
         goto: 'ordering',
       },
-      { type: 'vars', setVars: () => ({ ordered: true }) },
+      { type: 'effect', setVars: () => ({ ordered: true }) },
       { type: 'label', key: 'end' },
       { type: 'content', getContent: () => 'enjoy ur meal' },
       { type: 'effect', doEffect: () => sideEffect('done') },
@@ -214,7 +214,7 @@ it('compile other segments type', () => {
       key: 'order_something',
       goto: 'ordering',
     },
-    { type: 'vars', setVars: expect.any(Function) },
+    { type: 'effect', setVars: expect.any(Function) },
     { type: 'content', getContent: expect.any(Function) },
     { type: 'effect', doEffect: expect.any(Function) },
     { type: 'return', getValue: expect.any(Function) },
@@ -244,9 +244,9 @@ it('throw if conditions key duplicated', () => {
     compile(
       [
         { type: 'content', getContent: () => 'Who R U?' },
-        { type: 'prompt', key: 'who', setVars: undefined },
+        { type: 'prompt', key: 'who' },
         { type: 'content', getContent: () => 'Who R U exactly!?' },
-        { type: 'prompt', key: 'who', setVars: undefined },
+        { type: 'prompt', key: 'who' },
       ],
       { scriptName: 'MyScript' }
     )

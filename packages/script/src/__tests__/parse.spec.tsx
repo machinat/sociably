@@ -7,7 +7,6 @@ import {
   ELSE,
   WHILE,
   PROMPT,
-  VARS,
   LABEL,
   CALL,
   EFFECT,
@@ -310,36 +309,23 @@ describe('parse <WHILE/>', () => {
   });
 });
 
-describe('parse <VARS/>', () => {
+describe('parse <EFFECT/>', () => {
   it('parse ok', () => {
+    const doSomething = () => 'foo';
     const helloSetter = () => ({ hello: 'world' });
-    const greetedSetter = () => ({ greeted: true });
     expect(
       parse(
         <>
-          <VARS set={helloSetter} />
-          {({ vars }) => `hello ${vars.hello}`}
-          <VARS set={greetedSetter} />
+          <EFFECT do={doSomething} set={helloSetter} />
+          <EFFECT set={helloSetter} />
+          <EFFECT do={doSomething} />
         </>
       )
     ).toEqual([
-      { type: 'vars', setVars: helloSetter },
-      { type: 'content', getContent: expect.any(Function) },
-      { type: 'vars', setVars: greetedSetter },
+      { type: 'effect', setVars: helloSetter, doEffect: doSomething },
+      { type: 'effect', setVars: helloSetter },
+      { type: 'effect', doEffect: doSomething },
     ]);
-  });
-
-  it('throw if set is empty', () => {
-    expect(() =>
-      parse(<VARS set={undefined as never} />)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"set\\" of <VARS/> should be a function"`
-    );
-    expect(() =>
-      parse(<VARS set={null as never} />)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"set\\" of <VARS/> should be a function"`
-    );
   });
 });
 
@@ -534,13 +520,6 @@ test('parse <RETURN/>', () => {
   ]);
 });
 
-test('parse <EFFECT />', () => {
-  const doEffect = ({ vars }) => () => console.log(vars);
-  expect(parse(<EFFECT do={doEffect} />)).toEqual([
-    { type: 'effect', doEffect },
-  ]);
-});
-
 test('parse whole script', () => {
   expect(
     parse(
@@ -587,11 +566,11 @@ test('parse whole script', () => {
           </ELSE>
         </IF>
 
-        <VARS set={({ vars }) => ({ ...vars, foo: 'bar' })} />
+        <EFFECT set={({ vars }) => ({ ...vars, foo: 'bar' })} />
         <LABEL key="2nd" />
         {() => 'consectetur'}
 
-        <VARS set={({ vars }) => ({ ...vars, foo: 'baz' })} />
+        <EFFECT set={({ vars }) => ({ ...vars, foo: 'baz' })} />
         <LABEL key="3rd" />
         {() => <del>incididunt</del>}
 

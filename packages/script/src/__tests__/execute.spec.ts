@@ -1,4 +1,3 @@
-import Machinat, { ThunkElement } from '@machinat/core';
 import moxy from '@moxyjs/moxy';
 import { makeContainer, ServiceScope } from '@machinat/core/service';
 import execute from '../execute';
@@ -180,116 +179,6 @@ describe('executing content command', () => {
     });
     expect(getContentContainer.mock).toHaveBeenCalledTimes(1);
     expect(getContentContainer.mock).toHaveBeenCalledWith('FOO_SERVICE');
-  });
-});
-
-describe('executing vars command', () => {
-  const contentCmd = {
-    type: 'content',
-    getContent: ({ vars: { t } }) => `hi#${t}`,
-  };
-  const setVarsCmd = moxy({
-    type: 'vars',
-    setVars: ({ vars }) => ({ ...vars, t: vars.t + 1 }),
-  });
-  const script = mockScript([setVarsCmd, contentCmd, setVarsCmd, contentCmd]);
-
-  beforeEach(() => {
-    setVarsCmd.setVars.mock.reset();
-    script.mock.reset();
-  });
-
-  test('with sync setVars function', async () => {
-    await expect(
-      execute(
-        scope,
-        channel,
-        [{ script, vars: { foo: 'bar', t: 0 }, stopAt: undefined }],
-        true
-      )
-    ).resolves.toEqual({
-      finished: true,
-      returnValue: undefined,
-      contents: ['hi#1', 'hi#2'],
-      stack: null,
-    });
-    expect(setVarsCmd.setVars.mock).toHaveBeenCalledTimes(2);
-    expect(setVarsCmd.setVars.mock).toHaveBeenNthCalledWith(1, {
-      platform: 'test',
-      channel,
-      vars: { foo: 'bar', t: 0 },
-    });
-    expect(setVarsCmd.setVars.mock).toHaveBeenNthCalledWith(2, {
-      platform: 'test',
-      channel,
-      vars: { foo: 'bar', t: 1 },
-    });
-  });
-
-  test('with async setVars function', async () => {
-    setVarsCmd.setVars.mock.fake(async ({ vars }) => ({
-      ...vars,
-      t: vars.t + 1,
-    }));
-
-    await expect(
-      execute(
-        scope,
-        channel,
-        [{ script, vars: { foo: 'bar', t: 0 }, stopAt: undefined }],
-        true
-      )
-    ).resolves.toEqual({
-      finished: true,
-      returnValue: undefined,
-      contents: ['hi#1', 'hi#2'],
-      stack: null,
-    });
-    expect(setVarsCmd.setVars.mock).toHaveBeenCalledTimes(2);
-    expect(setVarsCmd.setVars.mock).toHaveBeenNthCalledWith(1, {
-      platform: 'test',
-      channel,
-      vars: { foo: 'bar', t: 0 },
-    });
-    expect(setVarsCmd.setVars.mock).toHaveBeenNthCalledWith(2, {
-      platform: 'test',
-      channel,
-      vars: { foo: 'bar', t: 1 },
-    });
-  });
-
-  test('with async setVars container', async () => {
-    const setVars = moxy(async ({ vars }) => ({ ...vars, t: vars.t + 1 }));
-    const setVarsContainer = moxy(makeContainer({ deps: [] })(() => setVars));
-    setVarsCmd.mock.getter('setVars').fake(() => setVarsContainer);
-
-    await expect(
-      execute(
-        scope,
-        channel,
-        [{ script, vars: { foo: 'bar', t: 0 }, stopAt: undefined }],
-        true
-      )
-    ).resolves.toEqual({
-      finished: true,
-      returnValue: undefined,
-      contents: ['hi#1', 'hi#2'],
-      stack: null,
-    });
-    expect(setVarsContainer.mock).toHaveBeenCalledTimes(2);
-    expect(setVarsContainer.mock).toHaveBeenCalledWith('FOO_SERVICE');
-
-    expect(setVars.mock).toHaveBeenCalledTimes(2);
-    expect(setVars.mock).toHaveBeenNthCalledWith(1, {
-      platform: 'test',
-      channel,
-      vars: { foo: 'bar', t: 0 },
-    });
-    expect(setVars.mock).toHaveBeenNthCalledWith(2, {
-      platform: 'test',
-      channel,
-      vars: { foo: 'bar', t: 1 },
-    });
   });
 });
 
@@ -981,26 +870,24 @@ describe('executing return command', () => {
 });
 
 describe('executing effect command', () => {
-  const sideEffect = moxy();
   const effectCommand = moxy({
     type: 'effect',
-    doEffect: async ({ vars }) => {
-      sideEffect(vars.foo);
-    },
+    doEffect: async () => 'baz',
+    setVars: (_, result) => ({ foo: result }),
   });
 
   const script = mockScript([
-    { type: 'content', getContent: () => 'hello' },
     effectCommand,
+    { type: 'content', getContent: () => 'hello' },
+    { type: 'return', getValue: ({ vars }) => vars },
   ]);
 
   beforeEach(() => {
-    sideEffect.mock.clear();
     effectCommand.mock.reset();
     script.mock.reset();
   });
 
-  test('with runtime side effect', async () => {
+  test('execute doEffect the setVars', async () => {
     const result = await execute(
       scope,
       channel,
@@ -1010,7 +897,7 @@ describe('executing effect command', () => {
 
     expect(result).toEqual({
       finished: true,
-      returnValue: undefined,
+      returnValue: { foo: 'baz' },
       contents: ['hello'],
       stack: null,
     });
@@ -1022,67 +909,61 @@ describe('executing effect command', () => {
       vars: { foo: 'bar' },
     });
 
-    expect(sideEffect.mock).toHaveBeenCalledTimes(1);
+    expect(effectCommand.setVars.mock).toHaveBeenCalledTimes(1);
+    expect(effectCommand.setVars.mock).toHaveBeenCalledWith(
+      { platform: 'test', channel, vars: { foo: 'bar' } },
+      'baz'
+    );
   });
 
-  test('with thunk effect', async () => {
-    effectCommand.doEffect.mock.fake(async ({ vars }) => () =>
-      sideEffect(vars.foo)
-    );
+  test('without doEffect', async () => {
+    effectCommand.mock.getter('doEffect').fakeReturnValue(undefined);
+    effectCommand.setVars.mock.fakeReturnValue({ foo: 'bar' });
 
     const result = await execute(
       scope,
       channel,
-      [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+      [{ script, vars: {}, stopAt: undefined }],
       true
     );
 
     expect(result).toEqual({
       finished: true,
-      returnValue: undefined,
-      contents: [
-        'hello',
-        Machinat.createElement(Machinat.Thunk, {
-          effect: expect.any(Function),
-        }),
-      ],
+      returnValue: { foo: 'bar' },
+      contents: ['hello'],
       stack: null,
     });
-    expect(effectCommand.doEffect.mock).toHaveBeenCalledTimes(1);
-    expect(effectCommand.doEffect.mock).toHaveBeenCalledWith({
-      platform: 'test',
-      channel,
-      vars: { foo: 'bar' },
-    });
 
-    expect(sideEffect.mock).not.toHaveBeenCalled();
-    (result.contents[1] as ThunkElement).props.effect();
-    expect(sideEffect.mock).toHaveBeenCalledTimes(1);
+    expect(effectCommand.setVars.mock).toHaveBeenCalledTimes(1);
+    expect(effectCommand.setVars.mock).toHaveBeenCalledWith(
+      { platform: 'test', channel, vars: {} },
+      undefined
+    );
   });
 
-  test('with async doEffect container', async () => {
-    const effectFn = moxy(async ({ vars }) => () => sideEffect(vars.foo));
+  test('with async doEffect/setVars container', async () => {
+    const effectFn = moxy(async () => 'baz');
     const effectContainer = moxy(makeContainer({ deps: [] })(() => effectFn));
     effectCommand.mock.getter('doEffect').fake(() => effectContainer);
 
-    const result = await execute(
-      scope,
-      channel,
-      [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-      true
-    );
+    const setVarsFn = moxy(async (_, result) => ({ foo: result }));
+    const setVarsContainer = moxy(makeContainer({ deps: [] })(() => setVarsFn));
+    effectCommand.mock.getter('setVars').fake(() => setVarsContainer);
 
-    expect(result).toEqual({
+    await expect(
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+        true
+      )
+    ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
-      contents: [
-        'hello',
-        Machinat.createElement(Machinat.Thunk, {
-          effect: expect.any(Function),
-        }),
-      ],
+      returnValue: { foo: 'baz' },
+      contents: ['hello'],
       stack: null,
     });
+
     expect(effectContainer.mock).toHaveBeenCalledTimes(1);
     expect(effectContainer.mock).toHaveBeenCalledWith('FOO_SERVICE');
 
@@ -1093,9 +974,14 @@ describe('executing effect command', () => {
       vars: { foo: 'bar' },
     });
 
-    expect(sideEffect.mock).not.toHaveBeenCalled();
-    (result.contents[1] as ThunkElement).props.effect();
-    expect(sideEffect.mock).toHaveBeenCalledTimes(1);
+    expect(setVarsContainer.mock).toHaveBeenCalledTimes(1);
+    expect(setVarsContainer.mock).toHaveBeenCalledWith('FOO_SERVICE');
+
+    expect(setVarsFn.mock).toHaveBeenCalledTimes(1);
+    expect(setVarsFn.mock).toHaveBeenCalledWith(
+      { platform: 'test', channel, vars: { foo: 'bar' } },
+      'baz'
+    );
   });
 });
 
@@ -1127,7 +1013,7 @@ describe('run whole script', () => {
       { type: 'return', getValue: ({ vars }) => vars },
       { type: 'jump_cond', condition: () => true, isNot: true, offset: 5 },
       {
-        type: 'vars',
+        type: 'effect',
         setVars: ({ vars }) => ({ ...vars, t: (vars.t || 0) + 1 }),
       },
       {
@@ -1198,11 +1084,10 @@ describe('run whole script', () => {
       vars: { foo: 'bar' },
     });
     expect(commands[6].setVars.mock).toHaveBeenCalledTimes(1);
-    expect(commands[6].setVars.mock).toHaveBeenCalledWith({
-      platform: 'test',
-      channel,
-      vars: { foo: 'bar' },
-    });
+    expect(commands[6].setVars.mock).toHaveBeenCalledWith(
+      { platform: 'test', channel, vars: { foo: 'bar' } },
+      undefined
+    );
     expect(commands[8].withParams.mock).not.toHaveBeenCalled();
     expect(commands[10].getContent.mock).not.toHaveBeenCalled();
 

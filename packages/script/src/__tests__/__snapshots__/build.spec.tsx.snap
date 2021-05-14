@@ -96,8 +96,9 @@ Array [
     "type": "jump",
   },
   Object {
+    "doEffect": undefined,
     "setVars": [Function],
-    "type": "vars",
+    "type": "effect",
   },
   Object {
     "getContent": [Function],

@@ -213,8 +213,9 @@ Array [
     "type": "conditions",
   },
   Object {
+    "doEffect": undefined,
     "setVars": [Function],
-    "type": "vars",
+    "type": "effect",
   },
   Object {
     "key": "2nd",
@@ -225,8 +226,9 @@ Array [
     "type": "content",
   },
   Object {
+    "doEffect": undefined,
     "setVars": [Function],
-    "type": "vars",
+    "type": "effect",
   },
   Object {
     "key": "3rd",
@@ -318,6 +320,7 @@ Array [
   },
   Object {
     "doEffect": [Function],
+    "setVars": undefined,
     "type": "effect",
   },
   Object {
