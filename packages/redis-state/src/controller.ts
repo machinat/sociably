@@ -43,6 +43,7 @@ export class RedisStateAccessor implements StateAccessor {
     return !newFieldCount;
   }
 
+  update<T>(key: string, updator: (value: undefined | T) => T): Promise<T>;
   async update<T>(
     key: string,
     updator: (value: undefined | T) => undefined | T

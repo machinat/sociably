@@ -4,6 +4,7 @@ import { makeInterface } from '../service';
 export interface StateAccessor {
   get<T>(key: string): Promise<undefined | T>;
   set<T>(key: string, value: T): Promise<boolean>;
+  update<T>(key: string, updator: (state: undefined | T) => T): Promise<T>;
   update<T>(
     key: string,
     updator: (state: undefined | T) => undefined | T
