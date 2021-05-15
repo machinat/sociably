@@ -97,15 +97,13 @@ describe('makeClassProvider({ deps, factory, lifetime })(klass)', () => {
     expect(MyProvider.$$multi).toBe(false);
   });
 
-  test('default $$factory, $$name and $$deps', () => {
+  test('default properties', () => {
     const ServiceKlazz = moxy(class ServiceKlazz {}, { mockMethod: false });
 
-    const MyProvider = makeClassProvider({ lifetime: 'singleton' })(
-      ServiceKlazz
-    );
+    const MyProvider = makeClassProvider()(ServiceKlazz);
 
     expect(MyProvider.$$name).toBe('ServiceKlazz');
-    expect(MyProvider.$$lifetime).toBe('singleton');
+    expect(MyProvider.$$lifetime).toBe('transient');
     expect(MyProvider.$$deps).toEqual([]);
     expect(MyProvider.$$multi).toBe(false);
 
@@ -121,7 +119,6 @@ describe('makeClassProvider({ deps, factory, lifetime })(klass)', () => {
     expect(() => {
       makeClassProvider({
         deps: [NonService],
-        factory: (_whatever) => 'boom',
         lifetime: 'singleton',
       })(class MyProvider {});
     }).toThrowErrorMatchingInlineSnapshot(
@@ -174,13 +171,12 @@ describe('makeFactoryProvider({ deps, lifetime })(factory)', () => {
     expect(providerFactory.$$lifetime).toBe('transient');
   });
 
-  test('default $$name and $$deps', () => {
+  test('default properties', () => {
     const factoryFn = (foo, bar, baz) => ({ foo, bar, baz });
 
-    const providerFactory = makeFactoryProvider({ lifetime: 'scoped' })(
-      factoryFn
-    );
+    const providerFactory = makeFactoryProvider()(factoryFn);
 
+    expect(providerFactory.$$lifetime).toBe('transient');
     expect(providerFactory.$$name).toBe('factoryFn');
     expect(providerFactory.$$deps).toEqual([]);
   });

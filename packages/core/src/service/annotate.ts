@@ -60,7 +60,7 @@ type ClassProviderOptions<T, Deps extends readonly ServiceDependency<any>[]> = {
   name?: string;
   deps?: Deps;
   factory?: ServiceFactoryFn<T, Deps>;
-  lifetime: ServiceLifetime;
+  lifetime?: ServiceLifetime;
 };
 
 type Constructor<T> = {
@@ -77,10 +77,10 @@ export const makeClassProvider = <
   Deps extends readonly ServiceDependency<any>[]
 >({
   name,
-  deps = [] as never,
   factory,
-  lifetime,
-}: ClassProviderOptions<_T, Deps>) => <
+  deps = [] as never,
+  lifetime = 'transient',
+}: ClassProviderOptions<_T, Deps> = {}) => <
   T extends _T,
   Klazz extends Constructor<T>
 >(
@@ -106,7 +106,7 @@ export const makeClassProvider = <
 type FactoryProviderOptions<Deps extends readonly ServiceDependency<any>[]> = {
   name?: string;
   deps?: Deps;
-  lifetime: ServiceLifetime;
+  lifetime?: ServiceLifetime;
 };
 
 /**
@@ -120,8 +120,8 @@ export const makeFactoryProvider = <
 >({
   name,
   deps = [] as never,
-  lifetime,
-}: FactoryProviderOptions<Deps>) => <T extends _T>(
+  lifetime = 'transient',
+}: FactoryProviderOptions<Deps> = {}) => <T extends _T>(
   factory: ServiceFactoryFn<T, Deps>
 ): ServiceProvider<_T extends {} ? _T : T, ResolveDependencies<Deps>> &
   ServiceFactoryFn<T, Deps> => {
