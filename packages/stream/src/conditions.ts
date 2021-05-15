@@ -4,10 +4,29 @@ import Stream from './stream';
 
 type PredicateFn<T> = (value: T) => boolean | Promise<boolean>;
 
-const conditions = <T>(
+function conditions<
+  T,
+  Predicators extends readonly MaybeContainer<PredicateFn<T>>[]
+>(
+  source: Stream<T>,
+  predicators: Predicators
+): {
+  [I in keyof Predicators]: Predicators[I] extends MaybeContainer<
+    (v: unknown) => v is infer U
+  >
+    ? Stream<U>
+    : Stream<T>;
+};
+
+function conditions<T>(
   source: Stream<T>,
   predicators: MaybeContainer<PredicateFn<T>>[]
-): Stream<T>[] => {
+): Stream<T>[];
+
+function conditions<T>(
+  source: Stream<T>,
+  predicators: MaybeContainer<PredicateFn<T>>[]
+): { [k: number]: Stream<T> } {
   const destinations = predicators.map(() => new Stream<T>());
 
   const injectablePredicators = predicators.map((predicateFnOrContainer) =>
@@ -41,6 +60,6 @@ const conditions = <T>(
   );
 
   return destinations;
-};
+}
 
 export default conditions;
