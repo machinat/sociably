@@ -13,17 +13,31 @@ it('exports interfaces', () => {
   `);
 });
 
-test('initModule()', () => {
-  expect(Script.initModule()).toEqual({ provisions: [ScriptProcessor] });
+describe('initModule()', () => {
+  test('create module service provisions', () => {
+    const MyScript = { name: 'Mine' /* , ... */ } as never;
+    const YourScript = { name: 'MineMine' /* , ... */ } as never;
 
-  const MyScript = { name: 'Mine' /* , ... */ } as never;
-  const YourScript = { name: 'MineMine' /* , ... */ } as never;
+    expect(Script.initModule({ libs: [MyScript, YourScript] })).toEqual({
+      provisions: expect.arrayContaining([
+        ScriptProcessor,
+        { provide: Script.LibraryList, withValue: MyScript },
+        { provide: Script.LibraryList, withValue: YourScript },
+      ]),
+    });
+  });
 
-  expect(Script.initModule({ libs: [MyScript, YourScript] })).toEqual({
-    provisions: expect.arrayContaining([
-      ScriptProcessor,
-      { provide: Script.LibraryList, withValue: MyScript },
-      { provide: Script.LibraryList, withValue: YourScript },
-    ]),
+  test('fail if lib is empty', () => {
+    expect(() =>
+      Script.initModule(undefined as never)
+    ).toThrowErrorMatchingInlineSnapshot(`"configs.libs should not be empty"`);
+
+    expect(() =>
+      Script.initModule({} as never)
+    ).toThrowErrorMatchingInlineSnapshot(`"configs.libs should not be empty"`);
+
+    expect(() =>
+      Script.initModule({ libs: [] })
+    ).toThrowErrorMatchingInlineSnapshot(`"configs.libs should not be empty"`);
   });
 });

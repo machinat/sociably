@@ -1,10 +1,11 @@
+import invariant from 'invariant';
 import type { ServiceModule } from '@machinat/core';
 import ProcessorP from './processor';
 import { LibraryListI } from './interface';
 import type { AnyScriptLibrary } from './types';
 
-type ScriptConfigs = {
-  libs?: AnyScriptLibrary[];
+type ScriptModuleConfigs = {
+  libs: AnyScriptLibrary[];
 };
 
 /**
@@ -17,14 +18,18 @@ namespace Script {
   export const LibraryList = LibraryListI;
   export type LibraryList = LibraryListI;
 
-  export const initModule = ({ libs }: ScriptConfigs = {}): ServiceModule => {
-    const libraries =
-      libs?.map((lib) => ({
-        provide: LibraryListI,
-        withValue: lib,
-      })) || [];
+  export const initModule = (configs: ScriptModuleConfigs): ServiceModule => {
+    invariant(
+      configs?.libs && configs.libs.length > 0,
+      'configs.libs should not be empty'
+    );
 
-    return { provisions: [ProcessorP, ...libraries] };
+    const libProvisions = configs.libs.map((lib) => ({
+      provide: LibraryListI,
+      withValue: lib,
+    }));
+
+    return { provisions: [ProcessorP, ...libProvisions] };
   };
 }
 
