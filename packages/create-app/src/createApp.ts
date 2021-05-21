@@ -115,9 +115,9 @@ const createMachinatApp = async ({
         await thenifiedly.call(
           writeFile,
           name ? joinPath(dirname(targetPath), name) : targetPath,
-          ext === '.ts'
+          ext === '.ts' || ext === '.tsx'
             ? formatCode(content, 'typescript')
-            : ext === '.js'
+            : ext === '.js' || ext === '.jsx'
             ? formatCode(content, 'babel')
             : ext === '.json'
             ? formatCode(content, 'json-stringify')

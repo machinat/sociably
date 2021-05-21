@@ -15,9 +15,11 @@ export default ({ projectName, platforms }: CreateAppContext) => {
 
       build: `npm run build:source${when(
         platforms.includes('webview')
-      )` && npm run build:webview`}`,
+      )` && npm run build:webview && npm run build:next`}`,
       'build:source': 'tsc',
-      'build:webview': 'next build ./src/webview',
+      'build:webview':
+        'mkdir -p ./lib/webview && cp ./src/webview/next.config.js ./lib/webview/',
+      'build:next': 'next build ./src/webview',
 
       start: 'per-env',
       'start:development': 'ts-node ./src/index.ts',
