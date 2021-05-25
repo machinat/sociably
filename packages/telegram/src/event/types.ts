@@ -1,6 +1,7 @@
 import type {
   EventBase,
   Message,
+  ChannelPost,
   MessageDetail,
   Text,
   FileDetail,
@@ -52,16 +53,27 @@ interface EventObject<Category extends string, Type extends string> {
  * A text message.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
+ * @eventCategory `'message' | 'edit_message'`
  * @eventType `'text'`
  */
-export interface TelegramTextEvent
-  extends EventObject<
-      'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
-      'text'
-    >,
+export interface TelegramTextMessageEvent
+  extends EventObject<'message' | 'edit_message', 'text'>,
     EventBase,
     Message,
+    MessageDetail,
+    Text {}
+
+/**
+ * A text message.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post' | 'edit_channel_post'`
+ * @eventType `'text'`
+ */
+export interface TelegramTextChannelPostEvent
+  extends EventObject<'channel_post' | 'edit_channel_post', 'text'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     Text {}
 
@@ -69,16 +81,29 @@ export interface TelegramTextEvent
  * Message is an animation.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
+ * @eventCategory `'message' | 'edit_message'`
  * @eventType `'animation'`
  */
-export interface TelegramAnimationEvent
-  extends EventObject<
-      'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
-      'animation'
-    >,
+export interface TelegramAnimationMessageEvent
+  extends EventObject<'message' | 'edit_message', 'animation'>,
     EventBase,
     Message,
+    MessageDetail,
+    Animation,
+    FileDetail,
+    Caption {}
+
+/**
+ * Message is an animation.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post' | 'edit_channel_post'`
+ * @eventType `'animation'`
+ */
+export interface TelegramAnimationChannelPostEvent
+  extends EventObject<'channel_post' | 'edit_channel_post', 'animation'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     Animation,
     FileDetail,
@@ -88,16 +113,29 @@ export interface TelegramAnimationEvent
  * Message is an audio file.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
+ * @eventCategory `'message' | 'edit_message'`
  * @eventType `'audio'`
  */
-export interface TelegramAudioEvent
-  extends EventObject<
-      'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
-      'audio'
-    >,
+export interface TelegramAudioMessageEvent
+  extends EventObject<'message' | 'edit_message', 'audio'>,
     EventBase,
     Message,
+    MessageDetail,
+    Audio,
+    FileDetail,
+    Caption {}
+
+/**
+ * Message is an audio file.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post' | 'edit_channel_post'`
+ * @eventType `'audio'`
+ */
+export interface TelegramAudioChannelPostEvent
+  extends EventObject<'channel_post' | 'edit_channel_post', 'audio'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     Audio,
     FileDetail,
@@ -107,16 +145,29 @@ export interface TelegramAudioEvent
  * Message is a general file.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
+ * @eventCategory `'message' | 'edit_message'`
  * @eventType `'document'`
  */
-export interface TelegramDocumentEvent
-  extends EventObject<
-      'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
-      'document'
-    >,
+export interface TelegramDocumentMessageEvent
+  extends EventObject<'message' | 'edit_message', 'document'>,
     EventBase,
     Message,
+    MessageDetail,
+    Document,
+    FileDetail,
+    Caption {}
+
+/**
+ * Message is a general file.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post' | 'edit_channel_post'`
+ * @eventType `'document'`
+ */
+export interface TelegramDocumentChannelPostEvent
+  extends EventObject<'channel_post' | 'edit_channel_post', 'document'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     Document,
     FileDetail,
@@ -126,16 +177,29 @@ export interface TelegramDocumentEvent
  * Message is a photo.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
+ * @eventCategory `'message' | 'edit_message'`
  * @eventType `'photo'`
  */
-export interface TelegramPhotoEvent
-  extends EventObject<
-      'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
-      'photo'
-    >,
+export interface TelegramPhotoMessageEvent
+  extends EventObject<'message' | 'edit_message', 'photo'>,
     EventBase,
     Message,
+    MessageDetail,
+    Photo,
+    FileDetail,
+    Caption {}
+
+/**
+ * Message is a photo.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post' | 'edit_channel_post'`
+ * @eventType `'photo'`
+ */
+export interface TelegramPhotoChannelPostEvent
+  extends EventObject<'channel_post' | 'edit_channel_post', 'photo'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     Photo,
     FileDetail,
@@ -145,16 +209,28 @@ export interface TelegramPhotoEvent
  * Message is a sticker.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
+ * @eventCategory `'message' | 'edit_message'`
  * @eventType `'sticker'`
  */
-export interface TelegramStickerEvent
-  extends EventObject<
-      'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
-      'sticker'
-    >,
+export interface TelegramStickerMessageEvent
+  extends EventObject<'message' | 'edit_message', 'sticker'>,
     EventBase,
     Message,
+    MessageDetail,
+    Sticker,
+    FileDetail {}
+
+/**
+ * Message is a sticker.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post' | 'edit_channel_post'`
+ * @eventType `'sticker'`
+ */
+export interface TelegramStickerChannelPostEvent
+  extends EventObject<'channel_post' | 'edit_channel_post', 'sticker'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     Sticker,
     FileDetail {}
@@ -163,16 +239,29 @@ export interface TelegramStickerEvent
  * Message is a video.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
+ * @eventCategory `'message' | 'edit_message'`
  * @eventType `'video'`
  */
-export interface TelegramVideoEvent
-  extends EventObject<
-      'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
-      'video'
-    >,
+export interface TelegramVideoMessageEvent
+  extends EventObject<'message' | 'edit_message', 'video'>,
     EventBase,
     Message,
+    MessageDetail,
+    Video,
+    FileDetail,
+    Caption {}
+
+/**
+ * Message is a video.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post' | 'edit_channel_post'`
+ * @eventType `'video'`
+ */
+export interface TelegramVideoChannelPostEvent
+  extends EventObject<'channel_post' | 'edit_channel_post', 'video'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     Video,
     FileDetail,
@@ -182,16 +271,28 @@ export interface TelegramVideoEvent
  * Message is a video note.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
+ * @eventCategory `'message' | 'edit_message'`
  * @eventType `'video_note'`
  */
-export interface TelegramVideoNoteEvent
-  extends EventObject<
-      'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
-      'video_note'
-    >,
+export interface TelegramVideoNoteMessageEvent
+  extends EventObject<'message' | 'edit_message', 'video_note'>,
     EventBase,
     Message,
+    MessageDetail,
+    VideoNote,
+    FileDetail {}
+
+/**
+ * Message is a video note.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post' | 'edit_channel_post'`
+ * @eventType `'video_note'`
+ */
+export interface TelegramVideoNoteChannelPostEvent
+  extends EventObject<'channel_post' | 'edit_channel_post', 'video_note'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     VideoNote,
     FileDetail {}
@@ -200,16 +301,29 @@ export interface TelegramVideoNoteEvent
  * Message is a voice message.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'edit_message' | 'channel_post' | 'edit_channel_post'`
+ * @eventCategory `'message' | 'edit_message'`
  * @eventType `'voice'`
  */
-export interface TelegramVoiceEvent
-  extends EventObject<
-      'message' | 'edit_message' | 'channel_post' | 'edit_channel_post',
-      'voice'
-    >,
+export interface TelegramVoiceMessageEvent
+  extends EventObject<'message' | 'edit_message', 'voice'>,
     EventBase,
     Message,
+    MessageDetail,
+    Voice,
+    FileDetail,
+    Caption {}
+
+/**
+ * Message is a voice message.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post' | 'edit_channel_post'`
+ * @eventType `'voice'`
+ */
+export interface TelegramVoiceChannelPostEvent
+  extends EventObject<'channel_post' | 'edit_channel_post', 'voice'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     Voice,
     FileDetail,
@@ -219,13 +333,27 @@ export interface TelegramVoiceEvent
  * Message is a shared contact.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'channel_post'`
+ * @eventCategory `'message'`
  * @eventType `'contact'`
  */
-export interface TelegramContactEvent
-  extends EventObject<'message' | 'channel_post', 'contact'>,
+export interface TelegramContactMessageEvent
+  extends EventObject<'message', 'contact'>,
     EventBase,
     Message,
+    MessageDetail,
+    Contact {}
+
+/**
+ * Message is a shared contact.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post'`
+ * @eventType `'contact'`
+ */
+export interface TelegramContactChannelPostEvent
+  extends EventObject<'channel_post', 'contact'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     Contact {}
 
@@ -233,13 +361,27 @@ export interface TelegramContactEvent
  * Message is a dice with random value from 1 to 6.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'channel_post'`
+ * @eventCategory `'message'`
  * @eventType `'dice'`
  */
-export interface TelegramDiceEvent
-  extends EventObject<'message' | 'channel_post', 'dice'>,
+export interface TelegramDiceMessageEvent
+  extends EventObject<'message', 'dice'>,
     EventBase,
     Message,
+    MessageDetail,
+    Dice {}
+
+/**
+ * Message is a dice with random value from 1 to 6.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post'`
+ * @eventType `'dice'`
+ */
+export interface TelegramDiceChannelPostEvent
+  extends EventObject<'channel_post', 'dice'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     Dice {}
 
@@ -250,7 +392,7 @@ export interface TelegramDiceEvent
  * @eventCategory `'message' | 'edit_message'`
  * @eventType `'game'`
  */
-export interface TelegramGameEvent
+export interface TelegramGameMessageEvent
   extends EventObject<'message' | 'edit_message', 'game'>,
     EventBase,
     Message,
@@ -261,13 +403,28 @@ export interface TelegramGameEvent
  * Message is a native poll.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'channel_post'`
+ * @eventCategory `'message'`
  * @eventType `'poll'`
  */
-export interface TelegramPollEvent
-  extends EventObject<'message' | 'channel_post', 'poll'>,
+export interface TelegramPollMessageEvent
+  extends EventObject<'message', 'poll'>,
     EventBase,
     Message,
+    MessageDetail,
+    MessagePoll,
+    PollDetail {}
+
+/**
+ * Message is a native poll.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post'`
+ * @eventType `'poll'`
+ */
+export interface TelegramPollChannelPostEvent
+  extends EventObject<'channel_post', 'poll'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     MessagePoll,
     PollDetail {}
@@ -276,13 +433,27 @@ export interface TelegramPollEvent
  * Message is a venue.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'channel_post'`
+ * @eventCategory `'message'`
  * @eventType `'venue'`
  */
-export interface TelegramVenueEvent
-  extends EventObject<'message' | 'channel_post', 'venue'>,
+export interface TelegramVenueMessageEvent
+  extends EventObject<'message', 'venue'>,
     EventBase,
     Message,
+    MessageDetail,
+    Venue {}
+
+/**
+ * Message is a venue.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post'`
+ * @eventType `'venue'`
+ */
+export interface TelegramVenueChannelPostEvent
+  extends EventObject<'channel_post', 'venue'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     Venue {}
 
@@ -290,13 +461,27 @@ export interface TelegramVenueEvent
  * Message is a shared location.
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'message' | 'channel_post'`
+ * @eventCategory `'message'`
  * @eventType `'location'`
  */
-export interface TelegramLocationEvent
-  extends EventObject<'message' | 'channel_post', 'location'>,
+export interface TelegramLocationMessageEvent
+  extends EventObject<'message', 'location'>,
     EventBase,
     Message,
+    MessageDetail,
+    Location {}
+
+/**
+ * Message is a shared location.
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#message).
+ * @eventCategory `'channel_post'`
+ * @eventType `'location'`
+ */
+export interface TelegramLocationChannelPostEvent
+  extends EventObject<'channel_post', 'location'>,
+    EventBase,
+    ChannelPost,
     MessageDetail,
     Location {}
 
@@ -562,21 +747,35 @@ export interface TelegramUnknownEvent
     Unknown {}
 
 export type TelegramEvent =
-  | TelegramTextEvent
-  | TelegramAnimationEvent
-  | TelegramAudioEvent
-  | TelegramDocumentEvent
-  | TelegramPhotoEvent
-  | TelegramStickerEvent
-  | TelegramVideoEvent
-  | TelegramVideoNoteEvent
-  | TelegramVoiceEvent
-  | TelegramContactEvent
-  | TelegramDiceEvent
-  | TelegramGameEvent
-  | TelegramPollEvent
-  | TelegramVenueEvent
-  | TelegramLocationEvent
+  | TelegramTextMessageEvent
+  | TelegramTextChannelPostEvent
+  | TelegramAnimationMessageEvent
+  | TelegramAnimationChannelPostEvent
+  | TelegramAudioMessageEvent
+  | TelegramAudioChannelPostEvent
+  | TelegramDocumentMessageEvent
+  | TelegramDocumentChannelPostEvent
+  | TelegramPhotoMessageEvent
+  | TelegramPhotoChannelPostEvent
+  | TelegramStickerMessageEvent
+  | TelegramStickerChannelPostEvent
+  | TelegramVideoMessageEvent
+  | TelegramVideoChannelPostEvent
+  | TelegramVideoNoteMessageEvent
+  | TelegramVideoNoteChannelPostEvent
+  | TelegramVoiceMessageEvent
+  | TelegramVoiceChannelPostEvent
+  | TelegramContactMessageEvent
+  | TelegramContactChannelPostEvent
+  | TelegramDiceMessageEvent
+  | TelegramDiceChannelPostEvent
+  | TelegramGameMessageEvent
+  | TelegramPollMessageEvent
+  | TelegramPollChannelPostEvent
+  | TelegramVenueMessageEvent
+  | TelegramVenueChannelPostEvent
+  | TelegramLocationMessageEvent
+  | TelegramLocationChannelPostEvent
   | TelegramNewChatMembersEvent
   | TelegramLeftChatMemberEvent
   | TelegramNewChatTitleEvent

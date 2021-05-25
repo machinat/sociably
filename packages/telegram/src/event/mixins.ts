@@ -52,11 +52,16 @@ export const EventBase: EventBase = {
 
 export interface Message {
   message: RawMessage;
+  user: TelegramUser;
 }
 
 export const Message: Message = {
   get message() {
     return this.payload.message;
+  },
+  get user() {
+    const fromUser = this.payload.message.from;
+    return new TelegramUser(fromUser.id, fromUser);
   },
 };
 
@@ -64,15 +69,26 @@ export const EditedMessage: Message = {
   get message() {
     return this.payload.edited_message;
   },
+  get user() {
+    const fromUser = this.payload.edited_message.from;
+    return new TelegramUser(fromUser.id, fromUser);
+  },
 };
 
-export const ChannelPost: Message = {
+export interface ChannelPost {
+  message: RawMessage;
+  user: null;
+}
+
+export const ChannelPost: ChannelPost = {
+  user: null,
   get message() {
     return this.payload.channel_post;
   },
 };
 
-export const EditedChannelPost: Message = {
+export const EditedChannelPost: ChannelPost = {
+  user: null,
   get message() {
     return this.payload.edited_channel_post;
   },
@@ -80,7 +96,6 @@ export const EditedChannelPost: Message = {
 
 export interface MessageDetail {
   channel: TelegramChat;
-  user: null | TelegramUser;
   /**	Unique message identifier inside this chat */
   messageId: number;
   /** Raw user object represent the sender, empty for messages sent to channels */
@@ -122,10 +137,6 @@ export interface MessageDetail {
 export const MessageDetail: MessageDetail = {
   get channel() {
     return new TelegramChat(this.botId, this.message.chat);
-  },
-  get user() {
-    const fromUser = this.message.from;
-    return fromUser ? new TelegramUser(fromUser.id, fromUser) : null;
   },
   get messageId(): number {
     return this.message.message_id;
