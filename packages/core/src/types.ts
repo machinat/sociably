@@ -20,6 +20,7 @@ import type {
 } from './symbol';
 
 export type { default as MachinatApp } from './app';
+export type { MachinatProfile } from './base/Profiler';
 
 export type MachinatRenderable =
   | MachinatText
