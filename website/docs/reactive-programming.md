@@ -25,7 +25,7 @@ For example, continuous messages in a moment should be treated as one. In a call
 
 `X-Machinat` is an extensional library to experiment reactive programming with conversational UI/UX. Consider an application flow for simple CRUD actions like:
 
-![Example App Control Flow](/img/example-app-control-flow.png)
+![Example App Control Flow](./assets/example-app-control-flow.png)
 
 It can be described in a reactive programming way like this:
 

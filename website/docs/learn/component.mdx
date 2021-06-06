@@ -1,0 +1,524 @@
+---
+title: UI Component
+---
+
+Now we know about how to send messages in **JSX**. In this lesson we will go
+deeper to make customized chat UI component.
+
+>　Time to accomplish: 10 minutes
+
+## Building Component
+
+### Carousel Template
+
+Let's continue to create the UI for showing todos list. But this time in a
+reusalbe and  **component**.
+
+First add a type represent the todo data:
+
+```ts title="src/types.ts"
+export type Todo = {
+  id: number;
+  name: string;
+};
+```
+
+Follow the guide of the platform you choose to create your first component:
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs
+  groupId="chat-platforms"
+  defaultValue="messenger"
+  values={[
+    {label: 'Messenger', value: 'messenger'},
+    {label: 'Telegram', value: 'telegram'},
+    {label: 'LINE', value: 'line'},
+  ]}>
+  <TabItem value="messenger">
+
+Create a `src/components/TodoList.tsx` file with following content:
+
+```tsx title="src/components/TodoList.tsx"
+import Machinat from '@machinat/core';
+import * as Messenger from '@machinat/messenger/components';
+import { Todo } from '../types';
+
+type TodoListProps = {
+  todos: Todo[];
+};
+
+const TodoList = ({ todos }: TodoListProps, { platform }) => {
+  if (todos.length === 0) {
+    return <p>You have no todo now.</p>;
+  }
+
+  const summary = <p>You have <b>{todos.length}</b> todos:</p>;
+  const finishLabel = 'Done ✓';
+
+  if (platform === 'messenger') {
+    return (
+      <>
+        {summary}
+        <Messenger.GenericTemplate>
+          {todos.slice(0, 10).map((todo) => (
+            <Messenger.GenericItem
+              title={todo.name}
+              buttons={
+                <Messenger.PostbackButton
+                  title={finishLabel}
+                  payload={JSON.stringify({ type: 'finish', id: todo.id })}
+                />
+              }
+            />
+          ))}
+        </Messenger.GenericTemplate>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {summary}
+      {todos.map((todo) => todo.name).join('\n')}
+    </>
+  );
+};
+
+export default TodoList;
+```
+
+
+   </TabItem>
+   <TabItem value="telegram">
+
+Create a `src/components/TodoList.tsx` file with following content:
+
+
+```tsx title="src/components/TodoList.tsx"
+import Machinat from '@machinat/core';
+import * as Telegram from '@machinat/telegram/components';
+import { Todo } from '../types';
+
+type TodoListProps = {
+  todos: Todo[];
+};
+
+const TodoList = ({ todos }: TodoListProps, { platform }) => {
+  if (todos.length === 0) {
+    return <p>You have no todo now.</p>;
+  }
+
+  const summary = <p>You have <b>{todos.length}</b> todos:</p>;
+  const finishLabel = 'Done ✓';
+
+  if (platform === 'telegram') {
+    return (
+      <>
+        {summary}
+        {todos.slice(0, 10).map((todo) => (
+          <Telegram.Text
+            replyMarkup={
+              <Telegram.InlineKeyboard>
+                <Telegram.CallbackButton
+                  text={finishLabel}
+                  data={JSON.stringify({ type: 'finish', id: todo.id })}
+                />
+              </Telegram.InlineKeyboard>
+            }
+          >
+            {todo.name}
+          </Telegram.Text>
+        ))}
+      </>
+    );
+  }
+
+  return (
+    <>
+      {summary}
+      {todos.map((todo) => todo.name).join('\n')}
+    </>
+  );
+};
+
+export default TodoList;
+```
+
+
+  </TabItem>
+  <TabItem value="line">
+
+Create a `src/components/TodoList.tsx` file with following content:
+
+```tsx title="src/components/TodoList.tsx"
+import Machinat from '@machinat/core';
+import * as Line from '@machinat/line/components';
+import { Todo } from '../types';
+
+type TodoListProps = {
+  todos: Todo[];
+};
+
+const TodoList = ({ todos }: TodoListProps, { platform }) => {
+  if (todos.length === 0) {
+    return <p>You have no todo now.</p>;
+  }
+
+  const summary = <p>You have <b>{todos.length}</b> todos:</p>;
+  const finishLabel = 'Done ✓';
+
+  if (platform === 'line') {
+    return (
+      <>
+        {summary}
+        <Line.CarouselTemplate
+          altText={todos.map((todo) => todo.name).join('\n')}
+        >
+          {todos.slice(1, 10).map((todo) => (
+            <Line.CarouselItem
+              actions={
+                <Line.PostbackAction
+                  label={finishLabel}
+                  data={JSON.stringify({ type: 'finish', id: todo.id })}
+                />
+              }
+            >
+              {todo.name}
+            </Line.CarouselItem>
+          ))}
+        </Line.CarouselTemplate>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {summary}
+      {todos.map((todo) => todo.name).join('\n')}
+    </>
+  );
+};
+
+export default TodoList;
+```
+
+
+  </TabItem>
+</Tabs>
+
+
+
+The component then can be used in the `handlePostback` handler like:
+
+```ts {1,5-11} title="src/handlers/handlePostback.tsx"
+import TodoList from '../components/TodoList.tsx'
+  // ...
+  if (action.type === 'list') {
+    return reply(
+      <TodoList
+        todos={[
+          { id: 1, name: 'Buy a mask' },
+          { id: 2, name: 'Wear it on' },
+          { id: 3, name: 'Be safe' },
+        ]}
+      />
+    );
+  }
+  // ...
+```
+
+
+Now tap the `Show Todos 📑` button, your bot should reply like this:
+
+<img width={400} src="../assets/list-todo-2.gif" />
+
+The `Done ✓` button would post back a `'finish'` action with the todo id, we will
+handle that at next lesson.
+
+:::tip
+For simplifiaction, this tutorial doesn't include paging when more than 10 todos.
+Check [here](https://github.com/machinat/todo-example/blob/main/src/components/ShowTodoList.tsx)
+if you are interested about that.
+:::
+
+### Component Function
+
+A component is a normal function returns the UI element to be sent.
+The first argument is an object represent the **props** of JSX element.
+
+The `TodoList` can be used like this:
+
+```tsx
+<TodoList todos={[{ id: 1, name: 'foo' }, /* ... */]} />
+```
+
+The `TodoList` function would then receive a `{ todos: [/* todos... */] }` object
+while rendering reply. The todos prop are then being used to generate the UIs like:
+
+```tsx
+<>{todos.map(todo => <p>{todo.name}</p>)}</>
+```
+
+As you can see, an array is able to be inserted in element children. This is equal
+to:
+
+```tsx
+<>
+  <p>{todo1.name}</p>
+  <p>{todo2.name}</p>
+  <p>{todo3.name}</p>
+  ...
+</>
+```
+
+### Cross-Platform in Component
+
+The second argument of the component function is an object containing infomations
+like the current platform. To make your component cross-platform, you can check
+the `platform` value and return the corresponded native UI.
+
+
+```tsx
+const TodoList = ({ todos }: TodoListProps, { platform }) => {
+  // ...
+  if (platform === 'messenger') {
+    return (
+      // messenger UI element
+    );
+  }
+  // ...
+```
+
+At the end of the function, we usually return a default general UI to support any
+new platform added in the future.
+
+```tsx
+  // ...
+  return <>{todos.map((todo) => todo.name).join('\n')}</>;
+};
+```
+
+### Wrapping Children
+
+One common technic for building component is taking children elements and
+wrap around it. Let's try it by creating a `WithRootMenu` component to reuse the
+list button:
+
+
+<Tabs
+  groupId="chat-platforms"
+  defaultValue="messenger"
+  values={[
+    {label: 'Messenger', value: 'messenger'},
+    {label: 'Telegram', value: 'telegram'},
+    {label: 'LINE', value: 'line'},
+  ]}>
+  <TabItem value="messenger">
+
+Create a new `src/components/WithRootMenu.tsx` file:
+
+```tsx title="src/components/WithRootMenu.tsx"
+import Machinat, { MachinatNode } from '@machinat/core';
+import { makeContainer } from '@machinat/core/service';
+import * as Messenger from '@machinat/messenger/components';
+
+type WithRootMenuProps = {
+  children: MachinatNode;
+  todoCount: number;
+};
+
+const WithRootMenu = (
+  { children, todoCount }: WithRootMenuProps,
+  { platform }
+) => {
+  const info = <>You have <b>{todoCount}</b> todos now.</>;
+
+  const listLabel = 'Show Todos 📑';
+  const listData = JSON.stringify({ type: 'list' });
+
+  if (platform === 'messenger') {
+    return (
+      <>
+        {children}
+        <Messenger.ButtonTemplate
+          buttons={
+            <Messenger.PostbackButton title={listLabel} payload={listData} />
+          }
+        >
+          {info}
+        </Messenger.ButtonTemplate>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {children}
+      {info}
+    </>
+  );
+};
+
+export default WithRootMenu;
+```
+
+
+  </TabItem>
+  <TabItem value="telegram">
+
+
+```tsx title="src/components/WithRootMenu.tsx"
+import Machinat, { MachinatNode } from '@machinat/core';
+import { makeContainer } from '@machinat/core/service';
+import * as Telegram from '@machinat/telegram/components';
+
+type WithRootMenuProps = {
+  children: MachinatNode;
+  todoCount: number;
+};
+
+const WithRootMenu = (
+  { children, todoCount }: WithRootMenuProps,
+  { platform }
+) => {
+  const info = <>You have <b>{todoCount}</b> todos now.</>;
+
+  const listLabel = 'Show Todos 📑';
+  const listData = JSON.stringify({ type: 'list' });
+
+  if (platform === 'telegram') {
+    return (
+      <>
+        {children}
+        <Telegram.Text
+          replyMarkup={
+            <Telegram.InlineKeyboard>
+              <Telegram.CallbackButton text={listLabel} data={listData} />
+            </Telegram.InlineKeyboard>
+          }
+        >
+          {info}
+        </Telegram.Text>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {children}
+      {info}
+    </>
+  );
+};
+
+export default WithRootMenu;
+```
+
+
+  </TabItem>
+  <TabItem value="line">
+
+
+```tsx title="src/components/WithRootMenu.tsx"
+import Machinat, { MachinatNode } from '@machinat/core';
+import { makeContainer } from '@machinat/core/service';
+import * as Line from '@machinat/line/components';
+
+type WithRootMenuProps = {
+  children: MachinatNode;
+  todoCount: number;
+};
+
+const WithRootMenu = (
+  { children, todoCount }: WithRootMenuProps,
+  { platform }
+) => {
+  const info = <>You have <b>{todoCount}</b> todos now.</>;
+
+  const listLabel = 'Show Todos 📑';
+  const listData = JSON.stringify({ type: 'list' });
+
+  if (platform === 'line') {
+    return (
+      <>
+        {children}
+        <Line.ButtonTemplate
+          altText={`You have ${todoCount} todos now.`}
+          actions={<Line.PostbackAction label={listLabel} data={listData} />}
+        >
+          {info}
+        </Line.ButtonTemplate>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {children}
+      {info}
+    </>
+  );
+};
+
+export default WithRootMenu;
+```
+
+
+  </TabItem>
+</Tabs>
+
+
+And change the `handleMessage` handler like:
+
+```tsx {2,15-17,23-25} title="src/handlers/handleMessage.tsx"
+import Machinat from '@machinat/core';
+import WithRootMenu from '../components/WithRootMenu';
+import { ChatEventContext } from '../types';
+
+const handleMessage = async ({
+  event,
+  reply,
+}: ChatEventContext & { event: { category: 'message' } }) => {
+  if (event.type === 'text') {
+    const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
+
+    if (matchingAddTodo) {
+      const todoName = matchingAddTodo[2].trim();
+      return reply(
+        <WithRootMenu todoCount={3}>
+          <p>Todo "<b>{todoName}</b>" is added!</p>
+        </WithRootMenu>
+      );
+    }
+  }
+
+  await reply(
+    <WithRootMenu todoCount={3}>
+      <p>Hello! I'm a Todo Bot 🤖</p>
+    </WithRootMenu>
+  );
+};
+
+export default handleMessage;
+```
+
+The `WithRootMenu` component can be used with additional messages it the element
+children. Like:
+
+```tsx
+<WithRootMenu todoCount={3}>
+  <p>Hello! I'm a Todo Bot 🤖</p>
+</WithRootMenu>
+```
+
+The element children `<p>Hello! I'm a Todo Bot 🤖</p>` is available as `children`
+prop in component function. We can then return it with the root menu attached
+below.
+
+---
+
+Now we are able to build complex, cross-platform and reusable chat UI with the
+customized **Component**. Next, we'll show user the real data and provide real
+features with these UI.

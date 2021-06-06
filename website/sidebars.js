@@ -1,5 +1,5 @@
 module.exports = {
-  someSidebar: {
+  docs: {
     Basic: [
       'getting-started',
       'receiving-events',
@@ -16,4 +16,12 @@ module.exports = {
       'reactive-programming',
     ],
   },
+  learn: [
+    'learn/create-app',
+    'learn/event-and-reply',
+    'learn/component',
+    'learn/service-and-state',
+    'learn/contexual-dialog',
+    'learn/webview-in-chat',
+  ],
 };

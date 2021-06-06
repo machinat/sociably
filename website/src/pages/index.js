@@ -31,8 +31,8 @@ const features = [
         UI. With Machinat, you can have both advantages by opening an embeded
         webview in the chatroom.
         <br />
-        The Hybrid App can improve the expereience of complex actions and
-        provide more enriched features.
+        The Hybrid App can improve the experience of complex actions and provide
+        more enriched features.
       </>
     ),
   },
@@ -121,9 +121,9 @@ function Home() {
           />
 
           <div className={clsx('hero__subtitle', styles.heroSubtitle)}>
-            <div>Build One In-Chat App</div>{' '}
+            <div>Build One in-Chat App</div>{' '}
             <div>
-              for ALL <NeonWords>Conversational Platforms</NeonWords>
+              For ALL <NeonWords>Conversational Platforms</NeonWords>
             </div>
           </div>
 

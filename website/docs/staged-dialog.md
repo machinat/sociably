@@ -310,7 +310,7 @@ bot.render(channel, runtime.output());
 
 Once a script is started, events would be delegated to the `Processor` until it is finished. Overall, the events is handled under a flow like this:
 
-![Script Saga Flow](/img/script-saga-flow.png)
+![Script Saga Flow](./assets/script-saga-flow.png)
 
 ### The Saga Pattern
 
