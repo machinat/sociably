@@ -15,7 +15,7 @@
     "./keywords": "./lib/keyword.js"
   },
   "scripts": {
-    "postinstall": "./polyfill-exports.js"
+    "postinstall": "node ./polyfill-exports.js"
   },
   "files": [
     "lib/*",

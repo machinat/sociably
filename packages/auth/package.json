@@ -20,7 +20,7 @@
     "polyfill-exports.js"
   ],
   "scripts": {
-    "postinstall": "./polyfill-exports.js"
+    "postinstall": "node ./polyfill-exports.js"
   },
   "license": "MIT",
   "publishConfig": {
