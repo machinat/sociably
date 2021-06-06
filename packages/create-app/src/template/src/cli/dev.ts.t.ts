@@ -48,7 +48,7 @@ async function dev() {
 
   // run server in watch mode
   nodemon({
-    exec: 'ts-node -r dotenv/config',
+    exec: './node_modules/.bin/ts-node -r dotenv/config',
     script: './src/index.ts',
     watch: './src',
     ext: 'ts,tsx',
