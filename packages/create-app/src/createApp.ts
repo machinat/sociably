@@ -139,7 +139,7 @@ const createMachinatApp = async ({
   const npmInstallProcess = spawnChildProcess(
     'npm',
     ['install', ...machinatDeps],
-    { cwd: projectPath, stdio: 'inherit' }
+    { cwd: projectPath, shell: true, stdio: 'inherit' }
   );
 
   const installCode = await thenifiedly.tillEvent('close', npmInstallProcess);
