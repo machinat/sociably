@@ -35,9 +35,7 @@ nock.disableNetConnect();
 const message = (
   <Expression
     quickReplies={
-      <QuickReply>
-        <MessageAction text="Hi!" label="HI" />
-      </QuickReply>
+      <QuickReply action={<MessageAction text="Hi!" label="HI" />} />
     }
   >
     Hello <b>LINE</b>

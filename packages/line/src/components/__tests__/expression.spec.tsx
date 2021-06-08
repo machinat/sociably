@@ -166,15 +166,16 @@ it('attach quickReply to last message object', async () => {
       <Expression
         quickReplies={
           <>
-            <QuickReply>
-              <MessageAction label="👮‍" text="Some superhero" />
-            </QuickReply>
-            <QuickReply>
-              <MessageAction label="🧚‍" text="Some fairytale bliss" />
-            </QuickReply>
-            <QuickReply imageUrl="https://somthing.just.like/this">
-              <MessageAction label="💑" text="Somebody I can kiss" />
-            </QuickReply>
+            <QuickReply
+              action={<MessageAction label="👮‍" text="Some superhero" />}
+            />
+            <QuickReply
+              action={<MessageAction label="🧚‍" text="Some fairytale bliss" />}
+            />
+            <QuickReply
+              imageUrl="https://somthing.just.like/this"
+              action={<MessageAction label="💑" text="Somebody I can kiss" />}
+            />
           </>
         }
       >
@@ -259,11 +260,7 @@ it('return null if children is empty', async () => {
   await expect(
     renderer.render(
       <Expression
-        quickReplies={[
-          <QuickReply>
-            <MessageAction text="nope" />
-          </QuickReply>,
-        ]}
+        quickReplies={[<QuickReply action={<MessageAction text="nope" />} />]}
       >
         {undefined}
       </Expression>,
