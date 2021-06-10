@@ -23,9 +23,16 @@ function useEventReducer<T>(
   const [data, dispatchEvent] = React.useReducer(reducer, initialValue);
 
   React.useEffect(() => {
-    client.onEvent((context) => {
+    const eventListener = (
+      context: ClientEventContext<AnyClientAuthorizer, EventValue>
+    ) => {
       dispatchEvent(context);
-    });
+    };
+
+    client.onEvent(eventListener);
+    return () => {
+      client.removeEventListener(eventListener);
+    };
   }, [client]);
 
   return data;
