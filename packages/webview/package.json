@@ -30,7 +30,8 @@
   "peerDependencies": {
     "@machinat/core": "^0.4.1-alpha",
     "@machinat/http": "^0.4.1-alpha",
-    "next": "^10.1.3"
+    "next": "^10.1.3",
+    "react": ">=16.6.0"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.1",
@@ -43,6 +44,7 @@
     "nanoid": "^3.1.20"
   },
   "devDependencies": {
-    "next": "^10.1.3"
+    "next": "^10.1.3",
+    "react": "^17.0.2"
   }
 }

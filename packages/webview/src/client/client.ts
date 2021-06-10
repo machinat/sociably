@@ -3,17 +3,18 @@
 import { AnyMarshalType, BaseMarshaler } from '@machinat/core/base/Marshaler';
 import AuthClient from '@machinat/auth/client';
 import type { UserOfAuthorizer, ContextOfAuthorizer } from '@machinat/auth';
+import { Connector, ClientEmitter } from '@machinat/websocket/client';
+import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant';
+import { WebviewConnection } from '../channel';
+import { createEvent } from '../utils';
 import type {
   EventInput,
   EventValue,
   ConnectEventValue,
   DisconnectEventValue,
-} from '@machinat/websocket';
-import { Connector, ClientEmitter } from '@machinat/websocket/client';
-import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant';
-import { WebviewConnection } from '../channel';
-import { createEvent } from '../utils';
-import type { WebviewEvent, AnyClientAuthorizer } from '../types';
+  AnyClientAuthorizer,
+} from '../types';
+import type { ClientEventContext } from './types';
 
 type ClientOptions<Authorizer extends AnyClientAuthorizer> = {
   /** URL string to connect WebSocket backend. Default to `"/websocket"` */
@@ -31,32 +32,10 @@ type ClientOptions<Authorizer extends AnyClientAuthorizer> = {
   mockupMode?: boolean;
 };
 
-export type ClientEventContext<
-  Authorizer extends AnyClientAuthorizer,
-  Value extends EventValue
-> = {
-  platform: string;
-  event: WebviewEvent<Value, UserOfAuthorizer<Authorizer>>;
-  authorizer: Authorizer;
-  auth: ContextOfAuthorizer<Authorizer>;
-};
-
-export type ClientEventContextOfAuthorizer<
-  Authorizer extends AnyClientAuthorizer,
-  Value extends EventValue
-> = Authorizer extends AnyClientAuthorizer
-  ? {
-      platform: Authorizer['platform'];
-      event: WebviewEvent<Value, UserOfAuthorizer<Authorizer>>;
-      authorizer: Authorizer;
-      auth: ContextOfAuthorizer<Authorizer>;
-    }
-  : never;
-
 class WebviewClient<
   Authorizer extends AnyClientAuthorizer,
   Value extends EventValue = EventValue
-> extends ClientEmitter<ClientEventContextOfAuthorizer<Authorizer, Value>> {
+> extends ClientEmitter<ClientEventContext<Authorizer, Value>> {
   private _authClient: AuthClient<Authorizer>;
   private _connector: Connector<UserOfAuthorizer<Authorizer>>;
   private _platformInput: string | undefined;
@@ -166,7 +145,7 @@ class WebviewClient<
           event: createEvent(connectEvent, this._channel, user),
           auth: this.authContext as ContextOfAuthorizer<Authorizer>,
           authorizer: this._authClient.getAuthorizer() as Authorizer,
-        } as ClientEventContextOfAuthorizer<Authorizer, Value>);
+        } as ClientEventContext<Authorizer, Value>);
       })
 
       .on('events', (values) => {
@@ -179,7 +158,7 @@ class WebviewClient<
             ),
             auth: this.authContext as ContextOfAuthorizer<Authorizer>,
             authorizer: this._authClient.getAuthorizer() as Authorizer,
-          } as ClientEventContextOfAuthorizer<Authorizer, Value>);
+          } as ClientEventContext<Authorizer, Value>);
         }
       })
 
@@ -201,7 +180,7 @@ class WebviewClient<
           ),
           auth: this.authContext as ContextOfAuthorizer<Authorizer>,
           authorizer: this._authClient.getAuthorizer() as Authorizer,
-        } as ClientEventContextOfAuthorizer<Authorizer, Value>);
+        } as ClientEventContext<Authorizer, Value>);
       })
 
       .on('error', this._emitError.bind(this));
