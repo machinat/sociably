@@ -6,7 +6,7 @@ export default ({ platforms }: CreateAppContext) =>
 import React from 'react';
 import Head from 'next/head';
 import getConfig from 'next/config';
-import WebviewClient from '@machinat/webview/client';${when(
+import WebviewClient, { useEventReducer } from '@machinat/webview/client';${when(
     platforms.includes('messenger')
   )`
 import { MessengerClientAuthorizer } from '@machinat/messenger/webview';`}${when(
@@ -36,24 +36,27 @@ const client =  new WebviewClient(
 );
 
 const WebAppHome = () => {
-  const [helloWords, setHelloWords] = React.useState(null);
+  const helloFromServer = useEventReducer(
+    client,
+    (currentHello: null | string, { event }): null | string => {
+      if (event.type === 'hello') {
+        return event.payload;
+      }
+      return currentHello;
+    },
+    null
+  );
+
   const [isButtonTapped, setButtonTapped] = React.useState(false);
 
-  React.useEffect(() => {
-    client.onEvent(({ event }) => {
-      if (event.type === 'hello') {
-        setHelloWords(event.payload);
-      }
-    });
-  }, []);
-
-  const sayHello = (payload: string) => {
-    client.send({ category: 'greeting', type: 'hello', payload });
-    setButtonTapped(true);
-  };
-  
   const Button = ({ payload }) => (
-    <button disabled={!client.isConnected} onClick={() => sayHello(payload)}>
+    <button
+      disabled={!client.isConnected}
+      onClick={() => {
+        client.send({ category: 'greeting', type: 'hello', payload });
+        setButtonTapped(true);
+      }}
+    >
       {payload}
     </button>
   );
@@ -74,7 +77,7 @@ const WebAppHome = () => {
           Get started by editing <code>src/webview/pages/index.js</code>
         </p>
 
-        <h3>{helloWords || 'connecting... '}</h3>
+        <h3>{helloFromServer || 'connecting... '}</h3>
         <p>{
           isButtonTapped
             ? 'Great! Check the chatroom 👍'
