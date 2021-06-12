@@ -124,7 +124,7 @@ const main = (event$: Stream<AppEventContext>) => {
   // ...
 ```
 
-The codes we added delegate the chats with running script process to the script
+The codes we added delegate chats with running script process to the script
 processor. Then the filtered `chat$` stream with no running process is handled
 by the original handlers.
 
@@ -133,15 +133,20 @@ by the original handlers.
 
 Now we can use the newly added script in the `handleMessage` function:
 
-```tsx {1-2,17-24} title="src/handlers/handleMessage.tsx"
-import { StartRuntime } from '@machinat/script'
+```tsx {1-2,10,13,23-26} title="src/handlers/handleMessage.tsx"
+import Script from '@machinat/script'
 import AddingTodo from '../scenes/AddingTodo';
 // ...
 
 const handleMessage = makeContainer({
-  deps: [Machinat.BaseProfiler, StateController, TodoController] as const,
+  deps: [
+    Machinat.BaseProfiler,
+    StateController,
+    TodoController,
+    Script.Processor
+  ] as const,
 })(
-  (profiler, stateController, todoController) =>
+  (profiler, stateController, todoController, processor) =>
     async ({
       event,
       reply,
@@ -150,21 +155,19 @@ const handleMessage = makeContainer({
         const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
         if (matchingAddTodo) {
           const todoName = matchingAddTodo[2].trim();
+
           if (!todoName) {
-            return reply(
-              <StartRuntime
-                script={AddingTodo}
-                channel={event.channel}
-              />
-            );
+            const runtime = await processor.start(event.channel, AddingTodo);
+            return reply(runtime.output());
           }
           // ...
 ```
 
-The `<StartRuntime />` runs `AddingTodo` script on the current chat. The script
-procssor would take over until the script exits.
+We use `processor.start(channel, script)` method to run `AddingTodo` script on
+the current chat. Then reply `runtime.output()` to send the initial messages.
+After that processor would take over the chat until the script is finished.
 
-When user doesn't specify the todo content, your bot now ask for it like this:
+Now your bot can ask for the todo name like this:
 
 <img width={400} src={require("./assets/add-todo-script-1.png").default} />
 
@@ -419,21 +422,19 @@ const app = Machinat.createApp({
 
 Then we can use the it when a user doesn't have any todo like this:
 
-```tsx {1,4,7-14} title="src/handlers/handleMessage.tsx"
+```tsx {1,4,6-9,12} title="src/handlers/handleMessage.tsx"
 import AskingFirstTodo from '../scenes/AskingFirstTodo';
 // ...
     const { data } = await todoController.getTodos(event.channel);
     const helloWords = <p>Hello, {userProfile.name}! I'm a Todo Bot 🤖</p>;
 
+    if (data.todos.length === 0) {
+      const runtime = await processor.start(event.channel, AskingFirstTodo);
+      return reply(runtime.output());
+    }
+
     return reply(
-      data.todos.length > 0 ? (
-        <RootMenu todoCount={data.todos.length}>{helloWords}</RootMenu>
-      ) : (
-        <>
-          {helloWords}
-          <StartRuntime script={AskingFirstTodo} channel={event.channel} />
-        </>
-      )
+        <WithMenu todoCount={data.todos.length}>{helloWords}</WithMenu>
     );
   }
 );
