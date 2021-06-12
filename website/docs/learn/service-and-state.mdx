@@ -18,7 +18,7 @@ Edit the `handleMessage` handler like this:
 ```tsx title="src/handlers/handleMessage.tsx"
 import Machinat from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
-import WithRootMenu from '../components/WithRootMenu';
+import WithMenu from '../components/WithMenu';
 import { ChatEventContext } from '../types';
 
 const handleMessage = makeContainer({
@@ -35,9 +35,9 @@ const handleMessage = makeContainer({
 
       const userProfile = await profiler.getUserProfile(event.user);
       await reply(
-        <WithRootMenu todoCount={3}>
+        <WithMenu todoCount={3}>
           <p>Hello, {userProfile.name}! I'm a Todo Bot 🤖</p>
-        </WithRootMenu>
+        </WithMenu>
       );
     }
 );
@@ -67,7 +67,7 @@ Add these codes to store the profile in the state:
 import Machinat, { MachinatProfile } from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
 import StateController from '@machinat/core/base/StateController';
-import WithRootMenu from '../components/WithRootMenu';
+import WithMenu from '../components/WithMenu';
 import { ChatEventContext } from '../types';
 
 const handleMessage = makeContainer({
@@ -91,9 +91,9 @@ const handleMessage = makeContainer({
       }
 
       await reply(
-        <WithRootMenu todoCount={3}>
+        <WithMenu todoCount={3}>
           <p>Hello, {userProfile.name}! I'm a Todo Bot 🤖</p>
-        </WithRootMenu>
+        </WithMenu>
       );
     }
 );
@@ -288,7 +288,7 @@ Now the `TodoController` service can be used just like the built-in services.
 Edit `handleMessage` function like this:
 
 
-```tsx {1,4,6,16} title="src/handlers/handleMessage.tsx"
+```tsx {1,4,6,16,27,29} title="src/handlers/handleMessage.tsx"
 import TodoController from '../service/TodoController';
 // ...
 const handleMessage = makeContainer({
@@ -312,7 +312,19 @@ const handleMessage = makeContainer({
           );
         }
       }
+
       // ...
+
+      const { data } = await todoController.getTodos(event.channel);
+      await reply(
+        <WithMenu todoCount={data.todos.length}>
+          <p>Hello, {userProfile.name}! I'm a Todo Bot 🤖</p>
+        </WithMenu>
+      );
+    }
+);
+
+export default handleMessage;
 ```
 
 And the listing todos and finishing todo features can be easilly completed like
@@ -338,7 +350,7 @@ import Machinat from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
 import TodoController from '../services/TodoController';
 import TodoList from '../components/TodoList'
-import WithRootMenu from '../components/WithRootMenu';
+import WithMenu from '../components/WithMenu';
 import { ChatEventContext } from '../types';
 
 const handlePostback = makeContainer({ deps: [TodoController] })(
@@ -350,7 +362,7 @@ const handlePostback = makeContainer({ deps: [TodoController] })(
       const action = JSON.parse(event.data!);
 
       if (action.type === 'list') {
-        const { data } = await todoController.getTodos(event.channel!);
+        const { data } = await todoController.getTodos(event.channel);
         return reply(
           <ShowTodoList todos={data.todos} />
         );
@@ -362,13 +374,13 @@ const handlePostback = makeContainer({ deps: [TodoController] })(
           action.id
         );
         return reply(
-          <WithRootMenu todoCount={data.todos.length}>
+          <WithMenu todoCount={data.todos.length}>
             {todo ? (
               <p>Todo "<b>{todo.name}</b>" is done!</p>
             ) : (
               <p>This todo is closed.</p>
             )}
-          </WithRootMenu>
+          </WithMenu>
         );
       }
     }
@@ -388,7 +400,7 @@ import { makeContainer } from '@machinat/core/service';
 import { AnswerCallbackQuery } from '@machinat/telegram/components';
 import TodoController from '../services/TodoController';
 import TodoList from '../components/TodoList'
-import WithRootMenu from '../components/WithRootMenu';
+import WithMenu from '../components/WithMenu';
 import { ChatEventContext } from '../types';
 
 const handlePostback = makeContainer({ deps: [TodoController] })(
@@ -416,14 +428,14 @@ const handlePostback = makeContainer({ deps: [TodoController] })(
           action.id
         );
         return reply(
-          <WithRootMenu todoCount={data.todos.length}>
+          <WithMenu todoCount={data.todos.length}>
             {answerQuery}
             {todo ? (
               <p>Todo "<b>{todo.name}</b>" is done!</p>
             ) : (
               <p>This todo is closed.</p>
             )}
-          </WithRootMenu>
+          </WithMenu>
         );
       }
 
@@ -444,7 +456,7 @@ import Machinat from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
 import TodoController from '../services/TodoController';
 import TodoList from '../components/TodoList'
-import WithRootMenu from '../components/WithRootMenu';
+import WithMenu from '../components/WithMenu';
 import { ChatEventContext } from '../types';
 
 const handlePostback = makeContainer({ deps: [TodoController] })(
@@ -456,7 +468,7 @@ const handlePostback = makeContainer({ deps: [TodoController] })(
       const action = JSON.parse(event.data!);
 
       if (action.type === 'list') {
-        const { data } = await todoController.getTodos(event.channel!);
+        const { data } = await todoController.getTodos(event.channel);
         return reply(
           <ShowTodoList todos={data.todos} />
         );
@@ -468,13 +480,13 @@ const handlePostback = makeContainer({ deps: [TodoController] })(
           action.id
         );
         return reply(
-          <WithRootMenu todoCount={data.todos.length}>
+          <WithMenu todoCount={data.todos.length}>
             {todo ? (
               <p>Todo "<b>{todo.name}</b>" is done!</p>
             ) : (
               <p>This todo is closed.</p>
             )}
-          </WithRootMenu>
+          </WithMenu>
         );
       }
     }
@@ -487,4 +499,24 @@ export default handlePostback;
   </TabItem>
 </Tabs>
 
+Now the try tap "Done ✓" button in the todos list, your bot would reply like
+this:
+
+<img width={400} src={require("./assets/finish-todo.png").default} />
+
+And check the `.state_data.json`, the todo data will be moved to the
+`"finishedTodos"` section like this:
+
+```ts
+    "finishedTodos": [
+      {
+        "id": 12,
+        "name": "Master State Service"
+      }
+    ]
+```
+
 ---
+
+Now our bot can provide real feature with data in the state. Next, we'll use
+the state to make the bot chat wiser.

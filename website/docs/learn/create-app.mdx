@@ -42,10 +42,10 @@ import TabItem from '@theme/TabItem';
   <TabItem value="messenger">
 
 
-#### 1. Create a Facebook app
-  a. Visit https://developers.facebook.com/apps, tap `Create App` to create a new app.
-  b. Go to: `App Dashboard Page` > `Settings` > `Basic`.
-  c. Copy the value of `App ID` and `App Secret`. Paste them in `.env` file in
+#### Create a Facebook app
+  1. Visit https://developers.facebook.com/apps, tap `Create App` to create a new app.
+  2. Go to: `App Dashboard Page` > `Settings` > `Basic`.
+  3. Copy the value of `App ID` and `App Secret`. Paste them in `.env` file in
      you project like:
 
 ```
@@ -53,24 +53,24 @@ MESSENGER_APP_ID= <App ID>
 MESSENGER_APP_SECRET= <App Secret>
 ```
 
-#### 2. Use Messneger in you app
+#### Use Messneger in you app
   Go to: `App Dashboard Page` > `Add a Product` > `Messenger` > `Set Up`
 
-#### 3. Create a Facebook page if you don't have one
+#### Create a Facebook page if you don't have one
   Go to: `Messenger Setting Page` > `Access Tokens` > `Create New Page`.
   Then follow the instruction to create a page for your bot.
 
-#### 4. Connect your page to the app
-  a. Go to: `Messenger Setting Page` > `Access Tokens` > `Add or Remove Pages`.
-  b. Choose the page you just created. After confirmation, you page should be
+#### Connect your page to the app
+  1. Go to: `Messenger Setting Page` > `Access Tokens` > `Add or Remove Pages`.
+  2. Choose the page you just created. After confirmation, you page should be
      listed in `Access Tokens` area.
-  c. Copy the id number of the page and paste it in `.env` file like:
+  3. Copy the id number of the page and paste it in `.env` file like:
 
 ```
 MESSENGER_PAGE_ID= <App ID>
 ```
 
-##$# 5. Get page token
+### Get page token
   Press `Generate Token` at the connected page. Copy the generated token and
   paste it in `.env` file like:
 
@@ -82,43 +82,43 @@ MESSENGER_ACCESS_TOKEN= <access token>
   <TabItem value="telegram">
 
 
-#### 1. Create a telegram bot
+#### Create a telegram bot
 
-a. Talk to [@BotFather](https://t.me/botfather) in the [Telegram](https://telegram.org/) app.
-b. Send '/newbot' command to create a bot. Follow the BotFather's instructions.
-c. Copy the token of your bot and paste it in `.env` file in your project like:
+1. Talk to [@BotFather](https://t.me/botfather) in the [Telegram](https://telegram.org/) app.
+2. Send '/newbot' command to create a bot. Follow the BotFather's instructions.
+3. Copy the token of your bot and paste it in `.env` file in your project like:
 
 ```
 TELEGRAM_BOT_TOKEN= <bot token>
 ```
 
-#### 2. Set domain of your bot
+#### Set domain of your bot
 
-a. Go to `.env` file in your project and copy the value of `DOMAIN` field. It
+1. Go to `.env` file in your project and copy the value of `DOMAIN` field. It
    should look like `xxx-xxx-123.t.machinat.dev`.
-b. Go back to [@BotFather](https://t.me/botfather) and send `/mybot` command. Choose the bot you just created.
-c. Go to `Bot Settings` > `Domain` > `Edit Domain`. Send the copied domain to BotFather.
+2. Go back to [@BotFather](https://t.me/botfather) and send `/mybot` command. Choose the bot you just created.
+3. Go to `Bot Settings` > `Domain` > `Edit Domain`. Send the copied domain to BotFather.
 
 
   </TabItem>
   <TabItem value="line">
 
 
-#### 1. Create Provider
+#### Create Provider
 
-a. Create a Provider at https://developers.line.biz/console/
-b. Under provider page, go to `Settings` > `Provider ID`. Copy the value and
+1. Create a Provider at https://developers.line.biz/console/
+2. Under provider page, go to `Settings` > `Provider ID`. Copy the value and
    paste it in `.env` file in your project like:
 
 ```
 LINE_PROVIDER_ID= <Provider ID>
 ```
 
-#### 2. Create Messaging API Channel
+#### Create Messaging API Channel
 
-a. Go to `Channels` tab at provider page. Tap '+' and create a new
+1. Go to `Channels` tab at provider page. Tap '+' and create a new
    `Messaging API` channel.
-b. Copy the values of `Channel ID` and `Channel secret` under `Basic settings`,
+2. Copy the values of `Channel ID` and `Channel secret` under `Basic settings`,
    paste them in `.env` file like:
 
 ```
@@ -126,23 +126,23 @@ LINE_CHANNEL_ID= <Channel ID>
 LINE_CHANNEL_SECRET = <Channel secret>
 ```
 
-c. Go to `Messaging API` tab, issue an access token at `Channel access token`.
+3. Go to `Messaging API` tab, issue an access token at `Channel access token`.
    Copy the token and paste it in `.env` file like:
 
 ```
 LINE_ACCESS_TOKEN= <access token>
 ```
 
-#### 3. Create a LIFF App
+#### Create a LIFF App
 
-a. Go to `Channels` tab at provider page. Tap '+' and create a new
+1. Go to `Channels` tab at provider page. Tap '+' and create a new
    `LINE Login` channel.
-b. Go to `.env` file in your project and copy the value of `DOMAIN` field. It
+2. Go to `.env` file in your project and copy the value of `DOMAIN` field. It
    should look like `xxx-xxx-123.t.machinat.dev`.
-c. Go to `LIFF` tab, create a new LIFF app.
-d. Fill the `Endpoint URL` with `https://{DOMAIN}/webview?platform=line`
-e. Select the `profile` option of `Scopes`.
-c. Copy the `LIFF ID` of the created LIFF app, paste it in `.env` file like:
+3. Go to `LIFF` tab, create a new LIFF app.
+4. Fill the `Endpoint URL` with `https://{DOMAIN}/webview?platform=line`
+5. Select the `profile` option of `Scopes`.
+6. Copy the `LIFF ID` of the created LIFF app, paste it in `.env` file like:
 
 ```
 LINE_LIFF_ID= <LIFF ID>
@@ -187,7 +187,7 @@ Let's change the reply a little bit. Open file `src/handlers/handleMessage.tsx`
 and edit the content to this:
 
 
-```tsx {8} title="src/handlers/handleMessage.tsx"
+```tsx title="src/handlers/handleMessage.tsx"
 import Machinat from '@machinat/core';
 import { ChatEventContext } from '../types';
 
@@ -203,7 +203,7 @@ export default handleMessage;
 
 Your bot should now reply like this:
 
-<img width="400" src="../assets/hello-todo-bot.png" />
+<img width={400} src={require("./assets/hello-todo-bot.png").default} />
 
 ---
 

@@ -232,7 +232,7 @@ import TodoList from '../components/TodoList.tsx'
 
 Now tap the `Show Todos 📑` button, your bot should reply like this:
 
-<img width={400} src="../assets/list-todo-2.gif" />
+<img width={400} src={require("./assets/list-todo-2.gif").default} />
 
 The `Done ✓` button would post back a `'finish'` action with the todo id, we will
 handle that at next lesson.
@@ -303,7 +303,7 @@ new platform added in the future.
 ### Wrapping Children
 
 One common technic for building component is taking children elements and
-wrap around it. Let's try it by creating a `WithRootMenu` component to reuse the
+wrap around it. Let's try it by creating a `WithMenu` component to reuse the
 list button:
 
 
@@ -317,20 +317,20 @@ list button:
   ]}>
   <TabItem value="messenger">
 
-Create a new `src/components/WithRootMenu.tsx` file:
+Create a new `src/components/WithMenu.tsx` file:
 
-```tsx title="src/components/WithRootMenu.tsx"
+```tsx title="src/components/WithMenu.tsx"
 import Machinat, { MachinatNode } from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
 import * as Messenger from '@machinat/messenger/components';
 
-type WithRootMenuProps = {
+type WithMenuProps = {
   children: MachinatNode;
   todoCount: number;
 };
 
-const WithRootMenu = (
-  { children, todoCount }: WithRootMenuProps,
+const WithMenu = (
+  { children, todoCount }: WithMenuProps,
   { platform }
 ) => {
   const info = <>You have <b>{todoCount}</b> todos now.</>;
@@ -361,7 +361,7 @@ const WithRootMenu = (
   );
 };
 
-export default WithRootMenu;
+export default WithMenu;
 ```
 
 
@@ -369,18 +369,18 @@ export default WithRootMenu;
   <TabItem value="telegram">
 
 
-```tsx title="src/components/WithRootMenu.tsx"
+```tsx title="src/components/WithMenu.tsx"
 import Machinat, { MachinatNode } from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
 import * as Telegram from '@machinat/telegram/components';
 
-type WithRootMenuProps = {
+type WithMenuProps = {
   children: MachinatNode;
   todoCount: number;
 };
 
-const WithRootMenu = (
-  { children, todoCount }: WithRootMenuProps,
+const WithMenu = (
+  { children, todoCount }: WithMenuProps,
   { platform }
 ) => {
   const info = <>You have <b>{todoCount}</b> todos now.</>;
@@ -413,7 +413,7 @@ const WithRootMenu = (
   );
 };
 
-export default WithRootMenu;
+export default WithMenu;
 ```
 
 
@@ -421,18 +421,18 @@ export default WithRootMenu;
   <TabItem value="line">
 
 
-```tsx title="src/components/WithRootMenu.tsx"
+```tsx title="src/components/WithMenu.tsx"
 import Machinat, { MachinatNode } from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
 import * as Line from '@machinat/line/components';
 
-type WithRootMenuProps = {
+type WithMenuProps = {
   children: MachinatNode;
   todoCount: number;
 };
 
-const WithRootMenu = (
-  { children, todoCount }: WithRootMenuProps,
+const WithMenu = (
+  { children, todoCount }: WithMenuProps,
   { platform }
 ) => {
   const info = <>You have <b>{todoCount}</b> todos now.</>;
@@ -462,7 +462,7 @@ const WithRootMenu = (
   );
 };
 
-export default WithRootMenu;
+export default WithMenu;
 ```
 
 
@@ -474,7 +474,7 @@ And change the `handleMessage` handler like:
 
 ```tsx {2,15-17,23-25} title="src/handlers/handleMessage.tsx"
 import Machinat from '@machinat/core';
-import WithRootMenu from '../components/WithRootMenu';
+import WithMenu from '../components/WithMenu';
 import { ChatEventContext } from '../types';
 
 const handleMessage = async ({
@@ -487,38 +487,42 @@ const handleMessage = async ({
     if (matchingAddTodo) {
       const todoName = matchingAddTodo[2].trim();
       return reply(
-        <WithRootMenu todoCount={3}>
+        <WithMenu todoCount={3}>
           <p>Todo "<b>{todoName}</b>" is added!</p>
-        </WithRootMenu>
+        </WithMenu>
       );
     }
   }
 
   await reply(
-    <WithRootMenu todoCount={3}>
+    <WithMenu todoCount={3}>
       <p>Hello! I'm a Todo Bot 🤖</p>
-    </WithRootMenu>
+    </WithMenu>
   );
 };
 
 export default handleMessage;
 ```
 
-The `WithRootMenu` component can be used with additional messages it the element
+The `WithMenu` component can be used with additional messages it the element
 children. Like:
 
 ```tsx
-<WithRootMenu todoCount={3}>
+<WithMenu todoCount={3}>
   <p>Hello! I'm a Todo Bot 🤖</p>
-</WithRootMenu>
+</WithMenu>
 ```
 
 The element children `<p>Hello! I'm a Todo Bot 🤖</p>` is available as `children`
 prop in component function. We can then return it with the root menu attached
 below.
 
+Now when your bot saying hello, the menu will be attached like this:
+
+<img width={400} src={require("./assets/hello-with-menu.png").default} />
+
 ---
 
-Now we are able to build complex, cross-platform and reusable chat UI with the
-customized **Component**. Next, we'll show user the real data and provide real
+We are able to build complex, cross-platform and reusable chat UI with the
+customized **component** now. Next, we'll show user the real data and provide real
 features with these UI.

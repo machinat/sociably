@@ -43,7 +43,8 @@ export default handleMessage;
 Now your bot can accept `add todo <name>` command like this:
 
 
-<img width="400" src="../assets/add-todo-say-hello.png" />
+<img width={400} src={require("./assets/add-todo-say-hello.png").default} />
+
 
 ### `event` Object
 
@@ -75,7 +76,7 @@ if (event.type === 'text') {
 ## Reply Message
 
 The `reply` function from the context sends messages back to the chatroom. The
-easiest way to use it is replying a string like:
+easiest way to use it is replying a string like this:
 
 ```tsx
 await reply('hello world');
@@ -90,6 +91,15 @@ text children.
 Despite plain text, the children can contain other elements like `<b>...</b>`.
 An expression can also be inserted with the `{todoName}` syntax.
 
+:::info
+To use the JSX syntax in typescript, you must use `.tsx` for file extension.
+And import `Machinat` at the beginning of the file like this:
+
+```ts
+import Machinat from '@machinat/core';
+```
+:::
+
 
 ### Formatting Text
 
@@ -98,7 +108,7 @@ html. Try change the tag to `i`, `s` and `code` and see what's different. These
 tags are **textual** and work like plain text so they can be placed in
 `<p></p>` element.
 
-> <img width="250" src="../assets/hello-with-formatting-text.png" />
+> <img width={250} src={require("./assets/hello-with-formatting-text.png").default} />
 >
 > `<b>Hello!</b> <s>I'm a</s> <i>Todo</i> <code>Bot 🤖</code>` in desktop **Messenger**.
 
@@ -142,7 +152,7 @@ The element `<></>` with empty tag is called _Fragment_. You can use it to group
 serveral messages together and send them once. The result would look like:
 
 
-<img width="400" src="../assets/add-todo-order-pizza.png" />
+<img width={400} src={require("./assets/add-todo-order-pizza.png").default} />
 
 
 With _Fragment_, sending messages is more like sketching up a view to user. You
@@ -330,7 +340,7 @@ const handleMessage = async ({
 
 Now a button should be attached to the reply of bot like:
 
-<img width="400" src="../assets/add-todo-with-list-button.png" />
+<img width={400} src={require("./assets/add-todo-with-list-button.png").default} />
 
 
 ### Props
@@ -436,7 +446,7 @@ const handlePostback = async ({
   event,
   reply,
 }: ChatEventContext & { event: { type: 'callback_query' } } ) => {
-  const action = JSON.parse(event.data);
+  const action = JSON.parse(event.data!);
   const answerQuery = <AnswerCallbackQuery queryId={event.queryId} />;
 
   if (action.type === 'list') {
@@ -534,9 +544,9 @@ const main = (event$: Stream<AppEventContext>): void => {
 
 Try tap the `Show Todos 📑` button in the chat room and you should see:
 
-<img width="400" src="../assets/list-todo-1.png" />
+<img width={400} src={require("./assets/list-todo-1.png").default} />
 
-### Stream in `main`
+### Stream Flow in `main`
 
 In the `main` function, the `event$` argument is a **stream** of all events. You
 can `.subscribe()` the stream to listen events, or `.pipe()` it to create a new
@@ -549,16 +559,16 @@ filtered stream is then handled by the `handlePostback` handler.
 event$
   .pipe(
     filter((ctx) => {
-      //
+      // return `true` and allow only 'postback' event to pass
       return ctx.event.type === 'postback'
     })
   )
   .subscribe(({ event }) => {
-
+    // receive only 'postback' event here
   });
 ```
 
 ---
 
-Our bot can receive events from user and reply simple answer. Next, we'll learn
+Our bot can receive events from user and reply simple answer now. Next, we'll learn
 how to make more complex UI for more powerful features.

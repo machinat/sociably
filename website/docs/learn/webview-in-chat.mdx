@@ -1,11 +1,15 @@
-Although most chat platforms provide some graphical UI in the chatroom. But web
-app still performs better on showing large data or doing somplex operations. In
-this lesson, you will learn how to embed a webview in the chatroom.
+---
+title: Webview in Chat
+---
 
-###
+We have learned how to ship features in a conversation. But sometimes chat UIs
+are not very suitable for all the features.
+In this lesson, you'll learn how to open an embeded webview and integrate it
+with your bot.
 
-To make the UI as easiest as possible, we haven't provide a way to delete todos.
-A webview is perfect to list all todos and provide a GUI for deleting.
+>　Time to accomplish: 10 minutes
+
+### Entry to Webview
 
 Most chat platforms need special API to display an embedded webview in the
 chatroom. Follow the guide of the platform you choose to add a button for
@@ -21,21 +25,21 @@ opening webview:
   ]}>
   <TabItem value="messenger">
 
-Add the following codes in the `WithRootMenu` component:
+Add the following codes in the `WithMenu` component:
 
-```tsx {4,20,28-38} title="src/components/WithRootMenu.tsx"
+```tsx {4,20,28-38} title="src/components/WithMenu.tsx"
 import Machinat, { MachinatNode } from '@machinat/core';
 import * as Messenger from '@machinat/messenger/components';
 
 const { DOMAIN } = process.env;
 
-type WithRootMenuProps = {
+type WithMenuProps = {
   children: MachinatNode;
   todoCount: number;
 };
 
-const WithRootMenu =  (
-  { children, todoCount }: WithRootMenuProps,
+const WithMenu =  (
+  { children, todoCount }: WithMenuProps,
   { platform }
 ) => {
   const info = <>You have <b>{todoCount}</b> todos now.</>;
@@ -73,7 +77,7 @@ const WithRootMenu =  (
   return <>{children}{info}</>;
 }
 
-export default WithRootMenu;
+export default WithMenu;
 ```
 
 `Messenger.UrlButton` component add a button that opens a web page when user tap it.
@@ -86,21 +90,21 @@ at. And the `platform=messenger` querystring tells webview client to adopt
   </TabItem>
   <TabItem value="telegram">
 
-Add the following codes in the `WithRootMenu` component:
+Add the following codes in the `WithMenu` component:
 
-```tsx {4,20,30-34} title="src/components/WithRootMenu.tsx"
+```tsx {4,20,30-34} title="src/components/WithMenu.tsx"
 import Machinat, { MachinatNode } from '@machinat/core';
 import * as Telegram from '@machinat/telegram/components';
 
 const { DOMAIN } = process.env;
 
-type WithRootMenuProps = {
+type WithMenuProps = {
   children: MachinatNode;
   todoCount: number;
 };
 
-const WithRootMenu =  (
-  { children, todoCount }: WithRootMenuProps,
+const WithMenu =  (
+  { children, todoCount }: WithMenuProps,
   { platform }
 ) => {
   const info = <>You have <b>{todoCount}</b> todos now.</>;
@@ -135,7 +139,7 @@ const WithRootMenu =  (
   return <>{children}{info}</>;
 }
 
-export default WithRootMenu;
+export default WithMenu;
 ```
 
 `Telegram.UrlButton` component add a button that opens a web page when user tap it.
@@ -148,21 +152,21 @@ our web server is located at.
   </TabItem>
   <TabItem value="line">
 
-  Add the following codes in the `WithRootMenu` component:
+  Add the following codes in the `WithMenu` component:
 
-```tsx {4,20,29-35} title="src/components/WithRootMenu.tsx"
+```tsx {4,20,29-35} title="src/components/WithMenu.tsx"
 import Machinat, { MachinatNode } from '@machinat/core';
 import * as Line from '@machinat/line/components';
 
 const { LINE_LIFF_ID } = process.env;
 
-type WithRootMenuProps = {
+type WithMenuProps = {
   children: MachinatNode;
   todoCount: number;
 };
 
-const WithRootMenu =  (
-  { children, todoCount }: WithRootMenuProps,
+const WithMenu =  (
+  { children, todoCount }: WithMenuProps,
   { platform }
 ) => {
   const info = <>You have <b>{todoCount}</b> todos now.</>;
@@ -197,7 +201,7 @@ const WithRootMenu =  (
   return <>{children}{info}</>;
 }
 
-export default WithRootMenu;
+export default WithMenu;
 ```
 
 `Line.UriAction` component add a button that opens a web page when user tap it.
@@ -214,84 +218,64 @@ adopt `line` platform for login.
 
 Now an `Edit 📤` button should be added in the root menu like this:
 
-<img width={400} src="../assets/webview-button.png" />
+<img width={400} src={require("./assets/webview-button.png").default} />
 
 Try tap the button and you should see the default webview is already working!
 
 
-### Webview Platform
+### Webview Client
 
-The webview server is hosted by the `@machinat/webview` platform. Like the chat
-platforms, your app can receive events from webview client and send the answer
-events back.
-
-To send the todos data to client, edit the `handleWebview` file like this:
-
-```tsx title="src/handlers/handleWebview.tsx"
-import { makeContainer } from '@machinat/core/service';
-import TodoController from '../services/TodoController';
-import { WebAppEventContext } from '../types';
-
-const handleWebview = makeContainer({
-  deps: [TodoController],
-})(
-  (todoController) =>
-    async ({ event, bot, metadata: { auth } }: WebAppEventContext) => {
-      if (event.type === 'connect') {
-        const { data } = await todoController.getTodos(auth.channel);
-
-        return bot.send(event.channel, {
-          category: 'webview_push',
-          type: 'app_data',
-          payload: { data },
-        });
-      }
-    }
-);
-
-export default handleWebview;
-```
-
-After a webview connection is opened and authorized, our app would receive a
-`connect` event. It's a good timing to send the todos data to webview client.
-
-`event.channel` here refer to a connection to the webcview client. We can use
-the `bot.send(connection, event)` method to send the push event to client side.
-
-The `metadata.auth` object contains the authorization infos about the connection.
-`auth.channel` here refer to the original chatroom where user comes from.
-So we can get the todos state data of the chat with `TodoController`.
-
-
-### Webview Page
-
-The front-end of webview is powered [Next.js](https://nextjs.org/).
-It helps us to build a modern web app in a simple but ...?????????????????/
-
-
-:::info
-We'll use some Next.js and React.js feature in the front-end codes.
-:::
+The web front-end codes of the webview is located at `src/webview/` folder. Check
+`src/webview/pages/index.tsx` file and you shoud see the webview client is
+contstructed like this:
 
 
 ```tsx title="src/webview/pages/index.tsx"
 // ...
+const client = new WebviewClient(
+  typeof window === 'undefined'
+    ? { mockupMode: true, authorizers: [] }
+    : {
+        authorizers: [
+          new MessengerClientAuthorizer({
+            appId: publicRuntimeConfig.messengerAppId,
+          }),
+          new TelegramClientAuthorizer(),
+          new LineClientAuthorizer({
+            liffId: publicRuntimeConfig.lineLiffId,
+          }),
+        ],
+      }
+);
+// ...
+```
+
+When a webview page is opened, the `client` would do this two things:
+
+1. Log in user to the chosen chat platform. With the user info, we can provide
+   features that integrated with chatroom.
+
+2. Create a `WebSocket` connection to communicate with server. We can then use
+   client to send events to server and receive event from it.
+
+### Webview Page
+
+Let's try display the todos in webview. Edit the `WebAppHome` page function like
+this:
+
+```tsx title="src/webview/pages/index.tsx"
+// ...
 const WebAppHome = () => {
-  const [data, dispatchEvent] = React.useReducer(
-    (data: null | TodoState, event: WebviewPush): TodoState => {
+  const data = useEventReducer(
+    client,
+    (currentData: null | TodoState, { event }): null | TodoState => {
       if (event.type === 'app_data') {
         return event.payload.data;
       }
-      return data;
+      return currentData;
     },
     null
   );
-
-  React.useEffect(() => {
-    client.onEvent(({ event }) => {
-      dispatchEvent(event);
-    });
-  }, []);
 
   return (
     <div>
@@ -324,25 +308,91 @@ const WebAppHome = () => {
 // ...
 ```
 
-
 :::info
-The JSX syntax in the webview page is React.js element
+The JSX syntax in the web front-end is [React.js](https://reactjs.org) element.
+While the _Machinat_ JSX elements are rendered into chat messages, the _React_
+JSX elements are rendered into html content of the web page.
 :::
 
-```tsx {2-19,28-35,45,50,56} title="src/webview/pages/index.tsx"
+
+The `useEventReducer` [hook](https://reactjs.org/docs/hooks-reference.htm)
+is the simplest way to handle events from server. Every time a event is received,
+the reducer function would be called to update data and the view.
+
+```ts
+const data = useEventReducer(client, reducerFn, initialValue);
+```
+
+Before the `'app_data'` event from server is recevied, the data value would be
+`null`. Try open the webview now and you should see the page without todos:
+
+
+<img width={500} src={require("./webview-1.png").default} />
+
+
+### Handle Event From Server
+
+On the server side, the events from client side are received just like other
+chat platforms. To send todos data to front-end, edit the `handleWebview`
+handler like this:
+
+```tsx title="src/handlers/handleWebview.tsx"
+import { makeContainer } from '@machinat/core/service';
+import TodoController from '../services/TodoController';
+import { WebAppEventContext } from '../types';
+
+const handleWebview = makeContainer({
+  deps: [TodoController],
+})(
+  (todoController) =>
+    async ({ event, bot, metadata: { auth } }: WebAppEventContext) => {
+      if (event.type === 'connect') {
+        const { data } = await todoController.getTodos(auth.channel);
+
+        return bot.send(event.channel, {
+          category: 'webview_push',
+          type: 'app_data',
+          payload: { data },
+        });
+      }
+    }
+);
+
+export default handleWebview;
+```
+
+After a webview connection is established, our app would receive a
+`'connect'` event. `event.channel` here refer to a connection to the webcview client.
+We can use `bot.send(connection, eventObj)` method to send the data to client side.
+
+The `metadata.auth` object contains the authorization infos about the connection.
+`auth.channel` here refer to the original chatroom where user comes from.
+We can use it to get the todos data of the chat with `TodoController`.
+
+Now the webview should display the todos you have like this:
+
+<img width={500} src={require("./webview-1.png").default} />
+
+
+### Send Event on Client Side
+
+The webview is good for serving more complex view and operation. We can easily
+add a button to delete the todo by adding these codes:
+
+```tsx {2-19,35,40,47} title="src/webview/pages/index.tsx"
 // ...
 const TodoRow = ({ todo }) => (
     <tr>
       <td style={{ verticalAlign: 'middle' }}>{todo.name}</td>
       <td style={{ textAlign: 'right' }}>
         <button
-          onClick={() =>
+          onClick={() => {
             client.send({
-              category: 'action',
+              category: 'webview_action',
               type: 'delete_todo',
               payload: { id: todo.id },
             })
-          }
+          }}
         >
           ❌
         </button>
@@ -351,27 +401,17 @@ const TodoRow = ({ todo }) => (
 );
 
 const WebAppHome = () => {
-  const [data, dispatchEvent] = React.useReducer(
-    (data: null | TodoState, event: WebviewPush): TodoState => {
-      if (event.type === 'app_data') {
-        return event.payload.data;
-      }
-
-      if (event.type === 'todo_deleted') {
-        const { id } = event.payload.todo;
-        return {
-          ...data,
-          todos: data.todos.filter((todo) => todo.id !== id),
-          finishedTodos: data.finishedTodos.filter((todo) => todo.id !== id),
-        };
-      }
-
-      return data;
-    },
-    null
-  );
-
   // ...
+
+  return (
+    <div>
+      <Head>
+        <title>Edit Todos</title>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
+        />
+      </Head>
 
       <main>
         <h3>Press ❌ to delete todos</h3>
@@ -396,8 +436,17 @@ const WebAppHome = () => {
 //...
 ```
 
+In the new `TodoRow` component, we add a `❌` button to delete todo.
+Our webview should look like this now:
 
-```tsx
+<img width={500} src={require("./webview-2.png").default} />
+
+When the button is clicked by user, we use `client.send(eventObj)` method to send
+a `'delete_todo'` event to server. We can receive it on server side this way:
+
+
+```tsx title="src/handlers/handleWebview.tsx"
+const handleWebview = makeContainer({ deps: [TodoController] })(
   // ...
   if (event.type === 'delete_todo') {
     const { todo } = await todoController.deleteTodo(
@@ -407,7 +456,7 @@ const WebAppHome = () => {
 
     if (todo) {
       return bot.send(event.channel, {
-        category: 'push',
+        category: 'webview_push',
         type: 'todo_deleted',
         payload: { todo },
       });
@@ -415,3 +464,42 @@ const WebAppHome = () => {
   }
   //...
 ```
+
+The todo is deleted from the state when a `'delete_todo'` event is received.
+Then we push a `'todo_deleted'` response to notify client that the action is
+succeeded.
+
+Finally in the front-end, we receive the response and update the data and view
+like this:
+
+```tsx {9-17} title="src/webview/pages/index.tsx"
+const WebAppHome = () => {
+  const data = useEventReducer(
+    client,
+    (currentData: null | TodoState, { event }): null | TodoState => {
+      if (event.type === 'app_data') {
+        return event.payload.data;
+      }
+
+      if (currentData && event.type === 'todo_deleted') {
+        const { id } = event.payload.todo;
+        const { todos, finishedTodos } = currentData;
+        return {
+          ...currentData,
+          todos: todos.filter((todo) => todo.id !== id),
+          finishedTodos: finishedTodos.filter((todo) => todo.id !== id),
+        };
+      }
+
+      return data;
+    },
+    null
+  );
+  // ...
+```
+
+Now the todos can be deleted in the webview like this:
+
+<video width={450} autoplay="autoplay" loop inline>
+  <source src={require("./assets/webview-3.webm").default} type="video/webm" />
+</video>

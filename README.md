@@ -7,29 +7,30 @@
 
 Machinat is a declarative, progressive and cross-platform JavaScript framework for building conversational UI/UX.
 
+*Chat Bot* is the most easy-to-use app format to get in touch with users. But making a bot is never easy, here are some problems you might meet:
+
+  - Handle more complex and more unpredictable user input.
+  - Interact using Conversational UI and Graphical UI at the same time.
+  - Manage conversation flow in a stateless backend.
+  - Support multiple platforms to reach most of users.
+  - Embed a webview for more features and even better experiences.
+
+These challenges are new and very different from the GUI based *Mobile Apps* or *Web Apps*. To build the next-gen app, we need a next-gen solution.
+
 ## Highlights
 
-- Make one app, serve for all platforms.
+  - Make one app, serve on all chat platforms.
+  - Declarative API for **in-Chat UI** & **Conversation Flow.**
+  - Keeps all native features form the original chat platforms.
 
-- Declarative _JSX_ API to build _Conversational UI_.
+  - Standard interfaces for external services, include accessing state data and intent recognizing.
 
-- Render expressive view instead of making many imperative API calls.
+  - Render dynamic and modular UI with customizable component.
 
-- Handle rich text format, in-chat widgets and actions like a pause as parts of UI.
 
-- Support cross-platform API along with complete native features of each platform.
+  - Embedded webview within the chat.
+  - Progressive design. Extendable and Replacable
 
-- Render dynamic and modular UI with customizable component.
-
-- Develop interactive Q&A dialog flow in flexible [_Script_](docs/stage-dialog.md).
-
-- Make hybrid experience of CUI and GUI by integrating webview within the chat platform.
-
-- Standard interfaces for external services, include accessing state data and intent recognizing.
-
-- Progressive design that most features and all platforms can be imported when needed.
-
-- Easy to extend through self-defined or 3rd-party event/dispatch middlewares, modules and platforms.
 
 ## Documents
 

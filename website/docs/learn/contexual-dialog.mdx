@@ -1,6 +1,13 @@
+---
+title: Conversation in Script
+---
+
 Our bot can interact with users in the _Q & A_ flows now. But it can't actually
 _chat_ with the user. In this lesson, you'll learn how to write scripts to guide
 your bot chatting.
+
+
+>　Time to accomplish: 10 minutes
 
 
 ## What's Machinat Script?
@@ -159,7 +166,7 @@ procssor would take over until the script exits.
 
 When user doesn't specify the todo content, your bot now ask for it like this:
 
-<img width="400" src="../assets/add-todo-script-1.png" />
+<img width={400} src={require("./assets/add-todo-script-1.png").default} />
 
 
 ### `PROMPT` For Answer
@@ -281,13 +288,13 @@ The message node can also get the `vars` from the circumstances and use them to
 build UI. Add this message node at the end of script to show the adding result:
 
 ```tsx {1,4-8} title="src/scenes/AddingTodo.tsx"
-import WithRootMenu from '../components/WithRootMenu';
+import WithMenu from '../components/WithMenu';
 // ...
 
     {({ vars: { todoName, todosCount } }) => (
-      <WithRootMenu todoCount={todosCount}>
+      <WithMenu todoCount={todosCount}>
         Todo "<b>{todoName}</b>" is added!
-      </WithRootMenu>
+      </WithMenu>
     )}
   </>
 );
@@ -295,8 +302,8 @@ import WithRootMenu from '../components/WithRootMenu';
 
 Now a todo can be added in a conversational way like this:
 
-<video width="420" autoplay="true" loop inline>
-  <source src="../assets/add-todo-script-2.webm" type="video/webm" />
+<video width={420} autoplay="autoplay" loop inline>
+  <source src={require("./assets/add-todo-script-2.webm").default} type="video/webm" />
 </video>
 
 
@@ -325,7 +332,7 @@ import { WHILE, PROMPT, EFFECT } from '@machinat/script/keywords';
     //...
 ```
 
-`WHILE` is a flow control keyword works like the `while` in programming
+`WHILE` is a flow control keyword like the `while` in programming
 language. We wrap the `PROMPT` element with `WHILE`, so bot would keep asking
 until the answer pass the verification.
 
@@ -335,8 +342,8 @@ string.
 
 The result would look like:
 
-<video width="420" autoplay="true" loop inline>
-  <source src="../assets/add-todo-script-3.webm" type="video/webm" />
+<video width={420} autoplay="autoplay" loop inline>
+  <source src={require("./assets/add-todo-script-3.webm").default} type="video/webm" />
 </video>
 
 
@@ -344,8 +351,115 @@ Despite `WHILE`, there are other flow control keywords you may familiar with,
 like `IF` and `RETURN`. You can control the conversation easily in the way of
 programming.
 
+### `CALL` Script
 
-### `CALL` Another Script
+A scirpt can also be used by another script like a function call.
+The `CALL` keyword instruct the runtime to execute a script, and go back to the
+current point after it return.
 
-```tsx {1,4,14} title="src/scenes/AddingTodo.tsx"
+We can use it to hint user for adding the first todo. Add a new `AskingFirstTodo`
+script like this:
+
+```tsx title="src/scenes/AskingFirstTodo.tsx"
+import Machinat from '@machinat/core';
+import { build } from '@machinat/script';
+import { IF, THEN, PROMPT, RETURN, CALL } from '@machinat/script/keywords';
+import AddingTodo from './AddingTodo';
+import { ChatEventContext } from '../types';
+
+type AskingFirstTodoVars = {
+  ok: boolean;
+};
+
+export default build<AskingFirstTodoVars>(
+  {
+    name: 'AskingFirstTodo',
+    initVars: () => ({ ok: false }),
+  },
+  <>
+    {() => <p>You have no todo now. Do you want to create one?</p>}
+
+    <PROMPT<AskingFirstTodoVars, ChatEventContext>
+      key="ask-adding"
+      set={(_, { event }) => ({
+        ok: event.type === 'text'
+          ? /(ok|yes|👌|👍)/i.test(event.text)
+          : false,
+      })}
+    />
+
+    <IF<AskingFirstTodoVars> condition={({ vars: { ok } }) => !ok}>
+      <THEN>
+        {() => <p>Ok, tell me when you need.</p>}
+        <RETURN />
+      </THEN>
+    </IF>
+
+    <CALL key="adding-todo" script={AddingTodo} />
+  </>
+);
 ```
+
+In the script we ask user about wether to create the first todo or not. If no,
+the script simply return. If yes, call the `AddingTodo` script for the creating
+process.
+
+Then add the new script in the registered libs:
+
+```ts {5} title="src/app.ts"
+const app = Machinat.createApp({
+  modules: [
+    // ...
+    Script.initModule({
+      libs: [AddingTodo, AskingFirstTodo],
+    }),
+  ],
+  // ...
+```
+
+Then we can use the it when a user doesn't have any todo like this:
+
+```tsx {1,4,7-14} title="src/handlers/handleMessage.tsx"
+import AskingFirstTodo from '../scenes/AskingFirstTodo';
+// ...
+    const { data } = await todoController.getTodos(event.channel);
+    const helloWords = <p>Hello, {userProfile.name}! I'm a Todo Bot 🤖</p>;
+
+    return reply(
+      data.todos.length > 0 ? (
+        <RootMenu todoCount={data.todos.length}>{helloWords}</RootMenu>
+      ) : (
+        <>
+          {helloWords}
+          <StartRuntime script={AskingFirstTodo} channel={event.channel} />
+        </>
+      )
+    );
+  }
+);
+
+export default handleMessage;
+```
+
+Now our bot ask user to create first todo while saying hello like this:
+
+
+<video width={420} autoplay="autoplay" loop inline>
+  <source src={require("./assets/hello-with-script.mp4").default} type="video/mp4" />
+</video>
+
+:::tip
+Delete the `todos` data in `.state_data.json` file to try this feature.
+:::
+
+:::info
+In the video above, the <img height={30} src={require("./assets/quick-replies-in-script.png").default} />
+options bring better experiences when answer the question. You can check the
+[complete example](https://github.com/machinat/todo-example/blob/main/src/scenes/AskingFirstTodo.tsx#L18-L36)
+about how to implement.
+:::
+
+---
+
+Now your bot can really have a chat with user according the script. Next, we'll
+learn how to use a webview to provide even more features than in the chatroom.
