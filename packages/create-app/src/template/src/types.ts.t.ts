@@ -32,21 +32,12 @@ export type ChatEventContext =${when(platforms.includes('messenger'))`
   | LineEventContext`};
 ${when(platforms.includes('webview'))`
 
-export type HelloEventValue = {
-  category: 'greeting';
-  type: 'hello';
-  payload: string;
-};
-
-export type WebAppEventValue = ConnectionEventValue | HelloEventValue;
-
 export type WebAppEventContext = WebviewEventContext<${when(
   platforms.includes('messenger')
 )`
     | MessengerServerAuthorizer`}${when(platforms.includes('telegram'))`
     | TelegramServerAuthorizer`}${when(platforms.includes('line'))`
-    | LineServerAuthorizer`},
-    WebAppEventValue
+    | LineServerAuthorizer`}
   >;`}
 
 export type AppEventContext =
