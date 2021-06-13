@@ -60,23 +60,21 @@ namespace Machinat {
   export const BaseBot = BaseBotP;
   export const BaseProfiler = BaseProfilerP;
   export const Marshaler = MarshalerP;
-}
 
-export default Machinat;
+  export namespace JSX {
+    export type Element = MachinatElement<any, any>;
+    export type ElementClass =
+      | NativeComponent<any, any>
+      | ContainerComponent<any>;
 
-declare global {
-  namespace JSX {
-    type Element = MachinatElement<any, any>;
-    type ElementClass = NativeComponent<any, any> | ContainerComponent<any>;
-
-    interface ElementAttributesProperty {
+    export interface ElementAttributesProperty {
       $$typeof: {};
     }
-    interface ElementChildrenAttribute {
+    export interface ElementChildrenAttribute {
       children: {};
     }
 
-    type LibraryManagedAttributes<C, P> = C extends NativeComponent<
+    export type LibraryManagedAttributes<C, P> = C extends NativeComponent<
       infer T,
       any
     >
@@ -88,3 +86,5 @@ declare global {
     // interface IntrinsicElements {}
   }
 }
+
+export default Machinat;
