@@ -1,13 +1,17 @@
-import { MaybeContainer } from '@machinat/core/service';
+import { MaybeContainer, ServiceContainer } from '@machinat/core/service';
 import injectMaybe from '../injectMaybe';
 import { OperatorFunction } from '../types';
 import doAsyncByKey from './doAsyncByKey';
 
 type EffectFn<T> = (val: T) => unknown | Promise<unknown>;
 
-const tap = <T>(
-  effecter: MaybeContainer<EffectFn<T>>
-): OperatorFunction<T, T> => {
+function tap<T>(
+  effecter: ServiceContainer<EffectFn<T>, unknown[]>
+): OperatorFunction<T, T>;
+
+function tap<T>(effecter: EffectFn<T>): OperatorFunction<T, T>;
+
+function tap<T>(effecter: MaybeContainer<EffectFn<T>>): OperatorFunction<T, T> {
   const injectEffect = injectMaybe(effecter);
 
   return doAsyncByKey(async (frame, observer) => {
@@ -19,6 +23,6 @@ const tap = <T>(
       observer.error({ value: err, key, scope });
     }
   });
-};
+}
 
 export default tap;
