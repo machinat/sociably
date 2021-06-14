@@ -327,7 +327,7 @@ Before the `'app_data'` event from server is recevied, the data value would be
 `null`. Try open the webview now and you should see the page without todos:
 
 
-<img width={500} src={require("./webview-1.png").default} />
+<img width={500} src={require("./assets/webview-1.png").default} />
 
 
 ### Handle Event From Server
@@ -371,7 +371,7 @@ We can use it to get the todos data of the chat with `TodoController`.
 
 Now the webview should display the todos you have like this:
 
-<img width={500} src={require("./webview-1.png").default} />
+<img width={500} src={require("./assets/webview-2.png").default} />
 
 
 ### Send Event on Client Side
@@ -439,7 +439,7 @@ const WebAppHome = () => {
 In the new `TodoRow` component, we add a `❌` button to delete todo.
 Our webview should look like this now:
 
-<img width={500} src={require("./webview-2.png").default} />
+<img width={500} src={require("./assets/webview-3.png").default} />
 
 When the button is clicked by user, we use `client.send(eventObj)` method to send
 a `'delete_todo'` event to server. We can receive it on server side this way:
@@ -501,5 +501,5 @@ const WebAppHome = () => {
 Now the todos can be deleted in the webview like this:
 
 <video width={450} autoplay="autoplay" loop inline>
-  <source src={require("./assets/webview-3.webm").default} type="video/webm" />
+  <source src={require("./assets/webview-delete.webm").default} type="video/webm" />
 </video>
