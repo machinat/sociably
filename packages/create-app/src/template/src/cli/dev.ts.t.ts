@@ -13,8 +13,7 @@ import nodemon from 'nodemon';
 configEnv();
 const { PORT, DEV_TUNNEL_SUBDOMAIN } = process.env;
 
-async function dev() {
-  // create a https tunnel to localhost
+async function connectTunnel() {
   const tunnel = await localtunnel({
     port: PORT,
     host: 'https://t.machinat.dev',
@@ -41,6 +40,13 @@ async function dev() {
     );
   });
 
+  return tunnel;
+}
+
+async function dev() {
+  // create a https tunnel to localhost
+  let tunnel = await connectTunnel();
+
   process.on('SIGINT', () => {
     tunnel.close();
     process.exit();
@@ -62,6 +68,15 @@ async function dev() {
 
   nodemon.on('restart', (changes: string[]) => {
     console.log(\`[dev:server] Restarting server. File changed: \${changes.join(', ')}\`);
+
+    if (process.platform === 'win32') {
+      tunnel.close();
+      setTimeout(() => {
+        connectTunnel().then((newTunnel) => {
+          tunnel = newTunnel;
+        });
+      }, 1500);
+    }
   });
 }
 
