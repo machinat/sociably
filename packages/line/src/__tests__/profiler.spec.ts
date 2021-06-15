@@ -153,7 +153,9 @@ describe('#getGroupProfile(user)', () => {
     expect(profile.platform).toBe('line');
     expect(profile.name).toBe('Group name');
     expect(profile.id).toBe('_GROUP_ID_');
-    expect(profile.avatar).toBe('https://profile.line-scdn.net/abcdefghijklmn');
+    expect(profile.avatarUrl).toBe(
+      'https://profile.line-scdn.net/abcdefghijklmn'
+    );
     expect(profile.data).toEqual(groupSummary);
 
     expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);

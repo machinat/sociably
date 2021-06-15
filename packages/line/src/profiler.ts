@@ -33,7 +33,7 @@ export class LineUserProfile
     return this.data.displayName;
   }
 
-  get avatar(): undefined | string {
+  get avatarUrl(): undefined | string {
     return this.data.pictureUrl;
   }
 
@@ -88,7 +88,7 @@ export class LineGroupProfile
     return this.data.groupName;
   }
 
-  get avatar(): undefined | string {
+  get avatarUrl(): undefined | string {
     return this.data.pictureUrl;
   }
 

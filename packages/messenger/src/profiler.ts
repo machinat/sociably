@@ -42,7 +42,7 @@ export class MessengerUserProfile
     return this.data.last_name;
   }
 
-  get avatar(): string {
+  get avatarUrl(): string {
     return this.data.profile_pic;
   }
 

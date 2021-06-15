@@ -31,13 +31,13 @@ export class TelegramUserProfile
     return new TelegramUserProfile(value.data, value.avatar);
   }
 
-  avatar: undefined | string;
+  avatarUrl: undefined | string;
   data: RawUser;
 
   platform = TELEGRAM;
 
-  constructor(rawUser: RawUser, avatar?: string) {
-    this.avatar = avatar;
+  constructor(rawUser: RawUser, avatarUrl?: string) {
+    this.avatarUrl = avatarUrl;
     this.data = rawUser;
   }
 
@@ -71,8 +71,8 @@ export class TelegramUserProfile
   }
 
   toJSONValue(): TelegramUserProfileValue {
-    const { data, avatar } = this;
-    return { data, avatar };
+    const { data, avatarUrl } = this;
+    return { data, avatar: avatarUrl };
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -95,12 +95,12 @@ export class TelegramChatProfile
   }
 
   data: RawChat;
-  avatar: undefined | string;
+  avatarUrl: undefined | string;
   platform = TELEGRAM;
 
-  constructor(data: RawChat, avatar?: string) {
+  constructor(data: RawChat, avatarUrl?: string) {
     this.data = data;
-    this.avatar = avatar;
+    this.avatarUrl = avatarUrl;
   }
 
   get id(): number {
@@ -134,8 +134,8 @@ export class TelegramChatProfile
   }
 
   toJSONValue(): TelegramChatProfileValue {
-    const { data, avatar } = this;
-    return { data, avatar };
+    const { data, avatarUrl } = this;
+    return { data, avatar: avatarUrl };
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -168,15 +168,15 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
        */
       inChat?: TelegramChat;
       /**
-       * If provided, the avatar is attached with the profile. This is
-       * useful to work with _fetchUserPhoto_ or login in the webview.
+       * If provided, `avatarUrl` will be attached with the profile for storing.
+       * This is useful to work with _fetchUserPhoto_ or login in the webview.
        */
-      avatar?: string;
+      avatarUrl?: string;
       /** Get user data from API by force. */
       fromApi?: boolean;
     } = {}
   ): Promise<TelegramUserProfile> {
-    const { inChat, avatar, fromApi } = options;
+    const { inChat, avatarUrl, fromApi } = options;
     let userData: RawUser;
 
     if (user.data && !fromApi) {
@@ -189,7 +189,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
       userData = chatMember.user;
     }
 
-    return new TelegramUserProfile(userData, avatar);
+    return new TelegramUserProfile(userData, avatarUrl);
   }
 
   /**
@@ -201,15 +201,15 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
     chat: string | number | TelegramChat | TelegramChatTarget,
     options: {
       /**
-       * If provided, the url is attached with the profile object. This is
-       * useful to work with _fetchChatPhoto_.
+       * If provided, `avatarUrl` will be attached with the profile for storing.
+       * This is useful to work with _fetchUserPhoto_ or login in the webview.
        */
-      avatar?: string;
+      avatarUrl?: string;
       /** Get chat data from API by force. */
       fromApi?: boolean;
     } = {}
   ): Promise<TelegramChatProfile> {
-    const { fromApi, avatar } = options;
+    const { fromApi, avatarUrl } = options;
     let chatId: number | string;
 
     if (typeof chat === 'number' || typeof chat === 'string') {
@@ -220,7 +220,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
       const { id, data } = chat;
 
       if (!fromApi && (data.title || data.first_name)) {
-        return new TelegramChatProfile(data, avatar);
+        return new TelegramChatProfile(data, avatarUrl);
       }
       chatId = id;
     }
@@ -229,7 +229,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
       chat_id: chatId,
     });
 
-    return new TelegramChatProfile(chatData, avatar);
+    return new TelegramChatProfile(chatData, avatarUrl);
   }
 
   /** Fetch the photo file of a user */
