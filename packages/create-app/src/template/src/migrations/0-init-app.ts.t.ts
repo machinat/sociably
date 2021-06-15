@@ -56,7 +56,7 @@ export const up = makeContainer({
     }
   );
 
-  // add the page to Messenger webhook
+  // add page to Messenger webhook
   await messengerBot.makeApiCall('POST', 'me/subscribed_apps', {
       subscribed_fields: ['messages', 'messaging_postbacks'],
   });`}${when(platforms.includes('telegram'))`
@@ -92,14 +92,14 @@ ${when(platforms.includes('messenger'))`
     ],
   });
 
-  // remove the page to from webhook
+  // delete app subscriptions
   await messengerBot.makeApiCall(
     'DELETE',
     \`\${MESSENGER_PAGE_ID}/subscribed_apps\`,
     { access_token: \`\${MESSENGER_APP_ID}|\${MESSENGER_APP_SECRET}\` }
   );
   
-  // delete Messenger webhook subscription
+  // remove page from webhook subscription
   await messengerBot.makeApiCall(
     'DELETE',
     \`\${MESSENGER_APP_ID}/subscriptions\`,
