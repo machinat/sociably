@@ -13,7 +13,7 @@ const authRouteFactory = makeFactoryProvider({
 })(
   (controller, configs): RequestRoute => ({
     name: 'auth',
-    path: configs.entryPath || '/',
+    path: configs.apiPath || '/',
     handler: (req, res, routingInfo) => {
       controller.delegateAuthRequest(req, res, routingInfo);
     },

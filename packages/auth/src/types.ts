@@ -220,7 +220,7 @@ export type AuthApiErrorBody = {
 export type AuthConfigs = {
   secret: string;
   redirectUrl: string;
-  entryPath?: string;
+  apiPath?: string;
   tokenAge?: number;
   authCookieAge?: number;
   dataCookieAge?: number;

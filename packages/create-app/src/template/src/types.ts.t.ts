@@ -21,10 +21,7 @@ import type { LineEventContext } from '@machinat/line';${when(
 import type { LineServerAuthorizer } from '@machinat/line/webview';`}`}${when(
     platforms.includes('webview')
   )`
-import type {
-  WebviewEventContext,
-  ConnectionEventValue,
-} from '@machinat/webview';`}
+import type { WebviewEventContext } from '@machinat/webview';`}
 
 export type ChatEventContext =${when(platforms.includes('messenger'))`
   | MessengerEventContext`}${when(platforms.includes('telegram'))`

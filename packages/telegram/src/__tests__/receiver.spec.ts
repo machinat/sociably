@@ -229,13 +229,13 @@ it('verify request path matching options.secretPath', async () => {
   expect(popEventMock).toHaveBeenCalledTimes(1);
 });
 
-test('verify secretPath with entryPath provided', async () => {
+test('verify secretPath with webhookPath provided', async () => {
   const receiver = new TelegramReceiver({
     bot,
     popEventWrapper,
     botId: 12345,
     secretPath: '__SECRET_PATH__',
-    entryPath: '/telegram',
+    webhookPath: '/telegram',
   });
 
   const req1 = createReq({

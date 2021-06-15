@@ -230,7 +230,7 @@ export type LineDispatchMiddleware = DispatchMiddleware<
 >;
 
 export type LineConfigs = {
-  entryPath?: string;
+  webhookPath?: string;
   providerId: string;
   channelId: string;
   channelSecret?: string;

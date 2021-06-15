@@ -15,7 +15,7 @@ import { NextReceiver } from '@machinat/next';
 import type { NextServer } from '@machinat/next';
 import WebSocket, { WebSocketServer } from '@machinat/websocket';
 import { useAuthLogin, verifyOrigin } from './utils';
-import { DEFAULT_AUTH_PATH } from './constant';
+import { DEFAULT_AUTH_PATH, DEFAULT_NEXT_PATH } from './constant';
 import type { WebviewConfigs, WebviewPlatformUtilities } from './types';
 
 export const ConfigsI = makeInterface<WebviewConfigs<AnyServerAuthorizer>>({
@@ -47,10 +47,10 @@ export const AuthControllerP: ServiceProvider<
     authorizers,
     {
       authSecret,
-      authApiPath,
+      authApiPath = DEFAULT_AUTH_PATH,
       authRedirectUrl,
       webviewHost,
-      webviewPath,
+      webviewPath = DEFAULT_NEXT_PATH,
       ...otherOptions
     }
   ) => {
@@ -61,9 +61,9 @@ export const AuthControllerP: ServiceProvider<
     return new WebviewAuthController(authorizers, {
       ...otherOptions,
       secret: authSecret,
-      entryPath: authApiPath || DEFAULT_AUTH_PATH,
+      apiPath: authApiPath,
       redirectUrl:
-        authRedirectUrl || `https://${webviewHost}/${webviewPath || ''}`,
+        authRedirectUrl || new URL(webviewPath, `https://${webviewHost}/`).href,
     });
   },
 })(WebviewAuthController);
@@ -88,7 +88,7 @@ export const NextReceiverP: ServiceProvider<
 > = makeClassProvider({
   lifetime: 'singleton',
   deps: [NextServerI, ConfigsI] as const,
-  factory: (server, { noPrepareNext, webviewPath }) =>
+  factory: (server, { noPrepareNext, webviewPath = DEFAULT_NEXT_PATH }) =>
     new WebviewNextReceiver(server, {
       entryPath: webviewPath,
       noPrepare: noPrepareNext,

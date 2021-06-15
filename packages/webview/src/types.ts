@@ -112,7 +112,7 @@ export type WebviewConfigs<
 > = {
   /** Host of the webview. */
   webviewHost: string;
-  /** Route path to the next server. Default to `"/webview"` */
+  /** Route path to the webview pages, default to `"/"`. */
   webviewPath?: string;
   /** Set to `true` for not running NextJS server. */
   noNextServer?: boolean;

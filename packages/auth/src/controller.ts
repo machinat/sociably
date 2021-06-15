@@ -75,7 +75,7 @@ type AuthVerifyResult<Authorizer extends AnyServerAuthorizer> =
 export class AuthController<Authorizer extends AnyServerAuthorizer> {
   authorizers: Authorizer[];
   secret: string;
-  entryPath: string;
+  apiPath: string;
   cookieOperator: CookieOperator;
 
   constructor(authorizers: Authorizer[], options: AuthConfigs) {
@@ -88,7 +88,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
     const {
       secret,
-      entryPath = '/',
+      apiPath = '/',
       redirectUrl,
       authCookieAge = 600, // 10 min
       dataCookieAge = 180, // 3 min
@@ -101,8 +101,8 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     } = options;
 
     invariant(
-      isSubpath(cookiePath, entryPath),
-      'options.entryPath should be a subpath of options.cookiePath'
+      isSubpath(cookiePath, apiPath),
+      'options.apiPath should be a subpath of options.cookiePath'
     );
 
     const {
@@ -128,10 +128,10 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
     this.secret = secret;
     this.authorizers = authorizers;
-    this.entryPath = entryPath;
+    this.apiPath = apiPath;
 
     this.cookieOperator = new CookieOperator({
-      entryPath,
+      apiPath,
       redirectUrl,
       secret,
       authCookieAge,
@@ -153,7 +153,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     const { pathname } = parseUrl(req.url as string);
     const subpath =
       routingInfo?.trailingPath ||
-      getRelativePath(this.entryPath, pathname || '/');
+      getRelativePath(this.apiPath, pathname || '/');
 
     if (subpath === '' || subpath.slice(0, 2) === '..') {
       respondApiError(res, undefined, 403, 'path forbidden');
@@ -200,7 +200,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
         {
           originalPath: pathname || '/',
           matchedPath: joinPath(
-            routingInfo?.matchedPath || this.entryPath,
+            routingInfo?.matchedPath || this.apiPath,
             platform
           ),
 

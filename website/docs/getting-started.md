@@ -21,14 +21,14 @@ Machinat.createApp({
   ],
   platforms: [
     Messenger.initModule({
-      entryPath: '/webhook/messenger',
+      webhookPath: '/webhook/messenger',
       pageId: ENV.MESSENGER_PAGE_ID,
       accessToken: ENV.MESSENGER_ACCESS_TOKEN,
       appSecret: ENV.MESSENGER_APP_SECRET,
       verifyToken: ENV.MESSENGER_VERIFY_TOKEN,
     }),
     Line.initModule({
-      entryPath: '/webhook/line',
+      webhookPath: '/webhook/line',
       providerId: ENV.LINE_PROVIDER_ID,
       channelId: ENV.LINE_CHANNEL_ID,
       channelSecret: ENV.LINE_CHANNEL_SECRET,
@@ -141,7 +141,7 @@ If you have multiple platforms requiring HTTP entry, you need to set the route p
 
 ```js
 Messenger.initModule({
-  entryPath: '/webhook/messenger',
+  webhookPath: '/webhook/messenger',
   ...
 })
 ```

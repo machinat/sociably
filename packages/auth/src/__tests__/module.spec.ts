@@ -6,7 +6,7 @@ import { ControllerP } from '../controller';
 
 const secret = '_SECRET_';
 const redirectUrl = '/webview';
-const entryPath = '/auth';
+const apiPath = '/auth';
 
 it('export interfaces', () => {
   expect(Auth.Controller).toBe(ControllerP);
@@ -31,7 +31,7 @@ it('export interfaces', () => {
 describe('initModule()', () => {
   test('provisions', async () => {
     const app = Machinat.createApp({
-      modules: [Auth.initModule({ secret, entryPath, redirectUrl })],
+      modules: [Auth.initModule({ secret, apiPath, redirectUrl })],
       services: [{ provide: Auth.AuthorizerList, withValue: moxy() }],
     });
     await app.start();
@@ -43,7 +43,7 @@ describe('initModule()', () => {
     ]);
 
     expect(controller).toBeInstanceOf(ControllerP);
-    expect(configs).toEqual({ secret, entryPath, redirectUrl });
+    expect(configs).toEqual({ secret, apiPath, redirectUrl });
     expect(routings).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -60,7 +60,7 @@ describe('initModule()', () => {
     const barAuthorizer = moxy();
     const ControllerSpy = moxy(ControllerP);
     const app = Machinat.createApp({
-      modules: [Auth.initModule({ secret, entryPath, redirectUrl })],
+      modules: [Auth.initModule({ secret, apiPath, redirectUrl })],
       services: [
         { provide: Auth.AuthorizerList, withValue: fooAuthorizer },
         { provide: Auth.AuthorizerList, withValue: barAuthorizer },
@@ -77,14 +77,14 @@ describe('initModule()', () => {
       ControllerSpy.$$factory.mock
     ).toHaveBeenCalledWith(
       expect.arrayContaining([fooAuthorizer, barAuthorizer]),
-      { secret, entryPath, redirectUrl }
+      { secret, apiPath, redirectUrl }
     );
   });
 
   test('provide request handler calls to ServerController#delegateAuthRequest()', async () => {
     const fakeController = moxy({ delegateAuthRequest: async () => {} });
     const app = Machinat.createApp({
-      modules: [Auth.initModule({ secret, redirectUrl, entryPath })],
+      modules: [Auth.initModule({ secret, redirectUrl, apiPath })],
       services: [
         {
           provide: Auth.Controller,

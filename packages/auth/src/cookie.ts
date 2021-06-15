@@ -25,7 +25,7 @@ import {
 } from './constant';
 
 type OperatorOptions = {
-  entryPath: string;
+  apiPath: string;
   redirectUrl: string;
   secret: string;
   authCookieAge: number;
@@ -51,7 +51,7 @@ class CookieOperator {
 
   constructor(options: OperatorOptions) {
     const {
-      entryPath,
+      apiPath,
       authCookieAge,
       dataCookieAge,
       cookieDomain,
@@ -86,7 +86,7 @@ class CookieOperator {
     };
 
     this._stateCookieOpts = {
-      path: entryPath,
+      path: apiPath,
       sameSite,
       secure,
       httpOnly: true,

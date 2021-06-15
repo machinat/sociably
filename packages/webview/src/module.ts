@@ -22,7 +22,12 @@ import type {
   EventValue,
 } from '@machinat/websocket';
 
-import { WEBVIEW, DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from './constant';
+import {
+  WEBVIEW,
+  DEFAULT_AUTH_PATH,
+  DEFAULT_WEBSOCKET_PATH,
+  DEFAULT_NEXT_PATH,
+} from './constant';
 import {
   SocketServerP,
   AuthControllerP,
@@ -64,9 +69,9 @@ const webSocketRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [SocketServerP, ConfigsI] as const,
 })(
-  (server, { webSocketPath }): UpgradeRoute => ({
+  (server, { webSocketPath = DEFAULT_WEBSOCKET_PATH }): UpgradeRoute => ({
     name: 'websocket',
-    path: webSocketPath || DEFAULT_WEBSOCKET_PATH,
+    path: webSocketPath,
     handler: (req, ns, head) => server.handleUpgrade(req, ns, head),
   })
 );
@@ -75,9 +80,9 @@ const authRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [AuthControllerP, ConfigsI] as const,
 })(
-  (controller, { authApiPath }): RequestRoute => ({
+  (controller, { authApiPath = DEFAULT_AUTH_PATH }): RequestRoute => ({
     name: 'auth',
-    path: authApiPath || DEFAULT_AUTH_PATH,
+    path: authApiPath,
     handler: (req, res, routingInfo) => {
       controller.delegateAuthRequest(req, res, routingInfo);
     },
@@ -87,12 +92,21 @@ const authRouteFactory = makeFactoryProvider({
 const nextRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [NextReceiverP, ConfigsI] as const,
-})((receiver, { webviewPath }): RequestRoute | DefaultRequestRoute => {
-  const handler = receiver.handleRequestCallback();
-  return webviewPath
-    ? { name: 'next', handler, path: webviewPath }
-    : { name: 'next', handler, default: true };
-});
+})((receiver, { webviewPath = DEFAULT_NEXT_PATH }):
+  | RequestRoute
+  | DefaultRequestRoute =>
+  webviewPath === '/'
+    ? {
+        name: 'next',
+        default: true,
+        handler: receiver.handleRequestCallback(),
+      }
+    : {
+        name: 'next',
+        path: webviewPath,
+        handler: receiver.handleRequestCallback(),
+      }
+);
 
 /**
  * @category Root

@@ -32,7 +32,7 @@ const webhookRouteFactory = makeFactoryProvider({
 })(
   (configs, receiver): RequestRoute => ({
     name: MESSENGER,
-    path: configs.entryPath || '/',
+    path: configs.webhookPath || '/',
     handler: receiver.handleRequestCallback(),
   })
 );

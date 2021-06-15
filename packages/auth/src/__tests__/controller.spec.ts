@@ -151,17 +151,17 @@ describe('#constructor()', () => {
     );
   });
 
-  it("throw if entryPath isn't a subpath of cookiePath when both given", () => {
+  it("throw if apiPath isn't a subpath of cookiePath when both given", () => {
     expect(
       () =>
         new AuthController(authorizers, {
           secret,
           redirectUrl: '/app/webview',
-          entryPath: '/auth',
+          apiPath: '/auth',
           cookiePath: '/app',
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.entryPath should be a subpath of options.cookiePath"`
+      `"options.apiPath should be a subpath of options.cookiePath"`
     );
   });
 
@@ -171,7 +171,7 @@ describe('#constructor()', () => {
         new AuthController(authorizers, {
           secret,
           redirectUrl: '/webview',
-          entryPath: '/app/auth',
+          apiPath: '/app/auth',
           cookiePath: '/app',
         })
     ).toThrowErrorMatchingInlineSnapshot(
@@ -185,7 +185,7 @@ describe('#constructor()', () => {
         new AuthController(authorizers, {
           secret,
           redirectUrl: 'view.machinat.io',
-          entryPath: '/auth',
+          apiPath: '/auth',
           cookieDomain: 'api.machinat.io',
         })
     ).toThrowErrorMatchingInlineSnapshot(
@@ -220,11 +220,11 @@ describe('#delegateAuthRequest(req, res)', () => {
       res = moxy(new ServerResponse({} as never));
     });
 
-    it('respond 403 if being called outside fo entryPath scope', async () => {
+    it('respond 403 if being called outside fo apiPath scope', async () => {
       const controller = new AuthController(authorizers, {
         secret,
         redirectUrl,
-        entryPath: '/auth',
+        apiPath: '/auth',
       });
 
       let req = prepareReq('GET', 'https://auth.machinat.com', {}, '');
@@ -255,7 +255,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       `);
     });
 
-    it('respond 403 if being called on entryPath directly', async () => {
+    it('respond 403 if being called on apiPath directly', async () => {
       const controller = new AuthController(authorizers, {
         secret,
         redirectUrl,
@@ -386,7 +386,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       const req = moxy(new IncomingMessage({} as never));
       const res = moxy(new ServerResponse({} as never));
 
-      req.mock.getter('url').fake(() => `${controller.entryPath}/foo`);
+      req.mock.getter('url').fake(() => `${controller.apiPath}/foo`);
       res.mock.getter('finished').fake(() => true);
       res.end.mock.fake(() => {});
 
@@ -409,7 +409,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       const controller = new AuthController(authorizers, {
         secret,
         redirectUrl,
-        entryPath: '/auth',
+        apiPath: '/auth',
       });
 
       let [cookies, payload] = await testIssueState(controller);
@@ -436,7 +436,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new AuthController(authorizers, {
           secret,
           redirectUrl: '/app/pages',
-          entryPath: '/app/auth',
+          apiPath: '/app/auth',
           dataCookieAge: 99,
           cookieDomain: 'machinat.io',
           cookiePath: '/app',
@@ -529,7 +529,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       const customizedController = new AuthController(authorizers, {
         secret,
         redirectUrl: '/app/pages',
-        entryPath: '/app/auth',
+        apiPath: '/app/auth',
         authCookieAge: 999,
         tokenAge: 9999,
         refreshPeriod: 99999,
@@ -669,7 +669,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       const controller = new AuthController(authorizers, {
         secret,
         redirectUrl,
-        entryPath: '/auth',
+        apiPath: '/auth',
       });
 
       let [cookies, payload] = await testIssueError(controller);
@@ -711,7 +711,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new AuthController(authorizers, {
           secret,
           redirectUrl: '/app/pages',
-          entryPath: '/app/auth',
+          apiPath: '/app/auth',
           dataCookieAge: 99,
           cookieDomain: 'machinat.io',
           cookiePath: '/app',
@@ -1083,7 +1083,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       const controller = new AuthController(authorizers, {
         secret,
         redirectUrl: '/app/pages',
-        entryPath: '/app/auth',
+        apiPath: '/app/auth',
         authCookieAge: 999,
         dataCookieAge: 99,
         tokenAge: 9999,
@@ -1379,7 +1379,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       const controller = new AuthController(authorizers, {
         secret,
         redirectUrl: '/app/pages',
-        entryPath: '/app/auth',
+        apiPath: '/app/auth',
         authCookieAge: 999,
         dataCookieAge: 99,
         tokenAge: 9999,

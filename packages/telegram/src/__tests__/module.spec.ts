@@ -36,7 +36,7 @@ describe('initModule(configs)', () => {
 
     const module = Telegram.initModule({
       botToken: '12345:_BOT_TOKEN_',
-      entryPath: '/webhook/telegram',
+      webhookPath: '/webhook/telegram',
       secretPath: '_SECRET_',
       maxConnections: 999,
       eventMiddlewares,
@@ -61,7 +61,7 @@ describe('initModule(configs)', () => {
   test('provisions', async () => {
     const configs = {
       botToken: '12345:_BOT_TOKEN_',
-      entryPath: '/webhook/telegram',
+      webhookPath: '/webhook/telegram',
       secretPath: '_SECRET_',
       authRedirectUrl: '/webview/index.html',
       maxConnections: 999,
@@ -154,7 +154,7 @@ describe('initModule(configs)', () => {
     );
   });
 
-  test('default entryPath to "/"', async () => {
+  test('default webhookPath to "/"', async () => {
     const configs = {
       botToken: '12345:_BOT_TOKEN_',
     };

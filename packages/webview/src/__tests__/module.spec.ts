@@ -104,6 +104,7 @@ test('service provisions', async () => {
     webSocketPath: '/mySocket',
     webviewHost: 'machinat.io',
     authSecret: '_SECRET_',
+    nextServerOptions: { dev: true, conf: { dist: '../../' } },
   };
 
   const app = Machinat.createApp({
@@ -148,6 +149,9 @@ test('service provisions', async () => {
 
   expect(nextReceiver).toBeInstanceOf(Next.Receiver);
   expect(createNextServer.mock).toHaveBeenCalledTimes(1);
+  expect(createNextServer.mock).toHaveBeenCalledWith(
+    configsInput.nextServerOptions
+  );
   expect(nextServer).toBe(createNextServer.mock.calls[0].result);
 
   expect(requestRoutes).toEqual(
@@ -251,6 +255,7 @@ test('startHook', async () => {
       Webview.initModule({
         webviewHost: 'machinat.io',
         authSecret: '_SECRET_',
+        nextServerOptions: { dev: true, conf: { dist: '../../' } },
       }),
     ],
     services: [

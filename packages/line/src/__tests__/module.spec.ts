@@ -59,7 +59,7 @@ describe('initModule(configs)', () => {
       channelId: '_BOT_CHANNEL_ID_',
       accessToken: '_ACCESS_TOKEN_',
       channelSecret: '_CHANNEL_SECRET_',
-      entryPath: '/webhook/line',
+      webhookPath: '/webhook/line',
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 
@@ -153,7 +153,7 @@ describe('initModule(configs)', () => {
     );
   });
 
-  test('default entryPath to "/"', async () => {
+  test('default webhookPath to "/"', async () => {
     const configs = {
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',

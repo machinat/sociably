@@ -125,7 +125,7 @@ const app = Machinat.createApp({
       entryPath: '/websocket',
     }),
     Auth.initModule({
-      entryPath: '/auth',
+      apiPath: '/auth',
       secret: '__SECRET_STRING__',
     }),
   ],

@@ -26,14 +26,14 @@ import { MessengerServerAuthorizer } from '@machinat/messenger/auth';
 Machinat.createApp({
   platforms: [
     Messenger.initModule({
-      entryPath: '/webhook',
+      webhookPath: '/webhook',
     }),
   ],
   modules: [
     Http.initModule({ ... }),
 
     Auth.initModule({
-      entryPath: '/auth',
+      apiPath: '/auth',
       secret: 'xxx-xxx-xxx-xxx',
     }),
   ],

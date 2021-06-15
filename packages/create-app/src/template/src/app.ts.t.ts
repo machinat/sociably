@@ -25,8 +25,7 @@ import { FileState } from '@machinat/local-state';${when(
     platforms.includes('webview')
   )`
 import { ServerDomain, LineLiffId } from './interface';
-import nextConfigs from './webview/next.config.js';
-import { WebAppEventValue } from './types';`}
+import nextConfigs from './webview/next.config.js';`}
 
 const {
   // location
@@ -78,7 +77,7 @@ const app = Machinat.createApp({
   platforms: [${when(platforms.includes('messenger'))`
 
     Messenger.initModule({
-      entryPath: '/webhook/messenger',
+      webhookPath: '/webhook/messenger',
       pageId: Number(MESSENGER_PAGE_ID),
       appSecret: MESSENGER_APP_SECRET,
       accessToken: MESSENGER_ACCESS_TOKEN,
@@ -86,13 +85,13 @@ const app = Machinat.createApp({
     }),`}${when(platforms.includes('telegram'))`
 
     Telegram.initModule({
+      webhookPath: '/webhook/telegram',
       botToken: TELEGRAM_BOT_TOKEN,
-      entryPath: '/webhook/telegram',
       secretPath: TELEGRAM_SECRET_PATH,
     }),`}${when(platforms.includes('line'))`
 
     Line.initModule({
-      entryPath: '/webhook/line',
+      webhookPath: '/webhook/line',
       providerId: LINE_PROVIDER_ID,
       channelId: LINE_CHANNEL_ID,
       accessToken: LINE_ACCESS_TOKEN,
@@ -103,8 +102,7 @@ const app = Machinat.createApp({
     Webview.initModule<${when(platforms.includes('messenger'))`
       | MessengerAuthorizer`}${when(platforms.includes('telegram'))`
       | TelegramAuthorizer`}${when(platforms.includes('line'))`
-      | LineAuthorizer`},
-      WebAppEventValue
+      | LineAuthorizer`}
     >({
       webviewHost: DOMAIN,
       webviewPath: '/webview',

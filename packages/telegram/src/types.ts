@@ -189,7 +189,7 @@ export type TelegramPlatformUtilities = PlatformUtilities<
 
 export type TelegramConfigs = {
   botToken: string;
-  entryPath?: string;
+  webhookPath?: string;
   secretPath?: string;
   maxConnections?: number;
   noServer?: boolean;
