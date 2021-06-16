@@ -39,6 +39,7 @@ type MessengerBotOptions = {
   pageId: number;
   accessToken: string;
   appSecret?: string;
+  graphApiVersion?: string;
   consumeInterval?: number;
 };
 
@@ -63,6 +64,7 @@ export class MessengerBot
     pageId,
     accessToken,
     appSecret,
+    graphApiVersion = 'v11.0',
     consumeInterval = 500,
     initScope = () => createEmptyScope(),
     dispatchWrapper = (dispatch) => dispatch,
@@ -78,7 +80,12 @@ export class MessengerBot
     >(MESSENGER, generalComponentDelegator);
 
     const queue = new Queue<MessengerJob, MessengerResult>();
-    const worker = new MessengerWorker(accessToken, consumeInterval, appSecret);
+    const worker = new MessengerWorker(
+      accessToken,
+      consumeInterval,
+      graphApiVersion,
+      appSecret
+    );
 
     this.engine = new Engine(
       MESSENGER,

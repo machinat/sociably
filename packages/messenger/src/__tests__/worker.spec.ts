@@ -46,12 +46,12 @@ afterEach(() => {
 });
 
 it('call to graph api', async () => {
-  const accessToken = '_graph_api_access_token_';
-  const worker = new MessengerWorker(accessToken, 0);
+  const accessToken = '_access_token_';
+  const worker = new MessengerWorker(accessToken, 0, 'v11.0', undefined);
 
   const bodySpy = moxy(() => true);
 
-  const scope = graphApi.post('/v7.0/', bodySpy).reply(
+  const scope = graphApi.post('/v11.0/', bodySpy).reply(
     200,
     JSON.stringify(
       new Array(3).fill({
@@ -103,17 +103,17 @@ it('call to graph api', async () => {
   expect(scope.isDone()).toBe(true);
 });
 
-it('attach appsecret_proof if appSecret option given', async () => {
+it('attach appsecret_proof if appSecret is given', async () => {
   const accessToken = '_fb_graph_api_access_token_';
   const appSecret = '_fb_app_secret_';
   const expectedProof =
     'c3d9a02ac88561d9721b3cb2ba338c933f0666b68ad29523393b830b3916cd91';
 
-  const worker = new MessengerWorker(accessToken, 0, appSecret);
+  const worker = new MessengerWorker(accessToken, 0, 'v11.0', appSecret);
 
   const bodySpy = moxy(() => true);
 
-  const scope = graphApi.post('/v7.0/', bodySpy).reply(
+  const scope = graphApi.post('/v11.0/', bodySpy).reply(
     200,
     JSON.stringify(
       new Array(3).fill({
@@ -148,14 +148,31 @@ it('attach appsecret_proof if appSecret option given', async () => {
   expect(scope.isDone()).toBe(true);
 });
 
+test('use different graph api version', async () => {
+  const worker1 = new MessengerWorker('_access_token_', 0, 'v8.0', undefined);
+  const scope1 = graphApi.post('/v8.0/').reply(200, '[]');
+
+  worker1.start(queue);
+  await queue.executeJobs(jobs);
+  expect(scope1.isDone()).toBe(true);
+  worker1.stop(queue);
+
+  const worker2 = new MessengerWorker('_access_token_', 0, 'v10.0', undefined);
+  const scope2 = graphApi.post('/v10.0/').reply(200, '[]');
+
+  worker2.start(queue);
+  await queue.executeJobs(jobs);
+  expect(scope2.isDone()).toBe(true);
+});
+
 it('upload files with form data if binary attached on job', async () => {
-  const worker = new MessengerWorker('_graph_api_access_token_', 0);
+  const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
 
   const bodySpy = moxy(() => true);
 
   const scope = graphApi
     .matchHeader('content-type', /multipart\/form-data.*/)
-    .post('/v7.0/', bodySpy)
+    .post('/v11.0/', bodySpy)
     .reply(
       200,
       JSON.stringify(
@@ -231,7 +248,7 @@ it('upload files with form data if binary attached on job', async () => {
   expect(file1Field).toBeTruthy();
 
   expect(body).toMatch(
-    /Content-Disposition: form-data; name="access_token"[\n\r\s]+_graph_api_access_token_/
+    /Content-Disposition: form-data; name="access_token"[\n\r\s]+_access_token_/
   );
 
   const batch = JSON.parse(
@@ -261,10 +278,10 @@ it('upload files with form data if binary attached on job', async () => {
 });
 
 it('throw if connection error happen', async () => {
-  const worker = new MessengerWorker('_graph_api_access_token_', 0);
+  const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
 
   const scope = graphApi
-    .post('/v7.0/')
+    .post('/v11.0/')
     .replyWithError('something wrong like connection error');
 
   worker.start(queue);
@@ -272,7 +289,7 @@ it('throw if connection error happen', async () => {
     Object {
       "batch": null,
       "errors": Array [
-        [FetchError: request to https://graph.facebook.com/v7.0/ failed, reason: something wrong like connection error],
+        [FetchError: request to https://graph.facebook.com/v11.0/ failed, reason: something wrong like connection error],
       ],
       "success": false,
     }
@@ -282,9 +299,9 @@ it('throw if connection error happen', async () => {
 });
 
 it('throw if api error happen', async () => {
-  const worker = new MessengerWorker('_graph_api_access_token_', 0);
+  const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
 
-  const scope = graphApi.post('/v7.0/').reply(400, {
+  const scope = graphApi.post('/v11.0/').reply(400, {
     error: {
       message: 'The access token could not be decrypted',
       type: 'OAuthException',
@@ -308,9 +325,9 @@ it('throw if api error happen', async () => {
 });
 
 it('throw if one single job fail', async () => {
-  const worker = new MessengerWorker('_graph_api_access_token_', 0);
+  const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
 
-  const scope = graphApi.post('/v7.0/').reply(
+  const scope = graphApi.post('/v11.0/').reply(
     200,
     JSON.stringify([
       {
@@ -349,10 +366,10 @@ it('throw if one single job fail', async () => {
 });
 
 it('waits consumeInterval for jobs to execute if set', async () => {
-  const worker = new MessengerWorker('_graph_api_access_token_', 300);
+  const worker = new MessengerWorker('_access_token_', 300, 'v11.0', undefined);
 
   const bodySpy = moxy(() => true);
-  const scope = graphApi.post('/v7.0/', bodySpy).reply(
+  const scope = graphApi.post('/v11.0/', bodySpy).reply(
     200,
     JSON.stringify(
       new Array(9).fill({
@@ -385,11 +402,11 @@ it('waits consumeInterval for jobs to execute if set', async () => {
 });
 
 it('execute immediatly if consumeInterval is 0', async () => {
-  const worker = new MessengerWorker('_graph_api_access_token_', 0);
+  const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
 
   const bodySpy = moxy(() => true);
   const scope = graphApi
-    .post('/v7.0/', bodySpy)
+    .post('/v11.0/', bodySpy)
     .times(3)
     .delay(50)
     .reply(
@@ -422,13 +439,13 @@ it('execute immediatly if consumeInterval is 0', async () => {
 });
 
 it('place params at query if DELETE job met', async () => {
-  const accessToken = '_graph_api_access_token_';
-  const worker = new MessengerWorker(accessToken, 0);
+  const accessToken = '_access_token_';
+  const worker = new MessengerWorker(accessToken, 0, 'v11.0', undefined);
 
   const bodySpy = moxy(() => true);
 
   const scope = graphApi
-    .post('/v7.0/', bodySpy)
+    .post('/v11.0/', bodySpy)
     .reply(
       200,
       JSON.stringify([

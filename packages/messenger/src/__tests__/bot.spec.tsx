@@ -51,7 +51,7 @@ let graphApi;
 const bodySpy = moxy(() => true);
 
 beforeEach(() => {
-  graphApi = nock('https://graph.facebook.com').post('/v7.0/', bodySpy);
+  graphApi = nock('https://graph.facebook.com').post('/v11.0/', bodySpy);
   bodySpy.mock.clear();
   Engine.mock.clear();
   Renderer.mock.clear();
@@ -106,10 +106,15 @@ describe('#constructor(options)', () => {
     );
 
     expect(Worker.mock).toHaveBeenCalledTimes(1);
-    expect(Worker.mock).toHaveBeenCalledWith('_ACCESS_TOKEN_', 500, undefined);
+    expect(Worker.mock).toHaveBeenCalledWith(
+      '_ACCESS_TOKEN_',
+      500,
+      'v11.0',
+      undefined
+    );
   });
 
-  it('pass consumeInterval and appSecret specified to worker', () => {
+  it('pass options to worker', () => {
     expect(
       new MessengerBot({
         initScope,
@@ -117,6 +122,7 @@ describe('#constructor(options)', () => {
         pageId,
         accessToken,
         appSecret,
+        graphApiVersion: 'v8.0',
         consumeInterval: 0,
       })
     );
@@ -125,6 +131,7 @@ describe('#constructor(options)', () => {
     expect(Worker.mock).toHaveBeenCalledWith(
       '_ACCESS_TOKEN_',
       0,
+      'v8.0',
       '_APP_SECRET_'
     );
   });

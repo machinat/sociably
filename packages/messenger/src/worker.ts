@@ -12,7 +12,6 @@ type MessengerSendingResponse = JobResponse<MessengerJob, MessengerResult>;
 
 type MessengerQueue = MachinatQueue<MessengerJob, MessengerResult>;
 
-const ENTRY = 'https://graph.facebook.com/v7.0/';
 const POST = 'POST';
 
 const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
@@ -80,6 +79,7 @@ export default class MessengerWorker
   implements MachinatWorker<MessengerJob, MessengerResult> {
   token: string;
   consumeInterval: number;
+  private _graphApiEntry: string;
   private _appSecretProof: string | undefined;
 
   private _started: boolean;
@@ -90,10 +90,13 @@ export default class MessengerWorker
   constructor(
     accessToken: string,
     consumeInterval: number,
-    appSecret?: string
+    graphApiVersion: string,
+    appSecret: undefined | string
   ) {
     this.token = accessToken;
     this.consumeInterval = consumeInterval;
+
+    this._graphApiEntry = `https://graph.facebook.com/${graphApiVersion}/`;
 
     this._appSecretProof = appSecret
       ? crypto.createHmac('sha256', appSecret).update(accessToken).digest('hex')
@@ -231,7 +234,7 @@ export default class MessengerWorker
         ? appendFieldsToForm(filesForm, batchBody)
         : JSON.stringify(batchBody);
 
-    const apiResponse = await fetch(ENTRY, {
+    const apiResponse = await fetch(this._graphApiEntry, {
       method: POST,
       headers: filesForm !== undefined ? undefined : REQEST_JSON_HEADERS,
       body,

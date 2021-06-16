@@ -182,8 +182,9 @@ export type MessengerConfigs = {
   shouldValidateRequest?: boolean;
   shouldHandleVerify?: boolean;
   verifyToken?: string;
-  consumeInterval?: number;
   webhookPath?: string;
+  graphApiVersion?: string;
+  consumeInterval?: number;
   noServer?: boolean;
   optionalProfileFields?: ('locale' | 'timezone' | 'gender')[];
   eventMiddlewares?: MaybeContainer<MessengerEventMiddleware>[];
