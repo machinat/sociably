@@ -16,7 +16,7 @@ import type {
 /**
  * @category Keyword
  */
-export const $ = (Machinat.Fragment as unknown) as <
+export const $ = Machinat.Fragment as unknown as <
   Vars = any,
   Input = any,
   Return = any

@@ -39,22 +39,24 @@ type ContainerOptions<Deps extends readonly ServiceDependency<any>[]> = {
  * makeContainer marks a function as a container and annotate the dependencies.
  * @category Service Registry
  */
-export const makeContainer = <Deps extends readonly ServiceDependency<any>[]>({
-  name,
-  deps = [] as any,
-}: ContainerOptions<Deps>) => <T>(
-  fn: ServiceFactoryFn<T, Deps>
-): ServiceContainer<T, ResolveDependencies<Deps>> &
-  ServiceFactoryFn<T, Deps> => {
-  const requirements = deps.map(polishServiceRequirement);
+export const makeContainer =
+  <Deps extends readonly ServiceDependency<any>[]>({
+    name,
+    deps = [] as any,
+  }: ContainerOptions<Deps>) =>
+  <T>(
+    fn: ServiceFactoryFn<T, Deps>
+  ): ServiceContainer<T, ResolveDependencies<Deps>> &
+    ServiceFactoryFn<T, Deps> => {
+    const requirements = deps.map(polishServiceRequirement);
 
-  return Object.defineProperties(fn, {
-    $$typeof: { value: MACHINAT_SERVICE_CONTAINER, configurable: true },
-    $$name: { value: name || fn.name, configurable: true },
-    $$deps: { value: requirements, configurable: true },
-    $$factory: { value: fn, configurable: true },
-  });
-};
+    return Object.defineProperties(fn, {
+      $$typeof: { value: MACHINAT_SERVICE_CONTAINER, configurable: true },
+      $$name: { value: name || fn.name, configurable: true },
+      $$deps: { value: requirements, configurable: true },
+      $$factory: { value: fn, configurable: true },
+    });
+  };
 
 type ClassProviderOptions<T, Deps extends readonly ServiceDependency<any>[]> = {
   name?: string;
@@ -72,36 +74,32 @@ type Constructor<T> = {
  * type, and also an interface can be implemented.
  * @category Service Registry
  */
-export const makeClassProvider = <
-  _T,
-  Deps extends readonly ServiceDependency<any>[]
->({
-  name,
-  factory,
-  deps = [] as never,
-  lifetime = 'transient',
-}: ClassProviderOptions<_T, Deps> = {}) => <
-  T extends _T,
-  Klazz extends Constructor<T>
->(
-  klazz: Klazz & Constructor<T>
-): ServiceProvider<_T extends {} ? _T : T, ResolveDependencies<Deps>> &
-  Klazz => {
-  validateLifetime(lifetime);
-  const requirements = deps.map(polishServiceRequirement);
+export const makeClassProvider =
+  <_T, Deps extends readonly ServiceDependency<any>[]>({
+    name,
+    factory,
+    deps = [] as never,
+    lifetime = 'transient',
+  }: ClassProviderOptions<_T, Deps> = {}) =>
+  <T extends _T, Klazz extends Constructor<T>>(
+    klazz: Klazz & Constructor<T>
+  ): ServiceProvider<_T extends {} ? _T : T, ResolveDependencies<Deps>> &
+    Klazz => {
+    validateLifetime(lifetime);
+    const requirements = deps.map(polishServiceRequirement);
 
-  return Object.defineProperties(klazz, {
-    $$name: { value: name || klazz.name, configurable: true },
-    $$typeof: { value: MACHINAT_SERVICE_PROVIDER, configurable: true },
-    $$deps: { value: requirements, configurable: true },
-    $$factory: {
-      value: factory || ((...args) => new klazz(...args)), // eslint-disable-line new-cap
-      configurable: true,
-    },
-    $$lifetime: { value: lifetime, configurable: true },
-    $$multi: { value: false, configurable: true },
-  });
-};
+    return Object.defineProperties(klazz, {
+      $$name: { value: name || klazz.name, configurable: true },
+      $$typeof: { value: MACHINAT_SERVICE_PROVIDER, configurable: true },
+      $$deps: { value: requirements, configurable: true },
+      $$factory: {
+        value: factory || ((...args) => new klazz(...args)), // eslint-disable-line new-cap
+        configurable: true,
+      },
+      $$lifetime: { value: lifetime, configurable: true },
+      $$multi: { value: false, configurable: true },
+    });
+  };
 
 type FactoryProviderOptions<Deps extends readonly ServiceDependency<any>[]> = {
   name?: string;
@@ -114,29 +112,28 @@ type FactoryProviderOptions<Deps extends readonly ServiceDependency<any>[]> = {
  * instance type, and also an interface can be implemented.
  * @category Service Registry
  */
-export const makeFactoryProvider = <
-  _T,
-  Deps extends readonly ServiceDependency<any>[]
->({
-  name,
-  deps = [] as never,
-  lifetime = 'transient',
-}: FactoryProviderOptions<Deps> = {}) => <T extends _T>(
-  factory: ServiceFactoryFn<T, Deps>
-): ServiceProvider<_T extends {} ? _T : T, ResolveDependencies<Deps>> &
-  ServiceFactoryFn<T, Deps> => {
-  validateLifetime(lifetime);
-  const requirements = deps.map(polishServiceRequirement);
+export const makeFactoryProvider =
+  <_T, Deps extends readonly ServiceDependency<any>[]>({
+    name,
+    deps = [] as never,
+    lifetime = 'transient',
+  }: FactoryProviderOptions<Deps> = {}) =>
+  <T extends _T>(
+    factory: ServiceFactoryFn<T, Deps>
+  ): ServiceProvider<_T extends {} ? _T : T, ResolveDependencies<Deps>> &
+    ServiceFactoryFn<T, Deps> => {
+    validateLifetime(lifetime);
+    const requirements = deps.map(polishServiceRequirement);
 
-  return Object.defineProperties(factory, {
-    $$name: { value: name || factory.name, configurable: true },
-    $$typeof: { value: MACHINAT_SERVICE_PROVIDER, configurable: true },
-    $$deps: { value: requirements, configurable: true },
-    $$factory: { value: factory, configurable: true },
-    $$lifetime: { value: lifetime, configurable: true },
-    $$multi: { value: false, configurable: true },
-  });
-};
+    return Object.defineProperties(factory, {
+      $$name: { value: name || factory.name, configurable: true },
+      $$typeof: { value: MACHINAT_SERVICE_PROVIDER, configurable: true },
+      $$deps: { value: requirements, configurable: true },
+      $$factory: { value: factory, configurable: true },
+      $$lifetime: { value: lifetime, configurable: true },
+      $$multi: { value: false, configurable: true },
+    });
+  };
 
 type MakeInterfaceOptions = {
   multi?: boolean;

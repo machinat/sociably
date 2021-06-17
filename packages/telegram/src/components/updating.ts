@@ -166,11 +166,8 @@ export const EditMedia: TelegramComponent<
     return null;
   }
 
-  const {
-    method,
-    parameters,
-    uploadingFiles,
-  }: TelegramSegmentValue = mediaSegments[0].value;
+  const { method, parameters, uploadingFiles }: TelegramSegmentValue =
+    mediaSegments[0].value;
   let mediaInput;
 
   if (method === 'sendPhoto') {

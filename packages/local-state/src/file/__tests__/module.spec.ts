@@ -33,17 +33,13 @@ test('provisions', async () => {
   });
   await app.start();
 
-  const [
-    fileController,
-    baseController,
-    configs,
-    defaultSerializer,
-  ] = app.useServices([
-    FileStateController,
-    BaseStateControllerI,
-    FileState.Configs,
-    FileState.Serializer,
-  ]);
+  const [fileController, baseController, configs, defaultSerializer] =
+    app.useServices([
+      FileStateController,
+      BaseStateControllerI,
+      FileState.Configs,
+      FileState.Serializer,
+    ]);
 
   expect(fileController).toBeInstanceOf(FileStateController);
   expect(baseController).toBe(fileController);

@@ -112,14 +112,8 @@ class CookieOperator {
     }
 
     try {
-      const {
-        platform,
-        state,
-      }: StateTokenPayload<State> = await thenifiedly.call(
-        verifyJWT,
-        encodedState,
-        this.options.secret
-      );
+      const { platform, state }: StateTokenPayload<State> =
+        await thenifiedly.call(verifyJWT, encodedState, this.options.secret);
 
       return platform === platformAsserted ? state : null;
     } catch (e) {

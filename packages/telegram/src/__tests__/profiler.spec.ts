@@ -383,13 +383,8 @@ describe('#fetchUserPhoto(user)', () => {
       first_name: 'John',
     });
 
-    const {
-      content,
-      contentType,
-      contentLength,
-      width,
-      height,
-    }: any = await profiler.fetchUserPhoto(user);
+    const { content, contentType, contentLength, width, height }: any =
+      await profiler.fetchUserPhoto(user);
 
     expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
     expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getUserProfilePhotos', {
@@ -485,13 +480,8 @@ describe('#fetchChatPhoto(user)', () => {
 
     const profiler = new TelegramProfiler(bot);
 
-    const {
-      content,
-      contentType,
-      contentLength,
-      width,
-      height,
-    }: any = await profiler.fetchChatPhoto(12345);
+    const { content, contentType, contentLength, width, height }: any =
+      await profiler.fetchChatPhoto(12345);
 
     expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
     expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {

@@ -10,7 +10,8 @@ const API_HOST = 'https://api.telegram.org';
 type TelegramJobQueue = Queue<TelegramJob, TelegramResult>;
 
 export default class TelegramWorker
-  implements MachinatWorker<TelegramJob, TelegramResult> {
+  implements MachinatWorker<TelegramJob, TelegramResult>
+{
   private _started: boolean;
   private _lockedKeys: Set<string>;
 

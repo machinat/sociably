@@ -30,7 +30,8 @@ const waitingForRedirecting = (): Promise<never> =>
 
 class LineClientAuthorizer
   implements
-    WebviewClientAuthorizer<LineAuthCredential, LineAuthData, LineAuthContext> {
+    WebviewClientAuthorizer<LineAuthCredential, LineAuthData, LineAuthContext>
+{
   liff: any;
   liffId: string;
   shouldLoadSDK: boolean;

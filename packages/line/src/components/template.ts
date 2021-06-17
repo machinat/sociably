@@ -60,8 +60,8 @@ export type ButtonTemplateProps = {
  * @props {@link ButtonTemplateProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#buttons).
  */
-export const ButtonTemplate: LineComponent<ButtonTemplateProps> = annotateLineComponent(
-  async function ButtonTemplate(node, path, render) {
+export const ButtonTemplate: LineComponent<ButtonTemplateProps> =
+  annotateLineComponent(async function ButtonTemplate(node, path, render) {
     const {
       actions,
       defaultAction,
@@ -74,15 +74,12 @@ export const ButtonTemplate: LineComponent<ButtonTemplateProps> = annotateLineCo
       children,
     } = node.props;
 
-    const [
-      defaultActionSegments,
-      actionSegments,
-      textSegments,
-    ] = await Promise.all([
-      render(defaultAction, '.defaultAction'),
-      render(actions, '.actions'),
-      render(children, '.children'),
-    ]);
+    const [defaultActionSegments, actionSegments, textSegments] =
+      await Promise.all([
+        render(defaultAction, '.defaultAction'),
+        render(actions, '.actions'),
+        render(children, '.children'),
+      ]);
 
     const template = {
       type: 'buttons',
@@ -103,8 +100,7 @@ export const ButtonTemplate: LineComponent<ButtonTemplateProps> = annotateLineCo
         template,
       }),
     ];
-  }
-);
+  });
 
 /**
  * @category Props
@@ -131,8 +127,8 @@ export type ConfirmTemplateProps = {
  * @props {@link ConfirmTemplateProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#confirm).
  */
-export const ConfirmTemplate: LineComponent<ConfirmTemplateProps> = annotateLineComponent(
-  async function ConfirmTemplate(node, path, render) {
+export const ConfirmTemplate: LineComponent<ConfirmTemplateProps> =
+  annotateLineComponent(async function ConfirmTemplate(node, path, render) {
     const { actions, altText, children } = node.props;
     const [actionSegments, textSegments] = await Promise.all([
       render(actions, '.actions'),
@@ -152,8 +148,7 @@ export const ConfirmTemplate: LineComponent<ConfirmTemplateProps> = annotateLine
         template,
       }),
     ];
-  }
-);
+  });
 
 /**
  * @category Props
@@ -200,15 +195,12 @@ export const CarouselItem: LineComponent<
     children,
   } = node.props;
 
-  const [
-    defaultActionSegments,
-    actionSegments,
-    textSegments,
-  ] = await Promise.all([
-    render(defaultAction, '.defaultAction'),
-    render(actions, '.actions'),
-    render(children, '.children'),
-  ]);
+  const [defaultActionSegments, actionSegments, textSegments] =
+    await Promise.all([
+      render(defaultAction, '.defaultAction'),
+      render(actions, '.actions'),
+      render(children, '.children'),
+    ]);
 
   return [
     makePartSegment(node, path, {
@@ -261,8 +253,8 @@ export type CarouselTemplateProps = {
  * @props {@link CarouselTemplateProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#carousel).
  */
-export const CarouselTemplate: LineComponent<CarouselTemplateProps> = annotateLineComponent(
-  async function CarouselTemplate(node, path, render) {
+export const CarouselTemplate: LineComponent<CarouselTemplateProps> =
+  annotateLineComponent(async function CarouselTemplate(node, path, render) {
     const { children, altText, imageAspectRatio, imageSize } = node.props;
     const columnSegments = await render(children, '.children');
 
@@ -280,8 +272,7 @@ export const CarouselTemplate: LineComponent<CarouselTemplateProps> = annotateLi
         template,
       }),
     ];
-  }
-);
+  });
 
 /**
  * @category Props
@@ -339,8 +330,12 @@ export type ImageCarouselTemplateProps = {
  * @props {@link ImageCarouselTemplateProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#image-carousel).
  */
-export const ImageCarouselTemplate: LineComponent<ImageCarouselTemplateProps> = annotateLineComponent(
-  async function ImageCarouselTemplate(node, path, render) {
+export const ImageCarouselTemplate: LineComponent<ImageCarouselTemplateProps> =
+  annotateLineComponent(async function ImageCarouselTemplate(
+    node,
+    path,
+    render
+  ) {
     const { children, altText } = node.props;
     const columnSegments = await render(children, '.children');
 
@@ -356,5 +351,4 @@ export const ImageCarouselTemplate: LineComponent<ImageCarouselTemplateProps> = 
         template,
       }),
     ];
-  }
-);
+  });

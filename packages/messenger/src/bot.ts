@@ -48,7 +48,8 @@ type MessengerBotOptions = {
  * @category Provider
  */
 export class MessengerBot
-  implements MachinatBot<MessengerChannel, MessengerJob, MessengerResult> {
+  implements MachinatBot<MessengerChannel, MessengerJob, MessengerResult>
+{
   pageId: number;
   worker: MessengerWorker;
   engine: Engine<

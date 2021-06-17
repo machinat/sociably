@@ -3,9 +3,11 @@ import type { RedisClient } from 'redis';
 import moxy from '@moxyjs/moxy';
 import { RedisStateController } from '../controller';
 
-const resolveCallback = (result) => (...args) => {
-  args[args.length - 1](null, result);
-};
+const resolveCallback =
+  (result) =>
+  (...args) => {
+    args[args.length - 1](null, result);
+  };
 
 const client = moxy<RedisClient>({
   hget: resolveCallback(null),

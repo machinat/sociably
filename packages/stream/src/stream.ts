@@ -26,11 +26,41 @@ export default class Stream<T> {
 
   /* eslint-disable prettier/prettier */
   pipe<A>(fn1: OperatorFunction<T, A>): Stream<A>;
-  pipe<A,B>(fn1: OperatorFunction<T,A>, fn2: OperatorFunction<A,B>): Stream<B>;
-  pipe<A,B,C>(fn1: OperatorFunction<T,A>,fn2: OperatorFunction<A,B>,fn3: OperatorFunction<B,C>): Stream<C>;
-  pipe<A,B,C,D>(fn1: OperatorFunction<T,A>,fn2: OperatorFunction<A,B>,fn3: OperatorFunction<B,C>,fn4: OperatorFunction<C,D>): Stream<D>;
-  pipe<A,B,C,D,E>(fn1: OperatorFunction<T,A>,fn2: OperatorFunction<A,B>,fn3: OperatorFunction<B,C>,fn4: OperatorFunction<C,D>,fn5: OperatorFunction<D,E>): Stream<E>;
-  pipe<A,B,C,D,E,F>(fn1: OperatorFunction<T,A>,fn2: OperatorFunction<A,B>,fn3: OperatorFunction<B,C>,fn4: OperatorFunction<C,D>,fn5: OperatorFunction<D,E>,fn6: OperatorFunction<E,F>): Stream<F>;
+  pipe<A, B>(
+    fn1: OperatorFunction<T, A>,
+    fn2: OperatorFunction<A, B>
+  ): Stream<B>;
+
+  pipe<A, B, C>(
+    fn1: OperatorFunction<T, A>,
+    fn2: OperatorFunction<A, B>,
+    fn3: OperatorFunction<B, C>
+  ): Stream<C>;
+
+  pipe<A, B, C, D>(
+    fn1: OperatorFunction<T, A>,
+    fn2: OperatorFunction<A, B>,
+    fn3: OperatorFunction<B, C>,
+    fn4: OperatorFunction<C, D>
+  ): Stream<D>;
+
+  pipe<A, B, C, D, E>(
+    fn1: OperatorFunction<T, A>,
+    fn2: OperatorFunction<A, B>,
+    fn3: OperatorFunction<B, C>,
+    fn4: OperatorFunction<C, D>,
+    fn5: OperatorFunction<D, E>
+  ): Stream<E>;
+
+  pipe<A, B, C, D, E, F>(
+    fn1: OperatorFunction<T, A>,
+    fn2: OperatorFunction<A, B>,
+    fn3: OperatorFunction<B, C>,
+    fn4: OperatorFunction<C, D>,
+    fn5: OperatorFunction<D, E>,
+    fn6: OperatorFunction<E, F>
+  ): Stream<F>;
+
   pipe(...fns: OperatorFunction<unknown, unknown>[]): Stream<unknown>;
   /* eslint-enable prettier/prettier */
   pipe(...fns: OperatorFunction<any, unknown>[]): Stream<unknown> {

@@ -10,7 +10,8 @@ import { TelegramAuthContext, TelegramAuthData } from './types';
 /* eslint-disable class-methods-use-this */
 export default class TelegramClientAuthorizer
   implements
-    WebviewClientAuthorizer<void, TelegramAuthData, TelegramAuthContext> {
+    WebviewClientAuthorizer<void, TelegramAuthData, TelegramAuthContext>
+{
   platform = TELEGRAM;
   marshalTypes = [
     TelegramChat,

@@ -69,19 +69,14 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [
-      bot,
-      receiver,
-      profiler,
-      configsProvided,
-      routings,
-    ] = app.useServices([
-      Messenger.Bot,
-      Messenger.Receiver,
-      Messenger.Profiler,
-      Messenger.Configs,
-      Http.RequestRouteList,
-    ]);
+    const [bot, receiver, profiler, configsProvided, routings] =
+      app.useServices([
+        Messenger.Bot,
+        Messenger.Receiver,
+        Messenger.Profiler,
+        Messenger.Configs,
+        Http.RequestRouteList,
+      ]);
 
     expect(bot).toBeInstanceOf(MessengerBot);
     expect(receiver).toBeInstanceOf(MessengerReceiver);

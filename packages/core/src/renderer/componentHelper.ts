@@ -17,21 +17,21 @@ type FunctionOf<Fn extends (...args: unknown[]) => unknown> = (
   ...args: Parameters<Fn>
 ) => ReturnType<Fn>;
 
-export const annotateNativeComponent = (platform: string) => <
-  Component extends NativeComponent<unknown, any>
->(
-  componentFn: FunctionOf<Component>
-): Component =>
-  Object.defineProperties(componentFn, {
-    $$typeof: {
-      value: MACHINAT_NATIVE_TYPE,
-      configurable: true,
-    },
-    $$platform: {
-      value: platform,
-      configurable: true,
-    },
-  });
+export const annotateNativeComponent =
+  (platform: string) =>
+  <Component extends NativeComponent<unknown, any>>(
+    componentFn: FunctionOf<Component>
+  ): Component =>
+    Object.defineProperties(componentFn, {
+      $$typeof: {
+        value: MACHINAT_NATIVE_TYPE,
+        configurable: true,
+      },
+      $$platform: {
+        value: platform,
+        configurable: true,
+      },
+    });
 
 export const makeBreakSegment = (
   node: GeneralElement | NativeElement<unknown, any>,

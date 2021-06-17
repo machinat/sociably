@@ -178,15 +178,8 @@ export const ImageMapVideoArea: LineComponent<
   ImageMapVideoAreaProps,
   PartSegment<any>
 > = annotateLineComponent(async function ImageMapVideoArea(node, path, render) {
-  const {
-    originalContentUrl,
-    previewImageUrl,
-    x,
-    y,
-    width,
-    height,
-    action,
-  } = node.props;
+  const { originalContentUrl, previewImageUrl, x, y, width, height, action } =
+    node.props;
 
   const actionSegments = await render(action, '.action');
   const actionValue = actionSegments?.[0].value;

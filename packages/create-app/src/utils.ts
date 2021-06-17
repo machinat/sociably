@@ -1,19 +1,18 @@
-export const when = (shouldOutput: boolean) => (
-  strs: TemplateStringsArray,
-  ...inputs: unknown[]
-): string => {
-  if (!shouldOutput) {
-    return '';
-  }
+export const when =
+  (shouldOutput: boolean) =>
+  (strs: TemplateStringsArray, ...inputs: unknown[]): string => {
+    if (!shouldOutput) {
+      return '';
+    }
 
-  let outputStr = '';
+    let outputStr = '';
 
-  for (let i = 0; i < strs.length; i += 1) {
-    outputStr += strs[i] + (inputs[i] || '');
-  }
+    for (let i = 0; i < strs.length; i += 1) {
+      outputStr += strs[i] + (inputs[i] || '');
+    }
 
-  return outputStr;
-};
+    return outputStr;
+  };
 
 export const polishFileContent = (inputString: string): null | string => {
   if (inputString === '') {

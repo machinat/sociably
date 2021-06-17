@@ -146,12 +146,11 @@ export type WebviewConfigs<
   dispatchMiddlewares?: MaybeContainer<WebviewDispatchMiddleware>[];
 };
 
-export type WebviewPlatformUtilities<
-  Authorizer extends AnyServerAuthorizer
-> = PlatformUtilities<
-  WebviewEventContext<Authorizer, EventValue>,
-  null,
-  WebSocketJob,
-  WebviewDispatchFrame,
-  WebSocketResult
->;
+export type WebviewPlatformUtilities<Authorizer extends AnyServerAuthorizer> =
+  PlatformUtilities<
+    WebviewEventContext<Authorizer, EventValue>,
+    null,
+    WebSocketJob,
+    WebviewDispatchFrame,
+    WebSocketResult
+  >;

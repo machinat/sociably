@@ -12,7 +12,8 @@ import { ConfigsI } from './interface';
 import { MESSENGER } from './constant';
 
 export class MessengerUserProfile
-  implements MachinatProfile, MarshallableInstance<RawUserProfile> {
+  implements MachinatProfile, MarshallableInstance<RawUserProfile>
+{
   static typeName = 'MessengerUserProfile';
 
   static fromJSONValue(data: RawUserProfile): MessengerUserProfile {

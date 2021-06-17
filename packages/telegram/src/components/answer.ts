@@ -172,13 +172,12 @@ export const InlineQueryResultArticle: TelegramComponent<
     thumbHeight,
   } = node.props;
 
-  const [
-    inputMessageContentObject,
-    inlineKeyboardSegemnts,
-  ] = await Promise.all([
-    renderInputMessageContent(inputMessageContent, render),
-    render(replyMarkup, '.replyMarkup'),
-  ]);
+  const [inputMessageContentObject, inlineKeyboardSegemnts] = await Promise.all(
+    [
+      renderInputMessageContent(inputMessageContent, render),
+      render(replyMarkup, '.replyMarkup'),
+    ]
+  );
 
   return [
     makePartSegment(node, path, {
@@ -258,15 +257,12 @@ export const InlineQueryResultPhoto: TelegramComponent<
     inputMessageContent,
   } = node.props as UnionToIntersection<InlineQueryResultPhotoProps>;
 
-  const [
-    inputMessageContentObject,
-    inlineKeyboardSegemnts,
-    captionSegments,
-  ] = await Promise.all([
-    renderInputMessageContent(inputMessageContent, render),
-    render(replyMarkup, '.replyMarkup'),
-    render(caption, '.caption'),
-  ]);
+  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+    await Promise.all([
+      renderInputMessageContent(inputMessageContent, render),
+      render(replyMarkup, '.replyMarkup'),
+      render(caption, '.caption'),
+    ]);
 
   return [
     makePartSegment(node, path, {
@@ -351,15 +347,12 @@ export const InlineQueryResultGif: TelegramComponent<
     inputMessageContent,
   } = node.props as UnionToIntersection<InlineQueryResultGifProps>;
 
-  const [
-    inputMessageContentObject,
-    inlineKeyboardSegemnts,
-    captionSegments,
-  ] = await Promise.all([
-    renderInputMessageContent(inputMessageContent, render),
-    render(replyMarkup, '.replyMarkup'),
-    render(caption, '.caption'),
-  ]);
+  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+    await Promise.all([
+      renderInputMessageContent(inputMessageContent, render),
+      render(replyMarkup, '.replyMarkup'),
+      render(caption, '.caption'),
+    ]);
 
   return [
     makePartSegment(node, path, {
@@ -445,15 +438,12 @@ export const InlineQueryResultMpeg4Gif: TelegramComponent<
     inputMessageContent,
   } = node.props as UnionToIntersection<InlineQueryResultMpeg4GifProps>;
 
-  const [
-    inputMessageContentObject,
-    inlineKeyboardSegemnts,
-    captionSegments,
-  ] = await Promise.all([
-    renderInputMessageContent(inputMessageContent, render),
-    render(replyMarkup, '.replyMarkup'),
-    render(caption, '.caption'),
-  ]);
+  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+    await Promise.all([
+      renderInputMessageContent(inputMessageContent, render),
+      render(replyMarkup, '.replyMarkup'),
+      render(caption, '.caption'),
+    ]);
 
   return [
     makePartSegment(node, path, {
@@ -541,15 +531,12 @@ export const InlineQueryResultVideo: TelegramComponent<
     inputMessageContent,
   } = node.props as UnionToIntersection<InlineQueryResultVideoProps>;
 
-  const [
-    inputMessageContentObject,
-    inlineKeyboardSegemnts,
-    captionSegments,
-  ] = await Promise.all([
-    renderInputMessageContent(inputMessageContent, render),
-    render(replyMarkup, '.replyMarkup'),
-    render(caption, '.caption'),
-  ]);
+  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+    await Promise.all([
+      renderInputMessageContent(inputMessageContent, render),
+      render(replyMarkup, '.replyMarkup'),
+      render(caption, '.caption'),
+    ]);
 
   return [
     makePartSegment(node, path, {
@@ -626,15 +613,12 @@ export const InlineQueryResultAudio: TelegramComponent<
     inputMessageContent,
   } = node.props as UnionToIntersection<InlineQueryResultAudioProps>;
 
-  const [
-    inputMessageContentObject,
-    inlineKeyboardSegemnts,
-    captionSegments,
-  ] = await Promise.all([
-    renderInputMessageContent(inputMessageContent, render),
-    render(replyMarkup, '.replyMarkup'),
-    render(caption, '.caption'),
-  ]);
+  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+    await Promise.all([
+      renderInputMessageContent(inputMessageContent, render),
+      render(replyMarkup, '.replyMarkup'),
+      render(caption, '.caption'),
+    ]);
 
   return [
     makePartSegment(node, path, {
@@ -704,15 +688,12 @@ export const InlineQueryResultVoice: TelegramComponent<
     inputMessageContent,
   } = node.props as UnionToIntersection<InlineQueryResultVoiceProps>;
 
-  const [
-    inputMessageContentObject,
-    inlineKeyboardSegemnts,
-    captionSegments,
-  ] = await Promise.all([
-    renderInputMessageContent(inputMessageContent, render),
-    render(replyMarkup, '.replyMarkup'),
-    render(caption, '.caption'),
-  ]);
+  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+    await Promise.all([
+      renderInputMessageContent(inputMessageContent, render),
+      render(replyMarkup, '.replyMarkup'),
+      render(caption, '.caption'),
+    ]);
 
   return [
     makePartSegment(node, path, {
@@ -793,15 +774,12 @@ export const InlineQueryResultDocument: TelegramComponent<
     inputMessageContent,
   } = node.props as UnionToIntersection<InlineQueryResultDocumentProps>;
 
-  const [
-    inputMessageContentObject,
-    inlineKeyboardSegemnts,
-    captionSegments,
-  ] = await Promise.all([
-    renderInputMessageContent(inputMessageContent, render),
-    render(replyMarkup, '.replyMarkup'),
-    render(caption, '.caption'),
-  ]);
+  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+    await Promise.all([
+      renderInputMessageContent(inputMessageContent, render),
+      render(replyMarkup, '.replyMarkup'),
+      render(caption, '.caption'),
+    ]);
 
   return [
     makePartSegment(node, path, {
@@ -847,13 +825,12 @@ export const InlineQueryResultSticker: TelegramComponent<
 ) {
   const { id, fileId, replyMarkup, inputMessageContent } = node.props;
 
-  const [
-    inputMessageContentObject,
-    inlineKeyboardSegemnts,
-  ] = await Promise.all([
-    renderInputMessageContent(inputMessageContent, render),
-    render(replyMarkup, '.replyMarkup'),
-  ]);
+  const [inputMessageContentObject, inlineKeyboardSegemnts] = await Promise.all(
+    [
+      renderInputMessageContent(inputMessageContent, render),
+      render(replyMarkup, '.replyMarkup'),
+    ]
+  );
 
   return [
     makePartSegment(node, path, {
@@ -913,13 +890,12 @@ export const InlineQueryResultLocation: TelegramComponent<
     thumbHeight,
   } = node.props;
 
-  const [
-    inputMessageContentObject,
-    inlineKeyboardSegemnts,
-  ] = await Promise.all([
-    renderInputMessageContent(inputMessageContent, render),
-    render(replyMarkup, '.replyMarkup'),
-  ]);
+  const [inputMessageContentObject, inlineKeyboardSegemnts] = await Promise.all(
+    [
+      renderInputMessageContent(inputMessageContent, render),
+      render(replyMarkup, '.replyMarkup'),
+    ]
+  );
 
   return [
     makePartSegment(node, path, {
@@ -991,13 +967,12 @@ export const InlineQueryResultVenue: TelegramComponent<
     thumbHeight,
   } = node.props;
 
-  const [
-    inputMessageContentObject,
-    inlineKeyboardSegemnts,
-  ] = await Promise.all([
-    renderInputMessageContent(inputMessageContent, render),
-    render(replyMarkup, '.replyMarkup'),
-  ]);
+  const [inputMessageContentObject, inlineKeyboardSegemnts] = await Promise.all(
+    [
+      renderInputMessageContent(inputMessageContent, render),
+      render(replyMarkup, '.replyMarkup'),
+    ]
+  );
 
   return [
     makePartSegment(node, path, {
@@ -1065,13 +1040,12 @@ export const InlineQueryResultContact: TelegramComponent<
     inputMessageContent,
   } = node.props;
 
-  const [
-    inputMessageContentObject,
-    inlineKeyboardSegemnts,
-  ] = await Promise.all([
-    renderInputMessageContent(inputMessageContent, render),
-    render(replyMarkup, '.replyMarkup'),
-  ]);
+  const [inputMessageContentObject, inlineKeyboardSegemnts] = await Promise.all(
+    [
+      renderInputMessageContent(inputMessageContent, render),
+      render(replyMarkup, '.replyMarkup'),
+    ]
+  );
 
   return [
     makePartSegment(node, path, {

@@ -34,12 +34,8 @@ export const Expression: TelegramComponent<
     replyMarkup,
   } = node.props;
 
-  const contentSegments:
-    | null
-    | IntermediateSegment<TelegramSegmentValue>[] = await render(
-    children,
-    '.children'
-  );
+  const contentSegments: null | IntermediateSegment<TelegramSegmentValue>[] =
+    await render(children, '.children');
 
   if (contentSegments === null) {
     return null;

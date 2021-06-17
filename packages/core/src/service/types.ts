@@ -66,29 +66,27 @@ export type ServiceDependency<I extends Interfaceable<unknown>> =
   | ServiceRequirement<I>
   | typeof ServiceScope;
 
-type ResolveInterfaceable<
-  I extends Interfaceable<unknown>
-> = I extends ServiceProvider<infer T, unknown[]>
-  ? T
-  : I extends SingularServiceInterface<infer T>
-  ? T
-  : I extends MultiServiceInterface<infer T>
-  ? T[]
-  : I extends PolymorphicServiceInterface<infer T>
-  ? Map<string, T>
-  : never;
+type ResolveInterfaceable<I extends Interfaceable<unknown>> =
+  I extends ServiceProvider<infer T, unknown[]>
+    ? T
+    : I extends SingularServiceInterface<infer T>
+    ? T
+    : I extends MultiServiceInterface<infer T>
+    ? T[]
+    : I extends PolymorphicServiceInterface<infer T>
+    ? Map<string, T>
+    : never;
 
-export type ResolveDependency<
-  Dep extends ServiceDependency<any>
-> = Dep extends typeof ServiceScope
-  ? ServiceScope
-  : Dep extends Interfaceable<unknown>
-  ? ResolveInterfaceable<Dep>
-  : Dep extends StrictServiceRequirement<infer I>
-  ? ResolveInterfaceable<I>
-  : Dep extends OptionalServiceRequirement<infer I>
-  ? null | ResolveInterfaceable<I>
-  : never;
+export type ResolveDependency<Dep extends ServiceDependency<any>> =
+  Dep extends typeof ServiceScope
+    ? ServiceScope
+    : Dep extends Interfaceable<unknown>
+    ? ResolveInterfaceable<Dep>
+    : Dep extends StrictServiceRequirement<infer I>
+    ? ResolveInterfaceable<I>
+    : Dep extends OptionalServiceRequirement<infer I>
+    ? null | ResolveInterfaceable<I>
+    : never;
 
 export type ResolveDependencies<
   Deps extends readonly ServiceDependency<Interfaceable<unknown>>[]

@@ -243,9 +243,8 @@ export type ContextOfAuthorizer<
   ? Context
   : never;
 
-type UserOfContext<
-  Context extends AnyAuthContext
-> = Context extends AuthContext<infer User, any> ? User : never;
+type UserOfContext<Context extends AnyAuthContext> =
+  Context extends AuthContext<infer User, any> ? User : never;
 
 export type UserOfAuthorizer<
   Authorizer extends AnyServerAuthorizer | AnyClientAuthorizer

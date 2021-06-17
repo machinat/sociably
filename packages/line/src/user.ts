@@ -8,7 +8,8 @@ type LineUserValue = {
 };
 
 export default class LineUser
-  implements MachinatUser, MarshallableInstance<LineUserValue> {
+  implements MachinatUser, MarshallableInstance<LineUserValue>
+{
   static typeName = 'LineUser';
 
   platform = LINE;

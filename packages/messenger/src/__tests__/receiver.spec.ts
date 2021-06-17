@@ -149,8 +149,7 @@ describe('handling GET', () => {
 
     const req = createReq({
       method: 'GET',
-      url:
-        '/?hub.mode=subscribe&hub.verify_token=_MY_TOKEN_&hub.challenge=FooBarBazHub',
+      url: '/?hub.mode=subscribe&hub.verify_token=_MY_TOKEN_&hub.challenge=FooBarBazHub',
     });
     const res = createRes();
 
@@ -385,8 +384,7 @@ describe('handling POST', () => {
     await receiver.handleRequest(
       createReq({
         method: 'POST',
-        body:
-          '{"object":"page","entry":[{"id":1234567890,"time":1458692752478,"messaging":[{"sender":{"id":"_PSID_"},"recipient":{"id":1234567890},"message":{"mid":"xxx","text":"foo"}}]}]}',
+        body: '{"object":"page","entry":[{"id":1234567890,"time":1458692752478,"messaging":[{"sender":{"id":"_PSID_"},"recipient":{"id":1234567890},"message":{"mid":"xxx","text":"foo"}}]}]}',
       }),
       createRes()
     );

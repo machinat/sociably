@@ -8,7 +8,8 @@ type TelegramUserValue = {
 };
 
 class TelegramUser
-  implements MachinatUser, MarshallableInstance<TelegramUserValue> {
+  implements MachinatUser, MarshallableInstance<TelegramUserValue>
+{
   static typeName = 'TelegramUser';
 
   static fromJSONValue({ id }: TelegramUserValue): TelegramUser {

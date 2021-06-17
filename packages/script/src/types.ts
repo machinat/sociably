@@ -375,15 +375,14 @@ export type ScriptCommand<Vars, Input, Return> =
   | EffectCommand<Vars, unknown>
   | ReturnCommand<Vars, Return>;
 
-export type CallStatus<
-  Script extends AnyScriptLibrary
-> = Script extends ScriptLibrary<unknown, infer Vars, unknown, unknown, unknown>
-  ? {
-      script: Script;
-      vars: Vars;
-      stopAt: undefined | string;
-    }
-  : never;
+export type CallStatus<Script extends AnyScriptLibrary> =
+  Script extends ScriptLibrary<unknown, infer Vars, unknown, unknown, unknown>
+    ? {
+        script: Script;
+        vars: Vars;
+        stopAt: undefined | string;
+      }
+    : never;
 
 export type SerializedCallStatus<Vars> = {
   name: string;
@@ -397,44 +396,22 @@ export type ScriptProcessState = {
   callStack: SerializedCallStatus<unknown>[];
 };
 
-export type ParamsOfScript<
-  Script extends AnyScriptLibrary
-> = Script extends ScriptLibrary<
-  infer Params,
-  unknown,
-  unknown,
-  unknown,
-  unknown
->
-  ? Params
-  : never;
+export type ParamsOfScript<Script extends AnyScriptLibrary> =
+  Script extends ScriptLibrary<infer Params, unknown, unknown, unknown, unknown>
+    ? Params
+    : never;
 
-export type VarsOfScript<
-  Script extends AnyScriptLibrary
-> = Script extends ScriptLibrary<unknown, infer Vars, unknown, unknown, unknown>
-  ? Vars
-  : never;
+export type VarsOfScript<Script extends AnyScriptLibrary> =
+  Script extends ScriptLibrary<unknown, infer Vars, unknown, unknown, unknown>
+    ? Vars
+    : never;
 
-export type InputOfScript<
-  Script extends AnyScriptLibrary
-> = Script extends ScriptLibrary<
-  unknown,
-  unknown,
-  infer Input,
-  unknown,
-  unknown
->
-  ? Input
-  : never;
+export type InputOfScript<Script extends AnyScriptLibrary> =
+  Script extends ScriptLibrary<unknown, unknown, infer Input, unknown, unknown>
+    ? Input
+    : never;
 
-export type ReturnOfScript<
-  Script extends AnyScriptLibrary
-> = Script extends ScriptLibrary<
-  unknown,
-  unknown,
-  unknown,
-  infer Return,
-  unknown
->
-  ? Return
-  : never;
+export type ReturnOfScript<Script extends AnyScriptLibrary> =
+  Script extends ScriptLibrary<unknown, unknown, unknown, infer Return, unknown>
+    ? Return
+    : never;

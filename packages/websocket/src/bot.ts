@@ -44,7 +44,8 @@ const toConnection = ({ serverId, id }: ConnIdentifier) =>
  */
 export class WebSocketBot
   implements
-    MachinatBot<WebSocketDispatchChannel, WebSocketJob, WebSocketResult> {
+    MachinatBot<WebSocketDispatchChannel, WebSocketJob, WebSocketResult>
+{
   private _server: ServerP<any, unknown>;
   engine: Engine<
     WebSocketDispatchChannel,

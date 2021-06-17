@@ -81,13 +81,8 @@ export const EditLiveLocation: TelegramComponent<
   path,
   render
 ) {
-  const {
-    latitude,
-    longitude,
-    messageId,
-    inlineMessageId,
-    replyMarkup,
-  } = node.props;
+  const { latitude, longitude, messageId, inlineMessageId, replyMarkup } =
+    node.props;
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [

@@ -18,8 +18,8 @@ export type LinkRichMenuProps = {
  * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/using-rich-menus/)
  *   and [reference](https://developers.line.biz/en/reference/messaging-api/#link-rich-menu-to-user).
  */
-export const LinkRichMenu: LineComponent<LinkRichMenuProps> = annotateLineComponent(
-  function LinkRichMenu(node, path) {
+export const LinkRichMenu: LineComponent<LinkRichMenuProps> =
+  annotateLineComponent(function LinkRichMenu(node, path) {
     return [
       makeUnitSegment(node, path, {
         id: node.props.id,
@@ -48,8 +48,7 @@ export const LinkRichMenu: LineComponent<LinkRichMenuProps> = annotateLineCompon
         },
       }),
     ];
-  }
-);
+  });
 
 const UNLINK_RICHMENU_VALUE = {
   [CHANNEL_REQUEST_GETTER](channel) {

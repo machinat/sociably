@@ -265,17 +265,16 @@ export type AppConfig<Platform extends AnyMachinatPlatform> = {
   services?: ServiceProvision<unknown>[];
 };
 
-export type EventContextOfPlatform<
-  Platform extends AnyMachinatPlatform
-> = Platform extends MachinatPlatform<
-  infer Context,
-  unknown,
-  unknown,
-  any,
-  unknown
->
-  ? Context
-  : never;
+export type EventContextOfPlatform<Platform extends AnyMachinatPlatform> =
+  Platform extends MachinatPlatform<
+    infer Context,
+    unknown,
+    unknown,
+    any,
+    unknown
+  >
+    ? Context
+    : never;
 
 export type InitScopeFn = () => ServiceScope;
 

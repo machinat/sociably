@@ -13,7 +13,8 @@ const USER_KEY = 'none_user';
 const CHANNEL_KEY = 'none_channel';
 
 class NoneClientAuthorizer
-  implements ClientAuthorizer<NoneAuthData, NoneAuthData, NoneAuthContext> {
+  implements ClientAuthorizer<NoneAuthData, NoneAuthData, NoneAuthContext>
+{
   platform = 'none';
 
   async init(): Promise<void> {}

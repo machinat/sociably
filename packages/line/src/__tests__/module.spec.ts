@@ -68,19 +68,14 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [
-      bot,
-      receiver,
-      configsProvided,
-      profiler,
-      routings,
-    ] = app.useServices([
-      Line.Bot,
-      Line.Receiver,
-      Line.Configs,
-      Line.Profiler,
-      Http.RequestRouteList,
-    ]);
+    const [bot, receiver, configsProvided, profiler, routings] =
+      app.useServices([
+        Line.Bot,
+        Line.Receiver,
+        Line.Configs,
+        Line.Profiler,
+        Http.RequestRouteList,
+      ]);
 
     expect(bot).toBeInstanceOf(LineBot);
     expect(receiver).toBeInstanceOf(LineReceiver);

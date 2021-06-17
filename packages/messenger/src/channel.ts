@@ -12,7 +12,8 @@ type MessengerChatValue = {
 };
 
 class MessengerChat
-  implements MachinatChannel, MarshallableInstance<MessengerChatValue> {
+  implements MachinatChannel, MarshallableInstance<MessengerChatValue>
+{
   static typeName = 'MessengerChat';
 
   static fromUser(user: MessengerUser): MessengerChat {

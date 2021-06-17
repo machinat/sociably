@@ -22,12 +22,8 @@ export const createChatJob = (
         uploadingFiles: null,
       });
     } else {
-      const {
-        method,
-        toDirectInstance,
-        parameters,
-        uploadingFiles,
-      } = segment.value;
+      const { method, toDirectInstance, parameters, uploadingFiles } =
+        segment.value;
 
       jobs.push({
         method,
@@ -54,12 +50,8 @@ export const createDirectInstanceJobs = (
     if (segment.type === 'text') {
       throw new TypeError('text is invalid to be rendered without target chat');
     } else {
-      const {
-        method,
-        toDirectInstance,
-        parameters,
-        uploadingFiles,
-      } = segment.value;
+      const { method, toDirectInstance, parameters, uploadingFiles } =
+        segment.value;
 
       if (!toDirectInstance) {
         throw new TypeError(

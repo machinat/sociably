@@ -11,7 +11,8 @@ import type { LineRawUserProfile } from './types';
 import { LINE } from './constant';
 
 export class LineUserProfile
-  implements MachinatProfile, MarshallableInstance<LineRawUserProfile> {
+  implements MachinatProfile, MarshallableInstance<LineRawUserProfile>
+{
   static typeName = 'LineUserProfile';
 
   static fromJSONValue(data: LineRawUserProfile): LineUserProfile {
@@ -66,7 +67,8 @@ type LineGroupSummary = {
 };
 
 export class LineGroupProfile
-  implements MachinatProfile, MarshallableInstance<LineGroupSummary> {
+  implements MachinatProfile, MarshallableInstance<LineGroupSummary>
+{
   static typeName = 'LineGroupProfile';
 
   static fromJSONValue(data: LineGroupSummary): LineGroupProfile {

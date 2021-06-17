@@ -34,7 +34,8 @@ const LOGIN_PARAMETERS = [
  * @category Provider
  */
 export class TelegramServerAuthorizer
-  implements ServerAuthorizer<never, TelegramAuthData, TelegramAuthContext> {
+  implements ServerAuthorizer<never, TelegramAuthData, TelegramAuthContext>
+{
   bot: BotP;
   private _secretKey: Buffer;
   platform = TELEGRAM;

@@ -73,19 +73,14 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [
-      bot,
-      receiver,
-      configsProvided,
-      profiler,
-      routings,
-    ] = app.useServices([
-      Telegram.Bot,
-      Telegram.Receiver,
-      Telegram.Configs,
-      Telegram.Profiler,
-      Http.RequestRouteList,
-    ]);
+    const [bot, receiver, configsProvided, profiler, routings] =
+      app.useServices([
+        Telegram.Bot,
+        Telegram.Receiver,
+        Telegram.Configs,
+        Telegram.Profiler,
+        Http.RequestRouteList,
+      ]);
 
     expect(bot).toBeInstanceOf(TelegramBot);
     expect(receiver).toBeInstanceOf(TelegramReceiver);

@@ -68,9 +68,8 @@ export const AuthControllerP: ServiceProvider<
   },
 })(WebviewAuthController);
 
-export type AuthControllerP<
-  Authorizer extends AnyServerAuthorizer
-> = WebviewAuthController<Authorizer>;
+export type AuthControllerP<Authorizer extends AnyServerAuthorizer> =
+  WebviewAuthController<Authorizer>;
 
 // next interfaces
 
@@ -165,9 +164,8 @@ export const SocketServerP: ServiceProvider<
     }),
 })(WebviewSocketServer);
 
-export type SocketServerP<
-  Authorizer extends AnyServerAuthorizer
-> = WebviewSocketServer<Authorizer>;
+export type SocketServerP<Authorizer extends AnyServerAuthorizer> =
+  WebviewSocketServer<Authorizer>;
 
 export const PlatformUtilitiesI = makeInterface<
   WebviewPlatformUtilities<AnyServerAuthorizer>

@@ -42,10 +42,11 @@ class WebhookReceiver {
         },
       };
 
-      const { code, headers, body: resBody } = await this._handleWebhook(
-        metadata,
-        routingInfo
-      );
+      const {
+        code,
+        headers,
+        body: resBody,
+      } = await this._handleWebhook(metadata, routingInfo);
 
       res.writeHead(code, headers);
       res.end(

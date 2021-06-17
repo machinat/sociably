@@ -37,25 +37,23 @@ namespace Machinat {
     return app;
   };
 
-  export const Fragment = (MACHINAT_FRAGMENT_TYPE as unknown) as (
+  export const Fragment = MACHINAT_FRAGMENT_TYPE as unknown as (
     props: FragmentProps
   ) => null;
 
-  export const Pause = (MACHINAT_PAUSE_TYPE as unknown) as (
+  export const Pause = MACHINAT_PAUSE_TYPE as unknown as (
     props: PauseProps
   ) => null;
 
-  export const Injection = (MACHINAT_INJECTION_TYPE as unknown) as (
+  export const Injection = MACHINAT_INJECTION_TYPE as unknown as (
     props: InjectionProps
   ) => null;
 
-  export const Thunk = (MACHINAT_THUNK_TYPE as unknown) as (
+  export const Thunk = MACHINAT_THUNK_TYPE as unknown as (
     props: ThunkProps
   ) => null;
 
-  export const Raw = (MACHINAT_RAW_TYPE as unknown) as (
-    props: RawProps
-  ) => null;
+  export const Raw = MACHINAT_RAW_TYPE as unknown as (props: RawProps) => null;
 
   export const BaseBot = BaseBotP;
   export const BaseProfiler = BaseProfilerP;

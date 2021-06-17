@@ -274,8 +274,7 @@ test('reply(message) sugar', async () => {
   await receiver.handleRequest(
     createReq({
       method: 'POST',
-      body:
-        '{"destination":"xxx","events":[{"replyToken":"__REPLY_TOKEN__","type":"message","timestamp":1462629479859,"source":{"type":"user","userId":"xxx"},"message":{"id":"325708","type":"text","text":"Hello, world"}}]}',
+      body: '{"destination":"xxx","events":[{"replyToken":"__REPLY_TOKEN__","type":"message","timestamp":1462629479859,"source":{"type":"user","userId":"xxx"},"message":{"id":"325708","type":"text","text":"Hello, world"}}]}',
     }),
     createRes()
   );

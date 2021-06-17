@@ -7,28 +7,28 @@ import AssetsManagerP from './manager';
  * and store it MessengerAssetsManager.
  * @category Container
  */
-const collectReusableAttachments = (
-  manager: AssetsManagerP
-): MessengerDispatchMiddleware => async (frame, next) => {
-  const response = await next(frame);
-  const { jobs, results } = response;
+const collectReusableAttachments =
+  (manager: AssetsManagerP): MessengerDispatchMiddleware =>
+  async (frame, next) => {
+    const response = await next(frame);
+    const { jobs, results } = response;
 
-  const updatingAssets: Promise<void>[] = [];
+    const updatingAssets: Promise<void>[] = [];
 
-  for (let i = 0; i < jobs.length; i += 1) {
-    const { attachmentAssetTag } = jobs[i];
-    const { body } = results[i];
+    for (let i = 0; i < jobs.length; i += 1) {
+      const { attachmentAssetTag } = jobs[i];
+      const { body } = results[i];
 
-    if (attachmentAssetTag && body.attachment_id) {
-      updatingAssets.push(
-        manager.saveAttachment(attachmentAssetTag, body.attachment_id)
-      );
+      if (attachmentAssetTag && body.attachment_id) {
+        updatingAssets.push(
+          manager.saveAttachment(attachmentAssetTag, body.attachment_id)
+        );
+      }
     }
-  }
 
-  await Promise.all(updatingAssets);
-  return response;
-};
+    await Promise.all(updatingAssets);
+    return response;
+  };
 
 const collectReusableAttachmentsC = makeContainer({
   deps: [AssetsManagerP] as const,

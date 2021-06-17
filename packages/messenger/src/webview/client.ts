@@ -34,7 +34,8 @@ class MessengerClientAuthorizer
       MessengerAuthCredential,
       MessengerAuthData,
       MessengerAuthContext
-    > {
+    >
+{
   appId: string;
   isSdkReady: boolean;
   extensionsSdk: any;

@@ -16,7 +16,8 @@ export class WebviewConnection
   implements
     MachinatChannel,
     ConnectionTarget,
-    MarshallableInstance<ConnectionValue> {
+    MarshallableInstance<ConnectionValue>
+{
   static typeName = 'WebviewConnection';
 
   static fromJSONValue({ id, serverId }: ConnectionValue): WebviewConnection {
@@ -57,7 +58,8 @@ export class WebviewUserChannel
   implements
     MachinatChannel,
     UserTarget,
-    MarshallableInstance<UserChannelValue> {
+    MarshallableInstance<UserChannelValue>
+{
   static typeName = 'WebviewUserChannel';
 
   static fromJSONValue({ userUid }: UserChannelValue): WebviewUserChannel {
@@ -92,7 +94,8 @@ type TopicValue = {
 };
 
 export class WebviewTopicChannel
-  implements MachinatChannel, TopicTarget, MarshallableInstance<TopicValue> {
+  implements MachinatChannel, TopicTarget, MarshallableInstance<TopicValue>
+{
   static typeName = 'WebviewTopicChannel';
 
   static fromJSONValue({ name }: TopicValue): WebviewTopicChannel {

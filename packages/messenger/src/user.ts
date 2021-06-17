@@ -8,7 +8,8 @@ type MessengerUserValue = {
 };
 
 export default class MessengerUser
-  implements MachinatUser, MarshallableInstance<MessengerUserValue> {
+  implements MachinatUser, MarshallableInstance<MessengerUserValue>
+{
   static typeName = 'MessengerUser';
 
   static fromJSONValue(value: MessengerUserValue): MessengerUser {

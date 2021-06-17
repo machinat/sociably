@@ -73,9 +73,7 @@ describe('initModule()', () => {
     await app.start();
 
     expect(ControllerSpy.$$factory.mock).toHaveBeenCalledTimes(1);
-    expect(
-      ControllerSpy.$$factory.mock
-    ).toHaveBeenCalledWith(
+    expect(ControllerSpy.$$factory.mock).toHaveBeenCalledWith(
       expect.arrayContaining([fooAuthorizer, barAuthorizer]),
       { secret, apiPath, redirectUrl }
     );

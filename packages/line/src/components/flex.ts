@@ -755,12 +755,8 @@ const createBlockComponent = (section, _childrenType) => {
 
   const wrapper = {
     [tagName]: async (node, path, render) => {
-      const {
-        children,
-        backgroundColor,
-        separator,
-        separatorColor,
-      } = node.props;
+      const { children, backgroundColor, separator, separatorColor } =
+        node.props;
 
       const contentSegments = await render(children, '.children');
       const contentValue = contentSegments?.[0].value;

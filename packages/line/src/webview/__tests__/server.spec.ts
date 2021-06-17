@@ -8,11 +8,11 @@ import LineApiError from '../../error';
 import { LineServerAuthorizer as ServerAuthorizer } from '../server';
 import { LiffContextOs } from '../../constant';
 
-const request = ({
+const request = {
   url: '/foo/auth/line',
   type: 'GET',
   headers: {},
-} as unknown) as IncomingMessage;
+} as unknown as IncomingMessage;
 
 const bot = moxy<LineBot>({
   providerId: '_PROVIDER_ID_',

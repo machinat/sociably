@@ -11,12 +11,13 @@ const injectMaybe = <Args extends unknown[], Result>(
     return () => fnOrContainer;
   }
 
-  return (frame: StreamingFrame<unknown>) => (...args: Args): Result => {
-    const { key, scope } = frame;
-    const provisions = new Map([[STREAMING_KEY_I, key]]);
+  return (frame: StreamingFrame<unknown>) =>
+    (...args: Args): Result => {
+      const { key, scope } = frame;
+      const provisions = new Map([[STREAMING_KEY_I, key]]);
 
-    return scope.injectContainer(fnOrContainer, provisions)(...args);
-  };
+      return scope.injectContainer(fnOrContainer, provisions)(...args);
+    };
 };
 
 export default injectMaybe;

@@ -49,8 +49,8 @@ const toConnection = ({ serverId, id }: ConnIdentifier): WebviewConnection =>
  * @category Provider
  */
 export class WebviewBot<Authorizer extends AnyServerAuthorizer>
-  implements
-    MachinatBot<WebviewDispatchChannel, WebSocketJob, WebSocketResult> {
+  implements MachinatBot<WebviewDispatchChannel, WebSocketJob, WebSocketResult>
+{
   private _server: SocketServerP<Authorizer>;
 
   engine: Engine<
@@ -188,6 +188,5 @@ export const BotP = makeClassProvider({
     ),
 })(WebviewBot);
 
-export type BotP<
-  Authorizer extends AnyServerAuthorizer
-> = WebviewBot<Authorizer>;
+export type BotP<Authorizer extends AnyServerAuthorizer> =
+  WebviewBot<Authorizer>;

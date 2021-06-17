@@ -33,14 +33,8 @@ export const UrlButton: TelegramComponent<
   UrlButtonProps,
   PartSegment<any>
 > = annotateTelegramComponent(function UrlButton(node, path) {
-  const {
-    text,
-    url,
-    login,
-    forwardText,
-    botUserName,
-    requestWriteAccess,
-  } = node.props;
+  const { text, url, login, forwardText, botUserName, requestWriteAccess } =
+    node.props;
 
   return [
     makePartSegment(

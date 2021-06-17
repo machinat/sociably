@@ -33,28 +33,26 @@ export const createEvent = <
   return event;
 };
 
-export const useAuthLogin = <Authorizer extends AnyServerAuthorizer>(
-  controller: Auth.Controller<Authorizer>
-): VerifyLoginFn<
-  MachinatUser,
-  ContextOfAuthorizer<Authorizer>,
-  string
-> => async (request: HttpRequestInfo, credential: string) => {
-  const result = await controller.verifyAuth(request, credential);
+export const useAuthLogin =
+  <Authorizer extends AnyServerAuthorizer>(
+    controller: Auth.Controller<Authorizer>
+  ): VerifyLoginFn<MachinatUser, ContextOfAuthorizer<Authorizer>, string> =>
+  async (request: HttpRequestInfo, credential: string) => {
+    const result = await controller.verifyAuth(request, credential);
 
-  if (!result.success) {
-    const { code, reason } = result;
-    return { success: false as const, code, reason };
-  }
+    if (!result.success) {
+      const { code, reason } = result;
+      return { success: false as const, code, reason };
+    }
 
-  const { context } = result;
-  return {
-    success: true as const,
-    authContext: context,
-    user: context.user,
-    expireAt: context.expireAt,
+    const { context } = result;
+    return {
+      success: true as const,
+      authContext: context,
+      user: context.user,
+      expireAt: context.expireAt,
+    };
   };
-};
 
 export const verifyOrigin = (origin: string, expectedHost: string): boolean => {
   const [protocol, host] = origin.split('//', 2);

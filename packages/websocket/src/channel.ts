@@ -12,7 +12,8 @@ export class WebSocketConnection
   implements
     MachinatChannel,
     ConnectionTarget,
-    MarshallableInstance<ConnectionValue> {
+    MarshallableInstance<ConnectionValue>
+{
   static typeName = 'WebSocketConnection';
 
   static fromJSONValue({ id, serverId }: ConnectionValue): WebSocketConnection {
@@ -53,7 +54,8 @@ export class WebSocketUserChannel
   implements
     MachinatChannel,
     UserTarget,
-    MarshallableInstance<UserChannelValue> {
+    MarshallableInstance<UserChannelValue>
+{
   static typeName = 'WebSocketUserChannel';
 
   static fromJSONValue({ userUid }: UserChannelValue): WebSocketUserChannel {
@@ -88,7 +90,8 @@ type TopicValue = {
 };
 
 export class WebSocketTopicChannel
-  implements MachinatChannel, TopicTarget, MarshallableInstance<TopicValue> {
+  implements MachinatChannel, TopicTarget, MarshallableInstance<TopicValue>
+{
   static typeName = 'WebSocketTopicChannel';
 
   static fromJSONValue({ name }: TopicValue): WebSocketTopicChannel {

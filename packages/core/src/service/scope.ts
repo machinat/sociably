@@ -15,7 +15,9 @@ import type {
  * executed under the same scope share the same singleton and scoped services.
  */
 export default class ServiceScope {
-  static $$typeof: typeof MACHINAT_SERVICE_INTERFACE = MACHINAT_SERVICE_INTERFACE;
+  static $$typeof: typeof MACHINAT_SERVICE_INTERFACE =
+    MACHINAT_SERVICE_INTERFACE;
+
   static $$name = 'ServiceScope';
   static $$multi = false as const;
   static $$polymorphic = false as const;

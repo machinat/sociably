@@ -11,7 +11,8 @@ type TelegramChatValue = {
 };
 
 export class TelegramChat
-  implements MachinatChannel, MarshallableInstance<TelegramChatValue> {
+  implements MachinatChannel, MarshallableInstance<TelegramChatValue>
+{
   static typeName = 'TelegramChat';
 
   static fromJSONValue(value: TelegramChatValue): TelegramChat {
@@ -70,7 +71,8 @@ type TelegramChatTargetValue = {
 };
 
 export class TelegramChatTarget
-  implements MachinatChannel, MarshallableInstance<TelegramChatTargetValue> {
+  implements MachinatChannel, MarshallableInstance<TelegramChatTargetValue>
+{
   static typeName = 'TelegramChatTarget';
 
   static fromJSONValue(value: TelegramChatTargetValue): TelegramChatTarget {

@@ -10,7 +10,8 @@ import { NoneUser, NoneChannel } from './instance';
 import { NoneAuthData, NoneAuthContext } from './types';
 
 export class NoneServerAuthorizer
-  implements ServerAuthorizer<NoneAuthData, NoneAuthData, NoneAuthContext> {
+  implements ServerAuthorizer<NoneAuthData, NoneAuthData, NoneAuthContext>
+{
   platform = 'none';
 
   async delegateAuthRequest(

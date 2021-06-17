@@ -25,9 +25,8 @@ const authRouteFactory = makeFactoryProvider({
  */
 namespace Auth {
   export const Controller = ControllerP;
-  export type Controller<
-    Authorizer extends AnyServerAuthorizer
-  > = ControllerP<Authorizer>;
+  export type Controller<Authorizer extends AnyServerAuthorizer> =
+    ControllerP<Authorizer>;
 
   export const Configs = ConfigsI;
   export type Configs = AuthConfigs;

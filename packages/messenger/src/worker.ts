@@ -76,7 +76,8 @@ const appendFieldsToForm = (
 type TimeoutID = ReturnType<typeof setTimeout>;
 
 export default class MessengerWorker
-  implements MachinatWorker<MessengerJob, MessengerResult> {
+  implements MachinatWorker<MessengerJob, MessengerResult>
+{
   token: string;
   consumeInterval: number;
   private _graphApiEntry: string;
@@ -183,12 +184,8 @@ export default class MessengerWorker
     const requests = new Array(jobs.length);
 
     for (let i = 0; i < jobs.length; i += 1) {
-      const {
-        request,
-        channelUid,
-        attachmentFileData,
-        attachmentFileInfo,
-      } = jobs[i];
+      const { request, channelUid, attachmentFileData, attachmentFileInfo } =
+        jobs[i];
 
       if (channelUid !== undefined) {
         // keep the order of requests per channel

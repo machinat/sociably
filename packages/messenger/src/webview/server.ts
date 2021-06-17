@@ -19,10 +19,8 @@ import type {
   MessengerAuthData,
 } from './types';
 
-const {
-  decode: decodeBase64Url,
-  toBuffer: decodeBase64UrlToBuffer,
-} = base64url;
+const { decode: decodeBase64Url, toBuffer: decodeBase64UrlToBuffer } =
+  base64url;
 
 type ServerAuthorizerOptions = {
   /** Page id which the app is running on. */
@@ -47,7 +45,8 @@ export class MessengerServerAuthorizer
       MessengerAuthCredential,
       MessengerAuthData,
       MessengerAuthContext
-    > {
+    >
+{
   platform = MESSENGER;
   pageId: number;
   appSecret: string;

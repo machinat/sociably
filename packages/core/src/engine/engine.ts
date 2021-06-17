@@ -178,10 +178,8 @@ export default class MachinatEngine<
       if (task.type === 'dispatch') {
         jobsExecuted.push(...task.payload);
 
-        const batchResp: JobBatchResponse<
-          Job,
-          Result
-        > = await this.queue.executeJobs(task.payload); // eslint-disable-line no-await-in-loop
+        const batchResp: JobBatchResponse<Job, Result> =
+          await this.queue.executeJobs(task.payload); // eslint-disable-line no-await-in-loop
 
         if (batchResp.success) {
           for (const jobResp of batchResp.batch) {

@@ -92,20 +92,22 @@ const authRouteFactory = makeFactoryProvider({
 const nextRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [NextReceiverP, ConfigsI] as const,
-})((receiver, { webviewPath = DEFAULT_NEXT_PATH }):
-  | RequestRoute
-  | DefaultRequestRoute =>
-  webviewPath === '/'
-    ? {
-        name: 'next',
-        default: true,
-        handler: receiver.handleRequestCallback(),
-      }
-    : {
-        name: 'next',
-        path: webviewPath,
-        handler: receiver.handleRequestCallback(),
-      }
+})(
+  (
+    receiver,
+    { webviewPath = DEFAULT_NEXT_PATH }
+  ): RequestRoute | DefaultRequestRoute =>
+    webviewPath === '/'
+      ? {
+          name: 'next',
+          default: true,
+          handler: receiver.handleRequestCallback(),
+        }
+      : {
+          name: 'next',
+          path: webviewPath,
+          handler: receiver.handleRequestCallback(),
+        }
 );
 
 /**
@@ -119,14 +121,12 @@ namespace Webview {
   export type Bot<Authorizer extends AnyServerAuthorizer> = BotP<Authorizer>;
 
   export const SocketServer = SocketServerP;
-  export type SocketServer<
-    Authorizer extends AnyServerAuthorizer
-  > = SocketServerP<Authorizer>;
+  export type SocketServer<Authorizer extends AnyServerAuthorizer> =
+    SocketServerP<Authorizer>;
 
   export const Receiver = ReceiverP;
-  export type Receiver<
-    Authorizer extends AnyServerAuthorizer
-  > = ReceiverP<Authorizer>;
+  export type Receiver<Authorizer extends AnyServerAuthorizer> =
+    ReceiverP<Authorizer>;
   export const SocketBroker = SocketBrokerI;
   export type SocketBroker = SocketBrokerI;
 
@@ -137,9 +137,8 @@ namespace Webview {
   export type WsServer = WsServerI;
 
   export const AuthController = AuthControllerP;
-  export type AuthController<
-    Authorizer extends AnyServerAuthorizer
-  > = AuthControllerP<Authorizer>;
+  export type AuthController<Authorizer extends AnyServerAuthorizer> =
+    AuthControllerP<Authorizer>;
 
   export const AuthorizerList = AuthorizerListI;
   export type AuthorizerList = AuthorizerListI;

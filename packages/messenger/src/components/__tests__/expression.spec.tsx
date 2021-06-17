@@ -286,20 +286,21 @@ it('adds quickReplies to last message action', async () => {
 });
 
 it('do nothing to non-messgae value', async () => {
-  renderGeneralElement.mock.wrap((renderText) => (node, path) =>
-    node.type === 'nonMessage'
-      ? [
-          {
-            type: 'unit',
-            value: {
-              something: 'else',
-              [API_PATH]: 'some/other/api',
+  renderGeneralElement.mock.wrap(
+    (renderText) => (node, path) =>
+      node.type === 'nonMessage'
+        ? [
+            {
+              type: 'unit',
+              value: {
+                something: 'else',
+                [API_PATH]: 'some/other/api',
+              },
+              node,
+              path,
             },
-            node,
-            path,
-          },
-        ]
-      : renderText(node, path)
+          ]
+        : renderText(node, path)
   );
 
   const segments = (await render(

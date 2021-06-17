@@ -139,16 +139,12 @@ export type FlexSegmentValue = {
 } & QuickRepliable;
 
 export type ApiCallGettable = {
-  [BULK_REQUEST_GETTER]: (
-    ids: string[]
-  ) => {
+  [BULK_REQUEST_GETTER]: (ids: string[]) => {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';
     path: string;
     body: any;
   };
-  [CHANNEL_REQUEST_GETTER]: (
-    channel: LineChat
-  ) => {
+  [CHANNEL_REQUEST_GETTER]: (channel: LineChat) => {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';
     path: string;
     body: any;

@@ -222,12 +222,8 @@ export const Dice: TelegramComponent<
   DiceProps,
   UnitSegment<TelegramSegmentValue>
 > = annotateTelegramComponent(async function Dice(node, path, render) {
-  const {
-    emoji,
-    disableNotification,
-    replyToMessageId,
-    replyMarkup,
-  } = node.props;
+  const { emoji, disableNotification, replyToMessageId, replyMarkup } =
+    node.props;
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [
@@ -372,12 +368,8 @@ export const Game: TelegramComponent<
   GameProps,
   UnitSegment<TelegramSegmentValue>
 > = annotateTelegramComponent(async function Game(node, path, render) {
-  const {
-    gameShortName,
-    disableNotification,
-    replyToMessageId,
-    replyMarkup,
-  } = node.props;
+  const { gameShortName, disableNotification, replyToMessageId, replyMarkup } =
+    node.props;
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
   return [

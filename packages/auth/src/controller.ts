@@ -511,6 +511,5 @@ export const ControllerP = makeClassProvider({
   deps: [AuthorizerListI, ConfigsI] as const,
 })(AuthController);
 
-export type ControllerP<
-  Authorizer extends AnyServerAuthorizer
-> = AuthController<Authorizer>;
+export type ControllerP<Authorizer extends AnyServerAuthorizer> =
+  AuthController<Authorizer>;

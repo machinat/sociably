@@ -10,6 +10,5 @@ export type StreamingFrame<T> = {
 
 export type OperatorFunction<T, R> = (input: Stream<T>) => Stream<R>;
 
-export type EventContextOfApp<
-  App extends MachinatApp<any, any>
-> = App extends MachinatApp<any, infer Context> ? Context : never;
+export type EventContextOfApp<App extends MachinatApp<any, any>> =
+  App extends MachinatApp<any, infer Context> ? Context : never;

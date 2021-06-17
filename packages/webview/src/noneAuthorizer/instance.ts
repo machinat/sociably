@@ -19,7 +19,8 @@ class NoneInstance {
 
 export class NoneUser
   extends NoneInstance
-  implements MarshallableInstance<{ id: string }> {
+  implements MarshallableInstance<{ id: string }>
+{
   static typeName = 'NoneUser';
 
   static fromJSONValue({ id }: { id: string }): NoneUser {
@@ -34,7 +35,8 @@ export class NoneUser
 
 export class NoneChannel
   extends NoneInstance
-  implements MarshallableInstance<{ id: string }> {
+  implements MarshallableInstance<{ id: string }>
+{
   static typeName = 'NoneChannel';
 
   static fromJSONValue({ id }: { id: string }): NoneChannel {

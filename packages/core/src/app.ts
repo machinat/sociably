@@ -256,21 +256,20 @@ export default class MachinatApp<
       const finalHandler = (scope: ServiceScope) => (ctx: Context) =>
         handlePopping(ctx, scope);
 
-      const execute = (idx: number, scope: ServiceScope) => async (
-        ctx: Context
-      ) => {
-        let middleware = middlewares[idx];
-        if (isServiceContainer(middleware)) {
-          middleware = scope.injectContainer(middleware);
-        }
+      const execute =
+        (idx: number, scope: ServiceScope) => async (ctx: Context) => {
+          let middleware = middlewares[idx];
+          if (isServiceContainer(middleware)) {
+            middleware = scope.injectContainer(middleware);
+          }
 
-        return middleware(
-          ctx,
-          idx + 1 < middlewares.length
-            ? execute(idx + 1, scope)
-            : finalHandler(scope)
-        );
-      };
+          return middleware(
+            ctx,
+            idx + 1 < middlewares.length
+              ? execute(idx + 1, scope)
+              : finalHandler(scope)
+          );
+        };
 
       return async (ctx: Context, scopeInput?: ServiceScope) => {
         const scope = scopeInput || this.serviceSpace.createScope();

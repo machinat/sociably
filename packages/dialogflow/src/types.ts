@@ -9,6 +9,8 @@ export type DialogflowConfigs = {
 
 export type SessionClient = v2.SessionsClient;
 
-export type DetactIntentResponse = protos.google.cloud.dialogflow.v2.IDetectIntentResponse;
+export type DetactIntentResponse =
+  protos.google.cloud.dialogflow.v2.IDetectIntentResponse;
 
-export type DetactIntentPayload = protos.google.cloud.dialogflow.v2.IQueryResult;
+export type DetactIntentPayload =
+  protos.google.cloud.dialogflow.v2.IQueryResult;

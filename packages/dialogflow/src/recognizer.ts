@@ -29,7 +29,8 @@ type DetectIntentOptions = {
  * @category Provider
  */
 export class DialogflowIntentRecognizer
-  implements BaseIntentRecognizer<DetactIntentPayload> {
+  implements BaseIntentRecognizer<DetactIntentPayload>
+{
   _client: SessionClient;
   projectId: string;
   defaultLanguageCode: undefined | string;
@@ -59,27 +60,26 @@ export class DialogflowIntentRecognizer
       channel.uid
     );
 
-    const [
-      { responseId, webhookStatus, queryResult },
-    ] = await this._client.detectIntent({
-      session: sessionPath,
-      queryInput: {
-        text: {
-          text,
-          languageCode: options?.languageCode || this.defaultLanguageCode,
+    const [{ responseId, webhookStatus, queryResult }] =
+      await this._client.detectIntent({
+        session: sessionPath,
+        queryInput: {
+          text: {
+            text,
+            languageCode: options?.languageCode || this.defaultLanguageCode,
+          },
         },
-      },
-      queryParams: options
-        ? {
-            timeZone: options.timeZone,
-            geoLocation: options.geoLocation,
-            resetContexts: options.resetContexts,
-            contexts: options.contexts?.map((contextName) => ({
-              name: `projects/${this.projectId}/agent/sessions/${channel.uid}/contexts/${contextName}`,
-            })),
-          }
-        : undefined,
-    });
+        queryParams: options
+          ? {
+              timeZone: options.timeZone,
+              geoLocation: options.geoLocation,
+              resetContexts: options.resetContexts,
+              contexts: options.contexts?.map((contextName) => ({
+                name: `projects/${this.projectId}/agent/sessions/${channel.uid}/contexts/${contextName}`,
+              })),
+            }
+          : undefined,
+      });
 
     if (!queryResult) {
       throw new DialogflowApiError(responseId, webhookStatus);

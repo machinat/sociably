@@ -46,11 +46,8 @@ type TelegramBotOptions = {
  */
 export class TelegramBot
   implements
-    MachinatBot<
-      TelegramChat | TelegramChatTarget,
-      TelegramJob,
-      TelegramResult
-    > {
+    MachinatBot<TelegramChat | TelegramChatTarget, TelegramJob, TelegramResult>
+{
   token: string;
   id: number;
   engine: Engine<
@@ -123,9 +120,7 @@ export class TelegramBot
     return this.engine.render(null, message, createDirectInstanceJobs);
   }
 
-  async fetchFile(
-    fileId: string
-  ): Promise<null | {
+  async fetchFile(fileId: string): Promise<null | {
     content: NodeJS.ReadableStream;
     contentType?: string;
     contentLength?: number;

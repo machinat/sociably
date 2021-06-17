@@ -90,55 +90,54 @@ export const createChatJobs = (replyToken: void | string) => {
 
 const MULITCAST_EXECUTION_KEY = '$$_multicast_$$';
 
-export const createMulticastJobs = (targets: string[]) => (
-  _: null,
-  segments: DispatchableSegment<LineSegmentValue>[]
-) => {
-  const jobs: LineJob[] = [];
-  let messages: LineSegmentValue[] = [];
+export const createMulticastJobs =
+  (targets: string[]) =>
+  (_: null, segments: DispatchableSegment<LineSegmentValue>[]) => {
+    const jobs: LineJob[] = [];
+    let messages: LineSegmentValue[] = [];
 
-  for (let i = 0; i < segments.length; i += 1) {
-    const { value } = segments[i];
+    for (let i = 0; i < segments.length; i += 1) {
+      const { value } = segments[i];
 
-    if (isMessageValue(value)) {
-      messages.push(
-        typeof value === 'string'
-          ? { type: 'text', text: value as string }
-          : value
-      );
+      if (isMessageValue(value)) {
+        messages.push(
+          typeof value === 'string'
+            ? { type: 'text', text: value as string }
+            : value
+        );
 
-      // flush messages buffer if accumlated to 5 or at the end of loop
-      if (messages.length === 5 || i === segments.length - 1) {
+        // flush messages buffer if accumlated to 5 or at the end of loop
+        if (messages.length === 5 || i === segments.length - 1) {
+          jobs.push({
+            method: 'POST',
+            path: PATH_MULTICAST,
+            body: { to: targets, messages },
+            executionKey: MULITCAST_EXECUTION_KEY,
+          });
+          messages = [];
+        }
+      } else {
+        // push buffered messages first
+        if (messages.length > 0) {
+          jobs.push({
+            method: 'POST',
+            path: PATH_MULTICAST,
+            body: { to: targets, messages },
+            executionKey: MULITCAST_EXECUTION_KEY,
+          });
+          messages = [];
+        }
+
+        // get dynamic api request
+        const { method, path, body } = value[BULK_REQUEST_GETTER](targets);
         jobs.push({
-          method: 'POST',
-          path: PATH_MULTICAST,
-          body: { to: targets, messages },
+          method,
+          path,
           executionKey: MULITCAST_EXECUTION_KEY,
+          body,
         });
-        messages = [];
       }
-    } else {
-      // push buffered messages first
-      if (messages.length > 0) {
-        jobs.push({
-          method: 'POST',
-          path: PATH_MULTICAST,
-          body: { to: targets, messages },
-          executionKey: MULITCAST_EXECUTION_KEY,
-        });
-        messages = [];
-      }
-
-      // get dynamic api request
-      const { method, path, body } = value[BULK_REQUEST_GETTER](targets);
-      jobs.push({
-        method,
-        path,
-        executionKey: MULITCAST_EXECUTION_KEY,
-        body,
-      });
     }
-  }
 
-  return jobs;
-};
+    return jobs;
+  };

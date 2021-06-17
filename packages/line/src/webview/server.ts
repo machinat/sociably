@@ -33,7 +33,8 @@ type VerifyTokenResult = {
  */
 export class LineServerAuthorizer
   implements
-    ServerAuthorizer<LineAuthCredential, LineAuthData, LineAuthContext> {
+    ServerAuthorizer<LineAuthCredential, LineAuthData, LineAuthContext>
+{
   bot: BotP;
   liffChannelIds: string[];
   platform = LINE;
