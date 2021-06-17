@@ -96,7 +96,7 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
     }));
 
     if (!this._socket || !this._connId) {
-      await new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         this._queuedEvents.push({
           resolve,
           reject,

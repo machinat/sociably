@@ -56,7 +56,7 @@ class MessengerClientAuthorizer
   // eslint-disable-next-line class-methods-use-this
   async init(): Promise<void> {
     if (!this.isSdkReady) {
-      const initPromise = new Promise((resolve, reject) => {
+      const initPromise = new Promise<void>((resolve, reject) => {
         const timeoutId = setTimeout(() => {
           reject(new Error('extension initiation timeout'));
         }, INIT_TIMEOUT);

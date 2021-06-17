@@ -35,5 +35,5 @@ website: api
 	yarn install; \
 	USE_SSH=true $(docusaurus) deploy
 
-node_modules: package.json yarn.lock $(pkg_confs)
-	yarn install
+node_modules: package.json package-lock.json $(pkg_confs)
+	npm install
