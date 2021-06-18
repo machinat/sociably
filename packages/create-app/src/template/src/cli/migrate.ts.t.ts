@@ -57,7 +57,10 @@ const umzug = new Umzug({
   logger: console,
   context: app,
   migrations: {
-    glob: resolvePath(__dirname, '../migrations/*.+(js|ts)'),
+    glob: resolvePath(
+      __dirname,
+      \`../migrations/*.\${__dirname.includes('/src/') ? 'ts' : 'js'}\`
+    ),
     resolve: ({ name, path, context: app }) => {
       return {
         name: name.replace(/.[t|j]s$/, ''),
