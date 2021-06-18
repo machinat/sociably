@@ -1,4 +1,4 @@
-import mixin from '@machinat/core/utils/mixin';
+import { mixin } from '@machinat/core/utils';
 import LineUser from '../user';
 import LineChat from '../channel';
 import {

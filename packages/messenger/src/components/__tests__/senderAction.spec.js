@@ -1,5 +1,5 @@
 import Machinat from '@machinat/core';
-import { isNativeType } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils';
 
 import Renderer from '@machinat/core/renderer';
 import { MarkSeen, TypingOn, TypingOff } from '../senderAction';

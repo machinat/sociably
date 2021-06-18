@@ -1,9 +1,9 @@
 /* eslint @typescript-eslint/no-use-before-define: ["error", { "variables": false }] */
 import invariant from 'invariant';
 import { MachinatElement } from '@machinat/core';
-import reduce from '@machinat/core/iterator/reduce';
-import formatNode from '@machinat/core/utils/formatNode';
-import { isElement } from '@machinat/core/utils/isX';
+import { reduce } from '@machinat/core/iterator';
+import { formatNode, isElement } from '@machinat/core/utils';
+
 import { isScript } from './utils';
 import {
   IF,

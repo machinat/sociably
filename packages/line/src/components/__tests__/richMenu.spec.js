@@ -1,6 +1,6 @@
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
-import { isNativeType } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils';
 import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../../constant';
 import LineChat from '../../channel';
 import { LinkRichMenu, UnlinkRichMenu } from '../richMenu';

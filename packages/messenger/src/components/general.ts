@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import formatNode from '@machinat/core/utils/formatNode';
+import { formatNode } from '@machinat/core/utils';
 import {
   makeTextSegment,
   makeUnitSegment,

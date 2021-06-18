@@ -1,6 +1,5 @@
 import invariant from 'invariant';
-import filterSymbolKeys from '@machinat/core/utils/filterSymbolKeys';
-import formatNode from '@machinat/core/utils/formatNode';
+import { filterSymbolKeys, formatNode } from '@machinat/core/utils';
 
 import type { DispatchableSegment } from '@machinat/core/engine';
 import type {

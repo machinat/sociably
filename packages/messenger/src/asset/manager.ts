@@ -1,7 +1,7 @@
 import type { MachinatNode } from '@machinat/core';
 import { makeClassProvider } from '@machinat/core/service';
 import StateControllerI from '@machinat/core/base/StateController';
-import formatNode from '@machinat/core/utils/formatNode';
+import { formatNode } from '@machinat/core/utils';
 import { PATH_PERSONAS } from '../constant';
 import { BotP } from '../bot';
 

@@ -1,5 +1,5 @@
 import type { MachinatNode } from '@machinat/core';
-import formatNode from '@machinat/core/utils/formatNode';
+import { formatNode } from '@machinat/core/utils';
 import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
 import { annotateTelegramComponent } from '../utils';
 import {

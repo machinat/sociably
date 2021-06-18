@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import type { MachinatNode } from '@machinat/core';
-import formatNode from '@machinat/core/utils/formatNode';
+import { formatNode } from '@machinat/core/utils';
 import { makeUnitSegment, makePartSegment } from '@machinat/core/renderer';
 import type { UnitSegment, PartSegment } from '@machinat/core/renderer';
 import { annotateMessengerComponent } from '../utils';

@@ -13,8 +13,8 @@
   "exports": {
     ".": "./lib/index.js",
     "./client": "./lib/client/index.js",
-    "./broker/*": "./lib/broker/*.js",
-    "./utils/*": "./lib/utils/*.js"
+    "./broker/LocalOnlyBroker": "./lib/broker/LocalOnlyBroker.js",
+    "./utils": "./lib/utils/index.js"
   },
   "files": [
     "lib/*",

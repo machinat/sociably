@@ -1,6 +1,6 @@
 import { MachinatNode } from '@machinat/core';
 import type { UnitSegment, OutputSegment } from '@machinat/core/renderer';
-import formatNode from '@machinat/core/utils/formatNode';
+import { formatNode } from '@machinat/core/utils';
 import type {
   MessengerSegmentValue,
   MessengerComponent,

@@ -5,7 +5,7 @@ import {
   UnitSegment,
   PartSegment,
 } from '@machinat/core/renderer';
-import formatNode from '@machinat/core/utils/formatNode';
+import { formatNode } from '@machinat/core/utils';
 import { annotateTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,

@@ -1,6 +1,6 @@
 import Machinat from '@machinat/core';
 import Renderer from '@machinat/core/renderer';
-import { isNativeType } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils';
 
 import {
   UrlButton,

@@ -6,7 +6,7 @@ import {
   UnitSegment,
   PartSegment,
 } from '@machinat/core/renderer';
-import formatNode from '@machinat/core/utils/formatNode';
+import { formatNode } from '@machinat/core/utils';
 import { annotateLineComponent } from '../utils';
 import type { LineComponent, FlexSegmentValue } from '../types';
 

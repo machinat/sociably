@@ -6,7 +6,7 @@ import {
   isRawType,
   isThunkType,
   isPauseType,
-} from '@machinat/core/utils/isX';
+} from '@machinat/core/utils';
 
 const machinatElementSerializer = {
   print(element: MachinatElement<any, any>, serialize, indent) {

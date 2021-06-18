@@ -1,5 +1,5 @@
 import type { MachinatNode } from '@machinat/core';
-import formatNode from '@machinat/core/utils/formatNode';
+import { formatNode } from '@machinat/core/utils';
 import { makeTextSegment, TextSegment } from '@machinat/core/renderer';
 import { annotateMessengerComponent } from '../utils';
 import type { MessengerComponent } from '../types';

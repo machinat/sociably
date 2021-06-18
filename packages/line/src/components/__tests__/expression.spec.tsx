@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
-import { isNativeType } from '@machinat/core/utils/isX';
+import { isNativeType } from '@machinat/core/utils';
 import Renderer from '@machinat/core/renderer';
 import { Expression } from '../expression';
 import { QuickReply } from '../quickReply';

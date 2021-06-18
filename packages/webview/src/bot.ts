@@ -13,7 +13,7 @@ import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import type { DispatchResponse } from '@machinat/core/engine';
 import type { AnyServerAuthorizer } from '@machinat/auth';
 import { WebSocketWorker } from '@machinat/websocket';
-import createJobs from '@machinat/websocket/utils/createJobs';
+import { createJobs } from '@machinat/websocket/utils';
 import type {
   EventInput,
   WebSocketJob,

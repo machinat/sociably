@@ -3,7 +3,7 @@ import {
   makeTextSegment,
   makeBreakSegment,
 } from '@machinat/core/renderer';
-import formatNode from '@machinat/core/utils/formatNode';
+import { formatNode } from '@machinat/core/utils';
 
 const p = async (node, path, render) => {
   const contentSegments = await render(node.props.children, '.children');
