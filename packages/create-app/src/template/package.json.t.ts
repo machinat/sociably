@@ -28,9 +28,9 @@ export default ({ projectName, platforms }: CreateAppContext) => {
       dev: 'ts-node ./src/cli/dev.ts',
     },
     dependencies: {
+      '@machinat/per-env': '^1.1.0',
       commander: '^7.2.0',
       dotenv: '^8.2.0',
-      'per-env': 'github:machinat/per-env',
       umzug: '^3.0.0-beta.15',
     },
     devDependencies: {
@@ -46,7 +46,6 @@ export default ({ projectName, platforms }: CreateAppContext) => {
     packageConfigs.dependencies = {
       ...packageConfigs.dependencies,
       ...{
-        '@machinat/webview': 'latest',
         next: '^10.1.3',
         react: '^17.0.2',
         'react-dom': '^17.0.2',
