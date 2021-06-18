@@ -13,7 +13,7 @@ export default ({ projectName, platforms }: CreateAppContext) => {
       'migrate:development': 'ts-node ./src/cli/migrate.ts',
       'migrate:production': 'node ./lib/cli/migrate.js',
 
-      build: `npm run build:source${when(
+      build: `npm run clean && npm run build:source${when(
         platforms.includes('webview')
       )` && npm run build:webview && npm run build:next`}`,
       'build:source': 'tsc',
