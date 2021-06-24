@@ -1,0 +1,62 @@
+---
+title: Introduction
+---
+
+Welcome! This tutorial will guide you to build a production-ready chabot
+with Machinat framework.
+
+Machinat is designed to build **applications** in chat, instead of just chatting.
+You'll know how to ship real features to user, using chat UIs, conversation
+flows and even an embedded webview.
+
+## What will we build?
+
+We will make a **Todo Bot** app with basic CRUD operations in this tutorial.
+User can manage their todos in the chat with bot.
+
+The bot will finally have conversation like this:
+
+<video width={420} autoplay="autoplay" loop inline>
+  <source src={require("./assets/tutorial-example.webm").default} type="video/webm" />
+</video>
+
+:::tip
+You can find the completed example codes [here](https://github.com/machinat/todo-example/).
+:::
+
+## Platforms
+
+You can choose which chat platform to use for the totorial. Please select the
+chosen platform if you see these tabs in the lessons:
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs
+  defaultValue="messenger"
+  values={[
+    {label: 'Messenger', value: 'messenger'},
+    {label: 'Telegram', value: 'telegram'},
+    {label: 'LINE', value: 'line'},
+  ]} >
+  <TabItem value="messenger" />
+  <TabItem value="telegram" />
+  <TabItem value="line" />
+</Tabs>
+
+Cross-platform app is possible but it's recommended to adopt one platform
+for the first time.
+
+## Prerequisites
+
+This tutorial assumes you are familiar with [_TypeScript_](https://www.typescriptlang.org/docs/handbook/intro.html)
+syntax and _JavaScript ES6_ features.
+
+If it's your first time developing with TypeScript, we recommend using
+[VS Code](https://code.visualstudio.com/) as editor to have full types support.
+
+### System Requirement
+
+- [Node.js](https://nodejs.org/) 10.13 or later
+- [npm](https://docs.npmjs.com/cli/v7/configuring-npm/install) v6.x or later
+- [git](https://git-scm.com/) v2.14.1 or late

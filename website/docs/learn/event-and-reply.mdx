@@ -6,7 +6,7 @@ Receive a message and send the answer back is the most basic function of
 chatbots. In this lesson you will learn how to receive specific type of event
 and make the response accordingly.
 
->　Time to accomplish: 10 minutes
+>　Time to accomplish: 15 minutes
 
 ## Listen to Event
 
@@ -34,7 +34,7 @@ const handleMessage = async ({
     }
   }
 
-  await reply(<p>Hello! I'm a Todo Bot 🤖</p>);
+  await reply("Hello! I'm a Todo Bot 🤖");
 };
 
 export default handleMessage;
@@ -84,54 +84,57 @@ await reply('hello world');
 
 ### JSX Syntax
 
-The html alike syntax `<p>Todo "<b>{todoName}</b>" is added!</p>` is called
-**JSX**. `<p>...</p>` element represent a message bubble containing the inner
-text children.
-
-Despite plain text, the children can contain other elements like `<b>...</b>`.
-An expression can also be inserted with the `{todoName}` syntax.
-
 :::info
-To use the JSX syntax in typescript, you must use `.tsx` for file extension.
-And import `Machinat` at the beginning of the file like this:
+To use the JSX syntax in typescript, you must use `.tsx` file extension.
+And also import `Machinat` at the beginning of the file like this:
 
 ```ts
 import Machinat from '@machinat/core';
 ```
 :::
 
+The html alike syntax `<p>Todo "<b>{todoName}</b>" is added!</p>` is called
+**JSX**. `<p>...</p>` element represent a message bubble containing the inner
+text children.
+
+Despite plain text like `Todo`, element children can contain other elements like
+`<b>...</b>`. An expression can also be inserted with the `{...}` syntax like
+`{todoName}`.
+
+JSX is used to construct messages in Machinat framework. We can simply send a
+JSX element like this:
+
+```tsx
+  await reply(<p>Hello! I'm a Todo Bot 🤖</p>);
+```
+
 
 ### Formatting Text
 
-Notice that `<b>{todoName}</b>` element makes the todo name bold as the way it is in
-html. Try change the tag to `i`, `s` and `code` and see what's different. These
+:::info
+Effect of text format can be different depends on chat platforms:
+- **Messenger** only support in the desktop browser. It shows markdown
+syntax in mobile app.
+- **LINE** doesn't support text format and shows plain text only.
+:::
+
+We use the `<b>{todoName}</b>` element to make the todo name bold. Try
+change the element tag to `i`, `s` or `code` and see what's different. These
 tags are **textual** and work like plain text so they can be placed in
 `<p></p>` element.
 
-> <img width={250} src={require("./assets/hello-with-formatting-text.png").default} />
->
-> `<b>Hello!</b> <s>I'm a</s> <i>Todo</i> <code>Bot 🤖</code>` in desktop **Messenger**.
+For example `<b>Hello!</b> <s>I'm a</s> <i>Todo</i> <code>Bot 🤖</code>` message will look
+like this:
 
+<img width={250} src={require("./assets/hello-with-formatting-text.png").default} />
 
-:::info
-The effect of formatting text is different depends on chat platform:
-- **Messenger** only support formatting in the desktop browser. It shows markdown
-  syntax in mobile app.
-- **LINE** doesn't support formatting and shows plain text only.
-:::
-
-### General UI
-
-The element with uncaptalized tags like `p` and `b` are general tags supported
-on all the chat platforms. It is the easiest way to send a message across
-different platforms.
 
 ### Grouping Messages
 
-Now let's add more details after adding on todo:
+Now let's add more details after adding a todo. Edit `handleMessage` like this:
 
 ```tsx {7-12} title="src/handlers/handleMessage.tsx"
-// ...
+  // ...
   if (event.type === 'text') {
     const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
 
@@ -155,420 +158,26 @@ serveral messages together and send them once. The result would look like:
 <img width={400} src={require("./assets/add-todo-order-pizza.png").default} />
 
 
-With _Fragment_, sending messages is more like sketching up a view to user. You
-can focus on making UI/UX, and _Machinat_ would take the rest of jobs.
+## General Tags
 
-### Native UI
+The element with uncaptalized tags like `p` and `b` are **general tags**, which are
+supported on all chat platforms. A JSX message contains only general tag element
+and text is the easiest way to make a cross-platform reply.
 
-Desite the general tags, each chat platform may have their own special features.
-These features are available as **Native Component** of each platform.
+For example this meassge can be replied no any chat platform:
 
-Let's try adding a button for showing all todos. Follow the guide of the
-platform you choose to edit `handleMessage`:
-
-
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
-<Tabs
-  groupId="chat-platforms"
-  defaultValue="messenger"
-  values={[
-    {label: 'Messenger', value: 'messenger'},
-    {label: 'Telegram', value: 'telegram'},
-    {label: 'LINE', value: 'line'},
-  ]}>
-  <TabItem value="messenger">
-
-
-```tsx {2,17-26} title="src/handlers/handleMessage.tsx"
-import Machinat from '@machinat/core';
-import * as Messenger from '@machinat/messenger/components';
-import { ChatEventContext } from '../types';
-
-const handleMessage = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { category: 'message' } } ) => {
-  if (event.type === 'text') {
-    const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
-
-    if (matchingAddTodo) {
-      const todoName = matchingAddTodo[2].trim();
-      return reply(
-        <>
-          <p>Todo "<b>{todoName}</b>" is added!</p>
-          <Messenger.ButtonTemplate
-            buttons={
-              <Messenger.PostbackButton
-                title="Show Todos 📑"
-                payload={JSON.stringify({ type: 'list' })}
-              />
-            }
-          >
-            You have <b>{3}</b> todos now.
-          </Messenger.ButtonTemplate>
-        </>
-      );
-    }
-  }
-  // ...
+```tsx
+await reply(
+  <>
+    <p>This can be sent to <b>ALL</b> chat platforms</p>
+    <img src="https://machinat.com/thumbs_up.png" />
+  </>
+);
 ```
 
-> - `Messenger.ButtonTemplate` sends a text message with buttons.
-> - `Messenger.PostbackButton` add a button to post `payload` back.
-
-  </TabItem>
-  <TabItem value="telegram">
-
-
-```tsx {2,17-28} title="src/handlers/handleMessage.tsx"
-import Machinat from '@machinat/core';
-import * as Telegram from '@machinat/telegram/components';
-import { ChatEventContext } from '../types';
-
-const handleMessage = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { category: 'message' } } ) => {
-  if (event.type === 'text') {
-    const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
-
-    if (matchingAddTodo) {
-      const todoName = matchingAddTodo[2].trim();
-      return reply(
-        <>
-          <p>Todo "<b>{todoName}</b>" is added!</p>
-          <Telegram.Text
-            replyMarkup={
-              <Telegram.InlineKeyboard>
-                <Telegram.CallbackButton
-                  text="Show Todos 📑"
-                  data={JSON.stringify({ type: 'list' })}
-                />
-              </Telegram.InlineKeyboard>
-            }
-          >
-            You have <b>{3}</b> todos now.
-          </Telegram.Text>
-        </>
-      );
-    }
-  }
-  // ...
-```
-
-> - `Telegram.Text` sends a text message bubble with telegram message options.
-> - `Telegram.InlineKeyboard` attach buttons in children below a message.
-> - `Telegram.CallbackButton` add a button to post `data` back.
-
-  </TabItem>
-  <TabItem value="line">
-
-
-```tsx {2,17-27} title="src/handlers/handleMessage.tsx"
-import Machinat from '@machinat/core';
-import * as Line from '@machinat/line/components';
-import { ChatEventContext } from '../types';
-
-const handleMessage = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { category: 'message' } } ) => {
-  if (event.type === 'text') {
-    const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
-
-    if (matchingAddTodo) {
-      const todoName = matchingAddTodo[2].trim();
-      return reply(
-        <>
-          <p>Todo "<b>{todoName}</b>" is added!</p>
-          <Line.ButtonTemplate
-            altText="You have 3 todos now."
-            actions={
-              <Line.PostbackAction
-                label="Show Todos 📑"
-                data={JSON.stringify({ type: 'list' })}
-              />
-            }
-          >
-            You have <b>{3}</b> todos now.
-          </Line.ButtonTemplate>
-        </>
-      );
-    }
-  }
-  // ...
-```
-
-> - `Line.ButtonTemplate` sends a text message bubble with buttons.
-> - `Line.PostbackAction` add a button to post `data` back.
-
-
-  </TabItem>
-</Tabs>
-
-The tag like `Messenger.ButtonTemplate` is a **Native Component** of chat platform.
-These components represent platform specific features, and can only be sent to the
-platform they belongs to.
-
-If you are building a cross-platform app, send the message according to platform
-like:
-
-```tsx {1,6-14} title="src/handlers/handleMessage.tsx"
-const handleMessage = async ({
-  platform,
-  event,
-  reply,
-}: ChatEventContext & { event: { category: 'message' } } ) => {
-  // ...
-    return reply(
-      <>
-        <p>Todo "<b>{todoName}</b>" is added!</p>
-        {
-          platform === 'messenger' ? (
-            // messenger component...
-          ) : platform === 'telegram' ? (
-            // telegram component...
-          ) : (
-            <p>You have <b>{3}</b> todos now.</p>
-          )
-        }
-      </>
-    );
-```
-
-Now a button should be attached to the reply of bot like:
-
-<img width={400} src={require("./assets/add-todo-with-list-button.png").default} />
-
-
-### Props
-
-The attributes we put on the **JSX** element are **Props**:
-
-```tsx {2,4-5}
-    <Messenger.ButtonTemplate
-      buttons={
-        <Messenger.PostbackButton
-          title="Show Todos 📑"
-          payload={JSON.stringify({ type: 'list' })}
-        />
-      }
-    >
-      You have <b>{3}</b> todos now.
-    </Messenger.ButtonTemplate>
-```
-
-Like _React.js_, they are used to pass values to the component. The value can be
-text (like `title`), expression (like `payload`) or even another element (like
-`buttons`).
-
-We pass JSON encoded data on `payload` (or `data`) prop to indicate the action
-type. We can use the data later to handle the postback event.
-
-
-## Event Flow
-
-### Handle Postback Event
-
-The button we added would post data back to our server while user tap the button
-in the chatroom. We can handle the postback events by adding these codes:
-
-
-<Tabs
-  groupId="chat-platforms"
-  defaultValue="messenger"
-  values={[
-    {label: 'Messenger', value: 'messenger'},
-    {label: 'Telegram', value: 'telegram'},
-    {label: 'LINE', value: 'line'},
-  ]}>
-  <TabItem value="messenger">
-
-
-Create a new `src/handlers/handlePostback.tsx` file:
-
-```tsx  title="src/handlers/handlePostback.tsx"
-import Machinat from '@machinat/core';
-import { ChatEventContext } from '../types';
-
-const handlePostback = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { type: 'postback' } } ) => {
-  const action = JSON.parse(event.data);
-
-  if (action.type === 'list') {
-    return reply(
-      <>
-        <p>You have <b>3</b> todos:</p>
-        <p>......</p>
-      </>
-    );
-  }
-};
-
-export default handlePostback;
-```
-
-And add these codes in `src/main.tsx`:
-
-```tsx title="src/main.tsx"
-import handlePostback from './handlers/handlePostback';
-// ...
-const main = (event$: Stream<AppEventContext>): void => {
-  // ...
-  event$
-    .pipe(
-      filter(
-        (ctx): ctx is ChatEventContext & { event: { type: 'postback' } } =>
-          ctx.event.type === 'postback'
-      )
-    )
-    .subscribe(handlePostback);
-  // ...
-```
-
-
-  </TabItem>
-  <TabItem value="telegram">
-
-
-Create a new `src/handlers/handlePostback.tsx` file:
-
-```tsx  title="src/handlers/handlePostback.tsx"
-import Machinat from '@machinat/core';
-import { AnswerCallbackQuery } from '@machinat/telegram/components';
-import { ChatEventContext } from '../types';
-
-const handlePostback = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { type: 'callback_query' } } ) => {
-  const action = JSON.parse(event.data!);
-  const answerQuery = <AnswerCallbackQuery queryId={event.queryId} />;
-
-  if (action.type === 'list') {
-    return reply(
-      <>
-        {answerQuery}
-        <p>You have <b>3</b> todos:</p>
-        <p>......</p>
-      </>
-    );
-  }
-
-  return reply(answerQuery);
-};
-
-export default handlePostback;
-```
-
-:::info
-The `callback_query` event of Telegram need to be replied with
-`AnswerCallbackQuery` to stop the client side pending.
-:::
-
-And add these codes in `src/main.tsx`:
-
-```tsx title="src/main.tsx"
-import handlePostback from './handlers/handlePostback';
-// ...
-const main = (event$: Stream<AppEventContext>): void => {
-  // ...
-  event$
-    .pipe(
-      filter(
-        (ctx): ctx is ChatEventContext & {
-          event: { type: 'callback_query' };
-        } => ctx.event.type === 'callback_query'
-      )
-    )
-    .subscribe(handlePostback);
-  // ...
-```
-
-
-  </TabItem>
-  <TabItem value="line">
-
-
-Create a new `src/handlers/handlePostback.tsx` file:
-
-```tsx  title="src/handlers/handlePostback.tsx"
-import Machinat from '@machinat/core';
-import { ChatEventContext } from '../types';
-
-const handlePostback = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { type: 'callback_query' } } ) => {
-  const action = JSON.parse(event.data!);
-
-  if (action.type === 'list') {
-    return reply(
-      <>
-        <p>You have <b>3</b> todos:</p>
-        <p>......</p>
-      </>
-    );
-  }
-};
-
-export default handlePostback;
-```
-
-And add these codes in `main`:
-
-```tsx title="src/main.tsx"
-import handlePostback from './handlers/handlePostback';
-// ...
-const main = (event$: Stream<AppEventContext>): void => {
-  // ...
-  event$
-    .pipe(
-      filter(
-        (ctx): ctx is ChatEventContext & { event: { type: 'postback' } } =>
-          ctx.event.type === 'postback'
-      )
-    )
-    .subscribe(handlePostback);
-  // ...
-```
-
-
-  </TabItem>
-</Tabs>
-
-
-Try tap the `Show Todos 📑` button in the chat room and you should see:
-
-<img width={400} src={require("./assets/list-todo-1.png").default} />
-
-### Stream Flow in `main`
-
-In the `main` function, the `event$` argument is a **stream** of all events. You
-can `.subscribe()` the stream to listen events, or `.pipe()` it to create a new
-stream.
-
-We use the `filter(...)` operator to allow only the postback events to pass. The
-filtered stream is then handled by the `handlePostback` handler.
-
-```ts
-event$
-  .pipe(
-    filter((ctx) => {
-      // return `true` and allow only 'postback' event to pass
-      return ctx.event.type === 'postback'
-    })
-  )
-  .subscribe(({ event }) => {
-    // receive only 'postback' event here
-  });
-```
+You can check the full list of general tags [here](/docs/rendering-elements#general-tags).
 
 ---
 
-Our bot can receive events from user and reply simple answer now. Next, we'll learn
-how to make more complex UI for more powerful features.
+Our bot can receive message from user and reply simple text answer now. Next,
+we'll learn how to interact with users using in-chat widget.

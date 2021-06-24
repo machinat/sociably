@@ -5,24 +5,25 @@ title: Create a Machinat App
 Let's create our first Machinat app and run it up! In this lesson we'll create a
 hello-world chatbot and make it available in the chat platform.
 
->　Time to accomplish: 10 minutes
+>　Time to accomplish: 15 minutes
 
 ## Chat Platform
 
 Machinat now support three chat platforms: `messenger`, `telegram` and `line`.
-Pick one platform you preferred and run this command in the terminal:
+Pick one platform you preferred and run this command with the platform you choose
+in the terminal:
 
 ```bash
-$ npm init @machinat/app -- -p <platform> -p webview my-todo-bot
+npm init @machinat/app -- -p <platform> -p webview my-todo-bot
 ```
+
+The scirpt would automatically create codes of a hello-world bot. Now
+`cd my-todo-bot` and take a look.
 
 :::tip
 You can choose multiple chat platforms by adding more `-p <platform>` flag, and
 your app will be corss-platform when finished.
 :::
-
-
-The scirpt would automatically create codes of a hello-world bot. Now `cd my-todo-bot` and take a look.
 
 ### Platform Setup
 
@@ -49,16 +50,16 @@ import TabItem from '@theme/TabItem';
      you project like:
 
 ```
-MESSENGER_APP_ID= <App ID>
-MESSENGER_APP_SECRET= <App Secret>
+MESSENGER_APP_ID= 1234567890
+MESSENGER_APP_SECRET= abcdef123456...
 ```
 
 #### Use Messneger in you app
   Go to: `App Dashboard Page` > `Add a Product` > `Messenger` > `Set Up`
 
-#### Create a Facebook page if you don't have one
+#### Create a Facebook page if you don't have one:
   Go to: `Messenger Setting Page` > `Access Tokens` > `Create New Page`.
-  Then follow the instruction to create a page for your bot.
+  Then follow the instructions to create a page for your bot.
 
 #### Connect your page to the app
   1. Go to: `Messenger Setting Page` > `Access Tokens` > `Add or Remove Pages`.
@@ -67,7 +68,7 @@ MESSENGER_APP_SECRET= <App Secret>
   3. Copy the id number of the page and paste it in `.env` file like:
 
 ```
-MESSENGER_PAGE_ID= <App ID>
+MESSENGER_PAGE_ID= 1234567890
 ```
 
 ### Get page token
@@ -75,8 +76,35 @@ MESSENGER_PAGE_ID= <App ID>
   paste it in `.env` file like:
 
 ```
-MESSENGER_ACCESS_TOKEN= <access token>
+MESSENGER_ACCESS_TOKEN= AaBbCcDdEeFf123456...
 ```
+
+## Run Machinat App
+
+### Start Dev Server
+
+Now run this command in the project directory:
+
+```bash
+npm run dev
+````
+
+Your app should be successfully running if all the required settings are
+finished.
+
+### Run Migrations
+
+One more step to be done for the first time starting.
+Keep the dev server runnning, and execute this command in **another command line
+tab**:
+
+```bash
+npm run migrate
+```
+
+The command register some necessery settings to Messenger platform. Your bot
+should be available now by messaging to your Facebook page!
+
 
   </TabItem>
   <TabItem value="telegram">
@@ -89,7 +117,7 @@ MESSENGER_ACCESS_TOKEN= <access token>
 3. Copy the token of your bot and paste it in `.env` file in your project like:
 
 ```
-TELEGRAM_BOT_TOKEN= <bot token>
+TELEGRAM_BOT_TOKEN= 654321:AaBbCcDdEdFf123456...
 ```
 
 #### Set domain of your bot
@@ -99,6 +127,29 @@ TELEGRAM_BOT_TOKEN= <bot token>
 2. Go back to [@BotFather](https://t.me/botfather) and send `/mybot` command. Choose the bot you just created.
 3. Go to `Bot Settings` > `Domain` > `Edit Domain`. Send the copied domain to BotFather.
 
+
+## Run Machinat App
+
+### Run Migrations
+
+Before the first time starting, you have to run this command in the project directory:
+
+```bash
+npm run migrate
+```
+
+The command register some necessery settings to the Telegram platform.
+
+### Start Dev Server
+
+Now we can start app in development mode with this command:
+
+```bash
+npm run dev
+````
+
+Keep the dev server running while you are developing. Your app should be available
+now in the private chat to your bot!
 
   </TabItem>
   <TabItem value="line">
@@ -111,7 +162,7 @@ TELEGRAM_BOT_TOKEN= <bot token>
    paste it in `.env` file in your project like:
 
 ```
-LINE_PROVIDER_ID= <Provider ID>
+LINE_PROVIDER_ID= 1234567890
 ```
 
 #### Create Messaging API Channel
@@ -122,15 +173,15 @@ LINE_PROVIDER_ID= <Provider ID>
    paste them in `.env` file like:
 
 ```
-LINE_CHANNEL_ID= <Channel ID>
-LINE_CHANNEL_SECRET = <Channel secret>
+LINE_CHANNEL_ID= 1234567890
+LINE_CHANNEL_SECRET = abcdef123456...
 ```
 
 3. Go to `Messaging API` tab, issue an access token at `Channel access token`.
    Copy the token and paste it in `.env` file like:
 
 ```
-LINE_ACCESS_TOKEN= <access token>
+LINE_ACCESS_TOKEN= AaBbCcDdEeFf123456...
 ```
 
 #### Create a LIFF App
@@ -145,45 +196,45 @@ LINE_ACCESS_TOKEN= <access token>
 6. Copy the `LIFF ID` of the created LIFF app, paste it in `.env` file like:
 
 ```
-LINE_LIFF_ID= <LIFF ID>
+LINE_LIFF_ID= 1234567890-abcdef123456
 ```
 
+## Run Machinat App
+
+### Run Migrations
+
+Before the first time starting, you have to run this command in the project directory:
+
+```bash
+npm run migrate
+```
+
+The command register some necessery settings to the LINE platform.
+
+### Start Dev Server
+
+Now we can start app in development mode with this command:
+
+```bash
+npm run dev
+````
+
+Keep the dev server running while you are developing. Your app should be available
+now in private chat to your LINE official account!
 
   </TabItem>
 </Tabs>
 
-## Run Machinat App
-
-### Start Dev Server
-
-Now you run the command:
-
-```bash
-$ npm run dev
-````
-
-Your app should be successfully running if all the required settings are
-finished.
-
-### Run Migrations
-
-Keep the dev server runnning, and execute this command in **another command line
-tab**:
-
-```bash
-$ npm run migrate
-```
-
-This would register some necessery settings to the chat platforms. Your bot
-should be available on the chat platform you choose after finished!
-
-
 ### Try Your Bot
 
 Your first hello world app is running now! Talk to your bot in the chat platform
-and see what happen.
+and it should work like this:
 
-Let's change the reply a little bit. Open file `src/handlers/handleMessage.tsx`
+<img width={400} src={require("./assets/hello-world-bot.png").default} />
+
+#### Reply Text
+
+Let's change the answer a little bit. Open file `src/handlers/handleMessage.tsx`
 and edit the content to this:
 
 
@@ -201,11 +252,11 @@ const handleMessage = async ({
 export default handleMessage;
 ```
 
-Your bot should now reply like this:
+Bot should now answer the string we `reply("...")` with:
 
 <img width={400} src={require("./assets/hello-todo-bot.png").default} />
 
 ---
 
-Your first bot is now running! Next, we'll teach it how to recieve messsges and
+Our first bot is running! Next, we'll teach it how to recieve messsges and
 make the answer.

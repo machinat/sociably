@@ -2,19 +2,18 @@
 title: UI Component
 ---
 
-Now we know about how to send messages in **JSX**. In this lesson we will go
-deeper to make customized chat UI component.
+Now we know how to use both general and native UIs. While the UIs are getting
+more complex, we might want to reuse them to keep the codes [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
+In this lesson, we will go deeper to make customized chat UI component.
 
 >　Time to accomplish: 10 minutes
 
 ## Building Component
 
-### Carousel Template
+Let's continue creating the todos list UI. But this time, we'll build the view
+as a reusable **Component** module.
 
-Let's continue to create the UI for showing todos list. But this time in a
-reusalbe and  **component**.
-
-First add a type represent the todo data:
+First add this type to represent the todo data:
 
 ```ts title="src/types.ts"
 export type Todo = {
@@ -23,7 +22,7 @@ export type Todo = {
 };
 ```
 
-Follow the guide of the platform you choose to create your first component:
+Then follow the guide of your chosen platform to create our first component:
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -81,7 +80,7 @@ const TodoList = ({ todos }: TodoListProps, { platform }) => {
   return (
     <>
       {summary}
-      {todos.map((todo) => todo.name).join('\n')}
+      {todos.map((todo) => <p>{todo.name}</p>)}
     </>
   );
 };
@@ -138,7 +137,7 @@ const TodoList = ({ todos }: TodoListProps, { platform }) => {
   return (
     <>
       {summary}
-      {todos.map((todo) => todo.name).join('\n')}
+      {todos.map((todo) => <p>{todo.name}</p>)}
     </>
   );
 };
@@ -196,7 +195,7 @@ const TodoList = ({ todos }: TodoListProps, { platform }) => {
   return (
     <>
       {summary}
-      {todos.map((todo) => todo.name).join('\n')}
+      {todos.map((todo) => <p>{todo.name}</p>)}
     </>
   );
 };
@@ -230,55 +229,66 @@ import TodoList from '../components/TodoList.tsx'
 ```
 
 
-Now tap the `Show Todos 📑` button, your bot should reply like this:
+Now tap the `Show Todos 📑` button again, your bot should reply like this:
 
 <img width={400} src={require("./assets/list-todo-2.gif").default} />
 
-The `Done ✓` button would post back a `'finish'` action with the todo id, we will
+> The `Done ✓` button would post back a `'finish'` action with the todo id, we will
 handle that at next lesson.
 
 :::tip
-For simplifiaction, this tutorial doesn't include paging when more than 10 todos.
-Check [here](https://github.com/machinat/todo-example/blob/main/src/components/ShowTodoList.tsx)
+For simplification, this tutorial doesn't include paging for more than 10 todos.
+Check [complete example](https://github.com/machinat/todo-example/blob/main/src/components/ShowTodoList.tsx)
 if you are interested about that.
 :::
 
+
 ### Component Function
 
-A component is a normal function returns the UI element to be sent.
-The first argument is an object represent the **props** of JSX element.
-
-The `TodoList` can be used like this:
+A **component** is a normal function with **capitalized** name that returns the
+UIs to be sent. The component then can be used just like a native component:
 
 ```tsx
 <TodoList todos={[{ id: 1, name: 'foo' }, /* ... */]} />
 ```
 
-The `TodoList` function would then receive a `{ todos: [/* todos... */] }` object
-while rendering reply. The todos prop are then being used to generate the UIs like:
+The first argument of component function is an object represent the **props** of
+JSX element. Our `TodoList` function will receive a `{ todos: [/* todos... */] }`
+object while rendering reply.
+
+We can then use the data from `todos` prop to return the UI like:
 
 ```tsx
-<>{todos.map(todo => <p>{todo.name}</p>)}</>
+  return (
+    <>
+      {summary}
+      {todos.map((todo) => <p>{todo.name}</p>)}
+    </>
+  );
 ```
 
-As you can see, an array is able to be inserted in element children. This is equal
-to:
+#### Rendering Array
+
+To render the todos list, we can insert an array of elements in JSX.
+The `{todos.map(todo => <p>{todo.name}</p>)}` code above actually works equal to:
 
 ```tsx
 <>
-  <p>{todo1.name}</p>
-  <p>{todo2.name}</p>
-  <p>{todo3.name}</p>
+  ...
+  <p>{todo[1].name}</p>
+  <p>{todo[2].name}</p>
+  <p>{todo[3].name}</p>
   ...
 </>
 ```
 
 ### Cross-Platform in Component
 
-The second argument of the component function is an object containing infomations
-like the current platform. To make your component cross-platform, you can check
-the `platform` value and return the corresponded native UI.
+The second argument of the component function is a rendering info object.
+To make your component cross-platform, you can check the `platform` value and
+return the corresponded native UI.
 
+For example:
 
 ```tsx
 const TodoList = ({ todos }: TodoListProps, { platform }) => {
@@ -291,21 +301,27 @@ const TodoList = ({ todos }: TodoListProps, { platform }) => {
   // ...
 ```
 
-At the end of the function, we usually return a default general UI to support any
-new platform added in the future.
+At the end of the function, we can return a default general UI for new platform
+that added in the future.
 
 ```tsx
   // ...
-  return <>{todos.map((todo) => todo.name).join('\n')}</>;
+  return (
+    <>
+      {summary}
+      {todos.map((todo) => <p>{todo.name}</p>)}
+    </>
+  );
 };
 ```
 
 ### Wrapping Children
 
-One common technic for building component is taking children elements and
+One another common technic for building component is taking children elements and
 wrap around it. Let's try it by creating a `WithMenu` component to reuse the
-list button:
+list button.
 
+Create a new `src/components/WithMenu.tsx` file with the following content:
 
 <Tabs
   groupId="chat-platforms"
@@ -317,7 +333,6 @@ list button:
   ]}>
   <TabItem value="messenger">
 
-Create a new `src/components/WithMenu.tsx` file:
 
 ```tsx title="src/components/WithMenu.tsx"
 import Machinat, { MachinatNode } from '@machinat/core';
@@ -470,7 +485,7 @@ export default WithMenu;
 </Tabs>
 
 
-And change the `handleMessage` handler like:
+And change the `handleMessage` handler like this:
 
 ```tsx {2,15-17,23-25} title="src/handlers/handleMessage.tsx"
 import Machinat from '@machinat/core';
@@ -504,8 +519,14 @@ const handleMessage = async ({
 export default handleMessage;
 ```
 
-The `WithMenu` component can be used with additional messages it the element
-children. Like:
+
+Now when your bot saying hello, the menu will be attached like this:
+
+<img width={400} src={require("./assets/hello-with-menu.png").default} />
+
+
+The `WithMenu` component can be used with additional messages in the element
+children. Like this:
 
 ```tsx
 <WithMenu todoCount={3}>
@@ -513,13 +534,24 @@ children. Like:
 </WithMenu>
 ```
 
-The element children `<p>Hello! I'm a Todo Bot 🤖</p>` is available as `children`
-prop in component function. We can then return it with the root menu attached
-below.
+The element children `<p>Hello! I'm a Todo Bot 🤖</p>` is then available as `children`
+prop in component function. We can simply return it with the menu attached
+below like:
 
-Now when your bot saying hello, the menu will be attached like this:
-
-<img width={400} src={require("./assets/hello-with-menu.png").default} />
+```tsx
+  return (
+    <>
+      {children}
+      <Messenger.ButtonTemplate
+        buttons={
+          <Messenger.PostbackButton title={listLabel} payload={listData} />
+        }
+      >
+        {info}
+      </Messenger.ButtonTemplate>
+    </>
+  );
+```
 
 ---
 

@@ -244,7 +244,7 @@ In the project we need to access the todo data serveral times. To keep the codes
 clean and [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself), it's
 better having a service to manage all the todo operations.
 
-For not repeating in same content, please download the `TodoController.ts` file
+For not repeating similar steps, please download the `TodoController.ts` file
 with this command:
 
 ```bash
@@ -252,8 +252,8 @@ curl -o ./src/services/TodoController.ts --create-dirs https://raw.githubusercon
 ```
 
 In the file we declare a `TodoController` class to manage todos from the state.
-Check the end of the file, you'll see `StateController` class is wrapped by
-`makeClassProvider` function:
+Check the end of `src/services/TodoController.ts` file, you'll see
+`StateController` class is wrapped by `makeClassProvider` function:
 
 ```ts
 export default makeClassProvider({
