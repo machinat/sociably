@@ -90,15 +90,21 @@ export const getServerSideProps = () => ({ props: {} });
 
 const { publicRuntimeConfig } = getConfig();
  
-const client = new WebviewClient({
-  mockupMode: typeof window === 'undefined',
-  authorizers: [
-    new MessengerClientAuthorizer({
-      appId: publicRuntimeConfig.messengerAppId,
-    }),
-    new TelegramClientAuthorizer(),
-  ],
-});
+const client = new WebviewClient(
+  typeof window === 'undefined'
+    ? { mockupMode: true, authorizers: [] }
+    : {
+        authorizers: [
+          new MessengerClientAuthorizer({
+            appId: publicRuntimeConfig.messengerAppId,
+          }),
+          new TelegramClientAuthorizer(),
+          new LineClientAuthorizer({
+            liffId: publicRuntimeConfig.lineLiffId,
+          }),
+        ],
+      }
+);
 
 client.onError(console.error);
 ```
@@ -117,9 +123,7 @@ module.exports = {
 3. Turn on `mockupMode` during server rendering at server side. It stop the client form making any real connection.
 4. Set the `platform` option if you want to specify the platform for authorization.
 
-The `WebviewClient` will automatically handle authorization and WebSocket. It's safe to subscribe and send events immediately after constructed.
-
-You can check more client options [here](/api/modules/webview_client.html#clientoptions).
+After being constructed, the `client` will: 1) log in user to the chosen chat platform and 2) create a `WebSocket` connection to communicate with server. You can check more client options [here](/api/modules/webview_client.html#clientoptions).
 
 ## Open Webview
 
