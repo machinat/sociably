@@ -309,11 +309,11 @@ In the example above, `Base.Profiler` can be used to fetch profile of users from
 
 For now the following `Base` interfaces are supported:
 
-- [`Bot`](/api/modules/core_base_bot): send messages to a channel across platforms, also available on `Machinat.Bot`.
-- [`Profiler`](/api/modules/core_base_profiler): fetch profile of users across platforms, also available on `Machinat.Profiler`.
-- [`StateController`](/api/modules/core_base_statecontroller): save and load state from state storage.
-- [`IntentRecognizer`](api/modules/core_base_intentrecognizer): recognize intent with external providers.
-- [`Marshaler`](api/modules/core_base_marshaler): marshal/unmarshal instances of built-in classes like user and channel.
+- [`Bot`](pathname:///api/modules/core_base_bot): send messages to a channel across platforms, also available on `Machinat.Bot`.
+- [`Profiler`](pathname:///api/modules/core_base_profiler): fetch profile of users across platforms, also available on `Machinat.Profiler`.
+- [`StateController`](pathname:///api/modules/core_base_statecontroller): save and load state from state storage.
+- [`IntentRecognizer`](pathname:///api/modules/core_base_intentrecognizer): recognize intent with external providers.
+- [`Marshaler`](pathname:///api/modules/core_base_marshaler): marshal/unmarshal instances of built-in classes like user and channel.
 
 
 ## Next

@@ -73,7 +73,7 @@ Here are the steps we do to run the webview up:
 6. If you have `next.config.js` settings in your next.js project. You have to require it and fill it at `nextServerOptions.conf`.
 7. Provide `Webview.AuthorizerList` with server authorizer providers of each chat platform.
 
-The webview page should be available at `/` of your server now. You can check more webview options [here](/api/modules/webview.html#webviewconfigs).
+The webview page should be available at `/` of your server now. You can check more webview options [here](pathname:///api/modules/webview.html#webviewconfigs).
 
 ### Front-End Setup
 
@@ -123,7 +123,7 @@ module.exports = {
 3. Turn on `mockupMode` during server rendering at server side. It stop the client form making any real connection.
 4. Set the `platform` option if you want to specify the platform for authorization.
 
-After being constructed, the `client` will: 1) log in user to the chosen chat platform and 2) create a `WebSocket` connection to communicate with server. You can check more client options [here](/api/modules/webview_client.html#clientoptions).
+After being constructed, the `client` will: 1) log in user to the chosen chat platform and 2) create a `WebSocket` connection to communicate with server. You can check more client options [here](pathname:///api/modules/webview_client.html#clientoptions).
 
 ## Open Webview
 
