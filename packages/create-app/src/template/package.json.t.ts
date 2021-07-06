@@ -7,7 +7,7 @@ export default ({ projectName, platforms }: CreateAppContext) => {
     name: projectName,
     private: true,
     scripts: {
-      clean: 'rm -rf ./lib ./dist && rm tsconfig.tsbuildinfo',
+      clean: 'rm -rf ./lib ./dist && rm -f tsconfig.tsbuildinfo',
 
       migrate: 'per-env',
       'migrate:development': 'ts-node ./src/cli/migrate.ts',
