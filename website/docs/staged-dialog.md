@@ -1,20 +1,26 @@
 ---
-title: Staged Dialog
+title: Conversation Script
 ---
 
-## Staged Dialog
-
-In a conversation, it is often you need to ask a question and wait for the answer. A dialog may contain a sequence of relating questions and answers. Let's call this kind of dialogs as _staged_.
+In a conversation, it's often that you need to ask a question and wait for the answer. A dialog may contain a sequence of relating questions and answers. Let's call this kind of dialogs as _staged_.
 
 A staged dialog is common when making order or customer service. In some more complex situations, a conversation may even contain many conditional branches of staged dialogs.
 
 Building staged dialog flows is a challenge in a chatbot as a back-end based app. Machinat take a special approach which enable you writing the **script** for a staged dialog.
 
+## Install
+
+You have to install `@machinat/script` package to use Machinat script. And make
+sure you have one state storage installed, such like `@machinat/redis-state` or
+`@machinat/local-state`.
+
+## Building Script
+
 Here is a simple Machinat script for making order:
 
 ```js
 import Machinat from '@machinat/core';
-import { container } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core/service';
 import IntentRecognizerI from '@machinat/core/base/IntentRecognizerI';
 import { build } from '@machinat/script';
 import {
@@ -30,16 +36,12 @@ import OrderSideDish from './OrderSideDish';
 
 const MAIN_DISHES = ['steak', 'chicken', 'pork'];
 
-const Order = build(
-  'Order',
+export default build(
+  { name: 'Ordering' },
   <>
     {() => <p>What main dish would you like?</p>}
 
-    <WHILE
-      condition={({ vars }) =>
-        !MAIN_DISHES.includes(vars.mainDish)
-      }
-    >
+    <WHILE condition={({ vars }) => !MAIN_DISHES.includes(vars.mainDish)}>
       {() => <p>We have {MAIN_DISHES.join(', ')}.</p>}
 
       <PROMPT
@@ -62,7 +64,7 @@ const Order = build(
     <PROMPT
       key="ask-side-dish"
       set={
-        container({
+        makeContainer({
           deps: [IntentRecognizerI],
         })(recognizer =>
           async ({ vars, channel }, { event }) => {
@@ -95,9 +97,7 @@ const Order = build(
     </IF>
 
     <RETURN
-      value={({ vars: { mainDish, sideDish } }) =>
-        ({ mainDish, sideDish })
-      }
+      value={({ vars: { mainDish, sideDish } }) => ({ mainDish, sideDish })}
     />
   </>
 );
@@ -107,17 +107,17 @@ As you can see, it works just like a script language! So you can easily handle c
 
 The **script** is a Machinat element tree, constructed with sequence of keywords and content. We'll break down how it work in this section.
 
-## Content Node
+### Content Node
 
-The content node is a function that returns the message to be sent. A content node can be placed in a script like:
+The content node is a function that returns the messages to be sent. A content node can be placed in a script like:
 
 ```js
 <>
-...
   {() => <p>Pick a main dish you like.</p>}
-...
 </>
 ```
+
+When a content node is met while the script is executing, the function will be called to get the messages. The messages will then being sent to proceed the conversation.
 
 ### Circumstance Object
 
@@ -125,7 +125,6 @@ The content function would receive an object represent the current execution cir
 
 ```js
 <>
-...
   {({ vars }) => (
     <p>
       Our {vars.mainDish} is good!
@@ -133,7 +132,6 @@ The content function would receive an object represent the current execution cir
       Would you like any side dish?
     </p>
   )}
-...
 </>
 ```
 
@@ -141,18 +139,11 @@ The circumstance object has the following properties:
 
 - `platform` - `string`, the platform name where the dialog happen.
 - `channel` - `object`, the channel where the dialog happen.
-- `vars` - `object`, a state object you can used to store data. The data is per execution scoped, you can consider it as using the `var` keyword in a function.
+- `vars` - `object`, a state object for storing data. 
 
-### Execute Time and Render Time
+`vars` is a special state exists while script is executing. The data is available locally under per execution scope. We'll use the `vars` a lot later, to store the user's answer and proceed the conversation according to it.
 
-While a script executing, the following 2 steps about the content would happen:
-
-1. When a content node is met, the content function is called for retrieving the message.
-2. After a `PROMPT` or at the end of script, messages collected from content nodes is rendered and sent.
-
-The 2 steps happens at different time, we call them _execute time_ and _render time_. Flow related logic like asking the question before `PROMPT` is handled at _execute time_. The presentation of the question is then determined at render time while rendering the message.
-
-## Keyword Element
+### Keyword Element
 
 The keyword element work just like keywords in script language, the dialog would be proceeded according to keywords met in the **script**. Here are the available keywords and their props:
 
@@ -176,17 +167,18 @@ The keyword element work just like keywords in script language, the dialog would
   - `children` - required, script block.
 
 - `PROMPT` - when a `PROMPT` element met, the execution stop and wait for user response.
-  - `key` - required, `string`, the key to identify the stop point.
+  - `key` - required, `string`, unique key for the stop point.
   - `set` - optional, `(Circumstance, Input) => Vars`, set new `vars` according to the input.
 
-- `VARS` - change `vars` value.
-  - `set` - required, `(Circumstance) => Vars`, set new `vars`.
+- `EFFECT` - change `vars` value.
+  - `do` - optional, `(Circumstance) => Result`, execute a side effect.
+  - `set` - optional, `(Circumstance, Result) => Vars`, set new `vars`.
 
 - `LABEL` - label a start point of the script.
-  - `key` - required, the key you can `goto` when call the script.
+  - `key` - required, `string`, unique key for the start point.
 
 - `CALL` - execute a sub-script.
-  - `key` - required, `string`, the key to identify the stop point.
+  - `key` - required, `string`, unique key for the stop point.
   - `script` - required, the sub-script.
   - `vars` - optional, `(Circumstance) => Vars`, the vars to be used by the sub-script.
   - `goto` - optional, `string`, begin execution from a label.
@@ -195,20 +187,28 @@ The keyword element work just like keywords in script language, the dialog would
 - `RETURN` - exit current script.
   - `value` - optional, `(Circumstance) => Vars`, the value to return.
 
-### Designing a Dialog
+### Prompting in Chat
 
 `PROMPT` is the most important keyword for building a staged dialog. It splits the dialog into different stages, an the processor would wait for the user inputs between them.
 
-Other keywords help you to handle the flow control flow surrounding `PROMPT`. Like in the upper example:
+When the `PROMPT` element is executed in the script, the following thing will
+happen in order:
+
+1. Stop executing the script
+2. Stop point info is stored in the state.
+3. Wait for answer from user.
+4. User reply the answer.
+5. The `set` prop function is called for updating `vars`.
+6. Continue running script from the `PROMPT`.
+
+### Flow Control Keywords
+
+Flow control keywords help you to handle the flow control of a conversation. Like in the upper example, a `PROMPT` is surrounded by `WHILE` keyword like:
 
 ```js
 <>
 ...
-  <WHILE
-    condition={({ vars }) =>
-      !MAIN_DISHES.includes(vars.mainDish)
-    }
-  >
+  <WHILE condition={({ vars }) => !MAIN_DISHES.includes(vars.mainDish)}>
     {() => <p>We have {MAIN_DISHES.join(', ')}.</p>}
 
     <PROMPT
@@ -223,39 +223,103 @@ Other keywords help you to handle the flow control flow surrounding `PROMPT`. Li
 </>
 ```
 
-`WHILE` defines the condition and the block to be looped containing a `PROMPT`. This make the bot keep asking user until a valid main dish is chosen.
+`WHILE` defines the `condition` for looping a section of conversation flow. We put a `PROMPT` in the children block, so the bot will keep asking user until a valid main dish is chosen and pass the `condition`.
+
+Despite `WHILE`, there are other control flow keywords like `IF` and `RETURN`. You can use them as the way in programming language.
+
+### Call Another Script
+
+You can also call another script using `CALL` keyword. The processor will
+execute the called script first, and continue from current point after the called
+script is returned.
+
+In the example above, we call an `OrderSideDish` script for a child ordering
+flow. So the conversation logic can be reused by different scripts, or even use
+it directly.
+
+```js
+<CALL
+  script={OrderSideDish}
+  key="order-side-dish"
+  set={({ vars }, { sideDish }) => ({ ...vars, sideDish })}
+/>
+```
+
+The `set` prop of `CALL` receive the circumstances object and the returned value
+of the script (by `<RETURN value={...} />`). We can set `vars` value with the
+result of the script for later use.
+
+### Macro Pattern
+
+Another way to reuse the conversation flow is macro style helper function. For 
+example, we can extract the asking dishes flow like this:
+
+```js
+const ASKING_DISH = (dishType, choices) => (
+  <>
+    {() => <p>What would you like for {dishType}?</p>}
+
+    <WHILE condition={({ vars }) => !choices.includes(vars[dishType])}>
+      {() => <p>We have {choices.join(', ')}.</p>}
+
+      <PROMPT
+        key={`ask-${dishType}`}
+        set={({ vars }, { event }) => ({
+          ...vars,
+          [dishType]: event.text,
+        })}
+      />
+    </WHILE>
+  </>
+);
+```
+
+The macro function can then be used in script like:
+
+```js
+<>
+  {() => <p>Welcome!</p>}
+  {ASKING_DISH('main dish', ['steak', 'chicken', 'pork'])}
+  {ASKING_DISH('side dish', ['fries', 'salad'])}
+  {ASKING_DISH('dessert', ['cake', 'pudding'])}
+  <RETURN value={({ vars }) => vars} />
+</>
+```
+
+This is particularly useful for reusing flows within a script. One thing to note here, the `key` still need to be unique in the whole script. Make sure you use variable argument to decide the `key` value.
 
 ### Using Containers
 
-Every functional prop of keyword elements can be changed to an asynchronous [container](dependency-injection.md#service-container) version. It helps you to use services like recognizing intent in the dialog flow.
+Every functional prop of keyword elements can be changed to an asynchronous [container](dependency-injection.md#service-container) version. It helps you to use services like recognizing intent. For example:
 
 ```js
-...
 <PROMPT
   key="ask-side-dish"
   set={
-    container({
-      deps: [Base.IntentRecognizer],
-    })(recognizer =>
-      async ({ vars, channel }, { event }) => {
-        const { intentType } = await recognizer.detectText(
-          channel,
-          event.text
-        );
+    makeContainer({ deps: [Base.IntentRecognizer] })(
+      (recognizer) =>
+        async ({ vars, channel }, { event }) => {
+          const { intentType } = await recognizer.detectText(
+            channel,
+            event.text
+          );
 
-        return {
-          ...vars,
-          wantSideDish: intentType === 'ok'
-        };
-      })
+          return {
+            ...vars,
+            wantSideDish: intentType === 'ok'
+          };
+        }
+    )
   }
 />
-...
 ```
 
-## Use the Scripts
 
-Before using scripts in your bot, you have to register the script processor service with all the scripts at first:
+## Use Scripts
+
+### Register Scripts
+
+Before using scripts in your bot, you have to register the script module with all the built scripts like this:
 
 ```js
 import Machiant from '@machinat/core';
@@ -279,46 +343,140 @@ const app = Machiant.createApp({
 });
 ```
 
-Then add the following code in your event handler:
+### Delegate Chat to Processor
+
+While a script is running on a chat, the control of the chat have to be delegated
+to the script processor. The processor will handles the dialog according the script
+that is running.
+
+You can add these codes in the event handler:
 
 ```js
-import { container } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core/service';
 import Script from '@machinat/script';
 
 app.onEvent(
-  container({
-    deps: [Script.Processor] }
-  )(processor => async context => {
-    const { bot, event: { channel } } = context;
+  makeContainer({ deps: [Script.Processor] })(
+    (processor) => async (context) => {
+      const { event, reply } = context;
 
-    const runtime = await processor.continue(channel, context);
-    if (runtime) {
-      return bot.render(channel, runtime.output());
+      const runtime = await processor.continue(event.channel, context);
+      if (runtime) {
+        return reply(runtime.output());
+      }
+
+      // default logic while not prompting in script...
     }
-
-    // default logic while not prompting...
-  })
+  )
 );
 ```
 
-The code above intercept the event if any script is now running on the current channel. If no script is running, you can respond any message or start a script with:
+The `processor.continue()` method return the current runtime on the chat if exists.
+We can simply reply the dialog messages with `runtime.output()`.
+
+Or if you're using `@machinat/stream`, filter the stream like this:
 
 ```js
-const runtime = await processor.start(channel, MyScript);
-bot.render(channel, runtime.output());
+import { makeContainer } from '@machinat/core/service';
+import Script from '@machinat/script';
+import { filter } from '@machinat/stream/operators'
+
+// use the filtered
+const nonExecutingChat$ = event$.pipe(
+  filter(
+    makeContainer({ deps: [Script.Processor] })(
+      (processor) => async (ctx) => {
+        const runtime = await processor.continue(ctx.event.channel, ctx);
+        if (!runtime) {
+          return true;
+        }
+
+        await ctx.reply(runtime.output());
+        return false;
+      }
+    )
+  )
+);
+
+nonExecutingChat$.subscribe(({ event }) => {
+  // default logic while not prompting in script...
+});
 ```
 
-Once a script is started, events would be delegated to the `Processor` until it is finished. Overall, the events is handled under a flow like this:
+Sometime you don't want all the events to be handled by the script. For example,
+to have scripts process only the messages events and leave the rest to other
+handlers. We can simply bypass delegating codes like:
+
+```js {6,23-25}
+app.onEvent(
+  makeContainer({ deps: [Script.Processor] })(
+    (processor) => async (ctx) => {
+      if (ctx.event.category === 'message') {    
+        const runtime = await processor.continue(ctx.event.channel, ctx);
+        if (runtime) {
+          return ctx.reply(runtime.output());
+        }
+      }
+      // ...
+    }
+  )
+);
+
+// or in the stream way
+
+event$.pipe(
+  filter(
+    makeContainer({ deps: [Script.Processor] })(
+      (processor) => async (ctx) => {
+        if (context.event.category !== 'message') {    
+          return true;
+        }
+        
+        const runtime = await processor.continue(ctx.event.channel, ctx);
+        if (!runtime) {
+          return true;
+        }
+
+        await ctx.reply(runtime.output());
+        return false;
+      }
+    )
+  )
+);
+```
+
+
+### Start Script
+
+If no script is currently running on the chat, a script can be started with `processor.start()` method like this:
+
+```js
+const runtime = await processor.start(event.channel, Ordering);
+await reply(runtime.output());
+```
+
+You can also send the output with additional messages like:
+
+```js
+await reply(
+  <>
+    <p>Good Evening!</p>
+    {runtime.output()}
+  </>
+);
+```
+
+Once the script is started, the script processor will handle the conversation according to the script until it's finished. Overall, the events is handled under a flow like this:
 
 ![Script Saga Flow](./assets/script-saga-flow.png)
 
 ### The Saga Pattern
 
-Machinat Script is a saga pattern implementation with the flow keywords sugar. A saga means a sequence of asynchronous tasks that would be executed by the order defined. It is invented to handle long lived operations on the back-end, like a _prompting_.
+Machinat Script is actually a saga pattern implementation with the script keywords sugar. A saga means a sequence of asynchronous tasks that would be executed by the order defined. It is invented to handle long lived operations on the back-end, like `PROMPT` user in chat.
 
-When you write a **script** with keywords, you define a saga that instruct `Processor` how to proceed the dialog. After a saga is triggered, all the contents and `PROMPT`s are promised to be finished before it successfully end or abort.
+When you write a **script** with keywords, you actually define a saga for proceeding conversation. After it is triggered, all the contents and `PROMPT`s are promised to be finished before the script returns.
 
-The major benefit of saga pattern is composing many atomic operations (promptings) into one atomic transaction (a dialog). You only have to declare the flow within script, then start it when you need. The script processor would handle the rest of all.
+The major benefit of saga pattern is composing many operations (contents and promptings) into one atomic transaction (a script). You only have to declare the flow within script, then start it when you need. The script processor would handle the rest of all.
 
 ## Next
 

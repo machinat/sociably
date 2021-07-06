@@ -38,7 +38,6 @@ import { build } from '@machinat/script';
 export default build(
   {
     name: 'AddingTodo',
-    initVars: () => ({}),
   },
   <>
     {() => <p>Please enter new todo name:</p>}
@@ -49,10 +48,9 @@ export default build(
 We `build` a script with its metadata and the script body. The `name` metadata
 should be unique in the whole project.
 
-In the script body a message node is added as a function returning a message
-element `{() => <p>...</p>}`. The function would be called when the node is met
-in the conversation, and the returned message element would be sent.
-
+In the script body, the function `{() => <p>...</p>}` is a content node in script.
+The content function will be called when it is met in the conversation, and the
+returned messages will be sent.
 
 ### Register Script
 
@@ -77,8 +75,7 @@ const app = Machinat.createApp({
 
 ### Delegate Chat to Processor
 
-And edit the `main` function like this:
-
+Edit the `main` function like this:
 
 ```ts {1,5-20,22,26} title="src/main.ts"
 import Script from '@machinat/script';
@@ -207,20 +204,16 @@ export default build<AddingTodoVars>(
 );
 ```
 
-When the `PROMPT` element is executed in the script, the following thing will
-happen in order:
+The `PROMPT` element stops the execution of scritp and wait for answer from user.
+When user replies, the script will start executing again from the `PROMPT` point.
 
-1. Stop point info is stored in the state.
-2. Stop executing the script and wait for answer from user.
-3. User reply the answer.
-4. The `set` function is called for updating `vars`.
-5. Continue running script from the `PROMPT`.
+### Script Vars
 
 `vars` is a special state exists while the script is running. It is initiated by
 the `initVars` function when the script starts. The `AddingTodoVars` is used
 to type the `vars` in `AddingTodo` script.
 
-`set` function receive two args: 1) a circumstance object containing current
+`set` prop of `PROMPT` receive two args: 1) a circumstance object containing current
 `vars`, 2) event context of the answer message. Then we can return the next
 `vars` value, set the `todoName` answer for later use.
 
@@ -282,13 +275,10 @@ functional prop of keywords can take the container version of it.
 The container require `TodoController` service to save new todo, and
 then set `todosCount` in the returned `vars` value.
 
-
-
-
 ### Message With `vars`
 
-The message node can also get the `vars` from the circumstances and use them to
-build UI. Add this message node at the end of script to show the adding result:
+The message node can also get the `vars` value and use them to build UI. Add
+this message node at the end of script to show the adding result:
 
 ```tsx {1,4-8} title="src/scenes/AddingTodo.tsx"
 import WithMenu from '../components/WithMenu';
@@ -356,11 +346,10 @@ programming.
 
 ### `CALL` Script
 
-A scirpt can also be used by another script like a function call.
-The `CALL` keyword instruct the runtime to execute a script, and go back to the
-current point after it return.
+We can also use another script like a function call. The `CALL` keyword execute
+a script, and go back to the current point after it return.
 
-We can use it to hint user for adding the first todo. Add a new `AskingFirstTodo`
+Let's use it to ask user for adding the first todo. Add a new `AskingFirstTodo`
 script like this:
 
 ```tsx title="src/scenes/AskingFirstTodo.tsx"
@@ -420,7 +409,7 @@ const app = Machinat.createApp({
   // ...
 ```
 
-Then we can use the it when a user doesn't have any todo like this:
+We can use the it when a user doesn't have any todo like this:
 
 ```tsx {1,4,6-9,12} title="src/handlers/handleMessage.tsx"
 import AskingFirstTodo from '../scenes/AskingFirstTodo';

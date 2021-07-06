@@ -2,8 +2,6 @@
 title: Receive Events
 ---
 
-# Receive Events
-
 After successfully start, the app should be able to receive events from registered platforms. Events of all the platforms can be listened with `app.onEvent()` method like this:
 
 ```js
@@ -46,7 +44,7 @@ The event context is a **plain object** containing the following properties:
 
 
 - `metadata`: `object`, the metadata about how the event being transmitted. There could be more information properties depends on platform implementation.
-  - `source`: `string`, the source type of the event.
+  - `source`: `string`, the source type of the event, typically 'webhook'.
 
 
 - `bot`: `null | object`, bot corresponded to the platform. If the platform doesn't support replying, the value would be null.
@@ -54,6 +52,8 @@ The event context is a **plain object** containing the following properties:
   - `render(channel, message)`: `function`, reply message to the channel.  Check [_Rendering Elements_](rendering-elements.md) for more details.
     - `channel`: `object`, the channel object.
     - `message`: `string|element`, the message to reply.
+
+- `reply`: `function`, a sugar function to reply messages to the original channel. `reply(messages)` works the same as `bot.render(event.channel, messages)`.
 
 ### The Channel
 
@@ -63,20 +63,25 @@ The `uid` of a channel is an unique string that would promised to be unique acro
 
 The channel is also being used as the target to send action back with `bot.render()`.
 
-### Standard Event Mixins
+### Identify Event
 
-To help you to get information from the various of events, some helper getters are added on the event object. For example, you can get the text message string like this:
+You can identify the kind of event you receive with the `platform`, `category`
+and `type` keys. For example, you can reply only the text messages like this:
 
 
 ```js
-bot.onEvent(({ event, bot }) => {
+app.onEvent(async ({ event, reply }) => {
   if (event.category === 'message' && event.type === 'text') {
-    bot.render(event.channel, `${event.text} is good!`);
+    await reply(`${event.text} is good!`);
   }
 });
 ```
 
-Here we define some common event types and the standard mixins for them. The mixins listed here should be implement on specific category/type by all platforms. You can use them without knowing the platform and the shape of event payload.
+#### Common Event Mixins
+
+To help you to get information about events from different platforms,
+some helper getters like `event.text` are added on specific kind event. 
+Here are the common event types and the standard mixins for them:
 
 ###### Text Message Event
 - `category`: `'message'`
@@ -87,7 +92,7 @@ Here we define some common event types and the standard mixins for them. The mix
 ###### Media Message Event
 - `category`: `'message'`
 - `type`: `'image' | 'video' | 'audio' | 'file'`
-- `url`: `void|string`, the url of the media if available.
+- `url`: `undefined | string`, the url of the media if available.
 
 ###### Location Message Event
 - `category`: `'message'`
@@ -97,8 +102,11 @@ Here we define some common event types and the standard mixins for them. The mix
 
 ###### Postback Event
 - `category`: `'postback'`
-- `type`: `any`
-- `data`: `void | string`, the postback data defined by your app if available.
+- `type`: `'postback'`
+- `data`: `undefined | string`, the postback data defined by your app if available.
+
+The mixins listed here should be implement on specific category/type by all platforms.
+You can use them without knowing the platform and the shape of event payload.
 
 Each platform might have their own mixins on events, check the docs of platform packages for more details.
 
@@ -113,16 +121,16 @@ To sum up a little bit, here are some strategies for you to handle events from m
 Let's put them together:
 
 ```js
-app.onEvent(({ platform, event, bot }) => {
+app.onEvent(async ({ platform, event, reply }) => {
   if (event.category === 'message' && event.type === 'text') {
     // reply for a text message
-    bot.render(event.channel, `Hello ${event.text}!`);
+    await reply(`Hello ${event.text}!`);
   } else if (platform === 'messenger') {
     // reply for messenger platform
-    bot.render(event.channel, 'Hello Messenger!');
+    await reply('Hello Messenger!');
   } else {
     // default reply
-    bot.render(event.channel, 'Hello World!');
+    await reply('Hello World!');
   }
 })
 ```

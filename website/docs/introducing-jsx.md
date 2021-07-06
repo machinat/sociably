@@ -2,19 +2,17 @@
 title: Introducing JSX
 ---
 
-# Introducing JSX
-
 In Machinat, you can use the _JSX_ syntax API to build the _Conversational User Interface_ (CUI) more expressively.
 
 ```js
-app.onEvent(async ({ bot, event }) => {
-  await bot.render(event.channel, (
+app.onEvent(async ({ reply }) => {
+  await reply(
     <p>
       Hello,
       <br />
       World!
     </p>
-  ));
+  );
 });
 ```
 
@@ -39,8 +37,7 @@ Consider the following dialogue in a chat room:
 As you see a dialogue is usually proceed by a collection of messages each time, let's call them an *expression*. In Machinat, an expression is the atomic unit for sending. You don't have to call many API to make the expression, the upper example can be made by:
 
 ```js
-bot.render(
-  channel,
+reply(
   <>
     This is my cat!
     <img src="http://foo.bar/cat.jpg" />
@@ -56,8 +53,7 @@ This provide a way to build CUI more declaratively. The sending of all messages 
 Most platform provide some ways to send rich formatting text message or more complex widgets in the chatroom. JSX is better to show the "view" of an expression in codes declaratively than huge and nested JSON.
 
 ```js
-bot.render(
-  channel,
+reply(
   <>
     <p>
       <b>foo</b>
@@ -83,8 +79,7 @@ Proper pause may make your speech more understandable and comfortable in a chat.
 In Machinat these can all be done in a JSX expression:
 
 ```js
-bot.render(
-  channel,
+reply(
   <>
     Hakuna Matata!
     <Messenger.TypingOn />
@@ -101,16 +96,15 @@ bot.render(
 
 Cross-platform is a big issue for chatbot because of the fact that there is no dominant messaging platform for now. JSX provide a [domain-specific language](https://en.wikipedia.org/wiki/Domain-specific_language) flexible enough to serve cross-platform API along with complete features of any particular platform.
 
-  ```js
-  bot.render(
-    channel,
-    <>
-      They both work!
-      <video src="http://..." />
-      <Messenger.Video attachmentId="_UPLOADED_VIDEO_" />
-    </>
-  );
-  ```
+```js
+reply(
+  <>
+    They both work!
+    <video src="http://..." />
+    <Messenger.Video attachmentId="_UPLOADED_VIDEO_" />
+  </>
+);
+```
 
 In the case above, the `<video ... />` element is a general API that can be sent to all platforms. The `<Messenger.Video ... />` element is a native API only works in `messenger` platform.
 

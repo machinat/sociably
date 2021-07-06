@@ -2,23 +2,8 @@
 title: Components for CUI
 ---
 
-# Components for CUI
-
-Components make your code DRY and help you to build a complex, intelligent and characteristic conversational app.
-
-## Why?
-
-Mastering conversations is difficult! Think about a simple greeting, it might be far more complex than sending a `'Hi!'`. There are some considerations like:
-
-- Bot should greet for the first time met or when user come back after leaving for a while.
-- Choose the words depends on context like: current time, blessing for festivals, how much familiar or other user information.
-- Have some randomness like telling a joke sometimes.
-- Continuing the topic from last conversation.
-- Hello in multi-languages.
-
-This is just merely a greeting. Such the issues might happen anywhere else in the conversations. That's why we need components to encapsulate these detailed conversational logic.
-
-Components let you split the UI into independent, reusable pieces, and think about each piece in isolation.
+Components let you split chat UI into independent, reusable pieces, and think about each piece in isolation.
+This make your code DRY and help you to build a complex, intelligent and characteristic conversation.
 
 ## Functional Components
 
@@ -124,37 +109,7 @@ function AskForOrder(props, { platform }) {
 
 The second argument is the circumstance while the component is being rendered. You can check which the `platform` property is and return the corresponding view.
 
-The components then can be used without worrying the differences between platforms.
-
-## Async Component (experimental)
-
-_This feature is on experiment and the behavior might changed in the future._
-
-Machinat also accepts async function as a component. This allow you to fetch necessary data to show the view while rendering.
-
-Let's try say `Hello` according to how long the user have left:
-
-```js
-async function Hello({ firstTime, channel }) {
-  if (firstTime) {
-    return <p>Hello! Nice to meet you!</p>;
-  }
-
-  const {lastSeenAt} = await getStateFromDB(channel.uid);
-  const hour = 60 * 60 * 1000;
-  const now = Date.now();
-
-  if (now - lastSeenAt < 8 * hour) {
-    return null;
-  }
-
-  if (now - lastSeenAt > 72 * hour) {
-    return <p>Welcome back!</p>;
-  }
-
-  return <p>Hi!👋</p>;
-}
-```
+Conventially at the end of the function, we can add a default cross-platform UI. This ensure the components is safe to be used on all the platforms.
 
 ## Expression Components
 
@@ -185,19 +140,6 @@ app.onEvent(async ({ event, bot }) => {
   }
 });
 ```
-
-## The Schema Pattern
-
-The _schema_ describe here is not something like DB schema, it refers the concept of [_schema in psychology_](https://en.wikipedia.org/wiki/Schema_(psychology)). A schema is a pattern in human mind that organize the some categories of information inputs and make the behaviors output.
-
-When you speak, a sequence of schemas are triggered to make the expression. They make the decisions from selecting the topics, making a metaphor, using grammars to picking a single word. This happens really fast while you speaking because human is good at language by nature.
-
-Each component in Machinat can be considered as a schema focusing on some specific logic. Like the `Welcome`, `Hello` and `RecommendDailySpecial` example above, the expressions are then made with these nested schemas.
-
-Components provide a way to build the CUI with the mechanism you already master! Before real strong AIs come out, this could be the way to approach the human-like conversational UI/UX.
-
-If you are interested about the theory behind, check [Cognitive Linguistics](https://en.wikipedia.org/wiki/Cognitive_linguistics) and [Construction Grammar](https://en.wikipedia.org/wiki/Construction_grammar) for more information.
-
 
 ## Next
 

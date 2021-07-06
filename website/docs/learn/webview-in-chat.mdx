@@ -241,21 +241,18 @@ constructed like this:
 
 ```tsx title="src/webview/pages/index.tsx"
 // ...
-const client = new WebviewClient(
-  typeof window === 'undefined'
-    ? { mockupMode: true, authorizers: [] }
-    : {
-        authorizers: [
-          new MessengerClientAuthorizer({
-            appId: publicRuntimeConfig.messengerAppId,
-          }),
-          new TelegramClientAuthorizer(),
-          new LineClientAuthorizer({
-            liffId: publicRuntimeConfig.lineLiffId,
-          }),
-        ],
-      }
-);
+const client = new WebviewClient({
+  mockupMode: typeof window === 'undefined',
+  authorizers: [
+    new MessengerClientAuthorizer({
+      appId: publicRuntimeConfig.messengerAppId,
+    }),
+    new TelegramClientAuthorizer(),
+    new LineClientAuthorizer({
+      liffId: publicRuntimeConfig.lineLiffId,
+    }),
+  ],
+});
 // ...
 ```
 

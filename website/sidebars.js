@@ -15,13 +15,15 @@ module.exports = {
       'integration-with-webview',
       'reactive-programming',
     ],
+    Tutorial: [
+      'learn/introduction',
+      'learn/create-app',
+      'learn/event-and-reply',
+      'learn/native-ui-and-postback',
+      'learn/component',
+      'learn/service-and-state',
+      'learn/contexual-dialog',
+      'learn/webview-in-chat',
+    ],
   },
-  learn: [
-    'learn/create-app',
-    'learn/event-and-reply',
-    'learn/component',
-    'learn/service-and-state',
-    'learn/contexual-dialog',
-    'learn/webview-in-chat',
-  ],
 };

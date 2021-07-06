@@ -1,8 +1,6 @@
 ---
-title: Rendering Elements
+title: Rendering Messages
 ---
-
-# Rendering Elements
 
 In Machinat, **Bot** is an abstraction which in charge of dispatching actions to a [channel](receiving-events.md#the-channel). Depends on the platform it belongs to, it can send message to a chatroom, emit event to a webview or reply on voice assistant.
 
@@ -53,11 +51,11 @@ bot.render(
 );
 ```
 
-### General Element Type
+### General Tags
 
-Element with string type (lower cased beginning JSX tag) in Machinat is _general_ that it can be rendered by bots of all platforms. Supported element tags and its props are listed below.
+Element with string type (lower cased beginning JSX tag) in Machinat is _general_. It can be rendered by bots of all platforms. Supported element tags and its props are listed below.
 
-Textual element types:
+##### Textual element types:
 
 - `b` - render children text bold if supported.
   - `children` - textual node.
@@ -82,14 +80,12 @@ Textual element types:
 - `pre` - render children text as preformatted if supported.
   - `children` - textual nodes.
 
+- `br` - add a line break.
 
-Non-textual element types:
+##### Non-textual element types:
 
-- `br` - add a break, in most IM platforms it separate content into different text bubbles. It worth noting `<br/>` is not textual so something like `<i><br/></i>` would throw when render.
-
-- `p` - wrap textual content paragraph as text messages. It accepts `<br/>` in the children for separation, in IM platforms `<p>foo<br/>bar</p>` renders into 2 text bubbles.
-  - `children` - textual nodes but includes `<br/>`.
-
+- `p` - wrap a textual content paragraph as text messages bubble.
+  - `children` - textual nodes.
 
 - `img` - send an image message.
   - `src` - URL string.
@@ -108,7 +104,7 @@ Non-textual element types:
 
 ### Native Component
 
-The general element types provide a set of unified APIs to make the cross-platform UI. But you might want to use more features that only available on particular platform. Use the **native component** from each platform package as the element type like this:
+The general tags provide a set of unified APIs for making cross-platform UI. But you might want to use more features that only available on particular platform. Use the **native component** from each platform package as the element type like this:
 
 ```js
 import { MediaTemplate, UrlButton } from '@machinat/messenger/components'
@@ -125,7 +121,7 @@ bot.render(
 );
 ```
 
-You can only use native component corresponded to the platform of bot. If a bot receive a native component from a different platform when `render`, it would immediately throw at render time.
+You can only use native component corresponded to the platform of bot. If a bot receive a native component from a different platform when `render`, it would immediately throw at run time.
 
 ### Pause
 
@@ -154,4 +150,4 @@ The `delayOneSec` function will be called and awaited between actions. This woul
 
 ## Next
 
-Learn how to modularize CUI with **component** in [next section](components-for-cui.md).
+Learn how to modularize chat UI with **component** in [next section](components-for-cui.md).
