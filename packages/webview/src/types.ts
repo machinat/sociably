@@ -127,11 +127,11 @@ export type WebviewConfigs<
 
   /** Secret to sign token for auth. */
   authSecret: string;
-  /** Route path to the auth backend. Default to `"/auth"` */
+  /** Route path to the auth api. Default to `"/auth"` */
   authApiPath?: string;
-  /** Valid time for auth token in seconds */
-  authRedirectUrl?: string;
+  /** Survival time of auth token in seconds */
   tokenAge?: number;
+  authRedirectUrl?: string;
   authCookieAge?: number;
   dataCookieAge?: number;
   refreshPeriod?: number;

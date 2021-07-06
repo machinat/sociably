@@ -82,7 +82,7 @@ beforeEach(() => {
 it('start connector and auth client', async () => {
   const client = new Client({
     platform: 'test',
-    authUrl: '/my_auth',
+    authApiUrl: '/my_auth',
     authorizers: [testAuthorizer, anotherAuthorizer],
     webSocketUrl: '/my_websocket',
   });
@@ -115,7 +115,7 @@ it('start connector and auth client', async () => {
   const login = Connector.mock.calls[0].args[1];
   await login();
 
-  expect(authClient.signIn.mock).toHaveBeenCalledTimes(1);
+  expect(authClient.signIn.mock).toHaveBeenCalled();
   expect(authClient.signIn.mock).toHaveBeenCalledWith({ platform: 'test' });
 
   connector.emit('connect', { connId: '#conn', user });
@@ -141,7 +141,7 @@ it('start connector and auth client', async () => {
 test('mockupMode', async () => {
   const client = new Client({
     platform: 'test',
-    authUrl: '/my_auth',
+    authApiUrl: '/my_auth',
     authorizers: [testAuthorizer, anotherAuthorizer],
     webSocketUrl: '/my_websocket',
     mockupMode: true,
@@ -234,7 +234,7 @@ it('login with auth client', async () => {
     credential: '_TOKEN_',
   });
 
-  expect(authClient.signIn.mock).toHaveBeenCalledTimes(1);
+  expect(authClient.signIn.mock).toHaveBeenCalled();
   expect(authClient.signIn.mock).toHaveBeenCalledWith({});
 });
 

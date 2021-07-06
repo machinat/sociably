@@ -177,7 +177,7 @@ class AuthClient<Authorizer extends AnyClientAuthorizer> extends EventEmitter {
       }
     }
 
-    // bigin a new auth flow
+    // begin a new auth flow
     this._authPromise = this._auth(platform)
       .catch((err) => {
         this._emitError(err, this._authData?.context || null);
