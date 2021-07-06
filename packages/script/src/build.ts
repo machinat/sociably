@@ -4,9 +4,9 @@ import parseScript from './parse';
 import compile from './compile';
 import type { ScriptLibrary } from './types';
 
-type ScriptBuildOtions<Args, Vars, Meta> = {
+type ScriptBuildOtions<Params, Vars, Meta> = {
   name: string;
-  initVars: (args: Args) => Vars;
+  initVars?: (params: Params) => Vars;
   meta?: Meta;
 };
 
@@ -31,7 +31,7 @@ const build = <
   return {
     $$typeof: MACHINAT_SCRIPT_TYPE,
     name: scriptName,
-    initVars,
+    initVars: initVars || (() => ({} as Vars)),
     stopPointIndex,
     commands,
     meta: (meta || null) as Meta,
