@@ -3,7 +3,9 @@ title: Getting Started
 slug: /
 ---
 
-Welcome to Machinat framework document! If you are learning about Machinat for the first time, we recommend to start from [the tutorial](/docs/learn). It'll bring you to build a complete Machinat app step by step.
+Welcome to Machinat framework document!
+
+If you are learning about Machinat for the first time, we recommend to start from [the tutorial](/docs/learn). It'll bring you to build a complete Machinat app step by step.
 
 ## System Requirement
 
@@ -186,9 +188,9 @@ For now we support these platforms listed below, please check the readme of the 
 
 ## Enabling JSX
 
-To enable Machinat JSX syntax, you might need to configure the transpiling
-environment first. After setup, you can import `Machinat` at the file to make
-JSX syntax work like:
+To enable Machinat JSX syntax, you need to configure the transpiling
+environment first. Then import `Machinat` at the beginning of file to make
+JSX syntax works like this:
 
 ```js
 import Machinat from '@machinat/core';
@@ -203,7 +205,7 @@ or [TypeScript](https://www.typescriptlang.org/).
 
 First install babel and `@machinat/babel-preset` package with command:
 
-```sh
+```bash
 npm install -D @babel/core @babel/cli @babel/preset-env @machinat/babel-preset
 # or using yarn
 yarn add --dev @babel/core @babel/cli @babel/preset-env @machinat/babel-preset
@@ -226,7 +228,7 @@ module.exports = {
 
 ### With TypeScript
 
-Add the following `compilerOptions` settings in your `tsconfig.json` like:
+Add the following `compilerOptions` settings in your `tsconfig.json`:
 
 ```json
 {
