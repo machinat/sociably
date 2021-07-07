@@ -55,8 +55,8 @@ namespace Machinat {
 
   export const Raw = MACHINAT_RAW_TYPE as unknown as (props: RawProps) => null;
 
-  export const BaseBot = BaseBotP;
-  export const BaseProfiler = BaseProfilerP;
+  export const Bot = BaseBotP;
+  export const Profiler = BaseProfilerP;
   export const Marshaler = MarshalerP;
 
   export namespace JSX {

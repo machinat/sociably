@@ -8,7 +8,7 @@ import { makeContainer } from '@machinat/core/service';
 import WithWebviewLink from '../components/WithWebviewLink';
 import { WebAppEventContext } from '../types';
 
-const handleWebview = makeContainer({ deps: [Machinat.BaseBot] })(
+const handleWebview = makeContainer({ deps: [Machinat.Bot] })(
   (baseBot) =>
     async ({
       event,
