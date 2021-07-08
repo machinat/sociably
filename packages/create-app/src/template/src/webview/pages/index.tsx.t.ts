@@ -36,15 +36,15 @@ const client =  new WebviewClient(
 );
 
 const WebAppHome = () => {
-  const helloFromServer = useEventReducer(
+  const data = useEventReducer(
     client,
-    (currentHello: null | string, { event }): null | string => {
+    (currentData: { hello?: string }, { event }): { hello?: string } => {
       if (event.type === 'hello') {
-        return event.payload;
+        return { hello: event.payload };
       }
-      return currentHello;
+      return currentData;
     },
-    null
+    { hello: undefined }
   );
 
   const [isButtonTapped, setButtonTapped] = React.useState(false);
@@ -77,7 +77,7 @@ const WebAppHome = () => {
           Get started by editing <code>src/webview/pages/index.js</code>
         </p>
 
-        <h3>{helloFromServer || 'connecting... '}</h3>
+        <h3>{data.hello || 'connecting... '}</h3>
         <p>{
           isButtonTapped
             ? 'Great! Check the chatroom 👍'

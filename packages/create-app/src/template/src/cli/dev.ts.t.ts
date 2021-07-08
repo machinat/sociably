@@ -47,10 +47,17 @@ async function dev() {
   // create a https tunnel to localhost
   let tunnel = await connectTunnel();
 
-  process.on('SIGINT', () => {
-    tunnel.close();
-    process.exit();
-  });
+  process
+    .on('exit', (code) => {
+      nodemon.emit('quit');
+      tunnel.close();
+      process.exit(code);
+    })
+    .on('SIGINT', () => {
+      nodemon.emit('quit');
+      tunnel.close();
+      process.exit(0);
+    });
 
   // run server in watch mode
   nodemon({
