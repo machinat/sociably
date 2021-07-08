@@ -46,7 +46,7 @@ export default ({ projectName, platforms }: CreateAppContext) => {
     packageConfigs.dependencies = {
       ...packageConfigs.dependencies,
       ...{
-        next: '^10.1.3',
+        next: '^11.0.1',
         react: '^17.0.2',
         'react-dom': '^17.0.2',
       },
