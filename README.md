@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img width="600" src="media/logo.svg" alt="Machinat" />
+  <img width="500" src="media/logo.svg" alt="Machinat" />
   <br/>
 </h1>
 
