@@ -2,7 +2,7 @@
 title: Create a Machinat App
 ---
 
-Let's create our first Machinat app and run it up! In this lesson we'll create a
+Let's create our first Machinat app and run it up! In this lesson, we'll create a
 hello-world chatbot and make it available in the chat platform.
 
 >　Time to accomplish: 15 minutes
@@ -17,7 +17,7 @@ in the terminal:
 npm init @machinat/app -- -p <platform> -p webview my-todo-bot
 ```
 
-The scirpt would automatically create codes of a hello-world bot. Now
+The scirpt will automatically create codes of a hello-world bot. Now
 `cd my-todo-bot` and take a look.
 
 :::tip
@@ -27,7 +27,7 @@ your app will be corss-platform when finished.
 
 ### Platform Setup
 
-Before starting your app, you have to configure the chat platform first.
+Before starting your app, you have to configure the chat platform settings first.
 Please follow the guide of the platform you choose:
 
 import Tabs from '@theme/Tabs';
@@ -252,11 +252,11 @@ const handleMessage = async ({
 export default handleMessage;
 ```
 
-Bot should now answer the string we `reply("...")` with:
+Bot should now answer the string we `reply("...")` with like this:
 
 <img width={400} src={require("./assets/hello-todo-bot.png").default} />
 
 ---
 
-Our first bot is running! Next, we'll teach it how to recieve messsges and
+Our first bot is running! Next, we'll teach it how to receive messsges and
 make the answer.
