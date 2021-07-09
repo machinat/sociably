@@ -87,16 +87,16 @@ development or deploying a new version.
 
 Check `src/migrations/0-init-app.ts` file to see the initiating jobs. You can
 edit them and add your own jobs. Every migration will be executed exactly only
-once per environment, so you have to add new migration file for changes after your app is
-online.
+once per environment. So you have to add new migration file for new changes
+after your app is online.
 
 :::tip
 Use `npm run migrate -- --down` command to revert the migrations.
 :::
 
 :::info
-If you app works on Messenger platform, make sure the server is already starting
-while running the initial migration.
+If you app works on Messenger platform, make sure the server is running up
+while executing the initial migration.
 :::
 
 ### Start Dev Server
@@ -108,14 +108,14 @@ mode. The command do 2 things:
 2. Create a https tunnel connected to a _https://xxx.t.machinat.dev_ endpoint.
    So your local server can accept webhook requests from the chat platforms.
 
-Now
+Try talk to your bot on the chat platform after server started. The hello-world
+app should be working now if you finish all the setup.
 
 ## Manually Install
 
-
 :::tip
-The rest sections of this page is for building your app from zero scratch by
-scratch. You can skip if you choose to use the initiator.
+The rest sections of this page is for creating your project from zero step by
+step. You can skip if you choose to use the initiator above.
 :::
 
 
@@ -161,7 +161,7 @@ Machinat codebase is separated into packages that you can optionally install
 only what you need. First you need to add the `core` module and also the `http`
 module for receiving HTTP request:
 
-```sh
+```bash
 npm install @machinat/core @machinat/http
 # or with yarn
 yarn add @machinat/core @machinat/http
@@ -173,7 +173,7 @@ Platform modules listen to external events from sources like webhook, then emit
 the events through the app. They also provide utilities to make reaction if
 possible. Install the platform module packages like:
 
-```sh
+```bash
 npm install @machinat/messenger @machinat/webview # ...
 # or with yarn
 yarn add @machinat/messenger @machinat/webview # ...

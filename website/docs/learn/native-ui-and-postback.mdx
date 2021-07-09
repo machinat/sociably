@@ -229,9 +229,8 @@ Like in _React.js_, they are used to pass values to the component. The value can
 text (like `title`), expression (like `payload`) or even another JSX element (like
 `buttons`).
 
-We pass JSON encoded data on `payload` (or `data`) prop to indicate the action
-type. We can use the data later to handle the postback event.
-
+We pass JSON encoded data on `payload` prop to indicate the action type. We can
+use the data later when handling the postback event.
 
 ## Event Flow
 
@@ -363,7 +362,7 @@ to the content.
 
 ### Stream Flow in `main`
 
-One more thing to do is wiring the `handlePostback` handler with main event
+One more thing to do is connecting the `handlePostback` handler to main event
 stream. Add these codes in the `main` function:
 
 
@@ -378,7 +377,7 @@ stream. Add these codes in the `main` function:
   <TabItem value="messenger">
 
 
-```tsx title="src/main.tsx"
+```tsx {1,5-12} title="src/main.tsx"
 import handlePostback from './handlers/handlePostback';
 // ...
 const main = (event$: Stream<AppEventContext>): void => {
@@ -398,7 +397,7 @@ const main = (event$: Stream<AppEventContext>): void => {
   <TabItem value="telegram">
 
 
-```tsx title="src/main.tsx"
+```tsx {1,5-13} title="src/main.tsx"
 import handlePostback from './handlers/handlePostback';
 // ...
 const main = (event$: Stream<AppEventContext>): void => {
@@ -419,7 +418,7 @@ const main = (event$: Stream<AppEventContext>): void => {
   <TabItem value="line">
 
 
-```tsx title="src/main.tsx"
+```tsx {1,5-12}  title="src/main.tsx"
 import handlePostback from './handlers/handlePostback';
 // ...
 const main = (event$: Stream<AppEventContext>): void => {
@@ -446,9 +445,11 @@ Now try tap the `Show Todos 📑` button in the chat room and you should see:
 
 
 The `event$` argument of `main` function is a **stream** of all events. Every
-event from the chat platform will flow through it. You can `.subscribe()` the
-stream to listen events, or use `.pipe()` to create a new stream.
+event from the chat platform will flow through it. You can `.subscribe(cb)` the
+stream to listen events, or use `.pipe(...operator)` to create a downstream.
 
+We use the `filter(predicator)` operator to allow only the postback events to pass. The
+filtered stream is then handled by the `handlePostback` handler.
 
 ```ts
 event$
@@ -463,11 +464,7 @@ event$
   });
 ```
 
-We use the `filter(...)` operator to allow only the postback events to pass. The
-filtered stream is then handled by the `handlePostback` handler.
-
-
 ---
 
 Our bot can interact with user by buttons and postback. Next, we'll learn
-how to make more complex UI for more powerful features.
+how to make more complex UI with component.

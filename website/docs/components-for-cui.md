@@ -107,7 +107,7 @@ function AskForOrder(props, { platform }) {
 }
 ```
 
-The second argument is the circumstance while the component is being rendered. You can check which the `platform` property is and return the corresponding view.
+The second argument is the environments while the component is being rendered. You can check which the `platform` property is and return the corresponding view.
 
 Conventially at the end of the function, we can add a default cross-platform UI. This ensure the components is safe to be used on all the platforms.
 

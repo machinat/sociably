@@ -2,27 +2,29 @@
 title: Service and State
 ---
 
-Despite replying messages, a chatbot could need many other services to provide
-more features. In this lesson, you will learn how to use built-in DI
+Despite replying messages, a chatbot need many other services to provide
+real features. In this lesson, you will learn how to use built-in DI
 (dependencies injection) system to access chat state and other services.
+
+>　Time to accomplish: 15 minutes
 
 ## Consuming Services
 
 ### Use Services in **Container**
 
-Fetching user name is a common feature you might need to make your bot chat
-better. `Machinat.BaseProfiler` can be used to achieve that.
+Fetching user name is a common feature to make your bot chat better. We can use
+`Machinat.Profiler` service to achieve that.
 
 Edit the `handleMessage` handler like this:
 
-```tsx title="src/handlers/handleMessage.tsx"
+```tsx {2,6-9,18,21,25} title="src/handlers/handleMessage.tsx"
 import Machinat from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
 import WithMenu from '../components/WithMenu';
 import { ChatEventContext } from '../types';
 
 const handleMessage = makeContainer({
-  deps: [Machinat.BaseProfiler] as const,
+  deps: [Machinat.Profiler] as const,
 })(
   (profiler) =>
     async ({
@@ -46,24 +48,23 @@ export default handleMessage;
 ```
 
 The `makeContainer` function declares a **Service Container** with the required
-`deps` services. A container event handler is a factory function returning the
-original handler. Framework would automatically inject the `deps` instances into
-the factory in the runtime.
+`deps` services. A event handler container is a factory function returning the
+original handler. Framework will inject the `deps` instances into the factory in
+the runtime.
 
-We register the `Machinat.BaseProfiler` service in `deps` array. It help us to
-fetch user profile across the platforms. The `profiler` instance is then
-injected into the factory function, and can be used in the original handler.
-
+The `Machinat.Profiler` service help us to fetch user profile across platforms.
+The `profiler` instance will be injected into the factory function, and can be
+used in the handler.
 
 ### Use User State
 
-The `getUserProfile` method makes a API call to chat platform.
+The `profiler.getUserProfile(user)` method makes a API call to the chat platform.
 It's better to save the user profile locally for the first time, so we can reuse
 it later on.
 
-Add these codes to store the profile in the state:
+Edit `handleMessage` handler to store the profile in the state like:
 
-```tsx {1,3,8,10,19-28} title="src/handlers/handleMessage.tsx"
+```tsx {1,3,8,10,19-25} title="src/handlers/handleMessage.tsx"
 import Machinat, { MachinatProfile } from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
 import StateController from '@machinat/core/base/StateController';
@@ -71,7 +72,7 @@ import WithMenu from '../components/WithMenu';
 import { ChatEventContext } from '../types';
 
 const handleMessage = makeContainer({
-  deps: [Machinat.BaseProfiler, StateController] as const,
+  deps: [Machinat.Profiler, StateController] as const,
 })(
   (profiler, stateController) =>
     async ({
@@ -101,17 +102,17 @@ const handleMessage = makeContainer({
 export default handleMessage;
 ```
 
-We add a `StateController` service in `deps` to cache the profile data locally.
-The `.userState(event.user)` returns a state object to access data of
+We add a `StateController` service in `deps` for caching the profile data locally.
+`stateController.userState(user)` method returns a state object to access data of
 `event.user`.
 
 The state object works like an asynchronous version of `Map`. We get the local
-cache value with `'profile_cache'` key. If no cached data, we fetch the user
-profile data and save it for later use.
+cache value with `'profile_cache'` key. Only when no cached data available, we
+fetch the user profile data and save it for later use.
 
 ### State Storage
 
-The `StateController` service need a state storage to work. Check `src/app.ts`,
+The `StateController` service require a state storage to work. Check `src/app.ts`,
 and you should see the following code:
 
 ```ts
@@ -127,7 +128,7 @@ and you should see the following code:
 ```
 
 While development, a local file is used to store the state data for ease of
-debugging. Check the `.state_data.json` file in the project folder and you would
+debugging. Check the `.state_data.json` file in the project folder and you should
 see the stored data like this:
 
 
@@ -153,13 +154,13 @@ see the stored data like this:
 ```
 
 The data under `"userStates" > "{user uid}" > "profile_cache"` is the saved
-profile data. You can edit the JSON data manually for debugging prupose.
+profile data. You can edit the JSON data manually for testing.
 
 
 ### Use Channel State
 
 Now let's store the todos data into state while adding todo.
-First add the type of the todos state data:
+First add the type for the todos state:
 
 ```ts title="src/types.ts"
 export type TodoState = {
@@ -194,25 +195,25 @@ import { TodoState } from '../types';
         );
 
       return reply(
-        <RootMenu todoCount={todoData.todos.length}>
+        <WithMenu todoCount={todoData.todos.length}>
           <p>Todo "<b>{todoName}</b>" is added!</p>
-        </RootMenu>
+        </WithMenu>
       );
     }
   }
   // ...
 ```
 
-We use `.update(key, updateFn)` method this time to save todo data. It takes a
-updator function take transform the current state value to the updated value. As you can
-see, we add the new todo and increment the id counter on the returning data.
+We use `state.update(key, updateFn)` method this time to save todo data. It takes an
+updator function that transform the current state value to the updated value. In
+the above codes, we add the new todo and increment the id counter on the returning data.
 
 If the current state value is empty, `undefined` would be passed to the updator
 function. We can simply use a [default parameter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters)
-like `= { currentId: 0, todos: [] }` to initiate the state.
+like `currentState = {/* ... */}` to initiate the state.
 
 Now try adding a todo with `add todo <name>` command. You should see the
-`src/.state_data.json` file has content like:
+`.state_data.json` file has content like:
 
 ```json
   "channelStates": {
@@ -230,19 +231,19 @@ Now try adding a todo with `add todo <name>` command. You should see the
   },
 ```
 
-Different from the profile data, we save the todo data to the **channel state**.
-`event.channel` refers to the **chatroom** where the message are sent to.
-The scope of **channel state** and **user state** is different because of group
-chat.
+Different from the profile, we save todos data to the **channel state**
+using `stateController.channelState(channel)` method.
 
+The `event.channel` refers to the chatroom where the message sent to. To serve
+group chats in the future, it's better to save todos by the chatroom.
 
 ## Providing Services
 
 ### Make Your Own Service
 
-In the project we need to access the todo data serveral times. To keep the codes
+In the project we need to access todos data serveral times. To keep our codes
 clean and [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself), it's
-better having a service to manage all the todo operations.
+better to have a service managing all the todo operations.
 
 For not repeating similar steps, please download the `TodoController.ts` file
 with this command:
@@ -262,13 +263,13 @@ export default makeClassProvider({
 ```
 
 The `makeClassProvider` function describe how a class should be provided as a
-service in the DI system. Like container, the required `deps` would be injected
-when a new instance is constructed.
+service in the DI system. Like a service container, the required `deps` will be
+injected when a new instance is constructed.
 
 ### Register Services
 
 A new service must be registered in the app before using. Add the
-`TodoController` service in the `services` section when `createApp`, like:
+`TodoController` service in the `services` section when `createApp`, like this:
 
 ```ts {1,6} title="src/app.ts"
 import TodoController from './services/TodoController';
@@ -292,7 +293,7 @@ Edit `handleMessage` function like this:
 import TodoController from '../service/TodoController';
 // ...
 const handleMessage = makeContainer({
-  deps: [Machinat.BaseProfiler, StateController, TodoController] as const,
+  deps: [Machinat.Profiler, StateController, TodoController] as const,
 })(
   (profiler, stateController, todoController) =>
   async ({
@@ -306,9 +307,9 @@ const handleMessage = makeContainer({
 
           const { data } = await todoController.addTodo(event.channel, todoName);
           return reply(
-            <RootMenu todoCount={data.todos.length}>
+            <WithMenu todoCount={data.todos.length}>
               <p>Todo "<b>{todoName}</b>" is added!</p>
-            </RootMenu>
+            </WithMenu>
           );
         }
       }
@@ -327,8 +328,8 @@ const handleMessage = makeContainer({
 export default handleMessage;
 ```
 
-And the listing todos and finishing todo features can be easilly completed like
-this:
+Then we can easily complete the listing todos and finishing todo features.
+Edit the `handlePostback` handler like this:
 
 
 import Tabs from '@theme/Tabs';
@@ -499,12 +500,12 @@ export default handlePostback;
   </TabItem>
 </Tabs>
 
-Now the try tap "Done ✓" button in the todos list, your bot would reply like
+Now the try tap `Done ✓` button in the todos list, your bot will reply like
 this:
 
 <img width={400} src={require("./assets/finish-todo.png").default} />
 
-And check the `.state_data.json`, the todo data will be moved to the
+And check the `.state_data.json` file, the todo data will be moved to the
 `"finishedTodos"` section like this:
 
 ```ts
@@ -518,5 +519,5 @@ And check the `.state_data.json`, the todo data will be moved to the
 
 ---
 
-Now our bot can provide real feature with data in the state. Next, we'll use
+Now our bot can provide real feature with real data in the state. Next, we'll use
 the state to make the bot chat wiser.

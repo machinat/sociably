@@ -118,12 +118,13 @@ syntax in mobile app.
 - **LINE** doesn't support text format and shows plain text only.
 :::
 
-We use the `<b>{todoName}</b>` element to make the todo name bold. Try
-change the element tag to `i`, `s` or `code` and see what's different. These
-tags are **textual** and work like plain text so they can be placed in
+We use the `"<b>{todoName}</b>"` element to make the todo name bold. Try
+change the element tag to `i`, `s` or `code` and see what's different.
+
+These text formatting tags are **textual** and work as plain text so they can be placed in
 `<p></p>` element.
 
-For example `<b>Hello!</b> <s>I'm a</s> <i>Todo</i> <code>Bot 🤖</code>` message will look
+`<p><b>Hello!</b> <s>I'm a</s> <i>Todo</i> <code>Bot 🤖</code></p>` message looks
 like this:
 
 <img width={250} src={require("./assets/hello-with-formatting-text.png").default} />
@@ -164,7 +165,7 @@ The element with uncaptalized tags like `p` and `b` are **general tags**, which 
 supported on all chat platforms. A JSX message contains only general tag element
 and text is the easiest way to make a cross-platform reply.
 
-For example this meassge can be replied no any chat platform:
+For example this meassge can be replied to any chat platform:
 
 ```tsx
 await reply(

@@ -2,15 +2,13 @@
 title: Conversation in Script
 ---
 
-Our bot can interact with users in the _Q & A_ flows now. But it can't actually
-_chat_ with the user. In this lesson, you'll learn how to write scripts to guide
-your bot chatting.
+Our bot interact with users in _Q & A_ flows now. But it can't actually
+**chat** with the user. In this lesson, you'll learn how to guide your bot
+having a conversation with scripts.
 
+>　Time to accomplish: 15 minutes
 
->　Time to accomplish: 10 minutes
-
-
-## What's Machinat Script?
+### What's Machinat Script?
 
 Machinat **Script** works like a scripting language written in JSX. You describe
 how a conversation should be proceeded in a script. And the script processor
@@ -54,8 +52,7 @@ returned messages will be sent.
 
 ### Register Script
 
-Before start using, the script and the module need to be registered in your
-app like this:
+The newly created script need to be registered at the module like this:
 
 ```ts {1-2,7-9} title="src/app.ts"
 import Script from '@machinat/script';
@@ -75,9 +72,13 @@ const app = Machinat.createApp({
 
 ### Delegate Chat to Processor
 
+One more setup to make the scripts work. While a script is running on a chat,
+the received events must be delegated to the script processor.
+
 Edit the `main` function like this:
 
-```ts {1,5-20,22,26} title="src/main.ts"
+```ts {1-2,6-21,23,32} title="src/main.ts"
+import { makeContainer } from '@machinat/core/service';
 import Script from '@machinat/script';
 // ...
 
@@ -121,9 +122,9 @@ const main = (event$: Stream<AppEventContext>) => {
   // ...
 ```
 
-The codes we added delegate chats with running script process to the script
-processor. Then the filtered `chat$` stream with no running process is handled
-by the original handlers.
+If a script runtime exists on a chat, the `runtime.output()` will be replied.
+The original handlers will not receive events from that chat until the script
+is finished.
 
 
 ### Use Script
@@ -137,7 +138,7 @@ import AddingTodo from '../scenes/AddingTodo';
 
 const handleMessage = makeContainer({
   deps: [
-    Machinat.BaseProfiler,
+    Machinat.Profiler,
     StateController,
     TodoController,
     Script.Processor
@@ -162,17 +163,17 @@ const handleMessage = makeContainer({
 
 We use `processor.start(channel, script)` method to run `AddingTodo` script on
 the current chat. Then reply `runtime.output()` to send the initial messages.
-After that processor would take over the chat until the script is finished.
+After that, the processor will take over the chat until the script is finished.
 
-Now your bot can ask for the todo name like this:
+Now if the todo name is absent, your bot ask for it like this:
 
 <img width={400} src={require("./assets/add-todo-script-1.png").default} />
 
 
 ### `PROMPT` For Answer
 
-The `AddingTodo` script is not actually handling answer now. We can use
-the `PROMPT` keyword to achieve that.
+The `AddingTodo` script is not actually handling user's answer now. We can use
+the `PROMPT` keyword to stop the script and wait for it.
 
 Add the these codes in the script:
 
@@ -213,16 +214,15 @@ When user replies, the script will start executing again from the `PROMPT` point
 the `initVars` function when the script starts. The `AddingTodoVars` is used
 to type the `vars` in `AddingTodo` script.
 
-`set` prop of `PROMPT` receive two args: 1) a circumstance object containing current
-`vars`, 2) event context of the answer message. Then we can return the next
-`vars` value, set the `todoName` answer for later use.
+`set` prop of `PROMPT` can be use to save user's answer into `vars`. It takes
+two args: 1) a environments object containing current `vars`, 2) event context
+of the answer message. Then we can return the next `vars` value, set the
+`todoName` answer for later use.
 
 ### Execute `EFFECT`
 
-Now we have the `todoName` answered by user, and need to save it in state like
-what we do in the `handleMessage` handler.
-
-We can add a `EFFECT` element to for that:
+Now we have the `todoName` answered by user, and need to save it into the state.
+We can add a `EFFECT` element for doing that:
 
 ```tsx {2,4-5,9,15,28-39} title="src/scenes/AddingTodo.tsx"
 import Machinat from '@machinat/core';
@@ -303,9 +303,7 @@ Now a todo can be added in a conversational way like this:
 ### Flow Control
 
 We haven't verify the user input yet, so there could be a problem when user
-reply a non-text message.
-
-We can use a `WHILE` keyword to fix that:
+reply a non-text message. We can use a `WHILE` keyword to fix that:
 
 ```tsx {1,4,14} title="src/scenes/AddingTodo.tsx"
 import { WHILE, PROMPT, EFFECT } from '@machinat/script/keywords';
@@ -330,7 +328,7 @@ language. We wrap the `PROMPT` element with `WHILE`, so bot would keep asking
 until the answer pass the verification.
 
 `condition` prop control whether the loop should continue. We verify the
-`vars.todoName` in the circumstances arg, and keep looping until it is a valid
+`vars.todoName` in the environments, and keep looping until it is a valid
 string.
 
 The result would look like:
@@ -341,13 +339,13 @@ The result would look like:
 
 
 Despite `WHILE`, there are other flow control keywords you may familiar with,
-like `IF` and `RETURN`. You can control the conversation easily in the way of
+like `IF` and `RETURN`. You can control the conversation easily just like
 programming.
 
 ### `CALL` Script
 
-We can also use another script like a function call. The `CALL` keyword execute
-a script, and go back to the current point after it return.
+We can also use another script as a function call. The `CALL` keyword tells the
+runtime to execute a script, and will go back to the current point after it return.
 
 Let's use it to ask user for adding the first todo. Add a new `AskingFirstTodo`
 script like this:
@@ -392,11 +390,11 @@ export default build<AskingFirstTodoVars>(
 );
 ```
 
-In the script we ask user about wether to create the first todo or not. If no,
+In the script we ask user wether to create the first todo or not. If no,
 the script simply return. If yes, call the `AddingTodo` script for the creating
 process.
 
-Then add the new script in the registered libs:
+Remember to add the new script in the registered libs:
 
 ```ts {5} title="src/app.ts"
 const app = Machinat.createApp({
@@ -409,9 +407,9 @@ const app = Machinat.createApp({
   // ...
 ```
 
-We can use the it when a user doesn't have any todo like this:
+Then we can use it in `handleMessage` handler when a user doesn't have any todo:
 
-```tsx {1,4,6-9,12} title="src/handlers/handleMessage.tsx"
+```tsx {1,4,6-14,17} title="src/handlers/handleMessage.tsx"
 import AskingFirstTodo from '../scenes/AskingFirstTodo';
 // ...
     const { data } = await todoController.getTodos(event.channel);
@@ -449,12 +447,12 @@ Delete the `todos` data in `.state_data.json` file to try this feature.
 
 :::info
 In the video above, the <img height={30} src={require("./assets/quick-replies-in-script.png").default} />
-options bring better experiences when answer the question. You can check the
+reply options bring better experiences for answering question. You can check the
 [complete example](https://github.com/machinat/todo-example/blob/main/src/scenes/AskingFirstTodo.tsx#L18-L36)
-about how to implement.
+for the detail.
 :::
 
 ---
 
-Now your bot can really have a chat with user according the script. Next, we'll
+Now your bot can have a conversation with user according the script. Next, we'll
 learn how to use a webview to provide even more features than in the chatroom.

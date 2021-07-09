@@ -11,7 +11,7 @@ with your bot.
 
 :::info
 Example in this lesson use some Next.js and React.js features in the webview.
-You can learn more about how they work here:
+You can learn more about them here:
 
 - [React.js](https://reactjs.org/docs/getting-started.html) - A JavaScript library for building user interfaces.
 - [Next.js](https://nextjs.org/docs/getting-started) - The React Framework for Production.
@@ -23,6 +23,10 @@ You can learn more about how they work here:
 Most chat platforms need special API to display an embedded webview in the
 chatroom. Follow the guide of the platform you choose to add a button for
 opening webview:
+
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 <Tabs
   groupId="chat-platforms"
@@ -92,9 +96,9 @@ export default WithMenu;
 `Messenger.UrlButton` component add a button that opens a web page when user tap it.
 The `messengerExtensions` prop need to be set for user login in the webview.
 
-`url` prop link to the `/webview` endpoint where our web server is located
-at. And the `platform=messenger` querystring tells webview client to adopt
-`messenger` platform for login.
+`url` prop links to `/webview` endpoint of our web server. And the
+`platform=messenger` querystring tells webview client to adopt `messenger`
+platform for login.
 
   </TabItem>
   <TabItem value="telegram">
@@ -154,14 +158,13 @@ export default WithMenu;
 `Telegram.UrlButton` component add a button that opens a web page when user tap it.
 The `login` prop need to be set for user login in the webview.
 
-`url` prop link to `/auth/telegram` endpoint for verifying [telegram login](https://telegram.org/blog/privacy-discussions-web-bots#meet-seamless-web-bots)
-data. If login succeed, user will be redirected to the `/webview` endpoint where
-our web server is located at.
+`url` prop links to `/auth/telegram` endpoint of our server for verifying login.
+If login succeed, user will be redirected to `/webview` to open the web page.
 
   </TabItem>
   <TabItem value="line">
 
-  Add the following codes in the `WithMenu` component:
+Add the following codes in the `WithMenu` component:
 
 ```tsx {4,20,29-35} title="src/components/WithMenu.tsx"
 import Machinat, { MachinatNode } from '@machinat/core';
@@ -217,27 +220,36 @@ export default WithMenu;
 `uri` prop link to the [LINE liff app](https://developers.line.biz/en/docs/liff/overview/)
 we created in lesson 1 with `https://{DOMAIN}/webview?platform=line`  url.
 
-LINE server would redirect user to `/webview` endpoint where our web
-server is located at. And the `platform=line` querystring tells webview client to
-adopt `line` platform for login.
+LINE server will redirect user to `/webview` endpoint of our server. And the
+`platform=line` querystring tells webview client to adopt `line` platform for login.
 
   </TabItem>
 </Tabs>
 
 
-Now an `Edit 📤` button should be added in the root menu like this:
+Now an `Edit 📤` button is added in the menu like this:
 
-<img width={400} src={require("./assets/webview-button.png").default} />
+<img width={200} src={require("./assets/webview-button.png").default} />
 
-Try tap the button and you should see the default webview is already working!
+Try tap the button and you should see the built-in webview is already working!
 
 
 ### Webview Client
 
-The web front-end codes of the webview is located at `src/webview/` folder. Check
+The web front-end codes are located at `src/webview/` folder. Check
 `src/webview/pages/index.tsx` file and you shoud see the webview client is
 constructed like this:
 
+
+<Tabs
+  groupId="chat-platforms"
+  defaultValue="messenger"
+  values={[
+    {label: 'Messenger', value: 'messenger'},
+    {label: 'Telegram', value: 'telegram'},
+    {label: 'LINE', value: 'line'},
+  ]}>
+  <TabItem value="messenger">
 
 ```tsx title="src/webview/pages/index.tsx"
 // ...
@@ -249,7 +261,37 @@ const client = new WebviewClient(
           new MessengerClientAuthorizer({
             appId: publicRuntimeConfig.messengerAppId,
           }),
-          new TelegramClientAuthorizer(),
+        ],
+      }
+);
+// ...
+```
+
+  </TabItem>
+  <TabItem value="telegram">
+
+```tsx title="src/webview/pages/index.tsx"
+// ...
+const client = new WebviewClient(
+  typeof window === 'undefined'
+    ? { mockupMode: true, authorizers: [] }
+    : {
+        authorizers: [new TelegramClientAuthorizer()],
+      }
+);
+// ...
+```
+
+  </TabItem>
+  <TabItem value="line">
+
+```tsx title="src/webview/pages/index.tsx"
+// ...
+const client = new WebviewClient(
+  typeof window === 'undefined'
+    ? { mockupMode: true, authorizers: [] }
+    : {
+        authorizers: [
           new LineClientAuthorizer({
             liffId: publicRuntimeConfig.lineLiffId,
           }),
@@ -259,13 +301,16 @@ const client = new WebviewClient(
 // ...
 ```
 
+  </TabItem>
+</Tabs>
+
+
 The `client` will log in user and make the connection to the server after
-constructed. We can then use it to subscibe/send events from/to server.
+constructed. We can then use it to subscibe and send events from/to server.
 
 ### Webview Page
 
-Let's try display the todos in webview. Edit the `WebAppHome` page function like
-this:
+Let's try display the todos in webview. Edit the index page like this:
 
 ```tsx title="src/webview/pages/index.tsx"
 // ...
@@ -321,7 +366,7 @@ JSX elements are rendered into html content of the web page.
 
 The `useEventReducer` [hook](https://reactjs.org/docs/hooks-reference.htm)
 is the simplest way to handle events from server. Every time a event is received,
-the reducer function would be called to update data and the view.
+the reducer function will be called to update data and the view.
 
 ```ts
 const data = useEventReducer(client, reducerFn, initialValue);
@@ -334,11 +379,11 @@ Before the `'app_data'` event from server is recevied, the data value would be
 <img width={500} src={require("./assets/webview-1.png").default} />
 
 
-### Handle Event From Server
+### Handle Event on Server Side
 
-On the server side, the events from client side are received just like other
+On the server side, events from client side are received just like other
 chat platforms. To send todos data to front-end, edit the `handleWebview`
-handler like this:
+handler to this:
 
 ```tsx title="src/handlers/handleWebview.tsx"
 import { makeContainer } from '@machinat/core/service';
@@ -366,12 +411,12 @@ export default handleWebview;
 ```
 
 After a webview connection is established, our app would receive a
-`'connect'` event. `event.channel` here refer to a connection to the webcview client.
-We can use `bot.send(connection, eventObj)` method to send the data to client side.
+`'connect'` event. `event.channel` here refer to a connection to the client.
+We can use `bot.send(connection, eventObj)` method to send the data to web page.
 
 The `metadata.auth` object contains the authorization infos about the connection.
 `auth.channel` here refer to the original chatroom where user comes from.
-We can use it to get the todos data of the chat with `TodoController`.
+We can use `TodoController` to get todos data saved by chatroom.
 
 Now the webview should display the todos you have like this:
 
@@ -380,8 +425,8 @@ Now the webview should display the todos you have like this:
 
 ### Send Event on Client Side
 
-The webview is good for serving more complex view and operation. We can easily
-add a button to delete the todo by adding these codes:
+Webview is very useful to show bigger data and make operations on them. Let's try
+adding a button to delete the todos. Edit the index page like this:
 
 ```tsx {2-19,35,40,47} title="src/webview/pages/index.tsx"
 // ...
@@ -440,13 +485,13 @@ const WebAppHome = () => {
 //...
 ```
 
-In the new `TodoRow` component, we add a `❌` button to delete todo.
+In the `TodoRow` component, we add a `❌` button for deleting the todo.
 Our webview should look like this now:
 
 <img width={500} src={require("./assets/webview-3.png").default} />
 
 When the button is clicked by user, we use `client.send(eventObj)` method to send
-a `'delete_todo'` event to server. We can receive it on server side this way:
+a `'delete_todo'` event to server. We can handle it on server side this way:
 
 
 ```tsx title="src/handlers/handleWebview.tsx"
@@ -469,11 +514,11 @@ const handleWebview = makeContainer({ deps: [TodoController] })(
   //...
 ```
 
-The todo is deleted from the state when a `'delete_todo'` event is received.
-Then we push a `'todo_deleted'` response to notify client that the action is
+We delete the todo from the state when a `'delete_todo'` event is received.
+Then a `'todo_deleted'` event is push back to notify client that the action is
 succeeded.
 
-Finally in the front-end, we receive the response and update the data and view
+Finally in the front-end, we can receive the response and update data and view
 like this:
 
 ```tsx {9-17} title="src/webview/pages/index.tsx"
@@ -507,3 +552,20 @@ Now the todos can be deleted in the webview like this:
 <video width={450} autoplay="autoplay" loop inline>
   <source src={require("./assets/webview-delete.webm").default} type="video/webm" />
 </video>
+
+---
+
+Congratulation 🎉! You have finished the Machinat app tutorial. Now you are able to
+combine **chat UIs**, **services**, **dialog scripts** and **webview** to build
+a functional app and fantastic experiences.
+
+Here are some resources you can go next:
+
+- Learn more about Machinat framework at our [documents](/docs).
+- Check the [complete todo app example](https://github.com/machinat/todo-example/)
+  for more features omitted in this tutorial. Like [paging](https://github.com/machinat/todo-example/blob/main/src/components/ShowTodoList.tsx).
+- Check our [pomodoro example](https://github.com/machinat/pomodoro-example/) to
+  see how to implement state machine pattern with a [dialog script event loop](https://github.com/machinat/pomodoro-example/blob/main/src/scenes/Pomodoro.tsx).
+- Check our [note example](https://github.com/machinat/note-example/) to see how
+  to serve in group chats with a [more complete webview project](https://github.com/machinat/note-example/blob/master/src/webview).
+- Visit [GitHub discussions](https://github.com/machinat/machinat/discussions) to ask any question you have.

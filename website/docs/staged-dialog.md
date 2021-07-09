@@ -119,9 +119,9 @@ The content node is a function that returns the messages to be sent. A content n
 
 When a content node is met while the script is executing, the function will be called to get the messages. The messages will then being sent to proceed the conversation.
 
-### Circumstance Object
+### Script Environments
 
-The content function would receive an object represent the current execution circumstance:
+The content function would receive an object represent the current execution environments:
 
 ```js
 <>
@@ -135,7 +135,7 @@ The content function would receive an object represent the current execution cir
 </>
 ```
 
-The circumstance object has the following properties:
+The environments object has the following properties:
 
 - `platform` - `string`, the platform name where the dialog happen.
 - `channel` - `object`, the channel where the dialog happen.
@@ -149,30 +149,30 @@ The keyword element work just like keywords in script language, the dialog would
 
 
 - `IF` - define an `if` flow.
-  - `condition` - required, `(Circumstance) => boolean`, go to `THEN` block if return true.
+  - `condition` - required, `(scriptEnv) => boolean`, go to `THEN` block if return true.
   - `children` - required, `THEN`, `ELSE`, `ELSE_IF` blocks.
 
 - `THEN` - proceed the block if the `IF` condition passed.
   - `children` - required, script block.
 
 - `ELSE_IF` - proceed the block if condition prop passed.
-  - `condition` - required, `(Circumstance) => boolean`
+  - `condition` - required, `(scriptEnv) => boolean`
   - `children` - required, script block.
 
 - `ELSE` - fallback block.
   - `children` - required, script block.
 
 - `WHILE` - define a `while` flow.
-  - `condition` - required, `(Circumstance) => boolean`, keep looping if condition return truthy.
+  - `condition` - required, `(scriptEnv) => boolean`, keep looping if condition return truthy.
   - `children` - required, script block.
 
 - `PROMPT` - when a `PROMPT` element met, the execution stop and wait for user response.
   - `key` - required, `string`, unique key for the stop point.
-  - `set` - optional, `(Circumstance, Input) => Vars`, set new `vars` according to the input.
+  - `set` - optional, `(scriptEnv, Input) => vars`, set `vars` value according to the input.
 
 - `EFFECT` - change `vars` value.
-  - `do` - optional, `(Circumstance) => Result`, execute a side effect.
-  - `set` - optional, `(Circumstance, Result) => Vars`, set new `vars`.
+  - `do` - optional, `(scriptEnv) => Result`, execute a side effect.
+  - `set` - optional, `(scriptEnv, Result) => vars`, set `vars` value.
 
 - `LABEL` - label a start point of the script.
   - `key` - required, `string`, unique key for the start point.
@@ -180,12 +180,12 @@ The keyword element work just like keywords in script language, the dialog would
 - `CALL` - execute a sub-script.
   - `key` - required, `string`, unique key for the stop point.
   - `script` - required, the sub-script.
-  - `vars` - optional, `(Circumstance) => Vars`, the vars to be used by the sub-script.
+  - `vars` - optional, `(scriptEnv) => vars`, the vars to be used by the sub-script.
   - `goto` - optional, `string`, begin execution from a label.
-  - `set` - optional, `(Circumstance, Value) => Vars`, set `vars` according to the returned value.
+  - `set` - optional, `(scriptEnv, Value) => vars`, set `vars` value according to the returned value.
 
 - `RETURN` - exit current script.
-  - `value` - optional, `(Circumstance) => Vars`, the value to return.
+  - `value` - optional, `(scriptEnv) => vars`, the value to return.
 
 ### Prompting in Chat
 
@@ -245,7 +245,7 @@ it directly.
 />
 ```
 
-The `set` prop of `CALL` receive the circumstances object and the returned value
+The `set` prop of `CALL` receive the environments object and the returned value
 of the script (by `<RETURN value={...} />`). We can set `vars` value with the
 result of the script for later use.
 

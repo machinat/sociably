@@ -2,8 +2,8 @@
 title: UI Component
 ---
 
-Now we know how to use both general and native UIs. While the UIs are getting
-more complex, we might want to reuse them to keep the codes [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
+Now we know how to use both general and native UIs. While the UI getting more
+complex, we might want to reuse them to keep the codes [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
 In this lesson, we will go deeper to make customized chat UI component.
 
 >　Time to accomplish: 10 minutes
@@ -211,8 +211,8 @@ export default TodoList;
 
 The component then can be used in the `handlePostback` handler like:
 
-```ts {1,5-11} title="src/handlers/handlePostback.tsx"
-import TodoList from '../components/TodoList.tsx'
+```tsx {1,5-11} title="src/handlers/handlePostback.tsx"
+import TodoList from '../components/TodoList.tsx';
   // ...
   if (action.type === 'list') {
     return reply(
@@ -245,7 +245,7 @@ if you are interested about that.
 
 ### Component Function
 
-A **component** is a normal function with **capitalized** name that returns the
+A **component** is a normal function with **capitalized** name, which returns the
 UIs to be sent. The component then can be used just like a native component:
 
 ```tsx
@@ -253,8 +253,8 @@ UIs to be sent. The component then can be used just like a native component:
 ```
 
 The first argument of component function is an object represent the **props** of
-JSX element. Our `TodoList` function will receive a `{ todos: [/* todos... */] }`
-object while rendering reply.
+JSX element. Our `TodoList` function will receive a `{ todos: [/* ... */] }`
+object while rendering reply message.
 
 We can then use the data from `todos` prop to return the UI like:
 
@@ -272,7 +272,7 @@ We can then use the data from `todos` prop to return the UI like:
 To render the todos list, we can insert an array of elements in JSX.
 The `{todos.map(todo => <p>{todo.name}</p>)}` code above actually works equal to:
 
-```tsx
+```tsx {3-5}
 <>
   ...
   <p>{todo[1].name}</p>
@@ -284,7 +284,7 @@ The `{todos.map(todo => <p>{todo.name}</p>)}` code above actually works equal to
 
 ### Cross-Platform in Component
 
-The second argument of the component function is a rendering info object.
+The second argument of the component function is a rendering environments object.
 To make your component cross-platform, you can check the `platform` value and
 return the corresponded native UI.
 
@@ -336,7 +336,6 @@ Create a new `src/components/WithMenu.tsx` file with the following content:
 
 ```tsx title="src/components/WithMenu.tsx"
 import Machinat, { MachinatNode } from '@machinat/core';
-import { makeContainer } from '@machinat/core/service';
 import * as Messenger from '@machinat/messenger/components';
 
 type WithMenuProps = {
@@ -386,7 +385,6 @@ export default WithMenu;
 
 ```tsx title="src/components/WithMenu.tsx"
 import Machinat, { MachinatNode } from '@machinat/core';
-import { makeContainer } from '@machinat/core/service';
 import * as Telegram from '@machinat/telegram/components';
 
 type WithMenuProps = {
@@ -438,7 +436,6 @@ export default WithMenu;
 
 ```tsx title="src/components/WithMenu.tsx"
 import Machinat, { MachinatNode } from '@machinat/core';
-import { makeContainer } from '@machinat/core/service';
 import * as Line from '@machinat/line/components';
 
 type WithMenuProps = {
@@ -525,8 +522,7 @@ Now when your bot saying hello, the menu will be attached like this:
 <img width={400} src={require("./assets/hello-with-menu.png").default} />
 
 
-The `WithMenu` component can be used with additional messages in the element
-children. Like this:
+The `WithMenu` component take additional messages in the element children like:
 
 ```tsx
 <WithMenu todoCount={3}>
@@ -536,7 +532,7 @@ children. Like this:
 
 The element children `<p>Hello! I'm a Todo Bot 🤖</p>` is then available as `children`
 prop in component function. We can simply return it with the menu attached
-below like:
+below. Like this:
 
 ```tsx
   return (
@@ -553,8 +549,10 @@ below like:
   );
 ```
 
+The children prop is useful to decorate messages with some routine attachment.
+For example: a greeting, a menu, quick replies or asking feedback.
+
 ---
 
 We are able to build complex, cross-platform and reusable chat UI with the
-customized **component** now. Next, we'll show user the real data and provide real
-features with these UI.
+customized **component** now. Next, we'll show user real data with these UIs.
