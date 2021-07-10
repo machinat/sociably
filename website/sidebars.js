@@ -4,7 +4,7 @@ module.exports = {
       'getting-started',
       'receiving-events',
       'introducing-jsx',
-      'rendering-elements',
+      'rendering-messages',
       'components-for-cui',
     ],
     Advanced: [
@@ -12,7 +12,7 @@ module.exports = {
       'recognizing-intent',
       'using-states',
       'dialog-script',
-      'integration-with-webview',
+      'embedded-webview',
       'reactive-programming',
     ],
     Tutorial: [

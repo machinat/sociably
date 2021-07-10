@@ -1,9 +1,9 @@
 ---
-title: Integrate with Webview
+title: Embedded Webview
 ---
 
 :::info
-This document assume you know basic usage about Next.js and React.js.
+This document assumes you know basic usage about Next.js and React.js.
 You can learn more about them here:
 
 - [React.js](https://reactjs.org/docs/getting-started.html) - A JavaScript library for building user interfaces.

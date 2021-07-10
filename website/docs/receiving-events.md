@@ -1,5 +1,5 @@
 ---
-title: Receive Events
+title: Receiving Events
 ---
 
 After successfully start, the app should be able to receive events from registered platforms. Events of all the platforms can be listened with `app.onEvent()` method like this:
@@ -49,7 +49,7 @@ The event context is a **plain object** containing the following properties:
 
 - `bot`: `null | object`, bot corresponded to the platform. If the platform doesn't support replying, the value would be null.
   - `platform`: `string`, platform the bot belongs to.
-  - `render(channel, message)`: `function`, reply message to the channel.  Check [_Rendering Elements_](rendering-elements.md) for more details.
+  - `render(channel, message)`: `function`, reply message to the channel.  Check [_Rendering Elements_](rendering-messages.md) for more details.
     - `channel`: `object`, the channel object.
     - `message`: `string|element`, the message to reply.
 
@@ -116,7 +116,7 @@ To sum up a little bit, here are some strategies for you to handle events from m
 
 1. **By branches**: check `context.platform` to have different reaction logic for different platforms.
 2. **Use standard event mixin**: reply to specific message type with the information get from standard mixin.
-3. **Cross-platform UI**: reply with a string or an element that is safe for cross-platform. We will discuss more about this at [_Rendering Elements_](rendering-elements.md) later.
+3. **Cross-platform UI**: reply with a string or an element that is safe for cross-platform. We will discuss more about this at [_Rendering Elements_](rendering-messages.md) later.
 
 Let's put them together:
 

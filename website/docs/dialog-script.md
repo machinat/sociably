@@ -478,4 +478,4 @@ The major benefit of saga pattern is composing many operations (contents and pro
 
 ## Next
 
-Learn how to extend the experience with GUI by integrating a webview in [next section](integration-with-webview.md).
+Learn how to extend the experience with GUI by integrating a webview in [next section](embedded-webview.md).

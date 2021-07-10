@@ -159,7 +159,7 @@ import { merge } from '@machinat/stream';
 const webviewAction$ = 
 ```
 
-## Designs And Road Map
+## Designs and Road Map
 
 :::info
 The features mentioned in this section are designs for the future. They are only partially supported in single process scope for the current version. 
@@ -211,7 +211,7 @@ But development of applications need to handle many detailed UI/UX logic, and re
 
 So could there be a monolithic way to have a message queue powered reactive programming lib for building UI/UX? There is actually a prior art, the [_Kafka Stream_](https://kafka.apache.org/documentation/streams/) based on [_Apache Kafka_](https://kafka.apache.org/). The streaming operations are backed with external message queue to match the guarantees describe above.
 
-### Now And Future
+### Now and Future Plan
 
 The current version of `@machinat/stream` only guarantee the upper features in single process scope. To make it support a server cluster, the simple road map is:
 

@@ -110,4 +110,4 @@ In the case above, the `<video ... />` element is a general API that can be sent
 
 ## Next
 
-Learn how the messages composed with JSX syntax being rendered then sent in [next section](rendering-elements.md).
+Learn how the messages composed with JSX syntax being rendered then sent in [next section](rendering-messages.md).

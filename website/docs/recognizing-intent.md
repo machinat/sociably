@@ -1,5 +1,5 @@
 ---
-title: Intent Recognition
+title: Recognizing Intent
 ---
 
 Intent recognition is one essential step to understand your user while building conversational UX. Machinat doesn't provide the utility by itself, but you can easily integrate with any suppliers in the market.

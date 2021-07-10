@@ -38,15 +38,15 @@ These challenges are new and very different from the GUI based *Mobile Apps* or 
   - [Getting Started](docs/getting-started.md)
   - [Receiving Events](docs/receiving-events.md)
   - [Introducing JSX](docs/introducing-jsx.md)
-  - [Rendering Elements](docs/rendering-elements.md)
+  - [Rendering Elements](docs/rendering-messages.md)
   - [Components for CUI](docs/components-for-cui.md)
 
 - Advanced topic
   - [Dependency Injection](docs/dependency-injection.md)
   - [Recognizing Intent](docs/recognizing-intent.md)
   - [Using States](docs/using-states.md)
-  - [Staged Dialog](docs/staged-dialog.md)
-  - [Integration with Webview](docs/integration-with-webview.md)
+  - [Staged Dialog](docs/dialog-script.md)
+  - [Integration with Webview](docs/embedded-webview.md)
   - [Reactive Programming](docs/reactive-programming.md)
 
 ## Platforms
