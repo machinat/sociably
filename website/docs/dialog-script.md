@@ -475,7 +475,3 @@ Machinat Script is actually a saga pattern implementation with the script keywor
 When you write a **script** with keywords, you actually define a saga for proceeding conversation. After it is triggered, all the contents and `PROMPT`s are promised to be finished before the script returns.
 
 The major benefit of saga pattern is composing many operations (contents and promptings) into one atomic transaction (a script). You only have to declare the flow within script, then start it when you need. The script processor would handle the rest of all.
-
-## Next
-
-Learn how to extend the experience with GUI by integrating a webview in [next section](embedded-webview.md).

@@ -160,7 +160,3 @@ app.onError(err => {
   console.error(err)
 });
 ```
-
-## Next
-
-Learn how to make rich expressions with _JSX_ in [next section](introducing-jsx.md).

@@ -284,7 +284,3 @@ app
 ```
 
 `app.start()` returns a promise, your app is ready to receive events after it resolved!
-
-## Next
-
-Learn how to receive and handle events in [next section](receiving-events.md).

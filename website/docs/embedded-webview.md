@@ -24,7 +24,6 @@ The `@machinat/webview` package combine these utilities to provide webviews inte
 
 ### Back-End Setup
 
-
 First install `@machinat/webview` package, then we can register the webview platform to the app like this:
 
 ```js
@@ -417,7 +416,3 @@ app.onEvent(
   )
 );
 ```
-
-## Next
-
-Learn how to build the application control flow with reactive programming in [next section](reactive-programming.md).

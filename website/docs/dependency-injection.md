@@ -314,8 +314,3 @@ For now the following `Base` interfaces are supported:
 - [`StateController`](pathname:///api/modules/core_base_statecontroller): save and load state from state storage.
 - [`IntentRecognizer`](pathname:///api/modules/core_base_intentrecognizer): recognize intent with external providers.
 - [`Marshaler`](pathname:///api/modules/core_base_marshaler): marshal/unmarshal instances of built-in classes like user and channel.
-
-
-## Next
-
-Learn how to use intent recognition service in [next section](recognizing-intent.md).

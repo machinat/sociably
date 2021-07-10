@@ -147,7 +147,3 @@ bot.render(channel,
 ```
 
 The `delayOneSec` function will be called and awaited between actions. This would postpone the sending of the rest actions afterward.
-
-## Next
-
-Learn how to modularize chat UI with **component** in [next section](components-for-cui.md).

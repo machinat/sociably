@@ -107,7 +107,3 @@ reply(
 ```
 
 In the case above, the `<video ... />` element is a general API that can be sent to all platforms. The `<Messenger.Video ... />` element is a native API only works in `messenger` platform.
-
-## Next
-
-Learn how the messages composed with JSX syntax being rendered then sent in [next section](rendering-messages.md).

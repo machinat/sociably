@@ -82,7 +82,3 @@ container({
   // ...
 })
 ```
-
-## Next
-
-Learn how to use state service in [next section](using-states.md).

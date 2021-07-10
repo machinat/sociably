@@ -140,7 +140,3 @@ app.onEvent(async ({ event, bot }) => {
   }
 });
 ```
-
-## Next
-
-By now you know about the core mechanism of Machinat for building CUI. Lean how to use more utilities with dependency injection in [next section](dependency-injection.md).
