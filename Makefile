@@ -32,7 +32,7 @@ api: bin
 
 website: api
 	cd ./website; \
-	yarn install; \
+	npm install; \
 	USE_SSH=true $(docusaurus) deploy
 
 node_modules: package.json package-lock.json $(pkg_confs)
