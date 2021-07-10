@@ -67,7 +67,7 @@ const fooBarContainer = makeContainer({
 
 In the example above, the `makeContainer` helper annotate the `fooBarContainer` function needs two dependencies `FooI` and `BarI`. The `foo` and `bar` instances will be injected later into the container while running.
 
-Machinat by default support dependencies injection for event/error handlers and components (experimental). It could also work in [`@machinat/script`](staged-dialog.md) and [`@machinat/stream`](reactive-programming.md).
+Machinat by default support dependencies injection for event/error handlers and components (experimental). It could also work in [`@machinat/script`](dialog-script.md) and [`@machinat/stream`](reactive-programming.md).
 
 ### Container Handler
 

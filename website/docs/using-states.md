@@ -136,4 +136,4 @@ For example, the `AssetsManager` service of each platform stores the assets id m
 
 ## Next
 
-Learn how to make more complex dialog flow in [next section](staged-dialog.md)
+Learn how to make more complex dialog flow in [next section](dialog-script.md)

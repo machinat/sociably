@@ -1,12 +1,10 @@
 ---
-title: Conversation Script
+title: Dialog Script
 ---
 
-In a conversation, it's often that you need to ask a question and wait for the answer. A dialog may contain a sequence of relating questions and answers. Let's call this kind of dialogs as _staged_.
+In a conversation, it's often that you need to ask a question and wait for the answer. A dialog may contain a sequence of relating questions and answers. It is common for features like making order or customer service.
 
-A staged dialog is common when making order or customer service. In some more complex situations, a conversation may even contain many conditional branches of staged dialogs.
-
-Building staged dialog flows is a challenge in a chatbot as a back-end based app. Machinat take a special approach which enable you writing the **script** for a staged dialog.
+Building the dialog flows logic is a challenge in a chatbot as a back-end based app. Machinat take a special approach which enable you writing **script** for a dialog.
 
 ## Install
 
