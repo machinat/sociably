@@ -19,7 +19,13 @@ module.exports = {
         {
           label: 'Docs',
           to: 'docs/',
-          activeBasePath: 'docs',
+          activeBaseRegex: 'docs/(?:(?!learn).)',
+          position: 'right',
+        },
+        {
+          label: 'Learn',
+          to: 'docs/learn/',
+          activeBasePath: 'docs/learn',
           position: 'right',
         },
         {
