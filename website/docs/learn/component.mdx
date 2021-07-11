@@ -175,7 +175,7 @@ const TodoList = ({ todos }: TodoListProps, { platform }) => {
         <Line.CarouselTemplate
           altText={todos.map((todo) => todo.name).join('\n')}
         >
-          {todos.slice(1, 10).map((todo) => (
+          {todos.slice(0, 10).map((todo) => (
             <Line.CarouselItem
               actions={
                 <Line.PostbackAction
@@ -212,7 +212,7 @@ export default TodoList;
 The component then can be used in the `handlePostback` handler like:
 
 ```tsx {1,5-11} title="src/handlers/handlePostback.tsx"
-import TodoList from '../components/TodoList.tsx';
+import TodoList from '../components/TodoList';
   // ...
   if (action.type === 'list') {
     return reply(
