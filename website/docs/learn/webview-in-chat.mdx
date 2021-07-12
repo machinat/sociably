@@ -312,8 +312,10 @@ constructed. We can then use it to subscibe and send events from/to server.
 
 Let's try display the todos in webview. Edit the index page like this:
 
-```tsx title="src/webview/pages/index.tsx"
+```tsx {1,5-14,19,27-39} title="src/webview/pages/index.tsx"
+import { TodoState } from '../../types';
 // ...
+
 const WebAppHome = () => {
   const data = useEventReducer(
     client,
@@ -494,7 +496,8 @@ When the button is clicked by user, we use `client.send(eventObj)` method to sen
 a `'delete_todo'` event to server. We can handle it on server side this way:
 
 
-```tsx title="src/handlers/handleWebview.tsx"
+```tsx {4-17} title="src/handlers/handleWebview.tsx"
+// ...
 const handleWebview = makeContainer({ deps: [TodoController] })(
   // ...
   if (event.type === 'delete_todo') {
@@ -562,8 +565,9 @@ a functional app and fantastic experiences.
 Here are some resources you can go next:
 
 - Learn more about Machinat framework at our [documents](/docs).
-- Check the [complete todo app example](https://github.com/machinat/todo-example/)
-  for more features omitted in this tutorial. Like [paging](https://github.com/machinat/todo-example/blob/main/src/components/ShowTodoList.tsx).
+- Check the complete [todo example](https://github.com/machinat/todo-example/)
+  for more features omitted in this tutorial. Like [paging](https://github.com/machinat/todo-example/blob/main/src/components/ShowTodoList.tsx),
+  [caching profile](https://github.com/machinat/todo-example/blob/main/src/services/useProfileFactory.ts).
 - Check our [pomodoro example](https://github.com/machinat/pomodoro-example/) to
   see how to implement state machine pattern with a [dialog script event loop](https://github.com/machinat/pomodoro-example/blob/main/src/scenes/Pomodoro.tsx).
 - Check our [note example](https://github.com/machinat/note-example/) to see how

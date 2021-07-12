@@ -54,17 +54,17 @@ returned messages will be sent.
 
 The newly created script need to be registered at the module like this:
 
-```ts {1-2,7-9} title="src/app.ts"
+```ts {1-2,8-10} title="src/app.ts"
 import Script from '@machinat/script';
 import AddingTodo from './scenes/AddingTodo';
 // ...
 
 const app = Machinat.createApp({
   modules: [
+    // ...
     Script.initModule({
       libs: [AddingTodo],
     }),
-  // ...
   ],
   // ...
 })
@@ -72,10 +72,25 @@ const app = Machinat.createApp({
 
 ### Delegate Chat to Processor
 
-One more setup to make the scripts work. While a script is running on a chat,
+One more setup to make the scripts work. When a script is running on a chat,
 the received events must be delegated to the script processor.
 
 Edit the `main` function like this:
+
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs
+  groupId="chat-platforms"
+  defaultValue="messenger"
+  values={[
+    {label: 'Messenger', value: 'messenger'},
+    {label: 'Telegram', value: 'telegram'},
+    {label: 'LINE', value: 'line'},
+  ]}>
+  <TabItem value="messenger">
+
 
 ```ts {1-2,6-21,23,32} title="src/main.ts"
 import { makeContainer } from '@machinat/core/service';
@@ -112,15 +127,111 @@ const main = (event$: Stream<AppEventContext>) => {
   chat$
     .pipe(
       filter(
-        (ctx): ctx is ChatEventContext & {
-          event: { type: 'postback' | 'callback_query' };
-        } =>
-          ctx.event.type === 'postback' || ctx.event.type === 'callback_query'
+        (ctx): ctx is ChatEventContext & { event: { type: 'postback' } } =>
+          ctx.event.type === 'postback'
       )
     )
     .subscribe(handlePostback);
   // ...
 ```
+
+  </TabItem>
+  <TabItem value="telegram">
+
+
+```ts {1-2,6-21,23,32} title="src/main.ts"
+import { makeContainer } from '@machinat/core/service';
+import Script from '@machinat/script';
+// ...
+
+const main = (event$: Stream<AppEventContext>) => {
+  const chat$ = event$.pipe(
+    filter((ctx): ctx is ChatEventContext => ctx.platform !== 'webview'),
+    filter(
+      makeContainer({ deps: [Script.Processor] })(
+        (processor) => async (ctx) => {
+          const runtime = await processor.continue(ctx.event.channel, ctx);
+          if (!runtime) {
+            return true;
+          }
+
+          await ctx.reply(runtime.output());
+          return false;
+        }
+      )
+    )
+  );
+
+  chat$
+    .pipe(
+      filter(
+        (ctx): ctx is ChatEventContext & { event: { category: 'message' } } =>
+          ctx.event.category === 'message'
+      )
+    )
+    .subscribe(handleMessage);
+
+  chat$
+    .pipe(
+      filter(
+        (ctx): ctx is ChatEventContext & { event: { type: 'callback_query' } } =>
+          ctx.event.type === 'callback_query'
+      )
+    )
+    .subscribe(handlePostback);
+  // ...
+```
+
+  </TabItem>
+  <TabItem value="line">
+
+```ts {1-2,6-21,23,32} title="src/main.ts"
+import { makeContainer } from '@machinat/core/service';
+import Script from '@machinat/script';
+// ...
+
+const main = (event$: Stream<AppEventContext>) => {
+  const chat$ = event$.pipe(
+    filter((ctx): ctx is ChatEventContext => ctx.platform !== 'webview'),
+    filter(
+      makeContainer({ deps: [Script.Processor] })(
+        (processor) => async (ctx) => {
+          const runtime = await processor.continue(ctx.event.channel, ctx);
+          if (!runtime) {
+            return true;
+          }
+
+          await ctx.reply(runtime.output());
+          return false;
+        }
+      )
+    )
+  );
+
+  chat$
+    .pipe(
+      filter(
+        (ctx): ctx is ChatEventContext & { event: { category: 'message' } } =>
+          ctx.event.category === 'message'
+      )
+    )
+    .subscribe(handleMessage);
+
+  chat$
+    .pipe(
+      filter(
+        (ctx): ctx is ChatEventContext & { event: { type: 'postback' } } =>
+          ctx.event.type === 'postback'
+      )
+    )
+    .subscribe(handlePostback);
+  // ...
+```
+
+
+  </TabItem>
+</Tabs>
+
 
 If a script runtime exists on a chat, the `runtime.output()` will be replied.
 The original handlers will not receive events from that chat until the script
@@ -177,7 +288,7 @@ the `PROMPT` keyword to stop the script and wait for it.
 
 Add the these codes in the script:
 
-```tsx {3,5-7,12,17-23} title="src/scenes/AddingTodo.tsx"
+```tsx {3,5-7,9,12,17-23} title="src/scenes/AddingTodo.tsx"
 import Machinat from '@machinat/core';
 import { build } from '@machinat/script';
 import { PROMPT } from '@machinat/script/keywords';
@@ -277,8 +388,10 @@ then set `todosCount` in the returned `vars` value.
 
 ### Message With `vars`
 
-The message node can also get the `vars` value and use them to build UI. Add
-this message node at the end of script to show the adding result:
+We can also get the `vars` value in the message node function and use them to
+build UI.
+
+Add this message node at the end of script to show the adding result:
 
 ```tsx {1,4-8} title="src/scenes/AddingTodo.tsx"
 import WithMenu from '../components/WithMenu';
@@ -302,7 +415,7 @@ Now a todo can be added in a conversational way like this:
 
 ### Flow Control
 
-We haven't verify the user input yet, so there could be a problem when user
+We haven't verify the user input yet, so it could be a problem when user
 reply a non-text message. We can use a `WHILE` keyword to fix that:
 
 ```tsx {1,4,14} title="src/scenes/AddingTodo.tsx"
@@ -327,9 +440,8 @@ import { WHILE, PROMPT, EFFECT } from '@machinat/script/keywords';
 language. We wrap the `PROMPT` element with `WHILE`, so bot would keep asking
 until the answer pass the verification.
 
-`condition` prop control whether the loop should continue. We verify the
-`vars.todoName` in the environments, and keep looping until it is a valid
-string.
+`condition` prop control whether the loop should continue. We check the
+`vars.todoName` value, and keep looping until it is a valid string.
 
 The result would look like:
 
@@ -344,7 +456,7 @@ programming.
 
 ### `CALL` Script
 
-We can also use another script as a function call. The `CALL` keyword tells the
+We can also use another script like a function call. The `CALL` keyword tells the
 runtime to execute a script, and will go back to the current point after it return.
 
 Let's use it to ask user for adding the first todo. Add a new `AskingFirstTodo`
@@ -396,7 +508,10 @@ process.
 
 Remember to add the new script in the registered libs:
 
-```ts {5} title="src/app.ts"
+```ts {1,8} title="src/app.ts"
+import AskingFirstTodo from './scenes/AskingFirstTodo';
+// ...
+
 const app = Machinat.createApp({
   modules: [
     // ...
@@ -409,9 +524,10 @@ const app = Machinat.createApp({
 
 Then we can use it in `handleMessage` handler when a user doesn't have any todo:
 
-```tsx {1,4,6-14,17} title="src/handlers/handleMessage.tsx"
+```tsx {1,5-15,18} title="src/handlers/handleMessage.tsx"
 import AskingFirstTodo from '../scenes/AskingFirstTodo';
 // ...
+    const userProfile = await profiler.getUserProfile(event.user);
     const { data } = await todoController.getTodos(event.channel);
     const helloWords = <p>Hello, {userProfile.name}! I'm a Todo Bot 🤖</p>;
 

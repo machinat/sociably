@@ -251,7 +251,7 @@ Now the `TodoController` service can be used just like the built-in services.
 Edit `handleMessage` function like this:
 
 
-```tsx {1,4,6,16,18,27,29} title="src/handlers/handleMessage.tsx"
+```tsx {1,4,6,16,18,26,28} title="src/handlers/handleMessage.tsx"
 import TodoController from '../services/TodoController';
 // ...
 const handleMessage = makeContainer({
@@ -276,8 +276,7 @@ const handleMessage = makeContainer({
         }
       }
 
-      // ...
-
+      const userProfile = await profiler.getUserProfile(event.user);
       const { data } = await todoController.getTodos(event.channel);
       await reply(
         <WithMenu todoCount={data.todos.length}>
