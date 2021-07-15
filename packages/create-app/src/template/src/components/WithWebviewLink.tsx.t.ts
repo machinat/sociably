@@ -14,7 +14,10 @@ import * as Telegram from '@machinat/telegram/components';`}${when(
     platforms.includes('line')
   )`
 import * as Line from '@machinat/line/components';`}
-import { ServerDomain, LineLiffId } from '../interface';
+import {
+  ServerDomain,${when(platforms.includes('line'))`
+  LineLiffId,`}
+} from '../interface';
 
 type WithWebviewLinkProps = {
   children: MachinatNode;

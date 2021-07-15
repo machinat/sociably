@@ -18,7 +18,6 @@ export default () =>
     "strictNullChecks": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "noUnusedLocals": true,
     "composite": true,
     "declaration": true,
     "sourceMap": true

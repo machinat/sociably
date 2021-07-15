@@ -75,15 +75,6 @@ async function dev() {
 
   nodemon.on('restart', (changes: string[]) => {
     console.log(\`[dev:server] Restarting server. File changed: \${changes.join(', ')}\`);
-
-    if (process.platform === 'win32') {
-      tunnel.close();
-      setTimeout(() => {
-        connectTunnel().then((newTunnel) => {
-          tunnel = newTunnel;
-        });
-      }, 1500);
-    }
   });
 }
 

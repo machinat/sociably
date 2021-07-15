@@ -24,7 +24,10 @@ import RedisState from '@machinat/redis-state';
 import { FileState } from '@machinat/local-state';${when(
     platforms.includes('webview')
   )`
-import { ServerDomain, LineLiffId } from './interface';
+import {
+  ServerDomain,${when(platforms.includes('line'))`
+  LineLiffId,`}
+} from './interface';
 import nextConfigs from './webview/next.config.js';`}
 
 const {
