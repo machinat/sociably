@@ -5,6 +5,7 @@ export interface MachinatProfile {
   readonly platform: string;
   readonly name: string;
   readonly avatarUrl: undefined | string;
+  data: any;
 }
 
 export interface UserProfiler<User extends MachinatUser> {
