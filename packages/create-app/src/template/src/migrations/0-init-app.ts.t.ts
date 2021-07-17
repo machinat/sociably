@@ -13,7 +13,7 @@ import Telegram from '@machinat/telegram';`}${when(platforms.includes('line'))`
 import Line from '@machinat/line';`}
 
 const {
-  DOMAIN,${when(platforms.includes('telegram'))`
+  DOMAIN,${when(platforms.includes('messenger'))`
   MESSENGER_PAGE_ID,
   MESSENGER_APP_ID,
   MESSENGER_APP_SECRET,
