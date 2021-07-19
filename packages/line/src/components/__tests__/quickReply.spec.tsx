@@ -8,7 +8,7 @@ import { UriAction } from '../action';
 it('is valid native component', () => {
   expect(typeof QuickReply).toBe('function');
 
-  expect(isNativeType(<QuickReply action="..." />)).toBe(true);
+  expect(isNativeType(<QuickReply>{null}</QuickReply>)).toBe(true);
   expect(QuickReply.$$platform).toBe('line');
 });
 
@@ -16,10 +16,9 @@ it('renders match snapshot', async () => {
   let rendered;
   const renderer = new Renderer('line', async (_, __, render) => {
     rendered = await render(
-      <QuickReply
-        imageUrl="https://..."
-        action={<UriAction uri="https://..." label="foo" />}
-      />,
+      <QuickReply imageUrl="https://...">
+        <UriAction uri="https://..." label="foo" />
+      </QuickReply>,
 
       null as never
     );
@@ -32,14 +31,13 @@ it('renders match snapshot', async () => {
     Array [
       Object {
         "node": <QuickReply
-          action={
-            <UriAction
-              label="foo"
-              uri="https://..."
-            />
-          }
           imageUrl="https://..."
-        />,
+        >
+          <UriAction
+            label="foo"
+            uri="https://..."
+          />
+        </QuickReply>,
         "path": "$#foo",
         "type": "part",
         "value": Object {

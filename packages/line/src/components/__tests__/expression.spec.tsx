@@ -166,16 +166,15 @@ it('attach quickReply to last message object', async () => {
       <Expression
         quickReplies={
           <>
-            <QuickReply
-              action={<MessageAction label="👮‍" text="Some superhero" />}
-            />
-            <QuickReply
-              action={<MessageAction label="🧚‍" text="Some fairytale bliss" />}
-            />
-            <QuickReply
-              imageUrl="https://somthing.just.like/this"
-              action={<MessageAction label="💑" text="Somebody I can kiss" />}
-            />
+            <QuickReply>
+              <MessageAction label="👮‍" text="Some superhero" />
+            </QuickReply>
+            <QuickReply>
+              <MessageAction label="🧚‍" text="Some fairytale bliss" />
+            </QuickReply>
+            <QuickReply imageUrl="https://somthing.just.like/this">
+              <MessageAction label="💑" text="Somebody I can kiss" />
+            </QuickReply>
           </>
         }
       >

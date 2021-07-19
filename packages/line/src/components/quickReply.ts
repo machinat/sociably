@@ -10,8 +10,8 @@ import { LineComponent } from '../types';
 export type QuickReplyProps = {
   /** URL of the icon that is displayed at the beginning of the button. */
   imageUrl?: string;
-  /** An {@link Action} element to be performed when the button is touched. */
-  action: MachinatNode;
+  /** One {@link Action} element to be performed when the button is touched. */
+  children: MachinatNode;
 };
 
 /**
@@ -26,9 +26,9 @@ export const QuickReply: LineComponent<
   QuickReplyProps,
   PartSegment<any>
 > = annotateLineComponent(async function QuickReply(node, path, render) {
-  const { imageUrl, action } = node.props;
+  const { imageUrl, children } = node.props;
 
-  const actionSegments = await render(action, '.action');
+  const actionSegments = await render(children, '.children');
   const actionValue = actionSegments?.[0].value;
 
   return [
