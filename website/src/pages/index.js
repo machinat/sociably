@@ -121,9 +121,9 @@ function Home() {
           />
 
           <div className={clsx('hero__subtitle', styles.heroSubtitle)}>
-            <div>Build One App</div>{' '}
+            <div>One Next-Gen App</div>{' '}
             <div>
-              For All <NeonWords>Chat Platforms</NeonWords>
+              For ALL <NeonWords>Chat Platforms</NeonWords>
             </div>
           </div>
 
