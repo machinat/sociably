@@ -258,11 +258,7 @@ it('attach quickReply to last message object', async () => {
 it('return null if children is empty', async () => {
   await expect(
     renderer.render(
-      <Expression
-        quickReplies={[<QuickReply action={<MessageAction text="nope" />} />]}
-      >
-        {undefined}
-      </Expression>,
+      <Expression quickReplies={[]}>{undefined}</Expression>,
       null as never
     )
   ).resolves.toBe(null);

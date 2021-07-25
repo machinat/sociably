@@ -1,4 +1,5 @@
 import { MachinatNode } from '@machinat/core';
+import { IntermediateSegment, TextSegment } from '@machinat/core/renderer';
 import { annotateLineComponent, isMessageValue } from '../utils';
 import { LineComponent } from '../types';
 
@@ -24,43 +25,54 @@ export const Expression: LineComponent<ExpressionProps> = annotateLineComponent(
     path,
     render
   ) {
-    const segments = await render(children, '.children');
+    const [segments, replySegments] = await Promise.all([
+      render(children, '.children'),
+      render(quickReplies, '.quickReplies'),
+    ]);
     if (segments === null) {
+      if (replySegments) {
+        throw new Error('no message in children for attaching quickReplies');
+      }
       return null;
     }
 
     let lastMessageIdx = -1;
+    const hoistedSegments: Exclude<IntermediateSegment<any>, TextSegment>[] =
+      segments.map((segment, i) => {
+        // hoisting text to text message object
+        if (segment.type === 'text') {
+          lastMessageIdx = i;
+          return {
+            type: 'unit',
+            value: { type: 'text', text: segment.value },
+            node: segment.node,
+            path: segment.path,
+          };
+        }
 
-    for (let i = 0; i < segments.length; i += 1) {
-      const segment = segments[i];
-      const { type, value } = segment;
+        if (segment.type === 'unit' && isMessageValue(segment.value)) {
+          lastMessageIdx = i;
+        }
+        return segment;
+      });
 
-      // hoisting text to line text message object
-      if (type === 'text') {
-        segment.type = 'unit';
-        segment.value = {
-          type: 'text',
-          text: value,
-        };
-      }
-
-      if (isMessageValue(value)) {
-        lastMessageIdx = i;
-      }
-    }
-
-    const quickReplySegments = await render(quickReplies, '.quickReplies');
-
-    if (quickReplySegments) {
+    if (replySegments) {
       if (lastMessageIdx === -1) {
-        throw new Error('no message existed in children to attach quickReply');
+        throw new Error('no message in children for attaching quickReplies');
       }
 
-      segments[lastMessageIdx].value.quickReply = {
-        items: quickReplySegments.map((segment) => segment.value),
-      };
+      const messageSegment = hoistedSegments[lastMessageIdx];
+      hoistedSegments.splice(lastMessageIdx, 1, {
+        ...messageSegment,
+        value: {
+          ...messageSegment.value,
+          quickReply: {
+            items: replySegments.map((segment) => segment.value),
+          },
+        },
+      });
     }
 
-    return segments;
+    return hoistedSegments;
   }
 );
