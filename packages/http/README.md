@@ -13,7 +13,7 @@ yarn add @machinat/core @machinat/http
 
 ## Docs
 
-Check the [package references](https://machinat.com/api/modules/http.html).
+Check the [package reference](https://machinat.com/api/modules/http.html).
 
 ## Setup
 

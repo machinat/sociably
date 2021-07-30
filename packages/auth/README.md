@@ -14,7 +14,7 @@ yarn add @machinat/core @machinat/http @machinat/auth
 
 ## Docs
 
-Check the [package references](https://machinat.com/api/modules/auth.html).
+Check the [package reference](https://machinat.com/api/modules/auth.html).
 
 ## Setup
 

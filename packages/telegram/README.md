@@ -13,7 +13,7 @@ yarn add @machinat/core @machinat/http @machinat/telegram
 ## Docs
 
 Check the [platform document](https://machinat.com/docs/telegram-platform) and
-[package references](https://machinat.com/api/modules/telegram.html).
+[package reference](https://machinat.com/api/modules/telegram.html).
 
 ## Setup
 

@@ -14,7 +14,7 @@ yarn add @machinat/core @machinat/local-state
 ## Docs
 
 Check the [Using State](https://machinat.com/docs/using-states) document for the
-usage guide, and the [package references](https://machinat.com/api/modules/local_state.html)
+usage guide, and the [package reference](https://machinat.com/api/modules/local_state.html)
 for API details.
 
 ## Setup

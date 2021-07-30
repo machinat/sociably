@@ -18,7 +18,7 @@ yarn add @machinat/core @machinat/dialogflow
 ## Docs
 
 Check the [Recognizing Intent](https://machinat.com/docs/recognizing-intent)
-document for the usage guide, and [package references](https://machinat.com/api/modules/dialogflow.html)
+document for the usage guide, and [package reference](https://machinat.com/api/modules/dialogflow.html)
 for API details.
 
 ## Setup

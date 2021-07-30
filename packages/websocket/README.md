@@ -14,7 +14,7 @@ yarn add @machinat/core @machinat/http @machinat/websocket
 
 ## Docs
 
-Check the [package references](https://machinat.com/api/modules/websocket.html).
+Check the [package reference](https://machinat.com/api/modules/websocket.html).
 
 ## Setup
 

@@ -13,7 +13,7 @@ yarn add @machinat/core @machinat/http @machinat/script
 ## Docs
 
 Check the [Dialog Script](https://machinat.com/docs/dialog-script) document for the
-usage guide, and the [package references](https://machinat.com/api/modules/script.html)
+usage guide, and the [package reference](https://machinat.com/api/modules/script.html)
 for API details.
 
 ## Setup

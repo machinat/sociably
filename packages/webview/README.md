@@ -19,7 +19,7 @@ yarn add @machinat/core @machinat/http @machinat/webview
 ## Docs
 
 Check the [Embedded Webview](https://machinat.com/docs/embedded-webview)
-document for the usage guide, and the [package references](https://machinat.com/api/modules/webview.html)
+document for the usage guide, and the [package reference](https://machinat.com/api/modules/webview.html)
 for API details.
 
 ## Setup

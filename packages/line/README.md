@@ -14,7 +14,7 @@ yarn add @machinat/core @machinat/http @machinat/line
 ## Docs
 
 Check the [platform document](https://machinat.com/docs/line-platform) and
-[package references](https://machinat.com/api/modules/line.html).
+[package reference](https://machinat.com/api/modules/line.html).
 
 ## Setup
 
