@@ -3,8 +3,9 @@ import { OperatorFunction } from '../types';
 import injectMaybe from '../injectMaybe';
 import doAsyncByKey from './doAsyncByKey';
 
-type PredicateFn<T> = (value: T) => boolean | Promise<boolean>;
+export type PredicateFn<T> = (value: T) => boolean | Promise<boolean>;
 
+/** @category Operator */
 function filter<
   T,
   Predicator extends ServiceContainer<PredicateFn<T>, unknown[]>

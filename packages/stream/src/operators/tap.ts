@@ -3,8 +3,9 @@ import injectMaybe from '../injectMaybe';
 import { OperatorFunction } from '../types';
 import doAsyncByKey from './doAsyncByKey';
 
-type EffectFn<T> = (val: T) => unknown | Promise<unknown>;
+export type EffectFn<T> = (val: T) => unknown | Promise<unknown>;
 
+/** @category Operator */
 function tap<T>(
   effecter: ServiceContainer<EffectFn<T>, unknown[]>
 ): OperatorFunction<T, T>;

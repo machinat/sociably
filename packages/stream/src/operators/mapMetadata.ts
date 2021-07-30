@@ -3,10 +3,11 @@ import { OperatorFunction, StreamingFrame } from '../types';
 import injectMaybe from '../injectMaybe';
 import doAsyncByKey from './doAsyncByKey';
 
-type MapMetadataFn<T, R> = (
+export type MapMetadataFn<T, R> = (
   frame: StreamingFrame<T>
 ) => Partial<StreamingFrame<R>> | Promise<Partial<StreamingFrame<R>>>;
 
+/** @category Operator */
 function mapMetadata<T, R>(
   mapper: ServiceContainer<MapMetadataFn<T, R>, unknown[]>
 ): OperatorFunction<T, R>;

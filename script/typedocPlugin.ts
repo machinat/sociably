@@ -9,6 +9,7 @@ import { Converter } from 'typedoc/dist/lib/converter/converter';
 import { Context } from 'typedoc/dist/lib/converter/context';
 import { DeclarationReflection } from 'typedoc/dist/lib/models/reflections/declaration';
 import { ReflectionCategory } from 'typedoc/dist/lib/models/ReflectionCategory';
+import { Comment } from 'typedoc/dist/lib/models/comments';
 
 const pkgs = fs
   .readdirSync('./packages')
@@ -23,14 +24,14 @@ const pkgsExports = new Map(
     );
 
     const exportsPaths = new Map(
-      Object.entries(
-        exports as Record<string, string>
-      ).map(([exportPath, libPath]) => [
-        exportPath,
-        libPath.slice(-3) === '.js'
-          ? `${libPath.slice(6, -3)}.ts`
-          : libPath.slice(6),
-      ])
+      Object.entries(exports as Record<string, string>).map(
+        ([exportPath, libPath]) => [
+          exportPath,
+          libPath.slice(-3) === '.js'
+            ? `${libPath.slice(6, -3)}.ts`
+            : libPath.slice(6),
+        ]
+      )
     );
 
     return [pkg, exportsPaths];
@@ -38,7 +39,7 @@ const pkgsExports = new Map(
 );
 
 class ModuleMappingPlugin extends ConverterComponent {
-  pkgExportedReflections: Map<string, Map<string, DeclarationReflection>>;
+  pkgExportsReflections: Map<string, Map<string, DeclarationReflection>>;
   pkgRootReflections: Map<string, DeclarationReflection>;
 
   initialize() {
@@ -54,7 +55,7 @@ class ModuleMappingPlugin extends ConverterComponent {
    * Triggered when the converter begins converting a project.
    */
   private onBegin() {
-    this.pkgExportedReflections = new Map();
+    this.pkgExportsReflections = new Map();
     this.pkgRootReflections = new Map();
   }
 
@@ -70,10 +71,10 @@ class ModuleMappingPlugin extends ConverterComponent {
     if (match) {
       const [, pkgName, sourcePath] = match;
 
-      let reflections = this.pkgExportedReflections.get(pkgName);
+      let reflections = this.pkgExportsReflections.get(pkgName);
       if (!reflections) {
         reflections = new Map();
-        this.pkgExportedReflections.set(pkgName, reflections);
+        this.pkgExportsReflections.set(pkgName, reflections);
       }
 
       if (reflections.has(sourcePath)) {
@@ -98,7 +99,7 @@ class ModuleMappingPlugin extends ConverterComponent {
       const rootPath = exportPaths.get('.');
 
       if (rootPath) {
-        const reflections = this.pkgExportedReflections.get(pkgName)!;
+        const reflections = this.pkgExportsReflections.get(pkgName)!;
         const rootReflection = reflections.get(rootPath);
 
         if (rootReflection) {
@@ -111,7 +112,7 @@ class ModuleMappingPlugin extends ConverterComponent {
       }
     }
 
-    for (const [pkgName, reflections] of this.pkgExportedReflections) {
+    for (const [pkgName, reflections] of this.pkgExportsReflections) {
       const rootReflection = this.pkgRootReflections.get(pkgName)!;
       if (!rootReflection.children) {
         rootReflection.children = [];
@@ -131,30 +132,33 @@ class ModuleMappingPlugin extends ConverterComponent {
     const modulesGroup = context.project.groups!.find(
       (group) => group.kind === ReflectionKind.Module
     )!;
-    modulesGroup.title = '@machinat/';
+    modulesGroup.title = 'Packages';
 
     for (const [pkgName, packageModule] of this.pkgRootReflections) {
-      if (!packageModule.categories) {
-        packageModule.categories = [];
-      }
+      // separate exports sub modules into a category
+      if (packageModule.categories) {
+        const subModuleCategory = new ReflectionCategory('Exports');
+        packageModule.categories.unshift(subModuleCategory);
 
-      const subModuleCategory = new ReflectionCategory('Sub Module');
-      packageModule.categories.splice(1, 0, subModuleCategory);
+        const subModules = [
+          ...this.pkgExportsReflections.get(pkgName)!.values(),
+        ];
+        subModuleCategory.children.push(...subModules);
 
-      const subModules = [
-        ...this.pkgExportedReflections.get(pkgName)!.values(),
-      ];
-      subModuleCategory.children.push(...subModules);
-
-      const otherCategory = packageModule.categories.find(
-        (category) => category.title === 'Other'
-      );
-      if (otherCategory) {
-        otherCategory.children = otherCategory.children.filter(
-          (reflection) =>
-            !subModules.includes(reflection as DeclarationReflection)
+        const otherCategory = packageModule.categories.find(
+          (category) => category.title === 'Other'
         );
+        if (otherCategory) {
+          otherCategory.children = otherCategory.children.filter(
+            (reflection) =>
+              !subModules.includes(reflection as DeclarationReflection)
+          );
+        }
       }
+
+      // attach package readme
+      const readme = fs.readFileSync(`./packages/${pkgName}/README.md`);
+      packageModule.comment = new Comment('', readme.toString());
     }
   }
 }

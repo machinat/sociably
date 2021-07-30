@@ -14,7 +14,7 @@ Reactive programming is a declarative programming paradigm to handle asynchronou
 A conversation can be treated as a stream of messages, and our app can handle chat streams reactively with the utilities.
 
 :::warning
-The package is still on early experimental. There might be a breaking change in the future for supporting cluster. Please consider that if you plan to use it on production.
+The package is still on early experimental. There might be breaking changes in the future for supporting cluster. Please consider that if you plan to use it on production.
 :::
 
 ### Install

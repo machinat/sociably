@@ -34,7 +34,9 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 <Tabs
-  defaultValue="messenger"
+  defaultValue={
+    new URLSearchParams(window.location.search).get('platform') || 'messenger'
+  }
   values={[
     {label: 'Messenger', value: 'messenger'},
     {label: 'Telegram', value: 'telegram'},

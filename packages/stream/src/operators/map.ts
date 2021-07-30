@@ -3,8 +3,9 @@ import injectMaybe from '../injectMaybe';
 import { OperatorFunction } from '../types';
 import doAsyncByKey from './doAsyncByKey';
 
-type MapFn<T, R> = (value: T) => R | Promise<R>;
+export type MapFn<T, R> = (value: T) => R | Promise<R>;
 
+/** @category Operator */
 function map<T, R>(mapper: MaybeContainer<MapFn<T, R>>): OperatorFunction<T, R>;
 
 function map<T, R>(mapper: MapFn<T, R>): OperatorFunction<T, R>;

@@ -8,6 +8,7 @@ type DebouncingCache<T> = {
   timeoutId: NodeJS.Timeout;
 };
 
+/** @category Operator */
 const bufferDebounceTime = <T>(t: number): OperatorFunction<T, T[]> => {
   const debouncingCaches = new Map<string, DebouncingCache<T>>();
 

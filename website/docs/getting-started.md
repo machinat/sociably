@@ -243,8 +243,8 @@ Add the following `compilerOptions` settings in your `tsconfig.json`:
 
 ## Listening to HTTP
 
-The `@machinat/http` module provide underlying utilities for platforms need
-receiving HTTP request. When `app.start()`, a HTTP server will be created and
+The `@machinat/http` module provide underlying utilities for platforms to listen
+HTTP requests. When `app.start()`, a HTTP server will be created and
 start listening for requests.
 
 You can use `listenOptions` to configure options for [`server.listen()`](https://nodejs.org/dist/latest/docs/api/net.html#net_server_listen_options_callback) like this:
@@ -259,7 +259,8 @@ Http.initModule({
 })
 ```
 
-If you have multiple platforms requiring HTTP entry, you need to set the route path at platform options like in the example:
+If you have multiple platforms requiring a HTTP entry point, you need to set the
+route path at platform options like:
 
 ```js
 Messenger.initModule({
@@ -268,11 +269,13 @@ Messenger.initModule({
 })
 ```
 
-Each platform's route path should be configured with no conflict. Please check the docs of platform package for more usage details.
+Each platform's route path should be configured with no conflict. Please check
+the docs of platform package for more usage details.
 
 ## Starting App
 
-After all modules configured, you must call `app.start()` to make everything work. It initiate the necessary services for the app to run.
+After all modules configured, you must call `app.start()` to make everything
+work. It initiate the necessary services for the app to run.
 
 ```js
 const app = Machinat.createApp({ ... });
