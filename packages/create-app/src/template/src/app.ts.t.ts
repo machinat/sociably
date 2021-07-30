@@ -98,8 +98,8 @@ const app = Machinat.createApp({
       providerId: LINE_PROVIDER_ID,
       channelId: LINE_CHANNEL_ID,
       accessToken: LINE_ACCESS_TOKEN,
-      channelSecret: LINE_CHANNEL_SECRET,
-      liffChannelIds: [LINE_LIFF_ID.split('-')[0]],
+      channelSecret: LINE_CHANNEL_SECRET,${when(platforms.includes('webview'))`
+      liffChannelIds: [LINE_LIFF_ID.split('-')[0]],`}
     }),`}${when(platforms.includes('webview'))`
 
     Webview.initModule<${when(platforms.includes('messenger'))`
@@ -121,8 +121,6 @@ const app = Machinat.createApp({
             messengerAppId: MESSENGER_APP_ID,`}${when(
     platforms.includes('line')
   )`
-            lineProviderId: LINE_PROVIDER_ID,
-            lineBotChannelId: LINE_CHANNEL_ID,
             lineLiffId: LINE_LIFF_ID,`}
           },
         },
