@@ -33,7 +33,7 @@ test('get asset id', async () => {
   const manager = new TelegramAssetsManager(stateController, bot);
 
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe(undefined);
-  await expect(manager.getFileId('my_file')).resolves.toBe(undefined);
+  await expect(manager.getFile('my_file')).resolves.toBe(undefined);
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(2);
   expect(state.get.mock).toHaveBeenCalledTimes(2);
@@ -42,7 +42,7 @@ test('get asset id', async () => {
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe('_FOO_BAR_ID_');
 
   state.get.mock.fakeReturnValue('_FILE_ID_');
-  await expect(manager.getFileId('my_file')).resolves.toBe('_FILE_ID_');
+  await expect(manager.getFile('my_file')).resolves.toBe('_FILE_ID_');
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(4);
   expect(stateController.globalState.mock.calls.map((c) => c.args[0]))
