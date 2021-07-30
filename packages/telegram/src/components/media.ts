@@ -13,12 +13,12 @@ import { MessageProps } from './types';
 
 export interface FileProps {
   /** The file id already stored somewhere on the Telegram servers. */
-  fileId: string;
+  fileId?: string;
   /** HTTP URL for the file to be sent. */
-  url: string;
+  url?: string;
   /** The file content data when uploading the file directly. */
-  fileData: string | Buffer | NodeJS.ReadableStream;
-  /** Metadata about the uploading `fileData` if needed (while using Buffer). */
+  fileData?: string | Buffer | NodeJS.ReadableStream;
+  /** Metadata about `fileData` if needed (while using Buffer). */
   fileInfo?: UploadingFileInfo;
   /**
    * The asset tag for {@link TelegramAssetsManager} to save the uploaded file
