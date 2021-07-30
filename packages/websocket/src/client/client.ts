@@ -50,7 +50,7 @@ class WebScoketClient<
       url || '/',
       login ||
         (() => Promise.resolve({ user: null as any, credential: null as any })),
-      marshalTypes || []
+      new BaseMarshaler(marshalTypes || [])
     );
 
     this._connector.start().catch(this._emitError.bind(this));
@@ -79,15 +79,9 @@ class WebScoketClient<
   private _initConnector(
     sockerUrl: string,
     login: ClientLoginFn<User, Credential>,
-    marshalTypes: AnyMarshalType[]
+    marshaler: BaseMarshaler
   ) {
-    return new Connector<User>(
-      sockerUrl,
-      login ||
-        (() => Promise.resolve({ user: null as never, credential: null })),
-      new BaseMarshaler(marshalTypes)
-    )
-
+    return new Connector<User>(sockerUrl, login, marshaler)
       .on('connect', ({ connId, user }) => {
         this._user = user;
         this._channel = new WebSocketConnection('*', connId);
@@ -101,7 +95,6 @@ class WebScoketClient<
           event: createEvent(connectEvent, this._channel, this._user),
         });
       })
-
       .on('events', (values) => {
         for (const value of values) {
           this._emitEvent({
@@ -113,7 +106,6 @@ class WebScoketClient<
           });
         }
       })
-
       .on('disconnect', ({ reason }) => {
         const channel = this._channel;
         this._channel = null;
@@ -131,7 +123,6 @@ class WebScoketClient<
           ),
         });
       })
-
       .on('error', this._emitError.bind(this));
   }
 }
