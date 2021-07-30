@@ -48,7 +48,7 @@ interface EventObject<
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
-interface MessengerTextEvent
+export interface TextEvent
   extends EventObject<'message' | 'standby', 'text'>,
     EventBase,
     Message,
@@ -62,7 +62,7 @@ interface MessengerTextEvent
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
  */
-interface MessengerTextEchoEvent
+export interface TextEchoEvent
   extends EventObject<'echo', 'text'>,
     EventBase,
     Message,
@@ -76,7 +76,7 @@ interface MessengerTextEchoEvent
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
-interface MessengerImageEvent
+export interface ImageEvent
   extends EventObject<'message' | 'standby', 'image'>,
     EventBase,
     Message,
@@ -89,7 +89,7 @@ interface MessengerImageEvent
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
  */
-interface MessengerImageEchoEvent
+export interface ImageEchoEvent
   extends EventObject<'echo', 'image'>,
     EventBase,
     Message,
@@ -102,7 +102,7 @@ interface MessengerImageEchoEvent
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
-interface MessengerVideoEvent
+export interface VideoEvent
   extends EventObject<'message' | 'standby', 'video'>,
     EventBase,
     Message,
@@ -114,7 +114,7 @@ interface MessengerVideoEvent
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
  */
-interface MessengerVideoEchoEvent
+export interface VideoEchoEvent
   extends EventObject<'echo', 'video'>,
     EventBase,
     Message,
@@ -127,7 +127,7 @@ interface MessengerVideoEchoEvent
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
-interface MessengerAudioEvent
+export interface AudioEvent
   extends EventObject<'message' | 'standby', 'audio'>,
     EventBase,
     Message,
@@ -139,7 +139,7 @@ interface MessengerAudioEvent
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
  */
-interface MessengerAudioEchoEvent
+export interface AudioEchoEvent
   extends EventObject<'echo', 'audio'>,
     EventBase,
     Message,
@@ -152,7 +152,7 @@ interface MessengerAudioEchoEvent
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
-interface MessengerFileEvent
+export interface FileEvent
   extends EventObject<'message' | 'standby', 'file'>,
     EventBase,
     Message,
@@ -164,7 +164,7 @@ interface MessengerFileEvent
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
  */
-interface MessengerFileEchoEvent
+export interface FileEchoEvent
   extends EventObject<'echo', 'file'>,
     EventBase,
     Message,
@@ -177,7 +177,7 @@ interface MessengerFileEchoEvent
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
-interface MessengerLocationEvent
+export interface LocationEvent
   extends EventObject<'message' | 'standby', 'location'>,
     EventBase,
     Message,
@@ -188,7 +188,7 @@ interface MessengerLocationEvent
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
-interface MessengerProductTemplateEvent
+export interface ProductTemplateEvent
   extends EventObject<'message' | 'standby', 'product_template'>,
     EventBase,
     Message,
@@ -202,7 +202,7 @@ interface MessengerProductTemplateEvent
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
  */
-interface MessengerTemplateEchoEvent
+export interface TemplateEchoEvent
   extends EventObject<'echo', 'template'>,
     EventBase,
     Message,
@@ -216,7 +216,7 @@ interface MessengerTemplateEchoEvent
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
-interface MessengerFallbackEvent
+export interface FallbackEvent
   extends EventObject<'message' | 'standby', 'fallback'>,
     EventBase,
     Message,
@@ -229,7 +229,7 @@ interface MessengerFallbackEvent
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
  */
-interface MessengerFallbackEchoEvent
+export interface FallbackEchoEvent
   extends EventObject<'echo', 'fallback'>,
     EventBase,
     Message,
@@ -242,7 +242,7 @@ interface MessengerFallbackEchoEvent
  * @subscription `message_reactions`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-reactions).
  */
-interface MessengerReactionEvent
+export interface ReactionEvent
   extends EventObject<'action', 'reaction'>,
     EventBase,
     Reaction {}
@@ -254,7 +254,7 @@ interface MessengerReactionEvent
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
-interface MessengerQuickReplyEvent
+export interface QuickReplyEvent
   extends EventObject<'postback' | 'standby', 'quick_reply'>,
     EventBase,
     Message,
@@ -270,7 +270,7 @@ interface MessengerQuickReplyEvent
  * @subscription `messaging_postbacks`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_postbacks).
  */
-interface MessengerPostbackEvent
+export interface PostbackEvent
   extends EventObject<'postback' | 'standby', 'postback'>,
     EventBase,
     Postback {}
@@ -290,7 +290,7 @@ interface MessengerPostbackEvent
  * @subscription `messaging_referrals`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_referrals).
  */
-interface MessengerReferralEvent
+export interface ReferralEvent
   extends EventObject<
       'action',
       'referral',
@@ -307,7 +307,7 @@ interface MessengerReferralEvent
  * @subscription `message_reads`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-reads).
  */
-interface MessengerReadEvent
+export interface ReadEvent
   extends EventObject<'action' | 'standby', 'read'>,
     EventBase,
     Read {}
@@ -318,7 +318,7 @@ interface MessengerReadEvent
  * @subscription `message_deliveries`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-deliveries).
  */
-interface MessengerDeliveryEvent
+export interface DeliveryEvent
   extends EventObject<'system' | 'standby', 'delivery'>,
     EventBase,
     Delivery {}
@@ -331,7 +331,7 @@ interface MessengerDeliveryEvent
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/account-linking)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_account_linking).
  */
-interface MessengerAccountLinkingEvent
+export interface AccountLinkingEvent
   extends EventObject<'action', 'account_linking'>,
     EventBase,
     AccountLinking {}
@@ -342,7 +342,7 @@ interface MessengerAccountLinkingEvent
  * @subscription `messaging_game_plays`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_game_plays).
  */
-interface MessengerGamePlayEvent
+export interface GamePlayEvent
   extends EventObject<'action', 'game_play'>,
     EventBase,
     GamePlay {}
@@ -355,7 +355,7 @@ interface MessengerGamePlayEvent
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/handover-protocol/pass-thread-control)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#pass_thread_control).
  */
-interface MessengerPassThreadControlEvent
+export interface PassThreadControlEvent
   extends EventObject<'handover_protocol', 'pass_thread_control'>,
     EventBase,
     PassThreadControl {}
@@ -368,7 +368,7 @@ interface MessengerPassThreadControlEvent
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/handover-protocol/take-thread-control)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#take_thread_control).
  */
-interface MessengerTakeThreadControlEvent
+export interface TakeThreadControlEvent
   extends EventObject<'handover_protocol', 'take_thread_control'>,
     EventBase,
     TakeThreadControl {}
@@ -383,7 +383,7 @@ interface MessengerTakeThreadControlEvent
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/handover-protocol/request-thread-control)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#request_thread_control).
  */
-interface MessengerRequestThreadControlEvent
+export interface RequestThreadControlEvent
   extends EventObject<'handover_protocol', 'request_thread_control'>,
     EventBase,
     RequestThreadControl {}
@@ -397,7 +397,7 @@ interface MessengerRequestThreadControlEvent
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/handover-protocol/assign-app-roles)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#app_roles).
  */
-interface MessengerAppRolesEvent
+export interface AppRolesEvent
   extends EventObject<'handover_protocol', 'app_roles'>,
     EventBase,
     AppRoles {}
@@ -411,7 +411,7 @@ interface MessengerAppRolesEvent
  * @subscription `messaging_optins`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_optins).
  */
-interface MessengerOptinEvent
+export interface OptinEvent
   extends EventObject<'action', 'optin', MessengerChat, null | MessengerUser>,
     EventBase,
     Optin {}
@@ -423,7 +423,7 @@ interface MessengerOptinEvent
  * @subscription `messaging_policy_enforcement`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_policy_enforcement).
  */
-interface MessengerPolicyEnforcementEvent
+export interface PolicyEnforcementEvent
   extends EventObject<'system', 'policy_enforcement', null, null>,
     EventBase,
     PolicyEnforcement {}
@@ -431,38 +431,41 @@ interface MessengerPolicyEnforcementEvent
 /**
  * @category Event
  */
-interface MessengerUnknownEvent
+export interface UnknownEvent
   extends EventObject<'unknown', 'unknown'>,
     EventBase {}
 
+/**
+ * @category Event
+ */
 export type MessengerEvent =
-  | MessengerTextEvent
-  | MessengerTextEchoEvent
-  | MessengerImageEvent
-  | MessengerImageEchoEvent
-  | MessengerVideoEvent
-  | MessengerVideoEchoEvent
-  | MessengerAudioEvent
-  | MessengerAudioEchoEvent
-  | MessengerFileEvent
-  | MessengerFileEchoEvent
-  | MessengerLocationEvent
-  | MessengerProductTemplateEvent
-  | MessengerTemplateEchoEvent
-  | MessengerFallbackEvent
-  | MessengerFallbackEchoEvent
-  | MessengerReactionEvent
-  | MessengerQuickReplyEvent
-  | MessengerPostbackEvent
-  | MessengerReferralEvent
-  | MessengerReadEvent
-  | MessengerDeliveryEvent
-  | MessengerAccountLinkingEvent
-  | MessengerGamePlayEvent
-  | MessengerPassThreadControlEvent
-  | MessengerTakeThreadControlEvent
-  | MessengerRequestThreadControlEvent
-  | MessengerAppRolesEvent
-  | MessengerOptinEvent
-  | MessengerPolicyEnforcementEvent
-  | MessengerUnknownEvent;
+  | TextEvent
+  | TextEchoEvent
+  | ImageEvent
+  | ImageEchoEvent
+  | VideoEvent
+  | VideoEchoEvent
+  | AudioEvent
+  | AudioEchoEvent
+  | FileEvent
+  | FileEchoEvent
+  | LocationEvent
+  | ProductTemplateEvent
+  | TemplateEchoEvent
+  | FallbackEvent
+  | FallbackEchoEvent
+  | ReactionEvent
+  | QuickReplyEvent
+  | PostbackEvent
+  | ReferralEvent
+  | ReadEvent
+  | DeliveryEvent
+  | AccountLinkingEvent
+  | GamePlayEvent
+  | PassThreadControlEvent
+  | TakeThreadControlEvent
+  | RequestThreadControlEvent
+  | AppRolesEvent
+  | OptinEvent
+  | PolicyEnforcementEvent
+  | UnknownEvent;

@@ -56,7 +56,7 @@ interface EventObject<Category extends string, Type extends string> {
  * @eventCategory `'message' | 'edit_message'`
  * @eventType `'text'`
  */
-export interface TelegramTextMessageEvent
+export interface TextMessageEvent
   extends EventObject<'message' | 'edit_message', 'text'>,
     EventBase,
     Message,
@@ -70,7 +70,7 @@ export interface TelegramTextMessageEvent
  * @eventCategory `'channel_post' | 'edit_channel_post'`
  * @eventType `'text'`
  */
-export interface TelegramTextChannelPostEvent
+export interface TextChannelPostEvent
   extends EventObject<'channel_post' | 'edit_channel_post', 'text'>,
     EventBase,
     ChannelPost,
@@ -84,7 +84,7 @@ export interface TelegramTextChannelPostEvent
  * @eventCategory `'message' | 'edit_message'`
  * @eventType `'animation'`
  */
-export interface TelegramAnimationMessageEvent
+export interface AnimationMessageEvent
   extends EventObject<'message' | 'edit_message', 'animation'>,
     EventBase,
     Message,
@@ -100,7 +100,7 @@ export interface TelegramAnimationMessageEvent
  * @eventCategory `'channel_post' | 'edit_channel_post'`
  * @eventType `'animation'`
  */
-export interface TelegramAnimationChannelPostEvent
+export interface AnimationChannelPostEvent
   extends EventObject<'channel_post' | 'edit_channel_post', 'animation'>,
     EventBase,
     ChannelPost,
@@ -116,7 +116,7 @@ export interface TelegramAnimationChannelPostEvent
  * @eventCategory `'message' | 'edit_message'`
  * @eventType `'audio'`
  */
-export interface TelegramAudioMessageEvent
+export interface AudioMessageEvent
   extends EventObject<'message' | 'edit_message', 'audio'>,
     EventBase,
     Message,
@@ -132,7 +132,7 @@ export interface TelegramAudioMessageEvent
  * @eventCategory `'channel_post' | 'edit_channel_post'`
  * @eventType `'audio'`
  */
-export interface TelegramAudioChannelPostEvent
+export interface AudioChannelPostEvent
   extends EventObject<'channel_post' | 'edit_channel_post', 'audio'>,
     EventBase,
     ChannelPost,
@@ -148,7 +148,7 @@ export interface TelegramAudioChannelPostEvent
  * @eventCategory `'message' | 'edit_message'`
  * @eventType `'document'`
  */
-export interface TelegramDocumentMessageEvent
+export interface DocumentMessageEvent
   extends EventObject<'message' | 'edit_message', 'document'>,
     EventBase,
     Message,
@@ -164,7 +164,7 @@ export interface TelegramDocumentMessageEvent
  * @eventCategory `'channel_post' | 'edit_channel_post'`
  * @eventType `'document'`
  */
-export interface TelegramDocumentChannelPostEvent
+export interface DocumentChannelPostEvent
   extends EventObject<'channel_post' | 'edit_channel_post', 'document'>,
     EventBase,
     ChannelPost,
@@ -180,7 +180,7 @@ export interface TelegramDocumentChannelPostEvent
  * @eventCategory `'message' | 'edit_message'`
  * @eventType `'photo'`
  */
-export interface TelegramPhotoMessageEvent
+export interface PhotoMessageEvent
   extends EventObject<'message' | 'edit_message', 'photo'>,
     EventBase,
     Message,
@@ -196,7 +196,7 @@ export interface TelegramPhotoMessageEvent
  * @eventCategory `'channel_post' | 'edit_channel_post'`
  * @eventType `'photo'`
  */
-export interface TelegramPhotoChannelPostEvent
+export interface PhotoChannelPostEvent
   extends EventObject<'channel_post' | 'edit_channel_post', 'photo'>,
     EventBase,
     ChannelPost,
@@ -212,7 +212,7 @@ export interface TelegramPhotoChannelPostEvent
  * @eventCategory `'message' | 'edit_message'`
  * @eventType `'sticker'`
  */
-export interface TelegramStickerMessageEvent
+export interface StickerMessageEvent
   extends EventObject<'message' | 'edit_message', 'sticker'>,
     EventBase,
     Message,
@@ -227,7 +227,7 @@ export interface TelegramStickerMessageEvent
  * @eventCategory `'channel_post' | 'edit_channel_post'`
  * @eventType `'sticker'`
  */
-export interface TelegramStickerChannelPostEvent
+export interface StickerChannelPostEvent
   extends EventObject<'channel_post' | 'edit_channel_post', 'sticker'>,
     EventBase,
     ChannelPost,
@@ -242,7 +242,7 @@ export interface TelegramStickerChannelPostEvent
  * @eventCategory `'message' | 'edit_message'`
  * @eventType `'video'`
  */
-export interface TelegramVideoMessageEvent
+export interface VideoMessageEvent
   extends EventObject<'message' | 'edit_message', 'video'>,
     EventBase,
     Message,
@@ -258,7 +258,7 @@ export interface TelegramVideoMessageEvent
  * @eventCategory `'channel_post' | 'edit_channel_post'`
  * @eventType `'video'`
  */
-export interface TelegramVideoChannelPostEvent
+export interface VideoChannelPostEvent
   extends EventObject<'channel_post' | 'edit_channel_post', 'video'>,
     EventBase,
     ChannelPost,
@@ -274,7 +274,7 @@ export interface TelegramVideoChannelPostEvent
  * @eventCategory `'message' | 'edit_message'`
  * @eventType `'video_note'`
  */
-export interface TelegramVideoNoteMessageEvent
+export interface VideoNoteMessageEvent
   extends EventObject<'message' | 'edit_message', 'video_note'>,
     EventBase,
     Message,
@@ -289,7 +289,7 @@ export interface TelegramVideoNoteMessageEvent
  * @eventCategory `'channel_post' | 'edit_channel_post'`
  * @eventType `'video_note'`
  */
-export interface TelegramVideoNoteChannelPostEvent
+export interface VideoNoteChannelPostEvent
   extends EventObject<'channel_post' | 'edit_channel_post', 'video_note'>,
     EventBase,
     ChannelPost,
@@ -304,7 +304,7 @@ export interface TelegramVideoNoteChannelPostEvent
  * @eventCategory `'message' | 'edit_message'`
  * @eventType `'voice'`
  */
-export interface TelegramVoiceMessageEvent
+export interface VoiceMessageEvent
   extends EventObject<'message' | 'edit_message', 'voice'>,
     EventBase,
     Message,
@@ -320,7 +320,7 @@ export interface TelegramVoiceMessageEvent
  * @eventCategory `'channel_post' | 'edit_channel_post'`
  * @eventType `'voice'`
  */
-export interface TelegramVoiceChannelPostEvent
+export interface VoiceChannelPostEvent
   extends EventObject<'channel_post' | 'edit_channel_post', 'voice'>,
     EventBase,
     ChannelPost,
@@ -336,7 +336,7 @@ export interface TelegramVoiceChannelPostEvent
  * @eventCategory `'message'`
  * @eventType `'contact'`
  */
-export interface TelegramContactMessageEvent
+export interface ContactMessageEvent
   extends EventObject<'message', 'contact'>,
     EventBase,
     Message,
@@ -350,7 +350,7 @@ export interface TelegramContactMessageEvent
  * @eventCategory `'channel_post'`
  * @eventType `'contact'`
  */
-export interface TelegramContactChannelPostEvent
+export interface ContactChannelPostEvent
   extends EventObject<'channel_post', 'contact'>,
     EventBase,
     ChannelPost,
@@ -364,7 +364,7 @@ export interface TelegramContactChannelPostEvent
  * @eventCategory `'message'`
  * @eventType `'dice'`
  */
-export interface TelegramDiceMessageEvent
+export interface DiceMessageEvent
   extends EventObject<'message', 'dice'>,
     EventBase,
     Message,
@@ -378,7 +378,7 @@ export interface TelegramDiceMessageEvent
  * @eventCategory `'channel_post'`
  * @eventType `'dice'`
  */
-export interface TelegramDiceChannelPostEvent
+export interface DiceChannelPostEvent
   extends EventObject<'channel_post', 'dice'>,
     EventBase,
     ChannelPost,
@@ -392,7 +392,7 @@ export interface TelegramDiceChannelPostEvent
  * @eventCategory `'message' | 'edit_message'`
  * @eventType `'game'`
  */
-export interface TelegramGameMessageEvent
+export interface GameMessageEvent
   extends EventObject<'message' | 'edit_message', 'game'>,
     EventBase,
     Message,
@@ -406,7 +406,7 @@ export interface TelegramGameMessageEvent
  * @eventCategory `'message'`
  * @eventType `'poll'`
  */
-export interface TelegramPollMessageEvent
+export interface PollMessageEvent
   extends EventObject<'message', 'poll'>,
     EventBase,
     Message,
@@ -421,7 +421,7 @@ export interface TelegramPollMessageEvent
  * @eventCategory `'channel_post'`
  * @eventType `'poll'`
  */
-export interface TelegramPollChannelPostEvent
+export interface PollChannelPostEvent
   extends EventObject<'channel_post', 'poll'>,
     EventBase,
     ChannelPost,
@@ -436,7 +436,7 @@ export interface TelegramPollChannelPostEvent
  * @eventCategory `'message'`
  * @eventType `'venue'`
  */
-export interface TelegramVenueMessageEvent
+export interface VenueMessageEvent
   extends EventObject<'message', 'venue'>,
     EventBase,
     Message,
@@ -450,7 +450,7 @@ export interface TelegramVenueMessageEvent
  * @eventCategory `'channel_post'`
  * @eventType `'venue'`
  */
-export interface TelegramVenueChannelPostEvent
+export interface VenueChannelPostEvent
   extends EventObject<'channel_post', 'venue'>,
     EventBase,
     ChannelPost,
@@ -464,7 +464,7 @@ export interface TelegramVenueChannelPostEvent
  * @eventCategory `'message'`
  * @eventType `'location'`
  */
-export interface TelegramLocationMessageEvent
+export interface LocationMessageEvent
   extends EventObject<'message', 'location'>,
     EventBase,
     Message,
@@ -478,7 +478,7 @@ export interface TelegramLocationMessageEvent
  * @eventCategory `'channel_post'`
  * @eventType `'location'`
  */
-export interface TelegramLocationChannelPostEvent
+export interface LocationChannelPostEvent
   extends EventObject<'channel_post', 'location'>,
     EventBase,
     ChannelPost,
@@ -492,7 +492,7 @@ export interface TelegramLocationChannelPostEvent
  * @eventCategory `'action'`
  * @eventType `'new_chat_members'`
  */
-export interface TelegramNewChatMembersEvent
+export interface NewChatMembersEvent
   extends EventObject<'action', 'new_chat_members'>,
     EventBase,
     Message,
@@ -506,7 +506,7 @@ export interface TelegramNewChatMembersEvent
  * @eventCategory `'action'`
  * @eventType `'left_chat_member'`
  */
-export interface TelegramLeftChatMemberEvent
+export interface LeftChatMemberEvent
   extends EventObject<'action', 'left_chat_member'>,
     EventBase,
     Message,
@@ -520,7 +520,7 @@ export interface TelegramLeftChatMemberEvent
  * @eventCategory `'action'`
  * @eventType `'new_chat_title'`
  */
-export interface TelegramNewChatTitleEvent
+export interface NewChatTitleEvent
   extends EventObject<'action', 'new_chat_title'>,
     EventBase,
     Message,
@@ -534,7 +534,7 @@ export interface TelegramNewChatTitleEvent
  * @eventCategory `'action'`
  * @eventType `'new_chat_photo'`
  */
-export interface TelegramNewChatPhotoEvent
+export interface NewChatPhotoEvent
   extends EventObject<'action', 'new_chat_photo'>,
     EventBase,
     Message,
@@ -548,7 +548,7 @@ export interface TelegramNewChatPhotoEvent
  * @eventCategory `'action'`
  * @eventType `'delete_chat_photo'`
  */
-export interface TelegramDeleteChatPhotoEvent
+export interface DeleteChatPhotoEvent
   extends EventObject<'action', 'delete_chat_photo'>,
     EventBase,
     Message,
@@ -561,7 +561,7 @@ export interface TelegramDeleteChatPhotoEvent
  * @eventCategory `'action'`
  * @eventType `'create_group_chat'`
  */
-export interface TelegramCreatGroupChatEvent
+export interface CreatGroupChatEvent
   extends EventObject<'action', 'create_group_chat'>,
     EventBase,
     Message,
@@ -574,7 +574,7 @@ export interface TelegramCreatGroupChatEvent
  * @eventCategory `'action'`
  * @eventType `'migrate_to_chat'`
  */
-export interface TelegramMigrateToChatEvent
+export interface MigrateToChatEvent
   extends EventObject<'action', 'migrate_to_chat'>,
     EventBase,
     Message,
@@ -588,7 +588,7 @@ export interface TelegramMigrateToChatEvent
  * @eventCategory `'action'`
  * @eventType `'migrate_from_chat'`
  */
-export interface TelegramMigrateFromChatEvent
+export interface MigrateFromChatEvent
   extends EventObject<'action', 'migrate_from_chat'>,
     EventBase,
     Message,
@@ -602,7 +602,7 @@ export interface TelegramMigrateFromChatEvent
  * @eventCategory `'action'`
  * @eventType `'pin_message'`
  */
-export interface TelegramPinMessageEvent
+export interface PinMessageEvent
   extends EventObject<'action', 'pin_message'>,
     EventBase,
     Message,
@@ -616,7 +616,7 @@ export interface TelegramPinMessageEvent
  * @eventCategory `'postback'`
  * @eventType `'successful_payment'`
  */
-export interface TelegramSuccessfulPaymentEvent
+export interface SuccessfulPaymentEvent
   extends EventObject<'postback', 'successful_payment'>,
     EventBase,
     Message,
@@ -630,7 +630,7 @@ export interface TelegramSuccessfulPaymentEvent
  * @eventCategory `'postback'`
  * @eventType `'inline_query'`
  */
-export interface TelegramInlineQueryEvent
+export interface InlineQueryEvent
   extends EventObject<'postback', 'inline_query'>,
     EventBase,
     InlineQuery {}
@@ -642,7 +642,7 @@ export interface TelegramInlineQueryEvent
  * @eventCategory `'postback'`
  * @eventType `'choose_inline_result'`
  */
-export interface TelegramChooseInlineResultEvent
+export interface ChooseInlineResultEvent
   extends EventObject<'postback', 'choose_inline_result'>,
     EventBase,
     ChosenInlineResult {}
@@ -654,7 +654,7 @@ export interface TelegramChooseInlineResultEvent
  * @eventCategory `'postback'`
  * @eventType `'callback_query'`
  */
-export interface TelegramCallbackQueryEvent
+export interface CallbackQueryEvent
   extends EventObject<'postback', 'callback_query'>,
     EventBase,
     CallbackQuery {}
@@ -666,7 +666,7 @@ export interface TelegramCallbackQueryEvent
  * @eventCategory `'postback'`
  * @eventType `'shipping_query'`
  */
-export interface TelegramShippingQueryEvent
+export interface ShippingQueryEvent
   extends EventObject<'postback', 'shipping_query'>,
     EventBase,
     ShippingQuery {}
@@ -678,7 +678,7 @@ export interface TelegramShippingQueryEvent
  * @eventCategory `'postback'`
  * @eventType `'pre_checkout_query'`
  */
-export interface TelegramPreCheckoutQueryEvent
+export interface PreCheckoutQueryEvent
   extends EventObject<'postback', 'pre_checkout_query'>,
     EventBase,
     PreCheckoutQuery {}
@@ -690,7 +690,7 @@ export interface TelegramPreCheckoutQueryEvent
  * @eventCategory `'postback'`
  * @eventType `'poll_change'`
  */
-export interface TelegramPollChangeEvent
+export interface PollChangeEvent
   extends EventObject<'postback', 'poll_change'>,
     EventBase,
     PollChange,
@@ -703,7 +703,7 @@ export interface TelegramPollChangeEvent
  * @eventCategory `'postback'`
  * @eventType `'poll_answer_change'`
  */
-export interface TelegramPollAnswerChangeEvent
+export interface PollAnswerChangeEvent
   extends EventObject<'postback', 'poll_answer_change'>,
     EventBase,
     PollAnswer {}
@@ -715,7 +715,7 @@ export interface TelegramPollAnswerChangeEvent
  * @eventCategory `'action'`
  * @eventType `'bot_member_updated'`
  */
-export interface TelegramBotMemberUpdatedEvent
+export interface BotMemberUpdatedEvent
   extends EventObject<'action', 'bot_member_updated'>,
     EventBase,
     ChatMember,
@@ -728,7 +728,7 @@ export interface TelegramBotMemberUpdatedEvent
  * @eventCategory `'action'`
  * @eventType `'chat_member_updated'`
  */
-export interface TelegramChatMemberUpdatedEvent
+export interface ChatMemberUpdatedEvent
   extends EventObject<'action', 'chat_member_updated'>,
     EventBase,
     ChatMember,
@@ -741,58 +741,61 @@ export interface TelegramChatMemberUpdatedEvent
  * @eventCategory `'unknown'`
  * @eventType `'unknown'`
  */
-export interface TelegramUnknownEvent
+export interface UnknownEvent
   extends EventObject<'unknown', 'unknown'>,
     EventBase,
     Unknown {}
 
+/**
+ * @category Event
+ */
 export type TelegramEvent =
-  | TelegramTextMessageEvent
-  | TelegramTextChannelPostEvent
-  | TelegramAnimationMessageEvent
-  | TelegramAnimationChannelPostEvent
-  | TelegramAudioMessageEvent
-  | TelegramAudioChannelPostEvent
-  | TelegramDocumentMessageEvent
-  | TelegramDocumentChannelPostEvent
-  | TelegramPhotoMessageEvent
-  | TelegramPhotoChannelPostEvent
-  | TelegramStickerMessageEvent
-  | TelegramStickerChannelPostEvent
-  | TelegramVideoMessageEvent
-  | TelegramVideoChannelPostEvent
-  | TelegramVideoNoteMessageEvent
-  | TelegramVideoNoteChannelPostEvent
-  | TelegramVoiceMessageEvent
-  | TelegramVoiceChannelPostEvent
-  | TelegramContactMessageEvent
-  | TelegramContactChannelPostEvent
-  | TelegramDiceMessageEvent
-  | TelegramDiceChannelPostEvent
-  | TelegramGameMessageEvent
-  | TelegramPollMessageEvent
-  | TelegramPollChannelPostEvent
-  | TelegramVenueMessageEvent
-  | TelegramVenueChannelPostEvent
-  | TelegramLocationMessageEvent
-  | TelegramLocationChannelPostEvent
-  | TelegramNewChatMembersEvent
-  | TelegramLeftChatMemberEvent
-  | TelegramNewChatTitleEvent
-  | TelegramNewChatPhotoEvent
-  | TelegramDeleteChatPhotoEvent
-  | TelegramCreatGroupChatEvent
-  | TelegramMigrateToChatEvent
-  | TelegramMigrateFromChatEvent
-  | TelegramPinMessageEvent
-  | TelegramSuccessfulPaymentEvent
-  | TelegramInlineQueryEvent
-  | TelegramChooseInlineResultEvent
-  | TelegramCallbackQueryEvent
-  | TelegramShippingQueryEvent
-  | TelegramPreCheckoutQueryEvent
-  | TelegramPollChangeEvent
-  | TelegramPollAnswerChangeEvent
-  | TelegramBotMemberUpdatedEvent
-  | TelegramChatMemberUpdatedEvent
-  | TelegramUnknownEvent;
+  | TextMessageEvent
+  | TextChannelPostEvent
+  | AnimationMessageEvent
+  | AnimationChannelPostEvent
+  | AudioMessageEvent
+  | AudioChannelPostEvent
+  | DocumentMessageEvent
+  | DocumentChannelPostEvent
+  | PhotoMessageEvent
+  | PhotoChannelPostEvent
+  | StickerMessageEvent
+  | StickerChannelPostEvent
+  | VideoMessageEvent
+  | VideoChannelPostEvent
+  | VideoNoteMessageEvent
+  | VideoNoteChannelPostEvent
+  | VoiceMessageEvent
+  | VoiceChannelPostEvent
+  | ContactMessageEvent
+  | ContactChannelPostEvent
+  | DiceMessageEvent
+  | DiceChannelPostEvent
+  | GameMessageEvent
+  | PollMessageEvent
+  | PollChannelPostEvent
+  | VenueMessageEvent
+  | VenueChannelPostEvent
+  | LocationMessageEvent
+  | LocationChannelPostEvent
+  | NewChatMembersEvent
+  | LeftChatMemberEvent
+  | NewChatTitleEvent
+  | NewChatPhotoEvent
+  | DeleteChatPhotoEvent
+  | CreatGroupChatEvent
+  | MigrateToChatEvent
+  | MigrateFromChatEvent
+  | PinMessageEvent
+  | SuccessfulPaymentEvent
+  | InlineQueryEvent
+  | ChooseInlineResultEvent
+  | CallbackQueryEvent
+  | ShippingQueryEvent
+  | PreCheckoutQueryEvent
+  | PollChangeEvent
+  | PollAnswerChangeEvent
+  | BotMemberUpdatedEvent
+  | ChatMemberUpdatedEvent
+  | UnknownEvent;

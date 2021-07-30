@@ -13,7 +13,7 @@ import type { TelegramEvent } from './event/types';
 import type { TelegramChat } from './channel';
 import type { TelegramBot } from './bot';
 
-export type { TelegramEvent } from './event/types';
+export * from './event/types';
 
 export type TelegramChatType = 'private' | 'group' | 'supergroup' | 'channel';
 

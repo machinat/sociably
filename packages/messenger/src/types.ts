@@ -15,7 +15,7 @@ import type MessengerChannel from './channel';
 import type { MessengerEvent } from './event/types';
 import type { API_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from './constant';
 
-export { MessengerEvent } from './event/types';
+export * from './event/types';
 
 export type PSIDTarget = { id: string };
 export type UserRefTarget = { user_ref: string };

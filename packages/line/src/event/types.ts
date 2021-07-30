@@ -49,7 +49,7 @@ interface EventObject<Category extends string, Type extends string> {
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-text).
  */
-export interface LineTextEvent
+export interface TextEvent
   extends EventObject<'message', 'text'>,
     EventBase,
     Message,
@@ -60,7 +60,7 @@ export interface LineTextEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-image).
  */
-export interface LineImageEvent
+export interface ImageEvent
   extends EventObject<'message', 'image'>,
     EventBase,
     Message,
@@ -71,7 +71,7 @@ export interface LineImageEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-video).
  */
-export interface LineVideoEvent
+export interface VideoEvent
   extends EventObject<'message', 'video'>,
     EventBase,
     Message,
@@ -83,7 +83,7 @@ export interface LineVideoEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-audio).
  */
-export interface LineAudioEvent
+export interface AudioEvent
   extends EventObject<'message', 'audio'>,
     EventBase,
     Message,
@@ -95,7 +95,7 @@ export interface LineAudioEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-file).
  */
-export interface LineFileEvent
+export interface FileEvent
   extends EventObject<'message', 'file'>,
     EventBase,
     Message,
@@ -106,7 +106,7 @@ export interface LineFileEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-location).
  */
-export interface LineLocationEvent
+export interface LocationEvent
   extends EventObject<'message', 'location'>,
     EventBase,
     Message,
@@ -117,7 +117,7 @@ export interface LineLocationEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#wh-sticker).
  */
-export interface LineStickerEvent
+export interface StickerEvent
   extends EventObject<'message', 'sticker'>,
     EventBase,
     Message,
@@ -128,7 +128,7 @@ export interface LineStickerEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#unsend-event).
  */
-export interface LineUnsendEvent
+export interface UnsendEvent
   extends EventObject<'action', 'unsend'>,
     EventBase,
     Message {}
@@ -137,7 +137,7 @@ export interface LineUnsendEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#follow-event).
  */
-export interface LineFollowEvent
+export interface FollowEvent
   extends EventObject<'action', 'follow'>,
     EventBase,
     Repliable {}
@@ -146,7 +146,7 @@ export interface LineFollowEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#unfollow-event).
  */
-export interface LineUnfollowEvent
+export interface UnfollowEvent
   extends EventObject<'action', 'unfollow'>,
     EventBase {}
 
@@ -154,7 +154,7 @@ export interface LineUnfollowEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#join-event).
  */
-export interface LineJoinEvent
+export interface JoinEvent
   extends EventObject<'action', 'join'>,
     EventBase,
     Repliable {}
@@ -163,15 +163,13 @@ export interface LineJoinEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#leave-event).
  */
-export interface LineLeaveEvent
-  extends EventObject<'action', 'leave'>,
-    EventBase {}
+export interface LeaveEvent extends EventObject<'action', 'leave'>, EventBase {}
 
 /**
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#member-joined-event).
  */
-export interface LineMemberJoinEvent
+export interface MemberJoinEvent
   extends EventObject<'action', 'member_join'>,
     EventBase,
     Repliable,
@@ -181,7 +179,7 @@ export interface LineMemberJoinEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#member-left-event).
  */
-export interface LineMemberLeaveEvent
+export interface MemberLeaveEvent
   extends EventObject<'action', 'member_leave'>,
     EventBase,
     Repliable,
@@ -191,7 +189,7 @@ export interface LineMemberLeaveEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-event).
  */
-export interface LinePostbackEvent
+export interface PostbackEvent
   extends EventObject<'postback', 'postback'>,
     EventBase,
     Repliable,
@@ -201,7 +199,7 @@ export interface LinePostbackEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
-export interface LineDatePostbackEvent
+export interface DatePostbackEvent
   extends EventObject<'postback', 'date_postback'>,
     EventBase,
     Repliable,
@@ -212,7 +210,7 @@ export interface LineDatePostbackEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
-export interface LineTimePostbackEvent
+export interface TimePostbackEvent
   extends EventObject<'postback', 'time_postback'>,
     EventBase,
     Repliable,
@@ -223,7 +221,7 @@ export interface LineTimePostbackEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
-export interface LineDateTimePostbackEvent
+export interface DateTimePostbackEvent
   extends EventObject<'postback', 'datetime_postback'>,
     EventBase,
     Repliable,
@@ -234,7 +232,7 @@ export interface LineDateTimePostbackEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#beacon-event).
  */
-export interface LineBeaconEvent
+export interface BeaconEvent
   extends EventObject<'beacon', 'beacon'>,
     EventBase,
     Repliable,
@@ -244,7 +242,7 @@ export interface LineBeaconEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#account-link-event).
  */
-export interface LineAccountLinkEvent
+export interface AccountLinkEvent
   extends EventObject<'action', 'account_link'>,
     EventBase,
     Repliable,
@@ -254,7 +252,7 @@ export interface LineAccountLinkEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#device-link-event).
  */
-export interface LineDeviceLinkEvent
+export interface DeviceLinkEvent
   extends EventObject<'things', 'device_link'>,
     EventBase,
     Repliable,
@@ -264,7 +262,7 @@ export interface LineDeviceLinkEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#device-unlink-event).
  */
-export interface LineDeviceUnlinkEvent
+export interface DeviceUnlinkEvent
   extends EventObject<'things', 'device_unlink'>,
     EventBase,
     Repliable,
@@ -274,7 +272,7 @@ export interface LineDeviceUnlinkEvent
  * @category Event
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#device-unlink-event).
  */
-export interface LineThingsScenarioExecutionEvent
+export interface ThingsScenarioExecutionEvent
   extends EventObject<'things', 'scenario_result'>,
     EventBase,
     Repliable,
@@ -284,35 +282,41 @@ export interface LineThingsScenarioExecutionEvent
 /**
  * @category Event
  */
-export interface LineUnknownEvent
+export interface UnknownEvent
   extends EventObject<'unknown', 'unknown'>,
     EventBase {}
 
+/**
+ * @category Event
+ */
 export type LineMessageEvent =
-  | LineTextEvent
-  | LineImageEvent
-  | LineVideoEvent
-  | LineAudioEvent
-  | LineFileEvent
-  | LineLocationEvent
-  | LineStickerEvent;
+  | TextEvent
+  | ImageEvent
+  | VideoEvent
+  | AudioEvent
+  | FileEvent
+  | LocationEvent
+  | StickerEvent;
 
+/**
+ * @category Event
+ */
 export type LineEvent =
   | LineMessageEvent
-  | LineUnsendEvent
-  | LineFollowEvent
-  | LineUnfollowEvent
-  | LineJoinEvent
-  | LineLeaveEvent
-  | LineMemberJoinEvent
-  | LineMemberLeaveEvent
-  | LinePostbackEvent
-  | LineTimePostbackEvent
-  | LineDatePostbackEvent
-  | LineDateTimePostbackEvent
-  | LineBeaconEvent
-  | LineAccountLinkEvent
-  | LineDeviceLinkEvent
-  | LineDeviceUnlinkEvent
-  | LineThingsScenarioExecutionEvent
-  | LineUnknownEvent;
+  | UnsendEvent
+  | FollowEvent
+  | UnfollowEvent
+  | JoinEvent
+  | LeaveEvent
+  | MemberJoinEvent
+  | MemberLeaveEvent
+  | PostbackEvent
+  | TimePostbackEvent
+  | DatePostbackEvent
+  | DateTimePostbackEvent
+  | BeaconEvent
+  | AccountLinkEvent
+  | DeviceLinkEvent
+  | DeviceUnlinkEvent
+  | ThingsScenarioExecutionEvent
+  | UnknownEvent;
