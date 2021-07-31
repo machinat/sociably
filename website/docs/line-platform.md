@@ -22,7 +22,7 @@ yarn add @machinat/core @machinat/http @machinat/line
 ## Setup
 
 :::tip
-You can check the [setup section of our tutorial](https://machinat.com/docs/learn/create-app#platform-setup?platform=line).
+You can check the [setup section of our tutorial](https://machinat.com/docs/learn/create-app#platform-setup?p=line).
 It brings you to create a LINE channel and configure your app step by step.
 :::
 

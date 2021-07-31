@@ -22,7 +22,7 @@ yarn add @machinat/core @machinat/http @machinat/telegram
 ## Steup
 
 :::tip
-You can check the [setup section of our tutorial](https://machinat.com/docs/learn/create-app#platform-setup?platform=telegram).
+You can check the [setup section of our tutorial](https://machinat.com/docs/learn/create-app#platform-setup?p=telegram).
 It brings you to register a Telegram bot and configure your app step by step.
 :::
 

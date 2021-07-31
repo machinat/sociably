@@ -32,11 +32,24 @@ Please follow the guide of the platform you choose:
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import useUserPreferencesContext from '@theme/hooks/useUserPreferencesContext';
 
-<Tabs
-  defaultValue={
-    new URLSearchParams(window.location.search).get('platform') || 'messenger'
+export const HackTabsChoices = () => {
+  const {tabGroupChoices, setTabGroupChoices} = useUserPreferencesContext();
+  if (typeof window === 'undefined') return null;
+  const groupId= 'chat-platforms';
+  const platform = new URL(window.location.href).searchParams.get('p');
+  if (platform !== tabGroupChoices[groupId] &&
+      ['messenger', 'telegram', 'line'].includes(platform)) {
+    setTabGroupChoices(groupId, platform);
   }
+  return null;
+}
+
+<HackTabsChoices />
+<Tabs
+  groupId="chat-platforms"
+  defaultValue="messenger"
   values={[
     {label: 'Messenger', value: 'messenger'},
     {label: 'Telegram', value: 'telegram'},

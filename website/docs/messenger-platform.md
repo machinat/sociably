@@ -22,7 +22,7 @@ yarn add @machinat/core @machinat/http @machinat/messenger
 ## Setup
 
 :::tip
-You can check the [setup section of our tutorial](https://machinat.com/docs/learn/create-app#platform-setup?platform=messenger).
+You can check the [setup section of our tutorial](https://machinat.com/docs/learn/create-app#platform-setup?p=messenger).
 It brings you to create a Facebook app and configure your app step by step.
 :::
 

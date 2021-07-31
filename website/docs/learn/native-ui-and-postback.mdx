@@ -24,9 +24,7 @@ import TabItem from '@theme/TabItem';
 
 <Tabs
   groupId="chat-platforms"
-  defaultValue={
-    new URLSearchParams(window.location.search).get('platform') || 'messenger'
-  }
+  defaultValue="messenger"
   values={[
     {label: 'Messenger', value: 'messenger'},
     {label: 'Telegram', value: 'telegram'},
@@ -244,9 +242,7 @@ in the chatroom. We can handle the postback events by adding these codes:
 
 <Tabs
   groupId="chat-platforms"
-  defaultValue={
-    new URLSearchParams(window.location.search).get('platform') || 'messenger'
-  }
+  defaultValue="messenger"
   values={[
     {label: 'Messenger', value: 'messenger'},
     {label: 'Telegram', value: 'telegram'},
@@ -372,9 +368,7 @@ stream. Add these codes in the `main` function:
 
 <Tabs
   groupId="chat-platforms"
-  defaultValue={
-    new URLSearchParams(window.location.search).get('platform') || 'messenger'
-  }
+  defaultValue="messenger"
   values={[
     {label: 'Messenger', value: 'messenger'},
     {label: 'Telegram', value: 'telegram'},
