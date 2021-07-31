@@ -28,8 +28,8 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.4.1-alpha",
-    "@machinat/http": "^0.4.1-alpha",
+    "@machinat/core": "^0.5.0-beta",
+    "@machinat/http": "^0.5.0-beta",
     "next": "^11.0.1",
     "react": ">=16.6.0"
   },
