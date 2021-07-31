@@ -1,5 +1,6 @@
 ---
 title: Telegram Platform
+sidebar_label: Telegram
 ---
 
 The `@machinat/telegram` platform enable your app to receive/send messages as a

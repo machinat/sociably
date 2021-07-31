@@ -1,5 +1,6 @@
 ---
 title: Messenger Platform
+sidebar_label: Messenger
 ---
 
 The `@machinat/messenger` platform enable your app to receive/send messages as a

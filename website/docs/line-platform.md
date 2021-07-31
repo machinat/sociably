@@ -1,5 +1,6 @@
 ---
 title: Line Platform
+sidebar_label: Line
 ---
 
 The `@machinat/line` platform enable your app to receive/send messages as a
