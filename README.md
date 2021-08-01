@@ -3,120 +3,48 @@
   <br/>
 </h1>
 
-> Conversational UI Framework for The Future
-
-Machinat is a declarative, progressive and cross-platform JavaScript framework for building conversational UI/UX.
-
-*Chat Bot* is the most easy-to-use app format to get in touch with users. But making a bot is never easy, here are some problems you might meet:
-
-  - Handle more complex and more unpredictable user input.
-  - Interact using Conversational UI and Graphical UI at the same time.
-  - Manage conversation flow in a stateless backend.
-  - Support multiple platforms to reach most of users.
-  - Embed a webview for more features and even better experiences.
-
-These challenges are new and very different from the GUI based *Mobile Apps* or *Web Apps*. To build the next-gen app, we need a next-gen solution.
+> Next-Gen Framework for Conversational UI/UX
 
 ## Highlights
 
   - Make one app, serve on all chat platforms.
-  - Declarative API for **in-Chat UI** & **Conversation Flow.**
-  - Keeps all native features form the original chat platforms.
 
-  - Standard interfaces for external services, include accessing state data and intent recognizing.
+  - Keep all native features from platforms.
 
-  - Render dynamic and modular UI with customizable component.
+  - Build chat UI with declarative API in JSX.
+  
+  - Modularize your UI in customizable component.
 
+  - Control conversation flow in programmable scripts.
 
-  - Embedded webview within the chat.
-  - Progressive design. Extendable and Replacable
+  - Progressive design powered by an elegant DI system.
+
+  - Use services like intent recognition interchangeably.
+
+  - Extend user experience with integrated webview.
 
 
 ## Documents
 
-- Main Concept:
-  - [Getting Started](docs/getting-started.md)
-  - [Receiving Events](docs/receiving-events.md)
-  - [Introducing JSX](docs/introducing-jsx.md)
-  - [Rendering Elements](docs/rendering-messages.md)
-  - [Components for CUI](docs/components-for-cui.md)
+- [Tutorial](https://machinat.com/docs/learn/)
+- [Document](https://machinat.com/docs/)
+- [API Reference](https://machinat.com/api/)
 
-- Advanced topic
-  - [Dependency Injection](docs/dependency-injection.md)
-  - [Recognizing Intent](docs/recognizing-intent.md)
-  - [Using States](docs/using-states.md)
-  - [Staged Dialog](docs/dialog-script.md)
-  - [Integration with Webview](docs/embedded-webview.md)
-  - [Reactive Programming](docs/reactive-programming.md)
+## Chat Platforms
 
-## Platforms
+For now we suppot 3 chat platforms: [Messenger](https://www.messenger.com/), [Telegram](https://telegram.org/) and [LINE](https://line.me/). In the future, we will cover all the chat platforms, including SMS, e-mail, WhatsApp, Twitter, Instagram, Slack, Discord and even voice assistants.
 
-Platforms are sources where events come from and possibly you can make reactions to. Machinat works like as a hub to communicate to all the channels, including instant messaging, voice assistant, SMS, e-mail, terminal console or any other event-based sources.
-
-The following platforms are officially supported for now:
-
-- Messenger - [`@machinat/messenger`](packages/messenger), receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
-- LINE - [`@machinat/line`](packages/line), receive/send messages as a [LINE](https://line.me) official account.
-- Next.js - [`@machinat/next`](packages/next), serve your web app with [Next.js](https://nextjs.org/).
-- WebSocket - [`@machinat/websocket`](packages/websocket), connect to the web front-end with [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
+There'll be a poll to let you decide the development order!
 
 ## Examples
 
-Machinat is flexible to use only the features and platforms you need, check [`./examples`](examples) for a most suitable one to start with.
+Here are some production-ready examples chatbots:
 
-A simplest Machinat app looks like:
+- [note-example](https://github.com/machinat/note-example) - taking note in private chat and group chat.
+- [todo-example](https://github.com/machinat/todo-example) - manage todo list in private chat.
+- [pomodoro-example](https://github.com/machinat/pomodoro-example) - pomodoro timer in private chat.
+- [4digits-example](https://github.com/machinat/4digits-example) - playing guessing 4 digits game in private chat.
 
-```js
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Messenger from '@machinat/messenger';
+## License
 
-function Hello({ name }) {
-  return (
-    <p>
-      Hello {name}!
-      <br />
-      🤗🤗🤗
-    </p>
-  );
-}
-
-Machinat.createApp({
-  modules: [
-    Http.initModule({ port: 8080 }),
-  ],
-  platforms: [
-    Messenger.initModule({ ... }),
-  ],
-})
-  .onEvent(async ({ bot, event }) => {
-    await bot.render(event.channel, <Hello name="Jojo" />);
-  })
-  .start();
-```
-
-The code above start a server on port 8080 listening to the webhooks from _Messenger_. Each time receive an event, it replies to user like this:
-
-![Hello Messages](media/example-message.png)
-
-The HTML like syntax is called JSX, you might have seen it in some fornt-end framework like [React.js](https://reactjs.org/docs/introducing-jsx.html) or [Vue.js](https://vuejs.org/v2/guide/render-function.html#JSX). But instead of being rendered into HTML in a web page, it's rendered into a chatroom or somewhere else the conversation is happening.
-
-## Philosophy
-
-- **Omni-channel App**: Omni-channel marketing and customer service is the trend nowadays. Therefor it is important for business to have omni-channel applications to touch and serve more customer automatically.
-
-  Machinat is a framework designed to serve multiple communication platforms with consistent user experiences  at the same time. We focus on the Instant Messaging platforms at first, i.e. for the _chatbots_, and will then expand to other platforms like SMS, e-mail, voice assistants and social medias later.
-
-  The goal of Machinat is to enable developers to build one-for-all conversational apps to communicate with users from every platform.
-
-- **Declarative**: Like React.js, Machinat JSX API provide a [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) that is declarative and flexible to define the presentation logic. The conversational UIs compose a "view" of expression as the way represent in the chatroom.
-
-  Declarative views make the conversational UI/UX code more expressive, predictable and also more easier to debug.
-
-- **Component-Based**: One of the major challenge of building UIs is the nested presentation logic, so does for CUI. For example, how a chatbot greet in many different situations under different conversation contexts?
-
-  With Machinat all the greeting logic can be encapsulated into a reusable `Hello` component. Components help to build conversational UI/UX in many aspects, including identical character, composing complex expressions and more skillful talk.
-
-## Compare
-
-WIP
+MIT
