@@ -18,15 +18,14 @@ software interact with users.
 
 <img/>
 
-Since about 2016, what everyone keeps asking is that **will chatbot be the next
-one?** Will it changes the way we build software following the _desktop apps_,
+So will chatbot be the next one? Will it changes the way we build software following the _desktop apps_,
 _web apps_ and _mobile apps_? Unfortunately, it doesn't seem to have a clear
 answer till today.
 
 
 ### Learning form 
 
-To find out what do chatbots still need to become the next-gen application format,
+To find out what does chatbot still lack of,
 we can learn from the past. Here are some of the most extraordinary apps built
 on different user interfaces:
 
@@ -48,34 +47,28 @@ three common points:
   A great app ships real features to users, instead of just being fancy.
 
 
-Below we'll show you the amazing solutions that Machinat framework provide.
-Which help you make best chatbot apps on these three aspects.
-
-
+Below we'll show you how Machinat framework can help to make best chatbot apps on these three aspects.
 
 ### Programmable UI
 
-Before introducing the way building UIs in Machinat, let's take a peek about the
-main stream way:
+Before diving deeper, let's take a peek of the main stream way to build a chatbot:
 
 <div></div>
 
 
-As you can see, the most popular frameworks/tools go for no-code solutions.
-Though it's easier for non-developer users to get started with, there could be
-some serious problems:
+The most popular tools go for no-code solutions, which is easier for non-developer users to get started. But the approach can lead some serious problems:
 
-- It's hard to make dynamic messages content. You can only make very limited
-  variations.
-- The dialog flows are not flexible enough, and you can't modularize them as 
-  well. It's almost impossible to build very complex dialog and logic.
+1. Very limited message formats.
+2. Inflexible message content.
+2. Very poor and rigid conversation logic.
+3. Not modularizable nor scalable.
 
-And here are our answer to them: **Messages View** and the **Dialog Script**.
+That's why we believe the best app can only be built with programming framework. And here are our answer to build chat UI: **Expression View** and the **Dialog Script**.
 
 
-### Messages View
+### Expression View
 
-In Machinat you build the **view** 
+Chat is a view! 
 
 
 ### Dialog Script
