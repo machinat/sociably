@@ -1,5 +1,5 @@
-import { when, polishFileContent } from '../../../../utils';
-import { CreateAppContext } from '../../../../types';
+import { when, polishFileContent } from '../../../utils';
+import { CreateAppContext } from '../../../types';
 
 export default ({ platforms }: CreateAppContext) =>
   polishFileContent(when(platforms.includes('webview'))`
@@ -74,7 +74,7 @@ const WebAppHome = () => {
       <main>
         <h1>Hello In-Chat Webview!</h1>
         <p>
-          Get started by editing <code>src/webview/pages/index.js</code>
+          Get started by editing <code>webview/pages/index.js</code>
         </p>
 
         <h3>{data.hello || 'connecting... '}</h3>

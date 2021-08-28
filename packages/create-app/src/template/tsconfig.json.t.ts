@@ -4,7 +4,6 @@ export default () =>
   polishFileContent(`
 {
   "include": ["./src/**/*"],
-  "exclude": ["./src/webview/**/*"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./lib",
@@ -18,8 +17,6 @@ export default () =>
     "strictNullChecks": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "composite": true,
-    "declaration": true,
     "sourceMap": true
   }
 }

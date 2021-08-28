@@ -28,7 +28,7 @@ import {
   ServerDomain,${when(platforms.includes('line'))`
   LineLiffId,`}
 } from './interface';
-import nextConfigs from './webview/next.config.js';`}
+import nextConfigs from '../webview/next.config.js';`}
 
 const {
   // location
@@ -114,7 +114,7 @@ const app = Machinat.createApp({
       sameSite: 'none',`}
       nextServerOptions: {
         dev: DEV,
-        dir: \`./\${DEV ? 'src' : 'lib'}/webview\`,
+        dir: './webview',
         conf: {
           ...nextConfigs,
           publicRuntimeConfig: {${when(platforms.includes('messenger'))`

@@ -1,5 +1,5 @@
-import { when, polishFileContent } from '../../../utils';
-import { CreateAppContext } from '../../../types';
+import { when, polishFileContent } from '../../utils';
+import { CreateAppContext } from '../../types';
 
 export default ({ platforms }: CreateAppContext) =>
   polishFileContent(when(platforms.includes('webview'))`
@@ -27,9 +27,6 @@ export default ({ platforms }: CreateAppContext) =>
   "include": [
     "**/*.ts",
     "**/*.tsx"
-  ],
-  "references": [
-    { "path": "../../" }
   ],
   "exclude": [
     "node_modules"

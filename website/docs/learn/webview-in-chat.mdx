@@ -236,9 +236,9 @@ Try tap the button and you should see the built-in webview is already working!
 
 ### Webview Client
 
-The web front-end codes are located at `src/webview/` folder. Check
-`src/webview/pages/index.tsx` file and you shoud see the webview client is
-constructed like this:
+The web front-end codes are located at `<root>/webview` folder. Check
+`webview/pages/index.tsx` file and you would see the webview client constructed
+like this:
 
 
 <Tabs
@@ -251,7 +251,7 @@ constructed like this:
   ]}>
   <TabItem value="messenger">
 
-```tsx title="src/webview/pages/index.tsx"
+```tsx title="webview/pages/index.tsx"
 // ...
 const client = new WebviewClient(
   typeof window === 'undefined'
@@ -270,7 +270,7 @@ const client = new WebviewClient(
   </TabItem>
   <TabItem value="telegram">
 
-```tsx title="src/webview/pages/index.tsx"
+```tsx title="webview/pages/index.tsx"
 // ...
 const client = new WebviewClient(
   typeof window === 'undefined'
@@ -285,7 +285,7 @@ const client = new WebviewClient(
   </TabItem>
   <TabItem value="line">
 
-```tsx title="src/webview/pages/index.tsx"
+```tsx title="webview/pages/index.tsx"
 // ...
 const client = new WebviewClient(
   typeof window === 'undefined'
@@ -312,8 +312,8 @@ constructed. We can then use it to subscibe and send events from/to server.
 
 Let's try display the todos in webview. Edit the index page like this:
 
-```tsx {1,5-14,19,27-39} title="src/webview/pages/index.tsx"
-import { TodoState } from '../../types';
+```tsx {1,5-14,19,27-39} title="webview/pages/index.tsx"
+import { TodoState } from '../../src/types';
 // ...
 
 const WebAppHome = () => {
@@ -430,7 +430,7 @@ Now the webview should display the todos you have like this:
 Webview is very useful to show bigger data and make operations on them. Let's try
 adding a button to delete the todos. Edit the index page like this:
 
-```tsx {2-19,35,40,47} title="src/webview/pages/index.tsx"
+```tsx {2-19,35,40,47} title="webview/pages/index.tsx"
 // ...
 const TodoRow = ({ todo }) => (
     <tr>
@@ -524,7 +524,7 @@ succeeded.
 Finally in the front-end, we can receive the response and update data and view
 like this:
 
-```tsx {9-17} title="src/webview/pages/index.tsx"
+```tsx {9-17} title="webview/pages/index.tsx"
 const WebAppHome = () => {
   const data = useEventReducer(
     client,
@@ -571,5 +571,5 @@ Here are some resources you can go next:
 - Check our [pomodoro example](https://github.com/machinat/pomodoro-example/) to
   see how to implement state machine pattern with a [dialog script event loop](https://github.com/machinat/pomodoro-example/blob/main/src/scenes/Pomodoro.tsx).
 - Check our [note example](https://github.com/machinat/note-example/) to see how
-  to serve in group chats with a [more complete webview project](https://github.com/machinat/note-example/blob/master/src/webview).
+  to serve in group chats with a [more complete webview project](https://github.com/machinat/note-example/blob/master/webview).
 - Visit [GitHub discussions](https://github.com/machinat/machinat/discussions) to ask any question you have.

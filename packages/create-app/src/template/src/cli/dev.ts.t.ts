@@ -65,7 +65,6 @@ async function dev() {
     script: './src/index.ts',
     watch: './src',
     ext: 'ts,tsx',
-    ignore: ['./src/webview'],
     verbose: true,
   });
 
