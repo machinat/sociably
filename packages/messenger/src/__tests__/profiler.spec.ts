@@ -2,6 +2,7 @@ import moxy from '@moxyjs/moxy';
 import type { MessengerBot } from '../bot';
 import MessengerUser from '../user';
 import { MessengerProfiler, MessengerUserProfile } from '../profiler';
+import GraphApiError from '../error';
 
 const rawProfileData = {
   id: 'xxxxxxxxx',
@@ -109,4 +110,23 @@ it('query additional optionalProfileFields if given', async () => {
   expect(
     MessengerUserProfile.fromJSONValue(profile.toJSONValue())
   ).toStrictEqual(profile);
+});
+
+it('return null if phone number user error met', async () => {
+  const profiler = new MessengerProfiler(bot);
+
+  bot.makeApiCall.mock.fake(async () => {
+    throw new GraphApiError({
+      error: {
+        message: '(#100) No profile available for this user.',
+        type: 'OAuthException',
+        code: 100,
+        error_subcode: 2018218,
+        fbtrace_id: 'G2oz2QE++k1',
+      },
+    });
+  });
+
+  expect(profiler.getUserProfile(user)).resolves.toBe(null);
+  expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
 });

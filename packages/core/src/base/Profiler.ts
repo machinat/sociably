@@ -9,7 +9,7 @@ export interface MachinatProfile {
 }
 
 export interface UserProfiler<User extends MachinatUser> {
-  getUserProfile(user: User): Promise<MachinatProfile>;
+  getUserProfile(user: User): Promise<null | MachinatProfile>;
 }
 
 /**
@@ -27,7 +27,7 @@ export class BaseProfiler implements UserProfiler<MachinatUser> {
     this._platformMapping = platformMapping;
   }
 
-  async getUserProfile(user: MachinatUser): Promise<MachinatProfile> {
+  async getUserProfile(user: MachinatUser): Promise<null | MachinatProfile> {
     const profiler = this._platformMapping.get(user.platform);
     if (!profiler) {
       throw new TypeError(

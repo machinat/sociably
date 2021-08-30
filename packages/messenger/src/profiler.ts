@@ -4,12 +4,12 @@ import type {
   UserProfiler,
 } from '@machinat/core/base/Profiler';
 import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
-
 import { BotP } from './bot';
 import type MessengerUser from './user';
 import type { RawUserProfile } from './types';
 import { ConfigsI } from './interface';
 import { MESSENGER } from './constant';
+import GraphApiError from './error';
 
 export class MessengerUserProfile
   implements MachinatProfile, MarshallableInstance<RawUserProfile>
@@ -97,11 +97,27 @@ export class MessengerProfiler implements UserProfiler<MessengerUser> {
     ].join(',');
   }
 
-  async getUserProfile(user: MessengerUser): Promise<MessengerUserProfile> {
-    const rawProfile: RawUserProfile = await this.bot.makeApiCall(
-      'GET',
-      `${user.id}?fields=${this.profileFields}`
-    );
+  async getUserProfile(
+    user: MessengerUser
+  ): Promise<null | MessengerUserProfile> {
+    let rawProfile: RawUserProfile;
+
+    try {
+      rawProfile = await this.bot.makeApiCall(
+        'GET',
+        `${user.id}?fields=${this.profileFields}`
+      );
+    } catch (err) {
+      if (err instanceof GraphApiError) {
+        const errSubCode = err.info.error_subcode;
+        if (errSubCode === 2018218) {
+          // can't get porfile from user login with phone number
+          // https://developers.facebook.com/docs/messenger-platform/identity/user-profile#profile_unavailable
+          return null;
+        }
+      }
+      throw err;
+    }
 
     return new MessengerUserProfile(rawProfile);
   }
