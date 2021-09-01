@@ -32,7 +32,7 @@ test('execute each asyncronized filterFn one by one', async () => {
   });
 
   const stream = new Stream();
-  stream.pipe(filter(filterFn)).subscribe(nextContainer, errorContainer);
+  stream.pipe(filter(filterFn)).subscribe(nextContainer).catch(errorContainer);
 
   stream.next({ scope: createEmptyScope(), value: 1, key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
@@ -79,7 +79,7 @@ test('filter frames with different keys parallelly', async () => {
   });
 
   const stream = new Stream();
-  stream.pipe(filter(filterFn)).subscribe(nextContainer, errorContainer);
+  stream.pipe(filter(filterFn)).subscribe(nextContainer).catch(errorContainer);
 
   stream.next({ scope: createEmptyScope(), value: 1, key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
@@ -135,7 +135,7 @@ it('emit error if thrown in filterFn', async () => {
   });
 
   const stream = new Stream();
-  stream.pipe(filter(filterFn)).subscribe(nextContainer, errorContainer);
+  stream.pipe(filter(filterFn)).subscribe(nextContainer).catch(errorContainer);
 
   stream.next({ scope: createEmptyScope(), value: 1, key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
@@ -175,7 +175,10 @@ test('use service container as filterer', async () => {
   );
 
   const stream = new Stream();
-  stream.pipe(filter(filterContainer)).subscribe(nextContainer, errorContainer);
+  stream
+    .pipe(filter(filterContainer))
+    .subscribe(nextContainer)
+    .catch(errorContainer);
 
   stream.next({ scope: createEmptyScope(), value: 1, key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 2, key: 'foo' });

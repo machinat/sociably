@@ -12,7 +12,7 @@ it('buffer frames by a debouncing time', () => {
   const nextListener = moxy();
   const errorListener = moxy();
 
-  buffered$.subscribe(nextListener, errorListener);
+  buffered$.subscribe(nextListener).catch(errorListener);
 
   source$.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
   source$.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
@@ -47,7 +47,7 @@ it('buffer frames with different keys separately', () => {
   const nextListener = moxy();
   const errorListener = moxy();
 
-  buffered$.subscribe(nextListener, errorListener);
+  buffered$.subscribe(nextListener).catch(errorListener);
 
   source$.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
   jest.advanceTimersByTime(1000);
@@ -82,7 +82,7 @@ it('transmit error from source', () => {
   const nextListener = moxy();
   const errorListener = moxy();
 
-  buffered$.subscribe(nextListener, errorListener);
+  buffered$.subscribe(nextListener).catch(errorListener);
 
   source$.error({
     scope: createEmptyScope(),

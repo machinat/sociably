@@ -32,7 +32,7 @@ test('execute each asyncronized mapper one by one', async () => {
   });
 
   const stream = new Stream();
-  stream.pipe(map(mapper)).subscribe(nextContainer, errorContainer);
+  stream.pipe(map(mapper)).subscribe(nextContainer).catch(errorContainer);
 
   stream.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
@@ -72,7 +72,8 @@ test('map frames with different keys parallelly', async () => {
         return `${value}!!!`;
       })
     )
-    .subscribe(nextContainer, errorContainer);
+    .subscribe(nextContainer)
+    .catch(errorContainer);
 
   stream.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 'B', key: 'bar' });
@@ -125,7 +126,8 @@ it('emit error if thrown in mapper', async () => {
         return `${value}!!!`;
       })
     )
-    .subscribe(nextContainer, errorContainer);
+    .subscribe(nextContainer)
+    .catch(errorContainer);
 
   stream.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
@@ -167,7 +169,7 @@ test('use service container as mapper', async () => {
   );
 
   const stream = new Stream();
-  stream.pipe(map(mapper)).subscribe(nextContainer, errorContainer);
+  stream.pipe(map(mapper)).subscribe(nextContainer).catch(errorContainer);
 
   stream.next({ scope: createEmptyScope(), value: 'A', key: 'Foo' });
   stream.next({ scope: createEmptyScope(), value: 'B', key: 'Foo' });

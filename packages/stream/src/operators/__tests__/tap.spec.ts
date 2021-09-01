@@ -29,7 +29,7 @@ test('execute each asyncronized side effect one by one', async () => {
   const tapper = moxy(() => delay(100));
 
   const stream = new Stream();
-  stream.pipe(tap(tapper)).subscribe(nextContainer, errorContainer);
+  stream.pipe(tap(tapper)).subscribe(nextContainer).catch(errorContainer);
 
   stream.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
@@ -62,7 +62,10 @@ test('execute each asyncronized side effect one by one', async () => {
 
 test('execute side effect with different keys parallelly', async () => {
   const stream = new Stream();
-  stream.pipe(tap(() => delay(100))).subscribe(nextContainer, errorContainer);
+  stream
+    .pipe(tap(() => delay(100)))
+    .subscribe(nextContainer)
+    .catch(errorContainer);
 
   stream.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 'B', key: 'bar' });
@@ -114,7 +117,8 @@ it('emit error if thrown in tap function', async () => {
         }
       })
     )
-    .subscribe(nextContainer, errorContainer);
+    .subscribe(nextContainer)
+    .catch(errorContainer);
 
   stream.next({ scope: createEmptyScope(), value: 'A', key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 'B', key: 'foo' });
@@ -151,7 +155,7 @@ test('use service container side effect', async () => {
   );
 
   const stream = new Stream();
-  stream.pipe(tap(tapper)).subscribe(nextContainer, errorContainer);
+  stream.pipe(tap(tapper)).subscribe(nextContainer).catch(errorContainer);
 
   stream.next({ scope: createEmptyScope(), value: 'A', key: 'Foo' });
   stream.next({ scope: createEmptyScope(), value: 'B', key: 'Foo' });

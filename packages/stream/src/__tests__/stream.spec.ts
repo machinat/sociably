@@ -4,50 +4,37 @@ import Stream from '../stream';
 import { STREAMING_KEY_I } from '../interface';
 
 describe('#subscribe()', () => {
-  it('emit event and error', () => {
+  it('emit event', () => {
     const stream = new Stream();
-    const nextListener = moxy();
-    const errorListener = moxy();
+    const eventListener = moxy();
 
-    stream.subscribe(nextListener, errorListener);
+    stream.subscribe(eventListener);
 
     stream.next({
       scope: createEmptyScope(),
       value: 'foo',
       key: 'foo.channel',
     });
-    expect(nextListener.mock).toHaveBeenCalledTimes(1);
-    expect(nextListener.mock).toHaveBeenCalledWith('foo');
-
-    stream.error({
-      scope: createEmptyScope(),
-      value: new Error('boo'),
-      key: undefined,
-    });
-    expect(errorListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledWith(new Error('boo'));
+    expect(eventListener.mock).toHaveBeenCalledTimes(1);
+    expect(eventListener.mock).toHaveBeenCalledWith('foo');
 
     stream.next({
       scope: createEmptyScope(),
       value: 'bar',
       key: 'bar.channel',
     });
-    expect(nextListener.mock).toHaveBeenCalledTimes(2);
-    expect(nextListener.mock).toHaveBeenCalledWith('bar');
+    expect(eventListener.mock).toHaveBeenCalledTimes(2);
+    expect(eventListener.mock).toHaveBeenCalledWith('bar');
   });
 
   test('subscribe with container', () => {
     const stream = new Stream();
-    const nextListener = moxy();
+    const eventListener = moxy();
     const nextContainer = moxy(
-      makeContainer({ deps: [STREAMING_KEY_I] })(() => nextListener)
-    );
-    const errorListener = moxy();
-    const errorContainer = moxy(
-      makeContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
+      makeContainer({ deps: [STREAMING_KEY_I] })(() => eventListener)
     );
 
-    stream.subscribe(nextContainer, errorContainer);
+    stream.subscribe(nextContainer);
 
     stream.next({
       scope: createEmptyScope(),
@@ -56,18 +43,8 @@ describe('#subscribe()', () => {
     });
     expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(1);
     expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('foo.channel');
-    expect(nextListener.mock).toHaveBeenCalledTimes(1);
-    expect(nextListener.mock).toHaveBeenCalledWith('foo');
-
-    stream.error({
-      scope: createEmptyScope(),
-      value: new Error('boo'),
-      key: undefined,
-    });
-    expect(errorContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-    expect(errorContainer.$$factory.mock).toHaveBeenCalledWith(undefined);
-    expect(errorListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledWith(new Error('boo'));
+    expect(eventListener.mock).toHaveBeenCalledTimes(1);
+    expect(eventListener.mock).toHaveBeenCalledWith('foo');
 
     stream.next({
       scope: createEmptyScope(),
@@ -76,12 +53,34 @@ describe('#subscribe()', () => {
     });
     expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(2);
     expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('bar.channel');
-    expect(nextListener.mock).toHaveBeenCalledTimes(2);
-    expect(nextListener.mock).toHaveBeenCalledWith('bar');
+    expect(eventListener.mock).toHaveBeenCalledTimes(2);
+    expect(eventListener.mock).toHaveBeenCalledWith('bar');
+  });
+
+  it('catch error from subscriber', () => {
+    const stream = new Stream();
+    const eventListener = moxy(() => {
+      throw new Error('boom');
+    });
+    const errorListener = moxy();
+    const defaultCatcher = moxy();
+
+    stream.subscribe(eventListener, errorListener).catch(defaultCatcher);
+
+    stream.next({
+      scope: createEmptyScope(),
+      value: 'foo',
+      key: 'foo.channel',
+    });
+
+    expect(eventListener.mock).toHaveBeenCalledTimes(1);
+    expect(errorListener.mock).toHaveBeenCalledTimes(1);
+    expect(errorListener.mock).toHaveBeenCalledWith(new Error('boom'));
+    expect(defaultCatcher.mock).not.toHaveBeenCalled();
   });
 });
 
-test('#pipe() make a subjects chain with operator functions', () => {
+test('#pipe()', () => {
   const source = new Stream();
 
   const operators = [
@@ -107,7 +106,7 @@ test('#pipe() make a subjects chain with operator functions', () => {
 });
 
 describe('#catch()', () => {
-  it('emit error', () => {
+  it('emit error from source', () => {
     const stream = new Stream();
     const errorListener = moxy();
 
@@ -126,6 +125,26 @@ describe('#catch()', () => {
     });
     expect(errorListener.mock).toHaveBeenCalledTimes(1);
     expect(errorListener.mock).toHaveBeenCalledWith(new Error('boo'));
+  });
+
+  it('emit error from subscriber', () => {
+    const stream = new Stream();
+    const eventListener = moxy(() => {
+      throw new Error('boom');
+    });
+    const errorListener = moxy();
+
+    stream.subscribe(eventListener).catch(errorListener);
+
+    stream.next({
+      scope: createEmptyScope(),
+      value: 'foo',
+      key: 'foo.channel',
+    });
+
+    expect(eventListener.mock).toHaveBeenCalledTimes(1);
+    expect(errorListener.mock).toHaveBeenCalledTimes(1);
+    expect(errorListener.mock).toHaveBeenCalledWith(new Error('boom'));
   });
 
   test('with container', () => {
@@ -154,17 +173,17 @@ describe('#catch()', () => {
     expect(errorListener.mock).toHaveBeenCalledWith(new Error('boo'));
   });
 
-  it('throw if no error subscriber when #error()', () => {
+  test('throw if no error subscriber exists', () => {
     const stream = new Stream();
     const nextContainer = moxy();
     stream.subscribe(nextContainer);
 
-    expect(() =>
+    expect(() => {
       stream.error({
         scope: createEmptyScope(),
         key: undefined,
         value: new Error('BOOM'),
-      })
-    ).toThrow('BOOM');
+      });
+    }).toThrow('BOOM');
   });
 });

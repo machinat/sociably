@@ -5,12 +5,17 @@ import injectMaybe from './injectMaybe';
 import pipe from './pipe';
 
 export default class Stream<T> {
-  _eventSubject: RxSubject<StreamingFrame<T>>;
-  _errorSubject: RxSubject<StreamingFrame<Error>>;
+  private _eventSubject: RxSubject<StreamingFrame<T>>;
+  private _errorSubject: RxSubject<StreamingFrame<Error>>;
+  private _errorListeners: ((
+    frame: StreamingFrame<Error>
+  ) => (err: Error) => void | Promise<void>)[];
 
   constructor() {
     this._eventSubject = new RxSubject();
     this._errorSubject = new RxSubject();
+
+    this._errorListeners = [];
   }
 
   next(frame: StreamingFrame<T>): void {
@@ -18,13 +23,18 @@ export default class Stream<T> {
   }
 
   error(frame: StreamingFrame<Error>): void {
-    if (this._errorSubject.observers.length === 0) {
-      throw frame.value;
+    if (!this._catchError(frame)) {
+      if (this._errorSubject.observers.length > 0) {
+        this._errorSubject.next(frame);
+      } else {
+        throw frame.value;
+      }
     }
-    this._errorSubject.next(frame);
   }
 
-  /* eslint-disable prettier/prettier */
+  /**
+   * pipe through a series of operators and return the piped stream.
+   */
   pipe<A>(fn1: OperatorFunction<T, A>): Stream<A>;
   pipe<A, B>(
     fn1: OperatorFunction<T, A>,
@@ -62,11 +72,14 @@ export default class Stream<T> {
   ): Stream<F>;
 
   pipe(...fns: OperatorFunction<unknown, unknown>[]): Stream<unknown>;
-  /* eslint-enable prettier/prettier */
+
   pipe(...fns: OperatorFunction<any, unknown>[]): Stream<unknown> {
     return pipe(...fns)(this);
   }
 
+  /**
+   * This is an interal API used by operators.
+   */
   _subscribe(
     nextListener: (frame: StreamingFrame<T>) => void,
     errorListener: (frame: StreamingFrame<Error>) => void
@@ -80,26 +93,64 @@ export default class Stream<T> {
     }
   }
 
+  /**
+   * Subscribe to all events flow to the stream. This doesn't stop the events
+   * from going down to the piped streams.
+   *
+   * If an error is thrown in the event subscriber, it's handled by the
+   * following order:
+   *   1. Be catched the errorCatcher parameter if given.
+   *   2. Be catched by error listeners registered by `catch` method
+   *   3. Throw immediately.
+   */
   subscribe(
-    nextListener: MaybeContainer<(value: T) => void>,
-    errorListener?: MaybeContainer<(err: Error) => void>
-  ): void {
-    const injectNextListener = injectMaybe(nextListener);
+    subscriber: MaybeContainer<(value: T) => void | Promise<void>>,
+    errorCatcher?: MaybeContainer<(err: Error) => void | Promise<void>>
+  ): Stream<T> {
+    const emitEvent = injectMaybe(subscriber);
+    const catchError = errorCatcher ? injectMaybe(errorCatcher) : null;
 
-    this._eventSubject.subscribe((frame) =>
-      injectNextListener(frame)(frame.value)
-    );
+    this._eventSubject.subscribe(async (frame) => {
+      try {
+        await emitEvent(frame)(frame.value);
+      } catch (err) {
+        if (catchError) {
+          catchError(frame)(err);
+        } else {
+          const { scope, key } = frame;
+          if (!this._catchError({ scope, key, value: err })) {
+            throw err;
+          }
+        }
+      }
+    });
 
-    if (errorListener) {
-      this.catch(errorListener);
-    }
+    return this;
   }
 
-  catch(errorListener: MaybeContainer<(err: Error) => void>): void {
-    const injectErrorListener = injectMaybe(errorListener);
+  /**
+   * Catch unstream errors and event subscriber errors. Upstream errors are
+   * handled by the folowing order:
+   *   1. Be catched by error listeners registered by this method
+   *   2. Go down to piped streams.
+   *   3. If no piped stream, throw immediately.
+   */
+  catch(
+    errorListener: MaybeContainer<(err: Error) => void | Promise<void>>
+  ): Stream<T> {
+    this._errorListeners.push(injectMaybe(errorListener));
+    return this;
+  }
 
-    this._errorSubject.subscribe((frame) =>
-      injectErrorListener(frame)(frame.value)
-    );
+  private _catchError(frame: StreamingFrame<Error>): boolean {
+    if (this._errorListeners.length === 0) {
+      return false;
+    }
+
+    for (const errListener of this._errorListeners) {
+      errListener(frame)(frame.value);
+    }
+
+    return true;
   }
 }

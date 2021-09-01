@@ -88,9 +88,7 @@ test('with async mapper container', async () => {
   );
 
   const stream = new Stream();
-  stream
-    .pipe(mapMetadata(mapContainer))
-    .subscribe(nextContainer, console.error);
+  stream.pipe(mapMetadata(mapContainer)).subscribe(nextContainer);
 
   stream.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
   await nextTick();
@@ -119,8 +117,8 @@ it('transmit error down', () => {
     makeContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
   );
 
-  const stream = new Stream();
-  stream
+  const source$ = new Stream();
+  source$
     .pipe(
       mapMetadata(() => ({
         value: 'bar',
@@ -130,7 +128,7 @@ it('transmit error down', () => {
     )
     .catch(errorContainer);
 
-  stream.error({
+  source$.error({
     value: new Error('boo'),
     scope: createEmptyScope(),
     key: 'foo.channel',
