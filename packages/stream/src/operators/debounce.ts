@@ -9,7 +9,7 @@ type DebouncingCache<T> = {
 };
 
 /** @category Operator */
-const bufferDebounceTime = <T>(t: number): OperatorFunction<T, T[]> => {
+const debounce = <T>(t: number): OperatorFunction<T, T[]> => {
   const debouncingCaches = new Map<string, DebouncingCache<T>>();
 
   return (source: Stream<T>) => {
@@ -56,4 +56,4 @@ const bufferDebounceTime = <T>(t: number): OperatorFunction<T, T[]> => {
   };
 };
 
-export default bufferDebounceTime;
+export default debounce;

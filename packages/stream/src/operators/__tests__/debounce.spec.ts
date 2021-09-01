@@ -1,13 +1,13 @@
 import moxy from '@moxyjs/moxy';
 import { createEmptyScope } from '@machinat/core/service';
 import Stream from '../../stream';
-import bufferDebounceTime from '../bufferDebounceTime';
+import debounce from '../debounce';
 
 jest.useFakeTimers();
 
 it('buffer frames by a debouncing time', () => {
   const source$ = new Stream();
-  const buffered$ = source$.pipe(bufferDebounceTime(1500));
+  const buffered$ = source$.pipe(debounce(1500));
 
   const nextListener = moxy();
   const errorListener = moxy();
@@ -42,7 +42,7 @@ it('buffer frames by a debouncing time', () => {
 
 it('buffer frames with different keys separately', () => {
   const source$ = new Stream();
-  const buffered$ = source$.pipe(bufferDebounceTime(2500));
+  const buffered$ = source$.pipe(debounce(2500));
 
   const nextListener = moxy();
   const errorListener = moxy();
@@ -77,7 +77,7 @@ it('buffer frames with different keys separately', () => {
 
 it('transmit error from source', () => {
   const source$ = new Stream();
-  const buffered$ = source$.pipe(bufferDebounceTime(2500));
+  const buffered$ = source$.pipe(debounce(2500));
 
   const nextListener = moxy();
   const errorListener = moxy();
