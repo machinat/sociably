@@ -9,7 +9,7 @@ export default class Stream<T> {
   private _errorSubject: RxSubject<StreamingFrame<Error>>;
   private _errorListeners: ((
     frame: StreamingFrame<Error>
-  ) => (err: Error) => void | Promise<void>)[];
+  ) => (err: Error) => unknown | Promise<unknown>)[];
 
   constructor() {
     this._eventSubject = new RxSubject();
@@ -104,8 +104,8 @@ export default class Stream<T> {
    *   3. Throw immediately.
    */
   subscribe(
-    subscriber: MaybeContainer<(value: T) => void | Promise<void>>,
-    errorCatcher?: MaybeContainer<(err: Error) => void | Promise<void>>
+    subscriber: MaybeContainer<(value: T) => unknown | Promise<unknown>>,
+    errorCatcher?: MaybeContainer<(err: Error) => unknown | Promise<unknown>>
   ): Stream<T> {
     const emitEvent = injectMaybe(subscriber);
     const catchError = errorCatcher ? injectMaybe(errorCatcher) : null;
@@ -136,7 +136,7 @@ export default class Stream<T> {
    *   3. If no piped stream, throw immediately.
    */
   catch(
-    errorListener: MaybeContainer<(err: Error) => void | Promise<void>>
+    errorListener: MaybeContainer<(err: Error) => unknown | Promise<unknown>>
   ): Stream<T> {
     this._errorListeners.push(injectMaybe(errorListener));
     return this;
