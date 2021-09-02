@@ -11,9 +11,9 @@ You can use them separatedly if you don't need them all.
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/http @machinat/webview
+npm install @machinat/core @machinat/http react react-dom next @machinat/webview 
 # or with yarn
-yarn add @machinat/core @machinat/http @machinat/webview
+yarn add @machinat/core @machinat/http react react-dom next @machinat/webview
 ```
 
 ## Docs

@@ -65,8 +65,8 @@ event$.subscribe(
   makeContainer({ deps: [Machinat.Profiler] })(
     (profiler) =>
       async ({ event, reply }) => {
-        const userProfile = await profiler.getUserProfile(event.user);
-        await reply(<p>Hello {userProfile.name}!</p>);
+        const profile = await profiler.getUserProfile(event.user);
+        await reply(<p>Hello {profile ? profile.name : 'there'}!</p>);
       }
   )
 );

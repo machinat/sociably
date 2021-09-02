@@ -527,9 +527,11 @@ Then we can use it in `handleMessage` handler when a user doesn't have any todo:
 ```tsx {1,5-15,18} title="src/handlers/handleMessage.tsx"
 import AskingFirstTodo from '../scenes/AskingFirstTodo';
 // ...
-    const userProfile = await profiler.getUserProfile(event.user);
+    const profile = await profiler.getUserProfile(event.user);
     const { data } = await todoController.getTodos(event.channel);
-    const helloWords = <p>Hello, {userProfile.name}! I'm a Todo Bot 🤖</p>;
+    const helloWords = (
+      <p>Hello{profile ? `, ${profile.name}` : ''}! I'm a Todo Bot 🤖</p>
+    );
 
     if (data.todos.length === 0) {
       const runtime = await processor.start(event.channel, AskingFirstTodo);

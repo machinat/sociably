@@ -14,17 +14,39 @@ Chat UI brings us a new way to communicate with users, but it cannot replace GUI
 
 The best practice we suggest is a hybrid experience combining the advantage of both CUI and GUI. While chatbot, as the entry point of the app, is easier to use and broadcast. An webview can be used to provide more advanced and complicated features.
 
-## Setup Webview
+## Webview Platform
 
-The `@machinat/webview` package combine these utilities to provide webviews integrated with chat platform:
+The `@machinat/webview` package provides webviews integrated with chat platforms. It actually does these three things in the background:
 
-1. A webview front-end server hosted with [Next.js](https://nextjs.org).
-2. A auth server that authorize user with chat platforms account.
-3. A [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) server to communicate with front-end in two-way.
+1. Serve the webview front-end app with [Next.js](https://nextjs.org).
+2. Authorize users with the chat platforms accounts.
+3. Connect a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) to instantly communicate with server.
+
+### Install With Creator
+
+Starting with our project creator is the recommended if you are creating a whole new project. You only have to add a `-p webview` flag, and everything will be set. Like:
+
+```bash
+npm init @machinat/app -- -p messenger -p webview my-project
+```
+
+### Install Manually
+
+Install the following packages with npm:
+
+```bash
+npm install react react-dom next @machinat/webview
+```
+
+Or using yarn:
+
+```bash
+yarn add react react-dom next @machinat/webview
+```
 
 ### Back-End Setup
 
-First install `@machinat/webview` package, then we can register the webview platform to the app like this:
+Register the webview platform to your app like this:
 
 ```js
 import Machinat from '@machinat/core';
@@ -62,13 +84,13 @@ const app = Machinat.createApp({
 });
 ```
 
-Here are the steps we do to run the webview up:
+Here are the steps to run the webviews:
 
 1. The `Http` module have to be installed.
 2. Fill `webviewHost` with hostname of your server.
 3. Fill `authSecret` for signing auth token.
 4. `nextServerOptions.dev` indicate next.js to start server in dev mode or not. We can use `NODE_ENV` environment to decide that.
-5. `nextServerOptions.dir` should point to the next.js project location from project root. You can use `npx create-next-app` to create one.
+5. `nextServerOptions.dir` should point to the Next.js project location from project root. You can use `npx create-next-app` to create one.
 6. If you have `next.config.js` settings in your next.js project. You have to require it and fill it at `nextServerOptions.conf`.
 7. Provide `Webview.AuthorizerList` with server authorizer providers of each chat platform.
 

@@ -35,10 +35,10 @@ const handleMessage = makeContainer({
         // ...
       }
 
-      const userProfile = await profiler.getUserProfile(event.user);
+      const profile = await profiler.getUserProfile(event.user);
       await reply(
         <WithMenu todoCount={3}>
-          <p>Hello, {userProfile.name}! I'm a Todo Bot 🤖</p>
+          <p>Hello{profile ? `, ${profile.name}` : ''}! I'm a Todo Bot 🤖</p>
         </WithMenu>
       );
     }
@@ -276,11 +276,11 @@ const handleMessage = makeContainer({
         }
       }
 
-      const userProfile = await profiler.getUserProfile(event.user);
+      const profile = await profiler.getUserProfile(event.user);
       const { data } = await todoController.getTodos(event.channel);
       await reply(
         <WithMenu todoCount={data.todos.length}>
-          <p>Hello, {userProfile.name}! I'm a Todo Bot 🤖</p>
+          <p>Hello{profile ? `, ${profile.name}` : ''}! I'm a Todo Bot 🤖</p>
         </WithMenu>
       );
     }

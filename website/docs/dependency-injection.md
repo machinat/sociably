@@ -82,7 +82,7 @@ app.onEvent(
     (profiler) => async ({ event, reply } ) => {
       const profile = await profiler.getUserProfile(event.user);
 
-      await reply(`Hello ${profile.name}!`)
+      await reply(`Hello ${profile ? profile.name : 'there'}!`)
     }
   )
 );
@@ -295,7 +295,7 @@ app.onEvent(
       const { bot, event: { channel, user } } = context;
 
       const profile = await profiler.getUserProfile(user);
-      await bot.render(channel, `Hello ${profile.name}!`);
+      await bot.render(channel, `Hello ${profile ? profile.name : 'there'}!`);
 
       await stateController
         .channelState(channel)
