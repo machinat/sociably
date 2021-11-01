@@ -125,25 +125,30 @@ You can only use native component corresponded to the platform of bot. If a bot 
 
 ### Pause
 
-`Machinat.Pause` is an utility to make a pause between messages. It can be done by adding a `<Machinat.Pause/>` element and optionally set the `until` prop with an async function.
-
+`Machinat.Pause` is an utility to make a pause between messages. It can be done by adding a `<Machinat.Pause/>` element with the `delay` prop for the millisecond to pause.
 
 ```js
-import delay from 'delay';
-
-const delayOneSec = () => delay(1000);
-
 bot.render(channel,
   <>
     1
-    <Machinat.Pause until={delayOneSec} />
+    <Machinat.Pause delay={1000} />
     2
-    <Machinat.Pause until={delayOneSec} />
+    <Machinat.Pause delay={1000} />
     3
-    <Machinat.Pause until={delayOneSec} />
+    <Machinat.Pause delay={1000} />
     Red light!
   </>
 );
 ```
 
-The `delayOneSec` function will be called and awaited between actions. This would postpone the sending of the rest actions afterward.
+You can also use the `wait` prop as a function that return the promise to wait for. For example:
+
+```js
+bot.render(channel,
+  <>
+    hello
+    <Machinat.Pause wait={() => delayRandomly()} />
+    world
+  </>
+);
+```

@@ -76,7 +76,7 @@ reply(
 
 Proper pause may make your speech more understandable and comfortable in a chat. Pause and other in-chat behaviors thus should be able to a part of the user experience.
 
-In Machinat these can all be done in a JSX expression:
+In Machinat this can be done in the JSX expression:
 
 ```js
 reply(
@@ -84,7 +84,7 @@ reply(
     Hakuna Matata!
     <Messenger.TypingOn />
 
-    <Machinat.Pause until={() => delay(2000)} />
+    <Machinat.Pause delay={2000} />
 
     {/* will be sent 2 sec after */}
     It means no worry!

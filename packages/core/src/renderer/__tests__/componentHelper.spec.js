@@ -39,7 +39,7 @@ test('makeBreakSegment(node, path)', () => {
   });
 });
 
-test('makePauseSegment(node, path, until)', () => {
+test('makePauseSegment(node, path, waitFn)', () => {
   expect(makePauseSegment(<hello />, '$::1')).toEqual({
     type: 'pause',
     node: <hello />,
@@ -47,11 +47,11 @@ test('makePauseSegment(node, path, until)', () => {
     path: '$::1',
   });
 
-  const until = async () => 'the_end_of_the_world';
-  expect(makePauseSegment(<hello />, '$::1', until)).toEqual({
+  const waitFn = async () => 'the_end_of_the_world';
+  expect(makePauseSegment(<hello />, '$::1', waitFn)).toEqual({
     type: 'pause',
     node: <hello />,
-    value: until,
+    value: waitFn,
     path: '$::1',
   });
 });

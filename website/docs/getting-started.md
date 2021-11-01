@@ -155,7 +155,7 @@ Machinat.createApp({
 
 ### Core Modules
 
-This document will bring you through how to make a cross-platform app with enriched conversational UIs step by step.
+This document will bring you through how to make a cross-platform app with enriched conversational UI step by step.
 
 Machinat codebase is separated into packages that you can optionally install
 only what you need. First you need to add the `core` module and also the `http`

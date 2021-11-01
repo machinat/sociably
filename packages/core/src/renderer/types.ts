@@ -2,7 +2,7 @@ import type {
   MachinatNode,
   RawElement,
   ThunkEffectFn,
-  PauseUntilFn,
+  PauseWaitFn,
 } from '../types';
 
 export type TextSegment = {
@@ -36,7 +36,7 @@ export type RawSegment<Value> = {
 export type PauseSegment = {
   type: 'pause';
   node: MachinatNode;
-  value: null | PauseUntilFn;
+  value: null | PauseWaitFn;
   path: string;
 };
 

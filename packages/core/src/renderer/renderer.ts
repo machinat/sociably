@@ -235,13 +235,24 @@ export default class MachinatRenderer<
     } else if (isPauseType(node)) {
       // add a PauseSegment
       const pauseEle: PauseElement = node;
+      const { wait: waitFn, delay: delayMs } = pauseEle.props;
+      const dealyFn = delayMs
+        ? () =>
+            new Promise((resolve) => {
+              setTimeout(resolve, delayMs);
+            })
+        : null;
 
       renderings.push(
         Promise.resolve([
           {
             type: 'pause',
             node: pauseEle,
-            value: pauseEle.props.until || null,
+            value: waitFn
+              ? dealyFn
+                ? () => waitFn().then(dealyFn)
+                : waitFn
+              : dealyFn,
             path,
           },
         ])

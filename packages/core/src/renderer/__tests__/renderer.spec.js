@@ -30,8 +30,8 @@ beforeEach(() => {
 
 describe('#render()', () => {
   it('works', async () => {
-    const untilCallback = () => Promise.resolve();
-    const WrappedPause = () => <Machinat.Pause until={untilCallback} />;
+    const waitCallback = () => Promise.resolve();
+    const WrappedPause = () => <Machinat.Pause wait={waitCallback} />;
 
     const sideEffect1 = moxy();
     const sideEffect2 = moxy();
@@ -82,7 +82,7 @@ describe('#render()', () => {
       <>
         {123}
         abc
-        <Machinat.Pause until={untilCallback} />
+        <Machinat.Pause wait={waitCallback} />
         <a>AAA</a>
         <b>BBB</b>
         <WrappedPause />
@@ -106,8 +106,8 @@ describe('#render()', () => {
       },
       {
         type: 'pause',
-        node: <Machinat.Pause until={untilCallback} />,
-        value: untilCallback,
+        node: <Machinat.Pause wait={waitCallback} />,
+        value: waitCallback,
         path: '$::2',
       },
       {
@@ -130,8 +130,8 @@ describe('#render()', () => {
       },
       {
         type: 'pause',
-        node: <Machinat.Pause until={untilCallback} />,
-        value: untilCallback,
+        node: <Machinat.Pause wait={waitCallback} />,
+        value: waitCallback,
         path: '$::5#WrappedPause',
       },
       {
@@ -720,5 +720,71 @@ describe('#render()', () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"native component <AnotherPlatformUnit /> at '$' is not supported by test"`
     );
+  });
+
+  test('resnder <Pause/> with wait and delay props', async () => {
+    jest.useFakeTimers();
+    const renderer = new Renderer('test', generalElementDelegate);
+    const waitFn = moxy(() => Promise.resolve());
+
+    const segments = await renderer.render(
+      <>
+        <Machinat.Pause />
+        <Machinat.Pause wait={waitFn} />
+        <Machinat.Pause delay={1000} />
+        <Machinat.Pause wait={waitFn} delay={1000} />
+      </>,
+      scope
+    );
+
+    expect(segments).toEqual([
+      {
+        type: 'pause',
+        node: <Machinat.Pause />,
+        value: null,
+        path: '$::0',
+      },
+      {
+        type: 'pause',
+        node: <Machinat.Pause wait={waitFn} />,
+        value: waitFn,
+        path: '$::1',
+      },
+      {
+        type: 'pause',
+        node: <Machinat.Pause delay={1000} />,
+        value: expect.any(Function),
+        path: '$::2',
+      },
+      {
+        type: 'pause',
+        node: <Machinat.Pause delay={1000} wait={waitFn} />,
+        value: expect.any(Function),
+        path: '$::3',
+      },
+    ]);
+
+    const spy = moxy();
+
+    // delay prop only
+    segments[2].value().then(spy);
+    await new Promise(process.nextTick);
+    expect(spy.mock).not.toHaveBeenCalled();
+
+    jest.advanceTimersByTime(1000);
+    await new Promise(process.nextTick);
+    expect(spy.mock).toHaveBeenCalledTimes(1);
+
+    // delay + wait prop only
+    segments[3].value().then(spy);
+    expect(waitFn.mock).toHaveBeenCalledTimes(1);
+    await new Promise(process.nextTick);
+    expect(spy.mock).toHaveBeenCalledTimes(1);
+
+    jest.advanceTimersByTime(1000);
+    await new Promise(process.nextTick);
+    expect(spy.mock).toHaveBeenCalledTimes(2);
+
+    jest.useRealTimers();
   });
 });

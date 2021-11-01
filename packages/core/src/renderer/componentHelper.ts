@@ -3,7 +3,7 @@ import type {
   GeneralElement,
   NativeElement,
   NativeComponent,
-  PauseUntilFn,
+  PauseWaitFn,
 } from '../types';
 import type {
   BreakSegment,
@@ -79,7 +79,7 @@ export const makeUnitSegment = <Value>(
 export const makePauseSegment = (
   node: GeneralElement | NativeElement<unknown, any>,
   path: string,
-  value?: PauseUntilFn
+  value?: PauseWaitFn
 ): PauseSegment => ({
   type: 'pause',
   node,
