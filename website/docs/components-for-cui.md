@@ -54,7 +54,7 @@ _The component names must start with a capital letter. A tag start with a lowerc
 
 ## Composing Components
 
-Other components can also be used in the output. This enable us to compose the whole expression with reusable parts.
+Other components can be used within the component's output too. So we can modulize the chat UI in many different levels. Like:
 
 ```js
 function RecommendDailySpecial() {
@@ -78,7 +78,7 @@ function Welcome({ name }) {
 bot.render(channel, <Welcome name="Jojo" />);
 ```
 
-Depends on the situations, you might have many messaging entries like `Welcome`. And the underlying `Hello` and `RecommendDailySpecial` can be reused many time.
+One suggested pattern is to have many entry level components like the `Welcome`. And the detailed UI like `Hello` and `RecommendDailySpecial` can be reused many time.
 
 ## Cross Platform
 
