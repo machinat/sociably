@@ -24,7 +24,7 @@ __What's the next-gen app in the social media age?__
 
 ### The Chatbot Hype
 
-Since about 2016, we've expected chatbot to be the answer. The future seemed to be bright since people are putting more time on messaging apps (now historic high of [2h27m](https://www.slideshare.net/DataReportal/digital-2021-october-global-statshot-report-v03/59)). But till now, the paradigm shift we expect hasn't come yet.
+Since about 2016, we've expected chatbot to be the answer. The future seemed to be bright since people are putting more time on social platforms (now historic high of [2h27m](https://www.slideshare.net/DataReportal/digital-2021-october-global-statshot-report-v03/59)). But till now, the paradigm shift we expect hasn't come yet.
 
 So what's wrong? Most discussions point to the technology today is too far from real AI. But this could reveal a bigger issue: **Most bots merely try to chat, they don't provide useful features!** Users may come to chatbots because of curiosity, but soon leave because of gaining nothing.
 
@@ -72,7 +72,7 @@ Most popular tools for chatbots choose the [no-code](https://en.wikipedia.org/wi
 But this way is totally not enough to handle the variation of the language, and stops us from building more complex features in chat. Because:
 
 - The expression and the conversation are inflexible.
-- It’s hard to implement features in programming.
+- It's hard to implement features in programming.
 - Cannot reuse the chatting skill, style and logic.
 
 That's why the no-code tools are mostly used to serve very limited content like blogs. Meanwhile good apps are always made by programming, which enables developers to flexibly build features and experiences.
@@ -165,7 +165,7 @@ general interfaces for cross-platform features, and the native interfaces for on
 
 > <i><small>Machinat framework API in different scopes.</small></i>
 
-Combining both API reduces the complexity for cross-platform experiences while keeping the capability to use **all the features of all the platforms**. This is the core design concept of Machinat, and you can apply this pattern everywhere in the framework.
+Combining both API reduces the complexity for building cross-platform experiences, at the same time, keeps the capability to use **all the features of all the platforms**. This is the core design concept of Machinat, and you can use this pattern everywhere in the framework.
 
 ### Cross-platform UI
 
@@ -175,7 +175,7 @@ One example is to build cross-platform chat UI in JSX. You can use two types of 
 
 - **Native Elements** are features for one specific platform. They include all the native expressive APIs, like `<Messenger.GenericTemplate>{...}</Messenger.GenericTemplate>`.
 
-The general elements can be used as base, then you can conditionally optimize it with native elements. Here is an example:
+The general elements can be used as the base expression, then you can conditionally optimize it with native elements. Here is an example:
 
 <div style={{width: '610px', overflow:'hidden', marginBottom:'-20px'}}>
   <video width={720} autoplay="autoplay" loop inline muted>
@@ -191,10 +191,10 @@ The cross-platform logic can be encapsulated in the component, so you can reuse 
 
 Finally, the most important question might be: What features can we ship through the conversational apps?
 
-The interactions can be done with chat UI is limited by the conversation platforms. This restricts chatbots from shipping various features like mobile apps or web apps. At the same time, lacking of a killer feature also stops users from migrating to the conversational apps.
+While using chat UI, the interactions with users is limited by the conversation platforms. This restricts chatbots from shipping various features as mobile apps or web apps do. Meanwhile, lacking of a killer feature also stops users from migrating to the conversational apps.
 
 We are going to reverse the disadvantages in two directions:
-1. Extend chat UI with graphical UI to ship more features.
+1. Extend the chat UI with GUI to ship more features.
 2. Integrate all the platforms to provide an unique experience.
 
 ### Chat UI + GUI
@@ -212,17 +212,17 @@ Chat UI is never a replacement of GUI. But we can actually use both of them to p
 The webview is not only a web page:
 
 - It's linked with the chatroom to extend chat UX.
-- It's automatically logged-in and safe to serve private data. 
-- It's connected with [`WebSocket`](https://en.wikipedia.org/wiki/WebSocket) to receive server push.
-- It's cross-platform that require only little setup.
+- It's automatically logged-in to safely serve private features.
+- It's connected with the server to receive instant server pushes.
+- It's cross-platform that require only a little setup.
 
-The webview empower the conversational app to achieve everything a web app can do. Such the hybrid app still keeps the easy-to-use advantage of chat UI, while the GUI can provide splendid features like games, dashboard, infinite scrolling views.
+The webview empowers conversational apps to achieve everything web apps can do. Such hybrid apps keeps the easy-to-use advantage of chat UI, while GUI can provide splendid features like games, dashboard, infinite scrolling views.
 
 ### Omni-channel App
 
-Finally, there has to be a killer feature. The superpower of an conversational app is to integrate all the social platforms to provide one integrated service. Here is a scenario: 
+Finally, there has to be a killer feature. The superpower of the conversational apps is to integrate all the social platforms and provide an integrated service. Here is a scenario:
 
-> Users get to know a travel website on social media. They interact with the post and get a coupon that attract them to the website. An embedded chatbot in the website can guide them to plan the tour. After the purchase, users can check the trips/tickets, receive notifications and get assistance in the messaging app. During the tour, the bot can be invited into a group to share info with travel mates. And after the tour, the bot can push more trip info and discount to attract users into another cycle.
+> Users get to know a travel website on social media. They interact with the post and get a coupon that attract them to the website. An embedded chatbot in the website can guide them to plan the tour. After the purchase, users can check the trips/tickets, receive notifications and get assistance in the messaging app. During the tour, the bot can be invited into a group to share info with travel mates. After the tour, the bot can push other trip info and discounts to get users into another cycle.
 
 Though the whole process happens on different platforms, but the users actually experience one continuous and consistent service. That's the idea of [omni-channel](https://en.wikipedia.org/wiki/Omnichannel) experience.
 
@@ -230,19 +230,19 @@ Though the whole process happens on different platforms, but the users actually 
 
 > <i><small>The omni-channel experience spectrum around the conversational app.</small></i>
 
-A conversational app can work on all these communication channels as the pivot of the integration. Let's call such an app that ships omni-channel experiences an **omni-channel app**. It helps businesses in the following aspects:
+A conversational app can work on all these communication channels as the pivot of the integration. Let's call an app that ships omni-channel experiences an **omni-channel app**. It can help businesses in the following aspects:
 
-- Link marketing, sales and customer services together as a unified service.
+- Link marketing, sales and customer services together as an unified service.
 - Make sure the business has identical image and style on every channel.
-- Maximize the overall traffic by combining all the channels together.
+- Maximize the overall traffic by referring users between different channels.
 
-The omni-channel experience is already widely adopted in marketing. Now the omni-channel apps can not only automate the marketing works, but also integrate all kinds of customer experiences to provide services as a whole.
+The omni-channel experience is already widely adopted in marketing. Now the omni-channel apps can not only automate the marketing works, but also integrate all the customer experiences together to serve as a whole.
 
 ## The Next-Gen App
 
-Back to the initial question, so what would the next-gen app be like?
+Back to the initial question, so what would the next-gen app be like based on these utilities?
 
-Now we can build chat UI/UX in modular way, which enable bots to have consistent knowledge, personality and chatting skills. The app can interacts with users on many social platforms to provide an integrated services as a profession. These utilities enable software to do what we can do in the social network.
+Now we can build chat UI/UX modules in programming, so the apps can have consistent chatting skills, knowledge and personality. The apps interacts with users on many social platforms and provide an integrated services as the profession. All these enable software to act more like real people.
 
 _The next-gen app is **Software as an Individual** in the social network._
 
@@ -278,15 +278,15 @@ Other kinds of app can only wait for being opened passively, but conversational 
 
 #### Transmit values in social network
 
-Today countless services and info are transmitted through the social network. Now software can be a node in the network that directly ships value between people, communities and businesses. For example, to share information; to assist people in a group/community; to be an agent for services/products.
+Today countless services and info are transmitted through the social network. Software now can be a node in the network that directly ships value between people, communities and businesses. For example, to share content; to assist people in a group/community; to be an agent for services/products.
 
-#### Hybrid user experience
+#### Hybrid of chat UI and GUI
 
-A conversational app can open GUI in chat to extend features. Meanwhile, it can be embedded as a chating view into the GUI based apps, like websites or mobile apps. The hybrid experiences have the advantages of both chat UI and GUI, which make the apps more friendly and more useful at the same time.
+A conversational app can open a webview in chat to extend features. Meanwhile, it can be embedded as a chat view in the websites or mobile apps. The hybrid experiences have the advantages of both chat UI and GUI, which make the apps more friendly and more useful at the same time.
 
-### Market Prospect
+### Potential Market
 
-The booming of apps always comes along with the prosperity of software platform. We have seen that on computers and mobile phones. The virtual social network now can be a brand new software platform. And it's becoming the most popular one.
+The booming of apps always comes along with the prosperity of software platform. We have seen that on computers and mobile phones. The social network now can be a brand new software platform. And it's becoming the most popular one.
 
 <img style={{marginBottom:'-20px'}} width={600} src={require("./assets/social-media-status.webp").default} />
 
@@ -294,15 +294,15 @@ The booming of apps always comes along with the prosperity of software platform.
 
 The number of active social media users is stunningly 4.45 billion now, which is even [twice than 2016](https://datareportal.com/reports/digital-2016-global-digital-overview). If we can attract 1% of people on social platforms, there will be **45 million** users base. It's not overstate at all, for instance, [Nike](https://www.instagram.com/nike/) has 182 million followers merely on Instagram.
 
-Since every business spends lots of human resource on social media and customer services, the potential market can be so large. The conversational apps can bring automation to these huge but highly manually driven market.
+Since every business spends lots of human resource on social media and customer services, the potential market can be large. Conversational apps can bring automation to this huge but highly manually driven market.
 
-On the other hand, if 1% of mobile apps' [218 billion download](https://www.appannie.com/en/go/state-of-mobile-2021) shift to the conversational apps, it could be totally **2 billion** new visitors yearly. It's pretty likely since this is already the [trend of customer services](https://www.gartner.com/en/newsroom/press-releases/2021-01-12-gartner-predicts-80--of-customer-service-organization).
+On the other hand, if 1% of mobile apps' [218 billion download](https://www.appannie.com/en/go/state-of-mobile-2021) shift to the conversational apps, it could be **2 billion** new visitors yearly. It's pretty likely since this is already the [trend of customer services](https://www.gartner.com/en/newsroom/press-releases/2021-01-12-gartner-predicts-80--of-customer-service-organization).
 
-We can start with simple apps, like apps for brands, campaigns or locations. People are already tired of filling their phone with these apps, while the conversational apps on social platforms are just perfect to both customers and businesses.
+We can start from simple apps, like apps for brands, campaigns or locations. People are already tired of filling their phone with these apps. The conversational apps on social platforms can perfectly match both customers' and businesses' needs.
 
 ### From App to AI
 
-Though AI is still the future, but conversational apps is the necessary midway. Because machine learning requires tons of data for training, [it's better to launch without ML first](https://developers.google.com/machine-learning/guides/rules-of-ml#rule_1_don%E2%80%99t_be_afraid_to_launch_a_product_without_machine_learning).
+Though AI is still the future, but conversational apps are the necessary midway. Because machine learning requires tons of data for training, it's better to [launch without ML first](https://developers.google.com/machine-learning/guides/rules-of-ml#rule_1_don%E2%80%99t_be_afraid_to_launch_a_product_without_machine_learning).
 
 Machinat's goal is to empower developers to craft the modules of mind by scratch. We can gradually build up the speaking skills, knowledge and personality while making the apps. For example, to make an expression with higher level modules like:
 
@@ -314,7 +314,7 @@ Machinat's goal is to empower developers to craft the modules of mind by scratch
 </WithContext>
 ```
 
-Once we accumulate these pattern enough, we might be able to train the ML models of human mind. Then the framework will work as the body that provide I/O, so the AI as mind can exist as _an person in the social network_, _a NPC in Metaverse_ or even _somebody in the real world_.
+Once we accumulate enough modules of human mind, we might be able to train the ML models with these patterns. Then the framework will work as the body that provide I/O, so the AI as mind can exist as _an person in the social network_, _a NPC in Metaverse_ or even _somebody in the real world_.
 
 This all begins from the simple conversational apps. If more developers join, we are more likely to make smarter apps and finally approach the real AI.
 
@@ -345,6 +345,6 @@ This all begins from the simple conversational apps. If more developers join, we
 
 - Will the project run by enterprise or community?
 
-  The framework **will always be be open-sourced and welcome community to participate**. But to maintain a framework that relates to so many external services, it require very quick and constant updates. It might be better to have an enterprise back it up, but we are open to any possibilities.
+  The framework will always be be open-sourced and welcome community to participate. But to maintain a framework that relates to so many external services, it requires constant and frequent updates. It might be better to have an enterprise to back it up. But we are open to any possibilities.
 
 ### Contact
