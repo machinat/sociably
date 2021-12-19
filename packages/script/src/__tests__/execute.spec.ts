@@ -44,7 +44,7 @@ describe('executing content command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['hello world'],
       stack: null,
     });
@@ -78,7 +78,7 @@ describe('executing content command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['hello', 'world'],
       stack: null,
     });
@@ -128,7 +128,7 @@ describe('executing content command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['hello', 'it is an', 'async', 'world'],
       stack: null,
     });
@@ -167,7 +167,7 @@ describe('executing content command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['hello', 'a contained', 'world'],
       stack: null,
     });
@@ -203,7 +203,7 @@ describe('executing prompt command', () => {
     script.mock.reset();
   });
 
-  test('return unfinished if prompt command met', async () => {
+  test('stop when a prompt command is met', async () => {
     await expect(
       execute(
         scope,
@@ -213,7 +213,7 @@ describe('executing prompt command', () => {
       )
     ).resolves.toEqual({
       finished: false,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['foo'],
       stack: [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
     });
@@ -221,7 +221,30 @@ describe('executing prompt command', () => {
     expect(promptCommand.setVars.mock).not.toHaveBeenCalled();
   });
 
-  test('continue from prompt with sync function setVars', async () => {
+  test('yield value when prompting', async () => {
+    promptCommand.mock
+      .getter('yieldValue')
+      .fakeReturnValue(() => 'hello from prompt');
+
+    await expect(
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+        true
+      )
+    ).resolves.toEqual({
+      finished: false,
+      returnedValue: undefined,
+      yieldedValue: 'hello from prompt',
+      contents: ['foo'],
+      stack: [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
+    });
+
+    expect(promptCommand.setVars.mock).not.toHaveBeenCalled();
+  });
+
+  test('continue from prompt point', async () => {
     await expect(
       execute(
         scope,
@@ -232,7 +255,7 @@ describe('executing prompt command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['yes'],
       stack: null,
     });
@@ -249,7 +272,7 @@ describe('executing prompt command', () => {
     });
   });
 
-  test('continue with async function setVars', async () => {
+  test('continue with async setVars', async () => {
     promptCommand.setVars.mock.fake(async ({ vars }, { answer }) => ({
       ...vars,
       answer,
@@ -265,7 +288,7 @@ describe('executing prompt command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['no'],
       stack: null,
     });
@@ -297,7 +320,7 @@ describe('executing prompt command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['maybe'],
       stack: null,
     });
@@ -339,7 +362,7 @@ describe('executing call command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['at skyfall', 'aww~awwww~awwwwwwwwww~'],
       stack: null,
     });
@@ -370,7 +393,7 @@ describe('executing call command', () => {
       type: 'call',
       script: subScript,
       withParams: () => ({ hello: 'from top' }),
-      setVars: ({ vars }, returnValue) => ({ ...vars, ...returnValue }),
+      setVars: ({ vars }, returnedValue) => ({ ...vars, ...returnedValue }),
     });
     const script = mockScript([
       callCommand,
@@ -393,7 +416,7 @@ describe('executing call command', () => {
         )
       ).resolves.toEqual({
         finished: true,
-        returnValue: undefined,
+        returnedValue: undefined,
         contents: ['hello the other side', 'yaaaaaay'],
         stack: null,
       });
@@ -426,9 +449,9 @@ describe('executing call command', () => {
       callCommand.withParams.mock.fake(async () => ({
         hello: 'async from top',
       }));
-      callCommand.setVars.mock.fake(async ({ vars }, returnValue) => ({
+      callCommand.setVars.mock.fake(async ({ vars }, returnedValue) => ({
         ...vars,
-        ...returnValue,
+        ...returnedValue,
       }));
 
       await expect(
@@ -440,7 +463,7 @@ describe('executing call command', () => {
         )
       ).resolves.toEqual({
         finished: true,
-        returnValue: undefined,
+        returnedValue: undefined,
         contents: ['hello the other side', 'yaaaaaay'],
         stack: null,
       });
@@ -468,9 +491,9 @@ describe('executing call command', () => {
       const withParamsContainer = moxy(
         makeContainer({ deps: [] })(() => withParamsFn)
       );
-      const setVarsFn = moxy(async ({ vars }, returnValue) => ({
+      const setVarsFn = moxy(async ({ vars }, returnedValue) => ({
         ...vars,
-        ...returnValue,
+        ...returnedValue,
       }));
       const setVarsContainer = moxy(
         makeContainer({ deps: [] })(() => setVarsFn)
@@ -488,7 +511,7 @@ describe('executing call command', () => {
         )
       ).resolves.toEqual({
         finished: true,
-        returnValue: undefined,
+        returnedValue: undefined,
         contents: ['hello the other side', 'yaaaaaay'],
         stack: null,
       });
@@ -544,7 +567,7 @@ describe('executing call command', () => {
       )
     ).resolves.toEqual({
       finished: false,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ["i can't go back"],
       stack: [
         { script, vars: { foo: 'bar' }, stopAt: 'motherCall' },
@@ -587,7 +610,7 @@ describe('executing call command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['starting in my heart'],
       stack: null,
     });
@@ -613,7 +636,7 @@ describe('executing jump command', () => {
       execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], true)
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['foo', 'baz'],
       stack: null,
     });
@@ -630,7 +653,7 @@ describe('executing jump command', () => {
       execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], true)
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['foo'],
       stack: null,
     });
@@ -662,7 +685,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], true)
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['foo', 'baz'],
       stack: null,
     });
@@ -673,7 +696,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], true)
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['foo', 'bar', 'baz'],
       stack: null,
     });
@@ -686,7 +709,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], true)
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['foo', 'baz'],
       stack: null,
     });
@@ -696,7 +719,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], true)
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['foo', 'bar', 'baz'],
       stack: null,
     });
@@ -713,7 +736,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], true)
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['foo', 'baz'],
       stack: null,
     });
@@ -723,7 +746,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], true)
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['foo', 'bar', 'baz'],
       stack: null,
     });
@@ -736,7 +759,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], true)
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['foo', 'bar', 'baz'],
       stack: null,
     });
@@ -747,7 +770,7 @@ describe('executing jump_condition command', () => {
       execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], true)
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['foo', 'baz'],
       stack: null,
     });
@@ -771,7 +794,7 @@ describe('executing return command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: undefined,
+      returnedValue: undefined,
       contents: ['hello'],
       stack: null,
     });
@@ -803,7 +826,7 @@ describe('executing return command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: 'bar',
+      returnedValue: 'bar',
       contents: ['hello'],
       stack: null,
     });
@@ -827,7 +850,7 @@ describe('executing return command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: 'bar',
+      returnedValue: 'bar',
       contents: ['hello'],
       stack: null,
     });
@@ -853,7 +876,7 @@ describe('executing return command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: 'bar',
+      returnedValue: 'bar',
       contents: ['hello'],
       stack: null,
     });
@@ -897,7 +920,7 @@ describe('executing effect command', () => {
 
     expect(result).toEqual({
       finished: true,
-      returnValue: { foo: 'baz' },
+      returnedValue: { foo: 'baz' },
       contents: ['hello'],
       stack: null,
     });
@@ -929,7 +952,7 @@ describe('executing effect command', () => {
 
     expect(result).toEqual({
       finished: true,
-      returnValue: { foo: 'bar' },
+      returnedValue: { foo: 'bar' },
       contents: ['hello'],
       stack: null,
     });
@@ -959,7 +982,7 @@ describe('executing effect command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: { foo: 'baz' },
+      returnedValue: { foo: 'baz' },
       contents: ['hello'],
       stack: null,
     });
@@ -1025,7 +1048,7 @@ describe('run whole script', () => {
         type: 'call',
         script: ChildScript,
         withParams: ({ vars: { desc } }) => ({ desc }),
-        setVars: ({ vars }, returnValue) => ({ ...vars, ...returnValue }),
+        setVars: ({ vars }, returnedValue) => ({ ...vars, ...returnedValue }),
         goto: 'BEGIN',
         key: 'CALL',
       },
@@ -1057,7 +1080,7 @@ describe('run whole script', () => {
       )
     ).resolves.toEqual({
       finished: false,
-      returnValue: undefined,
+      returnedValue: undefined,
       stack: [
         {
           script: MockScript,
@@ -1105,7 +1128,7 @@ describe('run whole script', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: { foo: 'bar' },
+      returnedValue: { foo: 'bar' },
       stack: null,
       contents: ['bye'],
     });
@@ -1139,7 +1162,7 @@ describe('run whole script', () => {
 
       expect(result).toEqual({
         finished: false,
-        returnValue: undefined,
+        returnedValue: undefined,
         stack: [
           {
             script: MockScript,
@@ -1157,7 +1180,7 @@ describe('run whole script', () => {
       execute(scope, channel, stack, false, { desc: 'fascinating' })
     ).resolves.toEqual({
       finished: true,
-      returnValue: { foo: 'bar', t: 3, desc: 'fascinating' },
+      returnedValue: { foo: 'bar', t: 3, desc: 'fascinating' },
       stack: null,
       contents: ['fascinating', 'world'],
     });
@@ -1192,7 +1215,7 @@ describe('run whole script', () => {
       )
     ).resolves.toEqual({
       finished: false,
-      returnValue: undefined,
+      returnedValue: undefined,
       stack: [
         {
           script: MockScript,
@@ -1257,7 +1280,7 @@ describe('run whole script', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnValue: { foo: 'baz', hello: 'subscript' },
+      returnedValue: { foo: 'baz', hello: 'subscript' },
       stack: null,
       contents: ['world'],
     });

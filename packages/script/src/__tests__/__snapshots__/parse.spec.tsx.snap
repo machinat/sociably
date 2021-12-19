@@ -133,6 +133,7 @@ Array [
                 "key": "ask_1",
                 "setVars": [Function],
                 "type": "prompt",
+                "yieldValue": undefined,
               },
             ],
             "condition": [Function],
@@ -159,6 +160,7 @@ Array [
                     "key": "ask_2",
                     "setVars": [Function],
                     "type": "prompt",
+                    "yieldValue": undefined,
                   },
                 ],
                 "condition": [Function],
@@ -198,7 +200,6 @@ Array [
             },
           ],
           "initVars": [Function],
-          "meta": null,
           "name": "AnotherScript",
           "stopPointIndex": Map {
             "foo" => 3,
@@ -260,6 +261,7 @@ Array [
                 "key": "ask_3",
                 "setVars": [Function],
                 "type": "prompt",
+                "yieldValue": undefined,
               },
             ],
             "condition": [Function],
@@ -298,7 +300,6 @@ Array [
         },
       ],
       "initVars": [Function],
-      "meta": null,
       "name": "AnotherScript",
       "stopPointIndex": Map {
         "foo" => 3,
@@ -317,6 +318,7 @@ Array [
     "key": "ask_4",
     "setVars": [Function],
     "type": "prompt",
+    "yieldValue": undefined,
   },
   Object {
     "doEffect": [Function],

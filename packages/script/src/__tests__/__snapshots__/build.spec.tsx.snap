@@ -36,12 +36,10 @@ Array [
           "key": "childPrompt",
           "setVars": [Function],
           "type": "prompt",
+          "yieldValue": undefined,
         },
       ],
       "initVars": [Function],
-      "meta": Object {
-        "foo": "baz",
-      },
       "name": "ChildScript",
       "stopPointIndex": Map {
         "childPrompt" => 1,
@@ -69,6 +67,7 @@ Array [
     "key": "ask_1",
     "setVars": [Function],
     "type": "prompt",
+    "yieldValue": undefined,
   },
   Object {
     "offset": -3,
@@ -86,6 +85,7 @@ Array [
     "key": "ask_2",
     "setVars": [Function],
     "type": "prompt",
+    "yieldValue": undefined,
   },
   Object {
     "getValue": [Function],
@@ -117,6 +117,7 @@ Array [
     "key": "childPrompt",
     "setVars": [Function],
     "type": "prompt",
+    "yieldValue": undefined,
   },
 ]
 `;

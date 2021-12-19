@@ -21,13 +21,12 @@ import type {
   RETURN,
 } from './keyword';
 
-export type ScriptLibrary<Params, Vars, Input, Return, Meta> = {
+export type ScriptLibrary<Vars, Input, Params, Return, Yield> = {
   $$typeof: typeof MACHINAT_SCRIPT_TYPE;
-  name: string;
-  commands: ScriptCommand<Vars, Input, Return>[];
+  commands: ScriptCommand<Vars, Input, Return, Yield>[];
   initVars: (params: Params) => Vars;
+  name: string;
   stopPointIndex: Map<string, number>;
-  meta: Meta;
 };
 
 export type AnyScriptLibrary = ScriptLibrary<
@@ -56,81 +55,81 @@ export type ConditionMatchFn<Vars> = (
 
 export type ConditionMatcher<Vars> = MaybeContainer<ConditionMatchFn<Vars>>;
 
-type ConditionBlocks<Vars, Input, Return> =
-  | ThenElement<Vars, Input, Return>
-  | ElseElement<Vars, Input, Return>
-  | ElseIfElement<Vars, Input, Return>;
+type ConditionBlocks<Vars, Input, Return, Yield> =
+  | ThenElement<Vars, Input, Return, Yield>
+  | ElseElement<Vars, Input, Return, Yield>
+  | ElseIfElement<Vars, Input, Return, Yield>;
 
 /**
  * @category Keyword Props
  */
-export type IfProps<Vars, Input, Return> = {
+export type IfProps<Vars, Input, Return, Yield> = {
   condition: ConditionMatcher<Vars>;
   children:
-    | ConditionBlocks<Vars, Input, Return>
-    | ConditionBlocks<Vars, Input, Return>[];
+    | ConditionBlocks<Vars, Input, Return, Yield>
+    | ConditionBlocks<Vars, Input, Return, Yield>[];
 };
 
 /**
  * @category Keyword Element
  */
-export type IfElement<Vars, Input, Return> = MachinatElement<
-  IfProps<Vars, Input, Return>,
+export type IfElement<Vars, Input, Return, Yield> = MachinatElement<
+  IfProps<Vars, Input, Return, Yield>,
   typeof IF
 >;
 
 /**
  * @category Keyword Props
  */
-export type BlockProps<Vars, Input, Return> = {
-  children: ScriptNode<Vars, Input, Return>;
+export type BlockProps<Vars, Input, Return, Yield> = {
+  children: ScriptNode<Vars, Input, Return, Yield>;
 };
 
 /**
  * @category Keyword Element
  */
-export type ThenElement<Vars, Input, Return> = MachinatElement<
-  BlockProps<Vars, Input, Return>,
+export type ThenElement<Vars, Input, Return, Yield> = MachinatElement<
+  BlockProps<Vars, Input, Return, Yield>,
   typeof THEN
 >;
 
 /**
  * @category Keyword Element
  */
-export type ElseElement<Vars, Input, Return> = MachinatElement<
-  BlockProps<Vars, Input, Return>,
+export type ElseElement<Vars, Input, Return, Yield> = MachinatElement<
+  BlockProps<Vars, Input, Return, Yield>,
   typeof ELSE
 >;
 
 /**
  * @category Keyword Props
  */
-export type ElseIfProps<Vars, Input, Return> = {
+export type ElseIfProps<Vars, Input, Return, Yield> = {
   condition: ConditionMatcher<Vars>;
-  children: ScriptNode<Vars, Input, Return>;
+  children: ScriptNode<Vars, Input, Return, Yield>;
 };
 
 /**
  * @category Keyword Element
  */
-export type ElseIfElement<Vars, Input, Return> = MachinatElement<
-  ElseIfProps<Vars, Input, Return>,
+export type ElseIfElement<Vars, Input, Return, Yield> = MachinatElement<
+  ElseIfProps<Vars, Input, Return, Yield>,
   typeof ELSE_IF
 >;
 
 /**
  * @category Keyword Props
  */
-export type WhileProps<Vars, Input, Return> = {
+export type WhileProps<Vars, Input, Return, Yield> = {
   condition: ConditionMatcher<Vars>;
-  children: ScriptNode<Vars, Input, Return>;
+  children: ScriptNode<Vars, Input, Return, Yield>;
 };
 
 /**
  * @category Keyword Element
  */
-export type WhileElement<Vars, Input, Return> = MachinatElement<
-  WhileProps<Vars, Input, Return>,
+export type WhileElement<Vars, Input, Return, Yield> = MachinatElement<
+  WhileProps<Vars, Input, Return, Yield>,
   typeof WHILE
 >;
 
@@ -143,24 +142,28 @@ export type PromptSetter<Vars, Input> = MaybeContainer<
   PromptSetFn<Vars, Input>
 >;
 
-export type PromptFilterPredecateFn<Vars, Input> = (
-  circs: ScriptCircs<Vars>,
-  input: Input
-) => boolean | Promise<boolean>;
+export type PromptYieldFn<Vars, Yield> = (
+  circs: ScriptCircs<Vars>
+) => Yield | Promise<Yield>;
+
+export type PromptYielder<Vars, Yield> = MaybeContainer<
+  PromptYieldFn<Vars, Yield>
+>;
 
 /**
  * @category Keyword Props
  */
-export type PromptProps<Vars, Input> = {
+export type PromptProps<Vars, Input, Yield> = {
   key: string;
   set?: PromptSetter<Vars, Input>;
+  yield?: PromptYieldFn<Vars, Yield>;
 };
 
 /**
  * @category Keyword Element
  */
-export type PromptElement<Vars, Input> = MachinatElement<
-  PromptProps<Vars, Input>,
+export type PromptElement<Vars, Input, Yield> = MachinatElement<
+  PromptProps<Vars, Input, Yield>,
   typeof PROMPT
 >;
 
@@ -198,9 +201,9 @@ export type CallProps<
   Vars,
   Script extends AnyScriptLibrary
 > = Script extends ScriptLibrary<
+  unknown,
+  unknown,
   infer Params,
-  unknown,
-  unknown,
   infer Return,
   unknown
 >
@@ -275,21 +278,21 @@ export type ReturnElement<Vars, Return> = MachinatElement<
   typeof RETURN
 >;
 
-export type ScriptElement<Vars, Input, Return> =
-  | IfElement<Vars, Input, Return>
-  | WhileElement<Vars, Input, Return>
-  | PromptElement<Vars, Input>
+export type ScriptElement<Vars, Input, Return, Yield> =
+  | IfElement<Vars, Input, Return, Yield>
+  | WhileElement<Vars, Input, Return, Yield>
+  | PromptElement<Vars, Input, Yield>
   | LabelElement
   | CallElement<Vars, AnyScriptLibrary>
   | ReturnElement<Vars, Return>;
 
-export type ScriptNode<Vars, Input, Return> =
+export type ScriptNode<Vars, Input, Return, Yield> =
   | MachinatEmpty
   | ContentNode<Vars>
-  | ScriptElement<Vars, Input, Return>
-  | ScriptNode<Vars, Input, Return>[]
+  | ScriptElement<Vars, Input, Return, Yield>
+  | ScriptNode<Vars, Input, Return, Yield>[]
   | MachinatElement<
-      { children: ScriptNode<Vars, Input, Return> },
+      { children: ScriptNode<Vars, Input, Return, Yield> },
       typeof Machinat.Fragment
     >;
 
@@ -297,15 +300,15 @@ export type ConditionsSegment<Vars> = {
   type: 'conditions';
   branches: {
     condition: ConditionMatcher<Vars>;
-    body: ScriptSegment<Vars, unknown, unknown>[];
+    body: ScriptSegment<Vars, unknown, unknown, unknown>[];
   }[];
-  fallbackBody: null | ScriptSegment<Vars, unknown, unknown>[];
+  fallbackBody: null | ScriptSegment<Vars, unknown, unknown, unknown>[];
 };
 
 export type WhileSegment<Vars> = {
   type: 'while';
   condition: ConditionMatcher<Vars>;
-  body: ScriptSegment<Vars, unknown, unknown>[];
+  body: ScriptSegment<Vars, unknown, unknown, unknown>[];
 };
 
 export type LabelSegment = {
@@ -318,16 +321,17 @@ export type ContentCommand<Vars> = {
   getContent: ContentNode<Vars>;
 };
 
-export type PromptCommand<Vars, Input> = {
+export type PromptCommand<Vars, Input, Yield> = {
   type: 'prompt';
   key: string;
   setVars?: PromptSetter<Vars, Input>;
+  yieldValue?: PromptYielder<Vars, Yield>;
 };
 
 export type CallCommand<Vars, Params, Return> = {
   type: 'call';
   key: string;
-  script: ScriptLibrary<Params, unknown, unknown, Return, unknown>;
+  script: ScriptLibrary<unknown, unknown, Params, Return, unknown>;
   withParams?: CallParamsGetter<Vars, Params>;
   setVars?: CallReturnSetter<Vars, Return>;
   goto?: string;
@@ -356,21 +360,21 @@ export type ReturnCommand<Vars, Return> = {
   getValue?: ReturnValueGetter<Vars, Return>;
 };
 
-export type ScriptSegment<Vars, Input, Return> =
+export type ScriptSegment<Vars, Input, Return, Yield> =
   | ContentCommand<Vars>
   | ConditionsSegment<Vars>
   | WhileSegment<Vars>
-  | PromptCommand<Vars, Input>
+  | PromptCommand<Vars, Input, Yield>
   | CallCommand<Vars, unknown, unknown>
   | EffectCommand<Vars, unknown>
   | LabelSegment
   | ReturnCommand<Vars, Return>;
 
-export type ScriptCommand<Vars, Input, Return> =
+export type ScriptCommand<Vars, Input, Return, Yield> =
   | ContentCommand<Vars>
   | JumpCommand
   | JumpCondCommand<Vars>
-  | PromptCommand<Vars, Input>
+  | PromptCommand<Vars, Input, Yield>
   | CallCommand<Vars, unknown, unknown>
   | EffectCommand<Vars, unknown>
   | ReturnCommand<Vars, Return>;
@@ -397,21 +401,26 @@ export type ScriptProcessState = {
 };
 
 export type ParamsOfScript<Script extends AnyScriptLibrary> =
-  Script extends ScriptLibrary<infer Params, unknown, unknown, unknown, unknown>
+  Script extends ScriptLibrary<unknown, unknown, infer Params, unknown, unknown>
     ? Params
     : never;
 
 export type VarsOfScript<Script extends AnyScriptLibrary> =
-  Script extends ScriptLibrary<unknown, infer Vars, unknown, unknown, unknown>
+  Script extends ScriptLibrary<infer Vars, unknown, unknown, unknown, unknown>
     ? Vars
     : never;
 
 export type InputOfScript<Script extends AnyScriptLibrary> =
-  Script extends ScriptLibrary<unknown, unknown, infer Input, unknown, unknown>
+  Script extends ScriptLibrary<unknown, infer Input, unknown, unknown, unknown>
     ? Input
     : never;
 
 export type ReturnOfScript<Script extends AnyScriptLibrary> =
   Script extends ScriptLibrary<unknown, unknown, unknown, infer Return, unknown>
     ? Return
+    : never;
+
+export type YieldOfScript<Script extends AnyScriptLibrary> =
+  Script extends ScriptLibrary<unknown, unknown, unknown, unknown, infer Yield>
+    ? Yield
     : never;

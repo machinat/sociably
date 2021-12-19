@@ -35,7 +35,7 @@ type TagIntermediate = {
 
 type CompileIntermediate =
   | ContentCommand<unknown>
-  | PromptCommand<unknown, unknown>
+  | PromptCommand<unknown, unknown, unknown>
   | EffectCommand<unknown, unknown>
   | CallCommand<unknown, unknown, unknown>
   | ReturnCommand<unknown, unknown>
@@ -43,8 +43,8 @@ type CompileIntermediate =
   | GotoCondIntermediate<unknown>
   | TagIntermediate;
 
-type CompileResult<Vars, Input, Retrun> = {
-  commands: ScriptCommand<Vars, Input, Retrun>[];
+type CompileResult<Vars, Input, Retrun, Yield> = {
+  commands: ScriptCommand<Vars, Input, Retrun, Yield>[];
   stopPointIndex: Map<string, number>;
 };
 
@@ -139,11 +139,12 @@ const compileWhileSegment = (
 
 const compilePromptCommand = ({
   setVars,
+  yieldValue,
   key,
-}: PromptCommand<unknown, unknown>): CompileIntermediate[] => {
+}: PromptCommand<unknown, unknown, unknown>): CompileIntermediate[] => {
   return [
     { type: 'tag', key, isEntryPoint: true },
-    { type: 'prompt', setVars, key },
+    { type: 'prompt', setVars, yieldValue, key },
   ];
 };
 
@@ -174,8 +175,8 @@ const compileReturnCommand = ({
   return [{ type: 'return', getValue }];
 };
 
-const compileSegment = <Vars, Input, Retrun>(
-  segment: ScriptSegment<Vars, Input, Retrun>,
+const compileSegment = <Vars, Input, Retrun, Yield>(
+  segment: ScriptSegment<Vars, Input, Retrun, Yield>,
   uniqCounter: () => number
 ): CompileIntermediate[] => {
   switch (segment.type) {
@@ -198,14 +199,14 @@ const compileSegment = <Vars, Input, Retrun>(
     default:
       throw new TypeError(
         `unknown segment type: ${
-          (segment as ScriptSegment<Vars, Input, Retrun>).type
+          (segment as ScriptSegment<Vars, Input, Retrun, Yield>).type
         }`
       );
   }
 };
 
-const compileSegments = <Vars, Input, Retrun>(
-  segments: ScriptSegment<Vars, Input, Retrun>[],
+const compileSegments = <Vars, Input, Retrun, Yield>(
+  segments: ScriptSegment<Vars, Input, Retrun, Yield>[],
   counter: () => number
 ) =>
   segments.reduce(
@@ -216,10 +217,10 @@ const compileSegments = <Vars, Input, Retrun>(
     []
   );
 
-const compile = <Vars, Input, Return>(
-  segments: ScriptSegment<Vars, Input, Return>[],
+const compile = <Vars, Input, Return, Yield>(
+  segments: ScriptSegment<Vars, Input, Return, Yield>[],
   meta: { scriptName: string }
-): CompileResult<Vars, Input, Return> => {
+): CompileResult<Vars, Input, Return, Yield> => {
   const keyIndex = new Map();
   const stopPointIndex = new Map();
 
@@ -246,7 +247,7 @@ const compile = <Vars, Input, Return>(
   }
 
   // translate "goto tag" to "jump index"
-  const commands: ScriptCommand<unknown, unknown, unknown>[] = [];
+  const commands: ScriptCommand<unknown, unknown, unknown, unknown>[] = [];
 
   for (const [idx, command] of mediateCommands.entries()) {
     if (command.type === 'goto') {
@@ -274,7 +275,7 @@ const compile = <Vars, Input, Return>(
   }
 
   return {
-    commands: commands as ScriptCommand<Vars, Input, Return>[],
+    commands: commands as ScriptCommand<Vars, Input, Return, Yield>[],
     stopPointIndex,
   };
 };

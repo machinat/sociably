@@ -4,10 +4,9 @@ import parseScript from './parse';
 import compile from './compile';
 import type { ScriptLibrary } from './types';
 
-type ScriptBuildOtions<Params, Vars, Meta> = {
+type ScriptBuildOtions<Params, Vars> = {
   name: string;
   initVars?: (params: Params) => Vars;
-  meta?: Meta;
 };
 
 const build = <
@@ -15,18 +14,19 @@ const build = <
   Input = AnyEventContext,
   Params = {},
   Return = void,
-  Meta = null
+  Yield = void
 >(
-  options: ScriptBuildOtions<Params, Vars, Meta>,
+  options: ScriptBuildOtions<Params, Vars>,
   src: MachinatElement<unknown, unknown>
-): ScriptLibrary<Params, Vars, Input, Return, Meta> => {
+): ScriptLibrary<Vars, Input, Params, Return, Yield> => {
   const scriptName = options.name;
-  const { meta, initVars } = options;
+  const { initVars } = options;
 
-  const segments = parseScript<Vars, Input, Return>(src);
-  const { stopPointIndex, commands } = compile<Vars, Input, Return>(segments, {
-    scriptName,
-  });
+  const segments = parseScript<Vars, Input, Return, Yield>(src);
+  const { stopPointIndex, commands } = compile<Vars, Input, Return, Yield>(
+    segments,
+    { scriptName }
+  );
 
   return {
     $$typeof: MACHINAT_SCRIPT_TYPE,
@@ -34,7 +34,6 @@ const build = <
     initVars: initVars || (() => ({} as Vars)),
     stopPointIndex,
     commands,
-    meta: (meta || null) as Meta,
   };
 };
 

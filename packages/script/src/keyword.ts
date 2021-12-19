@@ -19,51 +19,52 @@ import type {
 export const $ = Machinat.Fragment as unknown as <
   Vars = any,
   Input = any,
-  Return = any
+  Return = any,
+  Yield = any
 >(
-  props: BlockProps<Vars, Input, Return>
+  props: BlockProps<Vars, Input, Return, Yield>
 ) => null;
 
 /**
  * @category Keyword
  */
-export const IF = <Vars = any, Input = any, Return = any>(
-  props: IfProps<Vars, Input, Return>
+export const IF = <Vars = any, Input = any, Return = any, Yield = any>(
+  props: IfProps<Vars, Input, Return, Yield>
 ): null => null;
 
 /**
  * @category Keyword
  */
-export const THEN = <Vars = any, Input = any, Return = any>(
-  props: BlockProps<Vars, Input, Return>
+export const THEN = <Vars = any, Input = any, Return = any, Yield = any>(
+  props: BlockProps<Vars, Input, Return, Yield>
 ): null => null;
 
 /**
  * @category Keyword
  */
-export const ELSE_IF = <Vars = any, Input = any, Return = any>(
-  props: ElseIfProps<Vars, Input, Return>
+export const ELSE_IF = <Vars = any, Input = any, Return = any, Yield = any>(
+  props: ElseIfProps<Vars, Input, Return, Yield>
 ): null => null;
 
 /**
  * @category Keyword
  */
-export const ELSE = <Vars = any, Input = any, Return = any>(
-  props: BlockProps<Vars, Input, Return>
+export const ELSE = <Vars = any, Input = any, Return = any, Yield = any>(
+  props: BlockProps<Vars, Input, Return, Yield>
 ): null => null;
 
 /**
  * @category Keyword
  */
-export const WHILE = <Vars = any, Input = any, Return = any>(
-  props: WhileProps<Vars, Input, Return>
+export const WHILE = <Vars = any, Input = any, Return = any, Yield = any>(
+  props: WhileProps<Vars, Input, Return, Yield>
 ): null => null;
 
 /**
  * @category Keyword
  */
-export const PROMPT = <Vars = any, Input = any>(
-  props: PromptProps<Vars, Input>
+export const PROMPT = <Vars = any, Input = any, Yield = any>(
+  props: PromptProps<Vars, Input, Yield>
 ): null => null;
 
 /**

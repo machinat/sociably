@@ -47,9 +47,9 @@ import type {
 const ifChildrenReducer = (
   segment: ConditionsSegment<unknown>,
   node:
-    | ThenElement<unknown, unknown, unknown>
-    | ElseElement<unknown, unknown, unknown>
-    | ElseIfElement<unknown, unknown, unknown>,
+    | ThenElement<unknown, unknown, unknown, unknown>
+    | ElseElement<unknown, unknown, unknown, unknown>
+    | ElseIfElement<unknown, unknown, unknown, unknown>,
   path: string,
   { condition }: { condition: ConditionMatcher<unknown> }
 ) => {
@@ -74,7 +74,7 @@ const ifChildrenReducer = (
       body: parseBlock(node.props.children, `${path}.children`),
     });
   } else if (node.type === ELSE_IF) {
-    const props = node.props as ElseIfProps<unknown, unknown, unknown>;
+    const props = node.props as ElseIfProps<unknown, unknown, unknown, unknown>;
 
     invariant(
       branches.length > 0 && !fallbackBody,
@@ -106,7 +106,7 @@ const ifChildrenReducer = (
 };
 
 const resolveIf = (
-  { condition, children }: IfProps<unknown, unknown, unknown>,
+  { condition, children }: IfProps<unknown, unknown, unknown, unknown>,
   path: string
 ): ConditionsSegment<unknown> => {
   invariant(
@@ -131,7 +131,7 @@ const resolveIf = (
 };
 
 const resolveWhile = (
-  { condition, children }: WhileProps<unknown, unknown, unknown>,
+  { condition, children }: WhileProps<unknown, unknown, unknown, unknown>,
   path: string
 ): WhileSegment<unknown> => {
   invariant(
@@ -156,13 +156,19 @@ const resolveLabel = ({ key }: LabelProps): LabelSegment => {
 };
 
 const resolvePrompt = ({
-  set: setVars,
   key,
-}: PromptProps<unknown, unknown>): PromptCommand<unknown, unknown> => {
+  set: setVars,
+  yield: yieldValue,
+}: PromptProps<unknown, unknown, unknown>): PromptCommand<
+  unknown,
+  unknown,
+  unknown
+> => {
   invariant(key, 'prop "key" of <PROMPT/> should not be empty');
   return {
     type: 'prompt',
     setVars,
+    yieldValue,
     key,
   };
 };
@@ -216,19 +222,24 @@ const resolveReturn = ({
 };
 
 const resolveElement = (
-  node: ScriptElement<unknown, unknown, unknown>,
+  node: ScriptElement<unknown, unknown, unknown, unknown>,
   path: string
-): ScriptSegment<unknown, unknown, unknown> => {
+): ScriptSegment<unknown, unknown, unknown, unknown> => {
   switch (node.type) {
     case IF:
-      return resolveIf(node.props as IfProps<unknown, unknown, unknown>, path);
+      return resolveIf(
+        node.props as IfProps<unknown, unknown, unknown, unknown>,
+        path
+      );
     case WHILE:
       return resolveWhile(
-        node.props as WhileProps<unknown, unknown, unknown>,
+        node.props as WhileProps<unknown, unknown, unknown, unknown>,
         path
       );
     case PROMPT:
-      return resolvePrompt(node.props as PromptProps<unknown, unknown>);
+      return resolvePrompt(
+        node.props as PromptProps<unknown, unknown, unknown>
+      );
     case LABEL:
       return resolveLabel(node.props as LabelProps);
     case CALL:
@@ -243,8 +254,10 @@ const resolveElement = (
 };
 
 const blockReducer = (
-  segments: ScriptSegment<unknown, unknown, unknown>[],
-  node: ScriptElement<unknown, unknown, unknown> | ContentNode<unknown>,
+  segments: ScriptSegment<unknown, unknown, unknown, unknown>[],
+  node:
+    | ScriptElement<unknown, unknown, unknown, unknown>
+    | ContentNode<unknown>,
   path: string
 ) => {
   if (isElement(node)) {
@@ -264,11 +277,11 @@ const blockReducer = (
   return segments;
 };
 
-const parseBlock = <Vars, Input, Return>(
-  node: ScriptNode<Vars, Input, Return>,
+const parseBlock = <Vars, Input, Return, Yield>(
+  node: ScriptNode<Vars, Input, Return, Yield>,
   path: string
-): ScriptSegment<Vars, Input, Return>[] => {
-  return reduce<ScriptSegment<Vars, Input, Return>[], void>(
+): ScriptSegment<Vars, Input, Return, Yield>[] => {
+  return reduce<ScriptSegment<Vars, Input, Return, Yield>[], void>(
     node as any,
     blockReducer as any,
     [],
@@ -277,11 +290,11 @@ const parseBlock = <Vars, Input, Return>(
   );
 };
 
-const parse = <Vars, Input, Return>(
+const parse = <Vars, Input, Return, Yield>(
   node: MachinatElement<unknown, unknown>
-): ScriptSegment<Vars, Input, Return>[] => {
-  return parseBlock<Vars, Input, Return>(
-    node as ScriptNode<Vars, Input, Return>,
+): ScriptSegment<Vars, Input, Return, Yield>[] => {
+  return parseBlock<Vars, Input, Return, Yield>(
+    node as ScriptNode<Vars, Input, Return, Yield>,
     '$'
   );
 };

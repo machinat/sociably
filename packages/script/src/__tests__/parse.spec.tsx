@@ -27,7 +27,6 @@ const AnotherScript: AnyScriptLibrary = {
     ['foo', 3],
     ['bar', 8],
   ]),
-  meta: null,
 };
 
 it('parse content fn', () => {
@@ -339,7 +338,7 @@ describe('parse <PROMPT/>', () => {
           {() => 'where r u last night?'}
           <PROMPT set={answerSetter} key="where" />
           {() => 'what r u doing?'}
-          <PROMPT set={answerSetter} key="what" />
+          <PROMPT set={answerSetter} key="what" yield={() => 'the heck'} />
           {() => 'how can you do this to me?'}
           <PROMPT set={answerSetter} key="how" />
         </>
@@ -348,13 +347,14 @@ describe('parse <PROMPT/>', () => {
       { type: 'content', getContent: expect.any(Function) },
       { type: 'prompt', key: 'where', setVars: answerSetter },
       { type: 'content', getContent: expect.any(Function) },
-      { type: 'prompt', key: 'what', setVars: answerSetter },
-      { type: 'content', getContent: expect.any(Function) },
       {
         type: 'prompt',
-        key: 'how',
+        key: 'what',
         setVars: answerSetter,
+        yieldValue: expect.any(Function),
       },
+      { type: 'content', getContent: expect.any(Function) },
+      { type: 'prompt', key: 'how', setVars: answerSetter },
     ]);
   });
 

@@ -170,7 +170,12 @@ it('compile other segments type', () => {
   const OrderScript = { fake: 'script' } as never;
   const sideEffect = moxy();
 
-  const { commands, stopPointIndex }: any = compile<unknown, unknown, unknown>(
+  const { commands, stopPointIndex }: any = compile<
+    unknown,
+    unknown,
+    unknown,
+    unknown
+  >(
     [
       { type: 'content', getContent: () => 'hello' },
       { type: 'label', key: 'begin' },
@@ -178,6 +183,7 @@ it('compile other segments type', () => {
       {
         type: 'prompt',
         key: 'ask_something',
+        yieldValue: () => 'he is here',
         setVars: () => ({ name: 'Jojo' }),
       },
       { type: 'content', getContent: () => `hi Jojo, order ur meal` },
@@ -203,6 +209,7 @@ it('compile other segments type', () => {
     {
       type: 'prompt',
       setVars: expect.any(Function),
+      yieldValue: expect.any(Function),
       key: 'ask_something',
     },
     { type: 'content', getContent: expect.any(Function) },

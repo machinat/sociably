@@ -21,7 +21,6 @@ test('built script object', () => {
   const ChildScript = build(
     {
       name: 'ChildScript',
-      meta: { foo: 'baz' },
       initVars,
     },
     <>
@@ -33,7 +32,6 @@ test('built script object', () => {
   const MyScript = build(
     {
       name: 'MyScript',
-      meta: { foo: 'bar' },
       initVars,
     },
     <>
@@ -89,7 +87,6 @@ test('built script object', () => {
       "end" => 15,
     }
   `);
-  expect(MyScript.meta).toEqual({ foo: 'bar' });
 
   expect(ChildScript.name).toBe('ChildScript');
   expect(ChildScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
@@ -100,6 +97,5 @@ test('built script object', () => {
     Map {
       "childPrompt" => 1,
     }
-    `);
-  expect(ChildScript.meta).toEqual({ foo: 'baz' });
+  `);
 });

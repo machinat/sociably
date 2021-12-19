@@ -24,13 +24,14 @@ const scope = moxy<ServiceScope>({
 } as never);
 
 const promptSetter = moxy(({ vars }) => vars);
+const yieldVars = moxy(({ vars }) => vars);
 
 const AnotherScript = moxy(
   build<{}, {}, {}>(
     { name: 'AnotherScript', initVars: (input) => input },
     <>
       {() => 'adipiscing '}
-      <PROMPT key="ask_4" set={promptSetter} />
+      <PROMPT key="ask_4" set={promptSetter} yield={yieldVars} />
       {() => 'elit, '}
     </>
   )
@@ -52,7 +53,7 @@ const MyScript = moxy(
 
           {() => 'dolor '}
 
-          <PROMPT key="ask_1" set={promptSetter} />
+          <PROMPT key="ask_1" set={promptSetter} yield={yieldVars} />
 
           {() => 'sit '}
         </THEN>
@@ -61,7 +62,7 @@ const MyScript = moxy(
           <LABEL key="#3" />
           {() => 'est '}
 
-          <PROMPT key="ask_2" set={promptSetter} />
+          <PROMPT key="ask_2" set={promptSetter} yield={yieldVars} />
 
           {() => 'laborum. '}
           <RETURN value={({ vars: { foo } }) => ({ foo })} />
@@ -70,7 +71,7 @@ const MyScript = moxy(
 
       {() => 'amet, '}
 
-      <PROMPT key="ask_3" set={promptSetter} />
+      <PROMPT key="ask_3" set={promptSetter} yield={yieldVars} />
 
       <LABEL key="#4" />
       {() => 'consectetur '}
@@ -84,7 +85,7 @@ const MyScript = moxy(
       <WHILE condition={({ vars: { i } }) => i < 5}>
         <EFFECT set={({ vars }) => ({ ...vars, i: vars.i + 1 })} />
 
-        <PROMPT key="ask_5" set={promptSetter} />
+        <PROMPT key="ask_5" set={promptSetter} yield={yieldVars} />
         {() => 'do '}
       </WHILE>
 
@@ -100,6 +101,7 @@ beforeEach(() => {
   MyScript.mock.clear();
   AnotherScript.mock.clear();
   promptSetter.mock.reset();
+  yieldVars.mock.reset();
 });
 
 describe('#start(channel, Script)', () => {
@@ -117,6 +119,7 @@ describe('#start(channel, Script)', () => {
     expect(runtime.isBeginning).toBe(false);
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
+    expect(runtime.yieldValue).toEqual({});
 
     expect(runtime.callStack).toEqual([
       { script: MyScript, stopAt: 'ask_1', vars: {} },
@@ -183,6 +186,7 @@ describe('#start(channel, Script)', () => {
     expect(runtime.isBeginning).toBe(false);
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
+    expect(runtime.yieldValue).toEqual({});
 
     expect(runtime.callStack).toEqual([
       { script: MyScript, stopAt: 'ask_2', vars: {} },
@@ -244,6 +248,7 @@ describe('#start(channel, Script)', () => {
     expect(runtime.isBeginning).toBe(false);
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
+    expect(runtime.yieldValue).toEqual({ foo: 'bar' });
 
     expect(runtime.callStack).toEqual([
       { script: MyScript, stopAt: 'ask_2', vars: { foo: 'bar' } },
@@ -346,6 +351,7 @@ describe('#continue(channel, input)', () => {
     expect(runtime.isFinished).toBe(false);
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
+    expect(runtime.yieldValue).toEqual({});
 
     const message = runtime.output();
     expect(message).toMatchInlineSnapshot(`
@@ -424,6 +430,7 @@ describe('#continue(channel, input)', () => {
     expect(runtime.isFinished).toBe(false);
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
+    expect(runtime.yieldValue).toEqual({ foo: 'bar', i: 1 });
 
     const message = runtime.output();
     expect(message).toMatchInlineSnapshot(`
@@ -502,7 +509,7 @@ describe('#continue(channel, input)', () => {
 });
 
 describe('#getRuntime(channel)', () => {
-  test('manually running', async () => {
+  test('manually call runtime.run()', async () => {
     const stateController = new InMemoryStateController();
     await stateController.channelState(channel).set('$$machinat:script', {
       version: 'V0',
@@ -524,6 +531,7 @@ describe('#getRuntime(channel)', () => {
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
       returnValue: undefined,
+      yieldValue: {},
       contents: ['consectetur ', 'adipiscing '],
     });
 
@@ -540,6 +548,7 @@ describe('#getRuntime(channel)', () => {
       finished: false,
       returnValue: undefined,
       contents: ['elit, ', 'sed '],
+      yieldValue: { foo: 'bar', i: 1 },
     });
 
     expect(promptSetter.mock).toHaveBeenCalledTimes(2);
@@ -554,6 +563,7 @@ describe('#getRuntime(channel)', () => {
         finished: false,
         returnValue: undefined,
         contents: ['do '],
+        yieldValue: { foo: 'bar', i: i + 2 },
       });
 
       expect(promptSetter.mock).toHaveBeenCalledTimes(3 + i);

@@ -14,11 +14,13 @@ import type {
   ParamsOfScript,
   InputOfScript,
   ReturnOfScript,
+  YieldOfScript,
 } from './types';
 
-type RuntimeResult<ReturnValue> = {
+type RuntimeResult<Return, Yield> = {
   finished: boolean;
-  returnValue: undefined | ReturnValue;
+  returnValue: undefined | Return;
+  yieldValue: undefined | Yield;
   contents: MachinatNode;
 };
 
@@ -32,7 +34,9 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
 
   private _requireSaving: boolean;
   private _queuedMessages: MachinatNode[];
+
   private _returnValue: undefined | ReturnOfScript<Script>;
+  private _yieldValue: undefined | YieldOfScript<Script>;
 
   constructor(
     stateContoller: StateControllerI,
@@ -59,6 +63,10 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
     return this._returnValue;
   }
 
+  get yieldValue(): undefined | YieldOfScript<Script> {
+    return this._yieldValue;
+  }
+
   get isBeginning(): boolean {
     return !(this.callStack && (this.saveTimestamp || this._requireSaving));
   }
@@ -69,32 +77,36 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
 
   async run(
     input?: InputOfScript<Script>
-  ): Promise<RuntimeResult<ReturnOfScript<Script>>> {
+  ): Promise<RuntimeResult<ReturnOfScript<Script>, YieldOfScript<Script>>> {
     if (!this.callStack) {
       return {
         finished: true,
         returnValue: undefined,
+        yieldValue: undefined,
         contents: null,
       };
     }
 
-    const { finished, returnValue, stack, contents } = await execute(
-      this._serviceScope,
-      this.channel,
-      this.callStack,
-      this.isBeginning,
-      input
-    );
+    const { finished, returnedValue, yieldedValue, stack, contents } =
+      await execute(
+        this._serviceScope,
+        this.channel,
+        this.callStack,
+        this.isBeginning,
+        input
+      );
 
     this.callStack = stack;
-    this._returnValue = returnValue;
+    this._returnValue = returnedValue;
+    this._yieldValue = yieldedValue;
     this._queuedMessages.push(contents);
     this._requireSaving = true;
 
     return {
       finished,
-      returnValue,
       contents,
+      returnValue: returnedValue,
+      yieldValue: yieldedValue,
     };
   }
 

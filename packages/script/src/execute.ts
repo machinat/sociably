@@ -20,6 +20,7 @@ import type {
   VarsOfScript,
   InputOfScript,
   ReturnOfScript,
+  YieldOfScript,
 } from './types';
 
 const getCursorIndexAssertedly = (
@@ -34,27 +35,31 @@ const getCursorIndexAssertedly = (
 
 type FinishedExecuteResult<Return> = {
   finished: true;
-  returnValue: Return;
+  returnedValue: Return;
+  yieldedValue: undefined;
   stack: null;
   contents: MachinatNode[];
 };
 
-type UnfinishedExecuteResult<Script extends AnyScriptLibrary> = {
+type UnfinishedExecuteResult<Yield, Script extends AnyScriptLibrary> = {
   finished: false;
-  returnValue: undefined;
+  returnedValue: undefined;
+  yieldedValue: Yield;
   stack: CallStatus<Script>[];
   contents: MachinatNode[];
 };
 
 type ExecuteResult<Script extends AnyScriptLibrary> =
   | FinishedExecuteResult<ReturnOfScript<Script>>
-  | UnfinishedExecuteResult<Script>;
+  | UnfinishedExecuteResult<YieldOfScript<Script>, Script>;
 
-type ExecuteContext<Vars> = {
+type ExecuteContext<Vars, Return, Yield> = {
   channel: MachinatChannel;
   scope: ServiceScope;
   finished: boolean;
+  returnedValue: undefined | Return;
   stopAt: undefined | string;
+  yieldedValue: undefined | Yield;
   cursor: number;
   contents: MachinatNode[];
   vars: Vars;
@@ -63,8 +68,8 @@ type ExecuteContext<Vars> = {
 
 const executeContentCommand = async <Vars>(
   { getContent }: ContentCommand<Vars>,
-  context: ExecuteContext<Vars>
-): Promise<ExecuteContext<Vars>> => {
+  context: ExecuteContext<Vars, unknown, unknown>
+): Promise<ExecuteContext<Vars, unknown, unknown>> => {
   const { cursor, contents, vars, channel, scope } = context;
   const newContent = await maybeInjectContainer<ContentFn<Vars>>(
     scope,
@@ -80,15 +85,15 @@ const executeContentCommand = async <Vars>(
 
 const executeJumpCommand = <Vars>(
   { offset }: JumpCommand,
-  context: ExecuteContext<Vars>
-): ExecuteContext<Vars> => {
+  context: ExecuteContext<Vars, unknown, unknown>
+): ExecuteContext<Vars, unknown, unknown> => {
   return { ...context, cursor: context.cursor + offset };
 };
 
 const executeJumpCondCommand = async <Vars>(
   { condition, isNot, offset }: JumpCondCommand<Vars>,
-  context: ExecuteContext<Vars>
-): Promise<ExecuteContext<Vars>> => {
+  context: ExecuteContext<Vars, unknown, unknown>
+): Promise<ExecuteContext<Vars, unknown, unknown>> => {
   const { cursor, scope, vars, channel } = context;
   const isMatched = await maybeInjectContainer<ConditionMatchFn<Vars>>(
     scope,
@@ -101,11 +106,29 @@ const executeJumpCondCommand = async <Vars>(
   };
 };
 
-const executePromptCommand = async <Vars>(
-  command: PromptCommand<Vars, unknown>,
-  context: ExecuteContext<Vars>
-): Promise<ExecuteContext<Vars>> => {
-  return { ...context, stopAt: command.key };
+const executePromptCommand = async <Vars, Yield>(
+  { key, yieldValue }: PromptCommand<Vars, unknown, Yield>,
+  context: ExecuteContext<Vars, unknown, Yield>
+): Promise<ExecuteContext<Vars, unknown, Yield>> => {
+  const { vars, scope, channel } = context;
+  let yieldedValue: undefined | Yield;
+
+  if (yieldValue) {
+    yieldedValue = await maybeInjectContainer(
+      scope,
+      yieldValue
+    )({
+      platform: channel.platform,
+      vars,
+      channel,
+    });
+  }
+
+  return {
+    ...context,
+    stopAt: key,
+    yieldedValue,
+  };
 };
 
 const executeCallCommand = async <Vars>(
@@ -116,8 +139,8 @@ const executeCallCommand = async <Vars>(
     setVars,
     goto,
   }: CallCommand<Vars, unknown, unknown>,
-  context: ExecuteContext<Vars>
-): Promise<ExecuteContext<Vars>> => {
+  context: ExecuteContext<Vars, unknown, unknown>
+): Promise<ExecuteContext<Vars, unknown, unknown>> => {
   const { vars, contents, scope, channel, cursor } = context;
   const index = goto ? getCursorIndexAssertedly(script, goto) : 0;
 
@@ -141,8 +164,9 @@ const executeCallCommand = async <Vars>(
   if (!result.finished) {
     return {
       ...context,
-      contents: concatedContent,
       stopAt: key,
+      yieldedValue: result.yieldedValue,
+      contents: concatedContent,
       descendantCallStack: result.stack,
     };
   }
@@ -152,7 +176,7 @@ const executeCallCommand = async <Vars>(
     updatedVars = await maybeInjectContainer<CallReturnSetFn<Vars, unknown>>(
       scope,
       setVars
-    )({ platform: channel.platform, channel, vars }, result.returnValue);
+    )({ platform: channel.platform, channel, vars }, result.returnedValue);
   }
 
   return {
@@ -165,8 +189,8 @@ const executeCallCommand = async <Vars>(
 
 const executeEffectCommand = async <Vars>(
   { doEffect, setVars }: EffectCommand<Vars, unknown>,
-  context: ExecuteContext<Vars>
-): Promise<ExecuteContext<Vars>> => {
+  context: ExecuteContext<Vars, unknown, unknown>
+): Promise<ExecuteContext<Vars, unknown, unknown>> => {
   const { cursor, scope, channel, vars } = context;
 
   let result: unknown;
@@ -192,13 +216,36 @@ const executeEffectCommand = async <Vars>(
   };
 };
 
-const executeCommand = async <Vars, Input, Return>(
-  command: Exclude<
-    ScriptCommand<Vars, Input, Return>,
-    ReturnCommand<Vars, Return>
-  >,
-  context: ExecuteContext<Vars>
-): Promise<ExecuteContext<Vars>> => {
+const executeReturnCommand = async <Vars, Return>(
+  { getValue }: ReturnCommand<Vars, Return>,
+  context: ExecuteContext<Vars, Return, unknown>
+): Promise<ExecuteContext<Vars, Return, unknown>> => {
+  const { scope, channel, vars } = context;
+  let returnedValue: undefined | Return;
+
+  if (getValue) {
+    // eslint-disable-next-line no-await-in-loop
+    returnedValue = await maybeInjectContainer(
+      scope,
+      getValue
+    )({
+      platform: channel.platform,
+      vars,
+      channel,
+    });
+  }
+
+  return {
+    ...context,
+    finished: true,
+    returnedValue,
+  };
+};
+
+const executeCommand = async (
+  command: ScriptCommand<unknown, unknown, unknown, unknown>,
+  context: ExecuteContext<unknown, unknown, unknown>
+): Promise<ExecuteContext<unknown, unknown, unknown>> => {
   switch (command.type) {
     case 'content':
       return executeContentCommand(command, context);
@@ -212,12 +259,11 @@ const executeCommand = async <Vars, Input, Return>(
       return executeCallCommand(command, context);
     case 'effect':
       return executeEffectCommand(command, context);
+    case 'return':
+      return executeReturnCommand(command, context);
     default:
       throw new TypeError(
-        `unknown command type ${
-          (command as ScriptCommand<Vars, Input, Return>).type ||
-          String(command)
-        }`
+        `unknown command type ${(command as any).type || String(command)}`
       );
   }
 };
@@ -231,9 +277,11 @@ const executeScript = async <Script extends AnyScriptLibrary>(
 ): Promise<ExecuteResult<Script>> => {
   const { commands } = script;
 
-  let context: ExecuteContext<VarsOfScript<Script>> = {
+  let context: ExecuteContext<unknown, unknown, unknown> = {
     finished: false,
+    returnedValue: undefined,
     stopAt: undefined,
+    yieldedValue: undefined,
     cursor: begin,
     contents: [],
     vars: beginVars,
@@ -245,42 +293,28 @@ const executeScript = async <Script extends AnyScriptLibrary>(
   while (context.cursor < commands.length) {
     const command = commands[context.cursor];
 
-    if (command.type === 'return') {
-      const { getValue } = command;
-      let returnValue: undefined | ReturnOfScript<Script>;
+    // eslint-disable-next-line no-await-in-loop
+    context = await executeCommand(command, context);
 
-      if (getValue) {
-        // eslint-disable-next-line no-await-in-loop
-        returnValue = (await maybeInjectContainer(
-          scope,
-          getValue
-        )({
-          platform: channel.platform,
-          vars: context.vars,
-          channel,
-        })) as ReturnOfScript<Script>;
-      }
-
+    if (context.finished) {
       return {
         finished: true,
-        returnValue: returnValue as ReturnOfScript<Script>,
+        returnedValue: context.returnedValue as ReturnOfScript<Script>,
+        yieldedValue: undefined,
         contents: context.contents,
         stack: null,
       };
     }
 
-    // eslint-disable-next-line no-await-in-loop
-    context = (await executeCommand(command, context)) as ExecuteContext<
-      VarsOfScript<Script>
-    >;
-
     if (context.stopAt) {
-      const { stopAt, contents, vars, descendantCallStack } = context;
+      const { stopAt, contents, vars, yieldedValue, descendantCallStack } =
+        context;
       const stackStatus = { script, vars, stopAt };
 
       return {
         finished: false,
-        returnValue: undefined,
+        returnedValue: undefined,
+        yieldedValue: yieldedValue as YieldOfScript<Script>,
         contents,
         stack: (descendantCallStack
           ? [stackStatus, ...descendantCallStack]
@@ -289,9 +323,11 @@ const executeScript = async <Script extends AnyScriptLibrary>(
     }
   }
 
+  // script ends with no RETURN
   return {
     finished: true,
-    returnValue: undefined as never,
+    returnedValue: undefined as never,
+    yieldedValue: undefined,
     contents: context.contents,
     stack: null,
   };
@@ -316,7 +352,7 @@ const execute = async <Script extends AnyScriptLibrary>(
 
     if (d === callingDepth - 1) {
       if (!isBeginning) {
-        // begin from stop point
+        // begin from the PROMPT point
         const awaitingPrompt = script.commands[index];
 
         invariant(
@@ -345,7 +381,7 @@ const execute = async <Script extends AnyScriptLibrary>(
         index += 1;
       }
     } else {
-      // handle descendant script call return
+      // handle script CALL return
       const awaitingCall = script.commands[index];
 
       invariant(
@@ -381,21 +417,24 @@ const execute = async <Script extends AnyScriptLibrary>(
     );
     contents.push(...result.contents);
 
+    // a PROMPT is met, break the runtime
     if (!result.finished) {
       return {
         finished: false,
-        returnValue: undefined,
+        yieldedValue: result.yieldedValue,
+        returnedValue: undefined,
         stack: [...beginningStack.slice(0, d), ...result.stack],
         contents,
       };
     }
 
-    currentReturnValue = result.returnValue;
+    currentReturnValue = result.returnedValue;
   }
 
   return {
     finished: true,
-    returnValue: currentReturnValue as ReturnOfScript<Script>,
+    returnedValue: currentReturnValue as ReturnOfScript<Script>,
+    yieldedValue: undefined,
     stack: null,
     contents,
   };
