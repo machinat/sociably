@@ -55,11 +55,12 @@ export class RedisStateAccessor implements StateAccessor {
       key
     );
 
-    const newValue = updator(
-      currentData ? this._parseValue(currentData) : undefined
-    );
+    const currentValue = this._parseValue(currentData);
+    const newValue = updator(currentData ? currentValue : undefined);
 
-    if (newValue !== undefined) {
+    if (newValue === undefined) {
+      await thenifiedly.callMethod('hdel', this._client, this._stateKey, key);
+    } else if (newValue !== currentValue) {
       await thenifiedly.callMethod(
         'hset',
         this._client,
@@ -67,8 +68,6 @@ export class RedisStateAccessor implements StateAccessor {
         key,
         this._stringifyValue(newValue)
       );
-    } else {
-      await thenifiedly.callMethod('hdel', this._client, this._stateKey, key);
     }
 
     return newValue;
